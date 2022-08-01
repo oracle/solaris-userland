@@ -162,7 +162,7 @@
  typedef enum { INIT_PW, INIT_KT, RENEW, VALIDATE } action_type;
  
  struct k_opts
-@@ -836,6 +840,15 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
+@@ -821,6 +825,15 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
          if (opts->verbose)
              fprintf(stderr, _("Stored credentials\n"));
      }
@@ -178,7 +178,7 @@
      notix = 0;
      if (k5->switch_to_cache) {
          ret = krb5_cc_switch(k5->ctx, k5->out_cc);
-@@ -903,3 +916,25 @@ main(int argc, char *argv[])
+@@ -890,3 +903,25 @@ main(int argc, char *argv[])
          exit(1);
      return 0;
  }
@@ -210,8 +210,8 @@
  SUBDIROBJLISTS=generic/OBJS.ST mechglue/OBJS.ST krb5/OBJS.ST spnego/OBJS.ST
  SHLIB_EXPDEPS=\
  	$(KRB5_DEPLIB) $(CRYPTO_DEPLIB) $(SUPPORT_DEPLIB) $(COM_ERR_DEPLIB)
--SHLIB_EXPLIBS=-lkrb5 -lk5crypto -lcom_err $(SUPPORT_LIB) $(DL_LIB) $(LIBS)
-+SHLIB_EXPLIBS=-lkrb5 -lk5crypto -lcom_err -lkwarn $(SUPPORT_LIB) $(DL_LIB) $(LIBS)
+-SHLIB_EXPLIBS=-lkrb5 -lk5crypto $(COM_ERR_LIB) $(SUPPORT_LIB) $(DL_LIB) $(LIBS)
++SHLIB_EXPLIBS=-lkrb5 -lk5crypto -lkwarn $(COM_ERR_LIB) $(SUPPORT_LIB) $(DL_LIB) $(LIBS)
  RELDIR=gssapi
  
  all-unix: all-liblinks @MAINT@ verify-calling-conventions-gssapi
@@ -224,17 +224,17 @@
 +#include <syslog.h>
 +#include <kerberosv5/private/ktwarn.h>
  
- static int
- has_unexpired_creds(krb5_gss_cred_id_t kcred,
-@@ -71,6 +73,7 @@ copy_initiator_creds(OM_uint32 *minor_status,
-     krb5_context context = NULL;
-     krb5_ccache ccache = NULL;
-     const char *ccache_name;
+ static OM_uint32
+ copy_initiator_creds(OM_uint32 *minor_status,
+@@ -43,6 +45,7 @@ copy_initiator_creds(OM_uint32 *minor_status,
+     krb5_principal princ = NULL;
+     krb5_boolean switch_to_cache = FALSE;
+     const char *ccache_name, *deftype;
 +    char *client_name = NULL;
  
      *minor_status = 0;
  
-@@ -162,6 +165,17 @@ copy_initiator_creds(OM_uint32 *minor_status,
+@@ -132,6 +135,17 @@ copy_initiator_creds(OM_uint32 *minor_status,
      *minor_status = 0;
      major_status = GSS_S_COMPLETE;
  

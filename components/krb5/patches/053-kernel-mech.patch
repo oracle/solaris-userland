@@ -123,74 +123,96 @@
 +}
 --- a/src/lib/gssapi/krb5/accept_sec_context.c
 +++ b/src/lib/gssapi/krb5/accept_sec_context.c
-@@ -437,6 +437,7 @@ kg_accept_krb5(minor_status, context_handle,
+@@ -478,7 +478,7 @@ process_checksum(OM_uint32 *minor_status, krb5_context context,
+                  krb5_auth_context auth_context, krb5_flags ap_req_options,
+                  krb5_authenticator *authenticator, krb5_gss_ctx_ext_t exts,
+                  krb5_gss_cred_id_t *deleg_out, krb5_ui_4 *flags_out,
+-                 krb5_error_code *code_out)
++                 krb5_error_code *code_out, int *bigend_out)
+ {
+     krb5_error_code code = 0;
+     OM_uint32 status, option_id, token_flags;
+@@ -490,6 +490,15 @@ process_checksum(OM_uint32 *minor_status, krb5_context context,
+     const uint8_t *token_cb, *option_bytes;
+     struct k5input in;
+     const krb5_checksum *cksum = authenticator->checksum;
++    int bigend = 0;
++    uint32_t (*input_get_uint32[2])(struct k5input *) = {
++        &k5_input_get_uint32_le,
++        &k5_input_get_uint32_be
++    };
++    uint16_t (*input_get_uint16[2])(struct k5input *) = {
++        &k5_input_get_uint16_le,
++        &k5_input_get_uint16_be
++    };
+ 
+     cb_cksum.contents = NULL;
+ 
+@@ -533,13 +542,21 @@ process_checksum(OM_uint32 *minor_status, krb5_context context,
+         }
+ 
+         k5_input_init(&in, cksum->contents, cksum->length);
+-        cb_len = k5_input_get_uint32_le(&in);
++        cb_len = input_get_uint32[bigend](&in);
+         if (cb_len != CB_MD5_LEN) {
+-            code = KG_BAD_LENGTH;
+-            status = GSS_S_FAILURE;
+-            goto fail;
++	    bigend = 1;
++            k5_input_init(&in, cksum->contents, cksum->length);
++	    cb_len = input_get_uint32[bigend](&in);
++	    if (cb_len != CB_MD5_LEN) {
++		code = KG_BAD_LENGTH;
++		status = GSS_S_FAILURE;
++		goto fail;
++	    }
+         }
+ 
++        if (bigend_out != NULL)
++            *bigend_out = bigend;
++
+         token_cb = k5_input_get_bytes(&in, cb_len);
+         if (acceptor_cb != GSS_C_NO_CHANNEL_BINDINGS) {
+             code = kg_checksum_channel_bindings(context, acceptor_cb,
+@@ -558,15 +575,15 @@ process_checksum(OM_uint32 *minor_status, krb5_context context,
+         }
+ 
+         /* Read the token flags and accept some of them as context flags. */
+-        token_flags = k5_input_get_uint32_le(&in);
++	token_flags = input_get_uint32[bigend](&in);
+         *flags_out = token_flags & INITIATOR_FLAGS;
+         if (cb_match)
+             *flags_out |= GSS_C_CHANNEL_BOUND_FLAG;
+ 
+         /* Read the delegated credential if present. */
+         if (in.len >= 4 && (token_flags & GSS_C_DELEG_FLAG)) {
+-            option_id = k5_input_get_uint16_le(&in);
+-            option_len = k5_input_get_uint16_le(&in);
++            option_id = input_get_uint16[bigend](&in);
++            option_len = input_get_uint16[bigend](&in);
+             option_bytes = k5_input_get_bytes(&in, option_len);
+             option = make_data((uint8_t *)option_bytes, option_len);
+             if (in.status) {
+@@ -658,6 +675,7 @@ kg_accept_krb5(minor_status, context_handle,
+     krb5_context context;
+     unsigned char *ptr;
      char *sptr;
-     OM_uint32 tmp;
-     size_t md5len;
 +    int bigend = 0;
      krb5_gss_cred_id_t cred = 0;
      krb5_data ap_rep, ap_req;
-     unsigned int i;
-@@ -692,6 +693,7 @@ kg_accept_krb5(minor_status, context_handle,
-         gss_flags = GSS_C_REPLAY_FLAG | GSS_C_SEQUENCE_FLAG;
-         if (ap_req_options & AP_OPTS_MUTUAL_REQUIRED)
-             gss_flags |= GSS_C_MUTUAL_FLAG;
-+	bigend = 0;
-     } else {
-         /* gss krb5 v1 */
+     krb5_error_code code;
+@@ -862,7 +880,7 @@ kg_accept_krb5(minor_status, context_handle,
+                                     auth_context, ap_req_options,
+                                     authdat, exts,
+                                     delegated_cred_handle ? &deleg_cred : NULL,
+-                                    &gss_flags, &code);
++                                    &gss_flags, &code, &bigend);
  
-@@ -719,14 +721,22 @@ kg_accept_krb5(minor_status, context_handle,
-         }
- 
-         ptr = (unsigned char *) authdat->checksum->contents;
-+	bigend = 0;
- 
--        TREAD_INT(ptr, tmp, 0);
-+        TREAD_INT(ptr, tmp, bigend);
- 
--        if (tmp != md5len) {
--            code = KG_BAD_LENGTH;
--            major_status = GSS_S_FAILURE;
--            goto fail;
--        }
-+	if (tmp != md5len) {
-+	    ptr = (unsigned char *) authdat->checksum->contents;
-+	    bigend = 1;
-+
-+	    TREAD_INT(ptr, tmp, bigend);
-+
-+	    if (tmp != md5len) {
-+		code = KG_BAD_LENGTH;
-+		major_status = GSS_S_FAILURE;
-+		goto fail;
-+	    }
-+	}
- 
-         /*
-           The following section of code attempts to implement the
-@@ -767,7 +777,7 @@ kg_accept_krb5(minor_status, context_handle,
- 
-         /* Read the token flags.  Remember if GSS_C_DELEG_FLAG was set, but
-          * mask it out until we actually read a delegated credential. */
--        TREAD_INT(ptr, gss_flags, 0);
-+        TREAD_INT(ptr, gss_flags, bigend);
-         token_deleg_flag = (gss_flags & GSS_C_DELEG_FLAG);
-         gss_flags &= ~GSS_C_DELEG_FLAG;
- 
-@@ -776,8 +786,8 @@ kg_accept_krb5(minor_status, context_handle,
-         i = authdat->checksum->length - 24;
-         if (i && token_deleg_flag) {
-             if (i >= 4) {
--                TREAD_INT16(ptr, option_id, 0);
--                TREAD_INT16(ptr, option.length, 0);
-+                TREAD_INT16(ptr, option_id, bigend);
-+                TREAD_INT16(ptr, option.length, bigend);
-                 i -= 4;
- 
-                 if (i < option.length) {
-@@ -874,6 +884,7 @@ kg_accept_krb5(minor_status, context_handle,
-                                       GSS_C_DCE_STYLE | GSS_C_IDENTIFY_FLAG |
-                                       GSS_C_EXTENDED_ERROR_FLAG)));
+     if (major_status != GSS_S_COMPLETE)
+         goto fail;
+@@ -894,6 +912,7 @@ kg_accept_krb5(minor_status, context_handle,
+     ctx->initiate = 0;
+     ctx->gss_flags = gss_flags | GSS_C_TRANS_FLAG;
      ctx->seed_init = 0;
 +    ctx->big_endian = bigend;
      ctx->cred_rcache = cred_rcache;
@@ -198,7 +220,7 @@
      /* XXX move this into gss_name_t */
 --- a/src/lib/gssapi/krb5/gssapiP_krb5.h
 +++ b/src/lib/gssapi/krb5/gssapiP_krb5.h
-@@ -205,6 +205,7 @@ typedef struct _krb5_gss_ctx_id_rec {
+@@ -207,6 +207,7 @@ typedef struct _krb5_gss_ctx_id_rec {
      krb5_magic magic;
      unsigned int initiate : 1;   /* nonzero if initiating, zero if accepting */
      unsigned int established : 1;
@@ -208,7 +230,7 @@
      unsigned int terminated : 1;
 --- a/src/lib/gssapi/krb5/gssapi_krb5.c
 +++ b/src/lib/gssapi/krb5/gssapi_krb5.c
-@@ -1031,6 +1031,7 @@ static int gss_krb5mechglue_init(void)
+@@ -1019,6 +1019,7 @@ static int gss_krb5mechglue_init(void)
  
      mech_krb5.mechNameStr = "kerberos_v5";
      mech_krb5.mech_type = (gss_OID)gss_mech_krb5;

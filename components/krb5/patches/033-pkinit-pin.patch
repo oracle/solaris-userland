@@ -56,7 +56,7 @@
  #include "k5-int.h"
  #include "pkinit.h"
  #include "k5-json.h"
-@@ -1475,6 +1479,10 @@ handle_gic_opt(krb5_context context,
+@@ -1465,6 +1469,10 @@ handle_gic_opt(krb5_context context,
      } else if (strcmp(attr, "disable_freshness") == 0) {
          if (strcmp(value, "yes") == 0)
              plgctx->opts->disable_freshness = 1;
@@ -80,7 +80,7 @@
  #include "k5-int.h"
  #include "pkinit_crypto_openssl.h"
  #include "k5-buf.h"
-@@ -981,6 +985,7 @@ pkinit_init_pkcs11(pkinit_identity_crypto_context ctx)
+@@ -1404,6 +1408,7 @@ pkinit_init_pkcs11(pkinit_identity_crypto_context ctx)
      ctx->slotid = PK_NOSLOT;
      ctx->token_label = NULL;
      ctx->cert_label = NULL;
@@ -88,7 +88,7 @@
      ctx->session = CK_INVALID_HANDLE;
      ctx->p11 = NULL;
  #endif
-@@ -1013,6 +1018,7 @@ pkinit_fini_pkcs11(pkinit_identity_crypto_context ctx)
+@@ -1436,6 +1441,7 @@ pkinit_fini_pkcs11(pkinit_identity_crypto_context ctx)
      free(ctx->token_label);
      free(ctx->cert_id);
      free(ctx->cert_label);
@@ -96,9 +96,9 @@
  #endif
  }
  
-@@ -3576,7 +3582,36 @@ pkinit_C_UnloadModule(void *handle)
-     dlclose(handle);
-     return CKR_OK;
+@@ -3530,7 +3536,36 @@ error:
+         krb5int_close_plugin(handle);
+     return NULL;
  }
 +/*
 + * labelstr will be C string containing token label with trailing white space
@@ -133,7 +133,7 @@
  static krb5_error_code
  pkinit_login(krb5_context context,
               pkinit_identity_crypto_context id_cryptoctx,
-@@ -3592,6 +3627,15 @@ pkinit_login(krb5_context context,
+@@ -3546,6 +3581,15 @@ pkinit_login(krb5_context context,
      if (tip->flags & CKF_PROTECTED_AUTHENTICATION_PATH) {
          rdat.data = NULL;
          rdat.length = 0;
@@ -149,7 +149,7 @@
      } else if (password != NULL) {
          rdat.data = strdup(password);
          rdat.length = strlen(password);
-@@ -3599,6 +3643,13 @@ pkinit_login(krb5_context context,
+@@ -3553,6 +3597,13 @@ pkinit_login(krb5_context context,
          r = KRB5_LIBOS_CANTREADPWD;
          rdat.data = NULL;
      } else {
@@ -163,7 +163,7 @@
          if (tip->flags & CKF_USER_PIN_LOCKED)
              warning = " (Warning: PIN locked)";
          else if (tip->flags & CKF_USER_PIN_FINAL_TRY)
-@@ -3607,11 +3658,14 @@ pkinit_login(krb5_context context,
+@@ -3561,11 +3612,14 @@ pkinit_login(krb5_context context,
              warning = " (Warning: PIN count low)";
          else
              warning = "";
@@ -180,7 +180,7 @@
  
          kprompt.prompt = prompt;
          kprompt.hidden = 1;
-@@ -3622,7 +3676,7 @@ pkinit_login(krb5_context context,
+@@ -3576,7 +3630,7 @@ pkinit_login(krb5_context context,
          k5int_set_prompt_types(context, &prompt_type);
          r = (*id_cryptoctx->prompter)(context, id_cryptoctx->prompter_data,
                                        NULL, NULL, 1, &kprompt);
@@ -189,7 +189,7 @@
          free(prompt);
      }
  
-@@ -3635,7 +3689,7 @@ pkinit_login(krb5_context context,
+@@ -3589,7 +3643,7 @@ pkinit_login(krb5_context context,
              r = KRB5KDC_ERR_PREAUTH_FAILED;
          }
      }
@@ -198,10 +198,10 @@
  
      return r;
  }
-@@ -3832,6 +3886,81 @@ pkinit_find_private_key(pkinit_identity_crypto_context id_cryptoctx,
+@@ -3798,6 +3852,81 @@ pkinit_find_private_key(pkinit_identity_crypto_context id_cryptoctx,
      r = id_cryptoctx->p11->C_FindObjects(id_cryptoctx->session, objp, 1, &count);
      id_cryptoctx->p11->C_FindObjectsFinal(id_cryptoctx->session);
-     pkiDebug("found %d private keys (%s)\n", (int) count, pkinit_pkcs11_code_to_text(r));
+     pkiDebug("found %d private keys (%s)\n", (int)count, pkcs11err(r));
 +
 +    /*
 +     * The CKA_ID may not be correctly set for the private key. For e.g. when
@@ -267,20 +267,20 @@
 +	free (n_bytes);
 +	if (r != CKR_OK) {
 +		pkiDebug("krb5_pkinit_sign_data: C_FindObjectsInit: %s\n",
-+			pkinit_pkcs11_code_to_text(r));
++			pkcs11err(r));
 +		return KRB5KDC_ERR_PREAUTH_FAILED;
 +	}
 +
 +	r = id_cryptoctx->p11->C_FindObjects(id_cryptoctx->session, objp, 1, &count);
 +	id_cryptoctx->p11->C_FindObjectsFinal(id_cryptoctx->session);
-+	pkiDebug("found %d private keys (%s)\n", (int) count, pkinit_pkcs11_code_to_text(r));
++	pkiDebug("found %d private keys (%s)\n", (int) count, pkcs11err(r));
 +
 +    }
 +
      if (r != CKR_OK || count < 1)
          return KRB5KDC_ERR_PREAUTH_FAILED;
      return 0;
-@@ -4214,7 +4343,10 @@ pkinit_get_certs_pkcs12(krb5_context context,
+@@ -4201,7 +4330,10 @@ pkinit_get_certs_pkcs12(krb5_context context,
          } else if (id_cryptoctx->prompter == NULL) {
              /* We can't use a prompter. */
              goto cleanup;
@@ -292,7 +292,7 @@
              /* Ask using a prompter. */
              memset(prompt_reply, '\0', sizeof(prompt_reply));
              rdat.data = prompt_reply;
-@@ -4233,7 +4365,7 @@ pkinit_get_certs_pkcs12(krb5_context context,
+@@ -4220,7 +4352,7 @@ pkinit_get_certs_pkcs12(krb5_context context,
              k5int_set_prompt_types(context, &prompt_type);
              r = (*id_cryptoctx->prompter)(context, id_cryptoctx->prompter_data,
                                            NULL, NULL, 1, &kprompt);
@@ -301,7 +301,7 @@
              if (r) {
                  TRACE_PKINIT_PKCS_PROMPT_FAIL(context);
                  goto cleanup;
-@@ -4538,6 +4670,11 @@ pkinit_get_certs_pkcs11(krb5_context context,
+@@ -4602,6 +4734,11 @@ pkinit_get_certs_pkcs11(krb5_context context,
          if (id_cryptoctx->cert_label == NULL)
              return ENOMEM;
      }
@@ -312,7 +312,7 @@
 +    }
      /* Convert the ascii cert_id string into a binary blob */
      if (idopts->cert_id_string != NULL) {
-         r = k5_hex_decode(idopts->cert_id_string,
+         ret = k5_hex_decode(idopts->cert_id_string, &id_cryptoctx->cert_id,
 --- a/src/plugins/preauth/pkinit/pkinit_crypto_openssl.h
 +++ b/src/plugins/preauth/pkinit/pkinit_crypto_openssl.h
 @@ -28,6 +28,10 @@
@@ -326,13 +326,13 @@
  #ifndef _PKINIT_CRYPTO_OPENSSL_H
  #define _PKINIT_CRYPTO_OPENSSL_H
  
-@@ -83,6 +87,7 @@ struct _pkinit_identity_crypto_context {
+@@ -82,6 +86,7 @@ struct _pkinit_identity_crypto_context {
      CK_SLOT_ID slotid;
      char *token_label;
      char *cert_label;
 +    char *PIN;
      /* These are crypto-specific */
-     void *p11_module;
+     struct plugin_file_handle *p11_module;
      CK_SESSION_HANDLE session;
 --- a/src/plugins/preauth/pkinit/pkinit_identity.c
 +++ b/src/plugins/preauth/pkinit/pkinit_identity.c
@@ -345,9 +345,9 @@
 + */
 +
  #include "pkinit.h"
- #include <dlfcn.h>
  #include <dirent.h>
-@@ -125,6 +129,7 @@ pkinit_init_identity_opts(pkinit_identity_opts **idopts)
+ 
+@@ -124,6 +128,7 @@ pkinit_init_identity_opts(pkinit_identity_opts **idopts)
      opts->token_label = NULL;
      opts->cert_id_string = NULL;
      opts->cert_label = NULL;
@@ -355,7 +355,7 @@
  #endif
  
      *idopts = opts;
-@@ -202,9 +207,13 @@ pkinit_dup_identity_opts(pkinit_identity_opts *src_opts,
+@@ -201,9 +206,13 @@ pkinit_dup_identity_opts(pkinit_identity_opts *src_opts,
          if (newopts->cert_label == NULL)
              goto cleanup;
      }
@@ -370,7 +370,7 @@
      *dest_opts = newopts;
      return 0;
  cleanup:
-@@ -232,6 +241,7 @@ pkinit_fini_identity_opts(pkinit_identity_opts *idopts)
+@@ -231,6 +240,7 @@ pkinit_fini_identity_opts(pkinit_identity_opts *idopts)
      free(idopts->token_label);
      free(idopts->cert_id_string);
      free(idopts->cert_label);

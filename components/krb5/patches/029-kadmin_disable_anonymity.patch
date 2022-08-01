@@ -39,7 +39,7 @@
  [\fB\-w\fP \fIpassword\fP]
  [\fB\-s\fP \fIadmin_server\fP[:\fIport\fP]]
  [command args...]
-@@ -100,21 +100,7 @@ Use \fIkeytab\fP to decrypt the KDC response.  This can only be used
+@@ -100,25 +100,11 @@ Use \fIkeytab\fP to decrypt the KDC response.  This can only be used
  with the \fB\-k\fP option.
  .TP
  \fB\-n\fP
@@ -58,14 +58,22 @@
 -fully anonymous operation.
 -.TP
 -\fB\-c\fP \fIcredentials_cache\fP
+-Use \fIcredentials_cache\fP as the credentials cache.  The cache
+-should contain a service ticket for the \fBkadmin/admin\fP or
+-\fBkadmin/ADMINHOST\fP (where \fIADMINHOST\fP is the fully\-qualified
+-hostname of the admin server) service; it can be acquired with the
 +.B \fB\-c\fP \fIcredentials_cache\fP
- Use \fIcredentials_cache\fP as the credentials cache.  The
- cache should contain a service ticket for the \fBkadmin/ADMINHOST\fP
- (where \fIADMINHOST\fP is the fully\-qualified hostname of the admin
++Use \fIcredentials_cache\fP as the credentials cache.  The
++cache should contain a service ticket for the \fBkadmin/ADMINHOST\fP
++(where \fIADMINHOST\fP is the fully\-qualified hostname of the admin
++server) or \fBkadmin/admin\fP service; it can be acquired with the
+ kinit(1) program.  If this option is not specified, kadmin
+ requests a new service ticket from the KDC, and stores it in its
+ own temporary ccache.
 --- a/src/tests/t_pkinit.py
 +++ b/src/tests/t_pkinit.py
-@@ -132,15 +132,16 @@ if '97:' in out:
-     fail('auth indicators seen in anonymous PKINIT ticket')
+@@ -126,15 +126,16 @@ realm.run([klist, '-C'], expected_msg='start_realm = KRBTEST.COM')
+ realm.run([kvno, '-S', 'host', hostname])
  
  # Test anonymous kadmin.
 -mark('anonymous kadmin')

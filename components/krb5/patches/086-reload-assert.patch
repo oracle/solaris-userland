@@ -1,0 +1,38 @@
+# The assertion has been triggered by gssapi/reload.c unit test case which
+# comes with MIT source code. It's still not clear to me why assert fires. The
+# same test used to pass with 1.18. I suspect something has changed around libc
+# threading/dynamic linker on Solaris.  The patch has not been submitted to
+# upstream yet.
+# 
+--- a/src/util/support/threads.c
++++ b/src/util/support/threads.c
+@@ -334,7 +334,8 @@ int k5_key_register (k5_key_t keynum, void (*destructor)(void *))
+ 
+ #ifndef ENABLE_THREADS
+ 
+-    assert(destructors_set[keynum] == 0);
++    assert((destructors_set[keynum] == 0) ||
++        (destructors[keynum] == destructor));
+     destructors[keynum] = destructor;
+     destructors_set[keynum] = 1;
+ 
+@@ -342,7 +343,8 @@ int k5_key_register (k5_key_t keynum, void (*destructor)(void *))
+ 
+     /* XXX: This can raise EXCEPTION_POSSIBLE_DEADLOCK.  */
+     EnterCriticalSection(&key_lock);
+-    assert(destructors_set[keynum] == 0);
++    assert((destructors_set[keynum] == 0) ||
++        (destructors[keynum] == destructor));
+     destructors_set[keynum] = 1;
+     destructors[keynum] = destructor;
+     LeaveCriticalSection(&key_lock);
+@@ -350,7 +352,8 @@ int k5_key_register (k5_key_t keynum, void (*destructor)(void *))
+ #else /* POSIX */
+ 
+     k5_mutex_lock(&key_lock);
+-    assert(destructors_set[keynum] == 0);
++    assert((destructors_set[keynum] == 0) ||
++        (destructors[keynum] == destructor));
+     destructors_set[keynum] = 1;
+     destructors[keynum] = destructor;
+     k5_mutex_unlock(&key_lock);

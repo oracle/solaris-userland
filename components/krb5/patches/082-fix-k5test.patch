@@ -1,0 +1,16 @@
+# Kerberos unit tests on Solaris require to run kadmind on non-default
+# port. We don't plan to contribute this change to upstream.
+
+--- a/src/util/k5test.py
++++ b/src/util/k5test.py
+@@ -1126,7 +1126,9 @@ class K5Realm(object):
+         dump_path = os.path.join(self.testdir, 'dump')
+         self._kadmind_proc = _start_daemon([kadmind, '-nofork',
+                                             '-p', kdb5_util, '-K', kprop,
+-                                            '-F', dump_path], env,
++                                            '-F', dump_path,
++                                            '-port', str(self.portbase + 1)],
++                                            env,
+                                            'starting...')
+ 
+     def stop_kadmind(self):

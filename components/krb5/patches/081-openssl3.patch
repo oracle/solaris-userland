@@ -1,0 +1,114 @@
+# Autoconf/automake which comes from upstream always picks up
+# OpenSSL from default location. On Solaris we need to extend
+# autoconf/automake so we can chose between default openssl
+# and openssl 3.0.
+# Patch is specific to Solaris.
+--- a/src/config/pre.in
++++ b/src/config/pre.in
+@@ -415,6 +415,7 @@ TLS_IMPL_LIBS	= @TLS_IMPL_LIBS@
+ 
+ # SPAKE preauth back-end libraries
+ SPAKE_OPENSSL_LIBS = @SPAKE_OPENSSL_LIBS@
++SPAKE_OPENSSL_CFLAGS = @SPAKE_OPENSSL_CFLAGS@
+ 
+ # Whether we have the SASL header file for the LDAP KDB module
+ HAVE_SASL = @HAVE_SASL@
+--- a/src/configure.ac
++++ b/src/configure.ac
+@@ -327,6 +327,48 @@ openssl|auto)
+ no)
+   AC_MSG_NOTICE(building without TLS support)
+   ;;
++openssl3)
++  AC_CHECK_LIB(ssl,SSL_CTX_new,[have_lib_ssl=true],[have_lib_ssl=false],
++               -L /usr/openssl/3/lib -lcrypto)
++  AC_MSG_CHECKING([for OpenSSL3])
++  if test x$have_lib_ssl = xtrue ; then
++    AC_DEFINE(TLS_IMPL_OPENSSL,1,[Define if TLS implementation is OpenSSL3])
++    AC_MSG_RESULT([yes])
++    TLS_IMPL_LIBS="-L /usr/openssl/3/lib/ -lssl -L /usr/openssl/3/lib/ -lcrypto"
++    TLS_IMPL_CFLAGS="-I/usr/openssl/3/include"
++    TLS_IMPL=openssl3
++    AC_MSG_NOTICE([TLS module will use OpenSSL3])
++  else
++    if test "$TLS_IMPL" = openssl3 ; then
++      AC_MSG_ERROR([OpenSSL3 not found!])
++    else
++      AC_MSG_WARN([OpenSSL3 not found!])
++    fi
++    TLS_IMPL=no
++    AC_MSG_NOTICE(building without TLS support)
++  fi
++  ;;
++openssl3.64)
++  AC_CHECK_LIB(ssl,SSL_CTX_new,[have_lib_ssl=true],[have_lib_ssl=false],
++               -L /usr/openssl/3/lib/64/ -lcrypto)
++  AC_MSG_CHECKING([for OpenSSL3])
++  if test x$have_lib_ssl = xtrue ; then
++    AC_DEFINE(TLS_IMPL_OPENSSL,1,[Define if TLS implementation is OpenSSL3])
++    AC_MSG_RESULT([yes])
++    TLS_IMPL_LIBS="-L /usr/openssl/3/lib/64/ -lssl -L /usr/openssl/3/lib/64/ -lcrypto"
++    TLS_IMPL_CFLAGS="-I/usr/openssl/3/include"
++    TLS_IMPL=openssl3
++    AC_MSG_NOTICE([TLS module will use OpenSSL3])
++  else
++    if test "$TLS_IMPL" = openssl3 ; then
++      AC_MSG_ERROR([OpenSSL3 not found!])
++    else
++      AC_MSG_WARN([OpenSSL3 not found!])
++    fi
++    TLS_IMPL=no
++    AC_MSG_NOTICE(building without TLS support)
++  fi
++  ;;
+ *)
+   AC_MSG_ERROR([Unsupported TLS implementation $withval])
+   ;;
+@@ -372,7 +414,8 @@ if test "$withval" = auto -o "$withval" = yes; then
+   AC_CHECK_LIB([crypto],[EC_POINT_new],[have_crypto=true],[have_crypto=false])
+   if test "$have_crypto" = true; then
+     AC_DEFINE(SPAKE_OPENSSL,1,[Define to use OpenSSL for SPAKE preauth])
+-    SPAKE_OPENSSL_LIBS=-lcrypto
++    SPAKE_OPENSSL_LIBS="$TLS_IMPL_LIBS"
++    SPAKE_OPENSSL_CFLAGS="$TLS_IMPL_CFLAGS"
+     HAVE_SPAKE_OPENSSL=yes
+   elif test "$withval" = yes; then
+     AC_MSG_ERROR([OpenSSL libcrypto not found])
+@@ -380,6 +423,7 @@ if test "$withval" = auto -o "$withval" = yes; then
+ fi
+ AC_SUBST(HAVE_SPAKE_OPENSSL)
+ AC_SUBST(SPAKE_OPENSSL_LIBS)
++AC_SUBST(SPAKE_OPENSSL_CFLAGS)
+ 
+ AC_ARG_ENABLE([aesni],
+   [AS_HELP_STRING([--disable-aesni], [Do not build with AES-NI support])],
+--- a/src/plugins/preauth/pkinit/Makefile.in
++++ b/src/plugins/preauth/pkinit/Makefile.in
+@@ -1,6 +1,7 @@
+ mydir=plugins$(S)preauth$(S)pkinit
+ BUILDTOP=$(REL)..$(S)..$(S)..
+ MODULE_INSTALL_DIR = $(KRB5_PA_MODULE_DIR)
++LOCALINCLUDES= $(SPAKE_OPENSSL_CFLAGS)
+ 
+ LIBBASE=pkinit
+ LIBMAJOR=0
+@@ -10,7 +11,8 @@ RELDIR=../plugins/preauth/pkinit
+ SHLIB_EXPDEPS = \
+ 	$(TOPLIBD)/libk5crypto$(SHLIBEXT) \
+ 	$(TOPLIBD)/libkrb5$(SHLIBEXT)
+-SHLIB_EXPLIBS= -lkrb5 $(COM_ERR_LIB) -lk5crypto -lcrypto $(DL_LIB) $(SUPPORT_LIB) $(LIBS)
++SHLIB_EXPLIBS= -lkrb5 $(COM_ERR_LIB) -lk5crypto $(DL_LIB) $(SUPPORT_LIB) \
++	$(LIBS) $(SPAKE_OPENSSL_LIBS)
+ 
+ STLIBOBJS= \
+ 	pkinit_accessor.o \
+--- a/src/plugins/preauth/spake/Makefile.in
++++ b/src/plugins/preauth/spake/Makefile.in
+@@ -1,6 +1,7 @@
+ mydir=plugins$(S)preauth$(S)spake
+ BUILDTOP=$(REL)..$(S)..$(S)..
+ MODULE_INSTALL_DIR = $(KRB5_PA_MODULE_DIR)
++LOCALINCLUDES= $(SPAKE_OPENSSL_CFLAGS)
+ 
+ # Like RUN_TEST, but use t_krb5.conf from this directory.
+ RUN_TEST_LOCAL_CONF=$(RUN_SETUP) KRB5_CONFIG=$(srcdir)/t_krb5.conf LC_ALL=C \

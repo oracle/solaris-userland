@@ -1,0 +1,47 @@
+# pkinit pre-auth plugin fails to load libpkcs11.so from
+# standard location (usr/lib/libpkcs11.so), it assumes the
+# libpkcs11.so should be found in current working directory
+# instead. We need to avoid a call to stat() in krb5int_open_plugin()
+# on Solaris. The issue has been reported to upstream:
+#	https://github.com/krb5/krb5/pull/1258
+# 
+--- a/src/util/support/plugins.c
++++ b/src/util/support/plugins.c
+@@ -189,10 +189,13 @@ long KRB5_CALLCONV
+ krb5int_open_plugin (const char *filepath, struct plugin_file_handle **h, struct errinfo *ep)
+ {
+     long err = 0;
++#if USE_CFBUNDLE
+     struct stat statbuf;
++#endif
+     struct plugin_file_handle *htmp = NULL;
+     int got_plugin = 0;
+ 
++#if USE_CFBUNDLE
+     if (!err) {
+         if (stat (filepath, &statbuf) < 0) {
+             err = errno;
+@@ -201,6 +204,7 @@ krb5int_open_plugin (const char *filepath, struct plugin_file_handle **h, struct
+                          filepath, strerror(err));
+         }
+     }
++#endif
+ 
+     if (!err) {
+         htmp = calloc (1, sizeof (*htmp)); /* calloc initializes ptrs to NULL */
+@@ -208,11 +212,12 @@ krb5int_open_plugin (const char *filepath, struct plugin_file_handle **h, struct
+     }
+ 
+ #if USE_DLOPEN
+-    if (!err && ((statbuf.st_mode & S_IFMT) == S_IFREG
++    if (!err
+ #if USE_CFBUNDLE
+-                 || (statbuf.st_mode & S_IFMT) == S_IFDIR
++                 && ((statbuf.st_mode & S_IFMT) == S_IFREG
++                 || (statbuf.st_mode & S_IFMT) == S_IFDIR)
+ #endif /* USE_CFBUNDLE */
+-        )) {
++        ) {
+         void *handle = NULL;
+ 
+ #if USE_CFBUNDLE

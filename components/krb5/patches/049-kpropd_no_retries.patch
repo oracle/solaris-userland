@@ -12,7 +12,7 @@
 #
 --- a/src/kprop/kpropd.c
 +++ b/src/kprop/kpropd.c
-@@ -730,18 +730,10 @@ reinit:
+@@ -727,18 +727,10 @@ reinit:
  
                  usage();
              }
@@ -20,7 +20,7 @@
              com_err(progname, retval,
 -                    _("while initializing %s interface, retrying"),
 -                    progname);
--            backoff_time = backoff_from_master(&reinit_cnt);
+-            backoff_time = backoff_from_primary(&reinit_cnt);
 -            if (debug) {
 -                fprintf(stderr, _("Sleeping %d seconds to re-initialize "
 -                                  "kadm5 (krb5kdc not running?)\n"),

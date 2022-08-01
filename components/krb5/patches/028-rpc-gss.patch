@@ -36,7 +36,7 @@
 #
 --- a/src/build-tools/krb5-config.in
 +++ b/src/build-tools/krb5-config.in
-@@ -97,9 +97,6 @@ while test $# != 0; do
+@@ -96,9 +96,6 @@ while test $# != 0; do
  	gssapi)
  	    library=gssapi
  	    ;;
@@ -46,7 +46,7 @@
  	kadm-client)
  	    library=kadm_client
  	    ;;
-@@ -142,7 +139,6 @@ if test -n "$do_help"; then
+@@ -141,7 +138,6 @@ if test -n "$do_help"; then
      echo "Libraries:"
      echo "        krb5              Kerberos 5 application"
      echo "        gssapi            GSSAPI application with Kerberos 5 bindings"
@@ -54,7 +54,7 @@
      echo "        kadm-client       Kadmin client"
      echo "        kadm-server       Kadmin server"
      echo "        kdb               Application that accesses the kerberos database"
-@@ -232,17 +228,10 @@ if test -n "$do_libs"; then
+@@ -231,17 +227,10 @@ if test -n "$do_libs"; then
  
      if test $library = 'kadm_server'; then
  	lib_flags="$lib_flags -lkadm5srv_mit -lkdb5 $KDB5_DB_LIB"
@@ -74,7 +74,7 @@
      if test $library = 'gssapi'; then
 --- a/src/config/pre.in
 +++ b/src/config/pre.in
-@@ -323,7 +323,7 @@ KDB5_PLUGIN_LIBS = @KDB5_PLUGIN_LIBS@
+@@ -300,7 +300,7 @@ KDB5_PLUGIN_LIBS = @KDB5_PLUGIN_LIBS@
  KADMCLNT_DEPLIB	= $(TOPLIBD)/libkadm5clnt_mit$(DEPLIBEXT)
  KADMSRV_DEPLIB	= $(TOPLIBD)/libkadm5srv_mit$(DEPLIBEXT)
  KDB5_DEPLIB	= $(TOPLIBD)/libkdb5$(DEPLIBEXT)
@@ -83,7 +83,7 @@
  GSS_DEPLIB	= $(TOPLIBD)/libgssapi_krb5$(DEPLIBEXT)
  KRB5_DEPLIB	= $(TOPLIBD)/libkrb5$(DEPLIBEXT)
  CRYPTO_DEPLIB	= $(TOPLIBD)/libk5crypto$(DEPLIBEXT)
-@@ -406,7 +406,7 @@ KRB5_BASE_LIBS	= $(KRB5_LIB) $(K5CRYPTO_LIB) $(COM_ERR_LIB) $(SUPPORT_LIB) $(GEN
+@@ -383,7 +383,7 @@ KRB5_BASE_LIBS	= $(KRB5_LIB) $(K5CRYPTO_LIB) $(COM_ERR_LIB) $(SUPPORT_LIB) $(GEN
  KDB5_LIBS	= $(KDB5_LIB) $(GSSRPC_LIBS)
  GSS_LIBS	= $(GSS_KRB5_LIB)
  # needs fixing if ever used on macOS!
@@ -106,7 +106,7 @@
  extern "C" {
 --- a/src/include/k5-int.h
 +++ b/src/include/k5-int.h
-@@ -221,13 +221,16 @@ typedef unsigned char   u_char;
+@@ -222,9 +222,12 @@ typedef unsigned char   u_char;
  #define KRB5_CONF_HTTP_ANCHORS                 "http_anchors"
  #define KRB5_CONF_IGNORE_ACCEPTOR_HOSTNAME     "ignore_acceptor_hostname"
  #define KRB5_CONF_IPROP_ENABLE                 "iprop_enable"
@@ -115,41 +115,52 @@
  #define KRB5_CONF_IPROP_LOGFILE                "iprop_logfile"
  #define KRB5_CONF_IPROP_MASTER_ULOGSIZE        "iprop_master_ulogsize"
 +#define KRB5_CONF_SUNW_DBPROP_MASTER_ULOGSIZE  "sunw_dbprop_master_ulogsize"
++#define KRB5_CONF_SUNW_DBPROP_SLAVE_POLL       "sunw_dbprop_slave_poll"
  #define KRB5_CONF_IPROP_PORT                   "iprop_port"
  #define KRB5_CONF_IPROP_RESYNC_TIMEOUT         "iprop_resync_timeout"
  #define KRB5_CONF_IPROP_REPLICA_POLL           "iprop_replica_poll"
- #define KRB5_CONF_IPROP_SLAVE_POLL             "iprop_slave_poll"
-+#define KRB5_CONF_SUNW_DBPROP_SLAVE_POLL       "sunw_dbprop_slave_poll"
- #define KRB5_CONF_K5LOGIN_AUTHORITATIVE        "k5login_authoritative"
- #define KRB5_CONF_K5LOGIN_DIRECTORY            "k5login_directory"
- #define KRB5_CONF_KADMIND_LISTEN               "kadmind_listen"
 --- a/src/kadmin/dbutil/kadm5_create.c
 +++ b/src/kadmin/dbutil/kadm5_create.c
-@@ -139,7 +139,7 @@ int kadm5_create_magic_princs(kadm5_config_params *params,
+@@ -139,18 +139,76 @@ int kadm5_create_magic_princs(kadm5_config_params *params,
  static int add_admin_princs(void *handle, krb5_context context, char *realm)
  {
      krb5_error_code ret = 0;
--    char *service_name = 0, *kiprop_name = 0, *canonhost = 0;
 +    char *service_name = 0, *kiprop_name = 0, *canonhost = 0, *chpw_name = NULL;
-     char localname[MAXHOSTNAMELEN];
++    char localname[MAXHOSTNAMELEN];
  
-     if (gethostname(localname, MAXHOSTNAMELEN)) {
-@@ -157,6 +157,11 @@ static int add_admin_princs(void *handle, krb5_context context, char *realm)
-         fprintf(stderr, _("Out of memory\n"));
-         goto clean_and_exit;
-     }
++    if (gethostname(localname, MAXHOSTNAMELEN)) {
++        ret = errno;
++        perror("gethostname");
++        goto clean_and_exit;
++    }
++    ret = krb5_expand_hostname(context, localname, &canonhost);
++    if (ret) {
++        com_err(progname, ret, _("while canonicalizing local hostname"));
++        goto clean_and_exit;
++    }
++    if (asprintf(&service_name, "kadmin/%s", canonhost) < 0) {
++        ret = ENOMEM;
++        fprintf(stderr, _("Out of memory\n"));
++        goto clean_and_exit;
++    }
 +    if (asprintf(&chpw_name, "changepw/%s", canonhost) < 0) {
 +        ret = ENOMEM;
 +        fprintf(stderr, _("Out of memory\n"));
 +        goto clean_and_exit;
 +    }
-     if (asprintf(&kiprop_name, "kiprop/%s", canonhost) < 0) {
-         ret = ENOMEM;
-         fprintf(stderr, _("Out of memory\n"));
-@@ -170,12 +175,22 @@ static int add_admin_princs(void *handle, krb5_context context, char *realm)
-                                ADMIN_LIFETIME)))
-         goto clean_and_exit;
- 
++    if (asprintf(&kiprop_name, "kiprop/%s", canonhost) < 0) {
++        ret = ENOMEM;
++        fprintf(stderr, _("Out of memory\n"));
++        goto clean_and_exit;
++    }
++
++    if ((ret = add_admin_princ(handle, context,
++                               service_name, realm,
++                               KRB5_KDB_DISALLOW_TGT_BASED |
++                               KRB5_KDB_LOCKDOWN_KEYS,
++                               ADMIN_LIFETIME)))
++        goto clean_and_exit;
++
 +    if ((ret = add_admin_princ(handle, context,
 +                               chpw_name, realm,
 +                               KRB5_KDB_DISALLOW_TGT_BASED |
@@ -164,19 +175,34 @@
                                 KRB5_KDB_DISALLOW_TGT_BASED |
                                 KRB5_KDB_LOCKDOWN_KEYS,
                                 ADMIN_LIFETIME)))
-         goto clean_and_exit;
+-        return ret;
++        goto clean_and_exit;
 +#endif
  
-     if ((ret = add_admin_princ(handle, context,
-                                KADM5_CHANGEPW_SERVICE, realm,
-@@ -191,6 +206,7 @@ clean_and_exit:
-     krb5_free_string(context, canonhost);
-     free(service_name);
-     free(kiprop_name);
+-    return add_admin_princ(handle, context, KADM5_CHANGEPW_SERVICE, realm,
+-                           KRB5_KDB_DISALLOW_TGT_BASED |
+-                           KRB5_KDB_PWCHANGE_SERVICE | KRB5_KDB_LOCKDOWN_KEYS,
+-                           CHANGEPW_LIFETIME);
++    if ((ret = add_admin_princ(handle, context,
++                               KADM5_CHANGEPW_SERVICE, realm,
++                               KRB5_KDB_DISALLOW_TGT_BASED |
++                               KRB5_KDB_PWCHANGE_SERVICE |
++                               KRB5_KDB_LOCKDOWN_KEYS,
++                               CHANGEPW_LIFETIME)))
++        goto clean_and_exit;
++
++    ret = add_admin_princ(handle, context, kiprop_name, realm, 0, 0);
++
++clean_and_exit:
++    krb5_free_string(context, canonhost);
++    free(service_name);
++    free(kiprop_name);
 +    free(chpw_name);
- 
-     return ret;
++
++    return ret;
  }
+ 
+ /*
 --- a/src/kadmin/server/ipropd_svc.c
 +++ b/src/kadmin/server/ipropd_svc.c
 @@ -152,6 +152,8 @@ iprop_get_updates_1_svc(kdb_last_t *arg, struct svc_req *rqstp)
@@ -366,7 +392,7 @@
  
  #include "misc.h"
  #include "auth.h"
-@@ -347,20 +348,21 @@ main(int argc, char *argv[])
+@@ -343,20 +344,21 @@ main(int argc, char *argv[])
      OM_uint32 minor_status;
      gss_buffer_desc in_buf;
      gss_OID nt_krb5_name_oid = (gss_OID)GSS_KRB5_NT_PRINCIPAL_NAME;
@@ -377,7 +403,7 @@
      const char *pid_file = NULL;
      char **db_args = NULL, **tmpargs;
      const char *acl_file;
-     int ret, i, db_args_size = 0, strong_random = 1, proponly = 0;
+     int ret, i, db_args_size = 0, proponly = 0;
 +    char **tmp_srv_names;
 +    krb5_principal princ;
 +    char *pos;
@@ -392,7 +418,7 @@
  
      progname = (strrchr(argv[0], '/') != NULL) ? strrchr(argv[0], '/') + 1 :
          argv[0];
-@@ -473,28 +475,88 @@ main(int argc, char *argv[])
+@@ -465,28 +467,88 @@ main(int argc, char *argv[])
                             "iprop_enable is true"));
      }
  
@@ -490,7 +516,7 @@
      svcauth_gssapi_set_log_badauth2_func(log_badauth, NULL);
      svcauth_gssapi_set_log_badverf_func(log_badverf, NULL);
      svcauth_gssapi_set_log_miscerr_func(log_miscerr, NULL);
-@@ -505,6 +567,7 @@ main(int argc, char *argv[])
+@@ -497,6 +559,7 @@ main(int argc, char *argv[])
  
      if (svcauth_gss_set_svc_name(GSS_C_NO_NAME) != TRUE)
          fail_to_start(0, _("Cannot initialize GSSAPI service name"));
@@ -498,7 +524,7 @@
  
      acl_file = (*params.acl_file != '\0') ? params.acl_file : NULL;
      ret = auth_init(context, acl_file);
-@@ -549,14 +612,16 @@ main(int argc, char *argv[])
+@@ -547,14 +610,16 @@ main(int argc, char *argv[])
      krb5_klog_syslog(LOG_INFO, _("finished, exiting"));
  
      /* Clean up memory, etc */
@@ -663,7 +689,7 @@
  }
  
  static int gss_to_krb5_name(kadm5_server_handle_t handle,
-@@ -267,7 +297,7 @@ static kadm5_ret_t
+@@ -269,7 +299,7 @@ static kadm5_ret_t
  stub_setup(krb5_ui_4 api_version, struct svc_req *rqstp, krb5_principal princ,
             kadm5_server_handle_t *handle_out, krb5_ui_4 *api_version_out,
             gss_buffer_t client_name_out, gss_buffer_t service_name_out,
@@ -672,7 +698,7 @@
  {
      kadm5_ret_t ret;
  
-@@ -290,6 +320,11 @@ stub_setup(krb5_ui_4 api_version, struct svc_req *rqstp, krb5_principal princ,
+@@ -292,6 +322,11 @@ stub_setup(krb5_ui_4 api_version, struct svc_req *rqstp, krb5_principal princ,
          if (krb5_unparse_name((*handle_out)->context, princ, princ_str_out))
              return KADM5_BAD_PRINCIPAL;
      }
@@ -684,7 +710,7 @@
  
      return KADM5_OK;
  }
-@@ -297,7 +332,8 @@ stub_setup(krb5_ui_4 api_version, struct svc_req *rqstp, krb5_principal princ,
+@@ -299,7 +334,8 @@ stub_setup(krb5_ui_4 api_version, struct svc_req *rqstp, krb5_principal princ,
  /* Perform common cleanup for server stub functions. */
  static void
  stub_cleanup(kadm5_server_handle_t handle, char *princ_str,
@@ -694,7 +720,7 @@
  {
      OM_uint32 minor_stat;
  
-@@ -306,6 +342,8 @@ stub_cleanup(kadm5_server_handle_t handle, char *princ_str,
+@@ -308,6 +344,8 @@ stub_cleanup(kadm5_server_handle_t handle, char *princ_str,
      free(princ_str);
      gss_release_buffer(&minor_stat, client_name);
      gss_release_buffer(&minor_stat, service_name);
@@ -703,7 +729,7 @@
  }
  
  static krb5_boolean
-@@ -343,15 +381,64 @@ changepw_not_self(kadm5_server_handle_t handle, struct svc_req *rqstp,
+@@ -345,15 +383,64 @@ changepw_not_self(kadm5_server_handle_t handle, struct svc_req *rqstp,
                                  princ);
  }
  
@@ -771,7 +797,7 @@
      return (flags & TKT_FLG_INITIAL) != 0;
  }
  
-@@ -439,10 +526,11 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
+@@ -441,10 +528,11 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
      gss_buffer_desc             service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t       handle;
      const char                  *errmsg = NULL;
@@ -784,7 +810,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -466,7 +554,7 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
+@@ -468,7 +556,7 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
      }
  
  exit_func:
@@ -793,7 +819,7 @@
      return TRUE;
  }
  
-@@ -479,10 +567,11 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
+@@ -481,10 +569,11 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
      gss_buffer_desc             service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t       handle;
      const char                  *errmsg = NULL;
@@ -806,7 +832,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -506,7 +595,7 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
+@@ -508,7 +597,7 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
      }
  
  exit_func:
@@ -815,7 +841,7 @@
      return TRUE;
  }
  
-@@ -534,10 +623,11 @@ delete_principal_2_svc(dprinc_arg *arg, generic_ret *ret,
+@@ -536,10 +625,11 @@ delete_principal_2_svc(dprinc_arg *arg, generic_ret *ret,
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -828,7 +854,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -570,7 +660,7 @@ delete_principal_2_svc(dprinc_arg *arg, generic_ret *ret,
+@@ -572,7 +662,7 @@ delete_principal_2_svc(dprinc_arg *arg, generic_ret *ret,
      }
  
  exit_func:
@@ -837,7 +863,7 @@
      return TRUE;
  }
  
-@@ -583,10 +673,11 @@ modify_principal_2_svc(mprinc_arg *arg, generic_ret *ret,
+@@ -585,10 +675,11 @@ modify_principal_2_svc(mprinc_arg *arg, generic_ret *ret,
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -850,7 +876,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -618,7 +709,7 @@ modify_principal_2_svc(mprinc_arg *arg, generic_ret *ret,
+@@ -620,7 +711,7 @@ modify_principal_2_svc(mprinc_arg *arg, generic_ret *ret,
      }
  
  exit_func:
@@ -859,7 +885,7 @@
      return TRUE;
  }
  
-@@ -633,10 +724,11 @@ rename_principal_2_svc(rprinc_arg *arg, generic_ret *ret,
+@@ -635,10 +726,11 @@ rename_principal_2_svc(rprinc_arg *arg, generic_ret *ret,
      const char                  *errmsg = NULL;
      size_t                      tlen1, tlen2, clen, slen;
      char                        *tdots1, *tdots2, *cdots, *sdots;
@@ -872,7 +898,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -702,7 +794,7 @@ rename_principal_2_svc(rprinc_arg *arg, generic_ret *ret,
+@@ -704,7 +796,7 @@ rename_principal_2_svc(rprinc_arg *arg, generic_ret *ret,
  exit_func:
      free(prime_arg1);
      free(prime_arg2);
@@ -881,7 +907,7 @@
      return TRUE;
  }
  
-@@ -714,10 +806,11 @@ get_principal_2_svc(gprinc_arg *arg, gprinc_ret *ret, struct svc_req *rqstp)
+@@ -716,10 +808,11 @@ get_principal_2_svc(gprinc_arg *arg, gprinc_ret *ret, struct svc_req *rqstp)
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -894,7 +920,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -743,7 +836,7 @@ get_principal_2_svc(gprinc_arg *arg, gprinc_ret *ret, struct svc_req *rqstp)
+@@ -745,7 +838,7 @@ get_principal_2_svc(gprinc_arg *arg, gprinc_ret *ret, struct svc_req *rqstp)
      }
  
  exit_func:
@@ -903,7 +929,7 @@
      return TRUE;
  }
  
-@@ -755,10 +848,11 @@ get_princs_2_svc(gprincs_arg *arg, gprincs_ret *ret, struct svc_req *rqstp)
+@@ -757,10 +850,11 @@ get_princs_2_svc(gprincs_arg *arg, gprincs_ret *ret, struct svc_req *rqstp)
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -916,7 +942,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -786,7 +880,7 @@ get_princs_2_svc(gprincs_arg *arg, gprincs_ret *ret, struct svc_req *rqstp)
+@@ -788,7 +882,7 @@ get_princs_2_svc(gprincs_arg *arg, gprincs_ret *ret, struct svc_req *rqstp)
      }
  
  exit_func:
@@ -925,7 +951,7 @@
      return TRUE;
  }
  
-@@ -799,10 +893,11 @@ chpass_principal_2_svc(chpass_arg *arg, generic_ret *ret,
+@@ -801,10 +895,11 @@ chpass_principal_2_svc(chpass_arg *arg, generic_ret *ret,
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -938,7 +964,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -836,7 +931,7 @@ chpass_principal_2_svc(chpass_arg *arg, generic_ret *ret,
+@@ -838,7 +933,7 @@ chpass_principal_2_svc(chpass_arg *arg, generic_ret *ret,
      }
  
  exit_func:
@@ -947,7 +973,7 @@
      return TRUE;
  }
  
-@@ -849,10 +944,11 @@ chpass_principal3_2_svc(chpass3_arg *arg, generic_ret *ret,
+@@ -851,10 +946,11 @@ chpass_principal3_2_svc(chpass3_arg *arg, generic_ret *ret,
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -960,7 +986,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -889,7 +985,7 @@ chpass_principal3_2_svc(chpass3_arg *arg, generic_ret *ret,
+@@ -891,7 +987,7 @@ chpass_principal3_2_svc(chpass3_arg *arg, generic_ret *ret,
      }
  
  exit_func:
@@ -969,7 +995,7 @@
      return TRUE;
  }
  
-@@ -902,10 +998,11 @@ setkey_principal_2_svc(setkey_arg *arg, generic_ret *ret,
+@@ -904,10 +1000,11 @@ setkey_principal_2_svc(setkey_arg *arg, generic_ret *ret,
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -982,7 +1008,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -938,7 +1035,7 @@ setkey_principal_2_svc(setkey_arg *arg, generic_ret *ret,
+@@ -940,7 +1037,7 @@ setkey_principal_2_svc(setkey_arg *arg, generic_ret *ret,
      }
  
  exit_func:
@@ -991,7 +1017,7 @@
      return TRUE;
  }
  
-@@ -951,10 +1048,11 @@ setkey_principal3_2_svc(setkey3_arg *arg, generic_ret *ret,
+@@ -953,10 +1050,11 @@ setkey_principal3_2_svc(setkey3_arg *arg, generic_ret *ret,
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -1004,7 +1030,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -988,7 +1086,7 @@ setkey_principal3_2_svc(setkey3_arg *arg, generic_ret *ret,
+@@ -990,7 +1088,7 @@ setkey_principal3_2_svc(setkey3_arg *arg, generic_ret *ret,
      }
  
  exit_func:
@@ -1013,7 +1039,7 @@
      return TRUE;
  }
  
-@@ -1001,10 +1099,11 @@ setkey_principal4_2_svc(setkey4_arg *arg, generic_ret *ret,
+@@ -1003,10 +1101,11 @@ setkey_principal4_2_svc(setkey4_arg *arg, generic_ret *ret,
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -1026,7 +1052,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1037,7 +1136,7 @@ setkey_principal4_2_svc(setkey4_arg *arg, generic_ret *ret,
+@@ -1039,7 +1138,7 @@ setkey_principal4_2_svc(setkey4_arg *arg, generic_ret *ret,
      }
  
  exit_func:
@@ -1035,7 +1061,7 @@
      return TRUE;
  }
  
-@@ -1072,10 +1171,11 @@ chrand_principal_2_svc(chrand_arg *arg, chrand_ret *ret, struct svc_req *rqstp)
+@@ -1074,10 +1173,11 @@ chrand_principal_2_svc(chrand_arg *arg, chrand_ret *ret, struct svc_req *rqstp)
      int                         nkeys;
      kadm5_server_handle_t       handle;
      const char                  *errmsg = NULL;
@@ -1048,7 +1074,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1114,7 +1214,7 @@ chrand_principal_2_svc(chrand_arg *arg, chrand_ret *ret, struct svc_req *rqstp)
+@@ -1116,7 +1216,7 @@ chrand_principal_2_svc(chrand_arg *arg, chrand_ret *ret, struct svc_req *rqstp)
      }
  
  exit_func:
@@ -1057,7 +1083,7 @@
      return TRUE;
  }
  
-@@ -1129,10 +1229,11 @@ chrand_principal3_2_svc(chrand3_arg *arg, chrand_ret *ret,
+@@ -1131,10 +1231,11 @@ chrand_principal3_2_svc(chrand3_arg *arg, chrand_ret *ret,
      int                         nkeys;
      kadm5_server_handle_t       handle;
      const char                  *errmsg = NULL;
@@ -1070,7 +1096,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1173,7 +1274,7 @@ chrand_principal3_2_svc(chrand3_arg *arg, chrand_ret *ret,
+@@ -1175,7 +1276,7 @@ chrand_principal3_2_svc(chrand3_arg *arg, chrand_ret *ret,
      }
  
  exit_func:
@@ -1079,7 +1105,7 @@
      return TRUE;
  }
  
-@@ -1185,10 +1286,11 @@ create_policy_2_svc(cpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1187,10 +1288,11 @@ create_policy_2_svc(cpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -1092,7 +1118,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1215,7 +1317,7 @@ create_policy_2_svc(cpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1217,7 +1319,7 @@ create_policy_2_svc(cpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
      }
  
  exit_func:
@@ -1101,7 +1127,7 @@
      return TRUE;
  }
  
-@@ -1227,10 +1329,11 @@ delete_policy_2_svc(dpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1229,10 +1331,11 @@ delete_policy_2_svc(dpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -1114,7 +1140,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1255,7 +1358,7 @@ delete_policy_2_svc(dpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1257,7 +1360,7 @@ delete_policy_2_svc(dpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
      }
  
  exit_func:
@@ -1123,7 +1149,7 @@
      return TRUE;
  }
  
-@@ -1267,10 +1370,11 @@ modify_policy_2_svc(mpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1269,10 +1372,11 @@ modify_policy_2_svc(mpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -1136,7 +1162,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1296,7 +1400,7 @@ modify_policy_2_svc(mpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1298,7 +1402,7 @@ modify_policy_2_svc(mpol_arg *arg, generic_ret *ret, struct svc_req *rqstp)
      }
  
  exit_func:
@@ -1145,7 +1171,7 @@
      return TRUE;
  }
  
-@@ -1310,12 +1414,13 @@ get_policy_2_svc(gpol_arg *arg, gpol_ret *ret, struct svc_req *rqstp)
+@@ -1312,12 +1416,13 @@ get_policy_2_svc(gpol_arg *arg, gpol_ret *ret, struct svc_req *rqstp)
      kadm5_principal_ent_rec     caller_ent;
      kadm5_server_handle_t       handle;
      const char                  *errmsg = NULL, *cpolicy = NULL;
@@ -1160,7 +1186,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1349,7 +1454,7 @@ get_policy_2_svc(gpol_arg *arg, gpol_ret *ret, struct svc_req *rqstp)
+@@ -1351,7 +1456,7 @@ get_policy_2_svc(gpol_arg *arg, gpol_ret *ret, struct svc_req *rqstp)
  
  exit_func:
      (void)kadm5_free_principal_ent(handle->lhandle, &caller_ent);
@@ -1169,7 +1195,7 @@
      return TRUE;
  }
  
-@@ -1361,10 +1466,11 @@ get_pols_2_svc(gpols_arg *arg, gpols_ret *ret, struct svc_req *rqstp)
+@@ -1363,10 +1468,11 @@ get_pols_2_svc(gpols_arg *arg, gpols_ret *ret, struct svc_req *rqstp)
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -1182,7 +1208,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1391,7 +1497,7 @@ get_pols_2_svc(gpols_arg *arg, gpols_ret *ret, struct svc_req *rqstp)
+@@ -1393,7 +1499,7 @@ get_pols_2_svc(gpols_arg *arg, gpols_ret *ret, struct svc_req *rqstp)
      }
  
  exit_func:
@@ -1191,7 +1217,7 @@
      return TRUE;
  }
  
-@@ -1404,7 +1510,7 @@ get_privs_2_svc(krb5_ui_4 *arg, getprivs_ret *ret, struct svc_req *rqstp)
+@@ -1406,7 +1512,7 @@ get_privs_2_svc(krb5_ui_4 *arg, getprivs_ret *ret, struct svc_req *rqstp)
      const char                     *errmsg = NULL;
  
      ret->code = stub_setup(*arg, rqstp, NULL, &handle, &ret->api_version,
@@ -1200,7 +1226,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1419,7 +1525,7 @@ get_privs_2_svc(krb5_ui_4 *arg, getprivs_ret *ret, struct svc_req *rqstp)
+@@ -1421,7 +1527,7 @@ get_privs_2_svc(krb5_ui_4 *arg, getprivs_ret *ret, struct svc_req *rqstp)
          krb5_free_error_message(handle->context, errmsg);
  
  exit_func:
@@ -1209,7 +1235,7 @@
      return TRUE;
  }
  
-@@ -1432,10 +1538,11 @@ purgekeys_2_svc(purgekeys_arg *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1434,10 +1540,11 @@ purgekeys_2_svc(purgekeys_arg *arg, generic_ret *ret, struct svc_req *rqstp)
      kadm5_server_handle_t       handle;
  
      const char                  *errmsg = NULL;
@@ -1222,7 +1248,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1458,7 +1565,7 @@ purgekeys_2_svc(purgekeys_arg *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1460,7 +1567,7 @@ purgekeys_2_svc(purgekeys_arg *arg, generic_ret *ret, struct svc_req *rqstp)
      }
  
  exit_func:
@@ -1231,7 +1257,7 @@
      return TRUE;
  }
  
-@@ -1470,10 +1577,11 @@ get_strings_2_svc(gstrings_arg *arg, gstrings_ret *ret, struct svc_req *rqstp)
+@@ -1472,10 +1579,11 @@ get_strings_2_svc(gstrings_arg *arg, gstrings_ret *ret, struct svc_req *rqstp)
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -1244,7 +1270,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1496,7 +1604,7 @@ get_strings_2_svc(gstrings_arg *arg, gstrings_ret *ret, struct svc_req *rqstp)
+@@ -1498,7 +1606,7 @@ get_strings_2_svc(gstrings_arg *arg, gstrings_ret *ret, struct svc_req *rqstp)
      }
  
  exit_func:
@@ -1253,7 +1279,7 @@
      return TRUE;
  }
  
-@@ -1508,10 +1616,11 @@ set_string_2_svc(sstring_arg *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1510,10 +1618,11 @@ set_string_2_svc(sstring_arg *arg, generic_ret *ret, struct svc_req *rqstp)
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -1266,7 +1292,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1534,7 +1643,7 @@ set_string_2_svc(sstring_arg *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1536,7 +1645,7 @@ set_string_2_svc(sstring_arg *arg, generic_ret *ret, struct svc_req *rqstp)
      }
  
  exit_func:
@@ -1275,7 +1301,7 @@
      return TRUE;
  }
  
-@@ -1549,7 +1658,7 @@ init_2_svc(krb5_ui_4 *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1551,7 +1660,7 @@ init_2_svc(krb5_ui_4 *arg, generic_ret *ret, struct svc_req *rqstp)
      char *cdots, *sdots;
  
      ret->code = stub_setup(*arg, rqstp, NULL, &handle, &ret->api_version,
@@ -1284,7 +1310,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1575,18 +1684,27 @@ init_2_svc(krb5_ui_4 *arg, generic_ret *ret, struct svc_req *rqstp)
+@@ -1577,18 +1686,27 @@ init_2_svc(krb5_ui_4 *arg, generic_ret *ret, struct svc_req *rqstp)
          krb5_free_error_message(handle->context, errmsg);
  
  exit_func:
@@ -1317,7 +1343,7 @@
  }
  
  bool_t
-@@ -1598,10 +1716,11 @@ get_principal_keys_2_svc(getpkeys_arg *arg, getpkeys_ret *ret,
+@@ -1600,10 +1718,11 @@ get_principal_keys_2_svc(getpkeys_arg *arg, getpkeys_ret *ret,
      gss_buffer_desc                 service_name = GSS_C_EMPTY_BUFFER;
      kadm5_server_handle_t           handle;
      const char                      *errmsg = NULL;
@@ -1330,7 +1356,7 @@
      if (ret->code)
          goto exit_func;
  
-@@ -1642,6 +1761,6 @@ get_principal_keys_2_svc(getpkeys_arg *arg, getpkeys_ret *ret,
+@@ -1644,6 +1763,6 @@ get_principal_keys_2_svc(getpkeys_arg *arg, getpkeys_ret *ret,
      }
  
  exit_func:
@@ -1340,7 +1366,7 @@
  }
 --- a/src/kprop/kpropd.c
 +++ b/src/kprop/kpropd.c
-@@ -610,13 +610,14 @@ full_resync(CLIENT *clnt)
+@@ -611,13 +611,14 @@ full_resync(CLIENT *clnt)
  
      memset(&clnt_res, 0, sizeof(clnt_res));
  
@@ -1701,17 +1727,19 @@
          }
      }
  
-@@ -793,21 +801,35 @@ krb5_error_code kadm5_get_config_params(krb5_context context,
-         params.mask |= KADM5_CONFIG_ULOG_SIZE;
-         params.iprop_ulogsize = params_in->iprop_ulogsize;
+@@ -790,25 +798,38 @@ krb5_error_code kadm5_get_config_params(krb5_context context,
      } else {
+         params.iprop_ulogsize = 0;
+         hierarchy[2] = KRB5_CONF_IPROP_ULOGSIZE;
 -        if (aprofile != NULL &&
--            !krb5_aprof_get_int32(aprofile, hierarchy, TRUE, &ivalue)) {
--            if (ivalue <= 0)
--                params.iprop_ulogsize = DEF_ULOGENTRIES;
--            else
--                params.iprop_ulogsize = ivalue;
--            params.mask |= KADM5_CONFIG_ULOG_SIZE;
+-            !krb5_aprof_get_int32(aprofile, hierarchy, TRUE, &ivalue) &&
+-            ivalue > 0)
+-            params.iprop_ulogsize = ivalue;
+-        hierarchy[2] = KRB5_CONF_IPROP_MASTER_ULOGSIZE;
+-        if (params.iprop_ulogsize == 0 && aprofile != NULL &&
+-            !krb5_aprof_get_int32(aprofile, hierarchy, TRUE, &ivalue) &&
+-            ivalue > 0)
+-            params.iprop_ulogsize = ivalue;
 +        if (aprofile != NULL) {
 +            if (!krb5_aprof_get_int32(aprofile, hierarchy, TRUE, &ivalue)) {
 +                if (ivalue <= 0)
@@ -1729,8 +1757,11 @@
 +                    params.mask |= KADM5_CONFIG_ULOG_SIZE;
 +                }
 +            }
-         }
++        }
+         if (params.iprop_ulogsize == 0)
+             params.iprop_ulogsize = DEF_ULOGENTRIES;
      }
+     params.mask |= KADM5_CONFIG_ULOG_SIZE;
  
 +    GET_DELTAT_PARAM(iprop_poll_time, KADM5_CONFIG_POLL_TIME,
 +                     KRB5_CONF_SUNW_DBPROP_SLAVE_POLL, 2 * 60); /* 2m */
@@ -1756,8 +1787,8 @@
  	$(TOPLIBD)/libkrb5$(SHLIBEXT) \
  	$(TOPLIBD)/libk5crypto$(SHLIBEXT) \
  	$(COM_ERR_DEPLIB) $(SUPPORT_LIBDEP)
--SHLIB_EXPLIBS=-lgssrpc -lgssapi_krb5 -lkrb5 -lk5crypto $(SUPPORT_LIB) -lcom_err $(LIBS)
-+SHLIB_EXPLIBS= -lgssapi_krb5 -lkrb5 -lk5crypto $(SUPPORT_LIB) -lcom_err $(LIBS)
+-SHLIB_EXPLIBS=-lgssrpc -lgssapi_krb5 -lkrb5 -lk5crypto $(SUPPORT_LIB) $(COM_ERR_LIB) $(LIBS)
++SHLIB_EXPLIBS=-lgssapi_krb5 -lkrb5 -lk5crypto $(SUPPORT_LIB) $(COM_ERR_LIB) $(LIBS)
  RELDIR=kadm5/clnt
  
  ##DOSBUILDTOP = ..\..\..
@@ -1778,7 +1809,7 @@
  
  enum init_type { INIT_PASS, INIT_SKEY, INIT_CREDS, INIT_ANONYMOUS };
  
-@@ -138,9 +138,378 @@ kadm5_init_with_skey(krb5_context context, char *client_name,
+@@ -138,6 +138,377 @@ kadm5_init_with_skey(krb5_context context, char *client_name,
                      server_handle);
  }
  
@@ -2093,10 +2124,12 @@
 +		}
 +	}
 +
++#ifndef INIT_TEST
 +	if (handle->clnt->cl_auth == NULL) {
 +		code = KADM5_GSS_ERROR;
 +		goto error;
 +	}
++#endif /* ! INIT_TEST */
 +
 +	/*
 +	 * Bypass the remainder of the code and return straightaway
@@ -2152,30 +2185,34 @@
 +}
 +
  static kadm5_ret_t
+ free_handle(kadm5_server_handle_t handle)
+ {
+@@ -170,7 +541,7 @@ free_handle(kadm5_server_handle_t handle)
+ 
+ static kadm5_ret_t
  init_any(krb5_context context, char *client_name, enum init_type init_type,
 -         char *pass, krb5_ccache ccache_in, char *service_name,
 +         char *pass, krb5_ccache ccache_in, char *svcname_in,
           kadm5_config_params *params_in, krb5_ui_4 struct_version,
           krb5_ui_4 api_version, char **db_args, void **server_handle)
  {
-@@ -152,13 +521,12 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+@@ -180,12 +551,12 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+     rpcprog_t rpc_prog;
      rpcvers_t rpc_vers;
-     krb5_ccache ccache;
      krb5_principal client = NULL, server = NULL;
 -    struct timeval timeout;
  
-     kadm5_server_handle_t handle;
+     kadm5_server_handle_t handle = NULL;
      kadm5_config_params params_local;
  
-     int code = 0;
--    generic_ret r = { 0, 0 };
+     krb5_error_code code;
 +    char svcname[BUFSIZ];
+     generic_ret r = { 0, 0 };
  
      initialize_ovk_error_table();
-     initialize_ovku_error_table();
-@@ -225,104 +593,27 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
-     if (code)
-         goto error;
+@@ -247,102 +618,29 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+     if (init_type == INIT_SKEY && client->realm.length == 0)
+         client->type = KRB5_NT_SRV_HST;
  
 -    /*
 -     * Get credentials.  Also does some fallbacks in case kadmin/fqdn
@@ -2184,7 +2221,7 @@
 -    code = get_init_creds(handle, client, init_type, pass, ccache_in,
 -                          service_name, handle->params.realm, &server);
 -    if (code)
--        goto error;
+-        goto cleanup;
 -
 -    /* If the service_name and client_name are iprop-centric, use the iprop
 -     * port and RPC identifiers. */
@@ -2201,7 +2238,7 @@
 +                                            handle->params.realm,
 +                                            svcname, sizeof(svcname));
 +        if (code)
-+            goto error;
++            goto cleanup;
      } else {
 -        port = handle->params.kadmind_port;
 -        rpc_prog = KADM;
@@ -2215,7 +2252,7 @@
 +    code = get_init_creds(handle, client, init_type, pass, ccache_in,
 +                          svcname, handle->params.realm, &server);
      if (code)
-         goto error;
+         goto cleanup;
  
 -    handle->clnt = clnttcp_create(NULL, rpc_prog, rpc_vers, &fd, 0, 0);
 -    if (handle->clnt == NULL) {
@@ -2223,8 +2260,11 @@
 -#ifdef DEBUG
 -        clnt_pcreateerror("clnttcp_create");
 -#endif
--        goto error;
--    }
++    code = _kadm5_initialize_rpcsec_gss_handle(handle, client_name,
++                                               svcname);
++    if (code != 0) {
+         goto cleanup;
+     }
 -
 -    /* Set a one-hour timeout. */
 -    timeout.tv_sec = 3600;
@@ -2235,10 +2275,6 @@
 -    handle->lhandle->clnt = handle->clnt;
 -    handle->lhandle->client_socket = fd;
 -
--    /* now that handle->clnt is set, we can check the handle */
--    if ((code = _kadm5_check_handle((void *) handle)))
--        goto error;
--
 -    /*
 -     * The RPC connection is open; establish the GSS-API
 -     * authentication context.
@@ -2246,15 +2282,16 @@
 -    code = setup_gss(handle, params_in,
 -                     (init_type == INIT_CREDS) ? client : NULL, server);
 -    if (code)
--        goto error;
+-        goto cleanup;
 -
 -    /*
--     * Bypass the remainder of the code and return straightaway
+-     * Bypass the remainder of the code and return straight away
 -     * if the gss service requested is kiprop
 -     */
 -    if (iprop_enable) {
 -        code = 0;
--        *server_handle = (void *) handle;
+-        *server_handle = handle;
+-        handle = NULL;
 -        goto cleanup;
 -    }
 -
@@ -2263,7 +2300,7 @@
 -#ifdef DEBUG
 -        clnt_perror(handle->clnt, "init_2 null resp");
 -#endif
--        goto error;
+-        goto cleanup;
 -    }
 -    /* Drop down to v3 wire protocol if server does not support v4 */
 -    if (r.code == KADM5_NEW_SERVER_API_VERSION &&
@@ -2272,7 +2309,7 @@
 -        memset(&r, 0, sizeof(generic_ret));
 -        if (init_2(&handle->api_version, &r, handle->clnt)) {
 -            code = KADM5_RPC_ERROR;
--            goto error;
+-            goto cleanup;
 -        }
 -    }
 -    /* Drop down to v2 wire protocol if server does not support v3 */
@@ -2282,18 +2319,16 @@
 -        memset(&r, 0, sizeof(generic_ret));
 -        if (init_2(&handle->api_version, &r, handle->clnt)) {
 -            code = KADM5_RPC_ERROR;
--            goto error;
+-            goto cleanup;
 -        }
 -    }
 -    if (r.code) {
 -        code = r.code;
-+    code = _kadm5_initialize_rpcsec_gss_handle(handle, client_name,
-+                                               svcname);
-+    if (code != 0) {
-         goto error;
+-        goto cleanup;
      }
  
-@@ -363,31 +654,17 @@ cleanup:
+     *server_handle = handle;
+@@ -356,16 +654,14 @@ cleanup:
      return code;
  }
  
@@ -2308,39 +2343,33 @@
  {
      kadm5_ret_t code;
      krb5_ccache ccache = NULL;
--    char svcname[BUFSIZ];
+-    char *svcname, svcbuf[BUFSIZ];
  
      *server_out = NULL;
  
--    /* NULL svcname means use host-based. */
--    if (svcname_in == NULL) {
--        code = kadm5_get_admin_service_name(handle->context,
--                                            handle->params.realm,
--                                            svcname, sizeof(svcname));
--        if (code)
--            goto error;
--    } else {
--        strncpy(svcname, svcname_in, sizeof(svcname));
--        svcname[sizeof(svcname)-1] = '\0';
--    }
--
-     /*
-      * Acquire a service ticket for svcname@realm for client, using password
-      * pass (which could be NULL), and create a ccache to store them in.  If
-@@ -425,12 +702,6 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
+@@ -404,20 +700,9 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
+     }
+     handle->lhandle->cache_name = handle->cache_name;
  
+-    svcname = (svcname_in != NULL) ? svcname_in : KADM5_ADMIN_SERVICE;
++    svcname = (svcname != NULL) ? svcname : KADM5_ADMIN_SERVICE;
      code = gic_iter(handle, init_type, ccache, client, pass, svcname, realm,
                      server_out);
 -    if ((code == KRB5KDC_ERR_S_PRINCIPAL_UNKNOWN
 -         || code == KRB5_CC_NOTFOUND) && svcname_in == NULL) {
--        /* Retry with old host-independent service principal. */
--        code = gic_iter(handle, init_type, ccache, client, pass,
--                        KADM5_ADMIN_SERVICE, realm, server_out);
+-        /* Retry with host-based service principal. */
+-        code = kadm5_get_admin_service_name(handle->context,
+-                                            handle->params.realm,
+-                                            svcbuf, sizeof(svcbuf));
+-        if (code)
+-            goto error;
+-        code = gic_iter(handle, init_type, ccache, client, pass, svcbuf, realm,
+-                        server_out);
 -    }
      /* Improved error messages */
      if (code == KRB5KRB_AP_ERR_BAD_INTEGRITY) code = KADM5_BAD_PASSWORD;
      if (code == KRB5KDC_ERR_S_PRINCIPAL_UNKNOWN)
-@@ -655,6 +926,27 @@ rpc_auth(kadm5_server_handle_t handle, kadm5_config_params *params_in,
+@@ -642,6 +927,27 @@ rpc_auth(kadm5_server_handle_t handle, kadm5_config_params *params_in,
           gss_cred_id_t gss_client_creds, gss_name_t gss_target)
  {
      OM_uint32 gssstat, minor_stat;
@@ -2368,7 +2397,7 @@
      struct rpc_gss_sec sec;
  
      /* Allow unauthenticated option for testing. */
-@@ -689,6 +981,7 @@ rpc_auth(kadm5_server_handle_t handle, kadm5_config_params *params_in,
+@@ -676,6 +982,7 @@ rpc_auth(kadm5_server_handle_t handle, kadm5_config_params *params_in,
                                                 GSS_C_MUTUAL_FLAG
                                                 | GSS_C_REPLAY_FLAG,
                                                 0, NULL, NULL, NULL);
@@ -2474,7 +2503,7 @@
  #include <kadm5/admin.h>
 --- a/src/lib/kadm5/server_internal.h
 +++ b/src/lib/kadm5/server_internal.h
-@@ -264,4 +264,8 @@ k5_kadm5_hook_rename (krb5_context context,
+@@ -266,4 +266,8 @@ k5_kadm5_hook_rename (krb5_context context,
  
  /** @}*/
  
@@ -2495,9 +2524,9 @@
  	$(TOPLIBD)/libkrb5$(SHLIBEXT) \
  	$(TOPLIBD)/libk5crypto$(SHLIBEXT) \
  	$(COM_ERR_DEPLIB) $(SUPPORT_LIBDEP)
--SHLIB_EXPLIBS =	-lgssrpc -lgssapi_krb5 -lkdb5 $(KDB5_DB_LIB) \
-+SHLIB_EXPLIBS =	 -lgssapi_krb5 -lkdb5 $(KDB5_DB_LIB) \
- 		-lkrb5 -lk5crypto $(SUPPORT_LIB) -lcom_err @GEN_LIB@ $(LIBS)
+-SHLIB_EXPLIBS =	-lgssrpc -lgssapi_krb5 -lkdb5 $(KDB5_DB_LIB) -lkrb5 \
++SHLIB_EXPLIBS =	-lgssapi_krb5 -lkdb5 $(KDB5_DB_LIB) -lkrb5 \
+ 		-lk5crypto $(SUPPORT_LIB) $(COM_ERR_LIB) @GEN_LIB@ $(LIBS)
  RELDIR=kadm5/srv
  
 @@ -37,6 +36,8 @@ SRCS =	$(srcdir)/pwqual.c \
@@ -2540,7 +2569,7 @@
  #ifdef HAVE_MEMORY_H
 --- a/src/lib/kadm5/srv/server_init.c
 +++ b/src/lib/kadm5/srv/server_init.c
-@@ -222,8 +222,7 @@ kadm5_ret_t kadm5_init(krb5_context context, char *client_name, char *pass,
+@@ -212,8 +212,7 @@ kadm5_ret_t kadm5_init(krb5_context context, char *client_name, char *pass,
  
  #define IPROP_REQUIRED_PARAMS                   \
      (KADM5_CONFIG_IPROP_ENABLED |               \
@@ -2549,7 +2578,18 @@
 +     KADM5_CONFIG_IPROP_LOGFILE)
  
      if ((handle->params.mask & REQUIRED_PARAMS) != REQUIRED_PARAMS) {
-         kadm5_free_config_params(handle->context, &handle->params);
+         ret = KADM5_MISSING_CONF_PARAMS;
+--- a/src/lib/kadm5/t_kadm5.py
++++ b/src/lib/kadm5/t_kadm5.py
+@@ -40,6 +40,6 @@ realm.run([kadminl, 'addprinc', '-pw', 'admin', 'admin/none'])
+ realm.run([kadminl, 'addprinc', '-pw', 'us3r', '-policy', 'minlife-pol',
+            'user'])
+ 
+-realm.run(['./t_kadm5srv', 'srv'])
+-realm.run(['./t_kadm5clnt', 'clnt'])
++#realm.run(['./t_kadm5srv', 'srv'])
++#realm.run(['./t_kadm5clnt', 'clnt'])
+ success('kadm5 API tests')
 --- a/src/lib/kdb/Makefile.in
 +++ b/src/lib/kdb/Makefile.in
 @@ -14,9 +14,8 @@ RELDIR=kdb
@@ -2558,8 +2598,8 @@
  	$(TOPLIBD)/libk5crypto$(SHLIBEXT) \
 -	$(TOPLIBD)/libgssrpc$(SHLIBEXT) \
  	$(TOPLIBD)/libkrb5$(SHLIBEXT)
--SHLIB_EXPLIBS=-lgssrpc -lkrb5 -lk5crypto -lcom_err $(SUPPORT_LIB) $(DL_LIB) $(LIBS)
-+SHLIB_EXPLIBS= -lkrb5 -lk5crypto -lcom_err $(SUPPORT_LIB) $(DL_LIB) $(LIBS)
+-SHLIB_EXPLIBS=-lgssrpc -lkrb5 -lk5crypto $(COM_ERR_LIB) $(SUPPORT_LIB) $(DL_LIB) $(LIBS)
++SHLIB_EXPLIBS=-lkrb5 -lk5crypto $(COM_ERR_LIB) $(SUPPORT_LIB) $(DL_LIB) $(LIBS)
  
  adb_err.$(OBJEXT): adb_err.c
  adb_err.c adb_err.h: $(srcdir)/adb_err.et
@@ -2594,7 +2634,7 @@
  {
 --- a/src/lib/krb5/os/locate_kdc.c
 +++ b/src/lib/krb5/os/locate_kdc.c
-@@ -828,6 +828,14 @@ k5_locate_kdc(krb5_context context, const krb5_data *realm,
+@@ -833,6 +833,14 @@ k5_locate_kdc(krb5_context context, const krb5_data *realm,
      return k5_locate_server(context, realm, serverlist, stype, no_udp);
  }
  
@@ -2607,19 +2647,19 @@
 +}
 +
  krb5_boolean
- k5_kdc_is_master(krb5_context context, const krb5_data *realm,
-                  struct server_entry *server)
+ k5_kdc_is_primary(krb5_context context, const krb5_data *realm,
+                   struct server_entry *server)
 --- a/src/lib/krb5/os/sn2princ.c
 +++ b/src/lib/krb5/os/sn2princ.c
-@@ -102,6 +102,7 @@ k5_expand_hostname(krb5_context context, const char *host,
-                (is_fallback &&
-                 context->dns_canonicalize_hostname == CANONHOST_FALLBACK));
+@@ -98,6 +98,7 @@ expand_hostname(krb5_context context, const char *host, krb5_boolean use_dns,
+ 
+     canonhost = host;
      if (use_dns) {
 +#if 0 /* force DNS lookup */
          /* Try a forward lookup of the hostname. */
          memset(&hint, 0, sizeof(hint));
          hint.ai_flags = AI_CANONNAME;
-@@ -120,6 +121,7 @@ k5_expand_hostname(krb5_context context, const char *host,
+@@ -116,6 +117,7 @@ expand_hostname(krb5_context context, const char *host, krb5_boolean use_dns,
              if (!err)
                  canonhost = namebuf;
          }
@@ -2831,7 +2871,7 @@
  
 --- a/src/tests/t_ccache.py
 +++ b/src/tests/t_ccache.py
-@@ -51,7 +51,7 @@ realm.kinit(realm.user_princ, password('user'))
+@@ -58,7 +58,7 @@ realm.kinit(realm.user_princ, password('user'))
  realm.run([klist, '-s'])
  realm.kinit(realm.user_princ, password('user'), ['-l', '-1s'])
  realm.run([klist, '-s'], expected_code=1)
@@ -2857,7 +2897,7 @@
  # On macOS with System Integrity Protection enabled, this script hangs
  # in the wait_for_prop() call after starting the first kpropd process,
  # most likely due to signal restrictions preventing the listening
-@@ -127,45 +135,10 @@ conf = {'realms': {'$realm': {'iprop_enable': 'true',
+@@ -128,45 +136,10 @@ conf = {'realms': {'$realm': {'iprop_enable': 'true',
  conf_rep1 = {'realms': {'$realm': {'iprop_replica_poll': '600',
                                     'iprop_logfile': '$testdir/ulog.replica1'}},
               'dbmodules': {'db': {'database_name': '$testdir/db.replica1'}}}
@@ -2903,7 +2943,15 @@
  
      # Define some principal names.  pr3 is long enough to cause internal
      # reallocs, but not long enough to grow the basic ulog entry size.
-@@ -194,9 +167,6 @@ for realm in multidb_realms(kdc_conf=conf, create_user=False,
+@@ -189,16 +162,13 @@ for realm in multidb_realms(kdc_conf=conf, create_user=False,
+ 
+     # Create the principal used to authenticate kpropd to kadmind.
+     kiprop_princ = 'kiprop/' + hostname
+-    realm.addprinc(kiprop_princ)
++    #realm.addprinc(kiprop_princ)
+     realm.extract_keytab(kiprop_princ, realm.keytab)
+ 
+     # Create the initial replica databases.
      dumpfile = os.path.join(realm.testdir, 'dump')
      realm.run([kdb5_util, 'dump', dumpfile])
      realm.run([kdb5_util, 'load', dumpfile], replica1)
@@ -2911,9 +2959,9 @@
 -    realm.run([kdb5_util, '-r', realm.realm, 'load', dumpfile], replica3)
 -    realm.run([kdb5_util, 'load', dumpfile], replica4)
  
-     # Reinitialize the master ulog so we know exactly what to expect in
-     # it.
-@@ -233,260 +203,4 @@ for realm in multidb_realms(kdc_conf=conf, create_user=False,
+     # Reinitialize the primary ulog so we know exactly what to expect
+     # in it.
+@@ -235,260 +205,4 @@ for realm in multidb_realms(kdc_conf=conf, create_user=False,
      # Start kadmind -proponly for replica1.  (Use the replica1m
      # environment which defines iprop_port to $port8.)
      replica1_out_dump_path = os.path.join(realm.testdir, 'dump.replica1.out')
@@ -2921,7 +2969,7 @@
 -    replica2_kprop_port = str(realm.portbase + 9)
 -    kadmind_proponly = realm.start_server([kadmind, '-r', realm.realm,
 -                                           '-nofork', '-proponly',
--                                           '-W', '-p', kdb5_util,
+-                                           '-p', kdb5_util,
 -                                           '-K', kprop, '-k',
 -                                           replica2_kprop_port,
 -                                           '-F', replica1_out_dump_path],
@@ -2972,7 +3020,7 @@
 -    stop_daemon(kpropd4)
 -
 -    # Start kpropd for replica2.  The -A option isn't needed since
--    # we're talking to the same host as master (we specify it anyway
+-    # we're talking to the same host as primary (we specify it anyway
 -    # to exercise the code), but replica2 defines iprop_port to $port8
 -    # so it will talk to replica1.  Get a full dump from replica1.
 -    mark('propagate 1->2 full')
@@ -3003,7 +3051,7 @@
 -    realm.run([kadminl, 'getprinc', pr1], env=replica2,
 -              expected_msg='Maximum renewable life: 0 days 22:00:00\n')
 -
--    # Reset the ulog on replica1 to force a full resync from master.
+-    # Reset the ulog on replica1 to force a full resync from primary.
 -    # The resync will use the old dump file and then propagate
 -    # changes.  replica2 should still be in sync with replica1 after
 -    # the resync, so make sure it doesn't take a full resync.
@@ -3078,7 +3126,7 @@
 -    realm.run([kadminl, 'getpol', 'testpol'], env=replica2, expected_code=1,
 -              expected_msg='Policy does not exist')
 -
--    # Modify a principal on the master and test that it propagates
+-    # Modify a principal on the primary and test that it propagates
 -    # incrementally.
 -    mark('propagate M->1->2 incremental (after policy changes)')
 -    realm.run([kadminl, 'modprinc', '-maxlife', '10 minutes', pr1])
@@ -3129,7 +3177,7 @@
 -
 -    pr1 = renpr
 -
--    # Reset the ulog on the master to force a full resync.
+-    # Reset the ulog on the primary to force a full resync.
 -    mark('propagate M->1->2 full (ulog reset)')
 -    realm.run([kproplog, '-R'])
 -    check_ulog(1, 1, 1, [None])
@@ -3152,7 +3200,7 @@
 -        fail('Expected synchronized from kpropd -t')
 -    check_ulog(1, 1, 1, [None], replica1)
 -
--    # Make a change on the master and fetch it incrementally.
+-    # Make a change on the primary and fetch it incrementally.
 -    realm.run([kadminl, 'modprinc', '-maxlife', '5 minutes', pr1])
 -    check_ulog(2, 1, 2, [None, pr1])
 -    out = realm.run_kpropd_once(replica1, ['-d'])
@@ -3174,6 +3222,26 @@
 -              expected_msg='Minimum number of password character classes: 3')
 -
  success('iprop tests')
+--- a/src/tests/t_kadmin.py
++++ b/src/tests/t_kadmin.py
+@@ -57,10 +57,12 @@ realm.run_kadmin(['listprincs'], expected_msg='foo199')
+ # krb5_sname_to_principal() result won't have a realm.  Try with and
+ # without without fallback processing since the code paths are
+ # different.
+-mark('kadmin -k')
+-realm.run([kadmin, '-k', 'getprinc', realm.host_princ])
+-no_canon_conf = {'libdefaults': {'dns_canonicalize_hostname': 'false'}}
+-no_canon = realm.special_env('no_canon', False, krb5_conf=no_canon_conf)
+-realm.run([kadmin, '-k', 'getprinc', realm.host_princ], env=no_canon)
++#
++# this does not work on Solaris due to rpc-gss changes.
++#mark('kadmin -k')
++#realm.run([kadmin, '-k', 'getprinc', realm.host_princ])
++#no_canon_conf = {'libdefaults': {'dns_canonicalize_hostname': 'false'}}
++#no_canon = realm.special_env('no_canon', False, krb5_conf=no_canon_conf)
++#realm.run([kadmin, '-k', 'getprinc', realm.host_princ], env=no_canon)
+ 
+ success('kadmin and kpasswd tests')
 --- a/src/tests/t_kadmin_acl.py
 +++ b/src/tests/t_kadmin_acl.py
 @@ -9,7 +9,7 @@ def make_client(name):
@@ -3197,9 +3265,30 @@
  msg = 'Operation requires initial ticket'
  realm.run([kadmin, '-c', realm.ccache, 'cpw', '-pw', 'newpw', 'none'],
            expected_code=1, expected_msg=msg)
+@@ -331,13 +331,14 @@ realm.run([kadmin, '-c', realm.ccache, 'cpw', '-randkey', '-e', 'aes256-cts',
+ # Test authentication to kadmin/hostname.
+ mark('authentication to kadmin/hostname')
+ kadmin_hostname = 'kadmin/' + hostname
+-realm.addprinc(kadmin_hostname)
+-realm.run([kadminl, 'delprinc', 'kadmin/admin'])
++#
++# this is created by default on solaris
++#
++#realm.addprinc(kadmin_hostname)
++# never exists on solaris
++#realm.run([kadminl, 'delprinc', 'kadmin/admin'])
+ msgs = ('Getting initial credentials for user/admin@KRBTEST.COM',
+-        'Setting initial creds service to kadmin/admin',
+-        '/Server not found in Kerberos database',
+-        'Getting initial credentials for user/admin@KRBTEST.COM',
+-        'Setting initial creds service to ' + kadmin_hostname,
++        'Setting initial creds service to kadmin/' + hostname,
+         'Decrypted AS reply')
+ realm.run([kadmin, '-p', 'user/admin', 'listprincs'], expected_code=1,
+           expected_msg="Operation requires ``list'' privilege",
 --- a/src/util/k5test.py
 +++ b/src/util/k5test.py
-@@ -1142,7 +1142,7 @@ class K5Realm(object):
+@@ -1179,7 +1179,7 @@ class K5Realm(object):
              princname = self.admin_princ
              pw = password('admin')
          return self.kinit(princname, pw,

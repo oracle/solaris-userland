@@ -28,8 +28,8 @@
  #ifndef LEAN_CLIENT
  k5_mutex_t gssint_krb5_keytab_lock = K5_MUTEX_PARTIAL_INITIALIZER;
  static char *krb5_gss_keytab = NULL;
-@@ -587,6 +591,151 @@ kg_cred_set_initial_refresh(krb5_context context, krb5_gss_cred_id_rec *cred,
-     set_refresh_time(context, cred->ccache, refresh);
+@@ -606,6 +610,152 @@ verify_initial_cred(krb5_context context, krb5_creds *creds,
+                                   verify->keytab, NULL, &vopts);
  }
  
 +#define	SAM_ACCOUNT_LEN 17 /* 15:hostname + 1:$ + 1:\0 */
@@ -177,10 +177,11 @@
 +    return code;
 +}
 +
++
  /* Get initial credentials using the supplied password or client keytab. */
  static krb5_error_code
- get_initial_cred(krb5_context context, krb5_gss_cred_id_rec *cred)
-@@ -606,8 +755,41 @@ get_initial_cred(krb5_context context, krb5_gss_cred_id_rec *cred)
+ get_initial_cred(krb5_context context, const struct verify_params *verify,
+@@ -626,8 +776,41 @@ get_initial_cred(krb5_context context, const struct verify_params *verify,
                                              cred->password, NULL, NULL, 0,
                                              NULL, opt);
      } else if (cred->client_keytab != NULL) {
@@ -224,7 +225,7 @@
      } else {
          code = KRB5_KT_NOTFOUND;
      }
-@@ -697,6 +879,23 @@ acquire_init_cred(krb5_context context,
+@@ -730,6 +913,23 @@ acquire_init_cred(krb5_context context, OM_uint32 *minor_status,
              krb5_clear_error_message(context);
              code = 0;
          }

@@ -1,0 +1,21 @@
+# Fix has been submitted to upstream. Details can be found
+# here:
+#	https://github.com/krb5/krb5/pull/1250
+# Quoting from commit message in upstream:
+#	leak into verify_response().  reply_key is no longer passed to the
+#	callback and therefore needs to be freed by this function.
+#
+#	 [ghudson@mit.edu: rewrote commit message]
+#	 ticket: 9061 (new)
+#	 tags: pullup
+#	 target_version: 1.20-next
+--- a/src/plugins/preauth/spake/spake_kdc.c
++++ b/src/plugins/preauth/spake/spake_kdc.c
+@@ -469,6 +469,7 @@ cleanup:
+     zapfree(spakeresult.data, spakeresult.length);
+     krb5_free_data_contents(context, &thash);
+     krb5_free_keyblock(context, k1);
++    krb5_free_keyblock(context, reply_key);
+     k5_free_spake_factor(context, factor);
+     (*respond)(arg, ret, NULL, NULL, NULL);
+ }

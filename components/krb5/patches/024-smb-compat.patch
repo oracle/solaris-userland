@@ -16,16 +16,16 @@
 #
 --- a/src/lib/gssapi/krb5/accept_sec_context.c
 +++ b/src/lib/gssapi/krb5/accept_sec_context.c
-@@ -456,8 +456,6 @@ kg_accept_krb5(minor_status, context_handle,
+@@ -673,8 +673,6 @@ kg_accept_krb5(minor_status, context_handle,
      const gss_OID_desc *mech_used = NULL;
-     OM_uint32 major_status = GSS_S_FAILURE;
+     OM_uint32 major_status;
      OM_uint32 tmp_minor_status;
 -    krb5_error krb_error_data;
 -    krb5_data scratch;
      gss_cred_id_t defcred = GSS_C_NO_CREDENTIAL;
      krb5_gss_cred_id_t deleg_cred = NULL;
      krb5int_access kaccess;
-@@ -1201,6 +1199,8 @@ fail:
+@@ -1219,6 +1217,8 @@ fail:
           major_status == GSS_S_CONTINUE_NEEDED)) {
          unsigned int tmsglen;
          int toktype;
@@ -34,7 +34,7 @@
  
          /*
           * The client is expecting a response, so we can send an
-@@ -1208,6 +1208,31 @@ fail:
+@@ -1226,6 +1226,31 @@ fail:
           */
          memset(&krb_error_data, 0, sizeof(krb_error_data));
  
@@ -68,7 +68,7 @@
              code = 60 /* KRB_ERR_GENERIC */;
 --- a/src/lib/gssapi/spnego/spnego_mech.c
 +++ b/src/lib/gssapi/spnego/spnego_mech.c
-@@ -174,6 +174,13 @@ get_negTokenResp(OM_uint32 *, unsigned char *, unsigned int,
+@@ -175,6 +175,13 @@ get_negTokenResp(OM_uint32 *, unsigned char *, unsigned int,
  static int
  is_kerb_mech(gss_OID oid);
  
@@ -82,7 +82,7 @@
  /* SPNEGO oid structure */
  static const gss_OID_desc spnego_oids[] = {
  	{SPNEGO_OID_LENGTH, SPNEGO_OID},
-@@ -1355,6 +1362,7 @@ acc_ctx_new(OM_uint32 *minor_status,
+@@ -1357,6 +1364,7 @@ acc_ctx_new(OM_uint32 *minor_status,
  	gss_buffer_desc der_mechTypes;
  	gss_OID mech_wanted;
  	spnego_gss_ctx_id_t sc = NULL;
@@ -90,7 +90,7 @@
  
  	ret = GSS_S_DEFECTIVE_TOKEN;
  	der_mechTypes.length = 0;
-@@ -3151,6 +3159,7 @@ get_available_mechs(OM_uint32 *minor_status,
+@@ -3160,6 +3168,7 @@ get_available_mechs(OM_uint32 *minor_status,
  	gss_OID_set mechs, goodmechs;
  	gss_OID_set_desc except_attrs;
  	gss_OID_desc attr_oids[3];
@@ -98,7 +98,7 @@
  
  	*rmechs = GSS_C_NO_OID_SET;
  
-@@ -3187,6 +3196,28 @@ get_available_mechs(OM_uint32 *minor_status,
+@@ -3196,6 +3205,28 @@ get_available_mechs(OM_uint32 *minor_status,
  		}
  	}
  

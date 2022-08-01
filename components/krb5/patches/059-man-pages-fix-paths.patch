@@ -75,7 +75,7 @@
  .TP
  \fBdefault_principal_expiration\fP
  (abstime string.)  Specifies the default expiration date of
-@@ -358,7 +358,7 @@ assigned port for kadmind is 749, which is used by default.
+@@ -369,7 +369,7 @@ assigned port for kadmind is 749, which is used by default.
  .TP
  \fBkey_stash_file\fP
  (String.)  Specifies the location where the master key has been
@@ -84,7 +84,7 @@
  .TP
  \fBkdc_listen\fP
  (Whitespace\- or comma\-separated list.)  Specifies the UDP
-@@ -550,7 +550,7 @@ The following tags may be specified in a [dbmodules] subsection:
+@@ -561,7 +561,7 @@ The following tags may be specified in a [dbmodules] subsection:
  .TP
  \fBdatabase_name\fP
  This DB2\-specific tag indicates the location of the database in
@@ -93,7 +93,7 @@
  .TP
  \fBdb_library\fP
  This tag indicates the name of the loadable database module.  The
-@@ -779,8 +779,8 @@ In the following example, the logging messages from the KDC will go to
+@@ -790,8 +790,8 @@ In the following example, the logging messages from the KDC will go to
  the console and to the system log under the facility LOG_DAEMON with
  default severity of LOG_INFO; and the logging messages from the
  administrative server will be appended to the file
@@ -104,7 +104,7 @@
  specified time interval of a day.
  .INDENT 0.0
  .INDENT 3.5
-@@ -790,7 +790,7 @@ specified time interval of a day.
+@@ -801,7 +801,7 @@ specified time interval of a day.
  [logging]
      kdc = CONSOLE
      kdc = SYSLOG:INFO:DAEMON
@@ -113,7 +113,7 @@
      admin_server = DEVICE=/dev/tty04
      admin_server_rotate = {
          period = 1d
-@@ -816,10 +816,10 @@ For each token type, the following tags may be specified:
+@@ -827,10 +827,10 @@ For each token type, the following tags may be specified:
  This is the server to send the RADIUS request to.  It can be a
  hostname with optional port, an ip address with optional port, or
  a Unix domain socket address.  The default is
@@ -127,7 +127,7 @@
  containing the secret used to encrypt the RADIUS packets.  The
  secret should appear in the first line of the file by itself;
  leading and trailing whitespace on the line will be removed.  If
-@@ -1210,8 +1210,8 @@ Here\(aqs an example of a kdc.conf file:
+@@ -1221,8 +1221,8 @@ Here\(aqs an example of a kdc.conf file:
      }
  
  [logging]
@@ -138,7 +138,7 @@
  
  [dbdefaults]
      ldap_kerberos_container_dn = cn=krbcontainer,dc=mit,dc=edu
-@@ -1236,7 +1236,7 @@ Here\(aqs an example of a kdc.conf file:
+@@ -1247,7 +1247,7 @@ Here\(aqs an example of a kdc.conf file:
  .UNINDENT
  .SH FILES
  .sp
@@ -149,7 +149,7 @@
  krb5.conf(5), krb5kdc(8), kadm5.acl(5)
 --- a/src/man/kprop.man
 +++ b/src/man/kprop.man
-@@ -54,7 +54,7 @@ Specifies the realm of the master server.
+@@ -54,7 +54,7 @@ Specifies the realm of the primary server.
  \fB\-f\fP \fIfile\fP
  Specifies the filename where the dumped principal database file is
  to be found; by default the dumped database file is normally
@@ -160,16 +160,16 @@
  Specifies the port to use to contact the kpropd(8) server
 --- a/src/man/kpropd.man
 +++ b/src/man/kpropd.man
-@@ -108,7 +108,7 @@ default, the master admin server is contacted.
+@@ -109,7 +109,7 @@ default, the primary admin server is contacted.
  .TP
  \fB\-f\fP \fIfile\fP
  Specifies the filename where the dumped principal database file is
 -to be stored; by default the dumped database file is \fB@LOCALSTATEDIR@\fP\fB/krb5kdc\fP\fB/from_master\fP\&.
 +to be stored; by default the dumped database file is \fB@LOCALSTATEDIR@\fP\fB/krb5\fP\fB/from_master\fP\&.
  .TP
- \fB\-p\fP
- Allows the user to specify the pathname to the kdb5_util(8)
-@@ -132,7 +132,7 @@ is only useful in combination with the \fB\-S\fP option.
+ \fB\-F\fP \fIkerberos_db\fP
+ Path to the Kerberos database file, if not the default.
+@@ -134,7 +134,7 @@ is only useful in combination with the \fB\-S\fP option.
  .TP
  \fB\-a\fP \fIacl_file\fP
  Allows the user to specify the path to the kpropd.acl file; by

@@ -15,41 +15,23 @@
 #
 --- a/src/kprop/kpropd.c
 +++ b/src/kprop/kpropd.c
-@@ -645,6 +645,7 @@ do_iprop()
-     kdb_last_t mylast;
-     kdb_fullresync_result_t *full_ret;
-     kadm5_iprop_handle_t handle;
-+   char **kiprop_srv_names;
- 
-     if (debug)
-         fprintf(stderr, _("Incremental propagation enabled\n"));
-@@ -654,8 +655,8 @@ do_iprop()
+@@ -654,6 +654,7 @@ do_iprop()
+     if (pollin == 0)
          pollin = 10;
  
-     if (master_svc_princstr == NULL) {
--        retval = kadm5_get_kiprop_host_srv_name(kpropd_context, realm,
--                                                &master_svc_princstr);
-+        retval = kadm5_get_kiprop_host_srv_names(kpropd_context, realm,
-+						 &kiprop_srv_names);
-         if (retval) {
-             com_err(progname, retval,
-                     _("%s: unable to get kiprop host based "
-@@ -663,6 +664,15 @@ do_iprop()
-                     progname, realm);
-             return retval;
-         }
-+        master_svc_princstr = strdup(kiprop_srv_names[0]);
-+	free_srv_names(kiprop_srv_names);
-+	if (master_svc_princstr == NULL) {
-+            com_err(progname, retval,
-+                    _("%s: unable to allocate memory for kiprop host based "
-+                      "service name for realm %s\n"),
-+                    progname, def_realm);
-+            return ENOMEM;
-+	}
++
+     retval = kadm5_get_kiprop_host_srv_name(kpropd_context, realm,
+                                             &primary_svc_princstr);
+     if (retval) {
+@@ -663,6 +664,8 @@ do_iprop()
+         goto done;
      }
  
++
++
      retval = sn2princ_realm(kpropd_context, NULL, KIPROP_SVC_NAME, realm,
+                             &iprop_svc_principal);
+     if (retval) {
 --- a/src/lib/kadm5/clnt/client_init.c
 +++ b/src/lib/kadm5/clnt/client_init.c
 @@ -299,7 +299,7 @@ _kadm5_initialize_rpcsec_gss_handle(kadm5_server_handle_t handle,
@@ -89,7 +71,7 @@
  		if (gssstat != GSS_S_COMPLETE) {
  			code = KADM5_GSS_ERROR;
  			goto error;
-@@ -509,7 +507,7 @@ cleanup:
+@@ -541,7 +539,7 @@ free_handle(kadm5_server_handle_t handle)
  
  static kadm5_ret_t
  init_any(krb5_context context, char *client_name, enum init_type init_type,
@@ -98,17 +80,17 @@
           kadm5_config_params *params_in, krb5_ui_4 struct_version,
           krb5_ui_4 api_version, char **db_args, void **server_handle)
  {
-@@ -526,7 +524,7 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+@@ -556,8 +554,6 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
      kadm5_config_params params_local;
  
-     int code = 0;
+     krb5_error_code code;
 -    char svcname[BUFSIZ];
-+    generic_ret *r;
+-    generic_ret r = { 0, 0 };
  
      initialize_ovk_error_table();
      initialize_ovku_error_table();
-@@ -594,15 +592,19 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
-         goto error;
+@@ -619,15 +615,19 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+         client->type = KRB5_NT_SRV_HST;
  
      /* NULL svcname means use host-based. */
 -    if (svcname_in == NULL) {
@@ -121,20 +103,20 @@
 +	code = kadm5_get_adm_host_srv_names(context, handle->params.realm,
 +	    &kadmin_srv_names);
          if (code)
-             goto error;
--    } else {
--        strncpy(svcname, svcname_in, sizeof(svcname));
--        svcname[sizeof(svcname)-1] = '\0';
++            goto error;
 +	svcname = strdup(kadmin_srv_names[0]);
 +	free_srv_names(kadmin_srv_names);
 +	if (svcname == NULL) {
 +	    code = ENOMEM;
-+            goto error;
+             goto cleanup;
+-    } else {
+-        strncpy(svcname, svcname_in, sizeof(svcname));
+-        svcname[sizeof(svcname)-1] = '\0';
 +	}
      }
  
      /* Get credentials. */
-@@ -658,13 +660,51 @@ cleanup:
+@@ -658,13 +658,51 @@ cleanup:
  static kadm5_ret_t
  get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
                 enum init_type init_type, char *pass, krb5_ccache ccache_in,
@@ -187,10 +169,11 @@
      /*
       * Acquire a service ticket for svcname@realm for client, using password
       * pass (which could be NULL), and create a ccache to store them in.  If
-@@ -700,7 +740,7 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
+@@ -700,8 +738,7 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
      }
      handle->lhandle->cache_name = handle->cache_name;
  
+-    svcname = (svcname != NULL) ? svcname : KADM5_ADMIN_SERVICE;
 -    code = gic_iter(handle, init_type, ccache, client, pass, svcname, realm,
 +    code = gic_iter(handle, init_type, ccache, client, pass, svcbuf, realm,
                      server_out);
@@ -216,16 +199,121 @@
  krb5_error_code
  krb5_get_as_key_password(krb5_context context,
                           krb5_principal client,
-@@ -135,7 +146,7 @@ krb5_init_creds_set_password(krb5_context context,
+@@ -133,6 +144,113 @@ krb5_init_creds_set_password(krb5_context context,
+     return 0;
+ }
  
- /* Return the password expiry time indicated by enc_part2.  Set *is_last_req
-  * if the information came from a last_req value. */
--static void
++/* Return the password expiry time indicated by enc_part2.  Set *is_last_req
++ * if the information came from a last_req value. */
 +void
- get_expiry_times(krb5_enc_kdc_rep_part *enc_part2, krb5_timestamp *pw_exp,
-                  krb5_timestamp *acct_exp, krb5_boolean *is_last_req)
- {
-@@ -287,6 +298,35 @@ krb5_get_init_creds_password(krb5_context context,
++get_expiry_times(krb5_enc_kdc_rep_part *enc_part2, krb5_timestamp *pw_exp,
++                 krb5_timestamp *acct_exp, krb5_boolean *is_last_req)
++{
++    krb5_last_req_entry **last_req;
++    krb5_int32 lr_type;
++
++    *pw_exp = 0;
++    *acct_exp = 0;
++    *is_last_req = FALSE;
++
++    /* Look for last-req entries for password or account expiration. */
++    if (enc_part2->last_req) {
++        for (last_req = enc_part2->last_req; *last_req; last_req++) {
++            lr_type = (*last_req)->lr_type;
++            if (lr_type == KRB5_LRQ_ALL_PW_EXPTIME ||
++                lr_type == KRB5_LRQ_ONE_PW_EXPTIME) {
++                *is_last_req = TRUE;
++                *pw_exp = (*last_req)->value;
++            } else if (lr_type == KRB5_LRQ_ALL_ACCT_EXPTIME ||
++                       lr_type == KRB5_LRQ_ONE_ACCT_EXPTIME) {
++                *is_last_req = TRUE;
++                *acct_exp = (*last_req)->value;
++            }
++        }
++    }
++
++    /* If we didn't find any, use the ambiguous key_exp field. */
++    if (*is_last_req == FALSE)
++        *pw_exp = enc_part2->key_exp;
++}
++
++/*
++ * Send an appropriate warning prompter if as_reply indicates that the password
++ * is going to expire soon.  If an expire callback was provided, use that
++ * instead.
++ */
++static void
++warn_pw_expiry(krb5_context context, krb5_get_init_creds_opt *options,
++               krb5_prompter_fct prompter, void *data,
++               const char *in_tkt_service, krb5_kdc_rep *as_reply)
++{
++    krb5_error_code ret;
++    krb5_expire_callback_func expire_cb;
++    void *expire_data;
++    krb5_timestamp pw_exp, acct_exp, now;
++    krb5_boolean is_last_req;
++    krb5_deltat delta;
++    char ts[256], banner[1024];
++
++    get_expiry_times(as_reply->enc_part2, &pw_exp, &acct_exp, &is_last_req);
++
++    k5_gic_opt_get_expire_cb(options, &expire_cb, &expire_data);
++    if (expire_cb != NULL) {
++        /* Invoke the expire callback and don't send prompter warnings. */
++        (*expire_cb)(context, expire_data, pw_exp, acct_exp, is_last_req);
++        return;
++    }
++
++    /* Don't warn if no password expiry value was sent. */
++    if (pw_exp == 0)
++        return;
++
++    /* Don't warn if the password is being changed. */
++    if (in_tkt_service && strcmp(in_tkt_service, "kadmin/changepw") == 0)
++        return;
++
++    /*
++     * If the expiry time came from a last_req field, assume the KDC wants us
++     * to warn.  Otherwise, warn only if the expiry time is less than a week
++     * from now.
++     */
++    ret = krb5_timeofday(context, &now);
++    if (ret != 0)
++        return;
++    if (!is_last_req &&
++        (ts_after(now, pw_exp) || ts_delta(pw_exp, now) > 7 * 24 * 60 * 60))
++        return;
++
++    if (!prompter)
++        return;
++
++    ret = krb5_timestamp_to_string(pw_exp, ts, sizeof(ts));
++    if (ret != 0)
++        return;
++
++    delta = ts_delta(pw_exp, now);
++    if (delta < 3600) {
++        snprintf(banner, sizeof(banner),
++                 _("Warning: Your password will expire in less than one hour "
++                   "on %s"), ts);
++    } else if (delta < 86400*2) {
++        snprintf(banner, sizeof(banner),
++                 _("Warning: Your password will expire in %d hour%s on %s"),
++                 delta / 3600, delta < 7200 ? "" : "s", ts);
++    } else {
++        snprintf(banner, sizeof(banner),
++                 _("Warning: Your password will expire in %d days on %s"),
++                 delta / 86400, ts);
++    }
++
++    /* PROMPTER_INVOCATION */
++    (*prompter)(context, data, 0, banner, 0, 0);
++}
++
+ /*
+  * Create a temporary options structure for getting a kadmin/changepw ticket,
+  * based on the appplication-specified options.  Propagate all application
+@@ -180,6 +298,35 @@ krb5_get_init_creds_password(krb5_context context,
                               krb5_deltat start_time,
                               const char *in_tkt_service,
                               krb5_get_init_creds_opt *options)
@@ -260,8 +348,16 @@
 +			     krb5_kdc_rep **ptr_as_reply)
  {
      krb5_error_code ret;
-     int use_master;
-@@ -504,8 +544,12 @@ cleanup:
+     int use_primary;
+@@ -388,13 +535,20 @@ krb5_get_init_creds_password(krb5_context context,
+         goto cleanup;
+ 
+ cleanup:
++    if (ret == 0)
++        warn_pw_expiry(context, options, prompter, data, in_tkt_service,
++                       as_reply);
+     free(chpw_opts);
+     zapfree(gakpw.storage.data, gakpw.storage.length);
      memset(pw0array, 0, sizeof(pw0array));
      memset(pw1array, 0, sizeof(pw1array));
      krb5_free_cred_contents(context, &chpw_creds);

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -31,8 +31,8 @@ COMPONENT_NAME=		Kerberos
 # Encoding rule for MINOR: MIT KerberosV5 x.y[.z] => MINOR $MAJOR.y
 # Encoding rule for MICRO: MIT KerberosV5 x.y[.z] => MICRO $MINOR[.z]
 COMPONENT_MAJOR=	1
-COMPONENT_MINOR=	$(COMPONENT_MAJOR).18
-COMPONENT_MICRO=	$(COMPONENT_MINOR).4
+COMPONENT_MINOR=	$(COMPONENT_MAJOR).20
+COMPONENT_MICRO=	$(COMPONENT_MINOR)
 COMPONENT_ANITYA_ID=	13287
 
 COMPONENT_VERSION=		$(COMPONENT_MICRO)
@@ -41,13 +41,13 @@ IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0
 COMPONENT_PROJECT_URL=	http://web.mit.edu/kerberos/
 COMPONENT_SRC=		krb5-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:66085e2f594751e77e82e0dbf7bbc344320fb48a9df2a633cfdd8f7d6da99fc8
+	sha256:7e022bdd3c851830173f9faaa006a230a0e0fdad4c953e85bff4bf0da036e12f
 COMPONENT_ARCHIVE_URL=	\
 	$(COMPONENT_PROJECT_URL)dist/krb5/$(COMPONENT_MINOR)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/kerberos
 
-COMPONENT_BAID=	106568
+COMPONENT_BAID=	123984
 
 # The unit tests are not python 3 friendly.
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -99,11 +99,10 @@ CONFIGURE_OPTIONS += --localstatedir=/var
 CONFIGURE_OPTIONS.32 += --libexecdir=$(USRLIBDIR)
 CONFIGURE_OPTIONS.64 += --libexecdir=$(USRLIBDIR)/$(MACH64)
 CONFIGURE_OPTIONS += --includedir=$(USRINCDIR)/kerberosv5
-CONFIGURE_OPTIONS += --with-tls-impl=openssl
+CONFIGURE_OPTIONS.32 += --with-tls-impl=openssl3
+CONFIGURE_OPTIONS.64 += --with-tls-impl=openssl3.64
 CONFIGURE_OPTIONS += --with-crypto-impl=ucrypto
 CONFIGURE_OPTIONS += --with-ldap
-CONFIGURE_OPTIONS += --with-prng-alg=os
-CONFIGURE_OPTIONS += --with-tcl=$(USRDIR)
 CONFIGURE_OPTIONS += --without-system-verto
 CONFIGURE_OPTIONS += --enable-pkinit
 # Documented as with-audit-plugin, but it's really enable-audit-plugin
@@ -219,9 +218,8 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION= \
 	$(CP) $(BUILD_DIR)/$(MACH64)/lib/libkadm5clnt.so.1 \
 		$(PROTO_DIR)$(USRLIBDIR)/$(MACH64);
 
-REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/libedit
-REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += network/dns/bind
 REQUIRED_PACKAGES += service/network/ldap/openldap
 REQUIRED_PACKAGES += service/security/kerberos-5

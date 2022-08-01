@@ -56,16 +56,16 @@
  struct k5_data
  {
      krb5_context ctx;
-@@ -675,6 +704,8 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
-     krb5_boolean pwprompt = FALSE;
-     krb5_address **addresses = NULL;
+@@ -652,6 +681,8 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
+     krb5_principal cprinc;
+     krb5_ccache mcc = NULL;
      int i;
 +    krb5_timestamp now, krb5_kdb_expiration;
 +    krb5_deltat lifetime = 0, rlife = 0, krb5_max_duration = 0;
  
      memset(&my_creds, 0, sizeof(my_creds));
  
-@@ -682,9 +713,79 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
+@@ -659,9 +690,79 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
      if (ret)
          goto cleanup;
  

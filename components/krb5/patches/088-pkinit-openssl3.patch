@@ -1,0 +1,62 @@
+# Patch updates our own Solaris specific changed delivered
+# by 033-pkinit-pin.patch, so it builds and links with OpenSSL-3.
+# I've decided to keep OpenSSL-3 change in seperate patch for now
+# just in case we will have to ship new kerberos with default SSL.
+# Once things around SSL conversion will settle down this
+# patch here should be folded to 033-pkinit-pin.patch.
+#
+# This patch is specific to Solaris.
+#
+--- a/src/plugins/preauth/pkinit/pkinit_crypto_openssl.c
++++ b/src/plugins/preauth/pkinit/pkinit_crypto_openssl.c
+@@ -3865,6 +3865,7 @@ pkinit_find_private_key(pkinit_identity_crypto_context id_cryptoctx,
+ 
+ 	EVP_PKEY *priv;
+ 	X509 *cert;
++	BIGNUM *modulus = NULL;
+ 	unsigned int n_len;
+ 	unsigned char *n_bytes;
+ 
+@@ -3896,17 +3897,26 @@ pkinit_find_private_key(pkinit_identity_crypto_context id_cryptoctx,
+ 	attrs[nattrs].ulValueLen = sizeof keytype;
+ 	nattrs++;
+ 
+-	n_len = BN_num_bytes(priv->pkey.rsa->n);
+-	n_bytes = (unsigned char *) malloc((size_t) n_len);
++	if (!EVP_PKEY_get_bn_param(priv, OSSL_PKEY_PARAM_RSA_N, &modulus)) {
++		pkiDebug(
++		    "EVP_PKEY_get_bn_param(OSSL_PKEY_PARAM_RSA_N) failed ");
++		return KRB5KDC_ERR_PREAUTH_FAILED;
++	}
++	n_len = BN_num_bytes(modulus);
++	n_bytes = (unsigned char *) malloc((size_t)n_len);
+ 	if (n_bytes == NULL) {
+-		return (ENOMEM);
++		BN_clear_free(modulus);
++		pkiDebug("%s n_bytes = malloc() failed\n", __func__);
++		return ENOMEM;
+ 	}
+-
+-	if (BN_bn2bin(priv->pkey.rsa->n, n_bytes) == 0) {
+-		free (n_bytes);
+-    		pkiDebug("zero-byte key modulus\n");
++	if (BN_bn2bin(modulus, n_bytes) == 0) {
++		free(n_bytes);
++		BN_clear_free(modulus);
++		pkiDebug("%s zero-byte key modulus\n", __func__);
+ 		return KRB5KDC_ERR_PREAUTH_FAILED;
+ 	}
++	BN_clear_free(modulus);
++	modulus = NULL;
+ 
+ 	attrs[nattrs].type = CKA_MODULUS;
+ 	attrs[nattrs].ulValueLen = n_len;
+@@ -3915,7 +3925,7 @@ pkinit_find_private_key(pkinit_identity_crypto_context id_cryptoctx,
+ 	nattrs++;
+ 
+ 	r = id_cryptoctx->p11->C_FindObjectsInit(id_cryptoctx->session, attrs, nattrs);
+-	free (n_bytes);
++	free(n_bytes);
+ 	if (r != CKR_OK) {
+ 		pkiDebug("krb5_pkinit_sign_data: C_FindObjectsInit: %s\n",
+ 			pkcs11err(r));

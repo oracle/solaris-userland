@@ -141,7 +141,7 @@
  
  extern gss_name_t                       gss_changepw_name;
  extern gss_name_t                       gss_oldchangepw_name;
-@@ -517,6 +518,80 @@ log_done(
+@@ -519,6 +520,80 @@ log_done(
                              client_addr(rqstp->rq_xprt));
  }
  
@@ -222,7 +222,7 @@
  bool_t
  create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
                         struct svc_req *rqstp)
-@@ -527,6 +602,8 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
+@@ -529,6 +604,8 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
      kadm5_server_handle_t       handle;
      const char                  *errmsg = NULL;
      gss_name_t                  name = NULL;
@@ -231,7 +231,7 @@
  
      ret->code = stub_setup(arg->api_version, rqstp, arg->rec.principal,
                             &handle, &ret->api_version, &client_name,
-@@ -534,8 +611,14 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
+@@ -536,8 +613,14 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
      if (ret->code)
          goto exit_func;
  
@@ -247,7 +247,7 @@
          ret->code = KADM5_AUTH_ADD;
          log_unauth("kadm5_create_principal", prime_arg,
                     &client_name, &service_name, rqstp);
-@@ -551,6 +634,25 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
+@@ -553,6 +636,25 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
  
          if (errmsg != NULL)
              krb5_free_error_message(handle->context, errmsg);
@@ -273,7 +273,7 @@
      }
  
  exit_func:
-@@ -568,6 +670,8 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
+@@ -570,6 +672,8 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
      kadm5_server_handle_t       handle;
      const char                  *errmsg = NULL;
      gss_name_t                  name = NULL;
@@ -282,7 +282,7 @@
  
      ret->code = stub_setup(arg->api_version, rqstp, arg->rec.principal,
                             &handle, &ret->api_version, &client_name,
-@@ -575,8 +679,13 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
+@@ -577,8 +681,13 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
      if (ret->code)
          goto exit_func;
  
@@ -297,7 +297,7 @@
          ret->code = KADM5_AUTH_ADD;
          log_unauth("kadm5_create_principal", prime_arg,
                     &client_name, &service_name, rqstp);
-@@ -592,6 +701,24 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
+@@ -594,6 +703,24 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
  
          if (errmsg != NULL)
              krb5_free_error_message(handle->context, errmsg);
