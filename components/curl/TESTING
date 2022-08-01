@@ -18,20 +18,18 @@ machines are needed:
 Here are the steps to setup:
 
 ### distro build box ###
-vm install --memory=8G <your_workspace>/components/curl/ aitst
-# if also other related library like i.e. library/nghttp2 has been changed in this build
-# then build it also in place and install it also on the aitst machine
-vm install <your_workspace>/components/nghttp2/ aitst
-# if you want to be hyper-perfect you can start testing by building ON part first then
-# create machine from onu archives
-vm install --memory=8G <on ws>
-# then (vm) install the userland part(s)
+vm 123root --memory=8G ST130 aitst
+
+Now you should modify files
+x86:
+ boot_archive_contents_x86.xml dc_ai_x86.xml
+sparc:
+ boot_archive_contents_sparc.xml dc_ai_sparc.xml
+in /usr/share/distro_const/
 
 #-------------------------------------------------------------------------------
-Example of change of miniroot contents in:
-  /usr/share/distro_const/boot_archive_contents_x86.xml
-        (boot_archive_contents_sparc.xml for sparc)
-if both libcurl and libnghttpd have been changed in the same build:
+Example of change of miniroot contents:
+vi /usr/share/distro_const/boot_archive_contents_x86.xml
 
 @@ -233,8 +233,8 @@
    <name>usr/lib/fm/libfmd_agent.so.1</name>
@@ -53,29 +51,24 @@ if both libcurl and libnghttpd have been changed in the same build:
    <name>usr/lib/64/libgss.so.1</name>
    <name>usr/lib/64/libgssapi_krb5.so</name>
    <name>usr/lib/64/libgssapi_krb5.so.2</name>
-@@ -303,12 +303,12 @@
-   <name>usr/lib/64/libidn2.so.0.3.3</name>
-   <name>usr/lib/libnghttp2.so</name>
-   <name>usr/lib/libnghttp2.so.14</name>
--  <name>usr/lib/libnghttp2.so.14.17.1</name>
-   <name>usr/lib/libnghttp2.so.14.18.0</name>
-+  <name>usr/lib/libnghttp2.so.14.20.0</name>
-   <name>usr/lib/64/libnghttp2.so</name>
-   <name>usr/lib/64/libnghttp2.so.14</name>
--  <name>usr/lib/64/libnghttp2.so.14.17.1</name>
-   <name>usr/lib/64/libnghttp2.so.14.18.0</name>
-+  <name>usr/lib/64/libnghttp2.so.14.20.0</name>
-   <!-- liblofi library needed by lofiadm(8) -->
-   <name>usr/lib/64/liblofi.so.1</name>
-   <name>usr/lib/libpkcs11.so.1</name>
 
+When fixes are tested on distro_const server then the changes should be committed
+in related ON files:
+./usr/src/cmd/distro_const/manifest/boot_archive_contents_sparc.xml
+./usr/src/cmd/distro_const/manifest/boot_archive_contents_x86.xml
 #-------------------------------------------------------------------------------
-We will also need changes in distro_const(8) manifest located in:
- /usr/share/distro_const/dc_ai_x86.xml (dc_ai_sparc.xml for sparc)
-where we need to change version-lock facet for web/curl (eventually for library/nghttp2)
-and also pkg-repo if we are testing trunk.
+
+Changes in distro_const(8) manifest needs:
+
+* unlock facets for modified packages in <image> section
+* add IPS publisher containing modified packages to <source> section
+* explicitly list modified packages including publisher name
+  in <software_data> section 
+
 Patch for direct application is at the end of this file so it can be used by:
   (cd /usr/share/distro_const/ ; gpatch -p0 ) < TESTING.txt
+then set appropriate values for nightly publisher:
+ file:///net/<buildhost>/builds/<yourdir>/<ws>/i386/repo/publisher/nightly/
 
 #-------------------------------------------------------------------------------
 #please note: distro_const doesn't work with python 3.9 so if:
@@ -91,12 +84,6 @@ Patch for direct application is at the end of this file so it can be used by:
   ls /rpool/dc/ai/media/
 #Oracle_Solaris_AI_{platform}.iso has been built. Then we can stop machine to set netw.
   poweroff
-
-When fixes are tested on distro_const server then the changes should be placed
-into related ON files:
-./usr/src/cmd/distro_const/manifest/boot_archive_contents_sparc.xml
-./usr/src/cmd/distro_const/manifest/boot_archive_contents_x86.xml
-and committed/pushed.
 
 #-- Setup networking -----------------------------------------------------------
   vm net aitst 1 vxlan ailan
@@ -205,23 +192,34 @@ Note: also the nghttp2 package can be updated but not soaked to distribution. Al
 this (updated) pkg should be installed on distro build box then .xml-manifests
 should reflects both changes.
 
---- dc_ai_x86.xml	2020-07-02 18:02:32.674719722 +0000
-+++ dc_ai_x86.xml	2020-07-02 19:05:49.477679578 +0000
-@@ -107,6 +107,8 @@
+--- dc_ai_x86.xml	2022-10-01 19:26:29.798854282 +0000
++++ dc_ai_x86.xml	2022-10-01 19:47:01.512373505 +0000
+@@ -107,6 +107,7 @@
             Exclude documentation, man pages, header files and lint libraries
             for AI image
             -->
 +           <facet set="false">facet.version-lock.web/curl</facet>
-+           <facet set="false">facet.version-lock.library/nghttp2</facet>
             <facet set="false">facet.devel</facet>
             <facet set="false">facet.doc</facet>
             <facet set="false">facet.doc.*</facet>
-@@ -137,7 +139,7 @@
+@@ -136,8 +137,11 @@
+          </image>
        </destination>
        <source>
++        <publisher name="nightly">
++          <origin name="file:///net/<buildhost>/builds/<yourdir>/<ws>/i386/repo/"/>
++        </publisher>
          <publisher name="solaris">
 -          <origin name="http://pkg.oracle.com/solaris/release"/>
 +          <origin name="http://ipkg.cz.oracle.com/solaris11/trunk/"/>
            <!--
              If mirrors for this publisher need to be set, specify them here.
            -->
+@@ -166,6 +170,7 @@
+         <name>pkg:/entire@11.update-11.update.sru.order.platform.build.rev</name>
+       -->
+       <software_data action="install">
++        <name>pkg://nightly/web/curl@latest</name>
+         <name>pkg:/entire@latest</name>
+         <name>pkg:/system/install/media/internal</name>
+         <name>pkg:/system/install/text-install</name>
