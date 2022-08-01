@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -32,57 +32,57 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		colord
-COMPONENT_VERSION=	1.3.5
+COMPONENT_VERSION=	1.4.6
 COMPONENT_PROJECT_URL=	https://www.freedesktop.org/software/colord/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH= sha256:2daa8ffd2a532d7094927cd1a4af595b8310cea66f7707edcf6ab743460feed2
+COMPONENT_ARCHIVE_HASH= \
+	sha256:7407631a27bfe5d1b672e7ae42777001c105d860b7b7392283c8c6300de88e6f
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	10190
 
-COMPONENT_BAID=		38827
+COMPONENT_BAID=		126471
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Requires fpclassify (c99).
-CFLAGS += -std=gnu99
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv; intltoolize --force);
+# Requires fpclassify (c99).
+CFLAGS += -std=gnu99 -D__EXTENSIONS__
+CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all
+LD_OPTIONS += -z gnu-version-script-compat
+
+CONFIGURE_OPTIONS.64 += --libexecdir=$(USRLIBDIR64)
 
 # Requires external package (https://bash-completion.alioth.debian.org) that we
 # don't currently have in Solaris.
-CONFIGURE_OPTIONS += --disable-bash-completion
-# gusb appears to be an abandoned project.
-CONFIGURE_OPTIONS += --disable-gusb
-CONFIGURE_OPTIONS.32 += --disable-polkit
-CONFIGURE_OPTIONS.64 += --enable-polkit
-CONFIGURE_OPTIONS += --disable-static
+CONFIGURE_OPTIONS += -Dbash_completion=false
+CONFIGURE_OPTIONS += -Dpnp_ids="/usr/share/hwdata/pci.ids"
+CONFIGURE_OPTIONS += -Dsystemd=false
 # Linux-specific.
-CONFIGURE_OPTIONS += --disable-systemd-login
-# Linux-specific.
-CONFIGURE_OPTIONS += --disable-udev
-CONFIGURE_OPTIONS += --enable-gtk-doc
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS += --enable-shared
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-vala
+CONFIGURE_OPTIONS += -Dudev_rules=false
 # may need tweaking to give colord user sufficient rights
-CONFIGURE_OPTIONS += --with-daemon-user=daemon
-CONFIGURE_OPTIONS += --with-pic
-# Mostly a placebo value; udev support is disabled above, but it still delivers
-# 'rule' files for udev (omitted from package manifest).
-CONFIGURE_OPTIONS += --with-udevrulesdir=/etc/udev/rules.d
+CONFIGURE_OPTIONS.32 += -Ddaemon=false
+CONFIGURE_OPTIONS.64 += -Ddaemon_user=daemon
 # Requires spotread 
-CONFIGURE_OPTIONS += --disable-argyllcms-sensor
+CONFIGURE_OPTIONS += -Dargyllcms_sensor=false
+CONFIGURE_OPTIONS += -Dlibcolordcompat=false
+CONFIGURE_OPTIONS.32 += -Dintrospection=false
+CONFIGURE_OPTIONS.64 += -Dintrospection=true
+# Cannot build man pages without docbook-xsl-ns
+CONFIGURE_OPTIONS += -Dman=false
+# Build vala bindings
+CONFIGURE_OPTIONS.64 += -Dvapi=true
 
 # Assumes GNU xgettext and tail in PATH
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
@@ -90,14 +90,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 	$(PROTO_DIR)/lib/svc/manifest/system/colord.xml; \
     $(INSTALL) -D -m 0555 $(COMPONENT_DIR)/files/svc-colord \
 	$(PROTO_DIR)/lib/svc/method/svc-colord; \
-    $(INSTALL) -D -m 0444 $(COMPONENT_SRC)/man/cd-create-profile.1 \
-	$(PROTO_DIR)/usr/share/man/man1/cd-create-profile.1; \
-    $(INSTALL) -D -m 0444 $(COMPONENT_SRC)/man/colormgr.1 \
-	$(PROTO_DIR)/usr/share/man/man1/colormgr.1; \
-    $(INSTALL) -D -m 0444 $(COMPONENT_SRC)/man/cd-it8.1 \
-	$(PROTO_DIR)/usr/share/man/man1/cd-it8.1; \
-    $(INSTALL) -D -m 0444 $(COMPONENT_SRC)/man/cd-fix-profile.1 \
-	$(PROTO_DIR)/usr/share/man/man1/cd-fix-profile.1;
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc

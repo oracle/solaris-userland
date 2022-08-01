@@ -1,0 +1,12 @@
+Fix undefined symbols __stack_chk_fail and __stack_chk_fail.
+
+--- colord-1.4.6/lib/colord/meson.build.orig	2022-04-25 09:39:19.002230018 -0700
++++ colord-1.4.6/lib/colord/meson.build	2022-04-25 09:39:53.621980470 -0700
+@@ -184,6 +184,7 @@
+   extra_args : [
+     '--c-include=colord.h',
+     '-DCD_COMPILATION',
++    '-lssp',
+     ],
+   link_with : colordprivate,
+   dependencies : [

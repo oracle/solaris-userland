@@ -38,7 +38,6 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/378
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=etc/dbus-1/system.d/org.freedesktop.ColorManager.conf
 file path=lib/svc/manifest/system/colord.xml
 file path=lib/svc/method/svc-colord
 file path=usr/bin/cd-create-profile
@@ -85,18 +84,18 @@ file path=usr/lib/$(MACH64)/colord-sensors/libcolord_sensor_dummy.so mode=0555 \
 file path=usr/lib/$(MACH64)/colord-session mode=0555 \
     restart_fmri=svc:/system/colord:default
 file path=usr/lib/$(MACH64)/girepository-1.0/Colord-1.0.typelib
-link path=usr/lib/$(MACH64)/libcolord.so target=libcolord.so.2.0.5
+link path=usr/lib/$(MACH64)/libcolord.so target=libcolord.so.2
 link path=usr/lib/$(MACH64)/libcolord.so.2 target=libcolord.so.2.0.5
 file path=usr/lib/$(MACH64)/libcolord.so.2.0.5
-link path=usr/lib/$(MACH64)/libcolordprivate.so target=libcolordprivate.so.2.0.5
+link path=usr/lib/$(MACH64)/libcolordprivate.so target=libcolordprivate.so.2
 link path=usr/lib/$(MACH64)/libcolordprivate.so.2 \
     target=libcolordprivate.so.2.0.5
 file path=usr/lib/$(MACH64)/libcolordprivate.so.2.0.5
 file path=usr/lib/$(MACH64)/pkgconfig/colord.pc
-link path=usr/lib/libcolord.so target=libcolord.so.2.0.5
+link path=usr/lib/libcolord.so target=libcolord.so.2
 link path=usr/lib/libcolord.so.2 target=libcolord.so.2.0.5
 file path=usr/lib/libcolord.so.2.0.5
-link path=usr/lib/libcolordprivate.so target=libcolordprivate.so.2.0.5
+link path=usr/lib/libcolordprivate.so target=libcolordprivate.so.2
 link path=usr/lib/libcolordprivate.so.2 target=libcolordprivate.so.2.0.5
 file path=usr/lib/libcolordprivate.so.2.0.5
 file path=usr/lib/pkgconfig/colord.pc
@@ -119,6 +118,7 @@ file path=usr/share/color/icc/colord/Gamma6500K.icc
 file path=usr/share/color/icc/colord/NTSC-RGB.icc
 file path=usr/share/color/icc/colord/PAL-RGB.icc
 file path=usr/share/color/icc/colord/ProPhotoRGB.icc
+file path=usr/share/color/icc/colord/Rec709.icc
 file path=usr/share/color/icc/colord/SMPTE-C-RGB.icc
 file path=usr/share/color/icc/colord/SwappedRedAndGreen.icc
 file path=usr/share/color/icc/colord/WideGamutRGB.icc
@@ -179,25 +179,22 @@ file path=usr/share/dbus-1/interfaces/org.freedesktop.ColorManager.Sensor.xml
 file path=usr/share/dbus-1/interfaces/org.freedesktop.ColorManager.xml
 file path=usr/share/dbus-1/services/org.freedesktop.ColorHelper.service
 file path=usr/share/dbus-1/system-services/org.freedesktop.ColorManager.service
+file path=usr/share/dbus-1/system.d/org.freedesktop.ColorManager.conf
 file path=usr/share/gir-1.0/Colord-1.0.gir
 file path=usr/share/glib-2.0/schemas/org.freedesktop.ColorHelper.gschema.xml
-file path=usr/share/gtk-doc/html/colord/CdClient.html
-file path=usr/share/gtk-doc/html/colord/CdDevice.html
-file path=usr/share/gtk-doc/html/colord/CdDom.html
-file path=usr/share/gtk-doc/html/colord/CdEdid.html
-file path=usr/share/gtk-doc/html/colord/CdIcc.html
-file path=usr/share/gtk-doc/html/colord/CdIccStore.html
-file path=usr/share/gtk-doc/html/colord/CdInterp.html
-file path=usr/share/gtk-doc/html/colord/CdInterpAkima.html
-file path=usr/share/gtk-doc/html/colord/CdInterpLinear.html
-file path=usr/share/gtk-doc/html/colord/CdIt8.html
-file path=usr/share/gtk-doc/html/colord/CdProfile.html
-file path=usr/share/gtk-doc/html/colord/CdSensor.html
-file path=usr/share/gtk-doc/html/colord/CdTransform.html
-file path=usr/share/gtk-doc/html/colord/ColorManager.html
-file path=usr/share/gtk-doc/html/colord/Device.html
-file path=usr/share/gtk-doc/html/colord/Profile.html
-file path=usr/share/gtk-doc/html/colord/Sensor.html
+file path=usr/share/gtk-doc/html/colord/colord-CdClient.html
+file path=usr/share/gtk-doc/html/colord/colord-CdDevice.html
+file path=usr/share/gtk-doc/html/colord/colord-CdDom.html
+file path=usr/share/gtk-doc/html/colord/colord-CdEdid.html
+file path=usr/share/gtk-doc/html/colord/colord-CdIcc.html
+file path=usr/share/gtk-doc/html/colord/colord-CdIccStore.html
+file path=usr/share/gtk-doc/html/colord/colord-CdInterp.html
+file path=usr/share/gtk-doc/html/colord/colord-CdInterpAkima.html
+file path=usr/share/gtk-doc/html/colord/colord-CdInterpLinear.html
+file path=usr/share/gtk-doc/html/colord/colord-CdIt8.html
+file path=usr/share/gtk-doc/html/colord/colord-CdProfile.html
+file path=usr/share/gtk-doc/html/colord/colord-CdSensor.html
+file path=usr/share/gtk-doc/html/colord/colord-CdTransform.html
 file path=usr/share/gtk-doc/html/colord/colord-cd-client-sync.html
 file path=usr/share/gtk-doc/html/colord/colord-cd-color.html
 file path=usr/share/gtk-doc/html/colord/colord-cd-device-sync.html
@@ -217,7 +214,6 @@ file path=usr/share/gtk-doc/html/colord/left.png
 file path=usr/share/gtk-doc/html/colord/libcolord.html
 file path=usr/share/gtk-doc/html/colord/libcolordprivate.html
 file path=usr/share/gtk-doc/html/colord/license.html
-file path=usr/share/gtk-doc/html/colord/ref-dbus.html
 file path=usr/share/gtk-doc/html/colord/right-insensitive.png
 file path=usr/share/gtk-doc/html/colord/right.png
 file path=usr/share/gtk-doc/html/colord/style.css
@@ -236,10 +232,12 @@ file path=usr/share/locale/es/LC_MESSAGES/colord.mo
 file path=usr/share/locale/eu/LC_MESSAGES/colord.mo
 file path=usr/share/locale/fi/LC_MESSAGES/colord.mo
 file path=usr/share/locale/fr/LC_MESSAGES/colord.mo
+file path=usr/share/locale/fur/LC_MESSAGES/colord.mo
 file path=usr/share/locale/gl/LC_MESSAGES/colord.mo
 file path=usr/share/locale/gu/LC_MESSAGES/colord.mo
 file path=usr/share/locale/he/LC_MESSAGES/colord.mo
 file path=usr/share/locale/hi/LC_MESSAGES/colord.mo
+file path=usr/share/locale/hr/LC_MESSAGES/colord.mo
 file path=usr/share/locale/hu/LC_MESSAGES/colord.mo
 file path=usr/share/locale/id/LC_MESSAGES/colord.mo
 file path=usr/share/locale/is/LC_MESSAGES/colord.mo
@@ -273,11 +271,8 @@ file path=usr/share/locale/tr/LC_MESSAGES/colord.mo
 file path=usr/share/locale/uk/LC_MESSAGES/colord.mo
 file path=usr/share/locale/zh_CN/LC_MESSAGES/colord.mo
 file path=usr/share/locale/zh_TW/LC_MESSAGES/colord.mo
-file path=usr/share/man/man1/cd-create-profile.1
-file path=usr/share/man/man1/cd-fix-profile.1
-file path=usr/share/man/man1/cd-it8.1
-file path=usr/share/man/man1/colormgr.1
 file path=usr/share/polkit-1/actions/org.freedesktop.color.policy
+file path=usr/share/vala/vapi/colord.deps
 file path=usr/share/vala/vapi/colord.vapi
 dir  path=var/lib/colord/icc group=daemon
 license COPYING license=GPLv2
