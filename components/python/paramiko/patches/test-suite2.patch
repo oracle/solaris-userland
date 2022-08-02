@@ -1,0 +1,58 @@
+From 014030ee0daa5bd87c873e155e4abe23c7d4c52a Mon Sep 17 00:00:00 2001
+From: Stanislav Levin <slev@altlinux.org>
+Date: Thu, 2 Dec 2021 17:11:29 +0300
+Subject: [PATCH] sftp tests: Replace unittest parts
+
+The original PR https://github.com/paramiko/paramiko/pull/992
+introduced several tests for sftp functionality. These tests
+made use of unittest's stuff like `assertTrue` and `assertEqual`
+because at that moment the tests were grouped under the
+`unittest.TestCase`-based class (`SFTPTest`). Before PR merge
+`unittest.TestCase` was refactored out from sftp tests
+(667bd74b139ed86f9b261d3abf5b6042ba80920b) but PR
+was not updated. The sftp tests are marked with `slow` and that's
+why they are not failed in CI (slow tests are excluded by default).
+
+Fixes: https://github.com/paramiko/paramiko/issues/1941
+Signed-off-by: Stanislav Levin <slev@altlinux.org>
+
+--- paramiko-2.11.0/tests/__init__.py
++++ paramiko-2.11.0/tests/__init__.py
+@@ -36,7 +36,7 @@ def requireNonAsciiLocale(category_name="LC_ALL"):
+ def _decorate_with_locale(category, try_locales, test_method):
+     """Decorate test_method to run after switching to a different locale."""
+ 
+-    def _test_under_locale(testself, sftp):
++    def _test_under_locale(testself, *args, **kwargs):
+         original = locale.setlocale(category)
+         while try_locales:
+             try:
+@@ -46,7 +46,7 @@ def _test_under_locale(testself, sftp):
+                 try_locales.pop(0)
+             else:
+                 try:
+-                    return test_method(testself)
++                    return test_method(testself, *args, **kwargs)
+                 finally:
+                     locale.setlocale(category, original)
+         skipTest = getattr(testself, "skipTest", None)
+--- paramiko-2.11.0/tests/test_sftp.py
++++ paramiko-2.11.0/tests/test_sftp.py
+@@ -277,7 +277,7 @@ def test_listdir_in_locale(self, sftp):
+         sftp.open(sftp.FOLDER + "/canard.txt", "w").close()
+         try:
+             folder_contents = sftp.listdir(sftp.FOLDER)
+-            self.assertEqual(["canard.txt"], folder_contents)
++            assert ["canard.txt"] == folder_contents
+         finally:
+             sftp.remove(sftp.FOLDER + "/canard.txt")
+ 
+@@ -797,7 +797,7 @@ def test_sftp_attributes_locale_time(self, sftp):
+         """Test SFTPAttributes under a locale with non-ascii time strings."""
+         some_stat = os.stat(sftp.FOLDER)
+         sftp_attributes = SFTPAttributes.from_stat(some_stat, u("a_directory"))
+-        self.assertTrue(b"a_directory" in sftp_attributes.asbytes())
++        assert b"a_directory" in sftp_attributes.asbytes()
+ 
+     def test_sftp_attributes_empty_str(self, sftp):
+         sftp_attributes = SFTPAttributes()

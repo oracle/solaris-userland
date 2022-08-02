@@ -1,32 +1,39 @@
-test_crypto:
-* Solaris doesn't have flaky python package and, therefore, all tests depending
-  on it are disabled.
+* Solaris doesn't have flaky and pretend python packages available.
 
-* Serial numbers of both dumps can be displayed in two ways which are both
-  valid, but simple string comparison fails due to that.  Patch fixes this by
-  comparing both serial numbers first and than replacing both strings with the
-  same one.
+* Several tests fail with OpenSSL 3 as their assumptions are incorrect. This is
+  an issue known to upstream:
+    https://github.com/pyca/pyopenssl/issues/1024
+    https://github.com/pyca/pyopenssl/issues/1072
 
-test_set_default_verify_paths:
-* Solaris doesn't have pretend python package and, therefore, all tests
-  depending on it are disabled.
+* Since blowfish is part of the legacy provider in OpenSSL 3, it's changed
+  to DES-EDE3-CBC available in the default one. This wasn't reported upstream
+  because standard cryptography doesn't work without the legacy provider, and
+  thus this shouldn't be an issue (but our patched variant doesn't need it).
 
-* This patch disables the test set default verify paths, which tries to connect
-  to an external server. This tries to connect using s_client, which does
-  not work within OWAN, even if proxy variables are set.
+* test_set_default_verify_paths tries to connect to an external server, which
+  does not work within OWAN, even if proxy variables are set.
 
---- pyOpenSSL-19.0.0/tests/test_crypto.py
-+++ pyOpenSSL-19.0.0/tests/test_crypto.py
-@@ -20,8 +20,6 @@ from cryptography.hazmat.backends.openss
+--- pyOpenSSL-22.0.0/tests/test_crypto.py
++++ pyOpenSSL-22.0.0/tests/test_crypto.py
+@@ -19,8 +19,6 @@ from cryptography.hazmat.backends.openss
  from cryptography.hazmat.primitives import serialization
  from cryptography.hazmat.primitives.asymmetric import rsa
  
 -import flaky
 -
- from OpenSSL.crypto import TYPE_RSA, TYPE_DSA, Error, PKey, PKeyType
- from OpenSSL.crypto import X509, X509Type, X509Name, X509NameType
+ from OpenSSL.crypto import TYPE_RSA, TYPE_DSA, Error, PKey
+ from OpenSSL.crypto import X509, X509Name
  from OpenSSL.crypto import (
-@@ -1646,7 +1644,7 @@ WpOdIpB8KksUTCzV591Nr1wd
+@@ -61,7 +59,7 @@ def normalize_privatekey_pem(pem):
+     return dump_privatekey(FILETYPE_PEM, load_privatekey(FILETYPE_PEM, pem))
+ 
+ 
+-GOOD_CIPHER = "blowfish"
++GOOD_CIPHER = "DES-EDE3-CBC"
+ BAD_CIPHER = "zippers"
+ 
+ GOOD_DIGEST = "SHA256"
+@@ -1859,7 +1857,7 @@ class TestX509(_PKeyInteractionTestsMixi
          with pytest.raises(TypeError):
              cert.gmtime_adj_notBefore(None)
  
@@ -35,7 +42,7 @@ test_set_default_verify_paths:
      def test_gmtime_adj_notBefore(self):
          """
          `X509.gmtime_adj_notBefore` changes the not-before timestamp to be the
-@@ -1672,7 +1670,7 @@ WpOdIpB8KksUTCzV591Nr1wd
+@@ -1885,7 +1883,7 @@ class TestX509(_PKeyInteractionTestsMixi
          with pytest.raises(TypeError):
              cert.gmtime_adj_notAfter(None)
  
@@ -44,61 +51,64 @@ test_set_default_verify_paths:
      def test_gmtime_adj_notAfter(self):
          """
          `X509.gmtime_adj_notAfter` changes the not-after timestamp
-@@ -2714,7 +2712,30 @@ class TestFunction(object):
-         dumped_text = dump_certificate(FILETYPE_TEXT, cert)
-         good_text = _runopenssl(
-             dumped_pem, b"x509", b"-noout", b"-text", b"-nameopt", b"")
--        assert dumped_text == good_text
-+
-+        # On Solaris, the serial number is displayed differently between both
-+        # dumps (but both are correct). Add additional check for equality of
-+        # those serial numbers.
-+        import re
-+        def get_serial_number(text):
-+            match = re.search(b'Serial Number:[^\(]+\(0x(.*)\)', text)
-+            if match:
-+                return match.group(1)
-+
-+            match = re.search(b'Serial Number:\n[ ]*([^\n]+)', text)
-+            if match:
-+                return match.group(1).replace(':', '')
-+            return None
-+
-+        good_serial_number = get_serial_number(good_text)
-+        dumped_serial_number = get_serial_number(dumped_text)
-+        assert good_serial_number == dumped_serial_number
-+
-+        # remove differences between both strings
-+        def fix_text(text):
-+            return re.sub(b'Serial Number:[ \n][^\n]+\n', b'Serial Number: ###\n', text)
-+
-+        assert fix_text(dumped_text) == fix_text(good_text)
+@@ -2022,6 +2020,7 @@ class TestX509(_PKeyInteractionTestsMixi
+         with pytest.raises(TypeError):
+             cert.get_extension("hello")
  
-     def test_dump_certificate_bad_type(self):
++    @pytest.mark.skip(reason="Test fails with OpenSSL 3")
+     def test_nullbyte_subjectAltName(self):
          """
-@@ -3205,9 +3226,7 @@ class TestCRL(object):
-             x509.NameAttribute(x509.NameOID.COMMON_NAME, u"Testing Root CA"),
-         ])
+         The fields of a `subjectAltName` extension on an X509 may contain NUL
+@@ -4041,6 +4040,7 @@ class TestX509StoreContext(object):
+         store_ctx = X509StoreContext(store, self.root_cert)
+         assert store_ctx.verify_certificate() is None
  
--    # Flaky because we compare the output of running commands which sometimes
--    # varies by 1 second
--    @flaky.flaky
-+    @pytest.mark.skip(reason="We don't have flaky python package in Solaris")
-     def test_export_text(self):
++    @pytest.mark.skip(reason="Test fails with OpenSSL 3")
+     def test_untrusted_self_signed(self):
          """
-         If passed ``FILETYPE_TEXT`` for the format, ``CRL.export`` returns a
---- pyOpenSSL-19.0.0/tests/test_ssl.py
-+++ pyOpenSSL-19.0.0/tests/test_ssl.py
-@@ -20,8 +20,6 @@ from warnings import simplefilter
+         `verify_certificate` raises error when a self-signed certificate is
+--- pyOpenSSL-22.0.0/tests/test_ssl.py
++++ pyOpenSSL-22.0.0/tests/test_ssl.py
+@@ -33,12 +33,8 @@ from os.path import join
+ from weakref import ref
+ from warnings import simplefilter
  
+-import flaky
+-
  import pytest
  
 -from pretend import raiser
 -
- from six import PY3, text_type
- 
  from cryptography import x509
-@@ -1150,6 +1148,7 @@ class TestContext(object):
+ from cryptography.hazmat.backends import default_backend
+ from cryptography.hazmat.primitives import hashes
+@@ -519,7 +515,7 @@ class TestContext(object):
+         with pytest.raises(TypeError):
+             context.set_cipher_list(object())
+ 
+-    @flaky.flaky
++    @pytest.mark.skip(reason="We don't have flaky python package in Solaris")
+     def test_set_cipher_list_no_cipher_match(self, context):
+         """
+         `Context.set_cipher_list` raises `OpenSSL.SSL.Error` with a
+@@ -568,6 +564,7 @@ class TestContext(object):
+         """
+         context.set_session_id(b"abc")
+ 
++    @pytest.mark.skip(reason="Test fails with OpenSSL 3")
+     def test_set_session_id_fail(self, context):
+         """
+         `Context.set_session_id` errors are propagated.
+@@ -885,7 +882,7 @@ class TestContext(object):
+         """
+         key = PKey()
+         key.generate_key(TYPE_RSA, 1024)
+-        pem = dump_privatekey(FILETYPE_PEM, key, "blowfish", passphrase)
++        pem = dump_privatekey(FILETYPE_PEM, key, "DES-EDE3-CBC", passphrase)
+         with open(tmpfile, "w") as fObj:
+             fObj.write(pem.decode("ascii"))
+         return tmpfile
+@@ -1254,6 +1251,7 @@ class TestContext(object):
          assert context._check_env_vars_set(dir_var, file_var) is True
          assert context._check_env_vars_set(dir_var, file_var) is True
  
@@ -106,9 +116,9 @@ test_set_default_verify_paths:
      def test_verify_no_fallback_if_env_vars_set(self, monkeypatch):
          """
          Test that we don't use the fallback path if env vars are set.
-@@ -1180,6 +1179,9 @@ class TestContext(object):
+@@ -1282,6 +1280,9 @@ class TestContext(object):
          reason="set_default_verify_paths appears not to work on Windows.  "
-         "See LP#404343 and LP#404344."
+         "See LP#404343 and LP#404344.",
      )
 +    @pytest.mark.skip(
 +        reason="This test doesn't work within OWAN, even with proxy set"
@@ -116,3 +126,11 @@ test_set_default_verify_paths:
      def test_set_default_verify_paths(self):
          """
          `Context.set_default_verify_paths` causes the platform-specific CA
+@@ -3670,6 +3671,7 @@ class TestMemoryBIO(object):
+         # handshake failure.
+         assert type(err.value) in [Error, SysCallError]
+ 
++    @pytest.mark.skip(reason="Test fails with OpenSSL 3")
+     def test_unexpected_EOF(self):
+         """
+         If the connection is lost before an orderly SSL shutdown occurs,

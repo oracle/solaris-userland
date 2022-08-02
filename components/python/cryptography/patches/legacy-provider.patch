@@ -1,0 +1,202 @@
+By default, cryptography loads both default and legacy providers and breaks if
+one of those is not available. We don't want to force the legacy provider on
+Solaris by default.
+
+This change also needs modifications to the test suite that expects that legacy
+algorithms are available.
+
+This unnecessary restriction was reported upstream:
+https://github.com/pyca/cryptography/issues/7358
+
+--- cryptography-37.0.2/src/cryptography/hazmat/bindings/openssl/binding.py
++++ cryptography-37.0.2/src/cryptography/hazmat/bindings/openssl/binding.py
+@@ -173,9 +173,6 @@ class Binding:
+                     cls._legacy_provider = cls.lib.OSSL_PROVIDER_load(
+                         cls.ffi.NULL, b"legacy"
+                     )
+-                    _openssl_assert(
+-                        cls.lib, cls._legacy_provider != cls.ffi.NULL
+-                    )
+                     cls._default_provider = cls.lib.OSSL_PROVIDER_load(
+                         cls.ffi.NULL, b"default"
+                     )
+--- cryptography-37.0.2/pyproject.toml
++++ cryptography-37.0.2/pyproject.toml
+@@ -19,6 +19,7 @@ addopts = "-r s --capture=no --strict-ma
+ markers = [
+     "skip_fips: this test is not executed in FIPS mode",
+     "supported: parametrized test requiring only_if and skip_message",
++    "legacy_algorithm: this test needs legacy provider when compiled with OpenSSL 3",
+ ]
+ 
+ [tool.mypy]
+--- cryptography-37.0.2/tests/conftest.py
++++ cryptography-37.0.2/tests/conftest.py
+@@ -33,6 +33,11 @@ def pytest_runtest_setup(item):
+     if openssl_backend._fips_enabled:
+         for marker in item.iter_markers(name="skip_fips"):
+             pytest.skip(marker.kwargs["reason"])
++    if (openssl_backend._lib and
++            openssl_backend._lib.CRYPTOGRAPHY_OPENSSL_300_OR_GREATER and
++            openssl_backend._binding._legacy_provider == openssl_backend._binding.ffi.NULL):
++        for marker in item.iter_markers(name="legacy_algorithm"):
++            pytest.skip("Requires OpenSSL legacy provider with OpenSSL 3.0.0+")
+ 
+ 
+ @pytest.fixture()
+--- cryptography-37.0.2/tests/hazmat/primitives/test_arc4.py
++++ cryptography-37.0.2/tests/hazmat/primitives/test_arc4.py
+@@ -14,6 +14,7 @@ from .utils import generate_stream_encry
+ from ...utils import load_nist_vectors
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms.ARC4(b"\x00" * 16), None
+--- cryptography-37.0.2/tests/hazmat/primitives/test_blowfish.py
++++ cryptography-37.0.2/tests/hazmat/primitives/test_blowfish.py
+@@ -14,6 +14,7 @@ from .utils import generate_encrypt_test
+ from ...utils import load_nist_vectors
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._BlowfishInternal(b"\x00" * 56), modes.ECB()
+@@ -32,6 +33,7 @@ class TestBlowfishModeECB:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._BlowfishInternal(b"\x00" * 56), modes.CBC(b"\x00" * 8)
+@@ -50,6 +52,7 @@ class TestBlowfishModeCBC:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._BlowfishInternal(b"\x00" * 56), modes.OFB(b"\x00" * 8)
+@@ -68,6 +71,7 @@ class TestBlowfishModeOFB:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._BlowfishInternal(b"\x00" * 56), modes.CFB(b"\x00" * 8)
+--- cryptography-37.0.2/tests/hazmat/primitives/test_cast5.py
++++ cryptography-37.0.2/tests/hazmat/primitives/test_cast5.py
+@@ -14,6 +14,7 @@ from .utils import generate_encrypt_test
+ from ...utils import load_nist_vectors
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._CAST5Internal(b"\x00" * 16), modes.ECB()
+@@ -32,6 +33,7 @@ class TestCAST5ModeECB:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._CAST5Internal(b"\x00" * 16), modes.CBC(b"\x00" * 8)
+@@ -50,6 +52,7 @@ class TestCAST5ModeCBC:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._CAST5Internal(b"\x00" * 16), modes.OFB(b"\x00" * 8)
+@@ -68,6 +71,7 @@ class TestCAST5ModeOFB:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._CAST5Internal(b"\x00" * 16), modes.CFB(b"\x00" * 8)
+--- cryptography-37.0.2/tests/hazmat/primitives/test_idea.py
++++ cryptography-37.0.2/tests/hazmat/primitives/test_idea.py
+@@ -14,6 +14,7 @@ from .utils import generate_encrypt_test
+ from ...utils import load_nist_vectors
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._IDEAInternal(b"\x00" * 16), modes.ECB()
+@@ -32,6 +33,7 @@ class TestIDEAModeECB:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._IDEAInternal(b"\x00" * 16), modes.CBC(b"\x00" * 8)
+@@ -50,6 +52,7 @@ class TestIDEAModeCBC:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._IDEAInternal(b"\x00" * 16), modes.OFB(b"\x00" * 8)
+@@ -68,6 +71,7 @@ class TestIDEAModeOFB:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._IDEAInternal(b"\x00" * 16), modes.CFB(b"\x00" * 8)
+--- cryptography-37.0.2/tests/hazmat/primitives/test_pkcs12.py
++++ cryptography-37.0.2/tests/hazmat/primitives/test_pkcs12.py
+@@ -86,6 +86,7 @@ class TestPKCS12Loading:
+     def test_load_pkcs12_ec_keys(self, filename, password, backend):
+         self._test_load_pkcs12_ec_keys(filename, password, backend)
+ 
++    @pytest.mark.legacy_algorithm
+     @pytest.mark.parametrize(
+         ("filename", "password"),
+         [
+--- cryptography-37.0.2/tests/hazmat/primitives/test_seed.py
++++ cryptography-37.0.2/tests/hazmat/primitives/test_seed.py
+@@ -14,6 +14,7 @@ from .utils import generate_encrypt_test
+ from ...utils import load_nist_vectors
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._SEEDInternal(b"\x00" * 16), modes.ECB()
+@@ -32,6 +33,7 @@ class TestSEEDModeECB:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._SEEDInternal(b"\x00" * 16), modes.CBC(b"\x00" * 16)
+@@ -50,6 +52,7 @@ class TestSEEDModeCBC:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._SEEDInternal(b"\x00" * 16), modes.OFB(b"\x00" * 16)
+@@ -68,6 +71,7 @@ class TestSEEDModeOFB:
+     )
+ 
+ 
++@pytest.mark.legacy_algorithm
+ @pytest.mark.supported(
+     only_if=lambda backend: backend.cipher_supported(
+         algorithms._SEEDInternal(b"\x00" * 16), modes.CFB(b"\x00" * 16)

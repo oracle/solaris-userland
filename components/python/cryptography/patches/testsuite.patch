@@ -1,14 +1,53 @@
-Solaris doesn't have pretend python package, hence all tests
-depending on it are disabled.
+Solaris doesn't have pretend, pytest-subtests or pytest-benchmark packages,
+hence all tests/options depending on those are disabled.
 
-test_load_ecdsa_no_named_curve doesn't work as it makes an incorrect
-assumption about our comparatively new version of OpenSSL
-
-https://github.com/pyca/cryptography/issues/4998
-
---- cryptography-3.1.1/tests/test_utils.py
-+++ cryptography-3.1.1/tests/test_utils.py
-@@ -8,8 +8,6 @@ import binascii
+--- cryptography-37.0.2/pyproject.toml
++++ cryptography-37.0.2/pyproject.toml
+@@ -15,7 +15,7 @@
+ target-version = ["py36"]
+ 
+ [tool.pytest.ini_options]
+-addopts = "-r s --capture=no --strict-markers --benchmark-disable"
++addopts = "-r s --capture=no --strict-markers"
+ markers = [
+     "skip_fips: this test is not executed in FIPS mode",
+     "supported: parametrized test requiring only_if and skip_message",
+--- cryptography-37.0.2/tests/conftest.py
++++ cryptography-37.0.2/tests/conftest.py
+@@ -40,6 +40,11 @@
+             pytest.skip("Requires OpenSSL legacy provider with OpenSSL 3.0.0+")
+ 
+ 
++@pytest.fixture
++def subtests():
++    pytest.skip("pytest-subtests is not available on Solaris")
++
++
+ @pytest.fixture()
+ def backend(request):
+     check_backend_support(openssl_backend, request)
+--- cryptography-37.0.2/tests/test_fernet.py
++++ cryptography-37.0.2/tests/test_fernet.py
+@@ -11,8 +11,6 @@ import time
+ 
+ import iso8601
+ 
+-import pretend
+-
+ import pytest
+ 
+ from cryptography.fernet import Fernet, InvalidToken, MultiFernet
+@@ -107,6 +105,7 @@ class TestFernet:
+         with pytest.raises(TypeError):
+             f.decrypt("")  # type: ignore[arg-type]
+ 
++    @pytest.mark.skip(reason="We don't have pretend on Solaris")
+     def test_timestamp_ignored_no_ttl(self, monkeypatch, backend):
+         f = Fernet(base64.urlsafe_b64encode(b"\x00" * 32), backend=backend)
+         pt = b"encrypt me"
+--- cryptography-37.0.2/tests/test_utils.py
++++ cryptography-37.0.2/tests/test_utils.py
+@@ -8,8 +8,6 @@ import inspect
  import os
  import textwrap
  
@@ -17,7 +56,7 @@ https://github.com/pyca/cryptography/issues/4998
  import pytest
  
  import cryptography
-@@ -39,6 +37,7 @@ from .utils import (
+@@ -41,6 +39,7 @@ from .utils import (
  )
  
  
@@ -25,7 +64,7 @@ https://github.com/pyca/cryptography/issues/4998
  def test_check_backend_support_skip():
      supported = pretend.stub(
          kwargs={"only_if": lambda backend: False, "skip_message": "Nope"}
-@@ -50,6 +49,7 @@ def test_check_backend_support_skip():
+@@ -52,6 +51,7 @@ def test_check_backend_support_skip():
      assert exc_info.value.args[0] == "Nope (True)"
  
  
@@ -33,40 +72,30 @@ https://github.com/pyca/cryptography/issues/4998
  def test_check_backend_support_no_skip():
      supported = pretend.stub(
          kwargs={"only_if": lambda backend: True, "skip_message": "Nope"}
---- cryptography-3.1.1/tests/x509/test_x509_ext.py
-+++ cryptography-3.1.1/tests/x509/test_x509_ext.py
-@@ -9,8 +9,6 @@ import datetime
- import ipaddress
+--- cryptography-37.0.2/tests/x509/test_x509_ext.py
++++ cryptography-37.0.2/tests/x509/test_x509_ext.py
+@@ -9,8 +9,6 @@ import ipaddress
  import os
+ import typing
  
 -import pretend
 -
  import pytest
  
- import six
-@@ -1578,6 +1576,7 @@ class TestSubjectKeyIdentifierExtension(
+ from cryptography import x509
+@@ -1743,6 +1741,7 @@ class TestSubjectKeyIdentifierExtension:
          ski = x509.SubjectKeyIdentifier.from_public_key(cert.public_key())
          assert ext.value == ski
  
 +    @pytest.mark.skip(reason="We don't have pretend on Solaris")
-     @pytest.mark.requires_backend_interface(interface=DSABackend)
-     @pytest.mark.requires_backend_interface(interface=X509Backend)
      def test_invalid_bit_string_padding_from_public_key(self, backend):
-@@ -1594,6 +1593,7 @@ class TestSubjectKeyIdentifierExtension(
-         with pytest.raises(ValueError):
+         data = load_vectors_from_file(
+             filename=os.path.join(
+@@ -1768,6 +1767,7 @@ class TestSubjectKeyIdentifierExtension:
+         with pytest.raises(ValueError, match="Invalid public key encoding"):
              _key_identifier_from_public_key(pretend_key)
  
 +    @pytest.mark.skip(reason="We don't have pretend on Solaris")
-     @pytest.mark.requires_backend_interface(interface=DSABackend)
-     @pytest.mark.requires_backend_interface(interface=X509Backend)
      def test_no_optional_params_allowed_from_public_key(self, backend):
---- cryptography-2.5/tests/x509/test_x509.py
-+++ cryptography-2.5/tests/x509/test_x509.py
-@@ -4625,6 +4625,7 @@ class TestECDSACertificate(object):
-             ec.ECDSA(cert.signature_hash_algorithm),
-         )
- 
-+    @pytest.mark.skip("Doesn't work with our version of OpenSSL")
-     def test_load_ecdsa_no_named_curve(self, backend):
-         _skip_curve_unsupported(backend, ec.SECP256R1())
-         cert = _load_cert(
+         data = load_vectors_from_file(
+             filename=os.path.join(

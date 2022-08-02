@@ -1,0 +1,23 @@
+The following two tests doesn't work with Python 2.7.
+
+This issue was reported upstream:
+https://github.com/paramiko/paramiko/issues/2095
+
+--- paramiko-2.11.0/tests/test_sftp.py
++++ paramiko-2.11.0/tests/test_sftp.py
+@@ -271,6 +271,7 @@ class TestSFTP(object):
+             sftp.remove(sftp.FOLDER + "/fish.txt")
+             sftp.remove(sftp.FOLDER + "/tertiary.py")
+ 
++    @pytest.mark.skipif(sys.version_info[0] == 2, reason="Doesn't work with Python 2.7")
+     @requireNonAsciiLocale()
+     def test_listdir_in_locale(self, sftp):
+         """Test listdir under a locale that uses non-ascii text."""
+@@ -792,6 +793,7 @@ class TestSFTP(object):
+         finally:
+             sftp.remove("%s/nonutf8data" % sftp.FOLDER)
+ 
++    @pytest.mark.skipif(sys.version_info[0] == 2, reason="Doesn't work with Python 2.7")
+     @requireNonAsciiLocale("LC_TIME")
+     def test_sftp_attributes_locale_time(self, sftp):
+         """Test SFTPAttributes under a locale with non-ascii time strings."""

@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 CARGO = cargo
 
 VENDORED_SOURCES_NAME = $(COMPONENT_SRC)-vendored-sources
 VENDORED_SOURCES = $(COMPONENT_DIR)/$(VENDORED_SOURCES_NAME)
-VENDORED_CARGO_LOCK = $(COMPONENT_SRC)/Cargo.lock
+VENDORED_CARGO_LOCK_LOCATION = $(COMPONENT_SRC)
 
 COMPONENT_SRC_crates = $(VENDORED_SOURCES_NAME)
 COMPONENT_ARCHIVE_crates = $(VENDORED_SOURCES_NAME).tar.bz2
@@ -48,12 +48,13 @@ VENDORED_SOURCES_ENFORCE = \
 # patching from 'prep' which is next.
 download-vendored-sources:
 	$(RM) -r $(VENDORED_SOURCES); mkdir $(VENDORED_SOURCES)
-	gtar xf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE) -C $(VENDORED_SOURCES); \
-	cd $(VENDORED_SOURCES)/$(COMPONENT_SRC); \
+	$(RM) -r temp; mkdir temp
+	gtar xf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE) -C temp; \
+	cd temp/$(COMPONENT_SRC); \
 	  for i in `find $(COMPONENT_DIR)/patches -name '*.patch'` ; do gpatch -p1 < $$i; done
-	cd $(VENDORED_SOURCES)/$(COMPONENT_SRC); PATH=$(PATH) \
-	  CARGO_HOME=$(VENDORED_SOURCES)/.cargo $(CARGO) vendor ..
-	$(RM) -r $(VENDORED_SOURCES)/.cargo $(VENDORED_SOURCES)/$(COMPONENT_SRC)
+	cd temp/$(VENDORED_CARGO_LOCK_LOCATION); PATH=$(PATH) \
+	  CARGO_HOME=$(VENDORED_SOURCES)/.cargo $(CARGO) vendor $(VENDORED_SOURCES)
+	$(RM) -r $(VENDORED_SOURCES)/.cargo temp
 	TZ=UTC gtar cjf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_crates) --sort=name \
 	  --mtime='1970-01-01' --owner=root --group=root $(VENDORED_SOURCES_NAME)
 	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_crates)
