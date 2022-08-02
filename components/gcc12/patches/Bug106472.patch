@@ -1,0 +1,30 @@
+This is change from upstream which should fix issue with dependecy issues
+during gcc 12 build.
+
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=106472
+
+https://gcc.gnu.org/git/gitweb.cgi?p=gcc.git;h=351e3cad2c5d4dfe43d68ba333bde1d70fa0b807
+
+Patch can be removed once we update to gcc version which incorporates it.
+
+diff --git a/Makefile.def b/Makefile.def
+index 72d58549645..11e9f23dc42 100644
+--- a/Makefile.def
++++ b/Makefile.def
+@@ -4,7 +4,7 @@ AutoGen definitions Makefile.tpl;
+ // Makefile.in is generated from Makefile.tpl by 'autogen Makefile.def'.
+ // This file was originally written by Nathanael Nerode.
+ //
+-//   Copyright 2002-2021 Free Software Foundation
++//   Copyright 2002-2022 Free Software Foundation
+ //
+ // This file is free software; you can redistribute it and/or modify
+ // it under the terms of the GNU General Public License as published by
+@@ -663,6 +663,7 @@ dependencies = { module=configure-target-newlib; on=all-binutils; };
+ dependencies = { module=configure-target-newlib; on=all-ld; };
+ dependencies = { module=configure-target-libgfortran; on=all-target-libquadmath; };
+ dependencies = { module=configure-target-libgfortran; on=all-target-libbacktrace; };
++dependencies = { module=configure-target-libgo; on=all-target-libbacktrace; };
+ 
+ languages = { language=c;	gcc-check-target=check-gcc; };
+ languages = { language=c++;	gcc-check-target=check-c++;
