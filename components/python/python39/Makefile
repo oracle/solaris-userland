@@ -126,6 +126,10 @@ CONFIGURE_OPTIONS += "ac_cv_func_getentropy=no"
 # from Linux Kernel and might cause problems.
 CONFIGURE_OPTIONS += "ac_cv_func_pthread_getcpuclockid=no"
 
+# Automatically detect OpenSSL 3 headers and libs. Note that pkgconfig
+# is not invoked when --with-openssl flag is present.
+PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
+
 COMPONENT_BUILD_ENV += DFLAGS="-$(BITS)"
 COMPONENT_BUILD_ENV += XPROFILE_DIR="$(XPROFILE_DIR)"
 COMPONENT_BUILD_ENV += PATH="$(PATH)"
@@ -175,6 +179,10 @@ install:    $(INSTALL_64)
 # $ TESTOPTS_PYTHON_TEST=test_sys
 TESTOPTS_PYTHON_TEST =
 COMPONENT_TEST_ENV = PATH="$(PATH)"
+# Force use of native distutils rather than the setuptools one
+# that otherwise takes over and breaks some tests.
+# https://github.com/pypa/setuptools/issues/3007
+COMPONENT_TEST_ENV += SETUPTOOLS_USE_DISTUTILS=stdlib
 # Using "-uall,-network" ensures all tests are run except the network tests.
 # The network tests contain many expected failures when run behind a firewall.
 # The "-v" ensures verbose mode.
@@ -210,7 +218,7 @@ REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
-REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/tcl-8
 REQUIRED_PACKAGES += runtime/tk-8
