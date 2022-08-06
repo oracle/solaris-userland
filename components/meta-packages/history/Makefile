@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -108,7 +108,8 @@ $(BUILD_DIR)/.linted-$(MACH): $(MOGRIFIED) $(HISTOGRIFIED) $(BUILD_DIR)
 			-e $(WS_TOOLS)/python/ -f $(WS_TOOLS)/pkglintrc $(MOGRIFIED)
 	$(TOUCH) $@
 
-$(BUILD_DIR)/.published-$(MACH): $(BUILD_DIR)/.linted-$(MACH) $(PUBLISHED)
+$(BUILD_DIR)/.published-$(MACH):
+	$(MAKE) -j $(COMPONENT_MAKE_JOBS) $(PUBLISHED) $(BUILD_DIR)/.linted-$(MACH)
 ifndef DISABLE_IPS_CATALOG_AND_INDEX_UPDATES
 	$(PKGREPO) refresh -s $(PKG_REPO)
 endif
