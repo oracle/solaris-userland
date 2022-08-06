@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
 #
 
 include ../make-rules/shared-macros.mk
@@ -176,7 +176,9 @@ $(WS_TOP)/.hgignore: $(WS_TOP)/.hgignore.template
 	$(CP) $(WS_TOP)/.hgignore.template $(WS_TOP)/.hgignore
 
 # The default number of build jobs per component if the full workspace is built.
-JOBS_PER_COMPONENT ?= 1
+# 1 disables parallel build in component, 0 lets the system autodetect number
+# of parallel jobs
+$(call read-config,JOBS_PER_COMPONENT,1)
 
 $(COMPONENT_DIRS):	$(WS_LOGS) setup FORCE
 	@cd $@ && echo "$(TARGET) $@" && \

@@ -162,11 +162,12 @@ have defaults, but can be overridden.
   parameter. For example you can set COMPONENT_MAKE_WRAPPER='timeout -k 60s 8h'
   or COMPONENT_MAKE_WRAPPER='env LD_BIND_NOW=1' and such.
 
-* JOBS_PER_COMPONENT variable has to be used instead of COMPONENT_MAKE_JOBS
-  variable if the full userland gate is built. The reason is that if
-  COMPONENT_MAKE_JOBS variable is passed on the command line, it overrides
-  the maximal number of jobs even for the components that have to be
-  compiled sequentially (set by COMPONENT_MAKE_JOBS=1 in the Makefile).
+* JOBS_PER_COMPONENT variable says how many parallel jobs is to be executed
+  inside every compiled component. (1 means do not build in parallel, 0 means
+  autodetect how many jobs should be executed based on how manu CPUs we have).
+  Component can override this setting by COMPONENT_MAKE_JOBS variable - this is
+  often used to force given component to be built sequentially. Default value
+  is 0 for single component build and 1 for full build.
 
 * COMPONENT_LABEL is an arbitrary string that will be used as part of
   COMPONENT_SRC when building an archive from an SCM source repository.  It
