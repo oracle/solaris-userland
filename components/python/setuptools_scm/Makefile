@@ -69,6 +69,8 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
+REQUIRED_PACKAGES += library/python/packaging-39
+REQUIRED_PACKAGES += library/python/packaging-37
 REQUIRED_PACKAGES += $(PYVS:%=library/python/setuptools-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/tomli-%)
+REQUIRED_PACKAGES += library/python/tomli-39
+REQUIRED_PACKAGES += library/python/tomli-37

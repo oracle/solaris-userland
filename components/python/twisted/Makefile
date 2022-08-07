@@ -96,5 +96,6 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/hyperlink-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/incremental-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/python-hamcrest-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/python-zope-interface-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
+REQUIRED_PACKAGES += library/python/typing-extensions-39
+REQUIRED_PACKAGES += library/python/typing-extensions-37
 REQUIRED_PACKAGES += system/library
