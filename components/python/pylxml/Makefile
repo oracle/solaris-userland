@@ -27,16 +27,16 @@ COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lxml
-COMPONENT_VERSION=	4.7.1
+COMPONENT_VERSION=	4.9.1
 COMPONENT_PROJECT_URL=	http://lxml.de/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4f8602403d0f91d000b704a5b05c4b32a7819e98be508eb316b15a8677cc1f2f
+    sha256:fe749b052bb7233fe5d072fcb549221a8cb1a16725c47c37e42b0b9cb3ff2c3f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/lxml
 COMPONENT_ANITYA_ID=	48378
-COMPONENT_BAID=		115123
+COMPONENT_BAID=		128302
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -52,6 +52,20 @@ COMPONENT_TEST_DIR=	$(COMPONENT_SRC)
 # characters in position 5-18: ordinal not in range(128)'
 # Taken from https://illumos.org/issues/6538
 COMPONENT_TEST_ENV+=	LC_ALL=en_US.UTF-8
+
+# Point the test suite to already built libraries and
+# stop it from rebuilding everything during testing.
+COMPONENT_TEST_ENV+=	HOME=$(BUILD_DIR)/config-$*
+
+# Because of our internal change to move 64-bit Python 2.7 libraries to '64'
+# directory (something that the test suite doesn't expect and prepares libraries
+# into incorrect place), imports don't work properly during testing. This fixes
+# it by adding a link to the correct place in the proto area.
+COMPONENT_PRE_TEST_ACTION += \
+	if [[ "$(PYTHON_VERSION)" == "2.7" && $(BITS) == 64 ]]; then \
+		$(RM) $(SOURCE_DIR)/src/lxml/64; \
+		$(LN) -s $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)/lxml/64 $(SOURCE_DIR)/src/lxml/64; \
+	fi;
 
 # Prevent errors like: OSError: Error reading file 'http://127.0.0.1:59951/':
 # failed to load HTTP resource
