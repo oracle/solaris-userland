@@ -37,7 +37,8 @@ COMPONENT_BUGDB=	python-mod/pytestdjango
 COMPONENT_ANITYA_ID=	40846
 COMPONENT_BAID=		119433
 
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
+PYTHON_VERSIONS = 3.9
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

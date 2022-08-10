@@ -38,57 +38,11 @@ COMPONENT_ANITYA_ID=	3828
 COMPONENT_BAID=		130921
 
 
-COMPONENT_NAME_22=	$(COMPONENT_NAME)
-COMPONENT_VERSION_22=	2.2.28
-COMPONENT_SRC_22=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_22)
-COMPONENT_ARCHIVE_22=	$(COMPONENT_SRC_22).tar.gz
-COMPONENT_ARCHIVE_HASH_22= \
-    sha256:378d9a3b524f2243fab24aa8f6427ce06f9b3a3ca43a7f9069af541b4373e47b
-COMPONENT_ARCHIVE_URL_22=	$(call pypi_url,22)
-COMPONENT_ANITYA_ID_22=	155462
-COMPONENT_BAID_22=	120547
-
-
-PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
-
-# As per PSARC/2021/051, different LTS version of Django is to
-# be delivered with each Python runtime.
+PYTHON_VERSIONS=	3.9
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-# Convenience variables
-TARGET_37 = $(BUILD_DIR)/$(MACH)-3.7/
-SOURCE_DIR_22 = $(COMPONENT_DIR)/$(COMPONENT_SRC_22)
-
-# Targets updated for older version build
-$(TARGET_37).built: SOURCE_DIR = $(SOURCE_DIR_22)
-
-$(TARGET_37).installed: SOURCE_DIR = $(SOURCE_DIR_22)
-
-$(TARGET_37).tested-and-compared: COMPONENT_TEST_DIR = $(SOURCE_DIR_22)/tests
-
-$(MANIFEST_BASE)-django-37.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_22)
-$(MANIFEST_BASE)-django-37.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_22)
-
-# Manifest convenience variables.
-$(MANIFEST_BASE)-django-37.mogrified: 32_ONLY = \#
-$(MANIFEST_BASE)-django-39.mogrified: 22_ONLY = \#
-
-PKG_MACROS += 22_ONLY="$(22_ONLY)"
-PKG_MACROS += 32_ONLY="$(32_ONLY)"
-
-# Meta package must have versions of older runtimes fixed
-FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)django-37@(.*) \
-		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_22)>" | \
-	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-django.mogrified \
-		> $(MANIFEST_BASE)-django.mogrified-fixed ;
-	$(MV) $(MANIFEST_BASE)-django.mogrified-fixed \
-		$(MANIFEST_BASE)-django.mogrified
-
-$(MANIFEST_BASE)-django.mangled: FIX_MANIFEST_VERSIONS
 
 # Replace "#!/usr/bin/env ..." shebang lines with properly versioned ones.
 COMPONENT_POST_BUILD_ACTION = \
@@ -104,7 +58,6 @@ COMPONENT_POST_INSTALL_ACTION = \
 PUBLISH_TRANSFORMS +=	$(COMPONENT_DIR)/django-locale-transform
 
 TEST_PYTHONPATH=$(SOURCE_DIR)
-$(TARGET_37).tested-and-compared: TEST_PYTHONPATH=$(SOURCE_DIR_22)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_ARGS +=	--settings test_sqlite
