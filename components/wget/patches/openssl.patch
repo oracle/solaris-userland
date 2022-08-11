@@ -1,0 +1,44 @@
+Patch submitted upstream as attachment to https://savannah.gnu.org/bugs/?62757
+
+
+From d2042c3852f29e7fbe64059de72cb1e948fe9292 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 12 Jul 2022 18:00:43 -0700
+Subject: [PATCH] * src/openssl.c: accept --secure-protocol=SSLv2/3 even if
+ OpenSSL doesn't
+
+Fixes: https://savannah.gnu.org/bugs/index.php?62757
+---
+ src/openssl.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/src/openssl.c b/src/openssl.c
+index 4f4fea0a..fa33af7e 100644
+--- a/src/openssl.c
++++ b/src/openssl.c
+@@ -218,16 +218,20 @@ ssl_init (void)
+ 
+   switch (opt.secure_protocol)
+     {
+-#if !defined OPENSSL_NO_SSL2 && OPENSSL_VERSION_NUMBER < 0x10100000L
+     case secure_protocol_sslv2:
++#if !defined OPENSSL_NO_SSL2 && OPENSSL_VERSION_NUMBER < 0x10100000L
+       meth = SSLv2_client_method ();
+       break;
++#else
++      /* fallthrough */
+ #endif
+ 
+-#ifndef OPENSSL_NO_SSL3_METHOD
+     case secure_protocol_sslv3:
++#ifndef OPENSSL_NO_SSL3_METHOD
+       meth = SSLv3_client_method ();
+       break;
++#else
++      /* fallthrough */
+ #endif
+ 
+     case secure_protocol_auto:
+-- 
+2.36.0
+
