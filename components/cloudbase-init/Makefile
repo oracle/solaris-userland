@@ -72,6 +72,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(PROTO_DIR)$(PYTHON_LIB)/cloudbaseinit/metadata/services; \
     $(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)
 
+REQUIRED_PACKAGES += library/python/jinja2-$(PYV)
 REQUIRED_PACKAGES += library/python/netaddr-$(PYV)
 REQUIRED_PACKAGES += library/python/netifaces-$(PYV)
 REQUIRED_PACKAGES += library/python/oauthlib-$(PYV)
