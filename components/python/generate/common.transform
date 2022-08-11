@@ -25,7 +25,7 @@
 
 # Manifest contains only generic version with $(PYVER) variable. Choose one
 # python version and transform it to $(PYVER).
-<transform file link path=.+3\.7.* -> edit path 3\\.7 \$\(PYVER\)>
+<transform file link path=.+3\.9.* -> edit path 3\\.9 \$\(PYVER\)>
 
 # Also transform python 2.7 64bit .so files in the /64/ directory
 <transform file link path=.+2\.7.+/64/.+ -> edit path 2\\.7 \$\(PYVER\)>
@@ -42,7 +42,7 @@
 <transform file path=usr/bin/.* -> set pkg.depend.bypass-generate .*importlib.*>
 
 # Handle PEP 3149 - ABI version tagged .so files (remove cpython-3XX version tags)
-<transform file path=.+\.cpython-3[2-9]m\.so$ -> edit path \\.cpython-3[2-9]m\\.so$ .so>
+<transform file path=.+\.cpython-39\.so$ -> edit path \\.cpython-39\\.so$ .so>
 
 # Handle PEP 384 - stable ABI .so files (remove .abi3 tag)
 <transform file path=.+\.abi3\.so$ -> edit path \\.abi3\\.so$ .so>

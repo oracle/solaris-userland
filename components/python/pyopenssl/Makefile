@@ -76,11 +76,6 @@ $(MANIFEST_BASE)-%-37.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
 $(MANIFEST_BASE)-%-27.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
 $(MANIFEST_BASE)-%-37.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
 
-# Common generate transform for python uses files from the 3.7 variant as
-# a baseline; hence, to make it work as expected, we have to pass 3.7
-# related COMPONENT_VERSION to make it work correctly.
-$(MANIFEST_BASE)-pyopenssl-PYVER.constructed: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-
 # Manifest convenience variables.
 NEW_ONLY = \#
 OLD_ONLY =
