@@ -171,6 +171,7 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/cffi-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
 REQUIRED_PACKAGES += library/python/enum-27
 REQUIRED_PACKAGES += library/python/ipaddress-27
+REQUIRED_PACKAGES += library/python/setuptools-rust
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += system/library
