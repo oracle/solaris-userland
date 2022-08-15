@@ -45,8 +45,16 @@ include $(WS_MAKE_RULES)/common.mk
 # and due to patches to autoconf and automake files.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 
+ifneq ($(strip $(OPENSSL3)),)
+OPENSSL_CFLAGS= -I/usr/openssl/3/include
+OPENSSL_LIBS.32= -L/usr/openssl/3/lib/ -lssl -lcrypto
+OPENSSL_LIBS.32 += $(LIBSOCKET) $(LIBNSL)
+OPENSSL_LIBS.64= -L/usr/openssl/3/lib/64/ -lssl -lcrypto
+OPENSSL_LIBS.64 += $(LIBSOCKET) $(LIBNSL)
+else
 OPENSSL_LIBS= -lssl -lcrypto
-OPENSSL_LIBS +=	$(LIBSOCKET) $(LIBNSL)
+OPENSSL_LIBS += $(LIBSOCKET) $(LIBNSL)
+endif
 
 CONFIGURE_BINDIR.32= $(USRLIB.32)/pam_pkcs11
 CONFIGURE_BINDIR.64= $(USRLIB.64)/pam_pkcs11
@@ -58,13 +66,23 @@ CONFIGURE_OPTIONS += --localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS += --with-confdir=/etc/security/pam_pkcs11
 CONFIGURE_OPTIONS += --docdir=/etc/security/pam_pkcs11
+ifneq ($(strip $(OPENSSL3)),)
+CONFIGURE_OPTIONS += OPENSSL_CFLAGS="$(OPENSSL_CFLAGS)"
+CONFIGURE_OPTIONS.32= OPENSSL_LIBS="$(OPENSSL_LIBS.32)"
+CONFIGURE_OPTIONS.64= OPENSSL_LIBS="$(OPENSSL_LIBS.64)"
+else
 CONFIGURE_OPTIONS += OPENSSL_LIBS="$(OPENSSL_LIBS)"
+endif
 CONFIGURE_OPTIONS += --with-pcsclite=yes
 CONFIGURE_OPTIONS += PCSC_CFLAGS="-I /usr/include/PCSC"
 CONFIGURE_OPTIONS += PCSC_LIBS="-lpcsclite"
 
 $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
 REQUIRED_PACKAGES += library/security/openssl
+endif
 REQUIRED_PACKAGES += library/security/pcsc/pcsclite
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += system/library/pam-core
