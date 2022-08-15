@@ -1,0 +1,36 @@
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+
+#
+# This is a list of known binary file types which should never be scanned
+# for any of the pbchk or nits tests. Beware that if a pattern is added here,
+# it is unconditionally excluded from all checks.
+#
+# These are excluded on the grounds that they cause problems in the Python3
+# unicode handling (and these files are very much not unicode!).
+#
+# Ensure that new entries are added alphabetically.
+#
+
+syntax: regexp
+\.au$
+\.aes$
+\.bin$
+\.der$
+\.dll$
+\.exe$
+\.gif$
+\.ico$
+\.jpg$
+\.png$
+\.ova$
+\.woff$
+\.zip$
+
+#
+# These are files which don't have a filename "extension", or the extension
+# is too generic, or the extension is not exclusively binary.
+#
+syntax: glob
+tools/.gnupg/pubring.gpg
