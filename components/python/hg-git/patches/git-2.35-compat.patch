@@ -1,0 +1,58 @@
+# HG changeset patch
+# User Dan Villiom Podlaski Christiansen <danchr@gmail.com>
+# Date 1647617959 -3600
+#      Fri Mar 18 16:39:19 2022 +0100
+# Branch 1.0.x
+# Node ID 0292bc2ecd8f69e619376fbe56e781e536a9488d
+# Parent  e77e982a1dc5a0586117fd3b151cb99ef3b42dd3
+tests: suppress output changed in Git 2.35 (or thereabouts)
+
+Git changed the exact wording and casing of the output of
+`--set-upstream`. This isn't important to our tests, so we suppress
+it.
+
+--- hg-git-0.10.4/tests/test-hg-author.t
++++ hg-git-0.10.4/tests/test-hg-author.t
+@@ -12,10 +12,8 @@ Load commonly used test logic
+   $ echo alpha > alpha
+   $ git add alpha
+   $ fn_git_commit -m "add alpha"
+-  $ git push --set-upstream origin master
+-  To $TESTTMP/repo.git
+-   * [new branch]      master -> master
+-  Branch 'master' set up to track remote branch 'master' from 'origin'.
++  $ git push --quiet --set-upstream origin master
++  Branch 'master' set up to track remote branch 'master' from 'origin'. (?)
+ 
+   $ cd ..
+   $ hg clone repo.git hgrepo
+--- hg-git-0.10.4/tests/test-hg-tags.t
++++ hg-git-0.10.4/tests/test-hg-tags.t
+@@ -12,10 +12,8 @@ Load commonly used test logic
+   $ echo alpha > alpha
+   $ git add alpha
+   $ fn_git_commit -m "add alpha"
+-  $ git push --set-upstream origin master
+-  To $TESTTMP/repo.git
+-   * [new branch]      master -> master
+-  Branch 'master' set up to track remote branch 'master' from 'origin'.
++  $ git push --quiet --set-upstream origin master
++  Branch 'master' set up to track remote branch 'master' from 'origin'. (?)
+ 
+   $ cd ..
+   $ hg clone -U repo.git hgrepo
+--- hg-git-0.10.4/tests/test-orphan-tags.t
++++ hg-git-0.10.4/tests/test-orphan-tags.t
+@@ -34,10 +34,8 @@ Create a temporary branch and tag
+   $ fn_git_tag the_tag -m "Tag message"
+   $ git tag -ln
+   the_tag         Tag message
+-  $ git push --set-upstream origin the_branch
+-  To $TESTTMP/git.bare
+-   * [new branch]      the_branch -> the_branch
+-  Branch 'the_branch' set up to track remote branch 'the_branch' from 'origin'.
++  $ git push --quiet --set-upstream origin the_branch
++  Branch 'the_branch' set up to track remote branch 'the_branch' from 'origin'. (?)
+   $ git push --tags
+   To $TESTTMP/git.bare
+    * [new tag]         the_tag -> the_tag
