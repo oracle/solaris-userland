@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 # For this component, prefer 32-bit over 64-bit for now until sufficient
 # testing has been performed.
@@ -28,15 +28,15 @@ BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pam_pkcs11
-COMPONENT_VERSION=	0.6.8
+COMPONENT_VERSION=	0.6.11
 COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/opensc/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9d942e542ef35d0e1f990d9ff5bf9df0af84c828ed081add2eb1b4d84f0efbda
+    sha256:44d717d285ad862cd63002e901b21fcbd808c65b063f71be1c2aece04dfa23ca
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)files/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/pam-pkcs11
 COMPONENT_ANITYA_ID=	13275
 
-COMPONENT_BAID=		30942
+COMPONENT_BAID=		128294
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -61,6 +61,7 @@ CONFIGURE_OPTIONS += --docdir=/etc/security/pam_pkcs11
 CONFIGURE_OPTIONS += OPENSSL_LIBS="$(OPENSSL_LIBS)"
 CONFIGURE_OPTIONS += --with-pcsclite=yes
 CONFIGURE_OPTIONS += PCSC_CFLAGS="-I /usr/include/PCSC"
+CONFIGURE_OPTIONS += PCSC_LIBS="-lpcsclite"
 
 $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
 REQUIRED_PACKAGES += library/security/openssl

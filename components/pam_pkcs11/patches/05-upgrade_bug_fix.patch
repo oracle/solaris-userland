@@ -3,20 +3,20 @@
 # - ldap_mapper.so (built with Mozilla LDAP)
 # - openldap_mapper.so (built with OpenLDAP)
 #
-# However, on S12, because Mozilla LDAP is EOL'ed, only one LDAP mapper module
+# However, on S11U4, because Mozilla LDAP is EOL'ed, only one LDAP mapper module
 # is provided:
 # - ldap_mapper.so (built with OpenLDAP)
 #
 # If openldap_mapper.so is used in pam_pkcs11.conf on S11U3, then pam_pkcs11
-# will fail to load the LDAP module after upgrade to S12. 
+# will fail to load the LDAP module after upgrade to S11U4.
 #
-# To resolve this upgrade issue, on S12, if openldap_mapper.so is specified in 
+# To resolve this upgrade issue, on S11U4, if openldap_mapper.so is specified in
 # pam_pkcs11.conf file, then we will load ldap_mapper.so instead. 
 #
-# This patch is Solaris specific and is for S12+ only. 
+# This patch is Solaris specific and is for S11U4+ only.
 #
---- pam_pkcs11-0.6.8_ISA/src/pam_pkcs11/mapper_mgr.c	Thu Oct 13 15:01:46 2016
-+++ pam_pkcs11-0.6.8_NEW/src/pam_pkcs11/mapper_mgr.c	Tue Nov  1 20:09:41 2016
+--- old/src/pam_pkcs11/mapper_mgr.c	2022-08-02 16:13:01.506795568 +0200
++++ new/src/pam_pkcs11/mapper_mgr.c	2022-08-02 16:13:54.226694433 +0200
 @@ -42,6 +42,41 @@
  #include <sys/param.h>
  #endif
@@ -59,7 +59,7 @@
  struct mapper_listitem *root_mapper_list;
  
  /*
-@@ -100,17 +135,49 @@
+@@ -100,17 +135,49 @@ struct mapper_instance *load_module(scco
  	    }
  	} else if (blk) { /* assume dynamic module */
  	    DBG1("Loading dynamic module for mapper '%s'",name);

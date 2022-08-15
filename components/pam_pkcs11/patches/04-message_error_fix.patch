@@ -10,18 +10,18 @@
 # Changes from smartcard to "smart card" in pam_prompt messages are for
 # Solaris message style compliance and they are Solaris specific. 
 #
---- pam_pkcs11-0.6.8_ORIG/src/pam_pkcs11/pam_pkcs11.c	Tue Oct  4 12:22:18 2016
-+++ pam_pkcs11-0.6.8_NEW/src/pam_pkcs11/pam_pkcs11.c	Thu Oct 27 15:56:06 2016
-@@ -199,7 +199,7 @@
-   char **issuer, **serial;
-   const char *login_token_name = NULL;
+--- old/src/pam_pkcs11/pam_pkcs11.c	2022-08-02 16:04:34.687896773 +0200
++++ new/src/pam_pkcs11/pam_pkcs11.c	2022-08-02 16:07:23.653822722 +0200
+@@ -239,7 +239,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
+   textdomain(PACKAGE);
+ #endif
  
--  pam_prompt(pamh, PAM_TEXT_INFO , NULL, _("Smartcard authentification starts"));
+-  pam_prompt(pamh, PAM_TEXT_INFO , NULL, _("Smartcard authentication starts"));
 +  pam_prompt(pamh, PAM_TEXT_INFO , NULL, _("Smart card authentication starts"));
  
    /* first of all check whether debugging should be enabled */
    for (i = 0; i < argc; i++)
-@@ -392,7 +392,7 @@
+@@ -445,7 +445,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
        }
      } else if (user) {
  		if (!configuration->quiet) {
@@ -30,7 +30,7 @@
  			sleep(configuration->err_display_time);
  		}
  
-@@ -419,7 +419,7 @@
+@@ -472,7 +472,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
        if (rv != 0) {
          /* user gave us a user id and no smart card go to next module */
  		if (!configuration->quiet) {
@@ -39,7 +39,7 @@
  			sleep(configuration->err_display_time);
  		}
  
-@@ -495,7 +495,7 @@
+@@ -548,7 +548,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
  			pam_syslog(pamh, LOG_ERR,
  					"password length is zero but the 'nullok' argument was not defined.");
  			if (!configuration->quiet) {
@@ -48,7 +48,7 @@
  				sleep(configuration->err_display_time);
  			}
  			return PAM_AUTH_ERR;
-@@ -523,7 +523,7 @@
+@@ -576,7 +576,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
        ERR1("open_pkcs11_login() failed: %s", get_error());
  		if (!configuration->quiet) {
  			pam_syslog(pamh, LOG_ERR, "open_pkcs11_login() failed: %s", get_error());

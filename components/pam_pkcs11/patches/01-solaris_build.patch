@@ -2,9 +2,9 @@
 # This patch contains changes for Solaris build.   This is for Solaris only,
 # so we will not contribute back this change to the upstream community. 
 #
---- pam_pkcs11-0.6.8_ORIG/configure.in	Sat Apr  7 10:09:19 2012
-+++ pam_pkcs11-0.6.8_NEW/configure.in	Wed Jul 13 15:12:01 2016
-@@ -96,7 +96,7 @@
+--- old/configure.ac	2022-08-02 15:17:44.510677516 +0200
++++ new/configure.ac	2022-08-02 15:18:59.477442530 +0200
+@@ -95,7 +95,7 @@ else
    AC_CHECK_LIB( ldap, ldap_init,
  	[
  	with_ldap=yes
@@ -13,3 +13,25 @@
  	],[
  	AC_MSG_WARN([Cannot find LDAP libraries. LDAP support disabled])
  	with_ldap=no
+--- old/src/pam_pkcs11/pam_pkcs11.c	2022-08-04 14:36:46.725084821 +0200
++++ new/src/pam_pkcs11/pam_pkcs11.c	2022-08-04 14:46:04.216029288 +0200
+@@ -112,9 +112,7 @@ static int pam_prompt(pam_handle_t *pamh
+   free(&resp[0]);
+   return PAM_SUCCESS;
+ }
+-#endif
+ 
+-#if !defined(HAVE_SECURITY_PAM_EXT_H) || defined(OPENPAM)
+ static void
+ pam_syslog(pam_handle_t *pamh, int priority, const char *fmt, ...)
+ {
+@@ -124,7 +122,9 @@ pam_syslog(pam_handle_t *pamh, int prior
+     vsyslog(priority, fmt, ap);
+     va_end(ap);
+ }
++#endif
+ 
++#if !defined(HAVE_SECURITY_PAM_EXT_H) && defined(OPENPAM)
+ /*
+  * With OpenPAM pam_prompt resp arg cannot be NULL, so this is just a wrapper.
+  */

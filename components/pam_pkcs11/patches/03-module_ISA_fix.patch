@@ -4,9 +4,9 @@
 # component, so that the PAM_PKCS11 module can be used for both 32 and 
 # 64 bit applications at the same time. This patch is for Solaris only. 
 #
---- pam_pkcs11-0.6.8_ORIG/src/common/strings.h	Sat Oct 23 11:36:36 2010
-+++ pam_pkcs11-0.6.8_NEW/src/common/strings.h	Thu Sep  1 13:47:52 2016
-@@ -125,6 +125,16 @@
+--- old/src/common/strings.h	2022-08-02 15:52:38.549259315 +0200
++++ new/src/common/strings.h	2022-08-02 15:54:04.245936839 +0200
+@@ -125,6 +125,16 @@ M_EXTERN char **split_static(const char
   */
  M_EXTERN char *trim(const char *str);
  
@@ -23,8 +23,8 @@
  #undef M_EXTERN
  
  #endif
---- pam_pkcs11-0.6.8_ORIG/src/common/strings.c	Sat Oct 23 11:36:36 2010
-+++ pam_pkcs11-0.6.8_NEW/src/common/strings.c	Fri Sep  2 10:08:11 2016
+--- old/src/common/strings.c	2022-08-02 15:52:38.558078631 +0200
++++ new/src/common/strings.c	2022-08-02 15:54:04.252838042 +0200
 @@ -34,6 +34,17 @@
  #include <unistd.h>
  #include "strings.h"
@@ -43,7 +43,7 @@
  /*
  check for null or blank string
  */
-@@ -182,4 +193,33 @@
+@@ -181,4 +192,33 @@ char *trim(const char *str){
          return res;
  }
  
@@ -77,9 +77,9 @@
 +#endif
 +
  #endif /* __STRINGS_C_ */
---- pam_pkcs11-0.6.8_ORIG/src/pam_pkcs11/pam_pkcs11.c	Sat Apr  7 09:55:19 2012
-+++ pam_pkcs11-0.6.8_NEW/src/pam_pkcs11/pam_pkcs11.c	Thu Sep  1 13:54:27 2016
-@@ -57,6 +57,10 @@
+--- old/src/pam_pkcs11/pam_pkcs11.c	2022-08-02 15:52:38.564693602 +0200
++++ new/src/pam_pkcs11/pam_pkcs11.c	2022-08-02 15:54:04.261267813 +0200
+@@ -61,6 +61,10 @@
  #endif
  #define LOGNAME   "PAM-PKCS11"  /* name for log-file entries */
  
@@ -90,7 +90,7 @@
  /*
  * comodity function that returns 1 on null, empty o spaced string
  */
-@@ -198,6 +202,9 @@
+@@ -225,6 +229,9 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
    char env_temp[256] = "";
    char **issuer, **serial;
    const char *login_token_name = NULL;
@@ -98,9 +98,9 @@
 +  char real_pkcs11_modulepath[MAXPATHLEN];
 +#endif
  
-   pam_prompt(pamh, PAM_TEXT_INFO , NULL, _("Smartcard authentification starts"));
- 
-@@ -315,9 +322,28 @@
+ #ifdef ENABLE_NLS
+   setlocale(LC_ALL, "");
+@@ -342,9 +349,28 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
      return PAM_IGNORE;
    }
  
@@ -129,8 +129,8 @@
    if (rv != 0) {
      ERR2("load_pkcs11_module() failed loading %s: %s",
  		configuration->pkcs11_modulepath, get_error());
---- pam_pkcs11-0.6.8_ORIG/src/pam_pkcs11/mapper_mgr.c	Sat Jul  9 05:20:48 2011
-+++ pam_pkcs11-0.6.8_NEW/src/pam_pkcs11/mapper_mgr.c	Thu Sep  1 13:57:17 2016
+--- old/src/pam_pkcs11/mapper_mgr.c	2022-08-02 15:52:38.573399770 +0200
++++ new/src/pam_pkcs11/mapper_mgr.c	2022-08-02 15:54:04.270019474 +0200
 @@ -38,6 +38,10 @@
  #include "../mappers/mapperlist.h"
  #include "mapper_mgr.h"
@@ -142,7 +142,7 @@
  struct mapper_listitem *root_mapper_list;
  
  /*
-@@ -54,6 +58,9 @@
+@@ -54,6 +58,9 @@ struct mapper_instance *load_module(scco
  	int old_level=get_debug_level();
  	const char *libname = NULL;
  	mapper_module * res = NULL;
@@ -152,7 +152,7 @@
  
  	/* get module info */
  	root = scconf_find_block(ctx,NULL,"pam_pkcs11");
-@@ -93,7 +100,17 @@
+@@ -93,7 +100,17 @@ struct mapper_instance *load_module(scco
  	    }
  	} else if (blk) { /* assume dynamic module */
  	    DBG1("Loading dynamic module for mapper '%s'",name);
@@ -170,8 +170,8 @@
  	    if (!handler) {
  		DBG3("dlopen failed for module:  %s path: %s Error: %s",name,libname,dlerror());
  		return NULL;
---- pam_pkcs11-0.6.8_ORIG/src/tools/pkcs11_inspect.c	Fri Apr  6 13:08:25 2012
-+++ pam_pkcs11-0.6.8_NEW/src/tools/pkcs11_inspect.c	Thu Sep  1 13:58:46 2016
+--- old/src/tools/pkcs11_inspect.c	2022-08-02 15:52:38.582281493 +0200
++++ new/src/tools/pkcs11_inspect.c	2022-08-02 15:54:04.279137432 +0200
 @@ -32,6 +32,10 @@
  #include "../pam_pkcs11/pam_config.h"
  #include "../pam_pkcs11/mapper_mgr.h"
@@ -183,7 +183,7 @@
  int main(int argc, const char **argv) {
    int i, rv;
    pkcs11_handle_t *ph;
-@@ -39,6 +43,9 @@
+@@ -39,6 +43,9 @@ int main(int argc, const char **argv) {
    unsigned int slot_num = 0;
    cert_object_t **certs;
    int cert_count;
@@ -193,7 +193,7 @@
  
    /* first of all check whether debugging should be enabled */
    for (i = 0; i < argc; i++)
-@@ -67,7 +74,19 @@
+@@ -67,7 +74,19 @@ int main(int argc, const char **argv) {
  
    /* load pkcs #11 module */
    DBG("loading pkcs #11 module...");
@@ -213,8 +213,8 @@
    if (rv != 0) {
      ERR2("load_pkcs11_module(%s) failed: %s", configuration->pkcs11_modulepath,
        get_error());
---- pam_pkcs11-0.6.8_ORIG/src/tools/pklogin_finder.c	Fri Apr  6 13:08:25 2012
-+++ pam_pkcs11-0.6.8_NEW/src/tools/pklogin_finder.c	Thu Sep  1 13:59:18 2016
+--- old/src/tools/pklogin_finder.c	2022-08-02 15:52:38.591372140 +0200
++++ new/src/tools/pklogin_finder.c	2022-08-02 15:54:04.288539588 +0200
 @@ -32,6 +32,10 @@
  #include "../pam_pkcs11/pam_config.h"
  #include "../pam_pkcs11/mapper_mgr.h"
@@ -226,7 +226,7 @@
  int main(int argc, const char **argv) {
    int i, rv;
    char *user = NULL;
-@@ -40,6 +44,9 @@
+@@ -40,6 +44,9 @@ int main(int argc, const char **argv) {
    cert_object_t **certs;
    int cert_count;
    unsigned int slot_num = 0;
@@ -236,7 +236,7 @@
  
  
    /* first of all check whether debugging should be enabled */
-@@ -69,7 +76,19 @@
+@@ -69,7 +76,19 @@ int main(int argc, const char **argv) {
  
    /* load pkcs #11 module */
    DBG("loading pkcs #11 module...");
