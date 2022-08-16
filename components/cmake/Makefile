@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS=64
 # Currently only builds with gcc
@@ -29,15 +29,15 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cmake
-CMAKE_MAJOR_VERSION=	3.21
+CMAKE_MAJOR_VERSION=	3.24
 COMPONENT_VERSION=	$(CMAKE_MAJOR_VERSION).0
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4a42d56449a51f4d3809ab4d3b61fd4a96a469e56266e896ce1009b5768bd2ab
+    sha256:c2b61f7cdecb1576cad25f918a8f42b8685d88a832fd4b62b9e0fa32e915a658
 COMPONENT_ARCHIVE_URL=	http://www.cmake.org/files/v$(CMAKE_MAJOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  http://www.cmake.org/
 COMPONENT_ANITYA_ID=	306
 
-COMPONENT_BAID=		105264
+COMPONENT_BAID=		128604
 
 # configure in cmake does not accept many of the options set in
 # configure.mk (CC=, CXX=, --bindir, --libdir, --sbindir).
@@ -108,15 +108,8 @@ COMPONENT_TEST_ENV += FC="$(GCC_ROOT)/bin/gfortran"
 COMPONENT_TEST_ENV += CLICOLOR=0
 
 COMPONENT_TEST_CMD = $(BUILD_DIR)/$(MACH64)/bin/ctest --output-on-failure
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "s/\s\s*[0-9][0-9]*\.[0-9][0-9]* sec/ SEC sec/"' \
-	'-e "s/\][0-9][0-9]*\.[0-9][0-9]* sec/\]SEC sec/"' \
-	'-e "/bin/ctest/d"' \
-	'-e "/Test project/d"' \
-	'-e "/^[mM]ake/d"' \
-	'-e "s|^make.*: Leaving directory.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^make.*: Entering directory.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "/^XXX_REMOVE_XXX$$/d" '
+COMPONENT_TEST_TRANSFORMS += ' -n '
+COMPONENT_TEST_TRANSFORMS += ' -e "/tests failed out of/p" '
 
 # Add path to libgfortran.so.[0-9] library to avoid Fortran test failures.
 # The library preload can be removed after bug 30144732 is fixed.

@@ -2,8 +2,8 @@
 #
 # Patch is Solaris specific and not appropriate for upstream.
 
---- cmake-3.21.0/Modules/CMakeDetermineJavaCompiler.cmake
-+++ cmake-3.21.0/Modules/CMakeDetermineJavaCompiler.cmake
+--- cmake-3.24.0/Modules/CMakeDetermineJavaCompiler.cmake
++++ cmake-3.24.0/Modules/CMakeDetermineJavaCompiler.cmake
 @@ -45,16 +45,11 @@ $ENV{JAVA_HOME}/bin
      /usr/bin
      /usr/lib/java/bin
@@ -21,8 +21,8 @@
      )
    # if no compiler has been specified yet, then look for one
    if(CMAKE_Java_COMPILER_INIT)
---- cmake-3.21.0/Modules/CMakeDetermineSystem.cmake
-+++ cmake-3.21.0/Modules/CMakeDetermineSystem.cmake
+--- cmake-3.24.0/Modules/CMakeDetermineSystem.cmake
++++ cmake-3.24.0/Modules/CMakeDetermineSystem.cmake
 @@ -33,7 +33,7 @@ # MacOSX                        Darwin
  
  # find out on which system cmake runs
@@ -32,8 +32,8 @@
    if(CMAKE_UNAME)
      if(CMAKE_HOST_SYSTEM_NAME STREQUAL "AIX")
        exec_program(${CMAKE_UNAME} ARGS -v OUTPUT_VARIABLE _CMAKE_HOST_SYSTEM_MAJOR_VERSION)
---- cmake-3.21.0/Modules/FindGTK2.cmake
-+++ cmake-3.21.0/Modules/FindGTK2.cmake
+--- cmake-3.24.0/Modules/FindGTK2.cmake
++++ cmake-3.24.0/Modules/FindGTK2.cmake
 @@ -301,9 +301,6 @@ endif()
      find_path(GTK2_${_var}_INCLUDE_DIR ${_hdr}
          PATHS
@@ -44,8 +44,8 @@
              /usr/libx32
              /usr/lib64
              /usr/lib
---- cmake-3.21.0/Modules/FindIce.cmake
-+++ cmake-3.21.0/Modules/FindIce.cmake
+--- cmake-3.24.0/Modules/FindIce.cmake
++++ cmake-3.24.0/Modules/FindIce.cmake
 @@ -421,7 +421,7 @@ set(Freeze_INCLUDE_DIR "${Freeze_INCLUDE
    # In common use on Linux, MacOS X (homebrew) and FreeBSD; prefer
    # version-specific dir
@@ -55,9 +55,9 @@
    list(APPEND ice_slice_suffixes
         "Ice-${Ice_VERSION_SLICE2CPP_FULL}/slice"
         "Ice-${Ice_VERSION_SLICE2CPP_SHORT}/slice"
---- cmake-3.21.0/Modules/FindJNI.cmake
-+++ cmake-3.21.0/Modules/FindJNI.cmake
-@@ -191,8 +191,6 @@ set(_JNI_JAVA_DIRECTORIES_BASE
+--- cmake-3.24.0/Modules/FindJNI.cmake
++++ cmake-3.24.0/Modules/FindJNI.cmake
+@@ -275,8 +275,6 @@ set(_JNI_JAVA_DIRECTORIES_BASE
    /usr/lib/jvm/java
    /usr/lib/java
    /usr/lib/jvm
@@ -66,7 +66,7 @@
    /usr/lib/j2sdk1.4-sun
    /usr/lib/j2sdk1.5-sun
    /opt/sun-jdk-1.5.0.04
-@@ -210,19 +208,6 @@ /usr/lib/jvm/java-11-openjdk-{libarch}
+@@ -294,19 +292,6 @@ /usr/lib/jvm/java-11-openjdk-{libarch}
    /usr/lib/jvm/java-8-openjdk-{libarch}     # Ubuntu 15.10
    /usr/lib/jvm/java-7-openjdk-{libarch}     # Ubuntu 15.10
    /usr/lib/jvm/java-6-openjdk-{libarch}     # Ubuntu 15.10
@@ -86,9 +86,9 @@
    # SuSE specific paths for default JVM
    /usr/lib64/jvm/java
    /usr/lib64/jvm/jre
---- cmake-3.21.0/Modules/FindJava.cmake
-+++ cmake-3.21.0/Modules/FindJava.cmake
-@@ -141,15 +141,11 @@ # environment can always override hard g
+--- cmake-3.24.0/Modules/FindJava.cmake
++++ cmake-3.24.0/Modules/FindJava.cmake
+@@ -126,15 +126,11 @@ # environment can always override hard g
  set(_JAVA_PATHS
    /usr/lib/java/bin
    /usr/share/java/bin
@@ -104,8 +104,8 @@
    )
  find_program(Java_JAVA_EXECUTABLE
    NAMES java
---- cmake-3.21.0/Modules/FindPHP4.cmake
-+++ cmake-3.21.0/Modules/FindPHP4.cmake
+--- cmake-3.24.0/Modules/FindPHP4.cmake
++++ cmake-3.24.0/Modules/FindPHP4.cmake
 @@ -19,10 +19,7 @@ #]======================================
  
  set(PHP4_POSSIBLE_INCLUDE_PATHS
@@ -117,8 +117,8 @@
    )
  
  set(PHP4_POSSIBLE_LIB_PATHS
---- cmake-3.21.0/Modules/FindQt.cmake
-+++ cmake-3.21.0/Modules/FindQt.cmake
+--- cmake-3.24.0/Modules/FindQt.cmake
++++ cmake-3.24.0/Modules/FindQt.cmake
 @@ -49,37 +49,6 @@ set(QT3_INSTALLED TRUE)
  endif()
  set(GLOB_TEMP_VAR)
@@ -173,8 +173,8 @@
    C:/Progra~1/qt/include
    PATH_SUFFIXES qt/include include/qt3)
  
---- cmake-3.21.0/Modules/FindQt3.cmake
-+++ cmake-3.21.0/Modules/FindQt3.cmake
+--- cmake-3.24.0/Modules/FindQt3.cmake
++++ cmake-3.24.0/Modules/FindQt3.cmake
 @@ -66,7 +66,6 @@ $ENV{QTDIR}/include
    ${GLOB_PATHS}
    /usr/share/qt3/include
@@ -183,8 +183,8 @@
    PATH_SUFFIXES lib/qt/include lib/qt3/include include/qt include/qt3 qt/include qt3/include
    )
  
---- cmake-3.21.0/Modules/Platform/UnixPaths.cmake
-+++ cmake-3.21.0/Modules/Platform/UnixPaths.cmake
+--- cmake-3.24.0/Modules/Platform/UnixPaths.cmake
++++ cmake-3.24.0/Modules/Platform/UnixPaths.cmake
 @@ -27,7 +27,7 @@ # please make sure to keep Help/variable
  # synchronized
  list(APPEND CMAKE_SYSTEM_PREFIX_PATH
@@ -194,8 +194,8 @@
  
    # CMake install location
    "${_CMAKE_INSTALL_DIR}"
---- cmake-3.21.0/Modules/UseJava.cmake
-+++ cmake-3.21.0/Modules/UseJava.cmake
+--- cmake-3.24.0/Modules/UseJava.cmake
++++ cmake-3.24.0/Modules/UseJava.cmake
 @@ -1108,7 +1108,6 @@ set(_jar_files)
      set(_jar_versions)
      set(_jar_paths
