@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=64
@@ -33,20 +33,19 @@ include ../../make-rules/shared-macros.mk
 PATH=$(dir $(CC)):$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		subversion
-COMPONENT_VERSION=	1.14.1
+COMPONENT_VERSION=	1.14.2
 COMPONENT_PROJECT_URL=	https://subversion.apache.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:dee2796abaa1f5351e6cc2a60b1917beb8238af548b20d3e1ec22760ab2f0cad
+    sha256:6da5f396e4e3f20490d6f4a7521733e5e58bb7b771151d2bbc1279291a21216d
 COMPONENT_ARCHIVE_URL=	https://www.apache.org/dist/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
-COMPONENT_PUBLIC_KEY_URL= https://www.apache.org/dist/subversion/subversion-1.14.1.KEYS
+COMPONENT_PUBLIC_KEY_URL= https://www.apache.org/dist/subversion/subversion-1.14.2.KEYS
 COMPONENT_BUGDB=	utility/svn
 COMPONENT_ANITYA_ID=	4905
+COMPONENT_BAID=		128859
 
-COMPONENT_BAID=		92888
-
-PYTHON_VERSIONS=	3.7
-PYTHON_VERSION =	3.7
+PYTHON_VERSION =	3.9
+PYTHON_VERSIONS =	$(PYTHON_VERSION)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -200,9 +199,6 @@ COMPONENT_BUILD_ENV += LDFLAGS="$(LDFLAGS)"
 
 COMPONENT_TEST_ENV += LD_LIBRARY_PATH_32="$(LD_TEST_PATH_32)"
 COMPONENT_TEST_ENV += LD_LIBRARY_PATH_64="$(LD_TEST_PATH_64)"
-# Force C locale to avoid test failures and memory exhaustion (bug 32762760).
-COMPONENT_TEST_ENV += LC_ALL=C
-COMPONENT_TEST_ENV += LANG=C
 
 # Do not transform .so files to include standard Python 3 ABI version tag.
 PY3_CPYTHON_NAMING = \#
@@ -222,7 +218,7 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libserf
 REQUIRED_PACKAGES += library/py3c
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

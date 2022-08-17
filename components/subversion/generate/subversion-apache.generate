@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -28,3 +28,6 @@
 # Delete everything not belonging to Apache modules
 <transform dir file link hardlink pkg.type=(?!apache_mod) -> drop>
 <transform dir file link hardlink -> delete pkg.type .*>
+
+# prevent 64-bit object in 32-bit path errors
+<transform file path=usr/apache2/2.4/libexec/.*\.so -> add pkg.linted.userland.action001.2 true>
