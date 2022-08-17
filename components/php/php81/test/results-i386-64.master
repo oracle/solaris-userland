@@ -1,15 +1,15 @@
 TEST RESULT SUMMARY
 ---------------------------------------------------------------------
-Exts skipped    :   14
+Exts skipped    :   15
 Exts tested     :   58
 ---------------------------------------------------------------------
 
-Number of tests : 17266             14708
-Tests skipped   : 2558 ( 14.8%) --------
-Tests warned    :    3 (  0.0%) (  0.0%)
-Tests failed    :  176 (  1.0%) (  1.2%)
+Number of tests : 17376             14803
+Tests skipped   : 2573 ( 14.8%) --------
+Tests warned    :    7 (  0.0%) (  0.0%)
+Tests failed    :  224 (  1.3%) (  1.5%)
 Expected fail   :   28 (  0.2%) (  0.2%)
-Tests passed    : 14501 ( 84.0%) ( 98.6%)
+Tests passed    : 14544 ( 83.7%) ( 98.3%)
 ---------------------------------------------------------------------
 =====================================================================
 
@@ -41,10 +41,10 @@ DateTime::sub() -- spring type3 type3 [ext/date/tests/DateTime_sub-spring-type3-
 Bug #42718 (unsafe_raw filter not applied when configured as default filter) [ext/filter/tests/bug42718.phpt]  XFAIL REASON: FILTER_UNSAFE_RAW not applied when configured as default filter, even with flags
 Bug #67296 (filter_input doesn't validate variables) [ext/filter/tests/bug49184.phpt]  XFAIL REASON: See Bug #49184
 Bug #67167: filter_var(null,FILTER_VALIDATE_BOOLEAN,FILTER_NULL_ON_FAILURE) returns null [ext/filter/tests/bug67167.02.phpt]  XFAIL REASON: Requires php_zval_filter to not use convert_to_string for all filters.
+datefmt_format_code() [ext/intl/tests/dateformat_format_variant3.phpt]  XFAIL REASON: This test assumes wrong data wrt to PDT. It is also too big and needs splitting up.
 Return type check elision [ext/opcache/tests/opt/verify_return_type.phpt]  XFAIL REASON: Return types cannot be inferred through prototypes
 via [ext/pdo_sqlite/tests/common.phpt]
 	SQLite PDO Common: PDOStatement::getColumnMeta [ext/pdo_sqlite/tests/pdo_022.phpt]  XFAIL REASON: This feature is not yet finalized, no test makes sense
-Phar web-based phar with fatal error [ext/phar/tests/fatal_error_webphar.phpt]  XFAIL REASON: Uses no longer supported __autoload() function, new phar needed
 updateTimestamp never called when session data is empty [ext/session/tests/bug71162.phpt]  XFAIL REASON: Current session module is designed to write empty session always. In addition, current session module only supports SessionHandlerInterface only from PHP 7.0.
 =====================================================================
 
@@ -55,10 +55,52 @@ Test stream_isatty with redirected STDERR [tests/output/stream_isatty_err.phpt]
 Test stream_isatty with redirected STDIN/STDERR [tests/output/stream_isatty_in-err.phpt]
 Test stream_isatty with redirected STDIN/STDOUT [tests/output/stream_isatty_in-out.phpt]
 Test stream_isatty with redirected STDOUT [tests/output/stream_isatty_out.phpt]
-Test curl_error() & curl_errno() function without url [ext/curl/tests/curl_basic_007.phpt]
 CURLOPT_SSL* basic client auth tests [ext/curl/tests/curl_setopt_ssl.phpt]
+Tests for DateTimeImmutable::createFromInterface [ext/date/tests/DateTimeImmutable_createFromInterface-001.phpt]
+Tests for DateTimeImmutable::createFromInterface inheritance [ext/date/tests/DateTimeImmutable_createFromInterface-002.phpt]
+Test clone on DateTimeZone objects [ext/date/tests/DateTimeZone_clone_basic1.phpt]
+Test of compare object handler for DateTimeZone objects [ext/date/tests/DateTimeZone_compare_basic1.phpt]
+Test new DateTimeZone() : basic functionality [ext/date/tests/DateTimeZone_construct_basic.phpt]
+Test serialization of DateTimeZone objects [ext/date/tests/DateTimeZone_serialize_type_2.phpt]
+DateTime::add() -- fall type2 type2 [ext/date/tests/DateTime_add-fall-type2-type2.phpt]
+DateTime::add() -- spring type2 type2 [ext/date/tests/DateTime_add-spring-type2-type2.phpt]
+Test clone of objects whose class derived from DateTime class [ext/date/tests/DateTime_clone_basic2.phpt]
+Test clone of DateTime objects [ext/date/tests/DateTime_clone_basic3.phpt]
+Test new DateTime() : basic functionality [ext/date/tests/DateTime_construct_basic1.phpt]
+Tests for DateTime::createFromInterface [ext/date/tests/DateTime_createFromInterface-001.phpt]
+Tests for DateTime::createFromInterface with inheritance [ext/date/tests/DateTime_createFromInterface-002.phpt]
+DateTime::diff() days -- fall type2 type2 [ext/date/tests/DateTime_days-fall-type2-type2.phpt]
+DateTime::diff() days -- fall type2 type3 [ext/date/tests/DateTime_days-fall-type2-type3.phpt]
+DateTime::diff() days -- fall type3 type2 [ext/date/tests/DateTime_days-fall-type3-type2.phpt]
+DateTime::diff() days -- fall type3 type3 [ext/date/tests/DateTime_days-fall-type3-type3.phpt]
+DateTime::diff() days -- spring type2 type2 [ext/date/tests/DateTime_days-spring-type2-type2.phpt]
+DateTime::diff() days -- spring type2 type3 [ext/date/tests/DateTime_days-spring-type2-type3.phpt]
+DateTime::diff() days -- spring type3 type2 [ext/date/tests/DateTime_days-spring-type3-type2.phpt]
+DateTime::diff() -- fall type2 type2 [ext/date/tests/DateTime_diff-fall-type2-type2.phpt]
+DateTime::diff() -- spring type2 type2 [ext/date/tests/DateTime_diff-spring-type2-type2.phpt]
+DateTime::sub() -- fall type2 type2 [ext/date/tests/DateTime_sub-fall-type2-type2.phpt]
+DateTime::sub() -- spring type2 type2 [ext/date/tests/DateTime_sub-spring-type2-type2.phpt]
+Bug #17988 (strtotime handling of postgresql timestamps) [ext/date/tests/bug17988.phpt]
+Bug #30532 (strtotime - crossing daylight savings time) [ext/date/tests/bug30532.phpt]
+Bug #44742 (timezone_offset_get() causes segmentation faults) [ext/date/tests/bug44742.phpt]
+Test for bug #45543: DateTime::setTimezone can not set timezones without ID. [ext/date/tests/bug45543.phpt]
+Bug #45554 (Inconsistent behavior of the u format char) [ext/date/tests/bug45554.phpt]
+Bug #53879 (DateTime::createFromFormat() fails to parse cookie expiration date) [ext/date/tests/bug53879.phpt]
+Bug #55253 (DateTime::add() and sub() result -1 hour on objects with time zone type 2) [ext/date/tests/bug55253.phpt]
+Bug #60236 (TLA timezone dates are not converted properly from timestamp) [ext/date/tests/bug60236.phpt]
+Bug #62896 Unixtimestamp may take on local times DST flag (this test will only be valid during CEST) [ext/date/tests/bug62896.phpt]
+Bug #66985 (Some timezones are no longer valid in PHP 5.5.10) [ext/date/tests/bug66985.phpt]
+Bug #74671 (DST timezone abbreviation has incorrect offset) [ext/date/tests/bug74671.phpt]
+date_create() function [1] [ext/date/tests/date_create-1.phpt]
+Test date_create() function : basic functionality [ext/date/tests/date_create_basic.phpt]
+Test for date_diff with timezone abbreviations. [ext/date/tests/date_diff1.phpt]
 Test gmstrftime() function : usage variation - Checking time related formats which are supported other than on Windows. [ext/date/tests/gmstrftime_variation16.phpt]
+RFC: DateTime and Daylight Saving Time Transitions (zone type 2) [ext/date/tests/rfc-datetime_and_daylight_saving_time-type2.phpt]
+RFC: DateTime and Daylight Saving Time Transitions (zone type 3, bd2) [ext/date/tests/rfc-datetime_and_daylight_saving_time-type3-bd2.phpt]
+RFC: DateTime and Daylight Saving Time Transitions (zone type 3, bs) [ext/date/tests/rfc-datetime_and_daylight_saving_time-type3-bs.phpt]
 Test strftime() function : usage variation - Checking time related formats which are supported other than on Windows. [ext/date/tests/strftime_variation16.phpt]
+strtotime() on date constants [ext/date/tests/strtotime2.phpt]
+Test timezone_open() function : basic functionality [ext/date/tests/timezone_open_basic1.phpt]
 enchant_broker_dict_exists() function [ext/enchant/tests/broker_dict_exists.phpt]
 @enchant_broker_free() function [ext/enchant/tests/broker_free_02.phpt]
 enchant_broker_free_dict(resource $dict); function [ext/enchant/tests/broker_free_dict.phpt]
@@ -125,6 +167,11 @@ Test the basics to function iconv. [ext/iconv/tests/iconv_basic_001.phpt]
 iconv_mime_encode() [ext/iconv/tests/iconv_mime_encode.phpt]
 iconv_strrpos() [ext/iconv/tests/iconv_strrpos.phpt]
 iconv_substr() with out of bounds offset [ext/iconv/tests/iconv_substr_out_of_bounds.phpt]
+IntlCalendar::fromDateTime(): basic test [ext/intl/tests/calendar_fromDateTime_basic.phpt]
+IntlCalendar::fromDateTime(): errors [ext/intl/tests/calendar_fromDateTime_error.phpt]
+IntlCalendar::setTimeZone(): valid time zones for DateTime but not ICU [ext/intl/tests/calendar_setTimeZone_error2.phpt]
+IntlCalendar::setTimeZone(): different ways to specify time zone [ext/intl/tests/calendar_setTimeZone_variation2.phpt]
+IntlTimeZone::fromDateTimeZone(): argument errors [ext/intl/tests/timezone_fromDateTimeZone_error.phpt]
 Bug #61367: open_basedir bypass in libxml RSHUTDOWN: write test [ext/libxml/tests/bug61367-write.phpt]
 pcntl: pcntl_sigprocmask(), pcntl_sigwaitinfo(), pcntl_sigtimedwait() [ext/pcntl/tests/002.phpt]
 Bug #74183 - preg_last_error not returning error code after error [ext/pcre/tests/bug74183.phpt]
@@ -198,6 +245,7 @@ Check cli_process_title support on Unix [sapi/cli/tests/cli_process_title_unix.p
 Testing ftell() on std streams [sapi/cli/tests/std_streams.phpt]
 FPM: bug68391 - Configuration inclusion in alphabetical order [sapi/fpm/tests/bug68391-conf-include-order.phpt]
 FPM: bug68423 - Multiple pools with different PMs (dynamic + ondemand + static) [sapi/fpm/tests/bug68423-multi-pool-all-pms.phpt]
+FPM: bug72185 - FastCGI empty frame incorrectly created [sapi/fpm/tests/bug72185-fcgi-empty-frame.phpt]
 FPM: bug78599 - env_path_info underflow - CVE-2019-11043 [sapi/fpm/tests/bug78599-path-info-underflow.phpt]
 Bug #80849 (HTTP Status header truncation) [sapi/fpm/tests/bug80849-fpm.phpt]
 FPM: Function fastcgi_finish_request basic test [sapi/fpm/tests/fastcgi_finish_request_basic.phpt]
@@ -233,6 +281,10 @@ FPM: Status listen test [sapi/fpm/tests/status-listen.phpt]
 WARNED TEST SUMMARY
 ---------------------------------------------------------------------
 DBA DB4 with persistent connections [ext/dba/tests/dba_db4_018.phpt] (warn: XFAIL section but test passes)
+Bug #78175.2 (Preloading segfaults at preload time and at runtime) [ext/opcache/tests/bug78175_2.phpt] (warn: XFAIL section but test passes)
+Bug #78376 (Incorrect preloading of constant static properties) [ext/opcache/tests/bug78376.phpt] (warn: XFAIL section but test passes)
+Preloading inherited method with separated static vars [ext/opcache/tests/preload_method_static_vars.phpt] (warn: XFAIL section but test passes)
+Preload trait with static variables in method [ext/opcache/tests/preload_trait_static.phpt] (warn: XFAIL section but test passes)
 Bug #81577: (Exceptions in interrupt handlers: cleanup_live_vars) [ext/pcntl/tests/bug81577_3.phpt] (warn: XFAIL section but test passes)
 Phar: bug #69958: Segfault in Phar::convertToData on invalid file [ext/phar/tests/bug69958.phpt] (warn: XFAIL section but test passes)
 =====================================================================

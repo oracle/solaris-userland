@@ -4,12 +4,12 @@ Exts skipped    :   14
 Exts tested     :   58
 ---------------------------------------------------------------------
 
-Number of tests : 16556             14058
-Tests skipped   : 2498 ( 15.1%) --------
-Tests warned    :    3 (  0.0%) (  0.0%)
-Tests failed    :  168 (  1.0%) (  1.2%)
+Number of tests : 16608             14102
+Tests skipped   : 2506 ( 15.1%) --------
+Tests warned    :    7 (  0.0%) (  0.0%)
+Tests failed    :  169 (  1.0%) (  1.2%)
 Expected fail   :   30 (  0.2%) (  0.2%)
-Tests passed    : 13857 ( 83.7%) ( 98.6%)
+Tests passed    : 13896 ( 83.7%) ( 98.5%)
 ---------------------------------------------------------------------
 =====================================================================
 
@@ -44,9 +44,9 @@ RFC: DateTime and Daylight Saving Time Transitions (zone type 3, fs) [ext/date/t
 Bug #42718 (unsafe_raw filter not applied when configured as default filter) [ext/filter/tests/bug42718.phpt]  XFAIL REASON: FILTER_UNSAFE_RAW not applied when configured as default filter, even with flags
 Bug #67296 (filter_input doesn't validate variables) [ext/filter/tests/bug49184.phpt]  XFAIL REASON: See Bug #49184
 Bug #67167: filter_var(null,FILTER_VALIDATE_BOOLEAN,FILTER_NULL_ON_FAILURE) returns null [ext/filter/tests/bug67167.02.phpt]  XFAIL REASON: Requires php_zval_filter to not use convert_to_string for all filters.
+datefmt_format_code() [ext/intl/tests/dateformat_format_variant3.phpt]  XFAIL REASON: This test assumes wrong data wrt to PDT. It is also too big and needs splitting up.
 via [ext/pdo_sqlite/tests/common.phpt]
 	SQLite PDO Common: PDOStatement::getColumnMeta [ext/pdo_sqlite/tests/pdo_022.phpt]  XFAIL REASON: This feature is not yet finalized, no test makes sense
-Phar web-based phar with fatal error [ext/phar/tests/fatal_error_webphar.phpt]  XFAIL REASON: Uses no longer supported __autoload() function, new phar needed
 updateTimestamp never called when session data is empty [ext/session/tests/bug71162.phpt]  XFAIL REASON: Current session module is designed to write empty session always. In addition, current session module only supports SessionHandlerInterface only from PHP 7.0.
 =====================================================================
 
@@ -194,6 +194,7 @@ Check cli_process_title support on Unix [sapi/cli/tests/cli_process_title_unix.p
 Testing ftell() on std streams [sapi/cli/tests/std_streams.phpt]
 FPM: bug68391 - Configuration inclusion in alphabetical order [sapi/fpm/tests/bug68391-conf-include-order.phpt]
 FPM: bug68423 - Multiple pools with different PMs (dynamic + ondemand + static) [sapi/fpm/tests/bug68423-multi-pool-all-pms.phpt]
+FPM: bug72185 - FastCGI empty frame incorrectly created [sapi/fpm/tests/bug72185-fcgi-empty-frame.phpt]
 FPM: bug78599 - env_path_info underflow - CVE-2019-11043 [sapi/fpm/tests/bug78599-path-info-underflow.phpt]
 Bug #80849 (HTTP Status header truncation) [sapi/fpm/tests/bug80849-fpm.phpt]
 FPM: Function fastcgi_finish_request basic test [sapi/fpm/tests/fastcgi_finish_request_basic.phpt]
@@ -227,6 +228,10 @@ FPM: Status listen test [sapi/fpm/tests/status-listen.phpt]
 WARNED TEST SUMMARY
 ---------------------------------------------------------------------
 DBA DB4 with persistent connections [ext/dba/tests/dba_db4_018.phpt] (warn: XFAIL section but test passes)
+Bug #78175.2 (Preloading segfaults at preload time and at runtime) [ext/opcache/tests/bug78175_2.phpt] (warn: XFAIL section but test passes)
+Bug #78376 (Incorrect preloading of constant static properties) [ext/opcache/tests/bug78376.phpt] (warn: XFAIL section but test passes)
+Preloading inherited method with separated static vars [ext/opcache/tests/preload_method_static_vars.phpt] (warn: XFAIL section but test passes)
+Preload trait with static variables in method [ext/opcache/tests/preload_trait_static.phpt] (warn: XFAIL section but test passes)
 Bug #81577: (Exceptions in interrupt handlers: cleanup_live_vars) [ext/pcntl/tests/bug81577_3.phpt] (warn: XFAIL section but test passes)
 Phar: bug #69958: Segfault in Phar::convertToData on invalid file [ext/phar/tests/bug69958.phpt] (warn: XFAIL section but test passes)
 =====================================================================
