@@ -107,6 +107,14 @@ COMPONENT_BUILD_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
 COMPONENT_INSTALL_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
 COMPONENT_TEST_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
 
+ifneq ($(strip $(OPENSSL3)),)
+# Use OpenSSL 3
+COMPONENT_BUILD_ENV += OPENSSL_LIB_DIR=/usr/openssl/3/lib/64
+COMPONENT_BUILD_ENV += OPENSSL_INCLUDE_DIR=/usr/openssl/3/include
+COMPONENT_INSTALL_ENV += OPENSSL_LIB_DIR=/usr/openssl/3/lib/64
+COMPONENT_INSTALL_ENV += OPENSSL_INCLUDE_DIR=/usr/openssl/3/include
+endif
+
 # Rust library names contain hash which differs between intel and sparc.
 # Therefore library list need to be created to be included into p5m file.
 COMPONENT_POST_INSTALL_ACTION += \
@@ -131,7 +139,11 @@ COMPONENT_TEST_TARGETS =
 REQUIRED_PACKAGES += developer/llvm/llvm
 REQUIRED_PACKAGES += developer/rust/rustc
 REQUIRED_PACKAGES += library/libssh2
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
 REQUIRED_PACKAGES += library/security/openssl
+endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
