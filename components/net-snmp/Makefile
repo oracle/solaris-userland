@@ -87,12 +87,8 @@ CONFIGURE_OPTIONS.64  +=	PERLPROG="$(PERL)"
 CONFIGURE_OPTIONS.64  +=	--with-perl-modules="$(PERL_ARGS)"
 CONFIGURE_OPTIONS.64  +=	--disable-perl-cc-checks
 
-# Install the net-snmp-57 libraries
 COMPONENT_PRE_CONFIGURE_ACTION = \
-	($(CLONEY) $(SOURCE_DIR) $(@D); $(CLONEY) $(COMPONENT_DIR)/sun $(@D)/sun; \
-	cd ../net-snmp-57 && $(GMAKE) install);	
-
-PRE_CLEAN_ACTION += cd ../net-snmp-57 && $(GMAKE) clean;
+	($(CLONEY) $(SOURCE_DIR) $(@D); $(CLONEY) $(COMPONENT_DIR)/sun $(@D)/sun);
 
 # Make a copy of the python bits so we can build separate python 3.9 support
 COMPONENT_PREP_ACTION += (cd $(@D) ; cp -rp python python3.9);
@@ -126,11 +122,6 @@ COMPONENT_TEST_ENV +=   LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
 # also here.
 PKG_PROTO_DIRS += $(BUILD_DIR)/prototype/$(MACH64)
 
-# Plus add paths to the 5.7 version libraries need to be added from the
-# net-snmp-57 proto path.
-PKG_PROTO_DIRS += $(WS_TOP)/components/net-snmp-57/build/prototype/$(MACH)
-PKG_PROTO_DIRS += $(WS_TOP)/components/net-snmp-57/build/prototype/$(MACH64)
-
 # Now we need to tell where 'gmake manifest-check' looks for binaries.
 # By default manifest-check takes binaries from build/prototype/$(uname -p). We
 # need to add more sources (see doc/manifest-check.txt for description):
@@ -141,9 +132,8 @@ GENERATE_PROTO_DIRS += build/$(MACH32)/docs^build/$$(MACH32)/docs
 GENERATE_PROTO_DIRS += build/prototype/$(MACH64)/usr/lib/$(MACH64)/^usr/lib/$$!(MACH64)
 # Add 64 bit binaries from build/prototype/$(MACH64)
 GENERATE_PROTO_DIRS += build/prototype/$(MACH64)/usr/bin^usr/bin
-# Add net-snmp-57 both 32 and 64 bit locations
-GENERATE_PROTO_DIRS += $(WS_TOP)/components/net-snmp-57/build/prototype/$(MACH64)
-GENERATE_PROTO_DIRS += $(WS_TOP)/components/net-snmp-57/build/prototype/$(MACH)
+# Add perl deliverables from build/prototype/$(MACH64)
+GENERATE_PROTO_DIRS += build/prototype/$(MACH64)/usr/perl5^usr/perl5
 # Add demo files
 GENERATE_PROTO_DIRS += sun/sdk/demo^sun/sdk/demo
 
