@@ -1,0 +1,24 @@
+Force use of Python 3.9.
+
+Not intended for upstream.
+
+--- gnome-browser-connector-v42.0/meson.build
++++ gnome-browser-connector-v42.0/meson.build
+@@ -1,7 +1,7 @@
+ project('gnome-browser-connector',
+   license: 'GPL-3',
+   version: run_command(
+-    'python3', '-c',
++    'python3.9', '-c',
+     'from gnome_browser_connector.version import __version__; print(__version__, end="")',
+     check: true
+   ).stdout(),
+@@ -13,7 +13,7 @@ MANIFEST_LEGACY_FILENAME = 'org.gnome.ch
+ 
+ # Dependencies
+ python_module = import('python')
+-py = python_module.find_installation('python3', required: true, modules: [
++py = python_module.find_installation('python3.9', required: true, modules: [
+   'gi'
+ ])
+ 

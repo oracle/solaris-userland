@@ -20,31 +20,29 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
-# All components using gobject-introspection must be built with gcc as
-# gobject-introspection does not produce correct results when using Studio.
-COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		chrome-gnome-shell
-COMPONENT_VERSION=	10.1
-COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeShellIntegrationForChrome
-COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
-COMPONENT_ARCHIVE_URL=	https://github.com/GNOME/chrome-gnome-shell/archive/$(COMPONENT_ARCHIVE)
+COMPONENT_NAME=		gnome-browser-connector
+COMPONENT_VERSION=	42.0
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeShellIntegration
+COMPONENT_SRC=		$(COMPONENT_NAME)-v$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_ARCHIVE_URL=	\
+	https://gitlab.gnome.org/nE0sIghT/gnome-browser-connector/-/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d93e83c7e7193e386df4acad6ea4c86ea9abc75bbe67539bbc9310607ea6aeb5
-COMPONENT_BUGDB=        gnome/gnome-shell
-COMPONENT_ANITYA_ID=	17138
+	sha256:3df9eabee19bbcae6e9be81eb123a7de42026d8c265a65ecb4f7df292708ac6e
+COMPONENT_BUGDB=	gnome/gnome-shell
+COMPONENT_ANITYA_ID=	281317
+COMPONENT_BAID=		128909
 
-COMPONENT_BAID=		47424
-
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.9
 
 TEST_TARGET = $(NO_TESTS)
 
-BUILD_STYLE = cmake
+BUILD_STYLE = meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -53,17 +51,14 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Need to convert "#! /usr/bin/env python" to actual path for pkgdepend to work
-PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/chrome-gnome-shell
-
-# Use explicit Python version rather than the default one
-CMAKE_OPTIONS += -DPYTHON_EXECUTABLE=$(PYTHON)
+PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-browser-connector
+PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-browser-connector-host
 
 # Deliver into vendor-packages instead of site-packages
+# Note: meson 0.60.0 will support this
 COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRLIBDIR)/python3.7/vendor-packages; \
-	$(MV) $(PROTOUSRLIBDIR)/python3.7/site-packages/* $(PROTOUSRLIBDIR)/python3.7/vendor-packages/
+	$(MKDIR) $(PROTOUSRLIBDIR)/python3.9/vendor-packages; \
+	$(MV) $(PROTOUSRLIBDIR)/python3.9/site-packages/* $(PROTOUSRLIBDIR)/python3.9/vendor-packages/
 
-REQUIRED_PACKAGES += library/python/pygobject-3-37
-REQUIRED_PACKAGES += library/python/requests-37
-REQUIRED_PACKAGES += runtime/python-37
-REQUIRED_PACKAGES += text/jq
+REQUIRED_PACKAGES += library/python/pygobject-3-39
+REQUIRED_PACKAGES += runtime/python-39
