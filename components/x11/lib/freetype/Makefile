@@ -29,16 +29,16 @@ COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freetype
-COMPONENT_VERSION=	2.11.1
+COMPONENT_VERSION=	2.12.1
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_PROJECT_URL=	https://www.freetype.org/
 COMPONENT_ARCHIVE_URL=	https://download.savannah.gnu.org/releases/freetype/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3333ae7cfda88429c97a7ae63b7d01ab398076c3b67182e960e5684050f2c5c8
+	sha256:4766f20157cc4cf0cd292f80bf917f92d1c439b243ac3018debf6b9140c41a7f
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        x11/font
 COMPONENT_ANITYA_ID=	854
-COMPONENT_BAID=		115729
+COMPONENT_BAID=		128644
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -46,7 +46,7 @@ FIX_PC_FILES=builds/unix/freetype2.in
 
 # Set here so we only have to update this one line, instead of multiple lines
 # in the *.p5m file on every new version
-FREETYPE_SOVERSION =	6.18.1
+FREETYPE_SOVERSION =	6.18.3
 PKG_VARS += FREETYPE_SOVERSION
 
 include $(WS_MAKE_RULES)/x11-component.mk
