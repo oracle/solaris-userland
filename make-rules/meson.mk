@@ -146,13 +146,21 @@ COMPONENT_BUILD_ENV += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 
 MESON = 	/usr/bin/meson
 
+# Create a native file to override what meson finds when looking for 'python'
+# or 'python3'. This allows us to set a specific version in our Makefile and
+# use versions other than the current system default.
+CFG=native.cfg
+$(BUILD_DIR)/config-%/$(CFG):
+	$(MKDIR) $(@D)
+	echo "[binaries]\npython = '$(PYTHON)'\n" > $@
+
 # configure the unpacked source for building 32 and 64 bit version
 # meson insists on separate source & build directories, so no cloney here.
-$(BUILD_DIR)/%/.configured:	$(SOURCE_DIR)/.prep
+$(BUILD_DIR)/%/.configured:	$(SOURCE_DIR)/.prep $(BUILD_DIR)/config-%/$(CFG)
 	($(RM) -rf $(@D) ; $(MKDIR) $(@D))
 	$(COMPONENT_PRE_CONFIGURE_ACTION)
 	(cd $(SOURCE_DIR) ; $(ENV) $(CONFIGURE_ENV) $(MESON) setup $(@D) \
-		$(CONFIGURE_OPTIONS))
+		--native-file=$(BUILD_DIR)/config-$*/$(CFG) $(CONFIGURE_OPTIONS))
 	$(COMPONENT_POST_CONFIGURE_ACTION)
 	$(TOUCH) $@
 

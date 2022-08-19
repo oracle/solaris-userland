@@ -34,11 +34,12 @@ COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Gedit
 COMPONENT_ARCHIVE_HASH=	\
     sha256:7a9b18b158808d1892989165f3706c4f1a282979079ab7458a79d3c24ad4deb5
-COMPONENT_BUGDB=        gnome/applications
+COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	5758
-
 COMPONENT_BAID=		120411
+
 BUILD_STYLE=		meson
+PYTHON_VERSION=		3.7
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -54,9 +55,9 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Compile all python sources to .pyc files
 COMPONENT_POST_INSTALL_ACTION += \
-        $(MV) $(PROTO_DIR)/usr/lib/python3.7/site-packages \
-              $(PROTO_DIR)/usr/lib/python3.7/vendor-packages; \
-        $(PYTHON) -m compileall $(PROTO_DIR)/usr/lib/python3.7/vendor-packages/gi/overrides;
+        $(MV) $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/site-packages \
+              $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/vendor-packages; \
+        $(PYTHON) -m compileall $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/vendor-packages/gi/overrides;
 PLUGINS_DIR = snippets; quickopen; externaltools
 COMPONENT_POST_INSTALL_ACTION += $(foreach i,$(PLUGINS_DIR),\
         $(PYTHON) -m compileall $(PROTO_DIR)$(USRLIBDIR64)/gedit/plugins/$(i));

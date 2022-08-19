@@ -34,10 +34,10 @@ COMPONENT_VERSION=	3.38.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Totem
 COMPONENT_ARCHIVE_HASH= \
 	sha256:fce562e2b26cbcfc0c678538dcc81f9dc15ce60d5a89ee4358907bf634304c40
-COMPONENT_BUGDB=        gnome/multimedia
+COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	13162
-
 COMPONENT_BAID=		110830
+
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -58,7 +58,7 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
                 $(PROTO_DIR)/usr/share/man/man1/totem-audio-preview.1;
  
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += developer/python/pylint-37
+REQUIRED_PACKAGES += developer/python/pylint
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas

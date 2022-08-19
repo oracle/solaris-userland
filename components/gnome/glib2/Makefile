@@ -39,7 +39,7 @@ COMPONENT_BAID=		118899
 BUILD_STYLE=		meson
 
 # No need to build for older versions.
-PYTHON_VERSIONS= 3.7
+PYTHON_VERSION= 3.7
 
 # sparc specific patch to workaround the problem with Fujitsu running
 # Xorg AND VNC/XDMCP simultaneously

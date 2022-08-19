@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -34,9 +34,10 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:f95f3fe031b0b01c02f79a1659f889152d3772ae3e44df8403d1460ba5eec36a
 COMPONENT_BUGDB=	gnome/preferences
 COMPONENT_ANITYA_ID=	16989
-
 COMPONENT_BAID=		111686
+
 BUILD_STYLE=		meson
+PYTHON_VERSION=		3.7
 
 TEST_TARGET = $(NO_TESTS)
 

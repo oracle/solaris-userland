@@ -37,6 +37,7 @@ COMPONENT_ANITYA_ID=	1174
 COMPONENT_BAID=		112396
 
 BUILD_STYLE=		meson
+PYTHON_VERSION=		3.7
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 include $(WS_MAKE_RULES)/test-x11.mk

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -36,11 +36,10 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_ARCHIVE_URL=  https://download-fallback.gnome.org/sources/gtk-doc/1.33/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/dev-tools
 COMPONENT_ANITYA_ID=	13140
-
 COMPONENT_BAID=		104791
-BUILD_STYLE=		meson
 
-PYTHON_VERSIONS= 3.7
+BUILD_STYLE=		meson
+PYTHON_VERSION=		3.7
 
 TEST_TARGET= $(SKIP_TEST)
 

@@ -30,14 +30,14 @@ COMPONENT_VERSION=	3.21.1
 COMPONENT_PROJECT_URL=	https://meldmerge.org/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:70fe98eb932ce21d67170e3b0f6a7317e813e862de98933ea513982e9a033202
-COMPONENT_BUGDB=        utility/meld
+COMPONENT_BUGDB=	utility/meld
 COMPONENT_ANITYA_ID=	5520
 COMPONENT_BAID=		123057
 
 # We just need to build one version.
-PYTHON_VERSIONS =       3.7
+PYTHON_VERSION=		3.7
 
-BUILD_STYLE= meson
+BUILD_STYLE=	meson
 TEST_TARGET=	$(TEST_64)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -45,7 +45,6 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # Needed to find GNU xgettext.
 PATH =			$(GNUBIN):$(USRBINDIR)
 
-PYTHON_VERSION =	3.7
 PKG_MACROS +=		PYVER="$(PYTHON_VERSION)" PYV="$(PYTHON_VERSION:3.%=3%)"
 
 PYTHON_DATA =		/usr
@@ -56,14 +55,15 @@ COMPONENT_SETUP_ARGS += --no-compile-schemas
 COMPONENT_SETUP_ARGS += --no-update-icon-cache
 
 COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRLIBDIR)/python3.7/vendor-packages; \
-        $(MV) $(PROTOUSRLIBDIR)/python3.7/site-packages/* $(PROTOUSRLIBDIR)/python3.7/vendor-packages/; \
+	$(MKDIR) $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages; \
+	$(MV) $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/site-packages/* \
+	      $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/; \
 	$(PYTHON) -m compileall $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages;
 
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/meld
 
 # To find py3cairo
-PKG_CONFIG_PATHS += /usr/lib/python3.7/vendor-packages/lib/pkgconfig
+PKG_CONFIG_PATHS += /usr/lib/python$(PYTHON_VERSION)/vendor-packages/lib/pkgconfig
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '

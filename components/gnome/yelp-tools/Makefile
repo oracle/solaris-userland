@@ -31,11 +31,12 @@ COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Yelp/Tools
 COMPONENT_ARCHIVE_HASH= \
 	sha256:37f1acc02bcbe68a31b86e07c129a839bd3276e656dc89eb7fc0a92746eff272
-COMPONENT_BUGDB=        gnome/docviewer
+COMPONENT_BUGDB=	gnome/docviewer
 COMPONENT_ANITYA_ID=	8420
 
 COMPONENT_BAID=		115917
-BUILD_STYLE=		meson	
+BUILD_STYLE=		meson
+PYTHON_VERSION=		3.7
 
 TEST_TARGET= $(NO_TESTS)
 
@@ -55,5 +56,5 @@ COMPONENT_POST_INSTALL_ACTION += \
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += library/gnome/yelp-xsl
 REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += library/python/lxml-37                            
+REQUIRED_PACKAGES += library/python/lxml-37
 REQUIRED_PACKAGES += runtime/python-37
