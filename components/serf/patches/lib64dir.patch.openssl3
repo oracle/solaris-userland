@@ -1,0 +1,24 @@
+Allows to build Serf with OpenSSL in non default path.
+
+--- serf-1.3.9/SConstruct
++++ serf-1.3.9/SConstruct
+@@ -94,6 +94,10 @@ PathVariable('OPENSSL',
+                "Path to OpenSSL's install area",
+                default_incdir,
+                PathVariable.PathIsDir),
++  PathVariable('OPENSSL_LIBDIR',
++               "Path to OpenSSL's lib directory",
++               default_incdir,
++               PathVariable.PathIsDir),
+   PathVariable('ZLIB',
+                "Path to zlib's install area",
+                default_incdir,
+@@ -371,7 +375,7 @@ apr_libs = ''
+     apu_libs = ''
+ 
+   env.Append(CPPPATH=['$OPENSSL/include'])
+-  env.Append(LIBPATH=['$OPENSSL/lib'])
++  env.Append(LIBPATH=['$OPENSSL_LIBDIR'])
+ 
+ 
+ # If build with gssapi, get its information and define SERF_HAVE_GSSAPI
