@@ -24,17 +24,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libtiff
-COMPONENT_VERSION=	4.2.0
+COMPONENT_VERSION=	4.4.0
 COMPONENT_PROJECT_URL=	http://www.simplesystems.org/libtiff/
 COMPONENT_SRC=		tiff-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:eb0484e568ead8fa23b513e9b0041df7e327f4ee2d22db5a533929dfc19633cb
+    sha256:917223b37538959aca3b790d2d73aa6e626b688e02dcda272aec24c2f498abed
 COMPONENT_ARCHIVE_URL=	http://download.osgeo.org/libtiff/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libtiff
 COMPONENT_ANITYA_ID=	1738
 
-COMPONENT_BAID=		96579
+COMPONENT_BAID=		128730
 
 # Added to find the *.3tiff that go into /usr/share/man/man3tiff
 PKG_PROTO_DIRS += $(COMPONENT_SRC)/man
