@@ -53,10 +53,17 @@ CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --enable-largefile
 # We prefer openssl over nettle.
 CONFIGURE_OPTIONS += --without-nettle
-CONFIGURE_OPTIONS += --with-openssl
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-xml2
 CONFIGURE_OPTIONS += --with-zlib
+ifneq ($(strip $(OPENSSL3)),)
+CFLAGS += -I/usr/openssl/3/include
+CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)"
+CONFIGURE_OPTIONS.64 += LDFLAGS="$(LDFLAGS) -L/usr/openssl/3/lib/$(BITS)"
+CONFIGURE_OPTIONS.32 += LDFLAGS="$(LDFLAGS) -L/usr/openssl/3/lib/"
+else
+CONFIGURE_OPTIONS += --with-openssl
+endif
 # Commands bsdtar, bsdcpio, and bsdcat are not delivered.
 CONFIGURE_OPTIONS += --disable-bsdtar
 CONFIGURE_OPTIONS += --disable-bsdcpio
@@ -116,5 +123,9 @@ REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += compress/lz4
 REQUIRED_PACKAGES += library/libxml2
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
 REQUIRED_PACKAGES += library/security/openssl
+endif
 REQUIRED_PACKAGES += library/zlib
