@@ -26,6 +26,12 @@ export PARFAIT_BUILD=no
 BUILD_BITS= 64
 COMPILER= gcc
 
+# Gcc 12 often fails when it is _not_ built in mulitple parallel jobs. This can
+# happen when full gate is built.
+ifeq ($(strip $(COMPONENT_MAKE_JOBS)),1)
+    COMPONENT_MAKE_JOBS=4
+endif
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
