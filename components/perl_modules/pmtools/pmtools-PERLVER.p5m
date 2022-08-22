@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -27,6 +27,7 @@ set name=pkg.fmri \
 set name=pkg.summary value="Perl module tools."
 set name=pkg.description \
     value="Perl module tools is a suite of small tools that help manage and inspect perl modules, perl Plain Old Documentation files, and perl programs."
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value="the Perl module tools"
 set name=info.classification \
@@ -90,7 +91,13 @@ file path=usr/perl5/$(PERLVER)/man/man3/Devel::Loaded.3
 file path=usr/perl5/$(PERLVER)/man/man3/pmtools.3
 file path=usr/perl5/vendor_perl/$(PERLVER)/Devel/Loaded.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/pmtools.pm
+
+# package legacy message
+file legacy-pmtools.txt \
+    path=usr/share/doc/release-notes/legacy-pmtools-$(PLV).txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@0
 license pmtools.license license=Artistic
+
 # force a dependency on the Perl runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=perl \
     pkg.debug.depend.path=usr/perl5/$(PERLVER)/bin
