@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		smp_utils
-COMPONENT_VERSION=	0.98
+COMPONENT_VERSION=	0.99
 COMPONENT_PROJECT_URL= http://sg.danny.cz/sg/smp_utils.html
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:eb1952a192992bc60c7c84301f43d57fd386d6dcc9eef3f018a94114a38bb7e0
+    sha256:f0ecd4532a1d9aff962f5028cfcf191da84274c5d3a1200f57cfbeb545a54b3c
 COMPONENT_ARCHIVE_URL=	http://sg.danny.cz/sg/p/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/smputils
 COMPONENT_ANITYA_ID=	4840
 
-COMPONENT_BAID=		44216
+COMPONENT_BAID=		128740
 
 include $(WS_MAKE_RULES)/common.mk
 
