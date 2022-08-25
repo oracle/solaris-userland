@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2009, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2022, Oracle and/or its affiliates.
 #
 
 # Use GNU compiler to automatically remove the build path from macros and debug information.
@@ -29,21 +29,15 @@ BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rsync
-COMPONENT_VERSION=	3.2.3
-COMPONENT_BAID=		91453
-COMPONENT_ARCHIVE_HASH=	sha256:becc3c504ceea499f4167a260040ccf4d9f2ef9499ad5683c179a697146ce50e
+COMPONENT_VERSION=	3.2.5
+COMPONENT_BAID=		129062
+COMPONENT_ARCHIVE_HASH=	sha256:2ac4d21635cdf791867bc377c35ca6dda7f50d919a58be45057fd51600c69aba
 COMPONENT_PROJECT_URL=	http://rsync.samba.org/
 COMPONENT_ARCHIVE_URL=	http://rsync.samba.org/ftp/rsync/src/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4217
 
 include $(WS_MAKE_RULES)/common.mk
-
-# The .1 refers to version 3.2.3-1 to distinguish between community version
-# of rsync and this package, which contains all known fixes. A similar approach
-# is adopted by some Linux distros.
-IPS_COMPONENT_VERSION=	3.2.3
-HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 
 ifeq ($(DEBUG), yes)
 gcc_OPT= -Og -g
