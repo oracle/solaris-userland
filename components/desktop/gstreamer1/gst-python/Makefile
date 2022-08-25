@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -30,17 +30,17 @@ COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-python
-COMPONENT_VERSION=	1.18.4
+COMPONENT_VERSION=	1.20.3
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:cb68e08a7e825e08b83a12a22dcd6e4f1b328a7b02a7ac84f42f68f4ddc7098e
+	sha256:db348120eae955b8cc4de3560a7ea06e36d6e1ddbaa99a7ad96b59846601cfdc
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	3881
 
-COMPONENT_BAID=		101887
+COMPONENT_BAID=		129020
 
 BUILD_STYLE=		meson
 PYTHON_VERSIONS= $(PYTHON3_VERSIONS)
