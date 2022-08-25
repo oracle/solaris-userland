@@ -20,20 +20,19 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mod_wsgi
-COMPONENT_VERSION=	4.7.1
-COMPONENT_ARCHIVE_HASH=	sha256:a82467c80369c02dbe487e6559d8db3b1170073c767a946a8c4851e99690ab16
+COMPONENT_VERSION=	4.9.3
+COMPONENT_ARCHIVE_HASH=	sha256:a197e448fedf718aba217cff927991c8be15c4dcbc5f548799ec8a66143d3628
 COMPONENT_ARCHIVE_URL=	https://pypi.python.org/packages/source/m/mod_wsgi/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  https://modwsgi.readthedocs.io/
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	2001
-
-COMPONENT_BAID=		87486
+COMPONENT_BAID=		129001
 
 # Don't use default CPPFLAGS; it causes Apache's custom CPP to fail.
 CONFIGURE_CPPFLAGS=
