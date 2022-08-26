@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 		64_and_32
@@ -75,6 +75,10 @@ CONFIGURE_ENV += PYTHON=$(PYTHON)
 
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
+PKG_CONFIG_PATHS.32 += /usr/openssl/3/lib/pkgconfig
+PKG_CONFIG_PATHS.64 += /usr/openssl/3/lib/64/pkgconfig
+PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
+
 # Required due to patches; must use special bootstrap script and not standard
 # autoreconf due to use of both gettext and intltool in the same project! If
 # you use standard autoreconf, configure will fail.
@@ -105,7 +109,7 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libsndfile
 REQUIRED_PACKAGES += library/libtool/libltdl
-REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/libdbus
