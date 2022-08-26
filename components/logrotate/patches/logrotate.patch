@@ -26,17 +26,17 @@ and this makes test-0087.sh pass.  Test test-0089.sh specifically tests using
 /dev/null as a state file.  As the lock file name is derived from the state
 file name then /dev/null needs to be avoided to make this tests pass. 
 
---- logrotate-3.19.0/logrotate.c.orig	2022-02-08 17:43:18.762772355 +0100
-+++ logrotate-3.19.0/logrotate.c	2022-02-08 17:44:04.796067364 +0100
-@@ -3000,6 +3000,7 @@
+--- logrotate-3.20.1/logrotate.c
++++ logrotate-3.20.1/logrotate.c
+@@ -3007,6 +3007,7 @@ }
  
  static int lockState(const char *stateFilename, int skip_state_lock)
  {
 +    struct flock lock_data;
-     int lockFd = open(stateFilename, O_RDWR | O_CLOEXEC);
-     if (lockFd == -1) {
-         if (errno == ENOENT) {
-@@ -3028,7 +3029,14 @@
+     int lockFd;
+     struct stat sb;
+ 
+@@ -3058,7 +3059,14 @@ close(lockFd);
          return 0;
      }
  
@@ -52,7 +52,7 @@ file name then /dev/null needs to be avoided to make this tests pass.
          if (errno == EWOULDBLOCK) {
              message(MESS_ERROR, "state file %s is already locked\n"
                      "logrotate does not support parallel execution on the"
-@@ -3051,6 +3059,7 @@
+@@ -3081,6 +3089,7 @@ int force = 0;
      int skip_state_lock = 0;
      const char *stateFile = STATEFILE;
      const char *logFile = NULL;
@@ -60,7 +60,7 @@ file name then /dev/null needs to be avoided to make this tests pass.
      FILE *logFd = NULL;
      int rc = 0;
      int arg;
-@@ -3169,6 +3178,22 @@
+@@ -3199,6 +3208,22 @@ if (!debug && lockState(stateFile, skip_
          exit(3);
      }
  
