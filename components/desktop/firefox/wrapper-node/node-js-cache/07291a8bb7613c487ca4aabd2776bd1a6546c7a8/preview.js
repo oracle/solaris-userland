@@ -11,7 +11,6 @@ loader.lazyRequireGetter(this, "_preview", "devtools/client/debugger/src/utils/p
 loader.lazyRequireGetter(this, "_ast", "devtools/client/debugger/src/utils/ast");
 loader.lazyRequireGetter(this, "_evaluationResult", "devtools/client/debugger/src/utils/evaluation-result");
 loader.lazyRequireGetter(this, "_getExpression", "devtools/client/debugger/src/utils/editor/get-expression");
-loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
 loader.lazyRequireGetter(this, "_environment", "devtools/client/debugger/src/utils/environment");
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_expressions", "devtools/client/debugger/src/actions/expressions");
@@ -95,7 +94,7 @@ function setPreview(cx, expression, location, tokenPos, cursorPos, target) {
     const thread = (0, _selectors.getCurrentThread)(getState());
     const selectedFrame = (0, _selectors.getSelectedFrame)(getState(), thread);
 
-    if (location && (0, _source.isOriginal)(source)) {
+    if (location && source.isOriginal) {
       const mapResult = await dispatch((0, _expressions.getMappedExpression)(expression));
 
       if (mapResult) {

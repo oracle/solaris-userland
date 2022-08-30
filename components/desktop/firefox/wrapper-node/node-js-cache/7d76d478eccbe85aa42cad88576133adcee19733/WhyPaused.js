@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
@@ -28,6 +30,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 const {
+  LocalizationProvider,
+  Localized
+} = require("devtools/client/shared/vendor/fluent-react");
+
+const {
   REPS: {
     Rep
   },
@@ -39,6 +46,17 @@ class WhyPaused extends _react.PureComponent {
     super(props);
     this.state = {
       hideWhyPaused: ""
+    };
+  }
+
+  static get propTypes() {
+    return {
+      delay: _propTypes.default.number.isRequired,
+      endPanelCollapsed: _propTypes.default.bool.isRequired,
+      highlightDomElement: _propTypes.default.func.isRequired,
+      openElementInInspector: _propTypes.default.func.isRequired,
+      unHighlightDomElement: _propTypes.default.func.isRequired,
+      why: _propTypes.default.object
     };
   }
 
@@ -125,7 +143,9 @@ class WhyPaused extends _react.PureComponent {
         className: "mutationNode"
       }, ancestorRep, ancestorGrip ? _react.default.createElement("span", {
         className: "why-paused-ancestor"
-      }, action === "remove" ? L10N.getStr("whyPaused.mutationBreakpointRemoved") : L10N.getStr("whyPaused.mutationBreakpointAdded"), targetRep) : targetRep));
+      }, _react.default.createElement(Localized, {
+        id: action === "remove" ? "whypaused-mutation-breakpoint-removed" : "whypaused-mutation-breakpoint-added"
+      }), targetRep) : targetRep));
     }
 
     if (typeof message == "string") {
@@ -142,6 +162,9 @@ class WhyPaused extends _react.PureComponent {
       endPanelCollapsed,
       why
     } = this.props;
+    const {
+      fluentBundles
+    } = this.context;
     const reason = (0, _pause.getPauseReason)(why);
 
     if (!why || !reason || endPanelCollapsed) {
@@ -150,18 +173,31 @@ class WhyPaused extends _react.PureComponent {
       });
     }
 
-    return _react.default.createElement("div", {
-      className: "pane why-paused"
-    }, _react.default.createElement("div", null, _react.default.createElement("div", {
-      className: "info icon"
-    }, _react.default.createElement(_AccessibleImage.default, {
-      className: "info"
-    })), _react.default.createElement("div", {
-      className: "pause reason"
-    }, L10N.getStr(reason), this.renderMessage(why))));
+    return (// We're rendering the LocalizationProvider component from here and not in an upper
+      // component because it does set a new context, overriding the context that we set
+      // in the first place in <App>, which breaks some components.
+      // This should be fixed in Bug 1743155.
+      _react.default.createElement(LocalizationProvider, {
+        bundles: fluentBundles || []
+      }, _react.default.createElement("div", {
+        className: "pane why-paused"
+      }, _react.default.createElement("div", null, _react.default.createElement("div", {
+        className: "info icon"
+      }, _react.default.createElement(_AccessibleImage.default, {
+        className: "info"
+      })), _react.default.createElement("div", {
+        className: "pause reason"
+      }, _react.default.createElement(Localized, {
+        id: reason
+      }), this.renderMessage(why)))))
+    );
   }
 
 }
+
+WhyPaused.contextTypes = {
+  fluentBundles: _propTypes.default.array
+};
 
 const mapStateToProps = state => ({
   endPanelCollapsed: (0, _selectors.getPaneCollapse)(state, "end"),

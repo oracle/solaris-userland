@@ -7,6 +7,8 @@ exports.default = SmartGap;
 
 var _react = _interopRequireDefault(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -97,3 +99,12 @@ function SmartGap({
     fill: "transparent"
   }));
 }
+
+SmartGap.propTypes = {
+  coords: _propTypes.default.object.isRequired,
+  gapHeight: _propTypes.default.number.isRequired,
+  offset: _propTypes.default.number.isRequired,
+  preview: _propTypes.default.object.isRequired,
+  token: _propTypes.default.object.isRequired,
+  type: _propTypes.default.oneOf(["popover", "tooltip"]).isRequired
+};

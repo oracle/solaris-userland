@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _AccessibleImage = _interopRequireDefault(require("./AccessibleImage"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -44,6 +46,12 @@ class Accordion extends _react.Component {
         className: "_content"
       }, (0, _react.cloneElement)(item.component, item.componentProps || {})));
     });
+  }
+
+  static get propTypes() {
+    return {
+      items: _propTypes.default.array.isRequired
+    };
   }
 
   handleHeaderClick(i) {

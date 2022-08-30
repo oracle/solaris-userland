@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_Button", "devtools/client/debugger/src/components/shared/Button/index");
 
 var _AccessibleImage = _interopRequireDefault(require("./AccessibleImage"));
@@ -103,6 +105,32 @@ class SearchInput extends _react.Component {
 
     this.state = {
       history: []
+    };
+  }
+
+  static get propTypes() {
+    return {
+      count: _propTypes.default.number.isRequired,
+      expanded: _propTypes.default.bool.isRequired,
+      handleClose: _propTypes.default.func,
+      handleNext: _propTypes.default.func.isRequired,
+      handlePrev: _propTypes.default.func.isRequired,
+      hasPrefix: _propTypes.default.bool.isRequired,
+      isLoading: _propTypes.default.bool.isRequired,
+      onBlur: _propTypes.default.func.isRequired,
+      onChange: _propTypes.default.func.isRequired,
+      onFocus: _propTypes.default.func.isRequired,
+      onHistoryScroll: _propTypes.default.func.isRequired,
+      onKeyDown: _propTypes.default.func.isRequired,
+      onKeyUp: _propTypes.default.func,
+      placeholder: _propTypes.default.string,
+      query: _propTypes.default.string,
+      selectedItemId: _propTypes.default.string,
+      shouldFocus: _propTypes.default.bool.isRequired,
+      showClose: _propTypes.default.bool.isRequired,
+      showErrorEmoji: _propTypes.default.bool.isRequired,
+      size: _propTypes.default.string,
+      summaryMsg: _propTypes.default.string
     };
   }
 

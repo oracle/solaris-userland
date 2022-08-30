@@ -9,8 +9,6 @@ var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/reac
 
 var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
 
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 loader.lazyRequireGetter(this, "_frames", "devtools/client/debugger/src/utils/pause/frames/index");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -25,6 +23,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 const IGNORED_SOURCE_URLS = ["debugger eval code"];
 
 class PreviewFunction extends _react.Component {
+  static get propTypes() {
+    return {
+      func: _propTypes.default.object.isRequired
+    };
+  }
+
   renderFunctionName(func) {
     const {
       l10n
@@ -39,15 +43,21 @@ class PreviewFunction extends _react.Component {
     const {
       parameterNames = []
     } = func;
-    const params = parameterNames.filter(Boolean).map(param => _react.default.createElement("span", {
-      className: "param",
-      key: param
-    }, param));
-    const commas = (0, _lodash.times)(params.length - 1).map((_, i) => _react.default.createElement("span", {
-      className: "delimiter",
-      key: i
-    }, ", "));
-    return (0, _lodash.flatten)((0, _lodash.zip)(params, commas));
+    return parameterNames.filter(Boolean).map((param, i, arr) => {
+      const elements = [_react.default.createElement("span", {
+        className: "param",
+        key: param
+      }, param)]; // if this isn't the last param, add a comma
+
+      if (i !== arr.length - 1) {
+        elements.push(_react.default.createElement("span", {
+          className: "delimiter",
+          key: i
+        }, ", "));
+      }
+
+      return elements;
+    }).flat();
   }
 
   jumpToDefinitionButton(func) {

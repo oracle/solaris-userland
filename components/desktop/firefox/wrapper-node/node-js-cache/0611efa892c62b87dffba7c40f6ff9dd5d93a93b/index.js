@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
 var _tabs = require("devtools/client/debugger/dist/vendors").vendored["react-aria-components/src/tabs"];
@@ -61,8 +63,15 @@ class PrimaryPanes extends _react.Component {
     };
   }
 
-  componentDidCatch(error) {
-    console.log(error);
+  static get propTypes() {
+    return {
+      clearProjectDirectoryRoot: _propTypes.default.func.isRequired,
+      cx: _propTypes.default.object.isRequired,
+      projectRootName: _propTypes.default.string.isRequired,
+      selectedTab: _propTypes.default.oneOf(["sources", "outline"]).isRequired,
+      setPrimaryPaneTab: _propTypes.default.func.isRequired,
+      threads: _propTypes.default.array.isRequired
+    };
   }
 
   renderOutlineTabs() {

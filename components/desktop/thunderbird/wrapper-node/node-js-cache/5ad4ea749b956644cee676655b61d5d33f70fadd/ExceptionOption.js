@@ -7,6 +7,8 @@ exports.default = ExceptionOption;
 
 var _react = _interopRequireDefault(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -29,3 +31,10 @@ function ExceptionOption({
     className: "breakpoint-exceptions-label"
   }, label));
 }
+
+ExceptionOption.propTypes = {
+  className: _propTypes.default.string.isRequired,
+  isChecked: _propTypes.default.bool.isRequired,
+  label: _propTypes.default.string.isRequired,
+  onChange: _propTypes.default.func.isRequired
+};

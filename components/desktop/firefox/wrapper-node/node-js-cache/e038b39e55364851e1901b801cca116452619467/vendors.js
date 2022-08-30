@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.vendored = void 0;
 
-var devtoolsUtils = _interopRequireWildcard(require("devtools/client/debugger/dist/vendors").vendored["devtools-utils"]);
-
 var fuzzaldrinPlus = _interopRequireWildcard(require("devtools/client/debugger/dist/vendors").vendored["fuzzaldrin-plus"]);
 
 var transition = _interopRequireWildcard(require("devtools/client/debugger/dist/vendors").vendored["react-transition-group/Transition"]);
@@ -14,10 +12,6 @@ var transition = _interopRequireWildcard(require("devtools/client/debugger/dist/
 var reactAriaComponentsTabs = _interopRequireWildcard(require("devtools/client/debugger/dist/vendors").vendored["react-aria-components/src/tabs"]);
 
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
-
-var _devtoolsSplitter = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["devtools-splitter"]);
-
-var _lodashMove = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["lodash-move"]);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -47,10 +41,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 // !!! Should remain synchronized with .babel/transform-mc.js !!!
 const vendored = {
   classnames: _classnames.default,
-  "devtools-splitter": _devtoolsSplitter.default,
-  "devtools-utils": devtoolsUtils,
   "fuzzaldrin-plus": fuzzaldrinPlus,
-  "lodash-move": _lodashMove.default,
   "react-aria-components/src/tabs": reactAriaComponentsTabs,
   "react-transition-group/Transition": transition
 };

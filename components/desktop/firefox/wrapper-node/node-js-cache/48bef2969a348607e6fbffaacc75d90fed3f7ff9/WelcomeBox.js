@@ -7,6 +7,8 @@ exports.default = exports.WelcomeBox = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _actions = _interopRequireDefault(require("../actions/index"));
@@ -24,6 +26,14 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 class WelcomeBox extends _react.Component {
+  static get propTypes() {
+    return {
+      openQuickOpen: _propTypes.default.func.isRequired,
+      setActiveSearch: _propTypes.default.func.isRequired,
+      toggleShortcutsModal: _propTypes.default.func.isRequired
+    };
+  }
+
   render() {
     const searchSourcesShortcut = (0, _text.formatKeyShortcut)(L10N.getStr("sources.search.key2"));
     const searchProjectShortcut = (0, _text.formatKeyShortcut)(L10N.getStr("projectTextSearch.key"));

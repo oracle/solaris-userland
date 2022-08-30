@@ -5,9 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buildGeneratedBindingList = buildGeneratedBindingList;
 exports.buildFakeBindingList = buildFakeBindingList;
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 loader.lazyRequireGetter(this, "_firefox", "devtools/client/debugger/src/client/firefox");
 loader.lazyRequireGetter(this, "_locColumn", "devtools/client/debugger/src/utils/pause/mapScopes/locColumn");
 loader.lazyRequireGetter(this, "_optimizedOut", "devtools/client/debugger/src/utils/pause/mapScopes/optimizedOut");
@@ -76,7 +73,7 @@ function buildGeneratedBindingList(scopes, generatedAstScopes, thisBinding) {
       const {
         refs
       } = generated.bindings[name];
-      const bindings = clientGlobalScopes.find(b => (0, _lodash.has)(b, name));
+      const bindings = clientGlobalScopes.find(b => name in b);
 
       for (const loc of refs) {
         if (bindings) {

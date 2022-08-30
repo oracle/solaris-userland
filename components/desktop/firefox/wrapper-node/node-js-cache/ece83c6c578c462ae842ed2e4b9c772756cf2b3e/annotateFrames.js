@@ -4,9 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.annotateFrames = annotateFrames;
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 loader.lazyRequireGetter(this, "_getFrameUrl", "devtools/client/debugger/src/utils/pause/frames/getFrameUrl");
 loader.lazyRequireGetter(this, "_getLibraryFromUrl", "devtools/client/debugger/src/utils/pause/frames/getLibraryFromUrl");
 
@@ -38,36 +35,48 @@ function annotateBabelAsyncFrames(frames) {
   return frames.map((frame, frameIndex) => isBabelFrame(frameIndex) ? { ...frame,
     library: "Babel"
   } : frame);
-} // Receives an array of frames and looks for babel async
-// call stack groups.
+}
+/**
+ * Returns all the indexes that are part of a babel async call stack.
+ *
+ * @param {Array<Object>} frames
+ * @returns Array<Integer>
+ */
 
 
 function getBabelFrameIndexes(frames) {
-  const startIndexes = frames.reduce((accumulator, frame, index) => {
-    if ((0, _getFrameUrl.getFrameUrl)(frame).match(/regenerator-runtime/i) && frame.displayName === "tryCatch") {
-      return [...accumulator, index];
+  const startIndexes = [];
+  const endIndexes = [];
+  frames.forEach((frame, index) => {
+    const frameUrl = (0, _getFrameUrl.getFrameUrl)(frame);
+
+    if (frameUrl.match(/regenerator-runtime/i) && frame.displayName === "tryCatch") {
+      startIndexes.push(index);
     }
 
-    return accumulator;
-  }, []);
-  const endIndexes = frames.reduce((accumulator, frame, index) => {
-    if ((0, _getFrameUrl.getFrameUrl)(frame).match(/_microtask/i) && frame.displayName === "flush") {
-      return [...accumulator, index];
+    if (frame.displayName === "flush" && frameUrl.match(/_microtask/i)) {
+      endIndexes.push(index);
     }
 
     if (frame.displayName === "_asyncToGenerator/<") {
-      return [...accumulator, index + 1];
+      endIndexes.push(index + 1);
     }
-
-    return accumulator;
-  }, []);
+  });
 
   if (startIndexes.length != endIndexes.length || startIndexes.length === 0) {
-    return frames;
-  } // Receives an array of start and end index tuples and returns
-  // an array of async call stack index ranges.
-  // e.g. [[1,3], [5,7]] => [[1,2,3], [5,6,7]]
+    return [];
+  }
 
+  const babelFrameIndexes = []; // We have the same number of start and end indexes, we can loop through one of them to
+  // build our async call stack index ranges
+  // e.g. if we have startIndexes: [1,5] and endIndexes: [3,8], we want to return [1,2,3,5,6,7,8]
 
-  return (0, _lodash.flatMap)((0, _lodash.zip)(startIndexes, endIndexes), ([startIndex, endIndex]) => (0, _lodash.range)(startIndex, endIndex + 1));
+  startIndexes.forEach((startIndex, index) => {
+    const matchingEndIndex = endIndexes[index];
+
+    for (let i = startIndex; i <= matchingEndIndex; i++) {
+      babelFrameIndexes.push(i);
+    }
+  });
+  return babelFrameIndexes;
 }

@@ -27,7 +27,7 @@ async function loadSource(state, source, {
   client,
   getState
 }) {
-  if ((0, _source.isPretty)(source) && (0, _source.isOriginal)(source)) {
+  if ((0, _source.isPretty)(source) && source.isOriginal) {
     const generatedSource = (0, _selectors.getGeneratedSource)(state, source);
 
     if (!generatedSource) {
@@ -43,7 +43,7 @@ async function loadSource(state, source, {
     return (0, _prettyPrint.prettyPrintSource)(sourceMaps, generatedSource, content.value, (0, _selectors.getSourceActorsForSource)(state, generatedSource.id));
   }
 
-  if ((0, _source.isOriginal)(source)) {
+  if (source.isOriginal) {
     const result = await sourceMaps.getOriginalSourceText(source.id);
 
     if (!result) {
@@ -161,12 +161,10 @@ const loadSourceText = (0, _memoizableAction.memoizeableAction)("loadSourceText"
       return null;
     }
 
-    const {
-      content
-    } = (0, _selectors.getSourceWithContent)(getState(), source.id);
+    const sourceTextContent = (0, _selectors.getSourceTextContent)(getState(), source.id);
 
-    if (!content || content.state === "pending") {
-      return content;
+    if (!sourceTextContent || sourceTextContent.state === "pending") {
+      return sourceTextContent;
     } // This currently swallows source-load-failure since we return fulfilled
     // here when content.state === "rejected". In an ideal world we should
     // propagate that error upward.

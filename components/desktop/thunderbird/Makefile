@@ -31,12 +31,12 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	91.13.0
-COMPONENT_BAID =	129123
+COMPONENT_VERSION =	102.2.0
+COMPONENT_BAID =	129240
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:c792cf97ff7693940a8fe1cebbaa26fbc83584250a9c9d072c7feef77896b31e
+    sha256:39cded4efd28d63c8f2bb4d46250b624aad29bd47b49eae85eff5a4746180e6c
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -53,7 +53,7 @@ COMPONENT_ANITYA_ID =	4967
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:f18b56812cfa4e9f9436fcf4eb38fb09cd2982b56490201a3bbaeb95866f7dfa
+    sha256:42880e0b05a0e1c9687d90cc918b6e3bb83cee639c712e1d1cf639c49ce436ba
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
@@ -91,7 +91,7 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # /usr/gnu/bin needed to pick up the GNU version of tail and readelf.
 # /usr/sbin needed for dtrace.
-PATH = $(COMPONENT_DIR)/wrapper-node:/usr/gnu/bin:/usr/bin:/usr/sbin
+PATH = $(EXTPATH):$(COMPONENT_DIR)/wrapper-node:/usr/gnu/bin:/usr/bin:/usr/sbin
 
 MOZCONFIG = $(SOURCE_DIR)/mozconfig
 
@@ -128,10 +128,10 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --enable-system-ffi" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libvpx" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --without-wasm-sandboxed-libraries" >> $(MOZCONFIG) ; \
 
 CXXFLAGS += -Wno-invalid-offsetof -fpermissive
 
@@ -254,5 +254,4 @@ REQUIRED_PACKAGES += web/browser/lynx
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxext
-REQUIRED_PACKAGES += x11/library/libxrender
-REQUIRED_PACKAGES += x11/library/toolkit/libxt
+REQUIRED_PACKAGES += x11/library/libxrandr

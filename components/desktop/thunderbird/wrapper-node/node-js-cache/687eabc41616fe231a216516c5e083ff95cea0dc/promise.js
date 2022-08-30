@@ -6,9 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.asyncActionAsValue = asyncActionAsValue;
 exports.promise = promiseMiddleware;
 exports.PROMISE = void 0;
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 loader.lazyRequireGetter(this, "_DevToolsUtils", "devtools/client/debugger/src/utils/DevToolsUtils");
 loader.lazyRequireGetter(this, "_asyncValue", "devtools/client/debugger/src/utils/async-value");
 
@@ -33,10 +30,6 @@ function seqIdGen() {
   return seqIdVal++;
 }
 
-function filterAction(action) {
-  return (0, _lodash.fromPairs)((0, _lodash.toPairs)(action).filter(pair => pair[0] !== PROMISE));
-}
-
 function promiseMiddleware({
   dispatch,
   getState
@@ -46,11 +39,14 @@ function promiseMiddleware({
       return next(action);
     }
 
-    const promiseInst = action[PROMISE];
-    const seqId = seqIdGen().toString(); // Create a new action that doesn't have the promise field and has
+    const seqId = seqIdGen().toString();
+    const {
+      [PROMISE]: promiseInst,
+      ...originalActionProperties
+    } = action; // Create a new action that doesn't have the promise field and has
     // the `seqId` field that represents the sequence id
 
-    action = { ...filterAction(action),
+    action = { ...originalActionProperties,
       seqId
     };
     dispatch({ ...action,

@@ -145,9 +145,11 @@ function setEditorText(editor, sourceId, content) {
   }
 }
 
-function setMode(editor, source, content, symbols) {
+function setMode(editor, source, sourceTextContent, symbols) {
   // Disable modes for minified files with 1+ million characters Bug 1569829
-  if (content.type === "text" && (0, _isMinified.isMinified)(source) && content.value.length > 1000000) {
+  const content = sourceTextContent.value;
+
+  if (content.type === "text" && (0, _isMinified.isMinified)(source, sourceTextContent) && content.value.length > 1000000) {
     return;
   }
 
@@ -164,25 +166,25 @@ function setMode(editor, source, content, symbols) {
  */
 
 
-function showSourceText(editor, source, content, symbols) {
+function showSourceText(editor, source, sourceTextContent, symbols) {
   if (hasDocument(source.id)) {
     const doc = getDocument(source.id);
 
     if (editor.codeMirror.doc === doc) {
-      setMode(editor, source, content, symbols);
+      setMode(editor, source, sourceTextContent, symbols);
       return;
     }
 
     editor.replaceDocument(doc);
     updateLineNumberFormat(editor, source.id);
-    setMode(editor, source, content, symbols);
+    setMode(editor, source, sourceTextContent, symbols);
     return doc;
   }
 
   const doc = editor.createDocument();
   setDocument(source.id, doc);
   editor.replaceDocument(doc);
-  setEditorText(editor, source.id, content);
-  setMode(editor, source, content, symbols);
+  setEditorText(editor, source.id, sourceTextContent.value);
+  setMode(editor, source, sourceTextContent, symbols);
   updateLineNumberFormat(editor, source.id);
 }

@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
@@ -60,6 +62,16 @@ class ExceptionPopup extends _react.Component {
 
     this.state = {
       isStacktraceExpanded: false
+    };
+  }
+
+  static get propTypes() {
+    return {
+      clearPreview: _propTypes.default.func.isRequired,
+      cx: _propTypes.default.object.isRequired,
+      mouseout: _propTypes.default.func.isRequired,
+      selectSourceURL: _propTypes.default.func.isRequired,
+      exception: _propTypes.default.object.isRequired
     };
   }
 

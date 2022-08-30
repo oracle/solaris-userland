@@ -10,6 +10,8 @@ var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/
 
 var _react = _interopRequireDefault(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _AccessibleImage = _interopRequireDefault(require("../AccessibleImage"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -42,5 +44,10 @@ const CommandBarButton = props => {
   }, rest), children);
 };
 
+CommandBarButton.propTypes = {
+  children: _propTypes.default.node.isRequired,
+  className: _propTypes.default.string.isRequired,
+  pressed: _propTypes.default.bool
+};
 var _default = CommandBarButton;
 exports.default = _default;

@@ -7,6 +7,8 @@ exports.default = exports.Thread = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
@@ -35,6 +37,16 @@ class Thread extends _react.Component {
       } = this.props;
       this.props.selectThread(this.props.cx, thread.actor);
     });
+  }
+
+  static get propTypes() {
+    return {
+      currentThread: _propTypes.default.string.isRequired,
+      cx: _propTypes.default.object.isRequired,
+      isPaused: _propTypes.default.bool.isRequired,
+      selectThread: _propTypes.default.func.isRequired,
+      thread: _propTypes.default.object.isRequired
+    };
   }
 
   render() {

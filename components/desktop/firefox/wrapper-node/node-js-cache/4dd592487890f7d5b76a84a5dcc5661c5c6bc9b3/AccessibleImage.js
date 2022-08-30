@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -21,5 +23,8 @@ const AccessibleImage = props => {
   return _react.default.createElement("span", props);
 };
 
+AccessibleImage.propTypes = {
+  className: _propTypes.default.string.isRequired
+};
 var _default = AccessibleImage;
 exports.default = _default;

@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
 var _AccessibleImage = _interopRequireDefault(require("./AccessibleImage"));
@@ -56,6 +58,16 @@ class ResultList extends _react.Component {
         className: "subtitle"
       }, item.subtitle) : null);
     });
+  }
+
+  static get propTypes() {
+    return {
+      items: _propTypes.default.array.isRequired,
+      role: _propTypes.default.oneOf(["listbox"]),
+      selectItem: _propTypes.default.func.isRequired,
+      selected: _propTypes.default.number.isRequired,
+      size: _propTypes.default.oneOf(["big", "small"])
+    };
   }
 
   render() {

@@ -98,10 +98,20 @@ function updateTree({
   }
 
   const newSourceTree = (0, _collapseTree.collapseTree)(uncollapsedTree);
+  let lazyParentMap;
+
+  const getParent = function (key) {
+    if (!lazyParentMap) {
+      lazyParentMap = (0, _utils.createParentMap)(newSourceTree);
+    }
+
+    return lazyParentMap.get(key);
+  };
+
   return {
     uncollapsedTree,
     sourceTree: newSourceTree,
-    parentMap: (0, _utils.createParentMap)(newSourceTree)
+    getParent
   };
 }
 

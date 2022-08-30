@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.updateFrameLocation = updateFrameLocation;
 exports.mapFrames = mapFrames;
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
+loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
 
 var _assert = _interopRequireDefault(require("../../utils/assert"));
 
@@ -16,21 +17,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
-function isFrameBlackboxed(state, frame) {
-  const source = (0, _selectors.getSource)(state, frame.location.sourceId);
-  return !!(source === null || source === void 0 ? void 0 : source.isBlackBoxed);
-}
-
 function getSelectedFrameId(state, thread, frames) {
   var _selectedFrame;
 
   let selectedFrame = (0, _selectors.getSelectedFrame)(state, thread);
+  const blackboxedRanges = (0, _selectors.getBlackBoxRanges)(state);
 
-  if (selectedFrame && !isFrameBlackboxed(state, selectedFrame)) {
+  if (selectedFrame && !(0, _source.isFrameBlackBoxed)(selectedFrame, (0, _selectors.getLocationSource)(state, selectedFrame.location), blackboxedRanges)) {
     return selectedFrame.id;
   }
 
-  selectedFrame = frames.find(frame => !isFrameBlackboxed(state, frame));
+  selectedFrame = frames.find(frame => {
+    const frameSource = (0, _selectors.getLocationSource)(state, frame.location);
+    return !(0, _source.isFrameBlackBoxed)(frame, frameSource, blackboxedRanges);
+  });
   return (_selectedFrame = selectedFrame) === null || _selectedFrame === void 0 ? void 0 : _selectedFrame.id;
 }
 
@@ -58,7 +58,7 @@ function isWasmOriginalSourceFrame(frame, getState) {
     return false;
   }
 
-  const generatedSource = (0, _selectors.getSource)(getState(), frame.generatedLocation.sourceId);
+  const generatedSource = (0, _selectors.getLocationSource)(getState(), frame.generatedLocation);
   return Boolean(generatedSource === null || generatedSource === void 0 ? void 0 : generatedSource.isWasm);
 }
 

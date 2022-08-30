@@ -55,6 +55,10 @@ function FrameLocation({
   }, library));
 }
 
+FrameLocation.propTypes = {
+  expanded: _propTypes.default.any.isRequired,
+  frame: _propTypes.default.object.isRequired
+};
 FrameLocation.displayName = "FrameLocation";
 
 class Group extends _react.Component {
@@ -70,6 +74,25 @@ class Group extends _react.Component {
 
     this.state = {
       expanded: false
+    };
+  }
+
+  static get propTypes() {
+    return {
+      copyStackTrace: _propTypes.default.func.isRequired,
+      cx: _propTypes.default.object,
+      disableContextMenu: _propTypes.default.bool.isRequired,
+      displayFullUrl: _propTypes.default.bool.isRequired,
+      frameworkGroupingOn: _propTypes.default.bool.isRequired,
+      getFrameTitle: _propTypes.default.func,
+      group: _propTypes.default.array.isRequired,
+      panel: _propTypes.default.oneOf(["debugger", "webconsole"]).isRequired,
+      restart: _propTypes.default.func,
+      selectFrame: _propTypes.default.func.isRequired,
+      selectLocation: _propTypes.default.func,
+      selectedFrame: _propTypes.default.object,
+      toggleBlackBox: _propTypes.default.func,
+      toggleFrameworkGrouping: _propTypes.default.func.isRequired
     };
   }
 

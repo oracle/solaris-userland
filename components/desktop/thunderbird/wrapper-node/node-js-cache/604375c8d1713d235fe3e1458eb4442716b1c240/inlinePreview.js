@@ -4,9 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.generateInlinePreview = generateInlinePreview;
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
 loader.lazyRequireGetter(this, "_context", "devtools/client/debugger/src/utils/context");
@@ -101,21 +98,35 @@ function generateInlinePreview(cx, frame) {
       });
       await Promise.all(previewBindings);
       scopes = scopes.parent;
-    }
+    } // Sort previews by line and column so they're displayed in the right order in the editor
 
+
+    allPreviews.sort((previewA, previewB) => {
+      if (previewA.line < previewB.line) {
+        return -1;
+      }
+
+      if (previewA.line > previewB.line) {
+        return 1;
+      } // If we have the same line number
+
+
+      return previewA.column < previewB.column ? -1 : 1;
+    });
     const previews = {};
-    const sortedPreviews = (0, _lodash.sortBy)(allPreviews, ["line", "column"]);
-    sortedPreviews.forEach(preview => {
+
+    for (const preview of allPreviews) {
       const {
         line
       } = preview;
 
       if (!previews[line]) {
-        previews[line] = [preview];
-      } else {
-        previews[line].push(preview);
+        previews[line] = [];
       }
-    });
+
+      previews[line].push(preview);
+    }
+
     return dispatch({
       type: "ADD_INLINE_PREVIEW",
       thread,

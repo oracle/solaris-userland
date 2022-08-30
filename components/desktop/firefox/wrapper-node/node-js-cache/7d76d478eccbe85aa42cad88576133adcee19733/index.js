@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
 var _devtoolsSourceMap = require("devtools/client/shared/source-map/index.js");
@@ -24,8 +26,6 @@ loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/pre
 var _Breakpoints = _interopRequireDefault(require("./Breakpoints/index"));
 
 var _Expressions = _interopRequireDefault(require("./Expressions"));
-
-var _devtoolsSplitter = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["devtools-splitter"]);
 
 var _Frames = _interopRequireDefault(require("./Frames/index"));
 
@@ -53,6 +53,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+const SplitBox = require("devtools/client/shared/components/splitter/SplitBox");
+
 function debugBtn(onClick, type, className, tooltip) {
   return _react.default.createElement("button", {
     onClick: onClick,
@@ -66,7 +71,7 @@ function debugBtn(onClick, type, className, tooltip) {
   }));
 }
 
-const mdnLink = "https://developer.mozilla.org/docs/Tools/Debugger/Using_the_Debugger_map_scopes_feature?utm_source=devtools&utm_medium=debugger-map-scopes";
+const mdnLink = "https://firefox-source-docs.mozilla.org/devtools-user/debugger/using_the_debugger_map_scopes_feature/";
 
 class SecondaryPanes extends _react.Component {
   constructor(props) {
@@ -90,39 +95,27 @@ class SecondaryPanes extends _react.Component {
     };
   }
 
-  renderBreakpointsToggle() {
-    const {
-      cx,
-      toggleAllBreakpoints,
-      breakpoints,
-      breakpointsDisabled
-    } = this.props;
-    const isIndeterminate = !breakpointsDisabled && breakpoints.some(x => x.disabled);
-
-    if (_prefs.features.skipPausing || breakpoints.length === 0) {
-      return null;
-    }
-
-    const inputProps = {
-      type: "checkbox",
-      "aria-label": breakpointsDisabled ? L10N.getStr("breakpoints.enable") : L10N.getStr("breakpoints.disable"),
-      className: "breakpoints-toggle",
-      disabled: false,
-      key: "breakpoints-toggle",
-      onChange: e => {
-        e.stopPropagation();
-        toggleAllBreakpoints(cx, !breakpointsDisabled);
-      },
-      onClick: e => e.stopPropagation(),
-      checked: !breakpointsDisabled && !isIndeterminate,
-      ref: input => {
-        if (input) {
-          input.indeterminate = isIndeterminate;
-        }
-      },
-      title: breakpointsDisabled ? L10N.getStr("breakpoints.enable") : L10N.getStr("breakpoints.disable")
+  static get propTypes() {
+    return {
+      cx: _propTypes.default.object.isRequired,
+      evaluateExpressions: _propTypes.default.func.isRequired,
+      expressions: _propTypes.default.array.isRequired,
+      hasFrames: _propTypes.default.bool.isRequired,
+      horizontal: _propTypes.default.bool.isRequired,
+      logEventBreakpoints: _propTypes.default.bool.isRequired,
+      mapScopesEnabled: _propTypes.default.bool.isRequired,
+      pauseOnExceptions: _propTypes.default.func.isRequired,
+      pauseReason: _propTypes.default.string.isRequired,
+      renderWhyPauseDelay: _propTypes.default.number.isRequired,
+      selectedFrame: _propTypes.default.object,
+      shouldPauseOnCaughtExceptions: _propTypes.default.bool.isRequired,
+      shouldPauseOnExceptions: _propTypes.default.bool.isRequired,
+      skipPausing: _propTypes.default.bool.isRequired,
+      source: _propTypes.default.object,
+      toggleEventLogging: _propTypes.default.func.isRequired,
+      toggleMapScopes: _propTypes.default.func.isRequired,
+      workers: _propTypes.default.array.isRequired
     };
-    return _react.default.createElement("input", inputProps);
   }
 
   watchExpressionHeaderButtons() {
@@ -298,7 +291,6 @@ class SecondaryPanes extends _react.Component {
     return {
       header: L10N.getStr("breakpoints.header"),
       className: "breakpoints-pane",
-      buttons: [this.renderBreakpointsToggle()],
       component: _react.default.createElement(_Breakpoints.default, {
         shouldPauseOnExceptions: shouldPauseOnExceptions,
         shouldPauseOnCaughtExceptions: shouldPauseOnCaughtExceptions,
@@ -419,7 +411,7 @@ class SecondaryPanes extends _react.Component {
   }
 
   renderVerticalLayout() {
-    return _react.default.createElement(_devtoolsSplitter.default, {
+    return _react.default.createElement(SplitBox, {
       initialSize: "300px",
       minSize: 10,
       maxSize: "50%",
@@ -474,9 +466,6 @@ const mapStateToProps = state => {
     cx: (0, _selectors.getThreadContext)(state),
     expressions: (0, _selectors.getExpressions)(state),
     hasFrames: !!(0, _selectors.getTopFrame)(state, thread),
-    breakpoints: (0, _selectors.getBreakpointsList)(state),
-    breakpointsDisabled: (0, _selectors.getBreakpointsDisabled)(state),
-    isWaitingOnBreak: (0, _selectors.getIsWaitingOnBreak)(state, thread),
     renderWhyPauseDelay: getRenderWhyPauseDelay(state, thread),
     selectedFrame,
     mapScopesEnabled: (0, _selectors.isMapScopesEnabled)(state),
@@ -485,13 +474,12 @@ const mapStateToProps = state => {
     workers: (0, _selectors.getThreads)(state),
     skipPausing: (0, _selectors.getSkipPausing)(state),
     logEventBreakpoints: (0, _selectors.shouldLogEventBreakpoints)(state),
-    source: selectedFrame && (0, _selectors.getSourceFromId)(state, selectedFrame.location.sourceId),
+    source: selectedFrame && (0, _selectors.getLocationSource)(state, selectedFrame.location),
     pauseReason: (pauseReason === null || pauseReason === void 0 ? void 0 : pauseReason.type) ?? ""
   };
 };
 
 var _default = (0, _connect.connect)(mapStateToProps, {
-  toggleAllBreakpoints: _actions.default.toggleAllBreakpoints,
   evaluateExpressions: _actions.default.evaluateExpressions,
   pauseOnExceptions: _actions.default.pauseOnExceptions,
   toggleMapScopes: _actions.default.toggleMapScopes,

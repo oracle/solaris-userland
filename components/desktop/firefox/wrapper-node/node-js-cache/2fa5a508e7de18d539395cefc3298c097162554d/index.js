@@ -5,20 +5,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.findSourceMatches = exports.getMatches = exports.stop = exports.start = void 0;
 
-var _devtoolsUtils = require("devtools/client/debugger/dist/vendors").vendored["devtools-utils"];
+var _workerUtils = require("devtools/client/shared/worker-utils");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
-const {
-  WorkerDispatcher
-} = _devtoolsUtils.workerUtils;
 let startArgs;
 let dispatcher;
 
 function getDispatcher() {
   if (!dispatcher) {
-    dispatcher = new WorkerDispatcher();
+    dispatcher = new _workerUtils.WorkerDispatcher();
     dispatcher.start(...startArgs);
   }
 

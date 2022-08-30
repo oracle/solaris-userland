@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.addTarget = addTarget;
 exports.removeTarget = removeTarget;
 exports.toggleJavaScriptEnabled = toggleJavaScriptEnabled;
-loader.lazyRequireGetter(this, "_sourceActors", "devtools/client/debugger/src/actions/source-actors");
 loader.lazyRequireGetter(this, "_context", "devtools/client/debugger/src/utils/context");
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 
@@ -39,19 +38,12 @@ function removeTarget(targetFront) {
       dispatch
     } = args;
     const cx = (0, _selectors.getContext)(getState());
-    const thread = (0, _selectors.getThread)(getState(), targetFront.targetForm.threadActor);
-
-    if (!thread) {
-      return;
-    }
-
-    client.removeThread(thread);
-    const sourceActors = (0, _selectors.getSourceActorsForThread)(getState(), thread.actor);
-    dispatch((0, _sourceActors.removeSourceActors)(sourceActors));
+    const threadActorID = targetFront.targetForm.threadActor;
+    client.removeThread(threadActorID);
     dispatch({
       type: "REMOVE_THREAD",
       cx,
-      oldThread: thread
+      threadActorID
     });
   };
 }

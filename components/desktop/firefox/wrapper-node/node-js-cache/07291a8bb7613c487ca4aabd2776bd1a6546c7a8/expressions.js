@@ -15,7 +15,6 @@ loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selec
 loader.lazyRequireGetter(this, "_promise", "devtools/client/debugger/src/actions/utils/middleware/promise");
 loader.lazyRequireGetter(this, "_expressions", "devtools/client/debugger/src/utils/expressions");
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
-loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -72,7 +71,7 @@ function autocomplete(cx, input, cursor) {
 
     const frameId = (0, _selectors.getSelectedFrameId)(getState(), cx.thread);
     const result = await client.autocomplete(input, cursor, frameId);
-    await dispatch({
+    dispatch({
       type: "AUTOCOMPLETE",
       cx,
       input,
@@ -183,13 +182,10 @@ function evaluateExpression(cx, expression) {
     const frame = (0, _selectors.getSelectedFrame)(getState(), cx.thread);
 
     if (frame) {
-      const {
-        location
-      } = frame;
-      const source = (0, _selectors.getSourceFromId)(getState(), location.sourceId);
+      const source = (0, _selectors.getLocationSource)(getState(), frame.location);
       const selectedSource = (0, _selectors.getSelectedSource)(getState());
 
-      if (selectedSource && (0, _source.isOriginal)(source) && (0, _source.isOriginal)(selectedSource)) {
+      if (selectedSource && source.isOriginal && selectedSource.isOriginal) {
         const mapResult = await dispatch(getMappedExpression(input));
 
         if (mapResult) {

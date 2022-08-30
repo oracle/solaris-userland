@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _actions = _interopRequireDefault(require("../../../actions/index"));
@@ -37,19 +39,31 @@ class BreakpointHeading extends _react.PureComponent {
     });
   }
 
+  static get propTypes() {
+    return {
+      cx: _propTypes.default.object.isRequired,
+      sources: _propTypes.default.array.isRequired,
+      source: _propTypes.default.object.isRequired,
+      hasSiblingOfSameName: _propTypes.default.bool.isRequired,
+      selectSource: _propTypes.default.func.isRequired,
+      thread: _propTypes.default.object.isRequired
+    };
+  }
+
   render() {
     const {
       cx,
       sources,
       source,
       hasSiblingOfSameName,
-      selectSource
+      selectSource,
+      thread
     } = this.props;
     const path = (0, _source.getDisplayPath)(source, sources);
     const query = hasSiblingOfSameName ? (0, _source.getSourceQueryString)(source) : "";
     return _react.default.createElement("div", {
       className: "breakpoint-heading",
-      title: (0, _source.getFileURL)(source, false),
+      title: `${thread === null || thread === void 0 ? void 0 : thread.name} - ${(0, _source.getFileURL)(source, false)}`,
       onClick: () => selectSource(cx, source.id),
       onContextMenu: this.onContextMenu
     }, _react.default.createElement(_SourceIcon.default, {
@@ -67,7 +81,8 @@ const mapStateToProps = (state, {
 }) => ({
   cx: (0, _selectors.getContext)(state),
   hasSiblingOfSameName: (0, _selectors.getHasSiblingOfSameName)(state, source),
-  breakpointsForSource: (0, _selectors.getBreakpointsForSource)(state, source.id)
+  breakpointsForSource: (0, _selectors.getBreakpointsForSource)(state, source.id),
+  thread: (0, _selectors.getThread)(state, source.thread)
 });
 
 var _default = (0, _connect.connect)(mapStateToProps, {

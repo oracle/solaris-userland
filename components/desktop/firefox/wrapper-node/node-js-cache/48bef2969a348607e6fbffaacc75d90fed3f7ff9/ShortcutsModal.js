@@ -7,6 +7,8 @@ exports.ShortcutsModal = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _Modal = _interopRequireDefault(require("./shared/Modal"));
 
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
@@ -23,6 +25,14 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 class ShortcutsModal extends _react.Component {
+  static get propTypes() {
+    return {
+      additionalClass: _propTypes.default.string.isRequired,
+      enabled: _propTypes.default.bool.isRequired,
+      handleClose: _propTypes.default.func.isRequired
+    };
+  }
+
   renderPrettyCombos(combo) {
     return combo.split(" ").map(c => _react.default.createElement("span", {
       key: c,
@@ -49,7 +59,7 @@ class ShortcutsModal extends _react.Component {
   renderSearchShortcuts() {
     return _react.default.createElement("ul", {
       className: "shortcuts-list"
-    }, this.renderShorcutItem(L10N.getStr("shortcuts.fileSearch2"), (0, _text.formatKeyShortcut)(L10N.getStr("sources.search.key2"))), this.renderShorcutItem(L10N.getStr("shortcuts.searchAgain2"), (0, _text.formatKeyShortcut)(L10N.getStr("sourceSearch.search.again.key3"))), this.renderShorcutItem(L10N.getStr("shortcuts.projectSearch2"), (0, _text.formatKeyShortcut)(L10N.getStr("projectTextSearch.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.functionSearch2"), (0, _text.formatKeyShortcut)(L10N.getStr("functionSearch.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.gotoLine"), (0, _text.formatKeyShortcut)(L10N.getStr("gotoLineModal.key3"))));
+    }, this.renderShorcutItem(L10N.getStr("shortcuts.fileSearch2"), (0, _text.formatKeyShortcut)(L10N.getStr("sources.search.key2"))), this.renderShorcutItem(L10N.getStr("shortcuts.projectSearch2"), (0, _text.formatKeyShortcut)(L10N.getStr("projectTextSearch.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.functionSearch2"), (0, _text.formatKeyShortcut)(L10N.getStr("functionSearch.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.gotoLine"), (0, _text.formatKeyShortcut)(L10N.getStr("gotoLineModal.key3"))));
   }
 
   renderShortcutsContent() {

@@ -5,10 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getBindingVariables = getBindingVariables;
 
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
-/* eslint max-nested-callbacks: ["error", 4] */
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
@@ -21,15 +17,24 @@ function getBindingVariables(bindings, parentName) {
     return [];
   }
 
-  const args = bindings.arguments.map(arg => (0, _lodash.toPairs)(arg)[0]);
-  const variables = (0, _lodash.toPairs)(bindings.variables);
-  return args.concat(variables).map(binding => {
-    const name = binding[0];
-    const contents = binding[1];
-    return {
-      name,
-      path: `${parentName}/${name}`,
-      contents
-    };
+  const nodes = [];
+
+  const addNode = (name, contents) => nodes.push({
+    name,
+    contents,
+    path: `${parentName}/${name}`
   });
+
+  for (const arg of bindings.arguments) {
+    // `arg` is an object which only has a single property whose name is the name of the
+    // argument. So here we can directly pick the first (and only) entry of `arg`
+    const [name, contents] = Object.entries(arg)[0];
+    addNode(name, contents);
+  }
+
+  for (const name in bindings.variables) {
+    addNode(name, bindings.variables[name]);
+  }
+
+  return nodes;
 }

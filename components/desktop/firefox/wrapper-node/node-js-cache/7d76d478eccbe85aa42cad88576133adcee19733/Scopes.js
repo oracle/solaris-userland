@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_menu", "devtools/client/debugger/src/context-menu/menu");
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
@@ -125,6 +127,28 @@ class Scopes extends _react.PureComponent {
       originalScopes: (0, _scopes.getScopes)(why, selectedFrame, originalFrameScopes),
       generatedScopes: (0, _scopes.getScopes)(why, selectedFrame, generatedFrameScopes),
       showOriginal: true
+    };
+  }
+
+  static get propTypes() {
+    return {
+      addWatchpoint: _propTypes.default.func.isRequired,
+      cx: _propTypes.default.object.isRequired,
+      expandedScopes: _propTypes.default.array.isRequired,
+      generatedFrameScopes: _propTypes.default.object,
+      highlightDomElement: _propTypes.default.func.isRequired,
+      isLoading: _propTypes.default.bool.isRequired,
+      isPaused: _propTypes.default.bool.isRequired,
+      mapScopesEnabled: _propTypes.default.bool.isRequired,
+      openElementInInspector: _propTypes.default.func.isRequired,
+      openLink: _propTypes.default.func.isRequired,
+      originalFrameScopes: _propTypes.default.object,
+      removeWatchpoint: _propTypes.default.func.isRequired,
+      selectedFrame: _propTypes.default.object.isRequired,
+      setExpandedScope: _propTypes.default.func.isRequired,
+      toggleMapScopes: _propTypes.default.func.isRequired,
+      unHighlightDomElement: _propTypes.default.func.isRequired,
+      why: _propTypes.default.object.isRequired
     };
   }
 

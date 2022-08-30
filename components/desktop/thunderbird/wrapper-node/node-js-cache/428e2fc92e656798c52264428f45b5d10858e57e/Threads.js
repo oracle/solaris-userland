@@ -7,6 +7,8 @@ exports.default = exports.Threads = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 
@@ -22,6 +24,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 class Threads extends _react.Component {
+  static get propTypes() {
+    return {
+      threads: _propTypes.default.array.isRequired
+    };
+  }
+
   render() {
     const {
       threads

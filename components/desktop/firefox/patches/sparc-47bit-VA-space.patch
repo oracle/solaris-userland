@@ -7,7 +7,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=577056
 Bug 577056 fatval: Memory layout for 64-bit Solaris is different than other 64-bit systems.
 
 --- /dev/null
-+++ b/js/mapfile.SolarisSPARC
++++ firefox-102.1.0/js/mapfile.SolarisSPARC
 @@ -0,0 +1,9 @@
 +# Mozilla JavaScript expects that no address above 47bits address range
 +# will get ever used. Solaris SPARC is not limiting address space.
@@ -18,9 +18,9 @@ Bug 577056 fatval: Memory layout for 64-bit Solaris is different than other 64-b
 +      VADDR = 0x800000000000;
 +      SIZE = 0xffff7fffffff0000;
 +};
---- a/browser/app/moz.build
-+++ b/browser/app/moz.build
-@@ -126,6 +126,10 @@
+--- firefox-102.1.0/browser/app/moz.build
++++ firefox-102.1.0/browser/app/moz.build
+@@ -144,6 +144,10 @@ # Set it to 256k.  See bug 127069.
  if CONFIG["OS_ARCH"] == "WINNT" and CONFIG["CC_TYPE"] not in ("clang", "gcc"):
      LDFLAGS += ["/HEAP:0x40000"]
  
@@ -31,9 +31,9 @@ Bug 577056 fatval: Memory layout for 64-bit Solaris is different than other 64-b
  DisableStlWrapping()
  
  if CONFIG["HAVE_CLOCK_MONOTONIC"]:
---- a/js/src/shell/moz.build
-+++ b/js/src/shell/moz.build
-@@ -51,6 +51,10 @@
+--- firefox-102.1.0/js/src/shell/moz.build
++++ firefox-102.1.0/js/src/shell/moz.build
+@@ -50,6 +50,10 @@ OBJDIR_FILES.js.src.shell += ["!/dist/bi
  # People expect the js shell to wind up in the top-level JS dir.
  OBJDIR_FILES.js.src += ["!/dist/bin/js%s" % CONFIG["BIN_SUFFIX"]]
  
@@ -44,9 +44,9 @@ Bug 577056 fatval: Memory layout for 64-bit Solaris is different than other 64-b
  # Stack size on Wasm/WASI
  # ==================================
  # Increase the default stack size (64KB) to 1MB.
---- a/js/xpconnect/shell/moz.build
-+++ b/js/xpconnect/shell/moz.build
-@@ -29,6 +29,10 @@
+--- firefox-102.1.0/js/xpconnect/shell/moz.build
++++ firefox-102.1.0/js/xpconnect/shell/moz.build
+@@ -34,6 +34,10 @@ # Always enter a Windows program through
      # a console application.
      WIN32_EXE_LDFLAGS += ["-ENTRY:wmainCRTStartup"]
  

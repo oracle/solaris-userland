@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
 var _BracketArrow = _interopRequireDefault(require("./BracketArrow"));
@@ -97,6 +99,17 @@ class Popover extends _react.Component {
 
       return this.calculateTopForRightOrientation(target, editor, popover);
     });
+  }
+
+  static get propTypes() {
+    return {
+      children: _propTypes.default.node.isRequired,
+      editorRef: _propTypes.default.object.isRequired,
+      mouseout: _propTypes.default.func.isRequired,
+      target: _propTypes.default.object.isRequired,
+      targetPosition: _propTypes.default.object.isRequired,
+      type: _propTypes.default.string.isRequired
+    };
   }
 
   componentDidMount() {

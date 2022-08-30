@@ -4,10 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.insertSourceActors = insertSourceActors;
-exports.removeSourceActor = removeSourceActor;
-exports.removeSourceActors = removeSourceActors;
-exports.loadSourceActorBreakableLines = exports.loadSourceActorBreakpointColumns = void 0;
-loader.lazyRequireGetter(this, "_sourceActors", "devtools/client/debugger/src/reducers/source-actors");
+exports.loadSourceActorBreakableLines = void 0;
+loader.lazyRequireGetter(this, "_sourceActors", "devtools/client/debugger/src/selectors/source-actors");
 loader.lazyRequireGetter(this, "_memoizableAction", "devtools/client/debugger/src/utils/memoizableAction");
 loader.lazyRequireGetter(this, "_promise", "devtools/client/debugger/src/actions/utils/middleware/promise");
 
@@ -25,61 +23,6 @@ function insertSourceActors(items) {
   };
 }
 
-function removeSourceActor(item) {
-  return removeSourceActors([item]);
-}
-
-function removeSourceActors(items) {
-  return function ({
-    dispatch
-  }) {
-    dispatch({
-      type: "REMOVE_SOURCE_ACTORS",
-      items
-    });
-  };
-}
-
-const loadSourceActorBreakpointColumns = (0, _memoizableAction.memoizeableAction)("loadSourceActorBreakpointColumns", {
-  createKey: ({
-    id,
-    line
-  }) => `${id}:${line}`,
-  getValue: ({
-    id,
-    line
-  }, {
-    getState
-  }) => (0, _sourceActors.getSourceActorBreakpointColumns)(getState(), id, line),
-  action: async ({
-    id,
-    line
-  }, {
-    dispatch,
-    getState,
-    client
-  }) => {
-    await dispatch({
-      type: "SET_SOURCE_ACTOR_BREAKPOINT_COLUMNS",
-      sourceId: id,
-      line,
-      [_promise.PROMISE]: (async () => {
-        const positions = await client.getSourceActorBreakpointPositions((0, _sourceActors.getSourceActor)(getState(), id), {
-          start: {
-            line,
-            column: 0
-          },
-          end: {
-            line: line + 1,
-            column: 0
-          }
-        });
-        return positions[line] || [];
-      })()
-    });
-  }
-});
-exports.loadSourceActorBreakpointColumns = loadSourceActorBreakpointColumns;
 const loadSourceActorBreakableLines = (0, _memoizableAction.memoizeableAction)("loadSourceActorBreakableLines", {
   createKey: args => args.id,
   getValue: ({

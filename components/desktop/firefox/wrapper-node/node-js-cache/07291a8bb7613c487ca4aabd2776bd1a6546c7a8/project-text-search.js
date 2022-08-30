@@ -18,7 +18,8 @@ loader.lazyRequireGetter(this, "_search", "devtools/client/debugger/src/workers/
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
 loader.lazyRequireGetter(this, "_loadSourceText", "devtools/client/debugger/src/actions/sources/loadSourceText");
-loader.lazyRequireGetter(this, "_projectTextSearch", "devtools/client/debugger/src/reducers/project-text-search");
+loader.lazyRequireGetter(this, "_projectTextSearch", "devtools/client/debugger/src/selectors/project-text-search");
+loader.lazyRequireGetter(this, "_projectTextSearch2", "devtools/client/debugger/src/reducers/project-text-search");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -99,9 +100,9 @@ function stopOngoingSearch(cx) {
     const ongoingSearch = (0, _projectTextSearch.getTextSearchOperation)(state);
     const status = (0, _projectTextSearch.getTextSearchStatus)(state);
 
-    if (ongoingSearch && status !== _projectTextSearch.statusType.done) {
+    if (ongoingSearch && status !== _projectTextSearch2.statusType.done) {
       ongoingSearch.cancel();
-      dispatch(updateSearchStatus(cx, _projectTextSearch.statusType.cancelled));
+      dispatch(updateSearchStatus(cx, _projectTextSearch2.statusType.cancelled));
     }
   };
 }
@@ -117,8 +118,11 @@ function searchSources(cx, query) {
     await dispatch(addOngoingSearch(cx, search));
     await dispatch(clearSearchResults(cx));
     await dispatch(addSearchQuery(cx, query));
-    dispatch(updateSearchStatus(cx, _projectTextSearch.statusType.fetching));
-    const validSources = (0, _selectors.getSourceList)(getState()).filter(source => !(0, _selectors.hasPrettySource)(getState(), source.id) && !(0, _source.isThirdParty)(source));
+    dispatch(updateSearchStatus(cx, _projectTextSearch2.statusType.fetching));
+    let validSources = (0, _selectors.getSourceList)(getState()).filter(source => !(0, _selectors.hasPrettySource)(getState(), source.id) && !(0, _source.isThirdParty)(source)); // Sort original entries first so that search results are more useful.
+    // See bug 1642778.
+
+    validSources = [...validSources.filter(x => x.isOriginal), ...validSources.filter(x => !x.isOriginal)];
 
     for (const source of validSources) {
       if (cancelled) {
@@ -132,7 +136,7 @@ function searchSources(cx, query) {
       await dispatch(searchSource(cx, source.id, query));
     }
 
-    dispatch(updateSearchStatus(cx, _projectTextSearch.statusType.done));
+    dispatch(updateSearchStatus(cx, _projectTextSearch2.statusType.done));
   };
 
   search.cancel = () => {

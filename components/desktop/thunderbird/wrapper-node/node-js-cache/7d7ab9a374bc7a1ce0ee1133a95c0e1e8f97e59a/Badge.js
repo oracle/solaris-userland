@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -18,5 +20,8 @@ const Badge = ({
   className: "badge text-white text-center"
 }, children);
 
+Badge.propTypes = {
+  children: _propTypes.default.node.isRequired
+};
 var _default = Badge;
 exports.default = _default;

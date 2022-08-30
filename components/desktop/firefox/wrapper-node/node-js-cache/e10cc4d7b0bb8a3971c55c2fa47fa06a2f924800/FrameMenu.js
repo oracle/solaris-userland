@@ -7,8 +7,6 @@ exports.default = FrameMenu;
 loader.lazyRequireGetter(this, "_menu", "devtools/client/debugger/src/context-menu/menu");
 loader.lazyRequireGetter(this, "_clipboard", "devtools/client/debugger/src/utils/clipboard");
 
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
@@ -18,7 +16,7 @@ const unblackboxString = "ignoreContextItem.unignore";
 function formatMenuElement(labelString, click, disabled = false) {
   const label = L10N.getStr(labelString);
   const accesskey = L10N.getStr(`${labelString}.accesskey`);
-  const id = `node-menu-${(0, _lodash.kebabCase)(label)}`;
+  const id = `node-menu-${labelString}`;
   return {
     id,
     label,

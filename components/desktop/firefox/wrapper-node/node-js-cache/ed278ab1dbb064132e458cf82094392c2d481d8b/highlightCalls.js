@@ -47,7 +47,7 @@ function highlightCalls(cx) {
       return;
     }
 
-    const source = (0, _selectors.getSource)(getState(), frame.location.sourceId);
+    const source = (0, _selectors.getLocationSource)(getState(), frame.location);
 
     if (!source) {
       return;

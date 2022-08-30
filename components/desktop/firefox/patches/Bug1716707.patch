@@ -1,0 +1,54 @@
+# HG changeset patch
+# User Petr Sumbera <petr.sumbera@oracle.com>
+# Date 1648114576 25200
+#      Thu Mar 24 02:36:16 2022 -0700
+# Node ID 903e5f164c0ed424492eec6f388c03cbbcf99913
+# Parent  20d81e68da033746bf81acbb08490f16679853da
+Bug 1716707 [s390x] Software WebRender does not support big endian
+
+diff -r 20d81e68da03 -r 903e5f164c0e gfx/webrender_bindings/RenderCompositorSWGL.cpp
+--- a/gfx/webrender_bindings/RenderCompositorSWGL.cpp	Thu Mar 24 06:57:58 2022 +0000
++++ b/gfx/webrender_bindings/RenderCompositorSWGL.cpp	Thu Mar 24 02:36:16 2022 -0700
+@@ -7,6 +7,7 @@
+ #include "RenderCompositorSWGL.h"
+ 
+ #include "mozilla/gfx/Logging.h"
++#include "mozilla/gfx/Swizzle.h"
+ #include "mozilla/widget/CompositorWidget.h"
+ 
+ #ifdef MOZ_WIDGET_GTK
+@@ -235,6 +237,13 @@
+   }
+   mDT->Flush();
+ 
++#if MOZ_BIG_ENDIAN()
++  // One swizzle to rule them all.
++  gfx::SwizzleData(mMappedData, mMappedStride, gfx::SurfaceFormat::B8G8R8A8,
++                   mMappedData, mMappedStride, gfx::SurfaceFormat::A8R8G8B8,
++                   mDT->GetSize());
++#endif
++
+   // Done with the DT. Hand it back to the widget and clear out any trace of it.
+   mWidget->EndRemoteDrawingInRegion(mDT, mDirtyRegion);
+   mDirtyRegion.SetEmpty();
+diff -r 20d81e68da03 -r 903e5f164c0e image/imgFrame.cpp
+--- a/image/imgFrame.cpp	Thu Mar 24 06:57:58 2022 +0000
++++ b/image/imgFrame.cpp	Thu Mar 24 02:36:16 2022 -0700
+@@ -372,6 +372,17 @@
+     return NS_ERROR_OUT_OF_MEMORY;
+   }
+ 
++#if MOZ_BIG_ENDIAN()
++  if (aBackend == gfx::BackendType::SKIA && canUseDataSurface) {
++      // SKIA is lying about what format it returns on big endian
++      for (int ii=0; ii < mRawSurface->GetSize().Height()*mRawSurface->Stride() / 4; ++ii) {
++        uint32_t *vals = (uint32_t*)(mRawSurface->GetData());
++        uint32_t val = ((vals[ii] << 8) & 0xFF00FF00 ) | ((vals[ii] >> 8) & 0xFF00FF );
++        vals[ii] = (val << 16) | (val >> 16);
++      }
++  }
++#endif
++
+   if (!canUseDataSurface) {
+     // We used an offscreen surface, which is an "optimized" surface from
+     // imgFrame's perspective.

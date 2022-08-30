@@ -17,7 +17,7 @@ function mapDisplayName(frame, {
     return frame;
   }
 
-  const source = (0, _selectors.getSource)(getState(), frame.location.sourceId);
+  const source = (0, _selectors.getLocationSource)(getState(), frame.location);
 
   if (!source) {
     return frame;

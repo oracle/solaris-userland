@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _index = _interopRequireDefault(require("devtools/client/shared/components/reps/index"));
 
 var _inspectorSharedUtils = require("devtools/client/inspector/shared/utils");
@@ -40,6 +42,19 @@ const localizationTerms = {
 };
 
 class DOMMutationBreakpointsContents extends _react.Component {
+  static get propTypes() {
+    return {
+      breakpoints: _propTypes.default.array.isRequired,
+      deleteBreakpoint: _propTypes.default.func.isRequired,
+      highlightDomElement: _propTypes.default.func.isRequired,
+      openElementInInspector: _propTypes.default.func.isRequired,
+      openInspector: _propTypes.default.func.isRequired,
+      setSkipPausing: _propTypes.default.func.isRequired,
+      toggleBreakpoint: _propTypes.default.func.isRequired,
+      unHighlightDomElement: _propTypes.default.func.isRequired
+    };
+  }
+
   handleBreakpoint(breakpointId, shouldEnable) {
     const {
       toggleBreakpoint,
@@ -136,6 +151,16 @@ const DOMMutationBreakpointsPanel = (0, _connect.connect)(mapStateToProps, {
 })(DOMMutationBreakpointsContents);
 
 class DomMutationBreakpoints extends _react.Component {
+  static get propTypes() {
+    return {
+      highlightDomElement: _propTypes.default.func.isRequired,
+      openElementInInspector: _propTypes.default.func.isRequired,
+      openInspector: _propTypes.default.func.isRequired,
+      setSkipPausing: _propTypes.default.func.isRequired,
+      unHighlightDomElement: _propTypes.default.func.isRequired
+    };
+  }
+
   render() {
     return _react.default.createElement(DOMMutationBreakpointsPanel, {
       openElementInInspector: this.props.openElementInInspector,

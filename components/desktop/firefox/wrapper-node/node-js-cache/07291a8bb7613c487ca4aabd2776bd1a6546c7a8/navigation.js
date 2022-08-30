@@ -58,7 +58,7 @@ function connect(url, actor, isWebExtension) {
     dispatch,
     getState
   }) {
-    await dispatch({
+    dispatch({
       type: "CONNECT",
       mainThreadActorID: actor,
       isWebExtension

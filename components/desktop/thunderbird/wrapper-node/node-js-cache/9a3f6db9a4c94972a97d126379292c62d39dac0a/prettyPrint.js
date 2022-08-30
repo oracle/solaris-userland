@@ -19,6 +19,7 @@ loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/so
 loader.lazyRequireGetter(this, "_loadSourceText", "devtools/client/debugger/src/actions/sources/loadSourceText");
 loader.lazyRequireGetter(this, "_pause", "devtools/client/debugger/src/actions/pause/index");
 loader.lazyRequireGetter(this, "_sources", "devtools/client/debugger/src/actions/sources/index");
+loader.lazyRequireGetter(this, "_create", "devtools/client/debugger/src/client/firefox/create");
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_select", "devtools/client/debugger/src/actions/sources/select");
 
@@ -68,21 +69,11 @@ function createPrettySource(cx, sourceId) {
     const source = (0, _selectors.getSourceFromId)(getState(), sourceId);
     const url = getPrettyOriginalSourceURL(source);
     const id = (0, _devtoolsSourceMap.generatedToOriginalId)(sourceId, url);
-    const prettySource = {
-      id,
-      url,
-      relativeUrl: url,
-      isBlackBoxed: false,
-      isPrettyPrinted: true,
-      isWasm: false,
-      isExtension: false,
-      extensionName: null,
-      isOriginal: true
-    };
+    const prettySource = (0, _create.createPrettyPrintOriginalSource)(id, url, source.thread);
     dispatch({
-      type: "ADD_SOURCE",
+      type: "ADD_SOURCES",
       cx,
-      source: prettySource
+      sources: [prettySource]
     });
     await dispatch((0, _select.selectSource)(cx, id));
     return prettySource;
@@ -159,7 +150,7 @@ function togglePrettyPrint(cx, sourceId) {
       cx,
       source: newPrettySource
     }));
-    await dispatch((0, _breakpoints.remapBreakpoints)(cx, sourceId));
+    await dispatch((0, _breakpoints.updateBreakpointsForNewPrettyPrintedSource)(cx, sourceId));
     return newPrettySource;
   };
 }

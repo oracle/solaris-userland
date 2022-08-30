@@ -9,20 +9,17 @@ exports.toggleEventLogging = toggleEventLogging;
 exports.addEventListenerExpanded = addEventListenerExpanded;
 exports.removeEventListenerExpanded = removeEventListenerExpanded;
 exports.getEventListenerBreakpointTypes = getEventListenerBreakpointTypes;
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 async function updateBreakpoints(dispatch, client, newEvents) {
+  await client.setEventListenerBreakpoints(newEvents);
   dispatch({
     type: "UPDATE_EVENT_LISTENERS",
     active: newEvents
   });
-  await client.setEventListenerBreakpoints(newEvents);
 }
 
 async function updateExpanded(dispatch, newExpanded) {
@@ -39,7 +36,7 @@ function addEventListenerBreakpoints(eventsToAdd) {
     getState
   }) => {
     const activeListenerBreakpoints = await (0, _selectors.getActiveEventListeners)(getState());
-    const newEvents = (0, _lodash.uniq)([...eventsToAdd, ...activeListenerBreakpoints]);
+    const newEvents = [...new Set([...eventsToAdd, ...activeListenerBreakpoints])];
     await updateBreakpoints(dispatch, client, newEvents);
   };
 }
@@ -51,7 +48,7 @@ function removeEventListenerBreakpoints(eventsToRemove) {
     getState
   }) => {
     const activeListenerBreakpoints = await (0, _selectors.getActiveEventListeners)(getState());
-    const newEvents = (0, _lodash.remove)(activeListenerBreakpoints, event => !eventsToRemove.includes(event));
+    const newEvents = activeListenerBreakpoints.filter(event => !eventsToRemove.includes(event));
     await updateBreakpoints(dispatch, client, newEvents);
   };
 }
@@ -77,7 +74,7 @@ function addEventListenerExpanded(category) {
     getState
   }) => {
     const expanded = await (0, _selectors.getEventListenerExpanded)(getState());
-    const newExpanded = (0, _lodash.uniq)([...expanded, category]);
+    const newExpanded = [...new Set([...expanded, category])];
     await updateExpanded(dispatch, newExpanded);
   };
 }

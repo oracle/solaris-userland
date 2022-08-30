@@ -3,16 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.newQueuedSources = newQueuedSources;
 exports.newOriginalSource = newOriginalSource;
 exports.newOriginalSources = newOriginalSources;
 exports.newGeneratedSource = newGeneratedSource;
 exports.newGeneratedSources = newGeneratedSources;
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
-loader.lazyRequireGetter(this, "_sourceActors", "devtools/client/debugger/src/reducers/source-actors");
-loader.lazyRequireGetter(this, "_sourceActors2", "devtools/client/debugger/src/actions/source-actors");
+loader.lazyRequireGetter(this, "_sourceActors", "devtools/client/debugger/src/actions/source-actors");
 loader.lazyRequireGetter(this, "_create", "devtools/client/debugger/src/client/firefox/create");
 loader.lazyRequireGetter(this, "_blackbox", "devtools/client/debugger/src/actions/sources/blackbox");
 loader.lazyRequireGetter(this, "_breakpoints", "devtools/client/debugger/src/actions/breakpoints/index");
@@ -44,17 +39,15 @@ function loadSourceMaps(cx, sources) {
   }) {
     try {
       const sourceList = await Promise.all(sources.map(async sourceActor => {
-        const originalSources = await dispatch(loadSourceMap(cx, sourceActor));
+        const originalSourcesInfo = await dispatch(loadSourceMap(cx, sourceActor));
+        originalSourcesInfo.forEach(sourceInfo => sourceInfo.thread = sourceActor.thread);
 
-        _sourceQueue.default.queueSources(originalSources.map(data => ({
-          type: "original",
-          data
-        })));
+        _sourceQueue.default.queueOriginalSources(originalSourcesInfo);
 
-        return originalSources;
+        return originalSourcesInfo;
       }));
       await _sourceQueue.default.flush();
-      return (0, _lodash.flatten)(sourceList);
+      return sourceList.flat();
     } catch (error) {
       if (!(error instanceof _context.ContextError)) {
         throw error;
@@ -188,44 +181,23 @@ function restoreBlackBoxedSources(cx, sources) {
     dispatch,
     getState
   }) => {
-    const tabs = (0, _selectors.getBlackBoxList)(getState());
+    const currentRanges = (0, _selectors.getBlackBoxRanges)(getState());
 
-    if (tabs.length == 0) {
+    if (Object.keys(currentRanges).length == 0) {
       return;
     }
 
     for (const source of sources) {
-      if (tabs.includes(source.url) && !source.isBlackBoxed) {
-        dispatch((0, _blackbox.toggleBlackBox)(cx, source));
+      const ranges = currentRanges[source.url];
+
+      if (ranges) {
+        // If the ranges is an empty then the whole source was blackboxed.
+        await dispatch((0, _blackbox.toggleBlackBox)(cx, source, true, ranges));
       }
     }
   };
-}
+} // Wrapper around newOriginalSources, only used by tests
 
-function newQueuedSources(sourceInfo) {
-  return async ({
-    dispatch
-  }) => {
-    const generated = [];
-    const original = [];
-
-    for (const source of sourceInfo) {
-      if (source.type === "generated") {
-        generated.push(source.data);
-      } else {
-        original.push(source.data);
-      }
-    }
-
-    if (generated.length > 0) {
-      await dispatch(newGeneratedSources(generated));
-    }
-
-    if (original.length > 0) {
-      await dispatch(newOriginalSources(original));
-    }
-  };
-}
 
 function newOriginalSource(sourceInfo) {
   return async ({
@@ -236,7 +208,7 @@ function newOriginalSource(sourceInfo) {
   };
 }
 
-function newOriginalSources(sourceInfo) {
+function newOriginalSources(originalSourcesInfo) {
   return async ({
     dispatch,
     getState
@@ -247,24 +219,15 @@ function newOriginalSources(sourceInfo) {
 
     for (const {
       id,
-      url
-    } of sourceInfo) {
+      url,
+      thread
+    } of originalSourcesInfo) {
       if (seen.has(id) || (0, _selectors.getSource)(state, id)) {
         continue;
       }
 
       seen.add(id);
-      sources.push({
-        id,
-        url,
-        relativeUrl: url,
-        isPrettyPrinted: false,
-        isWasm: false,
-        isBlackBoxed: false,
-        isExtension: false,
-        extensionName: null,
-        isOriginal: true
-      });
+      sources.push((0, _create.createSourceMapOriginalSource)(id, url, thread));
     }
 
     const cx = (0, _selectors.getContext)(state);
@@ -277,7 +240,8 @@ function newOriginalSources(sourceInfo) {
 
     return sources;
   };
-}
+} // Wrapper around newGeneratedSources, only used by tests
+
 
 function newGeneratedSource(sourceInfo) {
   return async ({
@@ -288,13 +252,13 @@ function newGeneratedSource(sourceInfo) {
   };
 }
 
-function newGeneratedSources(sourceInfo) {
+function newGeneratedSources(sourceResources) {
   return async ({
     dispatch,
     getState,
     client
   }) => {
-    if (sourceInfo.length == 0) {
+    if (sourceResources.length == 0) {
       return [];
     }
 
@@ -302,56 +266,40 @@ function newGeneratedSources(sourceInfo) {
     const newSourcesObj = {};
     const newSourceActors = [];
 
-    for (const {
-      thread,
-      source,
-      id
-    } of sourceInfo) {
-      const newId = id || (0, _create.makeSourceId)(source, thread);
-
-      if (!(0, _selectors.getSource)(getState(), newId) && !newSourcesObj[newId]) {
-        newSourcesObj[newId] = {
-          id: newId,
-          url: source.url,
-          relativeUrl: source.url,
-          isPrettyPrinted: false,
-          extensionName: source.extensionName,
-          isBlackBoxed: false,
-          isWasm: !!_prefs.features.wasm && source.introductionType === "wasm",
-          isExtension: source.url && (0, _source.isUrlExtension)(source.url) || false,
-          isOriginal: false
-        };
+    for (const sourceResource of sourceResources) {
+      // By the time we process the sources, the related target
+      // might already have been destroyed. It means that the sources
+      // are also about to be destroyed, so ignore them.
+      // (This is covered by browser_toolbox_backward_forward_navigation.js)
+      if (sourceResource.targetFront.isDestroyed()) {
+        continue;
       }
 
-      const actorId = (0, _sourceActors.stringToSourceActorId)(source.actor); // We are sometimes notified about a new source multiple times if we
+      const id = (0, _create.makeSourceId)(sourceResource);
+
+      if (!(0, _selectors.getSource)(getState(), id) && !newSourcesObj[id]) {
+        newSourcesObj[id] = (0, _create.createGeneratedSource)(sourceResource);
+      }
+
+      const actorId = sourceResource.actor; // We are sometimes notified about a new source multiple times if we
       // request a new source list and also get a source event from the server.
 
       if (!(0, _selectors.hasSourceActor)(getState(), actorId)) {
-        newSourceActors.push({
-          id: actorId,
-          actor: source.actor,
-          thread,
-          source: newId,
-          isBlackBoxed: source.isBlackBoxed,
-          sourceMapBaseURL: source.sourceMapBaseURL,
-          sourceMapURL: source.sourceMapURL,
-          url: source.url,
-          introductionType: source.introductionType
-        });
+        newSourceActors.push((0, _create.createSourceActor)(sourceResource));
       }
 
-      resultIds.push(newId);
+      resultIds.push(id);
     }
 
     const newSources = Object.values(newSourcesObj);
     const cx = (0, _selectors.getContext)(getState());
     dispatch(addSources(cx, newSources));
-    dispatch((0, _sourceActors2.insertSourceActors)(newSourceActors));
+    dispatch((0, _sourceActors.insertSourceActors)(newSourceActors));
 
     for (const newSourceActor of newSourceActors) {
       // Fetch breakable lines for new HTML scripts
       // when the HTML file has started loading
-      if ((0, _source.isInlineScript)(newSourceActor) && (0, _selectors.isSourceLoadingOrLoaded)(getState(), newSourceActor.source)) {
+      if ((0, _source.isInlineScript)(newSourceActor) && (0, _selectors.getSourceTextContent)(getState(), newSourceActor.source) != null) {
         dispatch((0, _sources.setBreakableLines)(cx, newSourceActor.source)).catch(error => {
           if (!(error instanceof _context.ContextError)) {
             throw error;
@@ -400,7 +348,7 @@ function checkNewSources(cx, sources) {
       dispatch(checkSelectedSource(cx, source.id));
     }
 
-    dispatch(restoreBlackBoxedSources(cx, sources));
+    await dispatch(restoreBlackBoxedSources(cx, sources));
     return sources;
   };
 }

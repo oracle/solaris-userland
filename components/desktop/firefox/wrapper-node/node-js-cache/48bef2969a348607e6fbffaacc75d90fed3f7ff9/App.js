@@ -23,8 +23,6 @@ loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selec
 
 var _devtoolsServices = _interopRequireDefault(require("Services"));
 
-var _devtoolsSplitter = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["devtools-splitter"]);
-
 var _ProjectSearch = _interopRequireDefault(require("./ProjectSearch"));
 
 var _PrimaryPanes = _interopRequireDefault(require("./PrimaryPanes/index"));
@@ -50,6 +48,10 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 const KeyShortcuts = require("devtools/client/shared/key-shortcuts");
+
+const SplitBox = require("devtools/client/shared/components/splitter/SplitBox");
+
+const AppErrorBoundary = require("devtools/client/shared/components/AppErrorBoundary");
 
 const shortcuts = new KeyShortcuts({
   window
@@ -157,7 +159,7 @@ class App extends _react.Component {
         endPanelCollapsed
       } = this.props;
       const horizontal = this.isHorizontal();
-      return _react.default.createElement(_devtoolsSplitter.default, {
+      return _react.default.createElement(SplitBox, {
         style: {
           width: "100vw"
         },
@@ -170,7 +172,7 @@ class App extends _react.Component {
           _prefs.prefs.endPanelSize = num;
           this.triggerEditorPaneResize();
         },
-        startPanel: _react.default.createElement(_devtoolsSplitter.default, {
+        startPanel: _react.default.createElement(SplitBox, {
           style: {
             width: "100vw"
           },
@@ -202,8 +204,28 @@ class App extends _react.Component {
     };
   }
 
+  static get propTypes() {
+    return {
+      activeSearch: _propTypes.default.oneOf(["file", "project"]),
+      closeActiveSearch: _propTypes.default.func.isRequired,
+      closeProjectSearch: _propTypes.default.func.isRequired,
+      closeQuickOpen: _propTypes.default.func.isRequired,
+      endPanelCollapsed: _propTypes.default.bool.isRequired,
+      fluentBundles: _propTypes.default.array.isRequired,
+      openQuickOpen: _propTypes.default.func.isRequired,
+      orientation: _propTypes.default.oneOf(["horizontal", "vertical"]).isRequired,
+      quickOpenEnabled: _propTypes.default.bool.isRequired,
+      selectedSource: _propTypes.default.object,
+      setActiveSearch: _propTypes.default.func.isRequired,
+      setOrientation: _propTypes.default.func.isRequired,
+      startPanelCollapsed: _propTypes.default.bool.isRequired,
+      toolboxDoc: _propTypes.default.object.isRequired
+    };
+  }
+
   getChildContext() {
     return {
+      fluentBundles: this.props.fluentBundles,
       toolboxDoc: this.props.toolboxDoc,
       shortcuts,
       l10n: L10N
@@ -219,7 +241,7 @@ class App extends _react.Component {
     searchKeys.forEach(key => shortcuts.on(key, this.toggleQuickOpenModal));
     shortcuts.on(L10N.getStr("gotoLineModal.key3"), e => this.toggleQuickOpenModal(e, ":"));
     shortcuts.on("Escape", this.onEscape);
-    shortcuts.on("Cmd+/", this.onCommandSlash);
+    shortcuts.on("CmdOrCtrl+/", this.onCommandSlash);
   }
 
   componentWillUnmount() {
@@ -230,6 +252,7 @@ class App extends _react.Component {
     searchKeys.forEach(key => shortcuts.off(key, this.toggleQuickOpenModal));
     shortcuts.off(L10N.getStr("gotoLineModal.key3"), this.toggleQuickOpenModal);
     shortcuts.off("Escape", this.onEscape);
+    shortcuts.off("CmdOrCtrl+/", this.onCommandSlash);
   }
 
   isHorizontal() {
@@ -283,10 +306,13 @@ class App extends _react.Component {
     } = this.props;
     return _react.default.createElement("div", {
       className: (0, _classnames.default)("debugger")
+    }, _react.default.createElement(AppErrorBoundary, {
+      componentName: "Debugger",
+      panel: L10N.getStr("ToolboxDebugger.label")
     }, _react.default.createElement(_A11yIntention.default, null, this.renderLayout(), quickOpenEnabled === true && _react.default.createElement(_QuickOpenModal.default, {
       shortcutsModalEnabled: this.state.shortcutsModalEnabled,
       toggleShortcutsModal: () => this.toggleShortcutsModal()
-    }), this.renderShortcutsModal()));
+    }), this.renderShortcutsModal())));
   }
 
 }
@@ -294,7 +320,8 @@ class App extends _react.Component {
 App.childContextTypes = {
   toolboxDoc: _propTypes.default.object,
   shortcuts: _propTypes.default.object,
-  l10n: _propTypes.default.object
+  l10n: _propTypes.default.object,
+  fluentBundles: _propTypes.default.array
 };
 
 const mapStateToProps = state => ({

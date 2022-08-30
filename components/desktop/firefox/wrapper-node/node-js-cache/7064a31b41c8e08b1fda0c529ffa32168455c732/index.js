@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
@@ -34,6 +36,16 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 class Breakpoints extends _react.Component {
+  static get propTypes() {
+    return {
+      breakpointSources: _propTypes.default.array.isRequired,
+      pauseOnExceptions: _propTypes.default.func.isRequired,
+      selectedSource: _propTypes.default.object,
+      shouldPauseOnCaughtExceptions: _propTypes.default.bool.isRequired,
+      shouldPauseOnExceptions: _propTypes.default.bool.isRequired
+    };
+  }
+
   componentWillUnmount() {
     this.removeEditor();
   }
@@ -91,21 +103,20 @@ class Breakpoints extends _react.Component {
     }
 
     const editor = this.getEditor();
-    const sources = [...breakpointSources.map(({
+    const sources = breakpointSources.map(({
       source
-    }) => source)];
+    }) => source);
     return _react.default.createElement("div", {
       className: "pane breakpoints-list"
     }, breakpointSources.map(({
       source,
       breakpoints
     }) => {
-      const sortedBreakpoints = (0, _breakpoint.sortSelectedBreakpoints)(breakpoints, selectedSource);
       return [_react.default.createElement(_BreakpointHeading.default, {
         key: source.id,
         source: source,
         sources: sources
-      }), ...sortedBreakpoints.map(breakpoint => _react.default.createElement(_Breakpoint.default, {
+      }), breakpoints.map(breakpoint => _react.default.createElement(_Breakpoint.default, {
         breakpoint: breakpoint,
         source: source,
         selectedSource: selectedSource,

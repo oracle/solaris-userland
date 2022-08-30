@@ -9,6 +9,8 @@ exports.default = exports.Popup = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _index = _interopRequireDefault(require("devtools/client/shared/components/reps/index"));
@@ -106,6 +108,20 @@ class Popup extends _react.Component {
     });
   }
 
+  static get propTypes() {
+    return {
+      clearPreview: _propTypes.default.func.isRequired,
+      cx: _propTypes.default.object.isRequired,
+      editorRef: _propTypes.default.object.isRequired,
+      highlightDomElement: _propTypes.default.func.isRequired,
+      openElementInInspector: _propTypes.default.func.isRequired,
+      openLink: _propTypes.default.func.isRequired,
+      preview: _propTypes.default.object.isRequired,
+      selectSourceURL: _propTypes.default.func.isRequired,
+      unHighlightDomElement: _propTypes.default.func.isRequired
+    };
+  }
+
   componentDidMount() {
     this.addHighlightToToken();
   }
@@ -134,6 +150,10 @@ class Popup extends _react.Component {
       target.classList.remove("preview-token");
       removeHighlightForTargetSiblings(target);
     }
+  }
+
+  createElement(element) {
+    return document.createElement(element);
   }
 
   renderFunctionPreview() {
@@ -192,10 +212,12 @@ class Popup extends _react.Component {
       disableWrap: true,
       focusable: false,
       openLink: openLink,
+      createElement: this.createElement,
       onDOMNodeClick: grip => openElementInInspector(grip),
       onInspectIconClick: grip => openElementInInspector(grip),
       onDOMNodeMouseOver: grip => highlightDomElement(grip),
-      onDOMNodeMouseOut: grip => unHighlightDomElement(grip)
+      onDOMNodeMouseOut: grip => unHighlightDomElement(grip),
+      mayUseCustomFormatter: true
     }));
   }
 

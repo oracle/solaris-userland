@@ -7,6 +7,8 @@ exports.default = exports.Outline = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_menu", "devtools/client/debugger/src/context-menu/menu");
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
@@ -23,8 +25,6 @@ loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selec
 var _OutlineFilter = _interopRequireDefault(require("./OutlineFilter"));
 
 var _PreviewFunction = _interopRequireDefault(require("../shared/PreviewFunction"));
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -80,6 +80,20 @@ class Outline extends _react.Component {
     this.state = {
       filter: "",
       focusedItem: null
+    };
+  }
+
+  static get propTypes() {
+    return {
+      alphabetizeOutline: _propTypes.default.bool.isRequired,
+      cursorPosition: _propTypes.default.object,
+      cx: _propTypes.default.object.isRequired,
+      flashLineRange: _propTypes.default.func.isRequired,
+      getFunctionText: _propTypes.default.func.isRequired,
+      onAlphabetizeClick: _propTypes.default.func.isRequired,
+      selectLocation: _propTypes.default.func.isRequired,
+      selectedSource: _propTypes.default.object.isRequired,
+      symbols: _propTypes.default.object.isRequired
     };
   }
 
@@ -277,22 +291,24 @@ class Outline extends _react.Component {
     const {
       filter
     } = this.state;
-    let classes = (0, _lodash.uniq)(functions.map(({
+    let classes = [...new Set(functions.map(({
       klass
-    }) => klass));
-    let namedFunctions = functions.filter(({
+    }) => klass))];
+    const namedFunctions = functions.filter(({
       name,
       klass
     }) => filterOutlineItem(name, filter) && !klass && !classes.includes(name));
-    let classFunctions = functions.filter(({
+    const classFunctions = functions.filter(({
       name,
       klass
     }) => filterOutlineItem(name, filter) && !!klass);
 
     if (this.props.alphabetizeOutline) {
-      namedFunctions = (0, _lodash.sortBy)(namedFunctions, "name");
+      const sortByName = (a, b) => a.name < b.name ? -1 : 1;
+
+      namedFunctions.sort(sortByName);
       classes = classes.sort();
-      classFunctions = (0, _lodash.sortBy)(classFunctions, "name");
+      classFunctions.sort(sortByName);
     }
 
     return _react.default.createElement("ul", {
@@ -349,16 +365,17 @@ class Outline extends _react.Component {
 exports.Outline = Outline;
 
 const mapStateToProps = state => {
-  const selectedSource = (0, _selectors.getSelectedSourceWithContent)(state);
+  const selectedSource = (0, _selectors.getSelectedSource)(state);
   const symbols = selectedSource ? (0, _selectors.getSymbols)(state, selectedSource) : null;
   return {
     cx: (0, _selectors.getContext)(state),
     symbols,
-    selectedSource: selectedSource,
+    selectedSource,
     cursorPosition: (0, _selectors.getCursorPosition)(state),
     getFunctionText: line => {
       if (selectedSource) {
-        return (0, _function.findFunctionText)(line, selectedSource, symbols);
+        const selectedSourceTextContent = (0, _selectors.getSelectedSourceTextContent)(state);
+        return (0, _function.findFunctionText)(line, selectedSource, selectedSourceTextContent, symbols);
       }
 
       return null;

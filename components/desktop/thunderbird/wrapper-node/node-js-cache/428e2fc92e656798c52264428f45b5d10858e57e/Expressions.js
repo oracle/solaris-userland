@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
@@ -22,8 +24,6 @@ loader.lazyRequireGetter(this, "_expressions", "devtools/client/debugger/src/uti
 loader.lazyRequireGetter(this, "_evaluationResult", "devtools/client/debugger/src/utils/evaluation-result");
 loader.lazyRequireGetter(this, "_Button", "devtools/client/debugger/src/components/shared/Button/index");
 
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -33,6 +33,10 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+const {
+  debounce
+} = require("devtools/shared/debounce");
 
 const {
   ObjectInspector
@@ -68,7 +72,7 @@ class Expressions extends _react.Component {
       });
     });
 
-    _defineProperty(this, "findAutocompleteMatches", (0, _lodash.debounce)((value, selectionStart) => {
+    _defineProperty(this, "findAutocompleteMatches", debounce((value, selectionStart) => {
       const {
         autocomplete
       } = this.props;
@@ -87,6 +91,10 @@ class Expressions extends _react.Component {
       });
       this.props.onExpressionAdded();
       this.props.clearExpressionError();
+    });
+
+    _defineProperty(this, "createElement", element => {
+      return document.createElement(element);
     });
 
     _defineProperty(this, "onFocus", () => {
@@ -170,6 +178,7 @@ class Expressions extends _react.Component {
         autoExpandDepth: 0,
         disableWrap: true,
         openLink: openLink,
+        createElement: this.createElement,
         onDoubleClick: (items, {
           depth
         }) => {
@@ -181,7 +190,8 @@ class Expressions extends _react.Component {
         onInspectIconClick: grip => openElementInInspector(grip),
         onDOMNodeMouseOver: grip => highlightDomElement(grip),
         onDOMNodeMouseOut: grip => unHighlightDomElement(grip),
-        shouldRenderTooltip: true
+        shouldRenderTooltip: true,
+        mayUseCustomFormatter: true
       }), _react.default.createElement("div", {
         className: "expression-container__close-btn"
       }, _react.default.createElement(_Button.CloseButton, {
@@ -195,6 +205,27 @@ class Expressions extends _react.Component {
       editIndex: -1,
       inputValue: "",
       focused: false
+    };
+  }
+
+  static get propTypes() {
+    return {
+      addExpression: _propTypes.default.func.isRequired,
+      autocomplete: _propTypes.default.func.isRequired,
+      autocompleteMatches: _propTypes.default.array,
+      clearAutocomplete: _propTypes.default.func.isRequired,
+      clearExpressionError: _propTypes.default.func.isRequired,
+      cx: _propTypes.default.object.isRequired,
+      deleteExpression: _propTypes.default.func.isRequired,
+      expressionError: _propTypes.default.bool.isRequired,
+      expressions: _propTypes.default.array.isRequired,
+      highlightDomElement: _propTypes.default.func.isRequired,
+      onExpressionAdded: _propTypes.default.func.isRequired,
+      openElementInInspector: _propTypes.default.func.isRequired,
+      openLink: _propTypes.default.any.isRequired,
+      showInput: _propTypes.default.bool.isRequired,
+      unHighlightDomElement: _propTypes.default.func.isRequired,
+      updateExpression: _propTypes.default.func.isRequired
     };
   }
 

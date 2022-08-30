@@ -18,7 +18,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 let targets;
 let commands;
-let breakpoints;
+let breakpoints; // The maximal number of stackframes to retrieve when pausing
+
 const CALL_STACK_PAGE_SIZE = 1000;
 
 function setupCommands(innerCommands) {
@@ -180,14 +181,14 @@ function toggleJavaScriptEnabled(enabled) {
 }
 
 function addWatchpoint(object, property, label, watchpointType) {
-  if (currentTarget().traits.watchpoints) {
+  if (currentTarget().getTrait("watchpoints")) {
     const objectFront = createObjectFront(object);
     return objectFront.addWatchpoint(property, label, watchpointType);
   }
 }
 
 async function removeWatchpoint(object, property) {
-  if (currentTarget().traits.watchpoints) {
+  if (currentTarget().getTrait("watchpoints")) {
     const objectFront = createObjectFront(object);
     await objectFront.removeWatchpoint(property);
   }
@@ -195,6 +196,10 @@ async function removeWatchpoint(object, property) {
 
 function hasBreakpoint(location) {
   return !!breakpoints[(0, _breakpoint.makePendingLocationId)(location)];
+}
+
+function getServerBreakpointsList() {
+  return Object.values(breakpoints);
 }
 
 async function setBreakpoint(location, options) {
@@ -335,15 +340,39 @@ async function pauseOnExceptions(shouldPauseOnExceptions, shouldPauseOnCaughtExc
   });
 }
 
-async function blackBox(sourceActor, isBlackBoxed, range) {
-  const sourceFront = currentThreadFront().source({
-    actor: sourceActor.actor
-  });
+async function blackBox(sourceActor, shouldBlackBox, ranges) {
+  const hasWatcherSupport = commands.targetCommand.hasTargetWatcherSupport();
 
-  if (isBlackBoxed) {
-    await sourceFront.unblackBox(range);
+  if (hasWatcherSupport) {
+    const blackboxingFront = await commands.targetCommand.watcherFront.getBlackboxingActor();
+
+    if (shouldBlackBox) {
+      await blackboxingFront.blackbox(sourceActor.url, ranges);
+    } else {
+      await blackboxingFront.unblackbox(sourceActor.url, ranges);
+    }
   } else {
+    const sourceFront = currentThreadFront().source({
+      actor: sourceActor.actor
+    }); // If there are no ranges, the whole source is being blackboxed
+
+    if (!ranges.length) {
+      await toggleBlackBoxSourceFront(sourceFront, shouldBlackBox);
+      return;
+    } // Blackbox the specific ranges
+
+
+    for (const range of ranges) {
+      await toggleBlackBoxSourceFront(sourceFront, shouldBlackBox, range);
+    }
+  }
+}
+
+async function toggleBlackBoxSourceFront(sourceFront, shouldBlackBox, range) {
+  if (shouldBlackBox) {
     await sourceFront.blackBox(range);
+  } else {
+    await sourceFront.unblackBox(range);
   }
 }
 
@@ -354,29 +383,18 @@ async function setSkipPausing(shouldSkip) {
 }
 
 async function setEventListenerBreakpoints(ids) {
-  return forEachThread(thread => thread.setActiveEventBreakpoints(ids));
-} // eslint-disable-next-line
+  const hasWatcherSupport = commands.targetCommand.hasTargetWatcherSupport();
 
-
-async function getEventListenerBreakpointTypes() {
-  let categories;
-
-  try {
-    categories = await currentThreadFront().getAvailableEventBreakpoints();
-
-    if (!Array.isArray(categories)) {
-      // When connecting to older browser that had our placeholder
-      // implementation of the 'getAvailableEventBreakpoints' endpoint, we
-      // actually get back an object with a 'value' property containing
-      // the categories. Since that endpoint wasn't actually backed with a
-      // functional implementation, we just bail here instead of storing the
-      // 'value' property into the categories.
-      categories = null;
-    }
-  } catch (err) {// Event bps aren't supported on this firefox version.
+  if (!hasWatcherSupport) {
+    return forEachThread(thread => thread.setActiveEventBreakpoints(ids));
   }
 
-  return categories || [];
+  const breakpointListFront = await commands.targetCommand.watcherFront.getBreakpointListActor();
+  await breakpointListFront.setActiveEventBreakpoints(ids);
+}
+
+async function getEventListenerBreakpointTypes() {
+  return currentThreadFront().getAvailableEventBreakpoints();
 }
 
 function pauseGrip(thread, func) {
@@ -399,8 +417,8 @@ async function addThread(targetFront) {
   return (0, _create.createThread)(threadActorID, targetFront);
 }
 
-function removeThread(thread) {
-  delete targets[thread.actor];
+function removeThread(threadActorID) {
+  delete targets[threadActorID];
 }
 
 function getMainThread() {
@@ -422,24 +440,17 @@ async function getSourceActorBreakableLines({
   thread,
   actor
 }) {
-  let sourceFront;
   let actorLines = [];
 
   try {
     const sourceThreadFront = lookupThreadFront(thread);
-    sourceFront = sourceThreadFront.source({
+    const sourceFront = sourceThreadFront.source({
       actor
     });
     actorLines = await sourceFront.getBreakableLines();
   } catch (e) {
-    // Handle backward compatibility
-    if (e.message && e.message.match(/does not recognize the packet type getBreakableLines/)) {
-      const pos = await sourceFront.getBreakpointPositionsCompressed();
-      actorLines = Object.keys(pos).map(line => Number(line));
-    } else {
-      // Other exceptions could be due to the target thread being shut down.
-      console.warn(`getSourceActorBreakableLines failed: ${e}`);
-    }
+    // Exceptions could be due to the target thread being shut down.
+    console.warn(`getSourceActorBreakableLines failed: ${e}`);
   }
 
   return actorLines;
@@ -470,6 +481,7 @@ const clientCommands = {
   getSourceActorBreakpointPositions,
   getSourceActorBreakableLines,
   hasBreakpoint,
+  getServerBreakpointsList,
   setBreakpoint,
   setXHRBreakpoint,
   removeXHRBreakpoint,

@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _AccessibleImage = _interopRequireDefault(require("./AccessibleImage"));
@@ -25,6 +27,15 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 class SourceIcon extends _react.PureComponent {
+  static get propTypes() {
+    return {
+      framework: _propTypes.default.string.isRequired,
+      modifier: _propTypes.default.func.isRequired,
+      source: _propTypes.default.object.isRequired,
+      symbols: _propTypes.default.object
+    };
+  }
+
   render() {
     const {
       modifier,

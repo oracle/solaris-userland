@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
@@ -271,6 +273,21 @@ class XHRBreakpoints extends _react.Component {
       focused: false,
       editIndex: -1,
       clickedOnFormElement: false
+    };
+  }
+
+  static get propTypes() {
+    return {
+      disableXHRBreakpoint: _propTypes.default.func.isRequired,
+      enableXHRBreakpoint: _propTypes.default.func.isRequired,
+      onXHRAdded: _propTypes.default.func.isRequired,
+      removeXHRBreakpoint: _propTypes.default.func.isRequired,
+      setXHRBreakpoint: _propTypes.default.func.isRequired,
+      shouldPauseOnAny: _propTypes.default.bool.isRequired,
+      showInput: _propTypes.default.bool.isRequired,
+      togglePauseOnAny: _propTypes.default.func.isRequired,
+      updateXHRBreakpoint: _propTypes.default.func.isRequired,
+      xhrBreakpoints: _propTypes.default.array.isRequired
     };
   }
 

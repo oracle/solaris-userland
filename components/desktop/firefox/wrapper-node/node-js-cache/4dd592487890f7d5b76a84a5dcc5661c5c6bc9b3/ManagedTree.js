@@ -7,6 +7,10 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -71,6 +75,20 @@ class ManagedTree extends _react.Component {
 
     this.state = {
       expanded: props.expanded || new Set()
+    };
+  }
+
+  static get propTypes() {
+    return {
+      expanded: _propTypes.default.object,
+      focused: _propTypes.default.any,
+      getPath: _propTypes.default.func.isRequired,
+      highlightItems: _propTypes.default.array,
+      listItems: _propTypes.default.array,
+      onCollapse: _propTypes.default.func.isRequired,
+      onExpand: _propTypes.default.func.isRequired,
+      onFocus: _propTypes.default.func.isRequired,
+      renderItem: _propTypes.default.func.isRequired
     };
   }
 

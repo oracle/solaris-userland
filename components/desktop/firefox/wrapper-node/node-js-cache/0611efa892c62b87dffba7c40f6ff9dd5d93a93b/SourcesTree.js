@@ -7,14 +7,12 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
-loader.lazyRequireGetter(this, "_sources", "devtools/client/debugger/src/reducers/sources");
 
 var _actions = _interopRequireDefault(require("../../actions/index"));
 
@@ -101,7 +99,7 @@ class SourcesTree extends _react.Component {
     _defineProperty(this, "getSourcesGroups", item => {
       const sourcesAll = (0, _sourcesTree.getAllSources)(this.props);
       const sourcesInside = (0, _sourcesTree.getSourcesInsideGroup)(item, this.props);
-      const sourcesOuside = (0, _lodash.difference)(sourcesAll, sourcesInside);
+      const sourcesOuside = sourcesAll.filter(source => !sourcesInside.includes(source));
       return {
         sourcesInside,
         sourcesOuside
@@ -143,6 +141,24 @@ class SourcesTree extends _react.Component {
       sources,
       threads: _threads
     });
+  }
+
+  static get propTypes() {
+    return {
+      cx: _propTypes.default.object.isRequired,
+      debuggeeUrl: _propTypes.default.string.isRequired,
+      expanded: _propTypes.default.object.isRequired,
+      focusItem: _propTypes.default.func.isRequired,
+      focused: _propTypes.default.object,
+      projectRoot: _propTypes.default.string.isRequired,
+      selectSource: _propTypes.default.func.isRequired,
+      selectedSource: _propTypes.default.object,
+      setExpandedState: _propTypes.default.func.isRequired,
+      shownSource: _propTypes.default.object,
+      sourceCount: _propTypes.default.number,
+      sources: _propTypes.default.object.isRequired,
+      threads: _propTypes.default.array.isRequired
+    };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -224,7 +240,7 @@ class SourcesTree extends _react.Component {
     const {
       highlightItems,
       listItems,
-      parentMap,
+      getParent,
       sourceTree
     } = this.state;
     const treeProps = {
@@ -233,7 +249,7 @@ class SourcesTree extends _react.Component {
       expanded,
       focused,
       getChildren: _sourcesTree.getChildren,
-      getParent: item => parentMap.get(item),
+      getParent,
       getPath: this.getPath,
       getRoots: () => this.getRoots(sourceTree, projectRoot),
       highlightItems,
@@ -280,7 +296,7 @@ function getSourceForTree(state, displayedSources, source) {
     return source;
   }
 
-  return (0, _sources.getGeneratedSourceByURL)(state, (0, _source.getRawSourceURL)(source.url));
+  return (0, _selectors.getGeneratedSourceByURL)(state, (0, _source.getRawSourceURL)(source.url));
 }
 
 const mapStateToProps = (state, props) => {

@@ -27,9 +27,9 @@ function doSearch(cx, query, editor) {
     getState,
     dispatch
   }) => {
-    const selectedSource = (0, _selectors.getSelectedSourceWithContent)(getState());
+    const sourceTextContent = (0, _selectors.getSelectedSourceTextContent)(getState());
 
-    if (!selectedSource || !selectedSource.content) {
+    if (!sourceTextContent) {
       return;
     }
 
@@ -43,9 +43,9 @@ function doSearchForHighlight(query, editor, line, ch) {
     getState,
     dispatch
   }) => {
-    const selectedSource = (0, _selectors.getSelectedSourceWithContent)(getState());
+    const sourceTextContent = (0, _selectors.getSelectedSourceTextContent)(getState());
 
-    if (!(selectedSource === null || selectedSource === void 0 ? void 0 : selectedSource.content)) {
+    if (!sourceTextContent) {
       return;
     }
 
@@ -89,13 +89,13 @@ function searchContents(cx, query, editor, focusFirstResult = true) {
     dispatch
   }) => {
     const modifiers = (0, _selectors.getFileSearchModifiers)(getState());
-    const selectedSource = (0, _selectors.getSelectedSourceWithContent)(getState());
+    const sourceTextContent = (0, _selectors.getSelectedSourceTextContent)(getState());
 
-    if (!editor || !selectedSource || !selectedSource.content || !(0, _asyncValue.isFulfilled)(selectedSource.content) || !modifiers) {
+    if (!editor || !sourceTextContent || !(0, _asyncValue.isFulfilled)(sourceTextContent) || !modifiers) {
       return;
     }
 
-    const selectedContent = selectedSource.content.value;
+    const selectedContent = sourceTextContent.value;
     const ctx = {
       ed: editor,
       cm: editor.codeMirror
@@ -109,7 +109,8 @@ function searchContents(cx, query, editor, focusFirstResult = true) {
     let text;
 
     if (selectedContent.type === "wasm") {
-      text = (0, _wasm.renderWasmText)(selectedSource.id, selectedContent).join("\n");
+      const selectedSourceId = (0, _selectors.getSelectedSourceId)(getState());
+      text = (0, _wasm.renderWasmText)(selectedSourceId, selectedContent).join("\n");
     } else {
       text = selectedContent.value;
     }
@@ -135,9 +136,9 @@ function searchContentsForHighlight(query, editor, line, ch) {
     dispatch
   }) => {
     const modifiers = (0, _selectors.getFileSearchModifiers)(getState());
-    const selectedSource = (0, _selectors.getSelectedSourceWithContent)(getState());
+    const sourceTextContent = (0, _selectors.getSelectedSourceTextContent)(getState());
 
-    if (!query || !editor || !selectedSource || !selectedSource.content || !modifiers) {
+    if (!query || !editor || !sourceTextContent || !modifiers) {
       return;
     }
 

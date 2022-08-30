@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -30,5 +32,11 @@ const BracketArrow = ({
   });
 };
 
+BracketArrow.propTypes = {
+  bottom: _propTypes.default.number,
+  left: _propTypes.default.number,
+  orientation: _propTypes.default.string.isRequired,
+  top: _propTypes.default.number
+};
 var _default = BracketArrow;
 exports.default = _default;

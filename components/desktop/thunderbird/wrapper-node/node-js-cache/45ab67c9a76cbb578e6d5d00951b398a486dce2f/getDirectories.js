@@ -7,10 +7,6 @@ exports.findSourceTreeNodes = findSourceTreeNodes;
 exports.getDirectories = getDirectories;
 loader.lazyRequireGetter(this, "_utils", "devtools/client/debugger/src/utils/sources-tree/utils");
 
-var _flattenDeep = _interopRequireDefault(require("devtools/client/shared/vendor/lodash").flattenDeep);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
@@ -45,7 +41,7 @@ function findSourceTreeNodes(sourceTree, path) {
 
   const result = _traverse(sourceTree);
 
-  return Array.isArray(result) ? (0, _flattenDeep.default)(result) : result;
+  return Array.isArray(result) ? result.flat(Infinity) : result;
 }
 
 function getAncestors(sourceTree, item) {

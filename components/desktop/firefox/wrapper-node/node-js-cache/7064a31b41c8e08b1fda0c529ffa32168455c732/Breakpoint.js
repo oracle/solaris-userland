@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _reselect = require("devtools/client/shared/vendor/reselect");
@@ -14,8 +16,6 @@ var _reselect = require("devtools/client/shared/vendor/reselect");
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
 var _actions = _interopRequireDefault(require("../../../actions/index"));
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
 
 var _BreakpointsContextMenu = _interopRequireDefault(require("./BreakpointsContextMenu"));
 
@@ -89,14 +89,22 @@ class Breakpoint extends _react.PureComponent {
         disableBreakpoint(cx, breakpoint);
       }
     });
+  }
 
-    _defineProperty(this, "highlightText", (0, _lodash.memoize)((text = "", editor) => {
-      const node = document.createElement("div");
-      editor.CodeMirror.runMode(text, "application/javascript", node);
-      return {
-        __html: node.innerHTML
-      };
-    }, text => text));
+  static get propTypes() {
+    return {
+      breakpoint: _propTypes.default.object.isRequired,
+      cx: _propTypes.default.object.isRequired,
+      disableBreakpoint: _propTypes.default.func.isRequired,
+      editor: _propTypes.default.object.isRequired,
+      enableBreakpoint: _propTypes.default.func.isRequired,
+      frame: _propTypes.default.object,
+      openConditionalPanel: _propTypes.default.func.isRequired,
+      removeBreakpoint: _propTypes.default.func.isRequired,
+      selectSpecificLocation: _propTypes.default.func.isRequired,
+      selectedSource: _propTypes.default.object,
+      source: _propTypes.default.object.isRequired
+    };
   }
 
   get selectedLocation() {
@@ -145,6 +153,14 @@ class Breakpoint extends _react.PureComponent {
       logValue
     } = breakpoint.options;
     return logValue || condition || (0, _breakpoint.getSelectedText)(breakpoint, selectedSource);
+  }
+
+  highlightText(text = "", editor) {
+    const node = document.createElement("div");
+    editor.CodeMirror.runMode(text, "application/javascript", node);
+    return {
+      __html: node.innerHTML
+    };
   }
 
   render() {

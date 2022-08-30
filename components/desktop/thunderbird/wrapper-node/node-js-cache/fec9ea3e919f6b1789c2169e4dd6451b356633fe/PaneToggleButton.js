@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
 var _AccessibleImage = _interopRequireDefault(require("../AccessibleImage"));
@@ -22,6 +24,15 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class PaneToggleButton extends _react.PureComponent {
+  static get propTypes() {
+    return {
+      collapsed: _propTypes.default.bool.isRequired,
+      handleClick: _propTypes.default.func.isRequired,
+      horizontal: _propTypes.default.bool.isRequired,
+      position: _propTypes.default.oneOf(["start", "end"]).isRequired
+    };
+  }
+
   label(position, collapsed) {
     switch (position) {
       case "start":

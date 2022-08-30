@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
@@ -231,6 +233,34 @@ class SourceTreeItem extends _react.Component {
     });
   }
 
+  static get propTypes() {
+    return {
+      autoExpand: _propTypes.default.bool.isRequired,
+      blackBoxSources: _propTypes.default.func.isRequired,
+      clearProjectDirectoryRoot: _propTypes.default.func.isRequired,
+      cx: _propTypes.default.object.isRequired,
+      debuggeeUrl: _propTypes.default.string.isRequired,
+      depth: _propTypes.default.number.isRequired,
+      expanded: _propTypes.default.bool.isRequired,
+      extensionName: _propTypes.default.string,
+      focusItem: _propTypes.default.func.isRequired,
+      focused: _propTypes.default.bool.isRequired,
+      getSourcesGroups: _propTypes.default.func.isRequired,
+      hasMatchingGeneratedSource: _propTypes.default.bool.isRequired,
+      hasPrettyTab: _propTypes.default.bool.isRequired,
+      item: _propTypes.default.object.isRequired,
+      loadSourceText: _propTypes.default.func.isRequired,
+      projectRoot: _propTypes.default.string.isRequired,
+      selectItem: _propTypes.default.func.isRequired,
+      setExpanded: _propTypes.default.func.isRequired,
+      setProjectDirectoryRoot: _propTypes.default.func.isRequired,
+      source: _propTypes.default.object,
+      sourceContent: _propTypes.default.object,
+      threads: _propTypes.default.array.isRequired,
+      toggleBlackBox: _propTypes.default.func.isRequired
+    };
+  }
+
   componentDidMount() {
     const {
       autoExpand,
@@ -403,7 +433,7 @@ class SourceTreeItem extends _react.Component {
 }
 
 function getHasMatchingGeneratedSource(state, source) {
-  if (!source || !(0, _source.isOriginal)(source)) {
+  if (!source || !source.isOriginal) {
     return false;
   }
 

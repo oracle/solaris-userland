@@ -30,6 +30,15 @@ class Modal extends _react.default.Component {
     });
   }
 
+  static get propTypes() {
+    return {
+      additionalClass: _propTypes.default.string,
+      children: _propTypes.default.node.isRequired,
+      handleClose: _propTypes.default.func.isRequired,
+      status: _propTypes.default.string.isRequired
+    };
+  }
+
   render() {
     const {
       additionalClass,
@@ -69,3 +78,10 @@ function Slide({
     handleClose: handleClose
   }, children));
 }
+
+Slide.propTypes = {
+  additionalClass: _propTypes.default.string,
+  children: _propTypes.default.node.isRequired,
+  handleClose: _propTypes.default.func.isRequired,
+  in: _propTypes.default.bool.isRequired
+};

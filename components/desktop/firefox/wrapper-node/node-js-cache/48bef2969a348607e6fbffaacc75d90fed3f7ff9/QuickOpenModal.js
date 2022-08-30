@@ -7,13 +7,13 @@ exports.default = exports.QuickOpenModal = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _fuzzaldrinPlus = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["fuzzaldrin-plus"]);
 
 loader.lazyRequireGetter(this, "_path", "devtools/client/debugger/src/utils/path");
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
 
 var _actions = _interopRequireDefault(require("../actions/index"));
 
@@ -38,7 +38,10 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-const updateResultsThrottle = 100;
+const {
+  throttle
+} = require("devtools/shared/throttle");
+
 const maxResults = 100;
 const SIZE_BIG = {
   size: "big"
@@ -56,6 +59,7 @@ function filter(values, query) {
 }
 
 class QuickOpenModal extends _react.Component {
+  // Put it on the class so it can be retrieved in tests
   constructor(props) {
     super(props);
 
@@ -124,7 +128,7 @@ class QuickOpenModal extends _react.Component {
       }
     });
 
-    _defineProperty(this, "updateResults", (0, _lodash.throttle)(query => {
+    _defineProperty(this, "updateResults", throttle(query => {
       if (this.isGotoQuery()) {
         return;
       }
@@ -142,7 +146,7 @@ class QuickOpenModal extends _react.Component {
       }
 
       return this.searchSources(query);
-    }, updateResultsThrottle));
+    }, QuickOpenModal.UPDATE_RESULTS_THROTTLE));
 
     _defineProperty(this, "setModifier", item => {
       if (["@", "#", ":"].includes(item.id)) {
@@ -333,6 +337,27 @@ class QuickOpenModal extends _react.Component {
     };
   }
 
+  static get propTypes() {
+    return {
+      closeQuickOpen: _propTypes.default.func.isRequired,
+      cx: _propTypes.default.object.isRequired,
+      displayedSources: _propTypes.default.array.isRequired,
+      enabled: _propTypes.default.bool.isRequired,
+      highlightLineRange: _propTypes.default.func.isRequired,
+      query: _propTypes.default.string.isRequired,
+      searchType: _propTypes.default.oneOf(["functions", "goto", "gotoSource", "other", "shortcuts", "sources", "variables"]).isRequired,
+      selectSpecificLocation: _propTypes.default.func.isRequired,
+      selectedContentLoaded: _propTypes.default.bool,
+      selectedSource: _propTypes.default.object,
+      setQuickOpenQuery: _propTypes.default.func.isRequired,
+      shortcutsModalEnabled: _propTypes.default.bool.isRequired,
+      symbols: _propTypes.default.object.isRequired,
+      symbolsLoading: _propTypes.default.bool.isRequired,
+      tabs: _propTypes.default.array.isRequired,
+      toggleShortcutsModal: _propTypes.default.func.isRequired
+    };
+  }
+
   setResults(results) {
     if (results) {
       results = results.slice(0, maxResults);
@@ -459,6 +484,8 @@ class QuickOpenModal extends _react.Component {
 
 
 exports.QuickOpenModal = QuickOpenModal;
+
+_defineProperty(QuickOpenModal, "UPDATE_RESULTS_THROTTLE", 100);
 
 function mapStateToProps(state) {
   const selectedSource = (0, _selectors.getSelectedSource)(state);

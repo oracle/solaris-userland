@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
@@ -59,6 +61,18 @@ class EventListeners extends _react.Component {
         focused: false
       });
     });
+  }
+
+  static get propTypes() {
+    return {
+      activeEventListeners: _propTypes.default.array.isRequired,
+      addEventListenerExpanded: _propTypes.default.func.isRequired,
+      addEventListeners: _propTypes.default.func.isRequired,
+      categories: _propTypes.default.array.isRequired,
+      expandedCategories: _propTypes.default.array.isRequired,
+      removeEventListenerExpanded: _propTypes.default.func.isRequired,
+      removeEventListeners: _propTypes.default.func.isRequired
+    };
   }
 
   hasMatch(eventOrCategoryName, searchText) {

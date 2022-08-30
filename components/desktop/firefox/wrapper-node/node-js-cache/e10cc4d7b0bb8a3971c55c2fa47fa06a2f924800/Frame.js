@@ -39,6 +39,11 @@ function FrameTitle({
   }, displayName);
 }
 
+FrameTitle.propTypes = {
+  frame: _propTypes.default.object.isRequired,
+  options: _propTypes.default.object.isRequired,
+  l10n: _propTypes.default.object.isRequired
+};
 const FrameLocation = (0, _react.memo)(({
   frame,
   displayFullUrl = false
@@ -70,8 +75,32 @@ const FrameLocation = (0, _react.memo)(({
   }, location.line));
 });
 FrameLocation.displayName = "FrameLocation";
+FrameLocation.propTypes = {
+  frame: _propTypes.default.object.isRequired,
+  displayFullUrl: _propTypes.default.bool.isRequired
+};
 
 class FrameComponent extends _react.Component {
+  static get propTypes() {
+    return {
+      copyStackTrace: _propTypes.default.func.isRequired,
+      cx: _propTypes.default.object,
+      disableContextMenu: _propTypes.default.bool.isRequired,
+      displayFullUrl: _propTypes.default.bool.isRequired,
+      frame: _propTypes.default.object.isRequired,
+      frameworkGroupingOn: _propTypes.default.bool.isRequired,
+      getFrameTitle: _propTypes.default.func,
+      hideLocation: _propTypes.default.bool.isRequired,
+      panel: _propTypes.default.oneOf(["debugger", "webconsole"]).isRequired,
+      restart: _propTypes.default.func,
+      selectFrame: _propTypes.default.func.isRequired,
+      selectedFrame: _propTypes.default.object,
+      shouldMapDisplayName: _propTypes.default.bool.isRequired,
+      toggleBlackBox: _propTypes.default.func,
+      toggleFrameworkGrouping: _propTypes.default.func.isRequired
+    };
+  }
+
   get isSelectable() {
     return this.props.panel == "webconsole";
   }

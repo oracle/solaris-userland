@@ -4,9 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.collapseFrames = collapseFrames;
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 loader.lazyRequireGetter(this, "_getFrameUrl", "devtools/client/debugger/src/utils/pause/frames/getFrameUrl");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -14,7 +11,7 @@ loader.lazyRequireGetter(this, "_getFrameUrl", "devtools/client/debugger/src/uti
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 // eslint-disable-next-line max-len
 function collapseLastFrames(frames) {
-  const index = (0, _lodash.findIndex)(frames, frame => (0, _getFrameUrl.getFrameUrl)(frame).match(/webpack\/bootstrap/i));
+  const index = frames.findIndex(frame => (0, _getFrameUrl.getFrameUrl)(frame).match(/webpack\/bootstrap/i));
 
   if (index == -1) {
     return {

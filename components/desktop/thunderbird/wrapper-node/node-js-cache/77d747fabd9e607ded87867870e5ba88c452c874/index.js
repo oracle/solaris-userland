@@ -65,6 +65,25 @@ class Frames extends _react.Component {
     };
   }
 
+  static get propTypes() {
+    return {
+      cx: _propTypes.default.object,
+      disableContextMenu: _propTypes.default.bool.isRequired,
+      disableFrameTruncate: _propTypes.default.bool.isRequired,
+      displayFullUrl: _propTypes.default.bool.isRequired,
+      frames: _propTypes.default.array.isRequired,
+      frameworkGroupingOn: _propTypes.default.bool.isRequired,
+      getFrameTitle: _propTypes.default.func,
+      panel: _propTypes.default.oneOf(["debugger", "webconsole"]).isRequired,
+      restart: _propTypes.default.func,
+      selectFrame: _propTypes.default.func.isRequired,
+      selectLocation: _propTypes.default.func,
+      selectedFrame: _propTypes.default.object,
+      toggleBlackBox: _propTypes.default.func,
+      toggleFrameworkGrouping: _propTypes.default.func
+    };
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     const {
       frames,

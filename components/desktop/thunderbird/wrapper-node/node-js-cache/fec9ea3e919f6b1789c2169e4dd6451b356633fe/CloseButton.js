@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(require("devtools/client/shared/vendor/react"));
 
+var _propTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
+
 var _AccessibleImage = _interopRequireDefault(require("../AccessibleImage"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -28,5 +30,10 @@ function CloseButton({
   }));
 }
 
+CloseButton.propTypes = {
+  buttonClass: _propTypes.default.string,
+  handleClick: _propTypes.default.func.isRequired,
+  tooltip: _propTypes.default.string
+};
 var _default = CloseButton;
 exports.default = _default;

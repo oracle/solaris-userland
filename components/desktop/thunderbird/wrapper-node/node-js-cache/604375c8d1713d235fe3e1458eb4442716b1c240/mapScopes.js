@@ -146,8 +146,8 @@ function getMappedScopes(cx, scopes, frame) {
       getState,
       dispatch
     } = thunkArgs;
-    const generatedSource = (0, _selectors.getSource)(getState(), frame.generatedLocation.sourceId);
-    const source = (0, _selectors.getSource)(getState(), frame.location.sourceId);
+    const generatedSource = (0, _selectors.getLocationSource)(getState(), frame.generatedLocation);
+    const source = (0, _selectors.getLocationSource)(getState(), frame.location);
 
     if (!(0, _selectors.isMapScopesEnabled)(getState()) || !source || !generatedSource || generatedSource.isWasm || source.isPrettyPrinted || (0, _source.isGenerated)(source)) {
       return null;
@@ -158,7 +158,7 @@ function getMappedScopes(cx, scopes, frame) {
       source
     }));
 
-    if ((0, _source.isOriginal)(source)) {
+    if (source.isOriginal) {
       await dispatch((0, _loadSourceText.loadSourceText)({
         cx,
         source: generatedSource

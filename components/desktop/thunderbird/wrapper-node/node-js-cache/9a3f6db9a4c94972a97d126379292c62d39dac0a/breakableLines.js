@@ -9,9 +9,6 @@ var _devtoolsSourceMap = require("devtools/client/shared/source-map/index.js");
 
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_breakpointPositions", "devtools/client/debugger/src/actions/breakpoints/breakpointPositions");
-
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 loader.lazyRequireGetter(this, "_sourceActors", "devtools/client/debugger/src/actions/source-actors");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -46,7 +43,7 @@ function setBreakableLines(cx, sourceId) {
       const existingBreakableLines = (0, _selectors.getBreakableLines)(getState(), sourceId);
 
       if (existingBreakableLines) {
-        breakableLines = (0, _lodash.union)(existingBreakableLines, breakableLines);
+        breakableLines = [...new Set([...existingBreakableLines, ...breakableLines])];
       }
 
       dispatch({

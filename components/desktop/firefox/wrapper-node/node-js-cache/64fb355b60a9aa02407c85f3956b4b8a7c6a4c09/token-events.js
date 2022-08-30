@@ -6,8 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.onMouseOver = onMouseOver;
 loader.lazyRequireGetter(this, "_", "devtools/client/debugger/src/utils/editor/index");
 
-var _lodash = require("devtools/client/shared/vendor/lodash");
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
@@ -69,6 +67,8 @@ function onMouseOver(codeMirror) {
   }
 
   return enterEvent => {
+    var _prevTokenPos, _prevTokenPos2;
+
     const {
       target
     } = enterEvent;
@@ -79,7 +79,7 @@ function onMouseOver(codeMirror) {
 
     const tokenPos = (0, _.getTokenLocation)(codeMirror, target);
 
-    if (!(0, _lodash.isEqual)(prevTokenPos, tokenPos)) {
+    if (((_prevTokenPos = prevTokenPos) === null || _prevTokenPos === void 0 ? void 0 : _prevTokenPos.line) !== (tokenPos === null || tokenPos === void 0 ? void 0 : tokenPos.line) || ((_prevTokenPos2 = prevTokenPos) === null || _prevTokenPos2 === void 0 ? void 0 : _prevTokenPos2.column) !== (tokenPos === null || tokenPos === void 0 ? void 0 : tokenPos.column)) {
       addMouseLeave(target);
       dispatch(codeMirror, "tokenenter", {
         event: enterEvent,
