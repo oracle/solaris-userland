@@ -92,6 +92,7 @@ COMPONENT_SYSTEM_TEST_ENV += $(PYTHON_ENV)
 
 # List of all PYTHON_VERSIONS without the dot.
 PYVS = $(shell echo $(PYTHON_VERSIONS) | tr -d .)
+PYVS3 = $(shell echo $(PYTHON3_VERSIONS) | tr -d .)
 
 # Build and install the canonical version (currently 3.7) last.
 ifneq ($(findstring 2.7,$(PYTHON_VERSIONS)),)

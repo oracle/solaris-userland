@@ -1,0 +1,98 @@
+Taken from upstream:
+https://github.com/PyCQA/pylint/pull/7541
+
+From c751ee83fbeaac230991b721e2443c3d752c78b1 Mon Sep 17 00:00:00 2001
+From: clavedeluna <danalitovsky+git@gmail.com>
+Date: Thu, 29 Sep 2022 13:07:10 -0300
+Subject: bugfix for Attribute.attrname
+
+diff --git a/pylint/checkers/modified_iterating_checker.py b/pylint/checkers/modified_iterating_checker.py
+index 9b0a43293f..bdc8fff7f9 100644
+--- pylint-2.15.2/pylint/checkers/modified_iterating_checker.py
++++ pylint-2.15.2/pylint/checkers/modified_iterating_checker.py
+@@ -113,11 +113,16 @@ class ModifiedIterationChecker(checkers.
+     @staticmethod
+     def _common_cond_list_set(
+         node: nodes.Expr,
+-        iter_obj: nodes.NodeNG,
++        iter_obj: nodes.Name | nodes.Attribute,
+         infer_val: nodes.List | nodes.Set,
+     ) -> bool:
++        iter_obj_name = (
++            iter_obj.attrname
++            if isinstance(iter_obj, nodes.Attribute)
++            else iter_obj.name
++        )
+         return (infer_val == utils.safe_infer(iter_obj)) and (
+-            node.value.func.expr.name == iter_obj.name
++            node.value.func.expr.name == iter_obj_name
+         )
+ 
+     @staticmethod
+diff --git a/tests/functional/m/modified_iterating.py b/tests/functional/m/modified_iterating.py
+index d9aad394ab..f7e977c240 100644
+--- pylint-2.15.2/tests/functional/m/modified_iterating.py
++++ pylint-2.15.2/tests/functional/m/modified_iterating.py
+@@ -1,7 +1,8 @@
+ """Tests for iterating-modified messages"""
+-# pylint: disable=not-callable,unnecessary-comprehension,too-few-public-methods
++# pylint: disable=not-callable,unnecessary-comprehension,too-few-public-methods,missing-class-docstring,missing-function-docstring
+ 
+ import copy
++from enum import Enum
+ 
+ item_list = [1, 2, 3]
+ for item in item_list:
+@@ -105,3 +106,15 @@ class MyClass:
+         """This should raise as we are deleting."""
+         for var in self.attribute:
+             del var  # [modified-iterating-list]
++
++class MyEnum(Enum):
++    FOO = 1
++    BAR = 2
++
++class EnumClass:
++    ENUM_SET = {MyEnum.FOO, MyEnum.BAR}
++
++    def useless(self):
++        other_set = set(self.ENUM_SET)
++        for obj in self.ENUM_SET:
++            other_set.remove(obj)
+diff --git a/tests/functional/m/modified_iterating.txt b/tests/functional/m/modified_iterating.txt
+index 7d5e3014d7..e5b57ca328 100644
+--- pylint-2.15.2/tests/functional/m/modified_iterating.txt
++++ pylint-2.15.2/tests/functional/m/modified_iterating.txt
+@@ -1,16 +1,16 @@
+-modified-iterating-list:8:4:8:26::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
+-modified-iterating-list:11:4:11:26::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
+-modified-iterating-dict:29:4:29:18::Iterated dict 'my_dict' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
+-modified-iterating-set:39:4:39:27::Iterated set 'item_set' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
+-modified-iterating-list:46:8:46:27::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
+-modified-iterating-set:47:8:47:26::Iterated set 'item_set' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
+-modified-iterating-list:48:4:48:23::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
+-modified-iterating-list:51:4:51:12::Iterated list 'list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
+-modified-iterating-list:54:4:54:20::Iterated list 'list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
+-modified-iterating-dict:57:4:57:9::Iterated dict 'my_dict' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
+-modified-iterating-set:60:4:60:15::Iterated set 'item_set' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
+-modified-iterating-list:64:4:64:23::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
+-modified-iterating-list:67:12:67:31::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
+-modified-iterating-list:69:16:69:35::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
+-modified-iterating-dict:95:8:95:28:update_existing_key:Iterated dict 'my_dict' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
+-modified-iterating-list:107:12:107:19:MyClass.my_method:Iterated list 'attribute' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
++modified-iterating-list:9:4:9:26::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
++modified-iterating-list:12:4:12:26::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
++modified-iterating-dict:30:4:30:18::Iterated dict 'my_dict' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
++modified-iterating-set:40:4:40:27::Iterated set 'item_set' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
++modified-iterating-list:47:8:47:27::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
++modified-iterating-set:48:8:48:26::Iterated set 'item_set' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
++modified-iterating-list:49:4:49:23::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
++modified-iterating-list:52:4:52:12::Iterated list 'list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
++modified-iterating-list:55:4:55:20::Iterated list 'list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
++modified-iterating-dict:58:4:58:9::Iterated dict 'my_dict' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
++modified-iterating-set:61:4:61:15::Iterated set 'item_set' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
++modified-iterating-list:65:4:65:23::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
++modified-iterating-list:68:12:68:31::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
++modified-iterating-list:70:16:70:35::Iterated list 'item_list' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE
++modified-iterating-dict:96:8:96:28:update_existing_key:Iterated dict 'my_dict' is being modified inside for loop body, iterate through a copy of it instead.:INFERENCE
++modified-iterating-list:108:12:108:19:MyClass.my_method:Iterated list 'attribute' is being modified inside for loop body, consider iterating through a copy of it instead.:INFERENCE

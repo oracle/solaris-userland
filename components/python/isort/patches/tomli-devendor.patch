@@ -1,0 +1,25 @@
+Isort brings in its own copy of tomli rather than using the system one.
+
+Not suitable for upstream.
+
+--- isort-5.10.1/setup.py
++++ isort-5.10.1/setup.py
+@@ -4,7 +4,6 @@ from setuptools import setup
+ packages = \
+ ['isort',
+  'isort._future',
+- 'isort._vendored.tomli',
+  'isort.deprecated',
+  'isort.stdlibs']
+ 
+--- isort-5.10.1/isort/settings.py
++++ isort-5.10.1/isort/settings.py
+@@ -48,7 +48,7 @@ from .wrap_modes import from_string as w
+ if TYPE_CHECKING:
+     tomli: Any
+ else:
+-    from ._vendored import tomli
++    import tomli
+ 
+ _SHEBANG_RE = re.compile(br"^#!.*\bpython[23w]?\b")
+ CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})

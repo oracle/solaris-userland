@@ -26,27 +26,39 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		isort
-COMPONENT_VERSION=	4.3.21
+COMPONENT_VERSION=	5.10.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d0e911c29983cc42a391d258bf2def503889d97c71aa8f86f1a8b1fb24eee0b6
+    sha256:3c36c0414e085d0182bd29da2e2595056b3ff813f4a8becabcf3baa9228be2a0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/isort
 COMPONENT_BUGDB=	python-mod/isort
 COMPONENT_ANITYA_ID=	11430
+COMPONENT_BAID=		122817
 
-COMPONENT_BAID=		76748
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
+COMPONENT_VERSION_OLD=	4.3.21
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD= \
+    sha256:d0e911c29983cc42a391d258bf2def503889d97c71aa8f86f1a8b1fb24eee0b6
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+COMPONENT_BAID_OLD=	76748
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 # Rename isort to its versioned name; mediated links (depending on
 # the python version) in the manifest will create the link from isort
 # to the correct isort-${PYTHON_VERSION}
 COMPONENT_POST_INSTALL_ACTION += \
-	(cd $(PROTO_DIR)/usr/bin ; $(MV) -f isort isort-$(PYTHON_VERSION)) ;
+	(cd $(PROTO_DIR)/usr/bin ; $(MV) -f isort isort-$(PYTHON_VERSION); \
+	 [ -f isort-identify-imports ] && \
+	 $(MV) isort-identify-imports isort-identify-imports-$(PYTHON_VERSION) || true) ;
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

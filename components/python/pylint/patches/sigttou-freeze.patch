@@ -10,15 +10,15 @@ We can safely ignore this signal, because readline is not used further.
 
 See bug 31397460 for more details.
 
---- pylint-2.6.0/pylint/__init__.py
-+++ pylint-2.6.0/pylint/__init__.py
-@@ -18,6 +18,9 @@ from pylint.__pkginfo__ import version a
- def run_pylint():
+--- pylint-2.13.9/pylint/__init__.py
++++ pylint-2.13.9/pylint/__init__.py
+@@ -18,6 +18,9 @@ def run_pylint(argv: Optional[Sequence[s
+     """
      from pylint.lint import Run as PylintRun
  
 +    import signal
 +    signal.signal(signal.SIGTTOU, signal.SIG_IGN)
 +
      try:
-         PylintRun(sys.argv[1:])
+         PylintRun(argv or sys.argv[1:])
      except KeyboardInterrupt:

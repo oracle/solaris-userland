@@ -20,11 +20,14 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
 
-# drop files we are not shipping
-<transform file path=.*/pylint/test/.* -> drop>
-<transform file path=usr/share/doc/.* -> drop>
+# Don't deliver executables and testing related files.
+<transform file path=usr/bin/.* -> drop>
+<transform file path=.*/dill/tests/.* -> drop>
+
+# bypass pkg.depend for all imports
+<transform file path=.*/dill/.*$ -> set pkg.depend.bypass-generate .*>

@@ -20,43 +20,36 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		mccabe
-COMPONENT_VERSION=	0.7.0
+COMPONENT_NAME=		dill
+COMPONENT_VERSION=	0.3.5.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:40a37f1bab2e8312d0671de162efefe76ca68e88a6cc099bab7cf9136bffa48f
+    sha256:52115ec4d77629a8c7ca303b8a2a99c14d01d806fb92a11693c274b5763c0acf
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/mccabe
-COMPONENT_BUGDB=	python-mod/mccabe
-COMPONENT_ANITYA_ID=	6902
-COMPONENT_BAID=		129342
+COMPONENT_PROJECT_URL=	https://github.com/uqfoundation/dill
+COMPONENT_BUGDB=	python-mod/dill
+COMPONENT_ANITYA_ID=	7687
+COMPONENT_BAID=		128430
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	0.5.2
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:3473f06c8b757bbb5cdf295099bf64032e5f7d6fe0ec2f97ee9b23cb0a435aff
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	35686
+PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
-
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =   test_mccabe.py
+COMPONENT_TEST_CMD =	$(PYTHON)
+COMPONENT_TEST_ARGS =	tests
+COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS =	'-n -e "/fails:/p"'
+
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
@@ -65,4 +58,4 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:	$(SYSTEM_TEST_NO_ARCH)
+system-test:    $(SYSTEM_TEST_NO_ARCH)

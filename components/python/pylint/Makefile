@@ -26,17 +26,18 @@ BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pylint
-COMPONENT_VERSION=	2.6.0
+COMPONENT_VERSION=	2.15.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=		\
-	sha256:21b1d21d50295c3f0e7e99cbb50bbb217311cc2b967b25c6ef05d700bf100830
-COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=  https://www.pylint.org/
 COMPONENT_BUGDB=	utility/pylint
 COMPONENT_ANITYA_ID=	5344
+COMPONENT_BAID=		129768
 
-COMPONENT_BAID=		90461
+# pypi archive doesn't include the test suite
+GIT_REPO=	https://github.com/PyCQA/pylint
+GIT_COMMIT_ID=	v$(COMPONENT_VERSION)
+GIT_HASH=	sha256:4c311dbdbb3261ec999b0403587ae798c3e43adfe1f70c5a9102ba0b9ce317e8
 
 # This component is delivered in two different versions because
 # the newer one is no longer Python 2.7 compatible.
@@ -46,7 +47,6 @@ COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
 COMPONENT_ARCHIVE_HASH_OLD=	\
 	sha256:ef901a34b62ed7a734370ba5b162d890231ba8822abe88c6dda1268e2575f5f1
 COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-
 COMPONENT_BAID_OLD=	34816
 
 include $(WS_MAKE_RULES)/prep.mk
@@ -61,23 +61,6 @@ PDOC_PYLINT =		$(PROTOUSRSHAREDOCDIR)/pylint
 PDOC_PYLINT_EXAMPLES =	$(PDOC_PYLINT)/examples
 
 COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PDOC_PYLINT) ;
-COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) $(COMPONENT_SRC)/README.rst $(PDOC_PYLINT) ;
-
-COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) $(COMPONENT_SRC)/examples/custom.py $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) $(COMPONENT_SRC)/examples/custom_raw.py $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) $(COMPONENT_SRC)/elisp/pylint.el $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) $(COMPONENT_SRC)/examples/pylintrc_camelcase $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) $(COMPONENT_SRC)/examples/pylintrc $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; $(MV) epylint epylint-$(PYTHON_VERSION)) ;
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint pylint-$(PYTHON_VERSION)) ;
@@ -86,18 +69,45 @@ COMPONENT_POST_INSTALL_ACTION += \
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; $(MV) symilar symilar-$(PYTHON_VERSION)) ;
 
-COMPONENT_POST_INSTALL_ACTION += \
-	($(PYTHON) -m py_compile $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/pylint/testutils.py) ;
+COMPONENT_POST_INSTALL_ACTION_NEW += \
+	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint-config pylint-config-$(PYTHON_VERSION)) ;
 
+COMPONENT_POST_INSTALL_ACTION_OLD += \
+	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint-gui pylint-gui-$(PYTHON_VERSION)) ;
+COMPONENT_POST_INSTALL_ACTION_OLD += \
+	$(MKDIR) $(PDOC_PYLINT) ;
+COMPONENT_POST_INSTALL_ACTION_OLD += \
+	$(CP) $(COMPONENT_SRC)/README.rst $(PDOC_PYLINT) ;
+COMPONENT_POST_INSTALL_ACTION_OLD += \
+	$(MKDIR) $(PDOC_PYLINT_EXAMPLES) ;
+COMPONENT_POST_INSTALL_ACTION_OLD += \
+	$(CP) $(COMPONENT_SRC)/examples/custom.py $(PDOC_PYLINT_EXAMPLES) ;
+COMPONENT_POST_INSTALL_ACTION_OLD += \
+	$(CP) $(COMPONENT_SRC)/examples/custom_raw.py $(PDOC_PYLINT_EXAMPLES) ;
+COMPONENT_POST_INSTALL_ACTION_OLD += \
+	$(CP) $(COMPONENT_SRC)/elisp/pylint.el $(PDOC_PYLINT_EXAMPLES) ;
+COMPONENT_POST_INSTALL_ACTION_OLD += \
+	$(CP) $(COMPONENT_SRC)/examples/pylintrc_camelcase $(PDOC_PYLINT_EXAMPLES) ;
+COMPONENT_POST_INSTALL_ACTION_OLD += \
+	$(CP) $(COMPONENT_SRC)/examples/pylintrc $(PDOC_PYLINT_EXAMPLES) ;
+COMPONENT_POST_INSTALL_ACTION_OLD += \
+	($(PYTHON) -m py_compile $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/pylint/testutils.py) ;
 
 # pylint-gui is no longer delivered in newer version
 $(BUILD_DIR)/%-2.7/.installed: COMPONENT_POST_INSTALL_ACTION += \
-	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint-gui pylint-gui-$(PYTHON_VERSION)) ;
+	$(COMPONENT_POST_INSTALL_ACTION_OLD)
 
+# pylint-config is only delivered in newer version
+$(BUILD_DIR)/%-3.7/.installed: COMPONENT_POST_INSTALL_ACTION += \
+	$(COMPONENT_POST_INSTALL_ACTION_NEW)
+$(BUILD_DIR)/%-3.9/.installed: COMPONENT_POST_INSTALL_ACTION += \
+	$(COMPONENT_POST_INSTALL_ACTION_NEW)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+# Ignore tests that need PythonGit, which is not available on Solaris
+COMPONENT_TEST_ARGS =	--ignore=tests/primer --ignore=tests/testutils/_primer -v
+
 COMPONENT_TEST_TRANSFORMS += \
 	'-nE -e "s/ ?=+ ?//g" ' \
 	'-e "s/ in [0-9]+(\.[0-9]*)?(s| seconds).*//" ' \
@@ -115,12 +125,14 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/astroid-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/isort-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/mccabe-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
 REQUIRED_PACKAGES += library/python/backports.functools_lru_cache-27
-REQUIRED_PACKAGES += library/python/toml-37
-REQUIRED_PACKAGES += library/python/toml-39
+REQUIRED_PACKAGES += library/python/six-27
+REQUIRED_PACKAGES += $(PYVS3:%=library/python/dill-%)
+REQUIRED_PACKAGES += $(PYVS3:%=library/python/tomli-%)
+REQUIRED_PACKAGES += $(PYVS3:%=library/python/tomlkit-%)
+REQUIRED_PACKAGES += $(PYVS3:%=library/python/typing-extensions-%)
