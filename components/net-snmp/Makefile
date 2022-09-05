@@ -68,7 +68,17 @@ CONFIGURE_OPTIONS  +=	--enable-agentx-dom-sock-only
 CONFIGURE_OPTIONS  +=	--enable-ucd-snmp-compatibility
 CONFIGURE_OPTIONS  +=	--enable-ipv6
 CONFIGURE_OPTIONS  +=	--enable-mfd-rewrites
+
+ifeq ($(strip $(OPENSSL3)),)
 CONFIGURE_OPTIONS  +=	--with-openssl=/lib/openssl
+else
+CONFIGURE_OPTIONS  +=	--with-openssl=/usr/openssl/3
+CONFIGURE_OPTIONS  +=	--disable-des
+OPENSSL_LIB_PATH.32=/usr/openssl/3/lib
+OPENSSL_LIB_PATH.64=/usr/openssl/3/lib/64
+CONFIGURE_OPTIONS += OPENSSL_LIB_PATH=$(OPENSSL_LIB_PATH.$(BITS))
+endif
+
 CONFIGURE_OPTIONS  +=	--with-transports="UDP TCP UDPIPv6 TCPIPv6"
 
 # Which MIB modules do we want to build
@@ -106,7 +116,13 @@ COMPONENT_TEST_TARGETS =	./RUNTESTS
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|\(simple-\).*|\1XXXXXX|g"' \
 	'-e "s|\(output (\)\(.*\)|\2|g"'
+
+ifneq ($(strip $(OPENSSL3)),)
+COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master.openssl3
+else
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
+endif
+
 # Get correct binaries from the proto area.
 TEST_BINPATH.32 =       $(PROTOUSRBINDIR)/$(MACH32)
 TEST_BINPATH.64 =       $(BUILD_DIR)/prototype/$(MACH64)$(USRBINDIR)
@@ -155,7 +171,8 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION= \
 	(cd $(@D)/python3.9 ; env PYTHON=$(PYTHON.3.9.$(BITS)) \
 	 $(PYTHON.3.9.$(BITS)) ./setup.py install \
 		--root $(PROTO_DIR) \
-		--install-lib=$(PYTHON.3.9.VENDOR_PACKAGES))
+		--install-lib=$(PYTHON.3.9.VENDOR_PACKAGES) \
+		--openssl_lib_dir=$(OPENSSL_LIB_PATH.$(BITS)))
 
 $(INSTALL_64): COMPONENT_INSTALL_ARGS += DESTDIR=$(BUILD_DIR)/prototype/$(MACH64)
 
@@ -172,7 +189,11 @@ PKG_MACROS += PYVER=$(PYTHON_VERSION)
 
 REQUIRED_PACKAGES += developer/build/make
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
+ifeq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl
+else
+REQUIRED_PACKAGES += library/security/openssl-3
+endif
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39

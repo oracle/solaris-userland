@@ -1,0 +1,19 @@
+Patch developed inhouse, fixes a compilation error when
+DES support is disabled in net-snmp as part of the move to
+openssl3.
+--- net-snmp-5.8.old/snmplib/scapi.c	2022-06-15 04:05:02.650644610 -0700
++++ net-snmp-5.8/snmplib/scapi.c	2022-06-16 03:49:40.245028025 -0700
+@@ -1269,12 +1269,12 @@
+ 
+         QUITFUN(SNMPERR_GENERR, sc_encrypt_quit);
+     }
+-    pad_size = pai->pad_size;
+ 
+     memset(my_iv, 0, sizeof(my_iv));
+ 
+ #ifndef NETSNMP_DISABLE_DES
+     if (USM_CREATE_USER_PRIV_DES == (pai->type & USM_PRIV_MASK_ALG)) {
++        pad_size = pai->pad_size;
+         if(!EVP_encrypt(EVP_des_cbc(), key, keylen,
+                         iv, plaintext, ptlen,
+                         ciphertext, ctlen)) {

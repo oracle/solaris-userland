@@ -1,0 +1,15 @@
+Patch developed inhouse for changes for linking net-snmp
+with openssl3 libraries.  
+--- net-snmp-5.8.old/configure	2022-07-25 23:43:18.681195295 -0700
++++ net-snmp-5.8/configure	2022-07-25 23:43:04.996590960 -0700
+@@ -4743,7 +4743,9 @@
+       else
+ 
+   if test "x$withval" != x -a -d $withval; then
+-     if test -d $withval/lib; then
++     if test "${OPENSSL_LIB_PATH+set}" = set; then
++       LDFLAGS="-L$OPENSSL_LIB_PATH $LDFLAGS"
++     elif test -d $withval/lib; then
+        LDFLAGS="-L$withval/lib $LDFLAGS"
+      fi
+      if test -d $withval/include; then

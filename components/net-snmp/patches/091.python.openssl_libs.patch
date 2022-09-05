@@ -1,0 +1,46 @@
+Patch developed inhouse, adds correct library paths for
+openssl libraries for building the net-snmp python bindings. 
+--- net-snmp-5.8.old/Makefile.in	2022-07-27 00:21:01.673434396 -0700
++++ net-snmp-5.8/Makefile.in	2022-07-26 08:58:40.463194440 -0700
+@@ -234,7 +234,7 @@
+         fi
+ 
+ pythoninstall:
+-	@(dir=`pwd`; cd python; $(PYMAKE) install --basedir=$$dir --root $(DESTDIR) --prefix=$(prefix) --install-lib=$(PYTHON_VENDOR_PACKAGES)) ; \
++	@(dir=`pwd`; cd python; $(PYMAKE) install --basedir=$$dir --root $(DESTDIR) --prefix=$(prefix) --install-lib=$(PYTHON_VENDOR_PACKAGES) --openssl_lib_dir=$(OPENSSL_LIB_PATH)) ; \
+         if test $$? != 0 ; then \
+            exit 1 ; \
+         fi
+--- net-snmp-5.8.old/python/setup.py	2022-07-27 00:21:04.188957648 -0700
++++ net-snmp-5.8/python/setup.py	2022-07-27 00:14:53.344247305 -0700
+@@ -5,6 +5,7 @@
+ import sys
+ 
+ intree=0
++libdirs = [] 
+ 
+ args = sys.argv[:]
+ for arg in args:
+@@ -12,17 +13,20 @@
+         basedir = arg.split('=')[1]
+         sys.argv.remove(arg)
+         intree=1
++    if arg.find('--openssl_lib_dir=') == 0:
++        libdirs.append(arg.split('=')[1])
++        sys.argv.remove(arg)
+ 
+ if intree:
+     netsnmp_libs = os.popen(basedir+'/net-snmp-config --libs').read()
+     libdir = os.popen(basedir+'/net-snmp-config --build-lib-dirs '+basedir).read()
+     incdir = os.popen(basedir+'/net-snmp-config --build-includes '+basedir).read() + " " + os.popen(basedir+'/net-snmp-config --base-cflags '+basedir).read()
+     libs = re.findall(r"-l(\S+)", netsnmp_libs)
+-    libdirs = re.findall(r"-L(\S+)", libdir)
++    libdirs += re.findall(r"-L(\S+)", libdir)
+     incdirs = re.findall(r"-I(\S+)", incdir)
+ else:
+     netsnmp_libs = os.popen('net-snmp-config --libs').read()
+-    libdirs = re.findall(r"-L(\S+)", netsnmp_libs)
++    libdirs += re.findall(r"-L(\S+)", netsnmp_libs)
+     incdirs = []
+     libs = re.findall(r"-l(\S+)", netsnmp_libs)
+ 
