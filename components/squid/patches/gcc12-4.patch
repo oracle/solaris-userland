@@ -1,0 +1,26 @@
+From b7c260f41b61883acd9cda371f30d77d632d2ba6 Mon Sep 17 00:00:00 2001
+From: Amos Jeffries <yadij@users.noreply.github.com>
+Date: Fri, 15 Dec 2017 15:50:53 +1300
+Subject: [PATCH] Convert Acl::InnerNode to C++11 for-each loop (#101)
+
+This also fixes a bug in some STL implementations where passing for_each &ACL::prepareForUse
+results in the ACL class nil-method explicitly running instead of the child ACL class
+virtual method.
+---
+ src/acl/InnerNode.cc | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/acl/InnerNode.cc b/src/acl/InnerNode.cc
+index 33ca0cbf47e..a5ec2e94440 100644
+--- a/src/acl/InnerNode.cc
++++ b/src/acl/InnerNode.cc
+@@ -21,7 +21,8 @@
+ void
+ Acl::InnerNode::prepareForUse()
+ {
+-    std::for_each(nodes.begin(), nodes.end(), std::mem_fun(&ACL::prepareForUse));
++    for (auto node : nodes)
++        node->prepareForUse();
+ }
+ 
+ bool

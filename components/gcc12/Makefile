@@ -130,6 +130,9 @@ CONFIGURE_OPTIONS +=	BOOT_CFLAGS='-g -O2'
 # This is the target and it must be last
 CONFIGURE_OPTIONS +=    $(GNU_ARCH)
 
+# Don't use gnatbind/gnatmake from /usr/bin.
+CONFIGURE_ENV     += GNATBIND="$(GCC_ROOT)/bin/gnatbind"
+CONFIGURE_ENV     += GNATMAKE="$(GCC_ROOT)/bin/gnatmake"
 
 CONFIGURE_ENV     += PYTHON="$(PYTHON)"
 
@@ -211,7 +214,7 @@ PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gccgo
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gfortran
 
 
-REQUIRED_PACKAGES += developer/gcc/gcc-gnat
+REQUIRED_PACKAGES += developer/gcc/gcc-gnat-12
 REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/isl

@@ -1,0 +1,19 @@
+Avoids following GCC 12 error.
+It is similar to previous gcc-12 patch files.
+Note that SBufCaseInsensitiveLess is in upstream already removed.
+
+squid-4.15/src/base/LookupTable.h:50:45: error: 'template<class _Arg1, class _Arg2, class _Result> struct std::binary_f]
+   50 | class SBufCaseInsensitiveLess : public std::binary_function<SBuf, SBuf, bool> {
+      |                                             ^~~~~~~~~~~~~~~
+
+--- squid-4.15/src/base/LookupTable.h
++++ squid-4.15/src/base/LookupTable.h
+@@ -47,7 +47,7 @@
+  *
+  */
+ 
+-class SBufCaseInsensitiveLess : public std::binary_function<SBuf, SBuf, bool> {
++class SBufCaseInsensitiveLess {
+ public:
+     bool operator() (const SBuf &x, const SBuf &y) const {
+         return x.caseCmp(y) < 0;

@@ -1,0 +1,61 @@
+From 617ce5838aa6bcb437b3f9ecc8bbfb5c17c44ee2 Mon Sep 17 00:00:00 2001
+From: Francesco Chemolli <kinkie@squid-cache.org>
+Date: Wed, 8 Jun 2022 12:12:31 +0000
+Subject: [PATCH] Remove use of deprecated std::iterator (#1069)
+
+c++17 deprecates std::iterator.
+Explicitly declare traits in our iterator classes instead of
+using std::iterator
+---
+ src/base/EnumIterator.h | 8 +++++++-
+ src/sbuf/SBuf.h         | 9 ++++++++-
+ 2 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/src/base/EnumIterator.h b/src/base/EnumIterator.h
+index 5d88100c45e..96cb826f05c 100644
+--- a/src/base/EnumIterator.h
++++ b/src/base/EnumIterator.h
+@@ -20,7 +20,7 @@
+  * \see EnumIterator, ReverseEnumIterator
+  */
+ template <typename EnumType>
+-class EnumIteratorBase : public std::iterator<std::bidirectional_iterator_tag, EnumType>
++class EnumIteratorBase
+ {
+ protected:
+ #if HAVE_STD_UNDERLYING_TYPE
+@@ -30,6 +30,12 @@ class EnumIteratorBase : public std::iterator<std::bidirectional_iterator_tag, E
+ #endif
+ 
+ public:
++    using iterator_category = std::bidirectional_iterator_tag;
++    using value_type = EnumType;
++    using difference_type = std::ptrdiff_t;
++    using pointer = EnumType *;
++    using reference = EnumType &;
++
+     explicit EnumIteratorBase(EnumType e) : current(static_cast<iterator_type>(e)) {}
+ 
+     bool operator==(const EnumIteratorBase &i) const {
+diff --git a/src/sbuf/SBuf.h b/src/sbuf/SBuf.h
+index ac98137b1cf..964d8fb9187 100644
+--- a/src/sbuf/SBuf.h
++++ b/src/sbuf/SBuf.h
+@@ -45,9 +45,16 @@ class CharacterSet;
+  * Please note that any operation on the underlying SBuf may invalidate
+  * all iterators over it, resulting in undefined behavior by them.
+  */
+-class SBufIterator : public std::iterator<std::input_iterator_tag, char>
++class SBufIterator
+ {
+ public:
++    // iterator traits
++    using iterator_category = std::input_iterator_tag;
++    using value_type = char;
++    using difference_type = std::ptrdiff_t;
++    using pointer = char*;
++    using reference = char&;
++
+     friend class SBuf;
+     typedef MemBlob::size_type size_type;
+     bool operator==(const SBufIterator &s) const;

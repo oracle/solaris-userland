@@ -665,7 +665,7 @@ export PARFAIT_NATIVEGXX=$(GCC_ROOT)/bin/g++
 ONBLD_ROOT ?=	$(BUILD_TOOLS)/onbld
 ONBLD_BIN ?=	$(ONBLD_ROOT)/bin
 
-GCC_ROOT ?=	/usr/gcc/11
+GCC_ROOT ?=	/usr/gcc/12
 
 CC.studio.32 =	$(SPRO_VROOT)/bin/cc
 CXX.studio.32 =	$(SPRO_VROOT)/bin/CC

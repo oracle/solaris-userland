@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -73,13 +73,13 @@ COMPONENT_POST_CONFIGURE_ACTION += \
 			$(GMAKE) gen/static_filters.src.cpp);
 
 # Needed to configure, build and install the aspell English dictionary.
-COMPONENT_POST_INSTALL_ACTION += \
+COMPONENT_POST_INSTALL_ACTION.64 += \
 	(cd $(SOURCE_DIR_1) ; \
 		PATH="$(ASPELL_BIN_DIR):$(PATH)" \
 		./configure --vars \
 		    ASPELL_FLAGS=--data-dir=$(ASPELL_LIB_DIR)/aspell-0.60 \
 		    DESTDIR=$(PROTO_DIR));
-COMPONENT_POST_INSTALL_ACTION += \
+COMPONENT_POST_INSTALL_ACTION.64 += \
 	(cd $(SOURCE_DIR_1) ; \
 		export LD_LIBRARY_PATH=$(ASPELL_LIB_DIR); \
 		PATH="$(ASPELL_BIN_DIR):$(PATH)" \

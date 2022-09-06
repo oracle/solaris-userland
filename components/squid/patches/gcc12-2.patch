@@ -1,0 +1,24 @@
+From 91d65f9cc61c70a709dcc5e0e08ad4d1726b6fe6 Mon Sep 17 00:00:00 2001
+From: Francesco Chemolli <kinkie@squid-cache.org>
+Date: Mon, 6 Jun 2022 08:58:57 +0000
+Subject: [PATCH] Remove reference to deprecated std::binary_function (#1068)
+
+C++11 deprecates std::binary_function. C++17 removes it.
+It only provides typedefs that are unused since C++11.
+---
+ src/HttpHeaderTools.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/HttpHeaderTools.h b/src/HttpHeaderTools.h
+index d017dfe5701..372086453e7 100644
+--- a/src/HttpHeaderTools.h
++++ b/src/HttpHeaderTools.h
+@@ -67,7 +67,7 @@ class HeaderManglers
+ private:
+     /// Case-insensitive std::string "less than" comparison functor.
+     /// Fast version recommended by Meyers' "Effective STL" for ASCII c-strings.
+-    class NoCaseLessThan: public std::binary_function<std::string, std::string, bool>
++    class NoCaseLessThan
+     {
+     public:
+         bool operator()(const std::string &lhs, const std::string &rhs) const {
