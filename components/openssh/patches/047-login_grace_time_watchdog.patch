@@ -16,8 +16,8 @@
 # Per agreement with upstream developers, filed:
 #    https://bugzilla.mindrot.org/show_bug.cgi?id=2615
 #
---- old/sshd.c	2020-11-19 14:55:11.092846916 +0000
-+++ new/sshd.c	2020-11-19 14:55:33.916322951 +0000
+--- old/sshd.c	2022-06-10 18:04:55.282081858 +0200
++++ new/sshd.c	2022-06-10 18:05:30.016559122 +0200
 @@ -260,7 +260,14 @@ struct sshbuf *loginmsg;
  /* Unprivileged user */
  struct passwd *privsep_pw = NULL;
@@ -144,7 +144,7 @@
  
  		/* Arrange for logging to be sent to the monitor */
  		set_log_handler(mm_log_handler, pmonitor);
-@@ -2212,8 +2309,10 @@ main(int ac, char **av)
+@@ -2208,8 +2305,10 @@ main(int ac, char **av)
  	 * are about to discover the bug.
  	 */
  	ssh_signal(SIGALRM, grace_alarm_handler);
@@ -156,7 +156,7 @@
  
  	if ((r = kex_exchange_identification(ssh, -1,
  	    options.version_addendum)) != 0)
-@@ -2271,6 +2370,7 @@ main(int ac, char **av)
+@@ -2267,6 +2366,7 @@ main(int ac, char **av)
  	 */
  	alarm(0);
  	ssh_signal(SIGALRM, SIG_DFL);
