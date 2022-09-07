@@ -20,23 +20,28 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         irssi
-COMPONENT_VERSION=	1.2.3
+COMPONENT_VERSION=	1.4.2
 COMPONENT_PROJECT_URL=	https://irssi.org/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:29cbb746d7e57591d8fcf799406fb28cb7c2d734bc4288cbb8b4c4e05cf99c25
+    sha256:2d72c9a178bf5cbe4dfab499818005abb85f79376476f924fc09c969cb1c8419
 COMPONENT_ARCHIVE_URL=	https://github.com/irssi/irssi/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	1404
+COMPONENT_BAID=	129591
 
-COMPONENT_BAID=	101746
+PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
+
+# Without this, linker flags from pkgconfig are added too late to take effect
+LDFLAGS += -L/usr/openssl/3/lib/64
+COMPONENT_BUILD_ARGS += LDFLAGS="$(LDFLAGS)"
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -50,6 +55,6 @@ CONFIGURE_OPTIONS +=    --with-perl-lib=$(USRDIR)/perl5/vendor_perl/$(PERL_VERSI
 
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/ncurses
-REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
