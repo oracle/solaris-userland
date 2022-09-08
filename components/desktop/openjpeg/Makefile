@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openjpeg
-COMPONENT_VERSION_1=    2.4
+COMPONENT_VERSION_1=    2.5
 COMPONENT_VERSION=	$(COMPONENT_VERSION_1).0
 COMPONENT_PROJECT_URL=	http://www.openjpeg.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:8702ba68b442657f11aaeb2b338443ca8d5fb95b0d845757968a7be31ef7f16d
-COMPONENT_ARCHIVE_URL=	https://github.com/uclouvain/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION).tar.gz
+    sha256:0333806d6adecc6f7a91243b2b839ff4d2053823634d4f6ed7a59bc87409122a
+COMPONENT_ARCHIVE_URL=	https://github.com/uclouvain/openjpeg/archive/refs/tags/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	library/openjpeg
 COMPONENT_ANITYA_ID=	2550
 
-COMPONENT_BAID=		90884
+COMPONENT_BAID=		129612
 
 BUILD_STYLE = cmake
 
