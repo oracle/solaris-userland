@@ -1,0 +1,22 @@
+#
+# This Solaris specific patch provides for possibility to build
+# OpenSSH with openssl-3 libraries located in non-standard place,
+# specified via configure option --with-ssl-dir.
+#
+--- old/configure.ac	2022-02-01 11:10:52.808061297 +0000
++++ new/configure.ac	2022-02-01 11:11:40.051722366 +0000
+@@ -2648,11 +2648,11 @@ AC_ARG_WITH([ssl-dir],
+ 				# Relative paths
+ 				./*|../*)	withval="`pwd`/$withval"
+ 			esac
+-			if test -d "$withval/lib"; then
++			if test -d "$withval/lib/64"; then
+ 				if test -n "${rpath_opt}"; then
+-					LDFLAGS="-L${withval}/lib ${rpath_opt}${withval}/lib ${LDFLAGS}"
++					LDFLAGS="-L${withval}/lib/64 ${rpath_opt}${withval}/lib ${LDFLAGS}"
+ 				else
+-					LDFLAGS="-L${withval}/lib ${LDFLAGS}"
++					LDFLAGS="-L${withval}/lib/64 ${LDFLAGS}"
+ 				fi
+ 			elif test -d "$withval/lib64"; then
+ 				if test -n "${rpath_opt}"; then

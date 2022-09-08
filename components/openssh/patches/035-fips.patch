@@ -1,11 +1,11 @@
 #
-# Dynamically set FIPS mode, when underlying libcrypto is FIPS capable.
-# Limit ciphers and MACs in algorithm negotiation proposal.
+# Limit ciphers and MACs in algorithm negotiation proposal,
+# when underlying libcrypto is FIPS capable.
 #
 # This patch is unlikely to be accepted upstream.
 #
---- old/cipher.c	2022-04-21 10:12:27.687837588 +0000
-+++ new/cipher.c	2022-04-21 10:14:31.688105631 +0000
+--- old/cipher.c	2022-06-10 17:30:51.408017630 +0200
++++ new/cipher.c	2022-06-10 17:32:22.008262950 +0200
 @@ -83,7 +83,43 @@ struct sshcipher {
  #endif
  };
@@ -50,8 +50,8 @@
  #ifdef WITH_OPENSSL
  #ifndef OPENSSL_NO_DES
  	{ "3des-cbc",		8, 24, 0, 0, CFLAG_CBC, EVP_des_ede3_cbc },
---- old/digest-openssl.c	2022-04-21 10:12:27.692947846 +0000
-+++ new/digest-openssl.c	2022-04-21 10:14:31.692984335 +0000
+--- old/digest-openssl.c	2022-06-10 17:30:51.412889245 +0200
++++ new/digest-openssl.c	2022-06-10 17:32:22.013194727 +0200
 @@ -31,6 +31,7 @@
  #include "sshbuf.h"
  #include "digest.h"
@@ -102,8 +102,8 @@
  	int alg;
  
  	for (alg = 0; digests[alg].id != -1; alg++) {
---- old/kex.c	2022-04-21 10:12:27.697956357 +0000
-+++ new/kex.c	2022-04-21 10:14:31.697914001 +0000
+--- old/kex.c	2022-06-10 17:30:51.417379391 +0200
++++ new/kex.c	2022-06-10 17:32:22.018298742 +0200
 @@ -90,7 +90,43 @@ struct kexalg {
  	int ec_nid;
  	int hash_alg;
@@ -167,8 +167,8 @@
  		oerrno = errno;
  		error("%s: sshbuf_putf: %s", __func__, ssh_err(r));
  		goto out;
---- old/mac.c	2022-04-21 10:12:27.702904706 +0000
-+++ new/mac.c	2022-04-21 10:14:31.702843216 +0000
+--- old/mac.c	2022-06-10 17:30:51.422245291 +0200
++++ new/mac.c	2022-06-10 17:32:22.023042394 +0200
 @@ -55,8 +55,33 @@ struct macalg {
  	int		len;		/* just for UMAC */
  	int		etm;		/* Encrypt-then-MAC */
@@ -203,8 +203,8 @@
  	/* Encrypt-and-MAC (encrypt-and-authenticate) variants */
  	{ "hmac-sha1",				SSH_DIGEST, SSH_DIGEST_SHA1, 0, 0, 0, 0 },
  	{ "hmac-sha1-96",			SSH_DIGEST, SSH_DIGEST_SHA1, 96, 0, 0, 0 },
---- old/misc.c	2022-04-21 10:12:27.707942701 +0000
-+++ new/misc.c	2022-04-21 10:14:31.707671960 +0000
+--- old/misc.c	2022-06-10 17:30:51.426905065 +0200
++++ new/misc.c	2022-09-08 15:40:24.139419896 +0200
 @@ -42,6 +42,7 @@
  #include <string.h>
  #include <time.h>
@@ -213,17 +213,18 @@
  
  #include <netinet/in.h>
  #include <netinet/in_systm.h>
-@@ -49,6 +50,9 @@
+@@ -49,6 +50,10 @@
  #include <netinet/tcp.h>
  #include <arpa/inet.h>
  
 +#include <openssl/crypto.h>
 +#include <openssl/err.h>
++#include <openssl/evp.h>
 +
  #include <ctype.h>
  #include <errno.h>
  #include <fcntl.h>
-@@ -85,6 +89,60 @@ chop(char *s)
+@@ -85,6 +90,46 @@ chop(char *s)
  
  }
  
@@ -232,74 +233,59 @@
 +int
 +ssh_FIPS_mode()
 +{
-+	return FIPS_mode();
++	int is_fips = 0;
++
++	if (OSSL_PROVIDER_available(NULL, "fips")) {
++		is_fips = 1;
++
++		/*
++		 * FIPS OpenSSL provider is active which means
++		 * we should operate in FIPS mode.
++		 * Since there might be additional openssl providers
++		 * activated, make sure only FIPS compliant
++		 * API is used.
++		 * It is expected to always succeed, so abort
++		 * in case of failure.
++		 */
++		if (EVP_set_default_properties(NULL, "fips=yes") == 0) {
++			fatal("ssh_FIPS_mode() failed to set fips property");
++		}
++	}
++	return is_fips;	
 +}
-+
-+/* store FIPS_mode_set() err code */
-+static unsigned long ssh_FIPS_err_code = 0;
-+
-+#define	MSGBUFSIZ	1024 /* equals log.c:MSGBUFSIZ */
 +
 +/*
 + * Check and display FIPS mode status. 
-+ * Called after ssh_FIPS_mode_set_if_capable() and when logging facility is
-+ * available.
-+ * If FIPS_mode_failed for FIPS capable libcrypto, exits with 255 code.
 + */
 +void 
 +ssh_FIPS_check_status()
 +{
-+	char ebuf[MSGBUFSIZ];
-+
-+	if (dlsym(RTLD_PROBE, "FIPS_module_mode_set") != NULL) {
-+		if (ssh_FIPS_mode()) {
-+			debug("Running in FIPS mode.");
-+		} else {
-+			ERR_error_string_n(ssh_FIPS_err_code, ebuf,
-+			    sizeof (ebuf));
-+			fatal("Setting FIPS mode failed! %s", ebuf);
-+		}
++	if (ssh_FIPS_mode()) {
++		debug("Running in FIPS mode.");
 +	} else {
 +		debug3("Loaded libcrypto is not FIPS capable.");
 +	}
-+	
-+}
-+
-+/* if underlying libcrypto is FIPS capable, set FIPS_mode to 1 */
-+int
-+ssh_FIPS_mode_set_if_capable()
-+{
-+	/* presence of FIPS_module_mode_set indicates FIPS capable OpenSSL */
-+	if (dlsym(RTLD_PROBE, "FIPS_module_mode_set") != NULL) {
-+		/* call the API function FIPS_mode_set*/
-+		if (!FIPS_mode_set(1)) {
-+			ssh_FIPS_err_code = ERR_get_error();
-+			return 1;
-+		}
-+	}
-+	return 0;
 +}
 +#endif
 +
  /* set/unset filedescriptor to non-blocking */
  int
  set_nonblock(int fd)
---- old/misc.h	2022-04-21 10:12:27.712840877 +0000
-+++ new/misc.h	2022-04-21 10:14:31.712377643 +0000
-@@ -47,6 +47,11 @@ char	*chop(char *);
+--- old/misc.h	2022-06-10 17:30:51.431595404 +0200
++++ new/misc.h	2022-06-10 17:48:20.120567028 +0200
+@@ -47,6 +47,10 @@ char	*chop(char *);
  void	skip_space(char **);
  char	*strdelim(char **);
  char	*strdelimw(char **);
 +#ifdef ENABLE_OPENSSL_FIPS
 +int	 ssh_FIPS_mode();
-+int	 ssh_FIPS_mode_set_if_capable();
 +void     ssh_FIPS_check_status();
 +#endif
  int	 set_nonblock(int);
  int	 unset_nonblock(int);
  void	 set_nodelay(int);
---- old/myproposal.h	2022-04-21 10:12:27.717890451 +0000
-+++ new/myproposal.h	2022-04-21 10:14:31.717129305 +0000
+--- old/myproposal.h	2022-06-10 17:30:51.436221241 +0200
++++ new/myproposal.h	2022-06-10 17:32:22.037307116 +0200
 @@ -24,7 +24,7 @@
   * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
@@ -419,8 +405,8 @@
  
  /* Not a KEX value, but here so all the algorithm defaults are together */
  #define	SSH_ALLOWED_CA_SIGALGS	\
---- old/ssh-add.1	2022-04-21 10:12:27.723608496 +0000
-+++ new/ssh-add.1	2022-04-21 10:14:31.721851771 +0000
+--- old/ssh-add.1	2022-06-10 17:30:51.440586990 +0200
++++ new/ssh-add.1	2022-06-10 17:32:22.041930974 +0200
 @@ -126,6 +126,8 @@ and
  .Dq sha256 .
  The default is
@@ -430,24 +416,8 @@
  .It Fl e Ar pkcs11
  Remove keys provided by the PKCS#11 shared library
  .Ar pkcs11 .
---- old/ssh-add.c	2022-04-21 10:12:27.728629528 +0000
-+++ new/ssh-add.c	2022-04-21 10:14:31.726530996 +0000
-@@ -679,6 +679,13 @@ main(int argc, char **argv)
- 
- 	log_init(__progname, log_level, log_facility, 1);
- 
-+#ifdef ENABLE_OPENSSL_FIPS
-+	if (ssh_FIPS_mode_set_if_capable()) {
-+		fprintf(stderr, "Setting FIPS mode failed!");
-+		exit(1);
-+	}
-+#endif
-+
- 	setvbuf(stdout, NULL, _IOLBF, 0);
- 
- 	/* First, get a connection to the authentication agent. */
---- old/ssh-agent.1	2022-04-21 10:12:27.733709711 +0000
-+++ new/ssh-agent.1	2022-04-21 10:14:31.731270383 +0000
+--- old/ssh-agent.1	2022-06-10 17:30:51.449218419 +0200
++++ new/ssh-agent.1	2022-06-10 17:32:22.051175192 +0200
 @@ -98,6 +98,8 @@ and
  .Dq sha256 .
  The default is
@@ -457,28 +427,9 @@
  .It Fl k
  Kill the current agent (given by the
  .Ev SSH_AGENT_PID
---- old/ssh-agent.c	2022-04-21 10:12:27.738859027 +0000
-+++ new/ssh-agent.c	2022-04-21 10:14:31.736011741 +0000
-@@ -1288,6 +1288,7 @@ main(int ac, char **av)
- 	struct pollfd *pfd = NULL;
- 	size_t npfd = 0;
- 	u_int maxfds;
-+	int fips_err;
- 
- 	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
- 	sanitise_stdfd();
-@@ -1298,6 +1299,10 @@ main(int ac, char **av)
- 
- 	platform_disable_tracing(0);	/* strict=no */
- 
-+#ifdef ENABLE_OPENSSL_FIPS
-+	fips_err = ssh_FIPS_mode_set_if_capable();
-+#endif
-+
- #ifdef RLIMIT_NOFILE
- 	if (getrlimit(RLIMIT_NOFILE, &rlim) == -1)
- 		fatal("%s: getrlimit: %s", __progname, strerror(errno));
-@@ -1455,8 +1460,19 @@ main(int ac, char **av)
+--- old/ssh-agent.c	2022-06-10 17:30:51.453666486 +0200
++++ new/ssh-agent.c	2022-06-10 17:49:11.455380964 +0200
+@@ -1455,6 +1455,9 @@ main(int ac, char **av)
  		printf(format, SSH_AUTHSOCKET_ENV_NAME, socket_name,
  		    SSH_AUTHSOCKET_ENV_NAME);
  		printf("echo Agent pid %ld;\n", (long)parent_pid);
@@ -487,19 +438,9 @@
 +#endif
  		fflush(stdout);
  		goto skip;
-+#ifdef ENABLE_OPENSSL_FIPS
-+	} else {
-+		/* we still need to error out on FIPS_mode_set failure */
-+		if (fips_err) {
-+			fprintf(stderr, "Setting FIPS mode failed!");
-+			cleanup_exit(1);
-+		}
-+#endif
  	}
- 	pid = fork();
- 	if (pid == -1) {
---- old/ssh-keygen.1	2022-04-21 10:12:27.743974713 +0000
-+++ new/ssh-keygen.1	2022-04-21 10:14:31.740889347 +0000
+--- old/ssh-keygen.1	2022-06-10 17:30:51.458552614 +0200
++++ new/ssh-keygen.1	2022-06-10 17:32:22.060754029 +0200
 @@ -272,6 +272,8 @@ default path for the resulting host key
  This is used by
  .Pa /etc/rc
@@ -518,8 +459,8 @@
  .It Fl e
  This option will read a private or public OpenSSH key file and
  print to stdout a public key in one of the formats specified by the
---- old/ssh-keygen.c	2022-04-21 10:12:27.749309710 +0000
-+++ new/ssh-keygen.c	2022-04-21 10:14:31.745872365 +0000
+--- old/ssh-keygen.c	2022-06-10 17:30:51.463329742 +0200
++++ new/ssh-keygen.c	2022-06-10 17:48:48.650815551 +0200
 @@ -1040,7 +1040,12 @@ do_gen_all_hostkeys(struct passwd *pw)
  		char *key_type;
  		char *key_type_display;
@@ -558,15 +499,7 @@
  
  	u_int32_t bits = 0;
  	int first = 0;
-@@ -3175,10 +3193,18 @@ main(int argc, char **argv)
- 
- 	__progname = ssh_get_progname(argv[0]);
- 
-+#ifdef ENABLE_OPENSSL_FIPS
-+	ssh_FIPS_mode_set_if_capable();
-+#endif
-+
- 	seed_rng();
+@@ -3179,6 +3197,10 @@ main(int argc, char **argv)
  
  	log_init(argv[0], SYSLOG_LEVEL_INFO, SYSLOG_FACILITY_USER, 1);
  
@@ -577,36 +510,23 @@
  	msetlocale();
  
  	/* we need this for the home * directory.  */
---- old/ssh-keysign.c	2022-04-21 10:12:27.754615314 +0000
-+++ new/ssh-keysign.c	2022-04-21 10:14:31.750669692 +0000
-@@ -172,6 +172,7 @@ main(int argc, char **argv)
- 	u_char *signature, *data, rver;
- 	char *host, *fp;
- 	size_t slen, dlen;
-+	int fips_err;
- 
- 	if (pledge("stdio rpath getpw dns id", NULL) != 0)
- 		fatal("%s: pledge: %s", __progname, strerror(errno));
-@@ -219,6 +220,17 @@ main(int argc, char **argv)
+--- old/ssh-keysign.c	2022-06-10 17:30:51.467735384 +0200
++++ new/ssh-keysign.c	2022-06-10 17:48:55.277570189 +0200
+@@ -219,6 +219,12 @@ main(int argc, char **argv)
  	if (found == 0)
  		fatal("could not open any host key");
  
 +#ifdef ENABLE_OPENSSL_FIPS
-+	fips_err = ssh_FIPS_mode_set_if_capable();
 +#ifdef DEBUG_SSH_KEYSIGN
 +	ssh_FIPS_check_status();
-+#else
-+	/* we still need to error out on FIPS_mode_set failure */
-+	if (fips_err)
-+		fatal("Setting FIPS mode failed!");
 +#endif
 +#endif
 +
  	found = 0;
  	for (i = 0; i < NUM_KEYTYPES; i++) {
  		keys[i] = NULL;
---- old/ssh.1	2022-04-21 10:12:27.759671237 +0000
-+++ new/ssh.1	2022-04-21 10:14:31.755430459 +0000
+--- old/ssh.1	2022-06-10 17:30:51.472608747 +0200
++++ new/ssh.1	2022-06-10 17:32:22.075115407 +0200
 @@ -96,6 +96,9 @@ If a
  is specified,
  it is executed on the remote host instead of a login shell.
@@ -617,21 +537,9 @@
  The options are as follows:
  .Pp
  .Bl -tag -width Ds -compact
---- old/ssh.c	2022-04-21 10:12:27.764851879 +0000
-+++ new/ssh.c	2022-04-21 10:14:31.760367232 +0000
-@@ -715,6 +715,11 @@ main(int ac, char **av)
- 	 */
- 	initialize_options(&options);
- 
-+#ifdef ENABLE_OPENSSL_FIPS
-+	/* determine FIPS mode early to limit ciphers and macs */
-+	ssh_FIPS_mode_set_if_capable();
-+#endif
-+
- 	/*
- 	 * Prepare main ssh transport/connection structures
- 	 */
-@@ -1183,6 +1188,10 @@ main(int ac, char **av)
+--- old/ssh.c	2022-06-10 17:30:51.477321485 +0200
++++ new/ssh.c	2022-06-10 17:48:31.469897460 +0200
+@@ -1183,6 +1183,10 @@ main(int ac, char **av)
  #endif
  		);
  
@@ -642,21 +550,20 @@
  	/* Parse the configuration files */
  	process_config_files(host_arg, pw, 0, &want_final_pass);
  	if (want_final_pass)
---- old/ssh_api.c	2022-04-21 10:12:27.769844333 +0000
-+++ new/ssh_api.c	2022-04-21 10:14:31.767074783 +0000
-@@ -92,6 +92,10 @@ ssh_init(struct ssh **sshp, int is_serve
+--- old/ssh_api.c	2022-06-10 17:30:51.481695856 +0200
++++ new/ssh_api.c	2022-06-10 17:52:06.120172518 +0200
+@@ -92,6 +92,9 @@ ssh_init(struct ssh **sshp, int is_serve
  	int r;
  
  	if (!called) {
 +#ifdef ENABLE_OPENSSL_FIPS
-+		ssh_FIPS_mode_set_if_capable();
 +		ssh_FIPS_check_status();
 +#endif
  		seed_rng();
  		called = 1;
  	}
---- old/ssh_config.5	2022-04-21 10:12:27.774877597 +0000
-+++ new/ssh_config.5	2022-04-21 10:14:31.772161379 +0000
+--- old/ssh_config.5	2022-06-10 17:30:51.486645467 +0200
++++ new/ssh_config.5	2022-06-10 17:32:22.089138487 +0200
 @@ -471,6 +471,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
  aes128-gcm@openssh.com,aes256-gcm@openssh.com
  .Ed
@@ -716,8 +623,8 @@
  .It Cm ProxyCommand
  Specifies the command to use to connect to the server.
  The command
---- old/sshd.8	2022-04-21 10:12:27.780017501 +0000
-+++ new/sshd.8	2022-04-21 10:14:31.777004718 +0000
+--- old/sshd.8	2022-06-10 17:30:51.491340610 +0200
++++ new/sshd.8	2022-06-10 17:32:22.093887832 +0200
 @@ -84,6 +84,9 @@ rereads its configuration file when it r
  by executing itself with the name and options it was started with, e.g.\&
  .Pa /usr/sbin/sshd .
@@ -728,20 +635,9 @@
  The options are as follows:
  .Bl -tag -width Ds
  .It Fl 4
---- old/sshd.c	2022-04-21 10:12:27.785159413 +0000
-+++ new/sshd.c	2022-04-21 10:14:31.781928861 +0000
-@@ -1568,6 +1568,10 @@ main(int ac, char **av)
- 	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
- 	sanitise_stdfd();
- 
-+#ifdef ENABLE_OPENSSL_FIPS
-+	ssh_FIPS_mode_set_if_capable();
-+#endif
-+
- 	seed_rng();
- 
- 	/* Initialize configuration options to their default values. */
-@@ -1705,6 +1709,10 @@ main(int ac, char **av)
+--- old/sshd.c	2022-06-10 17:30:51.496163874 +0200
++++ new/sshd.c	2022-06-10 17:48:35.687560530 +0200
+@@ -1705,6 +1705,10 @@ main(int ac, char **av)
  	    SYSLOG_FACILITY_AUTH : options.log_facility,
  	    log_stderr || !inetd_flag || debug_flag);
  
@@ -752,7 +648,7 @@
  	/*
  	 * Unset KRB5CCNAME, otherwise the user's session may inherit it from
  	 * root's environment
-@@ -2415,10 +2423,15 @@ do_ssh2_kex(struct ssh *ssh)
+@@ -2415,10 +2419,15 @@ do_ssh2_kex(struct ssh *ssh)
  	if (strlen(myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS]) == 0)
  		orig = NULL;
  
@@ -772,8 +668,8 @@
  
  	if (gss && orig)
  		xasprintf(&newstr, "%s,%s", gss, orig);
---- old/sshd_config.5	2022-04-21 10:12:27.790467272 +0000
-+++ new/sshd_config.5	2022-04-21 10:14:31.786812379 +0000
+--- old/sshd_config.5	2022-06-10 17:30:51.500903601 +0200
++++ new/sshd_config.5	2022-06-10 17:32:22.103549295 +0200
 @@ -232,6 +232,9 @@ is enabled),
  .Qq password
  and
@@ -833,8 +729,8 @@
  The list of available MAC algorithms may also be obtained using
  .Qq ssh -Q mac .
  .It Cm Match
---- old/sshkey.c	2022-04-21 10:12:27.795611859 +0000
-+++ new/sshkey.c	2022-04-21 10:14:31.791809843 +0000
+--- old/sshkey.c	2022-06-10 17:30:51.505976069 +0200
++++ new/sshkey.c	2022-06-10 17:49:24.414139404 +0200
 @@ -103,7 +103,54 @@ struct keytype {
  	int cert;
  	int sigonly;
@@ -890,8 +786,8 @@
  	{ "ssh-ed25519", "ED25519", NULL, KEY_ED25519, 0, 0, 0 },
  	{ "ssh-ed25519-cert-v01@openssh.com", "ED25519-CERT", NULL,
  	    KEY_ED25519_CERT, 0, 1, 0 },
---- old/sshconnect2.c	2022-04-21 10:12:27.800842159 +0000
-+++ new/sshconnect2.c	2022-04-21 10:14:31.796781579 +0000
+--- old/sshconnect2.c	2022-06-10 17:30:51.510764160 +0200
++++ new/sshconnect2.c	2022-06-10 17:32:22.113350282 +0200
 @@ -262,29 +262,36 @@ ssh_kex2(struct ssh *ssh, char *host, st
  
  #if defined(GSSAPI) && defined(WITH_OPENSSL)
