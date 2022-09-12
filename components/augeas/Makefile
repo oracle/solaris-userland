@@ -20,25 +20,21 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		augeas
-COMPONENT_VERSION=	1.8.1
-COMPONENT_PROJECT_URL=	http://www.augeas.net/
+COMPONENT_VERSION=	1.13.0
+COMPONENT_PROJECT_URL=	https://www.augeas.net/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:65cf75b5a573fee2a5c6c6e3c95cad05f0101e70d3f9db10d53f6cc5b11bc9f9
-COMPONENT_ARCHIVE_URL=	http://download.augeas.net/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+	sha256:5002f33f42365ab78be974609a0f3b76a4c277fc404ec79f516305cab5ce5de1
+COMPONENT_ARCHIVE_URL=	https://github.com/hercules-team/augeas/releases/download/release-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	7017
 
-COMPONENT_BAID=	42689
-
-PKG_MACROS += LIBAUGEAS_VER=so.0.22.1
-PKG_MACROS += LIBFA_VER=so.1.4.4
+COMPONENT_BAID=	129171
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -53,6 +49,8 @@ COMPONENT_PRE_CONFIGURE_ACTION +=  ;($(CLONEY) $(SOURCE_DIR) $(@D))
 CONFIGURE_OPTIONS  +=	--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS  +=	--disable-dependency-tracking
 
+# GNU binaries like gnu grep needs to be used for some tests to pass
+COMPONENT_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
 COMPONENT_TEST_ARGS = -k
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
@@ -84,3 +82,4 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

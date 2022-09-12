@@ -1,0 +1,26 @@
+Patch taken from 
+https://github.com/hercules-team/augeas/commit/23f7b550de4754ae01fe64a2e3d562fa55810879
+
+From 23f7b550de4754ae01fe64a2e3d562fa55810879 Mon Sep 17 00:00:00 2001
+From: Alex-Braine <alex.braine.lu@gmail.com>
+Date: Wed, 2 Feb 2022 21:02:16 +0100
+Subject: [PATCH] Replace deprecated 'security_context_t' with 'char *'
+
+---
+ src/transform.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/transform.c b/src/transform.c
+index 176482b93..d46f2c497 100644
+--- a/src/transform.c
++++ b/src/transform.c
+@@ -918,7 +918,7 @@ static int transfer_file_attrs(FILE *from, FILE *to,
+     struct stat st;
+     int ret = 0;
+     int selinux_enabled = (is_selinux_enabled() > 0);
+-    security_context_t con = NULL;
++    char *con = NULL;
+ 
+     int from_fd;
+     int to_fd = fileno(to);
+
