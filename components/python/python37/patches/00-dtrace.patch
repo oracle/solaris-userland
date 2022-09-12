@@ -9,8 +9,8 @@ Rest of the Makefile wasn't entirely ready for dtrace compilation on Solaris.
 This patch was offered upstream:
 https://bugs.python.org/issue35520
 
---- Python-3.7.13/configure
-+++ Python-3.7.13/configure
+--- Python-3.7.14/configure
++++ Python-3.7.14/configure
 @@ -11407,7 +11407,7 @@ if ${ac_cv_dtrace_link+:} false; then :
    $as_echo_n "(cached) " >&6
  else
@@ -20,8 +20,8 @@ https://bugs.python.org/issue35520
              "$DTRACE" -G -s conftest.d -o conftest.o > /dev/null 2>&1 && \
                  ac_cv_dtrace_link=yes
  
---- Python-3.7.13/configure.ac
-+++ Python-3.7.13/configure.ac
+--- Python-3.7.14/configure.ac
++++ Python-3.7.14/configure.ac
 @@ -3510,7 +3510,7 @@ then
      AC_CACHE_CHECK([whether DTrace probes require linking],
          [ac_cv_dtrace_link], [dnl
@@ -31,8 +31,8 @@ https://bugs.python.org/issue35520
              "$DTRACE" -G -s conftest.d -o conftest.o > /dev/null 2>&1 && \
                  ac_cv_dtrace_link=yes
        ])
---- Python-3.7.13/Makefile.pre.in
-+++ Python-3.7.13/Makefile.pre.in
+--- Python-3.7.14/Makefile.pre.in
++++ Python-3.7.14/Makefile.pre.in
 @@ -454,8 +454,7 @@ LIBRARY_OBJS=	\
  # On some systems, object files that reference DTrace probes need to be modified
  # in-place by dtrace(1).
@@ -63,7 +63,7 @@ https://bugs.python.org/issue35520
  
  
  libpython$(VERSION).sl: $(LIBRARY_OBJS)
-@@ -759,6 +758,7 @@ Modules/getbuildinfo.o: $(PARSER_OBJS) \
+@@ -766,6 +765,7 @@ Modules/getbuildinfo.o: $(PARSER_OBJS) \
  		$(PYTHON_OBJS) \
  		$(MODULE_OBJS) \
  		$(MODOBJS) \
@@ -71,7 +71,7 @@ https://bugs.python.org/issue35520
  		$(srcdir)/Modules/getbuildinfo.c
  	$(CC) -c $(PY_CORE_CFLAGS) \
  	      -DGITVERSION="\"`LC_ALL=C $(GITVERSION)`\"" \
-@@ -929,6 +929,10 @@ Include/pydtrace_probes.h: $(srcdir)/Inc
+@@ -936,6 +936,10 @@ Include/pydtrace_probes.h: $(srcdir)/Inc
  	sed 's/PYTHON_/PyDTrace_/' $@ > $@.tmp
  	mv $@.tmp $@
  

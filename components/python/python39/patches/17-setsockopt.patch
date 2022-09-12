@@ -13,9 +13,9 @@ rather than in our application code (because upstream is generally aware of this
 
 See the bug for more information.
 
---- Python-3.9.13/Modules/socketmodule.c
-+++ Python-3.9.13/Modules/socketmodule.c
-@@ -2991,6 +2991,7 @@ sock_setsockopt(PySocketSockObject *s, P
+--- Python-3.9.14/Modules/socketmodule.c
++++ Python-3.9.14/Modules/socketmodule.c
+@@ -2993,6 +2993,7 @@ sock_setsockopt(PySocketSockObject *s, P
      int optname;
      int res;
      Py_buffer optval;
@@ -23,7 +23,7 @@ See the bug for more information.
      int flag;
      unsigned int optlen;
      PyObject *none;
-@@ -3013,8 +3014,15 @@ sock_setsockopt(PySocketSockObject *s, P
+@@ -3015,8 +3016,15 @@ sock_setsockopt(PySocketSockObject *s, P
      /* setsockopt(level, opt, flag) */
      if (PyArg_ParseTuple(args, "iii:setsockopt",
                           &level, &optname, &flag)) {

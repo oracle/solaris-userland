@@ -1,8 +1,8 @@
 This patch adds Python debugger support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-3.9.9/Makefile.pre.in
-+++ Python-3.9.9/Makefile.pre.in
+--- Python-3.9.14/Makefile.pre.in
++++ Python-3.9.14/Makefile.pre.in
 @@ -474,7 +474,7 @@ DTRACE_DEPS = \
  # Default target
  all:		@DEF_MAKE_ALL_RULE@
@@ -28,7 +28,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  
  Programs/_testembed: Programs/_testembed.o $(LIBRARY) $(LDLIBRARY) $(PY3LIBRARY) $(EXPORTSYMS)
  	$(LINKCC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/_testembed.o $(BLDLIBRARY) $(LIBS) $(MODLIBS) $(SYSLIBS)
-@@ -1248,7 +1257,7 @@ multisslcompile: build_all
+@@ -1249,7 +1258,7 @@ multisslcompile: build_all
  multissltest: build_all
  	$(RUNSHARED) ./$(BUILDPYTHON) Tools/ssl/multissltests.py
  
@@ -37,8 +37,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  	if test "x$(ENSUREPIP)" != "xno"  ; then \
  		case $(ENSUREPIP) in \
  			upgrade) ensurepip="--upgrade" ;; \
---- Python-3.9.9/py_db/libpython39_db.c
-+++ Python-3.9.9/py_db/libpython39_db.c
+--- Python-3.9.14/py_db/libpython39_db.c
++++ Python-3.9.14/py_db/libpython39_db.c
 @@ -0,0 +1,596 @@
 +/*
 + * CDDL HEADER START
@@ -636,8 +636,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +
 +	free(iter);
 +}
---- Python-3.9.9/py_db/libpython39_db.h
-+++ Python-3.9.9/py_db/libpython39_db.h
+--- Python-3.9.14/py_db/libpython39_db.h
++++ Python-3.9.14/py_db/libpython39_db.h
 @@ -0,0 +1,73 @@
 +/*
 + * CDDL HEADER START
@@ -712,8 +712,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +#endif
 +
 +#endif	/* _LIBPYTHON39_DB_H */
---- Python-3.9.9/py_db/mapfile-vers
-+++ Python-3.9.9/py_db/mapfile-vers
+--- Python-3.9.14/py_db/mapfile-vers
++++ Python-3.9.14/py_db/mapfile-vers
 @@ -0,0 +1,39 @@
 +#
 +# CDDL HEADER START

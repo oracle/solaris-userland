@@ -1,8 +1,8 @@
 This patch adds Python debugger support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-3.7.5/Makefile.pre.in
-+++ Python-3.7.5/Makefile.pre.in
+--- Python-3.7.14/Makefile.pre.in
++++ Python-3.7.14/Makefile.pre.in
 @@ -462,7 +462,7 @@ DTRACE_DEPS = \
  # Default target
  all:		@DEF_MAKE_ALL_RULE@
@@ -28,7 +28,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  
  Modules/Setup: $(srcdir)/Modules/Setup.dist
  	@if test -f Modules/Setup; then \
-@@ -1129,7 +1138,7 @@ multisslcompile: build_all
+@@ -1136,7 +1145,7 @@ multisslcompile: build_all
  multissltest: build_all
  	$(RUNSHARED) ./$(BUILDPYTHON) Tools/ssl/multissltests.py
  
@@ -37,8 +37,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  	if test "x$(ENSUREPIP)" != "xno"  ; then \
  		case $(ENSUREPIP) in \
  			upgrade) ensurepip="--upgrade" ;; \
---- Python-3.7.5/py_db/libpython37_db.c
-+++ Python-3.7.5/py_db/libpython37_db.c
+--- Python-3.7.14/py_db/libpython37_db.c
++++ Python-3.7.14/py_db/libpython37_db.c
 @@ -0,0 +1,595 @@
 +/*
 + * CDDL HEADER START
@@ -635,8 +635,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +
 +	free(iter);
 +}
---- Python-3.7.5/py_db/libpython37_db.h
-+++ Python-3.7.5/py_db/libpython37_db.h
+--- Python-3.7.14/py_db/libpython37_db.h
++++ Python-3.7.14/py_db/libpython37_db.h
 @@ -0,0 +1,73 @@
 +/*
 + * CDDL HEADER START
@@ -711,8 +711,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +#endif
 +
 +#endif	/* _LIBPYTHON37_DB_H */
---- Python-3.7.5/py_db/mapfile-vers
-+++ Python-3.7.5/py_db/mapfile-vers
+--- Python-3.7.14/py_db/mapfile-vers
++++ Python-3.7.14/py_db/mapfile-vers
 @@ -0,0 +1,39 @@
 +#
 +# CDDL HEADER START

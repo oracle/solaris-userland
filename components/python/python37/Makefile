@@ -28,16 +28,16 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = Python
-COMPONENT_VERSION     = 3.7.13
+COMPONENT_VERSION     = 3.7.14
 COMPONENT_PROJECT_URL = https://python.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:99f106275df8899c3e8cb9d7c01ce686c202ef275953301427194693de5bef84
+    sha256:4157ae31eb81af19e81c36882610491b0fb8f50e00fa8a17b095c88908b9c45c
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)ftp/python/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB       = utility/python
 COMPONENT_ANITYA_ID   = 19543
-COMPONENT_BAID        = 125219
+COMPONENT_BAID        = 129713
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk
@@ -176,6 +176,10 @@ install:    $(INSTALL_64)
 # $ TESTOPTS_PYTHON_TEST=test_sys
 TESTOPTS_PYTHON_TEST =
 COMPONENT_TEST_ENV = PATH="$(PATH)"
+# Force use of native distutils rather than the setuptools one
+# that otherwise takes over and breaks some tests.
+# https://github.com/pypa/setuptools/issues/3007
+COMPONENT_TEST_ENV += SETUPTOOLS_USE_DISTUTILS=stdlib
 # Using "-uall,-network" ensures all tests are run except the network tests.
 # The network tests contain many expected failures when run behind a firewall.
 # The "-v" ensures verbose mode.
