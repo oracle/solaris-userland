@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -35,20 +35,20 @@ include ../../make-rules/shared-macros.mk
 #   DHCP <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		isc-dhcp
-COMPONENT_VERSION=	4.4.2-P1
+COMPONENT_VERSION=	4.4.3
 HUMAN_VERSION=		$(COMPONENT_VERSION)
-IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION:%-P1=%).1.0
+IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 COMPONENT_SRC_NAME=	dhcp
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/dhcp/
 COMPONENT_ARCHIVE_URL=  \
     http://ftp.isc.org/isc/dhcp/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:b05e04337539545a8faa0d6ac518defc61a07e5aec66a857f455e7f218c85a1a
+    sha256:0e3ec6b4c2a05ec0148874bcd999a66d05518378d77421f607fb0bc9d0135818
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sha512.asc
 COMPONENT_BUGDB=	service/dhcp-server
 COMPONENT_ANITYA_ID=	5584
 
-COMPONENT_BAID=		97422
+COMPONENT_BAID=		127222
 
 INSTALL_TARGET=
 include $(WS_MAKE_RULES)/common.mk
@@ -62,15 +62,6 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 # Some patches need configure script re-creation.
 COMPONENT_PREP_ACTION +=(cd $(@D); autoreconf -vfi);
-
-# Additional patch for BIND which is applied post configure by unpacking
-# provided BIND using a suitable target within dhcp build, and then
-# applying the patch.  Our build phase then conifugres and builds BIND
-# libraries as it did before.
-COMPONENT_POST_CONFIGURE_ACTION += \
-	(cd $(BUILD_DIR_$(BITS))/bind;\
-	$(GMAKE) bind1;\
-	$(GPATCH) -p4 < $(COMPONENT_DIR)/patches_1/stats.c.patch;)
 
 CONFIGURE_OPTIONS  +=	--sysconfdir=$(ETCDIR)/inet
 CONFIGURE_OPTIONS  +=	--sbindir=$(USRLIBDIR)/inet
