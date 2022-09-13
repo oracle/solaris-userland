@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 # Don't bother specifying each .pyc file.  Allow individual actions to
@@ -37,7 +37,7 @@
 <transform file pkg.tmp.pyversion=2\.X -> emit file path=%(path)c>
 <transform hardlink pkg.tmp.pyversion=2\.X -> emit hardlink path=%(path)c target=%(target)c>
 
-<transform file pkg.tmp.pyversion=3\.([0-9])(.*) path=.*/(.*)\.py$ -> emit file path=/usr/lib/python3.%<1>%<2>/__pycache__/%<3>.cpython-3%<1>.pyc>
+<transform file pkg.tmp.pyversion=3\.([0-9]+)(.*) path=.*/(.*)\.py$ -> emit file path=/usr/lib/python3.%<1>%<2>/__pycache__/%<3>.cpython-3%<1>.pyc>
 <transform hardlink pkg.tmp.pyversion=3\.(.*) -> emit hardlink path=%(path)c target=%(target)c>
 
 <transform file pkg.tmp.autopyc=.* -> delete pkg.tmp.autopyc .*>

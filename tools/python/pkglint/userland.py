@@ -744,6 +744,7 @@ class UserlandManifestChecker(base.ManifestChecker):
             "27": (62211).to_bytes(2, "little") + b"\r\n",
             "37": (3394).to_bytes(2, "little") + b"\r\n",
             "39": (3425).to_bytes(2, "little") + b"\r\n",
+            "311": (3495).to_bytes(2, "little") + b"\r\n",
         }
 
         def locate_file(path):
@@ -848,7 +849,7 @@ class UserlandManifestChecker(base.ManifestChecker):
             elif path.endswith(".pyc"):
                 # map each .pyc to corresponding .py source file
                 source = path.replace("__pycache__/", "")[:-1]
-                source = re.sub(r"\.cpython-[0-9]{2}", "", source)
+                source = re.sub(r"\.cpython-[0-9]+", "", source)
 
                 if source in filemap:
                     filemap[source] = path
