@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		re2c
-COMPONENT_VERSION=	2.0.3
+COMPONENT_VERSION=	3.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_PROJECT_URL=	http://re2c.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b2bc1eb8aaaa21ff2fcd26507b7e6e72c5e3d887e58aa515c2155fb17d744278
+    sha256:b3babbbb1461e13fe22c630a40c43885efcfbbbb585830c6f4c0d791cf82ba0b
 COMPONENT_ARCHIVE_URL=	https://github.com/skvadrik/$(COMPONENT_NAME)/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	7664
 
-COMPONENT_BAID =		85656
+COMPONENT_BAID =	129706
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
 
@@ -46,6 +46,9 @@ export PATH=$(GCC_ROOT)/bin:$(GNUBIN):$(USRBINDIR)
 # Needed to get the tests to run successfully.
 COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
 
+CONFIGURE_OPTIONS +=	--disable-golang
+CONFIGURE_OPTIONS +=	--disable-rust
+
 # Needed for "gmake test" to work successfully.
 # If SHELLOPTS is exported (as it is by the userland makefiles),
 # then all shell options get exported to child invocations of bash,
@@ -55,6 +58,13 @@ COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
 unexport SHELLOPTS
 
 COMPONENT_SYSTEM_TEST_ENV +=	RE2C_BIN=$(USRBINDIR)/re2c
+COMPONENT_TEST_TRANSFORMS += \
+	'-n ' \
+	'-e "/TOTAL:/p" ' \
+	'-e "/PASS:/p" ' \
+	'-e "/FAIL:/p" ' \
+	'-e "/ERROR:/p" ' \
+	'-e "/SKIP:/p" '
 
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
