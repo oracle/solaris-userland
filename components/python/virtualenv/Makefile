@@ -20,27 +20,40 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 
+# Even though the component is pure python, some
+# tests compilate non pure extensions.
+COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		virtualenv
-COMPONENT_VERSION=	16.7.10
+COMPONENT_VERSION=	20.16.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:92f8fece996e62f97b6e56ee878a3f9c978781f59ab22bccdd0ab3e457371c33
+    sha256:554609a339c7d15b21dceb191938c57d06d17067224c7e891a1ff13dfba312cc
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pypa/virtualenv
 COMPONENT_BUGDB=	python-mod/virtualenv
 COMPONENT_ANITYA_ID=	6904
+COMPONENT_BAID=		129917
 
-COMPONENT_BAID=		77545
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
+COMPONENT_VERSION_OLD=	16.7.10
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD= \
+    sha256:92f8fece996e62f97b6e56ee878a3f9c978781f59ab22bccdd0ab3e457371c33
+COMPONENT_ARCHIVE_URL_OLD= $(call pypi_url,OLD)
+COMPONENT_BAID_OLD=	77545
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 # Tests require a network access.
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -62,9 +75,15 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_NO_ARCH)
+test:		$(TEST_64)
 
-system-test:	$(SYSTEM_TEST_NO_ARCH)
+system-test:	$(SYSTEM_TEST_64)
+
+REQUIRED_PACKAGES += library/python/distlib-37
+REQUIRED_PACKAGES += library/python/distlib-39
+REQUIRED_PACKAGES += library/python/filelock-37
+REQUIRED_PACKAGES += library/python/filelock-39
+REQUIRED_PACKAGES += library/python/importlib-metadata-37
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/mock

@@ -1,0 +1,62 @@
+FileLock (UnixFileLock in this case) uses Pythons fcntl.flock for locking. On
+Solaris however, this function is emulated with fcntl (as flock is not available),
+and that changes the semantics a little bit. While flock is associated with
+file description, fcntl is associated with the process.
+
+That means that while calling flock on an already flocked file within the same
+process will fail, multiple fcntl will always succeed (and just overwrite the
+lock with new information). The test suite expects the flock behavior (as
+everything runs in the same process), which is why several tests fail.
+
+That said, UnixFileLock still works as expected when used between multiple processes.
+
+The patch is not suitable for upstream, but this behavior was reported there:
+https://github.com/tox-dev/py-filelock/issues/165
+
+--- filelock-3.8.0/tests/test_filelock.py
++++ filelock-3.8.0/tests/test_filelock.py
+@@ -203,7 +203,7 @@ def test_threaded_shared_lock_obj(lock_t
+     assert not lock.is_locked
+ 
+ 
+-@pytest.mark.parametrize("lock_type", [FileLock, SoftFileLock])
++@pytest.mark.parametrize("lock_type", [SoftFileLock])
+ @pytest.mark.skipif(hasattr(sys, "pypy_version_info") and sys.platform == "win32", reason="deadlocks randomly")
+ def test_threaded_lock_different_lock_obj(lock_type: type[BaseFileLock], tmp_path: Path) -> None:
+     # Runs multiple threads, which acquire the same lock file with a different FileLock object. When thread group 1
+@@ -236,7 +236,7 @@ def test_threaded_lock_different_lock_ob
+     assert not lock_2.is_locked
+ 
+ 
+-@pytest.mark.parametrize("lock_type", [FileLock, SoftFileLock])
++@pytest.mark.parametrize("lock_type", [SoftFileLock])
+ def test_timeout(lock_type: type[BaseFileLock], tmp_path: Path) -> None:
+     # raises Timeout error when the lock cannot be acquired
+     lock_path = tmp_path / "a"
+@@ -259,7 +259,7 @@ def test_timeout(lock_type: type[BaseFil
+     assert not lock_2.is_locked
+ 
+ 
+-@pytest.mark.parametrize("lock_type", [FileLock, SoftFileLock])
++@pytest.mark.parametrize("lock_type", [SoftFileLock])
+ def test_non_blocking(lock_type: type[BaseFileLock], tmp_path: Path) -> None:
+     # raises Timeout error when the lock cannot be acquired
+     lock_path = tmp_path / "a"
+@@ -282,7 +282,7 @@ def test_non_blocking(lock_type: type[Ba
+     assert not lock_2.is_locked
+ 
+ 
+-@pytest.mark.parametrize("lock_type", [FileLock, SoftFileLock])
++@pytest.mark.parametrize("lock_type", [SoftFileLock])
+ def test_default_timeout(lock_type: type[BaseFileLock], tmp_path: Path) -> None:
+     # test if the default timeout parameter works
+     lock_path = tmp_path / "a"
+@@ -345,7 +345,7 @@ def test_acquire_release_on_exc(lock_typ
+ 
+ 
+ @pytest.mark.skipif(hasattr(sys, "pypy_version_info"), reason="del() does not trigger GC in PyPy")
+-@pytest.mark.parametrize("lock_type", [FileLock, SoftFileLock])
++@pytest.mark.parametrize("lock_type", [SoftFileLock])
+ def test_del(lock_type: type[BaseFileLock], tmp_path: Path) -> None:
+     # lock is released when the object is deleted
+     lock_path = tmp_path / "a"

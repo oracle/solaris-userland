@@ -1,0 +1,58 @@
+Platformdirs is not available on Solaris, and considering the size of code it
+brings in, it doesn't seem necessary to add it yet.
+
+--- virtualenv-20.16.3/src/virtualenv/app_data/__init__.py
++++ virtualenv-20.16.3/src/virtualenv/app_data/__init__.py
+@@ -5,14 +5,19 @@ Application data stored by virtualenv.
+ import logging
+ import os
+ 
+-from platformdirs import user_data_dir
+-
+ from .na import AppDataDisabled
+ from .read_only import ReadOnlyAppData
+ from .via_disk_folder import AppDataDiskFolder
+ from .via_tempdir import TempAppData
+ 
+ 
++def user_data_dir(appname, appauthor):
++    path = os.environ.get("XDG_DATA_HOME", "")
++    if not path.strip():
++        path = os.path.expanduser("~/.local/share")
++    return os.path.join(path, appname)
++
++
+ def _default_app_data_dir(env):
+     key = "VIRTUALENV_OVERRIDE_APP_DATA"
+     if key in env:
+--- virtualenv-20.16.3/src/virtualenv/config/ini.py
++++ virtualenv-20.16.3/src/virtualenv/config/ini.py
+@@ -3,11 +3,16 @@ import os
+ from configparser import ConfigParser
+ from pathlib import Path
+ 
+-from platformdirs import user_config_dir
+-
+ from .convert import convert
+ 
+ 
++def user_config_dir(appname, appauthor):
++    path = os.environ.get("XDG_DATA_HOME", "")
++    if not path.strip():
++        path = os.path.expanduser("~/.config")
++    return os.path.join(path, appname)
++
++
+ class IniConfig:
+     VIRTUALENV_CONFIG_FILE_ENV_VAR = "VIRTUALENV_CONFIG_FILE"
+     STATE = {None: "failed to parse", True: "active", False: "missing"}
+--- virtualenv-20.16.3/setup.cfg
++++ virtualenv-20.16.3/setup.cfg
+@@ -35,7 +35,6 @@ packages = find:
+ install_requires = 
+ 	distlib>=0.3.5,<1
+ 	filelock>=3.4.1,<4
+-	platformdirs>=2.4,<3
+ 	importlib-metadata>=4.8.3;python_version < "3.8"
+ 	importlib-resources>=5.4;python_version < "3.7"
+ python_requires = >=3.6

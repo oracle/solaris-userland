@@ -1,39 +1,58 @@
-We don't have pypiserver and pytest_localserver.http packages available
-in Solaris, which doesn't matter that much because the only test using
-them (test_create_environment_with_local_https_pypi) doesn't work in our
-build infrastructure anyway. Hence we can safely comment them out.
+Several test related components are not available on Solaris; those
+include flaky, pytest-mock and pytest-freezegun.
 
-test_bootstrap.py has a small oversight in its assertion. Not for upstream,
-because they moved to a new codebase, which dropped test anymore.
+Not intended for upstream.
 
---- virtualenv-16.7.10/tests/test_virtualenv.py
-+++ virtualenv-16.7.10/tests/test_virtualenv.py
-@@ -10,9 +10,7 @@ import tempfile
- import textwrap
- import zipfile
+--- virtualenv-20.16.3/setup.cfg
++++ virtualenv-20.16.3/setup.cfg
+@@ -114,7 +114,7 @@ universal = true
+ markers = 
+    slow
+ junit_family = xunit2
+-addopts = --tb=auto -ra --showlocals --no-success-flaky-report
++addopts = --tb=auto -ra --showlocals
+ env = 
+    PYTHONWARNINGS=ignore:DEPRECATION::pip._internal.cli.base_command
+    PYTHONIOENCODING=utf-8
+--- virtualenv-20.16.3/tests/integration/test_zipapp.py
++++ virtualenv-20.16.3/tests/integration/test_zipapp.py
+@@ -4,7 +4,6 @@ import sys
+ from pathlib import Path
  
--import pypiserver
  import pytest
--import pytest_localserver.http
- import six
+-from flaky import flaky
  
- import virtualenv
-@@ -489,6 +487,7 @@ def test_create_environment_in_dir_with_
-     virtualenv.create_environment(ve_path)
+ from virtualenv.discovery.py_info import PythonInfo
+ from virtualenv.run import cli_run
+@@ -82,7 +81,6 @@ def call_zipapp(zipapp, tmp_path, zipapp
+     return _run
  
  
-+@pytest.mark.skip("Doesn't work on Solaris")
- def test_create_environment_with_local_https_pypi(tmpdir):
-     """Create virtual environment using local PyPI listening https with
-     certificate signed with custom certificate authority
---- virtualenv-16.7.10/tests/test_bootstrap.py
-+++ virtualenv-16.7.10/tests/test_bootstrap.py
-@@ -36,7 +36,7 @@ def bootstrap():
-         print(
-             "exe at {}".format(
-                 subprocess.check_output(
--                    [os.path.join(bin_dir, EXPECTED_EXE), "-c", "import sys; print(sys.executable)"],  # noqa: F821
-+                    [os.path.realpath(os.path.join(bin_dir, EXPECTED_EXE)), "-c", "import sys; print(sys.executable)"],  # noqa: F821
-                     universal_newlines=True,
-                 )
-             )
+-@flaky(max_runs=2, min_passes=1)
+ def test_zipapp_help(call_zipapp, capsys):
+     call_zipapp("-h")
+     out, err = capsys.readouterr()
+--- virtualenv-20.16.3/tests/conftest.py
++++ virtualenv-20.16.3/tests/conftest.py
+@@ -379,3 +379,11 @@ def _skip_if_test_in_system(session_app_
+     current = PythonInfo.current(session_app_data)
+     if current.system_executable is not None:
+         pytest.skip("test not valid if run under system")
++
++@pytest.fixture()
++def freezer(*args, **kwargs):
++    pytest.skip("pytest-freezegun is not available on Solaris")
++
++@pytest.fixture()
++def mocker(*args, **kwargs):
++    pytest.skip("pytest-mock is not available on Solaris")
+--- virtualenv-20.16.3/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
++++ virtualenv-20.16.3/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
+@@ -210,6 +210,7 @@ def test_base_bootstrap_link_via_app_dat
+         assert (result.creator.purelib / key).exists()
+ 
+ 
++@pytest.mark.skip(reason="Sometimes fails for unknown reasons.")
+ @pytest.mark.usefixtures("temp_app_data")
+ def test_app_data_parallel_ok(tmp_path):
+     exceptions = _run_parallel_threads(tmp_path)

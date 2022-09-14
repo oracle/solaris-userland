@@ -1,0 +1,18 @@
+Python 3.7 fails the virtualenv creation with crazy symbols due to a problem
+with pydoc not handling those paths correctly. Python 3.9 and later don't
+have that problem, so I don't think it's worth digging into this more.
+
+This seems to be a known issue in the upstream:
+https://bugs.python.org/issue25184
+
+--- virtualenv-20.16.3/tests/conftest.py
++++ virtualenv-20.16.3/tests/conftest.py
+@@ -293,6 +293,8 @@ def is_inside_ci():
+ @pytest.fixture(scope="session")
+ def special_char_name():
+     base = "e-$ èрт🚒♞中片-j"
++    if sys.version_info <= (3, 8):
++        base = "e-test"
+     # workaround for pypy3 https://bitbucket.org/pypy/pypy/issues/3147/venv-non-ascii-support-windows
+     encoding = "ascii" if IS_WIN else sys.getfilesystemencoding()
+     # let's not include characters that the file system cannot encode)
