@@ -70,7 +70,8 @@ system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/testtools-%)
+REQUIRED_PACKAGES += library/python/testtools-27
 
 # Test related dependencies
 REQUIRED_PACKAGES += library/python/extras
+REQUIRED_PACKAGES += library/python/testtools
