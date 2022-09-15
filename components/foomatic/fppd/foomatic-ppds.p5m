@@ -18,12 +18,13 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
     value=pkg:/print/lp/filter/foomatic-ppds@0.2008.8.18,$(BUILD_VERSION)
 set name=pkg.summary value="foomatic_ppds - Foomatic Print PPDs"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value="the Foomatic Print PPDs"
 set name=info.classification value=org.opensolaris.category.2008:System/Printing
@@ -34,6 +35,9 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 
 
 file path=usr/lib/lp/caches/SUNWfoomatic.cache
+file print-lp-filter-foomatic-ppds.txt \
+    path=usr/share/doc/release-notes/print-lp-filter-foomatic-ppds.txt \
+    mode=0444 must-display=true release-note=feature/pkg/self@0
 file path=usr/share/ppd/SUNWfoomatic/Alps/Alps-MD-1000-md2k.ppd.gz
 file path=usr/share/ppd/SUNWfoomatic/Alps/Alps-MD-1000-ppmtocpva.ppd.gz
 file path=usr/share/ppd/SUNWfoomatic/Alps/Alps-MD-1000-ppmtomd.ppd.gz
