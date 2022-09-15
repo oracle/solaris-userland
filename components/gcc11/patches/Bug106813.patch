@@ -1,0 +1,17 @@
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=106813
+
+--- gcc-11.2.0/libgo/runtime/go-signal.c
++++ gcc-11.2.0/libgo/runtime/go-signal.c
+@@ -231,6 +231,12 @@
+ 	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.pc;
+ #elif defined(__NetBSD__)
+ 	ret.sigpc = _UC_MACHINE_PC(((ucontext_t*)(context)));
++#elif defined(__x86_64__) && defined(__sun__)
++	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.gregs[REG_RIP];
++#elif defined(__i386__) && defined(__sun__)
++	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.gregs[REG_EIP];
++#elif defined(__sparc__) && defined(__sun__)
++	ret.sigpc = ((ucontext_t*)(context))->uc_mcontext.gregs[REG_PC];
+ #endif
+ 
+ 	if (ret.sigpc == 0) {
