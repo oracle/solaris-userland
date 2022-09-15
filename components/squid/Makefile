@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -54,6 +54,9 @@ include $(WS_MAKE_RULES)/common.mk
 
 CFLAGS += -I$(USRINCDIR)/kerberosv5
 CFLAGS += $(CPP_LARGEFILES)
+
+# xmlSetFeature amd htmlDefaultSAXHandlerInit are deprecated since libxml 2.10
+CXXFLAGS += -Wno-deprecated-declarations
 
 CONFIGURE_LIBDIR.64 =	$(CONFIGURE_PREFIX)/lib
 

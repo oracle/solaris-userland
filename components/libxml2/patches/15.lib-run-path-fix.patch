@@ -1,6 +1,10 @@
---- libxml2-2.9.13/xml2-config.in
-+++ libxml2-2.9.13/xml2-config.in
-@@ -82,17 +82,7 @@ echo @WITH_MODULES@
+Make the library configuration universal for 32/64bits.
+
+Solaris specific. Not suitable for upstream.
+
+--- libxml2-2.10.2/xml2-config.in
++++ libxml2-2.10.2/xml2-config.in
+@@ -82,16 +82,7 @@
         	;;
  
      --libs)
@@ -8,14 +12,13 @@
 -            shift
 -            libs="@XML_LIBS@"
 -        else
--            libs="@XML_LIBS@ @XML_PRIVATE_LIBS@ @MODULE_PLATFORM_LIBS@"
+-            libs="@XML_LIBS@ @XML_PRIVATE_LIBS@ @MODULE_PLATFORM_LIBS@ @LIBS@"
 -        fi
 -
 -        if [ "@XML_LIBDIR@" != "-L/usr/lib" -a "@XML_LIBDIR@" != "-L/usr/lib64" ]; then
 -            libs="@XML_LIBDIR@ $libs"
 -        fi
--
 +        libs="@XML_LIBS@"
-         libs="$libs @WIN32_EXTRA_LIBADD@"
          ;;
  
+     *)
