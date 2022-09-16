@@ -28,16 +28,16 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		vim
 COMPONENT_VERSION=	9.0
-IPS_COMPONENT_VERSION=	9.0.138
+IPS_COMPONENT_VERSION=	9.0.823
 COMPONENT_FULL_VERSION=$(shell echo $(IPS_COMPONENT_VERSION) | awk -F. '{printf("%d.%d.%04d\n", $$1, $$2, $$3)}')
 COMPONENT_SRC=	vim-$(COMPONENT_FULL_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_URL=	https://github.com/vim/vim/archive/v$(COMPONENT_FULL_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:600b3d3cdee9438097bd3f59cd9a5fdef4374378ee8abb9fe4901f0316bb0ae8
+COMPONENT_ARCHIVE_HASH=	sha256:97fb5efd59f077e29f241e1e96931386688f9546dcac2aab45b71c6cbb4ad5a7
 COMPONENT_PROJECT_URL=	http://www.vim.org/
 COMPONENT_ANITYA_ID=	5092
 
-COMPONENT_BAID=		128070
+COMPONENT_BAID=		132343
 
 PKG_MACROS +=	VIMVER=vim$(subst .,,$(COMPONENT_VERSION))
 
@@ -122,7 +122,6 @@ $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-n '
 # remove such tests from the result to make it comparable with master results file.
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_debugger.vim:/d" '
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_cmdline.vim:/d" '
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_suspend.vim:/d" '
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_messages.vim:/d" '
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_popupwin.vim:/d" '
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_vim9_script.vim:/d" '

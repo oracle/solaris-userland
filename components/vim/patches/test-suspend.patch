@@ -1,0 +1,21 @@
+The Test_suspend test expects bash prompt to contain either '$' or '#'. The
+test fails if one has different PS1 in his .bashrc. This is a workaround to
+make the tests pass in our infrastructure.
+
+Not suitable for upstream.
+
+--- vim-9.0.0823/src/testdir/test_suspend.vim
++++ vim-9.0.0823/src/testdir/test_suspend.vim
+@@ -19,9 +19,10 @@ endfunc
+ 
+ func Test_suspend()
+   CheckFeature terminal
+-  CheckExecutable /bin/sh
++  CheckExecutable /bin/bash
+ 
+-  let buf = term_start('/bin/sh')
++  let $PS1="\\u@\\h:\\w\\\$ "
++  let buf = term_start('/bin/bash --norc')
+   " Wait for shell prompt.
+   call WaitForAssert({-> assert_match('[$#] $', term_getline(buf, '.'))})
+ 

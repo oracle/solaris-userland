@@ -1,0 +1,75 @@
+https://www.mail-archive.com/vim_dev@googlegroups.com/msg63877.html
+
+This reverts https://github.com/vim/vim/commit/5903aaf7eb4586cf7e4fa5a219092334b05c89de
+which makes vim tests to hang on Solaris. More investigation is needed.
+
+This patch is not intended for upstream.
+
+
+--- b/src/channel.c
++++ a/src/channel.c
+@@ -3589,24 +3589,6 @@
+ // Buffer size for reading incoming messages.
+ #define MAXMSGSIZE 4096
+ 
+-/*
+- * Check if there are remaining data that should be written for "in_part".
+- */
+-    static int
+-is_channel_write_remaining(chanpart_T *in_part)
+-{
+-    buf_T *buf = in_part->ch_bufref.br_buf;
+-
+-    if (in_part->ch_writeque.wq_next != NULL)
+-	return TRUE;
+-    if (buf == NULL)
+-	return FALSE;
+-    return in_part->ch_buf_append
+-	    ? (in_part->ch_buf_bot < buf->b_ml.ml_line_count)
+-	    : (in_part->ch_buf_top <= in_part->ch_buf_bot
+-			    && in_part->ch_buf_top <= buf->b_ml.ml_line_count);
+-}
+-
+ #if defined(HAVE_SELECT)
+ /*
+  * Add write fds where we are waiting for writing to be possible.
+@@ -3622,7 +3604,8 @@
+ 	chanpart_T  *in_part = &ch->ch_part[PART_IN];
+ 
+ 	if (in_part->ch_fd != INVALID_FD
++		&& (in_part->ch_bufref.br_buf != NULL
++		    || in_part->ch_writeque.wq_next != NULL))
+-		&& is_channel_write_remaining(in_part))
+ 	{
+ 	    FD_SET((int)in_part->ch_fd, wfds);
+ 	    if ((int)in_part->ch_fd >= maxfd)
+@@ -3646,7 +3629,8 @@
+ 	chanpart_T  *in_part = &ch->ch_part[PART_IN];
+ 
+ 	if (in_part->ch_fd != INVALID_FD
++		&& (in_part->ch_bufref.br_buf != NULL
++		    || in_part->ch_writeque.wq_next != NULL))
+-		&& is_channel_write_remaining(in_part))
+ 	{
+ 	    in_part->ch_poll_idx = nfd;
+ 	    fds[nfd].fd = in_part->ch_fd;
+@@ -3881,6 +3865,8 @@
+ 	// Store the read message in the queue.
+ 	channel_save(channel, part, buf, len, FALSE, "RECV ");
+ 	readlen += len;
++	if (len < MAXMSGSIZE)
++	    break;	// did read everything that's available
+     }
+ 
+     // Reading a disconnection (readlen == 0), or an error.
+--- vim-9.0.0501/src/version.c
++++ vim-9.0.0501/src/version.c
+@@ -914,8 +914,6 @@ static int included_patches[] =
+ /**/
+     395,
+ /**/
+-    394,
+-/**/
+     393,
+ /**/
+     392,
