@@ -20,22 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		modsecurity
-COMPONENT_VERSION=	2.9.5
+COMPONENT_VERSION=	2.9.6
+COMPONENT_BAID=		130023
 COMPONENT_PROJECT_URL=	https://github.com/SpiderLabs/ModSecurity
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e2bfc8cd8b8de1e21f054d310543373ea5d89adbd96784e832be0da3e4dc149e
+    sha256:626a831aca92cdff73ea68a85b7f5c105d9a15365fa270fbed3139a81eaf3344
 COMPONENT_ARCHIVE_URL= \
     $(COMPONENT_PROJECT_URL)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	9933
-
-COMPONENT_BAID=		112732
 
 MODULES_INSTALL=
 MODULES_TEST= $(TEST_AND_COMPARE_64)
