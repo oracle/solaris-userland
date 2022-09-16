@@ -3,8 +3,8 @@ tests which depend on those.
 
 Not for upstream
 
---- oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_service_application.py
-+++ oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_service_application.py
+--- oauthlib-3.2.1/tests/oauth2/rfc6749/clients/test_service_application.py
++++ oauthlib-3.2.1/tests/oauth2/rfc6749/clients/test_service_application.py
 @@ -3,7 +3,8 @@ import os
  from time import time
  from unittest.mock import patch
@@ -15,8 +15,8 @@ Not for upstream
  
  from oauthlib.common import Request
  from oauthlib.oauth2 import ServiceApplicationClient
---- oauthlib-3.2.0/tests/oauth1/rfc5849/test_client.py
-+++ oauthlib-3.2.0/tests/oauth1/rfc5849/test_client.py
+--- oauthlib-3.2.1/tests/oauth1/rfc5849/test_client.py
++++ oauthlib-3.2.1/tests/oauth1/rfc5849/test_client.py
 @@ -7,6 +7,7 @@ from oauthlib.oauth1 import (
  from oauthlib.oauth1.rfc5849 import Client
  
@@ -41,17 +41,17 @@ Not for upstream
      def test_rsa_no_key(self):
          client = Client('client_key', signature_method=SIGNATURE_RSA)
          self.assertRaises(ValueError, client.sign, 'http://example.com')
---- oauthlib-3.2.0/tests/oauth1/rfc5849/test_signatures.py
-+++ oauthlib-3.2.0/tests/oauth1/rfc5849/test_signatures.py
-@@ -20,6 +20,7 @@ from oauthlib.oauth1.rfc5849.signature i
-     verify_plaintext
+--- oauthlib-3.2.1/tests/oauth1/rfc5849/test_signatures.py
++++ oauthlib-3.2.1/tests/oauth1/rfc5849/test_signatures.py
+@@ -10,6 +10,7 @@ from oauthlib.oauth1.rfc5849.signature i
  )
+ 
  from tests.unittest import TestCase
 +import pytest
  
- 
  # ################################################################
-@@ -638,6 +639,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
+ 
+@@ -627,6 +628,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
          'DWdUh/79ZWNOrCirBFIP26cHLApjYdt4ZG7EVK0/GubS2v8wT1QPRsog8zyiMZkm' \
          'g4JXdWCGXG8YRvRJTg+QKhXuXwS6TcMNakrgzgFIVhA='
  
@@ -59,7 +59,7 @@ Not for upstream
      def test_sign_rsa_sha1_with_client(self):
          """
          Test sign and verify with RSA-SHA1.
-@@ -653,6 +655,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
+@@ -642,6 +644,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
                          self.expected_signature_rsa_sha1),
              self.rsa_public_client.rsa_key))
  
@@ -67,7 +67,7 @@ Not for upstream
      def test_sign_rsa_sha256_with_client(self):
          """
          Test sign and verify with RSA-SHA256.
-@@ -668,6 +671,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
+@@ -657,6 +660,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
                          self.expected_signature_rsa_sha256),
              self.rsa_public_client.rsa_key))
  
@@ -75,7 +75,7 @@ Not for upstream
      def test_sign_rsa_sha512_with_client(self):
          """
          Test sign and verify with RSA-SHA512.
-@@ -683,6 +687,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
+@@ -672,6 +676,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
                          self.expected_signature_rsa_sha512),
              self.rsa_public_client.rsa_key))
  
@@ -83,7 +83,7 @@ Not for upstream
      def test_rsa_false_positives(self):
          """
          Test verify_rsa-* functions will correctly detect invalid signatures.
-@@ -745,6 +750,7 @@ MmgDHR2tt8KeYTSgfU+BAkBcaVF91EQ7VXhvyABN
+@@ -734,6 +739,7 @@ MmgDHR2tt8KeYTSgfU+BAkBcaVF91EQ7VXhvyABN
                                  bad_signature),
                      self.rsa_public_client.rsa_key))
  
@@ -91,7 +91,7 @@ Not for upstream
      def test_rsa_bad_keys(self):
          """
          Testing RSA sign and verify with bad key values produces errors.
-@@ -780,6 +786,7 @@ MmgDHR2tt8KeYTSgfU+BAkBcaVF91EQ7VXhvyABN
+@@ -769,6 +775,7 @@ MmgDHR2tt8KeYTSgfU+BAkBcaVF91EQ7VXhvyABN
          # For completeness, this text could repeat the above for RSA-SHA256 and
          # RSA-SHA512 signing and verification functions.
  
@@ -99,8 +99,8 @@ Not for upstream
      def test_rsa_jwt_algorithm_cache(self):
          # Tests cache of RSAAlgorithm objects is implemented correctly.
  
---- oauthlib-3.2.0/tests/oauth1/rfc5849/endpoints/test_base.py
-+++ oauthlib-3.2.0/tests/oauth1/rfc5849/endpoints/test_base.py
+--- oauthlib-3.2.1/tests/oauth1/rfc5849/endpoints/test_base.py
++++ oauthlib-3.2.1/tests/oauth1/rfc5849/endpoints/test_base.py
 @@ -11,6 +11,7 @@ from oauthlib.oauth1.rfc5849.endpoints i
  )
  
@@ -117,8 +117,8 @@ Not for upstream
      def test_rsa_signature(self):
          rsa_sig = ("fxFvCx33oKlR9wDquJ%2FPsndFzJphyBa3RFPPIKi3flqK%2BJ7yIrMVbH"
                     "YTM%2FLHPc7NChWz4F4%2FzRA%2BDN1k08xgYGSBoWJUOW6VvOQ6fbYhMA"
---- oauthlib-3.2.0/tests/oauth2/rfc6749/test_parameters.py
-+++ oauthlib-3.2.0/tests/oauth2/rfc6749/test_parameters.py
+--- oauthlib-3.2.1/tests/oauth2/rfc6749/test_parameters.py
++++ oauthlib-3.2.1/tests/oauth2/rfc6749/test_parameters.py
 @@ -5,6 +5,7 @@ from oauthlib.oauth2.rfc6749.errors impo
  from oauthlib.oauth2.rfc6749.parameters import *
  
@@ -143,8 +143,8 @@ Not for upstream
      def test_url_encoded_token_response(self):
          """Verify fallback parameter parsing and validation for token responses. """
          self.assertEqual(parse_token_response(self.url_encoded_response), self.json_dict)
---- oauthlib-3.2.0/tests/oauth2/rfc6749/test_server.py
-+++ oauthlib-3.2.0/tests/oauth2/rfc6749/test_server.py
+--- oauthlib-3.2.1/tests/oauth2/rfc6749/test_server.py
++++ oauthlib-3.2.1/tests/oauth2/rfc6749/test_server.py
 @@ -16,7 +16,7 @@ from oauthlib.oauth2.rfc6749.grant_types
  )
  
@@ -186,8 +186,8 @@ Not for upstream
      @mock.patch('oauthlib.common.generate_token', new=lambda: 'abc')
      def test_client_grant(self):
          body = 'grant_type=client_credentials&scope=all+of+them'
---- oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_backend_application.py
-+++ oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_backend_application.py
+--- oauthlib-3.2.1/tests/oauth2/rfc6749/clients/test_backend_application.py
++++ oauthlib-3.2.1/tests/oauth2/rfc6749/clients/test_backend_application.py
 @@ -6,6 +6,7 @@ from oauthlib import signals
  from oauthlib.oauth2 import BackendApplicationClient
  
@@ -204,8 +204,8 @@ Not for upstream
      def test_parse_token_response(self):
          client = BackendApplicationClient(self.client_id)
  
---- oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_legacy_application.py
-+++ oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_legacy_application.py
+--- oauthlib-3.2.1/tests/oauth2/rfc6749/clients/test_legacy_application.py
++++ oauthlib-3.2.1/tests/oauth2/rfc6749/clients/test_legacy_application.py
 @@ -7,6 +7,7 @@ from oauthlib import signals
  from oauthlib.oauth2 import LegacyApplicationClient
  
@@ -222,8 +222,8 @@ Not for upstream
      def test_parse_token_response(self):
          client = LegacyApplicationClient(self.client_id)
  
---- oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_mobile_application.py
-+++ oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_mobile_application.py
+--- oauthlib-3.2.1/tests/oauth2/rfc6749/clients/test_mobile_application.py
++++ oauthlib-3.2.1/tests/oauth2/rfc6749/clients/test_mobile_application.py
 @@ -6,6 +6,7 @@ from oauthlib import signals
  from oauthlib.oauth2 import MobileApplicationClient
  
@@ -240,8 +240,8 @@ Not for upstream
      def test_parse_token_response(self):
          client = MobileApplicationClient(self.client_id)
  
---- oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_web_application.py
-+++ oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_web_application.py
+--- oauthlib-3.2.1/tests/oauth2/rfc6749/clients/test_web_application.py
++++ oauthlib-3.2.1/tests/oauth2/rfc6749/clients/test_web_application.py
 @@ -13,6 +13,7 @@ from oauthlib.oauth2.rfc6749 import erro
  from oauthlib.oauth2.rfc6749.clients import AUTH_HEADER, BODY, URI_QUERY
  
