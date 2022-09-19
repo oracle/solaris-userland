@@ -41,6 +41,12 @@ BUILD_STYLE=		meson
 # No need to build for older versions.
 PYTHON_VERSIONS= 3.7
 
+# sparc specific patch to workaround the problem with Fujitsu running
+# Xorg AND VNC/XDMCP simultaneously
+ifeq ($(MACH), sparc)
+ADDITIONAL_PATCHES += patches/21-fdwalk-workaround.sparc
+endif
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += $(CPP_XPG6MODE)

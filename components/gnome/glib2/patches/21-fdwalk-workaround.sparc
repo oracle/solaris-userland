@@ -1,0 +1,43 @@
+Starting SRU 39, Fujitsu is seeing issues with being unable to login
+when starting Xorg on the mga AND VNC/XDCMP simultaneously.
+
+For sparc reverting back to what was done before this change.
+
+--- a/glib/gspawn.c	2022-09-17 07:40:02.035587722 -0700
++++ b/glib/gspawn.c	2022-09-17 07:53:51.656767737 -0700
+@@ -1458,27 +1458,6 @@
+ 
+ #endif
+ 
+-#if defined(__sun__) && defined(F_PREVFD) && defined(F_NEXTFD)
+-/*
+- * Solaris 11.4 has a signal-safe way which allows
+- * us to find all file descriptors in a process.
+- *
+- * fcntl(fd, F_NEXTFD, maxfd)
+- * - returns the first allocated file descriptor <= maxfd  > fd.
+- *
+- * fcntl(fd, F_PREVFD)
+- * - return highest allocated file descriptor < fd.
+- */
+-
+-  open_max = fcntl (INT_MAX, F_PREVFD); /* find the maximum fd */
+-  if (open_max < 0) /* No open files */
+-    return 0;
+-
+-  for (fd = -1; (fd = fcntl (fd, F_NEXTFD, open_max)) != -1; )
+-    if ((res = cb (data, fd)) != 0 || fd == open_max)
+-      break;
+-#else
+-
+ #if 0 && defined(HAVE_SYS_RESOURCE_H)
+   /* Use getrlimit() function provided by the system if it is known to be
+    * async-signal safe.
+@@ -1512,7 +1491,6 @@
+   for (fd = 0; fd < open_max; fd++)
+       if ((res = cb (data, fd)) != 0)
+           break;
+-#endif
+ 
+   return res;
+ #endif
