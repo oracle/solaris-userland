@@ -52,8 +52,8 @@ CONFIGURE_OPTIONS += no-afalgeng
 CONFIGURE_OPTIONS += no-capieng
 CONFIGURE_OPTIONS += no-padlockeng
 
-CONFIGURE_OPTIONS.32 += --libdir=$(CONFIGURE_PREFIX)/lib -Wl,-rpath=$(CONFIGURE_PREFIX)/lib no-asm
-CONFIGURE_OPTIONS.64 += --libdir=$(CONFIGURE_PREFIX)/lib/$(MACH64) -Wl,-rpath=$(CONFIGURE_PREFIX)/lib/$(MACH64)
+CONFIGURE_OPTIONS.32 += --libdir=$(CONFIGURE_PREFIX)/lib no-asm
+CONFIGURE_OPTIONS.64 += --libdir=$(CONFIGURE_PREFIX)/lib/$(MACH64)
 CONFIGURE_OPTIONS.i386.32  +=	solaris-x86-gcc
 CONFIGURE_OPTIONS.sparc.32 +=	solaris-sparcv9-gcc
 CONFIGURE_OPTIONS.i386.64  +=	solaris64-x86_64-gcc
@@ -80,11 +80,14 @@ COMPONENT_POST_CONFIGURE_ACTION = \
 COMPONENT_INSTALL_ARGS += MANSUFFIX=openssl
 
 # 32 and 64 bits configuration.h headers need to be merged to the final one.
+# Note: because diff returns 1 when files are not equal, we have to supress
+# gmake failure. It is reason why 'true' command was added.
 OPENSSLH=include/openssl/configuration.h
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
-	-diff -D _LP64 $(BUILD_DIR_32)/$(OPENSSLH) \
+	diff -D _LP64 $(BUILD_DIR_32)/$(OPENSSLH) \
 	$(BUILD_DIR_64)/$(OPENSSLH) > \
-	$(PROTO_DIR)$(CONFIGURE_PREFIX)/$(OPENSSLH)
+	$(PROTO_DIR)$(CONFIGURE_PREFIX)/$(OPENSSLH); \
+	true;
 
 LINT_FLAGS += -I$(@D)/include -erroff=E_STATIC_UNUSED
 
