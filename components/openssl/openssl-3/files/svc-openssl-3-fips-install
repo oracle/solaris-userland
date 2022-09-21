@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#!/usr/bin/bash
 
 #
 # Copyright (c) 2021, 2022, Oracle and/or its affiliates.
@@ -9,26 +9,79 @@
 
 . /lib/svc/share/smf_include.sh
 
-OPENSSL_HOME=/usr/openssl/3
-OPENSSL="$OPENSSL_HOME/bin/openssl"
+OPENSSL_HOME="/usr/openssl/3"
 FIPS_MODULE="$OPENSSL_HOME/lib/64/ossl-modules/fips.so"
-FIPS_CONF=/etc/openssl/3/conf.d/fipsmodule.cnf
+FIPS_MODULE_CONF="/etc/openssl/3/conf.d/fipsmodule.cnf"
+FIPS_PROVIDER_CONF="/etc/openssl/3/conf.d/fipsprovider.cnf"
+FIPS_INSTALL_CMD="$OPENSSL_HOME/bin/openssl fipsinstall -module=$FIPS_MODULE"
+SYSTEM_FIPS_MODE_FILE="/etc/system.d/crypto:fips-140"
+
+update_fipsmodule_config()
+{
+	# we run fipsinstall with empty configuration because
+	# even some valid system configurations can break this command
+	export OPENSSL_CONF=
+
+	if $FIPS_INSTALL_CMD -verify -in "$FIPS_MODULE_CONF"; then
+		return
+	fi
+
+	echo "INFO: updating fipsmodule.cnf:"
+	$FIPS_INSTALL_CMD -out "$FIPS_MODULE_CONF" || exit $SMF_EXIT_ERR_FATAL
+}
+
+
+update_fipsprovider_config()
+{
+	# Set the fips provider as the default when the system is in FIPS 140 mode
+	if [[ -f $SYSTEM_FIPS_MODE_FILE ]] ; then
+		mode='yes'
+		h=
+	else
+		mode='no'
+		h='#'
+	fi
+
+	# Check if the configuration file is already up to date
+	if grep -q "^# System is in FIPS 140 mode: ${mode}$" $FIPS_PROVIDER_CONF; then
+		# no update needed
+		return
+	fi
+
+	cat <<-EOF >$FIPS_PROVIDER_CONF
+	#
+	# fips-140 module configuration file
+	# Automatically generated file, do not edit
+	# Created by $SMF_FMRI
+	#
+	# System is in FIPS 140 mode: ${mode}
+	#
+
+	[provider_sect]
+	fips = fips_sect
+
+	${h}default = fips_mode_default_sect
+	${h}base = base_sect
+	${h}
+	${h}[fips_mode_default_sect]
+	${h}# empty section to deactivate default provider
+	${h}
+	${h}[base_sect]
+	${h}activate = 1
+	${h}
+	${h}[evp_properties]
+	${h}default_properties = "fips=yes"
+	EOF
+}
+
 
 case "$1" in
 	"start"|"refresh")
-		(
-			cat <<-EOF
-			#
-			# fips-140 module configuration file
-			# Automatically generated file, do not edit
-			# Created by $SMF_FMRI
-			#
-			EOF
-
-			# we want fipsinstall to use an empty configuration because
-			# even some valid configurations can break this command
-			OPENSSL_CONF= $OPENSSL fipsinstall --module "$FIPS_MODULE"
-		) 2>&1 1>"$FIPS_CONF" || exit $SMF_EXIT_ERR_FATAL
+		# Only update config files if allowed
+		if [ -w /etc/openssl/3/conf.d ] ; then
+			update_fipsmodule_config
+			update_fipsprovider_config
+		fi
 		;;
 
 	*)
@@ -36,4 +89,3 @@ case "$1" in
 		exit $SMF_EXIT_ERR_FATAL
 		;;
 esac
-
