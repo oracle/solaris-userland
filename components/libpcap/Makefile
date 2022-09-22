@@ -20,23 +20,22 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libpcap
-COMPONENT_VERSION=	1.9.1
+COMPONENT_VERSION=	1.10.1
 COMPONENT_PROJECT_URL=	https://www.tcpdump.org/
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:635237637c5b619bcceba91900666b64d56ecb7be63f298f601ec786ce087094
+COMPONENT_ARCHIVE_HASH=	sha256:ed285f4accaf05344f90975757b3dbfe772ba41d1c401c2648b7fa45b711bdd4
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/libpcap
 COMPONENT_ANITYA_ID=	1702
 
-COMPONENT_BAID=		71300
+COMPONENT_BAID=		130341
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
