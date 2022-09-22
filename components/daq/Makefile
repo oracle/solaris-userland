@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS= 32_and_64
@@ -30,15 +30,14 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		daq
-COMPONENT_VERSION=	2.0.6
+COMPONENT_VERSION=	2.0.7
 COMPONENT_PROJECT_URL=	http://www.snort.org/
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:b40e1d1273e08aaeaa86e69d4f28d535b7e53bdb3898adf539266b63137be7cb
+COMPONENT_ARCHIVE_HASH=	sha256:d1f6709bc5dbddee3fdf170cdc1e49fb926e2031d4869ecf367a8c47efc87279
 COMPONENT_ARCHIVE_URL=	https://www.snort.org/downloads/snort/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/daq
 COMPONENT_ANITYA_ID=	13264
 
-COMPONENT_BAID=		36403
+COMPONENT_BAID=		130308
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -53,8 +52,8 @@ CONFIGURE_OPTIONS +=    --enable-static=no
 
 # cheesy, but if we turn off visibility then it doesn't
 # save the CFLAGS right and then nulls them.
-CONFIGURE_OPTIONS +=	"gl_cv_cc_visibility=no"
-CONFIGURE_OPTIONS +=	gl_save_CFLAGS="$(CFLAGS)"
+CONFIGURE_OPTIONS += gl_cv_cc_visibility=no
+CONFIGURE_OPTIONS += gl_save_CFLAGS="$(CFLAGS)"
 
 REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += developer/parser/bison
