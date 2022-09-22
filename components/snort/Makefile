@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -28,14 +28,13 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		snort
-COMPONENT_VERSION=	2.9.18
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:d0308642f69e0d36f70db9703e5766afce2f44ff05b7d2c9cc8e3ac8323b2c77
+COMPONENT_VERSION=	2.9.20
+COMPONENT_ARCHIVE_HASH=	sha256:29400e13f53b1831e0b8b10ec1224a1cbaa6dc1533a5322a20dd80bb84b4981c
 COMPONENT_PROJECT_URL=	https://www.snort.org/
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)downloads/archive/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13263
 
-COMPONENT_BAID=		106097
+COMPONENT_BAID=		130312
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -43,8 +42,12 @@ include $(WS_MAKE_RULES)/common.mk
 # Need to recreate the configure script for gethrtime checks.
 COMPONENT_PREP_ACTION +=	(cd $(@D); autoreconf -fiv);
 
-CONFIGURE_OPTIONS +=	--with-libpcre-libraries="$(USRLIBDIR64)"
-CONFIGURE_OPTIONS +=	--with-dnet-libraries="$(USRLIBDIR64)"
+PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
+
+# Without this, linker flags from pkgconfig are added too late to take effect
+LDFLAGS += -L/usr/openssl/3/lib/64
+COMPONENT_BUILD_ARGS += LDFLAGS="$(LDFLAGS)"
+
 CONFIGURE_OPTIONS +=	--disable-static-daq
 CONFIGURE_OPTIONS +=	--disable-open-appid
 
@@ -53,8 +56,7 @@ REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/pcre
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
