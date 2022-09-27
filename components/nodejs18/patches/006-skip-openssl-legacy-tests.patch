@@ -1,0 +1,18 @@
+Skip tests that require OpenSSL 3 'legacy' provider. It is not present on
+Solaris 11.4 by default.
+
+diff -ru node-18.9.1.orig/test/addons/addons.status node-18.9.1/test/addons/addons.status
+--- node-18.9.1.orig/test/addons/addons.status	2022-09-23 03:14:30.000000000 +0200
++++ node-18.9.1/test/addons/addons.status	2022-09-26 21:05:36.461314688 +0200
+@@ -15,3 +15,11 @@
+ zlib-binding/test: SKIP
+ # https://github.com/nodejs/node/issues/34410
+ register-signal-handler/test: PASS,FLAKY
++
++[$system==solaris]
++#
++# On Solaris 11.4 OpenSSL 3 'legacy' provider is neither included in CBE
++# nor it is installed by default. Skip tests requiring it.
++#
++openssl-providers/test-legacy-provider-config: SKIP
++openssl-providers/test-legacy-provider-option: SKIP
