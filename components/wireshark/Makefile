@@ -27,18 +27,18 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wireshark
-COMPONENT_VERSION=	3.6.8
-COMPONENT_BAID=		129597
+COMPONENT_VERSION=	4.0.0
+COMPONENT_BAID=		130994
 COMPONENT_PROJECT_URL=	http://www.wireshark.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:67ab23ee09a646ab8cc0ddcc985209f24f253337461e3d9644c6cfe1c097260c
+    sha256:3dc125ef85e85c2a756a74cc739b3eb11ce38e30a08e085e77d378ee7fdcaded
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/src/all-versions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5137
 
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-docs-generated.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:43a4353eb967ae08e50d5783313db1375a8b4ea5fd618cafff15991f61e93931
+    sha256:775bf22dcfad156320e39f7d3247c11dbd36bc37f5448c1263be502b4395ec94
 COMPONENT_ARCHIVE_URL_1 =  make://docs-generated/$(COMPONENT_ARCHIVE_1)
 
 BUILD_STYLE=	cmake
@@ -75,7 +75,9 @@ PKG_MACROS+= MICRO_VERSION=$(word 3,$(subst ., ,$(COMPONENT_VERSION)))
 # Reported via bug 12923
 CFLAGS += -I/usr/include/kerberosv5
 
-# Set path to Qt5 cmake modules.
+CMAKE_OPTIONS += -DUSE_qt6=ON
+
+# Set path to Qt cmake modules.
 CMAKE_OPTIONS += -DCMAKE_PREFIX_PATH=$(USRLIBDIR64)/cmake/
 # Add non-standard path to perl pod2man and pod2html commands.
 CMAKE_OPTIONS += -DCMAKE_PROGRAM_PATH=$(USRDIR)/perl5/bin/
@@ -109,12 +111,14 @@ REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += diagnostic/wireshark/wireshark-common
 REQUIRED_PACKAGES += codec/speex
-REQUIRED_PACKAGES += library/desktop/qt5
+REQUIRED_PACKAGES += library/desktop/qt6
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libcares
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nghttp2
+REQUIRED_PACKAGES += library/pcre2
+REQUIRED_PACKAGES += library/security/libgpg-error
 REQUIRED_PACKAGES += library/snappy
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += compress/lz4
