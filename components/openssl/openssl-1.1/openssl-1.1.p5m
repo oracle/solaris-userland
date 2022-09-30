@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through uncommitted">
@@ -31,6 +31,7 @@ set name=pkg.description \
     value="OpenSSL is a full-featured toolkit implementing the Transport Layer Security (TLS v1+) protocols as well as a full-strength general purpose cryptography library."
 set name=pkg.depend.runpath value=$PKGDEPEND_RUNPATH:/usr/openssl/1.1/lib
 set name=pkg.human-version value=$(COMPONENT_VERSION)
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value="OpenSSL 1.1"
 set name=info.classification value=org.opensolaris.category.2008:System/Security
@@ -8681,6 +8682,9 @@ file path=usr/openssl/1.1/share/man/man7openssl/passphrase-encoding.7openssl
 file path=usr/openssl/1.1/share/man/man7openssl/scrypt.7openssl
 file path=usr/openssl/1.1/share/man/man7openssl/ssl.7openssl
 file path=usr/openssl/1.1/share/man/man7openssl/x509.7openssl
+file release-notes/openssl-11.txt \
+    path=usr/share/doc/release-notes/openssl-11.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@0
 license openssl-1.1.license license="OpenSSL, SSLeay"
 # OpenSSL packages are now managed by 'pkg mediator', and the installation
 # of 'openssl-fips-140' package requires 'openssl' package with the mediator
