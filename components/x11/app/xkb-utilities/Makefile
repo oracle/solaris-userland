@@ -20,26 +20,28 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		setxkbmap
-COMPONENT_VERSION=	1.3.2
+COMPONENT_VERSION=	1.3.3
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8ff27486442725e50b02d7049152f51d125ecad71b7ce503cfa09d5d8ceeb9f5
+	sha256:b560c678da6930a0da267304fa3a41cc5df39a96a5e23d06f14984c87b6f587b
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	12314
-COMPONENT_BAID=		86175
+COMPONENT_BAID=		122716
 
 COMPONENT_NAME_1=       xkbutils
-COMPONENT_VERSION_1=    1.0.4
+COMPONENT_VERSION_1=    1.0.5
+COMPONENT_ARCHIVE_1=    $(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1=       \
-    sha256:d2a18ab90275e8bca028773c44264d2266dab70853db4321bdbc18da75148130
+    sha256:f6a4a8e9c54582beb3787b1faa8168caab125c1fee0ca9cfa5b6c9c1df25eea4
 COMPONENT_ANITYA_ID_1=	15016
-COMPONENT_BAID_1=		52979
+COMPONENT_BAID_1=	130803
 
 COMPONENT_NAME_2=       xkbprint
 COMPONENT_VERSION_2=    1.0.5
@@ -77,5 +79,6 @@ include $(WS_MAKE_RULES)/x11-component.mk
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxkbfile
+REQUIRED_PACKAGES += x11/library/libxrandr
 REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
 REQUIRED_PACKAGES += x11/library/toolkit/libxt

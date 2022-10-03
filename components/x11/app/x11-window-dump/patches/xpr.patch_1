@@ -138,17 +138,6 @@ index b9cd707..9865c7e 100644
  static
  char *convert_data(
      XWDFileHeader *win,
-@@ -237,7 +311,9 @@ void ln03_setup(
-   int *top_margin,
-   int flags,
-   const char *header,
--  const char *trailer);
-+  const char *trailer,
-+  int paper_width,
-+  int paper_length);
- static void ln03_finish(void);
- static void la100_setup(int iw, int ih, int scale);
- static void la100_finish(void);
 @@ -255,7 +331,9 @@ void ps_setup(
    int flags,
    const char *header,
@@ -197,33 +186,6 @@ index b9cd707..9865c7e 100644
  
      if (device == PS) {
  	iw = win.pixmap_width;
-@@ -436,7 +526,7 @@ int main(int argc, char **argv)
-     if (device == LN03) {
- /*	ln03_grind_fonts(sixmap, iw, ih, scale, &pixmap); */
- 	ln03_setup(iw, ih, orientation, scale, left, top,
--		   &left_margin, &top_margin, flags, header, trailer);
-+		   &left_margin, &top_margin, flags, header, trailer, paper_width, paper_length);
- 	ln03_output_sixels(sixmap, iw, ih, (flags & F_NOSIXOPT), split,
- 			   scale, top_margin, left_margin);
- 	ln03_finish();
-@@ -446,7 +536,7 @@ int main(int argc, char **argv)
- 	la100_finish();
-     } else if (device == PS) {
- 	ps_setup(iw, ih, orientation, scale, left, top,
--		   flags, header, trailer, w_name);
-+		   flags, header, trailer, w_name, paper_width, paper_length);
- 	ps_output_bits(iw, ih, flags, orientation, &win, data);
- 	ps_finish();
-     } else {
-@@ -598,6 +598,8 @@
- 	    "    -left <inches>  -top <inches>\n"
- 	    "    -noposition\n"
- 	    "    -nosixopt\n"
-+	    "    -papertype {letter | legal | A0-A10 | B0-B10 | C0-C10}\n"
-+	    "    -pheight <inches>[in | cm | mm] -pwidth <inches>[in | cm | mm]\n"
- 	    "    -plane <n>\n"
- 	    "    -psfig\n"
- 	    "    -render <type>\n"
 @@ -512,7 +604,9 @@ void parse_args(
    int *density,
    unsigned int *cutoff,
@@ -298,45 +260,6 @@ index b9cd707..9865c7e 100644
  {
      register int w_scale;
      register int h_scale;
-@@ -829,22 +962,22 @@ void setup_layout(
- 	if ((win_width < win_height || (flags & F_PORTRAIT)) &&
- 	    !(flags & F_LANDSCAPE)) {
- 	    *orientation = PORTRAIT;
--	    w_max = (width > 0)? width : W_MAX;
--	    h_max = (height > 0)? height : H_MAX;
-+	    w_max = (width > 0)? width : wmax;
-+	    h_max = (height > 0)? height : hmax;
- 	    w_scale = w_max / win_width;
- 	    h_scale = h_max / win_height;
- 	    *scale = min(w_scale, h_scale);
- 	} else {
- 	    *orientation = LANDSCAPE;
--	    w_max = (width > 0)? width : H_MAX;
--	    h_max = (height > 0)? height : W_MAX;
-+	    w_max = (width > 0)? width : hmax;
-+	    h_max = (height > 0)? height : wmax;
- 	    w_scale = w_max / win_width;
- 	    h_scale = h_max / win_height;
- 	    *scale = min(w_scale, h_scale);
- 	}
-     } else {			/* device == LA100 */
- 	*orientation = PORTRAIT;
--	*scale = W_MAX / win_width;
-+	*scale = wmax / win_width;
-     }
-     if (*scale == 0) *scale = 1;
-     if (*scale > 6) *scale = 6;
-@@ -1151,7 +1284,9 @@ void ln03_setup(
-   int *top_margin,
-   int flags,
-   const char *header,
--  const char *trailer)
-+  const char *trailer,
-+  int paper_width,
-+  int paper_length)
- {
-     register int i;
-     register int lm, tm, xm;
 @@ -1432,7 +1567,9 @@ void ps_setup(
    int flags,
    const char *header,
@@ -502,3 +425,52 @@ index 3129f08..223f037 100644
  .IP "\fB\-density\fP \fIdpi\fP"
  Indicates what dot-per-inch density should be used by the HP printer.
  .IP "\fB\-cutoff\fP \fIlevel\fP"
+--- a/xpr.c	2022-09-30 21:37:43.692090484 -0700
++++ b/xpr.c	2022-09-30 22:10:58.728887186 -0700
+@@ -464,7 +464,7 @@
+     ih = win.pixmap_height;
+ 
+     ps_setup(iw, ih, orientation, scale, left, top,
+-             flags, header, trailer, w_name);
++             flags, header, trailer, w_name, paper_width, paper_length);
+     ps_output_bits(iw, ih, flags, orientation, &win, data);
+     ps_finish();
+ 
+@@ -516,6 +516,8 @@
+ 	    "    -landscape  -portrait\n"
+ 	    "    -left <inches>  -top <inches>\n"
+ 	    "    -noposition\n"
++	    "    -papertype {letter | legal | A0-A10 | B0-B10 | C0-C10}\n"
++            "    -pheight <inches>[in | cm | mm] -pwidth <inches>[in | cm | mm]\n"
+ 	    "    -plane <n>\n"
+ 	    "    -psfig\n"
+ 	    "    -render <type>\n"
+@@ -806,15 +808,15 @@
+ 	if ((win_width < win_height || (flags & F_PORTRAIT)) &&
+ 	    !(flags & F_LANDSCAPE)) {
+ 	    *orientation = PORTRAIT;
+-	    w_max = (width > 0)? width : W_MAX;
+-	    h_max = (height > 0)? height : H_MAX;
++	    w_max = (width > 0)? width : wmax;
++	    h_max = (height > 0)? height : hmax;
+ 	    w_scale = w_max / win_width;
+ 	    h_scale = h_max / win_height;
+ 	    *scale = min(w_scale, h_scale);
+ 	} else {
+ 	    *orientation = LANDSCAPE;
+-	    w_max = (width > 0)? width : H_MAX;
+-	    h_max = (height > 0)? height : W_MAX;
++	    w_max = (width > 0)? width : hmax;
++	    h_max = (height > 0)? height : wmax;
+ 	    w_scale = w_max / win_width;
+ 	    h_scale = h_max / win_height;
+ 	    *scale = min(w_scale, h_scale);
+@@ -821,7 +823,7 @@
+ 	}
+     } else {
+ 	*orientation = PORTRAIT;
+-	*scale = W_MAX / win_width;
++	*scale = wmax / win_width;
+     }
+     if (*scale == 0) *scale = 1;
+     if (*scale > 6) *scale = 6;

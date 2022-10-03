@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xclock
-COMPONENT_VERSION=	1.0.9
+COMPONENT_VERSION=	1.1.1
 COMPONENT_ARCHIVE_HASH= \
-	sha256:cf461fb2c6f2ac42c54d8429ee2010fdb9a1442a370adfbfe8a7bfaf33c123bb
+	sha256:df7ceabf8f07044a2fde4924d794554996811640a45de40cb12c2cf1f90f742c
+COMPONENT_ARCHIVE=  $(COMPONENT_SRC).tar.xz
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15032
-COMPONENT_BAID=		67901
+COMPONENT_BAID=		122713
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -46,3 +47,4 @@ REQUIRED_PACKAGES += x11/library/libxmu
 REQUIRED_PACKAGES += x11/library/libxrender
 REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
 REQUIRED_PACKAGES += x11/library/toolkit/libxt
+REQUIRED_PACKAGES += system/library/math

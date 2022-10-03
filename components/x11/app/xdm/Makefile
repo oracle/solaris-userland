@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xdm
-COMPONENT_VERSION=	1.1.12
+COMPONENT_VERSION=	1.1.13
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0dd283f72dda098d09e2925b9278c95e21551e693a5802ab442d1b577d8327f4
+	sha256:e58267e8f1478f2f5cd57cbcf2367a36973860c3131a450a3e0816585af03264
+COMPONENT_ARCHIVE=  $(COMPONENT_SRC).tar.xz
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	5255
-COMPONENT_BAID=		60122
+COMPONENT_BAID=		122715
 
 TEST_TARGET = $(NO_TESTS)
 

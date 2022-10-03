@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xload
-COMPONENT_VERSION=	1.1.3
+COMPONENT_VERSION=	1.1.4
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f34e4803871d771325cfe52bebd98cc5b6040d3f065184ec73de436f9a375907
+	sha256:8346b99120db24e0f42920f7f12e23e9b1b407d3a66ce419990387b608373031
+COMPONENT_ARCHIVE=  	$(COMPONENT_SRC).tar.xz
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	14992
-COMPONENT_BAID=		59318
+COMPONENT_BAID=		122714
 
 TEST_TARGET = $(NO_TESTS)
 

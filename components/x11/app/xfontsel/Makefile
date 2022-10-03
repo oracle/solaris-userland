@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xfontsel
-COMPONENT_VERSION=	1.0.6
+COMPONENT_VERSION=	1.1.0
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:25aa0b7c4262f5e99c07c2b96e00e4eb25b7e53f94fa803942af9d0e8da3001c
+	sha256:17052c3357bbfe44b8468675ae3d099c2427ba9fcac10540aef524ae4d77d1b4
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15023
-COMPONENT_BAID=		59312
+COMPONENT_BAID=		130811
 
 PKG_PROTO_DIRS += $(BUILD_DIR_64)
 

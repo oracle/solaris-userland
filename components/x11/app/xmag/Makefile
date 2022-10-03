@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xmag
-COMPONENT_VERSION=	1.0.6
+COMPONENT_VERSION=	1.0.7
+COMPONENT_ARCHIVE=     	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:87a2bc23b251e2d8f8370d3283a4d6c8dac98a30cb5749a04336cdb55c14e161
+	sha256:009936cc5a2706084079127b26cf55c713767650a34cb69e5682d60e33ce7461
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	14963
-COMPONENT_BAID=		52984
+COMPONENT_BAID=		130802
 
 # Sun source
 COMPONENT_NAME_1=       xmag_multivis
