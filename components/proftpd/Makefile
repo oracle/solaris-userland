@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -68,6 +68,7 @@ CFLAGS += -I$(USRINCDIR)/kerberosv5 -DHAVE_KRB5_H=1 -DKRB5_DLLIMP= -DHAVE__GETGR
 ifeq ($(OS_VERSION), 11.3)
 CFLAGS += -D_POSIX_PTHREAD_SEMANTICS
 endif
+CFLAGS += -DPR_TUNABLE_PATH_MAX=16384	# current ~1k is not sufficient for GSSAPI
 LDFLAGS +=	-m$(BITS)
 # Force immediate (no-lazy) binding because of chroot() can loose the access
 # into (/usr)/lib
