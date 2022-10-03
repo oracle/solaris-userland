@@ -27,18 +27,18 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		proftpd
-COMPONENT_VERSION=	1.3.6
-COMPONENT_SUBVERSION=
+COMPONENT_VERSION=	1.3.8
+COMPONENT_SUBVERSION=	rc4
 HUMAN_VERSION=		$(COMPONENT_VERSION)$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=	http://www.proftpd.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:91ef74b143495d5ff97c4d4770c6804072a8c8eb1ad1ecc8cc541b40e152ecaf
+	sha256:63a91b2fb7a9ab1409f6ae315e90e2efefea8c98e00ada9b8d97b0fadb2abe5e
 COMPONENT_ARCHIVE_URL= ftp://ftp.proftpd.org/distrib/source/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	service/proftpd
-COMPONENT_BAID_PROFTPD=	48064
+COMPONENT_BAID_PROFTPD=	128000
 COMPONENT_ANITYA_ID=	7609
 
 # mod_gss subcomponent
@@ -50,7 +50,7 @@ COMPONENT_SRC_1=	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
 #
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1)b.tar.gz
 COMPONENT_ARCHIVE_HASH_1= \
-    sha256:5322b11901108f4a6f0009c4a67bf6e6980fa9c016b24fc64b986c8529d3e58b
+    sha256:f2003c92b539d86c02b4d28d9255dc6c768a35a413c783a14f038ecd00234057
 MOD_GSS_URL=https://sourceforge.net/projects/gssmod/files/mod_gss/Version%20
 COMPONENT_ARCHIVE_URL_1= $(MOD_GSS_URL)$(COMPONENT_VERSION_1)/$(COMPONENT_ARCHIVE_1)
 COMPONENT_ANITYA_ID_1=	17188
@@ -69,10 +69,12 @@ ifeq ($(OS_VERSION), 11.3)
 CFLAGS += -D_POSIX_PTHREAD_SEMANTICS
 endif
 CFLAGS += -DPR_TUNABLE_PATH_MAX=16384	# current ~1k is not sufficient for GSSAPI
+CFLAGS += -I/usr/openssl/3/include/
 LDFLAGS +=	-m$(BITS)
 # Force immediate (no-lazy) binding because of chroot() can loose the access
 # into (/usr)/lib
 LDFLAGS +=	-z now -z guidance=nolazyload -z nolazyload -lbsm
+LDFLAGS +=	-L/usr/openssl/3/lib/64
 
 CONFIGURE_OPTIONS +=	install_user=`id -nu`
 CONFIGURE_OPTIONS +=	install_group=`groups | cut -f 1 -d ' '`
@@ -88,10 +90,9 @@ CONFIGURE_OPTIONS +=	--enable-openssl
 CONFIGURE_OPTIONS +=	--enable-tests
 CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS +=	--with-modules=mod_solaris_audit:mod_solaris_priv
-CONFIGURE_OPTIONS +=	--with-shared=mod_facl:mod_wrap:mod_tls:mod_tls-fips-140:mod_auth_gss:mod_gss:mod_ifsession
+CONFIGURE_OPTIONS +=	--with-shared=mod_facl:mod_wrap:mod_tls:mod_auth_gss:mod_gss:mod_ifsession
 CONFIGURE_OPTIONS +=	--enable-buffer-size=16384
-CONFIGURE_OPTIONS +=	FIPS_CPPFLAGS="-I/usr/openssl/fips-140/include"
-CONFIGURE_OPTIONS +=	FIPS_LDFLAGS="-R/lib/openssl/fips-140/64"
+CONFIGURE_OPTIONS +=	--disable-ncurses
 
 # Copy Solaris modules and GSSAPI modules to proftpd source tree.
 COMPONENT_PRE_CONFIGURE_ACTION = \
@@ -123,8 +124,7 @@ CONFIGURE_SCRIPT =	$(@D)/configure
 # attributes.
 LICENSE_TRANSFORMS =
 
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

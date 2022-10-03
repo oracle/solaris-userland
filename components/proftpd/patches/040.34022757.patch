@@ -23,21 +23,7 @@
 #
 --- a/src/inet.c
 +++ b/src/inet.c
-@@ -316,6 +316,13 @@ static conn_t *init_conn(pool *p, int fd, const pr_netaddr_t *bind_addr,
-         strerror(errno));
-     }
- 
-+    /* Allow port reuse. */
-+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, (void *) &one,
-+        sizeof(one)) < 0) {
-+      pr_log_pri(PR_LOG_NOTICE, "error setting SO_REUSEPORT: %s",
-+        strerror(errno));
-+    }
-+
-     /* Allow socket keep-alive messages. */
-     if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (void *) &one,
-         sizeof(one)) < 0) {
-@@ -421,9 +428,29 @@ static conn_t *init_conn(pool *p, int fd, const pr_netaddr_t *bind_addr,
+@@ -461,9 +461,29 @@ static conn_t *init_conn(pool *p, int fd, const pr_netaddr_t *bind_addr,
       * second) if the port being bound to is INPORT_ANY.
       */
      for (i = 10; i; i--) {
@@ -67,7 +53,7 @@
  
        if (res == -1 &&
            hold_errno == EINTR) {
-@@ -449,6 +476,7 @@ static conn_t *init_conn(pool *p, int fd, const pr_netaddr_t *bind_addr,
+@@ -494,6 +514,7 @@ static conn_t *init_conn(pool *p, int fd, const pr_netaddr_t *bind_addr,
        }
  
        pr_timer_sleep(1);

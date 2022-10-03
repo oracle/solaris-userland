@@ -10,17 +10,17 @@
 
 --- a/modules/mod_xfer.c
 +++ b/modules/mod_xfer.c
-@@ -28,6 +28,9 @@
- 
+@@ -29,6 +29,9 @@
  #include "conf.h"
  #include "privs.h"
+ #include "error.h"
 +#ifdef _SOLARIS_DTRACE
 +#include "ftp_provider_impl.h"
 +#endif
  
  #ifdef HAVE_SYS_SENDFILE_H
  # include <sys/sendfile.h>
-@@ -1960,7 +1963,24 @@ MODRET xfer_stor(cmd_rec *cmd) {
+@@ -2141,6 +2144,13 @@ MODRET xfer_stor(cmd_rec *cmd) {
       * be doing short writes, and we ideally should be more resilient/graceful
       * in the face of such things.
       */
@@ -31,9 +31,14 @@
 +      ftp_transfer_start(&proto);
 +    }
 +#endif
-+
-     res = pr_fsio_write(stor_fh, lbuf, len);
-+
+     res = pr_fsio_write_with_error(cmd->pool, stor_fh, lbuf, len, &err);
+     xerrno = errno;
+ 
+@@ -2153,7 +2163,13 @@ MODRET xfer_stor(cmd_rec *cmd) {
+       res = pr_fsio_write_with_error(cmd->pool, stor_fh, lbuf, len, &err);
+       xerrno = errno;
+     }
+-
 +#ifdef _SOLARIS_DTRACE
 +    if (ftp_transfer_done_enabled() && res == len) {
 +      ftpproto_t proto;
@@ -41,11 +46,10 @@
 +      ftp_transfer_done(&proto);
 +    }
 +#endif
-+
      if (res != len) {
        xerrno = EIO;
  
-@@ -2512,7 +2532,24 @@ MODRET xfer_retr(cmd_rec *cmd) {
+@@ -2938,7 +2954,24 @@ MODRET xfer_retr(cmd_rec *cmd) {
        break;
      }
  
@@ -57,7 +61,7 @@
 +    }
 +#endif
 +
-     len = transmit_data(cmd->pool, nbytes_sent, &curr_pos, lbuf, bufsz);
+     len = transmit_data(cmd->pool, curr_offset, &curr_pos, lbuf, bufsz);
 +
 +#ifdef _SOLARIS_DTRACE
 +    if (ftp_transfer_done_enabled() && len > 0) {

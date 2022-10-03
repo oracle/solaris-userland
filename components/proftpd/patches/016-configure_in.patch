@@ -18,7 +18,7 @@
 
 --- a/configure.in
 +++ b/configure.in
-@@ -47,6 +47,9 @@ AC_SUBST(BUILD_OPTS)
+@@ -48,6 +48,9 @@ AC_SUBST(BUILD_OPTS)
  AC_SUBST(OSREL)
  AC_SUBST(OSTYPE)
  
@@ -28,7 +28,7 @@
  dnl MacOSX requires -traditional-cpp; autodetecting it isn't impossible
  dnl AFAIK, since assuming the need for -traditional-cpp breaks the build
  dnl on other OSes. -jwm, 30 Jan 2001
-@@ -168,6 +171,9 @@ LIB_DEPS="\"\""
+@@ -180,6 +183,9 @@ LIB_DEPS="\"\""
  
  AC_ARG_VAR(LIBS, [linker flags, e.g. -l<lib>.{a,so} if you have nonstandard libraries to link])
  
@@ -38,15 +38,7 @@
  dnl configure command line options...
  
  dnl --with options.
-@@ -3215,6 +3221,7 @@ if test x"$pr_use_openssl" = xyes; then
- 
-   AC_TRY_RUN(
-     [
-+      #include <openssl/crypto.h>
-       #include <openssl/fips.h>
-       int main(int argc, char *argv[]) {
-       # ifdef OPENSSL_FIPS
-@@ -3688,7 +3695,56 @@ for module in $ac_shared_modules; do
+@@ -4065,7 +4071,56 @@ for module in $ac_shared_modules; do
    src=`echo "$module" | sed -e 's/\.la$//'`.c;
    srcinc=`echo "$module" | sed -e 's/\.la$//'`.h;
  

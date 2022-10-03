@@ -1,0 +1,17 @@
+#
+# variable $test_dir is part of global scope
+# fix has been submitted to upstream:
+#	https://github.com/proftpd/proftpd/pull/1514
+#
+
+--- a/tests/t/lib/ProFTPD/Tests/Config/Directory.pm
++++ b/tests/t/lib/ProFTPD/Tests/Config/Directory.pm
+@@ -198,7 +198,7 @@ sub dir_wide_layout {
+     my $namelen = 3;
+ 
+     for (my $i = 0; $i < $width; $i++) {
+-      my $target_dir = get_name($namelen, 1);
++      $target_dir = get_name($namelen, 1);
+       my $dir = File::Spec->rel2abs("$tmpdir/$target_dir");
+       mkpath($dir);
+ 

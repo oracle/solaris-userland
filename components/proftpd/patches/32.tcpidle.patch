@@ -1,0 +1,19 @@
+#
+# We define both socket options (SO_KEEPALIVE and TCP_IDLE) on Solaris.
+# in order to make t/config/socketoptions.t test case happy I've decided
+# to give TCP_KEEPIDLE option precedence. Change has been submitted
+# to upstream:
+#	https://github.com/proftpd/proftpd/pull/1518
+#
+
+--- a/src/inet.c
++++ b/src/inet.c
+@@ -989,7 +989,7 @@ int pr_inet_set_proto_keepalive(pool *p, conn_t *c,
+   if (val != -1) {
+     int option_name;
+ 
+-# if defined(TCP_KEEPALIVE)
++#ifndef TCP_KEEPIDLE
+     option_name = TCP_KEEPALIVE;
+ # else
+     option_name = TCP_KEEPIDLE;

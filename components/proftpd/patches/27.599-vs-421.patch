@@ -1,0 +1,133 @@
+#
+# reply code 599 is never sent back by proftpd server. It used
+# to come from FTP client library itself. However something has
+# changed and we see 421 error where we used to see 599.
+# fix has been submitted to upstream:
+#	https://github.com/proftpd/proftpd/pull/1515
+# 
+--- a/tests/t/lib/ProFTPD/Tests/Config/MaxLoginAttempts.pm
++++ b/tests/t/lib/ProFTPD/Tests/Config/MaxLoginAttempts.pm
+@@ -106,7 +106,7 @@ sub maxloginattempts_one {
+       $resp_code = $client->response_code();
+       $resp_msg = $client->response_msg(0);
+ 
+-      $expected = 599;
++      $expected = 421;
+       $self->assert($expected == $resp_code,
+         test_msg("Expected response code $expected, got $resp_code"));
+     };
+@@ -243,7 +243,7 @@ sub maxloginattempts_absent {
+       my $resp_code = $client->response_code();
+       my $resp_msg = $client->response_msg(0);
+ 
+-      my $expected = 599;
++      my $expected = 421;
+       $self->assert($expected == $resp_code,
+         test_msg("Expected response code $expected, got $resp_code"));
+     };
+--- a/tests/t/lib/ProFTPD/Tests/Config/TimeoutStalled.pm
++++ b/tests/t/lib/ProFTPD/Tests/Config/TimeoutStalled.pm
+@@ -293,11 +293,11 @@ sub timeoutstalled_exceeded_list {
+ 
+       # Perl's Net::Cmd module uses a very non-standard 599 code to
+       # indicate that the connection is closed
+-      $expected = 599;
++      $expected = 421;
+       $self->assert($expected == $resp_code,
+         test_msg("Expected $expected, got $resp_code"));
+ 
+-      $expected = "Connection closed";
++      $expected = "[Net::FTP] Connection closed";
+       $self->assert($expected eq $resp_msg,
+         test_msg("Expected '$expected', got '$resp_msg'"));
+     };
+@@ -432,11 +432,11 @@ sub timeoutstalled_exceeded_nlst {
+ 
+       # Perl's Net::Cmd module uses a very non-standard 599 code to
+       # indicate that the connection is closed
+-      $expected = 599;
++      $expected = 421;
+       $self->assert($expected == $resp_code,
+         test_msg("Expected $expected, got $resp_code"));
+ 
+-      $expected = "Connection closed";
++      $expected = "[Net::FTP] Connection closed";
+       $self->assert($expected eq $resp_msg,
+         test_msg("Expected '$expected', got '$resp_msg'"));
+     };
+@@ -571,11 +571,11 @@ sub timeoutstalled_exceeded_mlsd {
+ 
+       # Perl's Net::Cmd module uses a very non-standard 599 code to
+       # indicate that the connection is closed
+-      $expected = 599;
++      $expected = 421;
+       $self->assert($expected == $resp_code,
+         test_msg("Expected $expected, got $resp_code"));
+ 
+-      $expected = "Connection closed";
++      $expected = "[Net::FTP] Connection closed";
+       $self->assert($expected eq $resp_msg,
+         test_msg("Expected '$expected', got '$resp_msg'"));
+     };
+@@ -710,11 +710,11 @@ sub timeoutstalled_exceeded_retr {
+ 
+       # Perl's Net::Cmd module uses a very non-standard 599 code to
+       # indicate that the connection is closed
+-      $expected = 599;
++      $expected = 421;
+       $self->assert($expected == $resp_code,
+         test_msg("Expected $expected, got $resp_code"));
+ 
+-      $expected = "Connection closed";
++      $expected = "[Net::FTP] Connection closed";
+       $self->assert($expected eq $resp_msg,
+         test_msg("Expected '$expected', got '$resp_msg'"));
+     };
+@@ -849,11 +849,11 @@ sub timeoutstalled_exceeded_stor {
+ 
+       # Perl's Net::Cmd module uses a very non-standard 599 code to
+       # indicate that the connection is closed
+-      $expected = 599;
++      $expected = 421;
+       $self->assert($expected == $resp_code,
+         test_msg("Expected $expected, got $resp_code"));
+ 
+-      $expected = "Connection closed";
++      $expected = "[Net::FTP] Connection closed";
+       $self->assert($expected eq $resp_msg,
+         test_msg("Expected '$expected', got '$resp_msg'"));
+     };
+@@ -989,11 +989,11 @@ sub timeoutstalled_exceeded_retr_usesendfile_on {
+ 
+       # Perl's Net::Cmd module uses a very non-standard 599 code to
+       # indicate that the connection is closed
+-      $expected = 599;
++      $expected = 421;
+       $self->assert($expected == $resp_code,
+         test_msg("Expected $expected, got $resp_code"));
+ 
+-      $expected = "Connection closed";
++      $expected = "[Net::FTP] Connection closed";
+       $self->assert($expected eq $resp_msg,
+         test_msg("Expected '$expected', got '$resp_msg'"));
+     };
+--- a/tests/t/lib/ProFTPD/Tests/Logging/ExtendedLog.pm
++++ b/tests/t/lib/ProFTPD/Tests/Logging/ExtendedLog.pm
+@@ -6588,7 +6588,7 @@ sub extlog_eos_reason_timeoutstalled {
+ 
+       # Perl's Net::Cmd module uses a very non-standard 599 code to
+       # indicate that the connection is closed
+-      $expected = 599;
++      $expected = 421;
+       $self->assert($expected == $resp_code,
+         test_msg("Expected $expected, got $resp_code"));
+ 
+@@ -9671,7 +9671,7 @@ EOC
+ 
+       # Perl's Net::Cmd module uses a very non-standard 599 code to
+       # indicate that the connection is closed
+-      $expected = 599;
++      $expected = 421;
+       $self->assert($expected == $resp_code,
+         test_msg("Expected $expected, got $resp_code"));
+ 
