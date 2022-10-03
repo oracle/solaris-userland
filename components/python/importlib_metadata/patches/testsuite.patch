@@ -4,14 +4,14 @@ Pkg is a package on Solaris making the test fail...
 
 Importlib must be fixed a little bit (this was reported)...
 
---- importlib_metadata-4.8.1/tests/fixtures.py
-+++ importlib_metadata-4.8.1/tests/fixtures.py
-@@ -10,13 +10,7 @@ import contextlib
+--- importlib_metadata-4.13.0/tests/fixtures.py
++++ importlib_metadata-4.13.0/tests/fixtures.py
+@@ -11,13 +11,7 @@ import contextlib
  from .py39compat import FS_NONASCII
  from typing import Dict, Union
  
 -try:
--    from importlib import resources
+-    from importlib import resources  # type: ignore
 -
 -    getattr(resources, 'files')
 -    getattr(resources, 'as_file')
@@ -21,7 +21,7 @@ Importlib must be fixed a little bit (this was reported)...
  
  
  @contextlib.contextmanager
-@@ -299,8 +293,8 @@ class ZipFixtures:
+@@ -285,8 +279,8 @@ class ZipFixtures:
      root = 'tests.data'
  
      def _fixture_on_path(self, filename):
@@ -32,8 +32,8 @@ Importlib must be fixed a little bit (this was reported)...
          assert file.name.startswith('example'), file.name
          sys.path.insert(0, str(file))
          self.resources.callback(sys.path.pop, 0)
---- importlib_metadata-4.8.1/tests/test_api.py
-+++ importlib_metadata-4.8.1/tests/test_api.py
+--- importlib_metadata-4.13.0/tests/test_api.py
++++ importlib_metadata-4.13.0/tests/test_api.py
 @@ -56,7 +56,7 @@ class APITests(
                  assert distribution(name).metadata['Name'] == 'pkg.dot'
  
@@ -43,8 +43,8 @@ Importlib must be fixed a little bit (this was reported)...
          for prefix in prefixes:
              with self.subTest(prefix):
                  with self.assertRaises(PackageNotFoundError):
---- importlib_metadata-4.8.1/conftest.py
-+++ importlib_metadata-4.8.1/conftest.py
+--- importlib_metadata-4.13.0/conftest.py
++++ importlib_metadata-4.13.0/conftest.py
 @@ -18,8 +18,11 @@ def remove_importlib_metadata():
      undoing the changes made by pytest's import of
      importlib_metadata (if any).
@@ -59,9 +59,9 @@ Importlib must be fixed a little bit (this was reported)...
      for mod in list(sys.modules):
          if mod.startswith('importlib_metadata'):
              del sys.modules[mod]
---- importlib_metadata-4.8.1/tests/test_main.py
-+++ importlib_metadata-4.8.1/tests/test_main.py
-@@ -6,7 +6,6 @@ import unittest
+--- importlib_metadata-4.13.0/tests/test_main.py
++++ importlib_metadata-4.13.0/tests/test_main.py
+@@ -5,7 +5,6 @@ import unittest
  import warnings
  import importlib
  import importlib_metadata
@@ -69,7 +69,7 @@ Importlib must be fixed a little bit (this was reported)...
  
  from . import fixtures
  from importlib_metadata import (
-@@ -205,7 +204,8 @@ class MissingSysPath(fixtures.OnSysPath,
+@@ -212,7 +211,8 @@ class MissingSysPath(fixtures.OnSysPath,
          importlib_metadata.distributions()
  
  
@@ -79,13 +79,3 @@ Importlib must be fixed a little bit (this was reported)...
      site_dir = '/access-denied'
  
      def setUp(self):
---- importlib_metadata-4.8.1/tests/test_integration.py
-+++ importlib_metadata-4.8.1/tests/test_integration.py
-@@ -44,6 +44,7 @@ class FinderTests(fixtures.Fixtures, uni
-         _compat.disable_stdlib_finder()
- 
- 
-+@unittest.skip("pep517 is not available on Solaris")
- class LocalProjectTests(fixtures.LocalPackage, unittest.TestCase):
-     def test_find_local(self):
-         dist = Distribution._local()

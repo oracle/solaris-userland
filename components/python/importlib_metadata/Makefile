@@ -26,22 +26,21 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		importlib_metadata
-COMPONENT_VERSION=	4.8.1
+COMPONENT_VERSION=	4.13.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:edc16d748dee561b2159868928a6cdc87811adaea4eab1b225b855574e82a88a
+    sha256:ecf6d309b95bd8ebc3e6e417ef30b3e3915899cd579762be99d4d9eae54479d5
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/python/importlib_metadata
 COMPONENT_BUGDB=	python-mod/importlib_meta
 COMPONENT_ANITYA_ID=	50323
-
-COMPONENT_BAID=		107901
+COMPONENT_BAID=		130836
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
