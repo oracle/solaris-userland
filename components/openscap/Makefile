@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -38,9 +38,6 @@ COMPONENT_ANITYA_ID=	15641
 COMPONENT_BAID =		96846
 
 BUILD_STYLE= cmake
-CMAKE_OPTIONS += -DPCRE_INCLUDE_DIR=/usr/include/pcre \
-    -DPYTHON_SITE_PACKAGES_INSTALL_DIR=/usr/lib/python$(PYTHON_VERSION)/vendor-packages/ \
-    -DCMAKE_PREFIX_PATH=/usr/perl5/$(PERL_VERSION)/bin
 CMAKE_MAKE_PROGRAM=$(GMAKE)
 
 CFLAGS+=		-std=c99
@@ -94,21 +91,14 @@ CPPFLAGS +=	-I$(SOURCE_DIR)/src/OVAL
 CPPFLAGS +=	-I$(SOURCE_DIR)/src/OVAL/probes
 CPPFLAGS +=	-I$(USRINCDIR)/pcre
 
-CONFIGURE_ENV +=        PERL="$(PERL)"
-CONFIGURE_ENV +=        PYTHON3="$(PYTHON)"
-CONFIGURE_OPTIONS +=	--enable-debug=no
-CONFIGURE_OPTIONS +=	--enable-sce=yes
-CONFIGURE_OPTIONS +=	--enable-perl=yes
-CONFIGURE_OPTIONS +=	--enable-python=no
-CONFIGURE_OPTIONS +=	--enable-python3=yes
-CONFIGURE_OPTIONS +=	--libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
-# Makefile.am files of this component are not compatible with Solaris make.
-# Use GNU make to avoid the configuration error when makefile fragments are processed.
-CONFIGURE_OPTIONS += MAKE=$(GMAKE)
-EXTRA_LIBS =		-lldap_r
-EXTRA_LIBS +=		$(LIBNSL) $(LIBSOCKET)
-EXTRA_LIBS +=		-lscf -ldlpi -lsec -lv12n
-CONFIGURE_OPTIONS +=	LDFLAGS="$(LDFLAGS) $(EXTRA_LIBS)"
+CMAKE_OPTIONS += -DPCRE_INCLUDE_DIR=/usr/include/pcre
+CMAKE_OPTIONS += -DPYTHON_SITE_PACKAGES_INSTALL_DIR=$(PYTHON_VENDOR_PACKAGES)
+
+CMAKE_OPTIONS += -DPERL_EXECUTABLE=$(PERL)
+CMAKE_OPTIONS += -DPYTHON_EXECUTABLE=$(PYTHON)
+CMAKE_OPTIONS += -DENABLE_SCE=ON
+CMAKE_OPTIONS += -DENABLE_PERL=ON
+CMAKE_OPTIONS += -DENABLE_PYTHON3=ON
 
 DOCS_DIR = $(PROTO_DIR)/usr/share/doc/openscap/
 
