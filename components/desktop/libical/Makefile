@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64_and_32
@@ -110,6 +110,7 @@ COMPONENT_POST_TEST_ACTION += \
 COMPONENT_TEST_TRANSFORMS += '-e "s|  *[\.0-9]* sec||g" '
 
 REQUIRED_PACKAGES += database/berkeleydb-5
+REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/icu

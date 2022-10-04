@@ -83,6 +83,7 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0555 $(COMPONENT_DIR)/files/svc-accountsservice \
                 $(PROTO_DIR)/lib/svc/method/svc-accountsservice; 
 
+REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/documentation-tool/xmlto
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2

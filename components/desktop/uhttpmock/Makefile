@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 		64_and_32
@@ -55,6 +55,7 @@ CONFIGURE_OPTIONS.32 += --disable-vala
 CONFIGURE_OPTIONS.64 += --enable-vala
 CONFIGURE_OPTIONS += --with-pic
 
+REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

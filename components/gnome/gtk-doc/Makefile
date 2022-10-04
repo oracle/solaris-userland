@@ -60,11 +60,6 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL:/p" ' \
         '-e "/ERROR:/p" '
 
-# Fix python scripts #! python line 
-COMPONENT_POST_INSTALL_ACTION += \
-        $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
-                $(PROTOUSRBINDIR)/gtkdoc-*;
-
 # Compile all python sources to .pyc files
 COMPONENT_POST_INSTALL_ACTION += \
         $(PYTHON) -m compileall $(PROTO_DIR)$(USRSHAREDIR)/gtk-doc/python;

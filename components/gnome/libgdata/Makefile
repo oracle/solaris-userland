@@ -63,6 +63,7 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/Ok/p" ' \
         '-e "/ok/p" '
 
+REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
