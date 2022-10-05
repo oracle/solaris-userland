@@ -20,19 +20,25 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
-# unexpand the VENDOR_GEM_DIR string
+# unexpand several manifest variables
 <transform dir file link hardlink -> edit path $(VENDOR_GEM_DIR) $!(VENDOR_GEM_DIR)>
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+<transform dir file link hardlink -> edit path $(RUBY_VERSION) $!(RUBY_VERSION)>
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+<transform dir file link hardlink -> edit path $(MACH64) $!(MACH64)>
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+# ext directory contains everything necessary to build the gem extension - keep the final .so only
+<transform file path=.*/gems/ruby-augeas-\$\(COMPONENT_VERSION\)/ext/augeas/(?!_augeas.so) -> drop>
+
+# drop logs from extension build
+<transform file path=.*/(gem_make.out|mkmf.log) -> drop>
 
 # drop unused files
 <transform file path=.+gz$ -> drop>
-<transform file path=.+/ext/augeas/.* -> drop>
-<transform file path=.+/extensions/.* -> drop>
 
-# This file is added correctly via 'static' file
-<transform file path=.+/lib/_augeas.so$ -> drop>
-
-# fix expanded strings
-<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+# allow 64 bit extension in 32bit path
+<transform file path=.*/(lib|ext/augeas)/_augeas.so$ -> set pkg.linted.userland.action001.2 true>
