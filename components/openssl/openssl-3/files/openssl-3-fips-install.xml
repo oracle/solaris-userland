@@ -2,7 +2,7 @@
 <!DOCTYPE service_bundle
   SYSTEM '/usr/share/lib/xml/dtd/service_bundle.dtd.1'>
 <!--
-  Copyright (c) 2021, Oracle and/or its affiliates.
+  Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
   Service manifest for the OpenSSL FIPS module install service
 
@@ -34,7 +34,7 @@
 		grouping="require_all"
 		restart_on="none"
 		type="service">
-		<service_fmri value="svc:/system/filesystem/local" />
+		<service_fmri value="svc:/system/filesystem/minimal" />
 	</dependency>
 
 	<!-- 
@@ -47,6 +47,16 @@
 		grouping="optional_all"
 		restart_on="none">
 		<service_fmri value="svc:/milestone/self-assembly-complete" />
+	</dependent>
+
+	<!-- 
+	OpenSSL consumers must wait until fips provider is ready to use.
+	-->
+	<dependent
+		name="openssl-3-install-ssh"
+		grouping="optional_all"
+		restart_on="none">
+		<service_fmri value="svc:/network/ssh" />
 	</dependent>
 
 	<exec_method
