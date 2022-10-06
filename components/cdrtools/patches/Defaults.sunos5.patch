@@ -1,5 +1,14 @@
---- cdrtools-3.01/DEFAULTS/Defaults.sunos5	2014-01-31 05:22:11.622002827 +0100
-+++ cdrtools-3.01/DEFAULTS/Defaults.sunos5	2014-01-31 05:21:20.893210286 +0100
+There are other users of the whole Schilytools package who build it on Solaris.
+They cannot install it under /usr (the location which we force in this patch)
+because some tool names would clash with system one. Thus the default looks
+sane. cdrtools deliver just four tools which doesn't clash with anything on the
+system so we can safely deliver them into standard location. This is the reason
+why this patch was rejected upstream.
+
+https://codeberg.org/schilytools/schilytools/issues/35
+
+--- a/DEFAULTS/Defaults.sunos5	2014-01-31 05:22:11.622002827 +0100
++++ b/DEFAULTS/Defaults.sunos5	2014-01-31 05:21:20.893210286 +0100
 @@ -30,16 +30,16 @@
  
  DEFINCDIRS=	$(SRCROOT)/include
