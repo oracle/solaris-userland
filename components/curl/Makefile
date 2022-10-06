@@ -27,18 +27,11 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		curl
-COMPONENT_VERSION=	7.84.0
-COMPONENT_BAID=		128656
+COMPONENT_VERSION=	7.85.0
+COMPONENT_ARCHIVE_HASH=	sha256:21a7e83628ee96164ac2b36ff6bf99d467c7b0b621c1f7e317d8f0d96011539c
+COMPONENT_BAID=		131409
 COMPONENT_PROJECT_URL=	http://curl.haxx.se/
-
-#GIT_REPO=	https://github.com/curl/curl.git
-## last tag we checkout to it
-#GIT_COMMIT_ID=	$(COMPONENT_VERSION)
-#GIT_HASH=	sha256:.......
-
-# git clone is fine but download of the archive is much faster
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
-COMPONENT_ARCHIVE_HASH=	sha256:702fb26e73190a3bd77071aa146f507b9817cc4dfce218d2ab87f00cd3bc059d
 COMPONENT_ARCHIVE_URL=	https://curl.se/download/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
