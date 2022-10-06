@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXp
-COMPONENT_VERSION=	1.0.3
+COMPONENT_VERSION=	1.0.4
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7f360c9905849c3587d48efc0f0ecbc852c19f61a52b18530d6b005cb9148c57
+	sha256:1f19e3b8e82a34a8fd9889a7d9af0abe8588cb03fb57c37c569634cf3b9df1a4
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1786
-COMPONENT_BAID=		53065
+COMPONENT_BAID=		130964
 
 TEST_TARGET = $(NO_TESTS)
 

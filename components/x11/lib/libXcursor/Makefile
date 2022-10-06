@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXcursor
-COMPONENT_VERSION=	1.2.0
+COMPONENT_VERSION=	1.2.1
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3ad3e9f8251094af6fe8cb4afcf63e28df504d46bfa5a5529db74a505d628782
+	sha256:46c143731610bafd2070159a844571b287ac26192537d047a39df06155492104
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1770
-COMPONENT_BAID=		61365
+COMPONENT_BAID=		131034
 
 TEST_TARGET = $(NO_TESTS)
 

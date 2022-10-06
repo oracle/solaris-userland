@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXft
-COMPONENT_VERSION=	2.3.4
+COMPONENT_VERSION=	2.3.6
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:57dedaab20914002146bdae0cb0c769ba3f75214c4c91bd2613d6ef79fc9abdd
+	sha256:60a6e7319fc938bbb8d098c9bcc86031cc2327b5d086d3335fc5c76323c03022
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1777
-COMPONENT_BAID=		109911
+COMPONENT_BAID=		130965
 
 TEST_TARGET = $(NO_TESTS)
 
