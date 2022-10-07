@@ -27,22 +27,28 @@ COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		msgpack
-COMPONENT_VERSION=	1.0.3
+COMPONENT_VERSION=	1.0.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:9cfa4b877c3d060ac1f2c6b0a90103423a9972e3a0c5b4446c89d738b629623e
+	sha256:f5d869c18f030202eb412f08b28d2afeea553d6613aee89e200d7aca7ef01f5f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pypi.python.org/pypi/msgpack/
 COMPONENT_BUGDB=	python-mod/msgpack
 COMPONENT_ANITYA_ID=	21831
-COMPONENT_BAID=		122693
+COMPONENT_BAID=		130925
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+ifeq ($(MACH),sparc)
+# On SPARC we have to add define for big endian mode
+# https://github.com/msgpack/msgpack-python/pull/495
+CFLAGS += 	-D__BIG_ENDIAN__=1
+endif
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/test
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
