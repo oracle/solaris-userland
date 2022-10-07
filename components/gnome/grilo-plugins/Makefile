@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		grilo-plugins
-COMPONENT_VERSION=	0.3.13
+COMPONENT_VERSION=	0.3.15
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Grilo
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1c4305d67364a930543836cc1982f30e946973b8ff6af3efe31d87709ab520f8
+	sha256:8518c3d954f93095d955624a044ce16a7345532f811d299dbfa1e114cfebab33
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	10929
 
-COMPONENT_BAID=		106985
+COMPONENT_BAID=		130756
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
