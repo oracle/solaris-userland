@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 link path=usr/ruby/$(RUBY_VER)/lib/64 target=$(MACH64)
@@ -92,3 +92,8 @@ link path=usr/share/man/man1/ruby.1 \
     mediator-version=$(RUBY_VER)
 
 file path=usr/ruby/$(RUBY_VER)/lib/$(MACH64)/libruby-static.a
+
+# Add release note informing about the obsolescence of this component
+file release-notes/runtime-ruby-26.txt \
+    path=usr/share/doc/release-notes/runtime-ruby-26.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@0
