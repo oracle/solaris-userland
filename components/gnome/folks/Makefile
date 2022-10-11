@@ -62,7 +62,7 @@ COMPONENT_TEST_ENV += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 # bluetooth support (unnecessary)
 CONFIGURE_OPTIONS += -Dbluez_backend=false
 # GSM Telephony Support (unnecessary).
-CONFIGURE_OPTIONS += -Dofono-backend=false
+CONFIGURE_OPTIONS += -Dofono_backend=false
 CONFIGURE_OPTIONS += -Dinspect_tool=false
 # reverting to default of tracker being disabled 
 # to avoid issues with the gir generation with the updated vala

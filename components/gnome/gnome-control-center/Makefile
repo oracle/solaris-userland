@@ -46,7 +46,6 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += -Dgnome_session_libexecdir=$(USRLIBDIR)
 CONFIGURE_OPTIONS += -Ddocumentation=true
 CONFIGURE_OPTIONS += -Dibus=true
 # Required for other components.

@@ -46,7 +46,7 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-CONFIGURE_OPTIONS += -Ddocs=true
+CONFIGURE_OPTIONS += -Dgtk_doc=enabled
 CONFIGURE_OPTIONS += -Dman=true
 CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 COMPONENT_BUILD_ENV +=  PATH="$(GNUBIN):$(PATH)"

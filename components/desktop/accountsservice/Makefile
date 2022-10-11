@@ -69,7 +69,7 @@ CONFIGURE_OPTIONS += -Dminimum_uid=100
 
 # Solaris does not have a wheel group, so we use the "sysadmin" group to
 # determine which accounts should be ACT_USER_ACCOUNT_TYPE_ADMINISTRATOR
-CONFIGURE_OPTIONS += -Dadmin-group=sysadmin
+CONFIGURE_OPTIONS += -Dadmin_group=sysadmin
 
 # Only need to install library from 32-bit builds, everything else overlaps
 # with 64-bit builds

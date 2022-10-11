@@ -59,7 +59,6 @@ LD_OPTIONS += -z gnu-version-script-compat
 CONFIGURE_ENV.64 += ac_cv_path_LIBGCRYPT_CONFIG=$(USRBINDIR64)/libgcrypt-config
 
 # Required for other components.
-CONFIGURE_OPTIONS += -Denable-quvi=no
 CONFIGURE_OPTIONS.32 += -Dintrospection=false
 CONFIGURE_OPTIONS.64 += -Dintrospection=true
 CONFIGURE_OPTIONS += -Denable-libarchive=yes

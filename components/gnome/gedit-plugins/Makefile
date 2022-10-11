@@ -48,9 +48,6 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-# Requires zeitgeist
-CONFIGURE_OPTIONS += -Dplugin_zeitgeist=false
-
 # Compile all python sources to .pyc files
 PLUGINS_DIR = charmap; coloschemer; commander; git; multiedit;\
 	sessionsaver; testsize; translate

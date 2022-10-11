@@ -50,7 +50,7 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 CPPFLAGS += -std=gnu99 -D_XOPEN_SOURCE=700 -D__EXTENSIONS__
 
-CONFIGURE_OPTIONS += -Dzoneinfo-dir=/usr/share/lib/zoneinfo
+CONFIGURE_OPTIONS += -Dzoneinfo_dir=/usr/share/lib/zoneinfo
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"

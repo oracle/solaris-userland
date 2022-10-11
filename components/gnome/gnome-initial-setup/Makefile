@@ -54,7 +54,6 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CONFIGURE_OPTIONS += -Dsystemd=false
-CONFIGURE_OPTIONS += -Dsoftware-sources=disabled
 CONFIGURE_OPTIONS += -Dcheese=disabled
 
 # gnome-initial-setup/pages/account/um-utils.c uses UT_NAMESIZE from the Linux

@@ -57,9 +57,9 @@ CONFIGURE_OPTIONS += -Dmonoscope=disabled
 CONFIGURE_OPTIONS += -Dbz2=enabled
 CONFIGURE_OPTIONS += -Dcairo=enabled
 CONFIGURE_OPTIONS += -Djpeg=enabled
-CONFIGURE_OPTIONS += -Dlibpng=enabled
 CONFIGURE_OPTIONS += -Doss=enabled
 CONFIGURE_OPTIONS += -Doss4=enabled
+CONFIGURE_OPTIONS += -Dpng=enabled
 CONFIGURE_OPTIONS += -Dpulse=enabled
 CONFIGURE_OPTIONS += -Dsoup=enabled
 CONFIGURE_OPTIONS += -Dspeex=enabled

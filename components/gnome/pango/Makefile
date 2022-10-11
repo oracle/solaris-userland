@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -42,8 +42,8 @@ BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_OPTIONS += -Denable_docs=true
-CONFIGURE_OPTIONS.32 += -Dgir=false
+# doc build requires python modules we don't have (markdown, typogrify)
+CONFIGURE_OPTIONS += -Dgtk_doc=false
 CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 CONFIGURE_OPTIONS += -Dinstall-tests=true
 
