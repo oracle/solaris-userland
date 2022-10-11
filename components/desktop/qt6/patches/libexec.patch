@@ -1,0 +1,15 @@
+Avoids installation into /usr/libexec directory.
+
+Solaris specific. Not suitable for upstream.
+
+--- qt-everywhere-src-6.4.0/qtbase/cmake/QtBuild.cmake
++++ qt-everywhere-src-6.4.0/qtbase/cmake/QtBuild.cmake
+@@ -112,7 +112,7 @@
+ if (WIN32)
+     set(_default_libexec "${INSTALL_ARCHDATADIR}/bin")
+ else()
+-    set(_default_libexec "${INSTALL_ARCHDATADIR}/libexec")
++    set(_default_libexec "${INSTALL_ARCHDATADIR}/lib/qt6")
+ endif()
+ 
+ qt_configure_process_path(

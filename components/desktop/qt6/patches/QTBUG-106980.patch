@@ -1,0 +1,13 @@
+https://bugreports.qt.io/browse/QTBUG-106980
+
+--- qt-everywhere-src-6.4.0/qtbase/src/corelib/global/qlogging.cpp
++++ qt-everywhere-src-6.4.0/qtbase/src/corelib/global/qlogging.cpp
+@@ -1304,7 +1304,7 @@
+     const char *cachedFname = nullptr;
+     auto decodeFrame = [&](const void *addr) -> DecodedFrame {
+         Dl_info info;
+-        if (!dladdr(addr, &info))
++        if (!dladdr((void*)addr, &info))
+             return {};
+ 
+         // These are actually UTF-8, so we'll correct below

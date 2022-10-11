@@ -1,0 +1,26 @@
+https://bugreports.qt.io/browse/QTBUG-107178
+
+--- qt-everywhere-src-6.4.0/qtbase/src/corelib/global/qprocessordetection.h
++++ qt-everywhere-src-6.4.0/qtbase/src/corelib/global/qprocessordetection.h
+@@ -291,7 +291,7 @@
+ */
+ #elif defined(__sparc__)
+ #  define Q_PROCESSOR_SPARC
+-#  if defined(__sparc_v9__)
++#  if defined(__sparc_v9__) || defined(__sparcv9)
+ #    define Q_PROCESSOR_SPARC_V9
+ #  endif
+ #  if defined(__sparc64__)
+--- qt-everywhere-src-6.4.0/qtbase/src/corelib/plugin/qelfparser_p.cpp
++++ qt-everywhere-src-6.4.0/qtbase/src/corelib/plugin/qelfparser_p.cpp
+@@ -128,10 +128,8 @@
+ #elif defined(Q_PROCESSOR_SH)
+             EM_SH
+ #elif defined(Q_PROCESSOR_SPARC_V9)
+-#  warning "Please confirm that this is correct for Linux and Solaris"
+             EM_SPARCV9
+ #elif defined(Q_PROCESSOR_SPARC_64)
+-#  warning "Please confirm that this is correct for Linux and Solaris"
+             EM_SPARCV9
+ #elif defined(Q_PROCESSOR_SPARC)
+             EM_SPARC
