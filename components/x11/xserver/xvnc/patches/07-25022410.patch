@@ -1,13 +1,20 @@
 Change for GNOME 3 where gnome-terminal expects a UTF-8 locale - not suitable for upstream
 
---- a/unix/vncserver	2017-03-11 07:11:39.811640603 +0000
-+++ b/unix/vncserver	2017-03-11 07:12:05.914376639 +0000
-@@ -35,6 +35,8 @@
+--- tigervnc-1.10.1/unix/vncserver
++++ tigervnc-1.10.1/unix/vncserver
+@@ -33,6 +33,15 @@ if($slashndx>=0) {
+     $exedir = substr($0, 0, $slashndx+1);
+ }
  
- $vncClasses = "";
- 
-+# With Gnome 3, gnome-terminal-server won't exec unless the locale is en_US.UTF-8
-+$ENV{LANG} = "en_US.UTF-8";
++# With Gnome 3, gnome-terminal-server won't exec unless vncserver is started with UTF-8 locale.
++for ($ENV{LANG}) {
++    /\.UTF-8/     and do {last;};
++    /^C$|^POSIX$/ and do {$ENV{LANG} = "C.UTF-8"; last;};
++    /\..*\@/      and do {$ENV{LANG} =~ s/\..*\@/.UTF-8\@/g; last;};
++    /\./          and do {$ENV{LANG} =~ s/\..*/.UTF-8/g; last;};
++    /_/           and do {$ENV{LANG} = "$ENV{LANG}.UTF-8"; last;};
++    $ENV{LANG} = "C.UTF-8";
++}
  &SanityCheck();
  
  #
