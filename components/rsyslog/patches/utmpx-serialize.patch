@@ -1,0 +1,49 @@
+#
+# 34550630 rsyslogd dumps a core when trying to read utmpx 
+#
+# setutxent/getutxent/endutxent are not MT-Safe; when multiple message
+# are directed to users, rsyslogd may crash.
+#
+# We also use the native utmpx which has more information as well
+# as support for larger pids.
+#
+# Should be send upstream.
+#
+--- rsyslog-8.2206.0/tools/omusrmsg.c	Mon Feb  7 00:24:35 2022
++++ rsyslog-8.2206.0/tools/omusrmsg.c	Tue Oct 11 00:58:32 2022
+@@ -34,8 +34,9 @@
+ #include <assert.h>
+ #include <signal.h>
+ #include <ctype.h>
++#include <pthread.h>
+ #include <sys/param.h>
+-#ifdef HAVE_UTMP_H
++#if defined(HAVE_UTMP_H) && !defined(OS_SOLARIS)
+ #  include <utmp.h>
+ #  define STRUCTUTMP struct utmp
+ #  define UTNAME ut_name
+@@ -65,6 +66,14 @@
+ #include "module-template.h"
+ #include "errmsg.h"
+ 
++#ifdef OS_SOLARIS
++#  define setutent() setutxent()
++#  define getutent() getutxent()
++#  define endutent() endutxent()
++#endif
++
++static pthread_mutex_t wall_mutex = PTHREAD_MUTEX_INITIALIZER;
++
+ 
+ /* portability: */
+ #ifndef _PATH_DEV
+@@ -299,7 +308,9 @@
+ BEGINdoAction
+ CODESTARTdoAction
+ 	dbgprintf("\n");
++	(void) pthread_mutex_lock(&wall_mutex);
+ 	iRet = wallmsg(ppString[0], pWrkrData->pData);
++	(void) pthread_mutex_unlock(&wall_mutex);
+ ENDdoAction
+ 
+ 
