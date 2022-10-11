@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pixman
-COMPONENT_VERSION=	0.38.4
+COMPONENT_VERSION=	0.40.0
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:84abb7fa2541af24d9c3b34bf75d6ac60cc94ac4410061bbb295b66a29221550
+	sha256:da8ed9fe2d1c5ef8ce5d1207992db959226bd4e37e3f88acf908fd9a71e2704e
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	3648
-COMPONENT_BAID=		67879
+COMPONENT_BAID=		131041
 COMPONENT_SIG_URL= 
 
 FIX_PC_FILES=pixman-1.pc.in
