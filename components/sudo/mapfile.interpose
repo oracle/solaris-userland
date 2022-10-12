@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+
+$mapfile_version 2
+
+# sudo interposes on some system routines. Ensure that occurs
+# in a direct binding environment.
+SYMBOL_SCOPE {
+    global:
+	getenv		{ FLAGS = INTERPOSE };
+	putenv		{ FLAGS = INTERPOSE };
+	setenv		{ FLAGS = INTERPOSE };
+	unsetenv	{ FLAGS = INTERPOSE };
+};

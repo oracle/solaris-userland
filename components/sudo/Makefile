@@ -65,6 +65,7 @@ COMPONENT_PREP_ACTION = ( cd $(@D) ; $(AUTORECONF) -f -I m4 )
 
 CPPFLAGS += -I$(USRINCDIR)/openldap
 CONFIGURE_ENV +=	"MAKE=$(GMAKE)"
+CONFIGURE_ENV +=	"SUDO_LDFLAGS=-Wl,-M,../../../mapfile.interpose"
 
 CONFIGURE_OPTIONS +=	--enable-openssl
 CONFIGURE_OPTIONS +=	--with-ldap
