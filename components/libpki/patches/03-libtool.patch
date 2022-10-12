@@ -2,15 +2,14 @@ Patch origin: in-house
 Patch status: Solaris-specific; not suitable for upstream
 
 eval doesn't work as expected with quotes on Solaris.
-
---- libpki-0.8.9/build/ltmain.sh	Tue Nov 10 13:50:30 2015
-+++ libpki-0.8.9/build/ltmain.sh	Wed Nov 11 14:43:19 2015
-@@ -657,7 +657,7 @@
-     }
+--- old/build/ltmain.sh	2022-10-12 16:18:48.397516724 +0200
++++ new/build/ltmain.sh	2022-10-12 16:55:59.430610073 +0200
+@@ -1219,7 +1219,7 @@ func_show_eval ()
+     eval "func_notquiet $func_quote_for_expand_result"
  
-     if ${opt_dry_run-false}; then :; else
--      eval "$my_cmd"
-+      eval $my_cmd
-       my_status=$?
-       if test "$my_status" -eq 0; then :; else
- 	eval "(exit $my_status); $my_fail_exp"
+     $opt_dry_run || {
+-      eval "$_G_cmd"
++      eval $_G_cmd
+       _G_status=$?
+       if test 0 -ne "$_G_status"; then
+ 	eval "(exit $_G_status); $_G_fail_exp"

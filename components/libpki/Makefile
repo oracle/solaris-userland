@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -32,7 +32,7 @@ include ../../make-rules/shared-macros.mk
 # at all times, so update ./history if planning to backport an update.
 
 COMPONENT_NAME=		libpki
-COMPONENT_VERSION=	0.8.9
+COMPONENT_VERSION=	0.9.2
 # The new form includes the commit as a disambiguator, but the current archive
 # wasn't created with that in its name, so we use the old form until the next
 # update.
@@ -43,12 +43,14 @@ COMPONENT_BUGDB=	library/smartcard
 COMPONENT_ANITYA_ID=	13309
 
 GIT_REPO= https://github.com/openca/libpki
-GIT_COMMIT_ID= b46aebc
-GIT_HASH=  sha256:16e84a529f0871dcff175c717cf472bdad0de0a4719bf1f204d49d9011eace2c
+GIT_COMMIT_ID= a8099c5
+GIT_HASH=  sha256:b203907ece2d6d73ccf4aa9de63319b72d77757a20958531ebf74772b84c27d9
 
-COMPONENT_BAID =		29247
+COMPONENT_BAID =		136660
 
 include $(WS_MAKE_RULES)/common.mk
+
+unexport SHELLOPTS
 
 PKG_PROTO_DIRS += $(COMPONENT_SRC)/docs
 
@@ -64,7 +66,12 @@ COMPONENT_PREP_ACTION +=(cd $(@D); autoreconf);
 CONFIGURE_ENV +=	DESTDIR="$(PROTO_DIR)"
 
 CONFIGURE_OPTIONS +=	--with-libdir=$(USRLIBDIR64)
-CONFIGURE_OPTIONS +=	--with-lib-prefix=$(USRLIBDIR64)
+
+OPENSSL_CFLAGS= -I/usr/openssl/3/include
+OPENSSL_LIBS= -L/usr/openssl/3/lib/64/ -lssl -lcrypto
+
+CONFIGURE_OPTIONS += OPENSSL_CFLAGS="$(OPENSSL_CFLAGS)"
+CONFIGURE_OPTIONS += OPENSSL_LIBS="$(OPENSSL_LIBS)"
 
 COMPONENT_PRE_TEST_ACTION = files/setup_test.sh $(@D) $(COMPONENT_SRC)
 
@@ -81,8 +88,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/\# ERROR:/p" '
 
 REQUIRED_PACKAGES += library/libxml2
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/network/ldap/openldap

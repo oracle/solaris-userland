@@ -1,20 +1,14 @@
 Patch origin: in-house
-Patch status: not Solaris-specific; suitable for upstream
+Patch status: Solaris-specific; not suitable for upstream
 
 Need to add architectures for Oracle build environments.
 
 Need to disable rpath to avoid including 32-bit runpath in 64-bit binary.
 
 Need to add AC_LANG_SOURCE to resolve autoreconf warnings.
-
-Need to use an appropriate path for ldap.h.
-On S11.4, we build with OpenLDAP.
-On S11.3, the default is to build with OpenLDAP, but we can specify to build
-with Mozilla LDAP instead by using --enable-openldap=no configure option.
-
---- libpki-0.8.9/configure.in	2016-06-01 15:47:12.987843577 -0700
-+++ libpki-0.8.9/configure.in	2016-06-20 11:13:17.409345800 -0700
-@@ -36,11 +36,20 @@
+--- old/configure.ac	2022-10-12 15:24:34.982444835 +0200
++++ new/configure.ac	2023-01-17 11:38:43.045063386 +0100
+@@ -44,11 +44,20 @@ case "$my_arch" in
      mybits="64"
      mybits_install="64"
      ;;
@@ -35,7 +29,7 @@ with Mozilla LDAP instead by using --enable-openldap=no configure option.
    *aix*)
      mybits="64"
      mybits_install="64"
-@@ -203,11 +212,13 @@
+@@ -280,11 +289,13 @@ case "${build_os}" in
   *sun*) myarch=solaris
  		shlext=so
  		rpath_opt="-R "
@@ -49,266 +43,84 @@ with Mozilla LDAP instead by using --enable-openldap=no configure option.
  		;;
   *hpux*)        myarch=hpux
  		shlext=so
-@@ -545,6 +556,7 @@
+@@ -669,7 +680,7 @@ dnl AC_MSG_ERROR( [****** ($DIST_NAME) I
  
- ldap_vendor=
+ dnl ==================== BEGIN LDAP Support =======================
+ 
+-ldap_vendor=
++ldap_vendor="OPENLDAP"
  ldap="yes"
-+openldap="yes"
  ldap_prefix=""
  ldap_path=""
- ldap_cflags=""
-@@ -562,6 +574,11 @@
- 		[enable ldap support ( default is yes)]),
- 		ldap=$enableval, ldap=yes )
+@@ -679,9 +690,9 @@ ldap_ldadd=
+ ldap_ldflags=
  
-+AC_ARG_ENABLE(openldap,
-+	AC_HELP_STRING( [--enable-openldap],
-+		[enable openldap support on Solaris 11.3 (default is yes)]),
-+		openldap=$enableval, openldap=yes )
-+
- if [[ "x$enable_iphone" = "xyes" ]] ; then
- 	ldap="no"
- fi
-@@ -780,12 +797,12 @@
- 	LDFLAGS="$mysql_ldflags $mysql_ldadd"
- 	ok=0
+ library_prefix=
+-library_ldflags=
+-library_cflags=
+-library_ldadd=
++library_ldflags=""
++library_cflags="-I/usr/include"
++library_ldadd="-lldap_r"
  
--	AC_RUN_IFELSE( [
-+	AC_RUN_IFELSE([AC_LANG_SOURCE([
- 		#include <mysql.h>
- 		int main(void) {
- 		        MYSQL *x;
- 		        return(0);
--		}], [ ok=1 ], [ ok=0 ])
-+		}])], [ ok=1 ], [ ok=0 ])
+ AC_ARG_ENABLE(ldap,
+ 	AC_HELP_STRING( [--enable-ldap],
+@@ -717,7 +728,6 @@ if ! [[ "x$ldap" = "xno" ]] ; then
+    fi
  
- 	CFLAGS="$OLD_CFLAGS"
- 	LDFLAGS="$OLD_LDFLAGS"
-@@ -884,12 +901,12 @@
- 	LDFLAGS="$pg_ldflags $pg_ldadd"
- 	ok=0
+    	dnl Now we have to check which LDAP vendor is available
+-	AC_LDAP_VENDOR( $ldap_prefix )
  
--	AC_RUN_IFELSE( [
-+	AC_RUN_IFELSE([AC_LANG_SOURCE([
- 		#include <libpq-fe.h>
- 		int main(void) {
- 			PGconn *sql;
- 		        return(0);
--		}], [ ok=1 ], [ ok=0 ])
-+		}])], [ ok=1 ], [ ok=0 ])
+    if [[ "x$ldap_vendor" = "x"  ]] ; then
+ 	AC_MSG_RESULT([*** ERROR: No supported LDAP vendor found.])
+@@ -1541,10 +1551,10 @@ AC_SUBST(sys_cflags)
+ libpki_cflags="-I${package_prefix}/include ${openssl_cflags} ${composite_cflags} ${ldap_cflags} ${kmf_cflags} ${xml2_cflags} ${mysql_cflags} ${pg_cflags}"
  
- 	CFLAGS="$OLD_CFLAGS"
- 	LDFLAGS="$OLD_LDFLAGS"
---- libpki-0.8.9/acinclude.m4	2016-06-01 15:47:48.803434658 -0700
-+++ libpki-0.8.9/acinclude.m4	2016-06-16 13:16:34.558401470 -0700
-@@ -293,12 +293,12 @@
- 
- dnl AC_MSG_RESULT([LD_LIBRARY_PATH=$library_path]);
- 
--AC_RUN_IFELSE( [
-+AC_RUN_IFELSE([AC_LANG_SOURCE([
- #include <openssl/x509.h>
- int main(void) {
- 	X509 *x = NULL;
- 	return(0);
--}], [ ok=1 ], [ ok=0 ])
-+}])], [ ok=1 ], [ ok=0 ])
- 
- CFLAGS=$old_cflags
- LDFLAGS=$old_ldflags
-@@ -337,12 +337,12 @@
- 
- AC_MSG_CHECKING([checking for $1 support]);
- 
--AC_RUN_IFELSE( [
-+AC_RUN_IFELSE([AC_LANG_SOURCE([
- #include <stdlib.h>
- int main(void)
- {
-         return(0);
--}], [ _supported=yes ], [ _supported=no])
-+}])], [ _supported=yes ], [ _supported=no])
- 
- if [[ $_supported = no ]] ; then
-         AC_MSG_RESULT([not supported]);
-@@ -367,84 +367,62 @@
- AC_MSG_CHECKING([checking for ldap vendor]);
- 
- if ! [[ "$_prefix" = "" ]] ; then
--	if $EGREP "Sun" "$_prefix/include/ldap.h" 2>&1 >/dev/null ; then
--	AC_DEFINE(LDAP_VENDOR_SUN)
--	AC_MSG_RESULT([yes])
--	ldap_vendor="SUN"
--   else
--   	if $EGREP "OpenLDAP" "$_prefix/include/ldap.h" 2>&1 >/dev/null ; then
--		AC_DEFINE(LDAP_VENDOR_OPENLDAP)
--		ldap_vendor="OPENLDAP"
--		library_ldflags=[-L$_prefix/lib]
--		library_ldadd=[-lldap_r]
-+	dnl A directory path where ldap.h exists.
-+	dnl The default is $_prefix/include, but it can be different depending
-+	dnl on operating systems and versions.
-+	ldap_include_dir=$_prefix/include
-+
-+	if [[ "$myarch" = "solaris" ]] ; then
-+		if [[ $EGREP -s "OpenLDAP" "$_prefix/include/ldap.h" ]] ; then
-+			dnl On Solaris 12, we force to build with OpenLDAP.
-+			AC_DEFINE(LDAP_VENDOR_OPENLDAP)
-+			AC_MSG_RESULT([yes])
-+			ldap_include_dir=$ldap_include_dir/openldap
-+			ldap_vendor="OPENLDAP"
-+			library_ldflags=[-L$_prefix/lib]
-+			library_ldadd=[-lldap_r]
-+		else
-+			dnl On Solaris 11.3, the default is to build with OpenLDAP,
-+			dnl but when --enable-openldap=no configure option is specified,
-+			dnl we build with Mozilla LDAP instead.
-+			if [[ "x$openldap" = "xyes" ]] ; then
-+				AC_DEFINE(LDAP_VENDOR_OPENLDAP)
-+				AC_MSG_RESULT([yes])
-+				ldap_include_dir=$ldap_include_dir/openldap
-+				ldap_vendor="OPENLDAP"
-+				library_ldflags=[-L$_prefix/lib]
-+				library_ldadd=[-lldap_r]
-+			else
-+				AC_DEFINE(LDAP_VENDOR_SUN)
-+				AC_MSG_RESULT([yes])
-+				ldap_vendor="SUN"
-+				ldap_lib=`ls "${_prefix}/lib/libldap.${shlext}" | head -n 1`;
-+				if [[ -z "$ldap_lib" ]] ; then
-+					AC_MSG_ERROR([*** LDAP: missing $_prefix/lib/libldap.$shlext!])
-+				fi
-+				library_ldflags=[-L$_prefix/lib]
-+				library_ldadd=[-lldap]
-+			fi
-+		fi
- 	else
--		AC_MSG_ERROR([*** LDAP::No supported vendors found in ($_prefix)***])
--	fi
--   fi
--
--	if [[ "$ldap_vendor" = "SUN" ]] ; then
--    	ldap_lib=`ls "${_prefix}/lib/libldap.${shlext}" | head -n 1`;
--		if [[ -z "$ldap_lib" ]] ; then
--			AC_MSG_ERROR([*** LDAP: missing $_prefix/lib/libldap.$shlext!])
-+		if $EGREP "OpenLDAP" "$ldap_include_dir/ldap.h" 2>&1 >/dev/null ; then
-+			AC_DEFINE(LDAP_VENDOR_OPENLDAP)
-+			AC_MSG_RESULT([yes])
-+			ldap_vendor="OPENLDAP"
-+			library_ldflags=[-L$_prefix/lib]
-+			library_ldadd=[-lldap_r]
-+		else
-+			AC_MSG_ERROR([*** LDAP::No supported vendors found in ($ldap_include_dir)***])
- 		fi
--		library_ldflags=[-L$_prefix/lib]
--		library_ldadd=[-lldap]
- 	fi
- 
- 	library_prefix=$_prefix;
--	library_cflags=[-I${_prefix}/include]
--
--old_cflags=$CFLAGS
--old_ldflags=$LDFLAGS
--old_ldadd=$LDADD
--
--CFLAGS=$library_cflags
--LDFLAGS=$library_ldflags
--LDADD=$library_ldadd
--
--AC_MSG_RESULT([LDAP SEARCH: CFLAGS: $library_cflags])
--AC_MSG_RESULT([LDAP SEARCH: LDFLAGS: $library_ldflags])
--AC_MSG_RESULT([LDAP SEARCH: LDADD: $library_ldadd])
--
--dnl AC_MSG_RESULT([LDAP VENDOR ===> searching for Sun])
--   AC_EGREP_CPP( [Sun],
--[
--#include <ldap.h>
--
--int main(void) {
--   char *p = LDAP_VENDOR_NAME;
--   return(0);
--}], 
--  	[
--	   AC_DEFINE(LDAP_VENDOR_SUN)
--	   ldap_vendor="SUN"
--        ])
--
--   if ! [[ "$ldap_vendor" = "SUN" ]] ; then
--   	dnl AC_MSG_CHECKING([checking for OpenLDAP vendor ($_prefix) ]);
--   	AC_EGREP_CPP( [OpenLDAP],
--[
--#include <ldap.h>
--
--int main(void) {
--   char *p = LDAP_VENDOR_NAME;
--   return(0);
--}], 
--  		[
--		   AC_DEFINE(LDAP_VENDOR_OPENLDAP)
--   		   dnl AC_MSG_CHECKING([checking for OpenLDAP vendor ($_prefix) ]);
--		   ldap_vendor="OPENLDAP"
--		])
--   fi
--
--LDFLAGS=$old_ldflags
--CFLAGS=$old_cflags
--LDADD=$old_ldadd
-+	library_cflags=[-I$ldap_include_dir]
- 
+ if [[ "${enable_shared}" = "yes" ]] ; then
+-  libpki_ldflags="-L${lib_prefix} ${openssl_ldflags} ${openssl_ldadd} ${composite_ldflags} ${xml2_ldflags} ${mysql_ldflags} ${pg_ldflags} ${kmf_ldflags}"
++  libpki_ldflags="${openssl_ldflags} ${openssl_ldadd} ${composite_ldflags} ${xml2_ldflags} ${mysql_ldflags} ${pg_ldflags} ${kmf_ldflags}"
+   libpki_ldadd="-lpthread ${openssl_ldadd} ${composite_ldadd} ${xml2_ldadd} ${mysql_ldadd} ${pg_ldadd} ${kmf_ldadd}"
  else
- 
--   AC_MSG_RESULT([LDAP VENDOR ($_prefix) ===> searching for Sun])
--   AC_EGREP_CPP( [Sun],
-+	AC_MSG_RESULT([LDAP VENDOR ===> searching for Sun])
-+	AC_EGREP_CPP( [Sun],
- [
- #include <ldap.h>
- 
-@@ -452,15 +430,15 @@
-    char *p = LDAP_VENDOR_NAME;
-    return(0);
- }], 
--  	[
--	   AC_DEFINE(LDAP_VENDOR_SUN)
--	   ldap_vendor="SUN"
-+	[
-+		AC_DEFINE(LDAP_VENDOR_SUN)
-+		ldap_vendor="SUN"
- 		library_ldadd="-lldap"
--        ])
-+	])
- 
--   if ! [[ "x$ldap_vendor" = "SUN" ]] ; then
--   	AC_MSG_CHECKING([checking for OpenLDAP vendor ($_prefix) ]);
--   	AC_EGREP_CPP( [OpenLDAP],
-+	if ! [[ "x$ldap_vendor" = "SUN" ]] ; then
-+		AC_MSG_CHECKING([checking for OpenLDAP vendor]);
-+		AC_EGREP_CPP( [OpenLDAP],
- [
- #include <ldap.h>
- 
-@@ -468,16 +446,13 @@
-    char *p = LDAP_VENDOR_NAME;
-    return(0);
- }], 
--  		[
--		   AC_DEFINE(LDAP_VENDOR_OPENLDAP)
--		   ldap_vendor="OPENLDAP"
-+		[
-+			AC_DEFINE(LDAP_VENDOR_OPENLDAP)
-+			ldap_vendor="OPENLDAP"
- 			library_ldadd="-lldap_r"
- 		])
--   fi
-+	fi
+-  libpki_ldflags="-static -L${lib_prefix} ${openssl_ldflags} ${composite_cflags} ${ldap_ldflags} ${xml2_ldflags} ${mysql_ldflags} ${pg_ldflags} ${kmf_ldflags}"
++  libpki_ldflags="-static ${openssl_ldflags} ${composite_cflags} ${ldap_ldflags} ${xml2_ldflags} ${mysql_ldflags} ${pg_ldflags} ${kmf_ldflags}"
+   libpki_ldadd="-lpthread ${openssl_ldadd} ${composite_ldadd} ${ldap_ldadd} ${xml2_ldadd} ${mysql_ldadd} ${pg_ldadd} ${resolv_ldadd} ${kmf_ldadd}"
  fi
--
--   AC_MSG_RESULT([LDAP VENDOR: $ldap_vendor]);
--
- ])
  
- AC_DEFUN(CHECK_EC, [
-@@ -548,7 +523,7 @@
+@@ -1575,7 +1585,7 @@ for dir in $c_dirs ; do
+     has_dir=`echo $libpki_cflags | grep "I${dir} "`
+     if ! [[ "x$has_dir" = "x" ]] ; then
+       libpki_cflags=`echo "$libpki_cflags" | sed -e "s|-I${dir} ||g"`
+-      libpki_cflags="-I${dir} $libpki_cflags"
++      libpki_cflags="$libpki_cflags -I${dir}"
+     	AC_MSG_RESULT([Removed duplicate entries for -I$dir from libpki_cflags])
+     fi
+   fi
+@@ -1597,11 +1607,11 @@ AC_SUBST(libpki_ldadd)
+ dnl Internal Makefile
+ if [[ "${enable_shared}" = "yes" ]] ; then
+ 	my_ldadd="-lpthread ${sys_ldadd} ${ldap_ldadd} ${openssl_ldadd} ${xml2_ldadd} ${kmf_ldadd} ${mysql_ldadd} ${pg_ldadd} ${resolv_ldadd} ${sys_ldadd}"
+-	my_ldflags="-L${lib_prefix} ${openssl_ldflags} ${composite_ldflags} ${ldap_ldflags} ${xml2_ldflags} ${sys_ldflags} ${kmf_ldflags} ${mysql_ldflags} ${pg_ldflags}"
++	my_ldflags="${openssl_ldflags} ${composite_ldflags} ${ldap_ldflags} ${xml2_ldflags} ${sys_ldflags} ${kmf_ldflags} ${mysql_ldflags} ${pg_ldflags}"
+ 	test_libs="${sys_ldflags} ${sys_ldadd}"
+ else
+ 	if [[ "$iphone_build" = "no" ]] ; then
+-		my_ldflags="-static -L${lib_prefix} ${openssl_ldflags} ${composite_ldflags} ${ldap_ldflags} ${xml2_ldflags} ${kmf_ldflags} ${mysql_ldflags} ${pg_ldflags}"
++		my_ldflags="-static ${openssl_ldflags} ${composite_ldflags} ${ldap_ldflags} ${xml2_ldflags} ${kmf_ldflags} ${mysql_ldflags} ${pg_ldflags}"
+ 		my_ldadd="${sys_ldadd} ${openssl_ldadd} ${composite_ldadd} ${xml2_ldadd} ${kmf_ldadd} ${mysql_ldadd} ${pg_ldadd} ${ldap_ldadd} ${resolv_ldadd} ${sys_ldadd}"
+ 		test_libs="-static ${sys_ldadd} src/.libs/libpki.a"
+ 	else
+@@ -1642,7 +1652,7 @@ for dir in $c_dirs ; do
+     has_dir=`echo $my_cflags | grep "I${dir} "`
+     if ! [[ "x$has_dir" = "x" ]] ; then
+       my_cflags=`echo "$my_cflags" | sed -e "s|-I${dir} ||g"`
+-      my_cflags="-I${dir} $my_cflags"
++      my_cflags="$my_cflags -I${dir}"
+     	AC_MSG_RESULT([Removed duplicate entries for -I${dir} from my_cflags])
+     fi
+   fi
+--- old/acinclude.m4	2022-10-12 15:24:34.987179388 +0200
++++ new/acinclude.m4	2023-01-17 09:48:19.440241584 +0100
+@@ -542,7 +542,7 @@ dnl 	fi
  dnl fi
  dnl ])
  
@@ -317,7 +129,7 @@ with Mozilla LDAP instead by using --enable-openldap=no configure option.
  dnl #include <openssl/ec.h>
  dnl #include <openssl/ecdsa.h>
  dnl #include <openssl/opensslconf.h>
-@@ -559,7 +534,7 @@
+@@ -553,7 +553,7 @@ dnl -garbage!
  dnl #endif
  dnl 	EC_KEY *d = NULL;
  dnl 	return(0);
@@ -326,51 +138,19 @@ with Mozilla LDAP instead by using --enable-openldap=no configure option.
  dnl 	AC_DEFINE([ENABLE_ECDSA], 1, [ECC Support for OpenSSL])
  dnl 	activate_ecdsa=yes
  dnl ], [activate_ecdsa=no])
-@@ -576,13 +551,13 @@
- dnl fi
+--- old/src/scripts/libpki-config.in	2023-01-16 10:28:51.214079538 +0100
++++ new/src/scripts/libpki-config.in	2023-01-16 10:29:38.955647748 +0100
+@@ -70,11 +70,11 @@ while test $# -gt 0; do
+        	;;
  
- AC_DEFUN(AC_OPENSSL_OCSP,
--[ AC_RUN_IFELSE( [
-+[ AC_RUN_IFELSE([AC_LANG_SOURCE([
- #include <openssl/ocsp.h>
- int main(void)
- {
- 	OCSP_CERTID *cid = NULL;
- 	return(0);
--}], [ AC_DEFINE(HAVE_OCSP) ], [ocsp_error=1])
-+}])], [ AC_DEFINE(HAVE_OCSP) ], [ocsp_error=1])
+     --ldlibs)
+-       	echo @rpath@ @my_ldflags@ -L@libdir@ @my_ldadd@
++       	echo @rpath@ @my_ldflags@ @my_ldadd@
+        	;;
  
- if [[ ocsp_error = 1 ]] ; then
- 	AC_MSG_RESULT([checking for OpenSSL OCSP support ... no])
-@@ -611,19 +586,19 @@
- ])
+     --libs)
+-       	echo @rpath@ @libpki_ldflags@ -L@libdir@ -lpki @libpki_ldadd@
++       	echo @rpath@ @libpki_ldflags@ -lpki @libpki_ldadd@
+        	;;
  
- AC_DEFUN(AC_GCC_CHECK_PRAGMA_IGNORED,
--[ AC_RUN_IFELSE( [
-+[ AC_RUN_IFELSE([AC_LANG_SOURCE([
- #include <stdio.h>
- #pragma GCC diagnostic ignored "-Wconversion"
- int main(void)
- {
- 	return(0);
- }
--],[ AC_DEFINE(HAVE_GCC_PRAGMA_IGNORED, 1, [GCC pragma ignored]) ], [])
-+])],[ AC_DEFINE(HAVE_GCC_PRAGMA_IGNORED, 1, [GCC pragma ignored]) ], [])
- 
- ])
- 
- AC_DEFUN(AC_GCC_CHECK_PRAGMA_POP,
--[ AC_RUN_IFELSE( [
-+[ AC_RUN_IFELSE([AC_LANG_SOURCE([
- #include <stdio.h>
- #pragma GCC diagnostic ignored "-Wconversion"
- int main(void)
-@@ -631,7 +606,7 @@
- 	return(0);
- }
- #pragma GCC diagnostic pop
--], [ AC_DEFINE(HAVE_GCC_PRAGMA_POP, 1, [GCC pragma pop]) ], [])
-+])], [ AC_DEFINE(HAVE_GCC_PRAGMA_POP, 1, [GCC pragma pop]) ], [])
- 
- ])
- 
+     *)

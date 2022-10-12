@@ -15,10 +15,9 @@ Need to include $(top_srcdir)/src because not all headers are available in
 $(top_builddir)/src/libpki.
 
 The option -ggdb doesn't work with Studio.
-
---- libpki-0.8.9/Makefile.am	2016-06-01 15:47:17.703517449 -0700
-+++ libpki-0.8.9/Makefile.am	2016-06-01 18:14:09.941087309 -0700
-@@ -89,8 +89,6 @@
+--- old/Makefile.am	2023-01-11 11:29:37.704474740 +0100
++++ new/Makefile.am	2023-01-11 11:30:29.745478695 +0100
+@@ -88,8 +88,6 @@ TESTS = src/tests/test1 \
   	src/tests/test4 \
   	src/tests/test5 \
   	src/tests/test6 \
@@ -27,9 +26,9 @@ The option -ggdb doesn't work with Studio.
  	src/tests/test9
  
  rebuild::
---- libpki-0.8.9/docs/Makefile.am	2016-06-01 15:47:48.571731471 -0700
-+++ libpki-0.8.9/docs/Makefile.am	2016-06-01 18:16:44.901744754 -0700
-@@ -36,10 +36,11 @@
+--- old/docs/Makefile.am	2023-01-11 11:29:37.709511134 +0100
++++ new/docs/Makefile.am	2023-01-11 11:30:29.750562576 +0100
+@@ -36,10 +36,11 @@ install-man::
  install-data-am: install-man
  	@$(NORMAL_INSTALL) ; \
          $(mkinstalldirs) $(DESTDIR)$(exec_prefix)/share; \
@@ -43,9 +42,9 @@ The option -ggdb doesn't work with Studio.
              fi \
            done
  
---- libpki-0.8.9/etc/Makefile.am	2016-06-01 15:47:16.927275667 -0700
-+++ libpki-0.8.9/etc/Makefile.am	2016-06-07 14:20:52.853719021 -0700
-@@ -12,42 +12,42 @@
+--- old/etc/Makefile.am	2023-01-11 11:29:37.714433892 +0100
++++ new/etc/Makefile.am	2023-01-11 11:30:29.755605825 +0100
+@@ -12,42 +12,42 @@ TOKENS     = token.d/*.xml
  HSMS       = hsm.d/*.xml
  STORES     = store.d/*.xml
  CONFIGS    = *.xml
@@ -100,18 +99,23 @@ The option -ggdb doesn't work with Studio.
 +	@$(INSTALL_DATA) $(PKI_CONFIG) $(DESTDIR)/etc
  
  
---- libpki-0.8.9/src/Makefile.am	2016-06-01 15:47:17.732926831 -0700
-+++ libpki-0.8.9/src/Makefile.am	2016-06-09 14:49:11.713859300 -0700
-@@ -27,19 +27,20 @@
+--- old/src/Makefile.am	2023-01-11 11:29:37.719291700 +0100
++++ new/src/Makefile.am	2023-01-11 11:30:29.760441258 +0100
+@@ -23,23 +23,25 @@ SUBDIRS = $(DRIVERS) $(CRYPTO_SRC_PREFIX
+ 
+ AM_CPPFLAGS = \
+ 	-I$(top_srcdir)/src \
++	-I$(top_srcdir)/src/libpki \
+ 	$(COND_INCLUDES)
   
  nobase_include_HEADERS = \
  	libpki/*.h \
 -	libpki/net/*.h \
 -	libpki/io/*.h \
+-	libpki/est/*.h \
 -	libpki/scep/*.h \
 -	libpki/prqp/*.h \
--	libpki/lirt/*.h \
--	libpki/cms/*.h \
+-	libpki/cmc/*.h \
 -	libpki/openssl/*.h \
 -	libpki/drivers/*.h \
 -	libpki/drivers/openssl/*.h \
@@ -122,10 +126,10 @@ The option -ggdb doesn't work with Studio.
 +	$(top_srcdir)/src/libpki/*.h \
 +	$(top_srcdir)/src/libpki/net/*.h \
 +	$(top_srcdir)/src/libpki/io/*.h \
++	$(top_srcdir)/src/libpki/est/*.h \
 +	$(top_srcdir)/src/libpki/scep/*.h \
 +	$(top_srcdir)/src/libpki/prqp/*.h \
-+	$(top_srcdir)/src/libpki/lirt/*.h \
-+	$(top_srcdir)/src/libpki/cms/*.h \
++	$(top_srcdir)/src/libpki/cmc/*.h \
 +	$(top_srcdir)/src/libpki/openssl/*.h \
 +	$(top_srcdir)/src/libpki/drivers/*.h \
 +	$(top_srcdir)/src/libpki/drivers/openssl/*.h \
@@ -135,12 +139,38 @@ The option -ggdb doesn't work with Studio.
 +	$(top_srcdir)/src/libpki/drivers/kmf/*.h
  
  SRCS = \
- 	pki_init.c \
---- libpki-0.8.9/src/tests/Makefile.am	2016-06-01 15:47:33.304908175 -0700
-+++ libpki-0.8.9/src/tests/Makefile.am	2016-06-07 15:21:44.869944846 -0700
-@@ -73,4 +73,4 @@
+ 	banners.c\
+--- old/src/tests/Makefile.am	2023-01-11 11:29:37.724111603 +0100
++++ new/src/tests/Makefile.am	2023-01-11 11:30:29.765418276 +0100
+@@ -72,4 +72,4 @@ test8_CFLAGS = -I$(TOP) $(LIBPKI_MYCFLAG
  test9_SOURCES = test9.c
  test9_LDFLAGS = $(testLDFLAGS)
  test9_LDADD   = $(testLDADD)
--test9_CFLAGS = -I$(TOP) $(LIBPKI_CFLAGS) -ggdb
-+test9_CFLAGS = -I$(TOP) $(LIBPKI_CFLAGS)
+-test9_CFLAGS = -I$(TOP) $(LIBPKI_MYCFLAGS) -ggdb
++test9_CFLAGS = -I$(TOP) $(LIBPKI_MYCFLAGS)
+--- old/src/openssl/Makefile.am	2023-01-11 11:29:37.729200170 +0100
++++ new/src/openssl/Makefile.am	2023-01-11 11:30:29.770444247 +0100
+@@ -18,9 +18,9 @@ OPENSSL_INTERNAL_SRCS = \
+         internal/x509_data_st.h
+ 
+ nobase_include_HEADERS = \
+-	internal/ossl_1_0_x/*.h \
+-	internal/ossl_1_1_0/*.h \
+-	internal/ossl_1_1_1/*.h
++	$(srcdir)/internal/ossl_1_0_x/*.h \
++	$(srcdir)/internal/ossl_1_1_0/*.h \
++	$(srcdir)/internal/ossl_1_1_1/*.h
+ 
+ OPENSSL_SRCS = \
+         $(OPENSSL_INTERNAL_SRCS) \
+--- old/src/tools/Makefile.am	2023-01-11 11:29:37.734064873 +0100
++++ new/src/tools/Makefile.am	2023-01-11 11:39:20.122397093 +0100
+@@ -8,7 +8,7 @@ BASE_DEFS =
+ 
+ DEFS = $(OPENCA_DEFS)
+ 
+-LIBPKI_MYCFLAGS	 = -D__LIB_BUILD__ -I$(TOP) @pthread_opts@ @my_cflags@ @sys_cflags@
++LIBPKI_MYCFLAGS	 = -D__LIB_BUILD__ -I$(TOP) -I$(top_srcdir)/src @pthread_opts@ @my_cflags@ @sys_cflags@
+ LIBPKI_MYLDFLAGS = @my_ldflags@ @rpath@
+ 
+ AM_CPPFLAGS = -I$(TOP)

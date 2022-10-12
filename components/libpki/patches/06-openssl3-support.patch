@@ -1,0 +1,312 @@
+#
+# This Solaris specific patch provides for possibility to build
+# LibPKI with openssl-3. List of modifications:
+#
+# - MD4 is disabled, since its support resides in legacy provider
+#   which is not installed by default on Solaris
+# - global *_it variables are in openssl-3 not accessed directly,
+#   but via *_it() "getters"
+#
+--- old/src/libpki/openssl/data_st.h	2023-01-25 07:28:44.283252440 +0100
++++ new/src/libpki/openssl/data_st.h	2023-01-25 07:31:33.842584087 +0100
+@@ -70,18 +70,9 @@ typedef ASN1_BIT_STRING	PKI_X509_SIGNATU
+ 
+ // #define PKI_ALGOR_MD2		NID_md2
+ // #define PKI_DIGEST_ALG_MD2	(PKI_DIGEST_ALG *) EVP_md2()
+-#ifndef OPENSSL_FIPS
+-#ifdef NID_md4
+-#define ENABLE_MD4
+-#define PKI_ALGOR_MD4       NID_md4
+-#define PKI_ALGOR_ID_MD4    NID_md4
+-#define PKI_DIGEST_ALG_MD4	(PKI_DIGEST_ALG *) EVP_md4()
+-#else
+ #define PKI_ALGOR_MD4       NID_undef
+ #define PKI_ALGOR_ID_MD4    NID_undef
+ #define PKI_DIGEST_ALG_MD4	(PKI_DIGEST_ALG *) NULL;
+-#endif
+-#endif // FIPS_MODE
+ 
+ // Support for MD5
+ #ifdef NID_md5
+@@ -202,8 +193,6 @@ typedef ASN1_BIT_STRING	PKI_X509_SIGNATU
+ // #define PKI_ALGOR_RSA_MD2	NID_md2WithRSAEncryption
+ #define PKI_ALGOR_RSA_MD5     NID_md5WithRSAEncryption
+ #define PKI_ALGOR_ID_RSA_MD5  NID_md5WithRSAEncryption
+-#define PKI_ALGOR_RSA_MD4	    NID_md4WithRSAEncryption
+-#define PKI_ALGOR_ID_RSA_MD4  NID_md4WithRSAEncryption
+ #define PKI_ALGOR_RSA_SHA1    NID_sha1WithRSAEncryption
+ #define PKI_ALGOR_ID_RSA_SHA1 NID_sha1WithRSAEncryption
+ 
+--- old/src/libpki/prqp/prqp_asn1.h	2023-01-11 15:32:55.290764491 +0100
++++ new/src/libpki/prqp/prqp_asn1.h	2023-01-11 15:46:50.242617698 +0100
+@@ -73,7 +73,7 @@ typedef struct CertIdentifier_st {
+ // DECLARE_ASN1_SET_OF(CERT_IDENTIFIER)
+ 
+ DECLARE_ASN1_FUNCTIONS(CERT_IDENTIFIER)
+-CERT_IDENTIFIER *CERT_IDENTIFIER_dup( CERT_IDENTIFIER *cid );
++CERT_IDENTIFIER *CERT_IDENTIFIER_dup( const CERT_IDENTIFIER *cid );
+ 
+ /* ResourceIdentifier ::= SEQUENCE {
+  *      resourceId      OBJECT IDENTIFIER,
+@@ -128,7 +128,7 @@ typedef struct PRQPReq_st {
+ 
+ DECLARE_ASN1_FUNCTIONS(PKI_PRQP_REQ)
+ 
+-PKI_PRQP_REQ * PKI_PRQP_REQ_dup ( PKI_PRQP_REQ *x );
++PKI_PRQP_REQ * PKI_PRQP_REQ_dup ( const PKI_PRQP_REQ *x );
+ 
+ /* PKIStatus ::= INTEGER {
+  * 	ok		{0},
+@@ -207,7 +207,7 @@ typedef struct ResourceResponseToken_st
+ DECLARE_ASN1_FUNCTIONS(RESOURCE_RESPONSE_TOKEN)
+ DECLARE_STACK_OF(RESOURCE_RESPONSE_TOKEN)
+ 
+-RESOURCE_RESPONSE_TOKEN * RESOURCE_RESPONSE_TOKEN_dup ( RESOURCE_RESPONSE_TOKEN * p );
++RESOURCE_RESPONSE_TOKEN * RESOURCE_RESPONSE_TOKEN_dup ( const RESOURCE_RESPONSE_TOKEN * p );
+ 
+ /* TBSRespData ::= {
+  *	version		INTEGER { v(1) },
+@@ -239,7 +239,7 @@ typedef struct PRQPResponse_st {
+ 
+ DECLARE_ASN1_FUNCTIONS(PKI_PRQP_RESP)
+ 
+-PKI_PRQP_RESP * PKI_PRQP_RESP_dup ( PKI_PRQP_RESP *x );
++PKI_PRQP_RESP * PKI_PRQP_RESP_dup ( const PKI_PRQP_RESP *x );
+ 
+ /* Crypto Functionality */
+ /*
+--- old/src/openssl/pki_algor.c	2023-01-25 07:27:42.283364042 +0100
++++ new/src/openssl/pki_algor.c	2023-01-25 07:30:17.553925066 +0100
+@@ -6,7 +6,6 @@
+ const PKI_ALGOR_ID PKI_ALGOR_ID_LIST_RSA[] = {
+ //	PKI_ALGOR_RSA_MD2,
+ #ifndef OPENSSL_FIPS
+-	PKI_ALGOR_ID_RSA_MD4,
+ 	PKI_ALGOR_ID_RSA_MD5,
+ #endif
+ 	PKI_ALGOR_ID_RSA_SHA1,
+@@ -71,7 +70,6 @@ PKI_ALGOR_ID PKI_ALGOR_ID_LIST_ECDSA[] =
+ PKI_ALGOR_ID PKI_DIGEST_ALG_ID_LIST[] = {
+ //	PKI_ALGOR_MD2,
+ #ifndef OPENSSL_FIPS
+-	PKI_ALGOR_ID_MD4,
+ 	PKI_ALGOR_ID_MD5,
+ 	PKI_ALGOR_ID_DSS1,
+ #endif
+@@ -343,9 +341,6 @@ PKI_X509_ALGOR_VALUE * PKI_X509_ALGOR_VA
+ 	switch (alg_nid) {
+ 
+ 		// RSA Scheme
+-#ifdef ENABLE_MD4
+-		case PKI_ALGOR_RSA_MD4:
+-#endif
+ #ifdef ENABLE_MD5
+ 		case PKI_ALGOR_RSA_MD5:
+ #endif
+@@ -471,11 +466,6 @@ PKI_DIGEST_ALG *PKI_X509_ALGOR_VALUE_get
+ 			ret = PKI_DIGEST_ALG_get ( PKI_ALGOR_SHA1 );
+ 			break;
+ 
+-#ifdef ENABLE_MD4
+-		case PKI_ALGOR_ID_RSA_MD4:
+-			ret = PKI_DIGEST_ALG_get ( PKI_ALGOR_MD4 );
+-			break;
+-#endif
+ #ifdef ENABLE_MD5
+ 		case PKI_ALGOR_ID_RSA_MD5:
+ 			ret = PKI_DIGEST_ALG_get ( PKI_ALGOR_MD5 );
+@@ -568,7 +558,6 @@ PKI_SCHEME_ID PKI_X509_ALGOR_VALUE_get_s
+ 			ret = PKI_SCHEME_DSA;
+ 			break;
+ //		case PKI_ALGOR_RSA_MD2:
+-		case PKI_ALGOR_ID_RSA_MD4:
+ 		case PKI_ALGOR_ID_RSA_MD5:
+ 		case PKI_ALGOR_ID_RSA_SHA1:
+ #ifdef ENABLE_SHA224
+@@ -716,11 +705,6 @@ PKI_DIGEST_ALG *PKI_DIGEST_ALG_get ( PKI
+ 	PKI_DIGEST_ALG * ret = NULL;
+ 
+ 	switch ( id ) {
+-#ifdef ENABLE_MD4
+-		case PKI_ALGOR_MD4:
+-			ret = PKI_DIGEST_ALG_MD4;
+-			break;
+-#endif
+ #ifdef ENABLE_MD5
+ 		case PKI_ALGOR_MD5:
+ 			ret = PKI_DIGEST_ALG_MD5;
+--- old/src/openssl/pki_x509_cert.c	2023-01-19 15:31:09.785877915 +0100
++++ new/src/openssl/pki_x509_cert.c	2023-01-19 16:20:10.284169236 +0100
+@@ -437,7 +437,7 @@ PKI_X509_CERT * PKI_X509_CERT_new (const
+               EC_KEY_set_conv_form(certPubKeyVal->pkey.ec, 
+               			   (point_conversion_form_t) kParams->ec.form);
+ # else
+-              EC_KEY_set_conv_form(EVP_PKEY_get0_EC_KEY(certPubKeyVal), 
++              EC_KEY_set_conv_form((EC_KEY *) EVP_PKEY_get0_EC_KEY(certPubKeyVal),
+               (point_conversion_form_t) kParams->ec.form);
+ # endif
+             }
+@@ -447,7 +447,7 @@ PKI_X509_CERT * PKI_X509_CERT_new (const
+             EC_KEY_set_asn1_flag(certPubKeyVal->pkey.ec,
+               kParams->ec.asn1flags );
+ # else
+-            EC_KEY_set_asn1_flag(EVP_PKEY_get0_EC_KEY(certPubKeyVal),
++            EC_KEY_set_asn1_flag((EC_KEY *) EVP_PKEY_get0_EC_KEY(certPubKeyVal),
+               kParams->ec.asn1flags );
+ # endif
+           }
+@@ -609,7 +609,7 @@ int PKI_X509_CERT_sign(PKI_X509_CERT *ce
+ 
+   // All Done
+   return PKI_OK;
+-};
++}
+ 
+ /*!
+  * \brief Signs a PKI_X509_CERT by using a configured PKI_TOKEN
+@@ -634,7 +634,7 @@ int PKI_X509_CERT_sign_tk ( PKI_X509_CER
+ 
+   // Signs the Certificate
+   return PKI_X509_CERT_sign(cert, kp, digest);
+-};
++}
+ 
+ 
+ /*! \brief Adds a specific extension to a certificate
+--- old/src/openssl/pki_x509_req.c	2023-01-19 15:49:46.508915195 +0100
++++ new/src/openssl/pki_x509_req.c	2023-01-19 16:20:21.230197494 +0100
+@@ -103,7 +103,6 @@ PKI_X509_REQ *PKI_X509_REQ_new(const PKI
+ 	if((val = req->cb->create()) == NULL ) {
+ 		PKI_ERROR(PKI_ERR_OBJECT_CREATE, NULL );
+ 		goto err;
+-		return ( NULL );
+ 	}
+ 
+ 	req->value = val;
+@@ -167,7 +166,7 @@ PKI_X509_REQ *PKI_X509_REQ_new(const PKI
+ 				case PKI_SCHEME_ECDSA:
+     				if ( kParams->ec.form != PKI_EC_KEY_FORM_UNKNOWN ) {
+ # if OPENSSL_VERSION_NUMBER > 0x1010000fL
+-    					EC_KEY_set_conv_form(EVP_PKEY_get0_EC_KEY(kVal),
++    					EC_KEY_set_conv_form((EC_KEY *) EVP_PKEY_get0_EC_KEY(kVal),
+ 							     (point_conversion_form_t)kParams->ec.form);
+ # else
+     					EC_KEY_set_conv_form(kVal->pkey.ec, (point_conversion_form_t)kParams->ec.form);
+--- old/src/openssl/pki_ocsp_resp.c	2023-01-19 15:28:04.750722938 +0100
++++ new/src/openssl/pki_ocsp_resp.c	2023-01-19 15:54:12.180562880 +0100
+@@ -703,7 +703,7 @@ const void * PKI_X509_OCSP_RESP_get_data
+ 			}
+ #if OPENSSL_VERSION_NUMBER > 0x1010000fL
+ 			mem->size = (size_t)ASN1_item_i2d((void *)&(tmp_x->tbsResponseData),
+-				&(mem->data), &OCSP_RESPDATA_it );
++				&(mem->data), OCSP_RESPDATA_it() );
+ #else
+ 			mem->size = (size_t)ASN1_item_i2d((void *)tmp_x->tbsResponseData, 
+ 				&(mem->data), &OCSP_RESPDATA_it );
+--- old/src/pki_x509.c	2023-01-19 15:29:01.248519450 +0100
++++ new/src/pki_x509.c	2023-01-19 15:58:47.310497214 +0100
+@@ -44,7 +44,7 @@ PKI_TBS_ASN1 * __datatype_get_asn1_ref(P
+ 	switch (type) {
+ 
+ 		case PKI_DATATYPE_X509_CERT : {
+-			it = &X509_CINF_it;
++			it = X509_CINF_it();
+ #if OPENSSL_VERSION_NUMBER > 0x1010000fL
+ 			p = &(((LIBPKI_X509_CERT *)v)->cert_info);
+ #else
+@@ -53,7 +53,7 @@ PKI_TBS_ASN1 * __datatype_get_asn1_ref(P
+ 		} break;
+ 
+ 		case PKI_DATATYPE_X509_CRL : {
+-			it = &X509_CRL_INFO_it;
++			it = X509_CRL_INFO_it();
+ #if OPENSSL_VERSION_NUMBER > 0x1010000fL
+ 			p = &(((PKI_X509_CRL_VALUE *)v)->crl);
+ #else
+@@ -62,7 +62,7 @@ PKI_TBS_ASN1 * __datatype_get_asn1_ref(P
+ 		} break;
+ 
+ 		case PKI_DATATYPE_X509_REQ : {
+-			it = &X509_REQ_INFO_it;
++			it = X509_REQ_INFO_it();
+ #if OPENSSL_VERSION_NUMBER > 0x1010000fL
+ 			p = &(((LIBPKI_X509_REQ *)v)->req_info);
+ #else
+@@ -71,7 +71,7 @@ PKI_TBS_ASN1 * __datatype_get_asn1_ref(P
+ 		} break;
+ 
+ 		case PKI_DATATYPE_X509_OCSP_REQ : {
+-			it = &OCSP_REQINFO_it;
++			it = OCSP_REQINFO_it();
+ #if OPENSSL_VERSION_NUMBER > 0x1010000fL
+ 			p = &(((PKI_X509_OCSP_REQ_VALUE *)v)->tbsRequest);
+ #else
+@@ -80,7 +80,7 @@ PKI_TBS_ASN1 * __datatype_get_asn1_ref(P
+ 		} break;
+ 
+ 		case PKI_DATATYPE_X509_OCSP_RESP : {
+-			it = &OCSP_RESPDATA_it;
++			it = OCSP_RESPDATA_it();
+ #if OPENSSL_VERSION_NUMBER > 0x1010000fL
+ 			p = &(((PKI_OCSP_RESP *)v)->bs->tbsResponseData);
+ #else
+@@ -89,17 +89,17 @@ PKI_TBS_ASN1 * __datatype_get_asn1_ref(P
+ 		} break;
+ 
+ 		case PKI_DATATYPE_X509_PRQP_REQ : {
+-			it = &PKI_PRQP_REQ_it;
++			it = PKI_PRQP_REQ_it();
+ 			p = ((PKI_X509_PRQP_REQ_VALUE *)v)->requestData;
+ 		} break;
+ 
+ 		case PKI_DATATYPE_X509_PRQP_RESP : {
+-			it = &PKI_PRQP_RESP_it;
++			it = PKI_PRQP_RESP_it();
+ 			p = ((PKI_X509_PRQP_RESP_VALUE *)v)->respData;
+ 		} break;
+ 
+ 		case PKI_DATATYPE_X509_CMS : {
+-			it = &CMS_ContentInfo_it;
++			it = CMS_ContentInfo_it();
+ 			p = NULL;
+ 		}
+ 
+@@ -322,7 +322,7 @@ int PKI_X509_set_modified ( PKI_X509 *x
+ 
+ 	return PKI_OK;
+ 
+-};
++}
+ 
+ /*! \brief Returns the type of a PKI_X509 object */
+ 
+@@ -349,7 +349,7 @@ const char * PKI_X509_get_type_parsed(co
+ 		i++;
+ 	};
+ 	return __parsed_datatypes[0].descr;
+-};
++}
+ 
+ /*! \brief Sets the HSM reference in a PKI_X509 object */
+ 
+--- old/src/token.c	2023-01-25 07:28:11.549353390 +0100
++++ new/src/token.c	2023-01-25 07:31:11.946373225 +0100
+@@ -971,7 +971,6 @@ int PKI_TOKEN_set_algor(PKI_TOKEN *tk, P
+  *
+  * Possible algoritms names are: 
+  *   RSA-MD2
+- *   RSA-MD4
+  *   RSA-MD5
+  *   RSA-SHA1
+  *   DSA-SHA1
+--- old/src/tools/Makefile.am	2023-01-11 19:40:51.995360221 +0100
++++ new/src/tools/Makefile.am	2023-01-11 19:40:59.259699053 +0100
+@@ -8,7 +8,7 @@ BASE_DEFS =
+ 
+ DEFS = $(OPENCA_DEFS)
+ 
+-LIBPKI_MYCFLAGS	 = -D__LIB_BUILD__ -I$(TOP) -I$(top_srcdir)/src @pthread_opts@ @my_cflags@ @sys_cflags@
++LIBPKI_MYCFLAGS	 = -D__LIB_BUILD__ -I$(TOP) -I$(top_srcdir)/src $(openssl_cflags) @pthread_opts@ @my_cflags@ @sys_cflags@
+ LIBPKI_MYLDFLAGS = @my_ldflags@ @rpath@
+ 
+ AM_CPPFLAGS = -I$(TOP)

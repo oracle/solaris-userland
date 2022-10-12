@@ -6,23 +6,22 @@ zero-sized struct/union.
 
 void function cannot return value. gcc just ignores it, but Studio considers
 it as an error.
-
---- libpki-0.8.9/src/libpki/openssl/data_st.h	2015-11-10 13:50:27.428271277 -0800
-+++ libpki-0.8.9/src/libpki/openssl/data_st.h	2016-02-05 10:23:52.741804145 -0800
-@@ -425,7 +425,9 @@
- 		int exponent;
- 	} rsa;
+--- old/src/libpki/openssl/data_st.h	2022-10-12 16:37:03.354898634 +0200
++++ new/src/libpki/openssl/data_st.h	2022-10-12 16:39:43.203737335 +0200
+@@ -549,7 +549,9 @@ typedef struct pki_keyparams_st {
  	// DSA scheme parameters
+ 
+ #ifdef OPENSSL_NO_DSA
 -	struct {} dsa;
 +	struct {
 +		int dummy;
 +	} dsa;
+ #endif
  
  #ifdef ENABLE_ECDSA
- 	// EC scheme parameters
---- libpki-0.8.9/src/pki_mem.c	2015-11-10 13:50:29.132816749 -0800
-+++ libpki-0.8.9/src/pki_mem.c	2016-02-05 10:42:12.359660890 -0800
-@@ -322,7 +322,10 @@
+--- old/src/pki_mem.c	2022-10-12 16:37:18.483772542 +0200
++++ new/src/pki_mem.c	2022-10-12 16:39:31.797142906 +0200
+@@ -327,7 +327,10 @@ void PKI_ZFree ( void *pnt, size_t size
  	if (!pnt) return;
  
  	/* If No size is provided, normal PKI_Free() is used */
