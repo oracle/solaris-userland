@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -29,19 +29,18 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		meson
-COMPONENT_VERSION=	0.59.2
+COMPONENT_VERSION=	0.63.3
 COMPONENT_PROJECT_URL=	http://mesonbuild.com/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:13dee549a7ba758b7e33ce7719f28d1d337a98d10d378a4779ccc996f5a2fc49
+    sha256:519c0932e1a8b208741f0fdce90aa5c0b528dd297cf337009bf63539846ac056
 COMPONENT_ARCHIVE_URL=	https://github.com/mesonbuild/meson/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
-COMPONENT_BUGDB=        utility/meson
+COMPONENT_BUGDB=	utility/meson
 COMPONENT_ANITYA_ID=	6472
+COMPONENT_BAID=		131204
 
-COMPONENT_BAID=		109353
-
-# As of 0.57.0, meson requires Python 3.6 or newer, and we only need
+# As of 0.62.0, meson requires Python 3.7 or newer, and we only need
 # to build for a single version, not all of them.
 PYTHON_VERSIONS=	$(PYTHON_VERSION)
 
@@ -49,8 +48,15 @@ BUILD_STYLE= setup.py
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Assumes GNU msgfmt is first in PATH
-PYTHON_ENV += PATH="$(GCC_ROOT)/bin:$(GNUBIN):$(USRBINDIR64):$(USRBINDIR):$(SPRO_VROOT)/bin"
+# Assumes GNU msgfmt is first in PATH, hence $(GNUBIN) before $(USRBINDIR).
+#
+# $(USRBINDIR64) must also be ahead of $(USRBINDIR) for the wxwidgets test
+# to find the correct version of wx-config for building 64-bit binaries.
+#
+# $(GNUBIN)/$(MACH64) must also be ahead of $(GNUBIN) for the ncurses test
+# to find the correct version of ncursesw5-config for building 64-bit binaries.
+PYTHON_ENV += \
+ PATH="$(GCC_ROOT)/bin:$(GNUBIN)/$(MACH64):$(GNUBIN):$(USRBINDIR64):$(USRBINDIR)"
 
 COMPONENT_PRE_INSTALL_ACTION += \
 	$(RM) -r $(PROTOUSRSHAREDIR) ;
@@ -63,12 +69,23 @@ COMPONENT_TEST_CMD=	./run_tests.py
 COMPONENT_TEST_ARGS=
 COMPONENT_TEST_MASTER=	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
+# 'test cases/common/230 external project' fails if /usr/bin/make is used
+# due to Solaris make bug 15352407 not handling $< in explicit rules unless
+# the GNU compatibility mode is enabled.  Using GNU make directly is easier.
+COMPONENT_TEST_ENV +=	MAKE=$(GMAKE)
+
+# We put /usr/gnu/bin ahead of /usr/bin in the $PATH above, but we also
+# need to make sure we run /usr/bin/ar instead of /usr/gnu/bin/ar or
+# many tests will fail.
+COMPONENT_TEST_ENV +=	AR=/usr/bin/ar
+
 # Test transforms retain only reproducible summaries of results output.
 # -E flag enables extended regular expressions, so that | can be used
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/^Total .*time:/d" ' \
         '-e "s/[0-9][0-9\.]* *s//" ' \
+        '-e "s/ED \[[ 1][ 0-9][0-9]%\]$$/ED/" ' \
         '-e "/^Total/p" ' \
         '-E -e "/(^test| \.\.\. |PASS|FAIL|ERROR)/p" '
 

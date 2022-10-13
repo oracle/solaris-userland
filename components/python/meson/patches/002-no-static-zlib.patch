@@ -1,0 +1,23 @@
+Since we only ship shared libz.so on Solaris and not static libz.a, the
+tests to statically link with libz cannot work, but the code to detect
+the dependency is not correctly detecting the lack of a static library
+so it's not skipping the test as it should.
+
+For now, we disable the runs of this test case with -Dstatic=true until
+we can figure out how to fix the library detection to correctly report
+there is no static library.
+
+Reported upstream: https://github.com/mesonbuild/meson/issues/10906
+
+diff --git a/test cases/rust/13 external c dependencies/test.json b/test cases/rust/13 external c dependencies/test.json
+index 423581ff6..06833a72d 100644
+--- a/test cases/rust/13 external c dependencies/test.json	
++++ b/test cases/rust/13 external c dependencies/test.json	
+@@ -2,7 +2,6 @@
+   "matrix": {
+     "options": {
+       "static": [
+-        { "val": true },
+         { "val": false }
+       ],
+       "method": [

@@ -39,13 +39,7 @@
 CONFIGURE_PREFIX ?=	/usr
 
 # When debugging a component, override this to be debug or debugoptimized
-MESON_BUILDTYPE ?=	plain
-
-ifeq ($(strip $(MESON_BUILDTYPE)), debug)
-MESON_OPTIMIZATION ?=	g
-else
-MESON_OPTIMIZATION ?=	3
-endif
+MESON_BUILDTYPE ?=	release
 
 MESON_BUILDPIE ?=	true
 
@@ -97,6 +91,9 @@ ifneq  ($(strip $(CONFIGURE_CPPFLAGS) $(CPPFLAGS)),)
 CONFIGURE_ENV += CPPFLAGS="$(strip $(CONFIGURE_CPPFLAGS) $(CPPFLAGS))"
 endif
 CONFIGURE_ENV += LDFLAGS="$(strip $(LDFLAGS))"
+# meson builds invalid *.a files if GNU ar is used, so force use of
+# Solaris ar no matter what the $PATH order is.
+CONFIGURE_ENV += AR=/usr/bin/ar
 
 # Ensure that 64-bit versions of *-config scripts are preferred.
 CONFIGURE_ENV.64 += PATH="$(USRBIN.64):$(PATH)"
@@ -104,7 +101,9 @@ CONFIGURE_ENV.64 += PATH="$(USRBIN.64):$(PATH)"
 # Options here should be limited to the built-in options listed on
 # https://mesonbuild.com/Builtin-options.html
 CONFIGURE_OPTIONS += --buildtype=$(MESON_BUILDTYPE)
+ifdef MESON_OPTIMIZATION
 CONFIGURE_OPTIONS += --optimization=$(MESON_OPTIMIZATION)
+endif
 CONFIGURE_OPTIONS += -Ddefault_library=shared
 CONFIGURE_OPTIONS += -Db_pie=$(MESON_BUILDPIE)
 
@@ -149,10 +148,13 @@ MESON = 	/usr/bin/meson
 # Create a native file to override what meson finds when looking for 'python'
 # or 'python3'. This allows us to set a specific version in our Makefile and
 # use versions other than the current system default.
+# We also use this mechanism to force use of the GNU msgfmt & xgettext tools
+# since meson uses options not compatible with the Solaris versions.
 CFG=native.cfg
 $(BUILD_DIR)/config-%/$(CFG):
 	$(MKDIR) $(@D)
-	echo "[binaries]\npython = '$(PYTHON)'\n" > $@
+	echo "[binaries]\npython = '$(PYTHON)'" > $@
+	echo "msgfmt = '$(GNUBIN)/msgfmt'\nxgettext = '$(GNUBIN)/xgettext'" >> $@
 
 # configure the unpacked source for building 32 and 64 bit version
 # meson insists on separate source & build directories, so no cloney here.

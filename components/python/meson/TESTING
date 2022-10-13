@@ -1,10 +1,11 @@
 'gmake test' runs the full test suite.
 
 To run individual unit test cases:
-    python3.7 meson-0.54.3/run_unittests.py -k <test>
+    cd meson-0.63.3
+    ./run_unittests.py -k <test>
 
 For example, to run the test_flock unit test:
-    python3.7 meson-0.54.3/run_unittests.py -k test_flock
+    ./run_unittests.py -k test_flock
 
 For other test cases, cd to the test case directory and run:
     env PKG_CONFIG_PATH=/usr/lib/64/pkgconfig python3 \
@@ -16,12 +17,11 @@ For other test cases, cd to the test case directory and run:
 Known, unfixed issues:
 
 ======================================================================
-FAIL: test_flock (__main__.AllPlatformTests)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "run_unittests.py", line 2825, in test_flock
-    self.assertTrue(exception_raised, 'Double locking did not raise exception.')
-AssertionError: False is not true : Double locking did not raise exception.
+run_unittests.py::AllPlatformTests::test_flock <- unittests/allplatformstests.py FAILED
+
+_________________________ AllPlatformTests.test_flock __________________________
+>   self.assertTrue(exception_raised, 'Double locking did not raise exception.')
+E   AssertionError: False is not true : Double locking did not raise exception.
 
 -- This appears to be because the test tries to lock the file twice
    in the same process, but the fcntl calls underlying Python's fcntl.flock()
@@ -30,36 +30,6 @@ AssertionError: False is not true : Double locking did not raise exception.
    process for this test?
 
    Reported upstream as https://github.com/mesonbuild/meson/issues/5903
-
-======================================================================
-FAIL: test_installed_modes (__main__.LinuxlikeTests)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "run_unittests.py", line 4579, in test_installed_modes
-    self.assertEqual(want_mode, found_mode[1:])
-AssertionError: 'rw------T' != 'rw-------'
-- rw------T
-?         ^
-+ rw-------
-?         ^
-
-FAIL: test_installed_modes_extended (__main__.LinuxlikeTests)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "run_unittests.py", line 4654, in test_installed_modes_extended
-    (fsobj, want_mode, found_mode)))
-AssertionError: '-r--r--r-T' != '-r--r--r--'
-- -r--r--r-T
-?          ^
-+ -r--r--r--
-?          ^
- : Expected file include/rootdir.h to have mode -r--r--r-T but found -r--r--r-- instead.
-
--- These appear to be because Solaris chmod(2) has an additional restriction:
-       If the process is not a privileged process and the file is not a direc-
-       tory, mode bit 01000 (S_ISVTX, the sticky bit) is cleared.
-
-   Reported upstream as https://github.com/mesonbuild/meson/issues/5902
 
 ======================================================================
 [4/6] Linking target libsample.so.

@@ -12,23 +12,23 @@ Subject: [PATCH] Meson should set correctly host_machine.cpu_family for 32bit
  builds
 
 ---
---- meson-0.59.2/mesonbuild/compilers/detect.py
-+++ meson-0.59.2/mesonbuild/compilers/detect.py
-@@ -1162,7 +1162,7 @@ Detect GNU compiler platform type (Apple
+--- meson-0.63.3/mesonbuild/compilers/detect.py
++++ meson-0.63.3/mesonbuild/compilers/detect.py
+@@ -1230,7 +1230,7 @@ Detect GNU compiler platform type (Apple
      """
      # Arguments to output compiler pre-processor defines to stdout
      # gcc, g++, and gfortran all support these arguments
 -    args = compiler + ['-E', '-dM', '-']
 +    args = compiler + os.environ.get('CFLAGS', '').split() + ['-E', '-dM', '-']
+     mlog.debug(f'Running command: {join_args(args)}')
      p, output, error = Popen_safe(args, write='', stdin=subprocess.PIPE)
      if p.returncode != 0:
-         raise EnvironmentException('Unable to detect GNU compiler type:\n' + output + error)
-@@ -1186,7 +1186,7 @@ def _get_clang_compiler_defines(compiler
+@@ -1257,7 +1257,7 @@ def _get_clang_compiler_defines(compiler
      """
      Get the list of Clang pre-processor defines
      """
 -    args = compiler + ['-E', '-dM', '-']
 +    args = compiler + os.environ.get('CFLAGS', '').split() + ['-E', '-dM', '-']
+     mlog.debug(f'Running command: {join_args(args)}')
      p, output, error = Popen_safe(args, write='', stdin=subprocess.PIPE)
      if p.returncode != 0:
-         raise EnvironmentException('Unable to get clang pre-processor defines:\n' + output + error)
