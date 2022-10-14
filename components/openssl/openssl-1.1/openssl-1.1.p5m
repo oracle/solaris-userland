@@ -22,7 +22,6 @@
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through uncommitted">
-<transform link mediator=openssl -> default mediator-implementation default@1.1>
 set name=pkg.fmri \
     value=pkg:/library/security/openssl-11@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
@@ -49,67 +48,12 @@ file files/audit_tags \
     path=etc/security/audit_tags.d/library:security:openssl-1.1 group=sys
 file files/exec_attr \
     path=etc/security/exec_attr.d/library:security:openssl-1.1 group=sys
-link path=lib/$(MACH64)/libcrypto.so target=libcrypto.so.1.1 mediator=openssl \
-    pkg.linted.pkglint.dupaction010.2=true
-link path=lib/$(MACH64)/libcrypto.so.1.0.0 \
-    target=../openssl/default/$(MACH64)/libcrypto.so.1.0.0 mediator=openssl
 link path=lib/$(MACH64)/libcrypto.so.1.1 \
     target=../../usr/openssl/1.1/lib/$(MACH64)/libcrypto.so.1.1
-
-# 64 bit libraries
-link path=lib/$(MACH64)/libssl.so target=libssl.so.1.1 mediator=openssl \
-    pkg.linted.pkglint.dupaction010.2=true
-link path=lib/$(MACH64)/libssl.so.1.0.0 \
-    target=../openssl/default/$(MACH64)/libssl.so.1.0.0 mediator=openssl
 link path=lib/$(MACH64)/libssl.so.1.1 \
     target=../../usr/openssl/1.1/lib/$(MACH64)/libssl.so.1.1
-
-# lint libraries links
-link path=lib/$(MACH64)/llib-lcrypto.ln \
-    target=../../usr/openssl/1.1/lib/$(MACH64)/llib-lcrypto.ln mediator=openssl
-link path=lib/$(MACH64)/llib-lssl.ln \
-    target=../../usr/openssl/1.1/lib/$(MACH64)/llib-lssl.ln mediator=openssl
-link path=lib/libcrypto.so target=libcrypto.so.1.1 mediator=openssl \
-    pkg.linted.pkglint.dupaction010.2=true
-link path=lib/libcrypto.so.1.0.0 target=openssl/default/libcrypto.so.1.0.0 \
-    mediator=openssl
 link path=lib/libcrypto.so.1.1 target=../usr/openssl/1.1/lib/libcrypto.so.1.1
-link path=lib/libssl.so target=libssl.so.1.1 mediator=openssl \
-    pkg.linted.pkglint.dupaction010.2=true
-link path=lib/libssl.so.1.0.0 target=openssl/default/libssl.so.1.0.0 \
-    mediator=openssl
 link path=lib/libssl.so.1.1 target=../usr/openssl/1.1/lib/libssl.so.1.1
-link path=lib/llib-lcrypto.ln target=../usr/openssl/1.1/lib/llib-lcrypto.ln \
-    mediator=openssl
-link path=lib/llib-lssl.ln target=../usr/openssl/1.1/lib/llib-lssl.ln \
-    mediator=openssl
-
-# binaries
-link path=usr/bin/CA.pl target=../openssl/1.1/bin/CA.pl mediator=openssl
-link path=usr/bin/c_rehash target=../openssl/1.1/bin/c_rehash mediator=openssl \
-    pkg.linted.pkglint.dupaction010.1=true
-
-# Commands (only 64-bit openssl(1) is delivered)
-link path=usr/bin/openssl target=../openssl/1.1/bin/openssl mediator=openssl
-
-# Header files
-link path=usr/include/openssl target=../openssl/1.1/include/openssl \
-    mediator=openssl
-# 64-bit pkg-config links
-link path=usr/lib/$(MACH64)/pkgconfig/libcrypto.pc \
-    target=../../../openssl/1.1/pkgconfig/64/libcrypto.pc mediator=openssl \
-    pkg.linted.pkglint.dupaction010.1=true
-link path=usr/lib/$(MACH64)/pkgconfig/libssl.pc \
-    target=../../../openssl/1.1/pkgconfig/64/libssl.pc mediator=openssl \
-    pkg.linted.pkglint.dupaction010.1=true
-
-# 32-bit pkg-config links
-link path=usr/lib/pkgconfig/libcrypto.pc \
-    target=../../openssl/1.1/pkgconfig/32/libcrypto.pc mediator=openssl \
-    pkg.linted.pkglint.dupaction010.1=true
-link path=usr/lib/pkgconfig/libssl.pc \
-    target=../../openssl/1.1/pkgconfig/32/libssl.pc mediator=openssl \
-    pkg.linted.pkglint.dupaction010.1=true
 file etc/openssl/1.1/misc/CA.pl path=usr/openssl/1.1/bin/CA.pl
 file path=usr/openssl/1.1/bin/c_rehash owner=root group=bin mode=0555
 file $(MACH64)/apps/openssl path=usr/openssl/1.1/bin/openssl owner=root \
@@ -8686,13 +8630,6 @@ file release-notes/openssl-11.txt \
     path=usr/share/doc/release-notes/openssl-11.txt mode=0444 \
     must-display=true release-note=feature/pkg/self@0
 license openssl-1.1.license license="OpenSSL, SSLeay"
-# OpenSSL packages are now managed by 'pkg mediator', and the installation
-# of 'openssl-fips-140' package requires 'openssl' package with the mediator
-# changes.
-depend type=optional \
-    fmri=library/security/openssl/openssl-fips-140@2.0.15-11.4.21.0.1.69.0
-depend type=optional fmri=library/security/openssl@1.0.2.20-11.4.21.0.1.69.0
-
 # Force a dependency on the Perl runtime. This is needed because of the CA.pl
 # and c_rehash scripts.
 depend type=require fmri=__TBD pkg.debug.depend.file=perl \
