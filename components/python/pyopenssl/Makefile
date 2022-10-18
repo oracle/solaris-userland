@@ -76,6 +76,9 @@ $(MANIFEST_BASE)-%-37.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
 $(MANIFEST_BASE)-%-27.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
 $(MANIFEST_BASE)-%-37.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
 
+# Make sure that prep is always executed correctly and entirely (see 34726564).
+build install publish test: prep
+
 # Manifest convenience variables.
 NEW_ONLY = \#
 OLD_ONLY =

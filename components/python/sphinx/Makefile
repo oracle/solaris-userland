@@ -58,12 +58,7 @@ BITS =		64
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =	-v
-
-# Failing tests were reported upstream:
-# https://github.com/sphinx-doc/sphinx/issues/9741
-COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS +=	'-n -e "/::.*FAILED/p"'
+COMPONENT_TEST_ARGS =
 
 PKG_MACROS +=	PYVER=$(PYTHON_VERSION)
 PKG_MACROS +=	PYV=$(shell echo $(PYTHON_VERSION) | tr -d .)

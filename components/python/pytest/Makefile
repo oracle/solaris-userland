@@ -26,16 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pytest
-COMPONENT_VERSION=	7.0.0
+COMPONENT_VERSION=	7.1.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0217d9912052b44f4cf9337c98b735b94cecc870b52cb4bcdb2ac52d3755f9fd
+    sha256:e2f6e91c0025003be74334dea914ed66a712ab7732e9a7b5dd9095c3b3bddc89
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pytest.org/latest/
 COMPONENT_BUGDB=	python-mod/pytest
 COMPONENT_ANITYA_ID=	3765
-COMPONENT_BAID=		116651
+COMPONENT_BAID=		131846
 
 # This component is delivered in two different versions because
 # the newer one is no longer Python 2.7 compatible.

@@ -4,8 +4,12 @@ test_pdb_continue_with_recursive_debug breaks for yet unknown reasons and
 should be investigated more (though it's not a core functionality we are
 using Pytest for).
 
---- pytest-7.0.0/testing/test_junitxml.py
-+++ pytest-7.0.0/testing/test_junitxml.py
+Other test_debugging tests, while marked xfail, sometimes pass causing the
+test to fail. This is known in upsteam:
+https://github.com/pytest-dev/pytest/issues/10042
+
+--- pytest-7.1.3/testing/test_junitxml.py
++++ pytest-7.1.3/testing/test_junitxml.py
 @@ -10,9 +10,8 @@ from typing import TYPE_CHECKING
  from typing import Union
  from xml.dom import minidom
@@ -17,9 +21,36 @@ using Pytest for).
  from _pytest.config import Config
  from _pytest.junitxml import bin_xml_escape
  from _pytest.junitxml import LogXML
---- pytest-7.0.0/testing/test_debugging.py
-+++ pytest-7.0.0/testing/test_debugging.py
-@@ -655,6 +655,7 @@ class TestPDB:
+--- pytest-7.1.3/testing/test_debugging.py
++++ pytest-7.1.3/testing/test_debugging.py
+@@ -353,7 +353,7 @@ class TestPDB:
+         result = pytester.runpytest_subprocess("--pdb", ".")
+         result.stdout.fnmatch_lines(["-> import unknown"])
+ 
+-    @pytest.mark.xfail(reason="#10042")
++    @pytest.mark.skip("Doesn't work well")
+     def test_pdb_interaction_capturing_simple(self, pytester: Pytester) -> None:
+         p1 = pytester.makepyfile(
+             """
+@@ -522,7 +522,7 @@ class TestPDB:
+         assert "BdbQuit" not in rest
+         assert "UNEXPECTED EXCEPTION" not in rest
+ 
+-    @pytest.mark.xfail(reason="#10042")
++    @pytest.mark.skip("Doesn't work well")
+     def test_pdb_interaction_capturing_twice(self, pytester: Pytester) -> None:
+         p1 = pytester.makepyfile(
+             """
+@@ -558,7 +558,7 @@ class TestPDB:
+         assert "1 failed" in rest
+         self.flush(child)
+ 
+-    @pytest.mark.xfail(reason="#10042")
++    @pytest.mark.skip("Doesn't work well")
+     def test_pdb_with_injected_do_debug(self, pytester: Pytester) -> None:
+         """Simulates pdbpp, which injects Pdb into do_debug, and uses
+         self.__class__ in do_continue.
+@@ -650,6 +650,7 @@ class TestPDB:
          child.expect("1 passed")
          self.flush(child)
  
@@ -27,3 +58,21 @@ using Pytest for).
      @pytest.mark.parametrize("capture_arg", ("", "-s", "-p no:capture"))
      def test_pdb_continue_with_recursive_debug(
          self, capture_arg, pytester: Pytester
+@@ -1003,7 +1004,7 @@ class TestDebuggingBreakpoints:
+         assert "reading from stdin while output" not in rest
+         TestPDB.flush(child)
+ 
+-    @pytest.mark.xfail(reason="#10042")
++    @pytest.mark.skip("Doesn't work well")
+     def test_pdb_not_altered(self, pytester: Pytester) -> None:
+         p1 = pytester.makepyfile(
+             """
+@@ -1163,7 +1164,7 @@ def test_quit_with_swallowed_SystemExit(
+ 
+ 
+ @pytest.mark.parametrize("fixture", ("capfd", "capsys"))
+-@pytest.mark.xfail(reason="#10042")
++@pytest.mark.skip("Doesn't work well")
+ def test_pdb_suspends_fixture_capturing(pytester: Pytester, fixture: str) -> None:
+     """Using "-s" with pytest should suspend/resume fixture capturing."""
+     p1 = pytester.makepyfile(

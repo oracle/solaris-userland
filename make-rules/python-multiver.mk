@@ -61,6 +61,9 @@ $(MANIFEST_BASE)-%-27.mangled: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
 $(MANIFEST_BASE)-%-27.depend: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
 $(MANIFEST_BASE)-%-27.published: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
 
+# Make sure that prep is always executed correctly and entirely (see 34726564).
+build install publish test: prep
+
 # The following two variables can be used within manifests to
 # distinguish files that are only available in a single version.
 NEW_ONLY =

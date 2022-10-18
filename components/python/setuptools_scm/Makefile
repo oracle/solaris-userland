@@ -53,12 +53,21 @@ include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/python-multiver.mk
 
+# Tests require a network access.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/testing
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
-COMPONENT_TEST_TRANSFORMS = '-nE -e "s/ ?=+ ?//g" -e "s/ in .*//" -e "/passed/p"'
+COMPONENT_TEST_ARGS =	-v
+COMPONENT_TEST_TRANSFORMS += \
+	'-nE -e "s/ ?=+ ?//g" ' \
+	'-e "s/ in [0-9]+(\.[0-9]*)?(s| seconds).*//" ' \
+	'-e "s/[0-9]+ warnings/x warnings/g" ' \
+	'-e "/::.*FAILED/p" ' \
+	'-e "/::.*ERROR/p" ' \
+	'-e "\\$$p"'
 
 # common targets
 build:		$(BUILD_NO_ARCH)
