@@ -20,8 +20,15 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
-# Solaris specific files are handled in lighttpd.static.
-<transform file path=Solaris/.* -> drop>
+# Drop everything from docs (see Makefile) except config files.
+<transform file path=etc/lighttpd/1.4/ -> set _drop true>
+<transform file path=etc/lighttpd/1.4/.+\.conf$ -> delete _drop .*>
+<transform file _drop=true -> drop>
+
+# Set mode and preserve for config files
+<transform file path=etc/lighttpd/1.4/ -> set mode 0644>
+<transform file path=etc/lighttpd/1.4/ -> add preserve renamenew>
+<transform file path=etc/lighttpd/1.4/lighttpd.conf -> add original_name SUNWlighttpd14:etc/lighttpd/1.4/lighttpd.conf>

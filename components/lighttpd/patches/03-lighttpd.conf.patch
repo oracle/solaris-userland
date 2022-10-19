@@ -8,8 +8,8 @@ behaviour as in lighttpd 1.4.45 and older.
 See the following webpage to get more information.
 https://redmine.lighttpd.net/boards/2/topics/7720
 
---- a/doc/config/conf.d/fastcgi.conf
-+++ b/doc/config/conf.d/fastcgi.conf
+--- lighttpd-1.4.67/doc/config/conf.d/fastcgi.conf
++++ lighttpd-1.4.67/doc/config/conf.d/fastcgi.conf
 @@ -22,8 +22,8 @@ ##
  #fastcgi.server = ( ".php" =>
  #                   ( "php-local" =>
@@ -21,8 +21,8 @@ https://redmine.lighttpd.net/boards/2/topics/7720
  #                       "max-procs" => 1,
  #                       "broken-scriptfilename" => "enable",
  #                     ),
---- a/doc/config/lighttpd.conf
-+++ b/doc/config/lighttpd.conf
+--- lighttpd-1.4.67/doc/config/lighttpd.conf
++++ lighttpd-1.4.67/doc/config/lighttpd.conf
 @@ -13,11 +13,11 @@ ##
  ## if you add a variable here. Add the corresponding variable in the
  ## chroot example as well.
@@ -88,7 +88,7 @@ https://redmine.lighttpd.net/boards/2/topics/7720
  
  ##
  #######################################################################
-@@ -329,7 +332,7 @@ ## index-file.names            = ( "inde
+@@ -332,7 +335,7 @@ ## index-file.names            = ( "inde
  ##                                 "index.htm", "default.htm" )
  ##
  index-file.names += (
@@ -97,12 +97,12 @@ https://redmine.lighttpd.net/boards/2/topics/7720
  )
  
  ##
-@@ -385,7 +388,7 @@ ##
+@@ -388,7 +391,7 @@ ##
  ## Format: <errorfile-prefix><status-code>.html
  ## -> ..../status-404.html for 'File not found'
  ##
--#server.errorfile-prefix    = "/srv/www/htdocs/errors/status-"
-+#server.errorfile-prefix    = "/var/lighttpd/1.4/errors/status-"
+-#server.errorfile-prefix    = server_root + "/htdocs/errors/status-"
++#server.errorfile-prefix    = server_root + "/var/lighttpd/1.4/errors/status-"
  
  ##
  ## mimetype mapping
