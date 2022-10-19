@@ -28,9 +28,9 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		links
-COMPONENT_VERSION=	2.26
-COMPONENT_BAID=		121548
-COMPONENT_ARCHIVE_HASH=	sha256:c42a4dba21dcfb4525034139489cd47f30aa0c5f9d05b37d4e2eaaea943fe2b1
+COMPONENT_VERSION=	2.28
+COMPONENT_BAID=		131741
+COMPONENT_ARCHIVE_HASH=	sha256:b20bcac4817e338a91653fad1ba062cf4416d7107a146aade3cb7a9d46e0c370
 COMPONENT_PROJECT_URL=	http://links.twibright.com/
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1822
@@ -40,6 +40,12 @@ include $(WS_MAKE_RULES)/common.mk
 
 PATCH_LEVEL =		0
 
+# Without this, linker flags from pkgconfig are added too late to take effect
+LDFLAGS += -L/usr/openssl/3/lib/64
+COMPONENT_BUILD_ARGS += LDFLAGS="$(LDFLAGS)"
+
+CONFIGURE_OPTIONS +=	--with-ssl=/usr/openssl/3
+
 # Configure in links does not understand CC, CXX, etc.  Need to generate a
 # new configure for it to configure and build properly.
 COMPONENT_PREP_ACTION=	(cd $(@D) ; autoconf)
@@ -47,6 +53,5 @@ COMPONENT_PREP_ACTION=	(cd $(@D) ; autoconf)
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += library/libevent
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
