@@ -1,3 +1,4 @@
+#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -17,16 +18,12 @@
 #
 # CDDL HEADER END
 #
+
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
 
-<include generate/common.transform>
-
-# Drop everything not belonging to "x11-modeline-utilities"
-<transform dir file link hardlink pkg.type=(?!x11-modeline-utilities) -> drop>
-<transform file path=usr/bin/cvt -> drop>
-<transform file path=usr/share/man/man1/cvt.1 -> drop>
-
-# Remove the mark
-<transform dir file link hardlink -> delete pkg.type .*>
+<transform file path=usr/bin/cvt -> \
+	set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/man/man1/cvt.1 -> \
+	set pkg.linted.pkglint.dupaction001.1 true>

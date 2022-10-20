@@ -1,3 +1,4 @@
+#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -17,16 +18,31 @@
 #
 # CDDL HEADER END
 #
+
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
 
-<include generate/common.transform>
+BUILD_BITS =            64
+COMPILER=		gcc
+include ../../../../make-rules/shared-macros.mk
 
-# Drop everything not belonging to "x11-modeline-utilities"
-<transform dir file link hardlink pkg.type=(?!x11-modeline-utilities) -> drop>
-<transform file path=usr/bin/cvt -> drop>
-<transform file path=usr/share/man/man1/cvt.1 -> drop>
+COMPONENT_NAME=		libxcvt
+COMPONENT_VERSION=	0.1.2
+COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
+COMPONENT_ARCHIVE_HASH= \
+	sha256:0561690544796e25cfbd71806ba1b0d797ffe464e9796411123e79450f71db38
+COMPONENT_BUGDB=        x11/libraries
+COMPONENT_ANITYA_ID=	235147
+COMPONENT_BAID=		131761
+COMPONENT_SIG_URL=
 
-# Remove the mark
-<transform dir file link hardlink -> delete pkg.type .*>
+BUILD_STYLE=		meson
+
+TEST_TARGET = $(NO_TESTS)
+
+include $(WS_MAKE_RULES)/x11-component.mk
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/math

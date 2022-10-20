@@ -20,26 +20,28 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
 set name=pkg.fmri \
-    value=pkg:/x11/modeline-utilities@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
-set name=pkg.summary value="Utilities for generating modelines"
-set name=pkg.description \
-    value="This pacakge delivers the utility for calculating the Generalized Timing Formula (GTF) VESA mode lines.  The output is suitable for use with the Xorg xorg.conf(4) configuration file."
+    value=pkg:/x11/library/libxcvt@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value=libxcvt
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
-set name=com.oracle.info.description value=x11-modeline-utilities
+set name=com.oracle.info.description \
+    value="library providing a standalone version of the X server implementation of the VESA CVT standard timing modelines generator"
 set name=info.classification value=org.opensolaris.category.2008:System/X11
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=value=PSARC/2015/251
+set name=org.opensolaris.arc-caseid value=PSARC/2022/153
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-link path=usr/X11/bin/gtf target=../../bin/gtf
-file path=usr/bin/gtf
-file path=usr/share/man/man1/gtf.1
-license xorg-server.license license=MIT
-# cvt is now moved to libxcvt and being delivered there
-depend type=group fmri=pkg:/x11/library/libxcvt
-
+file path=usr/bin/cvt pkg.linted.pkglint.dupaction001.1=true
+file path=usr/include/libxcvt/libxcvt.h
+file path=usr/include/libxcvt/libxcvt_mode.h
+link path=usr/lib/$(MACH64)/libxcvt.so target=libxcvt.so.0
+file path=usr/lib/$(MACH64)/libxcvt.so.$(COMPONENT_VERSION)
+link path=usr/lib/$(MACH64)/libxcvt.so.0 target=libxcvt.so.$(COMPONENT_VERSION)
+file path=usr/lib/$(MACH64)/pkgconfig/libxcvt.pc
+file path=usr/share/man/man1/cvt.1 pkg.linted.pkglint.dupaction001.1=true
+license COPYING license=MIT
+depend type=require fmri=pkg:/x11/modeline-utilities
