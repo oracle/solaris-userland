@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -29,35 +29,36 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sigcpp
-COMPONENT_VERSION=	2.10.2
+COMPONENT_VERSION=	2.10.8
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libsigc++/stable/
 COMPONENT_SRC=		libsigc++-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:b1ca0253379596f9c19f070c83d362b12dfd39c0a3ea1dd813e8e21c1a097a98
+    sha256:235a40bec7346c7b82b6a8caae0456353dc06e71f14bc414bcc858af1838719a
 COMPONENT_ARCHIVE_URL= https://download.gnome.org/sources/libsigc++/2.10/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7961
 
-COMPONENT_BAID=		73484
+COMPONENT_BAID=		131088
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CXXFLAGS += -std=c++11
 
-# Requires a reconf due to m4 macro patch.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+CONFIGURE_OPTIONS += -Dbuild-documentation=true
 
 # for the tests
 unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+        '-e "/OK/p" ' \
+        '-e "/Ok:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Timeout:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += image/graphviz
