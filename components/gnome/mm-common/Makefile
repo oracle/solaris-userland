@@ -20,26 +20,33 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mm-common
-COMPONENT_VERSION=	0.9.12
+COMPONENT_VERSION=	1.0.4
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/glibmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ceffdcce1e5b52742884c233ec604bf6fded12eea9da077ce7a62c02c87e7c0b
+    sha256:e954c09b4309a7ef93e13b69260acdc5738c907477eb381b78bb1e414ee6dbd8
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13152
 
-COMPONENT_BAID=		68817
+COMPONENT_BAID=		131074
+BUILD_STYLE=		meson
+
+# Use explicit Python version rather than the default one
+PYTHON_VERSION = 3.9
+CONFIGURE_ENV += PYTHON=$(PYTHON)
+
+# pkgdepend complains if it doesn't find a version of python specified
+PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/mm-common-get
 
 TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_OPTIONS += --disable-network
-
+REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += shell/ksh93
