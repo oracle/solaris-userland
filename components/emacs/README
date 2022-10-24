@@ -18,11 +18,11 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2022, Oracle and/or its affiliates.
 #
 
 NAME:             emacs
-VERSION:          27.2
+VERSION:          28.2
 DESCRIPTION:      GNU Emacs editor
 LICENSE:          GPLv3
 BUGTRAQ:          solaris/utility/emacs
@@ -36,11 +36,6 @@ information needed to understand how this component is put together.
 
 - We patch the following changes into the emacs sources. Additional
   details are found in the comment at the top of each patch.
-
-        emacsclient.patch
-            Newer versions have a fix for emacsclient that is incompatible
-            with the current behavior of fstat() when applied to a socket
-            file on Solaris.
 
         find.patch
             The rgrep function uses the GNU-specific -path option to the
@@ -162,6 +157,10 @@ information needed to understand how this component is put together.
   and the use of usr/lib/isaexec has been removed: This cuts the number of
   builds necessary in half, and also the binary package size. It also
   simplifies packaging, and the user's view of /usr/bin/emacs*.
+
+- With Emacs 28, there is a JIT facility for native compilation of Lisp
+  (.eln) files. In the interest of simplicity, and to avoid a requirement
+  on libgccjit, we are currently not enabling the feature.
 
 - There are three different toolkit options: None, Athena widgets
   (aka Xaw, or lucid), and gtk. It would be nice to only support gtk,
