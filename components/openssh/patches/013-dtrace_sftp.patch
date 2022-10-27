@@ -42,7 +42,7 @@ index 43205c9..e3e98af 100644
  
  SFTP_OBJS=	sftp.o sftp-client.o sftp-common.o sftp-glob.o progressmeter.o
  
-@@ -264,9 +266,18 @@ $(CONFIGFILES): $(CONFIGFILES_IN)
+@@ -264,9 +266,20 @@ $(CONFIGFILES): $(CONFIGFILES_IN)
  moduli:
  	echo
  
@@ -54,6 +54,8 @@ index 43205c9..e3e98af 100644
 +sftp_provider.o: sftp_provider.d sftp_provider.h sftp-server.o
 +	/usr/sbin/dtrace -G -64 -xnolibs -s $(srcdir)/sftp_provider.d \
 +	    sftp-server.o -o sftp_provider.o
++
++sftp-server.o: sftp_provider.h
 +
  clean:	regressclean
  	rm -f *.o *.lo *.a $(TARGETS) logintest config.cache config.log
