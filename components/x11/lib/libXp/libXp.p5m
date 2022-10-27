@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability obsolete>
@@ -29,13 +29,14 @@ set name=pkg.fmri \
 set name=pkg.summary value="libXp - X Print Client Library"
 set name=pkg.description \
     value="Xlib-based client API for the X Print extension to the X11 protocol"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=libXp
 set name=info.classification value=org.opensolaris.category.2008:System/X11
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/1998/299 value=PSARC/2001/103 \
-    value=PSARC/2009/294
+    value=PSARC/2009/294 value=PSARC/2022/127
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=usr/X11/lib/$(MACH64)/libXp.so target=../../../lib/$(MACH64)/libXp.so
 link path=usr/X11/lib/$(MACH64)/libXp.so.1 \
@@ -50,6 +51,9 @@ link path=usr/lib/libXp.so target=libXp.so.1
 link path=usr/lib/libXp.so.1 target=libXp.so.1.0.0
 file path=usr/lib/libXp.so.1.0.0
 file path=usr/lib/pkgconfig/xp.pc
+file release-notes/legacy-libXp.txt \
+    path=usr/share/doc/release-notes/legacy-libXp.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@1.0.4-11.4.54.0.0.135.0
 file path=usr/share/man/man3xp/XpCancelDoc.3xp
 file path=usr/share/man/man3xp/XpCancelJob.3xp
 file path=usr/share/man/man3xp/XpCancelPage.3xp
