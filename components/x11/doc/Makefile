@@ -28,22 +28,22 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xorg-docs
 COMPONENT_CATEGORY=	doc
-COMPONENT_VERSION=	1.7.1
+COMPONENT_VERSION=	1.7.2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:24b8677c3462c10465cf50d40576d76682acd5835526093a575865b2aa242c4b
+	sha256:2391b8af472626c12d3c3814b5e7a0ea43c3a96eda94255b7ed8bdff0fbf08e3
 COMPONENT_ANITYA_ID=	5212
 COMPONENT_BUGDB=	x11/doc
-COMPONENT_BAID=		52992
+COMPONENT_BAID=		132235
 
 COMPONENT_NAME_1=	xorg-sgml-doctools
-COMPONENT_VERSION_1=	1.11
+COMPONENT_VERSION_1=	1.12
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.bz2
 COMPONENT_ARCHIVE_URL_1= $(COMPONENT_PROJECT_URL)/releases/individual/$(COMPONENT_CATEGORY)/$(COMPONENT_ARCHIVE_1)
 COMPONENT_ARCHIVE_HASH_1= \
-	sha256:e71ce1df82dcc51eb14be6f42171dcc6bdd11ef46c0c605d6da8af12bd73b74c
+	sha256:65a9fdddedc17bd5e9c0b00d904960f03f047c3a62de5458989d493c29fec806
 COMPONENT_ANITYA_ID_1=	5211
-COMPONENT_BAID_1=		52993
+COMPONENT_BAID_1=	132234
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -58,12 +58,6 @@ include $(WS_MAKE_RULES)/x11-component.mk
 # Have to install the doc tools before configuring the docs
 $(BUILD_DIR)/$(MACH64)-$(COMPONENT_NAME)/.configured: $(BUILD_DIR)/$(MACH64)-$(COMPONENT_NAME_1)/.installed
 
-# Regenerate configure script with util-macros > 0.19.0 to get fix to make
-# it work with xmlto 0.0.27 & later. It can be removed when we update to an
-# upstream version built with those macros.
-# Without this workaround, configure warns "xmlto cannot generate text format"
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv) ;
-
 # Fix entity paths in DocBook files so that gnome-help can resolve them
 COMPONENT_PREP_ACTION += \
 	find $(@D) -name '*.xml' | xargs $(PERL) -i.orig -p -e \
@@ -72,12 +66,24 @@ COMPONENT_PREP_ACTION += \
 CONFIGURE_OPTIONS += --docdir='$(USRSHAREDOCDIR)/X11'
 CONFIGURE_OPTIONS += XORG_SGML_PATH='$(PROTO_DIR)/usr/share/sgml'
 
+# Extra install work for xorg-sgml-doctools
 COMPONENT_INSTALL_ARGS += pkgconfigdir="$(DESTDIR)/usr/share/pkgconfig"
-COMPONENT_POST_INSTALL_ACTION += \
+COMPONENT_POST_INSTALL_ACTION_1 += \
 	$(GSED) -e 's|sgmlrootdir=|sgmlrootdir=$(PROTO_DIR)|g' \
 	    $(PROTO_DIR)/usr/share/pkgconfig/xorg-sgml-doctools.pc > \
 	    $(PROTO_DIR)/usr/share/pkgconfig/xorg-sgml-doctools-uninstalled.pc ;
+$(BUILD_DIR)/$(MACH64)-$(COMPONENT_NAME_1)/.installed: COMPONENT_POST_INSTALL_ACTION=$(COMPONENT_POST_INSTALL_ACTION_1)
 
+# Extra install work for xorg-docs
 COMPONENT_POST_INSTALL_ACTION += \
 	$(PERL) -i -p -e 's|__distroname__|Oracle Solaris|g' \
 	    $(PROTO_DIR)/usr/share/man/man7/*.7 ;
+
+COMPONENT_POST_INSTALL_ACTION += \
+	$(INSTALL) -m 0444 $(COMPONENT_DIR)/X11.7 \
+	    $(PROTO_DIR)/usr/share/man/man7/ ;
+
+# Avoid conflict with Solaris's standards.7 man page
+COMPONENT_POST_INSTALL_ACTION += \
+	$(MV) $(PROTO_DIR)/usr/share/man/man7/Standards.7 \
+	    $(PROTO_DIR)/usr/share/man/man7/XStandards.7 ;
