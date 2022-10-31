@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -29,16 +29,16 @@ include ../../make-rules/shared-macros.mk
 PATH=$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		gnupg
-COMPONENT_VERSION=	2.2.20
+COMPONENT_VERSION=	2.3.8
 COMPONENT_PROJECT_URL=	http://www.gnupg.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:04a7c9d48b74c399168ee8270e548588ddbe52218c337703d7f06373d326ca30
+    sha256:540b7a40e57da261fb10ef521a282e0021532a80fd023e75fb71757e8a4969ed
 COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gnupg/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1215
 
-COMPONENT_BAID=		78940
+COMPONENT_BAID=		132293
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -78,6 +78,7 @@ COMPONENT_TEST_TRANSFORMS += \
      '-e "/Making/d"' \
      '-e "/Known envvars/d"' \
      '-e "/make/d"' \
+     '-e "/\/tmp\/gpg/d"' \
      '-e "s/[0-9]\{1,\}\.[0-9]\{1,\} s, //g"' \
      '-e "s^[0-9]\{1,\} kB/s^^g"'  \
      '-e "s^[0-9]\{1,\}  kB/s^^g"'  \
@@ -124,6 +125,11 @@ COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABL
 COMPONENT_POST_INSTALL_ACTION += \
 	( cd $(PROTOUSRSHARELOCALEDIR) ; \
 	    $(CP) -R 'en@boldquot' en )
+
+# Testing expects gpg binary instead of gpg2
+COMPONENT_PRE_TEST_ACTION += \
+	( cd $(COMPONENT_DIR)/build/$(MACH64)/bin ; \
+	    /usr/bin/ln gpg gpg2 )
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += database/sqlite-3

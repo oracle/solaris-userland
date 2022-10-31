@@ -5,7 +5,8 @@ PASS: t-percent
 PASS: t-gettime
 PASS: t-sysutils
 PASS: t-sexputil
-    > XAUTHORITY(xauthority) XMODIFIERS GTK_IM_MODULE DBUS_SESSION_BUS_ADDRESS
+    > XAUTHORITY(xauthority) XMODIFIERS WAYLAND_DISPLAY XDG_SESSION_TYPE
+    > QT_QPA_PLATFORM GTK_IM_MODULE DBUS_SESSION_BUS_ADDRESS
     > QT_IM_MODULE INSIDE_EMACS PINENTRY_USER_DATA(pinentry-user-data)
 PASS: t-session-env
 PASS: t-openpgp-oid
@@ -18,11 +19,12 @@ PASS: t-strlist
 PASS: t-name-value
 PASS: t-ccparray
 PASS: t-recsel
+PASS: t-w32-cmdline
 PASS: t-exechelp
 error running '/bin/false': exit status 255
 PASS: t-exectool
 ===================
-All 20 tests passed
+All 21 tests passed
 ===================
 PASS: t-rmd160
 can't allocate lock for '$(SOURCE_DIR)/g10/t-keydb-keyring.kbx'
@@ -35,145 +37,150 @@ All 4 tests passed
 ==================
 All 0 tests passed
 ==================
+PASS: t-protect
+=============
+1 test passed
+=============
 PASS: t-http-basic
 PASS: t-ldap-parse-uri
+PASS: t-ldap-misc
 ==================
-All 2 tests passed
+All 3 tests passed
 ==================
 EXEEXT= GPGSCM_PATH=$(SOURCE_DIR)/tests/gpgscm \
 	./gpgscm $(SOURCE_DIR)/tests/gpgscm/t-child.scm
 Testing process and IPC primitives... 
 hello world. 
 All good. 
-LC_ALL=C EXEEXT= PATH=../gpgscm:/usr/bin:/usr/gnu/bin abs_top_srcdir=$(SOURCE_DIR) objdir=$(@D) GPGSCM_PATH=$(SOURCE_DIR)/tests/gpgscm $(@D)/tests/gpgscm/gpgscm \
+LC_ALL=C EXEEXT= PATH="../gpgscm:/usr/bin:/usr/gnu/bin" abs_top_srcdir="$(SOURCE_DIR)" objdir="$(@D)" GNUPG_BUILD_ROOT="$(@D)" GNUPG_IN_TEST_SUITE=fact GPGSCM_PATH="$(SOURCE_DIR)/tests/gpgscm" $(@D)/tests/gpgscm/gpgscm \
   $(SOURCE_DIR)/tests/openpgp/run-tests.scm  
 PASS: tests/openpgp/setup.scm 
 Printing the GPG version 
-PASS: tests/openpgp/version.scm 
+PASS: <standard>tests/openpgp/version.scm 
 Checking armor encoding and decoding 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
-PASS: tests/openpgp/enarmor.scm 
+PASS: <standard>tests/openpgp/enarmor.scm 
 Hashing the empty string 
     > MD5 SHA1 RIPEMD160 SHA224 SHA256 SHA384 SHA512 <  
 Hashing the string "abcdefghijklmnopqrstuvwxyz" 
     > MD5 SHA1 RIPEMD160 SHA224 SHA256 SHA384 SHA512 <  
-PASS: tests/openpgp/mds.scm 
+PASS: <standard>tests/openpgp/mds.scm 
 Checking decryption of supplied files 
     > plain-1 plain-2 plain-3 plain-large <  
-PASS: tests/openpgp/decrypt.scm 
+PASS: <standard>tests/openpgp/decrypt.scm 
 Checking decryption of supplied files using --multifile. 
 Verifying files: 
     > plain-1 plain-2 plain-3 plain-large <  
-PASS: tests/openpgp/decrypt-multifile.scm 
+PASS: <standard>tests/openpgp/decrypt-multifile.scm 
 Checking decryption of supplied DSA encrypted file 
     > plain-1 <  
-PASS: tests/openpgp/decrypt-dsa.scm 
+PASS: <standard>tests/openpgp/decrypt-dsa.scm 
 Checking decryption of supplied files using the session key. 
     > plain-1 plain-2 plain-3 plain-large <  
-PASS: tests/openpgp/decrypt-session-key.scm 
+PASS: <standard>tests/openpgp/decrypt-session-key.scm 
 Checking unwrapping the encryption. 
     > encsig-2-keys-3 encsig-2-keys-4 <  
-PASS: tests/openpgp/decrypt-unwrap-verify.scm 
+PASS: <standard>tests/openpgp/decrypt-unwrap-verify.scm 
 Checking signing with the default hash algorithm 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
 Checking signing with a specific hash algorithm 
     > SHA1 RIPEMD160 SHA256 SHA384 SHA512 SHA224 <  
-PASS: tests/openpgp/sigs.scm 
+PASS: <standard>tests/openpgp/sigs.scm 
 Checking signing using DSA with the default hash algorithm 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
 Checking signing using DSA with a specific hash algorithm 
     > SHA1 RIPEMD160 <  
-PASS: tests/openpgp/sigs-dsa.scm 
+PASS: <standard>tests/openpgp/sigs-dsa.scm 
 Checking encryption 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
 Checking encryption using a specific cipher algorithm 
     > IDEA ........ 3DES ........ CAST5 ........ BLOWFISH ........ AES ........ AES192 ........ AES256 ........ TWOFISH ........ CAMELLIA128 ........ CAMELLIA192 ........ CAMELLIA256 ........ <  
     > plain-1 plain-2 plain-3 plain-large <  
-PASS: tests/openpgp/encrypt.scm 
+PASS: <standard>tests/openpgp/encrypt.scm 
 Checking encryption of supplied files using --multifile. 
 Verifying files: 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
-PASS: tests/openpgp/encrypt-multifile.scm 
+PASS: <standard>tests/openpgp/encrypt-multifile.scm 
 Checking encryption using DSA 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
 Checking encryption using DSA and a specific cipher algorithm 
     > IDEA ........ 3DES ........ CAST5 ........ BLOWFISH ........ AES ........ AES192 ........ AES256 ........ TWOFISH ........ CAMELLIA128 ........ CAMELLIA192 ........ CAMELLIA256 ........ <  
-PASS: tests/openpgp/encrypt-dsa.scm 
+PASS: <standard>tests/openpgp/encrypt-dsa.scm 
 Checking encryption using a specific compression algorithm 
     > Uncompressed ........ ZIP ........ ZLIB ........ BZIP2 ........ <  
-PASS: tests/openpgp/compression.scm 
+PASS: <standard>tests/openpgp/compression.scm 
 Checking encryption, signing, and producing armored output 
     > plain-1 plain-2 plain-3 plain-large <  
-PASS: tests/openpgp/seat.scm 
+PASS: <standard>tests/openpgp/seat.scm 
 Checking signing and verifying plain text messages 
     > plain-1 plain-2 plain-3 plain-large plain-large <  
 Checking signing and verifying test vectors 
     > 0 1 2 3 4 5 <  
-PASS: tests/openpgp/clearsig.scm 
+PASS: <standard>tests/openpgp/clearsig.scm 
 Checking encryption and decryption using pipes 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
-PASS: tests/openpgp/encryptp.scm 
+PASS: <standard>tests/openpgp/encryptp.scm 
 Checking detached signatures 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
-PASS: tests/openpgp/detach.scm 
+PASS: <standard>tests/openpgp/detach.scm 
 Checking detached signatures of multiple files 
-PASS: tests/openpgp/detachm.scm 
+PASS: <standard>tests/openpgp/detachm.scm 
 Checking armored signatures 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
-PASS: tests/openpgp/armsigs.scm 
+PASS: <standard>tests/openpgp/armsigs.scm 
 Checking armored encryption 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
-PASS: tests/openpgp/armencrypt.scm 
+PASS: <standard>tests/openpgp/armencrypt.scm 
 Checking armored encryption and decryption using pipes 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
-PASS: tests/openpgp/armencryptp.scm 
+PASS: <standard>tests/openpgp/armencryptp.scm 
 Checking signing and encryption 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
 Checking bug 537: MDC problem with old style compressed packets. 
-PASS: tests/openpgp/signencrypt.scm 
+PASS: <standard>tests/openpgp/signencrypt.scm 
 Checking signing and encryption using DSA 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
 Checking signing and encryption using DSA with a specific hash algorithm 
     > SHA1 RIPEMD160 <  
-PASS: tests/openpgp/signencrypt-dsa.scm 
+PASS: <standard>tests/openpgp/signencrypt-dsa.scm 
 Checking armored signing and encryption 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
-PASS: tests/openpgp/armsignencrypt.scm 
+PASS: <standard>tests/openpgp/armsignencrypt.scm 
 Checking armored detached signatures 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
-PASS: tests/openpgp/armdetach.scm 
+PASS: <standard>tests/openpgp/armdetach.scm 
 Checking armored detached signatures of multiple files 
-PASS: tests/openpgp/armdetachm.scm 
+PASS: <standard>tests/openpgp/armdetachm.scm 
 Checking batch key generation 
-PASS: tests/openpgp/genkey1024.scm 
+PASS: <standard>tests/openpgp/genkey1024.scm 
 Checking conventional encryption 
     > plain-2 data-32000 <  
 Checking conventional encryption using a specific cipher 
     > IDEA .. 3DES .. CAST5 .. BLOWFISH .. AES .. AES192 .. AES256 .. TWOFISH .. CAMELLIA128 .. CAMELLIA192 .. CAMELLIA256 .. <  
-PASS: tests/openpgp/conventional.scm 
+PASS: <standard>tests/openpgp/conventional.scm 
 Checking conventional encryption with MDC 
     > IDEA .. 3DES .. CAST5 .. BLOWFISH .. AES .. AES192 .. AES256 .. TWOFISH .. CAMELLIA128 .. CAMELLIA192 .. CAMELLIA256 .. <  
 Checking sign+symencrypt 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
-PASS: tests/openpgp/conventional-mdc.scm 
+PASS: <standard>tests/openpgp/conventional-mdc.scm 
 Checking that a valid signature is verified as such 
     > sig-sl-valid <  
 Checking that an invalid signature is verified as such 
     > sig-1ls1ls-valid sig-ls-valid sig-1lsls-invalid sig-lsls-invalid sig-lss-invalid sig-slsl-invalid <  
-PASS: tests/openpgp/multisig.scm 
+PASS: <standard>tests/openpgp/multisig.scm 
 Checking bogus signature 
     > #x2d #xca <  
 Checking that a valid signature is verified as such 
     > msg_ols_asc msg_cols_asc msg_sl_asc msg_oolss_asc msg_cls_asc msg_clss_asc <  
-Checking that a valid signature over multiple messages is verified as such 
+Checking that a valid signature over multiple messages is rejected 
     > msg_olsols_asc_multiple msg_clsclss_asc_multiple <  
 Checking that an invalid signature is verified as such 
     > bad_ls_asc bad_fols_asc bad_olsf_asc bad_ools_asc <  
 Checking that a valid Ed25519 signature is verified as such 
     > msg_ed25519_rshort msg_ed25519_sshort <  
-PASS: tests/openpgp/verify.scm 
+PASS: <standard>tests/openpgp/verify.scm 
 Checking verification of supplied files using --multifile. 
-PASS: tests/openpgp/verify-multifile.scm 
+PASS: <standard>tests/openpgp/verify-multifile.scm 
 Checking bogus signature 
     > #x2d #xca <  
 Checking that a valid signature is verified as such 
@@ -182,21 +189,35 @@ Checking that an invalid signature is verified as such
     > bad_ls_asc bad_fols_asc bad_olsf_asc bad_ools_asc <  
 Checking that a valid Ed25519 signature is verified as such 
     > msg_ed25519_rshort msg_ed25519_sshort <  
-PASS: tests/openpgp/gpgv.scm 
+PASS: <standard>tests/openpgp/gpgv.scm 
 Checking that a signature by bad key should not be verified 
     > msg_signed_asc <  
-PASS: tests/openpgp/gpgv-forged-keyring.scm 
+PASS: <standard>tests/openpgp/gpgv-forged-keyring.scm 
 Checking armored_key_8192 
 Importing alpha_seckey 
 Checking for bug #1179 
-PASS: tests/openpgp/armor.scm 
+PASS: <standard>tests/openpgp/armor.scm 
 Checking bug 894: segv importing certain keys. 
 Checking bug 1223: designated revoker sigs are not properly merged. 
 Checking import of two keys with colliding long key ids. 
-PASS: tests/openpgp/import.scm 
+PASS: <standard>tests/openpgp/import.scm 
 Checking key revocation. 
-PASS: tests/openpgp/import-revocation-certificate.scm 
-PASS: tests/openpgp/4gb-packet.scm 
+PASS: <standard>tests/openpgp/import-revocation-certificate.scm 
+Preparing for ECC test 
+Importing ECC public keys 
+Checking opaque ECDSA signatures 
+    > msg_opaque_signed_256 msg_opaque_signed_384 msg_opaque_signed_521 <  
+Importing ECC secret keys 
+Checking ECC encryption 
+Checking ECDH decryption 
+    > msg_encrypted_256 msg_encrypted_384 msg_encrypted_521 <  
+Checking ECC encryption and decryption 
+    > plain-1 ... plain-2 ... plain-3 ... plain-large ... data-500 ... data-9000 ... data-32000 ... data-80000 ... <  
+Checking ECC signing and verifiction 
+    > plain-1 ... plain-2 ... plain-3 ... plain-large ... data-500 ... data-9000 ... data-32000 ... data-80000 ... <  
+Importing ECC secret keys directly 
+PASS: <standard>tests/openpgp/ecc.scm 
+PASS: <standard>tests/openpgp/4gb-packet.scm 
 Checking tofu policies and trust... 
 Setting a fixed policy... 
     > good ..... unknown ..... bad ..... <  
@@ -212,90 +233,80 @@ Checking UTK sigs...
     > Marking 1938C3A0E4674B6C217AC0B987DB2814EC38277E as ultimately trusted. <
     > Adding conflicting user id. <
     > Adding cross signature on user id. <
-PASS: tests/openpgp/tofu.scm 
+PASS: <standard>tests/openpgp/tofu.scm 
 Checking basic WoT (classic trust model)...
-PASS: tests/openpgp/trust-pgp-1.scm 
+PASS: <standard>tests/openpgp/trust-pgp-1.scm 
 Checking WoT with trust signatures (PGP trust model)...
-PASS: tests/openpgp/trust-pgp-2.scm 
+PASS: <standard>tests/openpgp/trust-pgp-2.scm 
 Checking max depth of trust signature chains...
-PASS: tests/openpgp/trust-pgp-3.scm 
+PASS: <standard>tests/openpgp/trust-pgp-3.scm 
+Checking trust signature with domain restrictions...
+0389C0B7990E10520B334F23756F1571EDA9184B : Expected trust to be f but got - 
+FAIL: <standard>tests/openpgp/trust-pgp-4.scm 
+Checking gpgtar without encryption 
+Checking gpgtar without encryption with nicer actions 
+Checking gpgtar with asymmetric encryption 
+Checking gpgtar with asymmetric encryption and signature 
+Checking gpgtar with signature 
+Checking gpgtar with symmetric encryption 
+Checking gpgtar with symmetric encryption and chosen cipher 
+Checking gpgtar with both symmetric and asymmetric encryption 
+PASS: <standard>tests/openpgp/gpgtar.scm 
 Importing public key. 
 Checking that the most recent, valid signing subkey is used by default 
     > 8BC90111 3E880CFF F5F77B83 45117079 1EA97479 <  
 Checking that we can select a specific signing key 
     > 8BC90111 F5F77B83 1EA97479 <  
-PASS: tests/openpgp/use-exact-key.scm 
+PASS: <standard>tests/openpgp/use-exact-key.scm 
 Importing public key. 
 Checking that the most recent, valid signing subkey is used by default 
     > 8BC90111 3E880CFF F5F77B83 45117079 1EA97479 <  
 Checking that the most recent, valid encryption subkey is used by default 
     > 8BC90111 3E880CFF F5F77B83 45117079 1EA97479 <  
-PASS: tests/openpgp/default-key.scm 
+PASS: <standard>tests/openpgp/default-key.scm 
+Checking key export 
+    > D74C5F22 C40FDECF ECABF51D <  
+PASS: <standard>tests/openpgp/export.scm 
+Importing ssh keys... 
+    > dsa rsa ecdsa ed25519 <  
+Checking for issue2316... 
+PASS: <standard>tests/openpgp/ssh-import.scm 
+Checking ssh export... 
+PASS: <standard>tests/openpgp/ssh-export.scm 
+Checking quick key generation... 
+Checking that we can add a user ID... 
+Checking that we can mark an user ID as primary. 
+Checking that we can mark a user ID as primary by its hash... 
+Checking that we get an error making non-existent user ID the primary one. 
+Checking that we can revoke a user ID... 
+Checking that we can revoke a user ID by its hash... 
+Checking that we get an error revoking a non-existent user ID. 
+Checking that we get an error revoking the last valid user ID. 
+Checking that we can change the expiration time. 
+Checking that we can add subkeys... 
+    > () (- - -) (default default never) (rsa sign auth encr seconds=600) (rsa auth,encr 2) (rsa sign 2038-01-01) (rsa sign 20380101T115500) (rsa sign 2d) (rsa1024 sign 2w) (rsa2048 encr 2m) (rsa4096 sign,auth 2y) (future-default) <  
+PASS: <standard>tests/openpgp/quick-key-manipulation.scm 
 Checking key selection 
     > 5 4 4 3 4 3 3 2 4 3 3 2 3 2 2 1 4 3 3 2 3 2 2 1 3 2 2 1 2 1 1 <  
-PASS: tests/openpgp/key-selection.scm 
-PASS: tests/openpgp/delete-keys.scm 
+PASS: <standard>tests/openpgp/key-selection.scm 
+PASS: <standard>tests/openpgp/delete-keys.scm 
 Checking reading and writing configuration via gpgconf...  
-    > keyserver ............. verbose ............. quiet ............. <  
-PASS: tests/openpgp/gpgconf.scm 
+    > compliance ............. verbose ............. quiet ............. <  
+PASS: <standard>tests/openpgp/gpgconf.scm 
 Checking passphrase cache (issue2015)... 
-PASS: tests/openpgp/issue2015.scm 
+PASS: <standard>tests/openpgp/issue2015.scm 
 Checking import statistics (issue2346)... 
-PASS: tests/openpgp/issue2346.scm 
+PASS: <standard>tests/openpgp/issue2346.scm 
 Checking robustness wrt empty databases in gnupghome (issue2417)... 
-PASS: tests/openpgp/issue2417.scm 
+PASS: <standard>tests/openpgp/issue2417.scm 
 Checking iobuf_peek corner case (issue2419)... 
-PASS: tests/openpgp/issue2419.scm 
+PASS: <standard>tests/openpgp/issue2419.scm 
+Checking TOFU trust model with ultimately trusted keys (issue2929). 
+PASS: <standard>tests/openpgp/issue2929.scm 
 Checking invocation with invalid file descriptors (issue2941). 
     > status-fd attribute-fd logger-fd override-session-key-fd passphrase-fd command-fd <  
-PASS: tests/openpgp/issue2941.scm 
+PASS: <standard>tests/openpgp/issue2941.scm 
 =================== 
-53 tests run, 53 succeeded, 0 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
+61 tests run, 60 succeeded, 1 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
+Failed tests: <standard>tests/openpgp/trust-pgp-4.scm 
 =================== 
-GPG_AGENT_INFO= LC_ALL=C EXEEXT= PATH=../gpgscm:/usr/bin:/usr/gnu/bin abs_top_srcdir=$(SOURCE_DIR) objdir=$(@D) GPGSCM_PATH=$(SOURCE_DIR)/tests/gpgscm $(@D)/tests/gpgscm/gpgscm \
-  $(SOURCE_DIR)/tests/migrations/run-tests.scm  
-Testing a clean migration ... 
-Testing a migration with existing private-keys-v1.d ... 
-Testing a migration with existing but weird private-keys-v1.d ... 
-Testing the extended private key format ... 
-PASS: tests/migrations/extended-pkf.scm 
-Checking migration with legacy key (issue2276)... 
-PASS: tests/migrations/issue2276.scm 
-=================== 
-3 tests run, 3 succeeded, 0 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
-=================== 
-LC_ALL=C EXEEXT= PATH=../gpgscm:/usr/bin:/usr/gnu/bin abs_top_srcdir=$(SOURCE_DIR) objdir=$(@D) GPGSCM_PATH=$(SOURCE_DIR)/tests/gpgscm $(@D)/tests/gpgscm/gpgscm \
-  $(SOURCE_DIR)/tests/gpgsm/run-tests.scm  
-PASS: tests/gpgsm/setup.scm 
-Checking certificate import. 
-    > cert_dfn_pca01.der cert_dfn_pca15.der <  
-PASS: tests/gpgsm/import.scm 
-Checking encryption 
-    > plain-1 ... plain-2 ... plain-3 ... plain-large ... data-500 ... data-9000 ... data-32000 ... data-80000 ... <  
-PASS: tests/gpgsm/encrypt.scm 
-Checking bogus signature. 
-    > #x2d #xca <  
-Checking that a valid signature is verified as such. 
-Checking that an invalid signature is verified as such. 
-PASS: tests/gpgsm/verify.scm 
-Checking decryption of supplied files. 
-    > plain-1 plain-2 plain-3 plain-large <  
-PASS: tests/gpgsm/decrypt.scm 
-Checking signing. 
-    > plain-1 ...... plain-2 ...... plain-3 ...... plain-large ...... data-500 ...... data-9000 ...... data-32000 ...... data-80000 ...... <  
-PASS: tests/gpgsm/sign.scm 
-=================== 
-5 tests run, 5 succeeded, 0 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
-=================== 
-LC_ALL=C EXEEXT= PATH=../gpgscm:/usr/bin:/usr/gnu/bin abs_top_srcdir=$(SOURCE_DIR) objdir=$(@D) GPGSCM_PATH=$(SOURCE_DIR)/tests/gpgscm $(@D)/tests/gpgscm/gpgscm \
-  $(SOURCE_DIR)/tests/gpgme/run-tests.scm  
-SKIP: Environment variable 'XTEST_GPGME_SRCDIR' not set.  Please point it to a recent GPGME source tree to run the GPGME test suite. 
-=================== 
-0 tests run, 0 succeeded, 0 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
-=================== 
-==================
-All 0 tests passed
-==================
-==================
-All 0 tests passed
-==================
