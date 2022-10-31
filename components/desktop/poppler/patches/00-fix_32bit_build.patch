@@ -1,6 +1,9 @@
 This patch fixes an issue with inconsistent -m?? flag passing to compiler by
 cmake.
 
+It also enforce UNIXv7 strict conformance mode to compile some parts of
+unit tests because _DEFAULT_SOURCE is not enough on Solaris.
+
 This is a Solaris specific patch.
 
 --- poppler-21.10.0/cmake/modules/PopplerMacros.cmake.orig	2021-10-13 14:22:10.726290108 +0200
@@ -9,8 +12,8 @@ This is a Solaris specific patch.
    set(CMAKE_BUILD_TYPE RelWithDebInfo)
  endif(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
  
-+set(DEFAULT_CXX_FLAGS   "-fno-exceptions -fno-check-new -fno-common -D_DEFAULT_SOURCE")
-+set(DEFAULT_C_FLAGS     "-std=c99 -D_DEFAULT_SOURCE")
++set(DEFAULT_CXX_FLAGS   "-fno-exceptions -fno-check-new -fno-common")
++set(DEFAULT_C_FLAGS     "-std=c99 -D_XOPEN_SOURCE=700")
 +string(FIND "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS}" "-m32" SEARCH_IDX)
 +if("${SEARCH_IDX}" GREATER "-1")
 +	set(DEFAULT_CXX_FLAGS "${DEFAULT_CXX_FLAGS} -m32")
