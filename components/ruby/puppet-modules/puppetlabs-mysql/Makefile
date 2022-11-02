@@ -25,8 +25,8 @@
 
 include ../../../../make-rules/shared-macros.mk
 GIT_REPO=       https://github.com/puppetlabs/puppetlabs-mysql
-GIT_COMMIT_ID=  v12.0.2
-GIT_HASH=sha256:00df97cc70820036671d4e78c068ba9b349186daee28d78b31113f2e99e5b697
+GIT_COMMIT_ID=  v13.0.0
+GIT_HASH=sha256:8a6522e5cb6cdd0e8dfdf5fd38bd88c5f4d4e65da8eeadf64766d27e9cba4d38
 
 COMPONENT_NAME=		puppetlabs-mysql
 COMPONENT_VERSION=	$(GIT_COMMIT_ID:v%=%)
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	238617
 
-COMPONENT_BAID=		122468
+COMPONENT_BAID=		131789
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/puppetmodule.mk
