@@ -26,6 +26,7 @@ set name=pkg.fmri \
     value=pkg:/developer/oracle/odpi-$(DOTLESS_VERSION)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Oracle Database Programming Interface-C"
 set name=pkg.human-version value=$(COMPONENT_VERSION)
+set name=pkg.legacy value=true
 set name=com.oracle.info.description \
     value="The Oracle Database Programming Interface-C"
 set name=info.classification \
@@ -43,6 +44,10 @@ link path=usr/lib/$(MACH64)/libodpic.so.$(MAJOR) \
 link path=usr/lib/libodpic.so target=./libodpic.so.$(COMPONENT_VERSION)
 file path=usr/lib/libodpic.so.$(COMPONENT_VERSION)
 link path=usr/lib/libodpic.so.$(MAJOR) target=./libodpic.so.$(COMPONENT_VERSION)
+# Add release note informing about the obsolescence of this component
+file release-notes/developer-oracle-odpi.txt \
+    path=usr/share/doc/release-notes/developer-oracle-odpi.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@0
 file manpages/libodpic.3lib \
     path=usr/share/man/man3lib/libodpic-$(DOTLESS_VERSION).3lib
 file path=usr/share/odpi/LICENSE.md
