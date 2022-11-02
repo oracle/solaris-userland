@@ -4,8 +4,8 @@ Patch status: Solaris-specific; not suitable for upstream
 Redirects build process to use local archives instead of downloading
 from external webs.
 
---- apache-tomcat-8.5.82-src/build.properties.default
-+++ apache-tomcat-8.5.82-src/build.properties.default
+--- apache-tomcat-8.5.83-src/build.properties.default
++++ apache-tomcat-8.5.83-src/build.properties.default
 @@ -121,6 +121,12 @@ base-maven.loc=https://repo.maven.apache
  # Mirror, was used when there were problems with the main SF downloads site
  # base-sf.loc=https://sunet.dl.sourceforge.net
@@ -35,11 +35,11 @@ from external webs.
  jdt.loc.2=http://download.eclipse.org/eclipse/downloads/drops4/${jdt.release}/ecj-${jdt.version}.jar
  
  # ----- Tomcat native library -----
-@@ -312,4 +318,10 @@ jsign.home=${base.path}/jsign-${jsign.ve
+@@ -311,3 +317,11 @@ jsign.checksum.value=10fb38a1182515d583a
+ jsign.home=${base.path}/jsign-${jsign.version}
  jsign.jar=${jsign.home}/jsign-${jsign.version}.jar
  jsign.loc=${base-maven.loc}/net/jsign/jsign/${jsign.version}/jsign-${jsign.version}.jar
- 
--
++
 +# allow Tomcat unit test pass even with JDK 8
 +# https://bz.apache.org/bugzilla/show_bug.cgi?id=66064
 +opens.javalang=-Dnop
