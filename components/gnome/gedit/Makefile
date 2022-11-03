@@ -62,6 +62,12 @@ PLUGINS_DIR = snippets; quickopen; externaltools
 COMPONENT_POST_INSTALL_ACTION += $(foreach i,$(PLUGINS_DIR),\
         $(PYTHON) -m compileall $(PROTO_DIR)$(USRLIBDIR64)/gedit/plugins/$(i));
 
+# Temporary workaround until all build machines are running meson-0.63
+COMPONENT_POST_INSTALL_ACTION += \
+for f in $(PROTO_DIR)/usr/share/help/[a-z]*/gedit/figures ; do \
+    (cd $$f ; $(RM) *.png ; $(SYMLINK) ../../../C/gedit/figures/*.png . ); \
+done ;
+
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo

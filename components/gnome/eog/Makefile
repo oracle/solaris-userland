@@ -57,9 +57,15 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 CFLAGS += $(CPP_XPG6MODE)
 
-COMPONENT_POST_INSTALL_ACTION.64 += \
+COMPONENT_POST_INSTALL_ACTION += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/eog.1 \
                 $(PROTO_DIR)/usr/share/man/man1/eog.1;
+
+# Temporary workaround until all build machines are running meson-0.63
+COMPONENT_POST_INSTALL_ACTION += \
+for f in $(PROTO_DIR)/usr/share/help/[a-z]*/eog/figures ; do \
+    (cd $$f ; $(RM) *.png ; $(SYMLINK) ../../../C/eog/figures/*.png . ); \
+done ;
 
 REQUIRED_PACKAGES += data/shared-mime-info
 REQUIRED_PACKAGES += image/library/libexif

@@ -73,6 +73,12 @@ CONFIGURE_OPTIONS +=	-Dps=enabled
 # Needed to find GNU msgfmt.
 COMPONENT_BUILD_ENV += PATH="/usr/gnu/bin:$(PATH)"
 
+# Temporary workaround until all build machines are running meson-0.63
+COMPONENT_POST_INSTALL_ACTION += \
+for f in $(PROTO_DIR)/usr/share/help/[a-z]*/evince/figures ; do \
+    (cd $$f ; $(RM) *.png ; $(SYMLINK) ../../../C/evince/figures/*.png . ); \
+done ;
+
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += gnome/file-manager/nautilus

@@ -60,6 +60,12 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS += -Dgtk_doc=true
 CONFIGURE_OPTIONS += -Dgladeui=true
 
+# Temporary workaround until all build machines are running meson-0.63
+COMPONENT_POST_INSTALL_ACTION += \
+for f in $(PROTO_DIR)/usr/share/help/[a-z]*/glade/figures ; do \
+    (cd $$f ; $(RM) *.png ; $(SYMLINK) ../../../C/glade/figures/*.png . ); \
+done ;
+
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf

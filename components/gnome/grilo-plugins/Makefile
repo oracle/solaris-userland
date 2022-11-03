@@ -49,6 +49,13 @@ COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
 CONFIGURE_OPTIONS += -Denable-lua-factory=no
 
+# Temporary workaround until all build machines are running meson-0.63
+COMPONENT_POST_INSTALL_ACTION += \
+for f in $(PROTO_DIR)/usr/share/help/[a-z]*/examples ; do \
+    (cd $$f ; $(RM) example-tmdb.c ; \
+	$(SYMLINK) ../../C/grilo-plugins/../examples/example-tmdb.c . ); \
+done ;
+
 COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
