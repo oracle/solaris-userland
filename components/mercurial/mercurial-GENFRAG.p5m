@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability committed>
@@ -30,9 +30,6 @@
 
 # We also ignore all dependencies implied by the demos.
 <transform file path=usr/demo/mercurial51/.+ -> set pkg.depend.bypass-generate .*>
-link path=usr/demo/mercurial/ target=mercurial51 mediator=hg-python \
-    mediator-version=2.7 pkg.linted.pkglint.dupaction010.1=true \
-    pkg.linted.userland.action002.0=true
 link path=usr/demo/mercurial/ target=mercurial51 mediator=hg-python \
     mediator-version=3.7 pkg.linted.pkglint.dupaction010.1=true \
     pkg.linted.userland.action002.0=true
@@ -104,24 +101,14 @@ file path=usr/demo/mercurial51/vim/patchreview.vim
 file path=usr/demo/mercurial51/xml.rnc
 file hg.1 path=usr/share/man/man1/hg-51.1
 link path=usr/share/man/man1/hg.1 target=./hg-51.1 mediator=hg-python \
-    mediator-version=2.7 pkg.linted.pkglint.dupaction010.1=true
-link path=usr/share/man/man1/hg.1 target=./hg-51.1 mediator=hg-python \
     mediator-version=3.7 pkg.linted.pkglint.dupaction010.1=true
 file hgignore.5 path=usr/share/man/man5/hgignore-51.5
-link path=usr/share/man/man5/hgignore.5 target=./hgignore-51.5 \
-    mediator=hg-python mediator-version=2.7 \
-    pkg.linted.pkglint.dupaction010.1=true
 link path=usr/share/man/man5/hgignore.5 target=./hgignore-51.5 \
     mediator=hg-python mediator-version=3.7 \
     pkg.linted.pkglint.dupaction010.1=true
 file hgrc.5 path=usr/share/man/man5/hgrc-51.5
 link path=usr/share/man/man5/hgrc.5 target=./hgrc-51.5 mediator=hg-python \
-    mediator-version=2.7 pkg.linted.pkglint.dupaction010.1=true
-link path=usr/share/man/man5/hgrc.5 target=./hgrc-51.5 mediator=hg-python \
     mediator-version=3.7 pkg.linted.pkglint.dupaction010.1=true
-link path=usr/share/zsh/vendor-functions/Completion/_hg target=./_hg-51 \
-    mediator=hg-python mediator-version=2.7 \
-    pkg.linted.pkglint.dupaction010.1=true
 link path=usr/share/zsh/vendor-functions/Completion/_hg target=./_hg-51 \
     mediator=hg-python mediator-version=3.7 \
     pkg.linted.pkglint.dupaction010.1=true

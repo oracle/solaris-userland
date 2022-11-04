@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,8 +36,6 @@ COMPONENT_PROJECT_URL=	https://github.com/pypa/distlib
 COMPONENT_BUGDB=	python-mod/distlib
 COMPONENT_ANITYA_ID=	34504
 COMPONENT_BAID=		129916
-
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

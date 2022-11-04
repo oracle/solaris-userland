@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,9 +37,6 @@ COMPONENT_BUGDB=	python-mod/ptyprocess
 COMPONENT_ANITYA_ID=	6446
 
 COMPONENT_BAID=		101439
-
-# Not necessary to build this for older Python versions
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

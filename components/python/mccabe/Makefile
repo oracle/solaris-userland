@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,20 +37,9 @@ COMPONENT_BUGDB=	python-mod/mccabe
 COMPONENT_ANITYA_ID=	6902
 COMPONENT_BAID=		129342
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	0.5.2
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:3473f06c8b757bbb5cdf295099bf64032e5f7d6fe0ec2f97ee9b23cb0a435aff
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	35686
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

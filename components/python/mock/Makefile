@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -46,9 +46,6 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-$(MANIFEST_BASE)-mock-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
-
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
@@ -61,4 +58,3 @@ test:		$(NO_TESTS)
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
-REQUIRED_PACKAGES += library/python/funcsigs-27

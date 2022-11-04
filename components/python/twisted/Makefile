@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -38,24 +38,12 @@ COMPONENT_BUGDB=	python-mod/twisted
 COMPONENT_ANITYA_ID=	4071
 COMPONENT_BAID=		123313
 
-
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	18.9.0
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.bz2
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:ab2d9e3c9cad99340d45a26d1432a695c7e2e804b95d5d907cf549509936ade8
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	69507
-
 # Twisted isn't compatible with Python 3.11 yet.
 PYTHON_VERSIONS = $(WITHOUT_PYTHON3.11)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 
 # Move executables into demo directory.

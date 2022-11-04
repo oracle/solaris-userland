@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -44,9 +44,6 @@ PYTHON_VERSIONS = $(WITHOUT_PYTHON3.11)
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-$(MANIFEST_BASE)-nose-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -78,9 +75,7 @@ COMPONENT_PRE_TEST_ACTION = \
 
 # Make all files Python 3 compatible
 COMPONENT_POST_BUILD_ACTION += \
-	if [[ "$(PYTHON_VERSION)" != "2.7" ]]; then \
-		2to3-$(PYTHON_VERSION) -nw --no-diffs $(@D)/lib/nose; \
-	fi;
+	2to3-$(PYTHON_VERSION) -nw --no-diffs $(@D)/lib/nose;
 
 # The test output can contain non-deterministic results because "chances are
 # you will experience odd, intermittent and unexplainable failures and errors"

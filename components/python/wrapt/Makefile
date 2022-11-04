@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -41,9 +41,6 @@ COMPONENT_BAID=		121809
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-$(MANIFEST_BASE)-wrapt-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest

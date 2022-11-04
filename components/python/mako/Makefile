@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,8 +36,6 @@ COMPONENT_PROJECT_URL=	http://www.makotemplates.org/
 COMPONENT_BUGDB=	python-mod/mako
 COMPONENT_ANITYA_ID=	3915
 COMPONENT_BAID=		133767
-
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

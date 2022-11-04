@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
 #
 
 # Some userland consolidation specific lint checks
@@ -741,7 +741,6 @@ class UserlandManifestChecker(base.ManifestChecker):
         # Magic values of all versions of Python can be found here:
         # https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap_external.py
         MAGIC_NUMBERS = {
-            "27": (62211).to_bytes(2, "little") + b"\r\n",
             "37": (3394).to_bytes(2, "little") + b"\r\n",
             "39": (3425).to_bytes(2, "little") + b"\r\n",
             "311": (3495).to_bytes(2, "little") + b"\r\n",
@@ -772,15 +771,6 @@ class UserlandManifestChecker(base.ManifestChecker):
         # we can get the header layout from the magic number (which
         # changes with each each bytecode revision)
         magic = data[:4]
-
-        # older Python 2 header
-        if magic == MAGIC_NUMBERS["27"]:
-            # validate a pyc against the source last-modified time
-            timestamp = int.from_bytes(data[4:8], "little")
-            if timestamp != int(st.st_mtime) & 0xFFFFFFFF:
-                engine.error(f"bytecode is stale in {pycpath}",
-                             msgid=f"{self.name}{_pkglint_id}.5")
-            return
 
         # verify that .cpython-XX extension corresponds to the
         # expected magic number

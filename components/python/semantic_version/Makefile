@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,8 +36,6 @@ COMPONENT_PROJECT_URL=	https://github.com/rbarrois/python-semanticversion
 COMPONENT_BUGDB=	python-mod/semantic_ver
 COMPONENT_ANITYA_ID=	46758
 COMPONENT_BAID=		124439
-
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

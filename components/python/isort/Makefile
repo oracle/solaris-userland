@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,20 +37,9 @@ COMPONENT_BUGDB=	python-mod/isort
 COMPONENT_ANITYA_ID=	11430
 COMPONENT_BAID=		122817
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	4.3.21
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:d0e911c29983cc42a391d258bf2def503889d97c71aa8f86f1a8b1fb24eee0b6
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	76748
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 # Rename isort to its versioned name; mediated links (depending on
 # the python version) in the manifest will create the link from isort
@@ -70,5 +59,3 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += library/python/backports.functools_lru_cache-27

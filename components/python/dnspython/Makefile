@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,30 +37,13 @@ COMPONENT_BUGDB=	python-mod/dnspython
 COMPONENT_ANITYA_ID=	13190
 COMPONENT_BAID=		123749
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	1.16.0
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).zip
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:36c5e8e38d4369a08b6780b7f27d790a292b2b08eea01607865bf0936c558e01
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	76738
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
-
-# Python 2.7 cannot handle some test modules due to typing import
-$(BUILD_DIR)/$(MACH)-2.7/.tested: COMPONENT_TEST_ARGS = \
-	--ignore=test_name.py --ignore=test_rdtypeanydnskey.py --ignore=test_zone.py
-$(BUILD_DIR)/$(MACH)-2.7/.system-tested: COMPONENT_SYSTEM_TEST_ARGS = \
-	--ignore=test_name.py --ignore=test_rdtypeanydnskey.py --ignore=test_zone.py
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

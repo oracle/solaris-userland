@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -36,28 +36,12 @@ COMPONENT_BUGDB=	python-mod/setuptools
 COMPONENT_ANITYA_ID=	4021
 COMPONENT_BAID=		121661
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	44.1.1
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	v$(COMPONENT_VERSION_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:d8203b2425014dd7b15b95c69a41454a98c90e5383c6a23d518f61c2e3e86bfd
-COMPONENT_ARCHIVE_URL_OLD= \
-    https://github.com/pypa/setuptools/archive/$(COMPONENT_ARCHIVE_OLD)
-COMPONENT_BAID_OLD=	106626
-
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
-# Need to bootstrap setuptools before we can run setup (old version
-# only; the new one no longer needs bootstrapping)
-COMPONENT_PREP_ACTION = (cd $(SOURCE_DIR_OLD) ; $(PYTHON.2.7) bootstrap.py)
 
 # common targets
 build:		$(BUILD_NO_ARCH)

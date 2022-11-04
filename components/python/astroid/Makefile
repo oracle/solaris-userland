@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -40,25 +40,9 @@ GIT_REPO=	$(COMPONENT_PROJECT_URL)
 GIT_COMMIT_ID=	v$(COMPONENT_VERSION)
 GIT_HASH=	sha256:3f2eb8f6ef55734c15e6a0caf705e96734ec7559a22dc6a7995bf8fff3b47c65
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	1.4.8
-COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD=	\
-	sha256:5f064785a7e45ed519285f2eb30b795e58a4932a0736b32030da6fef3394ddb3
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	34811
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
-
-$(BUILD_DIR)/%-2.7/.tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)/astroid/tests
-$(BUILD_DIR)/%-2.7/.tested: COMPONENT_TEST_ARGS += unittest_*
-$(BUILD_DIR)/%-2.7/.system-tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)/astroid/tests
-$(BUILD_DIR)/%-2.7/.system-tested: COMPONENT_TEST_ARGS += unittest_*
 
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
@@ -78,5 +62,4 @@ system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/lazy-object-proxy-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/wrapt-%)
-REQUIRED_PACKAGES += library/python/six-27
 REQUIRED_PACKAGES += $(PYVS3:%=library/python/typing-extensions-%)

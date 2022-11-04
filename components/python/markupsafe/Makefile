@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
@@ -37,8 +37,6 @@ COMPONENT_BUGDB=	python-mod/markupsafe
 COMPONENT_ANITYA_ID=	3918
 
 COMPONENT_BAID=		108268
-
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

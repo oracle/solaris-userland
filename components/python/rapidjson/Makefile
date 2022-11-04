@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,8 +37,6 @@ COMPONENT_PROJECT_URL=	https://github.com/python-rapidjson/python-rapidjson
 COMPONENT_BUGDB=	python-mod/rapidjson
 COMPONENT_ANITYA_ID=	42927
 COMPONENT_BAID=		123151
-
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

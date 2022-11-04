@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 
 # Component uses ABI3 naming.
@@ -44,9 +44,6 @@ COMPONENT_BAID=		122404
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-$(MANIFEST_BASE)-xattr-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
 
 # The test suite wants to use some unicode filenames, which don't work in the C
 # locale.

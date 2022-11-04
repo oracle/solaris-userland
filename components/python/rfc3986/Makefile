@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,8 +36,6 @@ COMPONENT_PROJECT_URL=	https://rfc3986.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	python-mod/rfc3986
 COMPONENT_ANITYA_ID=	13218
 COMPONENT_BAID=		122686
-
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

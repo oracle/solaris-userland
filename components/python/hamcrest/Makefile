@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,20 +37,9 @@ COMPONENT_BUGDB=	python-mod/pyhamcrest
 COMPONENT_ANITYA_ID=	11633
 COMPONENT_BAID=		122905
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	1.10.1
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:74efac903a361ee05076679d12c84ad278970d55dcf7508fa7669d244a19dc8b
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	86821
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -63,13 +52,8 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# Tests are available only in the new version
-test:		$(BUILD_DIR)/$(MACH)-3.7/.tested \
-		$(BUILD_DIR)/$(MACH)-3.9/.tested \
-		$(BUILD_DIR)/$(MACH)-3.11/.tested
+test:		$(TEST_NO_ARCH)
 
-system-test:	$(BUILD_DIR)/$(MACH)-3.7/.system-tested \
-		$(BUILD_DIR)/$(MACH)-3.9/.system-tested \
-		$(BUILD_DIR)/$(MACH)-3.11/.system-tested
+system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)

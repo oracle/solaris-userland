@@ -20,16 +20,9 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 link path=usr/bin/hg \
     target=../lib/python$(PYVER)/vendor-packages/mercurial/hg \
     mediator=hg-python mediator-version=$(PYVER)
-
-# Different setuptools versions generate different files
-$(PYTHON_2.7_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/mercurial-$(COMPONENT_VERSION)-py$(PYVER).egg-info
-$(PYTHON_3.7_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/mercurial-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
-$(PYTHON_3.7_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/mercurial-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
-$(PYTHON_3.7_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/mercurial-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
-$(PYTHON_3.7_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/mercurial-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -44,10 +44,6 @@ include $(WS_MAKE_RULES)/ips.mk
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
-
-# Some files are available for Python 3.x only
-$(MANIFEST_BASE)-%-27.mogrified: NEW_ONLY = \#
-PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

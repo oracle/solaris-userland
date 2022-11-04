@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
@@ -40,20 +40,9 @@ GIT_REPO=	https://github.com/PyCQA/pylint
 GIT_COMMIT_ID=	v$(COMPONENT_VERSION)
 GIT_HASH=	sha256:4c311dbdbb3261ec999b0403587ae798c3e43adfe1f70c5a9102ba0b9ce317e8
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	1.6.4
-COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD=	\
-	sha256:ef901a34b62ed7a734370ba5b162d890231ba8822abe88c6dda1268e2575f5f1
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	34816
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 # There are several pylint documentation files that setup.py isn't installing
 # but are present in the pylint package on other distributions. Copy them into
@@ -69,42 +58,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; $(MV) pyreverse pyreverse-$(PYTHON_VERSION)) ;
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; $(MV) symilar symilar-$(PYTHON_VERSION)) ;
-
-COMPONENT_POST_INSTALL_ACTION_NEW += \
+COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint-config pylint-config-$(PYTHON_VERSION)) ;
-
-COMPONENT_POST_INSTALL_ACTION_OLD += \
-	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint-gui pylint-gui-$(PYTHON_VERSION)) ;
-COMPONENT_POST_INSTALL_ACTION_OLD += \
-	$(MKDIR) $(PDOC_PYLINT) ;
-COMPONENT_POST_INSTALL_ACTION_OLD += \
-	$(CP) $(COMPONENT_SRC)/README.rst $(PDOC_PYLINT) ;
-COMPONENT_POST_INSTALL_ACTION_OLD += \
-	$(MKDIR) $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION_OLD += \
-	$(CP) $(COMPONENT_SRC)/examples/custom.py $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION_OLD += \
-	$(CP) $(COMPONENT_SRC)/examples/custom_raw.py $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION_OLD += \
-	$(CP) $(COMPONENT_SRC)/elisp/pylint.el $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION_OLD += \
-	$(CP) $(COMPONENT_SRC)/examples/pylintrc_camelcase $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION_OLD += \
-	$(CP) $(COMPONENT_SRC)/examples/pylintrc $(PDOC_PYLINT_EXAMPLES) ;
-COMPONENT_POST_INSTALL_ACTION_OLD += \
-	($(PYTHON) -m py_compile $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/pylint/testutils.py) ;
-
-# pylint-gui is no longer delivered in newer version
-$(BUILD_DIR)/%-2.7/.installed: COMPONENT_POST_INSTALL_ACTION += \
-	$(COMPONENT_POST_INSTALL_ACTION_OLD)
-
-# pylint-config is only delivered in newer version
-$(BUILD_DIR)/%-3.7/.installed: COMPONENT_POST_INSTALL_ACTION += \
-	$(COMPONENT_POST_INSTALL_ACTION_NEW)
-$(BUILD_DIR)/%-3.9/.installed: COMPONENT_POST_INSTALL_ACTION += \
-	$(COMPONENT_POST_INSTALL_ACTION_NEW)
-$(BUILD_DIR)/%-3.11/.installed: COMPONENT_POST_INSTALL_ACTION += \
-	$(COMPONENT_POST_INSTALL_ACTION_NEW)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -133,8 +88,6 @@ system-test:	$(SYSTEM_TEST_NO_ARCH)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/astroid-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/isort-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/mccabe-%)
-REQUIRED_PACKAGES += library/python/backports.functools_lru_cache-27
-REQUIRED_PACKAGES += library/python/six-27
 REQUIRED_PACKAGES += $(PYVS3:%=library/python/dill-%)
 REQUIRED_PACKAGES += $(PYVS3:%=library/python/tomli-%)
 REQUIRED_PACKAGES += $(PYVS3:%=library/python/tomlkit-%)

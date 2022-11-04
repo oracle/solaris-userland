@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -38,31 +38,14 @@ COMPONENT_BUGDB=	python-mod/lazy-obj-proxy
 COMPONENT_ANITYA_ID=	8265
 COMPONENT_BAID=		122683
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	1.6.0
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:69a515c20c1ae723a39aa42165b5d78a4b016dd914c090015d4e72666b1bec67
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	101378
-
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
-
-$(MANIFEST_BASE)-lazy-object-proxy-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
 
 COMPONENT_TEST_DIR =    $(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =    $(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
-
-# Several files are available only in 3.x packages
-$(MANIFEST_BASE)-lazy-object-proxy-27.mogrified: PYTHON_3_ONLY = \#
 
 PKG_MACROS += PYTHON_3_ONLY="$(PYTHON_3_ONLY)"
 
@@ -76,5 +59,3 @@ install:	$(INSTALL_32_and_64)
 test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TEST_32_and_64)
-
-REQUIRED_PACKAGES += library/python/setuptools_scm-27

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -45,9 +45,6 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-$(MANIFEST_BASE)-backports.functools_lru_cache-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
-
 # Remove pytest.ini which breaks our testing with unknown arguments
 COMPONENT_PRE_TEST_ACTION = $(RM) $(SOURCE_DIR)/pytest.ini
 COMPONENT_PRE_SYSTEM_TEST_ACTION = $(RM) $(SOURCE_DIR)/pytest.ini
@@ -69,4 +66,3 @@ system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 # Setup related components
 REQUIRED_PACKAGES += library/python/setuptools_scm
-REQUIRED_PACKAGES += library/python/setuptools_scm-27

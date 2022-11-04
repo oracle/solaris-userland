@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 #
@@ -40,9 +40,6 @@
 # <transform set name=pkg.fmri value=(pkg:/+)?.*(library/perl-5/.*-522.*) -> set mark_legacy true>
 #
 
-# Python 2.7 and all related packages
-<transform set name=pkg.fmri value=(pkg:/+)?.*(-27).* -> set mark_legacy true>
-
 # Python 3.7 and all related packages
 <transform set name=pkg.fmri value=(pkg:/+)?.*(-37).* -> set mark_legacy true>
 
@@ -61,13 +58,6 @@
 
 # Mark packages which are unnecessary in newer runtimes.
 <transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/backports.functools_lru_cache).* -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/enum).* -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/funcsigs).* -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/ipaddress).* -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/scandir).* -> set mark_legacy true>
-
-# The following packages should not be marked
-<transform set name=pkg.fmri value=(pkg:/+)?.*(developer/build/scons-27) -> delete mark_legacy true>
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # Automatic processing starts here, no change is needed beyond this line

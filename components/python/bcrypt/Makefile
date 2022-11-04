@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -42,21 +42,10 @@ COMPONENT_BUGDB=	python-mod/bcrypt
 COMPONENT_ANITYA_ID=	9047
 COMPONENT_BAID=		125145
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	3.1.7
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:86ef92f1a7d420d8ecc4eff396800ac29b481a43384cee90ba49e5b5157be831
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	77131
-
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -74,4 +63,3 @@ test:		$(TEST_32_and_64)
 system-test:    $(SYSTEM_TEST_32_and_64)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cffi-%)
-REQUIRED_PACKAGES += library/python/six-27

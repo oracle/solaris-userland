@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,8 +38,6 @@ COMPONENT_BAID=		120562
 GIT_REPO=   $(COMPONENT_PROJECT_URL)
 GIT_COMMIT_ID=  $(COMPONENT_VERSION)
 GIT_HASH=   sha256:717b2b0278456492bb0c962de65f0b4ba5c59a76849a304a22aa538f8ea92833
-
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

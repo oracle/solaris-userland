@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32_and_64
 COMPILER= gcc
@@ -41,7 +41,7 @@ COMPONENT_ANITYA_ID=	1969
 COMPONENT_BAID=		72279
 
 # Build mercurial for both Python 2.x and 3.x
-PYTHON_VERSIONS = 2.7 3.7
+PYTHON_VERSIONS = 3.7
 
 BUILD_STYLE= setup.py
 

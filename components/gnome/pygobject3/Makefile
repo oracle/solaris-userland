@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 # gobject-introspection bindings are only built correctly for gtk when building
@@ -39,8 +39,6 @@ COMPONENT_ANITYA_ID=	13158
 
 COMPONENT_BAID=		111952
 BUILD_STYLE=		meson
-
-PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
 
 PKG_CONFIG_PATHS+=$(PYTHON_VENDOR_PACKAGES_BASE)/lib/pkgconfig/
 

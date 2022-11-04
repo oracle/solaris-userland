@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -35,8 +35,6 @@ COMPONENT_PROJECT_URL=	http://code.google.com/p/prettytable/
 COMPONENT_BUGDB=	python-mod/prettytable
 COMPONENT_ANITYA_ID=	19994
 COMPONENT_BAID=		122947
-
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

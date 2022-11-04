@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -64,4 +64,3 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyasn1-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyasn1-modules-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
-REQUIRED_PACKAGES += library/python/ipaddress-27

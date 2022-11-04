@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -43,7 +43,6 @@ COMPONENT_ANITYA_ID=	3881
 COMPONENT_BAID=		129020
 
 BUILD_STYLE=		meson
-PYTHON_VERSIONS= $(PYTHON3_VERSIONS)
 
 # Replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses meson.
 CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)

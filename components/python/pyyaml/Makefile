@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -42,20 +42,13 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-$(MANIFEST_BASE)-pyyaml-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
-
 # Library libyaml is not available on Solaris.
 COMPONENT_SETUP_ARGS += --without-libyaml
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =		$(SOURCE_DIR)
-COMPONENT_TEST_ARGS.2.7 =	./tests/lib/test_all.py
-COMPONENT_TEST_ARGS.3.7 =	./tests/lib3/test_all.py
-COMPONENT_TEST_ARGS.3.9 =	./tests/lib3/test_all.py
-COMPONENT_TEST_ARGS.3.11 =   ./tests/lib3/test_all.py
-COMPONENT_TEST_ARGS =		$(COMPONENT_TEST_ARGS.$(PYTHON_VERSION))
+COMPONENT_TEST_ARGS =		tests/lib3/test_all.py
 
 # common targets
 build:		$(BUILD_NO_ARCH)

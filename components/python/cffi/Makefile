@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -43,9 +43,6 @@ COMPONENT_BAID=		123050
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-$(MANIFEST_BASE)-cffi-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -85,16 +82,9 @@ COMPONENT_PRE_TEST_ACTION = \
 	    $(SOURCE_DIR)/doc/source/installation.rst \
 	    $(@D)/tests/doc/source
 
-# We get spurious test failures with 64bit version of python 2.7
-test:		$(BUILD_DIR)/$(MACH32)-2.7/.tested \
-		$(BUILD_DIR)/$(MACH64)-3.7/.tested \
-		$(BUILD_DIR)/$(MACH64)-3.9/.tested \
-		$(BUILD_DIR)/$(MACH64)-3.11/.tested
+test:		$(TEST_32_and_64)
 
-system-test:	$(BUILD_DIR)/$(MACH32)-2.7/.system-tested \
-		$(BUILD_DIR)/$(MACH64)-3.7/.system-tested \
-		$(BUILD_DIR)/$(MACH64)-3.9/.system-tested \
-		$(BUILD_DIR)/$(MACH64)-3.11/.system-tested
+system-test:	$(SYSTEM_TEST_32_and_64)
 
 endif
 

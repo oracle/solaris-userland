@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -83,13 +83,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-$(MANIFEST_BASE)-cryptography-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
-
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # Convenience variables
-TARGET_27 = $(BUILD_DIR)/%-2.7/
 TARGET_37 = $(BUILD_DIR)/%-3.7/
 TARGET_39 = $(BUILD_DIR)/%-3.9/
 TARGET_311 = $(BUILD_DIR)/%-3.11/
@@ -112,27 +108,18 @@ $(TARGET_311).built: COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
 $(TARGET_311).installed: COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 
 # Targets updated for older version build
-$(TARGET_27).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
 $(TARGET_37).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
 
-$(TARGET_27).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
 $(TARGET_37).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
 
-$(TARGET_27).tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
 $(TARGET_37).tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_27).system-tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
 $(TARGET_37).system-tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
 
-$(TARGET_27).tested: SOURCE_DIR_VECTORS = $(SOURCE_DIR_VECTORS_OLD)
 $(TARGET_37).tested: SOURCE_DIR_VECTORS = $(SOURCE_DIR_VECTORS_OLD)
-$(TARGET_27).system-tested: SOURCE_DIR_VECTORS = $(SOURCE_DIR_VECTORS_OLD)
 $(TARGET_37).system-tested: SOURCE_DIR_VECTORS = $(SOURCE_DIR_VECTORS_OLD)
 
-$(MANIFEST_BASE)-%-27.mogrified: COMPONENT_ARCHIVE_URL=$(COMPONENT_ARCHIVE_URL_OLD)
 $(MANIFEST_BASE)-%-37.mogrified: COMPONENT_ARCHIVE_URL=$(COMPONENT_ARCHIVE_URL_OLD)
-$(MANIFEST_BASE)-%-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
 $(MANIFEST_BASE)-%-37.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-$(MANIFEST_BASE)-%-27.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
 $(MANIFEST_BASE)-%-37.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
 
 # Make sure that prep is always executed correctly and entirely (see 34726564).
@@ -151,7 +138,7 @@ PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
 
 # Meta package must have versions of older runtimes fixed
 FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)cryptography-.7@(.*) \
+	echo "<transform depend fmri=(.*)cryptography-37@(.*) \
 		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
 	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-cryptography.mogrified \
 		> $(MANIFEST_BASE)-cryptography.mogrified-fixed ;
@@ -180,8 +167,6 @@ system-test:    $(SYSTEM_TEST_32_and_64)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cffi-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
-REQUIRED_PACKAGES += library/python/enum-27
-REQUIRED_PACKAGES += library/python/ipaddress-27
 REQUIRED_PACKAGES += library/python/setuptools-rust
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl-3

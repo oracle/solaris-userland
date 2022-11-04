@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -42,9 +42,6 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-$(MANIFEST_BASE)-pylxml-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
-
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_ARGS=	test
@@ -59,16 +56,6 @@ COMPONENT_TEST_ENV+=	LC_ALL=en_US.UTF-8
 # Point the test suite to already built libraries and
 # stop it from rebuilding everything during testing.
 COMPONENT_TEST_ENV+=	HOME=$(BUILD_DIR)/config-$*
-
-# Because of our internal change to move 64-bit Python 2.7 libraries to '64'
-# directory (something that the test suite doesn't expect and prepares libraries
-# into incorrect place), imports don't work properly during testing. This fixes
-# it by adding a link to the correct place in the proto area.
-COMPONENT_PRE_TEST_ACTION += \
-	if [[ "$(PYTHON_VERSION)" == "2.7" && $(BITS) == 64 ]]; then \
-		$(RM) $(SOURCE_DIR)/src/lxml/64; \
-		$(LN) -s $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)/lxml/64 $(SOURCE_DIR)/src/lxml/64; \
-	fi;
 
 # Prevent errors like: OSError: Error reading file 'http://127.0.0.1:59951/':
 # failed to load HTTP resource

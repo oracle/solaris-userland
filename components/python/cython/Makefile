@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -57,15 +57,9 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 # suffix.
 COMPONENT_POST_INSTALL_ACTION += \
         (cd $(PROTO_DIR)/usr/bin ; \
-         if [[ "$(PYTHON_VERSION)" == "2.7" && "$(BITS)" == "64" ]]; then \
-            $(MKDIR) $(PROTO_DIR)/usr/bin/$(MACH64); \
-            for c in cython cythonize cygdb; do \
-                $(MV) $$c $(MACH64)/$$c-$(PYTHON_VERSION) ; \
-            done; \
-         else \
             for c in cython cythonize cygdb; do \
                 $(MV) $$c $$c-$(PYTHON_VERSION) ; \
-            done; fi )
+            done )
 
 COMPONENT_TEST_ENV += CC=gcc CXX=g++ MAKE=gmake
 COMPONENT_TEST_DIR =    $(SOURCE_DIR)

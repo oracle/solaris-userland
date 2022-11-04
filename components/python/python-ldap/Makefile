@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 
 # Build requirements, needed before inclusion of shared-macros.
@@ -41,28 +41,14 @@ COMPONENT_BUGDB=	python-mod/python-ldap
 COMPONENT_ANITYA_ID=	13261
 COMPONENT_BAID=		126501
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	3.2.0
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:7d1c4b15375a533564aad3d3deade789221e450052b21ebb9720fb822eccdb8e
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	67339
 
-
-# Building for Python 2.7, 3.7, 3.9 and 3.11 only. (the default now)
+# Building for Python 3.7, 3.9 and 3.11 only. (the default now)
 # Reference ../../../make-rules/shared-macros.mk
-# PYTHON_VERSIONS=	3.7 3.9 3.11 2.7
+# PYTHON_VERSIONS=	3.7 3.9 3.11
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
-
-$(MANIFEST_BASE)-python-ldap-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -85,13 +71,9 @@ build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-test:		$(BUILD_DIR)/$(MACH64)-3.7/.tested \
-		$(BUILD_DIR)/$(MACH64)-3.9/.tested \
-		$(BUILD_DIR)/$(MACH64)-3.11/.tested
+test:		$(TEST_32_and_64)
 
-system-test:	$(BUILD_DIR)/$(MACH64)-3.7/.system-tested \
-		$(BUILD_DIR)/$(MACH64)-3.9/.system-tested \
-		$(BUILD_DIR)/$(MACH64)-3.11/.system-tested
+system-test:	$(SYSTEM_TEST_32_and_64)
 
 # Package dependencies.
 # ---------------------

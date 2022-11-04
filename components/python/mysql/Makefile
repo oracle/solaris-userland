@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -38,21 +38,10 @@ COMPONENT_BUGDB=	python-mod/mysql
 COMPONENT_ANITYA_ID=	7972
 COMPONENT_BAID=		121815
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	1.4.5
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:66b7024d50b82bf17ccaf783efb8140b537f0269c5591ec75db46398ff8b2a79
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	70776
-
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 PATH_64=		/usr/mysql/5.7/bin:/usr/bin:$(SPRO_VROOT)/bin
 COMPONENT_BUILD_ENV +=		PATH=$(PATH_$(BITS)):$(PATH)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,21 +37,10 @@ COMPONENT_BUGDB=	python-mod/pytest
 COMPONENT_ANITYA_ID=	3765
 COMPONENT_BAID=		131846
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	4.4.0
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:f21d2f1fb8200830dcbb5d8ec466a9c9120e20d8b53c7585d180125cce1d297a
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	61987
-
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 # New version of pytest no longer generates -$(PYVER) script for
 # each version.  Generate them now for backward compatibility.
@@ -92,13 +81,7 @@ REQUIRED_PACKAGES += $(PYVS3:%=library/python/tomli-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pluggy-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/py-%)
-REQUIRED_PACKAGES += library/python/atomicwrites-27
-REQUIRED_PACKAGES += library/python/funcsigs-27
 REQUIRED_PACKAGES += library/python/importlib-metadata-37
-REQUIRED_PACKAGES += library/python/more_itertools-27
-REQUIRED_PACKAGES += library/python/pathlib2-27
-REQUIRED_PACKAGES += library/python/six-27
-REQUIRED_PACKAGES += library/python/setuptools_scm-27
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/hypothesis

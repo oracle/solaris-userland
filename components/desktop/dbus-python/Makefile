@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -38,8 +38,6 @@ COMPONENT_BUGDB=	library/dbus
 COMPONENT_ANITYA_ID=	402
 
 COMPONENT_BAID=		113006
-
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 # Do not transform .so files to include standard Python 3 ABI version tag.
 PY3_CPYTHON_NAMING = \#

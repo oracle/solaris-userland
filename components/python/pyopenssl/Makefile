@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
@@ -50,13 +50,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-$(MANIFEST_BASE)-pyopenssl-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
-
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # Convenience variables
-TARGET_27 = $(BUILD_DIR)/%-2.7/
 TARGET_37 = $(BUILD_DIR)/%-3.7/
 TARGET_39 = $(BUILD_DIR)/%-3.9/
 TARGET_39 = $(BUILD_DIR)/%-3.11/
@@ -64,20 +60,14 @@ TARGET_39 = $(BUILD_DIR)/%-3.11/
 SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
 
 # Targets updated for older version build
-$(TARGET_27).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
 $(TARGET_37).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
 
-$(TARGET_27).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
 $(TARGET_37).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
 
-$(TARGET_27).tested: COMPONENT_SRC = $(COMPONENT_SRC_OLD)
 $(TARGET_37).tested: COMPONENT_SRC = $(COMPONENT_SRC_OLD)
 
-$(MANIFEST_BASE)-%-27.mogrified: COMPONENT_ARCHIVE_URL=$(COMPONENT_ARCHIVE_URL_OLD)
 $(MANIFEST_BASE)-%-37.mogrified: COMPONENT_ARCHIVE_URL=$(COMPONENT_ARCHIVE_URL_OLD)
-$(MANIFEST_BASE)-%-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
 $(MANIFEST_BASE)-%-37.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-$(MANIFEST_BASE)-%-27.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
 $(MANIFEST_BASE)-%-37.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
 
 # Make sure that prep is always executed correctly and entirely (see 34726564).

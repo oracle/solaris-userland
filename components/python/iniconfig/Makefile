@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,9 +36,6 @@ COMPONENT_PROJECT_URL=	https://github.com/pytest-dev/iniconfig
 COMPONENT_BUGDB=	python-mod/iniconfig
 COMPONENT_ANITYA_ID=	6883
 COMPONENT_BAID=		116642
-
-# No need to build this for Python 2.7
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

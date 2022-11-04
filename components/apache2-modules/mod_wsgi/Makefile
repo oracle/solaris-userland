@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,6 @@ COMPONENT_BAID=		129001
 
 # Don't use default CPPFLAGS; it causes Apache's custom CPP to fail.
 CONFIGURE_CPPFLAGS=
-VARIANTS_64 += $(BUILD_DIR)/apache24-python27
 VARIANTS_64 += $(BUILD_DIR)/apache24-python37
 VARIANTS_64 += $(BUILD_DIR)/apache24-python39
 VARIANTS_64 += $(BUILD_DIR)/apache24-python311
@@ -49,7 +48,6 @@ $(BUILD_DIR)/apache24-%/$(MACH64)/.configured: APXS=$(APACHE_24_USR_PREFIX)/bin/
 $(BUILD_DIR)/apache24-%/$(MACH64)/.built: BITS=64
 $(BUILD_DIR)/apache24-%/$(MACH64)/.tested: BITS=64
 
-$(BUILD_DIR)/apache2%-python27/$(MACH64)/.configured: PYTHON=$(PYTHON.2.7.64)
 $(BUILD_DIR)/apache2%-python37/$(MACH64)/.configured: PYTHON=$(PYTHON.3.7.64)
 $(BUILD_DIR)/apache2%-python39/$(MACH64)/.configured: PYTHON=$(PYTHON.3.9.64)
 $(BUILD_DIR)/apache2%-python311/$(MACH64)/.configured: PYTHON=$(PYTHON.3.11.64)
@@ -59,7 +57,6 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 
 CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 
-REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311

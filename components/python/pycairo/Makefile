@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -40,35 +40,12 @@ COMPONENT_BUGDB=	python-mod/pycairo
 COMPONENT_ANITYA_ID=	13166
 COMPONENT_BAID=		122799
 
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-COMPONENT_VERSION_OLD=	1.18.1
-COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD= \
-    sha256:83f4711ed0c7545427dd21665bdbf7f42484f90115016319e1877544b72f3848
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=	66833
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
-
-$(MANIFEST_BASE)-pycairo-27.mogrified: \
-    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
 
 # Disable tests since cairo fails to import.
 $(SKIP_TEST_AT_TOP_LEVEL)
-
-# Manifest convenience variables
-$(MANIFEST_BASE)-pycairo-27.mogrified: PYTHON3_ONLY = \#
-$(MANIFEST_BASE)-pycairo-37.mogrified: PYTHON2_ONLY = \#
-$(MANIFEST_BASE)-pycairo-39.mogrified: PYTHON2_ONLY = \#
-$(MANIFEST_BASE)-pycairo-311.mogrified: PYTHON2_ONLY = \#
-
-PKG_MACROS += PYTHON2_ONLY="$(PYTHON2_ONLY)"
-PKG_MACROS += PYTHON3_ONLY="$(PYTHON3_ONLY)"
 
 # Required to setup the prefix path to generate valid *.pc files.
 COMPONENT_INSTALL_ARGS+= --prefix $(PYTHON_VENDOR_PACKAGES_BASE)
@@ -87,11 +64,7 @@ build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-# We get spurious test failures with 64bit version of python 2.7
-test:		$(BUILD_DIR)/$(MACH32)-2.7/.tested \
-		$(BUILD_DIR)/$(MACH64)-3.7/.tested \
-		$(BUILD_DIR)/$(MACH64)-3.9/.tested \
-		$(BUILD_DIR)/$(MACH64)-3.11/.tested
+test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
