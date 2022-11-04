@@ -1,0 +1,147 @@
+cdrtools do use too liberal optimisation which might mean that code compiled on
+one machine may not run on another. In our case it was for example cdda2wav
+using BMI1 instructions.
+
+This patch does three things
+ - make the build log verbose, not hiding compiler commands
+ - remove '-fast' studio option
+ - knock down studio '-O' to '-O2'
+
+--- schilytools/RULES/rules.top
++++ schilytools/RULES/rules.top
+@@ -33,7 +33,7 @@ all:
+ # echoing by calling "make NOECHO= "
+ #
+ ###########################################################################
+-NOECHO=@
++NOECHO= # @
+ 
+ ###########################################################################
+ #
+--- schilytools/libmdigest/mdigest.mk
++++ schilytools/libmdigest/mdigest.mk
+@@ -22,7 +22,7 @@ CPPOPTS +=	-DUSE_PG
+ _XARCH_OPT=	$(OARCH:%cc64=$(SUNPROCOPT64))
+ XARCH_OPT=	$(_XARCH_OPT:%cc=$(XARCH_GEN))
+ 
+-SUNPROCOPTOPT=	-fast $(XARCH_OPT)
++SUNPROCOPTOPT=	$(XARCH_OPT)
+ GCCOPTOPT=	-O3  -fexpensive-optimizations
+ #
+ include		Targets
+--- schilytools/libmdigest/shlmdigest.mk
++++ schilytools/libmdigest/shlmdigest.mk
+@@ -23,7 +23,7 @@ CPPOPTS +=	-DUSE_PG
+ _XARCH_OPT=	$(OARCH:%cc64=$(SUNPROCOPT64))
+ XARCH_OPT=	$(_XARCH_OPT:%cc=$(XARCH_GEN))
+ 
+-SUNPROCOPTOPT=	-fast $(XARCH_OPT)
++SUNPROCOPTOPT=	$(XARCH_OPT)
+ GCCOPTOPT=	-O3  -fexpensive-optimizations
+ #
+ include		Targets
+--- schilytools/hdump/Makefile
++++ schilytools/hdump/Makefile
+@@ -25,7 +25,7 @@ CPPOPTS +=	-DTEXT_DOMAIN=\"SCHILY_UTILS\
+ _XARCH_OPT=	$(OARCH:%cc64=$(SUNPROCOPT64))
+ XARCH_OPT=	$(_XARCH_OPT:%cc=$(XARCH_GEN))
+ 
+-SUNPROCOPTOPT=	-fast $(XARCH_OPT)
++SUNPROCOPTOPT=	$(XARCH_OPT)
+ GCCOPTOPT=	-O3  -fexpensive-optimizations
+ #
+ CFILES=		hdump.c
+--- schilytools/isaexec/Makefile
++++ schilytools/isaexec/Makefile
+@@ -12,7 +12,7 @@ CPPOPTS +=	-DSCHILY_PRINT
+ CPPOPTS +=	-DUSE_NLS
+ CPPOPTS +=	'-DTEXT_DOMAIN="SUNW_OST_OSCMD"'
+ 
+-SUNPROCOPTOPT=	-fast -xspace -xstrconst $(XARCH_OPT)
++SUNPROCOPTOPT=	-xspace -xstrconst $(XARCH_OPT)
+ 
+ CFILES=		isaexec.c
+ 
+--- schilytools/libedc/shledc_dec.mk
++++ schilytools/libedc/shledc_dec.mk
+@@ -19,7 +19,7 @@ TARGETLIB=	edc_ecc_dec
+ _XARCH_OPT=	$(OARCH:%cc64=$(SUNPROCOPT64))
+ XARCH_OPT=	$(_XARCH_OPT:%cc=$(XARCH_GEN))
+ 
+-SUNPROCOPTOPT=	-fast $(XARCH_OPT)
++SUNPROCOPTOPT=	$(XARCH_OPT)
+ GCCOPTOPT=	-O3  -fexpensive-optimizations
+ #
+ CFILES=		edc_ecc_dec.c
+--- schilytools/libedc/libedc_p.mk
++++ schilytools/libedc/libedc_p.mk
+@@ -25,7 +25,7 @@ COPTS +=	$(COPTGPROF)
+ _XARCH_OPT=	$(OARCH:%cc64=$(SUNPROCOPT64))
+ XARCH_OPT=	$(_XARCH_OPT:%cc=$(XARCH_GEN))
+ 
+-SUNPROCOPTOPT=	-fast $(XARCH_OPT)
++SUNPROCOPTOPT=	$(XARCH_OPT)
+ GCCOPTOPT=	-O3  -fexpensive-optimizations
+ #
+ CFILES=		edc_ecc.c
+--- schilytools/libedc/libedc_dec.mk
++++ schilytools/libedc/libedc_dec.mk
+@@ -18,7 +18,7 @@ TARGETLIB=	edc_ecc_dec
+ _XARCH_OPT=	$(OARCH:%cc64=$(SUNPROCOPT64))
+ XARCH_OPT=	$(_XARCH_OPT:%cc=$(XARCH_GEN))
+ 
+-SUNPROCOPTOPT=	-fast $(XARCH_OPT)
++SUNPROCOPTOPT=	$(XARCH_OPT)
+ GCCOPTOPT=	-O3  -fexpensive-optimizations
+ #
+ CFILES=		edc_ecc_dec.c
+--- schilytools/libedc/libedc_dec_p.mk
++++ schilytools/libedc/libedc_dec_p.mk
+@@ -21,7 +21,7 @@ COPTS +=	$(COPTGPROF)
+ _XARCH_OPT=	$(OARCH:%cc64=$(SUNPROCOPT64))
+ XARCH_OPT=	$(_XARCH_OPT:%cc=$(XARCH_GEN))
+ 
+-SUNPROCOPTOPT=	-fast $(XARCH_OPT)
++SUNPROCOPTOPT=	$(XARCH_OPT)
+ GCCOPTOPT=	-O3  -fexpensive-optimizations
+ #
+ CFILES=		edc_ecc_dec.c
+--- schilytools/libedc/libedc.mk
++++ schilytools/libedc/libedc.mk
+@@ -22,7 +22,7 @@ CPPOPTS +=	-Iold
+ _XARCH_OPT=	$(OARCH:%cc64=$(SUNPROCOPT64))
+ XARCH_OPT=	$(_XARCH_OPT:%cc=$(XARCH_GEN))
+ 
+-SUNPROCOPTOPT=	-fast $(XARCH_OPT)
++SUNPROCOPTOPT=	$(XARCH_OPT)
+ GCCOPTOPT=	-O3  -fexpensive-optimizations
+ #
+ CFILES=		edc_ecc.c
+--- schilytools/libedc/shledc.mk
++++ schilytools/libedc/shledc.mk
+@@ -23,7 +23,7 @@ CPPOPTS +=	-Iold
+ _XARCH_OPT=	$(OARCH:%cc64=$(SUNPROCOPT64))
+ XARCH_OPT=	$(_XARCH_OPT:%cc=$(XARCH_GEN))
+ 
+-SUNPROCOPTOPT=	-fast $(XARCH_OPT)
++SUNPROCOPTOPT=	$(XARCH_OPT)
+ GCCOPTOPT=	-O3  -fexpensive-optimizations
+ #
+ CFILES=		edc_ecc.c
+--- schilytools/RULES/cc-sunpro.rul
++++ schilytools/RULES/cc-sunpro.rul
+@@ -48,12 +48,12 @@ XARCH_GEN=	$(SUNPROCOPTXX)
+ CPPOPTS=	-I$(ARCHDIR) -I$(OINCSDIR) $(INCDIRS:%=-I%) $(INCDIRSX:%=-I%)
+ COPTS=		-Xa $(SUNPROCOPTXX)
+ CWOPTS=		-v
+-COPTOPT=	-O
++COPTOPT=	-O2
+ COPTDYN=	-Kpic
+ COPTGPROF=	-xpg
+ C++OPTS=	$(SUNPROCOPTXX)
+ C++WOPTS=	
+-C++OPTOPT=	-O
++C++OPTOPT=	-O2
+ C++OPTDYN=	-Kpic
+ C++OPTGPROF=	-xpg
+ 
