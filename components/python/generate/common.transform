@@ -49,3 +49,7 @@
 
 # Drop all patch backup files
 <transform file path=.+~$ -> drop>
+
+# Python 3.11 never used packages /python-2/ so we can safely drop all the
+# dependencies. It is easier to do it once here rather than in every component.
+<transform depend fmri=library/python-2/.*-311$ -> drop>
