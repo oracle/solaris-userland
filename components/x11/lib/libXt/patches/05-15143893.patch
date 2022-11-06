@@ -1,0 +1,18 @@
+Oracle Bug 15143893 - SUNBT4810740 vsw512 test XtCallbackReleaseCacheRefList
+    regresses in S10_26
+
+XtCallbackReleaseCacheRefList() should not be calling XtFree(closure) as it
+does not "own" this data.  In the VSW test it points to an automatic array.
+
+Need to submit upstream.
+
+--- libXt-1.1.5/src/Convert.c
++++ libXt-1.1.5/src/Convert.c
+@@ -1165,7 +1165,6 @@ XtPointer call_data)	/* unused */
+ {
+     XtAppReleaseCacheRefs( XtWidgetToApplicationContext(widget),
+ 			   (XtCacheRef*)closure );
+-    XtFree(closure);
+ }
+ 
+ 
