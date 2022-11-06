@@ -171,11 +171,13 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION= \
 	(cd $(@D)/python3.9 ; env PYTHON=$(PYTHON.3.9.$(BITS)) \
 	 $(PYTHON.3.9.$(BITS)) ./setup.py install \
 		--root $(PROTO_DIR) \
-		--install-lib=$(PYTHON.3.9.VENDOR_PACKAGES)) ; \
+		--install-lib=$(PYTHON.3.9.VENDOR_PACKAGES) \
+		--openssl_lib_dir=$(OPENSSL_LIB_PATH.$(BITS))) ; \
 	(cd $(@D)/python3.11 ; env PYTHON=$(PYTHON.3.11.$(BITS)) \
 	 $(PYTHON.3.11.$(BITS)) ./setup.py install \
 		--root $(PROTO_DIR) \
-		--install-lib=$(PYTHON.3.11.VENDOR_PACKAGES))
+		--install-lib=$(PYTHON.3.11.VENDOR_PACKAGES) \
+		--openssl_lib_dir=$(OPENSSL_LIB_PATH.$(BITS))) ;
 
 $(INSTALL_64): COMPONENT_INSTALL_ARGS += DESTDIR=$(BUILD_DIR)/prototype/$(MACH64)
 
