@@ -107,21 +107,6 @@
      key <LSGT> { [  less,            greater,          bar                    ] };
      key <AB08> { [  comma,           semicolon                                ] };
      key <AB09> { [  period,          colon                                    ] };
-@@ -95,4 +97,14 @@
- partial alphanumeric_keys
- 	xkb_symbols "mac" {
- 	include "fi(mac)"
-+};
-+
-+partial alphanumeric_keys
-+	xkb_symbols "winkeys" {
-+	include "fi(winkeys)"
-+};
-+
-+partial alphanumeric_keys
-+	xkb_symbols "das" {
-+	include "fi(das)"
- };
 --- a/symbols/sun_vndr//gb	2013-09-05 22:27:17.000000000 +0000
 +++ b/symbols/sun_vndr//gb	2017-05-10 16:42:44.319488626 +0000
 @@ -34,7 +36,7 @@
@@ -147,35 +132,6 @@
  };
 --- a/symbols/sun_vndr//jp	2013-09-05 22:27:17.000000000 +0000
 +++ b/symbols/sun_vndr//jp	2017-05-10 16:42:44.439986096 +0000
-@@ -20,14 +20,27 @@
- // FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- // NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- // WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
--// 
-+//
- // Except as contained in this notice, the name of a copyright holder
- // shall not be used in advertising or otherwise to promote the sale, use
- // or other dealings in this Software without prior written authorization
- // of the copyright holder.
- //
-+//
-+//
- 
- partial default alphanumeric_keys modifier_keys
-+xkb_symbols "sun_type7" {
-+
-+    include "jp"
-+
-+    key <ALGR> { [ Alt_R, Alt_R ] };
-+
-+	modifier_map Mod1 { Alt_L, Alt_R };
-+
-+};
-+
-+partial alphanumeric_keys modifier_keys
- xkb_symbols "sun_type6_suncompat" {
- 
- 	include "inet(evdev)"
 @@ -57,7 +70,7 @@
      key <AD08> { [ i, I            ], [ kana_NI        ]   };
      key <AD09> { [ o, O            ], [ kana_RA        ]   };
@@ -377,27 +333,6 @@
  };
 --- a/symbols/sun_vndr//us	2013-07-27 23:46:45.000000000 +0000
 +++ b/symbols/sun_vndr//us	2017-05-10 16:42:45.117645655 +0000
-@@ -26,17 +26,10 @@
- // or other dealings in this Software without prior written authorization
- // of the copyright holder.
- //
-+//
-+//
- 
--partial default alphanumeric_keys
--xkb_symbols "sunbasic" {
--
--    include "us(basic)"
--    include "capslock(capslock)"
--    include "srvr_ctrl(xfree86)"
--
--};
--
--partial alphanumeric_keys
-+default partial alphanumeric_keys
- xkb_symbols "sun_type6" {
- 
- 	name[Group1]= "English (US, Sun Type 6/7)";
 @@ -43,12 +36,19 @@
  
      include "sun_vndr/us(sunbasic)"
@@ -453,3 +388,41 @@
 +	xkb_symbols "T3" {
 +	include "de(T3)"
  };
+--- a/symbols/sun_vndr/jp	2022-10-20 09:22:38.502419714 -0700
++++ b/symbols/sun_vndr/jp	2022-10-20 09:24:03.101434638 -0700
+@@ -28,6 +28,17 @@
+ //
+ 
+ default partial alphanumeric_keys modifier_keys
++xkb_symbols "sun_type7" {
++
++    include "jp"
++
++    key <ALGR> { [ Alt_R, Alt_R ] };
++
++    modifier_map Mod1 { Alt_L, Alt_R };
++
++};
++
++default partial alphanumeric_keys modifier_keys
+ xkb_symbols "sun_type6_suncompat" {
+ 
+ 	include "inet(evdev)"
+--- a/symbols/sun_vndr/us	2022-10-20 09:24:27.947585709 -0700
++++ b/symbols/sun_vndr/us	2022-10-20 09:25:10.042589709 -0700
+@@ -28,15 +28,6 @@
+ //
+ 
+ default partial alphanumeric_keys
+-xkb_symbols "sunbasic" {
+-
+-    include "us(basic)"
+-    include "capslock(capslock)"
+-    include "srvr_ctrl(xfree86)"
+-
+-};
+-
+-partial alphanumeric_keys
+ xkb_symbols "sun_type6" {
+ 
+ 	name[Group1]= "English (US, Sun Type 6/7)";

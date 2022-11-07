@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		smproxy
-COMPONENT_VERSION=	1.0.6
+COMPONENT_VERSION=	1.0.7
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6cf19155a2752237f36dbf8bc4184465ea190d2652f887faccb4e2a6ebf77266
+	sha256:4aa99237cc9dab7d87ce9bc7cca4116674a853b5f08dfe3f9db1bb2b2cf9f305
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15039
-COMPONENT_BAID=		52929
+COMPONENT_BAID=		132596
 
 TEST_TARGET = $(NO_TESTS)
 

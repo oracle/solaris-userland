@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		makedepend
-COMPONENT_VERSION=	1.0.6
+COMPONENT_VERSION=	1.0.7
 COMPONENT_PROJECT_URL=  https://www.x.org
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d558a52e8017d984ee59596a9582c8d699a1962391b632bec3bb6804bf4d501c
+	sha256:a729cfd3c0f4e16c0db1da351e7f53335222e058e3434e84f91251fd6d407065
 COMPONENT_BUGDB=        x11/builds
 COMPONENT_ANITYA_ID=	13528
-COMPONENT_BAID=		61050
+COMPONENT_BAID=		132969
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -45,9 +45,6 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 # and Xorg will not have any keyboard input when it starts up.
 link path=usr/X11/lib/X11/xkb target=../../../share/X11/xkb
 link path=usr/X11/share/X11/xkb target=../../../share/X11/xkb
-file path=usr/lib/$(MACH64)/pkgconfig/xkeyboard-config.pc
-link path=usr/lib/pkgconfig/xkeyboard-config.pc \
-    target=../$(MACH64)/pkgconfig/xkeyboard-config.pc
 file README path=usr/share/X11/xkb/README
 file path=usr/share/X11/xkb/compat/README
 file path=usr/share/X11/xkb/compat/accessx
@@ -57,7 +54,7 @@ file path=usr/share/X11/xkb/compat/complete
 file path=usr/share/X11/xkb/compat/iso9995
 file path=usr/share/X11/xkb/compat/japan
 file path=usr/share/X11/xkb/compat/ledcaps
-file ledcompose path=usr/share/X11/xkb/compat/ledcompose
+file path=usr/share/X11/xkb/compat/ledcompose
 file path=usr/share/X11/xkb/compat/lednum
 file path=usr/share/X11/xkb/compat/ledscroll
 file path=usr/share/X11/xkb/compat/level5
@@ -151,6 +148,7 @@ file path=usr/share/X11/xkb/symbols/ba
 file path=usr/share/X11/xkb/symbols/bd
 file path=usr/share/X11/xkb/symbols/be
 file path=usr/share/X11/xkb/symbols/bg
+file path=usr/share/X11/xkb/symbols/bqn
 file path=usr/share/X11/xkb/symbols/br
 file path=usr/share/X11/xkb/symbols/brai
 file path=usr/share/X11/xkb/symbols/bt
@@ -173,6 +171,7 @@ file path=usr/share/X11/xkb/symbols/digital_vndr/vt
 file path=usr/share/X11/xkb/symbols/dk
 file path=usr/share/X11/xkb/symbols/dz
 file path=usr/share/X11/xkb/symbols/ee
+file path=usr/share/X11/xkb/symbols/eg
 file path=usr/share/X11/xkb/symbols/empty
 file path=usr/share/X11/xkb/symbols/epo
 file path=usr/share/X11/xkb/symbols/es
@@ -214,6 +213,7 @@ file path=usr/share/X11/xkb/symbols/kz
 file path=usr/share/X11/xkb/symbols/la
 file path=usr/share/X11/xkb/symbols/latam
 file path=usr/share/X11/xkb/symbols/latin
+file path=usr/share/X11/xkb/symbols/level2
 file path=usr/share/X11/xkb/symbols/level3
 file path=usr/share/X11/xkb/symbols/level5
 file path=usr/share/X11/xkb/symbols/lk
@@ -318,6 +318,7 @@ file path=usr/share/X11/xkb/symbols/th
 file path=usr/share/X11/xkb/symbols/tj
 file path=usr/share/X11/xkb/symbols/tm
 file path=usr/share/X11/xkb/symbols/tr
+file path=usr/share/X11/xkb/symbols/trans
 file path=usr/share/X11/xkb/symbols/tw
 file path=usr/share/X11/xkb/symbols/typo
 file path=usr/share/X11/xkb/symbols/tz
@@ -344,6 +345,7 @@ file path=usr/share/X11/xkb/types/pc
 link path=usr/share/X11/xkb/xkbcomp target=../../../X11/bin/xkbcomp
 file files/xkbtable.map path=usr/share/X11/xkb/xkbtable.map
 file path=usr/share/locale/af/LC_MESSAGES/xkeyboard-config.mo
+file path=usr/share/locale/ar/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/az/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/bg/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/ca/LC_MESSAGES/xkeyboard-config.mo
@@ -357,7 +359,9 @@ file path=usr/share/locale/eo/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/es/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/fi/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/fr/LC_MESSAGES/xkeyboard-config.mo
+file path=usr/share/locale/fur/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/gl/LC_MESSAGES/xkeyboard-config.mo
+file path=usr/share/locale/he/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/hr/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/hu/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/id/LC_MESSAGES/xkeyboard-config.mo
@@ -370,6 +374,7 @@ file path=usr/share/locale/lt/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/nb/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/nl/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/pl/LC_MESSAGES/xkeyboard-config.mo
+file path=usr/share/locale/pt/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/pt_BR/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/ro/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/ru/LC_MESSAGES/xkeyboard-config.mo
@@ -385,6 +390,7 @@ file path=usr/share/locale/vi/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/zh_CN/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/locale/zh_TW/LC_MESSAGES/xkeyboard-config.mo
 file path=usr/share/man/man7/xkeyboard-config.7
+file path=usr/share/pkgconfig/xkeyboard-config.pc
 license COPYING license=MIT
 
 # for the xkbcomp symlink

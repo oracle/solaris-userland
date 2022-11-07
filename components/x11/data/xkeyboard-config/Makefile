@@ -20,22 +20,26 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xkeyboard-config
-COMPONENT_VERSION=	2.24
+COMPONENT_VERSION=	2.37
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_PROJECT_URL=	https://www.freedesktop.org/wiki/Software/XKeyboardConfig/
 COMPONENT_ARCHIVE_URL=	https://www.x.org/releases/individual/$(COMPONENT_CATEGORY)/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:91b18580f46b4e4ea913707f6c8d68ab5286879c3a6591462f3b9e760d3ac4d7
+	sha256:eb1383a5ac4b6210d7c7302b9d6fab052abdf51c5d2c9b55f1f779997ba68c6c
 COMPONENT_BUGDB=        x11/i18n
 COMPONENT_ANITYA_ID=	5191
+COMPONENT_SIG_URL=
 
-COMPONENT_BAID=	53152
+COMPONENT_BAID=		132959
+
+BUILD_STYLE=		meson
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/compat
 PKG_PROTO_DIRS += $(SOURCE_DIR)
@@ -46,9 +50,8 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 # Assumes xgettext is first in $PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
-
-COMPONENT_INSTALL_ARGS += pkgconfigdir="$(DESTDIR)/usr/lib/$(MACH64)/pkgconfig"
-
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += developer/intltool
