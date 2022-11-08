@@ -36,8 +36,6 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	2035
 COMPONENT_BAID=		126902
 
-PROTOCONTRIBDIR =	$(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)/contrib
-
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =		$(ADIHEAP_ENABLE)
 ADISTACK_MODE =		$(ADISTACK_ENABLE)
@@ -63,11 +61,6 @@ CONFIGURE_OPTIONS  +=		--with-idn
 CFLAGS +=			-I"$(USRINCDIR)/idn"
 CONFIGURE_OPTIONS  +=		--with-wc-funcs
 CONFIGURE_OPTIONS  +=		--with-sasl
-
-COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOCONTRIBDIR); \
-	$(CP) $(SOURCE_DIR)/contrib/mutt_oauth2.py $(PROTOCONTRIBDIR);\
-	$(CP) $(SOURCE_DIR)/contrib/mutt_oauth2.py.README $(PROTOCONTRIBDIR);
 
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl
