@@ -20,24 +20,26 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+COMPILER=   gcc
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lynx
-COMPONENT_VERSION=	2.8.8
-COMPONENT_PROJECT_URL=	https://lynx.browser.org/
-COMPONENT_SRC=		$(COMPONENT_NAME)2-8-8
-COMPONENT_ARCHIVE=	$(COMPONENT_NAME)$(COMPONENT_VERSION)rel.2.tar.bz2
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:6980e75cf0d677fd52c116e2e0dfd3884e360970c88c8356a114338500d5bee7
-COMPONENT_ARCHIVE_URL=	\
-    https://invisible-mirror.net/archives/lynx/tarballs/$(COMPONENT_ARCHIVE)
+COMPONENT_VERSION=	2.9.0
+COMPONENT_PATCHREL=	10
+COMPONENT_BAID=		132729
+COMPONENT_ARCHIVE_HASH=	sha256:02395a655dbea47ed3d5a4ef1942cbedc0ed42b836658ffdc15d60cb2279db21
+COMPONENT_SRC=		$(COMPONENT_NAME)$(COMPONENT_VERSION)dev.$(COMPONENT_PATCHREL)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_ARCHIVE_URL=	https://invisible-mirror.net/archives/lynx/tarballs/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
+COMPONENT_PROJECT_URL=	https://lynx.browser.org/
+IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).$(COMPONENT_PATCHREL)
 COMPONENT_ANITYA_ID=	1863
 
-COMPONENT_BAID=		22182
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
 
@@ -49,15 +51,14 @@ include $(WS_MAKE_RULES)/common.mk
 # Needed to successfully find lynx.pot.
 COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
 
-CFLAGS +=	-I$(USRINCDIR)/ncurses
-CFLAGS += $(XPG6MODE)
-studio_C99MODE = $(studio_C99_ENABLE) 
+CPPFLAGS +=	-I$(USRINCDIR)/ncurses
+CPPFLAGS +=	-I$(USRINCDIR)/idn
 
 CONFIGURE_OPTIONS +=	--enable-nls
 CONFIGURE_OPTIONS +=	--enable-japanese-utf8
 CONFIGURE_OPTIONS +=	--enable-widec
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)/lynx
-CONFIGURE_OPTIONS +=	--with-ssl
+CONFIGURE_OPTIONS +=	--with-gnutls
 CONFIGURE_OPTIONS +=	--with-screen=ncurses
 
 # Use the HTML and CSS styling external test suite as referenced at
@@ -79,7 +80,6 @@ COMPONENT_SYSTEM_TEST_ARGS =		-dump \
 	http://www.cameronmoll.com/articles/mobile/mkp/pg4.html
 COMPONENT_SYSTEM_TEST_TARGETS =
 
-REQUIRED_PACKAGES += library/libidn
+REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/ncurses
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
