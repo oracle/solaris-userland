@@ -67,3 +67,8 @@ REQUIRED_PACKAGES += library/python/build-39
 REQUIRED_PACKAGES += library/python/installer-39
 REQUIRED_PACKAGES += library/python/wheel-39
 endif
+ifneq ($(findstring 3.11, $(PYTHON_VERSIONS)),)
+REQUIRED_PACKAGES += library/python/build-311
+REQUIRED_PACKAGES += library/python/installer-311
+REQUIRED_PACKAGES += library/python/wheel-311
+endif
