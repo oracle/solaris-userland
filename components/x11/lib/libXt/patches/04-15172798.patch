@@ -14,13 +14,31 @@ Solution:
 If current application is 64bit model, use the 7th byte to hash the
 converter. Moreover, add more optimization macro definition.
 
---- libXt-1.1.5/src/Convert.c
-+++ libXt-1.1.5/src/Convert.c
-@@ -707,7 +707,12 @@ register Cardinal   i;
+--- a/src/Convert.c	2022-11-07 18:38:02.582934787 -0800
++++ b/src/Convert.c	2022-11-07 18:39:37.801918875 -0800
+@@ -717,9 +717,13 @@
      LOCK_PROCESS;
      /* Try to find cache entry for conversion */
-     hash = ((long) converter >> 2) + from->size + *((char *) from->addr);
--    if (from->size > 1) hash += ((char *) from->addr)[1];
+     hash = HashCode(converter, from);
+-    if (from->size > 1)
+-        hash += ((char *) from->addr)[1];
+-
++    if (from->size > 1) {
++	if (sizeof(long) == 4)
++            hash += ((char *) from->addr)[1];
++        else
++            hash += ((char *) from->addr)[6];
++    }
++        
+     for (p = cacheHashTable[hash & CACHEHASHMASK]; p; p = p->next) {
+         if ((p->hash == hash)
+             && (p->converter == (XtTypeConverter) converter)
+@@ -816,8 +820,12 @@
+     LOCK_PROCESS;
+     /* Try to find cache entry for conversion */
+     hash = HashCode(converter, from);
+-    if (from->size > 1)
+-        hash += ((char *) from->addr)[1];
 +    if (from->size > 1) {
 +	if (sizeof(long) == 4)
 +            hash += ((char *) from->addr)[1];
@@ -28,19 +46,5 @@ converter. Moreover, add more optimization macro definition.
 +            hash += ((char *) from->addr)[6];
 +    }
  
-     for (p = cacheHashTable[hash & CACHEHASHMASK]; p; p = p->next) {
- 	if ((p->hash == hash)
-@@ -805,7 +810,12 @@ }
-     LOCK_PROCESS;
-     /* Try to find cache entry for conversion */
-     hash = ((long)(converter) >> 2) + from->size + *((char *) from->addr);
--    if (from->size > 1) hash += ((char *) from->addr)[1];
-+    if (from->size > 1) {
-+	if (sizeof(long) == 4)
-+	    hash += ((char *) from->addr)[1];
-+	else
-+	    hash += ((char *) from->addr)[6];
-+    }
- 
      if (cP->cache_type != XtCacheNone) {
- 	for (p = cacheHashTable[hash & CACHEHASHMASK]; p; p = p->next){
+         for (p = cacheHashTable[hash & CACHEHASHMASK]; p; p = p->next) {

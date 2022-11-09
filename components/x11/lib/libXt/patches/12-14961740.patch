@@ -31,9 +31,9 @@ Finally, the error handler returns -1 from _XtWaitForSomething().
 
 Need to evaluate for submission upstream.
 
---- libXt-1.1.5/configure.ac
-+++ libXt-1.1.5/configure.ac
-@@ -77,6 +77,7 @@ AC_SUBST(LDFLAGS_FOR_BUILD)
+--- a/configure.ac	2022-11-07 19:20:45.189568737 -0800
++++ b/configure.ac	2022-11-07 19:21:07.279113999 -0800
+@@ -80,6 +80,7 @@
  
  # Map function checks to old Imake #defines
  case $host_os in
@@ -41,10 +41,10 @@ Need to evaluate for submission upstream.
  	# darwin through Snow Leopard has poll() but can't be used to poll character devices.
  	darwin@<:@789@:>@*|darwin10*) ;;
  	darwin*)
---- libXt-1.1.5/src/NextEvent.c
-+++ libXt-1.1.5/src/NextEvent.c
-@@ -344,6 +344,51 @@ }
- #endif
+--- a/src/NextEvent.c	2022-11-07 19:21:23.489203221 -0800
++++ b/src/NextEvent.c	2022-11-07 19:29:41.331516786 -0800
+@@ -367,6 +367,53 @@
+     }
  }
  
 +static void CheckAndTrimTimes(XtAppContext app, wait_times_ptr_t wt)
@@ -92,30 +92,22 @@ Need to evaluate for submission upstream.
 +       }
 +    }
 +}
- 
- static int IoWait (
-     wait_times_ptr_t wt,
-@@ -626,20 +671,56 @@ if (nfds == -1) {
- 	    /*
- 	     *  interrupt occured recalculate time value and wait again.
- 	     */
--	    if (errno == EINTR || errno == EAGAIN) {
--		if (errno == EAGAIN) {
--		    errno = 0;  /* errno is not self reseting */
--		    continue;
--		}
--	        errno = 0;  /* errno is not self reseting */
--
--		/* was it interrupted by a signal that we care about? */
--		if (!ignoreSignals && app->signalQueue != NULL) {
--		    SignalEventRec *se_ptr = app->signalQueue;
--		    while (se_ptr != NULL) {
--			if (se_ptr->se_notice) {
--			    if (block && howlong != NULL)
--				AdjustHowLong (howlong, &wt.start_time);
++
++
+ static int
+ IoWait(wait_times_ptr_t wt, wait_fds_ptr_t wf)
+ {
+@@ -651,21 +698,56 @@
+             /*
+              *  interrupt occured recalculate time value and wait again.
+              */
+-            if (errno == EINTR || errno == EAGAIN) {
+-                if (errno == EAGAIN) {
 +            if (errno == EAGAIN) {
-+                errno = 0;  /* errno is not self reseting */
-+                continue;
+                     errno = 0;  /* errno is not self reseting */
+                     continue;
+-                }
+-                errno = 0;      /* errno is not self reseting */
 +            } else if (errno == EBADF) {
 +                /* Bug 4482749 - If we have a bad FD stop monitoring it */
 +                int i;
@@ -128,7 +120,7 @@ Need to evaluate for submission upstream.
 +                            char     bad_fd[55];
 +                            String   param = bad_fd;
 +                            Cardinal param_count = 1;
-+
+ 
 +                            /*
 +                             * Get rid of any input procedures on the bad FD
 +                             * and regenerate the list of FDs we listen to.
@@ -148,42 +140,43 @@ Need to evaluate for submission upstream.
 +                            XtAppWarning(app, param);
 +
 +                          }
-+                      }
++                      } 
 +                  }
 +
 +                return -1;
 +
-+            } else if (errno == EINTR) {
-+                errno = 0;
++                } else if (errno == EINTR) {
++               	    errno = 0;      /* errno is not self reseting */
 +
-+                /* was it interrupted by a signal that we care about? */
-+                if (!ignoreSignals && app->signalQueue != NULL) {
-+                    SignalEventRec *se_ptr = app->signalQueue;
-+                    while (se_ptr != NULL) {
-+                        if (se_ptr->se_notice) {
-+                            if (block && howlong != NULL)
+                 /* was it interrupted by a signal that we care about? */
+                 if (!ignoreSignals && app->signalQueue != NULL) {
+                     SignalEventRec *se_ptr = app->signalQueue;
+-
+                     while (se_ptr != NULL) {
+                         if (se_ptr->se_notice) {
+                             if (block && howlong != NULL)
+-                                AdjustHowLong(howlong, &wt.start_time);
 +                                AdjustHowLong (howlong, &wt.start_time);
  #ifdef USE_POLL
- 			    XtStackFree ((XtPointer) wf.fdlist, fdlist);
+                             XtStackFree((XtPointer) wf.fdlist, fdlist);
  #endif
-@@ -684,17 +765,33 @@ } else
- #endif
- 			nfds = 0;
- 		}
--	    } else {
--		char Errno[12];
--		String param = Errno;
--		Cardinal param_count = 1;
--
--		sprintf( Errno, "%d", errno);
--		XtAppWarningMsg(app, "communicationError","select",
--			XtCXtToolkitError,"Select failed; error code %s",
--			&param, &param_count);
--		continue;
--	    }
-+            } else if (errno == EINVAL) {       /* (Can be recovered from if    */
+@@ -717,17 +799,32 @@
+                         nfds = 0;
+                 }
+             }
+-            else {
+-                char Errno[12];
+-                String param = Errno;
+-                Cardinal param_count = 1;
++            else if (errno == EINVAL) {
 +                struct timeval  tv={0};
-+
+ 
+-                sprintf(Errno, "%d", errno);
+-                XtAppWarningMsg(app, "communicationError", "select",
+-                                XtCXtToolkitError,
+-                                "Select failed; error code %s", &param,
+-                                &param_count);
+-                continue;
 +                nfds = Select(wf.nfds, &wf.rmask, &wf.wmask, &wf.emask, &tv);
 +                                                /* Do a non-blocking select to  */
 +                                                /* eliminate any timeout errors.*/
@@ -207,7 +200,6 @@ Need to evaluate for submission upstream.
 +                    CheckAndTrimTimes(app, &wt);
 +                    continue;
 +                }
-+            }
- 	} /* timed out or input available */
- 	break;
-     }
+             }
+         }                       /* timed out or input available */
+         break;

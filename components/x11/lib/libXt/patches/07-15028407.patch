@@ -25,25 +25,27 @@ make sense.
 
 Need to evaluate for submission upstream.
 
---- libXt-1.1.5/src/Display.c
-+++ libXt-1.1.5/src/Display.c
-@@ -316,12 +316,15 @@ /*
-  * Save away argv and argc so we can set the properties later
-  */
+--- a/src/Display.c	2022-11-07 19:09:53.543560261 -0800
++++ b/src/Display.c	2022-11-07 19:11:41.337732726 -0800
+@@ -346,13 +346,16 @@
+     /*
+      * Save away argv and argc so we can set the properties later
+      */
+-    saved_argv = (_XtString *)
+-        __XtMalloc((Cardinal)
+-                   ((size_t) (*argc_in_out + 1) * sizeof(_XtString)));
++    if (*argv_in_out != NULL) {
++       saved_argv = (String *)
++               __XtMalloc( (Cardinal)((*argc_in_out + 1) * sizeof(String)) );
  
--    saved_argv = (String *)
--	__XtMalloc( (Cardinal)((*argc_in_out + 1) * sizeof(String)) );
--
--    for (i = 0 ; i < *argc_in_out ; i++) saved_argv[i] = (*argv_in_out)[i];
--    saved_argv[i] = NULL;	/* NULL terminate that sucker. */
-+    if(*argv_in_out != NULL) {
-+    	saved_argv = (String *)
-+		__XtMalloc( (Cardinal)((*argc_in_out + 1) * sizeof(String)) );
- 
-+    	for (i = 0 ; i < *argc_in_out ; i++) saved_argv[i] = (*argv_in_out)[i];
-+    	saved_argv[i] = NULL;	/* NULL terminate that sucker. */
+-    for (i = 0; i < *argc_in_out; i++)
+-        saved_argv[i] = (*argv_in_out)[i];
+-    saved_argv[i] = NULL;       /* NULL terminate that sucker. */
++       for (i = 0 ; i < *argc_in_out ; i++) 
++		saved_argv[i] = (*argv_in_out)[i];
++       saved_argv[i] = NULL;   /* NULL terminate that sucker. */
 +    } else {
-+	saved_argv = NULL;
++       saved_argv = NULL;
 +    }
  
      *app_context_return = XtCreateApplicationContext();

@@ -24,9 +24,9 @@ Oracle Bug 14974628 - SUNBT4185875 _XtwaitForSomething implemented incorrectly
 
 which added the missing "return" keywords.
 
---- libXt-1.1.5/src/Event.c
-+++ libXt-1.1.5/src/Event.c
-@@ -563,6 +563,14 @@ UNLOCK_PROCESS;
+--- a/src/Event.c	2022-11-07 19:12:33.474188705 -0800
++++ b/src/Event.c	2022-11-07 19:13:39.893732706 -0800
+@@ -590,6 +590,14 @@
      UNLOCK_APP(app);
  }
  
@@ -38,10 +38,10 @@ which added the missing "return" keywords.
 +    XtRegisterDrawable(XtDisplay(widget), (Drawable)window, widget);
 +}
 +
- void XtUnregisterDrawable(
-     Display* display,
-     Drawable drawable)
-@@ -613,6 +621,14 @@ UNLOCK_PROCESS;
+ void
+ XtUnregisterDrawable(Display *display, Drawable drawable)
+ {
+@@ -641,6 +649,14 @@
      UNLOCK_APP(app);
  }
  
@@ -53,12 +53,12 @@ which added the missing "return" keywords.
 +    XtUnregisterDrawable(XtDisplay(widget), (Drawable)window);
 +}
 +
- static void ExpandWWTable(
-     register WWTable tab)
+ static void
+ ExpandWWTable(register WWTable tab)
  {
---- libXt-1.1.5/src/NextEvent.c
-+++ libXt-1.1.5/src/NextEvent.c
-@@ -747,6 +747,33 @@ (*ptr->te_proc) (ptr->te_closure, (XtInt
+--- a/src/NextEvent.c	2022-11-07 19:13:50.529610200 -0800
++++ b/src/NextEvent.c	2022-11-07 19:14:35.844822484 -0800
+@@ -782,6 +782,33 @@
  #define SeCallProc(ptr) \
      (*ptr->se_proc) (ptr->se_closure, (XtSignalId*)&ptr);
  

@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libpciaccess
-COMPONENT_VERSION=	0.16
+COMPONENT_VERSION=	0.17
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:214c9d0d884fdd7375ec8da8dcb91a8d3169f263294c9a90c575bf1938b9f489
+	sha256:74283ba3c974913029e7a547496a29145b07ec51732bbb5b5c58d5025ad95b73
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1703
-COMPONENT_BAID=		67886
+COMPONENT_BAID=		132854
 
-# GNU Build System files have to be regenerated for automake 1.16.
-# It can be removed when the upstream starts to use a newer automake version.
+# required because of a patched Makefile.am
 COMPONENT_PREP_ACTION = (cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 
 PKG_PROTO_DIRS +=  $(BUILD_DIR_64)/scanpci/.libs

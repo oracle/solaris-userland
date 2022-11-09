@@ -20,21 +20,20 @@
 #
 
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXmu
-COMPONENT_VERSION=	1.1.3
+COMPONENT_VERSION=	1.1.4
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9c343225e7c3dc0904f2122b562278da5fed639b1b5e880d25111561bac5b731
+	sha256:210de3ab9c3e9382572c25d17c2518a854ce6e2c62c5f8315deac7579e758244
 COMPONENT_BUGDB=	x11/libraries
 COMPONENT_ANITYA_ID=	1785
-COMPONENT_BAID=		61377
-
-TEST_TARGET = $(NO_TESTS)
+COMPONENT_BAID=		132858
 
 FIX_PC_FILES=xmu.pc.in xmuu.pc.in
 
@@ -56,6 +55,16 @@ CPPFLAGS += 	-I $(LIBX11_DIR)/libX11-*/src/xcms
 
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --disable-static
+
+# Add tests
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/OK:/p" ' \
+        '-e "/PASS:/p" ' \
+        '-e "/FAIL:/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_ENV += libtool_install_magic='%%%MAGIC variable%%%'
 
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/header/x11-protocols

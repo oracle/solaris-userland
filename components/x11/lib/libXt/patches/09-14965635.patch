@@ -20,14 +20,13 @@ parent returns XtGeometryDone shall return XtGeometryYes.
 Under the conditions described above, XtMakeResizeRequest() returns
 XtGeometryDone instead of XtGeometryYes. 
 
---- libXt-1.1.5/src/Geometry.c
-+++ libXt-1.1.5/src/Geometry.c
-@@ -330,6 +330,12 @@ returnCode = (*manager)(widget, request,
- 	} else {
- 	    returnCode = (*manager)(widget, request, reply);
- 	}
-+
-+	/* leob fix for bug 4153816 */
+--- a/src/Geometry.c	2022-11-07 19:15:26.274225985 -0800
++++ b/src/Geometry.c	2022-11-07 19:16:12.473217747 -0800
+@@ -336,6 +336,11 @@
+         else {
+             returnCode = (*manager) (widget, request, reply);
+         }
++       /* leob fix for bug 4153816 */
 +        if (returnCode == XtGeometryDone && XtIsRealized(widget) &&
 +            (widget->core.width != request->width ||
 +             widget->core.height != request->height) )

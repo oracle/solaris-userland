@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
+
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXt
-COMPONENT_VERSION=	1.1.5
+COMPONENT_VERSION=	1.2.1
 COMPONENT_ARCHIVE_HASH= \
-	sha256:46eeb6be780211fdd98c5109286618f6707712235fdd19df4ce1e6954f349f1a
+	sha256:679cc08f1646dbd27f5e48ffe8dd49406102937109130caab02ca32c083a3d60
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1793
-COMPONENT_BAID=		53071
+COMPONENT_BAID=		132776
 
-TEST_TARGET = $(NO_TESTS)
 
 FIX_PC_FILES=xt.pc.in
 
@@ -51,6 +51,16 @@ CPPFLAGS += -DGETVALUES_BUG -DNO_ALLOCA
 # then the loader can't find them.  It complains silently.
 CFLAGS += \
         -xinline=no%_XtAppCreateShell,no%XtAppNextEvent,no%XtAppProcessEvent
+
+# Add tests
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/OK:/p" ' \
+        '-e "/PASS:/p" ' \
+        '-e "/FAIL:/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_ENV += libtool_install_magic='%%%MAGIC variable%%%'
 
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libice

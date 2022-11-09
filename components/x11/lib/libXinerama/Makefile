@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXinerama
-COMPONENT_VERSION=	1.1.4
+COMPONENT_VERSION=	1.1.5
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0008dbd7ecf717e1e507eed1856ab0d9cf946d03201b85d5dcf61489bb02d720
+	sha256:5094d1f0fcc1828cb1696d0d39d9e866ae32520c54d01f618f1a3c1e30c2085c
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1779
-COMPONENT_BAID=		58637
+COMPONENT_BAID=		132599
 
 TEST_TARGET = $(NO_TESTS)
 

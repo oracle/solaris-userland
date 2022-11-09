@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXpresent
-COMPONENT_VERSION=	1.0.0
+COMPONENT_VERSION=	1.0.1
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c11ae015141a9afbe10f4f2b8ee00b11adca6373dc1b9808d7c6c138b2da7b8a
+	sha256:b964df9e5a066daa5e08d2dc82692c57ca27d00b8cc257e8e960c9f1cf26231b
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	17166
-COMPONENT_BAID=		53067
+COMPONENT_BAID=		132855
 
 TEST_TARGET = $(NO_TESTS)
 
