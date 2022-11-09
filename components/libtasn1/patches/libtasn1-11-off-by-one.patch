@@ -1,0 +1,24 @@
+commit 606dcb139fa18a39205b6909389836106e7a9c0f
+Author: Simon Josefsson <simon@josefsson.org>
+Date:   Wed Aug 17 12:25:06 2022 +0200
+
+    Fix ETYPE_OK off by one array size check.  Closes: #32.
+    
+    Reported by David Trabish in
+    <https://gitlab.com/gnutls/libtasn1/-/issues/32>.
+    
+    Signed-off-by: Simon Josefsson <simon@josefsson.org>
+
+diff --git a/lib/int.h b/lib/int.h
+index 7d2eea3..18024ea 100644
+--- a/lib/int.h
++++ b/lib/int.h
+@@ -98,7 +98,7 @@ typedef struct tag_and_class_st
+ #define ETYPE_TAG(etype) (_asn1_tags[etype].tag)
+ #define ETYPE_CLASS(etype) (_asn1_tags[etype].class)
+ #define ETYPE_OK(etype) (((etype) != ASN1_ETYPE_INVALID && \
+-                          (etype) <= _asn1_tags_size && \
++                          (etype) < _asn1_tags_size && \
+                           _asn1_tags[(etype)].desc != NULL)?1:0)
+ 
+ #define ETYPE_IS_STRING(etype) ((etype == ASN1_ETYPE_GENERALSTRING || \
