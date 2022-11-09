@@ -28,23 +28,62 @@ BUILD_BITS = 		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		numpy
-COMPONENT_VERSION=	1.19.0
+COMPONENT_VERSION=	1.23.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:76766cc80d6128750075378d3bb7812cf146415bd29b588616f72c943c00d598
+    sha256:ed2cc92af0efad20198638c69bb0fc2870a58dabfba6eb722c933b48556c686c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.numpy.org/
 COMPONENT_BUGDB=	python-mod/numpy
 COMPONENT_ANITYA_ID=	2509
+COMPONENT_BAID=		132926
 
-COMPONENT_BAID=		86306
+COMPONENT_NAME_OLD=	$(COMPONENT_NAME)
+COMPONENT_VERSION_OLD=	1.21.6
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).zip
+COMPONENT_ARCHIVE_HASH_OLD=	\
+    sha256:ecb55251139706669fdec2ff073c98ef8e9a84473e51e716211b41aa0f18e656
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+COMPONENT_BAID_OLD=	133199
 
-# Numpy isn't compatible with Python 3.11 yet.
-PYTHON_VERSIONS = 3.7 3.9
+PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 BUILD_STYLE= setup.py
 include $(WS_MAKE_RULES)/common.mk
+
+# Convenience variables
+TARGET_37 = $(BUILD_DIR)/%-3.7/
+SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
+
+# Targets updated for older version build
+$(TARGET_37).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_37).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_37).tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_37).system-tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
+
+$(TARGET_37).tested: SOURCE_DIR_VECTORS = $(SOURCE_DIR_VECTORS_OLD)
+$(TARGET_37).system-tested: SOURCE_DIR_VECTORS = $(SOURCE_DIR_VECTORS_OLD)
+
+$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_ARCHIVE_URL=$(COMPONENT_ARCHIVE_URL_OLD)
+$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
+$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
+
+# Make sure that prep is always executed correctly and entirely (see 34726564).
+build install publish test: prep
+
+# Meta package must have versions of older runtimes fixed
+FIX_MANIFEST_VERSIONS:
+	echo "<transform depend fmri=(.*)numpy-37@(.*) \
+		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
+	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-numpy.mogrified \
+		> $(MANIFEST_BASE)-numpy.mogrified-fixed ;
+	$(MV) $(MANIFEST_BASE)-numpy.mogrified-fixed \
+		$(MANIFEST_BASE)-numpy.mogrified
+
+$(MANIFEST_BASE)-numpy.mangled: FIX_MANIFEST_VERSIONS
+
 
 COMPONENT_BUILD_ARGS.gcc	+= --compiler=gnu --fcompiler=gnu95
 COMPONENT_BUILD_ARGS 		+= $(COMPONENT_BUILD_ARGS.$(COMPILER)) -lm
@@ -72,11 +111,10 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s/[0-9]+ warnings/x warnings/g" ' \
 	'-e "/^FAILED/p" ' \
 	'-e "/^ERROR/p" ' \
-	'-e "\\$$p"'
+	'-e "/passed,/p"'
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).$(MACH).master
 
 REQUIRED_PACKAGES += library/python/cython
-REQUIRED_PACKAGES += library/python/nose
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/math

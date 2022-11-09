@@ -1,0 +1,51 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+
+# Drop everything not Python 3.7 related
+<transform file path=(?!.*3\.7.*) -> drop>
+
+# f2py versioned executables do not have a dash in their name
+# thus they are handled here and not globally
+#<transform file path=(?!usr/bin/f2py3.7)$ -> drop>
+<transform file path=usr/bin/f2py3.7 -> \
+	emit link path=usr/bin/f2py target=f2py3.7 mediator=python mediator-version=3.7>
+
+# Bypass pkgdepend detection of importlib in executable entry scripts
+<transform file path=usr/bin/.* -> set pkg.depend.bypass-generate .*importlib.*>
+
+# Handle PEP 3149 - ABI version tagged .so files (remove cpython-37m version tags)
+<transform file path=.+\.cpython-37m\.so$ -> edit path \\.cpython-37m\\.so$ .so>
+
+# Drop all patch backup files
+<transform file path=.+~$ -> drop>
+
+
+# pyx and pxd files are not parsable by pkgdepend.
+<transform file path=.*\.(pxd|pyx)$ -> set pkg.depend.bypass-generate .*>
+
+# bypass dependency detection in files with #!/usr/bin/pythonXX header
+<transform file path=.*/numpy/f2py/[^/]*.py$ -> set pkg.depend.bypass-generate .*>
+<transform file path=.*/numpy/random/_examples/cython/setup.py$ -> set pkg.depend.bypass-generate .*>
+<transform file path=.*/numpy/distutils/(cpuinfo|system_info).py$ -> set pkg.depend.bypass-generate .*>
