@@ -77,6 +77,7 @@ CONFIGURE_OPTIONS +=	--with-iologdir=/var/share/sudo/sudo-io
 CONFIGURE_OPTIONS +=	--with-relaydir=/var/share/sudo/sudo_logsrvd
 CONFIGURE_OPTIONS +=	--with-pam
 CONFIGURE_OPTIONS +=	--with-pam-login
+CONFIGURE_OPTIONS +=	--enable-gss-krb5-ccache-name
 CONFIGURE_OPTIONS +=	--with-tty-tickets
 CONFIGURE_OPTIONS +=	--without-insults
 CONFIGURE_OPTIONS +=	--without-lecture
