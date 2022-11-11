@@ -1,0 +1,42 @@
+27832835 Xorg segfault on startup in xf86OpenConsole on ast SPARC
+
+Reverts upstream commit:
+https://gitlab.freedesktop.org/xorg/driver/xf86-video-ast/-/commit/9918d6f69ac
+
+Reported upstream as:
+https://gitlab.freedesktop.org/xorg/driver/xf86-video-ast/-/issues/2
+
+--- xf86-video-ast-1.1.5/src/ast_driver.c
++++ xf86-video-ast-1.1.5/src/ast_driver.c
+@@ -667,6 +667,15 @@ #if !(defined(__sparc__))
+        /* Enable VGA MMIO Access */
+        vASTEnableVGAMMIO(pScrn);
+ #endif
++       /* Init VGA Adapter */
++       if (!xf86IsPrimaryPci(pAST->PciInfo))
++       {
++           ASTInitVGA(pScrn, 0);
++       }
++
++       vASTOpenKey(pScrn);
++       bASTRegInit(pScrn);
++
+ 
+        /* Get Chip Type */
+        if (PCI_DEV_REVISION(pAST->PciInfo) >= 0x40)
+@@ -680,15 +689,6 @@ ASTGetChipType(pScrn);
+        else
+            pAST->jChipType = AST2000;
+ 
+-       /* Init VGA Adapter */
+-       if (!xf86IsPrimaryPci(pAST->PciInfo))
+-       {
+-           ASTInitVGA(pScrn, 0);
+-       }
+-
+-       vASTOpenKey(pScrn);
+-       bASTRegInit(pScrn);
+-
+        /* Get Options from Scratch */
+        ASTGetScratchOptions(pScrn);
+ 

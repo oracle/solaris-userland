@@ -1,8 +1,11 @@
-Existing set of patches from X gate.  
+17907916 typing while X resets on attached or rkvm console leads to hard hang
 
---- a/src/ast_vgatool.c	Thu Apr 28 20:39:59 2016
-+++ b/src/ast_vgatool.c	Thu Apr 28 20:41:39 2016
-@@ -1075,16 +1075,29 @@
+Unknown if this should be applied upstream for all platforms or if it's
+Solaris specific.
+
+--- xf86-video-ast-1.1.5/src/ast_vgatool.c
++++ xf86-video-ast-1.1.5/src/ast_vgatool.c
+@@ -1077,30 +1077,43 @@ }
  static void vEnableVGA(ScrnInfoPtr pScrn)
  {
      ASTRecPtr pAST;
@@ -12,12 +15,12 @@ Existing set of patches from X gate.
  
      SetReg(VGA_ENABLE_PORT, 0x01);
 -    SetReg(MISC_PORT_WRITE, 0x01);
+ 
 +    /*
 +     * Only set the Input/Output Address bit in the Miscellaneous
 +     * output register, as clearing others bits and accessing the
 +     * frame buffer caused non-resumable errors on sparc.
 +     */
- 
 +    miscout = GetReg(MISC_PORT_READ);
 +    SetReg(MISC_PORT_WRITE, miscout | 0x01);
  }
@@ -34,7 +37,6 @@ Existing set of patches from X gate.
      0x04,
      0x1C,
      0xFF
-@@ -1091,7 +1104,7 @@
  };
  
  static UCHAR ExtRegInfo_AST2300A0[] = {
@@ -43,7 +45,6 @@ Existing set of patches from X gate.
      0x04,
      0x1C,
      0xFF
-@@ -1098,7 +1111,7 @@
  };
  
  static UCHAR ExtRegInfo_AST2300[] = {

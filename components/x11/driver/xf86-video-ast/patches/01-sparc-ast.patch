@@ -1,8 +1,433 @@
-Existing set of patches from X gate for sparc support
+Oracle Bug 15556759 - SUNBT6831193 AST driver does not work on sparc
 
---- a/src/ast_vgatool.h	Thu Apr 28 20:07:13 2016
-+++ b/src/ast_vgatool.h	Thu Apr 28 20:11:35 2016
-@@ -20,6 +20,12 @@
+To make AST driver work on sparc, here's the changes:
+
+. replace inb/outb with ioctls
+. send vis ioctl to get pci config info for the device
+. new code to do vgahw related operations
+. new code to map/unmap  video memory
+
+With later updates from these Oracle bug fixes:
+
+15560547 SUNBT6837131 Can't bring up dtlogin with AST2000 driver on nvx_114
+15663014 SUNBT6977519 Mass minor update to X upstream releases [August 2010 edition]
+15675158 SUNBT6992282 Mismerge of ast ddx driver
+15738038 SUNBT7083537 Xorg 1.12 & associated module updates
+14850206 update to Xorg 1.13.0
+19240845 X server crashes in ast_drv.so on S11U2
+21256857 Update Xorg to the latest community version 1.17.2
+21767820 Cannot set anymore display resolution to 1280x1024
+23287368 Update Xorg server to 1.18.3
+
+Not suitable for upstream in current form, but portions may be able to made
+upstreamable.
+
+
+--- xf86-video-ast-1.1.5/src/Makefile.am
++++ xf86-video-ast-1.1.5/src/Makefile.am
+@@ -44,4 +44,5 @@ ast_tool.c 	\
+ 	ast_vgatool.c 	\
+ 	ast_vgatool.h   \
+ 	ast_dp501fw.h	\
++	ast_sparc_driver.c \
+         compat-api.h
+--- xf86-video-ast-1.1.5/src/ast.h
++++ xf86-video-ast-1.1.5/src/ast.h
+@@ -33,6 +33,11 @@ #define Support_ShadowFB
+ 
+ #include <string.h>
+ #include <stdlib.h>
++#include <sys/visual_io.h>
++
++#ifdef __sparc
++#define __sparc__ 1
++#endif
+ 
+ #ifdef HAVE_XAA_H
+ #include "xaa.h"
+@@ -306,10 +311,28 @@ ShadowWindowProc window;
+     CreateScreenResourcesProcPtr CreateScreenResources;
+ #endif
+ 
++#if defined(__sparc__)
++    char               *deviceName;
++    int                fd;
++#endif
++
+ } ASTRec, *ASTRecPtr, *ASTPtr;
+ 
+ #define ASTPTR(p) ((ASTRecPtr)((p)->driverPrivate))
+ 
++#if defined(__sparc__)
++
++extern struct pci_device *ASTGetPciInfo(ASTRecPtr);
++extern ScrnInfoPtr        ASTAllocScreen(DriverPtr, GDevPtr);
++extern pointer           ASTMapVidMem(ScrnInfoPtr, unsigned int, CARD32,
++                                               unsigned long, unsigned long);
++extern void              ASTUnmapVidMem(ScrnInfoPtr, pointer, unsigned long);
++extern void              ASTNotifyModeChanged(ScrnInfoPtr);
++extern void              ASTSaveHW(ScrnInfoPtr);
++extern void              ASTRestoreHW(ScrnInfoPtr);
++
++#endif
++
+ /* ast_vgatool.c */
+ extern Bool bASTIsVGAEnabled(ScrnInfoPtr pScrn);
+ extern Bool ASTGetVGA2EDID(ScrnInfoPtr pScrn, unsigned char *pEDIDBuffer);
+--- xf86-video-ast-1.1.5/src/ast_cursor.c
++++ xf86-video-ast-1.1.5/src/ast_cursor.c
+@@ -82,7 +82,11 @@ pAST->HWCInfoPtr = infoPtr;
+ 
+     infoPtr->Flags = HARDWARE_CURSOR_TRUECOLOR_AT_8BPP |
+                      HARDWARE_CURSOR_INVERT_MASK |
++#if     !defined(__sparc__)
+                      HARDWARE_CURSOR_BIT_ORDER_MSBFIRST;
++#else
++                    0;
++#endif
+ 
+     infoPtr->MaxWidth  = MAX_HWC_WIDTH;
+     infoPtr->MaxHeight = MAX_HWC_HEIGHT;
+--- xf86-video-ast-1.1.5/src/ast_driver.c
++++ xf86-video-ast-1.1.5/src/ast_driver.c
+@@ -1,5 +1,6 @@
+ /*
+  * Copyright (c) 2005 ASPEED Technology Inc.
++ * Copyright (c) 2009, 2018, Oracle and/or its affiliates.
+  *
+  * Permission to use, copy, modify, distribute, and sell this software and its
+  * documentation for any purpose is hereby granted without fee, provided that
+@@ -74,7 +75,7 @@ static void ASTFreeScreen(FREE_SCREEN_AR
+ static ModeStatus ASTValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode, Bool verbose, int flags);
+ 
+ /* Internally used functions */
+-static Bool ASTGetRec(ScrnInfoPtr pScrn);
++extern Bool ASTGetRec(ScrnInfoPtr pScrn);
+ static void ASTFreeRec(ScrnInfoPtr pScrn);
+ static Bool ASTSaveScreen(ScreenPtr pScreen, Bool unblack);
+ static Bool ASTCloseScreen(CLOSE_SCREEN_ARGS_DECL);
+@@ -244,7 +245,7 @@ xf86MatchDevice(AST_DRIVER_NAME, &devSec
+       return FALSE;
+     }
+ 
+-#ifndef XSERVER_LIBPCIACCESS
++#if !defined(XSERVER_LIBPCIACCESS) && !defined(__sparc__)
+    /*
+     * This probing is just checking the PCI data the server already
+     * collected.
+@@ -254,6 +255,8 @@ return FALSE;
+     }
+ #endif
+ 
++#if !defined(__sparc__)
++
+     numUsed = xf86MatchPciInstances(AST_NAME, PCI_VENDOR_AST,
+ 				   ASTChipsets, ASTPciChipsets,
+ 				   devSections, numDevSections,
+@@ -322,6 +325,36 @@ } /* end of if flags */
+ 
+     free(devSections);
+     free(usedChips);
++#else
++    if (flags & PROBE_DETECT) {
++        foundScreen = TRUE;
++    } else {
++        for (i = 0; i < numDevSections; i++) {
++
++           ScrnInfoPtr pScrn = NULL;
++
++           /* Allocate new ScrnInfoRec and claim the slot */
++           if (pScrn = ASTAllocScreen(drv, devSections[i])) {
++               pScrn->driverVersion = AST_VERSION;
++               pScrn->driverName = AST_DRIVER_NAME;
++               pScrn->name = AST_NAME;
++
++               pScrn->Probe = ASTProbe;
++               pScrn->PreInit = ASTPreInit;
++               pScrn->ScreenInit = ASTScreenInit;
++               pScrn->SwitchMode = ASTSwitchMode;
++               pScrn->AdjustFrame = ASTAdjustFrame;
++               pScrn->EnterVT = ASTEnterVT;
++               pScrn->LeaveVT = ASTLeaveVT;
++               pScrn->FreeScreen = ASTFreeScreen;
++               pScrn->ValidMode = ASTValidMode;
++
++               foundScreen = TRUE;
++           }
++       }
++    }
++    free(devSections);
++#endif
+ 
+     return foundScreen;
+ }
+@@ -393,6 +426,10 @@ return FALSE;
+ 
+    pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
+ 
++#if defined(__sparc__)
++   pEnt->location.type = BUS_PCI;
++#endif
++
+    if (flags & PROBE_DETECT) {
+        ASTProbeDDC(pScrn, pEnt->index);
+        return TRUE;
+@@ -495,7 +532,11 @@ }
+    /* Fill AST Info */
+    pAST = ASTPTR(pScrn);
+    pAST->pEnt    = xf86GetEntityInfo(pScrn->entityList[0]);
++#if !defined(__sparc__)
+    pAST->PciInfo = xf86GetPciInfoForEntity(pAST->pEnt->index);
++#else
++   pAST->PciInfo = ASTGetPciInfo(pAST);
++#endif
+ #ifndef XSERVER_LIBPCIACCESS
+    pAST->PciTag  = pciTag(pAST->PciInfo->bus, pAST->PciInfo->device,
+ 			  pAST->PciInfo->func);
+@@ -541,6 +582,7 @@ xf86DrvMsg(pScrn->scrnIndex, from, "Chip
+ 	      (pScrn->chipset != NULL) ? pScrn->chipset : "Unknown ast");
+ 
+ 
++#if !(defined(__sparc__))
+ #if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
+     /* "Patch" the PIOOffset inside vgaHW in order to force
+      * the vgaHW module to use our relocated i/o ports.
+@@ -551,6 +593,7 @@ pScrn->domainIOBase + PCI_REGION_BASE(pA
+     pAST->RelocateIO = pScrn->domainIOBase +
+ 	    PCI_REGION_BASE(pAST->PciInfo, 2, REGION_IO);
+ #else
++#endif
+     pAST->RelocateIO = (PCI_REGION_BASE(pAST->PciInfo, 2, REGION_IO));
+ 
+ #endif
+@@ -620,8 +663,10 @@ pScrn->videoRam = pAST->ulVRAMSize / 102
+    }
+    else
+    {
++#if !(defined(__sparc__))
+        /* Enable VGA MMIO Access */
+        vASTEnableVGAMMIO(pScrn);
++#endif
+ 
+        /* Get Chip Type */
+        if (PCI_DEV_REVISION(pAST->PciInfo) >= 0x40)
+@@ -868,6 +913,10 @@ #endif
+ 
+    vFillASTModeInfo (pScrn);
+ 
++#if (defined(__sparc__))
++   ASTNotifyModeChanged(pScrn);
++#endif
++
+    ASTSave(pScrn);
+    if (!ASTModeInit(pScrn, pScrn->currentMode)) {
+       xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Mode Init Failed \n");
+@@ -1245,7 +1294,7 @@ * Private data for the driver is stored
+  * These two functions create and destroy that private data.
+  *
+  */
+-static Bool
++Bool
+ ASTGetRec(ScrnInfoPtr pScrn)
+ {
+    if (pScrn->driverPrivate)
+--- xf86-video-ast-1.1.5/src/ast_tool.c
++++ xf86-video-ast-1.1.5/src/ast_tool.c
+@@ -50,16 +50,28 @@ #include "xf86Cursor.h"
+ /* Driver specific headers */
+ #include "ast.h"
+ 
++#if defined(__sparc__)
++extern pointer ASTMapVidMem(ScrnInfoPtr, unsigned int, CARD32,
++                                 unsigned long, unsigned long);
++extern void    ASTUnmapVidMem(ScrnInfoPtr, pointer, unsigned long);
++#endif /* __sparc__ */
++
++
+ Bool
+ ASTMapMem(ScrnInfoPtr pScrn)
+ {
+    ASTRecPtr pAST = ASTPTR(pScrn);
+ 
+-#ifndef XSERVER_LIBPCIACCESS
+-   pAST->FBVirtualAddr = xf86MapPciMem(pScrn->scrnIndex, VIDMEM_FRAMEBUFFER,
++#if !defined(XSERVER_LIBPCIACCESS) || defined(__sparc__)
++#if !defined(__sparc__)
++   pAST->FBVirtualAddr = xf86MapPciMem(pScrn->scrnIndex, 0x01,
+ 				 pAST->PciTag,
+ 				 pAST->FBPhysAddr, pAST->FbMapSize);
+ #else
++   pAST->FBVirtualAddr = ASTMapVidMem(pScrn, 0x01, NULL,
++                                pAST->FBPhysAddr, pAST->FbMapSize);
++#endif /* sparc */
++#else
+    {
+      void** result = (void**)&pAST->FBVirtualAddr;
+      int err = pci_device_map_range(pAST->PciInfo,
+@@ -85,10 +97,14 @@ ASTUnmapMem(ScrnInfoPtr pScrn)
+ {
+    ASTRecPtr pAST = ASTPTR(pScrn);
+ 
+-#ifndef XSERVER_LIBPCIACCESS
++#if !defined(XSERVER_LIBPCIACCESS) || defined(__sparc__)
++#if !defined(__sparc__)
+    xf86UnMapVidMem(pScrn->scrnIndex, (pointer) pAST->FBVirtualAddr,
+ 		   pAST->FbMapSize);
+ #else
++   ASTUnmapVidMem(pScrn, (pointer)pAST->FBVirtualAddr, pAST->FbMapSize);
++#endif
++#else
+    pci_device_unmap_range(pAST->PciInfo, pAST->FBVirtualAddr, pAST->FbMapSize);
+ #endif
+ 
+@@ -101,21 +117,26 @@ Bool
+ ASTMapMMIO(ScrnInfoPtr pScrn)
+ {
+    ASTRecPtr pAST = ASTPTR(pScrn);
+-#ifndef XSERVER_LIBPCIACCESS
++#if !defined(XSERVER_LIBPCIACCESS) || defined(__sparc__)
+    int mmioFlags;
+ 
+ #if !defined(__alpha__)
+-   mmioFlags = VIDMEM_MMIO | VIDMEM_READSIDEEFFECT;
++   mmioFlags = 0x02 | 0x08;
+ #else
+-   mmioFlags = VIDMEM_MMIO | VIDMEM_READSIDEEFFECT | VIDMEM_SPARSE;
++   mmioFlags = 0x02 | 0x08 | 0x10;
+ #endif
+ 
+-
++#if !defined(__sparc__)
+    pAST->MMIOVirtualAddr = xf86MapPciMem(pScrn->scrnIndex, mmioFlags,
+ 				         pAST->PciTag,
+ 				         pAST->MMIOPhysAddr, pAST->MMIOMapSize);
+ 
+ #else
++   pAST->MMIOVirtualAddr = ASTMapVidMem(pScrn,
++                        0x02 | 0x08, NULL,
++                        pAST->MMIOPhysAddr, pAST->MMIOMapSize);
++#endif
++#else
+    {
+      void** result = (void**)&pAST->MMIOVirtualAddr;
+      int err = pci_device_map_range(pAST->PciInfo,
+@@ -140,10 +161,14 @@ ASTUnmapMMIO(ScrnInfoPtr pScrn)
+ {
+    ASTRecPtr pAST = ASTPTR(pScrn);
+ 
+-#ifndef XSERVER_LIBPCIACCESS
++#if !defined(XSERVER_LIBPCIACCESS) || defined(__sparc__)
++#if !defined(__sparc__)
+    xf86UnMapVidMem(pScrn->scrnIndex, (pointer) pAST->MMIOVirtualAddr,
+ 		   pAST->MMIOMapSize);
+ #else
++   ASTUnmapVidMem(pScrn, (pointer)pAST->MMIOVirtualAddr, pAST->MMIOMapSize);
++#endif
++#else
+    pci_device_unmap_range(pAST->PciInfo, pAST->MMIOVirtualAddr, pAST->MMIOMapSize);
+ #endif
+    pAST->MMIOVirtualAddr = 0;
+--- xf86-video-ast-1.1.5/src/ast_vgatool.c
++++ xf86-video-ast-1.1.5/src/ast_vgatool.c
+@@ -543,6 +543,7 @@ ulVRAMSize = VIDEOMEM_SIZE_64M;
+        break;
+    }
+ 
++#if !defined(__sparc__)
+    /* Adjust VRAMSize from Scratch */
+    GetIndexRegMask(CRTC_PORT, 0x99, 0xFF, jReg);
+    switch (jReg & 0x03)
+@@ -557,6 +558,7 @@ case 0x03:
+        ulVRAMSize -= 0x400000;
+        break;
+    }
++#endif
+ 
+    return (ulVRAMSize);
+ }
+@@ -864,6 +866,7 @@ } /* end of vASTLoadPalette */
+ void
+ ASTDisplayPowerManagementSet(ScrnInfoPtr pScrn, int PowerManagementMode, int flags)
+ {
++#if !defined(__sparc__)
+    ASTRecPtr pAST;
+    UCHAR SEQ01, CRB6;
+    ULONG ulData, ulTemp;
+@@ -923,9 +926,9 @@ if (PowerManagementMode == DPMSModeOn)
+    {  /* 3rd Tx */
+       if (pAST->jTxChipType == Tx_DP501) SetDP501VideoOutput(pScrn, 1);
+    }
++#endif
+ }
+ 
+-
+ #ifndef I2C_BASE
+ #define I2C_BASE			0x1e780000
+ #endif
+@@ -1411,7 +1414,7 @@ { 0x0028, 0x00000003 },
+     { 0x0030, 0x00000040 },
+     { 0x0028, 0x00000003 },
+     { 0x000C, 0x00005a21 },
+-    { 0x0034, 0x00007c03 },
++    { 0x0034, 0x00007c43 },
+     { 0x0120, 0x00004c41 },
+     { 0xffff, 0xffffffff },
+ };
+@@ -1464,7 +1467,7 @@ { 0x0028, 0x00000003 },
+     { 0x0030, 0x00000040 },
+     { 0x0028, 0x00000003 },
+     { 0x000C, 0x00005a21 },
+-    { 0x0034, 0x00007c03 },
++    { 0x0034, 0x00007c43 },
+     { 0x0120, 0x00005061 },
+     { 0xffff, 0xffffffff },
+ };
+@@ -3550,9 +3553,11 @@ pAST = ASTPTR(pScrn);
+ 
+    {
+        /* Enable PCI */
++#if !defined(__sparc__)
+        PCI_READ_LONG(pAST->PciInfo, &ulData, 0x04);
+        ulData |= 0x03;
+        PCI_WRITE_LONG(pAST->PciInfo, ulData, 0x04);
++#endif
+ 
+        /* Enable VGA */
+        vEnableVGA(pScrn);
+@@ -3849,9 +3854,11 @@ uint32_t ulData;
+     pAST = ASTPTR(pScrn);
+ 
+     /* Enable PCI */
++#if    !defined(__sparc__)
+     PCI_READ_LONG(pAST->PciInfo, &ulData, 0x04);
+     ulData |= 0x03;
+     PCI_WRITE_LONG(pAST->PciInfo, ulData, 0x04);
++#endif
+ 
+     /* init DRAM if no F/W */
+     /* TODO */
+@@ -3943,9 +3950,11 @@ jReg = inb(pAST->RelocateIO + 0x43);
+     if (jReg != 0x01)
+     {
+        /* Enable PCI */
++#if !defined(__sparc__)
+        PCI_READ_LONG(pAST->PciInfo, &ulData, 0x04);
+        ulData |= 0x03;
+        PCI_WRITE_LONG(pAST->PciInfo, ulData, 0x04);
++#endif
+ 
+        outb(pAST->RelocateIO + 0x43, 0x01);
+        outb(pAST->RelocateIO + 0x42, 0x01);
+--- xf86-video-ast-1.1.5/src/ast_vgatool.h
++++ xf86-video-ast-1.1.5/src/ast_vgatool.h
+@@ -1,5 +1,6 @@
+ /*
+  * Copyright (c) 2005 ASPEED Technology Inc.
++ * Copyright (c) 2005, 2016, Oracle and/or its affiliates.
+  *
+  * Permission to use, copy, modify, distribute, and sell this software and its
+  * documentation for any purpose is hereby granted without fee, provided that
+@@ -20,6 +21,12 @@ * TORTIOUS ACTION, ARISING OUT OF OR IN
   * PERFORMANCE OF THIS SOFTWARE.
   */
  
@@ -15,14 +440,11 @@ Existing set of patches from X gate for sparc support
  /* VRAM Size Definition */
  #define VIDEOMEM_SIZE_08M	0x00800000
  #define VIDEOMEM_SIZE_16M	0x01000000
-@@ -40,6 +46,91 @@
+@@ -40,6 +47,88 @@ #define DRAMTYPE_1Gx32		3
  #define DRAMTYPE_2Gx16		6
  #define DRAMTYPE_4Gx16		7
  
 +#if defined(__sparc__)
-+
-+#define SET_IO_REG             0x1000
-+#define GET_IO_REG             0x1001
 +
 +#define AR_PORT_WRITE          0x40
 +#define MISC_PORT_WRITE        0x42
@@ -107,7 +529,7 @@ Existing set of patches from X gate for sparc support
  #define AR_PORT_WRITE		(pAST->MMIOVirtualAddr + 0x3c0)
  #define MISC_PORT_WRITE		(pAST->MMIOVirtualAddr + 0x3c2)
  #define VGA_ENABLE_PORT		(pAST->MMIOVirtualAddr + 0x3c3)
-@@ -72,6 +163,7 @@
+@@ -72,6 +161,7 @@ MMIO_OUT8(base, 0, index);	\
  						__Temp = (MMIO_IN8(base, 1)&(and))|(val);	\
  						SetIndexReg(base,index,__Temp);			\
  						}
@@ -115,483 +537,10 @@ Existing set of patches from X gate for sparc support
  
  #define VGA_GET_PALETTE_INDEX(index, red, green, blue) \
  { \
-@@ -170,3 +262,6 @@
+@@ -170,3 +260,6 @@ }
  /* Delay */
  #define DelayUS(x)		usleep(x)
  #define DelayMS(x)		DelayUS(1000*x)
 +
 +#endif /* ASTVGATOOL_H */
 +
---- a/src/ast_vgatool.c	Thu Apr 28 20:06:47 2016
-+++ b/src/ast_vgatool.c	Thu Apr 28 20:14:54 2016
-@@ -864,6 +864,7 @@
- void
- ASTDisplayPowerManagementSet(ScrnInfoPtr pScrn, int PowerManagementMode, int flags)
- {
-+#if !defined(__sparc__)
-    ASTRecPtr pAST;
-    UCHAR SEQ01, CRB6;
-    ULONG ulData, ulTemp;
-@@ -923,9 +924,9 @@
-    {  /* 3rd Tx */
-       if (pAST->jTxChipType == Tx_DP501) SetDP501VideoOutput(pScrn, 1);
-    }
-+#endif
- }
- 
--
- #ifndef I2C_BASE
- #define I2C_BASE			0x1e780000
- #endif
-@@ -1411,7 +1412,7 @@
-     { 0x0030, 0x00000040 },
-     { 0x0028, 0x00000003 },
-     { 0x000C, 0x00005a21 },
--    { 0x0034, 0x00007c03 },
-+    { 0x0034, 0x00007c43 },
-     { 0x0120, 0x00004c41 },
-     { 0xffff, 0xffffffff },
- };
-@@ -1464,7 +1465,7 @@
-     { 0x0030, 0x00000040 },
-     { 0x0028, 0x00000003 },
-     { 0x000C, 0x00005a21 },
--    { 0x0034, 0x00007c03 },
-+    { 0x0034, 0x00007c43 },
-     { 0x0120, 0x00005061 },
-     { 0xffff, 0xffffffff },
- };
-@@ -3550,9 +3551,11 @@
- 
-    {
-        /* Enable PCI */
-+#if !defined(__sparc__)
-        PCI_READ_LONG(pAST->PciInfo, &ulData, 0x04);
-        ulData |= 0x03;
-        PCI_WRITE_LONG(pAST->PciInfo, ulData, 0x04);
-+#endif
- 
-        /* Enable VGA */
-        vEnableVGA(pScrn);
-@@ -3849,9 +3852,11 @@
-     pAST = ASTPTR(pScrn);
- 
-     /* Enable PCI */
-+#if    !defined(__sparc__)
-     PCI_READ_LONG(pAST->PciInfo, &ulData, 0x04);
-     ulData |= 0x03;
-     PCI_WRITE_LONG(pAST->PciInfo, ulData, 0x04);
-+#endif
- 
-     /* init DRAM if no F/W */
-     /* TODO */
-@@ -3943,9 +3948,11 @@
-     if (jReg != 0x01)
-     {
-        /* Enable PCI */
-+#if !defined(__sparc__)
-        PCI_READ_LONG(pAST->PciInfo, &ulData, 0x04);
-        ulData |= 0x03;
-        PCI_WRITE_LONG(pAST->PciInfo, ulData, 0x04);
-+#endif
- 
-        outb(pAST->RelocateIO + 0x43, 0x01);
-        outb(pAST->RelocateIO + 0x42, 0x01);
---- a/src/ast_driver.c	Thu Apr 28 20:15:13 2016
-+++ b/src/ast_driver.c	Thu Apr 28 20:21:06 2016
-@@ -74,7 +74,7 @@
- static ModeStatus ASTValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode, Bool verbose, int flags);
- 
- /* Internally used functions */
--static Bool ASTGetRec(ScrnInfoPtr pScrn);
-+extern Bool ASTGetRec(ScrnInfoPtr pScrn);
- static void ASTFreeRec(ScrnInfoPtr pScrn);
- static Bool ASTSaveScreen(ScreenPtr pScreen, Bool unblack);
- static Bool ASTCloseScreen(CLOSE_SCREEN_ARGS_DECL);
-@@ -244,7 +244,7 @@
-       return FALSE;
-     }
- 
--#ifndef XSERVER_LIBPCIACCESS
-+#if !defined(XSERVER_LIBPCIACCESS) && !defined(__sparc__)
-    /*
-     * This probing is just checking the PCI data the server already
-     * collected.
-@@ -254,6 +254,8 @@
-     }
- #endif
- 
-+#if !defined(__sparc__)
-+
-     numUsed = xf86MatchPciInstances(AST_NAME, PCI_VENDOR_AST,
- 				   ASTChipsets, ASTPciChipsets,
- 				   devSections, numDevSections,
-@@ -322,7 +324,37 @@
- 
-     free(devSections);
-     free(usedChips);
-+#else
-+    if (flags & PROBE_DETECT) {
-+        foundScreen = TRUE;
-+    } else {
-+        for (i = 0; i < numDevSections; i++) {
- 
-+           ScrnInfoPtr pScrn = NULL;
-+
-+           /* Allocate new ScrnInfoRec and claim the slot */
-+           if (pScrn = ASTAllocScreen(drv, devSections[i])) {
-+               pScrn->driverVersion = AST_VERSION;
-+               pScrn->driverName = AST_DRIVER_NAME;
-+               pScrn->name = AST_NAME;
-+
-+               pScrn->Probe = ASTProbe;
-+               pScrn->PreInit = ASTPreInit;
-+               pScrn->ScreenInit = ASTScreenInit;
-+               pScrn->SwitchMode = ASTSwitchMode;
-+               pScrn->AdjustFrame = ASTAdjustFrame;
-+               pScrn->EnterVT = ASTEnterVT;
-+               pScrn->LeaveVT = ASTLeaveVT;
-+               pScrn->FreeScreen = ASTFreeScreen;
-+               pScrn->ValidMode = ASTValidMode;
-+
-+               foundScreen = TRUE;
-+           }
-+       }
-+    }
-+    free(devSections);
-+#endif
-+
-     return foundScreen;
- }
- 
-@@ -393,6 +425,10 @@
- 
-    pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
- 
-+#if defined(__sparc__)
-+   pEnt->location.type = BUS_PCI;
-+#endif
-+
-    if (flags & PROBE_DETECT) {
-        ASTProbeDDC(pScrn, pEnt->index);
-        return TRUE;
-@@ -495,7 +531,11 @@
-    /* Fill AST Info */
-    pAST = ASTPTR(pScrn);
-    pAST->pEnt    = xf86GetEntityInfo(pScrn->entityList[0]);
-+#if !defined(__sparc__)
-    pAST->PciInfo = xf86GetPciInfoForEntity(pAST->pEnt->index);
-+#else
-+   pAST->PciInfo = ASTGetPciInfo(pAST);
-+#endif
- #ifndef XSERVER_LIBPCIACCESS
-    pAST->PciTag  = pciTag(pAST->PciInfo->bus, pAST->PciInfo->device,
- 			  pAST->PciInfo->func);
-@@ -541,6 +581,7 @@
- 	      (pScrn->chipset != NULL) ? pScrn->chipset : "Unknown ast");
- 
- 
-+#if !(defined(__sparc__))
- #if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-     /* "Patch" the PIOOffset inside vgaHW in order to force
-      * the vgaHW module to use our relocated i/o ports.
-@@ -551,11 +592,10 @@
-     pAST->RelocateIO = pScrn->domainIOBase +
- 	    PCI_REGION_BASE(pAST->PciInfo, 2, REGION_IO);
- #else
-+#endif
-     pAST->RelocateIO = (PCI_REGION_BASE(pAST->PciInfo, 2, REGION_IO));
--
- #endif
- 
--
-    if (pAST->pEnt->device->MemBase != 0) {
-       pAST->FBPhysAddr = pAST->pEnt->device->MemBase;
-       from = X_CONFIG;
-@@ -620,8 +660,10 @@
-    }
-    else
-    {
-+#if !(defined(__sparc__))
-        /* Enable VGA MMIO Access */
-        vASTEnableVGAMMIO(pScrn);
-+#endif
- 
-        /* Get Chip Type */
-        if (PCI_DEV_REVISION(pAST->PciInfo) >= 0x40)
-@@ -868,6 +910,10 @@
- 
-    vFillASTModeInfo (pScrn);
- 
-+#if (defined(__sparc__))
-+   ASTNotifyModeChanged(pScrn);
-+#endif
-+
-    ASTSave(pScrn);
-    if (!ASTModeInit(pScrn, pScrn->currentMode)) {
-       xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Mode Init Failed \n");
-@@ -1245,7 +1291,7 @@
-  * These two functions create and destroy that private data.
-  *
-  */
--static Bool
-+Bool
- ASTGetRec(ScrnInfoPtr pScrn)
- {
-    if (pScrn->driverPrivate)
---- a/src/Makefile.am	Thu Apr 28 20:21:29 2016
-+++ b/src/Makefile.am	Thu Apr 28 20:21:47 2016
-@@ -44,4 +44,5 @@
- 	ast_vgatool.c 	\
- 	ast_vgatool.h   \
- 	ast_dp501fw.h	\
-+	ast_sparc_driver.c \
-         compat-api.h
---- a/src/ast_cursor.c	Thu Apr 28 20:21:59 2016
-+++ b/src/ast_cursor.c	Thu Apr 28 20:22:41 2016
-@@ -82,7 +82,11 @@
- 
-     infoPtr->Flags = HARDWARE_CURSOR_TRUECOLOR_AT_8BPP |
-                      HARDWARE_CURSOR_INVERT_MASK |
-+#if     !defined(__sparc__)
-                      HARDWARE_CURSOR_BIT_ORDER_MSBFIRST;
-+#else
-+                    0;
-+#endif
- 
-     infoPtr->MaxWidth  = MAX_HWC_WIDTH;
-     infoPtr->MaxHeight = MAX_HWC_HEIGHT;
---- a/src/ast.h	Thu Apr 28 19:56:47 2016
-+++ b/src/ast.h	Thu Apr 28 20:24:13 2016
-@@ -33,7 +33,12 @@
- 
- #include <string.h>
- #include <stdlib.h>
-+#include <sys/visual_io.h>
- 
-+#ifdef __sparc
-+#define __sparc__ 1
-+#endif
-+
- #ifdef HAVE_XAA_H
- #include "xaa.h"
- #endif
-@@ -306,10 +311,87 @@
-     CreateScreenResourcesProcPtr CreateScreenResources;
- #endif
- 
-+#if defined(__sparc__)
-+    char               *deviceName;
-+    int                fd;
-+#endif
-+
- } ASTRec, *ASTRecPtr, *ASTPtr;
- 
- #define ASTPTR(p) ((ASTRecPtr)((p)->driverPrivate))
- 
-+#if defined(__sparc__)
-+#ifndef VIS_GETPCICONFIG
-+
-+/*
-+ * These definitions will be removed when they are included in the
-+ * visual_io.h
-+ */
-+#define VIS_GETVIDEOMODENAME            (VIOC | 12)
-+#define VIS_STOREVIDEOMODENAME          (VIOC | 13)
-+#define VIS_MAX_VMODE_LEN               48
-+
-+typedef struct  vis_video_mode {
-+        char            mode_name[VIS_MAX_VMODE_LEN];
-+        uint32_t        vRefresh;
-+        char            pad[96];
-+} vis_video_mode_t;
-+
-+#define VIS_GETPCICONFIG               (VIOC | 14)
-+
-+typedef struct  vis_pci_cfg {
-+        uint16_t        VendorID;
-+        uint16_t        DeviceID;
-+        uint16_t        Command;
-+        uint16_t        Status;
-+        uint8_t         RevisionID;
-+        uint8_t         ProgIF;
-+        uint8_t         SubClass;
-+        uint8_t         BaseClass;
-+
-+        uint8_t         CacheLineSize;
-+        uint8_t         LatencyTimer;
-+        uint8_t         HeaderType;
-+        uint8_t         BIST;
-+
-+        uint32_t        bar[6];
-+        uint32_t        CIS;
-+        uint16_t        SubVendorID;
-+        uint16_t        SubSystemID;
-+        uint32_t        ROMBaseAddress;
-+
-+        uint8_t         CapabilitiesPtr;
-+        uint8_t         Reserved_1[3];
-+        uint32_t        Reserved_2;
-+
-+        uint8_t         InterruptLine;
-+        uint8_t         InterruptPin;
-+        uint8_t         MinimumGrant;
-+        uint8_t         MaximumLatency;
-+
-+       uint8_t         pad[100];
-+} vis_pci_cfg_t;
-+
-+#define VIS_SETIOREG                    (VIOC | 17)
-+#define VIS_GETIOREG                    (VIOC | 18)
-+
-+typedef struct vis_io_reg {
-+        uchar_t         offset;
-+        uchar_t         value;
-+} vis_io_reg_t;
-+#endif
-+
-+extern struct pci_device *ASTGetPciInfo(ASTRecPtr);
-+extern ScrnInfoPtr        ASTAllocScreen(DriverPtr, GDevPtr);
-+extern pointer           ASTMapVidMem(ScrnInfoPtr, unsigned int, CARD32,
-+                                               unsigned long, unsigned long);
-+extern void              ASTUnmapVidMem(ScrnInfoPtr, pointer, unsigned long);
-+extern void              ASTNotifyModeChanged(ScrnInfoPtr);
-+extern void              ASTSaveHW(ScrnInfoPtr);
-+extern void              ASTRestoreHW(ScrnInfoPtr);
-+
-+#endif
-+
- /* ast_vgatool.c */
- extern Bool bASTIsVGAEnabled(ScrnInfoPtr pScrn);
- extern Bool ASTGetVGA2EDID(ScrnInfoPtr pScrn, unsigned char *pEDIDBuffer);
---- a/src/ast_tool.c	Thu Apr 28 20:00:59 2016
-+++ b/src/ast_tool.c	Thu Apr 28 20:27:12 2016
-@@ -50,16 +50,28 @@
- /* Driver specific headers */
- #include "ast.h"
- 
-+#if defined(__sparc__)
-+extern pointer ASTMapVidMem(ScrnInfoPtr, unsigned int, CARD32,
-+                                 unsigned long, unsigned long);
-+extern void    ASTUnmapVidMem(ScrnInfoPtr, pointer, unsigned long);
-+#endif /* __sparc__ */
-+
-+
- Bool
- ASTMapMem(ScrnInfoPtr pScrn)
- {
-    ASTRecPtr pAST = ASTPTR(pScrn);
- 
--#ifndef XSERVER_LIBPCIACCESS
--   pAST->FBVirtualAddr = xf86MapPciMem(pScrn->scrnIndex, VIDMEM_FRAMEBUFFER,
-+#if !defined(XSERVER_LIBPCIACCESS) || defined(__sparc__)
-+#if !defined(__sparc__)
-+   pAST->FBVirtualAddr = xf86MapPciMem(pScrn->scrnIndex, 0x01,
- 				 pAST->PciTag,
- 				 pAST->FBPhysAddr, pAST->FbMapSize);
- #else
-+   pAST->FBVirtualAddr = ASTMapVidMem(pScrn, 0x01, NULL,
-+                                pAST->FBPhysAddr, pAST->FbMapSize);
-+#endif /* sparc */
-+#else
-    {
-      void** result = (void**)&pAST->FBVirtualAddr;
-      int err = pci_device_map_range(pAST->PciInfo,
-@@ -85,10 +97,14 @@
- {
-    ASTRecPtr pAST = ASTPTR(pScrn);
- 
--#ifndef XSERVER_LIBPCIACCESS
-+#if !defined(XSERVER_LIBPCIACCESS) || defined(__sparc__)
-+#if !defined(__sparc__)
-    xf86UnMapVidMem(pScrn->scrnIndex, (pointer) pAST->FBVirtualAddr,
- 		   pAST->FbMapSize);
- #else
-+   ASTUnmapVidMem(pScrn, (pointer)pAST->FBVirtualAddr, pAST->FbMapSize);
-+#endif
-+#else
-    pci_device_unmap_range(pAST->PciInfo, pAST->FBVirtualAddr, pAST->FbMapSize);
- #endif
- 
-@@ -101,21 +117,26 @@
- ASTMapMMIO(ScrnInfoPtr pScrn)
- {
-    ASTRecPtr pAST = ASTPTR(pScrn);
--#ifndef XSERVER_LIBPCIACCESS
-+#if !defined(XSERVER_LIBPCIACCESS) || defined(__sparc__)
-    int mmioFlags;
- 
- #if !defined(__alpha__)
--   mmioFlags = VIDMEM_MMIO | VIDMEM_READSIDEEFFECT;
-+   mmioFlags = 0x02 | 0x08;
- #else
--   mmioFlags = VIDMEM_MMIO | VIDMEM_READSIDEEFFECT | VIDMEM_SPARSE;
-+   mmioFlags = 0x02 | 0x08 | 0x10;
- #endif
- 
--
-+#if !defined(__sparc__)
-    pAST->MMIOVirtualAddr = xf86MapPciMem(pScrn->scrnIndex, mmioFlags,
- 				         pAST->PciTag,
- 				         pAST->MMIOPhysAddr, pAST->MMIOMapSize);
- 
- #else
-+   pAST->MMIOVirtualAddr = ASTMapVidMem(pScrn,
-+                        0x02 | 0x08, NULL,
-+                        pAST->MMIOPhysAddr, pAST->MMIOMapSize);
-+#endif
-+#else
-    {
-      void** result = (void**)&pAST->MMIOVirtualAddr;
-      int err = pci_device_map_range(pAST->PciInfo,
-@@ -140,10 +161,14 @@
- {
-    ASTRecPtr pAST = ASTPTR(pScrn);
- 
--#ifndef XSERVER_LIBPCIACCESS
-+#if !defined(XSERVER_LIBPCIACCESS) || defined(__sparc__)
-+#if !defined(__sparc__)
-    xf86UnMapVidMem(pScrn->scrnIndex, (pointer) pAST->MMIOVirtualAddr,
- 		   pAST->MMIOMapSize);
- #else
-+   ASTUnmapVidMem(pScrn, (pointer)pAST->MMIOVirtualAddr, pAST->MMIOMapSize);
-+#endif
-+#else
-    pci_device_unmap_range(pAST->PciInfo, pAST->MMIOVirtualAddr, pAST->MMIOMapSize);
- #endif
-    pAST->MMIOVirtualAddr = 0;
---- a/src/ast_driver.c	2016-10-19 19:32:32.586151260 -0700
-+++ b/src/ast_driver.c	2016-10-19 19:36:20.008810060 -0700
-@@ -665,7 +665,16 @@
-        /* Enable VGA MMIO Access */
-        vASTEnableVGAMMIO(pScrn);
- #endif
-+       /* Init VGA Adapter */
-+       if (!xf86IsPrimaryPci(pAST->PciInfo))
-+       {
-+           ASTInitVGA(pScrn, 0);
-+       }
- 
-+       vASTOpenKey(pScrn);
-+       bASTRegInit(pScrn);
-+
-+
-        /* Get Chip Type */
-        if (PCI_DEV_REVISION(pAST->PciInfo) >= 0x40)
-            pAST->jChipType = AST2500;
-@@ -678,15 +687,6 @@
-        else
-            pAST->jChipType = AST2000;
- 
--       /* Init VGA Adapter */
--       if (!xf86IsPrimaryPci(pAST->PciInfo))
--       {
--           ASTInitVGA(pScrn, 0);
--       }
--
--       vASTOpenKey(pScrn);
--       bASTRegInit(pScrn);
--
-        /* Get Options from Scratch */
-        ASTGetScratchOptions(pScrn);
- 

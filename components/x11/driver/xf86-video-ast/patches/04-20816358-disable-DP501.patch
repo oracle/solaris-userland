@@ -1,8 +1,13 @@
-Existing set of patches from X gate.
+20816358 Long delay before graphical desktop appears, X4-2 ILOM console
 
---- a/src/ast.h	Thu Apr 28 20:42:49 2016
-+++ b/src/ast.h	Thu Apr 28 20:43:41 2016
-@@ -81,13 +81,6 @@
+Not suitable for upstream as-is, since it reverts upstream commit
+https://gitlab.freedesktop.org/xorg/driver/xf86-video-ast/-/commit/0bbae30ffc6a1
+
+Would need to make optional to be submitted upstream.
+
+--- xf86-video-ast-1.1.5/src/ast.h
++++ xf86-video-ast-1.1.5/src/ast.h
+@@ -81,13 +81,6 @@ AST2500,
      AST1180
  } CHIP_ID;
  
@@ -16,7 +21,7 @@ Existing set of patches from X gate.
  /* AST REC Info */
  #define AST_NAME 			"AST"
  #define AST_DRIVER_NAME 		"ast"
-@@ -105,10 +98,6 @@
+@@ -105,10 +98,6 @@ #define MIN_CMDQ_SIZE			0x00040000
  #define CMD_QUEUE_GUARD_BAND    	0x00000020
  #define DEFAULT_HWC_NUM			0x00000002
  
@@ -27,7 +32,7 @@ Existing set of patches from X gate.
  /* Patch Info */
  #define ABI_VIDEODRV_VERSION_PATCH	SET_ABI_VERSION(0, 5)
  
-@@ -292,10 +281,6 @@
+@@ -292,10 +281,6 @@ int				clip_bottom;
      int				mon_h_active;		/* Monitor Info. */
      int				mon_v_active;
  
@@ -38,9 +43,9 @@ Existing set of patches from X gate.
  #ifdef AstVideo
      XF86VideoAdaptorPtr adaptor;
      Atom        	xvBrightness, xvContrast, xvColorKey, xvHue, xvSaturation;
---- a/src/ast_driver.c	Thu Apr 28 20:44:00 2016
-+++ b/src/ast_driver.c	Thu Apr 28 20:44:49 2016
-@@ -1311,8 +1311,6 @@
+--- xf86-video-ast-1.1.5/src/ast_driver.c
++++ xf86-video-ast-1.1.5/src/ast_driver.c
+@@ -1313,8 +1313,6 @@ if (!pScrn)
        return;
     if (!pScrn->driverPrivate)
        return;
@@ -49,7 +54,7 @@ Existing set of patches from X gate.
     free(pScrn->driverPrivate);
     pScrn->driverPrivate = 0;
  }
-@@ -1577,12 +1575,6 @@
+@@ -1579,12 +1577,6 @@ if (xf86LoadSubModule(pScrn, "ddc"))
     {
        if (pAST->jChipType == AST1180)
            Flags = ASTGetVGA2EDID(pScrn, DDC_data);
@@ -62,7 +67,7 @@ Existing set of patches from X gate.
        else
            Flags = ASTGetVGAEDID(pScrn, DDC_data);
  
-@@ -1633,14 +1625,6 @@
+@@ -1635,14 +1627,6 @@ if (xf86LoadSubModule(pScrn, "ddc"))
     {
        if (pAST->jChipType == AST1180)
            Flags = ASTGetVGA2EDID(pScrn, DDC_data);
@@ -77,9 +82,9 @@ Existing set of patches from X gate.
        else
            Flags = ASTGetVGAEDID(pScrn, DDC_data);
  
---- a/src/ast_mode.c	Thu Apr 28 20:45:05 2016
-+++ b/src/ast_mode.c	Thu Apr 28 20:46:08 2016
-@@ -515,8 +515,6 @@
+--- xf86-video-ast-1.1.5/src/ast_mode.c
++++ xf86-video-ast-1.1.5/src/ast_mode.c
+@@ -515,8 +515,6 @@ {
          vASTOpenKey(pScrn);
          bASTRegInit(pScrn);
  
@@ -88,7 +93,7 @@ Existing set of patches from X gate.
          vSetStdReg(pScrn, mode, &vgamodeinfo);
          vSetCRTCReg(pScrn, mode, &vgamodeinfo);
          vSetOffsetReg(pScrn, mode, &vgamodeinfo);
-@@ -528,7 +526,6 @@
+@@ -528,7 +526,6 @@ bSetDACReg(pScrn, mode, &vgamodeinfo);
          /* clear video buffer to avoid display noise */
          memset(pAST->FBVirtualAddr, 0x00, pAST->VideoModeInfo.ScreenPitch*pAST->VideoModeInfo.ScreenHeight);
  
@@ -96,7 +101,7 @@ Existing set of patches from X gate.
      }
  
      /* post set mode */
-@@ -549,6 +546,8 @@
+@@ -549,6 +546,8 @@ }
     }
  #endif
  
@@ -105,9 +110,9 @@ Existing set of patches from X gate.
      return (TRUE);
  }
  
---- a/src/ast_vgatool.c	Thu Apr 28 20:46:28 2016
-+++ b/src/ast_vgatool.c	Thu Apr 28 20:50:55 2016
-@@ -53,7 +53,6 @@
+--- xf86-video-ast-1.1.5/src/ast_vgatool.c
++++ xf86-video-ast-1.1.5/src/ast_vgatool.c
+@@ -53,7 +53,6 @@ #include <unistd.h>
  /* Driver specific headers */
  #include "ast.h"
  #include "ast_vgatool.h"
@@ -115,7 +120,7 @@ Existing set of patches from X gate.
  
  __inline ULONG MIndwm(UCHAR *mmiobase, ULONG r)
  {
-@@ -85,315 +84,6 @@
+@@ -85,315 +84,6 @@ *(volatile ULONG *) (mmiobase + 0x10000
  }
  
  /*
@@ -431,7 +436,7 @@ Existing set of patches from X gate.
   * VGA Modules
   */
  void
-@@ -598,12 +288,6 @@
+@@ -600,12 +290,6 @@ else
             ulDCLK = ActualDRAMBandwidth / ((pScrn->bitsPerPixel+1) / 8);
     }
  
@@ -444,7 +449,7 @@ Existing set of patches from X gate.
     /* Add for AST2100, ycchen@061807 */
     if ((pAST->jChipType == AST2100) || (pAST->jChipType == AST2200) || (pAST->jChipType == AST2300) || (pAST->jChipType == AST2400) || (pAST->jChipType == AST2500) || (pAST->jChipType == AST1180) )
     {
-@@ -662,38 +346,6 @@
+@@ -664,38 +348,6 @@ GetIndexRegMask(CRTC_PORT, 0x90, 0xFF, j
     if (jReg & 0x10)
         pAST->VGA2Clone = TRUE;
  
@@ -483,7 +488,7 @@ Existing set of patches from X gate.
     /* WideScreen Support */
     switch (pAST->jChipType)
     {
-@@ -752,10 +404,6 @@
+@@ -754,10 +406,6 @@ {
      ASTRecPtr pAST = ASTPTR(pScrn);
      ULONG ulData;
  
@@ -494,7 +499,7 @@ Existing set of patches from X gate.
      if (pAST->jChipType == AST1180)
      {
          ReadAST1180SOC(AST1180_GFX_BASE + AST1180_VGA1_CTRL, ulData);
-@@ -783,9 +431,6 @@
+@@ -785,9 +433,6 @@ }
      else
          SetIndexRegMask(SEQ_PORT,0x01, 0xDF, 0x00);
  
@@ -504,7 +509,7 @@ Existing set of patches from X gate.
  }
  
  void ASTBlankScreen(ScrnInfoPtr pScrn, Bool unblack)
-@@ -902,11 +547,6 @@
+@@ -904,11 +549,6 @@ ulData = 0x001C0000;
        break;
     }
  
@@ -516,7 +521,7 @@ Existing set of patches from X gate.
     if (pAST->jChipType == AST1180)
     {
         ReadAST1180SOC(AST1180_GFX_BASE + AST1180_VGA1_CTRL, ulTemp);
-@@ -920,10 +560,6 @@
+@@ -922,10 +562,6 @@ SetIndexRegMask(SEQ_PORT,0x01, 0xDF, SEQ
         SetIndexRegMask(CRTC_PORT,0xB6, 0xFC, CRB6);
     }
  
@@ -527,7 +532,7 @@ Existing set of patches from X gate.
  #endif
  }
  
-@@ -3448,109 +3084,6 @@
+@@ -3450,109 +3086,6 @@ }
  
  } /* vGetDefaultSettings */
  
@@ -637,7 +642,7 @@ Existing set of patches from X gate.
  /*
   * Flags: 0: POST init
   *        1: resume from power management
-@@ -3587,7 +3120,6 @@
+@@ -3589,7 +3122,6 @@ vInitAST2300DRAMReg(pScrn);
         else
             vInitDRAMReg(pScrn);
  
@@ -645,9 +650,9 @@ Existing set of patches from X gate.
     }
  
     return (TRUE);
---- a/src/ast_vgatool.h	Thu Apr 28 20:51:13 2016
-+++ b/src/ast_vgatool.h	Thu Apr 28 20:51:36 2016
-@@ -259,9 +259,5 @@
+--- xf86-video-ast-1.1.5/src/ast_vgatool.h
++++ xf86-video-ast-1.1.5/src/ast_vgatool.h
+@@ -257,9 +257,5 @@ *(ULONG *) (pAST->MMIOVirtualAddr + 0xF0
          *(ULONG *) (pAST->MMIOVirtualAddr + 0x10000 + ((addr) & 0x0000FFFF)) = (data);	\
  }
  

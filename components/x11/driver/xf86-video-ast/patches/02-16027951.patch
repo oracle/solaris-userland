@@ -1,16 +1,22 @@
-Existing set of patches from X gate.
+Fix for Oracle bug 16027951 Xorg GUI fails to start when installing solaris 11.
+
+Root cause: ast driver uses only 128 bytes buffer for EDID reading.
+When extension flag (the 126th byte) is non-zero, indicating
+extensions blocks to follow, X server reads beyond the buffer
+boundary resulting in seg fault.
+
+As discussed in the Oracle bug report, throwing away the extension data isn't
+great, but a more complete fix requires reworking the code to dynamically
+allocate more than 128 bytes when the extension data is present, so this patch
+isn't suitable for upstream in it's current form.
+
+Reported upstream:
+https://gitlab.freedesktop.org/xorg/driver/xf86-video-ast/-/issues/6
 
 
---- a/src/ast_driver.c	Thu Apr 28 20:37:05 2016
-+++ b/src/ast_driver.c	Thu Apr 28 20:39:07 2016
-@@ -1,5 +1,6 @@
- /*
-  * Copyright (c) 2005 ASPEED Technology Inc.
-+ * Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved
-  *
-  * Permission to use, copy, modify, distribute, and sell this software and its
-  * documentation for any purpose is hereby granted without fee, provided that
-@@ -1585,6 +1586,12 @@
+--- xf86-video-ast-1.1.5/src/ast_driver.c
++++ xf86-video-ast-1.1.5/src/ast_driver.c
+@@ -1588,6 +1588,12 @@ }
        else
            Flags = ASTGetVGAEDID(pScrn, DDC_data);
  
@@ -23,7 +29,7 @@ Existing set of patches from X gate.
        if (Flags)
        {
            ConfiguredMonitor = xf86InterpretEDID(pScrn->scrnIndex, DDC_data);
-@@ -1637,6 +1644,12 @@
+@@ -1640,6 +1646,12 @@ }
        else
            Flags = ASTGetVGAEDID(pScrn, DDC_data);
  
