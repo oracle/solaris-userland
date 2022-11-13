@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_ARCH=     i386
@@ -44,13 +44,16 @@ COMPONENT_BUGDB=    utility/qemu-img
 
 COMPONENT_BAID=		101894
 
+# qemu currently has a custom build system that uses the same commands as
+# GNU autoconf to configure and build from the outside, but actually wraps
+# around meson & ninja inside.
 BUILD_STYLE= configure
 
 # Disable non-tools targets
 CONFIGURE_OPTIONS=  --disable-system --disable-blobs --without-default-features --enable-tools --enable-vdi
 
-# There are some test failures, the master test file is missing.
-$(SKIP_TEST_AT_TOP_LEVEL)
+# Tests are focused on emulator, don't cover tools
+TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -58,9 +61,12 @@ PATH=   $(GNUBIN):$(USRBINDIR64):$(USRBINDIR)
 
 COMPONENT_BUILD_ENV += PATH="$(PATH)"
 
-# Tests are focused on emulator, don't cover tools
-test:		$(NO_TESTS)
+# meson-0.63 builds invalid *.a files if GNU ar is used, so force use of
+# Solaris ar no matter what the $PATH order is.
+CONFIGURE_ENV += AR=/usr/bin/ar
 
+REQUIRED_PACKAGES += developer/build/meson
+REQUIRED_PACKAGES += developer/build/ninja
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
