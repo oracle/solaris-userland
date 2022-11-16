@@ -1,0 +1,43 @@
+Submitted and accepted upstream:
+https://github.com/mesonbuild/meson/pull/11050
+
+Fixes:
+https://github.com/mesonbuild/meson/issues/9882
+Oracle Bug 34806457 - meson should not build thin archives on Solaris 
+
+
+From 8ee4660788df678b64bb2986b5f2f8474c127ae2 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 15 Nov 2022 14:11:02 -0800
+Subject: [PATCH] linkers: Don't build thin archives on illumos or Solaris
+
+The system linkers don't support this particular GNU extension on
+these OS'es, so don't build them there.
+
+Based on an OpenIndiana patch created by @alarcher. Closes #9882.
+---
+ mesonbuild/linkers/linkers.py | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/mesonbuild/linkers/linkers.py b/mesonbuild/linkers/linkers.py
+index 27ccef37b..ee7d0092a 100644
+--- a/mesonbuild/linkers/linkers.py
++++ b/mesonbuild/linkers/linkers.py
+@@ -208,8 +208,12 @@ class ArLinker(ArLikeLinker):
+         return self.can_rsp
+ 
+     def get_std_link_args(self, env: 'Environment', is_thin: bool) -> T.List[str]:
+-        # FIXME: osx ld rejects this: "file built for unknown-unsupported file format"
+-        if is_thin and not env.machines[self.for_machine].is_darwin():
++        # Thin archives are a GNU extension not supported by the system linkers
++        # on Mac OS X, Solaris, or illumos, so don't build them on those OSes.
++        # OS X ld rejects with: "file built for unknown-unsupported file format"
++        # illumos/Solaris ld rejects with: "unknown file type"
++        if is_thin and not env.machines[self.for_machine].is_darwin() \
++          and not env.machines[self.for_machine].is_sunos():
+             return self.std_thin_args
+         else:
+             return self.std_args
+-- 
+2.37.1
+

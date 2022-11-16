@@ -61,8 +61,8 @@ PATH=   $(GNUBIN):$(USRBINDIR64):$(USRBINDIR)
 
 COMPONENT_BUILD_ENV += PATH="$(PATH)"
 
-# meson-0.63 builds invalid *.a files if GNU ar is used, so force use of
-# Solaris ar no matter what the $PATH order is.
+# Use Solaris ar no matter what the $PATH order is, to avoid meson detecting
+# GNU extensions that GNU ar supports but the Solaris linker does not.
 CONFIGURE_ENV += AR=/usr/bin/ar
 
 REQUIRED_PACKAGES += developer/build/meson

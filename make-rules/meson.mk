@@ -91,8 +91,8 @@ ifneq  ($(strip $(CONFIGURE_CPPFLAGS) $(CPPFLAGS)),)
 CONFIGURE_ENV += CPPFLAGS="$(strip $(CONFIGURE_CPPFLAGS) $(CPPFLAGS))"
 endif
 CONFIGURE_ENV += LDFLAGS="$(strip $(LDFLAGS))"
-# meson builds invalid *.a files if GNU ar is used, so force use of
-# Solaris ar no matter what the $PATH order is.
+# Use Solaris ar no matter what the $PATH order is, to avoid meson detecting
+# GNU extensions that GNU ar supports but the Solaris linker does not.
 CONFIGURE_ENV += AR=/usr/bin/ar
 
 # Ensure that 64-bit versions of *-config scripts are preferred.
