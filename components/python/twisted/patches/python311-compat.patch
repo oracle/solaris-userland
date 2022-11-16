@@ -1,0 +1,103 @@
+Adds support for Python 3.11
+
+Taken from upstream:
+https://github.com/twisted/twisted/pull/11733
+https://github.com/twisted/twisted/pull/11734
+
+--- Twisted-22.10.0/src/twisted/mail/test/test_smtp.py
++++ Twisted-22.10.0/src/twisted/mail/test/test_smtp.py
+@@ -1771,7 +1771,8 @@ def test_defaultReactorIsGlobalReactor(self):
+         The default C{reactor} parameter of L{twisted.mail.smtp.sendmail} is
+         L{twisted.internet.reactor}.
+         """
+-        args, varArgs, keywords, defaults = inspect.getargspec(smtp.sendmail)
++        fullSpec = inspect.getfullargspec(smtp.sendmail)
++        defaults = fullSpec[3]
+         self.assertEqual(reactor, defaults[2])
+ 
+     def _honorsESMTPArguments(self, username, password):
+--- Twisted-22.10.0/src/twisted/persisted/aot.py
++++ Twisted-22.10.0/src/twisted/persisted/aot.py
+@@ -399,8 +399,10 @@ class AOTUnjellier:
+                 inst = klass.__new__(klass)
+                 if hasattr(klass, "__setstate__"):
+                     self.callAfter(inst.__setstate__, state)
+-                else:
++                elif isinstance(state, dict):
+                     inst.__dict__ = state
++                else:
++                    inst.__dict__ = state.__getstate__()
+                 return inst
+ 
+             elif c is Ref:
+--- Twisted-22.10.0/src/twisted/spread/flavors.py
++++ Twisted-22.10.0/src/twisted/spread/flavors.py
+@@ -398,6 +398,8 @@ class RemoteCopy(Unjellyable):
+         object's dictionary (or a filtered approximation of it depending
+         on my peer's perspective).
+         """
++        if not state:
++            state = {}
+         state = {
+             x.decode("utf8") if isinstance(x, bytes) else x: y for x, y in state.items()
+         }
+--- Twisted-22.10.0/src/twisted/spread/jelly.py
++++ Twisted-22.10.0/src/twisted/spread/jelly.py
+@@ -154,7 +154,8 @@ def _newInstance(cls, state):
+     instance = _createBlank(cls)
+ 
+     def defaultSetter(state):
+-        instance.__dict__ = state
++        if isinstance(state, dict):
++            instance.__dict__ = state or {}
+ 
+     setter = getattr(instance, "__setstate__", defaultSetter)
+     setter(state)
+--- Twisted-22.10.0/src/twisted/test/test_persisted.py
++++ Twisted-22.10.0/src/twisted/test/test_persisted.py
+@@ -378,6 +378,10 @@ class AOTTests(TestCase):
+             def __dict__(self):
+                 raise AttributeError()
+ 
++            @property
++            def __getstate__(self):
++                raise AttributeError()
++
+         self.assertRaises(TypeError, aot.jellyToSource, UnknownType())
+ 
+     def test_basicIdentity(self):
+--- Twisted-22.10.0/src/twisted/trial/test/test_pyunitcompat.py
++++ Twisted-22.10.0/src/twisted/trial/test/test_pyunitcompat.py
+@@ -218,8 +218,10 @@ class PyUnitResultTests(SynchronousTestC
+         pyresult = pyunit.TestResult()
+         result = PyUnitResultAdapter(pyresult)
+         result.addError(self, f)
++        tback = "".join(traceback.format_exception(*exc_info))
+         self.assertEqual(
+-            pyresult.errors[0][1], "".join(traceback.format_exception(*exc_info))
++            pyresult.errors[0][1].endswith("ZeroDivisionError: division by zero\n"),
++            tback.endswith("ZeroDivisionError: division by zero\n"),
+         )
+ 
+     def test_trialSkip(self):
+--- Twisted-22.10.0/src/twisted/web/test/test_flatten.py
++++ Twisted-22.10.0/src/twisted/web/test/test_flatten.py
+@@ -706,15 +706,15 @@ class FlattenerErrorTests(SynchronousTes
+                     Exception while flattening:
+                       \\[<unrenderable>\\]
+                       <unrenderable>
+-                      .*
++                      <Deferred at .* current result: <twisted.python.failure.Failure builtins.RuntimeError: example>>
+                       File ".*", line \\d*, in _flattenTree
+-                        element = await element
+-                    RuntimeError: example
++                        element = await element.*
+                     """
+                 ),
+                 flags=re.MULTILINE,
+             ),
+         )
++        self.assertIn("RuntimeError: example", str(failure.value))
+         # The original exception is unmodified and will be logged separately if
+         # unhandled.
+         self.failureResultOf(failing, RuntimeError)
