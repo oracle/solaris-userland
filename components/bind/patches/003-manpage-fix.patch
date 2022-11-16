@@ -1,28 +1,14 @@
-This patch is created by Oracle to addresses a couple of issues with
-manual page references.  The ISC have been informed of these issues
-and a future release of BIND should make this patch obsolete.
+This patch is created by Oracle to direct users to base64(1) as
+we do not ship mmencode(1).
 
-  1. "ndc" is no longer shipped now that rndc is established.
-  2. "nsupdate" continues to be delivered in section 1, not 8.
-  3. "mmencode" not provided with Solaris, use base64 for encoding secret.
+The ISC have previously been informed, it is an Oracle specific patch.
 
---- bind-9.16.29/doc/man/rndc.8in
-+++ bind-9.16.29/doc/man/rndc.8in
-@@ -605,7 +605,7 @@ Several error messages could be clearer.
- .SH SEE ALSO
- .sp
- \fBrndc.conf(5)\fP, \fBrndc\-confgen(8)\fP,
--\fBnamed(8)\fP, \fBnamed.conf(5)\fP, \fBndc(8)\fP, BIND 9 Administrator
-+\fBnamed(8)\fP, \fBnamed.conf(5)\fP, BIND 9 Administrator
- Reference Manual.
- .SH AUTHOR
- Internet Systems Consortium
---- bind-9.16.29/doc/man/rndc.conf.5in
-+++ bind-9.16.29/doc/man/rndc.conf.5in
+--- bind-9.18.9/doc/man/rndc.conf.5in
++++ bind-9.18.9/doc/man/rndc.conf.5in
 @@ -86,8 +86,8 @@ authentication key. The base\-64 string
  .sp
  There are two common ways to generate the base\-64 string for the secret.
- The BIND 9 program \fBrndc\-confgen\fP can be used to generate a random
+ The BIND 9 program \fI\%rndc\-confgen\fP can be used to generate a random
 -key, or the \fBmmencode\fP program, also known as \fBmimencode\fP, can be
 -used to generate a base\-64 string from known input. \fBmmencode\fP does
 +key, or the \fBbase64\fP program, can be
@@ -32,7 +18,7 @@ and a future release of BIND should make this patch obsolete.
  .SH EXAMPLE
 @@ -175,9 +175,9 @@ A complete \fBrndc.conf\fP file, includi
  is written to the standard output. Commented\-out \fBkey\fP and
- \fBcontrols\fP statements for \fBnamed.conf\fP are also printed.
+ \fBcontrols\fP statements for \fI\%named.conf\fP are also printed.
  .sp
 -To generate a base\-64 secret with \fBmmencode\fP:
 +To generate a base\-64 secret with \fBbase64\fP:
@@ -46,8 +32,8 @@ and a future release of BIND should make this patch obsolete.
  details.
  .SH SEE ALSO
  .sp
--\fBrndc(8)\fP, \fBrndc\-confgen(8)\fP, \fBmmencode(1)\fP, BIND 9 Administrator Reference Manual.
-+\fBrndc(8)\fP, \fBrndc\-confgen(8)\fP, \fBbase64(1)\fP, BIND 9 Administrator Reference Manual.
+-\fI\%rndc(8)\fP, \fI\%rndc\-confgen(8)\fP, \fBmmencode(1)\fP, BIND 9 Administrator Reference Manual.
++\fI\%rndc(8)\fP, \fI\%rndc\-confgen(8)\fP, \fBbase64(1)\fP, BIND 9 Administrator Reference Manual.
  .SH AUTHOR
  Internet Systems Consortium
  .SH COPYRIGHT

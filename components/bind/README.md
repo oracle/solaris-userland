@@ -96,7 +96,7 @@ For example
 	```
 	$ WS=/builds/user/workspace
 	$ sudo mkdir -p $WS
-	$ sudo chown user $WS
+	$ sudo chown $USER $WS
 	$ mkdir -p $WS/components/bind
 	```
 
@@ -111,63 +111,47 @@ For example
 
 	```
 	$ cd build/amd64 || cd build/sparcv9
-    $ sudo bin/tests/system/ifconfig.sh up
+	$ cd bin/tests/system
+    $ sudo ifconfig.sh up
 	```
 
 5. Set PATH so that GNU utilities are used, and execute test.
 
 	```
     $ PATH=/usr/gnu/bin:/usr/bin:/usr/sbin; export PATH
-    $ gmake test
+    $ sh runall.sh
 	```
 
+6. Optional, run individual test or a bunch of tests using 'run.sh':
+
+   ```
+   $ sh run.sh doth acl addzone
+   ```
+
 The tests may take some hours to complete.  They write a summary
-report to ./bin/tests/system/systests.output.  A helper script in
-./Solaris/test-summarize.awk can help examine the summary report.
+report to ./build/*/bin/tests/system/systests.output.  A helper script
+in ./Solaris/test-summarize.awk can help examine the summary report,
+for example to review a summary of skipped tests:
+
+```
+awk -v skipped=1 -f $WS/components/bind/Solaris/test-summarize.awk \
+   ./bin/tests/system/systests.output
+
+```
+
+For further information regarding these tests refer to README in
+bin/tests/system directory.
+
 
 ### Skipped tests
 
 Some of tests require additional software to be installed, such as
 `dnspython` and Perl modules `Net::DNS` and `Digest-HMAC`.
 
-Currently a total of four tests are skipped which rely on options not
-currently configured:
+With those packages installed currently a total of three tests are
+skipped which rely on options not currently configured:
 
-```
-$ awk -v skipped=1 -f $WS/components/bind/Solaris/test-summarize.awk \
-> ./bin/tests/system/systests.output
-T:dlz:1:A
-A:dlz:System test dlz
-I:dlz:PORTRANGE:7100 - 7199
-I:dlz:DLZ filesystem driver not supported
-I:dlz:Prerequisites missing, skipping test.
-R:dlz:SKIPPED
+- SKIP: engine_pkcs11
+- SKIP: geoip2
+- SKIP: keyfromlabel
 
-T:eddsa:1:A
-A:eddsa:System test eddsa
-I:eddsa:PORTRANGE:5300 - 5399
-I:eddsa:This test requires support for EDDSA cryptography
-I:eddsa:configure with --with-openssl, or --enable-native-pkcs11 --with-pkcs11
-I:eddsa:This test requires support for EDDSA cryptography
-I:eddsa:configure with --with-openssl, or --enable-native-pkcs11 --with-pkcs11
-I:eddsa:Prerequisites missing, skipping test.
-R:eddsa:SKIPPED
-
-T:geoip2:1:A
-A:geoip2:System test geoip2
-I:geoip2:PORTRANGE:8300 - 8399
-I:geoip2:This test requires GeoIP support.
-I:geoip2:Prerequisites missing, skipping test.
-R:geoip2:SKIPPED
-
-T:nzd2nzf:1:A
-A:nzd2nzf:System test nzd2nzf
-I:nzd2nzf:PORTRANGE:10500 - 10599
-I:nzd2nzf:This test requires LMDB support (--with-lmdb)
-I:nzd2nzf:Prerequisites missing, skipping test.
-R:nzd2nzf:SKIPPED
-
-
-tests=104 skip=4 known=0 pass=100 issue=4
-
-```

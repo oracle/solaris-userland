@@ -36,7 +36,7 @@ set name=info.classification \
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2009/308 value=PSARC/2016/261 \
-    value=PSARC/2017/175
+    value=PSARC/2017/175 value=PSARC/2022/174
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/arpaname
 file path=usr/bin/delv
@@ -45,6 +45,8 @@ file path=usr/bin/host
 file path=usr/bin/mdig
 file path=usr/bin/nslookup
 file path=usr/bin/nsupdate
+file path=usr/lib/dns/$(MACH64)/bind/filter-a.so
+file path=usr/lib/dns/$(MACH64)/bind/filter-aaaa.so
 file path=usr/lib/dns/$(MACH64)/libbind9-$(COMPONENT_VERSION).so
 link path=usr/lib/dns/$(MACH64)/libbind9.so \
     target=libbind9-$(COMPONENT_VERSION).so
@@ -62,25 +64,7 @@ link path=usr/lib/dns/$(MACH64)/libisccfg.so \
     target=libisccfg-$(COMPONENT_VERSION).so
 file path=usr/lib/dns/$(MACH64)/libns-$(COMPONENT_VERSION).so
 link path=usr/lib/dns/$(MACH64)/libns.so target=libns-$(COMPONENT_VERSION).so
-file path=usr/lib/dns/$(MACH64)/named/filter-aaaa.so
-file path=usr/lib/python3.9/vendor-packages/isc-2.0-py3.9.egg-info/PKG-INFO
-file path=usr/lib/python3.9/vendor-packages/isc-2.0-py3.9.egg-info/SOURCES.txt
-file path=usr/lib/python3.9/vendor-packages/isc-2.0-py3.9.egg-info/dependency_links.txt
-file path=usr/lib/python3.9/vendor-packages/isc-2.0-py3.9.egg-info/top_level.txt
-file path=usr/lib/python3.9/vendor-packages/isc/__init__.py
-file path=usr/lib/python3.9/vendor-packages/isc/checkds.py
-file path=usr/lib/python3.9/vendor-packages/isc/coverage.py
-file path=usr/lib/python3.9/vendor-packages/isc/dnskey.py
-file path=usr/lib/python3.9/vendor-packages/isc/eventlist.py
-file path=usr/lib/python3.9/vendor-packages/isc/keydict.py
-file path=usr/lib/python3.9/vendor-packages/isc/keyevent.py
-file path=usr/lib/python3.9/vendor-packages/isc/keymgr.py
-file path=usr/lib/python3.9/vendor-packages/isc/keyseries.py
-file path=usr/lib/python3.9/vendor-packages/isc/keyzone.py
-file path=usr/lib/python3.9/vendor-packages/isc/parsetab.py
-file path=usr/lib/python3.9/vendor-packages/isc/policy.py
-file path=usr/lib/python3.9/vendor-packages/isc/rndc.py
-file path=usr/lib/python3.9/vendor-packages/isc/utils.py
+link path=usr/lib/dns/64 target=$(MACH64)
 link path=usr/sbin/arpaname target=../bin/arpaname
 link path=usr/sbin/dig target=../bin/dig
 link path=usr/sbin/host target=../bin/host
@@ -90,33 +74,31 @@ file path=usr/sbin/rndc
 file path=usr/share/man/man1/arpaname.1
 file path=usr/share/man/man1/delv.1
 file path=usr/share/man/man1/dig.1
+file path=usr/share/man/man1/dnssec-cds.1
+file path=usr/share/man/man1/dnssec-dsfromkey.1
+file path=usr/share/man/man1/dnssec-importkey.1
+file path=usr/share/man/man1/dnssec-keyfromlabel.1
+file path=usr/share/man/man1/dnssec-keygen.1
+file path=usr/share/man/man1/dnssec-revoke.1
+file path=usr/share/man/man1/dnssec-settime.1
+file path=usr/share/man/man1/dnssec-signzone.1
+file path=usr/share/man/man1/dnssec-verify.1
 file path=usr/share/man/man1/host.1
 file path=usr/share/man/man1/mdig.1
+file path=usr/share/man/man1/named-checkconf.1
+file path=usr/share/man/man1/named-checkzone.1
+file path=usr/share/man/man1/named-compilezone.1
+file path=usr/share/man/man1/named-journalprint.1
 file path=usr/share/man/man1/named-rrchecker.1
+file path=usr/share/man/man1/nsec3hash.1
 file path=usr/share/man/man1/nslookup.1
 file path=usr/share/man/man1/nsupdate.1
 file path=usr/share/man/man5/named.conf.5
 file path=usr/share/man/man5/rndc.conf.5
 file path=usr/share/man/man8/ddns-confgen.8
-file path=usr/share/man/man8/dnssec-cds.8
-file path=usr/share/man/man8/dnssec-checkds.8
-file path=usr/share/man/man8/dnssec-coverage.8
-file path=usr/share/man/man8/dnssec-dsfromkey.8
-file path=usr/share/man/man8/dnssec-importkey.8
-file path=usr/share/man/man8/dnssec-keyfromlabel.8
-file path=usr/share/man/man8/dnssec-keygen.8
-file path=usr/share/man/man8/dnssec-keymgr.8
-file path=usr/share/man/man8/dnssec-revoke.8
-file path=usr/share/man/man8/dnssec-settime.8
-file path=usr/share/man/man8/dnssec-signzone.8
-file path=usr/share/man/man8/dnssec-verify.8
+file path=usr/share/man/man8/filter-a.8
 file path=usr/share/man/man8/filter-aaaa.8
-file path=usr/share/man/man8/named-checkconf.8
-file path=usr/share/man/man8/named-checkzone.8
-file path=usr/share/man/man8/named-compilezone.8
-file path=usr/share/man/man8/named-journalprint.8
 file path=usr/share/man/man8/named.8
-file path=usr/share/man/man8/nsec3hash.8
 file path=usr/share/man/man8/rndc-confgen.8
 file path=usr/share/man/man8/rndc.8
 file path=usr/share/man/man8/tsig-keygen.8

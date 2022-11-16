@@ -25,11 +25,17 @@
 
 # Assign all files and links to bind Client package; bindc.p5m.
 # Later rules will reassign as necessary.
-<transform file link -> default pkg.type client-pkg>
+<transform file link hardlink -> default pkg.type client-pkg>
 
 # Identify derived Server package, bind.p5m, contents.
 # Everything delivered to usr/sbin - except for rndc.
+# 9.18 does not deliver so much to usr/bin now, so additional sorting required.
 <transform file link hardlink path=usr/sbin/* -> set pkg.type server-pkg>
+<transform file link hardlink path=usr/bin/dnssec-* -> set pkg.type server-pkg>
+<transform file link hardlink path=usr/bin/named-* -> set pkg.type server-pkg>
+<transform file path=usr/bin/nsec3hash -> set pkg.type server-pkg>
+
+# rndc is delivered with the client package.
 <transform file path=usr/sbin/rndc$ -> set pkg.type client-pkg>
 
 # Historically named-rrchecker is delivered in the server package.

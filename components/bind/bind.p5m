@@ -34,7 +34,7 @@ set name=info.classification value=org.opensolaris.category.2008:System/Services
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2009/308 value=PSARC/2016/261 \
-    value=PSARC/2017/175
+    value=PSARC/2017/175 value=PSARC/2022/174
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 
 # Solaris additions
@@ -42,32 +42,40 @@ file Solaris/server.xml path=lib/svc/manifest/network/dns/server.xml
 file Solaris/dns-server.sh path=lib/svc/method/dns-server mode=0555
 
 # Tools
+file path=usr/bin/dnssec-cds
+file path=usr/bin/dnssec-dsfromkey
+file path=usr/bin/dnssec-importkey
+file path=usr/bin/dnssec-keyfromlabel
+file path=usr/bin/dnssec-keygen
+file path=usr/bin/dnssec-revoke
+file path=usr/bin/dnssec-settime
+file path=usr/bin/dnssec-signzone
+file path=usr/bin/dnssec-verify
+file path=usr/bin/named-checkconf
+hardlink path=usr/bin/named-checkzone target=named-compilezone
+file path=usr/bin/named-compilezone
+file path=usr/bin/named-journalprint
 file path=usr/bin/named-rrchecker
-file path=usr/sbin/ddns-confgen
-file path=usr/sbin/dnssec-cds
-file path=usr/sbin/dnssec-checkds pkg.depend.bypass-generate=.*/win32api.* \
-    pkg.depend.bypass-generate=.*/win32con.*
-file path=usr/sbin/dnssec-coverage pkg.depend.bypass-generate=.*/time.* \
-    pkg.depend.bypass-generate=.*/win32api.* \
-    pkg.depend.bypass-generate=.*/win32con.*
-file path=usr/sbin/dnssec-dsfromkey
-file path=usr/sbin/dnssec-importkey
-file path=usr/sbin/dnssec-keyfromlabel
-file path=usr/sbin/dnssec-keygen
-file path=usr/sbin/dnssec-keymgr
-file path=usr/sbin/dnssec-revoke
-file path=usr/sbin/dnssec-settime
-file path=usr/sbin/dnssec-signzone
-file path=usr/sbin/dnssec-verify
+file path=usr/bin/nsec3hash
+hardlink path=usr/sbin/ddns-confgen target=tsig-keygen
+link path=usr/sbin/dnssec-cds target=../bin/dnssec-cds
+link path=usr/sbin/dnssec-dsfromkey target=../bin/dnssec-dsfromkey
+link path=usr/sbin/dnssec-importkey target=../bin/dnssec-importkey
+link path=usr/sbin/dnssec-keyfromlabel target=../bin/dnssec-keyfromlabel
+link path=usr/sbin/dnssec-keygen target=../bin/dnssec-keygen
+link path=usr/sbin/dnssec-revoke target=../bin/dnssec-revoke
+link path=usr/sbin/dnssec-settime target=../bin/dnssec-settime
+link path=usr/sbin/dnssec-signzone target=../bin/dnssec-signzone
+link path=usr/sbin/dnssec-verify target=../bin/dnssec-verify
 file path=usr/sbin/named
-file path=usr/sbin/named-checkconf
-file path=usr/sbin/named-checkzone
-link path=usr/sbin/named-compilezone target=named-checkzone
-file path=usr/sbin/named-journalprint
+link path=usr/sbin/named-checkconf target=../bin/named-checkconf
+link path=usr/sbin/named-checkzone target=../bin/named-checkzone
+link path=usr/sbin/named-compilezone target=../bin/named-compilezone
+link path=usr/sbin/named-journalprint target=../bin/named-journalprint
 link path=usr/sbin/named-rrchecker target=../bin/named-rrchecker
-file path=usr/sbin/nsec3hash
+link path=usr/sbin/nsec3hash target=../bin/nsec3hash
 file path=usr/sbin/rndc-confgen
-link path=usr/sbin/tsig-keygen target=ddns-confgen
+file path=usr/sbin/tsig-keygen
 file Solaris/bind-transition.txt \
     path=usr/share/doc/release-notes/bind-transition.txt owner=root group=sys \
     mode=0444

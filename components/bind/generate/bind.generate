@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -31,10 +31,6 @@
 # drop files where patch didn't apply cleanly and gnu patch did create a backup
 <transform file path=.*~$ -> drop>
 
-# Both dnssec-checkds and dnssec-coverage are decorated in bind.static
-# and therefore dropped here.
-<transform file path=usr/sbin/dnssec-(checkds$|coverage$) -> drop>
-
 # delete everything not belonging to this package
-<transform file link pkg.type=(?!server-pkg) -> drop>
-<transform file link -> delete pkg.type .*>
+<transform file link hardlink pkg.type=(?!server-pkg) -> drop>
+<transform file link hardlink -> delete pkg.type .*>

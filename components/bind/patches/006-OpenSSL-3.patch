@@ -1,0 +1,32 @@
+Patch modifies Makefile.in and Makefile.am so that OpenSSL 3.0 library
+path comes before libuv's path, which is in the default location
+where OpenSSL 1.0.2 can also be found!
+
+Patch provided upstream for their information:
+https://gitlab.isc.org/isc-projects/bind9/-/issues/3414
+
+I expect we shall need to maintain until OpenSSL 3.0 is the default.
+
+--- bind-9.18.9/lib/isc/Makefile.am
++++ bind-9.18.9/lib/isc/Makefile.am
+@@ -218,8 +218,8 @@ $(AM_LDFLAGS)		\
+ 	-release "$(PACKAGE_VERSION)"
+ 
+ libisc_la_LIBADD =		\
+-	$(LIBUV_LIBS)		\
+ 	$(OPENSSL_LIBS)		\
++	$(LIBUV_LIBS)		\
+ 	$(ZLIB_LIBS)
+ 
+ if HAVE_JEMALLOC
+--- bind-9.18.9/lib/isc/Makefile.in
++++ bind-9.18.9/lib/isc/Makefile.in
+@@ -818,7 +818,7 @@ libisc_la_LDFLAGS = \
+ 	$(AM_LDFLAGS)		\
+ 	-release "$(PACKAGE_VERSION)"
+ 
+-libisc_la_LIBADD = $(LIBUV_LIBS) $(OPENSSL_LIBS) $(ZLIB_LIBS) \
++libisc_la_LIBADD = $(OPENSSL_LIBS) $(LIBUV_LIBS) $(ZLIB_LIBS) \
+ 	$(am__append_3) $(am__append_5) $(am__append_8) \
+ 	$(am__append_10)
+ all: all-am

@@ -41,6 +41,7 @@ Required Options:
 
 Optional options:
     -b bind-port    Port named will listen on for requests. [$bind_port_d]
+    -k              Run keygen test on various ciphers.
     -r rndc_port    Port named will listen on for control [$rndc_port_d]
     -X              Debug
     -?              Display this usage
@@ -103,10 +104,11 @@ integer rndc_port=$rndc_port_d
 integer fail
 
 # Read command line arguments.
-while getopts :b:d:p:r:r:X opt; do
+while getopts :b:d:kp:r:r:X opt; do
     case $opt in
 	(b) bind_port=$OPTARG;;
 	(d) directory=$OPTARG;;
+	(k) opt_k=$opt;;
 	(p) PROTO=$OPTARG;;
 	(r) rndc_port=$OPTARG;;
 	(X) set -x; typeset -ft $(typeset +f);;
@@ -129,38 +131,47 @@ if [[ ! -f $runlog ]]; then
     fi
 fi
 
+# Command locations, historically most admin commands were in /usr/sbin.
+# But some have moved, and while packaging adds in static links that is
+# deliberatly not the case for prototype area.
+#
+# Commands used with `run` that have a dash in there name are kwnow by
+# the last part of there name, for example named-checkconf becomes ${checkconf}.
+
 # Set command paths from provided PROTO.
 SBIN=${PROTO%*/}/usr/sbin
 BIN=${PROTO%*/}/usr/bin
+commands="dig named named-checkconf rndc dnssec-keygen"
 
-# Check commands are present.  Could read this list from the package
-# file, but for now just looks for those that are used here.
-for command in $SBIN/named $SBIN/named-checkconf $SBIN/rndc; do
-    if [[ ! -x $command ]]; then
+for command in $commands; do
+    if [[ -x ${BIN}/${command} ]]; then # Most are in /usr/bin now
+	eval ${command#*-}=${BIN}/${command}
+    elif [[ -x ${SBIN}/${command} ]]; then # Some remain in /usr/sbin
+	eval ${command#*-}=${SBIN}/${command}
+    else
 	e "$command missing!"
 	(( fail++ ))
     fi
 done
 (( fail > 0 )) && exit $fail
 
-# Set dig path, used to live in sbin.
-if [[ -x ${BIN}/dig ]]; then
-    dig=${BIN}/dig
-elif [[ -x ${SBIN}/dig ]]; then
-    dig=${SBIN}/dig
-else
-    e "dig missing!"
-    exit 1
-fi
-
 # set LD_LIBRARY_PATH only when PROTO is not root, and not already set.
 if [[ ${PROTO} != '/' && -z $LD_LIBRARY_PATH ]]; then
     if [[ -d ${PROTO}/usr/lib/dns ]]; then
-	export LD_LIBRARY_PATH=${PROTO}/usr/lib/dns
+	# Backward compatibility, same test script used for a previous release.
+	export LD_LIBRARY_PATH_32=${PROTO}/usr/lib/dns
+	[[ $(uname -p) = 'sparc' ]] && MACH64=sparcv9 || MACH64=amd64
+	export LD_LIBRARY_PATH_64=${PROTO}/usr/lib/dns/${MACH64}
     else
 	e "Warning: Library directory not found: ${PROTO}/usr/lib/dns"
     fi
+else
+    e "Notice: LD_LIBRARY_PATH not being overridden: $LD_LIBRARY_PATH"
 fi
+
+# Check linkage
+run ldd ${named} | grep '(file not found)' && e linkage error $named && exit 1
+
 
 # Discover name servers and domain name from resolv.conf
 resconf=/etc/resolv.conf
@@ -280,7 +291,7 @@ dname.example.com.		IN      DNAME   sub.example.com.
 " > ${directory:+$directory/}example.com.zone
 
 d "Verifying initial named.conf file."
-run ${SBIN}/named-checkconf -z ${named_conf} || ret=$?
+run ${checkconf} -z ${named_conf} || ret=$?
 if [[ $ret -ne 0 ]]; then
     e "Error: named-checkconf returned with non-zero exit code: $ret"
     exit $ret
@@ -319,10 +330,10 @@ options {
 " > ${rndc_conf}
 
 d "Verifying configuration after key and controls added."
-run ${SBIN}/named-checkconf -z ${named_conf}
+run ${checkconf} -z ${named_conf}
 
 d "starting DNS server"
-run ${SBIN}/named -c ${named_conf} -p ${bind_port}
+run ${named} -c ${named_conf} -p ${bind_port}
 
 d "checking for pid file"
 let t=0
@@ -342,7 +353,7 @@ if [[ -z $pid ]]; then
 fi
 
 d "Turning on tracing"
-run ${SBIN}/rndc -c ${rndc_conf} trace 3
+run ${rndc} -c ${rndc_conf} trace 3
 
 d "Look-up IPv4 (A) record"
 run ${dig} @0 -p ${bind_port} -t A ipboth.example.com.
@@ -360,13 +371,13 @@ d "looking up host known to have DNAME"
 run ${dig} @0 -p ${bind_port} -t a jack.dname.example.com.
 
 d "Requesting status"
-run ${SBIN}/rndc -c ${rndc_conf} status > $directory/rndc_status
+run ${rndc} -c ${rndc_conf} status > $directory/rndc_status
 
 d "Requesting dump of server's caches and zones"
-run ${SBIN}/rndc -c ${rndc_conf} dumpdb -all
+run ${rndc} -c ${rndc_conf} dumpdb -all
 
 d "Requesting BIND to stop"
-run ${SBIN}/rndc -c ${rndc_conf} stop
+run ${rndc} -c ${rndc_conf} stop
 
 # Wait for upto five seconds for server to shutdown.
 if [[ -n $pid && -f $directory/named.pid ]]; then
@@ -384,7 +395,7 @@ fi
 d "REDACT: $directory/named.pid counter $t"
 
 d "Requesting status - should fail as server has stopped."
-run -e 1 ${SBIN}/rndc -c ${rndc_conf} status
+run -e 1 ${rndc} -c ${rndc_conf} status
 
 # Make sure named has exited.
 if [[ -n $pid && -f $directory/named.pid ]]; then
@@ -396,12 +407,18 @@ if [[ -n $pid && -f $directory/named.pid ]]; then
 fi
 
 # basic dnssec-keygen test
-imps="RSASHA1 NSEC3RSASHA1 RSASHA256 RSASHA512 ECDSAP256SHA256 ECDSAP384SHA384"
-for i in $imps; do
-    run ${SBIN}/dnssec-keygen -K /tmp -a $i -n ZONE -fk secure.example
-done
-for i in ED25519 ED448 DH; do
-    run -e 1 ${SBIN}/dnssec-keygen -K /tmp -a $i -n ZONE -fk secure.example
-done
+if [[ -n $opt_k ]]; then
+    # Following algorithums taken from the dnssec-keygen(8) manual page
+    imps="RSASHA1 NSEC3RSASHA1 RSASHA256 RSASHA512 ECDSAP256SHA256"
+    imps="$imps ECDSAP384SHA384 ED25519 ED448"
+    # tests expected to pass (OpenSSL 3)
+    for i in $imps; do
+	run ${keygen} -K /tmp -a $i -n ZONE -fk secure.example
+    done
+    # Tests expected to fail.
+    for i in DH; do
+	run -e 1 ${keygen} -K /tmp -a $i -n ZONE -fk secure.example
+    done
+fi
 
 exit $ret

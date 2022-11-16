@@ -39,12 +39,19 @@ file Solaris/bind-notice.txt \
     mode=0444 must-display=true \
     release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)
 
-# Include backwards compatible link.
+# Include backwards compatible links.
+link path=usr/sbin/dnssec-cds target=../bin/dnssec-cds
+link path=usr/sbin/dnssec-dsfromkey target=../bin/dnssec-dsfromkey
+link path=usr/sbin/dnssec-importkey target=../bin/dnssec-importkey
+link path=usr/sbin/dnssec-keyfromlabel target=../bin/dnssec-keyfromlabel
+link path=usr/sbin/dnssec-keygen target=../bin/dnssec-keygen
+link path=usr/sbin/dnssec-revoke target=../bin/dnssec-revoke
+link path=usr/sbin/dnssec-settime target=../bin/dnssec-settime
+link path=usr/sbin/dnssec-signzone target=../bin/dnssec-signzone
+link path=usr/sbin/dnssec-verify target=../bin/dnssec-verify
+link path=usr/sbin/named-checkconf target=../bin/named-checkconf
+link path=usr/sbin/named-checkzone target=../bin/named-checkzone
+link path=usr/sbin/named-compilezone target=../bin/named-compilezone
+link path=usr/sbin/named-journalprint target=../bin/named-journalprint
 link path=usr/sbin/named-rrchecker target=../bin/named-rrchecker
-
-# Bypass package testing against windows dependencies for two python files.
-file path=usr/sbin/dnssec-checkds pkg.depend.bypass-generate=.*/win32api.* \
-    pkg.depend.bypass-generate=.*/win32con.*
-file path=usr/sbin/dnssec-coverage pkg.depend.bypass-generate=.*/time.* \
-    pkg.depend.bypass-generate=.*/win32api.* \
-    pkg.depend.bypass-generate=.*/win32con.*
+link path=usr/sbin/nsec3hash target=../bin/nsec3hash

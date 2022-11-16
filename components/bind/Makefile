@@ -41,18 +41,18 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.16.33
+COMPONENT_VERSION=	9.18.9
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-COMPONENT_BAID=		130203
+COMPONENT_BAID=		133259
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:ec4fbea4b2e368d1824971509e33fa159224ad14b436034c6bcd46104c328d91
+	sha256:6a9665998d568604460df0918fc8ccfad7d29388d4d842560c056cc211cbb243
 COMPONENT_ARCHIVE_URL=	\
 	http://ftp.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
-COMPONENT_ANITYA_ID=	77661
+COMPONENT_ANITYA_ID=	242117
 
 # ISC OpenPGP Key obtained from https://ftp.isc.org/isc/pgpkeys
 # Added to repository using command:
@@ -86,6 +86,10 @@ PKG_MACROS +=           PYVER=$(PYTHON_VERSION)
 # Patches to configure.in require configure script re-creation.
 # COMPONENT_PREP_ACTION +=(cd $(@D); autoreconf -vfi);
 
+# OpenSSL configuration. Required for DNSSEC features, used by libisc.
+# Use OpenSSL 3, Setting --with-openssl=/usr/openssl/3 was not sufficient.
+PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
+
 # Specify "configure" options and features, sorted as per configure usage.
 # FYI, The configure options applied are displayed by 'named -V'.
 #
@@ -101,46 +105,60 @@ CONFIGURE_OPTIONS +=	--enable-pthread-rwlock
 CONFIGURE_OPTIONS +=	--enable-fixed-rrset
 # Report values of all configure options
 CONFIGURE_OPTIONS +=	--enable-full-report
-# specify path to Python interpreter, helps with packaging too.
-CONFIGURE_OPTIONS +=	--with-python=$(PYTHON.$(PYTHON_VERSION))
-# Installation directory for Python modules, in vendor directory.
-CONFIGURE_OPTIONS +=	--with-python-install-dir=$(PYTHON_VENDOR_PACKAGES_BASE)
-# GNU libtool required for creation of shared libraries.
-CONFIGURE_OPTIONS +=	--with-libtool
-# Root of the OpenSSL directory, use openssl, required for DNSSEC features.
-CONFIGURE_OPTIONS +=	--with-openssl=/lib/openssl
+
 # Get GSSAPI configuration from krb5-config command.
 CONFIGURE_OPTIONS +=	--with-gssapi=krb5-config
 
-# Override / set specific pathnames:
+# Override / set specific installation pathnames:
 # - DNS libraries are in usr/lib/dns - Override settings from configure.mk
 CONFIGURE_LIBDIR.64 =	$(CONFIGURE_PREFIX)/lib/dns/$(MACH64)
 # CONFIGURE_LIBDIR.32 =	$(CONFIGURE_PREFIX)/lib/dns
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
 
-CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)"
+# Configure needs to use gmake, not make.
+CONFIGURE_ENV += MAKE=$(GMAKE)
+# Needed for `cp -a`, `date -r -u` and possibly others.
+PATH=$(GNUBIN):$(USRBINDIR)
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =		$(ADIHEAP_ENABLE)
 ADISTACK_MODE =		$(ADISTACK_ENABLE)
 
+# $(SOURCE_DIR)/configure is using CC_FOR_BUILD which does not respect
+# our compilation flags and causes linker failure. This is a
+# workaround to have it use PIC build flags.
+COMPONENT_BUILD_ARGS += \
+	CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
+
+# Verbose gmake, the default is not show the executed commands.
+ifneq ($(strip $(GMAKE_VERBOSE_MAKEFILE)),)
+COMPONENT_BUILD_ARGS +=	V=1
+endif
+
+# Identify source_file files in hard links for manifest generator.
+PKG_HARDLINKS +=	usr/sbin/tsig-keygen
+PKG_HARDLINKS +=	usr/bin/named-compilezone
+
 # Documentation.
 # --------------
-# With 9.16.x we're no longer providing HTML or PDF documentation.
-# it is accessible directly from
-# https://downloads.isc.org/isc/bind9/COMPONENT_VERSION/doc/arm/html/
-# which is added to named(8) via ./patches/001-manpage_named_8.patch.
-# The following action updates the link to point to the version.
-# Note, $(@D) used in place of $(SOURCE_DIR) as it was just copied.
-COMPONENT_PRE_CONFIGURE_ACTION += \
+#
+# With 9.16.x and beyond we're no longer providing HTML or PDF
+# documentation.  An interactive searchable version is available from
+# https://bind9.readthedocs.io/ which is added to named(8) via
+# ./patches/001-manpage_named_8.patch.  The following action updates
+# the link to point to the specific version.  Note, $(@D) used in
+# place of $(SOURCE_DIR).
+component_version_	=	$(subst .,_,$(COMPONENT_VERSION))
+COMPONENT_PREP_ACTION += \
 	if grep -q COMPONENT_VERSION  $(@D)/doc/man/named.8in; then \
-	    gsed --in-place -e "s/COMPONENT_VERSION/$(COMPONENT_VERSION)/" \
+	    gsed --in-place -e "s/COMPONENT_VERSION/$(component_version_)/" \
 		$(@D)/doc/man/named.8in; \
 	fi;
 
 # Test configuration.
 # -------------------
+#
 # Target 'test' is run from PROTO_DIR, while 'system-test' uses root
 # ("/") directory.
 #
@@ -151,7 +169,8 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 #
 TEST_HOSTNAME :=	$(shell uname -n)	# To redact from test output.
 COMPONENT_TEST_TRANSFORMS +=	\
-	'-e "s|$(PROTO_DIR)||g" ' \
+	'-e "s|$(PROTO_DIR)|\\$$(PROTO_DIR)|g" ' \
+	'-e "s|$(MACH64)|\\$$(MACH64)|g" ' \
 	'-e "s|$(BUILD_DIR)|\\$$(BUILD_DIR)|g" ' \
 	'-e "s|<id:[^>]*>$$|<id:REDACTED>|" ' \
 	'-e "s| id: [0-9].*$$| id: REDACTED|g" ' \
@@ -170,7 +189,7 @@ COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ENV +=	\
 	LD_LIBRARY_PATH=$(PROTO_DIR)$(CONFIGURE_LIBDIR.64)
 COMPONENT_TEST_CMD =	ksh  $(COMPONENT_DIR)/Solaris/testing.ksh
-COMPONENT_TEST_ARGS =	-d $(BUILD_DIR)/test/config
+COMPONENT_TEST_ARGS =	-k -d $(BUILD_DIR)/test/config
 COMPONENT_TEST_ARGS +=	-p $(PROTO_DIR)
 
 COMPONENT_SYSTEM_TEST_TARGETS =
@@ -233,12 +252,17 @@ REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libedit
 REQUIRED_PACKAGES += library/libuv
 REQUIRED_PACKAGES += library/libxml2
-# Libraries and commands linked with libssl.so.1.0.0.
-REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/nghttp2
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 # Service package requires client package for libraries.
 REQUIRED_PACKAGES += network/dns/bind
-REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += security/kerberos-5
-REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+
+# The following are already identified in ../../make-rules/shared-macros.mk
+# REQUIRED_PACKAGES += shell/ksh93
+# REQUIRED_PACKAGES += system/library
+# REQUIRED_PACKAGES += system/library/libc
+
+

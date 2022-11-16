@@ -1,50 +1,101 @@
-BIND version 9.16.29
+BIND version 9.18.9
 
-Solaris provides the Extended Support  Version (ESV) of BIND.  Solaris
-10,  and Solaris  11 (until  now) provided  BIND 9.11  ESV.  The  9.11
-branch has  been declared end-of-life  as of  March 2022 and  has been
-superseded by BIND 9.16 ESV.
+Solaris  11.4  now  provides  BIND  9.18  Stable  Version  which  uses
+OpenSSL 3.
+
+ISC, the authors  of BIND, declared the 9.11 branch  to be end-of-life
+as  of March  2022 and  superseded it  by BIND  9.16 Extended  Support
+Version (ESV) and BIND 9.18 Current-Stable for OpenSSL 3 support.
+
+As of  Solaris 11.4.51,  BIND was  updated to 9.16  ESV as  an interim
+measure.   It has  subsequently been  updated to  BIND 9.18  utilising
+OpenSSL 3.
 
 BIND versions  are for  the most part  compatible.  Some  features may
 however be deprecated.  Most configurable  features that are no longer
-applicable are ignored.   The update from 9.11 to  9.16 is significant
-and while no  major issues are expected it may  be necessary to modify
-your configuration following this update of BIND.
+applicable are ignored.  The update  from 9.11 branch was significant,
+and while most configurations will be fine there are some known issues
+(see below).   It may therefore  be necessary to  modify named.conf(5)
+following this update.  For more  detailed information please refer to
+the BIND documentation:
 
-Before rebooting into  the new Boot Environment (BE)  it is recomended
-that you  shutdown BIND using the  rndc(8) command as below  to quiese
-and flush any dynamic zone journal files.
+- https://bind9.readthedocs.io/en/v9_18_9/notes.html#notes-for-bind-9-18-9
+
+
+Known Issues
+------------
+
+Upgrading from BIND 9.16.32, 9.18.6,  or any older version may require
+a  manual  configuration  change.  The  following  configurations  are
+affected:
+
+- `type  primary` zones  configured with  `dnssec-policy` but  without
+  either `allow-update` or `update-policy`,
+- `type secondary` zones configured with `dnssec-policy`.
+
+In these cases please add `inline-signing yes`; to the individual zone
+configuration(s).  Without  applying this  change, named will  fail to
+start.  For more details, see:
+
+- https://kb.isc.org/docs/dnssec-policy-requires-dynamic-dns-or-inline-signing
+
+
+Important note regarding chroot environments
+--------------------------------------------
+
+   Any  update  to  BIND  requires   a  re-evaluation  to  the  chroot
+   environment as  BIND's libraries and its  fourth party dependencies
+   are subject  to change.  With  BIND 9.16 the network  interface was
+   completely refactored  to use  libuv and so  this is  an additional
+   dependency  that will  need  to  be catered  for.   With BIND  9.18
+   OpenSSL 3 libraries are needed too.
+
+   Oracle  recommends using  Solaris  Zones which  provide a  security
+   boundary with  a Common Criteria evaluation  for containment. Zones
+   are automatically updated by pkg(1)  ensuring they have the correct
+   dependencies and fixes therein.
+
+
+Verification of BIND configuration
+----------------------------------
+
+Following  package update,  and  before rebooting  into  the new  Boot
+Environment (BE)  it is recommended  that you shutdown BIND  using the
+rndc(8) command as below to quiesce and flush any dynamic zone journal
+files.
 
       # rndc stop -p
 
 Proceed once the named(8) process id, as displayed by rndc output, has
 stopped running.  If rndc is not configured then continue to reboot as
-normal. Note  that BIND  9.16 can  read BIND  9.11 journal  files, but
-beware that BIND 9.11 can not read BIND 9.16 journal files.
+normal. Note that BIND 9.16 and 9.18 can read BIND 9.11 journal files,
+but  beware that  BIND 9.11  can not  read BIND  9.16 or  9.18 journal
+files.
 
 Once booted  into the updated BE  check the SMF service  dns/server is
 enabled   and   online.    Then    check   the   configuration   using
 named-checkconf(8) command  and modify the  configuration accordingly,
 do  this if  the  service is  offline  or online  as  it may  indicate
-statements that are depricated.
+statements that are deprecated.
 
       # named-checkconf -z
 
-Significant work included in the 9.16 branch includes:
+Significant work included in the 9.16 and 9.18 branch
+-----------------------------------------------------
 
-    1. The new Key and Signing Policy (KASP) feature provides
-       simplified DNSSEC key and signing management using policies
+    1.  The  new  Key  and  Signing  Policy  (KASP)  feature  provides
+       simplified  DNSSEC key  and signing  management using  policies
        defined by the "dnssec-policy" statement. This tool is intended
-       to significantly facilitate ongoing key and signing
+       to   significantly   facilitate   ongoing   key   and   signing
        maintenance.
 
-    2. The way that DNSSEC trust anchors are managed has been
+    2.  The  way  that  DNSSEC  trust anchors  are  managed  has  been
        improved. Please note the updated CLI for this.
 
-    3. DLV (Domain Look-aside Verification) has been deprecated since
-       BIND 9.12. dlv.isc.org (the main service used by those
-       previously relying on DLV, operated by ISC) was turned off
-       in 2017. Support for DLV has now been removed from BIND 9
+    3. DLV (Domain Look-aside  Verification) has been deprecated since
+       BIND  9.12.  dlv.isc.org  (the   main  service  used  by  those
+       previously  relying on  DLV, operated  by ISC)  was turned  off
+       in  2017. Support  for DLV  has now  been removed  from BIND  9
        completely. Removing this feature required a multi-year process
        of notification, working with partners, and gradual deprecation
        to avoid disruption in the DNS.
@@ -59,14 +110,21 @@ Removal of pkcs11 commands:
         /usr/sbin/pkcs11-list
         /usr/sbin/pkcs11-tokens
 
-For additional information on changes between BIND 9.11 and 9.16 refer
-to the ISC Knowledge Base Document:
+
+Additional information and resources
+------------------------------------
+
+If updating from BIND 9.11 refer to the ISC Knowledge Base Document:
 
   - https://kb.isc.org/docs/changes-to-be-aware-of-when-moving-from-911-to-916
 
-Read more details about BIND 9.16 in the BIND Adiministration
-Reference Manaual (ARM) at:
+For BIND 9 Significant Features Matrix, see ISC Knowledge Base
 
-  - https://downloads.isc.org/isc/bind9/9.16.29/doc/arm/html/
-  - https://downloads.isc.org/isc/bind9/9.16.29/doc/arm/Bv9ARM.pdf
+  - https://kb.isc.org/v1/docs/aa-01310
+
+Read more details about BIND 9.18 in the BIND Administrator Reference
+Manaual (ARM) at:
+
+  - https://bind9.readthedocs.io/en/v9_18_9/
+
 
