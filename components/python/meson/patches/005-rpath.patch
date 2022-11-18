@@ -1,0 +1,31 @@
+Fix for Oracle Bug 34812717:
+meson should not strip RUNPATHs specified by -R arguments in pkg-config files
+
+Reported upstream:
+https://github.com/mesonbuild/meson/issues/11073
+
+--- meson-0.63.3/mesonbuild/backend/backends.py
++++ meson-0.63.3/mesonbuild/backend/backends.py
+@@ -702,6 +702,9 @@ # Match solaris style compat runpath for
+         # -Wl,-R
+         # -Wl,-R,
+         runpath_regex = re.compile(r'-Wl,-R[,]?([^,]+)')
++        # Match solaris style compat rpath formats:
++        # -R
++        other_runpath_regex = re.compile(r'-R([^,]+)')
+         # Match symbols formats:
+         # -Wl,--just-symbols=
+         # -Wl,--just-symbols,
+@@ -717,6 +720,12 @@ for dir in runpath_match.group(1).split(
+                     # The symbols arg is an rpath if the path is a directory
+                     if Path(dir).is_dir():
+                         dirs.add(dir)
++            other_runpath_match = other_runpath_regex.match(arg)
++            if other_runpath_match:
++                for dir in other_runpath_match.group(1).split(':'):
++                    # The symbols arg is an rpath if the path is a directory
++                    if Path(dir).is_dir():
++                        dirs.add(dir)
+             symbols_match = symbols_regex.match(arg)
+             if symbols_match:
+                 for dir in symbols_match.group(1).split(':'):
