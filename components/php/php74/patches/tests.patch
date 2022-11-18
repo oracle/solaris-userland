@@ -99,95 +99,6 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  error_reporting(E_ALL);
  
  if (substr(PHP_OS, 0, 3) == 'WIN') {
---- php-7.4.23/sapi/fpm/tests/bug68381-log-level-warning.phpt
-+++ php-7.4.23/sapi/fpm/tests/bug68381-log-level-warning.phpt
-@@ -4,6 +4,10 @@ --SKIPIF--
- <?php
- include "skipif.inc";
- if (getenv("SKIP_ASAN")) die("skip Often fails on azure with asan for unknown reason");
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it newer ends */
-+    die('skip.. Not valid for SunOS');
-+}
- ?>
- --FILE--
- <?php
---- php-7.4.23/sapi/fpm/tests/bug68420-ipv4-all-addresses.phpt
-+++ php-7.4.23/sapi/fpm/tests/bug68420-ipv4-all-addresses.phpt
-@@ -3,6 +3,10 @@ FPM: bug68420 - IPv4 all addresses
- --SKIPIF--
- <?php
- include "skipif.inc";
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it newer ends */
-+    die('skip.. Not valid for SunOS');
-+}
- ?>
- --FILE--
- <?php
---- php-7.4.23/sapi/fpm/tests/bug68442-signal-reload.phpt
-+++ php-7.4.23/sapi/fpm/tests/bug68442-signal-reload.phpt
-@@ -1,7 +1,12 @@
- --TEST--
- FPM: bug68442 - Signal reload
- --SKIPIF--
--<?php include "skipif.inc"; ?>
-+<?php
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it kills all tests by the signal */
-+    die('skip.. Not valid for SunOS');
-+}
-+?>
- --FILE--
- <?php
- 
---- php-7.4.23/sapi/fpm/tests/bug74083-concurrent-reload.phpt
-+++ php-7.4.23/sapi/fpm/tests/bug74083-concurrent-reload.phpt
-@@ -2,8 +2,10 @@ --TEST--
- Concurrent reload signals should not kill PHP-FPM master process. (Bug: #74083)
- --SKIPIF--
- <?php
--include "skipif.inc";
--if (getenv("SKIP_SLOW_TESTS")) die("skip slow test");
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it kills all tests by the signal */
-+    die('skip.. Not valid for SunOS');
-+}
- ?>
- --FILE--
- <?php
---- php-7.4.23/sapi/fpm/tests/bug76601-reload-child-signals.phpt
-+++ php-7.4.23/sapi/fpm/tests/bug76601-reload-child-signals.phpt
-@@ -2,9 +2,10 @@ --TEST--
- FPM: bug76601 children should not ignore signals during concurrent reloads
- --SKIPIF--
- <?php
--include "skipif.inc";
--if (getenv("SKIP_SLOW_TESTS")) die("skip slow test");
--?>
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it kills all tests by the signal */
-+    die('skip.. Not valid for SunOS');
-+}?>
- --FILE--
- <?php
- 
---- php-7.4.23/sapi/fpm/tests/bug77934-reload-process-control.phpt
-+++ php-7.4.23/sapi/fpm/tests/bug77934-reload-process-control.phpt
-@@ -1,7 +1,12 @@
- --TEST--
- FPM: bug77934 - php-fpm kill -USR2 not working
- --SKIPIF--
--<?php include "skipif.inc"; ?>
-+<?php
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it kills all tests by the signal */
-+    die('skip.. Not valid for SunOS');
-+}
-+?>
- --FILE--
- <?php
- 
 --- php-7.4.23/sapi/fpm/tests/bug80024-socket-reduced-inherit.phpt
 +++ php-7.4.23/sapi/fpm/tests/bug80024-socket-reduced-inherit.phpt
 @@ -1,7 +1,12 @@
@@ -204,108 +115,25 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  --FILE--
  <?php
  
---- php-7.4.23/sapi/fpm/tests/log-bwd-msg-with-nl.phpt
-+++ php-7.4.23/sapi/fpm/tests/log-bwd-msg-with-nl.phpt
-@@ -1,7 +1,12 @@
- --TEST--
- FPM: Buffered worker output decorated log with msg containing new lines
- --SKIPIF--
--<?php include "skipif.inc"; ?>
-+<?php
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it hangs and never ends */
-+    die('skip.. Not valid for SunOS');
-+}
-+?>
- --FILE--
- <?php
- 
---- php-7.4.23/sapi/fpm/tests/log-bwd-multiple-msgs-stdout-stderr.phpt
-+++ php-7.4.23/sapi/fpm/tests/log-bwd-multiple-msgs-stdout-stderr.phpt
-@@ -1,7 +1,10 @@
- --TEST--
- FPM: Buffered worker output decorated log with multiple continuous messages (stdout/stderr mixed)
- --SKIPIF--
--<?php include "skipif.inc"; ?>
-+<?php
-+/* on SunOS it hangs and never ends */
+--- php-7.4.33/tests/output/stream_isatty_out-err.phpt
++++ php-7.4.33/tests/output/stream_isatty_out-err.phpt
+@@ -5,6 +5,7 @@
+ if (getenv("SKIP_IO_CAPTURE_TESTS")) {
+ 	die("skip I/O capture test");
+ }
 +if (PHP_OS == 'SunOS') die('skip.. Not valid for SunOS');
-+?>
- --XFAIL--
- Fails intermittently
- --FILE--
---- php-7.4.23/sapi/fpm/tests/log-bwd-multiple-msgs.phpt
-+++ php-7.4.23/sapi/fpm/tests/log-bwd-multiple-msgs.phpt
-@@ -1,7 +1,12 @@
- --TEST--
- FPM: Buffered worker output decorated log with multiple continuous messages
- --SKIPIF--
--<?php include "skipif.inc"; ?>
-+<?php
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it hangs and never ends */
-+    die('skip.. Not valid for SunOS');
-+}
-+?>
- --FILE--
- <?php
- 
---- php-7.4.23/sapi/fpm/tests/reload-uses-sigkill-as-last-measure.phpt
-+++ php-7.4.23/sapi/fpm/tests/reload-uses-sigkill-as-last-measure.phpt
-@@ -2,9 +2,10 @@ --TEST--
- If SIGQUIT and SIGTERM during reloading fail, SIGKILL should be sent
- --SKIPIF--
- <?php
--include "skipif.inc";
--if (!function_exists('pcntl_sigprocmask')) die('skip Requires pcntl_sigprocmask()');
--if (getenv('SKIP_SLOW_TESTS')) die('skip slow tests excluded by request');
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it kills all tests by the signal */
-+    die('skip.. Not valid for SunOS');
-+}
  ?>
- --FILE--
- <?php
---- php-7.4.23/sapi/fpm/tests/socket-invalid-allowed-clients.phpt
-+++ php-7.4.23/sapi/fpm/tests/socket-invalid-allowed-clients.phpt
-@@ -2,7 +2,10 @@ --TEST--
- FPM: Socket for invalid allowed client only
- --SKIPIF--
- <?php
--include "skipif.inc";
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it hangs and never ends */
-+    die('skip.. Not valid for SunOS');
+ --CAPTURE_STDIO--
+ STDOUT STDERR
+--- php-7.4.33/ext/sockets/tests/socket_cmsg_rights.phpt
++++ php-7.4.33/ext/sockets/tests/socket_cmsg_rights.phpt
+@@ -11,6 +11,9 @@
+ if (strtolower(substr(PHP_OS, 0, 3)) == 'aix') {
+ die('skip not for AIX');
+ }
++if (PHP_OS == 'SunOS') {
++die('skip not for SunOS');
 +}
- ?>
- --FILE--
+ --CLEAN--
  <?php
---- php-7.4.23/sapi/fpm/tests/socket-uds-basic.phpt
-+++ php-7.4.23/sapi/fpm/tests/socket-uds-basic.phpt
-@@ -1,7 +1,12 @@
- --TEST--
- FPM: Unix Domain Socket connection
- --SKIPIF--
--<?php include "skipif.inc"; ?>
-+<?php
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it newer ends */
-+    die('skip.. Not valid for SunOS');
-+}
-+?>
- --FILE--
- <?php
- 
---- php-7.4.23/sapi/fpm/tests/socket-uds-numeric-ugid-nonroot.phpt
-+++ php-7.4.23/sapi/fpm/tests/socket-uds-numeric-ugid-nonroot.phpt
-@@ -5,6 +5,10 @@ <?php
- include "skipif.inc";
- FPM\Tester::skipIfRoot();
- FPM\Tester::skipIfPosixNotLoaded();
-+if (substr(PHP_OS, 0, 5) == 'SunOS') {
-+    /* on SunOS it newer ends */
-+    die('skip.. Not valid for SunOS');
-+}
- ?>
- --FILE--
- <?php
+ $path = __DIR__ . "/socket_cmsg_rights.sock";

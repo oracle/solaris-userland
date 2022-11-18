@@ -29,7 +29,7 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 MAJOR_VERSION=7.4
-MICRO_VERSION=30
+MICRO_VERSION=33
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
@@ -37,11 +37,11 @@ UL_PHP_MINOR_VERSION=	$(MAJOR_VERSION)
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:ea72a34f32c67e79ac2da7dfe96177f3c451c3eefae5810ba13312ed398ba70d
+    sha256:924846abf93bc613815c55dd3f5809377813ac62a9ec4eb3778675b82a27b927
 COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
 COMPONENT_ANITYA_ID=	57896
 
-COMPONENT_BAID=		128483
+COMPONENT_BAID=		132751
 COMPONENT_BAID_IMAP=	37002
 
 include $(WS_MAKE_RULES)/common.mk
@@ -162,11 +162,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 COMPONENT_PRE_TEST_ACTION += ( rm -rf $(BUILD_DIR)/tmp-$(MACH); \
 	mkdir $(BUILD_DIR)/tmp-$(MACH) );
 COMPONENT_TEST_ENV += TMPDIR=$(BUILD_DIR)/tmp-$(MACH)
-# some PHP sapi tests leave php-fpm running 
-COMPONENT_POST_TEST_ACTION += ( ps -ef -o "pid,comm" \
-	| grep "$(BUILD_DIR)/$(MACH64)/sapi/fpm/php-fpm" \
-	| awk '{print $$1}' \
-	| while read pid; do kill $$pid; done );
 # test failures; keep going
 COMPONENT_TEST_ARGS += -k -i
 # some tests go to internet and others behave differently when proxy is set
