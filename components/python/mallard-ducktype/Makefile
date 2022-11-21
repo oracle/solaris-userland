@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -41,14 +41,10 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# The test suite fails to start.
-$(SKIP_TEST_AT_TOP_LEVEL)
+PYTHON_VERSION = 3.11
+PYTHON_VERSIONS = $(PYTHON_VERSION)
 
-PYTHON_VERSIONS = PYTHON3
-
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+PKG_MACROS +=	PYVER=$(PYTHON_VERSION)
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -57,8 +53,8 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_NO_ARCH)
+test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
