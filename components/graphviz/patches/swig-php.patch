@@ -1,0 +1,51 @@
+Allows build with SWIG 4.1.0 which no longer generates gv.php.
+
+See also: https://gitlab.com/graphviz/graphviz/-/commit/e161d76809ac07a1c0f59a910aaedc77b251f929
+
+and
+
+https://gitlab.com/graphviz/graphviz/-/issues/2322
+
+--- graphviz-2.47.1/tclpkg/Makefile.am
++++ graphviz-2.47.1/tclpkg/Makefile.am
+@@ -63,14 +63,6 @@ else \
+ 		echo "Warning: @PHP_INSTALL_DIR@ is not writable."; \
+ 		echo "Skipping system installation of php binding."; \
+ 	fi
+-	-mkdir -p $(DESTDIR)@PHP_INSTALL_DATADIR@;
+-	if test -w $(DESTDIR)@PHP_INSTALL_DATADIR@; then \
+-		(cd $(DESTDIR)@PHP_INSTALL_DATADIR@; \
+-			cp -f $(DESTDIR)$(pkgphpdir)/gv.php gv.php;) \
+-	else \
+-		echo "Warning: @PHP_INSTALL_DATADIR@ is not writable."; \
+-		echo "Skipping system installation of php binding."; \
+-	fi
+ endif
+ if WITH_PYTHON
+ 	-mkdir -p $(DESTDIR)@PYTHON_INSTALL_DIR@;
+--- graphviz-2.47.1/tclpkg/gv/Makefile.am
++++ graphviz-2.47.1/tclpkg/gv/Makefile.am
+@@ -206,13 +206,12 @@ gv_perl.cpp: gv.i
+ 	$(SWIG) -c++ $(SWIG_PERL_OPT) -o gv_perl.cpp $(srcdir)/gv.i
+ 
+ pkgphpdir = $(pkglibdir)/php
+-PHP_data = gv.php
++PHP_data = 
+ nodist_libgv_php_la_SOURCES = gv_php.cpp php_gv.h
+ libgv_php_la_SOURCES = $(BASESOURCES) gv_php_init.c
+ libgv_php_la_LIBADD = $(BASELIBS) $(PHP_LIBS)
+ libgv_php_la_LDFLAGS = -module -avoid-version
+ libgv_php_la_CPPFLAGS = $(BASECPPFLAGS) $(PHP_INCLUDES)
+-gv.php: gv_php.cpp
+ php_gv.h: gv_php.cpp
+ gv_php.cpp: gv.i
+ 	$(SWIG) -c++ $(SWIG_PHP_OPT) -o gv_php.cpp $(srcdir)/gv.i
+--- graphviz-2.47.1/tclpkg/gv/demo/modgraph.php
++++ graphviz-2.47.1/tclpkg/gv/demo/modgraph.php
+@@ -1,6 +1,5 @@
+ #!/usr/bin/php
+ <?php
+-include("gv.php");
+ 
+ # display the kernel module dependencies
+ 

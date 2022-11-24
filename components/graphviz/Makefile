@@ -57,7 +57,7 @@ INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.11.VENDOR_PACKAGES)/gv.pyc
 
 include $(WS_MAKE_RULES)/common.mk
 
-PATH =		/usr/php/7.4/bin:/usr/bin:/usr/gnu/bin
+PATH =		/usr/php/8.1/bin:/usr/bin:/usr/gnu/bin
 
 # GMP header files for the guile extension (no --with- flag)
 # The guile build is broken with studio (15732452), so we disable this for now.
@@ -107,6 +107,18 @@ $(INSTALL_64): COMPONENT_INSTALL_ARGS += LUA_INSTALL_DIR=$(USRLIBDIR)/lua/5.4/64
 # Use GNU ln, which supports the -r (--relative) option.
 COMPONENT_INSTALL_ARGS += LN_S="gln -s"
 
+# build php and python modules for older versions as well
+PHP_74_CONFIG = /usr/php/7.4/bin/php-config
+PHP_74_INCLUDES := $(shell $(PHP_74_CONFIG) --includes)
+PHP_74_INSTALL_DIR := $(shell $(PHP_74_CONFIG) --extension-dir)
+PHP_74_LDFLAGS := $(shell $(PHP_74_CONFIG) --ldflags)
+PHP_74_LIBS := $(shell $(PHP_74_CONFIG) --libs)
+PHP_80_CONFIG = /usr/php/8.0/bin/php-config
+PHP_80_INCLUDES := $(shell $(PHP_80_CONFIG) --includes)
+PHP_80_INSTALL_DIR := $(shell $(PHP_80_CONFIG) --extension-dir)
+PHP_80_LDFLAGS := $(shell $(PHP_80_CONFIG) --ldflags)
+PHP_80_LIBS := $(shell $(PHP_80_CONFIG) --libs)
+
 PKG_CONFIG = /usr/bin/pkg-config
 PYTHON_37_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.7)
 PYTHON_37_LIBS = $(shell $(PKG_CONFIG) --libs python-3.7)
@@ -119,6 +131,9 @@ $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
     (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-additional ; \
     $(GSED) -i '/^SUBDIRS =/s|$$| gv-additional|' tclpkg/Makefile ; \
     $(GSED) -i \
+     -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_74_INCLUDES)|' \
+     -e '/^PHP_INSTALL_DIR =/s|=.*$$|= $(PHP_74_INSTALL_DIR)|' \
+     -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_74_LDFLAGS) $(PHP_74_LIBS)|' \
      -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.7)|' \
      -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_37_INCLUDES)|' \
      -e '/^PYTHON3_INSTALL_DIR =/s|=.*$$|= $(PYTHON_37_INSTALL_DIR)|' \
@@ -127,6 +142,9 @@ $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
     (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-additionalx ; \
     $(GSED) -i '/^SUBDIRS =/s|$$| gv-additionalx|' tclpkg/Makefile ; \
     $(GSED) -i \
+     -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_80_INCLUDES)|' \
+     -e '/^PHP_INSTALL_DIR =/s|=.*$$|= $(PHP_80_INSTALL_DIR)|' \
+     -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_80_LDFLAGS) $(PHP_80_LIBS)|' \
      -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.11)|' \
      -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_311_INCLUDES)|' \
      -e '/^PYTHON3_INSTALL_DIR =/s|=.*$$|= $(PYTHON_311_INSTALL_DIR)|' \
@@ -234,6 +252,8 @@ REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/php-74
+REQUIRED_PACKAGES += web/php-80
+REQUIRED_PACKAGES += web/php-81
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxmu
 REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
