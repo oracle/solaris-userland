@@ -10,8 +10,8 @@ export PATH=/usr/bin:/usr/sbin
 # Find the list of packages that depend on Python 2.7, remembering to add in
 # the runtime itself.
 echo "# Gathering list of installed Python 2.7 packages...\c"
-py27_installed="$(pkg search -lHo pkg.shortfmri depend:require:runtime/python-27)\
- runtime/python-27"
+py27_installed="$(pkg search -lHo pkg.shortfmri \
+    depend:require:runtime/python-27) runtime/python-27@2.7"
 
 echo "\n# Unlocking installed Python 2.7 packages"
 pkg change-facet $(for p in $py27_installed ; do
