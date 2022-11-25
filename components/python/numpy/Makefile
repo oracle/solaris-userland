@@ -104,6 +104,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 COMPONENT_TEST_DIR  = $(@D)
 COMPONENT_TEST_ARGS = -c 'import numpy; numpy.test()'
 COMPONENT_TEST_ENV += F90="$(GCC_ROOT)/bin/gfortran -m$(BITS)"
+# Do not use tmp directory for tests to avoid persistent RAM usage.
+COMPONENT_TEST_ENV += PYTEST_DEBUG_TEMPROOT=$(BUILD_DIR)/$(MACH64)-$(PYTHON_VERSION)/
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-nE -e "s/ ?=+ ?//g" ' \
