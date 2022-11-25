@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -68,17 +68,12 @@ CONFIGURE_OPTIONS  += --x-libraries=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS  += --without-qt
 CONFIGURE_OPTIONS  += WX_CONFIG="$(USRBINDIR64)/wx-config"
 
-REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/libpng16
-REQUIRED_PACKAGES += image/library/libtiff
-REQUIRED_PACKAGES += image/library/libwebp
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/gd
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/graphics/wxwidgets
@@ -98,15 +93,3 @@ REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxcomposite
-REQUIRED_PACKAGES += x11/library/libxcursor
-REQUIRED_PACKAGES += x11/library/libxdamage
-REQUIRED_PACKAGES += x11/library/libxevie
-REQUIRED_PACKAGES += x11/library/libxext
-REQUIRED_PACKAGES += x11/library/libxfixes
-REQUIRED_PACKAGES += x11/library/libxi
-REQUIRED_PACKAGES += x11/library/libxinerama
-REQUIRED_PACKAGES += x11/library/libxpm
-REQUIRED_PACKAGES += x11/library/libxrandr
-REQUIRED_PACKAGES += x11/library/libxrender
-REQUIRED_PACKAGES += x11/library/libxscrnsaver
