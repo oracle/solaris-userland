@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS=64
@@ -29,7 +29,7 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		llvm
-COMPONENT_VERSION=	11.0.0
+COMPONENT_VERSION=	13.0.1
 COMPONENT_PROJECT_URL=	https://llvm.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)
 COMPONENT_BUGDB=	utility/llvm
@@ -38,18 +38,18 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC_NAME=	$(COMPONENT_SRC).src
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC_NAME).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:913f68c898dfb4a03b397c5e11c6a2f39d0f22ed7665c9cefa87a34423a72469
+    sha256:ec6b80d82c384acad2dc192903a6cf2cdbaffb889b84bfb98da9d71e630fc834
 COMPONENT_ARCHIVE_URL=	https://github.com/llvm/llvm-project/releases/download/llvmorg-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1830
 
-COMPONENT_BAID=		89193
+COMPONENT_BAID=		134017
 
 COMPONENT_NAME_1 =	clang
 COMPONENT_SRC_1 =	clang-$(COMPONENT_VERSION).src
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:0f96acace1e8326b39f220ba19e055ba99b0ab21c2475042dbc6a482649c5209
+    sha256:787a9e2d99f5c8720aa1773e4be009461cd30d3bd40fdd24591e473467c917c9
 COMPONENT_ARCHIVE_URL_1 = https://github.com/llvm/llvm-project/releases/download/llvmorg-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 COMPONENT_ANITYA_ID_1=	11811
@@ -75,7 +75,8 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 include $(WS_MAKE_RULES)/common.mk
 
-PATCH_LEVEL := 0
+PKG_MACROS += PYVER="$(PYTHON_VERSION)"
+
 DEBUG_BUILD := 0
 
 export PATH=/usr/gnu/bin:/usr/bin:/usr/perl5/$(PERL_VERSION)/bin
@@ -109,8 +110,9 @@ LLVM_BINDIR=$(BUILD_DIR_$(BITS))/bin
 INSTALL_CXA_FINALIZE := 0
 
 SCAN_VIEW_FILES=Reporter.py ScanView.py
+SCAN_BUILD_LIBS=libear libscanbuild
 CLANG_FORMAT_FILES=clang-format-diff.py clang-format-sublime.py \
-		   clang-format.py
+		   clang-format.py clang-rename.py
 LLVM_MAN_FILES=FileCheck.1 bugpoint.1 clang.1 lit.1 llc.1 lli.1 \
 	       llvm-ar.1 llvm-as.1 llvm-bcanalyzer.1 llvm-build.1 \
 	       llvm-config.1 llvm-cov.1 llvm-diff.1 llvm-dis.1 \
@@ -146,6 +148,12 @@ COMPONENT_POST_INSTALL_ACTION += \
 	list3='$(CLANG_FORMAT_FILES)' ; for f in $$list3 ; do \
 	  $(INSTALL) --mode=644 $(PROTOUSRSHAREDIR)/clang/$$f \
 	    $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/$$f ; \
+	done ;
+
+COMPONENT_POST_INSTALL_ACTION += \
+	list4='$(SCAN_BUILD_LIBS)' ; for f in $$list4 ; do \
+	  $(RM) -r $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/$$f ; \
+	  $(MV) $(PROTOUSRLIBDIR)/$$f $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages ; \
 	done ;
 
 COMPONENT_POST_INSTALL_ACTION += \
@@ -396,10 +404,21 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 PERL_SCRIPTS += $(PROTO_DIR)/usr/libexec/ccc-analyzer
 PERL_SCRIPTS += $(PROTO_DIR)/usr/libexec/c++-analyzer
 PERL_SCRIPTS += $(PROTO_DIR)/usr/bin/scan-build
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/analyze-build
 PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/git-clang-format
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/intercept-build
 PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/hmaptool
 PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/scan-build
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/scan-build-py
 PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/scan-view
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/analyze-c++
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/analyze-cc
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/intercept-c++
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/intercept-cc
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/libexec/analyze-c++
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/libexec/analyze-cc
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/libexec/intercept-c++
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/libexec/intercept-cc
 PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/vendor-packages/clang-format-diff.py
 PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/vendor-packages/Reporter.py
 PYTHON_SCRIPTS += $(PROTO_DIR)/usr/share/clang/clang-format-diff.py

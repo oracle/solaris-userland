@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -40,27 +40,30 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2013/188 value=PSARC/2021/058
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/bin/analyze-build
 file path=usr/bin/arcmt-test
 file path=usr/bin/c-arcmt-test
 file path=usr/bin/c-index-test
-link path=usr/bin/clang target=clang-11
+link path=usr/bin/clang target=clang-13
 link path=usr/bin/clang++ target=clang
-file path=usr/bin/clang-11
+file path=usr/bin/clang-13
 file path=usr/bin/clang-check
 link path=usr/bin/clang-cl target=clang
 link path=usr/bin/clang-cpp target=clang
 file path=usr/bin/clang-extdef-mapping
-# Intentionally elided; msvc target driver.
-# link path=usr/bin/clang-cl target=clang
 file path=usr/bin/clang-format
 file path=usr/bin/clang-offload-bundler
 file path=usr/bin/clang-offload-wrapper
 file path=usr/bin/clang-refactor
 file path=usr/bin/clang-rename
+file path=usr/bin/clang-repl
 file path=usr/bin/clang-scan-deps
 file path=usr/bin/diagtool
 file path=usr/bin/git-clang-format
+file path=usr/bin/hmaptool
+file path=usr/bin/intercept-build
 file path=usr/bin/scan-build
+file path=usr/bin/scan-build-py
 file path=usr/bin/scan-view pkg.depend.bypass-generate=.*
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_builtin_vars.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_cmath.h
@@ -71,6 +74,7 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_libd
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_math.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_math_forward_declares.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_runtime_wrapper.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_hip_cmath.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_hip_libdevice_declares.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_hip_math.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_hip_runtime_wrapper.h
@@ -119,8 +123,10 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vp2intersec
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vpopcntdqintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vpopcntdqvlintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avxintrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avxvnniintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/bmi2intrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/bmiintrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/builtins.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cet.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cetintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cldemoteintrin.h
@@ -139,14 +145,20 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/fma4intrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/fmaintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/fxsrintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/gfniintrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/hexagon_circ_brev_intrinsics.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/hexagon_protos.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/hexagon_types.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/hresetintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/htmintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/htmxlintrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/hvx_hexagon_protos.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ia32intrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/immintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/intrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/inttypes.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/invpcidintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/iso646.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/keylockerintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/limits.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/lwpintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/lzcntintrin.h
@@ -164,6 +176,7 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/_
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/cmath
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/complex
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/complex.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/complex_cmath.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/math.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/new
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/pconfigintrin.h
@@ -180,6 +193,7 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ppc_wrappers/xmmi
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/prfchwintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ptwriteintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/rdseedintrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/riscv_vector.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/rtmintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/s390intrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/serializeintrin.h
@@ -197,6 +211,7 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tbmintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tgmath.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tmmintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tsxldtrkintrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/uintrintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/unwind.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/vadefs.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/vaesintrin.h
@@ -207,6 +222,7 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/waitpkgintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/wasm_simd128.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/wbnoinvdintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/wmmintrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/x86gprintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/x86intrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xmmintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xopintrin.h
@@ -215,17 +231,36 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xsaveintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xsaveoptintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xsavesintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xtestintrin.h
+file usr/libexec/analyze-c++ path=usr/lib/analyze-c++ mode=0555
+file usr/libexec/analyze-cc path=usr/lib/analyze-cc mode=0555
 file usr/libexec/c++-analyzer path=usr/lib/c++-analyzer mode=0555
 file usr/libexec/ccc-analyzer path=usr/lib/ccc-analyzer mode=0555
 file path=usr/lib/clang/$(MACH64)/cxa_finalize.o
 file path=usr/lib/clang/$(MACH64)/cxa_finalize_pic.o
 file path=usr/lib/clang/cxa_finalize.o
 file path=usr/lib/clang/cxa_finalize_pic.o
-file path=usr/lib/python3.7/vendor-packages/Reporter.py
-file path=usr/lib/python3.7/vendor-packages/ScanView.py
-file path=usr/lib/python3.7/vendor-packages/clang-format-diff.py
-file path=usr/lib/python3.7/vendor-packages/clang-format-sublime.py
-file path=usr/lib/python3.7/vendor-packages/clang-format.py
+file usr/libexec/intercept-c++ path=usr/lib/intercept-c++ mode=0555
+file usr/libexec/intercept-cc path=usr/lib/intercept-cc mode=0555
+file path=usr/lib/python$(PYVER)/vendor-packages/Reporter.py
+file path=usr/lib/python$(PYVER)/vendor-packages/ScanView.py
+file path=usr/lib/python$(PYVER)/vendor-packages/clang-format-diff.py
+file path=usr/lib/python$(PYVER)/vendor-packages/clang-format-sublime.py
+file path=usr/lib/python$(PYVER)/vendor-packages/clang-format.py
+file path=usr/lib/python$(PYVER)/vendor-packages/clang-rename.py
+file path=usr/lib/python$(PYVER)/vendor-packages/libear/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/libear/config.h.in
+file path=usr/lib/python$(PYVER)/vendor-packages/libear/ear.c
+file path=usr/lib/python$(PYVER)/vendor-packages/libscanbuild/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/libscanbuild/analyze.py
+file path=usr/lib/python$(PYVER)/vendor-packages/libscanbuild/arguments.py
+file path=usr/lib/python$(PYVER)/vendor-packages/libscanbuild/clang.py
+file path=usr/lib/python$(PYVER)/vendor-packages/libscanbuild/compilation.py
+file path=usr/lib/python$(PYVER)/vendor-packages/libscanbuild/intercept.py
+file path=usr/lib/python$(PYVER)/vendor-packages/libscanbuild/report.py
+file path=usr/lib/python$(PYVER)/vendor-packages/libscanbuild/resources/scanview.css
+file path=usr/lib/python$(PYVER)/vendor-packages/libscanbuild/resources/selectable.js
+file path=usr/lib/python$(PYVER)/vendor-packages/libscanbuild/resources/sorttable.js
+file path=usr/lib/python$(PYVER)/vendor-packages/libscanbuild/shell.py
 file path=usr/share/clang/bash-autocomplete.sh
 file path=usr/share/clang/clang-format-bbedit.applescript
 file path=usr/share/clang/clang-format-diff.py
@@ -234,13 +269,12 @@ file path=usr/share/clang/clang-format.el
 file path=usr/share/clang/clang-format.py
 file path=usr/share/clang/clang-rename.el
 file path=usr/share/clang/clang-rename.py
+file path=usr/share/man/man1/clang-tblgen.1
 file path=usr/share/man/man1/clang.1
 file path=usr/share/man/man1/diagtool.1
 file path=usr/share/man/man1/scan-build.1
 file path=usr/share/scan-build/scanview.css
 file path=usr/share/scan-build/sorttable.js
-file path=usr/share/scan-view/FileRadar.scpt
-file path=usr/share/scan-view/GetRadarVersion.scpt
 file path=usr/share/scan-view/Reporter.py
 file path=usr/share/scan-view/ScanView.py
 file path=usr/share/scan-view/bugcatcher.ico

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 # These are normally in transforms/manifest-check-cleanup which we don't use
@@ -28,6 +28,9 @@
 <transform dir -> drop>
 <transform file path=.*\.pyc$ -> drop>
 <transform file link path=mangled/.* -> edit path ^mangled/ "">
+
+# Use PYVER for default Python version
+<transform file path=.+3\.7.* -> edit path 3\\.7 \$\(PYVER\)>
 
 # by default everything is llvm-build package
 <transform file link hardlink -> default pkg.type build-llvm>
@@ -39,11 +42,14 @@
 <transform file link path=usr/(bin|share/man/man1)/ -> set pkg.type llvm>
 <transform file link path=usr/lib/.*/(libLLVM|libLTO).*\.so -> set pkg.type libs-llvm>
 
-<transform file link path=usr/(bin|share/man/man1)/(arcmt-test|c-|clang|scan|diagtool|git-clang-format) -> set pkg.type clang>
+<transform file link path=usr/(bin|share/man/man1)/(arcmt-test|c-|clang|scan|diagtool|git-clang-format|hmaptool) -> set pkg.type clang>
+<transform file link path=usr/(bin|share/man/man1)/(analyze-build|intercept-build) -> set pkg.type clang>
 <transform file path=usr/libexec -> set pkg.type clang>
 <transform file link path=usr/lib/.*/libclang.*\.so -> set pkg.type libs-clang>
 <transform file path=usr/lib/.*/clang/.*/include -> set pkg.type clang>
 <transform file path=usr/lib/clang -> set pkg.type clang>
-<transform file path=usr/lib/python3.7/vendor-packages -> set pkg.type clang>
+<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages -> set pkg.type clang>
+<transform file path=usr/lib/libear -> set pkg.type clang>
+<transform file path=usr/lib/libscanbuild -> set pkg.type clang>
 <transform file path=usr/share/clang -> set pkg.type clang>
 <transform file path=usr/share/scan -> set pkg.type clang>
