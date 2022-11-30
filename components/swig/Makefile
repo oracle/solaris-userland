@@ -31,14 +31,14 @@ COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		swig
-COMPONENT_VERSION=	4.0.2
+COMPONENT_VERSION=	4.1.0
 COMPONENT_PROJECT_URL=	http://www.swig.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d53be9730d8d58a16bf0cbd1f8ac0c0c3e1090573168bfa151b01eb47fa906fc
+    sha256:d6a9a8094e78f7cfb6f80a73cc271e1fe388c8638ed22668622c2c646df5bb3d
 COMPONENT_ARCHIVE_URL=	http://prdownloads.sourceforge.net/swig/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4919
 
-COMPONENT_BAID=		122390
+COMPONENT_BAID=		133519
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -80,9 +80,7 @@ COMPONENT_TEST_TARGETS = \
 	partialcheck-python-test-suite \
 	partialcheck-ruby-test-suite
 
-REQUIRED_PACKAGES += library/pcre
+REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime 
-REQUIRED_PACKAGES += system/library/math
