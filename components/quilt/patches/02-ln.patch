@@ -1,0 +1,18 @@
+The default for GNU ln on Solaris and Linux are different - while on Linux it
+behaves like `ln -P` (which is the behavior expected by this code), on Solaris
+it defaults to `ln -L`.
+
+This issue was reported upstream.
+http://savannah.nongnu.org/bugs/index.php?63451
+
+--- quilt/scripts/backup-files.in
++++ quilt/scripts/backup-files.in
+@@ -94,7 +94,7 @@ backup()
+ 		if [ -n "$OPT_NOLINKS" -a "$(stat @STAT_HARDLINK@ "$file")" = 1 ]; then
+ 			cp -p "$file" "$backup"
+ 		else
+-			ln "$file" "$backup" 2>&4 || cp -p "$file" "$backup"
++			ln -P "$file" "$backup" 2>&4 || cp -p "$file" "$backup"
+ 			if [ -n "$OPT_NOLINKS" ]; then
+ 				ensure_nolinks "$file"
+ 			fi
