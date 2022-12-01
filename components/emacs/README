@@ -37,6 +37,11 @@ information needed to understand how this component is put together.
 - We patch the following changes into the emacs sources. Additional
   details are found in the comment at the top of each patch.
 
+        etags.patch
+            Versions of Emacs through 28.2 are vulnerable to CVE-2022-45939.
+            This patch comes from the upstream git repository, and can
+            be removed when we move to Emacs 29 or newer.
+
         find.patch
             The rgrep function uses the GNU-specific -path option to the
             find command. Change the default value for the find-program
@@ -52,7 +57,7 @@ information needed to understand how this component is put together.
             Modify the way emacs searches for its dump files in the PATH_EXEC
             directory so that it works correctly when emacs is run via the
             /usr/bin/emacs mediator symlink. See the following for the
-	    background behind this change.
+            background behind this change.
 
             https://lists.gnu.org/archive/html/emacs-devel/2021-04/msg00875.html
 
