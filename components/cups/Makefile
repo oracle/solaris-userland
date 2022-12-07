@@ -52,7 +52,7 @@ $(CONFIGURE_64):	LDFLAGS += -m64
 # Ensure dynamic shared objects are linked using same LDFLAGS as executables.
 CONFIGURE_ENV += DSOFLAGS="$(LDFLAGS)"
 
-CONFIGURE_OPTIONS.32 +=	--with-components=libcups
+CONFIGURE_OPTIONS.32 +=	--with-components=core
 CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
