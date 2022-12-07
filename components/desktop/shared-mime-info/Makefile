@@ -20,40 +20,33 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
+COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		shared-mime-info
-COMPONENT_VERSION=	1.15
+COMPONENT_VERSION=	2.2
 COMPONENT_PROJECT_URL=	https://freedesktop.org/wiki/Software/shared-mime-info/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f482b027437c99e53b81037a9843fccd549243fd52145d016e9c7174a4f5db90
+	sha256:7e571525280ebd3ef1d6234f0ea7a0bc675b37b2b0f45497afd894ad49de5efb
 COMPONENT_ARCHIVE_URL=	\
-	https://gitlab.freedesktop.org/xdg/shared-mime-info/uploads/b27eb88e4155d8fccb8bb3cd12025d5b/$(COMPONENT_ARCHIVE)
+	https://gitlab.freedesktop.org/xdg/shared-mime-info/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5524
+COMPONENT_BAID=		136073
 
-COMPONENT_BAID=		77726
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/common.mk
-
-# Requires gnu versions of xgettext & msgfmt first in $PATH
-CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Don't generate files at build time that update-mime-database will be
 # generating from svc:/application/desktop-cache/mime-types-cache:default
 # so we don't suck them into the package and then have pkg verify errors
-CONFIGURE_OPTIONS += --disable-update-mimedb
-CONFIGURE_OPTIONS += --disable-dependency-tracking
+CONFIGURE_OPTIONS += -Dupdate-mimedb=false
 
-# Tests need GNU version of make to work correctly
-COMPONENT_TEST_ENV +=   PATH="$(GNUBIN):$(PATH)"
-
-REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
 # Needed for minimal-fs dependency in mime-types-cache.xml SMF manifest:
