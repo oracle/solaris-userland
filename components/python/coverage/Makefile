@@ -46,6 +46,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+$(MANIFEST_BASE)-coverage-27.mogrified: \
+    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
+
 COMPONENT_POST_INSTALL_ACTION =	\
 	(cd $(PROTO_DIR)/usr/bin ; $(MV) -f coverage coverage$(PYTHON_VERSION))
 

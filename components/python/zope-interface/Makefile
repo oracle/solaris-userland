@@ -43,6 +43,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+$(MANIFEST_BASE)-zope-interface-27.mogrified: \
+    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
+
 COMPONENT_TEST_DIR =	$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
 COMPONENT_TEST_CMD =	$(PYTHON) -m unittest discover -s zope/interface -t .
 COMPONENT_TEST_ARGS =

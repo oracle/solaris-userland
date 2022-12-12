@@ -83,6 +83,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+$(MANIFEST_BASE)-cryptography-27.mogrified: \
+    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
+
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # Convenience variables

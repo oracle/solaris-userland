@@ -55,6 +55,9 @@ include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/python-multiver.mk
 
+$(MANIFEST_BASE)-pycairo-27.mogrified: \
+    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
+
 # Disable tests since cairo fails to import.
 $(SKIP_TEST_AT_TOP_LEVEL)
 

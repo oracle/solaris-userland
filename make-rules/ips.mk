@@ -310,7 +310,7 @@ $(foreach ver,$(PYTHON_VERSIONS),$(eval $(call python-manifest-rule,$(ver),$(she
 # corresponding version of python is on the system.
 $(BUILD_DIR)/mkgeneric-python: $(WS_MAKE_RULES)/shared-macros.mk
 	$(RM) $@
-	$(foreach ver,$(shell echo $(PYTHON_VERSIONS) | tr -d .), \
+	$(foreach ver,$(shell echo $(filter 3.%, $(PYTHON_VERSIONS)) | tr -d .), \
 		$(call mkgeneric,runtime/python,$(ver)))
 
 # Build Python version-wrapping manifests from the generic version.

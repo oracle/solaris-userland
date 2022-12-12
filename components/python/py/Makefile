@@ -41,6 +41,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+$(MANIFEST_BASE)-py-27.mogrified: \
+    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
+
 COMPONENT_TEST_ENV +=	LC_ALL=en_US.UTF-8
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/testing
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest

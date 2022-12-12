@@ -45,6 +45,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+$(MANIFEST_BASE)-xattr-27.mogrified: \
+    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
+
 # The test suite wants to use some unicode filenames, which don't work in the C
 # locale.
 COMPONENT_TEST_ENV +=	LC_ALL=en_US.UTF-8

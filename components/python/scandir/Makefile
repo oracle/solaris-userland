@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 64
@@ -47,6 +47,11 @@ PYTHON_VERSIONS = $(PYTHON2_VERSIONS)
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# With broken 2.7 related links, mkgeneric-python
+# file needs to be manually created.
+$(BUILD_DIR)/mkgeneric-python:
+	echo >> $@
 
 COMPONENT_TEST_ENV =	LC_ALL=en_US.UTF-8
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/test

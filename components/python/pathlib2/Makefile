@@ -45,6 +45,11 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+# With broken 2.7 related links, mkgeneric-python
+# file needs to be manually created.
+$(BUILD_DIR)/mkgeneric-python:
+	echo >> $@
+
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =

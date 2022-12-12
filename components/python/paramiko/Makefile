@@ -41,6 +41,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+$(MANIFEST_BASE)-paramiko-27.mogrified: \
+    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
+
 # set LC_ALL for unicode sftp tests test_K_utf8 and test_L_utf8_chdir
 COMPONENT_TEST_ENV =	LC_ALL=en_US.UTF-8
 COMPONENT_TEST_ENV +=	PYTHONPATH=$(SOURCE_DIR)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -40,6 +40,9 @@ COMPONENT_BAID=		31609
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+$(MANIFEST_BASE)-lockfile-27.mogrified: \
+    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

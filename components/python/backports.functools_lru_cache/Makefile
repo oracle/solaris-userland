@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -44,6 +44,9 @@ PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+$(MANIFEST_BASE)-backports.functools_lru_cache-27.mogrified: \
+    PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/py27-transform
 
 # Remove pytest.ini which breaks our testing with unknown arguments
 COMPONENT_PRE_TEST_ACTION = $(RM) $(SOURCE_DIR)/pytest.ini
