@@ -9,8 +9,8 @@
 #
 # As such, this is Solaris specific patch.
 #
---- old/ssh-keygen.1	2022-10-26 15:00:03.210123548 +0200
-+++ new/ssh-keygen.1	2022-10-26 15:00:39.316799077 +0200
+--- old/ssh-keygen.1	2022-05-04 08:24:41.720763055 +0000
++++ new/ssh-keygen.1	2022-05-04 08:25:12.218024847 +0000
 @@ -51,7 +51,7 @@
  .Op Fl m Ar format
  .Op Fl N Ar new_passphrase
@@ -20,7 +20,7 @@
  .Op Fl w Ar provider
  .Nm ssh-keygen
  .Fl p
-@@ -291,7 +291,7 @@ flag determines the key length by select
+@@ -293,7 +293,7 @@ flag determines the key length by select
  curve sizes: 256, 384 or 521 bits.
  Attempting to use bit lengths other than these three values for ECDSA keys
  will fail.
@@ -29,7 +29,7 @@
  .Fl b
  flag will be ignored.
  .It Fl C Ar comment
-@@ -574,14 +574,12 @@ by key ID or serial number.
+@@ -576,14 +576,12 @@ by key ID or serial number.
  See the
  .Sx KEY REVOCATION LISTS
  section for details.
@@ -45,7 +45,7 @@
  or
  .Dq rsa .
  .Pp
-@@ -977,7 +975,8 @@ of user presence (e.g. by having the use
+@@ -979,7 +977,8 @@ of user presence (e.g. by having the use
  This option only makes sense for the FIDO authenticator algorithms
  .Cm ecdsa-sk
  and
@@ -55,7 +55,7 @@
  .Pp
  .It Ic source-address Ns = Ns Ar address_list
  Restrict the source addresses from which the certificate is considered valid.
-@@ -1151,18 +1150,16 @@ user2@example.com namespaces="file" ssh-
+@@ -1153,18 +1152,16 @@ user2@example.com namespaces="file" ssh-
  .It Ev SSH_SK_PROVIDER
  Specifies a path to a library that will be used when loading any
  FIDO authenticator-hosted keys, overriding the default of using
@@ -77,7 +77,7 @@
  This file should not be readable by anyone but the user.
  It is possible to
  specify a passphrase when generating the key; that passphrase will be
-@@ -1175,12 +1172,10 @@ will read this file when a login attempt
+@@ -1177,12 +1174,10 @@ will read this file when a login attempt
  .Pp
  .It Pa ~/.ssh/id_dsa.pub
  .It Pa ~/.ssh/id_ecdsa.pub
@@ -92,8 +92,8 @@
  The contents of this file should be added to
  .Pa ~/.ssh/authorized_keys
  on all machines
---- old/ssh_config.5	2022-10-26 15:00:03.215617631 +0200
-+++ new/ssh_config.5	2022-10-26 15:00:39.322233616 +0200
+--- old/ssh_config.5	2022-05-04 08:24:41.725894553 +0000
++++ new/ssh_config.5	2022-05-04 08:25:12.223084652 +0000
 @@ -903,15 +903,12 @@ The default for this option is:
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
@@ -145,8 +145,8 @@
  rsa-sha2-512,rsa-sha2-256,ssh-rsa
  .Ed
  .Pp
---- old/ssh.1	2022-10-26 15:00:03.221160973 +0200
-+++ new/ssh.1	2022-10-26 15:00:39.327544161 +0200
+--- old/ssh.1	2022-05-04 08:24:41.730912622 +0000
++++ new/ssh.1	2022-05-04 08:25:12.228088190 +0000
 @@ -289,9 +289,7 @@ public key authentication is read.
  The default is
  .Pa ~/.ssh/id_dsa ,
