@@ -131,7 +131,6 @@ REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/graphics/cogl
 REQUIRED_PACKAGES += library/json-glib
-REQUIRED_PACKAGES += library/libcroco
 REQUIRED_PACKAGES += library/libical
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/python/pygobject-3-37

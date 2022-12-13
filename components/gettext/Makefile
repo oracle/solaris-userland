@@ -69,7 +69,6 @@ REQUIRED_PACKAGES += developer/icu
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/icu
-REQUIRED_PACKAGES += library/libcroco
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += shell/ksh93
