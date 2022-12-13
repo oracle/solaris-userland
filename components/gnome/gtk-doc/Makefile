@@ -79,5 +79,4 @@ REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/python/libxml2-37
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-37
-REQUIRED_PACKAGES += service/gnome/desktop-cache
 REQUIRED_PACKAGES += text/gnu-gettext

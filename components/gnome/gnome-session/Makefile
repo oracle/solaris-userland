@@ -61,7 +61,6 @@ REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/xdg/consolekit
-REQUIRED_PACKAGES += service/gnome/desktop-cache
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/library/dbus/dbus-x11
 REQUIRED_PACKAGES += system/library/libdbus
