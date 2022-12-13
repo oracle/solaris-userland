@@ -97,12 +97,6 @@ REQUIRED_PACKAGES += library/apr-util-1
 REQUIRED_PACKAGES += library/apr-util-1/apr-ldap
 REQUIRED_PACKAGES += library/apr-util-1/dbd-mysql
 REQUIRED_PACKAGES += library/apr-util-1/dbd-sqlite
-# to be removed after apr-1 gets into repo
-REQUIRED_PACKAGES += library/apr-16
-REQUIRED_PACKAGES += library/apr-util-16
-REQUIRED_PACKAGES += library/apr-util-16/apr-ldap
-REQUIRED_PACKAGES += library/apr-util-16/dbd-mysql
-REQUIRED_PACKAGES += library/apr-util-16/dbd-sqlite
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/pcre2
