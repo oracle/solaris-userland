@@ -1,0 +1,62 @@
+From 0555d4f5a5568333ae48216af6e7f1cd6a02fba8 Mon Sep 17 00:00:00 2001
+From: "Igor V. Kovalenko" <igor.v.kovalenko@gmail.com>
+Date: Sun, 4 Jul 2021 09:58:26 +0300
+Subject: [PATCH] module-gsettings: Handle I/O hangup
+
+When child `gsettings-helper` terminates prematurely, unconditionally reading
+from child pipe fails in a busy loop until child process is reaped.
+
+Fix this by terminating module upon PA_IO_EVENT_HANGUP or PA_IO_EVENT_ERROR.
+
+Part-of: <https://gitlab.freedesktop.org/pulseaudio/pulseaudio/-/merge_requests/600>
+---
+ src/modules/gsettings/module-gsettings.c |  2 +-
+ src/modules/stdin-util.c                 | 18 ++++++++++++------
+ 2 files changed, 13 insertions(+), 7 deletions(-)
+
+diff --git a/src/modules/gsettings/module-gsettings.c b/src/modules/gsettings/module-gsettings.c
+index 08220934d..6cfac77bb 100644
+--- a/src/modules/gsettings/module-gsettings.c
++++ b/src/modules/gsettings/module-gsettings.c
+@@ -64,7 +64,7 @@ int pa__init(pa_module*m) {
+     u->io_event = m->core->mainloop->io_new(
+             m->core->mainloop,
+             u->fd,
+-            PA_IO_EVENT_INPUT,
++            PA_IO_EVENT_INPUT | PA_IO_EVENT_HANGUP | PA_IO_EVENT_ERROR,
+             io_event_cb,
+             u);
+ 
+diff --git a/src/modules/stdin-util.c b/src/modules/stdin-util.c
+index 37bd1a4a6..18408000a 100644
+--- a/src/modules/stdin-util.c
++++ b/src/modules/stdin-util.c
+@@ -267,13 +267,19 @@ void io_event_cb(
+ 
+     struct userdata *u = userdata;
+ 
+-    if (handle_event(u) < 0) {
++    if (events & (PA_IO_EVENT_HANGUP|PA_IO_EVENT_ERROR)) {
++        pa_log("Lost I/O connection in module \"%s\"", u->module->name);
++        goto fail;
++    }
+ 
+-        if (u->io_event) {
+-            u->core->mainloop->io_free(u->io_event);
+-            u->io_event = NULL;
+-        }
++    if (handle_event(u) >= 0)
++        return;
+ 
+-        pa_module_unload_request(u->module, true);
++fail:
++    if (u->io_event) {
++        u->core->mainloop->io_free(u->io_event);
++        u->io_event = NULL;
+     }
++
++    pa_module_unload_request(u->module, true);
+ }
+-- 
+GitLab
+
