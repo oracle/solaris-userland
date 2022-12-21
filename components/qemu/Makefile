@@ -30,19 +30,21 @@ COMPILER=       gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qemu
-COMPONENT_VERSION=	6.0.0
+COMPONENT_VERSION=	7.1.0
 
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:87bc1a471ca24b97e7005711066007d443423d19aacda3d442558ae032fa30b9
+	sha256:a0634e536bded57cf38ec8a751adb124b89c776fe0846f21ab6c6728f1cbbbe6
 COMPONENT_ANITYA_ID=	13607
 
 COMPONENT_ARCHIVE_URL=  https://download.qemu.org/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+COMPONENT_PUBLIC_KEY_URL= \
+	https://keys.openpgp.org/vks/v1/by-fingerprint/CEACC9E15534EBABB82D3FA03353C9CEF108B584
 COMPONENT_PROJECT_URL=	https://www.qemu.org
 COMPONENT_BUGDB=    utility/qemu-img
 
-COMPONENT_BAID=		101894
+COMPONENT_BAID=		134281
 
 # qemu currently has a custom build system that uses the same commands as
 # GNU autoconf to configure and build from the outside, but actually wraps

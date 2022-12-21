@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "QEMU-IMG" "1" "Jun 01, 2021" "6.0.0" "QEMU"
+.TH "QEMU-IMG" "1" "Dec 01, 2022" "7.1.0" "QEMU"
 .SH NAME
 qemu-img \- QEMU disk image utility
 .SH SYNOPSIS
@@ -121,11 +121,11 @@ The following commands are supported:
 .UNINDENT
 .INDENT 0.0
 .TP
-.B convert [\-\-object OBJECTDEF] [\-\-image\-opts] [\-\-target\-image\-opts] [\-\-target\-is\-zero] [\-\-bitmaps] [\-U] [\-C] [\-c] [\-p] [\-q] [\-n] [\-f FMT] [\-t CACHE] [\-T SRC_CACHE] [\-O OUTPUT_FMT] [\-B BACKING_FILE] [\-o OPTIONS] [\-l SNAPSHOT_PARAM] [\-S SPARSE_SIZE] [\-r RATE_LIMIT] [\-m NUM_COROUTINES] [\-W] [\-\-salvage] FILENAME [FILENAME2 [...]] OUTPUT_FILENAME
+.B convert [\-\-object OBJECTDEF] [\-\-image\-opts] [\-\-target\-image\-opts] [\-\-target\-is\-zero] [\-\-bitmaps] [\-U] [\-C] [\-c] [\-p] [\-q] [\-n] [\-f FMT] [\-t CACHE] [\-T SRC_CACHE] [\-O OUTPUT_FMT] [\-B BACKING_FILE [\-F BACKING_FMT]] [\-o OPTIONS] [\-l SNAPSHOT_PARAM] [\-S SPARSE_SIZE] [\-r RATE_LIMIT] [\-m NUM_COROUTINES] [\-W] [\-\-salvage] FILENAME [FILENAME2 [...]] OUTPUT_FILENAME
 .UNINDENT
 .INDENT 0.0
 .TP
-.B create [\-\-object OBJECTDEF] [\-q] [\-f FMT] [\-b BACKING_FILE] [\-F BACKING_FMT] [\-u] [\-o OPTIONS] FILENAME [SIZE]
+.B create [\-\-object OBJECTDEF] [\-q] [\-f FMT] [\-b BACKING_FILE [\-F BACKING_FMT]] [\-u] [\-o OPTIONS] FILENAME [SIZE]
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -245,9 +245,9 @@ in case both \fI\-q\fP and \fI\-p\fP options are used.
 .TP
 .B \-S SIZE
 Indicates the consecutive number of bytes that must contain only zeros
-for qemu\-img to create a sparse image during conversion. This value is rounded
-down to the nearest 512 bytes. You may use the common size suffixes like
-\fBk\fP for kilobytes.
+for \fBqemu\-img\fP to create a sparse image during conversion. This value is
+rounded down to the nearest 512 bytes. You may use the common size suffixes
+like \fBk\fP for kilobytes.
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -467,8 +467,8 @@ during the check. \fB\-r leaks\fP repairs only cluster leaks, whereas
 \fB\-r all\fP fixes all kinds of errors, with a higher risk of choosing the
 wrong fix or hiding corruption that has already occurred.
 .sp
-Only the formats \fBqcow2\fP, \fBqed\fP and \fBvdi\fP support
-consistency checks.
+Only the formats \fBqcow2\fP, \fBqed\fP, \fBparallels\fP, \fBvhdx\fP, \fBvmdk\fP and
+\fBvdi\fP support consistency checks.
 .sp
 In case the image does not have any inconsistencies, check exits with \fB0\fP\&.
 Other exit codes indicate the kind of inconsistency found or if another error
@@ -566,7 +566,7 @@ Error on reading data
 .UNINDENT
 .INDENT 0.0
 .TP
-.B convert [\-\-object OBJECTDEF] [\-\-image\-opts] [\-\-target\-image\-opts] [\-\-target\-is\-zero] [\-\-bitmaps] [\-U] [\-C] [\-c] [\-p] [\-q] [\-n] [\-f FMT] [\-t CACHE] [\-T SRC_CACHE] [\-O OUTPUT_FMT] [\-B BACKING_FILE] [\-o OPTIONS] [\-l SNAPSHOT_PARAM] [\-S SPARSE_SIZE] [\-r RATE_LIMIT] [\-m NUM_COROUTINES] [\-W] FILENAME [FILENAME2 [...]] OUTPUT_FILENAME
+.B convert [\-\-object OBJECTDEF] [\-\-image\-opts] [\-\-target\-image\-opts] [\-\-target\-is\-zero] [\-\-bitmaps [\-\-skip\-broken\-bitmaps]] [\-U] [\-C] [\-c] [\-p] [\-q] [\-n] [\-f FMT] [\-t CACHE] [\-T SRC_CACHE] [\-O OUTPUT_FMT] [\-B BACKING_FILE [\-F BACKING_FMT]] [\-o OPTIONS] [\-l SNAPSHOT_PARAM] [\-S SPARSE_SIZE] [\-r RATE_LIMIT] [\-m NUM_COROUTINES] [\-W] FILENAME [FILENAME2 [...]] OUTPUT_FILENAME
 Convert the disk image \fIFILENAME\fP or a snapshot \fISNAPSHOT_PARAM\fP
 to disk image \fIOUTPUT_FILENAME\fP using format \fIOUTPUT_FMT\fP\&. It can
 be optionally compressed (\fB\-c\fP option) or use any format specific
@@ -581,7 +581,7 @@ growable format such as \fBqcow\fP: the empty sectors are detected and
 suppressed from the destination image.
 .sp
 \fISPARSE_SIZE\fP indicates the consecutive number of bytes (defaults to 4k)
-that must contain only zeros for qemu\-img to create a sparse image during
+that must contain only zeros for \fBqemu\-img\fP to create a sparse image during
 conversion. If \fISPARSE_SIZE\fP is 0, the source will not be scanned for
 unallocated or zero sectors, and the destination image will always be
 fully allocated.
@@ -589,7 +589,7 @@ fully allocated.
 You can use the \fIBACKING_FILE\fP option to force the output image to be
 created as a copy on write image of the specified base image; the
 \fIBACKING_FILE\fP should have the same content as the input\(aqs base image,
-however the path, image format, etc may differ.
+however the path, image format (as given by \fIBACKING_FMT\fP), etc may differ.
 .sp
 If a relative path name is given, the backing file is looked up relative to
 the directory containing \fIOUTPUT_FILENAME\fP\&.
@@ -597,7 +597,7 @@ the directory containing \fIOUTPUT_FILENAME\fP\&.
 If the \fB\-n\fP option is specified, the target volume creation will be
 skipped. This is useful for formats such as \fBrbd\fP if the target
 volume has already been created with site specific options that cannot
-be supplied through qemu\-img.
+be supplied through \fBqemu\-img\fP\&.
 .sp
 Out of order writes can be enabled with \fB\-W\fP to improve performance.
 This is only recommended for preallocated devices like host devices or other
@@ -606,10 +606,16 @@ creating compressed images.
 .sp
 \fINUM_COROUTINES\fP specifies how many coroutines work in parallel during
 the convert process (defaults to 8).
+.sp
+Use of \fB\-\-bitmaps\fP requests that any persistent bitmaps present in
+the original are also copied to the destination.  If any bitmap is
+inconsistent in the source, the conversion will fail unless
+\fB\-\-skip\-broken\-bitmaps\fP is also specified to copy only the
+consistent bitmaps.
 .UNINDENT
 .INDENT 0.0
 .TP
-.B create [\-\-object OBJECTDEF] [\-q] [\-f FMT] [\-b BACKING_FILE] [\-F BACKING_FMT] [\-u] [\-o OPTIONS] FILENAME [SIZE]
+.B create [\-\-object OBJECTDEF] [\-q] [\-f FMT] [\-b BACKING_FILE [\-F BACKING_FMT]] [\-u] [\-o OPTIONS] FILENAME [SIZE]
 Create the new disk image \fIFILENAME\fP of size \fISIZE\fP and format
 \fIFMT\fP\&. Depending on the file format, you can add one or more \fIOPTIONS\fP
 that enable additional features of this format.
@@ -617,7 +623,7 @@ that enable additional features of this format.
 If the option \fIBACKING_FILE\fP is specified, then the image will record
 only the differences from \fIBACKING_FILE\fP\&. No size needs to be specified in
 this case. \fIBACKING_FILE\fP will never be modified unless you use the
-\fBcommit\fP monitor command (or qemu\-img commit).
+\fBcommit\fP monitor command (or \fBqemu\-img commit\fP).
 .sp
 If a relative path name is given, the backing file is looked up relative to
 the directory containing \fIFILENAME\fP\&.
@@ -768,15 +774,19 @@ the \fBstart\fP, \fBlength\fP, \fBoffset\fP fields;
 it will also include other more specific information:
 .INDENT 7.0
 .IP \(bu 2
-whether the sectors contain actual data or not (boolean field \fBdata\fP;
-if false, the sectors are either unallocated or stored as optimized
-all\-zero clusters);
+boolean field \fBdata\fP: true if the sectors contain actual data,
+false if the sectors are either unallocated or stored as optimized
+all\-zero clusters
 .IP \(bu 2
-whether the data is known to read as zero (boolean field \fBzero\fP);
+boolean field \fBzero\fP: true if the data is known to read as zero
 .IP \(bu 2
-in order to make the output shorter, the target file is expressed as
-a \fBdepth\fP; for example, a depth of 2 refers to the backing file
-of the backing file of \fIFILENAME\fP\&.
+boolean field \fBpresent\fP: true if the data belongs to the backing
+chain, false if rebasing the backing chain onto a deeper file
+would pick up data from the deeper file;
+.IP \(bu 2
+integer field \fBdepth\fP: the depth within the backing chain at
+which the data was resolved; for example, a depth of 2 refers to
+the backing file of the backing file of \fIFILENAME\fP\&.
 .UNINDENT
 .sp
 In JSON format, the \fBoffset\fP field is optional; it is absent in
@@ -862,7 +872,7 @@ There are two different modes in which \fBrebase\fP can operate:
 .TP
 .B Safe mode
 This is the default mode and performs a real rebase operation. The
-new backing file may differ from the old one and qemu\-img rebase
+new backing file may differ from the old one and \fBqemu\-img rebase\fP
 will take care of keeping the guest\-visible content of \fIFILENAME\fP
 unchanged.
 .sp
@@ -875,7 +885,7 @@ converting an image. It only works if the old backing file still
 exists.
 .TP
 .B Unsafe mode
-qemu\-img uses the unsafe mode if \fB\-u\fP is specified. In this
+\fBqemu\-img\fP uses the unsafe mode if \fB\-u\fP is specified. In this
 mode, only the backing file name and format of \fIFILENAME\fP is changed
 without any checks on the file contents. The user must take care of
 specifying the correct new backing file, or the guest\-visible
@@ -921,7 +931,7 @@ partitioning tools inside the VM to reduce allocated file systems and partition
 sizes accordingly.  Failure to do so will result in data loss!
 .sp
 When shrinking images, the \fB\-\-shrink\fP option must be given. This informs
-qemu\-img that the user acknowledges all loss of data beyond the truncated
+\fBqemu\-img\fP that the user acknowledges all loss of data beyond the truncated
 image\(aqs end.
 .sp
 After using this command to grow a disk image, you must use file system and
@@ -1070,6 +1080,37 @@ an existing file which is COW and has data blocks already, it
 couldn\(aqt be changed to NOCOW by setting \fBnocow=on\fP\&. One can
 issue \fBlsattr filename\fP to check if the NOCOW flag is set or not
 (Capital \(aqC\(aq is NOCOW flag).
+.TP
+.B \fBdata_file\fP
+Filename where all guest data will be stored. If this option is used,
+the qcow2 file will only contain the image\(aqs metadata.
+.sp
+Note: Data loss will occur if the given filename already exists when
+using this option with \fBqemu\-img create\fP since \fBqemu\-img\fP will create
+the data file anew, overwriting the file\(aqs original contents. To simply
+update the reference to point to the given pre\-existing file, use
+\fBqemu\-img amend\fP\&.
+.TP
+.B \fBdata_file_raw\fP
+If this option is set to \fBon\fP, QEMU will always keep the external data
+file consistent as a standalone read\-only raw image.
+.sp
+It does this by forwarding all write accesses to the qcow2 file through to
+the raw data file, including their offsets. Therefore, data that is visible
+on the qcow2 node (i.e., to the guest) at some offset is visible at the same
+offset in the raw data file. This results in a read\-only raw image. Writes
+that bypass the qcow2 metadata may corrupt the qcow2 metadata because the
+out\-of\-band writes may result in the metadata falling out of sync with the
+raw image.
+.sp
+If this option is \fBoff\fP, QEMU will use the data file to store data in an
+arbitrary manner. The file’s content will not make sense without the
+accompanying qcow2 metadata. Where data is written will have no relation to
+its offset as seen by the guest, and some writes (specifically zero writes)
+may not be forwarded to the data file at all, but will only be handled by
+modifying qcow2 metadata.
+.sp
+This option can only be enabled if \fBdata_file\fP is set.
 .UNINDENT
 .UNINDENT
 .UNINDENT
@@ -1092,6 +1133,6 @@ images to either raw or qcow2 in order to achieve good performance.
 .SH AUTHOR
 Fabrice Bellard
 .SH COPYRIGHT
-2020, The QEMU Project Developers
+2022, The QEMU Project Developers
 .\" Generated by docutils manpage writer.
 .
