@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -52,6 +52,10 @@ COMPONENT_PRE_CONFIGURE_ACTION =  \
 #
 # /usr/bin/event_rpcgen.py
 
+SSL_PKG_CONFIG_PATH.64 = /usr/openssl/3/lib/64/pkgconfig
+SSL_PKG_CONFIG_PATH.32 = /usr/openssl/3/lib/pkgconfig
+PKG_CONFIG_PATHS += $(SSL_PKG_CONFIG_PATH.$(BITS))
+
 CONFIGURE_OPTIONS	+= CFLAGS="$(CFLAGS)"
 CONFIGURE_OPTIONS	+= --disable-static
 
@@ -82,7 +86,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/FAIL/p" ' \
 	'-e "/ERROR/p" '
 
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

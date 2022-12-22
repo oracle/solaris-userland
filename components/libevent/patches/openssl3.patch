@@ -1,0 +1,52 @@
+https://github.com/libevent/libevent/commit/29c420c418aeb497e5e8b7abd45dee39194ca5fc
+
+--- libevent-2.1.12-stable/bufferevent_openssl.c
++++ libevent-2.1.12-stable/bufferevent_openssl.c
+@@ -514,7 +514,9 @@ dirty_shutdown = 1;
+ 		put_error(bev_ssl, errcode);
+ 		break;
+ 	case SSL_ERROR_SSL:
+-		/* Protocol error. */
++		/* Protocol error; possibly a dirty shutdown. */
++		if (ret == 0 && SSL_is_init_finished(bev_ssl->ssl) == 0)
++			dirty_shutdown = 1;
+ 		put_error(bev_ssl, errcode);
+ 		break;
+ 	case SSL_ERROR_WANT_X509_LOOKUP:
+--- libevent-2.1.12-stable/sample/le-proxy.c
++++ libevent-2.1.12-stable/sample/le-proxy.c
+@@ -112,10 +112,15 @@ const char *msg = (const char*)
+ 				    ERR_reason_error_string(err);
+ 				const char *lib = (const char*)
+ 				    ERR_lib_error_string(err);
++#if OPENSSL_VERSION_MAJOR >= 3
++				fprintf(stderr,
++					"%s in %s\n", msg, lib);
++#else
+ 				const char *func = (const char*)
+ 				    ERR_func_error_string(err);
+ 				fprintf(stderr,
+ 				    "%s in %s %s\n", msg, lib, func);
++#endif
+ 			}
+ 			if (errno)
+ 				perror("connection error");
+--- libevent-2.1.12-stable/test/regress_ssl.c
++++ libevent-2.1.12-stable/test/regress_ssl.c
+@@ -374,7 +374,16 @@ SSL *ssl;
+ 		++n_connected;
+ 		ssl = bufferevent_openssl_get_ssl(bev);
+ 		tt_assert(ssl);
++#if OPENSSL_VERSION_MAJOR >= 3
++		/* SSL_get1_peer_certificate() means we want
++		 * to increase the reference count on the cert
++		 * and so we will need to free it ourselves later
++		 * when we're done with it. The non-reference count
++		 * increasing version is not available in OpenSSL 1.1.1. */
++		peer_cert = SSL_get1_peer_certificate(ssl);
++#else
+ 		peer_cert = SSL_get_peer_certificate(ssl);
++#endif
+ 		if (type & REGRESS_OPENSSL_SERVER) {
+ 			tt_assert(peer_cert == NULL);
+ 		} else {
