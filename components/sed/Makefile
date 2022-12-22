@@ -20,20 +20,19 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sed
-COMPONENT_VERSION=	4.4
+COMPONENT_VERSION=	4.9
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:cbd6ebc5aaf080ed60d0162d7f6aeae58211a1ee9ba9bb25623daa6cd942683b
+    sha256:6e226b732e1cd739464ad6862bd1a1aba42d7982922da7a53519631d24975181
 COMPONENT_BUGDB=	utility/gnu-sed
 COMPONENT_ANITYA_ID=	4789
-
-COMPONENT_BAID=		38342
+COMPONENT_BAID=		133534
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
