@@ -29,15 +29,14 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libical
-COMPONENT_VERSION=	3.0.10
+COMPONENT_VERSION=	3.0.16
 COMPONENT_PROJECT_URL=	http://libical.github.io/libical/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f933b3e6cf9d56a35bb5625e8e4a9c3a50239a85aea05ed842932c1a1dc336b4
+	sha256:b44705dd71ca4538c86fb16248483ab4b48978524fb1da5097bd76aa2e0f0c33
 COMPONENT_ARCHIVE_URL=	https://github.com/$(COMPONENT_NAME)/$(COMPONENT_NAME)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	1637
-
-COMPONENT_BAID=		102213
+COMPONENT_BAID=		133528
 
 BUILD_STYLE= cmake
 
@@ -77,6 +76,9 @@ COMPONENT_BUILD_ENV += CXXFLAGS="$(CXXFLAGS)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
 COMPONENT_TEST_TARGETS = test
+
+# Remove any color coding from the test output.
+COMPONENT_TEST_ARGS += COLOR=no
 
 # Enable libadimalloc or libumem (only ADI caught the heap-use-after-free case)
 ISA_EXTENSIONS.64	= $(shell isainfo -x | grep '^$(MACH64):')
