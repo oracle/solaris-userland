@@ -1,0 +1,16 @@
+src/parallel is not found when doing out-of-source build.
+
+This issue was reported upstream:
+https://savannah.gnu.org/bugs/index.php?63409
+
+--- parallel-20221122/Makefile.in
++++ parallel-20221122/Makefile.in
+@@ -936,7 +936,7 @@ pack_unpack_and_test_build:
+ 	./configure && make -j && sudo make -j install
+ install-data-hook:
+ 	mkdir -p ${zshcompletiondir} ${bashcompletiondir}
+-	src/parallel --shell-completion bash > ${bashcompletion}
++	$(srcdir)/src/parallel --shell-completion bash > ${bashcompletion}
+ # Make zsh eval the --shell-completion code dynamically so if
+ # a newer version of GNU Parallel is installed by a normal
+ # user, this newer version will generate the
