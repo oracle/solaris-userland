@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 # Cairo uses atomic intrinsics not supported in Studio 12.4 (ER 19201298)
@@ -29,16 +29,16 @@ BUILD_BITS =            64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cairo
-COMPONENT_VERSION=	1.16.0
+COMPONENT_VERSION=	1.17.4
 COMPONENT_PROJECT_URL=	http://cairographics.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:5e7b29b3f113ef870d1e3ecf8adf21f923396401604bda16d44be45e66052331
-COMPONENT_ARCHIVE_URL=	http://cairographics.org/releases/$(COMPONENT_ARCHIVE)
+    sha256:74b24c1ed436bbe87499179a3b27c43f4143b8676d8ad237a6fa787401959705
+COMPONENT_ARCHIVE_URL=	https://cairographics.org/snapshots/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/cairo
 COMPONENT_ANITYA_ID=	247
 
-COMPONENT_BAID=		67362
+COMPONENT_BAID=		133577
 
 # Cairo tests currently require an X display & require more work to run properly
 TEST_TARGET= $(NO_TESTS)
