@@ -1,0 +1,13 @@
+Bash expects an error message, but Solaris has slightly differently worded one.
+This patches the expected test output to pass on Solaris.
+
+This is not suitable for upstream.
+
+--- tests/vredir.right
++++ tests/vredir.right
+@@ -98,4 +98,4 @@ swizzle ()
+     exec {stdin}<&${fd[0]}-;
+     exec {stdout}>&${fd[1]}-
+ }
+-./vredir8.sub: line 12: $fd: Bad file descriptor
++./vredir8.sub: line 12: $fd: Bad file number

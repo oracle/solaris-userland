@@ -28,32 +28,15 @@
  
 --- tests/assoc11.sub
 +++ tests/assoc11.sub
-@@ -13,6 +13,8 @@
+@@ -13,7 +13,7 @@
  #
  # these tests were previously in array19.sub, but they are acceptable syntax now
  
-+shopt -u xpg_echo
-+
- declare -A a
+-declare -A a
++shopt -u xpg_echo; declare -A a
  declare a='(1 2 3)'
  declare -p a
---- tests/assoc.right
-+++ tests/assoc.right
-@@ -237,7 +237,7 @@ declare -A foo=([d]="4" [c]="3" [b]="2"
- foo=( d "4" c "3" b "2" a "1" )
- declare -A foo=(["\\"]="5" ["@"]="3" ["holy hell this works"]="4" ["a b"]="1" ["spa ces"]="2" )
- foo=( echo "\\" "5" "@" "3" "holy hell this works" "4" "a b" "1" "spa ces" "2" )
--./assoc11.sub: line 34: "": bad array subscript
-+./assoc11.sub: line 36: "": bad array subscript
- declare -A foo=([";"]="semicolon" ["]"]="def" [a=b]="assignment" ["a]a"]="abc" ["foo[bar"]="bleh" )
- foo=( ";" "semicolon" "]" "def" a=b "assignment" "a]a" "abc" "foo[bar" "bleh" )
- declare -A foo=(["'"]="squote" ["\""]="dquote" ["\\"]="bslash" ["\`"]="backquote" )
-@@ -257,4 +257,4 @@ declare -A a=([")"]="rparen" ["\""]="dqu
- declare -A a=([")"]="rparen" ["\""]="dquote" ["]"]="rbrace" ["\\"]="bs" )
- declare -A a=([")"]="rparen" ["\""]="dquote" ["]"]="rbrace" ["\\"]="bs" )
- declare -Arx foo=([two]="2" [three]="3" [one]="1" )
--./assoc11.sub: line 90: foo: readonly variable
-+./assoc11.sub: line 92: foo: readonly variable
+ unset a
 --- tests/varenv16.sub
 +++ tests/varenv16.sub
 @@ -14,6 +14,8 @@
@@ -65,3 +48,25 @@
  show2()
  {
          printf %s "foo=${foo-<unset>}"
+--- tests/new-exp.tests
++++ tests/new-exp.tests
+@@ -17,7 +17,7 @@ fi
+ 
+ # must do this because posix mode causes process substitution to be disabled
+ # and flagged as a syntax error, which causes the shell to exit
+-set +o posix
++set +o posix; shopt -u xpg_echo
+ 
+ expect()
+ {
+--- tests/new-exp16.sub
++++ tests/new-exp16.sub
+@@ -16,7 +16,7 @@ HOME=/homes/chet
+ string=abcdefg
+ set -- a b c
+ 
+-shopt -u patsub_replacement
++shopt -u patsub_replacement xpg_echo
+ 
+ # verify existing behavior
+ echo ${string/abc/~}

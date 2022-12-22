@@ -1,13 +1,6 @@
-
-	  ***********************************************************
-	  *                                                         *
-	  * GNU bash, version 5.1.16(1)-release (sparc-sun-solaris2.11)
-	  *                                                         *
-	  ***********************************************************
-
 Testing $(@D)/bash
-version: 5.1.16(1)-release
-versinfo: 5 1 16 1 release sparc-sun-solaris2.11
+version: 5.2.15(1)-release
+versinfo: 5 2 15 1 release sparc-sun-solaris2.11
 HOSTTYPE = sparc
 OSTYPE = solaris2.11
 MACHTYPE = sparc-sun-solaris2.11
@@ -55,6 +48,9 @@ run-errors
 run-execscript
 warning: the text of a system error message may vary between systems and
 warning: produce diff output.
+warning: UNIX versions number signals differently.
+warning: If output differing only in line numbers is produced, please
+warning: do not consider this a test failure.
 warning: if the text of the error messages concerning `notthere' or
 warning: `/tmp/bash-notthere' not being found or `/' being a directory
 warning: produce diff output, please do not consider this a test failure
@@ -71,6 +67,9 @@ warning: they may show up as diff output.
 warning: if so, please do not consider this a test failure
 run-getopts
 run-glob-test
+2,3d1
+< glob2.sub: warning: you do not have the zh_HK.big5hkscs locale installed;
+< glob2.sub: warning: that will cause some of these tests to fail.
 run-globstar
 run-heredoc
 warning: UNIX versions number signals and schedule processes differently.
@@ -87,8 +86,12 @@ run-ifs
 run-ifs-posix
 run-input-test
 run-intl
-warning: some of these tests will fail if you do not have UTF-8
-warning: locales installed on your system.
+unicode1.sub: warning: you do not have the ja_JP.SJIS locale installed;
+unicode1.sub: that will cause some of these tests to be skipped.
+24c24
+< Passed all 1251 Unicode tests
+---
+> Passed all 1378 Unicode tests
 run-invert
 run-iquote
 run-jobs
@@ -138,6 +141,7 @@ warning: been compiled into the shell or if the OS does not provide
 warning: FIFOs or /dev/fd. Some tests may fail if the OS does not
 warning: provide FIFOs.
 run-quote
+run-quotearray
 run-read
 warning: please do not consider output differing only in the amount of
 warning: white space to be an error.
