@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Use GCC until Studio supports large enums (23058232)
@@ -28,18 +28,17 @@ COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tmux
-COMPONENT_VERSION=	3.1c
-IPS_COMPONENT_VERSION=	3.1.3
+COMPONENT_VERSION=	3.3a
+IPS_COMPONENT_VERSION=	3.3.1
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://tmux.github.io/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:741fed668e711388cfb3d5f84f54b8e18d53ab3f59e2f065102773fafe8dc834
+    sha256:e4fd347843bd0772c4f48d6dde625b0b109b7a380ff15db21e97c11a4dcdf93f
 COMPONENT_ANITYA_ID=	4980
 
 COMPONENT_ARCHIVE_URL=	https://github.com/tmux/tmux/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 
-COMPONENT_BAID=		88937
-
+COMPONENT_BAID=		133820
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -50,3 +49,4 @@ CONFIGURE_ENV += LIBNCURSES_LIBS="-L$(USRLIBDIR64) -lncurses"
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library/math
