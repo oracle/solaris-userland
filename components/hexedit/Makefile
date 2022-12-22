@@ -20,13 +20,13 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hexedit
-COMPONENT_VERSION=	1.5
+COMPONENT_VERSION=	1.6
 COMPONENT_PROJECT_URL=	http://merd.sourceforge.net/pixel/hexedit.html
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
@@ -34,9 +34,9 @@ COMPONENT_ANITYA_ID=	13305
 
 GIT_REPO=		https://github.com/pixel/hexedit.git
 GIT_COMMIT_ID=		$(COMPONENT_VERSION)
-GIT_HASH=		sha256:27a2349f659e995d7731ad672450f61a2e950330049a6fb59b77490c5e0015ac
+GIT_HASH=		sha256:598906131934f88003a6a937fab10542686ce5f661134bc336053e978c4baae3
 
-COMPONENT_BAID=		111295
+COMPONENT_BAID=		134003
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
