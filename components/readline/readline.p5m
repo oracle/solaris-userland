@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -30,12 +30,15 @@ set name=pkg.summary \
     value="GNU readline provides interactive line-editing and history"
 set name=pkg.description \
     value="The GNU Readline library provides a set of functions for use by applications that allow users to edit command lines as they are typed in."
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
+set name=com.oracle.info.description value="GNU readline"
 set name=info.classification \
     value=org.opensolaris.category.2008:System/Libraries
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2007/188 value=PSARC/2017/149
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+#
 file examples/Inputrc path=usr/demo/readline/Inputrc
 file path=usr/include/readline/chardefs.h
 file path=usr/include/readline/history.h
@@ -46,31 +49,23 @@ file path=usr/include/readline/rlstdc.h
 file path=usr/include/readline/rltypedefs.h
 file path=usr/include/readline/tilde.h
 link path=usr/lib/$(MACH64)/libhistory.so target=libhistory.so.8
-file path=usr/lib/$(MACH64)/libhistory.so.7
 file path=usr/lib/$(MACH64)/libhistory.so.8
 link path=usr/lib/$(MACH64)/libreadline.so target=libreadline.so.8
-file path=usr/lib/$(MACH64)/libreadline.so.7
 file path=usr/lib/$(MACH64)/libreadline.so.8
 file path=usr/lib/$(MACH64)/llib-lreadline.ln
+file path=usr/lib/$(MACH64)/pkgconfig/history.pc
 file path=usr/lib/$(MACH64)/pkgconfig/readline.pc
 link path=usr/lib/libhistory.so target=libhistory.so.8
-file path=usr/lib/libhistory.so.7
 file path=usr/lib/libhistory.so.8
 link path=usr/lib/libreadline.so target=libreadline.so.8
-file path=usr/lib/libreadline.so.7
 file path=usr/lib/libreadline.so.8
 file path=usr/lib/llib-lreadline.ln
+file path=usr/lib/pkgconfig/history.pc
 file path=usr/lib/pkgconfig/readline.pc
 file path=usr/share/info/history.info
 file path=usr/share/info/readline.info
 file path=usr/share/info/rluserman.info
 file path=usr/share/man/man3/history.3
 file path=usr/share/man/man3/readline.3
-license readline.license license="GPLv3, FDLv1.3" \
-    com.oracle.info.baid=$(COMPONENT_BAID_V8) \
-    com.oracle.info.description="GNU readline" com.oracle.info.name=readline \
-    com.oracle.info.version=$(COMPONENT_VERSION)
-license readline.license license="GPLv3, FDLv1.3 (readline7)" \
-    com.oracle.info.baid=$(COMPONENT_BAID_V7) \
-    com.oracle.info.description="GNU readline" com.oracle.info.name=readline \
-    com.oracle.info.version=$(COMPONENT_VERSION_1)
+#
+license readline.license license="GPLv3, FDLv1.3"
