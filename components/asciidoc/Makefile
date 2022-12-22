@@ -20,57 +20,35 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		asciidoc
-COMPONENT_VERSION=	9.0.2
+COMPONENT_VERSION=	10.2.0
 COMPONENT_PROJECT_URL=	https://asciidoc.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:2494b54e87dd1018a0b809de401b7e6cb957ab2ad3840e91db5de08c372e4c45
+    sha256:237b2ba5c35c0ae7ccd4cd44ebf1d87c20b2695dae01798954416d492ef7fa0e
 COMPONENT_ARCHIVE_URL=	\
     https://github.com/asciidoc/asciidoc-py3/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13262
+COMPONENT_BAID=		133659
 
-COMPONENT_BAID=		87660
+SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
 
-SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
+PYTHON_VERSION = 3.11
+PYTHON_VERSIONS = $(PYTHON_VERSION)
+
+BUILD_STYLE= pybuild
 include $(WS_MAKE_RULES)/common.mk
 
-PYTHON_VERSION = 3.7
-
-# AsciiDoc configuration and data files belong in /usr/share, not /etc based
-# on discussion from ARC pre-review.
-#
-CONFIGURE_OPTIONS +=    --sysconfdir=$(USRSHAREDIR)
-
-# pkgdepend doesn't like the first line of a Python script to be:
-# '#!/usr/bin/env python' so turn it into '#!/usr/bin/python$(PYTHON_VERSION)'
-#
-COMPONENT_POST_INSTALL_ACTION += \
-        $(GSED) -i -e 's?env python3?python$(PYTHON_VERSION)?' \
-                $(PROTOUSRBINDIR)/asciidoc.py;
-COMPONENT_POST_INSTALL_ACTION += \
-        $(GSED) -i -e 's?env python3?python$(PYTHON_VERSION)?' \
-                $(PROTOUSRBINDIR)/a2x.py;
-
-COMPONENT_PRE_CONFIGURE_ACTION = \
-        ($(CLONEY) $(SOURCE_DIR) $(@D))
-
-COMPONENT_TEST_DIR =	$(@D)/tests
-COMPONENT_TEST_ENV_CMD =
-COMPONENT_TEST_ENV =	export PATH=$(@D):$$PATH;
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	\
-	$(PYTHON) ../asciidocapi.py; \
-	if [ $$? -eq 0 ] ; \
-		then print "asciidocapi test passed"; \
-		else print "asciidocapi test failed"; \
-	fi; \
 	$(PYTHON) ./testasciidoc.py update --force; \
 	$(PYTHON) ./testasciidoc.py run
-COMPONENT_TEST_TARGETS =
+COMPONENT_TEST_ARGS =
+COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
@@ -82,23 +60,13 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^FAILED/p" ' \
 	'-e "/^TOTAL/p" '
 
-COMPONENT_SYSTEM_TEST_DIR =    $(@D)/tests
-COMPONENT_SYSTEM_TEST_ENV_CMD =
-COMPONENT_SYSTEM_TEST_CMD =    \
-	$(PYTHON) ../asciidocapi.py; \
-	if [ $$? -eq 0 ] ; \
-		then print "asciidocapi test passed"; \
-		else print "asciidocapi test failed"; \
-	fi; \
-	$(PYTHON) ./testasciidoc.py update --force; \
-	$(PYTHON) ./testasciidoc.py run
-COMPONENT_SYSTEM_TEST_TARGETS =
-
+PKG_MACROS +=	PYVER=$(PYTHON_VERSION)
 
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += web/browser/lynx
-# test dependencies
+
+# Testing related dependencies
 REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += library/python/pygments
