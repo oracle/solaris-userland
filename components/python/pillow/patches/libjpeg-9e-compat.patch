@@ -1,0 +1,27 @@
+Fixes image mode detection issue in libjpeg 9e:
+https://github.com/python-pillow/Pillow/issues/6741
+https://github.com/python-pillow/Pillow/pull/6767
+
+From 3ec8fa614705ae273426d60f994e3b01bb57a69a Mon Sep 17 00:00:00 2001
+From: Andrew Murray <radarhere@users.noreply.github.com>
+Date: Wed, 30 Nov 2022 13:49:07 +1100
+Subject: [PATCH] Do not trust JPEG decoder to determine image is CMYK
+
+---
+ src/PIL/BlpImagePlugin.py | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/PIL/BlpImagePlugin.py b/src/PIL/BlpImagePlugin.py
+index 5339977371..45987ec03a 100644
+--- a/src/PIL/BlpImagePlugin.py
++++ b/src/PIL/BlpImagePlugin.py
+@@ -373,6 +373,9 @@ def _decode_jpeg_stream(self):
+         data = BytesIO(data)
+         image = JpegImageFile(data)
+         Image._decompression_bomb_check(image.size)
++        if image.mode == "CMYK":
++            decoder_name, extents, offset, args = image.tile[0]
++            image.tile = [(decoder_name, extents, offset, (args[0], "CMYK"))]
+         r, g, b = image.convert("RGB").split()
+         image = Image.merge("RGB", (b, g, r))
+         self.set_as_raw(image.tobytes())
