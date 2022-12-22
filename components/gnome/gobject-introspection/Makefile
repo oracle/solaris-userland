@@ -41,6 +41,8 @@ COMPONENT_ANITYA_ID=	1223
 COMPONENT_BAID=		109048
 BUILD_STYLE=		meson
 
+PYTHON_VERSION = 3.11
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # g-ir-scanner
@@ -52,7 +54,7 @@ PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-scanner
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-annotation-tool
 
 CONFIGURE_OPTIONS += -Dcairo=enabled
-CONFIGURE_OPTIONS += -Dpython=python3.7
+CONFIGURE_OPTIONS += -Dpython=$(PYTHON)
 
 PY3_CPYTHON_NAMING=\#
 
@@ -66,6 +68,10 @@ COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_POST_INSTALL_ACTION += \
         $(MV) $(PROTOUSRLIBDIR)/$(MACH64)/gobject-introspection $(PROTOUSRLIBDIR)/ ;
+
+# GObject Introspection doesn't automatically compile its sources
+COMPONENT_POST_INSTALL_ACTION += \
+        $(PYTHON) -m compileall $(PROTOUSRLIBDIR)/gobject-introspection/giscanner/ ;
 
 # Standard automake test framework results transform
 COMPONENT_TEST_TRANSFORMS += '-e "s/       [0-9].[0-9][0-9]s//"'
@@ -83,7 +89,7 @@ REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libffi
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/iconv/iconv-core
 REQUIRED_PACKAGES += system/library/math

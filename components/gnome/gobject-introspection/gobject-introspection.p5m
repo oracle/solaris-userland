@@ -23,6 +23,10 @@
 # Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
+# Because python code in GObject Introspection is not on standard path but in
+# /usr/lib/gobject-introspection/giscanner we can't use autopyc. After pyc files
+# are dropped by cleanup rule we emit it back to the manifest.
+<transform file path=(.*)/(.*)\.py$ -> emit file path=%<1>/__pycache__/%<2>.cpython-311.pyc>
 <transform file path=usr.*/man/.+ -> \
     default mangler.man.stability "pass-through volatile">
 set name=pkg.fmri \
@@ -98,7 +102,7 @@ file path=usr/lib/$(MACH64)/libgirepository-1.0.so.1.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/gobject-introspection-1.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gobject-introspection-no-export-1.0.pc
 file path=usr/lib/gobject-introspection/giscanner/__init__.py
-file path=usr/lib/gobject-introspection/giscanner/_giscanner.cpython-37m.so \
+file path=usr/lib/gobject-introspection/giscanner/_giscanner.cpython-311.so \
     pkg.linted.userland.action001.2=true
 file path=usr/lib/gobject-introspection/giscanner/_version.py
 file path=usr/lib/gobject-introspection/giscanner/annotationmain.py
@@ -229,6 +233,7 @@ file path=usr/share/gobject-introspection-1.0/tests/utility.h
 file path=usr/share/gobject-introspection-1.0/tests/warnlib.c
 file path=usr/share/gobject-introspection-1.0/tests/warnlib.h
 file path=usr/share/man/man1/g-ir-compiler.1
+file path=usr/share/man/man1/g-ir-doc-tool.1
 file path=usr/share/man/man1/g-ir-generate.1
 file path=usr/share/man/man1/g-ir-scanner.1
 license gobject-introspection.license \
