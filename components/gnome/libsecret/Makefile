@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,44 +30,54 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsecret
-COMPONENT_VERSION=	0.20.4
+COMPONENT_VERSION=	0.20.5
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Libsecret
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:325a4c54db320c406711bf2b55e5cb5b6c29823426aa82596a907595abb39d28
+    sha256:3fb3ce340fcd7db54d87c893e69bfc2b1f6e4d4b279065ffe66dac9f0fd12b4d
 COMPONENT_BUGDB=        gnome/security
 COMPONENT_ANITYA_ID=	13150
 
-COMPONENT_BAID=		92084
+COMPONENT_BAID=		131071
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+include $(WS_MAKE_RULES)/test-x11.mk
+
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
+# Assumes GNU ar in PATH
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+
+# Assumes GNU gettext in PATH
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+
 # Required so that configure can find and use 64-bit version of config program.
 CONFIGURE_ENV.64 += ac_cv_path_LIBGCRYPT_CONFIG=$(USRBINDIR64)/libgcrypt-config
 
-CONFIGURE_OPTIONS += --disable-static
+CONFIGURE_OPTIONS += -Dgtk_doc=false
 # Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
+CONFIGURE_OPTIONS.32 += -Dintrospection=false
+CONFIGURE_OPTIONS.64 += -Dintrospection=true
 # Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-vala
-CONFIGURE_OPTIONS.64 += --enable-vala
-
-# Requires a reconf due to patch to configure.ac.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+CONFIGURE_OPTIONS.32 += -Dvapi=false
+CONFIGURE_OPTIONS.64 += -Dvapi=true
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
-COMPONENT_TEST_ARGS =   -k -i
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
-
+	'-n ' \
+	'-e "/OK/p" ' \
+	'-e "/FAIL /p" ' \
+	'-e "/Summary /p" ' \
+	'-e "/Ok:/p" ' \
+	'-e "/Skipped:/p" ' \
+	'-e "/Timeout:/p" ' \
+	'-e "/Fail:/p" ' \
+	'-e "/Pass:/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
