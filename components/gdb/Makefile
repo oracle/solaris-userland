@@ -42,10 +42,13 @@ COMPONENT_BAID=		100947
 # The traditional output from gmake test omits some
 # test results information that is contained in the 
 # build/<arch>/gdb/testsuite/gdb.sum file, so use that file instead
-# for test results comparison.
+# for test results comparison. Also sort the results so that they are
+# comparable
 COMPONENT_POST_TEST_ACTION += \
 	( $(MV) $(COMPONENT_TEST_OUTPUT) $(COMPONENT_TEST_OUTPUT)-orig ; \
-	$(CP) $(BUILD_DIR_64)/gdb/testsuite/gdb.sum $(COMPONENT_TEST_OUTPUT) )
+	$(PERL) $(COMPONENT_TEST_RESULTS_DIR)/sort-results.pl $(BUILD_DIR_64)/gdb/testsuite/gdb.sum $(COMPONENT_TEST_OUTPUT) )
+
+
 
 # Test results vary from run to run and machine to machine,
 # so master test results will not match (+- 50 passes).

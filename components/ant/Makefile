@@ -89,7 +89,8 @@ COMPONENT_TEST_TRANSFORMS +=  \
 	'-e "/Transform time: /d" ' \
 	'-e "/Deleting: /d" ' \
 	'-e "/^Buildfile: /d" ' \
-	'-e "/^Total time: /d" '
+	'-e "/^Total time: /d" ' \
+	'-e "/^Created dir: /d" '
 
 REQUIRED_PACKAGES += developer/java/junit
 REQUIRED_PACKAGES += $(PERL_PKG)

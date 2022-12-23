@@ -42,6 +42,8 @@ COMPONENT_ANITYA_ID=	7927
 
 COMPONENT_BAID=		130978
 
+TEST_TARGET= $(SKIP_TEST)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Qt doesn't use cmake just for configuring but also for build and install.
