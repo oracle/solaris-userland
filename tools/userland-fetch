@@ -45,6 +45,7 @@ import shutil
 import subprocess
 import socket
 import time
+import lzma
 
 from typing import List, Optional, Tuple, Generator
 
@@ -160,6 +161,9 @@ def calculate_hash(filename: str, algorithm: str, validate_payload: bool = False
     elif filename.endswith((".gz", ".tgz")):
         with gzip.GzipFile(filename, 'rb') as gzfile:
             return _calculate_hash(gzfile, algorithm)
+    elif filename.endswith((".xz")):
+        with lzma.LZMAFile(filename, 'rb') as xzfile:
+            return _calculate_hash(xzfile, algorithm)
     else:
         raise NotImplementedError("File format not implemented")
 

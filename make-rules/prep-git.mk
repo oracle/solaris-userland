@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
 #
 
 GIT =		/usr/bin/git
@@ -91,7 +91,7 @@ $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 		--prefix $$(COMPONENT_SRC$(1))/ \
 		$$(or $$(GIT_COMMIT_ID$(1)),$$(GIT_BRANCH$(1)))) > $$@ && \
 	$(RM) -r $$$${TMP_REPO} ) && \
-	( GIT_HASH=$$$$(digest -a sha256 $$@) && \
+	( GIT_HASH=$$$$( $(WS_TOOLS)/userland-payload-checksum $$@ ) && \
 	$(GSED) -i \
 		-e "s/\(GIT_HASH$(1)[[:space:]]*=[[:space:]]*\).*/\1sha256:$$$${GIT_HASH}/" \
 		Makefile )) && \
