@@ -76,3 +76,5 @@ install:	$(INSTALL_32_and_64)
 test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TEST_32_and_64)
+
+REQUIRED_PACKAGES += library/python/setuptools_scm-27

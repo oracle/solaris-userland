@@ -98,6 +98,7 @@ REQUIRED_PACKAGES += library/python/importlib-metadata-37
 REQUIRED_PACKAGES += library/python/more_itertools-27
 REQUIRED_PACKAGES += library/python/pathlib2-27
 REQUIRED_PACKAGES += library/python/six-27
+REQUIRED_PACKAGES += library/python/setuptools_scm-27
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/hypothesis

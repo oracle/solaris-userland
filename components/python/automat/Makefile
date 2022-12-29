@@ -63,3 +63,4 @@ system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
+REQUIRED_PACKAGES += library/python/setuptools_scm-27

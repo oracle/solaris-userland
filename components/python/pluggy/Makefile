@@ -72,3 +72,4 @@ REQUIRED_PACKAGES += library/python/importlib-metadata-37
 
 # Setup related components
 REQUIRED_PACKAGES += library/python/setuptools_scm
+REQUIRED_PACKAGES += library/python/setuptools_scm-27
