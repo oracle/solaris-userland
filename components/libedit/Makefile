@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libedit
-COMPONENT_VERSION=	20210910-3.1
-IPS_COMPONENT_VERSION=  3.1.20210910
+COMPONENT_VERSION=	20221030-3.1
+IPS_COMPONENT_VERSION=  3.1.20221030
 COMPONENT_PROJECT_URL=	http://www.thrysoee.dk/editline/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6792a6a992050762edcca28ff3318cdb7de37dccf7bc30db59fcd7017eed13c5
+    sha256:f0925a5adf4b1bf116ee19766b7daa766917aec198747943b1c4edf67a4be2bb
 COMPONENT_ARCHIVE_URL=	http://www.thrysoee.dk/editline/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libedit
 COMPONENT_ANITYA_ID=	1599
 
-COMPONENT_BAID=		121806
+COMPONENT_BAID=		135522
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
