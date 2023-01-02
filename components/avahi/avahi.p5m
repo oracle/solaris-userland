@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -37,14 +37,15 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2007/464
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+set name=variant.opensolaris.zone value=global value=nonglobal
 #
 file path=etc/avahi/avahi-daemon.conf
 file path=etc/avahi/avahi-dnsconfd.action
 file path=etc/avahi/hosts
 file path=etc/dbus-1/system.d/avahi-dbus.conf
 file files/avahi-bridge-dsd.xml \
-    path=lib/svc/manifest/system/avahi-bridge-dsd.xml
-file files/svc-avahi-bridge-dsd path=lib/svc/method/svc-avahi-bridge-dsd
+    path=lib/svc/manifest/system/avahi-bridge-dsd.xml \
+    variant.opensolaris.zone=global
 file path=usr/bin/avahi-browse
 link path=usr/bin/avahi-browse-domains target=avahi-browse
 file path=usr/bin/avahi-publish
@@ -72,7 +73,8 @@ file path=usr/lib/libavahi-common.so.3.5.3
 link path=usr/lib/libavahi-core.so target=libavahi-core.so.7.0.2
 link path=usr/lib/libavahi-core.so.7 target=libavahi-core.so.7.0.2
 file path=usr/lib/libavahi-core.so.7.0.2
-file usr/bin/avahi-daemon path=usr/sbin/avahi-daemon-bridge-dsd
+file usr/bin/avahi-daemon path=usr/sbin/avahi-daemon-bridge-dsd \
+    variant.opensolaris.zone=global
 file path=usr/share/locale/ach/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/ar/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/bg/LC_MESSAGES/avahi.mo

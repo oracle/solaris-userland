@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -87,9 +87,7 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
     $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/colord.xml \
-	$(PROTO_DIR)/lib/svc/manifest/system/colord.xml; \
-    $(INSTALL) -D -m 0555 $(COMPONENT_DIR)/files/svc-colord \
-	$(PROTO_DIR)/lib/svc/method/svc-colord; \
+	$(PROTO_DIR)/lib/svc/manifest/system/colord.xml
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc

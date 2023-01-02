@@ -1,6 +1,6 @@
-#! /bin/ksh93
+#!/usr/bin/ksh
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -34,13 +34,6 @@ PATH=/usr/bin:/usr/sbin
 
 . /lib/svc/share/smf_include.sh
 
-USAGE="Usage: $0 { start | refresh }"
-
-if [[ $# -ne 1 ]] ; then
-    print "$USAGE" >&2
-    exit 2
-fi
-
 #
 # IF the mime cache exist then :
 #   get the list of mime type files newer than the cache file
@@ -67,10 +60,6 @@ else
 fi
 
 if [[ -n "$RESULT" ]]; then
-  if [[ ! -x /usr/bin/update-desktop-database ]] ; then
-    echo "update-desktop-database not installed"
-    return
-  fi
   echo "updating desktop file cache"
   /usr/bin/update-desktop-database -q
   if [[ $? -ne 0 ]]; then
@@ -96,10 +85,6 @@ else
 fi
 
 if [[ -n "$RESULT" ]]; then
-  if [[ ! -x /usr/bin/update-desktop-database ]] ; then
-    echo "update-desktop-database not installed"
-    return
-  fi
   echo "updating desktop file cache"
   /usr/bin/update-desktop-database -q
   if [[ $? -ne 0 ]]; then
@@ -114,16 +99,14 @@ fi
 METHOD="$1"
 
 case $METHOD in
-    start|refresh)
+    start)
+	if ! is_self_assembly_boot; then
+		exit $SMF_EXIT_OK
+	fi
 	# Continue with rest of script
 	;;
-    -*)
-	print "$USAGE" >&2
-	exit 2
-	;;
-    *)
-	print "Invalid method $METHOD" >&2
-	exit 2
+    refresh)
+	# Continue with rest of script
 	;;
 esac
 

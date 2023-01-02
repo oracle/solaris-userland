@@ -20,7 +20,7 @@
    
     CDDL HEADER END
    
-    Copyright (c) 2009, 2016, Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009, 2023, Oracle and/or its affiliates.
 
     NOTE:  This service description is not editable; its contents
     may be overwritten by package or patch operations, including
@@ -109,8 +109,18 @@
 	<exec_method
         	type='method'
 		name='start'
-		exec='/lib/svc/method/svc-net-snmp'
+		exec='/usr/sbin/snmpd'
 		timeout_seconds='60'>
+		<method_context>
+		    <method_environment>
+			<envvar
+			    name="SNMPCONFPATH"
+			    value="/etc/net-snmp/snmp:/var/net-snmp"/>
+			<envvar
+			    name="MIBDIRS"
+			    value="/etc/net-snmp/snmp/mibs"/>
+		    </method_environment>
+		</method_context>
 	</exec_method>
 
 	<exec_method

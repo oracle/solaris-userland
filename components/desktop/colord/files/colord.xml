@@ -21,7 +21,7 @@
 
     CDDL HEADER END
 
-    Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 
     NOTE:  This service manifest is not editable; its contents will
     be overwritten by package or patch operations, including
@@ -66,11 +66,15 @@
 	</method_context>
 
 	<exec_method timeout_seconds="60" type="method" name="start"
-		exec="/lib/svc/method/svc-colord start"/>
+		exec='/usr/lib/64/colord'/>
 	<exec_method timeout_seconds="60" type="method" name="stop"
 		exec=":kill"/>
 	<exec_method timeout_seconds="60" type="method" name="refresh"
 		exec=":true"/>
+
+	<property_group name='startd' type='framework'>
+		<propval name='duration' type='astring' value='child' />
+	</property_group>
 
 	<stability value='Unstable' />
 

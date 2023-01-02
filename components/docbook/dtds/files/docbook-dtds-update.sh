@@ -1,7 +1,6 @@
-#!/bin/ksh -p
+#!/usr/bin/ksh -p
 #
-# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
-# Use is subject to license terms.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -35,13 +34,6 @@ PATH=/usr/bin:/usr/sbin
 
 . /lib/svc/share/smf_include.sh
 
-USAGE="Usage: $0 { start | refresh }"
-
-if [ $# -ne 1 ] ; then
-    echo $USAGE
-    exit 2
-fi
-
 CATALOG_INSTALL=/usr/share/sgml/docbook/docbook-dtds-install.sh
 CATALOG_UNINSTALL=/usr/share/sgml/docbook/docbook-dtds-uninstall.sh
 
@@ -60,18 +52,13 @@ METHOD=$1
 
 case "$METHOD" in
     'start')
+	if ! is_self_assembly_boot; then
+		exit $SMF_EXIT_OK
+	fi
 	# Continue with rest of script
 	;;
     'refresh')
 	# Continue with rest of script
-	;;
-    -*)
-	echo $USAGE
-	exit 2
-	;;
-    *)
-	echo "Invalid method $METHOD"
-	exit 2
 	;;
 esac
 

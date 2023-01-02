@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <!--
-    Copyright (c) 2004, 2015, Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2004, 2023, Oracle and/or its affiliates.
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -63,14 +63,18 @@
 		<service_fmri value='file://localhost/usr/bin/fc-cache' />
 	</dependency>
 
+	<dependent
+		name='fc-cache-assembly-complete'
+		grouping='optional_all'
+		restart_on='none'>
+		<service_fmri value='svc:/milestone/self-assembly-complete' />
+	</dependent>
+
 	<exec_method
 		type='method'
 		name='start'
-		exec='/lib/svc/method/fc-cache %m'
+		exec='/lib/svc/method/fc-cache'
 		timeout_seconds='3600'>
-		<method_context>
-                        <method_credential user='root' group='root' />
-                </method_context>
         </exec_method>
 
 	<exec_method

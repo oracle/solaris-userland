@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 #
 # CDDL HEADER START
 #
@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -85,7 +85,7 @@ function populate_texinfo_directory() {
 case "$1" in
 'start'|'refresh')
 	if [[ "$1" = 'start' ]]; then
-		if [[ ! -f "/.SELF-ASSEMBLY-REQUIRED" ]]; then
+		if ! is_self_assembly_boot; then
 			exit $SMF_EXIT_OK
 		fi
 	fi

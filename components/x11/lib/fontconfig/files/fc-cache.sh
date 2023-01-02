@@ -1,6 +1,6 @@
-#!/bin/ksh93
+#!/usr/bin/ksh
 #
-# Copyright (c) 2008, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -29,28 +29,9 @@ PATH=/usr/bin:/usr/sbin
 
 . /lib/svc/share/smf_include.sh
 
-USAGE="Usage: $0 <method>"
-
-if [ $# -ne 1 ] ; then
-    echo $USAGE
-    exit 2
+if ! is_self_assembly_boot; then
+	exit $SMF_EXIT_OK
 fi
-
-METHOD=$1
-
-case $METHOD in
-    start)
-	# Continue with rest of script
-	;;
-    -*)
-	echo $USAGE
-	exit 2
-	;;
-    *)
-	echo "Invalid method $METHOD"
-	exit 2
-	;;
-esac
 
 getprop() {
     PROPVAL=""

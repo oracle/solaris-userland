@@ -1,4 +1,4 @@
-#! /bin/ksh93
+#!/usr/bin/ksh
 
 #
 # CDDL HEADER START
@@ -22,33 +22,24 @@
 #
 
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 PATH=/usr/bin:/usr/sbin
 
 . /lib/svc/share/smf_include.sh
 
-USAGE="Usage: $0 <method>"
-
-if [[ $# -ne 1 ]] ; then
-	print "$USAGE" >&2
-	exit 2
-fi
-
 METHOD="$1"
 
 case $METHOD in
-	start|refresh)
+	start)
+		if ! is_self_assembly_boot; then
+			exit $SMF_EXIT_OK
+		fi
 		# Continue with rest of script
 		;;
-	-*)
-		print "$USAGE" >&2
-		exit 2
-		;;
-	*)
-		print "Invalid method $METHOD" >&2
-		exit 2
+	refresh)
+		# Continue with rest of script
 		;;
 esac
 
@@ -56,11 +47,6 @@ for DIR in "" "/64"; do
     MAKE_CACHE="/usr/bin$DIR/gtk-query-immodules-3.0"
     MODULE_DIR="/usr/lib$DIR/gtk-3.0/3.0.0/immodules/"
     CACHE_FILE="/usr/lib$DIR/gtk-3.0/3.0.0/immodules.cache"
-
-    if [[ ! -x "${MAKE_CACHE}" ]] ; then
-	print "${MAKE_CACHE} not installed"
-	continue
-    fi
 
     if [[ ! -r "${CACHE_FILE}" ]]; then
 	RESULT="no cache file"

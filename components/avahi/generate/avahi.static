@@ -20,17 +20,14 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 # SMF service: svc:/system/avahi-bridge-dsd:default
-file files/avahi-bridge-dsd.xml path=lib/svc/manifest/system/avahi-bridge-dsd.xml
-
-# service method
-file files/svc-avahi-bridge-dsd path=lib/svc/method/svc-avahi-bridge-dsd
+file files/avahi-bridge-dsd.xml path=lib/svc/manifest/system/avahi-bridge-dsd.xml variant.opensolaris.zone=global
 
 # LSARC/2007/464/ -> rename avahi-daemon to avahi-daemon-bridge-dsd
-file usr/bin/avahi-daemon path=usr/sbin/avahi-daemon-bridge-dsd
+file usr/bin/avahi-daemon path=usr/sbin/avahi-daemon-bridge-dsd variant.opensolaris.zone=global
 
 # Man pages can not be rebuilt because the xmltoman is missing on Solaris
 # so current man pages are patched instead. Only links are deliverd by install

@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <!--
- Copyright (c) 2022, Oracle and/or its affiliates.
+ Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 -->
 
 <service_bundle type='manifest' name='unbound'>
@@ -14,7 +14,7 @@
                    exec='/usr/sbin/unbound'
                    timeout_seconds='60' >
         <method_context>
-          <method_credential user='_unbound' group='_unbound'
+          <method_credential user='_unbound' group='_unbound' supp_groups=''
             privileges='basic,{net_privaddr}:53/udp,{net_privaddr}:53/tcp,{zone}:/etc/unbound/*,proc_chroot,proc_setid' />
         </method_context>
       </exec_method>

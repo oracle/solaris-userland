@@ -1,6 +1,6 @@
-#! /bin/ksh93
+#!/usr/bin/ksh
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -34,13 +34,6 @@ PATH=/usr/bin:/usr/sbin
 
 . /lib/svc/share/smf_include.sh
 
-USAGE="Usage: $0 { start | refresh }"
-
-if [[ $# -ne 1 ]] ; then
-    print "$USAGE" >&2
-    exit 2
-fi
-
 #
 # for each icon directory update the icon cache if:
 #  - a index.theme file exist
@@ -53,10 +46,6 @@ ICONDIR="/usr/share/icons"
 
 start_icon_cache ()
 {
-if [[ ! -x /usr/bin/gtk-update-icon-cache ]]  ; then
-    echo "gtk-update-icon-cache not installed"
-    return
-fi
 if [[ ! -w $ICONDIR ]] ; then
     echo "$ICONDIR is not writable, skipping."
     return
@@ -95,10 +84,6 @@ done
 
 refresh_icon_cache ()
 {
-if [[ ! -x /usr/bin/gtk-update-icon-cache ]] ; then
-    echo "gtk-update-icon-cache not installed"
-    return
-fi
 if [[ ! -w $ICONDIR ]] ; then
   echo "$ICONDIR is not writable, skipping."
   return
@@ -139,16 +124,14 @@ done
 METHOD=$1
 
 case $METHOD in
-    start|refresh)
+    start)
+	if ! is_self_assembly_boot; then
+		exit $SMF_EXIT_OK
+	fi
 	# Continue with rest of script
 	;;
-    -*)
-	print "$USAGE" >&2
-	exit 2
-	;;
-    *)
-	print "Invalid method $METHOD" >&2
-	exit 2
+    refresh)
+	# Continue with rest of script
 	;;
 esac
 
