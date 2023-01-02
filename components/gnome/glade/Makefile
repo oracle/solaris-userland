@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,13 +28,13 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glade
-COMPONENT_VERSION=	3.38.2
+COMPONENT_VERSION=	3.40.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Glade
 COMPONENT_ARCHIVE_HASH= \
-	sha256:98fc87647d88505c97dd2f30f2db2d3e9527515b3af11694787d62a8d28fbab7
+	sha256:31c9adaea849972ab9517b564e19ac19977ca97758b109edc3167008f53e3d9c
 COMPONENT_BUGDB=	gnome/libglade
 COMPONENT_ANITYA_ID=	1174
-COMPONENT_BAID=		112396
+COMPONENT_BAID=		133507
 
 BUILD_STYLE=		meson
 PYTHON_VERSION=		3.7
