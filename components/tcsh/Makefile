@@ -20,25 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tcsh
-COMPONENT_VERSION=	6.22.03
-IPS_COMPONENT_VERSION=	6.22.3
+COMPONENT_VERSION=	6.24.07
+IPS_COMPONENT_VERSION=	6.24.7
 COMPONENT_PROJECT_URL=	http://www.tcsh.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:be2cfd653d2a0c7f506d2dd14c12324ba749bd484037be6df44a3973f52262b7
+    sha256:8847f6574afd2651fa7dc3321a7d12d0e42aa41f2b2c03d37cc1b254aba4e64d
 COMPONENT_ARCHIVE_URL=	https://astron.com/pub/tcsh/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4945
-
-COMPONENT_BAID=		89152
-
-# the testsuite needs to be configured first
-SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
+COMPONENT_BAID=		135568
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -57,7 +53,6 @@ LOCALEDIR=$(PROTO_DIR)/$(CONFIGURE_LOCALEDIR)
 CONFIGURE_OPTIONS  +=		--localedir=$(CONFIGURE_LOCALEDIR)
 
 COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(USRBINDIR)
-COMPONENT_SYSTEM_TEST_TARGETS= system-test
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \

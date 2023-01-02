@@ -1,200 +1,228 @@
 Changes to the tcsh man specific to Solaris.
-
 These changes will not be sent upstream.
 
-diff --git a/tcsh.man b/tcsh.man
-index b01d07e..6300705 100644
---- a/tcsh.man
-+++ b/tcsh.man
-@@ -77,6 +77,9 @@
- .\"   used here if you can. In particular, please don't use nroff commands
- .\"   which aren't already used herein.
- .\" 
+--- tcsh-6.24.07/tcsh.man.in.orig	2023-01-03 16:40:08.940472328 +0100
++++ tcsh-6.24.07/tcsh.man.in	2023-01-03 17:03:48.690760859 +0100
+@@ -56,6 +56,9 @@
+ .\"   new features in NEW FEATURES and referenced external commands in SEE
+ .\"   ALSO.
+ .\"
 +.\" Modified to reference existing Solaris man pages, to add the Solaris
 +.\" stability classification, and to add a note about source availability.
 +.\"
- .TH TCSH 1 "11 Nov 2020" "Astron 6.22.03"
- .SH NAME
- tcsh \- C shell with file name completion and command line editing
-@@ -151,7 +154,7 @@ flag specified.
- .TP 4
- .B \-m
- The shell loads \fI~/.tcshrc\fR even if it does not belong to the effective
--user.  Newer versions of \fIsu\fR(1) can pass \fB\-m\fR to the shell. (+)
-+user.  Newer versions of \fIsu\fR(8) can pass \fB\-m\fR to the shell. (+)
- .TP 4
- .B \-n
- The shell parses commands but does not execute them.
-@@ -202,7 +205,7 @@ comment.
- Remaining arguments are placed in the \fBargv\fR shell variable.
- .SS "Startup and shutdown"
+ .Dd @PACKAGE_ENGLISH_DATE@
+ .Dt TCSH 1
+ .Os @PACKAGE_ORIGIN@ @PACKAGE_VERSION@
+@@ -190,7 +193,7 @@
+ .Pa ~/.tcshrc
+ even if it does not belong to the effective user.
+ Newer versions of
+-.Xr su 1
++.Xr su 8
+ can pass
+ .Fl m
+ to the shell. (+)
+@@ -280,9 +283,9 @@
+ .
+ .Ss Startup and shutdown
  A login shell begins by executing commands from the system files
--\fI/etc/csh.cshrc\fR and \fI/etc/csh.login\fR.
-+\fI/etc/.cshrc\fR and \fI/etc/.login\fR.
- It then executes commands from files in the user's \fBhome\fR directory:
- first \fI~/.tcshrc\fR (+)
- or, if \fI~/.tcshrc\fR is not found, \fI~/.cshrc\fR,
-@@ -210,17 +213,17 @@ then the contents of \fI~/.history\fR (or the value of the \fBhistfile\fR shell
- then \fI~/.login\fR,
- and finally \fI~/.cshdirs\fR (or the value of the \fBdirsfile\fR shell variable) (+).
- The shell may read \fI/etc/csh.login\fR before instead of after
--\fI/etc/csh.cshrc\fR, and \fI~/.login\fR before instead of after
-+\fI/etc/.cshrc\fR, and \fI~/.login\fR before instead of after
- \fI~/.tcshrc\fR or \fI~/.cshrc\fR and \fI~/.history\fR, if so compiled;
- see the \fBversion\fR shell variable. (+)
- .PP
--Non-login shells read only \fI/etc/csh.cshrc\fR and \fI~/.tcshrc\fR
-+Non-login shells read only \fI/etc/.cshrc\fR and \fI~/.tcshrc\fR
- or \fI~/.cshrc\fR on startup.
- .PP
- For examples of startup files, please consult
- \fIhttp://tcshrc.sourceforge.net\fR.
- .PP
--Commands like \fIstty\fR(1) and \fItset\fR(1),
-+Commands like \fIstty\fR(1) and \fItset\fR(1B),
- which need be run only once per login, usually go in one's \fI~/.login\fR file.
- Users who need to use the same set of files with both \fIcsh\fR(1) and
- \fItcsh\fR can have only a \fI~/.cshrc\fR which checks for the existence of the
-@@ -2055,7 +2058,7 @@ In either case, 7-bit ASCII is the default character code
- and changing the \fBLANG\fR or \fBLC_CTYPE\fR environment variables
+-.Pa /etc/csh.cshrc
++.Pa /etc/.cshrc
+ and
+-.Pa /etc/csh.login .
++.Pa /etc/.login .
+ It then executes commands from files in the user's
+ .Pa home
+ directory:
+@@ -306,7 +309,7 @@
+ The shell may read
+ .Pa /etc/csh.login
+ before instead of after
+-.Pa /etc/csh.cshrc ,
++.Pa /etc/.cshrc ,
+ and
+ .Pa ~/.login
+ before instead of after
+@@ -321,7 +324,7 @@
+ shell variable. (+)
+ .Pp
+ Non-login shells read only
+-.Pa /etc/csh.cshrc
++.Pa /etc/.cshrc
+ and
+ .Pa ~/.tcshrc
+ or
+@@ -334,7 +337,7 @@
+ Commands like
+ .Xr stty 1
+ and
+-.Xr tset 1 ,
++.Xr tset 1B ,
+ which need be run only once per login, usually go in one's
+ .Pa ~/.login
+ file.
+@@ -3966,7 +3969,7 @@
  causes a check for possible changes in these respects.
- .PP
--When using the system's NLS, the \fIsetlocale\fR(3) function is called
-+When using the system's NLS, the \fIsetlocale\fR(3C) function is called
+ .Pp
+ When using the system's NLS, the
+-.Xr setlocale 3
++.Xr setlocale 3C
+ function is called
  to determine appropriate character code/classification and sorting
- (e.g., a 'en_CA.UTF-8' would yield "UTF-8" as a character code).
- This function typically examines the \fBLANG\fR and \fBLC_CTYPE\fR
-@@ -2756,7 +2759,7 @@ The \fBecho_style\fR shell variable may be set to emulate (or not) the flags and
- sequences of the BSD and/or System V versions of \fIecho\fR; see \fIecho\fR(1).
- .TP 8
- .B echotc \fR[\fB\-sv\fR] \fIarg\fR ... (+)
--Exercises the terminal capabilities (see \fItermcap\fR(5)) in \fIargs\fR.
-+Exercises the terminal capabilities (see \fIterminfo\fR(5)) in \fIargs\fR.
- For example, 'echotc home' sends the cursor to the home position,
- \&'echotc cm 3 10' sends it to column 3 and row 10, and
- \&'echotc ts 0; echo "This is a test."; echotc fs' prints "This is a test."
-@@ -2807,7 +2810,7 @@ shell and executes the resulting command(s) in the context
- of the current shell.  This is usually used to execute commands
+ (e.g.,
+@@ -5338,7 +5341,7 @@
+ .
+ .It Ic echotc Oo Fl sv Oc Ar arg No \&... No (+)
+ Exercises the terminal capabilities (see
+-.Xr termcap 5 )
++.Xr terminfo 5 )
+ in
+ .Ar arg .
+ For example,
+@@ -5420,7 +5423,7 @@
  generated as the result of command or variable substitution,
  because parsing occurs before these substitutions.
--See \fItset\fR(1) for a sample use of \fIeval\fR.
-+See \fItset\fR(1B) for a sample use of \fIeval\fR.
- .TP 8
- .B exec \fIcommand\fR
- Executes the specified command in place of the current shell.
-@@ -3415,7 +3418,7 @@ Sets the system execution path.  (TCF only)
- .TP 8
- .B settc \fIcap value \fR(+)
- Tells the shell to believe that the terminal capability \fIcap\fR
--(as defined in \fItermcap\fR(5)) has the value \fIvalue\fR.
-+(as defined in \fIterminfo\fR(5)) has the value \fIvalue\fR.
+ See
+-.Xr tset 1
++.Xr tset 1B
+ for a sample use of
+ .Ic eval .
+ .
+@@ -6625,7 +6628,7 @@
+ Tells the shell to believe that the terminal capability
+ .Ar cap
+ (as defined in
+-.Xr termcap 5 )
++.Xr terminfo 5 )
+ has the value
+ .Ar value .
  No sanity checking is done.
- Concept terminal users may have to `settc xn no' to get proper
- wrapping at the rightmost column.
-@@ -3468,7 +3471,7 @@ the current job.
- .B suspend
- Causes the shell to stop in its tracks, much as if it had
- been sent a stop signal with \fB^Z\fR.  This is most often used to
--stop shells started by \fIsu\fR(1).
-+stop shells started by \fIsu\fR(8).
- .PP
- .B switch (\fIstring\fB)
- .br
-@@ -3502,11 +3505,11 @@ there is no default, execution continues after the \fIendsw\fR.
- .PD
- .TP 8
- .B telltc \fR(+)
--Lists the values of all terminal capabilities (see \fItermcap\fR(5)).
-+Lists the values of all terminal capabilities (see \fIterminfo\fR(5)).
- .TP 8
- .B termname \fR[\fIterminal type\fR] \fR(+)
- Tests if \fIterminal type\fR (or the current value of \fBTERM\fR if no
--\fIterminal type\fR is given) has an entry in the hosts termcap(5) or
-+\fIterminal type\fR is given) has an entry in the hosts
- terminfo(5) database. Prints the terminal type to stdout and returns 0
- if an entry is present otherwise returns 1.
- .TP 8
-@@ -4745,8 +4748,8 @@ nls
- The system's NLS is used; default for systems with NLS
- .TP 6
- lf
--Login shells execute \fI/etc/csh.login\fR before instead of after
--\fI/etc/csh.cshrc\fR and \fI~/.login\fR before instead of after
-+Login shells execute \fI/etc/.login\fR before instead of after
-+\fI/etc/.cshrc\fR and \fI~/.login\fR before instead of after
- \fI~/.tcshrc\fR and \fI~/.history\fR.
- .TP 6
- dl
-@@ -4773,7 +4776,7 @@ Kanji is used if appropriate according to locale settings,
- unless the \fBnokanji\fR shell variable is set
- .TP 6
- sm
--The system's \fImalloc\fR(3) is used
-+The system's \fImalloc\fR(3C) is used
- .TP 6
- hb
- The `#!<program> <args>' convention is emulated when executing shell scripts
-@@ -4867,7 +4870,8 @@ The full name is printed if it is an IP address or an X Window System display.
- .PD
- .PP
- %M and %m are available on only systems that store the remote hostname in
--\fI/etc/utmp\fR.
-+\fI/etc/utmp\fR or
-+\fI/etc/utmpx\fR.
- If unset, `%n has %a %l from %m.' is used, or `%n has %a %l.' on systems
- which don't store the remote hostname.
- .RE
-@@ -4887,7 +4891,7 @@ Equivalent to the \fBafsuser\fR shell variable.
- The number of columns in the terminal.  See \fBTerminal management\fR.
- .TP 8
- .B DISPLAY
--Used by X Window System (see \fIX\fR(1)).
-+Used by X Window System (see \fIX\fR(7)).
- If set, the shell does not set \fBautologout\fR (q.v.).
- .TP 8
- .B EDITOR
-@@ -4904,7 +4908,7 @@ Equivalent to the \fBhome\fR shell variable.
- .TP 8
- .B HOST \fR(+)
+@@ -6770,7 +6773,7 @@
+ .Ic ^Z .
+ This is most often used to
+ stop shells started by
+-.Xr su 1 .
++.Xr su 8 .
+ .
+ .El
+ .Pp
+@@ -6824,7 +6827,7 @@
+ .
+ .It Ic telltc No (+)
+ Lists the values of all terminal capabilities (see
+-.Xr termcap 5 ) .
++.Xr terminfo 5 ) .
+ .
+ .It Ic termname Oo Ar termtype Oc No (+)
+ Tests if
+@@ -6834,8 +6837,6 @@
+ if no
+ .Ar termtype
+ is given) has an entry in the hosts
+-.Xr termcap 5
+-or
+ .Xr terminfo 5
+ database.
+ Prints the terminal type to stdout and returns 0
+@@ -9072,9 +9073,9 @@
+ .
+ .It Li lf
+ Login shells execute
+-.Pa /etc/csh.login
++.Pa /etc/.login
+ before instead of after
+-.Pa /etc/csh.cshrc
++.Pa /etc/.cshrc
+ and
+ .Pa ~/.login
+ before instead of after
+@@ -9124,7 +9125,7 @@
+ .
+ .It Li sm
+ The system's
+-.Xr malloc 3
++.Xr malloc 3C
+ is used.
+ .
+ .It Li hb
+@@ -9281,6 +9282,8 @@
+ .Ql %m
+ are available on only systems that store the remote hostname in
+ .Pa /etc/utmp .
++or
++.Pa /etc/utmpx .
+ .Pp
+ If unset,
+ .Dl %n has %a %l from %m\&.
+@@ -9339,7 +9342,7 @@
+ .
+ .It Ev DISPLAY
+ Used by X Window System (see
+-.Xr X 1 ) .
++.Xr X 7 ) .
+ If set, the shell does not set
+ .Ic autologout .
+ .
+@@ -9368,8 +9371,8 @@
+ .It Ev HOST No (+)
  Initialized to the name of the machine on which the shell
--is running, as determined by the \fIgethostname\fR(2) system call.
-+is running, as determined by the \fIgethostname\fR(3C) library call.
- .TP 8
- .B HOSTTYPE \fR(+)
+ is running, as determined by the
+-.Xr gethostname 2
+-system call.
++.Xr gethostname 3C
++library call.
+ .
+ .It Ev HOSTTYPE No (+)
  Initialized to the type of machine on which the shell
-@@ -5142,7 +5146,7 @@ ConvexOS, Stellix and Intel use \fI/etc/cshrc\fR and
- NeXTs use \fI/etc/cshrc.std\fR.
- A/UX, AMIX, Cray and IRIX have no equivalent in \fIcsh\fR(1),
- but read this file in \fItcsh\fR anyway.
--Solaris 2.x does not have it either, but \fItcsh\fR reads \fI/etc/.cshrc\fR.  (+)
-+Solaris 2.x does not have it either, but \fItcsh\fR reads \fI/etc/.cshrc\fR.  
- .TP 16
- .I /etc/csh.login
- Read by login shells after \fI/etc/csh.cshrc\fR.
-@@ -5349,11 +5353,11 @@ an argument list.
- To detect looping, the shell restricts the number of \fIalias\fR
- substitutions on a single line to 20.
- .SH "SEE ALSO"
--csh(1), emacs(1), ls(1), newgrp(1), sh(1), setpath(1), stty(1), su(1),
--tset(1), vi(1), x(1), access(2), execve(2), fork(2), killpg(2),
--pipe(2), setrlimit(2), sigvec(2), stat(2), umask(2), vfork(2), wait(2),
--malloc(3), setlocale(3), tty(4), a.out(5), termcap(5), environ(7),
--termio(7), Introduction to the C Shell
-+csh(1), emacs(1), ls(1), newgrp(1), sh(1), stty(1), su(8),
-+tset(1B), vi(1), X(7), access(2), execve(2), fork(2), killpg(3C),
-+pipe(2), setrlimit(2), sigvec(3UCB), stat(2), umask(2), vfork(2), wait(2),
-+malloc(3C), setlocale(3C), tty(7D), a.out(4), terminfo(5), environ(7),
-+termio(7I), Introduction to the C Shell
- .SH VERSION
- This manual documents tcsh 6.22.03 (Astron) 2020-11-18.
- .SH AUTHORS
-@@ -5532,3 +5536,9 @@ All the people on the net, for putting up with,
- reporting bugs in, and suggesting new additions to each and every version
- .PP
- Richard M. Alderson III, for writing the `T in tcsh' section
-+
-+.SH "NOTES"
-+.PP
+@@ -10044,28 +10047,28 @@
+ .Xr setpath 1 ,
+ .Xr sh 1 ,
+ .Xr stty 1 ,
+-.Xr su 1 ,
+-.Xr tset 1 ,
++.Xr su 8 ,
++.Xr tset 1B ,
+ .Xr vi 1 ,
+-.Xr x 1 ,
++.Xr X 7 ,
+ .Xr access 2 ,
+ .Xr execve 2 ,
+ .Xr fork 2 ,
+-.Xr killpg 2 ,
++.Xr killpg 3C ,
+ .Xr pipe 2 ,
+ .Xr setrlimit 2 ,
+-.Xr sigvec 2 ,
++.Xr sigvec 3UCB ,
+ .Xr stat 2 ,
+ .Xr umask 2 ,
+ .Xr vfork 2 ,
+ .Xr wait 2 ,
+-.Xr malloc 3 ,
+-.Xr setlocale 3 ,
+-.Xr tty 4 ,
+-.Xr a.out 5 ,
+-.Xr termcap 5 ,
++.Xr malloc 3C ,
++.Xr setlocale 3C ,
++.Xr tty 7D ,
++.Xr a.out 4 ,
++.Xr terminfo 5 ,
+ .Xr environ 7 ,
+-.Xr termio 7 ,
++.Xr termio 7I ,
+ .Em Introduction to the C Shell
+ .
+ .Sh VERSION
+@@ -10403,6 +10406,11 @@
+ .Sx T in tcsh
+ section
+ .
++. Sh NOTES
 +It is no longer possible for variables to have a '-' or a '=' within the
 +name. Any variables of this form will generate a 'setenv: Syntax error'
 +error message.
++.
+ .Sh BUGS
+ When a suspended command is restarted, the shell prints the directory
+ it started in if this is different from the current directory.

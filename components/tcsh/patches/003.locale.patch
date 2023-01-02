@@ -1,8 +1,6 @@
-diff --git a/sh.c b/sh.c
-index d7b5da3..44fac51 100644
---- a/sh.c
-+++ b/sh.c
-@@ -173,17 +173,10 @@ add_localedir_to_nlspath(const char *path)
+--- tcsh-6.24.06/sh.c.orig	2022-12-19 17:45:42.434084082 +0100
++++ tcsh-6.24.06/sh.c	2022-12-19 17:46:14.302438309 +0100
+@@ -173,17 +173,10 @@
      size_t len;
      int add_LOC = 1;
      int add_lang = 1;
@@ -20,16 +18,14 @@ index d7b5da3..44fac51 100644
      if ((old = getenv("NLSPATH")) != NULL)
          len = strlen(old) + 1;	/* don't forget the colon. */
      else
-diff --git a/sh.func.c b/sh.func.c
-index 40ab3b3..28094e6 100644
---- a/sh.func.c
-+++ b/sh.func.c
-@@ -2671,6 +2671,8 @@ nlsinit(void)
+--- tcsh-6.24.06/sh.func.c.orig	2022-12-19 17:46:32.355990824 +0100
++++ tcsh-6.24.06/sh.func.c	2022-12-19 17:49:15.719213636 +0100
+@@ -2625,6 +2625,8 @@
  
      if (adrof(STRcatalog) != NULL)
  	catalog = xasprintf("tcsh.%s", short2str(varval(STRcatalog)));
 +/* for compatibility */
-+#undef NL_CAT_LOCALE
++#undef NL_CAT_LOCALE		
  #ifdef NL_CAT_LOCALE /* POSIX-compliant. */
      /*
       * Check if LC_MESSAGES is set in the environment and use it, if so.
