@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32
@@ -48,7 +48,8 @@ COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 COMPONENT_INSTALL_ARGS += pkgconfigdir="$(DESTDIR)/usr/share/pkgconfig"
 CONFIGURE_ENV += XORG_SGML_PATH="$(PROTO_DIR)/usr/share/sgml"
 
-# This is for the print, xevie headers which we still include
+# This is for the xevie headers which we still include
+# Will be dropped once EOF of xevie completes (PSARC/2022/176)
 CONFIGURE_OPTIONS += --enable-legacy
 
 REQUIRED_PACKAGES += developer/documentation-tool/asciidoc
