@@ -20,28 +20,21 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		fstobdf
-COMPONENT_VERSION=	1.0.7
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH= \
-	sha256:2624cbf071ccca89c2a6dadd65004784f478b2ba1c62b8209e03909954f36b50
 COMPONENT_BUGDB=        x11/xclients
-COMPONENT_ANITYA_ID=	17156
-COMPONENT_BAID=		132597
 
-COMPONENT_NAME_1=       fslsfonts
-COMPONENT_VERSION_1=    1.0.6
-COMPONENT_ARCHIVE_1 ?= $(COMPONENT_SRC_1).tar.xz
-COMPONENT_ARCHIVE_HASH_1=       \
+COMPONENT_NAME=         fslsfonts
+COMPONENT_VERSION=      1.0.6
+COMPONENT_ARCHIVE ?=    $(COMPONENT_SRC).tar.xz
+COMPONENT_ARCHIVE_HASH=         \
     sha256:01cb0c5a7dbddadef846ca3b52c2ab9c60f2c32c3f16584cd97a6c7f293341ee
-COMPONENT_ANITYA_ID_1=	17157
-COMPONENT_BAID_1=	130798
+COMPONENT_ANITYA_ID=    17157
+COMPONENT_BAID=         130798
 
 COMPONENT_NAME_2=       showfont
 COMPONENT_VERSION_2=    1.0.6
@@ -64,7 +57,7 @@ TEST_TARGET = $(NO_TESTS)
 BUILD_TARGET = $(BUILD_$(MK_BITS))
 INSTALL_TARGET = $(INSTALL_$(MK_BITS))
 
-LIST = 1 2 3
+LIST = 2 3
 
 define extra-target-rules
 $(BUILD_DIR)/%_$(1)/.configured: SOURCE_DIR=$$(SOURCE_DIR_$(1))
