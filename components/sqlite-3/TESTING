@@ -20,9 +20,9 @@ modified IPS repo and test installing Solaris from it.
 # http://nana.us.oracle.com/products/Solaris_Trunk/st_trunk/${BUILD}/zipped-repo/
 
 # I perform whole action in zfs so that I can rollback easily
-zfs create scratch/repo
+zfs create rpool/scratch/repo
 ksh ./install-repo.ksh -d repo
-zfs snapshot scratch/repo@after_unpack
+zfs snapshot rpool/scratch/repo@after_unpack
 
 # Remove old sqlite
 PKG=database/sqlite-3
@@ -79,8 +79,6 @@ gsed -i 's$http://pkg.oracle.com/solaris/release$file:///scratch/repo$' iso.xml
 #     <publisher name="solaris">
 #       <origin name="CHANGE_THIS"/>
 
-# The machine needs uucp installed otherwise building iso fails
-sudo pkg install -v service/network/uucp
 sudo distro_const build iso.xml
 
 # Now install machine from the iso (see instructions bellow) and verify that
