@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wheel
-COMPONENT_VERSION=	0.37.1
+COMPONENT_VERSION=	0.38.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:78cc63d56649c516052d4aeb92db258f014c3aa6085c7f81a28b7aec8c4773d0
+    sha256:965f5259b566725405b05e7cf774052044b1ed30119b5d586b2703aafe8719ac
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pypa/wheel
 COMPONENT_BUGDB=	python-mod/wheel
 COMPONENT_ANITYA_ID=	11428
-COMPONENT_BAID=		119214
+COMPONENT_BAID=		135532
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
