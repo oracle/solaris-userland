@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 # MySQL 5.7 is compiled using GCC. Note that the MySQL Server 5.7 for
@@ -34,12 +34,12 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = mysql
-COMPONENT_VERSION     = 5.7.39
+COMPONENT_VERSION     = 5.7.40
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_NAME)-boost-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-                        sha256:8206d24cb93c52d900ce67cd50618331a4cc071c0040b3a72bcb4b94fa45468f
-COMPONENT_ARCHIVE_URL = https://cdn.mysql.com/archives/mysql-5.7/$(COMPONENT_ARCHIVE)
+                        sha256:e2a93d90e5773286efb71cb34cab0d51cd70d35e71c24c71eaa5df45f4b2de87
+COMPONENT_ARCHIVE_URL = https://dev.mysql.com/get/Downloads/MySQL-5.7/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL = https://dev.mysql.com/
 COMPONENT_BUGDB       = database/mysql
 COMPONENT_ANITYA_ID=	100777
