@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -39,13 +39,13 @@ set name=org.opensolaris.arc-caseid value=LSARC/2005/734
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file path=usr/bin/gnome-autogen.sh
-file path=usr/share/aclocal/ax_check_enable_debug.m4
-file path=usr/share/aclocal/ax_code_coverage.m4
 file path=usr/share/aclocal/gnome-code-coverage.m4
 file path=usr/share/aclocal/gnome-common.m4
 file path=usr/share/aclocal/gnome-compiler-flags.m4
 #
 license COPYING license=GPLv2
+# macros removed from gnome-common are now delivered by autoconf-archive
+depend type=group fmri=pkg:/developer/build/autoconf-archive
 #
 # Prior to s12_99, gnome-common was part of the developer/gnome/gettext package,
 # so this optional dependency ensures we don't try to install a conflicting
