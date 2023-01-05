@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64_and_32
@@ -28,14 +28,14 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		graphene
-COMPONENT_VERSION=	1.10.2
+COMPONENT_VERSION=	1.10.8
 COMPONENT_PROJECT_URL=	https://ebassi.github.io/graphene/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:e97de8208f1aac4f913d4fa71ab73a7034e807186feb2abe55876e51c425a7f6
+	sha256:a37bb0e78a419dcbeaa9c7027bcff52f5ec2367c25ec859da31dfde2928f279a
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	12758
 
-COMPONENT_BAID=		89503
+COMPONENT_BAID=		135518
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -44,7 +44,7 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-CONFIGURE_OPTIONS.32 += -Dintrospection=false
+CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 CONFIGURE_OPTIONS += -Darm_neon=false
 # we don't need to distribute graphene tests
 CONFIGURE_OPTIONS += -Dinstalled_tests=false
