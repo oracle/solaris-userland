@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 	64_and_32
@@ -40,36 +40,6 @@ COMPONENT_ARCHIVE_URL =	https://www.ijg.org/files/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	library/libjpeg
 
 COMPONENT_BAID =	129210
-
-COMPONENT_VERSION_1 =	6.0.2
-PROJECT_VERSION_1 =	6b2
-HUMAN_VERSION_1 =	v$(PROJECT_VERSION_1)
-COMPONENT_PROJECT_URL_1=https://sourceforge.net/projects/libjpeg/
-COMPONENT_SRC_1 =	jpeg-$(PROJECT_VERSION_1)
-COMPONENT_SRC_NAME_1 =	jpegsrc.$(HUMAN_VERSION_1)
-COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_NAME_1).tar.gz
-COMPONENT_ARCHIVE_HASH_1= \
-	sha256:6d2be0db82dda2e50c908b72aa22ed8cf42cc5aa5ae5f2b081498be6ef16eabc
-COMPONENT_ARCHIVE_URL_1=http://jpegclub.org/support/files/$(COMPONENT_ARCHIVE_1)
-
-COMPONENT_BAID_1 =	39267
-
-BUILD_OLD_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)
-BUILD_OLD_DIR_64 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH64)
-
-$(BUILD_OLD_DIR_32)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_64)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_32)/.configured: BITS=32
-$(BUILD_OLD_DIR_64)/.configured: BITS=64
-
-BUILD_32 += $(BUILD_OLD_DIR_32)/.built
-BUILD_64 += $(BUILD_OLD_DIR_64)/.built
-
-INSTALL_32 += $(BUILD_OLD_DIR_32)/.installed
-INSTALL_64 += $(BUILD_OLD_DIR_64)/.installed
-
-$(BUILD_DIR_32)/.installed:     $(BUILD_OLD_DIR_32)/.installed
-$(BUILD_DIR_64)/.installed:     $(BUILD_OLD_DIR_64)/.installed
 
 include $(WS_MAKE_RULES)/common.mk
 
