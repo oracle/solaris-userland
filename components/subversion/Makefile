@@ -84,7 +84,7 @@ COMPONENT_TEST_TRANSFORMS += \
      '-e "/^Python version.*/d"'
 
 # There is only one version of Perl supported and Perl is only 64-bit
-PERL_VERSION = 5.32
+PERL_VERSION = 5.36
 PERL = $(USRDIR)/perl5/$(PERL_VERSION)/bin/perl
 
 PERL_ARCH_i386 = i86pc-solaris-thread-multi-64

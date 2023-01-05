@@ -41,7 +41,7 @@ COMPONENT_ANITYA_ID=	4880
 COMPONENT_PUBLIC_KEY_URL=	http://www.squid-cache.org/pgp.asc
 
 # Use Perl better than default one
-PERL_VERSION = 5.32
+PERL_VERSION = 5.36
 
 # Enable adiheap security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -137,7 +137,7 @@ REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/security/nettle
-REQUIRED_PACKAGES += runtime/perl-532
+REQUIRED_PACKAGES += runtime/perl-536
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
