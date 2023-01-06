@@ -152,6 +152,7 @@ PERL_SCRIPTS= \
   $(PROTOUSRLIBDIR)/golang/src/syscall/mksysnum_openbsd.pl
 
 
+ifeq ($(MACH), i386)
 # Used during the build.
 REQUIRED_PACKAGES += developer/gcc
 REQUIRED_PACKAGES += developer/versioning/git
@@ -171,3 +172,4 @@ REQUIRED_PACKAGES += system/library
 # support is optional.
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/linker
+endif
