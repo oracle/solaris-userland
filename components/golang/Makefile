@@ -52,27 +52,6 @@ GOROOT_FINAL=		/usr/lib/golang/
 COMPONENT_BUILD_ENV +=	GOROOT_FINAL="$(GOROOT_FINAL)"
 COMPONENT_BUILD_ENV +=	GOOS="solaris"
 
-
-# Bootstrap golang from much older C based version
-# https://go.dev/doc/install/source#bootstrapFromSource
-BOOTSTRAP=$(COMPONENT_DIR)/bootstrap/go/
-COMPONENT_BUILD_ENV +=	\
-	GOROOT_BOOTSTRAP="$(BOOTSTRAP)"
-
-bootstrap:
-	$(MKDIR) bootstrap ;\
-	cd bootstrap ;\
-	wget https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz ;\
-	tar -xzf go1.4-bootstrap-20171003.tar.gz ;\
-	cd go/src ;\
-	$(ENV) CGO_ENABLED=0 ./make.bash
-
-CLEAN_PATHS += bootstrap
-ifeq ($(MACH),i386)
-build: bootstrap
-endif
-
-
 BUILD_STYLE= justmake
 BUILD_64 += $(BUILD_DIR)/man1/go.1
 INSTALL_64 := build $(INSTALL_64)
