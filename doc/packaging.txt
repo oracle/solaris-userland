@@ -1,11 +1,11 @@
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
 #
 
 
                 Userland Consolidation Packaging Guidelines.
 
-	Each component that integrates into the Userland consolidation must have at
+    Each component that integrates into the Userland consolidation must have at
 least one package manifest that describes the content to be delivered.  In some
 cases components *may* deliver through multiple packages.  Canonical component
 package manifests must be placed in the component's build directory.  They also
@@ -345,8 +345,19 @@ TL;DR you have to:
 
     file release-notes/legacy-runtime-python-34.txt \
         path=usr/share/doc/release-notes/legacy-runtime-python-34.txt mode=0444 \
-        must-display=true release-note=feature/pkg/self@0
+        must-display=true \
+        release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+        release-note=feature/pkg/self@0
 
+ The first release-note attribute makes "pkg update" display the note when
+ upgrading from a version older than the one listed.  (If the component
+ version changes during the legacy period, you may want to list the initial
+ version instead of $(IPS_COMPONENT_VERSION) here to reduce the number of times
+ the note is displayed on upgrade.)
+
+ The second release-note attribute, with the "@0" notation, makes pkg display
+ the note when the package is initially installed instead of being upgraded.
+ See the pkg(7) man page for further details.
 
 Longer description:
 
