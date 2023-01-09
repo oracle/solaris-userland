@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 #
 # Rules and Macros for building open source software that builds with
@@ -80,6 +80,32 @@ COMPONENT_SYSTEM_TEST_CMD =	$(NINJA)
 COMPONENT_TEST_TARGETS =	test
 COMPONENT_SYSTEM_TEST_TARGETS =	test
 
+# Meson test results do not have stable line ordering. The following transform
+# sorts the test cases, ensures that each test case is present exactly once
+# (which is not necessarily true for failed ones as those also appear in the
+# failure summary), and keeps the test summary at the bottom of the result.
+MESON_TRANSFORM_CONTENT = \
+	'$(GNU_GREP) -E \"^[ \\\\t]*[0-9]+/[0-9]+\" $(COMPONENT_TEST_OUTPUT).raw \|' \
+	'$(GSED) -e \"s@^[ \\\\t]*[0-9]*/[0-9]*[ \\\\t]*@@\" -e \"s/[ \\\\t]*[0-9]*[0-9].[0-9][0-9]s//\"' \
+		'-e \"s/[ \\\\t]*\(\\\\?exit status.*//\" \| sort \| uniq \> $(COMPONENT_TEST_OUTPUT)\\n' \
+	'echo \>\> $(COMPONENT_TEST_OUTPUT)\\n' \
+	'$(GSED) -n -e \"s/[ \\\\t]*$$//\" -e \"/^Ok:/p\" -e \"/^Skipped:/p\" -e \"/^Timeout:/p\" -e \"/Fail:/p\" -e \"/Pass:/p\"' \
+	'$(COMPONENT_TEST_OUTPUT).raw \>\> $(COMPONENT_TEST_OUTPUT)\\n'
+
+COMPONENT_TEST_MESON_CLEANUP_CMD =	$(COMPONENT_TEST_BUILD_DIR)/meson-transform-$(BITS)-results
+COMPONENT_TEST_MESON_CLEANUP = \
+	@if [ -e $(COMPONENT_TEST_MASTER) ]; \
+	then \
+		print "\#!/bin/sh" > $(COMPONENT_TEST_MESON_CLEANUP_CMD); \
+		print '$(MESON_TRANSFORM_CONTENT)' \
+			>> $(COMPONENT_TEST_MESON_CLEANUP_CMD); \
+		$(MV) -n $(COMPONENT_TEST_OUTPUT) $(COMPONENT_TEST_OUTPUT).raw; \
+		$(SHELL) $(COMPONENT_TEST_MESON_CLEANUP_CMD); \
+	else \
+		print 'Cannot find $(COMPONENT_TEST_MASTER)'; \
+		exit 2; \
+	fi
+
 # Test the built source.  If the output file shows up in the environment or
 # arguments, don't redirect stdout/stderr to it.
 $(BUILD_DIR)/%/.tested-and-compared:    $(BUILD_DIR)/%/.built
@@ -92,6 +118,7 @@ $(BUILD_DIR)/%/.tested-and-compared:    $(BUILD_DIR)/%/.built
 		$(COMPONENT_TEST_ARGS) $(COMPONENT_TEST_TARGETS)) \
 		$(if $(findstring $(COMPONENT_TEST_OUTPUT),$(COMPONENT_TEST_ENV)$(COMPONENT_TEST_ARGS)),,&> $(COMPONENT_TEST_OUTPUT))
 	$(COMPONENT_POST_TEST_ACTION)
+	$(COMPONENT_TEST_MESON_CLEANUP)
 	$(COMPONENT_TEST_CREATE_TRANSFORMS)
 	$(COMPONENT_TEST_PERFORM_TRANSFORM)
 	$(COMPONENT_TEST_COMPARE)

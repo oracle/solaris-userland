@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -53,12 +53,6 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS.32 += -Dwith_introspection=false
 CONFIGURE_OPTIONS.64 += -Dwith_introspection=true
 
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Fail:/p" ' \
-        '-e "/Pass:/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += library/desktop/cairo

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -47,13 +47,6 @@ LD_OPTIONS += -z gnu-version-script-compat
 CONFIGURE_ENV += $(COMPONENT_BUILD_ENV)
 
 # for tests
-COMPONENT_TEST_TRANSFORMS += '-e "s/            [0-9].[0-9][0-9]s//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Pass:/p" ' \
-        '-e "/Fail:/p" ' \
-        '-e "/OK/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen

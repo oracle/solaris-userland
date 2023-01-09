@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -52,16 +52,6 @@ LDFLAGS += -z gnu-version-script-compat
 
 CONFIGURE_OPTIONS += -Dinstalled_tests=true
 CONFIGURE_OPTIONS += -Dgtk_doc=true
-
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9]*.[0-9][0-9]s//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/GLib-Net-WARNING/d" ' \
-        '-e "/OK/p" ' \
-        '-e "/Fail/p" ' \
-        '-e "/Pass/p" ' \
-        '-e "/Ok/p" ' \
-        '-e "/ok/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -121,22 +121,8 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 # Needed for "gmake test" to work successfully.
 unexport SHELLOPTS
 
-# pixbuf-randomly-modified tests have a different random suffix each time,
-# so strip that out to allow repeatable comparisons
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "s%/pixbuf/randomly-modified/.*%/pixbuf/randomly-modified/...%"'
-
 # Standard automake test framework results transform
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-# get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9]s//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Timeout:/p" ' \
-        '-e "/Skipped:/p" ' \
-        '-e "/Fail:/p" ' \
-        '-e "/Pass:/p" '
 
 clean:: $(SUBDIRS)
 	$(RM) -r build build_32 build_64

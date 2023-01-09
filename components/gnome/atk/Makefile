@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -59,9 +59,11 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 COMPONENT_TEST_TARGETS += ; cd tests; ./testdocument; ./testrole ; \
 	./testrelation ; ./teststateset ; ./testvalue
 
+# Don't use meson transform as the test results are non-standard.
+COMPONENT_TEST_MESON_CLEANUP =
 # get rid of the timestamps from the test results
 COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9]s//" '
-COMPONENT_TEST_COMPARE_CMD =  $(GDIFF) -uN --ignore-space-change --ignore-blanks-lines
+COMPONENT_TEST_COMPARE_CMD =  $(GDIFF) -uN --ignore-space-change --ignore-blank-lines
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 

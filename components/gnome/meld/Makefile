@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -66,14 +66,6 @@ PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/meld
 PKG_CONFIG_PATHS += /usr/lib/python$(PYTHON_VERSION)/vendor-packages/lib/pkgconfig
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
-COMPONENT_TEST_TRANSFORMS += '-e "s/OK      [0-9]//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/OK/p" ' \
-        '-e "/Ok/p" ' \
-        '-e "/Pass/p" ' \
-        '-e "/Fail/p" '
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

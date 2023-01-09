@@ -53,10 +53,7 @@ CPPFLAGS += -std=gnu99 -D_XOPEN_SOURCE=700 -D__EXTENSIONS__
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Pass:/p" ' \
-        '-e "/Fail:/p" '
+        '-e "s/[0-9]* subtests passed/x subtests passed/"'
 
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += system/library

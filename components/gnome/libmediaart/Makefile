@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -53,14 +53,6 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 # for the tests
 unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9]*.[0-9][0-9]s//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/OK/p" ' \
-        '-e "/Fail/p" ' \
-        '-e "/Pass/p" ' \
-        '-e "/Ok/p" ' \
-        '-e "/ok/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala

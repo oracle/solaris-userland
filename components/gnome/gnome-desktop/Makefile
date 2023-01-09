@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -62,6 +62,8 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 
 COMPONENT_TEST_TARGETS += ; cd tests; ./wall-clock;
 COMPONENT_TEST_TRANSFORMS += '-e "/^\#/d"'
+# Don't use meson transform as the test results are non-standard.
+COMPONENT_TEST_MESON_CLEANUP =
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -64,13 +64,6 @@ CONFIGURE_OPTIONS += -Dprofiling=false
 CONFIGURE_OPTIONS += -Ddocs=true
 CONFIGURE_OPTIONS.32 += -Dintrospection=false
 
-# get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Pass:/p" ' \
-        '-e "/Fail:/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils

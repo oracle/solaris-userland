@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -66,11 +66,6 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Pass:/p" ' \
-        '-e "/Fail:/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc

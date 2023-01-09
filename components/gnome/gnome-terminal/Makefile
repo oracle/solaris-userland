@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -51,14 +51,6 @@ LDFLAGS += -fstack-protector
 LDFLAGS += -z gnu-version-script-compat
 
 unexport SHELLOPTS
-
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok/p" ' \
-        '-e "/Fail/p" ' \
-        '-e "/Pass/p" ' \
-        '-e "/Skipped/p" ' \
-        '-e "/Timeout/p" '
 
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gnome-shell

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -52,15 +52,6 @@ CONFIGURE_OPTIONS += -Dminer_rss=false
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 LDFLAGS += -z gnu-version-script-compat
 
-# Add tests
-# get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/OK:/p" ' \
-        '-e "/Pass:/p" ' \
-        '-e "/Fail:/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += codec/flac

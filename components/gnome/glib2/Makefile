@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER =      	gcc
@@ -108,22 +108,9 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gnome-interfaces.7 \
                 $(PROTO_DIR)/usr/share/man/man7/gnome-interfaces.7;
 
-# Strip random seeds from glib tests that use different values each run
-# Even though this is hooked up, the test results vary from system to
-# system, so gmake test isn't consistently passing
-COMPONENT_TEST_TRANSFORMS += \
-        '-e "s/seed:[0-9]*/seed:/"'
 # get rid of the timestamps from the test results
 COMPONENT_TEST_MASTER = \
 	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
-COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
-COMPONENT_TEST_TRANSFORMS += '-e "s/OK      [0-9]//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Skipped:/p" ' \
-        '-e "/Fail:/p" ' \
-        '-e "/Pass:/p" '
 
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += data/docbook/docbook-dtds

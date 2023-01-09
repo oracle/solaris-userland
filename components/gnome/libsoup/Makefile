@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 32_and_64
@@ -62,15 +62,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 # for the tests
 unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "s|\s\+[0-9]\+\.[0-9]\+s||p" ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Fail:/p" ' \
-        '-e "/Pass:/p" ' \
-        '-e "/Skipped:/p" ' \
-        '-e "/Timeout:/p" ' \
-        '-e "/The output from the failed tests:/q" '
 
 # ssl-test fails due to new glib-networking with slightly different behavior
 # and this know issue: https://gitlab.gnome.org/GNOME/libsoup/-/issues/120.

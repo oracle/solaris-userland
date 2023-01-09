@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -37,6 +37,8 @@ COMPONENT_ANITYA_ID=	5496
 
 COMPONENT_BAID=		123939
 BUILD_STYLE=		meson
+
+TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

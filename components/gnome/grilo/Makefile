@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -54,14 +54,6 @@ COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 CONFIGURE_OPTIONS.32 += -Denable-introspection=false
 CONFIGURE_OPTIONS.32 += -Denable-vala=false
 
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok/p" ' \
-        '-e "/Fail/p" ' \
-        '-e "/Pass/p" ' \
-        '-e "/Skipped/p" ' \
-        '-e "/Timeout/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc

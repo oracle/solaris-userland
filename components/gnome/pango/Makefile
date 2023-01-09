@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -72,15 +72,9 @@ COMPONENT_TEST_TARGETS += ; cd tests; ./cxx-test; ./markup-parse; \
         ./testboundaries; ./testcolor; ./testiter; ./testscript; \
 	./test-ellipsize; ./test-harfbuzz; ./test-itemize; ./test-layout; \
 	./test-pangocairo-threads; ./test-shape; ./testmisc; ./testattributes;
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9]s//" '
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9][0-9].[0-9][0-9]s//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Fail:/p" ' \
-        '-e "/Pass:/p" ' \
-        '-e "/Skipped:/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+        '-e "s/[0-9]* subtests passed/x subtests passed/"'
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/fribidi

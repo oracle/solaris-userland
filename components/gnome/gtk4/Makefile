@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -58,14 +58,6 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-COMPONENT_TEST_TRANSFORMS += \
-        '-e "s/seed:[0-9]*/seed:/"'
-# get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
-COMPONENT_TEST_TRANSFORMS += '-e "s/OK      [0-9]//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/OK/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH64).master
 
 REQUIRED_PACKAGES += image/library/librsvg

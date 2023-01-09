@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64_and_32
@@ -48,11 +48,6 @@ CONFIGURE_OPTIONS += -Dbuiltin=libicu
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Pass:/p" ' \
-        '-e "/Fail:/p" '
 
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += system/library

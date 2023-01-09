@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 # gobject-introspection must be built with gcc as gobject-introspection does
@@ -73,15 +73,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 COMPONENT_POST_INSTALL_ACTION += \
         $(PYTHON) -m compileall $(PROTOUSRLIBDIR)/gobject-introspection/giscanner/ ;
 
-# Standard automake test framework results transform
-COMPONENT_TEST_TRANSFORMS += '-e "s/       [0-9].[0-9][0-9]s//"'
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Skip:/p" ' \
-        '-e "/Fail:/p" ' \
-        '-e "/Pass:/p" ' \
-        '-e "/Timeout:/p" ' \
-        '-e "/Ok:/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # Requires bison >= 3.0

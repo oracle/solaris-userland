@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -68,14 +68,6 @@ CONFIGURE_OPTIONS += -Dinspect_tool=false
 # to avoid issues with the gir generation with the updated vala
 
 LDFLAGS += -z gnu-version-script-compat
-
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok/p" ' \
-        '-e "/Fail/p" ' \
-        '-e "/Pass/p" ' \
-        '-e "/Skipped/p" ' \
-        '-e "/Timeout/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala

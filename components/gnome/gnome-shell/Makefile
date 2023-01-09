@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -83,14 +83,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 # evolution-data-server component directory
 PKG_CONFIG_PATHS += $(WS_COMPONENTS)/gnome/evolution-data-server
 
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok/p" ' \
-        '-e "/Fail/p" ' \
-        '-e "/Pass/p" ' \
-        '-e "/Skipped/p" ' \
-        '-e "/Timeout/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/vala

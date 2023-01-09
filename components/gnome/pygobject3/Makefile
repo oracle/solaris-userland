@@ -65,8 +65,6 @@ $(BUILD_DIR)/%-3.11/.tested-and-compared:		PYTHON_VERSION=3.11
 
 include $(WS_MAKE_RULES)/test-x11.mk
 
-COMPONENT_TEST_TRANSFORMS += '-n -e "/:/p"'
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # g-ir-scanner

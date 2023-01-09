@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 		64
 # All components using gobject-introspection must be built with gcc as
@@ -49,11 +49,6 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
-
-# intltool may or may not be run depending on previous state of build dir
-COMPONENT_TEST_TRANSFORMS += \
-	"-e '/\/usr\/bin\/intltool-update/d'" \
-	"-e 's/\s\+[0-9\.]\+s//'"
 
 CONFIGURE_OPTIONS += -Dsolaris=true
 CONFIGURE_OPTIONS += -Dselinux=disabled
@@ -86,8 +81,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
                 $(PROTO_DIR)/lib/svc/method/svc-gdm; \
         $(INSTALL) -D $(COMPONENT_DIR)/files/org.gnome.login-screen.gschema.override \
                 $(PROTO_DIR)/usr/share/glib-2.0/schemas/org.gnome.login-screen.gschema.override;
-
-COMPONENT_TEST_TRANSFORMS += '-e "/^make/d"'
 
 REQUIRED_PACKAGES += data/iso-codes
 REQUIRED_PACKAGES += developer/documentation-tool/itstool

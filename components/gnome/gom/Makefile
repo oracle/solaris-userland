@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -60,9 +60,6 @@ CONFIGURE_OPTIONS += -Denable-gtk-doc=true
 CONFIGURE_OPTIONS.32 += -Denable-introspection=false
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_COMPARE_CMD =  $(GDIFF) -uN --ignore-space-change --ignore-blanks-lines
-# get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc

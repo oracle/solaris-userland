@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -68,11 +68,9 @@ COMPONENT_POST_INSTALL_ACTION += ( \
 		$(PERL) -i -pe 's|\#!/usr/bin/env python3|\#!$(PYTHON)|' $(PROTOUSRLIBDIR64)/gstreamer-1.0/gst-plugins-doc-cache-generator \
 	);
 
-
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ENV = -i
 COMPONENT_TEST_ARGS = -k 0
-COMPONENT_TEST_TRANSFORMS += '-e "s/\s*[0-9]\+\.[0-9]\+s//"'
 
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxslt

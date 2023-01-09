@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -58,11 +58,6 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Pass:/p" ' \
-        '-e "/Fail:/p" '
 
 REQUIRED_PACKAGES += developer/ui-designer/glade
 REQUIRED_PACKAGES += library/desktop/atk

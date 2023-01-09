@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -66,9 +66,6 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS)-$(MACH).master
 COMPONENT_TEST_ARGS = -k 0
 COMPONENT_TEST_ENV = -i
-COMPONENT_TEST_TRANSFORMS += '-e "s/\s*[0-9]\+\.[0-9]\+s//" '
-COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/TIME/" '
-COMPONENT_TEST_TRANSFORMS += '-e "s/TIME.*\$$(@D)/TIME GST_ENV \$$(@D)/"'
 
 REQUIRED_PACKAGES += codec/libtheora
 REQUIRED_PACKAGES += codec/libogg

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		64_and_32
@@ -51,14 +51,6 @@ CONFIGURE_OPTIONS.32 += -Dvapi=false
 CONFIGURE_OPTIONS.64 += -Dvapi=true
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9]*.[0-9][0-9]s//" '
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/OK/p" ' \
-        '-e "/Fail/p" ' \
-        '-e "/Pass/p" ' \
-        '-e "/Ok/p" ' \
-        '-e "/ok/p" '
 
 # added because of the read-only directory required for the test
 # without this gmake clobber will fail 
