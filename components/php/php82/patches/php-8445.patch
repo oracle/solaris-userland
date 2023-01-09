@@ -1,0 +1,65 @@
+https://github.com/php/php-src/issues/8445
+
+This reverts following commit:
+https://github.com/php/php-src/commit/72f8dbb31295e4e5633a9033c6d91a45d102c485
+
+--- php-8.1.5/TSRM/TSRM.h
++++ php-8.1.5/TSRM/TSRM.h
+@@ -168,10 +168,8 @@ #define TSRMG_STATIC(id, type, element)
+ #define TSRMG_BULK_STATIC(id, type)	((type) (*((void ***) TSRMLS_CACHE))[TSRM_UNSHUFFLE_RSRC_ID(id)])
+ #define TSRMG_FAST_STATIC(offset, type, element)	(TSRMG_FAST_BULK_STATIC(offset, type)->element)
+ #define TSRMG_FAST_BULK_STATIC(offset, type)	((type) (((char*) TSRMLS_CACHE)+(offset)))
+-#define TSRMLS_MAIN_CACHE_EXTERN() extern TSRM_TLS void *TSRMLS_CACHE TSRM_TLS_MODEL_ATTR;
+-#define TSRMLS_MAIN_CACHE_DEFINE() TSRM_TLS void *TSRMLS_CACHE TSRM_TLS_MODEL_ATTR = NULL;
+-#define TSRMLS_CACHE_EXTERN() extern TSRM_TLS void *TSRMLS_CACHE;
+-#define TSRMLS_CACHE_DEFINE() TSRM_TLS void *TSRMLS_CACHE = NULL;
++#define TSRMLS_CACHE_EXTERN() extern TSRM_TLS void *TSRMLS_CACHE TSRM_TLS_MODEL_ATTR;
++#define TSRMLS_CACHE_DEFINE() TSRM_TLS void *TSRMLS_CACHE TSRM_TLS_MODEL_ATTR = NULL;
+ #define TSRMLS_CACHE_UPDATE() TSRMLS_CACHE = tsrm_get_ls_cache()
+ #define TSRMLS_CACHE _tsrm_ls_cache
+ 
+@@ -185,8 +183,6 @@ #define tsrm_env_lock()
+ #define tsrm_env_unlock()
+ 
+ #define TSRMG_STATIC(id, type, element)
+-#define TSRMLS_MAIN_CACHE_EXTERN()
+-#define TSRMLS_MAIN_CACHE_DEFINE()
+ #define TSRMLS_CACHE_EXTERN()
+ #define TSRMLS_CACHE_DEFINE()
+ #define TSRMLS_CACHE_UPDATE()
+--- php-8.1.5/Zend/zend.c
++++ php-8.1.5/Zend/zend.c
+@@ -50,7 +50,7 @@ static HashTable *global_class_table = N
+ static HashTable *global_constants_table = NULL;
+ static HashTable *global_auto_globals_table = NULL;
+ static HashTable *global_persistent_list = NULL;
+-TSRMLS_MAIN_CACHE_DEFINE()
++ZEND_TSRMLS_CACHE_DEFINE()
+ # define GLOBAL_FUNCTION_TABLE		global_function_table
+ # define GLOBAL_CLASS_TABLE			global_class_table
+ # define GLOBAL_CONSTANTS_TABLE		global_constants_table
+--- php-8.1.5/Zend/zend.h
++++ php-8.1.5/Zend/zend.h
+@@ -69,11 +69,7 @@ #define ZEND_TSRMLS_CACHE_UPDATE()
+ #define ZEND_TSRMLS_CACHE
+ #endif
+ 
+-#ifndef ZEND_COMPILE_DL_EXT
+-TSRMLS_MAIN_CACHE_EXTERN()
+-#else
+ ZEND_TSRMLS_CACHE_EXTERN()
+-#endif
+ 
+ struct _zend_serialize_data;
+ struct _zend_unserialize_data;
+--- php-8.1.5/build/php.m4
++++ php-8.1.5/build/php.m4
+@@ -935,7 +935,7 @@ else
+     if test "$3" = "shared" || test "$3" = "yes"; then
+ dnl ---------------------------------------------- Shared module
+       [PHP_]translit($1,a-z_-,A-Z__)[_SHARED]=yes
+-      PHP_ADD_SOURCES_X($ext_dir,$2,$ac_extra -DZEND_COMPILE_DL_EXT=1,shared_objects_$1,yes)
++      PHP_ADD_SOURCES_X($ext_dir,$2,$ac_extra,shared_objects_$1,yes)
+       PHP_SHARED_MODULE($1,shared_objects_$1, $ext_builddir, $6, $7)
+       AC_DEFINE_UNQUOTED([COMPILE_DL_]translit($1,a-z_-,A-Z__), 1, Whether to build $1 as dynamic module)
+     fi
