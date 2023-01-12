@@ -137,7 +137,7 @@ REQUIRED_PACKAGES += developer/gcc
 REQUIRED_PACKAGES += developer/versioning/git
 # Go bootstraps itself using Go, so at least one previous version must already
 # be installed.
-REQUIRED_PACKAGES += developer/golang
+REQUIRED_PACKAGES += developer/go
 # Used in this Makefile.
 REQUIRED_PACKAGES += file/gnu-findutils
 REQUIRED_PACKAGES += text/gnu-sed
