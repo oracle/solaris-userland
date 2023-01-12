@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		conflict
-COMPONENT_VERSION=	20210108
-IPS_COMPONENT_VERSION=	0.2021.1.8
+COMPONENT_VERSION=	20221002
+IPS_COMPONENT_VERSION=	0.2022.10.2
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_PROJECT_URL=	http://invisible-island.net/conflict/conflict.html
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:90e878233d022c4e7507cf9e7424c3131c016b00f00f6661dae7ee1a29239a56
+    sha256:8c183f3cabc814384db94a616d132f252753a8481a3f356a2135691d7d30dffc
 COMPONENT_ARCHIVE_URL=	https://invisible-mirror.net/archives/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	13297
 
-COMPONENT_BAID=		118742
+COMPONENT_BAID=		136282
 
 # We really do need to build conflict so that it can use the files in the
 # build directory. We are using the installed conflict binary to do this
