@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 
@@ -39,7 +39,7 @@ COMPONENT_ARCHIVE_URL=	http://www.cpan.org/src/5.0/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/perl
 COMPONENT_ANITYA_ID=	13599
 
-COMPONENT_BAID=		126852
+COMPONENT_BAID=		135331
 
 include $(WS_MAKE_RULES)/common.mk
 
