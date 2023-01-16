@@ -19,14 +19,14 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openca-ocspd
-COMPONENT_VERSION=	3.1.2
+COMPONENT_VERSION=	3.1.3
 # The new form includes the commit as a disambiguator, but the current archive
 # wasn't created with that in its name, so we use the old form until the next
 # update.
@@ -37,10 +37,10 @@ COMPONENT_BUGDB=	library/smartcard
 COMPONENT_ANITYA_ID=	13308
 
 GIT_REPO= https://github.com/openca/openca-ocspd
-GIT_COMMIT_ID= 0f16341
-GIT_HASH=  sha256:0f894c7f19d658bdbda88887a3d748e8a968c6fd5cfc5f7be8ace9399b2f878d
+GIT_COMMIT_ID= 99b7613
+GIT_HASH=  sha256:15f0633ca01b6c7233cc0ddfba7cd7ed84780943464bc260a845df149b2bd66b
 
-COMPONENT_BAID =		30783
+COMPONENT_BAID =		136664
 
 # Skip test because of set up requirements.
 #
@@ -64,8 +64,7 @@ COMPONENT_BUILD_ENV +=  PATH="$(PATH):$(POD2MAN_PATH)"
 COMPONENT_PRE_BUILD_ACTION = $(CP) $(COMPONENT_SRC)/docs/ocspd.3.pod $(@D)/docs
 
 REQUIRED_PACKAGES += library/security/ocsp/libpki
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
