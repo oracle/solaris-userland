@@ -20,21 +20,23 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		poppler
-COMPONENT_VERSION=	22.10.0
+COMPONENT_VERSION=	23.01.0
+# must not be zero padded
+IPS_COMPONENT_VERSION=	23.1.0
 COMPONENT_PROJECT_URL=	https://poppler.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH= sha256:04e40fad924a6de62e63017a6fd4c04696c1f526dedc2ba5ef275cedf646292a
+COMPONENT_ARCHIVE_HASH= sha256:fae9b88d3d5033117d38477b79220cfd0d8e252c278ec870ab1832501741fd94
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/poppler
 COMPONENT_ANITYA_ID=	3686
-COMPONENT_BAID_POPPLER=	131371
+COMPONENT_BAID_POPPLER=	136205
 
 COMPONENT_NAME_1=	poppler-data
 COMPONENT_VERSION_1=	0.4.11
@@ -91,18 +93,6 @@ COMPONENT_POST_BUILD_ACTION = \
 
 # Always show the build and link lines for easier debugging.
 COMPONENT_BUILD_ARGS += V=1
-
-PKG_OBJ =	poppler
-SUBPKG_OBJ =	poppler-desktop
-EXCLUSION_FILE = poppler-desktop-deps
-
-include $(WS_MAKE_RULES)/pkgobjs.mk
-$(EXCLUSION_FILE_TARGET): $(HEAP_OBJ)
-	find $(PROTO_DIR) -type f | (while read f; do file "$$f"; done) | grep -w ELF | cut -f1 -d\: | (while read f; do echo $$f: `ldd "$$f"`; done) | egrep 'libXrender|gobj|libX11|glib|libGL' | cut -f1 -d\: | sed -e 's$$$(PROTO_DIR)/$$$$' | sed -e 's/$(MACH64)/$$(MACH64)/' > $@.tmp ; \
-	find $(PROTO_DIR) -type f | egrep 'cairo' | sed -e 's$$$(PROTO_DIR)/$$$$' | sed -e 's/$(MACH64)/$$(MACH64)/' >> $@.tmp ; \
-	find $(PROTO_DIR) -type f -o -type l | egrep 'glib|gir|g-i-r' | sed -e 's$$$(PROTO_DIR)/$$$$' | sed -e 's/$(MACH64)/$$(MACH64)/' >> $@.tmp ; \
-	sort -u $@.tmp > $@ ; \
-	rm $@.tmp
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
