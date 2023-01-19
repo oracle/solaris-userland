@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -32,38 +32,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	library/libgdbm
 COMPONENT_ANITYA_ID=	882
 
-COMPONENT_BAID_V1_23=		122551
-COMPONENT_BAID_V1_8_3=		7526
-
-# For now, we want to continue to provide the libgdbm so
-# (and its links) from gdbm 1.8.3.
-COMPONENT_VERSION_1 =	1.8.3
-COMPONENT_SRC_1 =	$(COMPONENT_NAME)-$(COMPONENT_VERSION_1)
-COMPONENT_ARCHIVE_1 =	$(COMPOENNT_SRC_1).tar.gz
-COMPONENT_ARCHIVE_HASH_1 = \
-	sha256:cc340338a2e28b40058ab9eb5354a21d53f88a1582ea21ba0bb185c37a281dc9
-COMPONENT_ARCHIVE_URL_1 =	https://ftp.gnu.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_NAME)-$(COMPONENT_VERSION_1).tar.gz
-SOURCE_DIR_1 =		$(COMPONENT_DIR)/$(COMPONENT_SRC_1)
-
-BUILD_OLD_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)
-BUILD_OLD_DIR_64 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH64)
-
-$(BUILD_OLD_DIR_32)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_64)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_32)/.configured:	BITS=32
-$(BUILD_OLD_DIR_64)/.configured:	BITS=64
-
-BUILD_32 += $(BUILD_OLD_DIR_32)/.built
-BUILD_64 += $(BUILD_OLD_DIR_64)/.built
-
-INSTALL_32 += $(BUILD_OLD_DIR_32)/.installed
-INSTALL_64 += $(BUILD_OLD_DIR_64)/.installed
-
-# install the old version first
-$(BUILD_DIR_32)/.installed:	$(BUILD_OLD_DIR_32)/.installed
-$(BUILD_DIR_64)/.installed:	$(BUILD_OLD_DIR_64)/.installed
-
-PKG_MACROS +=	COMPONENT_VERSION_1=$(COMPONENT_VERSION_1)
+COMPONENT_BAID=		122551
 
 build:		$(BUILD_32_and_64)
 

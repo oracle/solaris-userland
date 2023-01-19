@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability Uncommitted>
@@ -27,6 +27,7 @@ set name=pkg.fmri \
 set name=pkg.summary value="GNU Database Manager"
 set name=pkg.description \
     value="GNU dbm is a set of database routines that use extensible hashing. It works similar to the standard UNIX dbm routines."
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value="the GNU Database Manager"
 set name=info.classification \
     value=org.opensolaris.category.2008:Development/Databases
@@ -36,21 +37,10 @@ set name=org.opensolaris.arc-caseid value=PSARC/2008/645
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/include/gdbm.h
 link path=usr/lib/$(MACH64)/libgdbm.so target=libgdbm.so.6.0.0
-link path=usr/lib/$(MACH64)/libgdbm.so.3 target=libgdbm.so.3.0.0
-file path=usr/lib/$(MACH64)/libgdbm.so.3.0.0
 link path=usr/lib/$(MACH64)/libgdbm.so.6 target=libgdbm.so.6.0.0
 file path=usr/lib/$(MACH64)/libgdbm.so.6.0.0
 link path=usr/lib/libgdbm.so target=libgdbm.so.6.0.0
-link path=usr/lib/libgdbm.so.3 target=libgdbm.so.3.0.0
-file path=usr/lib/libgdbm.so.3.0.0
 link path=usr/lib/libgdbm.so.6 target=libgdbm.so.6.0.0
 file path=usr/lib/libgdbm.so.6.0.0
 file path=usr/share/man/man3/gdbm.3
-license gdbm.license license=GPLv3 \
-    com.oracle.info.baid=$(COMPONENT_BAID_V1_23) \
-    com.oracle.info.description="GNU Database Manager" \
-    com.oracle.info.name=gdbm com.oracle.info.version=$(COMPONENT_VERSION)
-license gdbm.license license="GPLv3 (gdbm1.8.3)" \
-    com.oracle.info.baid=$(COMPONENT_BAID_V1_8_3) \
-    com.oracle.info.description="GNU Database Manager" \
-    com.oracle.info.name=gdbm com.oracle.info.version=$(COMPONENT_VERSION_1)
+license gdbm.license license=GPLv3
