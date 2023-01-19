@@ -3,11 +3,9 @@ Patch status: Solaris-specific; not suitable for upstream
 
 Drops extra privilege which was given via SMF manifest file.
 
-diff --git a/server/main.c b/server/main.c
-index 6ff375d..5bc79e1 100644
---- a/server/main.c
-+++ b/server/main.c
-@@ -45,6 +45,8 @@
+--- httpd-2.4.55/server/main.c
++++ httpd-2.4.55/server/main.c
+@@ -46,6 +46,8 @@ #if APR_HAVE_UNISTD_H
  #include <unistd.h>
  #endif
  
@@ -16,7 +14,7 @@ index 6ff375d..5bc79e1 100644
  /* WARNING: Win32 binds http_main.c dynamically to the server. Please place
   *          extern functions and global data in another appropriate module.
   *
-@@ -480,6 +482,7 @@ int main(int argc, const char * const argv[])
+@@ -502,6 +504,7 @@ apr_getopt_t *opt;
      apr_status_t rv;
      module **mod;
      const char *opt_arg;
@@ -24,7 +22,7 @@ index 6ff375d..5bc79e1 100644
      APR_OPTIONAL_FN_TYPE(ap_signal_server) *signal_server;
      int rc = OK;
  
-@@ -830,6 +833,20 @@ int main(int argc, const char * const argv[])
+@@ -852,6 +855,20 @@ apr_pool_lock(pconf, 1);
  
          ap_run_optional_fn_retrieve();
  

@@ -1,7 +1,4 @@
-First part is Solaris private (for nonstandard library path).
-
-Second part for FIPS support with OpenSSL3:
-https://bz.apache.org/bugzilla/show_bug.cgi?id=66063
+Solaris private (for nonstandard library path).
 
 --- httpd-2.4.53/acinclude.m4
 +++ httpd-2.4.53/acinclude.m4
@@ -28,21 +25,3 @@ OPENSSL_FIPS is no longer defined with openssl-3, it always HAVE_FIPS.
 
 
 
-git-svn-id: https://svn.apache.org/repos/asf/httpd/httpd/trunk@1901772 13f79535-47bb-0310-9956-ffa450edef68
----
- modules/ssl/ssl_private.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/modules/ssl/ssl_private.h b/modules/ssl/ssl_private.h
-index 2bebde1981f..77e893ad1a0 100644
---- a/modules/ssl/ssl_private.h
-+++ b/modules/ssl/ssl_private.h
-@@ -147,7 +147,7 @@
- #define MODSSL_USE_OPENSSL_PRE_1_1_API (OPENSSL_VERSION_NUMBER < 0x10100000L)
- #endif
- 
--#if defined(OPENSSL_FIPS)
-+#if defined(OPENSSL_FIPS) || OPENSSL_VERSION_NUMBER >= 0x30000000L
- #define HAVE_FIPS
- #endif
- 

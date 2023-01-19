@@ -1,11 +1,9 @@
 Patch origin: in-house
 Patch status: Solaris-specific; not suitable for upstream
 
-diff --git a/Makefile.in b/Makefile.in
-index 9ae3c97..6bd25d6 100644
---- a/Makefile.in
-+++ b/Makefile.in
-@@ -50,6 +50,9 @@ install-conf:
+--- httpd-2.4.55/Makefile.in
++++ httpd-2.4.55/Makefile.in
+@@ -50,6 +50,9 @@ sed -e 's#@@ServerRoot@@#$(prefix)#g' \
  	    				-e 's#@@Port@@#$(PORT)#g' \
  	    				-e 's#@@SSLPort@@#$(SSLPORT)#g' \
  	    				-e '/@@LoadModule@@/d' \
@@ -15,7 +13,7 @@ index 9ae3c97..6bd25d6 100644
  	    				< $$i; \
  	    		else \
  	    			sed -n -e '/@@LoadModule@@/q' \
-@@ -126,6 +129,19 @@ install-conf:
+@@ -126,6 +129,19 @@ if test ! -f $(DESTDIR)$(sbindir)/envvar
  	        cp -p envvars-std $(DESTDIR)$(sbindir)/envvars ; \
  	    fi ; \
  	fi
@@ -34,8 +32,8 @@ index 9ae3c97..6bd25d6 100644
 +	@grep "^#" $(top_builddir)/support/envvars-std > $(DESTDIR)$(sysconfdir)/envvars
  
  # Create a sanitized config_vars.mk
- build/config_vars.out: build/config_vars.mk
-@@ -232,7 +248,6 @@ install-cgi:
+ build/config_vars.out: build/config_vars.mk build/config_vars.sh
+@@ -232,7 +248,6 @@ fi
  
  install-other:
  	@test -d $(DESTDIR)$(logfiledir) || $(MKINSTALLDIRS) $(DESTDIR)$(logfiledir)
