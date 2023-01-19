@@ -17,8 +17,30 @@ styles could resolve this issue as well.
 
 The patch is not suitable for upstream.
 
---- libxslt-1.1.33/libxslt/transform.c	2019-02-13 00:51:19.602434690 +0000
-+++ libxslt-1.1.33/libxslt/transform.c	2019-02-13 00:48:02.062467331 +0000
+--- libxslt-1.1.37/doc/xsltproc.1
++++ libxslt-1.1.37/doc/xsltproc.1
+@@ -107,7 +107,7 @@ \fB\-\-maxdepth \fR\fB\fIVALUE\fR\fR
+ .RS 4
+ Adjust the maximum depth of the template stack before
+ \fBlibxslt\fR(3)
+-concludes it is in an infinite loop\&. The default is 3000\&.
++concludes it is in an infinite loop\&. The default is 10000\&.
+ .RE
+ .PP
+ \fB\-\-maxvars \fR\fB\fIVALUE\fR\fR
+--- libxslt-1.1.37/doc/xsltproc.xml
++++ libxslt-1.1.37/doc/xsltproc.xml
+@@ -206,7 +206,7 @@ Adjust the maximum depth of the template
+ 			before <citerefentry>
+ 			<refentrytitle>libxslt</refentrytitle>
+ 			<manvolnum>3</manvolnum>
+-		</citerefentry> concludes it is in an infinite loop. The default is 3000.
++		</citerefentry> concludes it is in an infinite loop. The default is 10000.
+ 		</para>
+ 	</listitem>
+ 		</varlistentry>
+--- libxslt-1.1.37/libxslt/transform.c
++++ libxslt-1.1.37/libxslt/transform.c
 @@ -67,7 +67,7 @@ static int xsltGetHTMLIDs(const xmlChar
  			  const xmlChar **systemID);
  #endif
@@ -28,25 +50,3 @@ The patch is not suitable for upstream.
  int xsltMaxVars = 15000;
  
  /*
---- libxslt-1.1.33/doc/xsltproc.xml	2019-02-13 00:51:50.487852991 +0000
-+++ libxslt-1.1.33/doc/xsltproc.xml	2019-02-13 00:49:28.335319197 +0000
-@@ -203,7 +203,7 @@
- 			before <citerefentry>
- 			<refentrytitle>libxslt</refentrytitle>
- 			<manvolnum>3</manvolnum>
--		</citerefentry> concludes it is in an infinite loop. The default is 3000.
-+		</citerefentry> concludes it is in an infinite loop. The default is 10000.
- 		</para>
- 	</listitem>
- 		</varlistentry>
---- libxslt-1.1.33/doc/xsltproc.1	2019-02-13 00:52:12.813616032 +0000
-+++ libxslt-1.1.33/doc/xsltproc.1	2019-02-13 00:48:51.133383418 +0000
-@@ -93,7 +93,7 @@ Display all the documents loaded during
- .RS 4
- Adjust the maximum depth of the template stack before
- \fBlibxslt\fR(3)
--concludes it is in an infinite loop\. The default is 3000\.
-+concludes it is in an infinite loop\. The default is 10000\.
- .RE
- .PP
- \fB\-\-nodtdattr\fR

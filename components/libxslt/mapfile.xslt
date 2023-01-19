@@ -17,9 +17,11 @@ $mapfile_version 2
 
 SYMBOL_VERSION SUNWpublic {
 	global:
+		xsltCompMatchClearCache;
 		xsltDecimalFormatGetByQName;
 		xsltFlagRVTs;
 		xsltInitCtxtKey;
+		xsltParseStylesheetUser;
 } SUNW_1.5;
 
 SYMBOL_VERSION SUNW_1.5 {
