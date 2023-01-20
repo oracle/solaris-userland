@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 # Static assertions fail when building with Studio
@@ -29,17 +29,17 @@ BUILD_BITS =            64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dbus
-COMPONENT_VERSION=	1.10.32
+COMPONENT_VERSION=	1.14.6
 COMPONENT_PROJECT_URL=	http://dbus.freedesktop.org
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:28baa6061a2b89b4c49688df0fab1f74b390c7fa6fac28c637622ee36ec49c8f
+    sha256:fd2bdf1bb89dc365a46531bff631536f22b0d1c6d5ce2c5c5e59b55265b3d66b
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/dbus
 COMPONENT_ANITYA_ID=	5356
 
-COMPONENT_BAID=		82961
+COMPONENT_BAID=		138047
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
@@ -69,6 +69,7 @@ CONFIGURE_OPTIONS +=	MAKE=$(GMAKE)
 # It can be removed when the upstream starts to use a newer automake version.
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
+REQUIRED_PACKAGES += developer/build/autoconf-archive
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/documentation-tool/xmlto

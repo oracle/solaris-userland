@@ -20,10 +20,17 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
 <include generate/common.generate>
 
 <transform file link pkg.type=(?!lib) -> drop>
 <transform file link -> delete pkg.type .*>
+
+# Drop cmake files for now since full build with current version of Qt fails
+<transform file path=usr/lib/cmake/DBus1/DBus1Config.cmake -> drop>
+<transform file path=usr/lib/cmake/DBus1/DBus1ConfigVersion.cmake -> drop>
+<transform file path=usr/lib/\$\(MACH64\)/cmake/DBus1/DBus1Config.cmake -> drop>
+<transform file path=usr/lib/\$\(MACH64\)/cmake/DBus1/DBus1ConfigVersion.cmake -> drop>
+
