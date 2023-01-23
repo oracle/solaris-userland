@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 BUILD_ARCH= i386
@@ -75,6 +75,13 @@ include $(WS_MAKE_RULES)/common.mk
 PUBLISH_TRANSFORMS := \
 	$(filter-out $(WS_TOP)/transforms/devel $(WS_TOP)/transforms/docs, $(PUBLISH_TRANSFORMS))
 
+# Go's "not well-formed" elf objects confuse elfsign, which then causes
+# problems for RE.  For now, we workaround this by adding the
+# 'com.oracle.elfsign=false' tag to every elf object.
+NO_ELFSIGN_MOG=		$(BUILD_DIR)/no-elfsign.mog
+
+PUBLISH_TRANSFORMS +=	$(NO_ELFSIGN_MOG)
+
 # Standard manifest cleanup drops all static libraries, but in this case,
 # delivering those makes sense. Because of that, Golang uses modified cleanup
 # transformation where static libraries are not touched.
@@ -122,6 +129,13 @@ define COMPONENT_INSTALL_ACTION=
 	($(MKDIR) $(PROTOUSRSHAREDIR)/man); \
 	($(CP) -R $(BUILD_DIR)/man1 $(PROTOUSRSHAREDIR)/man);
 endef
+
+COMPONENT_POST_INSTALL_ACTION += ( \
+	cd $(PROTO_DIR); \
+	find . -type f -exec elffile {} + | grep 'ELF [36]' | \
+	    $(GSED) -e 's/^..\(.*\):.*$$/<transform file path=\1$$ -> \\\
+	        default com.oracle.elfsign false>/' > $(NO_ELFSIGN_MOG) \
+	);
 
 PERL_SCRIPTS= \
   $(PROTOUSRLIBDIR)/golang/src/regexp/syntax/make_perl_groups.pl \
