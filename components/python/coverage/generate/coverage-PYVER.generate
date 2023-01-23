@@ -20,17 +20,17 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 # drop files we are not shipping
 <transform file path=usr/bin/coverage[23]$ -> drop>
-<transform file path=usr/bin/coverage-[23]\.[0-9]$ -> drop>
+<transform file path=usr/bin/coverage-[23]\.[0-9]+$ -> drop>
 
 <include ../generate/common.transform>
 
 # coverage versioned executables do not have a dash in their name
 # thus they are handled here and not globally
-<transform file path=usr/bin/coverage[23]\.[0-9]$ -> drop>
+<transform file path=usr/bin/coverage[23]\.[0-9]+$ -> drop>
 <transform file path=usr/bin/coverage\$\(PYVER\) -> \
 	emit link path=usr/bin/coverage target=coverage$(PYVER) mediator=python mediator-version=$(PYVER)>
