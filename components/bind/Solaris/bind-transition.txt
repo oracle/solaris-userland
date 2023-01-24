@@ -1,15 +1,11 @@
-BIND version 9.18.9
+BIND version 9.18.11
 
-Solaris  11.4  now  provides  BIND  9.18  Stable  Version  which  uses
-OpenSSL 3.
+As of  Solaris 11.4.57 BIND  has been  updated to 9.18  Stable Version
+which uses OpenSSL 3.
 
 ISC, the authors  of BIND, declared the 9.11 branch  to be end-of-life
 as  of March  2022 and  superseded it  by BIND  9.16 Extended  Support
 Version (ESV) and BIND 9.18 Current-Stable for OpenSSL 3 support.
-
-As of  Solaris 11.4.51,  BIND was  updated to 9.16  ESV as  an interim
-measure.   It has  subsequently been  updated to  BIND 9.18  utilising
-OpenSSL 3.
 
 BIND versions  are for  the most part  compatible.  Some  features may
 however be deprecated.  Most configurable  features that are no longer
@@ -68,28 +64,89 @@ files.
 
 Proceed once the named(8) process id, as displayed by rndc output, has
 stopped running.  If rndc is not configured then continue to reboot as
-normal. Note that BIND 9.16 and 9.18 can read BIND 9.11 journal files,
-but  beware that  BIND 9.11  can not  read BIND  9.16 or  9.18 journal
-files.
+normal. If rndc fails due to  an error in rndc.conf address that first
+and restart the service before continuing with `rndc stop -p`.
+
+If updating from BIND 9.11 refer to the ISC Knowledge Base Document
+https://kb.isc.org/docs/changes-to-be-aware-of-when-moving-from-911-to-916
+- Note that BIND  9.16 and 9.18 can read BIND  9.11 journal files, but
+  BIND 9.11 can not read BIND 9.16 or 9.18 journal files.
 
 Once booted  into the updated BE  check the SMF service  dns/server is
-enabled   and   online.    Then    check   the   configuration   using
-named-checkconf(8) command  and modify the  configuration accordingly,
-do  this if  the  service is  offline  or online  as  it may  indicate
-statements that are deprecated.
+enabled   and   online.
 
-      # named-checkconf -z
+      # svcs svc:/network/dns/server:default
 
-Significant work included in the 9.16 and 9.18 branch
------------------------------------------------------
+Then  check the  configuration  using  named-checkconf(8) command  and
+modify the configuration accordingly, do this if the service is online
+or in maintenance as it may indicate statements that are deprecated.
 
-    1.  The  new  Key  and  Signing  Policy  (KASP)  feature  provides
+      # named-checkconf -zj
+
+Fix any issues indicated and re-test using the same command.
+- Note  that   while  named-checkconf  may  pass,  some  configuration
+  statements may  cause the service  to stop working.  For  example if
+  using a stale DNSSEC configuration.
+
+If the service is in maintenance or is failing to resolve queries post
+upgrade refer to Troubleshooting below.
+
+
+Troubleshooting
+---------------
+
+If  the previous  state was  maintenance  and changes  have been  made
+following `named-checkconf` then clear  the service instance and check
+its state after a minute or two.
+
+      # svcs clear svc:/network/dns/server:default
+      # sleep 60; svcs svc:/network/dns/server:default
+
+If problems  persist then disable the  service and run named  in debug
+mode and observe what occurs while a lookup is attempted.
+
+      # svcadm disable -t svc:/network/dns/server:default
+      # script
+      # /usr/sbin/named -g -d 4
+
+And from another terminal
+
+      # dig @0 $hostname
+
+- Note  $hostname should  be  some viable  fully  qualified name,  for
+  example "host.example.com."
+
+Once  `dig`  has  retuned  quit (Ctrl-c)  the  `named`  process,  exit
+`script` and look  at the information collected  in `typescript` file.
+Do re-enable dns/service.
+
+      # svcadm enable svc:/network/dns/server:default
+
+Hopefully   the   collected   information  will   provide   sufficient
+information needed to address the issue.  It may be necessary to use a
+more  verbose debug  level,  and or  instead  configure logging.   For
+further  information on  troubleshooting BIND  refer to  the following
+documentation:
+
+- What to do with a misbehaving BIND server
+  https://kb.isc.org/docs/aa-00341
+- Troubleshooting - BIND 9 9.18.10 documentation
+  https://downloads.isc.org/isc/bind9/9.18.11/doc/arm/html/chapter9.html
+- BIND Logging - some basic recommendations
+  https://kb.isc.org/docs/aa-01526
+
+
+
+Significant work included in the 9.18 branch
+--------------------------------------------
+
+    1. The  new  Key  and  Signing  Policy  (KASP)  feature   provides
        simplified  DNSSEC key  and signing  management using  policies
        defined by the "dnssec-policy" statement. This tool is intended
        to   significantly   facilitate   ongoing   key   and   signing
        maintenance.
 
-    2.  The  way  that  DNSSEC  trust anchors  are  managed  has  been
+    2. The  way  that  DNSSEC  trust  anchors  are  managed  has  been
        improved. Please note the updated CLI for this.
 
     3. DLV (Domain Look-aside  Verification) has been deprecated since
@@ -125,6 +182,6 @@ For BIND 9 Significant Features Matrix, see ISC Knowledge Base
 Read more details about BIND 9.18 in the BIND Administrator Reference
 Manaual (ARM) at:
 
-  - https://bind9.readthedocs.io/en/v9_18_9/
+  - https://bind9.readthedocs.io/en/v9_18_11/
 
 
