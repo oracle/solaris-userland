@@ -20,21 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		expect
-COMPONENT_VERSION=	5.45
+COMPONENT_VERSION=	5.45.4
+COMPONENT_BAID=		136345
 COMPONENT_PROJECT_URL=	https://core.tcl.tk/expect/
 COMPONENT_SRC=		$(COMPONENT_NAME)$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b28dca90428a3b30e650525cdc16255d76bb6ccd65d448be53e620d95d5cc040
+    sha256:49a7da83b0bdd9f46d04a04deec19c7767bb9a323e40c4781f89caf760b92c34
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/expect/files/Expect/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	771
-
-COMPONENT_BAID=		32791
 
 include $(WS_MAKE_RULES)/common.mk
 
