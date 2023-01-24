@@ -20,24 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 # Don't bother specifying each .pyc file.  Allow individual actions to
 # override this by setting pkg.tmp.autopyc to false.
-# Note that prior to Python 3, the following covered all .py files.  But since
-# then only files under usr/lib/python[23].* are covered, and any components
-# shipping .py files elsewhere need to specify pkg.tmp.pyversion directly to
-# generate .pyc files.  But that variable really should be private to this
-# file. 20632788 has been filed to fix this.
+
+# Files in /usr/bin are not compiled to .pyc files
+<transform file path=usr/bin/.* -> default pkg.tmp.autopyc false>
 <transform file path=.*\.py$ -> default pkg.tmp.autopyc true>
-<transform file hardlink pkg.tmp.autopyc=true path=usr/lib/python2\.(.*)\.py$ -> default pkg.tmp.pyversion 2.X>
+
+# Files in version specific directories have pyversion automatically determined.
 <transform file hardlink pkg.tmp.autopyc=true path=usr/lib/python3\.(.*)/.*\.py$ -> default pkg.tmp.pyversion 3.%<1>>
+# The rest of them have pyversion set to $(PYVER).
+<transform file hardlink pkg.tmp.autopyc=true -> default pkg.tmp.pyversion $(PYVER)>
 
-<transform file pkg.tmp.pyversion=2\.X -> emit file path=%(path)c>
-<transform hardlink pkg.tmp.pyversion=2\.X -> emit hardlink path=%(path)c target=%(target)c>
-
-<transform file pkg.tmp.pyversion=3\.([0-9]+)(.*) path=.*/(.*)\.py$ -> emit file path=/usr/lib/python3.%<1>%<2>/__pycache__/%<3>.cpython-3%<1>.pyc>
+<transform file pkg.tmp.pyversion=3\.([0-9]+) path=(.*)/(.*)\.py$ -> \
+	emit file path=%<2>/__pycache__/%<3>.cpython-3%<1>.pyc>
 <transform hardlink pkg.tmp.pyversion=3\.(.*) -> emit hardlink path=%(path)c target=%(target)c>
 
 <transform file pkg.tmp.autopyc=.* -> delete pkg.tmp.autopyc .*>

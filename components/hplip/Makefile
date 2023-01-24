@@ -83,6 +83,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 hplip.license:
 	cat $(SOURCE_DIR)/copyright >$@
 
+# For autopyc transformation
+PKG_MACROS +=	PYVER=$(PYTHON_VERSION)
+
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/print/cups-libs

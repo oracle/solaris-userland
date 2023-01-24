@@ -20,13 +20,9 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
-# Because python code in GObject Introspection is not on standard path but in
-# /usr/lib/gobject-introspection/giscanner we can't use autopyc. After pyc files
-# are dropped by cleanup rule we emit it back to the manifest.
-<transform file path=(.*)/(.*)\.py$ -> emit file path=%<1>/__pycache__/%<2>.cpython-311.pyc>
 <transform file path=usr.*/man/.+ -> \
     default mangler.man.stability "pass-through volatile">
 set name=pkg.fmri \

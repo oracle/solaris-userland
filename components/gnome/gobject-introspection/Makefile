@@ -75,6 +75,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
+# For autopyc transformation
+PKG_MACROS += PYVER=$(PYTHON_VERSION)
+
 # Requires bison >= 3.0
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += library/desktop/cairo

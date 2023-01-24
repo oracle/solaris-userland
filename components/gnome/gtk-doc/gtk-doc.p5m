@@ -18,13 +18,10 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 <transform file path=usr.*/man/.+ -> \
     default mangler.man.stability "pass-through volatile">
-# Automatically add .pyc file for each .py source.
-<transform file path=(usr/share/gtk-doc/python/gtkdoc)/(.*)\.py$ -> \
-    emit file path=%<1>/__pycache__/%<2>.cpython-37.pyc>
 set name=pkg.fmri \
     value=pkg:/developer/documentation-tool/gtk-doc@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="A tool to generate API documentation for C code."

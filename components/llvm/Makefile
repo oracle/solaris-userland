@@ -158,6 +158,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 COMPONENT_POST_INSTALL_ACTION += \
 	cd $(PROTOUSRLIBDIR) ; \
+	$(PYTHON) -m compileall . ; \
+	cd $(PROTOUSRSHAREDIR) ; \
 	$(PYTHON) -m compileall . ;
 
 ifeq ($(INSTALL_CXA_FINALIZE),1)

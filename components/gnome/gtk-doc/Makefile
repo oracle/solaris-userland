@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -63,6 +63,9 @@ COMPONENT_TEST_TRANSFORMS += \
 # Compile all python sources to .pyc files
 COMPONENT_POST_INSTALL_ACTION += \
         $(PYTHON) -m compileall $(PROTO_DIR)$(USRSHAREDIR)/gtk-doc/python;
+
+# For autopyc transformation
+PKG_MACROS += PYVER=$(PYTHON_VERSION)
 
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl
