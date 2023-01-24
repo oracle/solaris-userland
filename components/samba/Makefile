@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS=	64_and_32
 COMPILER=	gcc
@@ -65,7 +65,7 @@ COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.11
 
 # yapp (yet another parser) is not propagated publicly
 PATH= :/usr/bin:/usr/gnu/bin:/usr/perl5/$(PERL_VERSION)/bin:
@@ -200,12 +200,12 @@ PERL_SCRIPTS   += $(PROTO_DIR)/usr/lib/samba/bin/pidl
 # List of python scripts can be obtained by:
 # ggrep -rlI '^\#!.*python' build/prototype/$(uname -p)/ | sed -e "s@build/prototype/$(uname -p)/@\$(PROTO_DIR)/@"
 PYTHON_SCRIPTS = \
-$(PROTO_DIR)/usr/lib/python3.7/vendor-packages/samba/samba/tests/dcerpc/raw_protocol.py \
-$(PROTO_DIR)/usr/lib/python3.7/vendor-packages/samba/samba/tests/krb5/simple_tests.py \
-$(PROTO_DIR)/usr/lib/python3.7/vendor-packages/samba/samba/tests/krb5/xrealm_tests.py \
-$(PROTO_DIR)/usr/lib/python3.7/vendor-packages/samba/samba/tests/krb5/s4u_tests.py \
-$(PROTO_DIR)/usr/lib/python3.7/vendor-packages/samba/samba/tests/krb5/kcrypto.py \
-$(PROTO_DIR)/usr/lib/python3.7/vendor-packages/samba/samba/subunit/run.py \
+$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/tests/dcerpc/raw_protocol.py \
+$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/tests/krb5/simple_tests.py \
+$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/tests/krb5/xrealm_tests.py \
+$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/tests/krb5/s4u_tests.py \
+$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/tests/krb5/kcrypto.py \
+$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/subunit/run.py \
 $(PROTO_DIR)/usr/lib/samba/sbin/samba-gpupdate
 
 COMPONENT_INSTALL_ENV += PATH="$(PATH)"
@@ -246,7 +246,7 @@ REQUIRED_PACKAGES += library/python/iso8601
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

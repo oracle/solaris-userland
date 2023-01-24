@@ -1,0 +1,32 @@
+From 9f92f12aacc02f71d74afe31037c9ffbf5c098f0 Mon Sep 17 00:00:00 2001
+From: Andreas Schneider <asn@samba.org>
+Date: Mon, 23 May 2022 07:54:06 +0200
+Subject: [PATCH] third_party: Update waf to version 2.0.24
+
+This fixes building of python libraries with Python 3.11!
+
+BUG: https://bugzilla.samba.org/show_bug.cgi?id=15071
+
+Cheery-picked from upstream:
+https://gitlab.com/samba-team/samba/-/merge_requests/2539
+
+--- samba-4.13.17/third_party/waf/waflib/Tools/python.py
++++ samba-4.13.17/third_party/waf/waflib/Tools/python.py
+@@ -315,7 +315,7 @@ def check_python_headers(conf, features=
+ 		conf.fatal('Could not find the python executable')
+ 
+ 	# so we actually do all this for compatibility reasons and for obtaining pyext_PATTERN below
+-	v = 'prefix SO LDFLAGS LIBDIR LIBPL INCLUDEPY Py_ENABLE_SHARED MACOSX_DEPLOYMENT_TARGET LDSHARED CFLAGS LDVERSION'.split()
++	v = 'prefix SO EXT_SUFFIX LDFLAGS LIBDIR LIBPL INCLUDEPY Py_ENABLE_SHARED MACOSX_DEPLOYMENT_TARGET LDSHARED CFLAGS LDVERSION'.split()
+ 	try:
+ 		lst = conf.get_python_variables(["get_config_var('%s') or ''" % x for x in v])
+ 	except RuntimeError:
+@@ -328,7 +328,7 @@ def check_python_headers(conf, features=
+ 	x = 'MACOSX_DEPLOYMENT_TARGET'
+ 	if dct[x]:
+ 		env[x] = conf.environ[x] = dct[x]
+-	env.pyext_PATTERN = '%s' + dct['SO'] # not a mistake
++	env.pyext_PATTERN = '%s' + (dct['EXT_SUFFIX'] or dct['SO']) # SO is deprecated in 3.5 and removed in 3.11
+ 
+ 
+ 	# Try to get pythonX.Y-config
