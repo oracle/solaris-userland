@@ -3,154 +3,206 @@ WAN-Boot server. This is the reason why AI iso image should be also tested when
 curl is updated.
 
 
-Also the /usr/share/distro_const/boot_archive_contents_x86.xml (contents of miniroot)
+File in /usr/share/distro_const/boot_archive_contents_x86.xml (contents of miniroot)
 need to reflect changes like the library releases changes or a new dependencies and so.
 Whenever the library dependencies will change the boot_archive_contents_x86.xml need to
 list these files needed otherwise the run time linker will not find it. This is because
 the miniroot image is using only the "hand picked" files not the full packages.
 
 
-Miniroot can be tested on VirtualBox setup in vxlan env. 3-virtual
-machines are needed:
- distro build box - build .iso then communicate and data handling
- AI server
- installed client
-Here are the steps to setup:
+Here are the steps to setup AI test on virtual:
 
-### distro build box ###
-vm 123root --memory=8G ST130 aitst
+### distro build boxes for both platforms ###
+vm install --memory=8G /net/your_sparc_ws/ aisparc
+vm install --memory=8G /net/your_x86_ws/ aisvr
+#
 
-Now you should modify files
-x86:
- boot_archive_contents_x86.xml dc_ai_x86.xml
-sparc:
- boot_archive_contents_sparc.xml dc_ai_sparc.xml
-in /usr/share/distro_const/
-
-#-------------------------------------------------------------------------------
-Example of change of miniroot contents:
-vi /usr/share/distro_const/boot_archive_contents_x86.xml
-
-@@ -233,8 +233,8 @@
-   <name>usr/lib/fm/libfmd_agent.so.1</name>
-   <name>usr/lib/fm/libfmd_zfs.so.1</name>
-   <name>usr/lib/libcurl.so.4</name>
--  <name>usr/lib/libcurl.so.4.4.0</name>
-   <name>usr/lib/libcurl.so.4.5.0</name>
-+  <name>usr/lib/libcurl.so.4.6.0</name>
-   <name>usr/lib/libdiskmgt.so.1</name>
-   <name>usr/lib/64/libdiskmgt.so.1</name>
-   <name>usr/lib/libgss.so.1</name>
-@@ -278,8 +278,8 @@
-   <name>usr/lib/rad/client/c/amd64/libdlmgr1_client.so.1</name>
-   <!-- Curl libraries  needed for /usr/sbin/dlmgmtd and AI -->
-   <name>usr/lib/64/libcurl.so.4</name>
--  <name>usr/lib/64/libcurl.so.4.4.0</name>
-   <name>usr/lib/64/libcurl.so.4.5.0</name>
-+  <name>usr/lib/64/libcurl.so.4.6.0</name>
-   <name>usr/lib/64/libgss.so.1</name>
-   <name>usr/lib/64/libgssapi_krb5.so</name>
-   <name>usr/lib/64/libgssapi_krb5.so.2</name>
-
-When fixes are tested on distro_const server then the changes should be committed
-in related ON files:
-./usr/src/cmd/distro_const/manifest/boot_archive_contents_sparc.xml
-./usr/src/cmd/distro_const/manifest/boot_archive_contents_x86.xml
-#-------------------------------------------------------------------------------
-
-Changes in distro_const(8) manifest needs:
-
-* unlock facets for modified packages in <image> section
-* add IPS publisher containing modified packages to <source> section
-* explicitly list modified packages including publisher name
-  in <software_data> section 
-
-Patch for direct application is at the end of this file so it can be used by:
-  (cd /usr/share/distro_const/ ; gpatch -p0 ) < TESTING.txt
-then set appropriate values for nightly publisher:
- file:///net/<buildhost>/builds/<yourdir>/<ws>/i386/repo/publisher/nightly/
+# Directory /usr/share/distro_const/ contains files to controll .iso boot image build:
+#   boot_archive_contents_*.xml defines names of files to be placed to miniroot
+#   dc_ai_*.xml manifest controls the build of AI image (package repos, packages,...)
+#    * can be replaced either by "x86" nor by "sparc"
+# Please note that the boot_archive_contents_*.xml file may contain multiple versions of
+# a library. If a given file is not found it is being silently ignored. This avoids the
+# necessity of synchronizing the file contents to the exact moment when a build machine
+# receives new version of a library.
 
 #-------------------------------------------------------------------------------
+# Example of change of miniroot contents:
+# vi /usr/share/distro_const/boot_archive_contents_x86.xml
+
+#    <name>usr/lib/fm/libfmd_agent.so.1</name>
+#    <name>usr/lib/fm/libfmd_zfs.so.1</name>
+#    <name>usr/lib/libcurl.so.4</name>
+# -  <name>usr/lib/libcurl.so.4.4.0</name>
+#    <name>usr/lib/libcurl.so.4.5.0</name>
+# +  <name>usr/lib/libcurl.so.4.6.0</name>
+#    <name>usr/lib/libdiskmgt.so.1</name>
+#    <name>usr/lib/64/libdiskmgt.so.1</name>
+#    <name>usr/lib/libgss.so.1</name>
+# ....
+#    <name>usr/lib/rad/client/c/amd64/libdlmgr1_client.so.1</name>
+#    <!-- Curl libraries  needed for /usr/sbin/dlmgmtd and AI -->
+#    <name>usr/lib/64/libcurl.so.4</name>
+# -  <name>usr/lib/64/libcurl.so.4.4.0</name>
+#    <name>usr/lib/64/libcurl.so.4.5.0</name>
+# +  <name>usr/lib/64/libcurl.so.4.6.0</name>
+#    <name>usr/lib/64/libgss.so.1</name>
+#    <name>usr/lib/64/libgssapi_krb5.so</name>
+#    <name>usr/lib/64/libgssapi_krb5.so.2</name>
+
+# Such changes should be also committed in related ON files:
+# ./usr/src/cmd/distro_const/manifest/boot_archive_contents_sparc.xml
+# ./usr/src/cmd/distro_const/manifest/boot_archive_contents_x86.xml
+#-------------------------------------------------------------------------------
+
+# Next step is to change dc_ai_*.xml distro_const(8) manifest which needs to change:
+
+# * unlock facets for modified packages in <image> section
+# * add IPS publisher containing modified packages to <source> section
+# * explicitly list modified packages including publisher name
+#   in <software_data> section 
+
 #please note: distro_const doesn't work with python 3.9 so if:
  python3 --version
  Python 3.9...
 #then you should set python3 mediator to 3.7 :
   pkg set-mediator --no-backup-be -v -V 3.7 python3
 
+# Patch for direct application is at the end of this file so it can be used by:
+  # x86
+  (cd /usr/share/distro_const/ ; gpatch -p0 ) < TESTING # this file
+  # sparc
+  gpatch -p0 /usr/share/distro_const/dc_ai_sparc.xml TESTING # this file
+  #
+# then set appropriate values for nightly publisher in .xml manifest:
+#  file:///net/<buildhost>/builds/<yourdir>/<ws>/i386/repo/publisher/nightly/
+
+# then run distro-constructor on both platforms:
+#--- sparc - aisparc -----------------------------------------------------------
+ distro_const build -v /usr/share/distro_const/dc_ai_sparc.xml
+
+# We will also use the SPARC distroconst box as a http proxy
+  cat > /etc/apache2/2.4/conf.d/my-proxy.conf  <<EOF
+Listen 192.168.1.2:3128
+LoadModule proxy_module libexec/mod_proxy.so
+LoadModule proxy_connect_module libexec/mod_proxy_connect.so
+LoadModule proxy_ftp_module libexec/mod_proxy_ftp.so
+LoadModule proxy_http_module libexec/mod_proxy_http.so
+<VirtualHost *:3128>
+        ProxyRequests On
+        ProxyVia On
+        CustomLog "/var/apache2/2.4/logs/proxy_log" common
+        <Proxy *>
+                AddDefaultCharset off
+                Order allow,deny
+                Allow from all
+        </Proxy>
+</VirtualHost> 
+EOF
+#--- x86 - aisvr ---------------------------------------------------------------
+  distro_const build -v /usr/share/distro_const/dc_ai_x86.xml
+
+# setup serial console
+  bootadm set-menu console=serial
+  bootadm change-entry -i 0 'kargs=-B console=ttya'
+  svccfg -s svc:/system/console-login:default setprop ttymon/device = "/dev/ttya"
+  svcadm refresh svc:/system/console-login:default
+  svcadm restart svc:/system/console-login:default
+
 #-------------------------------------------------------------------------------
-#then run distro-constructor:
-  distro_const build -v /usr/share/distro_const/dc_ai_x86.xml # dc_ai_sparc.xml
-#when distro-constructor is finished (take couple of tenths minutes) we can check
+# when distro-constructor is finished (take couple of tenths minutes) we can check
   ls /rpool/dc/ai/media/
-#Oracle_Solaris_AI_{platform}.iso has been built. Then we can stop machine to set netw.
+# if Oracle_Solaris_AI_{platform}.iso has been built. Then we can stop boxes to
+# set ailan networking
   poweroff
 
-#-- Setup networking -----------------------------------------------------------
-  vm net aitst 1 vxlan ailan
-  # x86
-  VBoxManage modifyvm aitst --macaddress2 02C0C0D0D0C0
-  # ldom
-  sudo ldm set-vnet mac-addr=02:C0:C0:D0:D0:C0 vswitch=vs_${USER}_ailan1 vnet1 ${USER}###_aitst
-  #
-  vm start aitst
-  vm sshroot aitst
+#-- Setup sparc distro build box (aisparc) -------------------------------------
+# There will be 2 interfaces one to the lab network and second to ailan network.
+  vm net aisparc 1 vxlan ailan
+  vm start aisparc
+  vm console aisparc
 
-#-- Set interfaces -------------------------------------------------------------
-  hostname aitst
-  echo '192.168.1.7 aitst.local aitst' >> /etc/inet/hosts
-  ipadm create-ip net1
-  ipadm create-addr -T static -a local=192.168.1.7/24 net1/v4
-  ipadm create-addr -T addrconf net1/v6
-# export Oracle_Solaris_AI_{platform}.iso
-  share -F nfs /rpool/dc/ai/media/
-  exit
-
-#-- Create aisvr ---------------------------------------------------------------
-  vm create S11.4_SRU aisvr
-  vm net aisvr 0 vxlan ailan
-  # x86
-  VBoxManage modifyvm aisvr --macaddress1 02C0C0D0D0D0
- #VBoxManage showvminfo aisvr --details | grep MAC: # to check
-  # ldom
-  sudo ldm set-vnet mac-addr=02:C0:C0:D0:D0:D0 vswitch=vs_${USER}_ailan1 vnet0 ${USER}###_aisvr
-  #
-  vm start aisvr
-
-#-- Setup aisvr ----------------------------------------------------------------
-  vm sshroot aitst
-  ping -sn -A inet6 -i net1 'fe80::c0:c0ff:fed0:d0d0'
-  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -B net1 root@'fe80::c0:c0ff:fed0:d0d0'
-### Setup AI server ###
-  hostname aisvr
+# after login: setup naming to local files
+  hostname aisparc
+  svcadm disable svc:/network/ldap/client
+  svcadm disable svc:/network/dns/client
+  svcadm disable nis/domain
+  ( props=`svccfg -s svc:/system/name-service/switch listprop config/\* | nawk '{ if ( $1 != "config/value_authorization" ) print $1; }'` ; for p in $props ; do echo "deleting: $p" ; svccfg -s svc:/system/name-service/switch delprop $p ; done )
+  svccfg -s svc:/system/name-service/switch setprop config/default = astring: files
+  svcadm refresh svc:/system/name-service/switch
   echo '192.168.1.1 aisvr.local aisvr' >> /etc/inet/hosts
+  echo '192.168.1.2 aisparc.local aisparc' >> /etc/inet/hosts
+  echo '192.168.1.16 nbb.local nbb' >> /etc/inet/hosts
+  echo '192.168.1.17 nbb2.local nbb2' >> /etc/inet/hosts
+  echo '192.168.1.18 nbb3.local nbb3' >> /etc/inet/hosts
+  echo '192.168.1.19 nbb4.local nbb4' >> /etc/inet/hosts
+  ipadm create-ip net1
+  ipadm create-addr -T static -a local=192.168.1.2/24 net1/v4
+  ipadm set-ifprop -p mtu=1450 -m ipv4 net1
+  share -F nfs /rpool/dc/ai/media/
+  svcadm enable http:apache24
+
+#-- Setup AI server (aisvr) x86 ------------------------------------------------
+  vm net aisvr 0 vxlan ailan
+  vm startC aisvr
+
+# after login: setup naming to local files
+  hostname aisvr
+  svcadm disable svc:/network/ldap/client
+  svcadm disable svc:/network/dns/client
+  svcadm disable nis/domain
+  ( props=`svccfg -s svc:/system/name-service/switch listprop config/\* | nawk '{ if ( $1 != "config/value_authorization" ) print $1; }'` ; for p in $props ; do echo "deleting: $p" ; svccfg -s svc:/system/name-service/switch delprop $p ; done )
+  svccfg -s svc:/system/name-service/switch setprop config/default = astring: files
+  svcadm refresh svc:/system/name-service/switch
+  echo '192.168.1.1 aisvr.local aisvr' >> /etc/inet/hosts
+  echo '192.168.1.2 aisparc.local aisparc' >> /etc/inet/hosts
   echo '192.168.1.16 nbb.local nbb' >> /etc/inet/hosts
   echo '192.168.1.17 nbb2.local nbb2' >> /etc/inet/hosts
   echo '192.168.1.18 nbb3.local nbb3' >> /etc/inet/hosts
   echo '192.168.1.19 nbb4.local nbb4' >> /etc/inet/hosts
   ipadm delete-addr net0/v4
   ipadm create-addr -T static -a local=192.168.1.1/24 net0/v4
-  ( props=`svccfg -s svc:/system/name-service/switch listprop config/\* | nawk '{ if ( $1 != "config/value_authorization" ) print $1; }'` ; for p in $props ; do echo "deleting: $p" ; svccfg -s svc:/system/name-service/switch delprop $p ; done )
-  svccfg -s svc:/system/name-service/switch setprop config/default = astring: files
-  svcadm refresh svc:/system/name-service/switch
-  svcadm disable svc:/network/ldap/client
-  svcadm disable svc:/network/dns/client
+# AI server setup
   installadm set-server -m -i 192.168.1.16 -c 4
-  ls /net/[fe80::c0:c0ff:fed0:d0c0]/rpool/dc/ai/media/
-  # x86
-  installadm create-service -n s11 -s /net/[fe80::c0:c0ff:fed0:d0c0]/rpool/dc/ai/media/Oracle_Solaris_AI_X86.iso -d /ai/s11
-  # sparc
-  installadm create-service -n s11 -s /net/[fe80::c0:c0ff:fed0:d0c0]/rpool/dc/ai/media/Oracle_Solaris_AI_SPARC.iso -d /ai/s11
-  #
+  # fix DHCP configuration
+  vi /etc/inet/dhcpd4.conf
+   # set option routers 192.168.1.1;
+   # remove Oracle NIS
+  svcadm refresh dhcp/server:ipv4
+  svcadm restart dhcp/server:ipv4
+
+  # x86 - service
+  installadm create-service -n s11x -s /rpool/dc/ai/media/Oracle_Solaris_AI_X86.iso -d /ai/s11x
+  bootadm set-menu -R /etc/netboot/service/default-i386/ console=serial
+  bootadm change-entry -R /etc/netboot/service/default-i386/ -i 0 'kargs=-B console=ttya -k'
+  ipadm set-ifprop -p mtu=1500 -m ipv4 net0
+  # TFTP x86-PXE do not wotk with MTU less than 1500
+
+  # sparc - service
+  ipadm set-ifprop -p mtu=1450 -m ipv4 net0
+  # NFS on vxlan do not work with MTU = 1500
+  # also DHCP boot on sparc require MTU = 1450
+  installadm create-service -n s11s -s /net/aisparc/rpool/dc/ai/media/Oracle_Solaris_AI_SPARC.iso -d /ai/s11s
   ln -s etc/netboot /tftpboot
   (cd /tftpboot ; ln -s . tftpboot)
-  installadm create-client -e 02:C0:C0:D0:D0:E0 -n s11 # MAC of nbb
+
+  # now create nbb (net-boot boxes) and use their real MACs
+  # x86
+  installadm create-client -e 08:00:27:63:55:60 -n s11x
+  # sparc - ldom
+  installadm create-client -e 00:14:4f:fa:7c:bc -n s11s
+  vi /etc/netboot/service/s11s/auto_install/default.xml
+  #  <ai_instance name="default" http_proxy='http://192.168.1.2:3128/'>
+  # set http proxy for IPS
+  # also set publisher to something real
 
 ### client ###
 # x86
   vm new -T Solaris11_64 -M 8G nbb
   vm net nbb 0 vxlan ailan
-  VBoxManage modifyvm nbb --macaddress1 02C0C0D0D0E0
+  VBoxManage showvminfo nbb | grep MAC
   VBoxManage modifyvm nbb --boot1 net
+  # VBoxManage modifyvm nbb --uart1 off
   vm start nbb
 # connect on rdp-port
 # notes:
@@ -159,13 +211,13 @@ then set appropriate values for nightly publisher:
 # client can be reset by
   vm reset nbb
 
-# ldom
-  vm new -M 8G nbb
-  vm net nbb 0 vxlan ailan
-  sudo ldm set-vnet mac-addr=02:C0:C0:D0:D0:E0 vswitch=vs_${USER}_ailan1 vnet0 ${USER}###_nbb
-  sudo ldm set-var 'auto-boot?=false' ${USER}###_nbb
-  vm start -ok nbb
-  vm console nbb
+# sparc - ldom
+  vm new -M 8G nbb1
+  vm net nbb1 0 vxlan ailan
+  sudo ldm list-domain -o net ${USER}###_nbb1
+  sudo ldm set-var 'auto-boot?=false' ${USER}###_nbb1
+  vm start -ok nbb1
+  vm console nbb1
 # ~~~# ...send break to ok-prompt
 # dhcp boot
   boot net:dhcp - install
