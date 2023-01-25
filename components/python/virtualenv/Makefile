@@ -74,3 +74,4 @@ REQUIRED_PACKAGES += library/python/importlib-metadata-37
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/mock
+REQUIRED_PACKAGES += library/python/pip

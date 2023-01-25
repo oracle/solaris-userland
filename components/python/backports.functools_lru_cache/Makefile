@@ -26,23 +26,22 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		backports.functools_lru_cache
-COMPONENT_VERSION=	1.6.1
+COMPONENT_VERSION=	1.6.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:dde846807b38531fa7afc3977ebdbd5f2ee354cbf5c9933506ae79b9e4eb352e
+	sha256:d5ed2169378b67d3c545e5600d363a923b09c456dab1593914935a68ad478271
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/backports.functools_lru_cache/
 COMPONENT_BUGDB=	python-mod/functools-lru
 COMPONENT_ANITYA_ID=	12085
-
-COMPONENT_BAID=		76743
+COMPONENT_BAID=		107601
 
 # This component is not necessary for Python 3.9
 PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # Remove pytest.ini which breaks our testing with unknown arguments

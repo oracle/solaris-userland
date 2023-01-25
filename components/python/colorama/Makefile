@@ -20,28 +20,27 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		colorama
-COMPONENT_VERSION=	0.4.4
+COMPONENT_VERSION=	0.4.6
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	https://github.com/tartley/colorama
 COMPONENT_BUGDB=	python-mod/colorama
 COMPONENT_ANITYA_ID=	3807
+COMPONENT_BAID=		136839
 
 # pypi archive doesn't include the test suite
 GIT_REPO=	$(COMPONENT_PROJECT_URL)
 GIT_COMMIT_ID=	$(COMPONENT_VERSION)
-GIT_HASH=	sha256:78215866046cdc2cc00bf283e3dbff18b09840604534137f300a402afedf28e2
-
-COMPONENT_BAID=		97628
+GIT_HASH=	sha256:42a91e557f5e47f2097252a61916d7cca9cd2f55a034b41e3fe082dd112950b2
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/colorama/tests

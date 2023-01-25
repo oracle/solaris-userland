@@ -26,28 +26,25 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyparsing
-COMPONENT_VERSION=	2.4.7
+COMPONENT_VERSION=	3.0.9
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1
+    sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/pyparsing/
 COMPONENT_BUGDB=	python-mod/pyparsing
 COMPONENT_ANITYA_ID=	3756
-
-COMPONENT_BAID=		107897
+COMPONENT_BAID=		136846
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)
-COMPONENT_TEST_CMD =	$(PYTHON) unitTests.py
-COMPONENT_TEST_ARGS =
-
-COMPONENT_TEST_TRANSFORMS += '-n -e "/OK/p"  -e "/FAILED/p"'
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_DIR =    $(SOURCE_DIR)
+COMPONENT_TEST_CMD =    $(PYTHON) -m pytest
+# test_diagram is for an optional feature we don't support atm.
+COMPONENT_TEST_ARGS =   --ignore=tests/test_diagram.py
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

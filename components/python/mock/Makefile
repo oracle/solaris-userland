@@ -26,25 +26,28 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mock
-COMPONENT_VERSION=	3.0.5
+COMPONENT_VERSION=	5.0.1
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:83657d894c90d5681d62155c82bda9c1187827525880eda8ff5df4ec813437c3
+    sha256:e3ea505c03babf7977fd21674a69ad328053d414f05e6433c30d8fa14a534a6b
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.voidspace.org.uk/python/mock/
 COMPONENT_BUGDB=	python-mod/mock
 COMPONENT_ANITYA_ID=	21272
-
-COMPONENT_BAID=		64190
+COMPONENT_BAID=		136841
 
 # mock has been subsumed into Python starting with 3.3. However, the community
 # is still using this package rather than the included one, mostly because it
 # has all the newest features even for older versions of Python.
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+COMPONENT_TEST_DIR =    $(SOURCE_DIR)/mock/tests
+COMPONENT_TEST_CMD =    $(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -53,8 +56,6 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(NO_TESTS)
+test:		$(TEST_NO_ARCH)
 
-system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
+system-test:	$(SYSTEM_TEST_NO_ARCH)
