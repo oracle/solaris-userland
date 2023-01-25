@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -30,14 +30,14 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		git
-COMPONENT_VERSION=	2.38.1
+COMPONENT_VERSION=	2.39.1
 COMPONENT_PROJECT_URL=	http://git-scm.com/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:97ddf8ea58a2b9e0fbc2508e245028ca75911bd38d1551616b148c1aa5740ad9
+    sha256:40a38a0847b30c371b35873b3afcf123885dd41ea3ecbbf510efa97f3ce5c161
 COMPONENT_ARCHIVE_URL=	https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5350
-COMPONENT_BAID=		132420 
+COMPONENT_BAID=		136845
 
 #
 # man pages are a separate archive
@@ -45,14 +45,14 @@ COMPONENT_BAID=		132420
 COMPONENT_SRC_1 =	$(COMPONENT_NAME)-manpages-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:47f9090252dc7d48fcca6c597495b912d81bf07de8547d1719bc950d9ad1759d
+    sha256:b522a58e963fd5137f660802ec5a93283abfa3eaa0f069ebb6e7f00e529cc775
 COMPONENT_ARCHIVE_URL_1 = https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1 =		-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
 
 include $(WS_MAKE_RULES)/common.mk
 
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.11
 
 # Deliver hardlinks as they appear in the proto area
 PKG_AUTO_HARDLINKS=1
@@ -161,7 +161,7 @@ REQUIRED_PACKAGES += library/security/openssl
 endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += web/curl
