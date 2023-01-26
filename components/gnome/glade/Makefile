@@ -37,7 +37,7 @@ COMPONENT_ANITYA_ID=	1174
 COMPONENT_BAID=		133507
 
 BUILD_STYLE=		meson
-PYTHON_VERSION=		3.7
+PYTHON_VERSION=		3.11
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 include $(WS_MAKE_RULES)/test-x11.mk
@@ -75,5 +75,5 @@ REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/library/math

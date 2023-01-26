@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -37,7 +37,7 @@ COMPONENT_ANITYA_ID=	16989
 COMPONENT_BAID=		111686
 
 BUILD_STYLE=		meson
-PYTHON_VERSION=		3.7
+PYTHON_VERSION=		3.11
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -64,5 +64,5 @@ REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/libsoup
-REQUIRED_PACKAGES += library/python/pygobject-3-37
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += library/python/pygobject-3-311
+REQUIRED_PACKAGES += runtime/python-311

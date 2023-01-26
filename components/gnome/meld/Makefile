@@ -35,7 +35,7 @@ COMPONENT_ANITYA_ID=	5520
 COMPONENT_BAID=		123057
 
 # We just need to build one version.
-PYTHON_VERSION=		3.7
+PYTHON_VERSION=		3.11
 
 BUILD_STYLE=	meson
 TEST_TARGET=	$(TEST_64)
@@ -54,11 +54,9 @@ PYTHON_DATA =		/usr
 COMPONENT_SETUP_ARGS += --no-compile-schemas
 COMPONENT_SETUP_ARGS += --no-update-icon-cache
 
+CONFIGURE_OPTIONS += -Dpython.purelibdir=$(PYTHON_VENDOR_PACKAGES)
 COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages; \
-	$(MV) $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/site-packages/* \
-	      $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/; \
-	$(PYTHON) -m compileall $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages;
+	$(PYTHON) -m compileall $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)
 
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/meld
 
@@ -76,8 +74,8 @@ REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/gtksourceview
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/gnome/gnome-common
-REQUIRED_PACKAGES += library/python/pycairo-37
-REQUIRED_PACKAGES += library/python/pygobject-3-37
-REQUIRED_PACKAGES += library/python/tkinter-37
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += library/python/pycairo-311
+REQUIRED_PACKAGES += library/python/pygobject-3-311
+REQUIRED_PACKAGES += library/python/tkinter-311
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += text/gnu-gettext

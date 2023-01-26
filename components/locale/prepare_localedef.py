@@ -1,6 +1,6 @@
-#!/usr/bin/python3.7
+#!/usr/bin/python3.11
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 # this script finds common parts in <loc>.src files
 # the common parts are saved to 'common/<lc_type>/data.<hash>'
@@ -17,7 +17,7 @@ hash_prefix = 6
 
 hdr = """
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 # The following content could be generated from following sources:
 #

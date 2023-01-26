@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
@@ -46,6 +46,6 @@ REQUIRED_PACKAGES += file/gnu-coreutils
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/python/pygobject-3-37
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += library/python/pygobject-3-311
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/ksh93

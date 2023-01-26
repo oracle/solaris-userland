@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -36,7 +36,7 @@ COMPONENT_ANITYA_ID=	8420
 
 COMPONENT_BAID=		115917
 BUILD_STYLE=		meson
-PYTHON_VERSION=		3.7
+PYTHON_VERSION=		3.11
 
 TEST_TARGET= $(NO_TESTS)
 
@@ -56,5 +56,5 @@ COMPONENT_POST_INSTALL_ACTION += \
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += library/gnome/yelp-xsl
 REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += library/python/lxml-37
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += library/python/lxml-311
+REQUIRED_PACKAGES += runtime/python-311

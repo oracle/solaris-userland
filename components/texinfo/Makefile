@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # using gcc makes parfait happy.
@@ -80,7 +80,7 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

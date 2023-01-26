@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -87,5 +87,5 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ERROR/p" '
 
 REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

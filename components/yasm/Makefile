@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 BUILD_ARCH= i386
 BUILD_BITS= 64_and_32
@@ -36,7 +36,7 @@ COMPONENT_ANITYA_ID=	5286
 
 COMPONENT_BAID=		24706
 
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.11
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -97,4 +97,4 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 # Required for man pages.
 REQUIRED_PACKAGES += developer/documentation-tool/xmlto
 # Needed for testing purposes
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311

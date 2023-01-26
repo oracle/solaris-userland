@@ -19,7 +19,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 #
 
@@ -182,7 +182,7 @@ $(BUILD_DIR)/common.list: $(COMPONENT_DIR)/prepare_localedef.py $(LOCALES:%=$(BU
 	$(RM) -r $(BUILD_DIR)/include $(BUILD_DIR)/common
 	$(MKDIR) $(BUILD_DIR)/include $(BUILD_DIR)/common
 	$(CLONEY) $(COMPONENT_DIR)/include $(@D)/include
-	$(PYTHON.3.7) $(COMPONENT_DIR)/prepare_localedef.py $(BUILD_DIR) $(LOCALES) >$@
+	$(PYTHON.3.11) $(COMPONENT_DIR)/prepare_localedef.py $(BUILD_DIR) $(LOCALES) >$@
 	touch $@
 
 #
@@ -227,4 +227,4 @@ $(BUILD_DIR)/.utf-8: $(BUILD_DIR)/.tools.prep
 REQUIRED_PACKAGES += system/locale
 
 REQUIRED_PACKAGES += developer/build/ant
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311

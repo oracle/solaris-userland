@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		NO_ARCH
@@ -42,12 +42,12 @@ TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 # Use explicit Python version rather than the default one
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.11
 CONFIGURE_ENV += PYTHON=$(PYTHON)
 
 # pkgdepend complains if it doesn't find a version of python specified
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/itstool
 
-REQUIRED_PACKAGES += library/python/libxml2-37
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += library/python/libxml2-311
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += text/gawk
