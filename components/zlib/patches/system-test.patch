@@ -3,9 +3,9 @@ Patch status: Solaris-specific; not suitable for upstream
 
 Allows to test minigzip with installed version of zlib.
 
---- zlib-1.2.12/Makefile.in
-+++ zlib-1.2.12/Makefile.in
-@@ -95,9 +95,11 @@ fi
+--- zlib-1.2.13/Makefile.in
++++ zlib-1.2.13/Makefile.in
+@@ -91,9 +91,11 @@ fi
  	@rm -f tmpst_$$
  
  testshared: shared
@@ -17,4 +17,4 @@ Allows to test minigzip with installed version of zlib.
 +	fi; \
  	SHLIB_PATH=`pwd`:$(SHLIB_PATH) ; export SHLIB_PATH; \
  	TMPSH=tmpsh_$$; \
- 	if echo hello world | ./minigzipsh | ./minigzipsh -d && ./examplesh $$TMPSH; then \
+ 	if echo hello world | ${QEMU_RUN} ./minigzipsh | ${QEMU_RUN} ./minigzipsh -d && ${QEMU_RUN} ./examplesh $$TMPSH; then \
