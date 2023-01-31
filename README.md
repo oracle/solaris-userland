@@ -1,5 +1,15 @@
 # Getting started with the Userland Consolidation
 
+This repository contains the build recipes, local modifications, and
+IPS package manifests for most of the free and open source software
+that is packaged for Oracle Solaris 11.4 and published in the official
+Oracle Solaris package repository on pkg.oracle.com.
+
+Some open source software in Solaris is maintained and packaged outside
+of the Userland Consolidation.  Source code for those components may be
+available from
+<https://www.oracle.com/downloads/opensource/solaris-source-code-downloads.html>.
+
 ## Getting Started
 This README provides a very brief overview of the gate (i.e., source
 code repository), how to retrieve a copy, and how to build it.  Detailed
@@ -70,6 +80,34 @@ That is generally wrapper around
     $ gmake publish
     $ # examine the log files and provide a summary
 
-  
-# Copyright
-Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+## Help
+
+See <https://www.oracle.com/solaris/technologies/free-open-source-software.html>
+for information on support for free and open source software provided for
+Oracle Solaris.
+
+Discussion forums are available at:
+- <https://community.oracle.com/mosc/categories/oracle_sun_technologies>
+- <https://community.oracle.com/tech/apps-infra/categories/13305-solaris>
+
+## Contributing
+
+Instead of submitting a pull request, please
+[follow our contribution guide](./CONTRIBUTING.md).
+
+## Security
+
+Please consult the [security guide](./SECURITY.md) for our
+security vulnerability reporting and disclosure process.
+
+## License
+
+Copyright (c) 2010, 2023, Oracle and/or its affiliates.
+
+Most of the content of this repo is released under the
+Common Development and Distribution License (CDDL)
+as shown at <https://oss.oracle.com/licenses/>.
+
+Modifications to upstream projects are generally licensed under
+the same terms as the upstream project unless otherwise specified
+in the files providing the changes.
