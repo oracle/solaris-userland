@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Use GCC until Studio supports large enums (23058232)
@@ -45,6 +45,8 @@ include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_ENV += LIBNCURSES_CFLAGS=-I$(USRINCDIR)/ncurses
 CONFIGURE_ENV += LIBNCURSES_LIBS="-L$(USRLIBDIR64) -lncurses"
+
+CONFIGURE_OPTIONS += --with-TERM=screen
 
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/ncurses
