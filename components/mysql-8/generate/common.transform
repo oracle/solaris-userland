@@ -1,0 +1,49 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2023, Oracle and/or its affiliates.
+#
+
+# use MAJOR_VERSION instead real version number
+<transform path=.*/8.0 -> edit path /8.0 /\$\(MAJOR_VERSION\)>
+
+# by default everything is mysql package
+<transform file link -> default pkg.type mysql>
+
+# lib package
+<transform file link path=.*/libmysqlclient\.so -> set pkg.type lib>
+
+# client package
+<transform file link path=.*/mysql(\.1)?$ -> set pkg.type client>
+<transform file link path=.*/mysql_config_editor(\.1)?$ -> set pkg.type client>
+<transform file link path=.*/mysqladmin(\.1)?$ -> set pkg.type client>
+<transform file link path=.*/mysqlbinlog(\.1)?$ -> set pkg.type client>
+<transform file link path=.*/mysqlcheck(\.1)?$ -> set pkg.type client>
+<transform file link path=.*/mysqldump(\.1)?$ -> set pkg.type client>
+<transform file link path=.*/mysqlimport(\.1)?$ -> set pkg.type client>
+<transform file link path=.*/mysqlpump(\.1)?$ -> set pkg.type client>
+<transform file link path=.*/mysqlshow(\.1)?$ -> set pkg.type client>
+<transform file link path=.*/mysqlslap(\.1)?$ -> set pkg.type client>
+
+# no need to deliver tests now
+<transform file link path=.*/bin/mysql.*test -> drop>
+<transform file link path=.*/mysql-test/.* -> drop>
