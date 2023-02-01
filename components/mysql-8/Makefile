@@ -117,7 +117,6 @@ REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libedit
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += library/security/libsasl2
 ifeq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl
 else
