@@ -20,23 +20,24 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
-<transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
+<transform file path=usr.*/man/.+ -> default mangler.man.stability obsolete>
 <transform file path=usr/include/irssi/.* -> default facet.devel true>
 set name=pkg.fmri \
     value=pkg:/network/chat/irssi@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="irssi - a terminal based IRC client"
 set name=pkg.description \
     value="Irssi is a terminal based IRC client for UNIX systems."
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value="irssi - a terminal based IRC client"
 set name=info.classification \
     value=org.opensolaris.category.2008:Applications/Internet
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=LSARC/2008/481
+set name=org.opensolaris.arc-caseid value=LSARC/2008/481 value=PSARC/2023/005
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=etc/irssi.conf
 file path=usr/bin/irssi
@@ -195,6 +196,11 @@ file path=usr/share/doc/irssi/signals.txt
 file path=usr/share/doc/irssi/special_vars.txt
 file path=usr/share/doc/irssi/startup-HOWTO.html
 file path=usr/share/doc/irssi/startup-HOWTO.txt
+file release-notes/network-chat-irssi.txt \
+    path=usr/share/doc/release-notes/network-chat-irssi.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/irssi/help/accept
 file path=usr/share/irssi/help/action
 file path=usr/share/irssi/help/admin
