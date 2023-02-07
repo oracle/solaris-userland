@@ -26,20 +26,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		incremental
-COMPONENT_VERSION=	21.3.0
+COMPONENT_VERSION=	22.10.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c85322cec90af07c16133a671bcecefe271bbf84fbf30f1c9e9e6a704f5a11a1
+    sha256:912feeb5e0f7e0188e6f42241d2f450002e11bbc0937c65865045854c24c0bd0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/twisted/incremental
 COMPONENT_BUGDB=	python-mod/incremental
 COMPONENT_ANITYA_ID=	19663
-
-COMPONENT_BAID=		96848
+COMPONENT_BAID=		138416
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/src/$(COMPONENT_NAME)/tests
@@ -53,12 +52,9 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# Twisted is not yet available for Python 3.11.
-test:		$(BUILD_DIR)/$(MACH)-3.7/.tested \
-		$(BUILD_DIR)/$(MACH)-3.9/.tested
+test:		$(TEST_NO_ARCH)
 
-system-test:	$(BUILD_DIR)/$(MACH)-3.7/.system-tested \
-		$(BUILD_DIR)/$(MACH)-3.9/.system-tested
+system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 # testing dependencies
 REQUIRED_PACKAGES += library/python/python-twisted
