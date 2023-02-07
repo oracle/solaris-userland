@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 # Recompile mercurial files into their custom bytecode. The only way to do
 # so seems to be by importing them (py_compile/compileall cannot be used),
@@ -15,10 +15,12 @@ import sys
 sys.path[0] = os.getcwd()
 
 # register custom loader by importing mercurial
-import mercurial
+import mercurial  # noqa
 
-# replace this lambda with print to get more verbose output
-verbose = lambda *a, **kv: None
+
+# replace this noop with print to get more verbose output
+def verbose(*a, **kw):
+    pass
 
 
 def filter_modules(fullname):

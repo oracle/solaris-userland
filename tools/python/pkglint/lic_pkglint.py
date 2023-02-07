@@ -1,7 +1,7 @@
 #!/usr/bin/python3.9
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 
 # OSNet-specific pkglint(1) checks, called as part of pkglint commands in
@@ -232,7 +232,7 @@ class ExtractLicense(base.ManifestChecker):
             if license_type in seen_license_types:
                 engine.error(_(
                     "License '%(lic)s' has been encountered multiple times in"
-                    " %(fmri)s") % {"fmri": pkgpath, "lic":license_type},
+                    " %(fmri)s") % {"fmri": pkgpath, "lic": license_type},
                     msgid=lint_id)
             seen_license_types[license_type] = action
             licenselic["license"] = license_type

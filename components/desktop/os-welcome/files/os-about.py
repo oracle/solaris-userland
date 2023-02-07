@@ -26,9 +26,11 @@ import subprocess
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk  # noqa
+
 
 def N_(message): return message
+
 
 PACKAGE = "os-welcome"
 LOCALEDIR = "/usr/share/locale"
@@ -37,6 +39,7 @@ release_text = N_("Release")
 space_text = N_("Used Space")
 available_text = N_("Available Space")
 memory_text = N_("Memory")
+
 
 def get_solaris_version():
     # product name is not localized. Uses version from uname -v.

@@ -272,11 +272,11 @@ class UserlandActionChecker(base.ActionChecker):
                             src_pfmri, targ_pfmri, ignore_pubs=ignore_pubs):
                         targ_dic.pop(targ_pfmri)
             targ_dic.update(src_dic)
-            l = []
+            lst = []
             for pfmri in targ_dic:
                 for action in targ_dic[pfmri]:
-                    l.append((pfmri, action))
-            target[p] = l
+                    lst.append((pfmri, action))
+            target[p] = lst
 
     def __realpath(self, path, target):
         """Combine path and target to get the real path."""
@@ -317,7 +317,7 @@ class UserlandActionChecker(base.ActionChecker):
 
         if elfinfo["type"] != "pie":
             engine.error(f"'{path}' is not PIE compiled",
-                           msgid=f"{self.name}{_pkglint_id}.PIE")
+                         msgid=f"{self.name}{_pkglint_id}.PIE")
 
     def __elf_runpath_check(self, path, engine, _pkglint_id):
         """Verify that RUNPATH of given binary is correct."""
@@ -615,7 +615,6 @@ class UserlandActionChecker(base.ActionChecker):
 
     smf_manifest.pkglint_desc = "SMF manifests must be valid."
 
-
     def symlink_check(self, action, manifest, engine, pkglint_id="009"):
         """Make sure that symlink and hardlink relative paths do not have too many '..' parts"""
 
@@ -623,11 +622,11 @@ class UserlandActionChecker(base.ActionChecker):
             p = PurePath(path)
             for i in p.parts:
                 if i == '..':
-                    depth-=1
+                    depth -= 1
                 elif i == '.':
                     pass
                 else:
-                    depth+=1
+                    depth += 1
 
                 if depth < 0:
                     raise ValueError()
@@ -640,8 +639,8 @@ class UserlandActionChecker(base.ActionChecker):
                 countRelativePath(depth - 1, target)
             except ValueError:
                 engine.error(f"Symlink or its target resolves to incorrect"
-                    f" relative path {source} -> {target} in {manifest.fmri}",
-                    msgid=f"{self.name}{pkglint_id}.RELPATH")
+                             f" relative path {source} -> {target} in {manifest.fmri}",
+                             msgid=f"{self.name}{pkglint_id}.RELPATH")
 
         if action.name not in ["link", "hardlink"]:
             return
@@ -649,6 +648,7 @@ class UserlandActionChecker(base.ActionChecker):
         checkLink(action.attrs["path"], action.attrs["target"], manifest)
 
     symlink_check.pkglint_desc = "No extra '..' in linked files"
+
 
 class UserlandManifestChecker(base.ManifestChecker):
     """An opensolaris.org-specific class to check manifests."""

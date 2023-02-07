@@ -11,7 +11,10 @@
 # as 'point' keyword defined in locale(5)
 #
 
-import os, re, sys, hashlib
+import hashlib
+import os
+import re
+import sys
 
 hash_prefix = 6
 
@@ -24,7 +27,7 @@ hdr = """
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
-# Common Development and Distribution License (the "License").  
+# Common Development and Distribution License (the "License").
 # You may not use this file except in compliance with the License.
 #
 # You can obtain a copy of the license at src/OPENSOLARIS.LICENSE
@@ -106,7 +109,9 @@ for locale in sys.argv[2:]:
     cset = re_cset.match(locale).group(1)
 
     d = read_posix(os.path.join(build_dir, locale, "posix.src"))
-    locs[locale] = {lc: hashlib.sha1((cset + d[lc]).encode()).hexdigest()[:hash_prefix] for lc in d}
+    locs[locale] = {
+        lc: hashlib.sha1((cset + d[lc]).encode()).hexdigest()[:hash_prefix] for lc in d
+    }
 
     for lc, h in locs[locale].items():
 
@@ -122,18 +127,18 @@ for locale in sys.argv[2:]:
             assert data[h]['cset'] == cset
 
 
-for l, loc in locs.items():
+for locale, loc in locs.items():
     # generate "full" version for localedef src package
-    with open(f"{build_dir}/{l}/posix.localedef_full", "w") as ofile:
+    with open(f"{build_dir}/{locale}/posix.localedef_full", "w") as ofile:
         ofile.write(hdr)
         for lc in lcc:
             ofile.write(f"\n\n{lc}\n\n{data[loc[lc]]['val']}\n\nEND {lc}\n")
 
 
 common_done = list()
-for l, loc in locs.items():
+for locale, loc in locs.items():
     # generate "point" version for locale compilation
-    with open(f"{build_dir}/{l}/posix.localedef", "w") as ofile:
+    with open(f"{build_dir}/{locale}/posix.localedef", "w") as ofile:
         for lc in lcc:
             h = loc[lc]
             cname = f"{lc[3:].lower()}.{h}"
@@ -144,24 +149,26 @@ for l, loc in locs.items():
             is_point = is_point and data[h]['cset'] == 'UTF-8'
 
             # the categories are not big enough to make sharing effective
-            is_point = is_point and lc not in ['LC_NUMERIC', 'LC_MONETARY', 'LC_TIME', 'LC_MESSAGES']
+            is_point = is_point and lc not in [
+                "LC_NUMERIC", "LC_MONETARY", "LC_TIME", "LC_MESSAGES",
+            ]
 
             # if en_US.UTF-8 changed, the ON *.sort files need to be changed,
             # see 22014135 for details. To avoid it, en_US.UTF-8 is generated "standalone"
             #
             # make C.UTF-8 locale standalone too.
-            is_point = is_point and l not in ['en_US.UTF-8', 'C.UTF-8']
+            is_point = is_point and locale not in ['en_US.UTF-8', 'C.UTF-8']
 
             ofile.write(f"\n\n{lc}\n\n")
 
             if h not in data or is_point:
-                print(f"<transform file path=usr/lib/locale/common/{cname} -> default facet.locale.{l.split('.')[0]} true>")
+                print(f"<transform file path=usr/lib/locale/common/{cname}"
+                      f" -> default facet.locale.{locale.split('.')[0]} true>")
                 ofile.write(f'point "common/{cname}"')
             else:
                 ofile.write(data[h]['val'])
 
             ofile.write(f"\n\nEND {lc}\n")
-
 
             if is_point and h not in common_done:
                 with open(f"{build_dir}/common/{cname}.localedef", "w") as ofile2:

@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 # Tests for Userland pkglint check extension (from userland.py)
@@ -43,7 +43,7 @@ class TestUserlandPkglint(unittest.TestCase):
         # test manifests based on the expected location of this script.
         here = pathlib.Path(__file__).parent.absolute()
         tools = here.parent.parent
-        self.extension_path = tools / "python"
+        self.ext_path = tools / "python"
         self.pkglintrc = tools / "pkglintrc"
         self.manifests = here / "manifests"
         self.protoarea = here / "proto"
@@ -72,12 +72,11 @@ class TestUserlandPkglint(unittest.TestCase):
                     env["PROTO_PATH"] = self.protoarea
 
                 res = subprocess.run(
-                    ["/bin/pkglint", "-e", self.extension_path, "-f", self.pkglintrc, manifest_path],
+                    ["/bin/pkglint", "-e", self.ext_path, "-f", self.pkglintrc, manifest_path],
                     text=True, capture_output=True, env=env)
                 return function(self, res.returncode, res.stdout, res.stderr)
             return wrapper
         return decorator
-
 
     @with_manifest("userland.action001_1.in")
     def test_action001_clean(self, ret, stdout, stderr):
@@ -85,17 +84,20 @@ class TestUserlandPkglint(unittest.TestCase):
         self.assertEqual(ret, 0)
         self.assertEqual(stderr, "")
 
-
     @with_manifest("userland.action001_2.in")
     def test_action001_mode(self, ret, stdout, stderr):
         """Mode and preserve attribute misuse is detected."""
-        self.assertIn("ERROR userland.action001.0        "
-            "usr/lib/pkglinttest/first.py is writable (0644), but missing a preserve attribute\n", stderr)
-        self.assertIn("ERROR userland.action001.4        "
-            "usr/lib/pkglinttest/second.py has a preserve action, but is not writable (0444)\n", stderr)
-        self.assertIn("ERROR userland.action001.3        "
+        self.assertIn(
+            "ERROR userland.action001.0        "
+            "usr/lib/pkglinttest/first.py is writable (0644), but missing a preserve attribute\n",
+            stderr)
+        self.assertIn(
+            "ERROR userland.action001.4        "
+            "usr/lib/pkglinttest/second.py has a preserve action, but is not writable (0444)\n",
+            stderr)
+        self.assertIn(
+            "ERROR userland.action001.3        "
             "usr/lib/pkglinttest/third.py has a preserve action, but no mode\n", stderr)
-
 
     @with_manifest("userland.action001_3.in", proto=True)
     def test_action001_protoarea(self, ret, stdout, stderr):
@@ -103,20 +105,23 @@ class TestUserlandPkglint(unittest.TestCase):
         self.assertEqual(ret, 0)
         self.assertNotIn("usr/lib/pkglinttest/foo.txt", stderr)
         # missing file at this stage is INFO only (with return code 0)
-        self.assertIn("INFO userland.action001.1         "
-            "usr/lib/pkglinttest/missing.txt missing from proto area, skipping content checks\n", stderr)
-
+        self.assertIn(
+            "INFO userland.action001.1         "
+            "usr/lib/pkglinttest/missing.txt missing from proto area, skipping content checks\n",
+            stderr)
 
     @with_manifest("userland.action001_4.in", proto=True)
     def test_action001_bitscheck(self, ret, stdout, stderr):
         """checks for 32/64 elf locations work correctly."""
 
         for val in ["usr/bin/sparcv7/64in32a", "usr/bin/sparcv7/64in32x"]:
-            self.assertIn("ERROR userland.action001.2        "
+            self.assertIn(
+                "ERROR userland.action001.2        "
                 f"64-bit object '{val}' in 32-bit path\n", stderr)
 
         for val in ["usr/bin/amd64/32in64a", "usr/bin/amd64/32in64x"]:
-            self.assertIn("ERROR userland.action001.2        "
+            self.assertIn(
+                "ERROR userland.action001.2        "
                 f"32-bit object '{val}' in 64-bit path(['usr', 'bin', 'amd64'])\n", stderr)
 
         for val in ["32in32b", "32in64b", "64in32b", "64in64b",
@@ -135,7 +140,8 @@ class TestUserlandPkglint(unittest.TestCase):
 
         for path in pathlist32:
             self.assertNotIn(f"usr/bin/{path}/32bin", stderr)
-            self.assertIn("ERROR userland.action001.2        "
+            self.assertIn(
+                "ERROR userland.action001.2        "
                 f"64-bit object 'usr/bin/{path}/64bin' in 32-bit path", stderr)
 
         pathlist64 = [
@@ -157,14 +163,16 @@ class TestUserlandPkglint(unittest.TestCase):
 
         for path in pathlist64:
             self.assertNotIn(f"usr/bin/{path}/64bin", stderr)
-            self.assertIn("ERROR userland.action001.2        "
-                f"32-bit object 'usr/bin/{path}/32bin' in 64-bit path(['usr', 'bin', '{path}'])\n", stderr)
+            self.assertIn(
+                "ERROR userland.action001.2        "
+                f"32-bit object 'usr/bin/{path}/32bin' in 64-bit path(['usr', 'bin', '{path}'])\n",
+                stderr)
 
         self.assertNotIn("usr/lib/xorg/modules/64bin", stderr)
         self.assertNotIn("usr/lib/xorg/modules/dri", stderr)
-        self.assertIn("ERROR userland.action001.2        "
-            "32-bit object 'usr/lib/xorg/modules/32bin' in 64-bit path(['usr', 'lib', 'xorg', 'modules'])\n", stderr)
-
+        self.assertIn(
+            "ERROR userland.action001.2        "
+            "32-bit object 'usr/lib/xorg/modules/32bin' in 64-bit path(['usr', 'lib', 'xorg', 'modules'])\n", stderr)  # noqa
 
     @with_manifest("userland.action001_5.in", proto=True)
     def test_action001_runpathcheck(self, ret, stdout, stderr):
@@ -173,37 +181,47 @@ class TestUserlandPkglint(unittest.TestCase):
         # basic checks
         self.assertNotIn("good32", stderr)
         self.assertNotIn("good64", stderr)
-        self.assertIn("ERROR userland.action001.3        "
-            f"bad RUNPATH, '{self.protoarea}/usr/lib/runpath/bad' includes '/wrong:/tmp'\n", stderr)
+        self.assertIn(
+            "ERROR userland.action001.3        "
+            f"bad RUNPATH, '{self.protoarea}/usr/lib/runpath/bad' includes '/wrong:/tmp'\n",
+            stderr)
 
         # 32/64 bit runpath checks
         self.assertNotIn("32with32", stderr)
         self.assertNotIn("64with64", stderr)
-        self.assertIn("WARNING userland.action001.3      "
-            f"32-bit runpath in 64-bit binary, '{self.protoarea}/usr/lib/runpath/64with32' includes '/lib'\n", stderr)
-        self.assertIn("WARNING userland.action001.3      "
-            f"64-bit runpath in 32-bit binary, '{self.protoarea}/usr/lib/runpath/32with64' includes '/lib/amd64'\n", stderr)
+        self.assertIn(
+            "WARNING userland.action001.3      "
+            f"32-bit runpath in 64-bit binary, '{self.protoarea}/usr/lib/runpath/64with32' includes '/lib'\n", stderr)  # noqa
+        self.assertIn(
+            "WARNING userland.action001.3      "
+            f"64-bit runpath in 32-bit binary, '{self.protoarea}/usr/lib/runpath/32with64' includes '/lib/amd64'\n", stderr)  # noqa
 
         # link checks
-        self.assertIn("WARNING userland.action001.3      "
+        self.assertIn(
+            "WARNING userland.action001.3      "
             f"runpath '/usr/openwin/lib' in '{self.protoarea}/usr/lib/runpath/linka' not found "
             "in reference paths but contains symlink at 'usr/openwin'\n", stderr)
-        self.assertIn("WARNING userland.action001.3      "
+        self.assertIn(
+            "WARNING userland.action001.3      "
             f"runpath '/usr/openwin/bin' in '{self.protoarea}/usr/lib/runpath/linkb' not found "
             "in reference paths but contains symlink at 'usr/openwin'\n", stderr)
-        self.assertIn("ERROR userland.action001.3        "
-            f"bad RUNPATH, '{self.protoarea}/usr/lib/runpath/linkc' includes '/usr/X11/bin'", stderr)
-
+        self.assertIn(
+            "ERROR userland.action001.3        "
+            f"bad RUNPATH, '{self.protoarea}/usr/lib/runpath/linkc' includes '/usr/X11/bin'",
+            stderr)
 
     @with_manifest("userland.action001_6.in", proto=True)
     def test_action001_aslrcheck(self, ret, stdout, stderr):
         """ASLR checks work correctly."""
         self.assertNotIn("aslr/enabled", stderr)
-        self.assertIn("WARNING userland.action001.6      "
+        self.assertIn(
+            "WARNING userland.action001.6      "
             f"'{self.protoarea}/usr/lib/aslr/disabled' does not have aslr enabled\n", stderr)
-        self.assertIn("ERROR userland.action001.5        "
+        self.assertIn(
+            "ERROR userland.action001.5        "
             f"'{self.protoarea}/usr/lib/aslr/noflag' is not tagged for aslr\n", stderr)
-        self.assertIn("ERROR userland.action001.PIE      "
+        self.assertIn(
+            "ERROR userland.action001.PIE      "
             f"'{self.protoarea}/usr/bin/no-pie' is not PIE compiled\n", stderr)
 
     @with_manifest("userland.action002_1.in")
@@ -212,61 +230,75 @@ class TestUserlandPkglint(unittest.TestCase):
         self.assertEqual(ret, 0)
         self.assertEqual(stderr, "")
 
-
     @with_manifest("userland.action002_2.in")
     def test_action002_broken_links(self, ret, stdout, stderr):
         """All broken links are correctly detected."""
-        self.assertIn("ERROR userland.action002.0        "
+        self.assertIn(
+            "ERROR userland.action002.0        "
             "link usr/bin/first has unresolvable target '/usr/lib/pkglinttest/foo.py'\n", stderr)
-        self.assertIn("ERROR userland.action002.0        "
+        self.assertIn(
+            "ERROR userland.action002.0        "
             "link usr/bin/second has unresolvable target '/usr/lib/pkglinttest/xyz.py'\n", stderr)
-        self.assertIn("ERROR userland.action002.0        "
+        self.assertIn(
+            "ERROR userland.action002.0        "
             "link usr/bin/third has unresolvable target '/usr/lib/'\n", stderr)
-        self.assertIn("ERROR userland.action002.0        "
+        self.assertIn(
+            "ERROR userland.action002.0        "
             "link usr/bin/fouth has unresolvable target '/home/'\n", stderr)
-        self.assertIn("ERROR userland.action002.0        "
-            "hardlink usr/bin/firstx has unresolvable target '/usr/lib/pkglinttest/foo.py'\n", stderr)
-        self.assertIn("ERROR userland.action002.0        "
-            "hardlink usr/bin/secondx has unresolvable target '/usr/lib/pkglinttest/xyz.py'\n", stderr)
-        self.assertIn("ERROR userland.action002.0        "
+        self.assertIn(
+            "ERROR userland.action002.0        "
+            "hardlink usr/bin/firstx has unresolvable target '/usr/lib/pkglinttest/foo.py'\n",
+            stderr)
+        self.assertIn(
+            "ERROR userland.action002.0        "
+            "hardlink usr/bin/secondx has unresolvable target '/usr/lib/pkglinttest/xyz.py'\n",
+            stderr)
+        self.assertIn(
+            "ERROR userland.action002.0        "
             "hardlink usr/bin/thirdx has unresolvable target '/usr/lib/'\n", stderr)
-        self.assertIn("ERROR userland.action002.0        "
+        self.assertIn(
+            "ERROR userland.action002.0        "
             "hardlink usr/bin/fouthx has unresolvable target '/home/'\n", stderr)
-        self.assertIn("ERROR userland.action009.RELPATH  "
-            "Symlink or its target resolves to incorrect relative path usr/bin/s-incorrect", stderr)
-        self.assertIn("ERROR userland.action009.RELPATH  "
-            "Symlink or its target resolves to incorrect relative path usr/bin/h-incorrect", stderr)
-        
-
+        self.assertIn(
+            "ERROR userland.action009.RELPATH  "
+            "Symlink or its target resolves to incorrect relative path usr/bin/s-incorrect",
+            stderr)
+        self.assertIn(
+            "ERROR userland.action009.RELPATH  "
+            "Symlink or its target resolves to incorrect relative path usr/bin/h-incorrect",
+            stderr)
 
     @with_manifest("userland.action003.in")
     def test_action003(self, ret, stdout, stderr):
         """SVR4 startup actions are reported as warnings."""
         self.assertEqual(ret, 0)
-        self.assertIn("WARNING userland.action003.0      "
+        self.assertIn(
+            "WARNING userland.action003.0      "
             "SVR4 startup 'etc/rca.d/foo.py', deliver SMF service instead\n", stderr)
-        self.assertIn("WARNING userland.action003.0      "
+        self.assertIn(
+            "WARNING userland.action003.0      "
             "SVR4 startup 'etc/init.d/bar.py', deliver SMF service instead\n", stderr)
-
 
     @with_manifest("userland.action004.in")
     def test_action004(self, ret, stdout, stderr):
         """Files are delivered in allowed locations only."""
         self.assertNotIn("correct", stderr)
-        self.assertIn("ERROR userland.action004.0        "
+        self.assertIn(
+            "ERROR userland.action004.0        "
             "object delivered into non-standard location: Solaris/wrong", stderr)
-        self.assertIn("ERROR userland.action004.0        "
+        self.assertIn(
+            "ERROR userland.action004.0        "
             "object delivered into non-standard location: bin/wrong", stderr)
-        self.assertIn("ERROR userland.action004.0        "
+        self.assertIn(
+            "ERROR userland.action004.0        "
             "object delivered into non-standard location: var/share/wrong", stderr)
-
 
     @with_manifest("userland.action008.in", proto=True)
     def test_action008(self, ret, stdout, stderr):
         """SMF manifests are validated."""
-        self.assertIn("ERROR userland.action008.0        "
+        self.assertIn(
+            "ERROR userland.action008.0        "
             "SMF manifest manifest.xml is not valid:\n", stderr)
-
 
     @with_manifest("userland.manifest001_1.in")
     def test_manifest001_empty(self, ret, stdout, stderr):
@@ -274,22 +306,21 @@ class TestUserlandPkglint(unittest.TestCase):
         self.assertEqual(ret, 0)
         self.assertEqual(stderr, "")
 
-
     @with_manifest("userland.manifest001_2.in")
     def test_manifest001_license_only(self, ret, stdout, stderr):
         """Packages with license and without files are ok."""
         self.assertEqual(ret, 0)
         self.assertEqual(stderr, "")
 
-
     @with_manifest("userland.manifest001_3.in")
     def test_manifest001_missing_license(self, ret, stdout, stderr):
         """Packages with files missing license and ARC are reported."""
-        self.assertIn("ERROR userland.manifest001.0      "
+        self.assertIn(
+            "ERROR userland.manifest001.0      "
             "missing license action in pkg:/library/foobar@1.0.0", stderr)
-        self.assertIn("ERROR userland.manifest001.0      "
+        self.assertIn(
+            "ERROR userland.manifest001.0      "
             "missing ARC data (org.opensolaris.arc-caseid) in pkg:/library/foobar@1.0.0", stderr)
-
 
     @with_manifest("userland.manifest002_1.in")
     def test_manifest002_allowed_publishers(self, ret, stdout, stderr):
@@ -297,84 +328,97 @@ class TestUserlandPkglint(unittest.TestCase):
         self.assertEqual(ret, 0)
         self.assertEqual(stderr, "")
 
-
     @with_manifest("userland.manifest002_2.in")
     def test_manifest002_forbidden_publisher(self, ret, stdout, stderr):
         """Package fmri doesn't have a publisher set."""
         package = "pkg://unknown/library/foobar@1.0.0,11.4-11.4.33.0.0.92.0"
 
-        self.assertEqual("ERROR userland.manifest002.2      "
+        self.assertEqual(
+            "ERROR userland.manifest002.2      "
             f"package {package} has a publisher set!\n", stderr)
-
 
     @with_manifest("userland.manifest003_1.in")
     def test_manifest003_missing_incorporate(self, ret, stdout, stderr):
         """CFFI is incorporated when package depends on it."""
         package = "pkg:/library/foobar@1.0.0,11.4-11.4.33.0.0.92.0"
 
-        self.assertIn("ERROR userland.manifest003.2      "
-            f"package {package} depends on CFFI, but does not incorporate it (should be at", stderr)
-
+        self.assertIn(
+            "ERROR userland.manifest003.2      "
+            f"package {package} depends on CFFI, but does not incorporate it (should be at",
+            stderr)
 
     @with_manifest("userland.manifest003_2.in")
     def test_manifest003_wrong_incorporate(self, ret, stdout, stderr):
         """CFFI is incorporated at a correct version."""
         package = "pkg:/library/foobar@1.0.0,11.4-11.4.33.0.0.92.0"
 
-        self.assertIn("ERROR userland.manifest003.3      "
-            f"package {package} depends on CFFI, but incorporates it at the wrong version (", stderr)
-
+        self.assertIn(
+            "ERROR userland.manifest003.3      "
+            f"package {package} depends on CFFI, but incorporates it at the wrong version (",
+            stderr)
 
     @with_manifest("userland.manifest004.in")
     def test_manifest004(self, ret, stdout, stderr):
         """Unexpanded variables are correctly detected."""
         package = "pkg:/library/foobar@1.0.0,11.4-11.4.33.0.0.92.0"
 
-        self.assertIn("ERROR userland.manifest004.0      "
-            f"Unexpanded make variable in {package}:\nset name=com.oracle.info.baid value=$(BAID)", stderr)
-        self.assertIn("ERROR userland.manifest004.0      "
+        self.assertIn(
+            "ERROR userland.manifest004.0      "
+            f"Unexpanded make variable in {package}:\nset name=com.oracle.info.baid value=$(BAID)",
+            stderr)
+        self.assertIn(
+            "ERROR userland.manifest004.0      "
             f"Unexpanded make variable in {package}:\n"
             "file NOHASH group=bin mode=0444 owner=root path=usr/lib/$(VERSION)/foo.py", stderr)
-
 
     @with_manifest("userland.manifest005.in")
     def test_manifest005(self, ret, stdout, stderr):
         """Only files for local architecture are being delivered."""
         package = "pkg:/library/foobar@1.0.0,11.4-11.4.33.0.0.92.0"
 
-        self.assertIn("ERROR userland.manifest005.1      "
-            f"Package {package} is being published for wrong architecture {{'arm64'}} instead of {platform.processor()}:\n"
+        self.assertIn(
+            "ERROR userland.manifest005.1      "
+            f"Package {package} is being published for wrong architecture {{'arm64'}} instead of {platform.processor()}:\n"  # noqa
             "('variant.arch', {'arm64'})", stderr)
-        self.assertIn("ERROR userland.manifest005.2      "
-            f"The manifest {package} contains action with wrong architecture '['arm64']' (instead of '{platform.processor()}'):\n"
-            "file NOHASH group=bin mode=0444 owner=root path=usr/lib/pkglinttest/xyz.py variant.arch=arm64", stderr)
+        self.assertIn(
+            "ERROR userland.manifest005.2      "
+            f"The manifest {package} contains action with wrong architecture '['arm64']' (instead of '{platform.processor()}'):\n"  # noqa
+            "file NOHASH group=bin mode=0444 owner=root path=usr/lib/pkglinttest/xyz.py variant.arch=arm64", stderr)  # noqa
 
         # the following assertions differ based on the architecture
         if platform.processor() == "i386":
-            self.assertIn("ERROR userland.manifest005.2      "
-                f"The manifest {package} contains action with wrong architecture '['sparc']' (instead of 'i386'):\n"
-                "file NOHASH group=bin mode=0444 owner=root path=usr/lib/pkglinttest/foo.py variant.arch=sparc", stderr)
+            self.assertIn(
+                "ERROR userland.manifest005.2      "
+                f"The manifest {package} contains action with wrong architecture '['sparc']' (instead of 'i386'):\n"  # noqa
+                "file NOHASH group=bin mode=0444 owner=root path=usr/lib/pkglinttest/foo.py variant.arch=sparc", stderr)  # noqa
         else:
-            self.assertIn("ERROR userland.manifest005.2      "
-                f"The manifest {package} contains action with wrong architecture '['i386']' (instead of 'sparc'):\n"
-                "file NOHASH group=bin mode=0444 owner=root path=usr/lib/pkglinttest/bar.py variant.arch=i386", stderr)
-
+            self.assertIn(
+                "ERROR userland.manifest005.2      "
+                f"The manifest {package} contains action with wrong architecture '['i386']' (instead of 'sparc'):\n"  # noqa
+                "file NOHASH group=bin mode=0444 owner=root path=usr/lib/pkglinttest/bar.py variant.arch=i386", stderr)  # noqa
 
     @with_manifest("userland.manifest006.in", proto=True)
     def test_manifest006(self, ret, stdout, stderr):
         """Pyc files are present and not stale."""
         self.assertNotIn("correct", stderr)
-        self.assertIn("WARNING userland.manifest006.0    "
+        self.assertIn(
+            "WARNING userland.manifest006.0    "
             "file usr/lib/python/without.py doesn't have corresponding .pyc file\n", stderr)
-        self.assertIn("ERROR userland.manifest006.9      "
+        self.assertIn(
+            "ERROR userland.manifest006.9      "
             "file usr/lib/python/orphan.pyc doesn't have corresponding .py source file\n", stderr)
-        self.assertIn("ERROR userland.manifest006.1      "
-            "bad pyc magic number in usr/lib/python/__pycache__/magicmismatch.cpython-37.pyc\n", stderr)
+        self.assertIn(
+            "ERROR userland.manifest006.1      "
+            "bad pyc magic number in usr/lib/python/__pycache__/magicmismatch.cpython-37.pyc\n",
+            stderr)
 
-        self.assertIn("ERROR userland.manifest006.5      "
+        self.assertIn(
+            "ERROR userland.manifest006.5      "
             "bytecode is stale in usr/lib/python/stale2.pyc\n", stderr)
-        self.assertIn("ERROR userland.manifest006.5      "
-            "bytecode is stale (timestamp) in usr/lib/python/__pycache__/stale3.cpython-39.pyc\n", stderr)
+        self.assertIn(
+            "ERROR userland.manifest006.5      "
+            "bytecode is stale (timestamp) in usr/lib/python/__pycache__/stale3.cpython-39.pyc\n",
+            stderr)
 
 
 if __name__ == '__main__':

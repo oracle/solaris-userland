@@ -25,9 +25,11 @@ import subprocess
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, Gio
+from gi.repository import Gtk, Gdk, Gio  # noqa
+
 
 def N_(message): return message
+
 
 PACKAGE = "os-welcome"
 LOCALEDIR = "/usr/share/locale"
@@ -36,6 +38,7 @@ LOCALEDIR = "/usr/share/locale"
 bullet_point = '\u2022'
 
 default_link_color = Gdk.Color(0, 0, 65535)
+
 
 # This needs to stay in sync with the method in /lib/svc/method/svc-webui-server
 # for generating the hostname used in the site certificate to avoid TLS errors.
@@ -53,25 +56,67 @@ def get_solaris_dashboard_url():
         hostname = "localhost"
     return "https://%s:6787/" % hostname
 
+
 help_link = {
-    'header': N_("Learn More about Oracle Solaris"),
-    'icon': "resources.png",
-    'url_links': [["https://docs.oracle.com/cd/E37838_01/html/E60974/index.html", N_("##What's new## with <b>Oracle Solaris 11.4</b>")], ["https://www.oracle.com/support/premier/systems/", N_("##Get world class support## with <b>Oracle Premier Support</b>")], ["https://blogs.oracle.com/solaris/", N_("##Catch the latest## from the <b>Oracle Solaris Blog</b>")], [get_solaris_dashboard_url(), N_("##Explore## the <b>Oracle Solaris Dashboard</b> with system analytics and more")]],
+    "header": N_("Learn More about Oracle Solaris"),
+    "icon": "resources.png",
+    "url_links": [
+        [
+            "https://docs.oracle.com/cd/E37838_01/html/E60974/index.html",
+            N_("##What's new## with <b>Oracle Solaris 11.4</b>"),
+        ],
+        [
+            "https://www.oracle.com/support/premier/systems/",
+            N_("##Get world class support## with <b>Oracle Premier Support</b>"),
+        ],
+        [
+            "https://blogs.oracle.com/solaris/",
+            N_("##Catch the latest## from the <b>Oracle Solaris Blog</b>"),
+        ],
+        [
+            get_solaris_dashboard_url(),
+            N_("##Explore## the <b>Oracle Solaris Dashboard</b> with system analytics and more"),
+        ],
+    ],
 }
 
 personalize_link = {
-    'header': N_("Use the GNOME Desktop"),
-    'icon': "gnome.png",
-    'program_links': [["yelp.desktop", N_("##Get Help## using the <b>GNOME Desktop</b>")], ["gnome-control-center.desktop", N_("##Change desktop settings## with <b>GNOME Control Center</b>")], ["gnome-universal-access-panel.desktop", N_("##Enable Accessibility## with <b>Settings > Universal Access</b>")]],
+    "header": N_("Use the GNOME Desktop"),
+    "icon": "gnome.png",
+    "program_links": [
+        [
+            "yelp.desktop",
+            N_("##Get Help## using the <b>GNOME Desktop</b>")
+        ],
+        [
+            "gnome-control-center.desktop",
+            N_("##Change desktop settings## with <b>GNOME Control Center</b>"),
+        ],
+        [
+            "gnome-universal-access-panel.desktop",
+            N_("##Enable Accessibility## with <b>Settings > Universal Access</b>"),
+        ],
+    ],
 }
 
 participate_link = {
-    'header': N_("Participate"),
-    'icon': "participate.png",
-    'url_links': [["https://community.oracle.com/mosc/categories/oracle_sun_technologies", N_("##Join the discussion## in the <b>Oracle Solaris Forums</b>")], ["https://github.com/oracle/oraclesolaris-contrib", N_("##Share and learn from other users## in the <b>oraclesolaris-contrib</b> github repo")]],
+    "header": N_("Participate"),
+    "icon": "participate.png",
+    "url_links": [
+        [
+            "https://community.oracle.com/mosc/categories/oracle_sun_technologies",
+            N_("##Join the discussion## in the <b>Oracle Solaris Forums</b>"),
+        ],
+        [
+            "https://github.com/oracle/oraclesolaris-contrib",
+            N_("##Share and learn from other users## in the "
+               "<b>oraclesolaris-contrib</b> github repo"),
+        ],
+    ],
 }
 
 ICON_PATH = "/usr/share/os-about/"
+
 
 class DialogOSNextSteps(Gtk.Dialog):
 

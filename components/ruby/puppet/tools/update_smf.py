@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 
 '''
@@ -253,15 +253,32 @@ def get_args():
     '''Build the option list for this utility'''
 
     parser = argparse.ArgumentParser(
-        description="Utility for assisting in the upgrading of Solaris Puppet SMF file")
-    parser.add_argument("-c", "--config", metavar="<puppet_config_file>",
-        required=True, help="Puppet configuration file generated via genconfig "
-            "option to puppet. i.e. puppet agent --genconfig > puppet.conf")
-    parser.add_argument("-s", "--smf", dest="smf_xml", metavar="<smf_config_file>",
-        required=True, help="Current solaris Puppet SMF XML configuration file. "
-            "This file is located in <userland_tree> /components/puppet/files/puppet.xml")
-    parser.add_argument("-o", "--output", metavar="<output_file>",
-        required=True, help="The name of the new puppet.xml file ")
+        description="Utility for assisting in the upgrading of Solaris Puppet SMF file"
+    )
+    parser.add_argument(
+        "-c",
+        "--config",
+        metavar="<puppet_config_file>",
+        required=True,
+        help="Puppet configuration file generated via genconfig "
+             "option to puppet. i.e. puppet agent --genconfig > puppet.conf",
+    )
+    parser.add_argument(
+        "-s",
+        "--smf",
+        dest="smf_xml",
+        metavar="<smf_config_file>",
+        required=True,
+        help="Current solaris Puppet SMF XML configuration file. "
+             "This file is located in <userland_tree> /components/puppet/files/puppet.xml",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        metavar="<output_file>",
+        required=True,
+        help="The name of the new puppet.xml file ",
+    )
 
     return parser.parse_args()
 
