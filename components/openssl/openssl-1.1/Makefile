@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -28,20 +28,20 @@ COMPONENT_NAME =	openssl-$(COMPONENT_VERSION_SHORT)
 
 # When new version of OpenSSL comes in, you must update both COMPONENT_VERSION
 # and IPS_COMPONENT_VERSION.
-COMPONENT_VERSION =	1.1.1q
+COMPONENT_VERSION =	1.1.1t
 # Version for IPS. It is easier to do it manually than convert the letter to a
 # number while taking into account that there might be no letter at all.
-IPS_COMPONENT_VERSION = 1.1.1.17
+IPS_COMPONENT_VERSION = 1.1.1.18
 COMPONENT_PROJECT_URL=	http://www.openssl.org/
 COMPONENT_SRC =		openssl-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d7939ce614029cdff0b6c20f0e2e5703158a489a72b2507b8bd51bf8c8fd10ca
+    sha256:8dee9b24bdb1dcbf0c3d1e9b02fb8f6bf22165e807f45adeb7c9677536859d3b
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	20333
 
-COMPONENT_BAID=		126435
+COMPONENT_BAID=		137925
 
 # Clone the patch files to the patches-all dir.
 # COPY_COMMON_FILES is there so that the copy is called as soon as
