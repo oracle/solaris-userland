@@ -705,8 +705,7 @@ RUBY_VERSION =	3.1
 RUBY_PUPPET_VERSION = 3.1
 
 # The default version should go last.
-RUBY_VERSIONS = 3.1 2.6
-RUBY.2.6 =	/usr/ruby/2.6/bin/ruby
+RUBY_VERSIONS = 3.1
 RUBY.3.1 =	/usr/ruby/3.1/bin/ruby
 RUBY =		$(RUBY.$(RUBY_VERSION))
 

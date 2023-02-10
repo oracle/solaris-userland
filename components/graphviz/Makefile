@@ -90,7 +90,7 @@ $(CONFIGURE_32): CONFIGURE_OPTIONS +=	--enable-ruby=no
 $(CONFIGURE_32): CONFIGURE_OPTIONS +=	--enable-php=no
 $(CONFIGURE_32): CONFIGURE_OPTIONS +=	--with-rsvg=no
 $(CONFIGURE_64): CONFIGURE_ENV +=	PERL=$(PERL)
-$(CONFIGURE_64): CONFIGURE_ENV +=	RUBY=$(RUBY.2.6)
+$(CONFIGURE_64): CONFIGURE_ENV +=	RUBY=$(RUBY.3.1)
 $(INSTALL_64): COMPONENT_INSTALL_ARGS += PHP_INSTALL_DIR=$(shell PATH=$(PATH) php-config --extension-dir)
 # tcl ships both 32 and 64 bit, but even though /usr/bin/tclsh is 64-bit, there
 # is no place to stick 64-bit modules, so skip it.  On the other hand, make
@@ -238,7 +238,7 @@ REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += runtime/ruby-26
+REQUIRED_PACKAGES += runtime/ruby-31
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
