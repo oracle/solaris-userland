@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -28,13 +28,13 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsigsegv
-COMPONENT_VERSION=	2.13
+COMPONENT_VERSION=	2.14
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:be78ee4176b05f7c75ff03298d84874db90f4b6c9d5503f0da1226b3a3c48119
+    sha256:cdac3941803364cf81a908499beb79c200ead60b6b5b40cad124fd1e06caa295
 COMPONENT_BUGDB=	library/libsigsegv
 COMPONENT_ANITYA_ID=	1722
 
-COMPONENT_BAID=		103121
+COMPONENT_BAID=		137685
 
 GENERATE_PROTO_DIRS += man3
 
