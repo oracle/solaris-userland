@@ -243,8 +243,8 @@ WANBOOT_OBJS =  \
     crypto/bn/bn_mod.o crypto/bn/bn_mont.o crypto/bn/bn_mul.o \
     crypto/bn/bn_prime.o crypto/bn/bn_print.o crypto/bn/bn_rand.o \
     crypto/bn/bn_recp.o crypto/bn/bn_shift.o crypto/bn/bn_sqr.o \
-    crypto/bn/bn_word.o crypto/bn/sparcv9-mont.o crypto/bn/sparcv9a-mont.o \
-    crypto/bn/sparct4-mont.o crypto/bn/vis3-mont.o \
+    crypto/bn/rsa_sup_mul.o crypto/bn/bn_word.o crypto/bn/sparcv9-mont.o \
+    crypto/bn/sparcv9a-mont.o crypto/bn/sparct4-mont.o crypto/bn/vis3-mont.o \
     crypto/buffer/buf_err.o crypto/buffer/buf_str.o crypto/buffer/buffer.o \
     crypto/camellia/camellia.o crypto/camellia/cmll_cbc.o \
     crypto/camellia/cmll_cfb.o crypto/camellia/cmll_ecb.o \
