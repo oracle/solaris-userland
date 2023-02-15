@@ -97,6 +97,7 @@ CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-libssh2
 CONFIGURE_OPTIONS += --with-nghttp2
 CONFIGURE_OPTIONS += --without-libpsl
+CONFIGURE_OPTIONS += --without-zstd
 CONFIGURE_OPTIONS += "curl_disallow_getifaddrs=yes"
 
 # Makefile.am files of this component are not compatible with Solaris make.

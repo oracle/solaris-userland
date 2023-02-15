@@ -107,6 +107,7 @@ docs-generated:
 	  $(COMPONENT_SRC)/doc/*.4 $(COMPONENT_SRC)/doc/*.html $(COMPONENT_SRC)/doc/AUTHORS-SHORT
 	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)
 
+REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += diagnostic/wireshark/wireshark-common

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -54,6 +54,7 @@ COMPONENT_TEST_TRANSFORMS += '-e "/^make/d" -e "/^Built/d" -e "/^Scanning depend
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/xz
+REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/security/nettle
 REQUIRED_PACKAGES += library/zlib

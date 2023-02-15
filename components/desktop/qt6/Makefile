@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS=64
 COMPILER=gcc
@@ -125,6 +125,7 @@ COMPONENT_INSTALL_ENV += INSTALL_ROOT=$(PROTO_DIR)
 
 PKG_AUTO_HARDLINKS=1
 
+REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += library/audio/pulseaudio

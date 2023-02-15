@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -99,6 +99,7 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 
 PKG_AUTO_HARDLINKS=1
 
+REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += developer/gnu-indent
 REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += developer/parser/bison
