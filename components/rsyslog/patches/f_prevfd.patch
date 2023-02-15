@@ -1,0 +1,33 @@
+#
+# F_PREVFD is mostly Solaris feature and so it does not seems to be
+# interesting for upstream.
+#
+
+--- rsyslog-8.2206.0/tools/rsyslogd.c.org	2022-05-17 23:42:39.000000000 -0700
++++ rsyslog-8.2206.0/tools/rsyslogd.c	2023-02-08 04:49:40.868070345 -0800
+@@ -29,6 +29,7 @@
+ #include <sys/wait.h>
+ #include <unistd.h>
+ #include <errno.h>
++#include <fcntl.h>
+ #ifdef ENABLE_LIBLOGGING_STDLOG
+ #  include <liblogging/stdlog.h>
+ #else
+@@ -385,10 +386,15 @@
+ #endif
+ 
+ 	/* close unnecessary open files */
++#if defined(F_PREVFD)
++	const int endClose = fcntl(INT_MAX, F_PREVFD) + 1;
++#else
+ 	const int endClose = getdtablesize();
++#endif
++	const int dbgfd = dbgGetDbglogFd();
+ 	close(0);
+-	for(int i = beginClose ; i <= endClose ; ++i) {
+-		if((i != dbgGetDbglogFd()) && (i != parentPipeFD)) {
++	for(int i = beginClose ; i < endClose ; ++i) {
++		if((i != dbgfd) && (i != parentPipeFD)) {
+ 			  aix_close_it(i); /* AIXPORT */
+ 		}
+ 	}
