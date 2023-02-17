@@ -1,21 +1,59 @@
-Potential to send upstream
+Submitted & accepted upstream:
+https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/21110
 
---- a/src/util/disk_cache_os.c	2021-11-29 15:30:14.519568232 -0800
-+++ b/src/util/disk_cache_os.c	2021-11-29 15:35:37.707800129 -0800
-@@ -167,9 +167,16 @@
+From 289eb50abf89289af7cd76fa948d33c5cb5b28bf Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Fri, 3 Feb 2023 13:12:38 -0800
+Subject: [PATCH] util/disk_cache: Handle OS'es without d_type in struct dirent
+
+Needed to build on Solaris
+
+Fixes: f58e6fee745 ("util/disk_cache: delete more cache items in one go when full")
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+Reviewed-by: Eric Engestrom <eric@igalia.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/21110>
+---
+ src/util/disk_cache_os.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/src/util/disk_cache_os.c b/src/util/disk_cache_os.c
+index eb42537b914..27a13926059 100644
+--- a/src/util/disk_cache_os.c
++++ b/src/util/disk_cache_os.c
+@@ -200,12 +200,24 @@ choose_lru_file_matching(const char *dir_path,
+    if (dir == NULL)
+       return NULL;
+ 
++   const int dir_fd = dirfd(dir);
++
     /* First count the number of files in the directory */
     unsigned total_file_count = 0;
     while ((dir_ent = readdir(dir)) != NULL) {
-+#ifndef DT_REG /* systems without d_type in dirent results */
-+    struct stat st;
-+
-+    if ((lstat(dir_ent->d_name, &st) != 0) || (!S_ISREG(st.st_mode)))
-+	 total_file_count++;
-+#else
++#ifdef HAVE_DIRENT_D_TYPE
        if (dir_ent->d_type == DT_REG) { /* If the entry is a regular file */
           total_file_count++;
        }
++#else
++      struct stat st;
++
++      if (fstatat(dir_fd, dir_ent->d_name, &st, AT_SYMLINK_NOFOLLOW) == 0) {
++         if (S_ISREG(st.st_mode)) {
++            total_file_count++;
++         }
++      }
 +#endif
     }
  
     /* Reset to the start of the directory */
+@@ -225,7 +237,7 @@ choose_lru_file_matching(const char *dir_path,
+          break;
+ 
+       struct stat sb;
+-      if (fstatat(dirfd(dir), dir_ent->d_name, &sb, 0) == 0) {
++      if (fstatat(dir_fd, dir_ent->d_name, &sb, 0) == 0) {
+          struct lru_file *entry = NULL;
+          if (!list_is_empty(lru_file_list))
+             entry = list_first_entry(lru_file_list, struct lru_file, node);
+-- 
+2.38.1
+

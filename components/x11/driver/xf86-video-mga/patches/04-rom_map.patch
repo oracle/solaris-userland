@@ -1,8 +1,24 @@
-Patches from the X gate
+Fix for:
+16245956 M4: ROM Mapping Error for Matrox Device after First Run
 
---- a/src/mga_dacG.c	Mon Feb 11 14:59:08 2013
-+++ b/src/mga_dacG.c	Mon Feb 11 15:00:39 2013
-@@ -1051,6 +1051,19 @@
+Investigation shows during first run, option register's
+biosen bit (the 30th bit) is reset to 0, which in turn
+causes ROM base address to be reset to 0 (according to
+matrox manual). The reason that we don't see this problem
+on T5 systems and the sample matrox cards we were using
+for development work, is the matrox chips on these devices
+are of revision 4, while the matrox chips used on M4 systems
+are of revision 5. Revision 4 uses SDRAM but revsion 5 uses
+non-SDRAM (could be SGRAM). The initialization bits
+for option register is different for them: revision 4
+set biosen but revision 5 clears this bit.
+
+The fix is to set pReg->Option whatever intended but keep the biosen
+bit intact. This reduces impact it might have on other devices.
+
+--- xf86-video-mga-2.0.0/src/mga_dacG.c
++++ xf86-video-mga-2.0.0/src/mga_dacG.c
+@@ -1264,6 +1264,19 @@ MGA1064_MISC_CTL_DAC_RAM_CS;
  
  		if (pMga->HasSDRAM)
  		    pReg->Option = 0x40049120;

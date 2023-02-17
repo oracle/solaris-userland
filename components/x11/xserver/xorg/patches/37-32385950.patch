@@ -1,13 +1,33 @@
-https://gitlab.freedesktop.org/xorg/xserver/-/issues/1127
+Submitted and accepted upstream for Xorg 21.1
 
---- a/glx/vndcmds.c	2021-05-11 07:41:37.306643295 -0700
-+++ b/glx/vndcmds.c	2021-05-11 12:39:29.334113418 -0700
-@@ -91,7 +91,7 @@
- {
+From 2de5ded3c6d73c1672d2cb14d603cb23fcd477e5 Mon Sep 17 00:00:00 2001
+From: Niveditha Rau <niveditha.rau@oracle.com>
+Date: Tue, 11 May 2021 15:08:41 -0700
+Subject: [PATCH] glx: Check for byte-swapping in SetReplyHeader
+
+Check for the need to byte-swap when attempting to display
+GL apps between a big-endian server and little-endian client
+or vice versa.
+
+Fixes: https://gitlab.freedesktop.org/xorg/xserver/-/issues/1127
+---
+ glx/vndcmds.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/glx/vndcmds.c b/glx/vndcmds.c
+index 21c6fef9e..d6d8719e1 100644
+--- a/glx/vndcmds.c
++++ b/glx/vndcmds.c
+@@ -92,6 +92,9 @@ static void SetReplyHeader(ClientPtr client, void *replyPtr)
      xGenericReply *rep = (xGenericReply *) replyPtr;
      rep->type = X_Reply;
--    rep->sequenceNumber = client->sequence;
-+    rep->sequenceNumber = client->swapped ? bswap_16(client->sequence) : client->sequence;
+     rep->sequenceNumber = client->sequence;
++    if (client->swapped) {
++	swaps(&rep->sequenceNumber);
++    }
      rep->length = 0;
  }
  
+-- 
+GitLab
+

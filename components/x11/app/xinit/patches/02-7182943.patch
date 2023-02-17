@@ -1,13 +1,33 @@
+Oracle Bug 15802823 - SUNBT7182943 Update xinit man page to not reference
+       /usr/ucb/rsh
+
+Submitted & accepted upstream:
+https://gitlab.freedesktop.org/xorg/app/xinit/-/merge_requests/14
+
+From 4f22f255e58fda758fcdd85f8554c4ef274600e8 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Wed, 9 Nov 2022 12:22:19 -0800
+Subject: [PATCH app/xinit] man page: Update remote display example from rsh to
+ ssh
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ man/xinit.man | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
 diff --git a/man/xinit.man b/man/xinit.man
-index f8005ce..9033b7e 100644
+index d9d08df..d51fecf 100644
 --- a/man/xinit.man
 +++ b/man/xinit.man
 @@ -120,7 +120,7 @@ arguments to the default \fIxterm\fP command.  It will ignore \fI\.xinitrc\fP.
- This will use the command \fI\.\/Xorg \-l \-c\fP to start the server and will
+ This will use the command \fI\./Xorg \-l \-c\fP to start the server and will
  append the arguments \fI\-e widgets\fP to the default \fIxterm\fP command.
  .TP 8
 -.B "xinit /usr/ucb/rsh fasthost cpupig \-display ws:1 \-\^\-  :1 \-a 2 \-t 5"
-+.B "xinit /usr/bin/rsh fasthost cpupig \-display ws:1 \-\^\-  :1 \-a 2 \-t 5"
++.B "xinit /usr/bin/ssh \-X fasthost cpupig \-\^\-  :1 \-a 2 \-t 5"
  This will start a server named \fIX\fP on display 1 with the arguments
  \fI\-a 2 \-t 5\fP.  It will then start a remote shell on the machine
  \fBfasthost\fP in which it will run the command \fIcpupig\fP, telling it
+-- 
+2.15.2
+

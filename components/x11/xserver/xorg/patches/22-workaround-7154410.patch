@@ -1,4 +1,6 @@
-Solaris specific patch for compiler
+Solaris specific patch to work around Studio compiler bug:
+15779437 - SUNBT7154410 iropt runs out of space in large function
+    with many calls to dlsym()
 
 not suitable for upstream
 
@@ -8,7 +10,7 @@ not suitable for upstream
  
  libglx_la_LIBADD = $(DLOPEN_LIBS)
  
-+# Workaround Studio 12.1 optimizer bug 7154410
++# Workaround Studio 12.1 optimizer bug 15779437
 +glapi_gentable.lo: CFLAGS = $(CCASFLAGS:-xO4=-xO0)
 +
  libglxvnd_la_SOURCES = \

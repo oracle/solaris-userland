@@ -1,11 +1,17 @@
-Existing patches from X gate
+One of the changes to add support for the Emulex Pilot 3 graphics (derived
+from the Matrox G200E2 graphics core) on SPARC systems, originally from:
+Oracle Bug 15716039 - SUNBT7045469 Need matrox sparc ddx
 
-diff --git a/src/mga_storm.c b/src/mga_storm.c
-index 7ac3ae0..96bb6b9 100644
---- a/src/mga_storm.c
-+++ b/src/mga_storm.c
-@@ -786,7 +786,6 @@ Bool mgaAccelInit( ScreenPtr pScreen )
-     }
+Original notes from 2011 in that bug said:
+"g200se_pilot3_offscreen.patch, and sparc.patch (after adapting) have
+ been applied to top of the upstream source, and will be submitted to
+ upstream."
+but it's unknown if it was ever submitted upstream or not.
+
+--- xf86-video-mga-2.0.0/src/mga_storm.c
++++ xf86-video-mga-2.0.0/src/mga_storm.c
+@@ -803,7 +803,6 @@ }
+ #endif
  
      switch (pMga->Chipset) {
 -    case PCI_CHIP_MGAG200_SE_A_PCI:

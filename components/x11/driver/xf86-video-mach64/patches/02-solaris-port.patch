@@ -1,7 +1,26 @@
-Fix for building on Solaris.
+Submitted & accepted upstream:
+https://gitlab.freedesktop.org/xorg/driver/xf86-video-mach64/-/merge_requests/7
 
---- a/src/atimach64probe.h	Tue Jun 16 12:21:31 2015
-+++ b/src/atimach64probe.h	Tue Jun 16 12:21:44 2015
+From ba223c5dc8f367a20ff8a91ab6c7208218e18080 Mon Sep 17 00:00:00 2001
+From: Niveditha Rau <Niveditha.Rau@Oracle.COM>
+Date: Tue, 16 Jun 2015 12:21:44 -0800
+Subject: [PATCH xf86-video-mach64] Mark DriverRec exported in atimach64probe.h
+ to match atimach64probe.c
+
+Fixes build failure when compiling with Solaris Studio compiler
+using -xldscope=hidden:
+"atimach64probe.c", line 308: redeclaration must have the same or more
+  restrictive linker scoping: MACH64
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ src/atimach64probe.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/atimach64probe.h b/src/atimach64probe.h
+index 7b0b4b6..1b44b62 100644
+--- a/src/atimach64probe.h
++++ b/src/atimach64probe.h
 @@ -25,7 +25,7 @@
  
  #include "xf86str.h"
@@ -11,3 +30,6 @@ Fix for building on Solaris.
  
  extern SymTabRec Mach64Chipsets[];
  
+-- 
+2.15.2
+

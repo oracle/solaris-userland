@@ -1,8 +1,8 @@
-Existing patch from the X gate
+Add libraries needed for build to succeed with -z defs
 
---- a/src/Makefile.am	Thu Sep 20 10:57:45 2012
-+++ b/src/Makefile.am	Thu Sep 20 10:58:04 2012
-@@ -27,7 +27,9 @@
+--- xf86-video-mga-2.0.0/src/Makefile.am
++++ xf86-video-mga-2.0.0/src/Makefile.am
+@@ -27,7 +27,9 @@ AM_CFLAGS = @XORG_CFLAGS@ @DRI_CFLAGS@
  mga_drv_la_LTLIBRARIES = mga_drv.la
  mga_drv_la_LDFLAGS = -module -avoid-version
  mga_drv_ladir = @moduledir@/drivers
@@ -12,4 +12,4 @@ Existing patch from the X gate
 +mga_drv_la_LIBADD += -lvgahw -lvbe -lint10
  
  mga_drv_la_SOURCES = \
-          binding.h \
+          mga_bios.c \

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -73,6 +73,7 @@ CONFIGURE_OPTIONS += --enable-record
 CONFIGURE_OPTIONS += --enable-render
 CONFIGURE_OPTIONS += --enable-resource
 CONFIGURE_OPTIONS += --enable-screensaver
+CONFIGURE_OPTIONS += --disable-selinux
 CONFIGURE_OPTIONS += --enable-shape
 CONFIGURE_OPTIONS += --enable-shm
 CONFIGURE_OPTIONS += --enable-sync

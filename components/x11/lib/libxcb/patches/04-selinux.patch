@@ -1,27 +1,17 @@
 Don't build Linux-specific SELINUX extension support on Solaris
 
-Would need to make it platform-specific to submit upstream
+Upstream always tries to generate the source files even if they
+won't be built, but we don't have the xselinux.xml needed to do that.
 
---- a/src/Makefile.am	2018-01-25 16:13:08.176494449 -0800
-+++ b/src/Makefile.am	2018-01-25 16:13:39.448698910 -0800
-@@ -204,13 +204,13 @@
+--- libxcb-1.14/src/Makefile.am
++++ libxcb-1.14/src/Makefile.am
+@@ -204,8 +204,8 @@ libxcb_xprint_la_LIBADD = $(XCB_LIBS)
  nodist_libxcb_xprint_la_SOURCES = xprint.c xprint.h
  endif
  
 -EXTSOURCES += xselinux.c
--if BUILD_SELINUX
--lib_LTLIBRARIES += libxcb-xselinux.la
--libxcb_xselinux_la_LDFLAGS = -version-info 0:0:0 -no-undefined @lt_enable_auto_import@
--libxcb_xselinux_la_LIBADD = $(XCB_LIBS)
--nodist_libxcb_xselinux_la_SOURCES = xselinux.c xselinux.h
--endif
-+#EXTSOURCES += xselinux.c
-+#if BUILD_SELINUX
-+#lib_LTLIBRARIES += libxcb-xselinux.la
-+#libxcb_xselinux_la_LDFLAGS = -version-info 0:0:0 -no-undefined @lt_enable_auto_import@
-+#libxcb_xselinux_la_LIBADD = $(XCB_LIBS)
-+#nodist_libxcb_xselinux_la_SOURCES = xselinux.c xselinux.h
-+#endif
- 
- EXTSOURCES += xtest.c
- if BUILD_XTEST
+ if BUILD_SELINUX
++EXTSOURCES += xselinux.c
+ lib_LTLIBRARIES += libxcb-xselinux.la
+ libxcb_xselinux_la_LDFLAGS = -version-info 0:0:0 -no-undefined @lt_enable_auto_import@
+ libxcb_xselinux_la_LIBADD = $(XCB_LIBS)

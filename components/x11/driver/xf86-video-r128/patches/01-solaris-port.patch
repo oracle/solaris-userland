@@ -1,7 +1,26 @@
-Existing set of patches from X gate.  Need to evaluate if we still need these
+Submitted & accepted upstream:
+https://gitlab.freedesktop.org/xorg/driver/xf86-video-r128/-/merge_requests/3
 
---- a/src/r128_probe.h	Tue Jun 16 12:26:33 2015
-+++ b/src/r128_probe.h	Tue Jun 16 12:26:50 2015
+From 244cdb405628167856a32fa8b9b88ac1b949a1d6 Mon Sep 17 00:00:00 2001
+From: Niveditha Rau <Niveditha.Rau@Oracle.COM>
+Date: Tue, 16 Jun 2015 12:26:33 -0800
+Subject: [PATCH xf86-video-r128] Mark DriverRec exported in r128_probe.h to
+ match r128_probe.c
+
+Fixes build failure when compiling with Solaris Studio compiler
+using -xldscope=hidden:
+"r128_probe.c", line 359: redeclaration must have the same or more
+  restrictive linker scoping: R128
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ src/r128_probe.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/r128_probe.h b/src/r128_probe.h
+index 8c4bfbd..4026989 100644
+--- a/src/r128_probe.h
++++ b/src/r128_probe.h
 @@ -97,7 +97,7 @@
  #define PCI_CHIP_RAGE128TT		0x5454
  #define PCI_CHIP_RAGE128TU		0x5455
@@ -11,3 +30,6 @@ Existing set of patches from X gate.  Need to evaluate if we still need these
  
  typedef enum
  {
+-- 
+2.15.2
+
