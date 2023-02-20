@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lcms2
-COMPONENT_VERSION=	2.12
+COMPONENT_VERSION=	2.14
 COMPONENT_PROJECT_URL=	http://www.littlecms.com/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7b6e0f57dd3e3580ce0128312eb5e3fdf2f5a1c825479fa762d54de4a39213e6
+    sha256:28474ea6f6591c4d4cee972123587001a4e6e353412a41b3e9e82219818d5740
 COMPONENT_ARCHIVE_URL=	\
     https://sourceforge.net/projects/lcms/files/lcms/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/lcms
 COMPONENT_ANITYA_ID=	9815
 
-COMPONENT_BAID=		103432
+COMPONENT_BAID=		138495
 
 include $(WS_MAKE_RULES)/common.mk
 
