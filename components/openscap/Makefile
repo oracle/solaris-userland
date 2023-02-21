@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -27,22 +27,21 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openscap
-COMPONENT_VERSION=	1.3.4
+COMPONENT_VERSION=	1.3.7
 COMPONENT_PROJECT_URL=  http://www.open-scap.org
 COMPONENT_DOWNLOAD_URL= https://github.com/OpenSCAP/openscap/releases/download
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6daadb7765739ee2c98ab83500ecb7f17219f66a4a76318a6125906e7fa03d7e
+    sha256:a74f5bfb420b748916d2f88941bb6e04cad4c67a4cafc78c96409cc15c54d1d3
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	15641
 
-COMPONENT_BAID =		96846
+COMPONENT_BAID =		138753
 
 BUILD_STYLE= cmake
 CMAKE_MAKE_PROGRAM=$(GMAKE)
 
 CFLAGS+=		-std=c99
 CFLAGS+=		-DNDEBUG
-CFLAGS+=		-DOSCAP_THREAD_SAFE
 CFLAGS+=		-D__$(MACH64)
 
 PYTHON_VERSION =	3.7
@@ -62,8 +61,9 @@ include $(WS_MAKE_RULES)/common.mk
 CONFIGURE_BINDIR.64 =	$(CONFIGURE_PREFIX)/bin
 CPPFLAGS +=	-I$(USRINCDIR)/openldap
 RAD_CLIENT_LIB_PATH =   /usr/lib/rad/client/c/$(MACH64)
+PERL_LIB_PATH =  /usr/perl5/$(PERL_VERSION)/lib/$(PERL_ARCH)/CORE
 
-LDFLAGS += -L$(RAD_CLIENT_LIB_PATH) -R$(RAD_CLIENT_LIB_PATH) \
+LDFLAGS += -L$(RAD_CLIENT_LIB_PATH) -R$(RAD_CLIENT_LIB_PATH) -R$(PERL_LIB_PATH) \
     -lradclient -ladr -lips_client -lzonemgr_client
 
 # XXX This shouldn't be necessary, but is; investigate why.
@@ -117,6 +117,7 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/pcre
+REQUIRED_PACKAGES += library/xmlsec
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += security/compliance/openscap

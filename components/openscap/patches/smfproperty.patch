@@ -1,7 +1,6 @@
-diff -ruN openscap-1.3.4.org/CMakeLists.txt openscap-1.3.4/CMakeLists.txt
---- openscap-1.3.4.org/CMakeLists.txt	2021-03-01 22:46:29.603108127 +0000
-+++ openscap-1.3.4/CMakeLists.txt	2021-03-01 22:47:18.168252627 +0000
-@@ -291,6 +291,7 @@
+--- openscap-1.3.7/CMakeLists.txt
++++ openscap-1.3.7/CMakeLists.txt
+@@ -304,6 +304,7 @@ cmake_dependent_option(OPENSCAP_PROBE_LI
  # SOLARIS PROBES
  cmake_dependent_option(OPENSCAP_PROBE_SOLARIS_ISAINFO "Solaris isainfo probe" ON "ENABLE_PROBES_SOLARIS" OFF)
  cmake_dependent_option(OPENSCAP_PROBE_SOLARIS_SMF "Solaris smf probe" ON "ENABLE_PROBES_SOLARIS" OFF)
@@ -9,7 +8,7 @@ diff -ruN openscap-1.3.4.org/CMakeLists.txt openscap-1.3.4/CMakeLists.txt
  
  # WINDOWS PROBES
  cmake_dependent_option(OPENSCAP_PROBE_WINDOWS_ACCESSTOKEN "Windows accesstoken probe" ON "ENABLE_PROBES_WINDOWS" OFF)
-@@ -421,6 +422,7 @@
+@@ -437,6 +438,7 @@ message(STATUS " ")
  message(STATUS "Solaris probes: ${ENABLE_PROBES_SOLARIS}")
  message(STATUS "  Solaris isainfo probe: ${OPENSCAP_PROBE_SOLARIS_ISAINFO}")
  message(STATUS "  Solaris smf probe: ${OPENSCAP_PROBE_SOLARIS_SMF}")
@@ -17,10 +16,9 @@ diff -ruN openscap-1.3.4.org/CMakeLists.txt openscap-1.3.4/CMakeLists.txt
  message(STATUS " ")
  
  
-diff -ruN openscap-1.3.4.org/config.h.in openscap-1.3.4/config.h.in
---- openscap-1.3.4.org/config.h.in	2021-03-01 22:46:29.514608087 +0000
-+++ openscap-1.3.4/config.h.in	2021-03-01 22:47:18.168699368 +0000
-@@ -111,6 +111,7 @@
+--- openscap-1.3.7/config.h.in
++++ openscap-1.3.7/config.h.in
+@@ -112,6 +112,7 @@ #cmakedefine OPENSCAP_PROBE_LINUX_SYSTEM
  #cmakedefine OPENSCAP_PROBE_LINUX_SYSTEMDUNITPROPERTY
  #cmakedefine OPENSCAP_PROBE_SOLARIS_ISAINFO
  #cmakedefine OPENSCAP_PROBE_SOLARIS_SMF
@@ -28,21 +26,9 @@ diff -ruN openscap-1.3.4.org/config.h.in openscap-1.3.4/config.h.in
  #cmakedefine OPENSCAP_PROBE_UNIX_DNSCACHE
  #cmakedefine OPENSCAP_PROBE_UNIX_FILE
  #cmakedefine OPENSCAP_PROBE_UNIX_FILEEXTENDEDATTRIBUTE
-diff -ruN openscap-1.3.4.org/src/OVAL/oval_enumerations.c openscap-1.3.4/src/OVAL/oval_enumerations.c
---- openscap-1.3.4.org/src/OVAL/oval_enumerations.c	2021-03-01 22:46:29.535840530 +0000
-+++ openscap-1.3.4/src/OVAL/oval_enumerations.c	2021-03-01 22:47:18.169258373 +0000
-@@ -547,6 +547,7 @@
- 	{OVAL_SOLARIS_PATCH, "patch"},
- 	{OVAL_SOLARIS_PATCH54, "patch54"},
- 	{OVAL_SOLARIS_SMF, "smf"},
-+	{OVAL_SOLARIS_SMFPROPERTY, "smfproperty"},
- 	{OVAL_SOLARIS_NDD, "ndd"},
- 	{OVAL_SOLARIS_PACKAGECHECK, "packagecheck"},
- 	{OVAL_SUBTYPE_UNKNOWN, NULL}
-diff -ruN openscap-1.3.4.org/src/OVAL/probes/probe-table.c openscap-1.3.4/src/OVAL/probes/probe-table.c
---- openscap-1.3.4.org/src/OVAL/probes/probe-table.c	2021-03-01 22:46:29.552014133 +0000
-+++ openscap-1.3.4/src/OVAL/probes/probe-table.c	2021-03-01 22:47:18.169745230 +0000
-@@ -135,6 +135,10 @@
+--- openscap-1.3.7/src/OVAL/probes/probe-table.c
++++ openscap-1.3.7/src/OVAL/probes/probe-table.c
+@@ -135,6 +135,10 @@ #ifdef OPENSCAP_PROBE_SOLARIS_SMF
  #include "unix/solaris/smf.h"
  #endif
  
@@ -53,7 +39,7 @@ diff -ruN openscap-1.3.4.org/src/OVAL/probes/probe-table.c openscap-1.3.4/src/OV
  #ifdef OPENSCAP_PROBE_UNIX_DNSCACHE
  #include "unix/dnscache_probe.h"
  #endif
-@@ -298,6 +302,9 @@
+@@ -298,6 +302,9 @@ #endif
  #ifdef OPENSCAP_PROBE_SOLARIS_SMF
  	{OVAL_SOLARIS_SMF, NULL, smf_probe_main, NULL, NULL},
  #endif
@@ -63,10 +49,9 @@ diff -ruN openscap-1.3.4.org/src/OVAL/probes/probe-table.c openscap-1.3.4/src/OV
  #ifdef OPENSCAP_PROBE_UNIX_DNSCACHE
  	{OVAL_UNIX_DNSCACHE, NULL, dnscache_probe_main, NULL, NULL},
  #endif
-diff -ruN openscap-1.3.4.org/src/OVAL/probes/unix/solaris/CMakeLists.txt openscap-1.3.4/src/OVAL/probes/unix/solaris/CMakeLists.txt
---- openscap-1.3.4.org/src/OVAL/probes/unix/solaris/CMakeLists.txt	2021-03-01 22:46:29.549752120 +0000
-+++ openscap-1.3.4/src/OVAL/probes/unix/solaris/CMakeLists.txt	2021-03-01 22:47:18.170137321 +0000
-@@ -11,6 +11,14 @@
+--- openscap-1.3.7/src/OVAL/probes/unix/solaris/CMakeLists.txt
++++ openscap-1.3.7/src/OVAL/probes/unix/solaris/CMakeLists.txt
+@@ -11,6 +11,14 @@ "smf.c"
  		"smf.h"
  	)
  endif()
@@ -571,14 +556,3 @@ diff -ruN openscap-1.3.4.org/src/OVAL/probes/unix/solaris/smfproperty.h openscap
 +int smfproperty_probe_main(probe_ctx *ctx, void *arg);
 +
 +#endif 
-diff -ruN openscap-1.3.4.org/src/OVAL/public/oval_types.h openscap-1.3.4/src/OVAL/public/oval_types.h
---- openscap-1.3.4.org/src/OVAL/public/oval_types.h	2021-03-01 22:46:29.578537388 +0000
-+++ openscap-1.3.4/src/OVAL/public/oval_types.h	2021-03-01 22:58:28.688622497 +0000
-@@ -217,6 +217,7 @@
- 	OVAL_SOLARIS_PATCH54 = OVAL_FAMILY_SOLARIS + 5,
- 	OVAL_SOLARIS_NDD = OVAL_FAMILY_SOLARIS + 6,
- 	OVAL_SOLARIS_PACKAGECHECK = OVAL_FAMILY_SOLARIS + 7,
-+	OVAL_SOLARIS_SMFPROPERTY = OVAL_FAMILY_SOLARIS + 8,
- 
- /// Unix subtypes
- 	OVAL_UNIX_FILE = OVAL_FAMILY_UNIX + 1,

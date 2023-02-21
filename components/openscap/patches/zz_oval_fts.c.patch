@@ -1,8 +1,6 @@
-diff --git a/src/OVAL/probes/oval_fts.c b/src/OVAL/probes/oval_fts.c
-index e34d9ab..4504648 100644
---- a/src/OVAL/probes/oval_fts.c
-+++ b/src/OVAL/probes/oval_fts.c
-@@ -43,8 +43,10 @@
+--- openscap-1.3.7/src/OVAL/probes/oval_fts.c
++++ openscap-1.3.7/src/OVAL/probes/oval_fts.c
+@@ -43,8 +43,10 @@ #include "oval_fts.h"
  #if defined(OS_SOLARIS)
  #include "fts_sun.h"
  #include <sys/mntent.h>
@@ -15,7 +13,7 @@ index e34d9ab..4504648 100644
  #elif defined(OS_AIX)
  #include "fts_sun.h"
  #else
-@@ -152,13 +154,7 @@ static void OVAL_FTSENT_free(OVAL_FTSENT *ofts_ent)
+@@ -152,13 +154,7 @@ #endif
  #ifndef MNTTYPE_PROC
  #define MNTTYPE_PROC	"proc"
  #endif
@@ -30,7 +28,7 @@ index e34d9ab..4504648 100644
  
  static bool valid_remote_fs(char *fstype)
  {
-@@ -183,79 +179,133 @@ static bool valid_local_fs(char *fstype)
+@@ -183,79 +179,133 @@ return (false);
  	return (true);
  }
  
@@ -206,13 +204,12 @@ index e34d9ab..4504648 100644
  {
 -	zone_path_t temp;
 -	avl_index_t where;
--
++      int i;
++      char *zonepath;
+ 
 -	strlcpy(temp.zpath, path, sizeof(temp.zpath));
 -	if (avl_find(&avl_tree_list, &temp, &where) != NULL)
 -		return (true);
-+      int i;
-+      char *zonepath;
-+
 +      i = 0;
 +      if (top == NULL)
 +              return (false);
@@ -226,7 +223,7 @@ index e34d9ab..4504648 100644
  
  	return (false);
  }
-@@ -914,7 +964,6 @@ OVAL_FTS *oval_fts_open_prefixed(const char *prefix, SEXP_t *path, SEXP_t *filen
+@@ -915,7 +965,6 @@ }
  #if defined(OS_SOLARIS)
  	if (load_zones_path_list() != 0) {
  		dE("Failed to load zones path info. Recursing non-global zones.");

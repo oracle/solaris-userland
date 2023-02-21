@@ -1,7 +1,6 @@
-diff -ruN openscap-1.3.4.org/CMakeLists.txt openscap-1.3.4/CMakeLists.txt
---- openscap-1.3.4.org/CMakeLists.txt	2021-04-19 21:59:34.225082992 +0000
-+++ openscap-1.3.4/CMakeLists.txt	2021-04-19 22:01:04.917892811 +0000
-@@ -290,6 +290,7 @@
+--- openscap-1.3.7/CMakeLists.txt
++++ openscap-1.3.7/CMakeLists.txt
+@@ -303,6 +303,7 @@ cmake_dependent_option(OPENSCAP_PROBE_LI
  
  # SOLARIS PROBES
  cmake_dependent_option(OPENSCAP_PROBE_SOLARIS_ISAINFO "Solaris isainfo probe" ON "ENABLE_PROBES_SOLARIS" OFF)
@@ -9,7 +8,7 @@ diff -ruN openscap-1.3.4.org/CMakeLists.txt openscap-1.3.4/CMakeLists.txt
  
  # WINDOWS PROBES
  cmake_dependent_option(OPENSCAP_PROBE_WINDOWS_ACCESSTOKEN "Windows accesstoken probe" ON "ENABLE_PROBES_WINDOWS" OFF)
-@@ -419,6 +420,7 @@
+@@ -435,6 +436,7 @@ message(STATUS " ")
  
  message(STATUS "Solaris probes: ${ENABLE_PROBES_SOLARIS}")
  message(STATUS "  Solaris isainfo probe: ${OPENSCAP_PROBE_SOLARIS_ISAINFO}")
@@ -17,10 +16,9 @@ diff -ruN openscap-1.3.4.org/CMakeLists.txt openscap-1.3.4/CMakeLists.txt
  message(STATUS " ")
  
  
-diff -ruN openscap-1.3.4.org/config.h.in openscap-1.3.4/config.h.in
---- openscap-1.3.4.org/config.h.in	2021-04-19 21:59:34.248015540 +0000
-+++ openscap-1.3.4/config.h.in	2021-04-19 22:01:04.918371207 +0000
-@@ -110,6 +110,7 @@
+--- openscap-1.3.7/config.h.in
++++ openscap-1.3.7/config.h.in
+@@ -111,6 +111,7 @@ #cmakedefine OPENSCAP_PROBE_LINUX_SELINU
  #cmakedefine OPENSCAP_PROBE_LINUX_SYSTEMDUNITDEPENDENCY
  #cmakedefine OPENSCAP_PROBE_LINUX_SYSTEMDUNITPROPERTY
  #cmakedefine OPENSCAP_PROBE_SOLARIS_ISAINFO
@@ -28,10 +26,9 @@ diff -ruN openscap-1.3.4.org/config.h.in openscap-1.3.4/config.h.in
  #cmakedefine OPENSCAP_PROBE_UNIX_DNSCACHE
  #cmakedefine OPENSCAP_PROBE_UNIX_FILE
  #cmakedefine OPENSCAP_PROBE_UNIX_FILEEXTENDEDATTRIBUTE
-diff -ruN openscap-1.3.4.org/src/OVAL/probes/probe-table.c openscap-1.3.4/src/OVAL/probes/probe-table.c
---- openscap-1.3.4.org/src/OVAL/probes/probe-table.c	2021-04-19 21:59:33.847887070 +0000
-+++ openscap-1.3.4/src/OVAL/probes/probe-table.c	2021-04-19 22:01:04.919295214 +0000
-@@ -131,6 +131,10 @@
+--- openscap-1.3.7/src/OVAL/probes/probe-table.c
++++ openscap-1.3.7/src/OVAL/probes/probe-table.c
+@@ -131,6 +131,10 @@ #ifdef OPENSCAP_PROBE_SOLARIS_ISAINFO
  #include "unix/solaris/isainfo_probe.h"
  #endif
  
@@ -42,7 +39,7 @@ diff -ruN openscap-1.3.4.org/src/OVAL/probes/probe-table.c openscap-1.3.4/src/OV
  #ifdef OPENSCAP_PROBE_UNIX_DNSCACHE
  #include "unix/dnscache_probe.h"
  #endif
-@@ -291,6 +295,9 @@
+@@ -291,6 +295,9 @@ #endif
  #ifdef OPENSCAP_PROBE_SOLARIS_ISAINFO
  	{OVAL_SOLARIS_ISAINFO, NULL, isainfo_probe_main, NULL, NULL},
  #endif
@@ -52,10 +49,9 @@ diff -ruN openscap-1.3.4.org/src/OVAL/probes/probe-table.c openscap-1.3.4/src/OV
  #ifdef OPENSCAP_PROBE_UNIX_DNSCACHE
  	{OVAL_UNIX_DNSCACHE, NULL, dnscache_probe_main, NULL, NULL},
  #endif
-diff -ruN openscap-1.3.4.org/src/OVAL/probes/unix/solaris/CMakeLists.txt openscap-1.3.4/src/OVAL/probes/unix/solaris/CMakeLists.txt
---- openscap-1.3.4.org/src/OVAL/probes/unix/solaris/CMakeLists.txt	2021-04-19 21:59:33.857029686 +0000
-+++ openscap-1.3.4/src/OVAL/probes/unix/solaris/CMakeLists.txt	2021-04-19 22:01:04.919786324 +0000
-@@ -5,6 +5,12 @@
+--- openscap-1.3.7/src/OVAL/probes/unix/solaris/CMakeLists.txt
++++ openscap-1.3.7/src/OVAL/probes/unix/solaris/CMakeLists.txt
+@@ -5,6 +5,12 @@ "isainfo_probe.h"
  	)
  endif()
  

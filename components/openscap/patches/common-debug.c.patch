@@ -1,7 +1,6 @@
-diff -ruN openscap-1.3.4.org/src/common/debug.c openscap-1.3.4/src/common/debug.c
---- openscap-1.3.4.org/src/common/debug.c	2021-02-26 02:48:31.471176244 +0000
-+++ openscap-1.3.4/src/common/debug.c	2021-02-26 02:54:58.199179304 +0000
-@@ -136,7 +136,7 @@
+--- openscap-1.3.7/src/common/debug.c
++++ openscap-1.3.7/src/common/debug.c
+@@ -136,7 +136,7 @@ }
  bool oscap_set_verbose(const char *verbosity_level, const char *filename)
  {
  	if (verbosity_level == NULL) {
@@ -10,7 +9,7 @@ diff -ruN openscap-1.3.4.org/src/common/debug.c openscap-1.3.4/src/common/debug.
  	}
  	__debuglog_level = oscap_verbosity_level_from_cstr(verbosity_level);
  	if (__debuglog_level == DBG_UNKNOWN) {
-@@ -209,7 +209,11 @@
+@@ -209,7 +209,11 @@ break;
  	default:
  		l = '0';
  	}
@@ -22,7 +21,7 @@ diff -ruN openscap-1.3.4.org/src/common/debug.c openscap-1.3.4/src/common/debug.
  	for (int i = 0; i < indent; i++) {
  		fprintf(__debuglog_fp, "  ");
  	}
-@@ -232,12 +236,17 @@
+@@ -232,12 +236,17 @@ #else
  	/* XXX: non-portable usage of pthread_t */
  	unsigned long long tid = (unsigned long long) thread;
  #endif
