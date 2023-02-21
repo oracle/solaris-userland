@@ -20,38 +20,38 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 		32_and_64
 COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libproxy
-COMPONENT_VERSION=	0.4.16
+COMPONENT_VERSION=	0.4.18
 COMPONENT_PROJECT_URL=	https://libproxy.github.io/libproxy/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_URL= \
 	https://github.com/libproxy/$(COMPONENT_NAME)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9e7959d6ae1d6c817f0ac1e253105ce8d99f55d7821c1b6eaef32bf6879c6f0a
+	sha256:0b4a9218d88f6cf9fa25996a3f38329a11f688a9d026141d9d0e966d8fa63837
 COMPONENT_BUGDB=	library/libproxy
 COMPONENT_ANITYA_ID=	12742
 
-COMPONENT_BAID=		90007
+COMPONENT_BAID=		138258
 
 BUILD_STYLE= 		cmake
 include $(WS_MAKE_RULES)/common.mk
 
 CXXFLAGS += -std=c++11
 
-PYTHON_VERSION=3.7
+PYTHON_VERSION=		3.11
 
-# Our Perl 5.22 is 64-bit, so don't deliver Perl bindings for 32-bit build.
+# Our Perl 5.36 is 64-bit, so don't deliver Perl bindings for 32-bit build.
 CMAKE_OPTIONS.32 = -DWITH_PERL=OFF
 CMAKE_OPTIONS.64 = -DWITH_PERL=ON
 
-# Our Python 3.7 is 64-bit only, so don't deliver Python bindings for 32-bit build.
+# Our Python 3.11 is 64-bit only, so don't deliver Python bindings for 32-bit build.
 CMAKE_OPTIONS.32 = -DWITH_PYTHON3=OFF
 CMAKE_OPTIONS.64 = -DWITH_PYTHON3=ON
 CMAKE_OPTIONS.64 += -DPYTHON3_EXECUTABLE="$(PYTHON)"
@@ -83,12 +83,11 @@ REQUIRED_PACKAGES += developer/build/gnu-make
 REQUIRED_PACKAGES += developer/build/pkg-config
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/libdbus
 
-COMPONENT_TEST_TARGETS = test
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS += '-e "s/Passed .*/Passed/" '
+# get rid of the timestamps from the test results
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9] sec//" '
 COMPONENT_TEST_TRANSFORMS += '-e "/Total Test time/d" '
