@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
+
 BUILD_BITS= 64
 
 # Parallel mode can be enabled only if GNU make is used.
@@ -57,6 +58,9 @@ include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_BUILD_ENV +=	MAKE="$(CCSMAKE)"	# Schilytools requires CCS make
 COMPONENT_BUILD_ENV +=	LDFLAGS="$(CC_BITS)"	# Propagate correct LDFLAGS to the linking phase.
+# Disable pulseaudio (desktop) dependency
+COMPONENT_BUILD_ENV +=  ac_cv_lib_pulse_pa_strerror=no
+COMPONENT_BUILD_ENV +=  ac_cv_lib_pulse_simple_pa_simple_new=no
 
 ifeq ($(strip $(PARFAIT_BUILD)),yes)
 COMPONENT_BUILD_ENV +=	"ac_cv_exeext=no"
@@ -93,4 +97,3 @@ cdrtools.license: $(DIST_COPYING) $(DIST_COPYRIGHT) $(DIST_LICENSES)
 
 REQUIRED_PACKAGES += developer/build/make
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += library/audio/pulseaudio
