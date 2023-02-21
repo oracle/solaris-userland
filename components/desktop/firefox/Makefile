@@ -124,6 +124,7 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-update-channel=esr" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libvpx" >> $(MOZCONFIG) ; \
