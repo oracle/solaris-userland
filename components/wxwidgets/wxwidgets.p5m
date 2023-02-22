@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -35,14 +35,6 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2008/476
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-link path=usr/bin/$(MACH64)/wx-config \
-    target=../../lib/$(MACH64)/wx/config/gtk2-unicode-3.0
-# wx-config embeds 'bindir'; ensure wxrc exists in usr/bin/$(MACH64)
-link path=usr/bin/$(MACH64)/wxrc target=../wxrc-3.0
-link path=usr/bin/$(MACH64)/wxrc-3.0 target=../wxrc-3.0
-link path=usr/bin/wx-config target=../lib/wx/config/gtk2-unicode-3.0
-link path=usr/bin/wxrc target=wxrc-3.0
-file usr/bin/$(MACH64)/wxrc-3.0 path=usr/bin/wxrc-3.0
 file path=usr/include/wx-3.0/wx/aboutdlg.h
 file path=usr/include/wx-3.0/wx/accel.h
 file path=usr/include/wx-3.0/wx/access.h
@@ -832,35 +824,5 @@ link path=usr/lib/libwx_gtk2u_xrc-3.0.so target=libwx_gtk2u_xrc-3.0.so.0
 file path=usr/lib/libwx_gtk2u_xrc-3.0.so.0
 file path=usr/lib/wx/config/gtk2-unicode-3.0 mode=0555
 file path=usr/lib/wx/include/gtk2-unicode-3.0/wx/setup.h
-file path=usr/share/aclocal/wxwin.m4
-file path=usr/share/bakefile/presets/wx.bkl
-file path=usr/share/bakefile/presets/wx_presets.py
-file path=usr/share/bakefile/presets/wx_unix.bkl
-file path=usr/share/bakefile/presets/wx_win32.bkl
-file path=usr/share/bakefile/presets/wx_xrc.bkl
-file path=usr/share/locale/ca/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/cs/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/da/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/de/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/el/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/es/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/fi/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/fr/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/hu/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/id/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/it/LC_MESSAGES/wxmsw.mo
-file path=usr/share/locale/it/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/ja/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/nl/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/pl/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/ru/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/sl/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/sv/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/tr/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/uk/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/zh_CN/LC_MESSAGES/wxstd.mo
-file path=usr/share/locale/zh_TW/LC_MESSAGES/wxstd.mo
-file wx-config.1 path=usr/share/man/man1/wx-config.1
-file wxrc.1 path=usr/share/man/man1/wxrc.1
 license wxwidgets.license license="GPLv2, LGPLv2"
 depend type=require fmri=service/opengl/ogl-select

@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2017, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -92,6 +92,8 @@ CONFIGURE_OPTIONS+=	--with-pic
 CONFIGURE_OPTIONS+=	--enable-pcre2-8
 # Enable UTF16 support required by Qt5.
 CONFIGURE_OPTIONS+= --enable-pcre2-16
+# Enable UTF32 support required by wxwidgets.
+CONFIGURE_OPTIONS+=	--enable-pcre2-32
 # Enable Unicode support (was --enable-unicode-properties in pcre(1) configure).
 CONFIGURE_OPTIONS+=	--enable-unicode
 
