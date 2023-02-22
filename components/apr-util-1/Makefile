@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 
 # Prefer 32-bit over 64-bit as apr-util has its own custom package layout.
@@ -29,19 +29,19 @@ include ../../make-rules/shared-macros.mk
 
 APU_VERSION=1
 MINOR_VERSION=6
-MICRO_VERSION=1
+MICRO_VERSION=3
 
 COMPONENT_NAME=		apr-util
 COMPONENT_VERSION=	$(APU_VERSION).$(MINOR_VERSION).$(MICRO_VERSION)
 COMPONENT_PROJECT_URL=	https://apr.apache.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b65e40713da57d004123b6319828be7f1273fbc6490e145874ee1177e112c459
+    sha256:2b74d8932703826862ca305b094eef2983c27b39d5c9414442e9976a9acf1983
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/apr/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	96
 
-COMPONENT_BAID=		46840
+COMPONENT_BAID=		138301
 
 CONFIGURE_DEFAULT_DIRS=no
 include $(WS_MAKE_RULES)/common.mk
@@ -61,8 +61,8 @@ CONFIGURE_OPTIONS +=	--with-ldap-include=$(USRINCDIR)/openldap
 CONFIGURE_OPTIONS +=	--without-odbc
 CONFIGURE_OPTIONS.32 +=	--enable-layout=Solaris
 CONFIGURE_OPTIONS.64 +=	--enable-layout=Solaris-$(MACH64)
-CONFIGURE_OPTIONS.32 +=	--with-apr=$(USRDIR)/apr/1.6/bin/apr-1-config
-CONFIGURE_OPTIONS.64 +=	--with-apr=$(USRDIR)/apr/1.6/bin/$(MACH64)/apr-1-config
+CONFIGURE_OPTIONS.32 +=	--with-apr=$(USRDIR)/apr/1/bin/apr-1-config
+CONFIGURE_OPTIONS.64 +=	--with-apr=$(USRDIR)/apr/1/bin/$(MACH64)/apr-1-config
 
 ifeq   ($(strip $(PARFAIT_BUILD)),yes)
 PATH=$(PARFAIT_TOOLS):$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)

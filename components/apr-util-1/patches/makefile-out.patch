@@ -18,8 +18,8 @@ Patch status: Solaris-specific; not suitable for upstream
  apu-config.out: $(APU_CONFIG)
 -	sed 's,^\(location=\).*$$,\1installed,' < $(APU_CONFIG) > $@
 +	sed -e 's,^\(location=\).*$$,\1installed,' \
-+	    -e '/^APU_SOURCE_DIR=/s,/.*",/usr/apr-util/1.6",' \
-+	    -e '/^APU_BUILD_DIR=/s,/.*",/usr/apr-util/1.6",' \
++	    -e '/^APU_SOURCE_DIR=/s,/.*",/usr/apr-util/1",' \
++	    -e '/^APU_BUILD_DIR=/s,/.*",/usr/apr-util/1",' \
 +	     < $(APU_CONFIG) > $@
  
  install: $(TARGETS) install-modules
