@@ -85,6 +85,7 @@ CONFIGURE_OPTIONS +=	--disable-ocaml-bindings
 CONFIGURE_OPTIONS +=	--disable-tcl-bindings
 CONFIGURE_OPTIONS +=	--disable-speech-support
 CONFIGURE_OPTIONS +=	--disable-stripping
+CONFIGURE_OPTIONS +=	--with-rgx-package=none
 CONFIGURE_OPTIONS +=	--disable-polkit # requires SO_PEERCRED support
 CONFIGURE_OPTIONS +=	--without-midi-package
 CONFIGURE_OPTIONS +=	--without-writable-directory
