@@ -43,10 +43,10 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-PATH_64=		/usr/mysql/5.7/bin:/usr/bin:$(SPRO_VROOT)/bin
+PATH_64=		/usr/mysql/8.0/bin:/usr/bin:$(SPRO_VROOT)/bin
 COMPONENT_BUILD_ENV +=		PATH=$(PATH_$(BITS)):$(PATH)
 COMPONENT_INSTALL_ENV +=	PATH=$(PATH_$(BITS)):$(PATH)
-CFLAGS_64=	-L/usr/mysql/5.7/lib/$(MACH64) -R/usr/mysql/5.7/lib/$(MACH64)
+CFLAGS_64=	-L/usr/mysql/8.0/lib/$(MACH64) -R/usr/mysql/8.0/lib/$(MACH64)
 CFLAGS +=	$(CFLAGS_$(BITS))
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
@@ -71,7 +71,7 @@ COMPONENT_TEST_ENV += MYSQL_HISTFILE=/dev/null
 # c) the COMPONENT_POST_TEST_ACTION kills both the mysql daemon and the
 #    background task
 
-MYSQL_VERSION       = 5.7
+MYSQL_VERSION       = 8.0
 MYSQL_BINDIR        = $(USRDIR)/mysql/$(MYSQL_VERSION)/bin
 MYSQL_TEST_USER     = root
 MYSQL_TEST_PASSWORD = test-password
@@ -159,6 +159,6 @@ test:		$(TEST_64)
 system-test:    $(SYSTEM_TEST_64)
 
 
-REQUIRED_PACKAGES += database/mysql-57
-REQUIRED_PACKAGES += database/mysql-57/library
+REQUIRED_PACKAGES += database/mysql-80
+REQUIRED_PACKAGES += database/mysql-80/library
 REQUIRED_PACKAGES += system/library

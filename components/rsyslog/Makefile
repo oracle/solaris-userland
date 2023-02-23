@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -134,7 +134,7 @@ TS_CONFIGURE_OPTIONS += --disable-libgcrypt
 # content. Also, building them from here requires python-docutils.
 TS_CONFIGURE_OPTIONS += --disable-generate-man-pages
 
-CONFIGURE_ENV += "MYSQL_CONFIG=/usr/mysql/5.7/bin/mysql_config"
+CONFIGURE_ENV += "MYSQL_CONFIG=/usr/mysql/8.0/bin/mysql_config"
 
 PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 
@@ -183,8 +183,8 @@ COMPONENT_TEST_TRANSFORMS += '-e "/ERROR/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/TOTAL/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/Testsuite summary/p"'
 
-REQUIRED_PACKAGES += database/mysql-57
-REQUIRED_PACKAGES += database/mysql-57/library
+REQUIRED_PACKAGES += database/mysql-80
+REQUIRED_PACKAGES += database/mysql-80/library
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libestr

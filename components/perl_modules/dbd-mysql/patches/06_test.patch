@@ -1,0 +1,39 @@
+From 7117e4c53fdd4d1ddd6672e339723bd5b3bd73ec Mon Sep 17 00:00:00 2001
+From: Walt Mankowski <waltman@pobox.com>
+Date: Thu, 10 Jun 2021 19:54:15 -0400
+Subject: [PATCH] accept 4031 as a valid return code when connection closed
+
+As of 8.0.24 MySQL writes the reason the connection was closed before
+closing it, so 4031 (ER_CLIENT_INTERACTION_TIMEOUT) is now an valid
+return code. See
+
+https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-24.html#mysqld-8-0-24-connection-management
+
+for more information.
+
+This addresses the issue reported in https://github.com/perl5-dbi/DBD-mysql/issues/329
+---
+ t/rt85919-fetch-lost-connection.t | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/t/rt85919-fetch-lost-connection.t b/t/rt85919-fetch-lost-connection.t
+index 8a47470..aa9f980 100644
+--- a/t/rt85919-fetch-lost-connection.t
++++ b/t/rt85919-fetch-lost-connection.t
+@@ -39,10 +39,16 @@ if (not $ok) {
+     # if we're connected via a local socket we receive error 2006
+     # (CR_SERVER_GONE_ERROR) but if we're connected using TCP/IP we get 
+     # 2013 (CR_SERVER_LOST)
++    #
++    # as of 8.0.24 MySQL writes the reason the connection was closed
++    # before closing it, so 4031 (ER_CLIENT_INTERACTION_TIMEOUT) is
++    # now an valid return code
+     if ($DBI::err == 2006) {
+        pass("received error 2006 (CR_SERVER_GONE_ERROR)");
+     } elsif ($DBI::err == 2013) {
+        pass("received error 2013 (CR_SERVER_LOST)");
++    } elsif ($DBI::err == 4031) {
++       pass("received error 4031 (ER_CLIENT_INTERACTION_TIMEOUT)");
+     } else {
+         fail('Should return error 2006 or 2013');
+     }

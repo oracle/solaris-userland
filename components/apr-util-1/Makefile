@@ -53,7 +53,7 @@ PATCH_LEVEL=0
 
 CONFIGURE_PREFIX=$(USRDIR)/apr-util/1
 
-CONFIGURE_OPTIONS.64 +=	--with-mysql=$(USRDIR)/mysql/5.7
+CONFIGURE_OPTIONS.64 +=	--with-mysql=$(USRDIR)/mysql/8.0
 CONFIGURE_OPTIONS +=	--with-expat=$(USRDIR)
 CONFIGURE_OPTIONS +=	--with-sqlite3=$(USRDIR)
 CONFIGURE_OPTIONS +=	--with-ldap=ldap_r-2.4
@@ -89,8 +89,8 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fi);
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-REQUIRED_PACKAGES += database/mysql-57
-REQUIRED_PACKAGES += database/mysql-57/library
+REQUIRED_PACKAGES += database/mysql-80
+REQUIRED_PACKAGES += database/mysql-80/library
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += library/apr-1

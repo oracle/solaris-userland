@@ -1,0 +1,18 @@
+https://bz.apache.org/bugzilla/show_bug.cgi?id=62631
+
+--- dbd/apr_dbd_mysql.c	2014-09-16 11:45:15.000000000 +0000
++++ dbd/apr_dbd_mysql.c	2018-08-11 20:25:13.202562000 +0000
+@@ -47,6 +47,13 @@ 
+ #include "apr_strings.h"
+ #include "apr_lib.h"
+ #include "apr_buckets.h"
++/* MySQL 8.0 replaces my_bool with C99 bool. Earlier versions of MySQL had
++* a typedef to char. Gem users reported failures on big endian systems when
++* using C99 bool types with older MySQLs due to mismatched behavior. */
++#ifndef HAVE_TYPE_MY_BOOL
++#include <stdbool.h>
++typedef bool my_bool;
++#endif
+ 
+ #include "apr_dbd_internal.h"
+ 
