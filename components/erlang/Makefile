@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 # Built in SFW with gcc and builds cleanly now only with gcc
@@ -160,7 +160,7 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += developer/java/jdk-8
 REQUIRED_PACKAGES += developer/lexer/flex
-REQUIRED_PACKAGES += library/graphics/wxwidgets
+REQUIRED_PACKAGES += library/graphics/wxwidgets-32
 REQUIRED_PACKAGES += library/ncurses
 ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
