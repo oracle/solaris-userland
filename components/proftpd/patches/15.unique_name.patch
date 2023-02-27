@@ -13,7 +13,7 @@
 
 --- a/tests/t/lib/ProFTPD/Tests/Commands/STOU.pm
 +++ b/tests/t/lib/ProFTPD/Tests/Commands/STOU.pm
-@@ -397,14 +397,22 @@ sub stou_ok_file {
+@@ -400,14 +400,22 @@ sub stou_ok_file {
  
        my $buf = "Foo!\n";
        $conn->write($buf, length($buf));
@@ -38,7 +38,7 @@
        $expected = 226;
        $self->assert($expected == $resp_code,
          test_msg("Expected $expected, got $resp_code"));
-@@ -413,7 +421,6 @@ sub stou_ok_file {
+@@ -416,7 +424,6 @@ sub stou_ok_file {
        $self->assert($expected eq $resp_msg,
          test_msg("Expected '$expected', got '$resp_msg'"));
  
@@ -46,7 +46,7 @@
        $self->assert($uniq_file, test_msg("Expected non-null unique file"));
  
        my $test_file = "$home_dir/$uniq_file";
-@@ -507,13 +514,23 @@ sub stou_file_umask_bug4223 {
+@@ -511,13 +518,23 @@ sub stou_file_umask_bug4223 {
  
        my $buf = "Foo!\n";
        $conn->write($buf, length($buf), 30);
@@ -74,7 +74,7 @@
        my $test_file = File::Spec->rel2abs("$setup->{home_dir}/$uniq_file");
 --- a/tests/t/lib/ProFTPD/Tests/Config/StoreUniquePrefix.pm
 +++ b/tests/t/lib/ProFTPD/Tests/Config/StoreUniquePrefix.pm
-@@ -113,13 +113,22 @@ sub storeuniqueprefix_ok {
+@@ -114,13 +114,22 @@ sub storeuniqueprefix_ok {
  
        my $buf = "Hello, World!\n";
        $conn->write($buf, length($buf));
@@ -98,7 +98,7 @@
        $expected = 226;
        $self->assert($expected == $resp_code,
          test_msg("Expected $expected, got $resp_code"));
-@@ -128,8 +137,6 @@ sub storeuniqueprefix_ok {
+@@ -129,8 +138,6 @@ sub storeuniqueprefix_ok {
        $self->assert($expected eq $resp_msg,
          test_msg("Expected '$expected', got '$resp_msg'"));
  

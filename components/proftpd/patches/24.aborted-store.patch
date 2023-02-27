@@ -35,7 +35,7 @@
 
 --- a/tests/t/lib/ProFTPD/Tests/Config/DeleteAbortedStores.pm
 +++ b/tests/t/lib/ProFTPD/Tests/Config/DeleteAbortedStores.pm
-@@ -148,10 +148,6 @@ sub deleteabortedstores_conn_aborted_ok {
+@@ -149,10 +149,6 @@ sub deleteabortedstores_conn_aborted_ok {
  
        eval { $conn->abort() };
  
@@ -46,7 +46,7 @@
        $client->quit();
  
        if (-f $test_file) {
-@@ -432,10 +428,6 @@ sub deleteabortedstores_conn_aborted_bug3917 {
+@@ -435,10 +431,6 @@ sub deleteabortedstores_conn_aborted_bug3917 {
  
        eval { $conn->abort() };
  
@@ -57,7 +57,7 @@
        $client->quit();
  
        if (-f $test_file) {
-@@ -661,10 +653,6 @@ sub deleteabortedstores_hiddenstores_on_timeout_stalled_bug4035 {
+@@ -666,10 +658,6 @@ sub deleteabortedstores_hiddenstores_on_timeout_stalled_bug4035 {
  
        eval { $conn->close() };
  
@@ -68,14 +68,3 @@
        $self->assert(!-f $test_file,
          test_msg("File $test_file exists unexpectedly"));
  
-@@ -803,10 +791,6 @@ sub deleteabortedstores_hiddenstores_on_xfer_aborted_bug4467 {
- 
-       eval { $conn->abort() };
- 
--      my $resp_code = $client->response_code();
--      my $resp_msg = $client->response_msg();
--      $self->assert_transfer_ok($resp_code, $resp_msg, 1);
--
-       eval { $conn->close() };
- 
-       $self->assert(-f $test_file,

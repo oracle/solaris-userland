@@ -12,7 +12,7 @@
 
 --- a/tests/t/lib/ProFTPD/Tests/Commands/MDTM.pm
 +++ b/tests/t/lib/ProFTPD/Tests/Commands/MDTM.pm
-@@ -1128,11 +1128,11 @@ sub mdtm_fails_eperm {
+@@ -1140,11 +1140,11 @@ sub mdtm_fails_eperm {
  
        chmod($perms, $setup->{home_dir});
  
@@ -28,7 +28,7 @@
      };
 --- a/tests/t/lib/ProFTPD/Tests/Commands/RETR.pm
 +++ b/tests/t/lib/ProFTPD/Tests/Commands/RETR.pm
-@@ -2264,11 +2264,11 @@ sub retr_fails_eperm {
+@@ -2283,11 +2283,11 @@ sub retr_fails_eperm {
  
        my $expected;
  
@@ -44,7 +44,7 @@
      };
 --- a/tests/t/lib/ProFTPD/Tests/Commands/RMD.pm
 +++ b/tests/t/lib/ProFTPD/Tests/Commands/RMD.pm
-@@ -1054,11 +1054,11 @@ sub rmd_fails_eloop {
+@@ -1064,11 +1064,11 @@ sub rmd_fails_eloop {
        my $resp_msg = $client->response_msg();
        $client->quit();
  
@@ -58,7 +58,7 @@
        $self->assert($expected eq $resp_msg,
          test_msg("Expected response message '$expected', got '$resp_msg'"));
      };
-@@ -1274,11 +1274,11 @@ sub rmd_fails_abs_symlink_enoent_chrooted_bug4219 {
+@@ -1286,11 +1286,11 @@ sub rmd_fails_abs_symlink_enoent_chrooted_bug4219 {
        my $resp_msg = $client->response_msg();
        $client->quit();
  
@@ -72,7 +72,7 @@
        $self->assert($expected eq $resp_msg,
          test_msg("Expected response message '$expected', got '$resp_msg'"));
      };
-@@ -1504,11 +1504,11 @@ sub rmd_fails_rel_symlink_enoent_chrooted_bug4219 {
+@@ -1518,11 +1518,11 @@ sub rmd_fails_rel_symlink_enoent_chrooted_bug4219 {
        my $resp_msg = $client->response_msg();
        $client->quit();
  
@@ -88,7 +88,7 @@
      };
 --- a/tests/t/lib/ProFTPD/Tests/Commands/RNTO.pm
 +++ b/tests/t/lib/ProFTPD/Tests/Commands/RNTO.pm
-@@ -671,11 +671,11 @@ sub rnto_fails_no_rnfr {
+@@ -676,11 +676,11 @@ sub rnto_fails_no_rnfr {
  
        my $expected;
  
@@ -102,7 +102,7 @@
        $self->assert($expected eq $resp_msg,
          test_msg("Expected '$expected', got '$resp_msg'"));
      };
-@@ -788,11 +788,11 @@ sub rnto_fails_enoent_no_file {
+@@ -794,11 +794,11 @@ sub rnto_fails_enoent_no_file {
        $resp_msg = $client->response_msg();
        $client->quit();
  

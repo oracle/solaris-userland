@@ -13,10 +13,15 @@
 
 --- a/tests/t/lib/ProFTPD/Tests/Config/AllowForeignAddress.pm
 +++ b/tests/t/lib/ProFTPD/Tests/Config/AllowForeignAddress.pm
-@@ -56,11 +56,6 @@ my $TESTS = {
-     test_class => [qw(bug forking)],
+@@ -51,16 +51,6 @@ my $TESTS = {
+     test_class => [qw(forking)],
    },
  
+-  fxp_pasv_allowed_by_class_issue1346 => {
+-    order => ++$order,
+-    test_class => [qw(bug forking)],
+-  },
+-
 -  fxp_allowed_2gb => {
 -    order => ++$order,
 -    test_class => [qw(forking)],
@@ -25,10 +30,115 @@
    # tls_fxp_allowed
  };
  
-@@ -1176,142 +1171,4 @@ EOC
+@@ -1079,248 +1069,4 @@ EOC
    test_cleanup($setup->{log_file}, $ex);
  }
  
+-sub fxp_pasv_allowed_by_class_issue1346 {
+-  my $self = shift;
+-  my $tmpdir = $self->{tmpdir};
+-  my $setup = test_setup($tmpdir, 'config');
+-
+-  my $class_name = 'allowed_fxp';
+-
+-  my $config = {
+-    PidFile => $setup->{pid_file},
+-    ScoreboardFile => $setup->{scoreboard_file},
+-    SystemLog => $setup->{log_file},
+-    TraceLog => $setup->{log_file},
+-    Trace => 'class:20 inet:20',
+-
+-    AuthUserFile => $setup->{auth_user_file},
+-    AuthGroupFile => $setup->{auth_group_file},
+-    AuthOrder => 'mod_auth_file.c',
+-
+-    AllowForeignAddress => $class_name,
+-
+-    IfModules => {
+-      'mod_delay.c' => {
+-        DelayEngine => 'off',
+-      },
+-    },
+-  };
+-
+-  my ($port, $config_user, $config_group) = config_write($setup->{config_file},
+-    $config);
+-
+-  if (open(my $fh, ">> $setup->{config_file}")) {
+-    print $fh <<EOC;
+-<Class $class_name>
+-  From 127.0.0.0/8
+-</Class>
+-EOC
+-    unless (close($fh)) {
+-      die("Can't write $setup->{config_file}: $!");
+-    }
+-
+-  } else {
+-    die("Can't open $setup->{config_file}: $!");
+-  }
+-
+-  # Open pipes, for use between the parent and child processes.  Specifically,
+-  # the child will indicate when it's done with its test by writing a message
+-  # to the parent.
+-  my ($rfh, $wfh);
+-  unless (pipe($rfh, $wfh)) {
+-    die("Can't open pipe: $!");
+-  }
+-
+-  my $ex;
+-
+-  # Fork child
+-  $self->handle_sigchld();
+-  defined(my $pid = fork()) or die("Can't fork: $!");
+-  if ($pid) {
+-    eval {
+-      my $client = ProFTPD::TestSuite::FTP->new('127.0.0.1', $port, 0, 3);
+-      $client->login($setup->{user}, $setup->{passwd});
+-
+-      # Attemping a data transfer should succeed, due to the AllowForeignAddress
+-      # class restriction.
+-      my $conn = $client->list_raw();
+-      unless ($conn) {
+-        die("Failed to LIST: " . $client->response_code() . " " .
+-          $client->response_msg());
+-      }
+-
+-      my $buf;
+-      $conn->read($buf, 8192, 30);
+-      eval { $conn->close() };
+-
+-      my ($resp_code, $resp_msg);
+-      $resp_code = $client->response_code();
+-      $resp_msg = $client->response_msg();
+-
+-      $self->assert_transfer_ok($resp_code, $resp_msg);
+-      $client->quit();
+-    };
+-    if ($@) {
+-      $ex = $@;
+-    }
+-
+-    $wfh->print("done\n");
+-    $wfh->flush();
+-
+-  } else {
+-    eval { server_wait($setup->{config_file}, $rfh) };
+-    if ($@) {
+-      warn($@);
+-      exit 1;
+-    }
+-
+-    exit 0;
+-  }
+-
+-  # Stop server
+-  server_stop($setup->{pid_file});
+-  $self->assert_child_ok($pid);
+-
+-  test_cleanup($setup->{log_file}, $ex);
+-}
+-
 -sub fxp_allowed_2gb {
 -  my $self = shift;
 -  my $tmpdir = $self->{tmpdir};
@@ -63,6 +173,7 @@
 -
 -    AuthUserFile => $setup->{auth_user_file},
 -    AuthGroupFile => $setup->{auth_group_file},
+-    AuthOrder => 'mod_auth_file.c',
 -
 -    AllowForeignAddress => 'on',
 -
