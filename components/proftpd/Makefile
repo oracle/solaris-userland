@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -99,6 +99,7 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CP) mod_solaris_audit.c $(SOURCE_DIR)/contrib ; \
 	$(CP) mod_solaris_priv.c $(SOURCE_DIR)/contrib ; \
 	cd $(SOURCE_DIR) ; \
+	cd locale && $(RM) *.po ; cd $(SOURCE_DIR) ; \
 	autoconf ; \
 	cd .. ; \
 	cd $(BUILD_DIR) ; \
