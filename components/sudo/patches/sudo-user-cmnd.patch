@@ -1,0 +1,26 @@
+Fix potential double free for rules that include a CHROOT= option.
+If a rule with a CHROOT= option matches the user, host and runas,
+the user_cmnd variable could be freed twice.
+
+diff -r 97ae12488007 plugins/sudoers/match_command.c
+--- a/plugins/sudoers/match_command.c	Thu Feb 16 11:45:31 2023 -0700
++++ b/plugins/sudoers/match_command.c	Wed Feb 22 13:51:04 2023 -0700
+@@ -818,12 +818,16 @@ command_matches(const char *sudoers_cmnd
+ 	/* Rule-specific runchroot, reset user_cmnd and user_stat. */
+ 	int status;
+ 
++	/* Save old user_cmnd first, set_cmnd_path() will free it. */
+ 	saved_user_cmnd = user_cmnd;
++	user_cmnd = NULL;
+ 	if (user_stat != NULL)
+ 	    saved_user_stat = *user_stat;
+ 	status = set_cmnd_path(runchroot);
+-	if (status != FOUND)
++	if (status != FOUND) {
++	    user_cmnd = saved_user_cmnd;
+ 	    saved_user_cmnd = NULL;
++	}
+ 	if (info != NULL)
+ 	    info->status = status;
+     }
+

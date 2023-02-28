@@ -2,31 +2,31 @@ various changes to comply with Oracle internal rules
 do not deliver examples, use secure ciphers by default, use tls by default
 not suitable for upstream
 
---- sudo-1.9.9/Makefile.in
-+++ sudo-1.9.9/Makefile.in
-@@ -58,7 +58,7 @@ python_version = @PYTHON_VERSION@
+--- sudo-1.9.12p2/Makefile.in
++++ sudo-1.9.12p2/Makefile.in
+@@ -61,7 +61,7 @@
+ 	  plugins/group_file plugins/sudoers plugins/system_group \
+ 	  @PYTHON_PLUGIN_SRC@ src include docs examples
  
- SUBDIRS = lib/util @ZLIB_SRC@ lib/eventlog lib/fuzzstub lib/iolog \
- 	  lib/protobuf-c @LOGSRV_SRC@ @LOGSRVD_SRC@ plugins/audit_json \
--	  plugins/group_file plugins/sample_approval plugins/sudoers \
-+	  plugins/group_file plugins/sudoers \
- 	  plugins/system_group @PYTHON_PLUGIN_SRC@ src include docs examples
+-SAMPLES = plugins/sample plugins/sample_approval
++#SAMPLES = plugins/sample plugins/sample_approval
  
- SAMPLES = plugins/sample
---- sudo-1.9.9/docs/sudo_logsrvd.conf.man.in
-+++ sudo-1.9.9/docs/sudo_logsrvd.conf.man.in
-@@ -214,7 +214,7 @@ section in
+ VERSION = @PACKAGE_VERSION@
+ PACKAGE_TARNAME = @PACKAGE_TARNAME@
+--- sudo-1.9.12p2/docs/sudo_logsrvd.conf.man.in
++++ sudo-1.9.12p2/docs/sudo_logsrvd.conf.man.in
+@@ -216,7 +216,7 @@
  openssl-ciphers(1)
  for full details.
  The default value is
--\fRHIGH:!aNULL\fR
-+\fRHIGH:!aNULL:!eNULL:!MD5:!DES:!RC4:!3DES:!PSK:!SHA1:!SHA256:!SHA384\fR
+-\(lqHIGH:!aNULL\(rq
++\(lqHIGH:!aNULL!eNULL:!MD5:!DES:!RC4:!3DES:!PSK:!SHA1:!SHA256:!SHA384\(rq
  which consists of encryption cipher suites with key lengths larger than
  128 bits, and some cipher suites with 128-bit keys.
  Cipher suites that offer no authentication are excluded.
---- sudo-1.9.9/examples/sudo_logsrvd.conf
-+++ sudo-1.9.9/examples/sudo_logsrvd.conf
-@@ -37,30 +37,30 @@ #timeout = 30
+--- sudo-1.9.12p2/examples/sudo_logsrvd.conf.in
++++ sudo-1.9.12p2/examples/sudo_logsrvd.conf.in
+@@ -37,29 +37,29 @@
  
  # If true, the server will validate its own certificate at startup.
  # Defaults to true.
@@ -55,16 +55,15 @@ not suitable for upstream
 +tls_key = /etc/certs/localhost/host.key
  
  # TLS cipher list (see "CIPHER LIST FORMAT" in the openssl-ciphers manual).
- # NOTE that this setting is only effective if the negotiated protocol
- # is TLS version 1.2.
--# The default cipher list is HIGH:!aNULL.
+ # This setting is only effective if the negotiated protocol is TLS version
+-# 1.2.  The default cipher list is HIGH:!aNULL.
 -#tls_ciphers_v12 = HIGH:!aNULL
-+# The default cipher list is HIGH:!aNULL:!eNULL:!MD5:!DES:!RC4:!3DES:!PSK:!SHA1:!SHA256:!SHA384.
++# 1.2.  The default cipher list is HIGH:!aNULL:!eNULL:!MD5:!DES:!RC4:!3DES:!PSK:!SHA1:!SHA256:!SHA384.
 +tls_ciphers_v12 = HIGH:!aNULL:!eNULL:!MD5:!DES:!RC4:!3DES:!PSK:!SHA1:!SHA256:!SHA384
  
  # TLS cipher list if the negotiated protocol is TLS version 1.3.
  # The default cipher list is TLS_AES_256_GCM_SHA384.
-@@ -109,30 +109,30 @@ #timeout = 30
+@@ -108,29 +108,29 @@
  
  # If true, the server's relay certificate will be verified at startup.
  # The default is to use the value in the [server] section.
@@ -93,16 +92,15 @@ not suitable for upstream
 +tls_key = /etc/certs/localhost/host.key
  
  # TLS cipher list (see "CIPHER LIST FORMAT" in the openssl-ciphers manual).
- # NOTE that this setting is only effective if the negotiated protocol
- # is TLS version 1.2.
- # The default is to use the value in the [server] section.
+ # this setting is only effective if the negotiated protocol is TLS version
+ # 1.2.  The default is to use the value in the [server] section.
 -#tls_ciphers_v12 = HIGH:!aNULL
-+#tls_ciphers_v12 = HIGH:!aNULL:!eNULL:!MD5:!DES:!RC4:!3DES:!PSK:!SHA1:!SHA256:!SHA384
++tls_ciphers_v12 = HIGH:!aNULL:!eNULL:!MD5:!DES:!RC4:!3DES:!PSK:!SHA1:!SHA256:!SHA384
  
  # TLS cipher list if the negotiated protocol is TLS version 1.3.
  # The default is to use the value in the [server] section.
---- sudo-1.9.9/logsrvd/logsrvd_conf.c
-+++ sudo-1.9.9/logsrvd/logsrvd_conf.c
+--- sudo-1.9.12pl2/logsrvd/logsrvd_conf.c
++++ sudo-1.9.12pl2/logsrvd/logsrvd_conf.c
 @@ -58,9 +58,9 @@ #include "sudo_util.h"
  #include "logsrvd.h"
  
@@ -116,8 +114,8 @@ not suitable for upstream
  
  /* Evaluates to true if at least one TLS field is set, else false. */
  # define TLS_CONFIGURED(_s)						\
---- sudo-1.9.9/logsrvd/tls_init.c
-+++ sudo-1.9.9/logsrvd/tls_init.c
+--- sudo-1.9.12pl2/logsrvd/tls_init.c
++++ sudo-1.9.12pl2/logsrvd/tls_init.c
 @@ -42,7 +42,7 @@ #include "sudo_gettext.h"
  #include "tls_common.h"
  #include "hostcheck.h"
