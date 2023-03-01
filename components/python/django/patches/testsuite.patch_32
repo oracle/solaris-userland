@@ -3,13 +3,13 @@ is failing on SPARC (causing many others to fail as well).
 
 Not intended for upstream.
 
---- Django-4.2/tests/settings_tests/tests.py
-+++ Django-4.2/tests/settings_tests/tests.py
-@@ -343,6 +343,7 @@ class SettingsTests(SimpleTestCase):
+--- Django-3.2.11/tests/settings_tests/tests.py
++++ Django-3.2.11/tests/settings_tests/tests.py
+@@ -328,6 +328,7 @@ class SettingsTests(SimpleTestCase):
  
      @requires_tz_support
-     @mock.patch("django.conf.global_settings.TIME_ZONE", "test")
+     @mock.patch('django.conf.global_settings.TIME_ZONE', 'test')
 +    @unittest.skipIf(sys.platform.startswith("sunos"), "Fails on SPARC due to 29259680")
      def test_incorrect_timezone(self):
-         with self.assertRaisesMessage(ValueError, "Incorrect timezone setting: test"):
+         with self.assertRaisesMessage(ValueError, 'Incorrect timezone setting: test'):
              settings._setup()

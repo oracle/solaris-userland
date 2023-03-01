@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		asgiref
-COMPONENT_VERSION=	3.5.2
+COMPONENT_VERSION=	3.6.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7b65b0ef4dd5682398449bd6b03c96697c8a73a1b416abf37818393580eef12c
+    sha256:9567dfe7bd8d3c8c892227827c41cce860b368104c3431da67a0c5a65a949506
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/django/asgiref/
 COMPONENT_BUGDB=	python-mod/asgiref
 COMPONENT_ANITYA_ID=	18462
-COMPONENT_BAID=		123831
+COMPONENT_BAID=		139057
 
-PYTHON_VERSIONS = 3.9
+PYTHON_VERSIONS = 3.9 3.11
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -56,4 +56,4 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)

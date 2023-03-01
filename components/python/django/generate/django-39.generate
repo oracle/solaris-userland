@@ -20,7 +20,17 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
-<include ../generate/common.transform>
+# Keep only Django 3.2 / Python 3.9 related files.
+<transform file link path=.+3\.9.* -> edit path 3\\.9 \$\(PYVER\)>
+
+<include generate/common.transform>
+
+<transform file link -> edit path $(COMPONENT_VERSION_32) \$\(COMPONENT_VERSION\)>
+
+# In this case, don't use the unexpanded $(PYVER) variable in the manifest.
+<transform file link -> edit path "\$\(PYVER\)" 3.9>
+<transform link path=usr/bin/django-admin -> edit target "\$\(PYVER\)" 3.9>
+<transform link path=usr/bin/django-admin -> edit mediator-version "\$\(PYVER\)" 3.9>

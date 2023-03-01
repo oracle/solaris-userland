@@ -20,13 +20,10 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
-<include ../generate/common.transform>
+# Keep only Django 4.2 / Python 3.11 related files.
+<transform file link path=.+3\.11.* -> edit path 3\\.11 \$\(PYVER\)>
 
-# We are not shipping .po locale files
-<transform file path=.+/LC_MESSAGES/django(|js).po -> drop>
-
-# Drop now deprecated django-admin.py
-<transform file path=usr/bin/django-admin.py$ -> drop>
+<include generate/common.transform>
