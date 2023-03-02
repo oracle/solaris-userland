@@ -20,12 +20,11 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 # Avoid hardcoding python version to make updates to new versions easier
-<transform dir file link hardlink -> edit path "/python\d\.\d/" "/python$!(PYVER)/">
-<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+<transform dir file link hardlink -> edit path "$(PYVER)" \$\(PYVER\)>
 
 # pkgdepend can't resolve the relative path from _test.py to client.py
 # correctly, but since they're both in the same package, we can skip it.

@@ -53,7 +53,7 @@ FIX_PC_FILES=*.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.11
 CONFIGURE_ENV += PYTHON="$(PYTHON)"
 PKG_MACROS += PYVER="$(PYTHON_VERSION)"
 
@@ -91,6 +91,8 @@ CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += INSTALL="$(INSTALL) -p"
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 
+COMPONENT_BUILD_ENV += PROTO_DIR=$(PROTO_DIR)
+
 XCBPROTO_BASE = $(WS_COMPONENTS)/x11/lib/libxcb/build/prototype/$(MACH)
 PKG_CONFIG_PATHS += $(XCBPROTO_BASE)/usr/share/pkgconfig/
 
@@ -114,6 +116,6 @@ REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += image/graphviz
 # xcb-proto runs xmllint
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += x11/library/libxau
 REQUIRED_PACKAGES += x11/library/libxdmcp

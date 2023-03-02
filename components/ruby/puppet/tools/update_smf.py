@@ -1,4 +1,4 @@
-#!/usr/bin/python3.7
+#!/usr/bin/python3.11
 #
 # CDDL HEADER START
 #
@@ -222,7 +222,7 @@ def update_smf_file(smf_xml_file, output_file):
     except (IOError, etree.XMLSyntaxError) as msg:
         err(msg)
         sys.exit(-1)
-    except NameError as msg:
+    except NameError:
         err(f"XML file {smf_xml_file} does not match expected format")
 
     # Delete the pg_pattern nodes and it's children

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=          	64
@@ -54,8 +54,8 @@ CC +=			$(CC_BITS)
 CFLAGS += 		$(CC_PIC)
 CPPFLAGS += 		-D_SYS_UCONTEXT_H # Workaround Bug Id 15558893
 
-# Orca uses python 3.7, so we need to match
-PYTHON_VERSION = 3.7
+# Orca uses python 3.11, so we need to match
+PYTHON_VERSION = 3.11
 CONFIGURE_ENV += PYTHON="$(PYTHON)"
 PKG_MACROS += PYVER="$(PYTHON_VERSION)"
 
@@ -74,9 +74,10 @@ COMPONENT_TEST_ENV += $(PYTHON_ENV)
 COMPONENT_SYSTEM_TEST_ENV += $(PYTHON_ENV)
 
 # brltty's Makefile doesn't let us pass --install-lib to setup.py so we
-# fake it with a symlink in the proto area
+# move it in the proto area manually
 COMPONENT_POST_INSTALL_ACTION += \
-    $(SYMLINK) site-packages $(PROTO_DIR)$(PYTHON_LIB)
+    $(MV) $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/site-packages \
+        $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages
 
 CONFIGURE_OPTIONS +=	--enable-python-bindings
 CONFIGURE_OPTIONS +=	--disable-java-bindings
@@ -100,8 +101,8 @@ COMPONENT_INSTALL_ARGS +=	INSTALL_ROOT=$(PROTO_DIR)
 
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/icu
-REQUIRED_PACKAGES += library/python/cython-37
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += library/python/cython-311
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libdbus

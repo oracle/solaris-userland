@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -49,7 +49,7 @@ LDFLAGS += -Wl,-R$(USRLIBDIR64)/eog
 
 # Assumes GNU msgfmt is in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
-CONFIGURE_ENV += PYTHON=$(PYTHON.3.7)
+CONFIGURE_ENV += PYTHON=$(PYTHON.3.11)
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CONFIGURE_OPTIONS += --disable-static
@@ -82,6 +82,5 @@ REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/desktop/libpeas
 REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11

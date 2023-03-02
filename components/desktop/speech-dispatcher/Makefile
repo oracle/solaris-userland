@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             64
@@ -54,7 +54,7 @@ CONFIGURE_OPTIONS += --with-pulse
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Same version as Orca uses
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.11
 CONFIGURE_ENV += PYTHON="$(PYTHON)"
 PKG_MACROS += PYVER="$(PYTHON_VERSION)"
 
@@ -70,4 +70,4 @@ REQUIRED_PACKAGES += library/desktop/dotconf
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libsndfile
 REQUIRED_PACKAGES += library/speech/espeak-ng
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311

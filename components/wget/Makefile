@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -32,6 +32,8 @@ COMPONENT_BAID=		121547
 COMPONENT_ARCHIVE_HASH= sha256:5726bb8bc5ca0f6dc7110f6416e4bb7019e2d2ff5bf93d1ca2ffcc6656f220e5
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ANITYA_ID=	5124
+
+PYTHON_VERSION = 3.11
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -50,7 +52,7 @@ COMPONENT_TEST_TRANSFORMS += '-ne "/^Please/p" '
 # The tests require 'python3' binary. We create symlink to /usr/bin/python3
 # in our test directory
 COMPONENT_PRE_TEST_ACTION += rm -f "$(COMPONENT_TEST_BUILD_DIR)/python3";
-COMPONENT_PRE_TEST_ACTION += ln -s $(PYTHON.3.7) "$(COMPONENT_TEST_BUILD_DIR)/python3";
+COMPONENT_PRE_TEST_ACTION += ln -s $(PYTHON) "$(COMPONENT_TEST_BUILD_DIR)/python3";
 COMPONENT_TEST_ENV += PATH="$$PATH:$(COMPONENT_TEST_BUILD_DIR)"
 
 # There are two sets of tests. First set fails unless we download some external
@@ -79,7 +81,7 @@ CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS +=	PATH="$(PATH):/usr/perl5/bin"
 CPPFLAGS +=	-I/usr/include/idn
 CONFIGURE_OPTIONS +=	CPPFLAGS="$(CPPFLAGS)"
-CONFIGURE_OPTIONS +=	PYTHON=$(PYTHON.3.7)
+CONFIGURE_OPTIONS +=	PYTHON=$(PYTHON)
 
 # No proxy settings for the tests because it runs it's own server on localhost
 # which can be unreachable via proxy

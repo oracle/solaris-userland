@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		64
@@ -40,8 +40,9 @@ COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	13112
 COMPONENT_BAID=		127635
 
-# Orca uses python 3.7, so we need to match
-PYTHON_VERSION=		3.7
+# Orca uses python 3.11, so we need to match
+PYTHON_VERSION=		3.11
+PKG_MACROS+=		PYVER="$(PYTHON_VERSION)"
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -87,6 +88,6 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += developer/documentation-tool/help2man
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/core-os
 

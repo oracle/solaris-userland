@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -39,7 +39,7 @@ COMPONENT_ANITYA_ID=	5758
 COMPONENT_BAID=		120411
 
 BUILD_STYLE=		meson
-PYTHON_VERSION=		3.7
+PYTHON_VERSION=		3.11
 
 TEST_TARGET = $(NO_TESTS)
 
