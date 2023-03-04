@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		font-bh-ttf
-COMPONENT_VERSION=	1.0.3
+COMPONENT_VERSION=	1.0.4
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:1b4bea63271b4db0726b5b52c97994c3313b6023510349226908090501abd25f
+	sha256:85a5f90d00c48c2b06fd125ea8adbc8b8ee97429e3075081c8710926efec3a56
 COMPONENT_ANITYA_ID=	17191
 COMPONENT_BUGDB=	x11/font
 
-COMPONENT_BAID=		53010
+COMPONENT_BAID=		139252
 
 include $(WS_MAKE_RULES)/x11-component.mk
 include $(WS_MAKE_RULES)/font.mk

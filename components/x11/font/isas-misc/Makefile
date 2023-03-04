@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		font-isas-misc
-COMPONENT_VERSION=	1.0.3
+COMPONENT_VERSION=	1.0.4
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:5824ab4b485951107dd245b8f7717d2822f1a6dbf6cea98f1ac7f49905c0a867
+	sha256:47e595bbe6da444b9f6fcaa26539abc7ba1989e23afa6cdc49e22e484cc438fc
 COMPONENT_ANITYA_ID=	17193
 COMPONENT_BUGDB=	x11/font
 
-COMPONENT_BAID=		53012
+COMPONENT_BAID=		139254
 
 include $(WS_MAKE_RULES)/x11-component.mk
 include $(WS_MAKE_RULES)/font.mk

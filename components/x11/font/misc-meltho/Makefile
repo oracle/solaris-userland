@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		font-misc-meltho
-COMPONENT_VERSION= 	1.0.3
+COMPONENT_VERSION= 	1.0.4
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:3721323f13855cf7ca609115a1f7b182491e9b2b9c6e01eb1a2c7f8edd480791
+	sha256:63be5ec17078898f263c24096a68b43ae5b06b88852e42549afa03d124d65219
 COMPONENT_ANITYA_ID=	17196
 COMPONENT_BUGDB=	x11/font
 
-COMPONENT_BAID=		53015
+COMPONENT_BAID=		139257
 
 include $(WS_MAKE_RULES)/x11-component.mk
 include $(WS_MAKE_RULES)/font.mk

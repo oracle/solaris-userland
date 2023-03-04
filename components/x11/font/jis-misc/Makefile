@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		font-jis-misc
-COMPONENT_VERSION= 	1.0.3
+COMPONENT_VERSION= 	1.0.4
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:2b18ce10b367ebafe95a17de799b6db9a24e2337188d124adaf68af05b1fac65
+	sha256:78d1eff6c471f7aa6802a26d62cccf51d8e5185586406d9b6e1ee691b0bffad0
 COMPONENT_ANITYA_ID=	17194
 COMPONENT_BUGDB=	x11/font
 
-COMPONENT_BAID=		53013
+COMPONENT_BAID=	 	139255
 
 include $(WS_MAKE_RULES)/x11-component.mk
 include $(WS_MAKE_RULES)/font.mk

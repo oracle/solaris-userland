@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		font-daewoo-misc
-COMPONENT_VERSION= 	1.0.3
+COMPONENT_VERSION= 	1.0.4
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:bc65de70bee12698caa95b523d3b652c056347e17b68cc8b5d6bbdff235c4be8
+	sha256:f63c8b3dc8f30098cb868b7db2c2c0c8b5b3fd2cefd044035697a43d4c7a4f31
 COMPONENT_ANITYA_ID=	17192
 COMPONENT_BUGDB=	x11/font
 
-COMPONENT_BAID=		53011
+COMPONENT_BAID=		139253
 
 include $(WS_MAKE_RULES)/x11-component.mk
 include $(WS_MAKE_RULES)/font.mk
