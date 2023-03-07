@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -30,15 +30,15 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		memcached
-COMPONENT_VERSION=	1.6.9
-COMPONENT_PROJECT_URL=	http://memcached.org/
+COMPONENT_VERSION=	1.6.18
+COMPONENT_PROJECT_URL=	https://www.memcached.org
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d5a62ce377314dbffdb37c4467e7763e3abae376a16171e613cbe69956f092d1
-COMPONENT_ARCHIVE_URL=	http://memcached.org/files/$(COMPONENT_ARCHIVE)
+    sha256:cbdd6ab8810649ac5d92fcd0fcb0ca931d8a9dbd0ad8cc575b47222eedd64158
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/files/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	database/memcached
 COMPONENT_ANITYA_ID=	1965
 
-COMPONENT_BAID=		104110
+COMPONENT_BAID=		139214
 
 include $(WS_MAKE_RULES)/common.mk
 
