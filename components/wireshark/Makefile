@@ -27,18 +27,18 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wireshark
-COMPONENT_VERSION=	4.0.3
-COMPONENT_BAID=		136493
+COMPONENT_VERSION=	4.0.4
+COMPONENT_BAID=		139209
 COMPONENT_PROJECT_URL=	http://www.wireshark.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6c51e15bcc0afb93734e686dbff354ffd159f570bd2904bcbbad6f3feb7e9511
+    sha256:a4a09f6564f00639036ffe5064ac4dc2176adfa3e484c539c9c73f835436e74b
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/src/all-versions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5137
 
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-docs-generated.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:e99dff8cd917919d10dd364358c5a2f92099e815866d2c7b298ebb19b0a4fa6a
+    sha256:00d62429138ab20dbd1b9f66d6480e001f709f6be829402d4c5520c254f56c98
 COMPONENT_ARCHIVE_URL_1 =  make://docs-generated/$(COMPONENT_ARCHIVE_1)
 
 BUILD_STYLE=	cmake
@@ -53,7 +53,7 @@ ADISTACK_MODE =	$(ADISTACK_DISABLE)
 COMPONENT_PREP_ACTION += ( $(GSED) -i \
 	-e 's;TryExec=wireshark;TryExec=/usr/sbin/wireshark;' \
 	-e 's;Exec=wireshark %f;Exec=pfexec /usr/sbin/wireshark %f;' \
-	$(SOURCE_DIR)/org.wireshark.Wireshark.desktop );
+	$(SOURCE_DIR)/resources/freedesktop/org.wireshark.Wireshark.desktop );
 
 # Extract and install pre-generated documentation
 COMPONENT_PREP_ACTION += gtar xvf $(COMPONENT_ARCHIVE_1) ;
@@ -96,11 +96,12 @@ CMAKE_OPTIONS += -DBUILD_dftest=OFF
 # use of Ruby gem installed 'asciidoctor'.
 docs-generated:
 	$(RM) -r $(COMPONENT_SRC); gtar xf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE)
-	mkdir $(SOURCE_DIR)/home; HOME=$(SOURCE_DIR)/home gem install --user-install asciidoctor
+	mkdir $(SOURCE_DIR)/home; HOME=$(SOURCE_DIR)/home \
+	  /usr/ruby/$(RUBY_VERSION)/bin/gem install --user-install asciidoctor
 	cd $(COMPONENT_SRC); \
 	  for i in `find $(COMPONENT_DIR)/patches -name '*.patch'` ; do gpatch -p1 < $$i; done ; \
 	  $(ENV) $(CONFIGURE_ENV) HOME=$(SOURCE_DIR)/home \
-	    PATH="$(PATH):$(SOURCE_DIR)/home/.gem/ruby/3.1.0/bin" $(CMAKE) $(CMAKE_OPTIONS) . ; \
+	    PATH="$(PATH):$(SOURCE_DIR)/home/.local/share/gem/ruby/$(RUBY_VERSION).0/bin" $(CMAKE) $(CMAKE_OPTIONS) . ; \
 	  $(ENV) $(COMPONENT_BUILD_ENV) HOME=$(SOURCE_DIR)/home $(GMAKE) docs
 	TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1) --sort=name \
 	  --mtime='1970-01-01' --owner=root --group=root $(COMPONENT_SRC)/doc/*.1 \
