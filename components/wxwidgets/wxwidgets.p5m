@@ -26,6 +26,7 @@
 set name=pkg.fmri \
     value=pkg:/library/graphics/wxwidgets@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="wxWidgets A cross-platform GUI toolkit"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="wxWidgets, cross-platform GUI toolkit"
@@ -33,7 +34,7 @@ set name=info.classification \
     value="org.opensolaris.category.2008:Desktop (GNOME)/Libraries"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=LSARC/2008/476
+set name=org.opensolaris.arc-caseid value=LSARC/2008/476 value=PSARC/2023/008
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/include/wx-3.0/wx/aboutdlg.h
 file path=usr/include/wx-3.0/wx/accel.h
@@ -824,5 +825,10 @@ link path=usr/lib/libwx_gtk2u_xrc-3.0.so target=libwx_gtk2u_xrc-3.0.so.0
 file path=usr/lib/libwx_gtk2u_xrc-3.0.so.0
 file path=usr/lib/wx/config/gtk2-unicode-3.0 mode=0555
 file path=usr/lib/wx/include/gtk2-unicode-3.0/wx/setup.h
+file release-notes/library-graphics-wxwidgets.txt \
+    path=usr/share/doc/release-notes/library-graphics-wxwidgets.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 license wxwidgets.license license="GPLv2, LGPLv2"
 depend type=require fmri=service/opengl/ogl-select
