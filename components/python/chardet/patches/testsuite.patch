@@ -1,0 +1,16 @@
+test_detect_all_and_detect_one_should_agree does not always pass
+depending on the specific machine and Python version.
+
+This issue is known upstream:
+https://github.com/chardet/chardet/issues/256
+
+--- chardet-5.1.0/test.py
++++ chardet-5.1.0/test.py
+@@ -223,6 +223,7 @@ if HAVE_HYPOTHESIS:
+         st.randoms(),
+     )
+     @settings(max_examples=200)
++    @pytest.mark.skip("Test is known to be flakey")
+     def test_detect_all_and_detect_one_should_agree(txt, enc, _):
+         try:
+             data = txt.encode(enc)

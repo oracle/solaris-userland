@@ -20,25 +20,24 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		chardet
-COMPONENT_VERSION=	4.0.0
+COMPONENT_VERSION=	5.1.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1973357919e213de4afd20cc4a7fe8c9086992bb166cf31cf010869da472093c
+    sha256:0d62712b956bc154f85fb0a266e2a3c5913c2967e00348701b32411d6def31e5
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/untitaker/python-atomicwrites
 COMPONENT_BUGDB=	python-mod/chardet
 COMPONENT_ANITYA_ID=	3798
-
-COMPONENT_BAID=		92477
+COMPONENT_BAID=		139578
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
