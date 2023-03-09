@@ -1,0 +1,65 @@
+https://github.com/php/php-src/issues/10015
+https://github.com/php/php-src/pull/9766
+
+--- php-8.1.16/TSRM/TSRM.c
++++ php-8.1.16/TSRM/TSRM.c
+@@ -789,4 +789,9 @@ return "POSIX Threads";
+ #endif
+ }/*}}}*/
+ 
++TSRM_API bool tsrm_is_managed_thread()
++{/*{{{*/
++	return tsrm_tls_get() ? true : false;
++}/*}}}*/
++
+ #endif /* ZTS */
+--- php-8.1.16/TSRM/TSRM.h
++++ php-8.1.16/TSRM/TSRM.h
+@@ -20,6 +20,7 @@ #else
+ # include "main/php_config.h"
+ #endif
+ 
++#include <stdbool.h>
+ #include "main/php_stdint.h"
+ 
+ #ifdef TSRM_WIN32
+@@ -136,6 +137,7 @@ TSRM_API size_t tsrm_get_ls_cache_tcb_of
+ TSRM_API uint8_t tsrm_is_main_thread(void);
+ TSRM_API uint8_t tsrm_is_shutdown(void);
+ TSRM_API const char *tsrm_api_name(void);
++TSRM_API bool tsrm_is_managed_thread(void);
+ 
+ #ifdef TSRM_WIN32
+ # define TSRM_TLS __declspec(thread)
+--- php-8.1.16/Zend/zend_execute_API.c
++++ php-8.1.16/Zend/zend_execute_API.c
+@@ -1316,7 +1316,13 @@ /* }}} */
+ #ifndef ZEND_WIN32
+ static void zend_timeout_handler(int dummy) /* {{{ */
+ {
+-#ifndef ZTS
++#ifdef ZTS
++	if (!tsrm_is_managed_thread()) {
++		fprintf(stderr, "zend_timeout_handler() called in a thread not managed by PHP. The expected signal handler will not be called. This is probably a bug.\n");
++
++		return;
++	}
++#else
+ 	if (EG(timed_out)) {
+ 		/* Die on hard timeout */
+ 		const char *error_filename = NULL;
+--- php-8.1.16/Zend/zend_signal.c
++++ php-8.1.16/Zend/zend_signal.c
+@@ -85,6 +85,12 @@ int errno_save = errno;
+ 	zend_signal_queue_t *queue, *qtmp;
+ 
+ #ifdef ZTS
++	if (!tsrm_is_managed_thread()) {
++		fprintf(stderr, "zend_signal_handler_defer() called in a thread not managed by PHP. The expected signal handler will not be called. This is probably a bug.\n");
++
++		return;
++	}
++
+ 	/* A signal could hit after TSRM shutdown, in this case globals are already freed. */
+ 	if (tsrm_is_shutdown()) {
+ 		/* Forward to default handler handler */

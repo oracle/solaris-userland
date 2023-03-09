@@ -2,37 +2,43 @@
 # Internal only, will not be submitted upstream.
 
 
---- php-8.1.0/ext/openssl/openssl.c
-+++ php-8.1.0/ext/openssl/openssl.c
-@@ -72,7 +72,9 @@ #define MIN_KEY_LENGTH		384
+--- php-8.1.16/ext/openssl/openssl.c
++++ php-8.1.16/ext/openssl/openssl.c
+@@ -72,9 +72,11 @@ #define MIN_KEY_LENGTH		384
  /* constants used in ext/phar/util.c, keep in sync */
  #define OPENSSL_ALGO_SHA1 	1
  #define OPENSSL_ALGO_MD5	2
 +#ifdef HAVE_OPENSSL_MD4_H
+ #ifndef OPENSSL_NO_MD4
  #define OPENSSL_ALGO_MD4	3
+ #endif
 +#endif
- #ifdef HAVE_OPENSSL_MD2_H
+ #ifndef OPENSSL_NO_MD2
  #define OPENSSL_ALGO_MD2	4
  #endif
-@@ -1029,9 +1031,11 @@ break;
+@@ -1125,11 +1127,13 @@ break;
  		case OPENSSL_ALGO_MD5:
  			mdtype = (EVP_MD *) EVP_md5();
  			break;
 +#ifdef HAVE_OPENSSL_MD4_H
+ #ifndef OPENSSL_NO_MD4
  		case OPENSSL_ALGO_MD4:
  			mdtype = (EVP_MD *) EVP_md4();
  			break;
+ #endif
 +#endif
- #ifdef HAVE_OPENSSL_MD2_H
+ #ifndef OPENSSL_NO_MD2
  		case OPENSSL_ALGO_MD2:
  			mdtype = (EVP_MD *) EVP_md2();
-@@ -1182,7 +1186,9 @@ #endif
+@@ -1282,9 +1286,11 @@ #endif
  	/* digest algorithm constants */
  	REGISTER_LONG_CONSTANT("OPENSSL_ALGO_SHA1", OPENSSL_ALGO_SHA1, CONST_CS|CONST_PERSISTENT);
  	REGISTER_LONG_CONSTANT("OPENSSL_ALGO_MD5", OPENSSL_ALGO_MD5, CONST_CS|CONST_PERSISTENT);
 +#ifdef HAVE_OPENSSL_MD4_H
+ #ifndef OPENSSL_NO_MD4
  	REGISTER_LONG_CONSTANT("OPENSSL_ALGO_MD4", OPENSSL_ALGO_MD4, CONST_CS|CONST_PERSISTENT);
+ #endif
 +#endif
- #ifdef HAVE_OPENSSL_MD2_H
+ #ifndef OPENSSL_NO_MD2
  	REGISTER_LONG_CONSTANT("OPENSSL_ALGO_MD2", OPENSSL_ALGO_MD2, CONST_CS|CONST_PERSISTENT);
  #endif
