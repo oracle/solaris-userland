@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -53,7 +53,7 @@ CONFIGURE_OPTIONS.32 += --disable-vala-bindings
 CONFIGURE_OPTIONS.64 += --enable-vala-bindings
 CONFIGURE_OPTIONS += --with-pic
 
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.11
 # Python is only used to generate build files
 CONFIGURE_ENV += PYTHON="$(PYTHON)"
 
@@ -71,6 +71,6 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/ERROR:/p" ' \
 
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib

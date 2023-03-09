@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -45,13 +45,18 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-# Accerciser requires python >= 3.2
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.11
 CONFIGURE_ENV += PYTHON="$(PYTHON)"
+PKG_MACROS += PYVER="$(PYTHON_VERSION)" PYV="$(PYTHON_VERSION:3.%=3%)"
 
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
+
+# plugins are not compiled automatically
+COMPONENT_POST_INSTALL_ACTION += \
+	$(PYTHON) -m compileall $(PROTO_DIR)$(USRSHAREDIR)/accerciser/plugins/*.py ; \
+	$(PYTHON) -m compileall $(PROTO_DIR)$(USRSHAREDIR)/accerciser/plugindata/validate/basic.py ;
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
@@ -67,6 +72,6 @@ REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libwnck3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/python/pyatspi2-37
-REQUIRED_PACKAGES += library/python/pygobject-3-37
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += library/python/pyatspi2-311
+REQUIRED_PACKAGES += library/python/pygobject-3-311
+REQUIRED_PACKAGES += runtime/python-311

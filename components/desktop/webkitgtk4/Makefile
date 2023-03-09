@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (bug 24796572)
@@ -116,7 +116,7 @@ CMAKE_OPTIONS += -DENABLE_INTROSPECTION=ON
 # Avoid to accidentally use ld.gold linker on Solaris.
 CMAKE_OPTIONS += -DUSE_LD_GOLD=OFF
 # Use a default python3 interpreter.
-CMAKE_OPTIONS += -DPYTHON_EXECUTABLE=$(PYTHON)
+CMAKE_OPTIONS += -DPYTHON_EXECUTABLE=$(PYTHON.3.11)
 # Solaris uses SMF and not systemd.
 CMAKE_OPTIONS += -DUSE_SYSTEMD=OFF
 # We need video playback support for gnome-welcome-tour.
@@ -173,7 +173,7 @@ REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/spell-checking/enchant
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += runtime/ruby
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/library/fontconfig

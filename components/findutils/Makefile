@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -49,7 +49,7 @@ CONFIGURE_OPTIONS +=	--disable-leaf-optimisation
 
 # Explicitly specify the preferred Python version to prevent
 # possible unexpected future changes.
-CONFIGURE_ENV += PYTHON="$(PYTHON.3.7)"
+CONFIGURE_ENV += PYTHON="$(PYTHON.3.11)"
 
 # Run all the tests even if there is a failure
 COMPONENT_TEST_ARGS += -k
@@ -69,6 +69,6 @@ unexport SHELLOPTS
 
 # test dependencies:
 REQUIRED_PACKAGES += developer/versioning/git
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 
 REQUIRED_PACKAGES += system/library/math

@@ -39,7 +39,7 @@ COMPONENT_ANITYA_ID=	13140
 COMPONENT_BAID=		104791
 
 BUILD_STYLE=		meson
-PYTHON_VERSION=		3.7
+PYTHON_VERSION=		3.11
 
 TEST_TARGET= $(SKIP_TEST)
 
@@ -79,7 +79,7 @@ REQUIRED_PACKAGES += editor/vim
 REQUIRED_PACKAGES += library/gnome/gnome-common
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += library/python/libxml2-37
+REQUIRED_PACKAGES += library/python/libxml2-311
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += text/gnu-gettext

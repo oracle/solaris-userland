@@ -1,0 +1,152 @@
+Following changes are necessary to make mozbuild Python 3.11 compatible.
+
+Changes are based on newer versions of mozbuild available in newer Mozilla codebases.
+
+--- mozjs-78.11.0/python/mozbuild/mozbuild/util.py
++++ mozjs-78.11.0/python/mozbuild/mozbuild/util.py
+@@ -220,7 +220,7 @@ class FileAvoidWrite(BytesIO):
+     still occur, as well as diff capture if requested.
+     """
+ 
+-    def __init__(self, filename, capture_diff=False, dry_run=False, readmode='rU'):
++    def __init__(self, filename, capture_diff=False, dry_run=False, readmode='r'):
+         BytesIO.__init__(self)
+         self.name = filename
+         assert type(capture_diff) == bool
+@@ -782,7 +782,7 @@ class HierarchicalStringList(object):
+         self._strings = StrictOrderingOnAppendList()
+         self._children = {}
+ 
+-    class StringListAdaptor(collections.Sequence):
++    class StringListAdaptor(collections.abc.Sequence):
+         def __init__(self, hsl):
+             self._hsl = hsl
+ 
+--- mozjs-78.11.0/python/mozbuild/mozbuild/backend/configenvironment.py
++++ mozjs-78.11.0/python/mozbuild/mozbuild/backend/configenvironment.py
+@@ -9,7 +9,8 @@ import six
+ import sys
+ import json
+ 
+-from collections import Iterable, OrderedDict
++from collections import OrderedDict
++from collections.abc import Iterable
+ from types import ModuleType
+ 
+ import mozpack.path as mozpath
+--- mozjs-78.11.0/python/mach/mach/main.py
++++ mozjs-78.11.0/python/mach/mach/main.py
+@@ -16,7 +16,7 @@ import os
+ import sys
+ import traceback
+ import uuid
+-from collections import Iterable
++from collections.abc import Iterable
+ 
+ from six import string_types
+ 
+--- mozjs-78.11.0/python/mozbuild/mozbuild/makeutil.py
++++ mozjs-78.11.0/python/mozbuild/mozbuild/makeutil.py
+@@ -7,7 +7,7 @@ from __future__ import absolute_import,
+ import os
+ import re
+ import six
+-from collections import Iterable
++from collections.abc import Iterable
+ 
+ 
+ class Makefile(object):
+--- mozjs-78.11.0/testing/mozbase/manifestparser/manifestparser/filters.py
++++ mozjs-78.11.0/testing/mozbase/manifestparser/manifestparser/filters.py
+@@ -12,7 +12,8 @@ from __future__ import absolute_import
+ 
+ import itertools
+ import os
+-from collections import defaultdict, MutableSequence
++from collections import defaultdict
++from collections.abc import MutableSequence
+ 
+ import six
+ from six import string_types
+--- mozjs-78.11.0/testing/mozbase/versioninfo.py
++++ mozjs-78.11.0/testing/mozbase/versioninfo.py
+@@ -11,7 +11,7 @@ from commit messages.
+ 
+ from __future__ import absolute_import, print_function
+ 
+-from collections import Iterable
++from collections.abc import Iterable
+ from distutils.version import StrictVersion
+ import argparse
+ import os
+--- mozjs-78.11.0/python/mozbuild/mozbuild/action/process_define_files.py
++++ mozjs-78.11.0/python/mozbuild/mozbuild/action/process_define_files.py
+@@ -36,7 +36,7 @@ def process_define_file(output, input):
+             not config.substs.get('JS_STANDALONE'):
+         config = PartialConfigEnvironment(mozpath.join(topobjdir, 'js', 'src'))
+ 
+-    with open(path, 'rU') as input:
++    with open(path, 'r') as input:
+         r = re.compile('^\s*#\s*(?P<cmd>[a-z]+)(?:\s+(?P<name>\S+)(?:\s+(?P<value>\S+))?)?', re.U)
+         for l in input:
+             m = r.match(l)
+--- mozjs-78.11.0/python/mozbuild/mozbuild/backend/base.py
++++ mozjs-78.11.0/python/mozbuild/mozbuild/backend/base.py
+@@ -265,7 +265,7 @@ class BuildBackend(LoggingMixin):
+         return status
+ 
+     @contextmanager
+-    def _write_file(self, path=None, fh=None, readmode='rU'):
++    def _write_file(self, path=None, fh=None, readmode='r'):
+         """Context manager to write a file.
+ 
+         This is a glorified wrapper around FileAvoidWrite with integration to
+--- mozjs-78.11.0/python/mozbuild/mozbuild/preprocessor.py
++++ mozjs-78.11.0/python/mozbuild/mozbuild/preprocessor.py
+@@ -517,7 +517,7 @@ class Preprocessor:
+ 
+         if args:
+             for f in args:
+-                with io.open(f, 'rU', encoding='utf-8') as input:
++                with io.open(f, 'r', encoding='utf-8') as input:
+                     self.processFile(input=input, output=out)
+             if depfile:
+                 mk = Makefile()
+@@ -807,7 +807,7 @@ class Preprocessor:
+                     args = self.applyFilters(args)
+                 if not os.path.isabs(args):
+                     args = os.path.join(self.curdir, args)
+-                args = io.open(args, 'rU', encoding='utf-8')
++                args = io.open(args, 'r', encoding='utf-8')
+             except Preprocessor.Error:
+                 raise
+             except Exception:
+@@ -862,7 +862,7 @@ def preprocess(includes=[sys.stdin], def
+     pp = Preprocessor(defines=defines,
+                       marker=marker)
+     for f in includes:
+-        with io.open(f, 'rU', encoding='utf-8') as input:
++        with io.open(f, 'r', encoding='utf-8') as input:
+             pp.processFile(input=input, output=output)
+     return pp.includes
+ 
+--- mozjs-78.11.0/python/mozbuild/mozpack/files.py
++++ mozjs-78.11.0/python/mozbuild/mozpack/files.py
+@@ -558,7 +558,7 @@ class PreprocessedFile(BaseFile):
+         pp = Preprocessor(defines=self.defines, marker=self.marker)
+         pp.setSilenceDirectiveWarnings(self.silence_missing_directive_warnings)
+ 
+-        with _open(self.path, 'rU') as input:
++        with _open(self.path, 'r') as input:
+             with _open(os.devnull, 'w') as output:
+                 pp.processFile(input=input, output=output)
+ 
+@@ -615,7 +615,7 @@ class PreprocessedFile(BaseFile):
+         pp = Preprocessor(defines=self.defines, marker=self.marker)
+         pp.setSilenceDirectiveWarnings(self.silence_missing_directive_warnings)
+ 
+-        with _open(self.path, 'rU') as input:
++        with _open(self.path, 'r') as input:
+             pp.processFile(input=input, output=dest, depfile=deps_out)
+ 
+         dest.close()

@@ -42,10 +42,10 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 include $(WS_MAKE_RULES)/common.mk
 
-# python3.7 only delivers tkinter requested by fetchmailconf.py
-# one also requires python3.7 as a min.python version so we are
+# python3.11 only delivers tkinter requested by fetchmailconf.py
+# one also requires python3.11 as a min.python version so we are
 # clipped on this version
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.11
 
 CONFIGURE_OPTIONS  +=		PYTHON="$(PYTHON)"
 CONFIGURE_OPTIONS  +=		--with-kerberos5
@@ -68,8 +68,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/were not run/p" ' \
 	'-e "/passed/p" '
 
-REQUIRED_PACKAGES += library/python/tkinter-37
+REQUIRED_PACKAGES += library/python/tkinter-311
 REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93

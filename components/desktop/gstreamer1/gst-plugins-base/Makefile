@@ -43,6 +43,7 @@ COMPONENT_ANITYA_ID=	1263
 COMPONENT_BAID=		127905
 
 BUILD_STYLE=		meson
+PYTHON_VERSION = 3.11
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -82,6 +83,7 @@ REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/sdl
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math

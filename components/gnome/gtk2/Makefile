@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -97,7 +97,7 @@ REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += print/cups
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/fontconfig

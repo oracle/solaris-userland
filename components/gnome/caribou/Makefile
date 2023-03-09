@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=  		64
@@ -38,7 +38,7 @@ COMPONENT_BAID=		38921
 
 TEST_TARGET = $(NO_TESTS)
 
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.11
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -77,7 +77,7 @@ REQUIRED_PACKAGES += library/desktop/libgee
 REQUIRED_PACKAGES += library/desktop/libxklavier
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/python/pygobject-3-37
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += library/python/pygobject-3-311
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxtst

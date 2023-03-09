@@ -50,7 +50,7 @@ CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Use explicit Python version rather than the default one
-CONFIGURE_ENV +=	PYTHON=$(PYTHON.3.7)
+CONFIGURE_ENV +=	PYTHON=$(PYTHON.3.11)
 
 # Assumes GNU xgettext in PATH.
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)

@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796622)
@@ -48,7 +48,7 @@ COMPONENT_BAID=		103941
 CXXFLAGS += -std=c++17
 
 # Only used during build process.
-PYTHON_VERSIONS= 3.7
+PYTHON_VERSION= 3.11
 
 # Tests hook up need work
 TEST_TARGET = $(SKIP_TEST)

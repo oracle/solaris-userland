@@ -53,7 +53,7 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 CXXFLAGS += -std=c++11 -D__EXTENSIONS__
 
-PYTHON_VERSION= 3.7
+PYTHON_VERSION= 3.11
 
 COMPONENT_POST_UNPACK_ACTION += $(CP) files/* $(SOURCE_DIR)/data/dbus-interfaces ;
 
@@ -125,10 +125,10 @@ REQUIRED_PACKAGES += library/graphics/cogl
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libical
 REQUIRED_PACKAGES += library/libsoup
-REQUIRED_PACKAGES += library/python/pygobject-3-37
-REQUIRED_PACKAGES += library/python/simplejson-37
+REQUIRED_PACKAGES += library/python/pygobject-3-311
+REQUIRED_PACKAGES += library/python/simplejson-311
 REQUIRED_PACKAGES += library/telepathy-glib
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/display-manager/gdm
 REQUIRED_PACKAGES += system/input-method/ibus
 REQUIRED_PACKAGES += system/library/accountsservice

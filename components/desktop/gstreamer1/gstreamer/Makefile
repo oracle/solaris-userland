@@ -44,7 +44,7 @@ COMPONENT_ANITYA_ID=	1263
 COMPONENT_BAID=		127894
 
 BUILD_STYLE=		meson
-PYTHON_VERSION=		3.7
+PYTHON_VERSION=		3.11
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -74,6 +74,6 @@ COMPONENT_TEST_ARGS = -k 0
 
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
