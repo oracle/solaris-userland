@@ -1,0 +1,15 @@
+Because of the way we compile SQLite, one test assertion fails.
+
+This issue was reported upstream:
+https://github.com/python/cpython/issues/101947
+
+--- Python-3.11.0/Lib/test/test_sqlite3/test_dbapi.py
++++ Python-3.11.0/Lib/test/test_sqlite3/test_dbapi.py
+@@ -604,7 +604,6 @@ class SerializeTests(unittest.TestCase):
+             with cx:
+                 cx.execute("create table t(t)")
+             data = cx.serialize()
+-            self.assertEqual(len(data), 8192)
+ 
+             # Remove test table, verify that it was removed.
+             with cx:
