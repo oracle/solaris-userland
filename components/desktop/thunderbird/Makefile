@@ -31,12 +31,12 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	102.8.0
-COMPONENT_BAID =	138486
+COMPONENT_VERSION =	102.9.0
+COMPONENT_BAID =	139992
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:12221faeb425490b799df12aa420ff9017eba573812b119b97ae1a1ed2727fc3
+    sha256:ecb34de765d548ed26ea24d4d617567a7896230d7c8379c1ef76be8ca05d6fef
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -53,7 +53,7 @@ COMPONENT_ANITYA_ID =	4967
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:f3d84212624ea6c560bc7c81f3d85ccf30b63359c3bc6ffdf80ea1c324155c3b
+    sha256:fe518c44e826218b632b2b9eabb203dc958a7a35e5e8d67d71e3641c592fc40f
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
@@ -153,12 +153,6 @@ COMPONENT_PRE_CONFIGURE_ACTION += $(CP) $(SOURCE_DIR)/configure.in $(SOURCE_DIR)
 
 # make sure that node wrapper is executable
 COMPONENT_PRE_CONFIGURE_ACTION += (chmod 555 $(COMPONENT_DIR)/wrapper-node/node);
-
-# Old 91ESR version need special change when build with new cbindgen (bug 1773259).
-COMPONENT_PRE_CONFIGURE_ACTION += ( \
-	cbindgen --version | grep '0.19.0' || \
-	gsed -i 's/const uint64_t ROOT_CLIP_CHAIN = ~0;//' \
-	    $(SOURCE_DIR)/gfx/webrender_bindings/webrender_ffi.h);
 
 COMPONENT_POST_BUILD_ACTION = \
 	(cd $(@D)/mail/installer ; $(ENV) $(COMPONENT_BUILD_ENV) \
