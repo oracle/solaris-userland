@@ -33,14 +33,14 @@ include ../../../make-rules/shared-macros.mk
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	102.8.0
-COMPONENT_BAID=		138331
+COMPONENT_VERSION =	102.9.0
+COMPONENT_BAID=		139990
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:47f8f6243bce8c2ef51adf8c9626bbf643e1c225dcb9ba5653a055ed5e76ca48
+    sha256:31b074623f09ca821a8a7dee0b3d2df1a45f1164264d31c26b4969a4d6a21dd1
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -57,7 +57,7 @@ COMPONENT_ANITYA_ID =	16838
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:b6bc46c4ab1eae20fcaafff3db55abb797013575f3e56c0550c98363eea89eba
+    sha256:659ca9e0c45b09f5722769c1ac6fe6e62f1905e214a68616c6c4c2584398ca3e
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
@@ -151,12 +151,6 @@ COMPONENT_PRE_CONFIGURE_ACTION += $(CP) $(SOURCE_DIR)/configure.in $(SOURCE_DIR)
 
 # make sure that node wrapper is executable
 COMPONENT_PRE_CONFIGURE_ACTION += (chmod 555 $(COMPONENT_DIR)/wrapper-node/node);
-
-# Old 91ESR version need special change when build with new cbindgen (bug 1773259).
-COMPONENT_PRE_CONFIGURE_ACTION += ( \
-	cbindgen --version | grep '0.19.0' || \
-	gsed -i 's/const uint64_t ROOT_CLIP_CHAIN = ~0;//' \
-	    $(SOURCE_DIR)/gfx/webrender_bindings/webrender_ffi.h);
 
 COMPONENT_POST_BUILD_ACTION = \
 	(cd $(@D)/browser/installer ; $(ENV) $(COMPONENT_BUILD_ENV) \
