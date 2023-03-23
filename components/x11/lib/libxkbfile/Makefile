@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxkbfile
-COMPONENT_VERSION=	1.1.1
+COMPONENT_VERSION=	1.1.2
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8623dc26e7aac3c5ad8a25e57b566f4324f5619e5db38457f0804ee4ed953443
+	sha256:b8a3784fac420b201718047cfb6c2d5ee7e8b9481564c2667b4215f6616644b1
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1781
-COMPONENT_BAID=		132849
+COMPONENT_BAID=		140572
+COMPONENT_SIG_URL=
 
 # required because of a patched Makefile.am
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv);

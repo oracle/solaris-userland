@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxshmfence
-COMPONENT_VERSION=	1.3.1
+COMPONENT_VERSION=	1.3.2
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1129f95147f7bfe6052988a087f1b7cb7122283d2c47a7dbf7135ce0df69b4f8
+	sha256:870df257bc40b126d91b5a8f1da6ca8a524555268c50b59c0acd1a27f361606f
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1792
-COMPONENT_BAID=		132846
+COMPONENT_BAID=		140514
+COMPONENT_SIG_URL=
 
 FIX_PC_FILES=xshmfence.pc.in
 

@@ -20,19 +20,21 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libICE
-COMPONENT_VERSION=	1.0.10
+COMPONENT_VERSION=	1.1.1
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6f86dce12cf4bcaf5c37dddd8b1b64ed2ddf1ef7b218f22b9942595fb747c348
+	sha256:03e77afaf72942c7ac02ccebb19034e6e20f456dcf8dddadfeb572aa5ad3e451
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1638
-COMPONENT_BAID=		67888
+COMPONENT_BAID=		140512
+COMPONENT_SIG_URL=	
 
 COMPONENT_NAME_1=       iceauth
 COMPONENT_VERSION_1=    1.0.9

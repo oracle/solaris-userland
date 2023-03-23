@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libSM
-COMPONENT_VERSION=	1.2.3
+COMPONENT_VERSION=	1.2.4
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2d264499dcb05f56438dee12a1b4b71d76736ce7ba7aa6efbf15ebb113769cbb
+	sha256:fdcbe51e4d1276b1183da77a8a4e74a137ca203e0bcfb20972dd5f3347e97b84
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1726
-COMPONENT_BAID=		59394
+COMPONENT_BAID=		140598
 
 TEST_TARGET = $(NO_TESTS)
 

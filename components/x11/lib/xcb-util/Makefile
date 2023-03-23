@@ -20,21 +20,22 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xcb-util
-COMPONENT_VERSION=	0.4.0
+COMPONENT_VERSION=	0.4.1
 COMPONENT_CATEGORY=	xcb
 COMPONENT_PROJECT_URL=  https://xcb.freedesktop.org/XcbUtil/
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:46e49469cb3b594af1d33176cd7565def2be3fa8be4371d62271fabb5eae50e9
+	sha256:5abe3bbbd8e54f0fa3ec945291b7e8fa8cfd3cccc43718f8758430f94126e512
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	5165
-COMPONENT_BAID=		23810
+COMPONENT_BAID=		140580
 
 COMPONENT_NAME_1=       xcb-util-cursor
 COMPONENT_VERSION_1=    0.1.4

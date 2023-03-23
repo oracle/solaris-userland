@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXcomposite
-COMPONENT_VERSION=	0.4.5
+COMPONENT_VERSION=	0.4.6
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b3218a2c15bab8035d16810df5b8251ffc7132ff3aa70651a1fba0bfe9634e8f
+	sha256:fe40bcf0ae1a09070eba24088a5eb9810efe57453779ec1e20a55080c6dc2c87
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1769
-COMPONENT_BAID=		61363
+COMPONENT_BAID=		140518
 
 TEST_TARGET = $(NO_TESTS)
 

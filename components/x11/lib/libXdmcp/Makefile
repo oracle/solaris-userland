@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXdmcp
-COMPONENT_VERSION=	1.1.3
+COMPONENT_VERSION=	1.1.4
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:20523b44aaa513e17c009e873ad7bbc301507a3224c232610ce2e099011c6529
+	sha256:2dce5cc317f8f0b484ec347d87d81d552cdbebb178bd13c5d8193b6b7cd6ad00
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1772
-COMPONENT_BAID=		61371
+COMPONENT_BAID=		140516
 
 FIX_PC_FILES=xdmcp.pc.in
 
