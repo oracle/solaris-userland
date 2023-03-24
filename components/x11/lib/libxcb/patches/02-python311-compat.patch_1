@@ -1,24 +1,12 @@
-There are two issues that make the code incompatible with newer Python runtimes.
+There is one issue that makes the code incompatible with newer Python runtimes.
 
-The gcd import is already fixed in newer versions of xcbgen; the missing reduce
-import was reported upstream:
+the missing reduce import was reported upstream:
 https://gitlab.freedesktop.org/xorg/proto/xcbproto/-/merge_requests/41
 
---- xcb-proto-1.14/xcbgen/align.py
-+++ xcb-proto-1.14/xcbgen/align.py
-@@ -2,7 +2,7 @@
- This module contains helper classes for alignment arithmetic and checks
- '''
- 
--from fractions import gcd
-+from math import gcd
- 
- class Alignment(object):
- 
 --- xcb-proto-1.14/xcbgen/xtypes.py
 +++ xcb-proto-1.14/xcbgen/xtypes.py
-@@ -5,6 +5,8 @@ from xcbgen.expr import Field, Expressio
- from xcbgen.align import Alignment, AlignmentLog
+@@ -12,6 +12,8 @@
+ 
  import __main__
  
 +from functools import reduce

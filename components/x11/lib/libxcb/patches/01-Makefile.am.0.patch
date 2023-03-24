@@ -4,6 +4,7 @@ Solaris specific changes:
  - Man pages go in man3xcb, not just man3
  - Use xcbproto files from proto area, not the installed system
 
+ - keep libxcb-dri3.so at 0.0.0
 Not suitable for upstream
 
 --- a/src/Makefile.am	2017-01-31 09:22:54.963032041 -0800
@@ -57,3 +58,14 @@ Not suitable for upstream
 +		$(PROTO_DIR)/$(XCBPROTO_XCBINCLUDEDIR)/$(@:.c=.xml)
  
  $(BUILT_MAN_PAGES): $(EXTSOURCES)
+--- a/src/Makefile.am	2023-03-24 10:31:47.940547094 -0700
++++ b/src/Makefile.am	2023-03-24 10:32:05.531046874 -0700
+@@ -63,7 +63,7 @@
+ EXTSOURCES += dri3.c
+ if BUILD_DRI3
+ lib_LTLIBRARIES += libxcb-dri3.la
+-libxcb_dri3_la_LDFLAGS = -version-info 1:0:1 -no-undefined @lt_enable_auto_import@
++libxcb_dri3_la_LDFLAGS = -version-info 0:0:0 -no-undefined @lt_enable_auto_import@
+ libxcb_dri3_la_LIBADD = $(XCB_LIBS)
+ nodist_libxcb_dri3_la_SOURCES = dri3.c dri3.h
+ endif
