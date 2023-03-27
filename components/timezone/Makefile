@@ -21,19 +21,19 @@
 #
 
 #
-# Copyright (c) 2005, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2005, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME= 	timezone
-HUMAN_VERSION=		2022g
+HUMAN_VERSION=		2023b
 # The last digit of COMPONENT_VERSION corresponds to the last letter of the
 # upstream archive name. 'a' -> 1, 'b' -> 2, etc.
-COMPONENT_VERSION=    	2022.7
+COMPONENT_VERSION=    	2023.2
 COMPONENT_PROJECT_URL=	http://www.iana.org/time-zones
 COMPONENT_ARCHIVE_URL=	https://data.iana.org/time-zones/releases/tzdata$(HUMAN_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH= sha256:4491db8281ae94a84d939e427bdd83dc389f26764d27d9a5c52d782c16764478 
+COMPONENT_ARCHIVE_HASH= sha256:9b78fd264f95611fe987a95721456cd5aac9f55e6915be4a9ca2997bc7ce0e6c 
 
 COMPONENT_BAID=		109636
 COMPONENT_ANITYA_ID=	5021
