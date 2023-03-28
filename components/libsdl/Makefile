@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS= 32_and_64
@@ -29,9 +29,9 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	SDL2
-COMPONENT_VERSION =	2.0.14
-COMPONENT_BAID =		95285
-COMPONENT_ARCHIVE_HASH=	sha256:d8215b571a581be1332d2106f8036fcb03d12a70bae01e20f424976d275432bc
+COMPONENT_VERSION =	2.26.4
+COMPONENT_BAID =	139614
+COMPONENT_ARCHIVE_HASH=	sha256:1a0f686498fb768ad9f3f80b39037a7d006eac093aad39cb4ebcc832a8887231
 COMPONENT_PROJECT_URL =	https://www.libsdl.org/
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
