@@ -26,12 +26,10 @@
 #
 
 
-set -Eeu -o pipefail
-
 UNCOMMITTED_CHANGES=$(
 	# Make sure that there are no other files changed than ips-buildinfo.mk
 	hg status -nmard |
-	( ggrep -v -F -x make-rules/ips-buildinfo.mk || : )
+	ggrep -v -F -x make-rules/ips-buildinfo.mk
 )
 if [ -n "$UNCOMMITTED_CHANGES" ]; then
 	echo "There are some uncommitted changes, please fix first:"
@@ -59,12 +57,35 @@ echo "Replacing AUTO_FMRI by $BRANCHID"
 #          - transforms/legacy
 #   replace every AUTO_FMRI in the file unless the line starts with '#'
 hg manifest |
-	ggrep -P '((/history|\.p5m)(|\.i386|\.sparc)$|^transforms/legacy$)' |
+	ggrep -P '((/history|\.p5m)(|\.i386|\.sparc)$|^transforms/legacy$|/generate/)' |
 	xargs perl -pi -e 's/AUTO_FMRI/'"$BRANCHID"'/g unless m/^\s*#/'
 
 # Now make all the modified manifests pkgfmt clean
 hg status --no-status --modified |
 	ggrep -P '\.p5m(|\.i386|\.sparc)$' |
 	xargs pkgfmt
+
+# Check that there are no unexpected files still containing the string AUTO_FMRI
+# The horrible regex means 'Take any line starting by AUTO_FMRI or any line
+# starting by anything but '#' an containing AUTO_FMRI.
+ALL_FILES_CONTAINING_AUTO_FMRI=$(
+	hg manifest |
+		xargs ggrep -P '(^|^[^#].*)AUTO_FMRI' |
+		sed -e 's/:.*//' |
+		sort -u
+)
+
+EXPECTED_FILES_CONTAINING_AUTO_FMRI="doc/packaging.txt
+tools/notifications.cfg
+tools/replace_auto_fmri
+transforms/auto_fmri"
+
+if [[ "$ALL_FILES_CONTAINING_AUTO_FMRI" != "$EXPECTED_FILES_CONTAINING_AUTO_FMRI" ]]; then
+	echo
+	echo "Error, there are unexpected files containing AUTO_FMRI:"
+	ggrep -v -f <(echo "$EXPECTED_FILES_CONTAINING_AUTO_FMRI") <<<"$ALL_FILES_CONTAINING_AUTO_FMRI"
+	exit 1
+fi
+
 
 hg diff
