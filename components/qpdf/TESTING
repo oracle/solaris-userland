@@ -1,0 +1,35 @@
+1) Unit tests should pass on both platforms.
+
+	$ gmake test
+
+  libtests/qtest/rc4.test tests are expected to fail. They require
+
+	pkg:/library/security/openssl-3/legacy-provider
+
+   to be installed, but the package is not installed by default. For component
+   upgrade, please test them manually.
+
+2.1) Pick a virtual and create a VM based on ST_userland_build.
+
+	$ vm create ST_userland_build qpdf
+
+2.2) Install the package.
+
+	$ pkg install pkg:/library/security/openssl-3/legacy-provider
+
+2.3) Edit the config and enable the provider.
+
+	$ sudo vim /etc/openssl/3/conf.d/legacymodule.cnf
+
+     Uncomment the last line.
+
+	activate = 1
+
+2.4) Setup the workspace as instructed and transfer the change you have made
+     there.
+2.5) Build.
+2.6) Run test-complete there. The target will run unit tests expecting all
+     tests to pass.
+
+	$ gmake test-complete
+

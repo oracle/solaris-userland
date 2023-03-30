@@ -20,56 +20,49 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qpdf
-COMPONENT_VERSION=	10.5.0
-COMPONENT_BAID=		115399
-COMPONENT_PROJECT_URL=	http://qpdf.sourceforge.net/
-#GIT_REPO=	https://github.com/qpdf/qpdf
-# GitHub can also provide .zip files which is much faster variant
-COMPONENT_SRC=	$(COMPONENT_NAME)-release-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	release-$(COMPONENT_NAME)-$(COMPONENT_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:8148ecbec5bdf58d11a1d032d15affec6ae260bf6aa3dcb6e2bd7146ace079df
-COMPONENT_ARCHIVE_URL=	https://github.com/qpdf/qpdf/archive/$(COMPONENT_ARCHIVE)
+COMPONENT_VERSION=	11.2.0
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
+COMPONENT_ARCHIVE_HASH=	sha256:d5fde4881948db41300f5806ea54f07f9fc37bc414a6a78efa2649d212b56707
+COMPONENT_ARCHIVE_URL=	https://github.com/qpdf/qpdf/archive/refs/tags/$(COMPONENT_ARCHIVE)
 
+COMPONENT_PROJECT_URL=	http://qpdf.sourceforge.net/
+COMPONENT_BAID=		136677
 COMPONENT_BUGDB=	utility/qpdf
 COMPONENT_ANITYA_ID=	5542
 
 COMPONENT_TEST_TARGET= $(TEST_64_and_32)
 
+BUILD_STYLE = cmake
+
 include $(WS_MAKE_RULES)/common.mk
 
-COMPONENT_PREP_ACTION += (cd $(@D); $(CONFIG_SHELL) autogen.sh )
+PKG_CONFIG_PATHS.64 = /usr/openssl/3/lib/64/pkgconfig
+PKG_CONFIG_PATHS.32 = /usr/openssl/3/lib/pkgconfig
+PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 
-COMPONENT_PRE_CONFIGURE_ACTION += $(CLONEY) $(SOURCE_DIR) $(@D)
-
-CONFIGURE_OPTIONS	+= --enable-shared
-CONFIGURE_OPTIONS	+= --disable-static
-CONFIGURE_OPTIONS	+= --disable-largefile
-#The openssl implementation is making use of deprecated APIs
-CONFIGURE_OPTIONS       += --disable-crypto-openssl
-
-# It would be nice to align this perl-script with perl version but it breaks a build.
-#PERL_SCRIPTS += $(PROTO_DIR)/usr/bin/fix-qdf
-
-# Note that filter-tokens test fails on 32-bit x86 architecture, see bug 32344732 for details.
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
-COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH) 
+COMPONENT_TEST_ENV += LC_ALL=C
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
-	'-e "/Total tests:/p" ' \
-	'-e "/Passes:/p" ' \
-	'-e "/Failures:/p" ' \
-	'-e "/Tests:/p" '
+	'-e "/tests passed.*tests failed out of/p" '
+
+# see TESTING
+test-complete: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-complete-$(BITS).master
+test-complete: test
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
