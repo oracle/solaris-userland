@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -30,20 +30,19 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sendmail
-COMPONENT_VERSION=	8.15.2
+COMPONENT_VERSION=	8.17.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-# Appending ".1" to provoke IPS message at install.
-IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).1
+IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION)
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	ftp://ftp.sendmail.org/pub/sendmail/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME).$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:24f94b5fd76705f15897a78932a5f2439a32b1a2fdc35769bb1a5f5d9b4db439
+    sha256:04bc76b6c886e6d111be7fd8daa32b8ce00128a288b6b52e067bc29f3854a6e6
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+
 COMPONENT_ANITYA_ID=	4796
 
-COMPONENT_BAID=		25110
+COMPONENT_BAID=		139735
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -88,10 +87,11 @@ CLEAN_PATHS += $(FILE_DIR)/aux/mailq
 # reasons.  If we did this via patch, then we would have to revise the patch
 # with every new release, since the version string changes every time.
 COMPONENT_PREP_ACTION =	$(GSED) -i -e 's/\(Version\[\] = "8\.[^"]*\)/\1+Sun/' \
-    $(COMPONENT_SRC)/sendmail/version.c
+    $(COMPONENT_SRC)/sendmail/version.c;
 
-# For 5.11, we need to distinguish between different versions, so use OS_VERSION.
-# For other releases, SOLARIS_VERSION, which comes from OS_RELEASE, is sufficient.
+# For 5.11, we need to distinguish between different versions, so use
+# OS_VERSION.  For other releases, SOLARIS_VERSION, which comes from
+# OS_RELEASE, is sufficient.
 ifeq ($(OS_RELEASE),5.11)
 SOLARIS= 	$(shell echo $(OS_VERSION) | \
     $(GSED) -e 's/^/2/' -e 's/\.//' -e 's/$$/0/')
@@ -162,7 +162,10 @@ $(SOURCE_DIR)/devtools/Site/site.config.m4:	unpack
 # So we clean before we build, and the last build (64) wins, which is what
 # we want.
 COMPONENT_POST_BUILD_ACTION = cd $(FILE_DIR)/aux ; \
-    $(GMAKE) BITS=$(BITS) clean build
+    $(GMAKE) BITS=$(BITS) clean build;
+COMPONENT_POST_BUILD_ACTION += cd $(@D)/doc/op ; \
+    GROFF_NO_SGR=1 $(GMAKE) op.txt ; \
+    $(GMAKE) op.pdf ;
 
 COMPONENT_POST_INSTALL_ACTION += cd $(FILE_DIR)/aux ; $(GMAKE) install ;
 COMPONENT_POST_INSTALL_ACTION += \
@@ -184,7 +187,12 @@ COMPONENT_POST_INSTALL_ACTION += \
     $(CP) submit.cf $(PROTOETCDIR)/mail ; \
     $(MKDIR) $(PROTO_DIR)/cf/cf ; \
     $(CP) submit.cf $(PROTO_DIR)/cf/cf ; \
-    m4 $(M4_ARG) ../m4/cf.m4 sendmail.mc > sendmail.cf
+    m4 $(M4_ARG) ../m4/cf.m4 sendmail.mc > sendmail.cf ;
+# Install "Sendmail Installation and Operation Guide"
+COMPONENT_POST_INSTALL_ACTION +=	\
+    $(MKDIR) -p $(PROTO_DIR)/usr/share/doc/op ; \
+    $(CP) $(@D)/doc/op/op.txt $(PROTO_DIR)/usr/share/doc/op ; \
+    $(CP) $(@D)/doc/op/op.pdf $(PROTO_DIR)/usr/share/doc/op ;
 
 COMPONENT_TEST_ARGS += CC="$(CC)"
 COMPONENT_TEST_ARGS += CCOPTS="$(CCOPTS)"

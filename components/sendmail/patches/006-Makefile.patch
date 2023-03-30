@@ -19,8 +19,8 @@
  
 @@ -40,6 +40,13 @@
  	do \
- 		(cd $$x; echo Making $@ in:; pwd; \
- 		$(SHELL) $(BUILD) $(OPTIONS) -c); \
+ 		(cd $$x; echo Making $@ in: && pwd && \
+ 		$(SHELL) $(BUILD) $(OPTIONS) -c) || exit; \
 +	done
 +
 +check: FRC

@@ -5,23 +5,23 @@ these settings.
 Patch was developed in-house; it is Solaris specific and will not be
 contributed upstream.
 
-diff -r 9fa1b59c1b87 sendmail/readcf.c
---- a/sendmail/readcf.c	Fri Jan 14 09:18:31 2022 -0800
-+++ b/sendmail/readcf.c	Mon Jan 17 07:05:05 2022 -0800
-@@ -160,7 +160,11 @@
- 	LineNumber = 0;
- 
- #if STARTTLS
+diff -r 35f2e411cf8b sendmail/conf.c
+--- a/sendmail/conf.c	Wed Mar 08 02:10:17 2023 -0800
++++ b/sendmail/conf.c	Wed Mar 08 03:00:00 2023 -0800
+@@ -382,7 +382,11 @@
+ # if _FFR_TLSFB2CLEAR
+ 	TLSFallbacktoClear = true;
+ # endif
 -	Srv_SSL_Options = SSL_OP_ALL;
 +	Srv_SSL_Options = SSL_OP_ALL
-+		| SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1	/* Oracle. */
-+		| SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3	/* Oracle. */
-+		;
++	    | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1	/* Oracle. */
++	    | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3		/* Oracle. */
++	    ;
 +
  	Clt_SSL_Options = SSL_OP_ALL
  # ifdef SSL_OP_NO_SSLv2
  		| SSL_OP_NO_SSLv2
-@@ -168,6 +172,8 @@
+@@ -390,6 +394,8 @@
  # ifdef SSL_OP_NO_TICKET
  		| SSL_OP_NO_TICKET
  # endif
@@ -30,9 +30,12 @@ diff -r 9fa1b59c1b87 sendmail/readcf.c
  		;
  # ifdef SSL_OP_TLSEXT_PADDING
  	/* SSL_OP_TLSEXT_PADDING breaks compatibility with some sites */
-@@ -2353,6 +2359,17 @@
+diff -r 35f2e411cf8b sendmail/readcf.c
+--- a/sendmail/readcf.c	Wed Mar 08 02:10:17 2023 -0800
++++ b/sendmail/readcf.c	Wed Mar 08 03:00:00 2023 -0800
+@@ -2379,6 +2379,17 @@
  	size_t len, i;
- 	int ret;
+ 	int ret, rv;
  
 +	char *defaultCipherList =
 +	    "ECDHE-ECDSA-AES256-GCM-SHA384"
@@ -45,37 +48,35 @@ diff -r 9fa1b59c1b87 sendmail/readcf.c
 +	    ":DHE-DSS-AES128-SHA";
 +	char *cipherList = defaultCipherList;
 +
- #  define who (srv ? "server" : "client")
- #  define NAME_C_S macvalue(macid(srv ? "{client_name}" : "{server_name}"), e)
- #  define ADDR_C_S macvalue(macid(srv ? "{client_addr}" : "{server_addr}"), e)
-@@ -2490,19 +2507,7 @@
+ # define who (srv ? "server" : "client")
+ # define NAME_C_S macvalue(macid(srv ? "{client_name}" : "{server_name}"), e)
+ # define ADDR_C_S macvalue(macid(srv ? "{client_addr}" : "{server_addr}"), e)
+@@ -2523,18 +2534,7 @@
  		}
- 		else if (sm_strcasecmp(opt, "cipherlist") == 0)
+ 		else if (SM_STRCASEEQ(opt, "cipherlist"))
  		{
 -			if (SSL_set_cipher_list(ssl, val) <= 0)
 -			{
--				ret = 1;
 -				if (LogLevel > 7)
 -				{
 -					sm_syslog(LOG_WARNING, NOQID,
 -						  "STARTTLS=%s, error: SSL_set_cipher_list(%s) failed",
 -						  who, val);
 -
--					if (LogLevel > 9)
--						tlslogerr(LOG_WARNING, who);
+-					tlslogerr(LOG_WARNING, 9, who);
 -				}
+-				goto fail;
 -			}
 +			cipherList = val;
  		}
- 		else if (sm_strcasecmp(opt, "keyfile") == 0)
- 			keyfile = val;
-@@ -2521,6 +2526,21 @@
+ # if MTA_HAVE_TLSv1_3
+ 		else if (SM_STRCASEEQ(opt, "ciphersuites"))
+@@ -2606,6 +2606,21 @@
  
  	} while (optionlist[i] != '\0' && i < len);
  
 +	if (SSL_set_cipher_list(ssl, cipherList) <= 0)
 +	{
-+		ret = 1;
 +		if (LogLevel > 7)
 +		{
 +			sm_syslog(LOG_WARNING, NOQID,
@@ -83,8 +84,9 @@ diff -r 9fa1b59c1b87 sendmail/readcf.c
 +				  who, cipherList);
 +
 +			if (LogLevel > 9)
-+				tlslogerr(LOG_WARNING, who);
++				tlslogerr(LOG_WARNING, 9, who);
 +		}
++		goto fail;
 +	}
 +
 +

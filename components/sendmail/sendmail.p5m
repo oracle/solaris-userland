@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
 #
 
 # This manifest contains several files with a preserve attribute that are not
@@ -192,6 +192,8 @@ link path=usr/sbin/newaliases target=../lib/inet/sendmail mediator=sendmail \
     mediator-implementation=sendmail mediator-priority=vendor
 link path=usr/sbin/sendmail target=../lib/inet/sendmail mediator=sendmail \
     mediator-implementation=sendmail mediator-priority=vendor
+file path=usr/share/doc/op/op.pdf
+file path=usr/share/doc/op/op.txt
 file files/sendmail-notice.txt \
     path=usr/share/doc/release-notes/sendmail-install.txt owner=root \
     group=sys mode=0444 must-display=true release-note=feature/pkg/self@0
@@ -227,7 +229,7 @@ group groupname=smmsp gid=25
 user username=smmsp ftpuser=false \
     gcos-field="SendMail Message Submission Program" group=smmsp home-dir=/ \
     password=NP uid=25
-license LICENSE license=sendmail
+license sendmail.license license=sendmail
 # sendmail's default LDA is mail.local, so specify a dependency on its
 # package, but not at any particular version.
 depend type=group fmri=pkg:/mail/mail.local
