@@ -27,13 +27,13 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME= 	timezone
-HUMAN_VERSION=		2023b
+HUMAN_VERSION=		2023c
 # The last digit of COMPONENT_VERSION corresponds to the last letter of the
 # upstream archive name. 'a' -> 1, 'b' -> 2, etc.
-COMPONENT_VERSION=    	2023.2
+COMPONENT_VERSION=    	2023.3
 COMPONENT_PROJECT_URL=	http://www.iana.org/time-zones
 COMPONENT_ARCHIVE_URL=	https://data.iana.org/time-zones/releases/tzdata$(HUMAN_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH= sha256:9b78fd264f95611fe987a95721456cd5aac9f55e6915be4a9ca2997bc7ce0e6c 
+COMPONENT_ARCHIVE_HASH= sha256:3f510b5d1b4ae9bb38e485aa302a776b317fb3637bdb6404c4adf7b6cadd965c 
 
 COMPONENT_BAID=		109636
 COMPONENT_ANITYA_ID=	5021
