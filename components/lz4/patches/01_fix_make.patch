@@ -3,63 +3,63 @@ tests reproducible together with gsed transforms.
 
 Not suitable for upstream.
 
---- a/tests/test_install.sh.original
-+++ b/tests/test_install.sh
-@@ -6,7 +6,7 @@ make="make -C $lz4_root"
+
+--- lz4-1.9.4/tests/test_install.sh.orig	2023-03-10 15:08:29.837672692 +0100
++++ lz4-1.9.4/tests/test_install.sh	2023-03-10 15:10:24.360447265 +0100
+@@ -6,7 +6,7 @@
  unamestr=$(uname)
  if [ "$unamestr" = 'Linux' ]; then
    make="make -C $lz4_root"
--elif [ "$unamestr" = 'FreeBSD' -o "$unamestr" = 'OpenBSD' ]; then
-+elif [ "$unamestr" = 'FreeBSD' -o "$unamestr" = 'OpenBSD' -o "$unamestr" = 'SunOS' ]; then
+-elif [ "$unamestr" = 'FreeBSD' ] || [ "$unamestr" = 'OpenBSD' ]; then
++elif [ "$unamestr" = 'FreeBSD' ] || [ "$unamestr" = 'OpenBSD' ] || [ "$unamestr" = 'SunOS' ]; then
    make="gmake -C $lz4_root"
  fi
-
---- a/tests/Makefile.original
-+++ b/tests/Makefile
-@@ -185,20 +185,20 @@ test-install: lz4 lib liblz4.pc
+ 
+--- lz4-1.9.4/tests/Makefile.orig	2023-03-10 17:03:18.541744970 +0100
++++ lz4-1.9.4/tests/Makefile	2023-03-10 17:03:25.909377379 +0100
+@@ -215,20 +215,20 @@
  test-lz4-sparse: lz4 datagen
  	@echo "\n ---- test sparse file support ----"
- 	$(DATAGEN) -g5M  -P100 > tmplsdg5M
--	$(LZ4) -B4D tmplsdg5M -c | $(LZ4) -dv --sparse > tmplscB4
-+	$(LZ4) -B4D tmplsdg5M -c | $(LZ4) -d --sparse > tmplscB4
- 	$(DIFF) -s tmplsdg5M tmplscB4
--	$(LZ4) -B5D tmplsdg5M -c | $(LZ4) -dv --sparse > tmplscB5
-+	$(LZ4) -B5D tmplsdg5M -c | $(LZ4) -d --sparse > tmplscB5
- 	$(DIFF) -s tmplsdg5M tmplscB5
--	$(LZ4) -B6D tmplsdg5M -c | $(LZ4) -dv --sparse > tmplscB6
-+	$(LZ4) -B6D tmplsdg5M -c | $(LZ4) -d --sparse > tmplscB6
- 	$(DIFF) -s tmplsdg5M tmplscB6
--	$(LZ4) -B7D tmplsdg5M -c | $(LZ4) -dv --sparse > tmplscB7
-+	$(LZ4) -B7D tmplsdg5M -c | $(LZ4) -d --sparse > tmplscB7
- 	$(DIFF) -s tmplsdg5M tmplscB7
--	$(LZ4) tmplsdg5M -c | $(LZ4) -dv --no-sparse > tmplsnosparse
-+	$(LZ4) tmplsdg5M -c | $(LZ4) -d --no-sparse > tmplsnosparse
- 	$(DIFF) -s tmplsdg5M tmplsnosparse
--	ls -ls tmpls*
-+	gls -ls --block-size=1 tmpls* | awk '{print $$6" "$$NF}' | column -t
- 	$(DATAGEN) -s1 -g1200007 -P100 | $(LZ4) | $(LZ4) -dv --sparse > tmplsodd   # Odd size file (to generate non-full last block)
- 	$(DATAGEN) -s1 -g1200007 -P100 | $(DIFF) -s - tmplsodd
--	ls -ls tmplsodd
-+	gls -ls --block-size=1 tmplsodd | awk '{print $$6" "$$1" "$$NF}'
- 	@$(RM) tmpls*
+ 	$(DATAGEN) -g5M  -P100 > $(FPREFIX)dg5M
+-	$(LZ4) -B4D $(FPREFIX)dg5M -c | $(LZ4) -dv --sparse > $(FPREFIX)cB4
++	$(LZ4) -B4D $(FPREFIX)dg5M -c | $(LZ4) -d --sparse > $(FPREFIX)cB4
+ 	$(DIFF) -s $(FPREFIX)dg5M $(FPREFIX)cB4
+-	$(LZ4) -B5D $(FPREFIX)dg5M -c | $(LZ4) -dv --sparse > $(FPREFIX)cB5
++	$(LZ4) -B5D $(FPREFIX)dg5M -c | $(LZ4) -d --sparse > $(FPREFIX)cB5
+ 	$(DIFF) -s $(FPREFIX)dg5M $(FPREFIX)cB5
+-	$(LZ4) -B6D $(FPREFIX)dg5M -c | $(LZ4) -dv --sparse > $(FPREFIX)cB6
++	$(LZ4) -B6D $(FPREFIX)dg5M -c | $(LZ4) -d --sparse > $(FPREFIX)cB6
+ 	$(DIFF) -s $(FPREFIX)dg5M $(FPREFIX)cB6
+-	$(LZ4) -B7D $(FPREFIX)dg5M -c | $(LZ4) -dv --sparse > $(FPREFIX)cB7
++	$(LZ4) -B7D $(FPREFIX)dg5M -c | $(LZ4) -d --sparse > $(FPREFIX)cB7
+ 	$(DIFF) -s $(FPREFIX)dg5M $(FPREFIX)cB7
+-	$(LZ4) $(FPREFIX)dg5M -c | $(LZ4) -dv --no-sparse > $(FPREFIX)nosparse
++	$(LZ4) $(FPREFIX)dg5M -c | $(LZ4) -d --no-sparse > $(FPREFIX)nosparse
+ 	$(DIFF) -s $(FPREFIX)dg5M $(FPREFIX)nosparse
+-	ls -ls $(FPREFIX)*
++	gls -ls --block-size=1 $(FPREFIX)* | awk '{print $$6" "$$NF}' | column -t
+ 	$(DATAGEN) -s1 -g1200007 -P100 | $(LZ4) | $(LZ4) -dv --sparse > $(FPREFIX)odd   # Odd size file (to generate non-full last block)
+ 	$(DATAGEN) -s1 -g1200007 -P100 | $(DIFF) -s - $(FPREFIX)odd
+-	ls -ls $(FPREFIX)odd
++	gls -ls --block-size=1 $(FPREFIX)odd | awk '{print $$6" "$$1" "$$NF}'
+ 	@$(RM) $(FPREFIX)*
  	@echo "\n Compatibility with Console :"
  	echo "Hello World 1 !" | $(LZ4) | $(LZ4) -d -c
-@@ -210,7 +210,7 @@ test-lz4-sparse: lz4 datagen
- 	$(LZ4) -B5 -v tmplsdg1M tmplsc
- 	$(LZ4) -d -v tmplsc tmplsr
- 	$(LZ4) -d -v tmplsc -c >> tmplsr
--	ls -ls tmp*
-+	gls -ls --block-size=1 tmp* | awk '{print $$6" "$$1" "$$NF}' | column -t
- 	$(DIFF) tmpls2M tmplsr
- 	@$(RM) tmpls*
+@@ -240,7 +240,7 @@
+ 	$(LZ4) -B5 -v $(FPREFIX)dg1M $(FPREFIX)c
+ 	$(LZ4) -d -v $(FPREFIX)c $(FPREFIX)r
+ 	$(LZ4) -d -v $(FPREFIX)c -c >> $(FPREFIX)r
+-	ls -ls $(FPREFIX)*
++	gls -ls --block-size=1 $(FPREFIX)* | awk '{print $$6" "$$1" "$$NF}' | column -t
+ 	$(DIFF) $(FPREFIX)2M $(FPREFIX)r
+ 	@$(RM) $(FPREFIX)*
  
-@@ -412,9 +412,7 @@ test-lz4-hugefile: lz4 datagen
- 	./datagen -g4500MB | $(LZ4) -v3BD | $(LZ4) -qt
+@@ -468,9 +468,7 @@
+ 	$(DATAGEN) -g6GB    | $(LZ4) -vB5D | $(LZ4) -qt
  	# test large file size [2-4] GB
- 	@$(DATAGEN) -g3G -P100 | $(LZ4) -vv | $(LZ4) --decompress --force --sparse - tmphf1
--	@ls -ls tmphf1
- 	@$(DATAGEN) -g3G -P100 | $(LZ4) --quiet --content-size | $(LZ4) --verbose --decompress --force --sparse - tmphf2
--	@ls -ls tmphf2
- 	$(DIFF) -s tmphf1 tmphf2
- 	@$(RM) tmphf*
- 
+ 	@$(DATAGEN) -g3G -P100 | $(LZ4) -vv | $(LZ4) --decompress --force --sparse - $(FPREFIX)1
+-	@ls -ls $(FPREFIX)1
+ 	@$(DATAGEN) -g3G -P100 | $(LZ4) --quiet --content-size | $(LZ4) --verbose --decompress --force --sparse - $(FPREFIX)2
+-	@ls -ls $(FPREFIX)2
+ 	$(DIFF) -s $(FPREFIX)1 $(FPREFIX)2
+ 	@$(RM) $(FPREFIX)*

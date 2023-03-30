@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -32,15 +32,15 @@ include ../../make-rules/shared-macros.mk
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 COMPONENT_NAME=		lz4
-COMPONENT_VERSION=	1.9.3
+COMPONENT_VERSION=	1.9.4
 COMPONENT_PROJECT_URL=	https://lz4.github.io/lz4/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:030644df4611007ff7dc962d981f390361e6c97a34e5cbc393ddfbe019ffe2c1
+    sha256:0b0e3aa07c8c063ddf40b082bdf7e37a1562bda40a0ff5272957f3e987e0e54b
 COMPONENT_ARCHIVE_URL=	https://github.com/lz4/lz4/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/lz4
 COMPONENT_ANITYA_ID=	1865
 
-COMPONENT_BAID=		120521
+COMPONENT_BAID=		139719
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
@@ -57,6 +57,9 @@ COMPONENT_PRE_BUILD_ACTION = $(CP) -rp $(SOURCE_DIR)/. $(@D)
 
 COMPONENT_INSTALL_ENV +=	PREFIX=$(USRDIR)
 COMPONENT_INSTALL_ENV +=	LIBDIR=$(USRLIBDIR64)
+
+# The test results differ for x86 and SPARC
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH$(BITS)).master
 
 COMPONENT_TEST_TARGETS = test
 COMPONENT_TEST_ENV += CC="$(CC)"
