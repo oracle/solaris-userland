@@ -19,22 +19,23 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64
+BUILD_BITS=	64
+COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         ccid
-COMPONENT_VERSION=      1.4.20
-COMPONENT_PROJECT_URL=  https://pcsclite.alioth.debian.org/ccid.html
-COMPONENT_DOWNLOAD_URL= https://alioth.debian.org/frs/download.php/file/4140/
-COMPONENT_ARCHIVE_HASH= sha256:400cb865bb63eed6d7668b2d971cb4644038b9b7a6cda121450d0c6cf6251cbc
+COMPONENT_VERSION=      1.5.2
+COMPONENT_PROJECT_URL=  https://ccid.apdu.fr
+COMPONENT_DOWNLOAD_URL= $(COMPONENT_PROJECT_URL)/files
+COMPONENT_ARCHIVE_HASH= sha256:13934487e6f8b48f699a16d367cc7a1af7a3ca874de721ac6e9633beb86e7219
 COMPONENT_ARCHIVE=      $(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.bz2
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        library/smartcard
 COMPONENT_ANITYA_ID=	2612
 
-COMPONENT_BAID =                  27382
+COMPONENT_BAID =	139302
 
 include $(WS_MAKE_RULES)/common.mk
 
