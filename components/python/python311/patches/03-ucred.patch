@@ -1,8 +1,8 @@
 This patch provides Python ucred support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-3.11.0/Modules/ucred.c
-+++ Python-3.11.0/Modules/ucred.c
+--- Python-3.11.2/Modules/ucred.c
++++ Python-3.11.2/Modules/ucred.c
 @@ -0,0 +1,404 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -408,9 +408,9 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +
 +	return m;
 +}
---- Python-3.11.0/setup.py
-+++ Python-3.11.0/setup.py
-@@ -1374,6 +1374,13 @@ class PyBuildExt(build_ext):
+--- Python-3.11.2/setup.py
++++ Python-3.11.2/setup.py
+@@ -1377,6 +1377,13 @@ class PyBuildExt(build_ext):
          # Build the _uuid module if possible
          self.addext(Extension('_uuid', ['_uuidmodule.c']))
  
@@ -424,7 +424,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
      def detect_modules(self):
          # remove dummy extension
          self.extensions = []
-@@ -1395,6 +1402,7 @@ class PyBuildExt(build_ext):
+@@ -1398,6 +1405,7 @@ class PyBuildExt(build_ext):
          self.detect_expat_elementtree()
          self.detect_multibytecodecs()
          self.detect_decimal()
@@ -432,8 +432,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
          self.detect_ctypes()
          self.detect_multiprocessing()
          self.detect_tkinter()
---- Python-3.11.0/Lib/test/ucredtest.py
-+++ Python-3.11.0/Lib/test/ucredtest.py
+--- Python-3.11.2/Lib/test/ucredtest.py
++++ Python-3.11.2/Lib/test/ucredtest.py
 @@ -0,0 +1,45 @@
 +#!/usr/bin/python3.11
 +

@@ -6,9 +6,9 @@ This was reported upstream and this patch is from there:
 https://github.com/python/cpython/issues/96308
 https://github.com/python/cpython/pull/96315
 
---- Python-3.11.0/Lib/test/test_embed.py
-+++ Python-3.11.0/Lib/test/test_embed.py
-@@ -344,18 +344,14 @@ class EmbeddingTests(EmbeddingTestsMixin
+--- Python-3.11.2/Lib/test/test_embed.py
++++ Python-3.11.2/Lib/test/test_embed.py
+@@ -350,18 +350,14 @@ class EmbeddingTests(EmbeddingTestsMixin
      def test_quickened_static_code_gets_unquickened_at_Py_FINALIZE(self):
          # https://github.com/python/cpython/issues/92031
  
@@ -29,7 +29,7 @@ https://github.com/python/cpython/pull/96315
  
              # Assert initially unquickened.
              # Use sets to account for byte order.
-@@ -363,7 +359,7 @@ class EmbeddingTests(EmbeddingTestsMixin
+@@ -369,7 +365,7 @@ class EmbeddingTests(EmbeddingTestsMixin
                  raise AssertionError()
  
              for i in range({QUICKENING_WARMUP_DELAY}):
@@ -38,7 +38,7 @@ https://github.com/python/cpython/pull/96315
  
              # Assert quickening worked
              if set(code._co_code_adaptive[:2]) != set([{resume_quick}, 0]):
-@@ -373,7 +369,8 @@ class EmbeddingTests(EmbeddingTestsMixin
+@@ -379,7 +375,8 @@ class EmbeddingTests(EmbeddingTestsMixin
          """)
          run = self.run_embedded_interpreter
          out, err = run("test_repeated_init_exec", code)

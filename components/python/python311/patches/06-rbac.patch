@@ -1,8 +1,8 @@
 This patch provides Python RBAC support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-3.11.0/Modules/authattr.c
-+++ Python-3.11.0/Modules/authattr.c
+--- Python-3.11.2/Modules/authattr.c
++++ Python-3.11.2/Modules/authattr.c
 @@ -0,0 +1,254 @@
 +/*
 + * CDDL HEADER START
@@ -258,8 +258,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	0,                            /* tp_free */
 +	0,                            /* tp_is_gc */
 +};
---- Python-3.11.0/Modules/execattr.c
-+++ Python-3.11.0/Modules/execattr.c
+--- Python-3.11.2/Modules/execattr.c
++++ Python-3.11.2/Modules/execattr.c
 @@ -0,0 +1,305 @@
 +/*
 + * CDDL HEADER START
@@ -566,8 +566,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	0,                            /* tp_free */
 +	0,                            /* tp_is_gc */
 +};
---- Python-3.11.0/Modules/privileges.c
-+++ Python-3.11.0/Modules/privileges.c
+--- Python-3.11.2/Modules/privileges.c
++++ Python-3.11.2/Modules/privileges.c
 @@ -0,0 +1,237 @@
 +/*
 + * CDDL HEADER START
@@ -806,8 +806,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +
 +       return m;
 +}
---- Python-3.11.0/Modules/pyrbac.c
-+++ Python-3.11.0/Modules/pyrbac.c
+--- Python-3.11.2/Modules/pyrbac.c
++++ Python-3.11.2/Modules/pyrbac.c
 @@ -0,0 +1,81 @@
 +/*
 + * CDDL HEADER START
@@ -890,8 +890,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	return m;
 +
 +}
---- Python-3.11.0/Modules/pyrbac.h
-+++ Python-3.11.0/Modules/pyrbac.h
+--- Python-3.11.2/Modules/pyrbac.h
++++ Python-3.11.2/Modules/pyrbac.h
 @@ -0,0 +1,45 @@
 +/*
 + * CDDL HEADER START
@@ -938,8 +938,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +extern PyTypeObject UserattrType;
 +
 +#endif
---- Python-3.11.0/Modules/userattr.c
-+++ Python-3.11.0/Modules/userattr.c
+--- Python-3.11.2/Modules/userattr.c
++++ Python-3.11.2/Modules/userattr.c
 @@ -0,0 +1,301 @@
 +/*
 + * CDDL HEADER START
@@ -1242,9 +1242,9 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	0,                            /* tp_free */
 +	0,                            /* tp_is_gc */
 +};
---- Python-3.11.0/setup.py
-+++ Python-3.11.0/setup.py
-@@ -1387,6 +1387,24 @@ class PyBuildExt(build_ext):
+--- Python-3.11.2/setup.py
++++ Python-3.11.2/setup.py
+@@ -1390,6 +1390,24 @@ class PyBuildExt(build_ext):
          if dlpi_inc is not None:
              self.add(Extension('dlpi', ['dlpimodule.c'], libraries=['dlpi']))
  
@@ -1269,7 +1269,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
      def detect_modules(self):
          # remove dummy extension
          self.extensions = []
-@@ -1410,6 +1428,8 @@ class PyBuildExt(build_ext):
+@@ -1413,6 +1431,8 @@ class PyBuildExt(build_ext):
          self.detect_decimal()
          self.detect_ucred()
          self.detect_dlpi()
@@ -1278,8 +1278,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
          self.detect_ctypes()
          self.detect_multiprocessing()
          self.detect_tkinter()
---- Python-3.11.0/Lib/test/privrbactest.py
-+++ Python-3.11.0/Lib/test/privrbactest.py
+--- Python-3.11.2/Lib/test/privrbactest.py
++++ Python-3.11.2/Lib/test/privrbactest.py
 @@ -0,0 +1,267 @@
 +#!/usr/bin/python3.11
 +

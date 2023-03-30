@@ -26,8 +26,8 @@ test_freeze is running configure and fails on an endian check. It should be
 investigated later, although since it's tools related, it's not
 the highest priority. [Should be reported upstream]
 
---- Python-3.11.0/Lib/test/test_gdb.py
-+++ Python-3.11.0/Lib/test/test_gdb.py
+--- Python-3.11.2/Lib/test/test_gdb.py
++++ Python-3.11.2/Lib/test/test_gdb.py
 @@ -52,6 +52,9 @@ if gdb_major_version < 7:
                              % (gdb_major_version, gdb_minor_version,
                                 gdb_version))
@@ -38,9 +38,9 @@ the highest priority. [Should be reported upstream]
  if not sysconfig.is_python_build():
      raise unittest.SkipTest("test_gdb only works on source builds at the moment.")
  
---- Python-3.11.0/Lib/test/test_unicodedata.py
-+++ Python-3.11.0/Lib/test/test_unicodedata.py
-@@ -331,6 +331,8 @@ class NormalizationTest(unittest.TestCas
+--- Python-3.11.2/Lib/test/test_unicodedata.py
++++ Python-3.11.2/Lib/test/test_unicodedata.py
+@@ -339,6 +339,8 @@ class NormalizationTest(unittest.TestCas
          TESTDATAFILE = "NormalizationTest.txt"
          TESTDATAURL = f"http://www.pythontest.net/unicode/{unicodedata.unidata_version}/{TESTDATAFILE}"
  
@@ -49,9 +49,9 @@ the highest priority. [Should be reported upstream]
          # Hit the exception early
          try:
              testdata = open_urlresource(TESTDATAURL, encoding="utf-8",
---- Python-3.11.0/Lib/test/test_re.py
-+++ Python-3.11.0/Lib/test/test_re.py
-@@ -2011,6 +2011,8 @@ class ReTests(unittest.TestCase):
+--- Python-3.11.2/Lib/test/test_re.py
++++ Python-3.11.2/Lib/test/test_re.py
+@@ -2016,6 +2016,8 @@ class ReTests(unittest.TestCase):
          self.assertTrue(re.match(b'(?Li)\xc5', b'\xe5'))
          self.assertTrue(re.match(b'(?Li)\xe5', b'\xc5'))
  
@@ -60,7 +60,7 @@ the highest priority. [Should be reported upstream]
      def check_en_US_utf8(self):
          locale.setlocale(locale.LC_CTYPE, 'en_US.utf8')
          self.assertTrue(re.match(b'\xc5\xe5', b'\xc5\xe5', re.L|re.I))
-@@ -2024,6 +2026,8 @@ class ReTests(unittest.TestCase):
+@@ -2029,6 +2031,8 @@ class ReTests(unittest.TestCase):
          is_emscripten or is_wasi,
          "musl libc issue on Emscripten/WASI, bpo-46390"
      )
@@ -69,8 +69,8 @@ the highest priority. [Should be reported upstream]
      def test_locale_compiled(self):
          oldlocale = locale.setlocale(locale.LC_CTYPE)
          self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
---- Python-3.11.0/Lib/test/test_time.py
-+++ Python-3.11.0/Lib/test/test_time.py
+--- Python-3.11.2/Lib/test/test_time.py
++++ Python-3.11.2/Lib/test/test_time.py
 @@ -642,7 +642,7 @@ class _TestStrftimeYear:
              self.test_year('%04d', func=year4d)
  
@@ -80,9 +80,9 @@ the highest priority. [Should be reported upstream]
          # Check that it doesn't crash for year > 9999
          try:
              time.strftime('%Y', (y,) + (0,) * 8)
---- Python-3.11.0/Lib/test/test_socket.py
-+++ Python-3.11.0/Lib/test/test_socket.py
-@@ -3418,7 +3418,7 @@ class CmsgMacroTests(unittest.TestCase):
+--- Python-3.11.2/Lib/test/test_socket.py
++++ Python-3.11.2/Lib/test/test_socket.py
+@@ -3422,7 +3422,7 @@ class CmsgMacroTests(unittest.TestCase):
          # Test CMSG_SPACE() with various valid and invalid values,
          # checking the assumptions used by sendmsg().
          toobig = self.socklen_t_limit - socket.CMSG_SPACE(1) + 1
@@ -91,7 +91,7 @@ the highest priority. [Should be reported upstream]
  
          last = socket.CMSG_SPACE(0)
          # struct cmsghdr has at least three members, two of which are ints
-@@ -3564,6 +3564,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3568,6 +3568,7 @@ class SCMRightsTest(SendrecvmsgServerTim
          self.createAndSendFDs(1)
  
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
@@ -99,7 +99,7 @@ the highest priority. [Should be reported upstream]
      @unittest.skipIf(AIX, "skipping, see issue #22397")
      @requireAttrs(socket, "CMSG_SPACE")
      def testFDPassSeparate(self):
-@@ -3575,6 +3576,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3579,6 +3580,7 @@ class SCMRightsTest(SendrecvmsgServerTim
  
      @testFDPassSeparate.client_skip
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
@@ -107,7 +107,7 @@ the highest priority. [Should be reported upstream]
      @unittest.skipIf(AIX, "skipping, see issue #22397")
      def _testFDPassSeparate(self):
          fd0, fd1 = self.newFDs(2)
-@@ -3588,6 +3590,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3592,6 +3594,7 @@ class SCMRightsTest(SendrecvmsgServerTim
              len(MSG))
  
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
@@ -115,7 +115,7 @@ the highest priority. [Should be reported upstream]
      @unittest.skipIf(AIX, "skipping, see issue #22397")
      @requireAttrs(socket, "CMSG_SPACE")
      def testFDPassSeparateMinSpace(self):
-@@ -3602,6 +3605,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3606,6 +3609,7 @@ class SCMRightsTest(SendrecvmsgServerTim
  
      @testFDPassSeparateMinSpace.client_skip
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
@@ -123,8 +123,8 @@ the highest priority. [Should be reported upstream]
      @unittest.skipIf(AIX, "skipping, see issue #22397")
      def _testFDPassSeparateMinSpace(self):
          fd0, fd1 = self.newFDs(2)
---- Python-3.11.0/Lib/test/test_pyexpat.py
-+++ Python-3.11.0/Lib/test/test_pyexpat.py
+--- Python-3.11.2/Lib/test/test_pyexpat.py
++++ Python-3.11.2/Lib/test/test_pyexpat.py
 @@ -466,12 +466,12 @@ class HandlerExceptionTest(unittest.Test
                                         "pyexpat.c", "StartElement")
              self.check_traceback_entry(entries[2],
@@ -144,8 +144,8 @@ the highest priority. [Should be reported upstream]
  
  
  # Test Current* members:
---- Python-3.11.0/Lib/test/test_tcl.py
-+++ Python-3.11.0/Lib/test/test_tcl.py
+--- Python-3.11.2/Lib/test/test_tcl.py
++++ Python-3.11.2/Lib/test/test_tcl.py
 @@ -189,6 +189,7 @@ class TclTest(unittest.TestCase):
          self.assertRaises((UnicodeEncodeError, ValueError, TclError),
                            tcl.getboolean, 'on\ud800')
@@ -162,8 +162,8 @@ the highest priority. [Should be reported upstream]
      def test_evalfile_null_in_result(self):
          tcl = self.interp
          filename = os_helper.TESTFN_ASCII
---- Python-3.11.0/Lib/test/test_tools/test_freeze.py
-+++ Python-3.11.0/Lib/test/test_tools/test_freeze.py
+--- Python-3.11.2/Lib/test/test_tools/test_freeze.py
++++ Python-3.11.2/Lib/test/test_tools/test_freeze.py
 @@ -14,6 +14,7 @@ with imports_under_tool('freeze', 'test'
  
  @support.requires_zlib()
