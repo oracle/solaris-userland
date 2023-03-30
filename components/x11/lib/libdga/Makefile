@@ -20,14 +20,17 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
-BUILD_BITS= 64_and_32
+# 64-bit is sparc only since Xsun/DGA was already obsolete before amd64 was added
+BUILD_BITS.sparc = 64_and_32
+BUILD_BITS.i386  = 32
+BUILD_BITS= $(BUILD_BITS.$(shell uname -p))
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         libdga
-COMPONENT_VERSION=      #
+COMPONENT_VERSION=      $(PKG_SOLARIS_VERSION)
 COMPONENT_SRC=          sun-src
 COMPONENT_ARCHIVE=	
 COMPONENT_ARCHIVE_SRC=	none
