@@ -2,7 +2,7 @@
 #
 # libXrender version mapfile
 #
-# Copyright (c) 2007, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2007, 2023, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -23,9 +23,33 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
+
+# [Note that the usr/src path below is found in the ON gate, not Userland]
+#
+# MAPFILE HEADER START
+#
+# WARNING:  STOP NOW.  DO NOT MODIFY THIS FILE.
+# Object versioning must comply with the rules detailed in
+#
+#	usr/src/lib/README.mapfiles
+#
+# You should not be making modifications here until you've read the most current
+# copy of that file. If you need help, contact a gatekeeper for guidance.
+#
+# MAPFILE HEADER END
 #
 
-RENDER_0.0 {
+#
+# README README README README README README: how to update this file
+#   1) All new public symbols go in SUNWpublic (not yet added)
+#   2) Any private symbols that need to be available to other objects
+#      go in SUNWprivate
+#   3) Do not remove or alter any other existing versions
+#
+
+$mapfile_version 2
+
+SYMBOL_VERSION RENDER_0.0 {
     global:
 	XRenderFindVisualFormat;
 	XRenderChangePicture;
@@ -46,7 +70,7 @@ RENDER_0.0 {
 	*;
 };
 
-RENDER_0.1 {
+SYMBOL_VERSION RENDER_0.1 {
     global:
 	XRenderFillRectangles;
 	XRenderSetPictureClipRegion;
@@ -56,19 +80,19 @@ RENDER_0.1 {
 	XRenderSetPictureClipRectangles;
 };
 
-RENDER_0.2 {
+SYMBOL_VERSION RENDER_0.2 {
     global:
 	XRenderCompositeText32;
 	XRenderCompositeText16;
 	XRenderCompositeText8;
 };
 
-RENDER_0.3 {
+SYMBOL_VERSION RENDER_0.3 {
     global:
 	RENDER_0.3;
 };
 
-RENDER_0.4 {
+SYMBOL_VERSION RENDER_0.4 {
     global:
 	XRenderCompositeTriStrip;
 	XRenderCompositeTriFan;
@@ -77,14 +101,14 @@ RENDER_0.4 {
 	XRenderCompositeDoublePoly;
 };
 
-RENDER_0.5 {
+SYMBOL_VERSION RENDER_0.5 {
     global:
 	XRenderFindStandardFormat;
 	XRenderParseColor;
 	XRenderCreateCursor;
 };
 
-RENDER_0.6 {
+SYMBOL_VERSION RENDER_0.6 {
     global:
 	XRenderQuerySubpixelOrder;
 	XRenderQueryFilters;
@@ -93,17 +117,17 @@ RENDER_0.6 {
 	XRenderSetPictureFilter;
 };
 
-RENDER_0.7 {
+SYMBOL_VERSION RENDER_0.7 {
     global:
 	XRenderQueryPictIndexValues;
 };
 
-RENDER_0.8 {
+SYMBOL_VERSION RENDER_0.8 {
     global:
 	XRenderCreateAnimCursor;
 };
 
-RENDER_0.9 {
+SYMBOL_VERSION RENDER_0.9 {
     global:
 	XRenderAddTraps;
 	XRenderCreateSolidFill;
@@ -111,4 +135,3 @@ RENDER_0.9 {
 	XRenderCreateRadialGradient;
 	XRenderCreateConicalGradient;
 };
-

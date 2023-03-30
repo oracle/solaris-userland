@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2006, 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2006, 2023, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -19,12 +19,35 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
-# 
-#
 #
 
+# [Note that the usr/src path below is found in the ON gate, not Userland]
+#
+# MAPFILE HEADER START
+#
+# WARNING:  STOP NOW.  DO NOT MODIFY THIS FILE.
+# Object versioning must comply with the rules detailed in
+#
+#	usr/src/lib/README.mapfiles
+#
+# You should not be making modifications here until you've read the most current
+# copy of that file. If you need help, contact a gatekeeper for guidance.
+#
+# MAPFILE HEADER END
+#
+
+#
+# README README README README README README: how to update this file
+#   1) All new public symbols go in SUNWpublic (not yet added)
+#   2) Any private symbols that need to be available to other objects
+#      go in SUNWprivate
+#   3) Do not remove or alter any other existing versions
+#
+
+$mapfile_version 2
+
 # XFIXES_0.0 represents the X11R6.8 / XFixes 2.0 version
-XFIXES_0.0 {
+SYMBOL_VERSION XFIXES_0.0 {
     global:
 # XFixes 1.0:
 	XFixesQueryExtension;
@@ -68,25 +91,25 @@ XFIXES_0.0 {
 	*;
 };
 
-XFIXES_2.0 {} XFIXES_0.0;
+SYMBOL_VERSION XFIXES_2.0 {} XFIXES_0.0;
 
 # XFixes 3.0:
-XFIXES_3.0 {
+SYMBOL_VERSION XFIXES_3.0 {
     global:
 	XFixesExpandRegion;
 } XFIXES_2.0;
 
 # XFixes 4.0 was the first version to have an API with Sun stability
 # declared above External/Volatile, so it became the initial SUNW_1.1 version.
-SUNW_1.1 {
+SYMBOL_VERSION SUNW_1.1 {
     global:
 	XFixesHideCursor;
 	XFixesShowCursor;
 } XFIXES_3.0;
 
-XFIXES_4.0 {} SUNW_1.1;
+SYMBOL_VERSION XFIXES_4.0 {} SUNW_1.1;
 
-XFIXES_5.0 {
+SYMBOL_VERSION XFIXES_5.0 {
     global:
 	XFixesCreatePointerBarrier;
 	XFixesDestroyPointerBarrier;

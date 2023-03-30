@@ -2,7 +2,7 @@
 #
 # libXt version mapfile
 #
-# Copyright (c) 2008, 2012, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -23,9 +23,33 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
+
+# [Note that the usr/src path below is found in the ON gate, not Userland]
+#
+# MAPFILE HEADER START
+#
+# WARNING:  STOP NOW.  DO NOT MODIFY THIS FILE.
+# Object versioning must comply with the rules detailed in
+#
+#	usr/src/lib/README.mapfiles
+#
+# You should not be making modifications here until you've read the most current
+# copy of that file. If you need help, contact a gatekeeper for guidance.
+#
+# MAPFILE HEADER END
 #
 
-SUNW_1.1 {
+#
+# README README README README README README: how to update this file
+#   1) All new public symbols go in SUNWpublic (not yet added)
+#   2) Any private symbols that need to be available to other objects
+#      go in SUNWprivate
+#   3) Do not remove or alter any other existing versions
+#
+
+$mapfile_version 2
+
+SYMBOL_VERSION SUNW_1.1 {
     global:
 	XtError;
 	XtGetKeyboardFocusWidget;
@@ -35,7 +59,7 @@ SUNW_1.1 {
 	XtReleaseGC;
 	XtCallbackExclusive;
 	XtGrabButton;
-	XtAppProcessEvent = NODIRECT;
+	XtAppProcessEvent 	{ FLAGS = NODIRECT };
 	XtAppPeekEvent;
 	XtConvertCase;
 	XtIsRectObj;
@@ -275,7 +299,7 @@ SUNW_1.1 {
 	XtAddCallbacks;
 	XtAppSetWarningMsgHandler;
 	XtStringConversionWarning;
-	XtAppNextEvent = NODIRECT;
+	XtAppNextEvent 	{ FLAGS = NODIRECT };
 	XtGetValues;
 	XtRealloc;
 	objectClassRec;
@@ -308,13 +332,13 @@ SUNW_1.1 {
 # of them instead.   (See Solaris bugs 4881065 & 6755532.)
 # Added _XtAppCreateShell,XtAppNextEvent,XtAppProcessEvent for
 # 6748586
-	vendorShellClassRec = NODIRECT;
-	vendorShellWidgetClass = NODIRECT;
+	vendorShellClassRec 	{ FLAGS = NODIRECT };
+	vendorShellWidgetClass 	{ FLAGS = NODIRECT };
     local:
 	*;
 };
 
-SUNWprivate {
+SYMBOL_VERSION SUNWprivate {
     global:
 	_XtShellGetCoordinates;
 	_XtGetUserName;
@@ -388,7 +412,7 @@ SUNWprivate {
 	_XtProcessLock;
 	_XtRemoveStateTreeByIndex;
 # See src/Initialize.c for explanation of why _XtInherit needs special linking
-	_XtInherit = NODIRECT;
+	_XtInherit 		{ FLAGS = NODIRECT };
 	_XtDependencies;
 	XtCvtStringToAcceleratorTable;
 	_XtRemoveAllInputs;
@@ -404,7 +428,7 @@ SUNWprivate {
 	_XtSetDefaultSelectionTimeout;
 	XtRegisterExtensionSelector;
 	_XtAllocTMContext;
-	_XtAppCreateShell = NODIRECT;
+	_XtAppCreateShell 	{ FLAGS = NODIRECT };
 	_XtCreateHookObj;
 	_XtDefaultErrorMsg;
 	_XtDisplayTranslations;
@@ -522,8 +546,7 @@ SUNWprivate {
 };
 
 # Added in libXt 1.1
-SUNW_1.2 {
+SYMBOL_VERSION SUNW_1.2 {
     global:
 	XtAsprintf;
 } SUNW_1.1;
-

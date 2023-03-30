@@ -1,5 +1,12 @@
-data = R0x1000000;
-{
+# Original source: https://prefetch.net/projects/apache_modtrace/build.txt
+
+$mapfile_version 2
+
+LOAD_SEGMENT data {
+	ROUND=0x1000000;
+};
+
+SYMBOL_SCOPE {
     local:
         apache_receive_request;
         apache_log_request;
@@ -10,4 +17,3 @@ data = R0x1000000;
         apache_check_authorization;
         dtrace_register_hooks;
 };
-

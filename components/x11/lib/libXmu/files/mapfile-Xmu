@@ -2,7 +2,7 @@
 #
 # libXmu mapfile
 #
-# Copyright (c) 2008, 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -24,7 +24,32 @@
 # DEALINGS IN THE SOFTWARE.
 #
 
-SUNW_1.2 {
+# [Note that the usr/src path below is found in the ON gate, not Userland]
+#
+# MAPFILE HEADER START
+#
+# WARNING:  STOP NOW.  DO NOT MODIFY THIS FILE.
+# Object versioning must comply with the rules detailed in
+#
+#	usr/src/lib/README.mapfiles
+#
+# You should not be making modifications here until you've read the most current
+# copy of that file. If you need help, contact a gatekeeper for guidance.
+#
+# MAPFILE HEADER END
+#
+
+#
+# README README README README README README: how to update this file
+#   1) All new public symbols go in SUNWpublic (not yet added)
+#   2) Any private symbols that need to be available to other objects
+#      go in SUNWprivate
+#   3) Do not remove or alter any other existing versions
+#
+
+$mapfile_version 2
+
+SYMBOL_VERSION SUNW_1.2 {
     global:
 	XmuAppendSegment;
 	XmuAreaAnd;
@@ -59,14 +84,14 @@ SUNW_1.2 {
 	XmuValidScanline;
 
 # Moved to libXmuu.so.1:
-	XmuNCopyISOLatin1Lowered	= FUNCTION FILTER libXmuu.so.1;
-	XmuNCopyISOLatin1Uppered	= FUNCTION FILTER libXmuu.so.1;
-	XmuSnprintf			= FUNCTION FILTER libXmuu.so.1;
+	XmuNCopyISOLatin1Lowered    { TYPE = FUNCTION; FILTER = libXmuu.so.1 };
+	XmuNCopyISOLatin1Uppered    { TYPE = FUNCTION; FILTER = libXmuu.so.1 };
+	XmuSnprintf		    { TYPE = FUNCTION; FILTER = libXmuu.so.1 };
     local:
 	*;
 } SUNW_1.1;
 
-SUNW_1.1 {
+SYMBOL_VERSION SUNW_1.1 {
     global:
 	XSolarisCheckColormapEquivalence;
 	XSolarisGetVisualGamma;
@@ -128,17 +153,17 @@ SUNW_1.1 {
 	XmuWnNameToNode;
 
 # Moved to libXmuu.so.1:
-	XmuClientWindow			= FUNCTION FILTER libXmuu.so.1;
-	XmuCompareISOLatin1		= FUNCTION FILTER libXmuu.so.1;
-	XmuCopyISOLatin1Lowered		= FUNCTION FILTER libXmuu.so.1;
-	XmuCopyISOLatin1Uppered		= FUNCTION FILTER libXmuu.so.1;
-	XmuCursorNameToIndex		= FUNCTION FILTER libXmuu.so.1;
-	XmuGetHostname			= FUNCTION FILTER libXmuu.so.1;
-	XmuPrintDefaultErrorMessage	= FUNCTION FILTER libXmuu.so.1;
-	XmuSimpleErrorHandler		= FUNCTION FILTER libXmuu.so.1;
+	XmuClientWindow		    { TYPE = FUNCTION; FILTER = libXmuu.so.1 };
+	XmuCompareISOLatin1	    { TYPE = FUNCTION; FILTER = libXmuu.so.1 };
+	XmuCopyISOLatin1Lowered	    { TYPE = FUNCTION; FILTER = libXmuu.so.1 };
+	XmuCopyISOLatin1Uppered	    { TYPE = FUNCTION; FILTER = libXmuu.so.1 };
+	XmuCursorNameToIndex	    { TYPE = FUNCTION; FILTER = libXmuu.so.1 };
+	XmuGetHostname		    { TYPE = FUNCTION; FILTER = libXmuu.so.1 };
+	XmuPrintDefaultErrorMessage { TYPE = FUNCTION; FILTER = libXmuu.so.1 };
+	XmuSimpleErrorHandler	    { TYPE = FUNCTION; FILTER = libXmuu.so.1 };
 };
 
-SUNWprivate {
+SYMBOL_VERSION SUNWprivate {
     global:
 	XSolarisGetVisualGammaCalled;
 	XmuDistinguishableColors;
@@ -196,4 +221,3 @@ SUNWprivate {
 	_XmuStringToBitmapFreeCache;
 	_XmuStringToBitmapInitCache;
 };
-
