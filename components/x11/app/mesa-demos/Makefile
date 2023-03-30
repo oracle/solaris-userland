@@ -20,35 +20,30 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mesa-demos
-COMPONENT_VERSION=	8.4.0
+COMPONENT_VERSION=	8.5.0
 COMPONENT_PROJECT_URL=	https://mesa3d.org/
-COMPONENT_ARCHIVE_URL=  https://mesa.freedesktop.org/archive/demos/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+COMPONENT_ARCHIVE_URL=  https://mesa.freedesktop.org/archive/demos/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+#COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ARCHIVE_HASH= \
-	sha256:01e99c94a0184e63e796728af89bfac559795fb2a0d6f506fa900455ca5fff7d
+	sha256:cea2df0a80f09a30f635c4eb1a672bf90c5ddee0b8e77f4d70041668ef71aac1
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	16781
 
-COMPONENT_BAID=		59323
+COMPONENT_BAID=		139143
+
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
-
-COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
-
-# Override some configure checks for libraries we don't need in the subset
-# we build & ship - have to set them to be non-empty strings though or
-# configure will fail.
-CONFIGURE_ENV += GLEW_CFLAGS="-I-have-no-GLEW-" 
-CONFIGURE_ENV += GLEW_LIBS="-I-have-no-GLEW-"
 
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
