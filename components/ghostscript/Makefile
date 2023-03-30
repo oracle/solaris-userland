@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -28,18 +28,18 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=      9.56.1
+COMPONENT_VERSION=      10.0.0
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
 COMPONENT_DOWNLOAD_URL= https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
-COMPONENT_ARCHIVE_HASH= sha256:1598b9a38659cce8448d42a73054b2f9cbfcc40a9b97eeec5f22d4d6cd1de8e6
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs9561/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_HASH= sha256:a57764d70caf85e2fc0b0f59b83b92e25775631714dcdb97cc6e0cea414bb5a3
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs1000/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
 
 COMPONENT_NAME_1=	tessdata_best
 GIT_REPO_1=		https://github.com/tesseract-ocr/$(COMPONENT_NAME_1)
 GIT_COMMIT_ID_1=	e2aad9b
 
-COMPONENT_BAID=		125961
+COMPONENT_BAID=		136605
 
 include $(WS_MAKE_RULES)/common.mk
 # some backup files are copied to proto
@@ -70,12 +70,18 @@ COMPONENT_INSTALL_TARGETS += \
 	install-exec install-so install-scripts install-data \
 	install-contrib-extras
 
+# Ghostscript build system decided to put shared files into 10.00.0 instead of
+# 10.0.0. That doesn't match COMPONENT_VERSION and our ghostscript-core.p5m
+# would change after each upgrade.
+GS_DEVS_SHARED_DIR=	10.00.0
+PKG_MACROS +=		GS_DEVS_SHARED_DIR=$(GS_DEVS_SHARED_DIR)
+
 COMPONENT_TEST_RESULTS_DIR =	$(COMPONENT_DIR)/test
 COMPONENT_TEST_MASTER =		$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_CMD =		sh $(COMPONENT_DIR)/test/run
 COMPONENT_TEST_ENV +=		TESSDATA_PREFIX="$(SOURCE_DIR_1)"
 COMPONENT_TEST_TRANSFORMS +=	"-e '/^Using/d'"
-COMPONENT_TEST_TRANSFORMS +=	"-e '/extract.c:208:page_free/d'"
+COMPONENT_TEST_TRANSFORMS +=	"-e '/extract.c:.*:extract_subpage_free/d'"
 
 COMPONENT_SYSTEM_TEST_CMD =	sh $(COMPONENT_DIR)/test/run
 COMPONENT_SYSTEM_TEST_ENV +=	TESSDATA_PREFIX="$(SOURCE_DIR_1)"

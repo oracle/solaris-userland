@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 # Do not add 32 bit executables
@@ -28,3 +28,8 @@
 
 # gsx is shipped in as a separate package
 <transform file path=usr/bin/gsx -> drop>
+
+# substitute the strange version gs decided to put shared files into,
+# see GS_DEVS_SHARED_DIR in Makefile
+<transform dir file link hardlink -> edit path "/$(GS_DEVS_SHARED_DIR)/" "/$!(GS_DEVS_SHARED_DIR)/">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
