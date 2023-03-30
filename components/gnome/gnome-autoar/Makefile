@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-autoar
-COMPONENT_VERSION=	0.4.1
+COMPONENT_VERSION=	0.4.3
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gnome-autoar/ 
 COMPONENT_ARCHIVE_HASH= \
-    sha256:646bd50ebad92d91c1be89097a15364156157442cac1471ded7ecb27d9a9150e
+    sha256:7bdf0789553496abddc3c963b0ce7363805c0c02c025feddebcaacc787249e88
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	15236
 
-COMPONENT_BAID=		112044
+COMPONENT_BAID=		139128
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
