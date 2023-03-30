@@ -26,19 +26,21 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		iniconfig
-COMPONENT_VERSION=	1.1.1
+COMPONENT_VERSION=	2.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:9d6a3a7eb04c730fc8db785809736acab0358ff52da6692818c3392186bd1934
-COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pytest-dev/iniconfig
 COMPONENT_BUGDB=	python-mod/iniconfig
-COMPONENT_ANITYA_ID=	6883
-COMPONENT_BAID=		116642
+COMPONENT_ANITYA_ID=	114778
+COMPONENT_BAID=		140181
+
+# pypi archive doesn't include the test suite
+GIT_REPO=	https://github.com/pytest-dev/iniconfig
+GIT_COMMIT_ID=	v$(COMPONENT_VERSION)
+GIT_HASH=	sha256:19b0bbce4df0434b821290bb935eb69a9d42b079135d902d959f2df6ec47629c
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)

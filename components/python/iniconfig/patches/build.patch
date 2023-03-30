@@ -1,0 +1,49 @@
+We do not have hatchling on Solaris, and it doesn't seem necessary
+to deliver it at this point. This patch modifies the build metadata
+to use setuptools instead.
+
+Also, the GitHub archive we use doesn't contain all the info necessary
+to guess the package version automatically, which is why it's explicitly
+listed here.
+
+Not intended for upstream.
+
+--- iniconfig-2.0.0/pyproject.toml
++++ iniconfig-2.0.0/pyproject.toml
+@@ -1,23 +1,18 @@
+ [build-system]
+-build-backend = "hatchling.build"
+-requires = [
+-  "hatch-vcs",
+-  "hatchling",
+-]
++requires = ["setuptools"]
++build-backend = "setuptools.build_meta"
+ 
+ [project]
+ name = "iniconfig"
++version = "2.0.0"
+ description = "brain-dead simple config-ini parsing"
+ readme = "README.rst"
+-license = "MIT"
++license = {text = "MIT"}
+ authors = [
+     { name = "Ronny Pfannschmidt", email = "opensource@ronnypfannschmidt.de" },
+     { name = "Holger Krekel", email = "holger.krekel@gmail.com" },
+ ]
+ requires-python = ">=3.7"
+-dynamic = [
+-  "version",
+-]
+ classifiers = [
+     "Development Status :: 4 - Beta",
+     "Intended Audience :: Developers",
+@@ -60,8 +55,6 @@ default = "pytest"
+ [[tool.hatch.envs.test.matrix]]
+ python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+ 
+-[tool.setuptools_scm]
+-
+ [tool.mypy]
+ strict = true
+ 
