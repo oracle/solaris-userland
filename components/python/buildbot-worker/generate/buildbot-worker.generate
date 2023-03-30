@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 # Manifest contains only generic version with $(PYVER) variable.
-<transform file link path=.+3\.7.* -> edit path 3\\.7 \$\(PYVER\)>
+<transform file link path=.+3\.11.* -> edit path 3\\.11 \$\(PYVER\)>
 
 # don't ship test related files
 <transform file path=.*/buildbot_worker/test/.* -> drop>
@@ -34,3 +34,9 @@
 
 # Bypass pkgdepend detection of importlib in executable entry scripts
 <transform file path=usr/bin/.* -> set pkg.depend.bypass-generate .*importlib.*>
+
+# Drop all patch backup files
+<transform file path=.+~$ -> drop>
+
+# Don't ship files related to experimental msgpack protocol.
+<transform file path=.*/buildbot_worker/(msgpack|util/deferwaiter).py$ -> drop>

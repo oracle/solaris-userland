@@ -20,34 +20,35 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		buildbot-worker
-COMPONENT_VERSION=	3.4.0
+COMPONENT_VERSION=	3.7.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e7f8adceb871e56d154713f834101804ed5894ab9d55d9f1c05fdeaa8bae1abe
+    sha256:2dcf8536b7d72df7849c3a8d06cf51f7a8eda0510e086daf2d15862a2a7ff953
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://buildbot.net/
 COMPONENT_BUGDB=	utility/buildbot
 COMPONENT_ANITYA_ID=	48000
-
-COMPONENT_BAID=		110618
+COMPONENT_BAID=		139815
 
 # all we need is a single variant
-PYTHON_VERSIONS = 3.7
+PYTHON_VERSION = 3.11
+PYTHON_VERSIONS = $(PYTHON_VERSION)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/buildbot_worker/test
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+# Experimental msgpack protocol is not supported at this point.
+COMPONENT_TEST_ARGS =	--ignore=unit/test_msgpack.py
 COMPONENT_TEST_ENV=	PATH=$(GNUBIN):$(PATH)
 
 PKG_MACROS +=	PYVER=$(PYTHON_VERSION)
@@ -67,3 +68,6 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/python-twisted-%)
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network
+
+# Testing related components
+REQUIRED_PACKAGES += $(PYVS:%=library/python/psutil-%)

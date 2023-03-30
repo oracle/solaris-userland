@@ -4,8 +4,8 @@ another soon-to-be-obsolete dependency is not feasible, we are patching it out.
 
 Not suitable for upstream (although they will most likely do the same thing soon).
 
---- buildbot-worker-3.4.0/buildbot_worker/compat.py
-+++ buildbot-worker-3.4.0/buildbot_worker/compat.py
+--- buildbot-worker-3.7.0/buildbot_worker/compat.py
++++ buildbot-worker-3.7.0/buildbot_worker/compat.py
 @@ -21,7 +21,6 @@ between Python 2 and Python 3.
  
  from __future__ import absolute_import
@@ -35,8 +35,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  
  __all__ = [
---- buildbot-worker-3.4.0/buildbot_worker/commands/utils.py
-+++ buildbot-worker-3.4.0/buildbot_worker/commands/utils.py
+--- buildbot-worker-3.7.0/buildbot_worker/commands/utils.py
++++ buildbot-worker-3.7.0/buildbot_worker/commands/utils.py
 @@ -15,7 +15,6 @@
  
  from __future__ import absolute_import
@@ -57,8 +57,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
              except UnicodeDecodeError:
                  log.err("rmdirRecursive: decoding from UTF-8 failed (ignoring)")
  
---- buildbot-worker-3.4.0/buildbot_worker/monkeypatches/testcase_assert.py
-+++ buildbot-worker-3.4.0/buildbot_worker/monkeypatches/testcase_assert.py
+--- buildbot-worker-3.7.0/buildbot_worker/monkeypatches/testcase_assert.py
++++ buildbot-worker-3.7.0/buildbot_worker/monkeypatches/testcase_assert.py
 @@ -15,7 +15,6 @@
  
  from __future__ import absolute_import
@@ -76,17 +76,17 @@ Not suitable for upstream (although they will most likely do the same thing soon
          expected_regexp = re.compile(expected_regexp)
  
      if not expected_regexp.search(str(exception)):
---- buildbot-worker-3.4.0/buildbot_worker/pbutil.py
-+++ buildbot-worker-3.4.0/buildbot_worker/pbutil.py
+--- buildbot-worker-3.7.0/buildbot_worker/pbutil.py
++++ buildbot-worker-3.7.0/buildbot_worker/pbutil.py
 @@ -19,7 +19,6 @@
  
  from __future__ import absolute_import
  from __future__ import print_function
 -from future.utils import iteritems
  
+ from twisted.application.internet import backoffPolicy
  from twisted.cred import error
- from twisted.internet import reactor
-@@ -114,6 +113,6 @@ def decode(data, encoding='utf-8', error
+@@ -153,6 +152,6 @@ def decode(data, encoding='utf-8', error
          return bytes2unicode(data, encoding, errors)
      if data_type in (dict, list, tuple):
          if data_type == dict:
@@ -94,13 +94,12 @@ Not suitable for upstream (although they will most likely do the same thing soon
 +            data = data.items()
          return data_type(map(decode, data))
      return data
---- buildbot-worker-3.4.0/buildbot_worker/runprocess.py
-+++ buildbot-worker-3.4.0/buildbot_worker/runprocess.py
-@@ -19,11 +19,6 @@ Support for running 'shell commands'
+--- buildbot-worker-3.7.0/buildbot_worker/runprocess.py
++++ buildbot-worker-3.7.0/buildbot_worker/runprocess.py
+@@ -19,10 +19,6 @@ Support for running 'shell commands'
  
  from __future__ import absolute_import
  from __future__ import print_function
--from future.builtins import range
 -from future.utils import PY3
 -from future.utils import iteritems
 -from future.utils import string_types
@@ -108,7 +107,7 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  import os
  import pprint
-@@ -56,6 +51,8 @@ from buildbot_worker.exceptions import A
+@@ -54,6 +50,8 @@ from buildbot_worker.exceptions import A
  if runtime.platformType == 'posix':
      from twisted.internet.process import Process
  
@@ -117,19 +116,19 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  def win32_batch_quote(cmd_list, unicode_encoding='utf-8'):
      # Quote cmd_list to a string that is suitable for inclusion in a
-@@ -337,9 +334,9 @@ class RunProcess(object):
+@@ -324,9 +322,9 @@ class RunProcess(object):
          def to_bytes(cmd):
              if isinstance(cmd, (tuple, list)):
                  for i, a in enumerate(cmd):
 -                    if isinstance(a, text_type):
 +                    if isinstance(a, str):
-                         cmd[i] = a.encode(self.builder.unicode_encoding)
+                         cmd[i] = a.encode(unicode_encoding)
 -            elif isinstance(cmd, text_type):
 +            elif isinstance(cmd, str):
-                 cmd = cmd.encode(self.builder.unicode_encoding)
+                 cmd = cmd.encode(unicode_encoding)
              return cmd
  
-@@ -355,7 +352,7 @@ class RunProcess(object):
+@@ -344,7 +342,7 @@ class RunProcess(object):
          if not os.path.exists(workdir):
              os.makedirs(workdir)
          if environ:
@@ -138,7 +137,7 @@ Not suitable for upstream (although they will most likely do the same thing soon
                  if isinstance(v, list):
                      # Need to do os.pathsep translation.  We could either do that
                      # by replacing all incoming ':'s with os.pathsep, or by
-@@ -378,9 +375,9 @@ class RunProcess(object):
+@@ -367,9 +365,9 @@ class RunProcess(object):
                  # environment
                  if key not in environ or environ[key] is not None:
                      newenv[key] = os.environ[key]
@@ -150,17 +149,17 @@ Not suitable for upstream (although they will most likely do the same thing soon
                          raise RuntimeError("'env' values must be strings or "
                                             "lists; key '{0}' is incorrect".format(key))
                      newenv[key] = p.sub(subst, v)
-@@ -637,7 +634,7 @@ class RunProcess(object):
+@@ -618,7 +616,7 @@ class RunProcess(object):
  
          # echo off hides this cheat from the log files.
          tf.write(u"@echo off\n")
 -        if isinstance(self.command, (string_types, bytes)):
 +        if isinstance(self.command, (str, bytes)):
-             tf.write(bytes2NativeString(self.command, self.builder.unicode_encoding))
+             tf.write(bytes2NativeString(self.command, self.unicode_encoding))
          else:
-             tf.write(win32_batch_quote(self.command, self.builder.unicode_encoding))
---- buildbot-worker-3.4.0/buildbot_worker/scripts/windows_service.py
-+++ buildbot-worker-3.4.0/buildbot_worker/scripts/windows_service.py
+             tf.write(win32_batch_quote(self.command, self.unicode_encoding))
+--- buildbot-worker-3.7.0/buildbot_worker/scripts/windows_service.py
++++ buildbot-worker-3.7.0/buildbot_worker/scripts/windows_service.py
 @@ -67,7 +67,6 @@
  from __future__ import absolute_import
  from __future__ import division
@@ -169,8 +168,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  import os
  import sys
---- buildbot-worker-3.4.0/buildbot_worker/test/unit/test_bot.py
-+++ buildbot-worker-3.4.0/buildbot_worker/test/unit/test_bot.py
+--- buildbot-worker-3.7.0/buildbot_worker/test/unit/test_bot.py
++++ buildbot-worker-3.7.0/buildbot_worker/test/unit/test_bot.py
 @@ -15,7 +15,6 @@
  
  from __future__ import absolute_import
@@ -179,8 +178,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  import multiprocessing
  import os
---- buildbot-worker-3.4.0/buildbot_worker/test/util/misc.py
-+++ buildbot-worker-3.4.0/buildbot_worker/test/util/misc.py
+--- buildbot-worker-3.7.0/buildbot_worker/test/util/misc.py
++++ buildbot-worker-3.7.0/buildbot_worker/test/util/misc.py
 @@ -20,8 +20,6 @@
  
  from __future__ import absolute_import
@@ -205,8 +204,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
          return s
      return s.replace('\n', os.linesep)
  
---- buildbot-worker-3.4.0/buildbot_worker/util/__init__.py
-+++ buildbot-worker-3.4.0/buildbot_worker/util/__init__.py
+--- buildbot-worker-3.7.0/buildbot_worker/util/__init__.py
++++ buildbot-worker-3.7.0/buildbot_worker/util/__init__.py
 @@ -13,8 +13,6 @@
  #
  # Copyright Buildbot Team Members
@@ -225,13 +224,21 @@ Not suitable for upstream (although they will most likely do the same thing soon
              return s
          return str(s)
  
---- buildbot-worker-3.4.0/setup.py
-+++ buildbot-worker-3.4.0/setup.py
-@@ -150,7 +150,6 @@ twisted_ver = ">= 17.9.0"
+--- buildbot-worker-3.7.0/setup.py
++++ buildbot-worker-3.7.0/setup.py
+@@ -149,7 +149,6 @@ twisted_ver = ">= 18.7.0"
  if setuptools is not None:
      setup_args['install_requires'] = [
          'twisted ' + twisted_ver,
 -        'future',
      ]
  
-     # buildbot_worker_windows_service needs pywin32
+     if sys.version_info >= (3, 6):
+--- buildbot-worker-3.7.0/buildbot_worker.egg-info/requires.txt
++++ buildbot-worker-3.7.0/buildbot_worker.egg-info/requires.txt
+@@ -1,5 +1,4 @@
+ twisted>=18.7.0
+-future
+ autobahn>=0.16.0
+ msgpack>=0.6.0
+ 
