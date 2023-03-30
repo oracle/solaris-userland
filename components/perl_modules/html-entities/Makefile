@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		HTML-Parser
-COMPONENT_VERSION=	3.72
+COMPONENT_VERSION=	3.81
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:cec2b0b45bf9f47319d3466a94a973c6e9eb589f04cddd0a9a67c421c1be44a7
+    sha256:c0910a5c8f92f8817edd06ccfd224ba1c2ebe8c10f551f032587a1fc83d62ff2
 COMPONENT_ARCHIVE_URL=	\
-    https://cpan.metacpan.org/authors/id/G/GA/GAAS/$(COMPONENT_ARCHIVE)
+    https://cpan.metacpan.org/authors/id/O/OA/OALDERS/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://metacpan.org/pod/HTML::Entities
 COMPONENT_BUGDB=	perl-mod/html-entities
 COMPONENT_ANITYA_ID=	2967
 
-COMPONENT_BAID=		71356
+COMPONENT_BAID=		137470
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -53,7 +53,8 @@ build:		$(BUILD_64)
 
 install:	$(INSTALL_64)
 
-test:		$(TEST_64)
+# We are missing Clone, URI and HTTP::Headers
+test:          $(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 

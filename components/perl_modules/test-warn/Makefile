@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Test-Warn
-COMPONENT_VERSION=	0.36
+COMPONENT_VERSION=	0.37
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6e09aaa0d7b9b9516bfb7f3466a7a92ef8b60d1556402cc96650855a5fc30dde
+    sha256:98ca32e7f2f5ea89b8bfb9a0609977f3d153e242e2e51705126cb954f1a06b57
 COMPONENT_ARCHIVE_URL=	\
     https://cpan.metacpan.org/authors/id/B/BI/BIGJ/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://metacpan.org/pod/Test::Warn
 COMPONENT_BUGDB=	perl-mod/test-warn
 COMPONENT_ANITYA_ID=	3425
 
-COMPONENT_BAID=		71406
+COMPONENT_BAID=		137475
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

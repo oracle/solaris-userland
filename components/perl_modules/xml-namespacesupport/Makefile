@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		XML-NamespaceSupport
-COMPONENT_VERSION=	1.11
+COMPONENT_VERSION=	1.12
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6d8151f0a3f102313d76b64bfd1c2d9ed46bfe63a16f038e7d860fda287b74ea
+    sha256:47e995859f8dd0413aa3f22d350c4a62da652e854267aa0586ae544ae2bae5ef
 COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/P/PE/PERIGRIN/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/~perigrin/XML-NamespaceSupport-1.11/lib/XML/NamespaceSupport.pm
 COMPONENT_BUGDB=	perl-mod/xml-namespace 
 COMPONENT_ANITYA_ID=	3530
 
-COMPONENT_BAID=		12443
+COMPONENT_BAID=		137478
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -53,7 +53,7 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 # Transform to remove machine-specific lines in test results
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^PERL_DL_NONLAZY/d" ' \
-	'-e "s|\(^Files=1,\sTests=48\).*|\1|" '
+	'-e "s|,[^,]*wallclock secs.*||" '
 
 build:		$(BUILD_64)
 

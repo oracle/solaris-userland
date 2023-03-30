@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		File-Which
-COMPONENT_VERSION=	1.23
+COMPONENT_VERSION=	1.27
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b79dc2244b2d97b6f27167fc3b7799ef61a179040f3abd76ce1e0a3b0bc4e078
+    sha256:3201f1a60e3f16484082e6045c896842261fc345de9fb2e620fd2a2c7af3a93a
 COMPONENT_ARCHIVE_URL=	\
     http://www.cpan.org/authors/id/P/PL/PLICEASE/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/dist/File-Which/
 COMPONENT_BUGDB=	perl-mod/file-which
 COMPONENT_ANITYA_ID=	6478
 
-COMPONENT_BAID=		67414
+COMPONENT_BAID=		137467
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

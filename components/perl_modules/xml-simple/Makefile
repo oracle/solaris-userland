@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 # Note that the use of this module itself is discouraged in new code.
@@ -29,18 +29,18 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		XML-Simple
-COMPONENT_VERSION=	2.24
+COMPONENT_VERSION=	2.25
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9a14819fd17c75fbb90adcec0446ceab356cab0ccaff870f2e1659205dc2424f
+    sha256:531fddaebea2416743eb5c4fdfab028f502123d9a220405a4100e68fc480dbf8
 COMPONENT_ARCHIVE_URL=	\
     http://www.cpan.org/authors/id/G/GR/GRANTM/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/dist/XML-Simple/
 COMPONENT_BUGDB=	perl-mod/xml-parser
 COMPONENT_ANITYA_ID=	3537
 
-COMPONENT_BAID=		40556
+COMPONENT_BAID=		137488
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

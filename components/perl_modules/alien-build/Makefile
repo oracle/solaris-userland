@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Alien-Build
-COMPONENT_VERSION=	1.89
+COMPONENT_VERSION=	2.77
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ffe36fa5b43c2e9c8c72a074a5ebc7d17821c0e297cd226797b0c192362027cb
+    sha256:fbf39ef634e364616e43e851c15a195ffa157b5cd7c9d89abfd8e31b6b11f1e9
 COMPONENT_ARCHIVE_URL=	\
     http://www.cpan.org/authors/id/P/PL/PLICEASE/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/dist/Alien-Build/
 COMPONENT_BUGDB=	perl-mod/alien-build
 COMPONENT_ANITYA_ID=	15795
 
-COMPONENT_BAID=		69766
+COMPONENT_BAID=		137455
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

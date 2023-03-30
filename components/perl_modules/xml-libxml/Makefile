@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		XML-LibXML
-COMPONENT_VERSION=	2.201
-HUMAN_VERSION=		2.0201
+COMPONENT_VERSION=	2.208
+HUMAN_VERSION=		2.0208
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e008700732502b3f1f0890696ec6e2dc70abf526cd710efd9ab7675cae199bc2
+    sha256:0c006b03bf8d0eb531fb56bda3ae15754ca56d888dd7b9e805ab9eb19d5fd653
 COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/S/SH/SHLOMIF/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/~shlomif/XML-LibXML/
 COMPONENT_BUGDB=	perl-mod/xml-libxml
 COMPONENT_ANITYA_ID=	3527
 
-COMPONENT_BAID=		67423
+COMPONENT_BAID=		137477
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

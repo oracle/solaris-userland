@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Path-Tiny
-COMPONENT_VERSION=	0.108
+COMPONENT_VERSION=	0.144
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3c49482be2b3eb7ddd7e73a5b90cff648393f5d5de334ff126ce7a3632723ff5
+    sha256:f6ea094ece845c952a02c2789332579354de8d410a707f9b7045bd241206487d
 COMPONENT_ARCHIVE_URL=	\
     http://www.cpan.org/authors/id/D/DA/DAGOLDEN/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/dist/Path-Tiny/
 COMPONENT_BUGDB=	perl-mod/path-tiny
 COMPONENT_ANITYA_ID=	11962
 
-COMPONENT_BAID=		67410
+COMPONENT_BAID=		137472
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Test-Deep
-COMPONENT_VERSION=	1.128
+COMPONENT_VERSION=	1.204
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6ba6b53ea3f0956fce199eabe19df29d4042c7afb01692432346c0944d02e8f5
+    sha256:b6591f6ccdd853c7efc9ff3c5756370403211cffe46047f082b1cd1611a84e5f
 COMPONENT_ARCHIVE_URL=	\
     https://cpan.metacpan.org/authors/id/R/RJ/RJBS/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://metacpan.org/pod/Test::Deep
 COMPONENT_BUGDB=	perl-mod/test-deep
 COMPONENT_ANITYA_ID=	11907
 
-COMPONENT_BAID=		71366
+COMPONENT_BAID=		137474
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

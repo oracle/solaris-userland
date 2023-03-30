@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 # This variable has no impact on perl build, it is here merely to satisfy
@@ -32,15 +32,15 @@ BUILD_BITS = 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		DBD-SQLite
-COMPONENT_VERSION=	1.70
+COMPONENT_VERSION=	1.72
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:40fd8ddf539e0e773a7a4e6d376794c3301459f9ab0050978bdcf97113dafe3e
+	sha256:5ca41e61eb52b52bd862a3088b912a75fe70910ac789b9a9983e0a449e94f551
 COMPONENT_ARCHIVE_URL=	http://backpan.perl.org/authors/id/I/IS/ISHIGAKI/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://github.com/DBD-SQLite/DBD-SQLite
 COMPONENT_BUGDB=	perl-mod/dbd-sqlite
 COMPONENT_ANITYA_ID=	2810
 
-COMPONENT_BAID=		119057
+COMPONENT_BAID=		137466
 
 BUILD_STYLE= makemaker
 LICENSE=DBD-SQLite.license

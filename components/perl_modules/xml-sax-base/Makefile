@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		XML-SAX-Base
-COMPONENT_VERSION=	1.8
-HUMAN_VERSION=		1.08
+COMPONENT_VERSION=	1.9
+HUMAN_VERSION=		1.09
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:666270318b15f88b8427e585198abbc19bc2e6ccb36dc4c0a4f2d9807330219e
+    sha256:66cb355ba4ef47c10ca738bd35999723644386ac853abbeb5132841f5e8a2ad0
 COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/G/GR/GRANTM/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/~grantm/
 COMPONENT_BUGDB=	perl-mod/xml-sax-base
 COMPONENT_ANITYA_ID=	3535
 
-COMPONENT_BAID=		12604
+COMPONENT_BAID=		137486
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

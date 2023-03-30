@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		PkgConfig
-COMPONENT_VERSION=	0.23026
+COMPONENT_VERSION=	0.25026
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:56c8ad9015af3799b99a21b8790997723406acf479f35d13fe9bf632db2d5c26
+    sha256:4dba5ed3c2d6a681b95c5ebf14b6a6995ce6991ae4719bad7f1aaf38e987c2a0
 COMPONENT_ARCHIVE_URL=	\
     http://www.cpan.org/authors/id/P/PL/PLICEASE/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/dist/PkgConfig/
 COMPONENT_BUGDB=	perl-mod/pkgconfig
 COMPONENT_ANITYA_ID=	21232
 
-COMPONENT_BAID=		67420
+COMPONENT_BAID=		137473
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
