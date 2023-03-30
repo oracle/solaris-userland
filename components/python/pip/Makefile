@@ -24,20 +24,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         pip
-COMPONENT_VERSION=      20.3.4
+COMPONENT_VERSION=      23.0.1
 COMPONENT_SRC=          $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:05ac8afe08b5fc34c61e1f91e3cd8effba42250419938c2070a139efdc5d0d57
+    sha256:8544443b6810cf1e41306f44218449524d579f4f801b6b16e46f7cabe64de155
 COMPONENT_ARCHIVE_URL=  https://github.com/pypa/pip/archive/$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=  https://github.com/pypa/pip
 COMPONENT_BUGDB=	utility/pip
 COMPONENT_ANITYA_ID=	6529
-
-COMPONENT_BAID=		101202
+COMPONENT_BAID=		140067
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
@@ -45,14 +44,6 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 # allow pkg to create the mediated link
 COMPONENT_POST_INSTALL_ACTION = \
 	(cd $(PROTO_DIR)/usr/bin ; $(MV) -f pip pip-$(PYTHON_VERSION));
-
-# INSTALLER file with 'pkg' as content prevents notices about newer available
-# pip version from appearing to our customers. We don't want our users to
-# update pip themselves, because our pip is patched to prevent damage to IPS
-# and other Python-related software.
-COMPONENT_EGG_DIR = $(COMPONENT_NAME)-$(COMPONENT_VERSION)-py$(PYTHON_VERSION).egg-info
-COMPONENT_POST_INSTALL_ACTION += \
-	(echo 'pkg' > $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)/$(COMPONENT_EGG_DIR)/INSTALLER)
 
 # common targets
 build:          $(BUILD_NO_ARCH)
@@ -64,5 +55,3 @@ install:        $(INSTALL_NO_ARCH)
 test:           $(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += library/python/requests

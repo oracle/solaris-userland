@@ -20,10 +20,13 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
 
 # remove versioned pip executables without the dash
 <transform file path=.*/pip[^/-]+$ -> drop>
+
+# remove windows related binaries
+<transform file path=.*/pip/_vendor/distlib/.*\.exe$ -> drop>
