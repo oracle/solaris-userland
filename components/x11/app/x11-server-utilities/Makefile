@@ -153,6 +153,7 @@ $(foreach n, $(LIST), \
 include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_OPTIONS += --disable-secure-rpc	# for xhost
+$(BUILD_DIR_2)/.configured: CONFIGURE_OPTIONS += --without-xf86misc # for xset
 
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/data/xbitmaps
@@ -166,5 +167,4 @@ REQUIRED_PACKAGES += x11/library/libxinerama
 REQUIRED_PACKAGES += x11/library/libxmuu
 REQUIRED_PACKAGES += x11/library/libxrandr
 REQUIRED_PACKAGES += x11/library/libxrender
-REQUIRED_PACKAGES += x11/library/libxxf86misc
 REQUIRED_PACKAGES += x11/library/libxxf86vm

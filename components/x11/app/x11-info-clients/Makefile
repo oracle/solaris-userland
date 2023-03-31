@@ -104,8 +104,9 @@ $(foreach n, $(LIST), \
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-# Disable support for DMX in xdpyinfo, since it's being EOF'ed
+# Disable support for DMX & xf86misc in xdpyinfo, since they've been EOF'ed
 CONFIGURE_OPTIONS += --without-dmx
+CONFIGURE_OPTIONS += --without-xf86misc
 
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11
@@ -117,7 +118,6 @@ REQUIRED_PACKAGES += x11/library/libxinerama
 REQUIRED_PACKAGES += x11/library/libxrender
 REQUIRED_PACKAGES += x11/library/libxtst
 REQUIRED_PACKAGES += x11/library/libxv
-REQUIRED_PACKAGES += x11/library/libxxf86misc
 REQUIRED_PACKAGES += x11/library/libxxf86vm
 REQUIRED_PACKAGES += x11/library/mesa
 REQUIRED_PACKAGES += x11/library/xcb-util
