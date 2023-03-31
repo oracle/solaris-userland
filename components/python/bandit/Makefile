@@ -26,17 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bandit
-COMPONENT_VERSION=	1.7.0
+COMPONENT_VERSION=	1.7.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:786a2d867c894ac53b390c284f24aae9ff03d8721c719d081503bdba6a204b22
+    sha256:bdfc739baa03b880c2d15d0431b31c658ffc348e907fe197e54e0389dd59e11e
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://bandit.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	utility/bandit
 COMPONENT_ANITYA_ID=	7319
-
-COMPONENT_BAID=		105266
+COMPONENT_BAID=		141261
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -71,7 +70,6 @@ system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/stevedore-%)
 
 # Testing related components
