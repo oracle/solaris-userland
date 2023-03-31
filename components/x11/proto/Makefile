@@ -48,9 +48,8 @@ COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 COMPONENT_INSTALL_ARGS += pkgconfigdir="$(DESTDIR)/usr/share/pkgconfig"
 CONFIGURE_ENV += XORG_SGML_PATH="$(PROTO_DIR)/usr/share/sgml"
 
-# This is for the xevie headers which we still include
-# Will be dropped once EOF of xevie completes (PSARC/2022/176)
-CONFIGURE_OPTIONS += --enable-legacy
+# We've either EOF'ed or never shipped support for all the legacy extensions
+CONFIGURE_OPTIONS += --disable-legacy
 
 REQUIRED_PACKAGES += developer/documentation-tool/asciidoc
 REQUIRED_PACKAGES += x11/documentation/xorg-docs
