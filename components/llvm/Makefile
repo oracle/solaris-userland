@@ -75,6 +75,7 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 include $(WS_MAKE_RULES)/common.mk
 
+PYTHON_VERSION = 3.11
 PKG_MACROS += PYVER="$(PYTHON_VERSION)"
 
 DEBUG_BUILD := 0
@@ -450,7 +451,7 @@ REQUIRED_PACKAGES += library/perl-5/xml-parser
 REQUIRED_PACKAGES += library/perl-5/xml-sax
 REQUIRED_PACKAGES += library/perl-5/xml-sax-base
 REQUIRED_PACKAGES += library/perl-5/xml-simple
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/header
 REQUIRED_PACKAGES += system/library/gcc/gcc-runtime-12

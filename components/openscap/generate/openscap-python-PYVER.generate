@@ -1,10 +1,10 @@
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 # We don't deliver openscap bindings for Python 3.9, and thus it's necessary
-# to use 3.7 for $(PYVER) substitution.
-<transform file link path=.+3\.7.* -> edit path 3\\.7 \$\(PYVER\)>
+# to use 3.11 for $(PYVER) substitution.
+<transform file link path=.+3\.11.* -> edit path 3\\.11 \$\(PYVER\)>
 
 <include ../python/generate/common.transform>
 
@@ -13,12 +13,5 @@
 <transform file path=usr/lib/python\$\(PYVER\)/.+ -> delete _drop_me_ .*>
 <transform file link _drop_me_=true -> drop>
 
-# Use $(PYVER)
-<transform dir file link hardlink -> edit path "/lib/python2.7/" "/lib/python$!(PYVER)/">
-<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
-<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages/oscap_docker_python/__init__.py -> drop>
-<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages/oscap_docker_python/get_cve_input.py -> drop>
-<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages/oscap_docker_python/oscap_docker_common.py -> drop>
-<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages/oscap_docker_python/oscap_docker_util.py -> drop>
-<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages/oscap_docker_python/oscap_docker_util_noatomic.py -> drop>
-
+# Don't deliver oscap_docker_python related files.
+<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages/oscap_docker_python/.* -> drop>

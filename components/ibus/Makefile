@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -43,7 +43,8 @@ TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 # Use explicit Python version rather than the default one
-CONFIGURE_ENV +=	PYTHON=$(PYTHON.3.7)
+PYTHON_VERSION =	3.11
+CONFIGURE_ENV +=	PYTHON=$(PYTHON)
 
 CONFIGURE_ENV +=	PATH=$(GNUBIN):$(USRBINDIR)
 CONFIGURE_ENV +=	GI_SCANNER_DISABLE_CACHE=1
@@ -65,6 +66,9 @@ CONFIGURE_OPTIONS +=	--disable-gtk-doc
 COMPONENT_POST_INSTALL_ACTION += \
     $(GUNZIP) -f $(PROTO_DIR)/usr/share/man/man*/*.gz ;
 
+# For autopyc transformation
+PKG_MACROS +=   PYVER=$(PYTHON_VERSION)
+
 REQUIRED_PACKAGES +=	library/desktop/atk
 REQUIRED_PACKAGES +=	library/desktop/cairo
 REQUIRED_PACKAGES +=	library/desktop/gdk-pixbuf
@@ -76,6 +80,6 @@ REQUIRED_PACKAGES +=	library/desktop/pango
 REQUIRED_PACKAGES +=	library/glib2
 REQUIRED_PACKAGES +=	library/gnome/dconf
 REQUIRED_PACKAGES +=	library/popt
-REQUIRED_PACKAGES +=	runtime/python-37
+REQUIRED_PACKAGES +=	runtime/python-311
 REQUIRED_PACKAGES +=	x11/library/libx11
 REQUIRED_PACKAGES +=	x11/library/libxi

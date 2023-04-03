@@ -44,7 +44,7 @@ CFLAGS+=		-std=c99
 CFLAGS+=		-DNDEBUG
 CFLAGS+=		-D__$(MACH64)
 
-PYTHON_VERSION =	3.7
+PYTHON_VERSION =	3.11
 PYTHON_VERSIONS=	$(PYTHON_VERSION)
 
 # Compile only for single perl version
@@ -53,7 +53,7 @@ PERL_VERSIONS =		$(PERL_VERSION)
 # Tests require xpath tool that is not available on Solaris.
 TEST_TARGET = $(NO_TESTS)
 
-# openscap is not adding cpython-37m string to shared libraries
+# openscap is not adding cpython-XX suffix to shared libraries
 PY3_CPYTHON_NAMING = \#
 
 include $(WS_MAKE_RULES)/common.mk
@@ -119,7 +119,7 @@ REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/pcre
 REQUIRED_PACKAGES += library/xmlsec
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += security/compliance/openscap
 REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

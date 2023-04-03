@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -40,10 +40,15 @@ COMPONENT_BUGDB=	library/libsndfile
 COMPONENT_ANITYA_ID=	13277
 COMPONENT_BAID=		127281
 
+PYTHON_VERSION = 3.11
+
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
 
 include $(WS_MAKE_RULES)/common.mk
+
+# Use explicit Python version rather than the default one
+CONFIGURE_ENV += PYTHON=$(PYTHON)
 
 # Needed to get tests/header_test.c to compile successfully on SPARC.
 gcc_XREGS.sparc=	-mapp-regs

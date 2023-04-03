@@ -54,7 +54,7 @@ include $(WS_MAKE_RULES)/common.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.11
 
 # The GNU compiler wants the GNU utilities.
 PATH=$(GNUBIN):$(USRBINDIR):$(USRDIR)/perl5/bin:$(GCC_ROOT)/bin
