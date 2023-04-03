@@ -20,9 +20,9 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64
+BUILD_BITS= 64_and_32
 COMPILER = gcc
 
 include ../../make-rules/shared-macros.mk
@@ -46,9 +46,17 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 # Set up arguments for install
 COMPONENT_INSTALL_ARGS += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ARGS += CC="$(CC)"
-COMPONENT_INSTALL_ARGS += PREFIX=$(USRDIR)
-COMPONENT_INSTALL_ARGS += LIBDIR=$(USRLIBDIR64)
+COMPONENT_INSTALL_ARGS += CFLAGS="$(CFLAGS)"
+COMPONENT_INSTALL_ARGS += prefix=$(USRDIR)
+COMPONENT_INSTALL_ARGS.32 += LIBDIR=$(USRLIBDIR)
+COMPONENT_INSTALL_ARGS.64 += LIBDIR=$(USRLIBDIR64)
 COMPONENT_INSTALL_ARGS += MANDIR=$(USRSHAREMANDIR)
+
+COMPONENT_BUILD_ARGS   += $(COMPONENT_INSTALL_ARGS)
+
+# strip -L/usr/lib from 32b. pc-file
+COMPONENT_POST_INSTALL_ACTION += $(GSED) -i -e 's|-L\$${libdir}||g' \
+  $(PROTO_DIR)/usr/lib/pkgconfig/libzstd.pc ;
 
 # Set up arguments for test
 COMPONENT_TEST_ARGS += CC="$(CC)"
@@ -58,5 +66,8 @@ COMPONENT_TEST_TRANSFORMS += \
   '-n' \
   '-e "/^test/p" '
 
-REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += compress/lz4
+REQUIRED_PACKAGES += compress/xz
+REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library/libc
