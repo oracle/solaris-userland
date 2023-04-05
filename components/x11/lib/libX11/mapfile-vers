@@ -2,7 +2,7 @@
 #
 # libX11 version mapfile
 #
-# Copyright (c) 2008, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -44,7 +44,7 @@ $mapfile_version 2
 
 #
 # README README README README README README: how to update this file
-#   1) All new public symbols go in SUNWpublic (not yet added)
+#   1) All new public symbols go in SUNWpublic (between SUNW_1.4 & SUNWprivate)
 #   2) Any private symbols that need to be available to other objects
 #      go in SUNWprivate
 #   3) Do not remove or alter any other existing versions
@@ -785,6 +785,13 @@ SYMBOL_VERSION SUNW_1.4 {
 	_XGetRequest;
 } SUNW_1.3;
 
+# All new public functions added in Solaris 11.4 and later go here
+SYMBOL_VERSION SUNWpublic {
+# New function added in libX11 1.7 for error handling
+	XSetIOErrorExitHandler;
+} SUNW_1.4;
+
+
 SYMBOL_VERSION SUNWprivate {
     global:
 	XauDisposeAuth 		{ TYPE = FUNCTION; FILTER = libXau.so.6 };
@@ -1063,7 +1070,7 @@ SYMBOL_VERSION SUNWprivate {
 	_Xwcstombs;
 	_Xwctomb;
 
-	# Needed for open-src/lib/libXmu/sun-src/src/VisGamma.c:
+	# Needed for components/x11/lib/libXmu/files/VisGamma.c:
 	_XcmsGetElement;
 	_XcmsGetProperty;
 
