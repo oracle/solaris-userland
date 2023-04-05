@@ -25,8 +25,8 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sudo
-SRC_VERSION=	1.9.12
-SRC_PATCH_VERSION=2
+SRC_VERSION=	1.9.13
+SRC_PATCH_VERSION=3
 ifdef SRC_PATCH_VERSION
 COMPONENT_VERSION=	$(SRC_VERSION).$(SRC_PATCH_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(SRC_VERSION)p$(SRC_PATCH_VERSION)
@@ -35,13 +35,13 @@ COMPONENT_VERSION=	$(SRC_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(SRC_VERSION)
 endif
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b9a0b1ae0f1ddd9be7f3eafe70be05ee81f572f6f536632c44cd4101bb2a8539
+    sha256:92334a12bb93e0c056b09f53e255ccb7d6f67c6350e2813cd9593ceeca78560b
 COMPONENT_ARCHIVE_URL=	https://www.sudo.ws/sudo/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_PROJECT_URL=  https://www.sudo.ws/
 COMPONENT_ANITYA_ID=	4906
 
-COMPONENT_BAID=		138517
+COMPONENT_BAID=		140681
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -56,6 +56,8 @@ endif
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
+
+PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 
 # Allows zero-sized struct/union declarations and void functions with return
 # statements returning a value to work.
@@ -127,7 +129,7 @@ COMPONENT_TEST_TRANSFORMS += '-e "s/\(check_ttyname:.*\)(.*)/\1/"'
 VISUDO=$(BUILD_DIR_64)/plugins/sudoers/.libs/visudo
 
 $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/library/security/crypto
