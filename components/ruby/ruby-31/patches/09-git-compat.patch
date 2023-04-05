@@ -1,0 +1,20 @@
+This change makes the test compatible with latest versions of Git (which
+introduced this change as CVE-2022-39253 mitigation).
+
+Change from upstream:
+https://github.com/rubygems/rubygems/commit/e29c79d1891a656ec50c8bd4ff6d8b11ca393f28
+
+--- ruby-3.1.2/test/rubygems/test_gem_source_git.rb
++++ ruby-3.1.2/test/rubygems/test_gem_source_git.rb
+@@ -63,6 +63,11 @@ class TestGemSourceGit < Gem::TestCase
+   end
+ 
+   def test_checkout_submodules
++    # We need to allow to checkout submodules with file:// protocol
++    # CVE-2022-39253
++    # https://lore.kernel.org/lkml/xmqq4jw1uku5.fsf@gitster.g/
++    system(@git, *%W[config --global protocol.file.allow always])
++
+     source = Gem::Source::Git.new @name, @repository, 'master', true
+ 
+     git_gem 'b'
