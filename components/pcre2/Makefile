@@ -81,7 +81,6 @@ CONFIGURE_OPTIONS+=	--includedir=$(CONFIGURE_INCLUDEDIR)/pcre
 CONFIGURE_OPTIONS+=	--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS+=	--disable-static
 CONFIGURE_OPTIONS+=	--enable-rebuild-chartables
-CONFIGURE_OPTIONS+=	--enable-newline-is-any
 CONFIGURE_OPTIONS+=	--disable-stack-for-recursion
 CONFIGURE_OPTIONS+=	--enable-pcre2grep-libz
 CONFIGURE_OPTIONS+=	--enable-pcre2grep-libbz2
