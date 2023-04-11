@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64_and_32
@@ -31,16 +31,16 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		harfbuzz
-COMPONENT_VERSION=	3.1.2
+COMPONENT_VERSION=	7.1.0
 COMPONENT_PROJECT_URL=	https://github.com/harfbuzz/harfbuzz
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4056b1541dd8bbd8ec29207fe30e568805c0705515632d7fec53a94399bc7945
+    sha256:f135a61cd464c9ed6bc9823764c188f276c3850a8dc904628de2a87966b7077b
 COMPONENT_ARCHIVE_URL=	https://github.com/harfbuzz/harfbuzz/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/harfbuzz
 COMPONENT_ANITYA_ID=	1299
 
-COMPONENT_BAID=		112988
+COMPONENT_BAID=		141908
 
 CXXFLAGS += -std=c++11
 

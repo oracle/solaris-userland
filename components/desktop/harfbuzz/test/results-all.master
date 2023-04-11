@@ -1,15 +1,19 @@
 PASS: test-algs
 PASS: test-array
+PASS: test-bimap
 PASS: test-iter
+PASS: test-machinery
 PASS: test-map
+PASS: test-multimap
 PASS: test-number
 PASS: test-ot-tag
 PASS: test-priority-queue
 PASS: test-set
+PASS: test-serialize
 PASS: test-unicode-ranges
 PASS: test-vector
-PASS: test-bimap
 PASS: test-repacker
+PASS: test-classdef-graph
 PASS: check-c-linkage-decls.py
 PASS: check-externs.py
 PASS: check-header-guards.py
@@ -17,8 +21,8 @@ PASS: check-includes.py
 PASS: check-static-inits.py
 PASS: check-symbols.py
 SKIP: check-libstdc++.py
-# TOTAL: 19
-# PASS:  18
+# TOTAL: 23
+# PASS:  22
 # SKIP:  1
 # XFAIL: 0
 # XFAIL: 0
@@ -27,6 +31,8 @@ SKIP: check-libstdc++.py
 # ERROR: 0
 PASS: test-aat-layout
 PASS: test-baseline
+PASS: test-be-glyph-advance
+PASS: test-be-num-glyphs
 PASS: test-blob
 PASS: test-buffer
 PASS: test-c
@@ -34,8 +40,11 @@ PASS: test-collect-unicodes
 PASS: test-cplusplus
 PASS: test-common
 PASS: test-draw
+PASS: test-extents
 PASS: test-font
 PASS: test-font-scale
+PASS: test-glyph-names
+PASS: test-instance-cff2
 PASS: test-map
 PASS: test-object
 PASS: test-ot-alternates
@@ -51,6 +60,7 @@ PASS: test-ot-metrics
 PASS: test-ot-tag
 PASS: test-ot-extents-cff
 PASS: test-ot-metrics-tt-var
+PASS: test-paint
 PASS: test-set
 PASS: test-shape
 PASS: test-style
@@ -73,13 +83,15 @@ PASS: test-subset-sbix
 PASS: test-subset-gpos
 PASS: test-subset-colr
 PASS: test-subset-cbdt
+PASS: test-subset-repacker
 PASS: test-unicode
 PASS: test-var-coords
 PASS: test-version
 PASS: test-multithread
 PASS: test-ot-math
-# TOTAL: 53
-# PASS:  53
+PASS: test-ft
+# TOTAL: 61
+# PASS:  61
 # SKIP:  0
 # XFAIL: 0
 # XFAIL: 0
@@ -91,28 +103,34 @@ PASS: tests/aat-trak.tests
 PASS: tests/arabic-fallback-shaping.tests
 PASS: tests/arabic-feature-order.tests
 PASS: tests/arabic-like-joining.tests
-PASS: tests/arabic-mark-attach.tests
 PASS: tests/arabic-mark-order.tests
 PASS: tests/arabic-normalization.tests
+PASS: tests/arabic-phags-pa.tests
 PASS: tests/arabic-stch.tests
 PASS: tests/automatic-fractions.tests
 PASS: tests/cluster.tests
 PASS: tests/collections.tests
 PASS: tests/color-fonts.tests
 PASS: tests/context-matching.tests
+SKIP: tests/coretext.tests
 PASS: tests/cursive-positioning.tests
 PASS: tests/default-ignorables.tests
 PASS: tests/digits.tests
+SKIP: tests/directwrite.tests
 PASS: tests/emoji.tests
 PASS: tests/emoji-clusters.tests
 PASS: tests/fallback-positioning.tests
+PASS: tests/glyph-props-no-gdef.tests
 PASS: tests/hangul-jamo.tests
+PASS: tests/hebrew-diacritics.tests
 PASS: tests/hyphens.tests
 PASS: tests/indic-consonant-with-stacker.tests
 PASS: tests/indic-decompose.tests
+PASS: tests/indic-feature-order.tests
 PASS: tests/indic-init.tests
 PASS: tests/indic-joiner-candrabindu.tests
 PASS: tests/indic-joiners.tests
+PASS: tests/indic-malayalam-dot-reph.tests
 PASS: tests/indic-old-spec.tests
 PASS: tests/indic-pref-blocking.tests
 PASS: tests/indic-script-extensions.tests
@@ -132,11 +150,13 @@ PASS: tests/mongolian-variation-selector.tests
 PASS: tests/myanmar-misc.tests
 PASS: tests/myanmar-syllable.tests
 PASS: tests/myanmar-zawgyi.tests
+PASS: tests/nested-mark-filtering-sets.tests
 PASS: tests/none-directional.tests
 PASS: tests/positioning-features.tests
 PASS: tests/rand.tests
 PASS: tests/reverse-sub.tests
 PASS: tests/rotation.tests
+PASS: tests/sara-am.tests
 PASS: tests/simple.tests
 PASS: tests/sinhala.tests
 PASS: tests/spaces.tests
@@ -144,7 +164,10 @@ PASS: tests/tibetan-contractions-1.tests
 PASS: tests/tibetan-contractions-2.tests
 PASS: tests/tibetan-vowels.tests
 PASS: tests/tt-kern-gpos.tests
+SKIP: tests/uniscribe.tests
+PASS: tests/unsafe-to-concat.tests
 PASS: tests/use-indic3.tests
+PASS: tests/use-javanese.tests
 PASS: tests/use-marchen.tests
 PASS: tests/use-syllable.tests
 PASS: tests/use-vowel-letter-spoofing.tests
@@ -153,9 +176,9 @@ PASS: tests/variations.tests
 PASS: tests/variations-rvrn.tests
 PASS: tests/vertical.tests
 PASS: tests/zero-width-marks.tests
-# TOTAL: 67
-# PASS:  66
-# SKIP:  1
+# TOTAL: 78
+# PASS:  74
+# SKIP:  4
 # XFAIL: 0
 # XFAIL: 0
 # FAIL:  0
@@ -393,6 +416,7 @@ SKIP: space_splitting.tests
 # FAIL:  0
 # XPASS: 0
 # ERROR: 0
+PASS: tests/32bit_var_store.tests
 PASS: tests/basics.tests
 PASS: tests/cbdt.tests
 PASS: tests/cff-full-font.tests
@@ -401,7 +425,9 @@ PASS: tests/cff.notoserifmyanmar.tests
 PASS: tests/cmap.tests
 PASS: tests/cmap14.tests
 PASS: tests/colr.tests
+PASS: tests/colr_glyphs.tests
 PASS: tests/colrv1.tests
+PASS: tests/colrv1_copy_varstore.tests
 PASS: tests/colr_with_components.tests
 PASS: tests/full-font.tests
 PASS: tests/glyf_bug_3131.tests
@@ -430,7 +456,6 @@ PASS: tests/layout.khmer.tests
 PASS: tests/layout.notonastaliqurdu.tests
 PASS: tests/layout.tests
 PASS: tests/layout.tinos.tests
-PASS: tests/layout.default_features.tests
 PASS: tests/layout.duplicate_features.tests
 PASS: tests/layout.unsorted_featurelist.tests
 PASS: tests/layout.drop_feature.tests
@@ -438,9 +463,20 @@ PASS: tests/sbix.tests
 PASS: tests/variable.tests
 PASS: tests/glyph_names.tests
 PASS: tests/math.tests
+PASS: tests/math_coverage_offset.tests
 PASS: tests/post.tests
-# TOTAL: 46
-# PASS:  46
+PASS: tests/full_instance.tests
+PASS: tests/instance_feature_variations.tests
+PASS: tests/instantiate_glyf.tests
+PASS: tests/instantiate_cff2.tests
+PASS: tests/pin_all_at_default.tests
+PASS: tests/instance_no_double_free.tests
+PASS: tests/mvar_full_instance.tests
+PASS: tests/instance_comp_glyph_empty_child.tests
+PASS: tests/post_apply_mvar_delta.tests
+PASS: tests/apply_cvar_delta.tests
+# TOTAL: 59
+# PASS:  59
 # SKIP:  0
 # XFAIL: 0
 # XFAIL: 0

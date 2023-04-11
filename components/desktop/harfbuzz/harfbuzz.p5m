@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -38,6 +38,7 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/074 value=PSARC/2019/027
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/bin/hb-info
 file path=usr/bin/hb-ot-shape-closure
 file path=usr/bin/hb-shape
 file path=usr/bin/hb-subset
@@ -46,7 +47,9 @@ file path=usr/include/harfbuzz/hb-aat-layout.h
 file path=usr/include/harfbuzz/hb-aat.h
 file path=usr/include/harfbuzz/hb-blob.h
 file path=usr/include/harfbuzz/hb-buffer.h
+file path=usr/include/harfbuzz/hb-cairo.h
 file path=usr/include/harfbuzz/hb-common.h
+file path=usr/include/harfbuzz/hb-cplusplus.hh
 file path=usr/include/harfbuzz/hb-deprecated.h
 file path=usr/include/harfbuzz/hb-draw.h
 file path=usr/include/harfbuzz/hb-face.h
@@ -69,52 +72,64 @@ file path=usr/include/harfbuzz/hb-ot-name.h
 file path=usr/include/harfbuzz/hb-ot-shape.h
 file path=usr/include/harfbuzz/hb-ot-var.h
 file path=usr/include/harfbuzz/hb-ot.h
+file path=usr/include/harfbuzz/hb-paint.h
 file path=usr/include/harfbuzz/hb-set.h
 file path=usr/include/harfbuzz/hb-shape-plan.h
 file path=usr/include/harfbuzz/hb-shape.h
 file path=usr/include/harfbuzz/hb-style.h
+file path=usr/include/harfbuzz/hb-subset-repacker.h
 file path=usr/include/harfbuzz/hb-subset.h
 file path=usr/include/harfbuzz/hb-unicode.h
 file path=usr/include/harfbuzz/hb-version.h
 file path=usr/include/harfbuzz/hb.h
 file path=usr/lib/$(MACH64)/cmake/harfbuzz/harfbuzz-config.cmake
 file path=usr/lib/$(MACH64)/girepository-1.0/HarfBuzz-0.0.typelib
+link path=usr/lib/$(MACH64)/libharfbuzz-cairo.so \
+    target=libharfbuzz-cairo.so.0.60710.0
+link path=usr/lib/$(MACH64)/libharfbuzz-cairo.so.0 \
+    target=libharfbuzz-cairo.so.0.60710.0
+file path=usr/lib/$(MACH64)/libharfbuzz-cairo.so.0.60710.0
 link path=usr/lib/$(MACH64)/libharfbuzz-gobject.so \
-    target=libharfbuzz-gobject.so.0.30102.0
+    target=libharfbuzz-gobject.so.0.60710.0
 link path=usr/lib/$(MACH64)/libharfbuzz-gobject.so.0 \
-    target=libharfbuzz-gobject.so.0.30102.0
-file path=usr/lib/$(MACH64)/libharfbuzz-gobject.so.0.30102.0
+    target=libharfbuzz-gobject.so.0.60710.0
+file path=usr/lib/$(MACH64)/libharfbuzz-gobject.so.0.60710.0
 link path=usr/lib/$(MACH64)/libharfbuzz-icu.so \
-    target=libharfbuzz-icu.so.0.30102.0
+    target=libharfbuzz-icu.so.0.60710.0
 link path=usr/lib/$(MACH64)/libharfbuzz-icu.so.0 \
-    target=libharfbuzz-icu.so.0.30102.0
-file path=usr/lib/$(MACH64)/libharfbuzz-icu.so.0.30102.0
+    target=libharfbuzz-icu.so.0.60710.0
+file path=usr/lib/$(MACH64)/libharfbuzz-icu.so.0.60710.0
 link path=usr/lib/$(MACH64)/libharfbuzz-subset.so \
-    target=libharfbuzz-subset.so.0.30102.0
+    target=libharfbuzz-subset.so.0.60710.0
 link path=usr/lib/$(MACH64)/libharfbuzz-subset.so.0 \
-    target=libharfbuzz-subset.so.0.30102.0
-file path=usr/lib/$(MACH64)/libharfbuzz-subset.so.0.30102.0
-link path=usr/lib/$(MACH64)/libharfbuzz.so target=libharfbuzz.so.0.30102.0
-link path=usr/lib/$(MACH64)/libharfbuzz.so.0 target=libharfbuzz.so.0.30102.0
-file path=usr/lib/$(MACH64)/libharfbuzz.so.0.30102.0
+    target=libharfbuzz-subset.so.0.60710.0
+file path=usr/lib/$(MACH64)/libharfbuzz-subset.so.0.60710.0
+link path=usr/lib/$(MACH64)/libharfbuzz.so target=libharfbuzz.so.0.60710.0
+link path=usr/lib/$(MACH64)/libharfbuzz.so.0 target=libharfbuzz.so.0.60710.0
+file path=usr/lib/$(MACH64)/libharfbuzz.so.0.60710.0
+file path=usr/lib/$(MACH64)/pkgconfig/harfbuzz-cairo.pc
 file path=usr/lib/$(MACH64)/pkgconfig/harfbuzz-gobject.pc
 file path=usr/lib/$(MACH64)/pkgconfig/harfbuzz-icu.pc
 file path=usr/lib/$(MACH64)/pkgconfig/harfbuzz-subset.pc
 file path=usr/lib/$(MACH64)/pkgconfig/harfbuzz.pc
 file path=usr/lib/cmake/harfbuzz/harfbuzz-config.cmake
-link path=usr/lib/libharfbuzz-gobject.so target=libharfbuzz-gobject.so.0.30102.0
+link path=usr/lib/libharfbuzz-cairo.so target=libharfbuzz-cairo.so.0.60710.0
+link path=usr/lib/libharfbuzz-cairo.so.0 target=libharfbuzz-cairo.so.0.60710.0
+file path=usr/lib/libharfbuzz-cairo.so.0.60710.0
+link path=usr/lib/libharfbuzz-gobject.so target=libharfbuzz-gobject.so.0.60710.0
 link path=usr/lib/libharfbuzz-gobject.so.0 \
-    target=libharfbuzz-gobject.so.0.30102.0
-file path=usr/lib/libharfbuzz-gobject.so.0.30102.0
-link path=usr/lib/libharfbuzz-icu.so target=libharfbuzz-icu.so.0.30102.0
-link path=usr/lib/libharfbuzz-icu.so.0 target=libharfbuzz-icu.so.0.30102.0
-file path=usr/lib/libharfbuzz-icu.so.0.30102.0
-link path=usr/lib/libharfbuzz-subset.so target=libharfbuzz-subset.so.0.30102.0
-link path=usr/lib/libharfbuzz-subset.so.0 target=libharfbuzz-subset.so.0.30102.0
-file path=usr/lib/libharfbuzz-subset.so.0.30102.0
-link path=usr/lib/libharfbuzz.so target=libharfbuzz.so.0.30102.0
-link path=usr/lib/libharfbuzz.so.0 target=libharfbuzz.so.0.30102.0
-file path=usr/lib/libharfbuzz.so.0.30102.0
+    target=libharfbuzz-gobject.so.0.60710.0
+file path=usr/lib/libharfbuzz-gobject.so.0.60710.0
+link path=usr/lib/libharfbuzz-icu.so target=libharfbuzz-icu.so.0.60710.0
+link path=usr/lib/libharfbuzz-icu.so.0 target=libharfbuzz-icu.so.0.60710.0
+file path=usr/lib/libharfbuzz-icu.so.0.60710.0
+link path=usr/lib/libharfbuzz-subset.so target=libharfbuzz-subset.so.0.60710.0
+link path=usr/lib/libharfbuzz-subset.so.0 target=libharfbuzz-subset.so.0.60710.0
+file path=usr/lib/libharfbuzz-subset.so.0.60710.0
+link path=usr/lib/libharfbuzz.so target=libharfbuzz.so.0.60710.0
+link path=usr/lib/libharfbuzz.so.0 target=libharfbuzz.so.0.60710.0
+file path=usr/lib/libharfbuzz.so.0.60710.0
+file path=usr/lib/pkgconfig/harfbuzz-cairo.pc
 file path=usr/lib/pkgconfig/harfbuzz-gobject.pc
 file path=usr/lib/pkgconfig/harfbuzz-icu.pc
 file path=usr/lib/pkgconfig/harfbuzz-subset.pc
@@ -157,7 +172,6 @@ file path=usr/share/gtk-doc/html/harfbuzz/api-index-1-4-3.html
 file path=usr/share/gtk-doc/html/harfbuzz/api-index-1-5-0.html
 file path=usr/share/gtk-doc/html/harfbuzz/api-index-1-6-0.html
 file path=usr/share/gtk-doc/html/harfbuzz/api-index-1-7-2.html
-file path=usr/share/gtk-doc/html/harfbuzz/api-index-1-7-5.html
 file path=usr/share/gtk-doc/html/harfbuzz/api-index-1-7-7.html
 file path=usr/share/gtk-doc/html/harfbuzz/api-index-1-8-0.html
 file path=usr/share/gtk-doc/html/harfbuzz/api-index-1-8-1.html
@@ -180,12 +194,23 @@ file path=usr/share/gtk-doc/html/harfbuzz/api-index-2-9-0.html
 file path=usr/share/gtk-doc/html/harfbuzz/api-index-2-9-1.html
 file path=usr/share/gtk-doc/html/harfbuzz/api-index-3-0-0.html
 file path=usr/share/gtk-doc/html/harfbuzz/api-index-3-1-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-3-3-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-3-4-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-4-0-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-4-1-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-4-2-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-4-3-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-4-4-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-5-0-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-5-3-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-6-0-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-7-0-0.html
+file path=usr/share/gtk-doc/html/harfbuzz/api-index-7-1-0.html
 file path=usr/share/gtk-doc/html/harfbuzz/api-index-full.html
 file path=usr/share/gtk-doc/html/harfbuzz/apple-advanced-typography-api.html
 file path=usr/share/gtk-doc/html/harfbuzz/buffers-language-script-and-direction.html
 file path=usr/share/gtk-doc/html/harfbuzz/building.html
 file path=usr/share/gtk-doc/html/harfbuzz/clusters.html
-file path=usr/share/gtk-doc/html/harfbuzz/complex-scripts.html
 file path=usr/share/gtk-doc/html/harfbuzz/core-api.html
 file path=usr/share/gtk-doc/html/harfbuzz/customizing-unicode-functions.html
 file path=usr/share/gtk-doc/html/harfbuzz/deprecated-api-index.html
@@ -194,15 +219,19 @@ file path=usr/share/gtk-doc/html/harfbuzz/fonts-and-faces-native-opentype.html
 file path=usr/share/gtk-doc/html/harfbuzz/fonts-and-faces-variable.html
 file path=usr/share/gtk-doc/html/harfbuzz/fonts-and-faces.html
 file path=usr/share/gtk-doc/html/harfbuzz/getting-started.html
+file path=usr/share/gtk-doc/html/harfbuzz/glyphs-and-rendering.html
 file path=usr/share/gtk-doc/html/harfbuzz/graphite-shaping.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-aat-layout.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-blob.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-buffer.html
+file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-cairo.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-common.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-coretext.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-deprecated.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-directwrite.html
+file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-draw.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-face.html
+file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-features.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-font.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-ft.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-gdi.html
@@ -219,6 +248,7 @@ file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-ot-metrics.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-ot-name.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-ot-shape.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-ot-var.html
+file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-paint.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-set.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-shape-plan.html
 file path=usr/share/gtk-doc/html/harfbuzz/harfbuzz-hb-shape.html
@@ -232,6 +262,7 @@ file path=usr/share/gtk-doc/html/harfbuzz/home.png
 file path=usr/share/gtk-doc/html/harfbuzz/index.html
 file path=usr/share/gtk-doc/html/harfbuzz/install-harfbuzz.html
 file path=usr/share/gtk-doc/html/harfbuzz/integration-api.html
+file path=usr/share/gtk-doc/html/harfbuzz/integration-cairo.html
 file path=usr/share/gtk-doc/html/harfbuzz/integration-coretext.html
 file path=usr/share/gtk-doc/html/harfbuzz/integration-freetype.html
 file path=usr/share/gtk-doc/html/harfbuzz/integration-icu.html
@@ -252,6 +283,7 @@ file path=usr/share/gtk-doc/html/harfbuzz/reference-manual.html
 file path=usr/share/gtk-doc/html/harfbuzz/reordering-in-levels-0-and-1.html
 file path=usr/share/gtk-doc/html/harfbuzz/right-insensitive.png
 file path=usr/share/gtk-doc/html/harfbuzz/right.png
+file path=usr/share/gtk-doc/html/harfbuzz/script-specific-shaping.html
 file path=usr/share/gtk-doc/html/harfbuzz/setting-buffer-properties.html
 file path=usr/share/gtk-doc/html/harfbuzz/shaping-and-shape-plans.html
 file path=usr/share/gtk-doc/html/harfbuzz/shaping-concepts.html
