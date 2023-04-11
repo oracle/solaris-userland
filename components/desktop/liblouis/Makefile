@@ -31,14 +31,14 @@ COMPONENT_MAKE_JOBS=1
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		liblouis
-COMPONENT_VERSION=	3.22.0
+COMPONENT_VERSION=	3.25.0
 COMPONENT_PROJECT_URL=	http://liblouis.org/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:74391c4e6a10677c02fb64e652448df9ee430c96d9bcfe1cc1ae3e49f051c4f4
+	sha256:d720aa5fcd51de925a28ae801b8b2ca76ee67e2360b40055c679bce8e565f251
 COMPONENT_ARCHIVE_URL=	https://github.com/liblouis/liblouis/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	13112
-COMPONENT_BAID=		127635
+COMPONENT_BAID=		141830
 
 # Orca uses python 3.11, so we need to match
 PYTHON_VERSION=		3.11
