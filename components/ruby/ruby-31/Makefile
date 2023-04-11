@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS = 64
 COMPILER = gcc
@@ -33,13 +33,13 @@ gcc_FIX_PATH=
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME         = ruby
-COMPONENT_VERSION      = 3.1.2
+COMPONENT_VERSION      = 3.1.4
 COMPONENT_PROJECT_URL  = http://www.ruby-lang.org/
 COMPONENT_ARCHIVE_HASH = \
-    sha256:b99bd7625673c90d0ca980bbadc77c383093a5e1b516b48a68e9767ff4195ffe
+    sha256:21bca50e9f8ae5ca82eafa2ad5879e9b6b262b474b5554c577b3ee4cb3e4d227
 COMPONENT_ARCHIVE_URL  = http://cache.ruby-lang.org/pub/ruby/3.1/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID    = 4223
-COMPONENT_BAID = 121944
+COMPONENT_BAID         = 142049
 
 CFLAGS += "-std=gnu99"
 
@@ -59,6 +59,10 @@ CONFIGURE_OPTIONS += ac_cv_sizeof___int128=0
 CONFIGURE_OPTIONS += --with-rubylibprefix=$(CONFIGURE_LIBDIR.32)/ruby
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --enable-rpath
+# Using both the baseruby and the --enable-rpath flag currently results
+# in incorrect RPATH in .so files. This issue was reported upstream:
+# https://bugs.ruby-lang.org/issues/19331
+CONFIGURE_OPTIONS += --without-baseruby
 # Don't need docs for ruby C source files
 CONFIGURE_OPTIONS += --disable-install-capi
 CONFIGURE_OPTIONS += --disable-option-checking
