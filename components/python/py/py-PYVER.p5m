@@ -20,9 +20,11 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 
+# Use transform to prevent duplicate pkg.legacy action error
+<transform set name=pkg.fmri -> set mark_legacy true>
 set name=pkg.fmri \
     value=pkg:/library/python/py-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
@@ -35,7 +37,7 @@ set name=info.classification \
     value=org.opensolaris.category.2008:Development/Python
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2013/354
+set name=org.opensolaris.arc-caseid value=PSARC/2013/354 value=PSARC/2023/043
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file path=usr/lib/python$(PYVER)/vendor-packages/py-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
