@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -31,30 +31,17 @@ COMPONENT_VERSION=	20050515
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	MgOpen-20050515.tar.gz
 COMPONENT_PROJECT_URL=	https://ellak.gr/2005/05/mgopen-fonts-are-available/
-COMPONENT_ARCHIVE_URL=	http://pkgs.fedoraproject.org/repo/pkgs/mgopen-fonts/MgOpen-20050515.tar.gz/9ad4bba3d173e92734320286bfff4c8e/MgOpen-20050515.tar.gz
+COMPONENT_ARCHIVE_URL=	https://pkgs.fedoraproject.org/repo/pkgs/mgopen-fonts/MgOpen-20050515.tar.gz/9ad4bba3d173e92734320286bfff4c8e/MgOpen-20050515.tar.gz
 COMPONENT_ARCHIVE_HASH= \
     sha256:9f94c07438152816479d0577694942c902e1219006c371e4b2797236109f0f41
 UNPACK_ARGS=		-r $(COMPONENT_SRC)
 
 COMPONENT_BUGDB=	g11n/font
-
 COMPONENT_BAID=		10410
 
-BUILD_STYLE=		justmake
+BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/font.mk
 
-PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
-
-COMPONENT_BUILD_ACTION = \
-	$(MKFONTSCALE) $(@D); \
-	$(MKFONTDIR) $(@D);
-
-COMPONENT_INSTALL_ACTION = \
-        $(CP) $(@D)/*.ttf $(@D)/fonts.dir $(@D)/fonts.scale $(PROTOFONTSDIR)/$(COMPONENT_NAME);
-
-COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
-
-REQUIRED_PACKAGES += x11/font-utilities
+COMPONENT_FONT_FILES= 	*.ttf

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -106,45 +106,33 @@ $(foreach n, $(LIST), \
 )
 
 COMPONENT_BUGDB=	g11n/font
-
 COMPONENT_BAID=		23766
 
-BUILD_STYLE=		justmake
+BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/font.mk
 
-PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
-PROTOETCFONTSDIR=   $(PROTOETCDIR)/fonts/conf.avail
+COMPONENT_FONT_FILES=  		$(foreach n, $(LIST), $(COMPONENT_SRC_$n)/*.ttf)
+COMPONENT_FONT_AVAIL_FILES=	$(foreach n, $(LIST), $(COMPONENT_SRC_$n)/*.conf)
+COMPONENT_FONT_CONF_FILES=	*.conf
+COMPONENT_FONT_DOC_FILES=	$(COMPONENT_SRC_0)/OFL.txt \
+		$(foreach n, $(LIST), $(COMPONENT_SRC_$n)/ChangeLog.[^o]*)
 
-COMPONENT_BUILD_ACTION = \
-	$(CP) $(foreach n,$(LIST),$(COMPONENT_SRC_$n)/*.ttf) $(@D)/; \
-	$(MKFONTSCALE) $(@D); \
-	$(MKFONTDIR) $(@D);
+COMPONENT_PREP_ACTION += \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_0)/ChangeLog.Assamese; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_1)/ChangeLog.Bengali; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_2)/ChangeLog.Devanagari; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_3)/ChangeLog.Gujarati; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_4)/ChangeLog.Kannada; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_5)/ChangeLog.Malayalam; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_6)/ChangeLog.Marathi; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_7)/ChangeLog.Nepali; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_8)/ChangeLog.Odia; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_9)/ChangeLog.Punjabi; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_10)/ChangeLog.Tamil; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_11)/ChangeLog.Tamil-Classical; \
+	$(SYMLINK) ChangeLog $(COMPONENT_SRC_12)/ChangeLog.Telugu;
 
-COMPONENT_INSTALL_ACTION = \
-	$(CP) $(COMPONENT_SRC_0)/OFL.txt $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/; \
-	$(CP) $(COMPONENT_SRC_0)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Assamese; \
-	$(CP) $(COMPONENT_SRC_1)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Bengali; \
-	$(CP) $(COMPONENT_SRC_2)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Devanagari; \
-	$(CP) $(COMPONENT_SRC_3)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Gujarati; \
-	$(CP) $(COMPONENT_SRC_4)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Kannada; \
-	$(CP) $(COMPONENT_SRC_5)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Malayalam; \
-	$(CP) $(COMPONENT_SRC_6)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Marathi; \
-	$(CP) $(COMPONENT_SRC_7)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Nepali; \
-	$(CP) $(COMPONENT_SRC_8)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Odia; \
-	$(CP) $(COMPONENT_SRC_9)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Punjabi; \
-	$(CP) $(COMPONENT_SRC_10)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Tamil; \
-	$(CP) $(COMPONENT_SRC_11)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Tamil-Classical; \
-	$(CP) $(COMPONENT_SRC_12)/ChangeLog $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/ChangeLog.Telugu; \
-	$(CP) $(foreach n,$(LIST),$(COMPONENT_SRC_$n)/*.conf) $(PROTOETCFONTSDIR)/; \
-	$(CP) $(@D)/*.ttf $(@D)/fonts.dir $(@D)/fonts.scale $(PROTOFONTSDIR)/$(COMPONENT_NAME);
-
-COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME); \
-	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME)/; \
-	$(MKDIR) $(PROTOETCFONTSDIR);
-
+# Needed for license action in lohit.p5m
 PKG_PROTO_DIRS += $(COMPONENT_SRC_0)
-
-REQUIRED_PACKAGES += x11/font-utilities

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -52,33 +52,26 @@ COMPONENT_SRC_1=	Gentium102
 
 
 COMPONENT_BUGDB=	g11n/font
-
 COMPONENT_BAID=		10465
 
-BUILD_STYLE=		justmake
+BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/font.mk
 
-PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
+COMPONENT_FONT_BUILD_DIR =	$(BUILD_DIR_NO_ARCH)
+COMPONENT_FONT_DOC_BUILD_DIR =	$(BUILD_DIR_NO_ARCH)
 
-COMPONENT_BUILD_ACTION = \
-	$(MV) $(@D)/FONTLOG.txt $(@D)/FONTLOG.basic.txt; \
-	$(CLONEY) $(SOURCE_DIR_1) $(@D); \
-	( cd $(@D); for fn in *.TTF; do $(MV) $$fn $${fn/.TTF/.ttf}; done; ); \
-	$(MKFONTSCALE) $(@D); \
-	$(MKFONTDIR) $(@D);
-
-COMPONENT_INSTALL_ACTION = \
-	$(CP) $(@D)/FONTLOG.txt $(@D)/GENTIUM-FAQ.txt $(@D)/OFL.txt \
-		$(@D)/OFL-FAQ.txt $(@D)/QUOTES.txt $(@D)/README.txt \
-		$(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/; \
-	$(CP) $(@D)/FONTLOG.basic.txt \
-		$(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/basic/FONTLOG.txt; \
-	$(CP) $(@D)/*.ttf $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
+COMPONENT_FONT_FILES= 		*.ttf
+COMPONENT_FONT_DOC_FILES=	*.txt
 
 COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/basic; \
-	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME);
+	$(CLONEY) $(SOURCE_DIR) $(@D); \
+	$(MV) $(@D)/FONTLOG.txt $(@D)/FONTLOG.basic.txt; \
+	$(CLONEY) $(SOURCE_DIR_1) $(@D); \
+	( cd $(@D); for fn in *.TTF; do $(MV) $$fn $${fn/.TTF/.ttf}; done; );
 
-REQUIRED_PACKAGES += x11/font-utilities
+COMPONENT_POST_INSTALL_ACTION += \
+	$(MKDIR) $(PROTO_DIR)$(COMPONENT_FONT_DOC_DEST_DIR)/basic ; \
+	$(MV) $(PROTO_DIR)$(COMPONENT_FONT_DOC_DEST_DIR)/FONTLOG.basic.txt \
+		$(PROTO_DIR)$(COMPONENT_FONT_DOC_DEST_DIR)/basic/FONTLOG.txt;

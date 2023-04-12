@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2009, 2023, Oracle and/or its affiliates.
 #
 
 # Handles fonts without any configure or build scripts, that just need to
@@ -34,22 +34,50 @@
 
 COMPONENT_BUGDB ?=	x11/fonts
 
+COMPONENT_FONT_DEST_DIR ?=	$(USRSHARETTFONTSDIR)/$(COMPONENT_NAME)
+COMPONENT_FONT_DOC_DEST_DIR ?=	$(USRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)
+
+PROTOETCFONTSDIR ?=	$(PROTOETCDIR)/fonts
+
 BUILD_STYLE ?= archive
 ifeq ($(strip $(BUILD_STYLE)),archive)
 INSTALL_TARGET ?= $(INSTALL_$(MK_BITS))
 
 include $(WS_MAKE_RULES)/common.mk
 
+COMPONENT_FONT_BUILD_DIR ?=	$(SOURCE_DIR)/$(COMPONENT_FONT_SRC_DIR)
+COMPONENT_FONT_DOC_BUILD_DIR ?=	$(SOURCE_DIR)/$(COMPONENT_FONT_DOC_SRC_DIR)
+COMPONENT_FONT_CONF_BUILD_DIR ?= $(SOURCE_DIR)/$(COMPONENT_FONT_CONF_SRC_DIR)
+
+COMPONENT_FONT_AVAIL_FILES ?=	$(COMPONENT_FONT_CONF_FILES)
+
+
 $(BUILD_DIR)/%/.installed: $(SOURCE_DIR)/.prep
 	$(MKDIR) $(@D)
 	$(COMPONENT_PRE_INSTALL_ACTION)
 	-$(RM) -r $(PROTO_DIR)$(COMPONENT_FONT_DEST_DIR)
 	$(MKDIR) $(PROTO_DIR)$(COMPONENT_FONT_DEST_DIR)
-	(cd $(SOURCE_DIR)/$(COMPONENT_FONT_SRC_DIR) ; \
+	(cd $(COMPONENT_FONT_BUILD_DIR) ; \
 	    $(INSTALL) -m 0444 $(COMPONENT_FONT_FILES) \
 		$(PROTO_DIR)$(COMPONENT_FONT_DEST_DIR))
 	$(MKFONTSCALE) $(PROTO_DIR)$(COMPONENT_FONT_DEST_DIR)
 	$(MKFONTDIR) $(PROTO_DIR)$(COMPONENT_FONT_DEST_DIR)
+	@if [[ "$(COMPONENT_FONT_DOC_FILES)" ]] ; then \
+	    set -x ; \
+	    $(MKDIR) $(PROTO_DIR)$(COMPONENT_FONT_DOC_DEST_DIR) ; \
+	    (cd $(COMPONENT_FONT_DOC_BUILD_DIR) ; \
+		$(INSTALL) -m 0444 $(COMPONENT_FONT_DOC_FILES) \
+		    $(PROTO_DIR)$(COMPONENT_FONT_DOC_DEST_DIR)) ; \
+	fi
+	@if [[ "$(COMPONENT_FONT_AVAIL_FILES)" ]] ; then \
+	    set -x ; \
+	    $(MKDIR) $(PROTOETCFONTSDIR)/conf.{d,avail} ; \
+	    (cd $(COMPONENT_FONT_CONF_BUILD_DIR) ; \
+		$(INSTALL) -m 0444 $(COMPONENT_FONT_AVAIL_FILES) \
+		    $(PROTOETCFONTSDIR)/conf.avail/ ) ; \
+	    (cd $(PROTOETCFONTSDIR)/conf.d ; $(RM) *.conf ; \
+	 	$(SYMLINK) ../conf.avail/$(COMPONENT_FONT_CONF_FILES) . ) ; \
+	fi
 	$(COMPONENT_POST_INSTALL_ACTION)
 	$(TOUCH) $@
 endif
@@ -68,9 +96,14 @@ $(MANIFEST_BASE)-%.mogrified: PUBLISH_TRANSFORMS += $(@:.mogrified=.font-transfo
 $(MANIFESTS:%.p5m=%.mogrified): font-transforms
 font-transforms: $(MANIFESTS:%.p5m=%.font-transforms)
 
+COMPONENT_FONT_METADATA_ARGS += -v COMPONENT_NAME=$(COMPONENT_NAME)
+
+# The second perl command drops non-ASCII attributes, as per Bug 33439055
 $(MANIFEST_BASE)-%.font-transforms: %.p5m
 	$(PERL) $(WS_TOOLS)/generate_font_metadata.pl \
-	    -p $(PROTO_DIR) -m $< > $@ || ( rm $@ ; exit 1 )
+	    -p $(PROTO_DIR) -m $< $(COMPONENT_FONT_METADATA_ARGS) \
+	    | $(PERL) -n -e 'print unless m{[^\x01-\x7f]+}' > $@ \
+		|| ( rm $@ ; exit 1 )
 
 # Package containing fc-scan used in generate_font_metadata.pl
 REQUIRED_PACKAGES	+= system/library/fontconfig

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -43,7 +43,7 @@ COMPONENT_ARCHIVE_1=	MalOtf.ttf
 COMPONENT_ARCHIVE_URL_1=http://malayalamlinux.sourceforge.net/downloads/fonts/MalOtf.ttf
 COMPONENT_ARCHIVE_HASH_1=sha256:2fea9a759d82610a7cea85d6bf6eef46a586a32231f10819421e67b642501905
 # hack to disable UNPACK for just one component
-UNPACK_ARGS_1= & true 
+UNPACK_ARGS_1= & true
 
 COMPONENT_PROJECT_URL_2=https://fedoraproject.org/wiki/Vemana2000_fonts
 COMPONENT_ARCHIVE_2=	Vemana2k-Li.zip
@@ -56,6 +56,7 @@ COMPONENT_ARCHIVE_URL_3=http://prdownloads.sourceforge.net/brahmi/kanotf.zip?dow
 COMPONENT_ARCHIVE_HASH_3=sha256:0fcf5e9772b583f4a36c1e931ac1ed7e90587d699251028f609f61c6036649b2
 
 COMPONENT_BUGDB=	g11n/font
+COMPONENT_BAID=		10460
 
 PKG_VARS+=	COMPONENT_ARCHIVE_URL_1
 PKG_VARS+=	COMPONENT_ARCHIVE_URL_2
@@ -65,28 +66,15 @@ PKG_VARS+=	COMPONENT_PROJECT_URL_1
 PKG_VARS+=	COMPONENT_PROJECT_URL_2
 PKG_VARS+=	COMPONENT_PROJECT_URL_3
 
-
-COMPONENT_BAID=		10460
-
-BUILD_STYLE=		justmake
+BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/font.mk
 
-PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
+COMPONENT_FONT_FILES= 	*.ttf
 
-COMPONENT_BUILD_ACTION = \
+COMPONENT_PREP_ACTION += \
 	$(CP) $(COMPONENT_ARCHIVE_1) $(@D); \
 	$(UNZIP) -d $(@D) $(COMPONENT_ARCHIVE_2) vemana2000.ttf; \
 	$(UNZIP) -d $(@D) -j $(COMPONENT_ARCHIVE_3) kanotf/fonts/Malige-b.TTF kanotf/fonts/Malige-n.TTF; \
-	for fn in $(@D)/*.TTF; do $(MV) $$fn $${fn/.TTF/.ttf}; done; \
-	$(MKFONTSCALE) $(@D); \
-	$(MKFONTDIR) $(@D);
-
-COMPONENT_INSTALL_ACTION = \
-	$(CP) $(@D)/*.ttf $(@D)/fonts.dir $(@D)/fonts.scale $(PROTOFONTSDIR)/$(COMPONENT_NAME);
-
-COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
-
-REQUIRED_PACKAGES += x11/font-utilities
+	for fn in $(@D)/*.TTF; do $(MV) $$fn $${fn/.TTF/.ttf}; done;

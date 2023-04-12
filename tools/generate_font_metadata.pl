@@ -1,7 +1,7 @@
 #! /usr/perl5/bin/perl -w
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -35,12 +35,18 @@ use Getopt::Long;
 # Required arguments:
 # -p <proto_area>
 # -m <manifest>
+#
+# Optional arguments:
+# -v <variable>=<value>
 
 my $proto_dir;
 my $manifest;
+my @variables = ();
 
 my $result = GetOptions('p|protodir=s' => \$proto_dir,
-                        'm|manifest=s' => \$manifest);
+                        'm|manifest=s' => \$manifest,
+                        'v|variable=s' => \@variables);
+
 
 if (!defined($proto_dir)) {
   print STDERR "Missing required protodir argument\n";
@@ -60,7 +66,15 @@ open my $MANIFEST, '<', $manifest
 
 while (my $man = <$MANIFEST>) {
   if ($man =~ m{path=(\S+)/fonts.dir}) {
-    $fontdirs{$1} = $1;
+    my $fontdir = $1;
+
+    if ($fontdir =~ m{\$\(}) {
+      foreach my $pair (@variables) {
+	my ($var, $value) = split /=/, $pair, 2;
+	$fontdir =~ s{\$\($var\)}{$value}g;
+      }
+    }
+    $fontdirs{$fontdir} = $fontdir;
   }
 }
 close $MANIFEST;

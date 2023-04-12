@@ -20,27 +20,27 @@
 #
 
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		liberation-fonts-ttf
+COMPONENT_NAME=		liberation
 COMPONENT_VERSION=	1.07.2
 IPS_COMPONENT_VERSION=	1.7.2
 COMPONENT_PROJECT_URL=	https://pagure.io/liberation-fonts
+COMPONENT_SRC=		$(COMPONENT_NAME)-fonts-ttf-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH= \
 	sha256:b1bbf2df80f388ca1748a41068fafebc8efdfdee7612afb78a7a7cd31004d50f
 COMPONENT_ARCHIVE_URL=	\
 	https://releases.pagure.org/liberation-fonts/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	x11/font
 COMPONENT_ANITYA_ID=	16833
+COMPONENT_BAID= 	109524
 
-COMPONENT_BAID= 			109524
-
-COMPONENT_FONT_FILES= 		License.txt *.ttf
-COMPONENT_FONT_DEST_DIR= 	$(USRSHARETTFONTSDIR)/liberation
+COMPONENT_FONT_FILES= 		*.ttf
+COMPONENT_FONT_DOC_FILES= 	*.txt
 
 include $(WS_MAKE_RULES)/font.mk
 

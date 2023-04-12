@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -34,33 +34,19 @@ IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
 
 COMPONENT_SRC=		un-fonts
 COMPONENT_ARCHIVE=	2607-un-fonts-core-$(COMPONENT_VERSION).tar.gz
-COMPONENT_PROJECT_URL=	http://kldp.net/unfonts/
-COMPONENT_ARCHIVE_URL=	http://kldp.net/unfonts/release/$(COMPONENT_ARCHIVE)
+COMPONENT_PROJECT_URL=	https://kldp.net/unfonts/
+COMPONENT_ARCHIVE_URL=	https://kldp.net/unfonts/release/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
     sha256:3b0a7274f9aab7e8f0f1938c01a70e1581766d51b494ba145683f37ac557918e
 COMPONENT_BUGDB=        g11n/font
 COMPONENT_ANITYA_ID=	5039
-
 COMPONENT_BAID=		10461
 
-BUILD_STYLE=		justmake
+BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/font.mk
 
-PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
-
-COMPONENT_BUILD_ACTION = \
-	$(MKFONTSCALE) $(@D); \
-	$(MKFONTDIR) $(@D);
-
-COMPONENT_INSTALL_ACTION = \
-	$(CP) $(@D)/README $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/; \
-	$(CP) $(@D)/*.ttf $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
-
-COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME); \
-	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME);
-
-REQUIRED_PACKAGES += x11/font-utilities
+COMPONENT_FONT_FILES= 		*.ttf
+COMPONENT_FONT_DOC_FILES=	README COPYING

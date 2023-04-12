@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -35,32 +35,24 @@ IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
 COMPONENT_SRC=		ttf-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	ttf-$(COMPONENT_NAME)_$(COMPONENT_VERSION).orig.tar.gz
 COMPONENT_PROJECT_URL=	https://www.freedesktop.org/wiki/Software/CJKUnifonts
-COMPONENT_ARCHIVE_URL=	http://archive.debian.org/debian/pool/main/t/ttf-$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://archive.debian.org/debian/pool/main/t/ttf-$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
     sha256:410085d5f86362d00c47705a36a1557d78043a1db7ed427b4abccc117f45fe6d
 COMPONENT_BUGDB=	g11n/font
 COMPONENT_ANITYA_ID=	289
-
 COMPONENT_BAID=		9839
 
-BUILD_STYLE=		justmake
+BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/font.mk
 
-PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
+COMPONENT_FONT_FILES=	*.ttf fonts.dir fonts.scale
 
-COMPONENT_BUILD_ACTION = \
-	$(MKFONTSCALE) $(@D); \
-	$(MKFONTDIR) $(@D); \
-	tail +2 $(@D)/fonts.alias > $(@D)/fonts.alias.new; \
-	cat fonts.alias >> $(@D)/fonts.alias.new;
+PROTOFONTSALIAS=	$(PROTO_DIR)$(COMPONENT_FONT_DEST_DIR)/fonts.alias
 
-COMPONENT_INSTALL_ACTION = \
-	$(CP) $(@D)/*.ttf $(@D)/fonts.scale $(@D)/fonts.dir $(PROTOFONTSDIR)/$(COMPONENT_NAME)/; \
-	$(CP) $(@D)/fonts.alias.new $(PROTOFONTSDIR)/$(COMPONENT_NAME)/fonts.alias;
+# Strip off first line of upstream file (line count) and append our aliases
+COMPONENT_POST_INSTALL_ACTION += \
+	tail +2 $(SOURCE_DIR)/fonts.alias > $(PROTOFONTSALIAS) ; \
+	cat $(COMPONENT_DIR)/fonts.alias >> $(PROTOFONTSALIAS) ;
 
-COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME);
-
-REQUIRED_PACKAGES += x11/font-utilities

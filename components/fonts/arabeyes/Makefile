@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -35,38 +35,31 @@ IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
 COMPONENT_SRC=		ae_fonts_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_PROJECT_URL=	https://www.arabeyes.org
-COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/arabeyes/Fonts/ae_fonts/ae_fonts_2.0.tar.bz2
+COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/arabeyes/Fonts/ae_fonts/ae_fonts_2.0.tar.bz2
 COMPONENT_ARCHIVE_HASH= \
     sha256:a274dcbe4f24ba930261b131c50de806a60f6145bc9cdd9227e749cd0d2cf63a
 COMPONENT_BUGDB=	g11n/font
-
 COMPONENT_BAID=		10449
 
-BUILD_STYLE=		justmake
+BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/font.mk
 
-PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
+COMPONENT_FONT_FILES=		*/*.ttf
+COMPONENT_FONT_DOC_FILES=	ChangeLog README
 
-COMPONENT_BUILD_ACTION = \
-	$(MV) $(@D)/*/*.ttf $(@D)/; \
-	$(MKFONTSCALE) $(@D); \
-	$(MKFONTDIR) $(@D); \
-	perl -i -nle 'print unless /-ascii-0/ or /-iso8859-6/' $(@D)/fonts.scale $(@D)/fonts.dir; \
-	perl -i -ple 's/194/117/' $(@D)/fonts.scale $(@D)/fonts.dir;
+COMPONENT_POST_INSTALL_ACTION += \
+	$(PERL) -i -nle 'print unless /-ascii-0/ or /-iso8859-6/' \
+	    $(PROTO_DIR)$(COMPONENT_FONT_DEST_DIR)/fonts.scale \
+	    $(PROTO_DIR)$(COMPONENT_FONT_DEST_DIR)/fonts.dir; \
+	$(PERL) -i -ple 's/194/117/' \
+	    $(PROTO_DIR)$(COMPONENT_FONT_DEST_DIR)/fonts.scale \
+	    $(PROTO_DIR)$(COMPONENT_FONT_DEST_DIR)/fonts.dir;
 
 # generate license file from sources
-COMPONENT_BUILD_ACTION += \
-	( perl -ne 'print if /^Typeface/ .. /your version.$$/' $(@D)/README; \
-	cat $(@D)/COPYING ) > $(@D)/../license
+COMPONENT_POST_INSTALL_ACTION += \
+	( $(PERL) -ne 'print if /^Typeface/ .. /your version.$$/' \
+	    $(SOURCE_DIR)/README; \
+	    $(CAT) $(SOURCE_DIR)/COPYING ) > $(@D)/../license
 
-COMPONENT_INSTALL_ACTION = cd $(@D); \
-	$(CP) *.ttf fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/; \
-	$(CP) ChangeLog README $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME);
-
-COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME); \
-	$(MKDIR) $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME);
-
-REQUIRED_PACKAGES += x11/font-utilities

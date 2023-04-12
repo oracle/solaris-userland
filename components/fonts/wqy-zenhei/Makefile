@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -39,32 +39,18 @@ COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/files/$(COMPONENT_NAME)/0.8.38%2
 COMPONENT_ARCHIVE_HASH= \
     sha256:6018eb54243eddc41e9cbe0b71feefa5cb2570ecbaccd39daa025961235dea22
 COMPONENT_BUGDB=	g11n/font
-
 COMPONENT_BAID=		23768
 
-BUILD_STYLE=		justmake
+BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/font.mk
 
-PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
-PROTOETCFONTSDIR=	$(PROTOETCDIR)/fonts/conf.avail
-
-COMPONENT_BUILD_ACTION = \
-	$(MKFONTSCALE) $(@D); \
-	$(MKFONTDIR) $(@D);
+COMPONENT_FONT_FILES= 		*.ttc
+COMPONENT_FONT_DOC_FILES=	AUTHORS ChangeLog README
+COMPONENT_FONT_CONF_FILES=	*.conf
 
 # generate license file
-COMPONENT_BUILD_ACTION += \
-	( perl -ne 'print if /^As a special/ .. /your version.$$/' $(@D)/README; \
-	cat $(@D)/COPYING ) > $(@D)/../license
-
-COMPONENT_INSTALL_ACTION = cd $(@D); \
-	$(CP) $(@D)/AUTHORS $(@D)/ChangeLog $(@D)/README $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME); \
-	$(CP) $(@D)/*.ttc $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/; \
-	$(CP) $(@D)/*.conf $(PROTOETCFONTSDIR)/;
-
-COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME); \
-	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME); \
-	$(MKDIR) $(PROTOETCFONTSDIR);
+COMPONENT_PREP_ACTION += \
+	( $(PERL) -ne 'print if /^\*\* GPL v2/ .. /^=+$$/' $(@D)/README; \
+	  $(CAT) $(@D)/COPYING ) > $(@D)/license

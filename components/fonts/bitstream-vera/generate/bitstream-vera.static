@@ -20,9 +20,8 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2023, Oracle and/or its affiliates.
 #
 
-# Remove Japanese font name attributes as they are non-ASCII and can break
-# pkg when running in a non-UTF8 environment.
-<transform file -> delete info.file.font.name:ja .*>
+link path=etc/X11/fontpath.d/$(COMPONENT_NAME):pri=42 \
+    target=../../../usr/share/fonts/TrueType/$(COMPONENT_NAME)

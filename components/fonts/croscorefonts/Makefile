@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -39,25 +39,12 @@ COMPONENT_ARCHIVE_URL=	https://gsdview.appspot.com/chromeos-localmirror/distfile
 COMPONENT_ARCHIVE_HASH= \
     sha256:672c3487883ec1ef83d9254240d4327b014212abc823d06d15816095867315e1
 COMPONENT_BUGDB=	g11n/font
-
 COMPONENT_BAID=		28052
 
-BUILD_STYLE=		justmake
+BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/font.mk
 
-PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
+COMPONENT_FONT_FILES=	*.ttf $(COMPONENT_DIR)/fonts.alias
 
-COMPONENT_BUILD_ACTION = \
-	$(MKFONTSCALE) $(@D); \
-	$(MKFONTDIR) $(@D);
-
-COMPONENT_INSTALL_ACTION = \
-	$(CP) $(@D)/*.ttf $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/; \
-	$(CP) fonts.alias $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
-
-COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME);
-
-REQUIRED_PACKAGES += x11/font-utilities

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -39,26 +39,12 @@ COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/arabeyes/kacst_f
 COMPONENT_ARCHIVE_HASH= \
     sha256:796149ab64dfe5da6334bda280e3bb4bad07a627246dcb24a844bdda24843fd3
 COMPONENT_BUGDB=	g11n/font
-
 COMPONENT_BAID=		10458
 
-BUILD_STYLE=		justmake
+BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/font.mk
 
-PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
-
-COMPONENT_BUILD_ACTION = cd $(@D); \
-	$(MKFONTSCALE) .; \
-	$(MKFONTDIR) .;
-
-COMPONENT_INSTALL_ACTION = cd $(@D); \
-	$(CP) README Copyright $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/; \
-	$(CP) *.ttf fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
-
-COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME); \
-	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME);
-
-REQUIRED_PACKAGES += x11/font-utilities
+COMPONENT_FONT_FILES= 		*.ttf
+COMPONENT_FONT_DOC_FILES=	README Copyright

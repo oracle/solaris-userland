@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -33,34 +33,20 @@ COMPONENT_VERSION=	2.1
 IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
 
 COMPONENT_SRC=		baekmuk-ttf-$(COMPONENT_VERSION)
-COMPONENT_PROJECT_URL=	http://kldp.net/baekmuk/
-COMPONENT_ARCHIVE_URL=	http://pkgs.fedoraproject.org/repo/pkgs/fonts-korean/$(COMPONENT_ARCHIVE)/afb58ae36c74fdcc232ec4a2084a956c/$(COMPONENT_ARCHIVE)
+COMPONENT_PROJECT_URL=	https://kldp.net/baekmuk/
+COMPONENT_ARCHIVE_URL=	https://pkgs.fedoraproject.org/repo/pkgs/fonts-korean/$(COMPONENT_ARCHIVE)/afb58ae36c74fdcc232ec4a2084a956c/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
     sha256:f367c48519bde6ff9941381f1eec7279ad8cec6ca2b20b4f1884752bd42f95da
 COMPONENT_BUGDB=	g11n/font
 COMPONENT_ANITYA_ID=	17137
-
 COMPONENT_BAID=		8316
 
-BUILD_STYLE=		justmake
+BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 
 # The baekmuk tarball doesn't unpack cleanly into its own directory.
 UNPACK_ARGS= -r $(COMPONENT_SRC)
 
+include $(WS_MAKE_RULES)/font.mk
 
-include $(WS_MAKE_RULES)/common.mk
-
-PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
-
-COMPONENT_BUILD_ACTION = \
-	$(MKFONTSCALE) $(@D); \
-	$(MKFONTDIR) $(@D);
-
-COMPONENT_INSTALL_ACTION = \
-	$(CP) $(@D)/*.ttf $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
-
-COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME);
-
-REQUIRED_PACKAGES += x11/font-utilities
+COMPONENT_FONT_FILES=	*.ttf

@@ -20,42 +20,37 @@
 #
 
 #
-# Copyright (c) 2007, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2007, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		dejavu-fonts-ttf
+COMPONENT_NAME=		dejavu
 COMPONENT_VERSION=	2.37
 COMPONENT_PROJECT_URL= 	https://dejavu-fonts.github.io/
+COMPONENT_SRC=          $(COMPONENT_NAME)-fonts-ttf-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
 	sha256:fa9ca4d13871dd122f61258a80d01751d603b4d3ee14095d65453b4e846e17d7
 COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/dejavu/dejavu/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	x11/font
 COMPONENT_ANITYA_ID=	418
-
-COMPONENT_BAID= 			34239
+COMPONENT_BAID= 	34239
 
 TEST_TARGET= $(NO_TESTS)
 
-COMPONENT_FONT_FILES= 		LICENSE ttf/*.ttf
-COMPONENT_FONT_DEST_DIR= 	$(USRSHARETTFONTSDIR)/dejavu
+COMPONENT_FONT_SRC_DIR=		ttf
+COMPONENT_FONT_FILES= 		*.ttf
+
+COMPONENT_FONT_DOC_FILES= 	LICENSE *.txt
+
+COMPONENT_FONT_CONF_SRC_DIR= 	fontconfig
+COMPONENT_FONT_CONF_FILES=	*.conf
 
 include $(WS_MAKE_RULES)/font.mk
 
 # Generate README file
 COMPONENT_POST_INSTALL_ACTION += \
 	grep -v travis-ci.org $(SOURCE_DIR)/README.md > \
-		$(PROTO_DIR)$(COMPONENT_FONT_DEST_DIR)/README ;
-
-# Install fontconfig files
-FONTCONF_DEST_DIR=$(PROTO_DIR)/etc/fonts
-
-COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(FONTCONF_DEST_DIR)/conf.avail \
-		$(FONTCONF_DEST_DIR)/conf.d ; \
-	$(INSTALL) -m 0444 $(SOURCE_DIR)/fontconfig/*.conf \
-		$(FONTCONF_DEST_DIR)/conf.avail/ ; \
-	(cd $(FONTCONF_DEST_DIR)/conf.d/ ; $(SYMLINK) -f ../conf.avail/* .) ;
+		$(PROTO_DIR)$(COMPONENT_FONT_DOC_DEST_DIR)/README ;
