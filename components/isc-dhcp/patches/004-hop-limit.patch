@@ -1,0 +1,30 @@
+This patch file was developed in-house to provide Solaris
+conformance for USGv6 requirements testing. The upstream
+is no longer maintained or developed.
+
+dhcrelay should comply with RFC 8415 default HOP_COUNT_LIMIT = 8
+
+Not passing upstream
+
+diff --git a/relay/dhcrelay.c b/relay/dhcrelay.c
+index f8db15c..74bde9b 100644
+--- a/relay/dhcrelay.c
++++ b/relay/dhcrelay.c
+*** 73,83 ****
+--- 73,87 ----
+                                   RAI option matching our ID was found. */
+  int bad_circuit_id = 0;               /* Circuit ID option in matching RAI option
+                                   did not match any known circuit ID. */
+  int missing_circuit_id = 0;   /* Circuit ID option in matching RAI option
+                                   was missing. */
++ #if defined (sun)
++ int max_hop_count = 8;                /* Maximum hop count */
++ #else
+  int max_hop_count = 10;               /* Maximum hop count */
++ #endif
+
+  int no_daemon = 0;
+  int dfd[2] = { -1, -1 };
+
+  #ifdef DHCPv6
+
