@@ -20,24 +20,19 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
-# There are a large number of macros in the GCB code written
-# specifically for GCC's preprocessor. Studio does not expand
-# these macros the same way GCC does, and the resulting gdb is
-# not usable. Building gdb with a GCC >= 4.7.2 produces very
-# good results, even on SPARC.
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdb
-COMPONENT_VERSION=	10.2
+COMPONENT_VERSION=	13.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b33ad58d687487a821ec8d878daab0f716be60d0936f2e3ac5cf08419ce70350
+    sha256:4cc3d7143d6d54d289d227b1e7289dbc0fa4cbd46131ab87136e1ea831cf46d4
 COMPONENT_ANITYA_ID=	11798
 
-COMPONENT_BAID=		100947
+COMPONENT_BAID=		140926
 
 # The traditional output from gmake test omits some
 # test results information that is contained in the 
@@ -106,11 +101,12 @@ CPPFLAGS = -D_REENTRANT -I$(USRINCDIR)/ncurses
 
 CONFIGURE_OPTIONS += --with-x=no
 CONFIGURE_OPTIONS += --with-curses
+CONFIGURE_OPTIONS += --disable-sim
 CONFIGURE_OPTIONS += --disable-werror
 CONFIGURE_OPTIONS += --enable-plugins
 CONFIGURE_OPTIONS += --enable-tui
 CONFIGURE_OPTIONS += --without-auto-load-safe-path
-CONFIGURE_OPTIONS += --with-python=$(PYTHON.3.7)
+CONFIGURE_OPTIONS += --with-python=$(PYTHON.3.11)
 CONFIGURE_OPTIONS += --with-libexpat-prefix=$(USRLIBDIR)
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS += --with-system-zlib
@@ -179,13 +175,15 @@ COMPONENT_POST_INSTALL_ACTION = \
 	$(PROTOUSRSHAREDIR)/info/ ; \
       $(INSTALL) -m 0644 $(SOURCE_DIR)/gdb/doc/gdb.info-7  \
 	$(PROTOUSRSHAREDIR)/info/ ; \
+      $(INSTALL) -m 0644 $(SOURCE_DIR)/gdb/doc/gdb.info-8  \
+	$(PROTOUSRSHAREDIR)/info/ ; \
       $(INSTALL) -m 0644 $(SOURCE_DIR)/gdb/doc/annotate.info  \
 	$(PROTOUSRSHAREDIR)/info/ ; \
       $(INSTALL) -m 0644 $(SOURCE_DIR)/gdb/doc/stabs.info  \
 	$(PROTOUSRSHAREDIR)/info/ ; \
       $(MKDIR) $(PROTOGNUSHAREMAN1) ; \
       $(MKDIR) $(PROTOUSRSHAREMAN1DIR) ; \
-      $(INSTALL) -m 0444 $(BUILD_DIR_64)/gdb/doc/gdb.1 \
+      $(INSTALL) -m 0444 $(SOURCE_DIR)/gdb/doc/gdb.1 \
 	$(PROTOUSRSHAREMAN1DIR) );
 
 # The manifest check expects that the component does not
@@ -210,6 +208,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 ASLR_MODE=$(ASLR_DISABLE)
 
 REQUIRED_PACKAGES += compress/xz
+REQUIRED_PACKAGES += compress/zstd
+REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
@@ -218,6 +218,6 @@ REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += library/mpfr
 REQUIRED_PACKAGES += text/texinfo
