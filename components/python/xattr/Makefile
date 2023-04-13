@@ -30,19 +30,19 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xattr
-COMPONENT_VERSION=	0.9.9
+COMPONENT_VERSION=	0.10.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:94adfc8a74c0e2e1459ccc3f8a4cf6699d072b6a9165288781159f4b10268a93
+    sha256:c12e7d81ffaa0605b3ac8c22c2994a8e18a9cf1c59287a1b7722a2289c952ec5
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/xattr/xattr
 COMPONENT_BUGDB=	python-mod/xattr
 COMPONENT_ANITYA_ID=	21273
-COMPONENT_BAID=		122404
+COMPONENT_BAID=		141690
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # The test suite wants to use some unicode filenames, which don't work in the C
@@ -72,7 +72,7 @@ install:	$(INSTALL_32_and_64)
 
 test:		$(TEST_32_and_64)
 
-system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:	$(SYSTEM_TEST_32_and_64)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cffi-%)
 REQUIRED_PACKAGES += system/library

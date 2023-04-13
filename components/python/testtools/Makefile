@@ -26,19 +26,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		testtools
-COMPONENT_VERSION=	2.5.0
+COMPONENT_VERSION=	2.6.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ee09d3ac2a77e0199c1577f2d9b35caa796e353e23dde98ca8c7ff31d97cbc78
+    sha256:28b65e14c0f2d3ecbbfb5f55c9dcde5e4faa80ac16a37a823909a1fe3cbcb30a
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/testing-cabal/testtools
 COMPONENT_BUGDB=	python-mod/testtools
 COMPONENT_ANITYA_ID=	4047
-COMPONENT_BAID=		118738
+COMPONENT_BAID=		141689
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
@@ -51,5 +51,4 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(NO_TESTS)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/extras-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/fixtures-%)

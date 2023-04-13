@@ -1,7 +1,7 @@
 
 
---- cffi-1.15.0/testing/cffi0/test_ownlib.py
-+++ cffi-1.15.0/testing/cffi0/test_ownlib.py
+--- cffi-1.15.1/testing/cffi0/test_ownlib.py
++++ cffi-1.15.1/testing/cffi0/test_ownlib.py
 @@ -173,7 +173,7 @@ class TestOwnLib(object):
                  unicode_name = u+'testownlib'
                  encoded = str(unicode_name)
@@ -11,15 +11,3 @@
                  cwd=str(udir), shell=True)
              cls.module = os.path.join(str(udir), unicode_name + (u+'.so'))
          print(repr(cls.module))
---- cffi-1.15.0/testing/support.py
-+++ cffi-1.15.0/testing/support.py
-@@ -114,6 +114,8 @@ else:
-         extra_compile_args.append('-Qunused-arguments')
-     else:
-         # assume a standard gcc
-+        # We add the -Wno-unknown-pragmas because Solaris' python is build
-+        # with Studio, which uses no_inline rather than noinline.
-         extra_compile_args = ['-Werror', '-Wall', '-Wextra', '-Wconversion',
--                              '-Wno-unused-parameter',
-+                              '-Wno-unused-parameter', '-Wno-unknown-pragmas',
-                               '-Wno-unreachable-code']

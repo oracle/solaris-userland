@@ -27,20 +27,19 @@ COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyrsistent
-COMPONENT_VERSION=	0.18.0
+COMPONENT_VERSION=	0.19.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:49acbec0c1a7da59d05db79a5c0df623b745413b83e0cfae04bf8acf01904f48
+    sha256:1a2994773706bbb4995c31a97bc94f1418314923bd1048c6d964837040376440
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/tobgu/pyrsistent/
 COMPONENT_BUGDB=	python-mod/pyrsistent
 COMPONENT_ANITYA_ID=	19676
-
-COMPONENT_BAID=		113447
+COMPONENT_BAID=		141686
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
@@ -57,5 +56,3 @@ install:	$(INSTALL_32_and_64)
 test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TEST_32_and_64)
-
-REQUIRED_PACKAGES += library/python/six

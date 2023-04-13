@@ -1,0 +1,27 @@
+We do not have hatchling on Solaris, and it doesn't seem necessary
+to deliver it at this point. This patch modifies the build metadata
+to use setuptools instead.
+
+Not intended for upstream.
+
+--- pyhamcrest-2.0.4/pyproject.toml
++++ pyhamcrest-2.0.4/pyproject.toml
+@@ -1,6 +1,6 @@
+ [build-system]
+-requires = ["hatchling", "hatch-vcs"]
+-build-backend = "hatchling.build"
++requires = ["setuptools"]
++build-backend = "setuptools.build_meta"
+ 
+ [project]
+ name = "PyHamcrest"
+@@ -46,6 +46,9 @@ classifiers = [
+ ]
+ dynamic = ["version"]
+ 
++[tool.setuptools.dynamic]
++version = {attr = "hamcrest.__version__"}
++
+ [project.optional-dependencies]
+ docs = ["sphinx~=4.0", "alabaster~=0.7"]
+ tests = [

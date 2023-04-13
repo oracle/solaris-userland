@@ -27,16 +27,16 @@ COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lazy-object-proxy
-COMPONENT_VERSION=	1.7.1
+COMPONENT_VERSION=	1.9.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4f060abec56fd6ac44c47b0c64b9ceb5e2f59c2b19145c2df37f3e0ef4889a3f
+    sha256:659fb5809fa4629b8a1ac5106f669cfc7bef26fbb389dda53b3e010d1ac4ebae
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/lazy-object-proxy
 COMPONENT_BUGDB=	python-mod/lazy-obj-proxy
 COMPONENT_ANITYA_ID=	8265
-COMPONENT_BAID=		122683
+COMPONENT_BAID=		141682
 
 
 include $(WS_MAKE_RULES)/prep.mk

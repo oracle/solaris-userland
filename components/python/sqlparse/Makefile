@@ -26,17 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sqlparse
-COMPONENT_VERSION=	0.4.2
+COMPONENT_VERSION=	0.4.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0c00730c74263a94e5a9919ade150dfc3b19c574389985446148402998287dae
+    sha256:69ca804846bb114d2ec380e4360a8a340db83f0ccf3afceeb1404df028f57268
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pypi.python.org/pypi/sqlparse/
 COMPONENT_BUGDB=	python-mod/sqlparse
 COMPONENT_ANITYA_ID=	4038
-
-COMPONENT_BAID=		113159
+COMPONENT_BAID=		141688
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -58,3 +57,5 @@ build:		$(BUILD_NO_ARCH)
 install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
+
+system-test:    $(SYSTEM_TEST_NO_ARCH)

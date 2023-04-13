@@ -1,40 +1,89 @@
 Make cffi test suite compatible with Python 3.11.
 
-Two combined patches from upstream:
-https://foss.heptapod.net/pypy/cffi/-/commit/871bae572cafc3afb81eb13705945f0a6f708d54
+Patch taken from upstream:
 https://foss.heptapod.net/pypy/cffi/-/commit/8a3c2c816d789639b49d3ae867213393ed7abdff
 
---- cffi-1.15.0/c/test_c.py
-+++ cffi-1.15.0/c/test_c.py
-@@ -1331,9 +1331,11 @@ def test_callback_exception():
+From 8a3c2c816d789639b49d3ae867213393ed7abdff Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Miro=20Hron=C4=8Dok?= <miro@hroncok.cz>
+Date: Fri, 15 Jul 2022 16:11:37 +0200
+Subject: [PATCH] Adjust tests for a last minute Python 3.11 change in the
+ traceback format
+
+See https://github.com/python/cpython/issues/93883
+and https://github.com/python/cpython/pull/93994
+
+--- cffi-1.15.1/c/test_c.py
++++ cffi-1.15.1/c/test_c.py
+@@ -1342,11 +1342,11 @@ def test_callback_exception():
      except ImportError:
          import io as cStringIO    # Python 3
      import linecache
--    def matches(istr, ipattern, ipattern38):
+-    def matches(istr, ipattern, ipattern38, ipattern311):
 +    def matches(istr, ipattern, ipattern38, ipattern311=None):
          if sys.version_info >= (3, 8):
              ipattern = ipattern38
-+        if sys.version_info >= (3, 11):
+         if sys.version_info >= (3, 11):
+-            ipattern = ipattern311
 +            ipattern = ipattern311 or ipattern38
          str, pattern = istr, ipattern
          while '$' in pattern:
              i = pattern.index('$')
-@@ -1478,6 +1480,18 @@ Traceback (most recent call last):
-   File "$", line $, in oops
+@@ -1400,16 +1400,6 @@ Traceback (most recent call last):
+   File "$", line $, in check_value
      $
- AttributeError: 'str' object has no attribute 'append$
-+""", """\
-+Exception ignored from cffi callback <function$Zcb1 at 0x$>, trying to convert the result back to C:
-+Traceback (most recent call last):
-+  File "$", line $, in test_callback_exception
-+    $
-+OverflowError: integer 60000 does not fit 'short'
-+Exception ignored during handling of the above exception by 'onerror':
-+Traceback (most recent call last):
-+  File "$", line $, in oops
-+    $
-+    $
-+AttributeError: 'str' object has no attribute 'append$
+ ValueError: 42
+-""", """\
+-Exception ignored from cffi callback <function$Zcb1 at 0x$>:
+-Traceback (most recent call last):
+-  File "$", line $, in Zcb1
+-    $
+-    $
+-  File "$", line $, in check_value
+-    $
+-    $
+-ValueError: 42
  """)
-     finally:
-         sys.stderr = orig_stderr
+         sys.stderr = cStringIO.StringIO()
+         bigvalue = 20000
+@@ -1424,13 +1414,6 @@ Traceback (most recent call last):
+   File "$", line $, in test_callback_exception
+     $
+ OverflowError: integer 60000 does not fit 'short'
+-""", """\
+-Exception ignored from cffi callback <function$Zcb1 at 0x$>, trying to convert the result back to C:
+-Traceback (most recent call last):
+-  File "$", line $, in test_callback_exception
+-    $
+-    $
+-OverflowError: integer 60000 does not fit 'short'
+ """)
+         sys.stderr = cStringIO.StringIO()
+         bigvalue = 20000
+@@ -1479,19 +1462,6 @@ Traceback (most recent call last):
+   File "$", line $, in test_callback_exception
+     $
+ TypeError: $integer$
+-""", """\
+-Exception ignored from cffi callback <function$Zcb1 at 0x$>, trying to convert the result back to C:
+-Traceback (most recent call last):
+-  File "$", line $, in test_callback_exception
+-    $
+-    $
+-OverflowError: integer 60000 does not fit 'short'
+-Exception ignored during handling of the above exception by 'onerror':
+-Traceback (most recent call last):
+-  File "$", line $, in test_callback_exception
+-    $
+-    $
+-TypeError: $integer$
+ """)
+         #
+         sys.stderr = cStringIO.StringIO()
+@@ -1526,7 +1496,6 @@ Exception ignored from cffi callback <fu
+ Traceback (most recent call last):
+   File "$", line $, in test_callback_exception
+     $
+-    $
+ OverflowError: integer 60000 does not fit 'short'
+ Exception ignored during handling of the above exception by 'onerror':
+ Traceback (most recent call last):

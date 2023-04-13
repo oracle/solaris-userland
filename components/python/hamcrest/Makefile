@@ -25,20 +25,20 @@
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		PyHamcrest
-COMPONENT_VERSION=	2.0.3
+COMPONENT_NAME=		pyhamcrest
+COMPONENT_VERSION=	2.0.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:cf3cad90c004f22973ea0e86f004d41a600be24472d18e07f641705837153bad
+    sha256:dd08cbc67fac05b80d66d0be51abd6364d706b4d63d80352e15b2468a455c44e
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/hamcrest/PyHamcrest
 COMPONENT_BUGDB=	python-mod/pyhamcrest
 COMPONENT_ANITYA_ID=	11633
-COMPONENT_BAID=		122905
+COMPONENT_BAID=		141678
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests

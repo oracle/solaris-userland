@@ -26,19 +26,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		attrs
-COMPONENT_VERSION=	21.4.0
+COMPONENT_VERSION=	22.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2bbbe66dabb2d2bdc08a0c01f7e0047480db1ac72cd06635361cb2fd6f440474
+    sha256:c9227bfc2f01993c03f68db37d1d15c9690188323c067c641f1a35ca58185f99
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://www.attrs.org/en/stable/
 COMPONENT_BUGDB=	python-mod/attrs
 COMPONENT_ANITYA_ID=	15099
-COMPONENT_BAID=		122501
+COMPONENT_BAID=		141672
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
@@ -60,4 +60,3 @@ system-test:    $(SYSTEM_TEST_NO_ARCH)
 REQUIRED_PACKAGES += library/python/coverage
 REQUIRED_PACKAGES += library/python/hypothesis
 REQUIRED_PACKAGES += library/python/python-zope-interface
-REQUIRED_PACKAGES += library/python/six
