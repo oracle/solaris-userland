@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -29,18 +29,18 @@ include ../../make-rules/shared-macros.mk
 PATH=$(dir $(CC)):$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		gpgme
-COMPONENT_VERSION=	1.11.1
+COMPONENT_VERSION=	1.18.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	http://www.gnupg.org/related_software/gpgme/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2d1b111774d2e3dd26dcd7c251819ce4ef774ec5e566251eb9308fa7542fbd6f
+    sha256:361d4eae47ce925dba0ea569af40e7b52c645c4ae2e65e5621bf1b6cdd8b0e9e
 COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gpgme/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	utility/gnupg
 COMPONENT_ANITYA_ID=	1239
 
-COMPONENT_BAID=		48789
+COMPONENT_BAID=		135717
 
 # Although building and running the GpgME tests is enabled, GpgME's
 # Test Harness is not suitable for running in an automated test
