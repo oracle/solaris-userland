@@ -20,30 +20,29 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ansible
-COMPONENT_VERSION=	2.10
-MICRO_VERSION=		15
+COMPONENT_VERSION=	2.14
 COMPONENT_SRC=		$(COMPONENT_NAME)-stable-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9f964bdd32b11b930c29ebac7760ab5fe5ce3f8c4f19353d7cc360211a74755b
+    sha256:b9758358487478a7613fc40e74db280a81622edc68836b021abadbfaa7e02716
 COMPONENT_ARCHIVE_URL=	\
     https://github.com/ansible/ansible/archive/stable-$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://github.com/ansible/ansible
 COMPONENT_BUGDB=	utility/ansible
 COMPONENT_ANITYA_ID=	13227
 
-COMPONENT_BAID=		111760
+COMPONENT_BAID=		136325
 PKG_MACROS+= MICRO_VERSION=$(MICRO_VERSION)
 
 # We need just a single version
-PYTHON_VERSIONS=	3.7
+PYTHON_VERSIONS=	3.11
 
 # Tests requires ddt which is not integrated
 TEST_TARGET= $(NO_TESTS)
@@ -69,11 +68,13 @@ COMPONENT_POST_INSTALL_ACTION += \
     $(INSTALL) --mode=644 $(COMPONENT_DIR)/files/man1/$(ANSIBLE_MAN) \
       $(PROTOUSRSHAREMAN1DIR)/
 
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/jinja2-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/importlib-metadata-%)
+REQUIRED_PACKAGES += $(PYVS:%=system/library/python/solaris-core-%)
+REQUIRED_PACKAGES += library/python/resolvelib
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network
-REQUIRED_PACKAGES += runtime/python-37
-REQUIRED_PACKAGES += system/library/python/solaris-core-37
