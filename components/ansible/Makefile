@@ -27,13 +27,13 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ansible
-COMPONENT_VERSION=	2.14
-COMPONENT_SRC=		$(COMPONENT_NAME)-stable-$(COMPONENT_VERSION)
+COMPONENT_VERSION=	2.14.0
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b9758358487478a7613fc40e74db280a81622edc68836b021abadbfaa7e02716
+    sha256:a7bf492c224080eefffd609338fb71f73f67a03f8a0471dfcd05894b5b6aebd4
 COMPONENT_ARCHIVE_URL=	\
-    https://github.com/ansible/ansible/archive/stable-$(COMPONENT_ARCHIVE)
+    https://github.com/ansible/ansible/archive/refs/tags/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=	https://github.com/ansible/ansible
 COMPONENT_BUGDB=	utility/ansible
 COMPONENT_ANITYA_ID=	13227
@@ -74,7 +74,6 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/jinja2-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/importlib-metadata-%)
-REQUIRED_PACKAGES += $(PYVS:%=system/library/python/solaris-core-%)
 REQUIRED_PACKAGES += library/python/resolvelib
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network
