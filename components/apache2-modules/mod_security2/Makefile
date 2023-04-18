@@ -20,17 +20,17 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		modsecurity
-COMPONENT_VERSION=	2.9.6
-COMPONENT_BAID=		130023
+COMPONENT_VERSION=	2.9.7
+COMPONENT_BAID=		142176
 COMPONENT_PROJECT_URL=	https://github.com/SpiderLabs/ModSecurity
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:626a831aca92cdff73ea68a85b7f5c105d9a15365fa270fbed3139a81eaf3344
+    sha256:2a28fcfccfef21581486f98d8d5fe0397499749b8380f60ec7bb1c08478e1839
 COMPONENT_ARCHIVE_URL= \
     $(COMPONENT_PROJECT_URL)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/apache
@@ -49,6 +49,7 @@ CONFIGURE_OPTIONS += --disable-mlogc
 CONFIGURE_OPTIONS += LTFLAGS="--silent --tag=CC"
 CONFIGURE_OPTIONS += --with-apr=`$(APXS) -q APR_CONFIG`
 CONFIGURE_OPTIONS += --with-apu=`$(APXS) -q APU_CONFIG`
+CONFIGURE_OPTIONS += --with-pcre2
 
 COMPONENT_TEST_ARGS += CFLAGS="$(CFLAGS) -DMSC_TEST"
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
@@ -62,6 +63,6 @@ COMPONENT_TEST_TRANSFORMS += \
 REQUIRED_PACKAGES += library/apr-1
 REQUIRED_PACKAGES += library/apr-util-1
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/pcre
+REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += web/curl
