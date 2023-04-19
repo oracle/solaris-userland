@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		grep
-COMPONENT_VERSION=	3.7
+COMPONENT_VERSION=	3.10
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5c10da312460aec721984d5d83246d24520ec438dd48d7ab5a05dbc0d6d6823c
+    sha256:24efa5b595fb5a7100879b51b8868a0bb87a71c183d02c4c602633b88af6855b
 COMPONENT_BUGDB=	utility/ggrep
 COMPONENT_ANITYA_ID=	1251
 
-COMPONENT_BAID=		117126
+COMPONENT_BAID=		142189
 
 SYSTEM_TEST_TARGET= $(SOURCE_DIR)/.system-test-patched configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
@@ -61,9 +61,6 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL/p" ' \
         '-e "/ERROR/p" '
 
-# Test output differs for each architecture
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
-
 # Putting GNU on path first prevents some tests from being skipped,
 # which also  keeps the test and system-test results consistent.
 # With the test target, the path to the just-built commands is
@@ -87,6 +84,11 @@ COMPONENT_PRE_TEST_ACTION += \
 	   $(GMAKE) clean build; \
 	fi
 
+# stack-overflow test fails with ASLR enabled binary on SPARC
+ifeq ($(MACH),sparc)
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+endif
+
 REQUIRED_PACKAGES += developer/gcc
-REQUIRED_PACKAGES += library/pcre
+REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += shell/bash
