@@ -1,13 +1,23 @@
-Allows build with Zlib 1.2.12.
+Workarounds regression in version 8.0.33 and thus allows to use system
+Zlib. Reported to MySQL team.
 
---- mysql-8.0.32/cmake/zlib.cmake
-+++ mysql-8.0.32/cmake/zlib.cmake
-@@ -29,7 +29,7 @@ # but we need at least version 1.2.11, a
- # all the platforms we need to support.
+--- mysql-8.0.33/cmake/zlib.cmake
++++ mysql-8.0.33/cmake/zlib.cmake
+@@ -60,6 +60,7 @@ IF(NOT ZLIB_INCLUDE_DIR STREQUAL "/usr/i
+       TARGET_INCLUDE_DIRECTORIES(zlib_interface SYSTEM INTERFACE
+         ${ZLIB_INCLUDE_DIR})
+     ENDIF()
++    FIND_ZLIB_VERSION(${ZLIB_INCLUDE_DIR})
+   ENDIF()
+ ENDFUNCTION(FIND_SYSTEM_ZLIB)
  
- # Security bug fixes required from:
--SET(MIN_ZLIB_VERSION_REQUIRED "1.2.13")
-+SET(MIN_ZLIB_VERSION_REQUIRED "1.2.12")
- 
- 
- MACRO(FIND_ZLIB_VERSION)
+@@ -114,9 +115,6 @@ IF(WITH_ZLIB STREQUAL "bundled")
+     MYSQL_USE_BUNDLED_ZLIB()
+   ELSEIF(WITH_ZLIB STREQUAL "system")
+     FIND_SYSTEM_ZLIB()
+-    IF(NOT ZLIB_FOUND)
+-      MESSAGE(FATAL_ERROR "Cannot find system zlib libraries.")
+-    ENDIF()
+   ELSE()
+     RESET_ZLIB_VARIABLES()
+     MESSAGE(FATAL_ERROR "WITH_ZLIB must be bundled or system")
