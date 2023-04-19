@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796395)
@@ -32,16 +32,16 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		flac
-COMPONENT_VERSION=	1.3.4
+COMPONENT_VERSION=	1.4.2
 COMPONENT_PROJECT_URL=	https://xiph.org/flac/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-       sha256:8ff0607e75a322dd7cd6ec48f4f225471404ae2730d0ea945127b1355155e737
+       sha256:e322d58a1f48d23d9dd38f432672865f6f79e73a6f9cc5a5f57fcaa83eb5a8e4
 COMPONENT_ARCHIVE_URL=	http://downloads.xiph.org/releases/flac/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	817
 
-COMPONENT_BAID=		117299
+COMPONENT_BAID=		141850
 
 # tests work but take hours to run and use a lot of disk space
 TEST_TARGET = $(SKIP_TEST)
@@ -56,6 +56,8 @@ COMPONENT_POST_CONFIGURE_ACTION += ( \
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS += --enable-ogg
+
+CXXFLAGS += -fstack-protector-all
 
 REQUIRED_PACKAGES += codec/libogg
 REQUIRED_PACKAGES += codec/libvorbis
