@@ -1,0 +1,61 @@
+This patch enables building both 32- and 64-bit versions of the library, and
+installing them under usr/lib. Since ODPI-C searches the standard library
+runpath to find libclntsh.so, we bake in the paths where the Instant Client
+is installed if using IPS.
+
+Not submitting upstream because this is specific to Solaris Userland build
+requirements.
+
+
+--- odpi-3.1.2/Makefile.orig	2019-02-04 14:13:08.000000000 -0800
++++ odpi-3.1.2/Makefile	2019-02-19 22:09:34.730465637 -0800
+@@ -19,19 +19,29 @@
+ 
+ vpath %.c src
+ vpath %.h include src
+ 
+ PREFIX ?= /usr/local
+-INSTALL_LIB_DIR = $(PREFIX)/lib
+-INSTALL_INC_DIR = $(PREFIX)/include
++INSTALL_LIB_DIR_32 = $(PREFIX)/lib
++INSTALL_LIB_DIR_64 = $(PREFIX)/lib/$(MACH64)
++INSTALL_LIB_DIR = $(INSTALL_LIB_DIR_$(BITS))
++INSTALL_INC_DIR = $(PREFIX)/include/odpi-$(DOTLESS_VERSION)
+ INSTALL_SHARE_DIR = $(PREFIX)/share/odpi
+ 
+-BUILD_DIR = build
+-LIB_DIR = lib
++BUILD_DIR = build$(BITS)
++LIB_DIR = lib$(BITS)
+ SAMPLES_DIR = samples
+ TESTS_DIR = test
+ 
++# We bake in the Instant Client library paths 
++LDFLAGS32 += -R"\$$ORIGIN/../oracle/instantclient/18.3/lib"
++LDFLAGS32 += -R"\$$ORIGIN/../oracle/instantclient/12.2/lib"
++LDFLAGS32 += -R"\$$ORIGIN/../oracle/instantclient/12.1/lib"
++LDFLAGS64 += -R"\$$ORIGIN/../../oracle/instantclient/18.3/lib/$(MACH64)"
++LDFLAGS64 += -R"\$$ORIGIN/../../oracle/instantclient/12.2/lib/$(MACH64)"
++LDFLAGS64 += -R"\$$ORIGIN/../../oracle/instantclient/12.1/lib/$(MACH64)"
++
+ CC = gcc
+ LD = gcc
+ AWK = awk
+ 
+ MAJOR_VERSION := $(shell $(AWK) '/\#define.*DPI_MAJOR_VERSION/ {print $$3}' \
+@@ -40,13 +50,12 @@
+ 	include/dpi.h )
+ PATCH_LEVEL := $(shell $(AWK) '/\#define.*DPI_PATCH_LEVEL/ {print $$3}' \
+ 	include/dpi.h )
+ 
+ INSTALL = install
+-CFLAGS = -Iinclude -O2 -g -Wall -fPIC
++CFLAGS = -Iinclude -O2 -g -Wall -fPIC -m$(BITS)
+-LIBS = -ldl -lpthread
+-LDFLAGS = -shared
++LDFLAGS = -shared -m$(BITS) $(LDFLAGS$(BITS))
+ VERSION_LIB_NAME = $(LIB_NAME).$(MAJOR_VERSION)
+ FULL_LIB_NAME = $(VERSION_LIB_NAME).$(MINOR_VERSION).$(PATCH_LEVEL)
+ ifeq ($(shell uname -s), Darwin)
+ 	LIB_NAME = libodpic.dylib
+ 	LIB_OUT_OPTS = -dynamiclib \
