@@ -20,17 +20,17 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxml2
-COMPONENT_VERSION=	2.10.3
-COMPONENT_BAID=		131573
+COMPONENT_VERSION=	2.10.4
+COMPONENT_BAID=		142364
 COMPONENT_PROJECT_URL=	http://xmlsoft.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5d2cc3d78bec3dbe212a9d7fa629ada25a7da928af432c93060ff5c17ee28a9c
+    sha256:ed0c91c5845008f1936739e4eee2035531c1c94742c6541f44ee66d885948d45
 COMPONENT_ARCHIVE =     $(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/libxml2/2.10/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libxml

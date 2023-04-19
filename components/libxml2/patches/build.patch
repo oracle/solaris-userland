@@ -12,11 +12,9 @@ Subject: [PATCH] Fix Windows compiler warnings in python/types.c
  xpath.c                        |  4 ++--
  6 files changed, 48 insertions(+), 52 deletions(-)
 
-diff --git a/include/libxml/xmlversion.h.in b/include/libxml/xmlversion.h.in
-index dfd3c30f8..e83fb7872 100644
---- a/include/libxml/xmlversion.h.in
-+++ b/include/libxml/xmlversion.h.in
-@@ -409,12 +409,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
+--- libxml2-2.10.4/include/libxml/xmlversion.h.in
++++ libxml2-2.10.4/include/libxml/xmlversion.h.in
+@@ -409,12 +409,7 @@ #define LIBXML_LZMA_ENABLED
  #endif
  
  #ifdef __GNUC__
@@ -30,7 +28,7 @@ index dfd3c30f8..e83fb7872 100644
  
  #ifndef ATTRIBUTE_UNUSED
  # if ((__GNUC__ > 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ >= 7)))
-@@ -424,12 +419,6 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
+@@ -424,12 +419,6 @@ #  define ATTRIBUTE_UNUSED
  # endif
  #endif
  
@@ -43,7 +41,7 @@ index dfd3c30f8..e83fb7872 100644
  #ifndef LIBXML_ATTR_ALLOC_SIZE
  # if (!defined(__clang__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 3))))
  #  define LIBXML_ATTR_ALLOC_SIZE(x) __attribute__((alloc_size(x)))
-@@ -440,12 +429,6 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
+@@ -440,12 +429,6 @@ #else
  # define LIBXML_ATTR_ALLOC_SIZE(x)
  #endif
  
@@ -56,7 +54,7 @@ index dfd3c30f8..e83fb7872 100644
  #ifndef LIBXML_ATTR_FORMAT
  # if ((__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 3)))
  #  define LIBXML_ATTR_FORMAT(fmt,args) __attribute__((__format__(__printf__,fmt,args)))
-@@ -465,6 +448,19 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
+@@ -465,6 +448,19 @@ #    define XML_DEPRECATED __attribute__
  #  endif
  #endif
  
@@ -76,7 +74,7 @@ index dfd3c30f8..e83fb7872 100644
  #else /* ! __GNUC__ */
  /**
   * ATTRIBUTE_UNUSED:
-@@ -493,6 +489,18 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
+@@ -493,6 +489,18 @@ */
  #ifndef XML_DEPRECATED
  #define XML_DEPRECATED
  #endif
@@ -95,15 +93,12 @@ index dfd3c30f8..e83fb7872 100644
  #endif /* __GNUC__ */
  
  #ifdef __cplusplus
-diff --git a/libxml.h b/libxml.h
-index a38f4f7c7..59294473c 100644
---- a/libxml.h
-+++ b/libxml.h
-@@ -54,18 +54,6 @@ int vfprintf(FILE *, const char *, va_list);
- #include "trio.h"
+--- libxml2-2.10.4/libxml.h
++++ libxml2-2.10.4/libxml.h
+@@ -56,18 +56,6 @@ #include "trio.h"
  #endif
  
--#if defined(__clang__) || \
+ #if defined(__clang__) || \
 -    (defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 406))
 -#define XML_IGNORE_PEDANTIC_WARNINGS \
 -    _Pragma("GCC diagnostic push") \
@@ -115,14 +110,13 @@ index a38f4f7c7..59294473c 100644
 -#define XML_POP_WARNINGS
 -#endif
 -
- #if defined(__clang__) || \
+-#if defined(__clang__) || \
      (defined(__GNUC__) && (__GNUC__ >= 8))
  #define ATTRIBUTE_NO_SANITIZE(arg) __attribute__((no_sanitize(arg)))
-diff --git a/python/libxml_wrap.h b/python/libxml_wrap.h
-index 478a20df3..2ba7571a6 100644
---- a/python/libxml_wrap.h
-+++ b/python/libxml_wrap.h
-@@ -68,11 +68,8 @@
+ #else
+--- libxml2-2.10.4/python/libxml_wrap.h
++++ libxml2-2.10.4/python/libxml_wrap.h
+@@ -68,11 +68,8 @@ (defined(__GNUC__) && (__GNUC__ * 100 +
  #define XML_IGNORE_DEPRECATION_WARNINGS \
      _Pragma("GCC diagnostic push") \
      _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
@@ -135,19 +129,17 @@ index 478a20df3..2ba7571a6 100644
  #endif
  
  #define PyxmlNode_Get(v) (((v) == Py_None) ? NULL : \
-diff --git a/python/types.c b/python/types.c
-index 644752ec7..5efeef99e 100644
---- a/python/types.c
-+++ b/python/types.c
-@@ -78,7 +78,6 @@ myInvalidParameterHandler(const wchar_t *expression,
+--- libxml2-2.10.4/python/types.c
++++ libxml2-2.10.4/python/types.c
+@@ -78,7 +78,6 @@ #endif
  
  FILE *
  libxml_PyFileGet(PyObject *f) {
 -    int flags;
      FILE *res;
      const char *mode;
-     int fd = PyObject_AsFileDescriptor(f);
-@@ -112,8 +111,9 @@ libxml_PyFileGet(PyObject *f) {
+ 
+@@ -113,8 +112,9 @@ hntdll = GetModuleHandleW(L"ntdll.dll");
  
      if (hntdll == NULL)
          return(NULL);
@@ -158,7 +150,7 @@ index 644752ec7..5efeef99e 100644
  
      if (NtQueryInformationFile != NULL &&
          (NtQueryInformationFile((HANDLE)w_fh,
-@@ -129,23 +129,24 @@ libxml_PyFileGet(PyObject *f) {
+@@ -130,23 +130,24 @@ is_write = TRUE;
              if (ai.AccessFlags & FILE_APPEND_DATA)
                  is_append = TRUE;
  
@@ -196,20 +188,18 @@ index 644752ec7..5efeef99e 100644
          }
  
      FreeLibrary(hntdll);
-@@ -153,6 +154,8 @@ libxml_PyFileGet(PyObject *f) {
+@@ -154,6 +155,8 @@ FreeLibrary(hntdll);
      if (!is_write && !is_read) /* also happens if we did not load or run NtQueryInformationFile() successfully */
          return(NULL);
  #else
 +    int flags;
 +
      /*
-      * macOS returns O_RDWR for standard streams, but fails to write to
-      * stdout or stderr when opened with fdopen(dup_fd, "rw").
-diff --git a/xmlmodule.c b/xmlmodule.c
-index af47514bc..cbb25a6d2 100644
---- a/xmlmodule.c
-+++ b/xmlmodule.c
-@@ -342,7 +342,7 @@ xmlModulePlatformClose(void *handle)
+      * Get the flags on the fd to understand how it was opened
+      */
+--- libxml2-2.10.4/xmlmodule.c
++++ libxml2-2.10.4/xmlmodule.c
+@@ -340,7 +340,7 @@ */
  static int
  xmlModulePlatformSymbol(void *handle, const char *name, void **symbol)
  {
@@ -218,11 +208,9 @@ index af47514bc..cbb25a6d2 100644
      *symbol = GetProcAddress(handle, name);
      return (NULL == *symbol) ? -1 : 0;
  XML_POP_WARNINGS
-diff --git a/xpath.c b/xpath.c
-index aa8df6132..54196fc1a 100644
---- a/xpath.c
-+++ b/xpath.c
-@@ -4855,7 +4855,7 @@ xmlXPathRegisterFuncNS(xmlXPathContextPtr ctxt, const xmlChar *name,
+--- libxml2-2.10.4/xpath.c
++++ libxml2-2.10.4/xpath.c
+@@ -4854,7 +4854,7 @@ if (ctxt->funcHash == NULL)
  	return(-1);
      if (f == NULL)
          return(xmlHashRemoveEntry2(ctxt->funcHash, name, ns_uri, NULL));
@@ -231,7 +219,7 @@ index aa8df6132..54196fc1a 100644
      return(xmlHashAddEntry2(ctxt->funcHash, name, ns_uri, (void *) f));
  XML_POP_WARNINGS
  }
-@@ -4938,7 +4938,7 @@ xmlXPathFunctionLookupNS(xmlXPathContextPtr ctxt, const xmlChar *name,
+@@ -4937,7 +4937,7 @@ }
      if (ctxt->funcHash == NULL)
  	return(NULL);
  
