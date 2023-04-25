@@ -49,6 +49,33 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
+# This section is workaround for 35310697
+ifeq ($(MACH), sparc)
+# Temporary workaround to build and link gobject-introspection against older libffi
+# Make sure that libffi is installed first
+$(CONFIGURE_64): ../../libffi/build/$(MACH64)/.installed
+
+../../libffi/build/$(MACH64)/.installed:
+	$(MAKE) -C ../../libffi install
+
+# Create custom libffi.pc
+COMPONENT_PRE_CONFIGURE_ACTION += cp $(COMPONENT_DIR)/files/libffi.pc $(COMPONENT_DIR)/build;
+COMPONENT_PRE_CONFIGURE_ACTION += perl -pi -e 's,PREFIX,$(WS_TOP)/components/libffi/build/3.2.1-$(MACH64),' $(COMPONENT_DIR)/build/libffi.pc;
+# And point pkg-config to it
+PKG_CONFIG_PATH=$(COMPONENT_DIR)/build:/usr/lib/$(MACH64)/pkgconfig
+# Fix runtime path
+COMPONENT_POST_INSTALL_ACTION += \
+        $(ELFEDIT) -e "dyn:rpath \$$ORIGIN/../../girepository" ./build/$(MACH64)/tests/scanner/libbarapp-1.0.so; \
+        $(ELFEDIT) -e "dyn:runpath \$$ORIGIN/../../girepository" ./build/$(MACH64)/tests/scanner/libbarapp-1.0.so; \
+        $(ELFEDIT) -e "dyn:delete RUNPATH" -e "dyn:delete RPATH" ./build/$(MACH64)/girepository/libgirepository-1.0.so;
+# Just double check that we link to correct library
+COMPONENT_POST_BUILD_ACTION += \
+        LIBFFI=`find $(COMPONENT_DIR) -name \*.so | xargs elfdump -d | grep NEEDED | grep libffi.so.6`; \
+        if [ -z "$$LIBFFI" ]; then \
+            echo "Error, this library should be linked to libffi.so.6, is libffi built?"; \
+            exit 1; \
+        fi
+endif
 
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-scanner
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-annotation-tool
