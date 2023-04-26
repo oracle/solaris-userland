@@ -81,12 +81,22 @@ COMPONENT_INSTALL_ARGS += MANSUFFIX=openssl
 # 32 and 64 bits configuration.h headers need to be merged to the final one.
 # Note: because diff returns 1 when files are not equal, we have to suppress
 # gmake failure. It is reason why 'true' command was added.
+# Both of the 32 and 64 bit bin/openssl are needed by the fips-140 SMF method.
 OPENSSLH=include/openssl/configuration.h
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
+	cd $(PROTO_DIR)$(CONFIGURE_PREFIX)/bin/ ; \
+	mkdir 64 ; \
+	mv openssl 64 ; \
+	ln 64/openssl openssl ; \
 	diff -D _LP64 $(BUILD_DIR_32)/$(OPENSSLH) \
 	$(BUILD_DIR_64)/$(OPENSSLH) > \
 	$(PROTO_DIR)$(CONFIGURE_PREFIX)/$(OPENSSLH); \
 	true;
+
+$(INSTALL_32): COMPONENT_POST_INSTALL_ACTION += \
+	cd $(PROTO_DIR)$(CONFIGURE_PREFIX)/bin/ ; \
+	mkdir 32 ; \
+	mv openssl 32
 
 LINT_FLAGS += -I$(@D)/include -erroff=E_STATIC_UNUSED
 

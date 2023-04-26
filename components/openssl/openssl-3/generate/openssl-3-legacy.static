@@ -20,9 +20,11 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
-file files/legacymodule.cnf path=etc/openssl/3/conf.d/legacymodule.cnf group=sys mode=0644 preserve=true
+file files/legacymodule.cnf path=etc/openssl/3/conf.d/legacymodule.cnf group=sys mode=0644 preserve=true overlay=allow
+dir  path=usr/openssl/3/lib/ossl-modules
 file path=usr/openssl/3/lib/ossl-modules/legacy.so
+dir  path=usr/openssl/3/lib/$(MACH64)/ossl-modules
 file path=usr/openssl/3/lib/$(MACH64)/ossl-modules/legacy.so

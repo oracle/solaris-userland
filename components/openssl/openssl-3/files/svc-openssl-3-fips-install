@@ -1,8 +1,9 @@
 #!/usr/bin/bash
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
+
 # This script runs fips provider self tests and generate
 # fipsmodule.conf file.
 #
@@ -10,10 +11,7 @@
 . /lib/svc/share/smf_include.sh
 
 OPENSSL_HOME="/usr/openssl/3"
-FIPS_MODULE="$OPENSSL_HOME/lib/64/ossl-modules/fips.so"
-FIPS_MODULE_CONF="/etc/openssl/3/conf.d/fipsmodule.cnf"
 FIPS_PROVIDER_CONF="/etc/openssl/3/conf.d/fipsprovider.cnf"
-FIPS_INSTALL_CMD="$OPENSSL_HOME/bin/openssl fipsinstall -module=$FIPS_MODULE"
 SYSTEM_FIPS_MODE_FILE="/etc/system.d/crypto:fips-140"
 
 update_fipsmodule_config()
@@ -22,18 +20,29 @@ update_fipsmodule_config()
 	# even some valid system configurations can break this command
 	export OPENSSL_CONF=
 
-	if $FIPS_INSTALL_CMD -verify -in "$FIPS_MODULE_CONF"; then
-		return
-	fi
+	for ISA in 32 64 ; do
+		# Verify first so we don't update if it isn't needed.
+		FIPS_MODULE="$OPENSSL_HOME/lib/$ISA/ossl-modules/fips.so"
+		FIPS_MODULE_CONF="/etc/openssl/3/conf.d/$ISA/fipsmodule.cnf"
+		if [[ -s $FIPS_MODULE_CONF ]]; then
+			echo "INFO: checking existing $FIPS_MODULE_CONF"
+			$OPENSSL_HOME/bin/$ISA/openssl fipsinstall -verify \
+			    -in $FIPS_MODULE_CONF -module $FIPS_MODULE
+			[[ $? == 0 ]] && continue
+		fi
+		echo "INFO: updating $ISA bit fipsmodule.cnf:"
+		$OPENSSL_HOME/bin/$ISA/openssl fipsinstall \
+		    -module=$FIPS_MODULE -out $FIPS_MODULE_CONF \
+		    || exit $SMF_EXIT_ERR_FATAL
 
-	echo "INFO: updating fipsmodule.cnf:"
-	$FIPS_INSTALL_CMD -out "$FIPS_MODULE_CONF" || exit $SMF_EXIT_ERR_FATAL
+	done
 }
 
 
 update_fipsprovider_config()
 {
-	# Set the fips provider as the default when the system is in FIPS 140 mode
+	# Set the fips provider as the default when the system is in
+	# FIPS 140 mode
 	if [[ -f $SYSTEM_FIPS_MODE_FILE ]] ; then
 		mode='yes'
 		h=
@@ -43,7 +52,8 @@ update_fipsprovider_config()
 	fi
 
 	# Check if the configuration file is already up to date
-	if grep -q "^# System is in FIPS 140 mode: ${mode}$" $FIPS_PROVIDER_CONF; then
+	if grep -q "^# System is in FIPS 140 mode: ${mode}$" \
+	    $FIPS_PROVIDER_CONF; then
 		# no update needed
 		return
 	fi
@@ -57,8 +67,8 @@ update_fipsprovider_config()
 	# System is in FIPS 140 mode: ${mode}
 	#
 
-	[provider_sect]
-	fips = fips_sect
+	${h}[provider_sect]
+	${h}fips = fips_sect
 
 	${h}default = fips_mode_default_sect
 	${h}base = base_sect
@@ -71,7 +81,11 @@ update_fipsprovider_config()
 	${h}
 	${h}[evp_properties]
 	${h}default_properties = "fips=yes"
+	${h}
+	${h}.include /etc/openssl/3/conf.d/\${_SYS::ISA}/fipsmodule.cnf
 	EOF
+
+	echo "Set FIPS 140 mode: ${mode}"
 }
 
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
 # Do not deliver the html version of the delivered manpages.
@@ -39,12 +39,21 @@
 <transform file path=usr/openssl/3/include/openssl/seed.h -> drop>
 
 # these files are delivered by openssl-3/provider/*
-<transform file path=etc/openssl/3/fipsmodule.cnf -> drop>
-<transform file path=usr/openssl/3/.+/ossl-modules/.+.so$ -> drop>
+<transform file path=etc/openssl/3/fipsmodule.cnf$ -> drop>
+<transform file path=etc/openssl/3/conf.d/.+/ -> drop>
+<transform file path=etc/openssl/3/conf.d/.+/.+/ -> drop>
+<transform dir path=usr/openssl/3/lib -> drop>
+<transform dir path=usr/openssl/3/lib/ossl-modules -> drop>
+<transform dir path=usr/openssl/3/lib/$(MACH64)/ossl-modules -> drop>
+<transform file path=usr/openssl/3/lib/ossl-modules/.+.so$ -> drop>
+<transform file path=usr/openssl/3/lib/.+/ossl-modules/.+.so$ -> drop>
 # these files are handled in openssl-3.static
 <transform file path=etc/openssl/3/openssl.cnf$ -> drop>
 <transform file path=etc/openssl/3/misc/.+ -> drop>
 <transform link path=etc/openssl/3/misc/.+ -> drop>
+<transform file path=usr/openssl/3/bin/.+ -> drop>
+<transform file path=usr/openssl/3/.+/bin/openssl -> drop>
+<transform hardlink path=usr/openssl/3/bin/.+ -> drop>
 
 # misc
 <transform file path=etc/openssl/3/.*.dist$ -> drop>

@@ -42,7 +42,7 @@ link path=etc/openssl/3/certs target=../certs
 dir  path=etc/openssl/3/conf.d
 file path=etc/openssl/3/ct_log_list.cnf
 file files/openssl.cnf path=etc/openssl/3/openssl.cnf group=sys mode=0644 \
-    preserve=true
+    overlay=allow preserve=true
 link path=etc/openssl/3/private target=../private
 file files/audit_tags \
     path=etc/security/audit_tags.d/library:security:openssl-3 group=sys
@@ -54,7 +54,9 @@ link path=lib/$(MACH64)/libssl.so.3 \
     target=../../usr/openssl/3/lib/$(MACH64)/libssl.so.3
 link path=lib/libcrypto.so.3 target=../usr/openssl/3/lib/libcrypto.so.3
 link path=lib/libssl.so.3 target=../usr/openssl/3/lib/libssl.so.3
-file path=usr/openssl/3/bin/openssl
+file path=usr/openssl/3/bin/32/openssl pkg.linted.userland.action001.PIE=true
+file path=usr/openssl/3/bin/64/openssl pkg.linted.userland.action001.PIE=true
+hardlink path=usr/openssl/3/bin/openssl target=64/openssl
 file path=usr/openssl/3/include/openssl/aes.h
 file path=usr/openssl/3/include/openssl/asn1.h
 file path=usr/openssl/3/include/openssl/asn1_mac.h
@@ -188,9 +190,11 @@ link path=usr/openssl/3/lib/$(MACH64)/libssl.so target=libssl.so.3
 file path=usr/openssl/3/lib/$(MACH64)/libssl.so.3
 file path=usr/openssl/3/lib/$(MACH64)/llib-lcrypto.ln
 file path=usr/openssl/3/lib/$(MACH64)/llib-lssl.ln
+dir  path=usr/openssl/3/lib/$(MACH64)/ossl-modules
 file path=usr/openssl/3/lib/$(MACH64)/pkgconfig/libcrypto.pc
 file path=usr/openssl/3/lib/$(MACH64)/pkgconfig/libssl.pc
 file path=usr/openssl/3/lib/$(MACH64)/pkgconfig/openssl.pc
+link path=usr/openssl/3/lib/32 target=.
 link path=usr/openssl/3/lib/64 target=$(MACH64)
 file path=usr/openssl/3/lib/engines-3/loader_attic.so
 link path=usr/openssl/3/lib/libcrypto.so target=libcrypto.so.3
@@ -199,6 +203,7 @@ link path=usr/openssl/3/lib/libssl.so target=libssl.so.3
 file path=usr/openssl/3/lib/libssl.so.3
 file path=usr/openssl/3/lib/llib-lcrypto.ln
 file path=usr/openssl/3/lib/llib-lssl.ln
+dir  path=usr/openssl/3/lib/ossl-modules
 file path=usr/openssl/3/lib/pkgconfig/libcrypto.pc
 file path=usr/openssl/3/lib/pkgconfig/libssl.pc
 file path=usr/openssl/3/lib/pkgconfig/openssl.pc
