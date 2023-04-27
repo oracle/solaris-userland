@@ -28,15 +28,15 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyatspi
-COMPONENT_VERSION=	2.38.1
+COMPONENT_VERSION=	2.46.0
 COMPONENT_PROJECT_URL=	\
 	https://wiki.linuxfoundation.org/accessibility/atk/at-spi/at-spi_on_d-bus
 COMPONENT_ARCHIVE_HASH= \
-       sha256:e49f27e9e29c24ac3ccb837a7f221952532940da0344e7e8c0899924aeb98151
+       sha256:d45489cf3d47aa150b1a35e8949b3b31035f8c2075e588d26b6efc625970c62e
 COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	13157
 
-COMPONENT_BAID=		97196
+COMPONENT_BAID=		142448
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
