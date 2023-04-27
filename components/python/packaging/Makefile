@@ -26,20 +26,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		packaging
-COMPONENT_VERSION=	21.0
+COMPONENT_VERSION=	23.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b50950e4c11957c7808fd5c3f04f2f75b1db40c303088bbda212678d2f881adf
+    sha256:b6ad297f8907de0fa2fe1ccbd26fdaf387f5f47c7275fedf8cce89f99446cf97
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pypa/packaging
 COMPONENT_BUGDB=	python-mod/packaging
 COMPONENT_ANITYA_ID=	11718
-
-COMPONENT_BAID=		107899
+COMPONENT_BAID=		140824
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
@@ -56,5 +55,3 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
-
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pyparsing-%)

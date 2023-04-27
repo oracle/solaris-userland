@@ -26,17 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.utils
-COMPONENT_VERSION=	4.10.0
+COMPONENT_VERSION=	6.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:82b08049631ae78079972aa651c7613806eaf8cae6bf95465e4af3f5b867ba9f
+    sha256:76bc0108d50aca972b68fec8298e791b5fbcbeb9a51a27c6986b41b0a6a62eeb
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.utils/
 COMPONENT_BUGDB=	python-mod/oslo.utils
 COMPONENT_ANITYA_ID=	3951
-
-COMPONENT_BAID=		108283
+COMPONENT_BAID=		140843
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -61,7 +60,6 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/netaddr-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/netifaces-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.i18n-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyparsing-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pytz-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)

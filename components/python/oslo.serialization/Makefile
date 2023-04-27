@@ -26,17 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.serialization
-COMPONENT_VERSION=	4.2.0
+COMPONENT_VERSION=	5.1.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f59628ad8bd062c9bcf964923e2b4659c51f4166368a6b96cc1b75e1dd8c657d
+    sha256:8abbda8b1763a06071fc28c5d8a9be547ba285f4830e68a70ff88fe11f16bf43
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.serialization/
 COMPONENT_BUGDB=	python-mod/oslo.serial
 COMPONENT_ANITYA_ID=	13181
-
-COMPONENT_BAID=		108281
+COMPONENT_BAID=		140845
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

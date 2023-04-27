@@ -1,18 +1,37 @@
 Patches to run cloudbase-init plugins on Solaris.  Possibly upstreamable
 
---- cloudbase-init-1.1.0/cloudbaseinit/osutils/posix.py
-+++ cloudbase-init-1.1.0/cloudbaseinit/osutils/posix.py
-@@ -13,11 +13,86 @@
+--- cloudbase-init-1.1.4/cloudbaseinit/osutils/posix.py
++++ cloudbase-init-1.1.4/cloudbaseinit/osutils/posix.py
+@@ -12,12 +12,106 @@
+ #    License for the specific language governing permissions and limitations
  #    under the License.
  
++import crypt
++import ctypes as C
  import os
--
 +import pwd
+ 
 +from subprocess import CalledProcessError, Popen, PIPE, check_call
-+from solaris_install.utils import encrypt_password
  from cloudbaseinit.osutils import base
  
  
++def encrypt_password(plaintext):
++
++    class Passwd(C.c_void_p):
++        # Since we are passing NULL as the second argument,
++        # all we need is a void pointer
++        pass
++
++    _libc = C.CDLL("libc.so.1")
++
++    crypt_gensalt = _libc.crypt_gensalt
++    crypt_gensalt.argtypes = (C.c_char_p, C.POINTER(Passwd))
++    crypt_gensalt.restype = C.c_char_p
++
++    salt = crypt_gensalt(None, None)
++    return crypt.crypt(plaintext, salt.decode())
++
++
  class PosixUtils(base.BaseOSUtils):
  
 +    def __init__(self):

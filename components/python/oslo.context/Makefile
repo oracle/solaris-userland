@@ -26,17 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.context
-COMPONENT_VERSION=	3.3.1
+COMPONENT_VERSION=	5.1.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:458de8e5a0759e6bceb7a139181ae169d6979cc917ea4f923ea67eec23ed072f
+    sha256:2f2e79171044efd1807c55713ed2c7f4068b18d73d027819165c4819b287cfaf
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.context/
 COMPONENT_BUGDB=	python-mod/oslo.context
 COMPONENT_ANITYA_ID=	6109
-
-COMPONENT_BAID=		108274
+COMPONENT_BAID=		140838
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

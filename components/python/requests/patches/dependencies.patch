@@ -6,51 +6,28 @@ bundling requests (LGPL chardet used by Apache licensed requests). We already
 provide chardet, and our legal has no issue with it, so there is no reason to
 use it for now.
 
-Update dependencies with `chardet>=3.0.2,<6`. Change is from upstream:
-https://github.com/psf/requests/pull/6179
-
---- requests-2.26.0/setup.py
-+++ requests-2.26.0/setup.py
-@@ -41,12 +41,10 @@ if sys.argv[-1] == 'publish':
- packages = ['requests']
+--- requests-2.28.2/setup.py
++++ requests-2.28.2/setup.py
+@@ -59,10 +59,9 @@ if sys.argv[-1] == "publish":
+     sys.exit()
  
  requires = [
--    'charset_normalizer~=2.0.0; python_version >= "3"',
--    'chardet>=3.0.2,<5; python_version < "3"',
-+    'chardet>=3.0.2,<6',
-     'idna>=2.5,<3; python_version < "3"',
-     'idna>=2.5,<4; python_version >= "3"',
-     'urllib3>=1.21.1,<1.27',
--    'certifi>=2017.4.17'
- 
+-    "charset_normalizer>=2,<4",
++    "chardet>=3.0.2,<6",
+     "idna>=2.5,<4",
+     "urllib3>=1.21.1,<1.27",
+-    "certifi>=2017.4.17",
  ]
  test_requirements = [
---- requests-2.26.0/requests.egg-info/requires.txt
-+++ requests-2.26.0/requests.egg-info/requires.txt
-@@ -1,12 +1,10 @@
+     "pytest-httpbin==0.0.7",
+--- requests-2.28.2/requests.egg-info/requires.txt
++++ requests-2.28.2/requests.egg-info/requires.txt
+@@ -1,7 +1,6 @@
+-charset_normalizer<4,>=2
++chardet<6,>=3.0.2
+ idna<4,>=2.5
  urllib3<1.27,>=1.21.1
 -certifi>=2017.4.17
-+chardet<6,>=3.0.2
- 
- [:python_version < "3"]
--chardet<5,>=3.0.2
- idna<3,>=2.5
- 
- [:python_version >= "3"]
--charset_normalizer~=2.0.0
- idna<4,>=2.5
  
  [security]
---- requests-2.26.0/requests/__init__.py
-+++ requests-2.26.0/requests/__init__.py
-@@ -74,8 +74,8 @@ def check_compatibility(urllib3_version,
-     if chardet_version:
-         major, minor, patch = chardet_version.split('.')[:3]
-         major, minor, patch = int(major), int(minor), int(patch)
--        # chardet_version >= 3.0.2, < 5.0.0
--        assert (3, 0, 2) <= (major, minor, patch) < (5, 0, 0)
-+        # chardet_version >= 3.0.2, < 6.0.0
-+        assert (3, 0, 2) <= (major, minor, patch) < (6, 0, 0)
-     elif charset_normalizer_version:
-         major, minor, patch = charset_normalizer_version.split('.')[:3]
-         major, minor, patch = int(major), int(minor), int(patch)
+ 

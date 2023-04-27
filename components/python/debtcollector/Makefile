@@ -26,17 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		debtcollector
-COMPONENT_VERSION=	2.3.0
+COMPONENT_VERSION=	2.5.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:dfc9bea99a35cca454e2bb79a75db5d435b24e4388c0a513837ec3d8edd47499
+    sha256:dc9d1ad3f745c43f4bbedbca30f9ffe8905a8c028c9926e61077847d5ea257ab
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/debtcollector/
 COMPONENT_BUGDB=	python-mod/debtcollector
 COMPONENT_ANITYA_ID=	6107
-
-COMPONENT_BAID=		108263
+COMPONENT_BAID=		140825
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -57,7 +56,5 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/wrapt-%)
 REQUIRED_PACKAGES += library/python/importlib-metadata-37

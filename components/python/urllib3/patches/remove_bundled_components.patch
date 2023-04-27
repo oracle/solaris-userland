@@ -3,10 +3,9 @@ use system ones instead.
 
 This is Solaris-specific and not suitable for upstream submission.
 
-diff -ur urllib3-1.26.6.orig//dummyserver/handlers.py urllib3-1.26.6/dummyserver/handlers.py
---- urllib3-1.26.6.orig//dummyserver/handlers.py	2021-07-08 02:13:31.359673928 -0700
-+++ urllib3-1.26.6/dummyserver/handlers.py	2021-07-08 02:49:37.060901403 -0700
-@@ -14,9 +14,9 @@
+--- urllib3-1.26.15/dummyserver/handlers.py
++++ urllib3-1.26.15/dummyserver/handlers.py
+@@ -14,9 +14,9 @@ from io import BytesIO
  from tornado import httputil
  from tornado.web import RequestHandler
  
@@ -19,10 +18,9 @@ diff -ur urllib3-1.26.6.orig//dummyserver/handlers.py urllib3-1.26.6/dummyserver
  
  log = logging.getLogger(__name__)
  
-diff -ur urllib3-1.26.6.orig//src/urllib3/_collections.py urllib3-1.26.6/src/urllib3/_collections.py
---- urllib3-1.26.6.orig//src/urllib3/_collections.py	2021-07-08 02:13:31.354911735 -0700
-+++ urllib3-1.26.6/src/urllib3/_collections.py	2021-07-08 02:49:36.916430465 -0700
-@@ -19,8 +19,8 @@
+--- urllib3-1.26.15/src/urllib3/_collections.py
++++ urllib3-1.26.15/src/urllib3/_collections.py
+@@ -19,8 +19,8 @@ except ImportError:  # Platform-specific
  from collections import OrderedDict
  
  from .exceptions import InvalidHeader
@@ -33,10 +31,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/_collections.py urllib3-1.26.6/src/url
  
  __all__ = ["RecentlyUsedContainer", "HTTPHeaderDict"]
  
-diff -ur urllib3-1.26.6.orig//src/urllib3/connection.py urllib3-1.26.6/src/urllib3/connection.py
---- urllib3-1.26.6.orig//src/urllib3/connection.py	2021-07-08 02:13:31.355387312 -0700
-+++ urllib3-1.26.6/src/urllib3/connection.py	2021-07-08 02:49:36.936902176 -0700
-@@ -9,9 +9,9 @@
+--- urllib3-1.26.15/src/urllib3/connection.py
++++ urllib3-1.26.15/src/urllib3/connection.py
+@@ -9,9 +9,9 @@ import warnings
  from socket import error as SocketError
  from socket import timeout as SocketTimeout
  
@@ -49,10 +46,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/connection.py urllib3-1.26.6/src/urlli
  from .util.proxy import create_proxy_ssl_context
  
  try:  # Compiled with SSL?
-diff -ur urllib3-1.26.6.orig//src/urllib3/connectionpool.py urllib3-1.26.6/src/urllib3/connectionpool.py
---- urllib3-1.26.6.orig//src/urllib3/connectionpool.py	2021-07-08 02:13:31.355640105 -0700
-+++ urllib3-1.26.6/src/urllib3/connectionpool.py	2021-07-08 02:49:36.950865523 -0700
-@@ -33,8 +33,8 @@
+--- urllib3-1.26.15/src/urllib3/connectionpool.py
++++ urllib3-1.26.15/src/urllib3/connectionpool.py
+@@ -34,8 +34,8 @@ from .exceptions import (
      SSLError,
      TimeoutError,
  )
@@ -60,12 +56,11 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/connectionpool.py urllib3-1.26.6/src/u
 -from .packages.six.moves import queue
 +import six
 +from six.moves import queue
- from .packages.ssl_match_hostname import CertificateError
  from .request import RequestMethods
  from .response import HTTPResponse
-diff -ur urllib3-1.26.6.orig//src/urllib3/exceptions.py urllib3-1.26.6/src/urllib3/exceptions.py
---- urllib3-1.26.6.orig//src/urllib3/exceptions.py	2021-07-08 02:13:31.354626126 -0700
-+++ urllib3-1.26.6/src/urllib3/exceptions.py	2021-07-08 02:49:36.905478105 -0700
+ from .util.connection import is_connection_dropped
+--- urllib3-1.26.15/src/urllib3/exceptions.py
++++ urllib3-1.26.15/src/urllib3/exceptions.py
 @@ -1,6 +1,6 @@
  from __future__ import absolute_import
  
@@ -74,10 +69,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/exceptions.py urllib3-1.26.6/src/urlli
  
  # Base Exceptions
  
-diff -ur urllib3-1.26.6.orig//src/urllib3/fields.py urllib3-1.26.6/src/urllib3/fields.py
---- urllib3-1.26.6.orig//src/urllib3/fields.py	2021-07-08 02:13:31.350310064 -0700
-+++ urllib3-1.26.6/src/urllib3/fields.py	2021-07-08 02:49:36.762285695 -0700
-@@ -4,7 +4,7 @@
+--- urllib3-1.26.15/src/urllib3/fields.py
++++ urllib3-1.26.15/src/urllib3/fields.py
+@@ -4,7 +4,7 @@ import email.utils
  import mimetypes
  import re
  
@@ -86,10 +80,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/fields.py urllib3-1.26.6/src/urllib3/f
  
  
  def guess_content_type(filename, default="application/octet-stream"):
-diff -ur urllib3-1.26.6.orig//src/urllib3/filepost.py urllib3-1.26.6/src/urllib3/filepost.py
---- urllib3-1.26.6.orig//src/urllib3/filepost.py	2021-07-08 02:13:31.349954805 -0700
-+++ urllib3-1.26.6/src/urllib3/filepost.py	2021-07-08 02:49:36.744469779 -0700
-@@ -6,8 +6,8 @@
+--- urllib3-1.26.15/src/urllib3/filepost.py
++++ urllib3-1.26.15/src/urllib3/filepost.py
+@@ -6,8 +6,8 @@ import os
  from io import BytesIO
  
  from .fields import RequestField
@@ -100,10 +93,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/filepost.py urllib3-1.26.6/src/urllib3
  
  writer = codecs.lookup("utf-8")[3]
  
-diff -ur urllib3-1.26.6.orig//src/urllib3/poolmanager.py urllib3-1.26.6/src/urllib3/poolmanager.py
---- urllib3-1.26.6.orig//src/urllib3/poolmanager.py	2021-07-08 02:13:31.355072374 -0700
-+++ urllib3-1.26.6/src/urllib3/poolmanager.py	2021-07-08 02:49:36.925047395 -0700
-@@ -13,8 +13,8 @@
+--- urllib3-1.26.15/src/urllib3/poolmanager.py
++++ urllib3-1.26.15/src/urllib3/poolmanager.py
+@@ -13,8 +13,8 @@ from .exceptions import (
      ProxySchemeUnsupported,
      URLSchemeUnknown,
  )
@@ -114,9 +106,8 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/poolmanager.py urllib3-1.26.6/src/urll
  from .request import RequestMethods
  from .util.proxy import connection_requires_http_tunnel
  from .util.retry import Retry
-diff -ur urllib3-1.26.6.orig//src/urllib3/request.py urllib3-1.26.6/src/urllib3/request.py
---- urllib3-1.26.6.orig//src/urllib3/request.py	2021-07-08 02:13:31.354478087 -0700
-+++ urllib3-1.26.6/src/urllib3/request.py	2021-07-08 02:49:36.899133939 -0700
+--- urllib3-1.26.15/src/urllib3/request.py
++++ urllib3-1.26.15/src/urllib3/request.py
 @@ -1,7 +1,7 @@
  from __future__ import absolute_import
  
@@ -126,10 +117,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/request.py urllib3-1.26.6/src/urllib3/
  
  __all__ = ["RequestMethods"]
  
-diff -ur urllib3-1.26.6.orig//src/urllib3/response.py urllib3-1.26.6/src/urllib3/response.py
---- urllib3-1.26.6.orig//src/urllib3/response.py	2021-07-08 02:13:31.350150698 -0700
-+++ urllib3-1.26.6/src/urllib3/response.py	2021-07-08 02:49:36.756070811 -0700
-@@ -26,7 +26,7 @@
+--- urllib3-1.26.15/src/urllib3/response.py
++++ urllib3-1.26.15/src/urllib3/response.py
+@@ -32,7 +32,7 @@ from .exceptions import (
      ResponseNotChunked,
      SSLError,
  )
@@ -138,10 +128,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/response.py urllib3-1.26.6/src/urllib3
  from .util.response import is_fp_closed, is_response_to_head
  
  log = logging.getLogger(__name__)
-diff -ur urllib3-1.26.6.orig//src/urllib3/contrib/appengine.py urllib3-1.26.6/src/urllib3/contrib/appengine.py
---- urllib3-1.26.6.orig//src/urllib3/contrib/appengine.py	2021-07-08 02:13:31.352283425 -0700
-+++ urllib3-1.26.6/src/urllib3/contrib/appengine.py	2021-07-08 02:49:36.826934046 -0700
-@@ -52,7 +52,7 @@
+--- urllib3-1.26.15/src/urllib3/contrib/appengine.py
++++ urllib3-1.26.15/src/urllib3/contrib/appengine.py
+@@ -52,7 +52,7 @@ from ..exceptions import (
      SSLError,
      TimeoutError,
  )
@@ -150,10 +139,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/contrib/appengine.py urllib3-1.26.6/sr
  from ..request import RequestMethods
  from ..response import HTTPResponse
  from ..util.retry import Retry
-diff -ur urllib3-1.26.6.orig//src/urllib3/contrib/ntlmpool.py urllib3-1.26.6/src/urllib3/contrib/ntlmpool.py
---- urllib3-1.26.6.orig//src/urllib3/contrib/ntlmpool.py	2021-07-08 02:13:31.351242751 -0700
-+++ urllib3-1.26.6/src/urllib3/contrib/ntlmpool.py	2021-07-08 02:49:36.786540322 -0700
-@@ -11,7 +11,7 @@
+--- urllib3-1.26.15/src/urllib3/contrib/ntlmpool.py
++++ urllib3-1.26.15/src/urllib3/contrib/ntlmpool.py
+@@ -11,7 +11,7 @@ from logging import getLogger
  from ntlm import ntlm
  
  from .. import HTTPSConnectionPool
@@ -162,45 +150,41 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/contrib/ntlmpool.py urllib3-1.26.6/src
  
  warnings.warn(
      "The 'urllib3.contrib.ntlmpool' module is deprecated and will be removed "
-diff -ur urllib3-1.26.6.orig//src/urllib3/contrib/pyopenssl.py urllib3-1.26.6/src/urllib3/contrib/pyopenssl.py
---- urllib3-1.26.6.orig//src/urllib3/contrib/pyopenssl.py	2021-07-08 02:13:31.351409005 -0700
-+++ urllib3-1.26.6/src/urllib3/contrib/pyopenssl.py	2021-07-08 02:49:36.795179120 -0700
-@@ -75,7 +75,7 @@
- import sys
+--- urllib3-1.26.15/src/urllib3/contrib/pyopenssl.py
++++ urllib3-1.26.15/src/urllib3/contrib/pyopenssl.py
+@@ -76,7 +76,7 @@ import sys
+ import warnings
  
  from .. import util
 -from ..packages import six
 +import six
  from ..util.ssl_ import PROTOCOL_TLS_CLIENT
  
- __all__ = ["inject_into_urllib3", "extract_from_urllib3"]
-diff -ur urllib3-1.26.6.orig//src/urllib3/contrib/_securetransport/bindings.py urllib3-1.26.6/src/urllib3/contrib/_securetransport/bindings.py
---- urllib3-1.26.6.orig//src/urllib3/contrib/_securetransport/bindings.py	2021-07-08 02:13:31.350855501 -0700
-+++ urllib3-1.26.6/src/urllib3/contrib/_securetransport/bindings.py	2021-07-08 02:49:36.774473380 -0700
-@@ -48,7 +48,7 @@
+ warnings.warn(
+--- urllib3-1.26.15/src/urllib3/contrib/_securetransport/bindings.py
++++ urllib3-1.26.15/src/urllib3/contrib/_securetransport/bindings.py
+@@ -48,7 +48,7 @@ from ctypes import (
  )
  from ctypes.util import find_library
  
--from urllib3.packages.six import raise_from
+-from ...packages.six import raise_from
 +from six import raise_from
  
  if platform.system() != "Darwin":
      raise ImportError("Only macOS is supported")
-diff -ur urllib3-1.26.6.orig//src/urllib3/util/connection.py urllib3-1.26.6/src/urllib3/util/connection.py
---- urllib3-1.26.6.orig//src/urllib3/util/connection.py 2021-07-08 07:41:00.899777832 -0700
-+++ urllib3-1.26.6/src/urllib3/util/connection.py       2021-07-08 07:42:11.104682021 -0700
-@@ -5,7 +5,7 @@
- from urllib3.exceptions import LocationParseError
-
+--- urllib3-1.26.15/src/urllib3/util/connection.py
++++ urllib3-1.26.15/src/urllib3/util/connection.py
+@@ -4,7 +4,7 @@ import socket
+ 
  from ..contrib import _appengine_environ
+ from ..exceptions import LocationParseError
 -from ..packages import six
 +import six
  from .wait import NoWayToWaitForSocketError, wait_for_read
-
-
-diff -ur urllib3-1.26.6.orig//src/urllib3/util/queue.py urllib3-1.26.6/src/urllib3/util/queue.py
---- urllib3-1.26.6.orig//src/urllib3/util/queue.py	2021-07-08 02:13:31.354140553 -0700
-+++ urllib3-1.26.6/src/urllib3/util/queue.py	2021-07-08 02:49:36.889137404 -0700
+ 
+ 
+--- urllib3-1.26.15/src/urllib3/util/queue.py
++++ urllib3-1.26.15/src/urllib3/util/queue.py
 @@ -1,7 +1,7 @@
  import collections
  
@@ -211,10 +195,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/util/queue.py urllib3-1.26.6/src/urlli
  
  if six.PY2:
      # Queue is imported for side effects on MS Windows. See issue #229.
-diff -ur urllib3-1.26.6.orig//src/urllib3/util/request.py urllib3-1.26.6/src/urllib3/util/request.py
---- urllib3-1.26.6.orig//src/urllib3/util/request.py	2021-07-08 02:13:31.353977185 -0700
-+++ urllib3-1.26.6/src/urllib3/util/request.py	2021-07-08 02:49:36.885558425 -0700
-@@ -3,7 +3,7 @@
+--- urllib3-1.26.15/src/urllib3/util/request.py
++++ urllib3-1.26.15/src/urllib3/util/request.py
+@@ -3,7 +3,7 @@ from __future__ import absolute_import
  from base64 import b64encode
  
  from ..exceptions import UnrewindableBodyError
@@ -223,10 +206,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/util/request.py urllib3-1.26.6/src/url
  
  # Pass as a value within ``headers`` to skip
  # emitting some HTTP headers that are added automatically.
-diff -ur urllib3-1.26.6.orig//src/urllib3/util/response.py urllib3-1.26.6/src/urllib3/util/response.py
---- urllib3-1.26.6.orig//src/urllib3/util/response.py	2021-07-08 02:13:31.353353289 -0700
-+++ urllib3-1.26.6/src/urllib3/util/response.py	2021-07-08 02:49:36.864561646 -0700
-@@ -3,7 +3,7 @@
+--- urllib3-1.26.15/src/urllib3/util/response.py
++++ urllib3-1.26.15/src/urllib3/util/response.py
+@@ -3,7 +3,7 @@ from __future__ import absolute_import
  from email.errors import MultipartInvariantViolationDefect, StartBoundaryNotFoundDefect
  
  from ..exceptions import HeaderParsingError
@@ -235,10 +217,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/util/response.py urllib3-1.26.6/src/ur
  
  
  def is_fp_closed(obj):
-diff -ur urllib3-1.26.6.orig//src/urllib3/util/retry.py urllib3-1.26.6/src/urllib3/util/retry.py
---- urllib3-1.26.6.orig//src/urllib3/util/retry.py	2021-07-08 02:13:31.353207645 -0700
-+++ urllib3-1.26.6/src/urllib3/util/retry.py	2021-07-08 02:49:36.860070161 -0700
-@@ -17,7 +17,7 @@
+--- urllib3-1.26.15/src/urllib3/util/retry.py
++++ urllib3-1.26.15/src/urllib3/util/retry.py
+@@ -17,7 +17,7 @@ from ..exceptions import (
      ReadTimeoutError,
      ResponseError,
  )
@@ -247,10 +228,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/util/retry.py urllib3-1.26.6/src/urlli
  
  log = logging.getLogger(__name__)
  
-diff -ur urllib3-1.26.6.orig//src/urllib3/util/ssl_.py urllib3-1.26.6/src/urllib3/util/ssl_.py
---- urllib3-1.26.6.orig//src/urllib3/util/ssl_.py	2021-07-08 02:13:31.352598282 -0700
-+++ urllib3-1.26.6/src/urllib3/util/ssl_.py	2021-07-08 02:49:36.835252199 -0700
-@@ -13,7 +13,7 @@
+--- urllib3-1.26.15/src/urllib3/util/ssl_.py
++++ urllib3-1.26.15/src/urllib3/util/ssl_.py
+@@ -13,7 +13,7 @@ from ..exceptions import (
      SNIMissingWarning,
      SSLError,
  )
@@ -259,22 +239,20 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/util/ssl_.py urllib3-1.26.6/src/urllib
  from .url import BRACELESS_IPV6_ADDRZ_RE, IPV4_RE
  
  SSLContext = None
-diff -ur urllib3-1.26.6.orig//src/urllib3/util/ssltransport.py urllib3-1.26.6/src/urllib3/util/ssltransport.py
---- urllib3-1.26.6.orig//src/urllib3/util/ssltransport.py	2021-07-08 02:13:31.353826842 -0700
-+++ urllib3-1.26.6/src/urllib3/util/ssltransport.py	2021-07-08 02:49:36.880834305 -0700
-@@ -3,7 +3,7 @@
+--- urllib3-1.26.15/src/urllib3/util/ssltransport.py
++++ urllib3-1.26.15/src/urllib3/util/ssltransport.py
+@@ -3,7 +3,7 @@ import socket
  import ssl
  
- from urllib3.exceptions import ProxySchemeUnsupported
--from urllib3.packages import six
+ from ..exceptions import ProxySchemeUnsupported
+-from ..packages import six
 +import six
  
  SSL_BLOCKSIZE = 16384
  
-diff -ur urllib3-1.26.6.orig//src/urllib3/util/url.py urllib3-1.26.6/src/urllib3/util/url.py
---- urllib3-1.26.6.orig//src/urllib3/util/url.py	2021-07-08 02:13:31.352760445 -0700
-+++ urllib3-1.26.6/src/urllib3/util/url.py	2021-07-08 02:49:36.842988550 -0700
-@@ -4,7 +4,7 @@
+--- urllib3-1.26.15/src/urllib3/util/url.py
++++ urllib3-1.26.15/src/urllib3/util/url.py
+@@ -4,7 +4,7 @@ import re
  from collections import namedtuple
  
  from ..exceptions import LocationParseError
@@ -283,10 +261,9 @@ diff -ur urllib3-1.26.6.orig//src/urllib3/util/url.py urllib3-1.26.6/src/urllib3
  
  url_attrs = ["scheme", "auth", "host", "port", "path", "query", "fragment"]
  
-diff -ur urllib3-1.26.6.orig//test/__init__.py urllib3-1.26.6/test/__init__.py
---- urllib3-1.26.6.orig//test/__init__.py	2021-07-08 02:13:31.363815250 -0700
-+++ urllib3-1.26.6/test/__init__.py	2021-07-08 02:49:37.207096788 -0700
-@@ -16,7 +16,7 @@
+--- urllib3-1.26.15/test/__init__.py
++++ urllib3-1.26.15/test/__init__.py
+@@ -18,7 +18,7 @@ except ImportError:
  
  from urllib3 import util
  from urllib3.exceptions import HTTPWarning
@@ -295,10 +272,9 @@ diff -ur urllib3-1.26.6.orig//test/__init__.py urllib3-1.26.6/test/__init__.py
  from urllib3.util import ssl_
  
  try:
-diff -ur urllib3-1.26.6.orig//test/test_collections.py urllib3-1.26.6/test/test_collections.py
---- urllib3-1.26.6.orig//test/test_collections.py	2021-07-08 02:13:31.361568668 -0700
-+++ urllib3-1.26.6/test/test_collections.py	2021-07-08 02:49:37.128979633 -0700
-@@ -3,7 +3,7 @@
+--- urllib3-1.26.15/test/test_collections.py
++++ urllib3-1.26.15/test/test_collections.py
+@@ -3,7 +3,7 @@ import pytest
  from urllib3._collections import HTTPHeaderDict
  from urllib3._collections import RecentlyUsedContainer as Container
  from urllib3.exceptions import InvalidHeader
@@ -307,10 +283,9 @@ diff -ur urllib3-1.26.6.orig//test/test_collections.py urllib3-1.26.6/test/test_
  
  xrange = six.moves.xrange
  
-diff -ur urllib3-1.26.6.orig//test/test_compatibility.py urllib3-1.26.6/test/test_compatibility.py
---- urllib3-1.26.6.orig//test/test_compatibility.py	2021-07-08 02:13:31.364395712 -0700
-+++ urllib3-1.26.6/test/test_compatibility.py	2021-07-08 02:49:37.227791547 -0700
-@@ -3,7 +3,7 @@
+--- urllib3-1.26.15/test/test_compatibility.py
++++ urllib3-1.26.15/test/test_compatibility.py
+@@ -3,7 +3,7 @@ import warnings
  import pytest
  
  from urllib3.connection import HTTPConnection
@@ -319,10 +294,9 @@ diff -ur urllib3-1.26.6.orig//test/test_compatibility.py urllib3-1.26.6/test/tes
  from urllib3.response import HTTPResponse
  
  
-diff -ur urllib3-1.26.6.orig//test/test_connectionpool.py urllib3-1.26.6/test/test_connectionpool.py
---- urllib3-1.26.6.orig//test/test_connectionpool.py	2021-07-08 02:13:31.364113013 -0700
-+++ urllib3-1.26.6/test/test_connectionpool.py	2021-07-08 02:49:37.219746007 -0700
-@@ -26,9 +26,9 @@
+--- urllib3-1.26.15/test/test_connectionpool.py
++++ urllib3-1.26.15/test/test_connectionpool.py
+@@ -26,9 +26,9 @@ from urllib3.exceptions import (
      SSLError,
      TimeoutError,
  )
@@ -332,12 +306,11 @@ diff -ur urllib3-1.26.6.orig//test/test_connectionpool.py urllib3-1.26.6/test/te
 +from six.moves import http_client as httplib
 +from six.moves.http_client import HTTPException
 +from six.moves.queue import Empty
- from urllib3.packages.ssl_match_hostname import CertificateError
  from urllib3.response import HTTPResponse
+ from urllib3.util.ssl_match_hostname import CertificateError
  from urllib3.util.timeout import Timeout
-diff -ur urllib3-1.26.6.orig//test/test_fields.py urllib3-1.26.6/test/test_fields.py
---- urllib3-1.26.6.orig//test/test_fields.py	2021-07-08 02:13:31.363668212 -0700
-+++ urllib3-1.26.6/test/test_fields.py	2021-07-08 02:49:37.200409052 -0700
+--- urllib3-1.26.15/test/test_fields.py
++++ urllib3-1.26.15/test/test_fields.py
 @@ -1,7 +1,7 @@
  import pytest
  
@@ -347,10 +320,9 @@ diff -ur urllib3-1.26.6.orig//test/test_fields.py urllib3-1.26.6/test/test_field
  
  
  class TestRequestField(object):
-diff -ur urllib3-1.26.6.orig//test/test_filepost.py urllib3-1.26.6/test/test_filepost.py
---- urllib3-1.26.6.orig//test/test_filepost.py	2021-07-08 02:13:31.361842212 -0700
-+++ urllib3-1.26.6/test/test_filepost.py	2021-07-08 02:49:37.137566009 -0700
-@@ -2,7 +2,7 @@
+--- urllib3-1.26.15/test/test_filepost.py
++++ urllib3-1.26.15/test/test_filepost.py
+@@ -2,7 +2,7 @@ import pytest
  
  from urllib3.fields import RequestField
  from urllib3.filepost import encode_multipart_formdata, iter_fields
@@ -359,10 +331,9 @@ diff -ur urllib3-1.26.6.orig//test/test_filepost.py urllib3-1.26.6/test/test_fil
  
  BOUNDARY = "!! test boundary !!"
  
-diff -ur urllib3-1.26.6.orig//test/test_queue_monkeypatch.py urllib3-1.26.6/test/test_queue_monkeypatch.py
---- urllib3-1.26.6.orig//test/test_queue_monkeypatch.py	2021-07-08 02:13:31.364246677 -0700
-+++ urllib3-1.26.6/test/test_queue_monkeypatch.py	2021-07-08 02:49:37.223771127 -0700
-@@ -5,7 +5,7 @@
+--- urllib3-1.26.15/test/test_queue_monkeypatch.py
++++ urllib3-1.26.15/test/test_queue_monkeypatch.py
+@@ -5,7 +5,7 @@ import pytest
  
  from urllib3 import HTTPConnectionPool
  from urllib3.exceptions import EmptyPoolError
@@ -371,10 +342,9 @@ diff -ur urllib3-1.26.6.orig//test/test_queue_monkeypatch.py urllib3-1.26.6/test
  
  
  class BadError(Exception):
-diff -ur urllib3-1.26.6.orig//test/test_response.py urllib3-1.26.6/test/test_response.py
---- urllib3-1.26.6.orig//test/test_response.py	2021-07-08 02:13:31.360616418 -0700
-+++ urllib3-1.26.6/test/test_response.py	2021-07-08 02:49:37.101145271 -0700
-@@ -23,7 +23,7 @@
+--- urllib3-1.26.15/test/test_response.py
++++ urllib3-1.26.15/test/test_response.py
+@@ -24,7 +24,7 @@ from urllib3.exceptions import (
      SSLError,
      httplib_IncompleteRead,
  )
@@ -383,10 +353,9 @@ diff -ur urllib3-1.26.6.orig//test/test_response.py urllib3-1.26.6/test/test_res
  from urllib3.response import HTTPResponse, brotli
  from urllib3.util.response import is_fp_closed
  from urllib3.util.retry import RequestHistory, Retry
-diff -ur urllib3-1.26.6.orig//test/test_retry.py urllib3-1.26.6/test/test_retry.py
---- urllib3-1.26.6.orig//test/test_retry.py	2021-07-08 02:13:31.363214520 -0700
-+++ urllib3-1.26.6/test/test_retry.py	2021-07-08 02:49:37.187061292 -0700
-@@ -11,8 +11,8 @@
+--- urllib3-1.26.15/test/test_retry.py
++++ urllib3-1.26.15/test/test_retry.py
+@@ -11,8 +11,8 @@ from urllib3.exceptions import (
      ResponseError,
      SSLError,
  )
@@ -397,10 +366,9 @@ diff -ur urllib3-1.26.6.orig//test/test_retry.py urllib3-1.26.6/test/test_retry.
  from urllib3.response import HTTPResponse
  from urllib3.util.retry import RequestHistory, Retry
  
-diff -ur urllib3-1.26.6.orig//test/test_retry_deprecated.py urllib3-1.26.6/test/test_retry_deprecated.py
---- urllib3-1.26.6.orig//test/test_retry_deprecated.py	2021-07-08 02:13:31.362001086 -0700
-+++ urllib3-1.26.6/test/test_retry_deprecated.py	2021-07-08 02:49:37.146017257 -0700
-@@ -12,8 +12,8 @@
+--- urllib3-1.26.15/test/test_retry_deprecated.py
++++ urllib3-1.26.15/test/test_retry_deprecated.py
+@@ -12,8 +12,8 @@ from urllib3.exceptions import (
      ResponseError,
      SSLError,
  )
@@ -411,10 +379,9 @@ diff -ur urllib3-1.26.6.orig//test/test_retry_deprecated.py urllib3-1.26.6/test/
  from urllib3.response import HTTPResponse
  from urllib3.util.retry import RequestHistory, Retry
  
-diff -ur urllib3-1.26.6.orig//test/test_util.py urllib3-1.26.6/test/test_util.py
---- urllib3-1.26.6.orig//test/test_util.py	2021-07-08 02:13:31.360350013 -0700
-+++ urllib3-1.26.6/test/test_util.py	2021-07-08 02:49:37.086650191 -0700
-@@ -19,7 +19,7 @@
+--- urllib3-1.26.15/test/test_util.py
++++ urllib3-1.26.15/test/test_util.py
+@@ -19,7 +19,7 @@ from urllib3.exceptions import (
      TimeoutStateError,
      UnrewindableBodyError,
  )
@@ -423,10 +390,9 @@ diff -ur urllib3-1.26.6.orig//test/test_util.py urllib3-1.26.6/test/test_util.py
  from urllib3.poolmanager import ProxyConfig
  from urllib3.util import is_fp_closed
  from urllib3.util.connection import _has_ipv6, allowed_gai_family, create_connection
-diff -ur urllib3-1.26.6.orig//test/with_dummyserver/test_connectionpool.py urllib3-1.26.6/test/with_dummyserver/test_connectionpool.py
---- urllib3-1.26.6.orig//test/with_dummyserver/test_connectionpool.py	2021-07-08 02:13:31.366674556 -0700
-+++ urllib3-1.26.6/test/with_dummyserver/test_connectionpool.py	2021-07-08 02:49:37.331755230 -0700
-@@ -30,8 +30,8 @@
+--- urllib3-1.26.15/test/with_dummyserver/test_connectionpool.py
++++ urllib3-1.26.15/test/with_dummyserver/test_connectionpool.py
+@@ -30,8 +30,8 @@ from urllib3.exceptions import (
      ReadTimeoutError,
      UnrewindableBodyError,
  )
@@ -437,10 +403,9 @@ diff -ur urllib3-1.26.6.orig//test/with_dummyserver/test_connectionpool.py urlli
  from urllib3.util import SKIP_HEADER, SKIPPABLE_HEADERS
  from urllib3.util.retry import RequestHistory, Retry
  from urllib3.util.timeout import Timeout
-diff -ur urllib3-1.26.6.orig//test/with_dummyserver/test_https.py urllib3-1.26.6/test/with_dummyserver/test_https.py
---- urllib3-1.26.6.orig//test/with_dummyserver/test_https.py	2021-07-08 02:13:31.366070822 -0700
-+++ urllib3-1.26.6/test/with_dummyserver/test_https.py	2021-07-08 02:49:37.301351530 -0700
-@@ -42,7 +42,7 @@
+--- urllib3-1.26.15/test/with_dummyserver/test_https.py
++++ urllib3-1.26.15/test/with_dummyserver/test_https.py
+@@ -41,7 +41,7 @@ from urllib3.exceptions import (
      SSLError,
      SystemTimeWarning,
  )
@@ -449,10 +414,9 @@ diff -ur urllib3-1.26.6.orig//test/with_dummyserver/test_https.py urllib3-1.26.6
  from urllib3.util.timeout import Timeout
  
  from .. import has_alpn
-diff -ur urllib3-1.26.6.orig//test/with_dummyserver/test_socketlevel.py urllib3-1.26.6/test/with_dummyserver/test_socketlevel.py
---- urllib3-1.26.6.orig//test/with_dummyserver/test_socketlevel.py	2021-07-08 02:13:31.365720367 -0700
-+++ urllib3-1.26.6/test/with_dummyserver/test_socketlevel.py	2021-07-08 02:49:37.285487654 -0700
-@@ -17,7 +17,7 @@
+--- urllib3-1.26.15/test/with_dummyserver/test_socketlevel.py
++++ urllib3-1.26.15/test/with_dummyserver/test_socketlevel.py
+@@ -17,7 +17,7 @@ from urllib3.exceptions import (
      ReadTimeoutError,
      SSLError,
  )
@@ -461,13 +425,13 @@ diff -ur urllib3-1.26.6.orig//test/with_dummyserver/test_socketlevel.py urllib3-
  from urllib3.poolmanager import proxy_from_url
  from urllib3.util import ssl_, ssl_wrap_socket
  from urllib3.util.retry import Retry
---- urllib3-1.26.6/setup.py
-+++ urllib3-1.26.6/setup.py
-@@ -83,6 +83,7 @@ setup(
+--- urllib3-1.26.15/setup.py
++++ urllib3-1.26.15/setup.py
+@@ -82,6 +82,7 @@ setup(
      ],
      package_dir={"": "src"},
      requires=[],
 +    install_requires=["six"],
-     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4",
+     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
      extras_require={
-         "brotli": ["brotlipy>=0.6.0"],
+         "brotli": [

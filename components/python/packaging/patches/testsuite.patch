@@ -2,8 +2,8 @@ Python pretend is not available on Solaris.
 
 Not for upstream.
 
---- packaging-21.0/tests/test_manylinux.py
-+++ packaging-21.0/tests/test_manylinux.py
+--- packaging-23.0/tests/test_manylinux.py
++++ packaging-23.0/tests/test_manylinux.py
 @@ -8,7 +8,6 @@ import sys
  import types
  import warnings
@@ -12,7 +12,7 @@ Not for upstream.
  import pytest
  
  from packaging import _manylinux
-@@ -122,10 +121,14 @@ def test_glibc_version_string_fail(monke
+@@ -119,10 +118,14 @@ def test_glibc_version_string_fail(monke
      assert _glibc_version_string() is None
      assert _get_glibc_version() == (-1, -1)
  
@@ -28,17 +28,17 @@ Not for upstream.
  )
  def test_glibc_version_string_confstr_fail(monkeypatch, failure):
      monkeypatch.setattr(os, "confstr", failure, raising=False)
---- packaging-21.0/tests/test_version.py
-+++ packaging-21.0/tests/test_version.py
-@@ -6,7 +6,6 @@ import itertools
+--- packaging-23.0/tests/test_version.py
++++ packaging-23.0/tests/test_version.py
+@@ -5,7 +5,6 @@
+ import itertools
  import operator
- import warnings
  
 -import pretend
  import pytest
  
- from packaging.version import InvalidVersion, LegacyVersion, Version, parse
-@@ -753,6 +752,7 @@ class TestVersion:
+ from packaging.version import InvalidVersion, Version, parse
+@@ -754,6 +753,7 @@ class TestVersion:
          method = getattr(Version, f"__{op}__")
          assert method(Version("1"), 1) is NotImplemented
  
@@ -46,17 +46,9 @@ Not for upstream.
      @pytest.mark.parametrize(("op", "expected"), [("eq", False), ("ne", True)])
      def test_compare_other(self, op, expected):
          other = pretend.stub(**{f"__{op}__": lambda other: NotImplemented})
-@@ -897,6 +897,7 @@ class TestLegacyVersion:
-         method = getattr(LegacyVersion, f"__{op}__")
-         assert method(LegacyVersion("1"), 1) is NotImplemented
- 
-+    @pytest.mark.skip(reason="pretend is not available on Solaris")
-     @pytest.mark.parametrize(("op", "expected"), [("eq", False), ("ne", True)])
-     def test_compare_other(self, op, expected):
-         other = pretend.stub(**{f"__{op}__": lambda other: NotImplemented})
---- packaging-21.0/tests/test_tags.py
-+++ packaging-21.0/tests/test_tags.py
-@@ -16,7 +16,6 @@ import sys
+--- packaging-23.0/tests/test_tags.py
++++ packaging-23.0/tests/test_tags.py
+@@ -17,7 +17,6 @@ import sys
  import sysconfig
  import types
  
@@ -64,7 +56,7 @@ Not for upstream.
  import pytest
  
  from packaging import tags
-@@ -308,12 +307,14 @@ class TestManylinuxPlatform:
+@@ -343,12 +342,14 @@ class TestManylinuxPlatform:
          # Clear the version cache
          tags._manylinux._get_glibc_version.cache_clear()
  
@@ -79,7 +71,7 @@ Not for upstream.
      def test_get_config_var_does_log(self, monkeypatch):
          debug = pretend.call_recorder(lambda *a: None)
          monkeypatch.setattr(tags.logger, "debug", debug)
-@@ -486,6 +487,7 @@ class TestManylinuxPlatform:
+@@ -521,6 +522,7 @@ class TestManylinuxPlatform:
          )
          assert platforms == expected
  
@@ -87,18 +79,18 @@ Not for upstream.
      @pytest.mark.parametrize(
          "native_arch, cross32_arch, musl_version",
          [
---- packaging-21.0/tests/test_musllinux.py
-+++ packaging-21.0/tests/test_musllinux.py
-@@ -4,7 +4,6 @@ import pathlib
- import struct
+--- packaging-23.0/tests/test_musllinux.py
++++ packaging-23.0/tests/test_musllinux.py
+@@ -2,7 +2,6 @@ import collections
+ import pathlib
  import subprocess
  
 -import pretend
  import pytest
  
  from packaging import _musllinux
-@@ -113,6 +112,7 @@ def test_parse_ld_musl_from_elf_no_inter
-     assert _parse_ld_musl_from_elf(io.BytesIO(data)) is None
+@@ -47,6 +46,7 @@ def test_parse_musl_version(output, vers
+     assert _parse_musl_version(output) == version
  
  
 +@pytest.mark.skip(reason="pretend is not available on Solaris")

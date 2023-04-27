@@ -20,28 +20,27 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cloudbase-init
-COMPONENT_VERSION=	1.1.0
+COMPONENT_VERSION=	1.1.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9df0b6dea409956aa799514bf4c7dcf870b7e96ed1e1700fb3f89e006634e87b
+    sha256:23342a1f2f17abaafa177e7d9365cb209aea98bb70c7d3bb2b37c83ef05cd6bc
 COMPONENT_ARCHIVE_URL=	\
     https://github.com/openstack/cloudbase-init/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://github.com/cloudbase/cloudbase-init
 COMPONENT_BUGDB=	service/cloudbase-init
 COMPONENT_ANITYA_ID=	13227
-
-COMPONENT_BAID=		75330
+COMPONENT_BAID=		140835
 
 # We need just a single version
-PYTHON_VERSIONS=	3.7
+PYTHON_VERSIONS=	3.11
 PYV=$(shell echo $(PYTHON_VERSIONS) | tr -d .)
 
 # Tests requires ddt which is not integrated
@@ -72,6 +71,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(PROTO_DIR)$(PYTHON_LIB)/cloudbaseinit/metadata/services; \
     $(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)
 
+REQUIRED_PACKAGES += library/python/cryptography-$(PYV)
 REQUIRED_PACKAGES += library/python/jinja2-$(PYV)
 REQUIRED_PACKAGES += library/python/netaddr-$(PYV)
 REQUIRED_PACKAGES += library/python/netifaces-$(PYV)
