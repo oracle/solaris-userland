@@ -43,21 +43,30 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/include/GL/freeglut.h
 file path=usr/include/GL/freeglut_ext.h
 file path=usr/include/GL/freeglut_std.h
+file path=usr/include/GL/freeglut_ucall.h
 file path=usr/include/GL/glut.h
-link path=usr/lib/$(MACH64)/libglut.so target=libglut.so.3.9.0
-link path=usr/lib/$(MACH64)/libglut.so.3 target=libglut.so.3.9.0
-file path=usr/lib/$(MACH64)/libglut.so.3.9.0
+file path=usr/lib/$(MACH64)/cmake/FreeGLUT/FreeGLUTConfig.cmake
+file path=usr/lib/$(MACH64)/cmake/FreeGLUT/FreeGLUTConfigVersion.cmake
+file path=usr/lib/$(MACH64)/cmake/FreeGLUT/FreeGLUTTargets-relwithdebinfo.cmake
+file path=usr/lib/$(MACH64)/cmake/FreeGLUT/FreeGLUTTargets.cmake
+link path=usr/lib/$(MACH64)/libglut.so target=libglut.so.3
+link path=usr/lib/$(MACH64)/libglut.so.3 target=libglut.so.3.12.0
+file path=usr/lib/$(MACH64)/libglut.so.3.12.0
+file path=usr/lib/$(MACH64)/pkgconfig/glut.pc
 link path=usr/lib/GL/$(MACH64)/libglut.so \
-    target=../../$(MACH64)/libglut.so.3.9.0
+    target=../../$(MACH64)/libglut.so.3.12.0
 link path=usr/lib/GL/$(MACH64)/libglut.so.3 \
-    target=../../$(MACH64)/libglut.so.3.9.0
-link path=usr/lib/GL/libglut.so target=../libglut.so.3.9.0
-link path=usr/lib/GL/libglut.so.3 target=../libglut.so.3.9.0
-link path=usr/lib/libglut.so target=libglut.so.3.9.0
-link path=usr/lib/libglut.so.3 target=libglut.so.3.9.0
-file path=usr/lib/libglut.so.3.9.0
-file freeglut_user_interface.html \
-    path=usr/share/doc/freeglut/freeglut_user_interface.html
-license COPYING license=Freeglut
+    target=../../$(MACH64)/libglut.so.3.12.0
+link path=usr/lib/GL/libglut.so target=../libglut.so.3.12.0
+link path=usr/lib/GL/libglut.so.3 target=../libglut.so.3.12.0
+file path=usr/lib/cmake/FreeGLUT/FreeGLUTConfig.cmake
+file path=usr/lib/cmake/FreeGLUT/FreeGLUTConfigVersion.cmake
+file path=usr/lib/cmake/FreeGLUT/FreeGLUTTargets-relwithdebinfo.cmake
+file path=usr/lib/cmake/FreeGLUT/FreeGLUTTargets.cmake
+link path=usr/lib/libglut.so target=libglut.so.3
+link path=usr/lib/libglut.so.3 target=libglut.so.3.12.0
+file path=usr/lib/libglut.so.3.12.0
+file path=usr/lib/pkgconfig/glut.pc
+license freeglut.license license=Freeglut
 depend type=require fmri=pkg:/service/opengl/ogl-select
 depend type=require fmri=pkg:/x11/header/x11-protocols facet.devel=true

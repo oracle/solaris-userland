@@ -20,26 +20,26 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freeglut
-COMPONENT_VERSION=	2.8.1
+COMPONENT_VERSION=	3.4.0
 COMPONENT_PROJECT_URL=  http://freeglut.sourceforge.net
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/freeglut/freeglut/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:dde46626a62a1cd9cf48a11951cdd592e7067c345cffe193a149dfd47aef999a
+	sha256:3c0bcb915d9b180a97edaebd011b7a1de54583a838644dcd42bb0ea0c6f3eaec
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	846
-COMPONENT_BAID=		23807
+COMPONENT_BAID=		141274
 
 TEST_TARGET = $(NO_TESTS)
 
-PKG_PROTO_DIRS += $(SOURCE_DIR)/doc
+BUILD_STYLE= cmake
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
