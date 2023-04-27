@@ -6,9 +6,9 @@ which makes vim tests to hang on Solaris. More investigation is needed.
 This patch is not intended for upstream.
 
 
---- b/src/channel.c
-+++ a/src/channel.c
-@@ -3589,24 +3589,6 @@
+--- vim-9.0.1443/src/channel.c
++++ vim-9.0.1443/src/channel.c
+@@ -3472,24 +3472,6 @@ #define DETACH_MSG_RAW "DETACH\n"
  // Buffer size for reading incoming messages.
  #define MAXMSGSIZE 4096
  
@@ -33,27 +33,27 @@ This patch is not intended for upstream.
  #if defined(HAVE_SELECT)
  /*
   * Add write fds where we are waiting for writing to be possible.
-@@ -3622,7 +3604,8 @@
+@@ -3505,7 +3487,8 @@ {
  	chanpart_T  *in_part = &ch->ch_part[PART_IN];
  
  	if (in_part->ch_fd != INVALID_FD
+-		&& is_channel_write_remaining(in_part))
 +		&& (in_part->ch_bufref.br_buf != NULL
 +		    || in_part->ch_writeque.wq_next != NULL))
--		&& is_channel_write_remaining(in_part))
  	{
  	    FD_SET((int)in_part->ch_fd, wfds);
  	    if ((int)in_part->ch_fd >= maxfd)
-@@ -3646,7 +3629,8 @@
+@@ -3529,7 +3512,8 @@ {
  	chanpart_T  *in_part = &ch->ch_part[PART_IN];
  
  	if (in_part->ch_fd != INVALID_FD
+-		&& is_channel_write_remaining(in_part))
 +		&& (in_part->ch_bufref.br_buf != NULL
 +		    || in_part->ch_writeque.wq_next != NULL))
--		&& is_channel_write_remaining(in_part))
  	{
  	    in_part->ch_poll_idx = nfd;
  	    fds[nfd].fd = in_part->ch_fd;
-@@ -3881,6 +3865,8 @@
+@@ -3764,6 +3748,8 @@ break;	// error or nothing more to read
  	// Store the read message in the queue.
  	channel_save(channel, part, buf, len, FALSE, "RECV ");
  	readlen += len;
@@ -62,9 +62,9 @@ This patch is not intended for upstream.
      }
  
      // Reading a disconnection (readlen == 0), or an error.
---- vim-9.0.0501/src/version.c
-+++ vim-9.0.0501/src/version.c
-@@ -914,8 +914,6 @@ static int included_patches[] =
+--- vim-9.0.1443/src/version.c
++++ vim-9.0.1443/src/version.c
+@@ -2794,8 +2794,6 @@ 396,
  /**/
      395,
  /**/

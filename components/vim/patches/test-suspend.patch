@@ -4,18 +4,41 @@ make the tests pass in our infrastructure.
 
 Not suitable for upstream.
 
---- vim-9.0.0823/src/testdir/test_suspend.vim
-+++ vim-9.0.0823/src/testdir/test_suspend.vim
-@@ -19,9 +19,10 @@ endfunc
+--- vim-9.0.1174/src/testdir/test_suspend.vim
++++ vim-9.0.1174/src/testdir/test_suspend.vim
+@@ -20,7 +20,7 @@ endfunc
  
  func Test_suspend()
    CheckFeature terminal
 -  CheckExecutable /bin/sh
 +  CheckExecutable /bin/bash
  
+   " Somehow the modifyOtherKeys response may get to the terminal when using
+   " Mac OS.  Make t_RK and 'keyprotocol' empty to avoid that.
+@@ -28,7 +28,7 @@ func Test_suspend()
+ 
+   call WaitForResponses()
+ 
 -  let buf = term_start('/bin/sh')
-+  let $PS1="\\u@\\h:\\w\\\$ "
 +  let buf = term_start('/bin/bash --norc')
+   " Wait for shell prompt.
+   call WaitForAssert({-> assert_match('[$#] $', term_getline(buf, '.'))})
+ 
+@@ -70,7 +70,7 @@ endfunc
+ 
+ func Test_suspend_autocmd()
+   CheckFeature terminal
+-  CheckExecutable /bin/sh
++  CheckExecutable /bin/bash
+ 
+   " Somehow the modifyOtherKeys response may get to the terminal when using
+   " Mac OS.  Make t_RK and 'keyprotocol' empty to avoid that.
+@@ -78,7 +78,7 @@ func Test_suspend_autocmd()
+ 
+   call WaitForResponses()
+ 
+-  let buf = term_start('/bin/sh', #{term_rows: 6})
++  let buf = term_start('/bin/bash --norc', #{term_rows: 6})
    " Wait for shell prompt.
    call WaitForAssert({-> assert_match('[$#] $', term_getline(buf, '.'))})
  
