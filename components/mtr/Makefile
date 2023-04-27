@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mtr
-COMPONENT_VERSION=	0.86
+COMPONENT_VERSION=	0.95
 COMPONENT_PROJECT_URL=	http://www.bitwizard.nl/mtr/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7912f049f9506748913e2866068b7f95b11a4e0a855322120b456c46ac9eb763
+    sha256:12490fb660ba5fb34df8c06a0f62b4f9cbd11a584fc3f6eceda0a99124e8596f
 COMPONENT_ARCHIVE_URL=	https://github.com/traviscross/mtr/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ANITYA_ID=	2029
 
-COMPONENT_BAID=		18217
+COMPONENT_BAID=		142513
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -41,8 +42,10 @@ include $(WS_MAKE_RULES)/common.mk
 CONFIGURE_SBINDIR.64 =		$(CONFIGURE_PREFIX)/bin
 CONFIGURE_OPTIONS  +=		--without-gtk
 CONFIGURE_OPTIONS  +=		--without-ipinfo
+CONFIGURE_OPTIONS  +=		--disable-dependency-tracking
 
 COMPONENT_PRE_CONFIGURE_ACTION += (cd $(SOURCE_DIR); ./bootstrap.sh)
 
+REQUIRED_PACKAGES += library/jansson
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += system/library/math
