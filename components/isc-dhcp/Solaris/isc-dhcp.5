@@ -1,5 +1,5 @@
 '\" te
-.\" Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+.\" Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 .TH isc-dhcp 5 "28 Feb 2018" "Oracle Solaris 11.4"
 .SH NAME
 isc\-dhcp \- ISC Dynamic Host Configuration Protocol Software
@@ -45,9 +45,10 @@ The following dhcpd service configuration properties can be viewed with
 .ad
 .sp .6
 .RS 4n
-Send log messages from the DHCP daemon to  the  standard  error  descriptor.
-Setting this property to true ensures the \fI-d\fR command-line option is
-used when starting dhcpd. This property is set to false by default.
+Setting this property to true ensures the \fI-q\fR command-line option is
+not used when starting dhcpd, thus enabling verbose (debug level) message
+logging.  This property is set to false by default.
+.sp
 .RE
 .sp
 .ne 2
@@ -90,6 +91,20 @@ this property to multiple interfaces as it is a list-of-string-values,
 and not a single comma separated string.
 .sp
 See Example 4.
+.sp
+.RE
+.ne 2
+.mk
+.na
+\fBno_syslog\fR\ =\ \fIboolean:\fR\ false
+.ad
+.sp .6
+.RS 4n
+Do not syslog messages from the DHCP daemon. By default logging is done
+to stderr (the service log) and via syslog to the messages file and to the
+console.
+Setting this property to true prevents logging via syslog, logging will
+continue to the service log file. This property is set to false by default.
 .RE
 .sp
 .ne 2

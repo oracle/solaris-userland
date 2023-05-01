@@ -1,27 +1,9 @@
 #!/sbin/sh
 #
-# CDDL HEADER START
-#
-# The contents of this file are subject to the terms of the
-# Common Development and Distribution License (the "License").
-# You may not use this file except in compliance with the License.
-#
-# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-# or http://www.opensolaris.org/os/licensing.
-# See the License for the specific language governing permissions
-# and limitations under the License.
-#
-# When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
-# If applicable, add the following below this CDDL HEADER, with the
-# fields enclosed by brackets "[]" replaced with your own identifying
-# information: Portions Copyright [yyyy] [name of copyright owner]
-#
-# CDDL HEADER END
 #
 
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -74,6 +56,11 @@ get_common_options() {
 		DEBUG="-d"
 	else
 		DEBUG="-q"
+	fi
+
+	# disable logging via syslog
+	if [ "`get_prop no_syslog`" = "true" ]; then
+		export OPTIONS="$OPTIONS --no_syslog"
 	fi
 
 	export OPTIONS="$OPTIONS $DEBUG"
@@ -253,6 +240,7 @@ case "$SMF_FMRI" in
 		OPTIONS="-6 $OPTIONS"
 	fi
 	export EXECFILE=$DHCPD_BIN
+	export SERVER=YES
 	;;
 
 $DHCPRELAY_IPV4)
@@ -286,11 +274,24 @@ $DHCPRELAY_IPV6)
 
 esac
 
-# Now start the daemon
-if [ "$DEBUG" = "-d" ]; then
-	$EXECFILE $OPTIONS &
+# Now start the daemon, we will log to both syslog and
+# the service logfile by default when we run the v4 or
+# v6 dhcp server so true daemonization is not possible.
+#
+if [ -n $SERVER ]; then
+	# avoid extra occurrence of "-d" switch (cosmetic)
+	OPTIONS=`echo $OPTIONS | sed 's/-d //'`
+	export OPTIONS
+
+	$EXECFILE -d $OPTIONS &
 else
-	$EXECFILE $OPTIONS
+	if [ "$DEBUG" = "-d" ]; then
+		$EXECFILE $OPTIONS &
+	else
+		# Can fully daemonize,
+		# logs to syslog only.
+		$EXECFILE $OPTIONS
+	fi
 fi
 
 if [ "$?" != "0" ]; then

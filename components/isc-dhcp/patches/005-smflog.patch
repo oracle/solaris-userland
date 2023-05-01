@@ -1,0 +1,303 @@
+*** a/includes/omapip/omapip_p.h	Wed Sep 28 07:39:15 2022
+--- b/includes/omapip/omapip_p.h	Mon May  1 03:38:29 2023
+***************
+*** 281,290 ****
+--- 281,293 ----
+  isc_result_t omapi_handle_clear(omapi_handle_t);
+  
+  extern int log_perror;
+  extern void (*log_cleanup) (void);
+  
++ int log_stderr;
++ int no_syslog;
++ 
+  void log_fatal (const char *, ...)
+  	__attribute__((__format__(__printf__,1,2))) ISC_DHCP_NORETURN;
+  int log_error (const char *, ...)
+  	__attribute__((__format__(__printf__,1,2)));
+  int log_info (const char *, ...)
+*** a/omapip/errwarn.c	Wed Sep 28 07:39:15 2022
+--- b/omapip/errwarn.c	Mon May  1 03:37:32 2023
+***************
+*** 33,55 ****
+--- 33,73 ----
+  
+  #include "dhcpd.h"
+  
+  #include <omapip/omapip_p.h>
+  #include <errno.h>
++ #include <time.h>
+  #include <syslog.h>
+  
+  #ifdef DEBUG
+  int log_perror = -1;
+  #else
+  int log_perror = 1;
+  #endif
++ 
+  void (*log_cleanup) (void);
+  
+  #define CVT_BUF_MAX 1023
+  static char mbuf [CVT_BUF_MAX + 1];
+  static char fbuf [CVT_BUF_MAX + 1];
+  
++ static void
++ prtime(void) {
++   time_t	now;
++   struct tm	*tm;
++   char		line[64];
++ 
++   if (log_perror && log_stderr == 1) {
++ 	 now = time((time_t *)0);
++ 	 tm = localtime(&now);
++ 
++ 	(void) strftime(line, sizeof line, "%Y %b %d %H:%M:%S", tm);
++ 
++ 	fprintf(stderr, "%s ", &line);
++   }
++ }
++ 
+  /* Log an error message, then exit... */
+  
+  void log_fatal (const char * fmt, ... )
+  {
+    va_list list;
+***************
+*** 58,72 ****
+  
+    /* %Audit% This is log output. %2004.06.17,Safe%
+     * If we truncate we hope the user can get a hint from the log.
+     */
+    va_start (list, fmt);
+    vsnprintf (mbuf, sizeof mbuf, fbuf, list);
+    va_end (list);
+  
+  #ifndef DEBUG
+!   syslog (LOG_ERR, "%s", mbuf);
+  #endif
+  
+    /* Also log it to stderr? */
+    if (log_perror) {
+  	  IGNORE_RET (write (STDERR_FILENO, mbuf, strlen (mbuf)));
+--- 76,92 ----
+  
+    /* %Audit% This is log output. %2004.06.17,Safe%
+     * If we truncate we hope the user can get a hint from the log.
+     */
+    va_start (list, fmt);
++   prtime();
+    vsnprintf (mbuf, sizeof mbuf, fbuf, list);
+    va_end (list);
+  
+  #ifndef DEBUG
+!   if (no_syslog == 0)
+!   	syslog (LOG_ERR, "%s", mbuf);
+  #endif
+  
+    /* Also log it to stderr? */
+    if (log_perror) {
+  	  IGNORE_RET (write (STDERR_FILENO, mbuf, strlen (mbuf)));
+***************
+*** 97,112 ****
+  
+    /* %Audit% This is log output. %2004.06.17,Safe%
+     * If we truncate we hope the user can get a hint from the log.
+     */
+    va_start (list, fmt);
+    vsnprintf (mbuf, sizeof mbuf, fbuf, list);
+    va_end (list);
+- 
+  #ifndef DEBUG
+!   syslog (LOG_ERR, "%s", mbuf);
+! #endif
+  
+    if (log_perror) {
+  	  IGNORE_RET (write (STDERR_FILENO, mbuf, strlen (mbuf)));
+  	  IGNORE_RET (write (STDERR_FILENO, "\n", 1));
+    }
+--- 117,133 ----
+  
+    /* %Audit% This is log output. %2004.06.17,Safe%
+     * If we truncate we hope the user can get a hint from the log.
+     */
+    va_start (list, fmt);
++   prtime();
+    vsnprintf (mbuf, sizeof mbuf, fbuf, list);
+    va_end (list);
+  #ifndef DEBUG
+!   if (no_syslog == 0)
+!   	syslog (LOG_ERR, "%s", mbuf);
+! #endif 
+  
+    if (log_perror) {
+  	  IGNORE_RET (write (STDERR_FILENO, mbuf, strlen (mbuf)));
+  	  IGNORE_RET (write (STDERR_FILENO, "\n", 1));
+    }
+***************
+*** 124,138 ****
+  
+    /* %Audit% This is log output. %2004.06.17,Safe%
+     * If we truncate we hope the user can get a hint from the log.
+     */
+    va_start (list, fmt);
+    vsnprintf (mbuf, sizeof mbuf, fbuf, list);
+    va_end (list);
+- 
+  #ifndef DEBUG
+!   syslog (LOG_INFO, "%s", mbuf);
+  #endif
+  
+    if (log_perror) {
+  	  IGNORE_RET (write (STDERR_FILENO, mbuf, strlen (mbuf)));
+  	  IGNORE_RET (write (STDERR_FILENO, "\n", 1));
+--- 145,160 ----
+  
+    /* %Audit% This is log output. %2004.06.17,Safe%
+     * If we truncate we hope the user can get a hint from the log.
+     */
+    va_start (list, fmt);
++   prtime();
+    vsnprintf (mbuf, sizeof mbuf, fbuf, list);
+    va_end (list);
+  #ifndef DEBUG
+!   if (no_syslog == 0)
+!   	syslog (LOG_INFO, "%s", mbuf);
+  #endif
+  
+    if (log_perror) {
+  	  IGNORE_RET (write (STDERR_FILENO, mbuf, strlen (mbuf)));
+  	  IGNORE_RET (write (STDERR_FILENO, "\n", 1));
+***************
+*** 151,165 ****
+  
+    /* %Audit% This is log output. %2004.06.17,Safe%
+     * If we truncate we hope the user can get a hint from the log.
+     */
+    va_start (list, fmt);
+    vsnprintf (mbuf, sizeof mbuf, fbuf, list);
+    va_end (list);
+- 
+  #ifndef DEBUG
+!   syslog (LOG_DEBUG, "%s", mbuf);
+  #endif
+  
+    if (log_perror) {
+  	  IGNORE_RET (write (STDERR_FILENO, mbuf, strlen (mbuf)));
+  	  IGNORE_RET (write (STDERR_FILENO, "\n", 1));
+--- 173,188 ----
+  
+    /* %Audit% This is log output. %2004.06.17,Safe%
+     * If we truncate we hope the user can get a hint from the log.
+     */
+    va_start (list, fmt);
++   prtime();
+    vsnprintf (mbuf, sizeof mbuf, fbuf, list);
+    va_end (list);
+  #ifndef DEBUG
+!   if (no_syslog == 0)
+!   	syslog (LOG_DEBUG, "%s", mbuf);
+  #endif
+  
+    if (log_perror) {
+  	  IGNORE_RET (write (STDERR_FILENO, mbuf, strlen (mbuf)));
+  	  IGNORE_RET (write (STDERR_FILENO, "\n", 1));
+*** a/server/dhcpd.c	Wed Sep 28 07:39:15 2022
+--- b/server/dhcpd.c	Mon May  1 03:40:31 2023
+***************
+*** 148,158 ****
+  }
+  
+  #ifndef UNIT_TEST
+  
+  #define DHCPD_USAGE0 \
+! "[-p <UDP port #>] [-f] [-d] [-q] [-t|-T]\n"
+  
+  #ifdef DHCPv6
+  #ifdef DHCP4o6
+  #define DHCPD_USAGE1 \
+  "             [-4|-6] [-4o6 <port>]\n" \
+--- 148,158 ----
+  }
+  
+  #ifndef UNIT_TEST
+  
+  #define DHCPD_USAGE0 \
+! "[-p <UDP port #>] [-f] [-d] [-q] [-t|-T] [--no_syslog]\n"
+  
+  #ifdef DHCPv6
+  #ifdef DHCP4o6
+  #define DHCPD_USAGE1 \
+  "             [-4|-6] [-4o6 <port>]\n" \
+***************
+*** 295,304 ****
+--- 295,307 ----
+  	progname = "dhcpd";
+  #else
+  	progname = argv[0];
+  #endif
+  
++ 	no_syslog = 0;
++ 	log_stderr = 0;
++ 
+          /* Make sure that file descriptors 0 (stdin), 1, (stdout), and
+             2 (stderr) are open. To do this, we assume that when we
+             open a file the lowest available file descriptor is used. */
+          fd = open("/dev/null", O_RDWR);
+          if (fd == 0)
+***************
+*** 315,324 ****
+--- 318,328 ----
+  		if (!strcmp (argv [i], "-f")) {
+  #ifndef DEBUG
+  			daemon = 0;
+  #endif
+  		} else if (!strcmp (argv [i], "-d")) {
++ 			log_stderr = 1;
+  #ifndef DEBUG
+  			daemon = 0;
+  #endif
+  		} else if (!strcmp (argv [i], "-t")) {
+  #ifndef DEBUG
+***************
+*** 444,453 ****
+--- 448,459 ----
+  			log_perror = -1;
+  		} else if (!strcmp (argv [i], "-s")) {
+  			if (++i == argc)
+  				usage(use_noarg, argv[i-1]);
+  			server = argv [i];
++ 		} else if (!strcmp(argv[i], "--no_syslog")) {
++ 			no_syslog = 1;
+  #if defined (PARANOIA)
+  		} else if (!strcmp (argv [i], "-user")) {
+  			if (++i == argc)
+  				usage(use_noarg, argv[i-1]);
+  			set_user = argv [i];
+*** a/server/dhcpd.8	Wed Sep 28 07:39:15 2022
+--- b/server/dhcpd.8	Sun Apr 30 12:25:48 2023
+***************
+*** 249,259 ****
+  reliable or otherwise cannot be used.  Normally,
+  .B dhcpd
+  will log all
+  output using the \fBsyslog(3)\fR function with the log facility set to
+  LOG_DAEMON.  Note that \fB\-d\fR implies \fB\-f\fR (the daemon will
+! not fork itself into the background).
+  .TP
+  .BI \-q
+  Be quiet at startup.  This suppresses the printing of the entire
+  copyright message during startup.  This might be desirable when
+  starting
+--- 249,260 ----
+  reliable or otherwise cannot be used.  Normally,
+  .B dhcpd
+  will log all
+  output using the \fBsyslog(3)\fR function with the log facility set to
+  LOG_DAEMON.  Note that \fB\-d\fR implies \fB\-f\fR (the daemon will
+! not fork itself into the background). dhcpd on Solaris will log to
+! both syslog and stderr unless the \fB\--no_syslog\fR switch is provided.
+  .TP
+  .BI \-q
+  Be quiet at startup.  This suppresses the printing of the entire
+  copyright message during startup.  This might be desirable when
+  starting
