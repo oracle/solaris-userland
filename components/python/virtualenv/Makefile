@@ -50,6 +50,12 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 COMPONENT_TEST_ENV +=	PATH=$(GNUBIN):$(PATH)
 COMPONENT_SYSTEM_TEST_ENV +=	PATH=$(GNUBIN):$(PATH)
 
+# Force use of native distutils rather than the setuptools one
+# that otherwise takes over and breaks some tests.
+# https://github.com/pypa/setuptools/issues/3007
+COMPONENT_TEST_ENV +=	SETUPTOOLS_USE_DISTUTILS=stdlib
+COMPONENT_SYSTEM_TEST_ENV +=	SETUPTOOLS_USE_DISTUTILS=stdlib
+
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =

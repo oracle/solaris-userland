@@ -3,19 +3,19 @@ include flaky, pytest-mock and pytest-freezegun.
 
 Not intended for upstream.
 
---- virtualenv-20.16.3/setup.cfg
-+++ virtualenv-20.16.3/setup.cfg
-@@ -114,7 +114,7 @@ universal = true
+--- virtualenv-20.16.5/setup.cfg
++++ virtualenv-20.16.5/setup.cfg
+@@ -110,7 +110,7 @@ formats = gztar
  markers = 
-    slow
+ 	slow
  junit_family = xunit2
 -addopts = --tb=auto -ra --showlocals --no-success-flaky-report
 +addopts = --tb=auto -ra --showlocals
  env = 
-    PYTHONWARNINGS=ignore:DEPRECATION::pip._internal.cli.base_command
-    PYTHONIOENCODING=utf-8
---- virtualenv-20.16.3/tests/integration/test_zipapp.py
-+++ virtualenv-20.16.3/tests/integration/test_zipapp.py
+ 	PYTHONWARNINGS=ignore:DEPRECATION::pip._internal.cli.base_command
+ 	PYTHONIOENCODING=utf-8
+--- virtualenv-20.16.5/tests/integration/test_zipapp.py
++++ virtualenv-20.16.5/tests/integration/test_zipapp.py
 @@ -4,7 +4,6 @@ import sys
  from pathlib import Path
  
@@ -32,8 +32,8 @@ Not intended for upstream.
  def test_zipapp_help(call_zipapp, capsys):
      call_zipapp("-h")
      out, err = capsys.readouterr()
---- virtualenv-20.16.3/tests/conftest.py
-+++ virtualenv-20.16.3/tests/conftest.py
+--- virtualenv-20.16.5/tests/conftest.py
++++ virtualenv-20.16.5/tests/conftest.py
 @@ -379,3 +379,11 @@ def _skip_if_test_in_system(session_app_
      current = PythonInfo.current(session_app_data)
      if current.system_executable is not None:
@@ -46,8 +46,8 @@ Not intended for upstream.
 +@pytest.fixture()
 +def mocker(*args, **kwargs):
 +    pytest.skip("pytest-mock is not available on Solaris")
---- virtualenv-20.16.3/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
-+++ virtualenv-20.16.3/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
+--- virtualenv-20.16.5/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
++++ virtualenv-20.16.5/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
 @@ -210,6 +210,7 @@ def test_base_bootstrap_link_via_app_dat
          assert (result.creator.purelib / key).exists()
  
