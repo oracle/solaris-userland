@@ -1,4 +1,3 @@
-
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -20,7 +19,7 @@
 #
 
 #
-# Copyright (c) 2007, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2007, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,16 +27,16 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tigervnc
-COMPONENT_VERSION=	1.10.1
+COMPONENT_VERSION=	1.13.1
 COMPONENT_PROJECT_URL=	http://tigervnc.org/
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:19fcc80d7d35dd58115262e53cac87d8903180261d94c2a6b0c19224f50b58c4
+	sha256:b7c5b8ed9e4e2c2f48c7b2c9f21927db345e542243b4be88e066b2daa3d1ae25
 COMPONENT_ARCHIVE_URL=	https://github.com/TigerVNC/tigervnc/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        x11/vnc
 COMPONENT_ANITYA_ID=	4970
 
-COMPONENT_BAID=		74126
+COMPONENT_BAID=		141621
 
 XORG_DIR=		$(COMPONENT_DIR:xvnc=xorg)
 get-xorg-value=		$(MAKE) --no-print-directory -C $(XORG_DIR) print-$(1) \
@@ -180,8 +179,10 @@ REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += image/library/libjpeg
+REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/graphics/pixman
+REQUIRED_PACKAGES += library/security/nettle
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/core-os
@@ -199,6 +200,7 @@ REQUIRED_PACKAGES += x11/library/libxdmcp
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxfixes
 REQUIRED_PACKAGES += x11/library/libxfont2
+REQUIRED_PACKAGES += x11/library/libxi
 REQUIRED_PACKAGES += x11/library/libxrandr
 REQUIRED_PACKAGES += x11/library/libxrender
 REQUIRED_PACKAGES += x11/library/libxtst

@@ -18,7 +18,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 <include ../xorg/generate/common.transform>
@@ -33,3 +33,13 @@
 # manifest-check will pull those from existing manifests and then complain
 # they are duplicated
 <transform file link dir variant.arch=(?!$(MACH)) -> drop>
+
+# Don't deliver these since we don't deliver vncserver as a service
+<transform file path=usr/lib/systemd/system/vncserver@.service -> drop>
+<transform file path=usr/lib/vncsession-start -> drop>
+<transform file path=usr/sbin/vncsession -> drop>
+<transform file path=usr/share/man/man8/vncsession.8 -> drop>
+
+# Deliver vncserver in /usr/bin
+<transform file path=usr/lib/vncserver -> set action.hash %(path)>
+<transform file path=usr/lib/vncserver -> edit path ^.*$ usr/bin/vncserver>

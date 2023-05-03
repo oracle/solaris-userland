@@ -29,22 +29,22 @@ Remove buildtime from binaries to avoid unnecessary change in ELF data.
  }
  
  static void usage()
---- a/unix/xserver/hw/vnc/xvnc.c	2018-11-20 16:05:07.354759941 -0800
-+++ b/unix/xserver/hw/vnc/xvnc.c	2018-11-20 16:05:41.709020108 -0800
-@@ -81,7 +81,6 @@
+--- a/unix/xserver/hw/vnc/xvnc.c	2023-03-28 10:20:37.965505385 -0700
++++ b/unix/xserver/hw/vnc/xvnc.c	2023-03-28 10:21:02.731474704 -0700
+@@ -64,7 +64,6 @@
  #include "dpmsproc.h"
  #endif
  #include <X11/keysym.h>
--  extern char buildtime[];
+-extern char buildtime[];
+ 
  #undef VENDOR_RELEASE
  #undef VENDOR_STRING
- #include "version-config.h"
-@@ -159,7 +158,7 @@
+@@ -115,7 +114,7 @@
  static void
  vncPrintBanner(void)
  {
 -    ErrorF("\nXvnc %s - built %s\n%s", XVNCVERSION, buildtime, XVNCCOPYRIGHT);
 +    ErrorF("\nXvnc %s \n%s", XVNCVERSION, XVNCCOPYRIGHT);
-     ErrorF("Underlying X server release %d, %s\n\n", VENDOR_RELEASE,
-            VENDOR_STRING);
+     ErrorF("Underlying X server release %d\n\n", VENDOR_RELEASE);
  }
+ 

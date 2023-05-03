@@ -18,7 +18,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 <include ../xorg/generate/common.transform>
@@ -28,3 +28,10 @@
 
 # Remove the mark
 <transform dir file link hardlink -> delete pkg.type .*>
+
+# don't deliver these since we don't start vncserver as a service
+<transform file path=etc/pam.d/tigervnc -> drop>
+<transform file path=etc/tigervnc/vncserver-config-defaults -> drop>
+<transform file path=etc/tigervnc/vncserver-config-mandatory -> drop>
+<transform file path=etc/tigervnc/vncserver.users -> drop>
+

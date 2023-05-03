@@ -1,0 +1,16 @@
+The base VNC protocol is unencrypted, but TigerVNC provides the VeNCrypt
+extension to use VNC over TLS to resolve that using the GNUtls library.
+This allows TLS encrypted communication between the server and the client.
+
+Also, the base VNC implementation uses vncpasswd which allows users to set the 
+password to access VNC desktops.  The default behavior is to prompt for a
+VNC password then store an obfuscated version of this password to passwd-file.
+Please note that the stored password is not encrypted securely.
+
+Users are recommended to use the more secure method of using PAM 
+authentication provided by TigerVNC.
+
+For Solaris, on the ILOMs, we have documented certain required guidelines 
+to ensure security during Xvnc usage.  Details can be found at:
+
+https://docs.oracle.com/cd/E37444_01/html/E37446/gqncv.html#scrolltoc
