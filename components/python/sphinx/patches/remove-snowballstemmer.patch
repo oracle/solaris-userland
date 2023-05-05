@@ -4,59 +4,521 @@ is patched out.
 
 Not intended for upstream.
 
---- Sphinx-4.2.0/setup.py
-+++ Sphinx-4.2.0/setup.py
-@@ -23,7 +23,6 @@ install_requires = [
-     'Jinja2>=2.3',
-     'Pygments>=2.0',
-     'docutils>=0.14,<0.18',
--    'snowballstemmer>=1.1',
-     'babel>=1.3',
-     'alabaster>=0.7,<0.8',
-     'requests>=2.5.0',
---- Sphinx-4.2.0/Sphinx.egg-info/requires.txt
-+++ Sphinx-4.2.0/Sphinx.egg-info/requires.txt
-@@ -6,7 +6,6 @@ sphinxcontrib-qthelp
- Jinja2>=2.3
- Pygments>=2.0
- docutils<0.18,>=0.14
--snowballstemmer>=1.1
- babel>=1.3
- alabaster<0.8,>=0.7
- requests>=2.5.0
---- Sphinx-4.2.0/tests/test_intl.py
-+++ Sphinx-4.2.0/tests/test_intl.py
-@@ -1301,6 +1301,7 @@ def getwarning(warnings):
-     return strip_escseq(warnings.getvalue().replace(os.sep, '/'))
+--- Sphinx-6.1.3/PKG-INFO
++++ Sphinx-6.1.3/PKG-INFO
+@@ -44,7 +44,6 @@ Classifier: Topic :: Text Processing ::
+ Requires-Dist: Jinja2>=3.0
+ Requires-Dist: Pygments>=2.13
+ Requires-Dist: docutils>=0.18,<0.20
+-Requires-Dist: snowballstemmer>=2.0
+ Requires-Dist: babel>=2.9
+ Requires-Dist: alabaster>=0.7,<0.8
+ Requires-Dist: requests>=2.25.0
+--- Sphinx-6.1.3/pyproject.toml
++++ Sphinx-6.1.3/pyproject.toml
+@@ -58,7 +58,6 @@ classifiers = [
+     "Jinja2>=3.0",
+     "Pygments>=2.13",
+     "docutils>=0.18,<0.20",
+-    "snowballstemmer>=2.0",
+     "babel>=2.9",
+     "alabaster>=0.7,<0.8",
+     "requests>=2.25.0",
+--- Sphinx-6.1.3/sphinx/search/da.py
++++ Sphinx-6.1.3/sphinx/search/da.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
  
+ from typing import Dict
  
-+@pytest.mark.skip(reason="Needs snowballstemmer that is not available on Solaris")
- @pytest.mark.sphinx('html', testroot='basic', confoverrides={'language': 'de'})
- def test_customize_system_message(make_app, app_params, sphinx_test_tempdir):
-     try:
---- Sphinx-4.2.0/tests/test_search.py
-+++ Sphinx-4.2.0/tests/test_search.py
-@@ -82,6 +82,7 @@ def test_meta_keys_are_handled_for_langu
-     assert not is_registered_term(searchindex, 'onlytoogerman')
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
  
+ from sphinx.search import SearchLanguage, parse_stop_word
  
-+@pytest.mark.skip(reason="Needs snowballstemmer that is not available on Solaris")
- @pytest.mark.sphinx(testroot='search', confoverrides={'html_search_language': 'de'})
- def test_meta_keys_are_handled_for_language_de(app, status, warning):
-     app.builder.build_all()
-@@ -95,6 +96,7 @@ def test_meta_keys_are_handled_for_langu
-     assert is_registered_term(searchindex, 'onlytoogerman')
+@@ -114,7 +117,14 @@ class SearchDanish(SearchLanguage):
+     stopwords = danish_stopwords
  
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('danish')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('danish')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
  
-+@pytest.mark.skip(reason="Needs snowballstemmer that is not available on Solaris")
- @pytest.mark.sphinx(testroot='search')
- def test_stemmer_does_not_remove_short_words(app, status, warning):
-     app.builder.build_all()
-@@ -258,6 +260,7 @@ def test_search_index_gen_zh(app, status
-     assert 'cas' in searchindex
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/de.py
++++ Sphinx-6.1.3/sphinx/search/de.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
  
+ from typing import Dict
  
-+@pytest.mark.skip(reason="Needs snowballstemmer that is not available on Solaris")
- @pytest.mark.sphinx(testroot='search')
- def test_nosearch(app):
-     app.build()
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage, parse_stop_word
+ 
+@@ -297,7 +300,14 @@ class SearchGerman(SearchLanguage):
+     stopwords = german_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('german')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('german')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/en.py
++++ Sphinx-6.1.3/sphinx/search/en.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage
+ 
+@@ -214,7 +217,14 @@ class SearchEnglish(SearchLanguage):
+     stopwords = english_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('porter')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('porter')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/es.py
++++ Sphinx-6.1.3/sphinx/search/es.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage, parse_stop_word
+ 
+@@ -357,7 +360,14 @@ class SearchSpanish(SearchLanguage):
+     stopwords = spanish_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('spanish')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('spanish')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/fi.py
++++ Sphinx-6.1.3/sphinx/search/fi.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage, parse_stop_word
+ 
+@@ -107,7 +110,14 @@ class SearchFinnish(SearchLanguage):
+     stopwords = finnish_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('finnish')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('finnish')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/fr.py
++++ Sphinx-6.1.3/sphinx/search/fr.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage, parse_stop_word
+ 
+@@ -193,7 +196,14 @@ class SearchFrench(SearchLanguage):
+     stopwords = french_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('french')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('french')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/hu.py
++++ Sphinx-6.1.3/sphinx/search/hu.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage, parse_stop_word
+ 
+@@ -220,7 +223,14 @@ class SearchHungarian(SearchLanguage):
+     stopwords = hungarian_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('hungarian')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('hungarian')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/it.py
++++ Sphinx-6.1.3/sphinx/search/it.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage, parse_stop_word
+ 
+@@ -310,7 +313,14 @@ class SearchItalian(SearchLanguage):
+     stopwords = italian_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('italian')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('italian')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/nl.py
++++ Sphinx-6.1.3/sphinx/search/nl.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage, parse_stop_word
+ 
+@@ -121,7 +124,14 @@ class SearchDutch(SearchLanguage):
+     stopwords = dutch_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('dutch')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('dutch')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/no.py
++++ Sphinx-6.1.3/sphinx/search/no.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage, parse_stop_word
+ 
+@@ -196,7 +199,14 @@ class SearchNorwegian(SearchLanguage):
+     stopwords = norwegian_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('norwegian')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('norwegian')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/pt.py
++++ Sphinx-6.1.3/sphinx/search/pt.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage, parse_stop_word
+ 
+@@ -255,7 +258,14 @@ class SearchPortuguese(SearchLanguage):
+     stopwords = portuguese_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('portuguese')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('portuguese')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/ro.py
++++ Sphinx-6.1.3/sphinx/search/ro.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict, Set
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage
+ 
+@@ -16,7 +19,14 @@ class SearchRomanian(SearchLanguage):
+     stopwords: set[str] = set()
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('romanian')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('romanian')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/ru.py
++++ Sphinx-6.1.3/sphinx/search/ru.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage, parse_stop_word
+ 
+@@ -245,7 +248,14 @@ class SearchRussian(SearchLanguage):
+     stopwords = russian_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('russian')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('russian')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/sv.py
++++ Sphinx-6.1.3/sphinx/search/sv.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage, parse_stop_word
+ 
+@@ -134,7 +137,14 @@ class SearchSwedish(SearchLanguage):
+     stopwords = swedish_stopwords
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('swedish')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('swedish')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/tr.py
++++ Sphinx-6.1.3/sphinx/search/tr.py
+@@ -4,7 +4,10 @@ from __future__ import annotations
+ 
+ from typing import Dict, Set
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage
+ 
+@@ -16,7 +19,14 @@ class SearchTurkish(SearchLanguage):
+     stopwords: set[str] = set()
+ 
+     def init(self, options: dict) -> None:
+-        self.stemmer = snowballstemmer.stemmer('turkish')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('turkish')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def stem(self, word: str) -> str:
++        if self.stemmer is None:
++            return word.lower()
+         return self.stemmer.stemWord(word.lower())
+--- Sphinx-6.1.3/sphinx/search/zh.py
++++ Sphinx-6.1.3/sphinx/search/zh.py
+@@ -6,7 +6,10 @@ import os
+ import re
+ from typing import Dict, List
+ 
+-import snowballstemmer
++try:
++    import snowballstemmer
++except ImportError:
++    snowballstemmer = None
+ 
+ from sphinx.search import SearchLanguage
+ 
+@@ -233,7 +236,12 @@ class SearchChinese(SearchLanguage):
+             if dict_path and os.path.isfile(dict_path):
+                 jieba.load_userdict(dict_path)
+ 
+-        self.stemmer = snowballstemmer.stemmer('english')
++        if snowballstemmer is not None:
++            self.stemmer = snowballstemmer.stemmer('english')
++        else:
++            import warnings
++            warnings.warn("snowballstemmer is not installed and stemming is thus very limited.")
++            self.stemmer = None
+ 
+     def split(self, input: str) -> list[str]:
+         chinese: list[str] = []
+@@ -255,6 +263,7 @@ class SearchChinese(SearchLanguage):
+         should_not_be_stemmed = (
+             word in self.latin_terms and
+             len(word) >= 3 and
++            self.stemmer is not None and
+             len(self.stemmer.stemWord(word.lower())) < 3
+         )
+         if should_not_be_stemmed:
+--- Sphinx-6.1.3/tests/test_search.py
++++ Sphinx-6.1.3/tests/test_search.py
+@@ -11,6 +11,9 @@ from docutils.parsers import rst
+ 
+ from sphinx.search import IndexBuilder
+ 
++import pytest
++pytestmark = pytest.mark.skip("snowballstemmer is not available on Solaris")
++
+ 
+ class DummyEnvironment(namedtuple('DummyEnvironment', ['version', 'domains'])):
+     def __getattr__(self, name):

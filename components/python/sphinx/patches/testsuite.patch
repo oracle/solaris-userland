@@ -2,17 +2,17 @@ html5lib is not available on Solaris, so let's skip tests depending on it.
 
 Not intended for upstream.
 
---- Sphinx-4.2.0/tests/test_smartquotes.py
-+++ Sphinx-4.2.0/tests/test_smartquotes.py
-@@ -9,7 +9,6 @@
- """
+--- Sphinx-6.1.3/tests/test_smartquotes.py
++++ Sphinx-6.1.3/tests/test_smartquotes.py
+@@ -1,7 +1,6 @@
+ """Test smart quotes."""
  
  import pytest
 -from html5lib import HTMLParser
  
  
  @pytest.mark.sphinx(buildername='html', testroot='smartquotes', freshenv=True)
-@@ -20,6 +19,7 @@ def test_basic(app, status, warning):
+@@ -12,6 +11,7 @@ def test_basic(app, status, warning):
      assert '<p>– “Sphinx” is a tool that makes it easy …</p>' in content
  
  
@@ -20,9 +20,9 @@ Not intended for upstream.
  @pytest.mark.sphinx(buildername='html', testroot='smartquotes', freshenv=True)
  def test_literals(app, status, warning):
      app.build()
---- Sphinx-4.2.0/tests/test_domain_std.py
-+++ Sphinx-4.2.0/tests/test_domain_std.py
-@@ -13,7 +13,6 @@ from unittest import mock
+--- Sphinx-6.1.3/tests/test_domain_std.py
++++ Sphinx-6.1.3/tests/test_domain_std.py
+@@ -5,7 +5,6 @@ from unittest import mock
  import pytest
  from docutils import nodes
  from docutils.nodes import definition, definition_list, definition_list_item, term
@@ -30,7 +30,7 @@ Not intended for upstream.
  
  from sphinx import addnodes
  from sphinx.addnodes import (desc, desc_addname, desc_content, desc_name, desc_signature,
-@@ -365,6 +364,7 @@ def test_multiple_cmdoptions(app):
+@@ -358,6 +357,7 @@ def test_multiple_cmdoptions(app):
      assert domain.progoptions[('cmd', '--output')] == ('index', 'cmdoption-cmd-o')
  
  
@@ -38,11 +38,11 @@ Not intended for upstream.
  @pytest.mark.sphinx(testroot='productionlist')
  def test_productionlist(app, status, warning):
      app.builder.build_all()
---- Sphinx-4.2.0/tests/test_build_html.py
-+++ Sphinx-4.2.0/tests/test_build_html.py
-@@ -16,7 +16,7 @@ from unittest.mock import ANY, call, pat
+--- Sphinx-6.1.3/tests/test_build_html.py
++++ Sphinx-6.1.3/tests/test_build_html.py
+@@ -7,7 +7,7 @@ from pathlib import Path
+ from unittest.mock import ANY, call, patch
  
- import pygments
  import pytest
 -from html5lib import HTMLParser
 +pytestmark = pytest.mark.skip("html5lib.HTMLParser is not available on Solaris")

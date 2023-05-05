@@ -20,26 +20,25 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, racle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		alabaster
-COMPONENT_VERSION=	0.7.12
+COMPONENT_VERSION=	0.7.13
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d35abce0b79e3ca4b208e5f340d7d0bf71074a6f1aa2066d0cca9c0159dbf706
+    sha256:a27a4a084d5e690e16e01e03ad2b2e552c61a65469419b907243193de1a84ae2
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://alabaster.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	utility/sphinx
 COMPONENT_ANITYA_ID=	7274
-
-COMPONENT_BAID=		110153
+COMPONENT_BAID=		143150
 
 # We need to mirror the Sphinx package
-PYTHON_VERSION =	3.9
+PYTHON_VERSION =	3.11
 PYTHON_VERSIONS =	$(PYTHON_VERSION)
 
 include $(WS_MAKE_RULES)/prep.mk

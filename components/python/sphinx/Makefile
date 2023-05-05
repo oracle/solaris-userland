@@ -20,30 +20,29 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Sphinx
-COMPONENT_VERSION=	4.2.0
+COMPONENT_VERSION=	6.1.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a188f70f81ffcf91adb279c833438639d1879bb186fbc3ce4ea2405147aa8612
+    sha256:0dac3b698538ffef41716cf97ba26c1c7788dba73ce6f150c1ff5b4720786dd2
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://www.sphinx-doc.org/en/master/
 COMPONENT_BUGDB=	utility/sphinx
 COMPONENT_ANITYA_ID=	4031
-
-COMPONENT_BAID=		110613
+COMPONENT_BAID=		143164
 
 # We need just a single version
-PYTHON_VERSION =	3.9
+PYTHON_VERSION =	3.11
 PYTHON_VERSIONS =	$(PYTHON_VERSION)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_ENV +=	no_proxy=localhost

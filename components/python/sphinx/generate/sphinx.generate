@@ -20,12 +20,12 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 # Manifest contains only generic version with $(PYVER) variable. Choose one
 # python version and transform it to $(PYVER).
-<transform file link path=.+3\.9.* -> edit path 3\\.9 \$\(PYVER\)>
+<transform file link path=.+3\.11.* -> edit path 3\\.11 \$\(PYVER\)>
 
 # We are not shipping .po locale files
 <transform file path=.+/sphinx/locale/.*\.po -> drop>
@@ -35,3 +35,6 @@
 
 # Bypass pkgdepend detection of importlib in executable entry scripts
 <transform file path=usr/bin/.* -> set pkg.depend.bypass-generate .*importlib.*>
+
+# Remove deprecated stemming support
+<transform file path=.*sphinx/util/stemmer/__init__.py$ -> drop>

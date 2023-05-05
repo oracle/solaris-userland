@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -37,6 +37,7 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2021/134
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
+file path=usr/bin/docutils pkg.depend.bypass-generate=.*importlib.*
 file path=usr/bin/rst2html.py
 file path=usr/bin/rst2html4.py
 file path=usr/bin/rst2html5.py
@@ -55,9 +56,11 @@ file path=usr/lib/python$(PYVER)/vendor-packages/docutils-$(COMPONENT_VERSION)-p
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils-$(COMPONENT_VERSION)-py$(PYVER).egg-info/_solaris_dep
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.html
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/docutils-$(COMPONENT_VERSION)-py$(PYVER).egg-info/entry_points.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.html
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/docutils/__main__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/core.py
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/examples.py
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/frontend.py
@@ -92,10 +95,11 @@ file path=usr/lib/python$(PYVER)/vendor-packages/docutils/languages/zh_cn.py
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/languages/zh_tw.py
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/nodes.py
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/parsers/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/docutils/parsers/commonmark_wrapper.py
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/parsers/null.py
 file \
     path=usr/lib/python$(PYVER)/vendor-packages/docutils/parsers/recommonmark_wrapper.py \
-    pkg.depend.bypass-generate=.*recommonmark.*
+    pkg.depend.bypass-generate=.*
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/parsers/rst/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/parsers/rst/directives/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/parsers/rst/directives/admonitions.py
@@ -237,9 +241,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/docutils/writers/s5_html/themes
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/writers/s5_html/themes/big-black/pretty.css
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/writers/s5_html/themes/big-white/framing.css
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/writers/s5_html/themes/big-white/pretty.css
-file path=usr/lib/python$(PYVER)/vendor-packages/docutils/writers/s5_html/themes/default/blank.gif
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/writers/s5_html/themes/default/framing.css
-file path=usr/lib/python$(PYVER)/vendor-packages/docutils/writers/s5_html/themes/default/iepngfix.htc
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/writers/s5_html/themes/default/opera.css
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/writers/s5_html/themes/default/outline.css
 file path=usr/lib/python$(PYVER)/vendor-packages/docutils/writers/s5_html/themes/default/pretty.css

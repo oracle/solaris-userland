@@ -851,9 +851,11 @@ class UserlandManifestChecker(base.ManifestChecker):
         for py, pyc in filemap.items():
             if pyc is None:
                 # this file doesn't have a .pyc file
-                engine.warning(
-                    f"file {py} doesn't have corresponding .pyc file",
-                    msgid=f"{self.name}{pkglint_id}.0")
+                if not py.startswith("usr/bin/"):
+                    # scripts in usr/bin are never compiled to .pyc files
+                    engine.warning(
+                        f"file {py} doesn't have corresponding .pyc file",
+                        msgid=f"{self.name}{pkglint_id}.0")
             else:
                 self.__validate_pyc(py, pyc, engine, pkglint_id)
 

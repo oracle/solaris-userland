@@ -20,15 +20,18 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 # Manifest contains only generic version with $(PYVER) variable. Choose one
 # python version and transform it to $(PYVER).
-<transform file link path=.+3\.9.* -> edit path 3\\.9 \$\(PYVER\)>
+<transform file link path=.+3\.11.* -> edit path 3\\.11 \$\(PYVER\)>
+
+# Bypass pkgdepend detection of importlib in executable entry scripts
+<transform file path=usr/bin/docutils -> set pkg.depend.bypass-generate .*importlib.*>
 
 # bypass optional imports detected by pkgdepend
 <transform file path=.*/docutils/.*/_html_base.py$ -> set pkg.depend.bypass-generate .*>
 <transform file path=.*/docutils/.*/code_analyzer.py$ -> set pkg.depend.bypass-generate .*pygments.*>
-<transform file path=.*/docutils/.*/recommonmark_wrapper.py$ -> set pkg.depend.bypass-generate .*recommonmark.*>
+<transform file path=.*/docutils/.*/recommonmark_wrapper.py$ -> set pkg.depend.bypass-generate .*>
 <transform file path=usr/bin/rst2odt_prepstyles.py$ -> set pkg.depend.bypass-generate .*lxml.*>
