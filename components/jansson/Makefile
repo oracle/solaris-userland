@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -47,6 +47,16 @@ LINT_FLAGS += -I$(PROTOUSRINCDIR)
 
 CONFIGURE_OPTIONS += --includedir=$(USRINCDIR)/jansson
 
+# build and install documentation
+COMPONENT_POST_BUILD_ACTION.64 += \
+	(cd $(BUILD_DIR_64)/doc ; $(GMAKE) html man)
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+	($(MKDIR) $(PROTOUSRSHAREDOCDIR)/$(COMPONENT_SRC); \
+	$(CP) -r $(BUILD_DIR_64)/doc/_build/html $(PROTOUSRSHAREDOCDIR)/$(COMPONENT_SRC); \
+	$(MKDIR) $(PROTOUSRSHAREMAN3DIR)lib; \
+	$(CP) -r $(BUILD_DIR_64)/doc/_build/man/* $(PROTOUSRSHAREMAN3DIR)lib)
+
 # The test/suites/api/check-exports uses nm and expects it to be the GNU kind.
 COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH)
 
@@ -54,3 +64,5 @@ COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH)
 # jansson_config.h in the build subdirectory. We need to rm the one in the
 # original source so that it doesn't get in the way.
 COMPONENT_PREP_ACTION += $(RM) $(@D)/src/jansson_config.h
+
+REQUIRED_PACKAGES += developer/documentation-tool/sphinx

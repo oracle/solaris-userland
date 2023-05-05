@@ -1,0 +1,43 @@
+By default, there is no Makefile target to build man pages. This change
+adds that and also changes the name and section to remain where we
+delivered it before.
+
+Because we deliver the header files to /usr/include/jansson, it's necessary to
+update the examples in the documentation so that they are correct.
+
+Not intended for upstream.
+
+--- jansson-2.14/doc/Makefile.am
++++ jansson-2.14/doc/Makefile.am
+@@ -8,6 +8,9 @@ SPHINXOPTS = -d _build/doctrees $(SPHINX
+ html-local:
+ 	$(SPHINXBUILD) -b html $(SPHINXOPTS) $(srcdir) _build/html
+ 
++man:
++	$(SPHINXBUILD) -b man $(SPHINXOPTS) $(srcdir) _build/man
++
+ install-html-local: html
+ 	mkdir -p $(DESTDIR)$(htmldir)
+ 	cp -r _build/html $(DESTDIR)$(htmldir)
+--- jansson-2.14/doc/conf.py
++++ jansson-2.14/doc/conf.py
+@@ -212,6 +212,6 @@ latex_documents = [
+ # One entry per manual page. List of tuples
+ # (source start file, name, description, authors, manual section).
+ man_pages = [
+-    ('index', 'jansson', u'Jansson Documentation',
+-     [u'Petri Lehtinen'], 1)
++    ('index', 'libjansson', u'Jansson Documentation',
++     [u'Petri Lehtinen'], '3lib')
+ ]
+--- jansson-2.14/doc/gettingstarted.rst
++++ jansson-2.14/doc/gettingstarted.rst
+@@ -253,7 +253,7 @@ in the beginning of every source file th
+ There's also just one library to link with, ``libjansson``. Compile and
+ link the program as follows::
+ 
+-    cc -o prog prog.c -ljansson
++    cc -I /usr/include/jansson -o prog prog.c -ljansson
+ 
+ Starting from version 1.2, there's also support for pkg-config_:
+ 
