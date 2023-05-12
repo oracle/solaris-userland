@@ -51,13 +51,6 @@ update_fipsprovider_config()
 		h='#'
 	fi
 
-	# Check if the configuration file is already up to date
-	if grep -q "^# System is in FIPS 140 mode: ${mode}$" \
-	    $FIPS_PROVIDER_CONF; then
-		# no update needed
-		return
-	fi
-
 	cat <<-EOF >$FIPS_PROVIDER_CONF
 	#
 	# fips-140 module configuration file
