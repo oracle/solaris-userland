@@ -27,9 +27,9 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		curl
-COMPONENT_VERSION=	7.87.0
-COMPONENT_ARCHIVE_HASH=	sha256:5d6e128761b7110946d1276aff6f0f266f2b726f5e619f7e0a057a474155f307
-COMPONENT_BAID=		135919
+COMPONENT_VERSION=	8.0.0
+COMPONENT_ARCHIVE_HASH=	sha256:dd6e792593dbd2253cc2da57265808427e3614e84ca86d424fbc75cf9baba08c
+COMPONENT_BAID=		140325
 COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_URL=	https://curl.se/download/$(COMPONENT_ARCHIVE)
@@ -97,7 +97,6 @@ CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-libssh2
 CONFIGURE_OPTIONS += --with-nghttp2
 CONFIGURE_OPTIONS += --without-libpsl
-CONFIGURE_OPTIONS += --without-zstd
 CONFIGURE_OPTIONS += "curl_disallow_getifaddrs=yes"
 
 # Makefile.am files of this component are not compatible with Solaris make.
@@ -143,6 +142,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ XPASS:/p" ' \
 	'-e "/ ERROR:/p" '
 
+REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/nghttp2

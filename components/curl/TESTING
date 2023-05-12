@@ -12,8 +12,8 @@ the miniroot image is using only the "hand picked" files not the full packages.
 
 Here are the steps to setup AI test on virtual:
 
-### distro build boxes for both platforms ###
-vm install --memory=8G /net/your_sparc_ws/ aisparc
+### distro build boxes for both platforms # sparc needs more memory ###
+vm install --memory=16G /net/your_sparc_ws/ aisparc
 vm install --memory=8G /net/your_x86_ws/ aisvr
 #
 
@@ -81,24 +81,6 @@ vm install --memory=8G /net/your_x86_ws/ aisvr
 #--- sparc - aisparc -----------------------------------------------------------
  distro_const build -v /usr/share/distro_const/dc_ai_sparc.xml
 
-# We will also use the SPARC distroconst box as a http proxy
-  cat > /etc/apache2/2.4/conf.d/my-proxy.conf  <<EOF
-Listen 192.168.1.2:3128
-LoadModule proxy_module libexec/mod_proxy.so
-LoadModule proxy_connect_module libexec/mod_proxy_connect.so
-LoadModule proxy_ftp_module libexec/mod_proxy_ftp.so
-LoadModule proxy_http_module libexec/mod_proxy_http.so
-<VirtualHost *:3128>
-        ProxyRequests On
-        ProxyVia On
-        CustomLog "/var/apache2/2.4/logs/proxy_log" common
-        <Proxy *>
-                AddDefaultCharset off
-                Order allow,deny
-                Allow from all
-        </Proxy>
-</VirtualHost> 
-EOF
 #--- x86 - aisvr ---------------------------------------------------------------
   distro_const build -v /usr/share/distro_const/dc_ai_x86.xml
 
@@ -128,6 +110,7 @@ EOF
   svcadm disable svc:/network/dns/client
   svcadm disable nis/domain
   ( props=`svccfg -s svc:/system/name-service/switch listprop config/\* | nawk '{ if ( $1 != "config/value_authorization" ) print $1; }'` ; for p in $props ; do echo "deleting: $p" ; svccfg -s svc:/system/name-service/switch delprop $p ; done )
+  svcadm refresh svc:/system/name-service/switch
   svccfg -s svc:/system/name-service/switch setprop config/default = astring: files
   svcadm refresh svc:/system/name-service/switch
   echo '192.168.1.1 aisvr.local aisvr' >> /etc/inet/hosts
@@ -140,7 +123,6 @@ EOF
   ipadm create-addr -T static -a local=192.168.1.2/24 net1/v4
   ipadm set-ifprop -p mtu=1450 -m ipv4 net1
   share -F nfs /rpool/dc/ai/media/
-  svcadm enable http:apache24
 
 #-- Setup AI server (aisvr) x86 ------------------------------------------------
   vm net aisvr 0 vxlan ailan
@@ -151,6 +133,7 @@ EOF
   svcadm disable svc:/network/ldap/client
   svcadm disable svc:/network/dns/client
   svcadm disable nis/domain
+  ldapclient uninit
   ( props=`svccfg -s svc:/system/name-service/switch listprop config/\* | nawk '{ if ( $1 != "config/value_authorization" ) print $1; }'` ; for p in $props ; do echo "deleting: $p" ; svccfg -s svc:/system/name-service/switch delprop $p ; done )
   svccfg -s svc:/system/name-service/switch setprop config/default = astring: files
   svcadm refresh svc:/system/name-service/switch
@@ -176,6 +159,8 @@ EOF
   bootadm set-menu -R /etc/netboot/service/default-i386/ console=serial
   bootadm change-entry -R /etc/netboot/service/default-i386/ -i 0 'kargs=-B console=ttya -k'
   ipadm set-ifprop -p mtu=1500 -m ipv4 net0
+  ln -s etc/netboot /tftpboot
+  (cd /tftpboot ; ln -s . tftpboot)
   # TFTP x86-PXE do not wotk with MTU less than 1500
 
   # sparc - service
@@ -183,18 +168,13 @@ EOF
   # NFS on vxlan do not work with MTU = 1500
   # also DHCP boot on sparc require MTU = 1450
   installadm create-service -n s11s -s /net/aisparc/rpool/dc/ai/media/Oracle_Solaris_AI_SPARC.iso -d /ai/s11s
-  ln -s etc/netboot /tftpboot
-  (cd /tftpboot ; ln -s . tftpboot)
+  installadm create-manifest -n s11s -f /net/aisparc/rpool/dc/ai/media/ai_sparc.xml -c cpu=sparc
 
-  # now create nbb (net-boot boxes) and use their real MACs
+  # now create net-boot boxes (use real MACs)
   # x86
-  installadm create-client -e 08:00:27:63:55:60 -n s11x
+  installadm create-client -n s11x -e 08:00:27:63:55:60
   # sparc - ldom
-  installadm create-client -e 00:14:4f:fa:7c:bc -n s11s
-  vi /etc/netboot/service/s11s/auto_install/default.xml
-  #  <ai_instance name="default" http_proxy='http://192.168.1.2:3128/'>
-  # set http proxy for IPS
-  # also set publisher to something real
+  installadm create-client -n s11s -e 0:14:4f:f8:4f:98
 
 ### client ###
 # x86
@@ -218,20 +198,67 @@ EOF
   sudo ldm set-var 'auto-boot?=false' ${USER}###_nbb1
   vm start -ok nbb1
   vm console nbb1
-# ~~~# ...send break to ok-prompt
-# dhcp boot
-  boot net:dhcp - install
-# direct wanboot
-  setenv network-boot-arguments host-ip=192.168.1.16,router-ip=192.168.1.1,subnet-mask=255.255.255.0,hostname=nbb,file=http://192.168.1.1:5555/cgi-bin/wanboot-cgi//?CONTENT=bootfile&IP=192.168.1.0&CID=0102C0C0D0D0E0
-  boot net - install
+  boot net:dhcp
+# then continue in manual install  <esc>2 as Enter
+# if hung <Enter>~~~~# ...send break to ok-prompt
 
-# troubleshooting (on aisvr)
+################################################################################
+# troubleshooting
+
+# snoop on aisvr
   snoop ether 02:C0:C0:D0:D0:E0
 # or
   dumpcap -i net0 -f 'ether host 02:C0:C0:D0:D0:E0' -w capfile
   tshark -r capfile > capfile.txt
 # http://192.168.1.1:5555/cgi-bin/wanboot-cgi//?CONTENT=bootfile&IP=192.168.1.0&CID=0102C0C0D0D0E0
 
+# remove leases
+  svcadm disable dhcp/server:ipv4
+  rm /var/db/isc-dhcp/dhcpd?.leases
+  svcadm enable dhcp/server:ipv4
+
+# installadm
+  installadm list -m -n s11s
+  installadm delete-service --autoremove --noprompt s11s
+
+# modify ai_manifest(5)
+  installadm export -n s11s -m orig_default -o ai_sparc.xml
+  # set http proxy for IPS
+  #  <ai_instance name="default" http_proxy='http://192.168.1.2:3128/'>
+  # also set publisher to http://ipkg.cz.oracle.com/solaris11/trunk/
+  # and add a proxy
+  #   <origin name="http://ipkg.cz.oracle.com/solaris11/trunk/"/>
+  #   <cmd_options>--proxy http://192.168.1.2:3128/</cmd_options>
+
+# direct wanboot
+  setenv network-boot-arguments host-ip=192.168.1.16,router-ip=192.168.1.1,subnet-mask=255.255.255.0,hostname=nbb,file=http://192.168.1.1:5555/cgi-bin/wanboot-cgi//?CONTENT=bootfile&IP=192.168.1.0&CID=0102C0C0D0D0E0
+  boot net - install
+
+  setenv network-boot-arguments host-ip=192.168.1.17,router-ip=192.168.1.1,subnet-mask=255.255.255.0,file=http://192.168.1.1:5555/cgi-bin/wanboot-cgi
+  boot net -sv
+
+# We can also use the SPARC distroconst box as a http proxy
+  cat > /etc/apache2/2.4/conf.d/my-proxy.conf  <<EOF
+Listen 192.168.1.2:3128
+LoadModule proxy_module libexec/mod_proxy.so
+LoadModule proxy_connect_module libexec/mod_proxy_connect.so
+LoadModule proxy_ftp_module libexec/mod_proxy_ftp.so
+LoadModule proxy_http_module libexec/mod_proxy_http.so
+<VirtualHost *:3128>
+        ProxyRequests On
+        ProxyVia On
+        CustomLog "/var/apache2/2.4/logs/proxy_log" common
+        <Proxy *>
+                AddDefaultCharset off
+                Order allow,deny
+                Allow from all
+        </Proxy>
+</VirtualHost> 
+EOF
+  svcadm enable http:apache24
+# then use  http_proxy=http://192.168.1.2:3128/
+
+################################################################################
 --- Modify the AI manifest -----------------------------------------------------
 Goal is to set appropriate facets to use nightly components on distro build box
 and also to set reachable pkg-repository,
