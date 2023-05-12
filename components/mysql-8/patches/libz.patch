@@ -1,0 +1,20 @@
+The zlib is added to list of libraries to link as
+
+LIST(APPEND LIBS_TO_LINK ext::zlib)
+
+in libmysql/CMakeLists.txt. Here we loop ever all the libraries forming
+'ext::blah' into "-lblah". libz is called "ext::zlib" and so the expected link
+argument is "-lzlib". But we need "-lz". We could go over every "ext::zlib"
+occurance everywhere changing it to "ext::z". Or we can handle it here.
+
+
+--- mysql-8.0.33/scripts/CMakeLists.txt
++++ mysql-8.0.33/scripts/CMakeLists.txt
+@@ -318,6 +318,7 @@ MACRO(EXTRACT_LINK_LIBRARIES target var)
+       ELSEIF (lib MATCHES "^ext::")
+         STRING(REGEX MATCH "ext::([a-z]+)" MATCH_LIB "${lib}")
+         SET(SYSTEM_LIB ${CMAKE_MATCH_1})
++        STRING(REGEX REPLACE "zlib" "z" SYSTEM_LIB ${SYSTEM_LIB})
+         SET(${var} "${${var}} -l${SYSTEM_LIB} ")
+       ELSEIF (lib MATCHES "^\\-L")
+         # Search directory. Test on FreeBSD: -L/usr/local/lib -lunwind
