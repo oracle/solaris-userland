@@ -30,38 +30,29 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		eog-plugins
-COMPONENT_VERSION=	3.26.7
+COMPONENT_VERSION=	44.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/EyeOfGnome
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2ce6c19e29eb723e2362a8b0d9c396e686d065e17acfc584cc8c2b0949a17b3d
-COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/3.26/$(COMPONENT_ARCHIVE)
+	sha256:db31cbf7bb9652db0a87113e9b51f4df2586763a261b0cbf04327d82cb38b047
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13120
 
-COMPONENT_BAID=		113010
+COMPONENT_BAID=		143448
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+PYTHON_VERSION = 3.11
 
 # Set runpath to find libeog.so library.
 LDFLAGS += -Wl,-R$(USRLIBDIR64)/eog
 
 # Assumes GNU msgfmt is in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
-CONFIGURE_ENV += PYTHON=$(PYTHON.3.11)
+CONFIGURE_ENV += PYTHON=$(PYTHON)
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
-
-CONFIGURE_OPTIONS += --disable-static
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --with-cms
-CONFIGURE_OPTIONS += --with-libexif
-CONFIGURE_OPTIONS += --with-libjpeg
-CONFIGURE_OPTIONS += --with-librsvg
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-x
-CONFIGURE_OPTIONS += --with-xmp
 
 REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += image/library/libjpeg
