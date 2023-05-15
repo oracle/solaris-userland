@@ -8,10 +8,8 @@ IP address of an interface on which Dnsmasq process is listening.
 This patch was developed in-house. Since it is Solaris-specific it is not
 suitable for upstream.
 
-diff --git a/Makefile b/Makefile
-index e4c3f5c..53f224a 100644
---- a/Makefile
-+++ b/Makefile
+--- a/Makefile	2023-02-02 21:24:24.000000000 +0100
++++ b/Makefile	2023-05-12 10:41:49.982977448 +0200
 @@ -19,6 +19,7 @@
  # Variables you may well want to override.
  
@@ -20,7 +18,7 @@ index e4c3f5c..53f224a 100644
  BINDIR        = $(PREFIX)/sbin
  MANDIR        = $(PREFIX)/share/man
  LOCALEDIR     = $(PREFIX)/share/locale
-@@ -43,6 +44,7 @@ XGETTEXT   = xgettext
+@@ -43,6 +44,7 @@
  SRC = src
  PO  = po
  MAN = man
@@ -28,19 +26,19 @@ index e4c3f5c..53f224a 100644
  
  #################################################################
  
-@@ -84,6 +86,8 @@ objs = cache.o rfc1035.o util.o option.o forward.o network.o \
+@@ -86,6 +88,8 @@
         poll.o rrfilter.o edns0.o arp.o crypto.o dump.o ubus.o \
-        metrics.o hash_questions.o
+        metrics.o hash-questions.o domain-match.o nftset.o
  
 +dhcp_release_objs = dhcp_release.o
 +
  hdrs = dnsmasq.h config.h dhcp-protocol.h dhcp6-protocol.h \
         dns-protocol.h radv-protocol.h ip6addr.h metrics.h
  
-@@ -92,11 +96,12 @@ all : $(BUILDDIR)
+@@ -94,11 +98,12 @@
   top="$(top)" \
-  build_cflags="$(version) $(dbus_cflags) $(idn2_cflags) $(idn_cflags) $(ct_cflags) $(lua_cflags) $(nettle_cflags)" \
-  build_libs="$(dbus_libs) $(idn2_libs) $(idn_libs) $(ct_libs) $(lua_libs) $(sunos_libs) $(nettle_libs) $(gmp_libs) $(ubus_libs)" \
+  build_cflags="$(version) $(dbus_cflags) $(idn2_cflags) $(idn_cflags) $(ct_cflags) $(lua_cflags) $(nettle_cflags) $(nft_cflags)" \
+  build_libs="$(dbus_libs) $(idn2_libs) $(idn_libs) $(ct_libs) $(lua_libs) $(sunos_libs) $(nettle_libs) $(gmp_libs) $(ubus_libs) $(nft_libs)" \
 - -f $(top)/Makefile dnsmasq 
 + -f $(top)/Makefile dnsmasq dhcp_release
  
@@ -52,7 +50,7 @@ index e4c3f5c..53f224a 100644
  
  clean : mostly_clean
  	rm -f $(BUILDDIR)/dnsmasq_baseline
-@@ -108,8 +113,10 @@ install : all install-common
+@@ -110,8 +115,10 @@
  install-common :
  	$(INSTALL) -d $(DESTDIR)$(BINDIR)
  	$(INSTALL) -d $(DESTDIR)$(MANDIR)/man8
@@ -63,16 +61,16 @@ index e4c3f5c..53f224a 100644
  
  all-i18n : $(BUILDDIR)
  	@cd $(BUILDDIR) && $(MAKE) \
-@@ -117,7 +124,7 @@ all-i18n : $(BUILDDIR)
+@@ -119,7 +126,7 @@
   i18n=-DLOCALEDIR=\'\"$(LOCALEDIR)\"\' \
-  build_cflags="$(version) $(dbus_cflags) $(idn2_cflags) $(idn_cflags) $(ct_cflags) $(lua_cflags) $(nettle_cflags)" \
-  build_libs="$(dbus_libs) $(idn2_libs) $(idn_libs) $(ct_libs) $(lua_libs) $(sunos_libs) $(nettle_libs) $(gmp_libs) $(ubus_libs)"  \
+  build_cflags="$(version) $(dbus_cflags) $(idn2_cflags) $(idn_cflags) $(ct_cflags) $(lua_cflags) $(nettle_cflags) $(nft_cflags)" \
+  build_libs="$(dbus_libs) $(idn2_libs) $(idn_libs) $(ct_libs) $(lua_libs) $(sunos_libs) $(nettle_libs) $(gmp_libs) $(ubus_libs) $(nft_libs)"  \
 - -f $(top)/Makefile dnsmasq
 + -f $(top)/Makefile dnsmasq dhcp_release
  	for f in `cd $(PO); echo *.po`; do \
- 		cd $(top) && cd $(BUILDDIR) && $(MAKE) top="$(top)" -f $(top)/Makefile $${f%.po}.mo; \
+ 		cd $(top) && cd $(BUILDDIR) && $(MAKE) top="$(top)" -f $(top)/bakefile $${f%.po}.mo; \
  	done
-@@ -160,6 +167,9 @@ $(copts_conf): $(hdrs)
+@@ -162,6 +169,9 @@
  $(objs:.o=.c) $(hdrs):
  	ln -s $(top)/$(SRC)/$@ .
  
@@ -82,7 +80,7 @@ index e4c3f5c..53f224a 100644
  $(objs): $(copts_conf) $(hdrs)
  
  .c.o:
-@@ -168,6 +178,9 @@ $(objs): $(copts_conf) $(hdrs)
+@@ -170,6 +180,9 @@
  dnsmasq : $(objs)
  	$(CC) $(LDFLAGS) -o $@ $(objs) $(build_libs) $(LIBS) 
  

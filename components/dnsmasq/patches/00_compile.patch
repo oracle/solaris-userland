@@ -44,19 +44,6 @@ index e770454..2a22bdd 100644
  void newaddress(time_t now);
  #endif
  
-diff --git a/src/dump.c b/src/dump.c
-index c131953..65c128f 100644
---- a/src/dump.c
-+++ b/src/dump.c
-@@ -148,7 +148,7 @@ void dump_packet(int mask, void *packet, size_t len, union mysockaddr *src, unio
-       ip.ip_v = IPVERSION;
-       ip.ip_hl = sizeof(struct ip) / 4;
-       ip.ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr) + len); 
--      ip.ip_ttl = IPDEFTTL;
-+      ip.ip_ttl = 64;
-       ip.ip_p = IPPROTO_UDP;
-       
-       if (src)
 --- a/src/ip6addr.h	2021-09-08 22:21:22.000000000 +0000
 +++ b/src/ip6addr.h	2021-11-30 07:27:25.197780519 +0000
 @@ -14,8 +14,41 @@
@@ -108,10 +95,21 @@ index c131953..65c128f 100644
 +
 +#endif /* HAVE_SOLARIS_NETWORK */
 --- a/bld/pkg-wrapper	2021-09-08 22:21:22.000000000 +0000
-+++ dnsmasq-2.86/bld/pkg-wrapper	2021-12-03 04:27:45.325925557 +0000
++++ b/bld/pkg-wrapper	2021-12-03 04:27:45.325925557 +0000
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  
  in=`cat`
  
+--- a/src/dump.c	2023-05-11 17:40:27.341715910 +0200
++++ b/src/dump.c	2023-05-11 17:44:17.810574531 +0200
+@@ -20,6 +20,8 @@
+ 
+ #include <netinet/icmp6.h>
+ 
++#define IPDEFTTL 64	/* default ttl, RFC 1122, RFC 1340 */
++
+ static u32 packet_count;
+ static void do_dump_packet(int mask, void *packet, size_t len,
+ 			   union mysockaddr *src, union mysockaddr *dst, int port, int proto);

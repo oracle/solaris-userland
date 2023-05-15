@@ -67,13 +67,11 @@ index befd8a0..4573730 100644
  #endif
  
  static const struct opttab_t {
-diff --git a/src/dnsmasq.c b/src/dnsmasq.c
-index a2e1796..ef85eb2 100644
---- a/src/dnsmasq.c
-+++ b/src/dnsmasq.c
-@@ -60,6 +60,10 @@ int main (int argc, char **argv)
-   struct server *serv;
-   char *netlink_warn;
+--- a/src/dnsmasq.c	2023-02-02 21:24:24.000000000 +0100
++++ dnsmasq-2.89/src/dnsmasq.c	2023-05-12 10:54:02.094077940 +0200
+@@ -66,6 +66,10 @@
+ #else
+   int bind_fallback = 0;
  #endif 
 +#if defined(HAVE_SOLARIS_NETWORK)
 +  int bound_ifindex = -1;
@@ -82,9 +80,20 @@ index a2e1796..ef85eb2 100644
  #if defined(HAVE_DHCP) || defined(HAVE_DHCP6)
    struct dhcp_context *context;
    struct dhcp_relay *relay;
-@@ -365,6 +369,23 @@ int main (int argc, char **argv)
- 	      did_bind = 1;
- 	    }
+@@ -985,6 +989,10 @@
+   if (netlink_warn)
+     my_syslog(LOG_WARNING, netlink_warn);
+ #  endif
++#  ifdef HAVE_SOLARIS_NETWORK
++  if (did_bind)
++    my_syslog(MS_DHCP | LOG_INFO, _("DHCP, sockets bound exclusively to interface index %d"), bound_ifindex);
++#  endif
+ 
+   /* after dhcp_construct_contexts */
+   if (daemon->dhcp || daemon->doing_dhcp6)
+@@ -1103,6 +1111,23 @@
+ 	  if (daemon->pxefd != -1)
+ 	    poll_listen(daemon->pxefd, POLLIN);
  	}
 +#elif defined(HAVE_SOLARIS_NETWORK) && defined(HAVE_DHCP)
 +      bound_ifindex = which_ifindex();
@@ -105,10 +114,10 @@ index a2e1796..ef85eb2 100644
 +	}
  #endif
  
- #if defined(HAVE_LINUX_NETWORK) && defined(HAVE_DHCP6)
-@@ -373,6 +394,12 @@ int main (int argc, char **argv)
- 	  bindtodevice(bound_device, daemon->dhcp6fd);
- 	  did_bind = 1;
+ #ifdef HAVE_DHCP6
+@@ -1212,6 +1237,12 @@
+ 	  poll_resolv(0, daemon->last_resolv != 0, now); 	  
+ 	  daemon->last_resolv = now;
  	}
 +#elif defined(HAVE_SOLARIS_NETWORK) && defined(HAVE_DHCP6)
 +      if (daemon->doing_dhcp6 && !daemon->relay6 && bound_ifindex >= 0)
@@ -117,29 +126,16 @@ index a2e1796..ef85eb2 100644
 +	  did_bind = 1;
 +	}
  #endif
-     }
-   else 
-@@ -950,6 +977,9 @@ int main (int argc, char **argv)
  
-   if (netlink_warn)
-     my_syslog(LOG_WARNING, netlink_warn);
-+#  elif defined(HAVE_SOLARIS_NETWORK)
-+  if (did_bind)
-+    my_syslog(MS_DHCP | LOG_INFO, _("DHCP, sockets bound exclusively to interface index %d"), bound_ifindex);
- #  endif
- 
-   /* after dhcp_construct_contexts */
-diff --git a/src/dnsmasq.h b/src/dnsmasq.h
-index 2a22bdd..897dcf5 100644
---- a/src/dnsmasq.h
-+++ b/src/dnsmasq.h
-@@ -1597,6 +1597,9 @@ int config_has_mac(struct dhcp_config *config, unsigned char *hwaddr, int len, i
- #ifdef HAVE_LINUX_NETWORK
- char *whichdevice(void);
- void bindtodevice(char *device, int fd);
-+#elif defined(HAVE_SOLARIS_NETWORK)
+       if (poll_check(piperead, POLLIN))
+--- a/src/dnsmasq.h	2023-02-02 21:24:24.000000000 +0100
++++ dnsmasq-2.89/src/dnsmasq.h	2023-05-12 11:04:20.988219658 +0200
+@@ -153,6 +153,8 @@
+ #include <sys/prctl.h>
+ #elif defined(HAVE_SOLARIS_NETWORK)
+ #include <priv.h>
 +int which_ifindex(void);
 +void bindtoif(int ifindex, int fd, int is_dhcp6);
  #endif
- #  ifdef HAVE_DHCP6
- void display_opts6(void);
+ 
+ /* Backwards compat with 2.83 */
