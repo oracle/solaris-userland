@@ -20,31 +20,28 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
-# 32-bit is preferred until sufficient testing can be done.
 BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 PATH=$(dir $(CC)):$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		unixODBC
-COMPONENT_VERSION=	2.3.9
+COMPONENT_VERSION=	2.3.11
 COMPONENT_PROJECT_URL=	http://www.unixodbc.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:52833eac3d681c8b0c9a5a65f2ebd745b3a964f208fc748f977e44015a31b207
+    sha256:d9e55c8e7118347e3c66c87338856dad1516b490fb7c756c1562a2c267c73b5c
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	library/unixodbc
 COMPONENT_ANITYA_ID=	7344
 
-COMPONENT_BAID=		101826
+COMPONENT_BAID=		142158
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
-PATCH_LEVEL = 0
-
-COMPONENT_POST_UNPACK_ACTION += (cd $(@D); autoreconf -fiv)
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 
 # Enable C99 mode + -Xc for its additional warnings.
 studio_C99MODE = -Xc $(studio_C99_ENABLE)
@@ -81,7 +78,7 @@ CONFIGURE_OPTIONS  +=	--disable-gnuthreads
 CONFIGURE_OPTIONS  +=	--enable-readline
 CONFIGURE_OPTIONS  +=	--enable-inicaching
 CONFIGURE_OPTIONS  +=	--enable-drivers=yes
-CONFIGURE_OPTIONS  +=	--enable-driver-conf=yes
+CONFIGURE_OPTIONS  +=	--enable-driver-config=yes
 CONFIGURE_OPTIONS  +=	--enable-fdb
 CONFIGURE_OPTIONS  +=	--enable-odbctrace
 CONFIGURE_OPTIONS  +=	--enable-iconv
@@ -100,19 +97,28 @@ CONFIGURE_ENV  +=   INSTALL="$(INSTALL)"
 
 COMPONENT_POST_INSTALL_ACTION.32 += \
 	($(MKDIR) $(PROTOPKGCONFIGDIR); \
-	$(GSED) -e 's|SED_SIZEOF_LONG|4|g' \
+	$(GSED) -e 's|SED_SIZEOF_LONG|4|g' -e 's|SED_VERSION|$(COMPONENT_VERSION)|g' \
 	    $(COMPONENT_DIR)/Solaris/unixODBC.pc > \
 	    $(PROTOPKGCONFIGDIR)/unixODBC.pc);
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
 	($(MKDIR) $(PROTOPKGCONFIGDIR64); \
-	$(GSED) -e 's|SED_SIZEOF_LONG|8|g' \
+	$(GSED) -e 's|SED_SIZEOF_LONG|8|g' -e 's|SED_VERSION|$(COMPONENT_VERSION)|g' \
 	    $(COMPONENT_DIR)/Solaris/unixODBC.pc > \
 	    $(COMPONENT_DIR)/unixODBC.pc.1; \
 	$(GSED) -e 's|/lib|/lib/$(MACH64)|g' \
 	    $(COMPONENT_DIR)/unixODBC.pc.1 > \
 	    $(PROTOPKGCONFIGDIR64)/unixODBC.pc; \
 	$(RM) -f $(COMPONENT_DIR)/unixODBC.pc.1);
+
+COMPONENT_POST_INSTALL_ACTION.64 += ( \
+	diff -D _LP64 $(BUILD_DIR_32)/unixodbc.h \
+   	  $(BUILD_DIR_64)/unixodbc.h > $(PROTOUSRINCDIR)/odbc/unixodbc.h; \
+	diff -D _LP64 $(BUILD_DIR_32)/config.h \
+   	  $(BUILD_DIR_64)/config.h > $(PROTOUSRINCDIR)/odbc/unixODBC/config.h ; \
+	diff -D _LP64 $(BUILD_DIR_32)/unixodbc_conf.h \
+   	  $(BUILD_DIR_64)/unixodbc_conf.h > $(PROTOUSRINCDIR)/odbc/unixODBC/unixodbc_conf.h ; \
+	true );
 
 REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/readline

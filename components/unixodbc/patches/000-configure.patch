@@ -1,97 +1,45 @@
-Changes to the configure program from a previous engineer.
+We seem to historically prefer pthreads instead of native threads.
 
-Further work (including patching against configure.ac instead of configure)
-needs to be done to determine if they are really essential and if they need
-to be sent upstream.
+https://github.com/lurcher/unixODBC/commit/7d72255824cb96599e71d19fbbc94405db658274#r108478182
 
-diff -r aa432d5e40c9 configure
---- configure	Tue Jan 25 15:15:15 2022 +0000
-+++ configure	Tue Jan 25 15:33:54 2022 +0000
-@@ -936,7 +936,7 @@
- datadir='${datarootdir}'
- sysconfdir='${prefix}/etc'
- sharedstatedir='${prefix}/com'
--localstatedir='${prefix}/var'
-+localstatedir='/var'
- runstatedir='${localstatedir}/run'
- includedir='${prefix}/include'
- oldincludedir='/usr/include'
-@@ -17759,6 +17759,7 @@
- int
- main (void)
- {
-+#error "We want to use libpthread and not libthread."
- mutex_lock()
-   ;
-   return 0;
-@@ -17850,7 +17851,7 @@
- if test -z "`${CC-cc} -pthread -c conftest.c 2>&1`"; then
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
- printf "%s\n" "yes" >&6; }
--  CFLAGS="$CFLAGS -pthread"
-+  CFLAGS="$CFLAGS"
- else
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
- printf "%s\n" "no" >&6; }
-@@ -17924,7 +17925,7 @@
- if test -z "`${CC-cc} -pthread -c conftest.c 2>&1`"; then
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
- printf "%s\n" "yes" >&6; }
--  CFLAGS="$CFLAGS -pthread"
-+  CFLAGS="$CFLAGS"
- else
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
- printf "%s\n" "no" >&6; }
-@@ -17962,7 +17963,7 @@
- if test -z "`${CC-cc} -pthread -c conftest.c 2>&1`"; then
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
- printf "%s\n" "yes" >&6; }
--  CFLAGS="$CFLAGS -pthread"
-+  CFLAGS="$CFLAGS"
- else
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
- printf "%s\n" "no" >&6; }
-@@ -18003,7 +18004,7 @@
+Historically we were suggesting -lsocket -lnsl -lgen -z ignore for our users.
+
+--- unixODBC-2.3.11/DriverManager/odbc.pc.in
++++ unixODBC-2.3.11/DriverManager/odbc.pc.in
+@@ -17,4 +17,4 @@ URL: http://unixodbc.org
+ Version: @PACKAGE_VERSION@
+ Cflags: -I${includedir}
+ Libs: -L${libdir} -lodbc
+-Libs.private: @LIBLTDL@ @LIBS@
++Libs.private: @LIBLTDL@ @LIBS@ -lsocket -lnsl -lgen -z ignore
+--- unixODBC-2.3.11/configure.ac
++++ unixODBC-2.3.11/configure.ac
+@@ -394,9 +394,9 @@ AC_DEFINE([HAVE_LIBPTH], [1], [Use the -
+   else
+     gotthread="no";
  
-           printf "%s\n" "#define HAVE_LIBPTHREAD 1" >>confdefs.h
+-	AC_MSG_CHECKING( if os is AIX )
++	AC_MSG_CHECKING( if $host_os os is AIX or Solaris )
+ 	case $host_os in
+-    	"aix"*)
++    	"aix"|"solaris"*)
+ 			raw_threads="no";
+ 			AC_MSG_RESULT( yes - disable check for libthread );
+     	;;
+@@ -508,7 +508,7 @@ ;;
+ esac
  
--          THREADLIB="-pthread -lc_r"
-+          THREADLIB="-lpthread -lposix4"
-           gotthread="yes";
- 
- else
-@@ -18016,7 +18017,7 @@
- 
-         if test "x$gotthread" = "xno"; then
-       SAVECFLAGS="$CFLAGS"
--      CFLAGS="$CFLAGS -D_THREAD_SAFE -D_ALL_SOURCE -D_LONG_LONG"
-+      CFLAGS="$CFLAGS -D_REENTRANT -D_THREAD_SAFE -D_ALL_SOURCE -D_LONG_LONG"
-       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for pthread_mutex_lock in -lpthread" >&5
- printf %s "checking for pthread_mutex_lock in -lpthread... " >&6; }
- ac_save_LIBS="$LIBS"
-@@ -18218,6 +18219,8 @@
- 
+ if test "x$stats" = "xtrue"; then
+-  AC_CHECK_FUNCS( ftok semget shmget semop [],[stats=false])
++  AC_CHECK_FUNCS( ftok semget shmget semop,[],[stats=false])
  fi
  
-+export drivers="true"
-+export driverc="true"
- 
- # Check whether --with-msql-lib was given.
- if test ${with_msql_lib+y}
-@@ -18502,6 +18505,7 @@
-   QNX_FALSE=
- fi
- 
-+export use_builtin_libtool="no"
-  if test "x$use_builtin_libtool" = "xyes" ; then
-   WITHLT_TRUE=
-   WITHLT_FALSE='#'
-@@ -19034,6 +19038,8 @@
- fi
- 
- fi
-+export LIBS="${LIBS} -lsocket -lnsl -lgen -z ignore"
-+export LD_OPTIONS="-lsocket -lnsl -lgen -z ignore"
- ac_fn_c_check_func "$LINENO" "putenv" "ac_cv_func_putenv"
- if test "x$ac_cv_func_putenv" = xyes
- then :
+ if test "x$stats" = "xtrue"; then
+--- unixODBC-2.3.11/odbcinst/odbcinst.pc.in
++++ unixODBC-2.3.11/odbcinst/odbcinst.pc.in
+@@ -9,4 +9,4 @@ URL: http://unixodbc.org
+ Version: @PACKAGE_VERSION@
+ Cflags: -I${includedir}
+ Libs: -L${libdir} -lodbcinst
+-Libs.private: @LIBLTDL@ @LIBS@
++Libs.private: @LIBLTDL@ @LIBS@ -lsocket -lnsl -lgen -z ignore
