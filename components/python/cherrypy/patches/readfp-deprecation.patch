@@ -1,0 +1,20 @@
+From d2bc527c12a74675d67ba5fbf9de0d014af929cb Mon Sep 17 00:00:00 2001
+From: Dan Radez <dradez@redhat.com>
+Date: Tue, 12 Apr 2022 09:40:46 -0400
+Subject: [PATCH] Replace readfp with read_file
+
+Getting Deprecation Warning in python 3.11:
+DeprecationWarning: This method will be removed in Python 3.12.
+Use 'parser.read_file()' instead.
+
+--- a/cherrypy/lib/reprconf.py
++++ b/cherrypy/lib/reprconf.py
+@@ -188,7 +188,7 @@ def as_dict(self, raw=False, vars=None):
+ 
+     def dict_from_file(self, file):
+         if hasattr(file, 'read'):
+-            self.readfp(file)
++            self.read_file(file)
+         else:
+             self.read(file)
+         return self.as_dict()

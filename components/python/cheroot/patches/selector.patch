@@ -1,0 +1,17 @@
+DevpollSelector used on Solaris by default doesn't work correctly
+and needs to be replaced with a different one.
+
+More info on the investigation here:
+https://github.com/cherrypy/cheroot/issues/561
+
+--- cheroot-9.0.0/cheroot/connections.py
++++ cheroot-9.0.0/cheroot/connections.py
+@@ -66,7 +66,7 @@ class _ThreadsafeSelector:
+     """
+ 
+     def __init__(self):
+-        self._selector = selectors.DefaultSelector()
++        self._selector = selectors.PollSelector()
+         self._lock = threading.Lock()
+ 
+     def __len__(self):

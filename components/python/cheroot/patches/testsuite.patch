@@ -1,0 +1,164 @@
+Solaris specific patch, not suitable for upstream.
+
+The pytest.ini changes are required as some of the
+default options are not available in Solaris.
+
+Additionally, a lot of test related packages are not available on Solaris
+and are either patched out or corresponding tests skipped. Those are
+'jaraco.context', 'jaraco.text', 'pypytools', 'pytest-forked' 'pytest-mocker',
+'requests_toolbelt', 'requests_unixsocket' and 'trustme'.
+
+--- cheroot-9.0.0/pytest.ini
++++ cheroot-9.0.0/pytest.ini
+@@ -1,8 +1,5 @@
+ [pytest]
+ addopts =
+-  # `pytest-xdist`:
+-  --numprocesses=auto
+-
+   # Show 10 slowest invocations:
+   --durations=10
+ 
+@@ -21,11 +18,6 @@ addopts =
+   # Dump the test results in junit format:
+   --junitxml=.test-results/pytest/test.xml
+ 
+-  # `pytest-cov`:
+-  --cov=cheroot
+-  --cov-report term-missing:skip-covered
+-  --cov-report xml:.test-results/pytest/cov.xml
+-
+   # pre-load an in-tree plugin
+   -p cheroot.test._pytest_plugin
+ 
+--- cheroot-9.0.0/cheroot/test/test_wsgi.py
++++ cheroot-9.0.0/cheroot/test/test_wsgi.py
+@@ -6,8 +6,6 @@ from traceback import print_tb
+ import pytest
+ import portend
+ import requests
+-from requests_toolbelt.sessions import BaseUrlSession as Session
+-from jaraco.context import ExceptionTrap
+ 
+ from cheroot import wsgi
+ from cheroot._compat import IS_MACOS, IS_WINDOWS
+@@ -37,7 +35,7 @@ def simple_wsgi_server():
+         yield locals()
+ 
+ 
+-@pytest.mark.flaky(reruns=3, reruns_delay=2)
++@pytest.mark.skip(reason="requests-toolbelt and jaraco.context is not available on Solaris")
+ def test_connection_keepalive(simple_wsgi_server):
+     """Test the connection keepalive works (duh)."""
+     session = Session(base_url=simple_wsgi_server['url'])
+--- cheroot-9.0.0/cheroot/test/test_ssl.py
++++ cheroot-9.0.0/cheroot/test/test_ssl.py
+@@ -14,7 +14,6 @@ import http.client
+ import OpenSSL.SSL
+ import pytest
+ import requests
+-import trustme
+ 
+ from .._compat import bton, ntob, ntou
+ from .._compat import IS_ABOVE_OPENSSL10, IS_CI, IS_PYPY
+@@ -128,7 +127,7 @@ def tls_http_server(request):
+ @pytest.fixture
+ def ca():
+     """Provide a certificate authority via fixture."""
+-    return trustme.CA()
++    pytest.skip("trustme is not available on Solaris")
+ 
+ 
+ @pytest.fixture
+@@ -629,7 +628,6 @@ def test_https_over_http_error(http_serv
+         pytest.param(ANY_INTERFACE_IPV6, marks=missing_ipv6),
+     ),
+ )
+-@pytest.mark.flaky(reruns=3, reruns_delay=2)
+ def test_http_over_https_error(
+     http_request_timeout,
+     tls_http_server, adapter_type,
+--- cheroot-9.0.0/cheroot/test/test_conn.py
++++ cheroot-9.0.0/cheroot/test/test_conn.py
+@@ -10,7 +10,6 @@ import http.client
+ import urllib.request
+ 
+ import pytest
+-from jaraco.text import trim, unwrap
+ 
+ from cheroot.test import helper, webtest
+ from cheroot._compat import IS_CI, IS_MACOS, IS_PYPY, IS_WINDOWS
+@@ -1036,13 +1035,11 @@ def test_No_Message_Body(test_client):
+ 
+ 
+ @pytest.mark.xfail(
+-    reason=unwrap(
+-        trim("""
++    reason="""
+         Headers from earlier request leak into the request
+         line for a subsequent request, resulting in 400
+         instead of 413. See cherrypy/cheroot#69 for details.
+-        """),
+-    ),
++        """
+ )
+ def test_Chunked_Encoding(test_client):
+     """Test HTTP uploads with chunked transfer-encoding."""
+--- cheroot-9.0.0/cheroot/test/conftest.py
++++ cheroot-9.0.0/cheroot/test/conftest.py
+@@ -81,3 +81,8 @@ def make_http_server(bind_addr):
+         time.sleep(0.1)
+ 
+     return httpserver
++
++
++@pytest.fixture
++def mocker():
++    pytest.skip("pytest-mocker is not available on Solaris")
+--- cheroot-9.0.0/cheroot/test/test_server.py
++++ cheroot-9.0.0/cheroot/test/test_server.py
+@@ -10,9 +10,6 @@ import urllib.parse  # noqa: WPS301
+ 
+ import pytest
+ import requests
+-import requests_unixsocket
+-
+-from pypytools.gc.custom import DefaultGc
+ 
+ from .._compat import bton, ntob
+ from .._compat import IS_LINUX, IS_MACOS, IS_WINDOWS, SYS_PLATFORM
+@@ -252,6 +249,7 @@ def peercreds_enabled_server(http_server
+     return httpserver
+ 
+ 
++@pytest.mark.skip(reason="requests_unixsocket is not available on Solaris")
+ @unix_only_sock_test
+ @non_macos_sock_test
+ def test_peercreds_unix_sock(http_request_timeout, peercreds_enabled_server):
+@@ -284,6 +282,7 @@ def test_peercreds_unix_sock(http_reques
+         assert peercreds_text_resp.status_code == 500
+ 
+ 
++@pytest.mark.skip(reason="requests_unixsocket is not available on Solaris")
+ @pytest.mark.skipif(
+     not IS_UID_GID_RESOLVABLE,
+     reason='Modules `grp` and `pwd` are not available '
+@@ -373,17 +372,10 @@ def test_high_number_of_file_descriptors
+ ISSUE511 = IS_MACOS
+ 
+ 
+-if not IS_WINDOWS and not ISSUE511:
+-    test_high_number_of_file_descriptors = pytest.mark.forked(
+-        test_high_number_of_file_descriptors,
+-    )
+-
+-
+ @pytest.fixture
+ def _garbage_bin():
+     """Disable garbage collection when this fixture is in use."""
+-    with DefaultGc().nogc():
+-        yield
++    pytest.skip("pypytools is not available on Solaris")
+ 
+ 
+ @pytest.fixture

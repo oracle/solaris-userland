@@ -26,20 +26,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cheroot
-COMPONENT_VERSION=	6.3.2
+COMPONENT_VERSION=	9.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:52f915d077ce6201e59c95c4a2ef89617d9b90e6185defb40c03ff3515d2066f
+	sha256:3d47ad9ee19ecbec144b4758399036692fdbf67a40b96eef1fb1454367b3d338
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/cherrypy/cheroot
 COMPONENT_BUGDB=	python-mod/cheroot
 COMPONENT_ANITYA_ID=	20163
-
-COMPONENT_BAID=		52313
+COMPONENT_BAID=		142887
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_POST_INSTALL_ACTION = \
@@ -58,10 +57,11 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/more_itertools-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
+REQUIRED_PACKAGES += library/python/importlib-metadata-37
 
 # Setup related components
 REQUIRED_PACKAGES += library/python/setuptools_scm

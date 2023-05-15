@@ -1,0 +1,57 @@
+zc.lockfile is not available on Solaris. However, we do ship
+filelock - a similar package with the same functionality.
+
+Not intended for upstream.
+
+--- CherryPy-18.8.0/setup.py
++++ CherryPy-18.8.0/setup.py
+@@ -61,7 +61,7 @@ params = dict(
+         'cheroot>=8.2.1',
+         'portend>=2.1.1',
+         'more_itertools',
+-        'zc.lockfile',
++        'filelock',
+     ],
+     extras_require={
+         'docs': [
+--- CherryPy-18.8.0/cherrypy/lib/sessions.py
++++ CherryPy-18.8.0/cherrypy/lib/sessions.py
+@@ -108,7 +108,7 @@ import threading
+ import binascii
+ import pickle
+ 
+-import zc.lockfile
++import filelock
+ 
+ import cherrypy
+ from cherrypy.lib import httputil
+@@ -544,21 +544,20 @@ class FileSession(Session):
+         if path is None:
+             path = self._get_file_path()
+         path += self.LOCK_SUFFIX
+-        checker = locking.LockChecker(self.id, self.lock_timeout)
+-        while not checker.expired():
+-            try:
+-                self.lock = zc.lockfile.LockFile(path)
+-            except zc.lockfile.LockError:
+-                time.sleep(0.1)
+-            else:
+-                break
++
++        self.lock = filelock.FileLock(path)
++        try:
++            self.lock.acquire(timeout=self.lock_timeout, poll_interval=0.1)
++        except filelock.Timeout:
++            raise locking.LockTimeout(
++                'Timeout acquiring lock for %(id)s' % self.id) from None
+         self.locked = True
+         if self.debug:
+             cherrypy.log('Lock acquired.', 'TOOLS.SESSIONS')
+ 
+     def release_lock(self, path=None):
+         """Release the lock on the currently-loaded session data."""
+-        self.lock.close()
++        self.lock.release()
+         self.locked = False
+ 
+     def clean_up(self):

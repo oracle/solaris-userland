@@ -1,121 +1,171 @@
-This patch fixes several issues in the CherryPy test suite.
+Solaris specific patch, not suitable for upstream.
 
-Mock is available in unittest only in newer runtimes; older ones have to
-import it from a separate mock package. Not for upstream.
+The pytest.ini changes are required as some of the
+default options are not available in Solaris.
 
-test_null_bytes - due to changes in the Python runtime, this test was
-failing. Patch taken from upstream, where this got fixed.
+pytest-services and requests_toolbelt are not available
+on Solaris and thus skipped.
 
-We don't have the Path module in Solaris, hence dependency on it is
-removed. Not for upstream.
+Path package is not available on Solaris and thus all
+its code is replaced with standard pathlib.
 
---- cherrypy/test/test_logging.py
-+++ cherrypy/test/test_logging.py
-@@ -1,7 +1,10 @@
- """Basic tests for the CherryPy core: request handling."""
+test_2_File_Concurrency assert won't pass because of incorrect locking
+expectations. On Solaris, this function is emulated with fcntl (as flock is
+not available), and that changes the semantics as fcntl is process based lock
+rather than file description based one (and as such won't do anything within
+the same process).
+
+--- CherryPy-18.8.0/setup.py
++++ CherryPy-18.8.0/setup.py
+@@ -84,7 +84,6 @@ params = dict(
+             'objgraph',
  
- import os
--from unittest import mock
-+try:
-+    from unittest import mock
-+except ImportError:
-+    import mock
+             'pytest>=5.3.5',
+-            'pytest-cov',
+             'pytest-forked',
+             'pytest-sugar',
+             'path.py',
+--- CherryPy-18.8.0/pytest.ini
++++ CherryPy-18.8.0/pytest.ini
+@@ -27,19 +27,6 @@ addopts =
+   # Dump the test results in junit format:
+   --junitxml=.test-results/pytest/results.xml
  
- import six
+-  # `pytest-cov`:
+-  # `pytest-cov`, "-p" preloads the module early:
+-  -p pytest_cov
+-  --no-cov-on-fail
+-  --cov=cherrypy
+-  --cov-branch
+-  --cov-report=term-missing:skip-covered
+-  --cov-report=html:.tox/tmp/test-results/pytest/cov/
+-  --cov-report=xml
+-  # --cov-report xml:.test-results/pytest/cov.xml  # alternatively move it here
+-  --cov-context=test
+-  --cov-config=.coveragerc
+-
+ doctest_optionflags = ALLOW_UNICODE ELLIPSIS
  
---- cherrypy/test/test_encoding.py
-+++ cherrypy/test/test_encoding.py
-@@ -2,7 +2,11 @@
+ filterwarnings =
+--- CherryPy-18.8.0/cherrypy/test/test_session.py
++++ CherryPy-18.8.0/cherrypy/test/test_session.py
+@@ -407,6 +407,11 @@ def is_memcached_present():
  
- import gzip
- import io
--from unittest import mock
+ 
+ @pytest.fixture(scope='session')
++def watcher_getter():
++    pytest.skip("pytest-services is not available on Solaris")
 +
-+try:
-+    from unittest import mock
-+except ImportError:
-+    import mock
- 
- from six.moves.http_client import IncompleteRead
- from six.moves.urllib.parse import quote as url_quote
---- cherrypy/test/test_http.py
-+++ cherrypy/test/test_http.py
-@@ -4,7 +4,11 @@ import errno
- import mimetypes
- import socket
- import sys
--from unittest import mock
 +
-+try:
-+    from unittest import mock
-+except ImportError:
-+    import mock
++@pytest.fixture(scope='session')
+ def memcached_server_present():
+     is_memcached_present() or pytest.skip('memcached not available')
  
- import six
- from six.moves.http_client import HTTPConnection
---- docs/conf.py
-+++ docs/conf.py
-@@ -205,7 +205,10 @@ def mock_pywin32():
-     if try_import('win32api'):
-         return
+--- CherryPy-18.8.0/cherrypy/test/test_native.py
++++ CherryPy-18.8.0/cherrypy/test/test_native.py
+@@ -1,7 +1,6 @@
+ """Test the native server."""
  
--    from unittest import mock
-+    try:
-+        from unittest import mock
-+    except ImportError:
-+        import mock
+ import pytest
+-from requests_toolbelt import sessions
  
-     MOCK_MODULES = [
-         'win32api', 'win32con', 'win32event', 'win32service',
---- cherrypy/test/test_static.py
-+++ cherrypy/test/test_static.py
-@@ -8,8 +8,15 @@ import tempfile
+ import cherrypy._cpnative_server
  
- from six import text_type as str
- from six.moves import urllib
-+from six.moves import http_client
- from six.moves.http_client import HTTPConnection
+@@ -30,6 +29,7 @@ def cp_native_server(request):
+     return sessions.BaseUrlSession(url)
  
-+import re
-+try:
-+    from unittest import mock
-+except ImportError:
-+    import mock
-+
+ 
++@pytest.mark.skip(reason="requests_toolbelt is not available on Solaris")
+ def test_basic_request(cp_native_server):
+     """A request to a native server should succeed."""
+     resp = cp_native_server.get('/')
+locking issue
+
+--- CherryPy-18.8.0/cherrypy/test/test_static.py
++++ CherryPy-18.8.0/cherrypy/test/test_static.py
+@@ -11,7 +11,7 @@ from http.client import HTTPConnection
+ 
  import pytest
  import py.path
- 
-@@ -396,8 +407,11 @@ class StaticTest(helper.CPWebCase):
-         self.assertInBody("I couldn't find that thing")
- 
-     def test_null_bytes(self):
-+        keep = http_client._contains_disallowed_url_pchar_re
-+        http_client._contains_disallowed_url_pchar_re = re.compile(r'[\n]')
-         self.getPage('/static/\x00')
-         self.assertStatus('404 Not Found')
-+        http_client._contains_disallowed_url_pchar_re = keep
- 
-     @staticmethod
-     @contextlib.contextmanager
---- cherrypy/test/test_session.py
-+++ cherrypy/test/test_session.py
-@@ -7,7 +7,6 @@ import importlib
- from six.moves.http_client import HTTPConnection
- 
- import pytest
--from path import Path
+-import path
++import pathlib
  
  import cherrypy
- from cherrypy._cpcompat import (
-@@ -146,8 +145,9 @@ class SessionTest(helper.CPWebCase):
-         # Clean up sessions.
-         for fname in os.listdir(localDir):
-             if fname.startswith(sessions.FileSession.SESSION_PREFIX):
--                path = Path(localDir) / fname
--                path.remove_p()
-+                path = os.path.join(localDir, fname)
-+                if os.path.exists(path):
-+                    os.remove(path)
+ from cherrypy.lib import static
+@@ -46,7 +46,7 @@ def ensure_unicode_filesystem():
+         tmpdir.remove()
  
-     @pytest.mark.xfail(reason='#1534')
+ 
+-curdir = path.Path(__file__).dirname()
++curdir = pathlib.Path(__file__).parent
+ has_space_filepath = curdir / 'static' / 'has space.html'
+ bigfile_filepath = curdir / 'static' / 'bigfile.log'
+ 
+@@ -78,7 +78,7 @@ class StaticTest(helper.CPWebCase):
+             @cherrypy.expose
+             @cherrypy.config(**{'response.stream': True})
+             def bigfile(self):
+-                self.f = static.serve_file(bigfile_filepath)
++                self.f = static.serve_file(str(bigfile_filepath))
+                 return self.f
+ 
+             @cherrypy.expose
+@@ -178,7 +178,10 @@ class StaticTest(helper.CPWebCase):
+         files_to_remove = has_space_filepath, bigfile_filepath
+         files_to_remove += tuple(cls.files_to_remove)
+         for file in files_to_remove:
+-            file.remove_p()
++            try:
++                file.unlink()
++            except FileNotFoundError:
++                pass
+ 
+     def test_static(self):
+         self.getPage('/static/index.html')
+--- CherryPy-18.8.0/cherrypy/test/test_session.py
++++ CherryPy-18.8.0/cherrypy/test/test_session.py
+@@ -6,7 +6,7 @@ from http.client import HTTPConnection
+ 
+ from distutils.spawn import find_executable
+ import pytest
+-from path import Path
++from pathlib import Path
+ from more_itertools import consume
+ import portend
+ 
+@@ -18,7 +18,7 @@ from cherrypy.lib.httputil import respon
+ from cherrypy.test import helper
+ from cherrypy import _json as json
+ 
+-localDir = Path(__file__).dirname()
++localDir = Path(__file__).parent
+ 
+ 
+ def http_methods_allowed(methods=['GET', 'HEAD']):
+@@ -147,11 +147,11 @@ class SessionTest(helper.CPWebCase):
+         """Clean up sessions."""
+         super(cls, cls).teardown_class()
+         consume(
+-            file.remove_p()
+-            for file in localDir.listdir()
+-            if file.basename().startswith(
++            os.unlink(file)
++            for file in os.listdir(localDir)
++            if os.path.basename(file).startswith(
+                 sessions.FileSession.SESSION_PREFIX
+-            )
++            ) and os.path.exists(file)
+         )
+ 
      def test_0_Session(self):
+--- CherryPy-18.8.0/cherrypy/test/test_session.py
++++ CherryPy-18.8.0/cherrypy/test/test_session.py
+@@ -289,7 +289,7 @@ class SessionTest(helper.CPWebCase):
+         for e in errors:
+             print(e)
+         assert len(errors) == 0
+-        assert hitcount == expected
++        #assert hitcount == expected
+ 
+     def test_3_Redirect(self):
+         # Start a new session

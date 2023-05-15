@@ -20,29 +20,24 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 PATH=/usr/bin:/usr/gnu/bin:/usr/sbin
 
 COMPONENT_NAME=		CherryPy
-COMPONENT_VERSION=	15.0.0
+COMPONENT_VERSION=	18.8.0
 COMPONENT_PROJECT_URL=	http://www.cherrypy.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7404638da9cf8c6be672505168ccb63e16d33cb3aa16a02ec30a44641f7546af
+    sha256:b8cdc87a37c728ef8670c84bb1a2e6a5e0296e70921aab6c73acea81478e2257
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/cherrypy
 COMPONENT_ANITYA_ID=	3799
+COMPONENT_BAID=		142916
 
-COMPONENT_BAID=		49591
-
-PATCH_LEVEL=0
-
-# CherryPy isn't compatible with Python 3.11 yet.
-PYTHON_VERSIONS = 3.7 3.9
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -79,8 +74,9 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cheroot-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/filelock-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/more_itertools-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/portend-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
 
 # Setup related components
 REQUIRED_PACKAGES += library/python/setuptools_scm
