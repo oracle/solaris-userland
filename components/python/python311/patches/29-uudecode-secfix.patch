@@ -1,0 +1,72 @@
+From 15d98b4b10bf8768a9968fa0b908b6d1c3a461fc Mon Sep 17 00:00:00 2001
+From: Sam Carroll <70000253+samcarroll42@users.noreply.github.com>
+Date: Tue, 9 May 2023 12:01:58 -0400
+Subject: [PATCH] gh-99889: Fix directory traversal security flaw in
+ uu.decode() (GH-104096)
+
+* Fix directory traversal security flaw in uu.decode()
+* also check absolute paths and os.altsep
+* Add a regression test.
+
+---------
+
+(cherry picked from commit 0aeda297931820436a50b78f4f7f0597274b5df4)
+
+Co-authored-by: Sam Carroll <70000253+samcarroll42@users.noreply.github.com>
+Co-authored-by: Gregory P. Smith <greg@krypto.org> [Google]
+
+--- Python-3.11.2/Lib/test/test_uu.py
++++ Python-3.11.2/Lib/test/test_uu.py
+@@ -147,6 +147,34 @@ class UUTest(unittest.TestCase):
+         uu.encode(inp, out, filename)
+         self.assertIn(safefilename, out.getvalue())
+ 
++    def test_no_directory_traversal(self):
++        relative_bad = b"""\
++begin 644 ../../../../../../../../tmp/test1
++$86)C"@``
++`
++end
++"""
++        with self.assertRaisesRegex(uu.Error, 'directory'):
++            uu.decode(io.BytesIO(relative_bad))
++        if os.altsep:
++            relative_bad_bs = relative_bad.replace(b'/', b'\\')
++            with self.assertRaisesRegex(uu.Error, 'directory'):
++                uu.decode(io.BytesIO(relative_bad_bs))
++
++        absolute_bad = b"""\
++begin 644 /tmp/test2
++$86)C"@``
++`
++end
++"""
++        with self.assertRaisesRegex(uu.Error, 'directory'):
++            uu.decode(io.BytesIO(absolute_bad))
++        if os.altsep:
++            absolute_bad_bs = absolute_bad.replace(b'/', b'\\')
++            with self.assertRaisesRegex(uu.Error, 'directory'):
++                uu.decode(io.BytesIO(absolute_bad_bs))
++
++
+ class UUStdIOTest(unittest.TestCase):
+ 
+     def setUp(self):
+--- Python-3.11.2/Lib/uu.py
++++ Python-3.11.2/Lib/uu.py
+@@ -133,7 +133,14 @@ def decode(in_file, out_file=None, mode=
+             # If the filename isn't ASCII, what's up with that?!?
+             out_file = hdrfields[2].rstrip(b' \t\r\n\f').decode("ascii")
+             if os.path.exists(out_file):
+-                raise Error('Cannot overwrite existing file: %s' % out_file)
++                raise Error(f'Cannot overwrite existing file: {out_file}')
++            if (out_file.startswith(os.sep) or
++                f'..{os.sep}' in out_file or (
++                    os.altsep and
++                    (out_file.startswith(os.altsep) or
++                     f'..{os.altsep}' in out_file))
++               ):
++                raise Error(f'Refusing to write to {out_file} due to directory traversal')
+         if mode is None:
+             mode = int(hdrfields[1], 8)
+         #

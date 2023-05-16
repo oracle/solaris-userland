@@ -26,6 +26,9 @@ test_freeze is running configure and fails on an endian check. It should be
 investigated later, although since it's tools related, it's not
 the highest priority. [Should be reported upstream]
 
+test_register currently doesn't work with docutils >= 0.19.
+This is a know issue: https://github.com/python/cpython/issues/98634
+
 --- Python-3.11.2/Lib/test/test_gdb.py
 +++ Python-3.11.2/Lib/test/test_gdb.py
 @@ -52,6 +52,9 @@ if gdb_major_version < 7:
@@ -172,3 +175,13 @@ the highest priority. [Should be reported upstream]
  @support.skip_if_buildbot('not all buildbots have enough space')
  class TestFreeze(unittest.TestCase):
  
+--- Python-3.11.2/Lib/distutils/tests/test_register.py
++++ Python-3.11.2/Lib/distutils/tests/test_register.py
+@@ -287,6 +287,7 @@ class RegisterTestCase(BasePyPIRCCommand
+ 
+         self.assertRaises(DistutilsSetupError, cmd.run)
+ 
++    @unittest.skip("doesn't work with new docutils")
+     def test_check_metadata_deprecated(self):
+         # makes sure make_metadata is deprecated
+         cmd = self._get_cmd()
