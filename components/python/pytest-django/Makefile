@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,7 +37,7 @@ COMPONENT_BUGDB=	python-mod/pytestdjango
 COMPONENT_ANITYA_ID=	40846
 COMPONENT_BAID=		119433
 
-PYTHON_VERSIONS = 3.9
+PYTHON_VERSIONS = 3.9 3.11
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

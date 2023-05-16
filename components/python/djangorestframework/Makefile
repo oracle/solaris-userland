@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		djangorestframework
-COMPONENT_VERSION=	3.13.1
+COMPONENT_VERSION=	3.14.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0c33407ce23acc68eca2a6e46424b008c9c02eceb8cf18581921d0092bc1f2ee
+    sha256:579a333e6256b09489cbe0a067e66abe55c6595d8926be6b99423786334350c8
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/encode/django-rest-framework
 COMPONENT_BUGDB=	python-mod/djangorest
 COMPONENT_ANITYA_ID=	9175
-COMPONENT_BAID=		116272
+COMPONENT_BAID=		141645
 
-PYTHON_VERSIONS = 3.9
+PYTHON_VERSIONS = 3.9 3.11
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -56,7 +56,7 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/django-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pytz-%)
