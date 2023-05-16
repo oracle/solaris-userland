@@ -1,12 +1,12 @@
-1 #
-2 # This patch contains changes to the default SSH system configurations for
-3 # /etc/ssh/sshd_config and /etc/ssh/ssh_config on Solaris.
-4 #
-5 # This is a Solaris specific patch and will not be contributed back to the
-6 # upstream community.
-7 #
---- old/ssh_config	2020-11-19 14:38:10.692282095 +0000
-+++ new/ssh_config	2020-11-19 14:40:49.453120503 +0000
+#
+# This patch contains changes to the default SSH system configurations for
+# /etc/ssh/sshd_config and /etc/ssh/ssh_config on Solaris.
+#
+# This is a Solaris specific patch and will not be contributed back to the
+# upstream community.
+#
+--- old/ssh_config	2023-04-09 08:51:07.363131549 +0200
++++ new/ssh_config	2023-04-09 08:52:15.547333438 +0200
 @@ -22,9 +22,9 @@
  #   ForwardX11 no
  #   PasswordAuthentication yes
@@ -27,8 +27,8 @@
 +# Send the LANG and LC_* environment variables to server.
 +SendEnv LANG
 +SendEnv LC_*
---- old/sshd_config	2020-11-19 14:38:10.697557122 +0000
-+++ new/sshd_config	2020-11-19 14:40:49.458876414 +0000
+--- old/sshd_config	2023-04-09 08:51:07.368749960 +0200
++++ new/sshd_config	2023-04-09 08:52:15.553022926 +0200
 @@ -3,114 +3,88 @@
  # This is the sshd server system-wide configuration file.  See
  # sshd_config(5) for more information.
@@ -53,59 +53,63 @@
 -#HostKey /etc/ssh/ssh_host_rsa_key
 -#HostKey /etc/ssh/ssh_host_ecdsa_key
 -#HostKey /etc/ssh/ssh_host_ed25519_key
+-
+-# Ciphers and keying
+-#RekeyLimit default none
+-
+-# Logging
+-#SyslogFacility AUTH
+-#LogLevel INFO
+-
+-# Authentication:
+-
+-#LoginGraceTime 2m
+-#PermitRootLogin prohibit-password
+-#StrictModes yes
+-#MaxAuthTries 6
+-#MaxSessions 10
 +# If port forwarding is enabled (default), specify if the server can bind to
 +# INADDR_ANY. 
 +# This allows the local port forwarding to work when connections are received
 +# from any remote host.
 +#GatewayPorts no
  
--# Ciphers and keying
--#RekeyLimit default none
+-#PubkeyAuthentication yes
 +# X11 tunneling options
 +#X11DisplayOffset 10
 +#X11UseLocalhost yes
 +X11Forwarding yes
  
--# Logging
--#SyslogFacility AUTH
--#LogLevel INFO
+-# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
+-# but this is overridden so installations will only check .ssh/authorized_keys
+-AuthorizedKeysFile	.ssh/authorized_keys
 +# The maximum number of concurrent unauthenticated connections to sshd.
 +# start:rate:full see sshd(1) for more information.
 +#MaxStartups 10:30:100
  
--# Authentication:
+-#AuthorizedPrincipalsFile none
 +# Banner to be printed before authentication starts.
 +Banner /etc/issue
  
--#LoginGraceTime 2m
--#PermitRootLogin prohibit-password
--#StrictModes yes
--#MaxAuthTries 6
--#MaxSessions 10
+-#AuthorizedKeysCommand none
+-#AuthorizedKeysCommandUser nobody
 +# Should sshd print the /etc/motd file and check for mail.
 +# On Solaris it is assumed that the login shell will do these (eg /etc/profile).
 +PrintMotd no
- 
--#PubkeyAuthentication yes
++
 +# KeepAlive specifies whether keep alive messages are sent to the client.
 +# See sshd(1) for detailed description of what this means.
 +# Note that the client may also be sending keep alive messages to the server.
 +#KeepAlive yes
- 
--# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
--# but this is overridden so installations will only check .ssh/authorized_keys
--AuthorizedKeysFile	.ssh/authorized_keys
++
 +# Syslog facility and level 
 +#SyslogFacility auth
 +#LogLevel info
- 
--#AuthorizedPrincipalsFile none
++
 +#
 +# Authentication configuration
 +#
- 
--#AuthorizedKeysCommand none
--#AuthorizedKeysCommandUser nobody
++
 +# sshd regenerates the key every KeyRegenerationInterval seconds.
 +# The key is never stored anywhere except the memory of sshd.
 +# The default is 1 hour (3600 seconds).
@@ -123,49 +127,45 @@
  
 -# To disable tunneled clear text passwords, change to no here!
 -#PasswordAuthentication yes
--#PermitEmptyPasswords no
 +# Length of time in seconds before a client that hasn't completed
 +# authentication is disconnected.
 +# Default is 120 seconds. 0 means no time limit.
 +#LoginGraceTime 120
- 
--# Change to no to disable s/key passwords
--#ChallengeResponseAuthentication yes
++
 +# Maximum number of retries for authentication
 +# Default is 6.
 +#MaxAuthTries  6
++
++# Are logins to accounts with empty passwords allowed.
++# If PermitEmptyPasswords is no, pass PAM_DISALLOW_NULL_AUTHTOK 
++# to pam_authenticate(3PAM).
+ #PermitEmptyPasswords no
  
+-# Change to no to disable s/key passwords
+-#KbdInteractiveAuthentication yes
+-
 -# Kerberos options
 -#KerberosAuthentication no
 -#KerberosOrLocalPasswd yes
 -#KerberosTicketCleanup yes
 -#KerberosGetAFSToken no
-+# Are logins to accounts with empty passwords allowed.
-+# If PermitEmptyPasswords is no, pass PAM_DISALLOW_NULL_AUTHTOK 
-+# to pam_authenticate(3PAM).
-+#PermitEmptyPasswords no
- 
+-
 -# GSSAPI options
 -#GSSAPIAuthentication no
 -#GSSAPICleanupCredentials yes
-+# To disable tunneled clear text passwords, change PasswordAuthentication to no.
-+#PasswordAuthentication yes
- 
+-
 -# Set this to 'yes' to enable PAM authentication, account processing,
 -# and session processing. If this is enabled, PAM authentication will
--# be allowed through the ChallengeResponseAuthentication and
+-# be allowed through the KbdInteractiveAuthentication and
 -# PasswordAuthentication.  Depending on your PAM configuration,
--# PAM authentication via ChallengeResponseAuthentication may bypass
--# the setting of "PermitRootLogin without-password".
+-# PAM authentication via KbdInteractiveAuthentication may bypass
+-# the setting of "PermitRootLogin prohibit-password".
 -# If you just want the PAM account and session checks to run without
 -# PAM authentication, then enable this but set PasswordAuthentication
--# and ChallengeResponseAuthentication to 'no'.
+-# and KbdInteractiveAuthentication to 'no'.
 -#UsePAM no
-+# Are root logins permitted using sshd.
-+# Note that sshd uses pam_authenticate(3PAM) so the root (or any other) user
-+# maybe denied access by a PAM module regardless of this setting.
-+# Valid options are yes, without-password, no.
-+PermitRootLogin no
++# To disable tunneled clear text passwords, change PasswordAuthentication to no.
++#PasswordAuthentication yes
  
 -#AllowAgentForwarding yes
 -#AllowTcpForwarding yes
@@ -187,14 +187,10 @@
 -#PermitTunnel no
 -#ChrootDirectory none
 -#VersionAddendum none
-+# sftp subsystem
-+Subsystem	sftp	internal-sftp
- 
+-
 -# no default banner path
 -#Banner none
-+# Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication.
-+#IgnoreUserKnownHosts yes
- 
+-
 -# override default of no subsystems
 -Subsystem	sftp	/usr/libexec/sftp-server
 -
@@ -204,6 +200,18 @@
 -#	AllowTcpForwarding no
 -#	PermitTTY no
 -#	ForceCommand cvs server
++# Are root logins permitted using sshd.
++# Note that sshd uses pam_authenticate(3PAM) so the root (or any other) user
++# maybe denied access by a PAM module regardless of this setting.
++# Valid options are yes, without-password, no.
++PermitRootLogin no
++
++# sftp subsystem
++Subsystem	sftp	internal-sftp
++
++# Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication.
++#IgnoreUserKnownHosts yes
++
 +# Accept the LANG and LC_* environment variables sent by the client.
 +AcceptEnv LANG
 +AcceptEnv LC_*

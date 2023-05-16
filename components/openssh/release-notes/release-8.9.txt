@@ -1,0 +1,277 @@
+OpenSSH 8.9 was released on 2022-02-23. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Future deprecation notice
+=========================
+
+A near-future release of OpenSSH will switch scp(1) from using the
+legacy scp/rcp protocol to using SFTP by default.
+
+Legacy scp/rcp performs wildcard expansion of remote filenames (e.g.
+"scp host:* .") through the remote shell. This has the side effect of
+requiring double quoting of shell meta-characters in file names
+included on scp(1) command-lines, otherwise they could be interpreted
+as shell commands on the remote side.
+
+This creates one area of potential incompatibility: scp(1) when using
+the SFTP protocol no longer requires this finicky and brittle quoting,
+and attempts to use it may cause transfers to fail. We consider the
+removal of the need for double-quoting shell characters in file names
+to be a benefit and do not intend to introduce bug-compatibility for
+legacy scp/rcp in scp(1) when using the SFTP protocol.
+
+Another area of potential incompatibility relates to the use of remote
+paths relative to other user's home directories, for example -
+"scp host:~user/file /tmp". The SFTP protocol has no native way to
+expand a ~user path. However, sftp-server(8) in OpenSSH 8.7 and later
+support a protocol extension "expand-path@openssh.com" to support
+this.
+
+Security Near Miss
+==================
+
+ * sshd(8): fix an integer overflow in the user authentication path
+   that, in conjunction with other logic errors, could have yielded
+   unauthenticated access under difficult to exploit conditions.
+
+   This situation is not exploitable because of independent checks in
+   the privilege separation monitor. Privilege separation has been
+   enabled by default in since openssh-3.2.2 (released in 2002) and
+   has been mandatory since openssh-7.5 (released in 2017). Moreover,
+   portable OpenSSH has used toolchain features available in most
+   modern compilers to abort on signed integer overflow since
+   openssh-6.5 (released in 2014).
+
+   Thanks to Malcolm Stagg for finding and reporting this bug.
+
+Potentially-incompatible changes
+================================
+
+ * sshd(8), portable OpenSSH only: this release removes in-built
+   support for MD5-hashed passwords. If you require these on your
+   system then we recommend linking against libxcrypt or similar.
+
+ * This release modifies the FIDO security key middleware interface
+   and increments SSH_SK_VERSION_MAJOR.
+
+Changes since OpenSSH 8.8
+=========================
+
+This release includes a number of new features.
+
+New features
+------------
+
+ * ssh(1), sshd(8), ssh-add(1), ssh-agent(1): add a system for
+   restricting forwarding and use of keys added to ssh-agent(1)
+   A detailed description of the feature is available at
+   https://www.openssh.com/agent-restrict.html and the protocol
+   extensions are documented in the PROTOCOL and PROTOCOL.agent
+   files in the source release.
+
+ * ssh(1), sshd(8): add the sntrup761x25519-sha512@openssh.com hybrid
+   ECDH/x25519 + Streamlined NTRU Prime post-quantum KEX to the
+   default KEXAlgorithms list (after the ECDH methods but before the
+   prime-group DH ones). The next release of OpenSSH is likely to
+   make this key exchange the default method.
+    
+ * ssh-keygen(1): when downloading resident keys from a FIDO token,
+   pass back the user ID that was used when the key was created and
+   append it to the filename the key is written to (if it is not the
+   default). Avoids keys being clobbered if the user created multiple
+   resident keys with the same application string but different user
+   IDs.
+
+ * ssh-keygen(1), ssh(1), ssh-agent(1): better handling for FIDO keys
+   on tokens that provide user verification (UV) on the device itself,
+   including biometric keys, avoiding unnecessary PIN prompts.
+
+ * ssh-keygen(1): add "ssh-keygen -Y match-principals" operation to
+   perform matching of principals names against an allowed signers
+   file. To be used towards a TOFU model for SSH signatures in git.
+
+ * ssh-add(1), ssh-agent(1): allow pin-required FIDO keys to be added
+   to ssh-agent(1). $SSH_ASKPASS will be used to request the PIN at
+   authentication time.
+    
+ * ssh-keygen(1): allow selection of hash at sshsig signing time
+   (either sha512 (default) or sha256).
+
+ * ssh(1), sshd(8): read network data directly to the packet input
+   buffer instead of indirectly via a small stack buffer. Provides a
+   modest performance improvement.
+
+ * ssh(1), sshd(8): read data directly to the channel input buffer,
+   providing a similar modest performance improvement.
+
+ * ssh(1): extend the PubkeyAuthentication configuration directive to
+   accept yes|no|unbound|host-bound to allow control over one of the
+   protocol extensions used to implement agent-restricted keys.
+
+Bugfixes
+--------
+
+ * sshd(8): document that CASignatureAlgorithms, ExposeAuthInfo and
+   PubkeyAuthOptions can be used in a Match block. PR#277.
+
+ * sshd(8): fix possible string truncation when constructing paths to
+   .rhosts/.shosts files with very long user home directory names.
+
+ * ssh-keysign(1): unbreak for KEX algorithms that use SHA384/512
+   exchange hashes
+    
+ * ssh(1): don't put the TTY into raw mode when SessionType=none,
+   avoids ^C being unable to kill such a session. bz3360
+
+ * scp(1): fix some corner-case bugs in SFTP-mode handling of
+   ~-prefixed paths.
+
+ * ssh(1): unbreak hostbased auth using RSA keys. Allow ssh(1) to
+   select RSA keys when only RSA/SHA2 signature algorithms are
+   configured (this is the default case). Previously RSA keys were
+   not being considered in the default case.
+
+ * ssh-keysign(1): make ssh-keysign use the requested signature
+   algorithm and not the default for the key type. Part of unbreaking
+   hostbased auth for RSA/SHA2 keys.
+
+ * ssh(1): stricter UpdateHostkey signature verification logic on
+   the client- side. Require RSA/SHA2 signatures for RSA hostkeys
+   except when RSA/SHA1 was explicitly negotiated during initial
+   KEX; bz3375
+
+ * ssh(1), sshd(8): fix signature algorithm selection logic for
+   UpdateHostkeys on the server side. The previous code tried to
+   prefer RSA/SHA2 for hostkey proofs of RSA keys, but missed some
+   cases. This will use RSA/SHA2 signatures for RSA keys if the
+   client proposed these algorithms in initial KEX. bz3375
+
+ * All: convert all uses of select(2)/pselect(2) to poll(2)/ppoll(2).
+   This includes the mainloops in ssh(1), ssh-agent(1), ssh-agent(1)
+   and sftp-server(8), as well as the sshd(8) listen loop and all
+   other FD read/writability checks. On platforms with missing or
+   broken poll(2)/ppoll(2) syscalls a select(2)-based compat shim is
+   available.
+    
+ * ssh-keygen(1): the "-Y find-principals" command was verifying key
+   validity when using ca certs but not with simple key lifetimes
+   within the allowed signers file.
+    
+ * ssh-keygen(1): make sshsig verify-time argument parsing optional
+
+ * sshd(8): fix truncation in rhosts/shosts path construction.
+
+ * ssh(1), ssh-agent(1): avoid xmalloc(0) for PKCS#11 keyid for ECDSA
+   keys (we already did this for RSA keys). Avoids fatal errors for
+   PKCS#11 libraries that return empty keyid, e.g. Microchip ATECC608B
+   "cryptoauthlib"; bz#3364
+
+ * ssh(1), ssh-agent(1): improve the testing of credentials against
+   inserted FIDO: ask the token whether a particular key belongs to
+   it in cases where the token supports on-token user-verification
+   (e.g. biometrics) rather than just assuming that it will accept it.
+
+   Will reduce spurious "Confirm user presence" notifications for key
+   handles that relate to FIDO keys that are not currently inserted in at
+   least some cases. bz3366
+    
+ * ssh(1), sshd(8): correct value for IPTOS_DSCP_LE. It needs to
+   allow for the preceding two ECN bits. bz#3373
+
+ * ssh-keygen(1): add missing -O option to usage() for the "-Y sign"
+   option.
+
+ * ssh-keygen(1): fix a NULL deref when using the find-principals
+   function, when matching an allowed_signers line that contains a
+   namespace restriction, but no restriction specified on the
+   command-line
+
+ * ssh-agent(1): fix memleak in process_extension(); oss-fuzz
+   issue #42719
+
+ * ssh(1): suppress "Connection to xxx closed" messages when LogLevel
+   is set to "error" or above. bz3378
+
+ * ssh(1), sshd(8): use correct zlib flags when inflate(3)-ing
+   compressed packet data. bz3372
+ 
+ * scp(1): when recursively transferring files in SFTP mode, create the
+   destination directory if it doesn't already exist to match scp(1) in
+   legacy RCP mode behaviour.
+    
+ * scp(1): many improvements in error message consistency between scp(1)
+   in SFTP mode vs legacy RCP mode.
+
+ * sshd(8): fix potential race in SIGTERM handling PR#289
+
+ * ssh(1), ssh(8): since DSA keys are deprecated, move them to the
+   end of the default list of public keys so that they will be tried
+   last. PR#295
+
+ * ssh-keygen(1): allow 'ssh-keygen -Y find-principals' to match
+   wildcard principals in allowed_signers files
+    
+Portability
+-----------
+
+ * ssh(1), sshd(8): don't trust closefrom(2) on Linux. glibc's
+   implementation does not work in a chroot when the kernel does not
+   have close_range(2). It tries to read from /proc/self/fd and when
+   that fails dies with an assertion of sorts. Instead, call
+   close_range(2) directly from our compat code and fall back if
+   that fails.  bz#3349,
+
+ * OS X poll(2) is broken; use compat replacement. For character-
+   special devices like /dev/null, Darwin's poll(2) returns POLLNVAL
+   when polled with POLLIN. Apparently this is Apple bug 3710161 -
+   not public but a websearch will find other OSS projects
+   rediscovering it periodically since it was first identified in
+   2005.
+
+ * Correct handling of exceptfds/POLLPRI in our select(2)-based
+   poll(2)/ppoll(2) compat implementation.
+
+ * Cygwin: correct checking of mbstowcs() return value.
+
+ * Add a basic SECURITY.md that refers people to the openssh.com
+   website.
+
+ * Enable additional compiler warnings and toolchain hardening flags,
+   including -Wbitwise-instead-of-logical, -Wmisleading-indentation,
+   -fzero-call-used-regs and -ftrivial-auto-var-init.
+
+ * HP/UX. Use compat getline(3) on HP-UX 10.x, where the libc version
+   is not reliable.
+
+Checksums:
+==========
+
+ - SHA1 (openssh-8.9.tar.gz) = 653310ba1a63959fe2df503fe7ad556445180127
+ - SHA256 (openssh-8.9.tar.gz) = mJigktP+Bk0sB7uRPuWgjcCOYZ+mIMdvRlZe66irtQA=
+
+ - SHA1 (openssh-8.9p1.tar.gz) = 205cdf0040a238047e2c49f43460e03d76e5d650
+ - SHA256 (openssh-8.9p1.tar.gz) = /Ul2VLerFobaxnL7g9+0ukCW6LX/zazNJiOArli+xec=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Please note that the OpenPGP key used to sign releases has been
+rotated for this release. The new key has been signed by the previous
+key to provide continuity.
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com

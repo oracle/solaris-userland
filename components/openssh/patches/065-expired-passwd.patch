@@ -7,9 +7,9 @@
 #
 # This is Solaris specific patch (not be to contributed to upstream).
 #
---- old/auth-pam.c	2020-11-19 15:13:09.368808020 +0000
-+++ new/auth-pam.c	2020-11-19 15:13:39.040557792 +0000
-@@ -403,6 +403,8 @@ do_pam_auth(struct pam_ctxt *ctxt)
+--- old/auth-pam.c	2023-04-06 16:46:26.977918818 +0200
++++ new/auth-pam.c	2023-04-06 16:47:26.338316435 +0200
+@@ -402,6 +402,8 @@ do_pam_auth(struct pam_ctxt *ctxt)
  	struct pam_conv sshpam_conv;
  	int flags = (options.permit_empty_passwd == 0 ?
  	    PAM_DISALLOW_NULL_AUTHTOK : 0);
@@ -18,7 +18,7 @@
  
  	sshpam_conv.conv = sshpam_child_conv;
  	sshpam_conv.appdata_ptr = ctxt;
-@@ -427,6 +429,15 @@ do_pam_auth(struct pam_ctxt *ctxt)
+@@ -426,6 +428,15 @@ do_pam_auth(struct pam_ctxt *ctxt)
  		goto auth_fail;
  	}
  	if (sshpam_authctxt->force_pwchange) {

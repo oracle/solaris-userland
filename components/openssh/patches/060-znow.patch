@@ -1,6 +1,6 @@
---- old/configure.ac	2020-11-19 15:09:44.733173940 +0000
-+++ new/configure.ac	2020-11-19 15:10:16.204505742 +0000
-@@ -171,7 +171,6 @@ if test "$GCC" = "yes" || test "$GCC" =
+--- old/configure.ac	2023-04-05 20:07:27.070503228 +0200
++++ new/configure.ac	2023-04-05 20:08:23.647640594 +0200
+@@ -213,7 +213,6 @@ if test "$GCC" = "yes" || test "$GCC" =
  	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,retpolineplt])
  	OSSH_CHECK_CFLAG_COMPILE([-D_FORTIFY_SOURCE=2])
  	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,relro])
@@ -8,11 +8,11 @@
  	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,noexecstack])
  	# NB. -ftrapv expects certain support functions to be present in
  	# the compiler library (libgcc or similar) to detect integer operations
---- old/Makefile.in	2020-11-19 15:09:44.738836343 +0000
-+++ new/Makefile.in	2020-11-19 15:10:16.209789541 +0000
-@@ -195,6 +195,9 @@ $(srcdir)/configure: configure.ac $(srcd
- 	@echo "ERROR: configure is out of date; please run ${AUTORECONF} (and configure)" 1>&2
- 	@exit 1
+--- old/Makefile.in	2023-04-05 20:07:15.926717882 +0200
++++ new/Makefile.in	2023-04-05 20:08:30.581306814 +0200
+@@ -195,6 +195,9 @@ $(LIBSSH_OBJS): Makefile.in config.h
+ $(SSHOBJS): Makefile.in config.h
+ $(SSHDOBJS): Makefile.in config.h
  
 +# For chroot(), make sure all libraries are loaded.
 +sshd : LDFLAGS += -Wl,-z,now

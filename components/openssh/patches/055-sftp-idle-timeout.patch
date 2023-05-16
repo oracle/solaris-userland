@@ -11,17 +11,17 @@
 # The interface to sftp MUST NOT BE CHANGED here without coordinating
 # with ZFSSA.
 #
---- old/sftp-server.c	2020-11-19 15:04:37.818147639 +0000
-+++ new/sftp-server.c	2020-11-19 15:05:13.740161780 +0000
-@@ -39,6 +39,7 @@
+--- old/sftp-server.c	2023-04-05 16:31:54.174384924 +0200
++++ new/sftp-server.c	2023-04-05 16:38:03.877556523 +0200
+@@ -44,6 +44,7 @@
  #include <time.h>
  #include <unistd.h>
  #include <stdarg.h>
 +#include <signal.h>
  
+ #include "atomicio.h"
  #include "xmalloc.h"
- #include "sshbuf.h"
-@@ -94,6 +95,9 @@ struct Stat {
+@@ -103,6 +104,9 @@ struct Stat {
  	Attrib attrib;
  };
  
@@ -31,7 +31,7 @@
  /* Packet handlers */
  static void process_open(u_int32_t id);
  static void process_close(u_int32_t id);
-@@ -1920,7 +1924,10 @@ sftp_server_cleanup_exit(int i)
+@@ -2258,7 +2262,10 @@ sftp_server_cleanup_exit(int i)
  		    pw->pw_name, client_addr);
  	}
  #ifdef SFTP_AUDIT
@@ -43,7 +43,7 @@
  #endif
  	_exit(i);
  }
-@@ -1939,11 +1946,18 @@ sftp_server_usage(void)
+@@ -2277,10 +2284,17 @@ sftp_server_usage(void)
  	exit(1);
  }
  
@@ -56,13 +56,12 @@
  int
  sftp_server_main(int argc, char **argv, struct passwd *user_pw)
  {
- 	fd_set *rset, *wset;
- 	int i, r, in, out, max, ch, skipargs = 0, log_stderr = 0;
+ 	int i, r, in, out, ch, skipargs = 0, log_stderr = 0;
 +	int timeout = 0;
- 	ssize_t len, olen, set_size;
+ 	ssize_t len, olen;
  	SyslogFacility log_facility = SYSLOG_FACILITY_AUTH;
  	char *cp, *homedir = NULL, uidstr[32], buf[4*4096];
-@@ -1958,7 +1972,7 @@ sftp_server_main(int argc, char **argv,
+@@ -2295,7 +2309,7 @@ sftp_server_main(int argc, char **argv,
  	pw = pwcopy(user_pw);
  
  	while (!skipargs && (ch = getopt(argc, argv,
@@ -71,7 +70,7 @@
  		switch (ch) {
  		case 'Q':
  			if (strcasecmp(optarg, "requests") != 0) {
-@@ -2020,6 +2034,20 @@ sftp_server_main(int argc, char **argv,
+@@ -2357,6 +2371,20 @@ sftp_server_main(int argc, char **argv,
  				fatal("Invalid umask \"%s\"", optarg);
  			(void)umask((mode_t)mask);
  			break;
@@ -92,29 +91,29 @@
  		case 'h':
  		default:
  			sftp_server_usage();
-@@ -2091,6 +2119,7 @@ sftp_server_main(int argc, char **argv,
+@@ -2418,6 +2446,7 @@ sftp_server_main(int argc, char **argv,
+ 		}
  	}
  
- 	set_size = howmany(max + 1, NFDBITS) * sizeof(fd_mask);
 +	signal(SIGALRM, sftp_alarm_handler);
  	for (;;) {
- 		memset(rset, 0, set_size);
- 		memset(wset, 0, set_size);
-@@ -2112,13 +2141,23 @@ sftp_server_main(int argc, char **argv,
- 		if (olen > 0)
- 			FD_SET(out, wset);
+ 		struct pollfd pfd[2];
+ 
+@@ -2444,13 +2473,23 @@ sftp_server_main(int argc, char **argv,
+ 			pfd[1].events = POLLOUT;
+ 		}
  
 +		if (timeout > 0)
 +			alarm(timeout);
 +
- 		if (select(max+1, rset, wset, NULL, NULL) == -1) {
+ 		if (poll(pfd, 2, -1) == -1) {
 +			if (g_timed_out){
 +				debug("SFTP idle timeout, closing session.");
 +				sftp_server_cleanup_exit(3);
 +			}
  			if (errno == EINTR)
  				continue;
- 			error("select: %s", strerror(errno));
+ 			error("poll: %s", strerror(errno));
  			sftp_server_cleanup_exit(2);
  		}
  
@@ -122,5 +121,5 @@
 +			alarm(0);
 +
  		/* copy stdin to iqueue */
- 		if (FD_ISSET(in, rset)) {
+ 		if (pfd[0].revents & (POLLIN|POLLHUP)) {
  			len = read(in, buf, sizeof buf);

@@ -3,9 +3,9 @@
 # from the server environment to the child if they have not been
 # accepted from the client.
 #
---- old/session.c	2020-11-19 15:07:52.598515287 +0000
-+++ new/session.c	2020-11-19 15:08:49.669098749 +0000
-@@ -959,6 +959,39 @@ read_etc_default_login(char ***env, u_in
+--- old/session.c	2023-04-09 09:22:45.034880618 +0200
++++ new/session.c	2023-04-09 09:24:34.187972201 +0200
+@@ -953,6 +953,39 @@ read_etc_default_login(char ***env, u_in
  }
  #endif /* HAVE_ETC_DEFAULT_LOGIN */
  
@@ -44,8 +44,8 @@
 +
  #if defined(USE_PAM) || defined(HAVE_CYGWIN)
  static void
- copy_environment_blacklist(char **source, char ***env, u_int *envsize,
-@@ -1117,6 +1150,8 @@ do_setup_env(struct ssh *ssh, Session *s
+ copy_environment_denylist(char **source, char ***env, u_int *envsize,
+@@ -1111,6 +1144,8 @@ do_setup_env(struct ssh *ssh, Session *s
  		    auth_sock_name);
  
  

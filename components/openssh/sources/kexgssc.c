@@ -23,7 +23,7 @@
  */
 
 /*
- * Copyright (c) 2004, 2020, Oracle and/or its affiliates.
+ * Copyright (c) 2004, 2023, Oracle and/or its affiliates.
  */
 
 #include "includes.h"
@@ -611,13 +611,6 @@ kexgssgex_client(struct ssh *ssh)
 		sshpkt_disconnect(ssh, "Hash's MIC didn't verify");
 
 	gss_release_buffer(&min_status, &msg_tok);
-
-	/* save session id */
-	if (kex->session_id == NULL) {
-		kex->session_id_len = hashlen;
-		kex->session_id = xmalloc(kex->session_id_len);
-		memcpy(kex->session_id, hash, kex->session_id_len);
-	}
 
 	if (kex->gss_deleg_creds)
 		ssh_gssapi_credentials_updated(ctxt);

@@ -1,0 +1,148 @@
+OpenSSH 9.0 was released on 2022-04-08. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Changes since OpenSSH 8.9
+=========================
+
+This release is focused on bug fixing.
+
+Potentially-incompatible changes
+--------------------------------
+
+This release switches scp(1) from using the legacy scp/rcp protocol
+to using the SFTP protocol by default.
+
+Legacy scp/rcp performs wildcard expansion of remote filenames (e.g.
+"scp host:* .") through the remote shell. This has the side effect of
+requiring double quoting of shell meta-characters in file names
+included on scp(1) command-lines, otherwise they could be interpreted
+as shell commands on the remote side.
+
+This creates one area of potential incompatibility: scp(1) when using
+the SFTP protocol no longer requires this finicky and brittle quoting,
+and attempts to use it may cause transfers to fail. We consider the
+removal of the need for double-quoting shell characters in file names
+to be a benefit and do not intend to introduce bug-compatibility for
+legacy scp/rcp in scp(1) when using the SFTP protocol.
+
+Another area of potential incompatibility relates to the use of remote
+paths relative to other user's home directories, for example -
+"scp host:~user/file /tmp". The SFTP protocol has no native way to
+expand a ~user path. However, sftp-server(8) in OpenSSH 8.7 and later
+support a protocol extension "expand-path@openssh.com" to support
+this.
+
+In case of incompatibility, the scp(1) client may be instructed to use
+the legacy scp/rcp using the -O flag.
+
+New features
+------------
+
+ * ssh(1), sshd(8): use the hybrid Streamlined NTRU Prime + x25519 key
+   exchange method by default ("sntrup761x25519-sha512@openssh.com").
+   The NTRU algorithm is believed to resist attacks enabled by future
+   quantum computers and is paired with the X25519 ECDH key exchange
+   (the previous default) as a backstop against any weaknesses in
+   NTRU Prime that may be discovered in the future. The combination
+   ensures that the hybrid exchange offers at least as good security
+   as the status quo.
+
+   We are making this change now (i.e. ahead of cryptographically-
+   relevant quantum computers) to prevent "capture now, decrypt
+   later" attacks where an adversary who can record and store SSH
+   session ciphertext would be able to decrypt it once a sufficiently
+   advanced quantum computer is available.
+
+ * sftp-server(8): support the "copy-data" extension to allow server-
+   side copying of files/data, following the design in
+   draft-ietf-secsh-filexfer-extensions-00. bz2948
+
+ * sftp(1): add a "cp" command to allow the sftp client to perform
+   server-side file copies.
+
+Bugfixes
+--------
+
+ * ssh(1), sshd(8): upstream: fix poll(2) spin when a channel's output
+   fd closes without data in the channel buffer. bz3405 and bz3411
+
+ * sshd(8): pack pollfd array in server listen/accept loop. Could
+   cause the server to hang/spin when MaxStartups > RLIMIT_NOFILE
+
+ * ssh-keygen(1): avoid NULL deref via the find-principals and
+   check-novalidate operations. bz3409 and GHPR#307 respectively.
+
+ * scp(1): fix a memory leak in argument processing. bz3404
+
+ * sshd(8): don't try to resolve ListenAddress directives in the sshd
+   re-exec path. They are unused after re-exec and parsing errors
+   (possible for example if the host's network configuration changed)
+   could prevent connections from being accepted.
+    
+ * sshd(8): when refusing a public key authentication request from a
+   client for using an unapproved or unsupported signature algorithm
+   include the algorithm name in the log message to make debugging
+   easier.
+    
+Portability
+-----------
+
+ * sshd(8): refactor platform-specific locked account check, fixing
+   an incorrect free() on platforms with both libiaf and shadow
+   passwords (probably only Unixware) GHPR#284,
+
+ * ssh(1), sshd(8): Fix possible integer underflow in scan_scaled(3)
+   parsing of K/M/G/etc quantities. bz#3401.
+
+ * sshd(8): provide killpg implementation (mostly for Tandem NonStop)
+   GHPR#301.
+
+ * Check for missing ftruncate prototype. GHPR#301
+
+ * sshd(8): default to not using sandbox when cross compiling. On most
+   systems poll(2) does not work when the number of FDs is reduced
+   with setrlimit, so assume it doesn't when cross compiling and we
+   can't run the test.  bz#3398.
+
+ * sshd(8): allow ppoll_time64 in seccomp sandbox. Should fix sandbox
+   violations on some (at least i386 and armhf) 32bit Linux platforms.
+   bz#3396.
+
+ * Improve detection of -fzero-call-used-regs=all support in
+   configure script.
+
+
+Checksums:
+==========
+
+
+ - SHA1 (openssh-9.0.tar.gz) = 05302aa4781e1a69db4261474ed940bd685afc24
+ - SHA256 (openssh-9.0.tar.gz) = 9I/FrLf5Gij/4NIPts9A8yWVi0ienyyMqjqn8s0hyLk=
+
+ - SHA1 (openssh-9.0p1.tar.gz) = 06dd658874dcd22d66311cf5999bd56c614de509
+ - SHA256 (openssh-9.0p1.tar.gz) = A5dDAhYenszjIVPPoQAS8eZcjzdQ9XOnOrG+/Vlyooo=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Please note that the OpenPGP key used to sign releases has been
+rotated for this release. The new key has been signed by the previous
+key to provide continuity.
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com
+

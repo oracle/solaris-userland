@@ -4,11 +4,9 @@
 # 2009, but it was not accepted by the upstream.  For more information, see
 # https://bugzilla.mindrot.org/show_bug.cgi?id=1681.
 #
-diff --git a/auth-pam.c b/auth-pam.c
-index 8323821..9e06be9 100644
---- a/auth-pam.c
-+++ b/auth-pam.c
-@@ -1261,11 +1261,13 @@ free_pam_environment(char **env)
+--- old/auth-pam.c	2023-04-07 18:03:17.216000608 +0200
++++ new/auth-pam.c	2023-04-07 18:03:51.759389193 +0200
+@@ -1279,11 +1279,13 @@ free_pam_environment(char **env)
  	free(env);
  }
  
@@ -22,7 +20,7 @@ index 8323821..9e06be9 100644
  static int
  sshpam_passwd_conv(int n, sshpam_const struct pam_message **msg,
      struct pam_response **resp, void *data)
-@@ -1287,12 +1289,24 @@ sshpam_passwd_conv(int n, sshpam_const struct pam_message **msg,
+@@ -1305,12 +1307,24 @@ sshpam_passwd_conv(int n, sshpam_const s
  	for (i = 0; i < n; ++i) {
  		switch (PAM_MSG_MEMBER(msg, i, msg_style)) {
  		case PAM_PROMPT_ECHO_OFF:
@@ -47,7 +45,7 @@ index 8323821..9e06be9 100644
  		case PAM_ERROR_MSG:
  		case PAM_TEXT_INFO:
  			len = strlen(PAM_MSG_MEMBER(msg, i, msg));
-@@ -1329,6 +1343,9 @@ static struct pam_conv passwd_conv = { sshpam_passwd_conv, NULL };
+@@ -1347,6 +1361,9 @@ static struct pam_conv passwd_conv = { s
  int
  sshpam_auth_passwd(Authctxt *authctxt, const char *password)
  {
@@ -57,7 +55,7 @@ index 8323821..9e06be9 100644
  	int flags = (options.permit_empty_passwd == 0 ?
  	    PAM_DISALLOW_NULL_AUTHTOK : 0);
  	char *fake = NULL;
-@@ -1349,6 +1366,15 @@ sshpam_auth_passwd(Authctxt *authctxt, const char *password)
+@@ -1367,6 +1384,15 @@ sshpam_auth_passwd(Authctxt *authctxt, c
  	    options.permit_root_login != PERMIT_YES))
  		sshpam_password = fake = fake_password(password);
  
@@ -73,7 +71,7 @@ index 8323821..9e06be9 100644
  	sshpam_err = pam_set_item(sshpam_handle, PAM_CONV,
  	    (const void *)&passwd_conv);
  	if (sshpam_err != PAM_SUCCESS)
-@@ -1360,6 +1386,16 @@ sshpam_auth_passwd(Authctxt *authctxt, const char *password)
+@@ -1378,6 +1404,16 @@ sshpam_auth_passwd(Authctxt *authctxt, c
  	free(fake);
  	if (sshpam_err == PAM_MAXTRIES)
  		sshpam_set_maxtries_reached(1);

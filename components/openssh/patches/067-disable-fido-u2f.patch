@@ -9,8 +9,8 @@
 #
 # As such, this is Solaris specific patch.
 #
---- old/ssh-keygen.1	2022-05-04 08:24:41.720763055 +0000
-+++ new/ssh-keygen.1	2022-05-04 08:25:12.218024847 +0000
+--- old/ssh-keygen.1	2023-04-09 09:35:36.544914163 +0200
++++ new/ssh-keygen.1	2023-04-09 09:36:43.282854793 +0200
 @@ -51,7 +51,7 @@
  .Op Fl m Ar format
  .Op Fl N Ar new_passphrase
@@ -18,9 +18,9 @@
 -.Op Fl t Cm dsa | ecdsa | ecdsa-sk | ed25519 | ed25519-sk | rsa
 +.Op Fl t Cm dsa | ecdsa | ed25519 | rsa
  .Op Fl w Ar provider
+ .Op Fl Z Ar cipher
  .Nm ssh-keygen
- .Fl p
-@@ -293,7 +293,7 @@ flag determines the key length by select
+@@ -305,7 +305,7 @@ flag determines the key length by select
  curve sizes: 256, 384 or 521 bits.
  Attempting to use bit lengths other than these three values for ECDSA keys
  will fail.
@@ -29,7 +29,7 @@
  .Fl b
  flag will be ignored.
  .It Fl C Ar comment
-@@ -576,14 +576,12 @@ by key ID or serial number.
+@@ -583,14 +583,12 @@ by key ID or serial number.
  See the
  .Sx KEY REVOCATION LISTS
  section for details.
@@ -45,7 +45,7 @@
  or
  .Dq rsa .
  .Pp
-@@ -979,7 +977,8 @@ of user presence (e.g. by having the use
+@@ -1038,7 +1036,8 @@ of user presence (e.g. by having the use
  This option only makes sense for the FIDO authenticator algorithms
  .Cm ecdsa-sk
  and
@@ -55,7 +55,7 @@
  .Pp
  .It Ic source-address Ns = Ns Ar address_list
  Restrict the source addresses from which the certificate is considered valid.
-@@ -1153,18 +1152,16 @@ user2@example.com namespaces="file" ssh-
+@@ -1290,18 +1289,16 @@ user2@example.com namespaces="file" ssh-
  .It Ev SSH_SK_PROVIDER
  Specifies a path to a library that will be used when loading any
  FIDO authenticator-hosted keys, overriding the default of using
@@ -77,7 +77,7 @@
  This file should not be readable by anyone but the user.
  It is possible to
  specify a passphrase when generating the key; that passphrase will be
-@@ -1177,12 +1174,10 @@ will read this file when a login attempt
+@@ -1314,12 +1311,10 @@ will read this file when a login attempt
  .Pp
  .It Pa ~/.ssh/id_dsa.pub
  .It Pa ~/.ssh/id_ecdsa.pub
@@ -92,72 +92,75 @@
  The contents of this file should be added to
  .Pa ~/.ssh/authorized_keys
  on all machines
---- old/ssh_config.5	2022-05-04 08:24:41.725894553 +0000
-+++ new/ssh_config.5	2022-05-04 08:25:12.223084652 +0000
-@@ -903,15 +903,12 @@ The default for this option is:
+--- old/ssh_config.5	2023-04-09 09:35:36.550497990 +0200
++++ new/ssh_config.5	2023-04-09 09:36:43.288500030 +0200
+@@ -384,8 +384,6 @@ The default is:
+ .Bd -literal -offset indent
+ ssh-ed25519,ecdsa-sha2-nistp256,
+ ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
+-sk-ssh-ed25519@openssh.com,
+-sk-ecdsa-sha2-nistp256@openssh.com,
+ rsa-sha2-512,rsa-sha2-256
+ .Ed
+ .Pp
+@@ -956,14 +954,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
--sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ssh-ed25519-cert-v01@openssh.com,
 -sk-ssh-ed25519-cert-v01@openssh.com,
+-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
  rsa-sha2-512-cert-v01@openssh.com,
  rsa-sha2-256-cert-v01@openssh.com,
- ssh-rsa-cert-v01@openssh.com,
+ ssh-ed25519,
  ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
+-sk-ssh-ed25519@openssh.com,
 -sk-ecdsa-sha2-nistp256@openssh.com,
--ssh-ed25519,sk-ssh-ed25519@openssh.com,
-+ssh-ed25519,
- rsa-sha2-512,rsa-sha2-256,ssh-rsa
+ rsa-sha2-512,rsa-sha2-256
  .Ed
  .Pp
-@@ -940,15 +937,12 @@ The default for this option is:
+@@ -1002,14 +996,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
--sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ssh-ed25519-cert-v01@openssh.com,
 -sk-ssh-ed25519-cert-v01@openssh.com,
+-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
  rsa-sha2-512-cert-v01@openssh.com,
  rsa-sha2-256-cert-v01@openssh.com,
- ssh-rsa-cert-v01@openssh.com,
+ ssh-ed25519,
  ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 -sk-ecdsa-sha2-nistp256@openssh.com,
--ssh-ed25519,sk-ssh-ed25519@openssh.com,
-+ssh-ed25519,
- rsa-sha2-512,rsa-sha2-256,ssh-rsa
+-sk-ssh-ed25519@openssh.com,
+ rsa-sha2-512,rsa-sha2-256
  .Ed
  .Pp
-@@ -1452,15 +1446,12 @@ The default for this option is:
+@@ -1602,14 +1592,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
--sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ssh-ed25519-cert-v01@openssh.com,
 -sk-ssh-ed25519-cert-v01@openssh.com,
+-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
  rsa-sha2-512-cert-v01@openssh.com,
  rsa-sha2-256-cert-v01@openssh.com,
- ssh-rsa-cert-v01@openssh.com,
+ ssh-ed25519,
  ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
+-sk-ssh-ed25519@openssh.com,
 -sk-ecdsa-sha2-nistp256@openssh.com,
--ssh-ed25519,sk-ssh-ed25519@openssh.com,
-+ssh-ed25519,
- rsa-sha2-512,rsa-sha2-256,ssh-rsa
+ rsa-sha2-512,rsa-sha2-256
  .Ed
  .Pp
---- old/ssh.1	2022-05-04 08:24:41.730912622 +0000
-+++ new/ssh.1	2022-05-04 08:25:12.228088190 +0000
-@@ -289,9 +289,7 @@ public key authentication is read.
+--- old/ssh.1	2023-04-09 09:35:36.555958480 +0200
++++ new/ssh.1	2023-04-09 09:36:43.293946144 +0200
+@@ -304,9 +304,7 @@ when the private key file is not present
  The default is
- .Pa ~/.ssh/id_dsa ,
+ .Pa ~/.ssh/id_rsa ,
  .Pa ~/.ssh/id_ecdsa ,
 -.Pa ~/.ssh/id_ecdsa_sk ,
  .Pa ~/.ssh/id_ed25519 ,
 -.Pa ~/.ssh/id_ed25519_sk
  and
- .Pa ~/.ssh/id_rsa .
+ .Pa ~/.ssh/id_dsa .
  Identity files may also be specified on
-@@ -924,12 +922,8 @@ This stores the private key in
+@@ -959,12 +957,8 @@ This stores the private key in
  (DSA),
  .Pa ~/.ssh/id_ecdsa
  (ECDSA),
@@ -170,7 +173,7 @@
  or
  .Pa ~/.ssh/id_rsa
  (RSA)
-@@ -938,12 +932,8 @@ and stores the public key in
+@@ -973,12 +967,8 @@ and stores the public key in
  (DSA),
  .Pa ~/.ssh/id_ecdsa.pub
  (ECDSA),
@@ -183,7 +186,7 @@
  or
  .Pa ~/.ssh/id_rsa.pub
  (RSA)
-@@ -1539,9 +1529,7 @@ above.
+@@ -1574,9 +1564,7 @@ above.
  .Pp
  .It Pa ~/.ssh/id_dsa
  .It Pa ~/.ssh/id_ecdsa
@@ -193,7 +196,7 @@
  .It Pa ~/.ssh/id_rsa
  Contains the private key for authentication.
  These files
-@@ -1555,9 +1543,7 @@ sensitive part of this file using AES-12
+@@ -1590,9 +1578,7 @@ sensitive part of this file using AES-12
  .Pp
  .It Pa ~/.ssh/id_dsa.pub
  .It Pa ~/.ssh/id_ecdsa.pub

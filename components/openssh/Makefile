@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -36,21 +36,21 @@ include ../../make-rules/shared-macros.mk
 # Then add a line to network-ssh.p5m to deliver them.
 
 COMPONENT_NAME=		openssh
-COMPONENT_VERSION=	8.4p1
+COMPONENT_VERSION=	9.3p1
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_ANITYA_ID=	2565
 
 # Version for IPS.  The encoding rules are:
 #   OpenSSH <x>.<y>p<n>     => IPS <x>.<y>.0.<n>
 #   OpenSSH <x>.<y>.<z>p<n> => IPS <x>.<y>.<z>.<n>
-IPS_COMPONENT_VERSION=	8.4.0.1
+IPS_COMPONENT_VERSION=	9.3.0.1
 
 COMPONENT_PROJECT_URL=	https://www.openssh.com/
-COMPONENT_ARCHIVE_HASH=	sha256:5a01d22e407eb1c05ba8a8f7c654d388a13e9f226e4ed33bd38748dafa1d2b24
+COMPONENT_ARCHIVE_HASH= sha256:e9baba7701a76a51f3d85a62c383a3c9dcd97fa900b859bc7db114c1868af8a8
 COMPONENT_ARCHIVE_URL=	https://mirrors.sonic.net/pub/OpenBSD/OpenSSH/portable/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
-COMPONENT_BAID_OPENSSH=	90793
+COMPONENT_BAID_OPENSSH=	143123
 COMPONENT_BAID_GSSKEX=	20735
 
 # Because of set up requirements, test suite is in stc gate.

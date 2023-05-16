@@ -10,9 +10,9 @@
 # In the future, if these bug fixes are accepted by the upstream in a later
 # release, we will remove this patch when we upgrade to that release.
 #
---- old/auth-pam.c	2020-11-19 14:13:18.133328772 +0000
-+++ new/auth-pam.c	2020-11-19 14:13:48.254329600 +0000
-@@ -1227,12 +1227,19 @@ do_pam_setcred(int init)
+--- old/auth-pam.c	2023-04-08 09:50:50.575430239 +0200
++++ new/auth-pam.c	2023-04-08 09:52:20.463652868 +0200
+@@ -1244,12 +1244,19 @@ do_pam_setcred(int init)
  		sshpam_cred_established = 1;
  		return;
  	}
@@ -32,7 +32,7 @@
  }
  
  static int
-@@ -1328,10 +1335,16 @@ do_pam_session(struct ssh *ssh)
+@@ -1345,10 +1352,16 @@ do_pam_session(struct ssh *ssh)
  	if (sshpam_err == PAM_SUCCESS)
  		sshpam_session_open = 1;
  	else {

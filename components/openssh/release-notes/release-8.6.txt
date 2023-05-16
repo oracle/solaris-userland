@@ -1,0 +1,167 @@
+OpenSSH 8.6 was released on 2021-04-19. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Future deprecation notice
+=========================
+
+It is now possible[1] to perform chosen-prefix attacks against the
+SHA-1 algorithm for less than USD$50K.
+
+In the SSH protocol, the "ssh-rsa" signature scheme uses the SHA-1
+hash algorithm in conjunction with the RSA public key algorithm.
+OpenSSH will disable this signature scheme by default in the near
+future.
+
+Note that the deactivation of "ssh-rsa" signatures does not necessarily
+require cessation of use for RSA keys. In the SSH protocol, keys may be
+capable of signing using multiple algorithms. In particular, "ssh-rsa"
+keys are capable of signing using "rsa-sha2-256" (RSA/SHA256),
+"rsa-sha2-512" (RSA/SHA512) and "ssh-rsa" (RSA/SHA1). Only the last of
+these is being turned off by default.
+
+This algorithm is unfortunately still used widely despite the
+existence of better alternatives, being the only remaining public key
+signature algorithm specified by the original SSH RFCs that is still
+enabled by default.
+
+The better alternatives include:
+
+ * The RFC8332 RSA SHA-2 signature algorithms rsa-sha2-256/512. These
+   algorithms have the advantage of using the same key type as
+   "ssh-rsa" but use the safe SHA-2 hash algorithms. These have been
+   supported since OpenSSH 7.2 and are already used by default if the
+   client and server support them.
+
+ * The RFC8709 ssh-ed25519 signature algorithm. It has been supported
+   in OpenSSH since release 6.5.
+
+ * The RFC5656 ECDSA algorithms: ecdsa-sha2-nistp256/384/521. These
+   have been supported by OpenSSH since release 5.7.
+
+To check whether a server is using the weak ssh-rsa public key
+algorithm, for host authentication, try to connect to it after
+removing the ssh-rsa algorithm from ssh(1)'s allowed list:
+
+    ssh -oHostKeyAlgorithms=-ssh-rsa user@host
+
+If the host key verification fails and no other supported host key
+types are available, the server software on that host should be
+upgraded.
+
+OpenSSH recently enabled the UpdateHostKeys option by default to assist
+the client by automatically migrating to better algorithms.
+
+[1] "SHA-1 is a Shambles: First Chosen-Prefix Collision on SHA-1 and
+    Application to the PGP Web of Trust" Leurent, G and Peyrin, T
+    (2020) https://eprint.iacr.org/2020/014.pdf
+
+Security
+========
+
+ * sshd(8): OpenSSH 8.5 introduced the LogVerbose keyword. When this
+   option was enabled with a set of patterns that activated logging
+   in code that runs in the low-privilege sandboxed sshd process, the
+   log messages were constructed in such a way that printf(3) format
+   strings could effectively be specified the low-privilege code.
+
+   An attacker who had sucessfully exploited the low-privilege
+   process could use this to escape OpenSSH's sandboxing and attack
+   the high-privilege process. Exploitation of this weakness is
+   highly unlikely in practice as the LogVerbose option is not
+   enabled by default and is typically only used for debugging. No
+   vulnerabilities in the low-privilege process are currently known
+   to exist.
+
+   Thanks to Ilja Van Sprundel for reporting this bug.
+
+Changes since OpenSSH 8.5
+=========================
+
+This release contains mostly bug fixes.
+
+New features
+------------
+
+ * sftp-server(8): add a new limits@openssh.com protocol extension
+   that allows a client to discover various server limits, including
+   maximum packet size and maximum read/write length.
+
+ * sftp(1): use the new limits@openssh.com extension (when available)
+   to select better transfer lengths in the client.
+
+ * sshd(8): Add ModuliFile keyword to sshd_config to specify the
+   location of the "moduli" file containing the groups for DH-GEX.
+
+ * unit tests: Add a TEST_SSH_ELAPSED_TIMES environment variable to
+   enable printing of the elapsed time in seconds of each test.
+
+Bugfixes
+--------
+
+ * ssh_config(5), sshd_config(5): sync CASignatureAlgorithms lists in
+   manual pages with the current default. GHPR#174
+
+ * ssh(1): ensure that pkcs11_del_provider() is called before exit.
+   GHPR#234
+
+ * ssh(1), sshd(8): fix problems in string->argv conversion. Multiple
+   backslashes were not being dequoted correctly and quoted space in
+   the middle of a string was being incorrectly split. GHPR#223
+
+ * ssh(1): return non-zero exit status when killed by signal; bz#3281
+
+ * sftp-server(8): increase maximum SSH2_FXP_READ to match the maximum
+   packet size. Also handle zero-length reads that are not explicitly
+   banned by the spec.
+
+Portability
+-----------
+
+ * sshd(8): don't mistakenly exit on transient read errors on the
+   network socket (e.g. EINTR, EAGAIN); bz3297
+
+ * Create a dedicated contrib/gnome-ssk-askpass3.c source instead of
+   building it from the same file as used for GNOME2. Use the GNOME3
+   gdk_seat_grab() to manage keyboard/mouse/server grabs for better
+   compatibility with Wayland.
+
+ * Fix portability build errors bz3293 bz3292 bz3291 bz3278
+
+ * sshd(8): soft-disallow the fstatat64 syscall in the Linux
+   seccomp-bpf sandbox. bz3276
+
+ * unit tests: enable autoopt and misc unit tests that were
+   previously skipped
+
+Checksums:
+==========
+
+ - SHA1 (openssh-8.6.tar.gz) = a3e93347eed6296faaaceb221e8786391530fccb
+ - SHA256 (openssh-8.6.tar.gz) = ihmgdEgKfCBRpC0qzdQRwYownrpBf+rsihvk4Rmim8M=
+
+ - SHA1 (openssh-8.6p1.tar.gz) = 8f9f0c94317baeb97747d6258f3997b4542762c0
+ - SHA256 (openssh-8.6p1.tar.gz) = w+bk2hYhdiyFDQO0fu0eSN/0zJYI3etUcgKiNN+O164=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Please note that the OpenPGP key used to sign releases has been
+rotated for this release. The new key has been signed by the previous
+key to provide continuity.
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com
