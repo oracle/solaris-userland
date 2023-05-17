@@ -75,6 +75,11 @@ LDFLAGS +=	-m$(BITS)
 LDFLAGS +=	-z now -z guidance=nolazyload -z nolazyload -lbsm
 LDFLAGS +=	-L/usr/openssl/3/lib/64
 
+#
+# forces build process to pickup /usr/gnu/bin/msgfmt
+#
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+
 CONFIGURE_OPTIONS +=	install_user=`id -nu`
 CONFIGURE_OPTIONS +=	install_group=`groups | cut -f 1 -d ' '`
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
@@ -98,7 +103,6 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CP) mod_solaris_audit.c $(SOURCE_DIR)/contrib ; \
 	$(CP) mod_solaris_priv.c $(SOURCE_DIR)/contrib ; \
 	cd $(SOURCE_DIR) ; \
-	cd locale && $(RM) *.po ; cd $(SOURCE_DIR) ; \
 	autoconf ; \
 	cd .. ; \
 	cd $(BUILD_DIR) ; \
