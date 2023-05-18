@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -46,11 +46,6 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
-
-# evolution-data-server requires nss/nspr, but Solaris doesn't include a 64-bit
-# pkg-config file for it, so we workaround this by using the one-off copy in the
-# evolution-data-server component directory
-PKG_CONFIG_PATHS += $(WS_COMPONENTS)/gnome/evolution-data-server
 
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/cairo

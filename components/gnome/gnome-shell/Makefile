@@ -78,11 +78,6 @@ COMPONENT_POST_INSTALL_ACTION += \
         $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
                 $(PROTOUSRBINDIR)/gnome-shell-perf-tool;
 
-# evolution-data-server requires nss/nspr, but Solaris doesn't include a 64-bit
-# pkg-config file for it, so we workaround this by using the one-off copy in the
-# evolution-data-server component directory
-PKG_CONFIG_PATHS += $(WS_COMPONENTS)/gnome/evolution-data-server
-
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/vala
