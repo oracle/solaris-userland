@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -53,7 +53,7 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 CXXFLAGS += -std=c++11
 
 # Workaround the mozjs issue described in 24935318
-# without with sushi has issues described in 28062328
+# without which sushi has issues described in 28062328
 LD_EXEC_OPTIONS += -M $(COMPONENT_DIR)/mapfile
 ADIHEAP_MODE = $(ADIHEAP_DISABLE)
 ADISTACK_MODE = $(ADISTACK_DISABLE)
@@ -64,7 +64,6 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += desktop/pdf-viewer/evince
-REQUIRED_PACKAGES += library/audio/libmusicbrainz5
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/clutter
 REQUIRED_PACKAGES += library/desktop/clutter/clutter-gst
