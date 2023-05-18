@@ -24,7 +24,7 @@
 #
 
 # use MAJOR_VERSION instead real version number
-<transform path=.*/8.0 -> edit path /8.0 /\$\(MAJOR_VERSION\)>
+<transform path=.*/8\.0 -> edit path /8\\.0 /\$\(MAJOR_VERSION\)>
 
 # by default everything is mysql package
 <transform file link -> default pkg.type mysql>
@@ -44,6 +44,6 @@
 <transform file link path=.*/mysqlshow(\.1)?$ -> set pkg.type client>
 <transform file link path=.*/mysqlslap(\.1)?$ -> set pkg.type client>
 
-# no need to deliver tests now
-<transform file link path=.*/bin/mysql.*test -> drop>
-<transform file link path=.*/mysql-test/.* -> drop>
+# tests package
+<transform file link path=.*/bin/mysql.*test -> set pkg.type tests>
+<transform file link path=.*/mysql-test/.* -> set pkg.type tests>
