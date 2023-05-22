@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ncurses
-COMPONENT_VERSION=	6.3-20220709
-IPS_COMPONENT_VERSION=	6.3.0.20220709
+COMPONENT_VERSION=	6.4-20230514
+IPS_COMPONENT_VERSION=	6.4.0.20230514
 COMPONENT_PROJECT_URL=	https://invisible-island.net/ncurses/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:5f6ab62adf2f57e5a9098e0a8c32ffd5a0e0fffaeeb751f7a0b395ff70471c9c
+    sha256:706b9b80ff5133dbdc5b2cffb3632d846f88599d513cc710e994c502d64cd7a2
 COMPONENT_ARCHIVE_URL=	https://invisible-mirror.net/archives/ncurses/current/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/ncurses
 COMPONENT_ANITYA_ID=	2057
-COMPONENT_BAID=		126978
+COMPONENT_BAID=		143745
 
 # Tests are interactive and require ncurses to be installed in CBE.
 # You can compile and run them from ncurses' test directory.
@@ -74,5 +74,4 @@ COMPONENT_POST_INSTALL_ACTION.32 += \
 	$(GSED) -i -e 's|$(GNUBIN)/i86|$(GNUBIN)|' \
 		$(PROTOGNUBIN)/$(MACH32)/ncursesw5-config;
 
-REQUIRED_PACKAGES += developer/gcc-10
 REQUIRED_PACKAGES += shell/bash
