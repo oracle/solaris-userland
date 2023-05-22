@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
 #
 
 #
@@ -443,6 +443,14 @@ def signature_validation(name: str, trusted: bool, args: argparse.Namespace) -> 
     for signature_file, _ in download_from_paths(args.search, signature_file, args.sigurl,
                                                  args.timeout, args.link, quiet=True):
 
+        if trusted:
+            # Validating the signature can have a side effect of updating our
+            # keyring with latest key available. We want that when downloading
+            # source from internet. We don't want that when downloading source from
+            # our cache any time later. Hash is enough.
+            print("skipped - using trusted download location")
+            return SigState.UNKNOWN
+
         try:
             ok, msg = validate_signature(name, signature_file)
         except FileNotFoundError as err:
@@ -453,7 +461,7 @@ def signature_validation(name: str, trusted: bool, args: argparse.Namespace) -> 
             print("ok")
             return SigState.VALID
 
-        if ok or trusted:
+        if ok:
             print(f"skipped\n{msg}")
             return SigState.UNKNOWN
 
@@ -467,11 +475,6 @@ def signature_validation(name: str, trusted: bool, args: argparse.Namespace) -> 
 
         # Bad signature - return Failure
         return SigState.FAILURE
-
-    if trusted:
-        print("skipped")
-        print("Warning: Cannot fetch the signature!")
-        return SigState.UNKNOWN
 
     print("failed (couldn't fetch signature)")
     return SigState.FAILURE
