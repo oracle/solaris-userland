@@ -1,0 +1,46 @@
+Disable unacceptable protocols
+
+Not suitable for upstream, this is Oracle policy
+
+--- neon-0.32.4/src/ne_openssl.c
++++ neon-0.32.4/src/ne_openssl.c
+@@ -53,6 +53,9 @@ #include "ne_internal.h"
+ #include "ne_private.h"
+ #include "ne_privssl.h"
+ 
++#define ORACLE_CIPHER_SELECTION "ALL:!aNULL:!eNULL:!EXPORT:!LOW:!MD5:!DES:!3DES:!RC2:!RC4:!PSK:!kDH"
++#define ORACLE_SSL_OPTIONS SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1
++
+ /* OpenSSL 0.9.6 compatibility */
+ #if OPENSSL_VERSION_NUMBER < 0x0090700fL
+ #define PKCS12_unpack_authsafes M_PKCS12_unpack_authsafes
+@@ -579,7 +582,8 @@ ctx->sess = NULL;
+         /* set client cert callback. */
+         SSL_CTX_set_client_cert_cb(ctx->ctx, provide_client_cert);
+         /* enable workarounds for buggy SSL server implementations */
+-        SSL_CTX_set_options(ctx->ctx, SSL_OP_ALL);
++        SSL_CTX_set_options(ctx->ctx, SSL_OP_ALL | ORACLE_SSL_OPTIONS);
++        SSL_CTX_set_cipher_list(ctx->ctx, ORACLE_CIPHER_SELECTION);
+         SSL_CTX_set_verify(ctx->ctx, SSL_VERIFY_PEER, verify_callback);
+ #if !defined(LIBRESSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x10101000L
+         SSL_CTX_set_post_handshake_auth(ctx->ctx, 1);
+@@ -590,7 +594,8 @@ SSL_CTX_set_session_cache_mode(ctx->ctx,
+ #ifdef SSL_OP_NO_TICKET
+         /* disable ticket support since it inhibits testing of session
+          * caching. */
+-        SSL_CTX_set_options(ctx->ctx, SSL_OP_NO_TICKET);
++        SSL_CTX_set_options(ctx->ctx, SSL_OP_NO_TICKET | ORACLE_SSL_OPTIONS);
++        SSL_CTX_set_cipher_list(ctx->ctx, ORACLE_CIPHER_SELECTION);
+ #endif
+     } else {
+         ne_free(ctx);
+@@ -615,7 +620,9 @@ }
+         break;
+     }
+ 
++    opts |= ORACLE_SSL_OPTIONS;
+     SSL_CTX_set_options(ctx->ctx, opts);
++    SSL_CTX_set_cipher_list(ctx->ctx, ORACLE_CIPHER_SELECTION);
+ }
+ 
+ int ne_ssl_context_get_flag(ne_ssl_context *ctx, int flag)

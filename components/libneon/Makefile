@@ -20,58 +20,41 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
-# Prefer 32-bit as only "binary" delivered is a script with embedded paths.
+
 BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME = libneon
-COMPONENT_VERSION = 0.30.1
-COMPONENT_PROJECT_URL=	http://www.webdav.org/neon/
+COMPONENT_VERSION = 0.32.4
+COMPONENT_PROJECT_URL=	https://notroj.github.io/neon/
 COMPONENT_SRC_NAME = neon
 COMPONENT_ARCHIVE_HASH = \
-    sha256:00c626c0dc18d094ab374dbd9a354915bfe4776433289386ed489c2ec0845cdd
+    sha256:b1e2120e4ae07df952c4a858731619733115c5f438965de4fab41d6bf7e7a508
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/neon
 COMPONENT_ANITYA_ID=	7604
 
-COMPONENT_BAID=		22614
+COMPONENT_BAID=		136487
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Fix 64-bit linking done via compiler.
-LDFLAGS += $(CC_BITS)
+CLONEY = true
+COMPONENT_PRE_CONFIGURE_ACTION += $(CP) -rp $(SOURCE_DIR)/. $(@D);
+CONFIGURE_SCRIPT = ./configure
 
-PATCH_LEVEL = 0
+$(BUILD_32): PKG_CONFIG_PATHS += /usr/openssl/3/lib/pkgconfig
+$(BUILD_64): PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
+$(BUILD_64): LDFLAGS = -m64
 
-CPPFLAGS += $(CPP_LARGEFILES)
-
+# Make test results a little bit easier to parse
+COMPONENT_TEST_ENV +=	TEST_QUIET=0
+COMPONENT_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
 COMPONENT_TEST_MASTER = \
        $(COMPONENT_TEST_RESULTS_DIR)/results-libneon.master
-
-COMPONENT_TEST_TRANSFORMS += \
-     '-e "/libtool/d"' \
-     '-e "/-m32/d"' \
-     '-e "/-m64/d"' \
-     '-e "/ld: warning/d"' \
-     '-e "/warning/d"' \
-     '-e "/prototype:/d"' \
-     '-e "/argument/d"' \
-     '-e "/Entering/d"' \
-     '-e "/Leaving/d"' \
-     '-e "/Nothing to be done/d"' \
-     '-e "s/[0-9]\{1,\}\.[0-9]\{1,\} s, //g"' \
-     '-e "s^[0-9]\{1,\} kB/s^^g"'  \
-     '-e "s^[0-9]\{1,\}  kB/s^^g"'  \
-     '-e "s^[0-9]\{1,\}\.[0-9]\{1,\}  MB/s^^g"' \
-     '-e "s^[0-9]\{1,\}\.[0-9]\{1,\} MB/s^^g"' \
-     '-e "s/([0-9]\{1,\} B)//g"' \
-     '-e "s/([0-9]\{1,\}  B)//g"' \
-     '-e "s/copied,/copied/g"'  \
-     '-e "s/ \{1,\}copied/ copied/g"'  \
-     '-e "s/copied $$/copied/g"'  \
-     '-e "s/copied [0-9]\{1,\}\./copied/g"'
+COMPONENT_TEST_TRANSFORMS += '-n '
+COMPONENT_TEST_TRANSFORMS += '-e "/^<- summary/p"'
 
 CONFIGURE_OPTIONS += --localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
@@ -89,12 +72,8 @@ CONFIGURE_OPTIONS += --with-gssapi
 CONFIGURE_OPTIONS += --with-libxml2
 CONFIGURE_OPTIONS += --with-pic
 
-COMPONENT_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
-
 REQUIRED_PACKAGES += library/libproxy
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
-REQUIRED_PACKAGES += shell/ksh93
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += system/library/security/gss
