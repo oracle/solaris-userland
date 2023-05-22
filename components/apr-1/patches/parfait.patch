@@ -8,9 +8,36 @@ removed here.
 It also creates bc equivalents for static library archives as used for
 linking Apache httpd binary.
 
---- build/ltmain.sh
-+++ build/ltmain.sh
-@@ -9040,7 +9040,7 @@
+--- apr-1.7.4/build/libtool.m4
++++ apr-1.7.4/build/libtool.m4
+@@ -1552,6 +1552,7 @@ [Commands used to install an old-style a
+ 
+ # Determine commands to create old-style static archives.
+ old_archive_cmds='$AR $AR_FLAGS $oldlib$oldobjs'
++old_archive_bc_cmds='$AR $AR_FLAGS $oldlib.bc$oldobjs_bc'
+ old_postinstall_cmds='chmod 644 $oldlib'
+ old_postuninstall_cmds=
+ 
+@@ -1565,6 +1566,7 @@ old_postinstall_cmds="$old_postinstall_c
+     ;;
+   esac
+   old_archive_cmds="$old_archive_cmds~\$RANLIB \$tool_oldlib"
++  old_archive_bc_cmds="$old_archive_bc_cmds~\$RANLIB \$tool_oldlib.bc"
+ fi
+ 
+ case $host_os in
+@@ -1577,6 +1579,8 @@ _LT_DECL([], [old_postinstall_cmds], [2]
+ _LT_DECL([], [old_postuninstall_cmds], [2])
+ _LT_TAGDECL([], [old_archive_cmds], [2],
+     [Commands used to build an old-style archive])
++_LT_TAGDECL([], [old_archive_bc_cmds], [2],
++    [Commands used to build an old-style archive from Parfait bc files])
+ _LT_DECL([], [lock_old_archive_extraction], [0],
+     [Whether to use a lock for old archive extraction])
+ ])# _LT_CMD_OLD_ARCHIVE
+--- apr-1.7.4/build/ltmain.sh
++++ apr-1.7.4/build/ltmain.sh
+@@ -9326,7 +9326,7 @@ removelist=
  	tempremovelist=`$ECHO "$output_objdir/*"`
  	for p in $tempremovelist; do
  	  case $p in
@@ -19,7 +46,7 @@ linking Apache httpd binary.
  	       ;;
  	    $output_objdir/$outputname | $output_objdir/$libname.* | $output_objdir/$libname$release.*)
  	       if test -n "$precious_files_regex"; then
-@@ -10617,6 +10617,14 @@
+@@ -10904,6 +10904,14 @@ func_extract_archives $gentop $dlprefile
  	  func_append oldobjs " $func_extract_archives_result"
  	fi
  
@@ -34,7 +61,7 @@ linking Apache httpd binary.
  	# POSIX demands no paths to be encoded in archives.  We have
  	# to avoid creating archives with duplicate basenames if we
  	# might have to extract them afterwards, e.g., when creating a
-@@ -10664,12 +10672,19 @@
+@@ -10951,12 +10959,19 @@ done
  	fi
  	func_to_tool_file "$oldlib" func_convert_file_msys_to_w32
  	tool_oldlib=$func_to_tool_file_result
@@ -55,30 +82,3 @@ linking Apache httpd binary.
  	elif test -n "$archiver_list_spec"; then
  	  func_verbose "using command file archive linking..."
  	  for obj in $oldobjs
---- build/libtool.m4
-+++ build/libtool.m4
-@@ -1541,6 +1541,7 @@
- 
- # Determine commands to create old-style static archives.
- old_archive_cmds='$AR $AR_FLAGS $oldlib$oldobjs'
-+old_archive_bc_cmds='$AR $AR_FLAGS $oldlib.bc$oldobjs_bc'
- old_postinstall_cmds='chmod 644 $oldlib'
- old_postuninstall_cmds=
- 
-@@ -1554,6 +1555,7 @@
-     ;;
-   esac
-   old_archive_cmds="$old_archive_cmds~\$RANLIB \$tool_oldlib"
-+  old_archive_bc_cmds="$old_archive_bc_cmds~\$RANLIB \$tool_oldlib.bc"
- fi
- 
- case $host_os in
-@@ -1566,6 +1568,8 @@
- _LT_DECL([], [old_postuninstall_cmds], [2])
- _LT_TAGDECL([], [old_archive_cmds], [2],
-     [Commands used to build an old-style archive])
-+_LT_TAGDECL([], [old_archive_bc_cmds], [2],
-+    [Commands used to build an old-style archive from Parfait bc files])
- _LT_DECL([], [lock_old_archive_extraction], [0],
-     [Whether to use a lock for old archive extraction])
- ])# _LT_CMD_OLD_ARCHIVE

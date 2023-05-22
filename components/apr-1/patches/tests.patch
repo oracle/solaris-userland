@@ -1,0 +1,12 @@
+Avoid noise in test output.
+
+--- apr-1.7.4/test/testfile.c
++++ apr-1.7.4/test/testfile.c
+@@ -1563,7 +1563,6 @@ APR_ASSERT_SUCCESS(tc, "create file", rv
+     apr_file_close(f);
+ 
+     seed = (unsigned int)apr_time_now();
+-    abts_log_message("Random seed for test_atomic_append() is %u", seed);
+     srand(seed);
+ 
+     /* Create two threads appending data to the same file. */

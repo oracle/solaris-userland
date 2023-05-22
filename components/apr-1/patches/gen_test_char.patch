@@ -5,9 +5,9 @@ With: https://github.com/apache/apr/commit/609814e7d74f83492d276c13b782666351989
 gen_test_char is newly built directly without using libtool and thus without "-KPIC -DPIC".
 The result was linking error complaing about missing symbols (e.g. printf).
 
---- Makefile.in.orig	2023-02-03 16:51:32.364639433 +0100
-+++ Makefile.in	2023-02-03 16:52:06.836096511 +0100
-@@ -147,7 +147,7 @@
+--- apr-1.7.4/Makefile.in
++++ apr-1.7.4/Makefile.in
+@@ -133,7 +133,7 @@ etags `find . -name '*.[ch]'`
  
  tools/gen_test_char@EXEEXT@: $(top_srcdir)/tools/gen_test_char.c
  	$(APR_MKDIR) tools

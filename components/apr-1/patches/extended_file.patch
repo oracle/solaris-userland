@@ -1,9 +1,9 @@
 Patch origin: in-house
 Patch status: Solaris-specific; not suitable for upstream
 
---- misc/unix/start.c.orig	Fri Sep 19 11:41:54 2008
-+++ misc/unix/start.c	Fri Sep 19 11:44:38 2008
-@@ -23,6 +23,9 @@
+--- apr-1.7.4/misc/unix/start.c
++++ apr-1.7.4/misc/unix/start.c
+@@ -23,6 +23,9 @@ #include "apr_atomic.h"
  #include "apr_arch_proc_mutex.h" /* for apr_proc_mutex_unix_setup_lock() */
  #include "apr_arch_internal_time.h"
  
@@ -13,7 +13,7 @@ Patch status: Solaris-specific; not suitable for upstream
  
  APR_DECLARE(apr_status_t) apr_app_initialize(int *argc, 
                                               const char * const * *argv, 
-@@ -47,6 +50,17 @@
+@@ -47,6 +50,17 @@ if (initialized++) {
          return APR_SUCCESS;
      }
  
