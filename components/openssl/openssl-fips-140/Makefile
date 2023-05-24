@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -44,7 +44,8 @@ COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:796624c593c361c695bd16314bc6f944184f5d2ff87efcf0bfa0545aa84c4d88
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
+# We need to store the key in the cache first
+# COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=    2566
 

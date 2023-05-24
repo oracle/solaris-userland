@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -31,7 +31,6 @@ COMPONENT_PROJECT_URL=	https://pagure.io/xmlto
 COMPONENT_ARCHIVE_HASH= \
     sha256:2f986b7c9a0e9ac6728147668e776d405465284e13c74d4146c9cbc51fd8aad3
 COMPONENT_ARCHIVE_URL=	https://releases.pagure.org/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	13307
 
 COMPONENT_BAID=		29616
