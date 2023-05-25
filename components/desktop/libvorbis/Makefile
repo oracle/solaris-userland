@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		32_and_64
@@ -28,15 +28,15 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libvorbis
-COMPONENT_VERSION=	1.3.6
+COMPONENT_VERSION=	1.3.7
 COMPONENT_PROJECT_URL=	https://xiph.org/vorbis/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6ed40e0241089a42c48604dc00e362beee00036af2d8b3f46338031c9e0351cb
+	sha256:0e982409a9c3fc82ee06e08205b1355e5c6aa4c36bca58146ef399621b0ce5ab
 COMPONENT_ARCHIVE_URL=	http://downloads.xiph.org/releases/vorbis/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1758
 
-COMPONENT_BAID=		48211
+COMPONENT_BAID=		143975
 
 include $(WS_MAKE_RULES)/common.mk
 
