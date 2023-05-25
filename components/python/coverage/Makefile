@@ -48,9 +48,9 @@ COMPONENT_POST_INSTALL_ACTION =	\
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
-build:		$(BUILD_32_and_64)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_64)
 
 # Tests need unittest-mixins and flaky just to run
 # and several more to complete successfully

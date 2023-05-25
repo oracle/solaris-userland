@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
 #
 
 #
@@ -131,7 +131,6 @@ PKG_MACROS +=		IPS_COMPONENT_RE_VERSION=$(subst .,\\.,$(IPS_COMPONENT_VERSION))
 # COMPONENT_VERSION suitable for use in regular expressions.
 PKG_MACROS +=		COMPONENT_RE_VERSION=$(subst .,\\.,$(COMPONENT_VERSION))
 
-PKG_MACROS +=		PYTHON_2.7_ONLY=\#
 PKG_MACROS +=		PYTHON_3.7_ONLY=\#
 PKG_MACROS +=		PYTHON_3.9_ONLY=\#
 PKG_MACROS +=		PYTHON_3.11_ONLY=\#

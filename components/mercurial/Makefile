@@ -22,7 +22,7 @@
 #
 # Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
-BUILD_BITS= 32_and_64
+BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
@@ -44,9 +44,6 @@ COMPONENT_BAID=		72279
 PYTHON_VERSIONS = 3.7
 
 BUILD_STYLE= setup.py
-
-# Build and install 64-bit first, so that the 32-bit hg is what's installed.
-INSTALL_TARGET = $(INSTALL_64) $(INSTALL_32)
 
 # Add install dependency when system-test target is implemented.
 include $(WS_MAKE_RULES)/common.mk

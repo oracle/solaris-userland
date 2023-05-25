@@ -48,13 +48,13 @@ COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
 # common targets
-build:		$(BUILD_32_and_64)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_64)
 
-test:		$(TEST_32_and_64)
+test:		$(TEST_64)
 
-system-test:    $(SYSTEM_TEST_32_and_64)
+system-test:    $(SYSTEM_TEST_64)
 
 
 REQUIRED_PACKAGES += system/library

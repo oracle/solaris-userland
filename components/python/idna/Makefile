@@ -48,8 +48,6 @@ COMPONENT_TEST_ARGS = -m unittest discover --pattern=*.py
 
 # The test output contains arbitrary output. Use nawk to extract just the
 # sections that summarizes the test result.
-# Most of the test cases skipped in Python 2.7 because 'Test requires Python 
-# wide Unicode support'.
 COMPONENT_TEST_TRANSFORMER = $(NAWK)
 COMPONENT_TEST_TRANSFORMS = "'/^Ran .+ / { sub(\" tests in .+s\", \" tests in\"); print }; /!NF/ { print }; /^OK/ { print };'"
 

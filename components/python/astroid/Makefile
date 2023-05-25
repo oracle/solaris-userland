@@ -60,5 +60,5 @@ test:		$(TEST_NO_ARCH)
 system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/lazy-object-proxy-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/wrapt-%)
-REQUIRED_PACKAGES += $(PYVS3:%=library/python/typing-extensions-%)

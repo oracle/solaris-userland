@@ -337,26 +337,6 @@ class TestUserlandPkglint(unittest.TestCase):
             "ERROR userland.manifest002.2      "
             f"package {package} has a publisher set!\n", stderr)
 
-    @with_manifest("userland.manifest003_1.in")
-    def test_manifest003_missing_incorporate(self, ret, stdout, stderr):
-        """CFFI is incorporated when package depends on it."""
-        package = "pkg:/library/foobar@1.0.0,11.4-11.4.33.0.0.92.0"
-
-        self.assertIn(
-            "ERROR userland.manifest003.2      "
-            f"package {package} depends on CFFI, but does not incorporate it (should be at",
-            stderr)
-
-    @with_manifest("userland.manifest003_2.in")
-    def test_manifest003_wrong_incorporate(self, ret, stdout, stderr):
-        """CFFI is incorporated at a correct version."""
-        package = "pkg:/library/foobar@1.0.0,11.4-11.4.33.0.0.92.0"
-
-        self.assertIn(
-            "ERROR userland.manifest003.3      "
-            f"package {package} depends on CFFI, but incorporates it at the wrong version (",
-            stderr)
-
     @with_manifest("userland.manifest004.in")
     def test_manifest004(self, ret, stdout, stderr):
         """Unexpanded variables are correctly detected."""
@@ -406,15 +386,11 @@ class TestUserlandPkglint(unittest.TestCase):
             "file usr/lib/python/without.py doesn't have corresponding .pyc file\n", stderr)
         self.assertIn(
             "ERROR userland.manifest006.9      "
-            "file usr/lib/python/orphan.pyc doesn't have corresponding .py source file\n", stderr)
+            "file usr/lib/python/__pycache__/orphan.cpython-39.pyc doesn't have corresponding .py source file\n", stderr)  # noqa
         self.assertIn(
             "ERROR userland.manifest006.1      "
             "bad pyc magic number in usr/lib/python/__pycache__/magicmismatch.cpython-37.pyc\n",
             stderr)
-
-        self.assertIn(
-            "ERROR userland.manifest006.5      "
-            "bytecode is stale in usr/lib/python/stale2.pyc\n", stderr)
         self.assertIn(
             "ERROR userland.manifest006.5      "
             "bytecode is stale (timestamp) in usr/lib/python/__pycache__/stale3.cpython-39.pyc\n",

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -48,7 +48,7 @@ COMPONENT_TEST_CMD =	\
 	$(PYTHON) ./testasciidoc.py update --force; \
 	$(PYTHON) ./testasciidoc.py run
 COMPONENT_TEST_ARGS =
-COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
+COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results.master
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \

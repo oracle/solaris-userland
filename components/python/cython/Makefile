@@ -23,7 +23,7 @@
 #
 
 COMPILER =		gcc
-BUILD_BITS =		32_and_64
+BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Cython
@@ -71,12 +71,12 @@ COMPONENT_TEST_TRANSFORMS += \
 '-e "/^ERROR:/p" ' \
 '-e "/^FAILED/p"'
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).$(MACH).master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION).$(MACH).master
 
 # common targets
-build:		$(BUILD_32_and_64)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_64)
 
 test:		$(TEST_64)
 

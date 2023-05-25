@@ -24,7 +24,7 @@
 #
 
 COMPILER=		gcc
-BUILD_BITS=		32_and_64
+BUILD_BITS=		64
 
 include ../../../make-rules/shared-macros.mk
 
@@ -60,11 +60,11 @@ COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
 # common targets
-build:		$(BUILD_32_and_64)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_64)
 
-test:		$(TEST_32_and_64)
+test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 

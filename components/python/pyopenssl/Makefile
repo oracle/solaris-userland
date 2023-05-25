@@ -49,58 +49,11 @@ COMPONENT_BAID_OLD=		61821
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-# Convenience variables
-TARGET_37 = $(BUILD_DIR)/%-3.7/
-TARGET_39 = $(BUILD_DIR)/%-3.9/
-TARGET_311 = $(BUILD_DIR)/%-3.11/
-
-SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
-
-# Targets updated for older version build
-$(TARGET_37).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_37).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_37).tested: COMPONENT_SRC = $(COMPONENT_SRC_OLD)
-
-$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_ARCHIVE_URL=$(COMPONENT_ARCHIVE_URL_OLD)
-$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
-
-# Make sure that prep is always executed correctly and entirely (see 34726564).
-build install publish test: prep
-
-# Manifest convenience variables.
-NEW_ONLY = \#
-OLD_ONLY =
-$(MANIFEST_BASE)-pyopenssl-39.mogrified: NEW_ONLY =
-$(MANIFEST_BASE)-pyopenssl-39.mogrified: OLD_ONLY = \#
-$(MANIFEST_BASE)-pyopenssl-311.mogrified: NEW_ONLY =
-$(MANIFEST_BASE)-pyopenssl-311.mogrified: OLD_ONLY = \#
-
-PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
-PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
-
-# Meta package must have versions of older runtimes fixed
-FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)pyopenssl-.7@(.*) \
-		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
-	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-pyopenssl.mogrified \
-		> $(MANIFEST_BASE)-pyopenssl.mogrified-fixed ;
-	$(MV) $(MANIFEST_BASE)-pyopenssl.mogrified-fixed \
-		$(MANIFEST_BASE)-pyopenssl.mogrified
-
-$(MANIFEST_BASE)-pyopenssl.mangled: FIX_MANIFEST_VERSIONS
-
-
-# Testing directly inside the build directory prevents ELFCLASS errors (because
-# both 32bit and 64bit versions of Python 2.7 have their own directory and
-# cached versions of 32/64 bit precompiled .so files are thus not a problem.)
-COMPONENT_PRE_TEST_ACTION = $(CP) -r $(COMPONENT_SRC)/tests $(@D)
-COMPONENT_TEST_DIR =	$(@D)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =	--disable-warnings
 
@@ -108,11 +61,11 @@ COMPONENT_TEST_ARGS =	--disable-warnings
 COMPONENT_TEST_ENV += TZ=UTC LC_ALL=en_US.UTF-8
 
 # common targets
-build:		$(BUILD_32_and_64)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_64)
 
-test:		$(TEST_32_and_64)
+test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 

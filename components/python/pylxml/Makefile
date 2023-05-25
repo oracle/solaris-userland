@@ -73,11 +73,11 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|\(Ran [0-9][0-9]* tests\).*|\1|p" '
 
 # common targets
-build:		$(BUILD_32_and_64)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_64)
 
-test:		$(TEST_32_and_64)
+test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
@@ -51,10 +51,10 @@ COMPONENT_TEST_ARGS =
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
-build:		$(BUILD_32_and_64)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_64)
 
-test:		$(TEST_32_and_64)
+test:		$(TEST_64)
 
-system-test:    $(SYSTEM_TEST_32_and_64)
+system-test:    $(SYSTEM_TEST_64)

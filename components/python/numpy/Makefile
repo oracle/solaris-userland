@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
-BUILD_BITS = 		32_and_64
+BUILD_BITS = 		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		numpy
@@ -52,38 +52,7 @@ PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 BUILD_STYLE= setup.py
 include $(WS_MAKE_RULES)/common.mk
-
-# Convenience variables
-TARGET_37 = $(BUILD_DIR)/%-3.7/
-SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
-
-# Targets updated for older version build
-$(TARGET_37).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_37).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_37).tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_37).system-tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_37).tested: SOURCE_DIR_VECTORS = $(SOURCE_DIR_VECTORS_OLD)
-$(TARGET_37).system-tested: SOURCE_DIR_VECTORS = $(SOURCE_DIR_VECTORS_OLD)
-
-$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_ARCHIVE_URL=$(COMPONENT_ARCHIVE_URL_OLD)
-$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
-
-# Make sure that prep is always executed correctly and entirely (see 34726564).
-build install publish test: prep
-
-# Meta package must have versions of older runtimes fixed
-FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)numpy-37@(.*) \
-		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
-	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-numpy.mogrified \
-		> $(MANIFEST_BASE)-numpy.mogrified-fixed ;
-	$(MV) $(MANIFEST_BASE)-numpy.mogrified-fixed \
-		$(MANIFEST_BASE)-numpy.mogrified
-
-$(MANIFEST_BASE)-numpy.mangled: FIX_MANIFEST_VERSIONS
-
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 COMPONENT_BUILD_ARGS.gcc	+= --compiler=gnu --fcompiler=gnu95
 COMPONENT_BUILD_ARGS 		+= $(COMPONENT_BUILD_ARGS.$(COMPILER)) -lm
@@ -115,7 +84,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^ERROR/p" ' \
 	'-e "/passed,/p"'
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).$(MACH).master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION).$(MACH).master
 
 REQUIRED_PACKAGES += library/python/cython
 REQUIRED_PACKAGES += system/library

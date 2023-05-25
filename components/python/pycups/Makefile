@@ -56,13 +56,13 @@ COMPONENT_TEST_DIR=	$(COMPONENT_SRC)
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 # common targets
-build:		$(BUILD_32_and_64)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_64)
 
-test:		$(TEST_32_and_64)
+test:		$(TEST_64)
 
-system-test:    $(SYSTEM_TEST_32_and_64)
+system-test:    $(SYSTEM_TEST_64)
 
 
 REQUIRED_PACKAGES += library/print/cups-libs

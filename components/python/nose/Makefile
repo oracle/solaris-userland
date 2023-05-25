@@ -53,6 +53,7 @@ $(SOURCE_DIR)/.prep:	PYTHON_VERSION=3.7
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_ARGS =	selftest.py
+COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # Used to automatically run the Python 2.6 nose tests even though there was
 # an error found when running one of the Python 2.7 ones.

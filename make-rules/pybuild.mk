@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
 include $(WS_MAKE_RULES)/python-common.mk
@@ -30,7 +30,7 @@ $(BUILD_DIR)/%/.built:	$(SOURCE_DIR)/.prep $(BUILD_DIR)/config-%/$(CFG)
 	$(RM) -r $(@D) ; $(MKDIR) $(@D)
 	$(COMPONENT_PRE_BUILD_ACTION)
 	(cd $(SOURCE_DIR) ; $(ENV) HOME=$(BUILD_DIR)/config-$* $(COMPONENT_BUILD_ENV) \
-		$(PYTHON.$(BITS)) -m build -nw -o $(BUILD_DIR)/$*/dist)
+		$(PYTHON) -m build -nw -o $(BUILD_DIR)/$*/dist)
 	$(COMPONENT_POST_BUILD_ACTION)
 ifeq   ($(strip $(PARFAIT_BUILD)),yes)
 	-$(PARFAIT) -e all -W --baseline-out=$(@D)/parfait.baseline -z $(SOURCE_DIR) -o $(@D)/parfait.report $(@D)
@@ -49,14 +49,11 @@ PYDEPEND = $(WS_TOOLS)/pydepend
 $(BUILD_DIR)/%/.installed:	$(BUILD_DIR)/%/.built $(BUILD_DIR)/config-%/$(CFG)
 	$(COMPONENT_PRE_INSTALL_ACTION)
 	(cd $(SOURCE_DIR) ; $(ENV) HOME=$(BUILD_DIR)/config-$* $(COMPONENT_INSTALL_ENV) \
-		$(PYTHON.$(BITS)) $(WS_TOOLS)/pyinstaller $(COMPONENT_INSTALL_ARGS) $(BUILD_DIR)/$*/dist)
+		$(PYTHON) $(WS_TOOLS)/pyinstaller $(COMPONENT_INSTALL_ARGS) $(BUILD_DIR)/$*/dist)
 	$(COMPONENT_POST_INSTALL_ACTION)
 	$(PYDEPEND) $(PYTHON_VERSION) $(PROTO_DIR)$(PYTHON_LIB)
 	$(TOUCH) $@
 
-ifneq ($(findstring 2.7, $(PYTHON_VERSIONS)),)
-$(error pybuild cannot be used with Python 2.7)
-endif
 ifneq ($(findstring 3.7, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += library/python/build-37
 REQUIRED_PACKAGES += library/python/installer-37

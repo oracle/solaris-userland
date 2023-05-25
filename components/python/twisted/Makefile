@@ -55,46 +55,7 @@ PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-# Convenience variables
-TARGET_37 = $(BUILD_DIR)/%-3.7/
-SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
-
-# Targets updated for older version build
-$(TARGET_37).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_37).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_37).tested-and-compared: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_37).system-tested-and-compared: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_ARCHIVE_URL=$(COMPONENT_ARCHIVE_URL_OLD)
-$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-$(MANIFEST_BASE)-%-37.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_OLD)
-
-# Make sure that prep is always executed correctly and entirely (see 34726564).
-build install publish test: prep
-
-# Manifest convenience variables.
-NEW_ONLY = \#
-OLD_ONLY =
-$(MANIFEST_BASE)-twisted-39.mogrified: NEW_ONLY =
-$(MANIFEST_BASE)-twisted-39.mogrified: OLD_ONLY = \#
-$(MANIFEST_BASE)-twisted-311.mogrified: NEW_ONLY =
-$(MANIFEST_BASE)-twisted-311.mogrified: OLD_ONLY = \#
-
-PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
-PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
-
-# Meta package must have versions of older runtimes fixed
-FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)twisted-37@(.*) \
-		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
-	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-twisted.mogrified \
-		> $(MANIFEST_BASE)-twisted.mogrified-fixed ;
-	$(MV) $(MANIFEST_BASE)-twisted.mogrified-fixed \
-		$(MANIFEST_BASE)-twisted.mogrified
-
-$(MANIFEST_BASE)-twisted.mangled: FIX_MANIFEST_VERSIONS
-
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 # Move executables into demo directory.
 COMPONENT_INSTALL_ARGS +=	--install-scripts=usr/demo/twisted-python$(PYTHON_VERSION)
@@ -104,9 +65,8 @@ COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =	--verbose
 
 # Unfortunately the master test results files are not only different for
-# each version of Python, they can also be different for 32-bit and 64-bit
-# versions and different for x86 and SPARC platforms.
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).$(MACH).master
+# each version of Python, they can also be different for x86 and SPARC platforms.
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION).$(MACH).master
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-nE -e "s/ ?=+ ?//g" ' \
@@ -122,13 +82,13 @@ COMPONENT_SYSTEM_TEST_ARGS=	--verbose
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-build:		$(BUILD_32_and_64)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_64)
 
-test:		$(TEST_32_and_64)
+test:		$(TEST_64)
 
-system-test:    $(SYSTEM_TEST_32_and_64)
+system-test:    $(SYSTEM_TEST_64)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/automat-%)

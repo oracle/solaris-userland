@@ -59,19 +59,18 @@ both:   components/<component-name>/test/results-32.master
         components/<component-name>/test/results-64.master
 
 For Python, COMPONENT_TEST_MASTER is overridden in
-make-rules/setup.py.mk to be:
+make-rules/python-common.mk to be:
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION).master
 
 so that means it's looking for one or more of:
 
-2.6:   components/python/<component-name>/test/results-2.6-32.master
-2.6:   components/python/<component-name>/test/results-2.6-64.master
-2.7:   components/python/<component-name>/test/results-2.7-32.master
-2.7:   components/python/<component-name>/test/results-2.7-64.master
-3.4:   components/python/<component-name>/test/results-3.4-64.master
+3.7:   components/python/<component-name>/test/results-3.7.master
+3.9:   components/python/<component-name>/test/results-3.9.master
+3.11:  components/python/<component-name>/test/results-3.11.master
 
-depending upon which versions of Python this component supports.
+depending upon which versions of Python this component supports. Because all
+of our runtimes are delivered in 64 bits only, there is no need for $(BITS).
 
 Perl is similar, with COMPONENT_TEST_MASTER being overridden in:
 make-rules/makemaker.mk to be:
@@ -89,8 +88,7 @@ depending upon which versions of Perl this component supports.
 Note that if the test results are the same for both 32-bit and 64-bit or
 for all versions of Python or Perl, you can override the
 COMPONENT_TEST_MASTER definition in your component Makefile and just supply
-a single master files file. For example, in components/python/pep8 Makefile
-we have:
+a single master files file like this:
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
@@ -242,7 +240,7 @@ but with its own "_SYSTEM" instance of other variables:
 
 In the ideal case, only Makefile variables would need to be modified to
 take a component where 'gmake test' works and extend it so that 'gmake
-system-test' works; see components/python34/Makefile for such an example.
+system-test' works.
 
 The next level up from that is the case where some simple patching is needed.
 In this case, simple means:

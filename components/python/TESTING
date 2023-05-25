@@ -8,12 +8,6 @@ there are several ways of doing that, a preferred way is with the following comm
 
 `$(PYTHON) -m pytest`
 
-The reason is that $(PYTHON) variable handles correctly 32 and 64-bit versions for Python 2.7,
-which is built for both. Invocations like `/usr/bin/python-$(PYTHON_VERSION)` and
-`py.test-$(PYTHON_VERSION)` are not doing that which makes them work for BITS independent
-components but not for compiled ones. To be consistent, `$(PYTHON) -m pytest` should be used
-as a default.
-
 Components which are not tested with pytest should use a similar approach if possible,
 e.g., `$(PYTHON)` or `$(PYTHON) -m nose`
 

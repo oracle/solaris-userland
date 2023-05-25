@@ -24,7 +24,7 @@
 #
 
 COMPILER=		gcc
-BUILD_BITS=		32_and_64
+BUILD_BITS=		64
 
 include ../../../make-rules/shared-macros.mk
 
@@ -63,9 +63,9 @@ COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_SYSTEM_TEST_ENV +=	TESTOWNLIB_CC="$(CC) $(CC_PIC) %s $(CC_BITS) -shared -o %s.so"
 
 # common targets
-build:		$(BUILD_32_and_64)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_64)
 
 
 ifneq ($(TOP_LEVEL_TEST),yes)
@@ -82,9 +82,9 @@ COMPONENT_PRE_TEST_ACTION = \
 	    $(SOURCE_DIR)/doc/source/installation.rst \
 	    $(@D)/tests/doc/source
 
-test:		$(TEST_32_and_64)
+test:		$(TEST_64)
 
-system-test:	$(SYSTEM_TEST_32_and_64)
+system-test:	$(SYSTEM_TEST_64)
 
 endif
 
