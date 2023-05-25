@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,15 +28,15 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libepoxy
-COMPONENT_VERSION=	1.5.7
+COMPONENT_VERSION=	1.5.10
 COMPONENT_PROJECT_URL=  https://github.com/anholt/libepoxy
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b9e22ba707d0e723e9665c67a2b2974a86f4c4c27e3009dde24a988d1aadf643
+	sha256:a7ced37f4102b745ac86d6a70a9da399cc139ff168ba6b8002b4d8d43c900c15
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	6090
-COMPONENT_BAID=		100128
+COMPONENT_BAID=		144001
 
 BUILD_STYLE=		meson
 
