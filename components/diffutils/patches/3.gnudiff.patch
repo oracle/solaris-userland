@@ -1,0 +1,19 @@
+This patch changes the diff program used by default by auxiliary programs like
+diff3 or sdiff. After this change, the order of standard and gnu paths in PATH
+is no longer significant.
+
+The default can still be changed with --diff-program=PROGRAM option.
+
+Not intended for upstream.
+
+--- diffutils-3.8/src/Makefile.am
++++ diffutils-3.8/src/Makefile.am
+@@ -52,7 +52,7 @@ MOSTLYCLEANFILES = paths.h paths.ht
+ 
+ cmp.$(OBJEXT) diff3.$(OBJEXT) diff.$(OBJEXT) sdiff.$(OBJEXT): paths.h
+ 
+-gdiff = `echo diff|sed '$(transform)'`
++gdiff = `echo gdiff|sed '$(transform)'`
+ BUILT_SOURCES = paths.h
+ paths.h: Makefile.am
+ 	$(AM_V_GEN)(echo '#define DEFAULT_DIFF_PROGRAM "'$(gdiff)'"' && \
