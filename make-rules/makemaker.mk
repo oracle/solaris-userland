@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 # makemaker.mk is used to build, install, test perl modules for
@@ -73,7 +73,6 @@ $(foreach perlver, $(PERL_VERSIONS), \
 )
 
 # Map each $(PERL_VERSIONS) to REQUIRED_PACKAGES needed
-PERL_REQUIRED_PACKAGES_5.32 += runtime/perl-532
 PERL_REQUIRED_PACKAGES_5.36 += runtime/perl-536
 
 

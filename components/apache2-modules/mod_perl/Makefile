@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -100,7 +100,7 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/apr-1
 REQUIRED_PACKAGES += library/apr-util-1
-REQUIRED_PACKAGES += library/perl-5/CGI-532
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/CGI-5%)
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/server/apache-24
