@@ -3,9 +3,10 @@ we do not ship mmencode(1).
 
 The ISC have previously been informed, it is an Oracle specific patch.
 
---- bind-9.18.9/doc/man/rndc.conf.5in
-+++ bind-9.18.9/doc/man/rndc.conf.5in
-@@ -86,8 +86,8 @@ authentication key. The base\-64 string
+diff -r 8ae3aac3130a doc/man/rndc.conf.5in
+--- a/doc/man/rndc.conf.5in	Wed May 17 06:42:39 2023 -0700
++++ b/doc/man/rndc.conf.5in	Wed May 17 06:45:44 2023 -0700
+@@ -86,8 +86,8 @@
  .sp
  There are two common ways to generate the base\-64 string for the secret.
  The BIND 9 program \fI\%rndc\-confgen\fP can be used to generate a random
@@ -16,19 +17,19 @@ The ISC have previously been informed, it is an Oracle specific patch.
  not ship with BIND 9 but is available on many systems. See the Example
  section for sample command lines for each.
  .SH EXAMPLE
-@@ -175,9 +175,9 @@ A complete \fBrndc.conf\fP file, includi
+@@ -175,9 +175,9 @@
  is written to the standard output. Commented\-out \fBkey\fP and
  \fBcontrols\fP statements for \fI\%named.conf\fP are also printed.
  .sp
 -To generate a base\-64 secret with \fBmmencode\fP:
-+To generate a base\-64 secret with \fBbase64\fP:
++To generate a base\-64 secret with \fBbas64\fP:
  .sp
--\fBecho "known plaintext for a secret" | mmencode\fP
-+\fBecho "known plaintext for a secret" | base64\fP
+-\fBecho \(dqknown plaintext for a secret\(dq | mmencode\fP
++\fBecho \(dqknown plaintext for a secret\(dq | base64\fP
  .SH NAME SERVER CONFIGURATION
  .sp
  The name server must be configured to accept rndc connections and to
-@@ -187,7 +187,7 @@ \fBcontrols\fP statement in the BIND 9 A
+@@ -187,7 +187,7 @@
  details.
  .SH SEE ALSO
  .sp

@@ -41,15 +41,15 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.18.11
+COMPONENT_VERSION=	9.18.15
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-COMPONENT_BAID=		136763
+COMPONENT_BAID=		143902
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:8ff3352812230cbcbda42df87cad961f94163d3da457c5e4bef8057fd5df2158
+	sha256:28ae8db14862801bc2bd4fd820db00667d3f1ff9ae9cc2d06a0ef7810fed7a4e
 COMPONENT_ARCHIVE_URL=	\
 	http://ftp.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	242117
@@ -59,7 +59,7 @@ COMPONENT_ANITYA_ID=	242117
 #   gpg2 --homedir "$(hg root)/tools/.gnupg" --import codesign2021.txt
 # Care must be taken if mercurial merge required!
 # see ../../doc/makefile-variables.txt
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sha512.asc
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
 # To use BIND's test target later, need to build in-place, and not use cloney.
 # Note that this Makefile does not use BIND's test target.
@@ -183,6 +183,7 @@ COMPONENT_TEST_TRANSFORMS +=	\
 	'-e "s|bytes [0-9]*|bytes REDACTED|"g ' \
 	'-e "s|$(COMPONENT_VERSION)|\\$$(COMPONENT_VERSION)|g" ' \
 	'-e "s|^Generating key pair.*|Generating key pair.|" ' \
+	'-e "s|dnssec-keygen -K [^ ]* |dnssec-keygen -K /tmp |" ' \
 	'-e "s|Ksecure\.example\.+[0-9]*+[0-9]*|Ksecure\.example\.+nnn\.+nnn|" '
 
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master

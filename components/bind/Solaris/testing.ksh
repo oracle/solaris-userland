@@ -1,25 +1,5 @@
 #!/bin/ksh
-#
-# CDDL HEADER START
-#
-# The contents of this file are subject to the terms of the
-# Common Development and Distribution License (the "License").
-# You may not use this file except in compliance with the License.
-#
-# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-# or http://www.opensolaris.org/os/licensing.
-# See the License for the specific language governing permissions
-# and limitations under the License.
-#
-# When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
-# If applicable, add the following below this CDDL HEADER, with the
-# fields enclosed by brackets "[]" replaced with your own identifying
-# information: Portions Copyright [yyyy] [name of copyright owner]
-#
-# CDDL HEADER END
-#
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 # Written to be compatible with ksh on Solaris 10.
 
@@ -407,18 +387,26 @@ if [[ -n $pid && -f $directory/named.pid ]]; then
 fi
 
 # basic dnssec-keygen test
+# Create temporary directory to avoid collisions with other users and to
+# clean up afterward.
 if [[ -n $opt_k ]]; then
-    # Following algorithums taken from the dnssec-keygen(8) manual page
-    imps="RSASHA1 NSEC3RSASHA1 RSASHA256 RSASHA512 ECDSAP256SHA256"
-    imps="$imps ECDSAP384SHA384 ED25519 ED448"
-    # tests expected to pass (OpenSSL 3)
-    for i in $imps; do
-	run ${keygen} -K /tmp -a $i -n ZONE -fk secure.example
-    done
-    # Tests expected to fail.
-    for i in DH; do
-	run -e 1 ${keygen} -K /tmp -a $i -n ZONE -fk secure.example
-    done
+    if ! tmp=$(mktemp -d); then
+	ret=$?
+	e "Error: failed to create temporary directory for dnsssec-keygen tests"
+    else
+	# Following algorithums taken from the dnssec-keygen(8) manual page
+	imps="RSASHA1 NSEC3RSASHA1 RSASHA256 RSASHA512 ECDSAP256SHA256"
+	imps="$imps ECDSAP384SHA384 ED25519 ED448"
+	# tests expected to pass (OpenSSL 3)
+	for i in $imps; do
+	    run ${keygen} -K $tmp -q -a $i -n ZONE -fk secure.example
+	done
+	# Tests expected to fail.
+	for i in DH; do
+	    run -e 1 ${keygen} -K $tmp -q -a $i -n ZONE -fk secure.example
+	done
+	rm -rf $tmp
+    fi
 fi
 
 exit $ret
