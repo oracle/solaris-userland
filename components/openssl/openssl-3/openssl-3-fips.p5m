@@ -22,6 +22,7 @@
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through uncommitted">
+<transform file -> default restart_fmri svc:/system/cryptosvc/openssl:fips-140>
 set name=pkg.fmri \
     value=pkg:/library/security/openssl-3/fips-140-provider@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="FIPS-140 provider for OpenSSL 3 library"
@@ -49,10 +50,8 @@ file files/openssl-3-fips-install.xml \
 file files/svc-openssl-3-fips-install \
     path=lib/svc/method/svc-openssl-3-fips-install
 dir  path=usr/openssl/3/lib/$(MACH64)/ossl-modules
-file path=usr/openssl/3/lib/$(MACH64)/ossl-modules/fips.so \
-    restart_fmri=svc:/system/cryptosvc/openssl:fips-140
-dir  path=usr/openssl/3/lib//ossl-modules
-file path=usr/openssl/3/lib/ossl-modules/fips.so \
-    restart_fmri=svc:/system/cryptosvc/openssl:fips-140
+file path=usr/openssl/3/lib/$(MACH64)/ossl-modules/fips.so
+dir  path=usr/openssl/3/lib/ossl-modules
+file path=usr/openssl/3/lib/ossl-modules/fips.so
 license openssl-3.license license=Apache2.0
 depend type=require fmri=__TBD pkg.debug.depend.file=usr/openssl/3/bin/openssl
