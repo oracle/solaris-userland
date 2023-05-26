@@ -27,15 +27,19 @@ COMPILER = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		c-ares
-COMPONENT_VERSION=	1.19.0
+COMPONENT_VERSION=	1.19.1
 COMPONENT_PROJECT_URL=	https://c-ares.org
 COMPONENT_ARCHIVE_HASH= \
-    sha256:bfceba37e23fd531293829002cac0401ef49a6dc55923f7f92236585b7ad1dd3
+    sha256:321700399b72ed0e037d0074c629e7741f6b2ec2dda92956abe3e9671d3e268e
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/c-ares
 COMPONENT_ANITYA_ID=	5840
 
-COMPONENT_BAID=		141843
+COMPONENT_BAID=		144031
 
-TEST_TARGET= $(NO_TESTS)
+# Needed for "gmake test" to work as it avoids "unbound variable" error.
+unexport SHELLOPTS
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
 include $(WS_MAKE_RULES)/common.mk
