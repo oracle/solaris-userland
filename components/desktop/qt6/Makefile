@@ -27,20 +27,20 @@ COMPILER=gcc
 
 include ../../../make-rules/shared-macros.mk
 
-MAJOR_VERSION=6.4
-MICRO_VERSION=0
+MAJOR_VERSION=6.5
+MICRO_VERSION=1
 
 COMPONENT_NAME=		qt-everywhere
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_PROJECT_URL=  https://qt.io/
 COMPONENT_SRC=		$(COMPONENT_NAME)-src-$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH=	sha256:8936b0354d95fa26e87be65cc9c840495360ad93fd09b069bc780cbcab4a2ca1
+COMPONENT_ARCHIVE_HASH=	sha256:a2d88a6f8c3835dca52f3b7433149c3de606a96bbf024640c27657276cc7350a
 COMPONENT_ARCHIVE_URL=	http://download.qt.io/official_releases/qt/$(MAJOR_VERSION)/$(COMPONENT_VERSION)/single/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/qt
 COMPONENT_ANITYA_ID=	7927
 
-COMPONENT_BAID=		130978
+COMPONENT_BAID=		144225
 
 TEST_TARGET= $(SKIP_TEST)
 
@@ -96,9 +96,12 @@ CONFIGURE_OPTIONS +=  -skip qtconnectivity
 CONFIGURE_OPTIONS +=  -skip qtdatavis3d
 CONFIGURE_OPTIONS +=  -skip qtdeclarative
 CONFIGURE_OPTIONS +=  -skip qtdoc
+CONFIGURE_OPTIONS +=  -skip qtgrpc
 CONFIGURE_OPTIONS +=  -skip qtquick3d
 CONFIGURE_OPTIONS +=  -skip qtquick3dphysics
+CONFIGURE_OPTIONS +=  -skip qtquickeffectmaker
 CONFIGURE_OPTIONS +=  -skip qtimageformats
+CONFIGURE_OPTIONS +=  -skip qtlocation
 CONFIGURE_OPTIONS +=  -skip qtlottie
 CONFIGURE_OPTIONS +=  -skip qtmqtt
 CONFIGURE_OPTIONS +=  -skip qtnetworkauth
@@ -120,6 +123,11 @@ CONFIGURE_OPTIONS +=  -nomake examples
 CONFIGURE_OPTIONS +=  -no-opengl
 CONFIGURE_OPTIONS +=  -no-feature-sqlmodel
 CONFIGURE_OPTIONS +=  -no-feature-itemmodeltester
+
+# Workaround for QTBUG-113686
+ifeq ($(MACH),i386)
+COMPONENT_POST_CONFIGURE_ACTION += $(GSED) -i 's;LINK_LIBRARIES =;LINK_LIBRARIES = -lgcc ;' $(@D)/build.ninja ;
+endif
 
 COMPONENT_INSTALL_ENV += INSTALL_ROOT=$(PROTO_DIR)
 
