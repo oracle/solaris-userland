@@ -1,0 +1,113 @@
+502-cyrus-sasl-2.1.27-cumulative-ossl3.patch
+
+Taken from upstream, should be staple in future official release.
+
+diff -r 5049a040f75e -r fd8da3d1ac5e configure.ac
+--- a/configure.ac	Thu Feb 02 09:34:26 2023 -0800
++++ b/configure.ac	Thu Feb 02 09:38:26 2023 -0800
+@@ -1059,7 +1059,11 @@
+ 	with_rc4=yes)
+ 
+ if test "$with_rc4" != no; then
+-    AC_DEFINE(WITH_RC4,[],[Use RC4])
++    if test "$with_openssl" = no; then
++        AC_WARN([OpenSSL not found -- RC4 will be disabled])
++    else
++        AC_DEFINE(WITH_RC4,[],[Use RC4])
++    fi
+ fi
+ 
+ building_for_macosx=no
+diff -r 5049a040f75e -r fd8da3d1ac5e plugins/scram.c
+--- a/plugins/scram.c	Thu Feb 02 09:34:26 2023 -0800
++++ b/plugins/scram.c	Thu Feb 02 09:38:26 2023 -0800
+@@ -65,7 +65,9 @@
+ 
+ #include <openssl/sha.h>
+ #include <openssl/evp.h>
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
+ #include <openssl/hmac.h>
++#endif
+ 
+ /*****************************  Common Section  *****************************/
+ 
+@@ -289,6 +291,32 @@
+ }
+ #endif
+ 
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++
++/* Decalre as void given functions never use the result */
++void *HMAC(const EVP_MD *evp_md, const void *key, int key_len,
++                     const unsigned char *data, size_t data_len,
++                     unsigned char *md, unsigned int *md_len)
++{
++    const char *digest;
++    size_t digest_size;
++    size_t out_len;
++    void *ret = NULL;
++
++    digest = EVP_MD_get0_name(evp_md);
++    if (digest == NULL) {
++        return NULL;
++    }
++    digest_size = EVP_MD_size(evp_md);
++
++    ret = EVP_Q_mac(NULL, "hmac", NULL, digest, NULL, key, key_len,
++                    data, data_len, md, digest_size, &out_len);
++    if (ret != NULL) {
++        *md_len = (unsigned int)out_len;
++    }
++    return ret;
++}
++#endif
+ 
+ /* The result variable need to point to a buffer big enough for the [SHA-*] hash */
+ static void
+diff -r 5049a040f75e -r fd8da3d1ac5e saslauthd/lak.c
+--- a/saslauthd/lak.c	Thu Feb 02 09:34:26 2023 -0800
++++ b/saslauthd/lak.c	Thu Feb 02 09:38:26 2023 -0800
+@@ -1806,18 +1806,36 @@
+ 		return rc;
+ 	}
+ 
+-	EVP_DigestInit(mdctx, md);
+-	EVP_DigestUpdate(mdctx, passwd, strlen(passwd));
++	rc = EVP_DigestInit(mdctx, md);
++	if (rc != 1) {
++		rc = LAK_FAIL;
++		goto done;
++	}
++	rc = EVP_DigestUpdate(mdctx, passwd, strlen(passwd));
++	if (rc != 1) {
++		rc = LAK_FAIL;
++		goto done;
++	}
+ 	if (hrock->salted) {
+-		EVP_DigestUpdate(mdctx, &cred[EVP_MD_size(md)],
+-				 clen - EVP_MD_size(md));
++		rc = EVP_DigestUpdate(mdctx, &cred[EVP_MD_size(md)],
++				      clen - EVP_MD_size(md));
++		if (rc != 1) {
++		    rc = LAK_FAIL;
++		    goto done;
++		}
+ 	}
+-	EVP_DigestFinal(mdctx, digest, NULL);
+-	EVP_MD_CTX_free(mdctx);
++	rc = EVP_DigestFinal(mdctx, digest, NULL);
++	if (rc != 1) {
++		rc = LAK_FAIL;
++		goto done;
++	}
+ 
+ 	rc = memcmp((char *)cred, (char *)digest, EVP_MD_size(md));
++	rc = rc ? LAK_INVALID_PASSWORD : LAK_OK;
++done:
++	EVP_MD_CTX_free(mdctx);
+ 	free(cred);
+-	return rc ? LAK_INVALID_PASSWORD : LAK_OK;
++	return rc;
+ }
+ 
+ #endif /* HAVE_OPENSSL */

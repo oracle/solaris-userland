@@ -1,0 +1,53 @@
+106-cyrus-sasl-2.1.27-nostrncpy.patch
+
+Taken from upstream, should be staple in future official release.
+
+diff -r 92112f146389 -r 88ba82fcd746 plugins/gssapi.c
+--- a/plugins/gssapi.c	Thu Feb 02 09:17:47 2023 -0800
++++ b/plugins/gssapi.c	Thu Feb 02 09:19:12 2023 -0800
+@@ -1567,7 +1567,6 @@
+ {
+ #ifdef HAVE_GSSKRB5_REGISTER_ACCEPTOR_IDENTITY
+     const char *keytab = NULL;
+-    char keytab_path[1024];
+     unsigned int rl;
+ #endif
+     
+@@ -1589,15 +1588,7 @@
+ 	    return SASL_FAIL;
+ 	}
+ 	
+-	if(strlen(keytab) > 1024) {
+-	    utils->log(NULL, SASL_LOG_ERR,
+-		       "path to keytab is > 1024 characters");
+-	    return SASL_BUFOVER;
+-	}
+-	
+-	strncpy(keytab_path, keytab, 1024);
+-	
+-	gsskrb5_register_acceptor_identity(keytab_path);
++	gsskrb5_register_acceptor_identity(keytab);
+     }
+ #endif
+     
+diff -r 92112f146389 -r 88ba82fcd746 plugins/ntlm.c
+--- a/plugins/ntlm.c	Thu Feb 02 09:17:47 2023 -0800
++++ b/plugins/ntlm.c	Thu Feb 02 09:19:12 2023 -0800
+@@ -378,10 +378,15 @@
+ 			     unsigned *buflen __attribute__((unused)),
+ 			     int *result)
+ {
+-    char P14[14];
++    char P14[14] = { 0 };
++    int Plen;
+     unsigned char S8[] = { 0x4b, 0x47, 0x53, 0x21, 0x40, 0x23, 0x24, 0x25 };
+ 
+-    strncpy(P14, (const char *) passwd->data, sizeof(P14));
++    Plen = sizeof(P14);
++    if (passwd->len < Plen) {
++        Plen = passwd->len;
++    }
++    memcpy(P14, (const char *) passwd->data, Plen);
+     ucase(P14, sizeof(P14));
+ 
+     E(P16, (unsigned char *) P14, sizeof(P14), S8, sizeof(S8));

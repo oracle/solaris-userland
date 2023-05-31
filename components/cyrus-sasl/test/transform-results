@@ -20,11 +20,17 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 RAW_RESULTS=$1
 
-grep -v 'WARNING.*corruption.*still worked' $RAW_RESULTS | \
-grep -v 'RANDOM TEST' | grep -v 'successful result' | grep -v ',PLAIN,' \
-	> test-$RAW_RESULTS
+sed \
+-e '/WARNING.*corruption.*still worked/d' \
+-e '/RANDOM TEST/d' \
+-e '/successful result/d' \
+-e '/,PLAIN,/d' \
+< $RAW_RESULTS | sed \
+-e ':a' -e 'N' -e '$!ba' \
+-e 's/  All memory accounted for!\n//' \
+> test-$RAW_RESULTS

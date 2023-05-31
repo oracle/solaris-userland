@@ -20,14 +20,42 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
+# COMPILER was studio.  Some GNU features have crept in, e.g. format attribute.
+COMPILER=		gcc
 
 # The Makefile of this component does not support multiple build jobs.
 COMPONENT_MAKE_JOBS=1
+
 include ../../make-rules/shared-macros.mk
+
+COMPONENT_NAME=		cyrus-sasl
+#
+# If you update the COMPONENT_VERSION, you should make a corresponding change
+# in the dependency at the bottom of ../openldap/openldap-client.p5m file.
+#
+COMPONENT_VERSION=	2.1.28
+COMPONENT_ARCHIVE_URL= \
+	$(ARCHIVE_BASE)/cyrus-sasl-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+ARCHIVE_BASE=	https://github.com/cyrusimap/cyrus-sasl/releases/download
+COMPONENT_ARCHIVE_HASH=        \
+	sha256:7ccfc6abd01ed67c1a0924b353e526f1b766b21f42d4562ee635a8ebfc5bb38c
+COMPONENT_PROJECT_URL=	https://www.cyrusimap.org/sasl/
+COMPONENT_ANITYA_ID=	13280
+
+# Check DONOTUSE items when updating the version, these parts are
+# removed before configuration as per our requirements.
+DONOTUSE= $(SOURCE_DIR)/mac  $(SOURCE_DIR)/dlcompat-20010505
+
+COMPONENT_BUGDB=	library/libsasl
+
+COMPONENT_BAID=		143253
+
+COMPONENT_BUILD_ARGS +=	\
+	CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
 
 ifeq   ($(strip $(PARFAIT_BUILD)),yes)
 PATH=$(PARFAIT_TOOLS):$(GNUBIN):$(SPRO_VROOT)/bin:$(USRBINDIR)
@@ -35,64 +63,79 @@ else
 PATH=$(GNUBIN):$(SPRO_VROOT)/bin:$(USRBINDIR)
 endif
 
-COMPONENT_NAME=		cyrus-sasl
-#
-# If you update the COMPONENT_VERSION, you should make a corresponding change
-# in the dependency at the bottom of the openldap/openldap.p5m file.
-#
-COMPONENT_VERSION=	2.1.26
-COMPONENT_PROJECT_URL=	https://www.cyrusimap.org/sasl/
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:8fbc5136512b59bb793657f36fadda6359cae3b08f01fd16b3d406f1345b7bc3
-COMPONENT_ARCHIVE_URL=	ftp://ftp.cyrusimap.org/cyrus-sasl/$(COMPONENT_ARCHIVE)
-COMPONENT_ANITYA_ID=	13280
-
-# Check DONOTUSE items when updating the version and hash
-DONOTUSE= $(SOURCE_DIR)/mac  $(SOURCE_DIR)/dlcompat-20010505
-
-COMPONENT_BUGDB=	library/libsasl
-
-COMPONENT_BAID=		21953
-
 SASL2.32 = $(USRLIBDIR)/sasl2
 SASL2.64 = $(USRLIBDIR)/sasl2/$(MACH64)
 SASL_CONFDIR = $(ETCDIR)/sasl2
 PROTO_CONFDIR = $(PROTO_DIR)$(SASL_CONFDIR)
-
-# GNU Build System files have to be regenerated for automake 1.16.
-COMPONENT_PREP_ACTION = (cd $(@D); autoreconf -fiv; automake --add-missing)
 
 TESTS_DIR=$(PROTO_DIR)/tests
 TESTS_32_DIR=$(TESTS_DIR)/$(MACH32)
 
 INSTALL_TARGET=
 TEST_TARGET= $(NO_TESTS)
+
 include $(WS_MAKE_RULES)/common.mk
 
-# This causes the default compilation argument to be wrong and isn't necessary.
-studio_MT=
+$(BUILD_DIR_64)/%:	CPPFLAGS += -I$(BUILD_DIR_64)/include
+$(BUILD_DIR_32)/%:	CPPFLAGS += -I$(BUILD_DIR_32)/include
 
-CPPFLAGS += -I$(USRINCDIR)/openldap
-LDFLAGS += $(CC_BITS)  -lscf -lresolv
+# Configuration options to be applied, default option in [brackets]
+#
+# Need openssl directory to become before /usr/lib which holds libssl.so
+# See also the LDFLAGS fixup below on COMPONENT_PRE_BUILD_ACTION.
+ifeq ($(strip $(OPENSSL3)),)
+$(info $(COMPONENT_NAME) $(COMPONENT_VERSION) to use OpenSSL 3)
+PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
+CONFIGURE_OPTIONS += --with-openssl=/usr/openssl/3
+else
+$(info $(COMPONENT_NAME) $(COMPONENT_VERSION) to use OpenSSL 1)
+CONFIGURE_OPTIONS += --with-openssl=/usr/lib
+endif
 
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
+
+# enable experimental SASLdb authentication module
 CONFIGURE_OPTIONS += --enable-auth-sasldb
+
+# enable use of the saslauth daemon using state dir DIR
 CONFIGURE_OPTIONS += --with-saslauthd=/var/run/saslauthd
+
+# set the DB library to use berkeley.
 CONFIGURE_OPTIONS += --with-dblib=berkeley
+
+# choose specific GSSAPI implementation [auto]
 CONFIGURE_OPTIONS += --with-gss_impl=mit
+
+# explicitly: not using GNU ld
 CONFIGURE_OPTIONS += --without-gnu-ld
+
+# Set plugin directory location.
 CONFIGURE_OPTIONS.32 += --with-plugindir=$(SASL2.32)
 CONFIGURE_OPTIONS.64 += --with-plugindir=$(SASL2.64)
-CONFIGURE_OPTIONS.32 += --with-sasldir=$(SASL2.32)
-CONFIGURE_OPTIONS.64 += --with-sasldir=$(SASL2.64)
+
+# Use doors for IPC communication.
 CONFIGURE_OPTIONS += --with-ipctype=doors
+
+# use LDAP (in DIR) for saslauthd [no]
 CONFIGURE_OPTIONS += --with-ldap=$(USRDIR)
+
+# compile sample code [yes]
 CONFIGURE_OPTIONS += --enable-sample
+
+# enable unsupported LOGIN authentication [no]
 CONFIGURE_OPTIONS += --enable-login
+# set the directory where config files will be found PLUGINDIR:SYSCONFDIR/sasl2
 CONFIGURE_OPTIONS += --with-configdir=$(ETCDIR)/sasl2
+
+# From OpenLDAP,  we currently ship libldab as libldap_r.
+CONFIGURE_OPTIONS += --with-ldap=ldap_r
+
 CONFIGURE_OPTIONS += --enable-ldapdb
 
+# Additional directories where pkg transform should look for delivered files.
 PKG_PROTO_DIRS += $(SOURCE_DIR)/doc $(COMPONENT_DIR)/Solaris
+
+$(BUILD_DIR_64)/%:	LINT_FLAGS += -I$(BUILD_DIR_64)/include
 
 LINTINCDIR= $(SOURCE_DIR)/include/sasl
 
@@ -104,29 +147,49 @@ INCLIST= hmac-md5.h \
 	saslplug.h \
 	saslutil.h
 
+# Make an include/sasl directory to make llib-lsasl2 match llib-lsasl2.ln
+COMPONENT_PREP_ACTION += \
+	$(MKDIR) $(LINTINCDIR) ; \
+	( cd $(LINTINCDIR) && \
+	    ( for i in $(INCLIST) ; do \
+		test -f ../$$i && ln -s ../$$i $$i || \
+			echo "Warning: $$i not found!" ; \
+	    done ) \
+	) ;
+
+# Fix up manual page references, Solaris uses section 3SASL not 3.
+# Modifies Header line and sasl manual page references within.
+# libsasl2.p5m takes care of the file renames from .3 to .3sasl.
+# Note, some additional manual pages delivered from Solaris/usr/share/man/man3
+COMPONENT_PREP_ACTION +=  $(FIND) $(@D)/man -type f -exec \
+		gsed --in-place \
+			-e 's/\(^.TH ".*" \)\("3"\)/\1"3SASL"/'\
+			-e 's/\(sasl[^(]*\)(3)/\1(3SASL)/g' \
+			{} +;
+
+# For automake (prep) and $(SOURCE_DIR)/configure (configure)
 export CONFIG_SITE=$(WS_COMPONENTS)/$(COMPONENT_NAME)/Solaris/config.site
 
 CFG_COMPILE=/usr/share/$(notdir $(AUTOMAKE))
 
-COMPONENT_PREP_ACTION = ( cd $(@D) &&  \
-		( cd config && ln -s $(CFG_COMPILE)/compile . ) ; \
-		( cd saslauthd/config && ln -s $(CFG_COMPILE)/compile . ); \
-		$(AUTORECONF) -m --force -v \
-		-I $(COMPONENT_DIR)/m4   \
-		-I $(SOURCE_DIR)/cmulocal \
-		-I $(SOURCE_DIR)/config ; \
-	    )
+# GNU Build System files have to be regenerated for automake 1.16.
+COMPONENT_PREP_ACTION += (cd $(@D) && pwd && \
+		$(AUTORECONF) --verbose --force --install --symlink --make \
+		-I $(COMPONENT_DIR)/m4 \
+		-I $(SOURCE_DIR)/config \
+	    );
+# This is not ideal, but a hack that is working for our needs.
+# change LDFLAGS so that it includes OPENSSL3 path first.
+ifeq ($(strip $(OPENSSL3)),)
+$(BUILD_DIR_64)/%:	SSL3LIB = -L/usr/openssl/3/lib/64 -L/usr/lib
+$(BUILD_DIR_32)/%:	SSL3LIB = -L/usr/openssl/3/lib -L/usr/lib
+COMPONENT_PRE_BUILD_ACTION +=  $(FIND) $(@D) -name Makefile -exec \
+	gsed --in-place -e \
+	's:^\(LDFLAGS[[:space:]]*=\)\(.*\):\1 $(SSL3LIB):' {} +;
+endif
 
 # Remove some things we don't use and aren't in the BAID
-# Make an include/sasl directory to make llib-lsasl2 match llib-lsasl2.ln
-COMPONENT_PRE_CONFIGURE_ACTION = \
-	-$(RM) -r $(DONOTUSE) ; \
-	$(MKDIR) $(LINTINCDIR) ; \
-	( cd $(LINTINCDIR) && \
-	    ( for i in $(INCLIST) ; do \
-	    	ln -s ../$$i $$i  ; \
-	    done ) \
-	)
+COMPONENT_PREP_ACTION += $(RM) -r $(DONOTUSE);
 
 INSTALL_32 +=	$(PROTOUSRLIBDIR)/libsasl.so.1
 INSTALL_64 +=	$(PROTOUSRLIBDIR64)/libsasl.so.1
@@ -134,9 +197,11 @@ INSTALL_64 +=	$(PROTOUSRLIBDIR64)/libsasl.so.1
 # common targets
 install:	build $(INSTALL_32_and_64)
 
+BUILTLIBSASL=lib/.libs/libsasl.so.1
+
 COMPONENT_POST_BUILD_ACTION += \
     $(LD) -F libsasl2.so.3 $(LD_BITS) \
-    -o $(BUILD_DIR_$(BITS))/lib/.libs/libsasl.so.1 \
+    -o $(BUILD_DIR_$(BITS))/$(BUILTLIBSASL) \
     -G -hlibsasl.so.1 $(LD_B_DIRECT) $(LD_Z_DEFS) -M$(COMPONENT_DIR)/mapfile ; \
     (cd $(BUILD_DIR_$(BITS))/sample; $(ENV) $(COMPONENT_BUILD_ENV) \
 	$(MAKE) sample-client sample-server) ; \
@@ -164,10 +229,10 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(CP) $(BUILD_DIR_64)/sample/.libs/sample-server $(TESTS_DIR) ; \
         $(CP) $(BUILD_DIR_64)/sample/.libs/sample-client $(TESTS_DIR) ;
 
-$(PROTOUSRLIBDIR)/libsasl.so.1:	$(BUILD_DIR)/$(MACH32)/lib/.libs/libsasl.so.1
+$(PROTOUSRLIBDIR)/libsasl.so.1:	$(BUILD_DIR)/$(MACH32)/$(BUILTLIBSASL)
 	$(CP) $< $@
 
-$(PROTOUSRLIBDIR64)/libsasl.so.1:	$(BUILD_DIR)/$(MACH64)/lib/.libs/libsasl.so.1
+$(PROTOUSRLIBDIR64)/libsasl.so.1:	$(BUILD_DIR)/$(MACH64)/$(BUILTLIBSASL)
 	$(CP) $< $@
 
 TARBALL_DIR=sasltest
@@ -187,7 +252,11 @@ sasltest.tgz:	install
 
 REQUIRED_PACKAGES += archiver/gnu-tar
 REQUIRED_PACKAGES += database/berkeleydb-5
-REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network/ldap/openldap
+ifeq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
+REQUIRED_PACKAGES += library/security/openssl
+endif

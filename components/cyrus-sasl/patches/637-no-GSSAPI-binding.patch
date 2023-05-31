@@ -1,0 +1,47 @@
+637-no-GSSAPI-binding.patch
+
+Taken from upstream, should be staple in future official release.
+
+Fix #637 don't enable GSSAPI channel bindings by default
+
+diff -r 3ce139c78ffc -r 50e0b2d8e420 include/sasl.h
+--- a/include/sasl.h	Mon Mar 06 09:20:08 2023 -0800
++++ b/include/sasl.h	Mon Mar 06 09:45:59 2023 -0800
+@@ -304,6 +304,8 @@
+  *			   credentials to do so
+  * MUTUAL_AUTH          -- require mechanisms which provide mutual
+  *			   authentication
++ * NONSTD_CBIND         -- enable channel binding on mechs that aren't
++ *                        supposed to support them but do anyway (e.g. GSSAPI)
+  */
+ #define SASL_SEC_NOPLAINTEXT      0x0001
+ #define SASL_SEC_NOACTIVE         0x0002
+@@ -312,6 +314,7 @@
+ #define SASL_SEC_NOANONYMOUS      0x0010
+ #define SASL_SEC_PASS_CREDENTIALS 0x0020
+ #define SASL_SEC_MUTUAL_AUTH      0x0040
++#define SASL_SEC_NONSTD_CBIND     0x0080
+ #define SASL_SEC_MAXIMUM          0xFFFF
+ 
+ /* This is used when adding hash size to the security_flags field */
+diff -r 3ce139c78ffc -r 50e0b2d8e420 plugins/gssapi.c
+--- a/plugins/gssapi.c	Mon Mar 06 09:20:08 2023 -0800
++++ b/plugins/gssapi.c	Mon Mar 06 09:45:59 2023 -0800
+@@ -904,7 +904,7 @@
+ 	real_input_token.length = clientinlen;
+     }
+ 
+-    if (params->cbinding != NULL) {
++    if ((params->props.security_flags & SASL_SEC_NONSTD_CBIND) && params->cbinding != NULL) {
+         cb.application_data.length = params->cbinding->len;
+         cb.application_data.value = params->cbinding->data;
+         bindings = &cb;
+@@ -1822,7 +1822,7 @@
+ 	    req_flags = req_flags |  GSS_C_DELEG_FLAG;
+ 	}
+ 
+-        if (params->cbinding != NULL) {
++	if ((params->props.security_flags & SASL_SEC_NONSTD_CBIND) && params->cbinding != NULL) {
+             cb.application_data.length = params->cbinding->len;
+             cb.application_data.value = params->cbinding->data;
+             bindings = &cb;
