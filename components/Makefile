@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
 #
 
 include ../make-rules/shared-macros.mk
@@ -241,7 +241,9 @@ pkglint:
 publish:
 	$(PKGREPO) refresh -s $(PKG_REPO)
 	$(PKGREPO) refresh -s $(PKG_EXPERIMENTAL_REPO)
+ifndef SKIP_BUILDING_INCORPORATIONS
 	$(MAKE) incorporation
+endif
 # pkglint all of the published manifests in one batch.
 ifdef CANONICAL_REPO
 	$(MAKE) pkglint

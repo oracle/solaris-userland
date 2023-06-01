@@ -535,6 +535,13 @@ publication, the following variables are available:
 * PKG_HARDLINKS contains list of files treated as hardlink targets during
   manifest generation.  Please see "Hardlinks" paragraph in doc/manifest-check.txt
 
+* SKIP_BUILDING_INCORPORATIONS. When 'gmake publish' is executed in
+  'components' directory it will not only build components but also creates
+  incorporations and runs pkglint. While creating seeding packages it is handy
+  to build components in parallel to speed up things so we run 'gmake publish'
+  in components directory. But we do not want to run the incorporations step.
+  Defining this variable avoids exactly that.
+
 Indirectly using variables
 ==========================
 
