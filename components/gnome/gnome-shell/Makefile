@@ -81,7 +81,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/vala
-REQUIRED_PACKAGES += gnome/accessibility/caribou
 REQUIRED_PACKAGES += gnome/gnome-clocks
 REQUIRED_PACKAGES += gnome/gnome-settings-daemon
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas

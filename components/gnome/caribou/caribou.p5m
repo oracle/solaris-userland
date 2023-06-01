@@ -21,19 +21,20 @@
 # Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 <transform file path=usr.*/man/.+ -> \
-    default mangler.man.stability "pass-through volatile">
+    default mangler.man.stability "obsolete pass-through volatile">
 set name=pkg.fmri \
     value=pkg:/gnome/accessibility/caribou@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="An on-screen keyboard alternative for GNOME"
 set name=pkg.description \
     value="Caribou is a text entry and UI navigation application being developed as an alternative to the Gnome On-screen Keyboard. The overarching goal for Caribou is to create a usable solution for people whose primary way of accessing a computer is a switch device."
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=$(COMPONENT_NAME)
 set name=info.classification \
     value="org.opensolaris.category.2008:Applications/System Utilities"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2016/489
+set name=org.opensolaris.arc-caseid value=PSARC/2016/489 value=PSARC/2023/055
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=etc/xdg/autostart/caribou-autostart.desktop
 file path=usr/bin/caribou-preferences
@@ -74,6 +75,11 @@ file path=usr/share/caribou/layouts/touch/il.xml
 file path=usr/share/caribou/layouts/touch/us.xml
 file path=usr/share/dbus-1/services/org.gnome.Caribou.Antler.service
 file path=usr/share/dbus-1/services/org.gnome.Caribou.Daemon.service
+file release-notes/gnome-accessibility-caribou.txt \
+    path=usr/share/doc/release-notes/gnome-accessibility-caribou.txt \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/gir-1.0/Caribou-1.0.gir
 file path=usr/share/glib-2.0/schemas/org.gnome.antler.gschema.xml
 file path=usr/share/glib-2.0/schemas/org.gnome.caribou.gschema.xml
