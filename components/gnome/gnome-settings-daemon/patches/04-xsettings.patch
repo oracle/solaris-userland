@@ -1,0 +1,21 @@
+Revert part of 8c4bca1d2d1a641ccb1a8111b1bc90806d7c144e 
+
+Reverted to what we currently have in g-s-d 3.38 for now since this 
+causes a gnome-shell crash at startup.  Changes have been made upstream 
+with the keys in the newer versions, so need to revisit this patch during
+the Gnome 45 update.
+
+Not suitable for upstream
+
+--- a/plugins/xsettings/gsd-xsettings-manager.c	2023-05-26 09:54:02.362922108 -0700
++++ b/plugins/xsettings/gsd-xsettings-manager.c	2023-05-26 09:54:50.544304973 -0700
+@@ -1303,7 +1303,9 @@
+         g_debug ("Starting xsettings manager");
+         gnome_settings_profile_start (NULL);
+ 
++#if 0
+         migrate_settings ();
++#endif
+ 
+         if (!setup_xsettings_managers (manager)) {
+                 g_set_error (error, GSD_XSETTINGS_ERROR,
