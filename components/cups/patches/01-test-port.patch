@@ -7,8 +7,6 @@ Install trap to kill leftover cupsd.
 
 Restart test if cupsd fails to start.
 
-Expect more warning message because of specific `pdftops-renderer' setting.
-
 This patch is not for upstream. The change was made to make the tests more
 reliable in Userland infrastructure.
 
@@ -90,17 +88,3 @@ reliable in Userland infrastructure.
  
  	tries=`expr $tries + 1`
  done
-@@ -1134,10 +1137,10 @@
- 
- # Warning log messages
- count=`$GREP '^W ' $BASE/log/error_log | $GREP -v CreateProfile | $GREP -v 'libusb error' | $GREP -v ColorManager | $GREP -v 'Avahi client failed' | wc -l | awk '{print $1}'`
--if test $count != 14; then
--	echo "FAIL: $count warning messages, expected 14."
-+if test $count != 80; then
-+	echo "FAIL: $count warning messages, expected 80."
- 	$GREP '^W ' $BASE/log/error_log
--	echo "    <p>FAIL: $count warning messages, expected 14.</p>" >>$strfile
-+	echo "    <p>FAIL: $count warning messages, expected 80.</p>" >>$strfile
- 	echo "    <pre>" >>$strfile
- 	$GREP '^W ' $BASE/log/error_log | sed -e '1,$s/&/&amp;/g' -e '1,$s/</&lt;/g' >>$strfile
- 	echo "    </pre>" >>$strfile

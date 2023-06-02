@@ -3,8 +3,8 @@ methods are still supported, just use non-existent TLSCertFile/TLSKeyFile or
 comment them out of the config.
 
 Not for upstream.
---- a/conf/cups-files.conf.in
-+++ b/conf/cups-files.conf.in
+--- cups-2.4.3/conf/cups-files.conf.in
++++ cups-2.4.3/conf/cups-files.conf.in
 @@ -72,6 +72,10 @@ #ServerBin @CUPS_SERVERBIN@
  # SSL/TLS keychain for the scheduler...
  #ServerKeychain @CUPS_SERVERKEYCHAIN@
@@ -16,8 +16,8 @@ Not for upstream.
  # Location of other configuration files...
  #ServerRoot @CUPS_SERVERROOT@
  
---- a/cups/cups.h
-+++ b/cups/cups.h
+--- cups-2.4.3/cups/cups.h
++++ cups-2.4.3/cups/cups.h
 @@ -592,7 +592,7 @@ /* New in CUPS 2.0/macOS 10.10 */
  extern cups_dest_t	*cupsGetDestWithURI(const char *name, const char *uri) _CUPS_API_2_0;
  extern const char	*cupsLocalizeDestMedia(http_t *http, cups_dest_t *dest, cups_dinfo_t *info, unsigned flags, cups_size_t *size) _CUPS_API_2_0;
@@ -27,8 +27,8 @@ Not for upstream.
  
  /* New in CUPS 2.2/macOS 10.12 */
  extern ssize_t		cupsHashData(const char *algorithm, const void *data, size_t datalen, unsigned char *hash, size_t hashsize) _CUPS_API_2_2;
---- a/cups/tls-gnutls.c
-+++ b/cups/tls-gnutls.c
+--- cups-2.4.3/cups/tls-gnutls.c
++++ cups-2.4.3/cups/tls-gnutls.c
 @@ -35,6 +35,8 @@ static int		tls_options = -1,/* Options
  			tls_min_version = _HTTP_TLS_1_0,
  			tls_max_version = _HTTP_TLS_MAX;
@@ -80,9 +80,9 @@ Not for upstream.
  
    _cupsMutexUnlock(&tls_mutex);
  
-@@ -1405,6 +1420,17 @@ }
-     if (isdigit(hostname[0] & 255) || hostname[0] == '[')
-       hostname[0] = '\0';		/* Don't allow numeric addresses */
+@@ -1409,6 +1424,17 @@ hostname[0] = '\0';		/* Don't allow nume
+ 
+     _cupsMutexLock(&tls_mutex);
  
 +    /*
 +     * Use explicitly specified cert
@@ -96,31 +96,66 @@ Not for upstream.
 +        DEBUG_printf(("4_httpTLSStart: Found TLSCertFile and TLSKeyFile."));
 +    } else {
      if (hostname[0])
-     {
-      /*
-@@ -1499,7 +1525,8 @@ }
+       cn = hostname;
+     else
+@@ -1461,7 +1487,8 @@ }
  
        have_creds = !access(crtfile, R_OK) && !access(keyfile, R_OK);
      }
 -
 +    }
 +    /* Fallback to self-signed if system was not found */
-     if (!have_creds && tls_auto_create && (hostname[0] || tls_common_name))
+     if (!have_creds && tls_auto_create && cn)
      {
-       DEBUG_printf(("4_httpTLSStart: Auto-create credentials for \"%s\".", hostname[0] ? hostname : tls_common_name));
---- a/scheduler/conf.h
-+++ b/scheduler/conf.h
-@@ -240,6 +240,8 @@ VAR int			CreateSelfSignedCerts	VALUE(TR
- 					/* Automatically create self-signed certs? */
- VAR char		*ServerKeychain		VALUE(NULL);
- 					/* Keychain holding cert + key */
-+VAR char		*TLSCertFile		VALUE(NULL);
-+VAR char		*TLSKeyFile		VALUE(NULL);
- #endif /* HAVE_TLS */
+       DEBUG_printf(("4_httpTLSStart: Auto-create credentials for \"%s\".", cn));
+--- cups-2.4.3/doc/help/encryption.html
++++ cups-2.4.3/doc/help/encryption.html
+@@ -40,10 +40,12 @@ SSLOptions AllowRC4 AllowSSL3
+ </pre>
  
- #ifdef HAVE_ONDEMAND
---- a/scheduler/conf.c
-+++ b/scheduler/conf.c
+     <h2 class="title" id="SERVER">Configuring Server TLS Policies</h2>
+-    <p>Two directives in the <a href="man-cups-files.conf.html"><var>cups-files.conf</var></a> file control the server (scheduler) TLS policies - <a href="man-cups-files.conf.html#CreateSelfSignedCerts"><code>CreateSelfSignedCerts</code></a> and <a href="man-cups-files.conf.html#ServerKeychain"><code>ServerKeychain</code></a>. The default policy creates self-signed certificates as needed.</p>
++    <p>Two directives in the <a href="man-cups-files.conf.html"><var>cups-files.conf</var></a> file control the server (scheduler) TLS policies - <a href="man-cups-files.conf.html#CreateSelfSignedCerts"><code>CreateSelfSignedCerts</code></a> and <a href="man-cups-files.conf.html#ServerKeychain"><code>ServerKeychain</code></a>. On Solaris two more - <a href="man-cups-files.conf.html#TLSCertFile"><code>TLSCertFile</code></a> and <a href="man-cups-files.conf.html#TLSKeyFile"><code>TLSKeyFile</code></a> were added and pre-filled with system wide certificate location. The default policy uses system wide certificate.</p>
+     <p>The <a href="man-cupsd.conf.html#DefaultEncryption"><code>DefaultEncryption</code></a> and <a href="man-cupsd.conf.html#Encryption"><code>Encryption</code></a> directives in the <a href="man-cupsd.conf.html"><var>cupsd.conf</var></a> file control whether encryption is used. The default configuration requires encryption for remote access whenever authentication is required.</p>
+ 
+     <h2 class="title" id="PLATFORM">Platform Differences</h2>
++    <h3>Solaris<sup>&reg;</sup></h3>
++    <p><a href="man-cups-files.conf.html#TLSCertFile"><code>TLSCertFile</code></a> and <a href="man-cups-files.conf.html#TLSKeyFile"><code>TLSKeyFile</code></a> options are Solaris specific and does not exist on other platforms.</p>
+     <h3>macOS<sup>&reg;</sup></h3>
+     <p>On macOS, client configuration settings for ordinary users are stored in the <var>~/Library/Preferences/org.cups.PrintingPrefs.plist</var> file. System-wide and user certificates are stored in the system and login keychains, with private CUPS keychains being used for self-signed and CUPS-managed certificates.</p>
+     <h3>Windows<sup>&reg;</sup></h3>
+--- cups-2.4.3/doc/help/man-cups-files.conf.html
++++ cups-2.4.3/doc/help/man-cups-files.conf.html
+@@ -137,6 +137,10 @@ <dt><a name="ServerKeychain"></a><b>Serv
+ <dd style="margin-left: 5.0em">Specifies the location of TLS certificates and private keys.
+ The default is "/Library/Keychains/System.keychain" on macOS and "/etc/cups/ssl" on all other operating systems.
+ macOS uses its keychain database to store certificates and keys while other platforms use separate files in the specified directory, *.crt for PEM-encoded certificates and *.key for PEM-encoded private keys.
++<dt><a name="TLSCertFile"></a><b>TLSCertFile </b><i>path</i>
++<dd style="margin-left: 5.0em">Solaris specific. Specifies the location of TLS certificate. The default is "/etc/certs/localhost/host.crt". Both TLSCertFile and TLSKeyFile must be set for this option to be used.
++<dt><a name="TLSKeyFile"></a><b>TLSKeyFile </b><i>path</i>
++<dd style="margin-left: 5.0em">Solaris specific. Specifies the location of TLS private key. The default is "/etc/certs/localhost/host.key". Both TLSCertFile and TLSKeyFile must be set for this option to be used.
+ <dt><a name="ServerRoot"></a><b>ServerRoot </b><i>directory</i>
+ <dd style="margin-left: 5.0em">Specifies the directory containing the server configuration files.
+ The default is "/etc/cups".
+--- cups-2.4.3/man/cups-files.conf.5
++++ cups-2.4.3/man/cups-files.conf.5
+@@ -195,6 +195,14 @@ \fBServerKeychain \fIpath\fR
+ Specifies the location of TLS certificates and private keys.
+ The default is "/Library/Keychains/System.keychain" on macOS and "/etc/cups/ssl" on all other operating systems.
+ macOS uses its keychain database to store certificates and keys while other platforms use separate files in the specified directory, *.crt for PEM-encoded certificates and *.key for PEM-encoded private keys.
++.\"#TLSCertFile
++.TP 5
++\fBTLSCertFile \fIpath\fR
++Solaris specific. Specifies the location of TLS certificate. The default is "/etc/certs/localhost/host.crt". Both TLSCertFile and TLSKeyFile must be set for this option to be used.
++.\"#TLSKeyFile
++.TP 5
++\fBTLSKeyFile \fIpath\fR
++Solaris specific. Specifies the location of TLS private key. The default is "/etc/certs/localhost/host.key". Both TLSCertFile and TLSKeyFile must be set for this option to be used.
+ .\"#ServerRoot
+ .TP 5
+ \fBServerRoot \fIdirectory\fR
+--- cups-2.4.3/scheduler/conf.c
++++ cups-2.4.3/scheduler/conf.c
 @@ -151,6 +151,8 @@ { "RequestRoot",		&RequestRoot,		CUPSD_V
    { "ServerBin",		&ServerBin,		CUPSD_VARTYPE_PATHNAME },
  #ifdef HAVE_TLS
@@ -139,9 +174,20 @@ Not for upstream.
  #endif /* HAVE_TLS */
  
   /*
---- a/tools/ippeveprinter.c
-+++ b/tools/ippeveprinter.c
-@@ -726,7 +726,7 @@ printer->ppdfile = strdup(ppdfile);
+--- cups-2.4.3/scheduler/conf.h
++++ cups-2.4.3/scheduler/conf.h
+@@ -240,6 +240,8 @@ VAR int			CreateSelfSignedCerts	VALUE(TR
+ 					/* Automatically create self-signed certs? */
+ VAR char		*ServerKeychain		VALUE(NULL);
+ 					/* Keychain holding cert + key */
++VAR char		*TLSCertFile		VALUE(NULL);
++VAR char		*TLSKeyFile		VALUE(NULL);
+ #endif /* HAVE_TLS */
+ 
+ #ifdef HAVE_ONDEMAND
+--- cups-2.4.3/tools/ippeveprinter.c
++++ cups-2.4.3/tools/ippeveprinter.c
+@@ -727,7 +727,7 @@ printer->ppdfile = strdup(ppdfile);
  #endif /* !CUPS_LITE */
  
  #ifdef HAVE_TLS
@@ -150,49 +196,3 @@ Not for upstream.
  #endif /* HAVE_TLS */
  
   /*
---- a/man/cups-files.conf.5
-+++ b/man/cups-files.conf.5
-@@ -195,6 +195,14 @@ \fBServerKeychain \fIpath\fR
- Specifies the location of TLS certificates and private keys.
- The default is "/Library/Keychains/System.keychain" on macOS and "/etc/cups/ssl" on all other operating systems.
- macOS uses its keychain database to store certificates and keys while other platforms use separate files in the specified directory, *.crt for PEM-encoded certificates and *.key for PEM-encoded private keys.
-+.\"#TLSCertFile
-+.TP 5
-+\fBTLSCertFile \fIpath\fR
-+Solaris specific. Specifies the location of TLS certificate. The default is "/etc/certs/localhost/host.crt". Both TLSCertFile and TLSKeyFile must be set for this option to be used.
-+.\"#TLSKeyFile
-+.TP 5
-+\fBTLSKeyFile \fIpath\fR
-+Solaris specific. Specifies the location of TLS private key. The default is "/etc/certs/localhost/host.key". Both TLSCertFile and TLSKeyFile must be set for this option to be used.
- .\"#ServerRoot
- .TP 5
- \fBServerRoot \fIdirectory\fR
---- a/doc/help/man-cups-files.conf.html
-+++ b/doc/help/man-cups-files.conf.html
-@@ -137,6 +137,10 @@ <dt><a name="ServerKeychain"></a><b>Serv
- <dd style="margin-left: 5.0em">Specifies the location of TLS certificates and private keys.
- The default is "/Library/Keychains/System.keychain" on macOS and "/etc/cups/ssl" on all other operating systems.
- macOS uses its keychain database to store certificates and keys while other platforms use separate files in the specified directory, *.crt for PEM-encoded certificates and *.key for PEM-encoded private keys.
-+<dt><a name="TLSCertFile"></a><b>TLSCertFile </b><i>path</i>
-+<dd style="margin-left: 5.0em">Solaris specific. Specifies the location of TLS certificate. The default is "/etc/certs/localhost/host.crt". Both TLSCertFile and TLSKeyFile must be set for this option to be used.
-+<dt><a name="TLSKeyFile"></a><b>TLSKeyFile </b><i>path</i>
-+<dd style="margin-left: 5.0em">Solaris specific. Specifies the location of TLS private key. The default is "/etc/certs/localhost/host.key". Both TLSCertFile and TLSKeyFile must be set for this option to be used.
- <dt><a name="ServerRoot"></a><b>ServerRoot </b><i>directory</i>
- <dd style="margin-left: 5.0em">Specifies the directory containing the server configuration files.
- The default is "/etc/cups".
---- a/doc/help/encryption.html
-+++ b/doc/help/encryption.html
-@@ -40,10 +40,12 @@ SSLOptions AllowRC4 AllowSSL3
- </pre>
- 
-     <h2 class="title" id="SERVER">Configuring Server TLS Policies</h2>
--    <p>Two directives in the <a href="man-cups-files.conf.html"><var>cups-files.conf</var></a> file control the server (scheduler) TLS policies - <a href="man-cups-files.conf.html#CreateSelfSignedCerts"><code>CreateSelfSignedCerts</code></a> and <a href="man-cups-files.conf.html#ServerKeychain"><code>ServerKeychain</code></a>. The default policy creates self-signed certificates as needed.</p>
-+    <p>Two directives in the <a href="man-cups-files.conf.html"><var>cups-files.conf</var></a> file control the server (scheduler) TLS policies - <a href="man-cups-files.conf.html#CreateSelfSignedCerts"><code>CreateSelfSignedCerts</code></a> and <a href="man-cups-files.conf.html#ServerKeychain"><code>ServerKeychain</code></a>. On Solaris two more - <a href="man-cups-files.conf.html#TLSCertFile"><code>TLSCertFile</code></a> and <a href="man-cups-files.conf.html#TLSKeyFile"><code>TLSKeyFile</code></a> were added and pre-filled with system wide certificate location. The default policy uses system wide certificate.</p>
-     <p>The <a href="man-cupsd.conf.html#DefaultEncryption"><code>DefaultEncryption</code></a> and <a href="man-cupsd.conf.html#Encryption"><code>Encryption</code></a> directives in the <a href="man-cupsd.conf.html"><var>cupsd.conf</var></a> file control whether encryption is used. The default configuration requires encryption for remote access whenever authentication is required.</p>
- 
-     <h2 class="title" id="PLATFORM">Platform Differences</h2>
-+    <h3>Solaris<sup>&reg;</sup></h3>
-+    <p><a href="man-cups-files.conf.html#TLSCertFile"><code>TLSCertFile</code></a> and <a href="man-cups-files.conf.html#TLSKeyFile"><code>TLSKeyFile</code></a> options are Solaris specific and does not exist on other platforms.</p>
-     <h3>macOS<sup>&reg;</sup></h3>
-     <p>On macOS, client configuration settings for ordinary users are stored in the <var>~/Library/Preferences/org.cups.PrintingPrefs.plist</var> file. System-wide and user certificates are stored in the system and login keychains, with private CUPS keychains being used for self-signed and CUPS-managed certificates.</p>
-     <h3>Windows<sup>&reg;</sup></h3>

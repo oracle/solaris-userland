@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		32_and_64
@@ -30,9 +30,9 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups
 
-COMPONENT_VERSION=	2.4.2
-COMPONENT_ARCHIVE_HASH=	sha256:f03ccb40b087d1e30940a40e0141dcbba263f39974c20eb9f2521066c9c6c908
-COMPONENT_BAID=		126901
+COMPONENT_VERSION=	2.4.3
+COMPONENT_ARCHIVE_HASH=	sha256:9ddeb98f20e9c9f4af121c2b1053e7420b79bd6770f1aded2866303d27526f6f
+COMPONENT_BAID=		144665
 
 COMPONENT_PROJECT_URL=	http://www.cups.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-source.tar.gz
@@ -50,17 +50,12 @@ $(CONFIGURE_32):	LDFLAGS += -m32
 $(CONFIGURE_64):	LDFLAGS += -m64
 
 # Ensure dynamic shared objects are linked using same LDFLAGS as executables.
-CONFIGURE_ENV += DSOFLAGS="$(LDFLAGS)"
+CONFIGURE_ENV +=	DSOFLAGS="$(LDFLAGS)"
 
 CONFIGURE_OPTIONS.32 +=	--with-components=core
-CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
-CONFIGURE_OPTIONS +=	--with-rundir=/system/volatile/cups
 CONFIGURE_OPTIONS +=	--with-smfmanifestdir=$(LIBDIR)/svc/manifest/application
-CONFIGURE_OPTIONS +=	--without-rcdir
-CONFIGURE_OPTIONS +=	--with-cups-user=lp
-CONFIGURE_OPTIONS +=	--with-cups-group=lp
 CONFIGURE_OPTIONS +=	--with-tls=gnutls
 
 COMPONENT_PREP_ACTION += (cd $(@D) ; \
