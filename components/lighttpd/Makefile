@@ -27,13 +27,13 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lighttpd
-COMPONENT_VERSION=	1.4.67
+COMPONENT_VERSION=	1.4.71
 COMPONENT_PROJECT_URL=	http://www.lighttpd.net/
-COMPONENT_ARCHIVE_HASH=	sha256:de3c783a0ec3459e7e36a5ef08e13482d8640b339570dd036dfd456a6f7bb312
+COMPONENT_ARCHIVE_HASH=	sha256:3855dfed5ce7a4b006e3d434b00985852b5a91c2abc56d92071f98bfe79f9d80
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1817
 
-COMPONENT_BAID=		131722
+COMPONENT_BAID=		144376
 
 LIGHTTPD_INSTALLDIR =	$(USRDIR)/lighttpd/1.4
 LIGHTTPD_ETC =		$(ETCDIR)/lighttpd/1.4
@@ -66,10 +66,8 @@ CONFIGURE_OPTIONS +=	--with-pic
 CONFIGURE_OPTIONS +=	--with-lua
 CONFIGURE_OPTIONS +=	--with-openssl=/usr/openssl/3
 CONFIGURE_OPTIONS +=	--with-openssl-libs=/usr/openssl/3/lib/64/
-CONFIGURE_OPTIONS +=	--with-pcre
 CONFIGURE_OPTIONS +=	--with-ldap
 CONFIGURE_OPTIONS +=	--with-mysql=$(USRDIR)/mysql/8.0/bin/mysql_config
-CONFIGURE_OPTIONS +=    PCRECONFIG="$(USRBINDIR64)/pcre-config"
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "s/, *[0-9][0-9]* wallclock secs (.*CPU)$$/, <TIMINGS REMOVED>/" ' \
@@ -77,7 +75,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/.*/d" '
 
 REQUIRED_PACKAGES += database/mysql-80/library
-REQUIRED_PACKAGES += library/pcre
+REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/lua
