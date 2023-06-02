@@ -83,7 +83,7 @@ $(BUILD_DIR_32)/%:	CPPFLAGS += -I$(BUILD_DIR_32)/include
 #
 # Need openssl directory to become before /usr/lib which holds libssl.so
 # See also the LDFLAGS fixup below on COMPONENT_PRE_BUILD_ACTION.
-ifeq ($(strip $(OPENSSL3)),)
+ifneq ($(strip $(OPENSSL3)),)
 $(info $(COMPONENT_NAME) $(COMPONENT_VERSION) to use OpenSSL 3)
 PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 CONFIGURE_OPTIONS += --with-openssl=/usr/openssl/3
@@ -180,7 +180,7 @@ COMPONENT_PREP_ACTION += (cd $(@D) && pwd && \
 	    );
 # This is not ideal, but a hack that is working for our needs.
 # change LDFLAGS so that it includes OPENSSL3 path first.
-ifeq ($(strip $(OPENSSL3)),)
+ifneq ($(strip $(OPENSSL3)),)
 $(BUILD_DIR_64)/%:	SSL3LIB = -L/usr/openssl/3/lib/64 -L/usr/lib
 $(BUILD_DIR_32)/%:	SSL3LIB = -L/usr/openssl/3/lib -L/usr/lib
 COMPONENT_PRE_BUILD_ACTION +=  $(FIND) $(@D) -name Makefile -exec \
@@ -255,7 +255,7 @@ REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network/ldap/openldap
-ifeq ($(strip $(OPENSSL3)),)
+ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
 else
 REQUIRED_PACKAGES += library/security/openssl
