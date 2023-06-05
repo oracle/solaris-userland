@@ -1,0 +1,15 @@
+#
+# Not for upstream, Oracle Solaris TLS policy
+#
+diff -ru rsyslog-8.2206.0/runtime/nsd_ossl.c rsyslog-8.2206.0-notls1.1/runtime/nsd_ossl.c
+--- rsyslog-8.2206.0/runtime/nsd_ossl.c	2023-05-31 12:15:13.121895806 +0100
++++ rsyslog-8.2206.0-notls1.1/runtime/nsd_ossl.c	2023-05-31 12:17:42.185875338 +0100
+@@ -1324,6 +1324,8 @@
+ 	/* Set CTX Options */
+ 	SSL_CTX_set_options(pThis->ctx, SSL_OP_NO_SSLv2);		/* Disable insecure SSLv2 Protocol */
+ 	SSL_CTX_set_options(pThis->ctx, SSL_OP_NO_SSLv3);		/* Disable insecure SSLv3 Protocol */
++	SSL_CTX_set_options(pThis->ctx, SSL_OP_NO_TLSv1);		/* Disable insecure TLSv1.0 protocol */
++	SSL_CTX_set_options(pThis->ctx, SSL_OP_NO_TLSv1_1);		/* Disable insecure TLSv1.1 Protocol */
+ 	SSL_CTX_sess_set_cache_size(pThis->ctx,1024);			/* TODO: make configurable? */
+ 
+ 	/* Set default VERIFY Options for OpenSSL CTX - and CALLBACK */
