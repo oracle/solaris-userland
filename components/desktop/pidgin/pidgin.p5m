@@ -18,15 +18,16 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
-<transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
+<transform file path=usr.*/man/.+ -> default mangler.man.stability obsolete>
 set name=pkg.fmri \
     value=pkg:/communication/im/pidgin@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="GNOME multi-protocol instant messaging client"
 set name=pkg.description \
     value="Pidgin is a chat program which lets you log in to accounts on multiple chat networks simultaneously."
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="the GNOME multi-protocol instant messaging client"
@@ -35,7 +36,7 @@ set name=info.classification \
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2007/309 value=PSARC/2010/448 \
-    value=PSARC/2011/258
+    value=PSARC/2011/258 value=PSARC/2023/066
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/finch
 file path=usr/bin/pidgin
@@ -300,6 +301,11 @@ file path=usr/share/aclocal/purple.m4
 file path=usr/share/appdata/pidgin.appdata.xml
 file path=usr/share/applications/pidgin.desktop \
     restart_fmri=svc:/application/desktop-cache/desktop-mime-cache:default
+file release-notes/communication-im-pidgin.txt \
+    path=usr/share/doc/release-notes/communication-im-pidgin.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/icons/hicolor/16x16/apps/pidgin.png \
     restart_fmri=svc:/application/desktop-cache/icon-cache:default
 file path=usr/share/icons/hicolor/22x22/apps/pidgin.png \
