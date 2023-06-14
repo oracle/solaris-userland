@@ -85,7 +85,7 @@ check_rtime:		TARGET = check_rtime
 zone-build:		TARGET = component-zone-build
 component-hook:		TARGET = component-hook
 regen-patches:		TARGET = regen-patches
-zone-build prep build install publish test system-test check_rtime regen-patches:	\
+download zone-build prep build install publish test system-test check_rtime regen-patches:	\
 	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1 ; \
 	RET=$$? ; \
 	if [ -d $(WS_COMPONENTS)/$@/build ]; then \
