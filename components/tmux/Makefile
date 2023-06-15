@@ -43,6 +43,9 @@ COMPONENT_BAID=		133820
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
+# Some patches need configure script recreation
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+
 CONFIGURE_ENV += LIBNCURSES_CFLAGS=-I$(USRINCDIR)/ncurses
 CONFIGURE_ENV += LIBNCURSES_LIBS="-L$(USRLIBDIR64) -lncurses"
 
