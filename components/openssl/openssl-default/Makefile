@@ -30,21 +30,21 @@ COMPONENT_NAME =	openssl
 # When upgrading OpenSSL, please, DON'T FORGET TO TEST WANBOOT too.
 # For more information about wanboot-openssl testing, please refer to
 # ../README.
-COMPONENT_VERSION =	1.0.2zg
+COMPONENT_VERSION =	1.0.2zh
 # Version for IPS. It is easier to do it manually than convert the letter to a
 # number while taking into account that there might be no letter at all.
-IPS_COMPONENT_VERSION = 1.0.2.32
+IPS_COMPONENT_VERSION = 1.0.2.33
 COMPONENT_PROJECT_URL=	https://www.openssl.org/
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:09f8372eaede77ec8e6945e2d2d8eeb1b91662980cf23fe95f627b377162296c
+    sha256:d5daca76bf6e29e1f49a6272d3b56ae8e02ddfb5f94483147d5d746454a5b3a3
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	17519
 
-COMPONENT_BAID=		137921
+COMPONENT_BAID=		145222
 
 # Clone the patch files to the patches-all dir.
 # COPY_COMMON_FILES is there so that rsync is called as soon as
@@ -243,7 +243,7 @@ WANBOOT_OBJS =  \
     crypto/bn/bn_mod.o crypto/bn/bn_mont.o crypto/bn/bn_mul.o \
     crypto/bn/bn_prime.o crypto/bn/bn_print.o crypto/bn/bn_rand.o \
     crypto/bn/bn_recp.o crypto/bn/bn_shift.o crypto/bn/bn_sqr.o \
-    crypto/bn/rsa_sup_mul.o crypto/bn/bn_word.o crypto/bn/sparcv9-mont.o \
+    crypto/bn/bn_word.o crypto/bn/sparcv9-mont.o \
     crypto/bn/sparcv9a-mont.o crypto/bn/sparct4-mont.o crypto/bn/vis3-mont.o \
     crypto/buffer/buf_err.o crypto/buffer/buf_str.o crypto/buffer/buffer.o \
     crypto/camellia/camellia.o crypto/camellia/cmll_cbc.o \
