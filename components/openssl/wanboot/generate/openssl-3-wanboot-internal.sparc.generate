@@ -23,9 +23,6 @@
 # Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
-# Do not deliver the html version of the delivered manpages.
-<transform file path=usr/openssl/3/share/doc/openssl/html/man./.+ -> drop>
-
 # Do not deliver header files for disallowed ciphers
 <transform file path=usr/openssl/3/.*include/openssl/rc2.h -> drop>
 <transform file path=usr/openssl/3/.*include/openssl/rc4.h -> drop>
@@ -38,33 +35,14 @@
 <transform file path=usr/openssl/3/.*include/openssl/whrlpool.h -> drop>
 <transform file path=usr/openssl/3/.*include/openssl/seed.h -> drop>
 
-# these files are delivered by openssl-3/provider/*
-<transform file path=etc/openssl/3/fipsmodule.cnf$ -> drop>
-<transform file path=etc/openssl/3/conf.d/.+/ -> drop>
-<transform file path=etc/openssl/3/conf.d/.+/.+/ -> drop>
-<transform dir path=usr/openssl/3/lib -> drop>
-<transform dir path=usr/openssl/3/lib/ossl-modules -> drop>
-<transform dir path=usr/openssl/3/lib/$(MACH64)/ossl-modules -> drop>
-<transform file path=usr/openssl/3/lib/ossl-modules/.+.so$ -> drop>
-<transform file path=usr/openssl/3/lib/.+/ossl-modules/.+.so$ -> drop>
-# these files are handled in openssl-3.static
-<transform file path=etc/openssl/3/openssl.cnf$ -> drop>
-<transform file path=etc/openssl/3/misc/.+ -> drop>
-<transform link path=etc/openssl/3/misc/.+ -> drop>
+# these files are delivered by other openssl-3 packages.
+<transform file path=etc/openssl/3/.+ -> drop>
 <transform file path=usr/openssl/3/bin/.+ -> drop>
-<transform file path=usr/openssl/3/.+/bin/openssl -> drop>
-<transform hardlink path=usr/openssl/3/bin/.+ -> drop>
+<transform file path=usr/openssl/3/include/.+ -> drop>
+<transform file path=usr/openssl/3/lib/.+ -> drop>
+<transform file path=usr/openssl/3/share/.+ -> drop>
+<transform link hardlink -> drop>
 
-# misc
-<transform file path=etc/openssl/3/.*.dist$ -> drop>
-
-# c_rehash is obsolete.
-<transform file path=.*c_rehash$ -> drop>
-<transform link path=.*c_rehash.* -> drop>
-
-# drop lint source (PSARC/2021/099)
-<transform file path=usr/openssl/3/lib/llib-lcrypto$ -> drop>
-<transform file path=usr/openssl/3/lib/llib-lssl$ -> drop>
-
-# drop wanboot files, these are in a separate package.
-<transform file path=usr/openssl/3/wanboot/.* -> drop>
+# drop wanboot files that are of no use for linking wanboot loader.
+<transform file path=usr/openssl/3/wanboot/ssl/.+ -> drop>
+<transform file path=usr/openssl/3/wanboot/lib/64/pkgconfig/.+ -> drop>

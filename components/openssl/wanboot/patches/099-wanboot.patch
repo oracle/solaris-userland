@@ -1,0 +1,446 @@
+commit df19376aa8a123e4700849011f5b5498a43673a2
+Author: Vladimir Kotal <Vladimir.Kotal@Oracle.COM>
+Date:   Tue Jun 6 14:51:33 2023 +0200
+
+    initial set of changes to build wanboot
+
+diff --git a/crypto/bio/bio_addr.c b/crypto/bio/bio_addr.c
+index a80774bbd7..130d15a9c3 100644
+--- a/crypto/bio/bio_addr.c
++++ b/crypto/bio/bio_addr.c
+@@ -741,6 +741,29 @@ int BIO_lookup_ex(const char *host, const char *service, int lookup_type,
+         }
+     } else {
+ #endif
++
++#ifdef _BOOT
++struct  hostent {
++        char    *h_name;        /* official name of host */
++        char    **h_aliases;    /* alias list */
++        int     h_addrtype;     /* host address type */
++        int     h_length;       /* length of address */
++        char    **h_addr_list;  /* list of addresses from name server */
++#define h_addr  h_addr_list[0]  /* address, for backward compatibility */
++};
++
++extern int h_errno;
++
++extern struct hostent *gethostbyname(const char *);
++
++struct	servent {
++		char	*s_name;	/* official service name */
++		char	**s_aliases;	/* alias list */
++		int	s_port;		/* port # */
++		char	*s_proto;	/* protocol to use */
++	};
++#endif
++
+         const struct hostent *he;
+ /*
+  * Because struct hostent is defined for 32-bit pointers only with
+@@ -871,6 +894,7 @@ int BIO_lookup_ex(const char *host, const char *service, int lookup_type,
+                 se_fallback.s_port = htons((unsigned short)portnum);
+                 se_fallback.s_proto = proto;
+                 se = &se_fallback;
++#ifndef _BOOT
+             } else if (endp == service) {
+                 se = getservbyname(service, proto);
+ 
+@@ -879,6 +903,7 @@ int BIO_lookup_ex(const char *host, const char *service, int lookup_type,
+                                    "calling getservbyname()");
+                     goto err;
+                 }
++#endif
+             } else {
+                 ERR_raise(ERR_LIB_BIO, BIO_R_MALFORMED_HOST_OR_SERVICE);
+                 goto err;
+diff --git a/crypto/bio/bio_sock.c b/crypto/bio/bio_sock.c
+index 476cbcc5ce..02e8a18921 100644
+--- a/crypto/bio/bio_sock.c
++++ b/crypto/bio/bio_sock.c
+@@ -392,6 +392,13 @@ int BIO_sock_info(int sock,
+  */
+ int BIO_socket_wait(int fd, int for_read, time_t max_time)
+ {
++#ifdef _BOOT
++    /*
++     * select() is not available when linking stand-alone
++     * library for wanboot.
++     */
++    return 1;
++#else
+     fd_set confds;
+     struct timeval tv;
+     time_t now;
+@@ -411,5 +418,6 @@ int BIO_socket_wait(int fd, int for_read, time_t max_time)
+     tv.tv_sec = (long)(max_time - now); /* might overflow */
+     return select(fd + 1, for_read ? &confds : NULL,
+                   for_read ? NULL : &confds, NULL, &tv);
++#endif
+ }
+ #endif /* !defined(OPENSSL_NO_SOCK) */
+diff --git a/crypto/cryptlib.c b/crypto/cryptlib.c
+index 6e73b8352c..8dcae48cc9 100644
+--- a/crypto/cryptlib.c
++++ b/crypto/cryptlib.c
+@@ -235,6 +235,12 @@ void OPENSSL_showfatal(const char *fmta, ...)
+ # endif
+ }
+ #else
++/*
++ * Solaris libsa.a used for WAN boot doesn't provide for vfprintf(). Since
++ * OPENSSL_showfatal() is not used anywhere else then here we can safely use
++ * the code from 0.9.7d version.
++ */
++#ifndef    _BOOT
+ void OPENSSL_showfatal(const char *fmta, ...)
+ {
+ #ifndef OPENSSL_NO_STDIO
+@@ -245,6 +251,7 @@ void OPENSSL_showfatal(const char *fmta, ...)
+     va_end(ap);
+ #endif
+ }
++#endif	/* _BOOT */
+ 
+ int OPENSSL_isservice(void)
+ {
+@@ -254,8 +261,14 @@ int OPENSSL_isservice(void)
+ 
+ void OPENSSL_die(const char *message, const char *file, int line)
+ {
++#ifndef _BOOT
+     OPENSSL_showfatal("%s:%d: OpenSSL internal error: %s\n",
+                       file, line, message);
++#else
++    fprintf(stderr,
++        "%s(%d): OpenSSL internal error, assertion failed: %s\n",
++        file, line, message);
++#endif /* _BOOT */
+ #if !defined(_WIN32)
+     abort();
+ #else
+diff --git a/crypto/evp/ctrl_params_translate.c b/crypto/evp/ctrl_params_translate.c
+index 605d1503de..52ec102b44 100644
+--- a/crypto/evp/ctrl_params_translate.c
++++ b/crypto/evp/ctrl_params_translate.c
+@@ -37,6 +37,52 @@
+ #include "crypto/dh.h"
+ #include "crypto/ec.h"
+ 
++#ifdef _BOOT
++/*
++ * This is the only place in OpenSSL so far which needs atoi() and wanboot
++ * contains the definitions, however all of them are local so far.
++ * Include the implementation directly until the use of atoi() becomes
++ * widespread throughout OpenSSL code.
++ */
++
++/*
++ * This implementation is taken from stand-alone libsock library:
++ * usr/src/stand/lib/sock/sock_test.c
++ */
++#ifndef	isdigit
++#define	isdigit(c) ((c) >= '0' && (c) <= '9')
++#endif
++
++#ifndef	isspace
++#define	isspace(c) ((c) == ' ' || (c) == '\t' || (c) == '\n' || \
++		    (c) == '\r' || (c) == '\f' || (c) == '\013')
++#endif
++int
++atoi(const char *p)
++{
++	int n;
++	int c = *p++, neg = 0;
++
++	while (isspace(c)) {
++		c = *p++;
++	}
++	if (!isdigit(c)) {
++		switch (c) {
++		case '-':
++			neg++;
++			/* FALLTHROUGH */
++		case '+':
++			c = *p++;
++		}
++	}
++	for (n = 0; isdigit(c); c = *p++) {
++		n *= 10; /* two steps to avoid unnecessary overflow */
++		n += '0' - c; /* accum neg to avoid surprises at MAX */
++	}
++	return (neg ? n : -n);
++}
++#endif
++
+ struct translation_ctx_st;       /* Forwarding */
+ struct translation_st;           /* Forwarding */
+ 
+diff --git a/crypto/init.c b/crypto/init.c
+index cacf637c89..6de8cd1590 100644
+--- a/crypto/init.c
++++ b/crypto/init.c
+@@ -106,8 +106,10 @@ DEFINE_RUN_ONCE_STATIC(ossl_init_register_atexit)
+     if (_onexit(win32atexit) == NULL)
+         return 0;
+ # else
++#ifndef _BOOT
+     if (atexit(OPENSSL_cleanup) != 0)
+         return 0;
++#endif
+ # endif
+ #endif
+ 
+diff --git a/crypto/o_dir.c b/crypto/o_dir.c
+index 6857a2e17d..bb22332e29 100644
+--- a/crypto/o_dir.c
++++ b/crypto/o_dir.c
+@@ -23,7 +23,7 @@
+ #include "internal/o_dir.h"
+ 
+ #define LPDIR_H
+-#if defined OPENSSL_SYS_UNIX || defined DJGPP \
++#if (defined OPENSSL_SYS_UNIX && !defined _BOOT) || defined DJGPP \
+     || (defined __VMS_VER && __VMS_VER >= 70000000)
+ # include "LPdir_unix.c"
+ #elif defined OPENSSL_SYS_VMS
+diff --git a/crypto/sparccpuid.S b/crypto/sparccpuid.S
+index 4771dd5087..41f57ef31b 100644
+--- a/crypto/sparccpuid.S
++++ b/crypto/sparccpuid.S
+@@ -477,6 +477,7 @@ CRYPTO_memcmp:
+ .type	CRYPTO_memcmp,#function
+ .size	CRYPTO_memcmp,.-CRYPTO_memcmp
+ 
++#ifndef _BOOT
+ .global	_sparcv9_vis1_instrument_bus
+ .align	8
+ _sparcv9_vis1_instrument_bus:
+@@ -576,3 +577,7 @@ _sparcv9_vis1_instrument_bus2:
+ .section	".init",#alloc,#execinstr
+ 	call	OPENSSL_cpuid_setup
+ 	nop
++#else
++        nop
++        nop
++#endif
+diff --git a/crypto/sparcv9cap.c b/crypto/sparcv9cap.c
+index 53c0c3e045..88018fb594 100644
+--- a/crypto/sparcv9cap.c
++++ b/crypto/sparcv9cap.c
+@@ -21,7 +21,11 @@
+ #if defined(__GNUC__) && defined(__linux)
+ __attribute__ ((visibility("hidden")))
+ #endif
++#ifndef        _BOOT
+ unsigned int OPENSSL_sparcv9cap_P[2] = { SPARCV9_TICK_PRIVILEGED, 0 };
++#else
++unsigned int OPENSSL_sparcv9cap_P[2] = { SPARCV9_VIS1, 0 };
++#endif
+ 
+ unsigned long _sparcv9_rdtick(void);
+ void _sparcv9_vis1_probe(void);
+@@ -38,7 +42,7 @@ size_t _sparcv9_vis1_instrument_bus2(unsigned int *, size_t, size_t);
+ uint32_t OPENSSL_rdtsc(void)
+ {
+     if (OPENSSL_sparcv9cap_P[0] & SPARCV9_TICK_PRIVILEGED)
+-#if defined(__sun) && defined(__SVR4)
++#if defined(__sun) && defined(__SVR4) && !defined(_BOOT)
+         return gethrtime();
+ #else
+         return 0;
+@@ -49,20 +53,28 @@ uint32_t OPENSSL_rdtsc(void)
+ 
+ size_t OPENSSL_instrument_bus(unsigned int *out, size_t cnt)
+ {
++#ifndef _BOOT
+     if ((OPENSSL_sparcv9cap_P[0] & (SPARCV9_TICK_PRIVILEGED | SPARCV9_BLK)) ==
+         SPARCV9_BLK)
+         return _sparcv9_vis1_instrument_bus(out, cnt);
+     else
+         return 0;
++#else
++    return 0;
++#endif
+ }
+ 
+ size_t OPENSSL_instrument_bus2(unsigned int *out, size_t cnt, size_t max)
+ {
++#ifndef _BOOT
+     if ((OPENSSL_sparcv9cap_P[0] & (SPARCV9_TICK_PRIVILEGED | SPARCV9_BLK)) ==
+         SPARCV9_BLK)
+         return _sparcv9_vis1_instrument_bus2(out, cnt, max);
+     else
+         return 0;
++#else
++    return 0;
++#endif
+ }
+ 
+ static sigjmp_buf common_jmp;
+@@ -82,6 +94,16 @@ static unsigned int (*getisax) (unsigned int vec[], unsigned int sz) = NULL;
+ # endif
+ #endif
+ 
++#if defined(_BOOT)
++/*
++ * Hardcoding sparc capabilities for wanboot.
++ * Older CPUs are EOLed anyway.
++ */
++void OPENSSL_cpuid_setup(void)
++{
++	OPENSSL_sparcv9cap_P[0] = SPARCV9_VIS1;
++}
++#else
+ void OPENSSL_cpuid_setup(void)
+ {
+     char *e;
+@@ -229,3 +251,4 @@ void OPENSSL_cpuid_setup(void)
+     }
+ # endif
+ }
++#endif
+diff --git a/crypto/x509/v3_utl.c b/crypto/x509/v3_utl.c
+index 6e4ef26ed6..ca7751bd3b 100644
+--- a/crypto/x509/v3_utl.c
++++ b/crypto/x509/v3_utl.c
+@@ -1151,11 +1151,51 @@ int ossl_a2i_ipadd(unsigned char *ipout, const char *ipasc)
+     }
+ }
+ 
++#if    defined(_BOOT)
++/* This function was copied from bio/b_sock.c */
++static int get_ip(const char *str, unsigned char ip[4])
++{
++    unsigned int tmp[4];
++    int num = 0, c, ok = 0;
++
++    tmp[0]=tmp[1]=tmp[2]=tmp[3]=0;
++
++    for (;;) {
++        c = *(str++);
++        if ((c >= '0') && (c <= '9')) {
++            ok = 1;
++            tmp[num] = tmp[num]*10+c-'0';
++            if (tmp[num] > 255)
++                return(0);
++        } else if (c == '.') {
++            if (!ok)
++                return (-1);
++            if (num == 3)
++                return (0);
++            num++;
++            ok = 0;
++        } else if (c == '\0' && (num == 3) && ok)
++            break;
++        else
++            return(0);
++        }
++    ip[0]=tmp[0];
++    ip[1]=tmp[1];
++    ip[2]=tmp[2];
++    ip[3]=tmp[3];
++    return(1);
++}
++#endif /* _BOOT */
++
+ static int ipv4_from_asc(unsigned char *v4, const char *in)
+ {
+     const char *p;
+     int a0, a1, a2, a3, n;
+ 
++#if    defined(_BOOT)
++    if (get_ip(in, v4) != 1)
++        return 0;
++#else    /* _BOOT */
+     if (sscanf(in, "%d.%d.%d.%d%n", &a0, &a1, &a2, &a3, &n) != 4)
+         return 0;
+     if ((a0 < 0) || (a0 > 255) || (a1 < 0) || (a1 > 255)
+@@ -1168,6 +1208,7 @@ static int ipv4_from_asc(unsigned char *v4, const char *in)
+     v4[1] = a1;
+     v4[2] = a2;
+     v4[3] = a3;
++#endif
+     return 1;
+ }
+ 
+diff --git a/crypto/x509/x_all.c b/crypto/x509/x_all.c
+index e58c9ab1c1..b2bc68fca3 100644
+--- a/crypto/x509/x_all.c
++++ b/crypto/x509/x_all.c
+@@ -92,6 +92,7 @@ int X509_sign_ctx(X509 *x, EVP_MD_CTX *ctx)
+ static ASN1_VALUE *simple_get_asn1(const char *url, BIO *bio, BIO *rbio,
+                                    int timeout, const ASN1_ITEM *it)
+ {
++#ifndef OPENSSL_NO_HTTP
+     BIO *mem = OSSL_HTTP_get(url, NULL /* proxy */, NULL /* no_proxy */,
+                              bio, rbio, NULL /* cb */, NULL /* arg */,
+                              1024 /* buf_size */, NULL /* headers */,
+@@ -101,6 +102,9 @@ static ASN1_VALUE *simple_get_asn1(const char *url, BIO *bio, BIO *rbio,
+ 
+     BIO_free(mem);
+     return res;
++#else
++    return 0;
++#endif
+ }
+ 
+ X509 *X509_load_http(const char *url, BIO *bio, BIO *rbio, int timeout)
+diff --git a/include/internal/sockets.h b/include/internal/sockets.h
+index 1876af8faf..b2f584e66e 100644
+--- a/include/internal/sockets.h
++++ b/include/internal/sockets.h
+@@ -70,13 +70,15 @@ struct servent *PASCAL getservbyname(const char *, const char *);
+ #   include <time.h>
+ #  endif
+ 
++#  ifndef _BOOT
+ #  include <netdb.h>
++#  endif
+ #  if defined(OPENSSL_SYS_VMS_NODECC)
+ #   include <socket.h>
+ #   include <in.h>
+ #   include <inet.h>
+ #  else
+-#   include <sys/socket.h>
++#   include "sys/socket.h"
+ #   ifndef NO_SYS_UN_H
+ #    include <sys/un.h>
+ #    ifndef UNIX_PATH_MAX
+@@ -135,6 +137,14 @@ struct servent *PASCAL getservbyname(const char *, const char *);
+ #  define clear_socket_error()    WSASetLastError(0)
+ #  define readsocket(s,b,n)       recv((s),(b),(n),0)
+ #  define writesocket(s,b,n)      send((s),(b),(n),0)
++# elif defined(_BOOT)
++extern int socket_read(int, void *, size_t, int);
++extern int socket_close(int);
++#  define ioctlsocket(a,b,c)	  (-1)
++#  define closesocket(s)          socket_close(s)
++#  define readsocket(s,b,n)       socket_read((s),(b),(n), 200)
++#  define writesocket(s,b,n)      send((s),(b),(n), 0)
++#  define __xnet_getsockopt	  getsockopt
+ # elif defined(__DJGPP__)
+ #  define closesocket(s)          close_s(s)
+ #  define readsocket(s,b,n)       read_s(s,b,n)
+diff --git a/providers/implementations/rands/seeding/rand_unix.c b/providers/implementations/rands/seeding/rand_unix.c
+index 750afca58e..4d20f5baf0 100644
+--- a/providers/implementations/rands/seeding/rand_unix.c
++++ b/providers/implementations/rands/seeding/rand_unix.c
+@@ -78,7 +78,7 @@ static uint64_t get_timer_bits(void);
+ # undef OSSL_POSIX_TIMER_OKAY
+ /* On some systems, _POSIX_TIMERS is defined but empty.
+  * Subtracting by 0 when comparing avoids an error in this case. */
+-# if defined(_POSIX_TIMERS) && _POSIX_TIMERS -0 > 0
++# if defined(_POSIX_TIMERS) && _POSIX_TIMERS -0 > 0 && !defined(_BOOT)
+ #  if defined(__GLIBC__)
+ #   if defined(__GLIBC_PREREQ)
+ #    if __GLIBC_PREREQ(2, 17)
+@@ -842,7 +842,7 @@ static uint64_t get_timer_bits(void)
+     if (res != 0)
+         return res;
+ 
+-# if defined(__sun) || defined(__hpux)
++# if (defined(__sun) && !defined(_BOOT)) || defined(__hpux)
+     return gethrtime();
+ # elif defined(_AIX)
+     {

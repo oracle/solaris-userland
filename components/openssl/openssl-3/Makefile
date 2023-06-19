@@ -25,18 +25,7 @@ BUILD_BITS= 64_and_32
 COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		openssl-3
-COMPONENT_VERSION=	3.0.9
-COMPONENT_PROJECT_URL=	https://www.openssl.org/
-COMPONENT_SRC=		openssl-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-	sha256:eb1ab04781474360f77c318ab89d8c5a03abc38e63d65a603cabbf1b00a1dc90
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
-COMPONENT_BUGDB=	library/openssl
-COMPONENT_ANITYA_ID=	2566
-COMPONENT_BAID=		145181
-
+include Makefile.com
 
 CONFIGURE_PREFIX = /usr/openssl/3
 CONFIGURE_OPTIONS = --openssldir=/etc/openssl/3
@@ -58,20 +47,15 @@ CONFIGURE_OPTIONS.sparc.32 +=	solaris-sparcv9-gcc
 CONFIGURE_OPTIONS.i386.64  +=	solaris64-x86_64-gcc
 CONFIGURE_OPTIONS.sparc.64 +=	solaris64-sparcv9-gcc
 
-CONFIGURE_DEFAULT_DIRS = no
-
 PROTOUSRLIBDIR = $(PROTO_DIR)$(CONFIGURE_PREFIX)/lib
 PROTOUSRLIBDIR64 = $(PROTO_DIR)/$(CONFIGURE_PREFIX)/lib/$(MACH64)
 include $(WS_MAKE_RULES)/common.mk
 
-# OpenSSL does not use autoconf but its own configure system.
-CONFIGURE_SCRIPT= $(SOURCE_DIR)/config
-
-# Alsways be super careful when appending to POST/PRE actions.
+# Always be super careful when appending to POST/PRE actions.
 # We need to make sure that if any sub-action fails, the whole recipe fails,
 # hence explicit exit is added to each append.
 COMPONENT_POST_BUILD_ACTION += \
-    ../common/verify_build.sh $(@D) $(CC) $(BITS) openssl-3.p5m || exit 1;
+    ../common/verify_build.sh $(@D) $(CC) $(BITS) openssl-3.p5m regular || exit 1;
 
 COMPONENT_POST_CONFIGURE_ACTION = \
       $(GPATCH) -p1 --verbose $(@D)/Makefile patches-post-config/Makefile.patch
@@ -106,9 +90,3 @@ LINT_FLAGS += -I$(@D)/include -erroff=E_STATIC_UNUSED
 #
 COMPONENT_TEST_TARGETS = test
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-
-REQUIRED_PACKAGES += developer/build/makedepend
-# Perl is needed for Configure, tests and the distributed CA.pl script.
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += system/core-os

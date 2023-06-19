@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 function fail()
@@ -10,8 +10,8 @@ function fail()
 }
 
 # Verify that the build has certain properties.
-if (( $# != 4 )); then
-	print "usage: $0 <build_dir> <cc_path> <arch> <pkg_manifest>"
+if (( $# != 5 )); then
+	print "usage: $0 <build_dir> <cc_path> <arch> <pkg_manifest> <type>"
 	exit 1
 fi
 
@@ -28,6 +28,12 @@ echo "Using CC: ${CC}"
 
 BITS="$3"
 
+TYPE="$5"
+LIB_SUFFIX="so"
+if [[ $TYPE == "wanboot" ]]; then
+	LIB_SUFFIX="a"
+fi
+
 PKG_MANIFEST_FILE="$4"
 
 function disallowed_check()
@@ -36,10 +42,10 @@ function disallowed_check()
 	cipher_regexp=$( echo ${disallowed_ciphers[*]} | \
 	    tr '[a-z]' '[A-Z]' | sed 's/ /|/g' )
 
-	echo "Checking libcrypto.so for symbols of disallowed ciphers"
-	if elfdump $BUILD_DIR/libcrypto.so | \
+	echo "Checking libcrypto.$LIB_SUFFIX for symbols of disallowed ciphers"
+	if elfdump $BUILD_DIR/libcrypto.$LIB_SUFFIX | \
 	    egrep '($cipher_regexp)' >/dev/null; then
-		fail "libcrypto.so contains disallowed ciphers"
+		fail "libcrypto contains disallowed ciphers"
 	fi
 
 	if [[ ! -r $PKG_MANIFEST_FILE ]]; then
@@ -57,9 +63,11 @@ function disallowed_check()
 			fail "Header file $header_file should not be delivered"
 		fi
 
-		echo "Checking header file $header_file in lint library files"
-		if grep $( echo $header_file | sed 's/\./\\./' ) llib-*; then
-			fail "Header file $header_file present in lint library files"
+		if [[ $TYPE != "wanboot" ]]; then
+			echo "Checking header file $header_file in lint library files"
+			if grep $( echo $header_file | sed 's/\./\\./' ) llib-*; then
+				fail "Header file $header_file present in lint library files"
+			fi
 		fi
 	done
 }
@@ -154,9 +162,33 @@ function pkgconfig_64bit_check()
 	done
 }
 
+#
+# wanboot specific checks
+#
+function wanboot_check()
+{
+	echo "Checking functions/symbols placed into separate sections"
+	for libfile in $BUILD_DIR/$lib/*.a; do
+		#
+		# 'elfdump -c' displays section information for all
+		# object files contained therein.
+		#
+		num=$( elfdump -c "$libfile" | grep 'text%' | wc -l )
+		if (( num == 0 )); then
+			fail "no text% sections in $libfile"
+		fi
+	done
+}
+
+# common checks
 disallowed_check
-deprecated_check
-sx_check
-threads_check
-soname_check
-pkgconfig_64bit_check
+
+if [[ $TYPE == "wanboot" ]]; then
+	wanboot_check
+else
+	deprecated_check
+	sx_check
+	threads_check
+	soname_check
+	pkgconfig_64bit_check
+fi

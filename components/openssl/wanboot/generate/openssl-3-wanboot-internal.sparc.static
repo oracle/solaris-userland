@@ -20,14 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, Oracle and/or its affiliates.
 #
 
-TOPTARGETS := prep build install publish test clean clobber
-SUBDIRS=openssl-3 openssl-default openssl-fips-140 wanboot
-
-$(TOPTARGETS): $(SUBDIRS)
-$(SUBDIRS):
-	$(MAKE) -C $@ $(MAKECMDGOALS)
-
-.PHONY: $(TOPTARGETS) $(SUBDIRS)
+file path=usr/openssl/3/wanboot/lib/64/libcommon.a facet.devel=all
+file path=usr/openssl/3/wanboot/lib/64/libcrypto.a facet.devel=all
+file path=usr/openssl/3/wanboot/lib/64/libdefault.a facet.devel=all
+file path=usr/openssl/3/wanboot/lib/64/libssl.a facet.devel=all
