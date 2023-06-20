@@ -58,7 +58,7 @@ include $(WS_MAKE_RULES)/common.mk
 CFLAGS += -std=gnu99
 
 # Make sure we use a 64-bit, multithreaded perl
-CONFIGURE_ENV +=	vi_cv_path_perl=/usr/perl5/5.32/bin/perl
+CONFIGURE_ENV +=	vi_cv_path_perl=/usr/perl5/$(PERL_VERSION)/bin/perl
 # Vim's configure script looks for a "python3" executable, per PEP 394
 CONFIGURE_ENV +=	vi_cv_path_python3=$(PYTHON.3.11)
 # zh_CN.cp936.po has invalid characters which GNU msgfmt seems to be able to ignore.
