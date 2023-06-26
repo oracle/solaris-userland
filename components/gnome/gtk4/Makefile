@@ -48,6 +48,7 @@ CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 CONFIGURE_OPTIONS += -Dwayland-backend=false
+CONFIGURE_OPTIONS += -Dsassc=disabled
 CONFIGURE_OPTIONS += -Dman-pages=true
 
 # GCC 11 compiles F16C meson intrinsics test. But later fp16.c build fails
