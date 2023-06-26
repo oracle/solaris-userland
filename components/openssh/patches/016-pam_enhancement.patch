@@ -9,8 +9,8 @@
 # In the future, if these enhancements are accepted by the upstream in a
 # later release, we will remove this patch when we upgrade to that release.
 #
---- old/auth-pam.c	2023-04-07 18:05:07.789522395 +0200
-+++ new/auth-pam.c	2023-04-07 18:06:02.772318333 +0200
+--- old/auth-pam.c	2023-06-21 10:19:27.635456238 +0200
++++ new/auth-pam.c	2023-06-21 10:28:25.534967297 +0200
 @@ -622,6 +622,66 @@ sshpam_null_conv(int n, sshpam_const str
  
  static struct pam_conv null_conv = { sshpam_null_conv, NULL };
@@ -43,26 +43,22 @@
 +	if (strcmp(method_name, "none") == 0) {
 +		snprintf(svcname, BUFSIZ, "%s-none",
 +		    options.pam_service_prefix);
-+	}
-+	if (strcmp(method_name, "password") == 0) {
++	} else if (strcmp(method_name, "password") == 0) {
 +		snprintf(svcname, BUFSIZ, "%s-password",
 +		    options.pam_service_prefix);
-+	}
-+	if (strcmp(method_name, "keyboard-interactive") == 0) {
++	} else if (strcmp(method_name, "keyboard-interactive") == 0) {
 +		/* "keyboard-interactive" is too long, shorten it */
 +		snprintf(svcname, BUFSIZ, "%s-kbdint",
 +		    options.pam_service_prefix);
-+	}
-+	if (strcmp(method_name, "publickey") == 0) {
++	} else if ((strcmp(method_name, "publickey") == 0) ||
++	    (strcmp(method_name, "publickey-hostbound-v00@openssh.com") == 0)) {
 +		/* "publickey" is too long, shorten it */
 +		snprintf(svcname, BUFSIZ, "%s-pubkey",
 +		    options.pam_service_prefix);
-+	}
-+	if (strcmp(method_name, "hostbased") == 0) {
++	} else if (strcmp(method_name, "hostbased") == 0) {
 +		snprintf(svcname, BUFSIZ, "%s-hostbased",
 +		    options.pam_service_prefix);
-+	}
-+	if (strncmp(method_name, "gssapi-", 7) == 0) {
++	} else if (strncmp(method_name, "gssapi-", 7) == 0) {
 +		/*
 +		 * Although OpenSSH only supports "gssapi-with-mic"
 +		 * for now. We will still map any userauth method
@@ -70,7 +66,11 @@
 +		 */ 
 +		snprintf(svcname, BUFSIZ, "%s-gssapi",
 +		    options.pam_service_prefix);
++	} else {
++		/* Unknown userauth method */
++		fatal_f("Unknown userauth method %s", method_name);
 +	}
++
 +	return svcname;
 +}
 +#endif /* PAM_ENHANCEMENT */
@@ -156,8 +156,8 @@
  	sshpam_authctxt = authctxt;
  
  	if (sshpam_err != PAM_SUCCESS) {
---- old/auth.h	2023-04-07 18:05:07.794824660 +0200
-+++ new/auth.h	2023-04-07 18:06:02.777945307 +0200
+--- old/auth.h	2023-06-21 10:19:27.643987128 +0200
++++ new/auth.h	2023-06-21 10:19:56.654002734 +0200
 @@ -95,6 +95,9 @@ struct Authctxt {
  
  	/* Information exposed to session */
@@ -168,8 +168,8 @@
  };
  
  /*
---- old/auth2.c	2023-04-07 18:05:07.800073968 +0200
-+++ new/auth2.c	2023-04-07 18:06:02.783357054 +0200
+--- old/auth2.c	2023-06-21 10:19:27.650707663 +0200
++++ new/auth2.c	2023-06-21 10:19:56.660305282 +0200
 @@ -294,7 +294,15 @@ input_userauth_request(int type, u_int32
  #endif
  		}
@@ -266,8 +266,8 @@
  		int r, success = PRIVSEP(do_pam_account());
  
  		/* If PAM returned a message, send it to the user. */
---- old/monitor_wrap.c	2023-04-07 18:05:07.805330603 +0200
-+++ new/monitor_wrap.c	2023-04-07 18:06:02.788668283 +0200
+--- old/monitor_wrap.c	2023-06-21 10:19:27.658803993 +0200
++++ new/monitor_wrap.c	2023-06-21 10:19:56.668084992 +0200
 @@ -396,6 +396,27 @@ mm_inform_authserv(char *service, char *
  	sshbuf_free(m);
  }
@@ -296,8 +296,8 @@
  /* Do the password authentication */
  int
  mm_auth_password(struct ssh *ssh, char *password)
---- old/monitor_wrap.h	2023-04-07 18:05:07.810590260 +0200
-+++ new/monitor_wrap.h	2023-04-07 18:06:02.793871211 +0200
+--- old/monitor_wrap.h	2023-06-21 10:19:27.665271338 +0200
++++ new/monitor_wrap.h	2023-06-21 10:19:56.676284845 +0200
 @@ -48,6 +48,7 @@ DH *mm_choose_dh(int, int, int);
  int mm_sshkey_sign(struct ssh *, struct sshkey *, u_char **, size_t *,
      const u_char *, size_t, const char *, const char *,
@@ -306,8 +306,8 @@
  void mm_inform_authserv(char *, char *);
  struct passwd *mm_getpwnamallow(struct ssh *, const char *);
  char *mm_auth2_read_banner(void);
---- old/monitor.c	2023-04-07 18:05:07.815860526 +0200
-+++ new/monitor.c	2023-04-07 18:06:02.799217572 +0200
+--- old/monitor.c	2023-06-21 10:19:27.674003166 +0200
++++ new/monitor.c	2023-06-21 10:19:56.684291248 +0200
 @@ -117,6 +117,9 @@ int mm_answer_sign(struct ssh *, int, st
  int mm_answer_pwnamallow(struct ssh *, int, struct sshbuf *);
  int mm_answer_auth2_read_banner(struct ssh *, int, struct sshbuf *);
@@ -424,8 +424,8 @@
  int
  mm_answer_authserv(struct ssh *ssh, int sock, struct sshbuf *m)
  {
---- old/monitor.h	2023-04-07 18:05:07.821029166 +0200
-+++ new/monitor.h	2023-04-07 18:06:02.804495664 +0200
+--- old/monitor.h	2023-06-21 10:19:27.680595964 +0200
++++ new/monitor.h	2023-06-21 10:19:56.692970073 +0200
 @@ -63,6 +63,9 @@ enum monitor_reqtype {
  	MONITOR_REQ_PAM_FREE_CTX = 110, MONITOR_ANS_PAM_FREE_CTX = 111,
  	MONITOR_REQ_AUDIT_EVENT = 112, MONITOR_REQ_AUDIT_COMMAND = 113,
@@ -436,8 +436,8 @@
  };
  
  struct ssh;
---- old/servconf.c	2023-04-07 18:05:07.826297063 +0200
-+++ new/servconf.c	2023-04-07 18:06:02.809814228 +0200
+--- old/servconf.c	2023-06-21 10:19:27.685976417 +0200
++++ new/servconf.c	2023-06-21 10:19:56.701648600 +0200
 @@ -185,6 +185,18 @@ initialize_server_options(ServerOptions
  	options->revoked_keys_file = NULL;
  	options->sk_provider = NULL;
@@ -529,8 +529,8 @@
  	case sDeprecated:
  	case sIgnore:
  	case sUnsupported:
---- old/servconf.h	2023-04-07 18:05:07.831427341 +0200
-+++ new/servconf.h	2023-04-07 18:06:02.815051152 +0200
+--- old/servconf.h	2023-06-21 10:19:27.691121344 +0200
++++ new/servconf.h	2023-06-21 10:19:56.710097305 +0200
 @@ -53,6 +53,10 @@
  #define PUBKEYAUTH_TOUCH_REQUIRED	(1)
  #define PUBKEYAUTH_VERIFY_REQUIRED	(1<<1)
@@ -555,8 +555,8 @@
  	int	fingerprint_hash;
  	int	expose_userauth_info;
  	u_int64_t timing_secret;
---- old/sshd.8	2023-04-07 18:05:07.836550835 +0200
-+++ new/sshd.8	2023-04-07 18:06:02.820432354 +0200
+--- old/sshd.8	2023-06-21 10:19:27.699090924 +0200
++++ new/sshd.8	2023-06-21 10:19:56.717857709 +0200
 @@ -1017,6 +1017,33 @@ concurrently for different ports, this c
  started last).
  The content of this file is not sensitive; it can be world-readable.
@@ -591,8 +591,8 @@
  .Sh SEE ALSO
  .Xr scp 1 ,
  .Xr sftp 1 ,
---- old/sshd_config.5	2023-04-07 18:05:07.841794499 +0200
-+++ new/sshd_config.5	2023-04-07 18:06:02.825772543 +0200
+--- old/sshd_config.5	2023-06-21 10:19:27.705957303 +0200
++++ new/sshd_config.5	2023-06-21 10:19:56.724024627 +0200
 @@ -1359,6 +1359,21 @@ and
  key exchange methods.
  The default is
