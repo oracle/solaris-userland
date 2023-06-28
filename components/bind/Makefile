@@ -41,15 +41,15 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.18.15
+COMPONENT_VERSION=	9.18.16
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-COMPONENT_BAID=		143902
+COMPONENT_BAID=		145680
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:28ae8db14862801bc2bd4fd820db00667d3f1ff9ae9cc2d06a0ef7810fed7a4e
+	sha256:c88234fe07ee75c3c8a9e59152fee64b714643de8e22cf98da3db4d0b57e0775
 COMPONENT_ARCHIVE_URL=	\
 	http://ftp.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	242117
@@ -69,7 +69,7 @@ CLONEY :=		echo
 
 # Test Targets.
 # -------------
-TEST_TARGET=		$(TEST_64)
+TEST_TARGET=		install $(TEST_64)
 SYSTEM_TEST_TARGET=	$(SYSTEM_TEST_64)
 
 # Disable tests since it requires packages that are not available in CBE.
@@ -79,9 +79,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 # Component Configuration.
 # ------------------------
-# PYVER is important for packaging and computing requisites.
-PYTHON_VERSION =        3.9
-PKG_MACROS +=           PYVER=$(PYTHON_VERSION)
 
 # Patches to configure.in require configure script re-creation.
 # COMPONENT_PREP_ACTION +=(cd $(@D); autoreconf -vfi);
