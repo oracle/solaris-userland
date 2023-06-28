@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -31,14 +31,14 @@ include ../../make-rules/test-x11.mk
 LD_Z_IGNORE=
 
 COMPONENT_NAME=		gnuplot
-COMPONENT_VERSION=	5.4.2
-COMPONENT_PROJECT_URL=  http://gnuplot.info/
+COMPONENT_VERSION=	5.4.8
+COMPONENT_PROJECT_URL=  https://gnuplot.sourceforge.net/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:e57c75e1318133951d32a83bcdc4aff17fed28722c4e71f2305cfc2ae1cae7ba
+    sha256:931279c7caad1aff7d46cb4766f1ff41c26d9be9daf0bcf0c79deeee3d91f5cf
 COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	1216
 
-COMPONENT_BAID=		104863
+COMPONENT_BAID=		145481
 
 CXXFLAGS += -std=c++14
 
