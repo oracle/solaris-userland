@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64_and_32
+BUILD_BITS =            64
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
 COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dconf-editor
-COMPONENT_VERSION=	3.38.3
+COMPONENT_VERSION=	43.0
 COMPONENT_PROJECT_URL=	http://wiki.gnome.org/dconf
 COMPONENT_ARCHIVE_HASH= \
-	sha256:571af4c7dad4f049b53e6cd728b79addf08c27ddab6bc57b396d211866ee79e3
+	sha256:935a3c2dd76cc2a93cd5aee9a54d3947fb111eb396f4b63dc5f0ba8f8d099136
 COMPONENT_BUGDB=        gnome/gconf
 COMPONENT_ANITYA_ID=	100776
 
-COMPONENT_BAID=		121353
+COMPONENT_BAID=		144773
 BUILD_STYLE=            meson
 
 TEST_TARGET= $(NO_TESTS)
@@ -52,6 +52,7 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/dconf
 REQUIRED_PACKAGES += library/libxml2
