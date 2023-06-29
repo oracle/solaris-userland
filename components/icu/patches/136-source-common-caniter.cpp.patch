@@ -3,14 +3,12 @@
 #
 getBuffer handling is tracked upstream as
 http://www.icu-project.org/trac/ticket/12378
-diff --git a/icu/source/common/caniter.cpp b/icu/source/common/caniter.cpp
-index b28acfc..759e032 100644
---- a/icu/source/common/caniter.cpp
-+++ b/icu/source/common/caniter.cpp
-@@ -518,6 +518,10 @@ Hashtable *CanonicalIterator::extract(Hashtable *fillinResult, UChar32 comp, con
-         return NULL;
+--- icu4c-73_1/icu/source/common/caniter.cpp
++++ icu4c-73_1/icu/source/common/caniter.cpp
+@@ -518,6 +518,10 @@ status = U_MEMORY_ALLOCATION_ERROR;
+         return nullptr;
      }
-     const UChar *decomp=decompString.getBuffer();
+     const char16_t *decomp=decompString.getBuffer();
 +    if ( decomp == NULL ) {
 +        status = U_MEMORY_ALLOCATION_ERROR;
 +        return NULL;
