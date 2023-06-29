@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         rlwrap
-COMPONENT_VERSION=      0.45.1
+COMPONENT_VERSION=      0.46.1
 COMPONENT_PROJECT_URL=  https://github.com/hanslub42/rlwrap
-COMPONENT_ARCHIVE=      v$(COMPONENT_VERSION).tar.gz
+COMPONENT_ARCHIVE=      $(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5edde7bd70277c56f48aecaecb02516a3fd51984fe058d3f3e37c7bcf9c83293
+    sha256:2711986a1248f6ac59e2aecf5586205835970040d300a42b4bf8014397e73e37
 COMPONENT_ARCHIVE_URL=  \
-	$(COMPONENT_PROJECT_URL)/archive/refs/tags/$(COMPONENT_ARCHIVE)
+	$(COMPONENT_PROJECT_URL)/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4199
 
-COMPONENT_BAID=		101394
+COMPONENT_BAID=		144923
 
 include $(WS_MAKE_RULES)/common.mk
 
