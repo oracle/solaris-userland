@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -28,17 +28,17 @@ include ../../make-rules/shared-macros.mk
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 COMPONENT_NAME=		rabbitmq-server
-COMPONENT_VERSION=	3.8.18
+COMPONENT_VERSION=	3.8.35
 COMPONENT_SRC_NAME=	rabbitmq-server
 COMPONENT_PROJECT_URL=	https://www.rabbitmq.com/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_BUGDB=	service/rabbitmq
 COMPONENT_ANITYA_ID=	5585
-COMPONENT_ARCHIVE_HASH= sha256:75372b483f141cb938b6ef8a6064f10ff7c1ea2ab0649f056992b6eaa0670471
+COMPONENT_ARCHIVE_HASH= sha256:2af5353a18ad54148d7c265209b715f9cecacb06e78d3acf1ce5a4993d32ebaa
 COMPONENT_ARCHIVE_URL= https://github.com/rabbitmq/rabbitmq-server/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
-COMPONENT_BAID=		103597
+COMPONENT_BAID=		145962
 
 BUILD_STYLE= justmake
 
