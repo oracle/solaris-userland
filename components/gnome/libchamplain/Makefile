@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libchamplain
-COMPONENT_VERSION=	0.12.20
+COMPONENT_VERSION=	0.12.21
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libchamplain
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:0232b4bfcd130a1c5bda7b6aec266bf2d06e701e8093df1886f1e26bc1ba3066
+	sha256:a915cd172a0c52944c5579fcb4683f8a878c571bf5e928254b5dafefc727e5a7
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1576
 
-COMPONENT_BAID=		88337
+COMPONENT_BAID=		145533
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -47,6 +47,8 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # g-ir-scanner
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
+CONFIGURE_OPTIONS += -Dlibsoup3=false
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
