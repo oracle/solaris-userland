@@ -33,10 +33,7 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cyrus-sasl
-#
-# If you update the COMPONENT_VERSION, you should make a corresponding change
-# in the dependency at the bottom of ../openldap/openldap-client.p5m file.
-#
+# A change to COMPONENT_VERSION requires it to be seeded to build servers.
 COMPONENT_VERSION=	2.1.28
 COMPONENT_ARCHIVE_URL= \
 	$(ARCHIVE_BASE)/cyrus-sasl-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
@@ -53,6 +50,41 @@ DONOTUSE= $(SOURCE_DIR)/mac  $(SOURCE_DIR)/dlcompat-20010505
 COMPONENT_BUGDB=	library/libsasl
 
 COMPONENT_BAID=		143253
+
+#
+# OpenLDAP has a requirement on the version of Cyrus-SASL.
+#
+# A change to the version of Cyrus-SASL REQUIRES a change to OpenLDAP
+# so that both are built and delivered in the same build.  To
+# accomplish this the Cyrus-SASL changes should be built and installed
+# (locally seeded, meaning you'll need a private build environment)
+# before OpenLDAP is built and tested.
+#
+# The following check is to assert that OpenLDAP is dependent on
+# Cyrus-SASL which contains a similar build time dependency check.
+# ASSERT_PREP_ACTION can be overwritten to skip this test, caution advised!
+LDAP_REQUIRE = \
+	"depend type=require fmri=pkg:/system/library/security/libsasl2"
+LDAP_SERVER_P5M = $(WS_COMPONENTS)/openldap/openldap-server.p5m
+ASSERT_PREP_ACTION = \
+	echo 'Assert openLDAP Makefile expects version $(COMPONENT_VERSION)';\
+	if ! $(GNU_GREP) -q \
+		'SASL_REQUIRED_VERSION=[[:space:]]$(COMPONENT_VERSION)' \
+		$(WS_COMPONENTS)/openldap/Makefile; \
+	then \
+		echo 'ERROR: OpenLDAP not expecting this version!'; \
+		echo 'OpenLDAP has built in checks that version must match!'; \
+		exit 1; \
+	fi; \
+	echo 'Assert OpenLDAP requires Cyrus-SASL $(COMPONENT_VERSION)'; \
+	if ! $(GNU_GREP) -q \
+		$(LDAP_REQUIRE)@$(COMPONENT_VERSION) $(LDAP_SERVER_P5M); \
+	then \
+		echo 'ERROR: pkg file $(LDAP_SERVER_P5M)'; \
+		echo 'Does not require libsasl2@$(COMPONENT_VERSION)!'; \
+		exit 1; \
+	fi;
+COMPONENT_PREP_ACTION += $(ASSERT_PREP_ACTION)
 
 COMPONENT_BUILD_ARGS +=	\
 	CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
@@ -84,11 +116,9 @@ $(BUILD_DIR_32)/%:	CPPFLAGS += -I$(BUILD_DIR_32)/include
 # Need openssl directory to become before /usr/lib which holds libssl.so
 # See also the LDFLAGS fixup below on COMPONENT_PRE_BUILD_ACTION.
 ifneq ($(strip $(OPENSSL3)),)
-$(info $(COMPONENT_NAME) $(COMPONENT_VERSION) to use OpenSSL 3)
 PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 CONFIGURE_OPTIONS += --with-openssl=/usr/openssl/3
 else
-$(info $(COMPONENT_NAME) $(COMPONENT_VERSION) to use OpenSSL 1)
 CONFIGURE_OPTIONS += --with-openssl=/usr/lib
 endif
 

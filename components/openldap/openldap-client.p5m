@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through uncommitted">
@@ -452,7 +452,8 @@ group groupname=openldap gid=75
 user username=openldap ftpuser=false gcos-field="OpenLDAP User" group=openldap \
     login-shell=/usr/bin/pfbash password=NP uid=75
 license openldap.license license="openldap license"
-# This dependency is because we are building against cyrus-sasl from its proto
-# area and bypassing the auto-generated dependency.  When upstream libsasl
-# is updated, this version number must be adjusted.
-depend type=require fmri=pkg:/system/library/security/libsasl2@2.1.26
+# Dependency is because OpenLDAP stores the exact version of Cyrus-SASL that it
+# was built with and refuses to run if they do not match, giving error, e.g.:
+# ldap_int_sasl_init: SASL library version mismatch: expected 2.1.28, got 2.1.26
+# Therefore this MUST match the Cyrus-SASL version number exactly.
+depend type=require fmri=pkg:/system/library/security/libsasl2@2.1.28

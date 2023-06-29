@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS= 64_and_32
@@ -47,6 +47,50 @@ COMPONENT_ANITYA_ID=	2551
 
 COMPONENT_BAID=		112873
 
+#
+# Cyrus-SASL is a requirement.
+#
+# A change to the version of Cyrus-SASL REQUIRES a change here in
+# OpenLDAP so that both are built and delivered in the same build.  To
+# accomplish this the Cyrus-SASL changes should be built and installed
+# (locally seeded, meaning you'll need a private build environment)
+# before OpenLDAP is built and tested.
+#
+# The following check is to assert that OpenLDAP is dependent on
+# Cyrus-SASL which contains a similar build time dependency check.
+# ASSERT_PREP_ACTION can be overwritten to skip this test, caution advised!
+SASL_REQUIRED_VERSION= 2.1.28
+LDAP_REQUIRE = \
+	"depend type=require fmri=pkg:/system/library/security/libsasl2"
+LDAP_SERVER_P5M = $(COMPONENT_DIR)/openldap-server.p5m
+LDAP_CLIENT_P5M = $(COMPONENT_DIR)/openldap-client.p5m
+ASSERT_PREP_ACTION = \
+	echo 'Assert Cyrus-SASL version matches $(SASL_REQUIRED_VERSION)'; \
+	if ! $(GNU_GREP) -q \
+		'COMPONENT_VERSION=[[:space:]]$(SASL_REQUIRED_VERSION)' \
+		$(WS_COMPONENTS)/cyrus-sasl/Makefile; \
+	then \
+		echo 'ERROR: Cyrus_SASL not at expected version!'; \
+		echo 'OpenLDAP has built in checks that version must match!'; \
+		exit 1; \
+	fi; \
+	echo 'Assert OpenLDAP requires Cyrus-SASL $(SASL_REQUIRED_VERSION)'; \
+	if ! $(GNU_GREP) -q \
+		$(LDAP_REQUIRE)@$(SASL_REQUIRED_VERSION) $(LDAP_SERVER_P5M); \
+	then \
+		echo 'ERROR: pkg file $(LDAP_SERVER_P5M)'; \
+		echo 'Does not require libsasl2@$(SASL_REQUIRED_VERSION)!'; \
+		exit 1; \
+	fi; \
+	if ! $(GNU_GREP) -q \
+		$(LDAP_REQUIRE)@$(SASL_REQUIRED_VERSION) $(LDAP_CLIENT_P5M); \
+	then \
+		echo 'ERROR: pkg file $(LDAP_CLIENT_P5M)'; \
+		echo 'Does not require libsasl2@$(SASL_REQUIRED_VERSION)!'; \
+		exit 1; \
+	fi;
+COMPONENT_PREP_ACTION += $(ASSERT_PREP_ACTION)
+
 # Set DEBUG=yes in environment to make this a debug build, inc. LDAP_DEBUG
 ifeq ($(DEBUG), yes)
 # Append to Studio optimization level (see ../../make-rules/shared-macros.mk)
@@ -69,6 +113,8 @@ endif
 # SOURCE_DATE_EPOCH when set to any non-null value prevents mkversion
 # from placing build machine information in deliverable files.
 COMPONENT_BUILD_ENV += SOURCE_DATE_EPOCH=1
+# LTCFLAGS is LibTool C FLAGS, see ltmain.sh.
+COMPONENT_BUILD_ENV += LTCFLAGS="-m$(BITS)"
 
 # Simple Document Format (SDF), to produce html documentation.
 SDFVER=			sdf-2.001
@@ -77,7 +123,8 @@ SDFBLIB=		$(BUILD_DIR_32)/${SDFVER}/blib
 COMPONENT_ARCHIVE_1= $(SDFVER).tar.gz
 COMPONENT_ARCHIVE_HASH_1= \
     sha256:6f9bcdc884a9f450208c740e45effdfeb7e65c689f57b05d3c15208193a8a6ea
-COMPONENT_ARCHIVE_URL_1= ftp://ftp.eenet.ee/pub/cpan/authors/id/I/IA/IANC/$(COMPONENT_ARCHIVE_1)
+COMPONENT_ARCHIVE_URL_1= \
+    ftp://ftp.eenet.ee/pub/cpan/authors/id/I/IA/IANC/$(COMPONENT_ARCHIVE_1)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -141,31 +188,6 @@ test-slapd-version:
 		$(PROTO_DIR)$(CONFIGURE_LIBDIR.64)/slapd -VVV; \
 
 #
-# Cyrus-sasl is a requirement.
-# OpenLDAP must be built with cyrus-sasl out of the gate instead of the
-# installed copy.
-#
-CYRUS_SASL_ROOT = $(WS_COMPONENTS)/cyrus-sasl/build/prototype/$(MACH)
-LDFLAGS.32 +="-L$(CYRUS_SASL_ROOT)$(USRLIBDIR)"
-LDFLAGS.64 +="-L$(CYRUS_SASL_ROOT)$(USRLIBDIR64)"
-LDFLAGS +=$(LDFLAGS.$(BITS))
-CPPFLAGS +="-I$(CYRUS_SASL_ROOT)$(USRINCDIR)"
-# make sure that we don't add the cyrus-sasl proto area to the RUNPATH
-LD_UNSET.32="-R$(CYRUS_SASL_ROOT)$(USRLIBDIR)"
-LD_UNSET.64="-R$(CYRUS_SASL_ROOT)$(USRLIBDIR.$(BITS))"
-LD_UNSET += $(LD_UNSET.$(BITS))
-COMPONENT_BUILD_ENV += LD_UNSET="$(LD_UNSET)"
-COMPONENT_BUILD_ENV += LTCFLAGS="-m$(BITS)"
-COMPONENT_INSTALL_ENV += LD_UNSET="$(LD_UNSET)"
-
-# special targets due to dependency on cyrus-sasl
-../cyrus-sasl/build/%/.installed:
-	(cd ../cyrus-sasl && $(GMAKE) install)
-
-$(CONFIGURE_32):       ../cyrus-sasl/build/$(MACH32)/.installed
-$(CONFIGURE_64):       ../cyrus-sasl/build/$(MACH64)/.installed
-
-#
 # Simple Document Format (SDF), produce html documentation.
 #
 # SDF: Unpack, patch and Build; only needed once.
@@ -207,7 +229,6 @@ endif
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += system/library/security/libsasl
 REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += text/groff/groff-core
