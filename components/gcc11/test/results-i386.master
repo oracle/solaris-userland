@@ -1,5 +1,5 @@
 cat <<'EOF' |
-LAST_UPDATED: Obtained from git: releases/gcc-11.3.0 revision 2d280e7eafc086e9df85f50ed1a6526d6a3a204d
+LAST_UPDATED: Obtained from git: releases/gcc-11.4.0 revision ff4bf326d03e750a8d4905ea49425fe7d15a04b8
 
 		=== acats tests ===
 
@@ -37,6 +37,10 @@ FAIL: g++.dg/guality/pr55665.C   -O2 -flto  line 23 p == 40
 FAIL: g++.dg/modules/stdio-1_a.H -std=c++17  scan-lang-dump module "Depset:0 decl entity:[0-9]* function_decl:'::printf'"
 FAIL: g++.dg/modules/stdio-1_a.H -std=c++2a  scan-lang-dump module "Depset:0 decl entity:[0-9]* function_decl:'::printf'"
 FAIL: g++.dg/modules/stdio-1_a.H -std=c++2b  scan-lang-dump module "Depset:0 decl entity:[0-9]* function_decl:'::printf'"
+FAIL: g++.target/i386/mv31.C  -std=c++98 (test for excess errors)
+FAIL: g++.target/i386/mv31.C  -std=c++14 (test for excess errors)
+FAIL: g++.target/i386/mv31.C  -std=c++17 (test for excess errors)
+FAIL: g++.target/i386/mv31.C  -std=c++2a (test for excess errors)
 FAIL: g++.target/i386/pr97054.C  -std=gnu++98 (test for excess errors)
 UNRESOLVED: g++.target/i386/pr97054.C  -std=gnu++98 compilation failed to produce executable
 FAIL: g++.target/i386/pr97054.C  -std=gnu++14 (test for excess errors)
@@ -48,12 +52,12 @@ UNRESOLVED: g++.target/i386/pr97054.C  -std=gnu++2a compilation failed to produc
 
 		=== g++ Summary ===
 
-# of expected passes		204310
-# of unexpected failures	29
+# of expected passes		204867
+# of unexpected failures	33
 # of expected failures		1104
 # of unresolved testcases	4
-# of unsupported tests		9508
-$(@D)/gcc/xg++  version 11.3.0 (GCC) 
+# of unsupported tests		9594
+$(@D)/gcc/xg++  version 11.4.0 (GCC) 
 
 		=== gcc tests ===
 
@@ -154,15 +158,19 @@ FAIL: gcc.dg/lto/modref-3 c_lto_modref-3_0.o-c_lto_modref-3_1.o execute -O2 -flt
 FAIL: gcc-dg-lto-modref-3-01.exe scan-wpa-ipa-dump modref "parm 1 flags: nodirectescape"
 FAIL: gcc.dg/lto/modref-4 c_lto_modref-4_0.o-c_lto_modref-4_1.o execute -O2 -flto-partition=max -fdump-ipa-modref -fno-ipa-sra -flto
 FAIL: gcc-dg-lto-modref-4-01.exe scan-wpa-ipa-dump modref "parm 1 flags: nodirectescape"
+FAIL: gcc.dg/vect/pr103116-2.c execution test
+FAIL: gcc.dg/vect/pr103116-2.c -flto -ffat-lto-objects execution test
+FAIL: gcc.target/i386/pr105554.c (test for excess errors)
+FAIL: gcc.target/i386/pr107304.c (test for excess errors)
 
 		=== gcc Summary ===
 
-# of expected passes		161371
-# of unexpected failures	59
+# of expected passes		161738
+# of unexpected failures	63
 # of unexpected successes	36
 # of expected failures		946
-# of unsupported tests		2779
-$(@D)/gcc/xgcc  version 11.3.0 (GCC) 
+# of unsupported tests		2807
+$(@D)/gcc/xgcc  version 11.4.0 (GCC) 
 
 		=== gfortran tests ===
 
@@ -171,10 +179,10 @@ Running target unix
 
 		=== gfortran Summary ===
 
-# of expected passes		57238
+# of expected passes		57551
 # of expected failures		232
 # of unsupported tests		99
-$(@D)/gcc/gfortran  version 11.3.0 (GCC) 
+$(@D)/gcc/gfortran  version 11.4.0 (GCC) 
 
 		=== gnat tests ===
 
@@ -183,10 +191,10 @@ Running target unix
 
 		=== gnat Summary ===
 
-# of expected passes		3355
+# of expected passes		3363
 # of expected failures		23
 # of unsupported tests		10
-$(@D)/gcc/gnatmake version 11.3.0
+$(@D)/gcc/gnatmake version 11.4.0
 
 		=== go tests ===
 
@@ -213,7 +221,7 @@ Running target unix
 # of expected passes		2822
 # of expected failures		6
 # of unsupported tests		68
-$(@D)/gcc/xgcc  version 11.3.0 (GCC) 
+$(@D)/gcc/xgcc  version 11.4.0 (GCC) 
 
 		=== gotools tests ===
 
@@ -227,7 +235,7 @@ FAIL: go test runtime
 # of expected passes		387
 # of unexpected failures	5
 # of untested testcases		124
-$(@D)/./gcc/gccgo version 11.3.0 (GCC)
+$(@D)/./gcc/gccgo version 11.4.0 (GCC)
 
 		=== libatomic tests ===
 
@@ -258,18 +266,17 @@ FAIL: runtime
 
 Running target unix/-m32
 FAIL: runtime
-FAIL: runtime/pprof
 
 		=== libgo Summary for unix/-m32 ===
 
-# of expected passes		182
-# of unexpected failures	2
+# of expected passes		183
+# of unexpected failures	1
 
 		=== libgo Summary ===
 
-# of expected passes		365
-# of unexpected failures	3
-$(@D)/./gcc/gccgo version 11.3.0 (GCC)
+# of expected passes		366
+# of unexpected failures	2
+$(@D)/./gcc/gccgo version 11.4.0 (GCC)
 
 		=== libgomp tests ===
 
@@ -278,7 +285,7 @@ Running target unix
 
 		=== libgomp Summary ===
 
-# of expected passes		8494
+# of expected passes		8518
 # of expected failures		6
 # of unsupported tests		536
 		=== libitm tests ===
@@ -295,26 +302,24 @@ Running target unix
 
 
 Running target unix
-FAIL: 27_io/filesystem/iterators/error_reporting.cc (test for excess errors)
-FAIL: 27_io/filesystem/iterators/error_reporting.cc execution test
-WARNING: program timed out.
-FAIL: 29_atomics/atomic_float/wait_notify.cc execution test
-WARNING: program timed out.
-FAIL: 29_atomics/atomic_ref/wait_notify.cc execution test
-FAIL: experimental/filesystem/iterators/error_reporting.cc (test for excess errors)
-FAIL: experimental/filesystem/iterators/error_reporting.cc execution test
+FAIL: libstdc++-prettyprinters/80276.cc whatis p4
+FAIL: libstdc++-prettyprinters/libfundts.cc print os
+FAIL: libstdc++-prettyprinters/libfundts.cc print as
+FAIL: libstdc++-prettyprinters/80276.cc whatis p4
+FAIL: libstdc++-prettyprinters/libfundts.cc print os
+FAIL: libstdc++-prettyprinters/libfundts.cc print as
 
 		=== libstdc++ Summary ===
 
-# of expected passes		14789
+# of expected passes		14852
 # of unexpected failures	6
-# of expected failures		124
+# of expected failures		128
 # of unsupported tests		724
 
-Compiler version: 11.3.0 (GCC) 
+Compiler version: 11.4.0 (GCC) 
 Platform: x86_64-pc-solaris2.11
 configure flags: --prefix=/usr/gcc/11 --mandir=/usr/gcc/11/share/man --bindir=/usr/gcc/11/bin --sbindir=/usr/gcc/11/sbin --libdir=/usr/gcc/11/lib --infodir=/usr/gcc/11/share/info --libexecdir=/usr/gcc/11/lib --enable-languages=ada,c,c++,fortran,go,objc --enable-shared --enable-initfini-array --disable-rpath --with-system-zlib --with-build-config=no --without-gnu-ld --with-ld=/usr/bin/ld --with-gnu-as --with-as=/usr/gnu/bin/as 'BOOT_CFLAGS=-g -O2' x86_64-pc-solaris2.11
 BOOT_CFLAGS=-g -O2
 EOF
-Mail -s "Results for 11.3.0 (GCC) testsuite on x86_64-pc-solaris2.11" gcc-testresults@gcc.gnu.org &&
+Mail -s "Results for 11.4.0 (GCC) testsuite on x86_64-pc-solaris2.11" gcc-testresults@gcc.gnu.org &&
 true
