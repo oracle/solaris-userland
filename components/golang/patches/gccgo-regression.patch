@@ -1,0 +1,32 @@
+From 3ba9c890b86dc8c3a54c98d32497b7a8012704f9 Mon Sep 17 00:00:00 2001
+From: Ian Lance Taylor <iant@golang.org>
+Date: Tue, 6 Jun 2023 12:49:20 -0700
+Subject: [PATCH] [release-branch.go1.19] cmd/cgo: correct _cgo_flags output
+
+For #60306
+For #60513
+
+Change-Id: I8b37d74433456f3270c2ea465ecf406da6e5a578
+Reviewed-on: https://go-review.googlesource.com/c/go/+/501297
+Run-TryBot: Ian Lance Taylor <iant@golang.org>
+Reviewed-by: Dmitri Shuralyov <dmitshur@golang.org>
+Reviewed-by: Dmitri Shuralyov <dmitshur@google.com>
+Reviewed-by: David Chase <drchase@google.com>
+TryBot-Bypass: Dmitri Shuralyov <dmitshur@golang.org>
+---
+ src/cmd/cgo/out.go | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/cmd/cgo/out.go b/src/cmd/cgo/out.go
+index 97d92db9cd8d2..6eb302b62b577 100644
+--- a/src/cmd/cgo/out.go
++++ b/src/cmd/cgo/out.go
+@@ -48,7 +48,7 @@ func (p *Package) writeDefs() {
+ 	fflg := creat(*objDir + "_cgo_flags")
+ 	for k, v := range p.CgoFlags {
+ 		for _, arg := range v {
+-			fmt.Fprintf(fflg, "_CGO_%s=%s\n", arg)
++			fmt.Fprintf(fflg, "_CGO_%s=%s\n", k, arg)
+ 		}
+ 		if k == "LDFLAGS" && !*gccgo {
+ 			for _, arg := range v {
