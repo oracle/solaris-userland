@@ -3,27 +3,27 @@ Patch status: Solaris-specific; not suitable for upstream
 
 Solaris specific documentation changes.
 
---- a/tcpdump.1.in	2021-06-07 22:21:43.000000000 +0200
-+++ b/tcpdump.1.in	2022-09-22 14:56:54.461128243 +0200
-@@ -20,7 +20,7 @@
+--- a/tcpdump.1.in
++++ b/tcpdump.1.in
+@@ -20,7 +20,7 @@ .\" THIS SOFTWARE IS PROVIDED ``AS IS''
  .\" WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
  .\" MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  .\"
--.TH TCPDUMP 1  "21 December 2020"
-+.TH TCPDUMP 8  "21 December 2020"
+-.TH TCPDUMP 1  "12 March 2023"
++.TH TCPDUMP 8  "12 March 2023"
  .SH NAME
  tcpdump \- dump traffic on a network
  .SH SYNOPSIS
-@@ -444,7 +444,7 @@
+@@ -448,7 +448,7 @@ and Solaris, an
  .I interface
  argument of ``any'' can be used to capture packets from all interfaces.
- Note that captures on the ``any'' device will not be done in promiscuous
+ Note that captures on the ``any'' pseudo-interface will not be done in promiscuous
 -mode.
 +mode. Currently, Solaris supports the ``any'' interface argument as well.
  .IP
  If the
  .B \-D
-@@ -1986,7 +1986,7 @@
+@@ -1997,7 +1997,7 @@ became available when linking with libpc
  .SH "SEE ALSO"
  .BR stty (1),
  .BR pcap (3PCAP),
@@ -32,9 +32,9 @@ Solaris specific documentation changes.
  .BR nit (4P),
  .BR \%pcap-savefile (@MAN_FILE_FORMATS@),
  .BR \%pcap-filter (@MAN_MISC_INFO@),
---- a/Makefile.in	2022-09-22 14:54:32.410810785 +0200
-+++ b/Makefile.in	2022-09-22 14:58:30.822519121 +0200
-@@ -419,14 +419,14 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -425,14 +425,14 @@ [ -d $(DESTDIR)$(bindir) ] || \
  	    (mkdir -p $(DESTDIR)$(bindir); chmod 755 $(DESTDIR)$(bindir))
  	$(INSTALL_PROGRAM) $(PROG) $(DESTDIR)$(bindir)/$(PROG)
  	$(INSTALL_PROGRAM) $(PROG) $(DESTDIR)$(bindir)/$(PROG).`cat ${srcdir}/VERSION`

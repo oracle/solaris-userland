@@ -20,22 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
+
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libpcap
-COMPONENT_VERSION=	1.10.1
+COMPONENT_VERSION=	1.10.4
 COMPONENT_PROJECT_URL=	https://www.tcpdump.org/
-COMPONENT_ARCHIVE_HASH=	sha256:ed285f4accaf05344f90975757b3dbfe772ba41d1c401c2648b7fa45b711bdd4
+COMPONENT_ARCHIVE_HASH=	sha256:ed19a0383fad72e3ad435fd239d7cd80d64916b87269550159d20e47160ebe5f
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/libpcap
 COMPONENT_ANITYA_ID=	1702
 
-COMPONENT_BAID=		130341
+COMPONENT_BAID=		145271
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -46,16 +47,7 @@ COMPONENT_PREP_ACTION =	(cd $(@D); autoconf);
 # libpcap Makefile does not use CFLAGS when building shared library.
 LDFLAGS += $(CC_BITS)
 
-CFLAGS += -DHAVE_CONFIG_H
-CFLAGS += -DBUILDING_PCAP
 CONFIGURE_OPTIONS  +=	--disable-dbus
-
-#
-# the private header file now depends on other internal header files, but since
-# we use it only to get the pcap structure, it's safe to get rid of them
-#
-COMPONENT_POST_INSTALL_ACTION += $(GSED) -i -e 's/^\#include "varattrs.h"//' $(PROTO_DIR)/usr/include/pcap-int.h;
-COMPONENT_POST_INSTALL_ACTION += $(GSED) -i -e 's/^\#include "fmtutils.h"//' $(PROTO_DIR)/usr/include/pcap-int.h;
 
 REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += developer/parser/bison

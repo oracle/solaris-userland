@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
+
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tcpdump
-COMPONENT_VERSION=	4.99.1
+COMPONENT_VERSION=	4.99.4
 COMPONENT_PROJECT_URL=	https://www.tcpdump.org/
-COMPONENT_ARCHIVE_HASH=	sha256:79b36985fb2703146618d87c4acde3e068b91c553fb93f021a337f175fd10ebe
+COMPONENT_ARCHIVE_HASH=	sha256:0232231bb2f29d6bf2426e70a08a7e0c63a0d59a9b44863b7f5e2357a6e49fea
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	4947
 
-COMPONENT_BAID=		130343
+COMPONENT_BAID=		144895
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -54,9 +55,9 @@ COMPONENT_PREP_ACTION = (cd $(@D); autoconf);
 # libpcap device enumeration.
 LD_B_DIRECT=
 
-CONFIGURE_OPTIONS += --enable-ipv6=yes
-CONFIGURE_OPTIONS += --with-user=nobody
-CONFIGURE_OPTIONS += --without-crypto
+CONFIGURE_OPTIONS	+= --with-user=nobody
+CONFIGURE_OPTIONS	+= --with-crypto=/usr/openssl/3
+CONFIGURE_ENV		+= LDFLAGS="-L/usr/openssl/3/lib/64"
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Entering directory/d" ' \
@@ -75,4 +76,5 @@ COMPONENT_SYSTEM_TEST_TARGETS =
 COMPONENT_PRE_SYSTEM_TEST_ACTION = \
         ($(CP) -r $(SOURCE_DIR)/tests $(@D)/.)
 
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += system/library/libpcap
