@@ -1,0 +1,24 @@
+Fixes test expectation for Python 3.11.4.
+
+Based on upstream commit:
+https://github.com/PyCQA/pycodestyle/commit/e8d84098da10d013ee686027e174814dbe4dd908
+
+--- pycodestyle-2.10.0/testsuite/test_api.py
++++ pycodestyle-2.10.0/testsuite/test_api.py
+@@ -329,10 +329,12 @@ class APITestCase(unittest.TestCase):
+         count_errors = pep8style.input_file('stdin', lines=['\x00\n'])
+ 
+         stdout = sys.stdout.getvalue()
+-        expected = "stdin:1:1: E901 ValueError"
+-        self.assertTrue(stdout.startswith(expected),
+-                        msg='Output %r does not start with %r' %
+-                        (stdout, expected))
++        if sys.version_info < (3, 11, 4):
++            expected = ["stdin:1:1: E901 ValueError: source code string cannot contain null bytes"]  # noqa: E501
++        else:
++            expected = ["stdin:1:1: E901 SyntaxError: source code string cannot contain null bytes"]  # noqa: E501
++
++        self.assertEqual(stdout.splitlines(), expected)
+         self.assertFalse(sys.stderr)
+         self.assertEqual(count_errors, 1)
+ 
