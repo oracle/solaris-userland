@@ -460,9 +460,27 @@ PKGMANGLE_OPTIONS = -D $(MANGLED_DIR) $(PKG_PROTO_DIRS:%=-d %)
 $(MANIFEST_BASE)-%.mangled:	$(MANIFEST_BASE)-%.mogrified $(MANGLED_DIR) $(PROTO_DIR)
 	$(PKGMANGLE) $(PKGMANGLE_OPTIONS) -m $< >$@
 
+REQUIRED_PACKAGES_VALID =	$(BUILD_DIR)/.required_packages_valid
+SKIP_REQUIRED_PACKAGES_CHECK ?=	$(REQUIRED_PACKAGES_VALID)
+$(REQUIRED_PACKAGES_VALID):	$(MAKEFILE_PREREQ) $(BUILD_DIR)
+	@echo
+	@echo Validating REQUIRED_PACKAGES:
+	@echo
+	@echo /usr/bin/pkg list -v $(REQUIRED_PACKAGES:%=/%)
+	@if /usr/bin/pkg list -v $(REQUIRED_PACKAGES:%=/%); then \
+		$(TOUCH) $@; \
+	else \
+		printf '!!!\n!!! ' >&2; \
+		printf 'The REQUIRED_PACKAGES check failed.\n!!!\n!!! ' >&2; \
+	        printf 'To skip it run:\n!!! ' >&2; \
+		printf '  gmake SKIP_REQUIRED_PACKAGES_CHECK=\n!!!\n' 2>&1; \
+		false; \
+	fi
+
 # generate dependencies
 PKGDEPEND_GENERATE_OPTIONS = -m $(PKG_PROTO_DIRS:%=-d %)
-$(MANIFEST_BASE)-%.depend:	$(MANIFEST_BASE)-%.mangled $(PROTO_DIR) install
+$(MANIFEST_BASE)-%.depend:	$(MANIFEST_BASE)-%.mangled $(PROTO_DIR) \
+				install $(SKIP_REQUIRED_PACKAGES_CHECK)
 	$(ENV) $(COMPONENT_PUBLISH_ENV) $(PKGDEPEND) generate \
 	    $(PKGDEPEND_GENERATE_OPTIONS) $< >$@
 
