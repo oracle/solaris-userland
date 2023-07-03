@@ -1,0 +1,28 @@
+*** INIT.2012-08-01/src/cmd/ksh93/sh/main.c.org	Thu Jun  8 02:15:54 2023
+--- INIT.2012-08-01/src/cmd/ksh93/sh/main.c	Thu Jun  8 07:08:05 2023
+***************
+*** 450,455 ****
+--- 450,472 ----
+  			while(top=sfstack(iop,SF_POPSTACK))
+  				sfclose(top);
+  		}
++ 		/*
++ 		 * Reset Lex_t and make sure heredocs file is closed
++ 		 * set to NULL and also clear lp->heredoc.  For now we only
++ 		 * do this when we get here in an interactive shell and
++ 		 * we have a left-over heredoc.
++ 		 */
++ 		if (sh_isstate(SH_INTERACTIVE) && jmpval==SH_JMPERREXIT)
++ 		{
++ 			if (shp->heredocs) {
++ 				Lex_t *lp;
++ 				(void)sfclose(shp->heredocs);
++ 				shp->heredocs = 0;
++ 				lp = (Lex_t *)shp->lex_context;
++ 				lp->heredoc = 0;
++ 				(void) sh_lexopen(lp, shp, 0);
++ 			}
++ 		}
+  		/* make sure that we own the terminal */
+  #ifdef SIGTSTP
+  		tcsetpgrp(job.fd,shp->gd->pid);
