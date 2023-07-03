@@ -1,0 +1,30 @@
+PycURL can fail during cleanup due to callbacks running at a point
+where too much is already cleaned up.
+
+This was reported upstream:
+https://github.com/pycurl/pycurl/issues/748
+
+--- pycurl-7.45.2/src/easy.c
++++ pycurl-7.45.2/src/easy.c
+@@ -469,10 +469,17 @@ util_curl_xdecref(CurlObject *self, int
+                 from the multi object's easy_object_dict, but this
+                 requires us to have a reference to the multi object
+                 which right now we don't. */
+-                /* Allow threads because callbacks can be invoked */
+-                PYCURL_BEGIN_ALLOW_THREADS_EASY
+-                (void) curl_multi_remove_handle(multi_stack->multi_handle, handle);
+-                PYCURL_END_ALLOW_THREADS_EASY
++                /* Allow threads because callbacks can be invoked. This is a slightly hacky
++                way of determining whether util_curl_xdecref was called from do_curl_clear or
++                util_curl_close. In the second case, self->handle is already cleaned and set
++                to NULL, which will break possible callbacks later. */
++                if (self->handle) {
++                    PYCURL_BEGIN_ALLOW_THREADS_EASY
++                    (void) curl_multi_remove_handle(multi_stack->multi_handle, handle);
++                    PYCURL_END_ALLOW_THREADS_EASY
++                } else {
++                    (void) curl_multi_remove_handle(multi_stack->multi_handle, handle);
++                }
+             }
+             self->multi_stack = NULL;
+             Py_DECREF(multi_stack);

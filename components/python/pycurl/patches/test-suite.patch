@@ -20,18 +20,17 @@ setting. Removal of this test fixes the problem.
      def test_pause_via_return(self):
          self.check_pause(False)
  
---- pycurl-7.44.1/tests/fake-curl/libcurl/Makefile
-+++ pycurl-7.44.1/tests/fake-curl/libcurl/Makefile
-@@ -11,9 +11,6 @@ clean:
+--- pycurl-7.45.2/tests/fake-curl/libcurl/Makefile
++++ pycurl-7.45.2/tests/fake-curl/libcurl/Makefile
+@@ -11,8 +11,6 @@ clean:
  
  .SUFFIXES: .c .so
  
 -CC = `curl-config --cc`
 -CFLAGS += `curl-config --cflags`
--
- .c.so:
- 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -shared -fPIC \
- 		-Wl,-soname,$@ -o $@ $<
+ UNAME := $(shell uname -s)
+ ifeq ($(UNAME),Darwin)
+ 	SONAME_FLAG = -install_name
 --- pycurl-7.44.1/tests/setup_test.py
 +++ pycurl-7.44.1/tests/setup_test.py
 @@ -162,7 +162,7 @@ not been able to determine which SSL bac
