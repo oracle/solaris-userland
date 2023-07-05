@@ -60,5 +60,4 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
 
 # Test related dependencies
-REQUIRED_PACKAGES += library/python/extras
 REQUIRED_PACKAGES += library/python/testtools
