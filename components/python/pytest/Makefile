@@ -75,15 +75,14 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/iniconfig-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pluggy-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/py-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/tomli-%)
 REQUIRED_PACKAGES += library/python/exceptiongroup-37
 REQUIRED_PACKAGES += library/python/exceptiongroup-39
 REQUIRED_PACKAGES += library/python/importlib-metadata-37
+REQUIRED_PACKAGES += library/python/tomli-37
+REQUIRED_PACKAGES += library/python/tomli-39
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/hypothesis
