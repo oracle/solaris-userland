@@ -1,0 +1,121 @@
+Part of the fix for the file tty-term.c is taken from 
+https://github.com/tmux/tmux/commit/8f34504736cf3547992c4ba948c1e65f3813715c#diff-de4f90e163caf6cc83476898c795355523776a76f9ccc7783e9bd3a99fde671d
+and from 
+https://github.com/tmux/tmux/commit/bf636d9575806134ca7efd917ee0d54e9330ae86
+and modified to apply to tmux version 3.3a as the upstream community 
+has made significant code changes to these files since the release of
+tmux 3.3a.
+
+--- tmux-3.3a/tty-term.c.orig	2023-07-06 05:10:02.362854823 -0700
++++ tmux-3.3a/tty-term.c	2023-07-06 05:17:34.227859409 -0700
+@@ -762,25 +762,37 @@
+ const char *
+ tty_term_string1(struct tty_term *term, enum tty_code_code code, int a)
+ {
++	const char *s;
+ #if defined(HAVE_TIPARM_S)
+-	return (tiparm_s(1, 0, tty_term_string(term, code), a));
++	s = tiparm_s(1, 0, tty_term_string(term, code), a);
+ #elif defined(HAVE_TIPARM)
+-	return (tiparm(tty_term_string(term, code), a));
++	s = tiparm(tty_term_string(term, code), a);
+ #else
+-	return (tparm((char *) tty_term_string(term, code), a, 0, 0, 0, 0, 0, 0, 0, 0));
++	s = tparm((char *) tty_term_string(term, code), a, 0, 0, 0, 0, 0, 0, 0, 0);
+ #endif
++	if (s == NULL) {
++		log_debug("could not expand %s", tty_term_codes[code].name);
++		return ("");
++	}
++	return (s);
+ }
+ 
+ const char *
+ tty_term_string2(struct tty_term *term, enum tty_code_code code, int a, int b)
+ {
++	const char *s;
+ #if defined(HAVE_TIPARM_S)
+-        return (tiparm_s(2, 0, tty_term_string(term, code), a, b));
++        s = tiparm_s(2, 0, tty_term_string(term, code), a, b);
+ #elif defined(HAVE_TIPARM)
+-        return (tiparm(tty_term_string(term, code), a, b));
++        s = tiparm(tty_term_string(term, code), a, b);
+ #else
+-        return (tparm((char *) tty_term_string(term, code), a, b, 0, 0, 0, 0, 0, 0, 0));
++        s = tparm((char *) tty_term_string(term, code), a, b, 0, 0, 0, 0, 0, 0, 0);
+ #endif
++	if (s == NULL) {
++		log_debug("could not expand %s", tty_term_codes[code].name);
++		return ("");
++	}
++	return (s);
+ }
+ 
+ const char *
+@@ -787,25 +799,37 @@
+ tty_term_string3(struct tty_term *term, enum tty_code_code code, int a, int b,
+     int c)
+ {
++	const char *s;
+ #if defined(HAVE_TIPARM_S)
+-        return (tiparm_s(3, 0, tty_term_string(term, code), a, b, c));
++        s = tiparm_s(3, 0, tty_term_string(term, code), a, b, c);
+ #elif defined(HAVE_TIPARM)
+-        return (tiparm(tty_term_string(term, code), a, b, c));
++        s = tiparm(tty_term_string(term, code), a, b, c);
+ #else
+-        return (tparm((char *) tty_term_string(term, code), a, b, c, 0, 0, 0, 0, 0, 0));
++        s = tparm((char *) tty_term_string(term, code), a, b, c, 0, 0, 0, 0, 0, 0);
+ #endif
++	if (s == NULL) {
++                log_debug("could not expand %s", tty_term_codes[code].name);
++                return ("");
++        }
++        return (s);
+ }
+ 
+ const char *
+ tty_term_ptr1(struct tty_term *term, enum tty_code_code code, const void *a)
+ {
++	const char *s;
+ #if defined(HAVE_TIPARM_S)
+-        return (tiparm_s(1, 1, tty_term_string(term, code), a));
++        s = tiparm_s(1, 1, tty_term_string(term, code), a);
+ #elif defined(HAVE_TIPARM)
+-        return (tiparm(tty_term_string(term, code), a));
++        s = tiparm(tty_term_string(term, code), a);
+ #else
+-        return (tparm((char *) tty_term_string(term, code), (long)a, 0, 0, 0, 0, 0, 0, 0, 0));
++        s = tparm((char *) tty_term_string(term, code), (long)a, 0, 0, 0, 0, 0, 0, 0, 0);
+ #endif
++	if (s == NULL) {
++                log_debug("could not expand %s", tty_term_codes[code].name);
++                return ("");
++        }
++        return (s);
+ }
+ 
+ const char *
+@@ -812,13 +836,19 @@
+ tty_term_ptr2(struct tty_term *term, enum tty_code_code code, const void *a,
+     const void *b)
+ {
++	const char *s;
+ #if defined(HAVE_TIPARM_S)
+-        return (tiparm_s(2, 3, tty_term_string(term, code), a, b));
++        s = tiparm_s(2, 3, tty_term_string(term, code), a, b);
+ #elif defined(HAVE_TIPARM)
+-        return (tiparm(tty_term_string(term, code), a, b));
++        s = tiparm(tty_term_string(term, code), a, b);
+ #else
+-        return (tparm((char *) tty_term_string(term, code), (long)a, (long)b, 0, 0, 0, 0, 0, 0, 0));
++        s = tparm((char *) tty_term_string(term, code), (long)a, (long)b, 0, 0, 0, 0, 0, 0, 0);
+ #endif
++	if (s == NULL) {
++                log_debug("could not expand %s", tty_term_codes[code].name);
++                return ("");
++        }
++        return (s);
+ }
+ 
+ int
