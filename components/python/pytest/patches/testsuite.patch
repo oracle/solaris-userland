@@ -8,8 +8,10 @@ Other test_debugging tests, while marked xfail, sometimes pass causing the
 test to fail. This is known in upsteam:
 https://github.com/pytest-dev/pytest/issues/10042
 
---- pytest-7.1.3/testing/test_junitxml.py
-+++ pytest-7.1.3/testing/test_junitxml.py
+Two tests need to be skipped because cwd is not removable on Solaris.
+
+--- pytest-7.3.1/testing/test_junitxml.py
++++ pytest-7.3.1/testing/test_junitxml.py
 @@ -10,9 +10,8 @@ from typing import TYPE_CHECKING
  from typing import Union
  from xml.dom import minidom
@@ -21,9 +23,9 @@ https://github.com/pytest-dev/pytest/issues/10042
  from _pytest.config import Config
  from _pytest.junitxml import bin_xml_escape
  from _pytest.junitxml import LogXML
---- pytest-7.1.3/testing/test_debugging.py
-+++ pytest-7.1.3/testing/test_debugging.py
-@@ -353,7 +353,7 @@ class TestPDB:
+--- pytest-7.3.1/testing/test_debugging.py
++++ pytest-7.3.1/testing/test_debugging.py
+@@ -372,7 +372,7 @@ class TestPDB:
          result = pytester.runpytest_subprocess("--pdb", ".")
          result.stdout.fnmatch_lines(["-> import unknown"])
  
@@ -32,7 +34,7 @@ https://github.com/pytest-dev/pytest/issues/10042
      def test_pdb_interaction_capturing_simple(self, pytester: Pytester) -> None:
          p1 = pytester.makepyfile(
              """
-@@ -522,7 +522,7 @@ class TestPDB:
+@@ -541,7 +541,7 @@ class TestPDB:
          assert "BdbQuit" not in rest
          assert "UNEXPECTED EXCEPTION" not in rest
  
@@ -41,7 +43,7 @@ https://github.com/pytest-dev/pytest/issues/10042
      def test_pdb_interaction_capturing_twice(self, pytester: Pytester) -> None:
          p1 = pytester.makepyfile(
              """
-@@ -558,7 +558,7 @@ class TestPDB:
+@@ -577,7 +577,7 @@ class TestPDB:
          assert "1 failed" in rest
          self.flush(child)
  
@@ -50,7 +52,7 @@ https://github.com/pytest-dev/pytest/issues/10042
      def test_pdb_with_injected_do_debug(self, pytester: Pytester) -> None:
          """Simulates pdbpp, which injects Pdb into do_debug, and uses
          self.__class__ in do_continue.
-@@ -650,6 +650,7 @@ class TestPDB:
+@@ -669,6 +669,7 @@ class TestPDB:
          child.expect("1 passed")
          self.flush(child)
  
@@ -58,7 +60,7 @@ https://github.com/pytest-dev/pytest/issues/10042
      @pytest.mark.parametrize("capture_arg", ("", "-s", "-p no:capture"))
      def test_pdb_continue_with_recursive_debug(
          self, capture_arg, pytester: Pytester
-@@ -1003,7 +1004,7 @@ class TestDebuggingBreakpoints:
+@@ -1022,7 +1023,7 @@ class TestDebuggingBreakpoints:
          assert "reading from stdin while output" not in rest
          TestPDB.flush(child)
  
@@ -67,7 +69,7 @@ https://github.com/pytest-dev/pytest/issues/10042
      def test_pdb_not_altered(self, pytester: Pytester) -> None:
          p1 = pytester.makepyfile(
              """
-@@ -1163,7 +1164,7 @@ def test_quit_with_swallowed_SystemExit(
+@@ -1182,7 +1183,7 @@ def test_quit_with_swallowed_SystemExit(
  
  
  @pytest.mark.parametrize("fixture", ("capfd", "capsys"))
@@ -76,3 +78,21 @@ https://github.com/pytest-dev/pytest/issues/10042
  def test_pdb_suspends_fixture_capturing(pytester: Pytester, fixture: str) -> None:
      """Using "-s" with pytest should suspend/resume fixture capturing."""
      p1 = pytester.makepyfile(
+--- pytest-7.3.1/testing/_py/test_local.py
++++ pytest-7.3.1/testing/_py/test_local.py
+@@ -600,6 +600,7 @@ class TestLocalPath(CommonFSTests):
+         assert str(local()) == os.getcwd()
+ 
+     @skiponwin32
++    @pytest.mark.skip("cwd cannot be removed on Solaris")
+     def test_chdir_gone(self, path1):
+         p = path1.ensure("dir_to_be_removed", dir=1)
+         p.chdir()
+@@ -613,6 +614,7 @@ class TestLocalPath(CommonFSTests):
+                 raise NotImplementedError
+ 
+     @skiponwin32
++    @pytest.mark.skip("cwd cannot be removed on Solaris")
+     def test_chdir_gone_in_as_cwd(self, path1):
+         p = path1.ensure("dir_to_be_removed", dir=1)
+         p.chdir()

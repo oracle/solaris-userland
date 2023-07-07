@@ -26,16 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pytest
-COMPONENT_VERSION=	7.1.3
+COMPONENT_VERSION=	7.3.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e2f6e91c0025003be74334dea914ed66a712ab7732e9a7b5dd9095c3b3bddc89
+    sha256:434afafd78b1d78ed0addf160ad2b77a30d35d4bdf8af234fe621919d9ed15e3
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pytest.org/latest/
 COMPONENT_BUGDB=	python-mod/pytest
 COMPONENT_ANITYA_ID=	3765
-COMPONENT_BAID=		131846
+COMPONENT_BAID=		144492
 
 
 include $(WS_MAKE_RULES)/prep.mk
@@ -81,6 +81,8 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pluggy-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/py-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/tomli-%)
+REQUIRED_PACKAGES += library/python/exceptiongroup-37
+REQUIRED_PACKAGES += library/python/exceptiongroup-39
 REQUIRED_PACKAGES += library/python/importlib-metadata-37
 
 # Testing related components
