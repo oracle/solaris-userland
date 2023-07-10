@@ -1,9 +1,6 @@
-#
-# Offered upstream: https://github.com/rsyslog/rsyslog/issues/5081
-#
-diff -r -u rsyslog-8.2206.0-baseline/plugins/imtcp/imtcp.c rsyslog-8.2206.0-crl/plugins/imtcp/imtcp.c
---- rsyslog-8.2206.0-baseline/plugins/imtcp/imtcp.c	2022-05-12 12:18:34.000000000 +0100
-+++ rsyslog-8.2206.0-crl/plugins/imtcp/imtcp.c	2023-01-16 14:02:27.856281608 +0000
+diff -u -r rsyslog-8.2206.0-nocrl/plugins/imtcp/imtcp.c rsyslog-8.2206.0-withcrl/plugins/imtcp/imtcp.c
+--- rsyslog-8.2206.0-nocrl/plugins/imtcp/imtcp.c	2022-05-12 12:18:34.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/plugins/imtcp/imtcp.c	2023-07-03 11:19:57.080690204 +0100
 @@ -142,6 +142,7 @@
  	uchar *pszStrmDrvrAuthMode;
  	uchar *pszStrmDrvrPermitExpiredCerts;
@@ -81,9 +78,9 @@ diff -r -u rsyslog-8.2206.0-baseline/plugins/imtcp/imtcp.c rsyslog-8.2206.0-crl/
  		free((void*)inst->pszStrmDrvrKeyFile);
  		free((void*)inst->pszStrmDrvrCertFile);
  		free((void*)inst->gnutlsPriorityString);
-diff -r -u rsyslog-8.2206.0-baseline/runtime/glbl.c rsyslog-8.2206.0-crl/runtime/glbl.c
---- rsyslog-8.2206.0-baseline/runtime/glbl.c	2022-05-12 12:18:34.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/glbl.c	2023-01-16 15:06:45.449313840 +0000
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/glbl.c rsyslog-8.2206.0-withcrl/runtime/glbl.c
+--- rsyslog-8.2206.0-nocrl/runtime/glbl.c	2022-05-12 12:18:34.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/glbl.c	2023-07-03 11:24:11.932986652 +0100
 @@ -114,6 +114,7 @@
  	{ "debug.gnutls", eCmdHdlrNonNegInt, 0 },
  	{ "debug.unloadmodules", eCmdHdlrBinary, 0 },
@@ -134,7 +131,16 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/glbl.c rsyslog-8.2206.0-crl/runtime
  	pIf->GetDfltNetstrmDrvrCertFile = GetDfltNetstrmDrvrCertFile;
  	pIf->GetDfltNetstrmDrvrKeyFile = GetDfltNetstrmDrvrKeyFile;
  	pIf->GetDfltNetstrmDrvr = GetDfltNetstrmDrvr;
-@@ -1165,6 +1187,9 @@
+@@ -927,6 +949,8 @@
+ 	loadConf->globals.pszDfltNetstrmDrvr = NULL;
+ 	free(loadConf->globals.pszDfltNetstrmDrvrCAF);
+ 	loadConf->globals.pszDfltNetstrmDrvrCAF = NULL;
++	free(loadConf->globals.pszDfltNetstrmDrvrCRLF);
++	loadConf->globals.pszDfltNetstrmDrvrCRLF = NULL;
+ 	free(loadConf->globals.pszDfltNetstrmDrvrKeyFile);
+ 	loadConf->globals.pszDfltNetstrmDrvrKeyFile = NULL;
+ 	free(loadConf->globals.pszDfltNetstrmDrvrCertFile);
+@@ -1165,6 +1189,9 @@
  		} else if(!strcmp(paramblk.descr[i].name, "defaultnetstreamdrivercafile")) {
  			cstr = (uchar*) es_str2cstr(cnfparamvals[i].val.d.estr, NULL);
  			setDfltNetstrmDrvrCAF(NULL, cstr);
@@ -144,7 +150,7 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/glbl.c rsyslog-8.2206.0-crl/runtime
  		} else if(!strcmp(paramblk.descr[i].name, "defaultnetstreamdriver")) {
  			cstr = (uchar*) es_str2cstr(cnfparamvals[i].val.d.estr, NULL);
  			setDfltNetstrmDrvr(NULL, cstr);
-@@ -1380,6 +1405,8 @@
+@@ -1380,6 +1407,8 @@
  	NULL));
  	CHKiRet(regCfSysLineHdlr((uchar *)"defaultnetstreamdrivercafile", 0, eCmdHdlrGetWord,
  	setDfltNetstrmDrvrCAF, NULL, NULL));
@@ -153,9 +159,9 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/glbl.c rsyslog-8.2206.0-crl/runtime
  	CHKiRet(regCfSysLineHdlr((uchar *)"defaultnetstreamdriverkeyfile", 0, eCmdHdlrGetWord,
  	setDfltNetstrmDrvrKeyFile, NULL, NULL));
  	CHKiRet(regCfSysLineHdlr((uchar *)"defaultnetstreamdrivercertfile", 0, eCmdHdlrGetWord,
-diff -r -u rsyslog-8.2206.0-baseline/runtime/glbl.h rsyslog-8.2206.0-crl/runtime/glbl.h
---- rsyslog-8.2206.0-baseline/runtime/glbl.h	2022-05-12 12:18:34.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/glbl.h	2022-10-04 17:10:26.050464137 +0100
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/glbl.h rsyslog-8.2206.0-withcrl/runtime/glbl.h
+--- rsyslog-8.2206.0-nocrl/runtime/glbl.h	2022-05-12 12:18:34.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/glbl.h	2023-07-03 11:19:57.081983307 +0100
 @@ -91,6 +91,7 @@
  
  	SIMP_PROP(DropMalPTRMsgs, int)
@@ -164,9 +170,9 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/glbl.h rsyslog-8.2206.0-crl/runtime
  	SIMP_PROP(DfltNetstrmDrvrCertFile, uchar*)
  	SIMP_PROP(DfltNetstrmDrvrKeyFile, uchar*)
  	SIMP_PROP(DfltNetstrmDrvr, uchar*)
-diff -r -u rsyslog-8.2206.0-baseline/runtime/netstrm.c rsyslog-8.2206.0-crl/runtime/netstrm.c
---- rsyslog-8.2206.0-baseline/runtime/netstrm.c	2022-05-12 12:18:34.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/netstrm.c	2023-01-16 12:47:53.793258549 +0000
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/netstrm.c rsyslog-8.2206.0-withcrl/runtime/netstrm.c
+--- rsyslog-8.2206.0-nocrl/runtime/netstrm.c	2022-05-12 12:18:34.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/netstrm.c	2023-07-03 11:19:57.082476672 +0100
 @@ -266,6 +266,15 @@
  }
  
@@ -191,9 +197,9 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/netstrm.c rsyslog-8.2206.0-crl/runt
  	pIf->SetDrvrTlsKeyFile = SetDrvrTlsKeyFile;
  	pIf->SetDrvrTlsCertFile = SetDrvrTlsCertFile;
  finalize_it:
-diff -r -u rsyslog-8.2206.0-baseline/runtime/netstrm.h rsyslog-8.2206.0-crl/runtime/netstrm.h
---- rsyslog-8.2206.0-baseline/runtime/netstrm.h	2022-04-04 08:26:40.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/netstrm.h	2023-01-16 13:19:18.283705645 +0000
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/netstrm.h rsyslog-8.2206.0-withcrl/runtime/netstrm.h
+--- rsyslog-8.2206.0-nocrl/runtime/netstrm.h	2022-04-04 08:26:40.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/netstrm.h	2023-07-03 11:19:57.082921301 +0100
 @@ -89,10 +89,11 @@
  
  	/* v15 -- Tls cert functions */
@@ -215,9 +221,9 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/netstrm.h rsyslog-8.2206.0-crl/runt
   * */
  
  /* prototypes */
-diff -r -u rsyslog-8.2206.0-baseline/runtime/netstrms.c rsyslog-8.2206.0-crl/runtime/netstrms.c
---- rsyslog-8.2206.0-baseline/runtime/netstrms.c	2022-05-12 12:18:34.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/netstrms.c	2023-01-16 13:21:45.279365945 +0000
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/netstrms.c rsyslog-8.2206.0-withcrl/runtime/netstrms.c
+--- rsyslog-8.2206.0-nocrl/runtime/netstrms.c	2022-05-12 12:18:34.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/netstrms.c	2023-07-03 11:19:57.083456668 +0100
 @@ -116,6 +116,8 @@
  	}
  	free((void*)pThis->pszDrvrCAFile);
@@ -271,9 +277,9 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/netstrms.c rsyslog-8.2206.0-crl/run
  	pIf->SetDrvrTlsKeyFile = SetDrvrTlsKeyFile;
  	pIf->SetDrvrTlsCertFile = SetDrvrTlsCertFile;
  finalize_it:
-diff -r -u rsyslog-8.2206.0-baseline/runtime/netstrms.h rsyslog-8.2206.0-crl/runtime/netstrms.h
---- rsyslog-8.2206.0-baseline/runtime/netstrms.h	2022-04-04 08:26:40.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/netstrms.h	2023-01-16 13:35:08.139697878 +0000
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/netstrms.h rsyslog-8.2206.0-withcrl/runtime/netstrms.h
+--- rsyslog-8.2206.0-nocrl/runtime/netstrms.h	2022-04-04 08:26:40.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/netstrms.h	2023-07-03 11:19:57.083890011 +0100
 @@ -38,6 +38,7 @@
  	int DrvrVerifyDepth;		/**< Verify Depth for certificate chains */
  	uchar *pszDrvrPermitExpiredCerts;
@@ -296,9 +302,84 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/netstrms.h rsyslog-8.2206.0-crl/run
  
  /* prototypes */
  PROTOTYPEObj(netstrms);
-diff -r -u rsyslog-8.2206.0-baseline/runtime/nsd_ossl.c rsyslog-8.2206.0-crl/runtime/nsd_ossl.c
---- rsyslog-8.2206.0-baseline/runtime/nsd_ossl.c	2023-01-16 14:03:01.891933561 +0000
-+++ rsyslog-8.2206.0-crl/runtime/nsd_ossl.c	2023-05-31 12:06:00.754559887 +0100
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/nsd_gtls.c rsyslog-8.2206.0-withcrl/runtime/nsd_gtls.c
+--- rsyslog-8.2206.0-nocrl/runtime/nsd_gtls.c	2022-05-12 12:18:34.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/nsd_gtls.c	2023-07-03 12:52:55.343591471 +0100
+@@ -707,7 +707,7 @@
+ gtlsInitCred(nsd_gtls_t *const pThis )
+ {
+ 	int gnuRet;
+-	const uchar *cafile;
++	const uchar *cafile, *crlfile;
+ 	DEFiRet;
+ 
+ 	/* X509 stuff */
+@@ -736,6 +736,11 @@
+ 		}
+ 	}
+ 
++	crlfile = (pThis->pszCRLFile == NULL) ? glbl.GetDfltNetstrmDrvrCRLF(runConf) : pThis->pszCRLFile;
++	if(crlfile == NULL) {
++		LogMsg(0, RS_RET_VALUE_NOT_SUPPORTED, LOG_WARNING,
++			"Warning: CRL not supported with gtls netstream driver");
++	}
+ 
+ finalize_it:
+ 	RETiRet;
+@@ -1376,6 +1381,7 @@
+ 	free(pThis->pszConnectHost);
+ 	free(pThis->pszRcvBuf);
+ 	free((void*) pThis->pszCAFile);
++	free((void*) pThis->pszCRLFile);
+ 
+ 	if(pThis->bOurCertIsInit)
+ 		for(unsigned i=0; i<pThis->nOurCerts; ++i) {
+@@ -1619,6 +1625,23 @@
+ }
+ 
+ static rsRetVal
++SetTlsCRLFile(nsd_t *pNsd, const uchar *const crlFile)
++{
++	DEFiRet;
++	nsd_gtls_t *const pThis = (nsd_gtls_t*) pNsd;
++
++	ISOBJ_TYPE_assert((pThis), nsd_gtls);
++	if(crlFile == NULL) {
++		pThis->pszCRLFile = NULL;
++	} else {
++		CHKmalloc(pThis->pszCRLFile = (const uchar*) strdup((const char*) crlFile));
++	}
++
++finalize_it:
++	RETiRet;
++}
++
++static rsRetVal
+ SetTlsKeyFile(nsd_t *pNsd, const uchar *const pszFile)
+ {
+ 	DEFiRet;
+@@ -2308,6 +2331,7 @@
+ 	pIf->SetPrioritizeSAN = SetPrioritizeSAN;
+ 	pIf->SetTlsVerifyDepth = SetTlsVerifyDepth;
+ 	pIf->SetTlsCAFile = SetTlsCAFile;
++	pIf->SetTlsCRLFile = SetTlsCRLFile;
+ 	pIf->SetTlsKeyFile = SetTlsKeyFile;
+ 	pIf->SetTlsCertFile = SetTlsCertFile;
+ finalize_it:
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/nsd_gtls.h rsyslog-8.2206.0-withcrl/runtime/nsd_gtls.h
+--- rsyslog-8.2206.0-nocrl/runtime/nsd_gtls.h	2022-05-12 12:18:34.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/nsd_gtls.h	2023-07-03 11:30:06.243092996 +0100
+@@ -47,6 +47,7 @@
+ 	uchar *pszConnectHost;	/**< hostname used for connect - may be used to
+ 					authenticate peer if no other name given */
+ 	const uchar *pszCAFile;
++	const uchar *pszCRLFile;
+ 	const uchar *pszKeyFile;
+ 	const uchar *pszCertFile;
+ 	gnutls_certificate_credentials_t xcred;
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/nsd_ossl.c rsyslog-8.2206.0-withcrl/runtime/nsd_ossl.c
+--- rsyslog-8.2206.0-nocrl/runtime/nsd_ossl.c	2023-07-03 11:13:51.609698585 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/nsd_ossl.c	2023-07-03 11:31:34.553271493 +0100
 @@ -1017,6 +1017,7 @@
  		SSL_CTX_free(pThis->ctx);
  	}
@@ -326,7 +407,7 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/nsd_ossl.c rsyslog-8.2206.0-crl/run
 +	crlFile = (char*) ((pThis->pszCRLFile == NULL) ? glbl.GetDfltNetstrmDrvrCRLF(runConf) : pThis->pszCRLFile);
 +	if(crlFile == NULL) {
 +		LogMsg(0, RS_RET_CA_CERT_MISSING, LOG_WARNING,
-+			"Warning: CRL certificrlte is not set");
++			"Warning: CRL file is not set");
 +		bHaveCRL = 0;
 +	} else {
 +		bHaveCRL = 1;
@@ -353,7 +434,7 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/nsd_ossl.c rsyslog-8.2206.0-crl/run
  	if(bHaveCert == 1 && SSL_CTX_use_certificate_chain_file(pThis->ctx, certFile) != 1) {
  		LogError(0, RS_RET_TLS_CERT_ERR, "Error: Certificate file could not be accessed. "
  				"Check at least: 1) file path is correct, 2) file exist, "
-@@ -2036,6 +2058,24 @@
+@@ -2038,6 +2060,24 @@
  }
  
  static rsRetVal
@@ -378,7 +459,7 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/nsd_ossl.c rsyslog-8.2206.0-crl/run
  SetTlsKeyFile(nsd_t *pNsd, const uchar *const pszFile)
  {
  	DEFiRet;
-@@ -2108,6 +2148,7 @@
+@@ -2110,6 +2150,7 @@
  	pIf->SetPrioritizeSAN = SetPrioritizeSAN; /* we don't NEED this interface! */
  	pIf->SetTlsVerifyDepth = SetTlsVerifyDepth;
  	pIf->SetTlsCAFile = SetTlsCAFile;
@@ -386,9 +467,9 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/nsd_ossl.c rsyslog-8.2206.0-crl/run
  	pIf->SetTlsKeyFile = SetTlsKeyFile;
  	pIf->SetTlsCertFile = SetTlsCertFile;
  
-diff -r -u rsyslog-8.2206.0-baseline/runtime/nsd_ossl.h rsyslog-8.2206.0-crl/runtime/nsd_ossl.h
---- rsyslog-8.2206.0-baseline/runtime/nsd_ossl.h	2023-01-16 14:03:01.892402302 +0000
-+++ rsyslog-8.2206.0-crl/runtime/nsd_ossl.h	2022-09-28 13:56:03.390075933 +0100
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/nsd_ossl.h rsyslog-8.2206.0-withcrl/runtime/nsd_ossl.h
+--- rsyslog-8.2206.0-nocrl/runtime/nsd_ossl.h	2023-07-03 11:13:51.610158416 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/nsd_ossl.h	2023-07-03 11:19:57.104988525 +0100
 @@ -50,6 +50,7 @@
  	int iMode;		/* 0 - plain tcp, 1 - TLS */
  	int bAbortConn;		/* if set, abort conncection (fatal error had happened) */
@@ -397,9 +478,9 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/nsd_ossl.h rsyslog-8.2206.0-crl/run
  	const uchar *pszKeyFile;
  	const uchar *pszCertFile;
  	enum {
-diff -r -u rsyslog-8.2206.0-baseline/runtime/nsd_ptcp.c rsyslog-8.2206.0-crl/runtime/nsd_ptcp.c
---- rsyslog-8.2206.0-baseline/runtime/nsd_ptcp.c	2022-05-12 12:18:34.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/nsd_ptcp.c	2023-02-09 16:41:08.280888821 +0000
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/nsd_ptcp.c rsyslog-8.2206.0-withcrl/runtime/nsd_ptcp.c
+--- rsyslog-8.2206.0-nocrl/runtime/nsd_ptcp.c	2022-05-12 12:18:34.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/nsd_ptcp.c	2023-07-03 14:22:43.066893427 +0100
 @@ -254,6 +254,19 @@
  }
  
@@ -420,20 +501,40 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/nsd_ptcp.c rsyslog-8.2206.0-crl/run
  SetTlsKeyFile(nsd_t __attribute__((unused)) *pNsd, const uchar *const pszFile)
  {
  	DEFiRet;
-diff -r -u rsyslog-8.2206.0-baseline/runtime/nsd.h rsyslog-8.2206.0-crl/runtime/nsd.h
---- rsyslog-8.2206.0-baseline/runtime/nsd.h	2022-04-04 08:26:40.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/nsd.h	2022-09-29 13:57:11.431283263 +0100
-@@ -95,6 +95,7 @@
- 
- 	/* v15 -- Tls functions */
- 	rsRetVal (*SetTlsCAFile)(nsd_t *pThis, const uchar *);
-+	rsRetVal (*SetTlsCRLFile)(nsd_t *pThis, const uchar *);
+@@ -705,6 +718,7 @@
+ 		CHKiRet(pNS->Drvr.SetCheckExtendedKeyUsage(pNewNsd, netstrms.GetDrvrCheckExtendedKeyUsage(pNS)));
+ 		CHKiRet(pNS->Drvr.SetPrioritizeSAN(pNewNsd, netstrms.GetDrvrPrioritizeSAN(pNS)));
+ 		CHKiRet(pNS->Drvr.SetTlsCAFile(pNewNsd, netstrms.GetDrvrTlsCAFile(pNS)));
++		CHKiRet(pNS->Drvr.SetTlsCRLFile(pNewNsd, netstrms.GetDrvrTlsCRLFile(pNS)));
+ 		CHKiRet(pNS->Drvr.SetTlsKeyFile(pNewNsd, netstrms.GetDrvrTlsKeyFile(pNS)));
+ 		CHKiRet(pNS->Drvr.SetTlsCertFile(pNewNsd, netstrms.GetDrvrTlsCertFile(pNS)));
+ 		CHKiRet(pNS->Drvr.SetTlsVerifyDepth(pNewNsd, netstrms.GetDrvrTlsVerifyDepth(pNS)));
+@@ -1069,6 +1083,7 @@
+ 	pIf->SetPrioritizeSAN = SetPrioritizeSAN;
+ 	pIf->SetTlsVerifyDepth = SetTlsVerifyDepth;
+ 	pIf->SetTlsCAFile = SetTlsCAFile;
++	pIf->SetTlsCRLFile = SetTlsCRLFile;
+ 	pIf->SetTlsKeyFile = SetTlsKeyFile;
+ 	pIf->SetTlsCertFile = SetTlsCertFile;
+ finalize_it:
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/nsd.h rsyslog-8.2206.0-withcrl/runtime/nsd.h
+--- rsyslog-8.2206.0-nocrl/runtime/nsd.h	2022-04-04 08:26:40.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/nsd.h	2023-07-03 11:32:34.290399909 +0100
+@@ -98,8 +98,10 @@
  	rsRetVal (*SetTlsKeyFile)(nsd_t *pThis, const uchar *);
  	rsRetVal (*SetTlsCertFile)(nsd_t *pThis, const uchar *);
  
-diff -r -u rsyslog-8.2206.0-baseline/runtime/rsconf.c rsyslog-8.2206.0-crl/runtime/rsconf.c
---- rsyslog-8.2206.0-baseline/runtime/rsconf.c	2022-05-12 12:18:34.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/rsconf.c	2022-10-04 17:06:44.071963202 +0100
++	/* v16 - Tls CRL */
++	rsRetVal (*SetTlsCRLFile)(nsd_t *pThis, const uchar *);
+ ENDinterface(nsd)
+-#define nsdCURR_IF_VERSION 15 /* increment whenever you change the interface structure! */
++#define nsdCURR_IF_VERSION 16 /* increment whenever you change the interface structure! */
+ /* interface version 4 added GetRemAddr()
+  * interface version 5 added EnableKeepAlive() -- rgerhards, 2009-06-02
+  * interface version 6 changed return of CheckConnection from void to rsRetVal -- alorbach, 2012-09-06
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/rsconf.c rsyslog-8.2206.0-withcrl/runtime/rsconf.c
+--- rsyslog-8.2206.0-nocrl/runtime/rsconf.c	2022-05-12 12:18:34.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/rsconf.c	2023-07-03 11:32:58.444092680 +0100
 @@ -181,6 +181,7 @@
  	pThis->globals.iGnuTLSLoglevel = 0;
  	pThis->globals.debugOnShutdown = 0;
@@ -442,9 +543,17 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/rsconf.c rsyslog-8.2206.0-crl/runti
  	pThis->globals.pszDfltNetstrmDrvrCertFile = NULL;
  	pThis->globals.pszDfltNetstrmDrvrKeyFile = NULL;
  	pThis->globals.pszDfltNetstrmDrvr = NULL;
-diff -r -u rsyslog-8.2206.0-baseline/runtime/rsconf.h rsyslog-8.2206.0-crl/runtime/rsconf.h
---- rsyslog-8.2206.0-baseline/runtime/rsconf.h	2022-05-12 12:18:34.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/rsconf.h	2022-10-04 17:00:27.649179439 +0100
+@@ -335,6 +336,7 @@
+ 	free(pThis->globals.pszWorkDir);
+ 	free(pThis->globals.operatingStateFile);
+ 	free(pThis->globals.pszDfltNetstrmDrvrCAF);
++	free(pThis->globals.pszDfltNetstrmDrvrCRLF);
+ 	free(pThis->globals.pszDfltNetstrmDrvrCertFile);
+ 	free(pThis->globals.pszDfltNetstrmDrvrKeyFile);
+ 	free(pThis->globals.pszDfltNetstrmDrvr);
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/rsconf.h rsyslog-8.2206.0-withcrl/runtime/rsconf.h
+--- rsyslog-8.2206.0-nocrl/runtime/rsconf.h	2022-05-12 12:18:34.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/rsconf.h	2023-07-03 11:19:57.087478823 +0100
 @@ -105,6 +105,7 @@
  	int debugOnShutdown; /* start debug log when we are shut down */
  	int iGnuTLSLoglevel;/* Sets GNUTLS Debug Level */
@@ -453,9 +562,9 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/rsconf.h rsyslog-8.2206.0-crl/runti
  	uchar *pszDfltNetstrmDrvrCertFile;/* default cert file for the netstrm driver (server) */
  	uchar *pszDfltNetstrmDrvrKeyFile; /* default key file for the netstrm driver (server) */
  	uchar *pszDfltNetstrmDrvr; /* module name of default netstream driver */
-diff -r -u rsyslog-8.2206.0-baseline/runtime/tcpsrv.c rsyslog-8.2206.0-crl/runtime/tcpsrv.c
---- rsyslog-8.2206.0-baseline/runtime/tcpsrv.c	2022-06-13 09:57:25.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/tcpsrv.c	2023-01-16 12:49:54.041937230 +0000
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/tcpsrv.c rsyslog-8.2206.0-withcrl/runtime/tcpsrv.c
+--- rsyslog-8.2206.0-nocrl/runtime/tcpsrv.c	2022-06-13 09:57:25.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/tcpsrv.c	2023-07-03 11:19:57.088177030 +0100
 @@ -1049,6 +1049,7 @@
  	 * when param is NULL default handling for ExpiredCerts is set! */
  	CHKiRet(netstrms.SetDrvrPermitExpiredCerts(pThis->pNS, pThis->pszDrvrPermitExpiredCerts));
@@ -499,9 +608,9 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/tcpsrv.c rsyslog-8.2206.0-crl/runti
  	pIf->SetDrvrKeyFile = SetDrvrKeyFile;
  	pIf->SetDrvrCertFile = SetDrvrCertFile;
  	pIf->SetDrvrName = SetDrvrName;
-diff -r -u rsyslog-8.2206.0-baseline/runtime/tcpsrv.h rsyslog-8.2206.0-crl/runtime/tcpsrv.h
---- rsyslog-8.2206.0-baseline/runtime/tcpsrv.h	2022-04-04 08:26:40.000000000 +0100
-+++ rsyslog-8.2206.0-crl/runtime/tcpsrv.h	2023-01-16 12:48:20.402720381 +0000
+diff -u -r rsyslog-8.2206.0-nocrl/runtime/tcpsrv.h rsyslog-8.2206.0-withcrl/runtime/tcpsrv.h
+--- rsyslog-8.2206.0-nocrl/runtime/tcpsrv.h	2022-04-04 08:26:40.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/runtime/tcpsrv.h	2023-07-03 11:34:27.207869353 +0100
 @@ -79,6 +79,7 @@
  	uchar *pszDrvrAuthMode;	/**< auth mode of the stream driver to use */
  	uchar *pszDrvrPermitExpiredCerts;/**< current driver setting for handlign expired certs */
@@ -510,17 +619,21 @@ diff -r -u rsyslog-8.2206.0-baseline/runtime/tcpsrv.h rsyslog-8.2206.0-crl/runti
  	uchar *pszDrvrKeyFile;
  	uchar *pszDrvrCertFile;
  	uchar *pszDrvrName;	/**< name of stream driver to use */
-@@ -206,6 +207,7 @@
- 	rsRetVal (*SetDrvrTlsVerifyDepth)(tcpsrv_t *pThis, int verifyDepth);
- 	/* added v25 -- Options for TLS certificates, 2021-07-19 */
+@@ -208,8 +209,10 @@
  	rsRetVal (*SetDrvrCAFile)(tcpsrv_t *pThis, uchar *pszMode);
-+	rsRetVal (*SetDrvrCRLFile)(tcpsrv_t *pThis, uchar *pszMode);
  	rsRetVal (*SetDrvrKeyFile)(tcpsrv_t *pThis, uchar *pszMode);
  	rsRetVal (*SetDrvrCertFile)(tcpsrv_t *pThis, uchar *pszMode);
++	/* added v26 -- Options for TSL CRL file */
++	rsRetVal (*SetDrvrCRLFile)(tcpsrv_t *pThis, uchar *pszMode);
  ENDinterface(tcpsrv)
-diff -r -u rsyslog-8.2206.0-baseline/tools/omfwd.c rsyslog-8.2206.0-crl/tools/omfwd.c
---- rsyslog-8.2206.0-baseline/tools/omfwd.c	2022-05-12 12:18:34.000000000 +0100
-+++ rsyslog-8.2206.0-crl/tools/omfwd.c	2023-01-16 14:58:45.038036779 +0000
+-#define tcpsrvCURR_IF_VERSION 25 /* increment whenever you change the interface structure! */
++#define tcpsrvCURR_IF_VERSION 26 /* increment whenever you change the interface structure! */
+ /* change for v4:
+  * - SetAddtlFrameDelim() added -- rgerhards, 2008-12-10
+  * - SetInputName() added -- rgerhards, 2008-12-10
+diff -u -r rsyslog-8.2206.0-nocrl/tools/omfwd.c rsyslog-8.2206.0-withcrl/tools/omfwd.c
+--- rsyslog-8.2206.0-nocrl/tools/omfwd.c	2022-05-12 12:18:34.000000000 +0100
++++ rsyslog-8.2206.0-withcrl/tools/omfwd.c	2023-07-03 11:19:57.089539021 +0100
 @@ -90,6 +90,7 @@
  	int iStrmDrvrSANPreference; /* ignore CN when any SAN set */
  	int iStrmTlsVerifyDepth; /**< Verify Depth for certificate chains */
