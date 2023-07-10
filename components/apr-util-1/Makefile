@@ -53,7 +53,15 @@ PATCH_LEVEL=0
 
 CONFIGURE_PREFIX=$(USRDIR)/apr-util/1
 
+ifneq ($(strip $(OPENSSL3)),)
+COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/apu-1-config ;
+COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/Makefile ;
+COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/test/Makefile ;
+CONFIGURE_OPTIONS +=    --with-openssl=/usr/openssl/3
+endif
+
 CONFIGURE_OPTIONS.64 +=	--with-mysql=$(USRDIR)/mysql/8.0
+CONFIGURE_OPTIONS +=	--with-crypto
 CONFIGURE_OPTIONS +=	--with-expat=$(USRDIR)
 CONFIGURE_OPTIONS +=	--with-sqlite3=$(USRDIR)
 CONFIGURE_OPTIONS +=	--with-ldap=ldap_r-2.4
@@ -95,6 +103,14 @@ REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += library/apr-1
 REQUIRED_PACKAGES += library/expat
+REQUIRED_PACKAGES += library/nspr
+REQUIRED_PACKAGES += library/security/nss
+ifeq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+else
+REQUIRED_PACKAGES += library/security/openssl-3
+endif
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/network/ldap/openldap

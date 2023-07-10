@@ -74,6 +74,7 @@ CONFIGURE_OPTIONS +=	--enable-mods-shared=all
 CONFIGURE_OPTIONS +=	--enable-proxy-fdpass
 CONFIGURE_OPTIONS +=	--enable-exception-hook
 CONFIGURE_OPTIONS +=	--enable-cgi
+CONFIGURE_OPTIONS +=	--enable-session-crypto
 CONFIGURE_OPTIONS +=	--enable-suexec
 CONFIGURE_OPTIONS +=	--with-suexec-caller=webservd
 CONFIGURE_OPTIONS +=	--with-apr=$(USRDIR)/apr/1/bin/$(MACH64)/apr-1-config

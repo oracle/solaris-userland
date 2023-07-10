@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 # APU_VERSION substitution
@@ -29,6 +29,8 @@
 # by default everything is apr-util package
 <transform file link -> default pkg.type main>
 
+<transform file link path=.*/apr_crypto_nss.*\.so$ -> set pkg.type nss>
+<transform file link path=.*/apr_crypto_openssl.*\.so$ -> set pkg.type openssl>
 <transform file link path=.*/apr_ldap.*\.so$ -> set pkg.type ldap>
 <transform file link path=.*/apr_dbd_mysql.*\.so$ -> set pkg.type mysql>
 <transform file link path=.*/apr_dbd_sqlite3.*\.so$ -> set pkg.type sqlite>
