@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,16 +30,22 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		librsvg
-COMPONENT_VERSION=	2.50.2
+COMPONENT_VERSION=	2.56.1
 COMPONENT_MAJOR_MINOR=	$(basename $(COMPONENT_VERSION))
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/LibRsvg
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6211f271ce4cd44a7318190d36712e9cea384a933d3e3570004edeb210a056d3
+    sha256:1685aeacae9a441dcb12c0c3ec63706172a2f52705dafbefb8e7311d4d5e430b
+
+# hash for vendored sources
+COMPONENT_ARCHIVE_HASH_crates = \
+    sha256:d1c54bb9185ec2646a804dc456f8f2ee0551d296082ad8bfe0f0efa825a7fc13
+
 COMPONENT_BUGDB=        library/librsvg
 COMPONENT_ANITYA_ID=	5420
 
-COMPONENT_BAID=		90922
+COMPONENT_BAID=		145901
 
+include $(WS_MAKE_RULES)/cargo-vendored.mk
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += --disable-Bsymbolic
@@ -51,6 +57,10 @@ CONFIGURE_OPTIONS += --enable-vala
 # Requires a reconf due to patch to configure.ac.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
+COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
+COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
+COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
+
 # for the tests
 unexport SHELLOPTS
 COMPONENT_TEST_TRANSFORMS += \
@@ -59,7 +69,7 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "s/;[[:space:]]finished[[:space:]].*//" ' \
         '-e "/test result/p" ' \
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH64).master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
