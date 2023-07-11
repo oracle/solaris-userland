@@ -49,6 +49,8 @@ include $(WS_MAKE_RULES)/common.mk
 
 CXXFLAGS += -std=c++14
 
+# We EOF'ed aalib - no need for ascii-art terminal output
+CONFIGURE_OPTIONS += -Daalib=disabled
 # No need for firewire support.
 CONFIGURE_OPTIONS += -Ddv1394=disabled
 # Linux only; requires ALSA.
@@ -84,7 +86,6 @@ REQUIRED_PACKAGES += codec/libvpx
 REQUIRED_PACKAGES += codec/speex
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
-REQUIRED_PACKAGES += library/aalib
 REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/audio/taglib
 REQUIRED_PACKAGES += library/desktop/cairo
