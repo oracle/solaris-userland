@@ -20,14 +20,15 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
-# libraries contain hash in their names and thus are included automatically
+# libraries (and some other files) contain hash in their names and thus are included automatically
 <transform path=usr/lib/\$\(MACH64\)/lib.*\.so$ -> drop>
 <transform path=usr/lib/\$\(MACH64\)/rustlib/(sparcv9-sun|x86_64-pc)-solaris/lib.* -> drop>
+<transform path=usr/share/doc/rust/html/static.files/.* -> drop>
 
 <transform path=usr/lib/\$\(MACH64\)/rustlib/sparcv9-sun-solaris -> edit path sparcv9-sun-solaris \$\(RUST_PLATFORM\)>
 <transform path=usr/lib/\$\(MACH64\)/rustlib/x86_64-pc-solaris -> edit path x86_64-pc-solaris \$\(RUST_PLATFORM\)>
@@ -50,6 +51,7 @@
 <transform file path=usr/share/doc/rust/html/core/arch/arm/fn\.vtb.*\.html -> set variant.arch i386>
 <transform file path=usr/share/doc/rust/html/core/core_arch/aarch64/neon/(fn\.)?v(q|t).*\.html -> set variant.arch i386>
 <transform file path=usr/share/doc/rust/html/core/core_arch/arm/neon/(fn\.)?v(q|t).*\.html -> set variant.arch i386>
+<transform file path=usr/share/doc/rust/html/src/core/portable-simd/crates/core_simd/src/vendor/x86\.rs\.html -> set variant.arch i386>
 
 # sparc files only 
 <transform file path=usr/share/doc/rust/html/std/os/linux/raw/arch/fn.stat.html -> set variant.arch sparc>

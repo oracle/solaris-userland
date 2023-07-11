@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =	64
@@ -28,13 +28,13 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	rustc
-COMPONENT_VERSION =	1.61.0
-COMPONENT_BAID =	123743
+COMPONENT_VERSION =	1.70.0
+COMPONENT_BAID =	145164
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_PROJECT_URL =	http://www.rust-lang.org/
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:a63305a3ad734f170746b337a5e3d07ccaa7aa8f253dc52336b44c0a3b549d7b
+    sha256:bb8e9c564566b2d3228d95de9063a9254182446a161353f1d843bfbaf5c34639
 COMPONENT_ARCHIVE_URL =	https://static.rust-lang.org/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL =	$(COMPONENT_ARCHIVE_URL).asc
 
@@ -45,14 +45,6 @@ PKG_VARS += RUST_PLATFORM
 
 # The unit tests hang and never finish.
 $(SKIP_TEST_AT_TOP_LEVEL)
-
-# Rust spuriously fails to build from time to time. To avoid the full build
-# failure, rust is built in three attempts and each is assigned 5 hours
-# (sequential build takes 2.5 hours). Note that rust typically fails in the
-# first 10 minutes, therefore, the longer time limit does not significantly
-# accumulate to the total build time of Userland gate.
-GMAKE := $(WS_TOOLS)/repeat_cmd 3 5h $(GMAKE)
-COMPONENT_BUILD_ENV += REPEAT_CMD_CLEANUP="gmake clean"
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -113,14 +105,21 @@ COMPONENT_BUILD_ENV += OPENSSL_LIB_DIR=/usr/openssl/3/lib/64
 COMPONENT_BUILD_ENV += OPENSSL_INCLUDE_DIR=/usr/openssl/3/include
 COMPONENT_INSTALL_ENV += OPENSSL_LIB_DIR=/usr/openssl/3/lib/64
 COMPONENT_INSTALL_ENV += OPENSSL_INCLUDE_DIR=/usr/openssl/3/include
+
+COMPONENT_PRE_BUILD_ACTION += \
+        ( $(MKDIR) $(@D)/pkgconfig-my; \
+        $(GSED) 's;-L.* ;;' $(USRLIBDIR)/64/pkgconfig/zlib.pc > $(@D)/pkgconfig-my/zlib.pc ) ;
+PKG_CONFIG_PATHS += $(@D)/pkgconfig-my
 endif
 
-# Rust library names contain hash which differs between intel and sparc.
-# Therefore library list need to be created to be included into p5m file.
+# Rust library names (and some other file names) contain hash which differs
+# between intel and sparc. Therefore library list need to be created to be
+# included into p5m file.
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR); \
 	ls -1 usr/lib/$(MACH64)/lib* \
-	  usr/lib/$(MACH64)/rustlib/$(RUST_PLATFORM)/lib/lib* | \
+	  usr/lib/$(MACH64)/rustlib/$(RUST_PLATFORM)/lib/lib* \
+	  usr/share/doc/rust/html/static.files/* | \
 	  awk '{ print "file path="$$1 " variant.arch=$(MACH)" }' > ../../libraries-hashed.$(MACH64); )
 
 # pkg-report requires *.p5m files to be processed by pkgmogrify. Since the
