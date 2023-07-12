@@ -1,0 +1,53 @@
+On Solaris device files are dynamically generated and can come and go, but
+the symbolic links that are used for aliases are not reaped. Instead of looking
+for a symbolic link to device file, just use /dev/zero.
+
+This has been submitted to the community as bug 3826. This patch may be removed
+after upgrading to t NTP version with that bug fixed.
+
+--- tests/libntp/realpath.c
++++ tests/libntp/realpath.c
+@@ -63,32 +63,17 @@ void test_DevLinks(void) {
+ #   else
+ 	char            nam[512];
+ 	char            abs[512];
+-	struct dirent * ent;
+-	DIR           * dfs = opendir("/dev");
+ 
+-	TEST_ASSERT_NOT_NULL_MESSAGE(dfs, "failed to open '/dev' !?!");
+-	while (NULL != (ent = readdir(dfs))) {
+-		/* the /dev/std{in,out,err} symlinks are prone to some
+-		 * kind of race condition under Linux, so we better skip
+-		 * them here; running tests in parallel can fail mysteriously
+-		 * otherwise. (Dunno *how* this could happen, but it
+-		 * did at some point in time, quite reliably...)
+-		 */
+-		if (!strncmp(ent->d_name, "std", 3))
+-			continue;
+-		/* otherwise build the full name & try to resolve: */
+-		snprintf(nam, sizeof(nam), "/dev/%s", ent->d_name);
+-		resolved = ntp_realpath(nam);
+-		TEST_ASSERT_NOT_NULL_MESSAGE(resolved, errMsg("could not resolve '%s'", nam));
+-		strlcpy(abs, resolved, sizeof(abs));
+-		free(resolved);
+-		resolved = NULL;
+-		/* test/development code:
+-		if (strcmp(nam, abs))
+-			printf(" '%s' --> '%s'\n", nam, abs);
+-		*/
+-		TEST_ASSERT_TRUE_MESSAGE(isValidAbsPath(abs), errMsg("could not validate '%s'", abs));
+-	}
+-	closedir(dfs);
++	snprintf(nam, sizeof(nam), "/dev/%s", "zero");
++	resolved = ntp_realpath(nam);
++	TEST_ASSERT_NOT_NULL_MESSAGE(resolved, errMsg("could not resolve '%s'", nam));
++	strlcpy(abs, resolved, sizeof(abs));
++	free(resolved);
++	resolved = NULL;
++	/* test/development code:
++	if (strcmp(nam, abs))
++		printf(" '%s' --> '%s'\n", nam, abs);
++	*/
++	TEST_ASSERT_TRUE_MESSAGE(isValidAbsPath(abs), errMsg("could not validate '%s'", abs));
+ #   endif
+ }

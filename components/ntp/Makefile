@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -30,7 +30,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ntp
 COMPONENT_VERSION=	4.2.8
-COMPONENT_PATCH_VERSION=	15
+COMPONENT_PATCH_VERSION=	17
 COMPONENT_RC_VERSION=	1
 HUMAN_VERSION=		$(COMPONENT_VERSION)p$(COMPONENT_PATCH_VERSION)
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).$(COMPONENT_PATCH_VERSION)
@@ -38,8 +38,9 @@ COMPONENT_PROJECT_URL=	http://www.ntp.org/
 COMPONENT_SRC_NAME=	ntp
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE_HASH=	 \
-    sha256:f65840deab68614d5d7ceb2d0bb9304ff70dcdedd09abb79754a87536b849c19
-COMPONENT_ARCHIVE_URL=	http://archive.ntp.org/ntp4/ntp-4.2/$(COMPONENT_ARCHIVE)
+    sha256:103dd272e6a66c5b8df07dce5e9a02555fcd6f1397bdfb782237328e89d3a866
+COMPONENT_ARCHIVE_URL=	\
+    http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB= service/ntp
 COMPONENT_ANITYA_ID=	9025
 COMPONENT_TEST_ENV += "TZ=UTC"
@@ -117,11 +118,12 @@ CONFIGURE_OPTIONS +=	--disable-optional-args
 CONFIGURE_OPTIONS +=	--enable-parse-clocks
 CONFIGURE_OPTIONS +=	--enable-ignore-dns-errors
 CONFIGURE_OPTIONS +=	--without-ntpsnmpd
-CONFIGURE_OPTIONS +=	--with-openssl-libdir=$(LIBDIR)/$(MACH64)
 CONFIGURE_OPTIONS +=	--disable-problem-tests
 
+PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
+
 REQUIRED_PACKAGES += library/libedit
-REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += service/network/dns/mdns
 REQUIRED_PACKAGES += shell/ksh93

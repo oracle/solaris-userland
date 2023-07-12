@@ -152,7 +152,7 @@ packetProcessing.c:37:test_AcceptNoSentPacketBroadcastMode:PASS
 packetProcessing.c:38:test_CorrectUnauthenticatedPacket:PASS
 packetProcessing.c:39:test_CorrectAuthenticatedPacketMD5:PASS
 packetProcessing.c:40:test_CorrectAuthenticatedPacketSHA1:PASS
-packetProcessing.c:488:test_CorrectAuthenticatedPacketCMAC:IGNORE: OpenSSL CMAC not used, skipping...
+packetProcessing.c:486:test_CorrectAuthenticatedPacketCMAC:IGNORE: OpenSSL CMAC not used, skipping...
 
 -----------------------
 19 Tests: 
@@ -210,11 +210,11 @@ PASS test-utilities (exit status: 0)
 
 .. contents:: :depth: 2
 
-a_md5encrypt.c:40:test_Encrypt:PASS
-a_md5encrypt.c:41:test_DecryptValid:PASS
-a_md5encrypt.c:42:test_DecryptInvalid:PASS
-a_md5encrypt.c:43:test_IPv4AddressToRefId:PASS
-a_md5encrypt.c:109:test_IPv6AddressToRefId:IGNORE: Skipping because of big endian problem?
+a_md5encrypt.c:41:test_Encrypt:PASS
+a_md5encrypt.c:42:test_DecryptValid:PASS
+a_md5encrypt.c:43:test_DecryptInvalid:PASS
+a_md5encrypt.c:44:test_IPv4AddressToRefId:PASS
+a_md5encrypt.c:110:test_IPv6AddressToRefId:IGNORE: Skipping because of big endian problem?
 
 -----------------------
 5 Tests: 
@@ -349,10 +349,10 @@ calendar.c:1207:test_zellerModInv:PASS
 
 OK
 PASS test-calendar (exit status: 0)
-caljulian.c:16:test_RegularTime:PASS
-caljulian.c:17:test_LeapYear:PASS
-caljulian.c:18:test_uLongBoundary:PASS
-caljulian.c:19:test_uLongWrapped:PASS
+caljulian.c:15:test_RegularTime:PASS
+caljulian.c:16:test_LeapYear:PASS
+caljulian.c:17:test_uLongBoundary:PASS
+caljulian.c:18:test_uLongWrapped:PASS
 
 -----------------------
 4 Tests: 
@@ -432,6 +432,46 @@ decodenetnum.c:16:test_NameBufOverflow:PASS
 
 OK
 PASS test-decodenetnum (exit status: 0)
+digest with key 1 { 0x00, 0x00, 0x00, 0x01, 0x34, 0x5b, 0xcf, 0xa8, 0x85, 0x6e, 
+0x9d, 0x01, 0xeb, 0x81, 0x25, 0xc2, 0xa4, 0xb8, 0x1b, 0xe0, }
+digest with key 51 { 0x00, 0x00, 0x00, 0x33, 0xd1, 0x04, 0x4e, 0xbf, 0x79, 0x2d, 
+0x3a, 0x40, 0xcd, 0xdc, 0x5a, 0x44, 0xde, 0xe0, 0x0c, 0x84, }
+digests.c:131:test_Digest_AES128CMAC:PASS
+MAC encrypt: EVP_MD_fetch failed
+digests.c:190:test_Digest_MD4:IGNORE: Likely OpenSSL 3 failed digest init.
+digest with key 3 { 0x00, 0x00, 0x00, 0x03, 0xa6, 0x8d, 0x3a, 0xfe, 0x52, 0xe5, 
+0xf7, 0xe9, 0x4c, 0x97, 0x72, 0x16, 0x7c, 0x28, 0x18, 0xaf, }
+digest with key 53 { 0x00, 0x00, 0x00, 0x35, 0xd4, 0x11, 0x2c, 0xc6, 0x66, 0x74, 
+0x46, 0x8b, 0x12, 0xb1, 0x8c, 0x49, 0xb0, 0x06, 0xda, 0x34, }
+digests.c:205:test_Digest_MD5:PASS
+MAC encrypt: EVP_MD_fetch failed
+digests.c:260:test_Digest_MDC2:IGNORE: Likely OpenSSL 3 failed digest init.
+digest with key 5 { 0x00, 0x00, 0x00, 0x05, 0x8c, 0x3e, 0x55, 0xbb, 0xec, 0x7c, 
+0xf6, 0x30, 0xef, 0xd1, 0x45, 0x8c, 0xdd, 0x29, 0x32, 0x7e, 0x04, 0x87, 0x6c, 0xd7, }
+digest with key 55 { 0x00, 0x00, 0x00, 0x37, 0x2d, 0x4a, 0x48, 0xdd, 0x28, 0x02, 
+0xb4, 0x9d, 0xe3, 0x6d, 0x1b, 0x90, 0x2b, 0xc4, 0x3f, 0xe5, 0x19, 0x60, 0x12, 0xbc, }
+digests.c:275:test_Digest_RIPEMD160:PASS
+digest with key 6 { 0x00, 0x00, 0x00, 0x06, 0xe2, 0xc6, 0x17, 0x71, 0x03, 0xc1, 
+0x85, 0x56, 0x35, 0xc7, 0x4e, 0x75, 0x79, 0x82, 0x9d, 0xcb, 0x2d, 0x06, 0x0e, 0xfa, }
+digest with key 56 { 0x00, 0x00, 0x00, 0x38, 0x01, 0x16, 0x37, 0xb4, 0xf5, 0x2d, 
+0xe0, 0x97, 0xaf, 0xd8, 0x58, 0xf7, 0xad, 0xb3, 0x7e, 0x38, 0x86, 0x85, 0x78, 0x44, }
+digests.c:314:test_Digest_SHA1:PASS
+digest with key 7 { 0x00, 0x00, 0x00, 0x07, 0x5c, 0x0c, 0x1a, 0x85, 0xad, 0x03, 
+0xb2, 0x9a, 0xe4, 0x75, 0x37, 0x93, 0xaa, 0xa6, 0xcd, 0x76, }
+digest with key 57 { 0x00, 0x00, 0x00, 0x39, 0x07, 0x04, 0x63, 0xcc, 0x46, 0xaf, 
+0xca, 0x00, 0x7d, 0xd1, 0x5a, 0x39, 0xfd, 0x34, 0xca, 0x10, }
+digests.c:353:test_Digest_SHAKE128:PASS
+
+-----------------------
+7 Tests: 
+5 PASS 
+0 XFAIL 
+0 Failures 
+0 XPASS 
+2 Ignored 
+
+OK
+PASS test-digests (exit status: 0)
 hextoint.c:9:test_SingleDigit:PASS
 hextoint.c:10:test_MultipleDigits:PASS
 hextoint.c:11:test_MaxUnsigned:PASS
@@ -622,6 +662,19 @@ prettydate.c:10:test_ConstantDate:PASS
 
 OK
 PASS test-prettydate (exit status: 0)
+realpath.c:48:test_CurrentWorkingDir:PASS
+realpath.c:59:test_DevLinks:PASS
+
+-----------------------
+2 Tests: 
+2 PASS 
+0 XFAIL 
+0 Failures 
+0 XPASS 
+0 Ignored 
+
+OK
+PASS test-realpath (exit status: 0)
 recvbuff.c:8:test_Initialization:PASS
 recvbuff.c:9:test_GetAndFree:PASS
 recvbuff.c:10:test_GetAndFill:PASS
@@ -771,8 +824,8 @@ PASS test-strtolfp (exit status: 0)
    ntp : tests/libntp/test-suite.log
 ===============================================
 
-# TOTAL: 40
-# PASS:  40
+# TOTAL: 42
+# PASS:  42
 # SKIP:  0
 # XFAIL: 0
 # FAIL:  0
@@ -1744,12 +1797,7 @@ PASS test-ntpq (exit status: 0)
 /* Zyfer GPStarplus */
 #define CLOCK_ZYFER 1
 
-/* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
-   systems. This function is required for `alloca.c' support on those systems.
-   */
-/* #undef CRAY_STACKSEG_END */
-
-/* Define to 1 if using `alloca.c'. */
+/* Define to 1 if using 'alloca.c'. */
 /* #undef C_ALLOCA */
 
 /* Enable debugging code? */
@@ -1837,7 +1885,7 @@ PASS test-ntpq (exit status: 0)
 /* #undef DECL_STRTOL_0 */
 
 /* Declare syscall()? */
-/* #undef DECL_SYSCALL */
+#define DECL_SYSCALL 1
 
 /* Declaration style */
 /* #undef DECL_SYSLOG_0 */
@@ -1872,6 +1920,9 @@ PASS test-ntpq (exit status: 0)
 /* use old autokey session key behavior? */
 /* #undef DISABLE_BUG3527_FIX */
 
+/* Disable debug assertion on OOB KoD RATE value? */
+/* #undef DISABLE_BUG3767_FIX */
+
 /* synch TODR hourly? */
 /* #undef DOSYNCTODR */
 
@@ -1890,6 +1941,9 @@ PASS test-ntpq (exit status: 0)
 /* Enable CMAC support? */
 #define ENABLE_CMAC 1
 
+/* auto-instantiate missing PPS devices on Linux */
+#define ENABLE_MAGICPPS 1
+
 /* nls support in libopts */
 /* #undef ENABLE_NLS */
 
@@ -1905,11 +1959,10 @@ PASS test-ntpq (exit status: 0)
 /* via __adjtimex */
 /* #undef HAVE_ADJTIMEX */
 
-/* Define to 1 if you have `alloca', as a function or macro. */
+/* Define to 1 if you have 'alloca', as a function or macro. */
 #define HAVE_ALLOCA 1
 
-/* Define to 1 if you have <alloca.h> and it should be used (not on Ultrix).
-   */
+/* Define to 1 if <alloca.h> works. */
 #define HAVE_ALLOCA_H 1
 
 /* Define to 1 if you have the `arc4random_buf' function. */
@@ -1945,6 +1998,9 @@ PASS test-ntpq (exit status: 0)
 /* Define to 1 if you have the `clock_settime' function. */
 #define HAVE_CLOCK_SETTIME 1
 
+/* Define to 1 if you have the `closefrom' function. */
+#define HAVE_CLOSEFROM 1
+
 /* Define to 1 if you have the <cthreads.h> header file. */
 /* #undef HAVE_CTHREADS_H */
 
@@ -1974,7 +2030,7 @@ PASS test-ntpq (exit status: 0)
 #define HAVE_DNSREGISTRATION 1
 
 /* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
-#define HAVE_DOPRNT 1
+/* #undef HAVE_DOPRNT */
 
 /* Can we drop root privileges? */
 #define HAVE_DROPROOT 1
@@ -1991,6 +2047,9 @@ PASS test-ntpq (exit status: 0)
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
 
+/* Define to 1 if you have the `fdopendir' function. */
+#define HAVE_FDOPENDIR 1
+
 /* Define to 1 if you have the `finite' function. */
 #define HAVE_FINITE 1
 
@@ -2005,6 +2064,12 @@ PASS test-ntpq (exit status: 0)
 
 /* Define to 1 if you have the `fstat' function. */
 #define HAVE_FSTAT 1
+
+/* Define to 1 if you have the `fstatat' function. */
+#define HAVE_FSTATAT 1
+
+/* Define to 1 if we have realpath() that supports NULL as the 2nd argument */
+#define HAVE_FUNC_POSIX_REALPATH 1
 
 /* Define to 1 if you have the `getbootfile' function. */
 /* #undef HAVE_GETBOOTFILE */
@@ -2126,7 +2191,7 @@ PASS test-ntpq (exit status: 0)
 /* Define to 1 if the system has the type `long long'. */
 #define HAVE_LONG_LONG 1
 
-/* Define to 1 if the system has the type 'long long int'. */
+/* Define to 1 if the system has the type `long long int'. */
 /* #undef HAVE_LONG_LONG_INT */
 
 /* if you have SunOS LWP package */
@@ -2164,6 +2229,9 @@ PASS test-ntpq (exit status: 0)
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
+
+/* Define to 1 if you have the <minix/config.h> header file. */
+/* #undef HAVE_MINIX_CONFIG_H */
 
 /* Define to 1 if you have the `mkstemp' function. */
 #define HAVE_MKSTEMP 1
@@ -2242,6 +2310,9 @@ PASS test-ntpq (exit status: 0)
 
 /* if you have NT Threads */
 /* #undef HAVE_NT_THREADS */
+
+/* Define to 1 if you have the `openat' function. */
+#define HAVE_OPENAT 1
 
 /* Define to 1 if you have the <openssl/cmac.h> header file. */
 #define HAVE_OPENSSL_CMAC_H 1
@@ -2441,6 +2512,9 @@ PASS test-ntpq (exit status: 0)
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
 
+/* Define to 1 if you have the <stdio.h> header file. */
+#define HAVE_STDIO_H 1
+
 /* Define to 1 if you have the <stdlib.h> header file. */
 #define HAVE_STDLIB_H 1
 
@@ -2456,7 +2530,7 @@ PASS test-ntpq (exit status: 0)
 /* Define to 1 if you have the `strerror' function. */
 #define HAVE_STRERROR 1
 
-/* Define to 1 if you have the `strerror_r' function. */
+/* Define if you have `strerror_r'. */
 #define HAVE_STRERROR_R 1
 
 /* Define to 1 if you have the <strings.h> header file. */
@@ -2752,7 +2826,7 @@ PASS test-ntpq (exit status: 0)
 /* deviant sigwait? */
 /* #undef HAVE_UNIXWARE_SIGWAIT */
 
-/* Define to 1 if the system has the type 'unsigned long long int'. */
+/* Define to 1 if the system has the type `unsigned long long int'. */
 #define HAVE_UNSIGNED_LONG_LONG_INT 1
 
 /* Define to 1 if you have the `updwtmp' function. */
@@ -3045,7 +3119,7 @@ PASS test-ntpq (exit status: 0)
 #define PACKAGE "ntp"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "http://bugs.ntp.org./"
+#define PACKAGE_BUGREPORT "https://bugs.ntp.org/"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "ntp"
@@ -3056,7 +3130,7 @@ PASS test-ntpq (exit status: 0)
 #define PACKAGE_TARNAME "ntp"
 
 /* Define to the home page for this package. */
-#define PACKAGE_URL "http://www.ntp.org./"
+#define PACKAGE_URL "https://www.ntp.org/"
 
 /* Define to the version of this package. */
 
@@ -3137,7 +3211,9 @@ PASS test-ntpq (exit status: 0)
 	STACK_DIRECTION = 0 => direction of growth unknown */
 /* #undef STACK_DIRECTION */
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #define STDC_HEADERS 1
 
 /* Step, then slew the clock? */
@@ -3166,7 +3242,8 @@ PASS test-ntpq (exit status: 0)
 /* Is K_TICK_NAME in nanoseconds? */
 #define TICK_NANO 1
 
-/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. This
+   macro is obsolete. */
 #define TIME_WITH_SYS_TIME 1
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
@@ -3197,21 +3274,87 @@ typedef unsigned int	uintptr_t;
 #ifndef _ALL_SOURCE
 # define _ALL_SOURCE 1
 #endif
+/* Enable general extensions on macOS.  */
+#ifndef _DARWIN_C_SOURCE
+# define _DARWIN_C_SOURCE 1
+#endif
+/* Enable general extensions on Solaris.  */
+#ifndef __EXTENSIONS__
+# define __EXTENSIONS__ 1
+#endif
 /* Enable GNU extensions on systems that have them.  */
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE 1
 #endif
-/* Enable threading extensions on Solaris.  */
+/* Enable X/Open compliant socket functions that do not require linking
+   with -lxnet on HP-UX 11.11.  */
+#ifndef _HPUX_ALT_XOPEN_SOCKET_API
+# define _HPUX_ALT_XOPEN_SOCKET_API 1
+#endif
+/* Identify the host operating system as Minix.
+   This macro does not affect the system headers' behavior.
+   A future release of Autoconf may stop defining this macro.  */
+#ifndef _MINIX
+/* # undef _MINIX */
+#endif
+/* Enable general extensions on NetBSD.
+   Enable NetBSD compatibility extensions on Minix.  */
+#ifndef _NETBSD_SOURCE
+# define _NETBSD_SOURCE 1
+#endif
+/* Enable OpenBSD compatibility extensions on NetBSD.
+   Oddly enough, this does nothing on OpenBSD.  */
+#ifndef _OPENBSD_SOURCE
+# define _OPENBSD_SOURCE 1
+#endif
+/* Define to 1 if needed for POSIX-compatible behavior.  */
+#ifndef _POSIX_SOURCE
+/* # undef _POSIX_SOURCE */
+#endif
+/* Define to 2 if needed for POSIX-compatible behavior.  */
+#ifndef _POSIX_1_SOURCE
+/* # undef _POSIX_1_SOURCE */
+#endif
+/* Enable POSIX-compatible threading on Solaris.  */
 #ifndef _POSIX_PTHREAD_SEMANTICS
 # define _POSIX_PTHREAD_SEMANTICS 1
+#endif
+/* Enable extensions specified by ISO/IEC TS 18661-5:2014.  */
+#ifndef __STDC_WANT_IEC_60559_ATTRIBS_EXT__
+# define __STDC_WANT_IEC_60559_ATTRIBS_EXT__ 1
+#endif
+/* Enable extensions specified by ISO/IEC TS 18661-1:2014.  */
+#ifndef __STDC_WANT_IEC_60559_BFP_EXT__
+# define __STDC_WANT_IEC_60559_BFP_EXT__ 1
+#endif
+/* Enable extensions specified by ISO/IEC TS 18661-2:2015.  */
+#ifndef __STDC_WANT_IEC_60559_DFP_EXT__
+# define __STDC_WANT_IEC_60559_DFP_EXT__ 1
+#endif
+/* Enable extensions specified by ISO/IEC TS 18661-4:2015.  */
+#ifndef __STDC_WANT_IEC_60559_FUNCS_EXT__
+# define __STDC_WANT_IEC_60559_FUNCS_EXT__ 1
+#endif
+/* Enable extensions specified by ISO/IEC TS 18661-3:2015.  */
+#ifndef __STDC_WANT_IEC_60559_TYPES_EXT__
+# define __STDC_WANT_IEC_60559_TYPES_EXT__ 1
+#endif
+/* Enable extensions specified by ISO/IEC TR 24731-2:2010.  */
+#ifndef __STDC_WANT_LIB_EXT2__
+# define __STDC_WANT_LIB_EXT2__ 1
+#endif
+/* Enable extensions specified by ISO/IEC 24747:2009.  */
+#ifndef __STDC_WANT_MATH_SPEC_FUNCS__
+# define __STDC_WANT_MATH_SPEC_FUNCS__ 1
 #endif
 /* Enable extensions on HP NonStop.  */
 #ifndef _TANDEM_SOURCE
 # define _TANDEM_SOURCE 1
 #endif
-/* Enable general extensions on Solaris.  */
-#ifndef __EXTENSIONS__
-# define __EXTENSIONS__ 1
+/* Enable X/Open extensions.  Define to 500 only if necessary
+   to make mbstate_t available.  */
+#ifndef _XOPEN_SOURCE
+/* # undef _XOPEN_SOURCE */
 #endif
 
 
@@ -3239,16 +3382,6 @@ typedef unsigned int	uintptr_t;
 /* routine worker child proc uses to exit. */
 #define WORKER_CHILD_EXIT exit
 
-/* Define to 1 if on MINIX. */
-/* #undef _MINIX */
-
-/* Define to 2 if the system does not provide POSIX.1 features except with
-   this defined. */
-/* #undef _POSIX_1_SOURCE */
-
-/* Define to 1 if you need to in order for `stat' and other things to work. */
-/* #undef _POSIX_SOURCE */
-
 /* enable thread safety */
 #define _REENTRANT 1
 
@@ -3264,7 +3397,8 @@ typedef unsigned int	uintptr_t;
 /* Are we _special_? */
 /* #undef __APPLE_USE_RFC_3542 */
 
-/* Define to 1 if type `char' is unsigned and you are not using gcc.  */
+/* Define to 1 if type `char' is unsigned and your compiler does not
+   predefine this macro.  */
 #ifndef __CHAR_UNSIGNED__
 /* # undef __CHAR_UNSIGNED__ */
 #endif
@@ -3297,7 +3431,7 @@ typedef unsigned int	uintptr_t;
 /* Define to `long int' if <sys/types.h> does not define. */
 /* #undef off_t */
 
-/* Define to `int' if <sys/types.h> does not define. */
+/* Define as a signed integer type capable of holding a process identifier. */
 /* #undef pid_t */
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
