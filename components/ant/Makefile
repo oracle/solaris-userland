@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 
@@ -30,17 +30,17 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ant
-COMPONENT_VERSION=	1.10.11
+COMPONENT_VERSION=	1.10.13
 COMPONENT_PROJECT_URL=	https://ant.apache.org/
 COMPONENT_SRC_NAME=	apache-ant
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:fee49208ba798be2e4302917a64a89f6756da542a0c2a2673e727182618f79ac
+    sha256:06a8f6f11529aeadcd10f96335dcd8b166188e2b970d27a648006a1be79b29f7
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/ant/source/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	50
 
-COMPONENT_BAID=		105323
+COMPONENT_BAID=		146684
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
