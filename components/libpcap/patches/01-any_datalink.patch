@@ -1,19 +1,24 @@
 This is edited upstream commit 841507c:
 https://github.com/the-tcpdump-group/libpcap/commit/841507c824c1e3adffca4ec8b3d986fbc1244ba1
 
-It fixes #1057:                                                                                       
+It fixes #1057:
+
 https://github.com/the-tcpdump-group/tcpdump/issues/1057
 
-Add the Solaris "any" device in pcap_findalldevs() if we have it.
+commit 841507c824c1e3adffca4ec8b3d986fbc1244ba1
+Author: Guy Harris <gharris@sonic.net>
+Date:   Tue Jun 13 17:17:15 2023 -0700
 
-There's no good run-time test, so we test at configure time, by checking
-whether /usr/include/inet/ipnet.h exists and contains IPNET_ANY_LINK.
-See https://github.com/the-tcpdump-group/tcpdump/issues/1057#issuecomment-1584088911
+    Add the Solaris "any" device in pcap_findalldevs() if we have it.
+    
+    There's no good run-time test, so we test at configure time, by checking
+    whether /usr/include/inet/ipnet.h exists and contains IPNET_ANY_LINK.
+    See https://github.com/the-tcpdump-group/tcpdump/issues/1057#issuecomment-1584088911
+    
+    We make a common routine to use to add that device.
 
-We make a common routine to use to add that device.
-
---- libpcap-1.10.4/CMakeLists.txt
-+++ libpcap-1.10.4/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
 @@ -1756,6 +1756,29 @@ set(CMAKE_EXTRA_INCLUDE_FILES  sys/types
              check_type_size("struct BPF_TIMEVAL" STRUCT_BPF_TIMEVAL)
          endif()
@@ -44,8 +49,8 @@ We make a common routine to use to add that device.
      elseif(PCAP_TYPE STREQUAL "haiku")
          #
          # Check for some headers just in case.
---- libpcap-1.10.4/cmakeconfig.h.in
-+++ libpcap-1.10.4/cmakeconfig.h.in
+--- a/cmakeconfig.h.in
++++ b/cmakeconfig.h.in
 @@ -150,6 +150,9 @@ #cmakedefine HAVE_SOCKLEN_T 1
  /* On solaris */
  #cmakedefine HAVE_SOLARIS 1
@@ -56,8 +61,8 @@ We make a common routine to use to add that device.
  /* define if we have the Solaris/IRIX getnetbyname_r() */
  #cmakedefine HAVE_SOLARIS_IRIX_GETNETBYNAME_R 1
  
---- libpcap-1.10.4/configure.ac
-+++ libpcap-1.10.4/configure.ac
+--- a/configure.ac
++++ b/configure.ac
 @@ -1121,6 +1121,25 @@ #include <sys/ioccom.h>
  		#endif
  		#include <net/bpf.h>
@@ -84,8 +89,8 @@ We make a common routine to use to add that device.
  	;;
  
  pf)
---- libpcap-1.10.4/pcap-bpf.c
-+++ libpcap-1.10.4/pcap-bpf.c
+--- a/pcap-bpf.c
++++ b/pcap-bpf.c
 @@ -3014,6 +3014,14 @@ if (pcap_findalldevs_interfaces(devlistp
  	    get_if_flags) == -1)
  		return (-1);	/* failure */
@@ -101,27 +106,27 @@ We make a common routine to use to add that device.
  #if defined(__FreeBSD__) && defined(SIOCIFCREATE2)
  	if (finddevs_usb(devlistp, errbuf) == -1)
  		return (-1);
---- libpcap-1.10.4/pcap-int.h
-+++ libpcap-1.10.4/pcap-int.h
+--- a/pcap-int.h
++++ b/pcap-int.h
 @@ -517,6 +517,8 @@ * using the "standard" mechanisms (SIOCG
   *
-  * "add_dev()" adds an entry to a pcap_if_list_t.
+  * "pcap_add_dev()" adds an entry to a pcap_if_list_t.
   *
 + * "pcap_add_any_dev()" adds an entry for the "any" device to a pcap_if_list_t.
 + *
-  * "find_dev()" tries to find a device, by name, in a pcap_if_list_t.
+  * "pcap_find_dev()" tries to find a device, by name, in a pcap_if_list_t.
   *
-  * "find_or_add_dev()" checks whether a device is already in a pcap_if_list_t
+  * "pcap_find_or_add_dev()" checks whether a device is already in a
 @@ -535,6 +537,7 @@ get_if_flags_func, const char *, char *)
- pcap_if_t *find_dev(pcap_if_list_t *, const char *);
- pcap_if_t *add_dev(pcap_if_list_t *, const char *, bpf_u_int32, const char *,
- 	    char *);
+ pcap_if_t *pcap_find_dev(pcap_if_list_t *, const char *);
+ pcap_if_t *pcap_add_dev(pcap_if_list_t *, const char *, bpf_u_int32,
+ 	    const char *, char *);
 +pcap_if_t *pcap_add_any_dev(pcap_if_list_t *, char *);
- int	add_addr_to_dev(pcap_if_t *, struct sockaddr *, size_t,
+ int	pcap_add_addr_to_dev(pcap_if_t *, struct sockaddr *, size_t,
  	    struct sockaddr *, size_t, struct sockaddr *, size_t,
  	    struct sockaddr *dstaddr, size_t, char *errbuf);
---- libpcap-1.10.4/pcap-linux.c
-+++ libpcap-1.10.4/pcap-linux.c
+--- a/pcap-linux.c
++++ b/pcap-linux.c
 @@ -1431,11 +1431,6 @@ return -1;
  }
  
@@ -142,15 +147,15 @@ We make a common routine to use to add that device.
 -	 * network device, the notion of "connected" vs. "disconnected"
 -	 * doesn't apply.
  	 */
--	if (add_dev(devlistp, "any",
+-	if (pcap_add_dev(devlistp, "any",
 -	    PCAP_IF_UP|PCAP_IF_RUNNING|PCAP_IF_CONNECTION_STATUS_NOT_APPLICABLE,
 -	    any_descr, errbuf) == NULL)
 +	if (pcap_add_any_dev(devlistp, errbuf) == NULL)
  		return (-1);
  
  	return (0);
---- libpcap-1.10.4/pcap.c
-+++ libpcap-1.10.4/pcap.c
+--- a/pcap.c
++++ b/pcap.c
 @@ -1420,6 +1420,24 @@ return (curdev);
  }
  
