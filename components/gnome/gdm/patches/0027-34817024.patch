@@ -1,0 +1,46 @@
+Fix for
+Oracle bug 34817024 login using incorrect username in gdm generates coredump
+
+which also works around
+Oracle bug 35606318 getpwnam_r() & getpwuid_r() return uninitialized pointer
+  for some errors
+
+Submitted upstream:
+https://gitlab.gnome.org/GNOME/gdm/-/merge_requests/213
+
+From 77add73991ff1135c92620fec2e70d88a5798d56 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Fri, 14 Jul 2023 12:42:11 -0700
+Subject: [PATCH] gdm-session-solaris-auditor: don't lookup a NULL username
+
+If the username is invalid, don't attempt to getpwnam(NULL) for it,
+just skip ahead to the non-existent user handling part of the code.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ daemon/gdm-session-solaris-auditor.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/daemon/gdm-session-solaris-auditor.c b/daemon/gdm-session-solaris-auditor.c
+index f632804db..8390ab3fe 100644
+--- a/daemon/gdm-session-solaris-auditor.c
++++ b/daemon/gdm-session-solaris-auditor.c
+@@ -322,11 +322,13 @@ static void
+ on_username_set (GdmSessionSolarisAuditor *auditor)
+ {
+         char          *username;
+-        struct passwd *passwd_entry;
++        struct passwd *passwd_entry = NULL;
+ 
+         g_object_get (G_OBJECT (auditor), "username", &username, NULL);
+ 
+-        gdm_get_pwent_for_name (username, &passwd_entry);
++        if (username != NULL) {
++                gdm_get_pwent_for_name (username, &passwd_entry);
++        }
+ 
+         if (passwd_entry != NULL) {
+                 auditor->uid = passwd_entry->pw_uid;
+-- 
+2.39.3
+
