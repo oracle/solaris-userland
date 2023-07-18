@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 COMPILER=	gcc
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         isl
-COMPONENT_VERSION=      0.24
+COMPONENT_VERSION=      0.26
 COMPONENT_PROJECT_URL=  https://libisl.sourceforge.io
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:fcf78dd9656c10eb8cf9fbd5f59a0b6b01386205fe1934b3b287a0a1898145c0
+	sha256:5eac8664e9d67be6bd0bee5085d6840b8baf738c06814df47eaf4166d9776436
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	13286
 
-COMPONENT_BAID=		101825
+COMPONENT_BAID=		146892
 
 include $(WS_MAKE_RULES)/common.mk
 
