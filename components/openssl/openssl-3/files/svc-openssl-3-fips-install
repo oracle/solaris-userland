@@ -16,6 +16,10 @@ SYSTEM_FIPS_MODE_FILE="/etc/system.d/crypto:fips-140"
 
 update_fipsmodule_config()
 {
+	# Explicitly remove the old single ISA fipmodule.cnf since it was not originally
+	# delivered via the fips-140-provider package.
+	rm -f /etc/openssl/3/conf.d/fipsmodule.cnf
+
 	# we run fipsinstall with empty configuration because
 	# even some valid system configurations can break this command
 	export OPENSSL_CONF=
