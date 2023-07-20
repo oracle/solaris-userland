@@ -99,6 +99,9 @@ CFLAGS = $(CC_BITS) $(CFLAGS_EXTRA) $(CFLAGS_$(MACH))
 CXXFLAGS = $(CC_BITS) $(CFLAGS_EXTRA) $(CFLAGS_$(MACH))
 CPPFLAGS = -D_REENTRANT -I$(USRINCDIR)/ncurses
 
+# gdb/python/py-block.c now requires C++ 11.
+CXXFLAGS += -std=c++11
+
 CONFIGURE_OPTIONS += --with-x=no
 CONFIGURE_OPTIONS += --with-curses
 CONFIGURE_OPTIONS += --disable-sim
