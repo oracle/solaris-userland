@@ -1,0 +1,13 @@
+Fix for 
+utils.c:805:17: error: 'FakeScreenFps' undeclared (first use in this function); 
+
+--- a/unix/xserver/os/utils.c	2022-12-07 09:37:42.112551863 -0800
++++ b/unix/xserver/os/utils.c	2022-12-07 09:38:56.609214055 -0800
+@@ -802,6 +802,7 @@
+         }
+         else if (strcmp(argv[i], "-fakescreenfps") == 0) {
+             if (++i < argc) {
++		uint32_t FakeScreenFps;
+                 FakeScreenFps = (uint32_t) atoi(argv[i]);
+                 if (FakeScreenFps < 1 || FakeScreenFps > 600)
+                     FatalError("fakescreenfps must be an integer in [1;600] range\n");

@@ -449,45 +449,6 @@ Would need to make optional to be submitted upstream.
     /* Add for AST2100, ycchen@061807 */
     if ((pAST->jChipType == AST2100) || (pAST->jChipType == AST2200) || (pAST->jChipType == AST2300) || (pAST->jChipType == AST2400) || (pAST->jChipType == AST2500) || (pAST->jChipType == AST1180) )
     {
-@@ -664,38 +348,6 @@ GetIndexRegMask(CRTC_PORT, 0x90, 0xFF, j
-    if (jReg & 0x10)
-        pAST->VGA2Clone = TRUE;
- 
--   /* 3rd Tx Check */
--   pAST->pDP501FWBufferVirtualAddress = NULL;
--   pAST->jTxChipType = Tx_NONE;
--   /* Get 3rd Tx Info from HW Reg. */
--   GetIndexRegMask(CRTC_PORT, 0xA3, 0xFF, jReg);
--   if (jReg & 0x80)
--       pAST->jTxChipType = Tx_Sil164;
--   /* Get 3rd Tx Info from BMC Scratch */
--   if ((pAST->jChipType == AST2300) || (pAST->jChipType == AST2400) || (pAST->jChipType == AST2500))
--   {
--       GetIndexRegMask(CRTC_PORT, 0xD1, 0x0E, jReg);
--	   switch (jReg)
--	   {
--	   case 0x04:
--	       pAST->jTxChipType = Tx_Sil164;
--	       break;
--       case 0x08:
--	        pAST->pDP501FWBufferVirtualAddress = (UCHAR*) calloc(1, 32*1024);
--	        if	(pAST->pDP501FWBufferVirtualAddress)
--	        {
--                if (BackupM68KFW(pScrn, pAST->pDP501FWBufferVirtualAddress, 32*1024) == FALSE)
--		        {
--                    free(pAST->pDP501FWBufferVirtualAddress);
--                    pAST->pDP501FWBufferVirtualAddress = NULL;
--		        }
--            } /* Backup DP501 FW */
--       case 0x0c:
--           pAST->jTxChipType = Tx_DP501;
--           break;
--       }
--   }
--
-    /* WideScreen Support */
-    switch (pAST->jChipType)
-    {
 @@ -754,10 +406,6 @@ {
      ASTRecPtr pAST = ASTPTR(pScrn);
      ULONG ulData;
@@ -661,4 +622,45 @@ Would need to make optional to be submitted upstream.
 -#define DelayMS(x)		DelayUS(1000*x)
 -
  #endif /* ASTVGATOOL_H */
+
+--- a/src/ast_vgatool.c	2022-12-09 15:50:18.848154859 -0800
++++ b/src/ast_vgatool.c	2022-12-09 15:50:40.572902620 -0800
+@@ -364,38 +364,6 @@
+    if (jReg & 0x10)
+        pAST->VGA2Clone = TRUE;
  
+-   /* 3rd Tx Check */
+-   pAST->pDP501FWBufferVirtualAddress = NULL;
+-   pAST->jTxChipType = Tx_NONE;
+-   /* Get 3rd Tx Info from HW Reg. */
+-   GetIndexRegMask(CRTC_PORT, 0xA3, 0xFF, jReg);
+-   if (jReg & 0x80)
+-       pAST->jTxChipType = Tx_Sil164;
+-   /* Get 3rd Tx Info from BMC Scratch */
+-   if ((pAST->jChipType == AST2300) || (pAST->jChipType == AST2400) || (pAST->jChipType == AST2500))
+-   {
+-       GetIndexRegMask(CRTC_PORT, 0xD1, 0x0E, jReg);
+-       switch (jReg)
+-       {
+-       case 0x04:
+-           pAST->jTxChipType = Tx_Sil164;
+-           break;
+-       case 0x08:
+-           pAST->pDP501FWBufferVirtualAddress = (UCHAR*) calloc(1, 32*1024);
+-           if	(pAST->pDP501FWBufferVirtualAddress)
+-           {
+-               if (BackupM68KFW(pScrn, pAST->pDP501FWBufferVirtualAddress, 32*1024) == FALSE)
+-               {
+-                   free(pAST->pDP501FWBufferVirtualAddress);
+-                   pAST->pDP501FWBufferVirtualAddress = NULL;
+-               }
+-           } /* Backup DP501 FW */
+-       case 0x0c:
+-           pAST->jTxChipType = Tx_DP501;
+-           break;
+-       }
+-   }
+-
+    /* WideScreen Support */
+    switch (pAST->jChipType)
+    {

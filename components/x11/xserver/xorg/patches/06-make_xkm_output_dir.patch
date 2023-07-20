@@ -11,8 +11,8 @@ Updated to include changes to ensure xkb directory & files are writable
 by gid 0, to fix bug:
 6916317 Changing xkb settings after login not working on snv130
 
---- a/xkb/Makefile.am	2019-02-12 10:33:44.699244809 -0800
-+++ b/xkb/Makefile.am	2019-02-12 10:34:07.773223892 -0800
+--- a/xkb/Makefile.am	2022-11-11 13:30:56.504613368 -0800
++++ b/xkb/Makefile.am	2022-11-11 13:31:15.238255954 -0800
 @@ -1,6 +1,7 @@
  noinst_LTLIBRARIES = libxkb.la libxkbstubs.la
  
@@ -21,8 +21,8 @@ by gid 0, to fix bug:
  
  DDX_SRCS = \
          ddxBeep.c \
---- a/xkb/ddxLoad.c	2019-02-12 10:34:22.951329549 -0800
-+++ b/xkb/ddxLoad.c	2019-02-12 10:43:09.600768247 -0800
+--- a/xkb/ddxLoad.c	2022-11-11 13:31:04.354186328 -0800
++++ b/xkb/ddxLoad.c	2022-11-11 13:56:58.069006921 -0800
 @@ -56,6 +56,18 @@
  #define PATHSEPARATOR "/"
  #endif
@@ -42,21 +42,20 @@ by gid 0, to fix bug:
  static unsigned
  LoadXKM(unsigned want, unsigned need, const char *keymap, XkbDescPtr *xkbRtrn);
  
-@@ -63,9 +75,13 @@
- OutputDirectory(char *outdir, size_t size)
- {
+@@ -67,8 +79,12 @@
+     int r = -1;
+ 
  #ifndef WIN32
 +#ifdef MAKE_XKM_OUTPUT_DIR
 +    if (geteuid() == 0 && trans_mkdir(XKM_OUTPUT_DIR, XKM_OUTPUT_DIR_MODE) == 0 && (strlen(XKM_OUTPUT_DIR) < size)) {
 +#else
      /* Can we write an xkm and then open it too? */
-     if (access(XKM_OUTPUT_DIR, W_OK | X_OK) == 0 &&
-         (strlen(XKM_OUTPUT_DIR) < size)) {
+     if (access(XKM_OUTPUT_DIR, W_OK | X_OK) == 0) {
 +#endif
-         (void) strcpy(outdir, XKM_OUTPUT_DIR);
-     }
-     else
-@@ -110,6 +126,15 @@
+         directory = XKM_OUTPUT_DIR;
+         if (XKM_OUTPUT_DIR[strlen(XKM_OUTPUT_DIR) - 1] != '/')
+             pathsep = "/";
+@@ -115,6 +131,15 @@
      const char *xkmfile = "-";
  #endif
  
@@ -72,7 +71,7 @@ by gid 0, to fix bug:
      snprintf(keymap, sizeof(keymap), "server-%s", display);
  
      OutputDirectory(xkm_output_dir, sizeof(xkm_output_dir));
-@@ -161,6 +186,11 @@
+@@ -166,6 +191,11 @@
      out = fopen(tmpname, "w");
  #endif
  

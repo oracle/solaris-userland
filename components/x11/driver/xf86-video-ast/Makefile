@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-ast
-COMPONENT_VERSION=	1.1.5
+COMPONENT_VERSION=	1.1.6
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1edbbc55d47d3fd71dec99b15c2483e22738c642623a0fb86ef4a81a9067a2de
+	sha256:eeff52178ce2916a0e07b531bb23c8b105826b6e6e6c5f7c90e33f757827a7c7
 COMPONENT_BUGDB=        x11/devices-ast
 COMPONENT_ANITYA_ID=	17163
-COMPONENT_BAID=		52999
+COMPONENT_BAID=		134667
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -47,7 +48,7 @@ CONFIGURE_OPTIONS += --disable-dri
 
 # Libraries/modules to link with
 AST_LIBRARIES.sparc = # nothing extra
-AST_LIBRARIES.i386 = -lint10 -lpciaccess -lvbe -lvgahw
+AST_LIBRARIES.i386 = -lint10 -lpciaccess -lvgahw
 AST_LIBRARIES = -lfb -lshadow $(AST_LIBRARIES.$(MACH))
 LD_SHARED_OPTIONS += -L$(X11_SERVERMODS_DIR) -R$(X11_SERVERMODS_DIR)
 LD_SHARED_OPTIONS += $(AST_LIBRARIES)

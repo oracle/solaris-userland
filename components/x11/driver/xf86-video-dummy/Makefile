@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-dummy
-COMPONENT_VERSION=	0.3.8
+COMPONENT_VERSION=	0.4.1
+COMPONENT_ARCHIVE=    	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3712bb869307233491e4c570732d6073c0dc3d99adfdb9977396a3fdf84e95b9
+	sha256:146a56649ace85b307910263bcaeebfd1da7258e6706c5f72c3b509779a81f40
 COMPONENT_BUGDB=        x11/devices-x86
 COMPONENT_ANITYA_ID=	5216
-COMPONENT_BAID=		53002
+COMPONENT_BAID=		145583
 
 TEST_TARGET = $(NO_TESTS)
 

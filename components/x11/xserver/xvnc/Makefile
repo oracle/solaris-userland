@@ -89,7 +89,7 @@ PATCH_STAMPS += $(XSERVER_SRC)/.patched
 
 $(XSERVER_SRC)/.patched: $(UNPACK_STAMP) $(UNPACK_STAMP_1) 
 	$(GPATCH) -d $(XSERVER_SRC) $(GPATCH_FLAGS) < \
-		$(SOURCE_DIR)/unix/xserver120.patch ; \
+		files/xserver21.patch ; \
 	for patch in $(XORG_DIR)/patches/*.patch ; do \
 		echo "$(GPATCH) -d $(XSERVER_SRC) $(GPATCH_FLAGS) < $${patch}" ; \
 		$(GPATCH) -d $(XSERVER_SRC) $(GPATCH_FLAGS) < $${patch} ; \
@@ -107,7 +107,7 @@ CMAKE_OPTIONS += -DCMAKE_SKIP_RPATH:BOOL=TRUE
 ### Xvnc (embedded in unix/xserver in TigerVNC sources) is built w/ autotools
 
 # common.mk would set these if BUILD_STYLE=configure, but not for cmake
-CONFIGURE_ENV += CFLAGS="$(strip $(CFLAGS))"
+CONFIGURE_ENV += CFLAGS="$(strip $(CFLAGS)) -I/usr/include/xorg"
 CONFIGURE_ENV += CXXFLAGS="$(strip $(CXXFLAGS))"
 CONFIGURE_ENV += LDFLAGS="$(strip $(LDFLAGS))"
 

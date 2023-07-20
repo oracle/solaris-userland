@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-input-mouse
-COMPONENT_VERSION=	1.9.3
+COMPONENT_VERSION=	1.9.5
+COMPONENT_ARCHIVE=     	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:93ecb350604d05be98b7d4e5db3b8155a44890069a7d8d6b800c0bea79c85cc5
+	sha256:dc75c9e97f269b5edf80b3bb17ecac7f31c093cd27f74b5220b9d07ee63e0b25
 COMPONENT_BUGDB=        x11/input
 COMPONENT_ANITYA_ID=	15901
-COMPONENT_BAID=		58675
+COMPONENT_BAID=		145582
 
 TEST_TARGET = $(NO_TESTS)
 

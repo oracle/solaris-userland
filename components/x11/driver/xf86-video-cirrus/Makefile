@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,12 +28,13 @@ BUILD_ARCH =		i386
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-cirrus
-COMPONENT_VERSION=	1.5.3
+COMPONENT_VERSION=	1.6.0
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:edc87b20a55259126b5239b5c1ef913419eab7ded0ed12ae9ae989460d7351ab
+	sha256:6448c25dabfa87153904cfa8aa21568d09022517d8f851dc9a360b3e1187f146
 COMPONENT_BUGDB=        x11/devices-x86
 COMPONENT_ANITYA_ID=	5215
-COMPONENT_BAID=		53001
+COMPONENT_BAID=		135058
 
 TEST_TARGET = $(NO_TESTS)
 

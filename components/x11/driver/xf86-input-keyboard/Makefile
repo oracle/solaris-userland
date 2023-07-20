@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-input-keyboard
-COMPONENT_VERSION=	1.9.0
+COMPONENT_VERSION=	2.0.0
+COMPONENT_ARCHIVE=     	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f7c900f21752683402992b288d5a2826de7a6c0c0abac2aadd7e8a409e170388
+	sha256:c9f6654376dd6f4e41b3351a746faac81ef4eb329cf738cf1de6f75ca3ee82f4
 COMPONENT_BUGDB=        x11/input
 COMPONENT_ANITYA_ID=	15902
-COMPONENT_BAID=		52994
+COMPONENT_BAID=		134679
 
 TEST_TARGET = $(NO_TESTS)
 

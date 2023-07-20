@@ -4,9 +4,9 @@ Bug 21206921 - Xorg crash switching back from VT under VirtualBox
 Not applicable upstream, since it's caused by our privilege dropping in
 the Solaris added sun-src/os/dtlogin.c
 
---- a/hw/xfree86/common/xf86Events.c	2019-02-12 13:01:04.959851842 -0800
-+++ b/hw/xfree86/common/xf86Events.c	2019-02-12 13:02:36.416576094 -0800
-@@ -456,6 +456,16 @@
+--- a/hw/xfree86/common/xf86Events.c	2022-11-11 14:02:33.111983006 -0800
++++ b/hw/xfree86/common/xf86Events.c	2022-11-11 14:03:58.510064360 -0800
+@@ -447,6 +447,16 @@
      if (!xf86VTSwitchTo())
          return;
  
@@ -20,10 +20,10 @@ the Solaris added sun-src/os/dtlogin.c
 +    }
 +#endif
 +
- #ifdef XF86PM
      xf86OSPMClose = xf86OSPMOpen();
- #endif
-@@ -497,6 +507,14 @@
+ 
+     if (xorgHWAccess)
+@@ -486,6 +496,14 @@
      xf86platformVTProbe();
  #endif
  
@@ -38,14 +38,14 @@ the Solaris added sun-src/os/dtlogin.c
      xf86UpdateHasVTProperty(TRUE);
  
      input_unlock();
---- a/hw/xfree86/os-support/solaris/sun_vid.c	2020-03-31 12:06:42.922428444 -0700
-+++ b/hw/xfree86/os-support/solaris/sun_vid.c	2020-03-31 12:08:49.718086507 -0700
+--- a/hw/xfree86/os-support/solaris/sun_vid.c	2022-11-11 14:04:16.098054848 -0800
++++ b/hw/xfree86/os-support/solaris/sun_vid.c	2022-11-11 14:05:07.742862015 -0800
 @@ -22,7 +22,7 @@
   * OF THIS SOFTWARE.
   *
   */
 -/* Copyright (c) 2008, Oracle and/or its affiliates. All rights reserved.
-+/* Copyright (c) 2008, 2017, Oracle and/or its affiliates. All rights reserved.
++/* Copyright (c) 2008, 2017, Oracle and/or its affiliates.
   *
   * Permission is hereby granted, free of charge, to any person obtaining a
   * copy of this software and associated documentation files (the "Software"),

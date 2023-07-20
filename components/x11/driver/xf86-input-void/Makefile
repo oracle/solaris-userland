@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-input-void
-COMPONENT_VERSION=	1.4.1
+COMPONENT_VERSION=	1.4.2
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f96e4f0a622821bf43a74bd419f2a18423343996c9d243c7e1430ba2d142339c
+	sha256:f0d04260b144ae8e6d791252836f972b0930ed7ee5d9daaeb268667807b78cb1
 COMPONENT_BUGDB=        x11/input
 COMPONENT_ANITYA_ID=	5246
-COMPONENT_BAID=		52998
+COMPONENT_BAID=		134612
 
 TEST_TARGET = $(NO_TESTS)
 

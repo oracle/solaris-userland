@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xorg-server
-COMPONENT_VERSION=	1.20.14
+COMPONENT_VERSION=	21.1.8
 COMPONENT_ARCHIVE_HASH= \
-	sha256:54b199c9280ff8bf0f73a54a759645bd0eeeda7255d1c99310d5b7595f3ac066
+	sha256:d845d1fee2edb33cb94f31b5170f26d98ed31f853ce2da21daca7c60c8ff3aae
 COMPONENT_BUGDB=        x11/xorg-server
 COMPONENT_ANITYA_ID=	5250
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
 COMPONENT_SIG_URL=
 
-COMPONENT_BAID=		129968
+COMPONENT_BAID=		141135
 
 # Remove compiler specific visibility flag that breaks builds of drivers
 # with other compilers
@@ -102,6 +102,7 @@ LD_OPTIONS += -z lazyload
 # Pass linker mapfile listing symbols that modules can count on resolving
 # from the Xorg binary itself
 LD_SHARED_OPTIONS +=  -M$(COMPONENT_DIR)/mapfile.$(MACH)
+LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile.$(MACH)
 
 # Disable direct binding in shared objects, since it breaks libglx.so
 COMPONENT_BUILD_ENV += LD_SHARED_UNSET="$(LD_B_DIRECT)"
@@ -234,6 +235,7 @@ REQUIRED_PACKAGES += x11/library/libepoxy
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxau
 REQUIRED_PACKAGES += x11/library/libxcb
+REQUIRED_PACKAGES += x11/library/libxcvt
 REQUIRED_PACKAGES += x11/library/libxdmcp
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxfixes

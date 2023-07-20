@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -29,12 +29,14 @@ COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-input-vmmouse
-COMPONENT_VERSION=	13.1.0
+COMPONENT_VERSION=	13.2.0
+COMPONENT_ARCHIVE=     	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0af558957ac1be1b2863712c2475de8f4d7f14921fd01ded2e2fde4921b19319
+	sha256:5fa6cb6c0523737266684b216dacbe7f0b2c8dba962bd188369d4e854ed7bfa9
 COMPONENT_BUGDB=        x11/input
 COMPONENT_ANITYA_ID=	5244
-COMPONENT_BAID=		52997
+COMPONENT_BAID=		134616
+COMPONENT_SIG_URL=
 
 PKG_PROTO_DIRS += $(BUILD_DIR_64)/tools
 

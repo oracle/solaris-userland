@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,12 +28,13 @@ BUILD_ARCH =		i386
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-r128
-COMPONENT_VERSION=	6.12.0
+COMPONENT_VERSION=	6.12.1
+COMPONENT_ARCHIVE=     	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:801c86882cbd2bbb3084d471dcc5cfee2c1754dcbfb4dc446676d58a6bd9e057
+	sha256:ac1e407758b5da1d9b0db929d3549d71a99f8eca450f7b8ccbb506f40b4f8af0
 COMPONENT_BUGDB=        x11/devices-x86
 COMPONENT_ANITYA_ID=	5232
-COMPONENT_BAID=		58738
+COMPONENT_BAID=		134613
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)
 
@@ -47,7 +48,7 @@ CONFIGURE_OPTIONS += --disable-dri
 LD_OPTIONS += \
         -L$(X11_SERVERMODS_DIR) \
         -R$(X11_SERVERMODS_DIR) \
-        -lint10 -lpciaccess -lfb -lpixman-1 -lvbe -lfbdevhw -lvgahw -lexa
+        -lint10 -lpciaccess -lfb -lpixman-1 -lfbdevhw -lvgahw -lexa
 
 REQUIRED_PACKAGES += diagnostic/scanpci
 REQUIRED_PACKAGES += library/graphics/pixman

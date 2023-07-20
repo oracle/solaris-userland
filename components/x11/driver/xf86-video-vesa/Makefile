@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -29,12 +29,13 @@ COMPILER = 		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-vesa
-COMPONENT_VERSION=	2.5.0
+COMPONENT_VERSION=	2.6.0
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1f1624f3c73906801ad1bc98335a2cb5676a7a4d18e5374d9a1d18464e54c659
+	sha256:dbf3f95bd0b598ac7e7fc9774b37dc387eb4f805f63e93f720a577c23500881c
 COMPONENT_BUGDB=        x11/devices-x86
 COMPONENT_ANITYA_ID=	5243
-COMPONENT_BAID=		86295
+COMPONENT_BAID=		134665
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -44,7 +45,7 @@ include $(WS_MAKE_RULES)/x11-component.mk
 LD_OPTIONS += \
         -L$(PROTODIR)$(X11_SERVERMODS_DIR) \
         -R$(X11_SERVERMODS_DIR) \
-        -lfb -lpciaccess -lshadow -lvbe
+        -lfb -lpciaccess -lshadow
 
 REQUIRED_PACKAGES += diagnostic/scanpci
 REQUIRED_PACKAGES += x11/server/xorg

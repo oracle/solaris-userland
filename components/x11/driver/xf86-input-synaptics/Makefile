@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-input-synaptics
-COMPONENT_VERSION=	1.9.1
+COMPONENT_VERSION=	1.9.2
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7af83526eff1c76e8b9e1553b34245c203d029028d8044dd9dcf71eef1001576
+	sha256:ab1fd79957d680a770afa4c123deb603ea0fe843e876391387eddb6b7f29ce17
 COMPONENT_BUGDB=        x11/input
 COMPONENT_ANITYA_ID=	5239
-COMPONENT_BAID=		58740
+COMPONENT_BAID=		134677
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/conf
 PKG_PROTO_DIRS += $(BUILD_DIR_64)/tools
