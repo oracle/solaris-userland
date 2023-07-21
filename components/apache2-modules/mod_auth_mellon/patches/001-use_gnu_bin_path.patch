@@ -1,10 +1,9 @@
 Solaris grep supports limited regular expressions.
 Use GNU grep in mellon_create_metadata.sh script.
 
-diff -ru mod_auth_mellon-0.14.1/mellon_create_metadata.sh mod_auth_mellon-0.14.1.new/mellon_create_metadata.sh
---- mod_auth_mellon-0.14.1/mellon_create_metadata.sh	2019-03-20 21:37:40.193318280 +0100
-+++ mod_auth_mellon-0.14.1.new/mellon_create_metadata.sh	2019-03-20 22:00:57.596300418 +0100
-@@ -30,7 +28,7 @@
+--- mod_auth_mellon-0.18.1/mellon_create_metadata.sh
++++ mod_auth_mellon-0.18.1/mellon_create_metadata.sh
+@@ -28,7 +28,7 @@ echo "$PROG: The URL to the MellonEndpoi
      exit 1
  fi
  
@@ -13,9 +12,9 @@ diff -ru mod_auth_mellon-0.14.1/mellon_create_metadata.sh mod_auth_mellon-0.14.1
      echo "$PROG: The URL must start with \"http://\" or \"https://\"." >&2
      exit 1
  fi
-@@ -71,7 +69,7 @@
+@@ -72,7 +72,7 @@ openssl req -utf8 -batch -config "$TEMPL
  
- rm -f "$TEMPLATEFILE"
+ rm -f "$TEMPLATEFILE" "${TEMPLATEFILE}.RANDOM"
  
 -CERT="$(grep -v '^-----' "$OUTFILE.cert")"
 +CERT="$(/usr/bin/ggrep -v '^-----' "$OUTFILE.cert")"

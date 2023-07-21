@@ -20,23 +20,22 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mod_auth_mellon
-COMPONENT_VERSION=	0.18.0
-HUMAN_VERSION=		$(COMPONENT_VERSION)-1
+COMPONENT_VERSION=	0.18.1
 COMPONENT_PROJECT_URL=	https://github.com/latchset/mod_auth_mellon
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:55488d421b61d7c73c26e0f9b27cd32e0f8d35a974e9d555f4b1d7414bb876cc
+    sha256:2e95396444689475d32e736ade4e9c31ea6dd3b619c888efbfc9ebe3636ce6c0
 COMPONENT_ARCHIVE_URL=	\
     $(COMPONENT_PROJECT_URL)/archive/refs/tags/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	1997
 
-COMPONENT_BAID=		111228
+COMPONENT_BAID=		147132
 
 ifeq ($(strip $(OPENSSL3)),)
 PKG_CONFIG_PATH.64=	/usr/lib/64/pkgconfig
