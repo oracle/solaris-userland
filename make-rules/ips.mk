@@ -156,7 +156,12 @@ PKG_PROTO_DIRS += $(MANGLED_DIR) $(PROTO_DIR) $(@D) $(COMPONENT_DIR) $(COMPONENT
 
 MANIFEST_BASE =		$(BUILD_DIR)/manifest-$(MACH)
 
-CANONICAL_MANIFESTS =	$(wildcard *.p5m)
+ifeq ($(strip $(MACH)),i386)
+FOREIGN_MACH = sparc
+else
+FOREIGN_MACH = i386
+endif
+CANONICAL_MANIFESTS = $(filter-out %.$(FOREIGN_MACH).p5m,$(wildcard *.p5m))
 ifneq ($(wildcard $(HISTORY)),)
 HISTORICAL_MANIFESTS = $(shell $(NAWK) -v FUNCTION=name -f $(GENERATE_HISTORY) < $(HISTORY))
 endif
