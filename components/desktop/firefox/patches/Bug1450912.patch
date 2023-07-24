@@ -5,21 +5,21 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1450912
 GCC libstdc++ should be fixed to support locales on Solaris so that
 std::regex functionality works.
 
---- firefox-102.1.0/browser/app/nsBrowserApp.cpp
-+++ firefox-102.1.0/browser/app/nsBrowserApp.cpp
-@@ -259,6 +259,9 @@ uint32_t gBlocklistInitFlags = eDllBlock
+--- firefox-115.0.3/browser/app/nsBrowserApp.cpp
++++ firefox-115.0.3/browser/app/nsBrowserApp.cpp
+@@ -274,6 +274,9 @@ }
  #endif
  
  int main(int argc, char* argv[], char* envp[]) {
 +
 +  setenv("LC_ALL", "C", 1);
 +
- #if defined(MOZ_ENABLE_FORKSERVER)
-   if (strcmp(argv[argc - 1], "forkserver") == 0) {
-     nsresult rv = InitXPCOMGlue(LibLoadingStrategy::NoReadAhead);
---- firefox-102.1.0/js/xpconnect/shell/xpcshell.cpp
-+++ firefox-102.1.0/js/xpconnect/shell/xpcshell.cpp
-@@ -40,6 +40,9 @@ #  include "FuzzerDefs.h"
+ #if defined(XP_UNIX)
+   ReserveDefaultFileDescriptors();
+ #endif
+--- firefox-115.0.3/js/xpconnect/shell/xpcshell.cpp
++++ firefox-115.0.3/js/xpconnect/shell/xpcshell.cpp
+@@ -39,6 +39,9 @@ #  include "FuzzerDefs.h"
  #endif
  
  int main(int argc, char** argv, char** envp) {

@@ -33,14 +33,14 @@ include ../../../make-rules/shared-macros.mk
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	102.13.0
-COMPONENT_BAID=		146668
+COMPONENT_VERSION =	115.0.3
+COMPONENT_BAID=		147230
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:fc3fab3de4bf65d1ec7fc30ae776144097b70a35d37c36663e11ffa618c13a2c
+    sha256:0bcc571c44f94ac6b8c26e896fd771eb7bd41b2a8ec35598bced0102c1b855fa
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -57,7 +57,7 @@ COMPONENT_ANITYA_ID =	16838
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:1515ae1bb7d8bbcdf609aaf8c90e7afdd9758512c7668d502935255aaebbe06e
+    sha256:0158faf1b25e82d77872f9a01ebb0da3f0f39a299114551245b08f7c095ca138
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
@@ -189,16 +189,6 @@ license: install
 	@echo "regenerating license text"
 	unzip -c $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/omni.ja chrome/toolkit/content/global/license.html \
 	    | LC_ALL=en_US.UTF-8 lynx --display_charset=utf-8 -stdin --dump -nolist > $(COMPONENT_NAME).license
-
-SIGNED_LIST.i386 = libsoftokn3.so libnssdbm3.so libfreebl3.so
-SIGNED_LIST.sparc = libsoftokn3.so libnssdbm3.so libfreebl_64fpu_3.so libfreebl_64int_3.so
-SIGNED_LIST = $(SIGNED_LIST.$(MACH))
-
-COMPONENT_POST_INSTALL_ACTION += \
-	slist='$(SIGNED_LIST)' ; for f in $$slist ; do \
-	    mcs -d $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/$$f ; \
-	    LD_LIBRARY_PATH=$(PROTOUSRLIBDIR)/$(COMPONENT_NAME) $(BUILD_DIR_64)/dist/bin/shlibsign -v -i $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/$$f ; \
-        done ;
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 

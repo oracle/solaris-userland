@@ -1,0 +1,15 @@
+Workaround for spellchecking issue on SPARC:
+https://bugzilla.mozilla.org/show_bug.cgi?id=1844117
+
+--- firefox-115.0.3/extensions/spellcheck/hunspell/src/hashmgr.cxx
++++ firefox-115.0.3/extensions/spellcheck/hunspell/src/hashmgr.cxx
+@@ -1396,6 +1396,9 @@
+ }
+ 
+ void* HashMgr::arena_alloc(int num_bytes) {
++#ifdef __sparc__
++  num_bytes = (((num_bytes + 7) >> 3) << 3);
++#endif
+   static const int MIN_CHUNK_SIZE = 4096;
+   if (arena.empty() || (current_chunk_size - current_chunk_offset < num_bytes)) {
+     current_chunk_size = std::max(MIN_CHUNK_SIZE, num_bytes);

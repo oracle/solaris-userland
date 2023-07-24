@@ -31,12 +31,12 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	102.13.0
-COMPONENT_BAID =	146669
+COMPONENT_VERSION =	115.0.1
+COMPONENT_BAID =	147381
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7a7208cab2810231c2842334a2ffb37d704934dd212011395aec3609751affbc
+    sha256:ca6f181f7d4d469763c480860beed01f5d5b3f429af39373dd06f4f846415935
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -53,7 +53,7 @@ COMPONENT_ANITYA_ID =	4967
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:6a1f58fc9df46a32a10c40cc4927460b77477a5543f6dad435ae8c90e666ac42
+    sha256:7796f653c201fa45e13582fe5959a8b26312af7a2c23c8fdd91afdfdf48ce738
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
@@ -107,11 +107,11 @@ MOZCONFIG_DEBUG =	/dev/null
 MOZCONFIG_NON_DEBUG =	$(MOZCONFIG)
 endif
 
+# Don't enable system-icu unless Bug 1843007 is resolved.
 COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options MOZILLA_OFFICIAL=1" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --prefix=/usr" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --libdir=/usr/lib" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --disable-av1" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --disable-crashreporter" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --disable-debug-symbols" >> $(MOZCONFIG_NON_DEBUG) ; \
 	echo "ac_add_options --disable-install-strip" >> $(MOZCONFIG_DEBUG) ; \
@@ -128,7 +128,6 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --enable-system-ffi" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libvpx" >> $(MOZCONFIG) ; \
@@ -161,6 +160,7 @@ COMPONENT_POST_BUILD_ACTION = \
 COMPONENT_POST_INSTALL_ACTION += \
         $(RM) -rf xpi ; \
         $(TAR) xvf $(COMPONENT_ARCHIVE_1) > /dev/null 2>&1 ; \
+	$(MKDIR) $(PROTOUSRLIBDIR)/thunderbird/distribution/extensions ; \
         list1='$(LANG_LIST)' ; for f in $$list1 ; do \
             $(CP) xpi/$$f.xpi \
                 $(PROTOUSRLIBDIR)/thunderbird/distribution/extensions/langpack-$$f@thunderbird.mozilla.org.xpi ; \
@@ -192,16 +192,6 @@ license: install
 	@echo "regenerating license text"
 	unzip -c $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/omni.ja chrome/messenger/content/messenger/license.html \
 	    | LC_ALL=en_US.UTF-8 lynx --display_charset=utf-8 -stdin --dump -nolist > $(COMPONENT_NAME).license
-
-SIGNED_LIST.i386 = libsoftokn3.so libnssdbm3.so libfreebl3.so
-SIGNED_LIST.sparc = libsoftokn3.so libnssdbm3.so libfreebl_64fpu_3.so libfreebl_64int_3.so
-SIGNED_LIST = $(SIGNED_LIST.$(MACH))
-
-COMPONENT_POST_INSTALL_ACTION += \
-	slist='$(SIGNED_LIST)' ; for f in $$slist ; do \
-	    mcs -d $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/$$f ; \
-	    LD_LIBRARY_PATH=$(PROTOUSRLIBDIR)/$(COMPONENT_NAME) $(BUILD_DIR_64)/dist/bin/shlibsign -v -i $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/$$f ; \
-        done ;
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
