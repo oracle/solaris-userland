@@ -25,10 +25,12 @@
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through volatile">
 set name=pkg.fmri \
-    value=pkg:/system/management/ansible@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/system/management/ansible-core@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="IT automation platform"
 set name=pkg.description \
     value="Ansible is a radically simple IT automation platform that makes your applications and systems easier to deploy and maintain. Automate everything from code deployment to network configuration to cloud management, in a language that approaches plain English, using SSH, with no agents to install on remote systems."
+set name=pkg.linted.pkglint.dupaction001.1 value=true
+set name=pkg.linted.pkglint.dupaction008 value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value="Ansible port for Oracle Solaris"
 set name=info.classification \
@@ -36,10 +38,8 @@ set name=info.classification \
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream value=info@ansible.com
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2021/123
+set name=org.opensolaris.arc-caseid value=PSARC/2023/052
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file files/ansible.cfg path=etc/ansible/ansible.cfg group=sys mode=0644 \
-    overlay=allow preserve=renamenew
 file path=usr/bin/ansible
 file path=usr/bin/ansible-config
 file path=usr/bin/ansible-console
@@ -71,6 +71,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/ansible/cli/vault.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/collections/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/collections/list.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/compat/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/ansible/compat/importlib_resources.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/compat/selectors/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/config/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/config/ansible_builtin_runtime.yml
@@ -333,10 +334,12 @@ file path=usr/lib/python$(PYVER)/vendor-packages/ansible/modules/command.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/modules/copy.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/modules/cron.py \
     pkg.depend.bypass-generate=.*
+file path=usr/lib/python$(PYVER)/vendor-packages/ansible/modules/deb822_repository.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/modules/debconf.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/modules/debug.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/modules/dnf.py \
     pkg.depend.bypass-generate=.*
+file path=usr/lib/python$(PYVER)/vendor-packages/ansible/modules/dnf5.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/modules/dpkg_selections.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/modules/expect.py \
     pkg.depend.bypass-generate=.*
@@ -422,11 +425,13 @@ file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/base.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/block.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/collectionsearch.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/conditional.py
+file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/delegatable.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/handler.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/handler_task_include.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/helpers.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/included_file.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/loop_control.py
+file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/notifiable.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/play.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/play_context.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/playbook/playbook_include.py
@@ -448,6 +453,8 @@ file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/action/async_st
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/action/command.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/action/copy.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/action/debug.py
+file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/action/dnf.py \
+    pkg.depend.bypass-generate=.*
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/action/fail.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/action/fetch.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/action/gather_facts.py
@@ -520,6 +527,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/checksum
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/combinations.yml
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/combine.yml
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/comment.yml
+file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/commonpath.yml
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/core.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/dict2items.yml
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/difference.yml
@@ -542,6 +550,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/log.yml
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/mandatory.yml
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/mathstuff.py
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/md5.yml
+file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/normpath.yml
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/password_hash.yml
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/path_join.yml
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible/plugins/filter/permutations.yml
@@ -740,5 +749,13 @@ file path=usr/lib/python$(PYVER)/vendor-packages/ansible_core-$(COMPONENT_VERSIO
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible_core-$(COMPONENT_VERSION)-py$(PYVER).egg-info/not-zip-safe
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible_core-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/ansible_core-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
+file path=usr/share/man/man1/ansible-config.1
+file path=usr/share/man/man1/ansible-console.1
+file path=usr/share/man/man1/ansible-doc.1
+file path=usr/share/man/man1/ansible-galaxy.1
+file path=usr/share/man/man1/ansible-inventory.1
+file path=usr/share/man/man1/ansible-playbook.1
+file path=usr/share/man/man1/ansible-pull.1
+file path=usr/share/man/man1/ansible-vault.1
 file path=usr/share/man/man1/ansible.1
 license COPYING license=GPLv3

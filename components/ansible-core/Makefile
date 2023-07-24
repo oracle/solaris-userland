@@ -26,25 +26,23 @@
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		ansible
-COMPONENT_VERSION=	2.14.0
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
+COMPONENT_NAME=		ansible-core
+COMPONENT_VERSION=	2.15.0
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a7bf492c224080eefffd609338fb71f73f67a03f8a0471dfcd05894b5b6aebd4
-COMPONENT_ARCHIVE_URL=	\
-    https://github.com/ansible/ansible/archive/refs/tags/v$(COMPONENT_VERSION).tar.gz
-COMPONENT_PROJECT_URL=	https://github.com/ansible/ansible
+    sha256:cf690fd4ebb40590e00c5acdc0624758ca4c58d1e4b2b02ec026a034070ebf4d
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_ARCHIVE_URL=	$(call pypi_url)
+COMPONENT_PROJECT_URL=	https://www.ansible.com/
 COMPONENT_BUGDB=	utility/ansible
-COMPONENT_ANITYA_ID=	13227
+COMPONENT_ANITYA_ID=	165410
 
-COMPONENT_BAID=		136325
+COMPONENT_BAID=		144988
 PKG_MACROS+= MICRO_VERSION=$(MICRO_VERSION)
 
-# We need just a single version
+# We need just a single Python version
 PYTHON_VERSIONS=	3.11
 
-# Tests requires ddt which is not integrated
 TEST_TARGET= $(NO_TESTS)
 
 BUILD_STYLE= setup.py
@@ -56,17 +54,12 @@ include $(WS_MAKE_RULES)/common.mk
 PKG_MACROS +=		PYVER=$(PYTHON_VERSIONS)
 PKG_MACROS +=		PYV=$(shell echo $(PYTHON_VERSIONS) | tr -d .)
 
-# Copy the PKG-INFO file to the build root
-COMPONENT_PRE_BUILD_ACTION = \
-    $(CP) $(COMPONENT_DIR)/PKG-INFO $(SOURCE_DIR)
-
-# Copy the man page to the standard man page location
-ANSIBLE_MAN = ansible.1
+# Copy man pages to the standard man page location
 COMPONENT_POST_INSTALL_ACTION += \
     cd $(COMPONENT_DIR) ; \
     $(MKDIR) $(PROTOUSRSHAREMAN1DIR) ; \
-    $(INSTALL) --mode=644 $(COMPONENT_DIR)/files/man1/$(ANSIBLE_MAN) \
-      $(PROTOUSRSHAREMAN1DIR)/
+    $(INSTALL) --mode=644 $(COMPONENT_SRC)/docs/man/man1/* \
+        $(PROTOUSRSHAREMAN1DIR)/
 
 REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
@@ -75,5 +68,3 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/importlib-metadata-%)
 REQUIRED_PACKAGES += library/python/resolvelib
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/network
