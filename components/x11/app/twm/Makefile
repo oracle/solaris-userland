@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,10 +28,8 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		twm
 COMPONENT_VERSION=	1.0.12
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:aaf201d4de04c1bb11eed93de4bee0147217b7bdf61b7b761a56b2fdc276afe4
-COMPONENT_ARCHIVE=  $(COMPONENT_SRC).tar.xz
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15038
 COMPONENT_BAID=		122757

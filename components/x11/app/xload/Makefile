@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,7 +30,6 @@ COMPONENT_NAME=		xload
 COMPONENT_VERSION=	1.1.4
 COMPONENT_ARCHIVE_HASH= \
 	sha256:8346b99120db24e0f42920f7f12e23e9b1b407d3a66ce419990387b608373031
-COMPONENT_ARCHIVE=  	$(COMPONENT_SRC).tar.xz
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	14992
 COMPONENT_BAID=		122714

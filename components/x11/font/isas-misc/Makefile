@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		font-isas-misc
 COMPONENT_VERSION=	1.0.4
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:47e595bbe6da444b9f6fcaa26539abc7ba1989e23afa6cdc49e22e484cc438fc
 COMPONENT_ANITYA_ID=	17193

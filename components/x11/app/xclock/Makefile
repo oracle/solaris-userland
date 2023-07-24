@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,7 +30,6 @@ COMPONENT_NAME=		xclock
 COMPONENT_VERSION=	1.1.1
 COMPONENT_ARCHIVE_HASH= \
 	sha256:df7ceabf8f07044a2fde4924d794554996811640a45de40cb12c2cf1f90f742c
-COMPONENT_ARCHIVE=  $(COMPONENT_SRC).tar.xz
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15032
 COMPONENT_BAID=		122713

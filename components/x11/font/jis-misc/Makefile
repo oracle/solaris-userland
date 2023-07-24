@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		font-jis-misc
 COMPONENT_VERSION= 	1.0.4
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:78d1eff6c471f7aa6802a26d62cccf51d8e5185586406d9b6e1ee691b0bffad0
 COMPONENT_ANITYA_ID=	17194

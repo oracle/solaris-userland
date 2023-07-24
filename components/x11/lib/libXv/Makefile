@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXv
 COMPONENT_VERSION=	1.0.12
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:aaf7fa09f689f7a2000fe493c0d64d1487a1210db154053e9e2336b860c63848
 COMPONENT_BUGDB=        x11/libraries

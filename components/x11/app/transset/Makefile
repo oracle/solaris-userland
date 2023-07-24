@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		transset
 COMPONENT_VERSION=	1.0.3
-COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:1fe38f30dddd0dd88b5f05f121e5c6632315915468cd6a49d65fc0b17aa3e6fe
 COMPONENT_BUGDB=        x11/xclients

@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXScrnSaver
 COMPONENT_VERSION=	1.2.4
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:75cd2859f38e207a090cac980d76bc71e9da99d48d09703584e00585abc920fe
 COMPONENT_BUGDB=        x11/libraries

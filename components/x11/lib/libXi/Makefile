@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,6 +28,7 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXi
 COMPONENT_VERSION=	1.8
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
 	sha256:2ed181446a61c7337576467870bc5336fc9e222a281122d96c4d39a3298bba00
 COMPONENT_BUGDB=        x11/libraries

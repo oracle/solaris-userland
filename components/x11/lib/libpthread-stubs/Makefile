@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,6 +30,7 @@ COMPONENT_NAME=		libpthread-stubs
 COMPONENT_VERSION=	0.4
 COMPONENT_CATEGORY=	xcb
 COMPONENT_PROJECT_URL=	https://xcb.freedesktop.org/
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
 	sha256:e4d05911a3165d3b18321cc067fdd2f023f06436e391c6a28dff618a78d2e733
 COMPONENT_BUGDB=        x11/libraries

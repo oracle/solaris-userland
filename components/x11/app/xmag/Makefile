@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xmag
 COMPONENT_VERSION=	1.0.7
-COMPONENT_ARCHIVE=     	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:009936cc5a2706084079127b26cf55c713767650a34cb69e5682d60e33ce7461
 COMPONENT_BUGDB=        x11/xclients

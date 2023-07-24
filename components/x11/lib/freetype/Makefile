@@ -30,7 +30,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freetype
 COMPONENT_VERSION=	2.13.0
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_PROJECT_URL=	https://www.freetype.org/
 COMPONENT_ARCHIVE_URL=	https://download.savannah.gnu.org/releases/freetype/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \

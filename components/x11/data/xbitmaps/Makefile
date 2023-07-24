@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            NO_ARCH
@@ -28,7 +28,7 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xbitmaps
 COMPONENT_VERSION=	1.1.2
-COMPONENT_PROJECT_URL=  https://www.x.org
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
 	sha256:b9f0c71563125937776c8f1f25174ae9685314cbd130fb4c2efce811981e07ee
 COMPONENT_BUGDB=        x11/other

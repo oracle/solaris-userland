@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 #
@@ -34,7 +34,7 @@ ifneq (,$(findstring $(X11_COMPONENTS_DIR), $(COMPONENT_DIR)))
 COMPONENT_CATEGORY    ?=	\
 	$(firstword $(subst /, ,$(COMPONENT_DIR:$(X11_COMPONENTS_DIR)/%=%)))
 endif
-COMPONENT_ARCHIVE     ?=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_ARCHIVE     ?=	$(COMPONENT_SRC).tar.xz
 ifneq ($(strip $(COMPONENT_ARCHIVE_SRC)), none)
 COMPONENT_ARCHIVE_URL ?=	https://www.x.org/releases/individual/$(COMPONENT_CATEGORY)/$(COMPONENT_ARCHIVE)
 endif

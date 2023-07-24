@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -29,7 +29,6 @@ include ../../../../make-rules/shared-macros.mk
 COMPONENT_NAME=		fontconfig
 COMPONENT_VERSION=	2.14.0
 COMPONENT_PROJECT_URL=	https://fontconfig.org/
-COMPONENT_ARCHIVE= 	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
 	sha256:dcbeb84c9c74bbfdb133d535fe1c7bedc9f2221a8daf3914b984c44c520e9bac

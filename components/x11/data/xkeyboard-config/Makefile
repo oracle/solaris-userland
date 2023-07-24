@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,14 +28,12 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xkeyboard-config
 COMPONENT_VERSION=	2.37
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_PROJECT_URL=	https://www.freedesktop.org/wiki/Software/XKeyboardConfig/
 COMPONENT_ARCHIVE_URL=	https://www.x.org/releases/individual/$(COMPONENT_CATEGORY)/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
 	sha256:eb1383a5ac4b6210d7c7302b9d6fab052abdf51c5d2c9b55f1f779997ba68c6c
 COMPONENT_BUGDB=        x11/i18n
 COMPONENT_ANITYA_ID=	5191
-COMPONENT_SIG_URL=
 
 COMPONENT_BAID=		132959
 

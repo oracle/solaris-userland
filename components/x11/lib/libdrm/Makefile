@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,6 +30,7 @@ include ../../../../make-rules/shared-macros.mk
 COMPONENT_NAME=		libdrm
 COMPONENT_VERSION=	2.4.100
 COMPONENT_PROJECT_URL=  https://dri.freedesktop.org/
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
 	sha256:c77cc828186c9ceec3e56ae202b43ee99eb932b4a87255038a80e8a1060d0a5d
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)libdrm/$(COMPONENT_ARCHIVE)

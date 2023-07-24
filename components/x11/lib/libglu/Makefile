@@ -30,7 +30,6 @@ include ../../../../make-rules/shared-macros.mk
 COMPONENT_NAME=		glu
 COMPONENT_VERSION=	9.0.2
 COMPONENT_PROJECT_URL=	https://www.mesa3d.org/
-COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_URL=	https://mesa.freedesktop.org/archive/glu/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
 	sha256:6e7280ff585c6a1d9dfcdf2fca489251634b3377bfc33c29e4002466a38d02d4

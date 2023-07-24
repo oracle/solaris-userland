@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXext
 COMPONENT_VERSION=	1.3.5
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:db14c0c895c57ea33a8559de8cb2b93dc76c42ea4a39e294d175938a133d7bca
 COMPONENT_BUGDB=        x11/libraries

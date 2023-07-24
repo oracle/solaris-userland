@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xkill
 COMPONENT_VERSION=	1.0.6
-COMPONENT_ARCHIVE=    	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:e5a8aa78c475677b11504646da8d93dacc30744258076a2ca418a24438aeb907
 COMPONENT_BUGDB=        x11/xclients

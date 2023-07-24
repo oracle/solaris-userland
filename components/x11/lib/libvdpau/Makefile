@@ -31,6 +31,7 @@ include ../../../../make-rules/shared-macros.mk
 COMPONENT_NAME=		libvdpau
 COMPONENT_VERSION=	1.5
 COMPONENT_PROJECT_URL=  http://freedesktop.org/wiki/Software/VDPAU/
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_URL=	https://gitlab.freedesktop.org/vdpau/libvdpau/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
 	sha256:a5d50a42b8c288febc07151ab643ac8de06a18446965c7241f89b4e810821913

@@ -30,6 +30,7 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-vboxvideo
 COMPONENT_VERSION=	1.0.0
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
 	sha256:7fb6a3bfbcbe95438617f55a2f7ace4c0edec8ea8b7007777f389438b40cbfa4
 COMPONENT_BUGDB=        x11/devices-x86

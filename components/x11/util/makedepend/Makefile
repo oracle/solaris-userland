@@ -28,8 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		makedepend
 COMPONENT_VERSION=	1.0.8
-COMPONENT_PROJECT_URL=  https://www.x.org
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:bfb26f8025189b2a01286ce6daacc2af8fe647440b40bb741dd5c397572cba5b
 COMPONENT_BUGDB=        x11/builds

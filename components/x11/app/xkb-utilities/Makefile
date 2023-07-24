@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		setxkbmap
 COMPONENT_VERSION=	1.3.3
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:b560c678da6930a0da267304fa3a41cc5df39a96a5e23d06f14984c87b6f587b
 COMPONENT_BUGDB=        x11/xclients
@@ -37,7 +36,6 @@ COMPONENT_BAID=		122716
 
 COMPONENT_NAME_1=       xkbutils
 COMPONENT_VERSION_1=    1.0.5
-COMPONENT_ARCHIVE_1=    $(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1=       \
     sha256:f6a4a8e9c54582beb3787b1faa8168caab125c1fee0ca9cfa5b6c9c1df25eea4
 COMPONENT_ANITYA_ID_1=	15016
@@ -45,7 +43,6 @@ COMPONENT_BAID_1=	130803
 
 COMPONENT_NAME_2=       xkbprint
 COMPONENT_VERSION_2=    1.0.6
-COMPONENT_ARCHIVE_2= 	$(COMPONENT_SRC_2).tar.xz
 COMPONENT_ARCHIVE_HASH_2=       \
     sha256:99cc9404f7b90289ae04944c0d98a208cc8b158492ad6481386e31d4d09aa7b0
 COMPONENT_ANITYA_ID_2=	17159
@@ -64,7 +61,7 @@ endef
 
 $(foreach n, $(LIST), \
     $(eval COMPONENT_SRC_$(n) = $(COMPONENT_NAME_$(n))-$(COMPONENT_VERSION_$(n))) \
-    $(eval COMPONENT_ARCHIVE_$(n) ?= $(COMPONENT_SRC_$(n)).tar.bz2) \
+    $(eval COMPONENT_ARCHIVE_$(n) ?= $(COMPONENT_SRC_$(n)).tar.xz) \
     $(eval COMPONENT_ARCHIVE_URL_$(n) ?= $$(COMPONENT_ARCHIVE_URL:$$(COMPONENT_ARCHIVE)=$(COMPONENT_ARCHIVE_$(n)))) \
     $(eval BUILD_DIR_$(n) += $(BUILD_DIR_$(MK_BITS))_$(n)) \
     $(eval CONFIGURE_$(MK_BITS) += $(BUILD_DIR_$(n))/.configured) \

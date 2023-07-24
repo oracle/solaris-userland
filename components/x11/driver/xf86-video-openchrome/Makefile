@@ -29,6 +29,7 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-openchrome
 COMPONENT_VERSION=	0.6.0
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
 	sha256:da2975c6379358de52c1257710c67eb59139a7f0a1cd28d00cc64cc3e1c02f75
 COMPONENT_BUGDB=        x11/devices-x86

@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xfd
 COMPONENT_VERSION=	1.1.4
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:d5470ffb66fd45a1e1b03d6df01f12d4caf0cf675cde0345cda237243e9076fd
 COMPONENT_BUGDB=        x11/xclients

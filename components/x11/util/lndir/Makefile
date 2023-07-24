@@ -28,8 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lndir
 COMPONENT_VERSION=	1.0.4
-COMPONENT_PROJECT_URL=  https://www.x.org
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:3e3437a9d3bb377755dd04a2c90d4c014d9fe90987ff73450bf5b8d161795e87
 COMPONENT_BUGDB=        x11/builds

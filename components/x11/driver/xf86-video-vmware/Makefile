@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,6 +30,7 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-vmware
 COMPONENT_VERSION=	13.3.0
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
 	sha256:47971924659e51666a757269ad941a059ef5afe7a47b5101c174a6022ac4066c
 COMPONENT_BUGDB=        x11/devices-x86

@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xcursorgen
 COMPONENT_VERSION=	1.0.8
-COMPONENT_ARCHIVE=    	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:32b33ce27b4e285e64ff375731806bb7988cc626ff10915c65f1dc4da640cc9b
 COMPONENT_BUGDB=        x11/xclients

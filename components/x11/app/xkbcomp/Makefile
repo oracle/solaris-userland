@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xkbcomp
 COMPONENT_VERSION=	1.4.6
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:fa50d611ef41e034487af7bd8d8c718df53dd18002f591cca16b0384afc58e98
 COMPONENT_BUGDB=        x11/xclients

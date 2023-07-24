@@ -28,7 +28,6 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xinit
 COMPONENT_VERSION=	1.4.2
-COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:b7d8dc8d22ef9f15985a10b606ee4f2aad6828befa437359934647e88d331f23
 COMPONENT_BUGDB=        x11/xclients
