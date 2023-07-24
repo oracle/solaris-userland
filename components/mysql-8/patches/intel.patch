@@ -1,7 +1,5 @@
 Allows build on Solaris x86.
 
-See also bug 35031331.
-
 --- mysql-8.0.33/cmake/os/SunOS.cmake
 +++ mysql-8.0.33/cmake/os/SunOS.cmake
 @@ -28,7 +28,7 @@ INCLUDE(CheckCXXSourceCompiles)
@@ -13,16 +11,3 @@ See also bug 35031331.
  ENDIF()
  
  IF("${CMAKE_C_FLAGS}${CMAKE_CXX_FLAGS}" MATCHES "-m32")
---- mysql-8.0.33/sql/CMakeLists.txt
-+++ mysql-8.0.33/sql/CMakeLists.txt
-@@ -1255,7 +1255,9 @@ IF(WITH_AUTHENTICATION_LDAP AND LINK_MYS
-   TARGET_LINK_LIBRARIES(mysqld ${LDAP_LIBRARY})
- ENDIF()
- 
--IF(SOLARIS)
-+# There is problem with some SSE instructions (movaps) and libmtmalloc new() which
-+# doesn't return 16bytes alligned pointer.
-+IF(SOLARIS_SPARC)
-   TARGET_LINK_LIBRARIES(mysqld mtmalloc)
- ENDIF()
- 

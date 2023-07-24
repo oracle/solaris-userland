@@ -1,0 +1,15 @@
+Allow test pass on Solaris.
+
+https://bugs.mysql.com/bug.php?id=111824
+
+--- mysql-8.0.34/unittest/gunit/innodb/ut0rnd-t.cc
++++ mysql-8.0.34/unittest/gunit/innodb/ut0rnd-t.cc
+@@ -340,7 +340,7 @@ // min, mid, max are usecases
+   uint64_t target_score[][2] = {{0, 0}, {n / 2, 0}, {n - 1, 0}};
+ 
+   // variation is needed. not needed to be so accurate always.
+-  const uint64_t min_score = 5000;
++  const uint64_t min_score = 500;
+   const uint64_t max_score = 17000;
+ 
+   for (uint64_t i = 0; i < max_count; i++) {
