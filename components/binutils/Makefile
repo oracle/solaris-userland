@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		binutils
-COMPONENT_VERSION=	2.36.1
+COMPONENT_VERSION=	2.40
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e81d9edf373f193af428a0f256674aea62a9d74dfe93f65192d4eae030b0f3b0
+    sha256:0f8a4c272d7f17f369ded10a4aca28b8e304828e95526da482b0ccc4dfc9d8e1
 COMPONENT_BUGDB=	utility/gnu-binutils
 COMPONENT_ANITYA_ID=	7981
 
-COMPONENT_BAID=		100258
+COMPONENT_BAID=		142292
 
 #
 # for platform and cross platform support
@@ -51,8 +51,6 @@ $(BUILD_DIR_64)-cross/.configured: CONFIGURE_OPTIONS += --target=$(CROSS_ARCH)
 TEST_TARGET= $(TEST_64)
 
 include $(WS_MAKE_RULES)/gnu-component.mk
-
-IPS_COMPONENT_VERSION=	2.36.1
 
 export PATH=$(dirname $(CC)):$(GNUBIN):/usr/bin
 COMPONENT_TEST_ARGS += -k
@@ -101,6 +99,7 @@ CONFIGURE_OPTIONS +=    --build=$(GNU_ARCH)
 # not be omitted, or set to a non-existent default.
 CONFIGURE_OPTIONS +=    --with-sysroot=/
 
+REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/flex-runtime
