@@ -1,11 +1,9 @@
 Patch origin: in-house
 Patch status: Solaris-specific; not suitable for upstream
 
-diff --git a/doc/tar.info-1 b/doc/tar.info-1
-index 7a82d76..c654101 100644
---- a/doc/tar.info-1
-+++ b/doc/tar.info-1
-@@ -3039,7 +3039,7 @@ File: tar.info,  Node: Option Summary,  Next: Short Option Summary,  Prev: Opera
+--- tar-1.35/doc/tar.info-1
++++ tar-1.35/doc/tar.info-1
+@@ -3084,7 +3084,7 @@ example of what you can see using this o
  
            $ tar --show-defaults
            --format=gnu -f- -b20 --quoting-style=escape
@@ -14,7 +12,7 @@ index 7a82d76..c654101 100644
  
       Notice, that this option outputs only one line.  The example output
       above has been split to fit page boundaries.  *Note defaults::.
-@@ -3626,7 +3626,7 @@ of 'tar' command line options:
+@@ -3669,7 +3669,7 @@ of ‘tar’ command line options:
  
       $ tar --show-defaults
       --format=gnu -f- -b20 --quoting-style=escape
@@ -23,85 +21,72 @@ index 7a82d76..c654101 100644
  
  Notice, that this option outputs only one line.  The example output
  above has been split to fit page boundaries.
-@@ -3635,7 +3635,7 @@ The above output shows that this version of GNU 'tar' defaults to using
- 'gnu' archive format (*note Formats::), it uses standard output as the
- archive, if no '--file' option has been given (*note file tutorial::),
- the default blocking factor is 20 (*note Blocking Factor::).  It also
--shows the default locations where 'tar' will look for 'rmt' and 'rsh'
-+shows the default locations where 'tar' will look for 'rmt' and 'ssh'
- binaries.
- 
- 
-@@ -6161,8 +6161,8 @@ File: tar.info,  Node: General-Purpose Variables,  Next: Magnetic Tape Control,
-      Full file name of 'mt' binary.
+@@ -6310,8 +6310,8 @@ -- Backup variable: MT
+      Full file name of ‘mt’ binary.
  
   -- Backup variable: RSH
--     Full file name of 'rsh' binary or its equivalent.  You may wish to
--     set it to 'ssh', to improve security.  In this case you will have
-+     Full file name of 'ssh' binary or its equivalent.  This has been
-+     set to `ssh', to improve security.  In this case you will have
+-     Full file name of ‘rsh’ binary or its equivalent.  You may wish to
+-     set it to ‘ssh’, to improve security.  In this case you will have
++     Full file name of ‘ssh’ binary or its equivalent.  This has been
++     set to ‘ssh’, to improve security.  In this case you will have
       to use public key authentication.
  
   -- Backup variable: RSH_COMMAND
-@@ -6621,7 +6621,7 @@ as the username on the remote machine.
-    If the archive file name includes a colon (':'), then it is assumed
+@@ -6770,7 +6770,7 @@ as the username on the remote machine.
+    If the archive file name includes a colon (‘:’), then it is assumed
  to be a file on another machine.  If the archive file is
- 'USER@HOST:FILE', then FILE is used on the host HOST.  The remote host
--is accessed using the 'rsh' program, with a username of USER.  If the
-+is accessed using the 'ssh' program, with a username of USER.  If the
- username is omitted (along with the '@' sign), then your user name will
- be used.  (This is the normal 'rsh' behavior.)  It is necessary for the
- remote machine, in addition to permitting your 'rsh' access, to have the
-@@ -7666,7 +7666,7 @@ control to what files transformations apply.  These are:
- 'H'
+ ‘USER@HOST:FILE’, then FILE is used on the host HOST.  The remote host
+-is accessed using the ‘rsh’ program, with a username of USER.  If the
++is accessed using the ‘ssh’ program, with a username of USER.  If the
+ username is omitted (along with the ‘@’ sign), then your user name will
+ be used.  (This is the normal ‘rsh’ behavior.)  It is necessary for the
+ remote machine, in addition to permitting your ‘rsh’ access, to have the
+--- tar-1.35/doc/tar.info-2
++++ tar-1.35/doc/tar.info-2
+@@ -168,7 +168,7 @@ Apply transformation to hard link target
+ ‘H’
       Do not apply transformation to hard link targets.
  
--   Default is 'rsh', which means to apply transformations to both
-+   Default is 'ssh', which means to apply transformations to both
+-   Default is ‘rsh’, which means to apply transformations to both
++   Default is ‘ssh’, which means to apply transformations to both
  archive members and targets of symbolic and hard links.
  
-    Default scope flags can also be changed using 'flags=' statement in
-diff --git a/doc/tar.info-2 b/doc/tar.info-2
-index a40d892..25b984d 100644
---- a/doc/tar.info-2
-+++ b/doc/tar.info-2
-@@ -2241,9 +2241,9 @@ write the entire new archive to its standard output.
-    If the file name contains a ':', it is interpreted as 'hostname:file
- name'.  If the HOSTNAME contains an "at" sign ('@'), it is treated as
- 'user@hostname:file name'.  In either case, 'tar' will invoke the
--command 'rsh' (or 'remsh') to start up an '/usr/libexec/rmt' on the
-+command 'ssh' (or 'remsh') to start up an '/usr/libexec/rmt' on the
+    Default scope flags can also be changed using ‘flags=’ statement in
+@@ -2634,9 +2634,9 @@ write the entire new archive to its stan
+    If the file name contains a ‘:’, it is interpreted as ‘hostname:file
+ name’.  If the HOSTNAME contains an “at” sign (‘@’), it is treated as
+ ‘user@hostname:file name’.  In either case, ‘tar’ will invoke the
+-command ‘rsh’ (or ‘remsh’) to start up an ‘/usr/libexec/rmt’ on the
++command ‘ssh’ (or ‘remsh’) to start up an ‘/usr/libexec/rmt’ on the
  remote machine.  If you give an alternate login name, it will be given
--to the 'rsh'.  Naturally, the remote machine must have an executable
-+to the 'ssh'.  Naturally, the remote machine must have an executable
- '/usr/libexec/rmt'.  This program is free software from the University
+-to the ‘rsh’.  Naturally, the remote machine must have an executable
++to the ‘ssh’.  Naturally, the remote machine must have an executable
+ ‘/usr/libexec/rmt’.  This program is free software from the University
  of California, and a copy of the source code can be found with the
- sources for 'tar'; it's compiled and installed by default.  The exact
-@@ -2291,8 +2291,8 @@ could also check for 'DEFTAPE' in '<sys/mtio.h>'.
+ sources for ‘tar’; it’s compiled and installed by default.  The exact
+@@ -2684,8 +2684,8 @@ ‘--force-local’
       Archive file is local even if it contains a colon.
  
- '--rsh-command=COMMAND'
--     Use remote COMMAND instead of 'rsh'.  This option exists so that
--     people who use something other than the standard 'rsh' (e.g., a
-+     Use remote COMMAND instead of 'ssh'.  This option exists so that
-+     people who use something other than the standard 'ssh' (e.g., a
-      Kerberized 'rsh') can access a remote device.
+ ‘--rsh-command=COMMAND’
+-     Use remote COMMAND instead of ‘rsh’.  This option exists so that
+-     people who use something other than the standard ‘rsh’ (e.g., a
++     Use remote COMMAND instead of ‘ssh’.  This option exists so that
++     people who use something other than the standard ‘ssh’ (e.g., a
+      Kerberized ‘rsh’) can access a remote device.
  
       When this command is not used, the shell command found when the
-@@ -2355,7 +2355,7 @@ In order to access the tape drive on a remote machine, 'tar' uses the
+@@ -2748,7 +2748,7 @@ In order to access the tape drive on a r
  remote tape server written at the University of California at Berkeley.
- The remote tape server must be installed as 'PREFIX/libexec/rmt' on any
- machine whose tape drive you want to use.  'tar' calls 'rmt' by running
--an 'rsh' or 'remsh' to the remote machine, optionally using a different
-+an 'ssh' or 'remsh' to the remote machine, optionally using a different
+ The remote tape server must be installed as ‘PREFIX/libexec/rmt’ on any
+ machine whose tape drive you want to use.  ‘tar’ calls ‘rmt’ by running
+-an ‘rsh’ or ‘remsh’ to the remote machine, optionally using a different
++an ‘ssh’ or ‘remsh’ to the remote machine, optionally using a different
  login name if one is supplied.
  
     A copy of the source for the remote tape server is provided.  Its
-diff --git a/src/tar.c b/src/tar.c
-index 728e38b..269a54b 100644
---- a/src/tar.c
-+++ b/src/tar.c
-@@ -648,7 +648,7 @@ static struct argp_option options[] = {
+--- tar-1.35/src/tar.c
++++ tar-1.35/src/tar.c
+@@ -649,7 +649,7 @@ {"rmt-command", RMT_COMMAND_OPTION, N_("
     N_("use given rmt COMMAND instead of rmt"),
     GRID_DEVICE },
    {"rsh-command", RSH_COMMAND_OPTION, N_("COMMAND"), 0,
