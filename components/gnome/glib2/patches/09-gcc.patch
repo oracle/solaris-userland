@@ -2,66 +2,19 @@ ALso disables GCC 7 format-nonliteral error.
 
 Not suitable for upstream
 
---- a/gio/gunixconnection.c	2019-10-21 19:56:03.909052696 -0700
-+++ b/gio/gunixconnection.c	2019-10-21 19:58:33.157526275 -0700
-@@ -162,11 +162,13 @@
-     {
-       gint i;
- 
-+#pragma GCC diagnostic warning "-Wformat-nonliteral"
-       g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
-         ngettext("Expecting 1 control message, got %d",
-                  "Expecting 1 control message, got %d",
-                  nscm),
-         nscm);
-+#pragma GCC diagnostic pop
- 
-       for (i = 0; i < nscm; i++)
-         g_object_unref (scms[i]);
-@@ -196,12 +198,15 @@
-     {
-       gint i;
- 
-+#pragma GCC diagnostic warning "-Wformat-nonliteral"
-       g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                    ngettext("Expecting one fd, but got %d\n",
-                             "Expecting one fd, but got %d\n",
-                             nfd),
-                    nfd);
-+#pragma GCC diagnostic pop
- 
-+
-       for (i = 0; i < nfd; i++)
-         close (fds[i]);
- 
-@@ -557,6 +562,7 @@
-     {
-       if (nscm != 1)
-         {
-+#pragma GCC diagnostic warning "-Wformat-nonliteral"
-           g_set_error (error,
-                        G_IO_ERROR,
-                        G_IO_ERROR_FAILED,
-@@ -564,6 +570,7 @@
-                                 "Expecting 1 control message, got %d",
-                                 nscm),
-                        nscm);
-+#pragma GCC diagnostic pop
-           goto out;
-         }
- 
---- a/tests/mapping-test.c	2019-11-03 19:08:23.363841674 -0800
-+++ b/tests/mapping-test.c	2019-11-03 19:08:56.870701385 -0800
-@@ -208,7 +208,9 @@
+--- a/glib/tests/mapping.c      2023-06-01 17:40:40.907059794 -0700
++++ b/glib/tests/mapping.c      2023-06-01 17:43:55.365968296 -0700
+@@ -225,7 +225,9 @@
    signal (SIGUSR1, handle_usr1);
  #endif
- 
+
 +#pragma GCC diagnostic warning "-Wformat"
    g_snprintf (pid, sizeof(pid), "%d", getpid ());
 +#pragma GCC diagnostic pop
-   child_argv[0] = argv0;
+   child_argv[0] = local_argv[0];
    child_argv[1] = "mapchild";
    child_argv[2] = pid;
+
 --- a/gio/tests/file.c	2020-09-17 16:33:33.060284970 -0700
 +++ b/gio/tests/file.c	2020-09-17 16:34:24.747513461 -0700
 @@ -881,7 +881,10 @@
@@ -75,3 +28,14 @@ Not suitable for upstream
  
    for (i = 0; i < G_N_ELEMENTS (vectors); i++)
      {
+--- a/glib/gspawn.c     2023-06-01 16:57:00.471203613 -0700
++++ b/glib/gspawn.c     2023-06-01 16:57:20.908832159 -0700
+@@ -1483,6 +1483,7 @@
+  */
+   gint fd;
+   gint res = 0;
++  gint open_max = -1;
+
+   open_max = fcntl (INT_MAX, F_PREVFD); /* find the maximum fd */
+   if (open_max < 0) /* No open files */
+
