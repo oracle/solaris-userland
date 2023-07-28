@@ -30,7 +30,7 @@ smf_configure_ip || exit $SMF_EXIT_OK
 
 if [ -z $SMF_FMRI ]; then
 	echo "SMF framework variables are not initialized."
-	exit $SMF_EXIT_ERR
+	exit $SMF_EXIT_ERR_FATAL
 fi
 
 #

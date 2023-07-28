@@ -29,7 +29,7 @@
 
 if [ -z $SMF_FMRI ]; then
         echo "SMF framework variables are not initialized."
-        exit $SMF_EXIT_ERR
+        exit $SMF_EXIT_ERR_FATAL
 fi
 
 getproparg() {
@@ -129,7 +129,7 @@ mysql_start() 	{
             echo "Starting service MySQL"
         else
             echo "Failed to start service MySQL"
-            exit $SMF_EXIT_ERR
+            exit $SMF_EXIT_ERR_FATAL
         fi
 	
 	)
