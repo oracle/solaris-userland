@@ -1,0 +1,223 @@
+Restores -h and -p option to give Solaris users a bit more time to
+update their scripts.
+
+This patch should be removed sooner rather than later, as the options
+may get reassigned which could cause other issues!
+
+It is a Solaris specific patch and is not intended for upstream.
+
+diff -r 286c5ffd2d2b clients/tools/common.c
+diff --git a/clients/tools/common.c b/clients/tools/common.c
+diff --git a/clients/tools/common.c b/clients/tools/common.c
+--- a/clients/tools/common.c
++++ b/clients/tools/common.c
+@@ -71,6 +71,8 @@
+ 
+ /* connection */
+ char		*ldapuri = NULL;
++char		*ldaphost = NULL;
++int  		ldapport = 0;
+ int		use_tls = 0;
+ int		protocol = -1;
+ int		version = 0;
+@@ -348,6 +350,10 @@
+ N_("             abandon, cancel, ignore (SIGINT sends abandon/cancel,\n"
+    "             or ignores response; if critical, doesn't wait for SIGINT.\n"
+    "             not really controls)\n")
++N_("  -h host    LDAP server.  Warning option deprecated; use -H URI\n"
++   "             This option will be removed in a future update, meanwhile a\n"
++   "             warning will be given unless environment variable\n"
++   "             LDAP_OPT_REPRIEVE is set.\n"),
+ N_("  -H URI     LDAP Uniform Resource Identifier(s)\n"),
+ N_("  -I         use SASL Interactive mode\n"),
+ N_("  -n         show what would be done but don't actually do it\n"),
+@@ -356,6 +362,10 @@
+ N_("  -o <opt>[=<optparam>] any libldap ldap.conf options, plus\n"),
+ N_("             ldif_wrap=<width> (in columns, or \"no\" for no wrapping)\n"),
+ N_("             nettimeout=<timeout> (in seconds, or \"none\" or \"max\")\n"),
++N_("  -p port    port on LDAP server.  Warning option deprecated; use -H URI\n"
++   "             This option will be removed in a future update, meanwhile a\n"
++   "             warning will be given unless environment variable\n"
++   "             LDAP_OPT_REPRIEVE is set.\n"),
+ N_("  -Q         use SASL Quiet mode\n"),
+ N_("  -R realm   SASL realm\n"),
+ N_("  -U authcid SASL authentication identity\n"),
+@@ -774,6 +784,16 @@
+ 			}
+ 			infile = optarg;
+ 			break;
++		case 'h':	/* ldap host */
++			if( ldaphost != NULL ) {
++				fprintf( stderr, "%s: -h previously specified\n", prog );
++				exit( EXIT_FAILURE );
++			}
++			if ( ! getenv( "LDAP_OPT_REPRIEVE" ) ) {
++				fprintf( stderr, "%s: warning: -h is deprecated; use -H URI\n", prog );
++			}
++			ldaphost = ber_strdup( optarg );
++			break;
+ 		case 'H':	/* ldap URI */
+ 			if( ldapuri != NULL ) {
+ 				fprintf( stderr, "%s: -H previously specified\n", prog );
+@@ -887,6 +907,21 @@
+ 			exit( EXIT_FAILURE );
+ #endif
+ 			break;
++		case 'p':
++			if( ldapport ) {
++				fprintf( stderr, "%s: -p previously specified\n", prog );
++				exit( EXIT_FAILURE );
++			}
++			if ( ! getenv( "LDAP_OPT_REPRIEVE" ) ) {
++				fprintf( stderr, "%s: warning: -p is deprecated; use -H URI\n", prog );
++			}
++			ival = strtol( optarg, &next, 10 );
++			if ( next == NULL || next[0] != '\0' ) {
++				fprintf( stderr, "%s: unable to parse port number \"%s\"\n", prog, optarg );
++				exit( EXIT_FAILURE );
++			}
++			ldapport = ival;
++			break;
+ 		case 'P':
+ 			ival = strtol( optarg, &next, 10 );
+ 			if ( next == NULL || next[0] != '\0' ) {
+@@ -1121,6 +1156,22 @@
+ #endif
+ 	}
+ 
++	if( ldapuri == NULL ) {
++		if( ldapport && ( ldaphost == NULL )) {
++			fprintf( stderr, "%s: -p without -h is invalid.\n", prog );
++			exit( EXIT_FAILURE );
++		}
++	} else {
++		if( ldaphost != NULL ) {
++			fprintf( stderr, "%s: -H incompatible with -h\n", prog );
++			exit( EXIT_FAILURE );
++		}
++		if( ldapport ) {
++			fprintf( stderr, "%s: -H incompatible with -p\n", prog );
++			exit( EXIT_FAILURE );
++		}
++	}
++
+ 	if( protocol == LDAP_VERSION2 ) {
+ 		if( assertctl || authzid || manageDIT || manageDSAit ||
+ #ifdef LDAP_CONTROL_OBSOLETE_PROXY_AUTHZ
+@@ -1191,7 +1242,19 @@
+ 	if ( !dont ) {
+ 		int rc;
+ 
+-		if ( ldapuri != NULL ) {
++		if( ( ldaphost != NULL || ldapport ) && ( ldapuri == NULL ) ) {
++			/* construct URL */
++			LDAPURLDesc url;
++			memset( &url, 0, sizeof(url));
++
++			url.lud_scheme = "ldap";
++			url.lud_host = ldaphost;
++			url.lud_port = ldapport;
++			url.lud_scope = LDAP_SCOPE_DEFAULT;
++
++			ldapuri = ldap_url_desc2str( &url );
++
++		} else if ( ldapuri != NULL ) {
+ 			LDAPURLDesc	*ludlist, **ludp;
+ 			char		**urls = NULL;
+ 			int		nurls = 0;
+diff --git a/clients/tools/ldapcompare.c b/clients/tools/ldapcompare.c
+--- a/clients/tools/ldapcompare.c
++++ b/clients/tools/ldapcompare.c
+@@ -104,7 +104,7 @@
+ 
+ 
+ const char options[] = "z"
+-	"Cd:D:e:H:IMnNO:o:P:QR:U:vVw:WxX:y:Y:Z";
++	"Cd:D:e:h:H:IMnNO:o:p:P:QR:U:vVw:WxX:y:Y:Z";
+ 
+ #ifdef LDAP_CONTROL_DONTUSECOPY
+ int dontUseCopy = 0;
+diff --git a/clients/tools/ldapdelete.c b/clients/tools/ldapdelete.c
+--- a/clients/tools/ldapdelete.c
++++ b/clients/tools/ldapdelete.c
+@@ -82,7 +82,7 @@
+ 
+ 
+ const char options[] = "r"
+-	"cd:D:e:f:H:IMnNO:o:P:QR:U:vVw:WxX:y:Y:z:Z";
++	"cd:D:e:f:h:H:IMnNO:o:p:P:QR:U:vVw:WxX:y:Y:z:Z";
+ 
+ int
+ handle_private_option( int i )
+diff --git a/clients/tools/ldapexop.c b/clients/tools/ldapexop.c
+--- a/clients/tools/ldapexop.c
++++ b/clients/tools/ldapexop.c
+@@ -52,7 +52,7 @@
+ 
+ 
+ const char options[] = ""
+-	"d:D:e:H:InNO:o:QR:U:vVw:WxX:y:Y:Z";
++	"d:D:e:h:H:InNO:o:p:QR:U:vVw:WxX:y:Y:Z";
+ 
+ int
+ handle_private_option( int i )
+diff --git a/clients/tools/ldapmodify.c b/clients/tools/ldapmodify.c
+--- a/clients/tools/ldapmodify.c
++++ b/clients/tools/ldapmodify.c
+@@ -125,7 +125,7 @@
+ 
+ 
+ const char options[] = "aE:rS:"
+-	"cd:D:e:f:H:IMnNO:o:P:QR:U:vVw:WxX:y:Y:Z";
++	"cd:D:e:f:h:H:IMnNO:o:p:P:QR:U:vVw:WxX:y:Y:Z";
+ 
+ int
+ handle_private_option( int i )
+diff --git a/clients/tools/ldapmodrdn.c b/clients/tools/ldapmodrdn.c
+--- a/clients/tools/ldapmodrdn.c
++++ b/clients/tools/ldapmodrdn.c
+@@ -95,7 +95,7 @@
+ 
+ 
+ const char options[] = "rs:"
+-	"cd:D:e:f:H:IMnNO:o:P:QR:U:vVw:WxX:y:Y:Z";
++	"cd:D:e:f:h:H:IMnNO:o:p:P:QR:U:vVw:WxX:y:Y:Z";
+ 
+ int
+ handle_private_option( int i )
+diff --git a/clients/tools/ldappasswd.c b/clients/tools/ldappasswd.c
+--- a/clients/tools/ldappasswd.c
++++ b/clients/tools/ldappasswd.c
+@@ -83,7 +83,7 @@
+ 
+ 
+ const char options[] = "Ea:As:St:T:"
+-	"d:D:e:H:InNO:o:QR:U:vVw:WxX:y:Y:Z";
++	"d:D:e:h:H:InNO:o:p:QR:U:vVw:WxX:y:Y:Z";
+ 
+ int
+ handle_private_option( int i )
+diff --git a/clients/tools/ldapsearch.c b/clients/tools/ldapsearch.c
+--- a/clients/tools/ldapsearch.c
++++ b/clients/tools/ldapsearch.c
+@@ -363,7 +363,7 @@
+ }
+ 
+ const char options[] = "a:Ab:cE:F:l:Ls:S:tT:uz:"
+-	"Cd:D:e:f:H:IMnNO:o:P:QR:U:vVw:WxX:y:Y:Z";
++	"Cd:D:e:f:h:H:IMnNO:o:p:P:QR:U:vVw:WxX:y:Y:Z";
+ 
+ int
+ handle_private_option( int i )
+diff --git a/clients/tools/ldapwhoami.c b/clients/tools/ldapwhoami.c
+--- a/clients/tools/ldapwhoami.c
++++ b/clients/tools/ldapwhoami.c
+@@ -62,7 +62,7 @@
+ 
+ 
+ const char options[] = ""
+-	"d:D:e:H:InNO:o:QR:U:vVw:WxX:y:Y:Z";
++	"d:D:e:h:H:InNO:o:p:QR:U:vVw:WxX:y:Y:Z";
+ 
+ int
+ handle_private_option( int i )

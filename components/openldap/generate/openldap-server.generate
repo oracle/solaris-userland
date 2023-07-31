@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 # components/openldap/generate/openldap-server.generate, dynamic package actions.
@@ -51,6 +51,8 @@
 # Not shipping bdb or hdb as we don't support them (we know the admin
 # guide has reference).
 <transform file link path=usr/share/man/man5/slapd-[bh]db.5$ -> drop>
+# Not providing optional server lloadd, drop it and it's config man page.
+<transform file path=usr/share/man/man[58]/lloadd.* -> drop>
 
 # Emit new locations for all the other manual pages rather than edit
 # path.  This keeps the p5m format as it was before, relying on actual

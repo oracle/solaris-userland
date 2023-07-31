@@ -1,6 +1,6 @@
 #!/usr/bin/ksh93
 
-# Copyright (c) 2007, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2007, 2023, Oracle and/or its affiliates.
 #
 source /lib/svc/share/smf_include.sh
 
@@ -178,8 +178,8 @@ function version_check
 		# Compare current version string to saved version string.
 		oldvers=$(grep 'OpenLDAP: slapd' $VERSION_FILE | cut -d" " -f4)
 		if [[ "$curvers" == "$oldvers" ]]; then
-		   :
-		elif [[ $oldvers == "2.4."@(4[5-9]|5[0-7]) ]]; then
+			:
+		elif [[ $oldvers == "2.6."@(4|5) ]]; then
 			logit "Notice: Compatible version $oldvers with $curvers"
 			version_update
 		else
@@ -192,10 +192,19 @@ function version_check
 		if [[ $db == "None" || $db == "ER!" ]]; then
 			logit "Notice: no current database ($db)."
 			version_update
-		elif [[ $db == "MDB" && $curvers == "2.4."@(4[5-9]|5[0-9]) ]]; then
-			logit "Notice: $db database compatible for $curvers"
-			version_update
-			version_code=1
+		elif [[ $db == "MDB" ]]; then
+			# Is current version a recognised version?
+			case $curvers in
+			    ("2.6."@(4|5))
+				logit "Notice: $db database compatible for " \
+					$curvers
+				version_update
+				version_code=1
+				;;
+			    (*)
+				version_code=255
+				;;
+			esac
 		else
 			version_code=255
 		fi

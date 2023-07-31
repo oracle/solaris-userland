@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 # components/openldap/generate/common.transform, common rules for openldap packages.
@@ -39,10 +39,10 @@
 <transform file path=etc/openldap/.* -> set pkg.type server-pkg>
 <transform file path=etc/openldap/(ldap\.conf\.default|ldap\.conf)$ -> set pkg.type client-pkg>
 
-# header file
-<transform file path=usr/include/openldap/slapi-plugin.h -> set pkg.type server-pkg>
+# header file usr/include/slapi-plugin.h
+<transform file path=usr/include/slapi-plugin.h -> set pkg.type server-pkg>
 
-# Solaris specific files, as specified in openldap-server.static
+# Solaris specific files, are specified in openldap-server.static
 <transform file path=Solaris/.* -> drop>
 
 # Documentation, section 8, most of section 5 and the admin guide.

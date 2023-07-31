@@ -32,20 +32,19 @@ include ../../make-rules/shared-macros.mk
 #   openLDAP <x>.<y>.<z>        =>   IPS <x>.<y>.<z>.0.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		openldap
-COMPONENT_VERSION=	2.4.59
+COMPONENT_VERSION=	2.6.5
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_PROJECT_URL=	http://www.openldap.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:99f37d6747d88206c470067eda624d5e48c1011e943ec0ab217bae8712e22f34
+    sha256:2e27a8d4f4c2af8fe840b573271c20aa163e24987f9765214644290f5beb38d9
 COMPONENT_ARCHIVE_URL=	\
-	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
+    ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/openldap
-# For check_anitya target, see 'gmake print-ANITYA_API_URL'
+# For check_anitya target, https://release-monitoring.org/project/2551
 COMPONENT_ANITYA_ID=	2551
-
-COMPONENT_BAID=		112873
+COMPONENT_BAID=		146981
 
 #
 # Cyrus-SASL is a requirement.
@@ -91,7 +90,11 @@ ASSERT_PREP_ACTION = \
 	fi;
 COMPONENT_PREP_ACTION += $(ASSERT_PREP_ACTION)
 
-# Set DEBUG=yes in environment to make this a debug build, inc. LDAP_DEBUG
+#
+# Studio Compiler options
+#
+
+# Set DEBUG=yes in environment to make this a debug build.
 ifeq ($(DEBUG), yes)
 # Append to Studio optimization level (see ../../make-rules/shared-macros.mk)
 # -xO4 with -g : best-effort symbolic information with full optimization.
@@ -99,27 +102,24 @@ studio_OPT.sparc.64 +=	-g
 studio_OPT.sparc.32 +=	-g
 studio_OPT.i386.32 +=	-g
 studio_OPT.i386.64 +=	-g
-CFLAGS += -DLDAP_DEBUG
 endif
-
+CFLAGS +=  $(studio_NORUNPATH)
 # Preserve all function argument values on AMD64.
 studio_OPT.i386.64 +=	-preserve_argvalues=complete
+# 32bit slapd (not delivered in Solaris) has some alignment issues
+# where it combines unaligned structures togther.
+# Override the default userland setting in shared-macros.mk to have
+# compiler handle interpretation of non-alignment instead of SIGBUS.
+studio_ALIGN.sparc.32 =	-xmemalign=8i
 
-# Threading debug, set THREAD_DEBUG=yes
-ifeq ($(THREAD_DEBUG), yes)
-CFLAGS += -DLDAP_THREAD_DEBUG
-endif
 
-# SOURCE_DATE_EPOCH when set to any non-null value prevents mkversion
-# from placing build machine information in deliverable files.
-COMPONENT_BUILD_ENV += SOURCE_DATE_EPOCH=1
-# LTCFLAGS is LibTool C FLAGS, see ltmain.sh.
-COMPONENT_BUILD_ENV += LTCFLAGS="-m$(BITS)"
+#
+# Prerequisites and preperatiion.
+#
 
 # Simple Document Format (SDF), to produce html documentation.
 SDFVER=			sdf-2.001
 SDFBLIB=		$(BUILD_DIR_32)/${SDFVER}/blib
-
 COMPONENT_ARCHIVE_1= $(SDFVER).tar.gz
 COMPONENT_ARCHIVE_HASH_1= \
     sha256:6f9bcdc884a9f450208c740e45effdfeb7e65c689f57b05d3c15208193a8a6ea
@@ -131,11 +131,30 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_PRE_CONFIGURE_ACTION += \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
 
+# Patches to configure.ac require configure script re-creation.
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -vfi);
+
 #
 # Configuration settings, options and modes.
 #
+
+# SOURCE_DATE_EPOCH when set to any non-null value prevents build/mkversion
+# from placing build machine information in deliverable files.
+COMPONENT_BUILD_ENV += SOURCE_DATE_EPOCH=1
+# LTCFLAGS is LibTool C FLAGS, see configure and build/ltmain.sh.
+COMPONENT_BUILD_ENV += LTCFLAGS="-m$(BITS)"
+
+ifeq ($(DEBUG), yes)
+CFLAGS += -DLDAP_DEBUG
+endif
+
+# Threading debug, set THREAD_DEBUG=yes
+ifeq ($(THREAD_DEBUG), yes)
+CFLAGS += -DLDAP_THREAD_DEBUG
+endif
+
 # we need to enable large file support and build PIC for our shared libraries
-CFLAGS += $(CPP_LARGEFILES) $(CC_PIC) $(studio_NORUNPATH)
+CFLAGS += $(CPP_LARGEFILES) $(CC_PIC)
 
 LINT_FLAGS += -Iinclude
 
@@ -143,53 +162,126 @@ CONFIGURE_ENV += "ac_cv_lib_net_main=no"
 CONFIGURE_ENV += "ac_cv_lib_net_socket=no"
 CONFIGURE_ENV += "ac_cv_lib_inet_socket=no"
 
-CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
-CONFIGURE_OPTIONS += --libexecdir=$(USRLIB.$(BITS))
-CONFIGURE_OPTIONS += --localstatedir=$(VARDIR)/openldap
-CONFIGURE_OPTIONS += --includedir=$(USRINCDIR)/openldap
-CONFIGURE_OPTIONS += --docdir=$(USRSHAREDOCDIR)
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-overlays
-CONFIGURE_OPTIONS += --enable-dynamic
-CONFIGURE_OPTIONS += --enable-modules
-CONFIGURE_OPTIONS += --enable-crypt
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --disable-bdb
-CONFIGURE_OPTIONS += --disable-hdb
-CONFIGURE_OPTIONS += --enable-mdb
-CONFIGURE_OPTIONS += --enable-null
-CONFIGURE_OPTIONS += --enable-passwd
-CONFIGURE_OPTIONS += --enable-shell
-CONFIGURE_OPTIONS += --enable-ldap
-CONFIGURE_OPTIONS += --enable-meta
-CONFIGURE_OPTIONS += --with-cyrus-sasl
-CONFIGURE_OPTIONS += --with-threads
-CONFIGURE_OPTIONS += --with-tls=openssl
+CONFIGURE_OPTIONS	+= --sysconfdir=$(ETCDIR)
+CONFIGURE_OPTIONS	+= --libexecdir=$(USRLIB.$(BITS))
+CONFIGURE_OPTIONS	+= --localstatedir=$(VARDIR)/openldap
+CONFIGURE_OPTIONS	+= --includedir=$(USRINCDIR)
+CONFIGURE_OPTIONS	+= --docdir=$(USRSHAREDOCDIR)
+CONFIGURE_OPTIONS	+= --disable-static
+CONFIGURE_OPTIONS	+= --enable-overlays
+CONFIGURE_OPTIONS	+= --enable-dynamic
+CONFIGURE_OPTIONS	+= --enable-modules
+CONFIGURE_OPTIONS	+= --enable-crypt
+CONFIGURE_OPTIONS	+= --enable-shared
+CONFIGURE_OPTIONS	+= --enable-mdb
+CONFIGURE_OPTIONS	+= --enable-null
+CONFIGURE_OPTIONS	+= --enable-passwd
+CONFIGURE_OPTIONS 	+= --enable-sock  # replacement for shell backend
+CONFIGURE_OPTIONS	+= --enable-ldap
+CONFIGURE_OPTIONS	+= --enable-meta
+CONFIGURE_OPTIONS	+= --with-cyrus-sasl
+CONFIGURE_OPTIONS	+= --with-threads
+CONFIGURE_OPTIONS	+= --with-tls=openssl
+
+# Append Configuration variables
+CONFIGURE_OPTIONS	+= CPPFLAGS="$(CPPFLAGS)"
+CONFIGURE_OPTIONS	+= CFLAGS="$(CFLAGS)"
+LDFLAGS			+= $(LDFLAGS.$(BITS))
+CONFIGURE_OPTIONS	+= LDFLAGS="$(LDFLAGS)"
+
+# Link against the desired OpenSSL library.
+ifneq ($(strip $(OPENSSL3)),)
+CPPFLAGS		+= -I/usr/openssl/3/include
+LDFLAGS.64		+= -L/usr/openssl/3/lib/64
+LDFLAGS.32		+= -L/usr/openssl/3/lib
+endif
+
+# After configure make announces that `depend` should be used.
+COMPONENT_POST_CONFIGURE_ACTION += \
+	(cd $(@D); $(MAKE) depend;)
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
+# Install of slapd is stripped by OpenLDAP INSTALL_STRIP_PROGRAM; for
+# debug build copy non-stripped version to proto area before publish.
+ifeq ($(DEBUG), yes)
+COMPONENT_POST_INSTALL_ACTION.64 +=	\
+	cp $(BUILD_DIR_64)/servers/slapd/.libs/slapd \
+		$(PROTO_DIR)/$(USRLIB)/slapd
+endif
+
 #
-# Test using test-and-compare framework as per ../../doc/testing.txt
+# Testing
+# Uses test-and-compare framework as per ../../doc/testing.txt
 #
 # Set LD_LIBRARY_PATH to load built libraries from PROTO directories.
 COMPONENT_TEST_ENV += LD_LIBRARY_PATH="$(PROTOUSRLIBDIR):$(PROTOUSRLIBDIR64):"
+COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(USRBINDIR)
+# Run all test, don't exit if one fails; tests/scripts/all
+COMPONENT_TEST_ENV += NOEXIT=true
+# Our build servers can require a little more time on occasion.
+# The default value in tests/scripts/defines.sh is 7 (version 2.6.5).
+SLEEP1=12
+COMPONENT_TEST_ENV += SLEEP1=$(SLEEP1)
+
 # Have gmake (COMPONENT_TEST_CMD) use environment variables.
 COMPONENT_TEST_ARGS += -e
-# Collect only action summaries to snapshot file using grep.
-COMPONENT_TEST_TRANSFORMER =	$(GNU_GREP)
-COMPONENT_TEST_TRANSFORMS =	'">>>>>"'
+# Collect only action summaries to snapshot file.  Awk script removes
+# time strings.
+COMPONENT_TEST_TRANSFORMER =	$(NAWK)
+COMPONENT_TEST_TRANSFORMS =	-f $(COMPONENT_DIR)/Solaris/test-transform.awk
+ifneq ($(strip $(OPENSSL3)),)
+COMPONENT_TEST_MASTER =	\
+	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master.openssl3
+else
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+endif
 
 # This is a handy test target for developer.  Please leave functional.
-test-slapd-version:
+test-slapd-version test-version:
 	-LD_LIBRARY_PATH=$(PROTO_DIR)$(CONFIGURE_LIBDIR.64) \
 		$(PROTO_DIR)$(CONFIGURE_LIBDIR.64)/slapd -VVV; \
+
+# useful for testing the nawk script without rerunning all the tests.
+test-transform:
+	@echo Running transform again with BITS=$(BITS)
+	$(COMPONENT_TEST_TRANSFORMER) \
+		$(COMPONENT_TEST_TRANSFORMS) $(COMPONENT_TEST_MASTER) > \
+			$(COMPONENT_TEST_SNAPSHOT)
+	$(COMPONENT_TEST_COMPARE_CMD) \
+		$(COMPONENT_TEST_MASTER) $(COMPONENT_TEST_SNAPSHOT)
+
+# Check license against source files. This is what I provided in TPNO.
+e = /usr/gnu/bin/echo
+test-license:
+	@$(MKDIR) -p $(BUILD_DIR)
+	( \
+		$e -n '-------------------------------';\
+		$e ' Top-level license --------------------------'; \
+		$e ; \
+		iconv -sct UTF-8 $(SOURCE_DIR)/LICENSE; $e; $e; \
+		$e -n '-------------------------------'; \
+		$e 'Copyright notices --------------------------'; \
+		$e; \
+		iconv -sct UTF-8 $(SOURCE_DIR)/COPYRIGHT; \
+	)  > $(BUILD_DIR)/$(COMPONENT_NAME).license.new;
+	cmp $(COMPONENT_DIR)/$(COMPONENT_NAME).license \
+	    $(BUILD_DIR)/$(COMPONENT_NAME).license.new >/dev/null || \
+		( \
+		$e 'WARNING: Built license differs:'; \
+		$e -n 'diff $(COMPONENT_NAME).license '; \
+		$e '$(subst $(COMPONENT_DIR)/,,$(BUILD_DIR))/$(COMPONENT_NAME).license.new'; \
+		$e 'ACTION: Check $(COMPONENT_DIR)/$(COMPONENT_NAME).license'; \
+		$e ' against TPNO:'; \
+		$e '   /ws/bugdb-tools/bin/tpno --arn $(TPNO)';\
+		)
 
 #
 # Simple Document Format (SDF), produce html documentation.
 #
+
 # SDF: Unpack, patch and Build; only needed once.
 COMPONENT_PRE_BUILD_ACTION.32 += \
 	(cd $(BUILD_DIR_32); \
@@ -205,28 +297,41 @@ COMPONENT_POST_BUILD_ACTION.32 += \
 
 # SDF: Install the guide and associated files into PROTO_DIR to ease
 # package generation.
+doc_admin=	usr/share/doc/openldap/admin26
 COMPONENT_POST_INSTALL_ACTION.32 +=	\
-	$(MKDIR) $(PROTO_DIR)/usr/share/doc/openldap/admin24; \
+	$(MKDIR) $(PROTO_DIR)/$(doc_admin); \
 	sed -e 's:../images/::' \
 	    $(BUILD_DIR_32)/doc/guide/admin/guide.html \
-	    > $(PROTO_DIR)/usr/share/doc/openldap/admin24/guide.html; \
+	    > $(PROTO_DIR)/$(doc_admin)/guide.html; \
 	$(FIND) $(BUILD_DIR_32)/doc/guide -name '*\.png' -o -name '*\.gif' | \
 	    while read file; do \
 		if grep -q "$${file\#\#*/}" \
-		    $(PROTO_DIR)/usr/share/doc/openldap/admin24/guide.html; \
-		then cp $$file $(PROTO_DIR)/usr/share/doc/openldap/admin24/.; \
+		    $(PROTO_DIR)/$(doc_admin)/guide.html; \
+		then cp $$file $(PROTO_DIR)/$(doc_admin)/.; \
 		else echo "Image file not used: $${file\#$(WS_TOP)/}"; \
 		fi; \
 	    done;
 
-# Install of slapd is stripped by OpenLDAP INSTALL_STRIP_PROGRAM; for
-# debug build copy non-stripped version to proto area before publish.
-ifeq ($(DEBUG), yes)
-COMPONENT_POST_INSTALL_ACTION.64 +=	\
-	cp $(BUILD_DIR_64)/servers/slapd/.libs/slapd $(PROTO_DIR)/$(USRLIB)/slapd
-endif
+# Fix /usr/lib paths in slapd.8 and lloadd (latter not delivered).
+COMPONENT_POST_INSTALL_ACTION += \
+	echo 'Fixing lib path in $(PROTO_DIR)/usr/share/man/man8/*'; \
+	gsed --in-place -e 's:\(^.B /usr/lib/\)\([^/]*/\)\(.*\):\1\3:' \
+		$(PROTO_DIR)/usr/share/man/man8/*; \
+	grep '^.B /usr/lib/' $(PROTO_DIR)/usr/share/man/man8/*;
 
+
+
+.PHONY: republish test-license test-slapd-version test-version test-transform
+
+republish:
+	$(GMAKE) publish PKGREPO_REMOVE_BEFORE_PUBLISH=yes
+
+
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
 REQUIRED_PACKAGES += library/security/openssl
+endif
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/security/libsasl2

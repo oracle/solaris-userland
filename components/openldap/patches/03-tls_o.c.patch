@@ -5,13 +5,13 @@ Patch was developed in-house; it is Solaris specific and
 will not be contributed upstream.
 
 diff --git a/libraries/libldap/tls_o.c b/libraries/libldap/tls_o.c
-index 4152cd9..2a872b1 100644
+diff --git a/libraries/libldap/tls_o.c b/libraries/libldap/tls_o.c
 --- a/libraries/libldap/tls_o.c
 +++ b/libraries/libldap/tls_o.c
-@@ -467,6 +467,16 @@ tlso_ctx_init( struct ldapoptions *lo, struct ldaptls *lt, int is_server )
- 		}
+@@ -641,6 +641,16 @@
  	}
- #endif
+ 	/* Explicitly honor the server side cipher suite preference */
+ 	SSL_CTX_set_options( ctx, SSL_OP_CIPHER_SERVER_PREFERENCE );
 +
 +#ifdef X509_V_FLAG_PARTIAL_CHAIN
 +	/*

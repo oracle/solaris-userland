@@ -20,10 +20,16 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 # components/openldap/generate/openldap-client.generate, dynamic package actions.
+
+# The generator is used to detect changes between the packaging file
+# and the prototype directory. It is particularly good for detecting
+# changes in the library version strings and makes it easier to
+# updated the package file, and of course easily identify any new or
+# missing files.
 
 <include generate/common.transform>
 
@@ -31,7 +37,6 @@
 <transform file link pkg.type=(?!client-pkg) -> drop>
 # Remove temporarily assigned pkg.type definitions.
 <transform file link -> delete pkg.type .*>
-
 
 # Have usr/bin/ldap* command files moved to lib/openldap/bin directory.
 # ---------------------------------------------------------------------
@@ -51,9 +56,6 @@
 # links in usr/bin need to point to openldap target, and have backward compat link (this is ldapadd -> ldapmodify).
 <transform link path=usr/bin/(ldap.+) target=^(ldap.+)$ -> emit link path=usr/bin/open%<1> target=open%<2>>
 <transform link path=usr/bin/(ldap.+) target=^(ldap.+)$ -> edit target ^(ldap.+)$ open%<2>>
-
-# Header files, Include link in parent directory to sub directory.
-<transform file path=usr/include/openldap/(.*) -> emit link path=usr/include/%<1> target=openldap/%<1>>
 
 # Manual pages are shipped in section <n>oldap and not <n>.
 # ---------------------------------------------------------
@@ -84,52 +86,13 @@
 <transform file path=etc/openldap/ldap.conf$ -> set overlay allow>
 <transform file path=etc/openldap/ldap.conf$ -> set preserve true>
 
-<transform file path=usr/lib.*/libldap_r-.* -> set pkg.depend.bypass-generate libsasl2.so.3>
+<transform file path=usr/lib.*/libldap.* -> set pkg.depend.bypass-generate libsasl2.so.3>
 
-# Oracle Solaris only provides the MT HOT library libldap_r.so.
+# Provide openldap 2.4 SONAME compatibility links to
+# libldap_r-2.4.so.2 and liblber-2.1.so.2
 # -------------------------------------------------------------
-# For compatibility libldap.so and specific version-ed libraries
-# are links to libldap_r.so.
-# This conversion recreates the p5m libraries as it was prior to
-# this generation translator.
+# File build/prototype/sparc/usr/lib/${MACH}/libldap.so.*
+# and build/prototype/sparc/usr/lib/libldap.so.*
+<transform file path=(usr/lib.*/libldap)\.so(.*) -> emit link path=%<1>_r-2.4.so.2 target=libldap.so%<2>>
+<transform file path=(usr/lib.*/liblber)\.so(.*) -> emit link path=%<1>-2.4.so.2 target=liblber.so%<2>>
 
-# The point of this generator is to automatically pick up the version
-# strings and make it easier to updated the package file, and of
-# course easily identify any new or missing files.
-
-# Want link like path=usr/lib/$(MACH64)/libldap_r-2.4.so target=libldap_r-2.4.so.2.10.14
-# Therefore using link path=usr/lib/libldap_r-2.4.so.2 target=libldap_r-2.4.so.2.10.14
-<transform link path=(usr/lib.*/libldap_r-.*\.so)\..*$ target=(libldap_r-.*)$ -> emit link path=%<1> target=%<2>>
-# Want link like path=usr/lib/$(MACH64)/libldap-2.4.so target=libldap_r-2.4.so.2.10.14
-<transform link path=(usr/lib.*/libldap).so target=libldap-(.*)\.so\.(.*) -> emit link path=%<1>-%<2>.so target=libldap_r-%<2>.so.%<3>>
-
-# make libldap-2.4.so.2.10.14 target=libldap_r-2.4.so.2.10.14
-<transform link path=usr/lib.*/libldap.so target=libldap-(.*) -> set target libldap_r-%<1>>
-<transform link path=usr/lib.*/libldap-(.*)\.so target=libldap-(.*) -> set target libldap_r-%<2>>
-
-# File build/prototype/sparc/usr/lib/sparcv9/libldap-2.4.so.2.10.14
-# and build/prototype/sparc/usr/lib/libldap-2.4.so.2.10.14
-# Deliver as links to libldap_r file.
-<transform file path=(usr/lib.*/libldap-)(.*\.so\..*) -> emit link path=%<1>%<2> target=libldap_r-%<2>>
-<transform file path=(usr/lib.*/libldap-)(.*\.so\..*) -> drop>
-
-# llib-llb, add a couple of links
-# +link path=usr/lib/$(MACH64)/llib-lldap-2.4.ln target=llib-lldap_r-2.4.ln
-# +link path=usr/lib/$(MACH64)/llib-lldap.ln target=llib-lldap_r-2.4.ln
-# +link path=usr/lib/llib-lldap-2.4.ln target=llib-lldap_r-2.4.ln
-# +link path=usr/lib/llib-lldap.ln target=llib-lldap_r-2.4.ln
-# First make non-version link without _r point to _r version.
-<transform file path=(usr/lib.*/)(llib-l.*)_r-(.*).ln$ -> emit link path=%<1>%<2>.ln target=%<2>_r-%<3>.ln>
-# Secondly versioned link without _r , point to _r version.
-<transform file path=(usr/lib.*/)(llib-l.*)_r-(.*).ln$ -> emit link path=%<1>%<2>-%<3>.ln target=%<2>_r-%<3>.ln>
-
-# Use the ln file to create other links to match the current p5m file!
-# +link path=usr/lib/$(MACH64)/llib-llber.ln target=llib-llber-2.4.ln
-# +link path=usr/lib/llib-lldap_r.ln target=llib-lldap_r-2.4.ln
-<transform file path=(usr/lib.*/)(llib-lldap_r)-(.*).ln$ -> emit link path=%<1>%<2>.ln target=%<2>-%<3>.ln>
-# +link path=usr/lib/llib-llber.ln target=llib-llber-2.4.ln
-<transform file path=(usr/lib.*/)(llib-llber)-(.*).ln$ -> emit link path=%<1>%<2>.ln target=%<2>-%<3>.ln>
-
-# +link path=usr/lib/liblber-2.4.so target=liblber-2.4.so.2.10.14
-# +link path=usr/lib/$(MACH64)/liblber-2.4.so target=liblber-2.4.so.2.10.14
-<transform file path=(usr/lib.*/)(liblber-.*\.so)(\..*) -> emit link path=%<1>%<2> target=%<2>%<3>>

@@ -1,4 +1,4 @@
-Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 
 # OpenLDAP notes.
 
@@ -13,9 +13,10 @@ is exported in LDIF format. Following package activation the old database
 should be removed and the previously exported LDIF imported.
 
 The openldap SMF service, ldap/server, (file Solaris/ldap-olslapd) includes a
-version check to help prevent accidental damage when versions do not match.
-A future update will hopefully move that check to within slapd(8oldap), until
-that time version updates will need to modify those checks.
+version check to help prevent accidental damage when versions do not match.  A
+future update will hopefully move that check to within slapd(8oldap), until
+that time version updates will need to modify those checks.  See also
+openldap-server.p5m below.
 
 ## Packaging
 
@@ -24,6 +25,13 @@ pkg:/library/openldap) it has subsequently been broken up into:
 
 - openldap-client.p5m (pkg:/system/network/ldap/openldap)
 - openldap-server.p5m (pkg:/service/network/ldap/openldap)
+
+When modifying the packaging p5m files one needs to also modify the generate
+files which may includes a number of transform lines so that the generated
+text matches.  Note that generation occurs toward the end of `gmake publish`
+step which is after the p5m file is used to package up (the generation is a
+cross check, not the author).
+
 
 ### openldap-server.p5m
 
@@ -44,22 +52,33 @@ Note: source file Solaris/openldap-notice.txt has two entries
     Which includes attribute *self@$(IPS\_COMPONENT\_VERSION)*
     causing it to be displayed when the component version is incremented.
 
-    By specifying the version as IPS\_COMPONENT\_VERSION the
-    release-note will correctly be applied when openldap component is
-    updated, and COMPONENT\_VERSION is modified in Makefile.  As
-    updates do not have to be applied incrementally it is not possible
-    to use the version as a definitive comparison to the
-    compatibility.
+    By specifying the version as IPS\_COMPONENT\_VERSION the release-note will
+    correctly be applied when openldap component is updated, and
+    COMPONENT\_VERSION is modified in Makefile.  As updates do not have to be
+    applied incrementally it is not possible to use the version as a
+    definitive comparison to the compatibility.
 
-    Originally set to $(IPS\_COMPONENT\_VERSION),$(BUILD\_VERSION)
-    which erroneously caused every build to display the release-note
-    as BUILD\_VERSION includes the branch-id (BRANCHID).
+    Originally set to $(IPS\_COMPONENT\_VERSION),$(BUILD\_VERSION) which
+    erroneously caused every build to display the release-note as
+    BUILD\_VERSION includes the branch-id (BRANCHID).
+
+OpenLDAP requires a specific version of cyrus-sasl library (libsasl2.so)
+because it stashes away the version number from compilation and refuses to work
+if that is not the version used at load time.  Hence at the end of the file
+there is a dependency on the current expected version (depend type=require
+fmri=.../libsasl2@...).  This does however then require additional
+`pkg.depend.bypass-generate=libsasl2.so.3` entries to prevent pkglint from
+reporting error "duplicate depend actions".
 
 ### openldap-client.p5m
 
-**Caution**
+Includes the same dependeny as openldap-server.p5m on libsasl2.
 
-- Oracle Solaris only provides the MT HOT library libldap\_r.so.  For
-  compatibility libldap.so and specific version-ed libraries are links
-  to libldap\_r.so.
+*OpenLDAP library libldap*
+
+Up until now (2.4.x) in Solaris distribution the libldap.so library has been a
+link to the MT HOT library libldap_r.so.  With 2.6.x libldap_r.so has
+officially been renamed libldap.so.  For backward compatibility we continue to
+provide libldap\_r.so and also the SONAME compatibility links to
+libldap_r-2.4.so.2 and liblber-2.1.so.2
 

@@ -56,11 +56,9 @@ link path=usr/bin/ldapmodrdn target=openldapmodrdn
 link path=usr/bin/ldappasswd target=openldappasswd
 link path=usr/bin/ldapsearch target=openldapsearch
 link path=usr/bin/ldapurl target=openldapurl
+link path=usr/bin/ldapvc target=openldapvc
 link path=usr/bin/ldapwhoami target=openldapwhoami
 link path=usr/bin/openldapadd target=openldapmodify
-# The bypasses (and manual dependency on libsasl at the end of the file)
-# are required for building with the cyrus-sasl proto area because of
-# libsasl version dependency checks in openldap code.
 file usr/bin/ldapcompare path=usr/bin/openldapcompare \
     pkg.depend.bypass-generate=libsasl2.so.3
 file usr/bin/ldapdelete path=usr/bin/openldapdelete \
@@ -76,64 +74,48 @@ file usr/bin/ldappasswd path=usr/bin/openldappasswd \
 file usr/bin/ldapsearch path=usr/bin/openldapsearch \
     pkg.depend.bypass-generate=libsasl2.so.3
 file usr/bin/ldapurl path=usr/bin/openldapurl
+file usr/bin/ldapvc path=usr/bin/openldapvc \
+    pkg.depend.bypass-generate=libsasl2.so.3
 file usr/bin/ldapwhoami path=usr/bin/openldapwhoami \
     pkg.depend.bypass-generate=libsasl2.so.3
-link path=usr/include/lber.h target=openldap/lber.h
-link path=usr/include/lber_types.h target=openldap/lber_types.h
-link path=usr/include/ldap.h target=openldap/ldap.h
-link path=usr/include/ldap_cdefs.h target=openldap/ldap_cdefs.h
-link path=usr/include/ldap_features.h target=openldap/ldap_features.h
-link path=usr/include/ldap_schema.h target=openldap/ldap_schema.h
-link path=usr/include/ldap_utf8.h target=openldap/ldap_utf8.h
-link path=usr/include/ldif.h target=openldap/ldif.h
-link path=usr/include/openldap.h target=openldap/openldap.h
-file path=usr/include/openldap/lber.h
-file path=usr/include/openldap/lber_types.h
-file path=usr/include/openldap/ldap.h
-file path=usr/include/openldap/ldap_cdefs.h
-file path=usr/include/openldap/ldap_features.h
-file path=usr/include/openldap/ldap_schema.h
-file path=usr/include/openldap/ldap_utf8.h
-file path=usr/include/openldap/ldif.h
-file path=usr/include/openldap/openldap.h
-link path=usr/lib/$(MACH64)/liblber-2.4.so target=liblber-2.4.so.2.11.7
-link path=usr/lib/$(MACH64)/liblber-2.4.so.2 target=liblber-2.4.so.2.11.7
-file path=usr/lib/$(MACH64)/liblber-2.4.so.2.11.7
-link path=usr/lib/$(MACH64)/liblber.so target=liblber-2.4.so.2.11.7
-link path=usr/lib/$(MACH64)/libldap-2.4.so target=libldap_r-2.4.so.2.11.7
-link path=usr/lib/$(MACH64)/libldap-2.4.so.2 target=libldap_r-2.4.so.2.11.7
-link path=usr/lib/$(MACH64)/libldap-2.4.so.2.11.7 target=libldap_r-2.4.so.2.11.7
-link path=usr/lib/$(MACH64)/libldap.so target=libldap_r-2.4.so.2.11.7
-link path=usr/lib/$(MACH64)/libldap_r-2.4.so target=libldap_r-2.4.so.2.11.7
-link path=usr/lib/$(MACH64)/libldap_r-2.4.so.2 target=libldap_r-2.4.so.2.11.7
-file path=usr/lib/$(MACH64)/libldap_r-2.4.so.2.11.7 \
+file path=usr/include/lber.h
+file path=usr/include/lber_types.h
+file path=usr/include/ldap.h
+file path=usr/include/ldap_cdefs.h
+file path=usr/include/ldap_features.h
+file path=usr/include/ldap_schema.h
+file path=usr/include/ldap_utf8.h
+file path=usr/include/ldif.h
+# # Deprecated header directory, as Mozilla versions used to be in parent.
+link path=usr/include/openldap target=.
+file path=usr/include/openldap.h
+# SONAME backward compatability link for 64bit liblber-2.4
+link path=usr/lib/$(MACH64)/liblber-2.4.so.2 target=liblber.so.2.0.200
+link path=usr/lib/$(MACH64)/liblber.so target=liblber.so.2.0.200
+link path=usr/lib/$(MACH64)/liblber.so.2 target=liblber.so.2.0.200
+file path=usr/lib/$(MACH64)/liblber.so.2.0.200
+link path=usr/lib/$(MACH64)/libldap.so target=libldap.so.2.0.200
+link path=usr/lib/$(MACH64)/libldap.so.2 target=libldap.so.2.0.200
+file path=usr/lib/$(MACH64)/libldap.so.2.0.200 \
     pkg.depend.bypass-generate=libsasl2.so.3
-link path=usr/lib/$(MACH64)/libldap_r.so target=libldap_r-2.4.so.2.11.7
-file path=usr/lib/$(MACH64)/llib-llber-2.4.ln
-link path=usr/lib/$(MACH64)/llib-llber.ln target=llib-llber-2.4.ln
-link path=usr/lib/$(MACH64)/llib-lldap-2.4.ln target=llib-lldap_r-2.4.ln
-link path=usr/lib/$(MACH64)/llib-lldap.ln target=llib-lldap_r-2.4.ln
-file path=usr/lib/$(MACH64)/llib-lldap_r-2.4.ln
-link path=usr/lib/$(MACH64)/llib-lldap_r.ln target=llib-lldap_r-2.4.ln
-link path=usr/lib/liblber-2.4.so target=liblber-2.4.so.2.11.7
-link path=usr/lib/liblber-2.4.so.2 target=liblber-2.4.so.2.11.7
-file path=usr/lib/liblber-2.4.so.2.11.7
-link path=usr/lib/liblber.so target=liblber-2.4.so.2.11.7
-link path=usr/lib/libldap-2.4.so target=libldap_r-2.4.so.2.11.7
-link path=usr/lib/libldap-2.4.so.2 target=libldap_r-2.4.so.2.11.7
-link path=usr/lib/libldap-2.4.so.2.11.7 target=libldap_r-2.4.so.2.11.7
-link path=usr/lib/libldap.so target=libldap_r-2.4.so.2.11.7
-link path=usr/lib/libldap_r-2.4.so target=libldap_r-2.4.so.2.11.7
-link path=usr/lib/libldap_r-2.4.so.2 target=libldap_r-2.4.so.2.11.7
-file path=usr/lib/libldap_r-2.4.so.2.11.7 \
-    pkg.depend.bypass-generate=libsasl2.so.3
-link path=usr/lib/libldap_r.so target=libldap_r-2.4.so.2.11.7
-file path=usr/lib/llib-llber-2.4.ln
-link path=usr/lib/llib-llber.ln target=llib-llber-2.4.ln
-link path=usr/lib/llib-lldap-2.4.ln target=llib-lldap_r-2.4.ln
-link path=usr/lib/llib-lldap.ln target=llib-lldap_r-2.4.ln
-file path=usr/lib/llib-lldap_r-2.4.ln
-link path=usr/lib/llib-lldap_r.ln target=llib-lldap_r-2.4.ln
+# SONAME backward compatibility link for 64bit libldap_r-2.4
+link path=usr/lib/$(MACH64)/libldap_r-2.4.so.2 target=libldap.so.2.0.200
+file path=usr/lib/$(MACH64)/llib-llber.ln
+file path=usr/lib/$(MACH64)/llib-lldap.ln
+file path=usr/lib/$(MACH64)/pkgconfig/lber.pc
+file path=usr/lib/$(MACH64)/pkgconfig/ldap.pc
+# SONAME backward compatability link for 64bit liblber-2.4
+link path=usr/lib/liblber-2.4.so.2 target=liblber.so.2.0.200
+link path=usr/lib/liblber.so target=liblber.so.2.0.200
+link path=usr/lib/liblber.so.2 target=liblber.so.2.0.200
+file path=usr/lib/liblber.so.2.0.200
+link path=usr/lib/libldap.so target=libldap.so.2.0.200
+link path=usr/lib/libldap.so.2 target=libldap.so.2.0.200
+file path=usr/lib/libldap.so.2.0.200 pkg.depend.bypass-generate=libsasl2.so.3
+# SONAME Backward compatibility link for 32bit libldap_r-2.4
+link path=usr/lib/libldap_r-2.4.so.2 target=libldap.so.2.0.200
+file path=usr/lib/llib-llber.ln
+file path=usr/lib/llib-lldap.ln
 link path=usr/lib/openldap/bin/ldapadd target=../../../bin/openldapmodify
 link path=usr/lib/openldap/bin/ldapcompare target=../../../bin/openldapcompare
 link path=usr/lib/openldap/bin/ldapdelete target=../../../bin/openldapdelete
@@ -143,7 +125,15 @@ link path=usr/lib/openldap/bin/ldapmodrdn target=../../../bin/openldapmodrdn
 link path=usr/lib/openldap/bin/ldappasswd target=../../../bin/openldappasswd
 link path=usr/lib/openldap/bin/ldapsearch target=../../../bin/openldapsearch
 link path=usr/lib/openldap/bin/ldapurl target=../../../bin/openldapurl
+link path=usr/lib/openldap/bin/ldapvc target=../../../bin/openldapvc
 link path=usr/lib/openldap/bin/ldapwhoami target=../../../bin/openldapwhoami
+file path=usr/lib/pkgconfig/lber.pc
+file path=usr/lib/pkgconfig/ldap.pc
+# Notice which is displayed on upgrade of openldap version.
+file Solaris/openldap-client.txt \
+    path=usr/share/doc/release-notes/openldap-client.txt owner=root group=sys \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)
 link path=usr/share/man/man1/ldapadd.1 target=../man1oldap/ldapadd.1oldap
 link path=usr/share/man/man1/ldapcompare.1 \
     target=../man1oldap/ldapcompare.1oldap
@@ -154,6 +144,7 @@ link path=usr/share/man/man1/ldapmodrdn.1 target=../man1oldap/ldapmodrdn.1oldap
 link path=usr/share/man/man1/ldappasswd.1 target=../man1oldap/ldappasswd.1oldap
 link path=usr/share/man/man1/ldapsearch.1 target=../man1oldap/ldapsearch.1oldap
 link path=usr/share/man/man1/ldapurl.1 target=../man1oldap/ldapurl.1oldap
+link path=usr/share/man/man1/ldapvc.1 target=../man1oldap/ldapvc.1oldap
 link path=usr/share/man/man1/ldapwhoami.1 target=../man1oldap/ldapwhoami.1oldap
 link path=usr/share/man/man1/openldapadd.1 target=../man1oldap/ldapadd.1oldap
 link path=usr/share/man/man1/openldapcompare.1 \
@@ -170,6 +161,7 @@ link path=usr/share/man/man1/openldappasswd.1 \
 link path=usr/share/man/man1/openldapsearch.1 \
     target=../man1oldap/ldapsearch.1oldap
 link path=usr/share/man/man1/openldapurl.1 target=../man1oldap/ldapurl.1oldap
+link path=usr/share/man/man1/openldapvc.1 target=../man1oldap/ldapvc.1oldap
 link path=usr/share/man/man1/openldapwhoami.1 \
     target=../man1oldap/ldapwhoami.1oldap
 link path=usr/share/man/man1oldap/ldapadd.1oldap target=ldapmodify.1oldap
@@ -181,6 +173,7 @@ file path=usr/share/man/man1oldap/ldapmodrdn.1oldap
 file path=usr/share/man/man1oldap/ldappasswd.1oldap
 file path=usr/share/man/man1oldap/ldapsearch.1oldap
 file path=usr/share/man/man1oldap/ldapurl.1oldap
+file path=usr/share/man/man1oldap/ldapvc.1oldap
 file path=usr/share/man/man1oldap/ldapwhoami.1oldap
 link path=usr/share/man/man3ldap target=man3oldap
 link path=usr/share/man/man3oldap/ber_alloc_t.3oldap target=lber-encode.3oldap
@@ -312,6 +305,8 @@ file path=usr/share/man/man3oldap/ldap_first_message.3oldap
 file path=usr/share/man/man3oldap/ldap_first_reference.3oldap
 link path=usr/share/man/man3oldap/ldap_free_urldesc.3oldap \
     target=ldap_url.3oldap
+link path=usr/share/man/man3oldap/ldap_get_attribute_ber.3oldap \
+    target=ldap_first_attribute.3oldap
 file path=usr/share/man/man3oldap/ldap_get_dn.3oldap
 file path=usr/share/man/man3oldap/ldap_get_option.3oldap
 file path=usr/share/man/man3oldap/ldap_get_values.3oldap

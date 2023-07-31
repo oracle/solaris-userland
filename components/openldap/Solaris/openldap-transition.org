@@ -1,0 +1,879 @@
+Copyright (c) 2023, Oracle and/or its affiliates. \\
+Copyright 1998-2022 The OpenLDAP Foundation
+
+#+begin_src ascii
+         __________________________________________________
+
+           REQUIREMENTS TO TRANSITION FROM ONE VERSION OF
+      		  OPENLDAP TO ANOTHER.
+         __________________________________________________
+
+#+end_src
+
+#+begin_comment
+
+This file is the source to openldap-transition.txt,
+it is written in Emacs Org mode; https://orgmode.org/.
+
+See the end of file for [[Org-mode settings]] and notes regarding this file.
+
+#+end_comment
+*Only required if the system is being used as an OpenLDAP server.*
+
+Ordinarily a system is being used as an OpenLDAP server when SMF
+service instance ldap/server:openldap is enabled and online.
+
+- The ~svcs(1)~ command will tell you the service status:
+
+  #+begin_verse
+  svcs ldap/server
+  #+end_verse
+
+The OpenLDAP package has been updated to include a newer version of
+OpenLDAP which must be manually migrated to.
+
+To transition from one version of OpenLDAP to the next it is imperative
+that databases are exported to LDAP Data Interchange Format (LDIF) and
+imported following the upgrade.  This is a manual procedure and needs to
+be completed by a systems administrator before booting into the new boot
+environment.
+
+
+The following sections attempt to document the steps you will need to
+take in order to upgrade.
+
+
+------------------------------------------------------------------------
+
+#+begin_verse
+               *READ ALL OF THESE INSTRUCTIONS CAREFULLY*
+
+               *BEFORE TAKING ACTION ON ANY STEPS BELOW*
+#+end_verse
+
+------------------------------------------------------------------------
+* Migration
+
+- Reference [[https://www.openldap.org/doc/admin26/maintenance.html]]
+
+
+a) Quiesce the service of writes, for example by disabling it:
+
+   #+begin_verse
+   svcadm disable -s ldap/server:openldap
+   #+end_verse
+
+b) Dump each database to LDIF file using slapcat(8) to a location where
+   it will be accessible from different boot environments.
+
+   #+begin_verse
+   mkdir -p /var/share/openldap
+   slapcat -n 1 -l /var/share/openldap/data1.ldif
+   #+end_verse
+
+c) Dump slapd-config(5) configuration to LDIF file
+
+   ldapservercfg(8) configures slapd(8) using slapd-config(5) and
+   therefore the *config database* should be exported in preparation for
+   any configuration changes that may be necessary.
+
+   You can skip this step if your configuration is using slapd.conf(5).
+
+   #+begin_verse
+   slapcat -n 0 -o ldif-wrap=no -l /var/share/openldap/conf.ldif
+   #+end_verse
+
+d) Boot into new boot environment when ready
+
+   *Read and understand the rest of this document first*
+
+   #+begin_verse
+   reboot
+   #+end_verse
+
+   Upon reboot the ldap/server:openldap service may be in maintenance
+   mode if the versions are not compatible.
+
+e) Apply any Version Specific Instructions
+   # Referenced in the text below as 'section "e"', so if this bullet
+   # changes then change that text below too.
+
+   *Further details are given below*
+
+f) Import LDIF configuration as necessary
+
+   If configuration changes were needed import the slpad-config(5oldap)
+   LDIF file.
+
+   *Warning* this example destroys the current configuration, while the
+   LDIF file created previously is a backup you may want to make sure
+   you have an alternative backup too.
+
+   Execute from a directory accessible to "openldap" to prevent
+   non-toxic (getcwd) error from slapadd.
+
+   #+begin_verse
+   IMPORT=/var/share/openldap/import.ldif
+   rm -rf /etc/openldap/slapd.d/*
+   cd /tmp
+   su openldap -c "slapadd -F /etc/openldap/slapd.d -n 0 -l $IMPORT"
+   #+end_verse
+
+g) Remove old database in /var/openldap/openldap-data
+
+   #+begin_verse
+   rm -rf /var/openldap/openldap-data/*
+   #+end_verse
+   # Which also removes the sunw_version file created and used by ldapservercfg.
+
+h) Import LDIF data
+
+   Use slapadd(8oldap) as user "openldap" to import each of the
+   previously saved data files.  Execute from a directory accessible to
+   "openldap" to prevent non-toxic (getcwd) error from slapadd.
+
+   #+begin_verse
+   cd /tmp
+   su openldap -c "slapadd -l /var/share/openldap/data1.ldif"
+   #+end_verse
+
+i) Enable ldap/server:openldap
+
+   #+begin_verse
+   svcadm enable -s ldap/server:openldap
+   #+end_verse
+
+   If the service had previously entered into maitenance because the old
+   databases had not been removed then it may be necessary to clear the
+   maintenance condition.
+
+   #+begin_verse
+   svcadm clear ldap/server:openldap
+   #+end_verse
+
+j) Check ldap/server:openldap status and log as necessary
+
+   #+begin_verse
+   svcs ldap/server:openldap
+   svcs -Lv ldap/server:openldap
+   #+end_verse
+
+
+------------------------------------------------------------------------
+* Version Specific Instructions
+
+These depend on the version you are updating from.  You can check the
+current version using the command ~/usr/bin/ldapsearch -VV~
+
+** From 2.4.44 through 2.4.59 to 2.6.
+
+- For section "e" above read:
+
+
+The following  sections attempt to document  the steps you will  need to
+take in order to upgrade to OpenLDAP 2.6 which require changes necessary
+for  2.5  as  well as  those  for  2.6  as  referenced in  the  OpenLDAP
+Administration Upgrading appendixes and quoted below:
+- [[https://www.openldap.org/doc/admin25/appendix-upgrading.html]]
+- [[https://www.openldap.org/doc/admin26/appendix-upgrading.html]]
+
+
+*** cn=config olc* attributes
+
+- Quote from: OpenLDAP 2.5 Admin Guide Appendix B.1.:
+  #+begin_quote
+  The  olcMirrorMode attribute  has  been  renamed to  olcMultiProvider.
+  Existing configurations will  continue to work with  the old parameter
+  name, but  it is advised to  update to the new  name as a part  of the
+  upgrade process.
+  #+end_quote
+
+
+slapd.conf also changes ~mirrormode~ for ~multiprovider~
+
+*** ppolicy overlay
+
+- Quote from: OpenLDAP 2.5 Admin Guide Appendix B.2.:
+  #+begin_quote
+  The overlay now implements version 10 of the ppolicy draft in full. This
+  includes the notion of a password administrator where applicable (as
+  determined by having a manage permission to the userPassword attribute)
+  and skips certain processing when there is no valid policy in effect or
+  where the operation is initiated by a password administrator.  Many
+  attributes are now tagged with NO-USER-MODIFICATION in the schema,
+  requiring the use of relax control to modify them.
+
+  In  OpenLDAP 2.4  the slapo-ppolicy(5)  overlay relied  on a  separate
+  schema  file to  be included  for  it to  function. This  schema is  now
+  implemented  internally in  the slapo-ppolicy  module. When  upgrading
+  slapd.conf(5) deployments the  include statement for the  schema must be
+  removed. For slapd-config(5) deployments,  the config database must be
+  exported via  slapcat and  the old ppolicy  schema removed  from the
+  export. The resulting config database [LDIF] can then be imported.
+  #+end_quote
+
+
+*Solaris considerations for ppolicy*
+
+~ldapservercfg~ configures ~slapd~ using ~slapd-config~ and therefore
+the *config database* must be exported via ~slapcat~ and the old
+~ppolicy~ schema removed from the export.  The resulting configuration
+LDIF file can then be imported with ~slapadd~.
+
+In the following example note that ~ldif-wrap=no~ is used to ensure the
+entries remain on one line ready for processing with a ~nawk(1)~ script.
+
+Stop LDAP service and export configuration to safe path where it can be
+imported from new boot environment:
+
+#+begin_verse
+EXPORT=/var/share/openldap/config.ldif
+IMPORT=/var/share/openldap/import.ldif
+svcadm disable -s ldap/server:openldap
+slapcat -o ldif-wrap=no -n 0 -l $EXPORT
+#+end_verse
+
+Confirm the file exists as later steps will remove the database.
+
+#+begin_verse
+file $EXPORT
+#+end_verse
+**** Example script to remove ppolicy from config LDIF file
+
+Save this awk script to a file called no-ppolicy-schema.awk
+------
+#+NAME: no-ppolicy-schema.awk
+#+begin_src awk :eval never-export :exports code
+#!/bin/nawk -f
+BEGIN {i=0;  # database index count.
+  cn="";     # Matched DN name.
+  ignore=0;  # Signifies lines being removed when 1.
+ }
+/^$/ {ignore=0;print;next}  # Blank line separates records.
+ignore==1 {next;}  # record being removed.
+/dn: cn={[0-9]+}ppolicy,cn=schema,cn=config$/ {
+        ignore=1; next;}  # ppolicy record found, ignore rest of record.
+/dn: cn={[0-9]+}.*,cn=schema,cn=config/ {
+  # Other schema detected, adjust database number.
+  match($0,"{[0-9]*}[^,]*")  # Find the common name.
+  cn="^cn: " substr($0, RSTART, RLENGTH) "$";  # cn match string
+  print substr($0,1,8) i"" substr($0,index($0,"}"));  # new index
+  j=i;i++; next}  # j is current cn index, i is now the next index.
+cn != "" && $0 ~ cn {  # cn matched, write cn with new index.
+  print substr($0,1,5) j"" substr($0,index($0,"}"));
+  cn=""; next}
+{print}  # output all other lines unchanged.
+#+end_src
+------
+
+Remove the ppolicy configuration from the exported configuration LDIF
+file using the commands:
+
+#+begin_verse
+nawk -f no-ppolicy-schema.awk $EXPORT > $IMPORT
+echo DONE $?
+#+end_verse
+
+***** Examine the resulting differences from awk changes
+For example using diff(1):
+#+begin_src sh :eval no :exports code
+diff -u $EXPORT $IMPORT
+#+end_src
+
+The results should be similar to following example which for brevity has
+been truncated at the seventy-second column (using ~cut -c 1-72~):
+
+#+begin_example
+--- /var/share/openldap/config.ldif 2023-05-12 10:42:30.712692430 +0000
++++ /var/share/openldap/import.ldif 2023-05-12 11:18:27.633212895 +0000
+@@ -793,39 +793,10 @@
+ modifiersName: cn=config
+ modifyTimestamp: 20230511133509Z
+ 
+-dn: cn={3}ppolicy,cn=schema,cn=config
+-objectClass: olcSchemaConfig
+-cn: {3}ppolicy
+-olcAttributeTypes: {0}( 1.3.6.1.4.1.42.2.27.8.1.1 NAME 'pwdAttribute' E
+-olcAttributeTypes: {1}( 1.3.6.1.4.1.42.2.27.8.1.2 NAME 'pwdMinAge' EQUA
+-olcAttributeTypes: {2}( 1.3.6.1.4.1.42.2.27.8.1.3 NAME 'pwdMaxAge' EQUA
+-olcAttributeTypes: {3}( 1.3.6.1.4.1.42.2.27.8.1.4 NAME 'pwdInHistory' E
+-olcAttributeTypes: {4}( 1.3.6.1.4.1.42.2.27.8.1.5 NAME 'pwdCheckQuality
+-olcAttributeTypes: {5}( 1.3.6.1.4.1.42.2.27.8.1.6 NAME 'pwdMinLength' E
+-olcAttributeTypes: {6}( 1.3.6.1.4.1.42.2.27.8.1.7 NAME 'pwdExpireWarnin
+-olcAttributeTypes: {7}( 1.3.6.1.4.1.42.2.27.8.1.8 NAME 'pwdGraceAuthNLi
+-olcAttributeTypes: {8}( 1.3.6.1.4.1.42.2.27.8.1.9 NAME 'pwdLockout' EQU
+-olcAttributeTypes: {9}( 1.3.6.1.4.1.42.2.27.8.1.10 NAME 'pwdLockoutDura
+-olcAttributeTypes: {10}( 1.3.6.1.4.1.42.2.27.8.1.11 NAME 'pwdMaxFailure
+-olcAttributeTypes: {11}( 1.3.6.1.4.1.42.2.27.8.1.12 NAME 'pwdFailureCou
+-olcAttributeTypes: {12}( 1.3.6.1.4.1.42.2.27.8.1.13 NAME 'pwdMustChange
+-olcAttributeTypes: {13}( 1.3.6.1.4.1.42.2.27.8.1.14 NAME 'pwdAllowUserC
+-olcAttributeTypes: {14}( 1.3.6.1.4.1.42.2.27.8.1.15 NAME 'pwdSafeModify
+-olcAttributeTypes: {15}( 1.3.6.1.4.1.42.2.27.8.1.30 NAME 'pwdMaxRecorde
+-olcAttributeTypes: {16}( 1.3.6.1.4.1.4754.1.99.1 NAME 'pwdCheckModule'
+-olcObjectClasses: {0}( 1.3.6.1.4.1.4754.2.99.1 NAME 'pwdPolicyChecker'
+-olcObjectClasses: {1}( 1.3.6.1.4.1.42.2.27.8.2.1 NAME 'pwdPolicy' SUP t
+-structuralObjectClass: olcSchemaConfig
+-entryUUID: a20f57d7-3721-49c0-ae6b-a0b95ce6bbe1
+-creatorsName: cn=config
+-createTimestamp: 20230511133509Z
+-entryCSN: 20230511133509.495298Z#000000#000#000000
+-modifiersName: cn=config
+-modifyTimestamp: 20230511133509Z
+ 
+-dn: cn={4}solaris,cn=schema,cn=config
++dn: cn={3}solaris,cn=schema,cn=config
+ objectClass: olcSchemaConfig
+-cn: {4}solaris
++cn: {3}solaris
+ structuralObjectClass: olcSchemaConfig
+ entryUUID: 7064bb28-9c84-4e40-b8be-9e77534c1144
+ creatorsName: cn=config
+@@ -997,9 +968,9 @@
+ modifiersName: cn=config
+ modifyTimestamp: 20230511133511Z
+ 
+-dn: cn={5}kerberos,cn=schema,cn=config
++dn: cn={4}kerberos,cn=schema,cn=config
+ objectClass: olcSchemaConfig
+-cn: {5}kerberos
++cn: {4}kerberos
+ structuralObjectClass: olcSchemaConfig
+ entryUUID: 2ff1438e-bd4a-4f70-9382-9b67cae6347b
+ creatorsName: cn=config
+#+end_example
+
+From the ~diff~ output one can confirm
+- ~{3}ppolicy~ DN has been removed along with all associated entries for that record.
+- Other DN's above 3 have been renumbered, e.g. ~{4}solaris~ has become
+  ~{3}solairs~ as has the DN's ~cn~ value.
+
+***** Failure to remove ppolicy schema results in error
+
+If the ~ppolicy~ is not removed from the exported LDIF configuration the
+following error will be seen during import (slapadd):
+
+#+begin_example
+olcAttributeTypes: value #0 olcAttributeTypes: Duplicate attributeType: "1.3.6.1.4.1.42.2.27.8.1.1"
+slapadd: could not add entry dn="cn={3}ppolicy,cn=schema,cn=config" (line=796): 
+Closing DB...
+#+end_example
+
+And the schemas for Solaris and Kerberos will be missing from slapd.d!
+
+**** An alternative method: remove and renumber schema files in slapd.d
+[[https://www.zytrax.com/books/ldap/ch6/slapd-config.html#use-schemas-delete][ Chapter 6: OpenLDAP using OLC (cn=config)]] suggests an alternative,
+remove and rename the files under ~slapd.d~!  If this is the only
+configuration change that is needed then this may well suffice, the
+recommendation is to use the export and import method above.
+
+1. Make sure the OpenLDAP service is stopped first:
+
+   #+begin_verse
+   svcadm disable -s ldap/server:openldap
+   #+end_verse
+
+2. Update the slapd directory to remove ppolicy.ldif file and renumber any
+   subsequent files.
+
+   As an example, examine the current ~cn=schema~ directory:
+   #+begin_example
+# cd /etc/openldap/slapd.d/cn=config/cn=schema
+# ls -1
+cn={0}core.ldif
+cn={1}cosine.ldif
+cn={2}inetorgperson.ldif
+cn={3}ppolicy.ldif
+cn={4}solaris.ldif
+cn={5}kerberos.ldif
+   #+end_example
+
+The following script will remove ~cn={3}ppolicy.ldif~ and renumber the other
+directories as appropriate.
+------
+#+NAME: no-ppolicy-schema.sh
+#+begin_src shell :eval never-export :exports code
+#!/bin/ksh
+safe=echo
+adjust=0
+for file in *.ldif; do
+    cn=${file%%\{*}
+    name=${file#*\}}
+    index=${file#*\{}
+    index=${index%\}*}
+    case $name in
+	(ppolicy.ldif)
+	    (( adjust++ ))
+	    $safe rm $file
+	    continue;;
+    esac
+    (( i = index - adjust ))
+    print "# DEBUG index $index new $i name $name"
+    if (( index != i )); then
+	newfile="${cn}{${i}}${name}"
+	$safe mv $file $newfile
+    fi
+done
+#+end_src
+------
+
+The output then confirms how the directory needs to be modified.
+
+#+begin_example
+# DEBUG index 0 new 0 name core.ldif
+# DEBUG index 1 new 1 name cosine.ldif
+# DEBUG index 2 new 2 name inetorgperson.ldif
+rm cn={3}ppolicy.ldif
+# DEBUG index 4 new 3 name solaris.ldif
+mv cn={4}solaris.ldif cn={3}solaris.ldif
+# DEBUG index 5 new 4 name kerberos.ldif
+mv cn={5}kerberos.ldif cn={4}kerberos.ldif
+#+end_example
+
+- Adjust ~safe=""~ when confident to have it make the changes, or copy
+  and paste the relevant commands from the scripts output.
+
+*** ppolicy overlay and pwdCheckModule                             :ol_2_6:
+
+- Quote from: OpenLDAP 2.6 Admin Guide Appendix B.1.:
+  #+begin_quote
+  The pwdCheckModule option has been moved to the overlay
+  configuration. Existing settings in password policy entries will be
+  ignored. It will be necessary to use pwdUseCheckModule instead and add
+  this configuration directive to the overlay when upgrading if it is
+  currently in use.
+  #+end_quote
+
+*** unique overlay                                                 :ol_2_5:
+
+- Quote from: OpenLDAP 2.5 Admin Guide Appendix B.3.:
+  #+begin_quote
+  In OpenLDAP 2.4 it was possible to bypass slapo-unique(5) checks by
+  using the manageDSAIT *control* as a *part of the request*. This is no
+  longer possible. To achieve the same functionality the relax control
+  must be used instead, *and the binding identity must* have *manage*
+  permissions on the entry being modified.
+
+  With OpenLDAP 2.5 a new keyword "serialize" has been added as a part of
+  the unique_uri configuration parameter. This will cause all write
+  operations requiring uniqueness to be serialized so as to avoid the
+  scenario where multiple concurrent updates can prevent uniqueness from
+  being enforced. See the slapo-unique(5) man page for further details.
+  #+end_quote
+
+
+Two considerations then:
+1. ~manageDsaIt~ replaced with a ~relax~
+2. ~serialize~ keyword for ~unique_uri~
+
+*** COMMENT B.4. ldap and meta backends                   :ol_2_5:noexport:
+*Solaris did not provide this backend*
+
+- Quote from: OpenLDAP 2.5 Admin Guide Appendix B.4.:
+  #+begin_quote
+  Several deprecated configuration directives for slapd-ldap(5) and
+  slapd-meta(5) have been removed.  Configurations using those directive
+  must be updated to use supported directives prior to upgrade.  See the
+  slapd-ldap(5) and slapd-meta(5) man pages from OpenLDAP 2.4 for a list
+  of deprecated directives.
+  #+end_quote
+
+
+**** COMMENT compare slapd-ldap(5)
+
+Excerpt from OpenLDAP 2.4.59 slapd-ldap(5)
+#+begin_example
+BACKWARD COMPATIBILITY
+       The LDAP backend has been heavily reworked between releases 2.2 and 2.3,
+       and subsequently between 2.3 and 2.4.  As a side-effect, some of the
+       traditional directives have been deprecated and should be no longer used,
+       as they might disappear in future releases.
+
+       acl-authcDN <administrative DN for access control purposes>
+              Formerly known as the binddn, it is the DN that is used to query
+              the target server for acl checking; it is supposed to have read
+              access on the target server to attributes used on the proxy for
+              acl checking.  There is no risk of giving away such values; they
+              are only used to check permissions.
+
+              The acl-authcDN identity is by no means implicitly used by the
+              proxy when the client connects anonymously.  The idassert-*
+              feature can be used (at own risk) for that purpose instead.
+
+              This directive is obsoleted by the binddn arg of acl-bind when
+              bindmethod=simple, and will be dismissed in the future.
+
+       acl-passwd <password>
+              Formerly known as the bindpw, it is the password used with the
+              above acl-authcDN directive.  This directive is obsoleted by the
+              credentials arg of acl-bind when bindmethod=simple, and will be
+              dismissed in the future.
+
+       idassert-authcDN <administrative DN for proxyAuthz purposes>
+              DN which is used to propagate the client's identity to the target
+              by means of the proxyAuthz control when the client does not belong
+              to the DIT fragment that is being proxied by back-ldap.  This
+              directive is obsoleted by the binddn arg of idassert-bind when
+              bindmethod=simple, and will be dismissed in the future.
+
+       idassert-passwd <password>
+              Password used with the idassert-authcDN above.  This directive is
+              obsoleted by the crendentials arg of idassert-bind when
+              bindmethod=simple, and will be dismissed in the future.
+
+       idassert-mode <mode> [<flags>]
+              defines what type of identity assertion is used.  This directive
+              is obsoleted by the mode arg of idassert-bind, and will be
+              dismissed in the future.
+
+       idassert-method <method> [<saslargs>]
+              This directive is obsoleted by the bindmethod arg of
+              idassert-bind, and will be dismissed in the future.
+
+       port <port>
+              this directive is no longer supported.  Use the uri directive as
+              described above.
+
+       server <hostname[:port]>
+              this directive is no longer supported.  Use the uri directive as
+              described above.
+
+       suffixmassage, map, rewrite*
+              These directives are no longer supported by back-ldap; their
+              functionality is now delegated to the rwm overlay.  Essentially,
+              add a statement
+
+              overlay rwm
+
+              first, and prefix all rewrite/map statements with rwm- to obtain
+              the original behavior.  See slapo-rwm(5) for details.
+#+end_example
+
+
+**** COMMENT compare slapd-meta(5)
+- openldap-2.4.59/doc/man/man5/slapd-meta.5
+- openldap-2.6.4/doc/man/man5/slapd-meta.5
+
+In both is the following deprecated warning
+#+begin_example
+DEPRECATED STATEMENTS
+       The following statements have been deprecated and should no longer be
+       used.
+
+       pseudorootdn <substitute DN in case of rootdn bind>
+              Use idassert-bind instead.
+
+       pseudorootpw <substitute password in case of rootdn bind>
+              Use idassert-bind instead.
+
+#+end_example
+
+
+In 2.4 there is also this:
+#+begin_example
+       tls {[try-]start|[try-]propagate}
+              execute the StartTLS extended operation when the connection is
+              initialized; only works if the URI directive protocol scheme is
+              not ldaps://.  propagate issues the StartTLS operation only if the
+              original connection did.  The try- prefix instructs the proxy to
+              continue operations if the StartTLS operation failed; its use is
+              highly deprecated.  If set before any target specification, it
+              affects all targets, unless overridden by any per-target
+              directive.
+#+end_example
+
+Though 2.6 has the same without the deprecated warning.
+#+begin_example
+       tls {none|[try-]start|[try-]propagate|ldaps}
+              [starttls=no] [tls_cert=<file>] [tls_key=<file>]
+              [tls_cacert=<file>] [tls_cacertdir=<path>]
+              [tls_reqcert=never|allow|try|demand]
+              [tls_reqsan=never|allow|try|demand] [tls_cipher_suite=<ciphers>]
+              [tls_ecname=<names>] [tls_crlcheck=none|peer|all]
+              Specify TLS settings regular connections.
+#+end_example
+
+*** shell backend                                                  :ol_2_5:
+
+- Quote from: OpenLDAP 2.5 Admin Guide Appendix B.5.:
+  #+begin_quote
+  This deprecated backend has been removed from OpenLDAP 2.5.
+  Configurations making use of this backend must remove it prior to
+  upgrade. The slapd-sock(5) backend is recommended as an alternative.
+  #+end_quote
+
+
+*** B.6. perl and sql backends                    :ol_2_5:noexport:
+
+- Quote from: OpenLDAP 2.5 Admin Guide Appendix B.6.:
+  #+begin_quote
+  The slapd-perl(5) and slapd-sql(5) backends are now deprecated and no
+  longer automatically enabled with the --enable-backends configure flag.
+  #+end_quote
+
+
+*** B.7. hdb and bdb backends                     :ol_2_5:noexport:
+
+- Quote from: OpenLDAP 2.5 Admin Guide Appendix B.7.:
+  #+begin_quote
+  The Berkeley DB based slapd-bdb and slapd-hdb backends have been
+  removed from OpenLDAP 2.5. Deployments making use of these backends
+  must migrate their configurations to use slapd-mdb(5) prior to
+  upgrade.
+  #+end_quote
+
+
+**** Solaris did not provide slapd-hdb and slapd-bdb removed in 2.4.44. :noexport:
+
+Confirmed: from ~slapd -VVV~
+#+begin_example
+Included static backends:
+    config
+    ldif
+    monitor
+    ldap
+    mdb
+    meta
+    null
+    passwd
+    relay
+    shell
+#+end_example
+
+*** mdb backend                                                    :ol_2_5:
+#+begin_comment
+Removed ~to OpenLDAP 2.5~ after ~from OpenLDAP 2.4~ in quoted text below
+#+end_comment
+- Quote from: OpenLDAP 2.5 Admin Guide Appendix B.8.:
+  #+begin_quote
+  It is advised to determine if the new slapd-mdb(5) idlexp backend
+  directive and/or the multival database directive should be added to
+  the OpenLDAP 2.6 configuration as well as the existing global sortvals
+  directive.  Configuring any of these items requires that existing
+  databases be reloaded for them to take full effect. This can be done
+  separately from the overall upgrade from OpenLDAP 2.4 if desired.
+  #+end_quote
+
+
+**** COMMENT ~idlexp~ directive documented in slapd-mdb.5
+
+#+begin_example
+CONFIGURATION
+       These slapd.conf options apply to the mdb backend.  That is, they must
+       follow a "backend mdb" line and come before any subsequent "backend" or
+       "database" lines.
+
+       idlexp <exp>
+              Specify a power of 2 for the maximum size of an index slot.  The
+              default is 16, yielding a maximum slot size of 2^16 or 65536.
+              Once set, this option applies to every mdb database instance.  The
+              specified value must be in the range of 16-30.
+#+end_example
+
+*** Client utility changes                                         :ol_2_5:
+
+- Quote from: OpenLDAP 2.5 Admin Guide Appendix B.9
+  #+begin_quote
+  The deprecated "-h"  (host) and "-p" (port) options for  the ldap client
+  utilities have been removed. It is  required to use a properly formatted
+  LDAP URI with the "-H" option in OpenLDAP 2.5 and later.
+  #+end_quote
+
+
+For a short time Solaris has patched these options back in.
+
+*You MUST modify your scripts to not rely on these options*
+
+A future OpenLDAP update may require them for another use!
+
+These options (~-h $host~ and ~-p $port~) will be removed in a future
+update.  Using them will generate an error on stderr to remind you that
+the options are deprecated with remedial advice to use '-H URI'.  The
+warning can be disabled, while this reprieve is in effect, by setting
+environment variable LDAP_OPT_REPRIEVE.
+
+# A mention of ldapurl seems relevant, note Solaris commands have been updated.
+~ldapurl(1oldap)~ can help by presenting the changed format, for example:
+
+#+NAME: ldapurl_example
+#+begin_src sh :exports both value :cache yes
+ldapurl -h hostname.example.com -p 636
+#+end_src
+
+Produces the following results
+#+NAME: results ldapurl_example
+#+results[eb21bf89fa4130407ee84e5c319b9e61dc4546a5]: ldapurl_example
+: ldap://hostname.example.com:636
+
+
+*** COMMENT lloadd backends                               :ol_2_6:noexport:
+
+- Quote from: OpenLDAP 2.6 Admin Guide Appendix B.2.:
+  #+begin_quote
+  Backends for lloadd are now grouped in tiers specifying the balancing
+  strategy. OpenLDAP 2.5 configurations must be updated to account for
+  this change.
+  #+end_quote
+
+
+**** COMMENT lloadd(8) - load balancing with lloadd (not configured or delivered)
+
+New feature introduced in 2.5, it's a configure option:
+#+begin_example
+LLOADD (Load Balancer Daemon) Options:
+  --enable-balancer       enable load balancer no|yes|mod [no]
+#+end_example
+
+*** monitor backend                                                :ol_2_6:
+
+- quote from: OpenLDAP 2.6 Admin Guide Appendix B.3.:
+  #+begin_quote
+  In 2.5 and prior, the managedInfo attribute in the cn=Log entry could be
+  used to change the loglevel of the slapd process. In 2.6,
+  monitorLogLevel can be used to change the slapd log level and
+  monitorDebugLevel can be used to change the slapd debug level.
+  #+end_quote
+
+
+*** contrib modules                                                :ol_2_6:
+
+- Quote from: OpenLDAP 2.6 Admin Guide Appendix B.4.:
+  #+begin_quote
+  If still using the lastbind overlay with olcLastBindPrecision (when
+  olcLastBindForwardUpdates is needed), you will need to configure
+  precision on its backend entry instead and the overlay will honor
+  it. The old attribute is no longer accepted or supported.
+  #+end_quote
+
+
+**** COMMENT Solaris provides ~lastbind~ overlay                :noexport:
+
+Makefile ~CONFIGURE_OPTIONS~ includes ~--enable-overlays~ which enables
+all overlays.
+
+*** /usr/include/openldap removed
+
+The header files are delivered directly to the standard /usr/include
+directory now, /usr/include/openldap directory is no longer delivered.
+
+** End of changes From 2.4.44 through 2.4.59 to 2.6.                :ignore:
+------------------------------------------------------------------------
+** From 2.4.30 or above to 2.4.44 through 2.4.59
+
+OpenLDAP 2.4.44 switched from using Berkeley DB (BDB) format to the
+Lightning Memory-Mapped Database (LMDB) format requiring an additional
+configuration change.
+
+- For section "e" above read:
+
+  slapd's configuration may require a couple of minor changes.
+
+  This is necessary to update:
+  - TLSProtocolMin :  Minimum protocol version (format change).
+    - If applicable change setting from "770" to "3.2"
+  - database : openLDAP database type
+    - If applicable change setting from bdb to mdb
+
+  Example: Modifying slapd.conf for use with OpenLDAP 2.4.44 and above.
+  #+BEGIN_EXAMPLE
+  # cp /etc/openldap/slapd.conf /etc/openldap/slapd.2430.conf
+  # vi /etc/openldap/slapd.conf
+  # diff /etc/openldap/slapd.2430.conf /etc/openldap/slapd.conf
+  27c27
+  < TLSProtocolMin        770
+  ---
+  > TLSProtocolMin        3.2
+  55c55
+  < database      bdb
+  ---
+  > database      mdb
+  #
+  #+END_EXAMPLE
+
+* End of Version Specific Changes                                    :ignore:
+
+------------------------------------------------------------------------
+* EOF                                                                :ignore:
+
+#+begin_verse
+         *That concludes the OpenLDAP transition instructions*
+#+end_verse
+
+* Org-mode settings                                                :noexport:
+[[https://orgmode.org/manual/Export-Settings.html][Export Settings (The Org Manual)]]
+Not using smart quotes.
+#+OPTIONS: ':nil
+Heading default level is 3, increased to 5 to keep export structure as
+intended.  Number all headings, not ASCII export does not underline
+headings above level 3 by default.
+#+OPTIONS: H:5 num:t
+Not using subscript or superscript.
+#+OPTIONS: ^:{}
+No table-of-contents, include tabels
+#+OPTIONS: toc:nil |:t
+Suppress conversion of title, as otherwise the ASCII exporter displaces
+the copyright lines. The title has its own explicit source instead.
+#+OPTIONS: title:nil
+Setting of TITLE here is for the HTML page heading.
+#+TITLE: REQUIREMENTS TO TRANSITION FROM ONE VERSION OF OPENLDAP TO ANOTHER.
+#+OPTIONS: author:nil creator:nil date:nil e:t email:nil
+#+OPTIONS: d:(not "LOGBOOK")
+Include footnotes if used.
+#+OPTIONS: f:t
+Remove other ORG marks (most not actually used within).
+#+OPTIONS: tags:nil tasks:nil todo:nil timestamp:nil
+#+LANGUAGE: en
+
+FYI, section headings in Org (lines beginning with one or more asterisk
+characters followed by a space character) can have /:tags:/ associated
+with them.  The /:ignore:/ tag causes export to drop the heading but not
+the section content within, useful for formatting and management of the
+org file.  While /:noexport:/ tag removes the heading and contents, but
+may execute source blocks.  A heading beginning with the *COMMENT*
+keyword prevents it from being exported and from any source blocks
+within it being executed.
+
+Some notes on the formatting regarding ASCII export.
+
+- ~begin_center~ is not working correctly on the *bold* text, the first
+  asterisk appears at the beginning of the line making it look like a
+  bullet point.  Therefore I have used ~verse~ rather than ~center~.
+
+- Within org a ~tilde~ is emphasis, which on ASCII export becomes
+  `tilde`.
+
+- Alas /italic/ does not get any special treatment and just gets
+  exported as ~/italic/~ and so I have not used it.
+
+- Quoted text is within ~begin_quote~/~end_quote~ blocks.  Those are
+  reformatted by the exporter and indented slightly, the ASCII exporter
+  does not otherwise make quoted text all that obvious and hence they
+  are placed after a list item which states there source.
+
+- src blocks, ascii export by default puts a box-string around the exported
+  code and examples. e.g.
+
+  #+begin_example
+   ,----
+   | $ echo Example of box-string
+   |   Example of box-string
+   `----
+  #+end_example
+
+  The following emacs-lisp prevents that.  It needs to be evaluated it
+  before exporting.
+
+  #+begin_src elisp
+  (require 'ox-ascii)
+  (advice-add 'org-ascii--box-string :override
+          (defun my-org-ascii--box-string  (s info)
+            s))
+  #+end_src
+
+Make the source and examples exported to HTML have a black background.
+#+HTML_HEAD_EXTRA: <style> pre.src { background-color: black; color: white; }</style>
+
+* EOF                                                                :ignore:
+# Emacs settings
+# Local Variables:
+# fill-column: 72
+# End:

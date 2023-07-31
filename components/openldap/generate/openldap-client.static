@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 
 # ldapadd manual page links
@@ -39,3 +39,11 @@ user username=openldap ftpuser=false gcos-field="OpenLDAP User" group=openldap \
 # ==============
 # ldap to oldap
 link path=usr/share/man/man3ldap target=man3oldap
+# Deprecated header directory, as Mozilla versions used to be in parent.
+link path=usr/include/openldap target=.
+
+# Notice which is displayed on upgrade of openldap version.
+file Solaris/openldap-client.txt \
+    path=usr/share/doc/release-notes/openldap-client.txt owner=root group=sys \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)

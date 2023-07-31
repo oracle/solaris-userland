@@ -3,9 +3,11 @@
 Solaris specific patch to use AI_ADDRCONFIG when calling getaddrinfo()
 and to not hold lock as getaddrinfo(3C) is MT-safe on Solaris.
 
---- openldap-2.4.59/libraries/libldap/os-ip.c
-+++ openldap-2.4.59/libraries/libldap/os-ip.c
-@@ -594,7 +594,7 @@ }
+diff --git a/libraries/libldap/os-ip.c b/libraries/libldap/os-ip.c
+diff --git a/libraries/libldap/os-ip.c b/libraries/libldap/os-ip.c
+--- a/libraries/libldap/os-ip.c
++++ b/libraries/libldap/os-ip.c
+@@ -637,7 +637,7 @@
  
  #if defined( HAVE_GETADDRINFO ) && defined( HAVE_INET_NTOP )
  	memset( &hints, '\0', sizeof(hints) );
@@ -14,7 +16,7 @@ and to not hold lock as getaddrinfo(3C) is MT-safe on Solaris.
  	/* Use AI_ADDRCONFIG only on systems where its known to be needed. */
  	hints.ai_flags = AI_ADDRCONFIG;
  #endif
-@@ -602,12 +602,16 @@ hints.ai_family = ldap_int_inet4or6;
+@@ -645,12 +645,16 @@
  	hints.ai_socktype = socktype;
  	snprintf(serv, sizeof serv, "%d", port );
  
@@ -30,4 +32,4 @@ and to not hold lock as getaddrinfo(3C) is MT-safe on Solaris.
 +#endif
  
  	if ( err != 0 ) {
- 		osip_debug(ld, "ldap_connect_to_host: getaddrinfo failed: %s\n",
+ 		Debug1(LDAP_DEBUG_TRACE,
