@@ -32,19 +32,19 @@ include ../../make-rules/shared-macros.mk
 #   openLDAP <x>.<y>.<z>        =>   IPS <x>.<y>.<z>.0.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		openldap
-COMPONENT_VERSION=	2.6.5
+COMPONENT_VERSION=	2.6.6
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_PROJECT_URL=	http://www.openldap.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2e27a8d4f4c2af8fe840b573271c20aa163e24987f9765214644290f5beb38d9
+    sha256:082e998cf542984d43634442dbe11da860759e510907152ea579bdc42fe39ea0
 COMPONENT_ARCHIVE_URL=	\
     ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/openldap
 # For check_anitya target, https://release-monitoring.org/project/2551
 COMPONENT_ANITYA_ID=	2551
-COMPONENT_BAID=		146981
+COMPONENT_BAID=		147977
 
 #
 # Cyrus-SASL is a requirement.
@@ -257,7 +257,7 @@ test-transform:
 e = /usr/gnu/bin/echo
 test-license:
 	@$(MKDIR) -p $(BUILD_DIR)
-	( \
+	@( \
 		$e -n '-------------------------------';\
 		$e ' Top-level license --------------------------'; \
 		$e ; \
@@ -267,8 +267,9 @@ test-license:
 		$e; \
 		iconv -sct UTF-8 $(SOURCE_DIR)/COPYRIGHT; \
 	)  > $(BUILD_DIR)/$(COMPONENT_NAME).license.new;
-	cmp $(COMPONENT_DIR)/$(COMPONENT_NAME).license \
-	    $(BUILD_DIR)/$(COMPONENT_NAME).license.new >/dev/null || \
+	@cmp $(COMPONENT_DIR)/$(COMPONENT_NAME).license \
+	    $(BUILD_DIR)/$(COMPONENT_NAME).license.new >/dev/null && \
+		$e "No changes detected to openldap.license file." || \
 		( \
 		$e 'WARNING: Built license differs:'; \
 		$e -n 'diff $(COMPONENT_NAME).license '; \

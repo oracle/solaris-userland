@@ -10,7 +10,7 @@
 # For comparision test print summary lines (those which begin >>>>>) and remove
 # all time information.
 #
-/^>>>>>/ && $3=="Finished|Failed" {sub($2 " ","");sub(" after .*","");print;next;}
+/^>>>>> [^ ]+ (Finished|Failed)/ {sub($2 " ","");sub(" after .*","");print;next;}
 /^>>>>> [0-9][0-9]:/ {sub("[0-9][0-9]:[0-9][0-9]:[0-9][0-9] ","");print;next;}
 /^>>>>> / {print;next;}
 
