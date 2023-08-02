@@ -1,0 +1,23 @@
+Solaris specific patch. The configure target doesn't work in Userland build
+infrastructure and in general it is not needed for building mrtg.
+
+--- mrtg-2.17.10/Makefile.in.orig	2023-08-02 15:17:23.826540733 +0200
++++ mrtg-2.17.10/Makefile.in	2023-08-02 15:17:46.174501613 +0200
+@@ -28,7 +28,7 @@
+ INSTALL = @INSTALL@
+ MKINSTALLDIRS = $(SHELL) $(top_srcdir)/mkinstalldirs
+ 
+-all:	 configure bin/rateup subst
++all:	 bin/rateup subst
+ 
+ bin/rateup: bin/rateup.o
+ 	$(SET_LD_RUN_PATH) $(CC) bin/rateup.o -o bin/rateup $(LDFLAGS)  $(LIBS)
+@@ -41,8 +41,6 @@
+ 	$(PERL) -0777 -p -i~ -e "s'^#!\s*/\S*perl'#! $(PERL)'" $(top_srcdir)/bin/cfgmaker $(top_srcdir)/bin/indexmaker $(top_srcdir)/bin/mrtg
+ 	$(PERL) -0777 -p -i~ -e 's@GRAPHFMT="...";@GRAPHFMT="$(GDFORM_EXT)";@' $(top_srcdir)/bin/mrtg $(top_srcdir)/bin/indexmaker
+ 
+-configure: configure.ac
+-	autoreconf --make
+ 	
+ clean:
+ 	-rm -f bin/rateup
