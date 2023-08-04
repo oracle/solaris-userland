@@ -30,19 +30,19 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sendmail
-COMPONENT_VERSION=	8.17.1
+COMPONENT_VERSION=	8.17.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION)
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	ftp://ftp.sendmail.org/pub/sendmail/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME).$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:04bc76b6c886e6d111be7fd8daa32b8ce00128a288b6b52e067bc29f3854a6e6
+    sha256:90f5ae74c35a84808861933ba094201b901b70c6b2903684dcf39bdae8a5a1a2
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
-
+# For check_anitya target, https://release-monitoring.org/project/4796
 COMPONENT_ANITYA_ID=	4796
 
-COMPONENT_BAID=		139735
+COMPONENT_BAID=		145799
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -125,6 +125,24 @@ $(SOURCE_DIR)/.prep:	$(SOURCE_DIR)/devtools/Site/site.config.m4
 # * Uncomment the 'confOPTIMIZE' line in the recipe below, and move it
 #   before the 'endef' line:
 
+# OPENSSL3, Needs to switch the same time as Cyrus-sasl
+ifneq ($(strip $(OPENSSL3)),)
+SM_OPENSSL3_SITE_CONFIG_M4_1 = \
+APPENDDEF(`confLIBDIRS', `-L/usr/openssl/3/lib/64')
+SM_OPENSSL3_SITE_CONFIG_M4_2 = \
+APPENDDEF(`confLIBDIRS', ` -R/usr/openssl/3/lib/64')
+SM_OPENSSL3_SITE_CONFIG_M4_3 = \
+APPENDDEF(`confINCDIRS', `-I/usr/openssl/3/include')
+
+# Fix-up site-config for the 32bit build.
+# Removes the link created by cloney and creates 32bit specific file.
+COMPONENT_PRE_BUILD_ACTION.32 = \
+	rm $(BUILD_DIR_32)/devtools/Site/site.config.m4; \
+	gsed -e "s:/usr/openssl/3/lib/64:/usr/openssl/3/lib/32:" \
+		$(SOURCE_DIR)/devtools/Site/site.config.m4 > \
+		$(BUILD_DIR_32)/devtools/Site/site.config.m4;
+endif
+
 define SITE_CONFIG_M4
 APPENDDEF(`conf_sendmail_ENVDEF', `-DSUN_EXTENSIONS')
 APPENDDEF(`conf_sendmail_ENVDEF', `-DVENDOR_DEFAULT=VENDOR_SUN')
@@ -144,9 +162,11 @@ APPENDDEF(`conf_sendmail_LIBS', `-lcrypto')
 APPENDDEF(`conf_sendmail_LIBS', `-lsasl2')
 APPENDDEF(`confMAPDEF', `-DLDAPMAP')
 APPENDDEF(`confLIBS', `-lldap_r-2.4 -llber-2.4 -lc')
+$(SM_OPENSSL3_SITE_CONFIG_M4_1)
+$(SM_OPENSSL3_SITE_CONFIG_M4_2)
+$(SM_OPENSSL3_SITE_CONFIG_M4_3)
 define(`confENVDEF', `-DSOLARIS=$(SOLARIS) -DNETINET6')
 define(`confDEPEND_TYPE', `Solaris')
-define(`confINCDIRS', `-I/usr/include/openldap')
 define(`confMKDIR', `/usr/bin/mkdir')
 define(`confMTCFLAGS', `$(CC_PIC)')
 define(`sendmailTARGET_LINKS', `')
@@ -224,7 +244,11 @@ install:	$(INSTALL_32_and_64)
 
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += library/libmilter
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
 REQUIRED_PACKAGES += library/security/openssl
+endif
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

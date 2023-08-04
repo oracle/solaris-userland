@@ -3,8 +3,8 @@ Changes here are specific to Solaris and are not passed upstream.
 Packaging installs "Sendmail Installation and Operation Guide"
 in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
 
---- sendmail-8.15.2/cf/README	2015-06-17 09:51:58.000000000 +0000
-+++ sendmail-8.17.1/cf/README	2023-03-16 12:24:00.000000000 +0000
+--- a/cf/README	Tue Jun 13 04:15:09 2023 -0700
++++ b/cf/README	Tue Jun 13 04:44:14 2023 -0700
 @@ -4,12 +4,10 @@
  This document describes the sendmail configuration files.  It
  explains how to create a sendmail.cf file for use with sendmail.
@@ -22,7 +22,16 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  
  Table of Content:
  
-@@ -61,7 +59,7 @@
+@@ -20,8 +18,6 @@
+ DOMAINS
+ MAILERS
+ FEATURES
+-HACKS
+-SITE CONFIGURATION
+ USING UUCP MAILERS
+ TWEAKING RULESETS
+ MASQUERADING AND RELAYING
+@@ -61,7 +57,7 @@
  Alternatively, you can simply:
  
  	cd ${CFDIR}/cf
@@ -31,7 +40,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  
  where ${CFDIR} is the root of the cf directory and config.mc is the
  name of your configuration file.  If you are running a version of M4
-@@ -149,14 +147,6 @@
+@@ -149,14 +145,6 @@
  a define(`PROCMAIL_MAILER_PATH', ...) should be done before
  FEATURE(`local_procmail').
  
@@ -46,7 +55,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  
  Note:
  Some rulesets, features, and options are only useful if the sendmail
-@@ -217,20 +207,6 @@
+@@ -217,20 +205,6 @@
  messages; in the worst case it might be ok to change the value
  directly in the generated .cf file, which however is not advised.
  
@@ -67,7 +76,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  +----------------+
  | FILE LOCATIONS |
  +----------------+
-@@ -339,8 +315,7 @@
+@@ -339,8 +313,7 @@
  			corresponding queue file types as explained in
  			doc/op/op.me.  See also QUEUE GROUP DEFINITIONS.
  MSP_QUEUE_DIR		[/var/spool/clientmqueue] The directory containing
@@ -77,7 +86,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  STATUS_FILE		[/etc/mail/statistics] The file containing status
  			information.
  LOCAL_MAILER_PATH	[/bin/mail] The program used to deliver local mail.
-@@ -370,17 +345,6 @@
+@@ -370,17 +343,6 @@
  LOCAL_SHELL_DIR		[$z:/] The directory search path in which the
  			shell should run.
  LOCAL_MAILER_QGRP	[undefined] The queue group for the local mailer.
@@ -95,7 +104,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  SMTP_MAILER_FLAGS	[undefined] Flags added to SMTP mailer.  Default
  			flags are `mDFMuX' for all SMTP-based mailers; the
  			"esmtp" mailer adds `a'; "smtp8" adds `8'; and
-@@ -437,17 +401,6 @@
+@@ -437,17 +399,6 @@
  			the UUCP mailers and which are converted to MIME will
  			be labeled with this character set.
  UUCP_MAILER_QGRP	[undefined] The queue group for the UUCP mailers.
@@ -113,7 +122,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  PROCMAIL_MAILER_PATH	[/usr/local/bin/procmail] The path to the procmail
  			program.  This is also used by
  			FEATURE(`local_procmail').
-@@ -462,60 +415,9 @@
+@@ -462,60 +413,9 @@
  PROCMAIL_MAILER_MAX	[undefined] If set, the maximum size message that
  			will be accepted by the procmail mailer.
  PROCMAIL_MAILER_QGRP	[undefined] The queue group for the procmail mailer.
@@ -174,7 +183,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  LOCAL_PROG_QGRP		[undefined] The queue group for the prog mailer.
  
  Note: to tweak Name_MAILER_FLAGS use the macro MODIFY_MAILER_FLAGS:
-@@ -633,18 +535,6 @@
+@@ -633,18 +533,6 @@
  		See the section below describing UUCP mailers in more
  		detail.
  
@@ -193,7 +202,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  procmail	An interface to procmail (does not come with sendmail).
  		This is designed to be used in mailertables.  For example,
  		a common question is "how do I forward all mail for a given
-@@ -667,37 +557,6 @@
+@@ -667,37 +555,6 @@
  		Of course there are other ways to solve this particular
  		problem, e.g., a catch-all entry in a virtusertable.
  
@@ -231,7 +240,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  The local mailer accepts addresses of the form "user+detail", where
  the "+detail" is not used for mailbox matching but is available
  to certain local mail programs (in particular, see
-@@ -1455,7 +1314,7 @@
+@@ -1460,7 +1317,7 @@
  		FEATURE and introduce new settings via DAEMON_OPTIONS().
  
  msp		Defines config file for Message Submission Program.
@@ -240,9 +249,9 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  		to use it.  An optional argument can be used to override
  		the default of `[localhost]' to use as host to send all
  		e-mails to.  Note that MX records will be used if the
-@@ -1603,78 +1462,6 @@
- 		has been compiled with the options MAP_REGEX and
- 		DNSMAP.
+@@ -1617,79 +1474,6 @@
+ 		For more information see doc/op/op.me.
+ 
  
 -+-------+
 -| HACKS |
@@ -316,10 +325,11 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
 -cf file at the place where MAILER(`uucp') inserts its rules.  This
 -should only be used if really necessary.
 -
+-
  +--------------------+
  | USING UUCP MAILERS |
  +--------------------+
-@@ -2930,8 +2717,7 @@
+@@ -2945,8 +2729,7 @@
  tokenization.  It might be simpler to use a regex map and apply it
  to $&{currHeader}.
  2. There are no default rulesets coming with this distribution of
@@ -329,7 +339,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  3. When using a default ruleset for headers, the name of the header
  currently being checked can be found in the $&{hdr_name} macro.
  
-@@ -3684,8 +3470,6 @@
+@@ -3706,8 +3489,6 @@
  This list is shown in four columns:  the name you define, the default
  value for that definition, the option or macro that is affected
  (either Ox for an option or Dx for a macro), and a brief description.
@@ -338,7 +348,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  
  Some options are likely to be deprecated in future versions -- that is,
  the option is only included to provide back-compatibility.  These are
-@@ -4386,7 +4170,7 @@
+@@ -4418,7 +4199,7 @@
  					[undefined] Defines {daemon_flags}
  					for direct submissions.
  confUSE_MSP		UseMSP		[undefined] Use as mail submission
@@ -347,7 +357,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  confDELIVER_BY_MIN	DeliverByMin	[0] Minimum time for Deliver By
  					SMTP Service Extension (RFC 2852).
  confREQUIRES_DIR_FSYNC	RequiresDirfsync	[true] RequiresDirfsync can
-@@ -4532,8 +4316,7 @@
+@@ -4564,8 +4345,7 @@
  | MESSAGE SUBMISSION PROGRAM |
  +----------------------------+
  
@@ -357,17 +367,18 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  a few hints how for those who want to tweak the default configuration
  for it (which is installed as submit.cf).
  
-@@ -4548,13 +4331,10 @@
+@@ -4580,13 +4360,10 @@
    of the default background mode.
  - FEATURE(stickyhost) and LOCAL_RELAY to send unqualified addresses
    to the LOCAL_RELAY instead of the default relay.
 -- confRAND_FILE if you use STARTTLS and sendmail is not compiled with
 -  the flag HASURANDOM.
- 
+-
 -The MSP performs hostname canonicalization by default.  As also
 -explained in sendmail/SECURITY, mail may end up for various DNS
 -related reasons in the MSP queue. This problem can be minimized by
 -using
++
 +The MSP performs hostname canonicalization by default.  Mail may end
 +up for various DNS related reasons in the MSP queue.  This problem
 +can be minimized by using
