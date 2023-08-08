@@ -118,6 +118,12 @@ COMPONENT_PREP_ACTION += \
       cd $(@D); autoconf; \
     )
 
+# Deliver ssh-copy-id utility along with its man page
+COMPONENT_POST_INSTALL_ACTION += \
+    ( $(CP) $(SOURCE_DIR)/contrib/ssh-copy-id $(PROTOUSRBINDIR); \
+      $(CP) $(SOURCE_DIR)/contrib/ssh-copy-id.1 $(PROTOUSRSHAREMAN1DIR); \
+    )
+
 REQUIRED_PACKAGES += library/libedit
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
