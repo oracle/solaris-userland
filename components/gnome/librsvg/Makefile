@@ -30,20 +30,20 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		librsvg
-COMPONENT_VERSION=	2.56.1
+COMPONENT_VERSION=	2.56.3
 COMPONENT_MAJOR_MINOR=	$(basename $(COMPONENT_VERSION))
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/LibRsvg
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1685aeacae9a441dcb12c0c3ec63706172a2f52705dafbefb8e7311d4d5e430b
+    sha256:5a328048a02d014645cd27f61140f4e0b11280fb2c7f2a21864fe0c59ac1ce88
 
 # hash for vendored sources
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:d1c54bb9185ec2646a804dc456f8f2ee0551d296082ad8bfe0f0efa825a7fc13
+    sha256:9a72d8d100d362c47b81ad173b1da09e2bf674a79f9439d9f2c436b1f31c7e7e
 
 COMPONENT_BUGDB=        library/librsvg
 COMPONENT_ANITYA_ID=	5420
 
-COMPONENT_BAID=		145901
+COMPONENT_BAID=		147811
 
 include $(WS_MAKE_RULES)/cargo-vendored.mk
 include $(WS_MAKE_RULES)/gnome-component.mk
