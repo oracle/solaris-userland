@@ -58,6 +58,7 @@ COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/Makefile ;
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/test/Makefile ;
 CONFIGURE_OPTIONS +=    --with-openssl=/usr/openssl/3
+CONFIGURE_OPTIONS +=    --with-nss
 endif
 
 CONFIGURE_OPTIONS.64 +=	--with-mysql=$(USRDIR)/mysql/8.0
