@@ -1,0 +1,113 @@
+Rework https://gitlab.gnome.org/GNOME/glib/-/commit/2b533ca99ad07090d7090ad7389d1e85230aa618 back in.
+
+We can just use the sh mechanism to launch apps vs using gio-launch-desktop
+which is also very linux-centric with logging errors.  
+
+This should resolve the issue seen with launching xterm from the gnome-shell
+app launcher, which is one testcase that we know of. 
+
+--- a/gio/meson.build	2023-08-24 13:16:28.172914268 -0700
++++ b/gio/meson.build	2023-08-24 13:17:46.340793185 -0700
+@@ -412,14 +412,6 @@
+       launch_desktop_sources += files('../glib/gjournal-private.c')
+     endif
+ 
+-    gio_launch_desktop = executable('gio-launch-desktop', launch_desktop_sources,
+-      include_directories : glibinc,
+-      install : true,
+-      install_dir : multiarch_libexecdir,
+-      install_tag : 'bin',
+-      c_args : gio_c_args,
+-      # intl.lib is not compatible with SAFESEH
+-      link_args : noseh_link_args)
+   endif
+ 
+   subdir('xdgmime')
+--- a/gio/gdesktopappinfo.c	2023-08-24 13:19:02.952187885 -0700
++++ b/gio/gdesktopappinfo.c	2023-08-24 13:22:28.080372735 -0700
+@@ -2923,6 +2923,14 @@
+       char *sn_id = NULL;
+       char **wrapped_argv;
+       int i;
++      const gchar * const wrapper_argv[] =
++        { 
++          "/bin/sh",
++          "-e",
++          "-u",
++          "-c", "export GIO_LAUNCHED_DESKTOP_FILE_PID=$$; exec \"$@\"",
++          "sh",  /* argv[0] for sh */
++        };
+ 
+       old_uris = dup_uris;
+       if (!expand_application_parameters (info, exec_line, &dup_uris, &argc, &argv, error))
+@@ -3011,32 +3019,28 @@
+           g_free (program);
+         }
+ 
+-      if (g_once_init_enter (&gio_launch_desktop_path))
+-        {
+-          const gchar *tmp = NULL;
+-          gboolean is_setuid = GLIB_PRIVATE_CALL (g_check_setuid) ();
++      /* Wrap the @argv in a command which will set the
++       * `GIO_LAUNCHED_DESKTOP_FILE_PID` environment variable. We canâ€™t set this
++       * in @envp along with `GIO_LAUNCHED_DESKTOP_FILE` because we need to know
++       * the PID of the new forked process. We canâ€™t use setenv() between fork()
++       * and exec() because weâ€™d rather use posix_spawn() for speed.
++       *
++       * `sh` should be available on all the platforms that `GDesktopAppInfo`
++       * currently supports (since they are all POSIX). If additional platforms
++       * need to be supported in future, it will probably have to be replaced
++       * with a wrapper program (grep the GLib git history for
++       * `gio-launch-desktop` for an example of this which could be
++       * resurrected). */
+ 
+-          /* Allow test suite to specify path to gio-launch-desktop */
+-          if (!is_setuid)
+-            tmp = g_getenv ("GIO_LAUNCH_DESKTOP");
++      wrapped_argv = g_new (char *, argc + G_N_ELEMENTS (wrapper_argv) + 1);
+ 
+-          /* Allow build system to specify path to gio-launch-desktop */
+-          if (tmp == NULL && g_file_test (GIO_LAUNCH_DESKTOP, G_FILE_TEST_IS_EXECUTABLE))
+-            tmp = GIO_LAUNCH_DESKTOP;
++      for (i = 0; i < G_N_ELEMENTS (wrapper_argv); i++)
++        wrapped_argv[i] = g_strdup (wrapper_argv[i]);
+ 
+-          /* Fall back on usual searching in $PATH */
+-          if (tmp == NULL)
+-            tmp = "gio-launch-desktop";
+-          g_once_init_leave (&gio_launch_desktop_path, tmp);
+-        }
+-
+-      wrapped_argv = g_new (char *, argc + 2);
+-      wrapped_argv[0] = g_strdup (gio_launch_desktop_path);
+-
+       for (i = 0; i < argc; i++)
+-        wrapped_argv[i + 1] = g_steal_pointer (&argv[i]);
++        wrapped_argv[i + G_N_ELEMENTS (wrapper_argv)] = g_steal_pointer (&argv[i]);
+ 
+-      wrapped_argv[i + 1] = NULL;
++      wrapped_argv[i + G_N_ELEMENTS (wrapper_argv)] = NULL;
+       g_free (argv);
+       argv = NULL;
+ 
+--- a/gio/tests/meson.build	2023-08-24 13:42:32.182890263 -0700
++++ b/gio/tests/meson.build	2023-08-24 13:42:44.631295609 -0700
+@@ -178,10 +178,6 @@
+ test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
+ test_env.set('GIO_MODULE_DIR', '')
+ 
+-if host_system != 'windows' and not glib_have_cocoa
+-  test_env.set('GIO_LAUNCH_DESKTOP', gio_launch_desktop.full_path())
+-endif
+-
+ # Check for libdbus1 - Optional - is only used in the GDBus test cases
+ # 1.2.14 required for dbus_message_set_serial
+ dbus1_dep = dependency('dbus-1', required : false, version : '>= 1.2.14')
+@@ -314,7 +310,6 @@
+       },
+       'desktop-app-info' : {
+         'install' : false,
+-        'depends' : gio_launch_desktop,
+         'extra_programs' : ['apps', 'appinfo-test'],
+       },
+     }
