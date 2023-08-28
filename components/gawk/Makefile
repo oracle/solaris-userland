@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 COMPILER= gcc
 
 COMPONENT_NAME=		gawk
-COMPONENT_VERSION=	5.1.1
+COMPONENT_VERSION=	5.2.2
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d87629386e894bbea11a5e00515fc909dc9b7249529dad9e6a3a2c77085f7ea2
+    sha256:3c1fce1446b4cbee1cd273bd7ec64bc87d89f61537471cd3e05e33a965a250e9
 COMPONENT_ANITYA_ID=	868
 
-COMPONENT_BAID=		116178
+COMPONENT_BAID=		149466
 
 # Adjust references to section 3am to be section 3 in the extensions man pages.
 COMPONENT_POST_CONFIGURE_ACTION = \
@@ -60,8 +60,9 @@ CFLAGS += $(XPG6MODE)
 # Utility executables are intentionally delivered to the 32-bit lib directory.
 CONFIGURE_LIBDIR.64 =   $(CONFIGURE_PREFIX)/lib
 
-CONFIGURE_OPTIONS	+=	--infodir=$(CONFIGURE_INFODIR)
-CONFIGURE_OPTIONS	+=	--libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
+CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
+CONFIGURE_OPTIONS +=	--libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
+CONFIGURE_OPTIONS +=	--disable-pma
 
 COMPONENT_SYSTEM_TEST_ARGS = AWKPROG=$(USRBINDIR)/gawk
 

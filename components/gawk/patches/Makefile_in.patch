@@ -1,14 +1,14 @@
 Solaris specific patch to allow both test and system-test to work.
 Has been offered upstream.
 
---- gawk-5.1.1/test/Makefile.in
-+++ gawk-5.1.1/test/Makefile.in
-@@ -2207,7 +2207,7 @@ # More PITA; some systems have medium sh
+--- gawk-5.2.2/test/Makefile.in.orig	2023-08-14 15:32:08.351901826 +0200
++++ gawk-5.2.2/test/Makefile.in	2023-08-14 15:33:46.742304468 +0200
+@@ -2318,7 +2318,7 @@
  # so this can still fail
  poundbang::
  	@echo $@
 -	@sed "s;/tmp/gawk;`pwd`/$(AWKPROG);" < "$(srcdir)"/poundbang.awk > ./_pbd.awk
 +	@sed "s;/tmp/gawk;$(AWKPROG);" < "$(srcdir)"/poundbang.awk > ./_pbd.awk
  	@chmod +x ./_pbd.awk
- 	@if ./_pbd.awk "$(srcdir)"/poundbang.awk > _`basename $@` ; \
+ 	@-if ./_pbd.awk "$(srcdir)"/poundbang.awk > _`basename $@` ; \
  	then : ; \
