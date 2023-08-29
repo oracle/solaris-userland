@@ -24,20 +24,18 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libtiff
-COMPONENT_VERSION=	4.4.0
+COMPONENT_VERSION=	4.5.1
+COMPONENT_BAID=		146896
+COMPONENT_ARCHIVE_HASH= sha256:d7f38b6788e4a8f5da7940c5ac9424f494d8a79eba53d555f4a507167dca5e2b
 COMPONENT_PROJECT_URL=	http://www.simplesystems.org/libtiff/
 COMPONENT_SRC=		tiff-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH= \
-    sha256:917223b37538959aca3b790d2d73aa6e626b688e02dcda272aec24c2f498abed
 COMPONENT_ARCHIVE_URL=	http://download.osgeo.org/libtiff/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libtiff
 COMPONENT_ANITYA_ID=	1738
 
-COMPONENT_BAID=		128730
-
 # Added to find the *.3tiff that go into /usr/share/man/man3tiff
-PKG_PROTO_DIRS += $(COMPONENT_SRC)/man
+PKG_PROTO_DIRS += $(COMPONENT_SRC)/doc/man-prebuilt
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk
@@ -92,6 +90,5 @@ REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libwebp
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/math
 
