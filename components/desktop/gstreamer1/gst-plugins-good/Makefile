@@ -30,17 +30,17 @@ COMPILER =              gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-plugins-good
-COMPONENT_VERSION=	1.20.3
+COMPONENT_VERSION=	1.22.5
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f8f3c206bf5cdabc00953920b47b3575af0ef15e9f871c0b6966f6d0aa5868b7
+	sha256:b67b31313a54c6929b82969d41d3cfdf2f58db573fb5f491e6bba5d84aea0778
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1263
 
-COMPONENT_BAID=		129010
+COMPONENT_BAID=		147435
 
 BUILD_STYLE=		meson
 PYTHON_VERSION = 3.11
@@ -99,7 +99,9 @@ REQUIRED_PACKAGES += library/desktop/orc
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libsoup
+REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/ncurses
+REQUIRED_PACKAGES += library/security/nettle
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime

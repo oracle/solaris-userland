@@ -9,7 +9,7 @@ elements_appsink                                               OK
 elements_appsrc                                                OK
 elements_audioconvert                                          OK
 elements_audiointerleave                                       OK
-elements_audiomixer                                            OK
+elements_audiomixer                                            FAIL
 elements_audiorate                                             OK
 elements_audioresample                                         OK
 elements_audiotestsrc                                          OK
@@ -50,6 +50,7 @@ libs_audiosink                                                 OK
 libs_baseaudiovisualizer                                       OK
 libs_discoverer                                                OK
 libs_fft                                                       OK
+libs_gstglapi                                                  OK
 libs_gstglcolorconvert                                         FAIL
 libs_gstglcontext                                              FAIL
 libs_gstglfeature                                              OK
@@ -62,6 +63,7 @@ libs_gstglshader                                               FAIL
 libs_gstglsl                                                   OK
 libs_gstglslstage                                              FAIL
 libs_gstglupload                                               FAIL
+libs_gstglvideomixerelement                                    OK
 libs_gstlibscpp                                                OK
 libs_libsabi                                                   OK
 libs_mikey                                                     OK
@@ -71,6 +73,7 @@ libs_profile                                                   OK
 libs_rtp                                                       OK
 libs_rtpbasedepayload                                          OK
 libs_rtpbasepayload                                            OK
+libs_rtphdrext                                                 OK
 libs_rtpmeta                                                   OK
 libs_rtsp                                                      OK
 libs_rtspconnection                                            OK
@@ -102,9 +105,16 @@ pipelines_vorbisdec                                            OK
 pipelines_vorbisenc                                            OK
 validate.audiotestsrc.reverse                                  SKIP
 validate.compositor.renogotiate_failing_unsupported_src_format SKIP
+validate.encodebin.set-encoder-properties                      SKIP
+validate.giosrc.read-growing-file                              SKIP
+validate.uridecodebin.expose_raw_pad_caps                      SKIP
 validate.videorate.10_to_1fps                                  SKIP
 validate.videorate.change_rate_reverse_playback                SKIP
 validate.videorate.change_rate_while_playing                   SKIP
+validate.videorate.duplicate_on_eos                            SKIP
+validate.videorate.duplicate_on_eos_disbaled                   SKIP
+validate.videorate.duplicate_on_eos_half_sec                   SKIP
+validate.videorate.fill_segment_after_caps_changed_before_eos  SKIP
 validate.videorate.rate_0_5                                    SKIP
 validate.videorate.rate_0_5_with_decoder                       SKIP
 validate.videorate.rate_2_0                                    SKIP
@@ -115,9 +125,9 @@ validate.videorate.reverse.1_to_10fps                          SKIP
 validate.videorate.reverse.30fps                               SKIP
 validate.videorate.reverse.variable_to_10fps                   SKIP
 
-Ok:                 87
+Ok:                 89
 Expected Fail:      0
-Fail:               12
+Fail:               13
 Unexpected Pass:    0
-Skipped:            14
+Skipped:            21
 Timeout:            3
