@@ -32,6 +32,9 @@ ifeq ($(strip $(COMPONENT_MAKE_JOBS)),1)
     COMPONENT_MAKE_JOBS=4
 endif
 
+# Temporary opt out till gcc-gnat-13 is in CBE.
+SKIP_REQUIRED_PACKAGES_CHECK=
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
@@ -215,7 +218,7 @@ PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gfortran
 
 
 REQUIRED_PACKAGES += compress/zstd
-REQUIRED_PACKAGES += developer/gcc/gcc-gnat-12
+REQUIRED_PACKAGES += developer/gcc/gcc-gnat-13
 REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/isl
