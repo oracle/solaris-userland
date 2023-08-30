@@ -34,6 +34,10 @@ COMPONENT_PROJECT_URL=	https://github.com/oracle/solaris-userland
 COMPONENT_ARCHIVE_URL=	https://github.com/oracle/solaris-userland.git
 COMPONENT_BUGDB=	gate-stuff/userland
 
+# This component collects REQUIRED_PACKAGES from all other components. We do
+# not need to check that the packages do exist here again.
+SKIP_REQUIRED_PACKAGES_CHECK=
+
 include $(WS_MAKE_RULES)/prep.mk
 
 include $(WS_MAKE_RULES)/ips.mk
