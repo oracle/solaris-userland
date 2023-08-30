@@ -27,9 +27,9 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		curl
-COMPONENT_VERSION=	8.1.0
-COMPONENT_ARCHIVE_HASH=	sha256:8439f39f0f5dd41f399cf60f3f6f5c3e47a4a41c96f99d991b77cecb921c553b
-COMPONENT_BAID=		143942
+COMPONENT_VERSION=	8.2.1
+COMPONENT_ARCHIVE_HASH=	sha256:0f1e31ebe336c09ec66381f1532f8350e466e1d02ffe10c4ac44a867f1b9d343
+COMPONENT_BAID=		147736
 COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_URL=	https://curl.se/download/$(COMPONENT_ARCHIVE)
@@ -97,6 +97,8 @@ CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-libssh2
 CONFIGURE_OPTIONS += --with-nghttp2
 CONFIGURE_OPTIONS += --without-libpsl
+# --enable-debug is required by unit tests build but works fine without
+#CONFIGURE_OPTIONS += --enable-debug
 CONFIGURE_OPTIONS += "curl_disallow_getifaddrs=yes"
 
 # Makefile.am files of this component are not compatible with Solaris make.
@@ -125,6 +127,8 @@ COMPONENT_TEST_ENV += CC="$(CC)"
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_TEST_ENV += CFLAGS="$(CFLAGS)"
 COMPONENT_TEST_ARGS+= -k -i
+
+COMPONENT_TEST_MASTER =         $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH$(BITS)).master
 
 # Only the #'s of passed/failed tests are verified for change
 # note: Test 1119 is failing permannently and it only checks library symbols
