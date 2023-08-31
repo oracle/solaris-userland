@@ -47,7 +47,6 @@ CPPFLAGS += $(CPP_LARGEFILES)
 CPPFLAGS += $(CC_PIC_ENABLE)
 CPPFLAGS += -DNAME_MAX=256
 
-CPPFLAGS += -I/usr/include/openldap
 CPPFLAGS += $(shell pkg-config --cflags libidn2)
 # GSS MECH's API is in /usr/include/kerberosv5/gssapi/
 CPPFLAGS += $(shell krb5-config --cflags)
@@ -91,7 +90,7 @@ else
 CONFIGURE_OPTIONS += --with-ssl
 endif
 CONFIGURE_OPTIONS += --with-ca-path=$(ETCDIR)/openssl/certs
-CONFIGURE_OPTIONS += --enable-ldap --with-ldap-lib=ldap_r --with-lber-lib=lber
+CONFIGURE_OPTIONS += --enable-ldap
 CONFIGURE_OPTIONS += --with-libidn2
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-libssh2

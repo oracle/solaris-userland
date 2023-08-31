@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 # For this component, prefer 32-bit over 64-bit for now until sufficient
 # testing has been performed.
@@ -31,8 +31,9 @@ COMPONENT_NAME=		pam_pkcs11
 COMPONENT_VERSION=	0.6.11
 COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/opensc/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:44d717d285ad862cd63002e901b21fcbd808c65b063f71be1c2aece04dfa23ca
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)files/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+	sha256:44d717d285ad862cd63002e901b21fcbd808c65b063f71be1c2aece04dfa23ca
+COMPONENT_ARCHIVE_URL=	\
+	$(COMPONENT_PROJECT_URL)files/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/pam-pkcs11
 COMPONENT_ANITYA_ID=	13275
 
@@ -58,7 +59,6 @@ endif
 
 CONFIGURE_BINDIR.32= $(USRLIB.32)/pam_pkcs11
 CONFIGURE_BINDIR.64= $(USRLIB.64)/pam_pkcs11
-CPPFLAGS += -I$(USRINCDIR)/openldap
 CFLAGS += -DMODULE_ISA_FIX -DUPGRADE_BUG_FIX
 CONFIGURE_OPTIONS += --datarootdir=$(ETCDIR)/security
 CONFIGURE_OPTIONS += --localedir=$(USRSHARELOCALEDIR)
@@ -86,4 +86,4 @@ endif
 REQUIRED_PACKAGES += library/security/pcsc/pcsclite
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += system/library/pam-core
-REQUIRED_PACKAGES += system/network/ldap/openldap 
+REQUIRED_PACKAGES += system/network/ldap/openldap

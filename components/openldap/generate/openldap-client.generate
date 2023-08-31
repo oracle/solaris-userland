@@ -88,11 +88,17 @@
 
 <transform file path=usr/lib.*/libldap.* -> set pkg.depend.bypass-generate libsasl2.so.3>
 
-# Provide openldap 2.4 SONAME compatibility links to
-# libldap_r-2.4.so.2 and liblber-2.1.so.2
+# Provide openldap 2.4 library backward compatibility links
 # -------------------------------------------------------------
-# File build/prototype/sparc/usr/lib/${MACH}/libldap.so.*
-# and build/prototype/sparc/usr/lib/libldap.so.*
+
+# For linker SONAME (ld.so); libldap_r-2.4.so.2 and liblber-2.4.so.2
 <transform file path=(usr/lib.*/libldap)\.so(.*) -> emit link path=%<1>_r-2.4.so.2 target=libldap.so%<2>>
 <transform file path=(usr/lib.*/liblber)\.so(.*) -> emit link path=%<1>-2.4.so.2 target=liblber.so%<2>>
+
+# For compiler (-l option); libldap_r-2.4.so, libldap_r.so, libldap-2.4.so
+# and liblber-2.4.so
+<transform file path=(usr/lib.*/libldap)\.so(.*) -> emit link path=%<1>_r-2.4.so target=libldap.so%<2>>
+<transform file path=(usr/lib.*/libldap)\.so(.*) -> emit link path=%<1>_r.so target=libldap.so%<2>>
+<transform file path=(usr/lib.*/libldap)\.so(.*) -> emit link path=%<1>-2.4.so target=libldap.so%<2>>
+<transform file path=(usr/lib.*/liblber)\.so(.*) -> emit link path=%<1>-2.4.so target=liblber.so%<2>>
 

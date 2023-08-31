@@ -166,10 +166,7 @@ COMPONENT_PREP_ACTION += (cd $(@D) ; $(WAF) distclean $(WAFOPTS) );
 COMPONENT_PRE_CONFIGURE_ACTION += \
    $(CLONEY) $(SOURCE_DIR) $(@D); \
    $(CP) $(COMPONENT_DIR)/Solaris/vfs_samfs.c $(@D)/source3/modules/vfs_samfs.c; \
-   $(MKDIR) $(PKGCONFIG_AUX_DIR); \
-   $(CP) $(COMPONENT_DIR)/Solaris/ldap.pc $(PKGCONFIG_AUX_DIR); \
-   $(CP) $(COMPONENT_DIR)/Solaris/lber.pc $(PKGCONFIG_AUX_DIR); \
-   $(CP) $(COMPONENT_DIR)/Solaris/openldap.pc $(PKGCONFIG_AUX_DIR);
+   $(MKDIR) $(PKGCONFIG_AUX_DIR);
 
 # fix samfs.pc to proto
 $(SAMBA_FULL_CONF): COMPONENT_PRE_CONFIGURE_ACTION += \

@@ -65,8 +65,7 @@ CONFIGURE_OPTIONS.64 +=	--with-mysql=$(USRDIR)/mysql/8.0
 CONFIGURE_OPTIONS +=	--with-crypto
 CONFIGURE_OPTIONS +=	--with-expat=$(USRDIR)
 CONFIGURE_OPTIONS +=	--with-sqlite3=$(USRDIR)
-CONFIGURE_OPTIONS +=	--with-ldap=ldap_r-2.4
-CONFIGURE_OPTIONS +=	--with-ldap-include=$(USRINCDIR)/openldap
+CONFIGURE_OPTIONS +=	--with-ldap
 CONFIGURE_OPTIONS +=	--without-odbc
 CONFIGURE_OPTIONS.32 +=	--enable-layout=Solaris
 CONFIGURE_OPTIONS.64 +=	--enable-layout=Solaris-$(MACH64)

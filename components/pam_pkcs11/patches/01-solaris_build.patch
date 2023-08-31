@@ -1,18 +1,7 @@
 #
 # This patch contains changes for Solaris build.   This is for Solaris only,
-# so we will not contribute back this change to the upstream community. 
+# so we will not contribute back this change to the upstream community.
 #
---- old/configure.ac	2022-08-02 15:17:44.510677516 +0200
-+++ new/configure.ac	2022-08-02 15:18:59.477442530 +0200
-@@ -95,7 +95,7 @@ else
-   AC_CHECK_LIB( ldap, ldap_init,
- 	[
- 	with_ldap=yes
--	LIBS="$LIBS -lldap"
-+	LIBS="$LIBS -lldap_r"
- 	],[
- 	AC_MSG_WARN([Cannot find LDAP libraries. LDAP support disabled])
- 	with_ldap=no
 --- old/src/pam_pkcs11/pam_pkcs11.c	2022-08-04 14:36:46.725084821 +0200
 +++ new/src/pam_pkcs11/pam_pkcs11.c	2022-08-04 14:46:04.216029288 +0200
 @@ -112,9 +112,7 @@ static int pam_prompt(pam_handle_t *pamh

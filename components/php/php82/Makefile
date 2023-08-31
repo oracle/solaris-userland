@@ -108,11 +108,9 @@ CXXFLAGS += -std=c++11
 CONFIGURE_OPTIONS += CXXFLAGS="$(CXXFLAGS)"
 
 # Use openldap
-# This is good enough to fool configure
-CPPFLAGS += -I$(USRINCDIR)/openldap
-LDFLAGS += -lldap_r
+LDFLAGS += -lldap
 # but ensure "make" gets the point
-COMPONENT_BUILD_ARGS += LDAP_SHARED_LIBADD="-lldap_r"
+COMPONENT_BUILD_ARGS += LDAP_SHARED_LIBADD="-lldap"
 
 CFLAGS += -std=gnu99
 

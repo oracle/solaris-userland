@@ -59,9 +59,6 @@ CONFIGURE_MANDIR= $(CONFIGURE_PREFIX)/man
 # Force lighttpd binaries and private modules to standard path
 CONFIGURE_LIBDIR.64 = $(CONFIGURE_PREFIX)/lib
 
-CFLAGS += "-I/usr/include/openldap"
-LDFLAGS += "-lldap_r-2.4"
-
 CONFIGURE_OPTIONS +=	--with-pic
 CONFIGURE_OPTIONS +=	--with-lua
 CONFIGURE_OPTIONS +=	--with-openssl=/usr/openssl/3

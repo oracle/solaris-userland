@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -61,8 +61,8 @@ AUXLIBS +=	-ldb-5.3
 CCARGS +=	-DHAS_SQLITE
 AUXLIBS +=	-lsqlite3
 # LDAP
-CCARGS +=	-DHAS_LDAP -I/usr/include/openldap
-AUXLIBS +=	-lldap_r-2.4 -llber-2.4
+CCARGS +=	-DHAS_LDAP
+AUXLIBS +=	-lldap -llber
 # Cyrus SASL
 CCARGS +=	-DUSE_SASL_AUTH -DUSE_CYRUS_SASL -I/usr/include/sasl
 AUXLIBS +=	-lsasl2
