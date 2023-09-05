@@ -1,0 +1,21 @@
+This patch is a workaround to:
+
+httpd: Syntax error on line 531 of /etc/apache2/2.4/httpd.conf: Syntax error on
+line 4 of /etc/apache2/2.4/conf.d/sso.conf: Cannot load libexec/mod_auth_mellon.so into server: ld.so.1: httpd: relocation error: file /usr/apache2/2.4/libexec/mod_auth_mellon.so: symbol lasso_get_min_signature_method: referenced symbol not found
+
+Problem was reported to upstream:
+
+lasso@listes.entrouvert.com
+
+diff -rup lasso-2.8.2.orig/lasso/xml/xml.h lasso-2.8.2/lasso/xml/xml.h
+--- lasso-2.8.2.orig/lasso/xml/xml.h	2023-09-04 13:17:29.549728470 +0200
++++ lasso-2.8.2/lasso/xml/xml.h	2023-09-04 13:18:46.282409575 +0200
+@@ -122,7 +122,7 @@ LassoSignatureMethod lasso_get_default_s
+ 
+ void lasso_set_default_signature_method(LassoSignatureMethod meth);
+ 
+-LassoSignatureMethod lasso_get_min_signature_method();
++LASSO_EXPORT LassoSignatureMethod lasso_get_min_signature_method();
+ 
+ void lasso_set_min_signature_method(LassoSignatureMethod meth);
+ 
