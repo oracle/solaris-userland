@@ -29,8 +29,8 @@ the highest priority. [Should be reported upstream]
 test_register currently doesn't work with docutils >= 0.19.
 This is a know issue: https://github.com/python/cpython/issues/98634
 
---- Python-3.11.4/Lib/test/test_gdb.py
-+++ Python-3.11.4/Lib/test/test_gdb.py
+--- Python-3.11.5/Lib/test/test_gdb.py
++++ Python-3.11.5/Lib/test/test_gdb.py
 @@ -52,6 +52,9 @@ if gdb_major_version < 7:
                              % (gdb_major_version, gdb_minor_version,
                                 gdb_version))
@@ -41,8 +41,8 @@ This is a know issue: https://github.com/python/cpython/issues/98634
  if not sysconfig.is_python_build():
      raise unittest.SkipTest("test_gdb only works on source builds at the moment.")
  
---- Python-3.11.4/Lib/test/test_unicodedata.py
-+++ Python-3.11.4/Lib/test/test_unicodedata.py
+--- Python-3.11.5/Lib/test/test_unicodedata.py
++++ Python-3.11.5/Lib/test/test_unicodedata.py
 @@ -339,6 +339,8 @@ class NormalizationTest(unittest.TestCas
          TESTDATAFILE = "NormalizationTest.txt"
          TESTDATAURL = f"http://www.pythontest.net/unicode/{unicodedata.unidata_version}/{TESTDATAFILE}"
@@ -52,9 +52,9 @@ This is a know issue: https://github.com/python/cpython/issues/98634
          # Hit the exception early
          try:
              testdata = open_urlresource(TESTDATAURL, encoding="utf-8",
---- Python-3.11.4/Lib/test/test_re.py
-+++ Python-3.11.4/Lib/test/test_re.py
-@@ -2016,6 +2016,8 @@ class ReTests(unittest.TestCase):
+--- Python-3.11.5/Lib/test/test_re.py
++++ Python-3.11.5/Lib/test/test_re.py
+@@ -1960,6 +1960,8 @@ class ReTests(unittest.TestCase):
          self.assertTrue(re.match(b'(?Li)\xc5', b'\xe5'))
          self.assertTrue(re.match(b'(?Li)\xe5', b'\xc5'))
  
@@ -63,7 +63,7 @@ This is a know issue: https://github.com/python/cpython/issues/98634
      def check_en_US_utf8(self):
          locale.setlocale(locale.LC_CTYPE, 'en_US.utf8')
          self.assertTrue(re.match(b'\xc5\xe5', b'\xc5\xe5', re.L|re.I))
-@@ -2029,6 +2031,8 @@ class ReTests(unittest.TestCase):
+@@ -1973,6 +1975,8 @@ class ReTests(unittest.TestCase):
          is_emscripten or is_wasi,
          "musl libc issue on Emscripten/WASI, bpo-46390"
      )
@@ -72,8 +72,8 @@ This is a know issue: https://github.com/python/cpython/issues/98634
      def test_locale_compiled(self):
          oldlocale = locale.setlocale(locale.LC_CTYPE)
          self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
---- Python-3.11.4/Lib/test/test_time.py
-+++ Python-3.11.4/Lib/test/test_time.py
+--- Python-3.11.5/Lib/test/test_time.py
++++ Python-3.11.5/Lib/test/test_time.py
 @@ -642,7 +642,7 @@ class _TestStrftimeYear:
              self.test_year('%04d', func=year4d)
  
@@ -83,8 +83,8 @@ This is a know issue: https://github.com/python/cpython/issues/98634
          # Check that it doesn't crash for year > 9999
          try:
              time.strftime('%Y', (y,) + (0,) * 8)
---- Python-3.11.4/Lib/test/test_socket.py
-+++ Python-3.11.4/Lib/test/test_socket.py
+--- Python-3.11.5/Lib/test/test_socket.py
++++ Python-3.11.5/Lib/test/test_socket.py
 @@ -3422,7 +3422,7 @@ class CmsgMacroTests(unittest.TestCase):
          # Test CMSG_SPACE() with various valid and invalid values,
          # checking the assumptions used by sendmsg().
@@ -126,8 +126,8 @@ This is a know issue: https://github.com/python/cpython/issues/98634
      @unittest.skipIf(AIX, "skipping, see issue #22397")
      def _testFDPassSeparateMinSpace(self):
          fd0, fd1 = self.newFDs(2)
---- Python-3.11.4/Lib/test/test_pyexpat.py
-+++ Python-3.11.4/Lib/test/test_pyexpat.py
+--- Python-3.11.5/Lib/test/test_pyexpat.py
++++ Python-3.11.5/Lib/test/test_pyexpat.py
 @@ -466,12 +466,12 @@ class HandlerExceptionTest(unittest.Test
                                         "pyexpat.c", "StartElement")
              self.check_traceback_entry(entries[2],
@@ -147,9 +147,9 @@ This is a know issue: https://github.com/python/cpython/issues/98634
  
  
  # Test Current* members:
---- Python-3.11.4/Lib/test/test_tcl.py
-+++ Python-3.11.4/Lib/test/test_tcl.py
-@@ -192,6 +192,7 @@ class TclTest(unittest.TestCase):
+--- Python-3.11.5/Lib/test/test_tcl.py
++++ Python-3.11.5/Lib/test/test_tcl.py
+@@ -184,6 +184,7 @@ class TclTest(unittest.TestCase):
          self.assertRaises((UnicodeEncodeError, ValueError, TclError),
                            tcl.getboolean, 'on\ud800')
  
@@ -157,7 +157,7 @@ This is a know issue: https://github.com/python/cpython/issues/98634
      def testEvalFile(self):
          tcl = self.interp
          filename = os_helper.TESTFN_ASCII
-@@ -206,6 +207,7 @@ class TclTest(unittest.TestCase):
+@@ -198,6 +199,7 @@ class TclTest(unittest.TestCase):
          self.assertEqual(tcl.eval('set b'),'2')
          self.assertEqual(tcl.eval('set c'),'3')
  
@@ -165,8 +165,8 @@ This is a know issue: https://github.com/python/cpython/issues/98634
      def test_evalfile_null_in_result(self):
          tcl = self.interp
          filename = os_helper.TESTFN_ASCII
---- Python-3.11.4/Lib/test/test_tools/test_freeze.py
-+++ Python-3.11.4/Lib/test/test_tools/test_freeze.py
+--- Python-3.11.5/Lib/test/test_tools/test_freeze.py
++++ Python-3.11.5/Lib/test/test_tools/test_freeze.py
 @@ -14,6 +14,7 @@ with imports_under_tool('freeze', 'test'
  
  @support.requires_zlib()
@@ -175,8 +175,8 @@ This is a know issue: https://github.com/python/cpython/issues/98634
  @support.skip_if_buildbot('not all buildbots have enough space')
  class TestFreeze(unittest.TestCase):
  
---- Python-3.11.4/Lib/distutils/tests/test_register.py
-+++ Python-3.11.4/Lib/distutils/tests/test_register.py
+--- Python-3.11.5/Lib/distutils/tests/test_register.py
++++ Python-3.11.5/Lib/distutils/tests/test_register.py
 @@ -287,6 +287,7 @@ class RegisterTestCase(BasePyPIRCCommand
  
          self.assertRaises(DistutilsSetupError, cmd.run)
