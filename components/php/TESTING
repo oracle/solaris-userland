@@ -11,13 +11,14 @@ VERS=8.1
 VERS=8.2
 
 # prepare database
-pkg install mysql-57 mysql-57/client
-svcadm enable svc:/application/database/mysql:version_57
-while $(svcs mysql:version_57 | grep -q online && echo false || echo true); do echo "Waiting for MySQL.."; sleep 1; done
-mysql --connect-expired-password -p"$(grep 'temporary password'  /var/mysql/5.7/data/`hostname`.err | awk '{print $11}')" <<EOF
-SET PASSWORD = PASSWORD('password123');
+pkg install mysql-80 mysql-80/client
+svcadm enable svc:/application/database/mysql:version_80
+while $(svcs mysql:version_80 | grep -q online && echo false || echo true); do echo "Waiting for MySQL.."; sleep 1; done
+mysql --connect-expired-password -p"$(grep 'temporary password'  /var/mysql/8.0/data/`hostname`.err | awk '{print $13}')" <<EOF
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'password123';
 create database php;
-GRANT ALL PRIVILEGES ON php.* TO php@localhost IDENTIFIED BY 'php123' WITH GRANT OPTION;
+CREATE USER 'php'@'%' IDENTIFIED BY 'php123';
+GRANT ALL PRIVILEGES ON php.* TO 'php'@'%' WITH GRANT OPTION;
 flush privileges;
 EOF
 

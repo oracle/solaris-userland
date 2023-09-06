@@ -3,9 +3,9 @@ https://github.com/php/php-src/issues/8445
 This reverts following commit:
 https://github.com/php/php-src/commit/72f8dbb31295e4e5633a9033c6d91a45d102c485
 
---- php-8.1.16/TSRM/TSRM.h
-+++ php-8.1.16/TSRM/TSRM.h
-@@ -169,10 +169,8 @@ #define TSRMG_STATIC(id, type, element)
+--- php-8.1.22/TSRM/TSRM.h
++++ php-8.1.22/TSRM/TSRM.h
+@@ -167,10 +167,8 @@ #define TSRMG_STATIC(id, type, element)
  #define TSRMG_BULK_STATIC(id, type)	((type) (*((void ***) TSRMLS_CACHE))[TSRM_UNSHUFFLE_RSRC_ID(id)])
  #define TSRMG_FAST_STATIC(offset, type, element)	(TSRMG_FAST_BULK_STATIC(offset, type)->element)
  #define TSRMG_FAST_BULK_STATIC(offset, type)	((type) (((char*) TSRMLS_CACHE)+(offset)))
@@ -18,7 +18,7 @@ https://github.com/php/php-src/commit/72f8dbb31295e4e5633a9033c6d91a45d102c485
  #define TSRMLS_CACHE_UPDATE() TSRMLS_CACHE = tsrm_get_ls_cache()
  #define TSRMLS_CACHE _tsrm_ls_cache
  
-@@ -186,8 +184,6 @@ #define tsrm_env_lock()
+@@ -184,8 +182,6 @@ #define tsrm_env_lock()
  #define tsrm_env_unlock()
  
  #define TSRMG_STATIC(id, type, element)
@@ -27,9 +27,9 @@ https://github.com/php/php-src/commit/72f8dbb31295e4e5633a9033c6d91a45d102c485
  #define TSRMLS_CACHE_EXTERN()
  #define TSRMLS_CACHE_DEFINE()
  #define TSRMLS_CACHE_UPDATE()
---- php-8.1.16/Zend/zend.c
-+++ php-8.1.16/Zend/zend.c
-@@ -50,7 +50,7 @@ static HashTable *global_class_table = N
+--- php-8.1.22/Zend/zend.c
++++ php-8.1.22/Zend/zend.c
+@@ -51,7 +51,7 @@ static HashTable *global_class_table = N
  static HashTable *global_constants_table = NULL;
  static HashTable *global_auto_globals_table = NULL;
  static HashTable *global_persistent_list = NULL;
@@ -38,9 +38,9 @@ https://github.com/php/php-src/commit/72f8dbb31295e4e5633a9033c6d91a45d102c485
  # define GLOBAL_FUNCTION_TABLE		global_function_table
  # define GLOBAL_CLASS_TABLE			global_class_table
  # define GLOBAL_CONSTANTS_TABLE		global_constants_table
---- php-8.1.16/Zend/zend.h
-+++ php-8.1.16/Zend/zend.h
-@@ -69,11 +69,7 @@ #define ZEND_TSRMLS_CACHE_UPDATE()
+--- php-8.1.22/Zend/zend.h
++++ php-8.1.22/Zend/zend.h
+@@ -70,11 +70,7 @@ #define ZEND_TSRMLS_CACHE_UPDATE()
  #define ZEND_TSRMLS_CACHE
  #endif
  
@@ -52,8 +52,8 @@ https://github.com/php/php-src/commit/72f8dbb31295e4e5633a9033c6d91a45d102c485
  
  struct _zend_serialize_data;
  struct _zend_unserialize_data;
---- php-8.1.16/build/php.m4
-+++ php-8.1.16/build/php.m4
+--- php-8.1.22/build/php.m4
++++ php-8.1.22/build/php.m4
 @@ -935,7 +935,7 @@ else
      if test "$3" = "shared" || test "$3" = "yes"; then
  dnl ---------------------------------------------- Shared module
