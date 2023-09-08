@@ -1,5 +1,8 @@
 html5lib is not available on Solaris, so let's skip tests depending on it.
 
+GitHub changed its frontend to be entirely client-side rendered, meaning that
+anchors are no longer part of the downloaded page.
+
 Not intended for upstream.
 
 --- Sphinx-6.1.3/tests/test_smartquotes.py
@@ -49,3 +52,14 @@ Not intended for upstream.
  
  from sphinx.builders.html import validate_html_extra_path, validate_html_static_path
  from sphinx.errors import ConfigError
+--- Sphinx-6.1.3/tests/roots/test-linkcheck/links.txt
++++ Sphinx-6.1.3/tests/roots/test-linkcheck/links.txt
+@@ -13,7 +13,7 @@ Some additional anchors to exercise igno
+ * `Complete nonsense <https://localhost:7777/doesnotexist>`_
+ * `Example valid local file <conf.py>`_
+ * `Example invalid local file <path/to/notfound>`_
+-* https://github.com/sphinx-doc/sphinx/blob/master/sphinx/__init__.py#L2
++* https://www.sphinx-doc.org/en/master/#get-started
+ 
+ .. image:: https://www.google.com/image.png
+ .. figure:: https://www.google.com/image2.png

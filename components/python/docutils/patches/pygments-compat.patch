@@ -1,0 +1,371 @@
+Backported from upstream:
+https://sourceforge.net/p/docutils/code/9354/
+
+Support Pygments 2.14 and newer in tests
+
+Pygments 2.14 contains changes in the Python lexer which break
+``test_code``, ``test_code_long``, and ``test_include``.
+
+https://pygments.org/docs/changelog/#version-2-14-0
+
+--- docutils-0.19/test/test_parsers/test_rst/test_directives/test_code.py
++++ docutils-0.19/test/test_parsers/test_rst/test_directives/test_code.py
+@@ -13,6 +13,14 @@ if __name__ == '__main__':
+ from test_parsers import DocutilsTestSupport
+ from docutils.utils.code_analyzer import with_pygments
+ 
++try:
++    from pygments import __version__ as _pygments_ver
++except ImportError:
++    _pygments_ver = ''
++    PYGMENTS_2_14_PLUS = False
++else:
++    PYGMENTS_2_14_PLUS = tuple(map(int, _pygments_ver.split('.'))) >= (2, 14)
++
+ 
+ def suite():
+     s = DocutilsTestSupport.ParserTestSuite()
+@@ -137,6 +145,60 @@ totest['code-parsing'] = [
+ <document source="test data">
+     <literal_block classes="code python3 testclass" ids="my-function" names="my_function" xml:space="preserve">
+         <inline classes="ln">
++             7 \n\
++        <inline classes="keyword">
++            def
++         \n\
++        <inline classes="name function">
++            my_function
++        <inline classes="punctuation">
++            ():
++        <inline classes="whitespace">
++            \n\
++        <inline classes="ln">
++             8 \n\
++        <inline classes="whitespace">
++                \n\
++        <inline classes="literal string doc">
++            \'\'\'Test the lexer.
++        <inline classes="ln">
++             9 \n\
++        <inline classes="literal string doc">
++                \'\'\'
++        <inline classes="whitespace">
++            \n\
++        <inline classes="ln">
++            10 \n\
++        <inline classes="whitespace">
++            \n\
++        <inline classes="ln">
++            11 \n\
++        <inline classes="whitespace">
++            \n\
++        <inline classes="comment single">
++            # and now for something completely different
++        <inline classes="whitespace">
++            \n\
++        <inline classes="ln">
++            12 \n\
++        <inline classes="whitespace">
++            \n\
++        <inline classes="name builtin">
++            print
++        <inline classes="punctuation">
++            (
++        <inline classes="literal number integer">
++            8
++        <inline classes="operator">
++            /
++        <inline classes="literal number integer">
++            2
++        <inline classes="punctuation">
++            )
++""" if PYGMENTS_2_14_PLUS else """\
++<document source="test data">
++    <literal_block classes="code python3 testclass" ids="my-function" names="my_function" xml:space="preserve">
++        <inline classes="ln">
+              7 \n\
+         <inline classes="keyword">
+             def
+--- docutils-0.19/test/test_parsers/test_rst/test_directives/test_code_long.py
++++ docutils-0.19/test/test_parsers/test_rst/test_directives/test_code_long.py
+@@ -13,6 +13,14 @@ if __name__ == '__main__':
+ from test_parsers import DocutilsTestSupport
+ from docutils.utils.code_analyzer import with_pygments
+ 
++try:
++    from pygments import __version__ as _pygments_ver
++except ImportError:
++    _pygments_ver = ''
++    PYGMENTS_2_14_PLUS = False
++else:
++    PYGMENTS_2_14_PLUS = tuple(map(int, _pygments_ver.split('.'))) >= (2, 14)
++
+ 
+ def suite():
+     settings = {'syntax_highlight': 'long'}
+@@ -40,6 +48,60 @@ totest['code-parsing-long'] = [
+ <document source="test data">
+     <literal_block classes="code python3" xml:space="preserve">
+         <inline classes="ln">
++             7 \n\
++        <inline classes="keyword">
++            def
++         \n\
++        <inline classes="name function">
++            my_function
++        <inline classes="punctuation">
++            ():
++        <inline classes="whitespace">
++            \n\
++        <inline classes="ln">
++             8 \n\
++        <inline classes="whitespace">
++                \n\
++        <inline classes="literal string doc">
++            \'\'\'Test the lexer.
++        <inline classes="ln">
++             9 \n\
++        <inline classes="literal string doc">
++                \'\'\'
++        <inline classes="whitespace">
++            \n\
++        <inline classes="ln">
++            10 \n\
++        <inline classes="whitespace">
++            \n\
++        <inline classes="ln">
++            11 \n\
++        <inline classes="whitespace">
++            \n\
++        <inline classes="comment single">
++            # and now for something completely different
++        <inline classes="whitespace">
++            \n\
++        <inline classes="ln">
++            12 \n\
++        <inline classes="whitespace">
++            \n\
++        <inline classes="name builtin">
++            print
++        <inline classes="punctuation">
++            (
++        <inline classes="literal number integer">
++            8
++        <inline classes="operator">
++            /
++        <inline classes="literal number integer">
++            2
++        <inline classes="punctuation">
++            )
++""" if PYGMENTS_2_14_PLUS else """\
++<document source="test data">
++    <literal_block classes="code python3" xml:space="preserve">
++        <inline classes="ln">
+              7 \n\
+         <inline classes="keyword">
+             def
+--- docutils-0.19/test/test_parsers/test_rst/test_directives/test_include.py
++++ docutils-0.19/test/test_parsers/test_rst/test_directives/test_include.py
+@@ -14,6 +14,14 @@ from test_parsers import DocutilsTestSup
+ from docutils import parsers
+ from docutils.utils.code_analyzer import with_pygments
+ 
++try:
++    from pygments import __version__ as _pygments_ver
++except ImportError:
++    _pygments_ver = ''
++    PYGMENTS_2_14_PLUS = False
++else:
++    PYGMENTS_2_14_PLUS = tuple(map(int, _pygments_ver.split('.'))) >= (2, 14)
++
+ # optional 3rd-party markdown parser
+ md_parser_name = 'recommonmark'
+ try:  # check availability
+@@ -1053,6 +1061,23 @@ Included code
+         <inline classes="generic heading">
+             -----------
+         \n\
++        <inline classes="whitespace">
++            \n\
++        This file is used by \n\
++        <inline classes="literal string">
++            ``test_include.py``
++        .
++""" % reldir(include1) if PYGMENTS_2_14_PLUS else """\
++<document source="test data">
++    <paragraph>
++        Included code
++    <literal_block classes="code rst" source="%s" xml:space="preserve">
++        <inline classes="generic heading">
++            Inclusion 1
++        \n\
++        <inline classes="generic heading">
++            -----------
++        \n\
+         \n\
+         This file is used by \n\
+         <inline classes="literal string">
+@@ -1083,6 +1108,32 @@ Included code
+         \n\
+         <inline classes="ln">
+             3 \n\
++        <inline classes="whitespace">
++            \n\
++        <inline classes="ln">
++            4 \n\
++        <inline classes="whitespace">
++        This file is used by \n\
++        <inline classes="literal string">
++            ``test_include.py``
++        .
++""" % reldir(include1) if PYGMENTS_2_14_PLUS else """\
++<document source="test data">
++    <paragraph>
++        Included code
++    <literal_block classes="code rst" source="%s" xml:space="preserve">
++        <inline classes="ln">
++            1 \n\
++        <inline classes="generic heading">
++            Inclusion 1
++        \n\
++        <inline classes="ln">
++            2 \n\
++        <inline classes="generic heading">
++            -----------
++        \n\
++        <inline classes="ln">
++            3 \n\
+         \n\
+         <inline classes="ln">
+             4 \n\
+@@ -1112,6 +1163,34 @@ TAB expansion with included code:
+         <inline classes="name variable">
+             `up`
+         .
++        <inline classes="whitespace">
++            \n\
++                <- leading raw tab.
++        <inline classes="whitespace">
++            \n\
++            \n\
++        Newlines
++        <inline classes="whitespace">
++            \n\
++        are
++        <inline classes="whitespace">
++            \n\
++        normalized.
++""" % include_literal if PYGMENTS_2_14_PLUS else """\
++<document source="test data">
++    <paragraph>
++        TAB expansion with included code:
++    <literal_block classes="code rst" source="%s" xml:space="preserve">
++        Literal included this should \n\
++        <inline classes="generic strong">
++            **not**
++         be \n\
++        <inline classes="generic emph">
++            *marked*
++         \n\
++        <inline classes="name variable">
++            `up`
++        .
+                 <- leading raw tab.
+         \n\
+         Newlines
+@@ -1140,6 +1219,34 @@ Custom TAB expansion with included code:
+         <inline classes="name variable">
+             `up`
+         .
++        <inline classes="whitespace">
++            \n\
++          <- leading raw tab.
++        <inline classes="whitespace">
++            \n\
++            \n\
++        Newlines
++        <inline classes="whitespace">
++            \n\
++        are
++        <inline classes="whitespace">
++            \n\
++        normalized.
++""" % include_literal if PYGMENTS_2_14_PLUS else """\
++<document source="test data">
++    <paragraph>
++        Custom TAB expansion with included code:
++    <literal_block classes="code rst" source="%s" xml:space="preserve">
++        Literal included this should \n\
++        <inline classes="generic strong">
++            **not**
++         be \n\
++        <inline classes="generic emph">
++            *marked*
++         \n\
++        <inline classes="name variable">
++            `up`
++        .
+           <- leading raw tab.
+         \n\
+         Newlines
+@@ -1168,6 +1275,34 @@ Custom TAB expansion with included code:
+         <inline classes="name variable">
+             `up`
+         .
++        <inline classes="whitespace">
++            \n\
++        \t<- leading raw tab.
++        <inline classes="whitespace">
++            \n\
++            \n\
++        Newlines
++        <inline classes="whitespace">
++            \n\
++        are
++        <inline classes="whitespace">
++            \n\
++        normalized.
++""" % include_literal if PYGMENTS_2_14_PLUS else """\
++<document source="test data">
++    <paragraph>
++        Custom TAB expansion with included code:
++    <literal_block classes="code rst" source="%s" xml:space="preserve">
++        Literal included this should \n\
++        <inline classes="generic strong">
++            **not**
++         be \n\
++        <inline classes="generic emph">
++            *marked*
++         \n\
++        <inline classes="name variable">
++            `up`
++        .
+         \t<- leading raw tab.
+         \n\
+         Newlines
+@@ -1183,6 +1318,25 @@ Including includes/include14.txt
+ <document source="test data">
+     <paragraph>
+         Including includes/include14.txt
++    <paragraph>
++        Including more/include6.txt as rst-code from includes/include14.txt:
++    <literal_block classes="code rst" source="%s" xml:space="preserve">
++        In includes/more/include6.txt
++        <inline classes="whitespace">
++            \n\
++            \n\
++        <inline classes="punctuation">
++            ..
++         \n\
++        <inline classes="operator word">
++            include
++        <inline classes="punctuation">
++            ::
++         ../sibling/include7.txt
++""" % reldir(include6) if PYGMENTS_2_14_PLUS else """\
++<document source="test data">
++    <paragraph>
++        Including includes/include14.txt
+     <paragraph>
+         Including more/include6.txt as rst-code from includes/include14.txt:
+     <literal_block classes="code rst" source="%s" xml:space="preserve">
