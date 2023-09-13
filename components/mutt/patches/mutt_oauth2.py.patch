@@ -357,7 +357,7 @@ diff -ru mutt-2.0.5.orig/contrib/mutt_oauth2.py mutt-2.0.5/contrib/mutt_oauth2.p
                  def do_HEAD(self):
                      '''Response to a HEAD requests.'''
                      self.send_response(200)
-@@ -214,206 +232,334 @@
+@@ -214,207 +232,335 @@
  
                  def do_GET(self):
                      '''For GET request, extract code parameter from URL.'''
@@ -470,6 +470,7 @@ diff -ru mutt-2.0.5.orig/contrib/mutt_oauth2.py mutt-2.0.5/contrib/mutt_oauth2.p
 +                  'redirect_uri': redirect_uri,
 +                  'client_secret': config['client_secret'],
                    'code_verifier': verifier})
+         print('Exchanging the authorization code for an access token')
          try:
 +            verbose("Trying to reach", registration['token_endpoint'])
              response = urllib.request.urlopen(registration['token_endpoint'],
