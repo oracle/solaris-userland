@@ -24,7 +24,7 @@
 #
 
 # Go has some 64-bit data objects in a 32-bit path.
-<transform file path=.*(bsd|linux)_.*\.syso$ -> default pkg.linted.userland.action001.2 true>
+<transform file path=.*(bsd|linux).*\.syso$ -> default pkg.linted.userland.action001.2 true>
 
 # Golang executables are not PIE and tagged for ASLR
 <transform file path=usr/lib/golang/bin/.*$ \
@@ -66,7 +66,7 @@
 	-> emit link path=usr/lib/%<1>-golang target=../lib/golang/bin/%<1>>
 
 # Drop files with non-ASCII filenames to prevent 33421539
-<transform file path=usr/lib/golang/test/fixedbugs/issue27836.dir/(Ämain|Äfoo).go$ -> drop>
+<transform file path=usr/lib/golang/test/fixedbugs/issue27836.dir/(Äfoo|Ämain|Þfoo|Þmain).go$ -> drop>
 
 # Drop all patch backup files
 <transform file path=.+~$ -> drop>
