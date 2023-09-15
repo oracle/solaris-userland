@@ -1,0 +1,45 @@
+The patch avoids Firefox crash in NVidia libGL.
+
+diff -rup firefox-115.1.0.orig/toolkit/xre/moz.build firefox-115.1.0/toolkit/xre/moz.build
+--- firefox-115.1.0.orig/toolkit/xre/moz.build	2023-09-08 13:51:23.739351178 +0200
++++ firefox-115.1.0/toolkit/xre/moz.build	2023-09-13 09:44:18.356300797 +0200
+@@ -179,10 +179,6 @@ include("/ipc/chromium/chromium-config.m
+ 
+ FINAL_LIBRARY = "xul"
+ 
+-if CONFIG["MOZ_X11"] or CONFIG["MOZ_WAYLAND"]:
+-    DEFINES["USE_GLX_TEST"] = True
+-    DIRS += ["glxtest"]
+-
+ for var in (
+     "MOZ_APP_NAME",
+     "MOZ_APP_BASENAME",
+diff -rup firefox-115.1.0.orig/browser/installer/package-manifest.in firefox-115.1.0/browser/installer/package-manifest.in
+--- firefox-115.1.0.orig/browser/installer/package-manifest.in	2023-09-08 13:51:55.853414476 +0200
++++ firefox-115.1.0/browser/installer/package-manifest.in	2023-09-13 11:48:56.357061447 +0200
+@@ -107,7 +107,6 @@
+ #endif
+ #endif
+ #ifdef MOZ_GTK
+-@BINPATH@/glxtest
+ @BINPATH@/@DLL_PREFIX@mozgtk@DLL_SUFFIX@
+ #ifdef MOZ_WAYLAND
+ @BINPATH@/@DLL_PREFIX@mozwayland@DLL_SUFFIX@
+--- firefox-115.1.0.orig/widget/gtk/GfxInfo.cpp	2023-09-08 13:50:56.113439980 +0200
++++ firefox-115.1.0/widget/gtk/GfxInfo.cpp	2023-09-13 14:18:27.525867006 +0200
+@@ -210,6 +210,7 @@ void GfxInfo::GetData() {
+   }
+   mInitialized = true;
+ 
++#ifdef USE_GLX_TEST
+   // In some cases (xpcshell test, Profile manager etc.)
+   // FireGLXTestProcess() is not fired in advance
+   // so we call it here.
+@@ -567,6 +568,7 @@ void GfxInfo::GetData() {
+   }
+ 
+   AddCrashReportAnnotations();
++#endif
+ }
+ 
+ int GfxInfo::FireTestProcess(const nsAString& aBinaryFile, int* aOutPipe,
