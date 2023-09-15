@@ -1,0 +1,41 @@
+There are several tests that don't close created transport threads, which
+results in a huge amount of lingering threads polluting the process and
+can even crash the test suite.
+
+This issue was reported upstream:
+https://github.com/paramiko/paramiko/pull/2301
+
+--- paramiko-2.11.0/tests/conftest.py
++++ paramiko-2.11.0/tests/conftest.py
+@@ -81,8 +81,9 @@ def sftp_server():
+     # Make & yield connection.
+     tc.connect(username="slowdive", password="pygmalion")
+     yield tc
+-    # TODO: any need for shutdown? Why didn't old suite do so? Or was that the
+-    # point of the "join all threads from threading module" crap in test.py?
++    # Shutdown both transports to prevent lingering threads.
++    tc.close()
++    ts.close()
+ 
+ 
+ @pytest.fixture
+--- paramiko-2.11.0/tests/test_client.py
++++ paramiko-2.11.0/tests/test_client.py
+@@ -330,6 +330,8 @@ class SSHClientTest(ClientTest):
+                 key_filename=cert_path,
+                 public_blob=PublicBlob.from_file(cert_path),
+             )
++            # Transport needs to be closed after each iteration.
++            self.tc.close()
+ 
+     @requires_sha1_signing
+     def test_certs_implicitly_loaded_alongside_key_filename_keys(self):
+@@ -348,6 +350,8 @@ class SSHClientTest(ClientTest):
+                     "{}-cert.pub".format(key_path)
+                 ),
+             )
++            # Transport needs to be closed after each iteration.
++            self.tc.close()
+ 
+     def _cert_algo_test(self, ver, alg):
+         # Issue #2017; see auth_handler.py
