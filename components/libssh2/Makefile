@@ -20,28 +20,28 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libssh2
-COMPONENT_VERSION=	1.10.0
+COMPONENT_VERSION=	1.11.0
 COMPONENT_PROJECT_URL=	https://www.libssh2.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:2066bfa8bddb614b9170bcd40dc4f3b8c8ca2c9fb2e57c7f70571c600ce5bf57
+	sha256:3736161e41e2693324deb38c26cfdc3efe6209d634ba4258db1cecff6a5ad461
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libssh2
 COMPONENT_ANITYA_ID=	1730
 
-COMPONENT_BAID=		107203
+COMPONENT_BAID=		148240
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS +=   --enable-shared
-CONFIGURE_OPTIONS +=   --disable-static
+CONFIGURE_OPTIONS +=   --disable-docker-tests
 
 ifneq ($(strip $(OPENSSL3)),)
 CONFIGURE_OPTIONS +=   --with-libssl-prefix=/usr/openssl/3
