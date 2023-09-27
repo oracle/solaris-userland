@@ -25,6 +25,7 @@
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
 COMPILER= gcc
+GCC_ROOT=/usr/gcc/12
 
 # Gcc 12 often fails when it is _not_ built in mulitple parallel jobs. This can
 # happen when full gate is built.

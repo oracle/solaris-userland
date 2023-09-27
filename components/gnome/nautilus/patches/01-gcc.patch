@@ -980,3 +980,15 @@ Disables GCC 7 format-nonliteral error.
                  }
                  g_object_unref (parent);
              }
+--- nautilus-3.34.0/src/nautilus-file-operations.c
++++ nautilus-3.34.0/src/nautilus-file-operations.c
+@@ -4223,7 +4223,9 @@
+ 
+         if (dest == NULL)
+         {
++#pragma GCC diagnostic warning "-Wnonnull"
+             end = strrchr (basename, '.');
++#pragma GCC diagnostic pop
+             if (end != NULL)
+             {
+                 count += atoi (end + 1);
