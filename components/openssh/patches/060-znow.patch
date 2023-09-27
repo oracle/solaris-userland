@@ -1,15 +1,5 @@
---- old/configure.ac	2023-04-05 20:07:27.070503228 +0200
-+++ new/configure.ac	2023-04-05 20:08:23.647640594 +0200
-@@ -213,7 +213,6 @@ if test "$GCC" = "yes" || test "$GCC" =
- 	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,retpolineplt])
- 	OSSH_CHECK_CFLAG_COMPILE([-D_FORTIFY_SOURCE=2])
- 	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,relro])
--	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,now])
- 	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,noexecstack])
- 	# NB. -ftrapv expects certain support functions to be present in
- 	# the compiler library (libgcc or similar) to detect integer operations
---- old/Makefile.in	2023-04-05 20:07:15.926717882 +0200
-+++ new/Makefile.in	2023-04-05 20:08:30.581306814 +0200
+--- openssh-9.4p1/Makefile.in
++++ openssh-9.4p1/Makefile.in
 @@ -195,6 +195,9 @@ $(LIBSSH_OBJS): Makefile.in config.h
  $(SSHOBJS): Makefile.in config.h
  $(SSHDOBJS): Makefile.in config.h
@@ -20,3 +10,13 @@
  .c.o:
  	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
  
+--- openssh-9.4p1/configure.ac
++++ openssh-9.4p1/configure.ac
+@@ -213,7 +213,6 @@ OSSH_CHECK_CFLAG_COMPILE([-mretpoline])
+ 	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,retpolineplt])
+ 	OSSH_CHECK_CFLAG_COMPILE([-D_FORTIFY_SOURCE=2])
+ 	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,relro])
+-	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,now])
+ 	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,noexecstack])
+ 	# NB. -ftrapv expects certain support functions to be present in
+ 	# the compiler library (libgcc or similar) to detect integer operations

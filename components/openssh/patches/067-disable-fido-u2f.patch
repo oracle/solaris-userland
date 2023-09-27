@@ -9,9 +9,9 @@
 #
 # As such, this is Solaris specific patch.
 #
---- old/ssh-keygen.1	2023-04-09 09:35:36.544914163 +0200
-+++ new/ssh-keygen.1	2023-04-09 09:36:43.282854793 +0200
-@@ -51,7 +51,7 @@
+--- openssh-9.4p1/ssh-keygen.1
++++ openssh-9.4p1/ssh-keygen.1
+@@ -51,7 +51,7 @@ .Op Fl f Ar output_keyfile
  .Op Fl m Ar format
  .Op Fl N Ar new_passphrase
  .Op Fl O Ar option
@@ -55,7 +55,7 @@
  .Pp
  .It Ic source-address Ns = Ns Ar address_list
  Restrict the source addresses from which the certificate is considered valid.
-@@ -1290,18 +1289,16 @@ user2@example.com namespaces="file" ssh-
+@@ -1290,18 +1289,16 @@ .Bl -tag -width Ds
  .It Ev SSH_SK_PROVIDER
  Specifies a path to a library that will be used when loading any
  FIDO authenticator-hosted keys, overriding the default of using
@@ -92,65 +92,9 @@
  The contents of this file should be added to
  .Pa ~/.ssh/authorized_keys
  on all machines
---- old/ssh_config.5	2023-04-09 09:35:36.550497990 +0200
-+++ new/ssh_config.5	2023-04-09 09:36:43.288500030 +0200
-@@ -384,8 +384,6 @@ The default is:
- .Bd -literal -offset indent
- ssh-ed25519,ecdsa-sha2-nistp256,
- ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
--sk-ssh-ed25519@openssh.com,
--sk-ecdsa-sha2-nistp256@openssh.com,
- rsa-sha2-512,rsa-sha2-256
- .Ed
- .Pp
-@@ -956,14 +954,10 @@ ssh-ed25519-cert-v01@openssh.com,
- ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ecdsa-sha2-nistp384-cert-v01@openssh.com,
- ecdsa-sha2-nistp521-cert-v01@openssh.com,
--sk-ssh-ed25519-cert-v01@openssh.com,
--sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- rsa-sha2-512-cert-v01@openssh.com,
- rsa-sha2-256-cert-v01@openssh.com,
- ssh-ed25519,
- ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
--sk-ssh-ed25519@openssh.com,
--sk-ecdsa-sha2-nistp256@openssh.com,
- rsa-sha2-512,rsa-sha2-256
- .Ed
- .Pp
-@@ -1002,14 +996,10 @@ ssh-ed25519-cert-v01@openssh.com,
- ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ecdsa-sha2-nistp384-cert-v01@openssh.com,
- ecdsa-sha2-nistp521-cert-v01@openssh.com,
--sk-ssh-ed25519-cert-v01@openssh.com,
--sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- rsa-sha2-512-cert-v01@openssh.com,
- rsa-sha2-256-cert-v01@openssh.com,
- ssh-ed25519,
- ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
--sk-ecdsa-sha2-nistp256@openssh.com,
--sk-ssh-ed25519@openssh.com,
- rsa-sha2-512,rsa-sha2-256
- .Ed
- .Pp
-@@ -1602,14 +1592,10 @@ ssh-ed25519-cert-v01@openssh.com,
- ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ecdsa-sha2-nistp384-cert-v01@openssh.com,
- ecdsa-sha2-nistp521-cert-v01@openssh.com,
--sk-ssh-ed25519-cert-v01@openssh.com,
--sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- rsa-sha2-512-cert-v01@openssh.com,
- rsa-sha2-256-cert-v01@openssh.com,
- ssh-ed25519,
- ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
--sk-ssh-ed25519@openssh.com,
--sk-ecdsa-sha2-nistp256@openssh.com,
- rsa-sha2-512,rsa-sha2-256
- .Ed
- .Pp
---- old/ssh.1	2023-04-09 09:35:36.555958480 +0200
-+++ new/ssh.1	2023-04-09 09:36:43.293946144 +0200
-@@ -304,9 +304,7 @@ when the private key file is not present
+--- openssh-9.4p1/ssh.1
++++ openssh-9.4p1/ssh.1
+@@ -305,9 +305,7 @@ when the private key file is not present
  The default is
  .Pa ~/.ssh/id_rsa ,
  .Pa ~/.ssh/id_ecdsa ,
@@ -160,7 +104,7 @@
  and
  .Pa ~/.ssh/id_dsa .
  Identity files may also be specified on
-@@ -959,12 +957,8 @@ This stores the private key in
+@@ -972,12 +970,8 @@ .Pa ~/.ssh/id_dsa
  (DSA),
  .Pa ~/.ssh/id_ecdsa
  (ECDSA),
@@ -173,7 +117,7 @@
  or
  .Pa ~/.ssh/id_rsa
  (RSA)
-@@ -973,12 +967,8 @@ and stores the public key in
+@@ -986,12 +980,8 @@ .Pa ~/.ssh/id_dsa.pub
  (DSA),
  .Pa ~/.ssh/id_ecdsa.pub
  (ECDSA),
@@ -186,7 +130,7 @@
  or
  .Pa ~/.ssh/id_rsa.pub
  (RSA)
-@@ -1574,9 +1564,7 @@ above.
+@@ -1587,9 +1577,7 @@ above.
  .Pp
  .It Pa ~/.ssh/id_dsa
  .It Pa ~/.ssh/id_ecdsa
@@ -196,7 +140,7 @@
  .It Pa ~/.ssh/id_rsa
  Contains the private key for authentication.
  These files
-@@ -1590,9 +1578,7 @@ sensitive part of this file using AES-12
+@@ -1603,9 +1591,7 @@ sensitive part of this file using AES-12
  .Pp
  .It Pa ~/.ssh/id_dsa.pub
  .It Pa ~/.ssh/id_ecdsa.pub
@@ -206,3 +150,59 @@
  .It Pa ~/.ssh/id_rsa.pub
  Contains the public key for authentication.
  These files are not
+--- openssh-9.4p1/ssh_config.5
++++ openssh-9.4p1/ssh_config.5
+@@ -406,8 +406,6 @@ The default is:
+ .Bd -literal -offset indent
+ ssh-ed25519,ecdsa-sha2-nistp256,
+ ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
+-sk-ssh-ed25519@openssh.com,
+-sk-ecdsa-sha2-nistp256@openssh.com,
+ rsa-sha2-512,rsa-sha2-256
+ .Ed
+ .Pp
+@@ -978,14 +976,10 @@ ssh-ed25519-cert-v01@openssh.com,
+ ecdsa-sha2-nistp256-cert-v01@openssh.com,
+ ecdsa-sha2-nistp384-cert-v01@openssh.com,
+ ecdsa-sha2-nistp521-cert-v01@openssh.com,
+-sk-ssh-ed25519-cert-v01@openssh.com,
+-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+ rsa-sha2-512-cert-v01@openssh.com,
+ rsa-sha2-256-cert-v01@openssh.com,
+ ssh-ed25519,
+ ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
+-sk-ssh-ed25519@openssh.com,
+-sk-ecdsa-sha2-nistp256@openssh.com,
+ rsa-sha2-512,rsa-sha2-256
+ .Ed
+ .Pp
+@@ -1024,14 +1018,10 @@ ssh-ed25519-cert-v01@openssh.com,
+ ecdsa-sha2-nistp256-cert-v01@openssh.com,
+ ecdsa-sha2-nistp384-cert-v01@openssh.com,
+ ecdsa-sha2-nistp521-cert-v01@openssh.com,
+-sk-ssh-ed25519-cert-v01@openssh.com,
+-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+ rsa-sha2-512-cert-v01@openssh.com,
+ rsa-sha2-256-cert-v01@openssh.com,
+ ssh-ed25519,
+ ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
+-sk-ecdsa-sha2-nistp256@openssh.com,
+-sk-ssh-ed25519@openssh.com,
+ rsa-sha2-512,rsa-sha2-256
+ .Ed
+ .Pp
+@@ -1624,14 +1614,10 @@ ssh-ed25519-cert-v01@openssh.com,
+ ecdsa-sha2-nistp256-cert-v01@openssh.com,
+ ecdsa-sha2-nistp384-cert-v01@openssh.com,
+ ecdsa-sha2-nistp521-cert-v01@openssh.com,
+-sk-ssh-ed25519-cert-v01@openssh.com,
+-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+ rsa-sha2-512-cert-v01@openssh.com,
+ rsa-sha2-256-cert-v01@openssh.com,
+ ssh-ed25519,
+ ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
+-sk-ssh-ed25519@openssh.com,
+-sk-ecdsa-sha2-nistp256@openssh.com,
+ rsa-sha2-512,rsa-sha2-256
+ .Ed
+ .Pp

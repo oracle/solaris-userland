@@ -22,9 +22,9 @@
 # Reported upstream:
 # https://bugzilla.mindrot.org/show_bug.cgi?id=2548
 #
---- old/auth-pam.c	2023-04-09 08:53:06.844669589 +0200
-+++ new/auth-pam.c	2023-04-09 08:59:27.293937266 +0200
-@@ -105,6 +105,7 @@ extern char *__progname;
+--- openssh-9.4p1/auth-pam.c
++++ openssh-9.4p1/auth-pam.c
+@@ -105,6 +105,7 @@ #ifdef GSSAPI
  #include "ssh-gss.h"
  #endif
  #include "monitor_wrap.h"
@@ -32,7 +32,7 @@
  
  extern ServerOptions options;
  extern struct sshbuf *loginmsg;
-@@ -116,42 +117,26 @@ extern u_int utmp_len;
+@@ -116,42 +117,26 @@ # error "USE_POSIX_THREADS replaced by U
  #endif
  
  /*
@@ -85,7 +85,7 @@
  static sshsig_t sshpam_oldsig;
  
  static void
-@@ -160,85 +145,25 @@ sshpam_sigchld_handler(int sig)
+@@ -160,85 +145,25 @@ {
  	ssh_signal(SIGCHLD, SIG_DFL);
  	if (cleanup_ctxt == NULL)
  		return;	/* handler called after PAM cleanup, shouldn't happen */
@@ -183,7 +183,7 @@
  
  static pam_handle_t *sshpam_handle = NULL;
  static int sshpam_err = 0;
-@@ -327,72 +252,11 @@ sshpam_password_change_required(int reqd
+@@ -327,72 +252,11 @@ auth_opts->permit_x11_forwarding_flag =
  	}
  }
  
@@ -258,7 +258,7 @@
      struct pam_response **resp, void *data)
  {
  	struct sshbuf *buffer;
-@@ -472,50 +336,81 @@ sshpam_thread_conv(int n, sshpam_const s
+@@ -472,50 +336,81 @@ return (PAM_CONV_ERR);
  }
  
  /*
@@ -372,7 +372,7 @@
  	sshpam_err = pam_set_item(sshpam_handle, PAM_CONV,
  	    (const void *)&sshpam_conv);
  	if (sshpam_err != PAM_SUCCESS)
-@@ -538,76 +433,34 @@ sshpam_thread(void *ctxtp)
+@@ -538,76 +433,34 @@ goto auth_fail;
  		sshpam_password_change_required(0);
  	}
  
@@ -478,7 +478,7 @@
  
  	debug3("PAM: %s entering", __func__);
  	/*
-@@ -931,7 +785,7 @@ sshpam_init_ctx(Authctxt *authctxt)
+@@ -931,7 +785,7 @@ }
  	expose_authinfo(__func__);
  	ctxt = xcalloc(1, sizeof *ctxt);
  
@@ -487,7 +487,7 @@
  	if (socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, socks) == -1) {
  		error("PAM: failed create sockets: %s", strerror(errno));
  		free(ctxt);
-@@ -939,16 +793,29 @@ sshpam_init_ctx(Authctxt *authctxt)
+@@ -939,16 +793,29 @@ return (NULL);
  	}
  	ctxt->pam_psock = socks[0];
  	ctxt->pam_csock = socks[1];
@@ -522,7 +522,7 @@
  	return (ctxt);
  }
  
-@@ -965,6 +832,7 @@ sshpam_query(void *ctx, char **name, cha
+@@ -965,6 +832,7 @@ size_t len, mlen, nmesg = 0;
  	int r;
  
  	debug3("PAM: %s entering", __func__);
@@ -530,7 +530,7 @@
  	if ((buffer = sshbuf_new()) == NULL)
  		fatal("%s: sshbuf_new failed", __func__);
  	*name = xstrdup("");
-@@ -973,6 +841,17 @@ sshpam_query(void *ctx, char **name, cha
+@@ -973,6 +841,17 @@ *prompts = xmalloc(sizeof(char *));
  	**prompts = NULL;
  	plen = 0;
  	*echo_on = xmalloc(sizeof(u_int));
@@ -546,9 +546,9 @@
 +	}
 +
  	while (ssh_msg_recv(ctxt->pam_psock, buffer) == 0) {
- 		if ((r = sshbuf_get_u8(buffer, &type)) != 0 ||
- 		    (r = sshbuf_get_cstring(buffer, &msg, &mlen)) != 0)
-@@ -1009,17 +888,6 @@ sshpam_query(void *ctx, char **name, cha
+ 		if (++nmesg > PAM_MAX_NUM_MSG)
+ 			fatal_f("too many query messages");
+@@ -1011,17 +890,6 @@ sshpam_set_maxtries_reached(1);
  			/* FALLTHROUGH */
  		case PAM_AUTH_ERR:
  			debug3("PAM: %s", pam_strerror(sshpam_handle, type));
@@ -566,7 +566,7 @@
  			/* FALLTHROUGH */
  		case PAM_SUCCESS:
  			if (**prompts != NULL) {
-@@ -1032,25 +900,16 @@ sshpam_query(void *ctx, char **name, cha
+@@ -1034,25 +902,16 @@ __func__, ssh_err(r));
  				free(**prompts);
  				**prompts = NULL;
  			}
@@ -602,7 +602,7 @@
  		default:
  			*num = 0;
  			**echo_on = 0;
-@@ -1138,7 +997,7 @@ sshpam_free_ctx(void *ctxtp)
+@@ -1140,7 +999,7 @@ {
  	struct pam_ctxt *ctxt = ctxtp;
  
  	debug3("PAM: %s entering", __func__);
@@ -611,8 +611,8 @@
  	free(ctxt);
  	/*
  	 * We don't call sshpam_cleanup() here because we may need the PAM
---- old/auth-pam.h	2023-04-09 08:53:06.850112979 +0200
-+++ new/auth-pam.h	2023-04-09 08:54:13.778723192 +0200
+--- openssh-9.4p1/auth-pam.h
++++ openssh-9.4p1/auth-pam.h
 @@ -40,7 +40,8 @@ int do_pam_putenv(char *, char *);
  char ** fetch_pam_environment(void);
  char ** fetch_pam_child_environment(void);
@@ -623,9 +623,9 @@
  void sshpam_cleanup(void);
  int sshpam_auth_passwd(Authctxt *, const char *);
  int sshpam_get_maxtries_reached(void);
---- old/monitor.c	2023-04-09 08:53:06.855762039 +0200
-+++ new/monitor.c	2023-04-09 08:54:13.784135590 +0200
-@@ -1120,6 +1120,7 @@ mm_answer_pam_init_ctx(struct ssh *ssh,
+--- openssh-9.4p1/monitor.c
++++ openssh-9.4p1/monitor.c
+@@ -1117,6 +1117,7 @@ mm_answer_pam_init_ctx(struct ssh *ssh,
  {
  	u_int ok = 0;
  	int r;
@@ -633,7 +633,7 @@
  
  	debug3("%s", __func__);
  	if (!options.kbd_interactive_authentication)
-@@ -1136,6 +1137,33 @@ mm_answer_pam_init_ctx(struct ssh *ssh,
+@@ -1133,6 +1134,33 @@ ok = 1;
  	}
  	if ((r = sshbuf_put_u32(m, ok)) != 0)
  		fatal("%s: buffer error: %s", __func__, ssh_err(r));
@@ -667,7 +667,7 @@
  	mm_request_send(sock, MONITOR_ANS_PAM_INIT_CTX, m);
  	return (0);
  }
-@@ -1815,7 +1843,8 @@ monitor_apply_keystate(struct ssh *ssh,
+@@ -1812,7 +1840,8 @@ struct kex *kex;
  	int r;
  
  	debug3_f("packet_set_state");
@@ -677,9 +677,9 @@
  		fatal_fr(r, "packet_set_state");
  	sshbuf_free(child_state);
  	child_state = NULL;
---- old/packet.c	2023-04-09 08:53:06.861198146 +0200
-+++ new/packet.c	2023-04-09 08:54:13.789658483 +0200
-@@ -2184,7 +2184,7 @@ ssh_packet_get_output(struct ssh *ssh)
+--- openssh-9.4p1/packet.c
++++ openssh-9.4p1/packet.c
+@@ -2184,7 +2184,7 @@ return (void *)ssh->state->output;
  }
  
  /* Reset after_authentication and reset compression in post-auth privsep */
@@ -688,7 +688,7 @@
  ssh_packet_set_postauth(struct ssh *ssh)
  {
  	int r;
-@@ -2431,9 +2431,6 @@ ssh_packet_set_state(struct ssh *ssh, st
+@@ -2431,9 +2431,6 @@ if ((r = ssh_set_newkeys(ssh, MODE_IN))
  	    (r = ssh_set_newkeys(ssh, MODE_OUT)) != 0)
  		return r;
  
@@ -698,8 +698,8 @@
  	sshbuf_reset(state->input);
  	sshbuf_reset(state->output);
  	if ((r = sshbuf_get_string_direct(m, &input, &ilen)) != 0 ||
---- old/packet.h	2023-04-09 08:53:06.866228921 +0200
-+++ new/packet.h	2023-04-09 08:54:13.794940104 +0200
+--- openssh-9.4p1/packet.h
++++ openssh-9.4p1/packet.h
 @@ -159,6 +159,7 @@ u_int	 ssh_packet_get_maxsize(struct ssh
  
  int	 ssh_packet_get_state(struct ssh *, struct sshbuf *);
@@ -708,9 +708,9 @@
  
  const char *ssh_remote_ipaddr(struct ssh *);
  int	 ssh_remote_port(struct ssh *);
---- old/session.c	2023-04-09 08:53:06.871736782 +0200
-+++ new/session.c	2023-04-09 08:54:13.800246367 +0200
-@@ -2781,7 +2781,7 @@ do_cleanup(struct ssh *ssh, Authctxt *au
+--- openssh-9.4p1/session.c
++++ openssh-9.4p1/session.c
+@@ -2781,7 +2781,7 @@ return;
  #ifdef USE_PAM
  	if (options.use_pam) {
  		sshpam_cleanup();

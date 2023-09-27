@@ -16,8 +16,8 @@
 # Per agreement with upstream developers, filed:
 #    https://bugzilla.mindrot.org/show_bug.cgi?id=2615
 #
---- old/sshd.c	2023-04-09 09:11:29.061328607 +0200
-+++ new/sshd.c	2023-04-09 09:12:42.781493036 +0200
+--- openssh-9.4p1/sshd.c
++++ openssh-9.4p1/sshd.c
 @@ -257,7 +257,14 @@ struct sshbuf *loginmsg;
  /* Unprivileged user */
  struct passwd *privsep_pw = NULL;
@@ -33,7 +33,7 @@
  void destroy_sensitive_data(void);
  void demote_sensitive_data(void);
  static void do_ssh2_kex(struct ssh *);
-@@ -360,6 +367,7 @@ grace_alarm_handler(int sig)
+@@ -360,6 +367,7 @@ if (getpgid(0) == getpid()) {
  		ssh_signal(SIGTERM, SIG_IGN);
  		kill(0, SIGTERM);
  	}
@@ -41,7 +41,7 @@
  
  	/* Log error and exit. */
  	sigdie("Timeout before authentication for %s port %d",
-@@ -367,6 +375,94 @@ grace_alarm_handler(int sig)
+@@ -367,6 +375,94 @@ ssh_remote_ipaddr(the_active_state),
  	    ssh_remote_port(the_active_state));
  }
  
@@ -136,7 +136,7 @@
  /* Destroy the host and server keys.  They will no longer be needed. */
  void
  destroy_sensitive_data(void)
-@@ -519,6 +615,7 @@ privsep_preauth(struct ssh *ssh)
+@@ -519,6 +615,7 @@ } else {
  		/* child */
  		close(pmonitor->m_sendfd);
  		close(pmonitor->m_log_recvfd);
@@ -144,7 +144,7 @@
  
  		/* Arrange for logging to be sent to the monitor */
  		set_log_handler(mm_log_handler, pmonitor);
-@@ -2225,8 +2322,10 @@ main(int ac, char **av)
+@@ -2225,8 +2322,10 @@ * mode; it is just annoying to have the
  	 * are about to discover the bug.
  	 */
  	ssh_signal(SIGALRM, grace_alarm_handler);
@@ -156,7 +156,7 @@
  
  	if ((r = kex_exchange_identification(ssh, -1,
  	    options.version_addendum)) != 0)
-@@ -2284,6 +2383,7 @@ main(int ac, char **av)
+@@ -2284,6 +2383,7 @@ * authentication.
  	 */
  	alarm(0);
  	ssh_signal(SIGALRM, SIG_DFL);

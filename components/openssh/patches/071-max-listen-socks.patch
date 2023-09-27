@@ -6,9 +6,9 @@
 #
 # Plan to contribute upstream.
 #
---- old/sshd.c	2023-04-09 09:38:24.944161956 +0200
-+++ new/sshd.c	2023-04-09 09:40:02.193410702 +0200
-@@ -181,8 +181,7 @@ static char **rexec_argv;
+--- openssh-9.4p1/sshd.c
++++ openssh-9.4p1/sshd.c
+@@ -181,8 +181,7 @@ /*
   * The sockets that the server is listening; this is used in the SIGHUP
   * signal handler.
   */
@@ -18,7 +18,7 @@
  static int num_listen_socks = 0;
  
  /* Daemon's agent connection */
-@@ -281,6 +280,8 @@ close_listen_socks(void)
+@@ -281,6 +280,8 @@ int i;
  
  	for (i = 0; i < num_listen_socks; i++)
  		close(listen_socks[i]);
@@ -27,7 +27,7 @@
  	num_listen_socks = 0;
  }
  
-@@ -1122,11 +1123,19 @@ listen_on_addrs(struct listenaddr *la)
+@@ -1122,11 +1123,19 @@ struct addrinfo *ai;
  	char ntop[NI_MAXHOST], strport[NI_MAXSERV];
  
  	for (ai = la->addrs; ai; ai = ai->ai_next) {

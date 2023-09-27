@@ -14,9 +14,9 @@
 #
 # Patch source: in-house
 #
---- old/mac.c	2023-04-09 09:07:52.130239287 +0200
-+++ new/mac.c	2023-04-09 09:09:08.643329710 +0200
-@@ -87,8 +87,10 @@ static const struct macalg macs[] = {
+--- openssh-9.4p1/mac.c
++++ openssh-9.4p1/mac.c
+@@ -87,8 +87,10 @@ { "hmac-sha1",				SSH_DIGEST, SSH_DIGEST
  	{ "hmac-sha1-96",			SSH_DIGEST, SSH_DIGEST_SHA1, 96, 0, 0, 0 },
  	{ "hmac-sha2-256",			SSH_DIGEST, SSH_DIGEST_SHA256, 0, 0, 0, 0 },
  	{ "hmac-sha2-512",			SSH_DIGEST, SSH_DIGEST_SHA512, 0, 0, 0, 0 },
@@ -27,7 +27,7 @@
  	{ "umac-64@openssh.com",		SSH_UMAC, 0, 0, 128, 64, 0 },
  	{ "umac-128@openssh.com",		SSH_UMAC128, 0, 0, 128, 128, 0 },
  
-@@ -97,8 +99,10 @@ static const struct macalg macs[] = {
+@@ -97,8 +99,10 @@ { "hmac-sha1-etm@openssh.com",		SSH_DIGE
  	{ "hmac-sha1-96-etm@openssh.com",	SSH_DIGEST, SSH_DIGEST_SHA1, 96, 0, 0, 1 },
  	{ "hmac-sha2-256-etm@openssh.com",	SSH_DIGEST, SSH_DIGEST_SHA256, 0, 0, 0, 1 },
  	{ "hmac-sha2-512-etm@openssh.com",	SSH_DIGEST, SSH_DIGEST_SHA512, 0, 0, 0, 1 },
@@ -38,8 +38,8 @@
  	{ "umac-64-etm@openssh.com",		SSH_UMAC, 0, 0, 128, 64, 1 },
  	{ "umac-128-etm@openssh.com",		SSH_UMAC128, 0, 0, 128, 128, 1 },
  
---- old/sshd_config.5	2023-04-09 09:07:52.136240863 +0200
-+++ new/sshd_config.5	2023-04-09 09:09:08.648876340 +0200
+--- openssh-9.4p1/sshd_config.5
++++ openssh-9.4p1/sshd_config.5
 @@ -1216,10 +1216,6 @@ The supported MACs are:
  .Pp
  .Bl -item -compact -offset indent

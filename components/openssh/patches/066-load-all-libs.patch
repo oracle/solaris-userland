@@ -2,9 +2,9 @@
 # This patch make sure we load all lazy loaded libraries from plugins;
 # these are not loaded for plugins.
 #
---- old/session.c	2023-04-06 16:50:47.339502741 +0200
-+++ new/session.c	2023-04-06 16:51:29.661284370 +0200
-@@ -1352,6 +1352,61 @@ do_nologin(struct passwd *pw)
+--- openssh-9.4p1/session.c
++++ openssh-9.4p1/session.c
+@@ -1352,6 +1352,61 @@ }
  	exit(254);
  }
  
@@ -66,7 +66,7 @@
  /*
   * Chroot into a directory after checking it for safety: all path components
   * must be root-owned directories with strict permissions.
-@@ -1396,6 +1451,10 @@ safely_chroot(const char *path, uid_t ui
+@@ -1396,6 +1451,10 @@ cp == NULL ? "" : "component ", componen
  
  	}
  

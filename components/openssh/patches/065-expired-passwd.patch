@@ -7,9 +7,9 @@
 #
 # This is Solaris specific patch (not be to contributed to upstream).
 #
---- old/auth-pam.c	2023-04-06 16:46:26.977918818 +0200
-+++ new/auth-pam.c	2023-04-06 16:47:26.338316435 +0200
-@@ -402,6 +402,8 @@ do_pam_auth(struct pam_ctxt *ctxt)
+--- openssh-9.4p1/auth-pam.c
++++ openssh-9.4p1/auth-pam.c
+@@ -402,6 +402,8 @@ {
  	struct pam_conv sshpam_conv;
  	int flags = (options.permit_empty_passwd == 0 ?
  	    PAM_DISALLOW_NULL_AUTHTOK : 0);
@@ -18,7 +18,7 @@
  
  	sshpam_conv.conv = sshpam_child_conv;
  	sshpam_conv.appdata_ptr = ctxt;
-@@ -426,6 +428,15 @@ do_pam_auth(struct pam_ctxt *ctxt)
+@@ -426,6 +428,15 @@ sshpam_err = PAM_ACCT_EXPIRED;
  		goto auth_fail;
  	}
  	if (sshpam_authctxt->force_pwchange) {

@@ -3,9 +3,9 @@
 # from the server environment to the child if they have not been
 # accepted from the client.
 #
---- old/session.c	2023-04-09 09:22:45.034880618 +0200
-+++ new/session.c	2023-04-09 09:24:34.187972201 +0200
-@@ -953,6 +953,39 @@ read_etc_default_login(char ***env, u_in
+--- openssh-9.4p1/session.c
++++ openssh-9.4p1/session.c
+@@ -953,6 +953,39 @@ free(tmpenv);
  }
  #endif /* HAVE_ETC_DEFAULT_LOGIN */
  
@@ -45,7 +45,7 @@
  #if defined(USE_PAM) || defined(HAVE_CYGWIN)
  static void
  copy_environment_denylist(char **source, char ***env, u_int *envsize,
-@@ -1111,6 +1144,8 @@ do_setup_env(struct ssh *ssh, Session *s
+@@ -1111,6 +1144,8 @@ child_set_env(&env, &envsize, SSH_AUTHSO
  		    auth_sock_name);
  
  

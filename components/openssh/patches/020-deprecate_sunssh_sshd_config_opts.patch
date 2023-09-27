@@ -13,9 +13,9 @@
 # This is a Solaris specific change to ease the transition and will not be
 # offered upstream.
 #
---- old/servconf.c	2023-04-07 18:34:29.625170978 +0200
-+++ new/servconf.c	2023-04-07 18:35:27.562028445 +0200
-@@ -634,10 +634,12 @@ static struct {
+--- openssh-9.4p1/servconf.c
++++ openssh-9.4p1/servconf.c
+@@ -633,10 +633,12 @@ { "kerberostgtpassing", sUnsupported, SS
  	{ "afstokenpassing", sUnsupported, SSHCFG_GLOBAL },
  #ifdef GSSAPI
  	{ "gssapiauthentication", sGssAuthentication, SSHCFG_ALL },
@@ -28,7 +28,7 @@
  	{ "gssapicleanupcredentials", sUnsupported, SSHCFG_GLOBAL },
  	{ "gssapistrictacceptorcheck", sUnsupported, SSHCFG_GLOBAL },
  #endif
-@@ -708,6 +710,30 @@ static struct {
+@@ -707,6 +709,30 @@ #ifdef PAM_ENHANCEMENT
  	{ "pamserviceprefix", sPAMServicePrefix, SSHCFG_GLOBAL },
  	{ "pamservicename", sPAMServiceName, SSHCFG_GLOBAL },
  #endif

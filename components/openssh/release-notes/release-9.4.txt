@@ -1,0 +1,158 @@
+OpenSSH 9.4 was released on 2023-08-10. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Changes since OpenSSH 9.3p2
+===========================
+
+This release fixes a number of bugs and adds some small features.
+
+Potentially incompatible changes
+--------------------------------
+
+ * This release removes support for older versions of libcrypto.
+   OpenSSH now requires LibreSSL >= 3.1.0 or OpenSSL >= 1.1.1.
+   Note that these versions are already deprecated by their upstream
+   vendors.
+
+ * ssh-agent(1): PKCS#11 modules must now be specified by their full
+   paths. Previously dlopen(3) could search for them in system
+   library directories.
+
+New features
+------------
+
+ * ssh(1): allow forwarding Unix Domain sockets via ssh -W.
+
+ * ssh(1): add support for configuration tags to ssh(1).
+   This adds a ssh_config(5) "Tag" directive and corresponding
+   "Match tag" predicate that may be used to select blocks of
+   configuration similar to the pf.conf(5) keywords of the same
+   name.
+
+ * ssh(1): add a "match localnetwork" predicate. This allows matching
+   on the addresses of available network interfaces and may be used to
+   vary the effective client configuration based on network location.
+
+ * ssh(1), sshd(8), ssh-keygen(1): infrastructure support for KRL
+   extensions.  This defines wire formats for optional KRL extensions
+   and implements parsing of the new submessages. No actual extensions
+   are supported at this point.
+
+ * sshd(8): AuthorizedPrincipalsCommand and AuthorizedKeysCommand now
+   accept two additional %-expansion sequences: %D which expands to
+   the routing domain of the connected session and %C which expands
+   to the addresses and port numbers for the source and destination
+   of the connection.
+
+ * ssh-keygen(1): increase the default work factor (rounds) for the
+   bcrypt KDF used to derive symmetric encryption keys for passphrase
+   protected key files by 50%.
+
+Bugfixes
+--------
+
+ * ssh-agent(1): improve isolation between loaded PKCS#11 modules
+   by running separate ssh-pkcs11-helpers for each loaded provider.
+
+ * ssh(1): make -f (fork after authentication) work correctly with
+   multiplexed connections, including ControlPersist. bz3589 bz3589
+
+ * ssh(1): make ConnectTimeout apply to multiplexing sockets and not
+   just to network connections.
+
+ * ssh-agent(1), ssh(1): improve defences against invalid PKCS#11
+   modules being loaded by checking that the requested module
+   contains the required symbol before loading it.
+
+ * sshd(8): fix AuthorizedPrincipalsCommand when AuthorizedKeysCommand
+   appears before it in sshd_config. Since OpenSSH 8.7 the
+   AuthorizedPrincipalsCommand directive was incorrectly ignored in
+   this situation. bz3574
+
+ * sshd(8), ssh(1), ssh-keygen(1): remove vestigal support for KRL
+   signatures When the KRL format was originally defined, it included
+   support for signing of KRL objects. However, the code to sign KRLs
+   and verify KRL signatues was never completed in OpenSSH. This
+   release removes the partially-implemented code to verify KRLs.
+   All OpenSSH tools now ignore KRL_SECTION_SIGNATURE sections in
+   KRL files.
+
+ * All: fix a number of memory leaks and unreachable/harmless integer
+   overflows.
+
+ * ssh-agent(1), ssh(1): don't truncate strings logged from PKCS#11
+   modules; GHPR406
+
+ * sshd(8), ssh(1): better validate CASignatureAlgorithms in
+   ssh_config and sshd_config. Previously this directive would accept
+   certificate algorithm names, but these were unusable in practice as
+   OpenSSH does not support CA chains. bz3577
+
+ * ssh(1): make `ssh -Q CASignatureAlgorithms` only list signature
+   algorithms that are valid for CA signing. Previous behaviour was
+   to list all signing algorithms, including certificate algorithms.
+
+ * ssh-keyscan(1): gracefully handle systems where rlimits or the
+   maximum number of open files is larger than INT_MAX; bz3581
+
+ * ssh-keygen(1): fix "no comment" not showing on when running
+   `ssh-keygen -l` on multiple keys where one has a comment and other
+   following keys do not. bz3580
+
+ * scp(1), sftp(1): adjust ftruncate() logic to handle servers that
+   reorder requests. Previously, if the server reordered requests then
+   the resultant file would be erroneously truncated.
+
+ * ssh(1): don't incorrectly disable hostname canonicalization when
+   CanonicalizeHostname=yes and ProxyJump was expicitly set to
+   "none". bz3567
+
+ * scp(1): when copying local->remote, check that the source file
+   exists before opening an SFTP connection to the server. Based on
+   GHPR#370
+
+Portability
+-----------
+
+ * All: a number of build fixes for various platforms and
+   configuration combinations.
+
+ * sshd(8): provide a replacement for the SELinux matchpathcon()
+   function, which is deprecated.
+
+ * All: relax libcrypto version checks for OpenSSL >=3. Beyond
+   OpenSSL 3.0, the ABI compatibility guarantees are wider (only
+   the library major must match instead of major and minor in
+   earlier versions).  bz#3548.
+
+ * Tests: fix build problems for the sk-dummy.so FIDO provider module
+   used in some tests.
+
+Checksums:
+==========
+
+ - SHA1 (openssh-9.4.tar.gz) = d88126d8d7b8e5bf4656587ac4a16055560641cc
+ - SHA256 (openssh-9.4.tar.gz) = 7eqFjx2hAunw+1Jy7f1JQXq//3AMr9B3dKtASDtq8go=
+
+ - SHA1 (openssh-9.4p1.tar.gz) = 5dea1f3c88f9cfe53a711a3c893ee8b7d3ffecff
+ - SHA256 (openssh-9.4p1.tar.gz) = Ngj9kIjbIWPOs+YAyFq3nQ3j0iHlkZLqGSPiMmOGaoU=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com

@@ -9,9 +9,9 @@
 # Patch offered upstream:
 #     https://bugzilla.mindrot.org/show_bug.cgi?id=2378
 #
---- old/auth-pam.c	2023-04-08 09:46:39.564530711 +0200
-+++ new/auth-pam.c	2023-04-08 09:48:37.365884685 +0200
-@@ -1179,6 +1179,20 @@ start_pam(struct ssh *ssh)
+--- openssh-9.4p1/auth-pam.c
++++ openssh-9.4p1/auth-pam.c
+@@ -1181,6 +1181,20 @@ if (sshpam_init(ssh, authctxt) == -1)
  		fatal("PAM: initialisation failed");
  }
  
@@ -32,8 +32,8 @@
  void
  finish_pam(void)
  {
---- old/auth-pam.h	2023-04-08 09:46:39.569917404 +0200
-+++ new/auth-pam.h	2023-04-08 09:48:37.371327749 +0200
+--- openssh-9.4p1/auth-pam.h
++++ openssh-9.4p1/auth-pam.h
 @@ -31,6 +31,9 @@ void start_pam(struct ssh *);
  void finish_pam(void);
  u_int do_pam_account(void);
@@ -44,9 +44,9 @@
  void do_pam_setcred(int );
  void do_pam_chauthtok(void);
  int do_pam_putenv(char *, char *);
---- old/auth.h	2023-04-08 09:46:39.575227996 +0200
-+++ new/auth.h	2023-04-08 09:48:37.376296516 +0200
-@@ -98,6 +98,9 @@ struct Authctxt {
+--- openssh-9.4p1/auth.h
++++ openssh-9.4p1/auth.h
+@@ -98,6 +98,9 @@ struct sshbuf	*session_info;	/* Auth inf
  #ifdef PAM_ENHANCEMENT
  	char		*authmethod_name;
  #endif 
@@ -56,9 +56,9 @@
  };
  
  /*
---- old/auth2-hostbased.c	2023-04-08 09:46:39.580446111 +0200
-+++ new/auth2-hostbased.c	2023-04-08 09:48:37.381205199 +0200
-@@ -80,6 +80,9 @@ userauth_hostbased(struct ssh *ssh, cons
+--- openssh-9.4p1/auth2-hostbased.c
++++ openssh-9.4p1/auth2-hostbased.c
+@@ -80,6 +80,9 @@ #ifdef DEBUG_PK
  	debug("signature:");
  	sshbuf_dump_data(sig, slen, stderr);
  #endif
@@ -68,7 +68,7 @@
  	pktype = sshkey_type_from_name(pkalg);
  	if (pktype == KEY_UNSPEC) {
  		/* this is perfectly legal */
-@@ -151,6 +154,13 @@ userauth_hostbased(struct ssh *ssh, cons
+@@ -151,6 +154,13 @@ PRIVSEP(sshkey_verify(key, sig, slen,
  	    sshbuf_ptr(b), sshbuf_len(b), pkalg, ssh->compat, NULL)) == 0)
  		authenticated = 1;
  
@@ -82,9 +82,9 @@
  	auth2_record_key(authctxt, authenticated, key);
  	sshbuf_free(b);
  done:
---- old/auth2.c	2023-04-08 09:46:39.585618075 +0200
-+++ new/auth2.c	2023-04-08 09:48:37.386554768 +0200
-@@ -403,6 +403,14 @@ userauth_finish(struct ssh *ssh, int aut
+--- openssh-9.4p1/auth2.c
++++ openssh-9.4p1/auth2.c
+@@ -403,6 +403,14 @@ PRIVSEP(audit_event(ssh, SSH_LOGIN_ROOT_
  #endif
  	}
  
@@ -99,9 +99,9 @@
  	if (authenticated && options.num_auth_methods != 0) {
  
  #if defined(USE_PAM) && defined(PAM_ENHANCEMENT)
---- old/config.h.in	2023-04-08 09:46:39.590947715 +0200
-+++ new/config.h.in	2023-04-08 09:48:37.391764681 +0200
-@@ -1054,6 +1054,9 @@
+--- openssh-9.4p1/config.h.in
++++ openssh-9.4p1/config.h.in
+@@ -1003,6 +1003,9 @@ #undef HAVE_OPENSSL_VERSION_NUM
  /* Define if you have Digital Unix Security Integration Architecture */
  #undef HAVE_OSF_SIA
  
@@ -111,9 +111,9 @@
  /* Define to 1 if you have the `pam_getenvlist' function. */
  #undef HAVE_PAM_GETENVLIST
  
---- old/configure.ac	2023-04-08 09:46:39.596719232 +0200
-+++ new/configure.ac	2023-04-08 09:48:37.397625849 +0200
-@@ -1175,6 +1175,7 @@ mips-sony-bsd|mips-sony-newsos4)
+--- openssh-9.4p1/configure.ac
++++ openssh-9.4p1/configure.ac
+@@ -1175,6 +1175,7 @@ fi
  		],
  	)
  	TEST_SHELL=$SHELL	# let configure find us a capable shell
@@ -121,9 +121,9 @@
  	;;
  *-*-sunos4*)
  	CPPFLAGS="$CPPFLAGS -DSUNOS4"
---- old/monitor.c	2023-04-08 09:46:39.602138871 +0200
-+++ new/monitor.c	2023-04-08 09:48:37.403013938 +0200
-@@ -402,6 +402,12 @@ monitor_child_preauth(struct ssh *ssh, s
+--- openssh-9.4p1/monitor.c
++++ openssh-9.4p1/monitor.c
+@@ -399,6 +399,12 @@ }
  		}
  	}
  
@@ -136,7 +136,7 @@
  	if (!authctxt->valid)
  		fatal_f("authenticated invalid user");
  	if (strcmp(auth_method, "unknown") == 0)
-@@ -609,14 +615,16 @@ monitor_reset_key_state(void)
+@@ -606,14 +612,16 @@ monitor_reset_key_state(void)
  {
  	/* reset state */
  	free(key_blob);
@@ -154,7 +154,7 @@
  	hostbased_chost = NULL;
  }
  
-@@ -1088,6 +1096,11 @@ mm_answer_pam_account(struct ssh *ssh, i
+@@ -1085,6 +1093,11 @@ int r;
  	if (!options.use_pam)
  		fatal("%s: PAM not enabled", __func__);
  

@@ -9,9 +9,9 @@
 # Patch source: in-house
 # Solaris specific, upstream already has per-session ccache.
 #
---- old/gss-serv.c	2023-04-09 09:04:45.577837422 +0200
-+++ new/gss-serv.c	2023-04-09 09:05:58.218797177 +0200
-@@ -51,6 +51,8 @@
+--- openssh-9.4p1/gss-serv.c
++++ openssh-9.4p1/gss-serv.c
+@@ -51,6 +51,8 @@ #include "uidswap.h"
  #include "ssh-gss.h"
  #include "monitor_wrap.h"
  
@@ -20,7 +20,7 @@
  extern ServerOptions options;
  
  static ssh_gssapi_client gssapi_client =
-@@ -400,6 +402,12 @@ ssh_gssapi_cleanup_creds(void)
+@@ -400,6 +402,12 @@ {
  	krb5_ccache ccache = NULL;
  	krb5_error_code problem;
  
@@ -33,7 +33,7 @@
  	if (gssapi_client.store.data != NULL) {
  		if ((problem = krb5_cc_resolve(gssapi_client.store.data, gssapi_client.store.envval, &ccache))) {
  			debug("%s: krb5_cc_resolve(): %.100s", __func__,
-@@ -418,10 +426,66 @@ ssh_gssapi_cleanup_creds(void)
+@@ -418,10 +426,66 @@ /* As user */
  void
  ssh_gssapi_storecreds(void)
  {
@@ -104,9 +104,9 @@
  }
  
  /* This allows GSSAPI methods to do things to the child's environment based
---- old/servconf.c	2023-04-09 09:04:45.583422277 +0200
-+++ new/servconf.c	2023-04-09 09:05:58.224489355 +0200
-@@ -201,6 +201,7 @@ initialize_server_options(ServerOptions
+--- openssh-9.4p1/servconf.c
++++ openssh-9.4p1/servconf.c
+@@ -200,6 +200,7 @@ * entire user authentication.
  	 */
  	options->pam_service_per_authmethod = 1;
  #endif /* PAM_ENHANCEMENT */
@@ -114,7 +114,7 @@
  	options->authorized_principals_file = NULL;
  	options->authorized_principals_command = NULL;
  	options->authorized_principals_command_user = NULL;
-@@ -474,7 +475,8 @@ fill_default_server_options(ServerOption
+@@ -473,7 +474,8 @@ #ifdef PAM_ENHANCEMENT
  	if (options->pam_service_prefix == NULL)
  		options->pam_service_prefix = _SSH_PAM_SERVICE_PREFIX;
  #endif
@@ -124,7 +124,7 @@
  	if (options->fwd_opts.streamlocal_bind_mask == (mode_t)-1)
  		options->fwd_opts.streamlocal_bind_mask = 0177;
  	if (options->fwd_opts.streamlocal_bind_unlink == -1)
-@@ -573,6 +575,7 @@ typedef enum {
+@@ -572,6 +574,7 @@ #endif
  	sRevokedKeys, sTrustedUserCAKeys, sAuthorizedPrincipalsFile,
  	sAuthorizedPrincipalsCommand, sAuthorizedPrincipalsCommandUser,
  	sKexAlgorithms, sCASignatureAlgorithms, sIPQoS, sVersionAddendum,
@@ -132,7 +132,7 @@
  	sAuthorizedKeysCommand, sAuthorizedKeysCommandUser,
  	sAuthenticationMethods, sHostKeyAgent, sPermitUserRC,
  	sStreamLocalBindMask, sStreamLocalBindUnlink,
-@@ -768,6 +771,7 @@ static struct {
+@@ -767,6 +770,7 @@ { "authorizedkeyscommanduser", sAuthoriz
  	{ "authorizedprincipalscommand", sAuthorizedPrincipalsCommand, SSHCFG_ALL },
  	{ "authorizedprincipalscommanduser", sAuthorizedPrincipalsCommandUser, SSHCFG_ALL },
  	{ "versionaddendum", sVersionAddendum, SSHCFG_GLOBAL },
@@ -140,7 +140,7 @@
  	{ "authenticationmethods", sAuthenticationMethods, SSHCFG_ALL },
  	{ "streamlocalbindmask", sStreamLocalBindMask, SSHCFG_ALL },
  	{ "streamlocalbindunlink", sStreamLocalBindUnlink, SSHCFG_ALL },
-@@ -1754,6 +1758,10 @@ process_server_config_line_depth(ServerO
+@@ -1760,6 +1764,10 @@ case sGssStrictAcceptor:
  		intptr = &options->gss_strict_acceptor;
  		goto parse_flag;
  
@@ -151,7 +151,7 @@
  	case sGssStoreRekey:
  		intptr = &options->gss_store_rekey;
  		goto parse_flag;
-@@ -3204,6 +3212,7 @@ dump_config(ServerOptions *o)
+@@ -3210,6 +3218,7 @@ dump_cfg_fmtint(sAllowStreamLocalForward
  	dump_cfg_fmtint(sStreamLocalBindUnlink, o->fwd_opts.streamlocal_bind_unlink);
  	dump_cfg_fmtint(sFingerprintHash, o->fingerprint_hash);
  	dump_cfg_fmtint(sExposeAuthInfo, o->expose_userauth_info);
@@ -159,9 +159,9 @@
  
  	/* string arguments */
  	dump_cfg_string(sPidFile, o->pid_file);
---- old/servconf.h	2023-04-09 09:04:45.588761199 +0200
-+++ new/servconf.h	2023-04-09 09:05:58.229541895 +0200
-@@ -248,6 +248,8 @@ typedef struct {
+--- openssh-9.4p1/servconf.h
++++ openssh-9.4p1/servconf.h
+@@ -248,6 +248,8 @@ char	**channel_timeouts;	/* inactivity t
  	u_int	num_channel_timeouts;
  
  	int	unused_connection_timeout;
@@ -170,30 +170,9 @@
  }       ServerOptions;
  
  /* Information about the incoming connection as used by Match */
---- old/sshd_config.5	2023-04-09 09:04:45.594195930 +0200
-+++ new/sshd_config.5	2023-04-09 09:05:58.235182472 +0200
-@@ -744,6 +744,18 @@ Specifies whether to automatically destr
- on logout.
- The default is
- .Cm yes .
-+.It Cm GSSAPIUseDefaultCCache
-+Specifies whether delegated GSSAPI credentials are stored in default credential
-+cache file (eg. /tmp/krb5cc_100 for a user with UID 100) or in per-session
-+non-default credential cache (eg.  /tmp/krb5cc_100_HwGrDC).  Tickets in
-+non-default credential cache are not directly usable for accessing
-+krb5-protected NFS shares.  Non-default credential cache can be destroyed on
-+logout based on 
-+.Cm GSSAPICleanupCredentials 
-+setting however default credential
-+caches are never automatically destroyed by sshd on session logout.
-+The default is 
-+.Cm yes .
- .It Cm GSSAPIKeyExchange
- Specifies whether key exchange based on GSSAPI is allowed. GSSAPI key exchange
- doesn't rely on ssh keys to verify host identity.
---- old/sshd.c	2023-04-09 09:04:45.599673246 +0200
-+++ new/sshd.c	2023-04-09 09:05:58.240668523 +0200
-@@ -2298,9 +2298,19 @@ main(int ac, char **av)
+--- openssh-9.4p1/sshd.c
++++ openssh-9.4p1/sshd.c
+@@ -2298,9 +2298,19 @@ #endif
  
  #ifdef GSSAPI
  	if (options.gss_authentication) {
@@ -213,3 +192,24 @@
  	}
  #endif
  #ifdef USE_PAM
+--- openssh-9.4p1/sshd_config.5
++++ openssh-9.4p1/sshd_config.5
+@@ -744,6 +744,18 @@ Specifies whether to automatically destr
+ on logout.
+ The default is
+ .Cm yes .
++.It Cm GSSAPIUseDefaultCCache
++Specifies whether delegated GSSAPI credentials are stored in default credential
++cache file (eg. /tmp/krb5cc_100 for a user with UID 100) or in per-session
++non-default credential cache (eg.  /tmp/krb5cc_100_HwGrDC).  Tickets in
++non-default credential cache are not directly usable for accessing
++krb5-protected NFS shares.  Non-default credential cache can be destroyed on
++logout based on 
++.Cm GSSAPICleanupCredentials 
++setting however default credential
++caches are never automatically destroyed by sshd on session logout.
++The default is 
++.Cm yes .
+ .It Cm GSSAPIKeyExchange
+ Specifies whether key exchange based on GSSAPI is allowed. GSSAPI key exchange
+ doesn't rely on ssh keys to verify host identity.
