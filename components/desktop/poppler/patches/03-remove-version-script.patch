@@ -1,0 +1,16 @@
+Solaris linker fails when version-script is used. I have filed an upstream bug
+and created this patch till the issue is resolved.
+
+https://gitlab.freedesktop.org/poppler/poppler/-/issues/1438
+
+--- a/CMakeLists.txt	2023-09-05 23:15:14.000000000 +0200
++++ b/CMakeLists.txt	2023-09-26 08:59:47.459557954 +0200
+@@ -648,7 +648,7 @@
+                               VERSION ${POPPLER_SOVERSION_NUMBER}.0.0
+                               SOVERSION ${POPPLER_SOVERSION_NUMBER})
+ 
+-if(UNIX AND (NOT APPLE))
++if(UNIX AND (NOT APPLE AND NOT CMAKE_HOST_SOLARIS))
+ 	set_target_properties(poppler PROPERTIES LINK_OPTIONS LINKER:--version-script=${LINKER_SCRIPT})
+ endif()
+ if(MINGW AND BUILD_SHARED_LIBS)
