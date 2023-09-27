@@ -92,12 +92,6 @@ CONFIGURE_OPTIONS+= --without-gvc
 CONFIGURE_OPTIONS+= --disable-openmp
 CONFIGURE_OPTIONS+= --without-openexr
 CONFIGURE_OPTIONS+= --without-openjp2 # tests do not pass
-# Using option 'with-fontconfig=no' so that the fonts/fonts path specified in
-# configuration file 'type-ghostscript.xml' is being used.
-CONFIGURE_OPTIONS+= --with-fontconfig=no
-# Configure option 'with-gs-font-dir' is required because some build systems
-# might not have ghostscript fonts installed.
-CONFIGURE_OPTIONS+= --with-gs-font-dir="/usr/share/ghostscript/fonts"
 CONFIGURE_OPTIONS+= --x-libraries=$(CONFIGURE_LIBDIR.$(BITS)) 
 CONFIGURE_OPTIONS.32+= --without-perl
 CONFIGURE_OPTIONS.64+= --with-perl=$(PERL)
@@ -140,7 +134,6 @@ REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += print/filter/ghostscript/fonts/gnu-gs-fonts-std
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/c++-runtime
 REQUIRED_PACKAGES += system/library/fontconfig

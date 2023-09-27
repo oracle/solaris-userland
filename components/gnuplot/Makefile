@@ -59,6 +59,9 @@ COMPONENT_POST_INSTALL_ACTION += ( \
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
+# Remove lines containing datetime
+COMPONENT_TEST_TRANSFORMS += '-e "/sunrise.*sunset.*sunlight/d" '
+
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS  += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
@@ -80,8 +83,6 @@ REQUIRED_PACKAGES += library/graphics/wxwidgets-32
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += print/filter/ghostscript/fonts/gnu-gs-fonts-other
-REQUIRED_PACKAGES += print/filter/ghostscript/fonts/gnu-gs-fonts-std
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
