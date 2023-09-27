@@ -47,6 +47,5 @@ CONFIGURE_OPTIONS +=	--enable-xdebug
 
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/php-80
 REQUIRED_PACKAGES += web/php-81
 REQUIRED_PACKAGES += web/php-82
