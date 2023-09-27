@@ -41,15 +41,15 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.18.16
+COMPONENT_VERSION=	9.18.19
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-COMPONENT_BAID=		145680
+COMPONENT_BAID=		150762
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:c88234fe07ee75c3c8a9e59152fee64b714643de8e22cf98da3db4d0b57e0775
+	sha256:115e09c05439bebade1d272eda08fa88eb3b60129edef690588c87a4d27612cc
 COMPONENT_ARCHIVE_URL=	\
 	http://ftp.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	242117
@@ -94,7 +94,6 @@ PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 #
 # We have no need of static libraries.
 CONFIGURE_OPTIONS +=	--disable-static
-CONFIGURE_OPTIONS +=	--enable-devpoll
 # use pthread rwlock instead of internal rwlock implementation
 CONFIGURE_OPTIONS +=	--enable-pthread-rwlock
 # Enabled fixed [order] resource-record sets for backward compatibility.
@@ -222,11 +221,11 @@ test-license:
 	    $(BUILD_DIR)/bind.license.new >/dev/null || \
 		( \
 		$e 'WARNING: Built license differs:'; \
-		$e -n 'diff bind.license '; \
+		$e -n 'diff -w bind.license '; \
 		$e '$(subst $(COMPONENT_DIR)/,,$(BUILD_DIR))/bind.license.new'; \
 		$e 'ACTION: Check $(BUILD_DIR)/bind.license'; \
 		$e ' against TPNO:'; \
-		$e '   /ws/bugdb-tools/bin/tpno --arn $(TPNO)';\
+		$e '   /ws/bugdb-tools/bin/tpno --arn -ba $(COMPONENT_BAID)';\
 		)
 
 .PHONY: republish test-license test-named-version test-version

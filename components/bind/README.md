@@ -1,4 +1,4 @@
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 
 # BIND notes.
 
@@ -12,16 +12,16 @@ remain compatible.  And indeed for the most part between minor version
 updates too; some features might no longer work but the keywords are
 ignored.
 
-BIND source has three major branches, Stable, Extended Support, and
-development. As of BIND 9.13, the minor odd number is the Development
-version which may receive new features at each micro version.  While
-even numbered version remain stable, receiving only bug fixes and no
-new features.
+BIND source has three major branches, Stable, Extended Support Version
+(ESV), and development. As of BIND 9.13, the minor odd number is the
+Development version which may receive new features at each micro
+version.  While even numbered version remain stable, receiving only
+bug fixes and no new features.
 
 The three current branches are
 
-- 9.16.x Extended Support Version.
-- 9.18.x Stable version, including OpenSSL 3.0 support.
+- 9.16.x Current-Stable, ESV
+- 9.18.x Current-Stable, ESV, including OpenSSL 3.0 support.
 - 9.19.x Development version
 
 ## Packaging
@@ -78,6 +78,8 @@ either on your own build machine or a suitably configured machine
 where you have re-created the build machines directory structure and
 copied "build" and the source directory over.
 
+Note that these test will not run when executed by root.
+
 For example
 
 1. Create tar ball of build and source directory.
@@ -115,10 +117,12 @@ For example
     $ sudo ifconfig.sh up
 	```
 
-5. Set PATH so that GNU utilities are used, and execute test.
+5. Set PATH so that GNU utilities are used, unset http\_proxy and
+   execute test.
 
 	```
     $ PATH=/usr/gnu/bin:/usr/bin:/usr/sbin; export PATH
+	$ unset http_proxy
     $ sh runall.sh
 	```
 
@@ -129,18 +133,20 @@ For example
    ```
 
 The tests may take some hours to complete.  They write a summary
-report to ./build/*/bin/tests/system/systests.output.  A helper script
-in ./Solaris/test-summarize.awk can help examine the summary report,
-for example to review a summary of skipped tests:
+report to ./build/*/bin/tests/system/systests.output.
+
+For further information regarding these tests refer to README in
+bin/tests/system directory.  The test framework is changing to use
+pytest.  As per the README the older testing can still be used using
+the legacy scripts.  A helper script in ./Solaris/test-summarize.awk
+can help examine the summary report from the legacy scripts, for
+example to review a summary of skipped tests:
 
 ```
 awk -v skipped=1 -f $WS/components/bind/Solaris/test-summarize.awk \
    ./bin/tests/system/systests.output
 
 ```
-
-For further information regarding these tests refer to README in
-bin/tests/system directory.
 
 
 ### Skipped tests
@@ -154,4 +160,10 @@ skipped which rely on options not currently configured:
 - SKIP: engine_pkcs11
 - SKIP: geoip2
 - SKIP: keyfromlabel
+
+
+### Failed tests
+
+- serv-stale fails to initialise.
+- tsig requires Net::DNS (Should have been skipped)
 
