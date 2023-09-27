@@ -20,24 +20,22 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=         tcl
-COMPONENT_VERSION=      8.6.12
+COMPONENT_NAME=          tcl
+COMPONENT_VERSION=       8.6.13
+COMPONENT_BAID=          147951
+COMPONENT_ARCHIVE_HASH=  sha256:c61f0d6699e2bc7691f119b41963aaa8dc980f23532c4e937739832a5f4a6642
 COMPONENT_MAJOR_VERSION= $(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
-COMPONENT_PROJECT_URL=	https://www.tcl.tk/
-COMPONENT_SRC=          $(COMPONENT_NAME)$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=      $(COMPONENT_NAME)-core$(COMPONENT_VERSION)-src.tar.gz
-COMPONENT_ARCHIVE_HASH= \
-    sha256:186748f1131cef3d637421a18d70892f808e526a29c694bebfeb1c540f98727c
-COMPONENT_ARCHIVE_URL=  http://prdownloads.sourceforge.net/tcl/$(COMPONENT_ARCHIVE)
-COMPONENT_BUGDB=	library/libtcl
-COMPONENT_ANITYA_ID=	4941
-
-COMPONENT_BAID=		122140
+COMPONENT_PROJECT_URL=   https://www.tcl.tk/
+COMPONENT_SRC=           $(COMPONENT_NAME)$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=       $(COMPONENT_NAME)-core$(COMPONENT_VERSION)-src.tar.gz
+COMPONENT_ARCHIVE_URL=   http://prdownloads.sourceforge.net/tcl/$(COMPONENT_ARCHIVE)
+COMPONENT_BUGDB=         library/libtcl
+COMPONENT_ANITYA_ID=     4941
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -64,9 +62,11 @@ CONFIGURE_OPTIONS +=		--enable-man-symlinks
 CONFIGURE_OPTIONS +=		--enable-threads
 CONFIGURE_OPTIONS.64 +=		--enable-64bit
 CONFIGURE_OPTIONS.sparc.64 +=	--enable-64bit-vis
+COMPONENT_BUILD_ENV += LC_ALL=C.UTF-8
+COMPONENT_INSTALL_ENV += LC_ALL=C.UTF-8
 
-COMPONENT_TEST_ENV	+= "TZ=GMT"
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_ENV	+= "TZ=GMT LC_ALL=C.UTF-8"
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_TARGETS = test
 # We skip until the beginning (append.test), read until a flaky text
 # (httpold.test), resume with the next (if-old.test), then stop at end time.
@@ -92,4 +92,5 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 PKG_MACROS += COMPONENT_MAJOR_VERSION=$(COMPONENT_MAJOR_VERSION)
 
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

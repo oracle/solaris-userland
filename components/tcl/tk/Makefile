@@ -20,24 +20,22 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tk
-COMPONENT_VERSION=	8.6.12
-COMPONENT_MINOR_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
+COMPONENT_VERSION=	8.6.13
+COMPONENT_BAID=		148006
+COMPONENT_ARCHIVE_HASH=	sha256:2e65fa069a23365440a3c56c556b8673b5e32a283800d8d9b257e3f584ce0675
+COMPONENT_MINOR_VERSION= $(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
 COMPONENT_PROJECT_URL=	https://www.tcl.tk/
 COMPONENT_SRC=		$(COMPONENT_NAME)$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:12395c1f3fcb6bed2938689f797ea3cdf41ed5cb6c4766eec8ac949560310630
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/tcl/files/Tcl/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_BUGDB=	library/libtk
 COMPONENT_ANITYA_ID=	11426
-
-COMPONENT_BAID=		120052
 
 include $(WS_MAKE_RULES)/common.mk
 include $(WS_MAKE_RULES)/test-x11.mk
