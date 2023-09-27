@@ -26,20 +26,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		PyYAML
-COMPONENT_VERSION=	5.4.1
+COMPONENT_VERSION=	6.0.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c07ab3e6de1e303096b57a3fef386f2e933a242da101608066e8e7a83ff9c0f2
+    sha256:bfdf460b1736c775f2ba9f6a92bca30bc2095067b8a9d77876d1fad6cc3b4a43
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pyyaml.org/wiki/PyYAML
 COMPONENT_BUGDB=	python-mod/pyyaml
 COMPONENT_ANITYA_ID=	4123
-
-COMPONENT_BAID=		95764
+COMPONENT_BAID=		149012
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # Library libyaml is not available on Solaris.
@@ -48,7 +47,8 @@ COMPONENT_SETUP_ARGS += --without-libyaml
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =		$(SOURCE_DIR)
-COMPONENT_TEST_ARGS =		tests/lib3/test_all.py
+COMPONENT_TEST_ARGS =		tests/lib/test_all.py
+COMPONENT_TEST_MASTER =		$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # common targets
 build:		$(BUILD_NO_ARCH)
@@ -57,5 +57,4 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
+system-test:	$(SYSTEM_TEST_NO_ARCH)

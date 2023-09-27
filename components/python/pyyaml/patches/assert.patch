@@ -1,0 +1,17 @@
+This patch updates one of the asserts to work as expected;
+with parentheses, it was always true.
+
+The change was offered upstream:
+https://github.com/yaml/pyyaml/pull/743
+
+--- PyYAML-6.0.1/tests/lib/test_dump_load.py
++++ PyYAML-6.0.1/tests/lib/test_dump_load.py
+@@ -9,7 +9,7 @@ def test_load_no_loader(verbose=False):
+         yaml.load("- foo\n")
+     except TypeError:
+         return True
+-    assert(False, "load() require Loader=...")
++    assert False, "load() require Loader=..."
+ test_load_no_loader.unittest = True
+ 
+ def test_load_safeloader(verbose=False):
