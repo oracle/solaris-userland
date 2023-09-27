@@ -8,18 +8,18 @@ Subject: [PATCH] 7162172
  1 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git Xtranssock.c Xtranssock.c
---- a/Xtranssock.c
-+++ b/Xtranssock.c
-@@ -1770,7 +1770,7 @@ TRANS(SocketINETConnect) (XtransConnInfo ciptr, char *host, char *port)
- 	 * only affect one of a set of addresses.  
+--- a/Xtranssock.c	2023-09-19 13:34:19.760227324 -0700
++++ b/Xtranssock.c	2023-09-19 13:45:07.489738999 -0700
+@@ -1639,7 +1639,7 @@
+ 	 * only affect one of a set of addresses.
  	 */
  
 -	if (olderrno == ECONNREFUSED || olderrno == EINTR
-+	if (olderrno == ECONNREFUSED 
++	if (olderrno == ECONNREFUSED
  #if defined(IPv6) && defined(AF_INET6)
  	  || (((addrlist->addr->ai_next != NULL) ||
  	        (addrlist->addr != addrlist->firstaddr)) &&
-@@ -1783,7 +1783,7 @@ TRANS(SocketINETConnect) (XtransConnInfo ciptr, char *host, char *port)
+@@ -1652,7 +1652,7 @@
  #endif
  	    )
  	    res = TRANS_TRY_CONNECT_AGAIN;
@@ -28,14 +28,12 @@ diff --git Xtranssock.c Xtranssock.c
  	    res = TRANS_IN_PROGRESS;
  	else
  	{
-@@ -2092,7 +2092,7 @@ TRANS(SocketUNIXConnect) (XtransConnInfo ciptr, char *host, char *port)
+@@ -1925,7 +1925,7 @@
  	    if (olderrno == EWOULDBLOCK || olderrno == EINPROGRESS)
  		return TRANS_IN_PROGRESS;
  	    else if (olderrno == EINTR)
 -		return TRANS_TRY_CONNECT_AGAIN;
 +		return TRANS_IN_PROGRESS;
- 	    else if (olderrno == ENOENT || olderrno == ECONNREFUSED) {
- 		/* If opening as abstract socket failed, try again normally */
- 		if (abstract) {
-1.7.3.2
-
+ 	    else {
+ 		prmsg (2,"SocketUNIXConnect: Can't connect: errno = %d\n",
+ 		       EGET());
