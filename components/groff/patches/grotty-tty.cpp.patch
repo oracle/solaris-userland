@@ -3,9 +3,9 @@ Fix for disabling Unicode Box Drawing character (CR #18159500).
 This fix is not integrated into the groff git repository upstream yet,
 but has been passed upstream.
 
---- groff-1.22.2/src/devices/grotty/tty.cpp.orig	2014-02-03 05:20:27.696842116 -0800
-+++ groff-1.22.2/src/devices/grotty/tty.cpp	2014-02-03 05:26:26.723872248 -0800
-@@ -275,10 +275,17 @@
+--- groff-1.23.0/src/devices/grotty/tty.cpp
++++ groff-1.23.0/src/devices/grotty/tty.cpp
+@@ -252,10 +252,17 @@ bool tty_printer::tty_color(unsigned int
  
  tty_printer::tty_printer() : cached_v(0)
  {
@@ -23,7 +23,7 @@ but has been passed upstream.
    schar dummy;
    // black, white
    (void)tty_color(0, 0, 0, &dummy, 0);
-@@ -652,6 +659,9 @@
+@@ -719,6 +726,9 @@ void tty_printer::put_color(schar color_
    }
  }
  
@@ -32,8 +32,8 @@ but has been passed upstream.
 +
  // The possible Unicode combinations for crossing characters.
  //
- // `  ' = 0, ` -' = 4, `- ' = 8, `--' = 12,
-@@ -665,6 +675,7 @@
+ // '  ' = 0, ' -' = 4, '- ' = 8, '--' = 12,
+@@ -732,6 +742,7 @@ static output_character crossings[4*4] =
    0x2574, 0x2510, 0x2518, 0x2524,
    0x2500, 0x252C, 0x2534, 0x253C
  };
@@ -41,7 +41,7 @@ but has been passed upstream.
  
  void tty_printer::end_page(int page_length)
  {
-@@ -713,11 +724,15 @@
+@@ -781,11 +792,15 @@ void tty_printer::end_page(int page_leng
        if (nextp && p->hpos == nextp->hpos) {
  	if (p->draw_mode() == HDRAW_MODE &&
  	    nextp->draw_mode() == VDRAW_MODE) {

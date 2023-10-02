@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -30,12 +30,15 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		groff
-COMPONENT_VERSION=	1.22.3
+COMPONENT_VERSION=	1.23.0
 COMPONENT_ARCHIVE_HASH= \
-    sha256:3a48a9d6c97750bfbd535feeb5be0111db6406ddb7bb79fc680809cda6d828a5
+    sha256:6b9757f592b7518b4902eb6af7e54570bdccba37a871fddb2d30ae3863511c13
 COMPONENT_ANITYA_ID=	1253
+COMPONENT_BAID=		149809
 
-COMPONENT_BAID=		30990
+# NOTE: During an update, do NOT trust generate to split all new files into
+# the correct packages. Since there isn't a simple rule of which file belongs
+# where, manual verification is necessary (see 35611860).
 
 TEST_TARGET= $(NO_TESTS)
 
@@ -69,16 +72,9 @@ PERL_SCRIPTS= \
 	$(PROTOUSRLIBDIR)/groff/groffer/subs.pl \
 	$(PROTOUSRLIBDIR)/groff/groffer/man.pl \
 	$(PROTOUSRBINDIR)/chem \
-	$(PROTOUSRBINDIR)/roff2pdf \
-	$(PROTOUSRBINDIR)/roff2dvi \
-	$(PROTOUSRBINDIR)/roff2text \
-	$(PROTOUSRBINDIR)/roff2html \
-	$(PROTOUSRBINDIR)/groffer \
 	$(PROTOUSRBINDIR)/glilypond \
 	$(PROTOUSRBINDIR)/gperl \
-	$(PROTOUSRBINDIR)/roff2ps \
 	$(PROTOUSRBINDIR)/gpinyin \
-	$(PROTOUSRBINDIR)/roff2x \
 	$(PROTOUSRBINDIR)/gropdf \
 	$(PROTOUSRBINDIR)/grog \
 	$(PROTOUSRBINDIR)/mmroff \

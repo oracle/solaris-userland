@@ -2,178 +2,919 @@ This patch comes from in-house and this is Solaris specific patch.
 neqn, tbl and nroff in groff still need to be installed with g prefix because
 ON provides these wrapper scripts. So man pages for these continue to use g prefix.
 
-diff -ruN groff-1.22.3.org/src/preproc/eqn/neqn.man groff-1.22.3/src/preproc/eqn/neqn.man
---- groff-1.22.3.org/src/preproc/eqn/neqn.man	2014-11-04 00:38:35.233523897 -0800
-+++ groff-1.22.3/src/preproc/eqn/neqn.man	2016-05-02 23:54:12.452351937 -0700
+--- groff-1.23.0/src/preproc/eqn/neqn.1.man
++++ groff-1.23.0/src/preproc/eqn/neqn.1.man
 @@ -1,6 +1,6 @@
--.TH @G@NEQN @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-+.TH GNEQN @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
- .SH NAME
--@g@neqn \- format equations for ascii output
-+gneqn \- format equations for ascii output
+-.TH @g@neqn @MAN1EXT@ "@MDATE@" "groff @VERSION@"
++.TH gneqn @MAN1EXT@ "@MDATE@" "groff @VERSION@"
+ .SH Name
+-@g@neqn \- format equations for character-cell terminal output
++gneqn \- format equations for character-cell terminal output
  .
  .
- .\" license
-@@ -27,7 +27,7 @@
- .SH SYNOPSIS
- .\" --------------------------------------------------------------------
+ .\" ====================================================================
+@@ -49,7 +49,7 @@
+ .SH Synopsis
+ .\" ====================================================================
  .
--.B @g@neqn
-+.B gneqn
- [@g@eqn options]
+-.SY @g@neqn
++.SY gneqn
+ .RI [ @g@eqn-argument \~.\|.\|.]
+ .YS
  .
+@@ -58,7 +58,7 @@
+ .SH Description
+ .\" ====================================================================
  .
-@@ -36,7 +36,7 @@
- .\" --------------------------------------------------------------------
- .
- The
--.B @g@neqn
-+.B gneqn
- program is actually just a shell script which invokes the
- .BR @g@eqn (@MAN1EXT@)
+-.I @g@neqn
++.I gneqn
+ invokes the
+ .MR @g@eqn @MAN1EXT@
  command with the
-diff -ruN groff-1.22.3.org/src/preproc/tbl/tbl.man groff-1.22.3/src/preproc/tbl/tbl.man
---- groff-1.22.3.org/src/preproc/tbl/tbl.man	2014-11-04 00:38:35.221524047 -0800
-+++ groff-1.22.3/src/preproc/tbl/tbl.man	2016-05-02 23:55:21.943598161 -0700
+--- groff-1.23.0/contrib/chem/chem.1.man
++++ groff-1.23.0/contrib/chem/chem.1.man
+@@ -84,7 +84,7 @@ program is a
+ preprocessor like
+ .IR @g@eqn ,
+ .IR @g@pic ,
+-.IR @g@tbl ,
++.IR gtbl ,
+ etc.
+ .
+ It generates
+--- groff-1.23.0/contrib/hdtbl/groff_hdtbl.7.man
++++ groff-1.23.0/contrib/hdtbl/groff_hdtbl.7.man
+@@ -209,7 +209,7 @@ On the other hand,
+ table processing with
+ .I hdtbl
+ is much slower than using the
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ preprocessor.
+ .
+ A further advantage is that the HTML-like syntax of
+@@ -1320,7 +1320,7 @@ language and GNU extensions to it.
+ .
+ .
+ .TP
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ describes the traditional
+ .I roff
+ preprocessor for tables.
+--- groff-1.23.0/contrib/mm/groff_mm.7.man
++++ groff-1.23.0/contrib/mm/groff_mm.7.man
+@@ -3705,7 +3705,7 @@ See
+ .BR TE ,
+ .BR TH ,
+ and
+-.MR @g@tbl @MAN1EXT@ .
++.MR gtbl @MAN1EXT@ .
+ .
+ .
+ .TP
+@@ -5409,7 +5409,7 @@ You can browse it interactively with \[l
+ .P
+ .MR groff @MAN1EXT@ ,
+ .MR @g@troff @MAN1EXT@ ,
+-.MR @g@tbl @MAN1EXT@ ,
++.MR gtbl @MAN1EXT@ ,
+ .MR @g@pic @MAN1EXT@ ,
+ .MR @g@eqn @MAN1EXT@ ,
+ .MR @g@refer @MAN1EXT@ ,
+--- groff-1.23.0/contrib/mm/mmroff.1.man
++++ groff-1.23.0/contrib/mm/mmroff.1.man
+@@ -154,7 +154,7 @@ Sweden.
+ .MR groff_mmse @MAN7EXT@ ,
+ .MR groff @MAN1EXT@ ,
+ .MR @g@troff @MAN1EXT@ ,
+-.MR @g@tbl @MAN1EXT@ ,
++.MR gtbl @MAN1EXT@ ,
+ .MR @g@pic @MAN1EXT@ ,
+ .MR @g@eqn @MAN1EXT@
+ .
+--- groff-1.23.0/doc/meref.me.in
++++ groff-1.23.0/doc/meref.me.in
+@@ -1348,7 +1348,7 @@ above and below it.
+ .i H
+ .DE
+ Begin (start)
+-.i \%@g@tbl (1)
++.i \%gtbl (1)
+ table.
+ Tables are preceded and followed by
+ .NR (bs
+@@ -1378,13 +1378,13 @@ calls.
+ With \(lq\c
+ .b ".TS H" \(rq,
+ end the
+-.i \%@g@tbl
++.i \%gtbl
+ table header.
+ .TL
+ .b .TE
+ .DE
+ End
+-.i \%@g@tbl
++.i \%gtbl
+ table.
+ .TL
+ .b .PS
+@@ -2258,9 +2258,9 @@ and a square \(sq labels \*G extensions.
+ \&.PE	M\(de	end \fI@g@pic\fP picture with position at bottom
+ \&.PF	M\(de	end \fI@g@pic\fP picture with position at top
+ \&.PS	M\(de	start \fI@g@pic\fP picture
+-\&.TE	M	end \fI@g@tbl\fP table
+-\&.TH	M	end heading for multi-page \fI@g@tbl\fP table
+-\&.TS	M	begin \fI@g@tbl\fP table
++\&.TE	M	end \fIgtbl\fP table
++\&.TH	M	end heading for multi-page \fIgtbl\fP table
++\&.TS	M	begin \fIgtbl\fP table
+ \e\(ha	F\(sc	1/12 em unbreakable hair space
+ \e_	F\(sc	underrule
+ \e\(ga	F\(sc	grave accent
+--- groff-1.23.0/man/groff_char.7.man
++++ groff-1.23.0/man/groff_char.7.man
+@@ -520,7 +520,7 @@ lines;
+ see subsection \[lq]Rules and lines\[rq] below.
+ .
+ Preprocessors like
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ and
+ .MR @g@pic @MAN1EXT@
+ draw boxes and will produce the best possible output for the device,
+@@ -2177,7 +2177,7 @@ and
+ Bernd Warken
+ .ME ,
+ revised to use
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ by
+ .MT esr@\:thyrsus\:.com
+ Eric S.\& Raymond
+--- groff-1.23.0/man/groff_diff.7.man
++++ groff-1.23.0/man/groff_diff.7.man
+@@ -903,7 +903,7 @@ uses this mechanism to create images of
+ .IR @g@pic ,
+ .IR @g@eqn ,
+ and
+-.IR @g@tbl .
++.IR gtbl .
+ .
+ At startup,
+ .I @g@troff
+--- groff-1.23.0/man/groff_tmac.5.man
++++ groff-1.23.0/man/groff_tmac.5.man
+@@ -509,7 +509,7 @@ which can be useful if the contents of t
+ macro calls or string interpolations.
+ .
+ Compare to
+-.MR @g@tbl @MAN1EXT@ .
++.MR gtbl @MAN1EXT@ .
+ .
+ It works only with the
+ .B ps
+--- groff-1.23.0/man/roff.7.man
++++ groff-1.23.0/man/roff.7.man
+@@ -374,7 +374,7 @@ The formatter provides facilities for so
+ there are many details to track
+ when using the \[lq]tab\[rq] and \[lq]field\[rq] low-level features,
+ so most users turn to the
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ preprocessor to lay out tables.
+ .\" END Keep roughly parallel with groff.texi nodes "Text" through "Tab
+ .\" Stops".
+@@ -1560,7 +1560,7 @@ Each program interprets input in a langu
+ others;
+ some are purely descriptive,
+ as with
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ and
+ .I roff
+ output,
+@@ -1649,7 +1649,7 @@ including
+ .IR @g@eqn ,
+ .IR @g@grn ,
+ .IR @g@pic ,
+-.IR @g@tbl ,
++.IR gtbl ,
+ .IR @g@refer ,
+ and
+ .IR @g@soelim .
+--- groff-1.23.0/src/devices/grohtml/grohtml.1.man
++++ groff-1.23.0/src/devices/grohtml/grohtml.1.man
+@@ -290,7 +290,7 @@ See
+ generates an image whenever an
+ .I @g@eqn
+ equation,
+-.I @g@tbl
++.I gtbl
+ table,
+ or
+ .I @g@pic
+--- groff-1.23.0/src/preproc/grn/grn.1.man
++++ groff-1.23.0/src/preproc/grn/grn.1.man
+@@ -471,14 +471,14 @@ When using
+ .I @g@grn
+ along with other preprocessors,
+ it is best to run
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ before
+ .IR @g@grn ,
+ .MR @g@pic @MAN1EXT@ ,
+ and/or
+ .I ideal \" no GNU version yet
+ to avoid overworking
+-.IR @g@tbl .
++.IR gtbl .
+ .
+ .MR @g@eqn @MAN1EXT@
+ should always be run last.
+--- groff-1.23.0/src/preproc/soelim/soelim.1.man
++++ groff-1.23.0/src/preproc/soelim/soelim.1.man
+@@ -219,7 +219,7 @@ source request requires a preprocessor s
+ .MR @g@pic @MAN1EXT@ ,
+ .MR @g@refer @MAN1EXT@ ,
+ or
+-.MR @g@tbl @MAN1EXT@ .
++.MR gtbl @MAN1EXT@ .
+ .
+ The usual processing sequence of
+ .MR groff @MAN1EXT@
+--- groff-1.23.0/src/preproc/tbl/tbl.1.man
++++ groff-1.23.0/src/preproc/tbl/tbl.1.man
 @@ -1,7 +1,7 @@
  '\" t
--.TH @G@TBL @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-+.TH GTBL @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
- .SH NAME
--@g@tbl \- format tables for troff
-+gtbl \- format tables for troff
+-.TH @g@tbl @MAN1EXT@ "@MDATE@" "groff @VERSION@"
++.TH gtbl @MAN1EXT@ "@MDATE@" "groff @VERSION@"
+ .SH Name
+-@g@tbl \- prepare tables for
++gtbl \- prepare tables for
+ .I groff
+ documents
  .
- .
- .\" license
-@@ -30,7 +30,7 @@
- .SH SYNOPSIS
- .\" --------------------------------------------------------------------
+@@ -52,21 +52,21 @@ documents
+ .SH Synopsis
+ .\" ====================================================================
  .
 -.SY @g@tbl
 +.SY gtbl
- .OP \-Cv
- .RI [ files\~ .\|.\|.]
+ .RB [ \-C ]
+ .RI [ file\~ .\|.\|.]
  .YS
-@@ -845,7 +845,7 @@
  .
- .LP
- Note that
--.B @g@tbl
-+.B gtbl
- computes the column widths line by line, applying \[rs]w on each entry
- which isn\[aq]t a text block.
  .
-@@ -1003,7 +1003,7 @@
- .SH "INTERACTION WITH @G@EQN"
- .\" --------------------------------------------------------------------
+-.SY @g@tbl
++.SY gtbl
+ .B \-\-help
+ .YS
  .
--.BR @g@tbl (@MAN1EXT@)
-+.BR gtbl (@MAN1EXT@)
+ .
+-.SY @g@tbl
++.SY gtbl
+ .B \-v
+ .
+-.SY @g@tbl
++.SY gtbl
+ .B \-\-version
+ .YS
+ .
+@@ -81,7 +81,7 @@ is part of the
+ .MR groff @MAN1EXT@
+ document formatting system.
+ .
+-.I @g@tbl
++.I gtbl
+ is a
+ .MR @g@troff @MAN1EXT@
+ preprocessor that translates descriptions of tables embedded in
+@@ -114,7 +114,7 @@ implementing any GNU extensions employed
+ must be used.
+ .
+ Normally,
+-.I @g@tbl
++.I gtbl
+ is not executed directly by the user,
+ but invoked by specifying the
+ .B \-t
+@@ -128,7 +128,7 @@ or if
+ .I file
+ is
+ .RB \[lq] \- \[rq],
+-.I @g@tbl
++.I gtbl
+ reads the standard input stream.
+ .
+ .
+@@ -136,7 +136,7 @@ reads the standard input stream.
+ .SS Overview
+ .\" ====================================================================
+ .
+-.I @g@tbl
++.I gtbl
+ expects to find table descriptions between input lines that begin with
+ .B .TS
+ (table start)
+@@ -166,7 +166,7 @@ pages
+ (Experienced
+ .I roff
+ users should observe that
+-.I @g@tbl
++.I gtbl
+ is not a
+ .I roff
+ language interpreter:
+@@ -175,7 +175,7 @@ and no spaces or tabs are permitted betw
+ the macro name.
+ .
+ These
+-.I @g@tbl
++.I gtbl
+ input tokens remain as-is in the output,
+ where they become ordinary macro calls.
+ .
+@@ -186,7 +186,7 @@ and
+ .B TE
+ macros to handle issues of table placement on the page.
+ .
+-.I @g@tbl
++.I gtbl
+ produces
+ .I groff
+ code to define these macros as empty if their definitions do not exist
+@@ -333,7 +333,7 @@ applies to a table that exceeds the avai
+ column separation is reduced as far as necessary
+ (even to zero).
+ .
+-.I @g@tbl
++.I gtbl
+ produces
+ .I groff
+ input that issues a diagnostic if such compression occurs.
+@@ -365,7 +365,7 @@ Don't use
+ diversions to manage page breaks.
+ .
+ Normally,
+-.I @g@tbl
++.I gtbl
+ employs them to avoid breaking a page within a table row.
+ .
+ This usage can sometimes interact badly with macro packages' own use of
+@@ -565,7 +565,7 @@ Left-align entry within the column.
+ .BR N ,\~ n
+ Numerically align entry in the column.
+ .
+-.I @g@tbl
++.I gtbl
+ aligns columns of numbers vertically at the units place.
+ .
+ If multiple decimal separators are adjacent to a digit,
+@@ -574,7 +574,7 @@ it uses the rightmost one for vertical a
+ If there is no decimal separator,
+ the rightmost digit is used for vertical alignment;
+ otherwise,
+-.I @g@tbl
++.I gtbl
+ centers the entry within the column.
+ .
+ The
+@@ -595,7 +595,7 @@ entries share a column with
+ .B L
+ or
+ .BR R \~entries,
+-.I @g@tbl
++.I gtbl
+ centers the widest
+ .BR N \~entry
+ with respect to the widest
+@@ -620,7 +620,7 @@ separator.
+ Use the
+ .B \%delim
+ region option to make
+-.I @g@tbl
++.I gtbl
+ ignore the data within
+ .I eqn
+ delimiters for that purpose.
+@@ -647,7 +647,7 @@ Replace table entry with a horizontal ru
+ .
+ An empty table entry is expected to correspond to this classifier;
+ if data are found there,
+-.I @g@tbl
++.I gtbl
+ issues a diagnostic message.
+ .
+ .
+@@ -657,7 +657,7 @@ Replace table entry with a double horizo
+ .
+ An empty table entry is expected to correspond to this classifier;
+ if data are found there,
+-.I @g@tbl
++.I gtbl
+ issues a diagnostic message.
+ .
+ .
+@@ -681,7 +681,7 @@ in boxed tables.
+ .
+ .P
+ To change the table format within a
+-.I @g@tbl
++.I gtbl
+ region,
+ use the
+ .B .T&
+@@ -983,7 +983,7 @@ A negative separation cannot be specifie
+ .
+ A separation amount after the last column in a row is nonsensical and
+ provokes a diagnostic from
+-.IR @g@tbl .
++.IR gtbl .
+ .
+ .
+ .\" ====================================================================
+@@ -1038,7 +1038,7 @@ hyphenated,
+ adjusted,
+ or populated with additional inter-sentence space.
+ .
+-.I @g@tbl
++.I gtbl
+ instructs the formatter to measure each table entry as it occurs in the
+ input,
+ updating the width required by its corresponding column.
+@@ -1200,7 +1200,7 @@ it can be placed within a
+ .
+ .
+ .P
+-.I @g@tbl
++.I gtbl
+ interprets a table entry beginning with
+ .RB \[lq] T{ \[rq]
+ at the end of an input line not as table data,
+@@ -1325,13 +1325,13 @@ Avoid using these names for any other pu
+ .
+ .
+ .P
+-.I @g@tbl
++.I gtbl
+ also defines a macro
+ .B T#
+ to produce the bottom and side lines of a boxed table.
+ .
+ While
+-.I @g@tbl
++.I gtbl
+ itself arranges for the output to include a call of this macro at the
+ end of such a table,
+ it can also be used by macro packages to create boxes for multi-page
+@@ -1362,7 +1362,7 @@ should not use any such identifiers.
+ .SS "Interaction with \f[I]@g@eqn\f[]"
+ .\" ====================================================================
+ .
+-.I @g@tbl
++.I gtbl
  should always be called before
- .BR @g@eqn (@MAN1EXT@)
- .RB ( groff (@MAN1EXT@)
-@@ -1034,12 +1034,12 @@
+ .MR @g@eqn @MAN1EXT@ .
+ .
+@@ -1381,7 +1381,7 @@ set up delimiters in your
+ input and use the
+ .B \%delim
+ region option so that
+-.I @g@tbl
++.I gtbl
+ will recognize them.
  .
  .
- .LP
--.B @g@tbl
-+.B gtbl
- uses register, string, macro and diversion names beginning with the digit\~\c
- .BR 3 .
+@@ -1434,7 +1434,7 @@ You can embed a table region inside a ma
  .
- When using
--.B @g@tbl
-+.B gtbl
- you should avoid using any names beginning with a\~\c
- .BR 3 .
+ However,
+ since
+-.I @g@tbl
++.I gtbl
+ writes its own macro definitions at the beginning of each table region,
+ it is necessary to call end macros instead of ending macro definitions
+ with
+@@ -1448,9 +1448,9 @@ the escape character must be disabled. \
  .
-@@ -1049,7 +1049,7 @@
- .\" --------------------------------------------------------------------
+ .P
+ Not all
+-.I @g@tbl
++.I gtbl
+ features can be exercised from such macros because
+-.I @g@tbl
++.I gtbl
+ is a
+ .I roff
+ preprocessor:
+@@ -1462,7 +1462,7 @@ For example,
+ vertically aligning decimal separators fails if the numbers containing
+ them occur as macro or string parameters;
+ the alignment is performed by
+-.I @g@tbl
++.I gtbl
+ itself,
+ which sees only
+ .BR \[rs]$1 ,
+@@ -1477,7 +1477,7 @@ interpolates a macro or string definitio
+ .\" XXX: The following is a general caveat about preprocessors; move it.
+ .P
+ Using
+-.I @g@tbl
++.I gtbl
+ macros within conditional input
+ (that is,
+ contingent upon an
+@@ -1489,14 +1489,14 @@ or
+ request)
+ can result in misleading line numbers in subsequent diagnostics.
  .
- Since
--.B @g@tbl
-+.B gtbl
- defines its own macros (right before each table) it is necessary to use
- an \[oq]end-of-macro\[cq] macro.
+-.I @g@tbl
++.I gtbl
+ unconditionally injects its output into the source document,
+ but the conditional branch containing it may not be taken,
+ and if it is not,
+ the
+ .B lf
+ requests that
+-.I @g@tbl
++.I gtbl
+ injects to restore the source line number cannot take effect.
  .
-@@ -1075,16 +1075,16 @@
+ Consider copying the input line counter register
+@@ -1916,7 +1916,7 @@ n|n\f[B]\[tmu]\f[]n|difference
  .
- .LP
- Note, however, that not all features of
--.B @g@tbl
-+.B gtbl
- can be wrapped into a macro because
--.B @g@tbl
-+.B gtbl
- sees the input earlier than
- .BR @g@troff .
+ .P
+ Some
+-.I @g@tbl
++.I gtbl
+ features cannot be illustrated in the limited environment of a portable
+ man page.
  .
- For example, number formatting with vertically aligned decimal points
- fails if those numbers are passed on as macro parameters because
- decimal point alignment is handled by
--.B @g@tbl
-+.B gtbl
- itself: It only sees \[oq]\[rs]$1\[cq], \[oq]\[rs]$2\[cq], etc., and
- therefore can\[aq]t recognize the decimal point.
+@@ -1928,7 +1928,7 @@ man page.
+ .\".I groff
+ .\"macro definition.
+ .\".
+-.\".IR @g@tbl ,
++.\".IR gtbl ,
+ .\"however,
+ .\"cannot know what will result from any macro argument interpolations,
+ .\"so we might confine such interpolations to one column of the table and
+--- groff-1.23.0/src/utils/grog/grog.1.man
++++ groff-1.23.0/src/utils/grog/grog.1.man
+@@ -392,7 +392,7 @@ In the foregoing example,
+ we see that this procedure enabled
+ .I grog
+ to detect
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ macros,
+ so we would add
+ .B \-s
+--- groff-1.23.0/tmac/groff_man.7.man.in
++++ groff-1.23.0/tmac/groff_man.7.man.in
+@@ -2173,7 +2173,7 @@ check,
+ or which is developed in the future.
  .
-diff -ruN groff-1.22.3.org/src/roff/nroff/nroff.man groff-1.22.3/src/roff/nroff/nroff.man
---- groff-1.22.3.org/src/roff/nroff/nroff.man	2014-11-04 00:38:35.526520234 -0800
-+++ groff-1.22.3/src/roff/nroff/nroff.man	2016-05-02 23:56:10.581654158 -0700
+ The table preprocessor
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ can likely meet your needs.
+ _endif()dnl
+ .
+@@ -3048,7 +3048,7 @@ to be lost.
+ If you feel tempted to change the tab stops such that calling this macro
+ later is desirable to restore them,
+ you should probably be composing a table using
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ instead.
+ .
+ .
+@@ -4248,7 +4248,7 @@ _endif()dnl
+ .SH "See also"
+ .\" ====================================================================
+ .
+-.MR @g@tbl @MAN1EXT@ ,
++.MR gtbl @MAN1EXT@ ,
+ .MR @g@eqn @MAN1EXT@ ,
+ and
+ .MR @g@refer @MAN1EXT@
+--- groff-1.23.0/tmac/groff_me.7.man
++++ groff-1.23.0/tmac/groff_me.7.man
+@@ -295,9 +295,9 @@ IS	start \fIideal\fP picture
+ PE	end \fI@g@pic\fP picture with drawing position at bottom
+ PF	end \fI@g@pic\fP picture with drawing position at top
+ PS	start \fI@g@pic\fP picture
+-TE	end \fI@g@tbl\fP table
+-TH	end heading for multi-page \fI@g@tbl\fP table
+-TS	start \fI@g@tbl\fP table
++TE	end \fIgtbl\fP table
++TH	end heading for multi-page \fIgtbl\fP table
++TS	start \fIgtbl\fP table
+ b	embolden argument
+ ba	set base indentation
+ bc	begin new column
+@@ -580,7 +580,7 @@ see
+ .MR @g@pic @MAN1EXT@ ,
+ .MR @g@refer @MAN1EXT@ ,
+ and
+-.MR @g@tbl @MAN1EXT@ .
++.MR gtbl @MAN1EXT@ .
+ .
+ .
+ .P
+--- groff-1.23.0/tmac/groff_ms.7.man
++++ groff-1.23.0/tmac/groff_ms.7.man
+@@ -93,7 +93,7 @@ and multi-column page layouts.
+ .
+ .I ms
+ supports the
+-.MR @g@tbl @MAN1EXT@ ,
++.MR gtbl @MAN1EXT@ ,
+ .MR @g@eqn @MAN1EXT@ ,
+ .MR @g@pic @MAN1EXT@ ,
+ and
+@@ -1473,7 +1473,7 @@ Changes to either register take effect a
+ The
+ .I ms
+ package is often used with the
+-.IR @g@tbl ,
++.IR gtbl ,
+ .IR @g@pic ,
+ .IR @g@eqn ,
+ and
+@@ -1486,7 +1486,7 @@ distance is also applied to regions of t
+ .IR @g@eqn ,
+ .IR @g@pic ,
+ and
+-.IR @g@tbl .
++.IR gtbl .
+ .
+ Mark text meant for preprocessors by enclosing it in pairs of tokens as
+ follows,
+@@ -1515,7 +1515,7 @@ calling the
+ .B TH
+ macro marks the end of such rows.
+ .
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ provides a comprehensive reference to the preprocessor and offers
+ examples of its use.
+ .
+@@ -2888,7 +2888,7 @@ You can browse it interactively with \[l
+ .PP
+ .MR groff @MAN1EXT@ ,
+ .MR @g@troff @MAN1EXT@ ,
+-.MR @g@tbl @MAN1EXT@ ,
++.MR gtbl @MAN1EXT@ ,
+ .MR @g@pic @MAN1EXT@ ,
+ .MR @g@eqn @MAN1EXT@ ,
+ .MR @g@refer @MAN1EXT@
+--- groff-1.23.0/tmac/groff_www.7.man
++++ groff-1.23.0/tmac/groff_www.7.man
+@@ -697,7 +697,7 @@ for details of how to switch this off or
+ .SH "Limitations of \f[I]grohtml\f[]"
+ .\" ====================================================================
+ .
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ tables are rendered as PNG images.
+ .
+ Paul DuBois's approach with
+--- groff-1.23.0/src/roff/nroff/nroff.1.man
++++ groff-1.23.0/src/roff/nroff/nroff.1.man
 @@ -1,6 +1,6 @@
--.TH @G@NROFF @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-+.TH GNROFF @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
- .SH NAME
--@g@nroff \- emulate nroff command with groff
-+gnroff \- emulate nroff command with groff
+-.TH @g@nroff @MAN1EXT@ "@MDATE@" "groff @VERSION@"
++.TH gnroff @MAN1EXT@ "@MDATE@" "groff @VERSION@"
+ .SH Name
+-@g@nroff \- format documents with
++gnroff \- format documents with
+ .I groff
+ for TTY (terminal) devices
  .
+@@ -51,7 +51,7 @@ for TTY (terminal) devices
+ .SH Synopsis
+ .\" ====================================================================
  .
- .\" --------------------------------------------------------------------
-@@ -38,7 +38,7 @@
- .    RB "[" "\\$1" "]"
- ..
- 
 -.SY @g@nroff
 +.SY gnroff
- .OP \-CchipStUvwW
- .OP \-d cs
- .OP \-M dir
-@@ -49,10 +49,10 @@
- .OP \-T name
- .RI [ file\~ .\|.\|.]
+ .RB [ \-bcCEhikpRStUVz ]
+ .RB [ \-d\~\c
+ .IR ctext ]
+@@ -85,15 +85,15 @@ for TTY (terminal) devices
+ .YS
+ .
  .
 -.SY @g@nroff
 +.SY gnroff
  .B \-\-help
+ .YS
+ .
  .
 -.SY @g@nroff
 +.SY gnroff
  .B \-v
- |
- .B \-\-version
-@@ -63,7 +63,7 @@
- .\" --------------------------------------------------------------------
  .
- The
--.B @g@nroff
-+.B gnroff
- script emulates the
- .B nroff
- command using groff.
-@@ -86,7 +86,7 @@
- .B \-T
- command line option (which overrides the environment variable)
+-.SY @g@nroff
++.SY gnroff
+ .B \-\-version
+ .YS
+ .
+@@ -102,7 +102,7 @@ for TTY (terminal) devices
+ .SH Description
+ .\" ====================================================================
+ .
+-.I @g@nroff
++.I gnroff
+ formats documents written in the
+ .MR groff @MAN7EXT@
+ language for typewriter-like devices such as terminal emulators.
+@@ -114,7 +114,7 @@ emulates the AT&T
+ command using
+ .MR groff @MAN1EXT@ .
+ .
+-.I @g@nroff
++.I gnroff
+ generates output via
+ .MR grotty @MAN1EXT@ ,
+ .IR groff 's
+@@ -139,7 +139,7 @@ environment variable nor the
+ command-line option
+ (which overrides the environment variable)
  specifies a (valid) device,
--.B @g@nroff
-+.B gnroff
- checks the current locale to select a default output device.
+-.I @g@nroff
++.I gnroff
+ consults the locale to select an appropriate output device.
  .
  It first tries the
-@@ -131,7 +131,7 @@
- .BR @g@troff (@MAN1EXT@).
+@@ -211,7 +211,7 @@ are documented in
  .
- In addition,
+ .B \-V
+ causes
+-.I @g@nroff
++.I gnroff
+ to display the constructed
+ .I groff
+ command on the standard output stream,
+@@ -221,7 +221,7 @@ but does not execute it.
+ and
+ .B \-\-version
+ show version information about
+-.I @g@nroff
++.I gnroff
+ and the programs it runs,
+ while
+ .B \-\-help
+@@ -233,7 +233,7 @@ all exit afterward.
+ .SH "Exit status"
+ .\" ====================================================================
+ .
+-.I @g@nroff
++.I gnroff
+ exits with error
+ .RB status\~ 2
+ if there was a problem parsing its arguments,
+--- groff-1.23.0/tmac/groff_mdoc.7.man
++++ groff-1.23.0/tmac/groff_mdoc.7.man
+@@ -2928,7 +2928,7 @@ and
+ modes.
+ .
+ If formatted with
+-.Xr @g@nroff @MAN1EXT@ ,
++.Xr gnroff @MAN1EXT@ ,
+ a quoted literal is always quoted.
+ .
+ If formatted with
+@@ -3814,7 +3814,7 @@ command-line arguments
+ (see
+ .Sx What's in a Name ) ,
+ the keep prevents
+-.Xr @g@nroff
++.Xr gnroff
+ from placing the flag and the argument on separate lines.
+ .
+ .
+@@ -4486,7 +4486,7 @@ was produced by:
+ Don't abuse this list type!
+ .
+ For more complicated cases it might be far better and easier to use
+-.Xr @g@tbl @MAN1EXT@ ,
++.Xr gtbl @MAN1EXT@ ,
+ the table preprocessor.
+ .El
+ .
+@@ -4584,7 +4584,7 @@ and
+ respectively
+ of the current font
+ (for
+-.Xr @g@nroff
++.Xr gnroff
+ output,
+ both scaling indicators give the same values).
+ .
+@@ -5358,7 +5358,7 @@ this functionality may return in the nex
+ .\" justified margins, but may break in between an argument and its
+ .\" declaration.
+ .\" In
+-.\" .Xr @g@nroff
++.\" .Xr gnroff
+ .\" the right margin is normally ragged and the problem is not as
+ .\" severe.
+ .
+--- groff-1.23.0/man/groff_out.5.man
++++ groff-1.23.0/man/groff_out.5.man
+@@ -1377,7 +1377,7 @@ is\~0, stop underlining of spaces.
+ This is needed for the
+ .B cu
+ request in
 -.B @g@nroff
 +.B gnroff
- silently ignores the options
- .BR \-e ,
- .BR \-q ,
+ mode and is ignored otherwise.
+ .
+ This command is a
+--- groff-1.23.0/src/roff/groff/groff.1.man
++++ groff-1.23.0/src/roff/groff/groff.1.man
+@@ -442,7 +442,7 @@ safer mode is enabled by default.
+ .TP
+ .B \-t
+ Run
+-.MR @g@tbl @MAN1EXT@
++.MR gtbl @MAN1EXT@
+ preprocessor.
+ .
+ .
+@@ -1001,7 +1001,7 @@ to format their output.
+ .TS
+ tab($);
+ Li Lx.
+-@g@tbl$lays out tables;
++gtbl$lays out tables;
+ @g@eqn$typesets mathematics;
+ @g@pic$draws diagrams;
+ @g@refer$processes bibliographic references;
+@@ -1090,7 +1090,7 @@ grap^.G1^.G2
+ ^^.PF
+ ^^.PY
+ @g@refer^.R1^.R2
+-@g@tbl^.TS^.TE
++gtbl^.TS^.TE
+ _
+ glilypond^.lilypond start^.lilypond stop
+ gperl^.Perl start^.Perl stop
+@@ -1306,7 +1306,7 @@ for the older system.
+ .
+ .P
+ A shell script,
+-.MR @g@nroff @MAN1EXT@ ,
++.MR gnroff @MAN1EXT@ ,
+ emulates the behavior of AT&T
+ .IR nroff . \" AT&T
+ .
+@@ -1924,7 +1924,7 @@ see section \[lq]Limitations\[rq] below.
+ To process a
+ .I roff
+ input file using the preprocessors
+-.I @g@tbl
++.I gtbl
+ and
+ .I @g@pic
+ and the
+@@ -1939,7 +1939,7 @@ a pipeline.
+ .
+ .IP
+ .EX
+-@g@pic foo.me | @g@tbl | @g@troff \-me \-Tutf8 | grotty
++@g@pic foo.me | gtbl | @g@troff \-me \-Tutf8 | grotty
+ .EE
+ .
+ .
+@@ -2288,7 +2288,7 @@ and further reading:
+ Preprocessors:
+ .MR @g@chem @MAN1EXT@ , \" #1
+ .MR @g@eqn @MAN1EXT@ , \" #34
+-.MR @g@neqn @MAN1EXT@ , \" #35
++.MR gneqn @MAN1EXT@ , \" #35
+ .MR glilypond @MAN1EXT@ , \" #4
+ .MR @g@grn @MAN1EXT@ , \" #36
+ .MR preconv @MAN1EXT@ , \" #38
+@@ -2297,7 +2297,7 @@ Preprocessors:
+ .MR gpinyin @MAN1EXT@ , \" #6
+ .MR @g@refer @MAN1EXT@ , \" #39
+ .MR @g@soelim @MAN1EXT@ , \" #40
+-.MR @g@tbl @MAN1EXT@ \" #41
++.MR gtbl @MAN1EXT@ \" #41
+ .
+ .
+ .TP
+@@ -2349,7 +2349,7 @@ Formatter program:
+ .TP
+ Formatter wrappers:
+ .\".MR groff @MAN1EXT@ , \" 42 -- this page
+-.MR @g@nroff @MAN1EXT@ , \" #44
++.MR gnroff @MAN1EXT@ , \" #44
+ .MR pdfroff @MAN1EXT@ \" #14
+ .
+ .

@@ -1,0 +1,55 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2023, Oracle and/or its affiliates.
+#
+
+<include generate/common.transform>
+
+# Delete everything not belonging to this package
+<transform hardlink file link pkg.type=(?!core) -> drop>
+<transform hardlink file link -> delete pkg.type .*>
+
+# Move some programs and their man pages into the gnu directory
+<transform file path=usr/bin/(neqn|nroff|tbl)$ -> set action.hash %(path)>
+<transform file path=usr/bin/(neqn|nroff|tbl)$ -> edit path bin gnu/bin>
+
+<transform file path=usr/share/man/man1/(neqn|nroff|tbl).1$ -> set action.hash %(path)>
+<transform file path=usr/share/man/man1/(neqn|nroff|tbl).1$ -> edit path man1/ man1/g>
+
+# Generate additional links
+# Note that all emitted links are still affected by pkg.type default set in common.transform
+# file and by related filter at the top of this file, which is why they have to be emitted
+# with 'pkg.type=core' (which is immediately removed).
+
+<transform file path=usr/bin/gdiffmk -> \
+	emit link path=usr/bin/diffmk target=./gdiffmk pkg.type=core>
+<transform file path=usr/share/man/man1/gdiffmk.1 -> \
+	emit link path=usr/share/man/man1/diffmk.1 target=./gdiffmk.1 pkg.type=core>
+
+<transform file path=usr/gnu/bin/(neqn|nroff|tbl)$ -> \
+	emit link path=usr/bin/g%<1> target=../gnu/bin/%<1> facet.compat.gnulinks=true pkg.type=core>
+
+<transform file path=usr/bin/(eqn|pic|refer|soelim|troff)$ -> \
+	emit link path=usr/bin/g%<1> target=./%<1> facet.compat.gnulinks=true pkg.type=core>
+<transform file path=usr/share/man/man1/(eqn|pic|refer|soelim|troff).1$ -> \
+	emit link path=usr/share/man/man1/g%<1>.1 target=./%<1>.1 facet.compat.gnulinks=true pkg.type=core>

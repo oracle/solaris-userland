@@ -1,0 +1,67 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2023, Oracle and/or its affiliates.
+#
+
+<include generate/common.transform>
+
+# Delete everything not belonging to this package
+<transform hardlink file link pkg.type=(?!main) -> drop>
+<transform hardlink file link -> delete pkg.type .*>
+
+# Ensure scripts delivered in usr/lib are executable.
+<transform file path=usr/lib/groff/.+\.pl$ -> set mode 0555>
+<transform file path=usr/lib/groff/.+\.sh$ -> set mode 0555>
+
+# Put the documentation in the correct location.
+<transform file link path=usr/share/doc/groff-\$\(COMPONENT_VERSION\)/.*$ -> \
+	set action.hash %(path)>
+<transform file link path=usr/share/doc/groff-\$\(COMPONENT_VERSION\)/.*$ -> \
+	edit path doc/groff- doc/groff/ >
+
+# Add the correct facet to the .html, .pdf and .ps documentation files.
+<transform file path=usr/share/doc/groff/\$\(COMPONENT_VERSION\)/(meintro.me|meref.me|pic.ms)$ -> set facet.doc true>
+<transform file path=usr/share/doc/groff/\$\(COMPONENT_VERSION\)/html/mom/.*\.html -> set facet.doc.html true>
+<transform file path=usr/share/doc/groff/\$\(COMPONENT_VERSION\)/pdf/.*\.pdf -> set facet.doc.pdf true>
+<transform file path=usr/share/doc/groff/\$\(COMPONENT_VERSION\)/.*\.ps -> set facet.doc.ps true>
+
+# Generate additional links
+<transform file path=usr/bin/(chem|grn|indxbib|lookbib)$ -> \
+	emit link path=usr/bin/g%<1> target=./%<1> facet.compat.gnulinks=true>
+<transform file path=usr/share/man/man1/(chem|grn|indxbib|lookbib).1$ -> \
+	emit link path=usr/share/man/man1/g%<1>.1 target=./%<1>.1 facet.compat.gnulinks=true>
+
+<transform file path=usr/share/man/man7/groff_(man|me|mm|ms)\.7$ -> \
+	emit link path=usr/share/man/man7/%<1>.7 target=./groff_%<1>.7>
+
+# Fix link to point relatively to the new path
+<transform link path=usr/share/doc/groff/\$\(COMPONENT_VERSION\)/pdf/mom-pdf.pdf -> \
+	set target ../examples/mom/mom-pdf.pdf>
+
+# texinfo-update service needs to be restarted if following files change
+<transform file path=usr/share/info/groff.info.* -> \
+	set restart_fmri svc:/application/texinfo-update:default>
+
+# We don't deliver glilypond related files and the charset.alias file
+<transform file path=.*/glilypond.* -> drop>
+<transform file path=usr/lib/charset.alias -> drop>
