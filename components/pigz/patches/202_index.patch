@@ -1,29 +1,30 @@
 Support for parallel decompression.
 Written by Mihael Gerdts <mike.gerdts@oracle.com>
 
-These changes have been sent upstream.
+These changes have been sent upstream:
+https://github.com/madler/pigz/issues/40
 
---- pigz-2.3.4/Makefile.orig	2017-03-02 13:32:39.612576924 +0000
-+++ pigz-2.3.4/Makefile	2017-03-02 13:32:51.018629392 +0000
-@@ -71,6 +71,15 @@
+--- pigz-2.8/Makefile
++++ pigz-2.8/Makefile
+@@ -95,6 +95,15 @@ test: pigz
  	  compress -f < pigz.c | ./unpigz | cmp - pigz.c ;\
  	fi
  	@rm -f pigz.c.gz pigz.c.zz pigz.c.zip
 +	@rm -rf d/1 d/2
-+	(mkdir -p d/1; cd d/1; tar xzf ../../../../pigz-2.3.3.tar.gz; \
++	(mkdir -p d/1; cd d/1; tar xzf ../../../../pigz-2.8.tar.gz; \
 +	  cd ..; cp -pr 1 2; ../pigz -rp 4 --index %z 1; \
 +	  ../pigz -drp 4 --index %z 1; diff -r 1 2)
 +	@rm -rf d/1 d/2
-+	(mkdir -p d/1; cd d/1; tar xzf ../../../../pigz-2.3.3.tar.gz; \
++	(mkdir -p d/1; cd d/1; tar xzf ../../../../pigz-2.8.tar.gz; \
 +	  cd ..; cp -pr 1 2; ../pigz -zrp 4 -X %f.idx 1; \
 +	  ../pigz -dzrp 4 -X %f.idx 1; diff -r 1 2)
 +	@rm -rf d/1 d/2
  
  tests: dev test
  	./pigzn -kf pigz.c ; ./pigz -t pigz.c.gz
---- pigz-2.3.4/pigz.1.orig	2017-03-02 13:33:31.420259920 +0000
-+++ pigz-2.3.4/pigz.1	2017-03-02 13:33:41.537522623 +0000
-@@ -188,6 +188,14 @@
+--- pigz-2.8/pigz.1
++++ pigz-2.8/pigz.1
+@@ -218,6 +218,14 @@ Provide more verbose output.
  .B -V --version
  Show the version of pigz. -vV also shows the zlib version.
  .TP
@@ -38,20 +39,20 @@ These changes have been sent upstream.
  .B -z --zlib
  Compress to zlib (.zz) instead of gzip format.
  .TP
---- pigz-2.3.4/pigz.c.orig	2017-03-02 13:26:45.154085766 +0000
-+++ pigz-2.3.4/pigz.c	2017-03-02 13:29:35.979415416 +0000
-@@ -224,14 +224,27 @@
+--- pigz-2.8/pigz.c
++++ pigz-2.8/pigz.c
+@@ -251,14 +251,27 @@
     the --independent or -i option, so that the blocks can be decompressed
     independently for partial error recovery or for random access.
  
 -   Decompression can't be parallelized over an arbitrary number of processors
 -   like compression can be, at least not without specially prepared deflate
--   streams for that purpose.  As a result, pigz uses a single thread (the main
+-   streams for that purpose. As a result, pigz uses a single thread (the main
 -   thread) for decompression, but will create three other threads for reading,
 -   writing, and check calculation, which can speed up decompression under some
 +   The --index or -X option causes the generation of a block index which can be
-+   used for parallel decompression.  The block index can be appended onto the
-+   compressed output or it may be stored in a separate file.  The uncompressed
++   used for parallel decompression. The block index can be appended onto the
++   compressed output or it may be stored in a separate file. The uncompressed
 +   size, compressed size, checksum of each block are stored in the index,
 +   allowing future applications to perform random reads of the compressed file.
 +   Streams generated with -X are readable by legacy versions of pigz and gzip.
@@ -60,53 +61,44 @@ These changes have been sent upstream.
 +   If a block index is not present, pigz uses a single thread (the main thread)
 +   for decompression, but will create three other threads for reading, writing,
 +   and check calculation, which can speed up decompression under some
-    circumstances.  Parallel decompression can be turned off by specifying one
+    circumstances. Parallel decompression can be turned off by specifying one
     process (-dp 1 or -tp 1).
  
 +   If the block index is present, the main thread reads the input file and
-+   dispatches each block to an uncompress thread.  The uncompress thread
++   dispatches each block to an uncompress thread. The uncompress thread
 +   uncompresses the block, verifies the block checksum, and passes the block
-+   off to a writer thread.  The writer thread writes the blocks in order,
-+   and combines the individual block checksums into a per-file checksum.  The
++   off to a writer thread. The writer thread writes the blocks in order,
++   and combines the individual block checksums into a per-file checksum. The
 +   per-file checksum is compared to the checksum in the stream's trailer.
 +
     pigz requires zlib 1.2.1 or later to allow setting the dictionary when doing
-    raw deflate.  Since zlib 1.2.3 corrects security vulnerabilities in zlib
+    raw deflate. Since zlib 1.2.3 corrects security vulnerabilities in zlib
     version 1.2.1 and 1.2.2, conditionals check for zlib 1.2.3 or later during
-@@ -266,7 +279,7 @@
-    jobs until instructed to return.  When a job is pulled, the dictionary, if
-    provided, will be loaded into the deflate engine and then that input buffer
-    is dropped for reuse.  Then the input data is compressed into an output
--   buffer that grows in size if necessary to hold the compressed data.  The job
-+   buffer that grows in size if necessary to hold the compressed data. The job
-    is then put into the write job list, sorted by the sequence number. The
-    compress thread however continues to calculate the check value on the input
-    data, either a CRC-32 or Adler-32, possibly in parallel with the write
-@@ -292,13 +305,14 @@
+@@ -319,13 +332,14 @@
     can't get way ahead of the write thread and build up a large backlog of
-    unwritten compressed data.  The write thread will write the compressed data,
-    drop the output buffer, and then wait for the check value to be unlocked
--   by the compress thread.  Then the write thread combines the check value for
--   this chunk with the total check value for eventual use in the trailer.  If
--   this is not the last chunk, the write thread then goes back to look for the
--   next output chunk in sequence.  After the last chunk, the write thread
--   returns and joins the main thread.  Unlike the compress threads, a new write
--   thread is launched for each input stream.  The write thread writes the
--   appropriate header and trailer around the compressed data.
-+   by the compress thread.  Then the write thread writes an index entry (if -X)
+    unwritten compressed data. The write thread will write the compressed data,
+    drop the output buffer, and then wait for the check value to be unlocked by
+-   the compress thread. Then the write thread combines the check value for this
+-   chunk with the total check value for eventual use in the trailer. If this is
+-   not the last chunk, the write thread then goes back to look for the next
+-   output chunk in sequence. After the last chunk, the write thread returns and
+-   joins the main thread. Unlike the compress threads, a new write thread is
+-   launched for each input stream. The write thread writes the appropriate
+-   header and trailer around the compressed data.
++   the compress thread. Then the write thread writes an index entry (if -X)
 +   and combines the check value for this chunk with the total check value for
-+   eventual use in the trailer.  If this is not the last chunk, the write thread
-+   then goes back to look for the next output chunk in sequence.  After the last
-+   chunk, the write thread returns and joins the main thread.  Unlike the
-+   compress threads, a new write thread is launched for each input stream.  The
++   eventual use in the trailer. If this is not the last chunk, the write thread
++   then goes back to look for the next output chunk in sequence. After the last
++   chunk, the write thread returns and joins the main thread. Unlike the
++   compress threads, a new write thread is launched for each input stream. The
 +   write thread writes the appropriate header and trailer around the compressed
 +   data.
  
     The input and output buffers are reused through their collection in pools.
     Each buffer has a use count, which when decremented to zero returns the
-@@ -347,6 +361,9 @@
- #if __STDC_VERSION__-0 >= 199901L || __GNUC__-0 >= 3
- #  include <inttypes.h> /* intmax_t */
+@@ -383,6 +397,9 @@
+    typedef unsigned long crc_t;
+    typedef unsigned prefix_t;
  #endif
 +#include <stddef.h>     /* offsetof() */
 +#include <sys/mman.h>   /* mmap() */
@@ -114,27 +106,26 @@ These changes have been sent upstream.
  
  #ifdef PIGZ_DEBUG
  #  if defined(__APPLE__)
-@@ -490,9 +507,11 @@
-     char *prog;             /* name by which pigz was invoked */
-     int ind;                /* input file descriptor */
-     int outd;               /* output file descriptor */
-+    int idxd;               /* index file descriptor */
-     char *inf;              /* input file name (allocated) */
-     size_t inz;             /* input file name allocated size */
-     char *outf;             /* output file name (allocated) */
-+    char *index;            /* index file name template (may have %f, %z) */
-     int verbosity;          /* 0 = quiet, 1 = normal, 2 = verbose, 3 = trace */
-     int headis;             /* 1 to store name, 2 to store date, 3 both */
-     int pipeout;            /* write output to stdout even if file */
-@@ -837,12 +856,15 @@
+@@ -532,9 +549,11 @@
+     char *prog;             // name by which pigz was invoked
+     int ind;                // input file descriptor
+     int outd;               // output file descriptor
++    int idxd;               // index file descriptor
+     char *inf;              // input file name (allocated)
+     size_t inz;             // input file name allocated size
+     char *outf;             // output file name (allocated)
++    char *index;            // index file name template (may have %f, %z)
+     int verbosity;          // 0 = quiet, 1 = normal, 2 = verbose, 3 = trace
+     int headis;             // 1 to store name, 2 to store date, 3 both
+     int pipeout;            // write output to stdout even if file
+@@ -922,11 +941,14 @@
  
  #endif
  
 +local void idx_abort(void);
 +
- /* abort or catch termination signal */
- local void cut_short(int sig)
- {
+ // Abort or catch termination signal.
+ local void cut_short(int sig) {
      if (sig == SIGINT) {
          Trace(("termination by user"));
      }
@@ -142,18 +133,16 @@ These changes have been sent upstream.
      if (g.outd != -1 && g.outd != 1) {
          unlink(g.outf);
          RELEASE(g.outf);
-@@ -968,11 +990,23 @@
-     return dos;
+@@ -1107,6 +1129,21 @@
+     return count;
  }
  
--/* put a 4-byte integer into a byte array in LSB order or MSB order */
-+/* put integers into a byte array in LSB order or MSB order */
- #define PUT2L(a,b) (*(a)=(b)&0xff,(a)[1]=(b)>>8)
- #define PUT4L(a,b) (PUT2L(a,(b)&0xffff),PUT2L((a)+2,(b)>>16))
++// Pull LSB order or MSB order integers from an unsigned char buffer.
++#define PUT2L(a,b) (*(a)=(b)&0xff,(a)[1]=(b)>>8)
++#define PUT4L(a,b) (PUT2L(a,(b)&0xffff),PUT2L((a)+2,(b)>>16))
 +#define PUT8L(a,b) (PUT4L(a,(b)&0xffffffff),PUT4L((a)+4,(b)>>32))
- #define PUT4M(a,b) (*(a)=(b)>>24,(a)[1]=(b)>>16,(a)[2]=(b)>>8,(a)[3]=(b))
- 
-+/* pull LSB order or MSB order integers from an unsigned char buffer */
++#define PUT4M(a,b) (*(a)=(b)>>24,(a)[1]=(b)>>16,(a)[2]=(b)>>8,(a)[3]=(b))
++
 +#define PULL2L(p) ((p)[0] + ((unsigned)((p)[1]) << 8))
 +#define PULL4L(p) (PULL2L(p) + ((unsigned long)(PULL2L((p) + 2)) << 16))
 +#define PULL8L(p) ((uint64_t)((p)[0]) | ((uint64_t)((p)[1]) << 8) | \
@@ -163,22 +152,21 @@ These changes have been sent upstream.
 +#define PULL2M(p) (((unsigned)((p)[0]) << 8) + (p)[1])
 +#define PULL4M(p) (((unsigned long)(PULL2M(p)) << 16) + PULL2M((p) + 2))
 +
-+
- /* write a gzip, zlib, or zip header using the information in the globals */
- local unsigned long put_header(void)
- {
-@@ -1272,7 +1306,7 @@
+ // Low 32-bits set to all ones.
+ #define LOW32 0xffffffff
  
- /* get a space from a pool -- the use count is initially set to one, so there
-    is no need to call use_space() for the first use */
--local struct space *get_space(struct pool *pool)
-+local struct space *get_space_size(struct pool *pool, size_t size)
- {
+@@ -1464,7 +1501,7 @@
+ 
+ // Get a space from a pool. The use count is initially set to one, so there is
+ // no need to call use_space() for the first use.
+-local struct space *get_space(struct pool *pool) {
++local struct space *get_space_size(struct pool *pool, size_t size) {
      struct space *space;
  
-@@ -1285,6 +1319,15 @@
-     if (pool->head != NULL) {
-         space = pool->head;
+     // if can't create any more, wait for a space to show up
+@@ -1478,6 +1515,15 @@
+         pool->head = space->next;
+         twist(pool->have, BY, -1);      // one less in pool
          possess(space->use);
 +        /* If there's not enough space, free and malloc rather than realloc to
 +           avoid the potential of an unnecessary memory copy. */
@@ -189,19 +177,19 @@ These changes have been sent upstream.
 +                throw(ENOMEM, "not enough memory");
 +            space->size = size;
 +        }
-         pool->head = space->next;
-         twist(pool->have, BY, -1);      /* one less in pool */
-         twist(space->use, TO, 1);       /* initially one user */
-@@ -1300,13 +1343,18 @@
+         twist(space->use, TO, 1);       // initially one user
+         space->len = 0;
+         return space;
+@@ -1491,13 +1537,18 @@
      release(pool->have);
      space = alloc(NULL, sizeof(struct space));
-     space->use = new_lock(1);           /* initially one user */
+     space->use = new_lock(1);           // initially one user
 -    space->buf = alloc(NULL, pool->size);
 -    space->size = pool->size;
 +    space->buf = alloc(NULL, size);
 +    space->size = size;
      space->len = 0;
-     space->pool = pool;                 /* remember the pool this belongs to */
+     space->pool = pool;                 // remember the pool this belongs to
      return space;
  }
  
@@ -210,55 +198,61 @@ These changes have been sent upstream.
 +    return get_space_size(pool, pool->size);
 +}
 +
- /* increase the size of the buffer in space */
- local void grow_space(struct space *space)
- {
-@@ -1373,17 +1421,35 @@
+ // Increase the size of the buffer in space.
+ local void grow_space(struct space *space) {
+     size_t more;
+@@ -1564,17 +1615,41 @@
      return count;
  }
  
 +/* prompt for permission to overwrite a file */
 +local int allow_overwrite(const char *path)
 +{
-+    char ch;
-+    int reply = -1;
++    int ch, overwrite = 0, first = 1;
 +
-+    fprintf(stderr, "%s exists -- overwrite (y/n)? ", path);
++    // get a response from the user -- the first non-blank
++    // character has to be a "y" or a "Y" to permit an overwrite
++    fprintf(stderr, "%s exists -- overwrite (y/n)? ", g.outf);
 +    fflush(stderr);
 +    do {
 +        ch = getchar();
-+        if (reply < 0 && ch != ' ' && ch != '\t')
-+            reply = ch == 'y' || ch == 'Y' ? 1 : 0;
++        if (first == 1) {
++            if (ch == ' ' || ch == '\t')
++                continue;
++            if (ch == 'y' || ch == 'Y')
++                overwrite = 1;
++            first = 0;
++        }
 +    } while (ch != EOF && ch != '\n' && ch != '\r');
-+    return reply;
++    return overwrite;
 +}
 +
- /* input and output buffer pools */
+ // Input and output buffer pools.
  local struct pool in_pool;
  local struct pool out_pool;
  local struct pool dict_pool;
  local struct pool lens_pool;
 +local struct pool idx_pool;
  
- /* -- parallel compression -- */
+ // -- parallel compression --
  
- /* compress or write job (passed from compress list to write list) -- if seq is
-    equal to -1, compress_thread is instructed to return; if more is false then
--   this is the last chunk, which after writing tells write_thread to return */
-+   this is the last chunk, which after writing tells compress_write_thread to
-+   return */
+ // Compress or write job (passed from compress list to write list). If seq is
+ // equal to -1, compress_thread is instructed to return; if more is false then
+-// this is the last chunk, which after writing tells write_thread to return.
++// this is the last chunk, which after writing tells compress_write_thread to
++// return
  struct job {
-     long seq;                   /* sequence number */
-     int more;                   /* true if this is not the last chunk */
-@@ -1430,6 +1496,7 @@
+     long seq;                   // sequence number
+     int more;                   // true if this is not the last chunk
+@@ -1620,6 +1695,7 @@
      new_pool(&out_pool, OUTPOOL(g.block), -1);
      new_pool(&dict_pool, DICT, -1);
      new_pool(&lens_pool, g.block >> (RSYNCBITS - 1), -1);
 +    new_pool(&idx_pool, 1, -1);
  }
  
- /* command the compress threads to all return, then join them all (call from
-@@ -1466,6 +1533,8 @@
+ // Command the compress threads to all return, then join them all (call from
+@@ -1655,6 +1731,8 @@
      Trace(("-- freed %d output buffers", caught));
      caught = free_pool(&in_pool);
      Trace(("-- freed %d input buffers", caught));
@@ -267,7 +261,7 @@ These changes have been sent upstream.
      free_lock(write_first);
      free_lock(compress_have);
      compress_have = NULL;
-@@ -1738,18 +1807,483 @@
+@@ -1957,17 +2035,482 @@
      }
  }
  
@@ -735,210 +729,258 @@ These changes have been sent upstream.
 +    return (idx_read_trailer(g.ind, g.inf, &trail) == 0);
 +}
 +
- /* collect the write jobs off of the list in sequence order and write out the
-    compressed data until the last chunk is written -- also write the header and
-    trailer and combine the individual check values of the input buffers */
--local void write_thread(void *dummy)
-+local void compress_write_thread(void *dummy)
- {
-     long seq;                       /* next sequence number looking for */
-     struct job *job;                /* job pulled and working on */
-     size_t len;                     /* input length */
-+    size_t olen;                    /* output length */
-     int more;                       /* true if more chunks to write */
-     unsigned long head;             /* header length */
-     unsigned long ulen;             /* total uncompressed size (overflow ok) */
--    unsigned long clen;             /* total compressed size (overflow ok) */
-+    size_t clen;                    /* total compressed size */
-     unsigned long check;            /* check value of uncompressed data */
-     ball_t err;                     /* error information from throw() */
+ // Collect the write jobs off of the list in sequence order and write out the
+ // compressed data until the last chunk is written. Also write the header and
+ // trailer and combine the individual check values of the input buffers.
+-local void write_thread(void *dummy) {
++local void compress_write_thread(void *dummy) {
+     long seq;                       // next sequence number looking for
+     struct job *job;                // job pulled and working on
+     size_t len;                     // input length
++    size_t olen;                    // output length
+     int more;                       // true if more chunks to write
+     length_t head;                  // header length
+     length_t ulen;                  // total uncompressed size (overflow ok)
+-    length_t clen;                  // total compressed size (overflow ok)
++    size_t clen;                    // total compressed size
+     unsigned long check;            // check value of uncompressed data
+     ball_t err;                     // error information from throw()
  
-@@ -1775,23 +2309,27 @@
-             /* update lengths, save uncompressed length for COMB */
+@@ -1993,24 +2536,28 @@
+             // update lengths, save uncompressed length for COMB
              more = job->more;
              len = job->in->len;
 +            olen = job->out->len;
              drop_space(job->in);
-             ulen += (unsigned long)len;
--            clen += (unsigned long)(job->out->len);
+             ulen += len;
+-            clen += job->out->len;
 +            clen += olen;
  
-             /* write the compressed data and drop the output buffer */
+             // write the compressed data and drop the output buffer
              Trace(("-- writing #%ld", seq));
 -            writen(g.outd, job->out->buf, job->out->len);
 +            writen(g.outd, job->out->buf, olen);
              drop_space(job->out);
              Trace(("-- wrote #%ld%s", seq, more ? "" : " (last)"));
  
--            /* wait for check calculation to complete, then combine, once
--               the compress thread is done with the input, release it */
-+            /* wait for check calculation to complete, then combine */
+-            // wait for check calculation to complete, then combine, once the
+-            // compress thread is done with the input, release it
++            // wait for check calculation to complete, then combine
              possess(job->calc);
              wait_for(job->calc, TO_BE, 1);
              release(job->calc);
              check = COMB(check, job->check, len);
+             Trace(("-- combined #%ld%s", seq, more ? "" : " (last)"));
  
-+            /* update the block index */
++            // update the block index
 +            if (g.index)
 +                idx_add(len, olen, job->check);
 +
-             /* free the job */
+             // free the job
              free_lock(job->calc);
              FREE(job);
-@@ -1873,7 +2411,7 @@
+@@ -2090,7 +2637,7 @@
      setup_jobs();
  
-     /* start write thread */
+     // start write thread
 -    writeth = launch(write_thread, NULL);
 +    writeth = launch(compress_write_thread, NULL);
  
-     /* read from input and start compress threads (write thread will pick up
-        the output of the compress threads) */
-@@ -2336,7 +2874,7 @@
+     // read from input and start compress threads (write thread will pick up
+     // the output of the compress threads)
+@@ -2576,7 +3123,7 @@
  #ifndef NOTHREAD
-     /* if first time in or procs == 1, read a buffer to have something to
-        return, otherwise wait for the previous read job to complete */
+     // if first time in or procs == 1, read a buffer to have something to
+     // return, otherwise wait for the previous read job to complete
 -    if (g.procs > 1) {
 +    if (g.procs > 1 && g.index == NULL && !ind_has_index()) {
-         /* if first time, fire up the read thread, ask for a read */
+         // if first time, fire up the read thread, ask for a read
          if (g.in_which == -1) {
              g.in_which = 1;
-@@ -2437,12 +2975,6 @@
-         g.in_next += togo; \
+@@ -2719,12 +3266,6 @@
+         crc = crc32z(crc, (unsigned char *)str, have); \
      } while (0)
  
--/* pull LSB order or MSB order integers from an unsigned char buffer */
+-// Pull LSB order or MSB order integers from an unsigned char buffer.
 -#define PULL2L(p) ((p)[0] + ((unsigned)((p)[1]) << 8))
 -#define PULL4L(p) (PULL2L(p) + ((unsigned long)(PULL2L((p) + 2)) << 16))
 -#define PULL2M(p) (((unsigned)((p)[0]) << 8) + (p)[1])
 -#define PULL4M(p) (((unsigned long)(PULL2M(p)) << 16) + PULL2M((p) + 2))
 -
- /* convert MS-DOS date and time to a Unix time, assuming current timezone
-    (you got a better idea?) */
- local time_t dos2time(unsigned long dos)
-@@ -3066,6 +3598,73 @@
-     return 0;
- }
+ // Convert MS-DOS date and time to a Unix time, assuming current timezone.
+ // (You got a better idea?)
+ local time_t dos2time(unsigned long dos) {
+@@ -3456,16 +3997,110 @@
+ // some odd code below that tries to detect and accommodate both cases.
+ #define SIG 0x08074b50
  
 +local void check_trailer(unsigned long check, off_t clen)
 +{
++    int more;
 +    unsigned tmp2;              /* used by GET4() */
 +    unsigned long tmp4;         /* used by GET4() */
 +    unsigned long len;
 +
-+    /* read and check trailer */
-+    if (g.form > 1) {           /* zip local trailer (if any) */
-+        if (g.form == 3) {      /* data descriptor follows */
-+            /* read original version of data descriptor */
++    // read and check trailer
++    if (g.form > 1) {           // zip local trailer (if any)
++        if (g.form == 3) {      // data descriptor follows
++            // get data descriptor values, assuming no signature
 +            g.zip_crc = GET4();
 +            g.zip_clen = GET4();
-+            g.zip_ulen = GET4();
-+            if (g.in_eof)
-+                throw(EDOM, "%s: corrupted zip entry -- missing trailer: ", g.inf);
++            g.zip_ulen = GET4();        // ZIP64 -> high clen, not ulen
 +
-+            /* if crc doesn't match, try info-zip variant with sig */
-+            if (g.zip_crc != g.out_check) {
-+                if (g.zip_crc != 0x08074b50UL || g.zip_clen != g.out_check)
-+                    throw(EDOM, "%s: corrupted zip entry -- crc32 mismatch: ", g.inf);
++            // deduce whether or not a signature precedes the values
++            if (g.zip_crc == SIG &&         // might be the signature
++                // if the expected CRC is not SIG, then it's a signature
++                (g.out_check != SIG ||      // assume signature
++                 // now we're in a very rare case where CRC == SIG -- the
++                 // first four bytes could be the signature or the CRC
++                 (g.zip_clen == SIG &&      // if not, then no signature
++                  // now we have the first two words are SIG and the
++                  // expected CRC is SIG, so it could be a signature and
++                  // the CRC, or it could be the CRC and a compressed
++                  // length that is *also* SIG (!) -- so check the low 32
++                  // bits of the expected compressed length for SIG
++                  ((clen & LOW32) != SIG || // assume signature and CRC
++                   // now the expected CRC *and* the expected low 32 bits
++                   // of the compressed length are SIG -- this is so
++                   // incredibly unlikely, clearly someone is messing with
++                   // us, but we continue ... if the next four bytes are
++                   // not SIG, then there is not a signature -- check those
++                   // bytes, currently in g.zip_ulen:
++                   (g.zip_ulen == SIG &&    // if not, then no signature
++                    // we have three SIGs in a row in the descriptor, and
++                    // both the expected CRC and the expected clen are SIG
++                    // -- the first one is a signature if we don't expect
++                    // the third word to be SIG, which is either the low 32
++                    // bits of ulen, or if ZIP64, the high 32 bits of clen:
++                    (g.zip64 ? clen >> 32 : g.out_tot) != SIG
++                    // if that last compare was equal, then the expected
++                    // values for the CRC, the low 32 bits of clen, *and*
++                    // the low 32 bits of ulen are all SIG (!!), or in the
++                    // case of ZIP64, even crazier, the CRC and *both*
++                    // 32-bit halves of clen are all SIG (clen > 500
++                    // petabytes!!!) ... we can no longer discriminate the
++                    // hypotheses, so we will assume no signature
++                    ))))) {
++                // first four bytes were actually the descriptor -- shift
++                // the values down and get another four bytes
 +                g.zip_crc = g.zip_clen;
 +                g.zip_clen = g.zip_ulen;
 +                g.zip_ulen = GET4();
 +            }
 +
-+            /* handle incredibly rare cases where crc equals signature */
-+            else if (g.zip_crc == 0x08074b50UL && g.zip_clen == g.zip_crc &&
-+              ((clen & LOW32) != g.zip_crc || g.zip_ulen == g.zip_crc)) {
-+                g.zip_crc = g.zip_clen;
-+                g.zip_clen = g.zip_ulen;
-+                g.zip_ulen = GET4();
-+            }
-+
-+            /* if second length doesn't match, try 64-bit lengths */
-+            if (g.zip_ulen != (g.out_tot & LOW32)) {
++            // if ZIP64, then ulen is really the high word of clen -- get
++            // the actual ulen and skip its high word as well (we only
++            // compare the low 32 bits of the lengths to verify)
++            if (g.zip64) {
 +                g.zip_ulen = GET4();
 +                (void)GET4();
 +            }
 +            if (g.in_eof)
-+                throw(EDOM, "%s: corrupted zip entry -- missing trailer: ", g.inf);
++                throw(EDOM, "%s: corrupted zip entry -- missing trailer", g.inf);
 +        }
-+        if (g.zip_clen != (clen & LOW32) || g.zip_ulen != (g.out_tot & LOW32))
-+            throw(EDOM, "%s: corrupted zip entry -- length mismatch: ", g.inf);
 +        check = g.zip_crc;
++        if (check != g.out_check)
++            throw(EDOM, "%s: corrupted zip entry -- crc32 mismatch", g.inf);
++        if (g.zip_clen != (clen & LOW32) ||
++            g.zip_ulen != (g.out_tot & LOW32))
++            throw(EDOM, "%s: corrupted zip entry -- length mismatch", g.inf);
++        more = more_zip_entries();  // see if more entries, get comment
 +    }
-+    else if (g.form == 1) {     /* zlib (big-endian) trailer */
++    else if (g.form == 1) {     // zlib (big-endian) trailer
 +        check = (unsigned long)(GET()) << 24;
 +        check += (unsigned long)(GET()) << 16;
 +        check += (unsigned)(GET()) << 8;
 +        check += GET();
 +        if (g.in_eof)
-+            throw(EDOM, "%s: corrupted zlib stream -- missing trailer: ", g.inf);
++            throw(EDOM, "%s: corrupted zlib stream -- missing trailer", g.inf);
 +        if (check != g.out_check)
-+            throw(EDOM, "%s: corrupted zlib stream -- adler32 mismatch: ", g.inf);
++            throw(EDOM, "%s: corrupted zlib stream -- adler32 mismatch", g.inf);
 +    }
-+    else {                      /* gzip trailer */
++    else {                      // gzip trailer
 +        check = GET4();
 +        len = GET4();
 +        if (g.in_eof)
-+            throw(EDOM, "%s: corrupted gzip stream -- missing trailer: ", g.inf);
++            throw(EDOM, "%s: corrupted gzip stream -- missing trailer", g.inf);
 +        if (check != g.out_check)
-+            throw(EDOM, "%s: corrupted gzip stream -- crc32 mismatch: ", g.inf);
++            throw(EDOM, "%s: corrupted gzip stream -- crc32 mismatch", g.inf);
 +        if (len != (g.out_tot & LOW32))
-+            throw(EDOM, "%s: corrupted gzip stream -- length mismatch: ", g.inf);
++            throw(EDOM, "%s: corrupted gzip stream -- length mismatch", g.inf);
 +    }
 +}
 +
- /* inflate for decompression or testing -- decompress from ind to outd unless
-    decode != 1, in which case just test ind, and then also list if list != 0;
-    look for and decode multiple, concatenated gzip and/or zlib streams;
-@@ -3073,10 +3672,8 @@
- local void infchk(void)
- {
-     int ret, cont, was;
--    unsigned long check, len;
-+    unsigned long check;
+ // Inflate for decompression or testing. Decompress from ind to outd unless
+ // decode != 1, in which case just test ind, and then also list if list != 0;
+ // look for and decode multiple, concatenated gzip and/or zlib streams; read
+ // and check the gzip, zlib, or zip trailer.
+ local void infchk(void) {
+     int ret, cont, more;
+-    unsigned long check, len, ktot;
++    unsigned long check, ktot;
      z_stream strm;
 -    unsigned tmp2;
 -    unsigned long tmp4;
-     off_t clen;
+     length_t clen, ctot, utot;
  
-     cont = 0;
-@@ -3113,72 +3710,7 @@
-         /* compute compressed data length */
+     ctot = utot = 0;
+@@ -3504,95 +4139,7 @@
+         // compute compressed data length
          clen = g.in_tot - g.in_left;
  
--        /* read and check trailer */
--        if (g.form > 1) {           /* zip local trailer (if any) */
--            if (g.form == 3) {      /* data descriptor follows */
--                /* read original version of data descriptor */
+-        // read and check trailer
+-        if (g.form > 1) {           // zip local trailer (if any)
+-            if (g.form == 3) {      // data descriptor follows
+-                // get data descriptor values, assuming no signature
 -                g.zip_crc = GET4();
 -                g.zip_clen = GET4();
--                g.zip_ulen = GET4();
--                if (g.in_eof)
--                    throw(EDOM, "%s: corrupted entry -- missing trailer",
--                          g.inf);
+-                g.zip_ulen = GET4();        // ZIP64 -> high clen, not ulen
 -
--                /* if crc doesn't match, try info-zip variant with sig */
--                if (g.zip_crc != g.out_check) {
--                    if (g.zip_crc != 0x08074b50UL || g.zip_clen != g.out_check)
--                        throw(EDOM, "%s: corrupted entry -- crc32 mismatch",
--                              g.inf);
+-                // deduce whether or not a signature precedes the values
+-                if (g.zip_crc == SIG &&         // might be the signature
+-                    // if the expected CRC is not SIG, then it's a signature
+-                    (g.out_check != SIG ||      // assume signature
+-                     // now we're in a very rare case where CRC == SIG -- the
+-                     // first four bytes could be the signature or the CRC
+-                     (g.zip_clen == SIG &&      // if not, then no signature
+-                      // now we have the first two words are SIG and the
+-                      // expected CRC is SIG, so it could be a signature and
+-                      // the CRC, or it could be the CRC and a compressed
+-                      // length that is *also* SIG (!) -- so check the low 32
+-                      // bits of the expected compressed length for SIG
+-                      ((clen & LOW32) != SIG || // assume signature and CRC
+-                       // now the expected CRC *and* the expected low 32 bits
+-                       // of the compressed length are SIG -- this is so
+-                       // incredibly unlikely, clearly someone is messing with
+-                       // us, but we continue ... if the next four bytes are
+-                       // not SIG, then there is not a signature -- check those
+-                       // bytes, currently in g.zip_ulen:
+-                       (g.zip_ulen == SIG &&    // if not, then no signature
+-                        // we have three SIGs in a row in the descriptor, and
+-                        // both the expected CRC and the expected clen are SIG
+-                        // -- the first one is a signature if we don't expect
+-                        // the third word to be SIG, which is either the low 32
+-                        // bits of ulen, or if ZIP64, the high 32 bits of clen:
+-                        (g.zip64 ? clen >> 32 : g.out_tot) != SIG
+-                        // if that last compare was equal, then the expected
+-                        // values for the CRC, the low 32 bits of clen, *and*
+-                        // the low 32 bits of ulen are all SIG (!!), or in the
+-                        // case of ZIP64, even crazier, the CRC and *both*
+-                        // 32-bit halves of clen are all SIG (clen > 500
+-                        // petabytes!!!) ... we can no longer discriminate the
+-                        // hypotheses, so we will assume no signature
+-                        ))))) {
+-                    // first four bytes were actually the descriptor -- shift
+-                    // the values down and get another four bytes
 -                    g.zip_crc = g.zip_clen;
 -                    g.zip_clen = g.zip_ulen;
 -                    g.zip_ulen = GET4();
 -                }
 -
--                /* handle incredibly rare cases where crc equals signature */
--                else if (g.zip_crc == 0x08074b50UL &&
--                         g.zip_clen == g.zip_crc &&
--                         ((clen & LOW32) != g.zip_crc ||
--                          g.zip_ulen == g.zip_crc)) {
--                    g.zip_crc = g.zip_clen;
--                    g.zip_clen = g.zip_ulen;
--                    g.zip_ulen = GET4();
--                }
--
--                /* if second length doesn't match, try 64-bit lengths */
--                if (g.zip_ulen != (g.out_tot & LOW32)) {
+-                // if ZIP64, then ulen is really the high word of clen -- get
+-                // the actual ulen and skip its high word as well (we only
+-                // compare the low 32 bits of the lengths to verify)
+-                if (g.zip64) {
 -                    g.zip_ulen = GET4();
 -                    (void)GET4();
 -                }
@@ -946,13 +988,16 @@ These changes have been sent upstream.
 -                    throw(EDOM, "%s: corrupted entry -- missing trailer",
 -                          g.inf);
 -            }
+-            check = g.zip_crc;
+-            if (check != g.out_check)
+-                throw(EDOM, "%s: corrupted entry -- crc32 mismatch", g.inf);
 -            if (g.zip_clen != (clen & LOW32) ||
 -                g.zip_ulen != (g.out_tot & LOW32))
 -                throw(EDOM, "%s: corrupted entry -- length mismatch",
 -                      g.inf);
--            check = g.zip_crc;
+-            more = more_zip_entries();  // see if more entries, get comment
 -        }
--        else if (g.form == 1) {     /* zlib (big-endian) trailer */
+-        else if (g.form == 1) {     // zlib (big-endian) trailer
 -            check = (unsigned long)(GET()) << 24;
 -            check += (unsigned long)(GET()) << 16;
 -            check += (unsigned)(GET()) << 8;
@@ -962,7 +1007,7 @@ These changes have been sent upstream.
 -            if (check != g.out_check)
 -                throw(EDOM, "%s: corrupted -- adler32 mismatch", g.inf);
 -        }
--        else {                      /* gzip trailer */
+-        else {                      // gzip trailer
 -            check = GET4();
 -            len = GET4();
 -            if (g.in_eof)
@@ -974,9 +1019,9 @@ These changes have been sent upstream.
 -        }
 +        check_trailer(check, clen);
  
-         /* show file information if requested */
+         // show file information if requested
          if (g.list) {
-@@ -3202,6 +3734,231 @@
+@@ -3638,6 +4185,231 @@
          complain("warning: %s: trailing junk was ignored", g.inf);
  }
  
@@ -1205,10 +1250,10 @@ These changes have been sent upstream.
 +        infchk();
 +}
 +
- /* --- decompress Unix compress (LZW) input --- */
+ // --- decompress Unix compress (LZW) input ---
  
- /* Type for accumulating bits.  23 bits will be used to accumulate up to 16-bit
-@@ -3614,7 +4371,7 @@
+ // Type for accumulating bits. 23 bits will be used to accumulate up to 16-bit
+@@ -4070,7 +4842,7 @@
          if (g.decode == 2) {
              try {
                  if (method == 8)
@@ -1217,30 +1262,31 @@ These changes have been sent upstream.
                  else {
                      unlzw();
                      if (g.list) {
-@@ -3687,19 +4444,8 @@
- 
-         /* if exists and not -f, give user a chance to overwrite */
-         if (g.outd < 0 && errno == EEXIST && isatty(0) && g.verbosity) {
--            int ch, reply;
--
--            fprintf(stderr, "%s exists -- overwrite (y/n)? ", g.outf);
--            fflush(stderr);
--            reply = -1;
--            do {
--                ch = getchar();
--                if (reply < 0 && ch != ' ' && ch != '\t')
--                    reply = ch == 'y' || ch == 'Y' ? 1 : 0;
--            } while (ch != EOF && ch != '\n' && ch != '\r');
--            if (reply == 1)
--                g.outd = open(g.outf, O_CREAT | O_TRUNC | O_WRONLY,
--                              0600);
-+            if (allow_overwrite(g.outf))
-+                g.outd = open(g.outf, O_CREAT | O_TRUNC | O_WRONLY, 0600);
-         }
- 
-         /* if exists and no overwrite, report and go on to next */
-@@ -3722,10 +4468,11 @@
-     /* process ind to outd */
+@@ -4135,21 +4907,7 @@
+         if (g.outd < 0 && errno == EEXIST) {
+             int overwrite = 0;
+             if (isatty(0) && g.verbosity) {
+-                // get a response from the user -- the first non-blank
+-                // character has to be a "y" or a "Y" to permit an overwrite
+-                fprintf(stderr, "%s exists -- overwrite (y/n)? ", g.outf);
+-                fflush(stderr);
+-                int ch, first = 1;
+-                do {
+-                    ch = getchar();
+-                    if (first == 1) {
+-                        if (ch == ' ' || ch == '\t')
+-                            continue;
+-                        if (ch == 'y' || ch == 'Y')
+-                            overwrite = 1;
+-                        first = 0;
+-                    }
+-                } while (ch != EOF && ch != '\n' && ch != '\r');
++               overwrite = allow_overwrite(g.outf);
+             }
+             if (!overwrite) {
+                 complain("skipping: %s exists", g.outf);
+@@ -4169,10 +4927,11 @@
+     // process ind to outd
      if (g.verbosity > 1)
          fprintf(stderr, "%s to %s ", g.inf, g.outf);
 +
@@ -1252,7 +1298,7 @@ These changes have been sent upstream.
              else if (method == 257)
                  unlzw();
              else
-@@ -3746,8 +4493,14 @@
+@@ -4193,8 +4952,14 @@
          }
      }
  #ifndef NOTHREAD
@@ -1268,76 +1314,68 @@ These changes have been sent upstream.
  #endif
      else
          single_compress(0);
-@@ -3756,6 +4509,10 @@
+@@ -4203,6 +4968,10 @@
          fflush(stderr);
      }
  
-+    /* close index file - this may append the index to outd */
++    // close index file - this may append the index to outd
 +    if (idx.valid)
 +        idx_close();
 +
-     /* finish up, copy attributes, set times, delete original */
-     if (g.ind != 0)
-         close(g.ind);
-@@ -3819,6 +4576,9 @@
+     // finish up, copy attributes, set times, delete original
+     load_end();
+     if (g.outd != -1 && g.outd != 1) {
+@@ -4286,6 +5055,9 @@
  "  -v, --verbose        Provide more verbose output",
  #endif
  "  -V  --version        Show the version of pigz",
 +"  -X  --index file     Create or use parallel uncompression index file.",
 +"                       %f and %z are replaced by uncompressed and compressed",
 +"                       file names",
+ "  -Y  --synchronous    Force output file write to permanent storage",
  "  -z, --zlib           Compress to zlib (.zz) instead of gzip format",
  "  --                   All arguments after \"--\" are treated as files"
- };
-@@ -3897,11 +4657,11 @@
-     {"LZW", "Z"}, {"ascii", "a"}, {"best", "9"}, {"bits", "Z"},
-     {"blocksize", "b"}, {"decompress", "d"}, {"fast", "1"}, {"first", "F"},
-     {"force", "f"}, {"help", "h"}, {"independent", "i"}, {"iterations", "I"},
--    {"keep", "k"}, {"license", "L"}, {"list", "l"}, {"maxsplits", "M"},
--    {"name", "N"}, {"no-name", "n"}, {"no-time", "T"}, {"oneblock", "O"},
--    {"processes", "p"}, {"quiet", "q"}, {"recursive", "r"}, {"rsyncable", "R"},
--    {"silent", "q"}, {"stdout", "c"}, {"suffix", "S"}, {"test", "t"},
--    {"to-stdout", "c"}, {"uncompress", "d"}, {"verbose", "v"},
-+    {"index", "X"}, {"keep", "k"}, {"license", "L"}, {"list", "l"},
-+    {"maxsplits", "M"}, {"name", "N"}, {"no-name", "n"}, {"no-time", "T"},
-+    {"oneblock", "O"}, {"processes", "p"}, {"quiet", "q"}, {"recursive", "r"},
-+    {"rsyncable", "R"}, {"silent", "q"}, {"stdout", "c"}, {"suffix", "S"},
-+    {"test", "t"}, {"to-stdout", "c"}, {"uncompress", "d"}, {"verbose", "v"},
-     {"version", "V"}, {"zip", "K"}, {"zlib", "z"}};
- #define NLOPTS (sizeof(longopts) / (sizeof(char *) << 1))
+@@ -4372,7 +5144,7 @@
+ #ifndef NOZOPFLI
+     {"first", "F"}, {"iterations", "I"}, {"maxsplits", "J"}, {"oneblock", "O"},
+ #endif
+-    {"help", "h"}, {"independent", "i"}, {"keep", "k"}, {"license", "L"},
++    {"help", "h"}, {"independent", "i"}, {"index", "X"}, {"keep", "k"}, {"license", "L"},
+     {"list", "l"}, {"name", "N"}, {"no-name", "n"}, {"no-time", "m"},
+     {"processes", "p"}, {"quiet", "q"}, {"recursive", "r"}, {"rsyncable", "R"},
+     {"silent", "q"}, {"stdout", "c"}, {"suffix", "S"}, {"synchronous", "Y"},
+@@ -4414,7 +5186,7 @@
  
-@@ -3941,7 +4701,7 @@
- 
-     /* if no argument or dash option, check status of get */
+     // if no argument or dash option, check status of get
      if (get && (arg == NULL || *arg == '-')) {
--        bad[1] = "bpSIM"[get - 1];
-+        bad[1] = "bpSIMX"[get - 1];
+-        bad[1] = "bpSIJAC"[get - 1];
++        bad[1] = "bpSIJACX"[get - 1];
          throw(EINVAL, "missing parameter after %s", bad);
      }
      if (arg == NULL)
-@@ -4014,6 +4774,7 @@
-                 if (g.verbosity > 1)
-                     fprintf(stderr, "zlib %s\n", zlibVersion());
+@@ -4500,6 +5272,7 @@
+                     printf("zlib %s\n", zlibVersion());
                  exit(0);
-+            case 'X':  g.setdict = 0; get = 6;  break;
+                 break;          // avoid warning
++            case 'X':  g.setdict = 0; get = 8;  break;
+             case 'Y':  g.sync = 1;  break;
              case 'Z':
                  throw(EINVAL, "invalid option: LZW output not supported: %s",
-                       bad);
-@@ -4043,7 +4804,7 @@
-             return 0;
+@@ -4535,7 +5308,7 @@
+             return 1;
      }
  
--    /* process option parameter for -b, -p, -S, -I, or -M */
-+    /* process option parameter for -b, -p, -S, -I, -M or -X */
+-    // process option parameter for -b, -p, -A, -S, -I, or -J
++    // process option parameter for -b, -p, -A, -S, -I, -J, or -X
      if (get) {
          size_t n;
  
-@@ -4078,6 +4839,8 @@
-             g.zopts.numiterations = num(arg);   /* optimization iterations */
-         else if (get == 5)
-             g.zopts.blocksplittingmax = num(arg);   /* max block splits */
-+        else if (get == 6)
-+            g.index = arg;                      /* index file */
+@@ -4580,6 +5353,8 @@
+ #endif
+         else if (get == 7)
+             g.comment = arg;                    // header comment
++        else if (get == 8)
++            g.index = arg;                      // index file
          get = 0;
-         return 0;
+         return 1;
      }

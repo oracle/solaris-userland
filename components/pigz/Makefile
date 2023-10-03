@@ -20,20 +20,19 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pigz
-COMPONENT_VERSION=	2.3.4
+COMPONENT_VERSION=	2.8
 COMPONENT_PROJECT_URL=	http://zlib.net/pigz/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6f031fa40bc15b1d80d502ff91f83ba14f4b079e886bfb83221374f7bf5c8f9a
+    sha256:eb872b4f0e1f0ebe59c9f7bd8c506c4204893ba6a8492de31df416f0d5170fd0
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3642
-
-COMPONENT_BAID=		38365
+COMPONENT_BAID=		151518
 
 BUILD_STYLE= justmake
 INSTALL_TARGET= build

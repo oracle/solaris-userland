@@ -7,44 +7,45 @@
 name threads to improve observability - developed by Oracle
 Not submitted upstream: Uses feature first present in Solaris 11.4
 
---- pigz-2.3.3/yarn.c.orig	2016-09-26 10:55:04.395234262 +0000
-+++ pigz-2.3.3/yarn.c	2016-09-26 10:57:33.364488635 +0000
-@@ -262,7 +262,12 @@
+--- pigz-2.8/yarn.c
++++ pigz-2.8/yarn.c
+@@ -290,8 +290,13 @@ local void *ignition(void *arg) {
  
- /* not all POSIX implementations create threads as joinable by default, so that
-    is made explicit here */
+ // Not all POSIX implementations create threads as joinable by default, so that
+ // is made explicit here.
 +#ifdef HAVE_PTHREAD_SETNAME_NP
-+#undef launch
-+thread *launch(const char *probename, void (*probe)(void *), void *payload)
++thread *launch_(const char *probename, void (*probe)(void *), void *payload,
++                char const *file, long line) {
 +#else
- thread *launch(void (*probe)(void *), void *payload)
+ thread *launch_(void (*probe)(void *), void *payload,
+                 char const *file, long line) {
 +#endif
- {
-     int ret;
-     thread *th;
-@@ -288,7 +293,9 @@
-         (ret = pthread_create(&(th->id), &attr, ignition, capsule)) ||
-         (ret = pthread_attr_destroy(&attr)))
-         fail(ret);
--
+     // construct the requested call and argument for the ignition() routine
+     // (allocated instead of automatic so that we're sure this will still be
+     // there when ignition() actually starts up -- ignition() will free this
+@@ -322,6 +327,9 @@ thread *launch_(void (*probe)(void *), v
+     if (ret)
+         fail(ret, file, line, "attr_destroy");
+ 
 +#ifdef HAVE_PTHREAD_SETNAME_NP
 +    (void)pthread_setname_np(th->id, probename);
 +#endif
-     /* put the thread in the threads list for join_all() */
+     // put the thread in the threads list for join_all()
      th->done = 0;
      th->next = threads;
---- pigz-2.3.3/yarn.h.orig	2016-09-26 10:57:54.883094290 +0000
-+++ pigz-2.3.3/yarn.h	2016-09-26 10:58:28.855091969 +0000
-@@ -115,7 +115,12 @@
+--- pigz-2.8/yarn.h
++++ pigz-2.8/yarn.h
+@@ -111,8 +111,13 @@ extern void (*yarn_abort)(int);
  void yarn_mem(void *(*)(size_t), void (*)(void *));
  
  typedef struct thread_s thread;
 +#ifdef HAVE_PTHREAD_SETNAME_NP
-+thread *launch(const char *, void (*)(void *), void *);
-+#define launch(p, a) launch(#p, p, a)
++thread *launch_(const char *, void (*)(void *), void *, char const *, long);
++#define launch(a, b) launch_(#a, a, b, __FILE__, __LINE__)
 +#else
- thread *launch(void (*)(void *), void *);
+ thread *launch_(void (*)(void *), void *, char const *, long);
+ #define launch(a, b) launch_(a, b, __FILE__, __LINE__)
 +#endif
- void join(thread *);
- int join_all(void);
- void destruct(thread *);
+ void join_(thread *, char const *, long);
+ #define join(a) join_(a, __FILE__, __LINE__)
+ int join_all_(char const *, long);
