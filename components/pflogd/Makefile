@@ -66,3 +66,4 @@ REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/libpcap
 REQUIRED_PACKAGES += system/library/smf
+REQUIRED_PACKAGES += system/zones
