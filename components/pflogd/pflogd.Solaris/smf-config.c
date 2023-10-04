@@ -21,18 +21,23 @@
  */
 
 /*
- * Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+ * Copyright (c) 2014, 2023, Oracle and/or its affiliates.
  */
 
 #include <string.h>
 #include <strings.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <zone.h>
 #include <err.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <libscf.h>
 #include <stddef.h>
+#include <libzonecfg.h>
 #include <libscf_priv.h>
+#include <sys/sysmacros.h>
+#include <sys/brand.h>
 
 #include "pflogd.h"
 #include "smf-config.h"
@@ -51,7 +56,7 @@
 
 /*
  * smf_pflogd_cfg
- * FTP proxy configuration container.
+ * pflogd proxy configuration container.
  */
 smf_pflogd_cfg_t	smf_pflogd_cfg;
 
@@ -183,6 +188,11 @@ static int smf_type[] = {
 static scf_propvec_t	prop_vec[SMF_CFG_PROP_COUNT + 1 + 1];
 
 /*
+ * There are four properties + NULL terminator
+ */
+static scf_propvec_t	zonedep_prop_vec[4 + 1];
+
+/*
  * general property group properties
  * +1 for NULL termination.
  * +2 for value_authorization/action_authorization
@@ -265,10 +275,38 @@ clear_prop_vec2(scf_propvec_t *prop_vec_ptr, int count)
 static void
 clear_prop_vec()
 {
-	clear_prop_vec2(prop_vec,
-	    sizeof (prop_vec) / sizeof (scf_propvec_t));
-	clear_prop_vec2(gen_prop_vec,
-	    sizeof (gen_prop_vec) / sizeof (scf_propvec_t));
+	clear_prop_vec2(prop_vec, ARRAY_LEN(prop_vec));
+	clear_prop_vec2(gen_prop_vec, ARRAY_LEN(gen_prop_vec));
+	clear_prop_vec2(zonedep_prop_vec, ARRAY_LEN(gen_prop_vec));
+}
+
+static int
+is_solaris10_brand(const char *zonename)
+{
+	char brand[MAXNAMELEN];
+	zone_dochandle_t zdh;
+
+	if ((zdh = zonecfg_init_handle()) == NULL) {
+		warn("%s unable to init zone_dochandle", __func__);
+		return (0);
+	}
+
+	if (zonecfg_get_handle(zonename, zdh) != Z_OK) {
+		warn("%s unable to get zone_dochandle for %s",
+		    __func__, zonename);
+		zonecfg_fini_handle(zdh);
+		return (0);
+	}
+
+	if (zonecfg_get_brand(zdh, brand, sizeof (brand)) != Z_OK) {
+		warn("%s unable to get %s zone brand", __func__, zonename);
+		zonecfg_fini_handle(zdh);
+		return (0);
+	}
+
+	zonecfg_fini_handle(zdh);
+
+	return (strcmp(brand, SOLARIS_S10C_BRAND_NAME) == 0);
 }
 
 /*
@@ -288,6 +326,8 @@ cfg_to_prop_vec(void)
 	int		i;
 	scf_propvec_t	*prop_vec_ptr = prop_vec;
 	conv_out_f	conv_func;
+	char		*zone_sep;
+	int		solaris10;
 
 	clear_prop_vec();
 
@@ -316,6 +356,60 @@ cfg_to_prop_vec(void)
 	gen_prop_vec[1].pv_type = SCF_TYPE_ASTRING;
 	gen_prop_vec[1].pv_prop = PFLOGD_PROP_ACTION_AUTH;
 	gen_prop_vec[1].pv_ptr = strdup(PFLOGD_MANAGE_AUTH);
+
+	if ((smf_pflogd_cfg.cfg_set & SMF_CFG_INTERFACE_SET) == 0)
+		return (0);
+
+	zone_sep = strchr(smf_pflogd_cfg.cfg_interface, '/');
+	if (zone_sep == NULL)
+		return (0);
+
+	if (getzoneid() != GLOBAL_ZONEID) {
+		errx(1,
+		    "pflogd can read interfaces attached to this zone only");
+	}
+
+	*zone_sep = '\0';
+
+	zonedep_prop_vec[0].pv_type = SCF_TYPE_FMRI;
+	zonedep_prop_vec[0].pv_prop = SCF_PROPERTY_ENTITIES;
+	(void) asprintf((char **)&zonedep_prop_vec[0].pv_ptr, "%s:%s",
+	    ZONE_SERVICE_FMRI, smf_pflogd_cfg.cfg_interface);
+
+	solaris10 = is_solaris10_brand(smf_pflogd_cfg.cfg_interface);
+
+	*zone_sep = '/';
+
+	if (zonedep_prop_vec[0].pv_ptr == NULL) {
+		clear_prop_vec2(zonedep_prop_vec, 3);
+		return (-1);
+	}
+
+	/*
+	 * Unlike native zone Solaris10 brand zones always get default capture
+	 * link (pflog0) when zone boots up. All packets logged by pf in brand
+	 * zone are processed by pflogd(8) running in global zone, because
+	 * pflogd(8) is not available in Solaris10 brand zone. It also
+	 * makes sense to create smf dependency of pflog smf service on
+	 * particular Solaris10 brand zone here.
+	 */
+	if (!solaris10) {
+		clear_prop_vec2(zonedep_prop_vec, 3);
+		errx(1, "pflog instances are only allowed to use "
+		    "capture links bound to solaris10(5) branded zones");
+	}
+
+	zonedep_prop_vec[1].pv_type = SCF_TYPE_ASTRING;
+	zonedep_prop_vec[1].pv_prop = SCF_PROPERTY_GROUPING;
+	zonedep_prop_vec[1].pv_ptr = strdup(SCF_DEP_REQUIRE_ALL);
+
+	zonedep_prop_vec[2].pv_type = SCF_TYPE_ASTRING;
+	zonedep_prop_vec[2].pv_prop = SCF_PROPERTY_RESTART_ON;
+	zonedep_prop_vec[2].pv_ptr = strdup(SCF_DEP_RESET_ON_REFRESH);
+
+	zonedep_prop_vec[3].pv_type = SCF_TYPE_ASTRING;
+	zonedep_prop_vec[3].pv_prop = SCF_PROPERTY_TYPE;
+	zonedep_prop_vec[3].pv_ptr = strdup(SCF_DEP_TYPE_SERVICE);
 
 	return (0);
 }
@@ -377,7 +471,7 @@ smf_print_pflogcfg(const char *smf_instance)
 
 	(void) asprintf(&fmri, "%s:%s", BASE_FMRI, smf_instance);
 	if (fmri == NULL) {
-		fprintf(stderr, "Out of memory.\n");
+		(void) fprintf(stderr, "Out of memory.\n");
 		return (-1);
 	}
 
@@ -402,13 +496,13 @@ smf_print_pflogcfg(const char *smf_instance)
 			prop_vec_ptr->pv_type = scf_simple_prop_type(prop);
 			if (prop_vec_ptr->pv_type == -1) {
 				free(fmri);
-				fprintf(stderr,
+				(void) fprintf(stderr,
 				    "Failed to get property type.\n");
 				return (-1);
 			}
 			if (prop_vec_ptr->pv_type != smf_type[i]) {
 				free(fmri);
-				fprintf(stderr,
+				(void) fprintf(stderr,
 				    "Property %s has unexpected type.\n",
 				    smf_propnames[i]);
 				return (-1);
@@ -446,7 +540,7 @@ smf_print_pflogcfg(const char *smf_instance)
 		}
 		if (prop_vec_ptr->pv_ptr == NULL) {
 			free(fmri);
-			fprintf(stderr, "Out of memory.\n");
+			(void) fprintf(stderr, "Out of memory.\n");
 			return (-1);
 		}
 
@@ -498,7 +592,7 @@ smf_print_pflogcfg(const char *smf_instance)
  * Function creates a new instance in smf(5) repository.
  */
 static int
-smf_create_pflogd_instance(const char *smf_instance)
+smf_create_pflogd_instance(const char *smf_instance, boolean_t with_zonedep)
 {
 	scf_handle_t	*h_scf = NULL;
 	scf_scope_t	*scp_scf = NULL;
@@ -564,9 +658,17 @@ smf_create_pflogd_instance(const char *smf_instance)
 	if (scf_instance_add_pg(sin_scf, PFLOGD_PG, "application", 0,
 	    NULL) != SCF_SUCCESS) {
 		(void) fprintf(stderr,
-		    "could not create property group - %s\n",
-		    scf_strerror(scf_error()));
+		    "could not create property group %s/application - %s\n",
+		    PFLOGD_PG, scf_strerror(scf_error()));
 		goto instance_delete;
+	}
+
+	if (with_zonedep && scf_instance_add_pg(sin_scf, "zone",
+	    SCF_GROUP_DEPENDENCY, 0, NULL) != SCF_SUCCESS) {
+		(void) fprintf(stderr,
+		    "could not create property group zone/dependency - %s\n",
+		    scf_strerror(scf_error()));
+		goto scope_destroy;
 	}
 
 	rv = 0;
@@ -574,8 +676,9 @@ smf_create_pflogd_instance(const char *smf_instance)
 
 instance_delete:
 	if (scf_instance_delete(sin_scf) != 0) {
-		fprintf(stderr, "Can't delete the newly created instance:");
-		fprintf(stderr, "\t%s\n", scf_strerror(scf_error()));
+		(void) fprintf(stderr,
+		    "Can't delete the newly created instance:\t%s\n",
+		    scf_strerror(scf_error()));
 	}
 instance_destroy:
 	scf_instance_destroy(sin_scf);
@@ -597,10 +700,11 @@ unbind:
 int
 smf_write_pflogcfg(const char *smf_instance, int create)
 {
-	int	i;
+	int	i, with_zonedep;
 	scf_propvec_t
 		*bad_prop_vec = NULL;
 	char	*fmri;
+	char	*interface;
 
 	if (atexit_set == 0) {
 		atexit(clear_prop_vec);
@@ -609,23 +713,28 @@ smf_write_pflogcfg(const char *smf_instance, int create)
 	}
 
 	if (create && (complete_pflogdcfg(smf_instance) != 0)) {
-		fprintf(stderr, "Out of memory.\n");
+		(void) fprintf(stderr, "Out of memory.\n");
 		return (-1);
 	}
 
 	if (cfg_to_prop_vec() != 0) {
-		fprintf(stderr, "Out of memory.\n");
+		(void) fprintf(stderr, "Out of memory.\n");
 		return (-1);
 	}
 
 	(void) asprintf(&fmri, "%s:%s", BASE_FMRI, smf_instance);
 	if (fmri == NULL) {
-		fprintf(stderr, "Out of memory.\n");
+		(void) fprintf(stderr, "Out of memory.\n");
 		return (-1);
 	}
 
 	if (create) {
-		if (smf_create_pflogd_instance(smf_instance) != 0) {
+		interface = (smf_pflogd_cfg.cfg_interface == NULL) ?
+		    "" : smf_pflogd_cfg.cfg_interface;
+		with_zonedep = (smf_pflogd_cfg.cfg_set & SMF_INTERFACE) &&
+		    strchr(interface, '/') != NULL;
+		if (smf_create_pflogd_instance(smf_instance,
+		    with_zonedep) != 0) {
 			free(fmri);
 			return (-1);
 		}
@@ -633,10 +742,10 @@ smf_write_pflogcfg(const char *smf_instance, int create)
 
 	if (create && (scf_write_propvec(fmri, "general", gen_prop_vec,
 	    &bad_prop_vec) != SCF_SUCCESS)) {
-		fprintf(stderr, "Can't update %s configuration:", fmri);
-		fprintf(stderr, "\t%s\n", scf_strerror(scf_error()));
+		(void) fprintf(stderr, "Can't update %s configuration: %s\n",
+		    fmri, scf_strerror(scf_error()));
 		if (bad_prop_vec != NULL) {
-			fprintf(stderr, "Could not set %s\n",
+			(void) fprintf(stderr, "Could not set %s\n",
 			    bad_prop_vec->pv_prop);
 		}
 		free(fmri);
@@ -644,21 +753,38 @@ smf_write_pflogcfg(const char *smf_instance, int create)
 	}
 
 	bad_prop_vec = NULL;
-	if (scf_write_propvec(fmri, PFLOGD_PG, prop_vec, &bad_prop_vec)
-	    != SCF_SUCCESS) {
-		fprintf(stderr, "Can't update %s configuration:", fmri);
-		fprintf(stderr, "\t%s\n", scf_strerror(scf_error()));
+	if (scf_write_propvec(fmri, PFLOGD_PG, prop_vec,
+	    &bad_prop_vec) != SCF_SUCCESS) {
+		(void) fprintf(stderr, "Can't update %s configuration:\t%s\n",
+		    fmri, scf_strerror(scf_error()));
 		if (bad_prop_vec != NULL) {
-			fprintf(stderr, "Could not set %s\n",
+			(void) fprintf(stderr, "Could not set %s\n",
 			    bad_prop_vec->pv_prop);
 		}
 		free(fmri);
 		exit(1);
 	}
 
+	if (zonedep_prop_vec[0].pv_ptr != NULL) {
+		bad_prop_vec = NULL;
+		if (scf_write_propvec(fmri, "zone", zonedep_prop_vec,
+		    &bad_prop_vec) != SCF_SUCCESS) {
+			(void) fprintf(stderr,
+			    "Can't update %s configuration:\t%s\n",
+			    fmri, scf_strerror(scf_error()));
+			if (bad_prop_vec != NULL) {
+				(void) fprintf(stderr, "Could not set %s\n",
+				    bad_prop_vec->pv_prop);
+			}
+			free(fmri);
+			exit(1);
+		}
+	}
+
 	if (smf_refresh_instance(fmri) != 0) {
-		fprintf(stderr, "Failed to do 'svcadm refresh %s':\n\t%s\n"
-		    "The service instance continues to run with old"
+		(void) fprintf(stderr,
+		    "Failed to do 'svcadm refresh %s':\n\t%s\n"
+		    "The service instance continues to run with old "
 		    "settings.\n",
 		    fmri,
 		    scf_strerror(scf_error()));

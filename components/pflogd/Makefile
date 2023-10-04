@@ -48,7 +48,7 @@ include $(WS_MAKE_RULES)/common.mk
 #
 # Don't overwrite CFLAGS here, just add our options there.
 #
-COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS) -D_SOLARIS_ -DOBSD_COMP -lscf"
+COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS) -D_SOLARIS_ -DOBSD_COMP -lscf -lzonecfg"
 
 COMPONENT_PRE_BUILD_ACTION = \
 	($(CP) pflogd.Solaris/smf-config.c $(@D)/. ; \
