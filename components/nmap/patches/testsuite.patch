@@ -1,0 +1,20 @@
+Lua on Solaris is compiled such that whole 'infinity' is printed out.
+
+Not intended for upstream.
+
+--- nmap-7.94/nselib/mongodb.lua
++++ nmap-7.94/nselib/mongodb.lua
+@@ -815,11 +815,11 @@ local TESTS = {
+   },
+   { desc = "BSONNUM: Inf",
+     bson = "10000000016400000000000000F07F00",
+-    test = function(o) return tostring(o.d) == "inf" end
++    test = function(o) return tostring(o.d) == "infinity" end
+   },
+   { desc = "BSONNUM: -Inf",
+     bson = "10000000016400000000000000F0FF00",
+-    test = function(o) return tostring(o.d) == "-inf" end
++    test = function(o) return tostring(o.d) == "-infinity" end
+   },
+   { desc = "bad BSONNUM: double truncated", invalid = true,
+     bson = "0B0000000164000000F03F00"
