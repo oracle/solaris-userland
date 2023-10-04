@@ -171,7 +171,6 @@ COMPONENT_TEST_MASTER = \
 
 REQUIRED_PACKAGES += developer/gcc/gcc-c-7
 REQUIRED_PACKAGES += developer/test/dejagnu
-REQUIRED_PACKAGES += library/gcc/gcc-c-runtime-7
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/isl
 REQUIRED_PACKAGES += library/mpc
@@ -181,5 +180,6 @@ REQUIRED_PACKAGES += runtime/tcl-8
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime-7
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
