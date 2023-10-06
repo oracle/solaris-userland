@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -30,11 +30,11 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		screen
-COMPONENT_VERSION=	4.9.0
+COMPONENT_VERSION=	4.9.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f9335281bb4d1538ed078df78a20c2f39d3af9a4e91c57d084271e0289c730f4
+    sha256:26cef3e3c42571c0d484ad6faf110c5c15091fbf872b06fa7aa4766c7405ac69
 COMPONENT_ANITYA_ID=	4772
-COMPONENT_BAID=		116780
+COMPONENT_BAID=		150694
 
 COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) $(AUTORECONF) -fiv);
 
