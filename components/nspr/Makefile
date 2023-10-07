@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		32_and_64
@@ -28,16 +28,16 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nspr
-COMPONENT_VERSION=	4.29
+COMPONENT_VERSION=	4.35
 COMPONENT_PROJECT_URL=	https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSPR
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:22286bdb8059d74632cc7c2865c139e63953ecfb33bf4362ab58827e86e92582
+    sha256:7ea3297ea5969b5d25a5dd8d47f2443cda88e9ee746301f6e1e1426f8a6abc8f
 COMPONENT_ARCHIVE_URL=	http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/v$(COMPONENT_VERSION)/src/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/nspr
 COMPONENT_ANITYA_ID=	7953
 
-COMPONENT_BAID=		86827
+COMPONENT_BAID=		151347
 
 LDFLAGS += $(CC_BITS)
 

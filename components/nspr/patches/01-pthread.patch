@@ -1,9 +1,9 @@
 Patch from sic team.
 Will not send upstream.
 
---- a/nspr/pr/src/pthreads/ptthread.c	2017-07-26 09:44:59.117046039 +0000
-+++ b/nspr/pr/src/pthreads/ptthread.c	2017-07-26 09:44:57.761778858 +0000
-@@ -1738,6 +1738,19 @@
+--- nspr-4.35/nspr/pr/src/pthreads/ptthread.c
++++ nspr-4.35/nspr/pr/src/pthreads/ptthread.c
+@@ -1652,6 +1652,32 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
      PRThread *thread;
      size_t nameLen;
      int result = 0;
@@ -13,8 +13,21 @@ Will not send upstream.
 +    int (*dynamic_pthread_setname_np)(pthread_t, const char*);
 +#endif
 +
-+#if !defined(OPENBSD) && !defined(FREEBSD) && !defined(DRAGONFLY) && !defined(NETBSD)
++#if !defined(OPENBSD) && !defined(FREEBSD) && !defined(DRAGONFLY) && !defined(ANDROID) && !defined(NETBSD)
++#if defined(DARWIN)
++    /* Mac OS X has a length limit of 63 characters, but there is no API
++     * exposing it.
++     */
++#define SETNAME_LENGTH_CONSTRAINT 63
++#else
++    /*
++     * The 15-character name length limit is an experimentally determined
++     * length of a null-terminated string that most linux distros accept
++     * as an argument to pthread_setname_np.  Otherwise the E2BIG
++     * error is returned by the function.
++     */
 +#define SETNAME_LENGTH_CONSTRAINT 15
++#endif
 +#define SETNAME_FRAGMENT1_LENGTH (SETNAME_LENGTH_CONSTRAINT >> 1)
 +#define SETNAME_FRAGMENT2_LENGTH \
 +    (SETNAME_LENGTH_CONSTRAINT - SETNAME_FRAGMENT1_LENGTH - 1)
@@ -23,8 +36,8 @@ Will not send upstream.
  
      if (!name) {
          PR_SetError(PR_INVALID_ARGUMENT_ERROR, 0);
-@@ -1755,7 +1768,10 @@
-         return PR_FAILURE;
+@@ -1671,7 +1697,10 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
+     }
      memcpy(thread->name, name, nameLen + 1);
  
 -#if defined(OPENBSD) || defined(FREEBSD) || defined(DRAGONFLY)
@@ -33,9 +46,9 @@ Will not send upstream.
 +    result = 0;
 +#elif defined(OPENBSD) || defined(FREEBSD) || defined(DRAGONFLY)
      pthread_set_name_np(thread->id, name);
- #elif defined(NETBSD)
-     result = pthread_setname_np(thread->id, "%s", (void *)name);
-@@ -1764,11 +1780,6 @@
+ #elif defined(ANDROID)
+     prctl(PR_SET_NAME, (unsigned long)(name));
+@@ -1682,11 +1711,6 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
       * On OSX, pthread_setname_np is only available in 10.6 or later, so test
       * for it at runtime.  It also may not be available on all linux distros.
       */
@@ -47,11 +60,24 @@ Will not send upstream.
  
      *(void**)(&dynamic_pthread_setname_np) =
          dlsym(RTLD_DEFAULT, "pthread_setname_np");
-@@ -1781,11 +1792,6 @@
-      * accept as an argument to pthread_setname_np.  Otherwise the E2BIG
-      * error is returned by the function.
-      */
+@@ -1694,24 +1718,6 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
+         return PR_SUCCESS;
+     }
+ 
+-#if defined(DARWIN)
+-    /* Mac OS X has a length limit of 63 characters, but there is no API
+-     * exposing it.
+-     */
+-#define SETNAME_LENGTH_CONSTRAINT 63
+-#else
+-    /*
+-     * The 15-character name length limit is an experimentally determined
+-     * length of a null-terminated string that most linux distros accept
+-     * as an argument to pthread_setname_np.  Otherwise the E2BIG
+-     * error is returned by the function.
+-     */
 -#define SETNAME_LENGTH_CONSTRAINT 15
+-#endif
 -#define SETNAME_FRAGMENT1_LENGTH (SETNAME_LENGTH_CONSTRAINT >> 1)
 -#define SETNAME_FRAGMENT2_LENGTH \
 -    (SETNAME_LENGTH_CONSTRAINT - SETNAME_FRAGMENT1_LENGTH - 1)

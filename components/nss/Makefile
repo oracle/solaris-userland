@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		32_and_64
@@ -33,20 +33,20 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nss
-COMPONENT_VERSION=	3.70
+COMPONENT_VERSION=	3.93
 # NSS ips major version is incorrect for historical reasons.
-IPS_COMPONENT_VERSION=	4.70
+IPS_COMPONENT_VERSION=	4.93
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_UVERSION=	$(subst .,_,$(COMPONENT_VERSION))
 COMPONENT_PROJECT_URL=	https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2b89abb8601ee405be8ac5b5703d71f1fb38a51c3a64a3d834387f78b325511b
+    sha256:15f54bb72048eb105f8c0e936a04b899e74c3db9a19bbc1e00acee2af9476a8a
 COMPONENT_ARCHIVE_URL=	http://ftp.mozilla.org/pub/security/$(COMPONENT_NAME)/releases/NSS_$(COMPONENT_UVERSION)_RTM/src/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/nss
 COMPONENT_ANITYA_ID=	2503
 
-COMPONENT_BAID=		108604
+COMPONENT_BAID=		151348
 
 BUILD_STYLE= justmake
 
@@ -135,10 +135,10 @@ COMPONENT_TEST_TARGETS =
 # the order of individual results became unstable
 COMPONENT_POST_TEST_ACTION = gsed -i "s/ ([0-9][0-9]* ms)//g" $(COMPONENT_TEST_OUTPUT); gsort -u -o $(COMPONENT_TEST_OUTPUT) $(COMPONENT_TEST_OUTPUT)
 #
-# DatagramPre13/TlsConnectDatagramPre13.DropServer(First|Second)FlightOncetests are not stable
+# DatagramPre13/TlsConnectDatagramPre13.DropServer(First|Second)FlightOnce tests are not stable
 #
 COMPONENT_TEST_TRANSFORMS = \
-        '-e "/listed below/d" ' \
+	'-e "/listed below/d" ' \
 	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropServerFirstFlightOnce\/0, where GetParam() = 770/d" ' \
 	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropServerFirstFlightOnce\/1, where GetParam() = 771/d" ' \
 	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropClientSecondFlightOnce\/0, where GetParam() = 770/d" ' \
@@ -151,12 +151,13 @@ COMPONENT_TEST_TRANSFORMS = \
 	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropServerFirstFlightThrice\/1, where GetParam() = 771/d" ' \
 	'-e "s/ ([0-9][0-9]* ms)//g" ' \
 	'-e "s/ $$//g" ' \
-        '-e "/  FAILED  /p" ' \
-        '-e "/.*/d" '
+	'-e "/  FAILED  /p" ' \
+	'-e "/.*/d" '
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += system/rsyslog
+REQUIRED_PACKAGES += system/library/math
 # for usr/bin/smime_gtest
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
