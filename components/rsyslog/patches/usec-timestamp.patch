@@ -1,0 +1,25 @@
+#
+# Use the new log_ctl_t; should be upstreamed.
+#
+--- rsyslog-8.2206.0/plugins/imsolaris/imsolaris.c	2022-05-12 13:18:34.000000000 +0200
++++ rsyslog-8.2206.0/plugins/imsolaris/imsolaris.c	2023-09-13 14:46:41.859412670 +0200
+@@ -216,8 +216,18 @@
+ 		pMsg->msgFlags = NEEDS_PARSING | NO_PRI_IN_RAW | IGNDATE;
+ 
+ 		/* Construct timestamp from msg ctl struct */
+-		tim.tv_usec = 0;
++#if defined(ttime)
++		/*
++		 * New version of log_ctl_t; ttime definition maps to
++		 * stime.tv_sec.
++		 */
++		tim.tv_sec = hdr.stime.tv_sec;
++		tim.tv_usec = hdr.stime.tv_nsec/1000;
++#else
+ 		tim.tv_sec = hdr.ttime;
++		tim.tv_usec = 0;
++#endif
++
+ 		datetime.timeval2syslogTime(&tim, &pMsg->tRcvdAt, TIME_IN_LOCALTIME);
+ 		CHKiRet(submitMsg(pMsg));
+ 	}

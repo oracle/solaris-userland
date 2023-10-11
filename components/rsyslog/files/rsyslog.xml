@@ -62,17 +62,11 @@
 		<service_fmri value='svc:/system/system-log:default' />
 	</dependency>
 
-	<!--
-		The rsyslog start method includes a "savecore -m" which
-		extracts messages from dump device, needing some time to
-		perform the I/O.
-		Use an appropriately long timeout value.
-	-->
 	<exec_method
 		type='method'
 		name='start'
-		exec='/lib/svc/method/rsyslog start'
-		timeout_seconds='600'>
+		exec='/lib/svc/method/rsyslog'
+		timeout_seconds='60'>
 		<method_context>
 		<method_credential
 		  privileges='basic,net_privaddr,file_chown_self,file_dac_search,file_dac_read' />
