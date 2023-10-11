@@ -20,11 +20,14 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
 #
 
 ifneq ($(NO_PKG_REPORT),)
 # If NO_PKG_REPORT is set, rest of this file is skipped via this condition
+component-report:
+else ifneq ($(strip $(BUILD_ARCH)),$(MACH))
+# If this component does not build for current architecture
 component-report:
 else
 PKG_REPORTS=$(CANONICAL_MANIFESTS:%.p5m=$(BUILD_DIR)/%.pkg-report)
@@ -69,9 +72,10 @@ $(BUILD_DIR)/component-report:	$(BUILD_DIR)/package-info
 	     	      ( : pkgrepo list is hard to  parsea so $$flags ) ; \
 	     	      ( : contain either flags or package version ) ; \
 		      if [[ $$flags != [or] ]]; then \
-		         echo "$$name@$$VER<br>" >>$@ ; \
+		         echo "$$name@$$VER<br>" ; \
 		      fi ; \
-		   done ; \
+		   done | \
+		   uniq >>$@ ; \
              else \
 	     	( : package version is known, just print it ) ; \
              	echo "$$pkg<br>" >>$@ ; \
@@ -95,7 +99,7 @@ $(BUILD_DIR)/component-report:	$(BUILD_DIR)/package-info
 	@echo "</tr>" >>$@
 
 $(BUILD_DIR)/package-info:	$(PKG_REPORTS)
-	@cat $(PKG_REPORTS) | sort -u >$@
+	cat $(PKG_REPORTS) | sort -u >$@
 
 $(BUILD_DIR)/component-info:	$(PKG_REPORTS)
 	@echo "COMPONENT_NAME=\"$(COMPONENT_NAME)\"" >$@
