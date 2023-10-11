@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 #
@@ -78,6 +78,10 @@ CONFIGURE_ETCDIR.64 ?= $(ETCDIR)
 CONFIGURE_DEFAULT_DIRS?=yes
 
 CONFIGURE_ENV += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
+# meson expects CC/CXX to include -m32/-m64 directly instead of relying
+# on CFLAGS, CPPFLAGS, or CXXFLAGS for them
+CC  += $(CC_BITS)
+CXX += $(CC_BITS)
 CONFIGURE_ENV += CC="$(CC)"
 CONFIGURE_ENV += CXX="$(CXX)"
 ifneq ($(strip $(CFLAGS)),)
@@ -86,10 +90,7 @@ endif
 ifneq ($(strip $(CXXFLAGS)),)
 CONFIGURE_ENV += CXXFLAGS='$(strip $(CXXFLAGS))'
 endif
-CONFIGURE_CPPFLAGS ?= $(CC_BITS)
-ifneq  ($(strip $(CONFIGURE_CPPFLAGS) $(CPPFLAGS)),)
-CONFIGURE_ENV += CPPFLAGS="$(strip $(CONFIGURE_CPPFLAGS) $(CPPFLAGS))"
-endif
+CONFIGURE_ENV += CPPFLAGS='$(strip $(CPPFLAGS))'
 CONFIGURE_ENV += LDFLAGS="$(strip $(LDFLAGS))"
 # Use Solaris ar no matter what the $PATH order is, to avoid meson detecting
 # GNU extensions that GNU ar supports but the Solaris linker does not.

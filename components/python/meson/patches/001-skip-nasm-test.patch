@@ -1,0 +1,30 @@
+Submitted & accepted upstream:
+https://github.com/mesonbuild/meson/pull/12320
+
+From 710a753c78077220b13a9f7e999dcdb61339efb1 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Mon, 2 Oct 2023 13:46:39 -0700
+Subject: [PATCH] nasm tests: skip asm language test on Solaris & illumos
+
+The code in this test to make Linux system calls is not compatible
+with the SunOS kernel system call conventions.
+---
+ test cases/nasm/2 asm language/meson.build | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/test cases/nasm/2 asm language/meson.build b/test cases/nasm/2 asm language/meson.build
+index 0eecd99a6..d025d43ea 100644
+--- a/test cases/nasm/2 asm language/meson.build	
++++ b/test cases/nasm/2 asm language/meson.build	
+@@ -7,6 +7,8 @@ endif
+ 
+ if host_machine.system() == 'windows'
+   error('MESON_SKIP_TEST: this test asm is not made for Windows')
++elif host_machine.system() == 'sunos'
++  error('MESON_SKIP_TEST: this test asm is not made for Solaris or illumos')
+ endif
+ 
+ if meson.backend().startswith('vs')
+-- 
+2.39.3
+

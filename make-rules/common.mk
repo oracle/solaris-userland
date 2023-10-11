@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 #
@@ -208,12 +208,6 @@ COMPONENT_PRE_TEST_ACTION += $(COMPONENT_PRE_TEST_ACTION.$(BITS))
 COMPONENT_PRE_TEST_ACTION += $(COMPONENT_PRE_TEST_ACTION.$(MACH))
 COMPONENT_POST_TEST_ACTION += $(COMPONENT_POST_TEST_ACTION.$(BITS))
 COMPONENT_POST_TEST_ACTION += $(COMPONENT_POST_TEST_ACTION.$(MACH))
-
-ifeq ($(strip $(BUILD_STYLE)),meson)
-# This is needed in the build environment for gobject-introspection
-COMPONENT_BUILD_ENV += CC="$(CC) $(CC_BITS)"
-COMPONENT_INSTALL_ENV += CC="$(CC) $(CC_BITS)"
-endif
 
 # Tell g-ir-scanner not to cache results in homedir of user running the build
 COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""

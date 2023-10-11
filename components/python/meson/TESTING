@@ -1,15 +1,22 @@
 'gmake test' runs the full test suite.
 
 To run individual unit test cases:
-    cd meson-0.63.3
+    cd meson-1.2.2
     ./run_unittests.py -k <test>
 
 For example, to run the test_flock unit test:
     ./run_unittests.py -k test_flock
 
-For other test cases, cd to the test case directory and run:
+For other test cases:
+    cd meson-1.2.2
+    ./run_single_test.py "<path to test case>"
+
+For example, to run the llvm tests:
+    ./run_single_test.py "test cases/frameworks/15 llvm"
+
+Or to do it by hand, cd to the test case directory and run:
     env PKG_CONFIG_PATH=/usr/lib/64/pkgconfig python3 \
- 	../../../meson.py builddir
+ 	../../../meson.py setup builddir
     cd builddir
     ninja
     ninja test
@@ -17,7 +24,7 @@ For other test cases, cd to the test case directory and run:
 Known, unfixed issues:
 
 ======================================================================
-run_unittests.py::AllPlatformTests::test_flock <- unittests/allplatformstests.py FAILED
+FAILED unittests/allplatformstests.py::AllPlatformTests::test_flock - Asserti...
 
 _________________________ AllPlatformTests.test_flock __________________________
 >   self.assertTrue(exception_raised, 'Double locking did not raise exception.')
