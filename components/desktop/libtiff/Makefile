@@ -24,9 +24,9 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libtiff
-COMPONENT_VERSION=	4.5.1
-COMPONENT_BAID=		146896
-COMPONENT_ARCHIVE_HASH= sha256:d7f38b6788e4a8f5da7940c5ac9424f494d8a79eba53d555f4a507167dca5e2b
+COMPONENT_VERSION=	4.6.0
+COMPONENT_BAID=		152300
+COMPONENT_ARCHIVE_HASH= sha256:88b3979e6d5c7e32b50d7ec72fb15af724f6ab2cbf7e10880c360a77e4b5d99a
 COMPONENT_PROJECT_URL=	http://www.simplesystems.org/libtiff/
 COMPONENT_SRC=		tiff-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
@@ -51,6 +51,7 @@ CONFIGURE_OPTIONS       += --enable-shared --disable-static
 CONFIGURE_OPTIONS       += ax_cv_check_gl_libgl="no"
 CONFIGURE_OPTIONS       += CXXFLAGS='$(CXXFLAGS)'
 CONFIGURE_OPTIONS       += CFLAGS='$(CFLAGS)'
+CONFIGURE_OPTIONS	+= --disable-dependency-tracking
 
 # Tests need GNU version of diff to work correctly
 COMPONENT_TEST_ENV +=   PATH="$(GNUBIN):$(PATH)"
