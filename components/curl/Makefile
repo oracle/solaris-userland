@@ -27,9 +27,9 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		curl
-COMPONENT_VERSION=	8.2.1
-COMPONENT_ARCHIVE_HASH=	sha256:0f1e31ebe336c09ec66381f1532f8350e466e1d02ffe10c4ac44a867f1b9d343
-COMPONENT_BAID=		147736
+COMPONENT_VERSION=	8.4.0
+COMPONENT_ARCHIVE_HASH=	sha256:e5250581a9c032b1b6ed3cf2f9c114c811fc41881069e9892d115cc73f9e88c6
+COMPONENT_BAID=		152243
 COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_URL=	https://curl.se/download/$(COMPONENT_ARCHIVE)
@@ -126,8 +126,6 @@ COMPONENT_TEST_ENV += CC="$(CC)"
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_TEST_ENV += CFLAGS="$(CFLAGS)"
 COMPONENT_TEST_ARGS+= -k -i
-
-COMPONENT_TEST_MASTER =         $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH$(BITS)).master
 
 # Only the #'s of passed/failed tests are verified for change
 # note: Test 1119 is failing permannently and it only checks library symbols
