@@ -34,13 +34,13 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libvpx
-COMPONENT_VERSION=	1.13.0
+COMPONENT_VERSION=	1.13.1
 COMPONENT_PROJECT_URL=	http://www.webmproject.org/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:cb2a393c9c1fae7aba76b950bb0ad393ba105409fe1a147ccd61b0aaa1501066
+	sha256:00dae80465567272abd077f59355f95ac91d7809a2d3006f9ace2637dd429d14
 COMPONENT_ARCHIVE_URL=	https://github.com/webmproject/libvpx/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libvpx
-COMPONENT_BAID=		144561
+COMPONENT_BAID=		151841
 COMPONENT_ANITYA_ID=	11083
 
 # Required for 64-bit builds.
