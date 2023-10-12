@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 32_and_64
@@ -28,19 +28,33 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		vala
-COMPONENT_VERSION=	0.54.2
+COMPONENT_VERSION=	0.56.13
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Vala
 COMPONENT_ARCHIVE_HASH= \
-	sha256:884de745317d4d56e4e8cede993dc8f04d50cfca36cf60d2f2f278c30c2b1311
+	sha256:4988223036c7e1e4874c476d0de8bd9cbe500ee25ef19a76e560dc0b6d56ae07
 COMPONENT_BUGDB=        gnome/dev-tools
 COMPONENT_ANITYA_ID=	5065
 
-COMPONENT_BAID=		110824
-
-# 23285126 - vala integrated tests should be hooked up
-TEST_TARGET= $(SKIP_TEST)
+COMPONENT_BAID=		151281
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+
+# to regenerate Makefile.in after patching tests/Makefile.am
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+
+# for tests
+unexport SHELLOPTS
+COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+       '-n ' \
+       '-e "/TOTAL: /p" ' \
+       '-e "/PASS: /p" ' \
+       '-e "/SKIP: /p" ' \
+       '-e "/FAIL: /p" ' \
+       '-e "/ERROR: /p" ' \
 
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += image/graphviz

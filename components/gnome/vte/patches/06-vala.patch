@@ -1,0 +1,16 @@
+Drop this patch when vte is updated to a new release.
+
+Fix accessibility conflict of constant and its value
+https://gitlab.gnome.org/GNOME/simple-scan/-/commit/c50802b213c325cfa957d66955f6de96908710d9
+
+--- a/bindings/vala/app.vala	2023-10-11 11:00:20.307329765 -0700
++++ b/bindinga/vala/app.vala	2023-10-11 11:00:27.163194780 -0700
+@@ -982,7 +982,7 @@
+       return value;
+     }
+ 
+-    public const OptionEntry[] entries = {
++    const OptionEntry[] entries = {
+       { "audible-bell", 'a', 0, OptionArg.NONE, ref audible,
+         "Use audible terminal bell", null },
+       { "command", 'c', 0, OptionArg.STRING, ref command,
