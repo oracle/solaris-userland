@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability 'pass-thru volatile'>
@@ -221,6 +221,12 @@ link path=usr/lib/gofmt-gcc target=../gcc/$(GCC_MAJOR_VERSION)/bin/gofmt \
     mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
 link path=usr/share/man/man1/gccgo.1 \
     target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/gccgo.1 \
+    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/share/man/man1/go-gcc.1 \
+    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/go.1 mediator=gcc \
+    mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/share/man/man1/gofmt.1 \
+    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/gofmt.1 \
     mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
 license gcc.license \
     license="GPLv3, GCC Runtime Library Exception v3.1, GPLv2, LGPLv3, LGPLv2.1, FDLv1.3, BSD, Apache v2.0"
