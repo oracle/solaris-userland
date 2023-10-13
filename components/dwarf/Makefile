@@ -20,45 +20,72 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
 #
+
 COMPILER=gcc
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dwarf
-COMPONENT_VERSION=	20191104
-# Convert YYYYMMDD -> YYYY.MM.DD
+COMPONENT_VERSION=	0.7.0
+# The following COMPONENT_VERSION_DATE field needs to modified during every 
+# new version update to 0.x.x as per the tarball release date seen at 
+# https://www.prevanders.net/dwarf.html#releases as the IPS package FMRI is dependent on it.
+# We can get rid of this field once the community starts 1.x.x releases.
+COMPONENT_VERSION_DATE= 20230520
 COMPONENT_PROJECT_URL=	https://www.prevanders.net/dwarf.html
-COMPONENT_SRC=	lib$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_SRC=		lib$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_URL=	https://www.prevanders.net/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:45f50a966314421b7dab525859853616df6c9680f0ccf2f44b030c505236eaba
+    sha256:23b71829de875fa5842e49f232c8ee1a5043805749738bc61424d9abc1189f38
 COMPONENT_BUGDB=	library/libdwarf
 COMPONENT_ANITYA_ID=	1597
 
-COMPONENT_BAID=		73000
+COMPONENT_BAID=		150358
 
-HUMAN_VERSION= $(shell echo $(COMPONENT_VERSION) | \
+COMPONENT_VERSION_1 =   20191104
+COMPONENT_BAID_1=       73000
+COMPONENT_SRC_1 =       lib$(COMPONENT_NAME)-$(COMPONENT_VERSION_1)
+COMPONENT_ARCHIVE_1 =   $(COMPONENT_SRC_1).tar.gz
+COMPONENT_ARCHIVE_HASH_1 = \
+        sha256:45f50a966314421b7dab525859853616df6c9680f0ccf2f44b030c505236eaba
+COMPONENT_ARCHIVE_URL_1 = https://www.prevanders.net/$(COMPONENT_ARCHIVE_1)
+SOURCE_DIR_1 =          $(COMPONENT_DIR)/$(COMPONENT_SRC_1)
+
+# Convert YYYYMMDD -> YYYY.MM.DD
+HUMAN_VERSION= $(shell echo $(COMPONENT_VERSION_DATE) | \
 	$(GSED) -e 's/\(.\{4\}\)\(.\{2\}\)/0.\1.\2./')
-IPS_COMPONENT_VERSION=	$(shell echo $(HUMAN_VERSION) | \
+IPS_COMPONENT_VERSION= $(shell echo $(HUMAN_VERSION) | \
 	$(GSED) -e 's/\.0/./g')
 
-COMPONENT_PREP_ACTION = (cd $(@D); $(AUTORECONF) -if)
+BUILD_OLD_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)
+BUILD_OLD_DIR_64 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH64)
 
-# the community doesn't have an install target yet
-INSTALL_TARGET=	build
+$(BUILD_OLD_DIR_32)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
+$(BUILD_OLD_DIR_64)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
+$(BUILD_OLD_DIR_32)/.configured:       BITS=32
+$(BUILD_OLD_DIR_64)/.configured:       BITS=64
+
+BUILD_32 += $(BUILD_OLD_DIR_32)/.built
+BUILD_64 += $(BUILD_OLD_DIR_64)/.built
+
+INSTALL_32 += $(BUILD_OLD_DIR_32)/.installed
+INSTALL_64 += $(BUILD_OLD_DIR_64)/.installed
+
+# install the old version first
+$(BUILD_DIR_32)/.installed:    $(BUILD_OLD_DIR_32)/.installed
+$(BUILD_DIR_64)/.installed:    $(BUILD_OLD_DIR_64)/.installed
+
+COMPONENT_PREP_ACTION = (cd $(@D); $(AUTORECONF) -if)
 
 TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
 # Use the headers from the workspace for lint library generation.
-LINT_FLAGS += -I$(SOURCE_DIR)/libdwarf
-LINT_FLAGS += -I$(BUILD_DIR_$(BITS))/libdwarf
-
-COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(USRBIN):$(USRBIN.32):$(GCC_ROOT)/bin"
+LINT_FLAGS += -I$(PROTOUSRINCDIR)
 
 CONFIGURE_OPTIONS +=	--enable-shared
 CONFIGURE_OPTIONS +=	--disable-nonshared
@@ -67,6 +94,7 @@ CONFIGURE_OPTIONS +=	--disable-nonshared
 # Use GNU make to avoid the configuration error when makefile fragments are processed.
 CONFIGURE_OPTIONS +=  MAKE=$(GMAKE)
 
+REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/linker
