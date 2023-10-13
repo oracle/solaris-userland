@@ -85,6 +85,13 @@ install::
   macro used will depend on the component and corresponds to the build target
   macro used.
 
+mangle::
+  This target must be present in all Makefiles.  It can be used at the top level
+  to act across all components, or on an individual component basis.  It is
+  automatically defined by including $(WS_MAKE_RULES)/ips.mk.  It depends
+  on the previously described 'install' target and will perform mangling
+  of component manifests and deliverables.
+
 pkglint::
   This target is an optional target is automatically defined in each Makefile
   by the inclusion of $(WS_MAKE_RULES)/prep.mk.  It will run the build steps
@@ -94,9 +101,9 @@ publish::
   This target is present in all Makefiles.  It can be used at the top level
   to act across all components, or on an individual component basis.  It is
   automatically defined by including $(WS_MAKE_RULES)/ips.mk.  It depends
-  on the previously described 'install' target and will perform a series of
-  internal, intermediate steps to use the component package manifests to
-  generate and publish packages for that component.
+  on the previously described 'install' and 'mangle' targets and will perform
+  a series of internal, intermediate steps to use the component package
+  manifests to generate and publish packages for that component.
 
 clean::
   This target is present in all Makefiles.  It can be used at the top level

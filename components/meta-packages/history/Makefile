@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -55,11 +55,11 @@ CANONICAL_MANIFESTS +=  $(GENERATED_ARCH_MANIFESTS)
 MOGRIFIED =		$(CANONICAL_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.mogrified)
 HISTOGRIFIED =		$(HISTORICAL_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.histogrified)
 PUBLISHED =		$(CANONICAL_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.published)
-PUBLISHED +=		$(HISTORICAL_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.published)
+PUBLISHED +=		$(HISTORICAL_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.histpublished)
 
 # Rule to generate historical manifests from the $(HISTORY) file.
 define history-manifest-rule
-$(MANIFEST_BASE)-$(1): $(HISTORY) $(BUILD_DIR)
+$(MANIFEST_BASE)-$(1): $(HISTORY) | $(BUILD_DIR)
 	( cat $(HISTORY) || : ) | \
 		$(NAWK) -v FUNCTION=manifest -v TARGET=$1 \
 		-f $(GENERATE_HISTORY) > $$@
@@ -82,27 +82,27 @@ build install test system-test:
 $(BUILD_DIR):
 	$(MKDIR) $@
 
-$(MANIFEST_BASE)-%.mogrified: %.p5m $(BUILD_DIR)
+$(MANIFEST_BASE)-%.mogrified: %.p5m | $(BUILD_DIR)
 	$(PKGMOGRIFY) $(PKG_OPTIONS) $< \
 	              $(WS_TOP)/transforms/incorporate \
 		      $(WS_TOP)/transforms/auto_fmri > $@
 
-$(MANIFEST_BASE)-%.histogrified: $(MANIFEST_BASE)-%.p5m $(BUILD_DIR)
+$(MANIFEST_BASE)-%.histogrified: $(MANIFEST_BASE)-%.p5m | $(BUILD_DIR)
 	$(PKGMOGRIFY) $(PKG_OPTIONS) $< \
 	              $(WS_TOP)/transforms/incorporate \
 		      $(WS_TOP)/transforms/auto_fmri > $@
 
-$(MANIFEST_BASE)-%.published: $(MANIFEST_BASE)-%.mogrified $(BUILD_DIR)
+$(MANIFEST_BASE)-%.published: $(MANIFEST_BASE)-%.mogrified | $(BUILD_DIR)
 	$(call log-package-publish, $<)
 	$(PKGSEND) -s $(PKG_REPO) publish --fmri-in-manifest --no-catalog $<
 	$(CP) $< $@
 
-$(MANIFEST_BASE)-%.published: $(MANIFEST_BASE)-%.histogrified $(BUILD_DIR)
+$(MANIFEST_BASE)-%.histpublished: $(MANIFEST_BASE)-%.histogrified | $(BUILD_DIR)
 	$(call log-package-publish, $<)
 	$(PKGSEND) -s $(PKG_REPO) publish --fmri-in-manifest --no-catalog $<
 	$(CP) $< $@
 
-$(BUILD_DIR)/.linted-$(MACH): $(MOGRIFIED) $(HISTOGRIFIED) $(BUILD_DIR)
+$(BUILD_DIR)/.linted-$(MACH): $(MOGRIFIED) $(HISTOGRIFIED) | $(BUILD_DIR)
 	$(ENV) SOLARIS_VERSION=$(SOLARIS_VERSION) \
 		$(PKGLINT) $(CANONICAL_REPO:%=-c $(WS_LINT_CACHE)) \
 			-e $(WS_TOOLS)/python/ -f $(WS_TOOLS)/pkglintrc $(MOGRIFIED)

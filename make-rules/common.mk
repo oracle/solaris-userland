@@ -169,7 +169,6 @@ build:          $(BUILD_TARGET)
 endif
 
 INSTALL_TARGET ?= $(INSTALL_$(MK_BITS))
-INSTALL_TARGET += $(MANGLED)
 ifneq ($(strip $(INSTALL_TARGET)),)
 install:        $(INSTALL_TARGET)
 endif

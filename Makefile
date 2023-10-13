@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
 #
 
 SUBDIRS =	components
@@ -30,6 +30,7 @@ TARGETS =	\
 		prep \
 		build \
 		install \
+		mangle \
 		publish \
 		validate \
 		clean \

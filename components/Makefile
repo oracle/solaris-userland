@@ -75,6 +75,7 @@ patch:			TARGET = patch
 prep:			TARGET = prep
 build:			TARGET = build
 install:		TARGET = install
+mangle:			TARGET = mangle
 publish:		TARGET = publish
 clean:			TARGET = clean
 clobber:		TARGET = clobber
@@ -85,7 +86,7 @@ check_rtime:		TARGET = check_rtime
 zone-build:		TARGET = component-zone-build
 component-hook:		TARGET = component-hook
 regen-patches:		TARGET = regen-patches
-download zone-build prep build install publish test system-test check_rtime regen-patches:	\
+download zone-build prep build install mangle publish test system-test check_rtime regen-patches:	\
 	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1 ; \
 	RET=$$? ; \
 	if [ -d $(WS_COMPONENTS)/$@/build ]; then \
@@ -111,11 +112,11 @@ system-test:		MAKEFLAGS += TOP_LEVEL_TEST=yes
 
 # We need to distinguish between the full and one component build
 # in order to tune the number of parallel build jobs.
-build install publish:	MAKEFLAGS += TOP_LEVEL_RUN=yes
+build install mangle publish:	MAKEFLAGS += TOP_LEVEL_RUN=yes
 
 .DEFAULT_GOAL :=	publish
 
-zone-build build install publish test system-test: $(COMPONENT_DIRS)
+zone-build build install mangle publish test system-test: $(COMPONENT_DIRS)
 
 COMPONENT_DIRS.nosetup =	$(COMPONENT_DIRS:%=%.nosetup)
 
@@ -183,7 +184,7 @@ $(call read-config,JOBS_PER_COMPONENT,1)
 $(COMPONENT_DIRS):	$(WS_LOGS) setup FORCE
 	@cd $@ && echo "$(TARGET) $@" && \
 	( env MAKELEVEL= COMPONENT_MAKE_JOBS=$(JOBS_PER_COMPONENT) \
-		time $(COMPONENT_MAKE_WRAPPER) $(GMAKE) --no-keep-going $(TARGET); \
+		time $(COMPONENT_MAKE_WRAPPER) $(GMAKE) --jobs=1 --no-keep-going $(TARGET); \
 		RET=$$?; \
 		echo TARGET_EXIT_CODE $$RET; \
 		exit $$RET \

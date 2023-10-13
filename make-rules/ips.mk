@@ -251,7 +251,7 @@ IPS_COMPONENT_VERSION ?=	$(COMPONENT_VERSION)
 # a package is for one architecture only.
 PUBLISH_STAMP ?= $(BUILD_DIR)/.published-$(MACH)
 
-$(MANIFEST_BASE)-%.constructed: install
+$(MANIFEST_BASE)-%.constructed: install | $(PROTO_DIR)
 	@env $(call prepare_env_args,\
 	    GENERATE_TRANSFORMS PROTO_DIR PKG_HARDLINKS PKG_AUTO_HARDLINKS \
 	    MANIFEST_BASE COMPONENT_DIR MANIFEST_CLEANUP_TRANSFORM \
@@ -268,11 +268,11 @@ endif
 manifest-update: MANIFEST_UPDATE=--update
 manifest-update: manifest-check
 
-publish:		build install manifest-check $(PUBLISH_STAMP)
+publish:		build install manifest-check mangle $(PUBLISH_STAMP)
 
 sample-manifest:	$(GENERATED).p5m
 
-$(GENERATED).p5m:	install
+$(GENERATED).p5m:	install | $(PROTO_DIR)
 	$(MANIFEST_GENERATE) \
 	    $(PKG_OPTIONS) \
 	    $(PKG_HARDLINKS:%=--target %) \
@@ -301,7 +301,7 @@ mkgeneric = \
 define python-manifest-rule
 $(MANIFEST_BASE)-%-$(2).mogrified: PKG_MACROS += PYTHON_$(1)_ONLY=
 
-$(MANIFEST_BASE)-%-$(2).p5m: %-PYVER.p5m
+$(MANIFEST_BASE)-%-$(2).p5m: %-PYVER.p5m | $(BUILD_DIR)
 	$(PKGFMT) $(PKGFMT_CHECK_ARGS) $(CANONICAL_MANIFESTS)
 	$(PKGMOGRIFY) -D PYVER=$(1) -D MAYBE_PYVER_SPACE="$(1) " \
 		-D MAYBE_SPACE_PYVER=" $(1)" $(MANIFEST_LIMITING_VARS) -D PYV=$(2) $$< > $$@
@@ -312,7 +312,7 @@ $(foreach ver,$(PYTHON_VERSIONS),$(eval $(call python-manifest-rule,$(ver),$(she
 # appropriate conditional dependencies into a python library's
 # runtime-version-generic package to pull in the version-specific bits when the
 # corresponding version of python is on the system.
-$(BUILD_DIR)/mkgeneric-python: $(WS_MAKE_RULES)/shared-macros.mk
+$(BUILD_DIR)/mkgeneric-python: $(WS_MAKE_RULES)/shared-macros.mk | $(BUILD_DIR)
 	$(RM) $@
 	$(foreach ver,$(shell echo $(filter 3.%, $(PYTHON_VERSIONS)) | tr -d .), \
 		$(call mkgeneric,runtime/python,$(ver)))
@@ -337,7 +337,7 @@ $(MANIFEST_BASE)-%.p5m: %-PYVER.p5m $(BUILD_DIR)/mkgeneric-python
 # Define and execute a macro that generates a rule to create a manifest for a
 # perl module specific to a particular version of the perl runtime.
 define perl-manifest-rule
-$(MANIFEST_BASE)-%-$(shell echo $(1) | tr -d .).p5m: %-PERLVER.p5m
+$(MANIFEST_BASE)-%-$(shell echo $(1) | tr -d .).p5m: %-PERLVER.p5m | $(BUILD_DIR)
 	$(PKGFMT) $(PKGFMT_CHECK_ARGS) $$<
 	$(PKGMOGRIFY) -D PERLVER=$(1) -D MAYBE_PERLVER_SPACE="$(1) " \
 		-D MAYBE_SPACE_PERLVER=" $(1)" \
@@ -350,7 +350,7 @@ $(foreach ver,$(PERL_VERSIONS),$(eval $(call perl-manifest-rule,$(ver))))
 # appropriate conditional dependencies into a perl library's
 # runtime-version-generic package to pull in the version-specific bits when the
 # corresponding version of perl is on the system.
-$(BUILD_DIR)/mkgeneric-perl: $(WS_MAKE_RULES)/shared-macros.mk
+$(BUILD_DIR)/mkgeneric-perl: $(WS_MAKE_RULES)/shared-macros.mk | $(BUILD_DIR)
 	$(RM) $@
 	$(foreach ver,$(shell echo $(PERL_VERSIONS) | tr -d .), \
 		$(call mkgeneric,runtime/perl,$(ver)))
@@ -370,7 +370,7 @@ $(MANIFEST_BASE)-%.p5m: %-PERLVER.p5m $(BUILD_DIR)/mkgeneric-perl
 # Creates build/manifest-*-modulename-##.p5m file where ## is replaced with
 # the version number.
 define ruby-manifest-rule
-$(MANIFEST_BASE)-%-$(2).p5m: %-RUBYVER.p5m
+$(MANIFEST_BASE)-%-$(2).p5m: %-RUBYVER.p5m | $(BUILD_DIR)
 	$(PKGFMT) $(PKGFMT_CHECK_ARGS) $(CANONICAL_MANIFESTS)
 	$(PKGMOGRIFY) -D RUBY_VERSION=$(1) -D RUBY_LIB_VERSION=$(1).0 \
 	    -D VENDOR_RUBY=usr/ruby/$(1)/lib/ruby/vendor_ruby/$(1).0 \
@@ -385,7 +385,7 @@ $(foreach ver,$(RUBY_VERSIONS),$(eval \
 # appropriate conditional dependencies into a ruby library's
 # runtime-version-generic package to pull in the version-specific bits when the
 # corresponding version of ruby is on the system.
-$(BUILD_DIR)/mkgeneric-ruby: $(WS_MAKE_RULES)/shared-macros.mk
+$(BUILD_DIR)/mkgeneric-ruby: $(WS_MAKE_RULES)/shared-macros.mk | $(BUILD_DIR)
 	$(RM) $@
 	$(foreach ver,$(shell echo $(RUBY_VERSIONS) | tr -d .), \
 		$(call mkgeneric,runtime/ruby,$(ver)))
@@ -408,7 +408,7 @@ PHP_EXTENSION_DIR_FUNC= $(shell env PATH=/usr/bin $(shell dirname $(PHP.$(1)))/p
 # Define and execute a macro that generates a rule to create a manifest for a
 # PHP module specific to a particular version of the PHP runtime.
 define php-manifest-rule
-$(MANIFEST_BASE)-%-$(shell echo $(1) | tr -d .).p5m: %-PHPVER.p5m
+$(MANIFEST_BASE)-%-$(shell echo $(1) | tr -d .).p5m: %-PHPVER.p5m | $(BUILD_DIR)
 	$(PKGFMT) $(PKGFMT_CHECK_ARGS) $$<
 	$(PKGMOGRIFY) -D PHPVER=$(1) -D MAYBE_PHPVER_SPACE="$(1) " \
 		-D MAYBE_SPACE_PHPVER=" $(1)" \
@@ -421,7 +421,7 @@ $(foreach ver,$(PHP_VERSIONS),$(eval $(call php-manifest-rule,$(ver))))
 # appropriate conditional dependencies into a PHP extensions's
 # runtime-version-generic package to pull in the version-specific bits when the
 # corresponding version of PHP is on the system.
-$(BUILD_DIR)/mkgeneric-php: $(WS_MAKE_RULES)/shared-macros.mk
+$(BUILD_DIR)/mkgeneric-php: $(WS_MAKE_RULES)/shared-macros.mk | $(BUILD_DIR)
 	$(RM) $@
 	$(foreach ver,$(shell echo $(PHP_VERSIONS) | tr -d .), \
 		$(call mkgeneric,web/php,$(ver)))
@@ -438,36 +438,49 @@ $(MANIFEST_BASE)-%.p5m: %-PHPVER.p5m $(BUILD_DIR)/mkgeneric-php
 
 # Rule to generate historical manifests from the $(HISTORY) file.
 define history-manifest-rule
-$(MANIFEST_BASE)-$(1): $(HISTORY) $(BUILD_DIR)
+$(MANIFEST_BASE)-$(1): $(HISTORY) | $(BUILD_DIR)
 	$(NAWK) -v TARGET=$(1) -v FUNCTION=manifest -f $(GENERATE_HISTORY) < \
 	    $(HISTORY) > $$@
 endef
 $(foreach mfst,$(HISTORICAL_MANIFESTS),$(eval $(call history-manifest-rule,$(mfst))))
 
 # mogrify non-parameterized manifests
-$(MANIFEST_BASE)-%.mogrified:	%.p5m $(BUILD_DIR)
+$(MANIFEST_BASE)-%.mogrified:	%.p5m | $(BUILD_DIR)
 	$(PKGFMT) $(PKGFMT_CHECK_ARGS) $<
 	$(PKGMOGRIFY) $(PKG_OPTIONS) $< \
 		$(PUBLISH_TRANSFORMS) | \
 		sed -e '/^$$/d' -e '/^#.*$$/d' | uniq >$@
 
 # mogrify parameterized manifests
-$(MANIFEST_BASE)-%.mogrified:	$(MANIFEST_BASE)-%.p5m $(BUILD_DIR)
+$(MANIFEST_BASE)-%.mogrified:	$(MANIFEST_BASE)-%.p5m | $(BUILD_DIR)
 	$(PKGMOGRIFY) $(PKG_OPTIONS) $< \
 		$(PUBLISH_TRANSFORMS) | \
 		sed -e '/^$$/d' -e '/^#.*$$/d' | uniq >$@
 
-# mangle the file contents
+# This rule forces all manifest-related targets to wait until the install target
+# finishes. While this is not strictly necessary (for example, .mogrified can
+# run much sooner as it doesn't need the proto area to exist), it makes build
+# logs much cleaner and predictable, preventing situations like mogrification
+# running before configure.
+$(CANONICAL_MANIFESTS): install
+
 $(BUILD_DIR) $(MANGLED_DIR) $(PROTO_DIR):
 	$(MKDIR) $@
 
+# mangle the file contents
 PKGMANGLE_OPTIONS = -D $(MANGLED_DIR) $(PKG_PROTO_DIRS:%=-d %)
-$(MANIFEST_BASE)-%.mangled:	$(MANIFEST_BASE)-%.mogrified $(MANGLED_DIR) $(PROTO_DIR)
+$(MANIFEST_BASE)-%.mangled:	$(MANIFEST_BASE)-%.mogrified | $(MANGLED_DIR) $(PROTO_DIR)
 	$(PKGMANGLE) $(PKGMANGLE_OPTIONS) -m $< >$@
+
+ifneq ($(strip $(BUILD_ARCH)),$(MACH))
+mangle: target-na
+else
+mangle: $(MANGLED)
+endif
 
 REQUIRED_PACKAGES_VALID =	$(BUILD_DIR)/.required_packages_valid
 SKIP_REQUIRED_PACKAGES_CHECK ?=	$(REQUIRED_PACKAGES_VALID)
-$(REQUIRED_PACKAGES_VALID):	$(MAKEFILE_PREREQ) $(BUILD_DIR)
+$(REQUIRED_PACKAGES_VALID):	$(MAKEFILE_PREREQ) | $(BUILD_DIR)
 	@echo
 	@echo Validating REQUIRED_PACKAGES:
 	@echo
@@ -484,8 +497,7 @@ $(REQUIRED_PACKAGES_VALID):	$(MAKEFILE_PREREQ) $(BUILD_DIR)
 
 # generate dependencies
 PKGDEPEND_GENERATE_OPTIONS = -m $(PKG_PROTO_DIRS:%=-d %)
-$(MANIFEST_BASE)-%.depend:	$(MANIFEST_BASE)-%.mangled $(PROTO_DIR) \
-				install $(SKIP_REQUIRED_PACKAGES_CHECK)
+$(MANIFEST_BASE)-%.depend:	$(MANIFEST_BASE)-%.mangled $(SKIP_REQUIRED_PACKAGES_CHECK) | $(PROTO_DIR)
 	$(ENV) $(COMPONENT_PUBLISH_ENV) $(PKGDEPEND) generate \
 	    $(PKGDEPEND_GENERATE_OPTIONS) $< >$@
 
@@ -500,17 +512,12 @@ $(MANIFEST_BASE)-%.depend:	$(MANIFEST_BASE)-%.mangled $(PROTO_DIR) \
 RESOLVE_DEPS=$(BUILD_DIR)/resolve.deps
 
 # Construct a list of packages which will be considered while looking for
-# package dependencies (see pkgdepend(1) resolve -e)
-# Here we take all the packages specified in REQUIRED_PACKAGES variable plus
-# their legacy variant.
-$(RESOLVE_DEPS):	$(MAKEFILE_PREREQ) $(BUILD_DIR)
-	@for pkg in $(REQUIRED_PACKAGES:%=/%) ; do \
-	    echo $${pkg} ; \
-	    echo /legacy$${pkg#/legacy} ; \
-	done | sort -u >$@
+# package dependencies (see pkgdepend(1) resolve -e).
+$(RESOLVE_DEPS):	$(MAKEFILE_PREREQ) | $(BUILD_DIR)
+	printf "%s\n" $(REQUIRED_PACKAGES:%=/%) | sort -u >$@
 
 # resolve the dependencies all at once
-$(BUILD_DIR)/.resolved-$(MACH):	$(DEPENDED) $(RESOLVE_DEPS)
+$(RESOLVED) &:	$(DEPENDED) $(RESOLVE_DEPS)
 	$(PKGDEPEND) resolve $(RESOLVE_DEPS:%=-e %) -m $(DEPENDED)
 ifneq ($(strip $(POSTRESOLVE_TRANSFORMS)),)
 	for manifest in $(RESOLVED) ; do \
@@ -519,7 +526,6 @@ ifneq ($(strip $(POSTRESOLVE_TRANSFORMS)),)
 		    > $${manifest} ; \
 	done
 endif
-	$(TOUCH) $@
 
 #
 # Generate a set of REQUIRED_PACKAGES based on what is needed to for pkgdepend
@@ -528,14 +534,14 @@ endif
 # You must still include packages for tools you build and test with.
 #
 REQUIRED_PACKAGES::	$(RESOLVED)
-	$(GMAKE) RESOLVE_DEPS= $(BUILD_DIR)/.resolved-$(MACH)
+	$(GMAKE) RESOLVE_DEPS= $(RESOLVED)
 	@echo "# Auto-generated contents below.  Please manually verify and remove this comment" >>Makefile
 	@$(PKGMOGRIFY) $(WS_TRANSFORMS)/$@ $(RESOLVED) | \
 		$(GSED) -e '/^[\t ]*$$/d' -e '/^#/d' | sort -u >>Makefile
 	@echo "*** Please edit your Makefile and verify the new content at the end ***"
 
 # lint the manifests all at once
-$(BUILD_DIR)/.linted-$(MACH):	$(BUILD_DIR)/.resolved-$(MACH)
+$(BUILD_DIR)/.linted-$(MACH):	$(RESOLVED)
 	@echo "VALIDATING MANIFEST CONTENT: $(RESOLVED)"
 	$(ENV) PROTO_PATH="$(PKG_PROTO_DIRS)"\
 		SOLARIS_VERSION=$(SOLARIS_VERSION)\
@@ -590,7 +596,6 @@ print-package-paths:	canonical-manifests
 		$(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 | \
  		sed -e '/^$$/d' -e '/^#.*$$/d' | sort -u
 
-$(RESOLVED):	install
 
 canonical-manifests:	$(CANONICAL_MANIFESTS) $(MAKEFILE_PREREQ) $(ALL_PATCHES) \
     $(HISTORY)
