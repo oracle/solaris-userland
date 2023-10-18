@@ -16,15 +16,13 @@ nm /usr/lib/rsyslog/lmnet.so |grep AllowedSenders_GSS
 
 
 # Install prerequirements for testing
-pkg install database/mysql-57 database/mysql-57/client
+pkg install database/mysql-80 database/mysql-80/client
 
 
 
 # Disable native syslog, enable rsyslog
-svcadm disable system/system-log:default
-sleep 5
-svcadm enable system/system-log:rsyslog
-sleep 5
+svcadm disable -s system/system-log:default
+svcadm enable -s system/system-log:rsyslog
 svcs -x
 
 
@@ -34,7 +32,7 @@ $FileGroup openldap
 *.* /var/tmp/openldap
 ================================================================================
 rm -f /var/tmp/openldap
-svcadm restart system/system-log:rsyslog
+svcadm restart -s system/system-log:rsyslog
 logger -p error "openldap"
 ls -l /var/tmp/openldap
 -rw-r--r--   1 root     openldap    2873 Jun 22 10:36 /var/tmp/openldap
@@ -63,7 +61,7 @@ if $msg contains "send" then {
 }
 ================================================================================
 
-svcadm restart system/system-log:rsyslog
+svcadm restart -s system/system-log:rsyslog
 yes 'd' | mail > /dev/null # delete mail messages
 logger -p error "Message 2 - send"
 mail -p # should contain our "Message 2 - send"
@@ -81,7 +79,7 @@ input(type="imfile"
       facility="local7")
 ================================================================================
 
-svcadm restart system/system-log:rsyslog
+svcadm restart -s system/system-log:rsyslog
 echo $"line created in a file\nand a second line" > /var/tmp/file_to_follow
 dmesg | tail
 #2016-06-10T09:14:20.481340+00:00 S12-99 foobar line created in a file
@@ -100,8 +98,7 @@ module(
 ================================================================================
 
 rm -f /tmp/stats
-svcadm restart system/system-log:rsyslog
-sleep 15
+svcadm restart -s system/system-log:rsyslog
 cat /tmp/stats # The file should be there and contain some stats
 
 
@@ -111,14 +108,14 @@ module(load="imtcp")
 input(type="imtcp" port="6666" address="127.0.0.1")
 ================================================================================
 
-svcadm restart system/system-log:rsyslog
+svcadm restart -s system/system-log:rsyslog
 echo '<89>xxxxxxxxxxxx' | nc localhost 6666
 dmesg | tail # message xxxx should be visible
 
 
 
 MYSQL_TEST_DATADIR=/var/tmp/mysql
-MYSQL_VERSION=5.7
+MYSQL_VERSION=8.0
 MYSQL_BINDIR=/usr/mysql/$MYSQL_VERSION/bin
 MYSQL_TEST_USER=root
 MYSQL_TEST_PASSWORD=new-password
@@ -191,7 +188,7 @@ $ModLoad ommysql.so
 if $msg contains 'mysql' then :ommysql:localhost,Syslog,root,new-password
 ================================================================================
 
-svcadm restart system/system-log:rsyslog
+svcadm restart -s system/system-log:rsyslog
 logger -p error "no database"
 logger -p info "mysql database"
 echo "select Message from SystemEvents" | mysql --user="$MYSQL_TEST_USER" --password="$MYSQL_TEST_PASSWORD" -D Syslog
@@ -215,7 +212,7 @@ $OMUxSockSocket /tmp/socksample
 
 rm -f /tmp/socksample
 python /var/tmp/a.py &
-svcadm restart system/system-log:rsyslog
+svcadm restart -s system/system-log:rsyslog
 logger -p info test
 # there should be output like !!! <14>Jun 13 20:05:56 S12-99 root: [ID 702911 user.info] test
 
@@ -227,7 +224,7 @@ rm /etc/rsyslog.d/*
 $ModLoad imudp
 $UDPServerRun 5822
 ================================================================================
-svcadm restart system/system-log:rsyslog
+svcadm restart -s system/system-log:rsyslog
 
 Lines denoted by '!!!' means that they apply to second (client) machine.
 Replace A.B.C.D by ip of server machine
@@ -236,20 +233,16 @@ Replace A.B.C.D by ip of server machine
 !!! *.* @A.B.C.D:5822
 !!! ================================================================================
 !!! # Disable native syslog, enable rsyslog
-!!! svcadm disable system/system-log:default
-!!! sleep 5
-!!! svcadm enable system/system-log:rsyslog
-!!! sleep 5
+!!! svcadm disable -s system/system-log:default
+!!! svcadm enable -s system/system-log:rsyslog
 !!! svcs -x
 !!!
-!!! svcadm restart system/system-log:rsyslog
+!!! svcadm restart -s system/system-log:rsyslog
 !!! logger -p error 'udp log'
-!!!
-!!! # Server should have the log
-!!! dmesg | tail
-!!! 2016-06-18T23:22:56+00:00 S12-101 root: [ID 702911 user.error] udp log
 
-dmesg | tail # should show 'udp log' message
+# Server should have the log
+dmesg | tail
+2016-06-18T23:22:56+00:00 S12-101 root: [ID 702911 user.error] udp log
 
 
 
@@ -257,12 +250,13 @@ dmesg | tail # should show 'udp log' message
 $ModLoad imtcp
 $InputTCPServerRun 5822
 ================================================================================
+svcadm restart -s system/system-log:rsyslog
 snoop -d net0 -x 0 port 5822
 
 !!! =============== On second machine replace /etc/rsyslog.d/client ================
 !!! *.* @@A.B.C.D:5822
 !!! ================================================================================
-!!! svcadm restart system/system-log:rsyslog
+!!! svcadm restart -s system/system-log:rsyslog
 !!! logger -p error 'tcp log'
 
 # Make sure snoop shows the 'tcp log' message in plain
@@ -295,6 +289,7 @@ openssl x509 -req -in server-req.pem -days 3600 -CA ca-cert.pem -CAkey ca-key.pe
 
 snoop -d net0 -x 0 port 5822
 # This should show no plain text message once we send it in next paragraph
+# (apart from last 'exiting on signal 15' upon the rsyslog restart below)
 
 !!! =============== On second machine replace /etc/rsyslog.d/client ================
 !!! $DefaultNetstreamDriverCAFile /etc/rsyslog.cert/ca-cert.pem
@@ -306,7 +301,7 @@ snoop -d net0 -x 0 port 5822
 !!! ================================================================================
 !!! mkdir -p /etc/rsyslog.cert
 !!! scp A.B.C.D:/etc/rsyslog.cert/ca-cert.pem /etc/rsyslog.cert/ca-cert.pem
-!!! svcadm restart system/system-log:rsyslog
+!!! svcadm restart -s system/system-log:rsyslog
 !!! logger -p error 'encrypted tcp log'
 
 # Make sure snoop SHOWS NO 'encrypted tcp log' message in plain

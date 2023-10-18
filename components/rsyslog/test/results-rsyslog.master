@@ -14,7 +14,6 @@ PASS: timestamp-isoweek.sh
 PASS: timestamp-mysql.sh
 PASS: timestamp-pgsql.sh
 PASS: timestamp-subseconds.sh
-PASS: hostname-getaddrinfo-fail.sh
 PASS: msleep_usage_output.sh
 PASS: mangle_qi_usage_output.sh
 PASS: minitcpsrv_usage_output.sh
@@ -24,6 +23,10 @@ PASS: prop-programname-with-slashes.sh
 PASS: hostname-with-slash-pmrfc5424.sh
 PASS: hostname-with-slash-pmrfc3164.sh
 PASS: hostname-with-slash-dflt-invld.sh
+PASS: func-substring-invld-startpos.sh
+PASS: func-substring-large-endpos.sh
+PASS: func-substring-large-neg-endpos.sh
+PASS: func-substring-relative-endpos.sh
 PASS: hostname-with-slash-dflt-slash-valid.sh
 PASS: empty-app-name.sh
 PASS: stop-localvar.sh
@@ -70,6 +73,7 @@ PASS: privdropgroupid.sh
 SKIP: privdropabortonidfail.sh
 SKIP: privdropabortonidfaillegacy.sh
 PASS: json-nonstring.sh
+PASS: json-onempty-at-end.sh
 PASS: template-json.sh
 PASS: template-pure-json.sh
 PASS: template-pos-from-to.sh
@@ -78,6 +82,7 @@ PASS: template-pos-from-to-oversize.sh
 PASS: template-pos-from-to-oversize-lowercase.sh
 PASS: template-pos-from-to-missing-jsonvar.sh
 PASS: template-const-jsonf.sh
+PASS: template-topos-neg.sh
 PASS: fac_authpriv.sh
 PASS: fac_local0.sh
 PASS: fac_local7.sh
@@ -313,6 +318,7 @@ PASS: incltest_dir_wildcard.sh
 PASS: incltest_dir_empty_wildcard.sh
 PASS: linkedlistqueue.sh
 PASS: lookup_table.sh
+PASS: lookup_table-hup-backgrounded.sh
 PASS: lookup_table_no_hup_reload.sh
 PASS: key_dereference_on_uninitialized_variable_space.sh
 PASS: array_lookup_table.sh
@@ -379,6 +385,7 @@ PASS: sndrcv_tls_certvalid.sh
 PASS: sndrcv_tls_certvalid_action_level.sh
 PASS: sndrcv_tls_certvalid_expired.sh
 PASS: sndrcv_tls_certvalid_expired_defaultmode.sh
+PASS: sndrcv_tls_certvalid_revoked.sh
 PASS: imtcp-tls-no-lstn-startup.sh
 PASS: imtcp-tls-gtls-x509fingerprint-invld.sh
 PASS: imtcp-tls-gtls-x509fingerprint.sh
@@ -406,6 +413,7 @@ PASS: sndrcv_tls_ossl_certvalid_action_level.sh
 PASS: sndrcv_tls_ossl_certvalid_expired.sh
 PASS: sndrcv_tls_ossl_certvalid_tlscommand.sh
 PASS: sndrcv_tls_ossl_certvalid_ciphers.sh
+PASS: sndrcv_tls_ossl_certvalid_revoked.sh
 PASS: imtcp-tls-ossl-x509valid.sh
 PASS: imtcp-tls-ossl-x509name.sh
 PASS: imtcp-tls-ossl-x509fingerprint.sh
@@ -468,7 +476,9 @@ SKIP: imfile-rename-while-stopped.sh
 SKIP: imfile-rename.sh
 PASS: imfile-symlink.sh
 PASS: imfile-symlink-multi.sh
+PASS: imfile-symlink-ext-tmp-dir-tree.sh
 SKIP: imfile-logrotate.sh
+SKIP: imfile-logrotate-async.sh
 SKIP: imfile-logrotate-multiple.sh
 SKIP: imfile-logrotate-copytruncate.sh
 SKIP: imfile-logrotate-nocopytruncate.sh
@@ -484,11 +494,11 @@ SKIP: glbl-oversizeMsg-truncate-imfile.sh
 PASS: config_enabled-on.sh
 PASS: config_enabled-off.sh
 ============================================================================
-Testsuite summary for rsyslog 8.2206.0
+Testsuite summary for rsyslog 8.2308.0
 ============================================================================
-# TOTAL: 486
-# PASS:  433
-# SKIP:  53
+# TOTAL: 496
+# PASS:  442
+# SKIP:  54
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
