@@ -27,47 +27,44 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libffi
-COMPONENT_VERSION=	3.2.1
-# We need to compile the old library in default path (as a COMPONENT_VERSION,
-# not COMPONENT_VERSION_1) but keep the FMRI to have the new version
-IPS_COMPONENT_VERSION=	3.4.4
+COMPONENT_VERSION=	3.4.4
 COMPONENT_PROJECT_URL=	http://sourceware.org/libffi/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d06ebb8e1d9a22d19e38d63fdb83954253f39bedc5d46232a05645685722ca37
+    sha256:d66c56ad259a82cf2a9dfc408b32bf5da52371500b84745f7fb8b645712df676
 COMPONENT_ARCHIVE_URL=	https://github.com/libffi/libffi/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libffi
 COMPONENT_ANITYA_ID=	1611
 
-COMPONENT_BAID=	22315
+COMPONENT_BAID=	136310
 
-# Since we already delivered the new version we need to keep delivering it from now on
-COMPONENT_VERSION_1 =	3.4.4
-COMPONENT_BAID_1=	136310
+# For version update, we want to continue to provide the libffi.so
+# (and its links) from version 3.2.1.
+COMPONENT_VERSION_1 =	3.2.1
+COMPONENT_BAID_1=	22315
 COMPONENT_SRC_1 =	$(COMPONENT_NAME)-$(COMPONENT_VERSION_1)
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1 = \
-	sha256:d66c56ad259a82cf2a9dfc408b32bf5da52371500b84745f7fb8b645712df676
+	sha256:d06ebb8e1d9a22d19e38d63fdb83954253f39bedc5d46232a05645685722ca37
 COMPONENT_ARCHIVE_URL_1 =	ftp://sources.redhat.com/pub/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE_1)
 SOURCE_DIR_1 =		$(COMPONENT_DIR)/$(COMPONENT_SRC_1)
 
+BUILD_OLD_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)
+BUILD_OLD_DIR_64 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH64)
 
-BUILD_NEW_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)
-BUILD_NEW_DIR_64 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH64)
+$(BUILD_OLD_DIR_32)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
+$(BUILD_OLD_DIR_64)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
+$(BUILD_OLD_DIR_32)/.configured:	BITS=32
+$(BUILD_OLD_DIR_64)/.configured:	BITS=64
 
-$(BUILD_NEW_DIR_32)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_NEW_DIR_64)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_NEW_DIR_32)/.configured:	BITS=32
-$(BUILD_NEW_DIR_64)/.configured:	BITS=64
+BUILD_32 += $(BUILD_OLD_DIR_32)/.built
+BUILD_64 += $(BUILD_OLD_DIR_64)/.built
 
-BUILD_32 += $(BUILD_NEW_DIR_32)/.built
-BUILD_64 += $(BUILD_NEW_DIR_64)/.built
+INSTALL_32 += $(BUILD_OLD_DIR_32)/.installed
+INSTALL_64 += $(BUILD_OLD_DIR_64)/.installed
 
-INSTALL_32 += $(BUILD_NEW_DIR_32)/.installed
-INSTALL_64 += $(BUILD_NEW_DIR_64)/.installed
-
-# install the new version first to overwrite it by older one
-$(BUILD_DIR_32)/.installed:	$(BUILD_NEW_DIR_32)/.installed
-$(BUILD_DIR_64)/.installed:	$(BUILD_NEW_DIR_64)/.installed
+# install the old version first
+$(BUILD_DIR_32)/.installed:	$(BUILD_OLD_DIR_32)/.installed
+$(BUILD_DIR_64)/.installed:	$(BUILD_OLD_DIR_64)/.installed
 
 include $(WS_MAKE_RULES)/common.mk
 
