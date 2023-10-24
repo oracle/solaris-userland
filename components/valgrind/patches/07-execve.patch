@@ -1,0 +1,20 @@
+On Solaris, calling execve with -1 as a first argument causes segfault.
+
+This is tracked internally as bug 35939973.
+
+Not intended for upstream.
+
+--- valgrind-3.21.0/none/tests/execve.c
++++ valgrind-3.21.0/none/tests/execve.c
+@@ -28,8 +28,11 @@ int main(int argc, char **argv)
+ 	 doesn't actually exists, so execve doesn't accidentally succeeds.  */
+       if (execve("/%/", NULL, NULL) >= 0)
+ 	printf ("WHAT?");
++#if !defined(VGO_solaris)
++      /* On Solaris, execve segfaults when -1 is given as an argument. */
+       if (execve("/%/", (void *)-1, NULL) >= 0)
+ 	printf ("WHAT?");
++#endif
+       if (execve("/%/", v_null, NULL) >= 0)
+ 	printf ("WHAT?");
+       if (execve("/%/", v_null, v_null) >= 0)

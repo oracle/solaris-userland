@@ -2,8 +2,8 @@ Add support for new mremap syscall.
 
 This can be offered upstream.
 
---- valgrind-3.18.1/coregrind/m_aspacemgr/aspacemgr-common.c
-+++ valgrind-3.18.1/coregrind/m_aspacemgr/aspacemgr-common.c
+--- valgrind-3.21.0/coregrind/m_aspacemgr/aspacemgr-common.c
++++ valgrind-3.21.0/coregrind/m_aspacemgr/aspacemgr-common.c
 @@ -223,7 +223,7 @@ SysRes ML_(am_do_extend_mapping_NO_NOTIF
     /* Extend the mapping old_addr .. old_addr+old_len-1 to have length
        new_len, WITHOUT moving it.  If it can't be extended in place,
@@ -22,8 +22,8 @@ This can be offered upstream.
     return VG_(do_syscall5)(
               __NR_mremap, 
               old_addr, old_len, new_len, 
---- valgrind-3.18.1/include/vki/vki-solaris.h
-+++ valgrind-3.18.1/include/vki/vki-solaris.h
+--- valgrind-3.21.0/include/vki/vki-solaris.h
++++ valgrind-3.21.0/include/vki/vki-solaris.h
 @@ -664,6 +664,11 @@ typedef struct vki_kcf_door_arg_s {
  #define vki_meminfo_t meminfo_t
  
@@ -36,8 +36,8 @@ This can be offered upstream.
  #include <sys/mntio.h>
  #define VKI_MNTIOC_GETEXTMNTENT MNTIOC_GETEXTMNTENT
  #define VKI_MNTIOC_GETMNTANY MNTIOC_GETMNTANY
---- valgrind-3.18.1/include/vki/vki-scnums-solaris.h
-+++ valgrind-3.18.1/include/vki/vki-scnums-solaris.h
+--- valgrind-3.21.0/include/vki/vki-scnums-solaris.h
++++ valgrind-3.21.0/include/vki/vki-scnums-solaris.h
 @@ -178,6 +178,7 @@
  #if defined(SOLARIS_UUIDSYS_SYSCALL)
  #define __NR_uuidsys                    SYS_uuidsys
@@ -46,9 +46,9 @@ This can be offered upstream.
  #define __NR_mmapobj                    SYS_mmapobj
  #define __NR_setrlimit                  SYS_setrlimit
  #define __NR_getrlimit                  SYS_getrlimit
---- valgrind-3.18.1/coregrind/m_syswrap/syswrap-solaris.c
-+++ valgrind-3.18.1/coregrind/m_syswrap/syswrap-solaris.c
-@@ -10904,6 +10904,9 @@ static SyscallTableEntry syscall_table[]
+--- valgrind-3.21.0/coregrind/m_syswrap/syswrap-solaris.c
++++ valgrind-3.21.0/coregrind/m_syswrap/syswrap-solaris.c
+@@ -10951,6 +10951,9 @@ static SyscallTableEntry syscall_table[]
  #if defined(SOLARIS_UUIDSYS_SYSCALL)
     SOLXY(__NR_uuidsys,              sys_uuidsys),               /* 124 */
  #endif /* SOLARIS_UUIDSYS_SYSCALL */

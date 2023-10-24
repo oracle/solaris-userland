@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 
 COMPILER=   gcc
@@ -30,16 +30,15 @@ BUILD_ARCH= i386
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=     valgrind
-COMPONENT_VERSION=  3.18.1
+COMPONENT_VERSION=  3.21.0
 COMPONENT_SRC=      $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=  $(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-  sha256:609f388f4eb78288943751b257381d95157dbd2705df60018dd941f1240436bd
+  sha256:10ce1618bb3e33fad16eb79552b0a3e1211762448a0d7fce11c8a6243b9ac971
 COMPONENT_ARCHIVE_URL= ftp://sourceware.org/pub/valgrind/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL= http://valgrind.org
 COMPONENT_ANITYA_ID=  13639
-
-COMPONENT_BAID=           111809
+COMPONENT_BAID=       152902
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -64,6 +63,15 @@ CXXFLAGS = -D__EXTENSIONS__
 # manual pages have their own build target
 COMPONENT_POST_BUILD_ACTION += \
   ( cd $(@D)/docs && $(ENV) $(GMAKE) man-pages )
+
+# Python scripts are no longer 3.7 compatible.
+PYTHON_VERSION = 3.9
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/cg_annotate
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/cg_diff
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/cg_merge
+
+PERL_SCRIPTS += $(PROTO_DIR)/usr/bin/callgrind_annotate
+PERL_SCRIPTS += $(PROTO_DIR)/usr/bin/callgrind_control
 
 # config.h is generated in the build directory while it is assumed to live in the source dir
 COMPONENT_POST_CONFIGURE_ACTION += ( cp $(@D)/config.h $(SOURCE_DIR) )
