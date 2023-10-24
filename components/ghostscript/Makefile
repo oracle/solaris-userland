@@ -28,19 +28,19 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=	10.01.1
-IPS_COMPONENT_VERSION=	$(subst .0,.,$(COMPONENT_VERSION))
+COMPONENT_VERSION=	10.02.0
+IPS_COMPONENT_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\.0\([^.]\)/.\1/g')
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
 COMPONENT_DOWNLOAD_URL= https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
-COMPONENT_ARCHIVE_HASH= sha256:4df18a808cd4369f25e02dbcec2f133cb6d674627b2c6b1502020e58d43e32ce
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs10011/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_HASH= sha256:e54062f166708d84ca82de9f8304a04344466080f936118b88082bd55ed6dc97
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs10020/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
 
 COMPONENT_NAME_1=	tessdata_best
 GIT_REPO_1=		https://github.com/tesseract-ocr/$(COMPONENT_NAME_1)
-GIT_COMMIT_ID_1=	e2aad9b
+GIT_COMMIT_ID_1=	fa8481f
 
-COMPONENT_BAID=		142601
+COMPONENT_BAID=		152187
 
 include $(WS_MAKE_RULES)/common.mk
 # some backup files are copied to proto
@@ -51,6 +51,9 @@ CONFIGURE_OPTIONS +=	--enable-dynamic
 CONFIGURE_OPTIONS +=	--disable-compile-inits
 CONFIGURE_OPTIONS +=	--without-libidn
 CONFIGURE_OPTIONS +=	--disable-hidden-visibility
+
+# Honour encrypted PDF permissions
+CFLAGS +=		-DUSE_PDF_PERMISSIONS=1
 
 # Sparcv7 cores on test docxwrite
 gcc_OPT.sparc.32 = -O0 -munaligned-doubles
