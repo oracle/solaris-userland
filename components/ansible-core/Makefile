@@ -27,9 +27,9 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ansible-core
-COMPONENT_VERSION=	2.15.0
+COMPONENT_VERSION=	2.15.5
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:cf690fd4ebb40590e00c5acdc0624758ca4c58d1e4b2b02ec026a034070ebf4d
+    sha256:8cc539cb8d4349af3ffd901c70722f7a7a203ae6427ddac95ffdf546a6e41602
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	https://www.ansible.com/
 COMPONENT_BUGDB=	utility/ansible
 COMPONENT_ANITYA_ID=	165410
 
-COMPONENT_BAID=		144988
+COMPONENT_BAID=		153136
 PKG_MACROS+= MICRO_VERSION=$(MICRO_VERSION)
 
 # We need just a single Python version
@@ -58,8 +58,9 @@ PKG_MACROS +=		PYV=$(shell echo $(PYTHON_VERSIONS) | tr -d .)
 COMPONENT_POST_INSTALL_ACTION += \
     cd $(COMPONENT_DIR) ; \
     $(MKDIR) $(PROTOUSRSHAREMAN1DIR) ; \
-    $(INSTALL) --mode=644 $(COMPONENT_SRC)/docs/man/man1/* \
-        $(PROTOUSRSHAREMAN1DIR)/
+    echo Generating man pages... ; \
+    LC_ALL=C.UTF-8 $(PYTHON) $(SOURCE_DIR)/packaging/cli-doc/build.py man \
+    --output-dir $(PROTOUSRSHAREMAN1DIR)/
 
 REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
