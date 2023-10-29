@@ -28,14 +28,14 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libhandy
-COMPONENT_VERSION=	1.8.0
+COMPONENT_VERSION=	1.8.2
 COMPONENT_PROJECT_URL=	https://gitlab.gnome.org/GNOME/libhandy
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:6c2542c0578924b0c29b7ae6cb44eb26df38eb01d6d5ef3d7d0b0825763230e8
+	sha256:d11aa2cd3e570ac6d0efdba46d173147c11f45826457e924c05990bb2e0df9ad
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	114486
 
-COMPONENT_BAID=		130748
+COMPONENT_BAID=		152514
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
