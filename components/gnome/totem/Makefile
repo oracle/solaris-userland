@@ -57,12 +57,6 @@ COMPONENT_POST_INSTALL_ACTION += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/totem-audio-preview.1 \
                 $(PROTO_DIR)/usr/share/man/man1/totem-audio-preview.1;
 
-# Temporary workaround until all build machines are running meson-0.63
-COMPONENT_POST_INSTALL_ACTION += \
-for f in $(PROTO_DIR)/usr/share/help/[a-z]*/totem/figures ; do \
-    (cd $$f ; $(RM) *.png ; $(SYMLINK) ../../../C/totem/figures/*.png . ); \
-done ;
-
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/python/pylint
 REQUIRED_PACKAGES += developer/vala
