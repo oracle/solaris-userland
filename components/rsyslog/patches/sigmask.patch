@@ -1,0 +1,88 @@
+#
+# Makes sure that we do not block SIGSEGV/SIGBUS; this is required to make
+# sure on_fault() can work in libc.so; specific to Solaris.
+#
+#
+--- rsyslog-8.2308.0/threads.c.org	2023-03-21 16:22:17.000000000 +0100
++++ rsyslog-8.2308.0/threads.c	2023-10-26 12:36:12.972512255 +0200
+@@ -230,11 +230,12 @@
+ 	}
+ #	endif
+ 
+-	/* block all signals except SIGTTIN and SIGSEGV */
++	/* block all signals except SIGTTIN, SIGBUS and SIGSEGV */
+ 	sigset_t sigSet;
+ 	sigfillset(&sigSet);
+ 	sigdelset(&sigSet, SIGTTIN);
+ 	sigdelset(&sigSet, SIGSEGV);
++	sigdelset(&sigSet, SIGBUS);
+ 	pthread_sigmask(SIG_BLOCK, &sigSet, NULL);
+ 
+ 	/* setup complete, we are now ready to execute the user code. We will not
+--- rsyslog-8.2308.0/runtime/wtp.c.org	2023-03-21 16:22:17.000000000 +0100
++++ rsyslog-8.2308.0/runtime/wtp.c	2023-10-26 12:32:47.953501837 +0200
+@@ -408,6 +408,7 @@
+ 	sigfillset(&sigSet);
+ 	sigdelset(&sigSet, SIGTTIN);
+ 	sigdelset(&sigSet, SIGSEGV);
++	sigdelset(&sigSet, SIGBUS);
+ 	pthread_sigmask(SIG_BLOCK, &sigSet, NULL);
+ 
+ #	if defined(HAVE_PRCTL) && defined(PR_SET_NAME)
+--- rsyslog-8.2308.0/contrib/impcap/impcap.c.org	2023-10-26 12:34:58.967635887 +0200
++++ rsyslog-8.2308.0/contrib/impcap/impcap.c	2023-10-26 12:35:17.109684743 +0200
+@@ -645,6 +645,8 @@
+ 	pthread_sigmask(SIG_BLOCK, &sigSet, NULL);
+ 	sigemptyset(&sigSet);
+ 	sigaddset(&sigSet, SIGTTIN);
++	sigaddset(&sigSet, SIGBUS);
++	sigaddset(&sigSet, SIGSEGV);
+ 	pthread_sigmask(SIG_UNBLOCK, &sigSet, NULL);
+ 	memset(&sigAct, 0, sizeof (sigAct));
+ 	sigemptyset(&sigAct.sa_mask);
+--- rsyslog-8.2308.0/plugins/imdiag/imdiag.c.org	2023-08-15 09:01:58.000000000 +0200
++++ rsyslog-8.2308.0/plugins/imdiag/imdiag.c	2023-10-26 12:34:15.479470095 +0200
+@@ -663,9 +663,10 @@
+ 	time_t strtTO;
+ 	time_t endTO;
+ 
+-	/* block all signals except SIGTTIN and SIGSEGV */
++	/* block all signals except SIGBUS and SIGSEGV */
+ 	sigfillset(&sigSet);
+ 	sigdelset(&sigSet, SIGSEGV);
++	sigdelset(&sigSet, SIGBUS);
+ 	pthread_sigmask(SIG_BLOCK, &sigSet, NULL);
+ 
+ 	dbgprintf("timeoutGuard: timeout %d seconds, time %lld\n", abortTimeout, (long long) time(NULL));
+--- rsyslog-8.2308.0/runtime/tcpsrv.c.org	2023-08-15 09:01:58.000000000 +0200
++++ rsyslog-8.2308.0/runtime/tcpsrv.c	2023-10-26 12:55:16.591270453 +0200
+@@ -1714,6 +1714,8 @@
+ 	 */
+ 	sigset_t sigSet, sigSetSave;
+ 	sigfillset(&sigSet);
++	sigdelset(&sigSet, SIGBUS);
++	sigdelset(&sigSet, SIGSEGV);
+ 	pthread_sigmask(SIG_SETMASK, &sigSet, &sigSetSave);
+ 
+ 	wrkrRunning = 0;
+--- rsyslog-8.2308.0/plugins/omprog/omprog.c.org	2023-03-21 16:22:17.000000000 +0100
++++ rsyslog-8.2308.0/plugins/omprog/omprog.c	2023-10-26 12:56:31.268538056 +0200
+@@ -691,6 +691,8 @@
+ 
+ 	/* block signals for this thread (otherwise shutdown hangs on FreeBSD) */
+ 	sigfillset(&sigSet);
++	sigdelset(&sigSet, SIGBUS);
++	sigdelset(&sigSet, SIGSEGV);
+ 	pthread_sigmask(SIG_SETMASK, &sigSet, NULL);
+ 
+ 	for(;;) {
+--- rsyslog-8.2308.0/plugins/imtcp/imtcp.c.org	2023-08-15 09:01:58.000000000 +0200
++++ rsyslog-8.2308.0/plugins/imtcp/imtcp.c	2023-10-26 12:56:54.555934811 +0200
+@@ -1009,6 +1009,7 @@
+ 	/* enable signals we still need */
+ 	sigdelset(&sigSet, SIGTTIN);
+ 	sigdelset(&sigSet, SIGSEGV);
++	sigdelset(&sigSet, SIGBUS);
+ 	pthread_sigmask(SIG_SETMASK, &sigSet, &sigSetSave);
+ 
+ 	pthread_attr_init(&sessThrdAttr);
