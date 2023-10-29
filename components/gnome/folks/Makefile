@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		folks
-COMPONENT_VERSION=	0.15.5
+COMPONENT_VERSION=	0.15.6
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Folks
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0fff8a896330cd82aee4598324f7e541c884d0337536212723b4beb38c759086
+	sha256:c866630c553f29ce9be1c7a60267cb4080a6bccf4b8d551dc4c7e6234d840248
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13121
 
-COMPONENT_BAID=		139055
+COMPONENT_BAID=		153191
 BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
