@@ -33,14 +33,14 @@ COMPONENT_MAKE_JOBS=1
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtksourceview
-COMPONENT_VERSION=	4.8.2
+COMPONENT_VERSION=	4.8.4
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GtkSourceView
 COMPONENT_ARCHIVE_HASH= \
-    sha256:842de7e5cb52000fd810e4be39cd9fe29ffa87477f15da85c18f7b82d45637cc
+    sha256:7ec9d18fb283d1f84a3a3eff3b7a72b09a10c9c006597b3fbabbb5958420a87d
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7724
 
-COMPONENT_BAID=		111696
+COMPONENT_BAID=		153253
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
