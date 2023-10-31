@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=   gcc
@@ -59,25 +59,28 @@ CONFIGURE_OPTIONS +=	--enable-japanese-utf8
 CONFIGURE_OPTIONS +=	--enable-widec
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)/lynx
 CONFIGURE_OPTIONS +=	--with-gnutls
+CONFIGURE_OPTIONS +=	--with-pkg-config=$(PKG_CONFIG_DEFAULT)
 CONFIGURE_OPTIONS +=	--with-screen=ncurses
 
 # Use the HTML and CSS styling external test suite as referenced at
 # http://www.w3.org/2005/MWI/Tests/. Use the US proxy to avoid HTTP 401 errors.
 COMPONENT_TEST_CMD = $(@D)/src/lynx
-COMPONENT_TEST_ARGS = -dump \
+COMPONENT_TEST_ARGS = --display_charset=utf-8 -dump \
 	http://www.cameronmoll.com/articles/mobile/mkp/pg1.html \
 	http://www.cameronmoll.com/articles/mobile/mkp/pg2.html \
 	http://www.cameronmoll.com/articles/mobile/mkp/pg3.html \
-	http://www.cameronmoll.com/articles/mobile/mkp/pg4.html
+	http://www.cameronmoll.com/articles/mobile/mkp/pg4.html \
+	https://www.w3.org/Provider/Style/dummy.html
 COMPONENT_TEST_TARGETS =
 
 COMPONENT_SYSTEM_TEST_DIR =
 COMPONENT_SYSTEM_TEST_CMD =		$(USRBINDIR)/lynx
-COMPONENT_SYSTEM_TEST_ARGS =		-dump \
+COMPONENT_SYSTEM_TEST_ARGS =		--display_charset=utf-8 -dump \
 	http://www.cameronmoll.com/articles/mobile/mkp/pg1.html \
 	http://www.cameronmoll.com/articles/mobile/mkp/pg2.html \
 	http://www.cameronmoll.com/articles/mobile/mkp/pg3.html \
-	http://www.cameronmoll.com/articles/mobile/mkp/pg4.html
+	http://www.cameronmoll.com/articles/mobile/mkp/pg4.html \
+	https://www.w3.org/Provider/Style/dummy.html
 COMPONENT_SYSTEM_TEST_TARGETS =
 
 REQUIRED_PACKAGES += library/gnutls-3
