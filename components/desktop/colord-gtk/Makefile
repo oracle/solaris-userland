@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,38 +30,41 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		colord-gtk
-COMPONENT_VERSION=	0.1.26
+COMPONENT_VERSION=	0.3.0
 COMPONENT_PROJECT_URL=	https://www.freedesktop.org/software/colord/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:28d00b7f157ea3e2ea5315387b2660fde82faba16674861c50465e55d61a3e45
+	sha256:b9466656d66d9a6ffbc2dd04fa91c8f6af516bf9efaacb69744eec0f56f3c1d0
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	331
 
-COMPONENT_BAID=		27550
+COMPONENT_BAID=		153531
 
 TEST_TARGET = $(NO_TESTS)
 
+BUILD_STYLE= 		meson
 include $(WS_MAKE_RULES)/common.mk
 
-# Assumes GNU xgettext in PATH
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
+# Assumes GNU xgettext first in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
-# We should only need gtk3 support.
-CONFIGURE_OPTIONS += --disable-gtk2
-# Documentation target is busted; also requires docbook2man.
-CONFIGURE_OPTIONS += --disable-gtk-doc
-CONFIGURE_OPTIONS += --disable-schemas-compile
-CONFIGURE_OPTIONS += --disable-static
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS += --enable-shared
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-vala
-CONFIGURE_OPTIONS += --with-pic
+# We have no need for a gtk2 version any longer
+CONFIGURE_OPTIONS += -Dgtk2=false
+# We need gtk3 for gnome-control-center 41 (until we upgrade to 45)
+CONFIGURE_OPTIONS += -Dgtk3=true
+# We will need gtk4 for gnome-control-center 45, but it requires gtk4 >= 4.4
+CONFIGURE_OPTIONS += -Dgtk4=false
+# Cannot build man pages without docbook-xsl-ns
+CONFIGURE_OPTIONS += -Dman=false
+# gobject-introspection & Vala API required for other components
+CONFIGURE_OPTIONS.32 += -Dintrospection=false -Dvapi=false
+CONFIGURE_OPTIONS.64 += -Dintrospection=true -Dvapi=true
 
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/desktop/cairo
@@ -69,3 +72,4 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += service/image/colord
+REQUIRED_PACKAGES += text/gnu-gettext

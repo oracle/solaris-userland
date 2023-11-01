@@ -1,0 +1,26 @@
+Patch from upstream:
+https://github.com/hughsie/colord-gtk/commit/c620b4a4b3dfc2ce58cd60b9d5209fb19396fc42
+
+From c620b4a4b3dfc2ce58cd60b9d5209fb19396fc42 Mon Sep 17 00:00:00 2001
+From: Richard Hughes <richard@hughsie.com>
+Date: Sat, 24 Jun 2023 12:06:12 +0100
+Subject: [PATCH] Fix the callback signature to fix a crash
+
+Fixes https://github.com/hughsie/colord-gtk/issues/22
+---
+ libcolord-gtk/cd-window.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libcolord-gtk/cd-window.c b/libcolord-gtk/cd-window.c
+index 45f65ad..c57c25b 100644
+--- a/libcolord-gtk/cd-window.c
++++ b/libcolord-gtk/cd-window.c
+@@ -295,7 +295,7 @@ cd_window_get_profile_device_find_cb (GObject *source,
+ }
+ 
+ static void
+-cd_window_device_changed_cb (CdDevice *device, CdWindow *window)
++cd_window_device_changed_cb (CdClient *client, CdDevice *device, CdWindow *window)
+ {
+ 	CdProfile *profile;
+ 

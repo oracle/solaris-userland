@@ -1,0 +1,19 @@
+Solaris-specific patch to disable -fstack-protector-strong since it causes
+builds with gcc 13.2.0 on Solaris to fail when linking with:
+
+Undefined                       first referenced
+ symbol                             in file
+__stack_chk_fail_local              libcolord-gtk/libcolord-gtk.so.1.0.3.p/cd-sample-widget.c.o  (symbol scope specifies local binding)
+__stack_chk_guard                   libcolord-gtk/libcolord-gtk.so.1.0.3.p/cd-sample-widget.c.o  (symbol belongs to implicit dependency /usr/gcc/13/lib/gcc/x86_64-pc-solaris2.11/13.2.0/../../../libssp.so.0)
+ld: fatal: symbol referencing errors
+
+--- colord-gtk-0.3.0/meson.build	2022-02-16 07:27:03.386177300 -0800
++++ colord-gtk-0.3.0/meson.build	2023-10-30 17:41:52.548622084 -0700
+@@ -41,7 +41,6 @@
+ 
+ # get supported warning flags
+ test_args = [
+-  '-fstack-protector-strong',
+   '-Waggregate-return',
+   '-Wunused',
+   '-Warray-bounds',
