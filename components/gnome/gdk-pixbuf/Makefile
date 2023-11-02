@@ -31,14 +31,14 @@ include ../../../make-rules/shared-macros.mk
 BUILD_STYLE=            meson
 
 COMPONENT_NAME=		gdk-pixbuf
-COMPONENT_VERSION=	2.42.8
+COMPONENT_VERSION=	2.42.10
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GdkPixbuf
 COMPONENT_ARCHIVE_HASH= \
-     sha256:84acea3acb2411b29134b32015a5b1aaa62844b19c4b1ef8b8971c6b0759f4c6
+     sha256:ee9b6c75d13ba096907a2e3c6b27b61bcd17f5c7ebeab5a5b439d2f2e39fe44b
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	9533
 
-COMPONENT_BAID=		118905
+COMPONENT_BAID=		153551
 
 COMPONENT_NAME_1=	gdk-pixbuf-xlib
 COMPONENT_VERSION_1=	2.40.2
@@ -60,6 +60,11 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # or LDFLAGS, especially the -m32/64 flag, to g-ir-scanner
 COMPONENT_BUILD_ENV += CFLAGS="$(strip $(CFLAGS))"
 COMPONENT_BUILD_ENV += LDFLAGS="$(strip $(LDFLAGS))"
+
+# Don't build the gi-docgen subproject for docs
+DISABLE_DOCS = --wrap-mode=nofallback 
+CONFIGURE_OPTIONS += $(DISABLE_DOCS)
+CONFIGURE_OPTIONS_1 = $(filter-out $(DISABLE_DOCS),$(CONFIGURE_OPTIONS))
 
 # Only gdk-pixbuf recognizes -Dintrospection=disabled, not gdk-pixbuf-xlib
 DISABLE_INTROSPECTION = -Dintrospection=disabled
