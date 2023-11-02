@@ -27,14 +27,14 @@ BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		evince
-COMPONENT_VERSION=	41.3
+COMPONENT_VERSION=	45.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Evince
 COMPONENT_ARCHIVE_HASH= \
-    sha256:3346b01f9bdc8f2d5ffea92f110a090c64a3624942b5b543aad4592a9de33bb0
+    sha256:d18647d4275cbddf0d32817b1d04e307342a85be914ec4dad2d8082aaf8aa4a8
 COMPONENT_BUGDB=	gnome/evince
 COMPONENT_ANITYA_ID=	8178
 
-COMPONENT_BAID=		115222
+COMPONENT_BAID=		153144
 BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)
@@ -60,6 +60,9 @@ LDFLAGS +=	$(CC_BITS) -lgmodule-2.0 -lm
 
 CONFIGURE_OPTIONS +=	--libexecdir="$(USRLIB)"
 CONFIGURE_OPTIONS +=	--sysconfdir="$(ETCDIR)"
+
+# There is no gi-docgen on system (see patch file).
+CONFIGURE_OPTIONS += -Dgtk_doc=false
 
 # Requires djvulibre library.
 CONFIGURE_OPTIONS +=	-Ddjvu=disabled
