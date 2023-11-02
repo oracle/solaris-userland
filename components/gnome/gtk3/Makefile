@@ -30,21 +30,24 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk3
-COMPONENT_VERSION=	3.24.34
+COMPONENT_VERSION=	3.24.38
 COMPONENT_PROJECT_URL=	https://www.gtk.org/
 COMPONENT_SRC=		gtk+-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:dbc69f90ddc821b8d1441f00374dc1da4323a2eafa9078e61edbe5eeefa852ec
+    sha256:ce11decf018b25bdd8505544a4f87242854ec88be054d9ade5f3a20444dd8ee7
 COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk+/3.24/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gtk+
 COMPONENT_ANITYA_ID=	10018
 
-COMPONENT_BAID=		123945
+COMPONENT_BAID=		153246
+
+BUILD_STYLE=		meson
 
 ETCDIR.64="$(ETCDIR)/$(MACH64)"
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+include $(WS_MAKE_RULES)/test-x11.mk
 
 # Uses isinf, etc. only available in c99 and newer.  The GNU variant is chosen
 # due to use of M_PI, etc. dropped in C99 and newer.
@@ -54,19 +57,13 @@ CFLAGS.gcc += -std=gnu11
 gcc_OPT.i386.32 = -O2
 
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS += --enable-libcanberra
-# Generate man pages
-CONFIGURE_OPTIONS += --enable-man
-CONFIGURE_OPTIONS += --with-x
-# disable colord for now till we get colord installed on build servers
-# at which point we can delete this and add it in REQ PKGS
-CONFIGURE_OPTIONS += --enable-colord=no
 
-# Needed due to patch to configure.ac.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+COMPONENT_BUILD_ENV += CFLAGS="$(strip $(CFLAGS))"
+
+# Required for other components.
+CONFIGURE_OPTIONS.32 += -Dintrospection=false
+CONFIGURE_OPTIONS += -Dwayland_backend=false
+CONFIGURE_OPTIONS += -Dman=true
 
 # Generate and install architecture-specific configuration files.
 PROTOGTKDIR=		$(PROTO_DIR)$(USRLIB)/gtk-3.0/3.0.0
@@ -93,17 +90,15 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgtk-3.3lib \
                 $(PROTO_DIR)/usr/share/man/man3lib/libgtk-3.3lib;
 
-# Standard automake test framework results transform
-# Remove icontheme test result to avoid inconsistent failures between runs
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-	'-e "/icontheme/d" ' \
-        '-e "/TOTAL/p" ' \
-        '-e "/SKIP/p" ' \
-        '-e "/PASS/p" ' \
-        '-e "/FAIL:/p" '
+        '-e "/Ok:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Timeout:/p" '
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl
@@ -125,6 +120,7 @@ REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += print/cups
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += service/image/colord
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/fontconfig

@@ -1,0 +1,17 @@
+find 32/64 cups libs
+
+--- a/modules/printbackends/meson.build	2023-10-12 22:11:08.984295122 -0700
++++ b/modules/printbackends/meson.build	2023-10-12 22:12:33.930506572 -0700
+@@ -58,7 +58,11 @@
+ endif
+ 
+ if enabled_print_backends.contains('cups')
+-  cups_dep = dependency('cups', version : '>=1.7', required: print_strict_deps)
++  if '-m32' in get_option('c_args')
++    cups_dep = cc.find_library('cups', dirs: ['/usr/lib'], required: print_strict_deps)
++  else
++    cups_dep = cc.find_library('cups', dirs: ['/usr/lib/64'], required: print_strict_deps)
++  endif
+   if cups_dep.found()
+     cups_extra_deps = []
+ 

@@ -1,0 +1,22 @@
+to install im-multipress.conf in 64-bit path
+
+--- a/meson.build	2023-10-26 07:12:47.292647637 -0700
++++ b/meson.build	2023-10-26 16:57:55.838994047 -0700
+@@ -762,7 +762,16 @@
+   [ 'xim', files([ immodule_srcdir + 'gtkimcontextxim.c', immodule_srcdir + 'imxim.c' ]), x11_enabled ],
+ ]
+ 
+-install_data(join_paths(immodule_srcdir, 'im-multipress.conf'), install_dir: join_paths(gtk_sysconfdir, 'gtk-3.0'))
++if '-m64' in get_option('c_args')
++  if get_option('bindir') == 'bin/amd64'
++     mach64 = 'amd64'
++  else
++     mach64 = 'sparcv9'
++  endif
++  install_data(join_paths(immodule_srcdir, 'im-multipress.conf'), install_dir: join_paths(gtk_sysconfdir, mach64, 'gtk-3.0'))
++else
++  install_data(join_paths(immodule_srcdir, 'im-multipress.conf'), install_dir: join_paths(gtk_sysconfdir, 'gtk-3.0'))
++endif
+ 
+ # Check for bind_textdomain_codeset, including -lintl if GLib brings it in by
+ # doing the same check as glib. We can't check that by linking to glib because
