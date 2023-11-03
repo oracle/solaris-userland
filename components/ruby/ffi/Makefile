@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,17 +29,17 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 COMPONENT_NAME=		ffi
-COMPONENT_VERSION=      1.13.1
+COMPONENT_VERSION=      1.16.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).gem
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4e15f52ee45af7c5674d656041855448adbb5022618be252cd602d81b8e2978a
+    sha256:6d3242ff10c87271b0675c58d68d3f10148fabc2ad6da52a18123f06078871fb
 COMPONENT_ARCHIVE_URL=	https://rubygems.org/downloads/$(COMPONENT_SRC).gem
-COMPONENT_PROJECT_URL=  https://github.com/ffi/ffi/tree/1.13.1
+COMPONENT_PROJECT_URL=  https://github.com/ffi/ffi
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	4292
 
-COMPONENT_BAID=                   88655
+COMPONENT_BAID=		153019
 
 GEM_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 GEM_INSTALL_ENV += PKG_CONFIG_PATH=$(PKG_CONFIG_PATH.64)
