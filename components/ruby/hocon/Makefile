@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,17 +29,17 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 COMPONENT_NAME=		hocon
-COMPONENT_VERSION=      1.3.1
+COMPONENT_VERSION=      1.4.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).gem
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b65aba4db51987a0d1d504696f3ebd0a484d86f18f33d0e66deedeed36d92e56
+    sha256:e71023ed7c56ae780ec34c0ce7789a233bcead08c045d50bc7b3af40f5afcd80
 COMPONENT_ARCHIVE_URL=	https://rubygems.org/downloads/$(COMPONENT_SRC).gem
 COMPONENT_PROJECT_URL=  https://github.com/puppetlabs/ruby-hocon
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	8369
 
-COMPONENT_BAID=                   88491
+COMPONENT_BAID=		152517
 
 # Create gemspec.
 COMPONENT_POST_UNPACK_ACTION= \
