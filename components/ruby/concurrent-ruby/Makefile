@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,17 +29,17 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 COMPONENT_NAME=		concurrent-ruby
-COMPONENT_VERSION=      1.1.8
+COMPONENT_VERSION=      1.2.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).gem
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e35169e8e01c33cddc9d322e4e793a9bc8c3c00c967d206d17457e0d301f2257
+    sha256:3879119b8b75e3b62616acc256c64a134d0b0a7a9a3fcba5a233025bcde22c4f
 COMPONENT_ARCHIVE_URL=	https://rubygems.org/downloads/$(COMPONENT_SRC).gem
 COMPONENT_PROJECT_URL=  https://github.com/ruby-concurrency/concurrent-ruby
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	11037
 
-COMPONENT_BAID=                   97064
+COMPONENT_BAID=		153021
 
 # Create gemspec.
 COMPONENT_POST_UNPACK_ACTION= \
