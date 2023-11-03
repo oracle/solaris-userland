@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,17 +29,17 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 COMPONENT_NAME=		semantic_puppet
-COMPONENT_VERSION=      1.0.3
+COMPONENT_VERSION=      1.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).gem
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3b83bff3bed1188d603947184c0e3ee4443543e3e832edccc7127b6209bb292b
+    sha256:52d108d08e1a5d95c00343cb3a4936fb1deecff2be612ec39c9cb66be5a8b859
 COMPONENT_ARCHIVE_URL=	https://rubygems.org/downloads/$(COMPONENT_SRC).gem
 COMPONENT_PROJECT_URL=  https://github.com/puppetlabs/semantic_puppet
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=    195770
 
-COMPONENT_BAID=                   97091
+COMPONENT_BAID=		153024
 
 # Create gemspec.
 COMPONENT_POST_UNPACK_ACTION= \
