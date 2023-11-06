@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -46,12 +46,12 @@ file path=etc/postfix/LICENSE
 file path=etc/postfix/TLS_LICENSE
 file path=etc/postfix/access mode=0644 preserve=true
 file path=etc/postfix/aliases mode=0644 preserve=true
-file path=etc/postfix/bounce.cf.default
+file path=etc/postfix/bounce.cf.default mode=0444
 file path=etc/postfix/canonical mode=0644 preserve=true
 file path=etc/postfix/generic mode=0644 preserve=true
 file path=etc/postfix/header_checks mode=0644 preserve=true
 file path=etc/postfix/main.cf mode=0644 preserve=true
-file path=etc/postfix/main.cf.default
+file path=etc/postfix/main.cf.default mode=0444
 file path=etc/postfix/main.cf.proto mode=0444
 file path=etc/postfix/makedefs.out
 file path=etc/postfix/master.cf mode=0644 preserve=true
@@ -76,7 +76,7 @@ file path=usr/lib/postfix/discard
 file path=usr/lib/postfix/dnsblog
 file path=usr/lib/postfix/error
 file path=usr/lib/postfix/flush
-hardlink path=usr/lib/postfix/lmtp target=smtp
+file path=usr/lib/postfix/lmtp
 file path=usr/lib/postfix/local
 file path=usr/lib/postfix/master
 file path=usr/lib/postfix/nqmgr
@@ -95,7 +95,7 @@ file path=usr/lib/postfix/qmqpd
 file path=usr/lib/postfix/scache
 file usr/lib/sendmail path=usr/lib/postfix/sendmail
 file path=usr/lib/postfix/showq
-file path=usr/lib/postfix/smtp
+hardlink path=usr/lib/postfix/smtp target=lmtp
 file path=usr/lib/postfix/smtpd
 file path=usr/lib/postfix/spawn
 file path=usr/lib/postfix/tlsmgr
@@ -147,9 +147,13 @@ file path=usr/share/man/man5/cidr_table.5
 file path=usr/share/man/man5/generic.5
 file path=usr/share/man/man5/header_checks.5
 file path=usr/share/man/man5/ldap_table.5
+file path=usr/share/man/man5/lmdb_table.5
 file path=usr/share/man/man5/master.5
 file path=usr/share/man/man5/memcache_table.5
+file path=usr/share/man/man5/mysql_table.5
+file path=usr/share/man/man5/nisplus_table.5
 file path=usr/share/man/man5/pcre_table.5
+file path=usr/share/man/man5/pgsql_table.5
 file path=usr/share/man/man5/postconf.5
 file usr/share/man/man5/aliases.5 path=usr/share/man/man5/postfix-aliases.5
 file path=usr/share/man/man5/postfix-wrapper.5

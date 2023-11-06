@@ -1,0 +1,48 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2023, Oracle and/or its affiliates.
+#
+
+# config files attrs
+<transform file \
+   path=etc/postfix/?(access|aliases|canonical|generic|header_checks|main.cf|master.cf|relocated|transport|virtual)$ \
+   -> default mode 0644>
+<transform file \
+   path=etc/postfix/?(access|aliases|canonical|generic|header_checks|main.cf|master.cf|relocated|transport|virtual)$ \
+   -> default preserve true>
+
+# config file prototypes
+<transform file path=etc/postfix/?(.+\.proto|.+\.default)$ -> default mode 0444>
+
+# sgid files
+<transform file path=usr/sbin/?(postdrop|postqueue) -> default mode 02555>
+<transform file path=usr/sbin/?(postdrop|postqueue) -> default group postdrop>
+
+# drop dup-actions covered by mediated links
+<transform link path=usr/bin/mailq -> drop>
+<transform file path=usr/lib/sendmail -> drop>
+<transform link path=usr/sbin/newaliases -> drop>
+<transform file path=usr/share/man/man1/mailq.1 -> drop>
+<transform file path=usr/share/man/man5/aliases.5 -> drop>
+<transform hardlink path=usr/lib/postfix/nqmgr -> drop>
+<transform file path=usr/lib/postfix/qmgr -> drop>

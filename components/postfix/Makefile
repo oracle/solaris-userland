@@ -51,9 +51,9 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 CCARGS =	-DDEF_DAEMON_DIR=\\\"/usr/lib/postfix\\\"
 CCARGS +=	-DDEF_MANPAGE_DIR=\\\"/usr/share/man\\\"
 CCARGS +=	-DDEF_NEWALIAS_PATH=\\\"/usr/sbin/newaliases\\\"
-# TLS
-CCARGS +=	-DUSE_TLS
-AUXLIBS =	-lssl -lcrypto
+# TLS (openssl3 API)
+CCARGS +=	-DUSE_TLS -I/usr/openssl/3/include/
+AUXLIBS =	-L/usr/openssl/3/lib/64/ -lssl -lcrypto
 # Berkeley DB
 CCARGS +=	-DHAS_DB
 AUXLIBS +=	-ldb-5.3
@@ -85,15 +85,16 @@ COMPONENT_BUILD_ENV += LD_LIBRARY_PATH=
 
 COMPONENT_INSTALL_TARGETS = non-interactive-package install_root="$(PROTO_DIR)"
 
+PKG_AUTO_HARDLINKS=1
+
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += library/icu
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
 REQUIRED_PACKAGES += library/pcre
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/ldap/openldap

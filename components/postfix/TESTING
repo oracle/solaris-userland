@@ -1,0 +1,75 @@
+
+vm install --memory=8G --net=static /net/WS/postfix/components/postfix/ smtptst
+
+cd # /root
+ldapclient -v uninit
+hostname smtptst
+MYIP=`ipadm | grep net0/v4 | nawk '{print $5;}' | nawk -F / '{print $1;}'`
+echo '::1             localhost loghost' > /etc/inet/hosts ; \
+echo '127.0.0.1       localhost' >> /etc/inet/hosts ; \
+echo "$MYIP smtptst.lab.solaris.oracle.com smtptst" >> /etc/inet/hosts
+
+ipadm | grep net0/v4
+cat /etc/inet/hosts
+
+pkg set-mediator -I openssl 3
+
+mkdir -p /etc/ssl/smtptst
+openssl genrsa -des3 -passout pass:1111 -rand file:/dev/urandom -out smtptst.key 2048
+openssl req -new -passin pass:1111 -key smtptst.key -subj "/C=CZ/ST=Prague/L=Prague/O=Solaris/OU=Lab/CN=smtptst"  -out smtptst.csr
+openssl x509 -req -passin  pass:1111 -days 365 -in smtptst.csr -signkey smtptst.key -out smtptst.cer
+openssl rsa -passin pass:1111  -in smtptst.key -out smtptst.key.nopass
+mv -f smtptst.key.nopass smtptst.key
+openssl req -new -x509 -extensions v3_ca -passout pass:1111 -subj "/C=CZ/ST=Prague/L=Prague/O=Solaris/OU=Lab/CN=smtptst"  -keyout cakey.pem -out cacert.pem -days 365
+chmod 600 smtptst.key
+chmod 600 cakey.pem
+mv smtptst.key /etc/ssl/smtptst
+mv smtptst.cer /etc/ssl/smtptst
+mv cakey.pem /etc/ssl/smtptst
+mv cacert.pem /etc/ssl/smtptst
+
+pkg set-mediator -I postfix sendmail
+pkg mediator sendmail
+ls -l /usr/lib/sendmail
+ls -l /usr/lib/postfix/sendmail
+
+postconf -e 'mydomain=lab.solaris.oracle.com'
+postconf -e 'smtpd_tls_auth_only = no'
+postconf -e 'smtp_use_tls = yes'
+postconf -e 'smtpd_use_tls = yes'
+postconf -e 'smtp_tls_note_starttls_offer = yes'
+postconf -e 'smtpd_tls_key_file = /etc/ssl/smtptst/smtptst.key'
+postconf -e 'smtpd_tls_cert_file = /etc/ssl/smtptst/smtptst.cer'
+postconf -e 'smtpd_tls_CAfile = /etc/ssl/smtptst/cacert.pem'
+postconf -e 'smtpd_tls_loglevel = 1'
+postconf -e 'smtpd_tls_received_header = yes'
+postconf -e 'smtpd_tls_session_cache_timeout = 3600s'
+postconf -e 'tls_random_source = dev:/dev/urandom'
+#postconf -e 'myhostname = smtptst.lab.solaris.oracle.com'
+svcadm disable -s svc:/network/smtp:sendmail
+svcadm enable -s svc:/network/smtp:postfix
+svcs smtp
+
+saslpasswd2 -c jura  # set passwd i.e. s3tup
+echo '   pwcheck_method: saslauthd' > /etc/sasl2/smtpd.conf
+echo '   mech_list: PLAIN LOGIN' >> /etc/sasl2/smtpd.conf
+postconf -e 'smtpd_sasl_auth_enable = yes'
+postconf -e 'smtpd_sasl_application_name = smtpd'
+saslauthd -V -a sasldb
+
+--------------------------------------------------------------------------------
+On other machine prepare file tmp/mail.txt :
+From: "Sender Name" <jura@lab.solaris.oracle.com>
+To: "Recipient Name" <name.surname@oracle.com>
+Subject: Test Email
+ 
+Hello,
+This is a test email.
+Best Regards,
+Sender Name
+
+...send it:
+curl --url 'smtp://virts9.cz.oracle.com:25' --ssl-reqd -k \
+  --mail-from 'jura@lab.solaris.oracle.com' --mail-rcpt 'name.surname@oracle.com' \
+  --upload-file tmp/mail.txt --user 'jura@smtptst:s3tup'
+

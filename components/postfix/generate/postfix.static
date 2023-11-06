@@ -1,0 +1,78 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2023, Oracle and/or its affiliates.
+#
+
+dir  path=etc/postfix/postfix-files.d
+
+# attrs
+file postfix.auth_attr path=etc/security/auth_attr.d/postfix group=sys
+file postfix.exec_attr path=etc/security/exec_attr.d/postfix group=sys
+file postfix.prof_attr path=etc/security/prof_attr.d/postfix group=sys
+
+# SMF files
+file postfix.xml path=lib/svc/manifest/network/postfix.xml
+file start-method path=lib/svc/method/postfix
+
+# executables
+dir  path=usr/lib/postfix
+file usr/lib/sendmail path=usr/lib/postfix/sendmail
+
+# sendmail mediation
+link path=usr/bin/mailq target=../../usr/lib/postfix/sendmail \
+    mediator=sendmail mediator-implementation=postfix
+link path=usr/lib/sendmail target=postfix/sendmail mediator=sendmail \
+    mediator-implementation=postfix
+link path=usr/sbin/newaliases target=../../usr/lib/postfix/sendmail \
+    mediator=sendmail mediator-implementation=postfix
+link path=usr/share/man/man1/mailq.1 target=postfix-mailq.1 mediator=sendmail \
+    mediator-implementation=postfix
+link path=usr/share/man/man5/aliases.5 target=postfix-aliases.5 \
+    mediator=sendmail mediator-implementation=postfix
+
+# man files
+file usr/share/man/man1/mailq.1 path=usr/share/man/man1/postfix-mailq.1
+file usr/share/man/man5/aliases.5 path=usr/share/man/man5/postfix-aliases.5
+
+# spool dirs
+dir  path=var/lib/postfix owner=postfix mode=0700
+dir  path=var/spool/postfix/active
+dir  path=var/spool/postfix/bounce
+dir  path=var/spool/postfix/corrupt
+dir  path=var/spool/postfix/defer
+dir  path=var/spool/postfix/deferred
+dir  path=var/spool/postfix/flush
+dir  path=var/spool/postfix/hold
+dir  path=var/spool/postfix/incoming
+dir  path=var/spool/postfix/maildrop group=postdrop mode=0730
+dir  path=var/spool/postfix/pid owner=root mode=0755
+dir  path=var/spool/postfix/private
+dir  path=var/spool/postfix/public group=postdrop mode=0710
+dir  path=var/spool/postfix/saved
+dir  path=var/spool/postfix/trace
+
+# mail user and groups
+group groupname=postdrop gid=28
+group groupname=postfix gid=27
+user username=postfix ftpuser=false gcos-field=Postfix group=postfix \
+    home-dir=/ password=NP uid=27
