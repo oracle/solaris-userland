@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 64_and_32
@@ -29,14 +29,14 @@ include ../../../make-rules/shared-macros.mk
 BUILD_STYLE=            meson
 
 COMPONENT_NAME=		libnotify
-COMPONENT_VERSION=	0.7.12
+COMPONENT_VERSION=	0.8.3
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libnotify/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:744b2b37508135f8261b755a9debe6e09add421adc75bde930f6e198b70ab46e
+	sha256:ee8f3ef946156ad3406fdf45feedbdcd932dbd211ab4f16f75eba4f36fb2f6c0
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13149
 
-COMPONENT_BAID=		123942
+COMPONENT_BAID=		152515
 
 # Tests do not work on Solaris yet
 TEST_TARGET= $(SKIP_TEST)
@@ -53,6 +53,8 @@ CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 CONFIGURE_OPTIONS.64 += -Dintrospection=enabled
 
 CONFIGURE_OPTIONS += -Dman=false
+# Requires gi-docgen
+CONFIGURE_OPTIONS += -Dgtk_doc=false
 CONFIGURE_OPTIONS += -Ddefault_library=shared
 
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
