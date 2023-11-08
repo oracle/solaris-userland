@@ -73,7 +73,6 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/gtksourceview
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/gnome/gnome-common
 REQUIRED_PACKAGES += library/python/pycairo-311
 REQUIRED_PACKAGES += library/python/pygobject-3-311
 REQUIRED_PACKAGES += library/python/tkinter-311

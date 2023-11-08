@@ -50,9 +50,6 @@ PKG_MACROS += PYVER="$(PYTHON_VERSION)" PYV="$(PYTHON_VERSION:3.%=3%)"
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
-# intltool may or may not be run depending on previous state of build dir
-COMPONENT_TEST_TRANSFORMS += "-e '/\/usr\/bin\/intltool-update/d'"
-
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/accessibility/brltty
 REQUIRED_PACKAGES += library/desktop/at-spi2-core

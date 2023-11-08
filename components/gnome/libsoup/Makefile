@@ -64,15 +64,13 @@ unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 # ssl-test fails due to new glib-networking with slightly different behavior
-# and this know issue: https://gitlab.gnome.org/GNOME/libsoup/-/issues/120.
+# and this known issue: https://gitlab.gnome.org/GNOME/libsoup/-/issues/120.
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib-networking
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gnome/gnome-common
 REQUIRED_PACKAGES += library/libpsl
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib

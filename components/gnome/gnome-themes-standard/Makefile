@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             64
@@ -44,6 +44,7 @@ CONFIGURE_ENV 		+= PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV 	+= PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV 	+= PATH="$(GNUBIN):$(PATH)"
 
+REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk2

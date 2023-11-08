@@ -94,6 +94,8 @@ COMPONENT_TEST_TRANSFORMS = -F"'('" \
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/icu
+# e-d-s < 3.43.1 requires intltool to build - remove when upgrading to later
+REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection

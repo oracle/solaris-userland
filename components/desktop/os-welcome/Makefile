@@ -42,6 +42,7 @@ include $(WS_MAKE_RULES)/common.mk
 # Assumes GNU msgfmt & xgettext in PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
+REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += file/gnu-coreutils
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection

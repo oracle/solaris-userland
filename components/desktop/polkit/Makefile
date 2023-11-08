@@ -20,11 +20,8 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
-
-# parfait is a bit unhappy (24796481)
-export PARFAIT_BUILD=no
 
 BUILD_BITS =            64
 # Also, all components using gobject-introspection must be built with gcc as
@@ -90,6 +87,8 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
                 $(PROTO_DIR)/lib/svc/method/svc-polkit; \
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
+# polkit < 0.120 requires intltool to build - remove when upgrading to later
+REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2

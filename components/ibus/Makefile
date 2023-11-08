@@ -69,6 +69,11 @@ COMPONENT_POST_INSTALL_ACTION += \
 # For autopyc transformation
 PKG_MACROS +=   PYVER=$(PYTHON_VERSION)
 
+# ibus < 1.5.20 requires intltool to build - remove when upgrading to later
+REQUIRED_PACKAGES +=	developer/intltool
+# ibus < 1.5.26 requires gnome-common to build - remove when upgrading to later
+REQUIRED_PACKAGES +=	library/gnome/gnome-common
+
 REQUIRED_PACKAGES +=	library/desktop/atk
 REQUIRED_PACKAGES +=	library/desktop/cairo
 REQUIRED_PACKAGES +=	library/desktop/gdk-pixbuf

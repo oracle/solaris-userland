@@ -78,8 +78,7 @@ PKG_CONFIG_PATHS.32 += /usr/openssl/3/lib/pkgconfig
 PKG_CONFIG_PATHS.64 += /usr/openssl/3/lib/64/pkgconfig
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 
-# Required due to patches; must use special bootstrap script and not standard
-# autoreconf due to use of both gettext and intltool in the same project! If
+# Required due to patches; must use special bootstrap script! If
 # you use standard autoreconf, configure will fail.
 COMPONENT_PREP_ACTION += ( cd $(@D) ; NOCONFIGURE=1 $(CONFIG_SHELL) bootstrap.sh );
 
@@ -114,6 +113,7 @@ REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/network/avahi
+REQUIRED_PACKAGES += text/gnu-gettext
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11

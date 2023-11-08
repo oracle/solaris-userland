@@ -56,6 +56,8 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += codec/flac
 REQUIRED_PACKAGES += codec/libvorbis
+# tr-miners < 2.99.1 requires intltool to build - remove when upgrading to later
+REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
 REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += image/library/libjpeg

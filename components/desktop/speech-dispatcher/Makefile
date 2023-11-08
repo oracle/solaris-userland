@@ -65,6 +65,8 @@ CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 PYTHON_SCRIPTS += $(PROTO_DIR)$(USRBINDIR)/spd-conf
 PYTHON_SCRIPTS += $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/speechd/_test.py
 
+# speech-dis. < 0.9.0 requires intltool to build - remove when upgrading to later
+REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/desktop/dotconf
 REQUIRED_PACKAGES += library/glib2

@@ -64,6 +64,7 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += "-e '/\/usr\/bin\/intltool-update/d'"
 
 REQUIRED_PACKAGES += developer/documentation-tool/itstool
+# 3.14.0 requires intltool to build - remove when upgrading to 3.32.0 or later
 REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/atk
@@ -75,3 +76,4 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/python/pyatspi2-311
 REQUIRED_PACKAGES += library/python/pygobject-3-311
 REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += text/gnu-gettext

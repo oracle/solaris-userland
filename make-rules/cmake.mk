@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 #
@@ -179,8 +179,6 @@ endif
 REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += developer/build/pkg-config
 REQUIRED_PACKAGES += developer/gnu-binutils
-REQUIRED_PACKAGES += developer/intltool
-REQUIRED_PACKAGES += library/gnome/gnome-common
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/linker
 # Most cmake-based components expect GNU versions of these.

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 COMPILER=	gcc
 BUILD_BITS=	64_and_32
@@ -85,6 +85,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/^PASS:/p" '
 
+# Avahi 0.7 requires intltool to build - remove when upgrading to 0.8
+REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2
