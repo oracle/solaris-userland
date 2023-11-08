@@ -86,6 +86,7 @@ link path=usr/lib/$(MACH64)/libhpmud.so.0 target=libhpmud.so.0.0.6
 file path=usr/lib/$(MACH64)/libhpmud.so.0.0.6
 file path=usr/lib/cups/backend/hp mode=0500
 file path=usr/lib/cups/backend/hpfax mode=0500 pkg.depend.bypass-generate=.*
+file path=usr/lib/cups/filter/hpcdmfax mode=0555
 file path=usr/lib/cups/filter/hpcups mode=0555
 file path=usr/lib/cups/filter/hpcupsfax mode=0555
 file path=usr/lib/cups/filter/hpps mode=0555
@@ -97,6 +98,7 @@ file path=usr/lib/systemd/system/hplip-printer@.service
 file path=usr/share/cups/drv/hp/hpcups.drv
 file path=usr/share/cups/mime/pstotiff.convs
 file path=usr/share/cups/mime/pstotiff.types
+file path=usr/share/cups/model/hplip/HP-Fax-CDM-hpcups.ppd.gz
 file path=usr/share/cups/model/hplip/HP-Fax-hpcups.ppd.gz
 file path=usr/share/cups/model/hplip/HP-Fax2-hpcups.ppd.gz
 file path=usr/share/cups/model/hplip/HP-Fax3-hpcups.ppd.gz
@@ -113,6 +115,9 @@ file path=usr/share/cups/model/hplip/hp-2000c.ppd.gz
 file path=usr/share/cups/model/hplip/hp-2500c.ppd.gz
 file path=usr/share/cups/model/hplip/hp-910.ppd.gz
 file path=usr/share/cups/model/hplip/hp-915.ppd.gz
+file path=usr/share/cups/model/hplip/hp-Deskjet_2800_series.ppd.gz
+file path=usr/share/cups/model/hplip/hp-Deskjet_4200_series.ppd.gz
+file path=usr/share/cups/model/hplip/hp-Deskjet_4900_series.ppd.gz
 file path=usr/share/cups/model/hplip/hp-amp.ppd.gz
 file path=usr/share/cups/model/hplip/hp-business_inkjet_1000.ppd.gz
 file path=usr/share/cups/model/hplip/hp-business_inkjet_1100.ppd.gz
@@ -184,8 +189,11 @@ file path=usr/share/cups/model/hplip/hp-color_laserjet_5500-pcl3.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_5500-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_5550-pcl3.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_5550-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_5700-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_5m-pcl3.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_5m-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_6700-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_6701-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_8500-pcl3.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_8500-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_8550-pcl3.ppd.gz
@@ -194,6 +202,7 @@ file path=usr/share/cups/model/hplip/hp-color_laserjet_9500-pcl3.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_9500-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_9500_mfp-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_E65150_E65160-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_X557-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_cm1015-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_cm1017-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_cm1312_mfp-pcl3.ppd.gz
@@ -263,6 +272,10 @@ file path=usr/share/cups/model/hplip/hp-color_laserjet_e67550_e67560-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_e67650_e67660-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_e75245-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_e85055-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_flow_5800-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_flow_6800-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_flow_X579-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_flow_X57945-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_flow_e57540-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_flow_e78625-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_flow_e78630-ps.ppd.gz
@@ -296,6 +309,9 @@ file path=usr/share/cups/model/hplip/hp-color_laserjet_m750-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_m751-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_m855-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_m856-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_5800-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_6800-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_6801-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_e47528-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_e57540-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_e77422-ps.ppd.gz
@@ -324,10 +340,15 @@ file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_m578-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_m680-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_m681_m682-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_m776-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_x677-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_x67755-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_x67765-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_4201-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_m252-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_m453-4-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_m478f-9f-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_m479-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_mfp_4301-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_mfp_m176n.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_mfp_m177fw.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_mfp_m277-ps.ppd.gz
@@ -335,6 +356,9 @@ file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_mfp_m377-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_mfp_m476-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_mfp_m477-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_pro_mfp_m477d-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_x654-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_x65455-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_x65465-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-cp1160.ppd.gz
 file path=usr/share/cups/model/hplip/hp-designjet_4000ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-designjet_4020ps-ps.ppd.gz
@@ -1395,10 +1419,14 @@ file path=usr/share/cups/model/hplip/hp-psc_920.ppd.gz
 file path=usr/share/cups/model/hplip/hp-psc_950.ppd.gz
 file path=usr/share/cups/model/hplip/hp-psc_950vr.ppd.gz
 file path=usr/share/cups/model/hplip/hp-psc_950xi.ppd.gz
+file path=usr/share/cups/model/hplip/hp-smart_tank_210-220_series.ppd.gz
 file path=usr/share/cups/model/hplip/hp-smart_tank_350_series.ppd.gz
 file path=usr/share/cups/model/hplip/hp-smart_tank_500_series.ppd.gz
+file path=usr/share/cups/model/hplip/hp-smart_tank_5100_series.ppd.gz
 file path=usr/share/cups/model/hplip/hp-smart_tank_510_series.ppd.gz
+file path=usr/share/cups/model/hplip/hp-smart_tank_520_540_series.ppd.gz
 file path=usr/share/cups/model/hplip/hp-smart_tank_530_series.ppd.gz
+file path=usr/share/cups/model/hplip/hp-smart_tank_580-590_series.ppd.gz
 file path=usr/share/cups/model/hplip/hp-smart_tank_6000_series.ppd.gz
 file path=usr/share/cups/model/hplip/hp-smart_tank_610_series.ppd.gz
 file path=usr/share/cups/model/hplip/hp-smart_tank_660-670_series.ppd.gz
@@ -1450,6 +1478,8 @@ file path=usr/share/doc/hplip-$(COMPONENT_VERSION)/upgrading.html
 file path=usr/share/hal/fdi/preprobe/10osvendor/20-hplip-devices.fdi
 file path=usr/share/hplip/__init__.py mode=0555 pkg.depend.bypass-generate=.*
 file path=usr/share/hplip/align.py mode=0555 pkg.depend.bypass-generate=.*
+file path=usr/share/hplip/base/CdmWifi.py mode=0555 \
+    pkg.depend.bypass-generate=.*
 file path=usr/share/hplip/base/LedmWifi.py mode=0555 \
     pkg.depend.bypass-generate=.*
 file path=usr/share/hplip/base/__init__.py mode=0555 \
@@ -1555,6 +1585,7 @@ file path=usr/share/hplip/doctor.py mode=0555 pkg.depend.bypass-generate=.*
 file path=usr/share/hplip/fab.py mode=0555 pkg.depend.bypass-generate=.*
 file path=usr/share/hplip/fax/__init__.py mode=0555 \
     pkg.depend.bypass-generate=.*
+file path=usr/share/hplip/fax/cdmfax.py mode=0555 pkg.depend.bypass-generate=.*
 file path=usr/share/hplip/fax/coverpages.py mode=0555 \
     pkg.depend.bypass-generate=.*
 file path=usr/share/hplip/fax/fax.py mode=0555 pkg.depend.bypass-generate=.*

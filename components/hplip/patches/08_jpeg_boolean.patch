@@ -1,0 +1,40 @@
+This patch makes hplip to build without following error:
+
+cannot convert 'bool' to 'boolean' in assignment
+
+I have filed and upstream bug:
+
+HPLIP 3.22.8 fails with "cannot convert 'bool' to 'boolean'" on Solaris
+https://bugs.launchpad.net/hplip/+bug/2043028
+
+--- a/fax/filters/cdmfax/hpcupscdmfax.cpp
++++ b/fax/filters/cdmfax/hpcupscdmfax.cpp
+@@ -227,7 +227,7 @@ {
+         //
+         // Adding Q-Table.
+         //
+-        jpeg_add_quant_table(&cinfo, i, mojave_quant_table1, 0, false);
++        jpeg_add_quant_table(&cinfo, i, mojave_quant_table1, 0, FALSE);
+ 
+         //
+         // Scaling the Q-Table elements.
+@@ -297,8 +297,8 @@ // Hard code to use sampling mode 4:4:4
+     //
+     cinfo.comp_info[0].h_samp_factor = 1;
+     cinfo.comp_info[0].v_samp_factor = 1;
+-    cinfo.write_JFIF_header = cinfo.write_Adobe_marker = false;
+-    jpeg_suppress_tables(&cinfo, true); //b4 true
++    cinfo.write_JFIF_header = cinfo.write_Adobe_marker = FALSE;
++    jpeg_suppress_tables(&cinfo, TRUE); //b4 true
+ 
+     //----------------------------------------------------------------
+     // JPEG Lib Step 4: Start the compression cycle
+@@ -307,7 +307,7 @@ //  jpeg_write_tables(cinfo);
+     //  set destination to image file
+     //  jpeg_start_compress(cinfo, FALSE);
+     //----------------------------------------------------------------
+-    jpeg_start_compress(&cinfo, true);
++    jpeg_start_compress(&cinfo, TRUE);
+ 
+     //----------------------------------------------------------------
+     // This completes the JPEG setup.
