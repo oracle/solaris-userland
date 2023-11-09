@@ -96,8 +96,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 	$(ELFEDIT) -e "dyn:runpath /usr/lib/xorg$$dir64" \
 	  $(PROTOUSRLIBDIR)/xorg/modules/dri$$dir64/swrast_dri.so ;
 
-PKG_AUTO_HARDLINKS=1
-
 REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += developer/gnu-indent
 REQUIRED_PACKAGES += developer/lexer/flex

@@ -54,9 +54,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 PYTHON_VERSION = 3.11
 
-# Deliver hardlinks as they appear in the proto area
-PKG_AUTO_HARDLINKS=1
-
 PKG_MACROS +=		PYVER=$(PYTHON_VERSION)
 
 CONFIGURE_LIBDIR.64 =	$(CONFIGURE_PREFIX)/lib

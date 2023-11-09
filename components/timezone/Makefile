@@ -110,5 +110,3 @@ endif
 test:	$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
-
-PKG_AUTO_HARDLINKS=	1

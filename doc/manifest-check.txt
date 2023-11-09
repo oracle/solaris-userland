@@ -177,15 +177,16 @@ not predetermined which of the hardlinks will be the main file action
 stable output and be able to perform 'manifest-check' and 'manifest-update'.
 
 First we can instruct sample-manifest to look into existing p5m file and
-generate the hardlinks accordingly. This is enabled in the Makefile by
-PKG_AUTO_HARDLINKS=1. This should be the preferred option for components
-delivering all hardlinks from the proto area as they are.
+generate the hardlinks accordingly. This is the default behavior. This should
+be the preferred option for components delivering all hardlinks from the proto
+area as they are.
 
 Second option is to specify manually which files will be the main file
 actions. This is done by listing the files in PKG_HARDLINKS Makefile
 variable. This option should be used in components where you do something
 funny with the hardlinks. For example turning them into symlinks (mediated
-perhaps).
+perhaps). Setting up PKG_HARDLINKS disables the automatic look into existing
+pkg file.
 
 There is one perhaps unexpected side effect. If you designate a file to be the
 main hardlink target (via either method) and such file is not found in the

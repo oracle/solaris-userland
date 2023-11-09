@@ -203,9 +203,6 @@ COMPONENT_TEST_TRANSFORMS  = "'/tests OK./ {results = 1}; /Total duration/ {resu
 test:        $(TEST_64)
 system-test: $(SYSTEM_TEST_64)
 
-# Deliver hardlinks as they appear in the proto area
-PKG_AUTO_HARDLINKS=1
-
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += database/sqlite-3

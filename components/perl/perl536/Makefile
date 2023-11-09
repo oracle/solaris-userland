@@ -116,9 +116,6 @@ COMPONENT_TEST_TRANSFORMS += \
 PKG_MACROS 		+=	P_ARCH=$(shell arch)
 PKG_MACROS		+=	PERL_VERSION=$(PERL_VERSION)
 
-# Deliver hardlinks as they appear in the proto area
-PKG_AUTO_HARDLINKS=1
-
 configure:	$(CONFIGURE_64)
 
 build:		$(BUILD_64)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -72,8 +72,5 @@ COMPONENT_INSTALL_ARGS += -f unix/Makefile
 # Unzip build ignores DESTDIR
 COMPONENT_INSTALL_ARGS += BINDIR=$(PROTOUSRBINDIR)
 COMPONENT_INSTALL_ARGS += MANDIR=$(PROTOUSRSHAREMANDIR)
-
-# Deliver hardlinks as they appear in the proto area
-PKG_AUTO_HARDLINKS=1
 
 REQUIRED_PACKAGES += shell/ksh93

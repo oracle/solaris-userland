@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
 #
 
 set -eu -o pipefail
@@ -62,13 +62,10 @@ ORIGIN="${RESULT#$MANIFEST_BASE-}"
 NAME="${ORIGIN%.constructed}" # This is used as a base for temporary file names
 ORIGIN="$NAME.p5m"
 
-# The environment variable PKG_AUTO_HARDLINKS is exported when this script is
-# bein called from Makefile. We need to turn it into command line argument
-# for manifest-generate
-if [ -n "${PKG_AUTO_HARDLINKS:-}" ]; then
-	TARGET_MANIFEST=( --manifest "$ORIGIN" )
+if [ -n "${PKG_HARDLINKS:-}" ]; then
+	HARDLINK_CMDLINE=( $(printf -- "--target %s " $PKG_HARDLINKS) )
 else
-	TARGET_MANIFEST=( )
+	HARDLINK_CMDLINE=( --manifest "$ORIGIN" )
 fi
 
 # Those are the files used to create the generated manifest
@@ -86,13 +83,11 @@ RESULT="$MANIFEST_BASE-$NAME.generated"
 DEBUG="$MANIFEST_BASE-$NAME.generate.debug"
 
 # Move the hardlink arguments to easier to use array
-HARDLINKS=()
-[ -z "$PKG_HARDLINKS" ] || mapfile -t HARDLINKS < <(printf -- "--target %s " $PKG_HARDLINKS)
 
 (
 	# First generate the sample manifest as 'gmake sample-manifest' would do
 	# Then pass it though the $TRANSFORM with full debug output.
-	"$MANIFEST_GENERATE" "${TARGET_MANIFEST[@]}" "${PKG_OPTIONS[@]}" ${HARDLINKS[@]} $PROTO_DIR $GENERATE_PROTO_DIRS |
+	"$MANIFEST_GENERATE" "${HARDLINK_CMDLINE[@]}" "${PKG_OPTIONS[@]}" $PROTO_DIR $GENERATE_PROTO_DIRS |
 	pkgmogrify -v "${PKG_OPTIONS[@]}" /dev/fd/0 \
 		$GENERATE_TRANSFORMS $MANIFEST_CLEANUP_TRANSFORM $TRANSFORM > "$DEBUG"
 

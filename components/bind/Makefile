@@ -132,10 +132,6 @@ ifneq ($(strip $(GMAKE_VERBOSE_MAKEFILE)),)
 COMPONENT_BUILD_ARGS +=	V=1
 endif
 
-# Identify source_file files in hard links for manifest generator.
-PKG_HARDLINKS +=	usr/sbin/tsig-keygen
-PKG_HARDLINKS +=	usr/bin/named-compilezone
-
 # Documentation.
 # --------------
 #

@@ -85,8 +85,6 @@ COMPONENT_BUILD_ENV += LD_LIBRARY_PATH=
 
 COMPONENT_INSTALL_TARGETS = non-interactive-package install_root="$(PROTO_DIR)"
 
-PKG_AUTO_HARDLINKS=1
-
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += library/icu

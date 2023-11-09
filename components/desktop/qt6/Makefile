@@ -131,8 +131,6 @@ endif
 
 COMPONENT_INSTALL_ENV += INSTALL_ROOT=$(PROTO_DIR)
 
-PKG_AUTO_HARDLINKS=1
-
 REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
