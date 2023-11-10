@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		yelp
-COMPONENT_VERSION=	41.2
+COMPONENT_VERSION=	42.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Yelp
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b00bf033f02dd79b6d3f255031c71df8d6ed38e552c870b8f391a374724c43c5
+	sha256:a2c5fd0787a9089c722cc66bd0f85cdf7088d870e7b6cc85799f8e5bff9eac4b
 COMPONENT_BUGDB=        gnome/docviewer
 COMPONENT_ANITYA_ID=	14867
 
-COMPONENT_BAID=		115919
+COMPONENT_BAID=		154027
 
 # gmake check works but produces no useful output
 TEST_TARGET = $(SKIP_TEST)
@@ -57,7 +57,7 @@ LD_EXEC_OPTIONS += -M $(WS_COMPONENTS)/desktop/webkitgtk4/mapfile_sparc_48bits
 endif
 
 # Needed due to patch to configure.ac.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+COMPONENT_PREP_ACTION += (cd $(@D); AUTOMAKE="automake --foreign" autoreconf -fiv);
 
 CONFIGURE_OPTIONS += --disable-schemas-compile
 CONFIGURE_OPTIONS += --disable-static
@@ -81,6 +81,7 @@ REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/harfbuzz
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/glib2
