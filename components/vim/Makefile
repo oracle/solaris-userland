@@ -28,16 +28,16 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		vim
 COMPONENT_VERSION=	9.0
-IPS_COMPONENT_VERSION=	9.0.1443
+IPS_COMPONENT_VERSION=	9.0.2095
 COMPONENT_FULL_VERSION=$(shell echo $(IPS_COMPONENT_VERSION) | awk -F. '{printf("%d.%d.%04d\n", $$1, $$2, $$3)}')
 COMPONENT_SRC=	vim-$(COMPONENT_FULL_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_URL=	https://github.com/vim/vim/archive/v$(COMPONENT_FULL_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:cb4a6986b66f9c0c9cb08d60c271b12dff4210621af3c3a910d2df2addbe3628
+COMPONENT_ARCHIVE_HASH=	sha256:35205487798ce29102d418b4cf19613e5f9cba514a3fbeab83f79a2483573c0b
 COMPONENT_PROJECT_URL=	http://www.vim.org/
 COMPONENT_ANITYA_ID=	5092
 
-COMPONENT_BAID=		142193
+COMPONENT_BAID=		154168
 
 PKG_MACROS +=	VIMVER=vim$(subst .,,$(COMPONENT_VERSION))
 
@@ -69,7 +69,7 @@ CONFIGURE_OPTIONS +=	--with-features=huge
 CONFIGURE_OPTIONS +=	--with-compiledby="the Solaris Userland build environment"
 CONFIGURE_OPTIONS +=	--with-modified-by="Solaris Userland Team"
 CONFIGURE_OPTIONS +=	--enable-luainterp=dynamic
-CONFIGURE_OPTIONS +=	--enable-perlinterp=dynamic
+CONFIGURE_OPTIONS +=	--enable-perlinterp=yes
 CONFIGURE_OPTIONS +=	--enable-pythoninterp=dynamic
 CONFIGURE_OPTIONS +=	--enable-python3interp=dynamic
 CONFIGURE_OPTIONS +=	--enable-rubyinterp=dynamic
@@ -101,6 +101,9 @@ $(X_VARIANT)/.installed: COMPONENT_INSTALL_TARGETS = installvimbin
 # the tests again. So before running the tests we remove all files ending with
 # '~'
 COMPONENT_PRE_TEST_ACTION += (gfind $(BUILD_DIR) -name \*~ | gxargs --no-run-if-empty --verbose rm);
+
+# The tests sometimes mess up the terminal
+COMPONENT_TEST_CLEANUP = [ ! -t 1 ] || stty sane
 
 # Vim test results vary whether you run vim with or without terminal available.
 # So if terminal is not awailable we run the tests in screen(1) to always

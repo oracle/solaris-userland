@@ -1,4 +1,4 @@
-GNU awk is needed to run the tests. Not suitable for upstream.
+GNU utilities are needed to run the tests. Not suitable for upstream.
 
 --- vim-9.0.0823/src/testdir/Makefile
 +++ vim-9.0.0823/src/testdir/Makefile
@@ -11,3 +11,14 @@ GNU awk is needed to run the tests. Not suitable for upstream.
  
  # Uncomment this line to use valgrind for memory leaks and extra warnings.
  #   The output goes into a file "valgrind.testN"
+--- vim-9.0.2009/src/testdir/test_terminal.vim
++++ vim-9.0.2009/src/testdir/test_terminal.vim
+@@ -515,7 +515,7 @@ call writefile([
+ 	\ 'set shell=/bin/sh noruler',
+ 	\ 'terminal',
+ 	\ 'sleep 200m',
+-	\ 'call feedkeys("tail -n 100 -f Xtext\<CR>", "xt")',
++	\ 'call feedkeys("gtail -n 100 -f Xtext\<CR>", "xt")',
+ 	\ 'sleep 100m',
+ 	\ 'call feedkeys("\<C-W>N", "xt")',
+ 	\ ], 'XTest_postponed', 'D')
