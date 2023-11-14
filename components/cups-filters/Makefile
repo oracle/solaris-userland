@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -28,13 +28,13 @@ gcc_OPT= -O2
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups-filters
-COMPONENT_VERSION=	1.28.15
-COMPONENT_BAID=		127285
-COMPONENT_ARCHIVE_HASH=	sha256:a907ec769fbb72efbfbf9b540b250a08e33b6e373a8a7c343f9840fba4d0478b
+COMPONENT_VERSION=	1.28.17
+COMPONENT_BAID=		154306
+COMPONENT_ARCHIVE_HASH=	sha256:270a3752a960368aa99d431fb5d34f4039b2ac943c576d840612d1d8185c9bb9
 COMPONENT_PROJECT_URL=	http://www.openprinting.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_URL=  http://www.openprinting.org/download/cups-filters/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://github.com/OpenPrinting/cups-filters/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/cups
 COMPONENT_ANITYA_ID=	5541
 
@@ -104,6 +104,7 @@ cups-filters.license: $(SOURCE_DIR)/COPYING \
 	$(COMPONENT_DIR)/licenses/LGPL-2.1.txt
 	cat $? > $@
 
+REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += image/library/libtiff
