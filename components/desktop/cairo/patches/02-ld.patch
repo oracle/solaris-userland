@@ -1,0 +1,14 @@
+merge request submitted upstream 
+https://gitlab.freedesktop.org/cairo/cairo/-/commit/54231e89f3846cb3e1e6fb6d25cec2502250ccf1
+
+--- a/meson.build	2023-11-07 12:53:17.039322746 -0800
++++ b/meson.build	2023-11-07 12:54:06.790071425 -0800
+@@ -780,7 +780,7 @@
+   conf.set('ATOMIC_OP_NEEDS_MEMORY_BARRIER', 1)
+ endif
+ 
+-have_ld_preload = ['linux', 'freebsd', 'darwin', 'dragonfly'].contains(host_machine.system())
++have_ld_preload = ['sunos', 'linux', 'freebsd', 'darwin', 'dragonfly'].contains(host_machine.system())
+ 
+ if have_ld_preload and zlib_dep.found() and conf.get('CAIRO_HAS_REAL_PTHREAD', 0) == 1 and conf.get('CAIRO_HAS_DLSYM', 0) == 1
+   conf.set('CAIRO_HAS_TRACE', 1)

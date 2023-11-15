@@ -1,0 +1,15 @@
+find TIOCGWINSZ on Solaris
+
+--- a/perf/cairo-perf-print.c	2023-11-07 08:30:25.242169284 -0800
++++ b/perf/cairo-perf-print.c	2023-11-07 08:31:40.487998618 -0800
+@@ -45,6 +45,10 @@
+ #include <sys/ioctl.h>
+ #endif
+ 
++#ifdef __sun
++#include <sys/termios.h>
++#endif
++
+ static void
+ report_print (const cairo_perf_report_t *report,
+ 	      int show_histogram)

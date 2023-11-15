@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -39,12 +39,11 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2012/339 value=PSARC/2016/229
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-#
+file path=usr/bin/cairo-sphinx pkg.depend.bypass-generate=libcairo-sphinx.so
 file path=usr/bin/cairo-trace
 file path=usr/include/cairo/cairo-deprecated.h
 file path=usr/include/cairo/cairo-features.h
 file path=usr/include/cairo/cairo-ft.h
-file path=usr/include/cairo/cairo-gl.h
 file path=usr/include/cairo/cairo-gobject.h
 file path=usr/include/cairo/cairo-pdf.h
 file path=usr/include/cairo/cairo-ps.h
@@ -57,30 +56,28 @@ file path=usr/include/cairo/cairo-xcb.h
 file path=usr/include/cairo/cairo-xlib-xrender.h
 file path=usr/include/cairo/cairo-xlib.h
 file path=usr/include/cairo/cairo.h
-file path=usr/lib/$(MACH64)/cairo/cairo-fdr.so
+file path=usr/lib/$(MACH64)/cairo/libcairo-fdr.so
+file path=usr/lib/$(MACH64)/cairo/libcairo-sphinx.so
 file path=usr/lib/$(MACH64)/cairo/libcairo-trace.so
-link path=usr/lib/$(MACH64)/libcairo-gobject.so \
-    target=libcairo-gobject.so.2.11704.0
+link path=usr/lib/$(MACH64)/libcairo-gobject.so target=libcairo-gobject.so.2
 link path=usr/lib/$(MACH64)/libcairo-gobject.so.2 \
-    target=libcairo-gobject.so.2.11704.0
-file path=usr/lib/$(MACH64)/libcairo-gobject.so.2.11704.0
+    target=libcairo-gobject.so.2.11708.0
+file path=usr/lib/$(MACH64)/libcairo-gobject.so.2.11708.0
 link path=usr/lib/$(MACH64)/libcairo-script-interpreter.so \
-    target=libcairo-script-interpreter.so.2.11704.0
+    target=libcairo-script-interpreter.so.2
 link path=usr/lib/$(MACH64)/libcairo-script-interpreter.so.2 \
-    target=libcairo-script-interpreter.so.2.11704.0
-file path=usr/lib/$(MACH64)/libcairo-script-interpreter.so.2.11704.0
-link path=usr/lib/$(MACH64)/libcairo.so target=libcairo.so.2.11704.0
-link path=usr/lib/$(MACH64)/libcairo.so.2 target=libcairo.so.2.11704.0
-file path=usr/lib/$(MACH64)/libcairo.so.2.11704.0
-file path=usr/lib/$(MACH64)/pkgconfig/cairo-egl.pc
+    target=libcairo-script-interpreter.so.2.11708.0
+file path=usr/lib/$(MACH64)/libcairo-script-interpreter.so.2.11708.0
+link path=usr/lib/$(MACH64)/libcairo.so target=libcairo.so.2
+link path=usr/lib/$(MACH64)/libcairo.so.2 target=libcairo.so.2.11708.0
+file path=usr/lib/$(MACH64)/libcairo.so.2.11708.0
 file path=usr/lib/$(MACH64)/pkgconfig/cairo-fc.pc
 file path=usr/lib/$(MACH64)/pkgconfig/cairo-ft.pc
-file path=usr/lib/$(MACH64)/pkgconfig/cairo-gl.pc
-file path=usr/lib/$(MACH64)/pkgconfig/cairo-glx.pc
 file path=usr/lib/$(MACH64)/pkgconfig/cairo-gobject.pc
 file path=usr/lib/$(MACH64)/pkgconfig/cairo-pdf.pc
 file path=usr/lib/$(MACH64)/pkgconfig/cairo-png.pc
 file path=usr/lib/$(MACH64)/pkgconfig/cairo-ps.pc
+file path=usr/lib/$(MACH64)/pkgconfig/cairo-script-interpreter.pc
 file path=usr/lib/$(MACH64)/pkgconfig/cairo-script.pc
 file path=usr/lib/$(MACH64)/pkgconfig/cairo-svg.pc
 file path=usr/lib/$(MACH64)/pkgconfig/cairo-tee.pc
@@ -89,28 +86,27 @@ file path=usr/lib/$(MACH64)/pkgconfig/cairo-xcb.pc
 file path=usr/lib/$(MACH64)/pkgconfig/cairo-xlib-xrender.pc
 file path=usr/lib/$(MACH64)/pkgconfig/cairo-xlib.pc
 file path=usr/lib/$(MACH64)/pkgconfig/cairo.pc
-file path=usr/lib/cairo/cairo-fdr.so
+file path=usr/lib/cairo/libcairo-fdr.so
+file path=usr/lib/cairo/libcairo-sphinx.so
 file path=usr/lib/cairo/libcairo-trace.so
-link path=usr/lib/libcairo-gobject.so target=libcairo-gobject.so.2.11704.0
-link path=usr/lib/libcairo-gobject.so.2 target=libcairo-gobject.so.2.11704.0
-file path=usr/lib/libcairo-gobject.so.2.11704.0
+link path=usr/lib/libcairo-gobject.so target=libcairo-gobject.so.2
+link path=usr/lib/libcairo-gobject.so.2 target=libcairo-gobject.so.2.11708.0
+file path=usr/lib/libcairo-gobject.so.2.11708.0
 link path=usr/lib/libcairo-script-interpreter.so \
-    target=libcairo-script-interpreter.so.2.11704.0
+    target=libcairo-script-interpreter.so.2
 link path=usr/lib/libcairo-script-interpreter.so.2 \
-    target=libcairo-script-interpreter.so.2.11704.0
-file path=usr/lib/libcairo-script-interpreter.so.2.11704.0
-link path=usr/lib/libcairo.so target=libcairo.so.2.11704.0
-link path=usr/lib/libcairo.so.2 target=libcairo.so.2.11704.0
-file path=usr/lib/libcairo.so.2.11704.0
-file path=usr/lib/pkgconfig/cairo-egl.pc
+    target=libcairo-script-interpreter.so.2.11708.0
+file path=usr/lib/libcairo-script-interpreter.so.2.11708.0
+link path=usr/lib/libcairo.so target=libcairo.so.2
+link path=usr/lib/libcairo.so.2 target=libcairo.so.2.11708.0
+file path=usr/lib/libcairo.so.2.11708.0
 file path=usr/lib/pkgconfig/cairo-fc.pc
 file path=usr/lib/pkgconfig/cairo-ft.pc
-file path=usr/lib/pkgconfig/cairo-gl.pc
-file path=usr/lib/pkgconfig/cairo-glx.pc
 file path=usr/lib/pkgconfig/cairo-gobject.pc
 file path=usr/lib/pkgconfig/cairo-pdf.pc
 file path=usr/lib/pkgconfig/cairo-png.pc
 file path=usr/lib/pkgconfig/cairo-ps.pc
+file path=usr/lib/pkgconfig/cairo-script-interpreter.pc
 file path=usr/lib/pkgconfig/cairo-script.pc
 file path=usr/lib/pkgconfig/cairo-svg.pc
 file path=usr/lib/pkgconfig/cairo-tee.pc
@@ -119,6 +115,17 @@ file path=usr/lib/pkgconfig/cairo-xcb.pc
 file path=usr/lib/pkgconfig/cairo-xlib-xrender.pc
 file path=usr/lib/pkgconfig/cairo-xlib.pc
 file path=usr/lib/pkgconfig/cairo.pc
+file path=usr/share/gtk-doc/html/cairo/api-index-1-0.html
+file path=usr/share/gtk-doc/html/cairo/api-index-1-10.html
+file path=usr/share/gtk-doc/html/cairo/api-index-1-12.html
+file path=usr/share/gtk-doc/html/cairo/api-index-1-14.html
+file path=usr/share/gtk-doc/html/cairo/api-index-1-16.html
+file path=usr/share/gtk-doc/html/cairo/api-index-1-18.html
+file path=usr/share/gtk-doc/html/cairo/api-index-1-2.html
+file path=usr/share/gtk-doc/html/cairo/api-index-1-4.html
+file path=usr/share/gtk-doc/html/cairo/api-index-1-6.html
+file path=usr/share/gtk-doc/html/cairo/api-index-1-8.html
+file path=usr/share/gtk-doc/html/cairo/api-index-all.html
 file path=usr/share/gtk-doc/html/cairo/bindings-errors.html
 file path=usr/share/gtk-doc/html/cairo/bindings-fonts.html
 file path=usr/share/gtk-doc/html/cairo/bindings-memory.html
@@ -128,6 +135,7 @@ file path=usr/share/gtk-doc/html/cairo/bindings-patterns.html
 file path=usr/share/gtk-doc/html/cairo/bindings-return-values.html
 file path=usr/share/gtk-doc/html/cairo/bindings-streams.html
 file path=usr/share/gtk-doc/html/cairo/bindings-surfaces.html
+file path=usr/share/gtk-doc/html/cairo/cairo-DWrite-Fonts.html
 file path=usr/share/gtk-doc/html/cairo/cairo-Error-handling.html
 file path=usr/share/gtk-doc/html/cairo/cairo-FreeType-Fonts.html
 file path=usr/share/gtk-doc/html/cairo/cairo-Image-Surfaces.html
@@ -147,7 +155,7 @@ file path=usr/share/gtk-doc/html/cairo/cairo-Transformations.html
 file path=usr/share/gtk-doc/html/cairo/cairo-Types.html
 file path=usr/share/gtk-doc/html/cairo/cairo-User-Fonts.html
 file path=usr/share/gtk-doc/html/cairo/cairo-Version-Information.html
-file path=usr/share/gtk-doc/html/cairo/cairo-Win32-Fonts.html
+file path=usr/share/gtk-doc/html/cairo/cairo-Win32-GDI-Fonts.html
 file path=usr/share/gtk-doc/html/cairo/cairo-Win32-Surfaces.html
 file path=usr/share/gtk-doc/html/cairo/cairo-XCB-Surfaces.html
 file path=usr/share/gtk-doc/html/cairo/cairo-XLib-Surfaces.html
@@ -167,15 +175,6 @@ file path=usr/share/gtk-doc/html/cairo/cairo-surfaces.html
 file path=usr/share/gtk-doc/html/cairo/cairo-text.html
 file path=usr/share/gtk-doc/html/cairo/cairo.devhelp2
 file path=usr/share/gtk-doc/html/cairo/home.png
-file path=usr/share/gtk-doc/html/cairo/index-1.10.html
-file path=usr/share/gtk-doc/html/cairo/index-1.12.html
-file path=usr/share/gtk-doc/html/cairo/index-1.14.html
-file path=usr/share/gtk-doc/html/cairo/index-1.16.html
-file path=usr/share/gtk-doc/html/cairo/index-1.2.html
-file path=usr/share/gtk-doc/html/cairo/index-1.4.html
-file path=usr/share/gtk-doc/html/cairo/index-1.6.html
-file path=usr/share/gtk-doc/html/cairo/index-1.8.html
-file path=usr/share/gtk-doc/html/cairo/index-all.html
 file path=usr/share/gtk-doc/html/cairo/index.html
 file path=usr/share/gtk-doc/html/cairo/language-bindings.html
 file path=usr/share/gtk-doc/html/cairo/left-insensitive.png
