@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		json-glib
-COMPONENT_VERSION=	1.6.6
+COMPONENT_VERSION=	1.8.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/JsonGlib
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:96ec98be7a91f6dde33636720e3da2ff6ecbb90e76ccaa49497f31a6855a490e
+    sha256:97ef5eb92ca811039ad50a65f06633f1aae64792789307be7170795d8b319454
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13144
 
-COMPONENT_BAID=		137481
+COMPONENT_BAID=		154136
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
