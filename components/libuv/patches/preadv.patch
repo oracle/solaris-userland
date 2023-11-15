@@ -1,0 +1,91 @@
+Interim patch to workaround missing preadv() and pwritev().
+https://github.com/libuv/libuv/issues/4176
+
+The patch is not for upstream, see:
+https://github.com/libuv/libuv/pull/4178
+
+Once Solaris implements preadv() and pwritev(),
+the patch can be removed.
+
+diff -ru libuv-v1.47.0.orig/src/unix/fs.c libuv-v1.47.0/src/unix/fs.c
+--- libuv-v1.47.0.orig/src/unix/fs.c	2023-11-09 22:03:50.794398925 +0100
++++ libuv-v1.47.0/src/unix/fs.c	2023-11-10 17:33:24.141679549 +0100
+@@ -85,10 +85,74 @@
+ #if defined(__CYGWIN__) ||                                                    \
+     (defined(__HAIKU__) && B_HAIKU_VERSION < B_HAIKU_VERSION_1_PRE_BETA_5) || \
+     (defined(__sun) && !defined(__illumos__))
+-#define preadv(fd, bufs, nbufs, off)                                          \
+-  pread(fd, (bufs)->iov_base, (bufs)->iov_len, off)
+-#define pwritev(fd, bufs, nbufs, off)                                         \
+-  pwrite(fd, (bufs)->iov_base, (bufs)->iov_len, off)
++#define preadv uv__preadv
++#define pwritev uv__pwritev
++
++static ssize_t
++uv__preadv(int fildes, const struct iovec *iov, int iovcnt, off_t offset)
++{
++	ssize_t	rc;
++	size_t	pos;
++	ssize_t result;
++	int olderrno = errno;
++
++	assert(iovcnt > 1);
++
++	for (pos = 0, result = 0;
++	    (rc = pread(fildes, iov->iov_base + pos, iov->iov_len - pos,
++	    offset + result)) > 0 && iovcnt > 0;) {
++		result += rc;
++		if ((pos += rc) == iov->iov_len) {
++			iov++;
++			iovcnt--;
++			pos = 0;
++		}
++	}
++
++	if (rc == -1) {
++		if (result > 0) {
++			/* Return partial result and ignore the error */
++			errno = olderrno;
++		} else {
++			result = -1;
++		}
++	}
++
++	return (result);
++}
++
++static ssize_t
++uv__pwritev(int fildes, const struct iovec *iov, int iovcnt, off_t offset)
++{
++	ssize_t	rc;
++	size_t	pos;
++	ssize_t result;
++	int olderrno = errno;
++
++	assert(iovcnt > 1);
++
++	for (pos = 0, result = 0;
++	    (rc = pwrite(fildes, iov->iov_base + pos, iov->iov_len - pos,
++	    offset + result)) > 0 && iovcnt > 0;) {
++		result += rc;
++		if ((pos += rc) == iov->iov_len) {
++			iov++;
++			iovcnt--;
++			pos = 0;
++		}
++	}
++
++	if (rc == -1) {
++		if (result > 0) {
++			/* Return partial result and ignore the error */
++			errno = olderrno;
++		} else {
++			result = -1;
++		}
++	}
++
++	return (result);
++}
+ #endif
+ 
+ #if defined(_AIX) && _XOPEN_SOURCE <= 600

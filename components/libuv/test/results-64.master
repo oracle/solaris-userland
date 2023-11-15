@@ -1,4 +1,4 @@
-1..401
+1..431
 ok 1 - platform_output
 # ELIDED
 ok # - active
@@ -12,6 +12,7 @@ ok # - barrier_serial_thread
 ok # - barrier_serial_thread_single
 ok # - callback_stack
 ok # - check_ref
+ok # - clock_gettime
 ok # - close_fd
 ok # - close_order
 ok # - closed_fd_events
@@ -32,6 +33,7 @@ ok # - embed
 ok # - emfile
 ok # - env_vars
 ok # - error_message
+ok # - fork_close_signal_in_child
 ok # - fork_fs_events_child
 ok # - fork_fs_events_child_dir
 ok # - fork_fs_events_file_parent_child
@@ -75,8 +77,10 @@ ok # - fs_file_pos_after_op_with_offset
 ok # - fs_file_sync
 ok # - fs_file_write_null_buffer
 ok # - fs_fstat
+ok # - fs_fstat_stdio
 ok # - fs_futime
 ok # - fs_get_system_error
+ok # - fs_link
 ok # - fs_lutime
 ok # - fs_mkdtemp
 ok # - fs_mkstemp
@@ -102,9 +106,11 @@ ok # - fs_readdir_non_existing_dir
 ok # - fs_readlink
 ok # - fs_realpath
 ok # - fs_rename_to_existing_file
+ok # - fs_scandir_early_exit
 ok # - fs_scandir_empty_dir
 ok # - fs_scandir_file
 ok # - fs_scandir_non_existent_dir
+ok # - fs_stat_batch_multiple
 ok # - fs_stat_missing_path
 ok # - fs_statfs
 ok # - fs_symlink
@@ -116,10 +122,12 @@ ok # - fs_write_alotof_bufs
 ok # - fs_write_alotof_bufs_with_offset
 ok # - fs_write_multiple_bufs
 ok # - get_currentexe
+ok # - get_group
 ok # - get_loadavg
 ok # - get_memory
 ok # - get_osfhandle_valid_handle
 ok # - get_passwd
+ok # - get_passwd2
 ok # - getaddrinfo_basic
 ok # - getaddrinfo_basic_sync
 ok # - getaddrinfo_concurrent
@@ -138,6 +146,7 @@ ok # - handle_type_name
 ok # - has_ref
 ok # - homedir
 ok # - hrtime
+ok # - idle_check
 ok # - idle_ref
 ok # - idle_starvation
 ok # - idna_toascii
@@ -164,10 +173,13 @@ ok # - loop_configure
 ok # - loop_handles
 ok # - loop_instant_close
 ok # - loop_stop
+ok # - loop_stop_before_run
 ok # - loop_update_time
 ok # - metrics_idle_time
 ok # - metrics_idle_time_thread
 ok # - metrics_idle_time_zero
+ok # - metrics_info_check
+ok # - metrics_pool_events
 ok # - multiple_listen
 ok # - not_readable_nor_writable_on_read_error
 ok # - not_writable_after_shutdown
@@ -175,8 +187,10 @@ ok # - open_osfhandle_valid_handle
 ok # - pipe_bind_error_addrinuse
 ok # - pipe_bind_error_addrnotavail
 ok # - pipe_bind_error_inval
+ok # - pipe_bind_or_listen_error_after_close
 ok # - pipe_close_stdout_read_stdin
 ok # - pipe_connect_bad_name
+ok # - pipe_connect_close_multiple
 ok # - pipe_connect_multiple
 ok # - pipe_connect_on_prepare
 ok # - pipe_connect_to_file
@@ -184,6 +198,7 @@ ok # - pipe_getsockname
 ok # - pipe_getsockname_abstract
 ok # - pipe_getsockname_blocking
 ok # - pipe_listen_without_bind
+ok # - pipe_overlong_path
 ok # - pipe_pending_instances
 ok # - pipe_ping_pong
 ok # - pipe_ping_pong_vec
@@ -245,6 +260,8 @@ ok # - spawn_inherit_streams
 ok # - spawn_preserve_env
 ok # - spawn_quoted_path # SKIP Test for Windows
 ok # - spawn_reads_child_path
+ok # - spawn_relative_path
+ok # - spawn_same_stdout_stderr
 ok # - spawn_setgid_fails
 ok # - spawn_setuid_fails
 ok # - spawn_setuid_setgid # SKIP It should be run as root user
@@ -259,6 +276,7 @@ ok # - spawn_tcp_server
 ok # - stdio_emulate_iocp
 ok # - stdio_over_pipes
 ok # - strscpy
+ok # - strtok
 ok # - sys_error
 ok # - tcp6_local_connect_timeout
 ok # - tcp6_ping_pong
@@ -277,15 +295,19 @@ ok # - tcp_bind_error_fault
 ok # - tcp_bind_error_inval
 ok # - tcp_bind_invalid_flags
 ok # - tcp_bind_localhost_ok
+ok # - tcp_bind_or_listen_error_after_close
 ok # - tcp_bind_writable_flags
 ok # - tcp_close
 ok # - tcp_close_accept
+ok # - tcp_close_after_read_timeout
 ok # - tcp_close_reset_accepted
 ok # - tcp_close_reset_accepted_after_shutdown
 ok # - tcp_close_reset_accepted_after_socket_shutdown
 ok # - tcp_close_reset_client
 ok # - tcp_close_reset_client_after_shutdown
 ok # - tcp_close_while_connecting
+ok # - tcp_connect6_error_fault
+ok # - tcp_connect6_link_local
 ok # - tcp_connect_error_after_write
 ok # - tcp_connect_error_fault
 ok # - tcp_connect_timeout
@@ -310,17 +332,20 @@ ok # - tcp_ref2
 ok # - tcp_ref2b
 ok # - tcp_ref3
 ok # - tcp_ref4
+ok # - tcp_rst
 ok # - tcp_shutdown_after_write
 ok # - tcp_try_write
 ok # - tcp_try_write_error
 ok # - tcp_unexpected_read
 ok # - tcp_write_after_connect
 ok # - tcp_write_fail
+ok # - tcp_write_in_a_row
 ok # - tcp_write_queue_order
 ok # - tcp_write_ready
 ok # - tcp_write_to_half_open_connection
 ok # - tcp_writealot
 ok # - test_macros
+ok # - thread_affinity
 ok # - thread_create
 ok # - thread_equal
 ok # - thread_local_storage
@@ -335,6 +360,7 @@ ok # - threadpool_cancel_getaddrinfo
 ok # - threadpool_cancel_getnameinfo
 ok # - threadpool_cancel_random
 ok # - threadpool_cancel_single
+ok # - threadpool_cancel_when_busy
 ok # - threadpool_cancel_work
 ok # - threadpool_multiple_event_loops
 ok # - threadpool_queue_work_einval
@@ -347,6 +373,9 @@ ok # - timer_huge_repeat
 ok # - timer_huge_timeout
 ok # - timer_init
 ok # - timer_is_closing
+ok # - timer_no_double_call_nowait
+ok # - timer_no_double_call_once
+ok # - timer_no_run_on_unref
 ok # - timer_null_callback
 ok # - timer_order
 ok # - timer_ref
@@ -381,6 +410,7 @@ ok # - udp_open_connect
 ok # - udp_open_twice
 ok # - udp_options
 ok # - udp_options6
+ok # - udp_recv_in_a_row
 ok # - udp_ref
 ok # - udp_ref2
 ok # - udp_ref3

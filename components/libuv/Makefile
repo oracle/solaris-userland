@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS=		64
@@ -30,30 +30,29 @@ include ../../make-rules/shared-macros.mk
 # Component information, used for download and packaging.
 # -------------------------------------------------------
 COMPONENT_NAME=		libuv
-COMPONENT_VERSION=	1.44.1
+COMPONENT_VERSION=	1.47.0
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-v$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	library/libuv
-COMPONENT_BAID=		119920
+COMPONENT_BAID=		154328
 COMPONENT_PROJECT_URL=	https://libuv.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=	\
 	https://dist.libuv.org/dist/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	10784
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:9d37b63430fe3b92a9386b949bebd8f0b4784a39a16964c82c9566247a76f64a
+	sha256:20c37a4ca77a2107879473c6c8fa0dc1350e80045df98bfbe78f7cd6d7dd2965
 
 include $(WS_MAKE_RULES)/common.mk
 
-## Preparation.
-##
-## gcc requires '-pthreads' option which copies in ltmain.sh which
-## needs fix for 29178672 and hence an additional patch here.
-COMPONENT_PREP_ACTION = (cd $(@D) ;
-COMPONENT_PREP_ACTION += $(SHELL) autogen.sh;
-COMPONENT_PREP_ACTION += /usr/bin/patch -p1 -i ../Solaris/ltmain-pthread.patch;
-COMPONENT_PREP_ACTION += )
+# Set LIBUVDEBUG=yes in environment to make this a debug build.
+ifneq ($(LIBUVDEBUG), yes)
+CPPFLAGS+=		-DNDEBUG
+endif
+
+# Preparation.
+COMPONENT_PREP_ACTION = (cd $(@D) ; $(SHELL) autogen.sh)
 
 # Post Build, create man page.  Requires sphinx-build.
 # The awk script removes the DOWNLOADS and INSTALLATION sections.
@@ -77,7 +76,7 @@ COMPONENT_TEST_TRANSFORMS =	\
 
 # license verification, consistent license file build and check
 e = /usr/gnu/bin/echo
-copyright_files = LICENSE-docs
+copyright_files = LICENSE-extra LICENSE-docs
 test-license:
 	@$(MKDIR) -p $(BUILD_DIR)
 	@( \
@@ -95,15 +94,8 @@ test-license:
 		( \
 			$e 'WARNING: $(COMPONENT_DIR)/libuv.license'; \
 			$e ' and $(BUILD_DIR)/libuv.license.new differ.'; \
-			$e 'ACTION: Check $(BUILD_DIR)/libuv.license'; \
-			$e ' against TPNO:'; \
-			$e '   /ws/bugdb-tools/bin/tpno --arn $(TPNO)';\
 		)
 
 # Helper target to display manual page.
 show-man: $(BUILD_DIR)/man/libuv.1
 	/usr/bin/nroff -man $(BUILD_DIR)/man/libuv.1
-
-# gmake REQUIRED_PACKAGES output
-# REQUIRED_PACKAGES += system/library
-# REQUIRED_PACKAGES += system/library/libc
