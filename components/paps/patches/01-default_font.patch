@@ -1,10 +1,8 @@
 Solaris specific: modify default font to Courier to match mp(1) output
 
-diff --git a/src/paps.1 b/src/paps.1
-index b804db3..b997556 100644
 --- a/src/paps.1
 +++ b/src/paps.1
-@@ -50,7 +50,7 @@ Format output into \fIcl\fR columns. Default is 1.
+@@ -50,7 +50,7 @@ .br
  Please notice this option isn't related to the terminal length as in a "80 columns terminal".
  .TP
  .B \-\-font=desc
@@ -13,11 +11,9 @@ index b804db3..b997556 100644
  The format of the string representation is:
  .IP
  "[family-list] [style-options] [size]"
-diff --git a/src/paps.c b/src/paps.c
-index d7315d7..4e28d45 100644
---- a/src/paps.c
-+++ b/src/paps.c
-@@ -57,10 +57,15 @@ int wcwidth(wchar_t c);
+--- a/src/paps.cc
++++ b/src/paps.cc
+@@ -67,10 +67,15 @@ #define N_(str)		(str)
  #endif
  
  #define BUFSIZE 1024
@@ -37,7 +33,7 @@ index d7315d7..4e28d45 100644
  #define MAKE_FONT_NAME(f,s)     f " " s
  
  /*
-@@ -551,7 +556,7 @@ int main(int argc, char *argv[])
+@@ -598,7 +603,7 @@ N_("Landscape output. (Default: portrait
      {"columns", 0, 0, G_OPTION_ARG_INT, &num_columns,
       N_("Number of columns output. (Default: 1)"), "NUM"},
      {"font", 0, 0, G_OPTION_ARG_STRING, &font,
@@ -45,4 +41,4 @@ index d7315d7..4e28d45 100644
 +     N_("Set font. (Default: Courier 10)"), "DESC"},
      {"output", 'o', 0, G_OPTION_ARG_STRING, &output,
       N_("Output file. (Default: stdout)"), "DESC"},
-     {"rtl", 0, 0, G_OPTION_ARG_NONE, &do_rtl,
+     {"version", 'v', 0, G_OPTION_ARG_NONE, &do_show_version,

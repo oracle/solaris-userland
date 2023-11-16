@@ -1,27 +1,22 @@
 Patch for upstream: fixes issue that tumble and duplex are set by default.
 
-diff --git a/src/paps.c b/src/paps.c
-index 77db5c8..cda7ebb 100644
---- a/src/paps.c
-+++ b/src/paps.c
-@@ -780,16 +780,16 @@ int main(int argc, char *argv[])
+--- a/src/paps.cc	2023-10-12 10:03:37.559866373 +0200
++++ b/src/paps.cc	2023-10-12 10:06:01.185136255 +0200
+@@ -860,14 +860,14 @@
        page_width = page_height;
        page_height = tmp;
        if (do_tumble < 0)
--        do_tumble = TRUE;
-+        do_tumble = FALSE;
+-        do_tumble = true;
++        do_tumble = false;
        if (do_duplex < 0)
--        do_duplex = TRUE;
-+        do_duplex = FALSE;
+-        do_duplex = true;
++        do_duplex = false;
      }
    else
      {
        if (do_tumble < 0)
--        do_tumble = TRUE;
-+        do_tumble = FALSE;
+-        do_tumble = true;
++        do_tumble = false;
        if (do_duplex < 0)
--        do_duplex = TRUE;
-+        do_duplex = FALSE;
+         do_duplex = true;
      }
-   
-   page_layout.page_width = page_width;

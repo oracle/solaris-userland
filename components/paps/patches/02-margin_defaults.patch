@@ -1,11 +1,9 @@
 Solaris specific: modify margin default values to match mp(1) output.
 mp was EOLed, but we don't want to change behavior.
 
-diff --git a/src/paps.1 b/src/paps.1
-index b997556..7c2bc81 100644
 --- a/src/paps.1
 +++ b/src/paps.1
-@@ -256,16 +256,16 @@ Scalable Vector Graphics
+@@ -256,16 +256,16 @@ .B Postscript points
  Each postscript point equals to 1/72 of an inch. 36 points are 1/2 of an inch.
  .TP
  .B \-\-bottom-margin=bm
@@ -26,11 +24,9 @@ index b997556..7c2bc81 100644
  .TP
  .B \-\-gutter-width=gw
  Set gutter width. Default is 40 postscript points.
-diff --git a/src/paps.c b/src/paps.c
-index 4e28d45..77db5c8 100644
---- a/src/paps.c
-+++ b/src/paps.c
-@@ -74,10 +74,10 @@ int wcwidth(wchar_t c);
+--- a/src/paps.cc
++++ b/src/paps.cc
+@@ -84,10 +84,10 @@ * 255 characters, including the initial
   */
  #define	CAIRO_COMMENT_MAX       255
  
@@ -45,8 +41,8 @@ index 4e28d45..77db5c8 100644
  
  
  typedef enum {
-@@ -578,13 +578,13 @@ int main(int argc, char *argv[])
-     {"format", 0, 0, G_OPTION_ARG_CALLBACK, _paps_arg_format_cb,
+@@ -629,13 +629,13 @@ N_("Base glyph orientation [natural, str
+     {"format", 0, 0, G_OPTION_ARG_CALLBACK, (gpointer)_paps_arg_format_cb,
       N_("Set output format [pdf, svg, ps]. (Default: ps)"), "FORMAT"},
      {"bottom-margin", 0, 0, G_OPTION_ARG_INT, &bottom_margin,
 -     N_("Set bottom margin in postscript point units (1/72 inch). (Default: 36)"), "NUM"},
