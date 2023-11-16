@@ -1,0 +1,141 @@
+Patch provided upstream:
+https://bugs.openldap.org/show_bug.cgi?id=10130
+
+This patch file is derived from OpenLDAP Software. All of the
+modifications to OpenLDAP Software represented in the following
+patch(es) were developed by Oracle.  Oracle has not assigned rights
+and/or interest in this work to any party. I, Stacey Marshall am
+authorized by Oracle, my employer, to release this work under the
+following terms.
+
+Oracle hereby place the following modifications to OpenLDAP Software
+(and only these modifications) into the public domain. Hence, these
+modifications may be freely used and/or redistributed for any purpose
+with or without attribution and/or other notice.
+
+Date: Tue, 14 Nov 2023 16:36:16 +0000
+Subject: [PATCH] Fixes 10130 Several callers of getpassphrase() ignore NULL
+ returns
+
+---
+ clients/tools/common.c     |  7 ++++---
+ clients/tools/ldappasswd.c | 14 ++++++++++++--
+ clients/tools/ldapvc.c     | 10 ++++++++--
+ servers/slapd/slappasswd.c | 13 +++++++++----
+ tests/progs/slapd-tester.c |  3 +++
+ 5 files changed, 36 insertions(+), 11 deletions(-)
+
+diff --git a/clients/tools/common.c b/clients/tools/common.c
+index 2bc9f133b..19f526566 100644
+--- a/clients/tools/common.c
++++ b/clients/tools/common.c
+@@ -1495,10 +1495,11 @@ tool_bind( LDAP *ld )
+ 
+ 		} else {
+ 			char *pw = getpassphrase( _("Enter LDAP Password: ") );
+-			if ( pw ) {
+-				passwd.bv_val = ber_strdup( pw );
+-				passwd.bv_len = strlen( passwd.bv_val );
++			if ( pw == NULL ) { /* Allow EOF to exit. */
++				tool_exit( ld, EXIT_FAILURE );
+ 			}
++			passwd.bv_val = ber_strdup( pw );
++			passwd.bv_len = strlen( passwd.bv_val );
+ 		}
+ 	}
+ 
+diff --git a/clients/tools/ldappasswd.c b/clients/tools/ldappasswd.c
+index 9a48aabf3..0d1ce84ab 100644
+--- a/clients/tools/ldappasswd.c
++++ b/clients/tools/ldappasswd.c
+@@ -220,7 +220,12 @@ main( int argc, char *argv[] )
+ 	if( want_oldpw && oldpw.bv_val == NULL ) {
+ 		/* prompt for old password */
+ 		char *ckoldpw;
+-		oldpw.bv_val = strdup(getpassphrase(_("Old password: ")));
++		ckoldpw = getpassphrase(_("Old password: "));
++		if ( ckoldpw == NULL ) { /* Allow EOF to exit. */
++			rc = EXIT_FAILURE;
++			goto done;
++		}
++		oldpw.bv_val = strdup( ckoldpw );
+ 		ckoldpw = getpassphrase(_("Re-enter old password: "));
+ 
+ 		if( oldpw.bv_val == NULL || ckoldpw == NULL ||
+@@ -245,7 +250,12 @@ main( int argc, char *argv[] )
+ 	if( want_newpw && newpw.bv_val == NULL ) {
+ 		/* prompt for new password */
+ 		char *cknewpw;
+-		newpw.bv_val = strdup(getpassphrase(_("New password: ")));
++		cknewpw = getpassphrase(_("New password: "));
++		if ( cknewpw == NULL ) { /* Allow EOF to exit. */
++			rc = EXIT_FAILURE;
++			goto done;
++		}
++		newpw.bv_val = strdup( cknewpw );
+ 		cknewpw = getpassphrase(_("Re-enter new password: "));
+ 
+ 		if( newpw.bv_val == NULL || cknewpw == NULL ||
+diff --git a/clients/tools/ldapvc.c b/clients/tools/ldapvc.c
+index 4f35025ec..badbdb947 100644
+--- a/clients/tools/ldapvc.c
++++ b/clients/tools/ldapvc.c
+@@ -309,8 +309,14 @@ main( int argc, char *argv[] )
+ #endif
+            && !cred.bv_val)
+ 	{
+-		cred.bv_val = strdup(getpassphrase(_("User's password: ")));
+-	    cred.bv_len = strlen(cred.bv_val);
++		char *userpw = getpassphrase(_("User's password: "));
++		if ( userpw == NULL ) /* Allow EOF to exit. */
++		{
++			free( cred.bv_val );
++			tool_exit( ld, EXIT_FAILURE );
++		}
++		cred.bv_val = strdup(userpw);
++		cred.bv_len = strlen(cred.bv_val);
+ 	}
+ 
+ #ifdef LDAP_API_FEATURE_VERIFY_CREDENTIALS_INTERACTIVE
+diff --git a/servers/slapd/slappasswd.c b/servers/slapd/slappasswd.c
+index 9c2adef22..e38436461 100644
+--- a/servers/slapd/slappasswd.c
++++ b/servers/slapd/slappasswd.c
+@@ -250,11 +250,16 @@ slappasswd( int argc, char *argv[] )
+ 		if( newpw == NULL ) {
+ 			/* prompt for new password */
+ 			char *cknewpw;
+-			newpw = ch_strdup(getpassphrase("New password: "));
++			newpw = getpassphrase("New password: ");
++			if ( newpw == NULL ) { /* Allow EOF to exit. */
++				rc = EXIT_FAILURE;
++				goto destroy;
++			}
++			newpw = ch_strdup(newpw);
+ 			cknewpw = getpassphrase("Re-enter new password: ");
+-	
+-			if( strcmp( newpw, cknewpw )) {
+-				fprintf( stderr, "Password values do not match\n" );
++			if( cknewpw == NULL || strcmp( newpw, cknewpw )) {
++				fprintf( stderr,
++				    "Password values do not match\n" );
+ 				rc = EXIT_FAILURE;
+ 				goto destroy;
+ 			}
+diff --git a/tests/progs/slapd-tester.c b/tests/progs/slapd-tester.c
+index 7ad88b82f..8f9656e67 100644
+--- a/tests/progs/slapd-tester.c
++++ b/tests/progs/slapd-tester.c
+@@ -406,6 +406,9 @@ main( int argc, char **argv )
+ 
+ 	if ( pw_ask ) {
+ 		passwd = getpassphrase( _("Enter LDAP Password: ") );
++		if ( passwd == NULL ) { /* Allow EOF to exit. */
++			exit( EXIT_FAILURE );
++		}
+ 
+ 	} else if ( pw_file ) {
+ 		struct berval	pw;
+-- 
+2.37.1 (Apple Git-137.1)
+
