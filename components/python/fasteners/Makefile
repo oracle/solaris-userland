@@ -26,18 +26,18 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fasteners
-COMPONENT_VERSION=	0.17.3
+COMPONENT_VERSION=	0.19
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	https://github.com/harlowja/fasteners
 COMPONENT_BUGDB=	python-mod/fasteners
 COMPONENT_ANITYA_ID=	6719
-COMPONENT_BAID=		120562
+COMPONENT_BAID=		154376
 
 # pypi archive doesn't include the test suite
 GIT_REPO=   $(COMPONENT_PROJECT_URL)
 GIT_COMMIT_ID=  $(COMPONENT_VERSION)
-GIT_HASH=   sha256:717b2b0278456492bb0c962de65f0b4ba5c59a76849a304a22aa538f8ea92833
+GIT_HASH=   sha256:f36f80e8f997b23bb527c853de6f502ba324a9aa21948f0863ccebede0ad885e
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -45,8 +45,10 @@ include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-# We don't have Python diskcache package available
-COMPONENT_TEST_ARGS =	--ignore=test_reader_writer_lock.py
+# We don't have Python diskcache and eventlet packages available
+COMPONENT_TEST_ARGS =	\
+	--ignore=test_reader_writer_lock.py \
+	--ignore=test_eventlet.py
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
