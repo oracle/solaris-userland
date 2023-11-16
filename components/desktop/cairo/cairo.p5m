@@ -30,7 +30,7 @@ set name=pkg.fmri \
 set name=pkg.summary value="Cairo vector graphics library"
 # pkgdepend needs help to follow the runtime generated symlinks to libGL
 set name=pkg.depend.runpath \
-    value=$PKGDEPEND_RUNPATH:usr/lib/mesa:usr/lib/mesa/$(MACH64)
+    value=$PKGDEPEND_RUNPATH:usr/lib/mesa:usr/lib/mesa/$(MACH64):usr/lib/cairo:usr/lib/$(MACH64)/cairo
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value="Cairo vector graphics library"
 set name=info.classification \
@@ -39,7 +39,7 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2012/339 value=PSARC/2016/229
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/bin/cairo-sphinx pkg.depend.bypass-generate=libcairo-sphinx.so
+file path=usr/bin/cairo-sphinx
 file path=usr/bin/cairo-trace
 file path=usr/include/cairo/cairo-deprecated.h
 file path=usr/include/cairo/cairo-features.h
