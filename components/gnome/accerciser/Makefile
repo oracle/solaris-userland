@@ -27,14 +27,14 @@ BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		accerciser
-COMPONENT_VERSION=	3.14.0
+COMPONENT_VERSION=	3.42.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Accerciser
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f5a5915d475e9241396414ccd167724c88807e77e69151cf0b40b32bd57d0574
+	sha256:7769bd4f4f63dc89a143e86cdc44feaebd7f8c969bea5c1f5a86ac9311902f48
 COMPONENT_BUGDB= 	gnome/accessibility
 COMPONENT_ANITYA_ID=	13116
 
-COMPONENT_BAID=		26967
+COMPONENT_BAID=		154469
 
 # The unit tests failed to start.
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -60,20 +60,21 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
-# intltool may or may not be run depending on previous state of build dir
-COMPONENT_TEST_TRANSFORMS += "-e '/\/usr\/bin\/intltool-update/d'"
+# msgfmt may or may not be run depending on previous state of build dir
+COMPONENT_TEST_TRANSFORMS += "-e '/\/usr\/gnu\/bin\/msgfmt/d'"
 
 REQUIRED_PACKAGES += developer/documentation-tool/itstool
-# 3.14.0 requires intltool to build - remove when upgrading to 3.32.0 or later
-REQUIRED_PACKAGES += developer/intltool
+REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
+REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libwnck3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/python/pyatspi2-311
+REQUIRED_PACKAGES += library/python/pycairo-311
 REQUIRED_PACKAGES += library/python/pygobject-3-311
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += text/gnu-gettext
