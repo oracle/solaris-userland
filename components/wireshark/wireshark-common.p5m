@@ -37,18 +37,17 @@ set name=org.opensolaris.arc-caseid value=PSARC/2007/334
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file exec_attr.dumpcap \
     path=etc/security/exec_attr.d/diagnostic:wireshark:wireshark-common
-link path=usr/lib/$(MACH64)/libwireshark.so target=libwireshark.so.16
-link path=usr/lib/$(MACH64)/libwireshark.so.16 \
-    target=libwireshark.so.16.0.$(MICRO_VERSION)
-file path=usr/lib/$(MACH64)/libwireshark.so.16.0.$(MICRO_VERSION)
-link path=usr/lib/$(MACH64)/libwiretap.so target=libwiretap.so.13
-link path=usr/lib/$(MACH64)/libwiretap.so.13 \
-    target=libwiretap.so.13.0.$(MICRO_VERSION)
-file path=usr/lib/$(MACH64)/libwiretap.so.13.0.$(MICRO_VERSION)
-link path=usr/lib/$(MACH64)/libwsutil.so target=libwsutil.so.14
-link path=usr/lib/$(MACH64)/libwsutil.so.14 target=libwsutil.so.14.0.0
-file path=usr/lib/$(MACH64)/libwsutil.so.14.0.0
-file path=usr/lib/$(MACH64)/pkgconfig/wireshark.pc
+link path=usr/lib/$(MACH64)/libwireshark.so target=libwireshark.so.17
+link path=usr/lib/$(MACH64)/libwireshark.so.17 \
+    target=libwireshark.so.17.0.$(MICRO_VERSION)
+file path=usr/lib/$(MACH64)/libwireshark.so.17.0.$(MICRO_VERSION)
+link path=usr/lib/$(MACH64)/libwiretap.so target=libwiretap.so.14
+link path=usr/lib/$(MACH64)/libwiretap.so.14 \
+    target=libwiretap.so.14.0.$(MICRO_VERSION)
+file path=usr/lib/$(MACH64)/libwiretap.so.14.0.$(MICRO_VERSION)
+link path=usr/lib/$(MACH64)/libwsutil.so target=libwsutil.so.15
+link path=usr/lib/$(MACH64)/libwsutil.so.15 target=libwsutil.so.15.0.0
+file path=usr/lib/$(MACH64)/libwsutil.so.15.0.0
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(MAJOR_VERSION)/codecs/g711.so
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(MAJOR_VERSION)/codecs/l16mono.so
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(MAJOR_VERSION)/epan/ethercat.so
@@ -70,13 +69,17 @@ file path=usr/sbin/editcap
 file path=usr/sbin/mergecap
 file path=usr/sbin/rawshark
 file path=usr/sbin/text2pcap
+file path=usr/share/doc/wireshark/COPYING
+file path=usr/share/doc/wireshark/README.xml-output
+file path=usr/share/doc/wireshark/pdml2html.xsl
+file path=usr/share/doc/wireshark/ws.css
 file path=usr/share/man/man1/androiddump.1
 file path=usr/share/man/man1/capinfos.1
 file path=usr/share/man/man1/ciscodump.1
-file path=usr/share/man/man1/dftest.1
 file path=usr/share/man/man1/dumpcap.1
 file path=usr/share/man/man1/editcap.1
 file path=usr/share/man/man1/etwdump.1
+file path=usr/share/man/man1/falcodump.1
 file path=usr/share/man/man1/mergecap.1
 file path=usr/share/man/man1/randpkt.1
 file path=usr/share/man/man1/rawshark.1
@@ -86,9 +89,6 @@ file path=usr/share/man/man1/wifidump.1
 file path=usr/share/man/man4/extcap.4
 file path=usr/share/man/man4/wireshark-filter.4
 file path=usr/share/metainfo/org.wireshark.Wireshark.metainfo.xml
-file path=usr/share/wireshark/AUTHORS-SHORT
-file path=usr/share/wireshark/Acknowledgements.md
-file path=usr/share/wireshark/COPYING
 file path=usr/share/wireshark/androiddump.html
 file path=usr/share/wireshark/capinfos.html
 file path=usr/share/wireshark/captype.html
@@ -97,7 +97,6 @@ file path=usr/share/wireshark/ciscodump.html
 file path=usr/share/wireshark/colorfilters
 file path=usr/share/wireshark/dfilter_macros
 file path=usr/share/wireshark/dfilters
-file path=usr/share/wireshark/dftest.html
 file path=usr/share/wireshark/diameter/AlcatelLucent.xml
 file path=usr/share/wireshark/diameter/Cisco.xml
 file path=usr/share/wireshark/diameter/CiscoSystems.xml
@@ -143,14 +142,11 @@ file path=usr/share/wireshark/dtds/xcap-caps.dtd
 file path=usr/share/wireshark/dtds/xcap-error.dtd
 file path=usr/share/wireshark/dumpcap.html
 file path=usr/share/wireshark/editcap.html
-file path=usr/share/wireshark/enterprises.tsv
 file path=usr/share/wireshark/etwdump.html
 file path=usr/share/wireshark/extcap.html
-file path=usr/share/wireshark/gpl-2.0-standalone.html
+file path=usr/share/wireshark/falcodump.html
 file path=usr/share/wireshark/ipmap.html
-file path=usr/share/wireshark/manuf
 file path=usr/share/wireshark/mergecap.html
-file path=usr/share/wireshark/pdml2html.xsl
 file path=usr/share/wireshark/profiles/Bluetooth/colorfilters
 file path=usr/share/wireshark/profiles/Bluetooth/preferences
 file path=usr/share/wireshark/profiles/Classic/colorfilters
@@ -161,6 +157,7 @@ file path=usr/share/wireshark/radius/dictionary
 file path=usr/share/wireshark/radius/dictionary.3com
 file path=usr/share/wireshark/radius/dictionary.3gpp
 file path=usr/share/wireshark/radius/dictionary.3gpp2
+file path=usr/share/wireshark/radius/dictionary.5x9
 file path=usr/share/wireshark/radius/dictionary.acc
 file path=usr/share/wireshark/radius/dictionary.acme
 file path=usr/share/wireshark/radius/dictionary.actelis
@@ -367,8 +364,8 @@ file path=usr/share/wireshark/radius/dictionary.zyxel
 file path=usr/share/wireshark/randpkt.html
 file path=usr/share/wireshark/randpktdump.html
 file path=usr/share/wireshark/rawshark.html
+file path=usr/share/wireshark/release-notes.html
 file path=usr/share/wireshark/reordercap.html
-file path=usr/share/wireshark/services
 file path=usr/share/wireshark/smi_modules
 file path=usr/share/wireshark/sshdump.html
 file path=usr/share/wireshark/text2pcap.html
@@ -381,7 +378,6 @@ file path=usr/share/wireshark/wimaxasncp/dictionary.xml
 file path=usr/share/wireshark/wireshark-filter.html
 file path=usr/share/wireshark/wireshark.html
 file path=usr/share/wireshark/wka
-file path=usr/share/wireshark/ws.css
 license COPYING license=GPLv2
 depend type=optional \
     fmri=diagnostic/wireshark/tshark@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
