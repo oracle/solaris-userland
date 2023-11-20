@@ -129,6 +129,9 @@ PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 COMPONENT_POST_CONFIGURE_ACTION += \
 	$(GSED) -i '/L\/usr\/openssl\/3\/lib/s/-L\/usr\/lib\/$(MACH64)//' \
 	    $(BUILD_DIR_64)/Makefile ;
+
+# When checking for uw-imap linker needs to get OpenSSL 3 first.
+LDFLAGS += -L/usr/openssl/3/lib/64
 endif
 
 COMPONENT_BUILD_ENV += TMPDIR=$(BUILD_DIR)/temp

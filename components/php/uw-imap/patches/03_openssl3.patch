@@ -1,0 +1,15 @@
+Allows build on Solaris with OpenSSL in nonstandard path.
+
+Not suitable for upstream.
+
+--- imap-2007f/Makefile
++++ imap-2007f/Makefile
+@@ -353,7 +353,7 @@ SPECIALS="SSLINCLUDE=/opt/csw/include/op
+ 
+ soc:	an
+ 	$(BUILD) BUILDTYPE=soc \
+-	SPECIALS="CC='$$CC' EXTRACFLAGS='$$CFLAGS' SSLINCLUDE=/usr/include/openssl SSLLIB=/usr/lib SSLCERTS=/etc/openssl/certs SSLKEYS=/etc/openssl/private"
++	SPECIALS="CC='$$CC' EXTRACFLAGS='$$CFLAGS' SSLINCLUDE=/usr/openssl/3/include SSLLIB=/usr/openssl3/lib/64 SSLCERTS=/etc/openssl/3/certs SSLKEYS=/etc/openssl/3/private"
+ 
+ ldb:	an
+ 	$(BUILD) BUILDTYPE=lnp IP=$(IP6) \
