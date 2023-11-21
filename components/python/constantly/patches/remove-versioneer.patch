@@ -1,0 +1,45 @@
+Versioneer library is not available on Solaris.
+
+Also, constantly is still installable with older setuptools
+and 100% compatible with Python 3.7.
+
+Not intended for upstream.
+
+--- constantly-23.10.4/pyproject.toml
++++ constantly-23.10.4/pyproject.toml
+@@ -1,5 +1,5 @@
+ [build-system]
+-requires = ["setuptools>=68.2", "versioneer[toml]==0.29"]
++requires = ["setuptools"]
+ build-backend = "setuptools.build_meta"
+ 
+ [project]
+@@ -26,9 +26,12 @@ license = {text = "MIT"}
+ name = "constantly"
+ maintainers = [{name = "Twisted Matrix Labs Developers"}]
+ urls = {Homepage = "https://github.com/twisted/constantly"}
+-requires-python = ">= 3.8"
++requires-python = ">= 3.7"
+ dynamic = ["version"]
+ 
++[tool.setuptools.dynamic]
++version = {attr = "constantly.__version__"}
++
+ [tool.setuptools]
+ include-package-data = false
+ 
+--- constantly-23.10.4/setup.py
++++ constantly-23.10.4/setup.py
+@@ -1,11 +1,6 @@
+ # Copyright (c) Twisted Matrix Laboratories.
+ # See LICENSE for details.
+ 
+-import versioneer
+-
+ from setuptools import setup
+ 
+-setup(
+-    version=versioneer.get_version(),
+-    cmdclass=versioneer.get_cmdclass(),
+-)
++setup()
