@@ -1,3 +1,9 @@
+# drop all core packages that are always present via shared-macros.mk
+<transform depend fmri=pkg:/shell/bash@.* -> drop>
+<transform depend fmri=pkg:/shell/ksh93@.* -> drop>
+<transform depend fmri=pkg:/system/library/libc@.* -> drop>
+<transform depend fmri=pkg:/system/library@.* -> drop>
+<transform depend fmri=pkg:/system/linker@.* -> drop>
 # print a line "REQUIRED_PACKAGES += {pkg-short-name}"
 <transform depend fmri=pkg:/(.+)@.+ -> print REQUIRED_PACKAGES += %<1> >
 # drop all actions

@@ -533,7 +533,7 @@ endif
 # lazy among us.  This is only a piece of the REQUIRED_PACKAGES puzzle.
 # You must still include packages for tools you build and test with.
 #
-REQUIRED_PACKAGES::	$(RESOLVED)
+REQUIRED_PACKAGES::
 	$(GMAKE) RESOLVE_DEPS= $(RESOLVED)
 	@echo "# Auto-generated contents below.  Please manually verify and remove this comment" >>Makefile
 	@$(PKGMOGRIFY) $(WS_TRANSFORMS)/$@ $(RESOLVED) | \
