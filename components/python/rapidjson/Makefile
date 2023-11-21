@@ -27,16 +27,16 @@ include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		python-rapidjson
-COMPONENT_VERSION=	1.6
+COMPONENT_VERSION=	1.13
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7d76b94beac9aa58e2b1b36d7995a1501f9ee9fd7bf6088d58725b9de5d508c2
+    sha256:ffe9d382be84ddcf197c188d2f49baa8b47270cec95a1dcb62496e2af3eb71d4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/python-rapidjson/python-rapidjson
 COMPONENT_BUGDB=	python-mod/rapidjson
 COMPONENT_ANITYA_ID=	42927
-COMPONENT_BAID=		123151
+COMPONENT_BAID=		154381
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
