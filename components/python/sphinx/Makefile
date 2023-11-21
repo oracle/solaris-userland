@@ -80,3 +80,6 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/pygments-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/requests-%)
 REQUIRED_PACKAGES += developer/documentation-tool/docutils
 REQUIRED_PACKAGES += developer/documentation-tool/sphinx/alabaster
+
+# build dependencies
+REQUIRED_PACKAGES += library/python/flit_core

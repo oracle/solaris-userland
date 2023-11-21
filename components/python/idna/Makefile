@@ -59,3 +59,6 @@ install:	$(INSTALL_64)
 test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)
+
+# build dependencies
+REQUIRED_PACKAGES += library/python/flit_core

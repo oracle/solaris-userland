@@ -1,18 +1,12 @@
 Don't use the vendored tomli package - use our own package instead.
 
---- flit_core-3.7.1/flit_core/config.py
-+++ flit_core-3.7.1/flit_core/config.py
-@@ -7,7 +7,7 @@ import os.path as osp
- from pathlib import Path
- import re
- 
--from .vendor import tomli
-+import tomli
- from .versionno import normalise_version
- 
- log = logging.getLogger(__name__)
---- flit_core-3.7.1/pyproject.toml
-+++ flit_core-3.7.1/pyproject.toml
+This patch exists only for automatic dependency detection. The vendored package
+is dropped via the generate file, and the flit_core import code is written such
+that when vendored tomli is not available, it uses the system one, so there is
+no need for further changes.
+
+--- flit_core-3.9.0/pyproject.toml
++++ flit_core-3.9.0/pyproject.toml
 @@ -9,7 +9,9 @@ authors=[
      {name = "Thomas Kluyver & contributors", email = "thomas@kluyver.me.uk"},
  ]
@@ -22,5 +16,5 @@ Don't use the vendored tomli package - use our own package instead.
 +    'tomli',
 +]
  requires-python = '>=3.6'
- classifiers = [
-     "License :: OSI Approved :: BSD License",
+ readme = "README.rst"
+ license = {file = "LICENSE"}
