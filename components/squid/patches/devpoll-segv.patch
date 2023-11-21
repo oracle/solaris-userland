@@ -1,0 +1,30 @@
+Avoid segfault calling fd_close() when devpoll_state has not yet been
+initialized by Comm::SelectLoopInit()
+
+Reported, but not yet fixed, upstream:
+https://bugs.squid-cache.org/show_bug.cgi?id=5314
+
+Part of the fix for Oracle Solaris Bug 35949097
+
+--- squid-5.9-prev/src/comm/ModDevPoll.cc	2023-10-26 16:56:48.051326694 -0700
++++ squid-5.9/src/comm/ModDevPoll.cc	2023-10-26 18:55:57.663657015 -0700
+@@ -176,6 +176,9 @@
+ void
+ Comm::SelectLoopInit(void)
+ {
++    if (devpoll_state != NULL)
++        return;
++    
+     /* allocate memory first before attempting to open poll device */
+     /* This is the stuff we use to read events.  If it's larger than
+        the current RLIMIT_NOFILE, the Solaris kernel returns EINVAL. */
+@@ -228,6 +231,9 @@
+            ", handler=" << handler << ", client_data=" << client_data <<
+            ", timeout=" << timeout);
+ 
++    if (devpoll_state == NULL)
++        SelectLoopInit();
++
+     /* POLLIN/POLLOUT are defined in <sys/poll.h> */
+     fde *F = &fd_table[fd];
+     if (!F->flags.open) {
