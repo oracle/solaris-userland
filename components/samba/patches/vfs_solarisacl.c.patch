@@ -1,0 +1,32 @@
+Fixes compilation errors.
+
+diff -rup samba-4.18.6.orig/source3/modules/vfs_solarisacl.c samba-4.18.6/source3/modules/vfs_solarisacl.c
+--- samba-4.18.6.orig/source3/modules/vfs_solarisacl.c	2023-09-12 13:06:45.378174057 +0200
++++ samba-4.18.6/source3/modules/vfs_solarisacl.c	2023-09-13 10:55:55.632326446 +0200
+@@ -62,7 +62,7 @@ static bool solaris_acl_check(SOLARIS_AC
+ 
+ /* public functions - the api */
+ 
+-static SMB_ACL_T solarisacl_sys_acl_get_file(vfs_handle_struct *handle,
++SMB_ACL_T solarisacl_sys_acl_get_file(vfs_handle_struct *handle,
+ 				const struct smb_filename *smb_fname,
+ 				SMB_ACL_TYPE_T type,
+ 				TALLOC_CTX *mem_ctx)
+@@ -234,7 +234,7 @@ int solarisacl_sys_acl_delete_def_fd(vfs
+ 
+ 	DBG_DEBUG("entering solarisacl_sys_acl_delete_def_fd.\n");
+ 
+-	smb_acl = solarisacl_sys_acl_get_file(handle, fsp->fsp_name->base_name,
++	smb_acl = solarisacl_sys_acl_get_file(handle, fsp->fsp_name,
+ 					      SMB_ACL_TYPE_ACCESS, talloc_tos());
+ 	if (smb_acl == NULL) {
+ 		DBG_DEBUG("getting file acl failed!\n");
+@@ -252,7 +252,7 @@ int solarisacl_sys_acl_delete_def_fd(vfs
+ 	}
+ 	ret = acl(fsp->fsp_name->base_name, SETACL, count, solaris_acl);
+ 	if (ret != 0) {
+-		DBG_DEBG("settinge file acl failed!\n");
++		DBG_DEBUG("setting file acl failed!\n");
+ 	}
+ 
+  done:

@@ -22,233 +22,135 @@
 #
 # Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
-BUILD_BITS=	64_and_32
-COMPILER=	gcc
 
-# Parallel build jobs are supported only if GNU make is used.
-COMPONENT_MAKE_JOBS=1
-include ../../make-rules/shared-macros.mk
+COMPILER=		gcc
+BUILD_BITS=		64_and_32
 
-ifeq ($(MACH), sparc)
-WAFOPTS = -j64
-gcc_OPT= -O2
-else
-WAFOPTS = -j16
-endif
-
-ifeq ($(DEBUG), yes)
-gcc_OPT= -Og -g
-endif
-
-# parfait seems to spin on us
-export PARFAIT_BUILD=no
+include			../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		samba
 COMPONENT_PROJECT_URL=	http://www.samba.org/
 COMPONENT_BUGDB=	utility/samba
 COMPONENT_ANITYA_ID=	4758
-
-COMPONENT_VERSION=	4.13.17
-COMPONENT_BAID=		116029
-# Samba pre-releases are available on git only.
-# if you want to build Samba from git uncomment next 4 lines
-#GIT_REPO=		https://git.samba.org/samba.git
-#GIT_COMMIT_ID=		master
-#GIT_HASH=		sha256:...
-#COMPONENT_SRC_URL=	$(GIT_REPO)
-# clone of git.samba.org takes a long
-# if you want to build Samba from archive uncomment next 3 lines
+COMPONENT_BAID=		154128
+COMPONENT_VERSION=	4.19.2
 COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_HASH=	sha256:17bdb9ea60d30af22851c8e134d67b43a22fb1e20f159152a647c69dc2a58a68
+COMPONENT_ARCHIVE_HASH=	\
+	sha256:9e63f0505e1c631f1db0b7a9349a51e925c026ca03af3fd5d812228bb597d393
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
-TEST_TARGET= $(NO_TESTS)
-include $(WS_MAKE_RULES)/common.mk
+#
+# Install target is 64-bit only. In 32-bit mode, just do partial build to make
+# NSS and PAM plugins and NSS hook. Don't install anything.... The binaries
+# will be cherry-picked from the build directory.
+#
+INSTALL_TARGET=		$(INSTALL_64) $(BUILD_32)
 
-PYTHON_VERSION = 3.11
+TEST_TARGET=		$(NO_TESTS)
 
-# yapp (yet another parser) is not propagated publicly
-PATH= :/usr/bin:/usr/gnu/bin:/usr/perl5/$(PERL_VERSION)/bin:
+include	$(WS_MAKE_RULES)/common.mk
 
-# Winbind only build is 32b.
-WB_ONLY_CONF=		$(BUILD_DIR_32)/.configured
-SAMBA_FULL_CONF=	$(BUILD_DIR_64)/.configured
+#
+# Linker refuses to link 32-bit binaries without explicit -m32 LDFLAGS.
+#
+LDFLAGS+=		-m$(BITS)
 
-$(BUILD_DIR_32)/%:	MACHLIBDIR=
-$(BUILD_DIR_64)/%:	MACHLIBDIR=/$(MACH64)
+COMPONENT_PRE_CONFIGURE_ACTION+= \
+	$(CLONEY) $(SOURCE_DIR) $(@D);
 
-# Uncomment the following line to enable verbose and single-thread (readable) build.
-#override WAFOPTS	=	-v -j1
-WAF= $(PYTHON) ./buildtools/bin/waf
+PREFIX=			/usr/lib/samba
+CONFIGURE_PREFIX=	$(PREFIX)
+CONFIGURE_DEFAULT_DIRS=	no
 
-# pkg-config files
-PKGCONFIG_AUX_DIR = $(BUILD_DIR)/lib$(MACHLIBDIR)/pkgconfig
-
-LIBS +=		-lrt -lsec -lcrypt -lmd5 -lsocket -lnsl -lpthread -lposix4
-# More libs needed by Samba (libavahi, libgamin, ...)
-$(SAMBA_FULL_CONF): LIBS += -lsendfile -lavahi-common -lavahi-core
-
-CPPFLAGS +=	$(CPP_LARGEFILES)
-CPPFLAGS +=	$(CPP_XPG6MODE)
-# Linux.h
-CPPFLAGS +=	-DNAME_MAX=256
-
-CFLAGS +=	-D_POSIX_C_SOURCE=200112L
-CFLAGS +=	-D__XOPEN_OR_POSIX
-CFLAGS +=	-D_POSIX_PTHREAD_SEMANTICS
-
-LDFLAGS +=	-m$(BITS)
-LDFLAGS +=	-R/usr/lib/samba$(MACHLIBDIR)
-LDFLAGS +=	-R/usr/lib/samba/private$(MACHLIBDIR)
-LDFLAGS +=	$(LIBS)
-
-CONFIGURE_OPTIONS =	--exec-prefix=/usr
-CONFIGURE_OPTIONS +=	--bindir=/usr/lib/samba/bin
-CONFIGURE_OPTIONS +=	--sbindir=/usr/lib/samba/sbin
-CONFIGURE_OPTIONS +=	--libdir=/usr/lib/samba$(MACHLIBDIR)
-
-CONFIGURE_OPTIONS +=	--with-privatelibdir=/usr/lib/samba/private$(MACHLIBDIR)
-CONFIGURE_OPTIONS +=	--sysconfdir=/etc/samba
-CONFIGURE_OPTIONS +=	--with-pammodulesdir=/usr/lib/samba/security$(MACHLIBDIR)
-CONFIGURE_OPTIONS +=	--datarootdir=/usr/lib/samba
-CONFIGURE_OPTIONS +=	--mandir=/usr/share/man
-CONFIGURE_OPTIONS +=	--htmldir=/usr/share/samba/swat/help
-CONFIGURE_OPTIONS +=	--includedir=/usr/include/samba
-CONFIGURE_OPTIONS +=	--with-privatedir=/etc/samba/private
-CONFIGURE_OPTIONS +=	--localstatedir=/var/samba
-CONFIGURE_OPTIONS +=	--with-logfilebase=/var/samba/log
-CONFIGURE_OPTIONS +=	--sharedstatedir=/var/samba/com
-CONFIGURE_OPTIONS +=	--libexecdir=/usr/lib/samba
-# Whenever getfacl is found HAVE_SOLARIS_UNIXWARE_ACLS is set and
-# vfs_solarisacl is placed into the list of the static modules
-CONFIGURE_OPTIONS +=	--with-static-modules=
-$(SAMBA_FULL_CONF):	CONFIGURE_OPTIONS += \
-	--with-shared-modules=vfs_worm,vfs_zfsacl,vfs_prealloc,vfs_cacheprime,vfs_commit,idmap_ldap,idmap_tdb2,idmap_rid,idmap_ad,idmap_hash,idmap_adex
-$(WB_ONLY_CONF):	CONFIGURE_OPTIONS += \
-	--with-shared-modules=idmap_ldap,idmap_tdb2,idmap_rid,idmap_ad,idmap_hash,idmap_adex
-CONFIGURE_OPTIONS +=	--with-ads
-CONFIGURE_OPTIONS +=	--with-winbind
-CONFIGURE_OPTIONS +=	--with-ldap
-CONFIGURE_OPTIONS +=	--with-system-mitkrb5
-CONFIGURE_OPTIONS +=	--without-ad-dc
-
-$(WB_ONLY_CONF):	CONFIGURE_OPTIONS +=	--disable-python
-$(SAMBA_FULL_CONF):	CONFIGURE_OPTIONS +=	--python=$(PYTHON)
-$(SAMBA_FULL_CONF):	CONFIGURE_OPTIONS +=	--nopyo
-CONFIGURE_OPTIONS +=	--disable-rpath
-CONFIGURE_OPTIONS +=	--bundled-libraries=ALL
-
-# PATH for 64-bit is already set in configure.mk
-CONFIGURE_ENV.32 +=	PATH="$(PATH)"
-CONFIGURE_ENV += 	CC="$(CC)"
-CONFIGURE_ENV += 	CPP="$(CC) -E"
-CONFIGURE_ENV += 	AWK=gawk
-CONFIGURE_ENV += 	PERL=$(PERL)
-$(SAMBA_FULL_CONF):	CONFIGURE_ENV += 	PYTHONDIR="$(PYTHON_VENDOR_PACKAGES)"
-$(SAMBA_FULL_CONF):	CONFIGURE_ENV += 	PYTHONARCHDIR="$(PYTHON_VENDOR_PACKAGES)/samba"
-CONFIGURE_ENV += 	LD="$(LD)"
-CONFIGURE_ENV +=	CFLAGS="$(CFLAGS)"
-CONFIGURE_ENV +=	CPPFLAGS="$(CPPFLAGS) -I$(PROTO_DIR)/usr/include -I$(COMPONENT_DIR)/Solaris/include"
-CONFIGURE_ENV +=	LINKFLAGS="$(LDFLAGS) $(LD_B_DIRECT)"
-CONFIGURE_ENV.64 +=	MACH64="$(MACH64)"
-CONFIGURE_ENV +=	LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)"
-CONFIGURE_ENV +=	CUPS_CONFIG=$(USRBINDIR)/cups-config
-CONFIGURE_ENV += 	INSTALL="$(INSTALL)"
-CONFIGURE_ENV += 	PKG_CONFIG_PATH="$(PKGCONFIG_AUX_DIR):$(PKG_CONFIG_PATH)"
-
-# Use explicit Python version rather than the default one
-CONFIGURE_ENV += PYTHON=$(PYTHON)
-
-# cleanup unpacked archive
-COMPONENT_PREP_ACTION += (cd $(@D) ; $(WAF) distclean $(WAFOPTS) );
-
-# configure
-COMPONENT_PRE_CONFIGURE_ACTION += \
-   $(CLONEY) $(SOURCE_DIR) $(@D); \
-   $(CP) $(COMPONENT_DIR)/Solaris/vfs_samfs.c $(@D)/source3/modules/vfs_samfs.c; \
-   $(MKDIR) $(PKGCONFIG_AUX_DIR);
-
-# fix samfs.pc to proto
-$(SAMBA_FULL_CONF): COMPONENT_PRE_CONFIGURE_ACTION += \
-   $(MKDIR) $(PROTO_DIR)/opt/SUNWsamfs/ ; \
-   $(CP) -r $(COMPONENT_DIR)/Solaris/include/ $(PROTO_DIR)/opt/SUNWsamfs/ ; \
-   sed -e "s:@MACHDIR@:$(MACHLIBDIR):g;s:@ROOT@:$(PROTO_DIR):g" \
-   $(COMPONENT_DIR)/Solaris/samfs.pc > $(PKGCONFIG_AUX_DIR)/samfs.pc;
-
-# Oracle HSM helper library
-$(SAMBA_FULL_CONF): COMPONENT_PRE_CONFIGURE_ACTION += \
-   $(MKDIR) $(PROTO_DIR)/opt/SUNWsamfs/lib$(MACHLIBDIR) ; \
-   $(CC) -m$(BITS) -G $(CC_PIC_MODE) -hlibsam.so Solaris/libsam.c \
-	-I$(COMPONENT_DIR)/Solaris/include \
-	-o $(PROTO_DIR)/opt/SUNWsamfs/lib$(MACHLIBDIR)/libsam.so ;
-
-CONFIGURE_SCRIPT= $(WAF) configure $(WAFOPTS)
-CONFIG_SHELL=
-
-# build
-COMPONENT_BUILD_ENV += PATH="$(PATH)"
-%/.built: GMAKE= $(WAF) build $(WAFOPTS)
-$(SAMBA_FULL_CONF:.configured=.built): COMPONENT_BUILD_TARGETS=
-$(WB_ONLY_CONF:.configured=.built): COMPONENT_BUILD_TARGETS= --targets=nss_winbind,pamwinbind,winbind_nss_hook
-
-# install
-PERL_SCRIPTS   += $(PROTO_DIR)/usr/lib/samba/bin/findsmb
-PERL_SCRIPTS   += $(PROTO_DIR)/usr/lib/samba/bin/pidl
+PYTHON_VERSION=		3.11
+SAMBA_PROTO_PYDIR=	$(PROTO_DIR)$(PREFIX)/lib/python$(PYTHON_VERSION)
+#
 # List of python scripts can be obtained by:
-# ggrep -rlI '^\#!.*python' build/prototype/$(uname -p)/ | sed -e "s@build/prototype/$(uname -p)/@\$(PROTO_DIR)/@"
-PYTHON_SCRIPTS = \
-$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/tests/dcerpc/raw_protocol.py \
-$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/tests/krb5/simple_tests.py \
-$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/tests/krb5/xrealm_tests.py \
-$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/tests/krb5/s4u_tests.py \
-$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/tests/krb5/kcrypto.py \
-$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/samba/samba/subunit/run.py \
-$(PROTO_DIR)/usr/lib/samba/sbin/samba-gpupdate
+# ggrep -rlI '^\#!.*python' build/prototype/$(uname -p)/ | \
+#	sed -e "s@build/prototype/$(uname -p)/@\$(PROTO_DIR)/@"
+#
+PYTHON_SCRIPTS+=	\
+	$(PROTO_DIR)$(PREFIX)/sbin/samba-gpupdate \
+	$(PROTO_DIR)$(PREFIX)/bin/samba-log-parser \
+	$(PROTO_DIR)$(PREFIX)/bin/samba-tool \
+	$(SAMBA_PROTO_PYDIR)/site-packages/samba/subunit/run.py \
+	$(SAMBA_PROTO_PYDIR)/site-packages/tests/*.py
 
-COMPONENT_INSTALL_ENV += PATH="$(PATH)"
-COMPONENT_INSTALL_ARGS = --destdir=$(PROTO_DIR)
-%/.installed: GMAKE= $(WAF) install $(WAFOPTS)
-$(SAMBA_FULL_CONF:.configured=.installed): COMPONENT_INSTALL_TARGETS=
-$(SAMBA_FULL_CONF:.configured=.installed): COMPONENT_POST_INSTALL_ACTION += \
-   $(MKDIR) $(PROTO_DIR)/etc/samba ; \
-   sed -f $(COMPONENT_DIR)/Solaris/smbconf.sed \
-     > $(PROTO_DIR)/etc/samba/smb.conf-example \
-     $(BUILD_DIR_SMB)/examples/smb.conf.default ; \
-   $(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)/ ;
+CONFIGURE_ENV+=		\
+	PATH=$(GNUBIN):$(USRBINDIR):/usr/perl5/$(PERL_VERSION)/bin
+CONFIGURE_ENV+=		PYTHON="$(PYTHON)"
+CONFIGURE_OPTIONS+=	--localstatedir=/var/samba
+CONFIGURE_OPTIONS+=	--includedir=/usr/include/samba
+CONFIGURE_OPTIONS+=	--sysconfdir=/etc/samba
+CONFIGURE_OPTIONS+=	--datarootdir=$(PREFIX)
+CONFIGURE_OPTIONS+=	--mandir=/usr/share/man
+CONFIGURE_OPTIONS+=	--with-privatelibdir=$(PREFIX)/private/$(MACH64)
+CONFIGURE_OPTIONS+=	--with-pammodulesdir=$(PREFIX)/security/$(MACH64)
+CONFIGURE_OPTIONS+=	--with-ads
+CONFIGURE_OPTIONS+=	--with-winbind
+CONFIGURE_OPTIONS+=	--with-ldap
+CONFIGURE_OPTIONS+=	--without-ad-dc
+CONFIGURE_OPTIONS+=	--bundled-libraries=ALL
+CONFIGURE_OPTIONS+=	--with-system-mitkrb5
+CONFIGURE_OPTIONS+=	--with-shared-modules=vfs_worm,vfs_zfsacl,vfs_cacheprime,vfs_commit,idmap_ldap,idmap_tdb2,idmap_rid,idmap_ad,idmap_hash,idmap_adex
+#
+# 32-bit build is only to build NSS winbind plugin,
+# don't bother with python modules.
+#
+CONFIGURE_OPTIONS.32+=	--disable-python
 
-# Do not use transform to create standard ABI version tagged .so files from Python 3 ABI
-PY3_CPYTHON_NAMING=\#
+#
+# In 32-bit mode, only build NSS plugin and hook.
+# There seems to be a race condition in build in WAF scripts so force -j 1.
+# The -j 1 makes WAF single threaded, but it doesn't hurt since we do it
+# only in 32-bit mode which is a partial build only.
+#
+COMPONENT_BUILD_ARGS.32= \
+			-j 1 nss_winbind winbind_nss_hook pamwinbind
 
-# do not do waf install for winbind only - override the recipe
-$(WB_ONLY_CONF:.configured=.installed): $(WB_ONLY_CONF:.configured=.built)
-	/bin/sh -c "cd $(@D) ; \
-	    $(INSTALL) -d $(PROTO_DIR)/usr/lib/samba$(MACHLIBDIR) ; \
-	    $(INSTALL) -m 0555 -t $(PROTO_DIR)/usr/lib/samba$(MACHLIBDIR) bin/shared/!(pam_*).so* ; \
-	    $(INSTALL) -d $(PROTO_DIR)/usr/lib/samba/security$(MACHLIBDIR) ; \
-	    $(INSTALL) -m 0555 -t $(PROTO_DIR)/usr/lib/samba/security$(MACHLIBDIR) bin/shared/pam_*.so* ; \
-	    $(INSTALL) -d $(PROTO_DIR)/usr/lib/samba/private$(MACHLIBDIR) ; \
-	    $(INSTALL) -m 0555 -t $(PROTO_DIR)/usr/lib/samba/private$(MACHLIBDIR) bin/shared/private/*.so* \
-	"
-	$(TOUCH) $@
+RMRPATH= 		$(ELFEDIT) -e "dyn:delete RUNPATH" -e "dyn:delete RPATH"
 
-REQUIRED_PACKAGES += library/desktop/search/tracker
-REQUIRED_PACKAGES += library/file-monitor/gamin
-REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gnutls-3
-REQUIRED_PACKAGES += library/icu
-REQUIRED_PACKAGES += library/jansson
-REQUIRED_PACKAGES += library/libarchive
-REQUIRED_PACKAGES += library/perl-5/parse-yapp
-REQUIRED_PACKAGES += library/python/iso8601
-REQUIRED_PACKAGES += library/print/cups-libs
-REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += $(PERL_PKG)
+COMPONENT_POST_INSTALL_ACTION.64+=	\
+	echo "Creating $(PROTO_DIR)/etc/samba/smb.conf-example"; \
+	$(MKDIR) $(PROTO_DIR)/etc/samba ; \
+	sed -f $(COMPONENT_DIR)/Solaris/smbconf.sed \
+	$(SOURCE_DIR)/examples/smb.conf.default \
+	> $(PROTO_DIR)/etc/samba/smb.conf-example; \
+	echo "Compiling .pyc's..."; \
+	$(PYTHON) -m compileall $(SAMBA_PROTO_PYDIR);
+
+COMPONENT_POST_BUILD_ACTION.32+=	\
+	echo "Copying NSS and PAM libraries..."; \
+	mkdir -p $(PROTO_DIR)$(PREFIX)/lib/ $(PROTO_DIR)$(PREFIX)/security/; \
+	cp $(BUILD_DIR_32)/bin/plugins/nss_winbind.so.1 \
+	$(PROTO_DIR)$(PREFIX)/lib/nss_winbind.so.1; \
+	cp $(BUILD_DIR_32)/bin/plugins/pam_winbind.so \
+	$(PROTO_DIR)$(PREFIX)/security/pam_winbind.so; \
+	cp $(BUILD_DIR_32)/bin/shared/libwinbind_nss_hook.so.1 \
+	$(PROTO_DIR)$(PREFIX)/lib/libwinbind_nss_hook.so.1; \
+	echo "Fixing RPATH..."; \
+	$(RMRPATH) $(PROTO_DIR)$(PREFIX)/lib/nss_winbind.so.1; \
+	$(RMRPATH) $(PROTO_DIR)$(PREFIX)/security/pam_winbind.so; \
+	$(RMRPATH) $(PROTO_DIR)$(PREFIX)/lib/libwinbind_nss_hook.so.1;
+
+#
+# Feed transforms/autopyc with PYVER
+#
+PKG_MACROS += PYVER=$(PYTHON_VERSION)
+
 REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += security/kerberos-5
-REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/libdbus
+REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += library/jansson
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/avahi
 REQUIRED_PACKAGES += system/network/ldap/openldap
+REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += library/print/cups-libs
+REQUIRED_PACKAGES += library/icu
+REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/desktop/search/tracker
+REQUIRED_PACKAGES += library/file-monitor/gamin
+REQUIRED_PACKAGES += library/libarchive
+REQUIRED_PACKAGES += system/core-os

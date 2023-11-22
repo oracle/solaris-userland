@@ -29,21 +29,8 @@
 # smbprofiles man
 <transform file path=.+/man/.+/profiles.1$ -> drop>
 
-# add to heap: ^file|^link|^dir .*path=etc/samba/|^dir .*path=var/samba/
-<transform dir path=^(?!(etc|var)/samba/.*) -> drop>
-
-# avoid of: 64-bit object 'usr/lib/samba/(s)bin/...' in 32-bit path
-<transform file path=usr/lib/samba/(s)?bin/.+ -> default pkg.linted.userland.action001.2 True>
-<transform file path=usr/lib/samba/samba/smbspool_krb5_wrapper -> default pkg.linted.userland.action001.2 True>
-
-# iso8601 was originally missing as dep. to run.py Now it is part of CBE but I do not want to extend
-<transform file path=usr/lib/python3.11/vendor-packages/samba/samba/subunit/run.* -> drop>
-# many deps are missing to raw_protocol.py
-<transform file path=usr/lib/python3.11/vendor-packages/(64/)?samba/samba/tests/dcerpc/raw_protocol.* -> drop>
-
-# bypass strange dependencies
+# bypass strange dependencies (depend doesn't find gp/__init__.py)
 <transform file path=usr/lib/samba/sbin/samba-gpupdate -> default pkg.depend.bypass-generate .*>
-<transform file path=usr/lib/python3.11/vendor-packages/samba/samba/tests/krb5/.+\.py -> default pkg.depend.bypass-generate .*>
 
 # mediated links macros to switch between Samba 4 and possibly any forked release
 <transform link target=.*/lib/samba/(s)?bin/.+ -> default mediator samba >
@@ -64,13 +51,5 @@
 # exclude: path=opt
 <transform file link path=opt/.* -> drop>
 
-# cpython
-#<transform file path=^(.+)\.cpython-.+\.so(.*)$ -> emit file path=%<1>.so%<2>>
-#<transform link path=^(.+)\.cpython-.+\.so(.*)$ target=^(.+)\.cpython-.+\.so(.*)$ -> emit link path=%<1>.so%<2> target=%<3>.so%<4>>
-#<transform file link path=^.+\.cpython-.+\..+$ -> drop>
-
-# drop .pyc's
-<transform file path=.+\.pyc$ -> drop>
-
-# This is workaround for bug 32667496
-<transform file path=Solaris -> drop>
+# Handle PEP 3149 - ABI version tagged .so files (remove cpython-311 version tags)
+<transform file path=.+\.cpython-311\.so$ -> edit path \\.cpython-311\\.so$ .so>
