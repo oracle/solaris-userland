@@ -26,19 +26,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		installer
-COMPONENT_VERSION=	0.5.1
+COMPONENT_VERSION=	0.7.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a488179fb15dae76c3e933d3a0a9b7ca5b01efebc28cf9a776e1bf44e6c3aebb
+    sha256:a26d3e3116289bb08216e0d0f7d925fcef0b0194eedfa0c944bcaaa106c4b631
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://installer.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	python-mod/installer
 COMPONENT_ANITYA_ID=	197662
-COMPONENT_BAID=		119209
+COMPONENT_BAID=		154742
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
