@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -55,7 +55,7 @@ COMPONENT_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
 COMPONENT_TEST_ENV +=	http_proxy=""
 COMPONENT_TEST_ENV +=	https_proxy=""
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/^\#/p" '

@@ -1,0 +1,17 @@
+A patch taken from:
+https://git.gnunet.org/libmicrohttpd.git/commit/?id=6d6846e20bfdf4b3eb1b592c97520a532f724238
+
+This change fixes issue described at:
+https://github.com/0xhebi/CVEs/blob/main/GNU%20Libmicrohttpd/CVE-2023-27371.md
+
+--- libmicrohttpd-0.9.52/src/microhttpd/postprocessor.c.prev	2023-11-10 16:28:28.258490916 +0100
++++ libmicrohttpd-0.9.52/src/microhttpd/postprocessor.c	2023-11-10 16:29:26.878880609 +0100
+@@ -309,7 +309,7 @@
+ 	return NULL; /* failed to determine boundary */
+       boundary += strlen ("boundary=");
+       blen = strlen (boundary);
+-      if ( (blen == 0) ||
++      if ( (blen < 2) ||
+            (blen * 2 + 2 > buffer_size) )
+         return NULL;            /* (will be) out of memory or invalid boundary */
+       if ( (boundary[0] == '"') &&
