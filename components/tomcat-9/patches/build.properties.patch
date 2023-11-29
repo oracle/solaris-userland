@@ -4,9 +4,14 @@ Patch status: Solaris-specific; not suitable for upstream
 Redirects build process to use local archives instead of downloading
 from external webs.
 
---- apache-tomcat-9.0.80-src/build.properties.default
-+++ apache-tomcat-9.0.80-src/build.properties.default
-@@ -122,6 +122,12 @@
+Forces older version of bnd as new version 7.0.0 is built for JDK 17
+("class file has wrong version 61.0, should be 52.0" issue).
+Note that bnd is used for creating OSGi metadata in JAR files only
+(it's not part of distribution).
+
+--- apache-tomcat-9.0.83-src/build.properties.default
++++ apache-tomcat-9.0.83-src/build.properties.default
+@@ -122,6 +122,12 @@ base-maven.loc=https://repo.maven.apache
  # Mirror, was used when there were problems with the main SF downloads site
  # base-sf.loc=https://sunet.dl.sourceforge.net
  
@@ -19,7 +24,7 @@ from external webs.
  # ----- Webservices - JAX RPC -----
  jaxrpc-lib.version=1.1-rc4
  jaxrpc-lib.checksum.enabled=true
-@@ -129,7 +135,7 @@
+@@ -129,7 +135,7 @@ jaxrpc-lib.checksum.algorithm=MD5|SHA-1
  jaxrpc-lib.checksum.value=4bebba22a4cdb9f68e16c45129770333|fe9371d33dc3e1646d4d13bde19614283eb998b1
  jaxrpc-lib.home=${base.path}/jaxrpc-${jaxrpc-lib.version}
  jaxrpc-lib.jar=${jaxrpc-lib.home}/geronimo-spec-jaxrpc-${jaxrpc-lib.version}.jar
@@ -28,7 +33,7 @@ from external webs.
  
  # ----- Webservices - WSDL4J -----
  wsdl4j-lib.version=1.6.3
-@@ -138,7 +144,7 @@
+@@ -138,7 +144,7 @@ wsdl4j-lib.checksum.algorithm=MD5|SHA-1
  wsdl4j-lib.checksum.value=cfc28d89625c5e88589aec7a9aee0208|6d106a6845a3d3477a1560008479312888e94f2f
  wsdl4j-lib.home=${base.path}/wsdl4j-${wsdl4j-lib.version}
  wsdl4j-lib.jar=${wsdl4j-lib.home}/wsdl4j-${wsdl4j-lib.version}.jar
@@ -37,7 +42,7 @@ from external webs.
  
  # ----- Eclipse JDT, version 4.7 or later -----#
  # See https://cwiki.apache.org/confluence/display/TOMCAT/Managing+Tomcat%27s+Dependency+on+the+Eclipse+JDT+Core+Batch+Compiler
-@@ -152,13 +158,13 @@
+@@ -152,13 +158,13 @@ # https://download.eclipse.org/eclipse/d
  #
  jdt.version=4.20
  jdt.release=R-4.20-202106111600
@@ -53,7 +58,19 @@ from external webs.
  jdt.loc.2=http://download.eclipse.org/eclipse/downloads/drops4/${jdt.release}/ecj-${jdt.version}.jar
  
  # ----- Tomcat native library -----
-@@ -314,6 +320,7 @@
+@@ -304,16 +310,17 @@ spotbugs.loc=${base-maven.loc}/com/githu
+ 
+ # ----- bnd, version 6.3.0 or later  -----
+ # ----- provides OSGI metadata for JARs       -----
+-bnd.version=7.0.0
++bnd.version=6.4.1
+ 
+ # checksums for biz.aQute.bnd-6.4.1.jar
+ bnd.checksum.enabled=true
+ bnd.checksum.algorithm=MD5|SHA-1
+-bnd.checksum.value=654776477ed942fc53f581fec66e253a|9937f6b7528628964a4ab8e50ba6b964d0310bce
++bnd.checksum.value=78a21ab586850832a78342b8d0a99f64|91f28d145a1284f270a3d2cdc886863460c89833
+ 
  bnd.home=${base.path}/bnd-${bnd.version}
  bnd.jar=${bnd.home}/biz.aQute.bnd-${bnd.version}.jar
  bnd.loc=${base-maven.loc}/biz/aQute/bnd/biz.aQute.bnd/${bnd.version}/biz.aQute.bnd-${bnd.version}.jar
@@ -61,7 +78,7 @@ from external webs.
  
  # ----- JSign, version 4.1 or later -----
  jsign.version=5.0
-@@ -348,3 +355,11 @@
+@@ -348,3 +355,11 @@ derby-shared.jar=${derby.home}/derby-sha
  derby-shared.loc=${base-maven.loc}/org/apache/derby/derbyshared/${derby.version}/derbyshared-${derby.version}.jar
  derby-tools.jar=${derby.home}/derby-tools-${derby.version}.jar
  derby-tools.loc=${base-maven.loc}/org/apache/derby/derbytools/${derby.version}/derbytools-${derby.version}.jar
