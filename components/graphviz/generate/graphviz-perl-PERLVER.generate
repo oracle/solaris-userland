@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
 # delete everything not belonging to this package
-<transform file link pkg.type=(?!graphviz) -> drop>
+<transform file link pkg.type=(?!perl) -> drop>
 <transform file link -> delete pkg.type .*>
 
-# Do not add 32 bit versions of binaries
-<transform path=usr/bin/\$\(MACH32\)/.+ -> drop>
+# Manifest lists files with generic $(PERLVER) and $(PERL_ARCH) variables.
+<transform file path=.* -> edit path "5.\d\d" \$\(PERLVER\)>
+<transform file path=.* -> edit path $(PERL_ARCH) \$\(PERL_ARCH\)>
 
-# Emit additional link for the config6 file
-<transform file path=usr/lib/graphviz/config6 \
-	-> emit link path=usr/lib/$!(MACH64)/graphviz/config6 target=../../graphviz/config6>
-<transform link -> edit path "\$!\((.*)\)" "$(\1)">
-
-# We don't need to deliver internal todo
-<transform file path=.*/internal_todo.html$ -> drop>
+# deduplication
+<transform file path=(.*/vendor_perl/.*/gv.so)$ -> \
+	emit link path=%<1> target=../../../../lib/$(MACH64)/graphviz/perl/libgv_perl.so>
+<transform file path=(.*/vendor_perl/.*/gv.pm)$ -> \
+	emit link path=%<1> target=../../../../lib/$(MACH64)/graphviz/perl/gv.pm>
+<transform file path=.*/vendor_perl/.*/gv.(so|pm)$ -> drop>

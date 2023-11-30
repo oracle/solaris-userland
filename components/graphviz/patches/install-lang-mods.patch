@@ -3,35 +3,16 @@ Allow language modules to be installed in the right place.
 For Python, ensure the use of the vendor-packages directory, as well as the
 use of a 64-bit-specific directory, as needed.
 
-For Lua, the appropriate variable will need to be set during installation,
-since there's no corresponding config_lua.lua file.
-
 This is an in-house Solaris specific patch not intended for upstream.
 
---- graphviz-2.47.1/config/config_python.py
-+++ graphviz-2.47.1/config/config_python.py
-@@ -6,7 +6,8 @@ if sys.argv[1] == "archlib":
- elif sys.argv[1] == "lib":
-     print(sysconfig.get_python_lib(0,1))
- elif sys.argv[1] == "archsitelib":
--    print(sysconfig.get_python_lib(1,0))
-+    pyver = ".".join(str(i) for i in sys.version_info[:2])
-+    print("/usr/lib/python{}/vendor-packages".format(pyver))
- elif sys.argv[1] == "sitelib":
-     print(sysconfig.get_python_lib(0,0))
- 
---- graphviz-2.47.1/tclpkg/Makefile.am
-+++ graphviz-2.47.1/tclpkg/Makefile.am
-@@ -34,9 +34,9 @@ pkgIndex.tcl: @TCL_PKGINDEX@ @TCL_PKGIND
- # without root privileges.
- install-data-hook:
- if WITH_LUA
--	-mkdir -p $(DESTDIR)@LUA_INSTALL_DIR@;
--	if test -w $(DESTDIR)@LUA_INSTALL_DIR@; then \
--		(cd $(DESTDIR)@LUA_INSTALL_DIR@; \
-+	-mkdir -p $(DESTDIR)$(LUA_INSTALL_DIR);
-+	if test -w $(DESTDIR)$(LUA_INSTALL_DIR); then \
-+		(cd $(DESTDIR)$(LUA_INSTALL_DIR); \
- 			cp -f $(DESTDIR)$(pkgluadir)/libgv_lua.so gv.so;) \
- 	else \
- 		echo "Warning: @LUA_INSTALL_DIR@ is not writable."; \
+--- graphviz-9.0.0/configure.ac
++++ graphviz-9.0.0/configure.ac
+@@ -1088,7 +1088,7 @@ else
+ 	           use_python3="No (python-$PYTHON3_VERSION.pc not found)"
+           fi
+         fi
+-        PYTHON3_INSTALL_DIR="`$PYTHON3 -c 'import sysconfig; print(sysconfig.get_path("platlib"))'`"
++        PYTHON3_INSTALL_DIR="/usr/lib/python${PYTHON3_VERSION}/vendor-packages"
+         save_CPPFLAGS=$CPPFLAGS
+         CPPFLAGS="$CPPFLAGS $PYTHON3_INCLUDES"
+         AC_CHECK_HEADER(Python.h,,[

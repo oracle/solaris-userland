@@ -20,22 +20,24 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
 # delete everything not belonging to this package
-<transform file link pkg.type=(?!graphviz) -> drop>
+<transform file link pkg.type=(?!php82) -> drop>
 <transform file link -> delete pkg.type .*>
 
-# Do not add 32 bit versions of binaries
-<transform path=usr/bin/\$\(MACH32\)/.+ -> drop>
+# generate additional links that match packaging expectations
+<transform file path=(.*)/libgv_php82.so$ -> \
+	emit link path=%<1>/libgv_php.so target=libgv_php82.so mediator=php mediator-version=8.2 pkg.type=php82>
+<transform file path=(.*)/libgv_php82.so$ -> \
+	emit link path=%<1>/gv-82.so target=libgv_php82.so pkg.type=php82>
+<transform file path=(.*)/libgv_php82.so$ -> \
+	emit link path=%<1>/gv.so target=gv-82.so mediator=php mediator-version=8.2 pkg.type=php82>
 
-# Emit additional link for the config6 file
-<transform file path=usr/lib/graphviz/config6 \
-	-> emit link path=usr/lib/$!(MACH64)/graphviz/config6 target=../../graphviz/config6>
-<transform link -> edit path "\$!\((.*)\)" "$(\1)">
-
-# We don't need to deliver internal todo
-<transform file path=.*/internal_todo.html$ -> drop>
+# deduplication
+<transform file path=(.*/extensions/.*/gv.so)$ -> \
+	emit link path=%<1> target=../../../../../lib/$(MACH64)/graphviz/php/libgv_php82.so>
+<transform file path=.*/extensions/.*/gv.so$ -> drop>

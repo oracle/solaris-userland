@@ -46,7 +46,6 @@ file path=usr/bin/dijkstra
 file path=usr/bin/dot
 link path=usr/bin/dot2gxl target=gxl2gv
 file path=usr/bin/dot_builtins
-file path=usr/bin/dotty
 file path=usr/bin/edgepaint
 link path=usr/bin/fdp target=dot
 file path=usr/bin/gc
@@ -62,8 +61,6 @@ file path=usr/bin/gvpack
 file path=usr/bin/gvpr
 link path=usr/bin/gxl2dot target=gxl2gv
 file path=usr/bin/gxl2gv
-file path=usr/bin/lefty
-file path=usr/bin/lneato
 file path=usr/bin/mm2gv
 link path=usr/bin/neato target=dot
 file path=usr/bin/nop
@@ -134,6 +131,11 @@ link path=usr/lib/$(MACH64)/graphviz/libgvplugin_gtk.so \
 link path=usr/lib/$(MACH64)/graphviz/libgvplugin_gtk.so.6 \
     target=libgvplugin_gtk.so.6.0.0
 file path=usr/lib/$(MACH64)/graphviz/libgvplugin_gtk.so.6.0.0
+link path=usr/lib/$(MACH64)/graphviz/libgvplugin_kitty.so \
+    target=libgvplugin_kitty.so.6.0.0
+link path=usr/lib/$(MACH64)/graphviz/libgvplugin_kitty.so.6 \
+    target=libgvplugin_kitty.so.6.0.0
+file path=usr/lib/$(MACH64)/graphviz/libgvplugin_kitty.so.6.0.0
 link path=usr/lib/$(MACH64)/graphviz/libgvplugin_neato_layout.so \
     target=libgvplugin_neato_layout.so.6.0.0
 link path=usr/lib/$(MACH64)/graphviz/libgvplugin_neato_layout.so.6 \
@@ -154,11 +156,11 @@ link path=usr/lib/$(MACH64)/graphviz/libgvplugin_rsvg.so \
 link path=usr/lib/$(MACH64)/graphviz/libgvplugin_rsvg.so.6 \
     target=libgvplugin_rsvg.so.6.0.0
 file path=usr/lib/$(MACH64)/graphviz/libgvplugin_rsvg.so.6.0.0
-link path=usr/lib/$(MACH64)/graphviz/libgvplugin_visio.so \
-    target=libgvplugin_visio.so.6.0.0
-link path=usr/lib/$(MACH64)/graphviz/libgvplugin_visio.so.6 \
-    target=libgvplugin_visio.so.6.0.0
-file path=usr/lib/$(MACH64)/graphviz/libgvplugin_visio.so.6.0.0
+link path=usr/lib/$(MACH64)/graphviz/libgvplugin_vt.so \
+    target=libgvplugin_vt.so.6.0.0
+link path=usr/lib/$(MACH64)/graphviz/libgvplugin_vt.so.6 \
+    target=libgvplugin_vt.so.6.0.0
+file path=usr/lib/$(MACH64)/graphviz/libgvplugin_vt.so.6.0.0
 link path=usr/lib/$(MACH64)/graphviz/libgvplugin_webp.so \
     target=libgvplugin_webp.so.6.0.0
 link path=usr/lib/$(MACH64)/graphviz/libgvplugin_webp.so.6 \
@@ -219,6 +221,11 @@ file path=usr/lib/graphviz/libgvplugin_gs.so.6.0.0
 link path=usr/lib/graphviz/libgvplugin_gtk.so target=libgvplugin_gtk.so.6.0.0
 link path=usr/lib/graphviz/libgvplugin_gtk.so.6 target=libgvplugin_gtk.so.6.0.0
 file path=usr/lib/graphviz/libgvplugin_gtk.so.6.0.0
+link path=usr/lib/graphviz/libgvplugin_kitty.so \
+    target=libgvplugin_kitty.so.6.0.0
+link path=usr/lib/graphviz/libgvplugin_kitty.so.6 \
+    target=libgvplugin_kitty.so.6.0.0
+file path=usr/lib/graphviz/libgvplugin_kitty.so.6.0.0
 link path=usr/lib/graphviz/libgvplugin_neato_layout.so \
     target=libgvplugin_neato_layout.so.6.0.0
 link path=usr/lib/graphviz/libgvplugin_neato_layout.so.6 \
@@ -234,11 +241,9 @@ link path=usr/lib/graphviz/libgvplugin_poppler.so \
 link path=usr/lib/graphviz/libgvplugin_poppler.so.6 \
     target=libgvplugin_poppler.so.6.0.0
 file path=usr/lib/graphviz/libgvplugin_poppler.so.6.0.0
-link path=usr/lib/graphviz/libgvplugin_visio.so \
-    target=libgvplugin_visio.so.6.0.0
-link path=usr/lib/graphviz/libgvplugin_visio.so.6 \
-    target=libgvplugin_visio.so.6.0.0
-file path=usr/lib/graphviz/libgvplugin_visio.so.6.0.0
+link path=usr/lib/graphviz/libgvplugin_vt.so target=libgvplugin_vt.so.6.0.0
+link path=usr/lib/graphviz/libgvplugin_vt.so.6 target=libgvplugin_vt.so.6.0.0
+file path=usr/lib/graphviz/libgvplugin_vt.so.6.0.0
 link path=usr/lib/graphviz/libgvplugin_webp.so target=libgvplugin_webp.so.6.0.0
 link path=usr/lib/graphviz/libgvplugin_webp.so.6 \
     target=libgvplugin_webp.so.6.0.0
@@ -275,90 +280,81 @@ file path=usr/lib/pkgconfig/libgvpr.pc
 file path=usr/lib/pkgconfig/liblab_gamut.pc
 file path=usr/lib/pkgconfig/libpathplan.pc
 file path=usr/lib/pkgconfig/libxdot.pc
-file path=usr/share/graphviz/doc/AUTHORS
-file path=usr/share/graphviz/doc/CHANGELOG.md
-file path=usr/share/graphviz/doc/COPYING
-file path=usr/share/graphviz/doc/Dot.ref
-file path=usr/share/graphviz/doc/NEWS
-file path=usr/share/graphviz/doc/addingLayout.txt
-file path=usr/share/graphviz/doc/cpl1.0.txt
-file path=usr/share/graphviz/doc/fontfaq.txt
-file path=usr/share/graphviz/doc/html/FAQ.html
-file path=usr/share/graphviz/doc/html/build.html
-file path=usr/share/graphviz/doc/html/char.html
-file path=usr/share/graphviz/doc/html/gdtclft.entities.example.png
-file path=usr/share/graphviz/doc/html/index.html
-file path=usr/share/graphviz/doc/html/info/arrows.html
-file path=usr/share/graphviz/doc/html/info/attrs.html
-file path=usr/share/graphviz/doc/html/info/colors.html
-file path=usr/share/graphviz/doc/html/info/command.html
-file path=usr/share/graphviz/doc/html/info/index.html
-file path=usr/share/graphviz/doc/html/info/lang.html
-file path=usr/share/graphviz/doc/html/info/output.html
-file path=usr/share/graphviz/doc/html/info/shapes.html
-file path=usr/share/graphviz/doc/html/pspdf.png
-file path=usr/share/graphviz/doc/html/schema/arguments.xml
-file path=usr/share/graphviz/doc/html/schema/attributes.xml
-file path=usr/share/graphviz/doc/html/schema/attributes.xslt
-file path=usr/share/graphviz/doc/html/tcldot.html
-file path=usr/share/graphviz/doc/html/todo.html
-file path=usr/share/graphviz/doc/html/winbuild.html
-file path=usr/share/graphviz/doc/latex_suggestions.txt
-file path=usr/share/graphviz/doc/pdf/Agraph.pdf
-file path=usr/share/graphviz/doc/pdf/acyclic.1.pdf
-file path=usr/share/graphviz/doc/pdf/bcomps.1.pdf
-file path=usr/share/graphviz/doc/pdf/ccomps.1.pdf
-file path=usr/share/graphviz/doc/pdf/cdt.3.pdf
-file path=usr/share/graphviz/doc/pdf/cgraph.3.pdf
-link path=usr/share/graphviz/doc/pdf/circo.1.pdf target=dot.1.pdf
-file path=usr/share/graphviz/doc/pdf/cluster.1.pdf
-file path=usr/share/graphviz/doc/pdf/diffimg.1.pdf
-file path=usr/share/graphviz/doc/pdf/dijkstra.1.pdf
-file path=usr/share/graphviz/doc/pdf/dot.1.pdf
-link path=usr/share/graphviz/doc/pdf/dot2gxl.1.pdf target=gv2gxl.1.pdf
-file path=usr/share/graphviz/doc/pdf/dotguide.pdf
-file path=usr/share/graphviz/doc/pdf/dotty.1.pdf
-file path=usr/share/graphviz/doc/pdf/dottyguide.pdf
-file path=usr/share/graphviz/doc/pdf/edgepaint.1.pdf
-file path=usr/share/graphviz/doc/pdf/expr.3.pdf
-link path=usr/share/graphviz/doc/pdf/fdp.1.pdf target=dot.1.pdf
-file path=usr/share/graphviz/doc/pdf/gc.1.pdf
-file path=usr/share/graphviz/doc/pdf/gml2gv.1.pdf
-file path=usr/share/graphviz/doc/pdf/graphml2gv.1.pdf
-link path=usr/share/graphviz/doc/pdf/gv2gml.1.pdf target=gml2gv.1.pdf
-link path=usr/share/graphviz/doc/pdf/gv2gxl.1.pdf target=gxl2gv.1.pdf
-file path=usr/share/graphviz/doc/pdf/gvc.3.pdf
-file path=usr/share/graphviz/doc/pdf/gvcolor.1.pdf
-file path=usr/share/graphviz/doc/pdf/gvgen.1.pdf
-file path=usr/share/graphviz/doc/pdf/gvmap.1.pdf
-file path=usr/share/graphviz/doc/pdf/gvmap.sh.1.pdf
-file path=usr/share/graphviz/doc/pdf/gvpack.1.pdf
-file path=usr/share/graphviz/doc/pdf/gvpr.1.pdf
-file path=usr/share/graphviz/doc/pdf/gvpr.3.pdf
-link path=usr/share/graphviz/doc/pdf/gxl2dot.1.pdf target=gxl2gv.1.pdf
-file path=usr/share/graphviz/doc/pdf/gxl2gv.1.pdf
-file path=usr/share/graphviz/doc/pdf/lefty.1.pdf
-file path=usr/share/graphviz/doc/pdf/leftyguide.pdf
-file path=usr/share/graphviz/doc/pdf/libguide.pdf
-file path=usr/share/graphviz/doc/pdf/lneato.1.pdf
-file path=usr/share/graphviz/doc/pdf/mingle.1.pdf
-file path=usr/share/graphviz/doc/pdf/mm2gv.1.pdf
-link path=usr/share/graphviz/doc/pdf/neato.1.pdf target=dot.1.pdf
-file path=usr/share/graphviz/doc/pdf/neatoguide.pdf
-file path=usr/share/graphviz/doc/pdf/nop.1.pdf
-file path=usr/share/graphviz/doc/pdf/osage.1.pdf
-file path=usr/share/graphviz/doc/pdf/pack.3.pdf
-file path=usr/share/graphviz/doc/pdf/patchwork.1.pdf
-file path=usr/share/graphviz/doc/pdf/pathplan.3.pdf
-file path=usr/share/graphviz/doc/pdf/prune.1.pdf
-file path=usr/share/graphviz/doc/pdf/sccmap.1.pdf
-link path=usr/share/graphviz/doc/pdf/sfdp.1.pdf target=dot.1.pdf
-file path=usr/share/graphviz/doc/pdf/smyrna.pdf
-file path=usr/share/graphviz/doc/pdf/tred.1.pdf
-link path=usr/share/graphviz/doc/pdf/twopi.1.pdf target=dot.1.pdf
-file path=usr/share/graphviz/doc/pdf/unflatten.1.pdf
-file path=usr/share/graphviz/doc/pdf/vimdot.1.pdf
-file path=usr/share/graphviz/doc/pdf/xdot.3.pdf
+file path=usr/share/doc/graphviz/AUTHORS
+file path=usr/share/doc/graphviz/Agraph.pdf
+file path=usr/share/doc/graphviz/CHANGELOG.md
+file path=usr/share/doc/graphviz/COPYING
+file path=usr/share/doc/graphviz/Dot.ref
+file path=usr/share/doc/graphviz/FAQ.html
+file path=usr/share/doc/graphviz/NEWS
+file path=usr/share/doc/graphviz/acyclic.1.pdf
+file path=usr/share/doc/graphviz/bcomps.1.pdf
+file path=usr/share/doc/graphviz/build.html
+file path=usr/share/doc/graphviz/ccomps.1.pdf
+file path=usr/share/doc/graphviz/cdt.3.pdf
+file path=usr/share/doc/graphviz/cgraph.3.pdf
+file path=usr/share/doc/graphviz/char.html
+link path=usr/share/doc/graphviz/circo.1.pdf target=dot.1.pdf
+file path=usr/share/doc/graphviz/cluster.1.pdf
+file path=usr/share/doc/graphviz/cpl1.0.txt
+file path=usr/share/doc/graphviz/diffimg.1.pdf
+file path=usr/share/doc/graphviz/dijkstra.1.pdf
+file path=usr/share/doc/graphviz/dot.1.pdf
+link path=usr/share/doc/graphviz/dot2gxl.1.pdf target=gxl2gv.1.pdf
+file path=usr/share/doc/graphviz/dotguide.pdf
+file path=usr/share/doc/graphviz/edgepaint.1.pdf
+file path=usr/share/doc/graphviz/expr.3.pdf
+link path=usr/share/doc/graphviz/fdp.1.pdf target=dot.1.pdf
+file path=usr/share/doc/graphviz/gc.1.pdf
+file path=usr/share/doc/graphviz/gdtclft.entities.example.png
+file path=usr/share/doc/graphviz/gml2gv.1.pdf
+file path=usr/share/doc/graphviz/graphml2gv.1.pdf
+link path=usr/share/doc/graphviz/gv2gml.1.pdf target=gml2gv.1.pdf
+link path=usr/share/doc/graphviz/gv2gxl.1.pdf target=gxl2gv.1.pdf
+file path=usr/share/doc/graphviz/gvc.3.pdf
+file path=usr/share/doc/graphviz/gvcolor.1.pdf
+file path=usr/share/doc/graphviz/gvgen.1.pdf
+file path=usr/share/doc/graphviz/gvmap.1.pdf
+file path=usr/share/doc/graphviz/gvmap.sh.1.pdf
+file path=usr/share/doc/graphviz/gvpack.1.pdf
+file path=usr/share/doc/graphviz/gvpr.1.pdf
+file path=usr/share/doc/graphviz/gvpr.3.pdf
+link path=usr/share/doc/graphviz/gxl2dot.1.pdf target=gxl2gv.1.pdf
+file path=usr/share/doc/graphviz/gxl2gv.1.pdf
+file path=usr/share/doc/graphviz/index.html
+file path=usr/share/doc/graphviz/info/arrows.html
+file path=usr/share/doc/graphviz/info/attrs.html
+file path=usr/share/doc/graphviz/info/colors.html
+file path=usr/share/doc/graphviz/info/command.html
+file path=usr/share/doc/graphviz/info/index.html
+file path=usr/share/doc/graphviz/info/lang.html
+file path=usr/share/doc/graphviz/info/output.html
+file path=usr/share/doc/graphviz/info/shapes.html
+file path=usr/share/doc/graphviz/latex_suggestions.txt
+file path=usr/share/doc/graphviz/libguide.pdf
+file path=usr/share/doc/graphviz/mm2gv.1.pdf
+link path=usr/share/doc/graphviz/neato.1.pdf target=dot.1.pdf
+file path=usr/share/doc/graphviz/neatoguide.pdf
+file path=usr/share/doc/graphviz/nop.1.pdf
+file path=usr/share/doc/graphviz/osage.1.pdf
+file path=usr/share/doc/graphviz/pack.3.pdf
+file path=usr/share/doc/graphviz/patchwork.1.pdf
+file path=usr/share/doc/graphviz/pathplan.3.pdf
+file path=usr/share/doc/graphviz/prune.1.pdf
+file path=usr/share/doc/graphviz/pspdf.png
+file path=usr/share/doc/graphviz/sccmap.1.pdf
+file path=usr/share/doc/graphviz/schema/arguments.xml
+file path=usr/share/doc/graphviz/schema/attributes.xml
+file path=usr/share/doc/graphviz/schema/attributes.xslt
+link path=usr/share/doc/graphviz/sfdp.1.pdf target=dot.1.pdf
+file path=usr/share/doc/graphviz/tcldot.html
+file path=usr/share/doc/graphviz/todo.html
+file path=usr/share/doc/graphviz/tred.1.pdf
+link path=usr/share/doc/graphviz/twopi.1.pdf target=dot.1.pdf
+file path=usr/share/doc/graphviz/unflatten.1.pdf
+file path=usr/share/doc/graphviz/vimdot.1.pdf
+file path=usr/share/doc/graphviz/winbuild.html
+file path=usr/share/doc/graphviz/xdot.3.pdf
 file path=usr/share/graphviz/graphs/directed/KW91.gv
 file path=usr/share/graphviz/graphs/directed/Latin1.gv
 file path=usr/share/graphviz/graphs/directed/NaN.gv
@@ -456,18 +452,6 @@ file path=usr/share/graphviz/gvpr/scalexy
 file path=usr/share/graphviz/gvpr/span
 file path=usr/share/graphviz/gvpr/topon
 file path=usr/share/graphviz/gvpr/treetoclust
-file path=usr/share/graphviz/lefty/box.lefty
-file path=usr/share/graphviz/lefty/def.lefty
-file path=usr/share/graphviz/lefty/dotty.lefty
-file path=usr/share/graphviz/lefty/dotty_draw.lefty
-file path=usr/share/graphviz/lefty/dotty_edit.lefty
-file path=usr/share/graphviz/lefty/dotty_layout.lefty
-file path=usr/share/graphviz/lefty/dotty_ui.lefty
-file path=usr/share/graphviz/lefty/fractal.lefty
-file path=usr/share/graphviz/lefty/fractal2.lefty
-file path=usr/share/graphviz/lefty/lefty.psp
-file path=usr/share/graphviz/lefty/slides.lefty
-file path=usr/share/graphviz/lefty/tree.lefty
 file path=usr/share/man/man1/acyclic.1
 file path=usr/share/man/man1/bcomps.1
 file path=usr/share/man/man1/ccomps.1
@@ -476,8 +460,7 @@ file path=usr/share/man/man1/cluster.1
 file path=usr/share/man/man1/diffimg.1
 file path=usr/share/man/man1/dijkstra.1
 file path=usr/share/man/man1/dot.1
-link path=usr/share/man/man1/dot2gxl.1 target=gv2gxl.1
-file path=usr/share/man/man1/dotty.1
+link path=usr/share/man/man1/dot2gxl.1 target=gxl2gv.1
 file path=usr/share/man/man1/edgepaint.1
 link path=usr/share/man/man1/fdp.1 target=dot.1
 file path=usr/share/man/man1/gc.1
@@ -493,9 +476,6 @@ file path=usr/share/man/man1/gvpack.1
 file path=usr/share/man/man1/gvpr.1
 link path=usr/share/man/man1/gxl2dot.1 target=gxl2gv.1
 file path=usr/share/man/man1/gxl2gv.1
-file path=usr/share/man/man1/lefty.1
-file path=usr/share/man/man1/lneato.1
-file path=usr/share/man/man1/mingle.1
 file path=usr/share/man/man1/mm2gv.1
 link path=usr/share/man/man1/neato.1 target=dot.1
 file path=usr/share/man/man1/nop.1

@@ -20,22 +20,19 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
 # delete everything not belonging to this package
-<transform file link pkg.type=(?!graphviz) -> drop>
+<transform file link pkg.type=(?!ruby) -> drop>
 <transform file link -> delete pkg.type .*>
 
-# Do not add 32 bit versions of binaries
-<transform path=usr/bin/\$\(MACH32\)/.+ -> drop>
+# Manifest lists files with generic $(MACH64) variable.
+<transform file path=.* -> edit path $(MACH64) \$\(MACH64\)>
 
-# Emit additional link for the config6 file
-<transform file path=usr/lib/graphviz/config6 \
-	-> emit link path=usr/lib/$!(MACH64)/graphviz/config6 target=../../graphviz/config6>
-<transform link -> edit path "\$!\((.*)\)" "$(\1)">
-
-# We don't need to deliver internal todo
-<transform file path=.*/internal_todo.html$ -> drop>
+# deduplication
+<transform file path=(.*/vendor_ruby/.*/gv.so)$ -> \
+	emit link path=%<1> target=../../../../../../../lib/$(MACH64)/graphviz/ruby/libgv_ruby.so>
+<transform file path=.*/vendor_ruby/.*/gv.so$ -> drop>

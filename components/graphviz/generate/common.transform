@@ -1,0 +1,86 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2023, Oracle and/or its affiliates.
+#
+
+# by default everything is graphviz package
+<transform file link -> default pkg.type graphviz>
+
+# Following rules are dropping language related binding files because
+# those have their own packages.
+
+# java related files
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/java/.+ -> set pkg.type java>
+<transform file link path=usr/lib/graphviz/java/.+ -> set pkg.type java>
+<transform file link path=.+3java(|\.pdf)$ -> set pkg.type java>
+
+# lua related files
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/lua/.+ -> set pkg.type lua>
+<transform file link path=usr/lib/graphviz/lua/.+ -> set pkg.type lua>
+<transform file link path=usr/lib/lua/.+ -> set pkg.type lua>
+<transform file link path=.+3lua(|\.pdf)$ -> set pkg.type lua>
+
+# perl related files
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/perl/.+ -> set pkg.type perl>
+<transform file link path=usr/perl5/vendor_perl/.+ -> set pkg.type perl>
+<transform file link path=.+3perl(|\.pdf)$ -> set pkg.type perl>
+
+# php related files
+<transform file link path=.+3php(|\.pdf)$ -> set pkg.type phpmeta>
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/php/libgv_php(8[0-9]).so -> set pkg.type php%<1>>
+<transform file link path=usr/php/8\.([0-9])/.+ -> set pkg.type php8%<1>>
+
+# python related files
+<transform file link path=.+3python(|\.pdf)$ -> set pkg.type pythonmeta>
+<transform file link path=usr/lib/python3.([0-9]+)/.+ -> set pkg.type python3%<1>>
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/python3/.+ -> drop>
+
+# ruby related files
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/ruby/.+ -> set pkg.type ruby>
+<transform file link path=usr/ruby/.+ -> set pkg.type ruby>
+<transform file link path=.+3ruby(|\.pdf)$ -> set pkg.type ruby>
+
+# csharp related files
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/sharp/.+ -> set pkg.type csharp>
+<transform file link path=usr/lib/graphviz/sharp/.+ -> set pkg.type csharp>
+<transform file link path=.+3sharp(|\.pdf)$ -> set pkg.type csharp>
+
+# tcl related files
+<transform file link path=usr/lib/(\$\(MACH64\)/)?graphviz/tcl/.+ -> set pkg.type tcl>
+<transform file link path=usr/lib/(64/)?tcl8.6/.+ -> set pkg.type tcl>
+<transform file link path=.+3tcl(|\.pdf)$ -> set pkg.type tcl>
+
+
+# all demos are for tcl except for modgraph.* with specific extensions
+<transform file link path=usr/share/graphviz/demo/.+ -> set pkg.type tcl>
+
+<transform file path=usr/share/graphviz/demo/modgraph.lua -> set pkg.type lua>
+<transform file path=usr/share/graphviz/demo/modgraph.php -> set pkg.type phpmeta>
+<transform file path=usr/share/graphviz/demo/modgraph.pl -> set pkg.type perl>
+<transform file path=usr/share/graphviz/demo/modgraph.py -> set pkg.type pythonmeta>
+<transform file path=usr/share/graphviz/demo/modgraph.rb -> set pkg.type ruby>
+
+
+# rename man pages from gv.3<ext> to gv-<ext>.3
+<transform file path=.*/gv\.3[^.]*$ -> set action.hash %(path)>
+<transform file path=.*/gv\.3([^.]*)$ -> edit path gv.3%<1> gv-%<1>.3>

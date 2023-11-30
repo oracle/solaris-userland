@@ -20,22 +20,18 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
 # delete everything not belonging to this package
-<transform file link pkg.type=(?!graphviz) -> drop>
+<transform file link pkg.type=(?!tcl) -> drop>
 <transform file link -> delete pkg.type .*>
 
-# Do not add 32 bit versions of binaries
-<transform path=usr/bin/\$\(MACH32\)/.+ -> drop>
+# move man pages into the correct places
+<transform file path=.*/.*\.3tcl$ -> set action.hash %(path)>
+<transform file path=.*/.*\.3tcl$ -> edit path /man3/ /man3tcl/>
 
-# Emit additional link for the config6 file
-<transform file path=usr/lib/graphviz/config6 \
-	-> emit link path=usr/lib/$!(MACH64)/graphviz/config6 target=../../graphviz/config6>
-<transform link -> edit path "\$!\((.*)\)" "$(\1)">
-
-# We don't need to deliver internal todo
-<transform file path=.*/internal_todo.html$ -> drop>
+# drop duplicate files and create links instead (via the static file)
+<transform file path=usr/lib/(64/)?tcl8.6/.+ -> drop>

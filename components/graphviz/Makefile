@@ -28,17 +28,17 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = graphviz
-COMPONENT_VERSION     = 2.47.1
+COMPONENT_VERSION     = 9.0.0
 COMPONENT_PROJECT_URL = http://www.graphviz.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:513765332d45c3e4ddc539aed4bbaf536e86bd87946d3fea25201c3cb7afc31a
+    sha256:504d19b5d0e5398a57e9d9de42393f90b9e79aff0969b4ebc3b891ccb39602ed
 COMPONENT_ARCHIVE_URL = \
     http://gitlab.com/graphviz/graphviz/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID   = 1249
 
-COMPONENT_BAID = 100932
+COMPONENT_BAID = 155072
 
 COMPONENT_PREP_ACTION += \
 	( cd $(@D) ; PATH="$(PATH)" $(CONFIG_SHELL) autogen.sh NOCONFIG)
@@ -50,39 +50,34 @@ PERL_VERSIONS = $(PERL_VERSION)
 # the install targets appropriately.
 INSTALL_TARGET = $(INSTALL_$(MK_BITS))
 INSTALL_TARGET += $(PROTOUSRLIBDIR)/graphviz/config6
-INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)/gv.pyc
-INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.9.VENDOR_PACKAGES)/gv.pyc
-INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.11.VENDOR_PACKAGES)/gv.pyc
+
+# The test infrastructure doesn't run well in our out-of-source build
+# environment. The system test, on the other hand, is trivial to run.
+TEST_TARGET = $(SKIP_TEST)
+SYSTEM_TEST_TARGET = $(SYSTEM_TEST_64)
 
 include $(WS_MAKE_RULES)/common.mk
 
 PATH =		/usr/php/8.2/bin:/usr/bin:/usr/gnu/bin
 
-# GMP header files for the guile extension (no --with- flag)
-# The guile build is broken with studio (15732452), so we disable this for now.
-# CPPFLAGS +=	-I/usr/include/gmp
 # Java header files (--with-javaincludedir allows for only one directory)
 CPPFLAGS +=	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/solaris
 
-# Make sure to use the right python, depending on the 32/64-bit build.
 CONFIGURE_ENV +=	PYTHON3=$(PYTHON.3.9)
+CONFIGURE_ENV +=	PYTHON3_INSTALL_DIR=$(PYTHON.3.9.VENDOR_PACKAGES)
 CONFIGURE_OPTIONS +=	--without-included-ltdl
-CONFIGURE_OPTIONS +=    --with-qt=no
+CONFIGURE_OPTIONS +=	--with-qt=no
 CONFIGURE_OPTIONS +=	--enable-go=no
 CONFIGURE_OPTIONS +=	--enable-ocaml=no
 CONFIGURE_OPTIONS +=	--enable-python=no
-CONFIGURE_OPTIONS +=	--enable-python2=no
 CONFIGURE_OPTIONS +=	--enable-python3=yes
 CONFIGURE_OPTIONS +=	--enable-tcl=yes
 CONFIGURE_OPTIONS +=	--x-libraries=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS +=	--with-gdincludedir=$(USRINCDIR)/gd2
 CONFIGURE_OPTIONS +=	--enable-man-pdfs
+CONFIGURE_OPTIONS +=	MAKE=$(GMAKE)
 
-# Makefile.am files of this component are not compatible with Solaris make.
-# Use GNU make to avoid the configuration error when makefile fragments are processed.
-CONFIGURE_OPTIONS +=  MAKE=$(GMAKE)
-
-COMPONENT_BUILD_ARGS += 	GREP=$(USRBINDIR)/ggrep
+COMPONENT_BUILD_ARGS +=	GREP=$(USRBINDIR)/ggrep
 
 # perl, ruby, php ship 64-bit only.
 $(CONFIGURE_32): CONFIGURE_OPTIONS +=	--enable-perl=no
@@ -102,10 +97,14 @@ $(CONFIGURE_64): CONFIGURE_ENV += 	TCLCONFIG=$(USRLIBDIR)/$(MACH64)/tclConfig.sh
 # Put the 64-bit lua module in a 64-bit directory.
 $(INSTALL_32): COMPONENT_INSTALL_ARGS += LUA_INSTALL_DIR=$(USRLIBDIR)/lua/5.4
 $(INSTALL_64): COMPONENT_INSTALL_ARGS += LUA_INSTALL_DIR=$(USRLIBDIR)/lua/5.4/64
+
 # Use GNU ln, which supports the -r (--relative) option.
 COMPONENT_INSTALL_ARGS += LN_S="gln -s"
 
-# build php and python modules for older versions as well
+# Build php and python modules for multiple versions. As graphviz doesn't
+# support that, we have to handle all that manually below.
+
+# Convenience variables for later use.
 PHP_81_CONFIG = /usr/php/8.1/bin/php-config
 PHP_81_INCLUDES := $(shell $(PHP_81_CONFIG) --includes)
 PHP_81_INSTALL_DIR := $(shell $(PHP_81_CONFIG) --extension-dir)
@@ -115,53 +114,60 @@ PHP_81_LIBS := $(shell $(PHP_81_CONFIG) --libs)
 PKG_CONFIG = /usr/bin/pkg-config
 PYTHON_37_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.7)
 PYTHON_37_LIBS = $(shell $(PKG_CONFIG) --libs python-3.7)
-PYTHON_37_INSTALL_DIR := /usr/lib/python3.7/vendor-packages
 PYTHON_311_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.11)
 PYTHON_311_LIBS = $(shell $(PKG_CONFIG) --libs python-3.11)
-PYTHON_311_INSTALL_DIR := /usr/lib/python3.11/vendor-packages
 
+# Create additional gv directories for non-default php and python
+# versions and update all relevant Makefile variables.
 $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
-    (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-additional ; \
-    $(GSED) -i '/^SUBDIRS =/s|$$| gv-additional|' tclpkg/Makefile ; \
+    (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv1 ; \
+    $(GSED) -i '/^SUBDIRS =/s|$$| gv1|' tclpkg/Makefile ; \
     $(GSED) -i \
      -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_81_INCLUDES)|' \
-     -e '/^PHP_INSTALL_DIR =/s|=.*$$|= $(PHP_81_INSTALL_DIR)|' \
      -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_81_LDFLAGS) $(PHP_81_LIBS)|' \
      -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.7)|' \
      -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_37_INCLUDES)|' \
-     -e '/^PYTHON3_INSTALL_DIR =/s|=.*$$|= $(PYTHON_37_INSTALL_DIR)|' \
      -e '/^PYTHON3_LIBS =/s|=.*$$|= $(PYTHON_37_LIBS)|' \
-     `find tclpkg/gv-additional -name Makefile` ) ; \
-    (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-additionalx ; \
-    $(GSED) -i '/^SUBDIRS =/s|$$| gv-additionalx|' tclpkg/Makefile ; \
+     `find tclpkg/gv1 -name Makefile` ) ; \
+    (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv2 ; \
+    $(GSED) -i '/^SUBDIRS =/s|$$| gv2|' tclpkg/Makefile ; \
     $(GSED) -i \
      -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.11)|' \
      -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_311_INCLUDES)|' \
-     -e '/^PYTHON3_INSTALL_DIR =/s|=.*$$|= $(PYTHON_311_INSTALL_DIR)|' \
      -e '/^PYTHON3_LIBS =/s|=.*$$|= $(PYTHON_311_LIBS)|' \
-     `find tclpkg/gv-additionalx -name Makefile` ) ;
+     `find tclpkg/gv2 -name Makefile` ) ;
 
-
-$(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
-    (cd $(@D)/tclpkg/gv-additional ; gmake V=1 libgv_python3.la ) ; \
-    (cd $(@D)/tclpkg/gv-additionalx ; gmake V=1 libgv_python3.la ) ;
-
-# correctly install multiple Python bindings into the corresponding
-# vendor-packages directories.
+# Install Python bindings for each version into vendor-packages directories
+# and generate pyc files. The default version is already installed, but
+# without the .pyc file and without .so version tag.
 37_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.7.VENDOR_PACKAGES)
 39_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.9.VENDOR_PACKAGES)
 311_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.11.VENDOR_PACKAGES)
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
 	($(RM) -r $(37_VENDOR_PROTO); $(MKDIR) $(37_VENDOR_PROTO); \
-	$(RM) -r $(39_VENDOR_PROTO); $(MKDIR) $(39_VENDOR_PROTO); \
+	$(INSTALL) -m 644 $(@D)/tclpkg/gv1/gv.py $(37_VENDOR_PROTO)/gv.py; \
+	$(PYTHON.3.7) -m compileall -l -d $(PYTHON.3.7.VENDOR_PACKAGES) $(37_VENDOR_PROTO); \
+	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_python3.soT $(37_VENDOR_PROTO)/_gv.cpython-37m.so; \
+	$(PYTHON.3.9) -m compileall -l -d $(PYTHON.3.9.VENDOR_PACKAGES) $(39_VENDOR_PROTO); \
+	$(MV) $(39_VENDOR_PROTO)/_gv.so $(39_VENDOR_PROTO)/_gv.cpython-39.so; \
 	$(RM) -r $(311_VENDOR_PROTO); $(MKDIR) $(311_VENDOR_PROTO); \
-	$(INSTALL) -m 644 $(@D)/tclpkg/gv-additional/gv.py $(37_VENDOR_PROTO)/gv.py ; \
-	$(INSTALL) $(@D)/tclpkg/gv-additional/.libs/libgv_python3.soT $(37_VENDOR_PROTO)/_gv.cpython-37m.so; \
-	$(INSTALL) -m 644 $(@D)/tclpkg/gv/gv.py $(39_VENDOR_PROTO)/gv.py ; \
-	$(INSTALL) $(@D)/tclpkg/gv/.libs/libgv_python3.soT $(39_VENDOR_PROTO)/_gv.cpython-39.so; \
-	$(INSTALL) -m 644 $(@D)/tclpkg/gv-additionalx/gv.py $(311_VENDOR_PROTO)/gv.py ; \
-	$(INSTALL) $(@D)/tclpkg/gv-additionalx/.libs/libgv_python3.soT $(311_VENDOR_PROTO)/_gv.cpython-311.so; ) ;
+	$(INSTALL) -m 644 $(@D)/tclpkg/gv2/gv.py $(311_VENDOR_PROTO)/gv.py; \
+	$(PYTHON.3.11) -m compileall -l -d $(PYTHON.3.11.VENDOR_PACKAGES) $(311_VENDOR_PROTO); \
+	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_python3.soT $(311_VENDOR_PROTO)/_gv.cpython-311.so; ) ;
+
+# Similarly, install PHP bindings for each version. _gv.so for default version
+# is already installed by Graphviz. Additional mediated links are handled
+# in manifests.
+PHP_GRAPHVIZ_PROTO = $(PROTO_DIR)$(USRLIBDIR64)/graphviz/php
+PHP81_VENDOR_PROTO = $(PROTO_DIR)$(PHP_81_INSTALL_DIR)
+
+$(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
+	($(MKDIR) $(PHP81_VENDOR_PROTO); \
+	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_php.soT $(PHP81_VENDOR_PROTO)/gv.so; \
+	$(RM) -r $(PHP_GRAPHVIZ_PROTO); $(MKDIR) $(PHP_GRAPHVIZ_PROTO); \
+	$(INSTALL) $(@D)/tclpkg/gv/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php82.so; \
+	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php81.so; ) ;
 
 # Create the config file once the 32-bit build is complete.  This runs the bits
 # we just built, so we have to set a handful of variables to the right place.
@@ -171,18 +177,6 @@ $(PROTOUSRLIBDIR)/graphviz/config6: $(INSTALL_32)
 	env LD_LIBRARY_PATH=$(PROTOUSRLIBDIR) GVBINDIR=$(PROTOUSRLIBDIR)/graphviz \
 		$(PROTOUSRBINDIR)/$(MACH32)/dot -c
 
-# Once the build is complete, compile the .py file.  There's no need to compile
-# the one in the "64" directory, so don't recurse.  And make sure that the
-# build path doesn't get embedded in the .pyc file.
-$(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_64)
-	$(PYTHON.3.7) -m compileall -l -d $(PYTHON.3.7.VENDOR_PACKAGES) \
-		$(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)
-$(PROTO_DIR)/$(PYTHON.3.9.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_64)
-	$(PYTHON.3.9) -m compileall -l -d $(PYTHON.3.9.VENDOR_PACKAGES) \
-		$(PROTO_DIR)/$(PYTHON.3.9.VENDOR_PACKAGES)
-$(PROTO_DIR)/$(PYTHON.3.11.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_64)
-	$(PYTHON.3.11) -m compileall -l -d $(PYTHON.3.11.VENDOR_PACKAGES) \
-		$(PROTO_DIR)/$(PYTHON.3.11.VENDOR_PACKAGES)
 
 # 'gvpr' uses HOSTCC variable instead of our configured compiler and options so
 # PIE build fails. This is a workaround for that.
@@ -191,23 +185,15 @@ COMPONENT_BUILD_ARGS += HOSTCC='$(CC) $(CC_PIC_ENABLE)'
 PKG_MACROS += PERL_PKG=$(PERL_PKG)
 PKG_MACROS += PERL_VERSION_NODOT=$(PERL_VERSION_NODOT)
 
-# The test infrastructure doesn't run in a VPATHed environment.
-COMPONENT_PRE_TEST_ACTION = \
-    (cd $(@D)/rtest; \
-    if ! test -L rtest.sh ; then \
-        $(LN) -fs $(SOURCE_DIR)/rtest/* . ; \
-        $(LN) -fs $(SOURCE_DIR)/rtest/graphs/* graphs ; \
-        $(LN) -fs $(SOURCE_DIR)/rtest/linux.x86/* linux.x86 ; \
-    fi )
-COMPONENT_TEST_DIR = $(@D)/rtest
-COMPONENT_TEST_ENV = PATH=$(BUILD_DIR_$(BITS)):$(GNUBIN):$(PATH)
- 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS += '-n -e "/No. tests: /p"'
+# Several tests require bigger stack to pass.
+$(SYSTEM_TEST_64): ENV := ulimit -Ss 16384; $(ENV)
 
-# The tests are known to fail consistently because the test samples are out
-# of date and not generated with a known configuration.
-test: $(TEST_32_and_64)
+COMPONENT_SYSTEM_TEST_DIR = $(SOURCE_DIR)
+# The Graphviz test suite uses Pytest for all its functionality.
+COMPONENT_SYSTEM_TEST_CMD = $(PYTHON) -m pytest
+COMPONENT_SYSTEM_TEST_ARGS = tests --verbose
+COMPONENT_SYSTEM_TEST_TARGETS =
+COMPONENT_SYSTEM_TEST_ENV = CC=$(CC)
 
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
 REQUIRED_PACKAGES += image/ghostscript

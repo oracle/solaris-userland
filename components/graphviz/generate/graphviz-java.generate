@@ -20,22 +20,21 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
 # delete everything not belonging to this package
-<transform file link pkg.type=(?!graphviz) -> drop>
+<transform file link pkg.type=(?!java) -> drop>
 <transform file link -> delete pkg.type .*>
 
-# Do not add 32 bit versions of binaries
-<transform path=usr/bin/\$\(MACH32\)/.+ -> drop>
+# don't deliver class files and duplicate files from non $(MACH64) directory
+<transform file path=.*\.class -> drop>
+<transform file link path=usr/lib/graphviz/.* -> drop>
 
-# Emit additional link for the config6 file
-<transform file path=usr/lib/graphviz/config6 \
-	-> emit link path=usr/lib/$!(MACH64)/graphviz/config6 target=../../graphviz/config6>
-<transform link -> edit path "\$!\((.*)\)" "$(\1)">
-
-# We don't need to deliver internal todo
-<transform file path=.*/internal_todo.html$ -> drop>
+# move files into the correct places
+<transform file path=.*/graphviz/java/org/.* -> set action.hash %(path)>
+<transform file path=.*/graphviz/java/org/.* -> edit path java/org/graphviz java>
+# and remove a dead link
+<transform link path=.*/graphviz/java/libgv.so$ -> drop>
