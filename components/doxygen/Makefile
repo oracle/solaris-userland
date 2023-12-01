@@ -20,28 +20,28 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		doxygen
-COMPONENT_VERSION=	1.9.3
+COMPONENT_VERSION=	1.9.8
 COMPONENT_PROJECT_URL=	http://www.doxygen.nl/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).src.tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f352dbc3221af7012b7b00935f2dfdc9fb67a97d43287d2f6c81c50449d254e0
+    sha256:05e3d228e8384b5f3af9c8fd6246d22804acb731a3a24ce285c8986ed7e14f62
 COMPONENT_ARCHIVE_URL=	http://doxygen.nl/files/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	457
 
 # Download the manual so that we don't have to keep updating it in the gate.
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_NAME)_manual-$(COMPONENT_VERSION).pdf.zip
 COMPONENT_ARCHIVE_HASH_1 =	\
-    sha256:9435f7a028946b76951e5e39c1da52162944e0756caef34b2f6c2d16593423fa
+    sha256:a5c036725f135d9eed8bfa366208677ec181a55a148cb157e681bfa8d8b11291
 COMPONENT_ARCHIVE_URL_1 =	http://doxygen.nl/files/$(COMPONENT_ARCHIVE_1)
 
-COMPONENT_BAID=		119817
+COMPONENT_BAID=		154260
 
 BUILD_STYLE= cmake
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
@@ -53,6 +53,9 @@ else
 # Necessary to find the right gcc during build
 PATH=$(GCC_ROOT)/bin:$(USRBINDIR)
 endif
+
+# Test 061 is known to fail: https://bugs.gentoo.org/907904
+COMPONENT_POST_UNPACK_ACTION += ( cd $(@D); $(RM) testing/061_Únicod€_file.cpp );
 
 # This test fails because we don't have bibtext. Unfortunately the testing
 # stops there and does not continue. As a workaround we remove this test.
