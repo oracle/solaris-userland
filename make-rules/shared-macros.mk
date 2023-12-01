@@ -876,6 +876,7 @@ PHP_VERSIONS = 8.1 8.2
 
 PHP.8.1 = /usr/php/8.1/bin/php
 PHP.8.2 = /usr/php/8.2/bin/php
+PHP.8.3 = /usr/php/8.3/bin/php
 
 # This is the default BUILD version of tcl
 # Not necessarily the system's default version, i.e. /usr/bin/tclsh
