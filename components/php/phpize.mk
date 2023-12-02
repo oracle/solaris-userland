@@ -36,54 +36,54 @@
 
 # xdebug is a good example of building an extension.
 
-$(BUILD_DIR)/$(MACH64)-8.0/.configured: UL_PHP_MINOR_VERSION=8.0
-$(BUILD_DIR)/$(MACH64)-8.0/.configured: BITS=64
 $(BUILD_DIR)/$(MACH64)-8.1/.configured: UL_PHP_MINOR_VERSION=8.1
 $(BUILD_DIR)/$(MACH64)-8.1/.configured: BITS=64
 $(BUILD_DIR)/$(MACH64)-8.2/.configured: UL_PHP_MINOR_VERSION=8.2
 $(BUILD_DIR)/$(MACH64)-8.2/.configured: BITS=64
+$(BUILD_DIR)/$(MACH64)-8.3/.configured: UL_PHP_MINOR_VERSION=8.3
+$(BUILD_DIR)/$(MACH64)-8.3/.configured: BITS=64
 
-$(BUILD_DIR)/$(MACH64)-8.0/.built:      UL_PHP_MINOR_VERSION=8.0
-$(BUILD_DIR)/$(MACH64)-8.0/.built:      BITS=64
 $(BUILD_DIR)/$(MACH64)-8.1/.built:      UL_PHP_MINOR_VERSION=8.1
 $(BUILD_DIR)/$(MACH64)-8.1/.built:      BITS=64
 $(BUILD_DIR)/$(MACH64)-8.2/.built:      UL_PHP_MINOR_VERSION=8.2
 $(BUILD_DIR)/$(MACH64)-8.2/.built:      BITS=64
+$(BUILD_DIR)/$(MACH64)-8.3/.built:      UL_PHP_MINOR_VERSION=8.3
+$(BUILD_DIR)/$(MACH64)-8.3/.built:      BITS=64
 
-$(BUILD_DIR)/$(MACH64)-8.0/.installed:  UL_PHP_MINOR_VERSION=8.0
-$(BUILD_DIR)/$(MACH64)-8.0/.installed:  BITS=64
 $(BUILD_DIR)/$(MACH64)-8.1/.installed:  UL_PHP_MINOR_VERSION=8.1
 $(BUILD_DIR)/$(MACH64)-8.1/.installed:  BITS=64
 $(BUILD_DIR)/$(MACH64)-8.2/.installed:  UL_PHP_MINOR_VERSION=8.2
 $(BUILD_DIR)/$(MACH64)-8.2/.installed:  BITS=64
+$(BUILD_DIR)/$(MACH64)-8.3/.installed:  UL_PHP_MINOR_VERSION=8.3
+$(BUILD_DIR)/$(MACH64)-8.3/.installed:  BITS=64
 
-$(BUILD_DIR)/$(MACH64)-8.0/.tested:	UL_PHP_MINOR_VERSION=8.0
-$(BUILD_DIR)/$(MACH64)-8.0/.tested:	BITS=64
 $(BUILD_DIR)/$(MACH64)-8.1/.tested:	UL_PHP_MINOR_VERSION=8.1
 $(BUILD_DIR)/$(MACH64)-8.1/.tested:	BITS=64
 $(BUILD_DIR)/$(MACH64)-8.2/.tested:	UL_PHP_MINOR_VERSION=8.2
 $(BUILD_DIR)/$(MACH64)-8.2/.tested:	BITS=64
+$(BUILD_DIR)/$(MACH64)-8.3/.tested:	UL_PHP_MINOR_VERSION=8.3
+$(BUILD_DIR)/$(MACH64)-8.3/.tested:	BITS=64
 
-$(BUILD_DIR)/$(MACH64)-8.0/.tested-and-compared: UL_PHP_MINOR_VERSION=8.0
-$(BUILD_DIR)/$(MACH64)-8.0/.tested-and-compared: BITS=64
 $(BUILD_DIR)/$(MACH64)-8.1/.tested-and-compared: UL_PHP_MINOR_VERSION=8.1
 $(BUILD_DIR)/$(MACH64)-8.1/.tested-and-compared: BITS=64
 $(BUILD_DIR)/$(MACH64)-8.2/.tested-and-compared: UL_PHP_MINOR_VERSION=8.2
 $(BUILD_DIR)/$(MACH64)-8.2/.tested-and-compared: BITS=64
+$(BUILD_DIR)/$(MACH64)-8.3/.tested-and-compared: UL_PHP_MINOR_VERSION=8.3
+$(BUILD_DIR)/$(MACH64)-8.3/.tested-and-compared: BITS=64
 
-$(BUILD_DIR)/$(MACH64)-8.0/.system-tested: UL_PHP_MINOR_VERSION=8.0
-$(BUILD_DIR)/$(MACH64)-8.0/.system-tested: BITS=64
 $(BUILD_DIR)/$(MACH64)-8.1/.system-tested: UL_PHP_MINOR_VERSION=8.1
 $(BUILD_DIR)/$(MACH64)-8.1/.system-tested: BITS=64
 $(BUILD_DIR)/$(MACH64)-8.2/.system-tested: UL_PHP_MINOR_VERSION=8.2
 $(BUILD_DIR)/$(MACH64)-8.2/.system-tested: BITS=64
+$(BUILD_DIR)/$(MACH64)-8.3/.system-tested: UL_PHP_MINOR_VERSION=8.3
+$(BUILD_DIR)/$(MACH64)-8.3/.system-tested: BITS=64
 
-$(BUILD_DIR)/$(MACH64)-8.0/.system-tested-and-compared: UL_PHP_MINOR_VERSION=8.0
-$(BUILD_DIR)/$(MACH64)-8.0/.system-tested-and-compared: BITS=64
 $(BUILD_DIR)/$(MACH64)-8.1/.system-tested-and-compared: UL_PHP_MINOR_VERSION=8.1
 $(BUILD_DIR)/$(MACH64)-8.1/.system-tested-and-compared: BITS=64
 $(BUILD_DIR)/$(MACH64)-8.2/.system-tested-and-compared: UL_PHP_MINOR_VERSION=8.2
 $(BUILD_DIR)/$(MACH64)-8.2/.system-tested-and-compared: BITS=64
+$(BUILD_DIR)/$(MACH64)-8.3/.system-tested-and-compared: UL_PHP_MINOR_VERSION=8.3
+$(BUILD_DIR)/$(MACH64)-8.3/.system-tested-and-compared: BITS=64
 
 CONFIGURE_64 = $(PHP_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
 BUILD_64     = $(PHP_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
@@ -108,18 +108,18 @@ PHP_HOME = $(PHP_TOP_DIR)/php$(PHP_VERSION_NODOT)
 # Build extensions against source tree versions of the interpreters and
 # not against installed interpreters.
 
-$(BUILD_DIR)/$(MACH64)-8.0/.configured: \
-	$(PHP_TOP_DIR)/php80/build/$(MACH64)/.installed
-
 $(BUILD_DIR)/$(MACH64)-8.1/.configured: \
 	$(PHP_TOP_DIR)/php81/build/$(MACH64)/.installed
 
 $(BUILD_DIR)/$(MACH64)-8.2/.configured: \
 	$(PHP_TOP_DIR)/php82/build/$(MACH64)/.installed
 
-$(PHP_TOP_DIR)/php80/build/$(MACH64)/.installed \
+$(BUILD_DIR)/$(MACH64)-8.3/.configured: \
+	$(PHP_TOP_DIR)/php83/build/$(MACH64)/.installed
+
 $(PHP_TOP_DIR)/php81/build/$(MACH64)/.installed \
-$(PHP_TOP_DIR)/php82/build/$(MACH64)/.installed:
+$(PHP_TOP_DIR)/php82/build/$(MACH64)/.installed \
+$(PHP_TOP_DIR)/php83/build/$(MACH64)/.installed:
 	cd $(PHP_HOME) ; $(GMAKE) install ;
 
 COMPONENT_PRE_CONFIGURE_ACTION += \
