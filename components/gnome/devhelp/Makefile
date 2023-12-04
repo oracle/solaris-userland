@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		devhelp
-COMPONENT_VERSION=	41.1
+COMPONENT_VERSION=	43.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Devhelp
 COMPONENT_ARCHIVE_HASH= \
-	sha256:46ea4f8752c22442e0f14be10387a4e8a3872680c3f04882aabeac7daea22e4b
+	sha256:63ceeefd05392e02044881ef1ecd724293553da5735b7efc082b2d13fe85dd04
 COMPONENT_BUGDB=        gnome/help
 COMPONENT_ANITYA_ID=	13119
 
-COMPONENT_BAID=		108917
+COMPONENT_BAID=		155270
 BUILD_STYLE=		meson
 
 COMPILER= gcc
