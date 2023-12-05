@@ -48,6 +48,8 @@ CONFIGURE_ENV += DSOFLAGS="$(LDFLAGS)"
 CPPFLAGS += -I/usr/include/cups/private
 CPPFLAGS += -I/usr/include/cups/private/cups
 CONFIGURE_ENV += CPPFLAGS="$(CPPFLAGS)"
+# C++ 17 is required by qpdf
+CXXFLAGS += -std=c++17
 
 CONFIGURE_OPTIONS +=	--libdir=/usr/lib/cups/$(MACH64)
 CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
