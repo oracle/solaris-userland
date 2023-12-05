@@ -153,4 +153,5 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/desktop/search/tracker
 REQUIRED_PACKAGES += library/file-monitor/gamin
 REQUIRED_PACKAGES += library/libarchive
+REQUIRED_PACKAGES += library/perl-5/parse-yapp
 REQUIRED_PACKAGES += system/core-os
