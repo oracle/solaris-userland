@@ -207,6 +207,7 @@ REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/unzip
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
+REQUIRED_PACKAGES += developer/llvm/clang
 REQUIRED_PACKAGES += developer/rust/cbindgen
 ifneq ($(MACH), sparc)
 REQUIRED_PACKAGES += developer/nasm
