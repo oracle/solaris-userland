@@ -28,19 +28,20 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=	10.02.0
+COMPONENT_VERSION=	10.02.1
 IPS_COMPONENT_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\.0\([^.]\)/.\1/g')
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
 COMPONENT_DOWNLOAD_URL= https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
-COMPONENT_ARCHIVE_HASH= sha256:e54062f166708d84ca82de9f8304a04344466080f936118b88082bd55ed6dc97
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs10020/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_HASH= sha256:e429e4f5b01615a4f0f93a4128e8a1a4d932dff983b1774174c79c0630717ad9
+COMPONENT_ARCHIVE_URL=	\
+	$(COMPONENT_DOWNLOAD_URL)/gs$(subst .,,$(COMPONENT_VERSION))/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
 
 COMPONENT_NAME_1=	tessdata_best
 GIT_REPO_1=		https://github.com/tesseract-ocr/$(COMPONENT_NAME_1)
 GIT_COMMIT_ID_1=	fa8481f
 
-COMPONENT_BAID=		152187
+COMPONENT_BAID=		155606
 
 include $(WS_MAKE_RULES)/common.mk
 # some backup files are copied to proto
@@ -98,11 +99,9 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/toolkit/libxt
