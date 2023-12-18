@@ -1,0 +1,14 @@
+#
+# Prevent overflowing the tmout (int32_t) * 1000.
+#
+--- INIT.2012-08-01/src/cmd/ksh93/bltins/read.c.org	2023-12-12 11:08:20.758637560 +0100
++++ INIT.2012-08-01/src/cmd/ksh93/bltins/read.c	2023-12-12 11:09:43.534125560 +0100
+@@ -66,7 +66,7 @@
+ 	register int r, flags=0, fd=0;
+ 	register Shell_t *shp = context->shp;
+ 	ssize_t	len=0;
+-	long timeout = 1000*shp->st.tmout;
++	long timeout = 1000l*shp->st.tmout;
+ 	int save_prompt, fixargs=context->invariant;
+ 	struct read_save *rp;
+ 	static char default_prompt[3] = {ESC,ESC};
