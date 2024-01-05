@@ -183,10 +183,11 @@ COMPONENT_TEST_ENV = PATH="$(PATH)"
 # that otherwise takes over and breaks some tests.
 # https://github.com/pypa/setuptools/issues/3007
 COMPONENT_TEST_ENV += SETUPTOOLS_USE_DISTUTILS=stdlib
-# Using "-uall,-network" ensures all tests are run except the network tests.
+# Using "-uall,-network,-urlfetch" ensures all tests are run except the network
+# tests and tests that download additional resources.
 # The network tests contain many expected failures when run behind a firewall.
 # The "-v" ensures verbose mode.
-COMPONENT_TEST_ENV += EXTRATESTOPTS="-v -uall,-network $(TESTOPTS_PYTHON_TEST)"
+COMPONENT_TEST_ENV += EXTRATESTOPTS="-v -uall,-network,-urlfetch $(TESTOPTS_PYTHON_TEST)"
 # Prevent the tests from getting stuck waiting for input.
 COMPONENT_TEST_TARGETS = test < /dev/null
 
@@ -194,7 +195,7 @@ COMPONENT_TEST_TARGETS = test < /dev/null
 COMPONENT_SYSTEM_TEST_TARGETS = 
 COMPONENT_SYSTEM_TEST_CMD  = $(PYTHON.3.11)
 COMPONENT_SYSTEM_TEST_ENV  = PATH="$(PATH)"
-COMPONENT_SYSTEM_TEST_ARGS = /usr/lib/python3.11/test/regrtest.py -v -uall,-network
+COMPONENT_SYSTEM_TEST_ARGS = /usr/lib/python3.11/test/regrtest.py -v -uall,-network,-urlfetch
 
 # The test output contains details from each test, in whatever order they
 # complete.  The default _TRANSFORMER is not powerful enough to deal with
