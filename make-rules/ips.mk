@@ -534,6 +534,7 @@ endif
 # You must still include packages for tools you build and test with.
 #
 REQUIRED_PACKAGES::
+	$(RM) $(RESOLVED)
 	$(GMAKE) RESOLVE_DEPS= $(RESOLVED)
 	@echo "# Auto-generated contents below.  Please manually verify and remove this comment" >>Makefile
 	@$(PKGMOGRIFY) $(WS_TRANSFORMS)/$@ $(RESOLVED) | \
