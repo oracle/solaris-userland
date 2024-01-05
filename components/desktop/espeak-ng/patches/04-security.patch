@@ -1,0 +1,168 @@
+Fixes CVE-2023-49990 CVE-2023-49991 CVE-2023-49992 CVE-2023-49993 & CVE-2023-49994.
+
+Desc for all of these:
+  A flaw was found in the espeak-ng package. A local attacker can use a
+  specially-crafted payload to trigger a floating point exception or buffer
+  overflow/underflow condition, which can lead to an application crash
+  or allow for arbitrary code execution.
+
+Patch from upstream:
+https://github.com/espeak-ng/espeak-ng/pull/1846
+
+--- espeak-ng-1.50-0577cd9/src/libespeak-ng/dictionary.c
++++ espeak-ng-1.50-0577cd9/src/libespeak-ng/dictionary.c
+@@ -1055,6 +1055,9 @@ void SetWordStress(Translator *tr, char
+ 
+ 	static char consonant_types[16] = { 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 };
+ 
++	memset(syllable_weight, 0, sizeof(syllable_weight));
++	memset(vowel_length, 0, sizeof(vowel_length));
++
+ 	stressflags = tr->langopts.stress_flags;
+ 
+ 	if (dictionary_flags != NULL)
+@@ -3040,6 +3043,7 @@ int RemoveEnding(Translator *tr, char *w
+ 			*word_end = 'e';
+ 	}
+ 	i = word_end - word;
++	if (i >= N_WORD_BYTES) i = N_WORD_BYTES-1;
+ 
+ 	if (word_copy != NULL) {
+ 		memcpy(word_copy, word, i);
+--- espeak-ng-1.50-0577cd9/src/libespeak-ng/readclause.c
++++ espeak-ng-1.50-0577cd9/src/libespeak-ng/readclause.c
+@@ -665,7 +665,7 @@ int ReadClause(Translator *tr, char *buf
+ 					if (c2 != '1') {
+ 						// a list of punctuation characters to be spoken, terminated by space
+ 						j = 0;
+-						while (!iswspace(c2) && !Eof()) {
++						while (!Eof() && !iswspace(c2) && (j < N_PUNCTLIST-1)) {
+ 							option_punctlist[j++] = c2;
+ 							c2 = GetC();
+ 							buf[ix++] = ' ';
+--- espeak-ng-1.50-0577cd9/src/libespeak-ng/synthdata.c
++++ espeak-ng-1.50-0577cd9/src/libespeak-ng/synthdata.c
+@@ -75,8 +75,15 @@ static espeak_ng_STATUS ReadPhFile(void
+ 	if ((f_in = fopen(buf, "rb")) == NULL)
+ 		return create_file_error_context(context, errno, buf);
+ 
+-	if (*ptr != NULL)
++	if (*ptr != NULL) {
+ 		free(*ptr);
++		*ptr = NULL;
++	}
++	
++	if (length == 0) {
++		*ptr = NULL;
++		return 0;
++	}
+ 
+ 	if ((*ptr = malloc(length)) == NULL) {
+ 		fclose(f_in);
+@@ -86,6 +93,7 @@ static espeak_ng_STATUS ReadPhFile(void
+ 		int error = errno;
+ 		fclose(f_in);
+ 		free(*ptr);
++		*ptr = NULL;
+ 		return create_file_error_context(context, error, buf);
+ 	}
+ 
+@@ -119,9 +127,11 @@ espeak_ng_STATUS LoadPhData(int *srate,
+ 	// read the version number and sample rate from the first 8 bytes of phondata
+ 	version = 0; // bytes 0-3, version number
+ 	rate = 0;    // bytes 4-7, sample rate
+-	for (ix = 0; ix < 4; ix++) {
+-		version += (wavefile_data[ix] << (ix*8));
+-		rate += (wavefile_data[ix+4] << (ix*8));
++	if (wavefile_data) {
++		for (ix = 0; ix < 4; ix++) {
++			version += (wavefile_data[ix] << (ix*8));
++			rate += (wavefile_data[ix+4] << (ix*8));
++		}
+ 	}
+ 
+ 	if (version != version_phdata)
+--- espeak-ng-1.50-0577cd9/src/libespeak-ng/translate.c
++++ espeak-ng-1.50-0577cd9/src/libespeak-ng/translate.c
+@@ -2603,6 +2603,7 @@ void TranslateClause(Translator *tr, int
+ 			if (dict_flags & FLAG_SPELLWORD) {
+ 				// redo the word, speaking single letters
+ 				for (pw = word; *pw != ' ';) {
++					memset(number_buf, 0, sizeof(number_buf));
+ 					memset(number_buf, ' ', 9);
+ 					nx = utf8_in(&c_temp, pw);
+ 					memcpy(&number_buf[2], pw, nx);
+--- espeak-ng-1.50-0577cd9/src/libespeak-ng/voices.c
++++ espeak-ng-1.50-0577cd9/src/libespeak-ng/voices.c
+@@ -557,6 +557,10 @@ voice_t *LoadVoice(const char *vname, in
+ 	static char voice_name[40];       // voice name for current_voice_selected
+ 	static char voice_languages[100]; // list of languages and priorities for current_voice_selected
+ 
++	if ((vname == NULL || vname[0] == 0) && !(control & 8)) {
++		return NULL;
++	}
++
+ 	strncpy0(voicename, vname, sizeof(voicename));
+ 	if (control & 0x10) {
+ 		strcpy(buf, vname);
+@@ -940,14 +944,14 @@ voice_t *LoadVoice(const char *vname, in
+ 
+ 	if (!tone_only) {
+ 		if (!!(control & 8/*compiling phonemes*/)) {
+-                        /* Set by espeak_ng_CompilePhonemeDataPath when it
+-                         * calls LoadVoice("", 8) to set up a dummy(?) voice.
+-                         * As phontab may not yet exist this avoids the spurious
+-                         * error message and guarantees consistent results by
+-                         * not actually reading a potentially bogus phontab...
+-                         */
+-                        ix = 0;
+-                } else if ((ix = SelectPhonemeTableName(phonemes_name)) < 0) {
++			/* Set by espeak_ng_CompilePhonemeDataPath when it
++				* calls LoadVoice("", 8) to set up a dummy(?) voice.
++				* As phontab may not yet exist this avoids the spurious
++				* error message and guarantees consistent results by
++				* not actually reading a potentially bogus phontab...
++				*/
++			ix = 0;
++		} else if ((ix = SelectPhonemeTableName(phonemes_name)) < 0) {
+ 			fprintf(stderr, "Unknown phoneme table: '%s'\n", phonemes_name);
+ 			ix = 0;
+ 		}
+--- espeak-ng-1.50-0577cd9/src/libespeak-ng/wavegen.c
++++ espeak-ng-1.50-0577cd9/src/libespeak-ng/wavegen.c
+@@ -530,14 +530,14 @@ static void AdvanceParameters()
+ 	if (wvoice == NULL)
+ 		return;
+ 
+-	int x;
++	int x = 0;
+ 	int ix;
+ 	static int Flutter_ix = 0;
+ 
+ 	// advance the pitch
+ 	wdata.pitch_ix += wdata.pitch_inc;
+ 	if ((ix = wdata.pitch_ix>>8) > 127) ix = 127;
+-	x = wdata.pitch_env[ix] * wdata.pitch_range;
++	if (wdata.pitch_env) x = wdata.pitch_env[ix] * wdata.pitch_range;
+ 	wdata.pitch = (x>>8) + wdata.pitch_base;
+ 	
+ 	
+@@ -553,7 +553,7 @@ static void AdvanceParameters()
+ 	
+ 	if(const_f0)
+ 		wdata.pitch = (const_f0<<12);
+-	
++
+ 	if (wdata.pitch < 102400)
+ 		wdata.pitch = 102400; // min pitch, 25 Hz  (25 << 12)
+ 
+@@ -1261,6 +1261,9 @@ static int WavegenFill2()
+ 	static bool resume = false;
+ 	static int echo_complete = 0;
+ 
++	if (wdata.pitch < 102400)
++		wdata.pitch = 102400; // min pitch, 25 Hz  (25 << 12)
++
+ 	while (out_ptr < out_end) {
+ 		if (WcmdqUsed() <= 0) {
+ 			if (echo_complete > 0) {
