@@ -5,9 +5,9 @@ can even crash the test suite.
 This issue was reported upstream:
 https://github.com/paramiko/paramiko/pull/2301
 
---- paramiko-2.11.0/tests/conftest.py
-+++ paramiko-2.11.0/tests/conftest.py
-@@ -81,8 +81,9 @@ def sftp_server():
+--- paramiko-3.4.0/tests/conftest.py
++++ paramiko-3.4.0/tests/conftest.py
+@@ -96,8 +96,9 @@ def sftp_server():
      # Make & yield connection.
      tc.connect(username="slowdive", password="pygmalion")
      yield tc
@@ -19,20 +19,20 @@ https://github.com/paramiko/paramiko/pull/2301
  
  
  @pytest.fixture
---- paramiko-2.11.0/tests/test_client.py
-+++ paramiko-2.11.0/tests/test_client.py
-@@ -330,6 +330,8 @@ class SSHClientTest(ClientTest):
-                 key_filename=cert_path,
-                 public_blob=PublicBlob.from_file(cert_path),
+--- paramiko-3.4.0/tests/test_client.py
++++ paramiko-3.4.0/tests/test_client.py
+@@ -328,6 +328,8 @@ class SSHClientTest(ClientTest):
+                 key_filename=key_path,
+                 public_blob=PublicBlob.from_file(f"{key_path}-cert.pub"),
              )
 +            # Transport needs to be closed after each iteration.
 +            self.tc.close()
  
      @requires_sha1_signing
      def test_certs_implicitly_loaded_alongside_key_filename_keys(self):
-@@ -348,6 +350,8 @@ class SSHClientTest(ClientTest):
-                     "{}-cert.pub".format(key_path)
-                 ),
+@@ -343,6 +345,8 @@ class SSHClientTest(ClientTest):
+                 key_filename=key_path,
+                 public_blob=PublicBlob.from_file(f"{key_path}-cert.pub"),
              )
 +            # Transport needs to be closed after each iteration.
 +            self.tc.close()

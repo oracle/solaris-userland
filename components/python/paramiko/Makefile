@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		paramiko
-COMPONENT_VERSION=	2.11.0
+COMPONENT_VERSION=	3.4.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:62963cb5ca607456bac881e8e293255397bd84d54f02fff13aa8b82bdcef6412
+	sha256:0ae53a326e9e8beab52395023d84e76c87f30b00852d663c2c58353e83cc556c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/paramiko/paramiko/
 COMPONENT_BUGDB=	python-mod/paramiko
 COMPONENT_ANITYA_ID=	3954
-COMPONENT_BAID=		127757
+COMPONENT_BAID=		156930
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -63,6 +63,5 @@ system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/bcrypt-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
 # locale required for unicode sftp tests
 REQUIRED_PACKAGES += system/locale

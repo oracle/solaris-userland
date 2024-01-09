@@ -1,0 +1,28 @@
+Several deprecated features are used in the test suite,
+which makes the test output much larger.
+
+This is known in upstream:
+https://github.com/paramiko/paramiko/issues/2290
+
+--- paramiko-3.3.1/tests/test_config.py
++++ paramiko-3.3.1/tests/test_config.py
+@@ -53,7 +53,7 @@ def load_config(name):
+ 
+ 
+ class TestSSHConfig:
+-    def setup(self):
++    def setup_method(self):
+         self.config = load_config("robey")
+ 
+     def test_init(self):
+--- paramiko-3.3.1/tests/test_client.py
++++ paramiko-3.3.1/tests/test_client.py
+@@ -684,7 +684,7 @@ class SSHClientTest(ClientTest):
+         )
+ 
+         self.event.wait(1.0)
+-        self.assertTrue(self.event.isSet())
++        self.assertTrue(self.event.is_set())
+         self.assertTrue(self.ts.is_active())
+ 
+     def test_update_environment(self):

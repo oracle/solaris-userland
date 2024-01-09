@@ -20,7 +20,11 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
+
+# We don't have PyNaCl and other supporting libraries on Solaris.
+# Because of that, we don't deliver Ed25519 support for now.
+<transform file path=.*/paramiko/ed25519key.py$ -> drop>
