@@ -4,9 +4,9 @@
 # The patch was rejected by OpenSSH upstream community. For more information,
 # see https://bugzilla.mindrot.org/show_bug.cgi?id=2242.
 #
---- openssh-9.4p1/readconf.c
-+++ openssh-9.4p1/readconf.c
-@@ -167,6 +167,9 @@ oAddressFamily, oGssAuthentication, oGss
+--- old/readconf.c	2023-12-19 11:54:38.126837297 +0100
++++ new/readconf.c	2023-12-19 11:55:35.640085294 +0100
+@@ -167,6 +167,9 @@ typedef enum {
  	oServerAliveInterval, oServerAliveCountMax, oIdentitiesOnly,
  	oSendEnv, oSetEnv, oControlPath, oControlMaster, oControlPersist,
  	oHashKnownHosts,
@@ -16,7 +16,7 @@
  	oTunnel, oTunnelDevice,
  	oLocalCommand, oPermitLocalCommand, oRemoteCommand,
  	oVisualHostKey,
-@@ -297,6 +300,9 @@ { "controlpath", oControlPath },
+@@ -297,6 +300,9 @@ static struct {
  	{ "controlmaster", oControlMaster },
  	{ "controlpersist", oControlPersist },
  	{ "hashknownhosts", oHashKnownHosts },
@@ -26,7 +26,7 @@
  	{ "include", oInclude },
  	{ "tunnel", oTunnel },
  	{ "tunneldevice", oTunnelDevice },
-@@ -1026,6 +1032,17 @@ }
+@@ -1032,6 +1038,17 @@ parse_multistate_value(const char *arg,
  	return -1;
  }
  
@@ -44,9 +44,9 @@
  /*
   * Processes a single option line as used in the configuration files. This
   * only sets those values that have not already been set.
-@@ -2301,6 +2318,13 @@ case oRequiredRSASize:
- 		intptr = &options->required_rsa_size;
- 		goto parse_int;
+@@ -2374,6 +2391,13 @@ parse_pubkey_algos:
+ 		}
+ 		break;
  
 +#ifdef DISABLE_BANNER
 +	case oDisableBanner:
@@ -58,7 +58,7 @@
  	case oDeprecated:
  		debug("%s line %d: Deprecated option \"%s\"",
  		    filename, linenum, keyword);
-@@ -2537,6 +2561,9 @@ options->session_type = -1;
+@@ -2610,6 +2634,9 @@ initialize_options(Options * options)
  	options->stdin_null = -1;
  	options->fork_after_authentication = -1;
  	options->proxy_use_fdpass = -1;
@@ -68,7 +68,7 @@
  	options->ignored_unknown = NULL;
  	options->num_canonical_domains = 0;
  	options->num_permitted_cnames = 0;
-@@ -2739,6 +2766,10 @@ if (options->canonicalize_fallback_local
+@@ -2815,6 +2842,10 @@ fill_default_options(Options * options)
  		options->canonicalize_fallback_local = 1;
  	if (options->canonicalize_hostname == -1)
  		options->canonicalize_hostname = SSH_CANONICALISE_NO;
@@ -79,10 +79,10 @@
  	if (options->fingerprint_hash == -1)
  		options->fingerprint_hash = SSH_FP_HASH_DEFAULT;
  #ifdef ENABLE_SK_INTERNAL
---- openssh-9.4p1/readconf.h
-+++ openssh-9.4p1/readconf.h
-@@ -182,6 +182,9 @@ int	required_rsa_size;	/* minimum size o
- 	int	enable_escape_commandline;	/* ~C commandline */
+--- old/readconf.h	2023-12-19 11:54:38.132141252 +0100
++++ new/readconf.h	2023-12-19 11:55:35.645608652 +0100
+@@ -186,6 +186,9 @@ typedef struct {
+ 	u_int	num_channel_timeouts;
  
  	char	*ignored_unknown; /* Pattern list of unknown tokens to ignore */
 +#ifdef DISABLE_BANNER
@@ -91,9 +91,9 @@
  }       Options;
  
  #define SSH_PUBKEY_AUTH_NO	0x00
-@@ -222,6 +225,12 @@ #define SSH_STRICT_HOSTKEY_NEW	1
- #define SSH_STRICT_HOSTKEY_YES	2
- #define SSH_STRICT_HOSTKEY_ASK	3
+@@ -231,6 +234,12 @@ typedef struct {
+ #define SSH_KEYSTROKE_CHAFF_MIN_MS		1024
+ #define SSH_KEYSTROKE_CHAFF_RNG_MS		2048
  
 +#ifdef DISABLE_BANNER
 +#define SSH_DISABLEBANNER_NO		0
@@ -103,10 +103,10 @@
 +
  const char *kex_default_pk_alg(void);
  char	*ssh_connection_hash(const char *thishost, const char *host,
-     const char *portstr, const char *user);
---- openssh-9.4p1/ssh_config.5
-+++ openssh-9.4p1/ssh_config.5
-@@ -633,6 +633,14 @@ .Xr sshd_config 5 ,
+     const char *portstr, const char *user, const char *jump_host);
+--- old/ssh_config.5	2023-12-19 11:54:38.138031946 +0100
++++ new/ssh_config.5	2023-12-19 11:55:35.651301338 +0100
+@@ -700,6 +700,14 @@ If set to a time in seconds, or a time i
  then the backgrounded master connection will automatically terminate
  after it has remained idle (with no client connections) for the
  specified time.
@@ -121,8 +121,8 @@
  .It Cm DynamicForward
  Specifies that a TCP port on the local machine be forwarded
  over the secure channel, and the application
---- openssh-9.4p1/sshconnect2.c
-+++ openssh-9.4p1/sshconnect2.c
+--- old/sshconnect2.c	2023-12-19 11:54:38.143648073 +0100
++++ new/sshconnect2.c	2023-12-19 11:55:35.656936883 +0100
 @@ -84,6 +84,10 @@ extern char *client_version_string;
  extern char *server_version_string;
  extern Options options;
@@ -134,7 +134,7 @@
  /*
   * SSH2 key exchange
   */
-@@ -585,8 +589,21 @@ debug3_f("entering");
+@@ -586,8 +590,21 @@ input_userauth_banner(int type, u_int32_
  	if ((r = sshpkt_get_cstring(ssh, &msg, &len)) != 0 ||
  	    (r = sshpkt_get_cstring(ssh, NULL, NULL)) != 0)
  		goto out;

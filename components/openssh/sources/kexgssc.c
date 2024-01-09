@@ -23,7 +23,7 @@
  */
 
 /*
- * Copyright (c) 2004, 2023, Oracle and/or its affiliates.
+ * Copyright (c) 2004, 2024, Oracle and/or its affiliates.
  */
 
 #include "includes.h"
@@ -397,8 +397,9 @@ kexgssgex_client(struct ssh *ssh)
 	    (r = sshpkt_send(ssh)) != 0)
 		fatal("Failed to construct a packet: %s", ssh_err(r));
 
-	if ((r = ssh_packet_read_expect(ssh, SSH2_MSG_KEXGSS_GROUP)) != 0)
-		fatal("Error: %s", ssh_err(r));
+	if ((r = ssh_packet_read(ssh)) != SSH2_MSG_KEXGSS_GROUP)
+		fatal_f("Protocol error: expected packet type %d, got %d",
+		    SSH2_MSG_KEXGSS_GROUP, r);
 
 	if ((r = sshpkt_get_bignum2(ssh, &p)) != 0 ||
 	    (r = sshpkt_get_bignum2(ssh, &g)) != 0 ||

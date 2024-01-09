@@ -1,0 +1,214 @@
+OpenSSH 9.6 was released on 2023-12-18. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Changes since OpenSSH 9.5
+=========================
+
+This release contains a number of security fixes, some small features
+and bugfixes.
+
+Security
+========
+
+This release contains fixes for a newly-discovered weakness in the
+SSH transport protocol, a logic error relating to constrained PKCS#11
+keys in ssh-agent(1) and countermeasures for programs that invoke
+ssh(1) with user or hostnames containing invalid characters.
+
+ * ssh(1), sshd(8): implement protocol extensions to thwart the
+   so-called "Terrapin attack" discovered by Fabian Bäumer, Marcus
+   Brinkmann and Jörg Schwenk. This attack allows a MITM to effect a
+   limited break of the integrity of the early encrypted SSH transport
+   protocol by sending extra messages prior to the commencement of
+   encryption, and deleting an equal number of consecutive messages
+   immediately after encryption starts. A peer SSH client/server
+   would not be able to detect that messages were deleted.
+
+   While cryptographically novel, the security impact of this attack
+   is fortunately very limited as it only allows deletion of
+   consecutive messages, and deleting most messages at this stage of
+   the protocol prevents user user authentication from proceeding and
+   results in a stuck connection.
+
+   The most serious identified impact is that it lets a MITM to
+   delete the SSH2_MSG_EXT_INFO message sent before authentication
+   starts, allowing the attacker to disable a subset of the keystroke
+   timing obfuscation features introduced in OpenSSH 9.5. There is no
+   other discernable impact to session secrecy or session integrity.
+
+   OpenSSH 9.6 addresses this protocol weakness through a new "strict
+   KEX" protocol extension that will be automatically enabled when
+   both the client and server support it. This extension makes
+   two changes to the SSH transport protocol to improve the integrity
+   of the initial key exchange.
+
+   Firstly, it requires endpoints to terminate the connection if any
+   unnecessary or unexpected message is received during key exchange
+   (including messages that were previously legal but not strictly
+   required like SSH2_MSG_DEBUG). This removes most malleability from
+   the early protocol.
+
+   Secondly, it resets the Message Authentication Code counter at the
+   conclusion of each key exchange, preventing previously inserted
+   messages from being able to make persistent changes to the
+   sequence number across completion of a key exchange. Either of
+   these changes should be sufficient to thwart the Terrapin Attack.
+
+   More details of these changes are in the PROTOCOL file in the
+   OpenSSH source distribition.
+
+ * ssh-agent(1): when adding PKCS#11-hosted private keys while
+   specifying destination constraints, if the PKCS#11 token returned
+   multiple keys then only the first key had the constraints applied.
+   Use of regular private keys, FIDO tokens and unconstrained keys
+   are unaffected.
+
+ * ssh(1): if an invalid user or hostname that contained shell
+   metacharacters was passed to ssh(1), and a ProxyCommand,
+   LocalCommand directive or "match exec" predicate referenced the
+   user or hostname via %u, %h or similar expansion token, then
+   an attacker who could supply arbitrary user/hostnames to ssh(1)
+   could potentially perform command injection depending on what
+   quoting was present in the user-supplied ssh_config(5) directive.
+
+   This situation could arise in the case of git submodules, where
+   a repository could contain a submodule with shell characters in
+   its user/hostname. Git does not ban shell metacharacters in user
+   or host names when checking out repositories from untrusted
+   sources.
+
+   Although we believe it is the user's responsibility to ensure
+   validity of arguments passed to ssh(1), especially across a
+   security boundary such as the git example above, OpenSSH 9.6 now
+   bans most shell metacharacters from user and hostnames supplied
+   via the command-line. This countermeasure is not guaranteed to be
+   effective in all situations, as it is infeasible for ssh(1) to
+   universally filter shell metacharacters potentially relevant to
+   user-supplied commands.
+
+   User/hostnames provided via ssh_config(5) are not subject to these
+   restrictions, allowing configurations that use strange names to
+   continue to be used, under the assumption that the user knows what
+   they are doing in their own configuration files.
+
+Potentially incompatible changes
+--------------------------------
+
+ * ssh(1), sshd(8): the RFC4254 connection/channels protocol provides
+   a TCP-like window mechanism that limits the amount of data that
+   can be sent without acceptance from the peer. In cases where this
+   limit was exceeded by a non-conforming peer SSH implementation,
+   ssh(1)/sshd(8) previously discarded the extra data. From OpenSSH
+   9.6, ssh(1)/sshd(8) will now terminate the connection if a peer
+   exceeds the window limit by more than a small grace factor. This
+   change should have no effect of SSH implementations that follow
+   the specification.
+
+New features
+------------
+
+ * ssh(1): add a %j token that expands to the configured ProxyJump
+   hostname (or the empty string if this option is not being used)
+   that can be used in a number of ssh_config(5) keywords. bz3610
+
+ * ssh(1): add ChannelTimeout support to the client, mirroring the
+   same option in the server and allowing ssh(1) to terminate
+   quiescent channels.
+
+ * ssh(1), sshd(8), ssh-add(1), ssh-keygen(1): add support for
+   reading ED25519 private keys in PEM PKCS8 format. Previously
+   only the OpenSSH private key format was supported.
+
+ * ssh(1), sshd(8): introduce a protocol extension to allow
+   renegotiation of acceptable signature algorithms for public key
+   authentication after the server has learned the username being
+   used for authentication. This allows varying sshd_config(5)
+   PubkeyAcceptedAlgorithms in a "Match user" block.
+
+ * ssh-add(1), ssh-agent(1): add an agent protocol extension to allow
+   specifying certificates when loading PKCS#11 keys. This allows the
+   use of certificates backed by PKCS#11 private keys in all OpenSSH
+   tools that support ssh-agent(1). Previously only ssh(1) supported
+   this use-case.
+
+Bugfixes
+--------
+
+ * ssh(1): when deciding whether to enable the keystroke timing
+   obfuscation, enable it only if a channel with a TTY is active.
+
+ * ssh(1): switch mainloop from poll(3) to ppoll(3) and mask signals
+   before checking flags set in signal handler. Avoids potential
+   race condition between signaling ssh to exit and polling. bz3531
+ 
+ * ssh(1): when connecting to a destination with both the
+   AddressFamily and CanonicalizeHostname directives in use,
+   the AddressFamily directive could be ignored. bz5326
+
+ * sftp(1): correct handling of the limits@openssh.com option when
+   the server returned an unexpected message.
+
+ * A number of fixes to the PuTTY and Dropbear regress/integration
+   tests.
+
+ * ssh(1): release GSS OIDs only at end of authentication, avoiding
+   unnecessary init/cleanup cycles. bz2982
+
+ * ssh_config(5): mention "none" is a valid argument to IdentityFile
+   in the manual. bz3080
+
+ * scp(1): improved debugging for paths from the server rejected for
+   not matching the client's glob(3) pattern in old SCP/RCP protocol
+   mode.
+
+ * ssh-agent(1): refuse signing operations on destination-constrained
+   keys if a previous session-bind operation has failed. This may
+   prevent a fail-open situation in future if a user uses a mismatched
+   ssh(1) client and ssh-agent(1) where the client supports a key type
+   that the agent does not support.
+
+Portability
+-----------
+
+ * Better identify unsupported and unstable compiler flags, such as
+   -fzero-call-used-regs which has been unstable across a several
+   clang releases.
+
+ * A number of fixes to regression test reliability and log
+   collection.
+
+ * Update the OpenSSL dependency in the RPM specification.
+
+ * sshd(8): for OpenSolaris systems that support privilege limitation
+   via the getpflags() interface, prefer using the newer PRIV_XPOLICY
+   to PRIV_LIMIT. bz2833
+
+Checksums:
+==========
+
+ - SHA1 (openssh-9.6.tar.gz) = a6d4cb69811e879e2f158c2e597fd9f444b26506
+ - SHA256 (openssh-9.6.tar.gz) = nejPUhSnG1R1sOmIBi/t+HMNvsRqfN/DJgjwIU2tvqg=
+
+ - SHA1 (openssh-9.6p1.tar.gz) = de300d09ec79fdbf37de4e6672cce4161439f2c3
+ - SHA256 (openssh-9.6p1.tar.gz) = kQIRwHJVqMWtZUORtA7lmABxDdgRndU2LeCThap6d3w=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com
+

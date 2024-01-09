@@ -9,9 +9,9 @@
 # Patch source: in-house
 # Solaris specific, upstream already has per-session ccache.
 #
---- openssh-9.4p1/gss-serv.c
-+++ openssh-9.4p1/gss-serv.c
-@@ -51,6 +51,8 @@ #include "uidswap.h"
+--- old/gss-serv.c	2023-12-19 13:14:17.784952473 +0100
++++ new/gss-serv.c	2023-12-19 13:15:18.295087374 +0100
+@@ -51,6 +51,8 @@
  #include "ssh-gss.h"
  #include "monitor_wrap.h"
  
@@ -20,7 +20,7 @@
  extern ServerOptions options;
  
  static ssh_gssapi_client gssapi_client =
-@@ -400,6 +402,12 @@ {
+@@ -400,6 +402,12 @@ ssh_gssapi_cleanup_creds(void)
  	krb5_ccache ccache = NULL;
  	krb5_error_code problem;
  
@@ -33,7 +33,7 @@
  	if (gssapi_client.store.data != NULL) {
  		if ((problem = krb5_cc_resolve(gssapi_client.store.data, gssapi_client.store.envval, &ccache))) {
  			debug("%s: krb5_cc_resolve(): %.100s", __func__,
-@@ -418,10 +426,66 @@ /* As user */
+@@ -418,10 +426,66 @@ ssh_gssapi_cleanup_creds(void)
  void
  ssh_gssapi_storecreds(void)
  {
@@ -104,9 +104,9 @@
  }
  
  /* This allows GSSAPI methods to do things to the child's environment based
---- openssh-9.4p1/servconf.c
-+++ openssh-9.4p1/servconf.c
-@@ -200,6 +200,7 @@ * entire user authentication.
+--- old/servconf.c	2023-12-19 13:14:17.790543683 +0100
++++ new/servconf.c	2023-12-19 13:15:18.300878719 +0100
+@@ -200,6 +200,7 @@ initialize_server_options(ServerOptions
  	 */
  	options->pam_service_per_authmethod = 1;
  #endif /* PAM_ENHANCEMENT */
@@ -114,7 +114,7 @@
  	options->authorized_principals_file = NULL;
  	options->authorized_principals_command = NULL;
  	options->authorized_principals_command_user = NULL;
-@@ -473,7 +474,8 @@ #ifdef PAM_ENHANCEMENT
+@@ -473,7 +474,8 @@ fill_default_server_options(ServerOption
  	if (options->pam_service_prefix == NULL)
  		options->pam_service_prefix = _SSH_PAM_SERVICE_PREFIX;
  #endif
@@ -124,7 +124,7 @@
  	if (options->fwd_opts.streamlocal_bind_mask == (mode_t)-1)
  		options->fwd_opts.streamlocal_bind_mask = 0177;
  	if (options->fwd_opts.streamlocal_bind_unlink == -1)
-@@ -572,6 +574,7 @@ #endif
+@@ -572,6 +574,7 @@ typedef enum {
  	sRevokedKeys, sTrustedUserCAKeys, sAuthorizedPrincipalsFile,
  	sAuthorizedPrincipalsCommand, sAuthorizedPrincipalsCommandUser,
  	sKexAlgorithms, sCASignatureAlgorithms, sIPQoS, sVersionAddendum,
@@ -132,7 +132,7 @@
  	sAuthorizedKeysCommand, sAuthorizedKeysCommandUser,
  	sAuthenticationMethods, sHostKeyAgent, sPermitUserRC,
  	sStreamLocalBindMask, sStreamLocalBindUnlink,
-@@ -767,6 +770,7 @@ { "authorizedkeyscommanduser", sAuthoriz
+@@ -767,6 +770,7 @@ static struct {
  	{ "authorizedprincipalscommand", sAuthorizedPrincipalsCommand, SSHCFG_ALL },
  	{ "authorizedprincipalscommanduser", sAuthorizedPrincipalsCommandUser, SSHCFG_ALL },
  	{ "versionaddendum", sVersionAddendum, SSHCFG_GLOBAL },
@@ -140,7 +140,7 @@
  	{ "authenticationmethods", sAuthenticationMethods, SSHCFG_ALL },
  	{ "streamlocalbindmask", sStreamLocalBindMask, SSHCFG_ALL },
  	{ "streamlocalbindunlink", sStreamLocalBindUnlink, SSHCFG_ALL },
-@@ -1760,6 +1764,10 @@ case sGssStrictAcceptor:
+@@ -1727,6 +1731,10 @@ process_server_config_line_depth(ServerO
  		intptr = &options->gss_strict_acceptor;
  		goto parse_flag;
  
@@ -151,7 +151,7 @@
  	case sGssStoreRekey:
  		intptr = &options->gss_store_rekey;
  		goto parse_flag;
-@@ -3210,6 +3218,7 @@ dump_cfg_fmtint(sAllowStreamLocalForward
+@@ -3237,6 +3245,7 @@ dump_config(ServerOptions *o)
  	dump_cfg_fmtint(sStreamLocalBindUnlink, o->fwd_opts.streamlocal_bind_unlink);
  	dump_cfg_fmtint(sFingerprintHash, o->fingerprint_hash);
  	dump_cfg_fmtint(sExposeAuthInfo, o->expose_userauth_info);
@@ -159,9 +159,9 @@
  
  	/* string arguments */
  	dump_cfg_string(sPidFile, o->pid_file);
---- openssh-9.4p1/servconf.h
-+++ openssh-9.4p1/servconf.h
-@@ -248,6 +248,8 @@ char	**channel_timeouts;	/* inactivity t
+--- old/servconf.h	2023-12-19 13:14:17.795831524 +0100
++++ new/servconf.h	2023-12-19 13:15:18.306426526 +0100
+@@ -246,6 +246,8 @@ typedef struct {
  	u_int	num_channel_timeouts;
  
  	int	unused_connection_timeout;
@@ -170,9 +170,9 @@
  }       ServerOptions;
  
  /* Information about the incoming connection as used by Match */
---- openssh-9.4p1/sshd.c
-+++ openssh-9.4p1/sshd.c
-@@ -2298,9 +2298,19 @@ #endif
+--- old/sshd.c	2023-12-19 13:14:17.801276016 +0100
++++ new/sshd.c	2023-12-19 13:15:18.311877813 +0100
+@@ -2298,9 +2298,19 @@ main(int ac, char **av)
  
  #ifdef GSSAPI
  	if (options.gss_authentication) {
@@ -192,8 +192,8 @@
  	}
  #endif
  #ifdef USE_PAM
---- openssh-9.4p1/sshd_config.5
-+++ openssh-9.4p1/sshd_config.5
+--- old/sshd_config.5	2023-12-19 13:14:17.806646789 +0100
++++ new/sshd_config.5	2023-12-19 13:15:18.317335250 +0100
 @@ -744,6 +744,18 @@ Specifies whether to automatically destr
  on logout.
  The default is

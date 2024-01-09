@@ -6,9 +6,9 @@
 # changed from deprecated to supported. Since this is for Solaris only, we will
 # not contribute back this change to the upstream community.
 #
---- openssh-9.4p1/readconf.c
-+++ openssh-9.4p1/readconf.c
-@@ -210,10 +210,14 @@ { "compressionlevel", oUnsupported },
+--- old/readconf.c	2023-12-19 11:49:49.802403073 +0100
++++ new/readconf.c	2023-12-19 11:50:31.496447459 +0100
+@@ -210,10 +210,14 @@ static struct {
  	/* Sometimes-unsupported options */
  #if defined(GSSAPI)
  	{ "gssapiauthentication", oGssAuthentication },
@@ -23,9 +23,9 @@
  #endif
  #ifdef ENABLE_PKCS11
  	{ "pkcs11provider", oPKCS11Provider },
-@@ -328,6 +332,23 @@ { "knownhostscommand", oKnownHostsComman
- 	{ "requiredrsasize", oRequiredRSASize },
- 	{ "enableescapecommandline", oEnableEscapeCommandline },
+@@ -330,6 +334,23 @@ static struct {
+ 	{ "obscurekeystroketiming", oObscureKeystrokeTiming },
+ 	{ "channeltimeout", oChannelTimeout },
  
 +#ifdef DEPRECATE_SUNSSH_OPT
 +        /*

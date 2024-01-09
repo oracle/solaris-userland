@@ -9,9 +9,9 @@
 #
 # As such, this is Solaris specific patch.
 #
---- openssh-9.4p1/ssh-keygen.1
-+++ openssh-9.4p1/ssh-keygen.1
-@@ -51,7 +51,7 @@ .Op Fl f Ar output_keyfile
+--- old/ssh-keygen.1	2023-12-19 13:30:52.318997022 +0100
++++ new/ssh-keygen.1	2023-12-19 13:31:39.318830260 +0100
+@@ -51,7 +51,7 @@
  .Op Fl m Ar format
  .Op Fl N Ar new_passphrase
  .Op Fl O Ar option
@@ -55,7 +55,7 @@
  .Pp
  .It Ic source-address Ns = Ns Ar address_list
  Restrict the source addresses from which the certificate is considered valid.
-@@ -1290,18 +1289,16 @@ .Bl -tag -width Ds
+@@ -1290,18 +1289,16 @@ user2@example.com namespaces="file" ssh-
  .It Ev SSH_SK_PROVIDER
  Specifies a path to a library that will be used when loading any
  FIDO authenticator-hosted keys, overriding the default of using
@@ -92,9 +92,9 @@
  The contents of this file should be added to
  .Pa ~/.ssh/authorized_keys
  on all machines
---- openssh-9.4p1/ssh.1
-+++ openssh-9.4p1/ssh.1
-@@ -305,9 +305,7 @@ when the private key file is not present
+--- old/ssh.1	2023-12-19 13:30:52.324470669 +0100
++++ new/ssh.1	2023-12-19 13:31:39.324333607 +0100
+@@ -306,9 +306,7 @@ when the private key file is not present
  The default is
  .Pa ~/.ssh/id_rsa ,
  .Pa ~/.ssh/id_ecdsa ,
@@ -104,7 +104,7 @@
  and
  .Pa ~/.ssh/id_dsa .
  Identity files may also be specified on
-@@ -972,12 +970,8 @@ .Pa ~/.ssh/id_dsa
+@@ -973,12 +971,8 @@ This stores the private key in
  (DSA),
  .Pa ~/.ssh/id_ecdsa
  (ECDSA),
@@ -117,7 +117,7 @@
  or
  .Pa ~/.ssh/id_rsa
  (RSA)
-@@ -986,12 +980,8 @@ .Pa ~/.ssh/id_dsa.pub
+@@ -987,12 +981,8 @@ and stores the public key in
  (DSA),
  .Pa ~/.ssh/id_ecdsa.pub
  (ECDSA),
@@ -130,7 +130,7 @@
  or
  .Pa ~/.ssh/id_rsa.pub
  (RSA)
-@@ -1587,9 +1577,7 @@ above.
+@@ -1588,9 +1578,7 @@ above.
  .Pp
  .It Pa ~/.ssh/id_dsa
  .It Pa ~/.ssh/id_ecdsa
@@ -140,7 +140,7 @@
  .It Pa ~/.ssh/id_rsa
  Contains the private key for authentication.
  These files
-@@ -1603,9 +1591,7 @@ sensitive part of this file using AES-12
+@@ -1604,9 +1592,7 @@ sensitive part of this file using AES-12
  .Pp
  .It Pa ~/.ssh/id_dsa.pub
  .It Pa ~/.ssh/id_ecdsa.pub
@@ -150,8 +150,8 @@
  .It Pa ~/.ssh/id_rsa.pub
  Contains the public key for authentication.
  These files are not
---- openssh-9.4p1/ssh_config.5
-+++ openssh-9.4p1/ssh_config.5
+--- old/ssh_config.5	2023-12-19 13:30:52.329999683 +0100
++++ new/ssh_config.5	2023-12-19 13:31:39.329797746 +0100
 @@ -406,8 +406,6 @@ The default is:
  .Bd -literal -offset indent
  ssh-ed25519,ecdsa-sha2-nistp256,
@@ -161,7 +161,7 @@
  rsa-sha2-512,rsa-sha2-256
  .Ed
  .Pp
-@@ -978,14 +976,10 @@ ssh-ed25519-cert-v01@openssh.com,
+@@ -1045,14 +1043,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -176,7 +176,7 @@
  rsa-sha2-512,rsa-sha2-256
  .Ed
  .Pp
-@@ -1024,14 +1018,10 @@ ssh-ed25519-cert-v01@openssh.com,
+@@ -1091,14 +1085,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -191,7 +191,7 @@
  rsa-sha2-512,rsa-sha2-256
  .Ed
  .Pp
-@@ -1624,14 +1614,10 @@ ssh-ed25519-cert-v01@openssh.com,
+@@ -1713,14 +1703,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,

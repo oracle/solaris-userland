@@ -9,9 +9,9 @@
 # In the future, if these enhancements are accepted by the upstream in a
 # later release, we will remove this patch when we upgrade to that release.
 #
---- openssh-9.4p1/auth-pam.c
-+++ openssh-9.4p1/auth-pam.c
-@@ -622,6 +622,66 @@ }
+--- old/auth-pam.c	2023-12-19 12:03:35.052212979 +0100
++++ new/auth-pam.c	2023-12-19 12:04:07.669107594 +0100
+@@ -622,6 +622,66 @@ sshpam_null_conv(int n, sshpam_const str
  
  static struct pam_conv null_conv = { sshpam_null_conv, NULL };
  
@@ -78,7 +78,7 @@
  static int
  sshpam_store_conv(int n, sshpam_const struct pam_message **msg,
      struct pam_response **resp, void *data)
-@@ -694,6 +754,15 @@ const char *pam_user, *user = authctxt->
+@@ -694,6 +754,15 @@ sshpam_init(struct ssh *ssh, Authctxt *a
  	const char **ptr_pam_user = &pam_user;
  	int r;
  
@@ -94,7 +94,7 @@
  #if defined(PAM_SUN_CODEBASE) && defined(PAM_MAX_RESP_SIZE)
  	/* Protect buggy PAM implementations from excessively long usernames */
  	if (strlen(user) >= PAM_MAX_RESP_SIZE)
-@@ -706,17 +775,61 @@ fatal("%s: called initially with no "
+@@ -706,17 +775,61 @@ sshpam_init(struct ssh *ssh, Authctxt *a
  			    "packet context", __func__);
  		}
  	} if (sshpam_handle != NULL) {
@@ -156,9 +156,9 @@
  	sshpam_authctxt = authctxt;
  
  	if (sshpam_err != PAM_SUCCESS) {
---- openssh-9.4p1/auth.h
-+++ openssh-9.4p1/auth.h
-@@ -95,6 +95,9 @@ char		*auth_method_info;
+--- old/auth.h	2023-12-19 12:03:35.057593500 +0100
++++ new/auth.h	2023-12-19 12:04:07.674471682 +0100
+@@ -95,6 +95,9 @@ struct Authctxt {
  
  	/* Information exposed to session */
  	struct sshbuf	*session_info;	/* Auth info for environment */
@@ -168,9 +168,9 @@
  };
  
  /*
---- openssh-9.4p1/auth2.c
-+++ openssh-9.4p1/auth2.c
-@@ -294,7 +294,15 @@ PRIVSEP(audit_event(ssh, SSH_INVALID_USE
+--- old/auth2.c	2023-12-19 12:03:35.062853258 +0100
++++ new/auth2.c	2023-12-19 12:04:07.679771125 +0100
+@@ -305,7 +305,15 @@ input_userauth_request(int type, u_int32
  #endif
  		}
  #ifdef USE_PAM
@@ -186,7 +186,7 @@
  			PRIVSEP(start_pam(ssh));
  #endif
  		ssh_packet_set_log_preamble(ssh, "%suser %s",
-@@ -331,6 +339,17 @@ authctxt->server_caused_failure = 0;
+@@ -344,6 +352,17 @@ input_userauth_request(int type, u_int32
  	/* try to authenticate user */
  	m = authmethod_lookup(authctxt, method);
  	if (m != NULL && authctxt->failures < options.max_authtries) {
@@ -204,7 +204,7 @@
  		debug2("input_userauth_request: try method %s", method);
  		authenticated =	m->userauth(ssh, method);
  	}
-@@ -356,6 +375,10 @@ const char *method = packet_method;
+@@ -369,6 +388,10 @@ userauth_finish(struct ssh *ssh, int aut
  	char *methods;
  	int r, partial = 0;
  
@@ -215,7 +215,7 @@
  	if (authenticated) {
  		if (!authctxt->valid) {
  			fatal("INTERNAL ERROR: authenticated invalid user %s",
-@@ -379,6 +402,30 @@ #endif
+@@ -392,6 +415,30 @@ userauth_finish(struct ssh *ssh, int aut
  	}
  
  	if (authenticated && options.num_auth_methods != 0) {
@@ -246,7 +246,7 @@
  		if (!auth2_update_methods_lists(authctxt, method, submethod)) {
  			authenticated = 0;
  			partial = 1;
-@@ -396,7 +443,19 @@ if (authctxt->postponed)
+@@ -409,7 +456,19 @@ userauth_finish(struct ssh *ssh, int aut
  		return;
  
  #ifdef USE_PAM
@@ -266,8 +266,8 @@
  		int r, success = PRIVSEP(do_pam_account());
  
  		/* If PAM returned a message, send it to the user. */
---- openssh-9.4p1/monitor.c
-+++ openssh-9.4p1/monitor.c
+--- old/monitor.c	2023-12-19 12:03:35.068190115 +0100
++++ new/monitor.c	2023-12-19 12:04:07.685125849 +0100
 @@ -117,6 +117,9 @@ int mm_answer_sign(struct ssh *, int, st
  int mm_answer_pwnamallow(struct ssh *, int, struct sshbuf *);
  int mm_answer_auth2_read_banner(struct ssh *, int, struct sshbuf *);
@@ -278,7 +278,7 @@
  int mm_answer_authpassword(struct ssh *, int, struct sshbuf *);
  int mm_answer_bsdauthquery(struct ssh *, int, struct sshbuf *);
  int mm_answer_bsdauthrespond(struct ssh *, int, struct sshbuf *);
-@@ -190,10 +193,17 @@ #endif
+@@ -190,10 +193,17 @@ struct mon_table mon_dispatch_proto20[]
      {MONITOR_REQ_SIGN, MON_ONCE, mm_answer_sign},
      {MONITOR_REQ_PWNAM, MON_ONCE, mm_answer_pwnamallow},
      {MONITOR_REQ_AUTHSERV, MON_ONCE, mm_answer_authserv},
@@ -296,7 +296,7 @@
      {MONITOR_REQ_PAM_ACCOUNT, 0, mm_answer_pam_account},
      {MONITOR_REQ_PAM_INIT_CTX, MON_ONCE, mm_answer_pam_init_ctx},
      {MONITOR_REQ_PAM_QUERY, 0, mm_answer_pam_query},
-@@ -300,6 +310,25 @@ mon_dispatch, &ent) == 1);
+@@ -300,6 +310,25 @@ monitor_child_preauth(struct ssh *ssh, s
  
  		/* Special handling for multiple required authentications */
  		if (options.num_auth_methods != 0) {
@@ -322,7 +322,7 @@
  			if (authenticated &&
  			    !auth2_update_methods_lists(authctxt,
  			    auth_method, auth_submethod)) {
-@@ -317,8 +346,21 @@ if (authctxt->pw->pw_uid == 0 &&
+@@ -317,8 +346,21 @@ monitor_child_preauth(struct ssh *ssh, s
  			    !auth_root_allowed(ssh, auth_method))
  				authenticated = 0;
  #ifdef USE_PAM
@@ -345,7 +345,7 @@
  				struct sshbuf *m;
  
  				if ((m = sshbuf_new()) == NULL)
-@@ -796,6 +838,10 @@ mm_request_send(sock, MONITOR_ANS_PWNAM,
+@@ -801,6 +843,10 @@ mm_answer_pwnamallow(struct ssh *ssh, in
  	/* Allow service/style information on the auth context */
  	monitor_permit(mon_dispatch, MONITOR_REQ_AUTHSERV, 1);
  	monitor_permit(mon_dispatch, MONITOR_REQ_AUTH2_READ_BANNER, 1);
@@ -356,7 +356,7 @@
  
  #ifdef USE_PAM
  	if (options.use_pam)
-@@ -820,6 +866,27 @@ free(banner);
+@@ -825,6 +871,27 @@ int mm_answer_auth2_read_banner(struct s
  	return (0);
  }
  
@@ -384,9 +384,9 @@
  int
  mm_answer_authserv(struct ssh *ssh, int sock, struct sshbuf *m)
  {
---- openssh-9.4p1/monitor.h
-+++ openssh-9.4p1/monitor.h
-@@ -63,6 +63,9 @@ MONITOR_REQ_PAM_RESPOND = 108, MONITOR_A
+--- old/monitor.h	2023-12-19 12:03:35.073439925 +0100
++++ new/monitor.h	2023-12-19 12:04:07.690396149 +0100
+@@ -63,6 +63,9 @@ enum monitor_reqtype {
  	MONITOR_REQ_PAM_FREE_CTX = 110, MONITOR_ANS_PAM_FREE_CTX = 111,
  	MONITOR_REQ_AUDIT_EVENT = 112, MONITOR_REQ_AUDIT_COMMAND = 113,
  
@@ -396,9 +396,9 @@
  };
  
  struct ssh;
---- openssh-9.4p1/monitor_wrap.c
-+++ openssh-9.4p1/monitor_wrap.c
-@@ -396,6 +396,27 @@ mm_request_send(pmonitor->m_recvfd, MONI
+--- old/monitor_wrap.c	2023-12-19 12:03:35.078671441 +0100
++++ new/monitor_wrap.c	2023-12-19 12:04:07.695607480 +0100
+@@ -396,6 +396,27 @@ mm_inform_authserv(char *service, char *
  	sshbuf_free(m);
  }
  
@@ -426,9 +426,9 @@
  /* Do the password authentication */
  int
  mm_auth_password(struct ssh *ssh, char *password)
---- openssh-9.4p1/monitor_wrap.h
-+++ openssh-9.4p1/monitor_wrap.h
-@@ -48,6 +48,7 @@ #endif
+--- old/monitor_wrap.h	2023-12-19 12:03:35.083810699 +0100
++++ new/monitor_wrap.h	2023-12-19 12:04:07.700831324 +0100
+@@ -48,6 +48,7 @@ DH *mm_choose_dh(int, int, int);
  int mm_sshkey_sign(struct ssh *, struct sshkey *, u_char **, size_t *,
      const u_char *, size_t, const char *, const char *,
      const char *, u_int compat);
@@ -436,9 +436,9 @@
  void mm_inform_authserv(char *, char *);
  struct passwd *mm_getpwnamallow(struct ssh *, const char *);
  char *mm_auth2_read_banner(void);
---- openssh-9.4p1/servconf.c
-+++ openssh-9.4p1/servconf.c
-@@ -184,6 +184,18 @@ options->authorized_keys_command_user =
+--- old/servconf.c	2023-12-19 12:03:35.089191626 +0100
++++ new/servconf.c	2023-12-19 12:04:07.706131302 +0100
+@@ -184,6 +184,18 @@ initialize_server_options(ServerOptions
  	options->revoked_keys_file = NULL;
  	options->sk_provider = NULL;
  	options->trusted_user_ca_keys = NULL;
@@ -457,7 +457,7 @@
  	options->authorized_principals_file = NULL;
  	options->authorized_principals_command = NULL;
  	options->authorized_principals_command_user = NULL;
-@@ -436,6 +448,12 @@ if (options->ip_qos_bulk == -1)
+@@ -436,6 +448,12 @@ fill_default_server_options(ServerOption
  		options->ip_qos_bulk = IPTOS_DSCP_CS1;
  	if (options->version_addendum == NULL)
  		options->version_addendum = xstrdup("");
@@ -470,7 +470,7 @@
  	if (options->fwd_opts.streamlocal_bind_mask == (mode_t)-1)
  		options->fwd_opts.streamlocal_bind_mask = 0177;
  	if (options->fwd_opts.streamlocal_bind_unlink == -1)
-@@ -527,6 +545,9 @@ sAcceptEnv, sSetEnv, sPermitTunnel,
+@@ -527,6 +545,9 @@ typedef enum {
  	sMatch, sPermitOpen, sPermitListen, sForceCommand, sChrootDirectory,
  	sUsePrivilegeSeparation, sAllowAgentForwarding,
  	sHostCertificate, sInclude,
@@ -480,7 +480,7 @@
  	sRevokedKeys, sTrustedUserCAKeys, sAuthorizedPrincipalsFile,
  	sAuthorizedPrincipalsCommand, sAuthorizedPrincipalsCommandUser,
  	sKexAlgorithms, sCASignatureAlgorithms, sIPQoS, sVersionAddendum,
-@@ -674,6 +695,10 @@ { "permitlisten", sPermitListen, SSHCFG_
+@@ -674,6 +695,10 @@ static struct {
  	{ "forcecommand", sForceCommand, SSHCFG_ALL },
  	{ "chrootdirectory", sChrootDirectory, SSHCFG_ALL },
  	{ "hostcertificate", sHostCertificate, SSHCFG_GLOBAL },
@@ -491,7 +491,7 @@
  	{ "revokedkeys", sRevokedKeys, SSHCFG_ALL },
  	{ "trustedusercakeys", sTrustedUserCAKeys, SSHCFG_ALL },
  	{ "authorizedprincipalsfile", sAuthorizedPrincipalsFile, SSHCFG_ALL },
-@@ -2570,6 +2595,37 @@ break;
+@@ -2553,6 +2578,37 @@ process_server_config_line_depth(ServerO
  		}
  		goto parse_time;
  
@@ -529,9 +529,9 @@
  	case sDeprecated:
  	case sIgnore:
  	case sUnsupported:
---- openssh-9.4p1/servconf.h
-+++ openssh-9.4p1/servconf.h
-@@ -53,6 +53,10 @@ /* PubkeyAuthOptions flags */
+--- old/servconf.h	2023-12-19 12:03:35.094400804 +0100
++++ new/servconf.h	2023-12-19 12:04:07.711358059 +0100
+@@ -51,6 +51,10 @@
  #define PUBKEYAUTH_TOUCH_REQUIRED	(1)
  #define PUBKEYAUTH_VERIFY_REQUIRED	(1<<1)
  
@@ -542,7 +542,7 @@
  struct ssh;
  struct fwd_perm_list;
  
-@@ -225,6 +229,12 @@ char   *version_addendum;	/* Appended to
+@@ -223,6 +227,12 @@ typedef struct {
  	u_int	num_auth_methods;
  	char   **auth_methods;
  
@@ -555,8 +555,8 @@
  	int	fingerprint_hash;
  	int	expose_userauth_info;
  	u_int64_t timing_secret;
---- openssh-9.4p1/sshd.8
-+++ openssh-9.4p1/sshd.8
+--- old/sshd.8	2023-12-19 12:03:35.099586259 +0100
++++ new/sshd.8	2023-12-19 12:04:07.716529974 +0100
 @@ -1017,6 +1017,33 @@ concurrently for different ports, this c
  started last).
  The content of this file is not sensitive; it can be world-readable.
@@ -591,9 +591,9 @@
  .Sh SEE ALSO
  .Xr scp 1 ,
  .Xr sftp 1 ,
---- openssh-9.4p1/sshd_config.5
-+++ openssh-9.4p1/sshd_config.5
-@@ -1359,6 +1359,21 @@ .Dq diffie-hellman-group-exchange-sha256
+--- old/sshd_config.5	2023-12-19 12:03:35.104872308 +0100
++++ new/sshd_config.5	2023-12-19 12:04:07.721896011 +0100
+@@ -1359,6 +1359,21 @@ and
  key exchange methods.
  The default is
  .Pa /etc/moduli .
@@ -615,7 +615,7 @@
  .It Cm PasswordAuthentication
  Specifies whether password authentication is allowed.
  The default is
-@@ -1894,8 +1909,7 @@ .Cm UsePAM
+@@ -1894,8 +1909,7 @@ If
  is enabled, you will not be able to run
  .Xr sshd 8
  as a non-root user.

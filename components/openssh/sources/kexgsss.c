@@ -23,7 +23,7 @@
  */
 
 /*
- * Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+ * Copyright (c) 2016, 2024, Oracle and/or its affiliates.
  */
 
 #include "includes.h"
@@ -311,7 +311,10 @@ kexgssgex_server(struct ssh *ssh)
 
 	/* 5. S generates an ephemeral key pair (do the allocations early) */
 	debug("Doing group exchange");
-	ssh_packet_read_expect(ssh, SSH2_MSG_KEXGSS_GROUPREQ);
+	if ((r = ssh_packet_read(ssh)) != SSH2_MSG_KEXGSS_GROUPREQ)
+		fatal_f("Protocol error: expected packet type %d, got %d",
+		    SSH2_MSG_KEXGSS_GROUPREQ, r);
+
 	/* store client proposal to provide valid signature */
 	if ((r = sshpkt_get_u32(ssh, &cmin)) != 0 ||
 	    (r = sshpkt_get_u32(ssh, &nbits)) != 0 ||

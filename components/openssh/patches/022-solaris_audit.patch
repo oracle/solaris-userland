@@ -20,8 +20,8 @@
 # An additional patch relying on the --with-audit=solaris configuration
 #  should/will be created for sftp Solaris Audit and password change.
 #
---- openssh-9.4p1/INSTALL
-+++ openssh-9.4p1/INSTALL
+--- old/INSTALL	2023-12-19 12:12:50.409935690 +0100
++++ new/INSTALL	2023-12-19 12:13:26.257852105 +0100
 @@ -103,9 +103,13 @@ http://www.gnu.org/software/automake/
  
  Basic Security Module (BSM):
@@ -51,8 +51,8 @@
  
  --with-pam enables PAM support. If PAM support is compiled in, it must
  also be enabled in sshd_config (refer to the UsePAM directive).
---- openssh-9.4p1/Makefile.in
-+++ openssh-9.4p1/Makefile.in
+--- old/Makefile.in	2023-12-19 12:12:50.415544998 +0100
++++ new/Makefile.in	2023-12-19 12:13:26.263240259 +0100
 @@ -121,7 +121,7 @@ SSHOBJS= ssh.o readconf.o clientloop.o s
  	sshconnect.o sshconnect2.o mux.o $(SKOBJS)
  
@@ -62,8 +62,8 @@
  	sshpty.o sshlogin.o servconf.o serverloop.o \
  	auth.o auth2.o auth-options.o session.o \
  	auth2-chall.o groupaccess.o \
---- openssh-9.4p1/README.platform
-+++ openssh-9.4p1/README.platform
+--- old/README.platform	2023-12-19 12:12:50.420901869 +0100
++++ new/README.platform	2023-12-19 12:13:26.268537292 +0100
 @@ -71,8 +71,8 @@ zlib-devel and pam-devel, on Debian base
  libssl-dev, libz-dev and libpam-dev.
  
@@ -87,9 +87,9 @@
  Platforms using PAM
  -------------------
  As of OpenSSH 4.3p1, sshd will no longer check /etc/nologin itself when
---- openssh-9.4p1/config.h.in
-+++ openssh-9.4p1/config.h.in
-@@ -1924,6 +1924,9 @@ #undef USE_LIBEDIT
+--- old/config.h.in	2023-12-19 12:12:50.426254411 +0100
++++ new/config.h.in	2023-12-19 12:13:26.273871602 +0100
+@@ -1933,6 +1933,9 @@
  /* Use Linux audit module */
  #undef USE_LINUX_AUDIT
  
@@ -99,9 +99,9 @@
  /* Enable OpenSSL engine support */
  #undef USE_OPENSSL_ENGINE
  
---- openssh-9.4p1/configure
-+++ openssh-9.4p1/configure
-@@ -1490,7 +1490,7 @@ --with-zlib=PATH        Use zlib in PATH
+--- old/configure	2023-12-19 12:12:50.433074378 +0100
++++ new/configure	2023-12-19 12:13:26.280709181 +0100
+@@ -1497,7 +1497,7 @@ Optional Packages:
    --without-zlib-version-check Disable zlib version check
    --with-ldns[=PATH]      Use ldns for DNSSEC support (optionally in PATH)
    --with-libedit[=PATH]   Enable libedit support for sftp
@@ -110,7 +110,7 @@
    --with-pie              Build Position Independent Executables if possible
    --with-security-key-builtin include builtin U2F/FIDO support
    --with-ssl-dir=PATH     Specify path to OpenSSL installation
-@@ -12412,6 +12412,31 @@ withval=$with_audit;
+@@ -14786,6 +14786,31 @@ then :
  	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for supported audit module" >&5
  printf %s "checking for supported audit module... " >&6; }
  	  case "$withval" in
@@ -142,9 +142,9 @@
  	  bsm)
  		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: bsm" >&5
  printf "%s\n" "bsm" >&6; }
---- openssh-9.4p1/configure.ac
-+++ openssh-9.4p1/configure.ac
-@@ -1748,10 +1748,21 @@ )
+--- old/configure.ac	2023-12-19 12:12:50.438883643 +0100
++++ new/configure.ac	2023-12-19 12:13:26.286497259 +0100
+@@ -1758,10 +1758,21 @@ AC_ARG_WITH([libedit],
  
  AUDIT_MODULE=none
  AC_ARG_WITH([audit],
@@ -167,9 +167,9 @@
  	  bsm)
  		AC_MSG_RESULT([bsm])
  		AUDIT_MODULE=bsm
---- openssh-9.4p1/defines.h
-+++ openssh-9.4p1/defines.h
-@@ -715,6 +715,11 @@ # define SSH_AUDIT_EVENTS
+--- old/defines.h	2023-12-19 12:12:50.444144496 +0100
++++ new/defines.h	2023-12-19 12:13:26.291822478 +0100
+@@ -715,6 +715,11 @@ struct winsize {
  # define CUSTOM_SSH_AUDIT_EVENTS
  #endif
  
@@ -181,9 +181,9 @@
  #if !defined(HAVE___func__) && defined(HAVE___FUNCTION__)
  #  define __func__ __FUNCTION__
  #elif !defined(HAVE___func__)
---- openssh-9.4p1/sshd.c
-+++ openssh-9.4p1/sshd.c
-@@ -2286,7 +2286,9 @@ startup_pipe = -1;
+--- old/sshd.c	2023-12-19 12:12:50.449443027 +0100
++++ new/sshd.c	2023-12-19 12:13:26.297144973 +0100
+@@ -2286,7 +2286,9 @@ main(int ac, char **av)
  	}
  
  #ifdef SSH_AUDIT_EVENTS
@@ -193,7 +193,7 @@
  #endif
  
  #ifdef GSSAPI
-@@ -2302,6 +2304,10 @@ do_pam_setcred(1);
+@@ -2302,6 +2304,10 @@ main(int ac, char **av)
  		do_pam_session(ssh);
  	}
  #endif
