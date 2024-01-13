@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-desktop
-COMPONENT_VERSION=	41.5
+COMPONENT_VERSION=	44.0
 COMPONENT_PROJECT_URL= 	https://developer.gnome.org/gnome-desktop/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:a85aa82f7fe2b18640475ba547fcf0314e6007e19bc58f6e74cb926021345c0c
+	sha256:42c773745d84ba14bc1cf1c4c6f4606148803a5cd337941c63964795f3c59d42
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13127
 
-COMPONENT_BAID=		118906
+COMPONENT_BAID=		157164
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -46,8 +46,8 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-CONFIGURE_OPTIONS += -Dgnome_distributor=Oracle
 CONFIGURE_OPTIONS.32 += -Dintrospection=false
+CONFIGURE_OPTIONS.32 += -Dbuild_gtk4=false
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIB.$(BITS))
 LDFLAGS += -z gnu-version-script-compat
 
@@ -71,10 +71,7 @@ REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/gtk4
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gnome/yelp-tools
-REQUIRED_PACKAGES += library/gnome/yelp-xsl
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxkbcommon
