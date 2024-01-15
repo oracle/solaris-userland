@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-session
-COMPONENT_VERSION=	41.3
+COMPONENT_VERSION=	45.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/SessionManagement
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ee4a229053f522624054889609335b885287cf67bbde0dc9fd882b01ec9b5b39
+	sha256:706d2ffcacac38553a3c0185793f5a2b4aac940bb5e789d953c9808163bef2f1
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	13136
 
-COMPONENT_BAID=		115225
+COMPONENT_BAID=		157185
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -49,26 +49,15 @@ CONFIGURE_OPTIONS += -Dsystemd_journal=false
 CONFIGURE_OPTIONS += -Dconsolekit=true
 CONFIGURE_OPTIONS += -Dsession_selector=true
 
-# Assumes GNU msgfmt, xgettext, tail, etc. are first in PATH.
-CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
-COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
-
 REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/json-glib
-REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += library/xdg/consolekit
-REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/library/dbus/dbus-x11
-REQUIRED_PACKAGES += system/library/libdbus
-REQUIRED_PACKAGES += system/library/libdbus-glib
-REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libepoxy
+REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcomposite
 REQUIRED_PACKAGES += x11/library/mesa
-REQUIRED_PACKAGES += x11/library/xtrans
