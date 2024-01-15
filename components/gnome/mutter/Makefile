@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mutter
-COMPONENT_VERSION=	41.9
+COMPONENT_VERSION=	45.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Mutter
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:e8bc6769c05886bfd4b7fc01f3c52b3bdc039ba133646d9e2c8da449359e208b
+	sha256:b78aea7f3e2bec8322a2af0404716be2269905c7d50c04b0b2a71a38814fcd01
 COMPONENT_BUGDB=        gnome/window-manager
 COMPONENT_ANITYA_ID=	13154
 
-COMPONENT_BAID=		129246
+COMPONENT_BAID=		157226
 BUILD_STYLE=            meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -48,10 +48,6 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
-COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
-CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-
 # Requires non-standard extensions.
 CFLAGS += -std=c99 -D__EXTENSIONS__
 
@@ -59,6 +55,7 @@ CONFIGURE_OPTIONS += -Dnative_backend=false
 CONFIGURE_OPTIONS += -Dsystemd=false
 # Not supported on Solaris
 CONFIGURE_OPTIONS += -Dwayland=false
+CONFIGURE_OPTIONS += -Dxwayland=false
 CONFIGURE_OPTIONS += -Dwayland_eglstream=false
 CONFIGURE_OPTIONS += -Dxwayland_path=''
 CONFIGURE_OPTIONS += -Dudev=false
@@ -72,29 +69,25 @@ LDFLAGS += -Wl,-zgnu-version-script-compat
 CONFIGURE_OPTIONS += --wrap-mode=nofallback
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += gnome/gnome-settings-daemon
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += library/desktop/clutter
 REQUIRED_PACKAGES += library/desktop/fribidi
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/graphene
-REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/desktop/libgweather
+REQUIRED_PACKAGES += library/desktop/gtk4
+REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/startup-notification
 REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
-REQUIRED_PACKAGES += library/graphics/cogl
 REQUIRED_PACKAGES += library/json-glib
+REQUIRED_PACKAGES += library/lcms2
+REQUIRED_PACKAGES += service/image/colord
 REQUIRED_PACKAGES += system/library/fontconfig
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/library/upower
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11
@@ -109,6 +102,5 @@ REQUIRED_PACKAGES += x11/library/libxinerama
 REQUIRED_PACKAGES += x11/library/libxkbcommon
 REQUIRED_PACKAGES += x11/library/libxkbfile
 REQUIRED_PACKAGES += x11/library/libxrandr
-REQUIRED_PACKAGES += x11/library/libxrender
 REQUIRED_PACKAGES += x11/library/libxtst
 REQUIRED_PACKAGES += x11/library/mesa

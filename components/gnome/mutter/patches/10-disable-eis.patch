@@ -1,0 +1,1996 @@
+
+--- a/meson.build	2024-01-02 14:11:19.632666877 -0800
++++ b/meson.build	2024-01-02 14:28:40.549280767 -0800
+@@ -129,8 +129,6 @@
+ colord_dep = dependency('colord', version: colord_req)
+ lcms2_dep = dependency('lcms2', version: lcms2_req)
+ harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req)
+-libeis_dep = dependency('libeis-1.0', version: libei_req)
+-libei_dep = dependency('libei-1.0', version: libei_req)
+ 
+ have_wayland = get_option('wayland')
+ # For now always require X11 support
+--- a/src/meson.build	2024-01-02 14:29:01.493374852 -0800
++++ b/src/meson.build	2024-01-02 14:29:40.899163462 -0800
+@@ -27,7 +27,6 @@
+   gnome_settings_daemon_dep,
+   json_glib_dep,
+   xkbcommon_dep,
+-  libeis_dep,
+ ]
+ 
+ if have_gnome_desktop
+@@ -88,7 +87,6 @@
+ if have_remote_desktop
+   mutter_pkg_private_deps += [
+     libpipewire_dep,
+-    libeis_dep,
+   ]
+ endif
+ 
+--- a/src/backends/meta-input-capture-session.c	2024-01-02 14:55:37.929842036 -0800
++++ b/src/backends/meta-input-capture-session.c	2024-01-02 14:55:43.964137226 -0800
+@@ -21,7 +21,6 @@
+ #include "backends/meta-input-capture-session.h"
+ 
+ #include <gio/gunixfdlist.h>
+-#include <libeis.h>
+ #include <stdint.h>
+ 
+ #include "backends/meta-dbus-session-watcher.h"
+--- a/src/backends/meta-fd-source.c	2024-01-02 15:12:08.771023466 -0800
++++ b/src/backends/meta-fd-source.c	2024-01-02 15:12:26.725848356 -0800
+@@ -22,6 +22,8 @@
+ 
+ #include "backends/meta-fd-source.h"
+ 
++#include <unistd.h>
++
+ typedef struct _MetaFdtSource
+ {
+   GSource source;
+--- a/src/tests/meson.build	2024-01-02 15:39:31.613445854 -0800
++++ b/src/tests/meson.build	2024-01-02 15:39:44.307672439 -0800
+@@ -316,8 +316,6 @@
+   input_capture_client = executable('mutter-input-capture-test-client',
+     sources: [
+       'input-capture-test-client.c',
+-      '../backends/meta-fd-source.c',
+-      '../backends/meta-fd-source.h',
+       dbus_input_capture_built_sources,
+     ],
+     include_directories: tests_includes,
+@@ -327,7 +325,6 @@
+     ],
+     dependencies: [
+       gio_unix_dep,
+-      libei_dep,
+     ],
+     install: have_installed_tests,
+     install_dir: mutter_installed_tests_libexecdir,
+--- a/src/tests/input-capture-tests.c	2024-01-02 15:40:45.973326679 -0800
++++ b/src/tests/input-capture-tests.c	2024-01-02 15:42:14.788688636 -0800
+@@ -19,7 +19,6 @@
+ #include "config.h"
+ 
+ #include <gio/gio.h>
+-#include <linux/input-event-codes.h>
+ 
+ #include "backends/meta-backend-private.h"
+ #include "meta-test/meta-context-test.h"
+@@ -180,34 +179,6 @@
+ }
+ 
+ static void
+-click_button (ClutterVirtualInputDevice *virtual_pointer,
+-              uint32_t                   button)
+-{
+-  clutter_virtual_input_device_notify_button (virtual_pointer,
+-                                              g_get_monotonic_time (),
+-                                              button,
+-                                              CLUTTER_BUTTON_STATE_PRESSED);
+-  clutter_virtual_input_device_notify_button (virtual_pointer,
+-                                              g_get_monotonic_time (),
+-                                              button,
+-                                              CLUTTER_BUTTON_STATE_RELEASED);
+-}
+-
+-static void
+-press_key (ClutterVirtualInputDevice *virtual_keyboard,
+-           uint32_t                   key)
+-{
+-  clutter_virtual_input_device_notify_key (virtual_keyboard,
+-                                           g_get_monotonic_time (),
+-                                           key,
+-                                           CLUTTER_KEY_STATE_PRESSED);
+-  clutter_virtual_input_device_notify_key (virtual_keyboard,
+-                                           g_get_monotonic_time (),
+-                                           key,
+-                                           CLUTTER_KEY_STATE_RELEASED);
+-}
+-
+-static void
+ meta_test_input_capture_sanity (void)
+ {
+   InputCaptureTestClient *test_client;
+@@ -354,119 +325,6 @@
+ }
+ 
+ static void
+-meta_test_input_capture_cancel_keybinding (void)
+-{
+-  MetaBackend *backend = meta_context_get_backend (test_context);
+-  ClutterSeat *seat = meta_backend_get_default_seat (backend);
+-  g_autoptr (MetaVirtualMonitor) virtual_monitor = NULL;
+-  g_autoptr (ClutterVirtualInputDevice) virtual_keyboard = NULL;
+-  g_autoptr (ClutterVirtualInputDevice) virtual_pointer = NULL;
+-  InputCaptureTestClient *test_client;
+-
+-  virtual_monitor = meta_create_test_monitor (test_context, 800, 600, 20.0);
+-  virtual_keyboard = clutter_seat_create_virtual_device (seat,
+-                                                         CLUTTER_KEYBOARD_DEVICE);
+-  virtual_pointer = clutter_seat_create_virtual_device (seat,
+-                                                        CLUTTER_POINTER_DEVICE);
+-  clutter_virtual_input_device_notify_absolute_motion (virtual_pointer,
+-                                                       g_get_monotonic_time (),
+-                                                       10.0, 10.0);
+-
+-  test_client = input_capture_test_client_new ("cancel-keybinding");
+-  input_capture_test_client_wait_for_state (test_client, "1");
+-
+-  clutter_virtual_input_device_notify_relative_motion (virtual_pointer,
+-                                                       g_get_monotonic_time (),
+-                                                       -20.0, 0.0);
+-  meta_flush_input (test_context);
+-  meta_wait_for_paint (test_context);
+-  assert_pointer_position (seat, 0.0, 10.0);
+-
+-  clutter_virtual_input_device_notify_relative_motion (virtual_pointer,
+-                                                       g_get_monotonic_time (),
+-                                                       10.0, 10.0);
+-  meta_flush_input (test_context);
+-  meta_wait_for_paint (test_context);
+-  assert_pointer_position (seat, 0.0, 10.0);
+-
+-  clutter_virtual_input_device_notify_key (virtual_keyboard,
+-                                           g_get_monotonic_time (),
+-                                           KEY_LEFTMETA,
+-                                           CLUTTER_KEY_STATE_PRESSED);
+-  clutter_virtual_input_device_notify_key (virtual_keyboard,
+-                                           g_get_monotonic_time (),
+-                                           KEY_LEFTSHIFT,
+-                                           CLUTTER_KEY_STATE_PRESSED);
+-  clutter_virtual_input_device_notify_key (virtual_keyboard,
+-                                           g_get_monotonic_time (),
+-                                           KEY_ESC,
+-                                           CLUTTER_KEY_STATE_PRESSED);
+-  clutter_virtual_input_device_notify_key (virtual_keyboard,
+-                                           g_get_monotonic_time (),
+-                                           KEY_ESC,
+-                                           CLUTTER_KEY_STATE_RELEASED);
+-  clutter_virtual_input_device_notify_key (virtual_keyboard,
+-                                           g_get_monotonic_time (),
+-                                           KEY_LEFTSHIFT,
+-                                           CLUTTER_KEY_STATE_RELEASED);
+-  clutter_virtual_input_device_notify_key (virtual_keyboard,
+-                                           g_get_monotonic_time (),
+-                                           KEY_LEFTMETA,
+-                                           CLUTTER_KEY_STATE_RELEASED);
+-
+-  meta_flush_input (test_context);
+-  meta_wait_for_paint (test_context);
+-
+-  clutter_virtual_input_device_notify_relative_motion (virtual_pointer,
+-                                                       g_get_monotonic_time (),
+-                                                       10.0, 10.0);
+-
+-  meta_flush_input (test_context);
+-  meta_wait_for_paint (test_context);
+-  assert_pointer_position (seat, 10.0, 20.0);
+-
+-  input_capture_test_client_write_state (test_client, "1");
+-
+-  input_capture_test_client_finish (test_client);
+-}
+-
+-static void
+-meta_test_input_capture_events (void)
+-{
+-  MetaBackend *backend = meta_context_get_backend (test_context);
+-  ClutterSeat *seat = meta_backend_get_default_seat (backend);
+-  g_autoptr (MetaVirtualMonitor) virtual_monitor1 = NULL;
+-  g_autoptr (MetaVirtualMonitor) virtual_monitor2 = NULL;
+-  g_autoptr (ClutterVirtualInputDevice) virtual_pointer = NULL;
+-  g_autoptr (ClutterVirtualInputDevice) virtual_keyboard = NULL;
+-  InputCaptureTestClient *test_client;
+-
+-  virtual_monitor1 = meta_create_test_monitor (test_context, 800, 600, 20.0);
+-
+-  virtual_pointer = clutter_seat_create_virtual_device (seat,
+-                                                        CLUTTER_POINTER_DEVICE);
+-  clutter_virtual_input_device_notify_absolute_motion (virtual_pointer,
+-                                                       g_get_monotonic_time (),
+-                                                       10.0, 10.0);
+-  virtual_keyboard = clutter_seat_create_virtual_device (seat,
+-                                                         CLUTTER_KEYBOARD_DEVICE);
+-
+-  test_client = input_capture_test_client_new ("events");
+-  input_capture_test_client_wait_for_state (test_client, "1");
+-
+-  clutter_virtual_input_device_notify_relative_motion (virtual_pointer,
+-                                                       g_get_monotonic_time (),
+-                                                       -20.0, -20.0);
+-  clutter_virtual_input_device_notify_relative_motion (virtual_pointer,
+-                                                       g_get_monotonic_time (),
+-                                                       2.0, -5.0);
+-  click_button (virtual_pointer, CLUTTER_BUTTON_PRIMARY);
+-  press_key (virtual_keyboard, KEY_A);
+-
+-  input_capture_test_client_finish (test_client);
+-}
+-
+-static void
+ on_a11y_timeout_started (ClutterSeat                   *seat,
+                          ClutterInputDevice            *device,
+                          ClutterPointerA11yTimeoutType  timeout_type,
+@@ -582,10 +440,6 @@
+                    meta_test_input_capture_barriers);
+   g_test_add_func ("/backends/native/input-capture/clear-barriers",
+                    meta_test_input_capture_clear_barriers);
+-  g_test_add_func ("/backends/native/input-capture/cancel-keybinding",
+-                   meta_test_input_capture_cancel_keybinding);
+-  g_test_add_func ("/backends/native/input-capture/events",
+-                   meta_test_input_capture_events);
+   g_test_add_func ("/backends/native/input-capture/a11y",
+                    meta_test_input_capture_a11y);
+ }
+--- a/src/tests/input-capture-test-client.c	2024-01-02 15:43:19.656170242 -0800
++++ b/src/tests/input-capture-test-client.c	2024-01-02 15:47:47.423857065 -0800
+@@ -20,13 +20,8 @@
+ 
+ #include <glib.h>
+ #include <gio/gunixinputstream.h>
+-#include <gio/gunixfdlist.h>
+-#include <libei.h>
+-#include <linux/input.h>
+ #include <stdio.h>
+ 
+-#include "backends/meta-fd-source.h"
+-
+ #include "meta-dbus-input-capture.h"
+ 
+ typedef struct
+@@ -52,37 +47,11 @@
+   MetaDBusInputCapture *proxy;
+ } InputCapture;
+ 
+-typedef struct _Event
+-{
+-  enum ei_event_type type;
+-  struct {
+-    double dx;
+-    double dy;
+-  } motion;
+-  struct {
+-    uint32_t button;
+-    gboolean is_press;
+-  } button;
+-  struct {
+-    uint32_t key;
+-    gboolean is_press;
+-  } key;
+-} Event;
+-
+ typedef struct _InputCaptureSession
+ {
+   MetaDBusInputCaptureSession *proxy;
+   unsigned int serial;
+ 
+-  struct ei *ei;
+-  GSource *ei_source;
+-
+-  Event *expected_events;
+-  int n_expected_events;
+-  int next_event;
+-
+-  gboolean has_pointer;
+-  gboolean has_keyboard;
+ } InputCaptureSession;
+ 
+ static GDataInputStream *stdin_reader;
+@@ -213,9 +182,6 @@
+ {
+   GError *error = NULL;
+ 
+-  g_clear_pointer (&session->ei, ei_unref);
+-  g_clear_pointer (&session->ei_source, g_source_destroy);
+-
+   if (!meta_dbus_input_capture_session_call_close_sync (session->proxy,
+                                                         NULL, &error))
+     g_error ("Failed to close session: %s", error->message);
+@@ -224,226 +190,6 @@
+   g_free (session);
+ }
+ 
+-static void
+-record_event (InputCaptureSession *session,
+-              const Event         *event)
+-{
+-  const Event *expected_event;
+-
+-  g_debug ("Record event #%d, with type %s",
+-           session->next_event + 1, ei_event_type_to_string (event->type));
+-  g_assert_nonnull (session->expected_events);
+-  g_assert_cmpint (session->next_event, <, session->n_expected_events);
+-
+-  expected_event = &session->expected_events[session->next_event++];
+-
+-  g_assert_cmpint (expected_event->type, ==, event->type);
+-
+-  switch (event->type)
+-    {
+-    case EI_EVENT_POINTER_MOTION:
+-      g_assert_cmpfloat_with_epsilon (event->motion.dx,
+-                                      expected_event->motion.dx,
+-                                      DBL_EPSILON);
+-      g_assert_cmpfloat_with_epsilon (event->motion.dy,
+-                                      expected_event->motion.dy,
+-                                      DBL_EPSILON);
+-      break;
+-    case EI_EVENT_BUTTON_BUTTON:
+-      g_assert_cmpint (event->button.button, ==, expected_event->button.button);
+-      break;
+-    case EI_EVENT_KEYBOARD_KEY:
+-      g_assert_cmpint (event->key.key, ==, expected_event->key.key);
+-      break;
+-    case EI_EVENT_FRAME:
+-      break;
+-    default:
+-      break;
+-    }
+-}
+-
+-static void
+-process_ei_event (InputCaptureSession *session,
+-                  struct ei_event     *ei_event)
+-{
+-  g_debug ("Processing event %s", ei_event_type_to_string (ei_event_get_type (ei_event)));
+-
+-  switch (ei_event_get_type (ei_event))
+-    {
+-    case EI_EVENT_SEAT_ADDED:
+-      {
+-        struct ei_seat *ei_seat = ei_event_get_seat (ei_event);
+-
+-        g_assert_true (ei_seat_has_capability (ei_seat, EI_DEVICE_CAP_POINTER));
+-        g_assert_true (ei_seat_has_capability (ei_seat, EI_DEVICE_CAP_KEYBOARD));
+-        g_assert_true (ei_seat_has_capability (ei_seat, EI_DEVICE_CAP_BUTTON));
+-        g_assert_true (ei_seat_has_capability (ei_seat, EI_DEVICE_CAP_SCROLL));
+-        ei_seat_bind_capabilities (ei_seat,
+-                                   EI_DEVICE_CAP_POINTER,
+-                                   EI_DEVICE_CAP_BUTTON,
+-                                   EI_DEVICE_CAP_SCROLL,
+-                                   EI_DEVICE_CAP_KEYBOARD,
+-                                   NULL);
+-        break;
+-      }
+-    case EI_EVENT_DEVICE_ADDED:
+-      {
+-        struct ei_device *ei_device = ei_event_get_device (ei_event);
+-
+-        if (ei_device_has_capability (ei_device, EI_DEVICE_CAP_POINTER) &&
+-            ei_device_has_capability (ei_device, EI_DEVICE_CAP_BUTTON) &&
+-            ei_device_has_capability (ei_device, EI_DEVICE_CAP_SCROLL))
+-          session->has_pointer = TRUE;
+-        if (ei_device_has_capability (ei_device, EI_DEVICE_CAP_KEYBOARD))
+-          session->has_keyboard = TRUE;
+-        break;
+-      }
+-    case EI_EVENT_DEVICE_REMOVED:
+-      {
+-        struct ei_device *ei_device = ei_event_get_device (ei_event);
+-
+-        if (ei_device_has_capability (ei_device, EI_DEVICE_CAP_POINTER) &&
+-            ei_device_has_capability (ei_device, EI_DEVICE_CAP_BUTTON) &&
+-            ei_device_has_capability (ei_device, EI_DEVICE_CAP_SCROLL))
+-          session->has_pointer = FALSE;
+-        if (ei_device_has_capability (ei_device, EI_DEVICE_CAP_KEYBOARD))
+-          session->has_keyboard = FALSE;
+-        break;
+-      }
+-    case EI_EVENT_POINTER_MOTION:
+-      record_event (session,
+-                    &(Event) {
+-                      .type = EI_EVENT_POINTER_MOTION,
+-                      .motion.dx = ei_event_pointer_get_dx (ei_event),
+-                      .motion.dy = ei_event_pointer_get_dy (ei_event),
+-                    });
+-      break;
+-    case EI_EVENT_BUTTON_BUTTON:
+-      record_event (session,
+-                    &(Event) {
+-                      .type = EI_EVENT_BUTTON_BUTTON,
+-                      .button.button = ei_event_button_get_button (ei_event),
+-                    });
+-      break;
+-    case EI_EVENT_KEYBOARD_KEY:
+-      record_event (session,
+-                    &(Event) {
+-                      .type = EI_EVENT_KEYBOARD_KEY,
+-                      .key.key = ei_event_keyboard_get_key (ei_event),
+-                    });
+-      break;
+-    case EI_EVENT_FRAME:
+-      record_event (session, &(Event) { .type = EI_EVENT_FRAME });
+-      break;
+-    default:
+-      break;
+-    }
+-}
+-
+-static gboolean
+-ei_source_prepare (gpointer user_data)
+-{
+-  InputCaptureSession *session = user_data;
+-  struct ei_event *ei_event;
+-  gboolean retval;
+-
+-  ei_event = ei_peek_event (session->ei);
+-  retval = !!ei_event;
+-  ei_event_unref (ei_event);
+-
+-  return retval;
+-}
+-
+-static gboolean
+-ei_source_dispatch (gpointer user_data)
+-{
+-  InputCaptureSession *session = user_data;
+-
+-  ei_dispatch (session->ei);
+-
+-  while (TRUE)
+-    {
+-      struct ei_event *ei_event;
+-
+-      ei_event = ei_get_event (session->ei);
+-      if (!ei_event)
+-        break;
+-
+-      process_ei_event (session, ei_event);
+-      ei_event_unref (ei_event);
+-    }
+-
+-  return G_SOURCE_CONTINUE;
+-}
+-
+-static void
+-set_expected_events (InputCaptureSession *session,
+-                     Event               *expected_events,
+-                     int                  n_expected_events)
+-{
+-  session->expected_events = expected_events;
+-  session->n_expected_events = n_expected_events;
+-  session->next_event = 0;
+-}
+-
+-static void
+-log_handler (struct ei             *ei,
+-             enum ei_log_priority   priority,
+-             const char            *message,
+-             struct ei_log_context *ctx)
+-{
+-  int message_length = strlen (message);
+-
+-  if (priority >= EI_LOG_PRIORITY_ERROR)
+-    g_critical ("libei: %.*s", message_length, message);
+-  else if (priority >= EI_LOG_PRIORITY_WARNING)
+-    g_warning ("libei: %.*s", message_length, message);
+-  else if (priority >= EI_LOG_PRIORITY_INFO)
+-    g_info ("libei: %.*s", message_length, message);
+-  else
+-    g_debug ("libei: %.*s", message_length, message);
+-}
+-
+-static void
+-input_capture_session_connect_to_eis (InputCaptureSession *session)
+-{
+-  g_autoptr (GVariant) fd_variant = NULL;
+-  g_autoptr (GUnixFDList) fd_list = NULL;
+-  GError *error = NULL;
+-  int fd;
+-  struct ei *ei;
+-  int ret;
+-
+-  if (!meta_dbus_input_capture_session_call_connect_to_eis_sync (session->proxy,
+-                                                                 NULL,
+-                                                                 &fd_variant,
+-                                                                 &fd_list,
+-                                                                 NULL, &error))
+-    g_error ("Failed to connect to EIS: %s", error->message);
+-
+-  fd = g_unix_fd_list_get (fd_list, g_variant_get_handle (fd_variant), &error);
+-  if (fd == -1)
+-    g_error ("Failed to get EIS file descriptor: %s", error->message);
+-
+-  ei = ei_new_receiver (session);
+-  ei_log_set_handler (ei, log_handler);
+-  ei_log_set_priority (ei, EI_LOG_PRIORITY_DEBUG);
+-
+-  ret = ei_setup_backend_fd (ei, fd);
+-  if (ret < 0)
+-    g_error ("Failed to setup libei backend: %s", g_strerror (errno));
+-
+-  session->ei = ei;
+-  session->ei_source = meta_create_fd_source (ei_get_fd (ei),
+-                                              "libei",
+-                                              ei_source_prepare,
+-                                              ei_source_dispatch,
+-                                              session,
+-                                              NULL);
+-  g_source_attach (session->ei_source, NULL);
+-  g_source_unref (session->ei_source);
+-}
+-
+ static GList *
+ input_capture_session_get_zones (InputCaptureSession *session)
+ {
+@@ -539,15 +285,11 @@
+                                double               y)
+ {
+   g_autoptr (GError) error = NULL;
+-  GVariantBuilder options_builder;
++  GVariant *position;
+ 
+-  g_variant_builder_init (&options_builder, G_VARIANT_TYPE_VARDICT);
+-  g_variant_builder_add (&options_builder, "{sv}",
+-                         "cursor_position",
+-                         g_variant_new ("(dd)", x, y));
+-
++  position = g_variant_new ("(dd)", x, y);
+   if (!meta_dbus_input_capture_session_call_release_sync (session->proxy,
+-                                                          g_variant_builder_end (&options_builder),
++                                                          position,
+                                                           NULL, &error))
+     g_warning ("Failed to release pointer: %s", error->message);
+ }
+@@ -779,105 +521,6 @@
+ }
+ 
+ static void
+-test_cancel_keybinding (void)
+-{
+-  InputCapture *input_capture;
+-  InputCaptureSession *session;
+-  g_autolist (Zone) zones = NULL;
+-
+-  input_capture = input_capture_new ();
+-  session = input_capture_create_session (input_capture);
+-
+-  zones = input_capture_session_get_zones (session);
+-  input_capture_session_add_barrier (session, 0, 0, 0, 600);
+-  input_capture_session_enable (session);
+-
+-  write_state (session, "1");
+-  wait_for_state (session, "1");
+-
+-  input_capture_session_close (session);
+-}
+-
+-static void
+-test_events (void)
+-{
+-  InputCapture *input_capture;
+-  InputCaptureSession *session;
+-  g_autolist (Zone) zones = NULL;
+-  Event expected_events[] = {
+-    /* Move the pointer with deltas (10, 15) and (2, -5), then click */
+-    {
+-      .type = EI_EVENT_POINTER_MOTION,
+-      .motion = { .dx = -10.0, .dy = -10.0 },
+-    },
+-    {
+-      .type = EI_EVENT_FRAME,
+-    },
+-    {
+-      .type = EI_EVENT_POINTER_MOTION,
+-      .motion = { .dx = 2.0, .dy = -5.0 },
+-    },
+-    {
+-      .type = EI_EVENT_FRAME,
+-    },
+-    {
+-      .type = EI_EVENT_BUTTON_BUTTON,
+-      .button = { .button = BTN_LEFT, .is_press = TRUE },
+-    },
+-    {
+-      .type = EI_EVENT_FRAME,
+-    },
+-    {
+-      .type = EI_EVENT_BUTTON_BUTTON,
+-      .button = { .button = BTN_LEFT, .is_press = FALSE },
+-    },
+-    {
+-      .type = EI_EVENT_FRAME,
+-    },
+-
+-    /* Press, then release, KEY_A */
+-    {
+-      .type = EI_EVENT_KEYBOARD_KEY,
+-      .key = { .key = KEY_A, .is_press = TRUE },
+-    },
+-    {
+-      .type = EI_EVENT_FRAME,
+-    },
+-    {
+-      .type = EI_EVENT_KEYBOARD_KEY,
+-      .key = { .key = KEY_A, .is_press = FALSE },
+-    },
+-    {
+-      .type = EI_EVENT_FRAME,
+-    },
+-  };
+-
+-  input_capture = input_capture_new ();
+-  session = input_capture_create_session (input_capture);
+-
+-  input_capture_session_connect_to_eis (session);
+-  zones = input_capture_session_get_zones (session);
+-  input_capture_session_add_barrier (session, 0, 0, 0, 600);
+-
+-  input_capture_session_enable (session);
+-
+-  while (!session->has_pointer ||
+-         !session->has_keyboard)
+-    g_main_context_iteration (NULL, TRUE);
+-
+-  write_state (session, "1");
+-
+-  set_expected_events (session,
+-                       expected_events,
+-                       G_N_ELEMENTS (expected_events));
+-
+-  while (session->next_event < session->n_expected_events)
+-    g_main_context_iteration (NULL, TRUE);
+-
+-  input_capture_session_close (session);
+-}
+-
+-static void
+ test_a11y (void)
+ {
+   InputCapture *input_capture;
+@@ -951,8 +594,6 @@
+   { "zones", test_zones, },
+   { "barriers", test_barriers, },
+   { "clear-barriers", test_clear_barriers, },
+-  { "cancel-keybinding", test_cancel_keybinding, },
+-  { "events", test_events, },
+   { "a11y", test_a11y, },
+ };
+ 
+--- a/src/meta/prefs.h	2024-01-02 15:48:59.500912421 -0800
++++ b/src/meta/prefs.h	2024-01-02 15:49:19.600670659 -0800
+@@ -429,7 +429,6 @@
+  * @META_KEY_BINDING_NON_MASKABLE: always active
+  * @META_KEY_BINDING_IGNORE_AUTOREPEAT: ignore autorepeat
+  * @META_KEY_BINDING_NO_AUTO_GRAB: not grabbed automatically
+- * @META_KEY_BINDING_CUSTOM_TRIGGER: uses a custom keybinding action
+  */
+ typedef enum
+ {
+@@ -440,7 +439,6 @@
+   META_KEY_BINDING_NON_MASKABLE = 1 << 3,
+   META_KEY_BINDING_IGNORE_AUTOREPEAT = 1 << 4,
+   META_KEY_BINDING_NO_AUTO_GRAB = 1 << 5,
+-  META_KEY_BINDING_CUSTOM_TRIGGER = 1 << 6,
+ } MetaKeyBindingFlags;
+ 
+ /**
+--- a/src/core/keybindings.c	2024-01-02 15:50:17.621381066 -0800
++++ b/src/core/keybindings.c	2024-01-02 15:53:05.775765566 -0800
+@@ -1917,15 +1917,10 @@
+ 
+   binding = get_keybinding (keys, &resolved_combo);
+ 
+-  if (!binding)
++  if (!binding ||
++	(!window && binding->flags & META_KEY_BINDING_PER_WINDOW))
+     goto not_found;
+ 
+-  if (!window && binding->flags & META_KEY_BINDING_PER_WINDOW)
+-    goto not_found;
+-
+-  if (binding->flags & META_KEY_BINDING_CUSTOM_TRIGGER)
+-    goto not_found;
+-
+   if (binding->handler == NULL)
+     meta_bug ("Binding %s has no handler", binding->name);
+ 
+@@ -3037,16 +3032,6 @@
+ }
+ 
+ static void
+-handle_cancel_input_capture (MetaDisplay           *display,
+-                             MetaWindow            *window,
+-                             const ClutterKeyEvent *event,
+-                             MetaKeyBinding        *binding,
+-                             gpointer               user_data)
+-{
+-  meta_display_cancel_input_capture (display);
+-}
+-
+-static void
+ handle_restore_shortcuts (MetaDisplay           *display,
+                           MetaWindow            *window,
+                           const ClutterKeyEvent *event,
+@@ -3373,14 +3358,6 @@
+                           META_KEYBINDING_ACTION_ROTATE_MONITOR,
+                           handle_rotate_monitor, 0);
+ 
+-  add_builtin_keybinding (display,
+-                          "cancel-input-capture",
+-                          mutter_keybindings,
+-                          META_KEY_BINDING_IGNORE_AUTOREPEAT |
+-                          META_KEY_BINDING_CUSTOM_TRIGGER,
+-                          META_KEYBINDING_ACTION_NONE,
+-                          handle_cancel_input_capture, 0);
+-
+ #ifdef HAVE_NATIVE_BACKEND
+   MetaContext *context = meta_display_get_context (display);
+   MetaBackend *backend = meta_context_get_backend (context);
+@@ -3944,59 +3921,4 @@
+                             G_CALLBACK (reload_keybindings), display);
+   g_signal_connect_swapped (backend, "keymap-layout-group-changed",
+                             G_CALLBACK (reload_keybindings), display);
+-}
+-
+-static gboolean
+-process_keybinding_key_event (MetaDisplay           *display,
+-                              MetaKeyHandler        *handler,
+-                              const ClutterKeyEvent *event)
+-{
+-  MetaKeyBindingManager *keys = &display->key_binding_manager;
+-  xkb_keycode_t keycode =
+-    (xkb_keycode_t) clutter_event_get_key_code ((ClutterEvent *) event);
+-  MetaResolvedKeyCombo resolved_combo = { &keycode, 1 };
+-  MetaKeyBinding *binding;
+-
+-  if (clutter_event_type ((ClutterEvent *) event) == CLUTTER_KEY_RELEASE)
+-    return FALSE;
+-
+-  resolved_combo.mask =
+-    mask_from_event_params (keys,
+-                            clutter_event_get_state ((ClutterEvent *) event));
+-
+-  binding = get_keybinding (keys, &resolved_combo);
+-  if (!binding)
+-    return FALSE;
+-
+-  if (handler != binding->handler)
+-    return FALSE;
+-
+-  g_return_val_if_fail (binding->flags & META_KEY_BINDING_CUSTOM_TRIGGER,
+-                        FALSE);
+-
+-  invoke_handler (display, binding->handler, NULL, event, binding);
+-  return TRUE;
+-}
+-
+-gboolean
+-meta_display_process_keybinding_event (MetaDisplay        *display,
+-                                       const char         *name,
+-                                       const ClutterEvent *event)
+-{
+-  MetaKeyHandler *handler;
+-
+-  handler = g_hash_table_lookup (key_handlers, name);
+-  if (!handler)
+-    return FALSE;
+-
+-  switch (clutter_event_type (event))
+-    {
+-    case CLUTTER_KEY_PRESS:
+-    case CLUTTER_KEY_RELEASE:
+-      return process_keybinding_key_event (display, handler,
+-                                           (ClutterKeyEvent *) event);
+-
+-    default:
+-      return FALSE;
+-    }
+ }
+--- a/src/core/keybindings-private.h	2024-01-02 15:53:47.504230612 -0800
++++ b/src/core/keybindings-private.h	2024-01-02 15:53:56.062106359 -0800
+@@ -152,7 +152,3 @@
+ 
+ void meta_x11_display_grab_keys   (MetaX11Display *x11_display);
+ void meta_x11_display_ungrab_keys (MetaX11Display *x11_display);
+-
+-gboolean meta_display_process_keybinding_event (MetaDisplay        *display,
+-                                                const char         *name,
+-                                                const ClutterEvent *event);
+--- a/src/core/events.c	2024-01-02 15:58:25.614212535 -0800
++++ b/src/core/events.c	2024-01-02 15:58:43.980548497 -0800
+@@ -261,13 +261,6 @@
+   event_type = clutter_event_type (event);
+   time_ms = clutter_event_get_time (event);
+ 
+-  if (meta_display_process_captured_input (display, event))
+-    {
+-      bypass_clutter = TRUE;
+-      bypass_wayland = TRUE;
+-      goto out;
+-    }
+-
+   device = clutter_event_get_device (event);
+   clutter_input_pointer_a11y_update (device, event);
+ 
+--- a/src/core/display.c	2024-01-02 15:59:21.195384633 -0800
++++ b/src/core/display.c	2024-01-02 16:00:40.013989072 -0800
+@@ -37,7 +37,6 @@
+ #include "backends/meta-backend-private.h"
+ #include "backends/meta-cursor-sprite-xcursor.h"
+ #include "backends/meta-cursor-tracker-private.h"
+-#include "backends/meta-input-capture.h"
+ #include "backends/meta-input-device-private.h"
+ #include "backends/meta-input-mapper-private.h"
+ #include "backends/meta-stage-private.h"
+@@ -140,8 +139,6 @@
+   guint queue_later_ids[META_N_QUEUE_TYPES];
+   GList *queue_windows[META_N_QUEUE_TYPES];
+ 
+-  gboolean enable_input_capture;
+-
+   struct {
+     MetaWindow *window;
+     gulong unmanaging_handler_id;
+@@ -724,64 +721,6 @@
+                                  : _("Privacy Screen Disabled"));
+ }
+ 
+-gboolean
+-meta_display_process_captured_input (MetaDisplay        *display,
+-                                     const ClutterEvent *event)
+-{
+-  MetaDisplayPrivate *priv = meta_display_get_instance_private (display);
+-  MetaContext *context = priv->context;
+-  MetaBackend *backend = meta_context_get_backend (context);
+-  MetaInputCapture *input_capture = meta_backend_get_input_capture (backend);
+-
+-  if (!priv->enable_input_capture)
+-    return FALSE;
+-
+-  /* Check for the cancel key combo, but let the event flow through, so
+-   * that meta_input_capture_process_event() can account for all press
+-   * and release events, even the one from the key combo itself.
+-   */
+-  meta_display_process_keybinding_event (display,
+-                                         "cancel-input-capture",
+-                                         event);
+-
+-  return meta_input_capture_process_event (input_capture, event);
+-}
+-
+-void
+-meta_display_cancel_input_capture (MetaDisplay *display)
+-{
+-  MetaDisplayPrivate *priv = meta_display_get_instance_private (display);
+-  MetaContext *context = priv->context;
+-  MetaBackend *backend = meta_context_get_backend (context);
+-  MetaInputCapture *input_capture = meta_backend_get_input_capture (backend);
+-
+-  meta_input_capture_notify_cancelled (input_capture);
+-}
+-
+-static void
+-enable_input_capture (MetaInputCapture *input_capture,
+-                      gpointer          user_data)
+-{
+-  MetaDisplay *display = META_DISPLAY (user_data);
+-  MetaDisplayPrivate *priv = meta_display_get_instance_private (display);
+-
+-  g_return_if_fail (!priv->enable_input_capture);
+-
+-  priv->enable_input_capture = TRUE;
+-}
+-
+-static void
+-disable_input_capture (MetaInputCapture *input_capture,
+-                       gpointer          user_data)
+-{
+-  MetaDisplay *display = META_DISPLAY (user_data);
+-  MetaDisplayPrivate *priv = meta_display_get_instance_private (display);
+-
+-  g_return_if_fail (priv->enable_input_capture);
+-
+-  priv->enable_input_capture = FALSE;
+-}
+-
+ #ifdef HAVE_X11_CLIENT
+ static gboolean
+ meta_display_init_x11_display (MetaDisplay  *display,
+@@ -935,7 +874,6 @@
+ #endif
+   MetaMonitorManager *monitor_manager;
+   MetaSettings *settings;
+-  MetaInputCapture *input_capture;
+ 
+   display = g_object_new (META_TYPE_DISPLAY, NULL);
+ 
+@@ -980,12 +918,6 @@
+ 
+   display->pad_action_mapper = meta_pad_action_mapper_new (monitor_manager);
+ 
+-  input_capture = meta_backend_get_input_capture (backend);
+-  meta_input_capture_set_event_router (input_capture,
+-                                       enable_input_capture,
+-                                       disable_input_capture,
+-                                       display);
+-
+   settings = meta_backend_get_settings (backend);
+   g_signal_connect (settings, "ui-scaling-factor-changed",
+                     G_CALLBACK (on_ui_scaling_factor_changed), display);
+--- a/src/core/display-private.h	2024-01-02 16:01:09.622513601 -0800
++++ b/src/core/display-private.h	2024-01-02 16:01:26.509604547 -0800
+@@ -348,8 +348,3 @@
+ void meta_display_flush_queued_window (MetaDisplay   *display,
+                                        MetaWindow    *window,
+                                        MetaQueueType  queue_types);
+-
+-gboolean meta_display_process_captured_input (MetaDisplay        *display,
+-                                              const ClutterEvent *event);
+-
+-void meta_display_cancel_input_capture (MetaDisplay *display);
+--- a/src/backends/meta-input-capture.h	2024-01-02 16:02:41.670056276 -0800
++++ b/src/backends/meta-input-capture.h	2024-01-02 16:03:07.641179606 -0800
+@@ -19,16 +19,9 @@
+ #pragma once
+ 
+ #include "backends/meta-dbus-session-manager.h"
+-#include "backends/meta-viewport-info.h"
+-#include "clutter/clutter.h"
+ 
+ #include "meta-dbus-input-capture.h"
+ 
+-typedef void (* MetaInputCaptureEnable) (MetaInputCapture *input_capture,
+-                                         gpointer          user_data);
+-typedef void (* MetaInputCaptureDisable) (MetaInputCapture *input_capture,
+-                                          gpointer          user_data);
+-
+ #define META_TYPE_INPUT_CAPTURE (meta_input_capture_get_type ())
+ G_DECLARE_FINAL_TYPE (MetaInputCapture, meta_input_capture,
+                       META, INPUT_CAPTURE,
+@@ -35,13 +28,3 @@
+                       MetaDbusSessionManager)
+ 
+ MetaInputCapture *meta_input_capture_new (MetaBackend *backend);
+-
+-void meta_input_capture_set_event_router (MetaInputCapture        *input_capture,
+-                                          MetaInputCaptureEnable   enable,
+-                                          MetaInputCaptureDisable  disable,
+-                                          gpointer                 user_data);
+-
+-void meta_input_capture_notify_cancelled (MetaInputCapture *input_capture);
+-
+-gboolean meta_input_capture_process_event (MetaInputCapture   *input_capture,
+-                                           const ClutterEvent *event);
+--- a/src/backends/meta-input-capture.c	2024-01-02 16:03:56.069506818 -0800
++++ b/src/backends/meta-input-capture.c	2024-01-02 16:05:38.022479493 -0800
+@@ -18,11 +18,10 @@
+ 
+ #include "config.h"
+ 
+-#include "backends/meta-input-capture-private.h"
++#include "backends/meta-input-capture.h"
+ 
+ #include "backends/meta-input-capture-session.h"
+ #include "backends/meta-backend-private.h"
+-#include "backends/meta-monitor-manager-private.h"
+ #include "clutter/clutter.h"
+ 
+ #include "meta-dbus-input-capture.h"
+@@ -30,11 +29,6 @@
+ #define META_INPUT_CAPTURE_DBUS_SERVICE "org.gnome.Mutter.InputCapture"
+ #define META_INPUT_CAPTURE_DBUS_PATH "/org/gnome/Mutter/InputCapture"
+ 
+-enum
+-{
+-  CANCELLED,
+-};
+-
+ typedef enum _MetaInputCaptureCapabilities
+ {
+   META_INPUT_CAPTURE_CAPABILITY_NONE = 1 << 0,
+@@ -47,13 +41,6 @@
+ {
+   MetaDbusSessionManager parent;
+ 
+-  struct {
+-    MetaInputCaptureEnable enable;
+-    MetaInputCaptureDisable disable;
+-    gpointer user_data;
+-  } event_router;
+-
+-  MetaInputCaptureSession *active_session;
+ };
+ 
+ G_DEFINE_TYPE (MetaInputCapture, meta_input_capture,
+@@ -169,59 +156,3 @@
+   return input_capture;
+ }
+ 
+-void
+-meta_input_capture_set_event_router (MetaInputCapture        *input_capture,
+-                                     MetaInputCaptureEnable   enable,
+-                                     MetaInputCaptureDisable  disable,
+-                                     gpointer                 user_data)
+-{
+-  g_warn_if_fail (!input_capture->event_router.enable &&
+-                  !input_capture->event_router.disable &&
+-                  !input_capture->event_router.user_data);
+-
+-  input_capture->event_router.enable = enable;
+-  input_capture->event_router.disable = disable;
+-  input_capture->event_router.user_data = user_data;
+-}
+-
+-void
+-meta_input_capture_activate (MetaInputCapture        *input_capture,
+-                             MetaInputCaptureSession *session)
+-{
+-  g_return_if_fail (input_capture->event_router.enable);
+-
+-  meta_topic (META_DEBUG_INPUT, "Activating input capturing");
+-  input_capture->active_session = session;
+-  input_capture->event_router.enable (input_capture,
+-                                      input_capture->event_router.user_data);
+-}
+-
+-void
+-meta_input_capture_deactivate (MetaInputCapture        *input_capture,
+-                               MetaInputCaptureSession *session)
+-{
+-  g_return_if_fail (input_capture->event_router.disable);
+-
+-  meta_topic (META_DEBUG_INPUT, "Deactivating input capturing");
+-  input_capture->event_router.disable (input_capture,
+-                                       input_capture->event_router.user_data);
+-  input_capture->active_session = NULL;
+-}
+-
+-void
+-meta_input_capture_notify_cancelled (MetaInputCapture *input_capture)
+-{
+-  g_return_if_fail (input_capture->active_session);
+-
+-  meta_input_capture_session_notify_cancelled (input_capture->active_session);
+-}
+-
+-gboolean
+-meta_input_capture_process_event (MetaInputCapture   *input_capture,
+-                                  const ClutterEvent *event)
+-{
+-  g_return_val_if_fail (input_capture->active_session, FALSE);
+-
+-  return meta_input_capture_session_process_event (input_capture->active_session,
+-                                                   event);
+-}
+--- a/data/dbus-interfaces/org.gnome.Mutter.InputCapture.xml	2024-01-02 16:06:46.873461630 -0800
++++ b/data/dbus-interfaces/org.gnome.Mutter.InputCapture.xml	2024-01-02 16:07:02.928605494 -0800
+@@ -49,12 +49,6 @@
+     <method name="Enable" />
+     <method name="Disable" />
+ 
+-    <method name="ConnectToEIS">
+-      <annotation name="org.gtk.GDBus.C.Name" value="connect_to_eis"/>
+-      <annotation name="org.gtk.GDBus.C.UnixFD" value="true"/>
+-      <arg type="h" name="fd" direction="out"/>
+-    </method>
+-
+     <method name="Release">
+       <arg type="a{sv}" name="options" direction="in" />
+     </method>
+--- a/data/org.gnome.mutter.gschema.xml.in	2024-01-02 16:07:22.080426367 -0800
++++ b/data/org.gnome.mutter.gschema.xml.in	2024-01-02 16:07:44.635781232 -0800
+@@ -179,10 +179,5 @@
+       <summary>Rotates the built-in monitor configuration</summary>
+     </key>
+ 
+-    <key name="cancel-input-capture" type="as">
+-      <default><![CDATA[['<Super><Shift>Escape']]]></default>
+-      <summary>Cancel any active input capture session</summary>
+-    </key>
+-
+   </schema>
+ </schemalist>
+--- a/src/backends/meta-input-capture-session.c	2024-01-02 16:08:30.108827119 -0800
++++ b/src/backends/meta-input-capture-session.c	2024-01-02 16:16:52.860272805 -0800
+@@ -20,17 +20,13 @@
+ 
+ #include "backends/meta-input-capture-session.h"
+ 
+-#include <gio/gunixfdlist.h>
+ #include <stdint.h>
+ 
+ #include "backends/meta-dbus-session-watcher.h"
+ #include "backends/meta-dbus-session-manager.h"
+-#include "backends/meta-fd-source.h"
+-#include "backends/meta-input-capture-private.h"
+ #include "backends/meta-monitor-manager-private.h"
+ #include "backends/meta-logical-monitor.h"
+ #include "backends/meta-remote-access-controller-private.h"
+-#include "core/meta-anonymous-file.h"
+ #include "meta/barrier.h"
+ #include "meta/boxes.h"
+ #include "meta/meta-backend.h"
+@@ -87,20 +83,6 @@
+ 
+   MetaInputCaptureSessionHandle *handle;
+ 
+-  struct eis *eis;
+-  struct eis_client *eis_client;
+-  struct eis_seat *eis_seat;
+-  struct eis_device *eis_pointer;
+-  struct eis_device *eis_keyboard;
+-  GSource *eis_source;
+-
+-  MetaAnonymousFile *keymap_file;
+-
+-  MetaViewportInfo *viewports;
+-
+-  gboolean cancel_requested;
+-  unsigned int buttons_pressed;
+-  unsigned int keys_pressed;
+ };
+ 
+ static void initable_init_iface (GInitableIface *iface);
+@@ -159,258 +141,6 @@
+ }
+ 
+ static void
+-setup_client (MetaInputCaptureSession *session,
+-              struct eis_client       *eis_client)
+-{
+-  MetaBackend *backend =
+-    meta_dbus_session_manager_get_backend (session->session_manager);
+-  ClutterSeat *seat = meta_backend_get_default_seat (backend);
+-  struct eis_seat *eis_seat;
+-
+-  session->eis_client = eis_client_ref (eis_client);
+-
+-  eis_client_connect (eis_client);
+-
+-  eis_seat = eis_client_new_seat (eis_client, clutter_seat_get_name (seat));
+-  eis_seat_configure_capability (eis_seat, EIS_DEVICE_CAP_POINTER);
+-  eis_seat_configure_capability (eis_seat, EIS_DEVICE_CAP_BUTTON);
+-  eis_seat_configure_capability (eis_seat, EIS_DEVICE_CAP_SCROLL);
+-  eis_seat_configure_capability (eis_seat, EIS_DEVICE_CAP_KEYBOARD);
+-  eis_seat_add (eis_seat);
+-
+-  session->eis_seat = eis_seat;
+-}
+-
+-static void
+-ensure_eis_pointer_regions (MetaInputCaptureSession *session,
+-                            struct eis_device       *eis_pointer)
+-{
+-  int idx = 0;
+-  MtkRectangle rect;
+-  float scale;
+-
+-  if (!session->viewports)
+-    return;
+-
+-  while (meta_viewport_info_get_view_info (session->viewports, idx++, &rect, &scale))
+-    {
+-      struct eis_region *r = eis_device_new_region (eis_pointer);
+-
+-      eis_region_set_offset (r, rect.x, rect.y);
+-      eis_region_set_size (r, rect.width, rect.height);
+-      eis_region_set_physical_scale (r, scale);
+-      eis_region_add (r);
+-      eis_region_unref (r);
+-    }
+-}
+-
+-static void
+-ensure_eis_pointer (MetaInputCaptureSession *session)
+-{
+-  struct eis_device *eis_pointer;
+-
+-  if (session->eis_pointer)
+-    return;
+-
+-  eis_pointer = eis_seat_new_device (session->eis_seat);
+-  eis_device_configure_name (eis_pointer, "captured relative pointer");
+-  eis_device_configure_capability (eis_pointer, EIS_DEVICE_CAP_POINTER);
+-  eis_device_configure_capability (eis_pointer, EIS_DEVICE_CAP_BUTTON);
+-  eis_device_configure_capability (eis_pointer, EIS_DEVICE_CAP_SCROLL);
+-  ensure_eis_pointer_regions (session, eis_pointer);
+-  eis_device_add (eis_pointer);
+-  eis_device_resume (eis_pointer);
+-
+-  session->eis_pointer = eis_pointer;
+-}
+-
+-static MetaAnonymousFile *
+-ensure_xkb_keymap_file (MetaInputCaptureSession  *session,
+-                        GError                  **error)
+-{
+-  MetaBackend *backend =
+-    meta_dbus_session_manager_get_backend (session->session_manager);
+-  struct xkb_keymap *keymap;
+-  g_autofree char *keymap_string = NULL;
+-  size_t keymap_size;
+-
+-  if (session->keymap_file)
+-    return session->keymap_file;
+-
+-  keymap = meta_backend_get_keymap (backend);
+-  if (!keymap)
+-    {
+-      g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
+-                   "Backend has no keymap");
+-      return NULL;
+-    }
+-
+-  keymap_string = xkb_keymap_get_as_string (keymap, XKB_KEYMAP_FORMAT_TEXT_V1);
+-  keymap_size = strlen (keymap_string) + 1;
+-
+-  session->keymap_file =
+-    meta_anonymous_file_new (keymap_size, (const uint8_t *) keymap_string);
+-
+-  return session->keymap_file;
+-}
+-
+-static void
+-ensure_eis_keyboard (MetaInputCaptureSession *session)
+-{
+-  struct eis_device *eis_keyboard;
+-  g_autoptr (GError) error = NULL;
+-  struct eis_keymap *eis_keymap;
+-  MetaAnonymousFile *keymap_file;
+-  int keymap_fd;
+-  size_t keymap_size;
+-
+-  if (session->eis_keyboard)
+-    return;
+-
+-  keymap_file = ensure_xkb_keymap_file (session, &error);
+-  if (!keymap_file)
+-    {
+-      g_warning ("Failed to create input capture keymap file: %s",
+-                 error->message);
+-      return;
+-    }
+-
+-  eis_keyboard = eis_seat_new_device (session->eis_seat);
+-  eis_device_configure_name (eis_keyboard, "captured keyboard");
+-  eis_device_configure_capability (eis_keyboard, EIS_DEVICE_CAP_KEYBOARD);
+-
+-  keymap_fd = meta_anonymous_file_open_fd (keymap_file,
+-                                           META_ANONYMOUS_FILE_MAPMODE_PRIVATE);
+-  keymap_size = meta_anonymous_file_size (keymap_file);
+-  eis_keymap = eis_device_new_keymap (eis_keyboard,
+-                                      EIS_KEYMAP_TYPE_XKB,
+-                                      keymap_fd, keymap_size);
+-  eis_keymap_add (eis_keymap);
+-  eis_keymap_unref (eis_keymap);
+-  meta_anonymous_file_close_fd (keymap_fd);
+-
+-  eis_device_add (eis_keyboard);
+-  eis_device_resume (eis_keyboard);
+-
+-  session->eis_keyboard = eis_keyboard;
+-}
+-
+-static void
+-clear_eis_pointer (MetaInputCaptureSession *session)
+-{
+-  if (!session->eis_pointer)
+-    return;
+-
+-  eis_device_remove (session->eis_pointer);
+-  g_clear_pointer (&session->eis_pointer, eis_device_unref);
+-}
+-
+-static void
+-remove_eis_pointer (MetaInputCaptureSession *session)
+-{
+-  clear_eis_pointer (session);
+-
+-  /* The pointer is removed, all its buttons are cleared */
+-  session->buttons_pressed = 0;
+-}
+-
+-static void
+-clear_eis_keyboard (MetaInputCaptureSession *session)
+-{
+-  if (!session->eis_keyboard)
+-    return;
+-
+-  eis_device_remove (session->eis_keyboard);
+-  g_clear_pointer (&session->eis_keyboard, eis_device_unref);
+-}
+-
+-static void
+-remove_eis_keyboard (MetaInputCaptureSession *session)
+-{
+-  clear_eis_keyboard (session);
+-
+-  /* The pointer is removed, all its buttons are cleared */
+-  session->keys_pressed = 0;
+-}
+-
+-static void
+-on_keymap_changed (MetaBackend *backend,
+-                   gpointer     user_data)
+-{
+-  MetaInputCaptureSession *session = META_INPUT_CAPTURE_SESSION (user_data);
+-
+-  g_clear_pointer (&session->keymap_file, meta_anonymous_file_free);
+-
+-  if (session->eis_keyboard)
+-    {
+-      clear_eis_keyboard (session);
+-      ensure_eis_keyboard (session);
+-    }
+-}
+-
+-static void
+-process_eis_event (MetaInputCaptureSession *session,
+-                   struct eis_event        *eis_event)
+-{
+-  struct eis_client *eis_client;
+-  struct eis_device *eis_device;
+-
+-  switch (eis_event_get_type (eis_event))
+-    {
+-    case EIS_EVENT_CLIENT_CONNECT:
+-      eis_client = eis_event_get_client (eis_event);
+-      if (eis_client_is_sender (eis_client))
+-        {
+-          g_warning ("Unexpected sender libei client '%s' connected to "
+-                     "input capture session",
+-                     eis_client_get_name (eis_client));
+-          eis_client_disconnect (eis_client);
+-          return;
+-        }
+-
+-      if (session->eis_client)
+-        {
+-          g_warning ("Unexpected additional libei client '%s' connected to "
+-                     "input capture session",
+-                     eis_client_get_name (eis_client));
+-          eis_client_disconnect (eis_client);
+-          return;
+-        }
+-
+-      setup_client (session, eis_client);
+-      break;
+-
+-    case EIS_EVENT_CLIENT_DISCONNECT:
+-      g_clear_pointer (&session->eis_seat, eis_seat_unref);
+-      g_clear_pointer (&session->eis_client, eis_client_unref);
+-      break;
+-    case EIS_EVENT_SEAT_BIND:
+-      if (eis_event_seat_has_capability (eis_event, EIS_DEVICE_CAP_POINTER) &&
+-          eis_event_seat_has_capability (eis_event, EIS_DEVICE_CAP_BUTTON) &&
+-          eis_event_seat_has_capability (eis_event, EIS_DEVICE_CAP_SCROLL))
+-        ensure_eis_pointer (session);
+-      else if (session->eis_pointer)
+-        clear_eis_pointer (session);
+-
+-      if (eis_event_seat_has_capability (eis_event, EIS_DEVICE_CAP_KEYBOARD))
+-        ensure_eis_keyboard (session);
+-      else if (session->eis_keyboard)
+-        clear_eis_keyboard (session);
+-      break;
+-    case EIS_EVENT_DEVICE_CLOSED:
+-      eis_device = eis_event_get_device (eis_event);
+-
+-      if (eis_device == session->eis_pointer)
+-        remove_eis_pointer (session);
+-      else if (eis_device == session->eis_keyboard)
+-        remove_eis_keyboard (session);
+-      break;
+-    default:
+-      break;
+-    }
+-}
+-
+-static void
+ on_barrier_hit (MetaBarrier             *barrier,
+                 const MetaBarrierEvent  *event,
+                 MetaInputCaptureSession *session)
+@@ -417,8 +147,6 @@
+ {
+   MetaDBusInputCaptureSession *skeleton =
+     META_DBUS_INPUT_CAPTURE_SESSION (session);
+-  MetaInputCapture *input_capture =
+-    META_INPUT_CAPTURE (session->session_manager);
+   GVariant *cursor_position;
+   unsigned int barrier_id;
+ 
+@@ -440,16 +168,10 @@
+                                                      quark_barrier_id));
+   cursor_position = g_variant_new ("(dd)", event->x, event->y);
+ 
+-  meta_input_capture_activate (input_capture, session);
+-
+   meta_dbus_input_capture_session_emit_activated (skeleton,
+                                                   barrier_id,
+                                                   ++session->activation_id,
+                                                   cursor_position);
+-  if (session->eis_pointer)
+-    eis_device_start_emulating (session->eis_pointer, session->activation_id);
+-  if (session->eis_keyboard)
+-    eis_device_start_emulating (session->eis_keyboard, session->activation_id);
+ 
+   init_remote_access_handle (session);
+ }
+@@ -522,7 +244,6 @@
+     }
+ 
+   session->state = INPUT_CAPTURE_STATE_ENABLED;
+-  session->cancel_requested = FALSE;
+ 
+   return TRUE;
+ 
+@@ -532,26 +253,6 @@
+ }
+ 
+ static void
+-meta_input_capture_session_deactivate (MetaInputCaptureSession *session)
+-{
+-  MetaDBusInputCaptureSession *skeleton =
+-    META_DBUS_INPUT_CAPTURE_SESSION (session);
+-  MetaInputCapture *input_capture =
+-    META_INPUT_CAPTURE (session->session_manager);
+-
+-  meta_input_capture_deactivate (input_capture, session);
+-
+-  if (session->eis_pointer)
+-    eis_device_stop_emulating (session->eis_pointer);
+-  if (session->eis_keyboard)
+-    eis_device_stop_emulating (session->eis_keyboard);
+-  meta_dbus_input_capture_session_emit_deactivated (skeleton,
+-                                                    session->activation_id);
+-
+-  session->state = INPUT_CAPTURE_STATE_ENABLED;
+-}
+-
+-static void
+ meta_input_capture_session_disable (MetaInputCaptureSession *session)
+ {
+   switch (session->state)
+@@ -570,10 +271,6 @@
+ 
+   clear_all_barriers (session);
+ 
+-  g_clear_pointer (&session->eis_pointer, eis_device_unref);
+-  g_clear_pointer (&session->eis_keyboard, eis_device_unref);
+-  g_clear_pointer (&session->eis_seat, eis_seat_unref);
+-
+   session->state = INPUT_CAPTURE_STATE_INIT;
+ 
+   if (session->handle)
+@@ -965,7 +662,7 @@
+ static gboolean
+ handle_release (MetaDBusInputCaptureSession *object,
+                 GDBusMethodInvocation       *invocation,
+-                GVariant                    *arg_options)
++                GVariant                    *position)
+ {
+   MetaInputCaptureSession *session = META_INPUT_CAPTURE_SESSION (object);
+   MetaBackend *backend =
+@@ -990,11 +687,12 @@
+     }
+ 
+   release_all_barriers (session);
+-  meta_input_capture_session_deactivate (session);
+ 
+-  if (g_variant_lookup (arg_options, "cursor_position", "(dd)", &x, &y))
+-    clutter_seat_warp_pointer (seat, x, y);
++  session->state = INPUT_CAPTURE_STATE_ENABLED;
+ 
++  g_variant_get (position, "(dd)", &x, &y);
++  clutter_seat_warp_pointer (seat, x, y);
++
+   if (session->handle)
+     release_remote_access_handle (session);
+ 
+@@ -1004,47 +702,6 @@
+ }
+ 
+ static gboolean
+-handle_connect_to_eis (MetaDBusInputCaptureSession *object,
+-                       GDBusMethodInvocation       *invocation,
+-                       GUnixFDList                 *fd_list_in)
+-{
+-  MetaInputCaptureSession *session = META_INPUT_CAPTURE_SESSION (object);
+-  int fd;
+-  g_autoptr (GUnixFDList) fd_list = NULL;
+-  int fd_idx;
+-  GVariant *fd_variant;
+-
+-  if (!check_permission (session, invocation))
+-    {
+-      g_dbus_method_invocation_return_error (invocation, G_DBUS_ERROR,
+-                                             G_DBUS_ERROR_ACCESS_DENIED,
+-                                             "Permission denied");
+-      return G_DBUS_METHOD_INVOCATION_HANDLED;
+-    }
+-
+-  fd = eis_backend_fd_add_client (session->eis);
+-  if (fd < 0)
+-    {
+-      g_dbus_method_invocation_return_error (invocation, G_DBUS_ERROR,
+-                                             G_DBUS_ERROR_FAILED,
+-                                             "Failed to create socket: %s",
+-                                             g_strerror (-fd));
+-      return G_DBUS_METHOD_INVOCATION_HANDLED;
+-    }
+-
+-  fd_list = g_unix_fd_list_new ();
+-  fd_idx = g_unix_fd_list_append (fd_list, fd, NULL);
+-  close (fd);
+-  fd_variant = g_variant_new_handle (fd_idx);
+-
+-  meta_dbus_input_capture_session_complete_connect_to_eis (object,
+-                                                           invocation,
+-                                                           fd_list,
+-                                                           fd_variant);
+-  return G_DBUS_METHOD_INVOCATION_HANDLED;
+-}
+-
+-static gboolean
+ handle_close (MetaDBusInputCaptureSession *object,
+               GDBusMethodInvocation       *invocation)
+ {
+@@ -1066,30 +723,12 @@
+ }
+ 
+ static void
+-meta_input_capture_session_set_viewports (MetaInputCaptureSession *session,
+-                                          MetaViewportInfo        *viewports)
+-{
+-  g_clear_object (&session->viewports);
+-  session->viewports = g_object_ref (viewports);
+-
+-  if (!session->eis_pointer)
+-    return;
+-
+-  clear_eis_pointer (session);
+-  ensure_eis_pointer (session);
+-}
+-
+-static void
+ on_monitors_changed (MetaMonitorManager      *monitor_manager,
+                      MetaInputCaptureSession *session)
+ {
+   MetaDBusInputCaptureSession *skeleton =
+     META_DBUS_INPUT_CAPTURE_SESSION (session);
+-  MetaViewportInfo *viewports;
+ 
+-  viewports = meta_monitor_manager_get_viewports (monitor_manager);
+-  meta_input_capture_session_set_viewports (session, viewports);
+-
+   session->zones_serial++;
+   meta_input_capture_session_disable (session);
+   meta_dbus_input_capture_session_emit_zones_changed (skeleton);
+@@ -1106,8 +745,6 @@
+     meta_dbus_session_manager_get_backend (session->session_manager);
+   MetaMonitorManager *monitor_manager =
+     meta_backend_get_monitor_manager (backend);
+-  MetaViewportInfo *viewports =
+-    meta_monitor_manager_get_viewports (monitor_manager);
+ 
+   session->connection =
+     meta_dbus_session_manager_get_connection (session->session_manager);
+@@ -1117,7 +754,6 @@
+                                          error))
+     return FALSE;
+ 
+-  meta_input_capture_session_set_viewports (session, viewports);
+   g_signal_connect_object (monitor_manager, "monitors-changed",
+                            G_CALLBACK (on_monitors_changed),
+                            session, 0);
+@@ -1139,7 +775,6 @@
+   iface->handle_enable = handle_enable;
+   iface->handle_disable = handle_disable;
+   iface->handle_release = handle_release;
+-  iface->handle_connect_to_eis = handle_connect_to_eis;
+   iface->handle_close = handle_close;
+   iface->handle_get_zones = handle_get_zones;
+ }
+@@ -1161,108 +796,11 @@
+   g_free (session->peer_name);
+   g_free (session->session_id);
+   g_free (session->object_path);
+-  g_clear_object (&session->viewports);
+-  g_clear_pointer (&session->keymap_file, meta_anonymous_file_free);
+-  g_clear_pointer (&session->eis_source, g_source_destroy);
+-  g_clear_pointer (&session->eis, eis_unref);
+ 
+   G_OBJECT_CLASS (meta_input_capture_session_parent_class)->finalize (object);
+ }
+ 
+ static void
+-meta_eis_log_handler (struct eis             *eis,
+-                      enum eis_log_priority   priority,
+-                      const char             *message,
+-                      struct eis_log_context *ctx)
+-{
+-  int message_length = strlen (message);
+-
+-  if (priority >= EIS_LOG_PRIORITY_ERROR)
+-    g_critical ("EIS: %.*s", message_length, message);
+-  else if (priority >= EIS_LOG_PRIORITY_WARNING)
+-    g_warning ("EIS: %.*s", message_length, message);
+-  else if (priority >= EIS_LOG_PRIORITY_INFO)
+-    g_info ("EIS: %.*s", message_length, message);
+-  else
+-    meta_topic (META_DEBUG_INPUT, "EIS: %.*s", message_length, message);
+-}
+-
+-static gboolean
+-meta_eis_source_prepare (gpointer user_data)
+-{
+-  MetaInputCaptureSession *session = META_INPUT_CAPTURE_SESSION (user_data);
+-  struct eis_event *eis_event;
+-  gboolean retval;
+-
+-  eis_event = eis_peek_event (session->eis);
+-  retval = !!eis_event;
+-  eis_event_unref (eis_event);
+-
+-  return retval;
+-}
+-
+-static gboolean
+-meta_eis_source_dispatch (gpointer user_data)
+-{
+-  MetaInputCaptureSession *session = META_INPUT_CAPTURE_SESSION (user_data);
+-
+-  eis_dispatch (session->eis);
+-
+-  while (TRUE)
+-    {
+-      struct eis_event *eis_event;
+-
+-      eis_event = eis_get_event (session->eis);
+-      if (!eis_event)
+-        break;
+-
+-      process_eis_event (session, eis_event);
+-      eis_event_unref (eis_event);
+-    }
+-
+-  return G_SOURCE_CONTINUE;
+-}
+-
+-static void
+-meta_input_capture_session_constructed (GObject *object)
+-{
+-  MetaInputCaptureSession *session = META_INPUT_CAPTURE_SESSION (object);
+-  MetaBackend *backend =
+-    meta_dbus_session_manager_get_backend (session->session_manager);
+-  static unsigned int global_session_number = 0;
+-  int fd;
+-  GSource *source;
+-
+-  session->object_path =
+-    g_strdup_printf (META_INPUT_CAPTURE_SESSION_DBUS_PATH "/u%u",
+-                     ++global_session_number);
+-
+-  session->barriers = g_hash_table_new_full (NULL, NULL, NULL,
+-                                             input_capture_barrier_free);
+-
+-  session->eis = eis_new (session);
+-  eis_log_set_handler (session->eis, meta_eis_log_handler);
+-  eis_log_set_priority (session->eis, EIS_LOG_PRIORITY_DEBUG);
+-  eis_setup_backend_fd (session->eis);
+-
+-  fd = eis_get_fd (session->eis);
+-  source = meta_create_fd_source (fd,
+-                                  "[mutter] eis",
+-                                  meta_eis_source_prepare,
+-                                  meta_eis_source_dispatch,
+-                                  session,
+-                                  NULL);
+-  session->eis_source = source;
+-  g_source_attach (source, NULL);
+-  g_source_unref (source);
+-
+-  g_signal_connect (backend, "keymap-changed",
+-                    G_CALLBACK (on_keymap_changed), session);
+-
+-  G_OBJECT_CLASS (meta_input_capture_session_parent_class)->constructed (object);
+-}
+-
+-static void
+ meta_input_capture_session_set_property (GObject      *object,
+                                          guint         prop_id,
+                                          const GValue *value,
+@@ -1319,7 +857,6 @@
+   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+ 
+   object_class->finalize = meta_input_capture_session_finalize;
+-  object_class->constructed = meta_input_capture_session_constructed;
+   object_class->set_property = meta_input_capture_session_set_property;
+   object_class->get_property = meta_input_capture_session_get_property;
+ 
+@@ -1332,6 +869,14 @@
+ static void
+ meta_input_capture_session_init (MetaInputCaptureSession *session)
+ {
++  static unsigned int global_session_number = 0;
++
++  session->object_path =
++    g_strdup_printf (META_INPUT_CAPTURE_SESSION_DBUS_PATH "/u%u",
++                     ++global_session_number);
++
++  session->barriers = g_hash_table_new_full (NULL, NULL, NULL,
++                                             input_capture_barrier_free);
+ }
+ 
+ char *
+@@ -1340,170 +885,6 @@
+   return session->object_path;
+ }
+ 
+-static void
+-maybe_disable_cancelled_session (MetaInputCaptureSession *session)
+-{
+-  if (!session->cancel_requested)
+-    return;
+-
+-  if (session->keys_pressed == 0 && session->buttons_pressed == 0)
+-    meta_input_capture_session_disable (session);
+-}
+-
+-static void
+-update_keys_pressed (MetaInputCaptureSession *session,
+-                     gboolean                 is_pressed)
+-{
+-  if (is_pressed)
+-    session->keys_pressed++;
+-  else if (session->keys_pressed > 0)
+-    session->keys_pressed--;
+-  else
+-    g_warning ("Unbalanced key release");
+-
+-  maybe_disable_cancelled_session (session);
+-}
+-
+-static void
+-update_buttons_pressed (MetaInputCaptureSession *session,
+-                        gboolean                 is_pressed)
+-{
+-  if (is_pressed)
+-    session->buttons_pressed++;
+-  else if (session->buttons_pressed > 0)
+-    session->buttons_pressed--;
+-  else
+-    g_warning ("Unbalanced button release");
+-
+-  maybe_disable_cancelled_session (session);
+-}
+-
+-gboolean
+-meta_input_capture_session_process_event (MetaInputCaptureSession *session,
+-                                          const ClutterEvent      *event)
+-{
+-  double dx, dy, dx_constrained, dy_constrained;
+-
+-  switch (clutter_event_type (event))
+-    {
+-    case CLUTTER_MOTION:
+-      if (!session->eis_pointer)
+-        return TRUE;
+-
+-      clutter_event_get_relative_motion (event, &dx, &dy, NULL, NULL,
+-                                         &dx_constrained, &dy_constrained);
+-
+-      eis_device_pointer_motion (session->eis_pointer,
+-                                 dx - dx_constrained,
+-                                 dy - dy_constrained);
+-      eis_device_frame (session->eis_pointer, eis_now (session->eis));
+-      break;
+-    case CLUTTER_BUTTON_PRESS:
+-      update_buttons_pressed (session, TRUE);
+-
+-      if (!session->eis_pointer)
+-        return TRUE;
+-
+-      eis_device_button_button (session->eis_pointer,
+-                                clutter_event_get_event_code (event),
+-                                true);
+-      eis_device_frame (session->eis_pointer, eis_now (session->eis));
+-      break;
+-    case CLUTTER_BUTTON_RELEASE:
+-      update_buttons_pressed (session, FALSE);
+-
+-      if (!session->eis_pointer)
+-        return TRUE;
+-
+-      eis_device_button_button (session->eis_pointer,
+-                                clutter_event_get_event_code (event),
+-                                false);
+-      eis_device_frame (session->eis_pointer, eis_now (session->eis));
+-      break;
+-    case CLUTTER_SCROLL:
+-      {
+-        ClutterScrollFinishFlags finish_flags;
+-        const double factor = 10.0;
+-        bool stop_x = false, stop_y = false;
+-        double dx, dy;
+-
+-        if (!session->eis_pointer)
+-          return TRUE;
+-
+-        finish_flags = clutter_event_get_scroll_finish_flags (event);
+-
+-        if ((finish_flags & CLUTTER_SCROLL_FINISHED_HORIZONTAL))
+-          stop_x = true;
+-        if ((finish_flags & CLUTTER_SCROLL_FINISHED_HORIZONTAL))
+-          stop_y = true;
+-
+-        if (stop_x || stop_y)
+-          eis_device_scroll_stop (session->eis_pointer, stop_x, stop_y);
+-
+-        switch (clutter_event_get_scroll_direction (event))
+-          {
+-          case CLUTTER_SCROLL_UP:
+-            eis_device_scroll_discrete (session->eis_pointer, 0, -120);
+-            break;
+-          case CLUTTER_SCROLL_DOWN:
+-            eis_device_scroll_discrete (session->eis_pointer, 0, 120);
+-            break;
+-          case CLUTTER_SCROLL_LEFT:
+-            eis_device_scroll_discrete (session->eis_pointer, -120, 0);
+-            break;
+-          case CLUTTER_SCROLL_RIGHT:
+-            eis_device_scroll_discrete (session->eis_pointer, 120, 0);
+-            break;
+-          case CLUTTER_SCROLL_SMOOTH:
+-            clutter_event_get_scroll_delta (event, &dx, &dy);
+-            eis_device_scroll_delta (session->eis_pointer,
+-                                     dx * factor,
+-                                     dy * factor);
+-            break;
+-          }
+-        eis_device_frame (session->eis_pointer, eis_now (session->eis));
+-        break;
+-      }
+-    case CLUTTER_KEY_PRESS:
+-      update_keys_pressed (session, TRUE);
+-
+-      if (!session->eis_keyboard)
+-        return TRUE;
+-
+-      eis_device_keyboard_key (session->eis_keyboard,
+-                               clutter_event_get_event_code (event),
+-                               true);
+-      eis_device_frame (session->eis_keyboard, eis_now (session->eis));
+-      break;
+-    case CLUTTER_KEY_RELEASE:
+-      update_keys_pressed (session, FALSE);
+-
+-      if (!session->eis_keyboard)
+-        return TRUE;
+-
+-      eis_device_keyboard_key (session->eis_keyboard,
+-                               clutter_event_get_event_code (event),
+-                               false);
+-      eis_device_frame (session->eis_keyboard, eis_now (session->eis));
+-      break;
+-    default:
+-      return FALSE;
+-    }
+-
+-  return TRUE;
+-}
+-
+-void
+-meta_input_capture_session_notify_cancelled (MetaInputCaptureSession *session)
+-{
+-  if (session->cancel_requested)
+-    return;
+-
+-  session->cancel_requested = TRUE;
+-
+-  maybe_disable_cancelled_session (session);
+-}
+-
+ static MetaInputCaptureSessionHandle *
+ meta_input_capture_session_handle_new (MetaInputCaptureSession *session)
+ {
+--- a/src/backends/meta-input-capture-session.h	2024-01-02 16:17:33.013777680 -0800
++++ b/src/backends/meta-input-capture-session.h	2024-01-02 16:17:57.258765225 -0800
+@@ -21,7 +21,6 @@
+ #include <glib-object.h>
+ 
+ #include "backends/meta-input-capture.h"
+-#include "backends/meta-viewport-info.h"
+ #include "meta/meta-remote-access-controller.h"
+ 
+ #define META_TYPE_INPUT_CAPTURE_SESSION (meta_input_capture_session_get_type ())
+@@ -36,8 +35,3 @@
+                       MetaRemoteAccessHandle)
+ 
+ char *meta_input_capture_session_get_object_path (MetaInputCaptureSession *session);
+-
+-gboolean meta_input_capture_session_process_event (MetaInputCaptureSession *session,
+-                                                   const ClutterEvent      *event);
+-
+-void meta_input_capture_session_notify_cancelled (MetaInputCaptureSession *session);
+--- a/src/meson.build	2024-01-02 19:02:19.421689042 -0800
++++ b/src/meson.build	2024-01-02 19:06:18.679146176 -0800
+@@ -233,10 +233,6 @@
+   'backends/meta-idle-manager.c',
+   'backends/meta-idle-manager.h',
+   'backends/meta-idle-monitor-private.h',
+-  'backends/meta-input-capture.c',
+-  'backends/meta-input-capture.h',
+-  'backends/meta-input-capture-session.c',
+-  'backends/meta-input-capture-session.h',
+   'backends/meta-input-device.c',
+   'backends/meta-input-mapper.c',
+   'backends/meta-input-mapper-private.h',
+--- a/src/backends/meta-backend.c	2024-01-02 19:08:09.001373587 -0800
++++ b/src/backends/meta-backend.c	2024-01-02 19:11:31.129959922 -0800
+@@ -57,7 +57,6 @@
+ #include "backends/meta-dbus-session-watcher.h"
+ #include "backends/meta-idle-manager.h"
+ #include "backends/meta-idle-monitor-private.h"
+-#include "backends/meta-input-capture.h"
+ #include "backends/meta-input-mapper-private.h"
+ #include "backends/meta-input-settings-private.h"
+ #include "backends/meta-logical-monitor.h"
+@@ -146,7 +145,6 @@
+   MetaScreenCast *screen_cast;
+   MetaRemoteDesktop *remote_desktop;
+ #endif
+-  MetaInputCapture *input_capture;
+ 
+ #ifdef HAVE_LIBWACOM
+   WacomDeviceDatabase *wacom_db;
+@@ -215,7 +213,6 @@
+   g_clear_object (&priv->remote_desktop);
+   g_clear_object (&priv->screen_cast);
+ #endif
+-  g_clear_object (&priv->input_capture);
+   g_clear_object (&priv->dbus_session_watcher);
+   g_clear_object (&priv->remote_access_controller);
+ 
+@@ -589,11 +586,6 @@
+     META_DBUS_SESSION_MANAGER (priv->remote_desktop));
+ #endif /* HAVE_REMOTE_DESKTOP */
+ 
+-  priv->input_capture = meta_input_capture_new (backend);
+-  meta_remote_access_controller_add (
+-    priv->remote_access_controller,
+-    META_DBUS_SESSION_MANAGER (priv->input_capture));
+-
+   if (!meta_monitor_manager_is_headless (priv->monitor_manager))
+     init_pointer_position (backend);
+ 
+--- a/src/backends/meta-backend.c	2024-01-02 19:31:33.517087428 -0800
++++ b/src/backends/meta-backend.c	2024-01-02 19:31:48.661226066 -0800
+@@ -1442,14 +1442,6 @@
+ }
+ #endif /* HAVE_REMOTE_DESKTOP */
+ 
+-MetaInputCapture *
+-meta_backend_get_input_capture (MetaBackend *backend)
+-{
+-  MetaBackendPrivate *priv = meta_backend_get_instance_private (backend);
+-
+-  return priv->input_capture;
+-}
+-
+ /**
+  * meta_backend_get_remote_access_controller:
+  * @backend: A #MetaBackend
