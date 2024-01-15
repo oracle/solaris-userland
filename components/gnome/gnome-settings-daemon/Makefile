@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,14 +28,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-settings-daemon
-COMPONENT_VERSION=	41.0
+COMPONENT_VERSION=	45.1
 COMPONENT_PROJECT_URL=	http://wiki.gnome.org
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e6ca6361fbd1deab2de1a1e390d4f14167cf47b1c547dbb8b65a5d89e9663884
+	sha256:c62bfec9817eee5b83ebe901a9286189a67eb5ff033c5dd41506574f822bf090
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	12860
 
-COMPONENT_BAID=		141494
+COMPONENT_BAID=		157184
 BUILD_STYLE=		meson
 
 # Tests require python-dbusmock and umockdev packages
@@ -43,10 +43,6 @@ BUILD_STYLE=		meson
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
-
-CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
-COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
 
 # gudev not yet supported on Solaris.
 CONFIGURE_OPTIONS += -Dgudev=false
@@ -65,21 +61,17 @@ CONFIGURE_OPTIONS += --libexecdir=$(USRLIB.$(BITS))
 REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/audio/pulseaudio
-REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/geoclue
 REQUIRED_PACKAGES += library/desktop/geocode-glib
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/desktop/libnotify
 REQUIRED_PACKAGES += library/desktop/libgweather
+REQUIRED_PACKAGES += library/desktop/libnotify
+REQUIRED_PACKAGES += library/desktop/p11-kit
 REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/gnome/gcr-4
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
-REQUIRED_PACKAGES += library/lcms2
-REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/print/cups-libs
-REQUIRED_PACKAGES += library/security/nss
 REQUIRED_PACKAGES += service/image/colord
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/math
@@ -89,4 +81,3 @@ REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxfixes
 REQUIRED_PACKAGES += x11/library/libxi
-REQUIRED_PACKAGES += x11/library/libxtst
