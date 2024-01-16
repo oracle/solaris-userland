@@ -28,16 +28,16 @@ BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk4
-COMPONENT_VERSION=	4.3.0
+COMPONENT_VERSION=	4.4.2
 COMPONENT_PROJECT_URL=	https://www.gtk.org/
 COMPONENT_SRC=		gtk-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1f6ddacb549c80923e6a0600c2a795b38add73f75dc0d0780cdf8bad59589c19
-COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk/4.3/$(COMPONENT_ARCHIVE)
+    sha256:08cdf45f655fe90318aba7d9e8008dda2ca4cb8db1b36197ca539ae25ce4719b
+COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk/4.4/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gtk+
 COMPONENT_ANITYA_ID=	13942
 
-COMPONENT_BAID=		102031
+COMPONENT_BAID=		155422
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -48,7 +48,8 @@ CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 CONFIGURE_OPTIONS += -Dwayland-backend=false
-CONFIGURE_OPTIONS += -Dsassc=disabled
+# Requires gstreamer-player-1
+CONFIGURE_OPTIONS += -Dmedia-gstreamer=disabled
 CONFIGURE_OPTIONS += -Dman-pages=true
 
 # GCC 11 compiles F16C meson intrinsics test. But later fp16.c build fails
@@ -60,6 +61,8 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH64).master
+COMPONENT_TEST_TRANSFORMS += \
+        '-e "s/[0-9]* subtests passed//"'
 
 REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += library/desktop/cairo
