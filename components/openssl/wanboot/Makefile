@@ -72,7 +72,6 @@ CONFIGURE_OPTIONS += --prefix=/usr/openssl/3/wanboot
 #
 # The removed options were:
 #
-#   no-deprecated - to allow APIs like SSL_library_init() to work
 #   no-stdio - for d2i_PKCS12_fp() etc.
 #   no-sock - needed for SSL_set_fd() etc.
 #   no-asm - needed for crypto performance
@@ -117,6 +116,7 @@ CONFIGURE_OPTIONS += no-cms
 CONFIGURE_OPTIONS += no-comp
 CONFIGURE_OPTIONS += no-crypto-mdebug
 CONFIGURE_OPTIONS += no-ct
+CONFIGURE_OPTIONS += no-deprecated
 CONFIGURE_OPTIONS += no-devcryptoeng
 CONFIGURE_OPTIONS += no-dgram
 CONFIGURE_OPTIONS += no-docs
