@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,16 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-system-monitor
-COMPONENT_VERSION=	41.0
+COMPONENT_VERSION=	45.0.2
 COMPONENT_PROJECT_URL=  https://help.gnome.org/users/gnome-system-monitor/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c7fc44c61949b794b0289968ebbbcc0c15f8cfc3d9e45bfaa81ed45c12139e5f
+	sha256:c5e272d90bf9986a3f8613d76e0d27fa42dfacee5c0192e73921bb94b1868a2e
+COMPONENT_ARCHIVE_URL= \
+        https://download.gnome.org/sources/$(COMPONENT_NAME)/$(basename $(COMPONENT_MAJOR_MINOR))/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	13137
 
-COMPONENT_BAID=		110765
+COMPONENT_BAID=		156901
 BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
