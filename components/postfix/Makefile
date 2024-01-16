@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -29,15 +29,13 @@ COMPILER =	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		postfix
-COMPONENT_VERSION=	3.2.2
+COMPONENT_VERSION=	3.8.4
+COMPONENT_BAID=		156614
+COMPONENT_ARCHIVE_HASH=	sha256:6f5848c5d8b6a7d2c5af0a9f75b0bd3f103451e912591464ab867fde085e6236
 COMPONENT_PROJECT_URL=	http://www.postfix.org
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:d06849418d119d09366997b2b481bb23f737629769b4e4a52da42fb3ad8b0576
 COMPONENT_ARCHIVE_URL=	https://archive.mgm51.com/mirrors/$(COMPONENT_NAME)-source/official/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	3693
-
-COMPONENT_BAID=		40979
 
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)
@@ -71,9 +69,8 @@ AUXLIBS +=	-lsasl2
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
-# pcre-config is run as part of the setup, so we need to find the 64-bit
-# version so it will provide a 64-bit runpath, o/w pkglint gives warnings.
-PATH =		$(USRBINDIR64):$(USRBINDIR):$(GNUBIN)
+# gnu-grep is needed
+PATH =		$(GNUBIN):$(USRBINDIR64):$(USRBINDIR)
 
 COMPONENT_BUILD_ENV += CCARGS="$(CCARGS)"
 COMPONENT_BUILD_ENV += OPT="$(CFLAGS)"
@@ -88,11 +85,9 @@ COMPONENT_INSTALL_TARGETS = non-interactive-package install_root="$(PROTO_DIR)"
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += library/icu
-REQUIRED_PACKAGES += library/pcre
+REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/ldap/openldap
