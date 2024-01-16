@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=	64
@@ -31,9 +31,9 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         hplip
-COMPONENT_VERSION=      3.23.8
-COMPONENT_BAID=		154086
-COMPONENT_ARCHIVE_HASH= sha256:f7cc05f628c0cfd750e54ae41431c1dfdd29e97682f18b5c5ba5cb2c5b4b1b46
+COMPONENT_VERSION=      3.23.12
+COMPONENT_BAID=		156972
+COMPONENT_ARCHIVE_HASH= sha256:a76c2ac8deb31ddb5f0da31398d25ac57440928a0692dcb060a48daa718e69ed
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hplipopensource.com/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
@@ -72,11 +72,7 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 PY3_CPYTHON_NAMING=\#
 
 # Fix python script shebang
-COMPONENT_POST_INSTALL_ACTION += \
-	echo "Fixing python shebang..."; \
-	ggrep -rlI -m1 '^\#!.*python' $(PROTO_DIR) | while read file; do \
-		$(call PYTHON_SCRIPT_SHEBANG_FIX_FUNC,"$$file") \
-	done;
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/cups/filter/pstotiff
 
 # Pre-compile python source code
 COMPONENT_POST_INSTALL_ACTION += \
