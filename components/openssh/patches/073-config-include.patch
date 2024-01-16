@@ -1,0 +1,24 @@
+#
+# Solaris specific patch to provide support for configuration
+# fragment files by default.
+# This is intentionally separate from any other patch that modifies
+# sshd_config so that over time those changes may be able to be delivered
+# as fragement files rather than patching the source.
+diff -u -r openssh-9.6p1/ssh_config openssh-9.6p1/ssh_config
+--- openssh-9.6p1/ssh_config	2024-01-15 14:54:36.379278879 +0000
++++ openssh-9.6p1/ssh_config	2024-01-15 14:55:04.626761601 +0000
+@@ -50,3 +50,5 @@
+ # Send the LANG and LC_* environment variables to server.
+ SendEnv LANG
+ SendEnv LC_*
++
++Include /etc/ssh/ssh_config.d/*.conf
+diff -u -r openssh-9.6p1/sshd_config openssh-9.6p1/sshd_config
+--- openssh-9.6p1/sshd_config	2024-01-15 14:54:36.379914637 +0000
++++ openssh-9.6p1/sshd_config	2024-01-15 14:54:57.277372919 +0000
+@@ -88,3 +88,5 @@
+ # Accept the LANG and LC_* environment variables sent by the client.
+ AcceptEnv LANG
+ AcceptEnv LC_*
++
++Include /etc/ssh/sshd_config.d/*.conf
