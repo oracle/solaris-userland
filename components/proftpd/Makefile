@@ -20,24 +20,26 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		proftpd
-COMPONENT_VERSION=	1.3.8
+COMPONENT_VERSION=	1.3.8a
+IPS_COMPONENT_VERSION=	1.3.8.1.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	http://www.proftpd.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:f7139e7377a2cb059b8b9b14d76a6df5f440e3181cb15ae890d43bbcae574748
+	sha256:56093b890a712220b09b98e29de2974a590e8fae6b36ed78c698a90945466aaf
 COMPONENT_ARCHIVE_URL= ftp://ftp.proftpd.org/distrib/source/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	service/proftpd
-COMPONENT_BAID_PROFTPD=	138794
+COMPONENT_BAID_PROFTPD=	156912
+# For check_anitya target, https://release-monitoring.org/project/7609
 COMPONENT_ANITYA_ID=	7609
 
 # mod_gss subcomponent
@@ -53,6 +55,7 @@ COMPONENT_ARCHIVE_HASH_1= \
 MOD_GSS_URL=https://sourceforge.net/projects/gssmod/files/mod_gss/Version%20
 COMPONENT_ARCHIVE_URL_1= $(MOD_GSS_URL)$(COMPONENT_VERSION_1)/$(COMPONENT_ARCHIVE_1)
 COMPONENT_ANITYA_ID_1=	17188
+# For check_anitya target, https://release-monitoring.org/project/17188
 COMPONENT_BAID_MOD_GSS=	48611
 
 # Enable adiheap and adistack security extensions
@@ -60,7 +63,7 @@ ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 # libcheck and specific Perl Test::Unit version is required for full test
-TEST_TARGET= $(SKIP_TEST)
+TEST_TARGET= $(TEST_64)
 include $(WS_MAKE_RULES)/common.mk
 
 CFLAGS += -I$(USRINCDIR)/kerberosv5 -DHAVE_KRB5_H=1 -DKRB5_DLLIMP= -DHAVE__GETGRPSBYMEMBER -D_SOLARIS_DTRACE
@@ -122,6 +125,24 @@ COMPONENT_PRE_BUILD_ACTION = \
 
 # proftpd configure and build is not ready for run out of the source tree
 CONFIGURE_SCRIPT =	$(@D)/configure
+
+# Test target, performs the API testing only.  See documentation for perl test.
+COMPONENT_TEST_DIR =	$(BUILD_DIR)/$(MACH64)
+COMPONENT_TEST_CMD =	$(GMAKE)
+COMPONENT_TEST_TARGETS =	check
+# Results are identical, no need for $(MACH64) specific files.
+COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+# Remove the building of the test tools, as that is a little noisy and a
+# future minor change within a make-rules file would then show up there.
+COMPONENT_TEST_TRANSFORMS +=	\
+	'-e "1,/^\.\/api-tests/d" '
+# Normalize some test specific failure output, ideally this wouldn't be
+# necessary had tests all passed.  Transforms DATE, TIME, UID, and [NUMBER].
+COMPONENT_TEST_TRANSFORMS +=	\
+	'-e "s|[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]|\\$$(DATE)|g" ' \
+	'-e "s|[0-2][0-9]:[0-5][0-9]:[0-5][[0-9]|\\$$(TIME)|g" ' \
+	'-e "s|,[0-9]* \[[0-9]*\]|,\\$$(UID) [\\$$(NUMBER)]|" ' \
+	'-e "s|^\[[0-9]*\]|[\\$$(NUMBER)]|" '
 
 # Do not apply the standard license transforms for this component. The
 # license actions in the proftpd.p5m file are already tagged with the
