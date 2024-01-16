@@ -19,7 +19,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -121,8 +121,6 @@ mysql_pinger() {
 # cannot accept a HUP signal to reload the configuration file my.cnf
 
 mysql_start() 	{
-	(
-	exec 2>&1
 	"${MYSQLBIN}"/mysqld_safe --defaults-file="${MYSQLCNF}" --user=mysql --datadir="${MYSQLDATA}" --pid-file="${PIDFILE}" > /dev/null &
 	
 	if mysql_pinger $! ; then
@@ -131,8 +129,6 @@ mysql_start() 	{
             echo "Failed to start service MySQL"
             exit $SMF_EXIT_ERR_FATAL
         fi
-	
-	)
 }
 
 case "$1" in
