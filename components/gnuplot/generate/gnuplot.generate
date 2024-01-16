@@ -20,16 +20,12 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 # Reintroduce $(GNUPLOT_VERSION) in generated p5m file.
 <transform file link -> edit path "$(GNUPLOT_VERSION)" "$(GV)">
 <transform file link -> edit path "GV" "GNUPLOT_VERSION">
-
-# Make gnuplot executable...
-<transform file path=usr/bin/gnuplot -> set mode 555>
-<transform file path=usr/lib/\$\(MACH64\)/gnuplot/\$\(GNUPLOT_VERSION\)/gnuplot_x11 -> set mode 555>
 
 # Setup manual page stability, see attributes(7).
 <transform file path=usr/share/man/man1/gnuplot.1 -> set mangler.man.stability uncommitted>
@@ -38,13 +34,6 @@
 <transform file path=usr/demo/gnuplot.*Makefile -> drop>
 <transform file path=usr/demo/gnuplot/plugin/\.deps -> drop>
 <transform file path=usr/demo/gnuplot/plugin/demo_plugin_so-demo_plugin.o -> drop>
-
-# Setup executable mode on demo's binaries and scripts.
-<transform file path=usr/demo/gnuplot/rundemo -> set mode 555>
-<transform file path=usr/demo/gnuplot/runtcldemo -> set mode 555>
-<transform file path=usr/demo/gnuplot/.*\.tcl$ -> set mode 555>
-<transform file path=usr/demo/gnuplot/.*\.pl$ -> set mode 555>
-<transform file path=usr/demo/gnuplot/binary[1-9]$ -> set mode 555>
 
 # Ignore 64-bit object in 32-bit path error for demo plugin.
 <transform file path=usr/demo/gnuplot/plugin/demo_plugin.so -> set pkg.linted.userland.action001.2 true>

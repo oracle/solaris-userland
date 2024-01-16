@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -28,10 +28,6 @@
 # Delete everything not belonging to this package
 <transform hardlink file link pkg.type=(?!main) -> drop>
 <transform hardlink file link -> delete pkg.type .*>
-
-# Ensure scripts delivered in usr/lib are executable.
-<transform file path=usr/lib/groff/.+\.pl$ -> set mode 0555>
-<transform file path=usr/lib/groff/.+\.sh$ -> set mode 0555>
 
 # Put the documentation in the correct location.
 <transform file link path=usr/share/doc/groff-\$\(COMPONENT_VERSION\)/.*$ -> \

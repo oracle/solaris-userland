@@ -20,14 +20,17 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
-<transform file path=usr/libexec -> set mode 0555>
 <transform file path=usr/libexec -> set action.hash %(path)>
 <transform file path=usr/libexec -> edit path libexec lib>
+
+# Drop unnecessary executable bits
+<transform file path=^usr/share/man/man1/scan-build.1$ -> delete mode 0555>
+<transform file path=^usr/lib/python.*/vendor-packages/.*\.(js|css|c|in) -> delete mode 0555>
 
 # missing python dependencies: ScanView.abi3.so, SocketServer.abi3.so, urllib2.abi3.so
 <transform file path=usr/bin/scan-view -> set pkg.depend.bypass-generate .*>

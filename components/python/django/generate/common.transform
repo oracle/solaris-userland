@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
 #
 
 # Remove everything remaining without the $(PYVER) variable in its path
@@ -42,3 +42,6 @@
 
 # Drop all patch backup files
 <transform file path=.+~$ -> drop>
+
+# Remove unnecessary executable bit
+<transform file path=.*/vendor-packages/django/conf/project_template/manage.py-tpl$ -> delete mode 0555>

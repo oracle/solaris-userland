@@ -20,7 +20,10 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 <transform path=usr/nodejs/18 -> edit path ^usr/nodejs/18 usr/nodejs/\$\(NODE_MAJOR_VERSION\)>
 <transform file path=usr/nodejs/\$\(NODE_MAJOR_VERSION\)/bin/node -> default pkg.linted.userland.action001.3 true>
+
+# Remove unnecessary executable bits
+<transform file path=^usr/nodejs/.*/lib/node_modules/ -> delete mode 0555>

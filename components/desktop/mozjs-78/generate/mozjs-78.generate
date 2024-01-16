@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 # move js-config to correct location
@@ -29,3 +29,7 @@
 
 # drop static library (with a weird extension)
 <transform file path=usr/lib/\$\(MACH64\)/libjs_static.ajs$ -> drop>
+
+# Drop unnecessary executable bit
+<transform file path=usr/include/mozjs-78/js-config.h -> delete mode 0555>
+<transform file path=usr/lib/.*/pkgconfig/mozjs-78.pc -> delete mode 0555>

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -48,10 +48,6 @@
 <transform file path=files/svc-portmap -> set action.hash %(path)>
 <transform file path=files/svc-portmap -> set path lib/svc/method/portmap>
 <transform file path=lib/svc/method/portmap -> set disable_fmri svc:/network/erlang/portmap:default>
-
-# Set appropriate permissions to the executable files.
-<transform file path=usr/lib/\$\(MACH64\)/erlang/erts-10.0/bin/beam.smp -> set mode 0555>
-<transform file path=usr/lib/\$\(MACH64\)/erlang/lib/tools-3.0/bin/emem -> set mode 0555>
 
 # Rename back the architecture specific files.
 <transform file path=.*/internal/arch_i386/.* -> edit path /arch_i386/ /i386/>

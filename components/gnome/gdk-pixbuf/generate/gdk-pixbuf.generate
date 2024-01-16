@@ -18,7 +18,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 <transform file path=usr/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache -> \
@@ -33,3 +33,6 @@
 	set pkg.linted.userland.action001.2 true>
 <transform file path=usr/lib/installed-tests/gdk-pixbuf/pixbuf-* -> \
 	set pkg.linted.userland.action001.2 true>
+
+# Drop unnecessary executable bit
+<transform set file path=^usr/lib/installed-tests/.* -> delete mode 0555>

@@ -20,12 +20,10 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
-# valgrind tools should be executable and linter must
-# accept them not being ASLR enabled
-<transform file path=.*/valgrind/.*(x86|amd64)-solaris$ -> set mode 0555>
+# valgrind tools are not ASLR enabled
 <transform file path=.*/valgrind/.*(x86|amd64)-solaris$ -> set pkg.linted.userland.action001.5 true>
 
 # -amd64-solaris libraries are placed in 32bit libexec directory

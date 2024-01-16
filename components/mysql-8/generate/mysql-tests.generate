@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
-<transform file path=.*/mysql-test/mysql-stress-test\.pl -> set mode 0555>
-<transform file path=.*/mysql-test/mysql-test-run\.pl -> set mode 0555>
-
 # delete everything not belonging to this package
 <transform file link pkg.type=(?!tests) -> drop>
 <transform file link -> delete pkg.type .*>
+
+# Remove unnecessary executable bits
+<transform file -> delete mode 0555>

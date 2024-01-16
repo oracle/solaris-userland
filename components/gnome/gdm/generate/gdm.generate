@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates. 
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -30,22 +30,12 @@
 <transform file link -> delete pkg.type .*>
 
 # Set perms and other attributes
-<transform file path=etc/gdm/Init/Default -> set mode 0555> 
 <transform file path=etc/gdm/Init/Default -> set preserve true>
-<transform file path=etc/gdm/PostLogin/Default.sample -> set mode 0555>
-<transform file path=etc/gdm/PostSession/Default-> set mode 0555> 
 <transform file path=etc/gdm/PostSession/Default-> set preserve true>
-<transform file path=etc/gdm/PreSession/Default -> set mode 0555> 
 <transform file path=etc/gdm/PreSession/Default -> set preserve true>
-<transform file path=etc/gdm/Xsession -> set mode 0555> 
 <transform file path=etc/gdm/Xsession -> set preserve true>
 <transform file path=etc/gdm/custom.conf -> set mode 0644> 
 <transform file path=etc/gdm/custom.conf -> set preserve renameold>
-<transform file path=usr/lib/gdm/gdm-host-chooser -> set mode 0555>
-<transform file path=usr/lib/gdm/gdm-runtime-config -> set mode 0555>
-<transform file path=usr/lib/gdm/gdm-session-worker -> set mode 0555>
-<transform file path=usr/lib/gdm/gdm-simple-chooser -> set mode 0555>
-<transform file path=usr/lib/gdm/gdm-x-session -> set mode 0555>
 <transform path=etc/gdm/gdm-launch-environment.pam -> set preserve renamenew>
 
 # These are delivered in desktop-startup.p5m
@@ -55,3 +45,10 @@
 
 # Drop since Solaris doesn't support wayland
 <transform file path=usr/lib/gdm/gdm-wayland-session -> drop>
+
+# Drop unnecessary executable bit
+<transform file path=^etc/gdm/gdm-launch-environment.pam$ -> delete mode 0555>
+<transform file path=^lib/svc/manifest/application/graphical-login/gdm.xml$ -> delete mode 0555>
+<transform file path=^usr/share/glib-2.0/schemas/org.gnome.login-screen.gschema.override$ -> delete mode 0555>
+<transform file path=^usr/share/xsessions/xterm.desktop$ -> delete mode 0555>
+

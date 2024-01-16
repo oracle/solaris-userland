@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 
 # Go has some 64-bit data objects in a 32-bit path.
@@ -38,10 +38,6 @@
 <transform file path=usr/lib/golang/pkg/tool/solaris_amd64/.*$ \
 	-> default pkg.linted.userland.action001.PIE true>
 
-# Executables in a non-standard path.
-<transform file path=usr/lib/golang/pkg/tool/solaris_amd64/.+ \
-	-> default mode 0555>
-
 # Hide test related files behind optional.test facet.
 <transform path=usr/lib/golang/test/.* -> default facet.optional.test true>
 <transform file path=.*_test.go$ -> default facet.optional.test true>
@@ -56,6 +52,9 @@
 # Go has test data not tagged for ASLR or PIE.
 <transform file path=usr/lib/golang/src/(debug|runtime)/.*/testdata/.*$ -> default pkg.linted.userland.action001.5 true>
 <transform file path=usr/lib/golang/src/(debug|runtime)/.*/testdata/.*$ -> default pkg.linted.userland.action001.PIE true>
+
+# No need for executables in src
+<transform file path=usr/lib/golang/src/.* -> delete mode 0555>
 
 
 # Create mediated bin links

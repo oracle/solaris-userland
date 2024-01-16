@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -56,14 +56,11 @@
 # Remove the mangled man pages so that we don't have duplicates in the output
 <transform file path=^[^/]*\.\d$ -> drop>
 
-<transform file path=usr/demo/mercurial58/(dumprevlog|editmerge|hg-ssh|hgk)$ -> set mode 555>
-<transform file path=usr/demo/mercurial58/(debugcmdserver.py|hgweb.fcgi|simplemerge)$ -> set mode 555>
-<transform file path=usr/demo/mercurial58/(tcsh_completion_build.sh|undumprevlog)$ -> set mode 555>
-
 # pkgdepend complains about a "__main__" import: bug 15710704
 <transform file path=.*/statprof.py$ -> set pkg.depend.bypass-generate .*>
 
-<transform file path=.*/vendor-packages/mercurial/hg$ -> set mode 0555>
-
 <transform link path=usr/bin/hg target=hg-(\d.\d) -> set target hg-3.9>
 <transform link path=usr/bin/hg -> edit target "\$!\((.*)\)" "$(\1)">
+
+# Drop unnecessary executable bits
+<transform file path=^usr/demo/.* -> delete mode 555>

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
 #
 
 # by default everything is graphviz package
@@ -84,3 +84,7 @@
 # rename man pages from gv.3<ext> to gv-<ext>.3
 <transform file path=.*/gv\.3[^.]*$ -> set action.hash %(path)>
 <transform file path=.*/gv\.3([^.]*)$ -> edit path gv.3%<1> gv-%<1>.3>
+
+
+# Drop unnecessary executable bits
+<transform file path=^usr/share/graphviz/demo/.* -> delete mode 0555>

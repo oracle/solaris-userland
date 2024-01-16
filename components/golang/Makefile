@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 BUILD_ARCH= i386
@@ -167,6 +167,7 @@ REQUIRED_PACKAGES += text/gnu-sed
 REQUIRED_PACKAGES += developer/documentation-tool/xml2roff
 # There's a single test script which requires perl.
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/header
 REQUIRED_PACKAGES += system/library
 # Used for cgo support at runtime; we don't add a package dependency since cgo

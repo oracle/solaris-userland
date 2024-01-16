@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 # Drop files that are part of localedef package
@@ -33,3 +33,7 @@
 # 'collate.4dab28' to 'collate.4dab$(COMPONENT_VERSION)'
 # because COMPONENT_VERSION=28 now. This is a workaround
 <transform file path=usr/lib/locale/common/collate.4dab.* -> drop>
+
+# Drop unnecessary executable bits
+<transform file path=^usr/lib/locale/.* -> delete mode 0555>
+<transform file path=^usr/share/lib/pub/UTF-8$ -> delete mode 0555>

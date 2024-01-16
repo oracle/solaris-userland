@@ -18,8 +18,11 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 # Drop 32-bit binaries
 <transform file path=usr/bin/\$\(MACH32\)/* -> drop>
+
+# Remove unnecessary executable bits
+<transform file path=^usr/lib/installed-tests/.* -> delete mode 0555>

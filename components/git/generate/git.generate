@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 # Do not distribute the userland mark that archive has been unpacked
@@ -32,5 +32,5 @@
 <transform dir file link hardlink -> edit path "/$(PERL_VERSION)/" "/$!(PERL_VERSION)/">
 <transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
 
-# This file needs to have mode 0555 
-<transform file path=usr/share/gitweb/gitweb.cgi -> set mode 0555>
+# Drop unnecessary executable bit
+<transform file path=^usr/share/git-core/templates/hooks/.* -> delete mode 0555>

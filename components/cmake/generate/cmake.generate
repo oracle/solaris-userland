@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 # Use this trick to revert $(CMAKE_MAJOR_VERSION) expansions.
@@ -32,3 +32,6 @@
 
 # Replaced by 'pkg info --license cmake' command.
 <transform file path=usr/doc -> drop>
+
+# Drop unnecessary executable bit
+<transform file path=^usr/share/cmake-.*/Modules/.* -> delete mode 0555>

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -149,6 +149,7 @@ REQUIRED_PACKAGES += runtime/ruby-31
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/core-os # nawk, env
 REQUIRED_PACKAGES += text/gnu-gettext
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm

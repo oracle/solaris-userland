@@ -18,7 +18,10 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 <transform link target=/.* -> drop>
+
+# Drop executable bit from gzip files
+<transform file path=^usr/share/foomatic/db/source/PPD/.*\.gz$ -> delete mode 0555>

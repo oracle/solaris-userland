@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 <transform path=.*/php/8.2 -> edit path php/8.2 php/\$\(MAJOR_VERSION\)>
@@ -57,3 +57,6 @@
 
 # Drop hidden pear files we are not shipping
 <transform path=\..* -> drop>
+
+# Drop unnecessary executable bits
+<transform file path=^usr/php/.*/lib/build/.* -> delete mode 0555>

@@ -20,13 +20,12 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 # Only the minimal installation required by Wireshark is delivered.
 
 # Set execution permissions for files in usr/lib/qt/ (originally usr/libexec/).
-<transform file path=usr/lib/qt6/.* -> set mode 0555>
 <transform file path=usr/lib/qt6/ensure_pro_file.cmake -> set mode 0444>
 
 # syncqt is not tagged for aslr after installation.
@@ -107,3 +106,7 @@
 
 # The files with Qt usage information are specified in the static file.
 <transform file path=files/libqt.3lib -> drop>
+
+# Remove executable flag from non-executable templates
+<transform file path=.*/Qt6/libexec/.*\.in$ -> delete mode 0555>
+
