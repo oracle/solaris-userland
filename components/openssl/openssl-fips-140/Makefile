@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -140,7 +140,7 @@ CONFIGURE_OPTIONS += $(CONFIGURE_OPTIONS$(BITS)_$(MACH))
 # run from the build directory. The easiest way to workaround it is to copy all
 # the source files there.
 COMPONENT_PRE_CONFIGURE_ACTION = \
-    ( $(CLONEY) $(SOURCE_DIR) $(BUILD_DIR)/$(MACH$(BITS)); )
+    $(CLONEY) $(SOURCE_DIR) $(BUILD_DIR)/$(MACH$(BITS));
 
 # We deliver only one opensslconf.h file which must be suitable for both 32 and
 # 64 bits. Depending on the configuration option, OpenSSL's Configure script
@@ -168,17 +168,20 @@ download clobber clean::
 # We do not ship our engines as patches since it would be more difficult to
 # update the files which have been under continuous development. We rather copy
 # the files to the right directories and let OpenSSL makefiles build it.
-# We also copy some FIPS specific header files needed to build FIPS version
-# of OpenSSL from FIPS module.
 COMPONENT_PRE_BUILD_ACTION = \
-    ( $(LN) -fs $(COMPONENT_DIR)/../common/engines/pkcs11/*     $(@D)/engines; \
+    ( $(LN) -fs $(COMPONENT_DIR)/../common/engines/pkcs11/*     $(@D)/engines; )
+
+# Link some FIPS specific header files needed to build FIPS version
+# of OpenSSL from FIPS module.
+COMPONENT_PRE_CONFIGURE_ACTION += \
       $(MKDIR) $(@D)/bin; \
+      $(MKDIR) $(@D)/include/openssl; \
       $(LN) -fs $(OPENSSL_FIPS_DIR)/build/$(MACH$(BITS))/include/openssl/fips.h $(@D)/include/openssl; \
       $(LN) -fs $(OPENSSL_FIPS_DIR)/build/$(MACH$(BITS))/include/openssl/fipssyms.h $(@D)/include/openssl; \
       $(LN) -fs $(OPENSSL_FIPS_DIR)/build/$(MACH$(BITS))/include/openssl/fips_rand.h $(@D)/include/openssl; \
       $(LN) -fs $(OPENSSL_FIPS_DIR)/build/$(MACH$(BITS))/fips/fipsld $(@D)/bin/; \
       $(LN) -fs $(OPENSSL_FIPS_DIR)/build/$(MACH$(BITS))/fips/fips_standalone_sha1 $(@D)/bin/; \
-      $(LN) -fs $(COMPONENT_DIR)/build/$(MACH$(BITS))/fips_premain_dso $(@D)/bin/;)
+      $(LN) -fs $(COMPONENT_DIR)/build/$(MACH$(BITS))/fips_premain_dso $(@D)/bin/;
 
 # OpenSSL does not install into <dir>/$(MACH64) for 64-bit install so no such
 # directory is created and Userland install code would fail when installing lint
