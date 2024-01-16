@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mm-common
-COMPONENT_VERSION=	1.0.4
+COMPONENT_VERSION=	1.0.5
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/glibmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:e954c09b4309a7ef93e13b69260acdc5738c907477eb381b78bb1e414ee6dbd8
+    sha256:705c6d29f4116a29bde4e36cfc1b046c92b6ef8c6dae4eaec85018747e6da5aa
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13152
 
-COMPONENT_BAID=		131074
+COMPONENT_BAID=		155729
 BUILD_STYLE=		meson
 
 # Use explicit Python version rather than the default one
