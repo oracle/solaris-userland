@@ -212,7 +212,7 @@ https://github.com/madler/pigz/issues/40
 +
 +    // get a response from the user -- the first non-blank
 +    // character has to be a "y" or a "Y" to permit an overwrite
-+    fprintf(stderr, "%s exists -- overwrite (y/n)? ", g.outf);
++    fprintf(stderr, "%s exists -- overwrite (y/n)? ", path);
 +    fflush(stderr);
 +    do {
 +        ch = getchar();
@@ -261,7 +261,7 @@ https://github.com/madler/pigz/issues/40
      free_lock(write_first);
      free_lock(compress_have);
      compress_have = NULL;
-@@ -1957,17 +2035,482 @@
+@@ -1957,17 +2035,490 @@
      }
  }
  
@@ -552,6 +552,11 @@ https://github.com/madler/pigz/issues/40
 +                (void) close(g.idxd);
 +                return -1;
 +            }
++            if (!S_ISREG(st.st_mode)) {
++                complain("%s: index is not a regular file", idx.path);
++                (void) close(g.idxd);
++                return -1;
++            }
 +            off = 0;
 +        }
 +        /* Try to mmap the index file and let the OS manage the space used by
@@ -595,13 +600,16 @@ https://github.com/madler/pigz/issues/40
 +
 +    g.idxd = open(idx.path, O_WRONLY | O_CREAT | O_TRUNC | (g.force ? 0 : O_EXCL),
 +                0600);
-+    if (g.idxd < 0 && errno == EEXIST && isatty(0) && g.verbosity &&
-+            allow_overwrite(idx.path)) {
-+        g.idxd = open(idx.path, O_CREAT | O_TRUNC | O_WRONLY, 0600);
-+        if (g.idxd == -1) {
-+            complain("%s: %s", idx.path, strerror(errno));
++    if (g.idxd < 0 && errno == EEXIST && isatty(0) && g.verbosity) {
++        if (allow_overwrite(idx.path)) {
++            g.idxd = open(idx.path, O_CREAT | O_TRUNC | O_WRONLY, 0600);
++        } else {
 +            return -1;
 +        }
++    }
++    if (g.idxd == -1) {
++        complain("%s: %s", idx.path, strerror(errno));
++        return -1;
 +    }
 +    idx.valid = 1;
 +    return 0;
@@ -746,7 +754,7 @@ https://github.com/madler/pigz/issues/40
      unsigned long check;            // check value of uncompressed data
      ball_t err;                     // error information from throw()
  
-@@ -1993,24 +2536,28 @@
+@@ -1993,24 +2544,28 @@
              // update lengths, save uncompressed length for COMB
              more = job->more;
              len = job->in->len;
@@ -779,7 +787,7 @@ https://github.com/madler/pigz/issues/40
              // free the job
              free_lock(job->calc);
              FREE(job);
-@@ -2090,7 +2637,7 @@
+@@ -2090,7 +2645,7 @@
      setup_jobs();
  
      // start write thread
@@ -788,7 +796,7 @@ https://github.com/madler/pigz/issues/40
  
      // read from input and start compress threads (write thread will pick up
      // the output of the compress threads)
-@@ -2576,7 +3123,7 @@
+@@ -2576,7 +3131,7 @@
  #ifndef NOTHREAD
      // if first time in or procs == 1, read a buffer to have something to
      // return, otherwise wait for the previous read job to complete
@@ -797,7 +805,7 @@ https://github.com/madler/pigz/issues/40
          // if first time, fire up the read thread, ask for a read
          if (g.in_which == -1) {
              g.in_which = 1;
-@@ -2719,12 +3266,6 @@
+@@ -2719,12 +3274,6 @@
          crc = crc32z(crc, (unsigned char *)str, have); \
      } while (0)
  
@@ -810,7 +818,7 @@ https://github.com/madler/pigz/issues/40
  // Convert MS-DOS date and time to a Unix time, assuming current timezone.
  // (You got a better idea?)
  local time_t dos2time(unsigned long dos) {
-@@ -3456,16 +3997,110 @@
+@@ -3456,16 +4005,110 @@
  // some odd code below that tries to detect and accommodate both cases.
  #define SIG 0x08074b50
  
@@ -924,7 +932,7 @@ https://github.com/madler/pigz/issues/40
      length_t clen, ctot, utot;
  
      ctot = utot = 0;
-@@ -3504,95 +4139,7 @@
+@@ -3504,95 +4147,7 @@
          // compute compressed data length
          clen = g.in_tot - g.in_left;
  
@@ -1021,7 +1029,7 @@ https://github.com/madler/pigz/issues/40
  
          // show file information if requested
          if (g.list) {
-@@ -3638,6 +4185,231 @@
+@@ -3638,6 +4193,231 @@
          complain("warning: %s: trailing junk was ignored", g.inf);
  }
  
@@ -1253,7 +1261,7 @@ https://github.com/madler/pigz/issues/40
  // --- decompress Unix compress (LZW) input ---
  
  // Type for accumulating bits. 23 bits will be used to accumulate up to 16-bit
-@@ -4070,7 +4842,7 @@
+@@ -4070,7 +4850,7 @@
          if (g.decode == 2) {
              try {
                  if (method == 8)
@@ -1262,7 +1270,7 @@ https://github.com/madler/pigz/issues/40
                  else {
                      unlzw();
                      if (g.list) {
-@@ -4135,21 +4907,7 @@
+@@ -4135,21 +4915,7 @@
          if (g.outd < 0 && errno == EEXIST) {
              int overwrite = 0;
              if (isatty(0) && g.verbosity) {
@@ -1285,7 +1293,7 @@ https://github.com/madler/pigz/issues/40
              }
              if (!overwrite) {
                  complain("skipping: %s exists", g.outf);
-@@ -4169,10 +4927,11 @@
+@@ -4169,10 +4935,11 @@
      // process ind to outd
      if (g.verbosity > 1)
          fprintf(stderr, "%s to %s ", g.inf, g.outf);
@@ -1298,7 +1306,7 @@ https://github.com/madler/pigz/issues/40
              else if (method == 257)
                  unlzw();
              else
-@@ -4193,8 +4952,14 @@
+@@ -4193,8 +4960,14 @@
          }
      }
  #ifndef NOTHREAD
@@ -1314,7 +1322,7 @@ https://github.com/madler/pigz/issues/40
  #endif
      else
          single_compress(0);
-@@ -4203,6 +4968,10 @@
+@@ -4203,6 +4976,10 @@
          fflush(stderr);
      }
  
@@ -1325,7 +1333,7 @@ https://github.com/madler/pigz/issues/40
      // finish up, copy attributes, set times, delete original
      load_end();
      if (g.outd != -1 && g.outd != 1) {
-@@ -4286,6 +5055,9 @@
+@@ -4286,6 +5063,9 @@
  "  -v, --verbose        Provide more verbose output",
  #endif
  "  -V  --version        Show the version of pigz",
@@ -1335,7 +1343,7 @@ https://github.com/madler/pigz/issues/40
  "  -Y  --synchronous    Force output file write to permanent storage",
  "  -z, --zlib           Compress to zlib (.zz) instead of gzip format",
  "  --                   All arguments after \"--\" are treated as files"
-@@ -4372,7 +5144,7 @@
+@@ -4372,7 +5152,7 @@
  #ifndef NOZOPFLI
      {"first", "F"}, {"iterations", "I"}, {"maxsplits", "J"}, {"oneblock", "O"},
  #endif
@@ -1344,7 +1352,7 @@ https://github.com/madler/pigz/issues/40
      {"list", "l"}, {"name", "N"}, {"no-name", "n"}, {"no-time", "m"},
      {"processes", "p"}, {"quiet", "q"}, {"recursive", "r"}, {"rsyncable", "R"},
      {"silent", "q"}, {"stdout", "c"}, {"suffix", "S"}, {"synchronous", "Y"},
-@@ -4414,7 +5186,7 @@
+@@ -4414,7 +5194,7 @@
  
      // if no argument or dash option, check status of get
      if (get && (arg == NULL || *arg == '-')) {
@@ -1353,7 +1361,7 @@ https://github.com/madler/pigz/issues/40
          throw(EINVAL, "missing parameter after %s", bad);
      }
      if (arg == NULL)
-@@ -4500,6 +5272,7 @@
+@@ -4500,6 +5280,7 @@
                      printf("zlib %s\n", zlibVersion());
                  exit(0);
                  break;          // avoid warning
@@ -1361,7 +1369,7 @@ https://github.com/madler/pigz/issues/40
              case 'Y':  g.sync = 1;  break;
              case 'Z':
                  throw(EINVAL, "invalid option: LZW output not supported: %s",
-@@ -4535,7 +5308,7 @@
+@@ -4535,7 +5316,7 @@
              return 1;
      }
  
@@ -1370,7 +1378,7 @@ https://github.com/madler/pigz/issues/40
      if (get) {
          size_t n;
  
-@@ -4580,6 +5353,8 @@
+@@ -4580,6 +5361,8 @@
  #endif
          else if (get == 7)
              g.comment = arg;                    // header comment
