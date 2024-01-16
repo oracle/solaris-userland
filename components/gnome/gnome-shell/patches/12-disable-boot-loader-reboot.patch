@@ -20,18 +20,16 @@ and makes it have rounded corners on both of its bottom corners.
 
 --- a/js/ui/endSessionDialog.js	2021-02-15 20:58:41.692841035 -0800
 +++ b/js/ui/endSessionDialog.js	2021-02-15 21:03:36.520911105 -0800
-@@ -230,10 +230,6 @@
-                       destroyOnClose: false });
+@@ -239,8 +239,6 @@
+         });
  
          this._loginManager = LoginManager.getLoginManager();
--        this._loginManager.canRebootToBootLoaderMenu(
--            (canRebootToBootLoaderMenu, unusedNeedsAuth) => {
--                this._canRebootToBootLoaderMenu = canRebootToBootLoaderMenu;
--            });
+-        this._canRebootToBootLoaderMenu = false;
+-        this._getCanRebootToBootLoaderMenu().catch(logError);
  
          this._userManager = AccountsService.UserManager.get_default();
          this._user = this._userManager.get_user(GLib.get_user_name());
-@@ -261,9 +257,6 @@
+@@ -268,9 +266,6 @@
          this._totalSecondsToStayOpen = 0;
          this._applications = [];
          this._sessions = [];
@@ -39,9 +37,9 @@ and makes it have rounded corners on both of its bottom corners.
 -        this._rebootButton = null;
 -        this._rebootButtonAlt = null;
  
-         this.connect('destroy',
-                      this._onDestroy.bind(this));
-@@ -411,26 +404,6 @@
+         this.connect('opened', this._onOpened.bind(this));
+ 
+@@ -415,26 +410,6 @@
          this._sessionSection.visible = hasSessions;
      }
  
@@ -68,10 +66,11 @@ and makes it have rounded corners on both of its bottom corners.
      _updateButtons() {
          this.clearButtons();
  
-@@ -453,35 +426,9 @@
+@@ -458,36 +433,9 @@
+                 },
                  label,
              });
- 
+-
 -            // Add Alt "Boot Options" option to the Reboot button
 -            if (this._canRebootToBootLoaderMenu && signal === 'ConfirmedReboot') {
 -                this._rebootButton = button;
@@ -86,7 +85,7 @@ and makes it have rounded corners on both of its bottom corners.
 -                    label: C_('button', 'Boot Options'),
 -                });
 -                this._rebootButtonAlt.visible = false;
--                this._capturedEventId = global.stage.connect('captured-event',
+-                this._capturedEventId = this.connect('captured-event',
 -                    this._onCapturedEvent.bind(this));
 -            }
          }
@@ -104,7 +103,7 @@ and makes it have rounded corners on both of its bottom corners.
      close(skipSignal) {
          super.close();
  
-@@ -491,21 +438,14 @@
+@@ -497,16 +445,10 @@
  
      cancel() {
          this._stopTimer();
@@ -115,14 +114,17 @@ and makes it have rounded corners on both of its bottom corners.
  
 -    _confirmRebootToBootLoaderMenu() {
 -        this._loginManager.setRebootToBootLoaderMenu();
--        this._confirm('ConfirmedReboot');
+-        this._confirm('ConfirmedReboot').catch(logError);
 -    }
 -
-     _confirm(signal) {
-         let callback = () => {
-             this._fadeOutDialog();
-             this._stopTimer();
--            this._stopAltCapture();
-             this._dbusImpl.emit_signal(signal, null);
-         };
+     async _confirm(signal) {
+         if (this._checkBox.visible) {
+             // Trigger the offline update as requested
+@@ -532,7 +474,6 @@
+ 
+         this._fadeOutDialog();
+         this._stopTimer();
+-        this._stopAltCapture();
+         this._dbusImpl.emit_signal(signal, null);
+     }
  

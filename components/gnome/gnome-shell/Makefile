@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-shell
-COMPONENT_VERSION=	41.9
+COMPONENT_VERSION=	45.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GnomeShell
 COMPONENT_ARCHIVE_HASH= \
-	sha256:55a3638242e9f5654c5deaed2d7272090df68ec634b3a1dee13ca9110d3c6e23
+	sha256:3a19724720d8274dc6bced68e0dd5fc7668a04cd79978cbbb8223474ccdda9ab
 COMPONENT_BUGDB=        gnome/gnome-shell
 COMPONENT_ANITYA_ID=	5409
 
-COMPONENT_BAID=		129244
+COMPONENT_BAID=		157246
 BUILD_STYLE=            meson
 
 # Workaround the mozjs issue described in 24935318
@@ -60,15 +60,13 @@ COMPONENT_POST_UNPACK_ACTION += $(CP) files/* $(SOURCE_DIR)/data/dbus-interfaces
 # Linux specific
 CONFIGURE_OPTIONS += -Dnetworkmanager=false
 CONFIGURE_OPTIONS += -Dsystemd=false
+# Requires libpipewire
+CONFIGURE_OPTIONS += -Dcamera_monitor=false
 # Requires mutter to enable tests - which in turn requires Wayland
 CONFIGURE_OPTIONS += -Dtests=false
 # Don't build subbprojects
 CONFIGURE_OPTIONS += --wrap-mode=nofallback
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIB.$(BITS))
-
-CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
-COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
 # pkgdepend doesn't like the first line of a Python script to be:
 # '#!/usr/bin/env python' so turn it into '#!/usr/bin/python$(PYTHON_VERSION)'
@@ -76,11 +74,10 @@ COMPONENT_POST_INSTALL_ACTION += \
         $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
                 $(PROTOUSRBINDIR)/gnome-shell-extension-tool; \
         $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
-                $(PROTOUSRBINDIR)/gnome-shell-perf-tool;
+                $(PROTOUSRBINDIR)/gnome-shell-test-tool;
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
-REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += gnome/gnome-clocks
 REQUIRED_PACKAGES += gnome/gnome-settings-daemon
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
@@ -91,30 +88,19 @@ REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/clutter
-REQUIRED_PACKAGES += library/desktop/clutter/clutter-gtk
 REQUIRED_PACKAGES += library/desktop/evolution-data-server
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/geocode-glib
 REQUIRED_PACKAGES += library/desktop/gjs
 REQUIRED_PACKAGES += library/desktop/gnome-autoar
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/graphene
-REQUIRED_PACKAGES += library/desktop/gstreamer-1
-REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/gtk4
-REQUIRED_PACKAGES += library/desktop/libchamplain
-REQUIRED_PACKAGES += library/desktop/libgee
 REQUIRED_PACKAGES += library/desktop/libgweather
-REQUIRED_PACKAGES += library/desktop/libnotify
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/desktop/startup-notification
-REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gnome/folks
-REQUIRED_PACKAGES += library/gnome/gcr
+REQUIRED_PACKAGES += library/gnome/gcr-4
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
-REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/graphics/cogl
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libical

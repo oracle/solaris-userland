@@ -13,31 +13,30 @@ Not suitable for upstream as they deprecated & removed ConsoleKit support.
      <file preprocess="xml-stripblanks">org.freedesktop.DBus.xml</file>
      <file preprocess="xml-stripblanks">org.freedesktop.GeoClue2.Agent.xml</file>
      <file preprocess="xml-stripblanks">org.freedesktop.GeoClue2.Manager.xml</file>
---- a/js/misc/loginManager.js	2020-04-05 17:34:33.092185745 -0700
-+++ b/js/misc/loginManager.js	2020-04-05 17:37:41.440169855 -0700
-@@ -14,6 +14,12 @@
+--- a/js/misc/loginManager.js	2023-12-21 16:12:34.777214142 -0800
++++ b/js/misc/loginManager.js	2023-12-21 16:21:55.653428337 -0800
+@@ -14,6 +14,11 @@
  const SystemdLoginSession = Gio.DBusProxy.makeProxyWrapper(SystemdLoginSessionIface);
  const SystemdLoginUser = Gio.DBusProxy.makeProxyWrapper(SystemdLoginUserIface);
  
 +const ConsoleKitManagerIface = loadInterfaceXML('org.freedesktop.ConsoleKit.Manager');
 +const ConsoleKitSessionIface = loadInterfaceXML('org.freedesktop.ConsoleKit.Session');
-+
 +const ConsoleKitManager = Gio.DBusProxy.makeProxyWrapper(ConsoleKitManagerIface);
-+const ConsoleKitSession = Gio.DBusProxy.makeProxyWrapper(ConsoleKitSessionIface);
++const ConsoleKitSession = Gio.DBusProxy.makeProxyWrapper(ConsoleKitSessionIface); 
 +
  function haveSystemd() {
-     return GLib.access("/run/systemd/seats", 0) >= 0;
+     return GLib.access('/run/systemd/seats', 0) >= 0;
  }
-@@ -43,7 +49,7 @@
-                                                -1, null);
+@@ -47,7 +52,7 @@
+             -1, null);
  
-         let version = result.deep_unpack()[0].deep_unpack();
+         let version = result.deepUnpack()[0].deepUnpack();
 -        return haveSystemd() && versionCompare('3.5.91', version);
 +        return versionCompare('3.5.91', version);
      } catch (e) {
          return false;
      }
-@@ -83,7 +89,7 @@
+@@ -83,7 +88,7 @@
          if (haveSystemd())
              _loginManager = new LoginManagerSystemd();
          else
@@ -46,15 +45,17 @@ Not suitable for upstream as they deprecated & removed ConsoleKit support.
      }
  
      return _loginManager;
-@@ -199,6 +205,81 @@
- };
- Signals.addSignalMethods(LoginManagerSystemd.prototype);
+@@ -208,6 +213,78 @@
+     }
+ }
  
-+var LoginManagerConsoleKit = class {
-+    constructor () {
++class LoginManagerConsoleKit extends Signals.EventEmitter {
++    constructor() {
++        super();
++    
 +        this._proxy = new ConsoleKitManager(Gio.DBus.system,
-+                                            'org.freedesktop.ConsoleKit',
-+                                            '/org/freedesktop/ConsoleKit/Manager');
++                                              'org.freedesktop.ConsoleKit',
++                                              '/org/freedesktop/ConsoleKit/Manager');
 +        this._proxy.connectSignal('PrepareForSleep',
 +                                  this._prepareForSleep.bind(this));
 +    }
@@ -63,68 +64,77 @@ Not suitable for upstream as they deprecated & removed ConsoleKit support.
 +    // session objects have different interfaces - but in both cases there are
 +    // Lock/Unlock signals, and that's all we count upon at the moment.
 +
++    async getCurrentSessionProxy() {
++        if (this._currentSession)
++            return this._currentSession;
 +
-+    getCurrentSessionProxy(callback) {
-+        if (this._currentSession) {
-+            callback (this._currentSession);
-+            return;
++        try {
++            const [objectPath] = await this._proxy.GetCurrentSessionAsync();
++            this._currentSession = new ConsoleKitSession(Gio.DBus.system,
++                'org.freedesktop.ConsoleKit', objectPath);
++            return this._currentSession;
++        } catch (error) {
++            logError(error, 'Could not get a proxy for the current session');
++            return null;
 +        }
-+
-+        this._proxy.GetCurrentSessionRemote((result, error) => {
-+            if (error) {
-+                logError(error, 'Could not get a proxy for the current session');
-+            } else {
-+                this._currentSession = new ConsoleKitSession(Gio.DBus.system,
-+                                                             'org.freedesktop.ConsoleKit',
-+                                                             result[0]);
-+                callback(this._currentSession);
-+            }
-+        });
 +    }
 +
-+    canSuspend(asyncCallback) {
-+        this._proxy.CanSuspendRemote((result, error) => {
-+            if (error) {
-+                asyncCallback(false, false);
-+            } else {
-+                asyncCallback(result[0], false);
-+            }
-+        });
++    async canSuspend() {
++        let canSuspend, needsAuth;
++
++        try {
++            const [result] = await this._proxy.CanSuspendAsync();
++            needsAuth = result === 'challenge';
++            canSuspend = needsAuth || result === 'yes';
++        } catch (error) {
++            canSuspend = false;
++            needsAuth = false;
++        }
++        return {canSuspend, needsAuth};
 +    }
 +
-+    listSessions(asyncCallback) {
-+        asyncCallback([]);
++    async listSessions() {
++        try {
++            const [sessions] = await this._proxy.ListSessionsAsync();
++            return sessions;
++        } catch (e) {
++            return [];
++        }
 +    }
 +
 +    suspend() {
-+        this._proxy.SuspendRemote(true);
++        this._proxy.SuspendAsync(true);
 +    }
 +
-+    inhibit(reason, callback) {
-+        let inVariant = GLib.Variant.new('(ssss)',
-+                                         ['sleep',
-+                                          'GNOME Shell',
-+                                          reason,
-+                                          'delay']);
-+        this._proxy.call_with_unix_fd_list('Inhibit', inVariant, 0, -1, null, null,
-+            (proxy, result) => {
-+                let fd = -1;
-+                try {
-+                    let [outVariant, fdList] = proxy.call_with_unix_fd_list_finish(result);
-+                    fd = fdList.steal_fds()[0];
-+                    callback(new Gio.UnixInputStream({ fd: fd }));
-+                } catch(e) {
-+                    logError(e, "Error getting ConsoleKit inhibitor");
-+                    callback(null);
-+                }
-+            });
++    async inhibit(reason, cancellable) {
++        const inVariant = new GLib.Variant('(ssss)',
++            ['sleep', 'GNOME Shell', reason, 'delay']);
++        const [outVariant_, fdList] =
++            await this._proxy.call_with_unix_fd_list('Inhibit',
++                inVariant, 0, -1, null, cancellable);
++        const [fd] = fdList.steal_fds();
++        return new Gio.UnixInputStream({ fd });
 +    }
 +
 +    _prepareForSleep(proxy, sender, [aboutToSuspend]) {
++        this.emit('prepare-for-sleep', aboutToSuspend);
 +    }
-+}
-+Signals.addSignalMethods(LoginManagerConsoleKit.prototype);
++};
 +
- var LoginManagerDummy = class {
-     getCurrentSessionProxy(_callback) {
+ class LoginManagerDummy extends Signals.EventEmitter  {
+     getCurrentSessionProxy() {
          // we could return a DummySession object that fakes whatever callers
+@@ -221,13 +298,6 @@
+             canSuspend: false,
+             needsAuth: false,
+         }));
+-    }
+-
+-    canRebootToBootLoaderMenu() {
+-        return new Promise(resolve => resolve({
+-            canRebootToBootLoaderMenu: false,
+-            needsAuth: false,
+-        }));
+     }
+ 
+     setRebootToBootLoaderMenu() {

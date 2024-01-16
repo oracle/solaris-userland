@@ -1,20 +1,21 @@
 Solaris-specific patch to change the default background to our branded image
 
---- a/js/ui/background.js	2021-02-16 16:10:01.450906315 -0800
-+++ b/js/ui/background.js	2021-02-16 16:14:40.808827070 -0800
-@@ -506,9 +506,11 @@
-     Signals: { 'loaded': {} },
+ 
+--- a/js/uibackground.js	2023-12-22 09:58:13.089993024 -0800
++++ b/js/ui/background.js	2023-12-22 09:59:42.494755206 -0800
+@@ -536,9 +536,10 @@
+     Signals: {'loaded': {}},
  }, class SystemBackground extends Meta.BackgroundActor {
      _init() {
-+	let file = Gio.File.new_for_uri('file:///usr/share/backgrounds/solaris/Polygons_Color.png');
++        let file = Gio.File.new_for_uri('file:///usr/share/backgrounds/solaris/Polygons_Color.png');
          if (_systemBackground == null) {
-             _systemBackground = new Meta.Background({ meta_display: global.display });
-             _systemBackground.set_color(DEFAULT_BACKGROUND_COLOR);
-+	    _systemBackground.set_file(file, GDesktopEnums.BackgroundStyle.WALLPAPER);
+             _systemBackground = new Meta.Background({meta_display: global.display});
+-            _systemBackground.set_color(DEFAULT_BACKGROUND_COLOR);
++            _systemBackground.set_file(file, GDesktopEnums.BackgroundStyle.WALLPAPER);
          }
  
          super._init({
-@@ -517,11 +519,22 @@
+@@ -547,11 +548,23 @@
          });
          this.content.background = _systemBackground;
  
@@ -39,32 +40,19 @@ Solaris-specific patch to change the default background to our branded image
 +                image = null;
 +            });
 +        }
++
      }
  });
  
---- a/data/theme/gnome-shell-sass/widgets/_screen-shield.scss    2022-01-18 06:24:43.754107336 -0800
-+++ b/data/theme/gnome-shell-sass/widgets/_screen-shield.scss 2022-01-18 06:25:07.528260999 -0800
-@@ -66,7 +66,8 @@
+--- a/data/theme/gnome-shell-sass/widgets/_login-lock.scss	2023-12-22 10:01:24.948121127 -0800
++++ b/a/data/theme/gnome-shell-sass/widgets/_login-lock.scss	2023-12-22 10:02:03.138931064 -0800
+@@ -168,7 +168,8 @@
  }
  
  #lockDialogGroup {
--  background-color: $system_bg_color;
+-  background-color: $_gdm_bg;
 +  background: lighten(#2e3436, 8%) url(file:///usr/share/backgrounds/solaris/Polygons_Color.png);
 +  background-repeat: no-repeat; background-size: cover;
  }
  
- #unlockDialogNotifications {
-
---- a/data/theme/gnome-shell.css        2022-02-04 09:10:17.773981510 -0800
-+++ b/data/theme/gnome-shell.css     2022-02-04 09:12:31.447589755 -0800
-@@ -2198,7 +2198,8 @@
-   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.6); }
-
- #lockDialogGroup {
--  background-color: #282828; }
-+  background: lighten(#282828, 8%) url(file:///usr/share/backgrounds/solaris/Polygons_Color.png);
-+  background-repeat: no-repeat; background-size: cover; }
-
- #unlockDialogNotifications StButton#vhandle, #unlockDialogNotifications StButton#hhandle {
-   background-color: rgba(53, 53, 53, 0.3); }
-
+ // Clock

@@ -6,20 +6,20 @@ Not for upstream.
 
 --- gnome-shell-3.38.6/js/gdm/loginDialog.js
 +++ gnome-shell-3.38.6/js/gdm/loginDialog.js
-@@ -35,6 +35,7 @@ const UserWidget = imports.ui.userWidget
+@@ -43,6 +43,7 @@
  const _FADE_ANIMATION_TIME = 250;
  const _SCROLL_ANIMATION_TIME = 500;
  const _TIMED_LOGIN_IDLE_THRESHOLD = 5.0;
 +const _LOGO_ICON_HEIGHT = 72;
  
- var UserListItem = GObject.registerClass({
-     Signals: { 'activate': {} },
-@@ -814,7 +815,7 @@ var LoginDialog = GObject.registerClass(
-         if (this._logoFile) {
-             let scaleFactor = St.ThemeContext.get_for_stage(global.stage).scale_factor;
-             this._logoBin.add_child(this._textureCache.load_file_async(this._logoFile,
--                                                                       -1, -1,
-+                                                                       -1, _LOGO_ICON_HEIGHT,
-                                                                        scaleFactor,
-                                                                        resourceScale));
+ export const UserListItem = GObject.registerClass({
+     Signals: {'activate': {}},
+@@ -839,7 +840,7 @@
+             const scaleFactor = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+             const texture = this._textureCache.load_file_async(
+                 this._logoFile,
+-                -1, -1,
++                -1, _LOGO_ICON_HEIGHT,
+                 scaleFactor, resourceScale);
+             this._logoBin.add_child(texture);
          }

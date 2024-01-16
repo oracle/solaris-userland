@@ -4,9 +4,9 @@ Not suitable for upstream
 
 --- a/js/ui/status/keyboard.js	2020-05-21 13:46:27.177831239 -0700
 +++ b/js/ui/status/keyboard.js	2020-05-21 13:47:51.095863245 -0700
-@@ -245,6 +245,18 @@
-                 id += '+' + variants[i];
-             sourcesList.push({ type: INPUT_SOURCE_TYPE_XKB, id: id });
+@@ -252,6 +252,19 @@
+                 id += `+${variants[i]}`;
+             sourcesList.push({type: INPUT_SOURCE_TYPE_XKB, id});
          }
 +        // systemd-localed is absent, so the above sourcesList,
 +        // which would otherwise come from org.freedesktop.locale1, is
@@ -20,6 +20,7 @@ Not suitable for upstream
 +                _kMLid = _kMLid + '+' + _keyboardManagerLayout.variant;
 +            sourcesList.push({ type: INPUT_SOURCE_TYPE_XKB, id: _kMLid });
 +        }
++
          return sourcesList;
-     },
+     }
  
