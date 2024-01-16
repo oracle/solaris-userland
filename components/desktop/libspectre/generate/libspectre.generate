@@ -20,28 +20,5 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, Oracle and/or its affiliates.
 #
-
-BUILD_BITS= 64_and_32
-COMPILER= gcc
-include ../../../make-rules/shared-macros.mk
-
-COMPONENT_NAME=		libspectre
-COMPONENT_VERSION=	0.2.12
-COMPONENT_PROJECT_URL=	https://libspectre.freedesktop.org
-COMPONENT_ARCHIVE_HASH= \
-    sha256:55a7517cd3572bd2565df0cf450944a04d5273b279ebb369a895391957f0f960
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_ARCHIVE)
-COMPONENT_BUGDB=	library/libspectre
-COMPONENT_ANITYA_ID=	1724
-
-COMPONENT_BAID=		157026
-
-TEST_TARGET= $(NO_TESTS)
-
-include $(WS_MAKE_RULES)/common.mk
-
-COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
-
-REQUIRED_PACKAGES += image/ghostscript
