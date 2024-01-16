@@ -1,0 +1,166 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2024, Oracle and/or its affiliates.
+#
+
+<transform file path=usr.*/man/.+ -> \
+    default mangler.man.stability "pass-through volatile">
+set name=pkg.fmri \
+    value=pkg:/library/libsoup-3@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="An HTTP client/server library for GNOME."
+set name=pkg.description \
+    value="libsoup is an HTTP client/server library for GNOME. It uses GObjects and the glib main loop, to integrate well with GNOME applications, and also has a synchronous API, for use in threaded applications."
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
+set name=com.oracle.info.description value=libsoup
+set name=info.classification \
+    value="org.opensolaris.category.2008:Desktop (GNOME)/Libraries"
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=LSARC/2003/298 value=PSARC/2010/143 \
+    value=PSARC/2024/005
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/include/libsoup-3.0/libsoup/soup-auth-domain-basic.h
+file path=usr/include/libsoup-3.0/libsoup/soup-auth-domain-digest.h
+file path=usr/include/libsoup-3.0/libsoup/soup-auth-domain.h
+file path=usr/include/libsoup-3.0/libsoup/soup-auth-manager.h
+file path=usr/include/libsoup-3.0/libsoup/soup-auth.h
+file path=usr/include/libsoup-3.0/libsoup/soup-cache.h
+file path=usr/include/libsoup-3.0/libsoup/soup-content-decoder.h
+file path=usr/include/libsoup-3.0/libsoup/soup-content-sniffer.h
+file path=usr/include/libsoup-3.0/libsoup/soup-cookie-jar-db.h
+file path=usr/include/libsoup-3.0/libsoup/soup-cookie-jar-text.h
+file path=usr/include/libsoup-3.0/libsoup/soup-cookie-jar.h
+file path=usr/include/libsoup-3.0/libsoup/soup-cookie.h
+file path=usr/include/libsoup-3.0/libsoup/soup-date-utils.h
+file path=usr/include/libsoup-3.0/libsoup/soup-enum-types.h
+file path=usr/include/libsoup-3.0/libsoup/soup-form.h
+file path=usr/include/libsoup-3.0/libsoup/soup-headers.h
+file path=usr/include/libsoup-3.0/libsoup/soup-hsts-enforcer-db.h
+file path=usr/include/libsoup-3.0/libsoup/soup-hsts-enforcer.h
+file path=usr/include/libsoup-3.0/libsoup/soup-hsts-policy.h
+file path=usr/include/libsoup-3.0/libsoup/soup-logger.h
+file path=usr/include/libsoup-3.0/libsoup/soup-message-body.h
+file path=usr/include/libsoup-3.0/libsoup/soup-message-headers.h
+file path=usr/include/libsoup-3.0/libsoup/soup-message-metrics.h
+file path=usr/include/libsoup-3.0/libsoup/soup-message.h
+file path=usr/include/libsoup-3.0/libsoup/soup-method.h
+file path=usr/include/libsoup-3.0/libsoup/soup-multipart-input-stream.h
+file path=usr/include/libsoup-3.0/libsoup/soup-multipart.h
+file path=usr/include/libsoup-3.0/libsoup/soup-server-message.h
+file path=usr/include/libsoup-3.0/libsoup/soup-server.h
+file path=usr/include/libsoup-3.0/libsoup/soup-session-feature.h
+file path=usr/include/libsoup-3.0/libsoup/soup-session.h
+file path=usr/include/libsoup-3.0/libsoup/soup-status.h
+file path=usr/include/libsoup-3.0/libsoup/soup-tld.h
+file path=usr/include/libsoup-3.0/libsoup/soup-types.h
+file path=usr/include/libsoup-3.0/libsoup/soup-uri-utils.h
+file path=usr/include/libsoup-3.0/libsoup/soup-version.h
+file path=usr/include/libsoup-3.0/libsoup/soup-websocket-connection.h
+file path=usr/include/libsoup-3.0/libsoup/soup-websocket-extension-deflate.h
+file path=usr/include/libsoup-3.0/libsoup/soup-websocket-extension-manager.h
+file path=usr/include/libsoup-3.0/libsoup/soup-websocket-extension.h
+file path=usr/include/libsoup-3.0/libsoup/soup-websocket.h
+file path=usr/include/libsoup-3.0/libsoup/soup.h
+file path=usr/lib/$(MACH64)/girepository-1.0/Soup-3.0.typelib
+link path=usr/lib/$(MACH64)/libsoup-3.0.so target=libsoup-3.0.so.0
+link path=usr/lib/$(MACH64)/libsoup-3.0.so.0 target=libsoup-3.0.so.0.7.1
+file path=usr/lib/$(MACH64)/libsoup-3.0.so.0.7.1
+file path=usr/lib/$(MACH64)/pkgconfig/libsoup-3.0.pc
+link path=usr/lib/libsoup-3.0.so target=libsoup-3.0.so.0
+link path=usr/lib/libsoup-3.0.so.0 target=libsoup-3.0.so.0.7.1
+file path=usr/lib/libsoup-3.0.so.0.7.1
+file path=usr/lib/pkgconfig/libsoup-3.0.pc
+file path=usr/share/gir-1.0/Soup-3.0.gir
+file path=usr/share/locale/ab/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/an/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/as/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/be/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/bg/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/bn_IN/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/bs/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ca/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ca@valencia/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/cs/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/da/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/de/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/el/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/en_GB/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/eo/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/es/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/et/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/eu/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/fa/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/fi/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/fr/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/fur/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/gd/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/gl/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/gu/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/he/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/hi/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/hr/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/hu/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/id/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/it/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ja/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ka/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/kn/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ko/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/lt/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/lv/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ml/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/mr/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ms/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/nb/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ne/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/nl/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/oc/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/or/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/pa/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/pl/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/pt/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/pt_BR/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ro/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ru/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/sk/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/sl/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/sr/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/sr@latin/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/sv/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ta/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/te/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/tg/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/th/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/tr/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/ug/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/uk/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/uz@cyrillic/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/vi/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/zh_CN/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/zh_HK/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/locale/zh_TW/LC_MESSAGES/libsoup-3.0.mo
+file path=usr/share/vala/vapi/libsoup-3.0.deps
+file path=usr/share/vala/vapi/libsoup-3.0.vapi
+license libsoup-3.license license=LGPLv2
+# libsoup will dlopen() glib-networking modules if needed for https connections
+depend type=group fmri=pkg:/library/glib-networking
