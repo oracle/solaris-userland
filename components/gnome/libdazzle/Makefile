@@ -28,14 +28,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libdazzle
-COMPONENT_VERSION=	3.42.0
+COMPONENT_VERSION=	3.44.0
 COMPONENT_PROJECT_URL=	https://gitlab.gnome.org/GNOME/libdazzle
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:eae67a3b3d9cce408ee9ec0ab6adecb83e52eb53f9bc93713f4df1e84da16925
+	sha256:3cd3e45eb6e2680cb05d52e1e80dd8f9d59d4765212f0e28f78e6c1783d18eae
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=    73149
 
-COMPONENT_BAID=		110574
+COMPONENT_BAID=		155881
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -45,15 +45,19 @@ CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-# Version 3.38.0 requires following for GCC 11 build.
-CFLAGS += -Wno-error=incompatible-pointer-types
-
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CONFIGURE_OPTIONS.32 += -Dwith_introspection=false
 CONFIGURE_OPTIONS.64 += -Dwith_introspection=true
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Ok:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Timeout:/p" '
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
