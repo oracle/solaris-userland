@@ -1,0 +1,140 @@
+Implement support for posix_spawn being called with close_fds argument.
+
+This was offered and merged upstream; it will be available in Python 3.13:
+https://github.com/python/cpython/issues/113117
+https://github.com/python/cpython/pull/113118
+
+--- Python-3.9.18/configure
++++ Python-3.9.18/configure
+@@ -11794,8 +11794,8 @@ for ac_func in alarm accept4 setitimer getitimer bind_textdomain_codeset chown \
+  initgroups kill killpg lchown lockf linkat lstat lutimes mmap \
+  memrchr mbrtowc mkdirat mkfifo \
+  madvise mkfifoat mknod mknodat mktime mremap nice openat pathconf pause pipe2 plock poll \
+- posix_fallocate posix_fadvise posix_spawn posix_spawnp pread preadv preadv2 \
+- pthread_condattr_setclock pthread_init pthread_kill pwrite pwritev pwritev2 \
++ posix_fallocate posix_fadvise posix_spawn posix_spawnp posix_spawn_file_actions_addclosefrom_np \
++ pread preadv preadv2 pthread_condattr_setclock pthread_init pthread_kill pwrite pwritev pwritev2 \
+  readlink readlinkat readv realpath renameat \
+  sem_open sem_timedwait sem_clockwait sem_getvalue sem_unlink sendfile setegid seteuid \
+  setgid sethostname \
+--- Python-3.9.18/configure.ac
++++ Python-3.9.18/configure.ac
+@@ -3716,8 +3716,8 @@ AC_CHECK_FUNCS(alarm accept4 setitimer getitimer bind_textdomain_codeset chown \
+  initgroups kill killpg lchown lockf linkat lstat lutimes mmap \
+  memrchr mbrtowc mkdirat mkfifo \
+  madvise mkfifoat mknod mknodat mktime mremap nice openat pathconf pause pipe2 plock poll \
+- posix_fallocate posix_fadvise posix_spawn posix_spawnp pread preadv preadv2 \
+- pthread_condattr_setclock pthread_init pthread_kill pwrite pwritev pwritev2 \
++ posix_fallocate posix_fadvise posix_spawn posix_spawnp posix_spawn_file_actions_addclosefrom_np \
++ pread preadv preadv2 pthread_condattr_setclock pthread_init pthread_kill pwrite pwritev pwritev2 \
+  readlink readlinkat readv realpath renameat \
+  sem_open sem_timedwait sem_clockwait sem_getvalue sem_unlink sendfile setegid seteuid \
+  setgid sethostname \
+--- Python-3.9.18/pyconfig.h.in
++++ Python-3.9.18/pyconfig.h.in
+@@ -779,6 +779,10 @@
+ /* Define to 1 if you have the `posix_spawnp' function. */
+ #undef HAVE_POSIX_SPAWNP
+ 
++/* Define to 1 if you have the `posix_spawn_file_actions_addclosefrom_np'
++   function. */
++#undef HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSEFROM_NP
++
+ /* Define to 1 if you have the `pread' function. */
+ #undef HAVE_PREAD
+ 
+--- Python-3.9.18/Modules/posixmodule.c
++++ Python-3.9.18/Modules/posixmodule.c
+@@ -5836,6 +5836,9 @@ enum posix_spawn_file_actions_identifier
+     POSIX_SPAWN_OPEN,
+     POSIX_SPAWN_CLOSE,
+     POSIX_SPAWN_DUP2
++#ifdef HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSEFROM_NP
++    ,POSIX_SPAWN_CLOSEFROM
++#endif
+ };
+ 
+ #if defined(HAVE_SCHED_SETPARAM) || defined(HAVE_SCHED_SETSCHEDULER) || defined(POSIX_SPAWN_SETSCHEDULER) || defined(POSIX_SPAWN_SETSCHEDPARAM)
+@@ -6075,6 +6078,24 @@ parse_file_actions(PyObject *file_action
+                 }
+                 break;
+             }
++#ifdef HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSEFROM_NP
++            case POSIX_SPAWN_CLOSEFROM: {
++                int fd;
++                if (!PyArg_ParseTuple(file_action, "Oi"
++                        ";A closefrom file_action tuple must have 2 elements",
++                        &tag_obj, &fd))
++                {
++                    goto fail;
++                }
++                errno = posix_spawn_file_actions_addclosefrom_np(file_actionsp,
++                                                                 fd);
++                if (errno) {
++                    posix_error();
++                    goto fail;
++                }
++                break;
++            }
++#endif
+             default: {
+                 PyErr_SetString(PyExc_TypeError,
+                                 "Unknown file_actions identifier");
+@@ -15113,6 +15134,9 @@ all_ins(PyObject *m)
+     if (PyModule_AddIntConstant(m, "POSIX_SPAWN_OPEN", POSIX_SPAWN_OPEN)) return -1;
+     if (PyModule_AddIntConstant(m, "POSIX_SPAWN_CLOSE", POSIX_SPAWN_CLOSE)) return -1;
+     if (PyModule_AddIntConstant(m, "POSIX_SPAWN_DUP2", POSIX_SPAWN_DUP2)) return -1;
++#ifdef HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSEFROM_NP
++    if (PyModule_AddIntConstant(m, "POSIX_SPAWN_CLOSEFROM", POSIX_SPAWN_CLOSEFROM)) return -1;
++#endif
+ #endif
+ 
+ #if defined(HAVE_SPAWNV) || defined (HAVE_RTPSPAWN)
+--- Python-3.9.18/Lib/subprocess.py
++++ Python-3.9.18/Lib/subprocess.py
+@@ -696,6 +696,7 @@ def _use_posix_spawn():
+ 
+ 
+ _USE_POSIX_SPAWN = _use_posix_spawn()
++_HAVE_POSIX_SPAWN_CLOSEFROM = hasattr(os, 'POSIX_SPAWN_CLOSEFROM')
+ 
+ 
+ class Popen(object):
+@@ -1636,7 +1637,7 @@ class Popen(object):
+                     errread, errwrite)
+ 
+ 
+-        def _posix_spawn(self, args, executable, env, restore_signals,
++        def _posix_spawn(self, args, executable, env, restore_signals, close_fds,
+                          p2cread, p2cwrite,
+                          c2pread, c2pwrite,
+                          errread, errwrite):
+@@ -1665,6 +1666,10 @@ class Popen(object):
+             ):
+                 if fd != -1:
+                     file_actions.append((os.POSIX_SPAWN_DUP2, fd, fd2))
++
++            if close_fds:
++                file_actions.append((os.POSIX_SPAWN_CLOSEFROM, 3))
++
+             if file_actions:
+                 kwargs['file_actions'] = file_actions
+ 
+@@ -1712,7 +1717,7 @@ class Popen(object):
+             if (_USE_POSIX_SPAWN
+                     and os.path.dirname(executable)
+                     and preexec_fn is None
+-                    and not close_fds
++                    and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                     and not pass_fds
+                     and cwd is None
+                     and (p2cread == -1 or p2cread > 2)
+@@ -1723,7 +1728,7 @@ class Popen(object):
+                     and gids is None
+                     and uid is None
+                     and umask < 0):
+-                self._posix_spawn(args, executable, env, restore_signals,
++                self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                                   p2cread, p2cwrite,
+                                   c2pread, c2pwrite,
+                                   errread, errwrite)

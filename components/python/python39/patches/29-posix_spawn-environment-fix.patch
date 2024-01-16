@@ -1,0 +1,62 @@
+Allow for os.posix_spawn call with env set to None, which makes it inherit
+the environment from the current process (similar to execv).
+
+With this change, subprocess using posix_spawn can behave similarly
+to the standard fork exec path.
+
+This was offered and merged upstream; it will be available in Python 3.13:
+https://github.com/python/cpython/issues/113119
+https://github.com/python/cpython/pull/113120
+
+--- Python-3.9.18/Lib/subprocess.py
++++ Python-3.9.18/Lib/subprocess.py
+@@ -1642,9 +1642,6 @@ class Popen(object):
+                          c2pread, c2pwrite,
+                          errread, errwrite):
+             """Execute program using os.posix_spawn()."""
+-            if env is None:
+-                env = os.environ
+-
+             kwargs = {}
+             if restore_signals:
+                 # See _Py_RestoreSignals() in Python/pylifecycle.c
+--- Python-3.9.18/Modules/posixmodule.c
++++ Python-3.9.18/Modules/posixmodule.c
+@@ -6151,9 +6151,9 @@ py_posix_spawn(int use_posix_spawnp, PyO
+         return NULL;
+     }
+ 
+-    if (!PyMapping_Check(env)) {
++    if (!PyMapping_Check(env) && env != Py_None) {
+         PyErr_Format(PyExc_TypeError,
+-                     "%s: environment must be a mapping object", func_name);
++                     "%s: environment must be a mapping object or None", func_name);
+         goto exit;
+     }
+ 
+@@ -6167,9 +6167,13 @@ py_posix_spawn(int use_posix_spawnp, PyO
+         goto exit;
+     }
+ 
+-    envlist = parse_envlist(env, &envc);
+-    if (envlist == NULL) {
+-        goto exit;
++    if (env == Py_None) {
++        envlist = environ;
++    } else {
++        envlist = parse_envlist(env, &envc);
++        if (envlist == NULL) {
++            goto exit;
++        }
+     }
+ 
+     if (file_actions != NULL && file_actions != Py_None) {
+@@ -6232,7 +6236,7 @@ exit:
+     if (attrp) {
+         (void)posix_spawnattr_destroy(attrp);
+     }
+-    if (envlist) {
++    if (envlist && envlist != environ) {
+         free_string_array(envlist, envc);
+     }
+     if (argvlist) {
