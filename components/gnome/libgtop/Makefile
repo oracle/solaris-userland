@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgtop
-COMPONENT_VERSION=	2.40.0
+COMPONENT_VERSION=	2.41.2
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libgtop/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:78f3274c0c79c434c03655c1b35edf7b95ec0421430897fb1345a98a265ed2d4
+	sha256:d9026cd8a48d27cdffd332f8d60a92764b56424e522c420cd13a01f40daf92c3
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13146
 
-COMPONENT_BAID=		64941
+COMPONENT_BAID=		156262
 
 TEST_TARGET = $(NO_TESTS)
 
