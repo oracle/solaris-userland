@@ -1,0 +1,115 @@
+Fix inline assembly statements causing "unused parameter" warnings.
+
+Patch backported from several commits of crc32c upstream:
+https://github.com/madler/brotli/issues/5
+https://github.com/madler/brotli/commit/c7a4aded8d9c3de6d4c55c5e10d00036b2e9b7e9
+https://github.com/madler/brotli/commit/77046b2d364b9c8c807a940543a8a1e9bd98eee2
+https://github.com/madler/brotli/commit/1d428d3a9baade233ebc3ac108293256bcb813d1
+
+From: Mark Adler <madler@alumni.caltech.edu>
+Date: Thu, 7 Dec 2023 11:44:47 -0800
+Subject: [PATCH] Remove extraneous register constraints in crc32c.c.
+
+--- memcached-1.6.22/crc32c.c
++++ memcached-1.6.22/crc32c.c
+@@ -1,6 +1,6 @@
+ /* crc32c.c -- compute CRC-32C using the Intel crc32 instruction
+- * Copyright (C) 2013, 2015, 2021 Mark Adler
+- * Version 1.4  31 May 2021  Mark Adler
++ * Copyright (C) 2013, 2015, 2021, 2023 Mark Adler
++ * Version 1.5  7 Dec 2023  Mark Adler
+  */
+ 
+ /*
+@@ -39,6 +39,7 @@
+                      Support big-endian processors in software calculation
+                      Add header for external use
+    1.4  31 May 2021  Correct register constraints on assembly instructions
++   1.5   7 Dec 2023  Improve register constraints for optimization
+  */
+ 
+ #include <pthread.h>
+@@ -137,14 +138,9 @@ static inline uint32_t crc32c_shift(uint
+ }
+ 
+ /* Block sizes for three-way parallel crc computation.  LONG and SHORT must
+-   both be powers of two.  The associated string constants must be set
+-   accordingly, for use in constructing the assembler instructions. */
++   both be powers of two. */
+ #define LONG 8192
+-#define LONGx1 "8192"
+-#define LONGx2 "16384"
+ #define SHORT 256
+-#define SHORTx1 "256"
+-#define SHORTx2 "512"
+ 
+ /* Tables for hardware crc that shift a crc by LONG and SHORT zeros. */
+ static pthread_once_t crc32c_once_hw = PTHREAD_ONCE_INIT;
+@@ -170,9 +166,9 @@ static uint32_t crc32c_hw(uint32_t crc,
+        to an eight-byte boundary */
+     unsigned char const *next = buf;
+     while (len && ((uintptr_t)next & 7) != 0) {
+-        __asm__("crc32b\t" "(%1), %0"
++        __asm__("crc32b\t%1, %0"
+                 : "+r"(crc0)
+-                : "r"(next), "m"(*next));
++                : "m"(*next));
+         next++;
+         len--;
+     }
+@@ -186,11 +182,11 @@ static uint32_t crc32c_hw(uint32_t crc,
+         uint64_t crc2 = 0;
+         unsigned char const * const end = next + LONG;
+         do {
+-            __asm__("crc32q\t" "(%3), %0\n\t"
+-                    "crc32q\t" LONGx1 "(%3), %1\n\t"
+-                    "crc32q\t" LONGx2 "(%3), %2"
++            __asm__("crc32q\t%3, %0\n\t"
++                    "crc32q\t%4, %1\n\t"
++                    "crc32q\t%5, %2"
+                     : "+r"(crc0), "+r"(crc1), "+r"(crc2)
+-                    : "r"(next), "m"(*next));
++                    : "m"(*next), "m"(next[LONG]), "m"(next[2*LONG]));
+             next += 8;
+         } while (next < end);
+         crc0 = crc32c_shift(crc32c_long, crc0) ^ crc1;
+@@ -206,11 +202,11 @@ static uint32_t crc32c_hw(uint32_t crc,
+         uint64_t crc2 = 0;
+         unsigned char const * const end = next + SHORT;
+         do {
+-            __asm__("crc32q\t" "(%3), %0\n\t"
+-                    "crc32q\t" SHORTx1 "(%3), %1\n\t"
+-                    "crc32q\t" SHORTx2 "(%3), %2"
++            __asm__("crc32q\t%3, %0\n\t"
++                    "crc32q\t%4, %1\n\t"
++                    "crc32q\t%5, %2"
+                     : "+r"(crc0), "+r"(crc1), "+r"(crc2)
+-                    : "r"(next), "m"(*next));
++                    : "m"(*next), "m"(next[SHORT]), "m"(next[2*SHORT]));
+             next += 8;
+         } while (next < end);
+         crc0 = crc32c_shift(crc32c_short, crc0) ^ crc1;
+@@ -224,9 +220,9 @@ static uint32_t crc32c_hw(uint32_t crc,
+     {
+         unsigned char const * const end = next + (len - (len & 7));
+         while (next < end) {
+-            __asm__("crc32q\t" "(%1), %0"
++            __asm__("crc32q\t%1, %0"
+                     : "+r"(crc0)
+-                    : "r"(next), "m"(*next));
++                    : "m"(*next));
+             next += 8;
+         }
+         len &= 7;
+@@ -234,9 +230,9 @@ static uint32_t crc32c_hw(uint32_t crc,
+ 
+     /* compute the crc for up to seven trailing bytes */
+     while (len) {
+-        __asm__("crc32b\t" "(%1), %0"
++        __asm__("crc32b\t%1, %0"
+                 : "+r"(crc0)
+-                : "r"(next), "m"(*next));
++                : "m"(*next));
+         next++;
+         len--;
+     }

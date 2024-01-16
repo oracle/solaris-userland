@@ -2,9 +2,9 @@ Adjustments needed to get memcached to build
 with the Studio compiler on Solaris.
 
 diff -ur memcached-1.6.18.orig//extstore.c memcached-1.6.18/extstore.c
---- memcached-1.6.18.orig//extstore.c	2023-03-02 20:56:49.827744683 -0800
-+++ memcached-1.6.18/extstore.c	2023-03-02 21:02:18.610682123 -0800
-@@ -860,7 +860,6 @@
+--- memcached-1.6.22/extstore.c
++++ memcached-1.6.22/extstore.c
+@@ -860,7 +860,6 @@ static void *extstore_io_thread(void *ar
          }
      }
  
@@ -12,16 +12,15 @@ diff -ur memcached-1.6.18.orig//extstore.c memcached-1.6.18/extstore.c
  }
  
  // call with *p locked.
-@@ -1005,5 +1004,4 @@
+@@ -1005,5 +1004,4 @@ static void *extstore_maint_thread(void
          STAT_UL(e);
      }
  
 -    return NULL;
  }
-diff -ur memcached-1.6.18.orig//logger.c memcached-1.6.18/logger.c
---- memcached-1.6.18.orig//logger.c	2023-03-02 20:56:49.800881157 -0800
-+++ memcached-1.6.18/logger.c	2023-03-02 20:58:34.832406062 -0800
-@@ -450,7 +450,7 @@
+--- memcached-1.6.22/logger.c
++++ memcached-1.6.22/logger.c
+@@ -560,7 +560,7 @@ void logger_set_gid(uint64_t gid) {
  #ifdef HAVE_GCC_64ATOMICS
      __sync_add_and_fetch(&logger_gid, gid);
  #elif defined(__sun)
@@ -30,10 +29,9 @@ diff -ur memcached-1.6.18.orig//logger.c memcached-1.6.18/logger.c
  #else
      mutex_lock(&logger_atomics_mutex);
      logger_gid = gid;
-diff -ur memcached-1.6.18.orig//slab_automove.c memcached-1.6.18/slab_automove.c
---- memcached-1.6.18.orig//slab_automove.c	2023-03-02 20:56:49.830738214 -0800
-+++ memcached-1.6.18/slab_automove.c	2023-03-02 21:00:21.047255604 -0800
-@@ -78,7 +78,7 @@
+--- memcached-1.6.22/slab_automove.c
++++ memcached-1.6.22/slab_automove.c
+@@ -78,7 +78,7 @@ void slab_automove_run(void *arg, int *s
      int oldest = -1;
      uint64_t oldest_age = 0;
      int youngest = -1;
@@ -42,10 +40,9 @@ diff -ur memcached-1.6.18.orig//slab_automove.c memcached-1.6.18/slab_automove.c
      bool youngest_evicting = false;
      *src = -1;
      *dst = -1;
-diff -ur memcached-1.6.18.orig//slabs.c memcached-1.6.18/slabs.c
---- memcached-1.6.18.orig//slabs.c	2023-03-02 20:56:49.823104743 -0800
-+++ memcached-1.6.18/slabs.c	2023-03-02 20:59:39.104632927 -0800
-@@ -213,7 +213,7 @@
+--- memcached-1.6.22/slabs.c
++++ memcached-1.6.22/slabs.c
+@@ -213,7 +213,7 @@ void slabs_init(const size_t limit, cons
       * the initial allocation fails, the required settings do not persist
       * for remaining allocations. As such it makes little sense to do slab
       * preallocation. */
@@ -54,10 +51,9 @@ diff -ur memcached-1.6.18.orig//slabs.c memcached-1.6.18/slabs.c
  
      mem_limit = limit;
  
-diff -ur memcached-1.6.18.orig//storage.c memcached-1.6.18/storage.c
---- memcached-1.6.18.orig//storage.c	2023-03-02 20:56:49.816442485 -0800
-+++ memcached-1.6.18/storage.c	2023-03-02 21:06:46.525102526 -0800
-@@ -649,7 +649,6 @@
+--- memcached-1.6.22/storage.c
++++ memcached-1.6.22/storage.c
+@@ -660,7 +660,6 @@ static void *storage_write_thread(void *
          }
          pthread_mutex_lock(&storage_write_plock);
      }
@@ -65,7 +61,7 @@ diff -ur memcached-1.6.18.orig//storage.c memcached-1.6.18/storage.c
  }
  
  // TODO
-@@ -982,9 +981,6 @@
+@@ -1019,9 +1018,6 @@ static void *storage_compact_thread(void
                  to_sleep += settings.ext_max_sleep;
          }
      }
