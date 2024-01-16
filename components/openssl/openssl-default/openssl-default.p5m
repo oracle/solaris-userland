@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through uncommitted">
@@ -120,11 +120,6 @@ link path=lib/openssl/engines/64 target=$(MACH64)
 link path=lib/openssl/engines/libpk11.so target=libpk11.so.1
 link path=lib/openssl/engines/libpk11.so.1 \
     target=../default/engines/libpk11.so.1 mediator=openssl
-
-# Wanboot static standalone openssl binaries
-file path=lib/openssl/wanboot/$(MACH64)/wanboot-openssl.o \
-    pkg.depend.bypass-generate=.* pkg.linted.userland.action001=true \
-    variant.arch=sparc
 link path=usr/bin/$(MACH32)/openssl \
     target=../../../lib/openssl/default/$(MACH32)/openssl mediator=openssl
 link path=usr/bin/CA.pl target=../../lib/openssl/default/CA.pl mediator=openssl
