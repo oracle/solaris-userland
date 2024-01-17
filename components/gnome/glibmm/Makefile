@@ -29,14 +29,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glibmm
-COMPONENT_VERSION=	2.66.2
+COMPONENT_VERSION=	2.66.6
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/glibmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:b2a4cd7b9ae987794cbb5a1becc10cecb65182b9bb841868625d6bbb123edb1d
+    sha256:5358742598181e5351d7bf8da072bf93e6dd5f178d27640d4e462bc8f14e152f
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7960
 
-COMPONENT_BAID=		111766
+COMPONENT_BAID=		155907
 BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
