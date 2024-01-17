@@ -1,67 +1,50 @@
 This patch adds Python debugger support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-3.9.14/Makefile.pre.in
-+++ Python-3.9.14/Makefile.pre.in
-@@ -474,7 +474,7 @@ DTRACE_DEPS = \
+--- Python-3.11.5/Makefile.pre.in
++++ Python-3.11.5/Makefile.pre.in
+@@ -585,7 +585,7 @@ LIBEXPAT_HEADERS= \
  # Default target
  all:		@DEF_MAKE_ALL_RULE@
- build_all:	check-clean-src $(BUILDPYTHON) oldsharedmods sharedmods gdbhooks \
--		Programs/_testembed python-config
-+		Programs/_testembed python-config build-py_db
+ build_all:	check-clean-src $(BUILDPYTHON) platform oldsharedmods sharedmods \
+-		gdbhooks Programs/_testembed python-config
++		gdbhooks Programs/_testembed python-config build-py_db
+ build_wasm: check-clean-src $(BUILDPYTHON) platform oldsharedmods python-config
  
  # Check that the source is clean when building out of source.
- check-clean-src:
-@@ -722,6 +722,15 @@ Makefile Modules/config.c: Makefile.pre
- 	@mv config.c Modules
- 	@echo "The Makefile was updated, you may need to re-run make."
+@@ -961,6 +961,18 @@ regen-re: $(BUILDPYTHON)
+ 	# using Tools/scripts/generate_re_casefix.py
+ 	$(RUNSHARED) ./$(BUILDPYTHON) $(srcdir)/Tools/scripts/generate_re_casefix.py $(srcdir)/Lib/re/_casefix.py
  
 +SHLIB_FLAGS = -shared -fpic
 +
-+libpython$(LDVERSION)_db.so.1.0:        $(srcdir)/py_db/libpython39_db.c
++libpython$(LDVERSION)_db.so.1.0:        $(srcdir)/py_db/libpython311_db.c
 +	$(CC) -o $@ $(CFLAGS) $(PY_CPPFLAGS) $(CPPFLAGS) $(SHLIB_FLAGS) $<
 +
++.PHONY: build-py_db
 +build-py_db:   libpython$(LDVERSION)_db.so.1.0
 +
++.PHONY: install-py_db
 +install-py_db: libpython$(LDVERSION)_db.so.1.0
 +	$(INSTALL_SHARED) libpython$(LDVERSION)_db.so.1.0 $(DESTDIR)$(LIBDIR)
++
+ Programs/_testembed: Programs/_testembed.o $(LINK_PYTHON_DEPS)
+ 	$(LINKCC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/_testembed.o $(LINK_PYTHON_OBJS) $(LIBS) $(MODLIBS) $(SYSLIBS)
  
- Programs/_testembed: Programs/_testembed.o $(LIBRARY) $(LDLIBRARY) $(PY3LIBRARY) $(EXPORTSYMS)
- 	$(LINKCC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/_testembed.o $(BLDLIBRARY) $(LIBS) $(MODLIBS) $(SYSLIBS)
-@@ -1249,7 +1258,7 @@ multisslcompile: build_all
- multissltest: build_all
- 	$(RUNSHARED) ./$(BUILDPYTHON) Tools/ssl/multissltests.py
- 
+@@ -1742,7 +1754,7 @@ multissltest: all
+ # prevent race conditions with PGO builds. PGO builds use recursive make,
+ # which can lead to two parallel `./python setup.py build` processes that
+ # step on each others toes.
 -install: @FRAMEWORKINSTALLFIRST@ commoninstall bininstall maninstall @FRAMEWORKINSTALLLAST@
 +install: @FRAMEWORKINSTALLFIRST@ commoninstall bininstall maninstall install-py_db @FRAMEWORKINSTALLLAST@
  	if test "x$(ENSUREPIP)" != "xno"  ; then \
  		case $(ENSUREPIP) in \
  			upgrade) ensurepip="--upgrade" ;; \
---- Python-3.9.18/py_db/libpython39_db.c
-+++ Python-3.9.18/py_db/libpython39_db.c
-@@ -0,0 +1,672 @@
+--- Python-3.11.5/py_db/libpython311_db.c
++++ Python-3.11.5/py_db/libpython311_db.c
+@@ -0,0 +1,858 @@
 +/*
-+ * CDDL HEADER START
-+ *
-+ * The contents of this file are subject to the terms of the
-+ * Common Development and Distribution License (the "License").
-+ * You may not use this file except in compliance with the License.
-+ *
-+ * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-+ * or http://www.opensolaris.org/os/licensing.
-+ * See the License for the specific language governing permissions
-+ * and limitations under the License.
-+ *
-+ * When distributing Covered Code, include this CDDL HEADER in each
-+ * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
-+ * If applicable, add the following below this CDDL HEADER, with the
-+ * fields enclosed by brackets "[]" replaced with your own identifying
-+ * information: Portions Copyright [yyyy] [name of copyright owner]
-+ *
-+ * CDDL HEADER END
-+ */
-+
-+/*
++ * Licensed to PSF under a Contributor Agreement.
 + * Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 + */
 +
@@ -77,12 +60,15 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +#include <frameobject.h>
 +#include "internal/pycore_runtime.h"
 +#include "internal/pycore_interp.h"
++#include "internal/pycore_frame.h"
 +
-+#include "libpython39_db.h"
++#include "libpython311_db.h"
 +
 +/*
 + * Decoding Python Stack Frames
 + * ============================
++ *
++ * Note that there are significant changes compared to Python 3.9.
 + *
 + * Python3 uses a variety of objects to construct its call chain.  The address
 + * space is accessible via global _PyRuntime pointer to _PyRuntimeState, which
@@ -98,27 +84,33 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 + *   +-----------------+
 + *   | _PyRuntimeState |  <----- PyRuntime
 + *   +-----------------+
-+ *       | interpreters.head
-+ *       V
++ *      | interpreters.head
++ *      V
 + *  +--------------------+ next  +--------------------+ next
 + *  | PyInterpreterState | ----> | PyInterpreterState | ----> ...
 + *  +--------------------+       +--------------------+
-+ *       | tstate_head                     | tstate_head
-+ *       V                                 V
-+ *  +---------------+ frame           +---------------+ frame
-+ *  | PyThreadState | -----> ...      | PyThreadState | -----> ...
-+ *  +---------------+                 +---------------+
-+ *       | next
-+ *       V
-+ *  +---------------+ frame  +---------------+ f_back  +---------------+
-+ *  | PyThreadState | -----> | PyFrameObject | ------> | PyFrameObject |
-+ *  +---------------+        +---------------+         +---------------+
-+ *       | next                      | f_code                 | f_code
-+ *       V                           V                        V
-+ *      ...                     +--------------+             ...
++ *      | threads.head                           | threads.head
++ *      V                                        V
++ *  +---------------+ cframe->current_frame    +---------------+  cframe
++ *  | PyThreadState | ---> ...                 | PyThreadState | -----> ...
++ *  +---------------+                          +---------------+
++ *      | next                                     | next
++ *      V                                          V
++ *  +---------------+ cframe->current_frame       ...
++ *  | PyThreadState | -------+
++ *  +---------------+        |
++ *      | next               |
++ *      V                    V
++ *     ...    +---------------------+ previous +---------------------+ previous
++ *            | _PyInterpreterFrame | -------> | _PyInterpreterFrame | ---> ...
++ *            +---------------------+          +---------------------+
++ *                               |                                |
++ *                               | f_code                         | f_code
++ *                               V                                V
++ *                              +--------------+                 ...
 + *                              | PyCodeObject |
 + *                              +--------------+
-+ *                 co_filename   |      |     | co_lnotab
++ *                 co_filename   |      |     | co_linetable
 + *                 +-------------+      |     +-------------+
 + *                 |                    | co_name           |
 + *                 V                    V                   V
@@ -128,31 +120,31 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 + *
 + * The _PyRuntimeState points to a list of one or more PyInterpreterState
 + * objects.  Each of these objects can contain one or more PyThreadState
-+ * objects.  The PyInterpreterState object keeps a pointer to the head of the
-+ * list of PyThreadState objects as tstate_head.
++ * objects.  The PyInterpreterState object keeps a pointer to the head
++ * of the list of PyThreadState objects as threads.head.
 + *
 + * Each thread keeps ahold of its stack frames.  The PyThreadState object
-+ * has a pointer to the topmost PyFrameObject, kept in frame.  The
-+ * successive frames on the stack are kept linked in the PyFrameObject's
-+ * f_back pointer, with each frame pointing to its caller.
++ * has a pointer to the topmost _PyInterpreterFrame, kept in frame.  The
++ * successive frames on the stack are kept linked in the _PyInterpreterFrame's
++ * previous pointer, with each frame pointing to its caller.
 + *
 + * In order to decode each call frame, our code needs to look at the
 + * PyCodeObject for each frame.  Essentially, this is the code that is
-+ * being executed in the frame.  The PyFrameObject keeps a pointer to this
-+ * code object in f_code.  In order to print meaningful debug information,
++ * being executed in the frame.  The _PyInterpreterFrame keeps a pointer to
++ * this code object in f_code.  In order to print meaningful debug information,
 + * it's necessary to extract the Python filename (co_filename), the
-+ * function name (co_name), and the line number within the file
-+ * (co_lnotab).  The filename and function are stored as strings, but the
-+ * line number is a mapping of bytecode offsets to line numbers.  The
-+ * description of the lnotab algorithm lives here:
++ * function name (co_name), and the line number within the file (co_linetable).
++ * The filename and function are stored as strings, but the line number
++ * is a mapping of bytecode offsets to line numbers.  The description
++ * of the algorithm lives here:
 + *
-+ * https://github.com/python/cpython/blob/3.9/Objects/lnotab_notes.txt
++ * https://github.com/python/cpython/blob/3.11/Objects/locations.md
 + *
 + * In order to decode the frame, the debugger needs to walk each
 + * InterpreterState object.  For each InterpreterState, every PyThreadState
-+ * must be traversed.  The PyThreadState objects point to the
-+ * PyFrameObjects.  For every thread, we must walk the frames backwards and
-+ * decode the strings that are in the PyCodeObjects.
++ * must be traversed.  The PyThreadState objects point to _PyInterpreterFrames.
++ * For every thread, we must walk the frames backwards and decode the strings
++ * that are in the PyCodeObjects.
 + */
 +
 +struct pydb_agent {
@@ -170,7 +162,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	pdi_next_cb_t pdi_nextf;
 +};
 +
-+#define	LIBPYTHON	"libpython3.9.so"
++#define	LIBPYTHON	"libpython3.11.so"
 +
 +#define	MIN(x, y)	(((x) < (y)) ? (x) : (y))
 +
@@ -250,38 +242,6 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +}
 +
 +/* Helper functions */
-+static int
-+pydb_getlno(pydb_agent_t *py, uintptr_t lnotab_addr, int firstline,
-+    int lastinst)
-+{
-+	unsigned char lnotab[4096];
-+	ssize_t lnotab_len;
-+	int addr, line;
-+	int i;
-+
-+	lnotab_len = pydb_strobj_readdata(py, lnotab_addr, lnotab,
-+	    sizeof (lnotab));
-+	if (lnotab_len < 0) {
-+		return (-1);
-+	}
-+
-+	/*
-+	 * Python's line number algorithm is arcane. See here for details:
-+	 * http://svn.python.org/projects/python/trunk/Objects/lnotab_notes.txt
-+	 */
-+
-+	line = firstline;
-+	for (addr = i = 0; i < lnotab_len; i += 2) {
-+		if (addr + lnotab[i] > lastinst) {
-+			break;
-+		}
-+		addr += lnotab[i];
-+		line += lnotab[i + 1];
-+	}
-+
-+	return (line);
-+}
-+
 +static ssize_t
 +pydb_asciiobj_readdata(pydb_agent_t *py, uintptr_t addr,
 +    unsigned char *buf, size_t buf_len)
@@ -412,21 +372,197 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	return (read_sz);
 +}
 +
++/*
++ * The following line number related functions are lifted directly from the
++ * Python source code [Objects/codeobject.c] with only minor modifications.
++ */
++static int
++pydb_scan_varint(const uint8_t *ptr)
++{
++    unsigned int read = *ptr++;
++    unsigned int val = read & 63;
++    unsigned int shift = 0;
++    while (read & 64) {
++        read = *ptr++;
++        shift += 6;
++        val |= (read & 63) << shift;
++    }
++    return val;
++}
++
++static int
++pydb_scan_signed_varint(const uint8_t *ptr)
++{
++    unsigned int uval = pydb_scan_varint(ptr);
++    if (uval & 1) {
++        return -(int)(uval >> 1);
++    }
++    else {
++        return uval >> 1;
++    }
++}
++
++static int
++pydb_get_line_delta(const uint8_t *ptr)
++{
++    int code = ((*ptr) >> 3) & 15;
++    switch (code) {
++        case PY_CODE_LOCATION_INFO_NONE:
++            return 0;
++        case PY_CODE_LOCATION_INFO_NO_COLUMNS:
++        case PY_CODE_LOCATION_INFO_LONG:
++            return pydb_scan_signed_varint(ptr+1);
++        case PY_CODE_LOCATION_INFO_ONE_LINE0:
++            return 0;
++        case PY_CODE_LOCATION_INFO_ONE_LINE1:
++            return 1;
++        case PY_CODE_LOCATION_INFO_ONE_LINE2:
++            return 2;
++        default:
++            /* Same line */
++            return 0;
++    }
++}
++
++static int
++pydb_is_no_line_marker(uint8_t b)
++{
++    return (b >> 3) == 0x1f;
++}
++
++static int
++pydb_next_code_delta(PyCodeAddressRange *bounds)
++{
++    return (((*bounds->opaque.lo_next) & 7) + 1) * sizeof(_Py_CODEUNIT);
++}
++
++static int
++pydb_previous_code_delta(PyCodeAddressRange *bounds)
++{
++    if (bounds->ar_start == 0) {
++        return 1;
++    }
++    const uint8_t *ptr = bounds->opaque.lo_next-1;
++    while (((*ptr) & 128) == 0) {
++        ptr--;
++    }
++    return (((*ptr) & 7) + 1) * sizeof(_Py_CODEUNIT);
++}
++
++static void
++pydb_retreat(PyCodeAddressRange *bounds)
++{
++    do {
++        bounds->opaque.lo_next--;
++    } while (((*bounds->opaque.lo_next) & 128) == 0);
++    bounds->opaque.computed_line -= pydb_get_line_delta(bounds->opaque.lo_next);
++    bounds->ar_end = bounds->ar_start;
++    bounds->ar_start -= pydb_previous_code_delta(bounds);
++    if (pydb_is_no_line_marker(bounds->opaque.lo_next[-1])) {
++        bounds->ar_line = -1;
++    } else {
++        bounds->ar_line = bounds->opaque.computed_line;
++    }
++}
++
++static void
++pydb_advance(PyCodeAddressRange *bounds)
++{
++    bounds->opaque.computed_line += pydb_get_line_delta(bounds->opaque.lo_next);
++    if (pydb_is_no_line_marker(*bounds->opaque.lo_next)) {
++        bounds->ar_line = -1;
++    } else {
++        bounds->ar_line = bounds->opaque.computed_line;
++    }
++    bounds->ar_start = bounds->ar_end;
++    bounds->ar_end += pydb_next_code_delta(bounds);
++    do {
++        bounds->opaque.lo_next++;
++    } while (bounds->opaque.lo_next < bounds->opaque.limit &&
++        ((*bounds->opaque.lo_next) & 128) == 0);
++}
++
++/* mirrors _PyCode_InitAddressRange &
++           _PyLineTable_InitAddressRange [codeobject.c] */
++int
++pydb_pycode_initaddressrange(pydb_agent_t *py, PyCodeObject* co,
++    PyCodeAddressRange *bounds)
++{
++    char linetable[4096];
++    ssize_t linetable_len;
++
++    linetable_len = pydb_strobj_readdata(py, (uintptr_t)(co->co_linetable),
++    linetable, sizeof (linetable));
++
++    bounds->opaque.lo_next = (const uint8_t *)linetable;
++    bounds->opaque.limit = bounds->opaque.lo_next + linetable_len;
++    bounds->ar_start = -1;
++    bounds->ar_end = 0;
++    bounds->opaque.computed_line = co->co_firstlineno;
++    bounds->ar_line = -1;
++
++    return bounds->ar_line;
++}
++
++/* mirrors _PyCode_CheckLineNumber, _PyLineTable_NextAddressRange &
++           _PyLineTable_PreviousAddressRange [codeobject.c] */
++int
++pydb_pycode_getlinenumber(int lasti, PyCodeAddressRange *bounds)
++{
++    while (bounds->ar_end <= lasti) {
++        if (bounds->opaque.lo_next >= bounds->opaque.limit) {
++            return -1;
++        }
++        pydb_advance(bounds);
++    }
++    while (bounds->ar_start > lasti) {
++        if (bounds->ar_start <= 0) {
++            return -1;
++        }
++        pydb_retreat(bounds);
++    }
++    return bounds->ar_line;
++}
++
++/* mirrors: _PyInterpreterFrame_GetLine [frame.c] & */
++/*          PyCode_Addr2Line [codeobject.c] */
++static int
++pydb_pyframe_getline(pydb_agent_t *py, _PyInterpreterFrame *frame,
++    PyCodeObject *co)
++{
++    int addr = _PyInterpreterFrame_LASTI(frame) * sizeof(_Py_CODEUNIT);
++    if (addr < 0) {
++    	return co->co_firstlineno;
++    }
++    if (co->_co_linearray) {
++    	int index = addr / sizeof(_Py_CODEUNIT);
++
++    	/* mirrors: _PyCode_LineNumberFromArray [pycore_code.h] */
++	    if (co->_co_linearray_entry_size == 2) {
++	        return ((int16_t *)co->_co_linearray)[index];
++	    }
++	    return ((int32_t *)co->_co_linearray)[index];
++    }
++
++    PyCodeAddressRange bounds;
++    pydb_pycode_initaddressrange(py, co, &bounds);
++    return pydb_pycode_getlinenumber(addr, &bounds);
++}
 +
 +static int
 +pydb_frameinfo(pydb_agent_t *py, uintptr_t addr, char *funcnm,
 +    size_t funcnm_sz, char *filenm, size_t filenm_sz, int *lineno)
 +{
-+	PyFrameObject fo;
++	_PyInterpreterFrame frame;
 +	PyCodeObject co;
 +	ssize_t rc;
 +
-+	if (ps_pread(py->pdb_ph, addr, &fo, sizeof (PyFrameObject))
++	if (ps_pread(py->pdb_ph, addr, &frame, sizeof (_PyInterpreterFrame))
 +	    != PS_OK) {
 +		return (-1);
 +	}
 +
-+	if (ps_pread(py->pdb_ph, (uintptr_t)fo.f_code, &co,
++	if (ps_pread(py->pdb_ph, (uintptr_t)frame.f_code, &co,
 +	    sizeof (PyCodeObject)) != PS_OK) {
 +		return (-1);
 +	}
@@ -443,8 +579,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +		return (-1);
 +	}
 +
-+	*lineno = pydb_getlno(py, (uintptr_t)co.co_lnotab, co.co_firstlineno,
-+	    fo.f_lasti);
++	*lineno = pydb_pyframe_getline(py, &frame, &co);
 +	if (*lineno < 0) {
 +		return (-1);
 +	}
@@ -455,7 +590,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +/* Functions that are part of the library's interface */
 +
 +/*
-+ * Given the address of a PyFrameObject, and a buffer of a known size,
++ * Given the address of a _PyInterpreterFrame, and a buffer of a known size,
 + * fill the buffer with a description of the frame.
 + */
 +int
@@ -488,9 +623,9 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +}
 +
 +/*
-+ * Return a description about a PyFrameObject, if the object is
-+ * actually a PyFrameObject.  In this case, the pc argument is checked
-+ * to make sure that it came from a function that takes a PyFrameObject
++ * Return a description about a _PyInterpreterFrame, if the object is
++ * actually a _PyInterpreterFrame.  In this case, the pc argument is checked
++ * to make sure that it came from a function that takes a _PyInterpreterFrame
 + * as its second (argv[1]) argument.
 + */
 +int
@@ -532,6 +667,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +/*
 + * Walks the list of PyInterpreterState objects.  If caller doesn't
 + * supply address of list, this method will look it up.
++ *
++ * mirrors: PyInterpreterState_Head() [pystate.c]
 + */
 +pydb_iter_t *
 +pydb_interp_iter_init(pydb_agent_t *py, uintptr_t addr)
@@ -548,16 +685,16 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +			return (NULL);
 +		}
 +
-+		if (ps_pread(py->pdb_ph, (uintptr_t)addr, &st, sizeof (_PyRuntimeState))
-+		    != PS_OK) {
++		if (ps_pread(py->pdb_ph, (uintptr_t)addr, &st,
++		    sizeof (_PyRuntimeState)) != PS_OK) {
 +			return (NULL);
 +		}
 +
 +		i_addr = (uintptr_t)st.interpreters.head;
 +
 +	} else {
-+		if (ps_pread(py->pdb_ph, (uintptr_t)addr, &i_addr, sizeof (uintptr_t))
-+		    != PS_OK) {
++		if (ps_pread(py->pdb_ph, (uintptr_t)addr, &i_addr,
++		    sizeof (uintptr_t)) != PS_OK) {
 +			return (NULL);
 +		}
 +	}
@@ -574,6 +711,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	return (itr);
 +}
 +
++/* mirrors: PyInterpreterState_Next() [pystate.c] */
 +static uintptr_t
 +pydb_interp_iter_next(pydb_iter_t *iter)
 +{
@@ -597,19 +735,57 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	return (cur);
 +}
 +
++/* mirrors: _PyFrame_IsIncomplete [pycore_frame.h] */
++static inline bool
++pydb_pyframe_isincomplete(struct ps_prochandle *pdb_ph,
++    _PyInterpreterFrame *frame)
++{
++	PyCodeObject co;
++	if (ps_pread(pdb_ph, (uintptr_t)frame->f_code, &co,
++	    sizeof (PyCodeObject)) != PS_OK) {
++		return (-1);
++	}
++	return frame->owner != FRAME_OWNED_BY_GENERATOR &&
++	frame->prev_instr < _PyCode_CODE(frame->f_code) + co._co_firsttraceable;
++}
++
 +/*
-+ * Walk a list of Python PyFrameObjects.  The addr argument must be
++ * Walk a list of Python _PyInterpreterFrames. The addr argument must be
 + * the address of a valid PyThreadState object.
++ *
++ * partially mirrors: PyThreadState_GetFrame() [pystate.c]
 + */
 +pydb_iter_t *
 +pydb_frame_iter_init(pydb_agent_t *py, uintptr_t addr)
 +{
 +	pydb_iter_t *itr;
 +	PyThreadState ts;
++	_PyCFrame cframe;
++	_PyInterpreterFrame frame;
 +
-+	if (ps_pread(py->pdb_ph, (uintptr_t)addr, &ts, sizeof (PyThreadState))
-+	    != PS_OK) {
++	// _PyInterpreterFrame *frame = ts->cframe->current_frame;
++	if (ps_pread(py->pdb_ph, (uintptr_t)addr, &ts,
++	    sizeof (PyThreadState)) != PS_OK) {
 +		return (NULL);
++	}
++	if (ps_pread(py->pdb_ph, (uintptr_t)ts.cframe, &cframe,
++	    sizeof (_PyCFrame)) != PS_OK) {
++		return (NULL);
++	}
++
++	// while (f && _PyFrame_IsIncomplete(f)) {
++	//     f = f->previous;
++	// }
++	uintptr_t address = (uintptr_t)cframe.current_frame;
++	while (address) {
++		if (ps_pread(py->pdb_ph, address, &frame,
++		    sizeof (_PyInterpreterFrame)) != PS_OK) {
++			return (NULL);
++		}
++		if (!pydb_pyframe_isincomplete(py->pdb_ph, &frame)) {
++			break;
++		}
++		address = (uintptr_t)frame.previous;
 +	}
 +
 +	itr = malloc(sizeof (pydb_iter_t));
@@ -618,31 +794,41 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	}
 +
 +	itr->pdi_ph = py->pdb_ph;
-+	itr->pdi_current = (uintptr_t)ts.frame;
++	itr->pdi_current = (uintptr_t)address;
 +	itr->pdi_nextf = pydb_frame_iter_next;
 +
 +	return (itr);
 +}
 +
++/* partially mirrors: PyFrame_GetBack() [frameobject.c] */
 +static uintptr_t
 +pydb_frame_iter_next(pydb_iter_t *iter)
 +{
-+	PyFrameObject fo;
 +	uintptr_t cur;
++	_PyInterpreterFrame frame;
 +
 +	cur = iter->pdi_current;
 +
 +	if (cur == 0) {
 +		return (cur);
 +	}
-+
-+	if (ps_pread(iter->pdi_ph, cur, &fo, sizeof (PyFrameObject))
-+	    != PS_OK) {
-+		iter->pdi_current = 0;
++	if (ps_pread(iter->pdi_ph, cur, &frame,
++	    sizeof (_PyInterpreterFrame)) != PS_OK) {
 +		return (0);
 +	}
++	uintptr_t address = (uintptr_t)frame.previous;
++	while (address) {
++		if (ps_pread(iter->pdi_ph, address, &frame,
++		    sizeof (_PyInterpreterFrame)) != PS_OK) {
++			return (0);
++		}
++		if (!pydb_pyframe_isincomplete(iter->pdi_ph, &frame)) {
++			break;
++		}
++		uintptr_t address = (uintptr_t)frame.previous;
++	}
 +
-+	iter->pdi_current = (uintptr_t)fo.f_back;
++	iter->pdi_current = (uintptr_t)address;
 +
 +	return (cur);
 +}
@@ -650,6 +836,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +/*
 + * Walk a list of Python PyThreadState objects.  The addr argument must be
 + * the address of a valid PyInterpreterState object.
++ *
++ * mirrors: PyInterpreterState_ThreadHead() [pystate.c]
 + */
 +pydb_iter_t *
 +pydb_thread_iter_init(pydb_agent_t *py, uintptr_t addr)
@@ -668,12 +856,13 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	}
 +
 +	itr->pdi_ph = py->pdb_ph;
-+	itr->pdi_current = (uintptr_t)is.tstate_head;
++	itr->pdi_current = (uintptr_t)is.threads.head;
 +	itr->pdi_nextf = pydb_thread_iter_next;
 +
 +	return (itr);
 +}
 +
++/* mirrors: PyThreadState_Next() [pystate.c] */
 +static uintptr_t
 +pydb_thread_iter_next(pydb_iter_t *iter)
 +{
@@ -712,8 +901,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +
 +	free(iter);
 +}
---- Python-3.9.14/py_db/libpython39_db.h
-+++ Python-3.9.14/py_db/libpython39_db.h
+--- Python-3.11.5/py_db/libpython311_db.h
++++ Python-3.11.5/py_db/libpython311_db.h
 @@ -0,0 +1,73 @@
 +/*
 + * CDDL HEADER START
@@ -736,11 +925,11 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 + * CDDL HEADER END
 + */
 +/*
-+ * Copyright (c) 2012, 2020, Oracle and/or its affiliates.
++ * Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 + */
 +
-+#ifndef	_LIBPYTHON39_DB_H
-+#define	_LIBPYTHON39_DB_H
++#ifndef	_LIBPYTHON311_DB_H
++#define	_LIBPYTHON311_DB_H
 +
 +#include <proc_service.h>
 +
@@ -761,12 +950,12 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +extern	pydb_agent_t	*pydb_agent_create(struct ps_prochandle *P, int vers);
 +extern	void		pydb_agent_destroy(pydb_agent_t *py);
 +
-+/* Used by callers that know they are looking at a PyFrameObject */
++/* Used by callers that know they are looking at a _PyInterpreterFrame */
 +extern	int	pydb_get_frameinfo(pydb_agent_t *py, uintptr_t frame_addr,
 +    char *fbuf, size_t bufsz, int verbose);
 +
 +/*
-+ * Used by callers that don't know if they're looking at PyFrameObject.
++ * Used by callers that don't know if they're looking at _PyInterpreterFrame.
 + * Checks PC for traceable functions.
 + */
 +extern	int	pydb_pc_frameinfo(pydb_agent_t *py, uintptr_t pc,
@@ -787,9 +976,9 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +}
 +#endif
 +
-+#endif	/* _LIBPYTHON39_DB_H */
---- Python-3.9.14/py_db/mapfile-vers
-+++ Python-3.9.14/py_db/mapfile-vers
++#endif	/* _LIBPYTHON311_DB_H */
+--- Python-3.11.5/py_db/mapfile-vers
++++ Python-3.11.5/py_db/mapfile-vers
 @@ -0,0 +1,39 @@
 +#
 +# CDDL HEADER START
@@ -813,7 +1002,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +#
 +
 +#
-+# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
++# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 +#
 +
 +SUNWprivate_1.1 {
