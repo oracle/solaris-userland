@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,11 +37,7 @@ INSTALL = install -c
 INSTALL_DATA = ${INSTALL} -m 644
 
 GMSGFMT = /usr/bin/gmsgfmt
-MSGFMT = /usr/bin/gmsgfmt
 XGETTEXT = /usr/bin/gxgettext
-INTLTOOL_UPDATE = /usr/bin/intltool-update
-INTLTOOL_EXTRACT = /usr/bin/intltool-extract
-GENPOT   = INTLTOOL_EXTRACT="$(INTLTOOL_EXTRACT)" XGETTEXT="$(XGETTEXT)" srcdir=$(srcdir) $(INTLTOOL_UPDATE) --gettext-package $(GETTEXT_PACKAGE) --pot
 
 ALL_LINGUAS = 
 
@@ -78,7 +74,7 @@ all-yes: $(CATALOGS) $(GETTEXT_PACKAGE).pot
 all-no:
 
 $(GETTEXT_PACKAGE).pot: $(POTFILES)
-	$(GENPOT)
+	$(XGETTEXT) --from-code=UTF-8 --keyword=N_ --add-comments $^ -o $@
 
 install: install-data
 install-data: install-data-yes
@@ -107,7 +103,6 @@ uninstall:
 
 clean:
 	rm -f *.gmo
-	rm -f .intltool-merge-cache
 
 distdir = ../$(PACKAGE)-$(VERSION)/$(subdir)
 dist distdir: $(DISTFILES)

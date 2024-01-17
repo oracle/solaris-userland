@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -76,11 +76,12 @@ LIB_DIR = /usr/lib/os-welcome
 DESTDIR=
 XDG_DIR= /etc/xdg/autostart
 INSTALL=/usr/sbin/install
-INTLTOOL_MERGE=/usr/bin/intltool-merge
+GMSGFMT=/usr/bin/gmsgfmt
 
 default: all
 
-%.desktop:   %.desktop.in   $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*.po) ; LC_ALL=C $(INTLTOOL_MERGE) -d -u -c $(top_builddir)/po/.intltool-merge-cache $(top_srcdir)/po $< $@
+%.desktop: %.desktop.in $(wildcard $(top_srcdir)/po/*.po)
+	$(GMSGFMT) --desktop --template $< -d $(top_srcdir)/po -o $@
 
 python_scripts: $(DATA)
 
