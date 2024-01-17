@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 
@@ -449,6 +449,7 @@ function build {
 		echo "Build logs are in $WS:"
 		echo "Failed components:"
 		( ggrep -r --exclude "$FULL_BUILD_LOG_NAME"$ -L -x -F 'TARGET_EXIT_CODE 0' || : ) |
+			sort |
 			sed -e 's/^/   /'
 		# Most probably if the full build failed then the repo wasn't
 		# "refresh"ed, so one can't list the packages in it even though the files
