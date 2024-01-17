@@ -20,27 +20,27 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ImageMagick
-COMPONENT_VERSION=	6.9.12
+COMPONENT_VERSION=	6.9.13
 COMPONENT_MAJOR_VERSION=$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.[0-9]\+\.[0-9]\+/\1/')
-COMPONENT_SUBVERSION=	93
+COMPONENT_SUBVERSION=	4
 HUMAN_VERSION=		$(COMPONENT_VERSION)-$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=	https://www.imagemagick.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-$(COMPONENT_SUBVERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:a8eeb984a0b180cdb964d813c211a764acc146eab338646bc696c6a13b61e4f4
+COMPONENT_ARCHIVE_HASH=	sha256:52a3ea24326d7489080a467336d14131cce618fef97783b0ab71e5ad381ad7b8
 COMPONENT_ARCHIVE_URL=	https://download.imagemagick.org/archive/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/imagemagick
 COMPONENT_ANITYA_ID=	1372
 
-COMPONENT_BAID=		148652
+COMPONENT_BAID=		157033
 
 # Enable adiheap security extension.
 # adistack fails with libgcc exception unwinding code.
@@ -88,11 +88,12 @@ CONFIGURE_ENV += CPPFLAGS_USER=$(CPPFLAGS_USER)
 CONFIGURE_OPTIONS+= --with-modules
 CONFIGURE_OPTIONS+= --enable-shared
 CONFIGURE_OPTIONS+= --disable-static
-CONFIGURE_OPTIONS+= --without-gvc
-CONFIGURE_OPTIONS+= --disable-openmp
-CONFIGURE_OPTIONS+= --without-openexr
-CONFIGURE_OPTIONS+= --without-openjp2 # tests do not pass
+CONFIGURE_OPTIONS+= --with-fftw
+CONFIGURE_OPTIONS+= --with-gslib
+CONFIGURE_OPTIONS+= --with-rsvg
 CONFIGURE_OPTIONS+= --x-libraries=$(CONFIGURE_LIBDIR.$(BITS)) 
+# 32bit platforms has limited address space, Sparcv7 unit tests fail
+CONFIGURE_OPTIONS.32+= --disable-openmp
 CONFIGURE_OPTIONS.32+= --without-perl
 CONFIGURE_OPTIONS.64+= --with-perl=$(PERL)
 CONFIGURE_OPTIONS.64+= --with-perl-options="INSTALLDIRS=vendor"
@@ -122,10 +123,14 @@ PKG_MACROS += PERL_PKG=$(PERL_PKG)
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/xz
+REQUIRED_PACKAGES += image/ghostscript
+REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
+REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += image/library/libwebp
+REQUIRED_PACKAGES += image/library/openjpeg2
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/fftw-3
@@ -135,7 +140,6 @@ REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/library/c++-runtime
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
