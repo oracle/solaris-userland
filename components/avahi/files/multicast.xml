@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<!--
+ Copyright (c) 2007, 2024, Oracle and/or its affiliates.
+
+    NOTE:  This service manifest is not editable; its contents will
+    be overwritten by package or patch operations, including
+    operating system upgrade.  Make customizations in a different
+    file.
+
+-->
+
+<service_bundle type='manifest' name='SUNWdsdr:multicast'>
+
+<service
+	name='network/dns/multicast'
+	type='service'
+	version='1'>
+
+	<dependency
+		name='loopback'
+		grouping='require_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/network/loopback'/>
+	</dependency>
+
+	<dependency name='net-physical'
+		grouping='require_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/network/physical:default'/>
+	</dependency>
+
+	<dependency
+		name='identity'
+		grouping='optional_all'
+		restart_on='refresh'
+		type='service'>
+		<service_fmri value='svc:/system/identity:node'/>
+	</dependency>
+
+	<dependency
+		name='system-log'
+		grouping='optional_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/system/system-log'/>
+	</dependency>
+
+	<dependency
+		name='dbus'
+		grouping='require_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/system/dbus'/>
+	</dependency>
+
+	<instance name='default' enabled='false'>
+		<dependency name='config_data' grouping='require_all'
+			restart_on='none' type='path'>
+			<service_fmri
+				value='file://localhost/etc/avahi/avahi-daemon.conf'/>
+		</dependency>
+
+		<exec_method
+			type='method'
+			name='start'
+			exec='/usr/sbin/avahi-daemon -D'
+			timeout_seconds='60'>
+		</exec_method>
+
+		<exec_method
+			type='method'
+			name='stop'
+			exec='/usr/sbin/avahi-daemon -k'
+			timeout_seconds='60'/>
+
+               <property_group name='nss_mdns_config' type='application'>
+                       <stability value='Unstable'/>
+
+                       <!-- mDNS domain search property list. Users must
+                            explicitly add mDNS search option values and
+                            none are provided here by default.
+                            <property name='search' type='astring'>
+                               <astring_list>
+                                       <value_node value='local'/>
+                               </astring_list>
+                            </property>
+                       -->
+                       <property name='domain' type='astring'>
+                               <astring_list>
+                                       <value_node value='local'/>
+                                       <value_node value='254.169.in-addr.arpa'/>
+                                       <value_node value='8.e.f.ip6.arpa'/>
+                                       <value_node value='9.e.f.ip6.arpa'/>
+                                       <value_node value='a.e.f.ip6.arpa'/>
+                                       <value_node value='b.e.f.ip6.arpa'/>
+                               </astring_list>
+                       </property>
+               </property_group>
+	</instance>
+
+        <stability value='Unstable'/>
+
+	<template>
+		<common_name>
+			<loctext xml:lang='C'>
+			DNS Service Discovery and Multicast DNS implemented by Avahi Daemon
+			</loctext>
+		</common_name>
+
+		<documentation>
+			<manpage title='avahi-daemon' section='1'/>
+		</documentation>
+	</template>
+</service>
+
+</service_bundle>

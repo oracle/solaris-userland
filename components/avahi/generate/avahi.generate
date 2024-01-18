@@ -20,14 +20,17 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
 # Delete everything not belonging to this package
-<transform file link pkg.type=(?!avahi) -> drop>
+<transform file link pkg.type=(?!avahi$) -> drop>
 <transform file link -> delete pkg.type .*>
 
-# Solaris do not announce these services
-<transform file path=etc/avahi/services/.* -> drop>
+# Add variant.opensolaris.zone=global
+<transform file path=usr/sbin/avahi-daemon -> set variant.opensolaris.zone global>
+
+# ServiceTypeDatabase.py contains conditional import which fools pkglint
+<transform file path=usr/lib/python.+/vendor-packages/.+/ServiceTypeDatabase.py -> set pkg.depend.bypass-generate .*anydbm.*>

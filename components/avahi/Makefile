@@ -20,81 +20,82 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
+
 COMPILER=	gcc
 BUILD_BITS=	64_and_32
+
 include ../../make-rules/shared-macros.mk
-# Override PATH set in shared-macros.mk by setting the GNU PATH as default.
-PATH=$(GNUBIN):$(USRBINDIR)
 
 COMPONENT_NAME=		avahi
-COMPONENT_VERSION=	0.7
-COMPONENT_BAID=		44165
-COMPONENT_ARCHIVE_HASH=	sha256:57a99b5dfe7fdae794e3d1ee7a62973a368e91e414bd0dfa5d84434de5b14804
+COMPONENT_VERSION=	0.8
+COMPONENT_BAID=		134572
+COMPONENT_ARCHIVE_HASH=	sha256:060309d7a333d38d951bc27598c677af1796934dbd98e1024e7ad8de798fedda
 COMPONENT_ARCHIVE_URL=	http://avahi.org/download/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://www.avahi.org/
 COMPONENT_BUGDB=	library/avahi
 COMPONENT_ANITYA_ID=	147
 
-# Needed to avoid test failures (unbounded variables in libtool).
-unexport SHELLOPTS
+PYTHON_VERSION=		3.11
 
 include $(WS_MAKE_RULES)/common.mk
 
-CONFIGURE_SBINDIR.64 =	$(CONFIGURE_BINDIR.64)
-CONFIGURE_OPTIONS	+=	--mandir=$(USRSHAREDIR)/man
-CONFIGURE_OPTIONS	+=	--enable-shared
-CONFIGURE_OPTIONS	+=	--disable-static
-CONFIGURE_OPTIONS	+=	--disable-python
+# service-type-database/build-db is missing from distribution, but is available
+# on github. That must have some reason because other distribution deliver it
+# same way. We should update the file during component upgrade. original:
+# https://github.com/lathiat/avahi/blob/master/service-type-database/build-db
+COMPONENT_PRE_CONFIGURE_ACTION += \
+	db=$(SOURCE_DIR)/service-type-database/build-db; \
+	$(CP) $(COMPONENT_DIR)/files/build-db $$db && $(CHMOD) +x $$db &&\
+	($(CLONEY) $(SOURCE_DIR) $(@D));
+
+CONFIGURE_ENV		+=	PYTHON=$(PYTHON.$(PYTHON_VERSION))
+# Avahi doesn't know sunos
+CONFIGURE_OPTIONS	+=	--with-distro=none
 CONFIGURE_OPTIONS	+=	--sysconfdir="$(ETCDIR)"
+CONFIGURE_OPTIONS	+=	--disable-qt5
+CONFIGURE_OPTIONS	+=	--disable-mono
 CONFIGURE_OPTIONS	+=	--with-avahi-user=daemon
 CONFIGURE_OPTIONS	+=	--with-avahi-group=other
-CONFIGURE_OPTIONS	+=	--with-distro=none
-CONFIGURE_OPTIONS	+=	--disable-gtk3
-CONFIGURE_OPTIONS	+=	--disable-qt3
-CONFIGURE_OPTIONS	+=	--disable-qt4
-CONFIGURE_OPTIONS	+=	--disable-mono
-CONFIGURE_OPTIONS	+=	--disable-monodoc
 CONFIGURE_OPTIONS	+=	--enable-tests
 CONFIGURE_OPTIONS	+=	--disable-autoipd
-CONFIGURE_OPTIONS	+=	--disable-gdbm
-CONFIGURE_OPTIONS	+=	--enable-dbm
-CONFIGURE_OPTIONS	+=	--disable-pygobject
-# xmltoman is not available
-CONFIGURE_OPTIONS	+=	--disable-manpages
+CONFIGURE_OPTIONS	+=	--enable-compat-libdns_sd
+CONFIGURE_OPTIONS.32	+=	--disable-python
+CONFIGURE_OPTIONS.32	+=	--disable-pygobject
 CONFIGURE_OPTIONS.64	+=	--enable-doxygen-man
 CONFIGURE_OPTIONS.32	+=	--disable-doxygen-man
-CONFIGURE_OPTIONS	+=	CPP="$(CC) -E"
-LDFLAGS	+=	-ldns_sd
+CONFIGURE_ENV.64	+=	PKG_CONFIG_PATH=/usr/lib/$(MACH64)/pkgconfig
 
-# NOCONFIGURE=yes -> do not execute "configure" directly from "autogen.sh" (/wo CONFIGURE_OPTIONS...)
-# running of configure /wo CONFIGURE_OPTIONS/ENV -> configure will fail (on --with-distro=none is missing)
-# because "sunos" is not among the distros known to avahi.
-# Note that GNU Build System files have to be regenerated for automake 1.16.
-COMPONENT_PREP_ACTION += \
- ( cd $(@D) ; PATH="$(PATH)" NOCONFIGURE=yes $(CONFIG_SHELL) autogen.sh; autoreconf -fiv)
+# Move site-packages into vendor-packages, compile to satisfy pkgdepend
+$(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
+	$(MV) $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/site-packages \
+		$(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages; \
+	$(PYTHON) -m compileall $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages;
 
-# build standalone sub-components only needed to lib support only
-SUBDIRS = avahi-common avahi-core avahi-client avahi-glib avahi-gobject avahi-ui
-$(BUILD_32):	COMPONENT_BUILD_TARGETS		+=	SUBDIRS="$(SUBDIRS)"
-$(INSTALL_32):	COMPONENT_INSTALL_TARGETS	+=	SUBDIRS="$(SUBDIRS)"
-
-COMPONENT_TEST_DIR =             $(@D)/avahi-core
+# Needed to avoid test failures (unbound variables in libtool).
+unexport SHELLOPTS
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/^PASS:/p" '
 
-# Avahi 0.7 requires intltool to build - remove when upgrading to 0.8
-REQUIRED_PACKAGES += developer/intltool
-REQUIRED_PACKAGES += library/desktop/gtk2
+REQUIRED_PACKAGES += library/database/gdbm
+REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libdaemon
-REQUIRED_PACKAGES += service/network/dns/mdns
+REQUIRED_PACKAGES += library/libevent
+REQUIRED_PACKAGES += library/python/dbus-python-311
+REQUIRED_PACKAGES += library/python/pygobject-3-311
+REQUIRED_PACKAGES += library/python/python-twisted-311
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/dbus
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
+REQUIRED_PACKAGES += system/network
+REQUIRED_PACKAGES += system/network/avahi
+REQUIRED_PACKAGES += system/network/avahi/gui

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -125,9 +125,9 @@ PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 REQUIRED_PACKAGES += library/libedit
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += service/network/dns/mdns
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/smf
 REQUIRED_PACKAGES += system/library/security/crypto
+REQUIRED_PACKAGES += system/network/avahi

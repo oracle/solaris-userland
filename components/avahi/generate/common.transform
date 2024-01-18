@@ -1,4 +1,4 @@
-#
+4
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -20,15 +20,12 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
-<transform file link -> set pkg.type gui>
-<transform file link path=etc/avahi/.+|.+/avahi-dbus.conf|.*/avahi-(browse|publish|resolve|set).*|.*/libavahi-(core|common|client).*|.+/LC_MESSAGES/.+ -> set pkg.type avahi>
+# Remove 32b. executables
+<transform file link path=usr/s*bin/\$\(MACH32\)/.* -> drop>
 
-# remove 32b. utils
-<transform file link path=usr/bin/\$\(MACH32\)/.* -> drop>
-
-# remove misplaced files in /man/
-<transform file path=man/(bssh\.1|avahi-.+) -> drop>
-<transform file path=files/.* -> drop>
+<transform file link -> set pkg.type avahi>
+<transform file link path=.*avahi-discover.*|.*bshell.*|.*bssh.*|.*bvnc.* -> set pkg.type avahi-gui>
+<transform file link path=.*gtk.*|.*freedesktop.*|.*\.dtd|.*[.-]ui -> set pkg.type avahi-gui>

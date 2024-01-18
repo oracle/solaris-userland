@@ -20,21 +20,11 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
 # Delete everything not belonging to this package
-<transform file link pkg.type=avahi -> drop>
+<transform file link pkg.type=(?!avahi-gui) -> drop>
 <transform file link -> delete pkg.type .*>
-
-# The avahi-discover is nice utility but it need pygtk and python-dbus
-<transform file path=usr/bin/avahi-discover -> drop >
-<transform file path=usr/share/applications/avahi-discover.desktop -> drop >
-
-# avahi-discover is nice utility but it need pygtk and python-dbus
-<transform file path=.+/avahi-discover.* -> drop>
-
-# LSARC/2007/464/ -> avahi-daemon is delivered as usr/sbin/avahi-daemon-bridge-dsd
-<transform file path=usr/bin/avahi-daemon -> drop>

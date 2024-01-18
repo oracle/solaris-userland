@@ -1,0 +1,47 @@
+This updates avahi-daemon.8 man page to contain information about
+svc:/network/dns/multicast:default SMF service and its properties.
+
+Solaris specific, not suitable for upstream.
+
+--- a/man/avahi-daemon.8.orig	2023-11-29 09:54:28.357588712 +0100
++++ b/man/avahi-daemon.8	2023-11-29 10:25:39.680288350 +0100
+@@ -54,6 +54,39 @@
+ .TP
+ \fB-v | --version\f1
+ Show version information 
++.SH SERVICE
++The \fBavahi-daemon\fR should be managed by the Solaris Management Facility (SMF) and should be administered by the \fBsvcadm\fR(8) command using the following fault management resource identifier (FMRI):
++.sp                                                                                                   
++.in +2
++.nf
++svc:/network/dns/multicast:default
++.fi
++.in -2                                                                                                
++.sp
++The configuration options for host name and host address queries using Multicast \fBDNS\fR are stored in a property group named "\fBnss_mdns_config\fR". The properties that make up the configuration options are as follows:
++.sp
++.ne 2
++.mk
++.na
++\fBsearch\fR
++.ad
++.RS 10n
++.rt
++A list of domain names for host name look up. By default, no search domains are included in the configuration.
++.RE
++.sp
++.ne 2
++.mk
++.na
++\fBdomain\fR
++.ad
++.RS 10n
++.rt
++A list of valid host name and address domains checked before Multicast \fBDNS\fR is used to look up the host name or host address. Host name or address outside domains not listed will not be queried at all. Domains specified in the \fBsearch\fR list are always treated as valid.
++.RE
++.sp
++.LP
++Please note the above configuration options are Volatile and may change in a future release.
+ .SH FILES
+ \fI/etc/avahi/avahi-daemon.conf\f1: the default configuration file for avahi-daemon, \fBavahi-daemon.conf(5)\f1 for more information.
+ 
