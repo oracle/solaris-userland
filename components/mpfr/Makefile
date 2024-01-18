@@ -19,7 +19,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=	gcc
@@ -28,10 +28,10 @@ include ../../make-rules/shared-macros.mk
 PATH=$(dir $(CC)):$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=         mpfr
-COMPONENT_VERSION=      4.1.0
+COMPONENT_VERSION=      4.2.1
 COMPONENT_PROJECT_URL=	http://www.mpfr.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:3127fe813218f3a1f0adf4e8899de23df33b4cf4b4b3831a5314f78e65ffa2d6
+    sha256:116715552bd966c85b417c424db1bbdf639f53836eb361549d1f8d6ded5cb4c6
 COMPONENT_DOWNLOAD_URL=	https://ftp.gnu.org/gnu/$(COMPONENT_NAME)
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
@@ -39,49 +39,14 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/libmpfr
 COMPONENT_ANITYA_ID=	2019
 
-COMPONENT_BAID=		91535
-COMPONENT_BAID_3.1.5=	37464
-
-COMPONENT_VERSION_1=      3.1.5
-COMPONENT_SRC_1=          $(COMPONENT_NAME)-$(COMPONENT_VERSION_1)
-COMPONENT_ARCHIVE_1=      $(COMPONENT_SRC_1).tar.gz
-COMPONENT_ARCHIVE_HASH_1= \
-    sha256:f4eb5070883aee3fd8b927751ea63ff95aebe24418cde852439ce74c3dd2513c
-COMPONENT_ARCHIVE_URL_1=$(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_ARCHIVE_1)
-COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
+COMPONENT_BAID=		156765
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Macros to configure, build, and install the old version so we can contiune
-# to deliver runtime support for GCC until a newer build of GCC built against
-# the new GNU MPFR is part of the CBE.  Once the newer GCC packages are 
-# on the build systems, we can stop building and delivering the old version.
-BUILD_OLD_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)
-BUILD_OLD_DIR_64 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH64)
-
-$(BUILD_OLD_DIR_32)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_64)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_32)/.configured:        BITS=32
-$(BUILD_OLD_DIR_64)/.configured:        BITS=64
-# GNU MP removed their workaround for pre-ANSI C compilers that didn't support
-# 'const' in GMP 5.1 MPFR 2.4.2 still expects to find the workaround.
-$(BUILD_OLD_DIR_32)/.configured:        CFLAGS += -D__gmp_const=const
-$(BUILD_OLD_DIR_64)/.configured:        CFLAGS += -D__gmp_const=const
-
-CONFIGURE_32 += $(BUILD_OLD_DIR_32)/.configured
-CONFIGURE_64 += $(BUILD_OLD_DIR_64)/.configured
-
-BUILD_32 += $(BUILD_OLD_DIR_32)/.built
-BUILD_64 += $(BUILD_OLD_DIR_64)/.built
-
-INSTALL_32 += $(BUILD_OLD_DIR_32)/.installed
-INSTALL_64 += $(BUILD_OLD_DIR_64)/.installed
-
-# install the old version first
-$(BUILD_DIR_32)/.installed:     $(BUILD_OLD_DIR_32)/.installed
-$(BUILD_DIR_64)/.installed:     $(BUILD_OLD_DIR_64)/.installed
-#
-# End old version
+# to fix SPARC test failures
+ifeq ($(MACH), sparc)
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+endif
 
 MPFRMULHIGH = 2048
 
