@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dill
-COMPONENT_VERSION=	0.3.5.1
+COMPONENT_VERSION=	0.3.7
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:52115ec4d77629a8c7ca303b8a2a99c14d01d806fb92a11693c274b5763c0acf
+    sha256:cc1c8b182eb3013e24bd475ff2e9295af86c1a38eb1aff128dac8962a9ce3c03
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/uqfoundation/dill
 COMPONENT_BUGDB=	python-mod/dill
 COMPONENT_ANITYA_ID=	7687
-COMPONENT_BAID=		128430
+COMPONENT_BAID=		157356
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -43,9 +43,7 @@ include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON)
-COMPONENT_TEST_ARGS =	tests
-COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS =	'-n -e "/fails:/p"'
+COMPONENT_TEST_ARGS =	-m dill.tests
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -55,5 +53,3 @@ build:		$(BUILD_NO_ARCH)
 install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
-
-system-test:    $(SYSTEM_TEST_NO_ARCH)

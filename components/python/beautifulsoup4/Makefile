@@ -20,29 +20,29 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		beautifulsoup4
-COMPONENT_VERSION=	4.11.1
+COMPONENT_VERSION=	4.12.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e575792b4b9b83d1b168e999be70ed497e9d1b0d4c579e8cdc7d033eee0dd71e
+    sha256:df16e0b7bfc652436016728e67cf62f9225432a435a0a0675e12b7ca65822238
 COMPONENT_ARCHIVE_URL=	\
-    https://www.crummy.com/software/BeautifulSoup/bs4/download/4.11/$(COMPONENT_ARCHIVE)
+    https://www.crummy.com/software/BeautifulSoup/bs4/download/4.12/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/beautifulsoup4
 COMPONENT_BUGDB=	python-mod/beautifulsoup4
 COMPONENT_ANITYA_ID=	3779
-COMPONENT_BAID=		121754
+COMPONENT_BAID=		157353
 
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-COMPONENT_TEST_DIR =	$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/bs4/tests
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/bs4/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 

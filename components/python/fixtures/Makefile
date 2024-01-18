@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fixtures
-COMPONENT_VERSION=	4.0.0
+COMPONENT_VERSION=	4.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e0c4a36f6cb170ec973f10ad34442d58aad76eb83cd83b52a0da6435a16a6e28
+    sha256:82b1c5e69f615526ef6c067188a1e6c6067df7f88332509c99f8b8fdbb9776f3
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/testing-cabal/fixtures
 COMPONENT_BUGDB=	python-mod/fixtures
 COMPONENT_ANITYA_ID=	8047
-COMPONENT_BAID=		122787
+COMPONENT_BAID=		157364
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/$(COMPONENT_NAME)/tests
@@ -57,7 +57,6 @@ test:		$(TEST_NO_ARCH)
 system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
 
 # Test related dependencies
 REQUIRED_PACKAGES += library/python/testtools
