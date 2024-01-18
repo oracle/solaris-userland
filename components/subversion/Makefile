@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=64
@@ -208,7 +208,6 @@ PKG_MACROS += PYVER=$(PYTHON_VERSION)
 PKG_MACROS += PYV=$(shell echo $(PYTHON_VERSION) | tr -d .)
 
 REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += developer/build/scons
 REQUIRED_PACKAGES += developer/swig
 REQUIRED_PACKAGES += developer/versioning/subversion
 REQUIRED_PACKAGES += library/apr-1

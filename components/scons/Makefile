@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		scons
-COMPONENT_VERSION=	4.4.0
+COMPONENT_VERSION=	4.6.0
 COMPONENT_PROJECT_URL=	http://www.scons.org/
 COMPONENT_SRC=		SCons-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:abb46de98cc8fa23fbcb2a591f26e143ee7e7df4927fb5b7c2d5b88c2826ebb1
+    sha256:7db28958b188b800f803c287d0680cc3ac7c422ed0b1cf9895042c52567803ec
 COMPONENT_ARCHIVE_URL=	\
     https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	4770
-COMPONENT_BAID=		133404
+COMPONENT_BAID=		157458
 
 # we only need a single version of SCons
 PYTHON_VERSION = 3.11
