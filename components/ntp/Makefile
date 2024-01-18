@@ -125,6 +125,8 @@ PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 REQUIRED_PACKAGES += library/libedit
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += $(PERL_PKG)
+# Following line could be safely removed with a new NTP uprev.
+REQUIRED_PACKAGES += service/network/dns/mdns
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/math
