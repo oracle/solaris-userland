@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cheroot
-COMPONENT_VERSION=	9.0.0
+COMPONENT_VERSION=	10.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:3d47ad9ee19ecbec144b4758399036692fdbf67a40b96eef1fb1454367b3d338
+	sha256:59c4a1877fef9969b3c3c080caaaf377e2780919437853fc0d32a9df40b311f0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/cherrypy/cheroot
 COMPONENT_BUGDB=	python-mod/cheroot
 COMPONENT_ANITYA_ID=	20163
-COMPONENT_BAID=		142887
+COMPONENT_BAID=		157286
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -60,7 +60,6 @@ test:		$(TEST_NO_ARCH)
 system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/more_itertools-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
 REQUIRED_PACKAGES += library/python/importlib-metadata-37
 
 # Setup related components

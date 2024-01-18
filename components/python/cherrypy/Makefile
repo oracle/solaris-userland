@@ -20,27 +20,27 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 PATH=/usr/bin:/usr/gnu/bin:/usr/sbin
 
 COMPONENT_NAME=		CherryPy
-COMPONENT_VERSION=	18.8.0
+COMPONENT_VERSION=	18.9.0
 COMPONENT_PROJECT_URL=	http://www.cherrypy.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b8cdc87a37c728ef8670c84bb1a2e6a5e0296e70921aab6c73acea81478e2257
+    sha256:6b06c191ce71a86461f30572a1ab57ffc09f43143ba8e42c103c7b3347220eb1
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/cherrypy
 COMPONENT_ANITYA_ID=	3799
-COMPONENT_BAID=		142916
+COMPONENT_BAID=		157288
 
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_POST_INSTALL_ACTION = \
