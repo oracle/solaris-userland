@@ -19,7 +19,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -28,26 +28,16 @@ include ../../make-rules/shared-macros.mk
 PATH=$(dir $(CC)):$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		gmp
-COMPONENT_VERSION=      6.2.1
+COMPONENT_VERSION=      6.3.0
 COMPONENT_PROJECT_URL=	https://gmplib.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:fd4829912cddd12f84181c3451cc752be224643e87fac497b69edddadc49b4f2
+    sha256:a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898
 COMPONENT_ARCHIVE_URL=  https://gmplib.org/download/gmp/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/gnump
 COMPONENT_ANITYA_ID=	1186
-COMPONENT_BAID=		91490
-
-COMPONENT_NAME_1=         gmp
-COMPONENT_VERSION_1=      4.3.2
-COMPONENT_SRC_1=          $(COMPONENT_NAME)-$(COMPONENT_VERSION_1)
-COMPONENT_ARCHIVE_1=      $(COMPONENT_SRC_1).tar.gz
-COMPONENT_ARCHIVE_HASH_1= \
-    sha256:7be3ad1641b99b17f6a8be6a976f1f954e997c41e919ad7e0c418fe848c13c97
-COMPONENT_ARCHIVE_URL_1=  http://ftp.gnu.org/gnu/gmp/$(COMPONENT_ARCHIVE_1)
-COMPONENT_SIG_URL_1=	  $(COMPONENT_ARCHIVE_URL_1).sig
-COMPONENT_BAID_1=		  16842
+COMPONENT_BAID=		156634
 
 COMPONENT_PREP_ACTION = (cd $(@D) ; $(AUTORECONF) -fiv)
 
@@ -63,33 +53,6 @@ BUILD_32_and_64 += $(WANBOOT_BUILD.$(MACH64))
 INSTALL_32_and_64 += $(WANBOOT_INSTALL.$(MACH64))
 
 $(BUILD_DIR_64)/.installed:	$(WANBOOT_INSTALL.$(MACH64))
-
-# Macros to configure, build, and install the old version so we can continue
-# to deliver runtime support for GCC until a newer build of GCC built against
-# the new GNU MP is part of the CBE.  Once the newer GCC packages are
-# on the build systems, we can stop building and delivering the old version.
-BUILD_OLD_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)
-BUILD_OLD_DIR_64 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH64)
-
-$(BUILD_OLD_DIR_32)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_64)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_32)/.configured:        BITS=32
-$(BUILD_OLD_DIR_64)/.configured:        BITS=64
-
-CONFIGURE_32 +=	$(BUILD_OLD_DIR_32)/.configured
-CONFIGURE_64 +=	$(BUILD_OLD_DIR_64)/.configured
-
-BUILD_32 += $(BUILD_OLD_DIR_32)/.built
-BUILD_64 += $(BUILD_OLD_DIR_64)/.built
-
-INSTALL_32 += $(BUILD_OLD_DIR_32)/.installed
-INSTALL_64 += $(BUILD_OLD_DIR_64)/.installed
-
-# install the old version first
-$(BUILD_DIR_32)/.installed:     $(BUILD_OLD_DIR_32)/.installed
-$(BUILD_DIR_64)/.installed:     $(BUILD_OLD_DIR_64)/.installed
-#
-# End old version
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -113,7 +76,7 @@ CFLAGS.wanboot += -fno-stack-protector
 CFLAGS.wanboot += -mno-stack-arg-probe
 CFLAGS.wanboot += -fno-tree-vectorize
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 # We want to run tests in a stripped environment so nothing interferes
 COMPONENT_TEST_ENV += -i
