@@ -20,60 +20,22 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mpc
-COMPONENT_VERSION=	1.2.1
+COMPONENT_VERSION=	1.3.1
 COMPONENT_PROJECT_URL=	http://www.multiprecision.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:17503d2c395dfcf106b622dc142683c1199431d095367c6aacba6eec30340459
+    sha256:ab642492f5cf882b74aa0cb730cd410a81edcdbec895183ce930e706c1c759b8
 COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1667
 
-COMPONENT_BAID=		91571
-
-#
-# Temporarily build the old version to transition GCC 4.9 & 5.  Once GCC has
-# been built against the new version, the old version can be removed.
-#
-# Begin old version
-#
-COMPONENT_VERSION_1=	1.0.3
-COMPONENT_SRC_1=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_1)
-COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
-COMPONENT_ARCHIVE_HASH_1= \
-    sha256:617decc6ea09889fb08ede330917a00b16809b8db88c29c31bfbb49cbf88ecc3
-COMPONENT_ARCHIVE_URL_1=$(COMPONENT_PROJECT_URL)downloads/$(COMPONENT_ARCHIVE_1)
-COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
-COMPONENT_ANITYA_ID_1=	1667
-
-COMPONENT_BAID_1=		32598
-
-# Macros to configure, build, and install the old version for the time being.
-BUILD_OLD_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)
-BUILD_OLD_DIR_64 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH64)
-
-$(BUILD_OLD_DIR_32)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_64)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_32)/.configured: BITS=32
-$(BUILD_OLD_DIR_64)/.configured: BITS=64
-
-BUILD_32 += $(BUILD_OLD_DIR_32)/.built
-BUILD_64 += $(BUILD_OLD_DIR_64)/.built
-
-INSTALL_32 += $(BUILD_OLD_DIR_32)/.installed
-INSTALL_64 += $(BUILD_OLD_DIR_64)/.installed
-
-# install the old version first
-$(BUILD_DIR_32)/.installed:     $(BUILD_OLD_DIR_32)/.installed
-$(BUILD_DIR_64)/.installed:     $(BUILD_OLD_DIR_64)/.installed
-#
-# End old version
+COMPONENT_BAID=		156769
 
 TEST_TARGET= install $(TEST_32_and_64)
 # Add install dependency when system-test target is implemented.
