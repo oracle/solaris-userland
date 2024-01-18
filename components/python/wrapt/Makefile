@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wrapt
-COMPONENT_VERSION=	1.14.1
+COMPONENT_VERSION=	1.16.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1ed0ae1ceb908f6a0cf0a32bf91c54381f9dadfb3e082ca1f109817ba970c6c2
+    sha256:5f370f952971e7d17c7d1ead40e49f32345a7f7a5373571ef44d800d06b1899d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/GrahamDumpleton/wrapt
 COMPONENT_BUGDB=	python-mod/wrapt
 COMPONENT_ANITYA_ID=	6108
-COMPONENT_BAID=		121809
+COMPONENT_BAID=		157279
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

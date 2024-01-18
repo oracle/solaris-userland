@@ -1,0 +1,46 @@
+Poetry is not available on Solaris; this patch modifies the build metadata
+to use setuptools instead.
+
+Not intended for upstream.
+
+--- tomlkit-0.12.3/pyproject.toml
++++ tomlkit-0.12.3/pyproject.toml
+@@ -1,25 +1,19 @@
+-[tool.poetry]
++[project]
+ name = "tomlkit"
+ version = "0.12.3"
+ description = "Style preserving TOML library"
+ authors = [
+-    "Sébastien Eustace <sebastien@eustace.io>",
+-    "Frost Ming <me@frostming.com>"
++    { name = "Sébastien Eustace", email = "sebastien@eustace.io" },
++    { name = "Frost Ming", email = "me@frostming.com" },
+ ]
+-license = "MIT"
++license = {text = "MIT"}
+ 
+ readme = "README.md"
+ 
++[project.urls]
+ homepage = "https://github.com/sdispater/tomlkit"
+ repository = "https://github.com/sdispater/tomlkit"
+ 
+-include = [
+-  { path = "tomlkit/py.typed" },
+-  { path = "tests", format = "sdist" },
+-  { path = "docs", format = "sdist" },
+-  { path = "CHANGELOG.md", format = "sdist" },
+-]
+-
+ [tool.poetry.dependencies]
+ python = ">=3.7"
+ 
+@@ -60,5 +54,5 @@ known_first_party = ["tomlkit"]
+ known_third_party = ["pytest"]
+ 
+ [build-system]
+-requires = ["poetry-core>=1.0.0a9"]
+-build-backend = "poetry.core.masonry.api"
++requires = ["setuptools"]
++build-backend = "setuptools.build_meta"

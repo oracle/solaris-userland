@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyhamcrest
-COMPONENT_VERSION=	2.0.4
+COMPONENT_VERSION=	2.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:dd08cbc67fac05b80d66d0be51abd6364d706b4d63d80352e15b2468a455c44e
+    sha256:c6acbec0923d0cb7e72c22af1926f3e7c97b8e8d69fc7498eabacaf7c975bd9c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/hamcrest/PyHamcrest
 COMPONENT_BUGDB=	python-mod/pyhamcrest
 COMPONENT_ANITYA_ID=	11633
-COMPONENT_BAID=		141678
+COMPONENT_BAID=		157284
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -55,5 +55,3 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TEST_NO_ARCH)
-
-REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)

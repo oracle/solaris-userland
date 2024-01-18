@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Babel
-COMPONENT_VERSION=	2.10.1
+COMPONENT_VERSION=	2.14.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3d9b904d064bfc103f528aa08954859cea75c5f57661b078c967d63626b3e1b5
+    sha256:6919867db036398ba21eb5c7a0f6b28ab8cbc3ae7a73a44ebe34ae74a4e7d363
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://babel.pocoo.org/
 COMPONENT_BUGDB=	python-mod/babel
 COMPONENT_ANITYA_ID=	11984
-COMPONENT_BAID=		123821
+COMPONENT_BAID=		157278
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_POST_INSTALL_ACTION = \
@@ -61,4 +61,4 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pytz-%)
+REQUIRED_PACKAGES += library/python/pytz-37
