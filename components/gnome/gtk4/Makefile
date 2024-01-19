@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -28,16 +28,16 @@ BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk4
-COMPONENT_VERSION=	4.4.2
+COMPONENT_VERSION=	4.12.4
 COMPONENT_PROJECT_URL=	https://www.gtk.org/
 COMPONENT_SRC=		gtk-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:08cdf45f655fe90318aba7d9e8008dda2ca4cb8db1b36197ca539ae25ce4719b
-COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk/4.4/$(COMPONENT_ARCHIVE)
+    sha256:ba67c6498e5599f928edafb9e08a320adfaa50ab2f0da6fc6ab2252fc2d57520
+COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk/4.12/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gtk+
 COMPONENT_ANITYA_ID=	13942
 
-COMPONENT_BAID=		155422
+COMPONENT_BAID=		156481
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -51,37 +51,34 @@ CONFIGURE_OPTIONS += -Dwayland-backend=false
 # Requires gstreamer-player-1
 CONFIGURE_OPTIONS += -Dmedia-gstreamer=disabled
 CONFIGURE_OPTIONS += -Dman-pages=true
-
-# GCC 11 compiles F16C meson intrinsics test. But later fp16.c build fails
-# with: 'ifunc' is not supported on this target.
-CONFIGURE_OPTIONS += -Df16c=disabled
-
-CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
-COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+CONFIGURE_OPTIONS += -Dintrospection=enabled
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH64).master
 COMPONENT_TEST_TRANSFORMS += \
-        '-e "s/[0-9]* subtests passed//"'
+        '-n ' \
+        '-e "/Ok:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Timeout:/p" '
 
+REQUIRED_PACKAGES += image/library/libjpeg
+REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += image/library/librsvg
+REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/fribidi
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/graphene
 REQUIRED_PACKAGES += library/desktop/harfbuzz
-REQUIRED_PACKAGES += library/desktop/librest
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
-REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libepoxy
 REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxcomposite
 REQUIRED_PACKAGES += x11/library/libxcursor
 REQUIRED_PACKAGES += x11/library/libxdamage
 REQUIRED_PACKAGES += x11/library/libxext
