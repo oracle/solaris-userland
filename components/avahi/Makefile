@@ -50,6 +50,11 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	$(CP) $(COMPONENT_DIR)/files/build-db $$db && $(CHMOD) +x $$db &&\
 	($(CLONEY) $(SOURCE_DIR) $(@D));
 
+# Because of the mapfile patch
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
+# MAKE=gmake is needed because of the autoreconf
+CONFIGURE_ENV		+=	MAKE=gmake
+
 CONFIGURE_ENV		+=	PYTHON=$(PYTHON.$(PYTHON_VERSION))
 # Avahi doesn't know sunos
 CONFIGURE_OPTIONS	+=	--with-distro=none
