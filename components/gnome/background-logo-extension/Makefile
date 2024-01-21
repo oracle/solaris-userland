@@ -20,21 +20,22 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		background-logo-extension
-COMPONENT_VERSION=	41.0
+COMPONENT_VERSION=	45.beta
+IPS_COMPONENT_VERSION=	45
 COMPONENT_PROJECT_URL=  https://extensions.gnome.org/extension/889/background-logo
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7cd2f17166db747678c9347e44bced98050b24afba306a88f7148fdf6597dc9e
+	sha256:e8c925bec2faa639542267bcb088aabf80ae8d68e493b901342834cfd8f178e0
 COMPONENT_ARCHIVE_URL=	http://releases.pagure.org/background-logo-extension/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gnome-shell
 COMPONENT_ANITYA_ID=	13118
 
-COMPONENT_BAID=		116235
+COMPONENT_BAID=		157592
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
