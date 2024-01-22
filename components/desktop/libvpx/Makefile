@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796432)
@@ -98,7 +98,7 @@ COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
 test: install
 
 ifneq ($(MACH), sparc)
-REQUIRED_PACKAGES += developer/yasm
+REQUIRED_PACKAGES += developer/nasm
 endif
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
