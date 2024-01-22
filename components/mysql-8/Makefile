@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER= gcc
@@ -29,14 +29,14 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 MAJOR_VERSION=8.0
-MICRO_VERSION=35
+MICRO_VERSION=36
 
 COMPONENT_NAME        = mysql
 COMPONENT_VERSION     = $(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_NAME)-boost-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-			sha256:41253c3a99cefcf6d806040c6687692eb0c37b4c7aae5882417dfb9c5d3ce4ce
+			sha256:429c5f69f3722e31807e74119d157a023277af210bfee513443cae60ebd2a86d
 COMPONENT_ARCHIVE_URL = https://dev.mysql.com/get/Downloads/MySQL-$(MAJOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL = https://dev.mysql.com/
 COMPONENT_BUGDB       = database/mysql
@@ -101,6 +101,9 @@ CMAKE_OPTIONS += -DWITH_INNODB_MEMCACHED=1
 CMAKE_OPTIONS += -DWITH_BOOST=$(SOURCE_DIR)/boost
 CMAKE_OPTIONS += -DWITH_ROUTER=OFF
 CMAKE_OPTIONS += -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE
+
+# merge_innodb_tests-t fails on SPARC:  https://bugs.mysql.com/bug.php?id=111824
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 COMPONENT_TEST_TRANSFORMS +=  \
 	'-e "s/   [0-9]\.[0-9][0-9] sec$$//" '  \
