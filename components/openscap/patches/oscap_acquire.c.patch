@@ -2,9 +2,9 @@ This patch fixes issues with the report not working
 when the SCE script output contains special characters.
 
 will be submitted to upstream
---- openscap-1.3.7/src/common/oscap_acquire.c
-+++ openscap-1.3.7/src/common/oscap_acquire.c
-@@ -436,6 +436,15 @@ if (readbuf == '&') {
+--- old/src/common/oscap_acquire.c	2023-12-12 13:21:49.184987341 +0100
++++ new/src/common/oscap_acquire.c	2023-12-12 13:22:42.329076779 +0100
+@@ -436,6 +436,15 @@ oscap_acquire_pipe_to_string(int fd)
  			// & is a special case, we have to "escape" it manually
  			// (all else will eventually get handled by libxml)
  			oscap_string_append_string(pipe_string, "&amp;");

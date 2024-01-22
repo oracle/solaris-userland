@@ -1,0 +1,23 @@
+#
+# Include sys/acl.h unconditionally, since HAVE_SYS_ACL_H check
+# is built around assumption that File Access Control List API
+# resides in libacl library which does not exist on Solaris.
+# On Solaris, that API is delivered by libsec(3LIB).
+#
+# We can remove this patch if HAVE_SYS_ACL_H check is modified
+# to work on Solaris.
+#
+# This is Solaris specific patch, not destined for upstream.
+#
+--- old/src/OVAL/probes/unix/file_probe.c	2023-12-13 14:52:45.255112720 +0100
++++ new/src/OVAL/probes/unix/file_probe.c	2023-12-13 14:53:12.420236612 +0100
+@@ -48,9 +48,7 @@
+ # include <acl/libacl.h>
+ #endif
+ 
+-#if defined(HAVE_SYS_ACL_H) && defined(OS_SOLARIS)
+ # include <sys/acl.h>
+-#endif
+ 
+ #include <probe/probe.h>
+ #include <probe/option.h>
