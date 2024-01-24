@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 #
@@ -82,14 +82,12 @@ pkg_install::
 	@$(MAKE) pkg_inst --no-print-directory
 endif
 
-pkg_install.version-lock:: HISTORICAL_MANIFESTS=
 pkg_install.version-lock::
 	@($(PKGMOGRIFY) $(PKG_OPTIONS) -P /dev/fd/3 \
 		$(PUBLISHED) \
 		$(WS_TRANSFORMS)/auto_fmri \
 		$(WS_TRANSFORMS)/pkg_install.version-lock > /dev/null) 3>&1
 
-pkg_install.package:: HISTORICAL_MANIFESTS=
 pkg_install.package::
 	@($(PKGMOGRIFY) $(PKG_OPTIONS) -P /dev/fd/3 \
 		$(PUBLISHED) \
