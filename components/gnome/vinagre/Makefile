@@ -47,6 +47,7 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 # RDP support requires freerdp
 CONFIGURE_OPTIONS += --disable-rdp
 CONFIGURE_OPTIONS += --with-telepathy=yes
+CONFIGURE_OPTIONS += --without-avahi
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
