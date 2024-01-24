@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -58,8 +58,9 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 CONFIGURE_OPTIONS += -Dgtk2=false
 # We need gtk3 for gnome-control-center 41 (until we upgrade to 45)
 CONFIGURE_OPTIONS += -Dgtk3=true
-# We will need gtk4 for gnome-control-center 45, but it requires gtk4 >= 4.4
-CONFIGURE_OPTIONS += -Dgtk4=false
+# We need gtk4 for gnome-control-center 45, but gtk4 is 64-bit-only
+CONFIGURE_OPTIONS.32 += -Dgtk4=false
+CONFIGURE_OPTIONS.64 += -Dgtk4=true
 # Cannot build man pages without docbook-xsl-ns
 CONFIGURE_OPTIONS += -Dman=false
 # gobject-introspection & Vala API required for other components
@@ -70,6 +71,7 @@ REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/gtk4
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += service/image/colord
 REQUIRED_PACKAGES += text/gnu-gettext
