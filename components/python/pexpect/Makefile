@@ -20,26 +20,22 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pexpect
-COMPONENT_VERSION=	4.8.0
+COMPONENT_VERSION=	4.9.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f704bb3d4f3c1182c506bd8530e0dd82e94d2f8d92bfd2bdd1586ca2bafcd233
+    sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pexpect.readthedocs.io/en/stable/
 COMPONENT_BUGDB=	python-mod/pexpect
 COMPONENT_ANITYA_ID=	7654
-
-COMPONENT_BAID=		87679
-
-# Not necessary to build this for older Python versions
-PYTHON_VERSIONS = 3.7 3.9 3.11
+COMPONENT_BAID=		157483
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
