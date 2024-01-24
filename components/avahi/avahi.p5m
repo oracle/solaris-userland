@@ -37,7 +37,6 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2007/464
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-set name=variant.opensolaris.zone value=global value=nonglobal
 #
 file path=etc/avahi/avahi-daemon.conf
 file path=etc/avahi/avahi-dnsconfd.action mode=0555
@@ -46,8 +45,7 @@ file path=etc/avahi/services/sftp-ssh.service
 file path=etc/avahi/services/ssh.service
 file path=etc/dbus-1/system.d/avahi-dbus.conf
 file files/multicast.xml path=lib/svc/manifest/system/multicast.xml mode=0444 \
-    restart_fmri=svc:/system/manifest-import:default \
-    variant.opensolaris.zone=global
+    restart_fmri=svc:/system/manifest-import:default
 file path=usr/bin/avahi-bookmarks
 file path=usr/bin/avahi-browse
 link path=usr/bin/avahi-browse-domains target=avahi-browse
@@ -159,7 +157,7 @@ file path=usr/lib/pkgconfig/avahi-libevent.pc
 file path=usr/lib/python3.11/vendor-packages/avahi/ServiceTypeDatabase.py \
     pkg.depend.bypass-generate=.*anydbm.*
 file path=usr/lib/python3.11/vendor-packages/avahi/__init__.py
-file path=usr/sbin/avahi-daemon variant.opensolaris.zone=global
+file path=usr/sbin/avahi-daemon
 file path=usr/sbin/avahi-dnsconfd
 file path=usr/share/gir-1.0/Avahi-0.6.gir
 file path=usr/share/gir-1.0/AvahiCore-0.6.gir
