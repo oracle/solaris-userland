@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -84,6 +84,8 @@ CONFIGURE_OPTIONS+=	--includedir=/usr/include/samba
 CONFIGURE_OPTIONS+=	--sysconfdir=/etc/samba
 CONFIGURE_OPTIONS+=	--datarootdir=$(PREFIX)
 CONFIGURE_OPTIONS+=	--mandir=/usr/share/man
+CONFIGURE_OPTIONS+=	--with-logfilebase=/var/samba/log
+CONFIGURE_OPTIONS+=	--with-privatedir=/etc/samba/private
 CONFIGURE_OPTIONS+=	--with-privatelibdir=$(PREFIX)/private/$(MACH64)
 CONFIGURE_OPTIONS+=	--with-pammodulesdir=$(PREFIX)/security/$(MACH64)
 CONFIGURE_OPTIONS+=	--with-ads

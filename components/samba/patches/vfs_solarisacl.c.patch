@@ -1,9 +1,14 @@
-Fixes compilation errors.
+Fixes:
 
-diff -rup samba-4.18.6.orig/source3/modules/vfs_solarisacl.c samba-4.18.6/source3/modules/vfs_solarisacl.c
---- samba-4.18.6.orig/source3/modules/vfs_solarisacl.c	2023-09-12 13:06:45.378174057 +0200
-+++ samba-4.18.6/source3/modules/vfs_solarisacl.c	2023-09-13 10:55:55.632326446 +0200
-@@ -62,7 +62,7 @@ static bool solaris_acl_check(SOLARIS_AC
+* compilation error
+* wrong file handle used in acl operations
+
+[2024/01/22 14:56:57.770223,  0] ../../source3/smbd/fd_handle.c:115(fsp_get_io_fd)
+  fsp_get_io_fd: fsp [ahoj] is a path referencing fsp
+
+--- samba-4.19.2.orig/source3/modules/vfs_solarisacl.c	2023-07-18 10:14:54.866093400 +0200
++++ samba-4.19.2.new/source3/modules/vfs_solarisacl.c	2024-01-22 20:52:07.079021035 +0100
+@@ -62,7 +62,7 @@
  
  /* public functions - the api */
  
@@ -12,7 +17,34 @@ diff -rup samba-4.18.6.orig/source3/modules/vfs_solarisacl.c samba-4.18.6/source
  				const struct smb_filename *smb_fname,
  				SMB_ACL_TYPE_T type,
  				TALLOC_CTX *mem_ctx)
-@@ -234,7 +234,7 @@ int solarisacl_sys_acl_delete_def_fd(vfs
+@@ -115,7 +115,7 @@
+ 
+ 	DEBUG(10, ("entering solarisacl_sys_acl_get_fd.\n"));
+ 
+-	if (!solaris_acl_get_fd(fsp_get_io_fd(fsp), &solaris_acl, &count)) {
++	if (!solaris_acl_get_fd(fsp_get_pathref_fd(fsp), &solaris_acl, &count)) {
+ 		goto done;
+ 	}
+ 
+@@ -174,7 +174,7 @@
+ 			   strerror(errno)));
+ 		goto done;
+ 	}
+-	if (!solaris_acl_get_fd(fsp_get_io_fd(fsp), &other_acl, &other_count)) {
++	if (!solaris_acl_get_fd(fsp_get_pathref_fd(fsp), &other_acl, &other_count)) {
+ 		DEBUG(10, ("error getting (default) acl from fd\n"));
+ 		goto done;
+ 	}
+@@ -195,7 +195,7 @@
+ 		goto done;
+ 	}
+ 
+-	ret = facl(fsp_get_io_fd(fsp), SETACL, count, solaris_acl);
++	ret = facl(fsp_get_pathref_fd(fsp), SETACL, count, solaris_acl);
+ 	if (ret != 0) {
+ 		DEBUG(10, ("call of facl failed (%s).\n", strerror(errno)));
+ 	}
+@@ -234,7 +234,7 @@
  
  	DBG_DEBUG("entering solarisacl_sys_acl_delete_def_fd.\n");
  
@@ -21,7 +53,7 @@ diff -rup samba-4.18.6.orig/source3/modules/vfs_solarisacl.c samba-4.18.6/source
  					      SMB_ACL_TYPE_ACCESS, talloc_tos());
  	if (smb_acl == NULL) {
  		DBG_DEBUG("getting file acl failed!\n");
-@@ -252,7 +252,7 @@ int solarisacl_sys_acl_delete_def_fd(vfs
+@@ -252,7 +252,7 @@
  	}
  	ret = acl(fsp->fsp_name->base_name, SETACL, count, solaris_acl);
  	if (ret != 0) {
