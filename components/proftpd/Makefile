@@ -44,19 +44,16 @@ COMPONENT_ANITYA_ID=	7609
 
 # mod_gss subcomponent
 COMPONENT_NAME_1=	mod_gss
-COMPONENT_VERSION_1=	1.3.8
+COMPONENT_VERSION_1=	1.3.9
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
-#
-# Note: we want to fetch mod_gss-1.3.8b.tar.gz
-#
-COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1)b.tar.gz
+COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1= \
-    sha256:f2003c92b539d86c02b4d28d9255dc6c768a35a413c783a14f038ecd00234057
+    sha256:de8babe0f13800da2142be74d82686af3984419a2ec09c86516467be58bce9a7
 MOD_GSS_URL=https://sourceforge.net/projects/gssmod/files/mod_gss/Version%20
 COMPONENT_ARCHIVE_URL_1= $(MOD_GSS_URL)$(COMPONENT_VERSION_1)/$(COMPONENT_ARCHIVE_1)
 COMPONENT_ANITYA_ID_1=	17188
 # For check_anitya target, https://release-monitoring.org/project/17188
-COMPONENT_BAID_MOD_GSS=	48611
+COMPONENT_BAID_MOD_GSS=	157143
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -111,7 +108,6 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 	cd $(BUILD_DIR) ; \
 	$(UNPACK) $(UNPACK_ARGS) ../$(COMPONENT_ARCHIVE_1) ; \
 	cd $(COMPONENT_SRC_1) ; \
-	$(GPATCH) < ../../mod_gss-patches/001.24934631.patch ; \
 	$(GPATCH) < ../../mod_gss-patches/002.27914767.patch ; \
 	./configure CC="$(CC)" CFLAGS="-I/usr/include/kerberosv5"; \
 	$(CP) mod_gss.c mod_auth_gss.c $(SOURCE_DIR)/contrib ; \
