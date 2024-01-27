@@ -354,18 +354,11 @@ diff -x '*~' -x '*.pyc' -Nru samba-4.13.8.orig/nsswitch/winbindd_dont_env.h samb
 +#ifndef WINBINDD_DONT_ENV
 +#define WINBINDD_DONT_ENV    "_NO_WINBINDD"
 +#endif
-diff -ru samba-4.18.6.orig/nsswitch/wscript_build samba-4.18.6/nsswitch/wscript_build
---- samba-4.18.6.orig/nsswitch/wscript_build	2023-09-12 13:06:48.321819754 +0200
-+++ samba-4.18.6/nsswitch/wscript_build	2023-10-30 19:05:24.416836818 +0100
-@@ -73,11 +73,19 @@
- 				  deps='wbclient',
- 				  realname='libnss_winbind.so')
- elif Utils.unversioned_sys_platform() == 'sunos':
-+	conf.env.VISIBILITY_CFLAGS = '-fvisibility=default'
-+
- 	bld.SAMBA_PLUGIN('nss_winbind',
- 			  source='winbind_nss_solaris.c winbind_nss_linux.c',
- 			  deps='wbclient',
+diff -x '*~' -x '*.pyc' -Nru samba-4.13.8.orig/nsswitch/wscript_build samba-4.13.8/nsswitch/wscript_build
+--- samba-4.13.8.orig/nsswitch/wscript_build	2020-07-09 11:33:56.000000000 +0000
++++ samba-4.13.8/nsswitch/wscript_build	2021-09-30 13:07:11.266608157 +0000
+@@ -85,6 +85,12 @@
+ 			  deps='winbind-client',
  			  realname='nss_winbind.so.1',
  			  vnum='1')
 +
@@ -375,5 +368,5 @@ diff -ru samba-4.18.6.orig/nsswitch/wscript_build samba-4.18.6/nsswitch/wscript_
 +			  realname='libwinbind_nss_hook.so.1')
 +
  elif (host_os.rfind('hpux') > -1):
- 	bld.SAMBA_PLUGIN('nss_winbind',
+ 	bld.SAMBA_LIBRARY('nss_winbind',
  			  source='winbind_nss_linux.c',

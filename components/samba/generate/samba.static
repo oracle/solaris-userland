@@ -18,10 +18,13 @@
 #
 # CDDL HEADER END
 #
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+#
 
-#
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
-#
+# pam.conf is now modularized using /etc/pam.d/ which is fine for adding of PAM-using services
+# ...but add of new pam_-backend will need further fix.
+# pam.conf-winbind is now obsoleted:
+#file Solaris/pam.conf-winbind     path=etc/pam.d/
 
 # etc/samba/private should not be readable for non-root users.
 dir  path=etc/samba/private mode=500
@@ -90,13 +93,12 @@ link path=usr/bin/tdbrestore target=../lib/samba/bin/tdbrestore
 link path=usr/bin/tdbtool target=../lib/samba/bin/tdbtool
 link path=usr/bin/testparm target=../lib/samba/bin/testparm
 link path=usr/bin/wbinfo target=../lib/samba/bin/wbinfo
-#link path=usr/bin/samba-tool target=../lib/samba/bin/samba-tool
 
 #
 # nss_libs
 link path=usr/lib/$(MACH64)/nss_winbind.so.1 \
-    target=../samba/lib/$(MACH64)/nss_winbind.so.1
-link path=usr/lib/nss_winbind.so.1 target=./samba/lib/nss_winbind.so.1
+    target=../samba/$(MACH64)/nss_winbind.so.1
+link path=usr/lib/nss_winbind.so.1 target=./samba/nss_winbind.so.1
 
 #
 # PAM-libs

@@ -1,0 +1,95 @@
+User quota do not work on Solaris
+
+Old code directly asking the quota on NFS server do not work
+on Solaris 11 and above. Using fcntl()-op. to get quota will
+either return quota nor return -1 (ENOSUP) i.e. on pcfs
+
+Solution unified cross all supported FSs is preferable.
+
+Samba bug: https://bugzilla.samba.org/show_bug.cgi?id=12758
+is now closed but the fix from community do not work so there
+is no fix available yet.
+
+Here is the fix. I did not removed the code not working on
+recent Solaris releases so it can be activated by adding:
+ -DSUNOS5NOTSUP=1
+on cc options. I am leaving the decision if completely remove
+the unused code on community.
+
+diff --git a/source3/wscript b/source3/wscript
+index 335cfd7..0f24f2d 100644
+--- a/source3/wscript
++++ b/source3/wscript
+@@ -1581,6 +1581,8 @@ main() {
+         conf.CHECK_HEADERS('sys/quota.h')
+         # For quotas on BSD systems
+         conf.CHECK_HEADERS('ufs/ufs/quota.h')
++        # For quotas on Solaris (it works for any FS)
++        conf.CHECK_HEADERS('sys/fs/ufs_quota.h')
+         # For quotas on AIX systems
+         conf.CHECK_HEADERS('jfs/quota.h')
+         # For quotas on Linux XFS filesystems
+diff --git a/source3/smbd/quotas.c b/source3/smbd/quotas.c
+index 604631f..0aa878b 100644
+--- a/source3/smbd/quotas.c
++++ b/source3/smbd/quotas.c
+@@ -41,10 +41,11 @@
+ #ifdef WITH_QUOTAS
+ 
+ #if defined(SUNOS5) /* Solaris */
+-
+ #include <fcntl.h>
+ #include <sys/param.h>
+ #include <sys/fs/ufs_quota.h>
++
++#if defined(SUNOS5NOTSUP) /* SOLARIS 9 and before */
+ #include <sys/mnttab.h>
+ #include <sys/mntent.h>
+ 
+@@ -102,7 +103,7 @@ static int my_xdr_getquota_args(XDR *xdrsp, struct getquota_args *args)
+ 	return (1);
+ }
+ 
+-/* Restricted to SUNOS5 for the moment, I haven`t access to others to test. */
++/* Restricted to SUNOS5 (5.9 and before) for the moment, I haven`t access to others to test. */
+ static bool nfs_quotas(char *nfspath, uid_t euser_id, uint64_t *bsize, uint64_t *dfree, uint64_t *dsize)
+ {
+ 	uid_t uid = euser_id;
+@@ -210,6 +211,7 @@ static bool nfs_quotas(char *nfspath, uid_t euser_id, uint64_t *bsize, uint64_t
+ 	DEBUG(10,("nfs_quotas: End of nfs_quotas\n" ));
+ 	return ret;
+ }
++#endif /* SUNOS5NOTSUP */
+ 
+ /****************************************************************************
+ try to get the disk space from disk quotas (SunOS & Solaris2 version)
+@@ -224,7 +226,9 @@ bool disk_quotas(connection_struct *conn, struct smb_filename *fname,
+ 	struct dqblk D;
+ 	struct quotctl command;
+ 	int file;
++#if defined(SUNOS5NOTSUP) /* SOLARIS 9 and before */
+ 	struct mnttab mnt;
++#endif
+ 	char *name = NULL;
+ 	FILE *fd;
+ 	SMB_STRUCT_STAT sbuf;
+@@ -237,6 +241,7 @@ bool disk_quotas(connection_struct *conn, struct smb_filename *fname,
+ 	devno = fname->st.st_ex_dev;
+ 	DEBUG(5,("disk_quotas: looking for path \"%s\" devno=%x\n",
+ 		path, (unsigned int)devno));
++#if defined(SUNOS5NOTSUP) /* SOLARIS 9 and before */
+ 	if ((fd = fopen(MNTTAB, "r")) == NULL) {
+ 		return false;
+ 	}
+@@ -281,7 +286,10 @@ bool disk_quotas(connection_struct *conn, struct smb_filename *fname,
+ 		unbecome_root();
+ 		return retval;
+ 	}
+-
++#else /* SOLARIS 10 and above */
++	become_root();
++	name = talloc_strdup(talloc_tos(), path);
++#endif
+ 	DEBUG(5,("disk_quotas: looking for quotas file \"%s\"\n", name));
+ 	if((file=open(name, O_RDONLY,0))<0) {
+ 		unbecome_root();
