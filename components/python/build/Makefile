@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		build
-COMPONENT_VERSION=	0.8.0
+COMPONENT_VERSION=	1.0.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:27d5c590f0297e8114b1b4b0dc491b9f57b440d0b9e3f055e09c5b1d72fe73c7
+    sha256:538aab1b64f9828977f84bc63ae570b060a8ed1be419e7870b8b4fc5e6ea553b
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pypa/build
 COMPONENT_BUGDB=	python-mod/build
 COMPONENT_ANITYA_ID=	132276
-COMPONENT_BAID=		123920
+COMPONENT_BAID=		157371
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_POST_INSTALL_ACTION += $(MV) \
@@ -56,7 +56,9 @@ test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/python/importlib-metadata-37
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pep517-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/tomli-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pyproject_hooks-%)
+REQUIRED_PACKAGES += library/python/importlib-metadata-37
+REQUIRED_PACKAGES += library/python/importlib-metadata-39
+REQUIRED_PACKAGES += library/python/tomli-37
+REQUIRED_PACKAGES += library/python/tomli-39

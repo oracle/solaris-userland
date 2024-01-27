@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		pep517
-COMPONENT_VERSION=	0.13.0
+COMPONENT_NAME=		pyproject_hooks
+COMPONENT_VERSION=	1.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ffcdf89f1deb2190290084ece1ec6034ea57d814d9f2906718c3339908cf8108
+    sha256:7dbb06fe7b7e341595c94e81bf4f84a0d0e4d212da967431ba0e9b34ff53601f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://pep517.readthedocs.io
-COMPONENT_BUGDB=	python-mod/pep517
-COMPONENT_ANITYA_ID=	47623
-COMPONENT_BAID=		141684
+COMPONENT_PROJECT_URL=	https://pyproject-hooks.readthedocs.io
+COMPONENT_BUGDB=	python-mod/pyprojecthooks
+COMPONENT_ANITYA_ID=	320474
+COMPONENT_BAID=		157255
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -57,9 +57,8 @@ test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/tomli-%)
-REQUIRED_PACKAGES += library/python/importlib-metadata-37
-REQUIRED_PACKAGES += library/python/zipp-37
+REQUIRED_PACKAGES += library/python/tomli-37
+REQUIRED_PACKAGES += library/python/tomli-39
 
 # build dependencies
 REQUIRED_PACKAGES += library/python/flit_core
