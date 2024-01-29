@@ -12,8 +12,9 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
  data/Makefile.am                 |  12 ++--
  4 files changed, 124 insertions(+), 20 deletions(-)
 
---- a/daemon/gdm-display-access-file.c	2022-02-01 16:41:47.956966766 -0800
-+++ b/daemon/gdm-display-access-file.c	2022-02-01 16:46:27.271713299 -0800
+
+--- a/daemon/gdm-display-access-file.c	2024-01-18 13:06:47.878057668 -0800
++++ b/daemon/gdm-display-access-file.c	2024-01-18 15:15:28.620532382 -0800
 @@ -41,6 +41,8 @@
  #include "gdm-display-access-file.h"
  #include "gdm-common.h"
@@ -23,24 +24,60 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
  struct _GdmDisplayAccessFile
  {
          GObject parent;
-@@ -260,10 +262,14 @@
+@@ -219,13 +221,24 @@
+         return TRUE;
+ }
+ 
++void            
++gdm_display_access_file_cleanup_xauth (void)
++{                    
++        /* Clean up any xauth_dir_name when shutting down */
++        if (strcmp (GDM_XAUTH_DIR, "/tmp") == 0 && xauth_dir_name != NULL) {
++                g_remove (xauth_dir_name);
++                g_debug ("GdmDisplayAccessFile: Unlinking xauth directory %s", xauth_dir_name);
++                xauth_dir_name = NULL;
++        }
++}   
++
+ static void
+-clean_up_stale_auth_subdirs (void)
++clean_up_stale_auth_subdirs (const char * xauth_dir_name)
+ {
+         g_autoptr(GDir) dir = NULL;
+         const char *filename;
+ 
+-        dir = g_dir_open (GDM_XAUTH_DIR, 0, NULL);
++        dir = g_dir_open (xauth_dir_name, 0, NULL);
+ 
+         if (dir == NULL) {
+                 return;
+@@ -234,7 +247,7 @@
+         while ((filename = g_dir_read_name (dir)) != NULL) {
+                 g_autofree char *path = NULL;
+ 
+-                path = g_build_filename (GDM_XAUTH_DIR, filename, NULL);
++                path = g_build_filename (xauth_dir_name, filename, NULL);
+ 
+                 /* Will only succeed if the directory is empty
+                  */
+@@ -247,6 +260,8 @@
                               char       **filename,
                               GError     **error)
  {
-+
-+	struct stat statbuf;
-+	gboolean dir_exists;
-         char   *template;
++        struct stat statbuf;
++        gboolean dir_exists;
+         g_autofree char *template = NULL;
+         g_autofree char *auth_filename = NULL;
          const char *dir_name;
-         char   *auth_filename;
-         int     fd;
-+	int     xauth_dir_fp = -1;
+@@ -254,15 +269,42 @@
          FILE   *fp;
          uid_t   uid;
          gid_t   gid;
-@@ -277,10 +283,37 @@
-         fp = NULL;
-         fd = -1;
++	int     xauth_dir_fp = -1;
+ 
+         g_assert (filename != NULL);
+ 
+         *filename = NULL;
  
 +        dir_exists = TRUE;
 +
@@ -71,7 +108,6 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
 -        if (g_file_test (GDM_XAUTH_DIR, G_FILE_TEST_IS_DIR) == FALSE) {
 -                g_remove (GDM_XAUTH_DIR);
 -                if (g_mkdir (GDM_XAUTH_DIR, 0711) != 0) {
-+
 +        if (g_file_test (xauth_dir_name, G_FILE_TEST_IS_DIR) == FALSE) {
 +                dir_exists = FALSE;
 +                g_remove (xauth_dir_name);
@@ -79,58 +115,27 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
                          g_set_error_literal (error,
                                               G_FILE_ERROR,
                                               g_file_error_from_errno (errno),
---- a/daemon/gdm-display-access-file.c	2020-03-26 13:11:46.257534641 -0700
-+++ b/daemon/gdm-display-access-file.c	2020-03-26 13:18:14.800172768 -0700
-@@ -219,13 +221,24 @@
-         return TRUE;
- }
- 
-+void
-+gdm_display_access_file_cleanup_xauth (void)
-+{
-+        /* Clean up any xauth_dir_name when shutting down */
-+        if (strcmp (GDM_XAUTH_DIR, "/tmp") == 0 && xauth_dir_name != NULL) {
-+                g_remove (xauth_dir_name);
-+                g_debug ("GdmDisplayAccessFile: Unlinking xauth directory %s", xauth_dir_name);
-+                xauth_dir_name = NULL;
-+        }
-+}
-+
- static void
--clean_up_stale_auth_subdirs (void)
-+clean_up_stale_auth_subdirs (const char * xauth_dir_name)
- {
-         GDir *dir;
-         const char *filename;
- 
--        dir = g_dir_open (GDM_XAUTH_DIR, 0, NULL);
-+        dir = g_dir_open (xauth_dir_name, 0, NULL);
- 
-         if (dir == NULL) {
-                 return;
-@@ -234,7 +247,7 @@
-         while ((filename = g_dir_read_name (dir)) != NULL) {
-                 char *path;
- 
--                path = g_build_filename (GDM_XAUTH_DIR, filename, NULL);
-+                path = g_build_filename (xauth_dir_name, filename, NULL);
- 
-                 /* Will only succeed if the directory is empty
-                  */
-@@ -277,18 +320,71 @@
-                         goto out;
+@@ -270,7 +312,7 @@
+                         return NULL;
                  }
  
 -                g_chmod (GDM_XAUTH_DIR, 0711);
 +                g_chmod (xauth_dir_name, 0711);
-                 _get_uid_and_gid_for_user (GDM_USERNAME, &uid, &gid);
+                 if (!_get_uid_and_gid_for_user (GDM_USERNAME, &uid, &gid)) {
+                         g_set_error (error,
+                                      GDM_DISPLAY_ERROR,
+@@ -280,17 +322,71 @@
+                         return NULL;
+                 }
+ 
 -                if (chown (GDM_XAUTH_DIR, 0, gid) != 0) {
 +                if (chown (xauth_dir_name, 0, gid) != 0) {
                          g_warning ("Unable to change owner of '%s'",
 -                                   GDM_XAUTH_DIR);
 +                                   xauth_dir_name);
-+               }
-+        }
+                 }
++
++        } 
 +
 +        /* Do sanity testing on the Xauth directory */
 +        if ((xauth_dir_fp = open (xauth_dir_name, O_RDONLY | O_NOFOLLOW)) == -1) {
@@ -140,18 +145,18 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
 +                    GDM_DISPLAY_ACCESS_FILE_ERROR_FINDING_AUTH_ENTRY,
 +                     _("GDM authorization directory %s cannot be opened."),
 +                     xauth_dir_name);
-+                goto out;
++                return NULL;
 +        }
 +
-+        if (fstat (xauth_dir_fp, &statbuf) == 0) {
++	if (fstat (xauth_dir_fp, &statbuf) == 0) {
 +                if (! S_ISDIR (statbuf.st_mode)) {
 +                        g_set_error (error,
 +                             GDM_DISPLAY_ACCESS_FILE_ERROR,
 +                             GDM_DISPLAY_ACCESS_FILE_ERROR_FINDING_AUTH_ENTRY,
 +                             _("GDM authorization directory %s is not a directory."),
 +                             xauth_dir_name);
-+                        goto out;
-                 }
++                        return NULL;
++                }
 +
 +                if (statbuf.st_uid != 0) {
 +                        g_set_error (error,
@@ -159,7 +164,7 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
 +                             GDM_DISPLAY_ACCESS_FILE_ERROR_FINDING_AUTH_ENTRY,
 +                             _("GDM authorization directory %s: uid is not root"),
 +                             xauth_dir_name);
-+                        goto out;
++                        return NULL;
 +                }
 +
 +                _get_uid_and_gid_for_user (GDM_USERNAME, &uid, &gid);
@@ -169,7 +174,7 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
 +                             GDM_DISPLAY_ACCESS_FILE_ERROR_FINDING_AUTH_ENTRY,
 +                             _("GDM authorization directory %s: gid is not the GDM user"),
 +                             xauth_dir_name);
-+                        goto out;
++                        return NULL;
 +
 +                }
          } else {
@@ -180,7 +185,7 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
 +                     GDM_DISPLAY_ACCESS_FILE_ERROR_FINDING_AUTH_ENTRY,
 +                     _("Cannot fstat() the GDM authorization directory %s"),
 +                     xauth_dir_name);
-+                goto out;
++                return NULL;
 +        }
  
 +        if (dir_exists == TRUE) {
@@ -191,35 +196,36 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
 +
                  /* and clean up any stale auth subdirs */
 -                clean_up_stale_auth_subdirs ();
+-        }
 +                clean_up_stale_auth_subdirs (xauth_dir_name);
-         }
++         }
  
          if (!_get_uid_and_gid_for_user (username, &uid, &gid)) {
-@@ -301,9 +397,8 @@
- 
+                 g_set_error (error,
+@@ -301,8 +397,8 @@
+                 return NULL;
          }
  
 -        template = g_strdup_printf (GDM_XAUTH_DIR
 -                                    "/auth-for-%s-XXXXXX",
--                                    username);
 +        template = g_strdup_printf ("%s/auth-for-%s-XXXXXX",
-+                                    xauth_dir_name, username);
++                                    xauth_dir_name,
+                                     username);
  
          g_debug ("GdmDisplayAccessFile: creating xauth directory %s", template);
-         /* Initially create with mode 01700 then later chmod after we create database */
-@@ -393,6 +488,10 @@
-                 close (fd);
-         }
+@@ -381,6 +477,10 @@
+ 
+         *filename = g_steal_pointer (&auth_filename);
  
 +        if (xauth_dir_fp != -1) {
 +               close (xauth_dir_fp);
 +        }
 +
+         /* don't close fd on purpose */
          return fp;
  }
- 
---- a/daemon/gdm-display-access-file.h	2020-03-26 13:18:33.039441423 -0700
-+++ b/daemon/gdm-display-access-file.h	2020-03-26 13:19:08.084547199 -0700
+--- a/daemon/gdm-display-access-file.h	2024-01-18 15:15:46.363266771 -0800
++++ b/daemon/gdm-display-access-file.h	2024-01-18 15:16:12.100047534 -0800
 @@ -62,6 +62,7 @@
  
  void                  gdm_display_access_file_close                   (GdmDisplayAccessFile  *file);
@@ -228,21 +234,13 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
  
  G_END_DECLS
  #endif /* __GDM_DISPLAY_ACCESS_FILE_H__ */
---- a/daemon/main.c	2020-03-26 13:19:32.304955272 -0700
-+++ b/daemon/main.c	2020-03-26 13:20:12.189152529 -0700
-@@ -48,6 +48,7 @@
- #include "gdm-settings.h"
- #include "gdm-settings-direct.h"
- #include "gdm-settings-keys.h"
-+#include "gdm-display-access-file.h"
- 
- #define GDM_DBUS_NAME "org.gnome.DisplayManager"
- 
-@@ -478,6 +479,8 @@
+--- a/daemon/main.c	2024-01-18 15:16:24.029772100 -0800
++++ b/daemon/main.c	2024-01-18 15:16:38.674300295 -0800
+@@ -470,6 +470,8 @@
          gdm_settings_direct_shutdown ();
          gdm_log_shutdown ();
  
-+        gdm_display_access_file_cleanup_xauth ();
++ 	gdm_display_access_file_cleanup_xauth ();
 +
          g_main_loop_unref (main_loop);
  

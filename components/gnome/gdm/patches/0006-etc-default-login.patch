@@ -9,43 +9,44 @@ Original date:2009-03-31 owner:yippi type:feature
  daemon/gdm-session-worker.c | 83 +++++++++++++++++++++++++++++++++++++++++----
  1 file changed, 76 insertions(+), 7 deletions(-)
 
---- a/daemon/gdm-session-worker.c	2021-02-17 12:54:09.818979840 -0800
-+++ b/daemon/gdm-session-worker.c	2021-02-17 12:59:39.594593695 -0800
-@@ -230,6 +230,33 @@
-                                                 worker_interface_init)
-                          G_ADD_PRIVATE (GdmSessionWorker))
+--- a/daemon/gdm-session-worker.c	2024-01-17 22:16:34.962916183 -0800
++++ b/daemon/gdm-session-worker.c	2024-01-17 22:23:35.058656675 -0800
+@@ -230,6 +230,34 @@
+                          G_IMPLEMENT_INTERFACE (GDM_DBUS_TYPE_WORKER,
+                                                 worker_interface_init))
  
 +#if __sun
 +#include <deflt.h>
-+
-+/*
++                                
++/*                      
 + * gdm_read_default
-+ *
++ *      
 + * This function is used to support systems that have the /etc/default/login
 + * interface to control programs that affect security.  This is a Solaris
 + * thing, though some users on other systems may find it useful.
 + */
 +static gchar *
 +gdm_read_default (gchar *key)
-+{
++{       
 +    gchar *retval = NULL;
-+
++        
 +    if (defopen ("/etc/default/login") == 0) {
 +       int flags = defcntl (DC_GETFLAGS, 0);
-+
++                
 +       TURNOFF (flags, DC_CASE);
 +       (void) defcntl (DC_SETFLAGS, flags);  /* ignore case */
-+       retval = g_strdup (defread (key));
-+       (void) defopen ((char *)NULL);
-+    }
++       retval = g_strdup (defread (key));                       
++       (void) defopen ((char *)NULL);                           
++    }                                            
 +   return retval;
-+}
-+#endif
++}        
++#endif  
++
 +
  #ifdef WITH_CONSOLE_KIT
- static gboolean
+ static gboolean                              
  open_ck_session (GdmSessionWorker  *worker)
-@@ -1510,6 +1537,28 @@
+@@ -1544,6 +1572,28 @@
          g_debug ("GdmSessionWorker: determining if authenticated user (password required:%d) is authorized to session",
                   password_is_required);
  
@@ -55,16 +56,16 @@ Original date:2009-03-31 owner:yippi type:feature
 +        if ((consoleonly != NULL) &&
 +            (strcmp (consoleonly, "/dev/console") == 0)) {
 +
-+                if (worker->priv->hostname != NULL &&
-+                    worker->priv->hostname[0] != '\0') {
++                if (worker->hostname != NULL &&
++                    worker->hostname[0] != '\0') {
 +                        struct passwd *passwd_entry;
 +
-+                        passwd_entry = getpwnam (worker->priv->username);
++                        passwd_entry = getpwnam (worker->username);
 +                        if (passwd_entry->pw_uid == 0) {
 +                                error_code = PAM_PERM_DENIED;
 +
 +                                g_debug ("The system administrator is not allowed to log in remotely");
-+                                g_set_error (error, GDM_SESSION_WORKER_ERROR, GDM_SESSION_WORKER_ERROR_AUTHORIZING, "%s", pam_strerror (worker->priv->pam_handle, error_code));
++                                g_set_error (error, GDM_SESSION_WORKER_ERROR, GDM_SESSION_WORKER_ERROR_AUTHORIZING, "%s", pam_strerror (worker->pam_handle, error_code));
 +                                goto out;
 +                        }
 +                }
@@ -74,15 +75,15 @@ Original date:2009-03-31 owner:yippi type:feature
          authentication_flags = 0;
  
          if (password_is_required) {
-@@ -1874,6 +1923,7 @@
+@@ -1798,6 +1848,7 @@
+         gboolean res;
+         uid_t    uid;
          gid_t    gid;
-         char    *shell;
-         char    *home;
-+        char	*path_str;
++ 	char     *path_str;
          int      error_code;
  
          ret = FALSE;
-@@ -1914,18 +1964,26 @@
+@@ -1835,18 +1886,25 @@
                                                                  home,
                                                                  shell);
  
@@ -90,7 +91,6 @@ Original date:2009-03-31 owner:yippi type:feature
 -         */
 -        if (!gdm_session_worker_environment_variable_is_set (worker, "PATH")) {
 +        path_str = NULL;
-+
 +#ifdef __sun
 +        if (uid == 0)
 +                path_str = gdm_read_default ("SUPATH=");
@@ -111,13 +111,13 @@ Original date:2009-03-31 owner:yippi type:feature
                  }
          }
  
-+        gdm_session_worker_set_environment_variable (worker, "PATH", path_str);
++	gdm_session_worker_set_environment_variable (worker, "PATH", path_str);
 +
          if (! _change_user (worker, uid, gid)) {
                  g_debug ("GdmSessionWorker: Unable to change to user");
                  error_code = PAM_SYSTEM_ERR;
-@@ -3046,6 +3104,17 @@
-         GError  *error;
+@@ -2969,6 +3027,17 @@
+         g_autoptr(GError) error = NULL;
          gboolean res;
  
 +#ifdef __sun
@@ -126,11 +126,11 @@ Original date:2009-03-31 owner:yippi type:feature
 +        passreq = gdm_read_default ("PASSREQ=");
 +
 +        if ((passreq != NULL) && g_ascii_strcasecmp (passreq, "YES") == 0)
-+                worker->priv->password_is_required = TRUE;
++                worker->password_is_required = TRUE;
 +        else
-+                worker->priv->password_is_required = FALSE;
++                worker->password_is_required = FALSE;
 +#endif
 +
-         error = NULL;
          res = gdm_session_worker_initialize_pam (worker,
-                                                  worker->priv->service,
+                                                  worker->service,
+                                                  (const char **) worker->extensions,

@@ -9,10 +9,9 @@ we all still logged in on serial terminals.
 
 Original date:2009-10-16 owner:yippi type:branding
 ---
- daemon/gdm-manager.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
 
---- a/daemon/gdm-manager.c	2020-06-19 20:42:07.349142221 -0700
-+++ b/daemon/gdm-manager.c	2020-06-19 20:45:07.554039906 -0700
+--- a/daemon/gdm-manager.c	2024-01-17 22:25:22.072124154 -0800
++++ b/daemon/gdm-manager.c	2024-01-17 22:43:32.618519859 -0800
 @@ -29,6 +29,11 @@
  #include <sys/stat.h>
  #include <sys/types.h>
@@ -25,20 +24,20 @@ Original date:2009-10-16 owner:yippi type:branding
  #include <glib.h>
  #include <glib/gi18n.h>
  #include <glib/gstdio.h>
-@@ -2825,6 +2830,47 @@
-         g_object_unref (session);
+@@ -1155,6 +1160,47 @@
+         return recorded;
  }
  
-+static void
-+create_device (const char *dev)
-+{
-+#ifdef __sun
++static void                                  
++create_device (const char *dev)              
++{                                            
++#ifdef __sun                                 
 +        gchar buf[MAXPATHLEN + 1];
 +        struct stat st;
-+
++        
 +        if (dev == NULL || dev[0] == '\0')
 +                return;
-+
++        
 +        if (strcmp (dev, "/dev/dtlocal")  != 0 &&
 +            strcmp (dev, "/dev/dtremote") != 0 )
 +                return;
@@ -52,7 +51,7 @@ Original date:2009-10-16 owner:yippi type:branding
 +                if (strcmp (buf, "/dev/null") == 0) {
 +                        /* Touch symlink */
 +                        struct utimbuf  timebuf;
-+
++        
 +                        timebuf.modtime = time ((time_t *) 0);
 +                        timebuf.actime  = timebuf.modtime;
 +
@@ -71,10 +70,10 @@ Original date:2009-10-16 owner:yippi type:branding
 +
 +
  static GdmSession *
- create_user_session_for_display (GdmManager *manager,
-                                  GdmDisplay *display,
-@@ -2855,6 +2901,9 @@
- #endif
+ find_user_session_for_display (GdmManager *self,
+                                GdmDisplay *display)
+@@ -2810,6 +2856,9 @@
+                       "supported-session-types", &supported_session_types,
                        NULL);
          display_device = get_display_device (manager, display);
 +        if (!display_device && !display_is_local)

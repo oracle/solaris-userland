@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 		64
 # All components using gobject-introspection must be built with gcc as
@@ -29,14 +29,15 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdm
-COMPONENT_VERSION=	41.3
+COMPONENT_VERSION=	45.0.1
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GDM
+COMPONENT_ARCHIVE_URL=  https://download.gnome.org/sources/$(COMPONENT_NAME)/$(basename $(COMPONENT_MAJOR_MINOR))/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:bb0b650a7cea90f09a33284fbd02975315407efc18e814009852d1bcad3437d4
+	sha256:6572578c05e3c6569d6ed269f7de2aaf3a035657654586d8243907bb7a6ffa85
 COMPONENT_BUGDB=        gnome/gdm
 COMPONENT_ANITYA_ID=	13122
 
-COMPONENT_BAID=		116233
+COMPONENT_BAID=		158393
 BUILD_STYLE=		meson
 
 # g-ir-scanner
@@ -55,6 +56,8 @@ CONFIGURE_OPTIONS += -Dselinux=disabled
 CONFIGURE_OPTIONS += -Dipv6=true
 CONFIGURE_OPTIONS += -Dgdm-xsession=true
 CONFIGURE_OPTIONS += -Dlibaudit=disabled
+CONFIGURE_OPTIONS += -Dsystemdsystemunitdir=no
+CONFIGURE_OPTIONS += -Dsystemduserunitdir=no
 CONFIGURE_OPTIONS += -Dsystemd-journal=false
 CONFIGURE_OPTIONS += -Dwayland-support=false
 CONFIGURE_OPTIONS += -Dplymouth=disabled
@@ -62,6 +65,7 @@ CONFIGURE_OPTIONS += -Dgroup=gdm
 CONFIGURE_OPTIONS += -Ddefault-path='$(USRBINDIR):$(USRSBINDIR)'
 CONFIGURE_OPTIONS += -Dxauth-dir=/tmp
 CONFIGURE_OPTIONS += -Dinitial-vt=7
+CONFIGURE_OPTIONS += -Dsolaris=true
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)/gdm"
 
 COMPONENT_POST_INSTALL_ACTION.64 += \

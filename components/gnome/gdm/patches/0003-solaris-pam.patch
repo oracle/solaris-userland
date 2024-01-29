@@ -29,8 +29,9 @@ daemon/gdm-session-worker.c:1200:31: warning: assignment from incompatible
 
 diff --git a/daemon/gdm-session-worker.c b/daemon/gdm-session-worker.c
 index 3b10940..291caad 100644
---- a/daemon/gdm-session-worker.c
-+++ b/daemon/gdm-session-worker.c
+
+--- a/daemon/gdm-session-worker.c	2024-01-17 17:03:33.875716588 -0800
++++ b/daemon/gdm-session-worker.c	2024-01-17 17:07:54.652337232 -0800
 @@ -37,6 +37,12 @@
  #include <grp.h>
  #include <pwd.h>
@@ -44,7 +45,7 @@ index 3b10940..291caad 100644
  #include <security/pam_appl.h>
  
  #ifdef HAVE_LOGINCAP
-@@ -205,7 +211,7 @@ static void     worker_interface_init           (GdmDBusWorkerIface *iface);
+@@ -213,7 +219,7 @@
  
  
  typedef int (* GdmSessionWorkerPamNewMessagesFunc) (int,
@@ -53,19 +54,20 @@ index 3b10940..291caad 100644
                                                      struct pam_response **,
                                                      gpointer);
  
-@@ -604,7 +610,11 @@ static gboolean
+@@ -609,7 +615,11 @@
  gdm_session_worker_get_username (GdmSessionWorker  *worker,
                                   char             **username)
  {
+-        gconstpointer item;
 +#ifdef __sun
 +        gpointer item;
 +#else
-         gconstpointer item;
++	gconstpointer item;
 +#endif
  
-         g_assert (worker->priv->pam_handle != NULL);
+         g_assert (worker->pam_handle != NULL);
  
-@@ -860,7 +870,7 @@ get_friendly_error_message (int error_code)
+@@ -1006,7 +1016,7 @@
  
  static int
  gdm_session_worker_pam_new_messages_handler (int                        number_of_messages,
@@ -74,10 +76,7 @@ index 3b10940..291caad 100644
                                               struct pam_response      **responses,
                                               GdmSessionWorker          *worker)
  {
-
---- a/daemon/gdm-session-worker.c	2020-06-19 20:54:51.607794558 -0700
-+++ b/daemon/gdm-session-worker.c	2020-06-19 20:56:07.894741419 -0700
-@@ -3489,6 +3489,7 @@
+@@ -3212,6 +3222,7 @@
          return TRUE;
  }
  
@@ -85,22 +84,22 @@ index 3b10940..291caad 100644
  static char **
  filter_extensions (const char * const *extensions)
  {
-@@ -3514,6 +3515,7 @@
+@@ -3235,6 +3246,7 @@
  
-         return filtered_extensions;
+         return g_steal_pointer (&filtered_extensions);
  }
 +#endif
  
  static gboolean
  gdm_session_worker_handle_initialize (GdmDBusWorker         *object,
-@@ -3533,8 +3535,10 @@
+@@ -3254,8 +3266,10 @@
          while (g_variant_iter_loop (&iter, "{sv}", &key, &value)) {
                  if (g_strcmp0 (key, "service") == 0) {
-                         worker->priv->service = g_variant_dup_string (value, NULL);
+                         worker->service = g_variant_dup_string (value, NULL);
 +#ifdef SUPPORTS_PAM_EXTENSIONS
                  } else if (g_strcmp0 (key, "extensions") == 0) {
-                         worker->priv->extensions = filter_extensions (g_variant_get_strv (value, NULL));
+                         worker->extensions = filter_extensions (g_variant_get_strv (value, NULL));
 +#endif
                  } else if (g_strcmp0 (key, "username") == 0) {
-                         worker->priv->username = g_variant_dup_string (value, NULL);
+                         worker->username = g_variant_dup_string (value, NULL);
                  } else if (g_strcmp0 (key, "is-program-session") == 0) {

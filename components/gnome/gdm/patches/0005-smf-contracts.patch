@@ -11,9 +11,9 @@ Original date:2008-05-05 owner:yippi type:feature doo:14007
  daemon/gdm-session-worker-job.c | 151 ++++++++++++++++++++++++++++++++++++++++
  3 files changed, 160 insertions(+)
 
---- a/daemon/gdm-session-worker-job.c	2020-03-26 08:44:00.852232622 -0700
-+++ b/daemon/gdm-session-worker-job.c	2020-03-26 08:47:47.948244229 -0700
-@@ -45,6 +45,13 @@
+--- a/daemon/gdm-session-worker-job.c	2024-01-17 17:17:01.820202779 -0800
++++ b/daemon/gdm-session-worker-job.c	2024-01-17 17:29:15.299642150 -0800
+@@ -44,6 +44,13 @@
  #include <systemd/sd-journal.h>
  #endif
  
@@ -27,7 +27,7 @@ Original date:2008-05-05 owner:yippi type:feature doo:14007
  #include <glib.h>
  #include <glib/gi18n.h>
  #include <glib-object.h>
-@@ -117,9 +124,145 @@
+@@ -112,9 +119,145 @@
          return;
  }
  
@@ -100,7 +100,6 @@ Original date:2008-05-05 owner:yippi type:feature doo:14007
 +
 +        contracts_fd = -1;
 +}
-+
 +static void
 +contracts_post_fork_parent (int fork_succeeded)
 +{
@@ -166,6 +165,7 @@ Original date:2008-05-05 owner:yippi type:feature doo:14007
 +static void
  session_worker_job_child_setup (GdmSessionWorkerJob *session_worker_job)
  {
++
 +#ifdef HAVE_SMF_CONTRACTS
 +        contracts_post_fork_child ();
 +#endif
@@ -173,7 +173,7 @@ Original date:2008-05-05 owner:yippi type:feature doo:14007
          sigset_t mask;
          session_worker_job_setup_journal_fds ();
  
-@@ -280,6 +423,10 @@
+@@ -265,6 +408,10 @@
          }
          env = get_job_environment (session_worker_job);
  
@@ -181,10 +181,10 @@ Original date:2008-05-05 owner:yippi type:feature doo:14007
 +        contracts_pre_fork ();
 +#endif
 +
-         error = NULL;
          ret = g_spawn_async_with_pipes (NULL,
                                          (char **) args->pdata,
-@@ -293,6 +440,10 @@
+                                         (char **)env->pdata,
+@@ -277,6 +424,10 @@
                                          NULL,
                                          &error);
  
@@ -192,6 +192,6 @@ Original date:2008-05-05 owner:yippi type:feature doo:14007
 +        contracts_post_fork_parent ((session_worker_job->pid > 0));
 +#endif
 +
-         g_ptr_array_foreach (args, (GFunc)g_free, NULL);
-         g_ptr_array_free (args, TRUE);
- 
+         if (! ret) {
+                 g_warning ("Could not start command '%s': %s",
+                            session_worker_job->command,
