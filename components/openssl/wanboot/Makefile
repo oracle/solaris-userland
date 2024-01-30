@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 # This Makefile contains wanboot specific rules.
@@ -204,3 +204,7 @@ BITS=64
 CC=$(CC.studio.64)
 COMPONENT_POST_BUILD_ACTION = \
     ../common/verify_build.sh $(@D) $(CC) $(BITS) openssl-3-wanboot-internal.sparc.p5m wanboot || exit 1;
+
+# Tests reside in ON, see ../README.md
+COMPONENT_TEST_TARGETS = test
+system-test:	$(NO_TESTS)
