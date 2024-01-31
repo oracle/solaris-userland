@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 #
 # userland-components
@@ -59,7 +59,7 @@ def main():
     for dirpath, dirnames, filenames in os.walk(f"{args.workspace}/components"):
         for name in filenames:
             # Find components by location their manifest files
-            if name.lower().endswith(".p5m"):
+            if name.lower().endswith(".p5m") and os.path.exists(f"{dirpath}/Makefile"):
                 verbose(f"found {dirpath}")
                 paths.append(dirpath)
                 # Abort search in the current directory
