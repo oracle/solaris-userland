@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -31,14 +31,14 @@ include ../../../make-rules/shared-macros.mk
 BUILD_STYLE=               meson
 
 COMPONENT_NAME=		libpeas
-COMPONENT_VERSION=	1.28.0
+COMPONENT_VERSION=	1.36.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Libpeas
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:42d91993b46ed50f16add6d9577ecc22beb8e2dffa7101e2232c2b63733b8b15
+    sha256:297cb9c2cccd8e8617623d1a3e8415b4530b8e5a893e3527bbfd1edd13237b4c
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	6871
 
-COMPONENT_BAID=		87891
+COMPONENT_BAID=		158234
 
 # Disable the unit tests since they are broken (crashes, assertions).
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -53,6 +53,7 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 CONFIGURE_OPTIONS += -Dpython2=false
 CONFIGURE_OPTIONS += -Dpython3=true
+CONFIGURE_OPTIONS += --wrap-mode=nofallback
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
