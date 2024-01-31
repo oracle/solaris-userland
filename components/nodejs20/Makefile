@@ -30,18 +30,18 @@ BUILD_ARCH=		i386
 include			../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		node
-COMPONENT_VERSION=	18.18.2
+COMPONENT_VERSION=	20.11.0
 COMPONENT_SUBVERSION=
 HUMAN_VERSION=		$(COMPONENT_VERSION)$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=	https://github.com/nodejs/node
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_HASH= \
-    sha256:01d4a1cbb44cbc884eede92f913ecdb5337628e0b0cbe0071dcc438e74d961e1
+    sha256:0a2ac54615dc2996e56221a3a18b51c1ba7a9bd70f9daaab2c179d57cb3d6bef
 COMPONENT_ARCHIVE_URL=	\
     $(COMPONENT_PROJECT_URL)/archive/v$(COMPONENT_VERSION).zip
 COMPONENT_BUGDB=	utility/nodejs
-COMPONENT_BAID=		152664
+COMPONENT_BAID=		157660
 COMPONENT_ANITYA_ID=	8251
 
 CONFIGURE_DEFAULT_DIRS=	no
@@ -69,14 +69,15 @@ CONFIGURE_OPTIONS+=	--shared-zlib
 CONFIGURE_OPTIONS+=	--with-intl=system-icu
 CONFIGURE_OPTIONS+=	--shared-cares
 CONFIGURE_OPTIONS+=	--shared-libuv
+CONFIGURE_OPTIONS+=	--shared
 
-CC_PIC_MODE = $(CC_PIC_DISABLE)
-LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+#CC_PIC_MODE = $(CC_PIC_DISABLE)
+#LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Read NPM_CONFIG_REGISTRY from local configuration file.
 $(call read-config,NPM_CONFIG_REGISTRY,https://registry.npmjs.org/)
 
-NPM_ENV=		NPM_CONFIG_USERCONFIG=/dev/null \
+NPM_ENV=		NPM_CONFIG_USERCONFIG=$(COMPONENT_DIR)/Solaris/npmrc \
 			NPM_CONFIG_CACHE=$(@D)/.npm \
 			NPM_CONFIG_REGISTRY=$(NPM_CONFIG_REGISTRY)
 
@@ -109,11 +110,9 @@ COMPONENT_BUILD_ARGS+=	LINK=$(LINK.OPENSSL3)
 COMPONENT_INSTALL_ARGS+=LINK=$(LINK.OPENSSL3)
 
 COMPONENT_TEST_TARGETS=	test-only
-#
 # The node-gyp sometimes rebuilds packages during 'gmake test'. It needs to
 # know which compiler and linker to use. Pass the information via environment.
-#
-COMPONENT_TEST_ARGS=	CC=gcc CXX=g++ LINK=$(LINK.OPENSSL3)
+COMPONENT_TEST_ARGS+=	CC=gcc CXX=g++ LINK=$(LINK.OPENSSL3)
 # add /usr/sbin to PATH for dtrace
 # add openssl-3 to PATH, some tests can't speak to s_client from other versions
 COMPONENT_TEST_ENV+=	PATH=$(BINDIR.OPENSSL3):$(GNUBIN):$(PATH):/usr/sbin \
@@ -121,8 +120,20 @@ COMPONENT_TEST_ENV+=	PATH=$(BINDIR.OPENSSL3):$(GNUBIN):$(PATH):/usr/sbin \
 
 PKG_MACROS+=		NODE_MAJOR_VERSION=$(NODE_MAJOR_VERSION)
 
+NODE_PROTO_DIR=$(PROTO_DIR)/usr/nodejs/$(NODE_MAJOR_VERSION)
+
+COMPONENT_POST_INSTALL_ACTION+= \
+        $(MKDIR) $(NODE_PROTO_DIR)/lib/$(MACH64); \
+        mv $(NODE_PROTO_DIR)/lib/libnode.so* $(NODE_PROTO_DIR)/lib/$(MACH64)/; \
+        echo "Compile .pyc's..."; \
+        $(PYTHON) -m compileall $(NODE_PROTO_DIR)/; \
+        echo "Fix RPATH and RUNPATH..."; \
+	elfedit -e 'dyn:runpath $$ORIGIN/../lib/$(MACH64)' \
+	-e 'dyn:rpath $$ORIGIN/../lib/$(MACH64)' $(NODE_PROTO_DIR)/bin/node
+
 REQUIRED_PACKAGES+=	system/core-os
 REQUIRED_PACKAGES+=	system/library/math
+REQUIRED_PACKAGES+=	system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES+=	system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES+=	library/icu
 REQUIRED_PACKAGES+=	library/nghttp2
