@@ -1,0 +1,42 @@
+Already in upstream:
+
+https://github.com/davea42/libdwarf-code/commit/cc343150beab8de77ae28c493ce8a83db152bda3
+
+Resolves:
+
+    dwarfdump ERROR:  ERROR: Failure reading CU header or DIE,
+        corrupt DWARF:  DW_DLE_RELOC_SECTION_RELOC_TARGET_SIZE_UNKNOWN
+        (233) so doing a relocation is unsafe. Attempting to continue.
+
+Adds R_386_GOTOFF to known 32-bit relocations on x86, GCC folks say it's
+allowed for debug sections. See:
+
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=98946
+
+diff -rup libdwarf-0.7.0/src/lib/libdwarf/dwarf_elf_defines.h
+libdwarf-0.7.0.new/src/lib/libdwarf/dwarf_elf_defines.h
+--- libdwarf-0.7.0/src/lib/libdwarf/dwarf_elf_defines.h	2023-05-10 19:09:15.000000000 +0200
++++ libdwarf-0.7.0.new/src/lib/libdwarf/dwarf_elf_defines.h	2024-01-26 09:49:02.581026152 +0100
+@@ -999,6 +999,9 @@ extern "C" {
+ #ifndef R_386_32
+ #define R_386_32                               1
+ #endif /* R_386_32 */
++#ifndef R_386_GOTOFF
++#define R_386_GOTOFF                           9
++#endif /* R_386_GOTOFF */
+ #ifndef R_386_GOTPC
+ #define R_386_GOTPC                            10
+ #endif /* R_386_GOTPC */
+diff -rup libdwarf-0.7.0/src/lib/libdwarf/dwarf_elf_rel_detector.c libdwarf-0.7.0.new/src/lib/libdwarf/dwarf_elf_rel_detector.c
+--- libdwarf-0.7.0/src/lib/libdwarf/dwarf_elf_rel_detector.c	2022-12-26 18:27:33.000000000 +0100
++++ libdwarf-0.7.0.new/src/lib/libdwarf/dwarf_elf_rel_detector.c	2024-01-26 09:49:20.026584986 +0100
+@@ -88,6 +88,9 @@ _dwarf_is_32bit_abs_reloc(unsigned int t
+ #if defined (R_386_32)
+             |  (type == R_386_32)
+ #endif
++#if defined (R_386_GOTOFF)
++            |  (type == R_386_GOTOFF)
++#endif
+ #if defined (R_386_GOTPC)
+             |  (type == R_386_GOTPC)
+ #endif
