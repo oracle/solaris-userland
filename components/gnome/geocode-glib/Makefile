@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -46,15 +46,19 @@ CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 CONFIGURE_OPTIONS.32 += -Denable-introspection=false
+CONFIGURE_OPTIONS += -Dsoup2=false
 
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 LDFLAGS +=  -Wl,-zgnu-version-script-compat
 
+# tests reference the json files
+COMPONENT_PRE_TEST_ACTION += cp $(SOURCE_DIR)/geocode-glib/tests/*.json \
+          $(BUILD_DIR_$(BITS))/geocode-glib/tests/
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/json-glib
-REQUIRED_PACKAGES += library/libsoup
+REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += system/library/math
