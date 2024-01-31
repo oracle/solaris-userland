@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -42,6 +42,9 @@ include $(WS_MAKE_RULES)/common.mk
 
 # otherwise our default PKG_CONFIG_PATH will change to the 64-bit libdir
 CONFIGURE_LIBDIR.64 =   $(CONFIGURE_PREFIX)/lib
+
+# Make sure that pkg-config removes our standard paths from --libs output
+CONFIGURE_OPTIONS += --with-system-library-path=/lib/$(MACH64):/usr/lib/$(MACH64):/lib:/usr/lib
 
 COMPONENT_TEST_DIR =		$(@D)/check
 COMPONENT_TEST_ENV +=		PATH=$(GNUBIN):$(USRBINDIR)
