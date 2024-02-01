@@ -1,0 +1,181 @@
+From 7efd6facc913e17d9d603960fd493f59b0ee316e Mon Sep 17 00:00:00 2001
+From: Georges Basile Stavracas Neto <georges.stavracas@gmail.com>
+Date: Mon, 10 Jan 2022 15:10:42 -0300
+Subject: [PATCH] Port to GWeather4
+
+In preparation for the GTK4 port. This is just a cheap port,
+I'll implement proper entry completion after porting to GTK4.
+---
+ build-aux/flatpak/org.gnome.Calendar.json |  2 +-
+ meson.build                               |  2 +-
+ src/gui/gcal-weather-settings.c           | 29 +++++++++++------------
+ src/gui/gcal-weather-settings.ui          |  2 +-
+ src/weather/gcal-weather-service.c        |  4 +---
+ src/weather/gcal-weather-service.h        |  3 +--
+ 6 files changed, 19 insertions(+), 23 deletions(-)
+
+diff --git a/src/gui/gcal-weather-settings.c b/src/gui/gcal-weather-settings.c
+index 6773ea5a5..391e47331 100644
+--- a/src/gui/gcal-weather-settings.c
++++ b/src/gui/gcal-weather-settings.c
+@@ -33,12 +33,14 @@ struct _GcalWeatherSettings
+   GtkSwitch          *weather_auto_location_switch;
+   GtkWidget          *weather_location_entry;
+ 
++  GWeatherLocation   *location;
++
+   GcalContext        *context;
+ };
+ 
+ 
+-static void          on_weather_location_searchbox_changed_cb    (GWeatherLocationEntry *entry,
+-                                                                  GcalWeatherSettings   *self);
++static void          on_weather_location_searchbox_changed_cb    (GtkEntry            *entry,
++                                                                  GcalWeatherSettings *self);
+ 
+ static void          on_show_weather_changed_cb                  (GtkSwitch           *wswitch,
+                                                                   GParamSpec          *pspec,
+@@ -111,7 +113,9 @@ load_weather_settings (GcalWeatherSettings *self)
+       world = gweather_location_get_world ();
+       weather_location = location ? gweather_location_deserialize (world, location) : NULL;
+ 
+-      gweather_location_entry_set_location (GWEATHER_LOCATION_ENTRY (self->weather_location_entry), weather_location);
++      self->location = weather_location ? g_object_ref (weather_location) : NULL;
++      gtk_entry_set_text (GTK_ENTRY (self->weather_location_entry),
++                          self->location ? gweather_location_get_name (self->location) : "");
+     }
+ 
+   g_signal_handlers_unblock_by_func (self->show_weather_switch, on_show_weather_changed_cb, self);
+@@ -124,7 +128,6 @@ load_weather_settings (GcalWeatherSettings *self)
+ static void
+ save_weather_settings (GcalWeatherSettings *self)
+ {
+-  g_autoptr (GWeatherLocation) location = NULL;
+   GSettings *settings;
+   GVariant *value;
+   GVariant *vlocation;
+@@ -135,8 +138,7 @@ save_weather_settings (GcalWeatherSettings *self)
+   if (!self->context)
+     GCAL_RETURN ();
+ 
+-  location = gweather_location_entry_get_location (GWEATHER_LOCATION_ENTRY (self->weather_location_entry));
+-  vlocation = location ? gweather_location_serialize (location) : NULL;
++  vlocation = self->location ? gweather_location_serialize (self->location) : NULL;
+ 
+   settings = gcal_context_get_settings (self->context);
+   value = g_variant_new ("(bbsmv)",
+@@ -170,17 +172,13 @@ update_menu_weather_sensitivity (GcalWeatherSettings *self)
+ static GWeatherLocation*
+ get_checked_fixed_location (GcalWeatherSettings *self)
+ {
+-  g_autoptr (GWeatherLocation) location = NULL;
+-
+-  location = gweather_location_entry_get_location (GWEATHER_LOCATION_ENTRY (self->weather_location_entry));
+-
+   /*
+    * NOTE: This check feels shabby. However, I couldn't find a better
+    * one without iterating the model. has-custom-text does not work
+    * properly. Lets go with it for now.
+    */
+-  if (location && gweather_location_get_name (location))
+-    return g_steal_pointer (&location);
++  if (self->location && gweather_location_get_name (self->location))
++    return g_object_ref (self->location);
+ 
+   return NULL;
+ }
+@@ -243,8 +241,8 @@ on_weather_auto_location_changed_cb (GtkSwitch           *lswitch,
+ }
+ 
+ static void
+-on_weather_location_searchbox_changed_cb (GWeatherLocationEntry *entry,
+-                                          GcalWeatherSettings   *self)
++on_weather_location_searchbox_changed_cb (GtkEntry            *entry,
++                                          GcalWeatherSettings *self)
+ {
+   GtkStyleContext  *context;
+   GWeatherLocation *location;
+@@ -264,7 +262,7 @@ on_weather_location_searchbox_changed_cb (GWeatherLocationEntry *entry,
+     {
+       gtk_style_context_remove_class (context, "error");
+       manage_weather_service (self);
+-      gweather_location_unref (location);
++      g_object_unref (location);
+     }
+ }
+ 
+@@ -278,6 +276,7 @@ gcal_weather_settings_finalize (GObject *object)
+ {
+   GcalWeatherSettings *self = (GcalWeatherSettings *)object;
+ 
++  g_clear_object (&self->location);
+   g_clear_object (&self->context);
+ 
+   G_OBJECT_CLASS (gcal_weather_settings_parent_class)->finalize (object);
+diff --git a/src/gui/gcal-weather-settings.ui b/src/gui/gcal-weather-settings.ui
+index 6fd72a7e7..f84ef43cc 100644
+--- a/src/gui/gcal-weather-settings.ui
++++ b/src/gui/gcal-weather-settings.ui
+@@ -63,7 +63,7 @@
+       </object>
+     </child>
+     <child>
+-      <object class="GWeatherLocationEntry" id="weather_location_entry">
++      <object class="GtkEntry" id="weather_location_entry">
+         <property name="visible">True</property>
+         <property name="can_focus">True</property>
+         <property name="primary_icon_name">edit-find-symbolic</property>
+diff --git a/src/weather/gcal-weather-service.c b/src/weather/gcal-weather-service.c
+index 9fbedb512..71ba82500 100644
+--- a/src/weather/gcal-weather-service.c
++++ b/src/weather/gcal-weather-service.c
+@@ -665,7 +665,7 @@ static void
+ update_gclue_location (GcalWeatherService  *self,
+                        GClueLocation       *location)
+ {
+-  GWeatherLocation *wlocation = NULL; /* owned */
++  g_autoptr (GWeatherLocation) wlocation = NULL; /* owned */
+ 
+   if (location)
+     {
+@@ -682,8 +682,6 @@ update_gclue_location (GcalWeatherService  *self,
+     }
+ 
+   update_location (self, wlocation);
+-
+-  g_clear_pointer (&wlocation, gweather_location_unref);
+ }
+ 
+ 
+diff --git a/src/weather/gcal-weather-service.h b/src/weather/gcal-weather-service.h
+index 7485a9135..80717ab6a 100644
+--- a/src/weather/gcal-weather-service.h
++++ b/src/weather/gcal-weather-service.h
+@@ -20,8 +20,7 @@
+ #define GCAL_WEATHER_SERVICE_H
+ 
+ #include <libgweather/gweather.h>
+-#include <glib-object.h>
+-#include <glib.h>
++#include <gtk/gtk.h>
+ 
+ #include "gcal-weather-info.h"
+ 
+-- 
+GitLab
+
+
+--- a/meson.build	2024-01-23 20:33:54.093363735 -0800
++++ b/meson.build	2024-01-23 20:34:24.953245635 -0800
+@@ -167,9 +167,9 @@
+ gtk_dep = dependency('gtk+-3.0', version: '>= 3.22.20')
+ gio_dep = dependency('gio-2.0', version: '>= 2.58.0')
+ goa_dep = dependency('goa-1.0', version: '>= 3.2.0')
+-gweather_dep = dependency('gweather-3.0', version: '>= 40.0')
++gweather_dep = dependency('gweather4')
+ geoclue_dep = dependency('libgeoclue-2.0', version: '>=2.4')
+-geocode_dep = dependency('geocode-glib-1.0', version: '>=3.23')
++geocode_dep = dependency('geocode-glib-2.0', version: '>=3.23')
+ m_dep = cc.find_library('m')
+ 
+ gnome = import('gnome')

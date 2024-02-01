@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -39,14 +39,14 @@ include ../../../make-rules/shared-macros.mk
 # GNOME stores and various components now expect it to be present.
 
 COMPONENT_NAME=		evolution-data-server
-COMPONENT_VERSION=	3.42.5
+COMPONENT_VERSION=	3.50.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Evolution
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a23ee8ebdbf2efddaac05b291fec6d203ad2fce359f911607b682cdb0bc23f53
+	sha256:225d70b6a40268f225c2ac428ee5eb52d5a6fda2602955d50a24970526fe2452
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10935
 
-COMPONENT_BAID=		123941
+COMPONENT_BAID=		157584
 
 BUILD_STYLE= cmake
 
@@ -58,6 +58,8 @@ CXXFLAGS += -std=c++11 -D__EXTENSIONS__ -DHAVE_SUN_KRB5
 CPPFLAGS += -I/usr/include/kerberosv5/
 CFLAGS += $(XPG6MODE)
 
+# to find gnu xgettext
+CMAKE_OPTIONS += -DGETTEXT_XGETTEXT_EXECUTABLE=/usr/gnu/bin/xgettext
 CMAKE_OPTIONS += -DENABLE_GOOGLE_AUTH=OFF
 CMAKE_OPTIONS += -DENABLE_OAUTH2=OFF
 CMAKE_OPTIONS += -DENABLE_UOA=OFF
@@ -65,6 +67,8 @@ CMAKE_OPTIONS += -DENABLE_INTROSPECTION=ON
 CMAKE_OPTIONS += -DOPEN_LDAP=OFF
 CMAKE_OPTIONS += -DENABLE_VALA_BINDINGS=ON
 CMAKE_OPTIONS += -DSYSCONF_INSTALL_DIR="/etc"
+CMAKE_OPTIONS += -DENABLE_OAUTH2_WEBKITGTK=OFF
+CMAKE_OPTIONS += -DENABLE_OAUTH2_WEBKITGTK4=OFF
 # Avoid to generate documentation since it might crash on sparc (see bug 31473179).
 CMAKE_OPTIONS += -DENABLE_GTK_DOC=OFF
 
@@ -93,38 +97,27 @@ COMPONENT_TEST_TRANSFORMS = -F"'('" \
 
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += developer/icu
-# e-d-s < 3.43.1 requires intltool to build - remove when upgrading to later
-REQUIRED_PACKAGES += developer/intltool
-REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
-REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += library/desktop/libgdata
+REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/gtk4
 REQUIRED_PACKAGES += library/desktop/libgweather
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libical
-REQUIRED_PACKAGES += library/libsoup
+REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/security/nss
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += runtime/perl-536
 REQUIRED_PACKAGES += security/kerberos-5
-REQUIRED_PACKAGES += security/kerberos-5/kdc
-REQUIRED_PACKAGES += system/library/iconv
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/library/security/gss
 REQUIRED_PACKAGES += system/network/ldap/openldap
-

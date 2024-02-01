@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -59,7 +59,7 @@ REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/libical
-REQUIRED_PACKAGES += library/libsoup
+REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
