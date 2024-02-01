@@ -18,11 +18,20 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
 #
 
 # empty directory
 dir  path=etc/odbc/ODBCDataSources
+
+# Compatibility links are still needed with some Oracle's StorageTek
+# Automated Cartridge System Library Software (ACSLS).
+link path=usr/lib/$(MACH64)/libodbc.so.1 target=libodbc.so.2.0.0
+link path=usr/lib/$(MACH64)/libodbccr.so.1 target=libodbccr.so.2.0.0
+link path=usr/lib/$(MACH64)/libodbcinst.so.1 target=libodbcinst.so.2.0.0
+link path=usr/lib/libodbc.so.1 target=libodbc.so.2.0.0
+link path=usr/lib/libodbccr.so.1 target=libodbccr.so.2.0.0
+link path=usr/lib/libodbcinst.so.1 target=libodbcinst.so.2.0.0
 
 # 64 bits binaries are delivered in /usr/bin
 file usr/bin/$(MACH64)/dltest path=usr/bin/dltest
