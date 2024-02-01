@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,17 +30,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgweather
-COMPONENT_VERSION=	40.0
+COMPONENT_VERSION=	4.4.0
+# This is being hardcoded here since we are updating from 40.0 to 4.4.0
+IPS_COMPONENT_VERSION=  44.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/LibGWeather
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:ca4e8f2a4baaa9fc6d75d8856adb57056ef1cd6e55c775ba878ae141b6276ee6
+	sha256:366e866ff2a708b894cfea9475b8e8ff54cb3e2b477ea72a8ade0dabee5f48a4
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13147
 
-COMPONENT_BAID=		110570
+COMPONENT_BAID=		157183
 BUILD_STYLE=		meson
-
-TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -50,10 +50,19 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 CPPFLAGS += -std=gnu99 -D_XOPEN_SOURCE=700 -D__EXTENSIONS__
 
+# Requires gi-docgen
+CONFIGURE_OPTIONS += -Dgtk_doc=false
 CONFIGURE_OPTIONS += -Dzoneinfo_dir=/usr/share/lib/zoneinfo
+CONFIGURE_OPTIONS += -Dtests=true
 
-CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
-COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Ok:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Timeout:/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
@@ -62,6 +71,7 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/desktop/geocode-glib
-REQUIRED_PACKAGES += library/libsoup
+REQUIRED_PACKAGES += library/json-glib
+REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += system/library/math
