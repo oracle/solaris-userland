@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -30,19 +30,19 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sendmail
-COMPONENT_VERSION=	8.17.2
+COMPONENT_VERSION=	8.18.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION)
 HUMAN_VERSION=		$(COMPONENT_VERSION)
-COMPONENT_PROJECT_URL=	ftp://ftp.sendmail.org/pub/sendmail/
+COMPONENT_PROJECT_URL=	https://ftp.sendmail.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME).$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:90f5ae74c35a84808861933ba094201b901b70c6b2903684dcf39bdae8a5a1a2
+	sha256:cbf1f309c38e4806f7cf3ead24260f17d1fe8fb63256d13edb3cdd1a098f0770
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 # For check_anitya target, https://release-monitoring.org/project/4796
 COMPONENT_ANITYA_ID=	4796
 
-COMPONENT_BAID=		145799
+COMPONENT_BAID=		158337
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -113,37 +113,22 @@ COMPONENT_BUILD_ARGS += CCLINK="$(CC)"
 COMPONENT_BUILD_ARGS += CC_PIC="$(CC_PIC)"
 COMPONENT_BUILD_ARGS += LDOPTS="$(CC_BITS)"
 
-$(SOURCE_DIR)/.prep:	$(SOURCE_DIR)/devtools/Site/site.config.m4
+# For a debug build: gmake clean build SENDMAILDEBUG=yes
+ifeq ($(strip $(SENDMAILDEBUG)), yes)
+COMPONENT_BUILD_ENV += studio_OPT=""
+endif
 
 # Sendmail looks for its build configuration in various per-OS config files
 # in its devtools/Site sub-dir, with site.config.m4 being the fallback.  So
-# create that file as part of the 'prep' phase.
+# create that file as part of the 'prep' phase with the configuration as we
+# want it.
 #
-# To build debug:
-# * Uncomment the following line:
-#   COMPONENT_BUILD_ENV += studio_OPT=""
-# * Uncomment the 'confOPTIMIZE' line in the recipe below, and move it
-#   before the 'endef' line:
+# Note that the blank line after `define name +=` is required and that
+# "+=" causes an extra space to be added, which the sed script removes.
+#
+$(SOURCE_DIR)/.prep:	$(SOURCE_DIR)/devtools/Site/site.config.m4
 
-# OPENSSL3, Needs to switch the same time as Cyrus-sasl
-ifneq ($(strip $(OPENSSL3)),)
-SM_OPENSSL3_SITE_CONFIG_M4_1 = \
-APPENDDEF(`confLIBDIRS', `-L/usr/openssl/3/lib/64')
-SM_OPENSSL3_SITE_CONFIG_M4_2 = \
-APPENDDEF(`confLIBDIRS', ` -R/usr/openssl/3/lib/64')
-SM_OPENSSL3_SITE_CONFIG_M4_3 = \
-APPENDDEF(`confINCDIRS', `-I/usr/openssl/3/include')
-
-# Fix-up site-config for the 32bit build.
-# Removes the link created by cloney and creates 32bit specific file.
-COMPONENT_PRE_BUILD_ACTION.32 = \
-	rm $(BUILD_DIR_32)/devtools/Site/site.config.m4; \
-	gsed -e "s:/usr/openssl/3/lib/64:/usr/openssl/3/lib/32:" \
-		$(SOURCE_DIR)/devtools/Site/site.config.m4 > \
-		$(BUILD_DIR_32)/devtools/Site/site.config.m4;
-endif
-
-define SITE_CONFIG_M4
+define SITE_CONFIG_M4 :=
 APPENDDEF(`conf_sendmail_ENVDEF', `-DSUN_EXTENSIONS')
 APPENDDEF(`conf_sendmail_ENVDEF', `-DVENDOR_DEFAULT=VENDOR_SUN')
 APPENDDEF(`conf_sendmail_ENVDEF', `-DSUN_INIT_DOMAIN')
@@ -162,21 +147,45 @@ APPENDDEF(`conf_sendmail_LIBS', `-lcrypto')
 APPENDDEF(`conf_sendmail_LIBS', `-lsasl2')
 APPENDDEF(`confMAPDEF', `-DLDAPMAP')
 APPENDDEF(`confLIBS', `-lldap -llber -lc')
-$(SM_OPENSSL3_SITE_CONFIG_M4_1)
-$(SM_OPENSSL3_SITE_CONFIG_M4_2)
-$(SM_OPENSSL3_SITE_CONFIG_M4_3)
+endef
+
+ifneq ($(strip $(OPENSSL3)),)
+define SITE_CONFIG_M4 +=
+
+APPENDDEF(`confLIBDIRS', `-L/usr/openssl/3/lib/64')
+APPENDDEF(`confLIBDIRS', ` -R/usr/openssl/3/lib/64')
+APPENDDEF(`confINCDIRS', `-I/usr/openssl/3/include')
+endef
+# Fix-up site-config for the 32bit build.
+# Removes the link created by cloney and creates 32bit specific file.
+COMPONENT_PRE_BUILD_ACTION.32 = \
+	rm $(BUILD_DIR_32)/devtools/Site/site.config.m4; \
+	gsed -e "s:/usr/openssl/3/lib/64:/usr/openssl/3/lib/32:" \
+		$(SOURCE_DIR)/devtools/Site/site.config.m4 > \
+		$(BUILD_DIR_32)/devtools/Site/site.config.m4;
+endif
+
+define SITE_CONFIG_M4 +=
+
 define(`confENVDEF', `-DSOLARIS=$(SOLARIS) -DNETINET6')
 define(`confDEPEND_TYPE', `Solaris')
 define(`confMKDIR', `/usr/bin/mkdir')
 define(`confMTCFLAGS', `$(CC_PIC)')
 define(`sendmailTARGET_LINKS', `')
 endef
-#define(\`confOPTIMIZE', \`-g')
+
+ifeq ($(strip $(SENDMAILDEBUG)), yes)
+define SITE_CONFIG_M4 +=
+
+define(`confOPTIMIZE', `-g')
+endef
+endif
 
 export SITE_CONFIG_M4
 
 $(SOURCE_DIR)/devtools/Site/site.config.m4:	unpack
 	$(file > $@,$(SITE_CONFIG_M4))
+	$(GSED) --in-place -e 's/ $$//' $@
 
 # mailq's Makefile doesn't grok the 32- and 64-bit build. We just want 64.
 # So we clean before we build, and the last build (64) wins, which is what
@@ -236,6 +245,12 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "/^Creating.*$$/d" ' \
     '-e "/^Including.*$$/d" ' \
     '-e "/^Making.*in.*$$/d" '
+
+# This is a handy test target for developer.  Please leave functional.
+.PHONY: test-version
+test-version:
+	LD_LIBRARY_PATH=$(PROTO_DIR)$(USRLIB) \
+		$(PROTO_DIR)$(USRLIB)/sendmail -d0.1 -bt </dev/null
 
 INSTALL_64=
 

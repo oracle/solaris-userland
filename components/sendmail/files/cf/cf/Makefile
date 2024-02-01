@@ -22,7 +22,7 @@
 #
 #  Makefile for configuration files.
 #
-# Copyright (c) 1998, 2011, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1998, 2024, Oracle and/or its affiliates.
 #
 #	@(#)Makefile	8.15 (Berkeley) 3/29/98
 #
@@ -65,6 +65,7 @@ M4FILES=\
 	${CFDIR}/feature/access_db.m4 \
 	${CFDIR}/feature/allmasquerade.m4 \
 	${CFDIR}/feature/always_add_domain.m4 \
+	${CFDIR}/feature/authinfo.m4 \
 	${CFDIR}/feature/badmx.m4 \
 	${CFDIR}/feature/bestmx_is_local.m4 \
 	${CFDIR}/feature/bitdomain.m4 \
@@ -76,6 +77,7 @@ M4FILES=\
 	${CFDIR}/feature/dnsbl.m4 \
 	${CFDIR}/feature/domaintable.m4 \
 	${CFDIR}/feature/enhdnsbl.m4 \
+	${CFDIR}/feature/fips3.m4 \
 	${CFDIR}/feature/generics_entire_domain.m4 \
 	${CFDIR}/feature/genericstable.m4 \
 	${CFDIR}/feature/greet_pause.m4 \
@@ -93,8 +95,10 @@ M4FILES=\
 	${CFDIR}/feature/mtamark.m4 \
 	${CFDIR}/feature/no_default_msa.m4 \
 	${CFDIR}/feature/nocanonify.m4 \
+	${CFDIR}/feature/nopercenthack.m4 \
 	${CFDIR}/feature/notsticky.m4 \
 	${CFDIR}/feature/nouucp.m4 \
+	${CFDIR}feature/nullclient.m4 \
 	${CFDIR}/feature/preserve_local_plus_detail.m4 \
 	${CFDIR}/feature/preserve_luser_host.m4 \
 	${CFDIR}/feature/promiscuous_relay.m4 \
@@ -120,6 +124,7 @@ M4FILES=\
 	${CFDIR}/m4/proto.m4 \
 	${CFDIR}/m4/version.m4 \
 	${CFDIR}/mailer/local.m4 \
+	${CFDIR}/mailer/procmail.m4 \
 	${CFDIR}/mailer/smtp.m4 \
 	${CFDIR}/mailer/uucp.m4 \
 	${CFDIR}/ostype/solaris2.m4 \
