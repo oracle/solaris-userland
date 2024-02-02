@@ -5,9 +5,9 @@ Pull request
 https://github.com/curl/curl/pull/9045
 sent to community.
 
---- a/m4/curl-openssl.m4	2022-06-21 09:57:36.168239589 +0200
-+++ b/m4/curl-openssl.m4	2022-06-21 10:03:25.856824092 +0200
-@@ -136,8 +136,8 @@
+--- a/m4/curl-openssl.m4	2023-12-05 15:57:41.000000000 +0100
++++ b/m4/curl-openssl.m4	2023-12-13 10:22:20.719271155 +0100
+@@ -137,8 +137,8 @@
    fi
  
    dnl finally, set flags to use SSL
@@ -18,3 +18,12 @@ sent to community.
  
    AC_CHECK_LIB(crypto, HMAC_Update,[
       HAVECRYPTO="yes"
+@@ -334,7 +334,7 @@
+        dnl linker doesn't search through, we need to add it to CURL_LIBRARY_PATH
+        dnl to prevent further configure tests to fail due to this
+        if test "x$cross_compiling" != "xyes"; then
+-         CURL_LIBRARY_PATH="$CURL_LIBRARY_PATH:$LIB_OPENSSL"
++         CURL_LIBRARY_PATH="$LIB_OPENSSL:$CURL_LIBRARY_PATH"
+          export CURL_LIBRARY_PATH
+          AC_MSG_NOTICE([Added $LIB_OPENSSL to CURL_LIBRARY_PATH])
+        fi

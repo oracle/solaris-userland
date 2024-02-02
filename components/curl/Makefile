@@ -20,16 +20,18 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
+# debug build? uncomment next line
+# GMAKE= /usr/gnu/bin/make V=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		curl
-COMPONENT_VERSION=	8.4.0
-COMPONENT_ARCHIVE_HASH=	sha256:e5250581a9c032b1b6ed3cf2f9c114c811fc41881069e9892d115cc73f9e88c6
-COMPONENT_BAID=		152243
+COMPONENT_VERSION=	8.6.0
+COMPONENT_ARCHIVE_HASH=	sha256:b4785f2d8877fa92c0e45d7155cf8cc6750dbda961f4b1a45bcbec990cf2fa9b
+COMPONENT_BAID=		158375
 COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_URL=	https://curl.se/download/$(COMPONENT_ARCHIVE)
