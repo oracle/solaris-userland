@@ -2,6 +2,7 @@
 
 # Open second terminal with root shell. Keep this as a possibility to assume
 # root privileges if you loose the ability to do so via sudo during testing.
+# Otherwise be logged in as a regular user.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -19,7 +20,7 @@ openssl dgst -sha224 /usr/bin/ls # make note of the hash
 
 # Add this line to sudoers (replace UID by your user name and HASH by the ls
 # hash):
-<UID> ALL = sha224:<HASH> /usr/bin/ls
+<UID> ALL = NOPASSWD: sha224:<HASH> /usr/bin/ls
 
 # This should work (asking you a password first)
 sudo /usr/bin/ls /
@@ -58,7 +59,7 @@ sudo /usr/sbin/auditreduce * | /usr/sbin/praudit -s
 > file,2014-03-27 10:34:23.000 +00:00,
 
 # Make sure that since the first run we can see new auditing record
-sudo auditreduce * | praudit -s
+sudo /usr/sbin/auditreduce * | /usr/sbin/praudit -s
 > file,2014-03-27 10:34:23.000 +00:00,
 > header,158,2,AUE_sudo,,10.0.2.15,2014-03-27 10:34:23.735 +00:00
 > subject,vmarek,root,staff,vmarek,staff,2295,3108723863,5096 202240 10.0.2.2
@@ -81,13 +82,13 @@ sudo bash -c '/usr/sbin/auditconfig -getpinfo $$'
 # Add audit flags to root
 sudo /usr/sbin/rolemod -K audit_flags=ex:no root
 
-# Make sure that the preselection mask now shows new entries (lo,ex)
+# Make sure that the preselection mask now shows new entry ('ex')
 sudo bash -c '/usr/sbin/auditconfig -getpinfo $$'
 
 # Disable PAM credentials in sudo by adding this line to sudoers:
 Defaults !pam_setcred
 
-# Make sure that the preselection mask now shows only previous entry
+# Make sure that the preselection mask now shows only previous entry (no 'ex')
 sudo bash -c '/usr/sbin/auditconfig -getpinfo $$'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -106,7 +107,7 @@ sudo id
 > uid=0(root) gid=0(root)
 
 # For bash it should leave your ID and just grant dtrace privileges
-sudo bash -c 'id; ppriv $$'
+sudo -u $LOGNAME bash -c 'id; ppriv $$'
 uid=157888(vmarek) gid=10(staff)
 > 2296:   bash -c id; ppriv $$
 > flags = <none>
@@ -116,7 +117,7 @@ uid=157888(vmarek) gid=10(staff)
 >         L: basic,dtrace_kernel,dtrace_proc,dtrace_user
 
 # dtrace functionality
-sudo /usr/sbin/dtrace -l -n 'syscall::b*:entry'
+sudo -u $LOGNAME /usr/sbin/dtrace -l -n 'syscall::b*:entry'
 >    ID   PROVIDER            MODULE                          FUNCTION NAME
 > 11282    syscall                                                 brk entry
 > 11550    syscall                                            brandsys entry
@@ -128,24 +129,24 @@ sudo /usr/sbin/dtrace -l -n 'syscall::b*:entry'
 
 # Verify the following works
 
-sudo /usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
+sudo /usr/perl5/5.32/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
 before
 uid=0(root) gid=0(root) groups=0(root),1(other),2(bin),3(sys),4(adm),6(mail),7(tty),8(lp),12(daemon)
 after
 
 # Add the following to sudoers
 
-ALL     ALL = NOPASSWD: NOEXEC: /usr/perl5/5.26/bin/perl
+ALL     ALL = NOPASSWD: NOEXEC: /usr/perl5/5.36/bin/perl
 
 # Now Perl should be prevent to run further commands, so the output is
 
-sudo /usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
+sudo /usr/perl5/5.36/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
 before
 after
 
 # Perl itself works as expected
 
-/usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
+/usr/perl5/5.36/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
 before
 uid=101(rimmer) gid=10(staff) groups=10(staff)
 after
@@ -169,14 +170,13 @@ sudo /usr/sbin/rolemod -K pam_policy= root
 # and there is no PAM_POLICY set in /etc/security/policy.conf
 sudo gsed -ibackup 's/^PAM_POLICY=/##PAM_POLICY=/' /etc/security/policy.conf
 # assume the root role
-su - root
+sudo su - root
 # run commands as different user
 sudo -u webservd /sbin/uname
 sudo -i -u webservd /sbin/uname
 
 # Now retest with various pam_policy values (unix, ldap, ...)
 /usr/sbin/rolemod -K pam_policy=unix root
-# goto begin
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -190,34 +190,146 @@ Defaults iolog_dir=/var/share/sudo/sudo-io
 # make sure your machine has the right hostname set up
 check-hostname
 # and regenerate the host CA and cert to capture the hostname change
-svccfg -s system/identity:cert delcust
-svcadm refresh system/identity:cert
-svcadm restart -s system/identity:cert
+sudo svccfg -s system/identity:cert delcust
+sudo svcadm refresh system/identity:cert
+sudo svcadm restart -s system/identity:cert
 
 # create some logs
 $ sudo bash
 # ls
 # exit
 
+
+mkdir -p /certs
+cd /certs
+mkdir -p certs csr newcerts private
+touch index.txt
+echo 1000 > serial
+
+cat >openssl.cnf <<-'EOT'
+[ ca ]
+default_ca              = CA_default
+
+[ CA_default ]
+dir                     = /certs
+certs                   = $dir/certs
+new_certs_dir	        = $dir/certs
+database                = $dir/index.txt
+certificate             = $dir/cacert.pem
+private_key             = $dir/private/cakey.pem
+serial                  = $dir/serial
+policy		        = policy_match
+
+[ policy_match ]
+countryName		= match
+stateOrProvinceName	= optional
+organizationName	= match
+organizationalUnitName	= optional
+commonName		= supplied
+emailAddress		= optional
+
+
+[ v3_ca ]
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid:always,issuer
+basicConstraints        = critical,CA:true
+keyUsage                = cRLSign, keyCertSign
+
+[ usr_cert ]
+basicConstraints        = CA:FALSE
+keyUsage                = nonRepudiation, digitalSignature, \
+                          keyEncipherment
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid,issuer
+
+[req]
+distinguished_name = req_distinguished_name
+
+[req_distinguished_name]
+EOT
+
+openssl genrsa -aes256 -out private/cakey.pem 4096
+
+chmod 400 private/cakey.pem
+openssl req -config openssl.cnf -key private/cakey.pem \
+               -new -x509 -days 7300 -sha256 -extensions v3_ca \
+               -subj "/CN=$(hostname).oracle.com/O=My Company Name LTD./C=US" \
+               -out cacert.pem
+
+chmod 444 cacert.pem
+openssl x509 -noout -text -in cacert.pem
+
+
+
+openssl genrsa -out private/logsrvd_key.pem 2048
+chmod 400 private/logsrvd_key.pem
+openssl req -config openssl.cnf -key private/logsrvd_key.pem -new \
+               -subj "/CN=$(hostname).oracle.com/O=My Company Name LTD./C=US" \
+               -sha256 -out csr/logsrvd_csr.pem
+openssl ca -config openssl.cnf -days 375 -notext -md sha256 \
+               -in csr/logsrvd_csr.pem -out certs/logsrvd_cert.pem
+
+openssl verify -CAfile cacert.pem certs/logsrvd_cert.pem
+
+
+
+openssl genrsa -out private/client_key.pem 2048
+chmod 400 private/client_key.pem
+openssl req -config openssl.cnf -key private/client_key.pem -new \
+               -subj "/CN=$(hostname).oracle.com/O=My Company Name LTD./C=US" \
+               -sha256 -out csr/client_csr.pem
+openssl ca -config openssl.cnf -days 375 -notext -md sha256 \
+               -in csr/client_csr.pem -out certs/client_cert.pem
+
+openssl verify -CAfile cacert.pem certs/client_cert.pem
+
+
+# Make sure that the hostname corresponds to /etc/hosts:
+$ openssl x509 -noout -text -in /certs/certs/logsrvd_cert.pem | grep Subject:
+# You should be able to ping the hostname stated in CN. If not, fix your
+# /etc/hosts
+
+
+# remeber the correct hostname for commands below
+H=.......
+
+
+cp /etc/sudo_logsrvd.conf config
+vi config
+
+           # Listen on port 30344 for TLS connections to any address.
+           listen_address = *:30343
+           listen_address = *:30344(tls)
+
+           # Path to the certificate authority bundle file in PEM format.
+           tls_cacert = /certs/cacert.pem
+
+           # Path to the server's certificate file in PEM format.
+           tls_cert = /certs/certs/logsrvd_cert.pem
+
+           # Path to the server's private key file in PEM format.
+           tls_key = /certs/private/logsrvd_key.pem
+
+
 # In one terminal run the server
-/usr/sbin/sudo_logsrvd -n
+/usr/sbin/sudo_logsrvd -n --file config
 
 # in another terminal run the client with TLS
-/usr/sbin/sudo_sendlog --host `hostname` --key /etc/certs/localhost/host.key --cert /etc/certs/localhost/host.crt --ca-bundle /etc/certs/localhost/host-ca/hostca.crt -p 30344 /var/share/sudo/sudo-io/00/00/01 -n
+/usr/sbin/sudo_sendlog --host $H --key /certs/private/logsrvd_key.pem --cert /certs/certs/logsrvd_cert.pem --ca-bundle /certs/cacert.pem -p 30344 /var/share/sudo/sudo-io/00/00/01 -n
 Connected to sudocbe:30344
 Server ID: Sudo Audit Server 1.9.9
 Remote log ID: /var/share/sudo/sudo-io/00/00/0G
 1 I/O log transmitted successfully in 0.031067965 seconds
 
 # and again with verifying the server certificate
-/usr/sbin/sudo_sendlog --host `hostname` --key /etc/certs/localhost/host.key --cert /etc/certs/localhost/host.crt --ca-bundle /etc/certs/localhost/host-ca/hostca.crt -p 30344 /var/share/sudo/sudo-io/00/00/01
+/usr/sbin/sudo_sendlog --host $H --key /certs/private/logsrvd_key.pem --cert /certs/certs/logsrvd_cert.pem --ca-bundle /certs/cacert.pem -p 30344 /var/share/sudo/sudo-io/00/00/01
 Connected to sudocbe:30344
 Server ID: Sudo Audit Server 1.9.9
 Remote log ID: /var/share/sudo/sudo-io/00/00/0H
 1 I/O log transmitted successfully in 0.031471913 seconds
 
 # and without TLS
-/usr/sbin/sudo_sendlog --host `hostname`  -p 30343 /var/share/sudo/sudo-io/00/00/01
+/usr/sbin/sudo_sendlog --host $H -p 30343 /var/share/sudo/sudo-io/00/00/01
 Connected to sudocbe:30343
 Server ID: Sudo Audit Server 1.9.9
 Remote log ID: /var/share/sudo/sudo-io/00/00/0I
