@@ -2,11 +2,9 @@ flock system call is not available on Solaris but it can be
 replaced by calling fcntl. This patch will be sent upstream
 after being reworked into a format that will be acceptable.
 
-diff --git a/src/hsts.c b/src/hsts.c
-index b91bc56..3d6669a 100644
---- a/src/hsts.c
-+++ b/src/hsts.c
-@@ -48,6 +48,7 @@ as that of the covered work.  */
+--- wget-1.21.4/src/hsts.c
++++ wget-1.21.4/src/hsts.c
+@@ -48,6 +48,7 @@ #include <sys/stat.h>
  #include <string.h>
  #include <stdio.h>
  #include <sys/file.h>
@@ -14,7 +12,7 @@ index b91bc56..3d6669a 100644
  
  struct hsts_store {
    struct hash_table *table;
-@@ -555,6 +556,7 @@ hsts_store_save (hsts_store_t store, const char *filename)
+@@ -554,6 +555,7 @@ {
    struct stat st;
    FILE *fp = NULL;
    int fd = 0;
@@ -22,7 +20,7 @@ index b91bc56..3d6669a 100644
  
    if (filename && hash_table_count (store->table) > 0)
      {
-@@ -563,7 +565,11 @@ hsts_store_save (hsts_store_t store, const char *filename)
+@@ -562,7 +564,11 @@ if (fp)
          {
            /* Lock the file to avoid potential race conditions */
            fd = fileno (fp);
