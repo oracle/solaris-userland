@@ -87,6 +87,9 @@ LD_Z_PIE_MODE =	$(LD_Z_PIE_ENABLE)
 # Fix 64-bit linking via compiler.
 LDFLAGS += $(CC_BITS)
 
+# Link OpenSSH with libumem
+LDFLAGS += -lumem
+
 CONFIGURE_OPTIONS += --with-ssl-dir=/usr/openssl/3
 CONFIGURE_OPTIONS += --with-audit=solaris
 CONFIGURE_OPTIONS += --with-libedit
