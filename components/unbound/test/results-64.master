@@ -1,4 +1,4 @@
-Start of unbound 1.16.3+libevent unit test.
+Start of unbound 1.19.0+libevent unit test.
 test authzone functions
 test negative cache functions
 test ub_random functions
@@ -58,6 +58,7 @@ test lruhash functions
 test slabhash functions
 test infra cache functions
 test sldns functions
+test interoperable dns cookies functions
 test zonemd functions
 test services/authzone.c:auth_zone_generate_zonemd_hash
 test services/authzone.c:auth_zone_generate_zonemd_check
@@ -68,7 +69,16 @@ test services/outside_network.c:reuse_tcp_insert
 test services/outside_network.c:reuse_tcp_lru_touch
 test services/outside_network.c:reuse_tcp_remove_tree_list
 test services/outside_network.c:reuse_tcp_lru_snip
+test services/outside_network.c:outnet_waiting_tcp_list_add_first
+test services/outside_network.c:outnet_waiting_tcp_list_add
+test services/outside_network.c:outnet_waiting_tcp_list_add_first
+test services/outside_network.c:outnet_waiting_tcp_list_remove
+test services/outside_network.c:outnet_waiting_tcp_list_pop
+test services/outside_network.c:reuse_write_wait_push_back
+test services/outside_network.c:reuse_write_wait_remove
+test services/outside_network.c:reuse_write_wait_pop
 test message parse functions
+test edns ede optional encoding functions
 ./testbound -s
 selftest successful (33 checks).
 for x in $(SOURCE_DIR)/testdata/*.rpl; do \
@@ -155,14 +165,16 @@ $(SOURCE_DIR)/testdata/black_key_entry.rpl  OK
 $(SOURCE_DIR)/testdata/black_prime.rpl  OK
 $(SOURCE_DIR)/testdata/black_prime_entry.rpl  OK
 $(SOURCE_DIR)/testdata/chaos_trustanchor.rpl  OK
+$(SOURCE_DIR)/testdata/disable_edns_do.rpl  OK
 $(SOURCE_DIR)/testdata/dns64_lookup.rpl  OK
 $(SOURCE_DIR)/testdata/domain_insec_ds.rpl  OK
 $(SOURCE_DIR)/testdata/ede_acl_refused.rpl  OK
-$(SOURCE_DIR)/testdata/ede_cache_snoop_noth_auth.rpl  OK
+$(SOURCE_DIR)/testdata/ede_cache_snoop_not_auth.rpl  OK
 $(SOURCE_DIR)/testdata/ede_localzone_dname_expansion.rpl  OK
 $(SOURCE_DIR)/testdata/edns_attached_once_per_upstream.rpl  OK
 $(SOURCE_DIR)/testdata/edns_client_string.rpl  OK
 $(SOURCE_DIR)/testdata/edns_client_string_opcode.rpl  OK
+$(SOURCE_DIR)/testdata/edns_downstream_cookies.rpl  OK
 $(SOURCE_DIR)/testdata/edns_keepalive.rpl  OK
 $(SOURCE_DIR)/testdata/fetch_glue.rpl  OK
 $(SOURCE_DIR)/testdata/fetch_glue_cname.rpl  OK
@@ -181,10 +193,12 @@ $(SOURCE_DIR)/testdata/fwd_no_cache.rpl  OK
 $(SOURCE_DIR)/testdata/fwd_notcached.rpl  OK
 $(SOURCE_DIR)/testdata/fwd_timeout.rpl  OK
 $(SOURCE_DIR)/testdata/fwd_two.rpl  OK
+$(SOURCE_DIR)/testdata/iter_auth_tc.rpl  OK
 $(SOURCE_DIR)/testdata/iter_class_any.rpl  OK
 $(SOURCE_DIR)/testdata/iter_cname_cache.rpl  OK
 $(SOURCE_DIR)/testdata/iter_cname_double.rpl  OK
 $(SOURCE_DIR)/testdata/iter_cname_minimise.rpl  OK
+$(SOURCE_DIR)/testdata/iter_cname_minimise_nx.rpl  OK
 $(SOURCE_DIR)/testdata/iter_cname_nx.rpl  OK
 $(SOURCE_DIR)/testdata/iter_cname_qnamecopy.rpl  OK
 $(SOURCE_DIR)/testdata/iter_cycle.rpl  OK
@@ -218,11 +232,15 @@ $(SOURCE_DIR)/testdata/iter_ghost_sub.rpl  OK
 $(SOURCE_DIR)/testdata/iter_ghost_timewindow.rpl  OK
 $(SOURCE_DIR)/testdata/iter_got6only.rpl  OK
 $(SOURCE_DIR)/testdata/iter_hint_lame.rpl  OK
+$(SOURCE_DIR)/testdata/iter_ignore_empty.rpl  OK
 $(SOURCE_DIR)/testdata/iter_lame_aaaa.rpl  OK
 $(SOURCE_DIR)/testdata/iter_lame_noaa.rpl  OK
 $(SOURCE_DIR)/testdata/iter_lame_nosoa.rpl  OK
 $(SOURCE_DIR)/testdata/iter_lamescrub.rpl  OK
 $(SOURCE_DIR)/testdata/iter_mod.rpl  OK
+$(SOURCE_DIR)/testdata/iter_nat64.rpl  OK
+$(SOURCE_DIR)/testdata/iter_nat64_prefix.rpl  OK
+$(SOURCE_DIR)/testdata/iter_nat64_prefix48.rpl  OK
 $(SOURCE_DIR)/testdata/iter_ns_badip.rpl  OK
 $(SOURCE_DIR)/testdata/iter_ns_spoof.rpl  OK
 $(SOURCE_DIR)/testdata/iter_nxns_cached.rpl  OK
@@ -263,6 +281,7 @@ $(SOURCE_DIR)/testdata/iter_scrub_dname_sec.rpl  OK
 $(SOURCE_DIR)/testdata/iter_scrub_ns.rpl  OK
 $(SOURCE_DIR)/testdata/iter_scrub_ns_fwd.rpl  OK
 $(SOURCE_DIR)/testdata/iter_scrub_ns_side.rpl  OK
+$(SOURCE_DIR)/testdata/iter_scrub_rr_length.rpl  OK
 $(SOURCE_DIR)/testdata/iter_soamin.rpl  OK
 $(SOURCE_DIR)/testdata/iter_stub_leak.rpl  OK
 $(SOURCE_DIR)/testdata/iter_stub_noroot.rpl  OK
@@ -287,6 +306,7 @@ $(SOURCE_DIR)/testdata/nsid_not_set.rpl  OK
 $(SOURCE_DIR)/testdata/refuse_xfr.rpl  OK
 $(SOURCE_DIR)/testdata/root_key_sentinel.rpl  OK
 $(SOURCE_DIR)/testdata/rpz_axfr.rpl  OK
+$(SOURCE_DIR)/testdata/rpz_cached_cname.rpl  OK
 $(SOURCE_DIR)/testdata/rpz_clientip.rpl  OK
 $(SOURCE_DIR)/testdata/rpz_ixfr.rpl  OK
 $(SOURCE_DIR)/testdata/rpz_nsdname.rpl  OK
@@ -304,10 +324,15 @@ $(SOURCE_DIR)/testdata/rrset_rettl.rpl  OK
 $(SOURCE_DIR)/testdata/rrset_untrusted.rpl  OK
 $(SOURCE_DIR)/testdata/rrset_updated.rpl  OK
 $(SOURCE_DIR)/testdata/serve_expired.rpl  OK
+$(SOURCE_DIR)/testdata/serve_expired_0ttl_nodata.rpl  OK
+$(SOURCE_DIR)/testdata/serve_expired_0ttl_nxdomain.rpl  OK
+$(SOURCE_DIR)/testdata/serve_expired_0ttl_servfail.rpl  OK
+$(SOURCE_DIR)/testdata/serve_expired_cached_servfail.rpl  OK
+$(SOURCE_DIR)/testdata/serve_expired_cached_servfail_refresh.rpl  OK
 $(SOURCE_DIR)/testdata/serve_expired_client_timeout.rpl  OK
 $(SOURCE_DIR)/testdata/serve_expired_client_timeout_no_prefetch.rpl  OK
+$(SOURCE_DIR)/testdata/serve_expired_client_timeout_servfail.rpl  OK
 $(SOURCE_DIR)/testdata/serve_expired_reply_ttl.rpl  OK
-$(SOURCE_DIR)/testdata/serve_expired_servfail.rpl  OK
 $(SOURCE_DIR)/testdata/serve_expired_ttl.rpl  OK
 $(SOURCE_DIR)/testdata/serve_expired_ttl_client_timeout.rpl  OK
 $(SOURCE_DIR)/testdata/serve_expired_zerottl.rpl  OK
@@ -327,6 +352,7 @@ $(SOURCE_DIR)/testdata/val_ans_nx.rpl  OK
 $(SOURCE_DIR)/testdata/val_any.rpl  OK
 $(SOURCE_DIR)/testdata/val_any_cname.rpl  OK
 $(SOURCE_DIR)/testdata/val_any_dname.rpl  OK
+$(SOURCE_DIR)/testdata/val_any_negcache.rpl  OK
 $(SOURCE_DIR)/testdata/val_cname_loop1.rpl  OK
 $(SOURCE_DIR)/testdata/val_cname_loop2.rpl  OK
 $(SOURCE_DIR)/testdata/val_cname_loop3.rpl  OK
@@ -442,6 +468,7 @@ $(SOURCE_DIR)/testdata/val_refer_unsignadd.rpl  OK
 $(SOURCE_DIR)/testdata/val_referd.rpl  OK
 $(SOURCE_DIR)/testdata/val_referglue.rpl  OK
 $(SOURCE_DIR)/testdata/val_rrsig.rpl  OK
+$(SOURCE_DIR)/testdata/val_scrub_rr_length.rpl  OK
 $(SOURCE_DIR)/testdata/val_secds.rpl  OK
 $(SOURCE_DIR)/testdata/val_secds_nosig.rpl  OK
 $(SOURCE_DIR)/testdata/val_spurious_ns.rpl  OK

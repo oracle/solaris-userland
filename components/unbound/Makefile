@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -28,11 +28,11 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		unbound
-COMPONENT_VERSION=	1.16.3
-COMPONENT_BAID=		130695
+COMPONENT_VERSION=	1.19.0
+COMPONENT_BAID=		158389
 COMPONENT_PROJECT_URL=	https://nlnetlabs.nl/projects/unbound/about/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ea0c6665e2c3325b769eac1dfccd60fe1828d5fcf662650039eccb3f67edb28e
+    sha256:a97532468854c61c2de48ca4170de854fd3bc95c8043bb0cfb0fe26605966624
 COMPONENT_ARCHIVE_URL= \
     https://nlnetlabs.nl/downloads/unbound/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/unbound
