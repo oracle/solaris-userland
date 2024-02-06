@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,14 +28,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gvfs
-COMPONENT_VERSION=	1.48.2
+COMPONENT_VERSION=	1.52.2
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/gvfs
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2c415ce7282d97db13e9c71433ab3bb86c89ccdbe420c4efe9a4600db52f3e2d
+	sha256:a643aceaa053caac0d8eff9a015f636e4bd1bb09cfe27864e347db67460e7b91
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5496
 
-COMPONENT_BAID=		123939
+COMPONENT_BAID=		158541
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -83,7 +83,7 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/libarchive
-REQUIRED_PACKAGES += library/libsoup
+REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += system/library/security/libgcrypt
 REQUIRED_PACKAGES += system/network/avahi
