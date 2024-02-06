@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS = 64
 COMPILER = gcc
@@ -206,6 +206,8 @@ COMPONENT_TEST_TRANSFORMS  = "'/tests OK./ {results = 1}; /Total duration/ {resu
 
 test:        $(TEST_64)
 system-test: $(SYSTEM_TEST_64)
+
+PKG_PROTO_DIRS += $(COMPONENT_DIR)/files
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/xz
