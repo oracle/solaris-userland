@@ -1,0 +1,17 @@
+We don't need to detect the platform since we deliver
+this package specifically for Solaris (Unix).
+
+Not intended for upstream.
+
+--- platformdirs-4.0.0/src/platformdirs/__init__.py
++++ platformdirs-4.0.0/src/platformdirs/__init__.py
+@@ -43,7 +43,8 @@ def _set_platform_dir_class() -> type[Pl
+     return Result
+ 
+ 
+-PlatformDirs = _set_platform_dir_class()  #: Currently active platform
++from platformdirs.unix import Unix as Result
++PlatformDirs = Result
+ AppDirs = PlatformDirs  #: Backwards compatibility with appdirs
+ 
+ 

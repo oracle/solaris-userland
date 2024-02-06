@@ -1,0 +1,33 @@
+We do not have hatchling on Solaris, and it doesn't seem necessary
+to deliver it at this point. This patch modifies the build metadata
+to use setuptools instead.
+
+Not intended for upstream.
+
+--- pipx-1.2.1/pyproject.toml
++++ pipx-1.2.1/pyproject.toml
+@@ -1,12 +1,12 @@
+ [build-system]
+-requires = ["hatchling>=0.15.0"]
+-build-backend = "hatchling.build"
++requires = ["setuptools"]
++build-backend = "setuptools.build_meta"
+ 
+ [project]
+ name = "pipx"
+ description = "Install and Run Python Applications in Isolated Environments"
+ readme = "README.md"
+-license = "MIT"
++license = {text = "MIT"}
+ requires-python = ">=3.7"
+ keywords = ["pip", "install", "cli", "workflow", "Virtual Environment"]
+ authors = [{ name = "Chad Smith", email = "chadsmith.software@gmail.com" }]
+@@ -42,6 +42,9 @@ pipx = "pipx.main:cli"
+ source = "code"
+ path = "src/pipx/version.py"
+ 
++[tool.setuptools.dynamic]
++version = {attr = "pipx.version.__version__"}
++
+ [tool.hatch.build.targets.sdist]
+ include = ["/src", "/logo.png", "/pipx_demo.gif", "/*.md"]
