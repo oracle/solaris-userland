@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -31,16 +31,16 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         cdrtools
-RELEASE_VERSION=	2022-09-18
+RELEASE_VERSION=	2023-09-28
 COMPONENT_VERSION=	$(subst -,,$(RELEASE_VERSION))
 COMPONENT_PROJECT_URL= 	https://codeberg.org/schilytools
 COMPONENT_SRC=		schilytools
 COMPONENT_ARCHIVE=      $(RELEASE_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:67b258cbdeb6299e6d7b281e0432d7aa32675387d0d34410b4ea673a50413e25
+COMPONENT_ARCHIVE_HASH=	sha256:564ea2365876a53eba02f184c565016399aee188c26d862589906cf3f92198e6
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/schilytools/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	9153
 
-COMPONENT_BAID=		131090
+COMPONENT_BAID=		158700
 
 ifeq ($(strip $(PARFAIT_BUILD)),yes)
 PATH=$(PARFAIT_TOOLS):$(SPRO_VROOT)/bin:$(USRBINDIR)
@@ -61,6 +61,10 @@ COMPONENT_BUILD_ENV +=	LDFLAGS="$(CC_BITS)"	# Propagate correct LDFLAGS to the l
 # Disable pulseaudio (desktop) dependency
 COMPONENT_BUILD_ENV +=  ac_cv_lib_pulse_pa_strerror=no
 COMPONENT_BUILD_ENV +=  ac_cv_lib_pulse_simple_pa_simple_new=no
+
+# Produce 64-bit binaries on Solaris, see cdrtools/INSTALL
+COMPONENT_BUILD_ARGS +=		CCOM=cc64
+COMPONENT_INSTALL_ARGS +=	CCOM=cc64
 
 ifeq ($(strip $(PARFAIT_BUILD)),yes)
 COMPONENT_BUILD_ENV +=	"ac_cv_exeext=no"
