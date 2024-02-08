@@ -1,18 +1,26 @@
-Fix Bug 23595729 dnet can't send out packet
-Will not send upstream
+Fixes: Bug 23595729 dnet can't send out packet
 
---- libdnet-1.12/src/eth-dlpi.c.orig	2016-09-26 15:47:06.875827196 +0000
-+++ libdnet-1.12/src/eth-dlpi.c	2016-09-26 17:00:25.875054128 +0000
-@@ -137,7 +137,7 @@
+This fix is outdated and this code is not called for a long time because
+eth-bsd.c is selected as an eth module during configure time instead of
+eth-dlpi.c.
+
+I am keeping this patch here just to note that the code in eth-dlpi.c is broken
+on Solaris.
+
+Not for upstream.
+
+--- a/src/eth-dlpi.c	2023-10-12 18:15:10.000000000 +0200
++++ b/src/eth-dlpi.c	2024-02-07 08:53:24.010770707 +0100
+@@ -151,7 +151,7 @@
  	}
  #else
  	e->fd = -1;
 -	snprintf(dev, sizeof(dev), "/dev/%s", device);
 +	snprintf(dev, sizeof(dev), "/dev/net/%s", device);
- 	if ((p = strpbrk(dev, "0123456789")) == NULL) {
+ 	if ((p = dev_find_ppa(dev)) == NULL) {
  		errno = EINVAL;
  		return (eth_close(e));
-@@ -146,7 +146,7 @@
+@@ -160,7 +160,7 @@
  	*p = '\0';
  
  	if ((e->fd = open(dev, O_RDWR)) < 0) {

@@ -1,0 +1,26 @@
+libcheck does not deliver static library on Solaris.
+
+--- a/configure.ac.orig	2023-12-11 14:07:30.697504259 +0100
++++ b/configure.ac	2023-12-11 14:07:52.344422591 +0100
+@@ -141,18 +141,18 @@
+       ;;
+     *)
+       AC_MSG_RESULT($withval)
+-      if test -f $withval/include/check.h -a -f $withval/lib/libcheck.a; then
++      if test -f $withval/include/check.h -a -f $withval/lib/libcheck.so; then
+           owd=`pwd`
+           if cd $withval; then withval=`pwd`; cd $owd; fi
+           CHECKINC="-I$withval/include"
+           CHECKLIB="-L$withval/lib -lcheck"
+-      elif test -f $withval/src/check.h -a -f $withval/src/libcheck.a; then
++      elif test -f $withval/src/check.h -a -f $withval/src/libcheck.so; then
+           owd=`pwd`
+           if cd $withval; then withval=`pwd`; cd $owd; fi
+           CHECKINC="-I$withval/src"
+           CHECKLIB="-L$withval/src -lcheck"
+       else
+-          AC_ERROR(check.h or libcheck.a not found in $withval)
++          AC_ERROR(check.h or libcheck.so not found in $withval)
+       fi
+       ;;
+     esac ],

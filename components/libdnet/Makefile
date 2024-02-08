@@ -20,47 +20,26 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
-PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
-
 COMPONENT_NAME=		libdnet
-COMPONENT_VERSION=	1.12
-COMPONENT_PROJECT_URL=	https://github.com/dugsong/libdnet
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:83b33039787cf99990e977cef7f18a5d5e7aaffc4505548a83d31bd3515eb026
-COMPONENT_ARCHIVE_URL=	https://github.com/dugsong/libdnet/archive/$(COMPONENT_ARCHIVE)
+COMPONENT_VERSION=	1.17.0
+COMPONENT_PROJECT_URL=	https://github.com/ofalk/libdnet
+COMPONENT_ARCHIVE_HASH=	sha256:6be1ed0763151ede4c9665a403f1c9d974b2ffab2eacdb26b22078e461aae1dc
+COMPONENT_ARCHIVE_URL=	https://github.com/ofalk/libdnet/archive/refs/tags/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libdnet 
 COMPONENT_ANITYA_ID=	6308
 
-COMPONENT_BAID=		10249
+COMPONENT_BAID=		155793
 
-TEST_TARGET= install $(TEST_32_and_64)
-SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk
 
-# Fix 64-bit linking done via compiler.
-LDFLAGS += $(CC_BITS)
-COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS)"
-
-# Needed to generate libraries with a .so extension.
-COMPONENT_PREP_ACTION = \
-	(cd $(@D) ; libtoolize --automake --copy ; \
-		aclocal -I config ; \
-		autoheader ; \
-		automake --add-missing --copy ; \
-		autoconf)
-
-# Remove Linux specific functionality.
-CONFIGURE_OPTIONS += ac_cv_dnet_linux_pf_packet=no
-CONFIGURE_OPTIONS +=	--with-check=/usr
-CONFIGURE_OPTIONS +=	--with-python=no
-
-PKG_MACROS +=		MACHINE=$(shell uname -m)
+# Component archive is wrongly packed upstream
+COMPONENT_POST_UNPACK_ACTION = \
+	$(MV) libdnet-$(notdir $(SOURCE_DIR)) $(notdir $(SOURCE_DIR))
 
 # Needed for "gmake test" to work successfully.
 # If SHELLOPTS is exported (as it is by the userland makefiles),
@@ -70,10 +49,9 @@ PKG_MACROS +=		MACHINE=$(shell uname -m)
 # diffs failing due to script tracing in output files.
 unexport SHELLOPTS
 
+TEST_TARGET= install $(TEST_32_and_64)
 COMPONENT_TEST_DIR =	$(@D)/test/check
-
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/TOTAL/p" ' \
@@ -82,16 +60,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/FAIL/p" ' \
 	'-e "/ERROR/p" '
 
-# Needed to build the test programs.
-COMPONENT_PRE_SYSTEM_TEST_ACTION += \
-	(cd $(@D)/src ; $(GMAKE) libdnet.la )
-
+SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
 COMPONENT_SYSTEM_TEST_DIR =	$(@D)/test/check
-
-# Get correct libdnet.so.1 from the proto area.
-TEST_LIBPATH.32 =	$(PROTOUSRLIBDIR)
-TEST_LIBPATH.64 =	$(PROTOUSRLIBDIR64)
-COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
 
 REQUIRED_PACKAGES += developer/test/check
 REQUIRED_PACKAGES += shell/ksh93

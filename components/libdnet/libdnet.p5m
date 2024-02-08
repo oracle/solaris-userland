@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -34,9 +34,8 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2012/202
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-# dnet-config contains embedded paths, so swap these around.
-file usr/bin/dnet-config path=usr/bin/$(MACH64)/dnet-config
-file usr/bin/$(MACH32)/dnet-config path=usr/bin/dnet-config
+file path=usr/bin/$(MACH32)/dnet-config
+file path=usr/bin/dnet-config
 file path=usr/include/dnet.h
 file path=usr/include/dnet/addr.h
 file path=usr/include/dnet/arp.h
@@ -47,19 +46,22 @@ file path=usr/include/dnet/icmp.h
 file path=usr/include/dnet/intf.h
 file path=usr/include/dnet/ip.h
 file path=usr/include/dnet/ip6.h
+file path=usr/include/dnet/ndisc.h
 file path=usr/include/dnet/os.h
 file path=usr/include/dnet/rand.h
 file path=usr/include/dnet/route.h
+file path=usr/include/dnet/sctp.h
 file path=usr/include/dnet/tcp.h
 file path=usr/include/dnet/tun.h
 file path=usr/include/dnet/udp.h
-link path=usr/lib/$(MACH64)/libdnet.so target=libdnet.so.1.0.1
-link path=usr/lib/$(MACH64)/libdnet.so.1 target=libdnet.so.1.0.1
-file path=usr/lib/$(MACH64)/libdnet.so.1.0.1
-link path=usr/lib/libdnet.so target=libdnet.so.1.0.1
-link path=usr/lib/libdnet.so.1 target=libdnet.so.1.0.1
-file path=usr/lib/libdnet.so.1.0.1
+link path=usr/lib/$(MACH64)/libdnet.so target=libdnet.so.1.0.2
+link path=usr/lib/$(MACH64)/libdnet.so.1 target=libdnet.so.1.0.2
+file path=usr/lib/$(MACH64)/libdnet.so.1.0.2
+link path=usr/lib/libdnet.so target=libdnet.so.1.0.2
+link path=usr/lib/libdnet.so.1 target=libdnet.so.1.0.2
+file path=usr/lib/libdnet.so.1.0.2
+file path=usr/sbin/$(MACH32)/dnet
 file path=usr/sbin/dnet
 file path=usr/share/man/man3/dnet.3
 file path=usr/share/man/man8/dnet.8
-license libdnet.license license="libdnet license"
+license libdnet.license license=BSD
