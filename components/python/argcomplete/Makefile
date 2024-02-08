@@ -31,7 +31,7 @@ COMPONENT_ARCHIVE_HASH= \
     sha256:f3e49e8ea59b4026ee29548e24488af46e30c9de57d48638e24f54a1ea1000a2
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/kislyuk/argcomplete
-COMPONENT_BUGDB=	utility/argcomplete
+COMPONENT_BUGDB=	python-mod/argcomplete
 COMPONENT_ANITYA_ID=	3773
 COMPONENT_BAID=		158056
 

@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH= \
     sha256:6564f4f2d1e39de860aeec736fde447741249da713257d40dd0595be651a281b
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/platformdirs/platformdirs
-COMPONENT_BUGDB=	utility/platformdirs
+COMPONENT_BUGDB=	python-mod/platformdirs
 COMPONENT_ANITYA_ID=	200932
 COMPONENT_BAID=		158059
 
