@@ -20,22 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ibus
-COMPONENT_VERSION=	1.5.19
+COMPONENT_VERSION=	1.5.29
 COMPONENT_PROJECT_URL=	https://github.com/ibus/ibus
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-rc2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4b66c798dab093f0fa738e5c10688d395a463287d13678c208a81051af5d2429
+    sha256:3a27ed120485b2077c62e36e788c302f34544ceac3b3b9cda28b7418e8051415
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	g11n/im-ibus
 COMPONENT_ANITYA_ID=	1352
 
-COMPONENT_BAID=		57928
+COMPONENT_BAID=		158838
 
 # disabled, upstream tests require DISPLAY and ibus daemon running.
 TEST_TARGET= $(NO_TESTS)
@@ -52,6 +53,8 @@ CONFIGURE_ENV +=	GI_SCANNER_DISABLE_CACHE=1
 CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS +=	--enable-gtk2
 CONFIGURE_OPTIONS +=	--enable-gtk3
+CONFIGURE_OPTIONS.64 +=	--enable-gtk4
+CONFIGURE_OPTIONS +=	--enable-gtk-doc
 CONFIGURE_OPTIONS +=	--enable-xim
 CONFIGURE_OPTIONS.32 +=	--disable-introspection
 CONFIGURE_OPTIONS.64 +=	--enable-introspection
@@ -59,32 +62,33 @@ CONFIGURE_OPTIONS +=	--libexecdir="$(USRLIBDIR)/$(COMPONENT_NAME)"
 CONFIGURE_OPTIONS +=	--sysconfdir=/etc
 CONFIGURE_OPTIONS +=	--disable-emoji-dict
 CONFIGURE_OPTIONS +=	--disable-unicode-dict
+CONFIGURE_OPTIONS +=	--disable-appindicator # Requires dbusmenu-gtk3
+CONFIGURE_OPTIONS +=	--disable-python2
+CONFIGURE_OPTIONS +=	--disable-systemd-services
+CONFIGURE_OPTIONS +=	--disable-wayland
 
-# gtkdoc fails on current sources
-CONFIGURE_OPTIONS +=	--disable-gtk-doc
-
-COMPONENT_POST_INSTALL_ACTION += \
-    $(GUNZIP) -f $(PROTO_DIR)/usr/share/man/man*/*.gz ;
+# Force rebuilding C sources from vala sources to avoid Wayland dependencies
+# Workaround for https://github.com/ibus/ibus/issues/2609
+COMPONENT_POST_UNPACK_ACTION += $(TOUCH) $(SOURCE_DIR)/ui/gtk3/*.vala ;
 
 # For autopyc transformation
 PKG_MACROS +=   PYVER=$(PYTHON_VERSION)
 
-# ibus < 1.5.20 requires intltool to build - remove when upgrading to later
-REQUIRED_PACKAGES +=	developer/intltool
-# ibus < 1.5.26 requires gnome-common to build - remove when upgrading to later
-REQUIRED_PACKAGES +=	library/gnome/gnome-common
-
+REQUIRED_PACKAGES +=	data/iso-codes
+REQUIRED_PACKAGES +=	developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES +=	library/desktop/atk
 REQUIRED_PACKAGES +=	library/desktop/cairo
 REQUIRED_PACKAGES +=	library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES +=	library/desktop/gobject/gobject-introspection
+REQUIRED_PACKAGES +=	library/desktop/graphene
 REQUIRED_PACKAGES +=	library/desktop/gtk2
 REQUIRED_PACKAGES +=	library/desktop/gtk3
+REQUIRED_PACKAGES +=	library/desktop/gtk4
 REQUIRED_PACKAGES +=	library/desktop/libnotify
 REQUIRED_PACKAGES +=	library/desktop/pango
 REQUIRED_PACKAGES +=	library/glib2
 REQUIRED_PACKAGES +=	library/gnome/dconf
-REQUIRED_PACKAGES +=	library/popt
 REQUIRED_PACKAGES +=	runtime/python-311
 REQUIRED_PACKAGES +=	x11/library/libx11
+REQUIRED_PACKAGES +=	x11/library/libxfixes
 REQUIRED_PACKAGES +=	x11/library/libxi
