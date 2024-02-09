@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,13 +30,13 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		totem
-COMPONENT_VERSION=	3.38.2
+COMPONENT_VERSION=	43.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Totem
 COMPONENT_ARCHIVE_HASH= \
-	sha256:fce562e2b26cbcfc0c678538dcc81f9dc15ce60d5a89ee4358907bf634304c40
+	sha256:b36d3655928b5896462a4d39f83b6ad66d37dbc9c99dceb02ea8a2e37394a41e
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	13162
-COMPONENT_BAID=		110830
+COMPONENT_BAID=		155412
 
 BUILD_STYLE=		meson
 
@@ -48,40 +48,23 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-# Assumes GNU msgfmt is in PATH.
-CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
-COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
-COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
-
 COMPONENT_POST_INSTALL_ACTION += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/totem-audio-preview.1 \
                 $(PROTO_DIR)/usr/share/man/man1/totem-audio-preview.1;
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += developer/python/pylint
-REQUIRED_PACKAGES += developer/vala
-REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += library/desktop/clutter
-REQUIRED_PACKAGES += library/desktop/clutter/clutter-gst3
-REQUIRED_PACKAGES += library/desktop/clutter/clutter-gtk
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+REQUIRED_PACKAGES += library/desktop/grilo
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
-REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-good
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/libhandy
+REQUIRED_PACKAGES += library/desktop/libpeas
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
-REQUIRED_PACKAGES += library/desktop/grilo
-REQUIRED_PACKAGES += library/desktop/grilo-plugins
-REQUIRED_PACKAGES += library/desktop/libpeas
-REQUIRED_PACKAGES += library/graphics/cogl
 REQUIRED_PACKAGES += library/media-player/totem-pl-parser
-REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += x11/library/libx11
