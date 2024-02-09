@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS=		64
@@ -30,19 +30,19 @@ include ../../make-rules/shared-macros.mk
 # Component information, used for download and packaging.
 # -------------------------------------------------------
 COMPONENT_NAME=		libuv
-COMPONENT_VERSION=	1.47.0
+COMPONENT_VERSION=	1.48.0
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-v$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	library/libuv
-COMPONENT_BAID=		154328
+COMPONENT_BAID=		158792
 COMPONENT_PROJECT_URL=	https://libuv.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=	\
 	https://dist.libuv.org/dist/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	10784
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:20c37a4ca77a2107879473c6c8fa0dc1350e80045df98bfbe78f7cd6d7dd2965
+	sha256:7f1db8ac368d89d1baf163bac1ea5fe5120697a73910c8ae6b2fffb3551d59fb
 
 include $(WS_MAKE_RULES)/common.mk
 

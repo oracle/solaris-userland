@@ -1,5 +1,5 @@
 #!/bin/nawk -f
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 # Adapted from COMPONENT_TEST_TRANFORMS in make-rules/shared-macros.mk
 #
@@ -37,6 +37,8 @@ src && $0 ~ src {gsub(src,"$(SOURCE_DIR)", $0);}
 # Ignore some IPV6 tests which vary depending on machine configuration.
 / - ip6_addr_link_local/ {p=0;print "# ignore ip6_addr_link_local!"; next;}
 / - udp_multicast_join6/ {p=0;print "# ignore udp_multicast_join6!"; next;}
+# Negated errno 128, Network is unreachable.
+/ - tcp_connect6_link_local/ {p=0;print "# ignore tcp_connect6_link_local!"; next;}
 # tty info explains it's skipped when tty device, remove info.
 /ok [0-9]+ - tty / {print $1,num,$3,$4; next;}
 # Remove the summary; exit.  As the IPv6 tests muddy the water.
