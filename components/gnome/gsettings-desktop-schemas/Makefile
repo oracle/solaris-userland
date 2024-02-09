@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gsettings-desktop-schemas
-COMPONENT_VERSION=	41.0
+COMPONENT_VERSION=	45.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/HowDoI/GSettings
 COMPONENT_ARCHIVE_HASH= \
-    sha256:77289972e596d044583f0c056306d8f1dbd8adcf912910a50da0a663e65332ed
+    sha256:365c8d04daf79b38c8b3dc9626349a024f9e4befdd31fede74b42f7a9fbe0ae2
 COMPONENT_BUGDB=	gnome/gconf
 COMPONENT_ANITYA_ID=	13139
 
-COMPONENT_BAID=		110807
+COMPONENT_BAID=		153631
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
