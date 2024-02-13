@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 # Refer to ../../doc/makefile-variables.txt
@@ -41,17 +41,18 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.18.19
+COMPONENT_VERSION=	9.18.24
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-COMPONENT_BAID=		150762
+COMPONENT_BAID=		158994
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:115e09c05439bebade1d272eda08fa88eb3b60129edef690588c87a4d27612cc
+	sha256:709d73023c9115ddad3bab65b6c8c79a590196d0d114f5d0ca2533dbd52ddf66
 COMPONENT_ARCHIVE_URL=	\
 	http://ftp.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+# For check_anitya target, https://release-monitoring.org/project/242117
 COMPONENT_ANITYA_ID=	242117
 
 # ISC OpenPGP Key obtained from https://ftp.isc.org/isc/pgpkeys
