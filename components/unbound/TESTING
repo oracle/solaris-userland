@@ -16,13 +16,20 @@ remote-control:
 EOF
 
 # enable unbound service
-svcadm enable svc:/network/dns/server:unbound
+svcadm enable -s svc:/network/dns/server:unbound
 
 # change resolver to localhost
 svccfg -s svc:/network/dns/client:default setprop config/nameserver = net_address: ::1
-svcadm refresh svc:/network/dns/client
+svcadm refresh -s svc:/network/dns/client
+grep ^nameserver /etc/resolv.conf
 
 # test unbound
 unbound-control status
-nslookup github.com
+
+dig -t a github.com
 unbound-control dump_cache | grep github
+
+# Lookup name via Name Service switch, flush hosts first.
+/usr/sbin/nscd -i hosts
+/usr/bin/getent hosts github.com
+

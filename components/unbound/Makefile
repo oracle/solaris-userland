@@ -28,14 +28,15 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		unbound
-COMPONENT_VERSION=	1.19.0
-COMPONENT_BAID=		158389
+COMPONENT_VERSION=	1.19.1
+COMPONENT_BAID=		159092
 COMPONENT_PROJECT_URL=	https://nlnetlabs.nl/projects/unbound/about/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:a97532468854c61c2de48ca4170de854fd3bc95c8043bb0cfb0fe26605966624
+    sha256:bc1d576f3dd846a0739adc41ffaa702404c6767d2b6082deb9f2f97cbb24a3a9
 COMPONENT_ARCHIVE_URL= \
     https://nlnetlabs.nl/downloads/unbound/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/unbound
+# For check_anitya target, https://release-monitoring.org/project/5042
 COMPONENT_ANITYA_ID=	5042
 
 # Enable adiheap and adistack security extensions
