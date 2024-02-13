@@ -1,0 +1,35 @@
+Fixes nicstat failure in NGZ after some activity in GZ (e.g. running dtrace or modunload -i 0) causes kstat chain update.
+
+--- ../nicstat-1.95/nicstat.c	2024-02-12 18:17:15.715738943 +0100
++++ nicstat.c	2024-02-12 18:15:44.972858033 +0100
+@@ -977,6 +977,8 @@ discover_kstats(char *if_name, nicdata_t
+ 
+ 	nic->ls_ksp = NULL;
+ 	nic->op_ksp = NULL;
++	nic->ls_types = 0;
++	nic->op_types = 0;
+ 	for (ksp = g_kc->kc_chain; ksp != NULL; ksp = ksp->ks_next) {
+ 		if (ksp->ks_type != KSTAT_TYPE_NAMED)
+ 			continue;
+@@ -1197,6 +1199,12 @@ update_nicdata_list()
+ 		} else {
+ 			/* Assume state is now out of date */
+ 			nicp->flags &= ~(NIC_UPDATED_FLAGS);
++
++			/* Discover kstats again if the chain is updated */
++			if (g_new_kstat_chain) {
++				if (! discover_kstats(ifp->name, nicp))
++					nicp->flags |= NIC_NO_KSTATS;
++			}
+ 		}
+ 
+ 		/* Add to new_nicdatap */
+@@ -1431,6 +1439,8 @@ update_stats()
+ 			continue;
+ 		if (g_nonlocal && (nicp->flags & NIC_LOOPBACK))
+ 			continue;
++		if (nicp->flags & NIC_NO_KSTATS)
++			continue;
+ 		if (! (nicp->flags & NIC_OK_UPDATED))
+ 			if (kstat_read(g_kc, nicp->op_ksp, NULL) < 0)
+ 				die(1, "kstat_read");
