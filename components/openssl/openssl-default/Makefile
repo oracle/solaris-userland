@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,23 +29,23 @@ COMPONENT_NAME =	openssl
 # When new version of OpenSSL comes in, you must update both COMPONENT_VERSION
 # and IPS_COMPONENT_VERSION.
 #
-COMPONENT_VERSION =	1.0.2zi
+COMPONENT_VERSION =	1.0.2zj
 #
 # Version for IPS. It is easier to do it manually than convert the letter to a
 # number while taking into account that there might be no letter at all.
 #
-IPS_COMPONENT_VERSION = 1.0.2.34
+IPS_COMPONENT_VERSION = 1.0.2.35
 COMPONENT_PROJECT_URL=	https://www.openssl.org/
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:80b6c07995fc92456e31c61cf1b2a18f75e314063189bb183af6ae66d0261d84
+    sha256:ea45fe8e64c922ac6ddcabff0cdb4acf636e08ea0b8f689ee0caee25a724d8cb
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	17519
 
-COMPONENT_BAID=		148629
+COMPONENT_BAID=		158763
 
 # Clone the patch files to the patches-all dir.
 # COPY_COMMON_FILES is there so that rsync is called as soon as

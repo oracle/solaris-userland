@@ -35,21 +35,21 @@ COMPONENT_NAME =	openssl-fips-140
 # is the FIPS module version. The COMPONENT_VERSION changes with the core
 # OpenSSL version, but the IPS_COMPONENT_VERSION is purposely only to change if
 # the FIPS module version changes.
-COMPONENT_VERSION =	1.0.2zi
+COMPONENT_VERSION =	1.0.2zj
 IPS_COMPONENT_VERSION = 2.0.15
 COMPONENT_PROJECT_URL=	https://www.openssl.org/
 COMPONENT_SRC_NAME =	openssl
 COMPONENT_SRC =		$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:80b6c07995fc92456e31c61cf1b2a18f75e314063189bb183af6ae66d0261d84
+    sha256:ea45fe8e64c922ac6ddcabff0cdb4acf636e08ea0b8f689ee0caee25a724d8cb
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
 # We need to store the key in the cache first
 # COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=    2566
 
-COMPONENT_BAID=		148629
+COMPONENT_BAID=		158763
 
 # Clone the patch files to the patches-all dir.
 # COPY_COMMON_FILES is there so that rsync is called as soon as
