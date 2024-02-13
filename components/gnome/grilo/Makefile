@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		grilo
-COMPONENT_VERSION=	0.3.13
+COMPONENT_VERSION=	0.3.16
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Grilo
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d14837f22341943ed8a189d9f0827a17016b802d18d0ed080e1413de0fdc927b
+	sha256:884580e8c5ece280df23aa63ff5234b7d48988a404df7d6bfccd1e77b473bd96
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	10928
 
-COMPONENT_BAID=		89421
+COMPONENT_BAID=		158858
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -54,7 +54,7 @@ COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 CONFIGURE_OPTIONS.32 += -Denable-introspection=false
 CONFIGURE_OPTIONS.32 += -Denable-vala=false
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
@@ -63,7 +63,7 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/liboauth
-REQUIRED_PACKAGES += library/libsoup
+REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/media-player/totem-pl-parser
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
