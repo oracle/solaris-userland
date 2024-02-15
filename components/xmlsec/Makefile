@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -56,7 +56,6 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_PRE_CONFIGURE_ACTION= \
 	$(CP) -rp $(SOURCE_DIR)/. $(@D) ;
 
-ifneq ($(strip $(OPENSSL3)),)
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L$${libdir} ;;' $(@D)/xmlsec1-config ;
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/lib/$(MACH64);;' $(@D)/xmlsec1-openssl.pc ;
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/lib/$(MACH64);;' $(@D)/src/openssl/Makefile ;
@@ -65,7 +64,6 @@ COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib ;-L/usr
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib ;-L/usr/openssl/3/lib/64 ;' $(@D)/src/openssl/Makefile ;
 COMPONENT_POST_CONFIGURE_ACTION += $(COMPONENT_POST_CONFIGURE_ACTION.$(BITS))
 CONFIGURE_OPTIONS+=	--with-openssl=/usr/openssl/3
-endif
 CONFIGURE_OPTIONS+=	PATH="$(GNUBIN):$$PATH"
 
 COMPONENT_PRE_TEST_ACTION+= $(MKDIR) $(@D)/tests-tmp ;
@@ -78,10 +76,6 @@ REQUIRED_PACKAGES+=	library/libxml2
 REQUIRED_PACKAGES+=	library/libxslt
 REQUIRED_PACKAGES+=	system/library/security/libgcrypt
 REQUIRED_PACKAGES+=	library/gnutls-3
-ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES+=	library/security/openssl-3
-else
-REQUIRED_PACKAGES+=	library/security/openssl
-endif
 REQUIRED_PACKAGES+=	library/security/nss
 REQUIRED_PACKAGES+=	library/nspr

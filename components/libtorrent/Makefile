@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -49,7 +49,6 @@ COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 CONFIGURE_OPTIONS  +=	--disable-debug
 
-ifneq ($(strip $(OPENSSL3)),)
 # Build against OpenSSL 3.
 PKG_CONFIG_PATHS.64 = /usr/openssl/3/lib/64/pkgconfig
 PKG_CONFIG_PATHS.32 = /usr/openssl/3/lib/pkgconfig
@@ -59,7 +58,6 @@ PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 LDFLAGS.32 += -L/usr/openssl/3/lib
 LDFLAGS.64 += -L/usr/openssl/3/lib/$(MACH64)
 COMPONENT_BUILD_ARGS += LDFLAGS="$(LDFLAGS.$(BITS))"
-endif
 
 COMPONENT_PRE_TEST_ACTION = (cd $(COMPONENT_TEST_DIR) && /usr/gnu/bin/make LibTorrentTest)
 COMPONENT_TEST_DIR =  $(BUILD_DIR)/$(MACH$(BITS))/test
@@ -70,11 +68,7 @@ COMPONENT_TEST_TARGETS =
 # Following line must be there to make the tests pass. Refer to the bug
 # to get more info.
 REQUIRED_PACKAGES += developer/c++/cppunit
-ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
-else
-REQUIRED_PACKAGES += library/security/openssl
-endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime

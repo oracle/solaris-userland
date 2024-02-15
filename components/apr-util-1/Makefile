@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 # Prefer 32-bit over 64-bit as apr-util has its own custom package layout.
@@ -53,13 +53,11 @@ PATCH_LEVEL=0
 
 CONFIGURE_PREFIX=$(USRDIR)/apr-util/1
 
-ifneq ($(strip $(OPENSSL3)),)
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/apu-1-config ;
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/Makefile ;
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/test/Makefile ;
 CONFIGURE_OPTIONS +=    --with-openssl=/usr/openssl/3
 CONFIGURE_OPTIONS +=    --with-nss
-endif
 
 CONFIGURE_OPTIONS.64 +=	--with-mysql=$(USRDIR)/mysql/8.0
 CONFIGURE_OPTIONS +=	--with-crypto
@@ -105,12 +103,7 @@ REQUIRED_PACKAGES += library/apr-1
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/security/nss
-ifeq ($(strip $(OPENSSL3)),)
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
-else
 REQUIRED_PACKAGES += library/security/openssl-3
-endif
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/network/ldap/openldap

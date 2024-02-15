@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 
 .PHONY: void
@@ -50,9 +50,6 @@ endef
 # source archives or we have changes that aren't reflected in their archives or
 # anywhere else.
 $(call read-config,INTERNAL_ARCHIVE_MIRROR,http://userland.us.oracle.com/source-archives)
-
-# The machine can be set to build openssl3 binaries by default
-$(call read-config,OPENSSL3,yes)
 
 # The location of an external mirror of community source archives that we build
 # in this gate.  The external mirror is a replica of the internal mirror.

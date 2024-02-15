@@ -190,11 +190,9 @@ LDFLAGS			+= $(LDFLAGS.$(BITS))
 CONFIGURE_OPTIONS	+= LDFLAGS="$(LDFLAGS)"
 
 # Link against the desired OpenSSL library.
-ifneq ($(strip $(OPENSSL3)),)
 CPPFLAGS		+= -I/usr/openssl/3/include
 LDFLAGS.64		+= -L/usr/openssl/3/lib/64
 LDFLAGS.32		+= -L/usr/openssl/3/lib
-endif
 
 # After configure make announces that `depend` should be used.
 COMPONENT_POST_CONFIGURE_ACTION += \
@@ -232,12 +230,8 @@ COMPONENT_TEST_ARGS += -e
 # time strings.
 COMPONENT_TEST_TRANSFORMER =	$(NAWK)
 COMPONENT_TEST_TRANSFORMS =	-f $(COMPONENT_DIR)/Solaris/test-transform.awk
-ifneq ($(strip $(OPENSSL3)),)
 COMPONENT_TEST_MASTER =	\
-	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master.openssl3
-else
-COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-endif
+	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # This is a handy test target for developer.  Please leave functional.
 test-slapd-version test-version:
@@ -328,11 +322,7 @@ republish:
 	$(GMAKE) publish PKGREPO_REMOVE_BEFORE_PUBLISH=yes
 
 
-ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
-else
-REQUIRED_PACKAGES += library/security/openssl
-endif
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/security/libsasl2

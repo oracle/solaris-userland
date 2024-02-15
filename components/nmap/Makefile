@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Can't use the Studio compilers as they don't support the GNU 
@@ -54,11 +54,7 @@ CONFIGURE_OPTIONS  +=   --srcdir=$(BUILD_DIR_64)
 CONFIGURE_OPTIONS  +=   --localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS  +=   --without-localdirs
 CONFIGURE_OPTIONS  +=   --without-zenmap
-ifneq ($(strip $(OPENSSL3)),)
 CONFIGURE_OPTIONS  +=   --with-openssl=/usr/openssl/3
-else
-CONFIGURE_OPTIONS  +=   --with-openssl
-endif
 CONFIGURE_OPTIONS  +=   --with-libpcap
 CONFIGURE_OPTIONS  +=   --with-libpcre
 CONFIGURE_OPTIONS  +=   --with-liblua
@@ -83,11 +79,7 @@ COMPONENT_TEST_TRANSFORMS += -E \
 
 REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/pcre
-ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
-else
-REQUIRED_PACKAGES += library/security/openssl
-endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

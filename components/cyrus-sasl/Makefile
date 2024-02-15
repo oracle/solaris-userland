@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -115,12 +115,8 @@ $(BUILD_DIR_32)/%:	CPPFLAGS += -I$(BUILD_DIR_32)/include
 #
 # Need openssl directory to become before /usr/lib which holds libssl.so
 # See also the LDFLAGS fixup below on COMPONENT_PRE_BUILD_ACTION.
-ifneq ($(strip $(OPENSSL3)),)
 PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 CONFIGURE_OPTIONS += --with-openssl=/usr/openssl/3
-else
-CONFIGURE_OPTIONS += --with-openssl=/usr/lib
-endif
 
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 
@@ -210,13 +206,11 @@ COMPONENT_PREP_ACTION += (cd $(@D) && pwd && \
 	    );
 # This is not ideal, but a hack that is working for our needs.
 # change LDFLAGS so that it includes OPENSSL3 path first.
-ifneq ($(strip $(OPENSSL3)),)
 $(BUILD_DIR_64)/%:	SSL3LIB = -L/usr/openssl/3/lib/64 -L/usr/lib
 $(BUILD_DIR_32)/%:	SSL3LIB = -L/usr/openssl/3/lib -L/usr/lib
 COMPONENT_PRE_BUILD_ACTION +=  $(FIND) $(@D) -name Makefile -exec \
 	gsed --in-place -e \
 	's:^\(LDFLAGS[[:space:]]*=\)\(.*\):\1 $(SSL3LIB):' {} +;
-endif
 
 # Remove some things we don't use and aren't in the BAID
 COMPONENT_PREP_ACTION += $(RM) -r $(DONOTUSE);
@@ -285,8 +279,4 @@ REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network/ldap/openldap
-ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
-else
-REQUIRED_PACKAGES += library/security/openssl
-endif

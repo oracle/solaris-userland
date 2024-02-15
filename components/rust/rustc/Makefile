@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =	64
@@ -99,7 +99,6 @@ COMPONENT_BUILD_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
 COMPONENT_INSTALL_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
 COMPONENT_TEST_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
 
-ifneq ($(strip $(OPENSSL3)),)
 # Use OpenSSL 3
 COMPONENT_BUILD_ENV += OPENSSL_LIB_DIR=/usr/openssl/3/lib/64
 COMPONENT_BUILD_ENV += OPENSSL_INCLUDE_DIR=/usr/openssl/3/include
@@ -110,7 +109,6 @@ COMPONENT_PRE_BUILD_ACTION += \
         ( $(MKDIR) $(@D)/pkgconfig-my; \
         $(GSED) 's;-L.* ;;' $(USRLIBDIR)/64/pkgconfig/zlib.pc > $(@D)/pkgconfig-my/zlib.pc ) ;
 PKG_CONFIG_PATHS += $(@D)/pkgconfig-my
-endif
 
 # Rust library names (and some other file names) contain hash which differs
 # between intel and sparc. Therefore library list need to be created to be
@@ -138,11 +136,7 @@ COMPONENT_TEST_TARGETS =
 REQUIRED_PACKAGES += developer/llvm/llvm
 REQUIRED_PACKAGES += developer/rust/rustc
 REQUIRED_PACKAGES += library/libssh2
-ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
-else
-REQUIRED_PACKAGES += library/security/openssl
-endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime

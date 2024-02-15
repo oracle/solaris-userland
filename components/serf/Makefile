@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 # Parallel build jobs are supported only if GNU make is used.
@@ -57,10 +57,8 @@ SERFLIBPATH_32 =	-R$(USED_APR)/lib -R$(USED_APU)/lib
 SERFLIBPATH_64 =	-R$(USED_APR)/lib/64 -R$(USED_APU)/lib/64
 SERFLIBDIR_32 =		/usr/lib
 SERFLIBDIR_64 =		/usr/lib/64
-ifneq ($(strip $(OPENSSL3)),)
 OPENSSL_LIBDIR_32 =	/usr/openssl/3/lib
 OPENSSL_LIBDIR_64 =	/usr/openssl/3/lib/$(MACH64)
-endif
 
 # We have to roll our own as serf is built with scons.
 SCONS =			/usr/bin/scons
@@ -72,21 +70,15 @@ COMPONENT_BUILD_ARGS += APR=$(APR_$(BITS))
 COMPONENT_BUILD_ARGS += APU=$(APU_$(BITS))
 COMPONENT_BUILD_ARGS += PREFIX=/usr
 COMPONENT_BUILD_ARGS += LIBDIR=$(SERFLIBDIR_$(BITS))
-ifneq ($(strip $(OPENSSL3)),)
 COMPONENT_BUILD_ARGS += OPENSSL=/usr/openssl/3
 COMPONENT_BUILD_ARGS += OPENSSL_LIBDIR=$(OPENSSL_LIBDIR_$(BITS))
-endif
 
 COMPONENT_TEST_CMD =	$(SCONS)
-ifneq ($(strip $(OPENSSL3)),)
 # Serf test test_ssl_handshake doesn't work correctly with OpenSSL 3.
 # There is ongoing upstream work to fix those tests:
 # https://github.com/apache/serf/commit/65b17ccf8badbe3911e8a71e6a735f7ea0dcef32
 # https://github.com/apache/serf/commit/70c9d83f7e013199b53b2c2fd11dcb2d90749c69
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master.openssl3
-else
-COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-endif
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^cc /d" ' \
@@ -120,11 +112,7 @@ REQUIRED_PACKAGES += developer/build/scons
 REQUIRED_PACKAGES += library/apr-1
 REQUIRED_PACKAGES += library/apr-util-1
 REQUIRED_PACKAGES += library/expat
-ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
-else
-REQUIRED_PACKAGES += library/security/openssl
-endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/math

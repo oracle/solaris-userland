@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -69,15 +69,11 @@ CONFIGURE_OPTIONS  +=	--enable-ucd-snmp-compatibility
 CONFIGURE_OPTIONS  +=	--enable-ipv6
 CONFIGURE_OPTIONS  +=	--enable-mfd-rewrites
 
-ifeq ($(strip $(OPENSSL3)),)
-CONFIGURE_OPTIONS  +=	--with-openssl=/lib/openssl
-else
 CONFIGURE_OPTIONS  +=	--with-openssl=/usr/openssl/3
 CONFIGURE_OPTIONS  +=	--disable-des
 OPENSSL_LIB_PATH.32=/usr/openssl/3/lib
 OPENSSL_LIB_PATH.64=/usr/openssl/3/lib/64
 CONFIGURE_OPTIONS += OPENSSL_LIB_PATH=$(OPENSSL_LIB_PATH.$(BITS))
-endif
 
 CONFIGURE_OPTIONS  +=	--with-transports="UDP TCP UDPIPv6 TCPIPv6"
 
@@ -117,11 +113,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|\(simple-\).*|\1XXXXXX|g"' \
 	'-e "s|\(output (\)\(.*\)|\2|g"'
 
-ifneq ($(strip $(OPENSSL3)),)
-COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master.openssl3
-else
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
-endif
 
 # Get correct binaries from the proto area.
 TEST_BINPATH.32 =       $(PROTOUSRBINDIR)/$(MACH32)
@@ -194,11 +186,7 @@ PKG_MACROS += PYVER=$(PYTHON_VERSION)
 
 REQUIRED_PACKAGES += developer/build/make
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
-ifeq ($(strip $(OPENSSL3)),)
-REQUIRED_PACKAGES += library/security/openssl
-else
 REQUIRED_PACKAGES += library/security/openssl-3
-endif
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39

@@ -149,7 +149,6 @@ APPENDDEF(`confMAPDEF', `-DLDAPMAP')
 APPENDDEF(`confLIBS', `-lldap -llber -lc')
 endef
 
-ifneq ($(strip $(OPENSSL3)),)
 define SITE_CONFIG_M4 +=
 
 APPENDDEF(`confLIBDIRS', `-L/usr/openssl/3/lib/64')
@@ -163,7 +162,6 @@ COMPONENT_PRE_BUILD_ACTION.32 = \
 	gsed -e "s:/usr/openssl/3/lib/64:/usr/openssl/3/lib/32:" \
 		$(SOURCE_DIR)/devtools/Site/site.config.m4 > \
 		$(BUILD_DIR_32)/devtools/Site/site.config.m4;
-endif
 
 define SITE_CONFIG_M4 +=
 
@@ -259,11 +257,7 @@ install:	$(INSTALL_32_and_64)
 
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += library/libmilter
-ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
-else
-REQUIRED_PACKAGES += library/security/openssl
-endif
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

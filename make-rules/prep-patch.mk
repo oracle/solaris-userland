@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 
 GPATCH =	/usr/bin/patch
@@ -68,18 +68,10 @@ define patch-variables
 
 ifeq ($(1),_0)
 PATCH_PATTERN$(1) ?=	%.patch
-ifeq ($(strip $(OPENSSL3)),)
-PATCHES$(1) = $(filter %.patch %.patch.openssl1,$(ALL_PATCHES))
-else
-PATCHES$(1) += $(filter %.patch %.patch.openssl3,$(ALL_PATCHES))
-endif
+PATCHES$(1) = $(filter %.patch,$(ALL_PATCHES))
 else
 PATCH_PATTERN$(1) ?=	%.patch$(1)
-ifeq ($(strip $(OPENSSL3)),)
-PATCHES$(1) = $(filter %.patch$(1) %.patch$(1).openssl1,$(ALL_PATCHES))
-else
-PATCHES$(1) += $(filter %.patch$(1) %.patch$(1).openssl3,$(ALL_PATCHES))
-endif
+PATCHES$(1) = $(filter %.patch$(1),$(ALL_PATCHES))
 endif
 
 ifneq ($(strip $(ADDITIONAL_PATCHES$(1))),)

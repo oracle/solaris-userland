@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Must use gcc because of 21090206
@@ -122,17 +122,12 @@ PROTOUSRPHPVERDIR = $(PROTO_DIR)/$(CONFIGURE_PREFIX)
 
 COMPONENT_PRE_CONFIGURE_ACTION += $(MKDIR) $(BUILD_DIR)/temp;
 
-ifneq ($(strip $(OPENSSL3)),)
 PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 
 # Remove unnecessary default library path which breaks OpenSSL 3 linking.
 COMPONENT_POST_CONFIGURE_ACTION += \
 	$(GSED) -i '/L\/usr\/openssl\/3\/lib/s/-L\/usr\/lib\/$(MACH64)//' \
 	    $(BUILD_DIR_64)/Makefile ;
-
-# When checking for uw-imap linker needs to get OpenSSL 3 first.
-LDFLAGS += -L/usr/openssl/3/lib/64
-endif
 
 COMPONENT_BUILD_ENV += TMPDIR=$(BUILD_DIR)/temp
 CONFIGURE_ENV += TMPDIR=$(BUILD_DIR)/temp
@@ -189,11 +184,7 @@ COMPONENT_TEST_ARGS += -k -i
 COMPONENT_TEST_ENV += http_proxy=
 COMPONENT_TEST_ENV += SKIP_ONLINE_TESTS=1
 # different results for different architectures
-ifneq ($(strip $(OPENSSL3)),)
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS)-OpenSSL3.master
-else
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
-endif
 COMPONENT_TEST_TRANSFORMS += \
     '-e "/^make/d" ' \
     '-e "/^TEST RESULT SUMMARY$$/,\$$p" ' \
@@ -213,11 +204,7 @@ REQUIRED_PACKAGES += library/gd
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/oniguruma
 REQUIRED_PACKAGES += library/pcre2
-ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
-else
-REQUIRED_PACKAGES += library/security/openssl
-endif
 REQUIRED_PACKAGES += system/dtrace
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime

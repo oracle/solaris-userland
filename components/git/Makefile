@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -73,9 +73,7 @@ CONFIGURE_OPTIONS  +=	--libexecdir=$(USRLIBDIR)
 CONFIGURE_OPTIONS  +=	--with-libpcre2
 CONFIGURE_OPTIONS  +=	--with-perl=$(PERL)
 CONFIGURE_OPTIONS  +=	--with-python=$(PYTHON)
-ifneq ($(strip $(OPENSSL3)),)
 CONFIGURE_OPTIONS  +=	--with-openssl=/usr/openssl/3
-endif
 
 # Build fails if environment variable PROFILE is set.
 COMPONENT_BUILD_ENV+=	PROFILE=
@@ -151,11 +149,7 @@ GENERATE_PROTO_DIRS += $(COMPONENT_SRC_1)
 REQUIRED_PACKAGES += crypto/gnupg
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/pcre2
-ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
-else
-REQUIRED_PACKAGES += library/security/openssl
-endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-311

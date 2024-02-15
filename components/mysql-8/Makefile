@@ -92,11 +92,7 @@ CMAKE_OPTIONS += -DWITH_LZ4=system
 CMAKE_OPTIONS += -DWITH_ZLIB=system
 CMAKE_OPTIONS += -DWITH_ZSTD=system
 CMAKE_OPTIONS += -DWITH_ICU=system
-ifeq ($(strip $(OPENSSL3)),)
-CMAKE_OPTIONS += -DWITH_SSL=system
-else
 CMAKE_OPTIONS += -DWITH_SSL=/usr/openssl/3
-endif
 CMAKE_OPTIONS += -DWITH_INNODB_MEMCACHED=1
 CMAKE_OPTIONS += -DWITH_BOOST=$(SOURCE_DIR)/boost
 CMAKE_OPTIONS += -DWITH_ROUTER=OFF
@@ -119,11 +115,7 @@ REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libedit
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/zlib
-ifeq ($(strip $(OPENSSL3)),)
-REQUIRED_PACKAGES += library/security/openssl
-else
 REQUIRED_PACKAGES += library/security/openssl-3
-endif
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93

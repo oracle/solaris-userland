@@ -66,11 +66,9 @@ ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 # Automatically detect OpenSSL 3 headers and libs.
-ifneq ($(strip $(OPENSSL3)),)
 SSL_PKG_CONFIG_PATH.64 = /usr/openssl/3/lib/64/pkgconfig
 SSL_PKG_CONFIG_PATH.32 = /usr/openssl/3/lib/pkgconfig
 PKG_CONFIG_PATHS += $(SSL_PKG_CONFIG_PATH.$(BITS))
-endif
 
 CONFIGURE_OPTIONS += --localstatedir=$(VARDIR) --enable-shared --disable-static
 CONFIGURE_OPTIONS += --enable-http --enable-ftp
@@ -86,11 +84,7 @@ CONFIGURE_OPTIONS += --enable-cookies
 CONFIGURE_OPTIONS += --with-random=/dev/urandom
 CONFIGURE_OPTIONS += --with-zlib
 CONFIGURE_OPTIONS += --with-gssapi
-ifneq ($(strip $(OPENSSL3)),)
 CONFIGURE_OPTIONS += --with-openssl=/usr/openssl/3
-else
-CONFIGURE_OPTIONS += --with-ssl
-endif
 CONFIGURE_OPTIONS += --with-ca-path=$(ETCDIR)/openssl/certs
 CONFIGURE_OPTIONS += --enable-ldap
 CONFIGURE_OPTIONS += --with-libidn2
@@ -149,11 +143,7 @@ REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/nghttp2
-ifneq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl-3
-else
-REQUIRED_PACKAGES += library/security/openssl
-endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
