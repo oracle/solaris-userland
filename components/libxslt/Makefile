@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -71,7 +71,10 @@ COMPONENT_PREP_ACTION += \
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # Rule out randomly sorted XSLT extensions list.
-COMPONENT_TEST_TRANSFORMS += '-e "/http:\/\//d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/http:\/\//d"' \
+  '-e "/make\[[0-9]\{1,\}\]/d"' \
+  '-e "/ld: warning/d"' \
+  '-e "/  CC/d"'
 
 # system-test should really use system version library
 COMPONENT_PRE_SYSTEM_TEST_ACTION = ($(RM) $(@D)/libxslt/.libs/*)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -60,6 +60,9 @@ CONFIGURE_OPTIONS	+= --with-crypto=/usr/openssl/3
 CONFIGURE_ENV		+= LDFLAGS="-L/usr/openssl/3/lib/64"
 
 COMPONENT_TEST_TRANSFORMS += \
+	'-e "/tcpdump version/d" ' \
+	'-e "/libpcap version/d" ' \
+	'-e "/OpenSSL 3/d" ' \
 	'-e "/Entering directory/d" ' \
 	'-e "/Leaving directory/d" ' \
 	'-e "/cd tests/d" '

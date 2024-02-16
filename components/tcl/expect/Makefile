@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
@@ -64,6 +64,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Nothing to be done/d"' \
 	'-e "/Leaving directory/d"' \
 	'-e "/Entering directory/d"' \
+	'-e "/TCL_LIBRARY=/d"' \
 	'-e "s|tcl/build/$(MACH$(BITS))|\\$$(TCLBUILD)|g"'
 
 # special targets due to tcl internals dependencies
