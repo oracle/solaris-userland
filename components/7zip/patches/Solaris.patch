@@ -1,0 +1,64 @@
+https://sourceforge.net/p/sevenzip/bugs/2442/
+
+--- 7z2301-src/CPP/7zip/UI/Console/Main.cpp
++++ 7z2301-src/CPP/7zip/UI/Console/Main.cpp
+@@ -926,9 +926,11 @@ #endif
+     
+     #else
+     
++    #if !defined(__sun)
+     struct winsize w;
+     if (ioctl(0, TIOCGWINSZ, &w) == 0)
+       consoleWidth = w.ws_col;
++    #endif
+     
+     #endif
+   }
+--- 7z2301-src/CPP/Windows/FileFind.cpp
++++ 7z2301-src/CPP/Windows/FileFind.cpp
+@@ -1192,7 +1192,7 @@ {
+   /* some systems (like CentOS 7.x on XFS) have (Type == DT_UNKNOWN)
+      we can call fstatat() for that case, but we use only (Name) check here */
+ 
+-  #if !defined(_AIX)
++  #if !defined(_AIX) && !defined(__sun)
+   if (Type != DT_DIR && Type != DT_UNKNOWN)
+     return false;
+   #endif
+@@ -1232,7 +1232,7 @@ }
+ 
+   fi.iNode = de->d_ino;
+   
+-  #if !defined(_AIX)
++  #if !defined(_AIX) && !defined(__sun)
+   fi.Type = de->d_type;
+   /* some systems (like CentOS 7.x on XFS) have (Type == DT_UNKNOWN)
+      we can set (Type) from fstatat() in that case.
+--- 7z2301-src/CPP/Windows/FileFind.h
++++ 7z2301-src/CPP/Windows/FileFind.h
+@@ -311,7 +311,7 @@ bool Next(CDirEntry &fileInfo, bool &fou
+   bool Fill_FileInfo(const CDirEntry &de, CFileInfo &fileInfo, bool followLink) const;
+   bool DirEntry_IsDir(const CDirEntry &de, bool followLink) const
+   {
+-    #if !defined(_AIX)
++    #if !defined(_AIX) && !defined(__sun)
+     if (de.Type == DT_DIR)
+       return true;
+     if (de.Type != DT_UNKNOWN)
+--- 7z2301-src/CPP/Windows/System.cpp
++++ 7z2301-src/CPP/Windows/System.cpp
+@@ -207,11 +207,14 @@ size = val;
+ 
+   #elif defined(_AIX)
+   // fixme
++  // fixme
+   #elif defined(__gnu_hurd__)
+   // fixme
+   #elif defined(__FreeBSD_kernel__) && defined(__GLIBC__)
+   // GNU/kFreeBSD Debian
+   // fixme
++  #elif defined(__sun)
++  // fixme
+   #else
+ 
+   struct sysinfo info;

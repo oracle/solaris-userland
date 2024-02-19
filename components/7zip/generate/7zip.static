@@ -1,4 +1,3 @@
-#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -20,24 +19,10 @@
 #
 
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2024, Oracle and/or its affiliates.
 #
 
-OPTFLAGS=-O -s
-
-LFS_CFLAGS = $(shell getconf LFS_CFLAGS)
-
-ALLFLAGS=${OPTFLAGS} -m64 \
-        -DHAVE_LONG_LONG \
-        $(LFS_CFLAGS) \
-        -DENV_UNIX \
-        -DNDEBUG -D_REENTRANT \
-        -D_7ZIP_LARGE_PAGES \
-        $(LOCAL_FLAGS)
-
-CXX=g++
-CC=gcc
-CC_SHARED=-fPIC
-LINK_SHARED=-fPIC -shared
-
-OBJ_CRC32=$(OBJ_CRC32_C)
+# compatibility links for p7zip
+link path=usr/bin/7z target=7zz
+link path=usr/bin/7za target=7zz
+link path=usr/bin/7zr target=7zz

@@ -1,0 +1,27 @@
+SPARC should be recognized as a 64-bit CPU.  Nothing seems to break with or
+without this patch.
+
+https://sourceforge.net/p/sevenzip/bugs/2443/
+This is suitable for passing upstream.
+
+--- 7z2301-src/C/CpuArch.h
++++ 7z2301-src/C/CpuArch.h
+@@ -144,6 +144,18 @@ #define MY_CPU_NAME "riscv"
+   #endif
+ #endif
+ 
++#if  defined(__sparc__) 
++  #define MY_CPU_SPARC
++  #if defined(__sparcv9)
++    #define MY_CPU_64BIT
++    #define MY_CPU_NAME "sparcv9"
++    #define MY_CPU_SIZEOF_POINTER 8
++  #else
++    #define MY_CPU_NAME "sparc"
++    #define MY_CPU_SIZEOF_POINTER 4
++  #endif
++#endif
++
+ 
+ #if defined(MY_CPU_X86) || defined(MY_CPU_AMD64)
+ #define MY_CPU_X86_OR_AMD64
