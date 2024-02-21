@@ -33,7 +33,7 @@ set name=info.classification \
     value=org.opensolaris.category.2008:System/Internationalization
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2009/499
+set name=org.opensolaris.arc-caseid value=PSARC/2009/499 value=PSARC/2024/032
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=etc/dconf/db/ibus.d/00-upstream-settings
 file path=etc/dconf/profile/ibus
@@ -81,19 +81,13 @@ file path=usr/include/ibus-1.0/ibusversion.h
 file path=usr/include/ibus-1.0/ibusxevent.h
 file path=usr/include/ibus-1.0/ibusxml.h
 file path=usr/lib/$(MACH64)/girepository-1.0/IBus-1.0.typelib
-file path=usr/lib/$(MACH64)/gtk-2.0/2.10.0/immodules/im-ibus.so
-file path=usr/lib/$(MACH64)/gtk-3.0/3.0.0/immodules/im-ibus.so
-file path=usr/lib/$(MACH64)/gtk-4.0/4.0.0/immodules/libim-ibus.so
 link path=usr/lib/$(MACH64)/libibus-1.0.so target=libibus-1.0.so.5.0.529
 link path=usr/lib/$(MACH64)/libibus-1.0.so.5 target=libibus-1.0.so.5.0.529
 file path=usr/lib/$(MACH64)/libibus-1.0.so.5.0.529
 file path=usr/lib/$(MACH64)/pkgconfig/ibus-1.0.pc
-file path=usr/lib/gtk-2.0/2.10.0/immodules/im-ibus.so
-file path=usr/lib/gtk-3.0/3.0.0/immodules/im-ibus.so
 file path=usr/lib/ibus/ibus-dconf mode=0555
 file path=usr/lib/ibus/ibus-engine-simple mode=0555
 file path=usr/lib/ibus/ibus-portal mode=0555
-file path=usr/lib/ibus/ibus-ui-gtk3 mode=0555
 file path=usr/lib/ibus/ibus-x11 mode=0555
 link path=usr/lib/libibus-1.0.so target=libibus-1.0.so.5.0.529
 link path=usr/lib/libibus-1.0.so.5 target=libibus-1.0.so.5.0.529
@@ -253,6 +247,16 @@ file path=usr/share/vala/vapi/ibus-1.0.deps
 file path=usr/share/vala/vapi/ibus-1.0.vapi
 license COPYING license=LGPLv2.1
 license COPYING.unicode license=other
+# Install input method modules matching the gtk versions installed
+depend type=conditional \
+    fmri=system/input-method/ibus/ibus-gtk2@$(IPS_COMPONENT_VERSION) \
+    predicate=library/desktop/gtk2
+depend type=conditional \
+    fmri=system/input-method/ibus/ibus-gtk3@$(IPS_COMPONENT_VERSION) \
+    predicate=library/desktop/gtk3
+depend type=conditional \
+    fmri=system/input-method/ibus/ibus-gtk4@$(IPS_COMPONENT_VERSION) \
+    predicate=library/desktop/gtk4
 # IBus looks for iso-codes data at runtime
 depend type=require fmri=__TBD \
     pkg.debug.depend.file=usr/share/xml/iso-codes/iso_639_3.xml \

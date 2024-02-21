@@ -23,10 +23,20 @@
 # Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
-<include generate/common.transform>
+# Ignore the 32-bit binaries
+<transform path=usr/bin/\$\(MACH32\)/.+ -> drop>
 
-# Drop everything not belonging to "ibus-base"
-<transform dir file link hardlink pkg.type=(?!ibus-base) -> drop>
+# Ignore Wayland config files
+<transform path=etc/xdg/Xwayland-session.d/.+ -> drop>
 
-# Remove the mark
-<transform dir file link hardlink -> delete pkg.type .*>
+# Manifest contains only generic version with $(PYVER) variable.
+<transform file path=.*/vendor-packages -> edit path $(PYVER) \$\(PYVER\)>
+
+# Set a default package for all files
+<transform dir file link hardlink -> default pkg.type ibus-base>
+
+# gtk version-specific files
+<transform dir file link hardlink path=.*/gtk-([2-4]).0/.* \
+ -> set pkg.type ibus-gtk%<1>>
+<transform dir file link hardlink path=.*-gtk([2-4])$ \
+ -> set pkg.type ibus-gtk%<1>>
