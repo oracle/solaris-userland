@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 
 # The Makefile of this component does not support multiple build jobs.
@@ -47,9 +47,9 @@ COMPONENT_BAID_LIBMLX4=	27060
 COMPONENT_BAID_LIBRDMACM=	27054
 COMPONENT_BAID_OPENSM=	26507
 COMPONENT_BAID_QPERF=	26508
-COMPONENT_BAID_LIBSDP=	5677
-COMPONENT_BAID_PERFTEST=	5678
-COMPONENT_BAID_RDS_TOOLS=	5689
+COMPONENT_BAID_LIBSDP=	159559
+COMPONENT_BAID_PERFTEST=	159556
+COMPONENT_BAID_RDS_TOOLS=	159540
 
 # for now, everything with a Makefile should be built
 SUBDIRS =	$(shell echo */Makefile | sed -e 's;/Makefile;;g')
