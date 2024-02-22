@@ -1,0 +1,19 @@
+clock() resolution on Solaris is not good enough for this test.
+
+This was reported upstream:
+https://github.com/libexpat/libexpat/issues/830
+
+--- expat-2.6.0/tests/basic_tests.c
++++ expat-2.6.0/tests/basic_tests.c
+@@ -5243,6 +5243,11 @@ START_TEST(test_big_tokens_take_linear_t
+     return;
+   }
+ #endif
++#if defined(__sun) && defined(__SVR4)
++  // On Solaris, clock() doesn't have a good enough resolution (even
++  // though CLOCKS_PER_SEC is high enough to pass the test above).
++  return;
++#endif
+ 
+   clock_t baseline = 0;
+   for (int i = 0; i < num_cases; ++i) {
