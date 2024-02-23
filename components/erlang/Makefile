@@ -31,12 +31,12 @@ include ../../make-rules/shared-macros.mk
 PATH=$(JAVA_HOME)/bin:$(USRBINDIR)
 
 COMPONENT_NAME=			erlang
-COMPONENT_VERSION=		24.2
+COMPONENT_VERSION=		24.3.4.16
 COMPONENT_PROJECT_URL=	https://erlang.org/
 COMPONENT_SRC_NAME=	otp_src
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0b9c9ba7d8b40f6c77d529e07561b10f0914d2bfe9023294d7eda85b62936792
+    sha256:f434c19d62b29ad8ef5300a490b9ea9df9cbfdd497c68603b184d43448418fa2
 COMPONENT_ARCHIVE_URL=  https://github.com/erlang/otp/archive/OTP-${COMPONENT_VERSION}.tar.gz
 COMPONENT_BUGDB=	utility/erlang
 COMPONENT_ANITYA_ID=	707
@@ -49,7 +49,7 @@ COMPONENT_NAME_1=	otp_doc_man
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)_$(COMPONENT_VERSION_SHORT)
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1=	\
-    sha256:56ae4b13fc7c003f4dd9951a9ff2a0bae0b38473df2c078d79c8553c277c5f4c
+    sha256:68ad2222eef77310c286411ad0e580865f3ba273e9fe42516ade0e5310cff614
 COMPONENT_ARCHIVE_URL_1=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1=	-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
@@ -60,27 +60,18 @@ COMPONENT_NAME_2=	otp_doc_html
 COMPONENT_SRC_2=	$(COMPONENT_NAME_2)_$(COMPONENT_VERSION_SHORT)
 COMPONENT_ARCHIVE_2=	$(COMPONENT_SRC_2).tar.gz
 COMPONENT_ARCHIVE_HASH_2=	\
-    sha256:f479cbc8a28532fd6a0a55fc26684b4e79312da4f86ee0735d0757f936672bbc
+    sha256:7a247113a0f90514aacb0656e98a1e4d63e2ebf4ac9981002d046599147dc177
 COMPONENT_ARCHIVE_URL_2=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_2)
 UNPACK_ARGS_2=	-r $(COMPONENT_SRC_2)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_2)
 COMPONENT_ANITYA_ID_2=	707
 
-COMPONENT_BAID=		116024
+COMPONENT_BAID=		159770
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 
 # Unreproducible test results, many hours to finish.
 $(SKIP_TEST_AT_TOP_LEVEL)
-
-# This is just a workaround to a problem we occasionally see on sparc.
-# The build stops and never finishes. The process erl_child_setup seems to be
-# stuck. Erlang normally builds in about 75 minutes (one job), so 180 minutes
-# timeout should be more than enough. This change makes sure that Erlang is built
-# in 3 attempts and if all attempts fail, then it is almost sure that there
-# is a problem in Erlang code or Common Build Environment.
-GMAKE := $(WS_TOOLS)/repeat_cmd 3 3h $(GMAKE)
-COMPONENT_BUILD_ENV += REPEAT_CMD_CLEANUP="gmake clean"
 
 include $(WS_MAKE_RULES)/common.mk
 

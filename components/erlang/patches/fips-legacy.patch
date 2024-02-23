@@ -1,0 +1,24 @@
+https://github.com/erlang/otp/issues/8134
+
+From 5549bf92e6920304ae83af13511b9a1c62ffe71e Mon Sep 17 00:00:00 2001
+From: Hans Nilsson <hans@erlang.org>
+Date: Fri, 19 Aug 2022 13:45:12 +0200
+Subject: [PATCH] crypto: Don't fail loading if the legacy provider is missing
+
+---
+ lib/crypto/c_src/crypto.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/crypto/c_src/crypto.c b/lib/crypto/c_src/crypto.c
+index d7364f694cd9..ef6d0bdc13cd 100644
+--- a/lib/crypto/c_src/crypto.c
++++ b/lib/crypto/c_src/crypto.c
+@@ -225,7 +225,7 @@ static int initialize(ErlNifEnv* env, ERL_NIF_TERM load_info)
+ #endif
+     if ((prov_cnt<MAX_NUM_PROVIDERS) && !(prov[prov_cnt++] = OSSL_PROVIDER_load(NULL, "default"))) return __LINE__;
+     if ((prov_cnt<MAX_NUM_PROVIDERS) && !(prov[prov_cnt++] = OSSL_PROVIDER_load(NULL, "base"))) return __LINE__;
+-    if ((prov_cnt<MAX_NUM_PROVIDERS) && !(prov[prov_cnt++] = OSSL_PROVIDER_load(NULL, "legacy"))) return __LINE__;
++    if (prov_cnt<MAX_NUM_PROVIDERS) {prov_cnt++; OSSL_PROVIDER_load(NULL, "legacy");}
+ #endif
+ 
+     if (library_initialized) {
