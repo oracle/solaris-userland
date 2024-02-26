@@ -1,0 +1,50 @@
+https://gitlab.gnome.org/GNOME/mutter/-/issues/2945
+https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/3176
+
+diff --git a/src/backends/x11/meta-output-xrandr.c b/src/backends/x11/meta-output-xrandr.c
+index 87f8518d5e4a1ed45c41d341e744dce46edcc785..653da27e80c7c8bccac61b511f7d89ecee7f95c2 100644
+--- a/src/backends/x11/meta-output-xrandr.c
++++ b/src/backends/x11/meta-output-xrandr.c
+@@ -873,6 +873,21 @@ output_info_init_tile_info (MetaOutputInfo *output_info,
+   XFree (prop);
+ }
+ 
++static gboolean
++sanity_check_duplicate (MetaCrtcMode **modes,
++                        size_t         n_modes,
++                        MetaCrtcMode  *mode)
++{
++  size_t i;
++
++  for (i = 0; i < n_modes; i++)
++    {
++      if (meta_crtc_mode_get_id (modes[i]) == meta_crtc_mode_get_id (mode))
++        return FALSE;
++    }
++
++  return TRUE;
++}
+ 
+ static void
+ output_info_init_modes (MetaOutputInfo *output_info,
+@@ -895,8 +910,17 @@ output_info_init_modes (MetaOutputInfo *output_info,
+ 
+           if (xrandr_output->modes[i] == (XID) meta_crtc_mode_get_id (mode))
+             {
+-              output_info->modes[n_actual_modes] = mode;
+-              n_actual_modes += 1;
++              if (sanity_check_duplicate (output_info->modes, n_actual_modes, mode))
++                {
++                  output_info->modes[n_actual_modes] = mode;
++                  n_actual_modes += 1;
++                }
++              else
++                {
++                  g_warning ("X11 server advertized duplicate identical modes "
++                             "(0x%" G_GINT64_MODIFIER "x)",
++                             meta_crtc_mode_get_id (mode));
++                }
+               break;
+             }
+         }
+
