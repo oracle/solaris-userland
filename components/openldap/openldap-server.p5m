@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through uncommitted">
@@ -83,9 +83,13 @@ file path=etc/openldap/slapd.ldif.default
 file Solaris/exec_attr path=etc/security/exec_attr.d/library:openldap
 file Solaris/prof_attr path=etc/security/prof_attr.d/library:openldap
 file Solaris/user_attr path=etc/user_attr.d/library:openldap
+file Solaris/ldap-idcert.xml \
+    path=lib/svc/manifest/network/ldap/ldap-idcert.xml \
+    restart_fmri=svc:/system/manifest-import:default
 file Solaris/ldap-olslapd.xml \
-    path=lib/svc/manifest/network/ldap/ldap-olslapd.xml
-file Solaris/ldap-olslapd path=lib/svc/method/ldap-olslapd
+    path=lib/svc/manifest/network/ldap/ldap-olslapd.xml \
+    restart_fmri=svc:/system/manifest-import:default
+file Solaris/ldap-olslapd.sh path=lib/svc/method/ldap-olslapd
 file path=usr/include/slapi-plugin.h
 file usr/lib/$(MACH64)/slapd path=usr/lib/slapd mode=0555 \
     pkg.depend.bypass-generate=libsasl2.so.3

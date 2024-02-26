@@ -4,7 +4,7 @@
 
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <!--
- Copyright (c) 2007, 2023, Oracle and/or its affiliates.
+ Copyright (c) 2007, 2024, Oracle and/or its affiliates.
 -->
 
 <service_bundle type='manifest' name='SUNWopenldapr:slapd'>
@@ -45,21 +45,21 @@
 		<exec_method
 		    type='method'
 		    name='start'
-		    exec='/lib/svc/method/ldap-olslapd start'
+		    exec='/lib/svc/method/ldap-olslapd %m'
 		    timeout_seconds='60'>
 		    <method_context>
 			<method_credential
 			    user='openldap'
 			    group='openldap'
 			    supp_groups=''
-			    privileges='basic,{net_privaddr}:389/tcp,{net_privaddr}:636/tcp' />
+			    privileges='basic,{net_privaddr}:389/tcp,{net_privaddr}:636/tcp,{file_dac_read}:/etc/certs/localhost/host.key' />
 		    </method_context>
 		</exec_method>
 
 		<exec_method
 		    type='method'
 		    name='stop'
-		    exec='/lib/svc/method/ldap-olslapd stop %{restarter/contract}'
+		    exec='/lib/svc/method/ldap-olslapd %m %{restarter/contract}'
 		    timeout_seconds='60' />
 
 		<property_group name='general' type='framework'>
@@ -94,6 +94,9 @@
 		    <propval name='backend_cn' type='astring' value='Manager'/>
 		    <propval name='admin_cn' type='astring' value='admin'/>
 		    <propval name='proxy_cn' type='astring' value='proxyagent'/>
+		    <propval name='ca_certificates' type='astring' value='/etc/certs/ca-certificates.crt' />
+		    <propval name='certificate' type='astring' value='/etc/certs/localhost/host.crt' />
+		    <propval name='privatekey' type='astring' value='/etc/certs/localhost/host.key' />
 		</property_group>
 
 		<property_group name='profile' type='application'>
@@ -109,7 +112,7 @@
 			    </astring_list>
 		        </property>
 			<propval name='value_authorization' type='astring'
-			    value='solaris.smf.value.name-service.ldap.server' />	
+			    value='solaris.smf.value.name-service.ldap.server' />
 		    </property_group>
 		</property_group>
 
@@ -144,7 +147,7 @@
 		            <cardinality min='1'/>
 		        </prop_pattern>
 		    </pg_pattern>
-				
+
 		    <pg_pattern name='cred' type='application'
 		        target='this' required='true'>
 		        <description> <loctext xml:lang='C'>
@@ -192,8 +195,55 @@
 		            </loctext> </description>
 		            <cardinality min='1' max='1'/>
 		        </prop_pattern>
+			<prop_pattern name='ca_certificates' type='astring'
+				      required='false'>
+			  <description> <loctext xml:lang='C'>
+			    The location of the Certificate Authorities file, that
+			    contains all the certificates that slapd needs to
+			    recognize.
+
+			    This value is written to slapd-config(8)
+			    attribute TLSCACertificateFile by
+			    ldapservercfg when configuring openldap.
+			    </loctext> </description>
+			  <cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='certificate' type='astring'
+				      required='false'>
+			  <description> <loctext xml:lang='C'>
+			    The location of the PEM-formatted x509
+			    certificate to use for SSL.
+
+			    This value is written to slapd-config(8)
+			    attribute TLSCertificateFile by
+			    ldapservercfg when configuring openldap.
+			    </loctext> </description>
+			  <cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='privatekey' type='astring'
+				      required='false'>
+			  <description> <loctext xml:lang='C'>
+			    The location of the PEM-formatted
+			    private key to use for SSL.
+
+			    This value is written to slapd-config(8)
+			    attribute olcTLSCertificateKeyFile by
+			    ldapservercfg when configuring openldap.
+
+			    The value of olcTLSCertificateKeyFile is
+			    compared by the start method with the
+			    default value of svc:/system/identity:cert
+			    property certificate/cert/private_key/uri.
+			    If they are a match then service
+			    ldap/identity:openldap is enabled; It has
+			    a dependency on identity:cert such that it
+			    will restart ldap/server:openldap if the
+			    system certificate changes.</loctext>
+			    </description>
+			  <cardinality min='1' max='1'/>
+			</prop_pattern>
 		    </pg_pattern>
-				
+
 		    <pg_pattern name='profile' type='application'
 		        target='this' required='true'>
 		        <description> <loctext xml:lang='C'>

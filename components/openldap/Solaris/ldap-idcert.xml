@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!--
+-->
+
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<!--
+ Copyright (c) 2024, Oracle and/or its affiliates.
+-->
+
+<service_bundle type='manifest' name='SUNWopenldaps:slapd'>
+
+<service
+    name='network/ldap/identity'
+    type='service'
+    version='1'>
+
+  <instance name='openldap' enabled='false'>
+    <dependency
+	name='openldap'
+	grouping='optional_all'
+	restart_on='none'
+	type='service'>
+      <service_fmri value='svc:/network/ldap/server:openldap' />
+    </dependency>
+    <dependency
+	name='system/manifest-import'
+	grouping='require_all'
+	restart_on='restart'
+	type='service'>
+      <service_fmri value='svc:/system/identity:cert'/>
+    </dependency>
+    <dependent
+        name='identity-openldap-run-once-complete'
+        grouping='optional_all'
+        restart_on='none'>
+        <service_fmri value='svc:/milestone/self-assembly-complete' />
+    </dependent>
+    <exec_method
+	type='method'
+	name='start'
+	exec='/lib/svc/method/ldap-olslapd identity_%m'
+	timeout_seconds='60' />
+    <exec_method
+	type='method'
+	name='stop'
+	exec=':true'
+	timeout_seconds='0' />
+    <property_group name='startd' type='framework'>
+      <propval name='duration' type='astring'
+	       value='transient' />
+    </property_group>
+    <property_group name='general' type='framework'>
+      <!-- Required to allow ldap/server:openldap to be able to enable
+	   and disable this instance -->
+      <propval name='action_authorization' type='astring'
+	       value='solaris.smf.manage.name-service.ldap.server' />
+      <propval name='value_authorization' type='astring'
+	       value='solaris.smf.value.name-service.ldap.server' />
+    </property_group>
+
+    <template>
+      <common_name>
+	<loctext xml:lang='C'>
+	  identity:openldap - system identity:cert notifier for OpenLDAP.
+	</loctext>
+      </common_name>
+      <description>
+	<loctext xml:lang='C'>
+	  A transient service that is used to inform openldap instance
+	  when svc:/system/identity:cert is restarted.  The openldap
+	  instance checks if slapd is using the system default X.509
+	  certificate for TLS and whether it has changed since slapd
+	  was started.  If it has then slapd is restarted so that it
+	  uses the latest TLS keys.
+	</loctext>
+      </description>
+      <documentation>
+	<manpage title='ldapservercfg' section='8'
+		 manpath='/usr/share/man' />
+      </documentation>
+    </template>
+  </instance>
+
+  <stability value='Evolving' />
+</service>
+
+</service_bundle>
