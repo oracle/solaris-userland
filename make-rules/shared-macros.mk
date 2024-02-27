@@ -808,16 +808,17 @@ JAVA_HOME = $(JAVA8_HOME)
 
 # This is the default BUILD version of perl
 # Not necessarily the system's default version, i.e. /usr/bin/perl
-PERL_VERSION ?= 5.36
+PERL_VERSION ?= 5.38
 PERL_VERSION_NODOT = $(subst .,,$(PERL_VERSION))
 
 # Used for versionless perl packages.  Processed by ips.mk to stamp out
 # multiple packages for each version of perl listed here.  Used by
 # perl_modules/* but also used for those components that deliver a perl
 # package like graphviz and openscap.
-PERL_VERSIONS = 5.36
+PERL_VERSIONS = 5.36 5.38
 
 PERL.5.36 =     /usr/perl5/5.36/bin/perl
+PERL.5.38 =     /usr/perl5/5.38/bin/perl
 
 define test-perl-availability
 TEST_PERL_PATH=$$(PERL.$(1))
