@@ -20,26 +20,40 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		c-ares
-COMPONENT_VERSION=	1.19.1
+COMPONENT_VERSION=	1.27.0
 COMPONENT_PROJECT_URL=	https://c-ares.org
 COMPONENT_ARCHIVE_HASH= \
-    sha256:321700399b72ed0e037d0074c629e7741f6b2ec2dda92956abe3e9671d3e268e
+    sha256:0a72be66959955c43e2af2fbd03418e82a2bd5464604ec9a62147e37aceb420b
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/c-ares
 COMPONENT_ANITYA_ID=	5840
 
-COMPONENT_BAID=		144031
+COMPONENT_BAID=		160210
+
+# Since C-ares 1.24.0 GoogleTest is no longer bundled. For now it's possible
+# to build it separately and provide path to it to be able to run tests.
+#
+# GoogleTest can be configured like this (define GOOGLETEST and MACH64):
+# cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_INSTALL_PREFIX=${GOOGLETEST} -DCMAKE_CXX_FLAGS=-m32 .
+# cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_LIBDIR=lib/${MACH64} -DCMAKE_INSTALL_PREFIX=${GOOGLETEST} .
+
+ifdef GOOGLETEST
+PKG_CONFIG_PATH.32 += $(GOOGLETEST)/lib/pkgconfig
+PKG_CONFIG_PATH.64 += $(GOOGLETEST)/lib/$(MACH64)/pkgconfig
+COMPONENT_TEST_ENV.32 = LD_LIBRARY_PATH=$(GOOGLETEST)/lib
+COMPONENT_TEST_ENV.64 = LD_LIBRARY_PATH=$(GOOGLETEST)/lib/$(MACH64)
+COMPONENT_TEST_ENV += $(COMPONENT_TEST_ENV.$(BITS))
+PATH=/usr/gnu/bin:/usr/bin
+endif
 
 # Needed for "gmake test" to work as it avoids "unbound variable" error.
 unexport SHELLOPTS
-
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 include $(WS_MAKE_RULES)/common.mk
