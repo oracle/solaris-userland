@@ -1,37 +1,205 @@
-Login on the lab machine with installed dnsmasq pkg and follow these steps:
+#!/bin/sh
+# DNSMASQ A lightweight DHCP, caching DNS server, and TFTP server.
+#
+# Its DNS and TFTP capabilities can be tested on a single machine.
+# DHCP testing requires a private network with at least two machines
+# to act as server and client.
 
-# check dns resolver if not online enable it
-svcadm enable svc:/network/dns/client
+# About this file.  TESTING has been written to be executable on the
+# machine with dnsmasq installed.  Note though that the DHCP testing
+# requires some commands to be executed on a client machine.
+# Therefore this testing is not fully automnated here.
 
-# check mutualy exclusive services
-svcs -H dns/server tftp/udp6 dns/server dhcp/server dhcp/bridge dhcp/relay
+echo ==========================================================================
+echo			DNS forwarder Testing
+echo ==========================================================================
 
-# prepare conf
-cp /etc/resolv.conf /etc/resolv.conf.dnsmasq
+set -x
+svcadm disable -s svc:/network/dnsmasq:default
+#
+# Login to a lab machine with installed dnsmasq pkg and follow these steps:
+#
+# Check mutually exclusive services, they should be disabled.
+svcs dns/server tftp/udp6 dhcp/server dhcp/bridge dhcp/relay 2>/dev/null
+
+echo "Preparing dnsmasq configuration".
+if [[ ! -f /etc/resolv.conf.dnsmasq ]]; then
+    cp /etc/resolv.conf /etc/resolv.conf.dnsmasq
+fi
+if [[ ! -f /etc/hosts.dnsmasq ]]; then
+    cp /etc/hosts /etc/hosts.dnsmasq
+    echo "192.168.57.1 dnsmasq1" >> /etc/hosts
+    echo "192.168.57.2 dnsmasq2" >> /etc/hosts
+fi
+
 cat > /etc/dnsmasq.conf <<EOF
-interface=lo0
+domain-needed	# Never forward plain names (without a dot or domain part)
+interface=lo0   # Use loopback interface only
+bind-interfaces # Do not bind to wildcard address.
+expand-hosts	# add domain onto short names
+domain=example.com
 resolv-file=/etc/resolv.conf.dnsmasq
 EOF
 
-# change resolver to localhost
-svccfg -s svc:/network/dns/client:default setprop config/nameserver = net_address: ::1
-svcadm refresh svc:/network/dns/client
-# ...and now you can obtain message from ldap_cachemgr falling in Degraded
+# OPTIONAL: Change systems resolver to local host.
+# Note that if system is configured to use LDAP server then messages from
+# ldap_cachemgr will start occuring and it will change its status to Degraded
+# while it is unable to resolve the LDAP servers.
+# This step is optional as the dig commands below are directed to localhost.
 
-# enable dnsmasq as local resolver
-svcadm enable dnsmasq
-# ...and now you can obtain message from ldap_cachemgr Restored service to online
+# svccfg -s svc:/network/dns/client:default \
+#       setprop config/nameserver = net_address: ::1
+# svcadm refresh -s svc:/network/dns/client
 
-# now you can check dns resolve again including IDN
-# note: vm sshroot turns ssh to 8 bit ASCII
-dig www.seznam.cz
-# Solaris dig do not support IDN unfortunately
- # LC_ALL=utf8 dig háčkyčárky.cz +short +idnin
-;; IDN input support not enabled
-# so räksmörgås.josefsson.owe can only check as
-dig 'xn--rksmrgs-5wao1o.josefsson.org' +short
+# Enable dnsmasq as local resolver.
+svcadm enable -t -s svc:/network/dnsmasq:default
 
-# now you can check disable dnsmasq
-svcadm disable dnsmasq
-# ...and retest digs are not working
-# note: after reenable ldap_cachemgr definitely goes mad
+# Now you can check dns resolve again including IDN
+# Note that vm sshroot turns ssh to 8 bit ASCII
+dig +short @::1 www.seznam.cz
+# Solaris dig do not support IDN unfortunately, so this wont work:
+#     LC_ALL=utf8 dig háčkyčárky.cz +short +idnin
+# Dig will report IDN input support not enabled
+# So räksmörgås.josefsson.owe can only check as:
+dig +short @::1 'xn--rksmrgs-5wao1o.josefsson.org'
+
+dig +short @127.0.0.1 dnsmasq1.example.com
+dig +short @127.0.0.1 dnsmasq2.example.com
+
+# Check that with dnsmasq disabled lookups to it fail.
+svcadm disable -s svc:/network/dnsmasq:default
+dig +short @127.0.0.1 dnsmasq2.example.com
+dig +short @::1 www.seznam.cz
+
+# Restore DNS configuration if changed above.
+if ! cmp /etc/resolv.conf.dnsmasq /etc/resolv.conf; then
+    cp /etc/resolv.conf.dnsmasq /etc/resolv.conf
+    /usr/sbin/nscfg import -f svc:/network/dns/client
+fi
+
+set +x
+echo "========================================================================"
+echo "                            TFTP test"
+echo "========================================================================"
+set -x
+
+# Writing dnsmasq configuration file.
+cat  >/etc/dnsmasq.conf <<EOF
+interface=lo0
+enable-tftp
+tftp-root=/var/ftpd
+tftp-no-fail
+EOF
+
+# Create data for tftp test
+mkdir -p /var/ftpd
+echo "Hello world on $(date)" > /var/ftpd/shout
+md5sum /var/ftpd/shout
+
+echo "Starting dnsmasq service"
+svcs svc:/network/dnsmasq:default
+svcadm enable -t -s svc:/network/dnsmasq:default
+
+tftp ::1 <<EOF
+get shout /tmp/shout
+EOF
+cat /tmp/shout
+md5sum /tmp/shout
+
+svcadm disable -s svc:/network/dnsmasq:default
+
+set +x
+echo "========================================================================"
+echo "   DHCP test - requires at least two machines on private network"
+echo "========================================================================"
+#
+# This test MUST only be done on a private network to prevent LAB
+# machines from obtaining network addresses from this test instance!
+#
+# In this example the server has two network interfaces,
+# One on the public network for access to it, and the other on a
+# private network which will be configured to provide DHCP services.
+#
+# The client has four interfaces, one on the public network and three
+# others on the same private network as the server.
+#
+# This dnsmasq server configuration includes DNS and TFTP datum.
+
+echo Configuring this machine as server for dnsmasq DHCP testing
+echo -----------------------------------------------------------
+set -x
+ipadm create-ip -t net1
+ipadm create-addr -t -T static -a local=192.168.57.1 net1/v4
+
+svcadm disable -s svc:/network/dnsmasq:default
+
+echo Writing dnsmasq configuration file.
+cat  >/etc/dnsmasq.conf <<EOF
+domain-needed
+bogus-priv
+interface=net1
+bind-interfaces
+expand-hosts
+domain=example.com
+dhcp-range=192.168.57.50,192.168.57.150,12h
+enable-tftp
+tftp-root=/var/ftpd
+tftp-no-fail
+log-dhcp
+resolv-file=/etc/resolv.conf.dnsmasq
+EOF
+
+svcadm enable -t -s svc:/network/dnsmasq:default
+
+set +x
+echo "------------------------------------------------------"
+echo "-- Manual actions to Configure client for DHCP test --"
+echo "------------------------------------------------------"
+
+echo Run the following commands on client and server as directed.
+
+# Note that `-t` is being used so that these parameters will not
+# survive reboot.  The dhcp_inittab paramaters are being ignored to
+# prevent routing and DNS changes.
+
+cat << EOF
+for net in net1 net2 net3; do
+  ipadm create-ip -t \$net
+   ipadm create-addr -t -T dhcp -p param-ignore-list=3,6,15,20 \$net/v4
+done
+ipadm
+EOF
+
+# Repeated here for direct copy and paste to client from this TESTING file
+# for net in net1 net2 net3; do ipadm create-ip -t $net; \
+#   ipadm create-addr -t -T dhcp -p param-ignore-list=3,6,15,20 $net/v4; done
+echo
+echo "Once the client has configured the private interfaces the"
+echo "dynamic assignments should be reflected in the leases file on the server:"
+echo
+echo cat /var/cache/dnsmasq.leases
+echo
+echo "Back on the client release two of the addresses,"
+echo "the `-r` option asks to inform the server the addresses are released."
+echo
+echo ipadm delete-addr -r net2/v4
+echo ipadm delete-addr -r net3/v4
+echo ipadm
+# Repeated: ipadm delete-addr -r net2/v4;ipadm delete-addr -r net3/v4;ipadm
+echo
+echo "On the server those addresses should now be released."
+echo
+echo cat /var/cache/dnsmasq.leases
+echo
+echo "Back on client remove final address and remove the IP networks:"
+echo
+echo ipadm delete-addr -r net1/v4
+cat <<EOF
+for net in net1 net2 net3; do ipadm delete-ip \$net; done
+EOF
+# Repeated: for net in net1 net2 net3; do ipadm delete-ip $net; done
+echo
+echo Stop dnsmasq server.
+echo svcadm disable svc:/network/dnsmasq:default
+echo
+echo ============================= EOF TESTING ===============================

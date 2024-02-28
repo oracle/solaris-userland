@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -29,9 +29,10 @@ include ../../make-rules/shared-macros.mk
 PATH=$(GNUBIN):$(USRBINDIR):$(USRSBINDIR)
 
 COMPONENT_NAME=		dnsmasq
-COMPONENT_VERSION=	2.89
-COMPONENT_BAID=		143689
-COMPONENT_ARCHIVE_HASH=	sha256:8651373d000cae23776256e83dcaa6723dee72c06a39362700344e0c12c4e7e4
+COMPONENT_VERSION=	2.90
+COMPONENT_BAID=		159275
+COMPONENT_ARCHIVE_HASH=	\
+	sha256:8f6666b542403b5ee7ccce66ea73a4a51cf19dd49392aaccd37231a2c51b303b
 COMPONENT_PROJECT_URL=	https://www.thekelleys.org.uk/$(COMPONENT_NAME)
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc

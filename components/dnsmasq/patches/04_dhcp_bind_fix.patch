@@ -4,13 +4,12 @@ that causes DHCP to be extremely slow.
 This patch was developed in-house. Since it is Solaris-specific, it is not
 suitable for upstream.
 
-diff --git a/src/dhcp-common.c b/src/dhcp-common.c
-index befd8a0..4573730 100644
---- a/src/dhcp-common.c
-+++ b/src/dhcp-common.c
-@@ -550,6 +550,58 @@ void  bindtodevice(char *device, int fd)
-       errno != EPERM)
-     die(_("failed to set SO_BINDTODEVICE on DHCP socket: %s"), NULL, EC_BADNET);
+diff -r da5825e07bd5 src/dhcp-common.c
+--- a/src/dhcp-common.c	Fri Feb 16 04:59:00 2024 -0800
++++ b/src/dhcp-common.c	Mon Feb 19 02:44:19 2024 -0800
+@@ -611,6 +611,62 @@
+   
+   return ret;
  }
 +#elif defined(HAVE_SOLARIS_NETWORK)
 +int which_ifindex(void)
@@ -19,8 +18,8 @@ index befd8a0..4573730 100644
 +   * to limit packet transmission/reception to that interface using IP_BOUND_IF
 +   * for IPv4 and IPV6_BOUND_IF for IPv6. This is for the use case of OpenStack,
 +   * which runs a new dnsmasq instance for each network it creates. Without this
-+   * socket option, each of the dnsmasq process would unnecessarily process 
-+   * packets that arrive on other interfaces as well, thus slowing down the 
++   * socket option, each of the dnsmasq process would unnecessarily process
++   * packets that arrive on other interfaces as well, thus slowing down the
 +   * entire DHCP process.
 +   */
 +
@@ -31,11 +30,11 @@ index befd8a0..4573730 100644
 +     return -1;
 +
 +   for (if_tmp = daemon->if_names; if_tmp; if_tmp = if_tmp->next)
-+     if (if_tmp->name && (!if_tmp->used || strchr(if_tmp->name, '*')))
++     if (if_tmp->name && (!(if_tmp->flags & INAME_USED) || strchr(if_tmp->name, '*')))
 +       return -1;
 + 
 +   for (found = NULL, iface = daemon->interfaces; iface; iface = iface->next)
-+     if (iface->dhcp_ok)
++     if (iface->dhcp4_ok || iface->dhcp6_ok)
 +       {
 +	 if (!found)
 +	   found = iface;
@@ -53,26 +52,32 @@ index befd8a0..4573730 100644
 +{
 +  if (is_dhcp6)
 +    {
-+      if (setsockopt(fd, IPPROTO_IPV6, IPV6_BOUND_IF, (char *)&ifindex, sizeof(ifindex)) == -1 && 
-+          errno != EPERM)
-+        die(_("failed to set IPv6_BOUND_IF on DHCP socket: %s"), NULL, EC_BADNET);
++      if (setsockopt(fd, IPPROTO_IPV6, IPV6_BOUND_IF,
++	      (char *)&ifindex, sizeof(ifindex)) == -1 && errno != EPERM) {
++	      die(_("failed to set IPv6_BOUND_IF on DHCP socket: %s"),
++		  NULL, EC_BADNET);
++      }
 +    }
 +  else
 +    {
-+      if (setsockopt(fd, IPPROTO_IP, IP_BOUND_IF, &ifindex, sizeof(ifindex)) == -1 &&
-+          errno != EPERM)
-+        die(_("failed to set IP_BOUND_IF on DHCP socket: %s"), NULL, EC_BADNET);
++      if (setsockopt(fd, IPPROTO_IP, IP_BOUND_IF,
++	      &ifindex, sizeof(ifindex)) == -1 && errno != EPERM) {
++	      die(_("failed to set IP_BOUND_IF on DHCP socket: %s"),
++		  NULL, EC_BADNET);
++      }
 +    }
 +}
  #endif
  
  static const struct opttab_t {
---- a/src/dnsmasq.c	2023-02-02 21:24:24.000000000 +0100
-+++ dnsmasq-2.89/src/dnsmasq.c	2023-05-12 10:54:02.094077940 +0200
-@@ -66,6 +66,10 @@
+diff -r da5825e07bd5 src/dnsmasq.c
+--- a/src/dnsmasq.c	Fri Feb 16 04:59:00 2024 -0800
++++ b/src/dnsmasq.c	Mon Feb 19 02:44:19 2024 -0800
+@@ -68,6 +68,11 @@
  #else
    int bind_fallback = 0;
  #endif 
++
 +#if defined(HAVE_SOLARIS_NETWORK)
 +  int bound_ifindex = -1;
 +  int did_bind = 0;
@@ -80,7 +85,21 @@ index befd8a0..4573730 100644
  #if defined(HAVE_DHCP) || defined(HAVE_DHCP6)
    struct dhcp_context *context;
    struct dhcp_relay *relay;
-@@ -985,6 +989,10 @@
+@@ -389,6 +395,13 @@
+ 
+       if ((did_bind = bind_dhcp_devices(bound_device)) & 2)
+ 	die(_("failed to set SO_BINDTODEVICE on DHCP socket: %s"), NULL, EC_BADNET);	
++#elif defined(HAVE_SOLARIS_NETWORK) && defined(HAVE_DHCP6)
++      if (daemon->doing_dhcp6 && !daemon->relay6 && bound_ifindex >= 0)
++	{
++          bindtoif(bound_ifindex, daemon->dhcp6fd, 1);
++	  did_bind = 1;
++	}
++
+ #endif
+     }
+   else 
+@@ -984,6 +999,10 @@
    if (netlink_warn)
      my_syslog(LOG_WARNING, netlink_warn);
  #  endif
@@ -91,7 +110,7 @@ index befd8a0..4573730 100644
  
    /* after dhcp_construct_contexts */
    if (daemon->dhcp || daemon->doing_dhcp6)
-@@ -1103,6 +1111,23 @@
+@@ -1109,6 +1130,23 @@
  	  if (daemon->pxefd != -1)
  	    poll_listen(daemon->pxefd, POLLIN);
  	}
@@ -115,22 +134,25 @@ index befd8a0..4573730 100644
  #endif
  
  #ifdef HAVE_DHCP6
-@@ -1212,6 +1237,12 @@
- 	  poll_resolv(0, daemon->last_resolv != 0, now); 	  
- 	  daemon->last_resolv = now;
- 	}
-+#elif defined(HAVE_SOLARIS_NETWORK) && defined(HAVE_DHCP6)
-+      if (daemon->doing_dhcp6 && !daemon->relay6 && bound_ifindex >= 0)
-+	{
-+          bindtoif(bound_ifindex, daemon->dhcp6fd, 1);
-+	  did_bind = 1;
-+	}
+diff -r da5825e07bd5 src/dnsmasq.h
+--- a/src/dnsmasq.h	Fri Feb 16 04:59:00 2024 -0800
++++ b/src/dnsmasq.h	Mon Feb 19 02:44:19 2024 -0800
+@@ -38,8 +38,12 @@
+ 
+ /* Need these defined early */
+ #if defined(__sun) || defined(__sun__)
+-#  define _XPG4_2
+-#  define __EXTENSIONS__
++#  ifndef _XPG4_2
++#    define _XPG4_2
++#  endif
++#  ifndef __EXTENSIONS__
++#    define __EXTENSIONS__
++#  endif
  #endif
  
-       if (poll_check(piperead, POLLIN))
---- a/src/dnsmasq.h	2023-02-02 21:24:24.000000000 +0100
-+++ dnsmasq-2.89/src/dnsmasq.h	2023-05-12 11:04:20.988219658 +0200
-@@ -153,6 +153,8 @@
+ #if (defined(__GNUC__) && __GNUC__ >= 3) || defined(__clang__)
+@@ -153,6 +159,8 @@
  #include <sys/prctl.h>
  #elif defined(HAVE_SOLARIS_NETWORK)
  #include <priv.h>

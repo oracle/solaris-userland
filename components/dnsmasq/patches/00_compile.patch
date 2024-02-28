@@ -3,11 +3,17 @@ Patches to successfully compile dnsmasq on Solaris.
 This patch was developed in-house. Since it is Solaris-specific it is not
 suitable for upstream.
 
-diff --git a/src/bpf.c b/src/bpf.c
-index 82d215a..ed06772 100644
---- a/src/bpf.c
-+++ b/src/bpf.c
-@@ -31,7 +31,9 @@
+--- dnsmasq-2.90/bld/pkg-wrapper
++++ dnsmasq-2.90/bld/pkg-wrapper
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ in=`cat`
+ 
+--- dnsmasq-2.90/src/bpf.c
++++ dnsmasq-2.90/src/bpf.c
+@@ -31,7 +31,9 @@ #if defined(__FreeBSD__)
  #  include <net/if_var.h> 
  #endif
  #include <netinet/in_var.h>
@@ -17,11 +23,9 @@ index 82d215a..ed06772 100644
  
  #ifndef SA_SIZE
  #define SA_SIZE(sa)                                             \
-diff --git a/src/config.h b/src/config.h
-index 9f69ce3..17bf7f1 100644
---- a/src/config.h
-+++ b/src/config.h
-@@ -302,7 +302,8 @@ HAVE_SOCKADDR_SA_LEN
+--- dnsmasq-2.90/src/config.h
++++ dnsmasq-2.90/src/config.h
+@@ -312,7 +312,8 @@ #define HAVE_SOLARIS_NETWORK
  #define HAVE_GETOPT_LONG
  #undef HAVE_SOCKADDR_SA_LEN
  #define ETHER_ADDR_LEN 6 
@@ -31,11 +35,9 @@ index 9f69ce3..17bf7f1 100644
  #endif
  
  /* rules to implement compile-time option dependencies and 
-diff --git a/src/dnsmasq.h b/src/dnsmasq.h
-index e770454..2a22bdd 100644
---- a/src/dnsmasq.h
-+++ b/src/dnsmasq.h
-@@ -1384,7 +1384,7 @@ int set_ipv6pktinfo(int fd);
+--- dnsmasq-2.90/src/dnsmasq.h
++++ dnsmasq-2.90/src/dnsmasq.h
+@@ -1556,7 +1556,7 @@ int set_ipv6pktinfo(int fd);
  #ifdef HAVE_DHCP6
  void join_multicast(int dienow);
  #endif
@@ -44,9 +46,20 @@ index e770454..2a22bdd 100644
  void newaddress(time_t now);
  #endif
  
---- a/src/ip6addr.h	2021-09-08 22:21:22.000000000 +0000
-+++ b/src/ip6addr.h	2021-11-30 07:27:25.197780519 +0000
-@@ -14,8 +14,41 @@
+--- dnsmasq-2.90/src/dump.c
++++ dnsmasq-2.90/src/dump.c
+@@ -20,6 +20,8 @@ #ifdef HAVE_DUMPFILE
+ 
+ #include <netinet/icmp6.h>
+ 
++#define IPDEFTTL 64	/* default ttl, RFC 1122, RFC 1340 */
++
+ static u32 packet_count;
+ static void do_dump_packet(int mask, void *packet, size_t len,
+ 			   union mysockaddr *src, union mysockaddr *dst, int port, int proto);
+--- dnsmasq-2.90/src/ip6addr.h
++++ dnsmasq-2.90/src/ip6addr.h
+@@ -14,8 +14,41 @@ You should have received a copy of the G
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
@@ -88,28 +101,9 @@ index e770454..2a22bdd 100644
  #define IN6_IS_ADDR_ULA(a) \
          ((((__const uint32_t *) (a))[0] & htonl (0xff000000))                 \
           == htonl (0xfd000000))
-@@ -31,3 +64,5 @@
+@@ -31,3 +64,5 @@ (((__const uint32_t *) (a))[0] == htonl
           && ((__const uint32_t *) (a))[1] == 0                                \
           && ((__const uint32_t *) (a))[2] == 0                                \
           && ((__const uint32_t *) (a))[3] == 0)
 +
 +#endif /* HAVE_SOLARIS_NETWORK */
---- a/bld/pkg-wrapper	2021-09-08 22:21:22.000000000 +0000
-+++ b/bld/pkg-wrapper	2021-12-03 04:27:45.325925557 +0000
-@@ -1,4 +1,4 @@
--#!/bin/sh
-+#!/bin/bash
- 
- in=`cat`
- 
---- a/src/dump.c	2023-05-11 17:40:27.341715910 +0200
-+++ b/src/dump.c	2023-05-11 17:44:17.810574531 +0200
-@@ -20,6 +20,8 @@
- 
- #include <netinet/icmp6.h>
- 
-+#define IPDEFTTL 64	/* default ttl, RFC 1122, RFC 1340 */
-+
- static u32 packet_count;
- static void do_dump_packet(int mask, void *packet, size_t len,
- 			   union mysockaddr *src, union mysockaddr *dst, int port, int proto);
