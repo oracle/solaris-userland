@@ -1,4 +1,4 @@
-Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2023, 2024, Oracle and/or its affiliates.
 Copyright 1998-2022 The OpenLDAP Foundation
 
          __________________________________________________
@@ -7,36 +7,57 @@ Copyright 1998-2022 The OpenLDAP Foundation
       		  OPENLDAP TO ANOTHER.
          __________________________________________________
 
-*Only required if the system is being used as an OpenLDAP server.*
+*Make sure you are reading the latest version of this document*, it may
+be on an alternative Boot Environment (BE) following a `pkg update'.
 
-Ordinarily a system is being used as an OpenLDAP server when SMF service
-instance ldap/server:openldap is enabled and online.
+You should at least carry out the export steps before booting into the
+new BE so that it is ready to be imported within the new BE.
+
+
+The requirements documented here are *Only required* when the system is
+being used as an *OpenLDAP server*.  Ordinarily a system is being used
+as an OpenLDAP server when SMF service instance ldap/server:openldap is
+enabled and online.
 
 - The `svcs(1)' command will tell you the service status:
 
         svcs ldap/server
 
-The OpenLDAP package has been updated to include a newer version of
-OpenLDAP which must be manually migrated to.
-
-To transition from one version of OpenLDAP to the next it is imperative
-that databases are exported to LDAP Data Interchange Format (LDIF) and
-imported following the upgrade.  This is a manual procedure and needs to
-be completed by a systems administrator before booting into the new boot
-environment.
+However it is possible that your site has its own setup, if your using
+the OpenLDAP software delivered in `service/network/ldap/openldap' then
+the information contained within is relevant.
 
 
-The following sections attempt to document the steps you will need to
-take in order to upgrade.
+OpenLDAP update requirements
+============================
+
+  The OpenLDAP package has been updated to include a newer version of
+  OpenLDAP which must be manually migrated to.
+
+  To transition from one version of OpenLDAP to the next it is
+  imperative that databases are exported to LDAP Data Interchange Format
+  (LDIF) and imported following the upgrade.  This is a manual procedure
+  and needs to be completed by a systems administrator before booting
+  into the new boot environment.
 
 
-------------------------------------------------------------------------
+  The following sections document the steps you will need to take in
+  order to upgrade.
 
-      *READ ALL OF THESE INSTRUCTIONS CAREFULLY*
+  Some versions require more migration work than others.  For example
+  the update from version 2.4 to 2.6 requires a fair amount of work.
+  While the step between 2.6.6 to 2.6.7 does not appear to require any,
+  though the advice from the OpenLDAP Foundation is to always export and
+  import.
 
-      *BEFORE TAKING ACTION ON ANY STEPS BELOW*
 
-------------------------------------------------------------------------
+  ----------------------------------------------------------------------
+
+        *READ ALL OF THESE INSTRUCTIONS CAREFULLY*
+
+        *BEFORE TAKING ACTION ON ANY STEPS BELOW*
+
+  ----------------------------------------------------------------------
 
 
 1 Migration
@@ -556,6 +577,5 @@ take in order to upgrade.
 
 
 ------------------------------------------------------------------------
-
 
       *That concludes the OpenLDAP transition instructions*

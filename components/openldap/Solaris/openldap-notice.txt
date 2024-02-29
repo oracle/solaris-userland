@@ -1,21 +1,4 @@
-
-Requirements to transition from one version of OpenLDAP to another.
-
- *Only required if the system is being used as an OpenLDAP server.*
-
-Ordinarily  a system  is being  used as  an OpenLDAP  server when  SMF
-service instance ldap/server:openldap is  enabled and online.  Part of
-the transition  *must be completed  before booting* into the  new Boot
-Environment (BE). For further information refer to instructions in the
-new BE in /usr/share/doc/release-notes/openldap-transition.txt:
-
-  rbe=$(beadm list -o name,flags|awk '$2~"N"{next}$2~"R"{print $1}')
-  dir=""; [[ -n $rbe ]] && dir=$(mktemp -d) && beadm mount $rbe $dir
-  cp $dir/usr/share/doc/release-notes/openldap-transition.txt /tmp
-  [[ -n $rbe ]] && beadm unmount $rbe && rmdir $dir
-  less /tmp/openldap-transition.txt
-
-IF YOU DIDN'T READ THE INSTRUCTIONS AND YOU ARE RUNNING THE NEW SYSTEM
-AND NOTHING IS WORKING, RECOVER BY BOOTING THE PREVIOUS BOOT ENVIRONMENT.
-
-
+If svc:/network/service/ldap/server:openldap is enabled this update requires
+you export the database for any active LDAP Server before reboot into the new
+boot environment. See /usr/share/doc/release-notes/openldap-transition.txt in
+the new BE.

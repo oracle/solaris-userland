@@ -1,4 +1,4 @@
-Copyright (c) 2023, Oracle and/or its affiliates. \\
+Copyright (c) 2023, 2024, Oracle and/or its affiliates. \\
 Copyright 1998-2022 The OpenLDAP Foundation
 
 #+begin_src ascii
@@ -18,16 +18,32 @@ it is written in Emacs Org mode; https://orgmode.org/.
 See the end of file for [[Org-mode settings]] and notes regarding this file.
 
 #+end_comment
-*Only required if the system is being used as an OpenLDAP server.*
+*Make sure you are reading the latest version of this document*, it may
+be on an alternative Boot Environment (BE) following a ~pkg update~.
 
-Ordinarily a system is being used as an OpenLDAP server when SMF
-service instance ldap/server:openldap is enabled and online.
+You should at least carry out the export steps before booting into the
+new BE so that it is ready to be imported within the new BE.
+
+
+The requirements documented here are *Only required* when the system is
+being used as an *OpenLDAP server*.  Ordinarily a system is being used
+as an OpenLDAP server when SMF service instance ldap/server:openldap is
+enabled and online.
 
 - The ~svcs(1)~ command will tell you the service status:
 
   #+begin_verse
   svcs ldap/server
   #+end_verse
+
+However it is possible that your site has its own setup, if your using
+the OpenLDAP software delivered in ~service/network/ldap/openldap~ then
+the information contained within is relevant.
+
+* OpenLDAP update requirements
+:PROPERTIES:
+:UNNUMBERED: t
+:END:
 
 The OpenLDAP package has been updated to include a newer version of
 OpenLDAP which must be manually migrated to.
@@ -39,8 +55,13 @@ be completed by a systems administrator before booting into the new boot
 environment.
 
 
-The following sections attempt to document the steps you will need to
-take in order to upgrade.
+The following sections document the steps you will need to take in order
+to upgrade.
+
+Some versions require more migration work than others.  For example the
+update from version 2.4 to 2.6 requires a fair amount of work.  While
+the step between 2.6.6 to 2.6.7 does not appear to require any, though
+the advice from the OpenLDAP Foundation is to always export and import.
 
 
 ------------------------------------------------------------------------
@@ -756,6 +777,9 @@ The header files are delivered directly to the standard /usr/include
 directory now, /usr/include/openldap directory is no longer delivered.
 
 ** End of changes From 2.4.44 through 2.4.59 to 2.6.                :ignore:
+:PROPERTIES:
+:UNNUMBERED: t
+:END:
 ------------------------------------------------------------------------
 ** From 2.4.30 or above to 2.4.44 through 2.4.59
 
@@ -790,47 +814,74 @@ configuration change.
   #+END_EXAMPLE
 
 * End of Version Specific Changes                                    :ignore:
-
+:PROPERTIES:
+:UNNUMBERED: t
+:END:
 ------------------------------------------------------------------------
-* EOF                                                                :ignore:
 
 #+begin_verse
          *That concludes the OpenLDAP transition instructions*
 #+end_verse
 
 * Org-mode settings                                                :noexport:
-[[https://orgmode.org/manual/Export-Settings.html][Export Settings (The Org Manual)]]
+This heading and content is not exported to the openldap-transition.txt
+file (:noexport: tag on heading line).
+
+For more information regarding the export settings refer to
+[[https://orgmode.org/manual/Export-Settings.html][Export Settings in The Org Manual]].
+
 Not using smart quotes.
 #+OPTIONS: ':nil
+
 Heading default level is 3, increased to 5 to keep export structure as
-intended.  Number all headings, not ASCII export does not underline
+intended.  Number all headings, note ASCII export does not underline
 headings above level 3 by default.
 #+OPTIONS: H:5 num:t
+
 Not using subscript or superscript.
 #+OPTIONS: ^:{}
-No table-of-contents, include tabels
+
+No table-of-contents, include tables
 #+OPTIONS: toc:nil |:t
+
 Suppress conversion of title, as otherwise the ASCII exporter displaces
 the copyright lines. The title has its own explicit source instead.
 #+OPTIONS: title:nil
+
 Setting of TITLE here is for the HTML page heading.
 #+TITLE: REQUIREMENTS TO TRANSITION FROM ONE VERSION OF OPENLDAP TO ANOTHER.
-#+OPTIONS: author:nil creator:nil date:nil e:t email:nil
+
+Author's name and details not needed, nor is the date of creation
+#+OPTIONS: author:nil creator:nil e:t email:nil date:nil
+
+No log book entries should be present, but just in case lets not include those.
 #+OPTIONS: d:(not "LOGBOOK")
+
 Include footnotes if used.
 #+OPTIONS: f:t
+
+Remove tags from the headings, they are for author or control mostly.
+#+OPTIONS: tags:nil
+
 Remove other ORG marks (most not actually used within).
-#+OPTIONS: tags:nil tasks:nil todo:nil timestamp:nil
+#+OPTIONS: tasks:nil todo:nil timestamp:nil
 #+LANGUAGE: en
 
-FYI, section headings in Org (lines beginning with one or more asterisk
+Some additional information regarding org mode formatting.
+
+Section headings in Org (lines beginning with one or more asterisk
 characters followed by a space character) can have /:tags:/ associated
-with them.  The /:ignore:/ tag causes export to drop the heading but not
-the section content within, useful for formatting and management of the
-org file.  While /:noexport:/ tag removes the heading and contents, but
-may execute source blocks.  A heading beginning with the *COMMENT*
-keyword prevents it from being exported and from any source blocks
-within it being executed.
+with them.
+- /:ignore:/ tag causes export to drop the heading but not the section
+  content within, useful for formatting and management of the org
+  file. It is an Org Mode 9.6 feature.  As previous versions do
+   not recognize it I have added an unnumbered property too - the
+  heading will be shown but not numbered.
+
+- /:noexport:/ tag removes the heading and contents, but may execute
+  source blocks.  A heading beginning with the *COMMENT* keyword
+  prevents it from being exported and from any source blocks within it
+  being executed.
 
 Some notes on the formatting regarding ASCII export.
 
@@ -839,7 +890,7 @@ Some notes on the formatting regarding ASCII export.
   bullet point.  Therefore I have used ~verse~ rather than ~center~.
 
 - Within org a ~tilde~ is emphasis, which on ASCII export becomes
-  `tilde`.
+  `tilde'.
 
 - Alas /italic/ does not get any special treatment and just gets
   exported as ~/italic/~ and so I have not used it.
@@ -849,7 +900,7 @@ Some notes on the formatting regarding ASCII export.
   does not otherwise make quoted text all that obvious and hence they
   are placed after a list item which states there source.
 
-- src blocks, ascii export by default puts a box-string around the exported
+- src blocks, ASCII export by default puts a box-string around the exported
   code and examples. e.g.
 
   #+begin_example
@@ -859,20 +910,30 @@ Some notes on the formatting regarding ASCII export.
    `----
   #+end_example
 
-  The following emacs-lisp prevents that.  It needs to be evaluated it
+  The following emacs-lisp prevents that.  It needs to be evaluated
   before exporting.
 
-  #+begin_src elisp
+  #+begin_src elisp :exports code :eval no
   (require 'ox-ascii)
   (advice-add 'org-ascii--box-string :override
-          (defun my-org-ascii--box-string  (s info)
-            s))
+          (defun my-org-ascii--box-string  (s info) s))
+  #+end_src
+
+  Alternatively conversion can be done in batch mode, for example:
+
+  #+begin_src sh :exports code :eval no
+  emacs openldap-transition.org -Q -batch --eval '(require `ox-ascii)' \
+     --eval '(advice-add `org-ascii--box-string :override (defun my-org-ascii--box-string (s info) s))' \
+     --eval '(org-ascii-export-to-ascii)'
   #+end_src
 
 Make the source and examples exported to HTML have a black background.
 #+HTML_HEAD_EXTRA: <style> pre.src { background-color: black; color: white; }</style>
 
-* EOF                                                                :ignore:
+View this file on Github at
+https://github.com/oracle/solaris-userland/blob/master/components/openldap/Solaris/openldap-transition.org
+
+* EOF                                                       :noexport:ignore:
 # Emacs settings
 # Local Variables:
 # fill-column: 72
