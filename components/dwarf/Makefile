@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=gcc
@@ -45,38 +45,11 @@ COMPONENT_ANITYA_ID=	1597
 
 COMPONENT_BAID=		150358
 
-COMPONENT_VERSION_1 =   20191104
-COMPONENT_BAID_1=       73000
-COMPONENT_SRC_1 =       lib$(COMPONENT_NAME)-$(COMPONENT_VERSION_1)
-COMPONENT_ARCHIVE_1 =   $(COMPONENT_SRC_1).tar.gz
-COMPONENT_ARCHIVE_HASH_1 = \
-        sha256:45f50a966314421b7dab525859853616df6c9680f0ccf2f44b030c505236eaba
-COMPONENT_ARCHIVE_URL_1 = https://www.prevanders.net/$(COMPONENT_ARCHIVE_1)
-SOURCE_DIR_1 =          $(COMPONENT_DIR)/$(COMPONENT_SRC_1)
-
 # Convert YYYYMMDD -> YYYY.MM.DD
 HUMAN_VERSION= $(shell echo $(COMPONENT_VERSION_DATE) | \
 	$(GSED) -e 's/\(.\{4\}\)\(.\{2\}\)/0.\1.\2./')
 IPS_COMPONENT_VERSION= $(shell echo $(HUMAN_VERSION) | \
 	$(GSED) -e 's/\.0/./g')
-
-BUILD_OLD_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)
-BUILD_OLD_DIR_64 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH64)
-
-$(BUILD_OLD_DIR_32)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_64)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
-$(BUILD_OLD_DIR_32)/.configured:       BITS=32
-$(BUILD_OLD_DIR_64)/.configured:       BITS=64
-
-BUILD_32 += $(BUILD_OLD_DIR_32)/.built
-BUILD_64 += $(BUILD_OLD_DIR_64)/.built
-
-INSTALL_32 += $(BUILD_OLD_DIR_32)/.installed
-INSTALL_64 += $(BUILD_OLD_DIR_64)/.installed
-
-# install the old version first
-$(BUILD_DIR_32)/.installed:    $(BUILD_OLD_DIR_32)/.installed
-$(BUILD_DIR_64)/.installed:    $(BUILD_OLD_DIR_64)/.installed
 
 COMPONENT_PREP_ACTION = (cd $(@D); $(AUTORECONF) -if)
 
