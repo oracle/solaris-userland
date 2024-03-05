@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             64
@@ -28,16 +28,16 @@ COMPILER=               gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		speech-dispatcher
-COMPONENT_VERSION=	0.8.8
+COMPONENT_VERSION=	0.11.5
 COMPONENT_PROJECT_URL=	https://devel.freebsoft.org/speechd
 COMPONENT_ARCHIVE_HASH= \
-   sha256:3c2a89800d73403192b9d424a604f0e614c58db390428355a3b1c7c401986cf3
+   sha256:1ce4759ffabbaf1aeb433a5ec0739be0676e9bdfbae9444a7b3be1b2af3ec12b
 COMPONENT_ARCHIVE_URL=	\
-    https://devel.freebsoft.org/pub/projects/speechd/$(COMPONENT_ARCHIVE)
+   https://github.com/brailcom/speechd/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=    13411
 
-COMPONENT_BAID=		71390
+COMPONENT_BAID=		154349
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -45,10 +45,16 @@ include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D)) ;
 
+CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR64)
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --with-espeak-ng
 CONFIGURE_OPTIONS += --with-pulse
+
+# We don't have the libraries these depend on
+CONFIGURE_OPTIONS += --with-baratinoo=no
+CONFIGURE_OPTIONS += --with-kali=no
+CONFIGURE_OPTIONS += --with-voxin=no
 
 # Assumes GNU xgettext & msgfmt are first in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
@@ -65,8 +71,6 @@ CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 PYTHON_SCRIPTS += $(PROTO_DIR)$(USRBINDIR)/spd-conf
 PYTHON_SCRIPTS += $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/speechd/_test.py
 
-# speech-dis. < 0.9.0 requires intltool to build - remove when upgrading to later
-REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/desktop/dotconf
 REQUIRED_PACKAGES += library/glib2
