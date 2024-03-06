@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -36,8 +36,7 @@ COMPONENT_ARCHIVE_URL= \
 COMPONENT_BUGDB=	service/ptp
 COMPONENT_ANITYA_ID=	3726
 
-COMPONENT_BAID_PTP=	12053
-COMPONENT_BAID_SOLARFLARE=	15584
+COMPONENT_BAID=	160874
 
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)

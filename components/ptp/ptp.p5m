@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -29,6 +29,7 @@ set name=pkg.summary \
 set name=pkg.description \
     value="Precision Time Protocol IEEE 1588-2008 (Version 2), PTP Daemon. Works either as PTP Master or PTP Slave."
 set name=pkg.linted.userland.action001.PIE value=true
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="Precision Time Protocol (PTP) IEEE 1588-2008 (Version 2)"
 set name=info.classification value=org.opensolaris.category.2008:System/Services
@@ -42,11 +43,4 @@ file Solaris/ptp.xml path=lib/svc/manifest/network/ptp.xml
 file Solaris/ptp.sh path=lib/svc/method/ptp
 file path=usr/lib/inet/ptpd
 file path=usr/share/man/man8/ptpd.8
-license ptp.license license="BSD (PTP)" \
-    com.oracle.info.baid=$(COMPONENT_BAID_PTP) \
-    com.oracle.info.description="the community version of ptpd" \
-    com.oracle.info.name=PTP
-license solarflare.license license="BSD (Solarflare)" \
-    com.oracle.info.baid=$(COMPONENT_BAID_SOLARFLARE) \
-    com.oracle.info.description="the Solarflare enhancement to community version of ptpd" \
-    com.oracle.info.name=Solarflare com.oracle.info.version=1.0.20
+license ptp.license license=BSD
