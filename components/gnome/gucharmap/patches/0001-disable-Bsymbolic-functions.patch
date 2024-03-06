@@ -1,0 +1,15 @@
+Replaces the --disable-Bsymbolic option we used to use with configure to
+build on Solaris, since Solaris only supports the -Bsymbolic-functions
+when building a shared object, but the meson setup tries to apply it to
+programs as well, and we prefer to use -B direct instead on Solaris in general.
+
+--- gucharmap-15.1.2/meson.build	2023-10-12 08:59:47.000000000 -0700
++++ gucharmap-15.1.2/meson.build	2024-01-19 17:35:14.335481797 -0800
+@@ -229,7 +229,6 @@
+ # Linker flags
+ 
+ linker_flags = [
+-  '-Wl,-Bsymbolic-functions'
+ ]
+ 
+ foreach flag: linker_flags

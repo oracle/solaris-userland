@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -26,8 +26,6 @@
 set name=pkg.fmri \
     value=pkg:/desktop/character-map/gucharmap@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Unicode character map for the GNOME project"
-set name=com.oracle.info.baid value=$(COMPONENT_BAID)
-set name=com.oracle.info.description value=$(COMPONENT_NAME)
 set name=info.classification \
     value="org.opensolaris.category.2008:Applications/System Utilities"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
@@ -44,59 +42,131 @@ file path=usr/include/gucharmap-2.90/gucharmap/gucharmap-chapters-view.h
 file path=usr/include/gucharmap-2.90/gucharmap/gucharmap-charmap.h
 file path=usr/include/gucharmap-2.90/gucharmap/gucharmap-chartable.h
 file path=usr/include/gucharmap-2.90/gucharmap/gucharmap-codepoint-list.h
+file path=usr/include/gucharmap-2.90/gucharmap/gucharmap-macros.h
 file path=usr/include/gucharmap-2.90/gucharmap/gucharmap-script-chapters-model.h
 file path=usr/include/gucharmap-2.90/gucharmap/gucharmap-script-codepoint-list.h
 file path=usr/include/gucharmap-2.90/gucharmap/gucharmap-type-builtins.h
 file path=usr/include/gucharmap-2.90/gucharmap/gucharmap-unicode-info.h
+file path=usr/include/gucharmap-2.90/gucharmap/gucharmap-version.h
 file path=usr/include/gucharmap-2.90/gucharmap/gucharmap.h
 file path=usr/lib/$(MACH64)/girepository-1.0/Gucharmap-2.90.typelib
-link path=usr/lib/$(MACH64)/libgucharmap_2_90.so \
-    target=libgucharmap_2_90.so.7.0.0
+link path=usr/lib/$(MACH64)/libgucharmap_2_90.so target=libgucharmap_2_90.so.7
 link path=usr/lib/$(MACH64)/libgucharmap_2_90.so.7 \
     target=libgucharmap_2_90.so.7.0.0
 file path=usr/lib/$(MACH64)/libgucharmap_2_90.so.7.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/gucharmap-2.90.pc
-file path=usr/share/appdata/gucharmap.appdata.xml
 file path=usr/share/applications/gucharmap.desktop
 file path=usr/share/gir-1.0/Gucharmap-2.90.gir
-file path=usr/share/glib-2.0/schemas/org.gnome.Charmap.enums.xml
 file path=usr/share/glib-2.0/schemas/org.gnome.Charmap.gschema.xml
+file path=usr/share/gtk-doc/html/gucharmap-2.90/GucharmapBlockChaptersModel.html
+file path=usr/share/gtk-doc/html/gucharmap-2.90/GucharmapCodepointList.html
+file path=usr/share/gtk-doc/html/gucharmap-2.90/GucharmapScriptChaptersModel.html
+file path=usr/share/gtk-doc/html/gucharmap-2.90/ch01.html
+file path=usr/share/gtk-doc/html/gucharmap-2.90/gucharmap-2.90.devhelp2
+file path=usr/share/gtk-doc/html/gucharmap-2.90/gucharmap-gucharmap-chapters-model.html
+file path=usr/share/gtk-doc/html/gucharmap-2.90/gucharmap-gucharmap-chapters-view.html
+file path=usr/share/gtk-doc/html/gucharmap-2.90/gucharmap-gucharmap-charmap.html
+file path=usr/share/gtk-doc/html/gucharmap-2.90/gucharmap-gucharmap-chartable.html
+file path=usr/share/gtk-doc/html/gucharmap-2.90/gucharmap-gucharmap-script-codepoint-list.html
+file path=usr/share/gtk-doc/html/gucharmap-2.90/gucharmap-gucharmap-unicode-info.html
+file path=usr/share/gtk-doc/html/gucharmap-2.90/home.png
+file path=usr/share/gtk-doc/html/gucharmap-2.90/index.html
+file path=usr/share/gtk-doc/html/gucharmap-2.90/left-insensitive.png
+file path=usr/share/gtk-doc/html/gucharmap-2.90/left.png
+file path=usr/share/gtk-doc/html/gucharmap-2.90/right-insensitive.png
+file path=usr/share/gtk-doc/html/gucharmap-2.90/right.png
+file path=usr/share/gtk-doc/html/gucharmap-2.90/style.css
+file path=usr/share/gtk-doc/html/gucharmap-2.90/up-insensitive.png
+file path=usr/share/gtk-doc/html/gucharmap-2.90/up.png
+file path=usr/share/help/C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/C/gucharmap/index.docbook
 file path=usr/share/help/C/gucharmap/legal.xml
+link path=usr/share/help/bg/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/bg/gucharmap/index.docbook
 file path=usr/share/help/bg/gucharmap/legal.xml
+link path=usr/share/help/ca/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/ca/gucharmap/index.docbook
 file path=usr/share/help/ca/gucharmap/legal.xml
+link path=usr/share/help/cs/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/cs/gucharmap/index.docbook
 file path=usr/share/help/cs/gucharmap/legal.xml
+link path=usr/share/help/de/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/de/gucharmap/index.docbook
 file path=usr/share/help/de/gucharmap/legal.xml
+link path=usr/share/help/el/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/el/gucharmap/index.docbook
 file path=usr/share/help/el/gucharmap/legal.xml
+link path=usr/share/help/en_GB/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/en_GB/gucharmap/index.docbook
 file path=usr/share/help/en_GB/gucharmap/legal.xml
+link path=usr/share/help/es/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/es/gucharmap/index.docbook
 file path=usr/share/help/es/gucharmap/legal.xml
+link path=usr/share/help/fi/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/fi/gucharmap/index.docbook
 file path=usr/share/help/fi/gucharmap/legal.xml
+link path=usr/share/help/fr/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/fr/gucharmap/index.docbook
 file path=usr/share/help/fr/gucharmap/legal.xml
+link path=usr/share/help/gl/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/gl/gucharmap/index.docbook
 file path=usr/share/help/gl/gucharmap/legal.xml
+link path=usr/share/help/hu/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
+file path=usr/share/help/hu/gucharmap/index.docbook
+file path=usr/share/help/hu/gucharmap/legal.xml
+link path=usr/share/help/id/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
+file path=usr/share/help/id/gucharmap/index.docbook
+file path=usr/share/help/id/gucharmap/legal.xml
+link path=usr/share/help/ko/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/ko/gucharmap/index.docbook
 file path=usr/share/help/ko/gucharmap/legal.xml
+link path=usr/share/help/oc/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/oc/gucharmap/index.docbook
 file path=usr/share/help/oc/gucharmap/legal.xml
+link path=usr/share/help/pl/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
+file path=usr/share/help/pl/gucharmap/index.docbook
+file path=usr/share/help/pl/gucharmap/legal.xml
+link path=usr/share/help/pt_BR/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/pt_BR/gucharmap/index.docbook
 file path=usr/share/help/pt_BR/gucharmap/legal.xml
+link path=usr/share/help/ru/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/ru/gucharmap/index.docbook
 file path=usr/share/help/ru/gucharmap/legal.xml
+link path=usr/share/help/sl/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/sl/gucharmap/index.docbook
 file path=usr/share/help/sl/gucharmap/legal.xml
+link path=usr/share/help/sv/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/sv/gucharmap/index.docbook
 file path=usr/share/help/sv/gucharmap/legal.xml
+link path=usr/share/help/uk/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
+file path=usr/share/help/uk/gucharmap/index.docbook
+file path=usr/share/help/uk/gucharmap/legal.xml
+link path=usr/share/help/vi/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/vi/gucharmap/index.docbook
 file path=usr/share/help/vi/gucharmap/legal.xml
+link path=usr/share/help/zh_CN/gucharmap/figures/gucharmap_window.png \
+    target=../../../C/gucharmap/figures/gucharmap_window.png
 file path=usr/share/help/zh_CN/gucharmap/index.docbook
 file path=usr/share/help/zh_CN/gucharmap/legal.xml
 file path=usr/share/locale/af/LC_MESSAGES/gucharmap.mo
@@ -190,9 +260,17 @@ file path=usr/share/locale/zh_TW/LC_MESSAGES/gucharmap.mo
 file files/charmap.1 path=usr/share/man/man1/charmap.1
 file files/gnome-character-map.1 path=usr/share/man/man1/gnome-character-map.1
 file files/gucharmap.1 path=usr/share/man/man1/gucharmap.1
+file path=usr/share/metainfo/gucharmap.metainfo.xml
+file path=usr/share/vala/vapi/gucharmap-2.90.deps
 file path=usr/share/vala/vapi/gucharmap-2.90.vapi
-license COPYING license=GPLv3
-license COPYING.UNICODE license=Unicode
+license COPYING license=GPLv3 com.oracle.info.baid=$(COMPONENT_BAID) \
+    com.oracle.info.description="the gucharmap command" \
+    com.oracle.info.name=$(COMPONENT_NAME) \
+    com.oracle.info.version=$(COMPONENT_VERSION)
+license license.UCD license=Unicode com.oracle.info.baid=$(COMPONENT_BAID_1) \
+    com.oracle.info.description="the Unicode character database" \
+    com.oracle.info.name="Unicode Character Database (UCD)" \
+    com.oracle.info.version=$(COMPONENT_VERSION_1)
 depend type=require fmri=__TBD \
     pkg.debug.depend.reason=gucharmap/gucharmap-window.c \
     pkg.tmp.gsettings-schema=org.gnome.Charmap
