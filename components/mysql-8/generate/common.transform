@@ -20,11 +20,14 @@
 #
 
 #
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2024, Oracle and/or its affiliates.
 #
 
 # use MAJOR_VERSION instead real version number
 <transform path=.*/8\.0 -> edit path /8\\.0 /\$\(MAJOR_VERSION\)>
+
+# Remove GNU patch backup files
+<transform file path=.*\.\~1\~$ -> drop>
 
 # by default everything is mysql package
 <transform file link -> default pkg.type mysql>
