@@ -1171,6 +1171,9 @@ license totem.license license=GPLv2+Exceptions
 # so avoid conflict with it
 depend type=optional \
     fmri=pkg:/gnome/media/gnome-media-player@2.30.0,5.12-5.12.0.0.0.112.0
+# totem requires the autoaudiosink plugin from this file
+depend type=require fmri=__TBD \
+    pkg.debug.depend.file=usr/lib/$(MACH64)/gstreamer-1.0/libgstautodetect.so
 depend type=require fmri=__TBD \
     pkg.debug.depend.reason=src/backend/bacon-video-widget.c \
     pkg.tmp.gsettings-schema=org.gnome.system.proxy
