@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../../make-rules/shared-macros.mk
 
 GIT_REPO= https://github.com/puppetlabs/puppetlabs-concat
-GIT_COMMIT_ID=  v7.1.1
-GIT_HASH=sha256:1bffb199ce0a1825635d31608bdb4a485041fe9b577ec04af328479be5ace821
+GIT_COMMIT_ID=  v9.0.2
+GIT_HASH=sha256:be8b3b23b1c414d602fb75016e3889c97db16a53e8a6c9033f5be68172ed9f65
 
 COMPONENT_NAME=		puppetlabs-concat
 COMPONENT_VERSION=	$(GIT_COMMIT_ID:v%=%)
@@ -35,7 +35,7 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	238608
 
-COMPONENT_BAID=		122117
+COMPONENT_BAID=		160715
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/puppetmodule.mk
