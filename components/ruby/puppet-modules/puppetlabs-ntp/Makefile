@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../../make-rules/shared-macros.mk
 
 GIT_REPO= https://github.com/puppetlabs/puppetlabs-ntp
-GIT_COMMIT_ID= v9.1.0
-GIT_HASH=sha256:ee5ac3dc41ee550968d85016c49c8d9cf6e279f046a50a7543f2ae235f6088a2
+GIT_COMMIT_ID= v10.1.0
+GIT_HASH=sha256:ac8004ecdc82347e343dad65143c4eb74a289242674c8e335277478927fe8a09
 
 COMPONENT_NAME=		puppetlabs-ntp
 COMPONENT_VERSION=	$(GIT_COMMIT_ID:v%=%)
@@ -35,7 +35,7 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	238622
 
-COMPONENT_BAID=		122474
+COMPONENT_BAID=		157726
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/puppetmodule.mk
