@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 #
@@ -40,11 +40,42 @@
 # unincorporated package(s) are specified on the command line.
 #
 
+
+<transform set name=org.opensolaris.consolidation value=python -> add pkg.tmp.python-incorporate %{pkg.fmri}>
+<transform set name=org.opensolaris.consolidation pkg.tmp.python-incorporate=(.*)@(.*) -> set pkg.tmp.python-incorporate %<1>>
+<transform set name=org.opensolaris.consolidation pkg.tmp.python-incorporate=(.*)-([0-9]+)$ -> set pkg.tmp.python-incorporate %<2>>
+
+# Silently ignore packages whose pkg.fmri does not match blah/blah/blah-37
+# Such packages go into userland-incorporation even though they had
+# CONSOLIDATION=python in Makefile. This makes sure that the generic packages like
+# library/python/xattr are still governed by userland-incorporation (but
+# xattr-37 is placed into runtime/python-37-incorporation)
+<transform set name=org.opensolaris.consolidation pkg.tmp.python-incorporate=.*/.* -> set incorporate consolidation/userland/userland-incorporation>
+<transform set name=org.opensolaris.consolidation pkg.tmp.python-incorporate=.*/.* -> delete pkg.tmp.python-incorporate .*>
+
+# Now remove all packages which were already obsoleted. Those will go into
+# userland-incorporation instead. This should be updated whenever (if ever) we
+# decide to get rid of specific python incorporation for good (== we no longer
+# want to support "simple" freezing for that version).
+#
+# Remove python 2.x packages which are already obsolete
+<transform set name=org.opensolaris.consolidation pkg.tmp.python-incorporate=^2.* -> set incorporate consolidation/userland/userland-incorporation>
+<transform set name=org.opensolaris.consolidation pkg.tmp.python-incorporate=^2.* -> delete pkg.tmp.python-incorporate .*>
+#
+# Remove python 3.x packages which are already obsolete
+<transform set name=org.opensolaris.consolidation pkg.tmp.python-incorporate=^3[45]$ -> set incorporate consolidation/userland/userland-incorporation>
+<transform set name=org.opensolaris.consolidation pkg.tmp.python-incorporate=^3[45]$ -> delete pkg.tmp.python-incorporate .*>
+
+<transform set name=org.opensolaris.consolidation pkg.tmp.python-incorporate=(.+) -> set pkg.tmp.python-incorporate runtime/python-%<1>-incorporation>
+<transform set name=org.opensolaris.consolidation pkg.tmp.python-incorporate=(.+) -> set incorporate %<1>>
+<transform set name=org.opensolaris.consolidation pkg.tmp.python-incorporate=(.+) -> delete pkg.tmp.python-incorporate .*>
+
 #
 # Add a default incorporate decoration if none exists.
 #
 <transform set name=org.opensolaris.consolidation -> \
     default incorporate consolidation/userland/userland-incorporation>
+
 
 #
 # convert the org.opensolaris.consolidation 'incorporate' attribute

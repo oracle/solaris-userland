@@ -20,8 +20,10 @@
 #
 
 #
-# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
+
+CONSOLIDATION = python
 
 $(BUILD_DIR)/%-3.7/.built:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.built:		PYTHON_VERSION=3.9

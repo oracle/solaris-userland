@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
+
 include ../../make-rules/shared-macros.mk
 
 PATH=$(USRBINDIR):$(GNUBIN):$(USRSBINDIR)
@@ -47,6 +48,10 @@ BUILD_STYLE= setup.py
 
 # Add install dependency when system-test target is implemented.
 include $(WS_MAKE_RULES)/common.mk
+
+# Mercurial does not belong to python incorporation even though it uses
+# 'setup.py' BUILD_STYLE
+CONSOLIDATION = userland
 
 # Move the 'hg' main binary into it's own directory so that it can be mediated
 COMPONENT_POST_INSTALL_ACTION = \

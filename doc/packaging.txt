@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 
 
@@ -520,5 +520,122 @@ obsolete packages will be created from 'history' as usual in addition to the
 packages being delivered to the experimental repo.
 
 
+
+=====================
+Python incorporations
+=====================
+
+a) incorporations
+-----------------
+All installed packages on a system should normally be from the same build
+(or SRU). If we install packages from different builds we risk that they might
+not work together. Such coherence is achieved by incorporations. Incorporation
+is a package which lists what version of each package can be installed.
+See pkg(7) - Depend Actions - type - incorporate.
+Biggest incorporation is userland-incorporation which lists most of the
+packages delivered by userland consolidation.
+
+b) facets
+---------
+
+There are however exceptional situations when we want to install a package from
+different build. For this reason the incorporations contain a mechanism which
+can circumvent the incorporation limit for a specific package. For this reason
+the incorporations do contain facets which allow us to disable single specific
+incorporation dependency. For example the following action from userland-incorporation:
+
+depend facet.version-lock.archiver/unrar=true fmri=archiver/unrar@6.2.10-11.4.69.0.0.165.0 type=incorporate
+
+says that as long as userland-incorporation is installed the unrar package must
+be of a specific version. But only when facet.version-lock.archiver/unrar is
+set to true. Such facet is considered to be true by default.
+(see FACETS AND VARIANTS in pkg(7)). If we want to install different version of
+unrar we have to set the fact to false first:
+
+pkg change-facet facet.version-lock.archiver/unrar=false
+
+That disables the incorporation for unrar package and we can potentially
+install any FMRI of unrar package.
+
+Please note that this is simplified case. Other packages may have more
+dependencies on unrar. Also unrar itself may have dependencies on the rest of
+the system. All such dependencies have to be satisfied without regard to how
+the facet is set.
+
+c) freezing
+-----------
+Freezing a package means to allow the whole system to update with the exception
+of the package. In order to achieve that you have to
+ - tell IPS to make given package un-changeable (example: pkg freeze archiver/unrar)
+ - tell IPS to relax incorporation depends (example: pkg change-facet facet.version-lock.archiver/unrar=false)
+
+After that you can update whole system and leave the unrar unchanged (with the
+caveat mentioned in note above).
+
+d) groups of packages
+---------------------
+Some packages are logically grouped together. For example python 3.7 (or any
+other version) and all it's modules. If one wants to freeze python 3.7 (perhaps
+because python 3.7 is going to be removed from Solaris) one would have to apply
+'freezing' as mentioned above to any and all python 3.7 related packages. This
+is quite impractical. In order to solve that we are introducing python
+incorporations. That means that there is new incorporation (for example
+runtime/python-37-incorporation) which lists all python 3.7 modules. It
+supports the same facets as userland-incorporation. When you want to freeze
+python 3.7 you need to freeze only this one incorporation. For example:
+
+pkg change-facet -v facet.version-lock.runtime/python-37-incorporation=false
+pkg freeze runtime/python-37-incorporation@11.4
+pkg update ...
+
+This allows the main userland-incorporation to be updated while keeping "old"
+python-37-incorporation intact. And the "old" incorporation keeps all python
+3.7 modules consistent with regards to build number.
+
+e) python incorporations
+------------------------
+
+In order to make group packages unconditionally bound by python incorporation
+(similarly to other packages are bound by userland-incorporation) we must make
+sure that the python incorporation is installed. Every package which uses
+python does require runtime/python-XY. So it is enough to make this
+runtime/python-XY require runtime/python-XY-incorporation to be present.
+
+f) Implementation and the use of python incorporations
+------------------------------------------------------------
+This feature is used to be able to freeze python runtime and corresponding
+modules in a simple way. Each python version has it's own incorporation.
+Userland infrastructure already has means of placing a package into different
+incorporation (default is userland-incorporation). Moving a package into python
+incorporation is done by setting make variable
+
+CONSOLIDATION = python
+
+This is automatically set in make-rules/python-common.mk so any python module
+is taken care of. Any other packages belonging to python-incorporation (such as
+the runtime itself which does not use python-common.mk) has to include the
+line above.
+
+On the other hand packages which do use python-common.mk, but should not be
+included in python incorporation must have
+
+CONSOLIDATION = userland
+
+this is for example mercurial. Please remember that the goal is to lock
+together python interpreter and any modules. Not every package using given
+python interpreter.
+
+g) Obsoleting python
+--------------------
+Once we obsolete python we must make sure that the obsolete packages are not
+going to be installed. We must make the python incorporation a version 99
+(generally something > than 11.4). This is done by new argument to
+userland-incorporator in $WS/components/Makefile:
+
+		$(WS_TOOLS)/userland-incorporator \
+			--repository $(PKG_REPO) \
+			--version $(PKG_SOLARIS_VERSION),$(BUILD_VERSION) \
+            --incorporation-version runtime/python-37-incorporation=99 \  <-----
+            ...
 
 # vi:set fdm=marker expandtab ts=4:

@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 #
 # incorporator - an utility to incorporate packages in a repo
@@ -48,12 +48,18 @@ def warning(msg):
     else:
         sys.stderr.write(f"WARNING: {msg}\n")
 
+# 'args' is a global variable
+args: argparse.Namespace
+
+def name_to_incorporation_version(name: str):
+    global args
+    return args.incorporation_version.get(name, args.incorporation_version[''])
 
 class Incorporation:
 
-    def __init__(self, name: str, args: argparse.Namespace):
+    def __init__(self, name: str):
         self._name = name
-        self._args = args
+        self._version = name_to_incorporation_version(name)
         self._packages: Dict[str, str] = {}
 
     @staticmethod
@@ -69,15 +75,16 @@ class Incorporation:
         self._packages[name] = version
 
     def __str__(self) -> str:
+        global args
         result = f"""
-set name=pkg.fmri value=pkg:/{self._name}@{self._args.version}
+set name=pkg.fmri value=pkg:/{self._name}@{self._version}
 set name=info.classification value="org.opensolaris.category.2008:Meta Packages/Incorporations"
 set name=org.opensolaris.consolidation value=userland
 set name=pkg.depend.install-hold value=core-os.userland
 set name=pkg.summary value="userland consolidation incorporation ({self._name})"
 set name=pkg.description value="This incorporation constrains packages from the userland consolidation"
-set name=com.oracle.info.consolidation.repository-changeset value="{self._args.repository_changeset}"
-set name=com.oracle.info.consolidation.repository-url value="{self._args.repository_url}"
+set name=com.oracle.info.consolidation.repository-changeset value="{args.repository_changeset}"
+set name=com.oracle.info.consolidation.repository-url value="{args.repository_url}"
 """
 
         for name in sorted(self._packages):
@@ -86,20 +93,17 @@ set name=com.oracle.info.consolidation.repository-url value="{self._args.reposit
         return result
 
 
-def get_incorporations(args: argparse.Namespace):
+def get_incorporations():
     """Get dict with Incorporations full of their packages.
 
     Note: This should probably use the pkg APIs at some point, but this appears
         to be a stable and less complicated interface to gathering information
         from the manifests in the package repo.
-
-    Args:
-        args: parsed command line arguments
-
     Returns:
         Dictionary with inc names as keys and Incorporations as values.
     """
 
+    global args
     incorporations: Dict[str, Incorporation] = {}
     versions = {}
 
@@ -180,16 +184,28 @@ def get_incorporations(args: argparse.Namespace):
         for inc_name in incorporate:
             # if we haven't started to build this incorporation, create one.
             if inc_name not in incorporations:
-                incorporations[inc_name] = Incorporation(inc_name, args)
+                incorporations[inc_name] = Incorporation(inc_name)
             # find the incorporation and add the package
             incorporation = incorporations[inc_name]
             incorporation[pkg_name] = pkg_version
+
+    #
+    # Normally the incorporations contain only regular packages, not other
+    # incorporations. The incorporations are instead 'held together' by
+    # 'entire' package. There is an exception for python incorporations which
+    # are listed in userland-incorporation. So here we add all python
+    # incorporations packages into userland-incorporation.
+    #
+    userland = incorporations["consolidation/userland/userland-incorporation"]
+    for i in incorporations:
+        if re.search("^runtime/python-\d+-incorporation$", i):
+            userland[i] = name_to_incorporation_version(i)
 
     return incorporations
 
 
 def main():
-    global Werror
+    global Werror, args
 
     parser = argparse.ArgumentParser(
         description="Incorporate packages in the repo.")
@@ -200,7 +216,9 @@ def main():
     parser.add_argument('-p', '--publisher', required=True,
         help="Selected publisher in given repository.")
     parser.add_argument('-v', '--version', default='5.12',
-        help="Newly created incorporation version.")
+        help="Default incorporation version.")
+    parser.add_argument('-i', '--incorporation-version', action='append',
+        help="Version of a specific incorporation (-i runtime/python-37-incorporation=99).")
     parser.add_argument('-d', '--destdir', default='',
         help="Directory of newly created incorporation manifest file.")
     parser.add_argument('-w', '--Werror', action='store_true',
@@ -215,7 +233,17 @@ def main():
     if args.Werror:
         Werror = True
 
-    incorporations = get_incorporations(args)
+    # Process --version and --incorporation-version
+    temp_version_dict={'': args.version} # Empty key holds default version
+    for commandline_string in args.incorporation_version or []:
+        match = re.search("^([^=]+)=([0-9.]+)$", commandline_string)
+        if match is None:
+            print(f"Error, incorporatino version should be in the form of 'blah/blah/blah@1.2.3'. But it is '{commandline_string}'")
+            sys.exit(1)
+        temp_version_dict[match[1]]=match[2]
+    args.incorporation_version = temp_version_dict
+
+    incorporations = get_incorporations()
 
     for incorporation_name in incorporations:
         filename = os.path.join(args.destdir,

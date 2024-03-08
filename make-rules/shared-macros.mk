@@ -109,7 +109,7 @@ ID=	/usr/bin/id
 # We want "nightly" as our publisher, to match other consolidations and
 # facilitate migrations. G11N wants $(CONSOLIDATION)-localizable for the
 # localizable publisher.
-CONSOLIDATION =	userland
+CONSOLIDATION ?=	userland
 PUBLISHER ?=	nightly
 PUBLISHER_LOCALIZABLE ?=	$(CONSOLIDATION)-localizable
 

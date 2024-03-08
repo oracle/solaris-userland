@@ -39,6 +39,8 @@ COMPONENT_BUGDB       = utility/python
 COMPONENT_ANITYA_ID   = 300958
 COMPONENT_BAID        = 149679
 
+CONSOLIDATION = python
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk
 include $(WS_MAKE_RULES)/ips.mk
