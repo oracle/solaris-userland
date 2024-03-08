@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 COMPILER= gcc
 BUILD_BITS= 64
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:f3ae8d3d4564a41b6e2a21f237d2f2b104f48108591e8b83497500182a3ab3a4
 COMPONENT_ANITYA_ID=	5
 
-COMPONENT_BAID=		690
+COMPONENT_BAID=		161033
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
