@@ -59,6 +59,7 @@ CONFIGURE_ENV		+=	PYTHON=$(PYTHON.$(PYTHON_VERSION))
 # Avahi doesn't know sunos
 CONFIGURE_OPTIONS	+=	--with-distro=none
 CONFIGURE_OPTIONS	+=	--sysconfdir="$(ETCDIR)"
+CONFIGURE_OPTIONS	+=	--localstatedir=/var
 CONFIGURE_OPTIONS	+=	--disable-qt5
 CONFIGURE_OPTIONS	+=	--disable-mono
 CONFIGURE_OPTIONS	+=	--with-avahi-user=daemon
