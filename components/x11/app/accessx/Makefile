@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE=
 COMPONENT_ARCHIVE_SRC=	none
 COMPONENT_BUGDB=	x11/xclients
 COMPONENT_ANITYA_ID=	N/A
-COMPONENT_BAID=		44520
+COMPONENT_BAID=		161350
 
 # nothing to download ; just build & package
 BUILD_STYLE= justmake
