@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tomcat
-COMPONENT_VERSION=	8.5.96
-COMPONENT_BAID=		155144
+COMPONENT_VERSION=	8.5.99
+COMPONENT_BAID=		161629
 COMPONENT_PROJECT_URL=	https://tomcat.apache.org/
 COMPONENT_SRC_NAME=	apache-tomcat
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6e436bfa5cdb87d2f67924f170498a78e238511638ad63745bb85e934b0b8d98
+    sha256:62ade4d6bf615f78a5495b5ced831a63b1f8617804dfa6e9952a4240453dcda6
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/tomcat/tomcat-8/v$(COMPONENT_VERSION)/src/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4987
