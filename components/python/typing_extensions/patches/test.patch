@@ -3,6 +3,11 @@ The PyPI archive doesn't include one file necessary for testing.
 This issue was reported upstream:
 https://github.com/python/typing_extensions/issues/61
 
+In Python 3.11, ann_modules were moved and need to be imported
+from a different place.
+
+This was already fixed upstream.
+
 --- /dev/null
 +++ typing_extensions-4.3.0/src/_typed_dict_test_helper.py
 @@ -0,0 +1,8 @@
@@ -14,3 +19,17 @@ https://github.com/python/typing_extensions/issues/61
 +
 +class FooGeneric(TypedDict, Generic[T]):
 +    a: Optional[T]
+--- typing_extensions-4.3.0/src/test_typing_extensions.py
++++ typing_extensions-4.3.0/src/test_typing_extensions.py
+@@ -13,7 +13,10 @@ import subprocess
+ import types
+ from unittest import TestCase, main, skipUnless, skipIf
+ from unittest.mock import patch
+-from test import ann_module, ann_module2, ann_module3
++try:
++    from test import ann_module, ann_module2, ann_module3
++except ImportError:
++    from test.typinganndata import ann_module, ann_module2, ann_module3
+ import typing
+ from typing import TypeVar, Optional, Union, Any, AnyStr
+ from typing import T, KT, VT  # Not in __all__.

@@ -1,9 +1,9 @@
 This patch adds Python debugger support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-3.11.5/Makefile.pre.in
-+++ Python-3.11.5/Makefile.pre.in
-@@ -585,7 +585,7 @@ LIBEXPAT_HEADERS= \
+--- Python-3.11.8/Makefile.pre.in
++++ Python-3.11.8/Makefile.pre.in
+@@ -586,7 +586,7 @@ LIBEXPAT_HEADERS= \
  # Default target
  all:		@DEF_MAKE_ALL_RULE@
  build_all:	check-clean-src $(BUILDPYTHON) platform oldsharedmods sharedmods \
@@ -12,7 +12,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  build_wasm: check-clean-src $(BUILDPYTHON) platform oldsharedmods python-config
  
  # Check that the source is clean when building out of source.
-@@ -961,6 +961,18 @@ regen-re: $(BUILDPYTHON)
+@@ -965,6 +965,18 @@ regen-re: $(BUILDPYTHON)
  	# using Tools/scripts/generate_re_casefix.py
  	$(RUNSHARED) ./$(BUILDPYTHON) $(srcdir)/Tools/scripts/generate_re_casefix.py $(srcdir)/Lib/re/_casefix.py
  
@@ -31,7 +31,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  Programs/_testembed: Programs/_testembed.o $(LINK_PYTHON_DEPS)
  	$(LINKCC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/_testembed.o $(LINK_PYTHON_OBJS) $(LIBS) $(MODLIBS) $(SYSLIBS)
  
-@@ -1742,7 +1754,7 @@ multissltest: all
+@@ -1747,7 +1759,7 @@ multissltest: all
  # prevent race conditions with PGO builds. PGO builds use recursive make,
  # which can lead to two parallel `./python setup.py build` processes that
  # step on each others toes.
@@ -40,8 +40,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  	if test "x$(ENSUREPIP)" != "xno"  ; then \
  		case $(ENSUREPIP) in \
  			upgrade) ensurepip="--upgrade" ;; \
---- Python-3.11.5/py_db/libpython311_db.c
-+++ Python-3.11.5/py_db/libpython311_db.c
+--- Python-3.11.8/py_db/libpython311_db.c
++++ Python-3.11.8/py_db/libpython311_db.c
 @@ -0,0 +1,858 @@
 +/*
 + * Licensed to PSF under a Contributor Agreement.
@@ -901,8 +901,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +
 +	free(iter);
 +}
---- Python-3.11.5/py_db/libpython311_db.h
-+++ Python-3.11.5/py_db/libpython311_db.h
+--- Python-3.11.8/py_db/libpython311_db.h
++++ Python-3.11.8/py_db/libpython311_db.h
 @@ -0,0 +1,73 @@
 +/*
 + * CDDL HEADER START
@@ -977,8 +977,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +#endif
 +
 +#endif	/* _LIBPYTHON311_DB_H */
---- Python-3.11.5/py_db/mapfile-vers
-+++ Python-3.11.5/py_db/mapfile-vers
+--- Python-3.11.8/py_db/mapfile-vers
++++ Python-3.11.8/py_db/mapfile-vers
 @@ -0,0 +1,39 @@
 +#
 +# CDDL HEADER START

@@ -7,8 +7,6 @@ Curses library fixes: Bug 22661864
 
 Changes to directory inclusion: Bug 20367692
 
-Libsocket tweaks: Bug 21959680
-
 --- Python-3.9.13/setup.py
 +++ Python-3.9.13/setup.py
 @@ -733,12 +733,15 @@ class PyBuildExt(build_ext):
@@ -93,11 +91,3 @@ Libsocket tweaks: Bug 21959680
          elif not skip_curses_panel:
              self.missing.append('_curses_panel')
  
-@@ -1142,6 +1180,7 @@ class PyBuildExt(build_ext):
-                 # Issue #35569: Expose RFC 3542 socket options.
-                 kwargs['extra_compile_args'] = ['-D__APPLE_USE_RFC_3542']
- 
-+            kwargs['libraries'] = ['socket', 'nsl']
-             self.add(Extension('_socket', ['socketmodule.c'], **kwargs))
-         elif self.compiler.find_library_file(self.lib_dirs, 'net'):
-             libs = ['net']

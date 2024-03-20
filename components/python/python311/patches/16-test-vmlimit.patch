@@ -5,9 +5,9 @@ slightly tweaked form at some point in the future.
 Note that this can also have wrong impact on other tests (e.g., imap which
 tries to allocate huge chunks of virtual memory).
 
---- Python-3.11.0/Lib/test/libregrtest/setup.py
-+++ Python-3.11.0/Lib/test/libregrtest/setup.py
-@@ -66,6 +66,19 @@ def setup_tests(ns):
+--- Python-3.11.8/Lib/test/libregrtest/setup.py
++++ Python-3.11.8/Lib/test/libregrtest/setup.py
+@@ -70,6 +70,19 @@ def setup_process():
          if getattr(module, '__file__', None):
              module.__file__ = os.path.abspath(module.__file__)
  
@@ -24,6 +24,6 @@ tries to allocate huge chunks of virtual memory).
 +            vm_limit = 8589934592
 +            resource.setrlimit(resource.RLIMIT_VMEM, (vm_limit, vm_limit))
 +
-     if ns.huntrleaks:
-         unittest.BaseTestSuite._cleanup = False
- 
+     if hasattr(sys, 'addaudithook'):
+         # Add an auditing hook for all tests to ensure PySys_Audit is tested
+         def _test_audit_hook(name, args):

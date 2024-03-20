@@ -8,8 +8,8 @@ This was offered and merged upstream; it will be available in Python 3.13:
 https://github.com/python/cpython/issues/113119
 https://github.com/python/cpython/pull/113120
 
---- Python-3.11.5/Lib/subprocess.py
-+++ Python-3.11.5/Lib/subprocess.py
+--- Python-3.11.8/Lib/subprocess.py
++++ Python-3.11.8/Lib/subprocess.py
 @@ -1753,9 +1753,6 @@ class Popen:
                           c2pread, c2pwrite,
                           errread, errwrite):
@@ -20,9 +20,9 @@ https://github.com/python/cpython/pull/113120
              kwargs = {}
              if restore_signals:
                  # See _Py_RestoreSignals() in Python/pylifecycle.c
---- Python-3.11.5/Modules/posixmodule.c
-+++ Python-3.11.5/Modules/posixmodule.c
-@@ -6291,9 +6291,9 @@ py_posix_spawn(int use_posix_spawnp, PyO
+--- Python-3.11.8/Modules/posixmodule.c
++++ Python-3.11.8/Modules/posixmodule.c
+@@ -6316,9 +6316,9 @@ py_posix_spawn(int use_posix_spawnp, PyO
          return NULL;
      }
  
@@ -34,7 +34,7 @@ https://github.com/python/cpython/pull/113120
          goto exit;
      }
  
-@@ -6307,9 +6307,13 @@ py_posix_spawn(int use_posix_spawnp, PyO
+@@ -6332,9 +6332,13 @@ py_posix_spawn(int use_posix_spawnp, PyO
          goto exit;
      }
  
@@ -51,7 +51,7 @@ https://github.com/python/cpython/pull/113120
      }
  
      if (file_actions != NULL && file_actions != Py_None) {
-@@ -6372,7 +6376,7 @@ exit:
+@@ -6397,7 +6401,7 @@ exit:
      if (attrp) {
          (void)posix_spawnattr_destroy(attrp);
      }

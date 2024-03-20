@@ -4,8 +4,8 @@ of, and hence we can reenable it within the shutil module.
 This was requested upstream as well:
 https://github.com/python/cpython/issues/86009
 
---- Python-3.11.5/Lib/shutil.py
-+++ Python-3.11.5/Lib/shutil.py
+--- Python-3.11.8/Lib/shutil.py
++++ Python-3.11.8/Lib/shutil.py
 @@ -42,7 +42,7 @@ elif _WINDOWS:
  COPY_BUFSIZE = 1024 * 1024 if _WINDOWS else 64 * 1024
  # This should never be removed, see rationale in:
@@ -15,9 +15,9 @@ https://github.com/python/cpython/issues/86009
  _HAS_FCOPYFILE = posix and hasattr(posix, "_fcopyfile")  # macOS
  
  # CMD defaults in Windows 10
---- Python-3.11.5/Doc/library/shutil.rst
-+++ Python-3.11.5/Doc/library/shutil.rst
-@@ -471,7 +471,8 @@ the use of userspace buffers in Python a
+--- Python-3.11.8/Doc/library/shutil.rst
++++ Python-3.11.8/Doc/library/shutil.rst
+@@ -474,7 +474,8 @@ the use of userspace buffers in Python a
  
  On macOS `fcopyfile`_ is used to copy the file content (not metadata).
  

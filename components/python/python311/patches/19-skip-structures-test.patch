@@ -1,0 +1,19 @@
+There are issues with structures of small float/double arrays being
+returned from function on SPARC.
+
+This issue is known upstream:
+https://github.com/python/cpython/issues/110190
+
+--- cpython-3.11/Lib/ctypes/test/test_structures.py
++++ cpython-3.11/Lib/ctypes/test/test_structures.py
+@@ -543,6 +543,10 @@ class StructureTestCase(unittest.TestCas
+             _fields_ = [('x', c_double)]
+         self._test_issue18060(Vector)
+ 
++    @unittest.skipIf(
++        platform.processor() == 'sparc',
++        "gh-110190: currently fails on SPARC",
++    )
+     def test_array_in_struct(self):
+         # See bpo-22273
+ 

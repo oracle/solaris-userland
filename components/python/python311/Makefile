@@ -28,16 +28,16 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = Python
-COMPONENT_VERSION     = 3.11.5
+COMPONENT_VERSION     = 3.11.8
 COMPONENT_PROJECT_URL = https://python.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:85cd12e9cf1d6d5a45f17f7afe1cebe7ee628d3282281c492e86adf636defa3f
+    sha256:9e06008c8901924395bc1da303eac567a729ae012baa182ab39269f650383bb3
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)ftp/python/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB       = utility/python
 COMPONENT_ANITYA_ID   = 300958
-COMPONENT_BAID        = 149679
+COMPONENT_BAID        = 158872
 
 CONSOLIDATION = python
 
@@ -204,7 +204,7 @@ COMPONENT_SYSTEM_TEST_ARGS = /usr/lib/python3.11/test/regrtest.py -v -uall,-netw
 # this; we need heavier artillery.  Extract just the sections that start
 # with "tests OK." and end with "Re-running failed tests..." for comparison.
 COMPONENT_TEST_TRANSFORMER = $(NAWK)
-COMPONENT_TEST_TRANSFORMS  = "'/tests OK./ {results = 1}; /Total duration/ {results = 0}; /Re-running failed tests in verbose mode/ {results = 0} {if (results) print $0 }'"
+COMPONENT_TEST_TRANSFORMS  = "'/Tests result/ {results = 1}; /Total duration/ {results = 0}; /Re-running failed tests in verbose mode/ {results = 0} {if (results) print $0 }'"
 
 test:        $(TEST_64)
 system-test: $(SYSTEM_TEST_64)

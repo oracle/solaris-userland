@@ -7,11 +7,9 @@ Curses library fixes: Bug 22661864
 
 Changes to directory inclusion: Bug 20367692
 
-Libsocket tweaks: Bug 21959680
-
---- Python-3.11.2/setup.py
-+++ Python-3.11.2/setup.py
-@@ -843,12 +843,15 @@ class PyBuildExt(build_ext):
+--- Python-3.11.8/setup.py
++++ Python-3.11.8/setup.py
+@@ -844,12 +844,15 @@ class PyBuildExt(build_ext):
                          add_dir_to_list(dir_list, directory)
  
      def configure_compiler(self):
@@ -32,16 +30,16 @@ Libsocket tweaks: Bug 21959680
          # only change this for cross builds for 3.3, issues on Mageia
          if CROSS_COMPILING:
              self.add_cross_compiling_paths()
-@@ -970,7 +973,7 @@ class PyBuildExt(build_ext):
+@@ -971,7 +974,7 @@ class PyBuildExt(build_ext):
          # grp(3)
          self.addext(Extension('grp', ['grpmodule.c']))
  
 -        self.addext(Extension('_socket', ['socketmodule.c']))
-+        self.addext(Extension('_socket', ['socketmodule.c'], libraries=['socket', 'nsl', 'resolv']))
++        self.addext(Extension('_socket', ['socketmodule.c'], libraries=['resolv']))
          self.addext(Extension('spwd', ['spwdmodule.c']))
  
          # select(2); not on ancient System V
-@@ -1111,8 +1114,16 @@ class PyBuildExt(build_ext):
+@@ -1112,8 +1115,16 @@ class PyBuildExt(build_ext):
                                                       ['/usr/lib/termcap'],
                                                       'termcap'):
                  readline_libs.append('termcap')
@@ -58,7 +56,7 @@ Libsocket tweaks: Bug 21959680
                                 libraries=readline_libs))
          else:
              self.missing.append('readline')
-@@ -1144,6 +1155,10 @@ class PyBuildExt(build_ext):
+@@ -1145,6 +1156,10 @@ class PyBuildExt(build_ext):
  
          curses_enabled = True
          if curses_library.startswith('ncurses'):
@@ -69,7 +67,7 @@ Libsocket tweaks: Bug 21959680
              curses_libs = [curses_library]
              self.add(Extension('_curses', ['_cursesmodule.c'],
                                 include_dirs=curses_includes,
-@@ -1171,10 +1186,34 @@ class PyBuildExt(build_ext):
+@@ -1172,10 +1187,34 @@ class PyBuildExt(build_ext):
          skip_curses_panel = True if AIX else False
          if (curses_enabled and not skip_curses_panel and
                  self.compiler.find_library_file(self.lib_dirs, panel_library)):
