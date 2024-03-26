@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-clocks
-COMPONENT_VERSION=	41.0
+COMPONENT_VERSION=	44.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Clocks
 COMPONENT_ARCHIVE_HASH= \
-	sha256:df8c8b04ab92fa618f5dee5118571ef9fc9e8a5b795ea00a35c6dc677cb02dac
+	sha256:17d7a97365cb8f1a023a1d78f7501f3353217fa7577d73afe7d0ca1e3b4f3838
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	10905
 
-COMPONENT_BAID=		110759
+COMPONENT_BAID=		161769
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -54,9 +54,9 @@ REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/geoclue
 REQUIRED_PACKAGES += library/desktop/geocode-glib
 REQUIRED_PACKAGES += library/desktop/gsound
-REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/gtk4
+REQUIRED_PACKAGES += library/desktop/libadwaita
 REQUIRED_PACKAGES += library/desktop/libgweather
-REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += system/library/math
