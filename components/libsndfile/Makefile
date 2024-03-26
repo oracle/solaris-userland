@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -28,17 +28,16 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsndfile
-COMPONENT_VERSION=	1.1.0
+COMPONENT_VERSION=	1.2.2
 COMPONENT_PROJECT_URL=	http://libsndfile.github.io/libsndfile/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0f98e101c0f7c850a71225fb5feaf33b106227b3d331333ddc9bacee190bcf41
+    sha256:3799ca9924d3125038880367bf1468e53a1b7e3686a934f098b7e1d286cdb80e
 COMPONENT_ARCHIVE_URL=	\
 	https://github.com/libsndfile/libsndfile/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
-#COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libsndfile
 COMPONENT_ANITYA_ID=	13277
-COMPONENT_BAID=		127281
+COMPONENT_BAID=		161694
 
 PYTHON_VERSION = 3.11
 
