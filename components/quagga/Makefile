@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2006, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2006, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	service/quagga
 COMPONENT_ANITYA_ID=	4139
 
-COMPONENT_BAID=		8062
+COMPONENT_BAID=		161755
 
 PATCH_LEVEL = 0
 
