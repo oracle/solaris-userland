@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+CONSOLIDATION = python
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mod_wsgi
