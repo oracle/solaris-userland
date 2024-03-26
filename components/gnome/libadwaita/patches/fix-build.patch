@@ -1,0 +1,43 @@
+Fix compile errors
+
+--- a/src/adw-tab-overview.c	2024-03-16 01:53:16.865525918 -0700
++++ b/src/adw-tab-overview.c	2024-03-16 01:53:39.415264718 -0700
+@@ -910,7 +910,9 @@
+   n_pages = adw_tab_view_get_n_pages (self->view);
+ 
+   /* Translators: Tab overview title, %u is the number of open tabs */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+   title_str = g_strdup_printf (dngettext (GETTEXT_PACKAGE, "%u Tab", "%u Tabs", n_pages), n_pages);
++#pragma GCC diagnostic pop
+ 
+   adw_window_title_set_title (ADW_WINDOW_TITLE (self->title), title_str);
+ 
+--- a/demo/pages/toasts/adw-demo-page-toasts.c	2024-03-16 01:55:28.837003737 -0700
++++ b/demo/pages/toasts/adw-demo-page-toasts.c	2024-03-16 01:56:20.037695893 -0700
+@@ -47,10 +47,12 @@
+   self->toast_undo_items++;
+ 
+   if (self->undo_toast) {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+     char *title =
+       g_strdup_printf (ngettext ("<span font_features='tnum=1'>%d</span> item deleted",
+                                  "<span font_features='tnum=1'>%d</span> items deleted",
+                                  self->toast_undo_items), self->toast_undo_items);
++#pragma GCC diagnostic pop
+ 
+     adw_toast_set_title (self->undo_toast, title);
+ 
+@@ -123,10 +125,13 @@
+ void
+ adw_demo_page_toasts_undo (AdwDemoPageToasts *self)
+ {
++
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+   char *title =
+     g_strdup_printf (ngettext ("Undoing deleting <span font_features='tnum=1'>%d</span> item…",
+                                "Undoing deleting <span font_features='tnum=1'>%d</span> items…",
+                                self->toast_undo_items), self->toast_undo_items);
++#pragma GCC diagnostic pop
+   AdwToast *toast = adw_toast_new (title);
+ 
+   adw_toast_set_priority (toast, ADW_TOAST_PRIORITY_HIGH);
