@@ -1,0 +1,33 @@
+As of Groff 1.23.0, the following characters are no longer mapped to Basic
+Latin code points on UTF-8 devices. This can cause problems with incorrectly
+formatted man pages where e.g. - (now mapped to the utf-8 hyphen) is used in
+places where \- should be (mapped to ASCII minus), resulting in problems with
+search and/or copy-paste.
+
+This patch reverts to the old behavior.
+
+For further information, see bug 36441822.
+
+--- groff-1.23.0/tmac/man.local
++++ groff-1.23.0/tmac/man.local
+@@ -24,6 +24,20 @@
+ .\" Set this register to configure which the `MR` macro uses.
+ .\" .nr an*MR-URL-format 1
+ .\"
++.\" As of Groff 1.23.0, the following characters are no longer mapped
++.\" to Basic Latin code points on UTF-8 devices. This can cause problems
++.\" with incorrectly formatted man pages where e.g. - (now mapped to the
++.\" utf-8 hyphen) is used in places where \- should be (mapped to ASCII
++.\" minus), resulting in problems with search and/or copy-paste.
++.\" The following reverts to the old behavior.
++.if '\*[.T]'utf8' \{\
++.  char ' \[aq]
++.  char - \-
++.  char ^ \[ha]
++.  char ` \[ga]
++.  char ~ \[ti]
++.\}
++.\"
+ .\" Local Variables:
+ .\" mode: nroff
+ .\" fill-column: 72
