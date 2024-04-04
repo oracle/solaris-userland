@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -52,7 +52,7 @@ LD_OPTIONS += \
         -R$(X11_SERVERMODS_DIR) \
         -R$(X11_SERVERLIBS_DIR)/$(MACH64) \
         -M $(COMPONENT_DIR)/mapfile.externs \
-        -lfb -lint10 -lpciaccess -lpixman-1 \
+        -lint10 -lpciaccess -lpixman-1 \
         -lexa -lvgahw -lm -ldrm -lshadow
 
 REQUIRED_PACKAGES += diagnostic/scanpci

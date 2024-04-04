@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -48,7 +48,7 @@ CONFIGURE_OPTIONS += --disable-dri
 # Libraries/modules to link with
 AST_LIBRARIES.sparc = # nothing extra
 AST_LIBRARIES.i386 = -lint10 -lpciaccess -lvgahw
-AST_LIBRARIES = -lfb -lshadow $(AST_LIBRARIES.$(MACH))
+AST_LIBRARIES = -lshadow $(AST_LIBRARIES.$(MACH))
 LD_SHARED_OPTIONS += -L$(X11_SERVERMODS_DIR) -R$(X11_SERVERMODS_DIR)
 LD_SHARED_OPTIONS += $(AST_LIBRARIES)
 

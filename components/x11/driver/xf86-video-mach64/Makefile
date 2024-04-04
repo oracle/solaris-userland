@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -46,7 +46,7 @@ CONFIGURE_OPTIONS += --disable-dri
 LD_OPTIONS += \
         -L$(X11_SERVERMODS_DIR) \
         -R$(X11_SERVERMODS_DIR) \
-        -lexa -lint10 -lpciaccess -lfb -lpixman-1 -lshadowfb 
+        -lexa -lint10 -lpciaccess -lpixman-1 -lshadowfb 
 
 REQUIRED_PACKAGES += diagnostic/scanpci
 REQUIRED_PACKAGES += library/graphics/pixman
