@@ -1,0 +1,48 @@
+We ship only libadwaita 1.3.6 in Solaris, so revert commit that references
+the newer API
+
+https://gitlab.gnome.org/GNOME/gnome-shell/-/commit/382434103c99efecf0c6b4a1ca68c90bcc5f40e6
+
+--- a/subprojects/extensions-app/data/ui/extensions-window.ui	2024-04-04 18:05:39.384139927 -0700
++++ b/subprojects/extensions-app/data/ui/extensions-window.ui	2024-04-04 18:08:05.032849547 -0700
+@@ -17,8 +17,9 @@
+     <property name="default-height">500</property>
+     <property name="title" translatable="yes">Extensions</property>
+     <child>
+-      <object class="AdwToolbarView">
+-        <child type="top">
++      <object class="GtkBox">
++        <property name="orientation">vertical</property>
++  	<child>
+           <object class="GtkHeaderBar">
+             <child type="end">
+               <object class="GtkMenuButton" id="menuButton">
+@@ -52,7 +53,7 @@
+             </child>
+           </object>
+         </child>
+-        <child type="top">
++        <child>
+           <object class="GtkSearchBar" id="searchBar">
+             <property name="key-capture-widget">ExtensionsWindow</property>
+             <property name="search-mode-enabled"
+@@ -66,7 +67,7 @@
+             </child>
+           </object>
+         </child>
+-        <property name="content">
++        <child>
+           <object class="GtkStack" id="mainStack">
+             <property name="transition-type">crossfade</property>
+             <property name="vexpand">True</property>
+@@ -147,8 +148,8 @@
+               </object>
+             </child>
+           </object>
+-        </property>
+-        <child type="bottom">
++        </child>
++        <child>
+           <object class="GtkActionBar" id="updatesBar">
+             <property name="revealed">False</property>
+             <child>
