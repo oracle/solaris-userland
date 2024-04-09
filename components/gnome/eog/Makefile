@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		eog
-COMPONENT_VERSION=	41.0
+COMPONENT_VERSION=	45.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/EyeOfGnome
 COMPONENT_ARCHIVE_HASH= \
-	sha256:917de086fd97fd3ec930fa07c88badd2be1f5d0ae6b9e569c986004e0359a9ac
+	sha256:d94cc39d82c80cee7281b82ace42c8225976ad5d0c3ef995c7e030f6bab2219c
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	5393
 
-COMPONENT_BAID=		108921
+COMPONENT_BAID=		159234
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -75,6 +75,7 @@ REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/exempi
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/libpeas
 REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/zlib
