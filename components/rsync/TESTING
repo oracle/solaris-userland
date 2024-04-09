@@ -1,12 +1,16 @@
-# Make sure we are looking at the correct rsync
-rsync --version
+# in component dir do:
 
-cd /var/tmp
+mkdir tmp
+cd tmp
+
+# Make sure we are looking at the correct rsync
+../build/prototype/$(uname -a)/usr/bin/rsync --version
+
 mkdir a
 cd a
 touch file
 runat file cp /etc/passwd extended
 cd ..
-rsync -Xr a/ b/
+../build/prototype/$(uname -a)/usr/bin/rsync -Xr a/ b/
 runat b/file cat extended
 # Should display /etc/passwd contents

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2009, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2024, Oracle and/or its affiliates.
 #
 
 # Use GNU compiler to automatically remove the build path from macros and debug information.
@@ -29,11 +29,11 @@ BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rsync
-COMPONENT_VERSION=	3.2.5
-COMPONENT_BAID=		129062
-COMPONENT_ARCHIVE_HASH=	sha256:2ac4d21635cdf791867bc377c35ca6dda7f50d919a58be45057fd51600c69aba
+COMPONENT_VERSION=	3.2.7
+COMPONENT_BAID=		161733
+COMPONENT_ARCHIVE_HASH=	sha256:4e7d9d3f6ed10878c58c5fb724a67dacf4b6aac7340b13e488fb2dc41346f2bb
 COMPONENT_PROJECT_URL=	http://rsync.samba.org/
-COMPONENT_ARCHIVE_URL=	http://rsync.samba.org/ftp/rsync/src/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/rsync/src/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4217
 
@@ -60,4 +60,3 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/skipped$$/p" '
 
 REQUIRED_PACKAGES += compress/lz4
-REQUIRED_PACKAGES += system/library/libc
