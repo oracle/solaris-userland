@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -28,17 +28,17 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = graphviz
-COMPONENT_VERSION     = 9.0.0
+COMPONENT_VERSION     = 10.0.1
 COMPONENT_PROJECT_URL = http://www.graphviz.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:504d19b5d0e5398a57e9d9de42393f90b9e79aff0969b4ebc3b891ccb39602ed
+    sha256:28f452ef1cb12288c8758a62f8c3fcfefdb91b251f7aae61d0d703f851bde931
 COMPONENT_ARCHIVE_URL = \
     http://gitlab.com/graphviz/graphviz/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID   = 1249
 
-COMPONENT_BAID = 155072
+COMPONENT_BAID = 161633
 
 COMPONENT_PREP_ACTION += \
 	( cd $(@D) ; PATH="$(PATH)" $(CONFIG_SHELL) autogen.sh NOCONFIG)
