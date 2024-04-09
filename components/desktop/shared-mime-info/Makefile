@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,15 +28,15 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		shared-mime-info
-COMPONENT_VERSION=	2.2
+COMPONENT_VERSION=	2.4
 COMPONENT_PROJECT_URL=	https://freedesktop.org/wiki/Software/shared-mime-info/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7e571525280ebd3ef1d6234f0ea7a0bc675b37b2b0f45497afd894ad49de5efb
+	sha256:531291d0387eb94e16e775d7e73788d06d2b2fdd8cd2ac6b6b15287593b6a2de
 COMPONENT_ARCHIVE_URL=	\
 	https://gitlab.freedesktop.org/xdg/shared-mime-info/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5524
-COMPONENT_BAID=		136073
+COMPONENT_BAID=		161969
 
 BUILD_STYLE=		meson
 
@@ -51,4 +51,6 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
 # Needed for minimal-fs dependency in mime-types-cache.xml SMF manifest:
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += text/gnu-gettext
