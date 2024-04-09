@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tree
-COMPONENT_VERSION=	2.0.2
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:541ee304be873dc1ca6e155289891813e246721d485ea746a04748419c61b074
-COMPONENT_PROJECT_URL=	http://mama.indstate.edu/users/ice/tree/
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)src/$(COMPONENT_ARCHIVE)
+COMPONENT_VERSION=	2.1.1
+COMPONENT_BAID=		161730
+COMPONENT_ARCHIVE_HASH=	sha256:bcd2a0327ad40592a9c43e09a4d2ef834e6f17aa9a59012a5fb1007950b5eced
+COMPONENT_SRC_NAME=	unix-$(COMPONENT_NAME)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION).tar.gz
+COMPONENT_PROJECT_URL=	https://gitlab.com/OldManProgrammer/unix-tree
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5006
-COMPONENT_BAID=		126554
 
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)
@@ -42,8 +42,6 @@ include $(WS_MAKE_RULES)/common.mk
 # Fixes creation of executable
 LDFLAGS += $(CC_BITS)
 
-# The native Makefile invites patching to build for Solaris, but doing it here
-# instead will keep it working if the build system changes.
 COMPONENT_BUILD_ARGS += CC="$(CC)"
 COMPONENT_BUILD_ARGS += CFLAGS="$(CFLAGS)"
 COMPONENT_BUILD_ARGS += LDFLAGS="$(LDFLAGS)"
