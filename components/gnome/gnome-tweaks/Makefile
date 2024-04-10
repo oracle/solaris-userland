@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,13 +28,13 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-tweaks
-COMPONENT_VERSION=	40.10
+COMPONENT_VERSION=	45.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Tweaks
 COMPONENT_ARCHIVE_HASH= \
-	sha256:cffd3b33a399577fbb4491ce8fbd02f54c5924f1056f30114e8d420290ef23fc
+	sha256:95ffa7f38d9b1dfd5e4cebefb752419fea21cd407021395adc9f112854416d4f
 COMPONENT_BUGDB=	gnome/preferences
 COMPONENT_ANITYA_ID=	16989
-COMPONENT_BAID=		143296
+COMPONENT_BAID=		161518
 
 BUILD_STYLE=		meson
 PYTHON_VERSION=		3.11
@@ -47,10 +47,11 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
+CONFIGURE_OPTIONS += -Dpython.purelibdir=$(PYTHON_VENDOR_PACKAGES)
+
 # pkgdepend doesn't like the first line of a Python script to be:
-# '#!/usr/bin/env python3' so turn it into '#!/usr/bin/python3.7'
+# '#!/usr/bin/env python3' so turn it into '#!/usr/bin/python3.11'
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-tweaks
-PYTHON_SCRIPTS += $(PROTOUSRLIBDIR)/gnome-tweak-tool-lid-inhibitor
 
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gnome-settings-daemon
