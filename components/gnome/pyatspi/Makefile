@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -28,15 +28,15 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyatspi
-COMPONENT_VERSION=	2.46.0
+COMPONENT_VERSION=	2.46.1
 COMPONENT_PROJECT_URL=	\
 	https://wiki.linuxfoundation.org/accessibility/atk/at-spi/at-spi_on_d-bus
 COMPONENT_ARCHIVE_HASH= \
-       sha256:d45489cf3d47aa150b1a35e8949b3b31035f8c2075e588d26b6efc625970c62e
+       sha256:f91f6a57434e9c07d13d5c4bf819dd78e8ee605aac2ae45d8c64c28114fb041b
 COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	13157
 
-COMPONENT_BAID=		142448
+COMPONENT_BAID=		163473
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
