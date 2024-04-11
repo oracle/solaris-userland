@@ -1,0 +1,28 @@
+Tell Samba it's built on Solaris to make it define SUNOS5.
+Import also patch from upstream:
+
+https://bugzilla.samba.org/show_bug.cgi?id=14820
+
+Signed-off-by: David Gajewski <dgajews@math.utoledo.edu>
+
+--- samba-4.19.4.orig/source3/wscript	2024-02-14 10:37:34.249906042 +0100
++++ samba-4.19.4/source3/wscript	2024-02-14 10:50:10.050322743 +0100
+@@ -162,6 +162,8 @@ long ret = splice(0,0,1,0,400,SPLICE_F_M
+         conf.CHECK_HEADERS('sys/inotify.h')
+         if conf.env.HAVE_SYS_INOTIFY_H:
+            conf.DEFINE('HAVE_INOTIFY', 1)
++    elif host_os.rfind('sunos5') > -1:
++        conf.DEFINE('SUNOS5', '1')
+ 
+     # Check for Linux kernel oplocks
+     if conf.CHECK_DECLS('F_SETLEASE', headers='linux/fcntl.h', reverse=True):
+@@ -1624,8 +1626,8 @@ int main(void) {
+         #
+         if not conf.CONFIG_SET('WITH_QUOTAS'):
+             if host_os.rfind('sunos5') > -1:
+-                conf.DEFINE('SUNOS5', '1')
+                 legacy_quota_libs = 'nsl'
++                conf.CHECK_FUNCS_IN('clnt_call', 'nsl')
+             conf.CHECK_CODE('''
+             #define WITH_QUOTAS 1
+             #define AUTOCONF_TEST 1

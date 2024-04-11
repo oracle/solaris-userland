@@ -1,9 +1,8 @@
 Solaris anti-recursion patch for samba(8) to work with nscd(8).
 
-diff -x '*~' -x '*.pyc' -Nru samba-4.13.8.orig/nsswitch/winbind_nss_hook.c samba-4.13.8/nsswitch/winbind_nss_hook.c
---- samba-4.13.8.orig/nsswitch/winbind_nss_hook.c	1970-01-01 01:00:00.000000000 +0000
-+++ samba-4.13.8/nsswitch/winbind_nss_hook.c	2021-09-30 15:43:47.294363438 +0000
-@@ -0,0 +1,320 @@
+--- samba-4.19.4.orig/nsswitch/winbind_nss_hook.c	1970-01-01 01:00:00.000000000 +0100
++++ samba-4.19.4.new/nsswitch/winbind_nss_hook.c	2024-01-31 12:08:14.925993932 +0100
+@@ -0,0 +1,418 @@
 +/*
 + * Samba anti-recursion wrapper for Solaris to work with nscd(8). It's a shared
 + * library preloaded for any Samba process to interpose anti-recursion aware
@@ -61,6 +60,8 @@ diff -x '*~' -x '*.pyc' -Nru samba-4.13.8.orig/nsswitch/winbind_nss_hook.c samba
 +static DEFINE_NSS_GETENT(context);
 +static pthread_key_t tsd_pw_key;
 +static pthread_key_t tsd_gr_key;
++static int (*libc_getgrouplist)(const char *, gid_t, gid_t *, int *);
++static int (*libc_initgroups)(const char *, gid_t);
 +static bool initialized;
 +
 +#define	DEFINE_INITF_FUNC(fname, capital) \
@@ -263,6 +264,100 @@ diff -x '*~' -x '*.pyc' -Nru samba-4.13.8.orig/nsswitch/winbind_nss_hook.c samba
 +DEFINE_GETENT_FUNC(getpwent, passwd)
 +DEFINE_GETENT_FUNC(getgrent, group)
 +
++/*
++ * Emulate getgrouplist(3C) by walking through all group entries to find
++ * suplementary groups of a given user. Walking uses an API that is winbind
++ * recursion avoidance aware. However, this can be very slow (depending on
++ * group database size and its latency, e.g. when system is client of large
++ * LDAP database). If recursion avoidance is not needed, use rather
++ * libc's getgrouplist().
++ */
++static int
++getgrouplist_slow(const char *user, gid_t group, gid_t *groups, int *ngroups)
++{
++	struct group grp, *grpp;
++	size_t len;		
++	int ngroups_max;
++	char *buf;		
++			
++	ngroups_max = *ngroups;
++	if (ngroups_max > 0) {
++		groups[0] = group;
++	}
++	*ngroups = 1;
++
++	len = sysconf(_SC_GETGR_R_SIZE_MAX);
++	if ((buf = malloc(len)) == NULL)
++		return (-1);
++
++	setgrent();
++	while (errno = 0, getgrent_r(&grp, buf, len) != NULL) {
++		for (char **ptr = grp.gr_mem; *ptr != NULL; ptr++) {
++			if (strcmp(*ptr, user) == 0) {
++				if (*ngroups < ngroups_max)
++					groups[*ngroups] = grp.gr_gid;
++				(*ngroups)++;
++			}
++		}
++	}
++	endgrent();
++	free(buf);
++	return ((*ngroups <= ngroups_max) ? *ngroups : -1);
++}
++
++int
++getgrouplist(const char *user, gid_t group, gid_t *groups, int *ngroups)
++{
++	if (is_recursion_disabled() || libc_getgrouplist == NULL)
++		return (getgrouplist_slow(user, group, groups, ngroups));
++	else
++		return (libc_getgrouplist(user, group, groups, ngroups));
++}
++
++/*
++ * Emulate initgroups(3C) by walking through all group entries to find
++ * suplementary groups of a given user. Walking uses an API that is winbind
++ * recursion avoidance aware. If recursion avoidance is not needed,
++ * use rather libc's version of initgroups().
++ */
++static int
++initgroups_slow(const char *name, gid_t basegid)
++{
++	int ngroups_max;
++	int ngroups;
++	gid_t *groups;
++	int rv;
++
++	ngroups_max = sysconf(_SC_NGROUPS_MAX);
++	if (ngroups_max < 0)
++		return (-1);
++	else if (ngroups_max == 0)
++		return (0);
++
++	groups = malloc(ngroups_max * sizeof (gid_t));
++	if (!groups)
++		return (-1);
++
++	ngroups = ngroups_max;
++	rv = getgrouplist_slow(name, basegid, groups, &ngroups);
++	if (rv >= 0) {
++		rv = setgroups(ngroups, groups);
++	} else {
++		rv = -1;
++	}
++	free(groups);
++	return (rv);
++}
++
++int
++initgroups(const char *name, gid_t basegid)
++{
++	if (is_recursion_disabled() || libc_initgroups == NULL)
++		return (initgroups_slow(name, basegid));
++	else
++		return (libc_initgroups(name, basegid));
++}
++
 +static bool
 +is_recursion_disabled(void)
 +{
@@ -294,6 +389,8 @@ diff -x '*~' -x '*.pyc' -Nru samba-4.13.8.orig/nsswitch/winbind_nss_hook.c samba
 +	s = getenv("_NO_WINBINDD_GROUP_POLICY");
 +	if (s != NULL)
 +		group_config = s;
++	libc_getgrouplist = dlsym(RTLD_NEXT, "getgrouplist");
++	libc_initgroups = dlsym(RTLD_NEXT, "initgroups");
 +	ret = pthread_key_create(&tsd_pw_key, tsd_destructor); 
 +	if (ret != 0)
 +		return;
@@ -354,11 +451,18 @@ diff -x '*~' -x '*.pyc' -Nru samba-4.13.8.orig/nsswitch/winbindd_dont_env.h samb
 +#ifndef WINBINDD_DONT_ENV
 +#define WINBINDD_DONT_ENV    "_NO_WINBINDD"
 +#endif
-diff -x '*~' -x '*.pyc' -Nru samba-4.13.8.orig/nsswitch/wscript_build samba-4.13.8/nsswitch/wscript_build
---- samba-4.13.8.orig/nsswitch/wscript_build	2020-07-09 11:33:56.000000000 +0000
-+++ samba-4.13.8/nsswitch/wscript_build	2021-09-30 13:07:11.266608157 +0000
-@@ -85,6 +85,12 @@
- 			  deps='winbind-client',
+diff -ru samba-4.18.6.orig/nsswitch/wscript_build samba-4.18.6/nsswitch/wscript_build
+--- samba-4.18.6.orig/nsswitch/wscript_build	2023-09-12 13:06:48.321819754 +0200
++++ samba-4.18.6/nsswitch/wscript_build	2023-10-30 19:05:24.416836818 +0100
+@@ -73,11 +73,19 @@
+ 				  deps='wbclient',
+ 				  realname='libnss_winbind.so')
+ elif Utils.unversioned_sys_platform() == 'sunos':
++	conf.env.VISIBILITY_CFLAGS = '-fvisibility=default'
++
+ 	bld.SAMBA_PLUGIN('nss_winbind',
+ 			  source='winbind_nss_solaris.c winbind_nss_linux.c',
+ 			  deps='wbclient',
  			  realname='nss_winbind.so.1',
  			  vnum='1')
 +
@@ -368,5 +472,5 @@ diff -x '*~' -x '*.pyc' -Nru samba-4.13.8.orig/nsswitch/wscript_build samba-4.13
 +			  realname='libwinbind_nss_hook.so.1')
 +
  elif (host_os.rfind('hpux') > -1):
- 	bld.SAMBA_LIBRARY('nss_winbind',
+ 	bld.SAMBA_PLUGIN('nss_winbind',
  			  source='winbind_nss_linux.c',

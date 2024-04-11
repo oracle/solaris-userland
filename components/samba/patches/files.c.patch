@@ -1,0 +1,31 @@
+Fixes:
+
+Files do not appear on Samba shares on Solaris.
+Only directories are visible.
+
+When a client attempts to list a directory, Samba tries to open each file in
+that directory, it uses an O_SEARCH flag passed as (a bit) an argument to
+openat(). On Solaris 11, that flag is valid only for directories and when used
+on regular files it results in a failure. The failure in Samba to open file
+while listing directory makes all files in directories to disappear, they
+don't show up on the client.
+
+This is not an issue on Linux.
+Linux doesn't implement O_SEARCH, it uses O_PATH instead.
+
+As a workaround we drop the O_SEARCH completely (for both files / directories),
+thus requiring +r bits on directories (+x is insufficient) for traversal.
+This is likely how Samba worked in past.
+
+
+--- samba-4.19.4/source3/smbd/files.c	2024-01-08 15:34:28.241466000 +0100
++++ samba-4.19.4.new/source3/smbd/files.c	2024-01-23 19:21:42.975659982 +0100
+@@ -887,7 +887,7 @@ NTSTATUS openat_pathref_fsp_nosymlink(TA
+ 	 */
+ 	how.flags |= O_PATH;
+ #else
+-#ifdef O_SEARCH
++#if 0
+ 	/*
+ 	 * O_SEARCH just checks for the "x" bit. We are traversing
+ 	 * directories, so we don't need the implicit O_RDONLY ("r"

@@ -1,6 +1,9 @@
+This patch fixes:
+
+tdb(/var/samba/lock/gencache.tdb): tdb_open_ex: tdb_mutex_init failed for /var/samba/lock/gencache.tdb: Device busy
+
 Linux implementation do not use possibility to return with EBUSY if mutex object
-is already initialized by the other process.
-Will be sent to community.
+is already initialized by the other process. Will be sent to community.
 
 diff --git a/lib/tdb/common/mutex.c b/lib/tdb/common/mutex.c
 index 78926db..d0b0930 100644

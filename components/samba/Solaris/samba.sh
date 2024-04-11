@@ -1,6 +1,6 @@
 #!/bin/ksh
 #
-# Copyright (c) 2009, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2024, Oracle and/or its affiliates.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -9,8 +9,8 @@ SAMBA_CONFIG=/etc/samba/smb.conf
 ARCH64=$(/usr/bin/isainfo -k)
 
 NSS_STRICT_NOFORK=DISABLED
-LD_PRELOAD_32=/usr/lib/samba/libwinbind_nss_hook.so.1
-LD_PRELOAD_64=/usr/lib/samba/$ARCH64/libwinbind_nss_hook.so.1
+LD_PRELOAD_32=/usr/lib/samba/lib/libwinbind_nss_hook.so.1
+LD_PRELOAD_64=/usr/lib/samba/lib/$ARCH64/libwinbind_nss_hook.so.1
 export NSS_STRICT_NOFORK LD_PRELOAD_32 LD_PRELOAD_64
 
 SWITCH_FMRI=svc:/system/name-service/switch
