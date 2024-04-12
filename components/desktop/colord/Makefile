@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -32,17 +32,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		colord
-COMPONENT_VERSION=	1.4.6
+COMPONENT_VERSION=	1.4.7
 COMPONENT_PROJECT_URL=	https://www.freedesktop.org/software/colord/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7407631a27bfe5d1b672e7ae42777001c105d860b7b7392283c8c6300de88e6f
+	sha256:de02d9910634ae159547585cec414e450f711c27235453b4f9b38a9f2361a653
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	10190
 
-COMPONENT_BAID=		126471
+COMPONENT_BAID=		163655
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
