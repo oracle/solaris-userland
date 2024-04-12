@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -26,15 +26,15 @@ BUILD_BITS =            32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		json-c
-COMPONENT_VERSION=	0.16
+COMPONENT_VERSION=	0.17
 COMPONENT_PROJECT_URL=	https://github.com/json-c/json-c/wiki/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:95d20eff907aa2fae7568d6257a82e698163064d5fa31f02851369f34ac43602
+    sha256:7550914d58fb63b2c3546f3ccfbe11f1c094147bd31a69dcd23714d7956159e6
 COMPONENT_ARCHIVE_URL=	https://s3.amazonaws.com/json-c_releases/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/json-c
 COMPONENT_ANITYA_ID=	1477
-COMPONENT_BAID=		126745
+COMPONENT_BAID=		163647
 
 BUILD_STYLE = cmake
 
