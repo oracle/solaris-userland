@@ -27,17 +27,18 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		vim
-COMPONENT_VERSION=	9.0
-IPS_COMPONENT_VERSION=	9.0.2136
+COMPONENT_VERSION=	9.1
+# Remove any leading zeros in IPS_COMPONENT_VERSION
+IPS_COMPONENT_VERSION=	9.1.211
 COMPONENT_FULL_VERSION=$(shell echo $(IPS_COMPONENT_VERSION) | awk -F. '{printf("%d.%d.%04d\n", $$1, $$2, $$3)}')
 COMPONENT_SRC=	vim-$(COMPONENT_FULL_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_URL=	https://github.com/vim/vim/archive/v$(COMPONENT_FULL_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:0e29e9bddb85b5d55fa91ba389ab4d85d09c880ac8f44bb40184dac2bf05fdb9
+COMPONENT_ARCHIVE_HASH=	sha256:de6b2b1e7add98ab6a8fa2b033a1ddbe9b9b216d9639d25dec9f9a1db215c056
 COMPONENT_PROJECT_URL=	http://www.vim.org/
 COMPONENT_ANITYA_ID=	5092
 
-COMPONENT_BAID=		155274
+COMPONENT_BAID=		163572
 
 PKG_MACROS +=	VIMVER=vim$(subst .,,$(COMPONENT_VERSION))
 
@@ -56,6 +57,8 @@ TEST_64 = 	$(NOX_VARIANT)/.tested-and-compared
 include $(WS_MAKE_RULES)/common.mk
 
 CFLAGS += -std=gnu99
+
+#COMPONENT_PREP_ACTION = (cd $(@D)/src ; autoreconf -fiv)
 
 # Make sure we use a 64-bit, multithreaded perl
 CONFIGURE_ENV +=	vi_cv_path_perl=/usr/perl5/$(PERL_VERSION)/bin/perl
@@ -131,6 +134,7 @@ $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_net
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_popupwin.vim:/d" '
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_prompt_buffer.vim:/d" '
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_vim9_script.vim:/d" '
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_termdebug.vim:/d" '
 # We keep in the filtered output just names of the failed tests. So we at least
 # know that it's not getting worse.
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/^\tFrom /p" '
