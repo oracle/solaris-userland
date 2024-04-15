@@ -20,7 +20,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 #
 unset LD_LIBRARY_PATH
@@ -294,10 +294,10 @@ run_single_threaded_tests() {
 	    fi
 	    echo "<a href=\"${file}.out\">${file}.out</a>" >> ${INDEX_HTML}
 	    echo "</br>" >> ${INDEX_HTML}
-	    pat=`cat ${file}.out | egrep 'ASSERTION|ERROR|FATAL'`
+	    pat=`cat ${file}.out | grep -E 'ASSERTION|ERROR|FATAL'`
 	    if [ "x${pat}" != "x" ] ; then
 		echo "############################################################"
-		tail -9 ${file}.out | egrep 'ASSERTION|ERROR|FATAL' | egrep '%'
+		tail -9 ${file}.out | grep -E 'ASSERTION|ERROR|FATAL' | grep -E '%'
 		echo "############################################################"
 	    fi
 	else
@@ -351,10 +351,10 @@ run_mt_tests() {
 	    fi
 	    echo "<a href=\"${file}.out\">${file}.out</a>" >> ${INDEX_HTML}
 	    echo "</br>" >> ${INDEX_HTML}
-	    pat=`cat ${file}.out | egrep 'ASSERTION|ERROR|FATAL'`
+	    pat=`cat ${file}.out | grep -E 'ASSERTION|ERROR|FATAL'`
 	    if [ "x${pat}" != "x" ] ; then
 		echo "############################################################"
-		tail -9 ${file}.out | egrep 'ASSERTION|ERROR|FATAL' | egrep '%'
+		tail -9 ${file}.out | grep -E 'ASSERTION|ERROR|FATAL' | grep -E '%'
 		echo "############################################################"
 	    fi
 	else

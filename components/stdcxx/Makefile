@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -52,20 +52,6 @@ CLEAN_PATHS += install.sh
 INSTALL_TARGET=
 
 include $(WS_MAKE_RULES)/common.mk
-
-SUNPRO_VERSION	:= $(shell $(CXX) -V 2>&1 | head -n1 \
-  | sed 's/.*C++ *\([^ ]*\).*/\1/')
-SUNPRO_MAJOR_VERSION := $(shell echo $(SUNPRO_VERSION) | cut -f1 -d'.')
-SUNPRO_MINOR_VERSION := $(shell echo $(SUNPRO_VERSION) | cut -f2 -d'.')
-
-TEMPLATE_FLAGS := -template=geninlinefuncs
-
-ifeq ($(shell expr $(SUNPRO_MAJOR_VERSION) = 5 \& \
-      $(SUNPRO_MINOR_VERSION) \> 12),1)
-  TEMPLATE_FLAGS := -template=geninlinefuncs,extdef
-  COMPONENT_TEST_MASTER = \
-    $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS)-$(MACH).master.SS12.4
-endif
 
 ISA_PATCH_DIR_32 = $(WS_TOP)/components/stdcxx/isa_patches/$(MACH)
 ISA_PATCH_DIR_64 = $(WS_TOP)/components/stdcxx/isa_patches/$(MACH64)
@@ -132,7 +118,7 @@ CXXFLAGS_GENERIC += -Qoption ccfe -expand=10000
 CXXFLAGS_GENERIC += -Qoption ccfe -abiopt=mangle6
 CXXFLAGS_GENERIC += -features=except,rtti,export,extensions,nestedaccess,tmplife,tmplrefstatic
 CXXFLAGS_GENERIC += -instances=global
-CXXFLAGS_GENERIC += $(TEMPLATE_FLAGS)
+CXXFLAGS_GENERIC += -template=geninlinefuncs,extdef
 CXXFLAGS_GENERIC += $(CXXFLAGS_$(MACH))
 CXXFLAGS_GENERIC += -xlang=c99
 CXXFLAGS_GENERIC += -xbuiltin=%none
@@ -247,10 +233,17 @@ COMPONENT_PRE_TEST_ACTION = \
             -builddir=$(BUILD_DIR)/$(MACH$(BITS)) \
             -srcdir=$(TOPDIR)-$(BITS)
 COMPONENT_TEST_DIR = $(BUILD_DIR)/$(MACH$(BITS))/build/tests
+
+# The number of assertions in '22.locale.moneypunct' can differ
+# depending on the machine it's being ran on.
 COMPONENT_TEST_CMD = \
 	$(CP) -p $(COMPONENT_DIR)/Solaris/run_tests.sh . ; \
 	$(CHMOD) 0755 run_tests.sh ; \
-	$(SHELL) ./run_tests.sh 2>&1 | $(PERL) -pe "s/\d+ (Segmentation Fault|Abort).*\./PID \1 ./"
+	$(SHELL) ./run_tests.sh 2>&1 | $(PERL) -pe "s/\d+ (Segmentation Fault|Abort).*\./PID \1 ./" | \
+	$(GSED) "/22.locale.moneypunct /{n;n;s/[0-9 ]* |     100% |/    XXXXX |     100% |/}"
+
+COMPONENT_TEST_MASTER = \
+	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS)-$(MACH).master
 
 COMPONENT_TEST_TARGETS =
 COMPONENT_TEST_COMPARE_CMD =  $(GDIFF) -uN --ignore-space-change
