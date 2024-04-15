@@ -18,11 +18,11 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2024, Oracle and/or its affiliates.
 #
 
 NAME:             emacs
-VERSION:          28.2
+VERSION:          29.3
 DESCRIPTION:      GNU Emacs editor
 LICENSE:          GPLv3
 BUGTRAQ:          solaris/utility/emacs
@@ -37,26 +37,6 @@ information needed to understand how this component is put together.
 - We patch the following changes into the emacs sources. Additional
   details are found in the comment at the top of each patch.
 
-        emacsclient1.patch
-        emacsclient2.patch
-        emacsclient3.patch
-
-            Versions of Emacs through 28.2 are vulnerable to CVE-2023-27985,
-            and CVE-2023-27986. These three patches cumulatively apply the
-            fixes from the Emacs 29.1 repository to emacsclient-mail.desktop
-            emacsclient.desktop. These patches come from the upstream git
-            repository, and can be removed when we move to Emacs 29 or newer.
-
-        etags.patch
-            Versions of Emacs through 28.2 are vulnerable to CVE-2022-45939.
-            This patch comes from the upstream git repository, and can
-            be removed when we move to Emacs 29 or newer.
-
-        etags2.patch
-            Versions of Emacs through 28.2 are vulnerable to CVE-2022-48337.
-            This patch comes from the upstream git repository, and can
-            be removed when we move to Emacs 29 or newer.
-
         find.patch
             The rgrep function uses the GNU-specific -path option to the
             find command. Change the default value for the find-program
@@ -68,10 +48,16 @@ information needed to understand how this component is put together.
             The safest policy is to do a brute force search of the entire
             source tree for defvar of find-program, and to fix them all.
 
-        htmlfontify.patch
-            Versions of Emacs through 28.2 are vulnerable to CVE-2022-48339.
-            This patch comes from the upstream git repository, and can
-            be removed when we move to Emacs 29 or newer.
+        lucid_xterm.patch
+            Lucid emacs (emacs-x) started using XSyncCreateFence in the
+            29 series. We find that it doesn't work properly on sparc,
+            while x86 has no issues. This patch works around that. See:
+
+                https://debbugs.gnu.org/cgi/bugreport.cgi?bug=69762
+
+            The issue in Xorg has been debugged, and a fix submitted.
+            It should be possible to remove this patch with the next
+            emacs update.
 
         mediator.patch
             Modify the way emacs searches for its dump files in the PATH_EXEC
@@ -80,11 +66,6 @@ information needed to understand how this component is put together.
             background behind this change.
 
             https://lists.gnu.org/archive/html/emacs-devel/2021-04/msg00875.html
-
-        ruby-mode.patch
-            Versions of Emacs through 28.2 are vulnerable to CVE-2022-48338.
-            This patch comes from the upstream git repository, and can
-            be removed when we move to Emacs 29 or newer.
 
 - If you patch configure.ac, as we did with emacs 24.5 for jpeg6b_config.patch,
   then you need a COMPONENT_PREP_ACTION definition in the Makefile in order
@@ -272,9 +253,8 @@ information needed to understand how this component is put together.
   Therefore, we went back to using gcc.
 
 - As mentioned above, starting with Emacs 27, we no longer rely on the
-  traditional "unexec", used by emacs since the 1980's.
-  on the Solaris dldump() function. Portable dumps (pdump) bring many
-  benefits for us:
+  traditional "unexec", used by emacs since the 1980's, or on the Solaris
+  dldump() function. Portable dumping (pdump) brings many benefits for us:
 
     * Inherent simplicity.
 

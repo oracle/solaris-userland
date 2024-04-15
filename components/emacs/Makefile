@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 # This code is built with gcc. See README.
 #
@@ -32,12 +32,12 @@ BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		emacs
-COMPONENT_VERSION=	28.2
+COMPONENT_VERSION=	29.3
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9755643e95bfb5950b7b4e0b5b000ded4b57bc91124c4319bc149c35bef65cc1
+    sha256:2de8df5cab8ac697c69a1c46690772b0cf58fe7529f1d1999582c67d927d22e4
 COMPONENT_ANITYA_ID=	675
 
-COMPONENT_BAID=		131581
+COMPONENT_BAID=		162570
 
 INSTALL_TARGET=
 # The upstream emacs distribution does not have tests to be run
@@ -93,6 +93,17 @@ CONFIGURE_OPTIONS +=	--with-gameuser=no
 CONFIGURE_OPTIONS +=	ac_cv_sys_long_file_names=yes
 ifeq   ($(strip $(PARFAIT_BUILD)),yes)
 CONFIGURE_OPTIONS +=	emacs_cv_prog_cc_o=no
+endif
+
+# Starting with Emacs 29.1, we see crashing at startup, on sparc only,
+# with the GTK and Lucid versions. See:
+#
+#	https://debbugs.gnu.org/cgi/bugreport.cgi?bug=69762
+#
+# Once the underlying server issue is resolved, this can be removed.
+#
+ifeq ($(MACH),sparc)
+CONFIGURE_OPTIONS +=	--without-xinput2
 endif
 
 # The emacs INSTALL says
@@ -243,12 +254,14 @@ COMPONENT_POST_INSTALL_ACTION += $(GUNZIP) \
 # common targets
 install:	$(BUILD_64) $(BUILD_DIR)/$(MACH64)-x/.installed 
 
+REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += editor/gnu-emacs
 REQUIRED_PACKAGES += file/gnu-findutils
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += image/library/libtiff
+REQUIRED_PACKAGES += image/library/libwebp
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
@@ -271,9 +284,11 @@ REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
+REQUIRED_PACKAGES += x11/library/xcb-util
+REQUIRED_PACKAGES += x11/library/libxcomposite
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxfixes
-REQUIRED_PACKAGES += x11/library/libxft
+REQUIRED_PACKAGES += x11/library/libxi
 REQUIRED_PACKAGES += x11/library/libxinerama
 REQUIRED_PACKAGES += x11/library/libxmu
 REQUIRED_PACKAGES += x11/library/libxpm
