@@ -128,15 +128,14 @@ COMPONENT_ARCHIVE_URL_1= \
 
 include $(WS_MAKE_RULES)/common.mk
 
-COMPONENT_PRE_CONFIGURE_ACTION += \
-	($(CLONEY) $(SOURCE_DIR) $(@D))
-
 # Patches to configure.ac require configure script re-creation.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -vfi);
 
 #
 # Configuration settings, options and modes.
 #
+COMPONENT_PRE_CONFIGURE_ACTION += \
+	($(CLONEY) $(SOURCE_DIR) $(@D))
 
 # SOURCE_DATE_EPOCH when set to any non-null value prevents build/mkversion
 # from placing build machine information in deliverable files.
@@ -210,6 +209,21 @@ COMPONENT_POST_INSTALL_ACTION.64 +=	\
 		$(PROTO_DIR)/$(USRLIB)/slapd
 endif
 
+# Conversion of openldap-transition.org to ASCII.
+# Creates copy in proto directory, as emacs creates in place, then removed.
+# ORGABS makes argument to --eval fit into the 80 column guideline.
+ORGABS =	org-ascii--box-string
+ORGSRC =	openldap-transition.org
+ORGSRCDIR =	$(COMPONENT_DIR)/Solaris
+ORGPUBDIR = 	$(PROTO_DIR)$(USRSHAREDOCDIR)/release-notes
+COMPONENT_POST_INSTALL_ACTION.64 +=	\
+  $(MKDIR) $(PROTO_DIR)/$(USRSHAREDOCDIR)/release-notes; \
+  $(CP) $(ORGSRCDIR)/$(ORGSRC) $(ORGPUBDIR); \
+  /usr/bin/emacs $(ORGPUBDIR)/$(ORGSRC) -Q -batch \
+    --eval '(require `ox-ascii)' \
+    --eval '(advice-add `$(ORGABS) :override (defun my-$(ORGABS) (s info) s))' \
+    --eval '(org-ascii-export-to-ascii)'; \
+  $(RM) $(ORGPUBDIR)/$(ORGSRC); \
 #
 # Testing
 # Uses test-and-compare framework as per ../../doc/testing.txt
@@ -313,8 +327,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 	gsed --in-place -e 's:\(^.B /usr/lib/\)\([^/]*/\)\(.*\):\1\3:' \
 		$(PROTO_DIR)/usr/share/man/man8/*; \
 	grep '^.B /usr/lib/' $(PROTO_DIR)/usr/share/man/man8/*;
-
-
 
 .PHONY: republish test-license test-slapd-version test-version test-transform
 

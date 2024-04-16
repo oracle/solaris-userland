@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 # components/openldap/generate/common.transform, common rules for openldap packages.
@@ -51,7 +51,8 @@
 <transform file path=usr/share/man/man5/(ldap.conf|ldif).5 -> set pkg.type client-pkg>
 # Admin guide
 <transform file path=usr/share/doc/openldap/.* -> set pkg.type server-pkg>
-
+# Server release, see openldap-server.static
+<transform file path=usr/share/doc/release-notes/openldap-transition.txt -> set pkg.type server-pkg>
 # slapd commands
 <transform file link path=usr/(sbin|lib)/slap.* -> set pkg.type server-pkg>
 <transform file link path=usr/(sbin|lib)/.*/slap.* -> set pkg.type server-pkg>
