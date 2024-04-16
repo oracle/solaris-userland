@@ -63,7 +63,11 @@ COMPONENT_PREP_ACTION = (cd $(@D) ; \
     libtoolize --force ; \
     aclocal ; \
     automake --foreign --add-missing ; \
-    autoconf )
+    autoconf );
+
+# Convert the license file from Windows-1252 encoding to utf-8
+COMPONENT_PREP_ACTION += \
+    (iconv -f WINDOWS-1252 -t UTF-8 $(SOURCE_DIR)/COPYING > $(SOURCE_DIR)/COPYING.UTF8 );
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
@@ -77,9 +81,6 @@ PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/cups/filter/pstotiff
 # Pre-compile python source code
 COMPONENT_POST_INSTALL_ACTION += \
 	$(PYTHON) -m compileall $(PROTO_DIR)/usr/share/hplip;
-
-hplip.license:
-	cat $(SOURCE_DIR)/copyright >$@
 
 # For autopyc transformation
 PKG_MACROS +=	PYVER=$(PYTHON_VERSION)

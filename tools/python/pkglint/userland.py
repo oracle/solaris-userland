@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 
 # Some userland consolidation specific lint checks
@@ -655,6 +655,14 @@ class UserlandManifestChecker(base.ManifestChecker):
 
     name = "userland.manifest"
 
+    @staticmethod
+    def __locate_file(path):
+        for proto_path in os.getenv("PROTO_PATH").split():
+            fullpath = os.path.join(proto_path, path)
+            if os.path.exists(fullpath):
+                return fullpath
+        return None
+
     def component_check(self, manifest, engine, pkglint_id="001"):
         """Make sure that manifests contain license action."""
         if not next(manifest.gen_actions_by_type("file"), False):
@@ -746,17 +754,10 @@ class UserlandManifestChecker(base.ManifestChecker):
             "311": (3495).to_bytes(2, "little") + b"\r\n",
         }
 
-        def locate_file(path):
-            for proto_path in os.getenv("PROTO_PATH").split():
-                fullpath = os.path.join(proto_path, path)
-                if os.path.exists(fullpath):
-                    return fullpath
-            return None
-
         # Find both files in given proto areas. Both files can be in a different
         # place (due to mangling), which is the reason this is done twice.
-        pyfull = locate_file(pypath)
-        pycfull = locate_file(pycpath)
+        pyfull = self.__locate_file(pypath)
+        pycfull = self.__locate_file(pycpath)
 
         if pyfull is None or pycfull is None:
             # non-existent files are handled by another check
@@ -861,7 +862,7 @@ class UserlandManifestChecker(base.ManifestChecker):
 
     pyc_check.pkglint_desc = ".pyc files must be importable and up-to-date."
 
-    def makefile_ascii_check(self, manifest, engine, pkglint_id="007"):
+    def manifest_ascii_check(self, manifest, engine, pkglint_id="007"):
         """Make sure that manifest is ASCII only."""
         for action in manifest.actions:
             if not str(action).isascii():
@@ -869,6 +870,29 @@ class UserlandManifestChecker(base.ManifestChecker):
                     f"Non ASCII value found in {manifest.fmri}:\n{action}",
                     msgid=f"{self.name}{pkglint_id}.0")
 
-    makefile_ascii_check.pkglint_desc = "manifests are ASCII only."
+    manifest_ascii_check.pkglint_desc = "manifests are ASCII only."
+
+    def license_unicode_check(self, manifest, engine, pkglint_id="008"):
+        """Make sure that licenses are UTF-8 encoded."""
+
+        if not os.getenv("PROTO_PATH"):
+            # this check require physical files to look at
+            return
+
+        for license in manifest.gen_actions_by_type("license"):
+            fullpath = self.__locate_file(license.hash)
+            if fullpath is None:
+                # non-existent files are handled by another check
+                return
+
+            try:
+                with open(fullpath, 'r', encoding='utf-8') as ifile:
+                    ifile.read()
+            except ValueError:
+                engine.error(
+                    f"Non UTF-8 encoded license found in {fullpath}.",
+                    msgid=f"{self.name}{pkglint_id}.0")
+
+    license_unicode_check.pkglint_desc = "licenses are UTF-8 encoded."
 
 # vim: expandtab sw=4 ts=4
