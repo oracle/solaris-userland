@@ -31,8 +31,7 @@ ALL_FILES_BASE= \
 # Let's avoid having multiple copies of images - we could do the same for css at
 # some stage
 ALL_IMAGES = \
-	html/C/images/ora_info_company.png \
-	html/C/images/ora_solaris.png\
+	html/C/images/Oracle_Solaris.svg \
 	$(null)
 
 ALL_STYLE = \
