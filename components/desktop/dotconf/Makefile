@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,17 +28,17 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dotconf
-COMPONENT_VERSION=	1.3
+COMPONENT_VERSION=	1.4.1
 COMPONENT_PROJECT_URL=	https://github.com/williamh/dotconf
 COMPONENT_ARCHIVE=      v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7f1ecf40de1ad002a065a321582ed34f8c14242309c3547ad59710ae3c805653
+    sha256:5922c46cacf99b2ecc4853d28a2bda4a489292e73276e604bd9cba29dfca892d
 COMPONENT_ARCHIVE_URL=	\
     $(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=    13410
 
-COMPONENT_BAID=		37436
+COMPONENT_BAID=		163955
 
 TEST_TARGET = $(NO_TESTS)
 
