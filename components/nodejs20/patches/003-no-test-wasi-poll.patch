@@ -1,4 +1,4 @@
-gmake test reports that poll() using WASI fails on Solaris 11.4:
+gmake test reports that poll() using WASI fails on latest Solaris 11.4:
 
 === release test-wasi ===
 Path: wasi/test-wasi
@@ -24,14 +24,14 @@ poll_oneoff(69584, 69520, 2, 69756)
 fd_write(2, 69504, 2, 69500)
 Assertion failed: fds[0].revents == (POLLHUP | POLLIN) (c/poll.c: main: 70)
 
-diff -ru node-16.3.0.orig/test/wasi/wasi.status node-16.3.0/test/wasi/wasi.status
---- node-16.3.0.orig/test/wasi/wasi.status	2021-07-27 12:45:09.670791383 +0000
-+++ node-16.3.0/test/wasi/wasi.status	2021-07-27 12:46:31.119606261 +0000
-@@ -4,4 +4,7 @@
- # below, without ".js", followed by ": PASS,FLAKY". Example:
- # sample-test                        : PASS,FLAKY
- 
-+[$system==solaris]
-+test-wasi: SKIP
+diff -ur node-20.12.2.orig/test/wasi/wasi.status node-20.12.2/test/wasi/wasi.status
+--- node-20.12.2.orig/test/wasi/wasi.status	2024-04-10 14:16:36.000000000 +0200
++++ node-20.12.2/test/wasi/wasi.status	2024-04-16 12:15:24.224267603 +0200
+@@ -10,3 +10,7 @@
+ [$system==win32 && $arch==arm64]
+ # https://github.com/nodejs/node/issues/51822
+ test-wasi-poll: PASS, FLAKY
 +
- [true] # This section applies to all platforms
++# Solaris
++[$system==solaris]
++test-wasi-poll: SKIP
