@@ -20,8 +20,10 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
+
+COMPILER=gcc
 
 include ../../../make-rules/shared-macros.mk
 
@@ -41,9 +43,6 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Library libyaml is not available on Solaris.
-COMPONENT_SETUP_ARGS += --without-libyaml
-
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =		$(SOURCE_DIR)
@@ -51,10 +50,12 @@ COMPONENT_TEST_ARGS =		tests/lib/test_all.py
 COMPONENT_TEST_MASTER =		$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # common targets
-build:		$(BUILD_NO_ARCH)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_NO_ARCH)
+install:	$(INSTALL_64)
 
-test:		$(TEST_NO_ARCH)
+test:		$(TEST_64)
 
-system-test:	$(SYSTEM_TEST_NO_ARCH)
+system-test:	$(SYSTEM_TEST_64)
+
+REQUIRED_PACKAGES += library/libyaml

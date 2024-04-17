@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS = 64
 COMPILER = gcc
@@ -190,6 +190,7 @@ COMPONENT_TEST_TRANSFORMS += \
 REQUIRED_PACKAGES += library/database/gdbm
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/libffi
+REQUIRED_PACKAGES += library/libyaml
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += library/security/openssl-3

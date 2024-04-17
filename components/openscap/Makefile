@@ -117,6 +117,7 @@ REQUIRED_PACKAGES += developer/swig
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
+REQUIRED_PACKAGES += library/libyaml
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/xmlsec
 REQUIRED_PACKAGES += $(PERL_PKG)
