@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 # parfait doesn't like sketchy code (25158912)
@@ -35,16 +35,16 @@ COMPONENT_MAKE_JOBS=1
 include ../../../make-rules/shared-macros.mk
 
 GIT_REPO=		https://github.com/espeak-ng/espeak-ng
-GIT_COMMIT_ID=		0577cd9
-GIT_HASH= sha256:457a6739e6a05f026fcf64a46776394e2a55aba705a4440e9193caad9b87fbf2
+GIT_COMMIT_ID=		$(COMPONENT_VERSION)
+GIT_HASH= sha256:addcefe6303361b3f22654d606d0cade215b0b52e72fdb086f7c244287b06ac3
 
 COMPONENT_NAME=		espeak-ng
-COMPONENT_VERSION=	1.50
+COMPONENT_VERSION=	1.51.1
 COMPONENT_PROJECT_URL=	https://github.com/espeak-ng/espeak-ng
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-$(GIT_COMMIT_ID)
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	12958
-COMPONENT_BAID= 	115279
+COMPONENT_BAID= 	164045
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -54,6 +54,10 @@ COMPONENT_PRE_CONFIGURE_ACTION += (cd $(SOURCE_DIR); ./autogen.sh) ;
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D)) ;
 
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+
+# Use GNU ln which supports the -v (--verbose) option
+# to avoid build failure.
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CFLAGS.sparc += -DBYTE_ORDER=BIG_ENDIAN
 CFLAGS += $(CFLAGS.$(MACH))

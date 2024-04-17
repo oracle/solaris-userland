@@ -9,9 +9,9 @@ Desc for all of these:
 Patch from upstream:
 https://github.com/espeak-ng/espeak-ng/pull/1846
 
---- espeak-ng-1.50-0577cd9/src/libespeak-ng/dictionary.c
-+++ espeak-ng-1.50-0577cd9/src/libespeak-ng/dictionary.c
-@@ -1055,6 +1055,9 @@ void SetWordStress(Translator *tr, char
+--- espeak-ng-1.51.1/src/libespeak-ng/dictionary.c
++++ espeak-ng-1.51.1/src/libespeak-ng/dictionary.c
+@@ -1062,6 +1062,9 @@ unsigned char phonetic[N_WORD_PHONEMES];
  
  	static char consonant_types[16] = { 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 };
  
@@ -21,7 +21,7 @@ https://github.com/espeak-ng/espeak-ng/pull/1846
  	stressflags = tr->langopts.stress_flags;
  
  	if (dictionary_flags != NULL)
-@@ -3040,6 +3043,7 @@ int RemoveEnding(Translator *tr, char *w
+@@ -3070,6 +3073,7 @@ if (*word_end == REPLACED_E)
  			*word_end = 'e';
  	}
  	i = word_end - word;
@@ -29,9 +29,9 @@ https://github.com/espeak-ng/espeak-ng/pull/1846
  
  	if (word_copy != NULL) {
  		memcpy(word_copy, word, i);
---- espeak-ng-1.50-0577cd9/src/libespeak-ng/readclause.c
-+++ espeak-ng-1.50-0577cd9/src/libespeak-ng/readclause.c
-@@ -665,7 +665,7 @@ int ReadClause(Translator *tr, char *buf
+--- espeak-ng-1.51.1/src/libespeak-ng/readclause.c
++++ espeak-ng-1.51.1/src/libespeak-ng/readclause.c
+@@ -665,7 +665,7 @@ option_punctlist[0] = 0;
  					if (c2 != '1') {
  						// a list of punctuation characters to be spoken, terminated by space
  						j = 0;
@@ -40,9 +40,9 @@ https://github.com/espeak-ng/espeak-ng/pull/1846
  							option_punctlist[j++] = c2;
  							c2 = GetC();
  							buf[ix++] = ' ';
---- espeak-ng-1.50-0577cd9/src/libespeak-ng/synthdata.c
-+++ espeak-ng-1.50-0577cd9/src/libespeak-ng/synthdata.c
-@@ -75,8 +75,15 @@ static espeak_ng_STATUS ReadPhFile(void
+--- espeak-ng-1.51.1/src/libespeak-ng/synthdata.c
++++ espeak-ng-1.51.1/src/libespeak-ng/synthdata.c
+@@ -75,8 +75,15 @@ return create_file_error_context(context
  	if ((f_in = fopen(buf, "rb")) == NULL)
  		return create_file_error_context(context, errno, buf);
  
@@ -59,7 +59,7 @@ https://github.com/espeak-ng/espeak-ng/pull/1846
  
  	if ((*ptr = malloc(length)) == NULL) {
  		fclose(f_in);
-@@ -86,6 +93,7 @@ static espeak_ng_STATUS ReadPhFile(void
+@@ -86,6 +93,7 @@ if (fread(*ptr, 1, length, f_in) != leng
  		int error = errno;
  		fclose(f_in);
  		free(*ptr);
@@ -67,7 +67,7 @@ https://github.com/espeak-ng/espeak-ng/pull/1846
  		return create_file_error_context(context, error, buf);
  	}
  
-@@ -119,9 +127,11 @@ espeak_ng_STATUS LoadPhData(int *srate,
+@@ -119,9 +127,11 @@ n_tunes = length / sizeof(TUNE);
  	// read the version number and sample rate from the first 8 bytes of phondata
  	version = 0; // bytes 0-3, version number
  	rate = 0;    // bytes 4-7, sample rate
@@ -82,9 +82,9 @@ https://github.com/espeak-ng/espeak-ng/pull/1846
  	}
  
  	if (version != version_phdata)
---- espeak-ng-1.50-0577cd9/src/libespeak-ng/translate.c
-+++ espeak-ng-1.50-0577cd9/src/libespeak-ng/translate.c
-@@ -2603,6 +2603,7 @@ void TranslateClause(Translator *tr, int
+--- espeak-ng-1.51.1/src/libespeak-ng/translate.c
++++ espeak-ng-1.51.1/src/libespeak-ng/translate.c
+@@ -2630,6 +2630,7 @@ }
  			if (dict_flags & FLAG_SPELLWORD) {
  				// redo the word, speaking single letters
  				for (pw = word; *pw != ' ';) {
@@ -92,9 +92,9 @@ https://github.com/espeak-ng/espeak-ng/pull/1846
  					memset(number_buf, ' ', 9);
  					nx = utf8_in(&c_temp, pw);
  					memcpy(&number_buf[2], pw, nx);
---- espeak-ng-1.50-0577cd9/src/libespeak-ng/voices.c
-+++ espeak-ng-1.50-0577cd9/src/libespeak-ng/voices.c
-@@ -557,6 +557,10 @@ voice_t *LoadVoice(const char *vname, in
+--- espeak-ng-1.51.1/src/libespeak-ng/voices.c
++++ espeak-ng-1.51.1/src/libespeak-ng/voices.c
+@@ -557,6 +557,10 @@ static char voice_identifier[40]; // fil
  	static char voice_name[40];       // voice name for current_voice_selected
  	static char voice_languages[100]; // list of languages and priorities for current_voice_selected
  
@@ -105,7 +105,7 @@ https://github.com/espeak-ng/espeak-ng/pull/1846
  	strncpy0(voicename, vname, sizeof(voicename));
  	if (control & 0x10) {
  		strcpy(buf, vname);
-@@ -940,14 +944,14 @@ voice_t *LoadVoice(const char *vname, in
+@@ -940,14 +944,14 @@ }
  
  	if (!tone_only) {
  		if (!!(control & 8/*compiling phonemes*/)) {
@@ -128,9 +128,9 @@ https://github.com/espeak-ng/espeak-ng/pull/1846
  			fprintf(stderr, "Unknown phoneme table: '%s'\n", phonemes_name);
  			ix = 0;
  		}
---- espeak-ng-1.50-0577cd9/src/libespeak-ng/wavegen.c
-+++ espeak-ng-1.50-0577cd9/src/libespeak-ng/wavegen.c
-@@ -530,14 +530,14 @@ static void AdvanceParameters()
+--- espeak-ng-1.51.1/src/libespeak-ng/wavegen.c
++++ espeak-ng-1.51.1/src/libespeak-ng/wavegen.c
+@@ -537,14 +537,14 @@ // Called every 64 samples to increment
  	if (wvoice == NULL)
  		return;
  
@@ -147,7 +147,7 @@ https://github.com/espeak-ng/espeak-ng/pull/1846
  	wdata.pitch = (x>>8) + wdata.pitch_base;
  	
  	
-@@ -553,7 +553,7 @@ static void AdvanceParameters()
+@@ -560,7 +560,7 @@ wdata.pitch += x;
  	
  	if(const_f0)
  		wdata.pitch = (const_f0<<12);
@@ -156,7 +156,7 @@ https://github.com/espeak-ng/espeak-ng/pull/1846
  	if (wdata.pitch < 102400)
  		wdata.pitch = 102400; // min pitch, 25 Hz  (25 << 12)
  
-@@ -1261,6 +1261,9 @@ static int WavegenFill2()
+@@ -1268,6 +1268,9 @@ int marker_type;
  	static bool resume = false;
  	static int echo_complete = 0;
  

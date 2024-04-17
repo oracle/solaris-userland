@@ -1,6 +1,6 @@
---- espeak-ng-1.50-0577cd9/src/libespeak-ng/mbrowrap.c.~1~	Mon Jan  3 11:14:18 2022
-+++ espeak-ng-1.50-0577cd9/src/libespeak-ng/mbrowrap.c	Thu May 12 05:27:52 2022
-@@ -216,7 +216,11 @@
+--- espeak-ng-1.51.1/src/libespeak-ng/mbrowrap.c
++++ espeak-ng-1.51.1/src/libespeak-ng/mbrowrap.c
+@@ -216,7 +216,11 @@ (void)written;   // suppress 'variable n
  		_exit(1);
  	}
  
@@ -12,14 +12,14 @@
  	mbr_proc_stat = open(charbuf, O_RDONLY);
  	if (mbr_proc_stat == -1) {
  		error = errno;
-@@ -410,8 +414,21 @@
+@@ -410,6 +414,19 @@ }
  	return result;
  }
  
 +#if defined(__sun) && defined(__SVR4) /* Solaris */
 +#include <procfs.h>
- static int mbrola_is_idle(void)
- {
++static int mbrola_is_idle(void)
++{
 +	psinfo_t ps;
 +
 +	// look in /proc to determine if mbrola is still running or sleeping
@@ -29,12 +29,10 @@
 +	return strcmp(ps.pr_fname, "mbrola") == 0 && ps.pr_lwp.pr_sname == 'S';
 +}
 +#else
-+static int mbrola_is_idle(void)
-+{
+ static int mbrola_is_idle(void)
+ {
  	char *p;
- 	char buffer[20]; // looking for "12345 (mbrola) S" so 20 is plenty
- 
-@@ -425,6 +442,7 @@
+@@ -425,6 +442,7 @@ if (!p || (unsigned)(p - buffer) >= size
  		return 0;
  	return p[1] == ' ' && p[2] == 'S';
  }
