@@ -31,12 +31,12 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	115.9.0
-COMPONENT_BAID =	161713
+COMPONENT_VERSION =	115.10.0
+COMPONENT_BAID =	164099
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:2aeb77ca7038df6f3d306f9c3d2a4ea615af0edcf0f7290215ca5f30c1290e57
+    sha256:49d8c9fe3bcf93c24b6c84b1ae4b20fa9a68099e7b878da17e8eb05aaba2d95d
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -53,7 +53,7 @@ COMPONENT_ANITYA_ID =	4967
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:bf0498c7006e672d0cd2ace8d3e95df8355c1a2d2607aab9dcf0f941ecec6a60
+    sha256:d82270912b232229b5f1f7416ab8c6c1be17e0984bbe1a1fe74408a8137a65a5
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
