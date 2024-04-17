@@ -1,0 +1,128 @@
+#!/bin/ksh -p
+#
+# Copyright (c) 2024, Oracle and/or its affiliates.
+#
+#
+# Version history:
+#
+# See upgrade/version property in svc:/network/firewall/pflog-upgrade:default
+#
+#  v0: initial release, service has not run yet
+#      upgrade/version = 0
+#  v1: added dependencies on zone SMF services to pflog service instances
+#      (for Solaris 10 branded zones, see solaris10(7) man page)
+#      upgrade/version = 1
+#
+
+. /lib/svc/share/smf_include.sh
+
+typeset -r SVCADM=/usr/sbin/svcadm
+typeset -r SVCCFG=/usr/sbin/svccfg
+typeset -r SVCPROP=/usr/bin/svcprop
+typeset -r SVCS=/usr/bin/svcs
+typeset -r ZONECFG=/usr/sbin/zonecfg
+
+function list_instances
+{
+	$SVCS -H -o fmri svc:/network/firewall/pflog
+}
+
+function must
+{
+	if ! "$@"; then
+		print -u2 "command $@ failed"
+		exit $SMF_EXIT_ERR_FATAL
+	fi
+}
+
+function add_zone_dependency
+{
+	typeset fmri=$1
+	typeset zone=$2
+	typeset zone_svc_fmri=svc:/system/zones/zone:$zone
+
+	must $SVCCFG -s "$fmri" addpg zone dependency
+	must $SVCCFG -s "$fmri" setprop zone/entities = fmri: "$zone_svc_fmri"
+	must $SVCCFG -s "$fmri" setprop zone/grouping = astring: require_all
+	must $SVCCFG -s "$fmri" setprop zone/restart_on = astring: refresh
+	must $SVCCFG -s "$fmri" setprop zone/type = astring: service
+	must $SVCADM refresh "$fmri"
+}
+
+#
+# All packets logged by PF in branded zone are processed by pflogd(8) in the
+# global zone as pflogd(8) is not available in solaris10(7) branded zone.
+# The capture interface for a branded zone is created when the zone boots.
+# The pflogd(8) process in GZ has to wait for the capture interface.
+#
+# This function walks all SMF service instances in global zone created by
+# pflogd(8). A dependency on zone's SMF service is added (if missing) to
+# every pflog's service instance that maps to a solaris10(7) branded zone.
+#
+function upgrade_instances_v1
+{
+	typeset fmri
+	typeset interface
+	typeset zone
+	typeset brand
+
+	print -u2 "upgrading SMF service instances from v0 to v1"
+	for fmri in $(list_instances); do
+		print "found $fmri :"
+		if [[ $fmri =~ :default$ ]]; then
+			print "skipping, default instance";
+		elif ! interface=$(smf_get_prop pflog/interface "$fmri"); then
+			print -u2 "can't get pflog/interface property of $fmri"
+			exit $SMF_EXIT_ERR_FATAL
+		elif ! [[ $interface =~ / ]]; then
+			print "skipping, interface has no /"
+		elif ! zone=${interface%%/*} || [[ $zone == $interface ]]; then
+			print -u2 "can't determine zone name from $interface"
+			exit $SMF_EXIT_ERR_FATAL
+		elif ! brand=$(set -- \
+		    $($ZONECFG -z "$zone" info brand); echo $2); then
+			print -u2 "can't determine zone's brand for $zone"
+			exit $SMF_EXIT_ERR_FATAL
+		elif [[ $brand != "solaris10" ]]; then
+			print "skipping, not a solaris10 branded zone"
+		elif $SVCPROP -q -p zone "$fmri"; then
+			print "skipping, zone dependency already exists"
+		elif ! add_zone_dependency "$fmri" "$zone"; then
+			print -u2 "failed to add dependency to $fmri on $zone"
+			exit $SMF_EXIT_ERR_FATAL
+		else
+			print "added dependency on zone $zone"
+		fi
+	done
+	return 0
+}
+
+function main
+{
+	typeset version
+	# no work in NGZ, currently the upgrade deals only with GZ
+	if ! smf_is_globalzone; then
+		exit $SMF_EXIT_OK
+	# check if the upgrade is already done
+	elif ! version=$(smf_get_prop upgrade/version); then
+		exit $SMF_EXIT_ERR_CONFIG
+	elif (( version < 1 )); then
+		if upgrade_instances_v1; then
+			must $SVCCFG -s "$SMF_FMRI" setprop upgrade/version = 1
+			must $SVCADM refresh -s "$SMF_FMRI"
+		fi
+	fi
+}
+
+function usage
+{
+	print -u2 "usage: $0 start"
+	exit $SMF_EXIT_ERR_FATAL
+}
+
+case "$1" in
+	start) main;;
+	*) usage;;
+esac
+
+exit $SMF_EXIT_OK

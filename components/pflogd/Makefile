@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -66,4 +66,5 @@ REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/libpcap
 REQUIRED_PACKAGES += system/library/smf
+REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/zones
