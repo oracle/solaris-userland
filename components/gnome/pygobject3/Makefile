@@ -23,21 +23,19 @@
 # Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
-# gobject-introspection bindings are only built correctly for gtk when building
-# with gcc, this would otherwise build with Studio.
 COMPILER =		gcc
 BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pygobject
-COMPONENT_VERSION=	3.42.0
+COMPONENT_VERSION=	3.48.2
 COMPONENT_PROJECT_URL=	https://pygobject.readthedocs.io/en/latest
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9b12616e32cfc792f9dc841d9c472a41a35b85ba67d3a6eb427e307a6fe4367b
+	sha256:00d956512f43a4782676eb04b25438b4b799e90273d8b805072dffc11a718c1e
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13158
 
-COMPONENT_BAID=		111952
+COMPONENT_BAID=		163884
 BUILD_STYLE=		meson
 
 PKG_CONFIG_PATHS+=$(PYTHON_VENDOR_PACKAGES_BASE)/lib/pkgconfig/
