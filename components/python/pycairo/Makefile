@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -29,16 +29,16 @@ BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pycairo
-COMPONENT_VERSION=	1.21.0
+COMPONENT_VERSION=	1.26.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9fe4d1a4356697bfe088ba7ac57b6644a7233e4e275a301ac587d5bdaeec93f4
+    sha256:2dddd0a874fbddb21e14acd9b955881ee1dc6e63b9c549a192d613a907f9cbeb
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://cairographics.org/pycairo/
 COMPONENT_BUGDB=	python-mod/pycairo
 COMPONENT_ANITYA_ID=	13166
-COMPONENT_BAID=		122799
+COMPONENT_BAID=		161754
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
