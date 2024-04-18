@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 
 include $(WS_MAKE_RULES)/python-common.mk
@@ -54,11 +54,6 @@ $(BUILD_DIR)/%/.installed:	$(BUILD_DIR)/%/.built $(BUILD_DIR)/config-%/$(CFG)
 	$(PYDEPEND) $(PYTHON_VERSION) $(PROTO_DIR)$(PYTHON_LIB)
 	$(TOUCH) $@
 
-ifneq ($(findstring 3.7, $(PYTHON_VERSIONS)),)
-REQUIRED_PACKAGES += library/python/build-37
-REQUIRED_PACKAGES += library/python/installer-37
-REQUIRED_PACKAGES += library/python/wheel-37
-endif
 ifneq ($(findstring 3.9, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += library/python/build-39
 REQUIRED_PACKAGES += library/python/installer-39

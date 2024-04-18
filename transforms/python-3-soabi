@@ -20,24 +20,17 @@
 #
 
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
-# Python 2's ABI for .so files is to simply append ".so".  But for Python
-# 3, it appends ".cpython-3#[d][m][u].so", where # is the minor version,
-# "d" is added if built --with-pydebug (we don't), "m" is added if built
-# --with-pymalloc (we do) and "u" is added if built --with-wide-unicode
-# (we don't).  See http://legacy.python.org/dev/peps/pep-3149/ for details.
+# Python 3 uses ABI versioned tags for .so files:
+# ".cpython-3#[d].so", where # is the minor version, and "d" is added if built
+# --with-pydebug (not used on Solaris). Previously, there were additional flags
+# for --with-wide-unicode ('u') and --with-pymalloc ('m'); those are no longer
+# being used.
+# See http://legacy.python.org/dev/peps/pep-3149/ for more information.
 $(PY3_CPYTHON_NAMING)<transform file -> edit path \
-$(PY3_CPYTHON_NAMING)      (usr/lib/python3.)([4-7])(/vendor-packages/(.*/)?(64/)?.*)\.so$ \
-$(PY3_CPYTHON_NAMING)      \\1\\2\\3.cpython-3\\2m.so >
-
-$(PY3_CPYTHON_NAMING)<transform file -> edit path \
-$(PY3_CPYTHON_NAMING)      (usr/lib/python3.)([8-9])(/vendor-packages/(.*/)?(64/)?.*)\.so$ \
-$(PY3_CPYTHON_NAMING)      \\1\\2\\3.cpython-3\\2.so >
-
-$(PY3_CPYTHON_NAMING)<transform file -> edit path \
-$(PY3_CPYTHON_NAMING)      (usr/lib/python3.)(1[0-9])(/vendor-packages/(.*/)?(64/)?.*)\.so$ \
+$(PY3_CPYTHON_NAMING)      (usr/lib/python3.)([0-9]+)(/vendor-packages/(.*/)?(64/)?.*)\.so$ \
 $(PY3_CPYTHON_NAMING)      \\1\\2\\3.cpython-3\\2.so >
 
 # A newer version of python setup tools enables to create ABI3 compliant

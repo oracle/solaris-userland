@@ -118,8 +118,6 @@ PHP_82_LDFLAGS := $(shell $(PHP_82_CONFIG) --ldflags)
 PHP_82_LIBS := $(shell $(PHP_82_CONFIG) --libs)
 
 PKG_CONFIG = /usr/bin/pkg-config
-PYTHON_37_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.7)
-PYTHON_37_LIBS = $(shell $(PKG_CONFIG) --libs python-3.7)
 PYTHON_311_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.11)
 PYTHON_311_LIBS = $(shell $(PKG_CONFIG) --libs python-3.11)
 
@@ -131,9 +129,6 @@ $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
     $(GSED) -i \
      -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_81_INCLUDES)|' \
      -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_81_LDFLAGS) $(PHP_81_LIBS)|' \
-     -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.7)|' \
-     -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_37_INCLUDES)|' \
-     -e '/^PYTHON3_LIBS =/s|=.*$$|= $(PYTHON_37_LIBS)|' \
      `find tclpkg/gv1 -name Makefile` ) ; \
     (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv2 ; \
     $(GSED) -i '/^SUBDIRS =/s|$$| gv2|' tclpkg/Makefile ; \
@@ -148,21 +143,16 @@ $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
 # Install Python bindings for each version into vendor-packages directories
 # and generate pyc files. The default version is already installed, but
 # without the .pyc file and without .so version tag.
-37_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.7.VENDOR_PACKAGES)
 39_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.9.VENDOR_PACKAGES)
 311_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.11.VENDOR_PACKAGES)
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
-	($(RM) -r $(37_VENDOR_PROTO); $(MKDIR) $(37_VENDOR_PROTO); \
-	$(INSTALL) -m 644 $(@D)/tclpkg/gv1/gv.py $(37_VENDOR_PROTO)/gv.py; \
-	$(PYTHON.3.7) -m compileall -l -d $(PYTHON.3.7.VENDOR_PACKAGES) $(37_VENDOR_PROTO); \
-	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_python3.soT $(37_VENDOR_PROTO)/_gv.cpython-37m.so; \
 	$(PYTHON.3.9) -m compileall -l -d $(PYTHON.3.9.VENDOR_PACKAGES) $(39_VENDOR_PROTO); \
 	$(MV) $(39_VENDOR_PROTO)/_gv.so $(39_VENDOR_PROTO)/_gv.cpython-39.so; \
 	$(RM) -r $(311_VENDOR_PROTO); $(MKDIR) $(311_VENDOR_PROTO); \
 	$(INSTALL) -m 644 $(@D)/tclpkg/gv2/gv.py $(311_VENDOR_PROTO)/gv.py; \
 	$(PYTHON.3.11) -m compileall -l -d $(PYTHON.3.11.VENDOR_PACKAGES) $(311_VENDOR_PROTO); \
-	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_python3.soT $(311_VENDOR_PROTO)/_gv.cpython-311.so; ) ;
+	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_python3.soT $(311_VENDOR_PROTO)/_gv.cpython-311.so;
 
 # Similarly, install PHP bindings for each version. _gv.so for default version
 # is already installed by Graphviz. Additional mediated links are handled
@@ -172,14 +162,14 @@ PHP81_VENDOR_PROTO = $(PROTO_DIR)$(PHP_81_INSTALL_DIR)
 PHP82_VENDOR_PROTO = $(PROTO_DIR)$(PHP_82_INSTALL_DIR)
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
-	($(MKDIR) $(PHP81_VENDOR_PROTO); \
+	$(MKDIR) $(PHP81_VENDOR_PROTO); \
 	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_php.soT $(PHP81_VENDOR_PROTO)/gv.so; \
 	$(MKDIR) $(PHP82_VENDOR_PROTO); \
 	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_php.soT $(PHP82_VENDOR_PROTO)/gv.so; \
 	$(RM) -r $(PHP_GRAPHVIZ_PROTO); $(MKDIR) $(PHP_GRAPHVIZ_PROTO); \
 	$(INSTALL) $(@D)/tclpkg/gv/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php83.so; \
 	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php81.so; \
-	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php82.so; ) ;
+	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php82.so;
 
 # Create the config file once the 32-bit build is complete.  This runs the bits
 # we just built, so we have to set a handful of variables to the right place.
@@ -225,7 +215,6 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += print/filter/poppler
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += runtime/ruby-31

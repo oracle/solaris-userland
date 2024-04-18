@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 
 include ../make-rules/shared-macros.mk
@@ -206,6 +206,7 @@ incorporation:
 		$(WS_TOOLS)/userland-incorporator \
 			--repository $(PKG_REPO) \
 			--version $(PKG_SOLARIS_VERSION),$(BUILD_VERSION) \
+			--incorporation-version runtime/python-37-incorporation=99 \
 			--publisher $(PUBLISHER) \
 			--destdir $(WS_MACH) \
 			--repository-changeset $(CONSOLIDATION_CHANGESET) \

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -39,23 +39,9 @@ COMPONENT_ANITYA_ID=	4071
 COMPONENT_BAID=		133256
 
 
-# Python 3.7 is still based on OpenSSL 1.0.2 meaning that
-# it is limited by the cryptography and openssl versions.
-COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
-COMPONENT_VERSION_OLD=	22.4.0
-COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD=	\
-	sha256:624dda287c097720d12e470f766770a1c7376c2a9b9f19c4828f411d9f9a6f3f
-COMPONENT_ARCHIVE_URL_OLD=  $(call pypi_url,OLD)
-COMPONENT_BAID_OLD=		123313
-
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 # Move executables into demo directory.
 COMPONENT_INSTALL_ARGS +=	--install-scripts=usr/demo/twisted-python$(PYTHON_VERSION)

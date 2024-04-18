@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 
 # Even though the component is pure python, some
@@ -76,7 +76,6 @@ system-test:	$(SYSTEM_TEST_64)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/distlib-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/filelock-%)
-REQUIRED_PACKAGES += library/python/importlib-metadata-37
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/mock

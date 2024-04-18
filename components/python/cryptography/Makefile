@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -53,27 +53,6 @@ COMPONENT_ARCHIVE_HASH_VECTORS=	\
 COMPONENT_ARCHIVE_URL_VECTORS=	$(call pypi_url,VECTORS)
 
 
-# Python 3.9 is delivered with new, partially rust-based and OpenSSL 3 linked version.
-COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
-COMPONENT_VERSION_OLD=	3.1.1
-COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD=	\
-    sha256:9d9fc6a16357965d282dd4ab6531013935425d0dc4950df2e0cf2a1b1ac1017d
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-COMPONENT_BAID_OLD=		96619
-
-# cryptography_vectors package is being used for testing only
-# and is not delivered with cryptography
-COMPONENT_NAME_VECTORS_OLD=		$(COMPONENT_NAME_VECTORS)
-COMPONENT_VERSION_VECTORS_OLD=	$(COMPONENT_VERSION_OLD)
-COMPONENT_SRC_VECTORS_OLD=		$(COMPONENT_NAME_VECTORS_OLD)-$(COMPONENT_VERSION_VECTORS_OLD)
-COMPONENT_ARCHIVE_VECTORS_OLD=	$(COMPONENT_SRC_VECTORS_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_VECTORS_OLD=	\
-	sha256:3f1d119b716f3dae1c120804f947fa3fde222aa11cf049a1ee3b2302d760583b
-COMPONENT_ARCHIVE_URL_VECTORS_OLD=	$(call pypi_url,VECTORS_OLD)
-
-
 # This is necessary for vendored rust dependencies
 include $(WS_MAKE_RULES)/cargo-vendored.mk
 VENDORED_SOURCES_NAME = $(COMPONENT_SRC)-rust-sources
@@ -82,33 +61,22 @@ VENDORED_CARGO_LOCK_LOCATION = $(COMPONENT_SRC)/src/rust
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # Convenience variables
-TARGET_37 = $(BUILD_DIR)/%-3.7/
 TARGET_39 = $(BUILD_DIR)/%-3.9/
 TARGET_311 = $(BUILD_DIR)/%-3.11/
 
 # OpenSSL 3 temporarily lives in non-standard directory.
-$(TARGET_39).built: CFLAGS += -I/usr/openssl/3/include
-$(TARGET_39).built: LDFLAGS += -L/usr/openssl/3/lib/$(BITS)
-$(TARGET_39).built: COMPONENT_BUILD_ENV += LDFLAGS="$(LDFLAGS)"
-$(TARGET_39).built: COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
-$(TARGET_39).built: COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
-$(TARGET_39).installed: COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
+CFLAGS += -I/usr/openssl/3/include
+LDFLAGS += -L/usr/openssl/3/lib/$(BITS)
+COMPONENT_BUILD_ENV += LDFLAGS="$(LDFLAGS)"
 
-$(TARGET_311).built: CFLAGS += -I/usr/openssl/3/include
-$(TARGET_311).built: LDFLAGS += -L/usr/openssl/3/lib/$(BITS)
-$(TARGET_311).built: COMPONENT_BUILD_ENV += LDFLAGS="$(LDFLAGS)"
-$(TARGET_311).built: COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
-$(TARGET_311).built: COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
-$(TARGET_311).installed: COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
+COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
+COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 
-$(TARGET_37).tested: SOURCE_DIR_VECTORS = $(SOURCE_DIR_VECTORS_OLD)
-$(TARGET_37).system-tested: SOURCE_DIR_VECTORS = $(SOURCE_DIR_VECTORS_OLD)
-
+COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest

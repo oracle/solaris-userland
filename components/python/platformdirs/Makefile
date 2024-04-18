@@ -49,5 +49,3 @@ build:          $(BUILD_NO_ARCH)
 install:        $(INSTALL_NO_ARCH)
 
 test:           $(SKIP_TEST)
-
-REQUIRED_PACKAGES += library/python/typing-extensions-37

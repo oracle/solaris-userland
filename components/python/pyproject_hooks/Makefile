@@ -57,7 +57,6 @@ test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/python/tomli-37
 REQUIRED_PACKAGES += library/python/tomli-39
 
 # build dependencies

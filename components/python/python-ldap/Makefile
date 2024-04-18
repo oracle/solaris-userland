@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 # Build requirements, needed before inclusion of shared-macros.
-# Building for Python 3.7 requires compiler to be gcc.
+# Building for Python 3.7+ requires compiler to be gcc.
 COMPILER=	gcc
 
 include ../../../make-rules/shared-macros.mk
@@ -41,10 +41,6 @@ COMPONENT_BUGDB=	python-mod/python-ldap
 COMPONENT_ANITYA_ID=	13261
 COMPONENT_BAID=		126501
 
-
-# Building for Python 3.7, 3.9 and 3.11 only. (the default now)
-# Reference ../../../make-rules/shared-macros.mk
-# PYTHON_VERSIONS=	3.7 3.9 3.11
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

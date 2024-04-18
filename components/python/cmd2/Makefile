@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -58,5 +58,3 @@ system-test:    $(SYSTEM_TEST_NO_ARCH)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyperclip-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/wcwidth-%)
-REQUIRED_PACKAGES += library/python/importlib-metadata-37
-REQUIRED_PACKAGES += library/python/typing-extensions-37

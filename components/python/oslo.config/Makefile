@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -67,4 +67,3 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/requests-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/rfc3986-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/stevedore-%)
-REQUIRED_PACKAGES += library/python/importlib-metadata-37

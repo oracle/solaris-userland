@@ -260,13 +260,11 @@ endif
 # BUILD_STYLE=
 
 # The default version should go last.
-PYTHON_VERSION =	3.7
-PYTHON3_VERSIONS =	3.7 3.9 3.11
-PYTHON_VERSIONS =	$(PYTHON3_VERSIONS)
+PYTHON_VERSION =	3.9
+PYTHON_VERSIONS =	3.9 3.11
 
-# Convenience variable for builds without Python 3.7, 3.9 and 3.11
-WITHOUT_PYTHON3.9 = 3.7 $(PYTHON2_VERSIONS)
-WITHOUT_PYTHON3.11 = 3.7 3.9 $(PYTHON2_VERSIONS)
+# Convenience variable for builds without Python 3.9 and 3.11
+WITHOUT_PYTHON3.11 = 3.9
 
 # PYTHON3_SOABI variable defines the naming scheme
 # of python3 extension libraries: cpython or abi3.
@@ -717,10 +715,6 @@ RUBY_SCRIPT_FIX_FUNC = \
         '1s%^\#! */usr/bin/env ruby%\#!/usr/ruby/$(RUBY_VERSION)/bin/ruby%' \
         \{\}
 
-PYTHON.3.7.VENDOR_PACKAGES.32 =
-PYTHON.3.7.VENDOR_PACKAGES.64 = /usr/lib/python3.7/vendor-packages
-PYTHON.3.7.VENDOR_PACKAGES = $(PYTHON.3.7.VENDOR_PACKAGES.64)
-
 PYTHON.3.9.VENDOR_PACKAGES.32 =
 PYTHON.3.9.VENDOR_PACKAGES.64 = /usr/lib/python3.9/vendor-packages
 PYTHON.3.9.VENDOR_PACKAGES = $(PYTHON.3.9.VENDOR_PACKAGES.64)
@@ -736,7 +730,6 @@ PYTHON_VENDOR_PACKAGES.32 = $(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES.32)
 PYTHON_VENDOR_PACKAGES.64 = $(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES.64)
 PYTHON_VENDOR_PACKAGES = $(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES)
 
-PYTHON.3.7.TEST = /usr/lib/python3.7/test
 PYTHON.3.9.TEST = /usr/lib/python3.9/test
 PYTHON.3.11.TEST = /usr/lib/python3.11/test
 
@@ -752,10 +745,6 @@ USRLIB =	$(USRLIB.$(BITS))
 # in such a way that we still need the .32 macro below.  And since we build
 # 64-bit only, we stick it directly in usr/bin (i.e., the 32-bit path) rather
 # than the 64-bit path.
-PYTHON.3.7.32 =	$(USRBIN.32)/python3.7
-PYTHON.3.7.64 =	$(USRBIN.32)/python3.7
-PYTHON.3.7 =	$(USRBIN.32)/python3.7
-
 PYTHON.3.9.32 =	$(USRBIN.32)/python3.9
 PYTHON.3.9.64 =	$(USRBIN.32)/python3.9
 PYTHON.3.9 =	$(USRBIN.32)/python3.9

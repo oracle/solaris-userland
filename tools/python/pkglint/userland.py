@@ -749,7 +749,6 @@ class UserlandManifestChecker(base.ManifestChecker):
         # Magic values of all versions of Python can be found here:
         # https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap_external.py
         MAGIC_NUMBERS = {
-            "37": (3394).to_bytes(2, "little") + b"\r\n",
             "39": (3425).to_bytes(2, "little") + b"\r\n",
             "311": (3495).to_bytes(2, "little") + b"\r\n",
         }

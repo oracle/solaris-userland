@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
@@ -37,19 +37,9 @@ COMPONENT_BUGDB=	python-mod/pyopenssl
 COMPONENT_ANITYA_ID=	5535
 COMPONENT_BAID=		124801
 
-COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
-COMPONENT_VERSION_OLD=	19.0.0
-COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD=	\
-	sha256:aeca66338f6de19d1aa46ed634c3b9ae519a64b458f8468aec688e7e3c20f200
-COMPONENT_ARCHIVE_URL_OLD=  $(call pypi_url,OLD)
-COMPONENT_BAID_OLD=		61821
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/python-multiver.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

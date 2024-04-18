@@ -49,7 +49,7 @@ TEST_TARGET= $(TEST_32_and_64)
 
 include $(WS_MAKE_RULES)/common.mk
 
-PYTHON_VERSION = 3.7
+PYTHON_VERSION = 3.9
 
 studio_C99MODE= $(studio_C99_ENABLE)
 CPPFLAGS += "-DFALSE_SHARING_ALIGN=64"
@@ -96,8 +96,8 @@ CONFIGURE_OPTIONS.64  +=	--disable-perl-cc-checks
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D); $(CLONEY) $(COMPONENT_DIR)/sun $(@D)/sun);
 
-# Make a copy of the python bits so we can build separate python 3.9 and 3.11 support
-COMPONENT_PREP_ACTION += (cd $(@D) ; cp -rp python python3.9; cp -rp python python3.11);
+# Make a copy of the python bits so we can build separate python 3.11 support
+COMPONENT_PREP_ACTION += (cd $(@D) ; cp -rp python python3.11);
 
 # for the goofy definition of ARCH in the extra Makefiles
 ARCH=32
@@ -160,11 +160,6 @@ $(INSTALL_32): COMPONENT_POST_INSTALL_ACTION= \
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION= \
 	($(MKDIR) -p $(BUILD_DIR)/prototype/$(MACH64)/etc/net-snmp/snmp/mibs; \
 	 cd $(BUILD_DIR)/$(MACH64)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS) install) ; \
-	(cd $(@D)/python3.9 ; env PYTHON=$(PYTHON.3.9.$(BITS)) \
-	 $(PYTHON.3.9.$(BITS)) ./setup.py install \
-		--root $(PROTO_DIR) \
-		--install-lib=$(PYTHON.3.9.VENDOR_PACKAGES) \
-		--openssl_lib_dir=$(OPENSSL_LIB_PATH.$(BITS))) ; \
 	(cd $(@D)/python3.11 ; env PYTHON=$(PYTHON.3.11.$(BITS)) \
 	 $(PYTHON.3.11.$(BITS)) ./setup.py install \
 		--root $(PROTO_DIR) \
@@ -188,7 +183,6 @@ REQUIRED_PACKAGES += developer/build/make
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/bash

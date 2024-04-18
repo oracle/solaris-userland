@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 # gobject-introspection bindings are only built correctly for gtk when building
@@ -44,22 +44,18 @@ PKG_CONFIG_PATHS+=$(PYTHON_VENDOR_PACKAGES_BASE)/lib/pkgconfig/
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
-$(BUILD_DIR)/%-3.7/.configured:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.configured:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.configured:		PYTHON_VERSION=3.11
 
 BUILD_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
-$(BUILD_DIR)/%-3.7/.built:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.built:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.built:		PYTHON_VERSION=3.11
 
 INSTALL_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
-$(BUILD_DIR)/%-3.7/.installed:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.installed:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.installed:		PYTHON_VERSION=3.11
 
 TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested-and-compared)
-$(BUILD_DIR)/%-3.7/.tested-and-compared:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.tested-and-compared:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.tested-and-compared:		PYTHON_VERSION=3.11
 
@@ -88,6 +84,5 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/python/pycairo
-REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311

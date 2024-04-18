@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -43,7 +43,7 @@ TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # pkgdepend doesn't like the first line of a Python script to be:
-# '#!/usr/bin/env python3' so turn it into '#!/usr/bin/python3.7'
+# '#!/usr/bin/env python3' so turn it into '#!/usr/bin/python3.11'
 
 COMPONENT_POST_INSTALL_ACTION += \
         $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \

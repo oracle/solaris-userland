@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 
 #
@@ -84,8 +84,6 @@ PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/depends
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/devel
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/docs
 PUBLISH_TRANSFORMS +=	$(LOCALE_TRANSFORMS)
-PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/standard-python-libraries
-PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/python-rename
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/python-3-groups
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/python-3-soabi
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/python-3-no-32bit
@@ -131,7 +129,6 @@ PKG_MACROS +=		IPS_COMPONENT_RE_VERSION=$(subst .,\\.,$(IPS_COMPONENT_VERSION))
 # COMPONENT_VERSION suitable for use in regular expressions.
 PKG_MACROS +=		COMPONENT_RE_VERSION=$(subst .,\\.,$(COMPONENT_VERSION))
 
-PKG_MACROS +=		PYTHON_3.7_ONLY=\#
 PKG_MACROS +=		PYTHON_3.9_ONLY=\#
 PKG_MACROS +=		PYTHON_3.11_ONLY=\#
 

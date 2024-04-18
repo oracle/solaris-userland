@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 
 HG =		/usr/bin/hg
@@ -77,7 +77,7 @@ $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 		-e "s/\(HG_HASH$(1)[[:space:]]*=[[:space:]]*\).*/\1sha256:$$$${HG_HASH}/" \
 		Makefile)
 
-REQUIRED_PACKAGES += developer/versioning/mercurial
+REQUIRED_PACKAGES += developer/versioning/mercurial58
 
 endif
 endif
