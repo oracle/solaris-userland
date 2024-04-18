@@ -1,0 +1,41 @@
+wxWidgets upstream decided to use GNU grep features instead of egrep.
+
+https://github.com/wxWidgets/wxWidgets/commit/2b6be286ee10b963bd15b31313fe9bf89de5dbc2
+
+As Solaris grep doesn't understand -E and there is no reason to depend on GNU grep package
+it needs to be partially reverted.
+
+--- wxWidgets-3.2.4/wx-config.in
++++ wxWidgets-3.2.4/wx-config.in
+@@ -402,7 +402,7 @@ prefix=${input_option_prefix-${this_pref
+ exec_prefix=${input_option_exec_prefix-${input_option_prefix-${this_exec_prefix:-@exec_prefix@}}}
+ wxconfdir="@libdir@/wx/config"
+ 
+-installed_configs=`cd "$wxconfdir" 2> /dev/null && ls | grep -v "^inplace-"`
++installed_configs=`cd "$wxconfdir" 2> /dev/null && ls | egrep "^inplace-"`
+ 
+ is_cross && target="@host_alias@"
+ 
+@@ -516,11 +516,11 @@ # --------------------------------------
+ # find_eligible_delegates _mask
+ # Outputs all the config files installed which match the
+ # (extended regex) _mask passed as an argument.
+-find_eligible_delegates() { echo "$installed_configs" | grep -E "$1" 2> /dev/null; }
++find_eligible_delegates() { echo "$installed_configs" | egrep "$1" 2> /dev/null; }
+ 
+ # user_mask_fits _config
+ # Returns true if the string _config satisfies the user specified mask.
+-user_mask_fits()          { echo "$1" | grep -E "$configmask" > /dev/null 2>&1; }
++user_mask_fits()          { echo "$1" | egrep "$configmask" > /dev/null 2>&1; }
+ 
+ # count_fields _word
+ # Returns the number of IFS split fields in _word
+@@ -669,7 +669,7 @@ _legacy_configs=`find_legacy_configs`
+     if [ -n "$_legacy_configs" ]; then
+         _legacy_mask=`get_legacy_mask`
+         for d in $_legacy_configs; do
+-            if echo $d | grep -E $_legacy_mask > /dev/null 2>&1 ; then
++            if echo $d | egrep $_legacy_mask > /dev/null 2>&1 ; then
+                 echo "$d"
+                 return
+             fi
