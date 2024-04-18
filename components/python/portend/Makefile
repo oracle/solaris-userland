@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		portend
-COMPONENT_VERSION=	3.1.0
+COMPONENT_VERSION=	3.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:f710d6cfdc6bd7bd12189d0f54aea77b3030d5ea930b236b6e43d25129320afc
+	sha256:5250a352c19c959d767cac878b829d93e5dc7625a5143399a2a00dc6628ffb72
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/portend
 COMPONENT_BUGDB=	python-mod/portend
 COMPONENT_ANITYA_ID=	20203
-COMPONENT_BAID=		122839
+COMPONENT_BAID=		150573
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
