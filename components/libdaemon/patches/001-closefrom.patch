@@ -1,9 +1,10 @@
 Fix for Oracle bug 36309412:
 libdaemon's daemon_close_all() calls close() too many times
 
-If the exception list is empty (first entry is -1), then just call closefrom(),
-otherwise call fdwalk() with a helper to check the exception list and skip the
-fd's listed in it.
+Call fdwalk() with a helper to check the exception list and skip the
+fd's listed in it, as well as the retval_fds, if any. Look for the largest
+fd in the list, and once we have done the fdwalk to a fd greater than that,
+call closefrom to close the rest of the open descriptors.
 
 --- libdaemon-0.14/configure.ac
 +++ libdaemon-0.14/configure.ac
@@ -17,7 +18,7 @@ fd's listed in it.
  AC_TYPE_SIGNAL
 --- libdaemon-0.14/libdaemon/dfork.c
 +++ libdaemon-0.14/libdaemon/dfork.c
-@@ -482,6 +482,29 @@ errno = saved_errno;
+@@ -482,6 +482,38 @@ int daemon_close_all(int except_fd, ...)
      return r;
  }
  
@@ -30,42 +31,48 @@ fd's listed in it.
 +    if (fd < 3) {
 +	return 0;
 +    }
-+
++    if (fd == _daemon_retval_pipe[1]) {
++	return 0;
++    }
++    int maxfd = _daemon_retval_pipe[1];
 +    for (int i = 0; except_fds[i] >= 0; i++) {
 +	if (except_fds[i] == fd) {
 +	    return 0;
 +	}
++#ifdef HAVE_CLOSEFROM
++	maxfd = (except_fds[i] > maxfd) ? except_fds[i] : maxfd;
 +    }
-+
++    if (fd > maxfd) {
++	closefrom(fd);
++	return fd;
++#endif /* HAVE_CLOSEFROM */
++    }
 +    if (close(fd) < 0 && errno != EBADF)
 +	return -1;
 +
 +    return 0;
 +}
-+#endif
++#endif /* HAVE_FDWALK */
 +
  /** Same as daemon_close_all but takes an array of fds, terminated by -1 */
  int daemon_close_allv(const int except_fds[]) {
      struct rlimit rl;
-@@ -558,6 +581,17 @@ }
+@@ -558,6 +590,14 @@ int daemon_close_allv(const int except_f
  
  #endif
  
-+#ifdef HAVE_CLOSEFROM
-+    if (except_fds[0] < 0) {
-+	closefrom(3);
-+	return 0;
-+    }
-+#endif
-+
 +#ifdef HAVE_FDWALK
-+    return fdwalk(daemon_close_fd, except_fds);
-+#else
++    int fdret = fdwalk(daemon_close_fd, except_fds); 
++    if (fdret >= 3) {
++	    fdret = 0;
++    }
++    return fdret;
++#else /* HAVE_FDWALK */
 +
      if (getrlimit(RLIMIT_NOFILE, &rl) > 0)
          maxfd = (int) rl.rlim_max;
      else
-@@ -587,6 +621,7 @@ _daemon_retval_pipe[0] = -1;        /* m
+@@ -587,6 +627,7 @@ int daemon_close_allv(const int except_f
      }
  
      return 0;

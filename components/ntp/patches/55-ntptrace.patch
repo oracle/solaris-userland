@@ -1,0 +1,32 @@
+This issue has been reported to the ntp community as bug 3912:
+https://bugs.ntp.org/show_bug.cgi?id=3912
+This patch may be removed when upgrading to a version of NTP with that bug
+fixed in it.
+
+--- scripts/ntptrace/ntptrace.in
++++ scripts/ntptrace/ntptrace.in
+@@ -6,6 +6,7 @@ use 5.006_000;
+ use strict;
+ use lib "@PERLLIBDIR@";
+ use NTP::Util qw(ntp_read_vars do_dns);
++use Scalar::Util qw(looks_like_number);
+ 
+ exit run(@ARGV) unless caller;
+ 
+@@ -59,7 +60,16 @@ sub get_info {
+     return if not defined $info;
+     return if not exists $info->{stratum};
+ 
++    if (not (exists $info->{offset} && looks_like_number($info->{offset}))) {
++        $info->{offset} = "NaN";
++    }
+     $info->{offset} /= 1000;
++    if (not (exists $info->{rootdisp} && looks_like_number($info->{rootdisp}))) {
++        $info->{rootdisp} = "NaN";
++    }
++    if (not (exists $info->{rootdelay} && looks_like_number($info->{rootdelay}))) {
++        $info->{rootdelay} = "NaN";
++    }
+     $info->{syncdistance} = ($info->{rootdisp} + ($info->{rootdelay} / 2)) / 1000;
+ 
+     return %$info;

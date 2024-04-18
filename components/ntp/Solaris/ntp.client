@@ -1,4 +1,4 @@
-# Copyright (c) 2009, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2024, Oracle and/or its affiliates.
 
 # Refer to ntp.conf(5) for further details.
 
@@ -22,7 +22,7 @@ disable auth
 
 # To configure NTP servers, replace the server_name with either the IP address
 # or hostname of the server you wish to use. If you just want to keep the time
-# in a causual way, one server may be enough for you. If you wish to keep it
+# in a casual way, one server may be enough for you. If you wish to keep it
 # to a more accurate level, 3 or more is recommended. Do not choose 2, because
 # 2 servers is an unstable configuration. By the same token 3 is only acceptable
 # if all are always available, since when a single one reboots or otherwise
@@ -37,7 +37,10 @@ disable auth
 #
 # There is also a DNS round-robin pool of public access NTP servers. The
 # instructions for accessing these are at http://www.pool.ntp.org
-# Please consider adding your own servers to the pool if possible.
+# Please consider adding your own servers to the pool if possible. If you 
+# specify the keyword "pool" instead of "server", all of the addresses returned
+# by DNS will be interpreted as separate servers rather than aliases for the
+# same server. 
 #
 # Many ISP's also provide NTP servers for use by their customers.
 
@@ -54,6 +57,12 @@ disable auth
 # notrap: Do not allow sending of system event traps.
 # nopeer: Do not allow an unconfigured system to serve time to this system.
 # noquery: Do not allow the use of ntpq or ntpdc to this system.
+# noserve: Do not serve time requests.
+# ignore: Immediately drop the incoming packet of all types.
+# kod limited: Rate limit the time requests from this source. If the rate
+# 	limit is exceeded, then a warning packet (Kiss'o'Death) is sent and
+# 	subsequent requests ignored that exceed the limit. Both keywords
+# 	must be specified to get this behavior. 
 #
 #  Note: Mode 7 (ntpdc) queries are not allowed by default. Leaving noquery
 #	 off will not allow processing of mode 7 requests, further configuration
@@ -76,6 +85,13 @@ restrict ::1
 
 # restrict 192.168.1.0 mask 255.255.255.0 nomodify notrap
 
+# Specify a template of restrictions to be used for all NTP associations,
+# whether configured, ephemeral or preemptible. If the "pool" keyword is used
+# and other restrict lines are present, then you must specify a
+# "restrict source" line to set the correct restrictions on the pool servers.
+
+# restrict source nomodify notrap
+#
 # Always configure the drift file. It can take days for ntpd to completely
 # stabilize and without the drift file, it has to start over on a reboot
 # of if ntpd restarts.
