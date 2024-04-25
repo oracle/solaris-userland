@@ -60,7 +60,11 @@ class Incorporation:
     def __init__(self, name: str):
         self._name = name
         self._version = name_to_incorporation_version(name)
+        # Dictionary of 'depend type="incorporate"' packages
+        # Key is package name, value is package version
         self._packages: Dict[str, str] = {}
+        # Set of 'depend type="required"' packages
+        self._group_requirements: Set(str) = set()
 
     @staticmethod
     def __package_to_str(name: str, version: str) -> str:
@@ -73,6 +77,9 @@ class Incorporation:
 
     def __setitem__(self, name: str, version: str):
         self._packages[name] = version
+
+    def add_group_dependency(self, name: str):
+        self._group_requirements.add(name)
 
     def __str__(self) -> str:
         global args
@@ -89,6 +96,9 @@ set name=com.oracle.info.consolidation.repository-url value="{args.repository_ur
 
         for name in sorted(self._packages):
             result += self.__package_to_str(name, self._packages[name]) + '\n'
+
+        for name in sorted(self._group_requirements):
+            result += f"depend fmri={name} type=group\n"
 
         return result
 
@@ -195,11 +205,14 @@ def get_incorporations():
     # 'entire' package. There is an exception for python incorporations which
     # are listed in userland-incorporation. So here we add all python
     # incorporations packages into userland-incorporation.
+    # In addition we also must add dependency of type "group" to
+    # userland-incorporation so that the python incorporation is always installed.
     #
     userland = incorporations["consolidation/userland/userland-incorporation"]
     for i in incorporations:
         if re.search("^runtime/python-\d+-incorporation$", i):
             userland[i] = name_to_incorporation_version(i)
+            userland.add_group_dependency(i)
 
     return incorporations
 
