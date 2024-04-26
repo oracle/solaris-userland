@@ -24,6 +24,8 @@
 #
 BUILD_BITS= 64
 COMPILER= gcc
+override CONSOLIDATION = userland
+
 include ../../make-rules/shared-macros.mk
 
 PATH=$(USRBINDIR):$(GNUBIN):$(USRSBINDIR)
