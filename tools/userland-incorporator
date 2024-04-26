@@ -249,9 +249,9 @@ def main():
     # Process --version and --incorporation-version
     temp_version_dict={'': args.version} # Empty key holds default version
     for commandline_string in args.incorporation_version or []:
-        match = re.search("^([^=]+)=([0-9.]+)$", commandline_string)
+        match = re.search("^([^=]+)=([0-9.,-]+)$", commandline_string)
         if match is None:
-            print(f"Error, incorporatino version should be in the form of 'blah/blah/blah@1.2.3'. But it is '{commandline_string}'")
+            print(f"Error, incorporatino version should be in the form of 'blah/blah/blah@1.2.3,11.4-11.4.72.0.0.171.0'. But it is '{commandline_string}'")
             sys.exit(1)
         temp_version_dict[match[1]]=match[2]
     args.incorporation_version = temp_version_dict

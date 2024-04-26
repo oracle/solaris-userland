@@ -206,7 +206,7 @@ incorporation:
 		$(WS_TOOLS)/userland-incorporator \
 			--repository $(PKG_REPO) \
 			--version $(PKG_SOLARIS_VERSION),$(BUILD_VERSION) \
-			--incorporation-version runtime/python-37-incorporation=99 \
+			--incorporation-version runtime/python-37-incorporation=99,$(BUILD_VERSION) \
 			--publisher $(PUBLISHER) \
 			--destdir $(WS_MACH) \
 			--repository-changeset $(CONSOLIDATION_CHANGESET) \
