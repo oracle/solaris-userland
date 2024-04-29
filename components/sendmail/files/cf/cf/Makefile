@@ -53,7 +53,7 @@ all: $(ALL)
 clean cleandir:
 	$(RM) $(ALL) core
 
-depend install: 
+depend install:
 
 # this is overkill, but....
 M4FILES=\
@@ -98,7 +98,7 @@ M4FILES=\
 	${CFDIR}/feature/nopercenthack.m4 \
 	${CFDIR}/feature/notsticky.m4 \
 	${CFDIR}/feature/nouucp.m4 \
-	${CFDIR}feature/nullclient.m4 \
+	${CFDIR}/feature/nullclient.m4 \
 	${CFDIR}/feature/preserve_local_plus_detail.m4 \
 	${CFDIR}/feature/preserve_luser_host.m4 \
 	${CFDIR}/feature/promiscuous_relay.m4 \
