@@ -1,0 +1,20 @@
+On Solaris, __STDC_VERSION__ is defined even for C++ build, meaning that
+the following check doesn't work as expected. Replacing it with __cplusplus
+fixes the issue.
+
+Note that this issue manifests only when building C++ Python extensions
+that use static_assert (like Cython tests).
+
+This should be reported upstream.
+
+--- Python-3.11.8/Include/pymacro.h
++++ Python-3.11.8/Include/pymacro.h
+@@ -18,7 +18,7 @@
+ // behaviour. So only define if building as C (if __STDC_VERSION__ is defined),
+ // not C++, and only for C11-17.
+ #if !defined(static_assert) && (defined(__GNUC__) || defined(__clang__)) \
+-     && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L \
++     && !defined(__cplusplus) && __STDC_VERSION__ >= 201112L \
+      && __STDC_VERSION__ <= 201710L
+ #  define static_assert _Static_assert
+ #endif
