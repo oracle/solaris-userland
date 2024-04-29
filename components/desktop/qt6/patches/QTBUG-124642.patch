@@ -1,0 +1,15 @@
+https://bugreports.qt.io/browse/QTBUG-124642
+
+--- qt-everywhere-src-6.7.0/qtbase/src/corelib/io/qprocess_unix.cpp
++++ qt-everywhere-src-6.7.0/qtbase/src/corelib/io/qprocess_unix.cpp
+@@ -32,6 +32,10 @@
+ #  include <sys/neutrino.h>
+ #endif
+ 
++#ifdef Q_OS_SOLARIS
++#  include <sys/termios.h>
++#endif
++
+ #include <errno.h>
+ #include <limits.h>
+ #include <stdlib.h>
