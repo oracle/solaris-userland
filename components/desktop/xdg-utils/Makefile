@@ -18,23 +18,24 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xdg-utils
-COMPONENT_VERSION=	1.1.3
+COMPONENT_VERSION=	1.2.1
 COMPONENT_PROJECT_URL=	https://www.freedesktop.org/wiki/Software/xdg-utils/
-COMPONENT_ARCHIVE=	xdg-utils-$(COMPONENT_VERSION).tar.gz
+COMPONENT_SRC=		$(COMPONENT_NAME)-v$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:25e0192b59e2f4205d142134009faaa9c3c354d029def71bafe8186ef9893e34
-COMPONENT_ARCHIVE_URL=	https://github.com/freedesktop/xdg-utils/archive/v$(COMPONENT_VERSION).tar.gz
+	sha256:f6b648c064464c2636884c05746e80428110a576f8daacf46ef2e554dcfdae75
+COMPONENT_ARCHIVE_URL=	https://gitlab.freedesktop.org/xdg/xdg-utils/-/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/interop
 COMPONENT_ANITYA_ID=	5176
 
-COMPONENT_BAID=		67436
+COMPONENT_BAID=		164635
 
 # Tests require a window system to be up and running
 TEST_TARGET = $(SKIP_TEST)
