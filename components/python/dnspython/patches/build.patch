@@ -1,13 +1,33 @@
-Wheel is not available on Solaris yet, but we don't need it to build the component anyway.
+Hatchling is not available on Solaris. This patch modifies
+the build metadata to use setuptools instead.
 
---- dnspython-2.2.1/setup.cfg
-+++ dnspython-2.2.1/setup.cfg
-@@ -46,7 +46,7 @@ packages =
-     dns.rdtypes.CH
- python_requires = >=3.6
- test_suite = tests
--setup_requires = setuptools>=44; wheel; setuptools_scm[toml]>=3.4.3
-+setup_requires = setuptools>=44; setuptools_scm[toml]>=3.4.3
+Not intended for upstream.
+
+--- dnspython-2.6.1/pyproject.toml
++++ dnspython-2.6.1/pyproject.toml
+@@ -1,12 +1,12 @@
+ [build-system]
+-requires = ["hatchling>=1.21.0"]
+-build-backend = "hatchling.build"
++requires = ["setuptools"]
++build-backend = "setuptools.build_meta"
  
- [options.extras_require]
- DOH = httpx>=0.21.1; h2>=4.1.0; requests; requests-toolbelt
+ [project]
+ name = "dnspython"
+ description = "DNS toolkit"
+ authors = [{ name = "Bob Halley", email = "halley@dnspython.org" }]
+-license = "ISC"
++license = {text = "ISC"}
+ classifiers = [
+     "Development Status :: 5 - Production/Stable",
+     "Intended Audience :: Developers",
+@@ -29,6 +29,9 @@ requires-python = ">=3.8"
+ dependencies = []
+ dynamic = ["version"]
+ 
++[tool.setuptools.dynamic]
++version = {attr = "dns.version.version"}
++
+ [project.optional-dependencies]
+ dev = [
+     "black>=23.1.0",

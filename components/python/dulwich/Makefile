@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -29,19 +29,19 @@ BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dulwich
-COMPONENT_VERSION=	0.20.42
+COMPONENT_VERSION=	0.21.7
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5c3ac2c35d49aece7adef4a748a9eec40f37563dac6fd88b1da87752fa19dbbf
+    sha256:a9e9c66833cea580c3ac12927e4b9711985d76afca98da971405d414de60e968
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://www.dulwich.io/
 COMPONENT_BUGDB=	python-mod/dulwich
 COMPONENT_ANITYA_ID=	6077
-COMPONENT_BAID=		123809
+COMPONENT_BAID=		157366
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # make executables for each Python version

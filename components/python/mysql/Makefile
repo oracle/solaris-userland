@@ -20,34 +20,31 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mysqlclient
-COMPONENT_VERSION=	2.1.1
+COMPONENT_VERSION=	2.2.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:828757e419fb11dd6c5ed2576ec92c3efaa93a0f7c39e263586d1ee779c3d782
+    sha256:33bc9fb3464e7d7c10b1eaf7336c5ff8f2a3d3b88bab432116ad2490beb3bf41
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/PyMySQL/mysqlclient-python
 COMPONENT_BUGDB=	python-mod/mysql
 COMPONENT_ANITYA_ID=	7972
-COMPONENT_BAID=		141683
+COMPONENT_BAID=		164454
 
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-PATH_64=		/usr/mysql/8.0/bin:/usr/bin:$(SPRO_VROOT)/bin
-COMPONENT_BUILD_ENV +=		PATH=$(PATH_$(BITS)):$(PATH)
-COMPONENT_INSTALL_ENV +=	PATH=$(PATH_$(BITS)):$(PATH)
-CFLAGS_64=	-L/usr/mysql/8.0/lib/$(MACH64) -R/usr/mysql/8.0/lib/$(MACH64)
-CFLAGS +=	$(CFLAGS_$(BITS))
+PKG_CONFIG_PATH =	/usr/mysql/8.0/lib/$(MACH64)/pkgconfig
+CFLAGS +=	-R/usr/mysql/8.0/lib/$(MACH64)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest

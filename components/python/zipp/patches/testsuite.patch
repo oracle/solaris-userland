@@ -1,18 +1,55 @@
-Packages jaraco.itertools and func_timeout are not available on Solaris.
+Packages jaraco.itertools and jaraco.functools are not available on Solaris.
 
---- zipp-3.4.1/test_zipp.py
-+++ zipp-3.4.1/test_zipp.py
-@@ -8,9 +8,6 @@ import shutil
- import string
- import functools
+The compose() code below is taken directly from jaraco.functools.
+https://github.com/jaraco/jaraco.functools
+
+--- zipp-3.18.1/tests/test_path.py
++++ zipp-3.18.1/tests/test_path.py
+@@ -1,6 +1,7 @@
+ import io
+ import itertools
+ import contextlib
++import functools
+ import pathlib
+ import tempfile
+ import shutil
+@@ -9,8 +10,33 @@ import sys
+ import unittest
+ import zipfile
  
 -import jaraco.itertools
--import func_timeout
--
+-from jaraco.functools import compose
++"""
++The following function is taken from jaraco.functools
++licensed under MIT license
++  Copyright Jason R. Coombs
++"""
++def compose(*funcs):
++    """
++    Compose any number of unary functions into a single unary function.
++
++    >>> import textwrap
++    >>> expected = str.strip(textwrap.dedent(compose.__doc__))
++    >>> strip_and_dedent = compose(str.strip, textwrap.dedent)
++    >>> strip_and_dedent(compose.__doc__) == expected
++    True
++
++    Compose also allows the innermost function to take arbitrary arguments.
++
++    >>> round_three = lambda x: round(x, ndigits=3)
++    >>> f = compose(round_three, int.__truediv__)
++    >>> [f(3*x, x+1) for x in range(1,10)]
++    [1.5, 2.0, 2.25, 2.4, 2.5, 2.571, 2.625, 2.667, 2.7]
++    """
++
++    def compose_two(f1, f2):
++        return lambda *args, **kwargs: f1(f2(*args, **kwargs))
++
++    return functools.reduce(compose_two, funcs)
+ 
  import zipp
  
- consume = tuple
-@@ -283,18 +280,6 @@ class TestPath(unittest.TestCase):
+@@ -320,17 +346,6 @@ class TestPath(unittest.TestCase):
          zf.mode = 'r'
          return zf
  
@@ -27,7 +64,6 @@ Packages jaraco.itertools and func_timeout are not available on Solaris.
 -        # Check the file iterated all items
 -        assert entries.count == self.HUGE_ZIPFILE_NUM_ENTRIES
 -
--    @func_timeout.func_set_timeout(3)
-     def test_implied_dirs_performance(self):
-         data = ['/'.join(string.ascii_lowercase + str(n)) for n in range(10000)]
-         zipp.CompleteDirs._implied_dirs(data)
+     @pass_alpharep
+     def test_read_does_not_close(self, alpharep):
+         alpharep = self.zipfile_ondisk(alpharep)

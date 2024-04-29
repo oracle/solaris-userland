@@ -1,132 +1,150 @@
-ed25519 is not supported on Solaris.
+ed25519 and ed448 is not supported on Solaris.
 
-Some DNS resolver related tests doesn't work within OWAN.
-
---- dnspython-2.2.1/tests/test_dnssec.py
-+++ dnspython-2.2.1/tests/test_dnssec.py
-@@ -326,12 +326,14 @@ class DNSSECValidatorTestCase(unittest.T
-                                 abs_ecdsa384_keys, None, when4)
+--- dnspython-2.6.1/tests/test_dnssec.py
++++ dnspython-2.6.1/tests/test_dnssec.py
+@@ -749,6 +749,7 @@ class DNSSECValidatorTestCase(unittest.T
+ 
          self.assertRaises(dns.dnssec.ValidationFailure, bad)
  
 +    @unittest.skip("ed25519 is not supported on Solaris")
      def testAbsoluteED25519Good(self):  # type: () -> None
-         dns.dnssec.validate(abs_ed25519_mx, abs_ed25519_mx_rrsig_1,
-                             abs_ed25519_keys_1, None, when5)
-         dns.dnssec.validate(abs_ed25519_mx, abs_ed25519_mx_rrsig_2,
-                             abs_ed25519_keys_2, None, when5)
+         dns.dnssec.validate(
+             abs_ed25519_mx, abs_ed25519_mx_rrsig_1, abs_ed25519_keys_1, None, when5
+@@ -757,6 +758,7 @@ class DNSSECValidatorTestCase(unittest.T
+             abs_ed25519_mx, abs_ed25519_mx_rrsig_2, abs_ed25519_keys_2, None, when5
+         )
  
 +    @unittest.skip("ed25519 is not supported on Solaris")
      def testAbsoluteED25519Bad(self):  # type: () -> None
          with self.assertRaises(dns.dnssec.ValidationFailure):
-             dns.dnssec.validate(abs_other_ed25519_mx, abs_ed25519_mx_rrsig_1,
-@@ -340,12 +342,14 @@ class DNSSECValidatorTestCase(unittest.T
-             dns.dnssec.validate(abs_other_ed25519_mx, abs_ed25519_mx_rrsig_2,
-                                 abs_ed25519_keys_2, None, when5)
+             dns.dnssec.validate(
+@@ -775,6 +777,7 @@ class DNSSECValidatorTestCase(unittest.T
+                 when5,
+             )
  
 +    @unittest.skip("ed448 is not supported on Solaris")
      def testAbsoluteED448Good(self):  # type: () -> None
-         dns.dnssec.validate(abs_ed448_mx, abs_ed448_mx_rrsig_1,
-                             abs_ed448_keys_1, None, when5)
-         dns.dnssec.validate(abs_ed448_mx, abs_ed448_mx_rrsig_2,
-                             abs_ed448_keys_2, None, when5)
+         dns.dnssec.validate(
+             abs_ed448_mx, abs_ed448_mx_rrsig_1, abs_ed448_keys_1, None, when5
+@@ -783,6 +786,7 @@ class DNSSECValidatorTestCase(unittest.T
+             abs_ed448_mx, abs_ed448_mx_rrsig_2, abs_ed448_keys_2, None, when5
+         )
  
 +    @unittest.skip("ed448 is not supported on Solaris")
      def testAbsoluteED448Bad(self):  # type: () -> None
          with self.assertRaises(dns.dnssec.ValidationFailure):
-             dns.dnssec.validate(abs_other_ed448_mx, abs_ed448_mx_rrsig_1,
---- dnspython-2.2.1/tests/test_query.py
-+++ dnspython-2.2.1/tests/test_query.py
-@@ -70,6 +70,7 @@ for (af, address) in ((socket.AF_INET, '
+             dns.dnssec.validate(
+@@ -922,6 +926,7 @@ class DNSSECValidatorTestCase(unittest.T
+                 rsasha512_when,
+             )
  
- keyring = dns.tsigkeyring.from_text({'name': 'tDz6cfXXGtNivRpQ98hr6A=='})
++    @unittest.skip("ed25519 is not supported on Solaris")
+     def check_candidates(self, flags, protocol, expected_number_of_candidates):
+         algorithm = dns.dnssec.Algorithm.ED25519
+         zsk_private_key = ed25519.Ed25519PrivateKey.generate()
+@@ -981,6 +986,7 @@ class DNSSECMiscTestCase(unittest.TestCa
+         ts = dns.dnssec.to_timestamp(441812220)
+         self.assertEqual(ts, REFERENCE_TIMESTAMP)
  
-+@unittest.skip("Doesn't work within OWAN")
- @unittest.skipIf(not _network_available, "Internet not reachable")
- class QueryTests(unittest.TestCase):
++    @unittest.skip("ed25519 is not supported on Solaris")
+     def testInceptionExpiration(self):
+         zsk_private_key = ed25519.Ed25519PrivateKey.generate()
+         zsk_dnskey = dns.dnssec.make_dnskey(
+@@ -1008,6 +1014,7 @@ class DNSSECMiscTestCase(unittest.TestCa
+         # Allow a little slop in case the clock ticks.
+         self.assertTrue(time.time() - a_rrsig.inception <= 2)
  
---- dnspython-2.2.1/tests/test_async.py
-+++ dnspython-2.2.1/tests/test_async.py
-@@ -256,6 +256,7 @@ class AsyncTests(unittest.TestCase):
-             self.async_run(run)
-         self.assertRaises(dns.resolver.NotAbsolute, bad)
++    @unittest.skip("ed25519 is not supported on Solaris")
+     def do_test_sign_zone(self, relativize):
+         zone = dns.zone.from_text(
+             test_zone_sans_nsec, "example.", relativize=relativize
+@@ -1229,6 +1236,7 @@ class DNSSECMakeDSTestCase(unittest.Test
+                     dns.rdata.from_text(dns.rdataclass.IN, dns.rdatatype.CDS, record)
+                 self.assertEqual(msg, str(cm.exception))
  
-+    @unittest.skip("Doesn't work within OWAN")
-     def testQueryUDP(self):
-         for address in query_addresses:
-             qname = dns.name.from_text('dns.google.')
-@@ -270,6 +271,7 @@ class AsyncTests(unittest.TestCase):
-             self.assertTrue('8.8.8.8' in seen)
-             self.assertTrue('8.8.4.4' in seen)
++    @unittest.skip("ed448 is not supported on Solaris")
+     def testMakeCDS(self):  # type: () -> None
+         name = dns.name.from_text("example.com")
+         key = ed448.Ed448PrivateKey.generate()
+@@ -1260,6 +1268,7 @@ class DNSSECMakeDSTestCase(unittest.Test
+                 self.assertEqual(dns.dnssec.key_id(d), c.key_tag)
+                 self.assertEqual(d.algorithm, c.algorithm)
  
-+    @unittest.skip("Doesn't work within OWAN")
-     def testQueryUDPWithSocket(self):
-         for address in query_addresses:
-             qname = dns.name.from_text('dns.google.')
-@@ -292,6 +294,7 @@ class AsyncTests(unittest.TestCase):
-             self.assertTrue('8.8.8.8' in seen)
-             self.assertTrue('8.8.4.4' in seen)
++    @unittest.skip("ed448 is not supported on Solaris")
+     def testMakeManyDSfromCDS(self):  # type: () -> None
+         name = dns.name.from_text("example.com")
+         nkeys = 3
+@@ -1284,6 +1293,7 @@ class DNSSECMakeDSTestCase(unittest.Test
  
-+    @unittest.skip("Doesn't work within OWAN")
-     def testQueryTCP(self):
-         for address in query_addresses:
-             qname = dns.name.from_text('dns.google.')
-@@ -306,6 +309,7 @@ class AsyncTests(unittest.TestCase):
-             self.assertTrue('8.8.8.8' in seen)
-             self.assertTrue('8.8.4.4' in seen)
+         self.assertEqual(len(cds_rdataset), nkeys)
  
-+    @unittest.skip("Doesn't work within OWAN")
-     def testQueryTCPWithSocket(self):
-         for address in query_addresses:
-             qname = dns.name.from_text('dns.google.')
-@@ -328,6 +332,7 @@ class AsyncTests(unittest.TestCase):
-             self.assertTrue('8.8.8.8' in seen)
-             self.assertTrue('8.8.4.4' in seen)
++    @unittest.skip("ed448 is not supported on Solaris")
+     def testMakeManyDSfromDNSKEY(self):  # type: () -> None
+         name = dns.name.from_text("example.com")
+         nkeys = 3
+@@ -1308,6 +1318,8 @@ class DNSSECMakeDSTestCase(unittest.Test
+ class DNSSECMakeDNSKEYTestCase(unittest.TestCase):
+     def testKnownDNSKEYs(self):  # type: () -> None
+         for tk in test_dnskeys:
++            if tk.algorithm in (dns.dnssec.Algorithm.ED25519, dns.dnssec.Algorithm.ED448):
++                continue
+             print(tk.command)
+             key = load_pem_private_key(tk.private_pem.encode(), password=None)
+             rdata1 = str(dns.dnssec.make_dnskey(key.public_key(), tk.algorithm))
+@@ -1332,6 +1344,7 @@ class DNSSECMakeDNSKEYTestCase(unittest.
+         with self.assertRaises(ValueError):
+             dns.dnssec.make_dnskey(key.public_key(), dns.dnssec.Algorithm.DSA)
  
-+    @unittest.skip("Doesn't work within OWAN")
-     @unittest.skipIf(not _ssl_available, "SSL not available")
-     def testQueryTLS(self):
-         for address in query_addresses:
-@@ -343,6 +348,7 @@ class AsyncTests(unittest.TestCase):
-             self.assertTrue('8.8.8.8' in seen)
-             self.assertTrue('8.8.4.4' in seen)
++    @unittest.skip("ed448 is not supported on Solaris")
+     def testMakeCDNSKEY(self):  # type: () -> None
+         key = ed448.Ed448PrivateKey.generate()
+         dnskey = dns.dnssec.make_dnskey(
+@@ -1405,14 +1418,17 @@ class DNSSECSignatureTestCase(unittest.T
+         key = ec.generate_private_key(curve=ec.SECP384R1(), backend=default_backend())
+         self._test_signature(key, dns.dnssec.Algorithm.ECDSAP384SHA384, abs_soa)
  
-+    @unittest.skip("Doesn't work within OWAN")
-     @unittest.skipIf(not _ssl_available, "SSL not available")
-     def testQueryTLSWithSocket(self):
-         for address in query_addresses:
-@@ -369,6 +375,7 @@ class AsyncTests(unittest.TestCase):
-             self.assertTrue('8.8.8.8' in seen)
-             self.assertTrue('8.8.4.4' in seen)
++    @unittest.skip("ed25519 is not supported on Solaris")
+     def testSignatureED25519(self):  # type: () -> None
+         key = ed25519.Ed25519PrivateKey.generate()
+         self._test_signature(key, dns.dnssec.Algorithm.ED25519, abs_soa)
  
-+    @unittest.skip("Doesn't work within OWAN")
-     def testQueryUDPFallback(self):
-         for address in query_addresses:
-             qname = dns.name.from_text('.')
-@@ -379,6 +386,7 @@ class AsyncTests(unittest.TestCase):
-             (_, tcp) = self.async_run(run)
-             self.assertTrue(tcp)
++    @unittest.skip("ed448 is not supported on Solaris")
+     def testSignatureED448(self):  # type: () -> None
+         key = ed448.Ed448PrivateKey.generate()
+         self._test_signature(key, dns.dnssec.Algorithm.ED448, abs_soa)
  
-+    @unittest.skip("Doesn't work within OWAN")
-     def testQueryUDPFallbackNoFallback(self):
-         for address in query_addresses:
-             qname = dns.name.from_text('dns.google.')
---- dnspython-2.2.1/tests/test_resolver_override.py
-+++ dnspython-2.2.1/tests/test_resolver_override.py
-@@ -18,6 +18,7 @@ except socket.gaierror:
-     _network_available = False
++    @unittest.skip("ed448 is not supported on Solaris")
+     def testSignRdataset(self):  # type: () -> None
+         key = ed448.Ed448PrivateKey.generate()
+         name = dns.name.from_text("example.com")
+@@ -1420,6 +1436,7 @@ class DNSSECSignatureTestCase(unittest.T
+         rrset = (name, rdataset)
+         self._test_signature(key, dns.dnssec.Algorithm.ED448, rrset)
  
++    @unittest.skip("ed448 is not supported on Solaris")
+     def testSignWildRdataset(self):  # type: () -> None
+         key = ed448.Ed448PrivateKey.generate()
+         name = dns.name.from_text("*.example.com")
+--- dnspython-2.6.1/tests/test_dnssecalgs.py
++++ dnspython-2.6.1/tests/test_dnssecalgs.py
+@@ -96,10 +96,12 @@ class DNSSECAlgorithm(unittest.TestCase)
+         self._test_dnssec_alg(PrivateECDSAP256SHA256)
+         self._test_dnssec_alg(PrivateECDSAP384SHA384)
  
-+@unittest.skip("Doesn't work within OWAN")
- @unittest.skipIf(not _network_available, "Internet not reachable")
- class OverrideSystemResolverTestCase(unittest.TestCase):
++    @unittest.skip("ed25519 and ed448 are not supported on Solaris")
+     def test_eddsa(self):
+         self._test_dnssec_alg(PrivateED25519)
+         self._test_dnssec_alg(PrivateED448)
  
---- dnspython-2.2.1/tests/test_resolver.py
-+++ dnspython-2.2.1/tests/test_resolver.py
-@@ -674,6 +674,7 @@ class LiveResolverTests(unittest.TestCas
-             self.assertIn(qname, nx.qnames())
-             self.assertGreaterEqual(len(nx.responses()), 1)
++    @unittest.skip("ed448 is not supported on Solaris")
+     def test_algorithm_mismatch(self):
+         private_key_ed448 = PrivateED448.generate()
+         dnskey_ed448 = private_key_ed448.public_key().to_dnskey()
+@@ -109,6 +111,7 @@ class DNSSECAlgorithm(unittest.TestCase)
  
-+    @unittest.skip("Doesn't work within OWAN")
-     def testResolveCacheHit(self):
-         res = dns.resolver.Resolver(configure=False)
-         res.nameservers = ['8.8.8.8']
+ @unittest.skipUnless(dns.dnssec._have_pyca, "Python Cryptography cannot be imported")
+ class DNSSECAlgorithmPrivateAlgorithm(unittest.TestCase):
++    @unittest.skip("ed25519 is not supported on Solaris")
+     def test_private(self):
+         class PublicExampleAlgorithm(PublicED25519):
+             algorithm = Algorithm.PRIVATEDNS

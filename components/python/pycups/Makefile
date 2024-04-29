@@ -20,24 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pycups
-COMPONENT_VERSION=	2.0.1
+COMPONENT_VERSION=	2.0.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:21a7b64e4c4a5cd1b2d598fec49f8f6e8fdb56f1e658bb0b7359875988a75c5f
+    sha256:843e385c1dbf694996ca84ef02a7f30c28376035588f5fbeacd6bae005cf7c8d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://cyberelk.net/tim/software/pycups/
 COMPONENT_BUGDB=	python-mod/pycups
 COMPONENT_ANITYA_ID=	7975
-
-COMPONENT_BAID=		107228
+COMPONENT_BAID=		164455
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

@@ -20,30 +20,30 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		zipp
-COMPONENT_VERSION=	3.8.0
+COMPONENT_VERSION=	3.18.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:35491bfd635345c3d679b0be92478e6e6b2c50bfc416006ffceab4dcffafa2ae
+    sha256:2884ed22e7d8961de1c9a05142eb69a247f120291bc0206a00a7642f09b5b715
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/jaraco/zipp
 COMPONENT_BUGDB=	python-mod/zipp
 COMPONENT_ANITYA_ID=	63514
-COMPONENT_BAID=		123045
+COMPONENT_BAID=		162208
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =   test_zipp.py
+COMPONENT_TEST_ARGS =   test_path.py
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

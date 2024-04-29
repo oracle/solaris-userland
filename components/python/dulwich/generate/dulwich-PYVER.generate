@@ -30,5 +30,5 @@
 <transform file path=usr/bin/(.*)\$\(PYVER\)$ -> \
 	emit link path=usr/bin/%<1> target=%<1>$(PYVER) mediator=python mediator-version=$(PYVER)>
 
-# Drop unnecessary executable bit
-<transform file path=.*/vendor-packages/dulwich/tests/data/commits/0d/89f20333fbb1d2f3a94da77f4981373d8f4310 -> delete mode 0555>
+# bypass pkg.depend due to relative imports
+<transform file path=.*/dulwich/graph.py$ -> set pkg.depend.bypass-generate .*>

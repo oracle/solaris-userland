@@ -26,23 +26,23 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hg-git
-COMPONENT_VERSION=	0.10.4
+COMPONENT_VERSION=	1.0.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3e0e16cccae4eb252de920f84d8cfd71c0b6c14eff9ca78e65735f971aba5416
+    sha256:eb389b349dd09bd318f62eb6b8fda55fb55cbcada497dc9de872c84bdff29691
 COMPONENT_ARCHIVE_URL= \
     https://foss.heptapod.net/mercurial/$(COMPONENT_NAME)/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hg-git.github.io/
 COMPONENT_BUGDB=	python-mod/hg-git
 COMPONENT_ANITYA_ID=	1314
-COMPONENT_BAID=		128514
+COMPONENT_BAID=		164456
 
 # hg-git mirrors Mercurial versions.
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.11)
+PYTHON_VERSIONS = 3.9
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # Mercurial does not belong to python incorporation even though it uses
@@ -52,6 +52,9 @@ CONSOLIDATION = userland
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON)
 COMPONENT_TEST_ARGS =	run-tests.py --with-hg=$(HG)
+
+COMPONENT_TEST_ENV += http_proxy= HTTP_PROXY=
+COMPONENT_TEST_ENV += https_proxy= HTTPS_PROXY=
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
