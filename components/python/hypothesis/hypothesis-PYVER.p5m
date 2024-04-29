@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -40,6 +40,8 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=usr/bin/hypothesis target=hypothesis-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
 file path=usr/bin/hypothesis-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
+file path=usr/lib/python$(PYVER)/vendor-packages/_hypothesis_ftz_detector.py
+file path=usr/lib/python$(PYVER)/vendor-packages/_hypothesis_globals.py
 file path=usr/lib/python$(PYVER)/vendor-packages/_hypothesis_pytestplugin.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
@@ -50,7 +52,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis-$(COMPONENT_VERSION)
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/_error_if_old.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/_settings.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/configuration.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/control.py
@@ -58,9 +59,9 @@ file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/core.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/database.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/entry_points.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/errors.py
-file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/executors.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/extra/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/extra/_array_helpers.py
+file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/extra/_patching.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/extra/array_api.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/extra/cli.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/extra/codemods.py
@@ -111,7 +112,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/internal/filtering.p
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/internal/floats.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/internal/healthcheck.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/internal/intervalsets.py
-file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/internal/lazyformat.py
+file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/internal/observability.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/internal/reflection.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/internal/scrutineer.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hypothesis/internal/validation.py

@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hypothesis
-COMPONENT_VERSION=	6.46.5
+COMPONENT_VERSION=	6.100.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0fb4e84320e53b822d4f106331a5e4e816376b2e733890825452b606c9c64f79
+    sha256:ebff09d7fa4f1fb6a855a812baf17e578b4481b7b70ec6d96496210d1a4c6c35
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/HypothesisWorks/hypothesis
 COMPONENT_BUGDB=	python-mod/hypothesis
 COMPONENT_ANITYA_ID=	7372
-COMPONENT_BAID=		122795
+COMPONENT_BAID=		164875
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -58,3 +58,4 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/sortedcontainers-%)
+REQUIRED_PACKAGES += library/python/exceptiongroup-39
