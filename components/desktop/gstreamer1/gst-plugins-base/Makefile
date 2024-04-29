@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -61,6 +61,9 @@ CONFIGURE_OPTIONS += -Dvorbis=enabled
 CONFIGURE_OPTIONS += -Dx11=enabled
 CONFIGURE_OPTIONS += -Dexamples=disabled
 
+# We EOF'ed libvisual - no need for generating visualizations for audio
+CONFIGURE_OPTIONS += -Dlibvisual=disabled
+
 # Requires GNU version of msgfmt...
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
@@ -77,7 +80,6 @@ REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/graphene
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
-REQUIRED_PACKAGES += library/desktop/libvisual
 REQUIRED_PACKAGES += library/desktop/orc
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2

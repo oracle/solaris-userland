@@ -20,22 +20,23 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
-    default mangler.man.stability "pass-through volatile">
+    default mangler.man.stability "obsolete pass-through volatile">
 set name=pkg.fmri \
     value=pkg:/library/desktop/libvisual@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
     value="Libvisual provides a convenient API for writing visualization plugins"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=libvisual
 set name=info.classification \
     value="org.opensolaris.category.2008:System/Multimedia Libraries"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2010/143
+set name=org.opensolaris.arc-caseid value=PSARC/2010/143 value=PSARC/2024/059
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/include/libvisual-0.4/libvisual/libvisual.h
 file path=usr/include/libvisual-0.4/libvisual/lv_actor.h
@@ -90,6 +91,11 @@ link path=usr/lib/libvisual-0.4.so target=libvisual-0.4.so.0.0.0
 link path=usr/lib/libvisual-0.4.so.0 target=libvisual-0.4.so.0.0.0
 file path=usr/lib/libvisual-0.4.so.0.0.0
 file path=usr/lib/pkgconfig/libvisual-0.4.pc
+file release-notes/library-desktop-libvisual.txt \
+    path=usr/share/doc/release-notes/library-desktop-libvisual.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/locale/es_AR/LC_MESSAGES/libvisual-0.4.mo
 file path=usr/share/locale/es_ES/LC_MESSAGES/libvisual-0.4.mo
 license COPYING license=LGPLv2.1
