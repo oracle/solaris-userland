@@ -33,13 +33,13 @@ gcc_FIX_PATH=
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME         = ruby
-COMPONENT_VERSION      = 3.1.4
+COMPONENT_VERSION      = 3.1.5
 COMPONENT_PROJECT_URL  = http://www.ruby-lang.org/
 COMPONENT_ARCHIVE_HASH = \
-    sha256:21bca50e9f8ae5ca82eafa2ad5879e9b6b262b474b5554c577b3ee4cb3e4d227
+    sha256:bf9be4bb076e448bdc7d7792367c54ef7a8900ed7e294906c5c4494c16edec2e
 COMPONENT_ARCHIVE_URL  = http://cache.ruby-lang.org/pub/ruby/3.1/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID    = 4223
-COMPONENT_BAID         = 142049
+COMPONENT_BAID         = 164866
 
 CFLAGS += "-std=gnu99"
 
