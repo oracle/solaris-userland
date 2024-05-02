@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsecret
-COMPONENT_VERSION=	0.20.5
+COMPONENT_VERSION=	0.21.4
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Libsecret
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3fb3ce340fcd7db54d87c893e69bfc2b1f6e4d4b279065ffe66dac9f0fd12b4d
+    sha256:163d08d783be6d4ab9a979ceb5a4fecbc1d9660d3c34168c581301cd53912b20
 COMPONENT_BUGDB=        gnome/security
 COMPONENT_ANITYA_ID=	13150
 
-COMPONENT_BAID=		131071
+COMPONENT_BAID=		165187
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -71,7 +71,7 @@ COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/OK/p" ' \
-	'-e "/FAIL /p" ' \
+	'-e "/FAIL/p" ' \
 	'-e "/Summary /p" ' \
 	'-e "/Ok:/p" ' \
 	'-e "/Skipped:/p" ' \
