@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,17 +28,17 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		desktop-file-utils
-COMPONENT_VERSION=	0.26
+COMPONENT_VERSION=	0.27
 COMPONENT_PROJECT_URL=	https://freedesktop.org/wiki/Software/desktop-file-utils/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:b26dbde79ea72c8c84fb7f9d870ffd857381d049a86d25e0038c4cef4c747309
+    sha256:a0817df39ce385b6621880407c56f1f298168c040c2032cedf88d5b76affe836
 COMPONENT_ARCHIVE_URL=	https://www.freedesktop.org/software/$(COMPONENT_NAME)/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/menus
 COMPONENT_ANITYA_ID=	421
 
-COMPONENT_BAID=		127392
+COMPONENT_BAID=		163900
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
