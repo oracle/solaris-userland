@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -28,15 +28,13 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk-doc
-COMPONENT_VERSION=	1.33.2
-COMPONENT_MAJOR_MINOR=	$(COMPONENT_VERSION)
+COMPONENT_VERSION=	1.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/DocumentationProject/GtkDoc
 COMPONENT_ARCHIVE_HASH= \
-    sha256:cc1b709a20eb030a278a1f9842a362e00402b7f834ae1df4c1998a723152bf43
-COMPONENT_ARCHIVE_URL=  https://download-fallback.gnome.org/sources/gtk-doc/1.33/$(COMPONENT_ARCHIVE)
+    sha256:b20b72b32a80bc18c7f975c9d4c16460c2276566a0b50f87d6852dff3aa7861c
 COMPONENT_BUGDB=	gnome/dev-tools
 COMPONENT_ANITYA_ID=	13140
-COMPONENT_BAID=		104791
+COMPONENT_BAID=		165095
 
 BUILD_STYLE=		meson
 PYTHON_VERSION=		3.11
