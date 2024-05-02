@@ -20,34 +20,37 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		docutils
-COMPONENT_VERSION=	0.19
+COMPONENT_VERSION=	0.21.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:53cff82fc622b3ef1db39729e13b9ddafc07bffafa0bc4abf3a4eed168b65bec
+    sha256:3a6b18732edf182daa3cd12775bbb338cf5691468f91eeeb109deff6ebfa986f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://docutils.sourceforge.io/
 COMPONENT_ANITYA_ID=	3849
 COMPONENT_BUGDB=	python-mod/docutils
-COMPONENT_BAID=		143155
+COMPONENT_BAID=		164670
 
 # We need just a single version
 PYTHON_VERSION =	3.11
 PYTHON_VERSIONS =	$(PYTHON_VERSION)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/test
 COMPONENT_TEST_CMD =	$(PYTHON) alltests.py
 COMPONENT_TEST_ARGS =
+
+# This directory is necessary for tests to pass.
+COMPONENT_PRE_TEST_ACTION = mkdir -p $(SOURCE_DIR)/test/functional/output
 
 PKG_MACROS +=	PYVER=$(PYTHON_VERSION)
 

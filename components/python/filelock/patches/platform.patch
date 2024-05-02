@@ -1,9 +1,9 @@
 Since the platform is known at this point, we can simplify the logic
 and not deliver the windows related locking.
 
---- filelock-3.8.0/src/filelock/__init__.py
-+++ filelock-3.8.0/src/filelock/__init__.py
-@@ -13,23 +13,14 @@ import warnings
+--- filelock-3.13.4/src/filelock/__init__.py
++++ filelock-3.13.4/src/filelock/__init__.py
+@@ -15,23 +15,14 @@ from typing import TYPE_CHECKING
  from ._api import AcquireReturnProxy, BaseFileLock
  from ._error import Timeout
  from ._soft import SoftFileLock
@@ -18,38 +18,37 @@ and not deliver the windows related locking.
  
 -if sys.platform == "win32":  # pragma: win32 cover
 -    _FileLock: type[BaseFileLock] = WindowsFileLock
--else:  # pragma: win32 no cover
+-else:  # pragma: win32 no cover # noqa: PLR5501
 -    if has_fcntl:
 -        _FileLock: type[BaseFileLock] = UnixFileLock
 -    else:
 -        _FileLock = SoftFileLock
 -        if warnings is not None:
--            warnings.warn("only soft file lock is available")
+-            warnings.warn("only soft file lock is available", stacklevel=2)
 +_FileLock: type[BaseFileLock] = UnixFileLock
  
- #: Alias for the lock, which should be used for the current platform. On Windows, this is an alias for
- # :class:`WindowsFileLock`, on Unix for :class:`UnixFileLock` and otherwise for :class:`SoftFileLock`.
-@@ -42,7 +33,6 @@ __all__ = [
+ if TYPE_CHECKING:
+     FileLock = SoftFileLock
+@@ -47,6 +38,5 @@ __all__ = [
      "SoftFileLock",
      "Timeout",
      "UnixFileLock",
 -    "WindowsFileLock",
-     "BaseFileLock",
-     "AcquireReturnProxy",
+     "__version__",
  ]
---- filelock-3.8.0/tests/test_filelock.py
-+++ filelock-3.8.0/tests/test_filelock.py
-@@ -14,7 +14,7 @@ from typing import Callable, Iterator, T
+--- filelock-3.13.4/tests/test_filelock.py
++++ filelock-3.13.4/tests/test_filelock.py
+@@ -18,7 +18,7 @@ from weakref import WeakValueDictionary
+ 
  import pytest
- from _pytest.logging import LogCaptureFixture
  
 -from filelock import BaseFileLock, FileLock, SoftFileLock, Timeout, UnixFileLock, WindowsFileLock
 +from filelock import BaseFileLock, FileLock, SoftFileLock, Timeout, UnixFileLock
  
- 
- @pytest.mark.parametrize(
-@@ -408,6 +408,7 @@ def test_context_decorator(lock_type: ty
-     assert not lock.is_locked
+ if TYPE_CHECKING:
+     from pytest_mock import MockerFixture
+@@ -521,6 +521,7 @@ def test_umask_soft(tmp_path: Path) -> N
+     lock.release()
  
  
 +@pytest.mark.skip(reason="We don't deliver WindowsFileLock with Solaris")

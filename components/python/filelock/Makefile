@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		filelock
-COMPONENT_VERSION=	3.8.0
+COMPONENT_VERSION=	3.13.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7a2a310c7c8986789de8e1f1ac0a277619bba90d68f7a937af3610a7594cc801
+    sha256:d13f466618bfde72bd2c18255e269f72542c6e70e7bac83a0232d6b1cc5c8cf4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/tox-dev/py-filelock
 COMPONENT_BUGDB=	python-mod/filelock
 COMPONENT_ANITYA_ID=	11739
-COMPONENT_BAID=		129915
+COMPONENT_BAID=		164674
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

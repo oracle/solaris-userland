@@ -13,9 +13,11 @@ That said, UnixFileLock still works as expected when used between multiple proce
 The patch is not suitable for upstream, but this behavior was reported there:
 https://github.com/tox-dev/py-filelock/issues/165
 
---- filelock-3.8.0/tests/test_filelock.py
-+++ filelock-3.8.0/tests/test_filelock.py
-@@ -203,7 +203,7 @@ def test_threaded_shared_lock_obj(lock_t
+Also, pytest-mocker is not available on Solaris.
+
+--- filelock-3.13.4/tests/test_filelock.py
++++ filelock-3.13.4/tests/test_filelock.py
+@@ -242,7 +242,7 @@ def test_threaded_shared_lock_obj(lock_t
      assert not lock.is_locked
  
  
@@ -24,7 +26,7 @@ https://github.com/tox-dev/py-filelock/issues/165
  @pytest.mark.skipif(hasattr(sys, "pypy_version_info") and sys.platform == "win32", reason="deadlocks randomly")
  def test_threaded_lock_different_lock_obj(lock_type: type[BaseFileLock], tmp_path: Path) -> None:
      # Runs multiple threads, which acquire the same lock file with a different FileLock object. When thread group 1
-@@ -236,7 +236,7 @@ def test_threaded_lock_different_lock_ob
+@@ -275,7 +275,7 @@ def test_threaded_lock_different_lock_ob
      assert not lock_2.is_locked
  
  
@@ -33,7 +35,7 @@ https://github.com/tox-dev/py-filelock/issues/165
  def test_timeout(lock_type: type[BaseFileLock], tmp_path: Path) -> None:
      # raises Timeout error when the lock cannot be acquired
      lock_path = tmp_path / "a"
-@@ -259,7 +259,7 @@ def test_timeout(lock_type: type[BaseFil
+@@ -298,7 +298,7 @@ def test_timeout(lock_type: type[BaseFil
      assert not lock_2.is_locked
  
  
@@ -42,7 +44,7 @@ https://github.com/tox-dev/py-filelock/issues/165
  def test_non_blocking(lock_type: type[BaseFileLock], tmp_path: Path) -> None:
      # raises Timeout error when the lock cannot be acquired
      lock_path = tmp_path / "a"
-@@ -282,7 +282,7 @@ def test_non_blocking(lock_type: type[Ba
+@@ -321,7 +321,7 @@ def test_non_blocking(lock_type: type[Ba
      assert not lock_2.is_locked
  
  
@@ -51,7 +53,7 @@ https://github.com/tox-dev/py-filelock/issues/165
  def test_default_timeout(lock_type: type[BaseFileLock], tmp_path: Path) -> None:
      # test if the default timeout parameter works
      lock_path = tmp_path / "a"
-@@ -345,7 +345,7 @@ def test_acquire_release_on_exc(lock_typ
+@@ -384,7 +384,7 @@ def test_acquire_release_on_exc(lock_typ
  
  
  @pytest.mark.skipif(hasattr(sys, "pypy_version_info"), reason="del() does not trigger GC in PyPy")
@@ -60,3 +62,46 @@ https://github.com/tox-dev/py-filelock/issues/165
  def test_del(lock_type: type[BaseFileLock], tmp_path: Path) -> None:
      # lock is released when the object is deleted
      lock_path = tmp_path / "a"
+@@ -536,6 +536,7 @@ def test_wrong_platform(tmp_path: Path)
+         lock._release()  # noqa: SLF001
+ 
+ 
++@pytest.mark.skip(reason="pytest-mocker is not available on Solaris")
+ @pytest.mark.skipif(sys.platform == "win32", reason="flock not run on windows")
+ def test_flock_not_implemented_unix(tmp_path: Path, mocker: MockerFixture) -> None:
+     mocker.patch("fcntl.flock", side_effect=OSError(ENOSYS, "mock error"))
+@@ -543,6 +544,7 @@ def test_flock_not_implemented_unix(tmp_
+         pass
+ 
+ 
++@pytest.mark.skip(reason="pytest-mocker is not available on Solaris")
+ def test_soft_errors(tmp_path: Path, mocker: MockerFixture) -> None:
+     mocker.patch("os.open", side_effect=OSError(ENOSYS, "mock error"))
+     with pytest.raises(OSError, match="mock error"):
+@@ -556,7 +558,7 @@ def _check_file_read_write(txt_file: Pat
+         assert txt_file.read_text() == uuid
+ 
+ 
+-@pytest.mark.parametrize("lock_type", [FileLock, SoftFileLock])
++@pytest.mark.parametrize("lock_type", [SoftFileLock])
+ def test_thrashing_with_thread_pool_passing_lock_to_threads(tmp_path: Path, lock_type: type[BaseFileLock]) -> None:
+     def mess_with_file(lock_: BaseFileLock) -> None:
+         with lock_:
+@@ -569,7 +571,7 @@ def test_thrashing_with_thread_pool_pass
+     assert all(r.result() is None for r in results)
+ 
+ 
+-@pytest.mark.parametrize("lock_type", [FileLock, SoftFileLock])
++@pytest.mark.parametrize("lock_type", [SoftFileLock])
+ def test_thrashing_with_thread_pool_global_lock(tmp_path: Path, lock_type: type[BaseFileLock]) -> None:
+     def mess_with_file() -> None:
+         with lock:
+@@ -583,7 +585,7 @@ def test_thrashing_with_thread_pool_glob
+     assert all(r.result() is None for r in results)
+ 
+ 
+-@pytest.mark.parametrize("lock_type", [FileLock, SoftFileLock])
++@pytest.mark.parametrize("lock_type", [SoftFileLock])
+ def test_thrashing_with_thread_pool_lock_recreated_in_each_thread(
+     tmp_path: Path,
+     lock_type: type[BaseFileLock],

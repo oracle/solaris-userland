@@ -3,8 +3,8 @@ freezegun module is not in Solaris, hence remove tests which depend on it.
 Current Pytest also breaks when unknown marker pytest.mark.no_cover is present.
 Considering that this is only used for code coverage, we can safely remove it.
 
---- python-dateutil-2.8.2/dateutil/test/test_utils.py
-+++ python-dateutil-2.8.2/dateutil/test/test_utils.py
+--- python-dateutil-2.9.0/tests/test_utils.py
++++ python-dateutil-2.9.0/tests/test_utils.py
 @@ -7,26 +7,11 @@ from dateutil import utils
  from dateutil.tz import UTC
  from dateutil.utils import within_delta
@@ -33,8 +33,8 @@ Considering that this is only used for code coverage, we can safely remove it.
  def test_utils_default_tz_info_naive():
      dt = datetime(2014, 9, 14, 9, 30)
      assert utils.default_tzinfo(dt, NYC).tzinfo is NYC
---- python-dateutil-2.8.2/dateutil/test/test_rrule.py
-+++ python-dateutil-2.8.2/dateutil/test/test_rrule.py
+--- python-dateutil-2.9.0/tests/test_rrule.py
++++ python-dateutil-2.9.0/tests/test_rrule.py
 @@ -13,7 +13,7 @@ from dateutil.rrule import (
      MO, TU, WE, TH, FR, SA, SU
  )
@@ -75,8 +75,8 @@ Considering that this is only used for code coverage, we can safely remove it.
  @pytest.mark.rruleset
  class RRuleSetTest(unittest.TestCase):
      def testSet(self):
---- python-dateutil-2.8.2/dateutil/test/conftest.py
-+++ python-dateutil-2.8.2/dateutil/test/conftest.py
+--- python-dateutil-2.9.0/tests/conftest.py
++++ python-dateutil-2.9.0/tests/conftest.py
 @@ -2,24 +2,6 @@ import os
  import pytest
  

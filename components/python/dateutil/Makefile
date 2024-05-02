@@ -20,30 +20,29 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		python-dateutil
-COMPONENT_VERSION=	2.8.2
+COMPONENT_VERSION=	2.9.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7015acdfc7d02dae96f410c7824eba437fa63ee516bb01ea885aa62e40f7f2b4
+    sha256:38ba378a1a0ef0206c3385e2737033ee9a89a50f4bbc08a5e27ff380bae7c93b
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://dateutil.readthedocs.org
 COMPONENT_BUGDB=	python-mod/dateutil
 COMPONENT_ANITYA_ID=	5621
-
-COMPONENT_BAID=		108262
+COMPONENT_BAID=		164667
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_ENV +=	LC_ALL=en_US.UTF-8
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/dateutil/test
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 

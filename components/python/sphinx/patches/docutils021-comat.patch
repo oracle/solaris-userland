@@ -1,0 +1,103 @@
+Fixes compatibility of tests with docutils 0.21.
+
+Partially backported from:
+https://github.com/sphinx-doc/sphinx/commit/8a990db49eb4fc19850f6d2964fe949884a6e303
+https://github.com/sphinx-doc/sphinx/commit/d66d51ad8cd981dd8a541881705b353ee9c5327c
+
+From 8a990db49eb4fc19850f6d2964fe949884a6e303 Mon Sep 17 00:00:00 2001
+From: Dmitry Shachnev <mitya57@users.noreply.github.com>
+Date: Sat, 5 Aug 2023 06:46:41 +0300
+Subject: [PATCH] Update ``test_captioned_code_block`` for latest Docutils
+ (#11551)
+
+Co-authored-by: Adam Turner <9087854+aa-turner@users.noreply.github.com>
+
+--- Sphinx-6.1.3/tests/test_build_manpage.py
++++ Sphinx-6.1.3/tests/test_build_manpage.py
+@@ -1,5 +1,6 @@
+ """Test the build process with manpage builder with the test root."""
+ 
++import docutils
+ import pytest
+ 
+ from sphinx.builders.manpage import default_man_pages
+@@ -51,20 +52,40 @@ def test_captioned_code_block(app, status, warning):
+     app.builder.build_all()
+     content = (app.outdir / 'python.1').read_text(encoding='utf8')
+ 
+-    assert ('.sp\n'
+-            'caption \\fItest\\fP rb\n'
+-            '.INDENT 0.0\n'
+-            '.INDENT 3.5\n'
+-            '.sp\n'
+-            '.nf\n'
+-            '.ft C\n'
+-            'def ruby?\n'
+-            '    false\n'
+-            'end\n'
+-            '.ft P\n'
+-            '.fi\n'
+-            '.UNINDENT\n'
+-            '.UNINDENT\n' in content)
++    if docutils.__version_info__[:2] < (0, 21):
++        expected = """\
++.sp
++caption \\fItest\\fP rb
++.INDENT 0.0
++.INDENT 3.5
++.sp
++.nf
++.ft C
++def ruby?
++    false
++end
++.ft P
++.fi
++.UNINDENT
++.UNINDENT
++"""
++    else:
++        expected = """\
++.sp
++caption \\fItest\\fP rb
++.INDENT 0.0
++.INDENT 3.5
++.sp
++.EX
++def ruby?
++    false
++end
++.EE
++.UNINDENT
++.UNINDENT
++"""
++
++    assert expected in content
+ 
+ 
+ def test_default_man_pages():
+--- Sphinx-6.1.3/tests/test_build_linkcheck.py
++++ Sphinx-6.1.3/tests/test_build_linkcheck.py
+@@ -12,6 +12,7 @@ from datetime import datetime
+ from queue import Queue
+ from unittest import mock
+ 
++import docutils
+ import pytest
+ import requests
+ 
+@@ -79,9 +80,13 @@ def test_defaults_json(app):
+     assert dnerow['status'] == 'broken'
+     assert dnerow['code'] == 0
+     assert dnerow['uri'] == 'https://localhost:7777/doesnotexist'
++
++    accurate_linenumbers = docutils.__version_info__[:2] >= (0, 21)
++    image2_lineno = 19 if accurate_linenumbers else 20
++
+     assert rowsby['https://www.google.com/image2.png'] == {
+         'filename': 'links.txt',
+-        'lineno': 20,
++        'lineno': image2_lineno,
+         'status': 'broken',
+         'code': 0,
+         'uri': 'https://www.google.com/image2.png',

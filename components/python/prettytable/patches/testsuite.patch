@@ -2,18 +2,27 @@ pytest-lazy-fixture plugin is not available on Solaris.
 
 Not suitable for upstream.
 
---- prettytable-3.3.0/tests/test_prettytable.py
-+++ prettytable-3.3.0/tests/test_prettytable.py
-@@ -29,6 +29,8 @@ from prettytable import (
+--- prettytable-3.10.0/tests/test_prettytable.py
++++ prettytable-3.10.0/tests/test_prettytable.py
+@@ -8,7 +8,7 @@ from math import e, pi, sqrt
+ from typing import Any
+ 
+ import pytest
+-from pytest_lazy_fixtures import lf
++lf = lambda _: None
+ 
+ import prettytable
+ from prettytable import (
+@@ -32,6 +32,8 @@ from prettytable import (
      from_json,
  )
  
 +pytest.lazy_fixture = lambda _: None
 +
  
- def helper_table(rows=3):
-     t = PrettyTable(["Field 1", "Field 2", "Field 3"])
-@@ -207,6 +209,7 @@ class TestNoneOption:
+ def test_version() -> None:
+     assert isinstance(prettytable.__version__, str)
+@@ -217,6 +219,7 @@ class TestNoneOption:
          )
  
  
@@ -21,8 +30,8 @@ Not suitable for upstream.
  class TestBuildEquivalence:
      """Make sure that building a table row-by-row and column-by-column yield the same
      results"""
-@@ -1601,6 +1604,7 @@ def emoji_pretty_table():
-     return pt
+@@ -1646,6 +1649,7 @@ def emoji_pretty_table() -> PrettyTable:
+     return table
  
  
 +@pytest.mark.skip(reason="pytest-lazy-fixture is not available on Solaris")
