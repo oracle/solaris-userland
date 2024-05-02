@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =	64
@@ -28,18 +28,18 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	cbindgen
-COMPONENT_VERSION =	0.24.3
-COMPONENT_BAID =	124793
+COMPONENT_VERSION =	0.26.0
+COMPONENT_BAID =	164728
 COMPONENT_PROJECT_URL =	https://github.com/eqrion/cbindgen
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:5d693ab54acc085b9f2dbafbcf0a1f089737f7e0cb1686fa338c2aaa05dc7705
+    sha256:b45e1a64875b615702a86ac3084ef69ae32926241cd2b687a30c12474be15105
 COMPONENT_ARCHIVE_URL =	https://github.com/eqrion/cbindgen/archive/v$(COMPONENT_VERSION).tar.gz
 
 # hash for vendored sources
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:91806554eb6d8207c7bceb097072cb2e427e93bb9de1f064e831bc33ff65b890
+    sha256:0943529f59f1fcf74ff1bb833eebd4c2d94a3dd893f9f8702024dc101e9acdf8
 
 COMPONENT_BUGDB =	utility/rust
 COMPONENT_ANITYA_ID =	16690
@@ -48,14 +48,21 @@ BUILD_STYLE = cargo
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Tests don't like "cloney".
+CLONEY=$(CP) -r $(SOURCE_DIR)/* $(BUILD_DIR_64); echo
+
+# Tests need to be run in single thread to get reproducible results.
+COMPONENT_TEST_TARGETS += -- --test-threads=1
+
 # Everything expects GNU utilities, so make sure those are preferred.
 # RUST_ALT_PATH allows to use different Rust version.
 PATH = $(RUST_ALT_PATH):/usr/gnu/bin:/usr/bin
 
-REQUIRED_PACKAGES +=	library/libssh2
-REQUIRED_PACKAGES +=	library/security/openssl
-REQUIRED_PACKAGES +=	library/zlib
-REQUIRED_PACKAGES +=	system/library
-REQUIRED_PACKAGES +=	system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES +=	system/library/math
-REQUIRED_PACKAGES +=	web/curl
+COMPONENT_TEST_TRANSFORMS += \
+	'-e "/ *Compiling /d" ' \
+	'-e "/Finished test/s; in .*;;" ' \
+	'-e "/^test result:/s; finished in .*;;" ' \
+	'-e "/Running /s;-................)$$;-xxxxxxxxxxxxxxxx);" '
+
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/math
