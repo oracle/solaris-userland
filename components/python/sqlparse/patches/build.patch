@@ -1,0 +1,26 @@
+We do not have hatchling on Solaris; this patch modifies the build
+metadata to use setuptools instead.
+
+Not intended for upstream.
+
+--- sqlparse-0.5.0/pyproject.toml
++++ sqlparse-0.5.0/pyproject.toml
+@@ -1,6 +1,6 @@
+ [build-system]
+-requires = ["hatchling"]
+-build-backend = "hatchling.build"
++requires = ["setuptools"]
++build-backend = "setuptools.build_meta"
+ 
+ [project]
+ name = "sqlparse"
+@@ -47,6 +47,9 @@ doc = [
+     "sphinx",
+ ]
+ 
++[tool.setuptools.dynamic]
++version = {attr = "sqlparse.__version__"}
++
+ [tool.hatch.version]
+ path = "sqlparse/__init__.py"
+ 
