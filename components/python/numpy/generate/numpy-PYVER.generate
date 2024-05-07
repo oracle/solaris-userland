@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
@@ -36,5 +36,6 @@
 
 # bypass dependency detection in files with #!/usr/bin/pythonXX header
 <transform file path=.*/numpy/f2py/[^/]*.py$ -> set pkg.depend.bypass-generate .*>
+<transform file path=.*/numpy/core/generate_numpy_api.py$ -> set pkg.depend.bypass-generate .*>
 <transform file path=.*/numpy/random/_examples/cython/setup.py$ -> set pkg.depend.bypass-generate .*>
 <transform file path=.*/numpy/distutils/(cpuinfo|system_info).py$ -> set pkg.depend.bypass-generate .*>

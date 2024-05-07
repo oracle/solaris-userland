@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -27,16 +27,16 @@ BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Cython
-COMPONENT_VERSION=	0.29.32
+COMPONENT_VERSION=	3.0.10
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=		\
-    sha256:baafd0eea60b9c14d9fc023bff4ed297c9539421940c5d580683b87d2f437ebc
+    sha256:bb8d981cceaa70e73ff36730a55a1b0adee88ff90ffcae3f9b41dbb5ae215bec
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=  http://cython.org/
 COMPONENT_BUGDB=	python-mod/cython
 COMPONENT_ANITYA_ID=	12679
-COMPONENT_BAID=		128741
+COMPONENT_BAID=		164460
 
 # Avoid warnings about use of the deprecated NumPy API. Please see
 # http://docs.cython.org/en/latest/src/reference/compilation.html#configuring-the-c-build
@@ -48,7 +48,7 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# There are crashes during the unit tests execution.
+# Tests take several hours to finish.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 # Since each version of the package delivers the same
