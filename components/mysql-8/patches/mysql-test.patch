@@ -10,9 +10,9 @@ Teach the script about location of 64bits plugin module (amd64|sparcv9).
 
 https://bugs.mysql.com/bug.php?id=114206
 
---- mysql-8.0.36/mysql-test/mysql-test-run.pl
-+++ mysql-8.0.36/mysql-test/mysql-test-run.pl
-@@ -53,6 +53,10 @@ use IO::Socket::INET;
+--- mysql-8.0.37/mysql-test/mysql-test-run.pl
++++ mysql-8.0.37/mysql-test/mysql-test-run.pl
+@@ -54,6 +54,10 @@ use IO::Socket::INET;
  
  push @INC, ".";
  
@@ -23,7 +23,7 @@ https://bugs.mysql.com/bug.php?id=114206
  use My::ConfigFactory;
  use My::CoreDump;
  use My::File::Path;    # Patched version of File::Path
-@@ -2022,7 +2026,7 @@ # Set the "var/" directory, the base for
+@@ -2025,7 +2029,7 @@ # Set the "var/" directory, the base for
    if (defined $ENV{MTR_BINDIR}) {
      $default_vardir = "$ENV{MTR_BINDIR}/mysql-test/var";
    } else {
@@ -32,7 +32,7 @@ https://bugs.mysql.com/bug.php?id=114206
    }
  
    if (!$opt_vardir) {
-@@ -2348,7 +2352,7 @@ my $config_content = "{ \"read_local_man
+@@ -2351,7 +2355,7 @@ my $config_content = "{ \"read_local_man
    my $manifest_file_ext = ".my";
    my $exe_mysqld = find_mysqld($basedir);
    my ($exename, $path, $suffix) = fileparse($exe_mysqld, qr/\.[^.]*/);
@@ -41,7 +41,7 @@ https://bugs.mysql.com/bug.php?id=114206
    open(my $mh, "> $manifest_file_path") or die;
    print $mh $config_content or die;
    close($mh);
-@@ -2361,7 +2365,7 @@ use File::Basename;
+@@ -2364,7 +2368,7 @@ use File::Basename;
    my $manifest_file_ext = ".my";
    my $exe_mysqld = find_mysqld($basedir);
    my ($exename, $path, $suffix) = fileparse($exe_mysqld, qr/\.[^.]*/);
@@ -50,7 +50,7 @@ https://bugs.mysql.com/bug.php?id=114206
    unlink $manifest_file_path;
  }
  
-@@ -2371,7 +2375,7 @@ my($component, $location) = @_;
+@@ -2374,7 +2378,7 @@ my($component, $location) = @_;
    use strict;
    my $config_content = "{ \"read_local_config\": true }";
    my $config_file_ext = ".cnf";
@@ -59,7 +59,7 @@ https://bugs.mysql.com/bug.php?id=114206
    open(my $mh, "> $config_file_path") or die;
    print $mh $config_content or die;
    close($mh);
-@@ -2968,6 +2972,8 @@ }
+@@ -2971,6 +2975,8 @@ }
    my $lib_plugin =
      mtr_file_exists(vs_config_dirs($location, $plugin_filename),
                      "$basedir/lib/plugin/" . $plugin_filename,
