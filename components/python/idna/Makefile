@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		idna
-COMPONENT_VERSION=	3.4
+COMPONENT_VERSION=	3.7
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4
+    sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/kjd/idna
 COMPONENT_BUGDB=	python-mod/idna
 COMPONENT_ANITYA_ID=	5487
-COMPONENT_BAID=		140833
+COMPONENT_BAID=		165383
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -44,7 +44,7 @@ include $(WS_MAKE_RULES)/ips.mk
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR = $(SOURCE_DIR)/tests
-COMPONENT_TEST_ARGS = -m unittest discover --pattern=*.py
+COMPONENT_TEST_ARGS = -m pytest
 
 # The test output contains arbitrary output. Use nawk to extract just the
 # sections that summarizes the test result.
