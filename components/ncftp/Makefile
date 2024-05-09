@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ncftp
-COMPONENT_VERSION=	3.2.6
+COMPONENT_VERSION=	3.2.7
 COMPONENT_PROJECT_URL=	http://www.ncftp.com/ncftp/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tar.gz
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:129e5954850290da98af012559e6743de193de0012e972ff939df9b604f81c23
-COMPONENT_ARCHIVE_URL=	ftp://ftp.ncftp.com/ncftp/$(COMPONENT_ARCHIVE)
+    sha256:d41c5c4d6614a8eae2ed4e4d7ada6b6d3afcc9fb65a4ed9b8711344bef24f7e8
+COMPONENT_ARCHIVE_URL=	https://www.ncftp.com/public_ftp/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/ncftp-client
 COMPONENT_ANITYA_ID=	2054
 
-COMPONENT_BAID=		38420
+COMPONENT_BAID=		165562
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
