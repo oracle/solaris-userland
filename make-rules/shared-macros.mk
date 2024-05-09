@@ -775,6 +775,7 @@ PYTHON_DATA= $(PYTHON_LIB)
 PYTHON_SCRIPT_SHEBANG_FIX_FUNC = \
 	$(GSED) -i \
 		-e '1s@/usr/bin/python$$@$(PYTHON)@' \
+		-e '1s@/usr/bin/python[23]$$@$(PYTHON)@' \
 		-e '1s@/usr/bin/python\ @$(PYTHON) @' \
 		-e '1s@/usr/bin/env\ $(PYTHON)@$(PYTHON)@' \
 		-e '1s@/usr/bin/env\ python[23]@$(PYTHON)@' \
