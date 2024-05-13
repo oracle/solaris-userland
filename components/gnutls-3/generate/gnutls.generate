@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 # We do not deliver 32-bit executables for GnuTLS.
@@ -45,5 +45,6 @@
 # Ignore mangled files.
 <transform file path=mangled/.+ -> drop>
 
-# We deliver gnutls static library only for x86 platform.
-<transform path=usr/lib/grub/wanboot/libgnutls.a -> set variant.arch i386>
+# We deliver gnutls-3.7.1 static library and headers only for x86 platform.
+<transform file path=usr/lib/grub/wanboot/.+ -> set variant.arch i386>
+<transform file path=usr/lib/grub/wanboot/.+ -> set mode 0444>

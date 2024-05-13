@@ -20,13 +20,11 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
-<transform file path=usr.*/man/.+ -> \
-    default mangler.man.stability "pass-through volatile">
-<transform file path=(.+)/man/man3gnutls/(.+).3gnutls$ -> \
-    set action.hash %<1>/man/man3/%<2>.3>
+<transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through volatile">
+<transform file path=(.+)/man/man3gnutls/(.+).3gnutls$ -> set action.hash %<1>/man/man3/%<2>.3>
 set name=pkg.fmri \
     value=pkg:/library/gnutls-3@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="GNU transport layer security library"
@@ -47,7 +45,6 @@ file path=usr/bin/gnutls-cli-debug
 file path=usr/bin/gnutls-serv
 file path=usr/bin/ocsptool
 file path=usr/bin/psktool
-file path=usr/bin/srptool
 file path=usr/include/$(COMPONENT_NAME)/abstract.h
 file path=usr/include/$(COMPONENT_NAME)/compat.h
 file path=usr/include/$(COMPONENT_NAME)/crypto.h
@@ -66,20 +63,37 @@ file path=usr/include/$(COMPONENT_NAME)/tpm.h
 file path=usr/include/$(COMPONENT_NAME)/urls.h
 file path=usr/include/$(COMPONENT_NAME)/x509-ext.h
 file path=usr/include/$(COMPONENT_NAME)/x509.h
-link path=usr/lib/$(MACH64)/libgnutls.so target=libgnutls.so.30.29.1
-link path=usr/lib/$(MACH64)/libgnutls.so.30 target=libgnutls.so.30.29.1
-file path=usr/lib/$(MACH64)/libgnutls.so.30.29.1
-link path=usr/lib/$(MACH64)/libgnutlsxx.so target=libgnutlsxx.so.28.1.0
-link path=usr/lib/$(MACH64)/libgnutlsxx.so.28 target=libgnutlsxx.so.28.1.0
-file path=usr/lib/$(MACH64)/libgnutlsxx.so.28.1.0
+link path=usr/lib/$(MACH64)/libgnutls.so target=libgnutls.so.30.38.0
+link path=usr/lib/$(MACH64)/libgnutls.so.30 target=libgnutls.so.30.38.0
+file path=usr/lib/$(MACH64)/libgnutls.so.30.38.0
+link path=usr/lib/$(MACH64)/libgnutlsxx.so target=libgnutlsxx.so.30.0.0
+link path=usr/lib/$(MACH64)/libgnutlsxx.so.30 target=libgnutlsxx.so.30.0.0
+file path=usr/lib/$(MACH64)/libgnutlsxx.so.30.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/gnutls.pc
-file path=usr/lib/grub/wanboot/libgnutls.a variant.arch=i386
-link path=usr/lib/libgnutls.so target=libgnutls.so.30.29.1
-link path=usr/lib/libgnutls.so.30 target=libgnutls.so.30.29.1
-file path=usr/lib/libgnutls.so.30.29.1
-link path=usr/lib/libgnutlsxx.so target=libgnutlsxx.so.28.1.0
-link path=usr/lib/libgnutlsxx.so.28 target=libgnutlsxx.so.28.1.0
-file path=usr/lib/libgnutlsxx.so.28.1.0
+file path=usr/lib/grub/wanboot/gnutls/abstract.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/compat.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/crypto.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/dtls.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/gnutls.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/ocsp.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/openpgp.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/pkcs11.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/pkcs12.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/pkcs7.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/self-test.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/socket.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/system-keys.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/tpm.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/urls.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/x509-ext.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/gnutls/x509.h mode=0444 variant.arch=i386
+file path=usr/lib/grub/wanboot/libgnutls.a mode=0444 variant.arch=i386
+link path=usr/lib/libgnutls.so target=libgnutls.so.30.38.0
+link path=usr/lib/libgnutls.so.30 target=libgnutls.so.30.38.0
+file path=usr/lib/libgnutls.so.30.38.0
+link path=usr/lib/libgnutlsxx.so target=libgnutlsxx.so.30.0.0
+link path=usr/lib/libgnutlsxx.so.30 target=libgnutlsxx.so.30.0.0
+file path=usr/lib/libgnutlsxx.so.30.0.0
 file path=usr/lib/pkgconfig/gnutls.pc
 file path=usr/share/locale/cs/LC_MESSAGES/gnutls.mo
 file path=usr/share/locale/de/LC_MESSAGES/gnutls.mo
@@ -88,10 +102,12 @@ file path=usr/share/locale/es/LC_MESSAGES/gnutls.mo
 file path=usr/share/locale/fi/LC_MESSAGES/gnutls.mo
 file path=usr/share/locale/fr/LC_MESSAGES/gnutls.mo
 file path=usr/share/locale/it/LC_MESSAGES/gnutls.mo
+file path=usr/share/locale/ka/LC_MESSAGES/gnutls.mo
 file path=usr/share/locale/ms/LC_MESSAGES/gnutls.mo
 file path=usr/share/locale/nl/LC_MESSAGES/gnutls.mo
 file path=usr/share/locale/pl/LC_MESSAGES/gnutls.mo
 file path=usr/share/locale/pt_BR/LC_MESSAGES/gnutls.mo
+file path=usr/share/locale/ro/LC_MESSAGES/gnutls.mo
 file path=usr/share/locale/sr/LC_MESSAGES/gnutls.mo
 file path=usr/share/locale/sv/LC_MESSAGES/gnutls.mo
 file path=usr/share/locale/uk/LC_MESSAGES/gnutls.mo
@@ -103,7 +119,6 @@ file path=usr/share/man/man1/gnutls-cli.1
 file path=usr/share/man/man1/gnutls-serv.1
 file path=usr/share/man/man1/ocsptool.1
 file path=usr/share/man/man1/psktool.1
-file path=usr/share/man/man1/srptool.1
 file path=usr/share/man/man3gnutls/dane_cert_type_name.3gnutls
 file path=usr/share/man/man3gnutls/dane_cert_usage_name.3gnutls
 file path=usr/share/man/man3gnutls/dane_match_type_name.3gnutls
@@ -129,6 +144,7 @@ file path=usr/share/man/man3gnutls/gnutls_aead_cipher_encrypt.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_aead_cipher_encryptv.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_aead_cipher_encryptv2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_aead_cipher_init.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_aead_cipher_set_key.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_alert_get.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_alert_get_name.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_alert_get_strname.3gnutls
@@ -229,9 +245,11 @@ file path=usr/share/man/man3gnutls/gnutls_check_version.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_add_auth.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_decrypt.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_decrypt2.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_cipher_decrypt3.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_deinit.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_encrypt.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_encrypt2.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_cipher_encrypt3.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_get.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_get_block_size.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_get_id.3gnutls
@@ -245,6 +263,9 @@ file path=usr/share/man/man3gnutls/gnutls_cipher_set_iv.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_suite_get_name.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_suite_info.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_cipher_tag.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_ciphersuite_get.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_compress_certificate_get_selected_method.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_compress_certificate_set_methods.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_compression_get.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_compression_get_id.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_compression_get_name.3gnutls
@@ -293,6 +314,7 @@ file path=usr/share/man/man3gnutls/gnutls_digest_get_id.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_digest_get_name.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_digest_get_oid.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_digest_list.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_digest_set_secure.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_dtls_cookie_send.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_dtls_cookie_verify.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_dtls_get_data_mtu.3gnutls
@@ -302,6 +324,8 @@ file path=usr/share/man/man3gnutls/gnutls_dtls_prestate_set.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_dtls_set_data_mtu.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_dtls_set_mtu.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_dtls_set_timeouts.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_early_cipher_get.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_early_prf_hash_get.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_ecc_curve_get.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_ecc_curve_get_id.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_ecc_curve_get_name.3gnutls
@@ -309,6 +333,7 @@ file path=usr/share/man/man3gnutls/gnutls_ecc_curve_get_oid.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_ecc_curve_get_pk.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_ecc_curve_get_size.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_ecc_curve_list.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_ecc_curve_set_enabled.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_encode_ber_digest_info.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_encode_gost_rs_value.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_encode_rs_value.3gnutls
@@ -323,8 +348,15 @@ file path=usr/share/man/man3gnutls/gnutls_ext_raw_parse.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_ext_register.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_ext_set_data.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_fingerprint.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_fips140_context_deinit.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_fips140_context_init.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_fips140_get_operation_state.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_fips140_mode_enabled.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_fips140_pop_context.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_fips140_push_context.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_fips140_run_self_tests.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_fips140_set_mode.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_get_library_config.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_get_system_config_file.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_global_deinit.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_global_init.3gnutls
@@ -621,6 +653,8 @@ file path=usr/share/man/man3gnutls/gnutls_priority_string_list.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_decrypt_data.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_decrypt_data2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_deinit.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_privkey_derive_secret.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_privkey_export_dh_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_export_dsa_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_export_dsa_raw2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_export_ecc_raw.3gnutls
@@ -637,6 +671,7 @@ file path=usr/share/man/man3gnutls/gnutls_privkey_get_pk_algorithm.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_get_seed.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_get_spki.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_get_type.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_privkey_import_dh_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_import_dsa_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_import_ecc_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_privkey_import_ext.3gnutls
@@ -669,9 +704,11 @@ file path=usr/share/man/man3gnutls/gnutls_protocol_get_id.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_protocol_get_name.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_protocol_get_version.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_protocol_list.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_protocol_set_enabled.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_allocate_client_credentials.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_allocate_server_credentials.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_client_get_hint.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_psk_format_imported_identity.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_free_client_credentials.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_free_server_credentials.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_server_get_username.3gnutls
@@ -680,10 +717,12 @@ file path=usr/share/man/man3gnutls/gnutls_psk_set_client_credentials.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_set_client_credentials2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_set_client_credentials_function.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_set_client_credentials_function2.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_psk_set_client_credentials_function3.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_set_params_function.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_set_server_credentials_file.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_set_server_credentials_function.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_set_server_credentials_function2.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_psk_set_server_credentials_function3.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_set_server_credentials_hint.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_set_server_dh_params.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_set_server_known_dh_params.3gnutls
@@ -692,6 +731,7 @@ file path=usr/share/man/man3gnutls/gnutls_pubkey_deinit.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_encrypt_data.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_export.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_export2.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_pubkey_export_dh_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_export_dsa_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_export_dsa_raw2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_export_ecc_raw.3gnutls
@@ -707,6 +747,7 @@ file path=usr/share/man/man3gnutls/gnutls_pubkey_get_pk_algorithm.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_get_preferred_hash_algorithm.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_get_spki.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_import.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_pubkey_import_dh_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_import_dsa_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_import_ecc_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pubkey_import_ecc_x962.3gnutls
@@ -752,6 +793,7 @@ file path=usr/share/man/man3gnutls/gnutls_record_recv_seq.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_send.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_send2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_send_early_data.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_record_send_file.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_send_range.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_set_max_early_data_size.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_set_max_recv_size.3gnutls
@@ -816,6 +858,8 @@ file path=usr/share/man/man3gnutls/gnutls_sign_get_pk_algorithm.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_sign_is_secure.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_sign_is_secure2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_sign_list.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_sign_set_secure.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_sign_set_secure_for_certs.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_sign_supports_pk_algorithm.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_srp_allocate_client_credentials.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_srp_allocate_server_credentials.3gnutls
@@ -872,6 +916,7 @@ file path=usr/share/man/man3gnutls/gnutls_transport_get_int.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_transport_get_int2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_transport_get_ptr.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_transport_get_ptr2.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_transport_is_ktls_enabled.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_transport_set_errno.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_transport_set_errno_function.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_transport_set_fastopen.3gnutls
@@ -1128,6 +1173,8 @@ file path=usr/share/man/man3gnutls/gnutls_x509_crt_sign.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_crt_sign2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_crt_verify.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_crt_verify_data2.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_x509_ct_sct_get.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_x509_ct_sct_get_version.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_dn_deinit.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_dn_export.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_dn_export2.3gnutls
@@ -1139,6 +1186,10 @@ file path=usr/share/man/man3gnutls/gnutls_x509_dn_init.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_dn_oid_known.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_dn_oid_name.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_dn_set_str.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_x509_ext_ct_export_scts.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_x509_ext_ct_import_scts.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_x509_ext_ct_scts_deinit.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_x509_ext_ct_scts_init.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_ext_deinit.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_ext_export_aia.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_ext_export_authority_key_id.3gnutls
@@ -1208,6 +1259,7 @@ file path=usr/share/man/man3gnutls/gnutls_x509_privkey_get_seed.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_privkey_get_spki.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_privkey_import.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_privkey_import2.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_x509_privkey_import_dh_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_privkey_import_dsa_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_privkey_import_ecc_raw.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_privkey_import_gost_raw.3gnutls
@@ -1229,8 +1281,10 @@ file path=usr/share/man/man3gnutls/gnutls_x509_rdn_get2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_rdn_get_by_oid.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_rdn_get_oid.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_spki_deinit.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_x509_spki_get_rsa_oaep_params.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_spki_get_rsa_pss_params.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_spki_init.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_x509_spki_set_rsa_oaep_params.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_spki_set_rsa_pss_params.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_tlsfeatures_add.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_x509_tlsfeatures_check_crt.3gnutls
