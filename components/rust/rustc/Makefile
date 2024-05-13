@@ -28,13 +28,13 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	rustc
-COMPONENT_VERSION =	1.70.0
-COMPONENT_BAID =	145164
+COMPONENT_VERSION =	1.78.0
+COMPONENT_BAID =	165406
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_PROJECT_URL =	http://www.rust-lang.org/
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:bb8e9c564566b2d3228d95de9063a9254182446a161353f1d843bfbaf5c34639
+    sha256:8065824f0255faa3901db8206e6f9423f6f8c07cec28bc6f2797c6c948310ece
 COMPONENT_ARCHIVE_URL =	https://static.rust-lang.org/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL =	$(COMPONENT_ARCHIVE_URL).asc
 
@@ -55,7 +55,7 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Everything expects GNU utilities, so make sure those are preferred.
 # BOOTSTRAP_PATH is used during updates before new version is seeded.
-PATH = $(BOOTSTRAP_PATH):$(COMPONENT_DIR)/epoll:/usr/gnu/bin:/usr/bin
+PATH = $(BOOTSTRAP_PATH):/usr/gnu/bin:/usr/bin
 
 # LD_B_DIRECT breaks the build.
 LD_B_DIRECT =
@@ -72,16 +72,8 @@ CONFIGURE_OPTIONS =	--prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS +=	--libdir=$(USRLIBDIR64)
 CONFIGURE_OPTIONS +=	--default-linker=gcc
 CONFIGURE_OPTIONS +=	--enable-local-rust
-
-COMPONENT_PRE_CONFIGURE_ACTION += \
-       ( cd $(COMPONENT_DIR)/epoll; \
-       $(GCC_ROOT)/bin/gcc -shared -DDEBUG=0 -o libepoll.so -fPIC -c epoll.c ; \
-       echo "\#!/bin/sh" > gcc ; \
-       echo "$(GCC_ROOT)/bin/gcc -L$(COMPONENT_DIR)/epoll -lepoll \$$@" >> gcc ; \
-       chmod a+x gcc ) ;
-
-CLEAN_PATHS += epoll/libepoll.so
-CLEAN_PATHS += epoll/gcc
+CONFIGURE_OPTIONS +=	--release-channel=stable
+CONFIGURE_OPTIONS +=	--docdir=/usr/share/doc/rust
 
 VENDORED_SOURCES_ENFORCE = \
         cd $(BUILD_DIR); mkdir -p .cargo; \
@@ -104,11 +96,6 @@ COMPONENT_BUILD_ENV += OPENSSL_LIB_DIR=/usr/openssl/3/lib/64
 COMPONENT_BUILD_ENV += OPENSSL_INCLUDE_DIR=/usr/openssl/3/include
 COMPONENT_INSTALL_ENV += OPENSSL_LIB_DIR=/usr/openssl/3/lib/64
 COMPONENT_INSTALL_ENV += OPENSSL_INCLUDE_DIR=/usr/openssl/3/include
-
-COMPONENT_PRE_BUILD_ACTION += \
-        ( $(MKDIR) $(@D)/pkgconfig-my; \
-        $(GSED) 's;-L.* ;;' $(USRLIBDIR)/64/pkgconfig/zlib.pc > $(@D)/pkgconfig-my/zlib.pc ) ;
-PKG_CONFIG_PATHS += $(@D)/pkgconfig-my
 
 # Rust library names (and some other file names) contain hash which differs
 # between intel and sparc. Therefore library list need to be created to be
