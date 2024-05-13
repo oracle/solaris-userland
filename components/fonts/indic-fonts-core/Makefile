@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -37,11 +37,13 @@ COMPONENT_ARCHIVE=	MuktiNarrow-0.94.tar.bz2
 COMPONENT_PROJECT_URL=	http://www.nongnu.org/freebangfont/sdf
 COMPONENT_ARCHIVE_URL=	http://download.savannah.nongnu.org/releases/freebangfont/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	sha256:bb8af9b9437f1d13ff8cdc8784188ebf0c2ee8b97e328281cd814a3afd4f82f3
+COMPONENT_BAID_MUKTINARROW=	164573
 
 COMPONENT_PROJECT_URL_1=http://www.malayalamfont.com/
 COMPONENT_ARCHIVE_1=	MalOtf.ttf
 COMPONENT_ARCHIVE_URL_1=http://malayalamlinux.sourceforge.net/downloads/fonts/MalOtf.ttf
 COMPONENT_ARCHIVE_HASH_1=sha256:2fea9a759d82610a7cea85d6bf6eef46a586a32231f10819421e67b642501905
+COMPONENT_BAID_MALAYALAM=	164810
 # hack to disable UNPACK for just one component
 UNPACK_ARGS_1= & true
 
@@ -49,14 +51,15 @@ COMPONENT_PROJECT_URL_2=https://fedoraproject.org/wiki/Vemana2000_fonts
 COMPONENT_ARCHIVE_2=	Vemana2k-Li.zip
 COMPONENT_ARCHIVE_URL_2=http://pkgs.fedoraproject.org/repo/pkgs/vemana2000-fonts/Vemana2k-Li.zip/a044265b4fbdede4d58f51eb1c9a9c7f/$(COMPONENT_ARCHIVE_2)
 COMPONENT_ARCHIVE_HASH_2=sha256:01d6df6d6387f7cd6b609ac5c0ac5c042a8ccba04c0e10800a4412d303579fe9
+COMPONENT_BAID_VEMANA=	164900
 
 COMPONENT_PROJECT_URL_3=http://brahmi.sourceforge.net/
 COMPONENT_ARCHIVE_3=	kanotf.zip
 COMPONENT_ARCHIVE_URL_3=http://prdownloads.sourceforge.net/brahmi/kanotf.zip?download
 COMPONENT_ARCHIVE_HASH_3=sha256:0fcf5e9772b583f4a36c1e931ac1ed7e90587d699251028f609f61c6036649b2
+COMPONENT_BAID_KANNADA=	165519
 
 COMPONENT_BUGDB=	g11n/font
-COMPONENT_BAID=		10460
 
 PKG_VARS+=	COMPONENT_ARCHIVE_URL_1
 PKG_VARS+=	COMPONENT_ARCHIVE_URL_2
