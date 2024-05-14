@@ -26,61 +26,23 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Django
-COMPONENT_VERSION=	4.2.10
+COMPONENT_VERSION=	4.2.13
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8a9efabeaa421c842dbedd1d0ee79f870f335d9175aed082c3610c8b58853666
+    sha256:5943a705626139d7e3ee7c1eb48a8cc85ca2886e4820f8efecd70b7828b76e23
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.djangoproject.com/
 COMPONENT_BUGDB=	python-mod/django
 COMPONENT_ANITYA_ID=	371326
-COMPONENT_BAID=		158782
-
-
-COMPONENT_NAME_32=	$(COMPONENT_NAME)
-COMPONENT_VERSION_32=	3.2.24
-COMPONENT_SRC_32=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_32)
-COMPONENT_ARCHIVE_32=	$(COMPONENT_SRC_32).tar.gz
-COMPONENT_ARCHIVE_HASH_32= \
-    sha256:b8171be288e4d6a5f4601798113d549d753088fcea7d13ce9f8ac9d28c8b72ee
-COMPONENT_ARCHIVE_URL_32=	$(call pypi_url,32)
-COMPONENT_ANITYA_ID_32=	336334
-COMPONENT_BAID_32=	158781
+COMPONENT_BAID=		166005
 
 
 PYTHON_VERSIONS=	3.9 3.11
 
-# As per PSARC/2021/051, different LTS version of Django is to
-# be delivered with each Python runtime.
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-# Convenience variables
-TARGET_39 = $(BUILD_DIR)/$(MACH)-3.9/
-SOURCE_DIR_32 = $(COMPONENT_DIR)/$(COMPONENT_SRC_32)
-
-# Targets updated for older version build
-$(TARGET_39).built: SOURCE_DIR = $(SOURCE_DIR_32)
-$(TARGET_39).installed: SOURCE_DIR = $(SOURCE_DIR_32)
-
-$(TARGET_39).tested-and-compared: COMPONENT_TEST_DIR = $(SOURCE_DIR_32)/tests
-
-$(MANIFEST_BASE)-django-39.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_32)
-$(MANIFEST_BASE)-django-39.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_32)
-
-# Meta package must have versions of older runtimes fixed
-FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)django-39@(.*) \
-		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_32)>" | \
-	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-django.mogrified \
-		> $(MANIFEST_BASE)-django.mogrified-fixed ;
-	$(MV) $(MANIFEST_BASE)-django.mogrified-fixed \
-		$(MANIFEST_BASE)-django.mogrified
-
-$(MANIFEST_BASE)-django.mangled: FIX_MANIFEST_VERSIONS
 
 # Replace "#!/usr/bin/env ..." shebang lines with properly versioned ones.
 COMPONENT_POST_BUILD_ACTION = \
@@ -95,14 +57,11 @@ COMPONENT_POST_INSTALL_ACTION = \
 # locale/__init__.py
 PUBLISH_TRANSFORMS +=	$(COMPONENT_DIR)/django-locale-transform
 
-TEST_PYTHONPATH=$(SOURCE_DIR)
-$(TARGET_39).tested-and-compared: TEST_PYTHONPATH=$(SOURCE_DIR_32)
-
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_ARGS +=	--settings test_sqlite
 # reset the test environment to only contain PATH, PYTHONPATH, and LC_ALL
 # (because many tests need to be able to access non-ASCII codepoints).
-COMPONENT_TEST_ENV =	PYTHONPATH=$(TEST_PYTHONPATH)
+COMPONENT_TEST_ENV =	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
 COMPONENT_TEST_ENV +=	LC_ALL=en_US.UTF-8
 
 # Prevent HTTP 502: cannotconnect errors when unit testing on live server
@@ -137,7 +96,6 @@ system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/asgiref-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/sqlparse-%)
-REQUIRED_PACKAGES += library/python/pytz-39
 REQUIRED_PACKAGES += library/python/mock
 REQUIRED_PACKAGES += library/python/pillow
 REQUIRED_PACKAGES += library/python/pyyaml
