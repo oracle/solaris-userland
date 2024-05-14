@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -28,14 +28,14 @@ include ../../make-rules/shared-macros.mk
 PATH = $(GNUBIN):$(USRBINDIR)
 
 COMPONENT_NAME=		quilt
-COMPONENT_VERSION=	0.67
+COMPONENT_VERSION=	0.68
 COMPONENT_PROJECT_URL=	https://savannah.nongnu.org/projects/quilt/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5d5ce75555016b8ef0bd3dbdfecb222b351b6b161ad6405cca1d6313a148ab12
+    sha256:fe8c09de03c106e85b3737c8f03ade147c956b79ed7af485a1c8a3858db38426
 COMPONENT_ARCHIVE_URL=	https://download.savannah.gnu.org/releases/quilt/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	4143
-COMPONENT_BAID=		133945
+COMPONENT_BAID=		166004
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 
