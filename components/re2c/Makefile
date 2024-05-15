@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		re2c
-COMPONENT_VERSION=	3.0
+COMPONENT_VERSION=	3.1
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_PROJECT_URL=	http://re2c.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b3babbbb1461e13fe22c630a40c43885efcfbbbb585830c6f4c0d791cf82ba0b
+    sha256:0ac299ad359e3f512b06a99397d025cfff81d3be34464ded0656f8a96676c029
 COMPONENT_ARCHIVE_URL=	https://github.com/skvadrik/$(COMPONENT_NAME)/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	7664
 
-COMPONENT_BAID =	129706
+COMPONENT_BAID =	166011
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
 
