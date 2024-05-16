@@ -53,6 +53,10 @@ PATCH_LEVEL=0
 
 CONFIGURE_PREFIX=$(USRDIR)/apr-util/1
 
+# OpenSSL 3 tweaks
+COMPONENT_POST_CONFIGURE_ACTION += $(GSED) -i 's;-I/usr/include ;;' $(@D)/apu-1-config ;
+COMPONENT_POST_CONFIGURE_ACTION += $(GSED) -i 's;-I/usr/include ;;' $(@D)/Makefile ;
+COMPONENT_POST_CONFIGURE_ACTION += $(GSED) -i 's;-I/usr/include ;;' $(@D)/test/Makefile ;
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/apu-1-config ;
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/Makefile ;
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/test/Makefile ;
