@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 # This file specifies configure-line options to enable as many extensions as
@@ -124,7 +124,6 @@ CONFIGURE_OPTIONS += --enable-mbstring=shared
 
 CONFIGURE_OPTIONS += --with-openssl=shared
 CONFIGURE_OPTIONS += --with-kerberos		# WARNING! imap reads same flag!
-REQUIRED_PACKAGES += library/security/openssl
 
 CONFIGURE_OPTIONS += --enable-pcntl=shared
 

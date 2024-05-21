@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -55,7 +55,6 @@ REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libtasn1
 REQUIRED_PACKAGES += library/security/nettle
-REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/pcsc/pcsclite
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcursor
