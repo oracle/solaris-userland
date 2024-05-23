@@ -13,6 +13,9 @@ remove the writing of a '.' to stderr (to show progress).
 
 tpack.lua: Fix for test discrepancy between sparc and x86, not for upstream.
 
+calls.lua: One test is not portable and breaks on sparc,
+upstream is aware of this issue.
+
 This patch will not be sent upstream.
 
 --- lua-5.4.4-tests/files.lua
@@ -57,3 +60,21 @@ This patch will not be sent upstream.
  print("\talignment: " .. align)
  
  
+--- lua-5.4.6-tests/calls.lua
++++ lua-5.4.6-tests/calls.lua
+@@ -342,6 +342,7 @@ do   -- another bug (in 5.4.0)
+ end
+ 
+ 
++if not _port then   -- not protable - breaks on big endian platforms
+ do   -- another bug (since 5.2)
+   -- corrupted binary dump: list of upvalue names is larger than number
+   -- of upvalues, overflowing the array of upvalues.
+@@ -354,6 +355,7 @@ do   -- another bug (since 5.2)
+ 
+   assert(load(code))   -- segfaults in previous versions
+ end
++end
+ 
+ 
+ x = string.dump(load("x = 1; return x"))
