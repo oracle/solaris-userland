@@ -1,0 +1,17 @@
+Disable protocols and ciphers unacceptable according to Oracle standards.
+
+Not intended for upstream.
+
+--- git-2.39.3/imap-send.c
++++ git-2.39.3/imap-send.c
+@@ -289,8 +289,8 @@ static int ssl_socket_connect(struct ima
+ 		return -1;
+ 	}
+ 
+-	if (use_tls_only)
+-		SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
++	SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1);
++	SSL_CTX_set_cipher_list(ctx, "ALL:!aNULL:!eNULL:!EXPORT:!LOW:!MD5:!DES:!3DES:!RC2:!RC4:!PSK:!kDH");
+ 
+ 	if (verify)
+ 		SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);

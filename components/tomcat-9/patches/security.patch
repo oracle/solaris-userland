@@ -1,0 +1,37 @@
+Disable the use of ciphers unacceptable according to Oracle standards by default.
+
+Not intended for upstream.
+
+--- apache-tomcat-9.0.87-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
++++ apache-tomcat-9.0.87-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
+@@ -532,7 +532,7 @@ public class OpenSSLCipherConfigurationP
+         addListAlias(SRP, filterByKeyExchange(allCiphers, Collections.singleton(KeyExchange.SRP)));
+         initialized = true;
+         // Despite what the OpenSSL docs say, DEFAULT also excludes SSLv2
+-        addListAlias(DEFAULT, parse("ALL:!EXPORT:!eNULL:!aNULL:!SSLv2:!DES:!RC2:!RC4:!DSS:!SEED:!IDEA:!CAMELLIA:!AESCCM:!3DES:!ARIA"));
++        addListAlias(DEFAULT, parse("ALL:!EXPORT:!eNULL:!aNULL:!SSLv2:!DES:!RC2:!RC4:!DSS:!SEED:!IDEA:!CAMELLIA:!AESCCM:!3DES:!ARIA:!PSK"));
+         // COMPLEMENTOFDEFAULT is also not exactly as defined by the docs
+         LinkedHashSet<Cipher> complementOfDefault = filterByKeyExchange(all, new HashSet<>(Arrays.asList(KeyExchange.EDH,KeyExchange.EECDH)));
+         complementOfDefault = filterByAuthentication(complementOfDefault, Collections.singleton(Authentication.aNULL));
+--- apache-tomcat-9.0.87-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
++++ apache-tomcat-9.0.87-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
+@@ -56,7 +56,7 @@ public class SSLHostConfig implements Se
+     // keys in Maps.
+     protected static final String DEFAULT_SSL_HOST_NAME = "_default_";
+     protected static final Set<String> SSL_PROTO_ALL_SET = new HashSet<>();
+-    public static final String DEFAULT_TLS_CIPHERS = "HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA";
++    public static final String DEFAULT_TLS_CIPHERS = "HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:!PSK";
+ 
+     static {
+         /* Default used if protocols are not configured, also used if
+--- apache-tomcat-9.0.87-src/webapps/docs/config/http.xml
++++ apache-tomcat-9.0.87-src/webapps/docs/config/http.xml
+@@ -1375,7 +1375,7 @@
+       avoided by providing an explicit list of ciphers that are supported by the
+       configured SSL implementation.</p>
+       <p>If not specified, a default (using the OpenSSL notation) of
+-      <code>HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA</code> will be
++      <code>HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:!PSK</code> will be
+       used.</p>
+       <p>Note that, by default, the order in which ciphers are defined is
+       treated as an order of preference. See <code>honorCipherOrder</code>.</p>

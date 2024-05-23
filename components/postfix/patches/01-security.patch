@@ -1,0 +1,65 @@
+Disable the use of protocols and ciphers unacceptable according
+to Oracle standards by default.
+
+Not intended for upstream.
+
+--- postfix-3.8.4/src/global/mail_params.h
++++ postfix-3.8.4/src/global/mail_params.h
+@@ -1362,11 +1362,11 @@ extern char *var_smtpd_tls_CAfile;
+ extern char *var_smtpd_tls_CApath;
+ 
+ #define VAR_SMTPD_TLS_PROTO		"smtpd_tls_protocols"
+-#define DEF_SMTPD_TLS_PROTO		">=TLSv1"
++#define DEF_SMTPD_TLS_PROTO		">=TLSv1.2"
+ extern char *var_smtpd_tls_proto;
+ 
+ #define VAR_SMTPD_TLS_MAND_PROTO	"smtpd_tls_mandatory_protocols"
+-#define DEF_SMTPD_TLS_MAND_PROTO	">=TLSv1"
++#define DEF_SMTPD_TLS_MAND_PROTO	">=TLSv1.2"
+ extern char *var_smtpd_tls_mand_proto;
+ 
+ #define VAR_SMTPD_TLS_CIPH	"smtpd_tls_ciphers"
+@@ -1597,15 +1597,15 @@ extern int var_lmtp_tls_scache_timeout;
+ extern char *var_smtp_tls_policy;
+ 
+ #define VAR_SMTP_TLS_PROTO	"smtp_tls_protocols"
+-#define DEF_SMTP_TLS_PROTO	">=TLSv1"
++#define DEF_SMTP_TLS_PROTO	">=TLSv1.2"
+ #define VAR_LMTP_TLS_PROTO	"lmtp_tls_protocols"
+-#define DEF_LMTP_TLS_PROTO	">=TLSv1"
++#define DEF_LMTP_TLS_PROTO	">=TLSv1.2"
+ extern char *var_smtp_tls_proto;
+ 
+ #define VAR_SMTP_TLS_MAND_PROTO	"smtp_tls_mandatory_protocols"
+-#define DEF_SMTP_TLS_MAND_PROTO	">=TLSv1"
++#define DEF_SMTP_TLS_MAND_PROTO	">=TLSv1.2"
+ #define VAR_LMTP_TLS_MAND_PROTO	"lmtp_tls_mandatory_protocols"
+-#define DEF_LMTP_TLS_MAND_PROTO	">=TLSv1"
++#define DEF_LMTP_TLS_MAND_PROTO	">=TLSv1.2"
+ extern char *var_smtp_tls_mand_proto;
+ 
+ #define VAR_SMTP_TLS_VFY_CMATCH	"smtp_tls_verify_cert_match"
+@@ -3347,19 +3347,19 @@ extern char *var_tls_cnf_name;
+  /*
+   * Deprecated and unused cipher, key exchange and public key algorithms
+   */
+-#define TLS_EXCL_CIPHS	    ":!SEED:!IDEA:!3DES:!RC2:!RC4:!RC5"
+-#define TLS_EXCL_KEXCH	    ":!kDH:!kECDH"
++#define TLS_EXCL_CIPHS	    ":!SEED:!IDEA:!DES:!3DES:!RC2:!RC4:!RC5"
++#define TLS_EXCL_KEXCH	    ":!kDH:!kECDH:!PSK"
+ #define TLS_EXCL_PKEYS	    ":!aDSS"
+ #define TLS_EXCL_DGSTS	    ":!MD5"
+ #define TLS_EXCL	    TLS_EXCL_CIPHS TLS_EXCL_REST
+ #define TLS_EXCL_REST	    TLS_EXCL_KEXCH TLS_EXCL_PKEYS TLS_EXCL_DGSTS
+ 
+ #define VAR_TLS_HIGH_CLIST	"tls_high_cipherlist"
+-#define DEF_TLS_HIGH_CLIST	"aNULL:-aNULL:HIGH" TLS_EXCL ":@STRENGTH"
++#define DEF_TLS_HIGH_CLIST	"!aNULL:HIGH" TLS_EXCL ":@STRENGTH"
+ extern char *var_tls_high_clist;
+ 
+ #define VAR_TLS_MEDIUM_CLIST	"tls_medium_cipherlist"
+-#define DEF_TLS_MEDIUM_CLIST	"aNULL:-aNULL:HIGH:MEDIUM" TLS_EXCL ":+RC4:@STRENGTH"
++#define DEF_TLS_MEDIUM_CLIST	"!aNULL:HIGH:MEDIUM" TLS_EXCL ":+RC4:@STRENGTH"
+ extern char *var_tls_medium_clist;
+ 
+ #define VAR_TLS_LOW_CLIST	"tls_low_cipherlist"
