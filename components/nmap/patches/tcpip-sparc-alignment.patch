@@ -3,9 +3,9 @@ Fixes alignment related Bus Error on SPARC.
 PR was offered upstream:
 https://github.com/nmap/nmap/pull/2508
 
---- nmap-7.94/tcpip.cc
-+++ nmap-7.94/tcpip.cc
-@@ -1499,13 +1499,13 @@ static bool accept_any (const unsigned c
+--- nmap-7.95/tcpip.cc
++++ nmap-7.95/tcpip.cc
+@@ -1500,13 +1500,13 @@ static bool accept_any (const unsigned c
  }
  
  static bool accept_ip (const unsigned char *p, const struct pcap_pkthdr *h, int datalink, size_t offset) {
@@ -22,7 +22,7 @@ https://github.com/nmap/nmap/pull/2508
      case 4:
      case 6:
        break;
-@@ -1517,9 +1517,11 @@ static bool accept_ip (const unsigned ch
+@@ -1518,9 +1518,11 @@ static bool accept_ip (const unsigned ch
    return true;
  }
  
@@ -35,7 +35,7 @@ https://github.com/nmap/nmap/pull/2508
    size_t offset = 0;
    struct pcap_pkthdr *head;
    const u8 *p;
-@@ -1544,8 +1546,14 @@ const u8 *readip_pcap(pcap_t *pd, unsign
+@@ -1545,8 +1547,14 @@ const u8 *readip_pcap(pcap_t *pd, unsign
    *len = head->caplen - offset;
    p += offset;
  
@@ -51,7 +51,7 @@ https://github.com/nmap/nmap/pull/2508
        *len = 0;
        return NULL;
      }
-@@ -1557,13 +1565,13 @@ const u8 *readip_pcap(pcap_t *pd, unsign
+@@ -1558,13 +1566,13 @@ const u8 *readip_pcap(pcap_t *pd, unsign
      memcpy(linknfo->header, p - offset, MIN(sizeof(linknfo->header), offset));
    }
    if (rcvdtime)
@@ -68,9 +68,9 @@ https://github.com/nmap/nmap/pull/2508
  }
  
  // Returns whether the packet receive time value obtained from libpcap
---- nmap-7.94/tcpip.h
-+++ nmap-7.94/tcpip.h
-@@ -354,7 +354,7 @@ bool getNextHopMAC(const char *iface, co
+--- nmap-7.95/tcpip.h
++++ nmap-7.95/tcpip.h
+@@ -355,7 +355,7 @@ bool getNextHopMAC(const char *iface, co
  const u8 *readipv4_pcap(pcap_t *pd, unsigned int *len, long to_usec,
                      struct timeval *rcvdtime, struct link_header *linknfo, bool validate);
  

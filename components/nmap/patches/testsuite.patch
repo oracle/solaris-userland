@@ -1,5 +1,7 @@
 Lua on Solaris is compiled such that whole 'infinity' is printed out.
 
+Prevent expr_match_test from filling the test log with test indexes.
+
 Not intended for upstream.
 
 --- nmap-7.94/nselib/mongodb.lua
@@ -18,3 +20,13 @@ Not intended for upstream.
    },
    { desc = "bad BSONNUM: double truncated", invalid = true,
      bson = "0B0000000164000000F03F00"
+--- nmap-7.95/tests/expr_match_test.cc
++++ nmap-7.95/tests/expr_match_test.cc
+@@ -203,7 +203,6 @@ int main(int argc, char **argv)
+     const char *expr = tests[i].expr;
+     bool expected = tests[i].result;
+     int nested = strchr(expr, '[') ? 1 : 0;
+-    std::cout << i << '\r';
+     for (int n = 1; n >= nested; n--)  {
+       num_run++;
+       if (expected != expr_match(val, 0, expr, 0, n)) {

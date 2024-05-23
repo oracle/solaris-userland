@@ -29,14 +29,14 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         nmap
-COMPONENT_VERSION=      7.94
+COMPONENT_VERSION=      7.95
 COMPONENT_PROJECT_URL=  https://nmap.org/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7ebc3a0d369d5965ba8b6513bce3ff6d3307a7cc87dd18f70d0af5d8e66a2849
+    sha256:015edd0091e5b017a891479ff276ca38fd50a98f7a87ea2c20664c2c5e384330
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)dist/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2096
-COMPONENT_BAID=		150008
+COMPONENT_BAID=		166796
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -67,6 +67,8 @@ COMPONENT_BUILD_ENV += CC="$(CC)"
 COMPONENT_INSTALL_ENV += CC="$(CC)"
 COMPONENT_TEST_ENV += CC="$(CC)"
 
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+
 # Ensure that the test results are reproducible.
 COMPONENT_TEST_TRANSFORMS += -E \
 	'-e "s|on port [0-9]+ \\(pid [0-9]+\\)|on port PORT (pid PID)|g" ' \
@@ -78,7 +80,7 @@ COMPONENT_TEST_TRANSFORMS += -E \
 	'-e "/\/usr\/gcc\/[0-9]+\/bin\/gcc/d" ' '-e "/\/usr\/gcc\/[0-9]+\/bin\/g\+\+/d" '
 
 REQUIRED_PACKAGES += library/libssh2
-REQUIRED_PACKAGES += library/pcre
+REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/lua
