@@ -1,0 +1,37 @@
+Perl incorrectly adds /usr/lib/sparcv9 to list of library search paths. If you
+do you may not be able to override a library from that path with library of
+your own.
+
+At the moment perl compiled on sparc shows:
+
+$ perl -V | grep usr/lib/sparcv9
+    ldflags =' -m64 -fstack-protector-strong -L/usr/lib/sparcv9 -L/usr/gnu/lib '
+    libpth=/lib/64 /usr/lib/64 /usr/gcc/13/lib /usr/lib /usr/lib/sparcv9 /usr/gnu/lib /usr/ccs/lib
+    libc=/usr/lib/sparcv9/libc.so
+    lddlflags=' -shared -m64 -L/usr/lib/sparcv9 -L/usr/gnu/lib -fstack-protector-strong'
+
+Both ldflags and lddlflags incorrectly add -L/usr/lib/sparcv9 to link command.
+
+This can happen:
+
+gcc ... -L/usr/lib/sparcv9 ... -Lmy_workspace/lib -lsnmp
+
+will use libsnmp.so from /usr/lib/sparcv9 instead from my_workspace/lib as
+intended.
+
+Please note that this is solaris specific change but for sparc only. X86 does
+not include such a change.
+
+This was filed here https://github.com/Perl/perl5/issues/22246
+
+--- perl-5.38.2/hints/solaris_2.sh
++++ perl-5.38.2/hints/solaris_2.sh
+@@ -607,7 +607,7 @@ EOM
+ 		    ;;
+ 		esac
+ 		if test "$processor" = sparc; then
+-		    loclibpth="/usr/lib/sparcv9 $loclibpth"
++		    #loclibpth="/usr/lib/sparcv9 $loclibpth"
+ 		    ccflags="$ccflags -mcpu=v9"
+ 		fi
+ 		ccflags="$ccflags -m64"
