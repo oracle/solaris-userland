@@ -1,0 +1,38 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2024, Oracle and/or its affiliates.
+#
+
+file etc/suricata/classification.config path=etc/suricata/classification.config.orig
+file etc/suricata/reference.config path=etc/suricata/reference.config.orig
+file etc/suricata/suricata.yaml path=etc/suricata/suricata.yaml.orig
+file etc/suricata/threshold.config path=etc/suricata/threshold.config.orig
+
+dir path=var/lib/suricata owner=_suricata group=daemon
+dir path=var/log/suricata owner=_suricata group=daemon mode=0700
+
+file Solaris/suricata.xml path=lib/svc/manifest/network/suricata.xml mode=0444 \
+	restart_fmri=svc:/system/manifest-import:default
+
+user username=_suricata ftpuser=false gcos-field="Suricata Daemon" group=daemon \
+	home-dir=/var/lib/suricata password=*LK* uid=64

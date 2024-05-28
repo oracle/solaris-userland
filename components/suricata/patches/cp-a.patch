@@ -1,0 +1,20 @@
+Solaris cp doesn't know -a, but GNU does.
+
+Not for upstream.
+
+--- a/rust/Makefile.am	2023-12-20 08:08:49.189030199 +0100
++++ b/rust/Makefile.am	2023-12-20 08:08:59.199508777 +0100
+@@ -43,11 +43,11 @@
+ 			--features "$(RUST_FEATURES)" $(RUST_TARGET)
+ endif
+ 	if test -e $(RUST_SURICATA_LIBDIR)/suricata.lib; then \
+-		cp -a $(RUST_SURICATA_LIBDIR)/suricata.lib \
++		gcp -a $(RUST_SURICATA_LIBDIR)/suricata.lib \
+ 			$(RUST_SURICATA_LIBDIR)/${RUST_SURICATA_LIBNAME}; \
+ 	fi
+ 	if test -e $(RUST_SURICATA_LIBDIR)/libsuricata.a; then \
+-		cp -a $(RUST_SURICATA_LIBDIR)/libsuricata.a \
++		gcp -a $(RUST_SURICATA_LIBDIR)/libsuricata.a \
+ 			$(RUST_SURICATA_LIBDIR)/${RUST_SURICATA_LIBNAME}; \
+ 	fi
+ 	$(MAKE) gen/rust-bindings.h

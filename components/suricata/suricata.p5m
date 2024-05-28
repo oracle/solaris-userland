@@ -1,0 +1,168 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2024, Oracle and/or its affiliates.
+#
+
+set name=pkg.fmri \
+    value=pkg:/service/network/suricata@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="Network analysis and threat detection software"
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
+set name=com.oracle.info.description \
+    value="High performance Network IDS, IPS and Network Security Monitoring engine."
+set name=info.classification \
+    value=org.opensolaris.category.2008:Applications/Internet
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2024/055
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=etc/suricata/classification.config mode=0644 preserve=true
+file etc/suricata/classification.config \
+    path=etc/suricata/classification.config.orig
+file path=etc/suricata/reference.config mode=0644 preserve=true
+file etc/suricata/reference.config path=etc/suricata/reference.config.orig
+file path=etc/suricata/suricata.yaml mode=0644 preserve=true
+file etc/suricata/suricata.yaml path=etc/suricata/suricata.yaml.orig
+file path=etc/suricata/threshold.config mode=0644 preserve=true
+file etc/suricata/threshold.config path=etc/suricata/threshold.config.orig
+file Solaris/suricata.xml path=lib/svc/manifest/network/suricata.xml mode=0444 \
+    restart_fmri=svc:/system/manifest-import:default
+file path=usr/bin/suricata-update
+file path=usr/bin/suricatactl
+file path=usr/bin/suricatasc
+file path=usr/include/htp/bstr.h
+file path=usr/include/htp/bstr_builder.h
+file path=usr/include/htp/htp.h
+file path=usr/include/htp/htp_base64.h
+file path=usr/include/htp/htp_config.h
+file path=usr/include/htp/htp_connection_parser.h
+file path=usr/include/htp/htp_core.h
+file path=usr/include/htp/htp_decompressors.h
+file path=usr/include/htp/htp_hooks.h
+file path=usr/include/htp/htp_list.h
+file path=usr/include/htp/htp_multipart.h
+file path=usr/include/htp/htp_table.h
+file path=usr/include/htp/htp_transaction.h
+file path=usr/include/htp/htp_urlencoded.h
+file path=usr/include/htp/htp_utf8_decoder.h
+file path=usr/include/htp/htp_version.h
+file path=usr/include/htp/lzma/7zTypes.h
+file path=usr/include/htp/lzma/LzmaDec.h
+link path=usr/lib/$(MACH64)/libhtp.so target=libhtp.so.2.0.0
+link path=usr/lib/$(MACH64)/libhtp.so.2 target=libhtp.so.2.0.0
+file path=usr/lib/$(MACH64)/libhtp.so.2.0.0
+file path=usr/lib/$(MACH64)/pkgconfig/htp.pc
+file path=usr/lib/python3.11/vendor-packages/suricata/__init__.py
+file path=usr/lib/python3.11/vendor-packages/suricata/config/__init__.py
+file path=usr/lib/python3.11/vendor-packages/suricata/config/defaults.py
+file path=usr/lib/python3.11/vendor-packages/suricata/ctl/__init__.py
+file path=usr/lib/python3.11/vendor-packages/suricata/ctl/filestore.py
+file path=usr/lib/python3.11/vendor-packages/suricata/ctl/loghandler.py
+file path=usr/lib/python3.11/vendor-packages/suricata/ctl/main.py
+file path=usr/lib/python3.11/vendor-packages/suricata/ctl/test_filestore.py
+file path=usr/lib/python3.11/vendor-packages/suricata/sc/__init__.py
+file path=usr/lib/python3.11/vendor-packages/suricata/sc/specs.py
+file path=usr/lib/python3.11/vendor-packages/suricata/sc/suricatasc.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/__init__.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/commands/__init__.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/commands/addsource.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/commands/checkversions.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/commands/disablesource.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/commands/enablesource.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/commands/listsources.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/commands/removesource.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/commands/updatesources.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/compat/__init__.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/compat/argparse/__init__.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/compat/argparse/argparse.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/compat/ordereddict.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/config.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/configs/__init__.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/configs/disable.conf
+file path=usr/lib/python3.11/vendor-packages/suricata/update/configs/drop.conf
+file path=usr/lib/python3.11/vendor-packages/suricata/update/configs/enable.conf
+file path=usr/lib/python3.11/vendor-packages/suricata/update/configs/modify.conf
+file path=usr/lib/python3.11/vendor-packages/suricata/update/configs/threshold.in
+file path=usr/lib/python3.11/vendor-packages/suricata/update/configs/update.yaml
+file path=usr/lib/python3.11/vendor-packages/suricata/update/data/__init__.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/data/index.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/data/update.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/engine.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/exceptions.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/extract.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/loghandler.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/main.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/maps.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/matchers.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/net.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/notes.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/osinfo.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/parsers.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/rule.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/sources.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/util.py
+file path=usr/lib/python3.11/vendor-packages/suricata/update/version.py
+file path=usr/lib/python3.11/vendor-packages/suricatasc/__init__.py
+file usr/bin/suricata path=usr/sbin/suricata
+file path=usr/share/doc/suricata/AUTHORS
+file path=usr/share/doc/suricata/Basic_Setup.txt
+file path=usr/share/doc/suricata/GITGUIDE
+file path=usr/share/doc/suricata/INSTALL
+file path=usr/share/doc/suricata/NEWS
+file path=usr/share/doc/suricata/README
+file path=usr/share/doc/suricata/Setting_up_IPSinline_for_Linux.txt
+file path=usr/share/doc/suricata/TODO
+file path=usr/share/doc/suricata/Third_Party_Installation_Guides.txt
+file path=usr/share/man/man1/suricata.1 mangler.man.stability=uncommitted
+file path=usr/share/man/man1/suricatactl-filestore.1 \
+    mangler.man.stability=uncommitted
+file path=usr/share/man/man1/suricatactl.1 mangler.man.stability=uncommitted
+file path=usr/share/man/man1/suricatasc.1 mangler.man.stability=uncommitted
+file path=usr/share/suricata/classification.config
+file path=usr/share/suricata/reference.config
+file path=usr/share/suricata/rules/app-layer-events.rules
+file path=usr/share/suricata/rules/decoder-events.rules
+file path=usr/share/suricata/rules/dhcp-events.rules
+file path=usr/share/suricata/rules/dnp3-events.rules
+file path=usr/share/suricata/rules/dns-events.rules
+file path=usr/share/suricata/rules/files.rules
+file path=usr/share/suricata/rules/ftp-events.rules
+file path=usr/share/suricata/rules/http-events.rules
+file path=usr/share/suricata/rules/http2-events.rules
+file path=usr/share/suricata/rules/ipsec-events.rules
+file path=usr/share/suricata/rules/kerberos-events.rules
+file path=usr/share/suricata/rules/modbus-events.rules
+file path=usr/share/suricata/rules/mqtt-events.rules
+file path=usr/share/suricata/rules/nfs-events.rules
+file path=usr/share/suricata/rules/ntp-events.rules
+file path=usr/share/suricata/rules/quic-events.rules
+file path=usr/share/suricata/rules/rfb-events.rules
+file path=usr/share/suricata/rules/smb-events.rules
+file path=usr/share/suricata/rules/smtp-events.rules
+file path=usr/share/suricata/rules/ssh-events.rules
+file path=usr/share/suricata/rules/stream-events.rules
+file path=usr/share/suricata/rules/tls-events.rules
+dir  path=var/lib/suricata owner=_suricata group=daemon
+dir  path=var/log/suricata owner=_suricata group=daemon mode=0700
+user username=_suricata ftpuser=false gcos-field="Suricata Daemon" \
+    group=daemon home-dir=/var/lib/suricata password=*LK* uid=64
+license suricata.license license=GPLv2

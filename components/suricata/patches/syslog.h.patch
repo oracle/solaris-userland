@@ -1,0 +1,14 @@
+Solaris syslog.h doesn't define LOG_FTP.
+
+--- a/src/util-syslog.c	2024-01-09 09:59:27.550326763 +0100
++++ b/src/util-syslog.c	2024-01-09 10:00:06.581732562 +0100
+@@ -33,7 +33,9 @@
+     { "authpriv",       LOG_AUTHPRIV },
+     { "cron",           LOG_CRON },
+     { "daemon",         LOG_DAEMON },
++#if defined(LOG_FTP)
+     { "ftp",            LOG_FTP },
++#endif
+     { "kern",           LOG_KERN },
+     { "lpr",            LOG_LPR },
+     { "mail",           LOG_MAIL },

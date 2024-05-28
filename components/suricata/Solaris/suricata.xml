@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<!--
+
+	Copyright (c) 2009, 2024, Oracle and/or its affiliates.
+
+-->
+
+<service_bundle type='manifest' name='network/suricata'>
+
+<service type='service' version='1' name='network/suricata'>
+
+	<dependency name='fs-local' grouping='require_all' restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/system/filesystem/local'/>
+	</dependency>
+
+	<dependency name='fs-autofs' grouping='optional_all' restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/system/filesystem/autofs'/>
+	</dependency>
+
+	<dependency name='network' grouping='optional_all' restart_on='error'
+		type='service'>
+		<service_fmri value='svc:/milestone/network'/>
+	</dependency>
+
+	<dependency name='net-loopback' grouping='require_all' restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/network/loopback'/>
+	</dependency>
+
+	<dependency name='net-physical' grouping='require_all' restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/network/physical'/>
+	</dependency>
+
+	<instance name='default' enabled='false'>
+		<exec_method
+			type='method' name='start'
+			exec='/usr/sbin/suricata --pcap -D'
+			timeout_seconds='-1'>
+			<method_context>
+				<method_credential
+					user='_suricata' group='daemon'
+					privileges='basic,net_rawaccess,{zone}:/system/volatile/suricata'/>
+			</method_context>
+		</exec_method>
+
+		<exec_method type='method' name='stop'
+			exec='/usr/bin/suricatasc -c shutdown' timeout_seconds='60'/>
+
+		<template>
+			<common_name>
+				<loctext xml:lang='C'>
+					Suricata daemon
+				</loctext>
+			</common_name>
+			<documentation>
+				<manpage title='suricata' section='1'
+					manpath='/usr/share/man'/>
+			</documentation>
+		</template>
+	</instance>
+
+	<instance name='update' enabled='false'>
+		<periodic_method period='86400' persistent='true'
+			exec='/usr/bin/suricata-update --reload-command="/usr/bin/suricatasc -c reload-rules-nonblocking"'
+			timeout_seconds='0'>
+			<method_context>
+				<method_credential user='_suricata' group='daemon'/>
+			</method_context>
+		</periodic_method>
+
+		<template>
+			<common_name>
+				<loctext xml:lang='C'>
+					Suricata update tool
+				</loctext>
+			</common_name>
+			<documentation>
+				<manpage title='suricata-update' section='1'
+					manpath='/usr/share/man'/>
+			</documentation>
+		</template>
+	</instance>
+
+	<stability value='Unstable'/>
+
+</service>
+
+</service_bundle>

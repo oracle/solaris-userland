@@ -1,0 +1,26 @@
+Fix alignment problems on SPARC. Based on similar fixes found at:
+
+  https://lists.debian.org/debian-sparc/2012/01/msg00012.html
+
+and:
+
+  https://www.winehq.org/pipermail/wine-patches/2011-February/098547.html
+
+This change needs to be sent upstream.
+
+--- a/src/main.c	2024-02-20 10:09:38.161133595 +0100
++++ b/src/main.c	2024-02-20 10:13:06.734861565 +0100
+@@ -19,5 +19,13 @@
+ 
+ int main(int argc, char **argv)
+ {
++/*
++ * 'ta 6' tells the kernel to synthesize any unaligned accesses this process
++ * makes, instead of just signalling an error and terminating the process.
++ */
++#ifdef __sparc
++    __asm("ta 6");
++#endif
++
+     return SuricataMain(argc, argv);
+ }
