@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -35,17 +35,17 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 # Customized pam.d/ftp configuration below is a copy of pam.d/other
 # configuration with pam_dhkeys module removed from the stack.
-file ftp.pam path=etc/pam.d/ftp
+file ftp.pam path=etc/pam.d/ftp mode=0644 overlay=allow preserve=true
 #
 # config. file
 file proftpd.conf path=etc/proftpd.conf mode=0644 overlay=allow preserve=true
 #
 # SMF(5)
 file auth_service-network-ftpd \
-    path=etc/security/auth_attr.d/service-network-ftpd
-file exec_attr-network-ftpd path=etc/security/exec_attr.d/service-network-ftpd
+    path=etc/security/auth_attr.d/service:network:ftpd
+file exec_attr-network-ftpd path=etc/security/exec_attr.d/service:network:ftpd
 file prof_service-network-ftpd \
-    path=etc/security/prof_attr.d/service-network-ftpd
+    path=etc/security/prof_attr.d/service:network:ftpd
 file ftp.xml path=lib/svc/manifest/network/ftp.xml
 #
 # executables
