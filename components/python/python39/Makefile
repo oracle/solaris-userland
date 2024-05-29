@@ -53,7 +53,12 @@ PKGSEND_PUBLISH_OPTIONS += -T \*Grammar\*.txt
 PKGSEND_PUBLISH_OPTIONS += -T \*Grammar\*.pickle
 
 # We patch auto* files, so regenerate headers and configure
-COMPONENT_PREP_ACTION = (cd $(@D) ; autoheader ; autoconf -f)
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoheader ; autoconf -f);
+
+# Replace the vendored pip wheel with a newer one
+COMPONENT_PREP_ACTION += \
+    ($(RM) -f $(SOURCE_DIR)/Lib/ensurepip/_bundled/pip*\.whl; \
+     $(CP) files/pip-24.0-py3-none-any.whl $(SOURCE_DIR)/Lib/ensurepip/_bundled/ );
 
 # we don't want to leak $(CC_BITS) into BASECFLAGS as it causes problems with
 # python-config
