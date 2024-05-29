@@ -1,0 +1,48 @@
+We do not have hatchling on Solaris, and it doesn't seem necessary
+to deliver it at this point. This patch modifies the build metadata
+to use setuptools instead.
+
+Not intended for upstream.
+
+--- virtualenv-20.26.2/pyproject.toml
++++ virtualenv-20.26.2/pyproject.toml
+@@ -1,9 +1,6 @@
+ [build-system]
+-build-backend = "hatchling.build"
+-requires = [
+-  "hatch-vcs>=0.3",
+-  "hatchling>=1.17.1",
+-]
++build-backend = "setuptools.build_meta"
++requires = ["setuptools"]
+ 
+ [project]
+ name = "virtualenv"
+@@ -14,7 +11,7 @@ keywords = [
+   "isolated",
+   "virtual",
+ ]
+-license = "MIT"
++license = {text = "MIT"}
+ maintainers = [
+   { name = "Bernat Gabor", email = "gaborjbernat@gmail.com" },
+ ]
+@@ -94,6 +91,18 @@ entry-points."virtualenv.discovery".buil
+ entry-points."virtualenv.seed".app-data = "virtualenv.seed.embed.via_app_data.via_app_data:FromAppData"
+ entry-points."virtualenv.seed".pip = "virtualenv.seed.embed.pip_invoke:PipInvoke"
+ 
++[tool.setuptools.dynamic]
++version = {attr = "virtualenv.version.__version__"}
++
++[tool.setuptools.package-data]
++"virtualenv.activation.bash" = ["*.sh"]
++"virtualenv.activation.batch" = ["*.bat"]
++"virtualenv.activation.cshell" = ["*.csh"]
++"virtualenv.activation.fish" = ["*.fish"]
++"virtualenv.activation.nushell" = ["*.nu"]
++"virtualenv.activation.powershell" = ["*.ps1"]
++"virtualenv.seed.wheels.embed" = ["*.whl"]
++
+ [tool.hatch]
+ build.hooks.vcs.version-file = "src/virtualenv/version.py"
+ build.targets.sdist.include = [

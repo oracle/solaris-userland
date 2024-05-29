@@ -29,19 +29,19 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		virtualenv
-COMPONENT_VERSION=	20.16.5
+COMPONENT_VERSION=	20.26.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:554609a339c7d15b21dceb191938c57d06d17067224c7e891a1ff13dfba312cc
+    sha256:82bf0f4eebbb78d36ddaee0283d43fe5736b53880b8a8cdcd37390a07ac3741c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pypa/virtualenv
 COMPONENT_BUGDB=	python-mod/virtualenv
 COMPONENT_ANITYA_ID=	6904
-COMPONENT_BAID=		129917
+COMPONENT_BAID=		167476
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # Tests require a network access.
@@ -66,16 +66,19 @@ COMPONENT_POST_INSTALL_ACTION +=	\
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
-build:		$(BUILD_NO_ARCH)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_NO_ARCH)
+install:	$(INSTALL_64)
 
+# While the component itself is pure Python,
+# some tests cases need a compiler.
 test:		$(TEST_64)
 
 system-test:	$(SYSTEM_TEST_64)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/distlib-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/filelock-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/platformdirs-%)
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/mock

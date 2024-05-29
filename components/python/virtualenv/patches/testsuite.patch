@@ -1,43 +1,46 @@
 Several test related components are not available on Solaris; those
 include flaky, pytest-mock and pytest-freezegun.
 
+The pytest-django plugin is causing several tests to fail due
+to changes in the working directory, so it is disabled.
+
 Not intended for upstream.
 
---- virtualenv-20.16.5/setup.cfg
-+++ virtualenv-20.16.5/setup.cfg
-@@ -110,7 +110,7 @@ formats = gztar
- markers = 
- 	slow
- junit_family = xunit2
--addopts = --tb=auto -ra --showlocals --no-success-flaky-report
-+addopts = --tb=auto -ra --showlocals
- env = 
- 	PYTHONWARNINGS=ignore:DEPRECATION::pip._internal.cli.base_command
- 	PYTHONIOENCODING=utf-8
---- virtualenv-20.16.5/tests/integration/test_zipapp.py
-+++ virtualenv-20.16.5/tests/integration/test_zipapp.py
-@@ -4,7 +4,6 @@ import sys
+--- virtualenv-20.26.2/pyproject.toml
++++ virtualenv-20.26.2/pyproject.toml
+@@ -165,7 +165,7 @@ count = true
+   "slow",
+ ]
+ timeout = 600
+-addopts = "--showlocals --no-success-flaky-report"
++addopts = "--showlocals -p no:django"
+ env = [
+   "PYTHONIOENCODING=utf-8",
+ ]
+--- virtualenv-20.26.2/tests/integration/test_zipapp.py
++++ virtualenv-20.26.2/tests/integration/test_zipapp.py
+@@ -6,7 +6,6 @@ from contextlib import suppress
  from pathlib import Path
  
  import pytest
 -from flaky import flaky
  
  from virtualenv.discovery.py_info import PythonInfo
- from virtualenv.run import cli_run
-@@ -82,7 +81,6 @@ def call_zipapp(zipapp, tmp_path, zipapp
-     return _run
+ from virtualenv.info import fs_supports_symlink
+@@ -102,7 +101,6 @@ def test_zipapp_in_symlink(capsys, call_
+     assert not err
  
  
 -@flaky(max_runs=2, min_passes=1)
  def test_zipapp_help(call_zipapp, capsys):
      call_zipapp("-h")
-     out, err = capsys.readouterr()
---- virtualenv-20.16.5/tests/conftest.py
-+++ virtualenv-20.16.5/tests/conftest.py
-@@ -379,3 +379,11 @@ def _skip_if_test_in_system(session_app_
-     current = PythonInfo.current(session_app_data)
-     if current.system_executable is not None:
-         pytest.skip("test not valid if run under system")
+     _out, err = capsys.readouterr()
+--- virtualenv-20.26.2/tests/conftest.py
++++ virtualenv-20.26.2/tests/conftest.py
+@@ -362,3 +362,11 @@ else:
+     @pytest.fixture()
+     def time_freeze(time_machine):
+         return lambda s: time_machine.move_to(s, tick=False)
 +
 +@pytest.fixture()
 +def freezer(*args, **kwargs):
@@ -46,9 +49,9 @@ Not intended for upstream.
 +@pytest.fixture()
 +def mocker(*args, **kwargs):
 +    pytest.skip("pytest-mock is not available on Solaris")
---- virtualenv-20.16.5/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
-+++ virtualenv-20.16.5/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
-@@ -210,6 +210,7 @@ def test_base_bootstrap_link_via_app_dat
+--- virtualenv-20.26.2/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
++++ virtualenv-20.26.2/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
+@@ -215,6 +215,7 @@ def test_base_bootstrap_link_via_app_dat
          assert (result.creator.purelib / key).exists()
  
  
