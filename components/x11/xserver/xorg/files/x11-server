@@ -1,6 +1,6 @@
-#!/bin/ksh93
+#!/usr/bin/sh
 #
-# Copyright (c) 2004, 2011, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2004, 2024, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -81,5 +81,6 @@ Xserver_ready() {
 }
 
 trap Xserver_ready USR1
-(trap '' USR1 ; exec /usr/bin/Xserver $CLASSES :$DISPLAY $* &)
-
+(trap '' USR1 ; exec /usr/bin/Xserver $CLASSES :$DISPLAY $*) &
+# Wait for SIGUSR1
+wait
