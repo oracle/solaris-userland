@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -33,6 +33,7 @@ set name=pkg.description \
 # pkgdepend needs help to follow the runtime generated symlinks to libGL
 set name=pkg.depend.runpath \
     value=$PKGDEPEND_RUNPATH:usr/lib/mesa:usr/lib/mesa/$(MACH64)
+set name=pkg.legacy value=true
 set name=pkg.linted.userland.action001.PIE value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=$(COMPONENT_NAME)
@@ -40,7 +41,7 @@ set name=info.classification \
     value="org.opensolaris.category.2008:Desktop (GNOME)/Libraries"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2016/413
+set name=org.opensolaris.arc-caseid value=PSARC/2016/413 value=PSARC/2024/071
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file usr/bin/$(MACH64)/WebKitWebDriver path=usr/bin/WebKitWebDriver
 file path=usr/include/webkitgtk-4.0/JavaScriptCore/JSBase.h
@@ -277,6 +278,11 @@ file path=usr/lib/$(MACH64)/pkgconfig/javascriptcoregtk-4.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/webkit2gtk-4.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/webkit2gtk-web-extension-4.0.pc
 file path=usr/lib/$(MACH64)/webkit2gtk-4.0/injected-bundle/libwebkit2gtkinjectedbundle.so
+file release-notes/library-desktop-webkitgtk4.txt \
+    path=usr/share/doc/release-notes/library-desktop-webkitgtk4.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/gir-1.0/JavaScriptCore-4.0.gir
 file path=usr/share/gir-1.0/WebKit2-4.0.gir
 file path=usr/share/gir-1.0/WebKit2WebExtension-4.0.gir
