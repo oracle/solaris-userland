@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,43 +28,41 @@ COMPILER=               gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libdrm
-COMPONENT_VERSION=	2.4.100
+COMPONENT_VERSION=	2.4.120
 COMPONENT_PROJECT_URL=  https://dri.freedesktop.org/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c77cc828186c9ceec3e56ae202b43ee99eb932b4a87255038a80e8a1060d0a5d
+	sha256:3bf55363f76c7250946441ab51d3a6cc0ae518055c0ff017324ab76cdefb327a
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)libdrm/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+#COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1596
-COMPONENT_BAID=		76453
+COMPONENT_BAID=		167437	
 
-TEST_TARGET = $(NO_TESTS)
+BUILD_STYLE=		meson
 
 CONFIGURE_LIBDIR.32 = $(USRLIBDIR)/xorg
 CONFIGURE_LIBDIR.64 = $(USRLIBDIR)/xorg/$(MACH64)
 
-FIX_PC_FILES=libdrm.pc.in libkms/libkms.pc.in
+FIX_PC_FILES=libdrm.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-# GNU Build System files have to be regenerated for automake 1.16.
-# It can be removed when the upstream starts to use a newer automake version.
-COMPONENT_PREP_ACTION = (cd $(@D); autoreconf -fiv)
+CFLAGS += -D_GNU_SOURCE -std=gnu99
 
-CONFIGURE_OPTIONS += --enable-libkms
-CONFIGURE_OPTIONS += --disable-amdgpu
-CONFIGURE_OPTIONS += --disable-intel
-CONFIGURE_OPTIONS += --disable-nouveau
-CONFIGURE_OPTIONS += --disable-radeon
-CONFIGURE_OPTIONS += --disable-udev
+CONFIGURE_OPTIONS += -Dintel=disabled
+CONFIGURE_OPTIONS += -Dradeon=disabled
+CONFIGURE_OPTIONS += -Dnouveau=disabled
+CONFIGURE_OPTIONS += -Damdgpu=disabled
 
-# Makefile.am files of this component are not compatible with Solaris make.
-# Use GNU make to avoid the configuration error when makefile fragments are processed.
-CONFIGURE_OPTIONS += MAKE=$(GMAKE)
-
-COMPONENT_INSTALL_ARGS.32 += pkgconfigdir="$(DESTDIR)/usr/lib/pkgconfig"
-COMPONENT_INSTALL_ARGS.64 += pkgconfigdir="$(DESTDIR)/usr/lib/$(MACH64)/pkgconfig"
+# for the tests
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Ok:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Timeout:/p" '
 
 REQUIRED_PACKAGES += diagnostic/scanpci
 REQUIRED_PACKAGES += library/desktop/cairo

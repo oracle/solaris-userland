@@ -9,7 +9,7 @@
 # copyright notice(s) and this permission notice appear in all copies of
 # the Software and that both the above copyright notice(s) and this
 # permission notice appear in supporting documentation.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 # OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
@@ -19,7 +19,7 @@
 # FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-# 
+#
 # Except as contained in this notice, the name of a copyright holder
 # shall not be used in advertising or otherwise to promote the sale, use
 # or other dealings in this Software without prior written authorization
@@ -29,11 +29,9 @@
 Changes from:
 23216116 i915/drm should use header files from libdrm, not have copies
 
-diff --git a/include/drm/drm.h b/include/drm/drm.h
-index 438abde..360cf2c 100644
---- a/include/drm/drm.h
-+++ b/include/drm/drm.h
-@@ -42,7 +42,7 @@
+--- a/include/drm/drm.h	2024-05-22 23:01:06.088472115 +0000
++++ b/include/drm/drm.h	2024-05-22 23:11:45.814488848 +0000
+@@ -41,7 +41,7 @@
  #include <asm/ioctl.h>
  typedef unsigned int drm_handle_t;
  
@@ -42,7 +40,7 @@ index 438abde..360cf2c 100644
  
  #include <stdint.h>
  #include <sys/ioccom.h>
-@@ -56,9 +56,39 @@ typedef uint32_t __u32;
+@@ -55,10 +55,40 @@
  typedef int64_t  __s64;
  typedef uint64_t __u64;
  typedef size_t   __kernel_size_t;
@@ -57,7 +55,7 @@ index 438abde..360cf2c 100644
  
 -#endif
 +#endif /* __linux__ */
-+
+ 
 +/* Solaris-specific. */
 +#if defined(__SOLARIS__) || defined(__sun)
 +
@@ -80,10 +78,11 @@ index 438abde..360cf2c 100644
 +#define _IOC_TYPE(req) ((req >> _IOC_TYPESHIFT) & ((1 << _IOC_TYPEBITS) -1))
 +
 +#endif /* __Solaris__ or __sun */
- 
++
  #if defined(__cplusplus)
  extern "C" {
-@@ -215,11 +245,11 @@ struct drm_ctx_priv_map {
+ #endif
+@@ -214,11 +244,11 @@
   * \sa drmAddMap().
   */
  struct drm_map {
@@ -93,11 +92,11 @@ index 438abde..360cf2c 100644
  	enum drm_map_type type;	 /**< Type of memory to map */
  	enum drm_map_flags flags;	 /**< Flags */
 -	void *handle;		 /**< User-space: "Handle" to pass to mmap() */
-+	unsigned long long handle;		 /**< User-space: "Handle" to pass to mmap() */
++	unsigned long long *handle;		 /**< User-space: "Handle" to pass to mmap() */
  				 /**< Kernel-space: kernel-virtual address */
  	int mtrr;		 /**< MTRR slot used */
  	/*   Private data */
-@@ -327,18 +357,22 @@ enum drm_dma_flags {
+@@ -326,18 +356,21 @@
   *
   * \sa drmAddBufs().
   */
@@ -109,7 +108,6 @@ index 438abde..360cf2c 100644
 +       _DRM_FB_BUFFER  = 0x08, /**< Buffer is in frame buffer */
 +       _DRM_PCI_BUFFER_RO = 0x10 /**< Map PCI DMA buffer read-only */
 +} drm_buf_flag;
-+
 +
  struct drm_buf_desc {
  	int count;		 /**< Number of buffers of this size */
@@ -127,29 +125,29 @@ index 438abde..360cf2c 100644
  	unsigned long agp_start; /**<
  				  * Start address of where the AGP buffers are
  				  * in the AGP aperture
-@@ -384,6 +418,7 @@ struct drm_buf_map {
+@@ -383,6 +416,7 @@
  	void *virtual;		/**< Mmap'd area in user-virtual */
  #endif
  	struct drm_buf_pub *list;	/**< Buffer information */
 +	int fd;
  };
  
- /**
-@@ -495,8 +530,13 @@ struct drm_wait_vblank_request {
+ /*
+@@ -494,8 +528,13 @@
  struct drm_wait_vblank_reply {
  	enum drm_vblank_seq_type type;
  	unsigned int sequence;
 +#if defined(__sun)
-+       time_t tval_sec;
-+       suseconds_t tval_usec;
++        time_t tval_sec;
++        suseconds_t tval_usec;
 +#else
  	long tval_sec;
  	long tval_usec;
 +#endif
  };
  
- /**
-@@ -813,10 +853,10 @@ extern "C" {
+ /*
+@@ -1029,10 +1068,10 @@
  #endif
  
  #define DRM_IOCTL_BASE			'd'
@@ -164,13 +162,13 @@ index 438abde..360cf2c 100644
  
  #define DRM_IOCTL_VERSION		DRM_IOWR(0x00, struct drm_version)
  #define DRM_IOCTL_GET_UNIQUE		DRM_IOWR(0x01, struct drm_unique)
-@@ -976,8 +1016,13 @@ struct drm_event {
+@@ -1342,8 +1381,13 @@
  struct drm_event_vblank {
  	struct drm_event base;
  	__u64 user_data;
 +#if defined(__sun)
-+       time_t tv_sec;
-+       suseconds_t tv_usec;
++        time_t tv_sec;
++        suseconds_t tv_usec;
 +#else
  	__u32 tv_sec;
  	__u32 tv_usec;
@@ -178,16 +176,3 @@ index 438abde..360cf2c 100644
  	__u32 sequence;
  	__u32 crtc_id; /* 0 on older kernels that do not support this */
  };
-diff --git a/include/drm/drm_fourcc.h b/include/drm/drm_fourcc.h
-index 5c69090..0fad35a 100644
---- a/include/drm/drm_fourcc.h
-+++ b/include/drm/drm_fourcc.h
-@@ -69,7 +69,7 @@ extern "C" {
- #define fourcc_code(a, b, c, d) ((__u32)(a) | ((__u32)(b) << 8) | \
- 				 ((__u32)(c) << 16) | ((__u32)(d) << 24))
- 
--#define DRM_FORMAT_BIG_ENDIAN (1<<31) /* format is big endian instead of little endian */
-+#define DRM_FORMAT_BIG_ENDIAN (1UL<<31) /* format is big endian instead of little endian */
- 
- /* Reserve 0 for the invalid format specifier */
- #define DRM_FORMAT_INVALID	0

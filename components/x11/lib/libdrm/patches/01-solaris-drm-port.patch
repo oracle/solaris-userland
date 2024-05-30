@@ -1,22 +1,9 @@
+
 Existing set of patches from the X gate
 
-diff --git a/libkms/linux.c b/libkms/linux.c
-index 5620505..e05df70 100644
---- a/libkms/linux.c
-+++ b/libkms/linux.c
-@@ -36,6 +36,7 @@
- #include <string.h>
- #include <unistd.h>
- #include <sys/stat.h>
-+#include <sys/sysmacros.h>
- #include <sys/types.h>
- #ifdef MAJOR_IN_MKDEV
- #include <sys/mkdev.h>
-diff --git a/xf86drm.h b/xf86drm.h
-index 3f52cd8..2cc2df2 100644
---- a/xf86drm.h
-+++ b/xf86drm.h
-@@ -484,6 +484,18 @@ do {	register unsigned int __old __asm("o0");		\
+--- a/xf86drm.h	2024-05-22 22:57:23.409391452 +0000
++++ b/xf86drm.h	2024-05-22 22:58:21.403029004 +0000
+@@ -507,6 +507,18 @@
  #endif /* architecture */
  #endif /* __GNUC__ >= 2 */
  
@@ -35,26 +22,22 @@ index 3f52cd8..2cc2df2 100644
  #ifndef DRM_CAS
  #define DRM_CAS(lock,old,new,ret) do { ret=1; } while (0) /* FAST LOCK FAILS */
  #endif
-diff --git a/xf86drmMode.c b/xf86drmMode.c
-index 207d7be..a9b8b8a 100644
---- a/xf86drmMode.c
-+++ b/xf86drmMode.c
-@@ -852,7 +852,9 @@ drm_public int drmCheckModesettingSupported(const char *busid)
+--- a/xf86drmMode.c	2024-05-22 22:58:37.595928931 +0000
++++ b/xf86drmMode.c	2024-05-22 22:59:36.986482716 +0000
+@@ -994,7 +994,9 @@
  	drmClose(fd);
  	return 0;
  #endif
 -	return -ENOSYS;
 +
 +/* for now return 0 on solaris */
-+       return 0;
++        return 0;
  }
  
  drm_public int drmModeCrtcGetGamma(int fd, uint32_t crtc_id, uint32_t size,
-diff --git a/xf86drm.c b/xf86drm.c
-index b7d5865..b29d055 100644
---- a/xf86drm.c
-+++ b/xf86drm.c
-@@ -1104,7 +1104,7 @@ drm_public int drmRmMap(int fd, drm_handle_t handle)
+--- a/xf86drm.c	2024-05-29 09:07:06.993471290 -0700
++++ b/xf86drm.c	2024-05-29 09:07:39.327646797 -0700
+@@ -1641,7 +1641,7 @@
      drm_map_t map;
  
      memclear(map);
