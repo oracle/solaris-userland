@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 # Replace variables used through the p5m file. We need to do it now so that the
@@ -48,6 +48,10 @@
 # Set hash for the duplicated action for 32bit libraries
 <transform file path=X(usr/etc/.*/)([^/]+).xml$ -> set action.hash %<1>%<2>.xml>
 <transform file path=X(usr/etc/.*/)([^/]+).xml$ -> set path usr/lib/ImageMagick-$!(COMPONENT_VERSION)/config-Q16/%<2>.xml>
+
+# Move man pages from usr/man to usr/share/man
+<transform file path=usr/man/(.*) -> set action.hash %(path)>
+<transform file path=usr/man/(.*) -> edit path usr/man usr/share/man>
 
 # Fix $!(...). It needs to be called twice because there are two such strings
 # in single action
