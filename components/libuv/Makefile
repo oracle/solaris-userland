@@ -24,7 +24,7 @@
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS=		64
-COMPILER=		gnu
+COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
 
 # Component information, used for download and packaging.
