@@ -26,6 +26,8 @@ USAGE="Usage: $0 [-d <display>] [-c <class>] <method> [-- <X server arguments>]"
 
 PATH=/usr/bin:/usr/sbin
 
+. /lib/svc/share/smf_exit_codes.sh
+
 #########
 #
 # Default values
@@ -84,3 +86,6 @@ trap Xserver_ready USR1
 (trap '' USR1 ; exec /usr/bin/Xserver $CLASSES :$DISPLAY $*) &
 # Wait for SIGUSR1
 wait
+
+# No SIGUSR1 was received; the X server exited without finishing startup.
+exit $SMF_EXIT_ERR_CONFIG
