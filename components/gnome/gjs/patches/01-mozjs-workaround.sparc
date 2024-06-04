@@ -1,0 +1,23 @@
+Internal bug references:
+ - 24935318 - running gjs-console on sparc results in a coredump 
+ - 36078952 - /usr/lib/ld could use a RESERVE_SEGMENT example 
+
+Use RESERVE_SEGMENT on SPARC to limit stack below 47bits of address space.
+
+https://bugzilla.mozilla.org/show_bug.cgi?id=577056
+Bug 577056 fatval: Memory layout for 64-bit Solaris is different than other 64-bit systems.
+
+--- a/meson.build	2024-05-20 14:23:14.998177773 -0700
++++ b/meson.build	2024-05-20 14:24:16.397247855 -0700
+@@ -594,8 +594,10 @@
+ 
+ gjs_console_srcs = ['gjs/console.cpp']
+ 
++mapfile = 'map.vas47'
++map_flag = '-Wl,-M,@0@/@1@'.format(meson.current_source_dir(), mapfile)
+ gjs_console = executable('gjs-console', gjs_console_srcs,
+-    dependencies: libgjs_dep, install: true)
++    dependencies: libgjs_dep, link_args: map_flag, link_depends: mapfile, install: true)
+ 
+ meson.add_install_script('build/symlink-gjs.py', get_option('bindir'))
+ 

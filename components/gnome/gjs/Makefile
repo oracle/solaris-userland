@@ -40,6 +40,13 @@ COMPONENT_ANITYA_ID=	9532
 COMPONENT_BAID=		156453
 BUILD_STYLE=		meson
 
+# Workaround the mozjs issue described in 24935318
+ifeq ($(MACH), sparc)
+ADDITIONAL_PATCHES += patches/01-mozjs-workaround.sparc
+COMPONENT_POST_UNPACK_ACTION += $(CP) /usr/lib/ld/map.vas47 $(SOURCE_DIR) ;
+LD_EXEC_OPTIONS.64 += -M /usr/lib/ld/map.vas47
+endif
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # g-ir-scanner
@@ -52,13 +59,6 @@ CONFIGURE_OPTIONS += -Dcairo=enabled
 CONFIGURE_OPTIONS += -Dprofiler=disabled
 # we don't need to distribute gjs tests
 CONFIGURE_OPTIONS += -Dinstalled_tests=false
-
-# Workaround the mozjs issue described in 24935318
-ifeq ($(MACH), sparc)
-LD_EXEC_OPTIONS.64 += -M $(WS_COMPONENTS)/desktop/polkit/mapfile
-COMPONENT_BUILD_ENV.64 += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS.64)"
-COMPONENT_INSTALL_ENV.64 += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS.64)"
-endif
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
