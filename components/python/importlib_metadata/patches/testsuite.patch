@@ -1,75 +1,24 @@
-importlib_resources are not available on Solaris. 
+pyfakefs is not available on Solaris; tests using it are skipped.
 
-Pkg is a package on Solaris making the test fail...
+Pkg is a package on Solaris, making the test fail.
 
-Importlib must be fixed a little bit (this was reported)...
+jaraco.test is not available on Solaris, hence the reimplementation
+of similar functionality.
 
---- importlib_metadata-4.13.0/tests/fixtures.py
-+++ importlib_metadata-4.13.0/tests/fixtures.py
-@@ -11,13 +11,7 @@ import contextlib
- from .py39compat import FS_NONASCII
- from typing import Dict, Union
+Not intended for upstream.
+
+--- importlib_metadata-7.1.0/tests/test_main.py
++++ importlib_metadata-7.1.0/tests/test_main.py
+@@ -7,8 +7,6 @@ import importlib_metadata
+ import contextlib
+ from .compat.py39 import os_helper
  
--try:
--    from importlib import resources  # type: ignore
--
--    getattr(resources, 'files')
--    getattr(resources, 'as_file')
--except (ImportError, AttributeError):
--    import importlib_resources as resources  # type: ignore
-+import pathlib
- 
- 
- @contextlib.contextmanager
-@@ -285,8 +279,8 @@ class ZipFixtures:
-     root = 'tests.data'
- 
-     def _fixture_on_path(self, filename):
--        pkg_file = resources.files(self.root).joinpath(filename)
--        file = self.resources.enter_context(resources.as_file(pkg_file))
-+        pkg_file = pathlib.Path(__file__).parent.resolve() / "data" / filename
-+        file = self.resources.enter_context(pkg_file)
-         assert file.name.startswith('example'), file.name
-         sys.path.insert(0, str(file))
-         self.resources.callback(sys.path.pop, 0)
---- importlib_metadata-4.13.0/tests/test_api.py
-+++ importlib_metadata-4.13.0/tests/test_api.py
-@@ -56,7 +56,7 @@ class APITests(
-                 assert distribution(name).metadata['Name'] == 'pkg.dot'
- 
-     def test_prefix_not_matched(self):
--        prefixes = 'p', 'pkg', 'pkg.'
-+        prefixes = 'p', 'pkg.'
-         for prefix in prefixes:
-             with self.subTest(prefix):
-                 with self.assertRaises(PackageNotFoundError):
---- importlib_metadata-4.13.0/conftest.py
-+++ importlib_metadata-4.13.0/conftest.py
-@@ -18,8 +18,11 @@ def remove_importlib_metadata():
-     undoing the changes made by pytest's import of
-     importlib_metadata (if any).
-     """
--    if sys.meta_path[-1].__class__.__name__ == 'MetadataPathFinder':
--        del sys.meta_path[-1]
-+    sys.meta_path = [
-+        item
-+        for item in sys.meta_path
-+        if item.__class__.__name__ != 'MetadataPathFinder'
-+    ]
-     for mod in list(sys.modules):
-         if mod.startswith('importlib_metadata'):
-             del sys.modules[mod]
---- importlib_metadata-4.13.0/tests/test_main.py
-+++ importlib_metadata-4.13.0/tests/test_main.py
-@@ -5,7 +5,6 @@ import unittest
- import warnings
- import importlib
- import importlib_metadata
 -import pyfakefs.fake_filesystem_unittest as ffs
- 
+-
  from . import fixtures
- from importlib_metadata import (
-@@ -212,7 +211,8 @@ class MissingSysPath(fixtures.OnSysPath,
+ from ._context import suppress
+ from ._path import Symlink
+@@ -249,7 +247,8 @@ class MissingSysPath(fixtures.OnSysPath,
          importlib_metadata.distributions()
  
  
@@ -79,3 +28,46 @@ Importlib must be fixed a little bit (this was reported)...
      site_dir = '/access-denied'
  
      def setUp(self):
+--- importlib_metadata-7.1.0/tests/test_api.py
++++ importlib_metadata-7.1.0/tests/test_api.py
+@@ -58,7 +58,7 @@ class APITests(
+                 assert distribution(name).metadata['Name'] == 'pkg.dot'
+ 
+     def test_prefix_not_matched(self):
+-        prefixes = 'p', 'pkg', 'pkg.'
++        prefixes = 'p', 'pkg.'
+         for prefix in prefixes:
+             with self.subTest(prefix):
+                 with self.assertRaises(PackageNotFoundError):
+--- importlib_metadata-7.1.0/tests/compat/py39.py
++++ importlib_metadata-7.1.0/tests/compat/py39.py
+@@ -1,9 +1,22 @@
+-from jaraco.test.cpython import from_test_support, try_import
++import test.support
++import types
+ 
++try:
++    from test.support import os_helper
++except ImportError:
++    os_helper = types.SimpleNamespace(
++        **{
++            "FS_NONASCII": test.support.FS_NONASCII,
++            "skip_unless_symlink": test.support.skip_unless_symlink,
++        }
++    )
+ 
+-os_helper = try_import('os_helper') or from_test_support(
+-    'FS_NONASCII', 'skip_unless_symlink'
+-)
+-import_helper = try_import('import_helper') or from_test_support(
+-    'modules_setup', 'modules_cleanup'
+-)
++try:
++    from test.support import import_helper
++except ImportError:
++    import_helper = types.SimpleNamespace(
++        **{
++            "modules_setup": test.support.modules_setup,
++            "modules_cleanup": test.support.modules_cleanup,
++        }
++    )

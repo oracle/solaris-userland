@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		distlib
-COMPONENT_VERSION=	0.3.6
+COMPONENT_VERSION=	0.3.8
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3db67514593ade94ac548e3513e04124ab8623bdce98611e5bc607188ebb1e1a
+    sha256:1530ea13e350031b6312d8580ddb6b27a104275a31106523b8f123787f494f64
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pypa/distlib
 COMPONENT_BUGDB=	python-mod/distlib
 COMPONENT_ANITYA_ID=	34504
-COMPONENT_BAID=		129916
+COMPONENT_BAID=		167648
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

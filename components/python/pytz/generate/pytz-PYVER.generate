@@ -20,13 +20,10 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
 
 # drop files we are not shipping
 <transform file path=.*/pytz/zoneinfo/.* -> drop>
-
-# add pkg.depend bypass to suppress incorrect cStringIO dependency detection for Python 3.x
-<transform file path=.*/pytz/tzfile.py$ -> set pkg.depend.bypass-generate .*cStringIO.*>

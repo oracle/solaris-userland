@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -48,17 +48,10 @@ file path=usr/lib/python$(PYVER)/vendor-packages/pytz/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pytz/exceptions.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pytz/lazy.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pytz/reference.py
-# Python 3 has a newer library to replace cStringIO.  The code is written
-# properly, but pkgdepend is not (yet) smart enough to grok the difference.
-file path=usr/lib/python$(PYVER)/vendor-packages/pytz/tzfile.py \
-    pkg.depend.bypass-generate=.*cStringIO.*
+file path=usr/lib/python$(PYVER)/vendor-packages/pytz/tzfile.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pytz/tzinfo.py
 #
 license LICENSE.txt license=MIT
-
-# force the rename with an optional dependency on the old name
-depend type=optional \
-    fmri=library/python-2/pytz-$(PYV)@2013.4,5.12-5.12.0.0.0.41.0
 
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
