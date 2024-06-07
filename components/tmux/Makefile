@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Use GCC until Studio supports large enums (23058232)
@@ -28,23 +28,19 @@ COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tmux
-COMPONENT_VERSION=	3.3a
-IPS_COMPONENT_VERSION=	3.3.1
+COMPONENT_VERSION=	3.4
+# tmux use letters instead of the patch-level
+#IPS_COMPONENT_VERSION=	3.4
+COMPONENT_BAID=		168231
+COMPONENT_ARCHIVE_HASH=	sha256:551ab8dea0bf505c0ad6b7bb35ef567cdde0ccb84357df142c254f35a23e19aa
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://tmux.github.io/
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:e4fd347843bd0772c4f48d6dde625b0b109b7a380ff15db21e97c11a4dcdf93f
 COMPONENT_ANITYA_ID=	4980
 
 COMPONENT_ARCHIVE_URL=	https://github.com/tmux/tmux/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 
-COMPONENT_BAID=		133820
-
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
-
-# Some patches need configure script recreation
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 CONFIGURE_ENV += LIBNCURSES_CFLAGS=-I$(USRINCDIR)/ncurses
 CONFIGURE_ENV += LIBNCURSES_LIBS="-L$(USRLIBDIR64) -lncurses"
@@ -53,5 +49,4 @@ CONFIGURE_OPTIONS += --with-TERM=screen
 
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/ncurses
-REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math
