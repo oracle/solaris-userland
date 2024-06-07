@@ -26,17 +26,17 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libarchive
-COMPONENT_VERSION=	3.6.1
+COMPONENT_VERSION=	3.7.4
 COMPONENT_PROJECT_URL=	http://www.libarchive.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c676146577d989189940f1959d9e3980d28513d74eedfbc6b7f15ea45fe54ee2
+    sha256:7875d49596286055b52439ed42f044bd8ad426aa4cc5aabd96bfe7abb971d5e8
 COMPONENT_ARCHIVE_URL= \
     https://github.com/libarchive/libarchive/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libarchive
 COMPONENT_ANITYA_ID=	1558
 
 
-COMPONENT_BAID=		122943
+COMPONENT_BAID=		168168
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
@@ -60,10 +60,11 @@ CFLAGS += -I/usr/openssl/3/include
 CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)"
 CONFIGURE_OPTIONS.64 += LDFLAGS="$(LDFLAGS) -L/usr/openssl/3/lib/$(BITS)"
 CONFIGURE_OPTIONS.32 += LDFLAGS="$(LDFLAGS) -L/usr/openssl/3/lib/"
-# Commands bsdtar, bsdcpio, and bsdcat are not delivered.
+# Commands bsdtar, bsdcpio, bsdcat and bsdunzip are not delivered.
 CONFIGURE_OPTIONS += --disable-bsdtar
 CONFIGURE_OPTIONS += --disable-bsdcpio
 CONFIGURE_OPTIONS += --disable-bsdcat
+CONFIGURE_OPTIONS += --disable-bsdunzip
 
 COMPONENT_BUILD_ARGS +=	CFLAGS="$(CFLAGS)"
 COMPONENT_TEST_ARGS +=	CFLAGS="$(CFLAGS)"

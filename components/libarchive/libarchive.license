@@ -1,3 +1,6 @@
+## Files:
+COPYING
+
 The libarchive distribution as a whole is Copyright by Tim Kientzle
 and is subject to the copyright notice reproduced at the bottom of
 this file.
@@ -15,7 +18,6 @@ the actual statements in the files are controlling.
 * The following source files are also subject in whole or in part to
   a 3-clause UC Regents copyright; please read the individual source
   files for details:
-   libarchive/archive_entry.c
    libarchive/archive_read_support_filter_compress.c
    libarchive/archive_write_add_filter_compress.c
    libarchive/mtree.5
@@ -41,44 +43,7 @@ do use the license below.  The varying licensing of the build scripts
 seems to be an unavoidable mess.
 
 
-Copyright (c) 2011-2012 libarchive Project
-Copyright (c) 2003-2018 Tim Kientzle
-Copyright (c) 2008-2014 Michihiro NAKAJIMA
-Copyright (c) 2016-2017,2019-2021 Martin Matuska
-Copyright (c) 2007-2010 Joerg Sonnenberger
-Copyright (c) 2003-2007 Kees Zeelenberg
-Copyright (c) 2006 Rudolf Marek SYSGO s.r.o.
-Copyright (c) 2008 Anselm Strauss
-Copyright (c) 2008 Miklos Vajna
-Copyright (c) 2003-2008 Tim Kientzle and Miklos Vajna
-Copyright (c) 2009-2011,2017 Sean Purcell
-Copyright (c) 2009 Andreas Henriksson <andreas@fatal.se>
-Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
-Copyright (c) 2011-2012 Andres Mejia
-Copyright (c) 2011-2014, Mike Kazantsev
-Copyright (c) 2012 Ondrej Holy
-Copyright (c) 2002 Thomas Moestl <tmm@FreeBSD.org>
-Copyright (c) 2013 Konrad Kleine
-Copyright (c) 2013 Marek Kubica
-Copyright (c) 2014 Kevin Locke
-Copyright (c) 2014 Sebastian Freundt
-Copyright (c) 2014 Trevor Drake
-Copyright (c) 2015 Graham Percival
-Copyright (c) 2015 Okhotnikov Kirill
-Copyright (c) 2016 IBM Corporation
-Copyright (c) 2016 Peter Wu
-Copyright (c) 2017 Phillip Berndt
-Copyright (c) 2018 Grzegorz Antoniak
-Copyright (c) 2018 The FreeBSD Foundation
-Copyright (c) 2007 Kai Wang
-Copyright (c) 2008 Jaakko Heinonen
-Copyright (c) 2019 Mike Frysinger
-Copyright (c) 2021 Jia Cheong Tan
-Copyright (c) 2021 Ryan Libby
-Copyright (c) 2003-2021 Wei-Cheng Pan
-Copyright (c) 2021 Red Hat, Inc.
-Copyright (c) 2021 Samanta Navarro
-
+Copyright (c) 2003-2018 <author(s)>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -103,161 +68,1278 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-% libarchive/archive_write_add_filter_compress.c
-% libarchive/archive_read_support_filter_compress.c
-/*-
- * Copyright (c) 1985, 1986, 1992, 1993
- *	The Regents of the University of California.  All rights reserved.
- *
- * This code is derived from software contributed to Berkeley by
- * Diomidis Spinellis and James A. Woods, derived from original
- * work by Spencer Thomas and Joseph Orost.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+## Files:
+libarchive/archive_write_add_filter_compress.c
+
+ Copyright (c) 1985, 1986, 1992, 1993
+	The Regents of the University of California.  All rights reserved.
+
+ This code is derived from software contributed to Berkeley by
+ Diomidis Spinellis and James A. Woods, derived from original
+ work by Spencer Thomas and Joseph Orost.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ 3. Neither the name of the University nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
 
 
-% libarchive/archive_entry.c
-/*-
- * Copyright (c) 1993
- *	The Regents of the University of California.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 4. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+## Files:
+libarchive/archive_write_set_format_gnutar.c
+
+Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+Copyright (c) 2011-2012 Michihiro NAKAJIMA
+Author: Jonas Gastal <jgastal@profusion.mobi>
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-% libarchive/archive_pack_dev.h
-% libarchive/archive_pack_dev.c
-/*-
- * Copyright (c) 1998, 2001 The NetBSD Foundation, Inc.
- * All rights reserved.
- *
- * This code is derived from software contributed to The NetBSD Foundation
- * by Charles M. Hannum.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+## Files:
+contrib/shar/shar.c
+cpio/cmdline.c
+cpio/cpio.c
+libarchive/archive_pathmatch.c
+libarchive/archive_pathmatch.h
+libarchive/archive_read_disk_posix.c
+libarchive/archive_read_disk_private.h
+libarchive/archive_read_disk_windows.c
+libarchive/archive_read_support_format_ar.c
+libarchive/archive_windows.h
+libarchive/archive_write_disk_posix.c
+libarchive/archive_write_disk_private.h
+libarchive/archive_write_disk_windows.c
+libarchive/archive_write_set_format_ar.c
+libarchive/test/test_read_format_ar.c
+libarchive/test/test_read_format_raw.c
+libarchive/test/test_read_format_warc.c
+libarchive/test/test_read_truncated_filter.c
+libarchive/test/test_write_filter_b64encode.c
+libarchive/test/test_write_filter_bzip2.c
+libarchive/test/test_write_filter_compress.c
+libarchive/test/test_write_filter_gzip.c
+libarchive/test/test_write_filter_gzip_timestamp.c
+libarchive/test/test_write_filter_lrzip.c
+libarchive/test/test_write_filter_lz4.c
+libarchive/test/test_write_filter_lzip.c
+libarchive/test/test_write_filter_lzma.c
+libarchive/test/test_write_filter_lzop.c
+libarchive/test/test_write_filter_uuencode.c
+libarchive/test/test_write_filter_xz.c
+libarchive/test/test_write_filter_zstd.c
+libarchive/test/test_write_format_ar.c
+libarchive/test/test_write_format_mtree.c
+libarchive/test/test_write_format_mtree_absolute_path.c
+libarchive/test/test_write_format_mtree_classic.c
+libarchive/test/test_write_format_mtree_classic_indent.c
+libarchive/test/test_write_format_mtree_fflags.c
+libarchive/test/test_write_format_mtree_no_separator.c
+libarchive/test/test_write_format_mtree_quoted_filename.c
+libarchive/test/test_write_format_zip_entry_size_unset.c
+libarchive_fe/err.c
+libarchive_fe/line_reader.c
+libarchive_fe/passphrase.c
+tar/test/test_option_ignore_zeros.c
+unzip/test/test_C.c
+unzip/test/test_I.c
+unzip/test/test_L.c
+unzip/test/test_P_encryption.c
+unzip/test/test_Z1.c
+unzip/test/test_basic.c
+unzip/test/test_d.c
+unzip/test/test_doubledash.c
+unzip/test/test_glob.c
+unzip/test/test_j.c
+unzip/test/test_n.c
+unzip/test/test_not_exist.c
+unzip/test/test_o.c
+unzip/test/test_p.c
+unzip/test/test_q.c
+unzip/test/test_singlefile.c
+unzip/test/test_t.c
+unzip/test/test_t_bad.c
+unzip/test/test_x.c
+
+Copyright (c) 2003-2006 Tim Kientzle
+Copyright (c) 2003-2007 Tim Kientzle
+Copyright (c) 2003-2009 Tim Kientzle
+Copyright (c) 2003-2010 Tim Kientzle
+Copyright (c) 2007 Kai Wang
+Copyright (c) 2007 Tim Kientzle
+Copyright (c) 2007-2009 Tim Kientzle
+Copyright (c) 2007-2010 Tim Kientzle
+Copyright (c) 2008 Jaakko Heinonen
+Copyright (c) 2008 Tim Kientzle
+Copyright (c) 2009 Michihiro NAKAJIMA
+Copyright (c) 2009-2011 Michihiro NAKAJIMA
+Copyright (c) 2010 Joerg Sonnenberger
+Copyright (c) 2010 Michihiro NAKAJIMA
+Copyright (c) 2010-2012 Michihiro NAKAJIMA
+Copyright (c) 2011 Michihiro NAKAJIMA
+Copyright (c) 2011-2012 Michihiro NAKAJIMA
+Copyright (c) 2012 Michihiro NAKAJIMA
+Copyright (c) 2014 Michihiro NAKAJIMA
+Copyright (c) 2014 Sebastian Freundt
+Copyright (c) 2017 Sean Purcell
+Copyright (c) 2021 Jia Cheong Tan
+Copyright (c) 2021 Ryan Libby
+Copyright (c) 2023 Aaron Lindros
+Copyright (c) 2023 Adrian Vovk
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer
+   in this position and unchanged.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-% libarchive/archive_rb.h
-% libarchive/archive_rb.c
-/*-
- * Copyright (c) 2001 The NetBSD Foundation, Inc.
- * All rights reserved.
- *
- * This code is derived from software contributed to The NetBSD Foundation
- * by Matt Thomas <matt@3am-software.com>.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * Based on: NetBSD: rb.c,v 1.6 2010/04/30 13:58:09 joerg Exp
- */
+## Files:
+libarchive/archive_pack_dev.c
+libarchive/archive_pack_dev.h
+
+Copyright (c) 1998, 2001 The NetBSD Foundation, Inc.
+All rights reserved.
+
+This code is derived from software contributed to The NetBSD Foundation
+by Charles M. Hannum.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
 
 
-% libarchive_fe/passphrase.c
-% libarchive/archive_random.c
- * Copyright (c) 1996, David Mazieres <dm@uun.org>
- * Copyright (c) 2008, Damien Miller <djm@openbsd.org>
- * Copyright (c) 2000-2002, 2007, 2010
- * 	Todd C. Miller <millert@openbsd.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+## Files:
+libarchive/test/test_read_format_isojoliet_versioned.c
+
+Copyright (c) 2003-2007 Tim Kientzle
+All rights reserved.
+
+Based on libarchive/test/test_read_format_isojoliet_bz2.c with
+bugs introduced by Andreas Henriksson <andreas@fatal.se> for
+testing ISO9660 image with Joliet extension and versioned files.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-% libarchive/xxhash.c
-/*
+## Files:
+cat/bsdcat.c
+cat/bsdcat.h
+cat/bsdcat_platform.h
+cat/cmdline.c
+cat/test/test.h
+cat/test/test_0.c
+cat/test/test_empty_gz.c
+cat/test/test_empty_lz4.c
+cat/test/test_empty_xz.c
+cat/test/test_empty_zstd.c
+cat/test/test_error.c
+cat/test/test_error_mixed.c
+cat/test/test_expand_Z.c
+cat/test/test_expand_bz2.c
+cat/test/test_expand_gz.c
+cat/test/test_expand_lz4.c
+cat/test/test_expand_mixed.c
+cat/test/test_expand_plain.c
+cat/test/test_expand_xz.c
+cat/test/test_expand_zstd.c
+cat/test/test_help.c
+cat/test/test_stdin.c
+cat/test/test_version.c
+contrib/android/config/android.h
+contrib/android/config/linux_host.h
+contrib/archivetest.c
+contrib/shar/tree.c
+contrib/shar/tree.h
+contrib/shar/tree_config.h
+cpio/config_freebsd.h
+cpio/cpio.h
+cpio/cpio_platform.h
+cpio/cpio_windows.c
+cpio/cpio_windows.h
+cpio/test/test.h
+cpio/test/test_0.c
+cpio/test/test_basic.c
+cpio/test/test_cmdline.c
+cpio/test/test_extract_cpio_Z.c
+cpio/test/test_extract_cpio_bz2.c
+cpio/test/test_extract_cpio_grz.c
+cpio/test/test_extract_cpio_gz.c
+cpio/test/test_extract_cpio_lrz.c
+cpio/test/test_extract_cpio_lz.c
+cpio/test/test_extract_cpio_lz4.c
+cpio/test/test_extract_cpio_lzma.c
+cpio/test/test_extract_cpio_lzo.c
+cpio/test/test_extract_cpio_xz.c
+cpio/test/test_extract_cpio_zstd.c
+cpio/test/test_format_newc.c
+cpio/test/test_gcpio_compat.c
+cpio/test/test_missing_file.c
+cpio/test/test_option_0.c
+cpio/test/test_option_B_upper.c
+cpio/test/test_option_C_upper.c
+cpio/test/test_option_J_upper.c
+cpio/test/test_option_L_upper.c
+cpio/test/test_option_Z_upper.c
+cpio/test/test_option_a.c
+cpio/test/test_option_b64encode.c
+cpio/test/test_option_c.c
+cpio/test/test_option_d.c
+cpio/test/test_option_f.c
+cpio/test/test_option_grzip.c
+cpio/test/test_option_help.c
+cpio/test/test_option_l.c
+cpio/test/test_option_lrzip.c
+cpio/test/test_option_lz4.c
+cpio/test/test_option_lzma.c
+cpio/test/test_option_lzop.c
+cpio/test/test_option_m.c
+cpio/test/test_option_passphrase.c
+cpio/test/test_option_t.c
+cpio/test/test_option_u.c
+cpio/test/test_option_uuencode.c
+cpio/test/test_option_version.c
+cpio/test/test_option_xz.c
+cpio/test/test_option_y.c
+cpio/test/test_option_z.c
+cpio/test/test_option_zstd.c
+cpio/test/test_owner_parse.c
+cpio/test/test_passthrough_dotdot.c
+cpio/test/test_passthrough_reverse.c
+libarchive/archive.h
+libarchive/archive_acl.c
+libarchive/archive_acl_private.h
+libarchive/archive_check_magic.c
+libarchive/archive_cmdline.c
+libarchive/archive_cmdline_private.h
+libarchive/archive_crc32.h
+libarchive/archive_cryptor.c
+libarchive/archive_cryptor_private.h
+libarchive/archive_digest.c
+libarchive/archive_digest_private.h
+libarchive/archive_disk_acl_darwin.c
+libarchive/archive_disk_acl_freebsd.c
+libarchive/archive_disk_acl_linux.c
+libarchive/archive_disk_acl_sunos.c
+libarchive/archive_entry.c
+libarchive/archive_entry.h
+libarchive/archive_entry_copy_bhfi.c
+libarchive/archive_entry_copy_stat.c
+libarchive/archive_entry_link_resolver.c
+libarchive/archive_entry_locale.h
+libarchive/archive_entry_private.h
+libarchive/archive_entry_sparse.c
+libarchive/archive_entry_stat.c
+libarchive/archive_entry_strmode.c
+libarchive/archive_entry_xattr.c
+libarchive/archive_getdate.h
+libarchive/archive_hmac.c
+libarchive/archive_hmac_private.h
+libarchive/archive_match.c
+libarchive/archive_openssl_evp_private.h
+libarchive/archive_openssl_hmac_private.h
+libarchive/archive_options.c
+libarchive/archive_options_private.h
+libarchive/archive_platform.h
+libarchive/archive_platform_acl.h
+libarchive/archive_platform_xattr.h
+libarchive/archive_private.h
+libarchive/archive_random.c
+libarchive/archive_random_private.h
+libarchive/archive_read.c
+libarchive/archive_read_add_passphrase.c
+libarchive/archive_read_append_filter.c
+libarchive/archive_read_data_into_fd.c
+libarchive/archive_read_disk_entry_from_file.c
+libarchive/archive_read_disk_set_standard_lookup.c
+libarchive/archive_read_extract.c
+libarchive/archive_read_extract2.c
+libarchive/archive_read_open_fd.c
+libarchive/archive_read_open_file.c
+libarchive/archive_read_open_filename.c
+libarchive/archive_read_open_memory.c
+libarchive/archive_read_private.h
+libarchive/archive_read_set_format.c
+libarchive/archive_read_set_options.c
+libarchive/archive_read_support_filter_all.c
+libarchive/archive_read_support_filter_by_code.c
+libarchive/archive_read_support_filter_bzip2.c
+libarchive/archive_read_support_filter_compress.c
+libarchive/archive_read_support_filter_grzip.c
+libarchive/archive_read_support_filter_gzip.c
+libarchive/archive_read_support_filter_lrzip.c
+libarchive/archive_read_support_filter_lz4.c
+libarchive/archive_read_support_filter_lzop.c
+libarchive/archive_read_support_filter_none.c
+libarchive/archive_read_support_filter_program.c
+libarchive/archive_read_support_filter_rpm.c
+libarchive/archive_read_support_filter_uu.c
+libarchive/archive_read_support_filter_xz.c
+libarchive/archive_read_support_filter_zstd.c
+libarchive/archive_read_support_format_7zip.c
+libarchive/archive_read_support_format_all.c
+libarchive/archive_read_support_format_by_code.c
+libarchive/archive_read_support_format_cab.c
+libarchive/archive_read_support_format_cpio.c
+libarchive/archive_read_support_format_empty.c
+libarchive/archive_read_support_format_iso9660.c
+libarchive/archive_read_support_format_lha.c
+libarchive/archive_read_support_format_mtree.c
+libarchive/archive_read_support_format_rar.c
+libarchive/archive_read_support_format_rar5.c
+libarchive/archive_read_support_format_raw.c
+libarchive/archive_read_support_format_tar.c
+libarchive/archive_read_support_format_warc.c
+libarchive/archive_read_support_format_xar.c
+libarchive/archive_read_support_format_zip.c
+libarchive/archive_string.c
+libarchive/archive_string.h
+libarchive/archive_string_sprintf.c
+libarchive/archive_util.c
+libarchive/archive_version_details.c
+libarchive/archive_virtual.c
+libarchive/archive_windows.c
+libarchive/archive_write.c
+libarchive/archive_write_add_filter.c
+libarchive/archive_write_add_filter_b64encode.c
+libarchive/archive_write_add_filter_by_name.c
+libarchive/archive_write_add_filter_bzip2.c
+libarchive/archive_write_add_filter_compress.c
+libarchive/archive_write_add_filter_grzip.c
+libarchive/archive_write_add_filter_gzip.c
+libarchive/archive_write_add_filter_lrzip.c
+libarchive/archive_write_add_filter_lz4.c
+libarchive/archive_write_add_filter_lzop.c
+libarchive/archive_write_add_filter_none.c
+libarchive/archive_write_add_filter_program.c
+libarchive/archive_write_add_filter_uuencode.c
+libarchive/archive_write_add_filter_xz.c
+libarchive/archive_write_add_filter_zstd.c
+libarchive/archive_write_disk_set_standard_lookup.c
+libarchive/archive_write_open_fd.c
+libarchive/archive_write_open_file.c
+libarchive/archive_write_open_filename.c
+libarchive/archive_write_open_memory.c
+libarchive/archive_write_private.h
+libarchive/archive_write_set_format.c
+libarchive/archive_write_set_format_7zip.c
+libarchive/archive_write_set_format_by_name.c
+libarchive/archive_write_set_format_cpio_binary.c
+libarchive/archive_write_set_format_cpio_newc.c
+libarchive/archive_write_set_format_cpio_odc.c
+libarchive/archive_write_set_format_filter_by_ext.c
+libarchive/archive_write_set_format_iso9660.c
+libarchive/archive_write_set_format_mtree.c
+libarchive/archive_write_set_format_pax.c
+libarchive/archive_write_set_format_private.h
+libarchive/archive_write_set_format_raw.c
+libarchive/archive_write_set_format_shar.c
+libarchive/archive_write_set_format_ustar.c
+libarchive/archive_write_set_format_v7tar.c
+libarchive/archive_write_set_format_xar.c
+libarchive/archive_write_set_format_zip.c
+libarchive/archive_write_set_options.c
+libarchive/archive_write_set_passphrase.c
+libarchive/archive_xxhash.h
+libarchive/config_freebsd.h
+libarchive/filter_fork.h
+libarchive/filter_fork_posix.c
+libarchive/filter_fork_windows.c
+libarchive/test/read_open_memory.c
+libarchive/test/test.h
+libarchive/test/test_acl_nfs4.c
+libarchive/test/test_acl_pax.c
+libarchive/test/test_acl_platform_nfs4.c
+libarchive/test/test_acl_platform_posix1e.c
+libarchive/test/test_acl_posix1e.c
+libarchive/test/test_acl_text.c
+libarchive/test/test_archive_api_feature.c
+libarchive/test/test_archive_clear_error.c
+libarchive/test/test_archive_cmdline.c
+libarchive/test/test_archive_digest.c
+libarchive/test/test_archive_getdate.c
+libarchive/test/test_archive_match_owner.c
+libarchive/test/test_archive_match_path.c
+libarchive/test/test_archive_match_time.c
+libarchive/test/test_archive_pathmatch.c
+libarchive/test/test_archive_read_add_passphrase.c
+libarchive/test/test_archive_read_close_twice.c
+libarchive/test/test_archive_read_close_twice_open_fd.c
+libarchive/test/test_archive_read_close_twice_open_filename.c
+libarchive/test/test_archive_read_multiple_data_objects.c
+libarchive/test/test_archive_read_next_header_empty.c
+libarchive/test/test_archive_read_next_header_raw.c
+libarchive/test/test_archive_read_open2.c
+libarchive/test/test_archive_read_set_filter_option.c
+libarchive/test/test_archive_read_set_format_option.c
+libarchive/test/test_archive_read_set_option.c
+libarchive/test/test_archive_read_set_options.c
+libarchive/test/test_archive_read_support.c
+libarchive/test/test_archive_set_error.c
+libarchive/test/test_archive_string.c
+libarchive/test/test_archive_string_conversion.c
+libarchive/test/test_archive_write_add_filter_by_name.c
+libarchive/test/test_archive_write_set_filter_option.c
+libarchive/test/test_archive_write_set_format_by_name.c
+libarchive/test/test_archive_write_set_format_filter_by_ext.c
+libarchive/test/test_archive_write_set_format_option.c
+libarchive/test/test_archive_write_set_option.c
+libarchive/test/test_archive_write_set_options.c
+libarchive/test/test_archive_write_set_passphrase.c
+libarchive/test/test_bad_fd.c
+libarchive/test/test_compat_bzip2.c
+libarchive/test/test_compat_cpio.c
+libarchive/test/test_compat_gtar.c
+libarchive/test/test_compat_gzip.c
+libarchive/test/test_compat_lz4.c
+libarchive/test/test_compat_lzip.c
+libarchive/test/test_compat_lzma.c
+libarchive/test/test_compat_lzop.c
+libarchive/test/test_compat_mac.c
+libarchive/test/test_compat_perl_archive_tar.c
+libarchive/test/test_compat_plexus_archiver_tar.c
+libarchive/test/test_compat_solaris_pax_sparse.c
+libarchive/test/test_compat_solaris_tar_acl.c
+libarchive/test/test_compat_star_acl.c
+libarchive/test/test_compat_tar_directory.c
+libarchive/test/test_compat_tar_hardlink.c
+libarchive/test/test_compat_uudecode.c
+libarchive/test/test_compat_uudecode_large.c
+libarchive/test/test_compat_xz.c
+libarchive/test/test_compat_zip.c
+libarchive/test/test_compat_zstd.c
+libarchive/test/test_empty_write.c
+libarchive/test/test_entry.c
+libarchive/test/test_entry_strmode.c
+libarchive/test/test_extattr_freebsd.c
+libarchive/test/test_filter_count.c
+libarchive/test/test_fuzz.c
+libarchive/test/test_gnutar_filename_encoding.c
+libarchive/test/test_link_resolver.c
+libarchive/test/test_open_failure.c
+libarchive/test/test_open_fd.c
+libarchive/test/test_open_file.c
+libarchive/test/test_open_filename.c
+libarchive/test/test_pax_filename_encoding.c
+libarchive/test/test_pax_xattr_header.c
+libarchive/test/test_read_data_large.c
+libarchive/test/test_read_disk.c
+libarchive/test/test_read_disk_directory_traversals.c
+libarchive/test/test_read_disk_entry_from_file.c
+libarchive/test/test_read_extract.c
+libarchive/test/test_read_file_nonexistent.c
+libarchive/test/test_read_filter_compress.c
+libarchive/test/test_read_filter_grzip.c
+libarchive/test/test_read_filter_lrzip.c
+libarchive/test/test_read_filter_lzop.c
+libarchive/test/test_read_filter_lzop_multiple_parts.c
+libarchive/test/test_read_filter_program.c
+libarchive/test/test_read_filter_program_signature.c
+libarchive/test/test_read_filter_uudecode.c
+libarchive/test/test_read_filter_uudecode_raw.c
+libarchive/test/test_read_format_7zip.c
+libarchive/test/test_read_format_7zip_encryption_data.c
+libarchive/test/test_read_format_7zip_encryption_header.c
+libarchive/test/test_read_format_7zip_encryption_partially.c
+libarchive/test/test_read_format_7zip_malformed.c
+libarchive/test/test_read_format_7zip_packinfo_digests.c
+libarchive/test/test_read_format_cab.c
+libarchive/test/test_read_format_cab_filename.c
+libarchive/test/test_read_format_cpio_afio.c
+libarchive/test/test_read_format_cpio_bin.c
+libarchive/test/test_read_format_cpio_bin_Z.c
+libarchive/test/test_read_format_cpio_bin_be.c
+libarchive/test/test_read_format_cpio_bin_bz2.c
+libarchive/test/test_read_format_cpio_bin_gz.c
+libarchive/test/test_read_format_cpio_bin_le.c
+libarchive/test/test_read_format_cpio_bin_lzip.c
+libarchive/test/test_read_format_cpio_bin_lzma.c
+libarchive/test/test_read_format_cpio_bin_xz.c
+libarchive/test/test_read_format_cpio_filename.c
+libarchive/test/test_read_format_cpio_odc.c
+libarchive/test/test_read_format_cpio_svr4_bzip2_rpm.c
+libarchive/test/test_read_format_cpio_svr4_gzip.c
+libarchive/test/test_read_format_cpio_svr4_gzip_rpm.c
+libarchive/test/test_read_format_cpio_svr4c_Z.c
+libarchive/test/test_read_format_empty.c
+libarchive/test/test_read_format_gtar_filename.c
+libarchive/test/test_read_format_gtar_gz.c
+libarchive/test/test_read_format_gtar_lzma.c
+libarchive/test/test_read_format_gtar_sparse.c
+libarchive/test/test_read_format_gtar_sparse_skip_entry.c
+libarchive/test/test_read_format_iso_Z.c
+libarchive/test/test_read_format_iso_multi_extent.c
+libarchive/test/test_read_format_iso_xorriso.c
+libarchive/test/test_read_format_isojoliet_long.c
+libarchive/test/test_read_format_isorr_bz2.c
+libarchive/test/test_read_format_isorr_ce.c
+libarchive/test/test_read_format_isorr_new_bz2.c
+libarchive/test/test_read_format_isorr_rr_moved.c
+libarchive/test/test_read_format_isozisofs_bz2.c
+libarchive/test/test_read_format_lha.c
+libarchive/test/test_read_format_lha_bugfix_0.c
+libarchive/test/test_read_format_lha_filename.c
+libarchive/test/test_read_format_lha_filename_utf16.c
+libarchive/test/test_read_format_mtree.c
+libarchive/test/test_read_format_mtree_crash747.c
+libarchive/test/test_read_format_pax_bz2.c
+libarchive/test/test_read_format_rar.c
+libarchive/test/test_read_format_rar5.c
+libarchive/test/test_read_format_rar_encryption_data.c
+libarchive/test/test_read_format_rar_encryption_header.c
+libarchive/test/test_read_format_rar_encryption_partially.c
+libarchive/test/test_read_format_rar_filter.c
+libarchive/test/test_read_format_rar_invalid1.c
+libarchive/test/test_read_format_tar.c
+libarchive/test/test_read_format_tar_concatenated.c
+libarchive/test/test_read_format_tar_empty_filename.c
+libarchive/test/test_read_format_tar_empty_pax.c
+libarchive/test/test_read_format_tar_empty_with_gnulabel.c
+libarchive/test/test_read_format_tar_filename.c
+libarchive/test/test_read_format_tar_invalid_pax_size.c
+libarchive/test/test_read_format_tbz.c
+libarchive/test/test_read_format_tgz.c
+libarchive/test/test_read_format_tlz.c
+libarchive/test/test_read_format_txz.c
+libarchive/test/test_read_format_tz.c
+libarchive/test/test_read_format_ustar_filename.c
+libarchive/test/test_read_format_xar.c
+libarchive/test/test_read_format_xar_doublelink.c
+libarchive/test/test_read_format_zip.c
+libarchive/test/test_read_format_zip_7075_utf8_paths.c
+libarchive/test/test_read_format_zip_comment_stored.c
+libarchive/test/test_read_format_zip_encryption_data.c
+libarchive/test/test_read_format_zip_encryption_header.c
+libarchive/test/test_read_format_zip_encryption_partially.c
+libarchive/test/test_read_format_zip_extra_padding.c
+libarchive/test/test_read_format_zip_filename.c
+libarchive/test/test_read_format_zip_high_compression.c
+libarchive/test/test_read_format_zip_jar.c
+libarchive/test/test_read_format_zip_mac_metadata.c
+libarchive/test/test_read_format_zip_malformed.c
+libarchive/test/test_read_format_zip_msdos.c
+libarchive/test/test_read_format_zip_nested.c
+libarchive/test/test_read_format_zip_nofiletype.c
+libarchive/test/test_read_format_zip_padded.c
+libarchive/test/test_read_format_zip_sfx.c
+libarchive/test/test_read_format_zip_traditional_encryption_data.c
+libarchive/test/test_read_format_zip_winzip_aes.c
+libarchive/test/test_read_format_zip_winzip_aes_large.c
+libarchive/test/test_read_format_zip_with_invalid_traditional_eocd.c
+libarchive/test/test_read_format_zip_zip64.c
+libarchive/test/test_read_large.c
+libarchive/test/test_read_pax_truncated.c
+libarchive/test/test_read_position.c
+libarchive/test/test_read_set_format.c
+libarchive/test/test_read_too_many_filters.c
+libarchive/test/test_read_truncated.c
+libarchive/test/test_short_writes.c
+libarchive/test/test_sparse_basic.c
+libarchive/test/test_tar_filenames.c
+libarchive/test/test_tar_large.c
+libarchive/test/test_ustar_filename_encoding.c
+libarchive/test/test_ustar_filenames.c
+libarchive/test/test_warn_missing_hardlink_target.c
+libarchive/test/test_write_disk.c
+libarchive/test/test_write_disk_appledouble.c
+libarchive/test/test_write_disk_failures.c
+libarchive/test/test_write_disk_fixup.c
+libarchive/test/test_write_disk_hardlink.c
+libarchive/test/test_write_disk_hfs_compression.c
+libarchive/test/test_write_disk_lookup.c
+libarchive/test/test_write_disk_mac_metadata.c
+libarchive/test/test_write_disk_no_hfs_compression.c
+libarchive/test/test_write_disk_perms.c
+libarchive/test/test_write_disk_secure.c
+libarchive/test/test_write_disk_secure744.c
+libarchive/test/test_write_disk_secure745.c
+libarchive/test/test_write_disk_secure746.c
+libarchive/test/test_write_disk_sparse.c
+libarchive/test/test_write_disk_symlink.c
+libarchive/test/test_write_disk_times.c
+libarchive/test/test_write_filter_program.c
+libarchive/test/test_write_format_7zip.c
+libarchive/test/test_write_format_7zip_empty.c
+libarchive/test/test_write_format_7zip_large.c
+libarchive/test/test_write_format_cpio.c
+libarchive/test/test_write_format_cpio_empty.c
+libarchive/test/test_write_format_cpio_newc.c
+libarchive/test/test_write_format_cpio_odc.c
+libarchive/test/test_write_format_gnutar.c
+libarchive/test/test_write_format_gnutar_filenames.c
+libarchive/test/test_write_format_iso9660.c
+libarchive/test/test_write_format_iso9660_boot.c
+libarchive/test/test_write_format_iso9660_empty.c
+libarchive/test/test_write_format_iso9660_filename.c
+libarchive/test/test_write_format_iso9660_zisofs.c
+libarchive/test/test_write_format_pax.c
+libarchive/test/test_write_format_raw.c
+libarchive/test/test_write_format_raw_b64.c
+libarchive/test/test_write_format_shar_empty.c
+libarchive/test/test_write_format_tar.c
+libarchive/test/test_write_format_tar_empty.c
+libarchive/test/test_write_format_tar_sparse.c
+libarchive/test/test_write_format_tar_ustar.c
+libarchive/test/test_write_format_tar_v7tar.c
+libarchive/test/test_write_format_warc.c
+libarchive/test/test_write_format_warc_empty.c
+libarchive/test/test_write_format_xar.c
+libarchive/test/test_write_format_xar_empty.c
+libarchive/test/test_write_format_zip.c
+libarchive/test/test_write_format_zip64_stream.c
+libarchive/test/test_write_format_zip_compression_store.c
+libarchive/test/test_write_format_zip_empty.c
+libarchive/test/test_write_format_zip_empty_zip64.c
+libarchive/test/test_write_format_zip_file.c
+libarchive/test/test_write_format_zip_file_zip64.c
+libarchive/test/test_write_format_zip_large.c
+libarchive/test/test_write_format_zip_stream.c
+libarchive/test/test_write_format_zip_zip64.c
+libarchive/test/test_write_open_memory.c
+libarchive/test/test_write_read_format_zip.c
+libarchive/test/test_xattr_platform.c
+libarchive/test/test_zip_filename_encoding.c
+libarchive_fe/err.h
+libarchive_fe/lafe_platform.h
+libarchive_fe/line_reader.h
+libarchive_fe/passphrase.h
+tar/bsdtar.c
+tar/bsdtar.h
+tar/bsdtar_platform.h
+tar/bsdtar_windows.c
+tar/bsdtar_windows.h
+tar/cmdline.c
+tar/config_freebsd.h
+tar/creation_set.c
+tar/read.c
+tar/subst.c
+tar/test/test.h
+tar/test/test_0.c
+tar/test/test_basic.c
+tar/test/test_copy.c
+tar/test/test_empty_mtree.c
+tar/test/test_extract_tar_Z.c
+tar/test/test_extract_tar_bz2.c
+tar/test/test_extract_tar_grz.c
+tar/test/test_extract_tar_gz.c
+tar/test/test_extract_tar_lrz.c
+tar/test/test_extract_tar_lz.c
+tar/test/test_extract_tar_lz4.c
+tar/test/test_extract_tar_lzma.c
+tar/test/test_extract_tar_lzo.c
+tar/test/test_extract_tar_xz.c
+tar/test/test_extract_tar_zstd.c
+tar/test/test_format_newc.c
+tar/test/test_help.c
+tar/test/test_leading_slash.c
+tar/test/test_missing_file.c
+tar/test/test_option_C_upper.c
+tar/test/test_option_H_upper.c
+tar/test/test_option_L_upper.c
+tar/test/test_option_O_upper.c
+tar/test/test_option_T_upper.c
+tar/test/test_option_U_upper.c
+tar/test/test_option_X_upper.c
+tar/test/test_option_a.c
+tar/test/test_option_acls.c
+tar/test/test_option_b.c
+tar/test/test_option_b64encode.c
+tar/test/test_option_exclude.c
+tar/test/test_option_exclude_vcs.c
+tar/test/test_option_fflags.c
+tar/test/test_option_gid_gname.c
+tar/test/test_option_group.c
+tar/test/test_option_grzip.c
+tar/test/test_option_j.c
+tar/test/test_option_k.c
+tar/test/test_option_keep_newer_files.c
+tar/test/test_option_lrzip.c
+tar/test/test_option_lz4.c
+tar/test/test_option_lzma.c
+tar/test/test_option_lzop.c
+tar/test/test_option_n.c
+tar/test/test_option_newer_than.c
+tar/test/test_option_nodump.c
+tar/test/test_option_older_than.c
+tar/test/test_option_owner.c
+tar/test/test_option_passphrase.c
+tar/test/test_option_q.c
+tar/test/test_option_r.c
+tar/test/test_option_s.c
+tar/test/test_option_safe_writes.c
+tar/test/test_option_uid_uname.c
+tar/test/test_option_uuencode.c
+tar/test/test_option_xattrs.c
+tar/test/test_option_xz.c
+tar/test/test_option_z.c
+tar/test/test_option_zstd.c
+tar/test/test_patterns.c
+tar/test/test_print_longpath.c
+tar/test/test_stdio.c
+tar/test/test_strip_components.c
+tar/test/test_symlink_dir.c
+tar/test/test_version.c
+tar/test/test_windows.c
+tar/util.c
+tar/write.c
+test_utils/test_common.h
+test_utils/test_main.c
+test_utils/test_utils.c
+test_utils/test_utils.h
+unzip/bsdunzip.h
+unzip/bsdunzip_platform.h
+unzip/cmdline.c
+unzip/test/test.h
+unzip/test/test_0.c
+unzip/test/test_version.c
+
+Copyright (C) 2014 Sebastian Freundt
+Copyright (c) 2003,2014 Tim Kientzle
+Copyright (c) 2003-2006 Tim Kientzle
+Copyright (c) 2003-2007 Kees Zeelenberg
+Copyright (c) 2003-2007 Tim Kientzle
+Copyright (c) 2003-2007,2013 Tim Kientzle
+Copyright (c) 2003-2007,2016 Tim Kientzle
+Copyright (c) 2003-2008 Tim Kientzle
+Copyright (c) 2003-2008 Tim Kientzle and Miklos Vajna
+Copyright (c) 2003-2008,2015 Tim Kientzle
+Copyright (c) 2003-2009 Tim Kientzle
+Copyright (c) 2003-2010 Tim Kientzle
+Copyright (c) 2003-2011 Tim Kientzle
+Copyright (c) 2003-2012 Tim Kientzle
+Copyright (c) 2003-2014 Tim Kientzle
+Copyright (c) 2003-2015 Tim Kientzle
+Copyright (c) 2003-2016 Tim Kientzle
+Copyright (c) 2003-2017 Tim Kientzle
+Copyright (c) 2003-2018 Tim Kientzle
+Copyright (c) 2003-2021 Wei-Cheng Pan
+Copyright (c) 2003-2023 Tim Kientzle
+Copyright (c) 2004-2013 Tim Kientzle
+Copyright (c) 2006 Rudolf Marek SYSGO s.r.o.
+Copyright (c) 2007 Joerg Sonnenberger
+Copyright (c) 2008 Anselm Strauss
+Copyright (c) 2008 Joerg Sonnenberger
+Copyright (c) 2008 Miklos Vajna
+Copyright (c) 2008, 2010 Michihiro NAKAJIMA
+Copyright (c) 2008-2014 Michihiro NAKAJIMA
+Copyright (c) 2009 Andreas Henriksson <andreas@fatal.se>
+Copyright (c) 2009 Joerg  Sonnenberger
+Copyright (c) 2009 Joerg Sonnenberger
+Copyright (c) 2009 Michihiro NAKAJIMA
+Copyright (c) 2009,2010 Michihiro NAKAJIMA
+Copyright (c) 2009-2011 Michihiro NAKAJIMA
+Copyright (c) 2009-2011 Sean Purcell
+Copyright (c) 2009-2012 Michihiro NAKAJIMA
+Copyright (c) 2009-2012,2014 Michihiro NAKAJIMA
+Copyright (c) 2010 Michihiro NAKAJIMA
+Copyright (c) 2010 Tim Kientzle
+Copyright (c) 2010-2011 Michihiro NAKAJIMA
+Copyright (c) 2010-2012 Michihiro NAKAJIMA
+Copyright (c) 2011 Andres Mejia
+Copyright (c) 2011 Michihiro NAKAJIMA
+Copyright (c) 2011 Tim Kientzle
+Copyright (c) 2011-2012 Andres Mejia
+Copyright (c) 2011-2012 Michihiro NAKAJIMA
+Copyright (c) 2011-2012,2014 Michihiro NAKAJIMA
+Copyright (c) 2011-2014, Mike Kazantsev
+Copyright (c) 2012 Andres Mejia
+Copyright (c) 2012 Michhiro NAKAJIMA
+Copyright (c) 2012 Michihiro NAKAJIMA
+Copyright (c) 2012 Ondrej Holy
+Copyright (c) 2012, 2014 Michihiro NAKAJIMA
+Copyright (c) 2012,2014 Michihiro NAKAJIMA
+Copyright (c) 2013 Konrad Kleine
+Copyright (c) 2013 Marek Kubica
+Copyright (c) 2013 Tim Kientzle
+Copyright (c) 2014 Kevin Locke
+Copyright (c) 2014 Michihiro NAKAJIMA
+Copyright (c) 2014 Mike Kazantsev
+Copyright (c) 2014 Sebastian Freundt
+Copyright (c) 2014 Tim Kientzle
+Copyright (c) 2014 Trevor Drake
+Copyright (c) 2014, Mike Kazantsev
+Copyright (c) 2015 Graham Percival
+Copyright (c) 2015 Okhotnikov Kirill
+Copyright (c) 2016 Martin Matuska
+Copyright (c) 2016 Peter Wu
+Copyright (c) 2016 Tim Kientzle
+Copyright (c) 2017 Martin Matuska
+Copyright (c) 2017 Phillip Berndt
+Copyright (c) 2017 Sean Purcell
+Copyright (c) 2018 Grzegorz Antoniak
+Copyright (c) 2018 Grzegorz Antoniak (http://antoniak.org)
+Copyright (c) 2019 Martin Matuska
+Copyright (c) 2019 Mike Frysinger
+Copyright (c) 2020 Ben Wagner
+Copyright (c) 2020 Martin Matuska
+Copyright (c) 2021 Martin Matuska
+Copyright (c) 2021 Red Hat, Inc.
+Copyright (c) 2021 Samanta Navarro
+Copyright (c) 2023 Martin Matuska
+Copyright (c) 2023, Martin Matuska
+Copyright (c) 2023-2024 Klara, Inc.
+Copyright (c) 2024 Haelwenn (lanodan) Monnier
+Copyright (c) 2024 Martin Matuska
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+## Files:
+tar/test/test_option_C_mtree.c
+
+Copyright (c) 2018 The FreeBSD Foundation
+All rights reserved.
+
+This software was developed by Arshan Khanifar <arshankhanifar@gmail.com>
+under sponsorship from the FreeBSD Foundation.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+## Files:
+libarchive/archive_string_composition.h
+
+Copyright (c) 2011-2012 libarchive Project
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+## Files:
+libarchive/archive_endian.h
+
+Copyright (c) 2002 Thomas Moestl <tmm@FreeBSD.org>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
+Borrowed from FreeBSD's <sys/endian.h>
+
+
+## Files:
+libarchive/archive_entry.c
+
+ Copyright (c) 1993
+	The Regents of the University of California.  All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ 4. Neither the name of the University nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
+
+
+## Files:
+unzip/bsdunzip.c
+
+SPDX-License-Identifier: BSD-2-Clause
+
+Copyright (c) 2007-2008 Dag-Erling Smørgrav
+Copyright (c) 2009, 2010 Joerg Sonnenberger <joerg@NetBSD.org>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer
+   in this position and unchanged.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
+This file would be much shorter if we didn't care about command-line
+compatibility with Info-ZIP's UnZip, which requires us to duplicate
+parts of libarchive in order to gain more detailed control of its
+behaviour for the purpose of implementing the -n, -o, -L and -a
+options.
+
+
+## Files:
+libarchive/test/test_read_format_isojoliet_bz2.c
+libarchive/test/test_read_format_isojoliet_rr.c
+
+Copyright (c) 2003-2007 Tim Kientzle
+All rights reserved.
+
+Based on libarchive/test/test_read_format_isorr_bz2.c with
+bugs introduced by Andreas Henriksson <andreas@fatal.se> for
+testing ISO9660 image with Joliet extension.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+## Files:
+libarchive/archive_write_set_format_warc.c
+
+Copyright (c) 2014 Sebastian Freundt
+Author: Sebastian Freundt  <devel@fresse.org>
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+## Files:
+unzip/la_getline.c
+
+Copyright (c) 2011 The NetBSD Foundation, Inc.
+All rights reserved.
+
+This code is derived from software contributed to The NetBSD Foundation
+by Christos Zoulas.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+
+## Files:
+libarchive/archive_rb.h
+
+Copyright (c) 2001 The NetBSD Foundation, Inc.
+All rights reserved.
+
+This code is derived from software contributed to The NetBSD Foundation
+by Matt Thomas <matt@3am-software.com>.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+Based on NetBSD: rb.h,v 1.13 2009/08/16 10:57:01 yamt Exp
+
+
+## Files:
+libarchive/archive_rb.c
+
+Copyright (c) 2001 The NetBSD Foundation, Inc.
+All rights reserved.
+
+This code is derived from software contributed to The NetBSD Foundation
+by Matt Thomas <matt@3am-software.com>.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+Based on: NetBSD: rb.c,v 1.6 2010/04/30 13:58:09 joerg Exp
+
+
+## Files:
+libarchive/test/test_read_pax_xattr_rht_security_selinux.c
+libarchive/test/test_read_pax_xattr_schily.c
+
+Copyright (c) 2003-2007 Tim Kientzle
+Copyright (c) 2016 IBM Corporation
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+This test case's code has been derived from test_entry.c
+
+
+## Files:
+libarchive/xxhash.c
+
 xxHash - Fast Hash algorithm
 Copyright (C) 2012-2014, Yann Collet.
 BSD 2-Clause License (http://www.opensource.org/licenses/bsd-license.php)
@@ -287,199 +1369,291 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 You can contact the author at :
 - xxHash source repository : http://code.google.com/p/xxhash/
-*/
 
 
-% libarchive/archive_blake2*
+## Files:
+libarchive/archive_read_support_filter_compress.c
 
-/*
-   BLAKE2 reference source code package - reference C implementations
+ Copyright (c) 1985, 1986, 1992, 1993
+	The Regents of the University of California.  All rights reserved.
 
-   Copyright 2012, Samuel Neves <sneves@dei.uc.pt>.  You may use this under the
-   terms of the CC0, the OpenSSL Licence, or the Apache Public License 2.0, at
-   your option.  The terms of these licenses can be found at:
+ This code is derived from software contributed to Berkeley by
+ Diomidis Spinellis and James A. Woods, derived from original
+ work by Spencer Thomas and Joseph Orost.
 
-   - CC0 1.0 Universal : http://creativecommons.org/publicdomain/zero/1.0
-   - OpenSSL license   : https://www.openssl.org/source/license.html
-   - Apache 2.0        : http://www.apache.org/licenses/LICENSE-2.0
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ 4. Neither the name of the University nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
 
-   More information about the BLAKE2 hash function can be found at
-   https://blake2.net.
-*/
+ THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
 
-                                 Apache License
-                           Version 2.0, January 2004
-                        http://www.apache.org/licenses/
 
-   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+## Files:
+libarchive/archive_blake2.h
+libarchive/archive_blake2_impl.h
+libarchive/archive_blake2s_ref.c
+libarchive/archive_blake2sp_ref.c
 
-   1. Definitions.
+BLAKE2 reference source code package - reference C implementations
 
-      "License" shall mean the terms and conditions for use, reproduction,
-      and distribution as defined by Sections 1 through 9 of this document.
+Copyright 2012, Samuel Neves <sneves@dei.uc.pt>.  You may use this under the
+terms of the CC0, the OpenSSL Licence, or the Apache Public License 2.0, at
+your option.  The terms of these licenses can be found at:
 
-      "Licensor" shall mean the copyright owner or entity authorized by
-      the copyright owner that is granting the License.
+- CC0 1.0 Universal : http://creativecommons.org/publicdomain/zero/1.0
+- OpenSSL license   : https://www.openssl.org/source/license.html
+- Apache 2.0        : http://www.apache.org/licenses/LICENSE-2.0
 
-      "Legal Entity" shall mean the union of the acting entity and all
-      other entities that control, are controlled by, or are under common
-      control with that entity. For the purposes of this definition,
-      "control" means (i) the power, direct or indirect, to cause the
-      direction or management of such entity, whether by contract or
-      otherwise, or (ii) ownership of fifty percent (50%) or more of the
-      outstanding shares, or (iii) beneficial ownership of such entity.
+More information about the BLAKE2 hash function can be found at
+https://blake2.net.
 
-      "You" (or "Your") shall mean an individual or Legal Entity
-      exercising permissions granted by this License.
 
-      "Source" form shall mean the preferred form for making modifications,
-      including but not limited to software source code, documentation
-      source, and configuration files.
+## Files:
+libarchive/archive_write_set_format_iso9660.c
 
-      "Object" form shall mean any form resulting from mechanical
-      transformation or translation of a Source form, including but
-      not limited to compiled object code, generated documentation,
-      and conversions to other media types.
+Usage  : copyright-file=<value>
+Type   : string, max 37 bytes
+Default: Not specified
+COMPAT : mkisofs -copyright <value>
 
-      "Work" shall mean the work of authorship, whether in Source or
-      Object form, made available under the License, as indicated by a
-      copyright notice that is included in or attached to the work
-      (an example is provided in the Appendix below).
+Specifies Copyright Filename.
+This file shall be described in the Root Directory
+and containing a copyright statement.
 
-      "Derivative Works" shall mean any work, whether in Source or Object
-      form, that is based on (or derived from) the Work and for which the
-      editorial revisions, annotations, elaborations, or other modifications
-      represent, as a whole, an original work of authorship. For the purposes
-      of this License, Derivative Works shall not include works that remain
-      separable from, or merely link (or bind by name) to the interfaces of,
-      the Work and Derivative Works thereof.
 
-      "Contribution" shall mean any work of authorship, including
-      the original version of the Work and any modifications or additions
-      to that Work or Derivative Works thereof, that is intentionally
-      submitted to Licensor for inclusion in the Work by the copyright owner
-      or by an individual or Legal Entity authorized to submit on behalf of
-      the copyright owner. For the purposes of this definition, "submitted"
-      means any form of electronic, verbal, or written communication sent
-      to the Licensor or its representatives, including but not limited to
-      communication on electronic mailing lists, source code control systems,
-      and issue tracking systems that are managed by, or on behalf of, the
-      Licensor for the purpose of discussing and improving the Work, but
-      excluding communication that is conspicuously marked or otherwise
-      designated in writing by the copyright owner as "Not a Contribution."
+## Files:
+libarchive/archive_read_support_filter_compress.c
 
-      "Contributor" shall mean Licensor and any individual or Legal Entity
-      on behalf of whom a Contribution has been received by Licensor and
-      subsequently incorporated within the Work.
+This code borrows heavily from "compress" source code, which is
+protected by the following copyright.  (Clause 3 dropped by request
+of the Regents.)
 
-   2. Grant of Copyright License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      copyright license to reproduce, prepare Derivative Works of,
-      publicly display, publicly perform, sublicense, and distribute the
-      Work and such Derivative Works in Source or Object form.
 
-   3. Grant of Patent License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      (except as stated in this section) patent license to make, have made,
-      use, offer to sell, sell, import, and otherwise transfer the Work,
-      where such license applies only to those patent claims licensable
-      by such Contributor that are necessarily infringed by their
-      Contribution(s) alone or by combination of their Contribution(s)
-      with the Work to which such Contribution(s) was submitted. If You
-      institute patent litigation against any entity (including a
-      cross-claim or counterclaim in a lawsuit) alleging that the Work
-      or a Contribution incorporated within the Work constitutes direct
-      or contributory patent infringement, then any patent licenses
-      granted to You under this License for that Work shall terminate
-      as of the date such litigation is filed.
+## Files:
+build/autoconf/ltmain.sh
 
-   4. Redistribution. You may reproduce and distribute copies of the
-      Work or Derivative Works thereof in any medium, with or without
-      modifications, and in Source or Object form, provided that You
-      meet the following conditions:
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-      (a) You must give any other recipients of the Work or
-          Derivative Works a copy of this License; and
 
-      (b) You must cause any modified files to carry prominent notices
-          stating that You changed the files; and
+## Files:
+libarchive/archive_random.c
 
-      (c) You must retain, in the Source form of any Derivative Works
-          that You distribute, all copyright, patent, trademark, and
-          attribution notices from the Source form of the Work,
-          excluding those notices that do not pertain to any part of
-          the Derivative Works; and
+Copyright (c) 1996, David Mazieres <dm@uun.org>
+Copyright (c) 2008, Damien Miller <djm@openbsd.org>
 
-      (d) If the Work includes a "NOTICE" text file as part of its
-          distribution, then any Derivative Works that You distribute must
-          include a readable copy of the attribution notices contained
-          within such NOTICE file, excluding those notices that do not
-          pertain to any part of the Derivative Works, in at least one
-          of the following places: within a NOTICE text file distributed
-          as part of the Derivative Works; within the Source form or
-          documentation, if provided along with the Derivative Works; or,
-          within a display generated by the Derivative Works, if and
-          wherever such third-party notices normally appear. The contents
-          of the NOTICE file are for informational purposes only and
-          do not modify the License. You may add Your own attribution
-          notices within Derivative Works that You distribute, alongside
-          or as an addendum to the NOTICE text from the Work, provided
-          that such additional attribution notices cannot be construed
-          as modifying the License.
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
 
-      You may add Your own copyright statement to Your modifications and
-      may provide additional or different license terms and conditions
-      for use, reproduction, or distribution of Your modifications, or
-      for any such Derivative Works as a whole, provided Your use,
-      reproduction, and distribution of the Work otherwise complies with
-      the conditions stated in this License.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-   5. Submission of Contributions. Unless You explicitly state otherwise,
-      any Contribution intentionally submitted for inclusion in the Work
-      by You to the Licensor shall be under the terms and conditions of
-      this License, without any additional terms or conditions.
-      Notwithstanding the above, nothing herein shall supersede or modify
-      the terms of any separate license agreement you may have executed
-      with Licensor regarding such Contributions.
 
-   6. Trademarks. This License does not grant permission to use the trade
-      names, trademarks, service marks, or product names of the Licensor,
-      except as required for reasonable and customary use in describing the
-      origin of the Work and reproducing the content of the NOTICE file.
+## Files:
+cpio/cpio_windows.c
+tar/bsdtar_windows.c
 
-   7. Disclaimer of Warranty. Unless required by applicable law or
-      agreed to in writing, Licensor provides the Work (and each
-      Contributor provides its Contributions) on an "AS IS" BASIS,
-      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-      implied, including, without limitation, any warranties or conditions
-      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
-      PARTICULAR PURPOSE. You are solely responsible for determining the
-      appropriateness of using or redistributing the Work and assume any
-      risks associated with Your exercise of permissions under this License.
+ win32error.c
+	  Map win32 error codes to errno values
 
-   8. Limitation of Liability. In no event and under no legal theory,
-      whether in tort (including negligence), contract, or otherwise,
-      unless required by applicable law (such as deliberate and grossly
-      negligent acts) or agreed to in writing, shall any Contributor be
-      liable to You for damages, including any direct, indirect, special,
-      incidental, or consequential damages of any character arising as a
-      result of this License or out of the use or inability to use the
-      Work (including but not limited to damages for loss of goodwill,
-      work stoppage, computer failure or malfunction, or any and all
-      other commercial damages or losses), even if such Contributor
-      has been advised of the possibility of such damages.
+ Portions Copyright (c) 1996-2008, PostgreSQL Global Development Group
 
-   9. Accepting Warranty or Additional Liability. While redistributing
-      the Work or Derivative Works thereof, You may choose to offer,
-      and charge a fee for, acceptance of support, warranty, indemnity,
-      or other liability obligations and/or rights consistent with this
-      License. However, in accepting such obligations, You may act only
-      on Your own behalf and on Your sole responsibility, not on behalf
-      of any other Contributor, and only if You agree to indemnify,
-      defend, and hold each Contributor harmless for any liability
-      incurred by, or claims asserted against, such Contributor by reason
-      of your accepting any such warranty or additional liability.
+ IDENTIFICATION
+	  $PostgreSQL: pgsql/src/port/win32error.c,v 1.4 2008/01/01 19:46:00 momjian Exp $
 
-   END OF TERMS AND CONDITIONS
+-------------------------------------------------------------------------
+
+
+## Files:
+cpio/cpio_windows.c
+tar/bsdtar_windows.c
+
+The following function was modified from PostgreSQL sources and is
+subject to the copyright below.
+
+
+## Files:
+libarchive/archive_entry.c
+
+Following code is modified from UC Berkeley sources, and
+is subject to the following copyright notice.
+
+
+## Files:
+libarchive/archive_getdate.c
+
+This code is in the public domain and has no copyright.
+
+This is a plain C recursive-descent translation of an old
+public-domain YACC grammar that has been used for parsing dates in
+very many open-source projects.
+
+Since the original authors were generous enough to donate their
+work to the public domain, I feel compelled to match their
+generosity.
+
+Tim Kientzle, February 2009.
+
+
+## Files:
+build/autoconf/ltmain.sh
+
+Copyright (C) 2010-2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+## Files:
+libarchive_fe/passphrase.c
+
+Copyright (c) 2000-2002, 2007, 2010
+	Todd C. Miller <millert@openbsd.org>
+
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Sponsored in part by the Defense Advanced Research Projects
+Agency (DARPA) and Air Force Research Laboratory, Air Force
+Materiel Command, USAF, under agreement number F39502-99-1-0512.
+
+
+## Files:
+build/autoconf/ltmain.sh
+
+Copyright (C) 1996-2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+## Files:
+cpio/cpio_windows.c
+tar/bsdtar_windows.c
+
+PostgreSQL Database Management System
+(formerly known as Postgres, then as Postgres95)
+
+Portions Copyright (c) 1996-2008, PostgreSQL Global Development Group
+
+Portions Copyright (c) 1994, The Regents of the University of California
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose, without fee, and without a written agreement
+is hereby granted, provided that the above copyright notice and this
+paragraph and the following two paragraphs appear in all copies.
+
+IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING
+LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS
+DOCUMENTATION, EVEN IF THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATIONS TO
+PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+
+## Files:
+doc/mdoc2man.awk
+doc/mdoc2wiki.awk
+
+Copyright (c) 2003 Peter Stuge <stuge-mdoc2man@cdy.org>
+
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+
+## Files:
+build/autoconf/ltmain.sh
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+
+## Files:
+build/autoconf/ltmain.sh
+
+As a special exception to the GNU General Public License, if you distribute
+this file as part of a program or library that is built using GNU Libtool,
+you may include this file under the same distribution terms that you use
+for the rest of that program.
+
+
+## Files:
+libarchive/archive_getdate.c
+
+*  Originally written by Steven M. Bellovin <smb@research.att.com> while
+*  at the University of North Carolina at Chapel Hill.  Later tweaked by
+*  a couple of people on Usenet.  Completely overhauled by Rich $alz
+*  <rsalz@bbn.com> and Jim Berets <jberets@bbn.com> in August, 1990;
+*
+*  This grammar has 10 shift/reduce conflicts.
+*
+*  This code is in the public domain and has no copyright.
+
+
+## Files:
+libarchive/archive_random.c
+
+Arc4 random number generator for OpenBSD.
+
+This code is derived from section 17.1 of Applied Cryptography,
+second edition, which describes a stream cipher allegedly
+compatible with RSA Labs "RC4" cipher (the actual description of
+which is a trade secret).  The same algorithm is used as a stream
+cipher called "arcfour" in Tatu Ylonen's ssh package.
+
+RC4 is a registered trademark of RSA Laboratories.
+
+
+## Files:
+unzip/la_queue.h
+
+ SPDX-License-Identifier: BSD-3-Clause
+
+ Copyright (c) 1991, 1993
+	The Regents of the University of California.  All rights reserved.
+
