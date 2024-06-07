@@ -1,0 +1,22 @@
+Create a log generating file.
+logging.sh:
+#!/bin/bash
+count=0
+while true; do
+count=$((count+1))
+echo "logging $count" >> ./logging.log
+sleep 1
+done
+
+Create a logrotation configure file.
+log-rotation.conf:
+/var/test/logging.log {
+size 1k
+rotate 10
+create
+}
+
+Set a cron job for logrotate to run as often as you would like with the following command:
+* * * * * logrotate <path_to_configuration_file>/log-rotation.conf
+Start running the logging script and it will write every second a line inside the logging.log file.
+Every time logrotate runs and the file is larger than 1k, it will create a new file and will keep up to 10 files.

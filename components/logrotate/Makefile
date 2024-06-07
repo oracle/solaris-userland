@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER = gcc
@@ -28,14 +28,14 @@ COMPILER = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		logrotate
-COMPONENT_VERSION=	3.20.1
+COMPONENT_VERSION=	3.21.0
 COMPONENT_PROJECT_URL=	https://github.com/logrotate/logrotate/releases/download
 COMPONENT_ARCHIVE_HASH= \
-    sha256:dbbe4e63f00aadbf7ee67bb4c654c2547cf391f51c180621077c9fbf83bd71ab
+	sha256:1680947a9431de1aaa629fedde358696ff49a808ae903feecf996682949e3cff
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	10567
 
-COMPONENT_BAID=		129002
+COMPONENT_BAID=	167636
 
 include $(WS_MAKE_RULES)/common.mk
 
