@@ -20,11 +20,9 @@ use Squid_MaxFD (which already reflects RLIMIT_NOFILE setting).
  src/comm/ModDevPoll.cc | 26 +++++++++++---------------
  1 file changed, 11 insertions(+), 15 deletions(-)
 
-diff --git a/src/comm/ModDevPoll.cc b/src/comm/ModDevPoll.cc
-index 5d4841bcdea..f2185261832 100644
---- a/src/comm/ModDevPoll.cc
-+++ b/src/comm/ModDevPoll.cc
-@@ -17,10 +17,7 @@
+--- squid-6.9/src/comm/ModDevPoll.cc
++++ squid-6.9/src/comm/ModDevPoll.cc
+@@ -17,10 +17,7 @@ * can zero out an entry in the poll list
   *
   * Ported by Peter Payne from Squid 2.7.STABLE9 comm_devpoll.c
   * on August 11, 2010 at 3pm (GMT+0100 Europe/London).
@@ -35,7 +33,7 @@ index 5d4841bcdea..f2185261832 100644
  /*
   * There are several poll types in Squid, ALL of which are compiled and linked
   * in. Thus conditional compile-time flags are used to prevent the different
-@@ -48,10 +45,6 @@
+@@ -49,10 +46,6 @@ #endif
  
  #define DEBUG_DEVPOLL 0
  
@@ -46,7 +44,7 @@ index 5d4841bcdea..f2185261832 100644
  /* TYPEDEFS */
  typedef short pollfd_events_t; /* type of pollfd.events from sys/poll.h */
  
-@@ -128,7 +121,7 @@ comm_flush_updates(void)
+@@ -129,7 +122,7 @@ * @param fd file descriptor to register
   * @param events events to register (usually POLLIN, POLLOUT, or POLLREMOVE)
   */
  static void
@@ -55,7 +53,7 @@ index 5d4841bcdea..f2185261832 100644
  {
      debugs(
          5,
-@@ -178,20 +171,23 @@ Comm::SelectLoopInit(void)
+@@ -179,20 +172,23 @@ {
      /* allocate memory first before attempting to open poll device */
      /* This tracks the FD devpoll offset+state */
      devpoll_state = (struct _devpoll_state *)xcalloc(

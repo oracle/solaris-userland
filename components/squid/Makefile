@@ -31,9 +31,9 @@ PATH=$(USRBINDIR):$(GNUBIN):$(USRSBINDIR):$(USRDIR)/perl5/bin
 
 COMPONENT_NAME=         squid
 COMPONENT_PROJECT_URL=  http://www.squid-cache.org/
-COMPONENT_VERSION=      6.7
-COMPONENT_BAID=		158657
-COMPONENT_ARCHIVE_HASH= sha256:e14daa4eae41925d1ae3f08e64439a6aaa3011bdced686628b8de697d5ab8428
+COMPONENT_VERSION=      6.9
+COMPONENT_BAID=		168354
+COMPONENT_ARCHIVE_HASH= sha256:ac24b2a54aa835c3fb948bb205a178689d70d912f9fa6e20115d6d37aa70c38f
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)Versions/v6/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
@@ -109,7 +109,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	echo '\ncache_effective_user webservd' >> squid.conf)
 
 # Adjust '#!/usr/bin/perl'
-PERL_SCRIPTS= $(PROTOUSRDIR)/squid/libexec/helper-mux.pl
+PERL_SCRIPTS= $(PROTOUSRDIR)/squid/libexec/helper-mux
 
 # Clean test-suite directory to get the same results regardless of
 # how many times 'gmake test' command was called (some tests are
@@ -129,6 +129,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Testsuite summary/d" ' \
 	'-E -e "/^(\# )?ERROR/p" '
 
+# cppunit is required for testing
+REQUIRED_PACKAGES += developer/c++/cppunit
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libtool/libltdl

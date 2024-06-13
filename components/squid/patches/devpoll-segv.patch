@@ -6,9 +6,9 @@ https://bugs.squid-cache.org/show_bug.cgi?id=5314
 
 Part of the fix for Oracle Solaris Bug 35949097
 
---- squid-5.9-prev/src/comm/ModDevPoll.cc	2023-10-26 16:56:48.051326694 -0700
-+++ squid-5.9/src/comm/ModDevPoll.cc	2023-10-26 18:55:57.663657015 -0700
-@@ -176,6 +176,9 @@
+--- squid-6.9/src/comm/ModDevPoll.cc
++++ squid-6.9/src/comm/ModDevPoll.cc
+@@ -169,6 +169,9 @@ */
  void
  Comm::SelectLoopInit(void)
  {
@@ -16,9 +16,9 @@ Part of the fix for Oracle Solaris Bug 35949097
 +        return;
 +    
      /* allocate memory first before attempting to open poll device */
-     /* This is the stuff we use to read events.  If it's larger than
-        the current RLIMIT_NOFILE, the Solaris kernel returns EINVAL. */
-@@ -228,6 +231,9 @@
+     /* This tracks the FD devpoll offset+state */
+     devpoll_state = (struct _devpoll_state *)xcalloc(
+@@ -224,6 +227,9 @@ debugs(5, 5, "FD " << fd << ", type=" <<
             ", handler=" << handler << ", client_data=" << client_data <<
             ", timeout=" << timeout);
  
