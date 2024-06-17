@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 # By default the .packlist is removed from any perl module, but we want to keep
@@ -33,4 +33,10 @@ dir  path=usr/perl5/site_perl/$(PERL_VERSION)/$(P_ARCH)-solaris-thread-multi-64
 link path=usr/perl5/bin target=$(PERL_VERSION)/bin mediator=perl
 link path=usr/perl5/man target=$(PERL_VERSION)/man mediator=perl
 link path=usr/perl5/pod target=$(PERL_VERSION)/lib/pod mediator=perl
+
+file release-notes/perl-5.36.txt \
+    path=usr/share/doc/release-notes/perl-5.36.txt \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 
