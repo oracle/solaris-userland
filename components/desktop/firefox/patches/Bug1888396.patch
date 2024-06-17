@@ -1,0 +1,112 @@
+https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
+
+--- firefox-115.12.0/gfx/skia/skia/include/private/SkColorData.h
++++ firefox-115.12.0/gfx/skia/skia/include/private/SkColorData.h
+@@ -12,6 +12,13 @@ #include "include/core/SkColor.h"
+ #include "include/core/SkColorPriv.h"
+ #include "include/private/base/SkTo.h"
+ 
++/* Macro to covert between big endian and little endian memory order. */
++#ifdef SK_CPU_BENDIAN
++#define BE_CONVERT(c) ((((c) & 0xff)<<24) | (((c) & 0xff00)<<8) | (((c) & 0xff0000)>>8) | (((c) & 0xff000000)>>24))
++#else
++#define BE_CONVERT(c) c
++#endif
++
+ ////////////////////////////////////////////////////////////////////////////////////////////
+ // Convert a 16bit pixel to a 32bit pixel
+ 
+--- firefox-115.12.0/gfx/skia/skia/src/core/SkBlitRow_D32.cpp
++++ firefox-115.12.0/gfx/skia/skia/src/core/SkBlitRow_D32.cpp
+@@ -307,7 +307,7 @@ }
+ void SkBlitRow::Color32(SkPMColor dst[], const SkPMColor src[], int count, SkPMColor color) {
+     switch (SkGetPackedA32(color)) {
+         case   0: memmove(dst, src, count * sizeof(SkPMColor)); return;
+-        case 255: SkOpts::memset32(dst, color, count);               return;
++        case 255: SkOpts::memset32(dst, BE_CONVERT(color), count); return;
+     }
+-    return SkOpts::blit_row_color32(dst, src, count, color);
++    return SkOpts::blit_row_color32(dst, src, count, BE_CONVERT(color));
+ }
+--- firefox-115.12.0/gfx/skia/skia/src/core/SkBlitter_ARGB32.cpp
++++ firefox-115.12.0/gfx/skia/skia/src/core/SkBlitter_ARGB32.cpp
+@@ -721,7 +721,7 @@ }
+         unsigned aa = antialias[0];
+         if (aa) {
+             if ((opaqueMask & aa) == 255) {
+-                SkOpts::memset32(device, color, count);
++                SkOpts::memset32(device, BE_CONVERT(color), count);
+             } else {
+                 uint32_t sc = SkAlphaMulQ(color, SkAlpha255To256(aa));
+                 SkBlitRow::Color32(device, device, count, sc);
+@@ -737,17 +737,17 @@ void SkARGB32_Blitter::blitAntiH2(int x,
+     uint32_t* device = fDevice.writable_addr32(x, y);
+     SkDEBUGCODE((void)fDevice.writable_addr32(x + 1, y);)
+ 
+-    device[0] = SkBlendARGB32(fPMColor, device[0], a0);
+-    device[1] = SkBlendARGB32(fPMColor, device[1], a1);
++    device[0] = BE_CONVERT(SkBlendARGB32(fPMColor, BE_CONVERT(device[0]), a0));
++    device[1] = BE_CONVERT(SkBlendARGB32(fPMColor, BE_CONVERT(device[1]), a1));
+ }
+ 
+ void SkARGB32_Blitter::blitAntiV2(int x, int y, U8CPU a0, U8CPU a1) {
+     uint32_t* device = fDevice.writable_addr32(x, y);
+     SkDEBUGCODE((void)fDevice.writable_addr32(x, y + 1);)
+ 
+-    device[0] = SkBlendARGB32(fPMColor, device[0], a0);
++    device[0] = BE_CONVERT(SkBlendARGB32(fPMColor, BE_CONVERT(device[0]), a0));
+     device = (uint32_t*)((char*)device + fDevice.rowBytes());
+-    device[0] = SkBlendARGB32(fPMColor, device[0], a1);
++    device[0] = BE_CONVERT(SkBlendARGB32(fPMColor, BE_CONVERT(device[0]), a1));
+ }
+ 
+ //////////////////////////////////////////////////////////////////////////////////////
+@@ -838,17 +838,17 @@ void SkARGB32_Opaque_Blitter::blitAntiH2
+     uint32_t* device = fDevice.writable_addr32(x, y);
+     SkDEBUGCODE((void)fDevice.writable_addr32(x + 1, y);)
+ 
+-    device[0] = SkFastFourByteInterp(fPMColor, device[0], a0);
+-    device[1] = SkFastFourByteInterp(fPMColor, device[1], a1);
++    device[0] = BE_CONVERT(SkFastFourByteInterp(fPMColor, BE_CONVERT(device[0]), a0));
++    device[1] = BE_CONVERT(SkFastFourByteInterp(fPMColor, BE_CONVERT(device[1]), a1));
+ }
+ 
+ void SkARGB32_Opaque_Blitter::blitAntiV2(int x, int y, U8CPU a0, U8CPU a1) {
+     uint32_t* device = fDevice.writable_addr32(x, y);
+     SkDEBUGCODE((void)fDevice.writable_addr32(x, y + 1);)
+ 
+-    device[0] = SkFastFourByteInterp(fPMColor, device[0], a0);
++    device[0] = BE_CONVERT(SkFastFourByteInterp(fPMColor, BE_CONVERT(device[0]), a0));
+     device = (uint32_t*)((char*)device + fDevice.rowBytes());
+-    device[0] = SkFastFourByteInterp(fPMColor, device[0], a1);
++    device[0] = BE_CONVERT(SkFastFourByteInterp(fPMColor, BE_CONVERT(device[0]), a1));
+ }
+ 
+ ///////////////////////////////////////////////////////////////////////////////
+@@ -868,7 +868,7 @@ }
+     unsigned dst_scale = SkAlpha255To256(255 - SkGetPackedA32(color));
+     size_t rowBytes = fDevice.rowBytes();
+     while (--height >= 0) {
+-        device[0] = color + SkAlphaMulQ(device[0], dst_scale);
++        device[0] = BE_CONVERT(color + SkAlphaMulQ(BE_CONVERT(device[0]), dst_scale));
+         device = (uint32_t*)((char*)device + rowBytes);
+     }
+ }
+@@ -885,7 +885,7 @@ uint32_t    color = fPMColor;
+     size_t      rowBytes = fDevice.rowBytes();
+ 
+     if (SkGetPackedA32(fPMColor) == 0xFF) {
+-        SkOpts::rect_memset32(device, color, width, rowBytes, height);
++        SkOpts::rect_memset32(device, BE_CONVERT(color), width, rowBytes, height);
+     } else {
+         while (height --> 0) {
+             SkBlitRow::Color32(device, device, width, color);
+@@ -914,7 +914,7 @@ }
+         unsigned aa = antialias[0];
+         if (aa) {
+             if (aa == 255) {
+-                SkOpts::memset32(device, black, count);
++                SkOpts::memset32(device, BE_CONVERT(black), count);
+             } else {
+                 SkPMColor src = aa << SK_A32_SHIFT;
+                 unsigned dst_scale = 256 - aa;
