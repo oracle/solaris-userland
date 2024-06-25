@@ -37,6 +37,35 @@ COMPONENT_ANITYA_ID=	1611
 
 COMPONENT_BAID=	136310
 
+# For version update, we want to continue to provide the libffi.so
+# (and its links) from version 3.2.1.
+COMPONENT_VERSION_1 =	3.2.1
+COMPONENT_BAID_1=	22315
+COMPONENT_SRC_1 =	$(COMPONENT_NAME)-$(COMPONENT_VERSION_1)
+COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.gz
+COMPONENT_ARCHIVE_HASH_1 = \
+	sha256:d06ebb8e1d9a22d19e38d63fdb83954253f39bedc5d46232a05645685722ca37
+COMPONENT_ARCHIVE_URL_1 =	ftp://sources.redhat.com/pub/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE_1)
+SOURCE_DIR_1 =		$(COMPONENT_DIR)/$(COMPONENT_SRC_1)
+
+BUILD_OLD_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)
+BUILD_OLD_DIR_64 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH64)
+
+$(BUILD_OLD_DIR_32)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
+$(BUILD_OLD_DIR_64)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
+$(BUILD_OLD_DIR_32)/.configured:	BITS=32
+$(BUILD_OLD_DIR_64)/.configured:	BITS=64
+
+BUILD_32 += $(BUILD_OLD_DIR_32)/.built
+BUILD_64 += $(BUILD_OLD_DIR_64)/.built
+
+INSTALL_32 += $(BUILD_OLD_DIR_32)/.installed
+INSTALL_64 += $(BUILD_OLD_DIR_64)/.installed
+
+# install the old version first
+$(BUILD_DIR_32)/.installed:	$(BUILD_OLD_DIR_32)/.installed
+$(BUILD_DIR_64)/.installed:	$(BUILD_OLD_DIR_64)/.installed
+
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_TEST_DIR =	$(@D)/testsuite
