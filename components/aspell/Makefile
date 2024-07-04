@@ -20,17 +20,17 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		aspell
-COMPONENT_VERSION=	0.60.8
+COMPONENT_VERSION=	0.60.8.1
 COMPONENT_PROJECT_URL=	http://aspell.net/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f9b77e515334a751b2e60daab5db23499e26c9209f5e7b7443b05235ad0226f2
+    sha256:d6da12b34d42d457fa604e435ad484a74b2effcd120ff40acd6bb3fb2887d21b
 COMPONENT_ANITYA_ID=	120
 
 COMPONENT_NAME_1=	aspell6-en
@@ -44,7 +44,7 @@ COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 SOURCE_DIR_1=		$(COMPONENT_DIR)/$(COMPONENT_SRC_1)
 COMPONENT_ANITYA_ID_1=	7838
 
-COMPONENT_BAID=		74382
+COMPONENT_BAID=		169297
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnu-component.mk
