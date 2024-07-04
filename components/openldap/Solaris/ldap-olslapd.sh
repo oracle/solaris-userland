@@ -223,7 +223,7 @@ function version_check
 		oldvers=$(grep 'OpenLDAP: slapd' $VERSION_FILE | cut -d" " -f4)
 		if [[ "$curvers" == "$oldvers" ]]; then
 			:
-		elif [[ $oldvers == "2.6."@([4-6]) ]]; then
+		elif [[ $oldvers == "2.6."@([4-7]) ]]; then
 			logit "Notice: Compatible version $oldvers with $curvers"
 			version_update
 		else
@@ -239,7 +239,7 @@ function version_check
 		elif [[ $db == "MDB" ]]; then
 			# Is current version a recognised version?
 			case $curvers in
-			    ("2.6."@([4-7]))
+			    ("2.6."@([4-8]))
 				logit "Notice: $db database compatible for " \
 					$curvers
 				version_update
