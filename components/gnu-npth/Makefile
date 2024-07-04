@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 # gnupth only delivers scripts that embed paths, so prefer 32-bit.
 BUILD_BITS= 32_and_64
@@ -28,17 +28,17 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		npth
-COMPONENT_VERSION=	1.5
+COMPONENT_VERSION=	1.7
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:294a690c1f537b92ed829d867bee537e46be93fbd60b16c04630fbbfcd9db3c2
+    sha256:8589f56937b75ce33b28d312fccbf302b3b71ec3f3945fde6aaa74027914ad05
 COMPONENT_BUGDB=	library/pth
 COMPONENT_ANITYA_ID=	2505
 
 COMPONENT_ARCHIVE_URL=https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=$(COMPONENT_ARCHIVE_URL).sig
 
-COMPONENT_BAID=	48663
+COMPONENT_BAID=		168893
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -58,6 +58,7 @@ LDFLAGS =	-lpthread -lposix4 -lrt
 
 CONFIGURE_OPTIONS  +=	--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS  +=	--with-pic
+CONFIGURE_OPTIONS  +=	--enable-install-npth-config
 
 CONFIGURE_ENV += LD="$(CC) $(CFLAGS) $(LDFLAGS)"
 CONFIGURE_ENV += CPP="$(CC) $(CPPFLAGS) $(CFLAGS) -E"

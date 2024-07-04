@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through volatile">
 set name=pkg.fmri \
@@ -38,11 +38,13 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/$(MACH64)/npth-config
 file path=usr/bin/npth-config
 file path=usr/include/npth.h
-link path=usr/lib/$(MACH64)/libnpth.so target=libnpth.so.0.1.1
-link path=usr/lib/$(MACH64)/libnpth.so.0 target=libnpth.so.0.1.1
-file path=usr/lib/$(MACH64)/libnpth.so.0.1.1
-link path=usr/lib/libnpth.so target=libnpth.so.0.1.1
-link path=usr/lib/libnpth.so.0 target=libnpth.so.0.1.1
-file path=usr/lib/libnpth.so.0.1.1
+link path=usr/lib/$(MACH64)/libnpth.so target=libnpth.so.0.2.0
+link path=usr/lib/$(MACH64)/libnpth.so.0 target=libnpth.so.0.2.0
+file path=usr/lib/$(MACH64)/libnpth.so.0.2.0
+file path=usr/lib/$(MACH64)/pkgconfig/npth.pc
+link path=usr/lib/libnpth.so target=libnpth.so.0.2.0
+link path=usr/lib/libnpth.so.0 target=libnpth.so.0.2.0
+file path=usr/lib/libnpth.so.0.2.0
+file path=usr/lib/pkgconfig/npth.pc
 file path=usr/share/aclocal/npth.m4
 license COPYING.LIB license=LGPLv2.1
