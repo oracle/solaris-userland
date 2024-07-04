@@ -41,15 +41,15 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.18.25
+COMPONENT_VERSION=	9.18.27
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-COMPONENT_BAID=		162335
+COMPONENT_BAID=		168803
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:5a4a70432a33d009f0e6e9dbb328aae7a5e27507e98e28bf3c0c6b250ccb2ab3
+	sha256:ea3f3d8cfa2f6ae78c8722751d008f54bc17a3aed2be3f7399eb7bf5f4cda8f1
 COMPONENT_ARCHIVE_URL=	\
 	http://ftp.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 # For check_anitya target, https://release-monitoring.org/project/242117
@@ -195,14 +195,14 @@ COMPONENT_TEST_TRANSFORMS +=	\
 	'-e "s|/tmp/BIND|\\$$(BUILD_DIR)|g" '
 
 # This is a handy test target for developer.  Please leave functional.
-test-named-version test-version:
+test-named-version test-version: build
 	LD_LIBRARY_PATH=$(PROTO_DIR)$(CONFIGURE_LIBDIR.64) \
 		$(PROTO_DIR)$(CONFIGURE_SBINDIR.64)/named -V; \
 
 # Check bind.license against source files. The real source should be that
 # obtained from the TPNO database . This serves as a reminder.
 e = /usr/gnu/bin/echo
-test-license:
+test-license: unpack
 	@$(MKDIR) -p $(BUILD_DIR)
 	@( \
 		$e -n '-------------------------------';\
@@ -225,7 +225,14 @@ test-license:
 		$e '   /ws/bugdb-tools/bin/tpno --arn -ba $(COMPONENT_BAID)';\
 		)
 
-.PHONY: republish test-license test-named-version test-version
+# Create bind tar file of build directory and source for testing else where.
+test-tar: build
+	$(TAR) zcf test.$(COMPONENT_SRC).$(MACH).tar.gz build $(COMPONENT_SRC)
+	@$e 'created test.$(COMPONENT_SRC).$(MACH).tar.gz'
+	@$e 'unpack into identical directory name on test machine:'
+	@pwd
+
+.PHONY: republish test-license test-named-version test-version test-tar
 
 # When updating workspace from one version to another, i.e. 9.16.28 to 9.16.29,
 # it seems the publisher package repository needs clearing out;
