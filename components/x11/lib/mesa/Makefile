@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -95,6 +95,13 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 	done ; \
 	$(ELFEDIT) -e "dyn:runpath /usr/lib/xorg$$dir64" \
 	  $(PROTOUSRLIBDIR)/xorg/modules/dri$$dir64/swrast_dri.so ;
+
+# 32-bit libs requiring GL libs need to find libdrm
+COMPONENT_POST_INSTALL_ACTION.32 += \
+	for f in libgbm.so.1.0.0 libEGL.so.1.0.0 libGL.so.1.2.0 ; do \
+	$(ELFEDIT) -e "dyn:runpath /usr/lib/xorg" \
+	  $(PROTOUSRLIBDIR)/$$f ; \
+	done ;
 
 REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += developer/gnu-indent
