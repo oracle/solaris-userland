@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		diffutils
-COMPONENT_VERSION=	3.8
+COMPONENT_VERSION=	3.10
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a6bdd7d1b31266d11c4f4de6c1b748d4607ab0231af5188fc2533d0ae2438fec
+	sha256:6b2df7b83de68e95670e21213ea69489394410275f4cfe70d358508c6e255ce1
 COMPONENT_BUGDB=	utility/gnu-diffutils
 COMPONENT_ANITYA_ID=	436
 
-COMPONENT_BAID=		110266
+COMPONENT_BAID=	168774
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 
@@ -60,6 +60,10 @@ CONFIGURE_OPTIONS  +=		--localedir=$(USRSHARELOCALEDIR)
 unexport SHELLOPTS
 
 COMPONENT_TEST_DIR =	$(@D)/tests
+
+# Some tests will execute gdiff (which is not in build area).
+# This avoids gdiff using from system.
+COMPONENT_PRE_TEST_ACTION += $(CP) $(@D)/src/diff $(@D)/src/gdiff;
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|^make.*: Leaving directory.*$$|XXX_CC_XXX|g" ' \
