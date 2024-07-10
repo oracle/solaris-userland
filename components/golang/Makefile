@@ -31,17 +31,17 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		golang
-COMPONENT_VERSION=	1.21.11
+COMPONENT_VERSION=	1.21.12
 COMPONENT_MAJOR_VERSION= \
 	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\.[0-9]\+\).*/\1/')
 COMPONENT_PROJECT_URL=	https://golang.org/
 COMPONENT_ARCHIVE=	go$(COMPONENT_VERSION).src.tar.gz
 COMPONENT_ARCHIVE_URL=	https://storage.googleapis.com/golang/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	 \
-	sha256:1de4484364552348f77012fb157e1473a48a02c066647ae04db88846b0e3b773
+	sha256:a8c1ac39ecfddae70ebd3c52b6e50ea139c480a643fcfdbbff5e3bcefcfbe534
 COMPONENT_PROJECT_URL=	https://golang.org
 COMPONENT_ANITYA_ID=	1227
-COMPONENT_BAID=		168155
+COMPONENT_BAID=		171064
 
 # Use a simple copy instead of cloney.
 CLONEY := echo
