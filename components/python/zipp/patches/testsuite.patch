@@ -1,21 +1,22 @@
-Packages jaraco.itertools and jaraco.functools are not available on Solaris.
+Packages jaraco.itertools, jaraco.functools and jaraco.test
+are not available on Solaris.
 
 The compose() code below is taken directly from jaraco.functools.
 https://github.com/jaraco/jaraco.functools
 
---- zipp-3.18.1/tests/test_path.py
-+++ zipp-3.18.1/tests/test_path.py
+--- zipp-3.19.2/tests/test_path.py
++++ zipp-3.19.2/tests/test_path.py
 @@ -1,6 +1,7 @@
  import io
  import itertools
  import contextlib
 +import functools
  import pathlib
- import tempfile
- import shutil
-@@ -9,8 +10,33 @@ import sys
- import unittest
- import zipfile
+ import pickle
+ import stat
+@@ -10,8 +11,33 @@ from .compat.overlay import zipfile
+ 
+ from .compat.py39.os_helper import temp_dir, FakePath
  
 -import jaraco.itertools
 -from jaraco.functools import compose
@@ -47,9 +48,9 @@ https://github.com/jaraco/jaraco.functools
 +
 +    return functools.reduce(compose_two, funcs)
  
- import zipp
+ from ._test_params import parameterize, Invoked
  
-@@ -320,17 +346,6 @@ class TestPath(unittest.TestCase):
+@@ -319,17 +345,6 @@ class TestPath(unittest.TestCase):
          zf.mode = 'r'
          return zf
  
@@ -57,7 +58,7 @@ https://github.com/jaraco/jaraco.functools
 -        """
 -        Ensure joinpath on items in zipfile is linear time.
 -        """
--        root = zipp.Path(self.huge_zipfile())
+-        root = zipfile.Path(self.huge_zipfile())
 -        entries = jaraco.itertools.Counter(root.iterdir())
 -        for entry in entries:
 -            entry.joinpath('suffix')
@@ -67,3 +68,28 @@ https://github.com/jaraco/jaraco.functools
      @pass_alpharep
      def test_read_does_not_close(self, alpharep):
          alpharep = self.zipfile_ondisk(alpharep)
+--- zipp-3.19.2/tests/compat/py39.py
++++ zipp-3.19.2/tests/compat/py39.py
+@@ -1,11 +1,15 @@
+ import sys
+ 
+-from jaraco.test.cpython import from_test_support, try_import
+-
+-
+-os_helper = try_import('os_helper') or from_test_support(
+-    'FakePath',
+-    'temp_dir',
+-)
++try:
++    from test.support import os_helper
++except ImportError:
++    import test.support
++    import types
++    os_helper = types.SimpleNamespace(
++        **{
++            "FakePath": test.support.FakePath,
++            "temp_dir": test.support.temp_dir,
++        }
++    )
+ 
+ sys.modules[__name__ + '.os_helper'] = os_helper
