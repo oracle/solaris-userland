@@ -3,8 +3,8 @@ Patch status: Solaris-specific; not suitable for upstream
 
 Drops extra privilege which was given via SMF manifest file.
 
---- httpd-2.4.55/server/main.c
-+++ httpd-2.4.55/server/main.c
+--- httpd-2.4.61/server/main.c
++++ httpd-2.4.61/server/main.c
 @@ -46,6 +46,8 @@ #if APR_HAVE_UNISTD_H
  #include <unistd.h>
  #endif
@@ -22,7 +22,7 @@ Drops extra privilege which was given via SMF manifest file.
      APR_OPTIONAL_FN_TYPE(ap_signal_server) *signal_server;
      int rc = OK;
  
-@@ -852,6 +855,20 @@ apr_pool_lock(pconf, 1);
+@@ -854,6 +857,20 @@ apr_pool_lock(pconf, 1);
  
          ap_run_optional_fn_retrieve();
  
