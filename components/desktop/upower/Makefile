@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,17 +30,17 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		upower
-COMPONENT_VERSION=	0.99.19
+COMPONENT_VERSION=	1.90.4
 COMPONENT_PROJECT_URL=	https://gitlab.freedesktop.org/upower/upower
 COMPONENT_SRC=		$(COMPONENT_NAME)-v$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e5bda2f5837ee311f5b7b6ec9549b029c88f4958011c6a8f5550b54408ee06ae
+	sha256:bfd0ff3be2be3176c64b78b24b6c7c0782f97777b4d9cb538509b5444ca135e1
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/-/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/upower
 COMPONENT_ANITYA_ID=	5056
 
-COMPONENT_BAID=		126474
+COMPONENT_BAID=		171480
 BUILD_STYLE=		meson
 
 # Tests do not work on Solaris yet
