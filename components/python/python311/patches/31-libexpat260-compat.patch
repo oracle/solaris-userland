@@ -14,9 +14,9 @@ CVE-2023-52425. Future versions of Expat may be more reactive.
 
 Co-authored-by: Serhiy Storchaka <storchaka@gmail.com>
 
---- a/Lib/test/test_xml_etree.py
-+++ b/Lib/test/test_xml_etree.py
-@@ -13,6 +13,7 @@
+--- Python-3.11.8/Lib/test/test_xml_etree.py
++++ Python-3.11.8/Lib/test/test_xml_etree.py
+@@ -13,6 +13,7 @@ import itertools
  import operator
  import os
  import pickle
@@ -24,7 +24,7 @@ Co-authored-by: Serhiy Storchaka <storchaka@gmail.com>
  import sys
  import textwrap
  import types
-@@ -120,6 +121,10 @@
+@@ -120,6 +121,10 @@ ATTLIST_XML = """\
  </foo>
  """
  
@@ -35,7 +35,7 @@ Co-authored-by: Serhiy Storchaka <storchaka@gmail.com>
  def checkwarnings(*filters, quiet=False):
      def decorator(test):
          def newtest(*args, **kwargs):
-@@ -1397,28 +1402,37 @@ def assert_event_tags(self, parser, expected, max_events=None):
+@@ -1400,28 +1405,37 @@ class XMLPullParserTest(unittest.TestCas
          self.assertEqual([(action, elem.tag) for action, elem in events],
                           expected)
  
