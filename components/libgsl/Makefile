@@ -20,30 +20,28 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
+
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gsl
-COMPONENT_VERSION=	2.4
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:4d46d07b946e7b31c19bbf33dda6204d7bedc2f5462a1bae1d4013426cd1ce9b
+COMPONENT_VERSION=	2.8
+COMPONENT_BAID=		170486
+COMPONENT_ARCHIVE_HASH=	sha256:6a99eeed15632c6354895b1dd542ed5a855c0f15d9ad1326c6fe2b2c9e423190
 COMPONENT_BUGDB=	library/libgsl
 COMPONENT_ANITYA_ID=	1267
 
-COMPONENT_BAID=		41177
+include $(WS_MAKE_RULES)/gnu-component.mk
 
-TEST_TARGET=
-SYSTEM_TEST_TARGET=
+# C11 extends complex
+CFLAGS += -std=c11
 
 # This component is using static libraries .a internally and these are not
 # compatible with PIE building
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
-
-include $(WS_MAKE_RULES)/gnu-component.mk
-
 
 # NOTE:
 # The libgsl package on Solaris is getting GSL CBLAS routines from
@@ -88,23 +86,34 @@ LDFLAGS += $(LD_DEF_LIBS)
 STUDIO_LIBS_PATH.32 =	$(USRLIBDIR)/studio
 STUDIO_LIBS_PATH.64 =	$(USRLIBDIR)/studio/64
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "s|^.*$(CC).*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^.*source=.*libtool=no.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^.*DEPDIR=.deps.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^make.*: Leaving directory.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^make.*: Entering directory.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^make.*: Nothing to be.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^.*warning:.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^.*s up to date.*$$|XXX_CC_XXX|g" ' \
-	'-e "/^XXX_CC_XXX$$/d" '
+COMPONENT_POST_INSTALL_ACTION += \
+   $(GSED) -i -e 's% -[RL]/usr/lib/$(MACH64)%%g;s% -[RL]/usr/lib%%g' $(PROTOUSRBINDIR)/gsl-config ; \
+   $(MKDIR) $(PROTOUSRBINDIR64) ; $(MKDIR) $(PROTOUSRBINDIR)/$(MACH32) ; \
+   $(RM) $(PROTOUSRBINDIR64)/gsl-config $(PROTOUSRBINDIR)/$(MACH32)/gsl-config ; \
+   $(SYMLINK) ../gsl-config $(PROTOUSRBINDIR)/$(MACH32)/gsl-config ; \
+   $(SYMLINK) ../gsl-config $(PROTOUSRBINDIR64)/gsl-config ;
 
 # Get correct libgsl.so from the proto area.
 TEST_LIBPATH.32 =	$(PROTOUSRLIBDIR)
 TEST_LIBPATH.64 =	$(PROTOUSRLIBDIR64)
+$(BUILD_DIR)/sparcv7/.tested $(BUILD_DIR)/sparcv7/.tested-and-compared: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-sparcv7.master
+$(BUILD_DIR)/sparcv9/.tested $(BUILD_DIR)/sparcv9/.tested-and-compared: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-sparcv9.master
+$(BUILD_DIR)/i86/.tested $(BUILD_DIR)/i86/.tested-and-compared: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-i86.master
+$(BUILD_DIR)/amd64/.tested $(BUILD_DIR)/amd64/.tested-and-compared: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-amd64.master
+COMPONENT_TEST_ARGS+= -k -i
 COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
+# Only the #'s of passed/failed tests are verified for change
+COMPONENT_TEST_TRANSFORMS += \
+	'-n ' \
+	'-e "/TESTDONE:/p" ' \
+	'-e "/TESTFAIL:/p" ' \
+	'-e "/ TOTAL:/p" ' \
+	'-e "/ PASS:/p" ' \
+	'-e "/ SKIP:/p" ' \
+	'-e "/ XFAIL:/p" ' \
+	'-e "/ FAIL:/p" ' \
+	'-e "/ XPASS:/p" ' \
+	'-e "/ ERROR:/p" '
 
 # Needed for "gmake test" to work successfully.
 # If SHELLOPTS is exported (as it is by the userland makefiles),
@@ -114,11 +123,5 @@ COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
 # diffs failing due to script tracing in output files.
 unexport SHELLOPTS
 
-test:		install $(TEST_32_and_64)
-
-system-test:    build $(SYSTEM_TEST_32_and_64)
-
-REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/library/openmp
 REQUIRED_PACKAGES += system/library/sunperf

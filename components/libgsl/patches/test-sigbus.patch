@@ -1,0 +1,38 @@
+--- a/filter/test.c	2024-07-15 11:35:26.107475035 +0200
++++ b/filter/test.c	2024-07-15 11:30:21.433022185 +0200
+@@ -68,6 +68,16 @@
+ int
+ main()
+ {
++
++#ifdef __sparcv9
++  /* if the code will address misaligned memory address then no SIGBUS is triggered but kernel
++     will emulate the instruction like it was performed against the properly aligned location.
++     Based on API introduced by: PSARC/2014/056
++  */
++  int __sparc_fixalign(int);
++  (void) __sparc_fixalign(1);
++#endif
++
+   gsl_rng * r = gsl_rng_alloc(gsl_rng_default);
+ 
+   test_gaussian(r);
+--- a/movstat/test.c	2024-07-15 11:35:26.107475035 +0200
++++ b/movstat/test.c	2024-07-15 11:30:21.433022185 +0200
+@@ -91,6 +91,16 @@
+ int
+ main()
+ {
++
++#ifdef __sparcv9
++  /* if the code will address misaligned memory address then no SIGBUS is triggered but kernel
++     will emulate the instruction like it was performed against the properly aligned location.
++     Based on API introduced by: PSARC/2014/056
++  */
++  int __sparc_fixalign(int);
++  (void) __sparc_fixalign(1);
++#endif
++
+   gsl_rng *r = gsl_rng_alloc(gsl_rng_default);
+ 
+   test_mean(r);

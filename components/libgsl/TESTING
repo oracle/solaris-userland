@@ -1,0 +1,11 @@
+
+# Compile fft.c:
+gcc -m64 -o fft -I$(pwd)/build/prototype/$(uname -p)/usr/include/ -R$(pwd)/build/prototype/$(uname -p)/usr/lib/$(isainfo -k) -L$(pwd)/build/prototype/$(uname -p)/usr/lib/$(isainfo -k) -lgsl -lgslcblas Solaris/fft.c
+# and run it to test arithmetic presicion:
+./fft
+# If underlying arithmetics works fine then computation errors accumulated in imaginary vector after FFT than reverse-FFT
+# should be significantly near to 0. and also the maximal numeric deviation (positive) should be 0-symmetric to minimal
+# numeric deviation (negative). This is the test if roundings do not adds a systematic error.
+# Notes:
+#  - fft.c is taken from public domain see comments inside
+#  - this file can be shell-inlined: . TESTING
