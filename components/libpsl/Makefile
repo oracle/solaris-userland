@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64_and_32
@@ -28,17 +28,17 @@ COMPILER =		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libpsl
-COMPONENT_VERSION=	0.21.2
+COMPONENT_VERSION=	0.21.5
 COMPONENT_PROJECT_URL=	https://github.com/rockdaboot/libpsl
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL= \
 	https://github.com/rockdaboot/libpsl/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:e35991b6e17001afa2c0ca3b10c357650602b92596209b7492802f3768a6285f
+	sha256:1dcc9ceae8b128f3c0b3f654decd0e1e891afc6ff81098f227ef260449dae208
 COMPONENT_BUGDB=	library/libpsl
 COMPONENT_ANITYA_ID=	7305
 
-COMPONENT_BAID=		137238
+COMPONENT_BAID=		172018
 BUILD_STYLE=		meson
 
 PYTHON_VERSION=		3.11
