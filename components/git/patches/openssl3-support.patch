@@ -2,14 +2,14 @@ The linker flag needs to be adjusted in order to find OpenSSL 3.
 
 Not intended for upstream.
 
---- git-2.39.4/Makefile
-+++ git-2.39.4/Makefile
-@@ -1656,7 +1656,7 @@ ifndef NO_OPENSSL
+--- a/Makefile	2024-07-18 12:43:55.055015517 +0200
++++ b/Makefile	2024-07-18 12:45:06.096256053 +0200
+@@ -1673,7 +1673,7 @@
  	OPENSSL_LIBSSL = -lssl
- 	ifdef OPENSSLDIR
+         ifdef OPENSSLDIR
  		BASIC_CFLAGS += -I$(OPENSSLDIR)/include
--		OPENSSL_LINK = -L$(OPENSSLDIR)/$(lib) $(CC_LD_DYNPATH)$(OPENSSLDIR)/$(lib)
-+		OPENSSL_LINK = -L$(OPENSSLDIR)/$(lib)/64 $(CC_LD_DYNPATH)$(OPENSSLDIR)/$(lib)/64
- 	else
+-		OPENSSL_LINK = $(call libpath_template,$(OPENSSLDIR)/$(lib))
++		OPENSSL_LINK = $(call libpath_template,$(OPENSSLDIR)/$(lib)/64)
+         else
  		OPENSSL_LINK =
- 	endif
+         endif

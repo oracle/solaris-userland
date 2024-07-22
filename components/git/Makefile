@@ -24,28 +24,24 @@
 #
 
 BUILD_BITS= 64
-# Studio compiler failed to build ref-filter.c:
-# "ref-filter.c", line 223: void function cannot return value
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		git
-COMPONENT_VERSION=	2.39.4
+COMPONENT_VERSION=	2.45.2
+COMPONENT_BAID=		172028
+COMPONENT_ARCHIVE_HASH=	sha256:51bfe87eb1c02fed1484051875365eeab229831d30d0cec5d89a14f9e40e9adb
+COMPONENT_ARCHIVE_HASH_1= sha256:0938309e86537063b9d6c39b12aa4a786e16e03d02a4d12866be2f3e0db919df
 COMPONENT_PROJECT_URL=	http://git-scm.com/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:ff2972e002c1bdf9f053243c934a2a1bc8248f8d419aaee8f6d5a4ed205c6633
 COMPONENT_ARCHIVE_URL=	https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5350
-COMPONENT_BAID=		166697
 
 #
 # man pages are a separate archive
 #
 COMPONENT_SRC_1 =	$(COMPONENT_NAME)-manpages-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.xz
-COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:a2cecf8471cf5213e0dd384d29c40d8752a1f7630ac1a893c48044e141bbd338
 COMPONENT_ARCHIVE_URL_1 = https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1 =		-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
@@ -129,21 +125,18 @@ COMPONENT_POST_TEST_ACTION = \
 # as the actual test results.
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
-	'-e "/^fixed/p" '\
-	'-e "/^failed/p" '\
-	'-e "/^broken/p" '\
-	'-e "/^total/p" '
+	'-e "/^not ok/p" '\
+	'-e "/^\# passed all remaining/p" '
 
 # This runs configure but configure doesn't generate a Makefile.
 # Instead a Makefile comes with git.
 # Anyways viewpathing doesn't work.
 # Therefore we need cloney to copy a set of files to build.
 
-COMPONENT_PRE_CONFIGURE_ACTION = \
-	($(CLONEY) $(SOURCE_DIR) $(@D))
-COMPONENT_PRE_CONFIGURE_ACTION += ; (cd $(@D); $(GMAKE) configure)
+COMPONENT_PRE_CONFIGURE_ACTION  = ($(CLONEY) $(SOURCE_DIR) $(@D));
+COMPONENT_PRE_CONFIGURE_ACTION += (cd $(@D); $(GMAKE) configure);
 
-# Allow manigest-generate see man pages from the second archive
+# Allow manifest-generate see man pages from the second archive
 GENERATE_PROTO_DIRS += $(COMPONENT_SRC_1)
 
 REQUIRED_PACKAGES += crypto/gnupg
