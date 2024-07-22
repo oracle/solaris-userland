@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -71,7 +71,7 @@ CONFIGURE_OPTIONS += --enable-windows-live
 CONFIGURE_OPTIONS += --with-pic
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += library/desktop/atk
+REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf

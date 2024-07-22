@@ -53,7 +53,7 @@ COMPONENT_POST_INSTALL_ACTION += \
                 $(PROTO_DIR)/usr/share/man/man1/totem-audio-preview.1;
 
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
-REQUIRED_PACKAGES += library/desktop/atk
+REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection

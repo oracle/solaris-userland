@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -30,20 +30,18 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		at-spi2-core
-COMPONENT_VERSION=	2.40.3
+COMPONENT_VERSION=	2.50.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Accessibility
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e49837c2ad30d71e1f29ca8e0968a54b95030272f7ff40b89b48968653f37a5c
+    sha256:5b81b1461a62dd8fbed1a276fa9ef5b7112f9ae5ff86e1e32ad9644b654ff78c
 COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	7841
 
-COMPONENT_BAID=		106963
+COMPONENT_BAID=		171874
 BUILD_STYLE=		meson
 
-# Tests do not work on Solaris yet
-TEST_TARGET= $(SKIP_TEST)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
+include $(WS_MAKE_RULES)/test-x11.mk
 
 # g-ir-scanner
 CC_PIC_MODE = $(CC_PIC_DISABLE)
@@ -51,12 +49,22 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS += -Ddbus_daemon=$(USRLIBDIR)/dbus-daemon
-CONFIGURE_OPTIONS.32 += -Dintrospection=no
-CONFIGURE_OPTIONS.64 += -Dintrospection=yes
+CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
+CONFIGURE_OPTIONS.64 += -Dintrospection=enabled
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/at-spi-registryd.1 \
                 $(PROTO_DIR)/usr/share/man/man1/at-spi-registryd.1;
+
+COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
+COMPONENT_TEST_TRANSFORMS += \
+       '-n ' \
+       '-e "/Ok: /p" ' \
+       '-e "/Fail: /p" ' \
+       '-e "/Pass: /p" ' \
+       '-e "/Skipped: /p" ' \
+       '-e "/Timeout: /p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas

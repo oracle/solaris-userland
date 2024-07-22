@@ -211,7 +211,7 @@ REQUIRED_PACKAGES += developer/rust/cbindgen
 ifneq ($(MACH), sparc)
 REQUIRED_PACKAGES += developer/nasm
 endif
-REQUIRED_PACKAGES += library/desktop/atk
+REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
