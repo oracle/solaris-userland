@@ -24,14 +24,15 @@ poll_oneoff(69584, 69520, 2, 69756)
 fd_write(2, 69504, 2, 69500)
 Assertion failed: fds[0].revents == (POLLHUP | POLLIN) (c/poll.c: main: 70)
 
-diff -ur node-20.12.2.orig/test/wasi/wasi.status node-20.12.2/test/wasi/wasi.status
---- node-20.12.2.orig/test/wasi/wasi.status	2024-04-10 14:16:36.000000000 +0200
-+++ node-20.12.2/test/wasi/wasi.status	2024-04-16 12:15:24.224267603 +0200
-@@ -10,3 +10,7 @@
- [$system==win32 && $arch==arm64]
- # https://github.com/nodejs/node/issues/51822
- test-wasi-poll: PASS, FLAKY
-+
+--- node-20.15.0.orig/test/wasi/wasi.status.orig	2024-06-20 12:08:07.000000000 +0200
++++ node-20.15.0/test/wasi/wasi.status	2024-07-03 11:19:30.605965644 +0200
+@@ -4,5 +4,8 @@ prefix wasi
+ # below, without ".js", followed by ": PASS,FLAKY". Example:
+ # sample-test                        : PASS,FLAKY
+ 
+-[true] # This section applies to all platforms
 +# Solaris
 +[$system==solaris]
 +test-wasi-poll: SKIP
+ 
++[true] # This section applies to all platforms
