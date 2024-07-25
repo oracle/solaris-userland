@@ -3,23 +3,9 @@ default search path for libraries.
 
 Note that it's not problem for Firefox itself which can cope with it.
 
-Changes for build/cargo-linker are needed after cargo-linker was
-converted from shell script to Python and it passes to
-gcc: '-Wl,-R,$ORIGIN' (including "'"!).
-https://bugzilla.mozilla.org/show_bug.cgi?id=1844538
-
---- firefox-115.0.3/build/cargo-linker
-+++ firefox-115.0.3/build/cargo-linker
-@@ -54,5 +54,4 @@ args.append(f"-fsanitize={SANITIZERS[suf
-             continue
-     args.append(arg)
- 
--wrap_ld = wrap_ld.split()
--os.execvp(wrap_ld[0], wrap_ld + args)
-+os.system(wrap_ld + " " + ' '.join(args))
---- firefox-115.0.3/js/src/old-configure.in
-+++ firefox-115.0.3/js/src/old-configure.in
-@@ -494,7 +494,7 @@ fi
+--- firefox-128.0/js/src/old-configure.in
++++ firefox-128.0/js/src/old-configure.in
+@@ -405,7 +405,7 @@ fi
      ;;
  
  *-solaris*)
@@ -28,9 +14,9 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1844538
      ;;
  
  *-wasi*)
---- firefox-115.0.3/old-configure.in
-+++ firefox-115.0.3/old-configure.in
-@@ -563,7 +563,7 @@ fi
+--- firefox-128.0/old-configure.in
++++ firefox-128.0/old-configure.in
+@@ -428,7 +428,7 @@ fi
      ;;
  
  *-solaris*)

@@ -1,7 +1,7 @@
 https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
 
---- firefox-115.12.0/gfx/skia/skia/include/private/SkColorData.h
-+++ firefox-115.12.0/gfx/skia/skia/include/private/SkColorData.h
+--- firefox-128.0/gfx/skia/skia/include/private/SkColorData.h
++++ firefox-128.0/gfx/skia/skia/include/private/SkColorData.h
 @@ -12,6 +12,13 @@ #include "include/core/SkColor.h"
  #include "include/core/SkColorPriv.h"
  #include "include/private/base/SkTo.h"
@@ -16,21 +16,21 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
  ////////////////////////////////////////////////////////////////////////////////////////////
  // Convert a 16bit pixel to a 32bit pixel
  
---- firefox-115.12.0/gfx/skia/skia/src/core/SkBlitRow_D32.cpp
-+++ firefox-115.12.0/gfx/skia/skia/src/core/SkBlitRow_D32.cpp
-@@ -307,7 +307,7 @@ }
- void SkBlitRow::Color32(SkPMColor dst[], const SkPMColor src[], int count, SkPMColor color) {
+--- firefox-128.0/gfx/skia/skia/src/core/SkBlitRow_D32.cpp
++++ firefox-128.0/gfx/skia/skia/src/core/SkBlitRow_D32.cpp
+@@ -555,7 +555,7 @@ }
+ void SkBlitRow::Color32(SkPMColor dst[], int count, SkPMColor color) {
      switch (SkGetPackedA32(color)) {
-         case   0: memmove(dst, src, count * sizeof(SkPMColor)); return;
--        case 255: SkOpts::memset32(dst, color, count);               return;
+         case   0: /* Nothing to do */                  return;
+-        case 255: SkOpts::memset32(dst, color, count); return;
 +        case 255: SkOpts::memset32(dst, BE_CONVERT(color), count); return;
      }
--    return SkOpts::blit_row_color32(dst, src, count, color);
-+    return SkOpts::blit_row_color32(dst, src, count, BE_CONVERT(color));
+-    return SkOpts::blit_row_color32(dst, count, color);
++    return SkOpts::blit_row_color32(dst, count, BE_CONVERT(color));
  }
---- firefox-115.12.0/gfx/skia/skia/src/core/SkBlitter_ARGB32.cpp
-+++ firefox-115.12.0/gfx/skia/skia/src/core/SkBlitter_ARGB32.cpp
-@@ -721,7 +721,7 @@ }
+--- firefox-128.0/gfx/skia/skia/src/core/SkBlitter_ARGB32.cpp
++++ firefox-128.0/gfx/skia/skia/src/core/SkBlitter_ARGB32.cpp
+@@ -1487,7 +1487,7 @@ }
          unsigned aa = antialias[0];
          if (aa) {
              if ((opaqueMask & aa) == 255) {
@@ -38,8 +38,8 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
 +                SkOpts::memset32(device, BE_CONVERT(color), count);
              } else {
                  uint32_t sc = SkAlphaMulQ(color, SkAlpha255To256(aa));
-                 SkBlitRow::Color32(device, device, count, sc);
-@@ -737,17 +737,17 @@ void SkARGB32_Blitter::blitAntiH2(int x,
+                 SkBlitRow::Color32(device, count, sc);
+@@ -1503,17 +1503,17 @@ void SkARGB32_Blitter::blitAntiH2(int x,
      uint32_t* device = fDevice.writable_addr32(x, y);
      SkDEBUGCODE((void)fDevice.writable_addr32(x + 1, y);)
  
@@ -61,7 +61,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
  }
  
  //////////////////////////////////////////////////////////////////////////////////////
-@@ -838,17 +838,17 @@ void SkARGB32_Opaque_Blitter::blitAntiH2
+@@ -1604,17 +1604,17 @@ void SkARGB32_Opaque_Blitter::blitAntiH2
      uint32_t* device = fDevice.writable_addr32(x, y);
      SkDEBUGCODE((void)fDevice.writable_addr32(x + 1, y);)
  
@@ -83,7 +83,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
  }
  
  ///////////////////////////////////////////////////////////////////////////////
-@@ -868,7 +868,7 @@ }
+@@ -1634,7 +1634,7 @@ }
      unsigned dst_scale = SkAlpha255To256(255 - SkGetPackedA32(color));
      size_t rowBytes = fDevice.rowBytes();
      while (--height >= 0) {
@@ -92,7 +92,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
          device = (uint32_t*)((char*)device + rowBytes);
      }
  }
-@@ -885,7 +885,7 @@ uint32_t    color = fPMColor;
+@@ -1651,7 +1651,7 @@ uint32_t    color = fPMColor;
      size_t      rowBytes = fDevice.rowBytes();
  
      if (SkGetPackedA32(fPMColor) == 0xFF) {
@@ -100,8 +100,8 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
 +        SkOpts::rect_memset32(device, BE_CONVERT(color), width, rowBytes, height);
      } else {
          while (height --> 0) {
-             SkBlitRow::Color32(device, device, width, color);
-@@ -914,7 +914,7 @@ }
+             SkBlitRow::Color32(device, width, color);
+@@ -1680,7 +1680,7 @@ }
          unsigned aa = antialias[0];
          if (aa) {
              if (aa == 255) {

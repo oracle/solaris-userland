@@ -1,0 +1,22 @@
+# HG changeset patch
+# User Petr Sumbera <petr.sumbera@oracle.com>
+# Date 1696492586 25200
+#      Thu Oct 05 00:56:26 2023 -0700
+# Node ID f2625bf75b624b05d0fc7804d4d57f790be5fed5
+# Parent  6192fb402d5aaf4f415076bc085ca42376b8d993
+New NSS (Bug 1851092) is missing alloca declaration.
+See: Bug 1857190 - lib/freebl/verified/internal/Hacl_Bignum_Base.h should include <alloca.h> on Solaris
+
+--- firefox-128.0/security/nss/lib/freebl/verified/karamel/include/krml/internal/builtin.h
++++ firefox-128.0/security/nss/lib/freebl/verified/karamel/include/krml/internal/builtin.h
+@@ -4,6 +4,10 @@ Licensed under the Apache 2.0 License. *
+ #ifndef __KRML_BUILTIN_H
+ #define __KRML_BUILTIN_H
+ 
++#if (defined(sun))
++#  include <alloca.h>
++#endif
++
+ /* For alloca, when using KaRaMeL's -falloca */
+ #if (defined(_WIN32) || defined(_WIN64))
+ #include <malloc.h>

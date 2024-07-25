@@ -30,17 +30,19 @@ BUILD_BITS = 64
 COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
+ESR = esr
+
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	115.12.0
-COMPONENT_BAID =	168638
+COMPONENT_VERSION =	128.0
+COMPONENT_BAID =	173203
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
-COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
+COMPONENT_ARCHIVE = 	$(COMPONENT_SRC)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:5d0c47eec0e047ac7ad9d39b564487b791528823e18c0012e4bb94233a96d25f
+    sha256:a07eac3cff7e0f7222b2db497452c72c8e7e9c9891f2d174f501052ae1f695d8
 ifndef CANDIDATE_BUILD
-MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
+MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
-MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/candidates/$(COMPONENT_VERSION)-candidates/build$(CANDIDATE_BUILD)
+MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/candidates/$(COMPONENT_VERSION)$(ESR)-candidates/build$(CANDIDATE_BUILD)
 endif
 COMPONENT_ARCHIVE_URL =	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	tbird/mailer
@@ -53,7 +55,7 @@ COMPONENT_ANITYA_ID =	4967
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:764ce66dbe05845e99563754b47356edd69ecba23c3d4f41c7c616ee2691ce19
+    sha256:412d71d380d5d8086f9bb881d3a884388c547961c6a5eae6b5cb1bda1d25e88f
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
