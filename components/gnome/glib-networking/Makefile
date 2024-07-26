@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 64_and_32
@@ -28,14 +28,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glib-networking
-COMPONENT_VERSION=	2.66.0
+COMPONENT_VERSION=	2.80.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GLib
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c5d7be2437fdd196eebfb70c4517b96d3ba7ec13bd496318b8f02dea383e0099
+    sha256:d8f4f1aab213179ae3351617b59dab5de6bcc9e785021eee178998ebd4bb3acf
 COMPONENT_BUGDB=	gnome/glib
 COMPONENT_ANITYA_ID=	10024
 
-COMPONENT_BAID=		90882
+COMPONENT_BAID=		173292
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
