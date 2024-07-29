@@ -1,5 +1,5 @@
 #!/bin/ksh
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 # Written to be compatible with ksh on Solaris 10.
 
@@ -53,6 +53,16 @@ function d
     print $@
 }
 
+function result {
+    if (( $1 != $2 )); then
+	e "RESULT: $1 (UNEXPECTED)"
+    else
+	d "RESULT: $1"
+    fi
+    d '====================================================================='
+    return $1
+}
+
 function run
 {
     # Display command, execute it and display exit code.
@@ -66,12 +76,7 @@ function run
     shift
     d "RUNNING: $cmd $@"
     $cmd $@ || ret=$?
-    if (( ret != exp )); then
-	e "RESULT: $ret (UNEXPECTED)"
-    else
-	d "RESULT: $ret"
-    fi
-    d '====================================================================='
+    result $ret $exp
     return $ret
 }
 
@@ -82,6 +87,11 @@ integer rndc_port_d=8953
 integer bind_port=$bind_port_d
 integer rndc_port=$rndc_port_d
 integer fail
+
+grep=/usr/bin/grep
+mktemp=/usr/bin/mktemp
+rm=/usr/bin/rm
+sort=/usr/bin/sort
 
 # Read command line arguments.
 while getopts :b:d:kp:r:r:X opt; do
@@ -150,7 +160,7 @@ else
 fi
 
 # Check linkage
-run ldd ${named} | grep '(file not found)' && e linkage error $named && exit 1
+run ldd ${named} | $grep '(file not found)' && e linkage error $named && exit 1
 
 
 # Discover name servers and domain name from resolv.conf
@@ -341,11 +351,25 @@ run ${dig} @0 -p ${bind_port} -t A ipboth.example.com.
 d "Look-up IPv6 (AAAA) record"
 run ${dig} @0 -p ${bind_port} -t AAAA ipboth.example.com.
 
-d "Look-up known (ANY) records"
-run ${dig} @0 -p ${bind_port} -t ANY ipboth.example.com.
-
-d "Request zone transfer (axfr)"
-run ${dig} @0 -p ${bind_port} -t axfr example.com.
+# The order of returned records keeps changing, so sort the output for these
+# as only interested in confirming the expected records are present.
+if tmp=$($mktemp); then
+    d "Look-up known (ANY) records"
+    d "Running: ${dig} @0 -p ${bind_port} -t ANY ipboth.example.com. |SORT"
+    ${dig} @0 -p ${bind_port} -t ANY ipboth.example.com. > $tmp
+    ret=$?
+    $grep -v '^;' $tmp | $sort | $grep -v '^$'
+    result $ret 0
+    d "Request zone transfer (axfr)"
+    d "Running: ${dig} @0 -p ${bind_port} -t axfr example.com. |SORT"
+    ${dig} @0 -p ${bind_port} -t axfr example.com. > $tmp
+    ret=$?
+    $grep -v '^;' $tmp | $sort | $grep -v '^$'
+    result $ret 0
+    $rm $tmp
+else
+    e "$mktemp failed! tests skipped! $?"
+fi
 
 d "looking up host known to have DNAME"
 run ${dig} @0 -p ${bind_port} -t a jack.dname.example.com.
@@ -382,7 +406,7 @@ if [[ -n $pid && -f $directory/named.pid ]]; then
     sleep 1 # Give it a second to die...
     if [[ -f $directory/named.pid ]]; then
 	e "Warning: named still running, sending SIGTERM to $pid"
-	ps -lp $pid | grep named && kill $pid
+	ps -lp $pid | $grep named && kill $pid
     fi
 fi
 
@@ -390,7 +414,7 @@ fi
 # Create temporary directory to avoid collisions with other users and to
 # clean up afterward.
 if [[ -n $opt_k ]]; then
-    if ! tmp=$(mktemp -d); then
+    if ! tmp=$($mktemp -d); then
 	ret=$?
 	e "Error: failed to create temporary directory for dnsssec-keygen tests"
     else
@@ -405,7 +429,7 @@ if [[ -n $opt_k ]]; then
 	for i in DH; do
 	    run -e 1 ${keygen} -K $tmp -q -a $i -n ZONE -fk secure.example
 	done
-	rm -rf $tmp
+	$rm -rf $tmp
     fi
 fi
 

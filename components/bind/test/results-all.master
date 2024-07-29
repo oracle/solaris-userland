@@ -71,41 +71,18 @@ ipboth.example.com.	172800	IN	AAAA	fd10:45df:879f:661d::10
 RESULT: 0
 =====================================================================
 Look-up known (ANY) records
-RUNNING: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t ANY ipboth.example.com.
-
-; <<>> DiG $(COMPONENT_VERSION) <<>> @0 -p 5353 -t ANY ipboth.example.com.
-; (1 server found)
-;; global options: +cmd
-;; Got answer:
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: REDACTED
-;; flags: qr aa rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 1
-
-;; OPT PSEUDOSECTION:
-; EDNS: version: 0, flags:; udp: 1232
-; COOKIE: REDACTED (good)
-;; QUESTION SECTION:
-;ipboth.example.com.		IN	ANY
-
-;; ANSWER SECTION:
+Running: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t ANY ipboth.example.com. |SORT
 ipboth.example.com.	172800	IN	A	192.168.4.10
 ipboth.example.com.	172800	IN	AAAA	fd10:45df:879f:661d::10
 ipboth.example.com.	172800	IN	TXT	"Both IP address types"
-
-;; SERVER: 0.0.0.0#5353(0) (TCP)
-;; MSG SIZE  rcvd: REDACTED
-
 RESULT: 0
 =====================================================================
 Request zone transfer (axfr)
-RUNNING: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t axfr example.com.
-
-; <<>> DiG $(COMPONENT_VERSION) <<>> @0 -p 5353 -t axfr example.com.
-; (1 server found)
-;; global options: +cmd
-example.com.		172800	IN	SOA	$(HOSTNAME) root.$(HOSTNAME) 20 3600 300 3600000 300
-example.com.		172800	IN	NS	$(HOSTNAME)
-mo.bar.example.com.	172800	IN	A	192.168.5.17
+Running: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t axfr example.com. |SORT
 dname.example.com.	172800	IN	DNAME	sub.example.com.
+example.com.		172800	IN	NS	$(HOSTNAME)
+example.com.		172800	IN	SOA	$(HOSTNAME) root.$(HOSTNAME) 20 3600 300 3600000 300
+example.com.		172800	IN	SOA	$(HOSTNAME) root.$(HOSTNAME) 20 3600 300 3600000 300
 ipboth.example.com.	172800	IN	A	192.168.4.10
 ipboth.example.com.	172800	IN	AAAA	fd10:45df:879f:661d::10
 ipboth.example.com.	172800	IN	TXT	"Both IP address types"
@@ -114,12 +91,9 @@ ipv6.example.com.	172800	IN	AAAA	fd10:45df:879f:661d::1
 jack.sub.example.com.	172800	IN	CNAME	manny.sub.example.com.
 manny.sub.example.com.	172800	IN	A	192.168.7.11
 manny.sub.example.com.	172800	IN	TXT	"Manny has alias of jack."
+mo.bar.example.com.	172800	IN	A	192.168.5.17
 xxx.example.com.	172800	IN	A	192.168.0.1
 xxx.example.com.	172800	IN	TXT	"text for xxx.example.com"
-example.com.		172800	IN	SOA	$(HOSTNAME) root.$(HOSTNAME) 20 3600 300 3600000 300
-;; SERVER: 0.0.0.0#5353(0) (TCP)
-;; XFR size: 15 records (messages 1, bytes REDACTED)
-
 RESULT: 0
 =====================================================================
 looking up host known to have DNAME
