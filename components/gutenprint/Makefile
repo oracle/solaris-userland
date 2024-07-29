@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -53,6 +53,7 @@ CONFIGURE_OPTIONS +=    --disable-static-genppd
 CONFIGURE_OPTIONS +=    --enable-simplified-cups-ppds
 CONFIGURE_OPTIONS +=    --without-readline
 CONFIGURE_OPTIONS +=    --disable-static
+CONFIGURE_OPTIONS +=	--disable-libgutenprintui2
 
 COMPONENT_BUILD_TARGETS = all
 
@@ -72,8 +73,6 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/ FAIL:/p" ' \
         '-e "/ ERROR:/p" '
 
-REQUIRED_PACKAGES += library/desktop/gtk2
-REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
