@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -53,7 +53,7 @@ CONFIGURE_OPTIONS += --enable-lynx
 CONFIGURE_OPTIONS += --enable-largefile
 CONFIGURE_OPTIONS += --enable-oss
 CONFIGURE_OPTIONS += --enable-pulse
-CONFIGURE_OPTIONS += --enable-gtk
+CONFIGURE_OPTIONS += --disable-gtk # don't build obsolete gtk2 support
 CONFIGURE_OPTIONS += --enable-gtk3
 CONFIGURE_OPTIONS += --with-pic
 
@@ -63,7 +63,6 @@ REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
-REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
