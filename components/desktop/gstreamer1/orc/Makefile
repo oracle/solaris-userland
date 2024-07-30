@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =  32_and_64
@@ -29,23 +29,23 @@ COMPILER =    gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		orc
-COMPONENT_VERSION=	0.4.34
+COMPONENT_VERSION=	0.4.39
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/projects/orc.html
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8f47abb3f097171e44eb807adcdabd860fba2effd37d8d3c4fbd5f341cadd41f
+	sha256:33ed2387f49b825fa1b9c3b0072e05f259141b895474ad085ae51143d3040cc0
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	2573
 
-COMPONENT_BAID=		144410
+COMPONENT_BAID=		173467
 
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/common.mk
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_ARGS =   -k 0
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
