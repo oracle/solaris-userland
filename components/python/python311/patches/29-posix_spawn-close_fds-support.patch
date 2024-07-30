@@ -4,8 +4,8 @@ This was offered and merged upstream; it will be available in Python 3.13:
 https://github.com/python/cpython/issues/113117
 https://github.com/python/cpython/pull/113118
 
---- Python-3.11.8/configure
-+++ Python-3.11.8/configure
+--- Python-3.11.9/configure
++++ Python-3.11.9/configure
 @@ -17805,6 +17805,12 @@ fi
  rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
  
@@ -19,8 +19,8 @@ https://github.com/python/cpython/pull/113118
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_setgroups" >&5
  $as_echo "$ac_cv_func_setgroups" >&6; }
    if test "x$ac_cv_func_setgroups" = xyes; then :
---- Python-3.11.8/configure.ac
-+++ Python-3.11.8/configure.ac
+--- Python-3.11.9/configure.ac
++++ Python-3.11.9/configure.ac
 @@ -4605,6 +4605,7 @@ AC_CHECK_FUNCS([ \
    lockf lstat lutimes madvise mbrtowc memrchr mkdirat mkfifo mkfifoat \
    mknod mknodat mktime mmap mremap nice openat opendir pathconf pause pipe \
@@ -29,8 +29,8 @@ https://github.com/python/cpython/pull/113118
    pread preadv preadv2 pthread_condattr_setclock pthread_init pthread_kill \
    pwrite pwritev pwritev2 readlink readlinkat readv realpath renameat \
    rtpSpawn sched_get_priority_max sched_rr_get_interval sched_setaffinity \
---- Python-3.11.8/pyconfig.h.in
-+++ Python-3.11.8/pyconfig.h.in
+--- Python-3.11.9/pyconfig.h.in
++++ Python-3.11.9/pyconfig.h.in
 @@ -890,6 +890,10 @@
  /* Define to 1 if you have the `posix_spawnp' function. */
  #undef HAVE_POSIX_SPAWNP
@@ -42,8 +42,8 @@ https://github.com/python/cpython/pull/113118
  /* Define to 1 if you have the `pread' function. */
  #undef HAVE_PREAD
  
---- Python-3.11.8/Modules/posixmodule.c
-+++ Python-3.11.8/Modules/posixmodule.c
+--- Python-3.11.9/Modules/posixmodule.c
++++ Python-3.11.9/Modules/posixmodule.c
 @@ -6000,6 +6000,9 @@ enum posix_spawn_file_actions_identifier
      POSIX_SPAWN_OPEN,
      POSIX_SPAWN_CLOSE,
@@ -79,7 +79,7 @@ https://github.com/python/cpython/pull/113118
              default: {
                  PyErr_SetString(PyExc_TypeError,
                                  "Unknown file_actions identifier");
-@@ -15510,6 +15531,9 @@ all_ins(PyObject *m)
+@@ -15538,6 +15559,9 @@ all_ins(PyObject *m)
      if (PyModule_AddIntConstant(m, "POSIX_SPAWN_OPEN", POSIX_SPAWN_OPEN)) return -1;
      if (PyModule_AddIntConstant(m, "POSIX_SPAWN_CLOSE", POSIX_SPAWN_CLOSE)) return -1;
      if (PyModule_AddIntConstant(m, "POSIX_SPAWN_DUP2", POSIX_SPAWN_DUP2)) return -1;
@@ -89,8 +89,8 @@ https://github.com/python/cpython/pull/113118
  #endif
  
  #if defined(HAVE_SPAWNV) || defined (HAVE_RTPSPAWN)
---- Python-3.11.8/Lib/subprocess.py
-+++ Python-3.11.8/Lib/subprocess.py
+--- Python-3.11.9/Lib/subprocess.py
++++ Python-3.11.9/Lib/subprocess.py
 @@ -744,6 +744,7 @@ def _use_posix_spawn():
  # guarantee the given libc/syscall API will be used.
  _USE_POSIX_SPAWN = _use_posix_spawn()
@@ -99,7 +99,7 @@ https://github.com/python/cpython/pull/113118
  
  
  class Popen:
-@@ -1747,7 +1748,7 @@ class Popen:
+@@ -1749,7 +1750,7 @@ class Popen:
                      errread, errwrite)
  
  
@@ -108,7 +108,7 @@ https://github.com/python/cpython/pull/113118
                           p2cread, p2cwrite,
                           c2pread, c2pwrite,
                           errread, errwrite):
-@@ -1776,6 +1777,10 @@ class Popen:
+@@ -1778,6 +1779,10 @@ class Popen:
              ):
                  if fd != -1:
                      file_actions.append((os.POSIX_SPAWN_DUP2, fd, fd2))
@@ -119,7 +119,7 @@ https://github.com/python/cpython/pull/113118
              if file_actions:
                  kwargs['file_actions'] = file_actions
  
-@@ -1823,7 +1828,7 @@ class Popen:
+@@ -1825,7 +1830,7 @@ class Popen:
              if (_USE_POSIX_SPAWN
                      and os.path.dirname(executable)
                      and preexec_fn is None
@@ -128,7 +128,7 @@ https://github.com/python/cpython/pull/113118
                      and not pass_fds
                      and cwd is None
                      and (p2cread == -1 or p2cread > 2)
-@@ -1835,7 +1840,7 @@ class Popen:
+@@ -1837,7 +1842,7 @@ class Popen:
                      and gids is None
                      and uid is None
                      and umask < 0):
@@ -137,8 +137,8 @@ https://github.com/python/cpython/pull/113118
                                    p2cread, p2cwrite,
                                    c2pread, c2pwrite,
                                    errread, errwrite)
---- Python-3.11.8/Lib/test/test_subprocess.py
-+++ Python-3.11.8/Lib/test/test_subprocess.py
+--- Python-3.11.9/Lib/test/test_subprocess.py
++++ Python-3.11.9/Lib/test/test_subprocess.py
 @@ -1608,6 +1608,7 @@ class ProcessTestCase(BaseTestCase):
      @unittest.skipIf(not sysconfig.get_config_var("HAVE_VFORK"),
                       "vfork() not enabled by configure.")

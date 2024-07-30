@@ -1,0 +1,38 @@
+This fixes a subinterpreter issue that seems to manifest due to our
+non-isolated build infrastructure.
+
+From 714f5e8bfa15fa90401d1ea81d3f493a0c4c56b1 Mon Sep 17 00:00:00 2001
+From: Chris Markiewicz <effigies@gmail.com>
+Date: Fri, 7 Jun 2024 09:59:48 -0400
+Subject: [PATCH] gh-117983: Defer import of threading for lazy module loading
+
+As noted in gh-117983, the import importlib.util can be triggered at
+interpreter startup under some circumstances, so adding threading makes
+it a potentially obligatory load.
+Lazy loading is not used in the stdlib, so this removes an unnecessary
+load for the majority of users and slightly increases the cost of the
+first lazily loaded module.
+
+Backported from upstream:
+https://github.com/python/cpython/pull/120233
+
+--- cpython-3.11/Lib/importlib/util.py
++++ cpython-3.11/Lib/importlib/util.py
+@@ -15,7 +15,6 @@ from contextlib import contextmanager
+ import _imp
+ import functools
+ import sys
+-import threading
+ import types
+ import warnings
+ 
+@@ -307,6 +306,9 @@ class LazyLoader(Loader):
+ 
+     def exec_module(self, module):
+         """Make the module load lazily."""
++        # Threading is only needed for lazy loading, and importlib.util can
++        # be pulled in at interpreter startup, so defer until needed.
++        import threading
+         module.__spec__.loader = self.loader
+         module.__loader__ = self.loader
+         # Don't need to worry about deep-copying as trying to set an attribute
