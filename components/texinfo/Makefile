@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # using gcc makes parfait happy.
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=		texinfo
-COMPONENT_VERSION=	6.1
+COMPONENT_VERSION=	7.1
 COMPONENT_PROJECT_URL=	https://www.gnu.org/software/texinfo/ 
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:02582b6d9b0552f1cb1312be6bd7023e9799603c3b2320fa68a36029e4cbafbb
+	sha256:dd5710b3a53ac002644677a06145748e260592a35be182dc830ebebb79c5d5a0
 COMPONENT_ARCHIVE_URL=  http://ftp.gnu.org/gnu/texinfo/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4958
 
-COMPONENT_BAID_TEXINFO=	29669
+COMPONENT_BAID_TEXINFO=	171442
 COMPONENT_BAID_TEXI2HTML=	8044
 
 COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) $(AUTORECONF) -fiv);
@@ -85,3 +85,4 @@ REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
