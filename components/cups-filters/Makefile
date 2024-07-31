@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -30,60 +30,36 @@ include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=		cups-filters
 COMPONENT_VERSION=	1.28.17
 COMPONENT_BAID=		154306
-COMPONENT_ARCHIVE_HASH=	sha256:270a3752a960368aa99d431fb5d34f4039b2ac943c576d840612d1d8185c9bb9
+COMPONENT_ARCHIVE_HASH=	sha256:01a2acbd6bb78f09638047e4e9ce305d7e5ef4cb9ed6949672b5d901b7321dd4
 COMPONENT_PROJECT_URL=	http://www.openprinting.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_URL=	https://github.com/OpenPrinting/cups-filters/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/cups
 COMPONENT_ANITYA_ID=	5541
 
 include $(WS_MAKE_RULES)/common.mk
 
-CPPFLAGS += -I/usr/include/cups
-
-# Ensure dynamic shared objects are linked using same LDFLAGS as executables.
-CONFIGURE_ENV += DSOFLAGS="$(LDFLAGS)"
-
-CPPFLAGS += -I/usr/include/cups/private
-CPPFLAGS += -I/usr/include/cups/private/cups
-CONFIGURE_ENV += CPPFLAGS="$(CPPFLAGS)"
 # C++ 17 is required by qpdf
 CXXFLAGS += -std=c++17
 
 CONFIGURE_OPTIONS +=	--libdir=/usr/lib/cups/$(MACH64)
 CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
-CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS +=	--with-cups-rundir=/system/volatile/cups
-CONFIGURE_OPTIONS +=	--with-ldap-includes=/usr/include/openldap
-CONFIGURE_OPTIONS +=	--with-fontdir=$(USRSHAREFONTSDIR)
-CONFIGURE_OPTIONS +=	--disable-static
-# use pdftops (poppler) renderer instead
-CONFIGURE_OPTIONS +=	--with-pdftops=pdftops
+# use gs or poppler according to printer PPD make-and-model; see README
+CONFIGURE_OPTIONS +=	--with-pdftops=hybrid
 CONFIGURE_OPTIONS +=	--disable-mutool
-# gs has better collor management but crashes
-CONFIGURE_OPTIONS +=	--enable-poppler
-CONFIGURE_OPTIONS +=	CFLAGS="$(CFLAGS)"
-CONFIGURE_OPTIONS +=	--enable-driverless=no
-CONFIGURE_OPTIONS +=	ENABLE_DRIVERLESS_FALSE="Y"
-CONFIGURE_OPTIONS +=	--with-php=no
-CONFIGURE_OPTIONS +=	--with-test-font-path=/usr/share/fonts/TrueType/dejavu/DejaVuSans.ttf
+CONFIGURE_OPTIONS +=	--with-rcdir=no
 
 # Makefile.am files of this component are not compatible with Solaris make.
-# Use GNU make to avoid the configuration error when makefile fragments are processed.
+# Use GNU make to avoid the configuration error when makefile fragments are
+# processed.
 CONFIGURE_OPTIONS +=  MAKE=$(GMAKE)
 
 # Needed for compilation with libqpdf
 PKG_CONFIG_PATHS.64 = /usr/openssl/3/lib/64/pkgconfig
 PKG_CONFIG_PATHS.32 = /usr/openssl/3/lib/pkgconfig
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
-
-COMPONENT_BUILD_ENV  += PATH="$(GNUBIN):$(PATH)"
-COMPONENT_INSTALL_ENV+= PATH="$(GNUBIN):$(PATH)"
-
-COMPONENT_PREP_ACTION += (cd $(@D) ; \
-   PATH=:/usr/gnu/bin:/usr/bin: $(CONFIG_SHELL) autogen.sh )
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
    ($(CLONEY) $(SOURCE_DIR) $(@D))
@@ -110,16 +86,24 @@ REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += image/library/libtiff
+REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += print/cups
 REQUIRED_PACKAGES += print/filter/poppler
 REQUIRED_PACKAGES += print/filter/qpdf
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/network
+REQUIRED_PACKAGES += system/network/avahi
+REQUIRED_PACKAGES += system/network/avahi/gui
+REQUIRED_PACKAGES += system/network/ldap/openldap

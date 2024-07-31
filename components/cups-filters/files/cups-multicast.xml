@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<!--
+    Copyright (c) 2024, Oracle and/or its affiliates.
+
+    NOTE:  This service manifest is not editable; its contents will
+    be overwritten by package or patch operations, including
+    operating system upgrade.  Make customizations in a different
+    file.
+-->
+
+<service_bundle type='manifest' name='cups-browsed'>
+
+<service name='application/cups/multicast' type='service' version='1'>
+
+        <dependency name='filesystem_minimal' type="service" grouping='require_all'
+		restart_on='none'>
+		<service_fmri value='svc:/system/filesystem/minimal'/>
+        </dependency>
+
+	<dependency name='network' type="service" grouping='require_all'
+		restart_on='none'>
+		<service_fmri value='svc:/network/service'/>
+	</dependency>
+
+        <instance name='default' enabled='false'>
+		<dependency name='config_data' grouping='require_all'
+			restart_on='none' type='path'>
+			<service_fmri value='file://localhost/etc/cups/cups-browsed.conf'/>
+		</dependency>
+
+		<dependency name='avahi' type="service" grouping='require_all'
+			restart_on='restart'>
+			<service_fmri value='svc:/network/dns/multicast'/>
+		</dependency>
+
+		<dependency name='cups-scheduler' type="service" grouping='require_all'
+			restart_on='restart'>
+			<service_fmri value='svc:/application/cups/scheduler'/>
+		</dependency>
+
+		<exec_method type='method' name='start'
+			exec='/lib/svc/method/svc-cups-browsed' timeout_seconds='60'>
+		</exec_method>
+
+		<exec_method type='method' name='stop' exec=':kill'
+			timeout_seconds='60'/>
+
+		<template>
+			<common_name>
+				<loctext xml:lang='C'>
+				A daemon for browsing the Bonjour broadcasts of shared, remote CUPS printers
+				</loctext>
+			</common_name>
+			<documentation>
+				<manpage title='cups-browsed' section='8'
+					manpath='/usr/share/man'/>
+			</documentation>
+		</template>
+
+        </instance>
+
+	<stability value='Unstable'/>
+
+</service>
+
+</service_bundle>

@@ -30,8 +30,30 @@ set name=com.oracle.info.description value="the Common Unix Print System (CUPS)"
 set name=info.classification value=org.opensolaris.category.2008:System/Printing
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2019/031 value=PSARC/2019/152
+set name=org.opensolaris.arc-caseid value=PSARC/2019/031 value=PSARC/2019/152 \
+    value=PSARC/2024/091
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=etc/cups/cups-browsed.conf
+file files/cups-multicast.xml \
+    path=lib/svc/manifest/application/cups-multicast.xml mode=0444 \
+    restart_fmri=svc:/system/manifest-import:default
+file files/svc-cups-browsed path=lib/svc/method/svc-cups-browsed
+link path=usr/bin/driverless target=../lib/cups/driver/driverless
+link path=usr/bin/driverless-fax target=../lib/cups/driver/driverless-fax
+link path=usr/bin/foomatic-rip target=../lib/cups/filter/foomatic-rip
+file path=usr/include/cupsfilters/colord.h
+file path=usr/include/cupsfilters/colormanager.h
+file path=usr/include/cupsfilters/driver.h
+file path=usr/include/cupsfilters/image.h
+file path=usr/include/cupsfilters/ipp.h
+file path=usr/include/cupsfilters/pdftoippprinter.h
+file path=usr/include/cupsfilters/ppdgenerator.h
+file path=usr/include/cupsfilters/raster.h
+file path=usr/include/fontembed/bitset.h
+file path=usr/include/fontembed/embed.h
+file path=usr/include/fontembed/fontfile.h
+file path=usr/include/fontembed/iofn.h
+file path=usr/include/fontembed/sfnt.h
 #
 link path=usr/lib/cups/$(MACH64)/libcupsfilters.so \
     target=libcupsfilters.so.1.0.0
@@ -41,11 +63,17 @@ file path=usr/lib/cups/$(MACH64)/libcupsfilters.so.1.0.0
 link path=usr/lib/cups/$(MACH64)/libfontembed.so target=libfontembed.so.1.0.0
 link path=usr/lib/cups/$(MACH64)/libfontembed.so.1 target=libfontembed.so.1.0.0
 file path=usr/lib/cups/$(MACH64)/libfontembed.so.1.0.0
+file path=usr/lib/cups/$(MACH64)/pkgconfig/libcupsfilters.pc
+file path=usr/lib/cups/$(MACH64)/pkgconfig/libfontembed.pc
 file path=usr/lib/cups/backend/beh mode=0555
-file path=usr/lib/cups/backend/cups-brf mode=0500
+file path=usr/lib/cups/backend/cups-brf mode=0555
+link path=usr/lib/cups/backend/driverless target=../driver/driverless
+link path=usr/lib/cups/backend/driverless-fax target=../driver/driverless-fax
 file path=usr/lib/cups/backend/implicitclass mode=0555
 file path=usr/lib/cups/backend/parallel mode=0555
 file path=usr/lib/cups/backend/serial mode=0555
+file path=usr/lib/cups/driver/driverless mode=0555
+file path=usr/lib/cups/driver/driverless-fax mode=0555
 file path=usr/lib/cups/filter/bannertopdf mode=0555
 file path=usr/lib/cups/filter/brftoembosser mode=0555
 file path=usr/lib/cups/filter/brftopagedbrf mode=0555
@@ -70,8 +98,6 @@ file path=usr/lib/cups/filter/musicxmltobrf mode=0555
 file path=usr/lib/cups/filter/pdftopdf mode=0555
 file path=usr/lib/cups/filter/pdftops mode=0555
 file path=usr/lib/cups/filter/pdftoraster mode=0555
-link path=usr/lib/cups/filter/pstopxl target=gstopxl
-link path=usr/lib/cups/filter/pstoraster target=gstoraster
 file path=usr/lib/cups/filter/rastertoescpx mode=0555
 file path=usr/lib/cups/filter/rastertopclm mode=0555
 file path=usr/lib/cups/filter/rastertopclx mode=0555
@@ -90,6 +116,7 @@ file path=usr/lib/cups/filter/vectortopdf mode=0555
 link path=usr/lib/cups/filter/vectortoubrl target=vectortobrf
 link path=usr/lib/cups/filter/wmftopdf target=vectortopdf
 link path=usr/lib/cups/filter/xfigtopdf target=vectortopdf
+file path=usr/sbin/cups-browsed
 file path=usr/share/cups/banners/classified
 file path=usr/share/cups/banners/confidential
 file path=usr/share/cups/banners/form
@@ -150,6 +177,10 @@ file path=usr/share/doc/cups-filters/COPYING
 file path=usr/share/doc/cups-filters/INSTALL
 file path=usr/share/doc/cups-filters/NEWS
 file path=usr/share/doc/cups-filters/README
+file path=usr/share/man/man1/driverless.1
+file path=usr/share/man/man1/foomatic-rip.1
+file path=usr/share/man/man5/cups-browsed.conf.5
+file path=usr/share/man/man8/cups-browsed.8
 file path=usr/share/ppd/cupsfilters/Fuji_Xerox-DocuPrint_CM305_df-PDF.ppd
 file path=usr/share/ppd/cupsfilters/Generic-PDF_Printer-PDF.ppd
 file path=usr/share/ppd/cupsfilters/HP-Color_LaserJet_CM3530_MFP-PDF.ppd

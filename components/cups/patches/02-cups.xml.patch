@@ -1,0 +1,22 @@
+Makes cups:scheduler SMF service disabled by default.
+
+--- a/scheduler/cups.xml.in.orig	2024-04-02 10:07:05.376761530 +0200
++++ b/scheduler/cups.xml.in	2024-04-02 10:07:25.397961616 +0200
+@@ -63,7 +71,7 @@
+         exec=':kill'
+         timeout_seconds='60' />
+ 
+-    <instance name='default' enabled='true' >
++    <instance name='default' enabled='false' >
+ 
+         <dependency
+             name='config_data'
+@@ -151,7 +159,7 @@
+         exec=':kill'
+         timeout_seconds='60' />
+ 
+-    <instance name='default' enabled='true' >
++    <instance name='default' enabled='false' >
+         <dependency
+             name='cupsd'
+             grouping='require_all'
