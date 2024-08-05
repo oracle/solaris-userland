@@ -1,0 +1,20 @@
+Create multiple text files and directories.
+touch first.txt second.txt third.txt
+mkdir first second third
+
+Insert text in some of the files.
+echo "this is a line" > first.txt
+echo "this is another line" > third.txt
+chmod 444 third.txt
+
+Run some tests with the command:
+find . -type f
+find . -type d
+find . -name "*irs*"
+find . -name "*irs*" -type d
+find . -name "*rst.tx*" -type f
+find . -name "*txt" -type f | xargs grep line
+find . -name "*txt" -type f -exec grep another {} \;
+find . -mtime -1
+find . -perm 444
+find . -name "*third.t*" -exec rm -i {} \;

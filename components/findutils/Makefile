@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		findutils
-COMPONENT_VERSION=	4.9.0
+COMPONENT_VERSION=	4.10.0
 COMPONENT_ARCHIVE= $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:a2bfb8c09d436770edc59f50fa483e785b161a3b7b9d547573cb08065fd462fe
+	sha256:1387e0b67ff247d2abde998f90dfbf70c1491391a59ddfecb8ae698789f0a4f5
 COMPONENT_ARCHIVE_URL=	http://ftp.gnu.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/gnu-findutils
 COMPONENT_ANITYA_ID=	812
 
-COMPONENT_BAID=		119388
+COMPONENT_BAID=	171208
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -50,6 +50,9 @@ CONFIGURE_OPTIONS +=	--disable-leaf-optimisation
 # Explicitly specify the preferred Python version to prevent
 # possible unexpected future changes.
 CONFIGURE_ENV += PYTHON="$(PYTHON.3.11)"
+
+# The test results differ for x86 and SPARC
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH$(BITS)).master
 
 # Run all the tests even if there is a failure
 COMPONENT_TEST_ARGS += -k
