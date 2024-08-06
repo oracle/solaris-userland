@@ -59,6 +59,7 @@ COMPONENT_POST_UNPACK_ACTION += $(CP) files/* $(SOURCE_DIR)/data/dbus-interfaces
 
 # Linux specific
 CONFIGURE_OPTIONS += -Dnetworkmanager=false
+CONFIGURE_OPTIONS += -Dportal_helper=false
 CONFIGURE_OPTIONS += -Dsystemd=false
 # Requires libpipewire
 CONFIGURE_OPTIONS += -Dcamera_monitor=false
