@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 export PARFAIT_BUILD=no
@@ -111,6 +111,7 @@ COMPONENT_BUILD_ENV += LD_OPTIONS="$(LD_OPTIONS)"
 COMPONENT_POST_UNPACK_ACTION = \
       $(MV) libomp_oss $(COMPONENT_SRC)
 
+REQUIRED_PACKAGES += developer/gcc/gcc-gfortran-13
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
