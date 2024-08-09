@@ -35,9 +35,9 @@ handler, fcntl() will return -1 with errno set to EINTR, and the lock operation
 will not be done. So, we have to call fcntl in a cycle and test errno for EINTR
 to fully emulate flock's blocking behavior.
 
---- logrotate-3.21.0/logrotate.c.orig	2024-05-28 18:13:15.220287101 +0200
-+++ logrotate-3.21.0/logrotate.c	2024-05-28 18:15:31.377036973 +0200
-@@ -3017,8 +3017,8 @@
+--- logrotate-3.22.0/logrotate.c.orig	2024-08-07 19:27:35.041489113 +0200
++++ logrotate-3.22.0/logrotate.c	2024-08-07 19:27:58.092714571 +0200
+@@ -3074,8 +3074,8 @@
  
  static int lockState(const char *stateFilename, int skip_state_lock, int wait_for_state_lock)
  {
@@ -47,14 +47,14 @@ to fully emulate flock's blocking behavior.
      struct stat sb;
  
      if (!strcmp(stateFilename, "/dev/null")) {
-@@ -3069,24 +3069,41 @@
+@@ -3126,25 +3125,42 @@
          return 0;
      }
  
 -    lockFlags = LOCK_EX;
      if (wait_for_state_lock)
-+    { 
-         message(MESS_DEBUG, "waiting for lock on state file %s", stateFilename);
++    {
+         message(MESS_DEBUG, "waiting for lock on state file %s\n", stateFilename);
 -    else
 -        lockFlags |= LOCK_NB;
 -
@@ -66,17 +66,14 @@ to fully emulate flock's blocking behavior.
 -        } else {
 -            message(MESS_ERROR, "error acquiring lock on state file %s: %s\n",
 -                    stateFilename, strerror(errno));
--        }
--        close(lockFd);
--        return 1;
-     }
++    }
 +    
 +    memset (&lock_data, 0, sizeof(lock_data));
 +    lock_data.l_start = 0; 
 +    lock_data.l_len = 0; 
 +    lock_data.l_whence = SEEK_SET;
 +    lock_data.l_type = F_WRLCK;
-+    
++        
 +    if (wait_for_state_lock) {
 +        while (fcntl(lockFd, F_SETLKW, &lock_data) == -1) {
 +            if (errno != EINTR) {
@@ -99,12 +96,16 @@ to fully emulate flock's blocking behavior.
 +            }
 +            close(lockFd);
 +            return 1;
-+       }
-+    }
+         }
+-        close(lockFd);
+-        return 1;
+     }
+-
++    
+     message(MESS_DEBUG, "acquired lock on state file %s\n", stateFilename);
  
-     message(MESS_DEBUG, "acquired lock on state file %s", stateFilename);
- 
-@@ -3101,6 +3118,7 @@
+     /* keep lockFd open till we terminate */
+@@ -3158,6 +3174,7 @@
      int wait_for_state_lock = 0;
      const char *stateFile = STATEFILE;
      const char *logFile = NULL;
@@ -112,10 +113,10 @@ to fully emulate flock's blocking behavior.
      FILE *logFd = NULL;
      int rc = 0;
      int arg;
-@@ -3228,6 +3246,20 @@
+@@ -3286,6 +3303,19 @@
+     if (!debug && lockState(stateFile, skip_state_lock, wait_for_state_lock)) {
          exit(3);
      }
- 
 +    /* Create a file name for a lock file and lock the lock file,
 +     * /dev/null shall be avoided */
 +    if (strcmp(stateFile, "/dev/null")) {
@@ -129,7 +130,6 @@ to fully emulate flock's blocking behavior.
 +            exit(3);
 +        }
 +    }     
-+
+ 
      if (readState(stateFile))
          rc = 1;
- 
