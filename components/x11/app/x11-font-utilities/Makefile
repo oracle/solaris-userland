@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mkfontscale
-COMPONENT_VERSION=	1.2.2
+COMPONENT_VERSION=	1.2.3
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8ae3fb5b1fe7436e1f565060acaa3e2918fe745b0e4979b5593968914fe2d5c4
+	sha256:2921cdc344f1acee04bcd6ea1e29565c1308263006e134a9ee38cf9c9d6fe75e
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15043
-COMPONENT_BAID=		122777
+COMPONENT_BAID=		174128
 
 COMPONENT_NAME_2=       bdftopcf
 COMPONENT_VERSION_2=    1.1.1

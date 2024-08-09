@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -35,11 +35,11 @@ COMPONENT_ANITYA_ID=	12314
 COMPONENT_BAID=		122716
 
 COMPONENT_NAME_1=       xkbutils
-COMPONENT_VERSION_1=    1.0.5
+COMPONENT_VERSION_1=    1.0.6
 COMPONENT_ARCHIVE_HASH_1=       \
-    sha256:f6a4a8e9c54582beb3787b1faa8168caab125c1fee0ca9cfa5b6c9c1df25eea4
+    sha256:31a2bbee1e09ccba01de92897b8f540b545de812f318d31de07bd3a5a75ee25e
 COMPONENT_ANITYA_ID_1=	15016
-COMPONENT_BAID_1=	130803
+COMPONENT_BAID_1=	173691
 
 COMPONENT_NAME_2=       xkbprint
 COMPONENT_VERSION_2=    1.0.6

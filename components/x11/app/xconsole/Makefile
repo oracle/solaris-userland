@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xconsole
-COMPONENT_VERSION=	1.0.8
+COMPONENT_VERSION=	1.1.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7b4a6af068e40e2e6a4521d6f35c9253ec152c287d025fff9cc4c99f2586bba4
+	sha256:0c775978cacdda76dfc8b5a97142f145a177d26220dd307866d9dd62e7391189
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15030
-COMPONENT_BAID=		130812
+COMPONENT_BAID=		173699
 
 TEST_TARGET = $(NO_TESTS)
 

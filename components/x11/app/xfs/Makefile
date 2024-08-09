@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xfs
-COMPONENT_VERSION=	1.2.1
+COMPONENT_VERSION=	1.2.2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3d8ac3e8add7eeb1dc199dff6c59f90a2dbe7aa4332c1e12192350f2cda1c1e6
+	sha256:b70bd46331e241b30e5e00dbdc2eabb7f3f8880cd44244acde13d7976d098ecc
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	5256
-COMPONENT_BAID=		130809
+COMPONENT_BAID=		173694
 
 TEST_TARGET = $(NO_TESTS)
 
