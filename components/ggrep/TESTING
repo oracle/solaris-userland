@@ -1,0 +1,17 @@
+	Make a text file with at least one sentence.
+echo "grep is a command-line utility for searching plaintext datasets for lines that match a regular expression. Its name comes from the ed command g/re/p, which has the same effect. grep was originally developed for the Unix operating system, but later available for all Unix-like systems and some others such as OS-9." > test_file
+	Testing:
+1. Insensitive searches:
+ggrep -i "UNIX" test_file
+2. Counting search:
+ggrep -c "in" test_file
+3. Show only the file name that has the desired pattern:
+echo "solaris" > second_test_file
+ggrep -l "solaris" *
+4. Line numbers where the pattern is found:
+ggrep -n "systems" test_file
+5. Multiple patterns search:
+ggrep -ei "unix|solaris" *
+6. Recursive search:
+mkdir new_directory; mv second_test_file new_directory
+ggrep -Rli "is" *
