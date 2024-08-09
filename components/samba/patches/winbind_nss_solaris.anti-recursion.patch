@@ -421,17 +421,6 @@ Solaris anti-recursion patch for samba(8) to work with nscd(8).
 +		destroy_tsd_key(tsd_gr_key);
 +	}
 +}
-diff -x '*~' -x '*.pyc' -Nru samba-4.13.8.orig/nsswitch/winbind_nss_solaris.c samba-4.13.8/nsswitch/winbind_nss_solaris.c
---- samba-4.13.8.orig/nsswitch/winbind_nss_solaris.c	2021-09-03 11:50:25.132215280 +0000
-+++ samba-4.13.8/nsswitch/winbind_nss_solaris.c	2021-09-30 13:07:11.293248875 +0000
-@@ -36,6 +36,7 @@
- #include <string.h>
- #include <pwd.h>
- #include <syslog.h>
-+#include <thread.h>
- 
- #if !defined(HPUX)
- #include <sys/syslog.h>
 diff -x '*~' -x '*.pyc' -Nru samba-4.13.8.orig/nsswitch/winbind_struct_protocol.h samba-4.13.8/nsswitch/winbind_struct_protocol.h
 --- samba-4.13.8.orig/nsswitch/winbind_struct_protocol.h	2020-07-09 11:33:56.000000000 +0000
 +++ samba-4.13.8/nsswitch/winbind_struct_protocol.h	2021-09-30 13:07:11.265235890 +0000

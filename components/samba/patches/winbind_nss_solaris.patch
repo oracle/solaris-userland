@@ -1,12 +1,7 @@
-From 192dfaaa07185e2da71d89e5bfb227204fd2bba1 Mon Sep 17 00:00:00 2001
-From: Jiri Sasek <Jiri.Sasek@Oracle.COM>
-Date: Wed, 22 Apr 2020 22:46:26 +0200
-Subject: [PATCH] Support for updated nscd interfaces in Solaris
+Support for updated nscd interfaces in Solaris
 
-diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
-index 495854f..85b92d0 100644
---- a/nsswitch/winbind_nss_solaris.c
-+++ b/nsswitch/winbind_nss_solaris.c
+--- samba-4.19.7/nsswitch/winbind_nss_solaris.c	2023-07-18 10:14:54.602091800 +0200
++++ samba-4.19.7.new/nsswitch/winbind_nss_solaris.c	2024-07-25 12:34:31.301288869 +0200
 @@ -2,6 +2,9 @@
    Solaris NSS wrapper for winbind
    - Shirish Kalele 2000
@@ -25,7 +20,15 @@ index 495854f..85b92d0 100644
  #include "winbind_client.h"
  #include <stdlib.h>
  #include <sys/types.h>
-@@ -55,6 +57,60 @@
+@@ -34,6 +36,7 @@
+ #include <string.h>
+ #include <pwd.h>
+ #include <syslog.h>
++#include <thread.h>
+ 
+ #if !defined(HPUX)
+ #include <sys/syslog.h>
+@@ -55,6 +58,60 @@
  
  #define NSS_ARGS(args) ((nss_XbyY_args_t *)args)
  
@@ -86,7 +89,7 @@ index 495854f..85b92d0 100644
  #ifdef HPUX
  
  /*
-@@ -90,30 +146,86 @@ _nss_winbind_endpwent_solwrap (nss_backend_t * be, void *args)
+@@ -90,30 +147,86 @@ _nss_winbind_endpwent_solwrap (nss_backe
  	return _nss_winbind_endpwent();
  }
  
@@ -139,7 +142,8 @@ index 495854f..85b92d0 100644
 +
  	ret = _nss_winbind_getpwent_r(result, buffer,
 -				      buflen, errnop);
--
++				      buflen, &NSS_ARGS(args)->erange);
+ 
 -	if(ret == NSS_STATUS_SUCCESS)
 -		{
 -			snprintf(logmsg, 79, "_nss_winbind_getpwent_solwrap: Returning user: %s\n",
@@ -150,8 +154,6 @@ index 495854f..85b92d0 100644
 -			snprintf(logmsg, 79, "_nss_winbind_getpwent_solwrap: Returning error: %d.\n",ret);
 -			NSS_DEBUG(logmsg);
 -		}
-+				      buflen, &NSS_ARGS(args)->erange);
-+
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		snprintf(logmsg, 79,
 +		    "_nss_winbind_getpwent_solwrap: Returning error: %d.\n",
@@ -188,7 +190,7 @@ index 495854f..85b92d0 100644
  	return ret;
  }
  
-@@ -122,17 +234,51 @@ _nss_winbind_getpwnam_solwrap (nss_backend_t* be, void* args)
+@@ -122,17 +235,51 @@ _nss_winbind_getpwnam_solwrap (nss_backe
  {
  	NSS_STATUS ret;
  	struct passwd* result = (struct passwd*) NSS_ARGS(args)->buf.result;
@@ -215,12 +217,13 @@ index 495854f..85b92d0 100644
 +						buflen,
  						&NSS_ARGS(args)->erange);
 -	if(ret == NSS_STATUS_SUCCESS)
+-		NSS_ARGS(args)->returnval = (void*) result;
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		goto out;
 +	}
-+
+ 
 +	if (res_needed) {
- 		NSS_ARGS(args)->returnval = (void*) result;
++		NSS_ARGS(args)->returnval = (void*) result;
 +	} else {
 +		(void) update_password_buffer(NSS_ARGS(args),
 +		    result->pw_name,
@@ -232,7 +235,7 @@ index 495854f..85b92d0 100644
 +		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
 +		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
 +	}
- 
++
 +out:
 +	if (!res_needed) {
 +		free(result);
@@ -243,7 +246,7 @@ index 495854f..85b92d0 100644
  	return ret;
  }
  
-@@ -141,16 +287,52 @@ _nss_winbind_getpwuid_solwrap(nss_backend_t* be, void* args)
+@@ -141,16 +288,52 @@ _nss_winbind_getpwuid_solwrap(nss_backen
  {
  	NSS_STATUS ret;
  	struct passwd* result = (struct passwd*) NSS_ARGS(args)->buf.result;
@@ -270,13 +273,14 @@ index 495854f..85b92d0 100644
 +				       buflen,
  				       &NSS_ARGS(args)->erange);
 -	if(ret == NSS_STATUS_SUCCESS)
-+
+-		NSS_ARGS(args)->returnval = (void*) result;
+ 
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		goto out;
 +	}
 +
 +	if (res_needed) {
- 		NSS_ARGS(args)->returnval = (void*) result;
++		NSS_ARGS(args)->returnval = (void*) result;
 +	} else {
 +		(void) update_password_buffer(NSS_ARGS(args),
 +		    result->pw_name,
@@ -288,7 +292,7 @@ index 495854f..85b92d0 100644
 +		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
 +		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
 +	}
- 
++
 +out:
 +	if (!res_needed) {
 +		free(result);
@@ -299,7 +303,7 @@ index 495854f..85b92d0 100644
  	return ret;
  }
  
-@@ -205,29 +387,76 @@ _nss_winbind_endgrent_solwrap (nss_backend_t * be, void *args)
+@@ -205,29 +388,96 @@ _nss_winbind_endgrent_solwrap (nss_backe
  	return _nss_winbind_endgrent();
  }
  
@@ -309,17 +313,37 @@ index 495854f..85b92d0 100644
 +{
 +	int     buflen;
 +	char    *buffer;
++	int	rv;
 +
 +	buflen = snprintf(NULL, 0, "%s:x:%u:%s",
 +	    name, gid, *mem ? *mem : "") + 1;
 +
++	for (const char **ptr = mem; *ptr; ptr++) {
++		buflen += strlen(*ptr);
++		if (ptr != mem)
++			buflen += 1; /* strlen(",") */
++	}
++
 +	if (buflen > argp->buf.buflen)
 +		return (-1);
++
 +	buflen = argp->buf.buflen;
 +	buffer = argp->buf.buffer;
 +
-+	(void) snprintf(buffer, buflen, "%s:x:%u:%s",
-+	    name, gid, *mem ? *mem : "");
++	rv += snprintf(buffer, buflen, "%s:x:%u:", name, gid);
++	buffer += rv;
++	buflen -= rv;
++
++	for (const char **ptr = mem; *ptr; ptr++) {
++		if (ptr != mem) {
++			rv = snprintf(buffer, buflen, ",");
++			buffer += rv;
++			buflen -= rv;
++		}
++		rv = snprintf(buffer, buflen, *ptr);
++		buffer += rv;
++		buflen -= rv;
++	}
 +
 +	return (0);
 +}
@@ -339,7 +363,8 @@ index 495854f..85b92d0 100644
  
 -	ret = _nss_winbind_getgrent_r(result, buffer,
 -				      buflen, errnop);
--
++	NSS_DEBUG("_nss_winbind_getgrent_solwrap");
+ 
 -	if(ret == NSS_STATUS_SUCCESS)
 -		{
 -			snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning group: %s\n", result->gr_name);
@@ -349,8 +374,6 @@ index 495854f..85b92d0 100644
 -			snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning error: %d.\n", ret);
 -			NSS_DEBUG(logmsg);
 -		}
-+	NSS_DEBUG("_nss_winbind_getgrent_solwrap");
- 
 +	if (!res_needed) {
 +		result = SMB_MALLOC_P(struct group);
 +		buflen = NSS_ARGS(args)->buf.buflen;
@@ -368,7 +391,7 @@ index 495854f..85b92d0 100644
 +		NSS_DEBUG(logmsg);
 +		goto out;
 +	}
-+
+ 
 +	snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning group: %s\n", result->gr_name);
 +	NSS_DEBUG(logmsg);
 +	if (res_needed) {
@@ -391,7 +414,7 @@ index 495854f..85b92d0 100644
  	return ret;
  
  }
-@@ -236,17 +465,50 @@ static NSS_STATUS
+@@ -236,17 +486,50 @@ static NSS_STATUS
  _nss_winbind_getgrnam_solwrap(nss_backend_t* be, void* args)
  {
  	NSS_STATUS ret;
@@ -447,7 +470,7 @@ index 495854f..85b92d0 100644
  
  	if (NSS_ARGS(args)->erange == ERANGE && ret == NSS_STATUS_TRYAGAIN)
  		return NSS_STATUS_UNAVAIL;
-@@ -258,17 +520,50 @@ static NSS_STATUS
+@@ -258,17 +541,50 @@ static NSS_STATUS
  _nss_winbind_getgrgid_solwrap(nss_backend_t* be, void* args)
  {
  	NSS_STATUS ret;
@@ -504,7 +527,7 @@ index 495854f..85b92d0 100644
  
  	if (NSS_ARGS(args)->erange == ERANGE && ret == NSS_STATUS_TRYAGAIN)
  		return NSS_STATUS_UNAVAIL;
-@@ -374,12 +669,20 @@ parse_response(int af, nss_XbyY_args_t* argp, struct winbindd_response *response
+@@ -374,12 +690,20 @@ parse_response(int af, nss_XbyY_args_t*
  	   then construct list of addresses for hostent.
  	*/
  	p = strchr(response->data.winsresp, '\n');
@@ -527,7 +550,7 @@ index 495854f..85b92d0 100644
  	for(; p != response->data.winsresp; p--) {
  		if(*p == '\t') addrcount++;
  	}
-@@ -488,6 +791,8 @@ _nss_winbind_ipnodes_getbyname(nss_backend_t* be, void *args)
+@@ -488,6 +812,8 @@ _nss_winbind_ipnodes_getbyname(nss_backe
  	NSS_STATUS ret;
  	int af;
  
@@ -536,7 +559,7 @@ index 495854f..85b92d0 100644
  	/* I assume there that AI_ADDRCONFIG cases are handled in nss
  	   frontend code, at least it seems done so in solaris...
  
-@@ -533,6 +838,8 @@ _nss_winbind_hosts_getbyname(nss_backend_t* be, void *args)
+@@ -533,6 +859,8 @@ _nss_winbind_hosts_getbyname(nss_backend
  	};
  	NSS_STATUS ret;
  
@@ -545,7 +568,7 @@ index 495854f..85b92d0 100644
  	strncpy(request.data.winsreq, argp->key.name, sizeof(request.data.winsreq) - 1);
  	request.data.winsreq[sizeof(request.data.winsreq) - 1] = '\0';
  
-@@ -559,6 +866,8 @@ _nss_winbind_hosts_getbyaddr(nss_backend_t* be, void *args)
+@@ -559,6 +887,8 @@ _nss_winbind_hosts_getbyaddr(nss_backend
  	nss_XbyY_args_t	*argp = (nss_XbyY_args_t *)args;
  	const char *p;
  
@@ -554,7 +577,7 @@ index 495854f..85b92d0 100644
  #if defined(AF_INET6)
  	/* winbindd currently does not resolve IPv6 */
  	if(argp->key.hostaddr.type == AF_INET6) {
-@@ -591,18 +900,21 @@ _nss_winbind_hosts_getbyaddr(nss_backend_t* be, void *args)
+@@ -591,18 +921,21 @@ _nss_winbind_hosts_getbyaddr(nss_backend
  static NSS_STATUS
  _nss_winbind_common_endent(nss_backend_t* be, void *args)
  {
@@ -576,7 +599,7 @@ index 495854f..85b92d0 100644
          return (NSS_STATUS_UNAVAIL);
  }
  
-@@ -611,6 +923,8 @@ _nss_winbind_common_constr (nss_backend_op_t ops[], int n_ops)
+@@ -611,6 +944,8 @@ _nss_winbind_common_constr (nss_backend_
  {
  	nss_backend_t* be;
  
@@ -585,7 +608,7 @@ index 495854f..85b92d0 100644
  	if(!(be = SMB_MALLOC_P(nss_backend_t)) )
  	return NULL;
  
-@@ -624,6 +938,7 @@ static NSS_STATUS
+@@ -624,6 +959,7 @@ static NSS_STATUS
  _nss_winbind_common_destr (nss_backend_t* be, void* args)
  {
  	SAFE_FREE(be);
@@ -593,7 +616,7 @@ index 495854f..85b92d0 100644
  	return NSS_STATUS_SUCCESS;
  }
  
-@@ -640,6 +955,7 @@ nss_backend_t *
+@@ -640,6 +976,7 @@ nss_backend_t *
  _nss_winbind_ipnodes_constr(dummy1, dummy2, dummy3)
          const char      *dummy1, *dummy2, *dummy3;
  {
@@ -601,7 +624,7 @@ index 495854f..85b92d0 100644
  	return (_nss_winbind_common_constr(ipnodes_ops,
  		sizeof (ipnodes_ops) / sizeof (ipnodes_ops[0])));
  }
-@@ -657,6 +973,7 @@ nss_backend_t *
+@@ -657,6 +994,7 @@ nss_backend_t *
  _nss_winbind_hosts_constr(dummy1, dummy2, dummy3)
          const char      *dummy1, *dummy2, *dummy3;
  {
