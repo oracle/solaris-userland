@@ -3,8 +3,8 @@ Changes here are specific to Solaris and are not passed upstream.
 Packaging installs "Sendmail Installation and Operation Guide"
 in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
 
---- a/cf/README	Tue Jun 13 04:15:09 2023 -0700
-+++ b/cf/README	Tue Jun 13 04:44:14 2023 -0700
+--- a/cf/README	Thu Aug 08 07:47:05 2024 -0700
++++ b/cf/README	Thu Aug 08 07:52:08 2024 -0700
 @@ -4,12 +4,10 @@
  This document describes the sendmail configuration files.  It
  explains how to create a sendmail.cf file for use with sendmail.
@@ -240,7 +240,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  The local mailer accepts addresses of the form "user+detail", where
  the "+detail" is not used for mailbox matching but is available
  to certain local mail programs (in particular, see
-@@ -1460,7 +1317,7 @@
+@@ -1462,7 +1319,7 @@
  		FEATURE and introduce new settings via DAEMON_OPTIONS().
  
  msp		Defines config file for Message Submission Program.
@@ -249,9 +249,9 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  		to use it.  An optional argument can be used to override
  		the default of `[localhost]' to use as host to send all
  		e-mails to.  Note that MX records will be used if the
-@@ -1617,79 +1474,6 @@
- 		For more information see doc/op/op.me.
- 
+@@ -1624,79 +1481,6 @@
+ 		respectively.  For details, see the file and
+ 		the OpenSSL documentation.
  
 -+-------+
 -| HACKS |
@@ -329,7 +329,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  +--------------------+
  | USING UUCP MAILERS |
  +--------------------+
-@@ -2945,8 +2729,7 @@
+@@ -2952,8 +2736,7 @@
  tokenization.  It might be simpler to use a regex map and apply it
  to $&{currHeader}.
  2. There are no default rulesets coming with this distribution of
@@ -339,7 +339,16 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  3. When using a default ruleset for headers, the name of the header
  currently being checked can be found in the $&{hdr_name} macro.
  
-@@ -3706,8 +3489,6 @@
+@@ -3551,7 +3334,7 @@
+ 
+ If you want to have different address in different domains, take
+ a look at the virtusertable feature, which is also explained at
+-http://www.sendmail.org/virtual-hosting.html
++https://web.archive.org/web/20161208132446/http://www.sendmail.com:80/sm/open_source/tips/virtual_hosting/
+ 
+ 
+ +--------------------+
+@@ -3713,8 +3496,6 @@
  This list is shown in four columns:  the name you define, the default
  value for that definition, the option or macro that is affected
  (either Ox for an option or Dx for a macro), and a brief description.
@@ -348,7 +357,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  
  Some options are likely to be deprecated in future versions -- that is,
  the option is only included to provide back-compatibility.  These are
-@@ -4418,7 +4199,7 @@
+@@ -4428,7 +4209,7 @@
  					[undefined] Defines {daemon_flags}
  					for direct submissions.
  confUSE_MSP		UseMSP		[undefined] Use as mail submission
@@ -357,7 +366,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  confDELIVER_BY_MIN	DeliverByMin	[0] Minimum time for Deliver By
  					SMTP Service Extension (RFC 2852).
  confREQUIRES_DIR_FSYNC	RequiresDirfsync	[true] RequiresDirfsync can
-@@ -4564,8 +4345,7 @@
+@@ -4574,8 +4355,7 @@
  | MESSAGE SUBMISSION PROGRAM |
  +----------------------------+
  
@@ -367,7 +376,7 @@ in text and pdf form $(@D)/doc/op/ to $(PROTO_DIR)/usr/share/doc/op/
  a few hints how for those who want to tweak the default configuration
  for it (which is installed as submit.cf).
  
-@@ -4580,13 +4360,10 @@
+@@ -4590,13 +4370,10 @@
    of the default background mode.
  - FEATURE(stickyhost) and LOCAL_RELAY to send unqualified addresses
    to the LOCAL_RELAY instead of the default relay.
