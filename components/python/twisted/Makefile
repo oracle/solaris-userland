@@ -26,25 +26,22 @@
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		Twisted
-COMPONENT_VERSION=	22.10.0
+COMPONENT_NAME=		twisted
+COMPONENT_VERSION=	24.7.0
 COMPONENT_PROJECT_URL=	http://twistedmatrix.com/trac/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:32acbd40a94f5f46e7b42c109bfae2b302250945561783a8b7a059048f2d4d31
+    sha256:fb6939c6fe21702b37fb27d84168f1744ef6dcf3a3444011a996e7d548bd4211
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/twisted
 COMPONENT_ANITYA_ID=	4071
-COMPONENT_BAID=		133256
+COMPONENT_BAID=		174444
 
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-# Move executables into demo directory.
-COMPONENT_INSTALL_ARGS +=	--install-scripts=usr/demo/twisted-python$(PYTHON_VERSION)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/src/twisted/test
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -81,10 +78,10 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/automat-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/constantly-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/hyperlink-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/incremental-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/python-hamcrest-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/python-zope-interface-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
 REQUIRED_PACKAGES += system/library
 
 # Testing related components
+REQUIRED_PACKAGES += library/python/python-hamcrest
 REQUIRED_PACKAGES += library/python/service_identity

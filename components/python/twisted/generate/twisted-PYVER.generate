@@ -27,6 +27,11 @@
 
 <transform file path=usr/demo/twisted-python[23]\.[0-9]+/.+ -> drop>
 
+# Move executables into demo directory
+<transform file path=usr/bin/.* -> set mode 0555>
+<transform file path=usr/bin/.* -> set action.hash %(path)>
+<transform file path=usr/bin/.* -> edit path usr/bin usr/demo/twisted-python$(PYVER)>
+
 # Bypass pkgdepend detection of importlib in executable entry scripts
 <transform file path=usr/demo/twisted-python.* \
 	-> set pkg.depend.bypass-generate .*importlib.*>
@@ -36,3 +41,6 @@
 
 # zope interface pkglint detection is currently broken and thus it has to be added manually
 <transform file path=.*/_solaris_dep -> set pkg.depend.bypass-generate .*zope.*>
+
+# drop newsfragments files
+<transform file path=.*/newsfragments/.* -> drop>

@@ -5,15 +5,15 @@ to skip tests of core functionality:
 https://twistedmatrix.com/trac/ticket/10113
 https://github.com/twisted/twisted/pull/1537
 
---- Twisted-21.2.0rc1/src/twisted/test/test_failure.py
-+++ Twisted-21.2.0rc1/src/twisted/test/test_failure.py
-@@ -16,7 +16,10 @@ from twisted.python import failure
- from traceback import FrameSummary
+--- twisted-24.7.0/src/twisted/test/test_failure.py
++++ twisted-24.7.0/src/twisted/test/test_failure.py
+@@ -19,7 +19,10 @@ from types import TracebackType
+ from typing import Any, Generator, cast
  from unittest import skipIf
  
--from cython_test_exception_raiser import raiser  # type: ignore[import]
+-from cython_test_exception_raiser import raiser
 +try:
-+    from cython_test_exception_raiser import raiser  # type: ignore[import]
++    from cython_test_exception_raiser import raiser
 +except ImportError:
 +    raiser = None
  
