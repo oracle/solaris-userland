@@ -33,14 +33,14 @@ include ../../../make-rules/shared-macros.mk
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	128.0
-COMPONENT_BAID=		173202
+COMPONENT_VERSION =	128.1.0
+COMPONENT_BAID=		174558
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:c5ba7dcfbaf8600667766891eca9069392b659e18255d91d742ac69f224c697c
+    sha256:ccdab622a395622abc6d80040a11715ad81a614f601db6672c05b98ac91fd9b5
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -57,7 +57,7 @@ COMPONENT_ANITYA_ID =	16838
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:062eb948210b0886c7dc7ca9b42c3a72d5a66eee8f6f6c1cd134b74b81d28ad4
+    sha256:fdfe80e413ded75a828a5972ae52a27b5d9d46ede4a31ab4defaf1be04f780cf
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
