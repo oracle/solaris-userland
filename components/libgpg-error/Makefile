@@ -27,17 +27,17 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgpg-error
-COMPONENT_VERSION=	1.45
+COMPONENT_VERSION=	1.50
 COMPONENT_PROJECT_URL=  https://gnupg.org/software/libgpg-error/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:570f8ee4fb4bff7b7495cff920c275002aea2147e9a1d220c068213267f80a26
+    sha256:69405349e0a633e444a28c5b35ce8f14484684518a508dc48a089992fe93e20a
 COMPONENT_ARCHIVE_URL=  https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	library/libgpg-error
 COMPONENT_ANITYA_ID=	1628
 
-COMPONENT_BAID=		124773
+COMPONENT_BAID=		174322
 
 COMPONENT_BUILD_TARGETS = all info
 
@@ -49,6 +49,7 @@ include $(WS_MAKE_RULES)/common.mk
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS += --enable-threads=posix
+CONFIGURE_OPTIONS += --enable-install-gpg-error-config
 
 # pkg-config --libs no more outputs default library paths. See bug 36130616.
 COMPONENT_TEST_ENV += PKG_CONFIG_ALLOW_SYSTEM_LIBS=

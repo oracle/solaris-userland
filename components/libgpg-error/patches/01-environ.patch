@@ -1,0 +1,19 @@
+This patch fixes the following build issue:
+
+spawn-posix.c:345:5: error: 'environ' undeclared (first use in this function)
+  345 |     environ = act->environ;
+      |     ^~~~~~~
+
+--- libgpg-error-1.50/src/spawn-posix.c.orig	2024-06-30 22:49:31.554845879 -0700
++++ libgpg-error-1.50/src/spawn-posix.c	2024-06-30 22:51:22.617273934 -0700
+@@ -57,7 +57,10 @@
+ 
+ #include "gpgrt-int.h"
+ 
++/* (Only glibc's unistd.h declares this iff _GNU_SOURCE is used.)  */
++extern char **environ;
+ 
++
+ /* Definition for the gpgrt_spawn_actions_t.  Note that there is a
+  * different one for Windows.  */
+ struct gpgrt_spawn_actions {
