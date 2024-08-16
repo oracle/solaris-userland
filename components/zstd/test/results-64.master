@@ -6,8 +6,9 @@ test : too large numeric argument
 test : set compression level with environment variable ZSTD_CLEVEL
 test : override ZSTD_CLEVEL with command line option
 test : compress to stdout
-test : compress to named file
+test : compress to named file (-o)
 test : force write, correct order
+test : -c + -o : last one wins
 test : forgotten argument
 test : implied stdout when input is stdin
 test : null-length file roundtrip
@@ -21,3 +22,8 @@ test : force overwrite
 test : overwrite readonly file
 test: --no-progress flag
 test: --progress flag
+test: overwrite input file (must fail)
+test: detect that input file does not exist
+test: --[no-]compress-literals
+test: --no-check for decompression
+test: check if binary has executable stack (#2963)

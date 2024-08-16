@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER = gcc
@@ -28,14 +28,13 @@ COMPILER = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		zstd
-COMPONENT_VERSION=	1.5.5
+COMPONENT_VERSION=	1.5.6
+COMPONENT_BAID=		175373
+COMPONENT_ARCHIVE_HASH= sha256:8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1
 COMPONENT_LABEL=	v$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://github.com/facebook/zstd
-COMPONENT_ARCHIVE_HASH= \
-    sha256:9c4396cc829cfae319a6e2615202e82aad41372073482fce286fac78646d3ee4
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/download/$(COMPONENT_LABEL)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	12083
-COMPONENT_BAID=		142182
 
 BUILD_STYLE = justmake
 
