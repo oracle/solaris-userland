@@ -20,10 +20,12 @@
 #
 
 #
-# Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
 
 # man pages
+<transform file link path=usr/man/.* -> \
+    exit 1 "Error: man pages belong to usr/share/man and not usr/man (%<action.path>)" >
 <transform dir path=usr.*/man(/.+)?$ -> default facet.doc.man all>
 <transform file link hardlink path=usr.*/man/.+$ -> default facet.doc.man all>
 
