@@ -73,7 +73,7 @@ unpack::	$$(UNPACK_STAMP$(1))
 REQUIRED_PACKAGES += archiver/gnu-tar
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/gzip
-REQUIRED_PACKAGES += compress/p7zip
+REQUIRED_PACKAGES += compress/7zip
 REQUIRED_PACKAGES += compress/unzip
 REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += compress/zip
