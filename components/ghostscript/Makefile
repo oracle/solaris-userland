@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -28,11 +28,11 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=	10.02.1
+COMPONENT_VERSION=	10.03.1
 IPS_COMPONENT_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\.0\([^.]\)/.\1/g')
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
 COMPONENT_DOWNLOAD_URL= https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
-COMPONENT_ARCHIVE_HASH= sha256:e429e4f5b01615a4f0f93a4128e8a1a4d932dff983b1774174c79c0630717ad9
+COMPONENT_ARCHIVE_HASH= sha256:31cd01682ad23a801cc3bbc222a55f07c4ea3e068bdfb447792d54db21a2e8ad
 COMPONENT_ARCHIVE_URL=	\
 	$(COMPONENT_DOWNLOAD_URL)/gs$(subst .,,$(COMPONENT_VERSION))/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
@@ -41,7 +41,7 @@ COMPONENT_NAME_1=	tessdata_best
 GIT_REPO_1=		https://github.com/tesseract-ocr/$(COMPONENT_NAME_1)
 GIT_COMMIT_ID_1=	fa8481f
 
-COMPONENT_BAID=		155606
+COMPONENT_BAID=		175547
 
 include $(WS_MAKE_RULES)/common.mk
 # some backup files are copied to proto
@@ -55,6 +55,10 @@ CONFIGURE_OPTIONS +=	--disable-hidden-visibility
 
 # Honour encrypted PDF permissions
 CFLAGS +=		-DUSE_PDF_PERMISSIONS=1
+
+# Take alternative definition of atomic int in Leptonica
+# https://github.com/tesseract-ocr/tesseract/issues/4288
+CXXFLAGS +=		-D__STDC_NO_ATOMICS__=1
 
 # Sparcv7 cores on test docxwrite
 gcc_OPT.sparc.32 = -O0 -munaligned-doubles
