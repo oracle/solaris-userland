@@ -4,11 +4,9 @@ can not be copied into the buffer to move it on aligned address location.
 
 This feature can not be misused for "daily" use because of its expesiveness.
 
-diff --git a/source3/smbd/server.c b/source3/smbd/server.c
-index 3347519..6659a5f 100644
---- a/source3/smbd/server.c
-+++ b/source3/smbd/server.c
-@@ -1524,6 +1524,9 @@ static NTSTATUS smbd_claim_version(struct messaging_context *msg,
+--- samba-4.19.8/source3/smbd/server.c
++++ samba-4.19.8/source3/smbd/server.c
+@@ -1539,6 +1539,9 @@ */
  	return NT_STATUS_OK;
  }
  
@@ -18,9 +16,9 @@ index 3347519..6659a5f 100644
  /****************************************************************************
   main program.
  ****************************************************************************/
-@@ -1653,6 +1656,17 @@ extern void build_options(bool screen);
- 		.exit_server_cleanly = smbd_exit_server_cleanly,
- 	};
+@@ -1695,6 +1698,17 @@ DEBUG(0,("ERROR: Can't log to stdout (-S
+ 		exit(1);
+ 	}
  
 +#ifdef __sparcv9	/* works on 64bit SPARC !only! */
 +	/* if the code will address misaligned memory address then no SIGBUS is triggered but
@@ -34,5 +32,5 @@ index 3347519..6659a5f 100644
 +#endif
 +
  	/*
- 	 * Do this before any other talloc operation
+ 	 * We want to die early if we can't open /dev/urandom
  	 */
