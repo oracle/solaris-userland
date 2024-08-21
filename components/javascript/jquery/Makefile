@@ -20,22 +20,21 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jquery
-COMPONENT_VERSION=	3.5.1
+COMPONENT_VERSION=	3.7.1
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:7e639522dc43fc18c80952dcab0d3c4d7d84a4ce5d5f9dd6b2b593987e7ae059
+	sha256:aeb6ee9b1606c016e76fb91a93f8ff3987ee6c39b51cfe0993f8dcc81271c32f
 COMPONENT_ARCHIVE_URL=	\
 	https://github.com/jquery/$(COMPONENT_NAME)/archive/$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=	https://jquery.com/
 COMPONENT_BUGDB=	javascript/jquery
 COMPONENT_ANITYA_ID=	7363
-
-COMPONENT_BAID=		79563
+COMPONENT_BAID=		175701
 
 # There is nothing to build, just package the dist files
 BUILD_STYLE= pkg

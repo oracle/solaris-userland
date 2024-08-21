@@ -20,22 +20,21 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tablesorter
-COMPONENT_VERSION=	2.31.3
+COMPONENT_VERSION=	2.32.0
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:6ba5e2726edd932499abe92444c06115b8d41357c485f3f6bf9ee407cc5f2dc4
+	sha256:9dadaf6ab8260b3e0b4728500a0ebb2ba5d8224cd0193b3f0e20f799c0500dd7
 COMPONENT_ARCHIVE_URL=	\
 	https://github.com/Mottie/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=	https://mottie.github.io/tablesorter/
 COMPONENT_BUGDB=	javascript/jquery
 COMPONENT_ANITYA_ID=	141610
-
-COMPONENT_BAID=		91003
+COMPONENT_BAID=		175700
 
 # There is nothing to build, just package the dist files
 BUILD_STYLE= pkg
