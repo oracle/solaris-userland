@@ -1,0 +1,13 @@
+https://github.com/NLnetLabs/unbound/issues/1126
+
+--- unbound-1.21.0/smallapp/unbound-control-setup.sh.in
++++ unbound-1.21.0/smallapp/unbound-control-setup.sh.in
+@@ -104,7 +104,7 @@ esac
+ done
+ shift $((OPTIND - 1))
+ 
+-if ! openssl >/dev/null 2>&1; then
++if ! openssl </dev/null >/dev/null 2>&1; then
+     echo "$0 requires openssl to be installed for keys/certificates generation." >&2
+     exit 1
+ fi
