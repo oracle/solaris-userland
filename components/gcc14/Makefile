@@ -218,7 +218,7 @@ PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gfortran
 
 
 REQUIRED_PACKAGES += compress/zstd
-REQUIRED_PACKAGES += developer/gcc/gcc-gnat-13
+REQUIRED_PACKAGES += developer/gcc/gcc-gnat-14
 REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/isl
