@@ -139,6 +139,9 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ XPASS:/p" ' \
 	'-e "/ ERROR:/p" '
 
+# If you are modifying runtime dependencies in this list, you probably
+# also need to make equivalent changes to the ON-boot-archive section of
+# tools/notifications.cfg
 REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/libssh2
