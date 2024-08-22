@@ -1,3 +1,6 @@
+## Files:
+LICENSE
+
 
                                  Apache License
                            Version 2.0, January 2004
@@ -200,55 +203,4587 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-CUPS
+
+
+## Files:
+README.md
+
+OpenPrinting CUPS v2.4.10
+=========================
+
+![Version](https://img.shields.io/github/v/release/openprinting/cups?include_prereleases)
+![Apache 2.0](https://img.shields.io/github/license/openprinting/cups)
+[![Build and Test](https://github.com/OpenPrinting/cups/workflows/Build%20and%20Test/badge.svg)](https://github.com/OpenPrinting/cups/actions/workflows/build.yml)
+[![Coverity Scan](https://img.shields.io/coverity/scan/23806)](https://scan.coverity.com/projects/openprinting-cups)
+
+
+Introduction
+------------
+
+OpenPrinting CUPS is the most current version of CUPS, a standards-based, open
+source printing system for Linux® and other Unix®-like operating systems.  CUPS
+supports printing to:
+
+- [AirPrint™][1] and [IPP Everywhere™][2] printers,
+- Network and local (USB) printers with Printer Applications, and
+- Network and local (USB) printers with (legacy) PPD-based printer drivers.
+
+CUPS provides the System V ("lp") and Berkeley ("lpr") command-line interfaces,
+a configurable web interface, a C API, and common print filters, drivers, and
+backends for printing.  The [cups-filters][3] project provides additional
+filters and drivers.
+
+CUPS is licensed under the Apache License Version 2.0 with an exception to allow
+linking against GNU GPL2-only software.  See the files `LICENSE` and `NOTICE`
+for more information.
+
+> Note: Apple maintains a separate repository for the CUPS that ships with macOS
+> and iOS at <https://github.com/apple/cups>.
+
+[1]: https://support.apple.com/en-us/HT201311
+[2]: https://www.pwg.org/ipp/everywhere.html
+[3]: https://github.com/openprinting/cups-filters
+
+
+Reading the Documentation
+-------------------------
+
+Initial documentation to get you started is provided in the root directory of
+the CUPS sources:
+
+- `CHANGES.md`: A list of changes in the current major release of CUPS.
+- `CONTRIBUTING.md`: Guidelines for contributing to the CUPS project.
+- `CREDITS.md`: A list of past contributors to the CUPS project.
+- `DEVELOPING.md`: Guidelines for developing code for the CUPS project.
+- `INSTALL.md`: Instructions for building and installing CUPS.
+- `LICENSE`: The CUPS license agreement (Apache 2.0).
+- `NOTICE`: Copyright notices and exceptions to the CUPS license agreement.
+- `README.md`: This file.
+- `REPORTING_ISSUES.md`: Instructions what information to provide when reporting an issue.
+
+Once you have installed the software you can access the documentation (and a
+bunch of other stuff) online at <http://localhost:631/> and using the `man`
+command, for example `man cups`.
+
+If you're having trouble getting that far, the documentation is located under
+the `doc/help` and `man` directories.
+
+*Please read the documentation before asking questions.*
+
+
+Setting Up Printers
+-------------------
+
+CUPS includes a web-based administration tool that allows you to manage
+printers, classes, and jobs on your server.  Open <http://localhost:631/admin/>
+in your browser to access the printer administration tools.  You will be asked
+for the administration password (root or any other user in the "sys", "system",
+"root", "admin", or "lpadmin" group on your system) when performing any
+administrative function.
+
+The `lpadmin` command is used to manage printers from the command-line.  For
+example, the following command creates a print queue called "myprinter" for an
+IPP Everywhere printer at address "11.22.33.44":
+
+    lpadmin -p myprinter -E -v "ipp://11.22.33.44/ipp/print" -m everywhere
+
+The `-p` option specifies the printer name.  The `-E` option enables the printer
+and accepts new print jobs immediately.  The `-v` option specifies the *device
+URI* for the printer, which tells CUPS how to communicate with the printer.  And
+the `-m` option specifies the model (driver) to use, in this case the IPP
+Everywhere ("everywhere") driver that is used for AirPrint and IPP Everywhere
+printers as well as shared printers and printers supported through Printer
+Applications.
+
+Legacy printers are supported using PPD (PostScript Printer Description) files
+that describe printer capabilities and driver programs needed for each printer.
+CUPS includes several sample PPD files for common legacy printers:
+
+   Driver                       | PPD Name
+   -----------------------------|------------------------------
+   Dymo Label Printers          | drv:///sample.drv/dymo.ppd
+   Intellitech Intellibar       | drv:///sample.drv/intelbar.ppd
+   EPSON 9-pin Series           | drv:///sample.drv/epson9.ppd
+   EPSON 24-pin Series          | drv:///sample.drv/epson24.ppd
+   Generic PCL Laser Printer    | drv:///sample.drv/generpcl.ppd
+   Generic PostScript Printer   | drv:///sample.drv/generic.ppd
+   HP DeskJet Series            | drv:///sample.drv/deskjet.ppd
+   HP LaserJet Series           | drv:///sample.drv/laserjet.ppd
+   OKIDATA 9-Pin Series         | drv:///sample.drv/okidata9.ppd
+   OKIDATA 24-Pin Series        | drv:///sample.drv/okidat24.ppd
+   Zebra CPCL Label Printer     | drv:///sample.drv/zebracpl.ppd
+   Zebra EPL1 Label Printer     | drv:///sample.drv/zebraep1.ppd
+   Zebra EPL2 Label Printer     | drv:///sample.drv/zebraep2.ppd
+   Zebra ZPL Label Printer      | drv:///sample.drv/zebra.ppd
+
+The sample drivers provide basic printing capabilities, but generally do not
+exercise the full potential of the printers or CUPS.  Other drivers provide
+greater printing capabilities.
+
+You can run the `lpinfo -m` command to list all of the available drivers:
+
+    lpinfo -m
+
+Similarly, the `lpinfo -v` command lists the available printers and their device
+URIs:
+
+    lpinfo -v
+
+Once you know the device URI and driver name, add the printer using the
+`lpadmin` command:
+
+    lpadmin -p PRINTER-NAME -E -v "DEVICE-URI" -m DRIVER-NAME
+
+
+Printing Files
+--------------
+
+CUPS provides both the System V `lp` and Berkeley `lpr` commands for printing:
+
+    lp FILENAME
+    lpr FILENAME
+
+Both the `lp` and `lpr` commands support printing options:
+
+    lp -o media=A4 -o resolution=600dpi FILENAME
+    lpr -o media=A4 -o resolution=600dpi FILENAME
+
+CUPS recognizes many types of images files as well as PDF, PostScript, and text
+files, so you can print those files directly rather than through an application.
+
+If you have an application that generates output specifically for your printer
+then you need to use the `-oraw` or `-l` options:
+
+    lp -o raw FILENAME
+    lpr -l FILENAME
+
+This will prevent the filters from misinterpreting your print file.
+
+
+Legal Stuff
+-----------
 
 Copyright © 2020-2023 by OpenPrinting
-Copyright © 2007-2019 by Apple Inc.
+
+Copyright © 2007-2020 by Apple Inc.
+
+Copyright © 1997-2007 by Easy Software Products.
+
+CUPS is provided under the terms of the Apache License, Version 2.0 with
+exceptions for GPL2/LGPL2 software.  A copy of this license can be found in the
+file `LICENSE`.  Additional legal information is provided in the file `NOTICE`.
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations under the License.
+
+
+## Files:
+vcnet/regex/README
+
+This is a modified version of Henry Spencer's "BSD" regular expression
+library. The original library can be found at
+https://github.com/garyhouston/regex.  A description of Spencer's
+various libraries can be found at https://garyhouston.github.io/regex/
+
+The changes in this version are:
+
+* The library name has been changed to rxspencer, the header installs
+  into a directory rxspencer, and the man pages named accordingly, to
+  allow easy installation as a system library on Linux without
+  conflicting with other regex libraries.
+* A CMake build system, which can build either static or shared
+  libraries, maybe even on non-Unix systems.
+* A few code modernizations and changes to improve portabilty, avoid
+  compiler warnings, and improve robustness.
+
+I (Gary Houston) originally made this version with a build system
+based on GNU Automake and Libtool, to allow building a shared library
+for a project where the library needed to be dynamically loaded. The
+CMake scripts were contributed by Stephen Just, modified from LuaDist
+versions.
+
+Spencer's original license can be found in the COPYRIGHT file. The CMake
+scripts are licensed under the MIT license. I release all of my own
+changes to the public domain under the Creative Commons Zero license.
+
+Installation
+============
+
+CMake needs to be installed. To build from a Linux command line, or
+something compatible, within the source directory:
+
+to configure for a static library:
+cmake .
+or
+cmake -Drxshared=0 .
+
+to configure for a shared library:
+cmake -Drxshared=1 .
+
+to disable tests:
+cmake -DBUILD_TESTING=OFF .
+
+to disable manuals/ documentation:
+cmake -DINSTALL_DOCS=OFF .
+
+to build:
+make
+make install
+
+also required on Linux, after installing the shared library:
+ldconfig
+
+to run the tests:
+make test
+
+to run the tests, with output displayed:
+ctest -V
+
+Usage
+=====
+
+Include the following header in a C program:
+
+#include <rxspencer/regex.h>
+
+Link with the library using the -lrxspencer flag, as in:
+gcc test.c -o test -lrxspencer
+
+The library is further described in the supplied man pages: rxspencer.3
+and rxspencer.7, which are formatted at
+https://garyhouston.github.io/regex/regex3.html and
+https://garyhouston.github.io/regex/regex7.html.
+
+--
+Gary Houston,  ghouston@arglist.com
+
+
+## Files:
+scheduler/colorman.c
+
+Color management routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2014 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+Original DBUS/colord code is Copyright © 2011 Red Hat, Inc.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+  Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+
+  Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+## Files:
+vcnet/dns_sd.h
+
+-*- Mode: C; tab-width: 4 -*-
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright (c) 2003-2004, Apple Computer, Inc. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1.  Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+2.  Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of its
+    contributors may be used to endorse or promote products derived from this
+    software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY APPLE AND ITS CONTRIBUTORS "AS IS" AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL APPLE OR ITS CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+## Files:
+backend/backend-private.h
+
+Backend support definitions for CUPS.
+
+Copyright © 2021 by OpenPrinting
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/dnssd.c
+
+DNS-SD discovery backend for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2008-2018 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/ieee1284.c
+
+IEEE-1284 support functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2015 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/ipp.c
+
+IPP backend for CUPS.
+
+Copyright © 2021-2024 by OpenPrinting
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/lpd.c
+
+Line Printer Daemon backend for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/network.c
+
+Common backend network APIs for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2016 by Apple Inc.
+Copyright © 2006-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/runloop.c
+
+Common run loop APIs for CUPS backends.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2014 by Apple Inc.
+Copyright © 2006-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/snmp-supplies.c
+
+SNMP supplies functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2008-2015 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/snmp.c
+
+SNMP discovery backend for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2014 by Apple Inc.
+Copyright © 2006-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/socket.c
+
+AppSocket backend for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/test1284.c
+
+IEEE-1284 support functions test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2010 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/testbackend.c
+
+Backend test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2014 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/testsupplies.c
+
+SNMP supplies test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2008-2011 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/usb-darwin.c
+
+USB backend for macOS.
+
+Copyright © 2022-2024 by OpenPrinting.
+Copyright © 2005-2021 Apple Inc. All rights reserved.
+
+IMPORTANT:  This Apple software is supplied to you by Apple Computer,
+Inc. ("Apple") in consideration of your agreement to the following
+terms, and your use, installation, modification or redistribution of
+this Apple software constitutes acceptance of these terms.  If you do
+not agree with these terms, please do not use, install, modify or
+redistribute this Apple software.
+
+In consideration of your agreement to abide by the following terms, and
+subject to these terms, Apple grants you a personal, non-exclusive
+license, under Apple's copyrights in this original Apple software (the
+"Apple Software"), to use, reproduce, modify and redistribute the Apple
+Software, with or without modifications, in source and/or binary forms;
+provided that if you redistribute the Apple Software in its entirety and
+without modifications, you must retain this notice and the following
+text and disclaimers in all such redistributions of the Apple Software.
+Neither the name, trademarks, service marks or logos of Apple Computer,
+Inc. may be used to endorse or promote products derived from the Apple
+Software without specific prior written permission from Apple.  Except
+as expressly stated in this notice, no other rights or licenses, express
+or implied, are granted by Apple herein, including but not limited to
+any patent rights that may be infringed by your derivative works or by
+other works in which the Apple Software may be incorporated.
+
+The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
+MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
+THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
+OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
+
+IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
+OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
+MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
+AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
+STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+
+## Files:
+backend/usb-libusb.c
+
+LIBUSB interface code for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/usb-unix.c
+
+USB port backend for CUPS.
+
+This file is included from "usb.c" when compiled on UNIX/Linux.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2013 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+backend/usb.c
+
+USB printer backend for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2012 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+berkeley/lpc.c
+
+"lpc" command for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+berkeley/lpq.c
+
+"lpq" command for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+berkeley/lpr.c
+
+"lpr" command for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
 Copyright © 1997-2007 by Easy Software Products.
 
-CUPS and the CUPS logo are trademarks of Apple Inc.
-
-The MD5 Digest code is Copyright 1999 Aladdin Enterprises.
-
-The Kerberos support code ("KSC") is copyright 2006 by Jelmer Vernooij and is
-provided 'as-is', without any express or implied warranty.  In no event will the
-author or Apple Inc. be held liable for any damages arising from the use of the
-KSC.
-
-Sources files containing KSC have the following text at the top of each source
-file:
-
-    This file contains Kerberos support code, copyright 2006 by Jelmer Vernooij.
-
-The KSC copyright and license apply only to Kerberos-related feature code in
-CUPS.  Such code is typically conditionally compiled based on the present of the
-HAVE_GSSAPI preprocessor definition.
-
-Permission is granted to anyone to use the KSC for any purpose, including
-commercial applications, and to alter it and redistribute it freely, subject to
-the following restrictions:
-
-  1. The origin of the KSC must not be misrepresented; you must not claim that
-     you wrote the original software. If you use the KSC in a product, an
-     acknowledgment in the product documentation would be appreciated but is not
-     required.
-  2. Altered source versions must be plainly marked as such, and must not be
-     misrepresented as being the original software.
-  3. This notice may not be removed or altered from any source distribution.
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
 
 
--- CUPS Exceptions to the Apache 2.0 License --
+## Files:
+berkeley/lprm.c
 
-As an exception, if, as a result of your compiling your source code, portions
-of this Software are embedded into an Object form of such source code, you
-may redistribute such embedded portions in such Object form without complying
-with the conditions of Sections 4(a), 4(b) and 4(d) of the License.
+"lprm" command for CUPS.
 
-In addition, if you combine or link compiled forms of this Software with
-software that is licensed under the GPLv2 ("Combined Software") and if a
-court of competent jurisdiction determines that the patent provision (Section
-3), the indemnity provision (Section 9) or other Section of the License
-conflicts with the conditions of the GPLv2, you may retroactively and
-prospectively choose to deem waived or otherwise exclude such Section(s) of
-the License, but only in their entirety and only with respect to the Combined
-Software.
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/admin.c
+
+Administration CGI for CUPS.
+
+Copyright © 2021-2024 by OpenPrinting
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/cgi-private.h
+
+Private CGI definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2011 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/cgi.h
+
+CGI support library definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/classes.c
+
+Class status CGI for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2016 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/help-index.c
+
+Online help index routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/help-index.h
+
+Online help index definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2011 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/help.c
+
+Online help CGI for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2011 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/html.c
+
+HTML support functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2011 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/ipp-var.c
+
+CGI <-> IPP variable routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2016 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/jobs.c
+
+Job status CGI for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2014 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/printers.c
+
+Printer status CGI for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2016 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/search.c
+
+Search routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/template.c
+
+CGI template function.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2015 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/testcgi.c
+
+CGI test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2014 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/testhi.c
+
+Help index test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2017 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/testtemplate.c
+
+CGI template test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2011 by Apple Inc.
+Copyright © 2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cgi-bin/var.c
+
+CGI form variable and array functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/adminutil.c
+
+Administration utility API definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 2001-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/adminutil.h
+
+Administration utility API definitions for CUPS.
+
+Copyright 2020-2024 by OpenPrinting.
+Copyright 2007-2016 by Apple Inc.
+Copyright 2001-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/array-private.h
+
+Private array definitions for CUPS.
+
+Copyright 2011-2012 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/array.c
+
+Sorted array routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/array.h
+
+Sorted array definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2010 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/auth.c
+
+Authentication functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+This file contains Kerberos support code, copyright 2006 by
+Jelmer Vernooij.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/backchannel.c
+
+Backchannel functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/backend.c
+
+Backend functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2015 by Apple Inc.
+Copyright 2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/backend.h
+
+Backend definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/cups-private.h
+
+Private definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/cups.h
+
+API definitions for CUPS.
+
+Copyright © 2021-202 by OpenPrinting.
+Copyright © 2007-2020 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/debug-internal.h
+
+Internal debugging macros for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/debug-private.h
+
+Private debugging APIs for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/debug.c
+
+Debugging functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2008-2018 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/dest-job.c
+
+Destination job support for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2012-2017 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/dest-localization.c
+
+Destination localization support for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2012-2017 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/dest-options.c
+
+Destination option/media support for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2012-2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/dest.c
+
+User-defined destination (and option) support for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/dir.c
+
+Directory routines for CUPS.
+
+This set of APIs abstracts enumeration of directory entries.
+
+Copyright © 2022-2024 by OpenPrinting.
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/dir.h
+
+Public directory definitions for CUPS.
+
+This set of APIs abstracts enumeration of directory entries.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/encode.c
+
+Option encoding routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/file-private.h
+
+Private file definitions for CUPS.
+
+Since stdio files max out at 256 files on many systems, we have to
+write similar functions without this limit.  At the same time, using
+our own file functions allows us to provide transparent support of
+different line endings, gzip'd print files, PPD files, etc.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/file.c
+
+File functions for CUPS.
+
+Since stdio files max out at 256 files on many systems, we have to
+write similar functions without this limit.  At the same time, using
+our own file functions allows us to provide transparent support of
+different line endings, gzip'd print files, PPD files, etc.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/file.h
+
+Public file definitions for CUPS.
+
+Since stdio files max out at 256 files on many systems, we have to
+write similar functions without this limit.  At the same time, using
+our own file functions allows us to provide transparent support of
+different line endings, gzip'd print files, PPD files, etc.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/fuzzipp.c
+
+IPP fuzzing program for CUPS.
+
+Copyright © 2022-2024 by OpenPrinting.
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/getdevices.c
+
+cupsGetDevices implementation for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2008-2016 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/getifaddrs-internal.h
+
+getifaddrs definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2018 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/getifaddrs.c
+
+Network interface functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/getputfile.c
+
+Get/put file functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/globals.c
+
+Global variable access routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/hash.c
+
+Hashing functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2015-2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/http-addr.c
+
+HTTP address routines for CUPS.
+
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/http-addrlist.c
+
+HTTP address list routines for CUPS.
+
+Copyright © 2022-2024 by OpenPrinting.
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/http-private.h
+
+Private HTTP definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2018 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/http-support.c
+
+HTTP support routines for CUPS.
+
+Copyright © 2020-2023 by OpenPrinting
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/http.c
+
+HTTP routines for CUPS.
+
+Copyright © 2022-2024 by OpenPrinting.
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+This file contains Kerberos support code, copyright 2006 by
+Jelmer Vernooij.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/http.h
+
+Hyper-Text Transport Protocol definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/ipp-file.c
+
+IPP data file parsing functions.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/ipp-private.h
+
+Private IPP definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/ipp-support.c
+
+Internet Printing Protocol support functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/ipp-vars.c
+
+IPP data file parsing functions.
+
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/ipp.c
+
+Internet Printing Protocol functions for CUPS.
+
+Copyright © 2022-2024 by OpenPrinting.
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/ipp.h
+
+Internet Printing Protocol definitions for CUPS.
+
+Copyright © 2022-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/langprintf.c
+
+Localized printf/puts functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 2002-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/language-private.h
+
+Private localization support for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/language.c
+
+I18N/language support for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2017 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/language.h
+
+Multi-language support for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/md5-internal.h
+
+Private MD5 definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2010 by Apple Inc.
+Copyright 2005 by Easy Software Products
+
+Copyright (C) 1999 Aladdin Enterprises.  All rights reserved.
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+
+L. Peter Deutsch
+ghost@aladdin.com
+
+
+## Files:
+cups/md5.c
+
+Private MD5 implementation for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2017 by Apple Inc.
+Copyright © 2005 by Easy Software Products
+Copyright © 1999 Aladdin Enterprises.  All rights reserved.
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+
+L. Peter Deutsch
+ghost@aladdin.com
+
+
+## Files:
+cups/md5passwd.c
+
+MD5 password support for CUPS (deprecated).
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2017 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/notify.c
+
+Notification routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2013 by Apple Inc.
+Copyright 2005-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/options.c
+
+Option routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2017 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/ppd-attr.c
+
+PPD model-specific attribute routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2015 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/ppd-cache.c
+
+PPD cache implementation for CUPS.
+
+Copyright © 2022-2024 by OpenPrinting.
+Copyright © 2010-2021 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/ppd-conflicts.c
+
+Option conflict management routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2018 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+PostScript is a trademark of Adobe Systems, Inc.
+
+
+## Files:
+cups/ppd-custom.c
+
+PPD custom option routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2015 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+PostScript is a trademark of Adobe Systems, Inc.
+
+
+## Files:
+cups/ppd-emit.c
+
+PPD code emission routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2019 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+PostScript is a trademark of Adobe Systems, Inc.
+
+
+## Files:
+cups/ppd-localize.c
+
+PPD localization routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2018 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+PostScript is a trademark of Adobe Systems, Inc.
+
+
+## Files:
+cups/ppd-mark.c
+
+Option marking routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+PostScript is a trademark of Adobe Systems, Inc.
+
+
+## Files:
+cups/ppd-page.c
+
+Page size functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2015 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+PostScript is a trademark of Adobe Systems, Inc.
+
+
+## Files:
+cups/ppd-private.h
+
+Private PPD definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+PostScript is a trademark of Adobe Systems, Inc.
+
+
+## Files:
+cups/ppd-util.c
+
+PPD utilities for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/ppd.c
+
+PPD file routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+PostScript is a trademark of Adobe Systems, Inc.
+
+
+## Files:
+cups/ppd.h
+
+PostScript Printer Description definitions for CUPS.
+
+THESE APIS ARE DEPRECATED.  THIS HEADER AND THESE FUNCTIONS WILL BE REMOVED
+IN A FUTURE RELEASE OF CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+PostScript is a trademark of Adobe Systems, Inc.
+
+
+## Files:
+cups/pwg-media.c
+
+PWG media name API implementation for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2009-2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/pwg-private.h
+
+Private PWG media API definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2009-2016 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/pwg.h
+
+PWG media API definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2009-2017 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/raster-error.c
+
+Raster error handling for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/raster-interpret.c
+
+PPD command interpreter for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1993-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/raster-interstub.c
+
+cupsRasterInterpretPPD stub for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2018 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/raster-private.h
+
+Private image library definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1993-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/raster-stream.c
+
+Raster file routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2019 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+This file is part of the CUPS Imaging library.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/raster-stubs.c
+
+Imaging library stubs for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2018 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/raster.h
+
+Raster file definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+This file is part of the CUPS Imaging library.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/rasterbench.c
+
+Raster benchmark program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2016 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/request.c
+
+IPP utilities for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/sidechannel.c
+
+Side-channel API code for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/sidechannel.h
+
+Side-channel API definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/snmp-private.h
+
+Private SNMP definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2014 by Apple Inc.
+Copyright © 2006-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/snmp.c
+
+SNMP functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 2006-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/snprintf.c
+
+snprintf functions for CUPS.
+
+Copyright © 2021-2023 by OpenPrinting
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/string-private.h
+
+Private string definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/string.c
+
+String functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/tempfile.c
+
+Temp file utilities for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/testadmin.c
+
+Admin function test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2013 by Apple Inc.
+Copyright 2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testarray.c
+
+Array test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testcache.c
+
+PPD cache testing program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2009-2018 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testclient.c
+
+Simulated client test program for CUPS.
+
+Copyright © 2020-2023 by OpenPrinting
+Copyright © 2017-2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/testconflicts.c
+
+PPD constraint test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2008-2012 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testcreds.c
+
+HTTP credentials test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2016 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testcups.c
+
+CUPS API test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testdest.c
+
+CUPS destination API test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2012-2018 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testfile.c
+
+File/directory test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/testgetdests.c
+
+CUPS cupsGetDests API test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2017 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testhttp.c
+
+HTTP test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/testi18n.c
+
+Internationalization test for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testipp.c
+
+IPP test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/testlang.c
+
+Localization test program for CUPS.
+
+Usage:
+
+  ./testlang [-l locale] [-p ppd] ["String to localize"]
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2017 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/testoptions.c
+
+Option unit test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2008-2016 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testppd.c
+
+PPD test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/testpwg.c
+
+PWG unit test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2009-2016 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testraster.c
+
+Raster test program routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/testsnmp.c
+
+SNMP test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2008-2014 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/testthreads.c
+
+Threaded test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2012-2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/thread-private.h
+
+Private threading definitions for CUPS.
+
+Copyright 2009-2017 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/thread.c
+
+Threading primitives for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2009-2018 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/tls-darwin.c
+
+TLS support code for CUPS on macOS.
+
+Copyright © 2021-2023 by OpenPrinting
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/tls-darwin.h
+
+TLS support header for CUPS on macOS.
+
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/tls-gnutls.c
+
+TLS support code for CUPS using GNU TLS.
+
+Copyright © 2020-2023 by OpenPrinting
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/tls-openssl.c
+
+TLS support code for CUPS using OpenSSL/LibreSSL.
+
+Copyright © 2020-2023 by OpenPrinting
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/tls-sspi.c
+
+TLS support for CUPS on Windows using the Security Support Provider
+Interface (SSPI).
+
+Copyright © 2020-2023 by OpenPrinting.
+Copyright © 2010-2018 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/tls.c
+
+TLS routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright @ 2007-2014 by Apple Inc.
+Copyright @ 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/tlscheck.c
+
+TLS check program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2017 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/transcode.c
+
+Transcoding support for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/transcode.h
+
+Transcoding definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+cups/usersys.c
+
+User, system, and password routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/util.c
+
+Printing utilities for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cups/versioning.h
+
+API versioning definitions for CUPS.
+
+Copyright © 2021 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+data/epson.h
+
+This file contains model number definitions for the CUPS sample
+ESC/P driver.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+data/hp.h
+
+This file contains model number definitions for the CUPS sample
+HP driver.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+data/label.h
+
+This file contains model number definitions for the CUPS sample
+label printer driver.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+doc/help/api-admin.html
+
+<!--
+  Administrative API header for CUPS.
+
+  Copyright © 2020-2024 by OpenPrinting.
+  Copyright © 2016 by Apple Inc.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/api-admin.html
+
+<!--
+  Administrative API documentation for CUPS.
+
+  Copyright © 2016 by Apple Inc.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/api-filter.html
+
+<!--
+  Filter and backend programming header for CUPS.
+
+  Copyright © 2020-2024 by OpenPrinting.
+  Copyright © 2008-2016 by Apple Inc.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/api-filter.html
+
+<!--
+  Filter and backend programming introduction for CUPS.
+
+  Copyright © 2007-2016 by Apple Inc.
+  Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/api-ppd.html
+
+<!--
+  PPD API header for CUPS.
+
+  Copyright © 2020-2024 by OpenPrinting.
+  Copyright © 2008-2019 by Apple Inc.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/api-ppd.html
+
+<!--
+  PPD API introduction for CUPS.
+
+  Copyright © 2007-2019 by Apple Inc.
+  Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/postscript-driver.html
+
+<!--
+  PostScript printer driver documentation for CUPS.
+
+  Copyright © 2020-2024 by OpenPrinting.
+  Copyright © 2007-2012 by Apple Inc.
+  Copyright © 1997-2007 by Easy Software Products.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/ppd-compiler.html
+
+<!--
+  PPD compiler documentation for CUPS.
+
+  Copyright © 2020-2024 by OpenPrinting.
+  Copyright © 2007-2012 by Apple Inc.
+  Copyright © 1997-2007 by Easy Software Products.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/raster-driver.html
+
+<!--
+  Raster printer driver documentation for CUPS.
+
+  Copyright © 2020-2024 by OpenPrinting.
+  Copyright © 2007-2018 by Apple Inc.
+  Copyright © 1997-2007 by Easy Software Products.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/spec-banner.html
+
+<!--
+  Banner file format specification for CUPS.
+
+  Copyright © 2020-2024 by OpenPrinting.
+  Copyright © 2008-2011 by Apple Inc.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/spec-command.html
+
+<!--
+  CUPS command file format specification for CUPS.
+
+  Copyright © 2020-2024 by OpenPrinting.
+  Copyright © 2007-2018 by Apple Inc.
+  Copyright © 1997-2006 by Easy Software Products.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/spec-ipp.html
+
+<!--
+  IPP specification for CUPS.
+
+  Copyright © 2020-2024 by OpenPrinting.
+  Copyright © 2007-2016 by Apple Inc.
+  Copyright © 1997-2007 by Easy Software Products.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+doc/help/spec-ppd.html
+
+<!--
+  PPD extension documentation for CUPS.
+
+  Copyright © 2020-2024 by OpenPrinting.
+  Copyright © 2007-2011 by Apple Inc.
+  Copyright © 1997-2007 by Easy Software Products.
+
+  Licensed under Apache License v2.0.  See the file "LICENSE" for more
+  information.
+-->
+
+
+## Files:
+examples/ppdx.c
+
+Example code for encoding and decoding large amounts of data in a PPD file.
+This would typically be used in a driver to save configuration/state
+information that could be used by an application.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2012 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+examples/ppdx.h
+
+Header for PPD data encoding example code.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2012 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+examples/testppdx.c
+
+Test program for PPD data encoding example code.
+
+Compile with:
+
+    gcc -o testppdx -D_PPD_DEPRECATED="" -g testppdx.c ppdx.c -lcups -lz
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2012 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+filter/commandtops.c
+
+PostScript command filter for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2008-2014 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+filter/common.c
+
+Common filter routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+filter/common.h
+
+Common filter definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2010 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+filter/gziptoany.c
+
+GZIP/raw pre-filter for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2015 by Apple Inc.
+Copyright © 1993-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+filter/pstops.c
+
+PostScript filter for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1993-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+filter/rastertoepson.c
+
+EPSON ESC/P and ESC/P2 filter for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2018 by Apple Inc.
+Copyright 1993-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+filter/rastertohp.c
+
+Hewlett-Packard Page Control Language filter for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2015 by Apple Inc.
+Copyright 1993-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+filter/rastertolabel.c
+
+Label printer filter for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 2001-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+filter/rastertopwg.c
+
+CUPS raster to PWG raster format filter for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2011, 2014-2017 Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+locale/checkpo.c
+
+Verify that translations in the .po file have the same number and type of
+printf-style format strings.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2017 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+Usage:
+
+  checkpo filename.{po,strings} [... filenameN.{po,strings}]
+
+Compile with:
+
+  gcc -o checkpo checkpo.c `cups-config --libs`
+
+
+## Files:
+locale/cups_ca.po
+
+Catalan message catalog for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2005-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+Àngel Mompó <mecatxis@gmail.com>, 2011, 2012.
+
+
+## Files:
+locale/cups_cs.po
+
+Czech message catalog for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2005-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+locale/cups_da.po
+
+Danish translation for CUPS
+
+Message catalog template for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 2005-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+locale/cups_de.po
+
+German message catalog for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2005-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+Notes for Translators:
+
+The "checkpo" program located in the "locale" source directory can be used
+to verify that your translations do not introduce formatting errors or other
+problems.  Run with:
+
+   cd locale
+   ./checkpo cups_LL.po
+
+where "LL" is your locale.
+Frederik Schwarzer <schwarzer@kde.org>, 2021.
+Joachim Schwender <Joachim@schwender-beyer.de>, 2021-2022.
+
+
+## Files:
+locale/cups_en.po
+
+ English message catalog for CUPS.
+
+ Copyright © 2020-2024 by OpenPrinting.
+ Copyright © 2007-2019 by Apple Inc.
+ Copyright © 2005-2007 by Easy Software Products.
+
+ Licensed under Apache License v2.0.  See the file "LICENSE" for more
+ information.
+
+
+ Notes for Translators:
+
+ The "checkpo" program located in the "locale" source directory can be used
+ to verify that your translations do not introduce formatting errors or other
+ problems.  Run with:
+
+    cd locale
+    ./checkpo cups_LL.po
+
+ where "LL" is your locale.
+
+, fuzzy
+
+
+## Files:
+locale/cups_es.po
+
+Spanish message catalog for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2005-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+locale/cups_fr.po
+
+French message catalog for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2005-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+locale/cups_it.po
+
+Italian message catalog for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2005-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+Giovanni Scafora <giovanni@archlinux.org>, 2013.
+
+
+## Files:
+locale/cups_ja.po
+
+Japanese message catalog for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2005-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+locale/cups_pt_BR.po
+
+Brazilian Portuguese message catalog for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2005-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+CUPS Glossary/Terminologies en->pt_BR
+
+character set = conjunto de caracteres
+find = encontrar
+get = obter
+locate = localizar
+not supported = Sem suporte a
+open = abrir
+status = estado
+unable = não foi possível
+
+
+## Files:
+locale/cups_zh_CN.po
+
+Chinese message catalog for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2005-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+Mingcong Bai <jeffbai@aosc.xyz>, 2016, 2017, 2018.
+
+
+## Files:
+locale/po2strings.c
+
+Convert a GNU gettext .po file to an Apple .strings file.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2017 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+Usage:
+
+  po2strings filename.strings filename.po
+
+Compile with:
+
+  gcc -o po2strings po2strings.c `cups-config --libs`
+
+
+## Files:
+man/mantohtml.c
+
+Man page to HTML conversion program.
+
+Copyright 2007-2017 by Apple Inc.
+Copyright 2004-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+monitor/bcp.c
+monitor/tbcp.c
+
+TBCP port monitor for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1993-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+notifier/dbus.c
+
+D-Bus notifier for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2008-2014 by Apple Inc.
+Copyright (C) 2011, 2013 Red Hat, Inc.
+Copyright (C) 2007 Tim Waugh <twaugh@redhat.com>
+Copyright 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+notifier/mailto.c
+
+"mailto" notifier for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+notifier/rss.c
+
+RSS notifier for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2015 by Apple Inc.
+Copyright 2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+notifier/testnotify.c
+
+Test notifier for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2016 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/genstrings.cxx
+
+GNU gettext message generator for the CUPS PPD Compiler.
+
+This program is used to generate a dummy source file containing all of
+the standard media and sample driver strings.  The results are picked up
+by GNU gettext and placed in the CUPS message catalog.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2008-2014 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+Usage:
+
+  ./genstrings >sample.c
+
+
+## Files:
+ppdc/ppdc-array.cxx
+
+Array class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2019 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-attr.cxx
+
+Attribute class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2009 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-catalog.cxx
+
+Shared message catalog class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2017 by Apple Inc.
+Copyright 2002-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-choice.cxx
+
+Option choice class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2009 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-constraint.cxx
+
+Constraint class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2009 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-driver.cxx
+ppdc/ppdc-source.cxx
+
+Copyright string
+
+
+## Files:
+ppdc/ppdc-driver.cxx
+
+PPD file compiler definitions for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 2002-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+ppdc/ppdc-file.cxx
+
+File class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2010 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-filter.cxx
+
+Filter class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2009 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-font.cxx
+
+Shared font class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2009 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-group.cxx
+
+Group class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-import.cxx
+
+PPD file import methods for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 2002-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-import.cxx
+
+Read the initial comments from the PPD file and use them as the
+copyright/license text...
+
+
+## Files:
+ppdc/ppdc-mediasize.cxx
+
+Shared media size class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2009 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-message.cxx
+
+Shared message class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2009 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-option.cxx
+
+Option class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-private.h
+
+Private definitions for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2009-2010 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-profile.cxx
+
+Color profile class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2009 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-shared.cxx
+
+Shared data class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2009 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-source.cxx
+
+Source class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2018 by Apple Inc.
+Copyright 2002-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+ppdc/ppdc-source.cxx
+
+Get the copyright string...
+
+
+## Files:
+ppdc/ppdc-source.cxx
+
+Write the copyright strings...
+
+
+## Files:
+ppdc/ppdc-string.cxx
+
+Shared string class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2012 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc-variable.cxx
+
+Variable class for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2009 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc.cxx
+
+PPD file compiler main entry for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 2002-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc.h
+
+Definitions for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2019 by Apple Inc.
+Copyright 2002-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdc.h
+
+Copyright strings
+
+
+## Files:
+ppdc/ppdhtml.cxx
+
+PPD to HTML utility for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2015 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdi.cxx
+
+PPD file import utility for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/ppdmerge.cxx
+
+PPD file merge utility for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 2002-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+ppdc/ppdpo.cxx
+
+PPD file message catalog program for the CUPS PPD Compiler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2015 by Apple Inc.
+Copyright 2002-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+ppdc/testcatalog.cxx
+
+Test program for message catalog class.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2008-2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/auth.c
+
+Authorization routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+This file contains Kerberos support code, copyright 2006 by
+Jelmer Vernooij.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/auth.h
+
+Authorization definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/banners.c
+
+Banner routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/banners.h
+
+Banner definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2010 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/cert.c
+
+Authentication certificate routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2016 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/cert.h
+
+Authentication certificate definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2012 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/classes.c
+
+Printer class routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2017 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/classes.h
+
+Printer class definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/client.c
+
+Client routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+This file contains Kerberos support code, copyright 2006 by
+Jelmer Vernooij.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/client.h
+
+Client definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/colorman.h
+
+Color management definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2012 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/conf.c
+
+Configuration routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/conf.h
+
+Configuration file definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/cups-deviced.c
+
+Device scanning mini-daemon for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/cups-driverd.cxx
+
+PPD/driver support for CUPS.
+
+This program handles listing and installing static PPD files, PPD files
+created from driver information files, and dynamically generated PPD files
+using driver helper programs.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/cups-exec.c
+
+Sandbox helper for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2014 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+Usage:
+
+    cups-exec /path/to/profile [-u UID] [-g GID] [-n NICE] /path/to/program argv0 argv1 ... argvN
+
+
+## Files:
+scheduler/cups-lpd.c
+
+Line Printer Daemon interface for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2016 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/cupsd.h
+
+Main header file for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/cupsfilter.c
+
+Filtering program for CUPS.
+
+Copyright © 2021-2023 by OpenPrinting
+Copyright © 2007-2016 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/dirsvc.c
+
+Directory services routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/dirsvc.h
+
+Directory services definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2017 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/env.c
+
+Environment management routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2016 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/file.c
+
+File functions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2014 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/filter.c
+
+File type conversion routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/ipp.c
+
+IPP routines for the CUPS scheduler.
+
+Copyright © 2020-2023 by OpenPrinting
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+This file contains Kerberos support code, copyright 2006 by
+Jelmer Vernooij.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/job.c
+
+Job management routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/job.h
+
+Print job definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2015 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/listen.c
+
+Server listening routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2016 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/log.c
+
+Log file routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/main.c
+
+Main loop for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/mime-private.h
+
+Private MIME type/conversion database definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2011-2018 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/mime.c
+
+MIME database file routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/mime.h
+
+MIME type/conversion database definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2013 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/network.c
+
+Network interface functions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/network.h
+
+Network interface definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2010 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/policy.c
+
+Policy routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011, 2014 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/policy.h
+
+Policy definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2010 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/printers.c
+
+Printer routines for the CUPS scheduler.
+
+Copyright © 2020-2023 by OpenPrinting
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/printers.h
+
+Printer definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright @ 2007-2017 by Apple Inc.
+Copyright @ 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/process.c
+
+Process management routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2017 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/quotas.c
+
+Quota routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2011 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/select.c
+
+Select abstraction functions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2016 by Apple Inc.
+Copyright 2006-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/server.c
+
+Server start/stop routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2019 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/statbuf.c
+
+Status buffer routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/statbuf.h
+
+Status buffer definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2010 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/subscriptions.c
+
+Subscription routines for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.	See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/subscriptions.h
+
+Subscription definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2010 by Apple Inc.
+Copyright 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/sysman.c
+
+System management functions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright @ 2007-2018 by Apple Inc.
+Copyright @ 2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/sysman.h
+
+System management definitions for the CUPS scheduler.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2017 by Apple Inc.
+Copyright 2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/testlpd.c
+
+cups-lpd test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2015 by Apple Inc.
+Copyright 2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/testmime.c
+
+MIME test program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/testspeed.c
+
+Scheduler speed test for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/testsub.c
+
+Scheduler notification tester for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 2006-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/type.c
+
+MIME typing routines for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+scheduler/util.c
+
+Mini-daemon utility functions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+scheduler/util.h
+
+Mini-daemon utility definitions for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2007-2014 by Apple Inc.
+Copyright 1997-2005 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
+## Files:
+systemv/cancel.c
+
+"cancel" command for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+systemv/cupsaccept.c
+
+"cupsaccept", "cupsdisable", "cupsenable", and "cupsreject" commands for
+CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+systemv/cupsctl.c
+
+Scheduler control program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 2006-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+systemv/cupstestppd.c
+
+PPD test program for CUPS.
+
+THIS PROGRAM IS DEPRECATED AND WILL BE REMOVED IN A FUTURE VERSION OF CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+PostScript is a trademark of Adobe Systems, Inc.
+
+
+## Files:
+systemv/lp.c
+
+"lp" command for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+systemv/lpadmin.c
+
+"lpadmin" command for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+systemv/lpinfo.c
+
+"lpinfo" command for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+systemv/lpmove.c
+
+"lpmove" command for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+systemv/lpoptions.c
+
+Printer option program for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+systemv/lpstat.c
+
+"lpstat" command for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+test/5.1-lpadmin.sh
+
+Test the lpadmin command.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2018 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+test/5.2-lpc.sh
+
+Test the lpc command.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+test/5.3-lpq.sh
+
+Test the lpq command.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+test/5.4-lpstat.sh
+
+Test the lpstat command.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+test/5.5-lp.sh
+
+Test the lp command.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+test/5.6-lpr.sh
+
+Test the lpr command.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+test/5.7-lprm.sh
+
+Test the lprm command.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+test/5.8-cancel.sh
+
+Test the cancel command.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2006 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+test/5.9-lpinfo.sh
+
+Test the lpinfo command.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2005 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+test/run-stp-tests.sh
+
+Perform the complete set of IPP compliance tests specified in the
+CUPS Software Test Plan.
+
+Copyright © 2020-2023 by OpenPrinting
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products, all rights reserved.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+test/waitjobs.sh
+
+Script to wait for jobs to complete.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2008-2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+tools/ippevecommon.h
+
+Common header for IPP Everywhere printer commands for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+tools/ippevepcl.c
+
+Generic HP PCL printer command for ippeveprinter/CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+tools/ippeveprinter.c
+
+IPP Everywhere printer application for CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2020 by the IEEE-ISTO Printer Working Group.
+Copyright © 2010-2021 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+Note: This program began life as the "ippserver" sample code that first
+appeared in CUPS 1.4.  The name has been changed in order to distinguish it
+from the PWG's much more ambitious "ippserver" program, which supports
+different kinds of IPP services and multiple services per instance - the
+"ippeveprinter" program exposes a single print service conforming to the
+current IPP Everywhere specification, thus the new name.
+
+
+## Files:
+tools/ippeveps.c
+
+Generic Adobe PostScript printer command for ippeveprinter/CUPS.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2019 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+tools/ippfind.c
+
+Utility to find IPP printers via Bonjour/DNS-SD and optionally run
+commands such as IPP and Bonjour conformance tests.  This tool is
+inspired by the UNIX "find" command, thus its name.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright © 2020 by the IEEE-ISTO Printer Working Group
+Copyright © 2008-2018 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+tools/ipptool.c
+
+ipptool command for CUPS.
+
+Copyright © 2021-2024 by OpenPrinting.
+Copyright © 2020 by The Printer Working Group.
+Copyright © 2007-2021 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+vcnet/config.h
+
+Configuration file for CUPS on Windows.
+
+Copyright © 2021-2024 by OpenPrinting
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+vcnet/dns_sd.c
+
+Dynamic wrapper for Bonjour SDK for Windows.
+
+Copyright © 2020-2024 by OpenPrinting.
+Copyright 2018 by Apple Inc.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+xcode/config.h
+
+Configuration file for CUPS and Xcode.
+
+Copyright © 2021-2024 by OpenPrinting
+Copyright © 2007-2019 by Apple Inc.
+Copyright © 1997-2007 by Easy Software Products.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more information.
+
+
