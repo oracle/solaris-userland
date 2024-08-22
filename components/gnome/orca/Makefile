@@ -28,13 +28,13 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		orca
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Orca
-COMPONENT_VERSION=	41.0
+COMPONENT_VERSION=	45.2
 COMPONENT_ARCHIVE_HASH= \
-       sha256:7697e51445e19fd774e68b160adaf6687b808172de0417602e169766b6b6d4bd
+       sha256:f0f2c579a5beedfe5653bc7fe24481c4d6aac5dd1f71c1e7a208595f3c78ef76
 COMPONENT_BUGDB= 	gnome/accessibility
 COMPONENT_ANITYA_ID=	13156
 
-COMPONENT_BAID=	        110888
+COMPONENT_BAID=	        175464
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -57,6 +57,5 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libwnck3
 REQUIRED_PACKAGES += library/liblouis
-REQUIRED_PACKAGES += library/python/pyatspi2-311
 REQUIRED_PACKAGES += library/python/pygobject-3-311
 REQUIRED_PACKAGES += runtime/python-311
