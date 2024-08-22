@@ -762,7 +762,7 @@ Upstream candidate.
        return 0;
 --- a/src/main/printers.c
 +++ b/src/main/printers.c
-@@ -845,7 +845,7 @@ stp_get_page_height(v) > height ||
+@@ -845,7 +845,7 @@
  	  stp_get_page_width(v) <= min_width || stp_get_page_width(v) > width)
  	{
  	  answer = 0;
@@ -771,19 +771,19 @@ Upstream candidate.
  	}
        stp_dprintf(STP_DBG_PAPER, v,
  		  "page size max %f %f min %f %f actual %f %f\n",
-@@ -878,13 +878,13 @@ }
-   if (stp_get_height(v) <= 0)
+@@ -880,13 +880,13 @@
+   if (stp_get_height(v) <= -epsilon)
      {
        answer = 0;
 -      stp_eprintf(v, _("Height must be greater than zero\n"));
 +      stp_eprintf(v, "%s", _("Height must be greater than zero\n"));
      }
  
-   if (stp_get_width(v) <= 0)
+   if (stp_get_width(v) <= -epsilon)
      {
        answer = 0;
 -      stp_eprintf(v, _("Width must be greater than zero\n"));
 +      stp_eprintf(v, "%s", _("Width must be greater than zero\n"));
      }
  
-   if (stp_get_left(v) + stp_get_width(v) > right)
+   if (stp_get_left(v) + stp_get_width(v) > right + epsilon)
