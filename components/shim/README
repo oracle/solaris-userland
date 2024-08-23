@@ -1,0 +1,13 @@
+The Makefile for shim is patched to not produce signed executables.
+
+To produce a signed shim executable for internal testing:
+
+1. Obtain access to an Oracle Linux system and install pesign
+2. Copy build/amd64/shim.p12, build/amd64/shim.crt and build/amd64/shim.efi to the OL system
+3. On the OL system:
+
+	mkdir certdb
+	pk12util -d certdb/ -i shim.p12 -W "" -K ""
+	certutil -d certdb/ -A -i shim.crt -n shim -t u
+	pesign -n certdb -i shim.efi -c "shim" -s -o shim.efi.signed -f
+

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_ARCH= i386
@@ -55,7 +55,6 @@ COMPONENT_BUILD_ARGS += CC="$(CC)"
 REQUIRED_PACKAGES += developer/gcc
 REQUIRED_PACKAGES += developer/gnu-binutils
 ifeq ($(MACH), i386)
-REQUIRED_PACKAGES += developer/sbsigntool
 REQUIRED_PACKAGES += library/libgnuefi
 endif
 REQUIRED_PACKAGES += text/text-utilities

@@ -86,7 +86,7 @@
  
 +ifeq ($(OS),SunOS)
 +%.efi.signed: %.efi shim.crt
-+	sbsign --cert $(word 2,$^) --key shim.key --output $@ $<
++	touch $@
 +else
  %.efi.signed: %.efi certdb/secmod.db
  	pesign -n certdb -i $< -c "shim" -s -o $@ -f
