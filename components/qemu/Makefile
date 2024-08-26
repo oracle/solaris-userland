@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_ARCH=     i386
@@ -30,11 +30,11 @@ COMPILER=       gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qemu
-COMPONENT_VERSION=	7.1.0
+COMPONENT_VERSION=	9.0.2
 
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:a0634e536bded57cf38ec8a751adb124b89c776fe0846f21ab6c6728f1cbbbe6
+	sha256:a8c3f596aece96da3b00cafb74baafa0d14515eafb8ed1ee3f7f5c2d0ebf02b6
 COMPONENT_ANITYA_ID=	13607
 
 COMPONENT_ARCHIVE_URL=  https://download.qemu.org/$(COMPONENT_ARCHIVE)
@@ -44,7 +44,7 @@ COMPONENT_PUBLIC_KEY_URL= \
 COMPONENT_PROJECT_URL=	https://www.qemu.org
 COMPONENT_BUGDB=    utility/qemu-img
 
-COMPONENT_BAID=		134281
+COMPONENT_BAID=		176681
 
 # qemu currently has a custom build system that uses the same commands as
 # GNU autoconf to configure and build from the outside, but actually wraps
@@ -52,7 +52,10 @@ COMPONENT_BAID=		134281
 BUILD_STYLE= configure
 
 # Disable non-tools targets
-CONFIGURE_OPTIONS=  --disable-system --disable-blobs --without-default-features --enable-tools --enable-vdi
+CONFIGURE_OPTIONS =  --disable-system
+CONFIGURE_OPTIONS += --without-default-features
+CONFIGURE_OPTIONS += --enable-tools
+CONFIGURE_OPTIONS += --enable-vdi
 
 # Tests are focused on emulator, don't cover tools
 TEST_TARGET= $(NO_TESTS)
@@ -66,6 +69,11 @@ COMPONENT_BUILD_ENV += PATH="$(PATH)"
 # Use Solaris ar no matter what the $PATH order is, to avoid meson detecting
 # GNU extensions that GNU ar supports but the Solaris linker does not.
 CONFIGURE_ENV += AR=/usr/bin/ar
+
+# To build qemu-img.1 man page, we need the sphinx_rtd_theme which
+# isn't in our package.  Uncomment the following lines to build it:
+#CONFIGURE_OPTIONS += --enable-docs --python=/usr/bin/python3.11
+#CONFIGURE_ENV += https_proxy=www-proxy.us.oracle.com:80
 
 REQUIRED_PACKAGES += developer/build/meson
 REQUIRED_PACKAGES += developer/build/ninja
