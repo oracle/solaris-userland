@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -39,61 +39,78 @@ COMPONENT_SRC=		ttf-sil-abyssinica-1.0
 COMPONENT_ARCHIVE=	ttf-sil-abyssinica_1.0.orig.tar.bz2
 COMPONENT_ARCHIVE_URL=	http://archive.debian.org/debian/pool/main/t/ttf-sil-abyssinica/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	sha256:8cdcdc58f9cef10350ff9abc6bccf87141aac2ae75d0e01c46317a82c4249a98
+COMPONENT_BAID_ABYSSINICA=	167893
 
 COMPONENT_SRC_1=	ttf-sil-andika-1.0.basic
 COMPONENT_ARCHIVE_1=	ttf-sil-andika_1.0.basic.orig.tar.gz
 COMPONENT_ARCHIVE_URL_1=http://archive.debian.org/debian/pool/main/t/ttf-sil-andika/$(COMPONENT_ARCHIVE_1)
 COMPONENT_ARCHIVE_HASH_1=sha256:01293f141eebda107e0a6828d6e0bcac08c4eedb2d7d80de892056191618244a
+COMPONENT_BAID_ANDIKA=	173843
 
 COMPONENT_SRC_2=	ttf-sil-charis-4.106
 COMPONENT_ARCHIVE_2=	ttf-sil-charis_4.106.orig.tar.bz2
 COMPONENT_ARCHIVE_URL_2=http://archive.debian.org/debian/pool/main/t/ttf-sil-charis/$(COMPONENT_ARCHIVE_2)
 COMPONENT_ARCHIVE_HASH_2=sha256:f173c1a1a7796e6952ad1211828d840d6c0b6268adc05e4f60be895ddea07af2
+COMPONENT_BAID_CHARIS=	173981
 
 COMPONENT_SRC_3=	ttf-sil-dai-banna-2.1
 COMPONENT_ARCHIVE_3=	ttf-sil-dai-banna_2.1.orig.tar.bz2
 COMPONENT_ARCHIVE_URL_3=http://archive.debian.org/debian/pool/main/t/ttf-sil-dai-banna/$(COMPONENT_ARCHIVE_3)
 COMPONENT_ARCHIVE_HASH_3=sha256:4c6fcf959e146396ef3b7d484c9a3db432c94d827a74607c6a199f9a80fac05d
+COMPONENT_BAID_BANNA=	174053
 
 COMPONENT_SRC_4=	ttf-sil-doulos-4.106
 COMPONENT_ARCHIVE_4=	ttf-sil-doulos_4.106.orig.tar.bz2
 COMPONENT_ARCHIVE_URL_4=http://archive.debian.org/debian/pool/main/t/ttf-sil-doulos/$(COMPONENT_ARCHIVE_4)
 COMPONENT_ARCHIVE_HASH_4=sha256:219c3e339a39de39d1d3cf3551d13450912e74c3dac8ebee6b0dc6f917ebbe4a
+COMPONENT_BAID_DOULOS=	174158
 
 COMPONENT_SRC_5=	ttf-sil-ezra-2.51
 COMPONENT_ARCHIVE_5=	ttf-sil-ezra_2.51.orig.tar.gz
 COMPONENT_ARCHIVE_URL_5=http://archive.debian.org/debian/pool/main/t/ttf-sil-ezra/$(COMPONENT_ARCHIVE_5)
 COMPONENT_ARCHIVE_HASH_5=sha256:dd397d02e2b957e3a44a9a1d9e0982ec94433c097483363779a27b711e529a1e
+COMPONENT_BAID_EZRA=	174160
 
 COMPONENT_SRC_6=	ttf-sil-galatia-2.1
 COMPONENT_ARCHIVE_6=	ttf-sil-galatia_2.1.orig.tar.gz
 COMPONENT_ARCHIVE_URL_6=http://archive.debian.org/debian/pool/main/t/ttf-sil-galatia/$(COMPONENT_ARCHIVE_6)
 COMPONENT_ARCHIVE_HASH_6=sha256:80df2b778195dc5b38ef6e98518960428077df7b8083544843bd57018c9f4f8b
+COMPONENT_BAID_GALATIA=	174264
 
 COMPONENT_SRC_7=	ttf-sil-scheherazade-1.001
 COMPONENT_ARCHIVE_7=	ttf-sil-scheherazade_1.001.orig.tar.gz
 COMPONENT_ARCHIVE_URL_7=http://archive.debian.org/debian/pool/main/t/ttf-sil-scheherazade/$(COMPONENT_ARCHIVE_7)
 COMPONENT_ARCHIVE_HASH_7=sha256:c0c50ce2c9af14d07e825c72cca2d5dd6bbe5dce3c952219cc89869571710845
+COMPONENT_BAID_SCHEHERAZADE=	174266
 
 COMPONENT_SRC_8=	ttf-sil-sophia-nubian-1.000
 COMPONENT_ARCHIVE_8=	ttf-sil-sophia-nubian_1.000.orig.tar.gz
 COMPONENT_ARCHIVE_URL_8=http://archive.debian.org/debian/pool/main/t/ttf-sil-sophia-nubian/$(COMPONENT_ARCHIVE_8)
 COMPONENT_ARCHIVE_HASH_8=sha256:827d6a66dfce15854c59a355f6299df089fadf935f48177fdac91212e44ebe4a
+COMPONENT_BAID_SOPHIA=	174271	
 
 COMPONENT_SRC_9=	ttf-sil-yi-1.200
 COMPONENT_ARCHIVE_9=	ttf-sil-yi_1.200.orig.tar.gz
 COMPONENT_ARCHIVE_URL_9=http://archive.debian.org/debian/pool/main/t/ttf-sil-yi/$(COMPONENT_ARCHIVE_9)
 COMPONENT_ARCHIVE_HASH_9=sha256:5d8635f903cd28ba41ad9698f60e84869cb6eea30c84bafc94fec2ab41a41177
+COMPONENT_BAID_YI=	174273
 
-COMPONENT_SRC_10=	SILApparatus
-COMPONENT_ARCHIVE_10=	SILApparatus1.0.zip
-COMPONENT_ARCHIVE_URL_10=http://scripts.sil.org/cms/scripts/render_download.php?format=file&media_id=SILApparatus1.0.zip&filename=SILApparatus1.0.zip
-COMPONENT_ARCHIVE_HASH_10=sha256:3355b8081e0f4d5e75675c2bb5eceb2468b63e45bf6d0558d2a2a2ab70854691
+COMPONENT_SRC_10=	Apparatus_SIL
+COMPONENT_ARCHIVE_10=	ApparatusSIL.zip
+COMPONENT_ARCHIVE_URL_10=https://scripts.sil.org/cms/sites/nrsi/download/appsil1.0.zip/$(COMPONENT_ARCHIVE_10)
+COMPONENT_ARCHIVE_HASH_10=sha256:0d8e3143b9c46c97916ab2cf85ae2187fe33b9b40859567a5524266dd58581bc
+COMPONENT_BAID_APPARATUS=	174365
 
 COMPONENT_SRC_11=	LateefRegOT
 COMPONENT_ARCHIVE_11=	LateefRegOT_1.001.zip
 COMPONENT_ARCHIVE_URL_11=https://software.sil.org/downloads/r/lateef/LateefRegOT_1.001.zip
 COMPONENT_ARCHIVE_HASH_11=sha256:ca3f84555007975d69c18f3d958f6a1a1c79c5b550c13d168d600e07efac1c09
+COMPONENT_BAID_LATEEF=	174367
+
+# Component directory with a space doesn't play well for post unpack actions
+COMPONENT_POST_UNPACK_ACTION_10 = \
+	$(MV) Apparatus\ SIL  $(COMPONENT_SRC_10)
+
 UNPACK_ARGS_11=		-r $(COMPONENT_SRC_11)
 
 LIST = 1 2 3 4 5 6 7 8 9 10 11
@@ -102,7 +119,6 @@ $(foreach n, $(LIST), \
 )
 
 COMPONENT_BUGDB=	g11n/font
-COMPONENT_BAID=		10474
 
 BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
@@ -137,4 +153,4 @@ COMPONENT_PREP_ACTION += \
 	$(MV) $(COMPONENT_SRC_4)/README.txt $(COMPONENT_SRC_4)/README.Doulos.txt; \
 	$(MV) $(COMPONENT_SRC_5)/README.txt $(COMPONENT_SRC_5)/README.Ezra.txt; \
 	$(MV) $(COMPONENT_SRC_8)/Readme.txt $(COMPONENT_SRC_8)/README.Sophia-Nubian.txt; \
-	$(MV) $(COMPONENT_SRC_10)/README.TXT $(COMPONENT_SRC_10)/README.Apparatus.txt;
+	$(MV) $(COMPONENT_SRC_10)/FONTLOG.txt $(COMPONENT_SRC_10)/README.Apparatus.txt;
