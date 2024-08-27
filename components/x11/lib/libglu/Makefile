@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -28,20 +28,24 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glu
-COMPONENT_VERSION=	9.0.2
+COMPONENT_VERSION=	9.0.3
 COMPONENT_PROJECT_URL=	https://www.mesa3d.org/
 COMPONENT_ARCHIVE_URL=	https://mesa.freedesktop.org/archive/glu/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6e7280ff585c6a1d9dfcdf2fca489251634b3377bfc33c29e4002466a38d02d4
+	sha256:bd43fe12f374b1192eb15fe20e45ff456b9bc26ab57f0eee919f96ca0f8a330f
 COMPONENT_BUGDB=	x11/libraries
 COMPONENT_ANITYA_ID=	13518
-COMPONENT_BAID=		141895
+COMPONENT_BAID=		176518
+
+BUILD_STYLE = 		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
 FIX_PC_FILES = glu.pc.in
+
+CONFIGURE_OPTIONS += -Dgl_provider=gl
 
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime

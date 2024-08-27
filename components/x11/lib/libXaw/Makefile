@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXaw
-COMPONENT_VERSION=	1.0.15
+COMPONENT_VERSION=	1.0.16
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ab35f70fde9fb02cc71b342f654846a74328b74cb3a0703c02d20eddb212754a
+	sha256:731d572b54c708f81e197a6afa8016918e2e06dfd3025e066ca642a5b8c39c8f
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1766
-COMPONENT_BAID=		140506
+COMPONENT_BAID=		175852
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -20,20 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXfixes
-COMPONENT_VERSION=	6.0.0
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_VERSION=	6.0.1
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a7c1a24da53e0b46cac5aea79094b4b2257321c621b258729bc3139149245b4c
+	sha256:b695f93cd2499421ab02d22744458e650ccc88c1d4c8130d60200213abc02d58
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1775
-COMPONENT_BAID=		109909
+COMPONENT_BAID=		176524
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -353,104 +353,6 @@ enhanced without the creation of TableAddConverter().
      p->from.size = from->size;
      if (from->size <= sizeof(p->from.addr)) {
          p->from_is_value = True;
-@@ -421,48 +458,67 @@
-         p->to_is_value = False;
-         p->to.addr = NULL;
-     }
--    else if (to->size <= sizeof(p->to.addr)) {
--        p->to_is_value = True;
--        XtMemmove(&p->to.addr, to->addr, to->size);
--    }
-     else {
--        p->to_is_value = False;
--        p->to.addr = (XPointer) _XtHeapAlloc(heap, to->size);
--        (void) memmove((char *) p->to.addr, (char *) to->addr, to->size);
-+       XPointer src_ptr, dest_ptr, gptr;
-+
-+        if ((size_t)to->size <= sizeof(p->to.addr)) {
-+               p->to_is_value = True;
-+                dest_ptr = (XPointer)&p->to.addr;
-+        } else {
-+                p->to_is_value = False;
-+                dest_ptr = p->to.addr = (XPointer)_XtHeapAlloc(heap, to->size);
-+        }
-+
-+        if (do_ref & XtCacheXmRefCount) {
-+                gptr = (*(p->replicator))(*(XtPointer *)(to->addr));
-+                src_ptr = (XtPointer)&gptr;
-+        } else {
-+                src_ptr = to->addr;
-+        }
-+
-+        memmove(dest_ptr, src_ptr, to->size);
-     }
-+
-+    if ((succeeded && destructor) || do_ref) {
-+       p->ref_count = 1;
-+    }
-+
-     UNLOCK_PROCESS;
-     return p;
- }
- 
- static void
--FreeCacheRec(XtAppContext app, CachePtr p, CachePtr * prev)
-+FreeCacheRec(XtAppContext app, CachePtr p, Boolean clean_table)
- {
-     LOCK_PROCESS;
--    if (p->has_ext) {
--        if (CEXT(p)->destructor) {
--            Cardinal num_args = p->num_args;
--            XrmValue *args = NULL;
--            XrmValue toc;
-+    if (clean_table) {
-+        CachePtr cachep, *cachepp;
-+        cachepp = &cacheHashTable[p->hash & CACHEHASHMASK];
-+        while (cachep = *cachepp) {
-+            if (p == cachep) {
-+               *cachepp = cachep->next;
-+                break;
-+            }
-+           cachepp = &cachep->next;
-+        }
-+    }
- 
--            if (num_args)
--                args = CARGS(p);
--            toc.size = p->to.size;
--            if (p->to_is_value)
--                toc.addr = (XPointer) &p->to.addr;
--            else
--                toc.addr = p->to.addr;
--            (*CEXT(p)->destructor) (app, &toc, CEXT(p)->closure, args,
--                                    &num_args);
-+    if (p->destructor) {
-+        Cardinal num_args=p->num_args;
-+        XrmValue *args=NULL;
-+        XrmValue toc;
-+
-+        if (num_args) {
-+               args = CARGS(p);
-         }
--        *(CEXT(p)->prev) = p->next;
--        if (p->next && p->next->has_ext)
--            CEXT(p->next)->prev = CEXT(p)->prev;
-+        toc.size = p->to.size;
-+        if (p->to_is_value) {
-+                toc.addr = (XPointer)&p->to.addr;
-+        } else {
-+            	toc.addr = p->to.addr;
-+        }
-+	(*p->destructor)(app, &toc, p->closure, args, &num_args);
-     }
--    else if (prev) {
--        *prev = p->next;
--        if (p->next && p->next->has_ext)
--            CEXT(p->next)->prev = prev;
--    }
-     if (p->must_be_freed) {
-         register int i;
- 
 @@ -487,17 +543,17 @@
  {
      int i;
@@ -569,3 +471,104 @@ enhanced without the creation of TableAddConverter().
          }
      }
      UNLOCK_PROCESS;
+--- a/src/Convert.c	2024-08-23 17:09:07.282194470 -0700
++++ b/src/Convert.c	2024-08-23 17:13:15.389361355 -0700
+@@ -458,48 +458,68 @@
+         p->to_is_value = False;
+         p->to.addr = NULL;
+     }
+-    else if (to->size <= sizeof(p->to.addr)) {
+-        p->to_is_value = True;
+-        XtMemmove(&p->to.addr, to->addr, to->size);
+-    }
+     else {
+-        p->to_is_value = False;
+-        p->to.addr = (XPointer) _XtHeapAlloc(heap, to->size);
+-        (void) memcpy(p->to.addr, (char *) to->addr, to->size);
++       XPointer src_ptr, dest_ptr, gptr;
++
++        if ((size_t)to->size <= sizeof(p->to.addr)) {
++               p->to_is_value = True;
++                dest_ptr = (XPointer)&p->to.addr;
++        } else {
++                p->to_is_value = False;
++                dest_ptr = p->to.addr = (XPointer)_XtHeapAlloc(heap, to->size);
++        }
++
++        if (do_ref & XtCacheXmRefCount) {
++                gptr = (*(p->replicator))(*(XtPointer *)(to->addr));
++                src_ptr = (XtPointer)&gptr;
++        } else {
++                src_ptr = to->addr;
++        }
++
++        memmove(dest_ptr, src_ptr, to->size);
+     }
++
++    if ((succeeded && destructor) || do_ref) {
++       p->ref_count = 1;
++    }
++
+     UNLOCK_PROCESS;
+     return p;
+ }
+ 
+ static void
+-FreeCacheRec(XtAppContext app, CachePtr p, CachePtr * prev)
++FreeCacheRec(XtAppContext app, CachePtr p, Boolean clean_table)
+ {
+     LOCK_PROCESS;
+-    if (p->has_ext) {
+-        if (CEXT(p)->destructor) {
+-            Cardinal num_args = p->num_args;
+-            XrmValue *args = NULL;
+-            XrmValue toc;
++    if (clean_table) {
++        CachePtr cachep, *cachepp;
++        cachepp = &cacheHashTable[p->hash & CACHEHASHMASK];
++        while (cachep = *cachepp) {
++            if (p == cachep) {
++               *cachepp = cachep->next;
++                break;
++            }
++           cachepp = &cachep->next;
++        }
++    }
+ 
+-            if (num_args)
+-                args = CARGS(p);
+-            toc.size = p->to.size;
+-            if (p->to_is_value)
+-                toc.addr = (XPointer) &p->to.addr;
+-            else
+-                toc.addr = p->to.addr;
+-            (*CEXT(p)->destructor) (app, &toc, CEXT(p)->closure, args,
+-                                    &num_args);
++    if (p->destructor) {
++        Cardinal num_args=p->num_args;
++        XrmValue *args=NULL;
++        XrmValue toc;
++
++        if (num_args) {
++               args = CARGS(p);
++
+         }
+-        *(CEXT(p)->prev) = p->next;
+-        if (p->next && p->next->has_ext)
+-            CEXT(p->next)->prev = CEXT(p)->prev;
++        toc.size = p->to.size;
++        if (p->to_is_value) {
++                toc.addr = (XPointer)&p->to.addr;
++        } else {
++               toc.addr = p->to.addr;
++        }
++       (*p->destructor)(app, &toc, p->closure, args, &num_args);
+     }
+-    else if (prev) {
+-        *prev = p->next;
+-        if (p->next && p->next->has_ext)
+-            CEXT(p->next)->prev = prev;
+-    }
+     if (p->must_be_freed) {
+         register int i;
+ 

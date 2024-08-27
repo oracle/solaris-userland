@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,13 +28,12 @@ BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXt
-COMPONENT_VERSION=	1.2.1
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_VERSION=	1.3.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:679cc08f1646dbd27f5e48ffe8dd49406102937109130caab02ca32c083a3d60
+	sha256:52820b3cdb827d08dc90bdfd1b0022a3ad8919b57a39808b12591973b331bf91
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1793
-COMPONENT_BAID=		132776
+COMPONENT_BAID=		176527
 
 
 FIX_PC_FILES=xt.pc.in

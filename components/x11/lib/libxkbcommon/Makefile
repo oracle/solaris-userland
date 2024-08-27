@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,20 +28,21 @@ COMPILER=               gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxkbcommon
-COMPONENT_VERSION=	1.5.0
+COMPONENT_VERSION=	1.7.0
 COMPONENT_PROJECT_URL=	http://xkbcommon.org
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:560f11c4bbbca10f495f3ef7d3a6aa4ca62b4f8fb0b52e7d459d18a26e46e017
+	sha256:65782f0a10a4b455af9c6baab7040e2f537520caa2ec2092805cdfd36863b247
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1780
-COMPONENT_BAID=		150792
+COMPONENT_BAID=		176526
 
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_OPTIONS += -Denable-wayland=false
+CONFIGURE_OPTIONS += -Denable-docs=true
 LD_OPTIONS += -z gnu-version-script-compat 
 CONFIGURE_ENV += $(COMPONENT_BUILD_ENV)
 

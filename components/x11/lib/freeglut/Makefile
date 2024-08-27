@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freeglut
-COMPONENT_VERSION=	3.4.0
+COMPONENT_VERSION=	3.6.0
 COMPONENT_PROJECT_URL=  http://freeglut.sourceforge.net
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/freeglut/freeglut/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3c0bcb915d9b180a97edaebd011b7a1de54583a838644dcd42bb0ea0c6f3eaec
+	sha256:9c3d4d6516fbfa0280edc93c77698fb7303e443c1aaaf37d269e3288a6c3ea52
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	846
-COMPONENT_BAID=		141274
+COMPONENT_BAID=		176038
 
 TEST_TARGET = $(NO_TESTS)
 

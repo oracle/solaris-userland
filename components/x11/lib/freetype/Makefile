@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -29,15 +29,15 @@ COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freetype
-COMPONENT_VERSION=	2.13.0
+COMPONENT_VERSION=	2.13.3
 COMPONENT_PROJECT_URL=	https://www.freetype.org/
 COMPONENT_ARCHIVE_URL=	https://download.savannah.gnu.org/releases/freetype/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5ee23abd047636c24b2d43c6625dcafc66661d1aca64dec9e0d05df29592624c
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+	sha256:0550350666d427c74daeb85d5ac7bb353acba5f76956395995311a9c6f063289
+#COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        x11/font
 COMPONENT_ANITYA_ID=	854
-COMPONENT_BAID=		142782
+COMPONENT_BAID=		176492
 
 TEST_TARGET = $(NO_TESTS)
 

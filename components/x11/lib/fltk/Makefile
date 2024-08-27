@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,15 +28,15 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fltk
-COMPONENT_VERSION=	1.3.8
+COMPONENT_VERSION=	1.3.9
 COMPONENT_PROJECT_URL=  http://fltk.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-source.tar.bz2
 COMPONENT_ARCHIVE_URL=	http://fltk.org/pub/fltk/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1d9832409fc08c908c64ab40ad9fd8b0e8af5d203651eb9690b810f41e2f412d
+	sha256:103441134915402808fd45424d4061778609437e804334434e946cfd26b196c2
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	823
-COMPONENT_BAID=		136349
+COMPONENT_BAID=		176032
 
 # Tests exists but need work to get hooked up
 TEST_TARGET = $(SKIP_TEST)

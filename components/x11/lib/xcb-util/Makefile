@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -37,11 +37,15 @@ COMPONENT_ANITYA_ID=	5165
 COMPONENT_BAID=		140580
 
 COMPONENT_NAME_1=       xcb-util-cursor
-COMPONENT_VERSION_1=    0.1.4
+COMPONENT_VERSION_1=    0.1.5
+COMPONENT_ARCHIVE_URL_1=\
+    https://www.x.org/releases/individual/lib/$(COMPONENT_ARCHIVE_1)
+COMPONENT_SIG_URL_1=\
+    https://www.x.org/releases/individual/lib/$(COMPONENT_ARCHIVE_1).sig
 COMPONENT_ARCHIVE_HASH_1= \
-    sha256:28dcfe90bcab7b3561abe0dd58eb6832aa9cc77cfe42fcdfa4ebe20d605231fb
+    sha256:0caf99b0d60970f81ce41c7ba694e5eaaf833227bb2cbcdb2f6dc9666a663c57
 COMPONENT_ANITYA_ID_1=  5166
-COMPONENT_BAID_1=	132828
+COMPONENT_BAID_1=	175863
 
 COMPONENT_NAME_2=       xcb-util-image
 COMPONENT_VERSION_2=    0.4.1

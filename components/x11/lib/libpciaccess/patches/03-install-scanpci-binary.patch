@@ -1,0 +1,21 @@
+Install manpage for scanpci and the binary
+
+--- a/scanpci/meson.build	2024-08-20 12:10:35.741840575 -0700
++++ b/scanpci/meson.build	2024-08-20 12:10:48.034363860 -0700
+@@ -22,4 +22,5 @@
+   'scanpci',
+   'scanpci.c',
+   dependencies : [dep_pciaccess],
++  install: true
+ )
+--- a/man/meson.build	2024-08-20 12:39:57.822450245 -0700
++++ b/man/meson.build	2024-08-20 12:40:06.170701300 -0700
+@@ -26,7 +26,7 @@
+     find_program('sed'), '-e', 's/__xorgversion__/X Version 11/', '@INPUT@',
+   ],
+   capture : true,
+-  install : false,
++  install : true,
+   install_dir : join_paths(get_option('prefix'), get_option('mandir'), 'man1'),
+ )
+ 
