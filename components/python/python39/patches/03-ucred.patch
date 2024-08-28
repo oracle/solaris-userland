@@ -1,8 +1,6 @@
 This patch provides Python ucred support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
-diff --git Python-2.6.4/Modules/ucred.c Python-2.6.4/Modules/ucred.c
-new file mode 100644
 --- Python-3.9.19/Modules/ucred.c
 +++ Python-3.9.19/Modules/ucred.c
 @@ -0,0 +1,404 @@
@@ -25,7 +23,7 @@ new file mode 100644
 + * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 + * DEALINGS IN THE SOFTWARE.
 + *
-+ * Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 + */
 +
 +#include <Python.h>
@@ -41,24 +39,24 @@ new file mode 100644
 +	ucred_t *ucred;
 +} pyucred_t;
 +
-+#define pyucred_getlongid(name, type)				\
-+	static PyObject *					\
-+	pyucred_get##name(pyucred_t *uc)			\
-+	{ 							\
-+		type val;					\
-+								\
-+		if (uc->ucred == NULL) {			\
-+			errno = EINVAL;				\
-+			PyErr_SetFromErrno(PyExc_OSError);	\
-+			return (NULL);				\
-+		}						\
-+								\
-+		if ((val = ucred_get##name(uc->ucred)) == -1) {	\
-+			PyErr_SetFromErrno(PyExc_OSError);	\
-+			return (NULL);				\
-+		}						\
-+								\
-+		return (Py_BuildValue("l", (long)val));		\
++#define pyucred_getlongid(name, type)					\
++	static PyObject *						\
++	pyucred_get##name(pyucred_t *uc, PyObject *Py_UNUSED(ignored))	\
++	{ 								\
++		type val;						\
++									\
++		if (uc->ucred == NULL) {				\
++			errno = EINVAL;					\
++			PyErr_SetFromErrno(PyExc_OSError);		\
++			return (NULL);					\
++		}							\
++									\
++		if ((val = ucred_get##name(uc->ucred)) == (type)-1) {	\
++			PyErr_SetFromErrno(PyExc_OSError);		\
++			return (NULL);					\
++		}							\
++									\
++		return (Py_BuildValue("l", (long)val));			\
 +	}
 +
 +pyucred_getlongid(euid, uid_t)
@@ -72,7 +70,7 @@ new file mode 100644
 +pyucred_getlongid(zoneid, zoneid_t)
 +
 +static PyObject *
-+pyucred_getgroups(pyucred_t *uc)
++pyucred_getgroups(pyucred_t *uc, PyObject *Py_UNUSED(ignored))
 +{
 +	const gid_t *groups;
 +	PyObject *list;
@@ -103,7 +101,7 @@ new file mode 100644
 +}
 +
 +static PyObject *
-+pyucred_getlabel(pyucred_t *uc)
++pyucred_getlabel(pyucred_t *uc, PyObject *Py_UNUSED(ignored))
 +{
 +	m_label_t *label;
 +	PyObject *ret;
@@ -234,9 +232,9 @@ new file mode 100644
 +	    "Return a list of group IDs." },
 +	{ "getlabel", (PyCFunction)pyucred_getlabel, METH_NOARGS,
 +	    pyucred_getlabel_doc },
-+	{ "getpflags", (PyCFunction)pyucred_getpflags,
++	{ "getpflags", (PyCFunction)(void(*)(void))pyucred_getpflags,
 +	    METH_VARARGS|METH_KEYWORDS, pyucred_getpflags_doc },
-+	{ "has_priv", (PyCFunction)pyucred_has_priv,
++	{ "has_priv", (PyCFunction)(void(*)(void))pyucred_has_priv,
 +	    METH_VARARGS|METH_KEYWORDS, pyucred_has_priv_doc },
 +	{ NULL, NULL }
 +};
@@ -370,9 +368,9 @@ new file mode 100644
 +    "was established. Raises OSError. See getpeerucred(3C).");
 +
 +static struct PyMethodDef pyucred_module_methods[] = {
-+	{ "get", (PyCFunction) pyucred_get,
++	{ "get", (PyCFunction)(void(*)(void))pyucred_get,
 +	  METH_VARARGS|METH_KEYWORDS, pyucred_get_doc },
-+	{ "getpeer", (PyCFunction) pyucred_getpeer,
++	{ "getpeer", (PyCFunction)(void(*)(void))pyucred_getpeer,
 +	  METH_VARARGS|METH_KEYWORDS, pyucred_getpeer_doc },
 +	{ NULL, NULL, 0, NULL }
 +};

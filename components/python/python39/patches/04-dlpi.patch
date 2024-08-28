@@ -1,8 +1,9 @@
 This patch provides Python dlpi support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
+
 --- Python-3.9.19/Modules/dlpimodule.c
 +++ Python-3.9.19/Modules/dlpimodule.c
-@@ -0,0 +1,1226 @@
+@@ -0,0 +1,1225 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a copy
 + * of this software and associated documentation files (the "Software"), to
@@ -22,7 +23,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 + * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 + * DEALINGS IN THE SOFTWARE.
 + *
-+ * Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 + */
 +
 +#include <Python.h>
@@ -144,7 +145,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "See dlpi_unbind(3DLPI).\n"
 +);
 +static PyObject *
-+link_unbind(pylink_t *link)
++link_unbind(pylink_t *link, PyObject *Py_UNUSED(ignored))
 +{
 +	int rval;
 +
@@ -381,7 +382,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +		    Py_None);
 +	}
 +
-+	result = PyEval_CallObject(cd->pyfunc, arglist);
++	result = PyObject_Call(cd->pyfunc, arglist, NULL);
 +	Py_DECREF(arglist);
 +	if (result == NULL) {
 +		PyErr_Clear(); /* cannot raise error */
@@ -508,7 +509,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "See dlpi_info(3DLPI).\n"
 +);
 +static PyObject *
-+link_get_sap(pylink_t *link)
++link_get_sap(pylink_t *link, PyObject *Py_UNUSED(ignored))
 +{
 +	dlpi_info_t info;
 +	int rval;
@@ -536,7 +537,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "See dlpi_fd(3DLPI).\n"
 +);
 +static PyObject *
-+link_get_fd(pylink_t *link)
++link_get_fd(pylink_t *link, PyObject *Py_UNUSED(ignored))
 +{
 +	int fd;
 +
@@ -561,7 +562,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "See dlpi_linkname(3DLPI).\n"
 +);
 +static PyObject *
-+link_get_linkname(pylink_t *link)
++link_get_linkname(pylink_t *link, PyObject *Py_UNUSED(ignored))
 +{
 +	const char *name = NULL;
 +
@@ -587,10 +588,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "See dlpi_info(3DLPI).\n"
 +);
 +static PyObject *
-+link_get_bcastaddr(pylink_t *link)
++link_get_bcastaddr(pylink_t *link, PyObject *Py_UNUSED(ignored))
 +{
-+	char *addr[DLPI_PHYSADDR_MAX];
-+	size_t addrlen = 0;
 +	dlpi_info_t info;
 +	int rval;
 +
@@ -765,7 +764,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "See dlpi_info(3DLPI).\n"
 +);
 +static PyObject *
-+link_get_timeout(pylink_t *link)
++link_get_timeout(pylink_t *link, PyObject *Py_UNUSED(ignored))
 +{
 +	dlpi_info_t info;
 +	int rval;
@@ -793,7 +792,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "See dlpi_info(3DLPI).\n"
 +);
 +static PyObject *
-+link_get_mactype(pylink_t *link)
++link_get_mactype(pylink_t *link, PyObject *Py_UNUSED(ignored))
 +{
 +	dlpi_info_t info;
 +	int rval;
@@ -851,7 +850,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "See dlpi_info(3DLPI).\n"
 +);
 +static PyObject *
-+link_get_sdu(pylink_t *link)
++link_get_sdu(pylink_t *link, PyObject *Py_UNUSED(ignored))
 +{
 +	dlpi_info_t info;
 +	int rval;
@@ -878,7 +877,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "See dlpi_info(3DLPI).\n"
 +);
 +static PyObject *
-+link_get_state(pylink_t *link)
++link_get_state(pylink_t *link, PyObject *Py_UNUSED(ignored))
 +{
 +	dlpi_info_t info;
 +	int rval;
@@ -906,7 +905,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "See dlpi_info(3DLPI).\n"
 +);
 +static PyObject *
-+link_get_qos_select(pylink_t *link)
++link_get_qos_select(pylink_t *link, PyObject *Py_UNUSED(ignored))
 +{
 +	dlpi_info_t info;
 +	int rval;
@@ -941,7 +940,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "See dlpi_info(3DLPI).\n"
 +);
 +static PyObject *
-+link_get_qos_range(pylink_t *link)
++link_get_qos_range(pylink_t *link, PyObject *Py_UNUSED(ignored))
 +{
 +	dlpi_info_t info;
 +	int rval;
@@ -970,19 +969,20 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +}
 +
 +static PyMethodDef pylink_methods[] = {
-+	{"bind", (PyCFunction)link_bind, METH_VARARGS|METH_KEYWORDS, bind_doc},
++	{"bind", (PyCFunction)(void(*)(void))link_bind,
++	    METH_VARARGS|METH_KEYWORDS, bind_doc},
 +	{"unbind", (PyCFunction)link_unbind, METH_NOARGS, unbind_doc},
-+	{"send", (PyCFunction)link_send, METH_VARARGS|METH_KEYWORDS,
++	{"send", (PyCFunction)(void(*)(void))link_send, METH_VARARGS|METH_KEYWORDS,
 +	    send_doc},
-+	{"recv", (PyCFunction)link_recv, METH_VARARGS|METH_KEYWORDS,
++	{"recv", (PyCFunction)(void(*)(void))link_recv, METH_VARARGS|METH_KEYWORDS,
 +	    recv_doc},
-+	{"disabmulti", (PyCFunction)link_disabmulti, METH_VARARGS|METH_KEYWORDS,
-+	    disabmulti_doc},
-+	{"enabmulti", (PyCFunction)link_enabmulti, METH_VARARGS|METH_KEYWORDS,
-+	    enabmulti_doc},
-+	{"enabnotify", (PyCFunction)link_enabnotify,
++	{"disabmulti", (PyCFunction)(void(*)(void))link_disabmulti,
++	    METH_VARARGS|METH_KEYWORDS, disabmulti_doc},
++	{"enabmulti", (PyCFunction)(void(*)(void))link_enabmulti,
++	    METH_VARARGS|METH_KEYWORDS, enabmulti_doc},
++	{"enabnotify", (PyCFunction)(void(*)(void))link_enabnotify,
 +	    METH_VARARGS|METH_KEYWORDS, enabnotify_doc},
-+	{"disabnotify", (PyCFunction)link_disabnotify,
++	{"disabnotify", (PyCFunction)(void(*)(void))link_disabnotify,
 +	    METH_VARARGS|METH_KEYWORDS, disabnotify_doc},
 +	{"get_fd", (PyCFunction)link_get_fd, METH_NOARGS, get_fd_doc},
 +	{"get_sap", (PyCFunction)link_get_sap, METH_NOARGS, get_sap_doc},
@@ -992,17 +992,17 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	    get_linkname_doc},
 +	{"get_bcastaddr", (PyCFunction)link_get_bcastaddr, METH_NOARGS,
 +	    get_bcastaddr_doc},
-+	{"get_physaddr", (PyCFunction)link_get_physaddr,
++	{"get_physaddr", (PyCFunction)(void(*)(void))link_get_physaddr,
 +	    METH_VARARGS|METH_KEYWORDS, get_physaddr_doc},
-+	{"set_physaddr", (PyCFunction)link_set_physaddr,
++	{"set_physaddr", (PyCFunction)(void(*)(void))link_set_physaddr,
 +	    METH_VARARGS|METH_KEYWORDS, set_physaddr_doc},
-+	{"promiscon", (PyCFunction)link_promiscon, METH_VARARGS|METH_KEYWORDS,
-+	    promiscon_doc},
-+	{"promiscoff", (PyCFunction)link_promiscoff, METH_VARARGS|METH_KEYWORDS,
-+	    promiscoff_doc},
++	{"promiscon", (PyCFunction)(void(*)(void))link_promiscon,
++	    METH_VARARGS|METH_KEYWORDS, promiscon_doc},
++	{"promiscoff", (PyCFunction)(void(*)(void))link_promiscoff,
++	    METH_VARARGS|METH_KEYWORDS, promiscoff_doc},
 +	{"get_timeout", (PyCFunction)link_get_timeout, METH_NOARGS,
 +	    get_timeout_doc},
-+	{"set_timeout", (PyCFunction)link_set_timeout,
++	{"set_timeout", (PyCFunction)(void(*)(void))link_set_timeout,
 +	    METH_VARARGS|METH_KEYWORDS, set_timeout_doc},
 +	{"get_sdu", (PyCFunction)link_get_sdu, METH_NOARGS, get_sdu_doc},
 +	{"get_state", (PyCFunction)link_get_state, METH_NOARGS,
@@ -1149,7 +1149,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "Returns a list containing link names of all links on the system.\n"
 +);
 +static PyObject *
-+listlink(PyObject *dlpi)
++listlink(PyObject *dlpi, PyObject *Py_UNUSED(ignored))
 +{
 +	PyObject *list;
 +
@@ -1161,11 +1161,11 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +}
 +
 +static PyMethodDef dlpi_methods[] = {
-+	{"arptype", (PyCFunction)arptype, METH_VARARGS|METH_KEYWORDS,
++	{"arptype", (PyCFunction)(void(*)(void))arptype, METH_VARARGS|METH_KEYWORDS,
 +	    arptype_doc},
-+	{"iftype", (PyCFunction)iftype, METH_VARARGS|METH_KEYWORDS,
++	{"iftype", (PyCFunction)(void(*)(void))iftype, METH_VARARGS|METH_KEYWORDS,
 +	    iftype_doc},
-+	{"mactype", (PyCFunction)mactype, METH_VARARGS|METH_KEYWORDS,
++	{"mactype", (PyCFunction)(void(*)(void))mactype, METH_VARARGS|METH_KEYWORDS,
 +	    mactype_doc},
 +	{"listlink", (PyCFunction)listlink, METH_NOARGS, listlink_doc},
 +	{NULL}

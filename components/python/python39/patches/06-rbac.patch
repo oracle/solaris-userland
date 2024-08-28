@@ -1,8 +1,6 @@
 This patch provides Python RBAC support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
-diff --git Python-2.6.4/Modules/authattr.c Python-2.6.4/Modules/authattr.c
-new file mode 100644
 --- Python-3.9.19/Modules/authattr.c
 +++ Python-3.9.19/Modules/authattr.c
 @@ -0,0 +1,254 @@
@@ -28,7 +26,7 @@ new file mode 100644
 + */
 +
 +/*
-+ * Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 + */
 +
 +/*
@@ -40,13 +38,13 @@ new file mode 100644
 +#include "pyrbac.h"
 +
 +static PyObject*
-+pyrbac_setauthattr(PyObject* self, PyObject* args) {
++pyrbac_setauthattr(PyObject* self, PyObject *Py_UNUSED(ignored)) {
 +	setauthattr();
 +	return Py_None;
 +}
 +
 +static PyObject*
-+pyrbac_endauthattr(PyObject* self, PyObject* args) {
++pyrbac_endauthattr(PyObject* self, PyObject *Py_UNUSED(ignored)) {
 +	endauthattr();
 +	return Py_None;
 +}
@@ -71,7 +69,7 @@ new file mode 100644
 +		for(len = 0; len < ret_authattr->attr->length; len++) {
 +			kv_t current = ret_authattr->attr->data[len];
 +
-+			PyObject* set = PyList_New(NULL);
++			PyObject* set = PyList_New(0);
 +			char* saveptr;
 +			char* item = strtok_r(current.value, ",", &saveptr);
 +			PyList_Append(set, PyBytes_FromString(item));
@@ -104,7 +102,7 @@ new file mode 100644
 +}
 +
 +static PyObject*
-+pyrbac_getauthattr(PyObject* self, PyObject* args) {
++pyrbac_getauthattr(PyObject* self, PyObject *Py_UNUSED(ignored)) {
 +	return(pyrbac_getauthnamattr(self, NULL, PYRBAC_ATTR_MODE));
 +}
 +
@@ -126,8 +124,8 @@ new file mode 100644
 +}
 +
 +static PyObject*
-+pyrbac_authattr_next(PyObject* self, PyObject* args) {
-+	PyObject* retval = pyrbac_getauthattr(self, args);
++pyrbac_authattr_next(PyObject* self) {
++	PyObject* retval = pyrbac_getauthattr(self, NULL);
 +	if( retval == Py_None ) {
 +		setauthattr();
 +		return NULL;
@@ -135,7 +133,7 @@ new file mode 100644
 +	return retval;
 +}
 +static PyObject*
-+pyrbac_authattr__iter__(PyObject* self, PyObject* args) {
++pyrbac_authattr__iter__(PyObject* self) {
 +	return self;
 +}
 +
@@ -285,7 +283,7 @@ new file mode 100644
 + */
 +
 +/*
-+ * Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 + */
 +
 +/*
@@ -297,13 +295,13 @@ new file mode 100644
 +#include "pyrbac.h"
 +
 +static PyObject *
-+pyrbac_setexecattr(PyObject* self, PyObject* args) {
++pyrbac_setexecattr(PyObject* self, PyObject *Py_UNUSED(ignored)) {
 +	setexecattr();
 +	return Py_None;
 +}
 +
 +static PyObject *
-+pyrbac_endexecattr(PyObject* self, PyObject* args) {
++pyrbac_endexecattr(PyObject* self, PyObject *Py_UNUSED(ignored)) {
 +	endexecattr();
 +	return Py_None;
 +}
@@ -340,7 +338,7 @@ new file mode 100644
 +			for(len = 0; len < execprof->attr->length; len++) {
 +				kv_t current = execprof->attr->data[len];
 +
-+				PyObject* set = PyList_New(NULL);
++				PyObject* set = PyList_New(0);
 +				char* saveptr;
 +				char* item = strtok_r(current.value, ",", &saveptr);
 +				PyList_Append(set, PyBytes_FromString(item));
@@ -413,13 +411,13 @@ new file mode 100644
 +}
 +
 +static PyObject*
-+pyrbac_getexecattr(PyObject* self, PyObject* args) {
++pyrbac_getexecattr(PyObject* self, PyObject *Py_UNUSED(ignored)) {
 +	return pyrbac_getexecuserprofattr(self, NULL, NULL, NULL, PYRBAC_ATTR_MODE);
 +}
 +
 +static PyObject*
-+pyrbac_execattr_next(PyObject* self, PyObject* args) {
-+	PyObject* retval = pyrbac_getexecattr(self, args);
++pyrbac_execattr_next(PyObject* self) {
++	PyObject* retval = pyrbac_getexecattr(self, NULL);
 +	if( retval == Py_None ) {
 +		setexecattr();
 +		return NULL;
@@ -427,7 +425,7 @@ new file mode 100644
 +	return retval;
 +}
 +static PyObject*
-+pyrbac_execattr__iter__(PyObject* self, PyObject* args) {
++pyrbac_execattr__iter__(PyObject* self) {
 +	return self;
 +}
 +
@@ -593,7 +591,7 @@ new file mode 100644
 + */
 +
 +/*
-+ * Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 + */
 +
 +/*
@@ -663,7 +661,7 @@ new file mode 100644
 +	set_str = priv_set_to_str(set, ',', PRIV_STR_LIT);
 +	priv_freeset(set);
 +	
-+	PyObject* set_list = PyList_New(NULL);
++	PyObject* set_list = PyList_New(0);
 +	char* saveptr;
 +	char* item = strtok_r(set_str, ",", &saveptr);
 +	PyList_Append(set_list, PyBytes_FromString(item));
@@ -688,8 +686,8 @@ new file mode 100644
 +	PyObject* set_string = PyList_GetItem(set_list_in, 0);
 +	int i;
 +	for (i = 1; i < PyList_Size(set_list_in); ++i) {
-+		PyBytes_Concat(set_string, PyBytes_FromString(","));
-+		PyBytes_Concat(set_string, PyList_GetItem(set_list_in, i));
++		PyBytes_Concat(&set_string, PyBytes_FromString(","));
++		PyBytes_Concat(&set_string, PyList_GetItem(set_list_in, i));
 +	}
 +
 +	priv_set_t * set = priv_str_to_set(PyBytes_AsString(set_string), ",", NULL);
@@ -699,7 +697,7 @@ new file mode 100644
 +	char * ret_str = priv_set_to_str(set, ',', PRIV_STR_LIT);
 +	priv_freeset(set);
 +	
-+	PyObject* set_list_out = PyList_New(NULL);
++	PyObject* set_list_out = PyList_New(0);
 +	char* saveptr;
 +	char* item = strtok_r(ret_str, ",", &saveptr);
 +	PyList_Append(set_list_out, PyBytes_FromString(item));
@@ -965,7 +963,7 @@ new file mode 100644
 + */
 +
 +/*
-+ * Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 + */
 +
 +/*
@@ -978,13 +976,13 @@ new file mode 100644
 +#include "pyrbac.h"
 +
 +static PyObject*
-+pyrbac_setuserattr(PyObject* self, PyObject* args) {
++pyrbac_setuserattr(PyObject* self, PyObject *Py_UNUSED(ignored)) {
 +	setuserattr();
 +	return Py_None;
 +}
 +
 +static PyObject*
-+pyrbac_enduserattr(PyObject* self, PyObject* args) {
++pyrbac_enduserattr(PyObject* self, PyObject *Py_UNUSED(ignored)) {
 +	enduserattr();
 +	return Py_None;
 +}
@@ -992,19 +990,19 @@ new file mode 100644
 +PyObject*
 +pyrbac_getuseruidnamattr(PyObject* self, void* arg, int mode, char* filename) {
 +	
-+	userattr_t *ret_userattr;
++	userattr_t *ret_userattr = NULL;
 +
 +	if (mode == PYRBAC_ATTR_MODE) {
-+	    if (filename != NULL) {
-+            FILE* file = fopen(filename, "r");
-+            if (file == NULL)
-+                return NULL;
-+	        ret_userattr = fgetuserattr(file);
-+	        if (fclose(file))
-+                return NULL;
-+	    }
-+	    else
-+	    	ret_userattr = getuserattr();
++		if (filename != NULL) {
++			FILE* file = fopen(filename, "r");
++			if (file == NULL)
++				return NULL;
++			ret_userattr = fgetuserattr(file);
++			if (fclose(file))
++				return NULL;
++		}
++		else
++			ret_userattr = getuserattr();
 +	}
 +	else if (mode == PYRBAC_NAM_MODE)
 +		ret_userattr = getusernam((char*) arg);
@@ -1027,7 +1025,7 @@ new file mode 100644
 +		for(len = 0; len < ret_userattr->attr->length; len++) {
 +			kv_t current = ret_userattr->attr->data[len];
 +
-+			PyObject* set = PyList_New(NULL);
++			PyObject* set = PyList_New(0);
 +			char* saveptr;
 +			char* item = strtok_r(current.value, ",", &saveptr);
 +			PyList_Append(set, PyBytes_FromString(item));
@@ -1060,7 +1058,7 @@ new file mode 100644
 +
 +
 +static PyObject*
-+pyrbac_getuserattr(PyObject* self, PyObject* args) {
++pyrbac_getuserattr(PyObject* self, PyObject *Py_UNUSED(ignored)) {
 +	return(pyrbac_getuseruidnamattr(self, (void*) NULL, PYRBAC_ATTR_MODE, NULL));
 +}
 +
@@ -1089,8 +1087,8 @@ new file mode 100644
 +}
 +
 +static PyObject*
-+pyrbac_userattr_next(PyObject* self, PyObject* args) {
-+	PyObject* retval = pyrbac_getuserattr(self, args);
++pyrbac_userattr_next(PyObject* self) {
++	PyObject* retval = pyrbac_getuserattr(self, NULL);
 +	if( retval == Py_None ) {
 +		setuserattr();
 +		return NULL;
@@ -1098,7 +1096,7 @@ new file mode 100644
 +	return retval;
 +}
 +static PyObject*
-+pyrbac_userattr__iter__(PyObject* self, PyObject* args) {
++pyrbac_userattr__iter__(PyObject* self) {
 +	return self;
 +}
 +
