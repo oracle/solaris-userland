@@ -1,0 +1,35 @@
+Part of the patch is taken from
+https://github.com/puppetlabs/facter/commit/b3a2ba3076d000c414a3ff7b1600c3c74cf6df4b
+
+From b3a2ba3076d000c414a3ff7b1600c3c74cf6df4b Mon Sep 17 00:00:00 2001
+From: Michael Hashizume <michael.hashizume@puppet.com>
+Date: Wed, 11 Oct 2023 16:24:36 -0700
+Subject: [PATCH] (FACT-3435) Guard against non-global zones in DMI
+
+Solaris non-global zones have limited access to system information and
+aren't able to perform all of the operations of a global zone.
+
+Because of that when the Solaris SPARC DMI resolver ran in a
+non-global zone, it wasn't able to access system information via
+`prtdiag`, resulting in unexpected text output that caused the resolver
+to error.
+
+This commit updates the Solaris SPARC DMI resolver to return if it
+receives unexpected text as a result of prtdiag.
+---
+
+--- a/lib/facter/resolvers/solaris/dmi_sparc.rb
++++ b/lib/facter/resolvers/solaris/dmi_sparc.rb
+@@ -19,6 +19,12 @@ def read_facts(fact_name)
+ 
+             matches = output.match(/System Configuration:\s+(.+?)\s+sun\d+\S+\s+(.+)/)&.captures
+ 
++            # There are circumstances (e.g. in non-global zones) when prtdiag
++            # will return text, but it's an error message or some other string
++            # that isn't parsed by the above match/capture. In that case, we
++            # simply return.
++            return if matches.nil?
++
+             @fact_list[:manufacturer] = matches[0]&.strip
+             @fact_list[:product_name] = matches[1]&.strip
+ 
