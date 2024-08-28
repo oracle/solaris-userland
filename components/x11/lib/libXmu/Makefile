@@ -51,7 +51,8 @@ COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) $(AUTORECONF) -fiv);
 
 # sun-src/src/VisGamma.c requires libX11 private headers for _Xcms functions
 LIBX11_DIR=	$(WS_COMPONENTS)/x11/lib/libX11
-CPPFLAGS += 	-I $(LIBX11_DIR)/libX11-*/src/xcms
+LIBX11_SRC=	$(shell $(MAKE) -C $(LIBX11_DIR) print-SOURCE_DIR | $(PERL) -nE 'say $$1 if m/^\S+=(\S+)/')
+CPPFLAGS += 	-I $(LIBX11_SRC)/src/xcms
 
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --disable-static
