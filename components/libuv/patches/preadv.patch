@@ -1,93 +1,26 @@
-Interim patch to workaround missing preadv() and pwritev().
-https://github.com/libuv/libuv/issues/4176
+Solaris 11.4 since SRU69 implements preadv and pwritev.
 
-The patch is not for upstream, see:
-https://github.com/libuv/libuv/pull/4178
+Accidentally in libuv the preadv / pwritev emulation was brought back, since
+Node.js required to support older systems. This happened in commit:
 
-Solaris trunk does now have an implementation following integration of
-14880338 Add support for preadv(2) and pwritev(2)
-However leaving patch in place at this time for simpler SRU backport.
-Patch can be removed following release of 11.4.69.
+https://github.com/libuv/libuv/commit/cc23e204d76688053c63fd1698435bc4b68aab6a
 
-diff -r 8f9d191192f4 src/unix/fs.c
---- a/src/unix/fs.c	Thu Feb 08 04:31:40 2024 -0800
-+++ b/src/unix/fs.c	Thu Feb 08 04:34:58 2024 -0800
-@@ -87,10 +87,74 @@
-     (defined(__sun) && !defined(__illumos__)) ||                              \
+The emulation is slightly different. It no longer hardcodes which system
+supports preadv and pwritev, instead it implements autodetection using dlsym().
+Once the commit lands in official libuv release, it will use dlsym() to
+discover real preadv / pwritev implementation in Solaris 11.4 SRU69+ and will
+use it instead of emulating the functionality.
+
+This libuv patch can be removed in a future libuv upgrade (perhaps 1.49).
+
+diff -rup libuv-v1.48.0.orig/src/unix/fs.c libuv-v1.48.0.new/src/unix/fs.c
+--- libuv-v1.48.0.orig/src/unix/fs.c	2024-02-07 21:20:07.000000000 +0100
++++ libuv-v1.48.0.new/src/unix/fs.c	2024-08-28 11:14:34.721864095 +0200
+@@ -84,7 +84,6 @@
+ 
+ #if defined(__CYGWIN__) ||                                                    \
+     (defined(__HAIKU__) && B_HAIKU_VERSION < B_HAIKU_VERSION_1_PRE_BETA_5) || \
+-    (defined(__sun) && !defined(__illumos__)) ||                              \
      (defined(__APPLE__) && !TARGET_OS_IPHONE &&                               \
       MAC_OS_X_VERSION_MIN_REQUIRED < 110000)
--#define preadv(fd, bufs, nbufs, off)                                          \
--  pread(fd, (bufs)->iov_base, (bufs)->iov_len, off)
--#define pwritev(fd, bufs, nbufs, off)                                         \
--  pwrite(fd, (bufs)->iov_base, (bufs)->iov_len, off)
-+#define preadv uv__preadv
-+#define pwritev uv__pwritev
-+
-+static ssize_t
-+uv__preadv(int fildes, const struct iovec *iov, int iovcnt, off_t offset)
-+{
-+	ssize_t	rc;
-+	size_t	pos;
-+	ssize_t result;
-+	int olderrno = errno;
-+
-+	assert(iovcnt > 1);
-+
-+	for (pos = 0, result = 0;
-+	    (rc = pread(fildes, iov->iov_base + pos, iov->iov_len - pos,
-+	    offset + result)) > 0 && iovcnt > 0;) {
-+		result += rc;
-+		if ((pos += rc) == iov->iov_len) {
-+			iov++;
-+			iovcnt--;
-+			pos = 0;
-+		}
-+	}
-+
-+	if (rc == -1) {
-+		if (result > 0) {
-+			/* Return partial result and ignore the error */
-+			errno = olderrno;
-+		} else {
-+			result = -1;
-+		}
-+	}
-+
-+	return (result);
-+}
-+
-+static ssize_t
-+uv__pwritev(int fildes, const struct iovec *iov, int iovcnt, off_t offset)
-+{
-+	ssize_t	rc;
-+	size_t	pos;
-+	ssize_t result;
-+	int olderrno = errno;
-+
-+	assert(iovcnt > 1);
-+
-+	for (pos = 0, result = 0;
-+	    (rc = pwrite(fildes, iov->iov_base + pos, iov->iov_len - pos,
-+	    offset + result)) > 0 && iovcnt > 0;) {
-+		result += rc;
-+		if ((pos += rc) == iov->iov_len) {
-+			iov++;
-+			iovcnt--;
-+			pos = 0;
-+		}
-+	}
-+
-+	if (rc == -1) {
-+		if (result > 0) {
-+			/* Return partial result and ignore the error */
-+			errno = olderrno;
-+		} else {
-+			result = -1;
-+		}
-+	}
-+
-+	return (result);
-+}
- #endif
- 
- #if defined(_AIX) && _XOPEN_SOURCE <= 600
+ #define preadv(fd, bufs, nbufs, off)                                          \
