@@ -1,0 +1,19 @@
+server_res is not touched if the previous getaddrinfo failed;
+there is nothing to free.
+
+This reverts the following upstream commit:
+https://github.com/esnet/iperf/commit/111212bca2eaab948cff11fafddcb097e7615f52
+
+and was reported here:
+https://github.com/esnet/iperf/pull/1755
+
+--- iperf-3.17.1/src/net.c
++++ iperf-3.17.1/src/net.c
+@@ -145,7 +145,6 @@ create_socket(int domain, int proto, con
+     if ((gerror = getaddrinfo(server, portstr, &hints, &server_res)) != 0) {
+ 	if (local)
+ 	    freeaddrinfo(local_res);
+-        freeaddrinfo(server_res);
+         return -1;
+     }
+ 
