@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -57,7 +57,9 @@ $(INSTALL_64):  COMPONENT_INSTALL_ARGS += INSTALL_SBIN=$(PROTOUSRBINDIR)
 # Unit tests require the files from proto area.
 test: install
 
-COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(PROTOUSRLIBDIR64)
+COMPONENT_TEST_ENV_CMD =
+COMPONENT_TEST_ENV =	\
+		export LD_LIBRARY_PATH=$(PROTOUSRLIBDIR64); set -e;
 COMPONENT_TEST_CMD =	\
 		$(PROTOUSRSBINDIR)/smp_conf_general -V; \
 		$(PROTOUSRSBINDIR)/smp_conf_phy_event -V; \
@@ -88,4 +90,3 @@ COMPONENT_TEST_CMD =	\
 		$(PROTOUSRSBINDIR)/smp_zone_lock -V; \
 		$(PROTOUSRSBINDIR)/smp_zone_unlock -V; \
 		$(PROTOUSRSBINDIR)/smp_zoned_broadcast -V
-

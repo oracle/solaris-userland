@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 		32_and_64
 COMPILER= 		gcc
@@ -88,6 +88,8 @@ REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/libdbus
 
+# Remove any color coding from the test output.
+COMPONENT_TEST_ARGS += COLOR=no
 # get rid of the timestamps from the test results
 COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9] sec//" '
 COMPONENT_TEST_TRANSFORMS += '-e "/Total Test time/d" '

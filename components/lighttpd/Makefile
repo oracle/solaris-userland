@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -68,7 +68,7 @@ CONFIGURE_OPTIONS +=	--with-mysql=$(USRDIR)/mysql/8.0/bin/mysql_config
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "s/, *[0-9][0-9]* wallclock secs (.*CPU)$$/, <TIMINGS REMOVED>/" ' \
-	'-e "/^preparing infrastructure/,/make\[4\]: Leaving directory/p" ' \
+	'-e "/^preparing infrastructure/,//p" ' \
 	'-e "/.*/d" '
 
 REQUIRED_PACKAGES += database/mysql-80/library

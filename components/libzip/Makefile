@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -48,6 +48,8 @@ COMPONENT_POST_INSTALL_ACTION.64 = ( \
  	  $(PROTOUSRDIR)/$$i ; done ) ;
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+# Remove any color coding from the test output.
+COMPONENT_TEST_ARGS += COLOR=no
 
 COMPONENT_TEST_TRANSFORMS += '-e "s/  *[0-9][0-9]*\.[0-9][0-9] sec//" ' 
 COMPONENT_TEST_TRANSFORMS += '-e "/^make/d" -e "/^Built/d" -e "/^Scanning dependencies/d" '

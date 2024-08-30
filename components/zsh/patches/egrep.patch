@@ -1,0 +1,70 @@
+GNU egrep is obsolescent, grep -E should be used instead.
+
+Not intended for upstream as they fixed this while doing bigger refactoring.
+
+--- zsh-5.8.1/Test/D07multibyte.ztst
++++ zsh-5.8.1/Test/D07multibyte.ztst
+@@ -6,7 +6,7 @@
+   unset -m LC_\*
+   mb_ok=
+   langs=(en_{US,GB}.{UTF-,utf}8 en.UTF-8
+-	 $(locale -a 2>/dev/null | egrep 'utf8|UTF-8'))
++	 $(locale -a 2>/dev/null | grep -E 'utf8|UTF-8'))
+   for LANG in $langs; do
+     if [[ é = ? ]]; then
+       mb_ok=1
+--- zsh-5.8.1/Test/E01options.ztst
++++ zsh-5.8.1/Test/E01options.ztst
+@@ -649,7 +649,7 @@
+ >noktarg1
+ >0 1
+ 
+-  showopt() { setopt | egrep 'localoptions|ksharrays'; }
++  showopt() { setopt | grep -E 'localoptions|ksharrays'; }
+   f1() { setopt localoptions ksharrays; showopt }
+   f2() { setopt ksharrays; showopt }
+   setopt kshoptionprint
+--- zsh-5.8.1/Test/X02zlevi.ztst
++++ zsh-5.8.1/Test/X02zlevi.ztst
+@@ -4,7 +4,7 @@
+   unset -m LC_\*
+   ZSH_TEST_LANG=
+   langs=(en_{US,GB}.{UTF-,utf}8 en.UTF-8
+-	 $(locale -a 2>/dev/null | egrep 'utf8|UTF-8'))
++	 $(locale -a 2>/dev/null | grep -E 'utf8|UTF-8'))
+   for LANG in $langs; do
+     if [[ é = ? ]]; then
+       ZSH_TEST_LANG=$LANG 
+--- zsh-5.8.1/Test/X03zlebindkey.ztst
++++ zsh-5.8.1/Test/X03zlebindkey.ztst
+@@ -5,7 +5,7 @@
+ %prep
+   ZSH_TEST_LANG=
+   langs=(en_{US,GB}.{UTF-,utf}8 en.UTF-8
+-	 $(locale -a 2>/dev/null | egrep 'utf8|UTF-8'))
++	 $(locale -a 2>/dev/null | grep -E 'utf8|UTF-8'))
+   for LANG in $langs; do
+     if [[ é = ? ]]; then
+       ZSH_TEST_LANG=$LANG
+--- zsh-5.8.1/Test/V07pcre.ztst
++++ zsh-5.8.1/Test/V07pcre.ztst
+@@ -13,7 +13,7 @@
+   unset -m LC_\*
+   mb_ok=
+   langs=(en_{US,GB}.{UTF-,utf}8 en.UTF-8
+-	 $(locale -a 2>/dev/null | egrep 'utf8|UTF-8'))
++	 $(locale -a 2>/dev/null | grep -E 'utf8|UTF-8'))
+   for LANG in $langs; do
+     if [[ é = ? ]]; then
+       mb_ok=1
+--- zsh-5.8.1/Test/Y01completion.ztst
++++ zsh-5.8.1/Test/Y01completion.ztst
+@@ -4,7 +4,7 @@
+   unset -m LC_\*
+   ZSH_TEST_LANG=
+   langs=(en_{US,GB}.{UTF-,utf}8 en.UTF-8
+-         $(locale -a 2>/dev/null | egrep 'utf8|UTF-8'))
++         $(locale -a 2>/dev/null | grep -E 'utf8|UTF-8'))
+   for LANG in $langs; do
+     if [[ é = ? ]]; then
+       ZSH_TEST_LANG=$LANG
