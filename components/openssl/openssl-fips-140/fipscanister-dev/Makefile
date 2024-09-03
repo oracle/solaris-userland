@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 #
@@ -128,8 +128,7 @@ install:	$(BUILD_DIR_32)/.verified $(BUILD_DIR_64)/.verified
 # used and that we used the correct tarball.
 $(BUILD_DIR)/%/.verified:	$(BUILD_DIR)/%/.installed
 	(printf x; \
-	$(ENV) - OPENSSL_FIPS=1 LD_LIBRARY_PATH=/lib/openssl/fips-140/64 \
-	/lib/openssl/fips-140/openssl sha1 -hmac $(OPENSSL_FIPS_HMAC_KEY) \
+	/usr/bin/openssl sha1 -hmac $(OPENSSL_FIPS_HMAC_KEY) \
 	    $(COMPONENT_ARCHIVE)) | \
 	    $(NAWK) '{ if ($$2 != "$(OPENSSL_FIPS_HMAC)") exit 1 }'
 	@echo Basic FIPS-140 mode verification passed.
