@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -65,10 +65,6 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += desktop/pdf-viewer/evince
 REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += library/desktop/clutter
-REQUIRED_PACKAGES += library/desktop/clutter/clutter-gst
-REQUIRED_PACKAGES += library/desktop/clutter/clutter-gst3
-REQUIRED_PACKAGES += library/desktop/clutter/clutter-gtk
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gjs
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
