@@ -190,106 +190,109 @@ Facets
 
 Renames
 
-    Renames in IPS are tricky.  We will use a case study to illustrate how
-    this needs to work.
+    Renaming IPS package is done by
+     - creating a package with new name
+     - creating a rename package
+     - making sure that the new package requires the rename package
 
-    All of the library/python-2/FOO modules that we had in Userland at the
-    time were renamed to library/python/FOO in s12_41.  This involved:
+    For example we want to rename package aaa into new name bbb. Extra care has
+    to be taken when we update version at the same time, so let's do that here.
 
-    * changing the FMRI to drop the "-2"
+    We have aaa@1.2.3 upstream now delivers the component renamed to bbb
+    currently at version 1.2.7.
 
-    * adding an optional dependency on the old name at the version and build
-      in which the rename occurred; this forces the rename.
+    First, create new package.
+    --------------------------
+    Edit aaa.p5m:
 
-    * depend type=optional fmri=library/python-2/FOO-$(PYV)@VERSION,BUILD
-      where FOO is the component name (e.g., "alembic", "amqp", etc.),
-      "$(PYV)" is that literal string, VERSION was the expanded value of
-      COMPONENT_VERSION from each component's Makefile (e.g., "0.6.0" for
-      alembic, "1.0.12" for amqp, etc.), and BUILD was set to
-      "5.12-5.12.0.0.0.41.0".  Note that BUILD needs to be set to the value of
-      the build you are integrating into.
+    -set name=pkg.fmri value=pkg:/aaa@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    +set name=pkg.fmri value=pkg:/bbb@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 
-    * creation of the file "history" (or adding to it if it already exists)
-      in each affected component directory (see NOTE 2 below); one or more
-      new lines should be added (in the case of python or other language
-      component, one for the versionless package plus one for each versioned
-      instance of the package; for an example of a less complicated
-      component that does not have a 'versionless' package like python, see
-      components/subversion)
-      
-      with syntax:
+    (We also edit Makefile so that COMPONENT_VERSION=1.2.7 and possibly other
+    variables there, but that is not important for the rename itself).
 
-	  renames:      OLD-NAME@VERSION,BUILD NEW-NAME
-	  obsoletions:  OLD-NAME@VERSION,BUILD
 
-      where e.g. OLD-NAME was library/python-2/FOO, NEW-NAME was
-      library/python/FOO, VERSION and BUILD are all as above.  Most Python
-      modules, including the two mentioned above, have such files which can
-      serve as examples.
+    Second, create a rename package.
+    --------------------------------
+    A package 'aaa' must exist, but it will become a rename package. In
+    'history' file we add
 
-      By default, packages created from the history files will be part of
-      the userland-incorporation.  If a package needs to be included in a
-      different incorporation, then incorporate=INCORPORATION may be
-      placed on the end of either the rename or obsoletion line.
-      Examples with incorporate=consolidation/desktop/gnome-incorporation
-      may be found in components/meta-packages/history/history.
+    aaa@1.2.3-AUTO_FMRI bbb
 
-    So far, not too bad.  This gets slightly more complicated when back-
-    porting in that BUILD needs to be set to the back-port build (e.g.,
-    "5.11-0.175.3.0.0.8.0", as was the case for tkinter-27) rather than
-    the S12 build.
+    This instructs UL infrastructure to create a rename package for current
+    build which renames aaa to bbb.
 
-    If the component is at the same version as when the rename was done, then
-    that's it.  But if the component has since been upgraded, then care must
-    be taken to set VERSION in both places above to the value that it was in
-    s12_41 when the rename was originally done.  In particular, the latest
-    version of a package name in an earlier release branch must not be greater
-    than the latest version of that same package name in the newer release
-    branch.  Otherwise the audits from Release Engineering will complain and
-    our gatekeeper will make you do a follow-up push to fix this.
+    For existing components we generally use the 'history' file in the
+    component directory. If the component was deleted then
+    components/meta-packages/history/history is used. Technically both provide
+    the same IPS package at the end.
 
-    In addition, during the transition period before all CBE machines have
-    the new package, the REQUIRED_PACKAGES in the Makefiles of any components
-    that depend on your package must include both your old and new package
-    names.  This is because those names are actually the limit set, to speed
-    up processing, rather than a true required list.
-    
-    If you tell pkgdepend it can look for the component dependencies in
-    either the old package name or the new name, then it will find them and
-    be happy.  If only one of your package names is listed and it doesn't
-    happen to be the one installed on the build system, the dependencies will
-    be unsatisifed and the build will break.
 
-    Until the new package name is available for installation, "gmake
-    system-check" will fail because it attempts to install all the packages
-    listed in REQUIRED_PACKAGES.  This can be ignored, but should be noted
-    in a flag-day so that people are aware they can ignore it.  Once the new
-    package name can be installed (even simply after running "gmake publish"
-    for the missing component and having your workspace publisher enabled on
-    the test system), this is no longer an issue, so there is no urgency in
-    removing the old name from the list.
+    Third, add optional dependency.
+    -------------------------------
+    We edit aaa.p5m (which now actually creates package named 'bbb' because of
+    first step) again adding:
 
-    NOTE:  The package version for the old name must be in the format shown
-    on in pkg contents -m output (before the colon) and not in the format
-    seen in the output of pkg list or pkg info, e.g.:
+    depend type=optional fmri=aaa@1.2.3-AUTO_FMRI
 
-    So, if contents -m library/python-2/subversion showed this:
+    This step is not necessary but desirable. The problem is that for any
+    reason (like unlocked facets) one may try to install pre-rename package aaa
+    with post-rename package bbb at the same time. That is not possible because
+    yesterdays aaa delivers the same files as todays bbb. IPS will not allow
+    that, BUT the error message is quite cryptic. If we add this dependency, we
+    say 'If you want to install bbb, you must have aaa of a version which does
+    not deliver any files. It is just a rename package'. Installing old aaa and
+    new bbb then gives clear error message.
 
-    set name=pkg.fmri value=pkg://solaris/library/python-2/subversion@1.7.5,5.12-5.12.0.0.0.41.0:20140130T085214Z
 
-    they used this:
-        library/python-2/subversion@1.7.20,5.12-5.12.0.0.0.41.0
+    Optionally rename the manifest.
+    -------------------------------
+    You may consider 'hg rename aaa.p5m bbb.p5m'. It has no impact on how the
+    packages are created, but it might be nice touch.
 
-    not this:
-        library/python-2/subversion@1.7.20-5.12.0.0.0.41.0
 
-    NOTE 2: The generic package renaming directions in Solaris documentation,
-    which call for preserving a 'rename' package (containing only metadata and
-    dependencies on the new package names) is not applicable when using the
-    Userland history file method.  The 'rename' package is created by
-    the Userland consolidation build, using the data in the history file.
-    So simply rename and edit the manifest (p5m file) to the new name instead
-    of creating an additional file.
+    Optionally rename the component directory.
+    ------------------------------------------
+    You may also consider 'hg rename components/aaa components/bbb'. Again no
+    impact on packages created, but it might make sense to do so.
+
+
+    Backport.
+    ---------
+    Special care has to be taken when rename is brought from Trunk to SRU
+    branch. SRU may have different revision of aaa when compared to Trunk. In
+    such case the backport must alter the history file and optional dependency
+    so that it lists version of aaa available in SRU branch at the time of
+    backport.
+
+    For example, if Trunk delivers aaa@1.2.3, but SRU only delivered aaa@1.0.0,
+    then the backport history file would be created or modified to contain:
+
+    aaa@1.0.0-AUTO_FMRI bbb
+
+    and a dependency file created or modified to contain:
+
+    depend type=optional fmri=aaa@1.0.0-AUTO_FMRI
+
+    even though Trunk had 1.2.3.
+
+    REQUIRED_PACKAGES.
+    ------------------
+    If there are other components which do require aaa, then this is a
+    complication. Ideally all such components should change:
+
+    - REQUIRED_PACKAGES += aaa
+    + REQUIRED_PACKAGES += bbb
+
+    But only at the moment when the CBE receives the new package bbb (not at
+    the moment of pushing such change to gate). This is hard to achieve, so
+    instead change all components to require 'bbb' at the same time as
+    renaming aaa to bbb and install the renamed to current CBE.
+
+    Otherwise REQUIRED_PACKAGES_VALID check in make-rules/ips.mk will fail.
+    There is way around that using SKIP_REQUIRED_PACKAGES_CHECK and later
+    removing it in another commit, but installing the new packages right away
+    to CBE is much simpler.
 
 
 ============
