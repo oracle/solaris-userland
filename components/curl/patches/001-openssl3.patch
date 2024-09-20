@@ -5,8 +5,8 @@ Pull request
 https://github.com/curl/curl/pull/9045
 sent to community.
 
---- a/m4/curl-openssl.m4	2023-12-05 15:57:41.000000000 +0100
-+++ b/m4/curl-openssl.m4	2023-12-13 10:22:20.719271155 +0100
+--- a/m4/curl-openssl.m4	2024-09-11 07:37:35.000000000 +0200
++++ b/m4/curl-openssl.m4	2024-09-11 09:04:57.413034055 +0200
 @@ -137,8 +137,8 @@
    fi
  
@@ -17,13 +17,13 @@ sent to community.
 +  LDFLAGS="$SSL_LDFLAGS $LDFLAGS"
  
    AC_CHECK_LIB(crypto, HMAC_Update,[
-      HAVECRYPTO="yes"
-@@ -334,7 +334,7 @@
-        dnl linker doesn't search through, we need to add it to CURL_LIBRARY_PATH
-        dnl to prevent further configure tests to fail due to this
-        if test "x$cross_compiling" != "xyes"; then
--         CURL_LIBRARY_PATH="$CURL_LIBRARY_PATH:$LIB_OPENSSL"
-+         CURL_LIBRARY_PATH="$LIB_OPENSSL:$CURL_LIBRARY_PATH"
-          export CURL_LIBRARY_PATH
-          AC_MSG_NOTICE([Added $LIB_OPENSSL to CURL_LIBRARY_PATH])
-        fi
+     HAVECRYPTO="yes"
+@@ -340,7 +340,7 @@
+       dnl linker doesn't search through, we need to add it to CURL_LIBRARY_PATH
+       dnl to prevent further configure tests to fail due to this
+       if test "x$cross_compiling" != "xyes"; then
+-        CURL_LIBRARY_PATH="$CURL_LIBRARY_PATH:$LIB_OPENSSL"
++        CURL_LIBRARY_PATH="$LIB_OPENSSL:$CURL_LIBRARY_PATH"
+         export CURL_LIBRARY_PATH
+         AC_MSG_NOTICE([Added $LIB_OPENSSL to CURL_LIBRARY_PATH])
+       fi
