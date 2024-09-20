@@ -77,9 +77,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 	  $(PROTOGTKDIR)/immodules/*.so | \
 	  $(GSED) -e 's%$(PROTO_DIR)%%' > $(PROTOIMMCONF) ;
 
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
-
 # Strip pids from test output, since they're always different
 COMPONENT_TEST_TRANSFORMS += '-e "s% (pid=[0-9]*)%%"'
 

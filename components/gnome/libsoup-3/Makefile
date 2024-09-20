@@ -57,8 +57,6 @@ CONFIGURE_OPTIONS += -Ddocs=disabled
 CONFIGURE_OPTIONS += -Dpkcs11_tests=disabled
 CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 
-# for the tests
-unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \

@@ -39,9 +39,6 @@ COMPONENT_BAID=	173636
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Unset SHELLOPTS to avoid 'unbound variable' errors during the tests.
-unexport SHELLOPTS
-
 # The tests need GNU variants of sed, egrep, etc.
 COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_TEST_TRANSFORMS += \

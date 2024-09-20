@@ -51,14 +51,6 @@ COMPONENT_POST_INSTALL_ACTION += \
         $(GSED) -i -e 's|3|3ssh2|g' \
 		$(PROTOUSRSHAREMAN3DIR)/libssh2_sftp_fstatvfs.3;
 
-# Needed for "gmake test" to work successfully.
-# If SHELLOPTS is exported (as it is by the userland makefiles),
-# then all shell options get exported to child invocations of bash,
-# which results in test failures due to nounset and xtrace being
-# set unexpectedly, and errors such as "$1: unbound variable" and
-# diffs failing due to script tracing in output files.
-unexport SHELLOPTS 
-
 # Master test results are the same for both 32-bit and 64-bit, so override
 # here, rather than create multiple identical master files.
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master

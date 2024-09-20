@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -59,9 +59,6 @@ CONFIGURE_OPTIONS +=	--localstatedir="$(VARDIR)"
 CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS += 	--enable-gtk-doc
 CONFIGURE_OPTIONS += 	--enable-tests
-
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/expat

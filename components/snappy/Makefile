@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -42,8 +42,6 @@ COMPONENT_BAID = 35662
 CXXFLAGS += -O2
 CONFIGURE_OPTIONS.64 +=    --prefix=$(USRLIBDIR64)
 CONFIGURE_OPTIONS    +=    --prefix=$(USRLIBDIR)
-
-unexport SHELLOPTS
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -79,8 +79,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(SYMLINK) ../conf.avail/$${f} $${f} ; \
     done) ;
 
-# for tests
-unexport SHELLOPTS
 # tests require GNU cp (support for -a) & date (support for -d)
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(USRBINDIR)"
 # prevent run-test.sh from downloading files from the internet

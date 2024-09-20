@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -38,9 +38,6 @@ COMPONENT_BAID = 36142
 # autoconf from finding and using C11 Annex K bounds checking interfaces because
 # ON then won't be able to link with this library).
 studio_C99MODE=-xc99=all,no_lib
-
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

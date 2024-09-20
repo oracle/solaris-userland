@@ -53,7 +53,4 @@ COMPONENT_TEST_ENV += $(COMPONENT_TEST_ENV.$(BITS))
 PATH=/usr/gnu/bin:/usr/bin
 endif
 
-# Needed for "gmake test" to work as it avoids "unbound variable" error.
-unexport SHELLOPTS
-
 include $(WS_MAKE_RULES)/common.mk

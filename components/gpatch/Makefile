@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -48,13 +48,6 @@ HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 # test and system-test targets.
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
-
-# Needed for "gmake test" to work successfully.
-# If SHELLOPTS is exported (as it is by the userland makefiles),
-# then all shell options get exported to child invocations of bash,
-# which results in test failures due to nounset being
-# set unexpectedly, and errors such as "$1: unbound variable"
-unexport SHELLOPTS
 
 COMPONENT_INSTALL_ARGS += bindir=$(USRBINDIR)
 

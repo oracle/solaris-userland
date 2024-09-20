@@ -43,15 +43,6 @@ CONFIGURE_PREFIX   = $(USRGNUDIR)
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS += --localedir=$(USRSHARELOCALEDIR)
 
-# Needed for "gmake test" to work.
-# SHELLOPTS is exported via make-rules/shared-macros.mk,
-# causing the braceexpand option to be set.
-# This option causes "$1: unbound variable" errors during the check-TESTS,
-# and the gnulib-tests don't even run at all.
-# Note that the below unexports SHELLOPTS, even for targets
-# other than "test." 
-unexport SHELLOPTS
-
 # Test transforms retain only relevant results output.
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \

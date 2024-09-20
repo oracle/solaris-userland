@@ -69,8 +69,6 @@ CONFIGURE_OPTIONS.64 += --with-locale-lib-dir='$${exec_prefix}/lib/X11/locale/$(
 # -DSUNSOFT_KBD enables Solaris traditional keyboard handling
 CPPFLAGS += -DSUNSOFT -DMOTIFBC -DSUNSOFT_KBD
 
-# for tests
-unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \

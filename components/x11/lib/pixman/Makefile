@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -47,8 +47,6 @@ CONFIGURE_OPTIONS += --disable-gtk
 # added to avoid the build failure of a void function returning value
 CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 
-# for tests
-unexport SHELLOPTS
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/TOTAL:/p" ' \

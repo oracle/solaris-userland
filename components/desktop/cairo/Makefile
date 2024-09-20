@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 # Cairo uses atomic intrinsics not supported in Studio 12.4 (ER 19201298)
@@ -54,9 +54,6 @@ CONFIGURE_OPTIONS += -Dtests=disabled
 COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libcairo.3lib\
                 $(PROTO_DIR)/usr/share/man/man3lib/libcairo.3lib;
-
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += image/library/libpng16

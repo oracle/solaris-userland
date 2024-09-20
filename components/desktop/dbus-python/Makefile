@@ -82,9 +82,6 @@ COMPONENT_TEST_ENV +=   PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
 # necessary due to 'dbus-daemon' executable
 COMPONENT_TEST_ENV +=   PATH=$(PATH):$(USRLIB.32)
 
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
-
 # Standard automake test framework results transform
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \

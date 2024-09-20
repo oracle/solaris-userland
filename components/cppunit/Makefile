@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER= gcc
@@ -48,9 +48,6 @@ export PATH=$(GCC_ROOT)/bin:$(GNUBIN):$(USRBINDIR)
 CONFIGURE_OPTIONS  +=	--disable-static
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
 
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime

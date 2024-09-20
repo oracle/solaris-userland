@@ -61,9 +61,6 @@ CONFIGURE_OPTIONS += --with-pic
 
 COMPONENT_PREP_ACTION = (cd $(@D) ; $(AUTORECONF) -fiv)
 
-# We have to unset SHELLOPTS otherwise the build fails.
-unexport SHELLOPTS
-
 # so lint can find the header
 LINT_FLAGS += -I$(SOURCE_DIR)/src
 

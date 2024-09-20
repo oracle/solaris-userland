@@ -75,9 +75,6 @@ CONFIGURE_OPTIONS.sparc += --target=sparc-solaris-gcc
 CONFIGURE_OPTIONS.i386.32 += --target=x86-solaris-gcc
 CONFIGURE_OPTIONS.i386.64 += --target=x86_64-solaris-gcc
 
-# Tests are hooked up but they take over 3 hours to run
-unexport SHELLOPTS
-
 COMPONENT_TEST_ARGS += -k -i
 COMPONENT_TEST_TARGETS = test
 COMPONENT_TEST_TRANSFORMS += \

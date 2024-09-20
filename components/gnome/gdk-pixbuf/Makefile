@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -122,9 +122,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 		$(COMPONENT_BUILD_TARGETS); \
 	$(ENV) $(COMPONENT_INSTALL_ENV) $(NINJA) $(COMPONENT_INSTALL_ARGS) \
 		$(COMPONENT_INSTALL_TARGETS) install)
-
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
 
 # Standard automake test framework results transform
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master

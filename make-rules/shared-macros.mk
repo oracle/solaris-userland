@@ -81,18 +81,6 @@ WS_LICENSES =	$(WS_TOP)/licenses
 WS_INCORPORATIONS =	$(WS_TOP)/incorporations
 WS_LINT_CACHE =	$(WS_MACH)/pkglint-cache
 
-# we want our pkg piplines to fail if there is an error
-# (like if pkgdepend fails in the middle of a pipe), but
-# we don't want the builds or ./configure's failing as well.
-# so we only set pipefail for the publish target and have
-# to reset it for the others since they might be invoked
-# as dependencies of publish.
-export SHELLOPTS
-build:		SHELLOPTS=
-test:		SHELLOPTS=
-install:	SHELLOPTS=
-publish:	SHELLOPTS=pipefail
-
 # This can be overridden to avoid rebuilding when you touch a Makefile
 MAKEFILE_PREREQ =	Makefile
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -61,8 +61,6 @@ COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
 COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 
-# for the tests
-unexport SHELLOPTS
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/^[mM]ake/d" ' \

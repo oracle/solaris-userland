@@ -47,8 +47,6 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 # to regenerate Makefile.in after patching tests/Makefile.am
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
-# for tests
-unexport SHELLOPTS
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \

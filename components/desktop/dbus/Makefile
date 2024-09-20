@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 # Static assertions fail when building with Studio
@@ -44,9 +44,6 @@ COMPONENT_BAID=		144820
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 include $(WS_MAKE_RULES)/common.mk
-
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
 
 # Will break parallel 32/64-bit builds; needs update when that happens.
 CONFIGURE_BINDIR.32 =   $(CONFIGURE_PREFIX)/bin

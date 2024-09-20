@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 # gobject-introspection must be built with gcc as gobject-introspection does
@@ -58,8 +58,6 @@ CONFIGURE_OPTIONS += -Dpython=$(PYTHON)
 
 PY3_CPYTHON_NAMING=\#
 
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
 COMPONENT_TEST_ENV += GI_SCANNER_DISABLE_CACHE=""
 COMPONENT_TEST_ENV += CC="$(CC)"
 COMPONENT_TEST_ENV += CFLAGS="$(strip $(CFLAGS))"

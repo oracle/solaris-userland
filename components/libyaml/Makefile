@@ -41,6 +41,3 @@ COMPONENT_BAID=		163198
 COMPONENT_BUGDB=        library/libyaml
 
 include $(WS_MAKE_RULES)/common.mk
-
-# Needed for "gmake test" to work as it avoids "unbound variable" error.
-unexport SHELLOPTS

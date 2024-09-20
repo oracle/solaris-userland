@@ -43,9 +43,6 @@ include $(WS_MAKE_RULES)/common.mk
 # Tests can't find their headers or data files unless we clone the source tree
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D));
 
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
-
 # Double formatting on 32bit Intel behaves unexpectedly
 # and breaks one of the tests.
 COMPONENT_TEST_ENV += ARGS="-E test_double_serializer"

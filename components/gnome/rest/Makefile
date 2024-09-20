@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -52,8 +52,6 @@ CONFIGURE_OPTIONS.64 += --enable-introspection
 # Needed because of Makefile.am patches.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
-# for the tests
-unexport SHELLOPTS
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D));
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS =   -k -i

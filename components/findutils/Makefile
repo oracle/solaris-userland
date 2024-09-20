@@ -64,12 +64,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^SKIP:/p" ' \
 	'-e "/^\# /p" ' \
 
-# Needed for "gmake test" to work successfully.
-# Otherwise we see errors such as:
-# FAIL: exec-nogaps.old-O3, sh: SHELLOPTS: readonly variable
-unexport SHELLOPTS
-
-
 # test dependencies:
 REQUIRED_PACKAGES += developer/versioning/git
 REQUIRED_PACKAGES += runtime/python-311

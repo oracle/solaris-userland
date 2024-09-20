@@ -275,7 +275,7 @@ $(GENERATED).p5m:	install | $(PROTO_DIR)
 	    $(PKG_OPTIONS) \
 	    $(PKG_HARDLINKS:%=--target %) \
 	    $(PROTO_DIR) $(GENERATE_PROTO_DIRS) | \
-	$(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 $(GENERATE_TRANSFORMS) | \
+	set -o pipefail; $(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 $(GENERATE_TRANSFORMS) | \
 		sed -e '/^$$/d' -e '/^#.*$$/d' | $(PKGFMT) | \
 		cat $(METADATA_TEMPLATE) - >$@
 
@@ -445,13 +445,13 @@ $(foreach mfst,$(HISTORICAL_MANIFESTS),$(eval $(call history-manifest-rule,$(mfs
 # mogrify non-parameterized manifests
 $(MANIFEST_BASE)-%.mogrified:	%.p5m | $(BUILD_DIR)
 	$(PKGFMT) $(PKGFMT_CHECK_ARGS) $<
-	$(PKGMOGRIFY) $(PKG_OPTIONS) $< \
+	set -o pipefail; $(PKGMOGRIFY) $(PKG_OPTIONS) $< \
 		$(PUBLISH_TRANSFORMS) | \
 		sed -e '/^$$/d' -e '/^#.*$$/d' | uniq >$@
 
 # mogrify parameterized manifests
 $(MANIFEST_BASE)-%.mogrified:	$(MANIFEST_BASE)-%.p5m | $(BUILD_DIR)
-	$(PKGMOGRIFY) $(PKG_OPTIONS) $< \
+	set -o pipefail; $(PKGMOGRIFY) $(PKG_OPTIONS) $< \
 		$(PUBLISH_TRANSFORMS) | \
 		sed -e '/^$$/d' -e '/^#.*$$/d' | uniq >$@
 
@@ -535,7 +535,7 @@ REQUIRED_PACKAGES::
 	$(RM) $(RESOLVED)
 	$(GMAKE) RESOLVE_DEPS= $(RESOLVED)
 	@echo "# Auto-generated contents below.  Please manually verify and remove this comment" >>Makefile
-	@$(PKGMOGRIFY) $(WS_TRANSFORMS)/$@ $(RESOLVED) | \
+	@set -o pipefail; $(PKGMOGRIFY) $(WS_TRANSFORMS)/$@ $(RESOLVED) | \
 		$(GSED) -e '/^[\t ]*$$/d' -e '/^#/d' | sort -u >>Makefile
 	@echo "*** Please edit your Makefile and verify the new content at the end ***"
 
@@ -586,12 +586,12 @@ endif
 	$(TOUCH) $@
 
 print-package-names:	canonical-manifests
-	@cat $(VERSIONED_MANIFESTS) $(WS_TOP)/transforms/print-pkgs | \
+	@set -o pipefail; cat $(VERSIONED_MANIFESTS) $(WS_TOP)/transforms/print-pkgs | \
 		$(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 | \
  		sed -e '/^$$/d' -e '/^#.*$$/d' | sort -u
 
 print-package-paths:	canonical-manifests
-	@cat $(VERSIONED_MANIFESTS) $(WS_TOP)/transforms/print-paths | \
+	@set -o pipefail; cat $(VERSIONED_MANIFESTS) $(WS_TOP)/transforms/print-paths | \
 		$(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 | \
  		sed -e '/^$$/d' -e '/^#.*$$/d' | sort -u
 

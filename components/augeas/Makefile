@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -68,15 +68,6 @@ COMPONENT_TEST_TRANSFORMS += \
 # XXX why does this coredump without the workaround?
 # Fixes coredump in gnulib-test/test-localename test
 CONFIGURE_OPTIONS  +=           ac_cv_func_newlocale=no
-
-# Needed for "gmake test" to work.
-# SHELLOPTS is exported via make-rules/shared-macros.mk,
-# causing the braceexpand option to be set.
-# This option causes "$1: unbound variable" errors during the check-TESTS,
-# and the gnulib-tests don't even run at all.
-# Note that the below unexports SHELLOPTS, even for targets
-# other than "test."
-unexport SHELLOPTS
 
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/ncurses

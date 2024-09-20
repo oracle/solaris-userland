@@ -69,9 +69,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 	        $(PYTHON) ./setup.py install --root $(PROTO_DIR) \
 		--install-lib $(PYTHON_LIB) );
 
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
-
 # Standard automake test framework results transform
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \

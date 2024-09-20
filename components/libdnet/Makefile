@@ -41,14 +41,6 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_POST_UNPACK_ACTION = \
 	$(MV) libdnet-$(notdir $(SOURCE_DIR)) $(notdir $(SOURCE_DIR))
 
-# Needed for "gmake test" to work successfully.
-# If SHELLOPTS is exported (as it is by the userland makefiles),
-# then all shell options get exported to child invocations of bash,
-# which results in test failures due to nounset and xtrace being
-# set unexpectedly, and errors such as "$1: unbound variable" and
-# diffs failing due to script tracing in output files.
-unexport SHELLOPTS
-
 TEST_TARGET= install $(TEST_32_and_64)
 COMPONENT_TEST_DIR =	$(@D)/test/check
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master

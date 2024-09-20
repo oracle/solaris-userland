@@ -81,9 +81,6 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 PERL_SCRIPTS += $(PROTO_DIR)/usr/lib/evolution-data-server/csv2vcard
 
-# for the tests
-unexport SHELLOPTS
-
 include $(WS_MAKE_RULES)/test-x11.mk
 
 #

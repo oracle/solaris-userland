@@ -64,9 +64,6 @@ CONFIGURE_OPTIONS += --enable-gtk-doc
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS =   -k -i
 
-# We unset SHELLOPTS to avoid 'unbound variable' errors during the tests.
-unexport SHELLOPTS
-
 COMPONENT_TEST_ENV = PATH=/usr/gnu/bin:/usr/bin
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \

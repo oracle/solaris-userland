@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -49,8 +49,6 @@ GIT_HASH=  sha256:b203907ece2d6d73ccf4aa9de63319b72d77757a20958531ebf74772b84c27
 COMPONENT_BAID =		136660
 
 include $(WS_MAKE_RULES)/common.mk
-
-unexport SHELLOPTS
 
 PKG_PROTO_DIRS += $(COMPONENT_SRC)/docs
 

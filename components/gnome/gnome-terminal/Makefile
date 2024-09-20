@@ -50,8 +50,6 @@ LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 LDFLAGS += -fstack-protector
 LDFLAGS += -z gnu-version-script-compat
 
-unexport SHELLOPTS
-
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gnome-shell
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas

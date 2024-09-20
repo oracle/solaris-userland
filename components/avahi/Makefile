@@ -79,8 +79,6 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
 		$(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages; \
 	$(PYTHON) -m compileall $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages;
 
-# Needed to avoid test failures (unbound variables in libtool).
-unexport SHELLOPTS
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/^PASS:/p" '

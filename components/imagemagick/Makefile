@@ -98,13 +98,6 @@ CONFIGURE_OPTIONS.32+= --without-perl
 CONFIGURE_OPTIONS.64+= --with-perl=$(PERL)
 CONFIGURE_OPTIONS.64+= --with-perl-options="INSTALLDIRS=vendor"
 
-# Needed for "gmake test" to work successfully.  If SHELLOPTS is exported (as
-# it is by the Userland Makefiles), then all shell options get exported to
-# child invocations of bash, which results in test failures due to nounset and
-# xtrace being set unexpectedly, and errors such as "$1: unbound variable" and
-# diffs failing due to script tracing in output files.
-unexport SHELLOPTS
-
 # Tests hang waiting for input unless stdin is redirected.
 COMPONENT_TEST_TARGETS = check < /dev/null
 

@@ -198,8 +198,6 @@ $(INSTALLED_MDB_README): $(INSTALLED_MDB_MODULE)
 	$(INSTALL) -D -m 0444 $(MDB_SOURCE_DIR)/README \
 		$(PROTO_DIR)$(MDB_SCRIPT_DIR)/
 
-# for tests
-unexport SHELLOPTS
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/TOTAL:/p" ' \

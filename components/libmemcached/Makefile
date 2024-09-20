@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -90,9 +90,6 @@ COMPONENT_TEST_TRANSFORMS += \
 # Master test results are the same for both 32-bit and 64-bit, so override
 # here, rather than create multiple identical master files.
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-# To prevent "libtool_install_magic: unbound variable"
-unexport SHELLOPTS
 
 # Tests fail, probably because memcached is not running.
 # XFAILS are due to servers or arguments not being provided. 

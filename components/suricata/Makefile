@@ -49,8 +49,6 @@ TEST_TARGET=		$(NO_TESTS)
 SYSTEM_TEST_TARGET=	$(NO_TESTS)
 # Prevents 'undefined __stack_chk_fail' during test target build
 #LDFLAGS += -fstack-protector
-# Needed for "gmake test" to work around "unbound variable" error
-#unexport SHELLOPTS
 
 include $(WS_MAKE_RULES)/common.mk
 

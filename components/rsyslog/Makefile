@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -163,9 +163,6 @@ libtest: $(LIB_TEST_AND_COMPARE)
 
 $(LIB_TEST_AND_COMPARE): COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-libfastjson.master
 $(LIB_TEST_AND_COMPARE): COMPONENT_TEST_BUILD_DIR = $(BUILD_DIR)/test/$(COMPONENT_SRC_LIB)
-
-# Needed for "gmake test" to work successfully.
-unexport SHELLOPTS
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-rsyslog.master
 

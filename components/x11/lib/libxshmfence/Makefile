@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -41,8 +41,6 @@ include $(WS_MAKE_RULES)/x11-component.mk
 # Don't include path to x11proto headers in our proto area in the *.pc files.
 COMPONENT_FIX_PC_FLAGS += -e 's| \@XPROTO_CFLAGS\@||g;'
 
-# for tests
-unexport SHELLOPTS
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/TOTAL:/p" ' \

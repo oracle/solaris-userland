@@ -42,8 +42,6 @@ LINT_FLAGS += -I$(SOURCE_DIR)/include/X11
 
 LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile
 
-# for tests
-unexport SHELLOPTS
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/TOTAL:/p" ' \
