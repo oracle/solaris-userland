@@ -79,6 +79,7 @@ CMAKE_OPTIONS += -DENABLE_GTK_DOC=OFF
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
+PERL_SCRIPTS += $(PROTO_DIR)/usr/lib/evolution-data-server/csv2vcard
 
 # for the tests
 unexport SHELLOPTS
@@ -118,7 +119,7 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/security/nss
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/perl-536
+REQUIRED_PACKAGES += runtime/perl-538
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
