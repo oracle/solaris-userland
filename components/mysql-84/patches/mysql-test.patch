@@ -1,0 +1,70 @@
+When not started from /usr/mysql/8.0/mysql-test/ it ends with Perl errors
+about missing library modules.
+
+/usr/mysql/8.0/mysql-test is read only direcotry, var/ should be created
+elsewhere.
+
+Don't try to create any file in /usr/mysql/8.0/ bin/ and lib/ either.
+
+Teach the script about location of 64bits plugin module (amd64|sparcv9).
+
+https://bugs.mysql.com/bug.php?id=114206
+
+--- mysql-8.4.2/mysql-test/mysql-test-run.pl
++++ mysql-8.4.2/mysql-test/mysql-test-run.pl
+@@ -55,6 +55,10 @@ use IO::Socket::INET;
+ 
+ push @INC, ".";
+ 
++# We should allow start without Perl errors from outside of mysql-test/
++# even if it's later not allowed.
++use lib dirname( abs_path $0 )."/lib";
++
+ use My::ConfigFactory;
+ use My::CoreDump;
+ use My::File::Path;    # Patched version of File::Path
+@@ -2061,7 +2065,7 @@ # Set the "var/" directory, the base for
+   if (defined $ENV{MTR_BINDIR}) {
+     $default_vardir = "$ENV{MTR_BINDIR}/mysql-test/var";
+   } else {
+-    $default_vardir = "$glob_mysql_test_dir/var";
++    $default_vardir = "/var/tmp/$ENV{LOGNAME}/mysql-test";
+   }
+ 
+   if (!$opt_vardir) {
+@@ -2436,7 +2440,7 @@ my $config_content = "{ \"read_local_man
+   my $manifest_file_ext = ".my";
+   my $exe_mysqld = find_mysqld($basedir);
+   my ($exename, $path, $suffix) = fileparse($exe_mysqld, qr/\.[^.]*/);
+-  my $manifest_file_path = $path.$exename.$manifest_file_ext;
++  my $manifest_file_path = $opt_vardir.$exename.$manifest_file_ext;
+   open(my $mh, "> $manifest_file_path") or die;
+   print $mh $config_content or die;
+   close($mh);
+@@ -2449,7 +2453,7 @@ use File::Basename;
+   my $manifest_file_ext = ".my";
+   my $exe_mysqld = find_mysqld($basedir);
+   my ($exename, $path, $suffix) = fileparse($exe_mysqld, qr/\.[^.]*/);
+-  my $manifest_file_path = $path.$exename.$manifest_file_ext;
++  my $manifest_file_path = $opt_vardir.$exename.$manifest_file_ext;
+   unlink $manifest_file_path;
+ }
+ 
+@@ -2459,7 +2463,7 @@ my($component, $location) = @_;
+   use strict;
+   my $config_content = "{ \"read_local_config\": true }";
+   my $config_file_ext = ".cnf";
+-  my $config_file_path = $location."\/".$component.$config_file_ext;
++  my $config_file_path = $opt_vardir."\/".$component.$config_file_ext;
+   open(my $mh, "> $config_file_path") or die;
+   print $mh $config_content or die;
+   close($mh);
+@@ -3037,6 +3041,8 @@ }
+   my $lib_plugin =
+     mtr_file_exists(vs_config_dirs($location, $plugin_filename),
+                     "$basedir/lib/plugin/" . $plugin_filename,
++                    "$basedir/lib/amd64/plugin/" . $plugin_filename,
++                    "$basedir/lib/sparcv9/plugin/" . $plugin_filename,
+                     "$basedir/lib64/plugin/" . $plugin_filename,
+                     "$basedir/lib/mysql/plugin/" . $plugin_filename,
+                     "$basedir/lib64/mysql/plugin/" . $plugin_filename,);
