@@ -1,0 +1,17 @@
+GCC 14 reveals use of Linux specific version of strerror_r:
+
+internal.c:437:12: error: returning ‘int’ from a function with return type ‘const char *’ makes pointer from integer without a cast [-Wint-conversion]
+  437 |     return strerror_r(errnum, buf, len);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+--- augeas-1.13.0/src/internal.c
++++ augeas-1.13.0/src/internal.c
+@@ -431,7 +431,7 @@
+ 
+ const char *xstrerror(int errnum, char *buf, size_t len) {
+ #ifdef HAVE_STRERROR_R
+-# ifdef __USE_GNU
++# ifdef __linux__
+     /* Annoying linux specific API contract */
+     return strerror_r(errnum, buf, len);
+ # else

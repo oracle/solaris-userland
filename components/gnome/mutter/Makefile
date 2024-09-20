@@ -48,6 +48,9 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types
+
 # Requires non-standard extensions.
 CFLAGS += -std=c99 -D__EXTENSIONS__
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../ofed-component-macros.mk
@@ -39,6 +39,9 @@ MAN3FILES = libsdp.3lib
 MAN5FILES = libsdp.conf.5
 
 SUFFIX.64 = $(MACH64)
+
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-implicit-function-declaration -Wno-incompatible-pointer-types
 
 CFLAGS += -D_POSIX_PTHREAD_SEMANTICS
 

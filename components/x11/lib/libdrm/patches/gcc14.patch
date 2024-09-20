@@ -1,0 +1,15 @@
+GCC 14 fixes which allows build. Should be investigated more closely.
+
+--- libdrm-2.4.120/xf86drm.c
++++ libdrm-2.4.120/xf86drm.c
+@@ -1641,7 +1641,10 @@ {
+     drm_map_t map;
+ 
+     memclear(map);
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wint-conversion"
+     map.handle = (drm_handle_t)(uintptr_t)handle;
++#pragma GCC diagnostic pop
+ 
+     if(drmIoctl(fd, DRM_IOCTL_RM_MAP, &map))
+         return -errno;

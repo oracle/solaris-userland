@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../ofed-component-macros.mk
@@ -33,6 +33,9 @@ COMPONENT_BUGDB=	utility/ofuv_tools
 COMPONENT_ANITYA_ID=	17143
 
 include ../ofed-component.mk
+
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-int-conversion
 
 CPPFLAGS +=	-I$(PROTOUSRINCDIR)
 CFLAGS +=	-O2 -Wall -D_XOPEN_SOURCE=500 -D__EXTENSIONS__ $(CPPFLAGS)

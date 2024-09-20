@@ -1,0 +1,64 @@
+GCC 14 fixes which allows build. Should be investigated more closely.
+
+Use of getdomainname() should be avoided as Solaris one is not the right one.
+
+--- hplip-3.23.12/io/hpmud/jd.c
++++ hplip-3.23.12/io/hpmud/jd.c
+@@ -31,6 +31,7 @@ #define _GNU_SOURCE
+ #endif
+ 
+ #include <signal.h>
++#include <strings.h>
+ #include "hpmud.h"
+ #include "hpmudi.h"
+ 
+--- hplip-3.23.12/pcard/pcardext/pcardext.c
++++ hplip-3.23.12/pcard/pcardext/pcardext.c
+@@ -26,7 +26,10 @@ \***************************************
+ 
+ #define PY_SSIZE_T_CLEAN
+ 
++#pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
++#pragma GCC diagnostic ignored "-Wint-conversion"
+ 
++#include <alloca.h>
+ #include <Python.h>
+ #include <structmember.h>
+ #include "../fat.h"
+--- hplip-3.23.12/prnt/cupsext/cupsext.c
++++ hplip-3.23.12/prnt/cupsext/cupsext.c
+@@ -89,6 +89,13 @@ #include "cupsext.h"
+ #include "hp_ipp.h"
+ #include "utils.h"
+ 
++// From protocol/hp_ipp.c
++void _releaseCupsInstance();
++int addCupsPrinter(char *name, char *device_uri, char *location, char *ppd_file, char *model, char *info);
++int delCupsPrinter(char *pr_name);
++int setDefaultCupsPrinter(char *pr_name);
++int controlCupsPrinter(char *pr_name, int op);
++
+ /* Ref: PEP 353 (Python 2.5) */
+ #if PY_VERSION_HEX < 0x02050000
+ typedef int Py_ssize_t;
+--- hplip-3.23.12/prnt/hpps/hppsfilter.c
++++ hplip-3.23.12/prnt/hpps/hppsfilter.c
+@@ -32,6 +32,7 @@ Author: Yashwant Kumar Sahu
+ \*****************************************************************************/
+ #include "hppsfilter.h"
+ 
++int getdomainname(char*, int);
+ 
+ /*  save final output ps file: in cupsd.conf file  value #hpLogLevel 15  */
+ static int g_savepsfile = 0;
+--- hplip-3.23.12/prnt/hpps/pserror.c
++++ hplip-3.23.12/prnt/hpps/pserror.c
+@@ -24,7 +24,7 @@ #define MAX_COLUMN	78	/* maximum column
+ void message(int flags, char *format, ...)
+ {
+   va_list args ;
+-  static column = 0 ;		/* current screen column for message wrap */
++  static int column = 0 ;	/* current screen column for message wrap */
+   char msgbuf[MAX_MESSAGE] ;	/* buffer in which to put the message */
+   char *bufptr = msgbuf ;	/* message buffer pointer */
+ 

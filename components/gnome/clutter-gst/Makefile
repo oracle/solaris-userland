@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -43,6 +43,9 @@ COMPONENT_BAID=		27034
 TEST_TARGET = $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types -Wno-implicit-function-declaration
 
 CONFIGURE_OPTIONS += --disable-static
 # Required for other components.

@@ -19,7 +19,7 @@
 #
 
 #
-# Copyright (c) 2007, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2007, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -58,6 +58,9 @@ BUILD_STYLE= cmake
 
 include $(WS_MAKE_RULES)/configure.mk
 include $(WS_MAKE_RULES)/x11-component.mk
+
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types
 
 # We need to unpack the xserver source in the unix/xserver directory of the
 # tigervnc source, but it's not empty, so we have to temporarily move the

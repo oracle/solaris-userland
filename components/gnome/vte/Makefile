@@ -44,6 +44,9 @@ TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types
+
 # g-ir-scanner
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)

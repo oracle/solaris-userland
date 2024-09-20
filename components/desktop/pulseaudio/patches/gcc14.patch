@@ -1,0 +1,17 @@
+GCC 14 fixes which resolve:
+
+modules/gsettings/module-gsettings.c: In function 'module_gsettings_LTX_pa__done':
+modules/gsettings/module-gsettings.c:95:9: error: implicit declaration of function 'kill' [-Wimplicit-function-declaration]
+   95 |         kill(u->pid, SIGTERM);
+      |         ^~~~
+
+--- pulseaudio-14.2/src/modules/gsettings/module-gsettings.c
++++ pulseaudio-14.2/src/modules/gsettings/module-gsettings.c
+@@ -23,6 +23,7 @@
+ 
+ #include <sys/types.h>
+ #include <sys/wait.h>
++#include <signal.h>
+ 
+ #include <pulsecore/core-error.h>
+ #include <pulsecore/core-util.h>

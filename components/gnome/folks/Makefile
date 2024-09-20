@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -41,6 +41,9 @@ COMPONENT_BAID=		153191
 BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types -Wno-implicit-function-declaration
 
 # __EXTENSIONS__ required for various non-standard function usages.
 CFLAGS += -D__EXTENSIONS__

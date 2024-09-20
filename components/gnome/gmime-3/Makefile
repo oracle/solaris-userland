@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -58,6 +58,8 @@ CONFIGURE_OPTIONS.64 += --enable-vala
 # utility, and Mono is not available. Explicitly disable it in order to
 # sidestep the issue.
 CONFIGURE_OPTIONS += --enable-mono=no
+# Solaris is missing "right" getdomainname().
+CONFIGURE_OPTIONS += ac_cv_func_getdomainname=no
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \

@@ -48,6 +48,9 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types -Wno-implicit-int
+
 CFLAGS += $(CPP_XPG6MODE)
 
 # Generate man pages.

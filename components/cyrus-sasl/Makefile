@@ -108,6 +108,9 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types
+
 $(BUILD_DIR_64)/%:	CPPFLAGS += -I$(BUILD_DIR_64)/include
 $(BUILD_DIR_32)/%:	CPPFLAGS += -I$(BUILD_DIR_32)/include
 

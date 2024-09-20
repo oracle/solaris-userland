@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 		64_and_32
 # For now, all things built for C++11 require gcc.
@@ -43,6 +43,9 @@ TEST_TARGET = $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 CXXFLAGS += -std=c++11
+
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types
 
 CONFIGURE_OPTIONS += --disable-static
 

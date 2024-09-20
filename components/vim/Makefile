@@ -56,6 +56,9 @@ TEST_64 = 	$(NOX_VARIANT)/.tested-and-compared
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-implicit-function-declaration
+
 CFLAGS += -std=gnu99
 
 #COMPONENT_PREP_ACTION = (cd $(@D)/src ; autoreconf -fiv)

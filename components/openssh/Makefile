@@ -59,6 +59,9 @@ TEST_TARGET= $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Required by GCC 14 - needs to be evaluated and properly fixed via 37063515.
+CFLAGS += -Wno-incompatible-pointer-types
+
 CFLAGS += -DSET_USE_PAM
 CFLAGS += -DDEPRECATE_SUNSSH_OPT
 CFLAGS += -DKRB5_BUILD_FIX

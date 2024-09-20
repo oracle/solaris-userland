@@ -1,0 +1,20 @@
+GCC 14 fixes which resolve:
+
+../../gstreamer-1.22.5/tests/misc/../../libs/gst/net/gstnetutils.c: In function 'gst_net_utils_set_socket_tos':
+../../gstreamer-1.22.5/tests/misc/../../libs/gst/net/gstnetutils.c:71:7: error: implicit declaration of function 'setsockopt' [-Wimplicit-function-declaration]
+   71 |   if (setsockopt (fd, IPPROTO_IP, IP_TOS, &tos, sizeof (tos)) < 0) {
+      |       ^~~~~~~~~~
+
+Should be investigated and proper fix offered to upstream.
+
+--- gstreamer-1.22.5/libs/gst/net/gstnetutils.c
++++ gstreamer-1.22.5/libs/gst/net/gstnetutils.c
+@@ -37,7 +37,7 @@
+ #include <gst/gstinfo.h>
+ #include <errno.h>
+ 
+-#ifdef HAVE_SYS_SOCKET_H
++#ifdef __sun
+ #include <sys/socket.h>
+ #endif
+ 

@@ -1,0 +1,72 @@
+
+GCC 14 fixes which resolve (Solaris PAM differences):
+
+/builds/psumbera/userland-test/components/desktop/polkit/polkit-0.118/src/polkitagent/polkitagenthelper-pam.c:138:32: error: assignment to 'int (*)(int,  struct pam_message **, struct pam_response **, void *)' from incompatible pointer type 'int (*)(int,  const struct pam_message **, struct pam_response **, void *)' [-Wincompatible-pointer-types]
+  138 |   pam_conversation.conv        = conversation_function;
+      |                                ^
+/builds/psumbera/userland-test/components/desktop/polkit/polkit-0.118/src/polkitagent/polkitagenthelper-pam.c:181:39: error: passing argument 3 of 'pam_get_item' from incompatible pointer type [-Wincompatible-pointer-types]
+  181 |   rc = pam_get_item (pam_h, PAM_USER, &authed_user);
+      |                                       ^~~~~~~~~~~~
+      |                                       |
+      |                                       const void **
+
+/builds/psumbera/userland-test/components/desktop/polkit/polkit-0.118/src/programs/pkexec.c:171:28: error: assignment to 'int (*)(int,  struct pam_message **, struct pam_response **, void *)' from incompatible pointer type 'int (*)(int,  const struct pam_message **, struct pam_response **, void *)' [-Wincompatible-pointer-types]
+  171 |   conversation.conv        = pam_conversation_function;
+      |                            ^	  
+
+/builds/psumbera/userland-test/components/desktop/polkit/polkit-0.118/test/mocklibc/src/netgroup-debug.c: In function ‘netgroup_debug_print_entry’:
+/builds/psumbera/userland-test/components/desktop/polkit/polkit-0.118/test/mocklibc/src/netgroup-debug.c:25:3: error: implicit declaration of function ‘print_indent’ [-Wimplicit-function-declaration]
+   25 |   print_indent(stream, indent);
+      |   ^~~~~~~~~~~~
+	  
+--- polkit-0.118/src/polkitagent/polkitagenthelper-pam.c
++++ polkit-0.118/src/polkitagent/polkitagenthelper-pam.c
+@@ -33,7 +33,7 @@
+ 
+ #include <polkit/polkit.h>
+ 
+-static int conversation_function (int n, const struct pam_message **msg, struct pam_response **resp, void *data);
++static int conversation_function (int n, struct pam_message **msg, struct pam_response **resp, void *data);
+ 
+ static void
+ send_to_helper (const gchar *str1,
+@@ -78,7 +78,7 @@
+   char *cookie = NULL;
+   struct pam_conv pam_conversation;
+   pam_handle_t *pam_h;
+-  const void *authed_user;
++  void *authed_user;
+ 
+   rc = 0;
+   pam_h = NULL;
+@@ -237,7 +237,7 @@
+ }
+ 
+ static int
+-conversation_function (int n, const struct pam_message **msg, struct pam_response **resp, void *data)
++conversation_function (int n, struct pam_message **msg, struct pam_response **resp, void *data)
+ {
+   struct pam_response *aresp;
+   char buf[PAM_MAX_RESP_SIZE];
+--- polkit-0.118/src/programs/pkexec.c
++++ polkit-0.118/src/programs/pkexec.c
+@@ -133,7 +133,7 @@
+ #ifdef POLKIT_AUTHFW_PAM
+ static int
+ pam_conversation_function (int n,
+-                           const struct pam_message **msg,
++                           struct pam_message **msg,
+                            struct pam_response **resp,
+                            void *data)
+ {
+--- polkit-0.118/test/mocklibc/src/netgroup-debug.c
++++ polkit-0.118/test/mocklibc/src/netgroup-debug.c
+@@ -21,6 +21,8 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ 
++void print_indent(FILE *stream, unsigned int indent);
++
+ void netgroup_debug_print_entry(struct entry *entry, FILE *stream, unsigned int indent) {
+   print_indent(stream, indent);
+ 

@@ -101,7 +101,7 @@ COMPONENT_PRE_CONFIGURE_ACTION= \
 # found in standard directories.
 #
 LINK.OPENSSL3=		\
-	"g++ $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
+	"$(GCC_ROOT)/bin/g++ $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	pkg-config --libs-only-L --libs-only-other openssl)"
 BINDIR.OPENSSL3=	/usr/openssl/3/bin
 

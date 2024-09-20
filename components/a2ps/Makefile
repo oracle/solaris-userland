@@ -36,6 +36,9 @@ COMPONENT_BAID=		161033
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-implicit-function-declaration
+
 # don't use LD_Z_IGNORE: causes linker problems
 LD_Z_IGNORE=
 

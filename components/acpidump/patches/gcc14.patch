@@ -1,0 +1,22 @@
+GCC 14 fixes.
+
+--- pmtools-20071116/madt/madt.c
++++ pmtools-20071116/madt/madt.c
+@@ -42,7 +42,7 @@
+ /* read standard input
+  * write decoded madt to standard output
+  */
+-get_next_entry(acpi_table_entry_header * entry_header)
++int get_next_entry(acpi_table_entry_header * entry_header)
+ {
+ 	size_t retval;
+ 
+@@ -53,7 +53,7 @@
+ 
+ u8	buffer[1024];
+ 
+-main()
++int main()
+ {
+ 	size_t retval;
+ 	struct acpi_table_madt *madt_header;

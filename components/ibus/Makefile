@@ -43,6 +43,9 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Required by GCC 14 - it's needed until vala is fixed.
+CFLAGS += -Wno-incompatible-pointer-types
+
 # Use explicit Python version rather than the default one
 PYTHON_VERSION =	3.11
 CONFIGURE_ENV +=	PYTHON=$(PYTHON)

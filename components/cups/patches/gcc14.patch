@@ -1,0 +1,27 @@
+
+GCC 14 fixes which resolve (Solaris PAM differs):
+
+ippeveprinter.c: In function 'authenticate_request':
+ippeveprinter.c:809:23: error: assignment to 'int (*)(int,  struct pam_message **, struct pam_response **, void *)' from incompatible pointer type 'int (*)(int,  const struct pam_message **, struct pam_response **, void *)' [-Wincompatible-pointer-types]
+  809 |   pamdata.conv        = pam_func; 
+
+--- cups-2.4.7/tools/ippeveprinter.c
++++ cups-2.4.7/tools/ippeveprinter.c
+@@ -324,7 +324,7 @@
+ static ipp_t		*load_ppd_attributes(const char *ppdfile, cups_array_t *docformats);
+ #endif /* !CUPS_LITE */
+ #if HAVE_LIBPAM
+-static int		pam_func(int, const struct pam_message **, struct pam_response **, void *);
++static int		pam_func(int, struct pam_message **, struct pam_response **, void *);
+ #endif /* HAVE_LIBPAM */
+ static int		parse_options(ippeve_client_t *client, cups_option_t **options);
+ static void		process_attr_message(ippeve_job_t *job, char *message);
+@@ -5634,7 +5634,7 @@
+ static int				/* O - Success or failure */
+ pam_func(
+     int                      num_msg,	/* I - Number of messages */
+-    const struct pam_message **msg,	/* I - Messages */
++    struct pam_message **msg,		/* I - Messages */
+     struct pam_response      **resp,	/* O - Responses */
+     void                     *appdata_ptr)
+ 					/* I - Pointer to connection */

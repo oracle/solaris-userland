@@ -1,0 +1,33 @@
+GCC 14 fixes which resolve:
+
+libffi-3.2.1/src/x86/ffi.c:389:21: error: passing argument 1 of 'ffi_call_SYSV' from incompatible pointer type [-Wincompatible-pointer-types]
+libffi-3.2.1/src/sparc/ffi.c:448:47: error: passing argument 6 of 'ffi_call_v8' from incompatible pointer type [-Wincompatible-pointer-types]
+
+--- libffi-3.2.1/src/x86/ffi.c
++++ libffi-3.2.1/src/x86/ffi.c
+@@ -386,8 +386,11 @@
+ #else
+ #ifndef X86_WIN32
+     case FFI_SYSV:
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+       ffi_call_SYSV(ffi_prep_args, &ecif, cif->bytes, cif->flags, ecif.rvalue,
+                     fn);
++#pragma GCC diagnostic pop
+       break;
+ #else
+     case FFI_SYSV:
+--- libffi-3.2.1/src/sparc/ffi.c
++++ libffi-3.2.1/src/sparc/ffi.c
+@@ -444,8 +444,11 @@
+ #else
+ 	      ffi_flush_icache (call_struct, 32);
+ #endif
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+ 	      ffi_call_v8(ffi_prep_args_v8, &ecif, cif->bytes,
+ 			  cif->flags, rvalue, call_struct);
++#pragma GCC diagnostic pop
+ 	      ffi_closure_free(call_struct);
+ 	    }
+ 	  else

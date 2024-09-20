@@ -49,6 +49,9 @@ TEST_TARGET= $(TEST_32_and_64)
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-implicit-function-declaration -Wno-incompatible-pointer-types
+
 PYTHON_VERSION = 3.9
 
 studio_C99MODE= $(studio_C99_ENABLE)

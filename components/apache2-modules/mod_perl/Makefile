@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -42,6 +42,8 @@ CONFIGURE_DEFAULT_DIRS= no
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
 
 include $(WS_MAKE_RULES)/common.mk
+
+PATH=$(GCC_ROOT)/bin:$(USRBINDIR)
 
 APACHE_USR_PREFIX=/usr/apache2/2.4
 

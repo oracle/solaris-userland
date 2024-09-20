@@ -1,0 +1,25 @@
+GCC 14 fixes which allows build (should be investigated more closely):
+
+libmlx4-1.0.6/src/mlx4.c:97:34: error: initialization of 'struct ibv_mr * (*)(struct ibv_pd *, void *, size_t,  int)' {aka 'struct ibv_mr * (*)(struct ibv_pd *, void *, long unsigned int,  int)'} from incompatible pointer type 'struct ibv_mr * (*)(struct ibv_pd *, void *, size_t,  enum ibv_access_flags)' {aka 'struct ibv_mr * (*)(struct ibv_pd *, void *, long unsigned int,  enum ibv_access_flags)'} [-Wincompatible-pointer-types]
+   97 |         .reg_mr_relaxed        = mlx4_reg_mr_relaxed,
+      |                                  ^~~~~~~~~~~~~~~~~~~
+
+--- libmlx4-1.0.6/src/mlx4.c
++++ libmlx4-1.0.6/src/mlx4.c
+@@ -86,6 +86,8 @@
+ 	HCA(MELLANOX, 0x1010),	/* MT27561 Family */
+ };
+ 
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+ static struct ibv_context_ops mlx4_ctx_ops = {
+ 	.query_device  = mlx4_query_device,
+ 	.query_port    = mlx4_query_port,
+@@ -120,6 +122,7 @@
+ 	.attach_mcast  = ibv_cmd_attach_mcast,
+ 	.detach_mcast  = ibv_cmd_detach_mcast
+ };
++#pragma GCC diagnostic pop
+ 
+ static int mlx4_init_context(struct verbs_device *v_device,
+ 				struct ibv_context *ibv_ctx, int cmd_fd)

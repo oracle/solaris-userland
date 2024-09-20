@@ -1,0 +1,27 @@
+GCC 14 fixes which resolve:
+
+espeak.c: In function 'espeak_list_synthesis_voices':
+espeak.c:901:40: error: implicit declaration of function 'index' [-Wimplicit-function-declaration]
+  901 |                                 dash = index(voicename, '-');
+      |                                        ^~~~~
+
+--- speech-dispatcher-0.11.5/src/modules/espeak.c
++++ speech-dispatcher-0.11.5/src/modules/espeak.c
+@@ -32,6 +32,7 @@
+ 
+ /* System includes. */
+ #include <string.h>
++#include <strings.h>
+ #include <ctype.h>
+ #include <glib.h>
+ #include <fcntl.h>
+--- speech-dispatcher-0.11.5/src/clients/say/say.c
++++ speech-dispatcher-0.11.5/src/clients/say/say.c
+@@ -26,6 +26,7 @@
+ 
+ #include <stdio.h>
+ #include <string.h>
++#include <strings.h>
+ #include <stdlib.h>
+ #include <assert.h>
+ #include <semaphore.h>

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../ofed-component-macros.mk
@@ -34,6 +34,9 @@ COMPONENT_BUGDB=	library/ofuv_lib
 COMPONENT_ANITYA_ID=	1636
 
 include ../ofed-component.mk
+
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-implicit-function-declaration
 
 LIBS +=	-libverbs
 

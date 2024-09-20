@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -40,6 +40,9 @@ COMPONENT_ANITYA_ID=	1625
 COMPONENT_BAID=		138846
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types
 
 CONFIGURE_OPTIONS += --disable-static
 # Required for other components.

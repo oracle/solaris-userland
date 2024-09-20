@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 # Preferred compiler set to gcc and not Studio as on Sparc architecture
@@ -46,6 +46,9 @@ COMPONENT_BAID=		9920
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
+
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types
 
 COMPONENT_BUILD_ARGS += -f src/Makefile
 COMPONENT_BUILD_ARGS += CC="$(CC)"

@@ -41,6 +41,9 @@ BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types -Wno-return-mismatch -Wno-int-conversion -Wno-implicit-function-declaration
+
 # Assumes GNU msgfmt in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"

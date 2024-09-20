@@ -40,6 +40,9 @@ TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-incompatible-pointer-types
+
 # rdesktop-1.6.0 tarball includes configure.ac but not configure, so we make it
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))

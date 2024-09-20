@@ -40,6 +40,9 @@ COMPONENT_ANITYA_ID=	13122
 COMPONENT_BAID=		158393
 BUILD_STYLE=		meson
 
+# gcc 14
+CFLAGS += -Wno-incompatible-pointer-types -Wno-implicit-function-declaration
+
 # g-ir-scanner
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)

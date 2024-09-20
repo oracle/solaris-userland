@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2024, Oracle and/or its affiliates.
  *
  * U.S. Government Rights - Commercial software. Government users are subject
  * to the Sun Microsystems, Inc. standard license agreement and applicable
@@ -21,6 +21,7 @@
 #include <net-snmp/agent/net-snmp-agent-includes.h>
 #include "sunProcesses.h"
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -36,6 +37,7 @@
 #include <string.h>
 #include <memory.h>
 #include <pwd.h>
+#include <signal.h>
 #include <syslog.h>
 
 #include "snmpvars.h"
@@ -59,6 +61,8 @@
 
 #define UDQ 50
 
+int readata();
+int read_tmp_file(int fd, char *bp, unsigned int bs);
 
 static struct psinfo info; /* process information structure from /proc */
 

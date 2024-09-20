@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS=64
@@ -454,7 +454,7 @@ REQUIRED_PACKAGES += library/perl-5/xml-simple
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/header
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime-13
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime-13
-REQUIRED_PACKAGES += system/library/gcc/gcc-gobjc-runtime-13
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime-14
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime-14
+REQUIRED_PACKAGES += system/library/gcc/gcc-gobjc-runtime-14
 REQUIRED_PACKAGES += system/library/math

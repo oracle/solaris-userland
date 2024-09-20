@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -66,7 +66,8 @@ COMPONENT_BUILD_ENV += LOCAL_UNZIP="$(LOCAL_UNZIP)"
 
 # The Makefile we want is under unix/Makefile
 COMPONENT_BUILD_ARGS += -f unix/Makefile
-COMPONENT_BUILD_TARGETS += generic CC="$(CC)"
+# GCC 14 requirement: -Wno-implicit-function-declaration (should be resolved)
+COMPONENT_BUILD_TARGETS += generic CC="$(CC) -Wno-implicit-function-declaration"
 COMPONENT_INSTALL_ARGS += -f unix/Makefile
 
 # Unzip build ignores DESTDIR

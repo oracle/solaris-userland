@@ -49,6 +49,9 @@ CXXFLAGS += -std=c++11
 # Uses gcc-specific language extensions.
 CXXFLAGS.studio += -features=extensions
 
+# To get localtime_r.
+CPPFLAGS += -D__EXTENSIONS__
+
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)"
 CONFIGURE_OPTIONS += -Dsystemd=false
 CONFIGURE_OPTIONS += -Dwnck=true

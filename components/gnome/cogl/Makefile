@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -48,6 +48,9 @@ COMPONENT_TEST_TRANSFORMS += '-e "/\(test_premult\).*/d" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-implicit-function-declaration
 
 # Workaround build failures when /usr/include/GL points to Nvidia's headers
 COMPONENT_PREP_ACTION += $(SYMLINK) /usr/include/mesa $(@D)/GL ;

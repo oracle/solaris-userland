@@ -56,6 +56,9 @@ endif
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-implicit-function-declaration
+
 CFLAGS += -I$(USRINCDIR)/idn
 
 COMPONENT_BUILD_TARGETS = all info
@@ -147,6 +150,8 @@ CFLAGS.grub += -mcmodel=large
 CFLAGS.grub += -mno-red-zone
 CFLAGS.grub += -fno-stack-protector
 CFLAGS.grub += -mno-stack-arg-probe
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS.grub += -Wno-implicit-function-declaration
 
 # set of the configure options as needed for grub
 
