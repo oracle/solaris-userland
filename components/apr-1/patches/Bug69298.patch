@@ -1,0 +1,13 @@
+https://bz.apache.org/bugzilla/show_bug.cgi?id=69298
+
+--- apr-1.7.5/include/apr.h.in
++++ apr-1.7.5/include/apr.h.in
+@@ -68,7 +68,7 @@ /* __has_attribute should always be a pr
+  * necessarily __attribute__ (e.g. builtin), so check for both to
+  * avoid overriding __attribute__.
+  */
+-#if !(defined(__attribute__) || defined(__has_attribute))
++#if !(defined(__attribute__) || defined(__has_attribute)) || defined(__SUNPRO_C)
+ #define __attribute__(__x)
+ #endif
+ #endif /* !__GNUC__ */

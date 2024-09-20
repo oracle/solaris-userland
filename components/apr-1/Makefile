@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 # Prefer 32-bit over 64-bit as apr has its own custom package layout.
@@ -29,19 +29,19 @@ include ../../make-rules/shared-macros.mk
 
 APR_VERSION=1
 MINOR_VERSION=7
-MICRO_VERSION=4
+MICRO_VERSION=5
 
 COMPONENT_NAME=		apr
 COMPONENT_VERSION=	$(APR_VERSION).$(MINOR_VERSION).$(MICRO_VERSION)
 COMPONENT_PROJECT_URL=	https://apr.apache.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a4137dd82a185076fa50ba54232d920a17c6469c30b0876569e1c2a05ff311d9
+    sha256:3375fa365d67bcf945e52b52cba07abea57ef530f40b281ffbe977a9251361db
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/apr/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	95
 
-COMPONENT_BAID=		143935
+COMPONENT_BAID=		176722
 
 CONFIGURE_DEFAULT_DIRS=no
 include $(WS_MAKE_RULES)/common.mk
