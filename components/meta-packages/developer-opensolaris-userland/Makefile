@@ -74,7 +74,7 @@ clean clobber::
 REQUIRED_PACKAGES += developer/build/gnu-make
 
 # We use HG as a versioning system
-REQUIRED_PACKAGES += developer/versioning/mercurial58
+REQUIRED_PACKAGES += developer/versioning/mercurial
 
 # Utils to generate IPS packages
 REQUIRED_PACKAGES += package/pkg

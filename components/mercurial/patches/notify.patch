@@ -1,0 +1,21 @@
+The fix was submitted to upstream at
+
+https://bz.mercurial-scm.org/show_bug.cgi?id=6911
+
+--- mercurial-6.8/hgext/notify.py
++++ mercurial-6.8/hgext/notify.py
+@@ -524,7 +524,13 @@ class notifier:
+                 )
+         msg['To'] = ', '.join(sorted(subs))
+ 
+-        msgtext = msg.as_bytes()
++        if self.test or self.mbox:
++            msgtext = msg.as_bytes()
++        else:
++            # According to https://www.rfc-editor.org/rfc/rfc5321#section-2.3.8
++            # SMTP requires the lines to be terminated by <CR><LF>
++            msgtext = msg.as_bytes(policy=msg.policy.clone(linesep='\r\n'))
++
+         if self.test:
+             self.ui.write(msgtext)
+             if not msgtext.endswith(b'\n'):
