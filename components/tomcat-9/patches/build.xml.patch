@@ -4,9 +4,9 @@ Patch status: Solaris-specific; not suitable for upstream
 Download/use only archives we really need.
 Don't install unnecessary stuff.
 
---- apache-tomcat-9.0.87-src/build.xml
-+++ apache-tomcat-9.0.87-src/build.xml
-@@ -1451,8 +1451,6 @@ </target>
+--- apache-tomcat-9.0.95-src/build.xml
++++ apache-tomcat-9.0.95-src/build.xml
+@@ -1497,8 +1497,6 @@ </target>
    <target name="deploy" depends="package,build-docs,build-tomcat-jdbc,compile-webapp-examples"
            description="Default. Builds a working Tomcat instance">
  
@@ -15,7 +15,7 @@ Don't install unnecessary stuff.
      <!-- Copy scripts -->
      <copy todir="${tomcat.build}/bin">
        <fileset dir="bin">
-@@ -2171,12 +2169,6 @@ <include name="**/*.dll"/>
+@@ -2252,12 +2250,6 @@ <include name="**/*.dll"/>
        </fileset>
      </copy>
  
@@ -28,7 +28,7 @@ Don't install unnecessary stuff.
      <!-- platform README files -->
      <echo append="false" file="${tomcat.dist}/bin/x64/README">
  Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
-@@ -3309,16 +3301,6 @@ <target name="download-compile"
+@@ -3416,16 +3408,6 @@ <target name="download-compile"
            description="Download components necessary to compile"
            depends="setup-bnd">
  
@@ -45,7 +45,7 @@ Don't install unnecessary stuff.
      <!-- Download JDT (Eclipse compiler) -->
      <antcall target="downloadfile-2">
        <param name="sourcefile.1" value="${jdt.loc.1}"/>
-@@ -3481,16 +3463,6 @@ </target>
+@@ -3588,16 +3570,6 @@ </target>
    <target name="download-dist"
            description="Download additional components for a distribution" >
  
@@ -62,7 +62,7 @@ Don't install unnecessary stuff.
      <antcall target="downloadzip-2">
        <param name="sourcefile.1" value="${tomcat-native.win.1}"/>
        <param name="sourcefile.2" value="${tomcat-native.win.2}"/>
-@@ -3501,16 +3473,6 @@ <param name="checksum.algorithm" value="
+@@ -3608,16 +3580,6 @@ <param name="checksum.algorithm" value="
        <param name="checksum.value" value="${tomcat-native.win.checksum.value}"/>
      </antcall>
  
