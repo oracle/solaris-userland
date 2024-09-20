@@ -156,9 +156,6 @@ CONFIGURE_OPTIONS += --enable-login
 # set the directory where config files will be found PLUGINDIR:SYSCONFDIR/sasl2
 CONFIGURE_OPTIONS += --with-configdir=$(ETCDIR)/sasl2
 
-# From OpenLDAP,  we currently ship libldab as libldap_r.
-CONFIGURE_OPTIONS += --with-ldap=ldap_r
-
 CONFIGURE_OPTIONS += --enable-ldapdb
 
 # Additional directories where pkg transform should look for delivered files.
