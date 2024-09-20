@@ -27,16 +27,14 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xmlsec
-COMPONENT_VERSION=	1.2.37
+COMPONENT_VERSION=	1.2.41
+COMPONENT_BAID=		174434
+COMPONENT_ARCHIVE_HASH= sha256:a0aecfdf1f190c6b866a278e42746b6582729a493f6ac6a1556a4663ff3ce625
 COMPONENT_PROJECT_URL=	https://www.aleksey.com/xmlsec
 COMPONENT_SRC_NAME=	xmlsec1
-COMPONENT_ARCHIVE_HASH= \
-    sha256:5f8dfbcb6d1e56bddd0b5ec2e00a3d0ca5342a9f57c24dffde5c796b2be2871c
-COMPONENT_ARCHIVE_URL=	http://www.aleksey.com/xmlsec/download/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://www.aleksey.com/xmlsec/download/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/xmlsec
 COMPONENT_ANITYA_ID=	5200
-
-COMPONENT_BAID=		134732
 
 PKG_CONFIG_PATH.64=	/usr/lib/64/pkgconfig
 
