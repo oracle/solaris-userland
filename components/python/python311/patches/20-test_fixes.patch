@@ -24,8 +24,8 @@ This is a know issue: https://github.com/python/cpython/issues/98634
 test_pkgutil and test_metadata_api don't expect that pkg module exists
 on Solaris. [Not for upstream]
 
---- Python-3.11.9/Lib/test/test_gdb/__init__.py
-+++ Python-3.11.9/Lib/test/test_gdb/__init__.py
+--- Python-3.11.10/Lib/test/test_gdb/__init__.py
++++ Python-3.11.10/Lib/test/test_gdb/__init__.py
 @@ -4,6 +4,7 @@
  # Lib/test/test_jit_gdb.py
  
@@ -44,8 +44,8 @@ on Solaris. [Not for upstream]
  if not sysconfig.is_python_build():
      raise unittest.SkipTest("test_gdb only works on source builds at the moment.")
  
---- Python-3.11.9/Lib/test/test_re.py
-+++ Python-3.11.9/Lib/test/test_re.py
+--- Python-3.11.10/Lib/test/test_re.py
++++ Python-3.11.10/Lib/test/test_re.py
 @@ -1983,6 +1983,8 @@ class ReTests(unittest.TestCase):
          self.assertTrue(re.match(b'(?Li)\xc5', b'\xe5'))
          self.assertTrue(re.match(b'(?Li)\xe5', b'\xc5'))
@@ -64,8 +64,8 @@ on Solaris. [Not for upstream]
      def test_locale_compiled(self):
          oldlocale = locale.setlocale(locale.LC_CTYPE)
          self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
---- Python-3.11.9/Lib/test/test_time.py
-+++ Python-3.11.9/Lib/test/test_time.py
+--- Python-3.11.10/Lib/test/test_time.py
++++ Python-3.11.10/Lib/test/test_time.py
 @@ -642,7 +642,7 @@ class _TestStrftimeYear:
              self.test_year('%04d', func=year4d)
  
@@ -75,9 +75,9 @@ on Solaris. [Not for upstream]
          # Check that it doesn't crash for year > 9999
          try:
              time.strftime('%Y', (y,) + (0,) * 8)
---- Python-3.11.9/Lib/test/test_socket.py
-+++ Python-3.11.9/Lib/test/test_socket.py
-@@ -3419,7 +3419,7 @@ class CmsgMacroTests(unittest.TestCase):
+--- Python-3.11.10/Lib/test/test_socket.py
++++ Python-3.11.10/Lib/test/test_socket.py
+@@ -3427,7 +3427,7 @@ class CmsgMacroTests(unittest.TestCase):
          # Test CMSG_SPACE() with various valid and invalid values,
          # checking the assumptions used by sendmsg().
          toobig = self.socklen_t_limit - socket.CMSG_SPACE(1) + 1
@@ -86,7 +86,7 @@ on Solaris. [Not for upstream]
  
          last = socket.CMSG_SPACE(0)
          # struct cmsghdr has at least three members, two of which are ints
-@@ -3565,6 +3565,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3573,6 +3573,7 @@ class SCMRightsTest(SendrecvmsgServerTim
          self.createAndSendFDs(1)
  
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
@@ -94,7 +94,7 @@ on Solaris. [Not for upstream]
      @unittest.skipIf(AIX, "skipping, see issue #22397")
      @requireAttrs(socket, "CMSG_SPACE")
      def testFDPassSeparate(self):
-@@ -3576,6 +3577,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3584,6 +3585,7 @@ class SCMRightsTest(SendrecvmsgServerTim
  
      @testFDPassSeparate.client_skip
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
@@ -102,7 +102,7 @@ on Solaris. [Not for upstream]
      @unittest.skipIf(AIX, "skipping, see issue #22397")
      def _testFDPassSeparate(self):
          fd0, fd1 = self.newFDs(2)
-@@ -3589,6 +3591,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3597,6 +3599,7 @@ class SCMRightsTest(SendrecvmsgServerTim
              len(MSG))
  
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
@@ -110,7 +110,7 @@ on Solaris. [Not for upstream]
      @unittest.skipIf(AIX, "skipping, see issue #22397")
      @requireAttrs(socket, "CMSG_SPACE")
      def testFDPassSeparateMinSpace(self):
-@@ -3603,6 +3606,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3611,6 +3614,7 @@ class SCMRightsTest(SendrecvmsgServerTim
  
      @testFDPassSeparateMinSpace.client_skip
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
@@ -118,8 +118,8 @@ on Solaris. [Not for upstream]
      @unittest.skipIf(AIX, "skipping, see issue #22397")
      def _testFDPassSeparateMinSpace(self):
          fd0, fd1 = self.newFDs(2)
---- Python-3.11.9/Lib/test/test_tools/test_freeze.py
-+++ Python-3.11.9/Lib/test/test_tools/test_freeze.py
+--- Python-3.11.10/Lib/test/test_tools/test_freeze.py
++++ Python-3.11.10/Lib/test/test_tools/test_freeze.py
 @@ -16,6 +16,7 @@ with imports_under_tool('freeze', 'test'
  @unittest.skipIf(sys.platform.startswith('win'), 'not supported on Windows')
  @unittest.skipIf(sys.platform == 'darwin' and sys._framework,
@@ -128,8 +128,8 @@ on Solaris. [Not for upstream]
  @support.skip_if_buildbot('not all buildbots have enough space')
  # gh-103053: Skip test if Python is built with Profile Guided Optimization
  # (PGO), since the test is just too slow in this case.
---- Python-3.11.9/Lib/distutils/tests/test_register.py
-+++ Python-3.11.9/Lib/distutils/tests/test_register.py
+--- Python-3.11.10/Lib/distutils/tests/test_register.py
++++ Python-3.11.10/Lib/distutils/tests/test_register.py
 @@ -286,6 +286,7 @@ class RegisterTestCase(BasePyPIRCCommand
  
          self.assertRaises(DistutilsSetupError, cmd.run)
@@ -138,8 +138,8 @@ on Solaris. [Not for upstream]
      def test_check_metadata_deprecated(self):
          # makes sure make_metadata is deprecated
          cmd = self._get_cmd()
---- Python-3.11.9/Lib/test/test_pkgutil.py
-+++ Python-3.11.9/Lib/test/test_pkgutil.py
+--- Python-3.11.10/Lib/test/test_pkgutil.py
++++ Python-3.11.10/Lib/test/test_pkgutil.py
 @@ -520,7 +520,11 @@ class NestedNamespacePackageTest(unittes
          sys.path.insert(0, os.path.join(self.basedir, 'b'))
          import pkg
@@ -153,8 +153,8 @@ on Solaris. [Not for upstream]
          import pkg.subpkg
          self.addCleanup(unload, 'pkg.subpkg')
          self.assertEqual(len(pkg.subpkg.__path__), 2)
---- Python-3.11.9/Lib/test/test_importlib/test_metadata_api.py
-+++ Python-3.11.9/Lib/test/test_importlib/test_metadata_api.py
+--- Python-3.11.10/Lib/test/test_importlib/test_metadata_api.py
++++ Python-3.11.10/Lib/test/test_importlib/test_metadata_api.py
 @@ -56,7 +56,7 @@ class APITests(
                  assert distribution(name).metadata['Name'] == 'pkg.dot'
  

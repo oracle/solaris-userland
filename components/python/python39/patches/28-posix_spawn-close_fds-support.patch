@@ -4,9 +4,9 @@ This was offered and merged upstream; it will be available in Python 3.13:
 https://github.com/python/cpython/issues/113117
 https://github.com/python/cpython/pull/113118
 
---- Python-3.9.18/configure
-+++ Python-3.9.18/configure
-@@ -11794,8 +11794,8 @@ for ac_func in alarm accept4 setitimer getitimer bind_textdomain_codeset chown \
+--- Python-3.9.20/configure
++++ Python-3.9.20/configure
+@@ -11794,8 +11794,8 @@ for ac_func in alarm accept4 setitimer g
   initgroups kill killpg lchown lockf linkat lstat lutimes mmap \
   memrchr mbrtowc mkdirat mkfifo \
   madvise mkfifoat mknod mknodat mktime mremap nice openat pathconf pause pipe2 plock poll \
@@ -17,9 +17,9 @@ https://github.com/python/cpython/pull/113118
   readlink readlinkat readv realpath renameat \
   sem_open sem_timedwait sem_clockwait sem_getvalue sem_unlink sendfile setegid seteuid \
   setgid sethostname \
---- Python-3.9.18/configure.ac
-+++ Python-3.9.18/configure.ac
-@@ -3716,8 +3716,8 @@ AC_CHECK_FUNCS(alarm accept4 setitimer getitimer bind_textdomain_codeset chown \
+--- Python-3.9.20/configure.ac
++++ Python-3.9.20/configure.ac
+@@ -3716,8 +3716,8 @@ AC_CHECK_FUNCS(alarm accept4 setitimer g
   initgroups kill killpg lchown lockf linkat lstat lutimes mmap \
   memrchr mbrtowc mkdirat mkfifo \
   madvise mkfifoat mknod mknodat mktime mremap nice openat pathconf pause pipe2 plock poll \
@@ -30,8 +30,8 @@ https://github.com/python/cpython/pull/113118
   readlink readlinkat readv realpath renameat \
   sem_open sem_timedwait sem_clockwait sem_getvalue sem_unlink sendfile setegid seteuid \
   setgid sethostname \
---- Python-3.9.18/pyconfig.h.in
-+++ Python-3.9.18/pyconfig.h.in
+--- Python-3.9.20/pyconfig.h.in
++++ Python-3.9.20/pyconfig.h.in
 @@ -779,6 +779,10 @@
  /* Define to 1 if you have the `posix_spawnp' function. */
  #undef HAVE_POSIX_SPAWNP
@@ -43,9 +43,9 @@ https://github.com/python/cpython/pull/113118
  /* Define to 1 if you have the `pread' function. */
  #undef HAVE_PREAD
  
---- Python-3.9.18/Modules/posixmodule.c
-+++ Python-3.9.18/Modules/posixmodule.c
-@@ -5836,6 +5836,9 @@ enum posix_spawn_file_actions_identifier
+--- Python-3.9.20/Modules/posixmodule.c
++++ Python-3.9.20/Modules/posixmodule.c
+@@ -5874,6 +5874,9 @@ enum posix_spawn_file_actions_identifier
      POSIX_SPAWN_OPEN,
      POSIX_SPAWN_CLOSE,
      POSIX_SPAWN_DUP2
@@ -55,7 +55,7 @@ https://github.com/python/cpython/pull/113118
  };
  
  #if defined(HAVE_SCHED_SETPARAM) || defined(HAVE_SCHED_SETSCHEDULER) || defined(POSIX_SPAWN_SETSCHEDULER) || defined(POSIX_SPAWN_SETSCHEDPARAM)
-@@ -6075,6 +6078,24 @@ parse_file_actions(PyObject *file_action
+@@ -6113,6 +6116,24 @@ parse_file_actions(PyObject *file_action
                  }
                  break;
              }
@@ -80,7 +80,7 @@ https://github.com/python/cpython/pull/113118
              default: {
                  PyErr_SetString(PyExc_TypeError,
                                  "Unknown file_actions identifier");
-@@ -15113,6 +15134,9 @@ all_ins(PyObject *m)
+@@ -15151,6 +15172,9 @@ all_ins(PyObject *m)
      if (PyModule_AddIntConstant(m, "POSIX_SPAWN_OPEN", POSIX_SPAWN_OPEN)) return -1;
      if (PyModule_AddIntConstant(m, "POSIX_SPAWN_CLOSE", POSIX_SPAWN_CLOSE)) return -1;
      if (PyModule_AddIntConstant(m, "POSIX_SPAWN_DUP2", POSIX_SPAWN_DUP2)) return -1;
@@ -90,8 +90,8 @@ https://github.com/python/cpython/pull/113118
  #endif
  
  #if defined(HAVE_SPAWNV) || defined (HAVE_RTPSPAWN)
---- Python-3.9.18/Lib/subprocess.py
-+++ Python-3.9.18/Lib/subprocess.py
+--- Python-3.9.20/Lib/subprocess.py
++++ Python-3.9.20/Lib/subprocess.py
 @@ -696,6 +696,7 @@ def _use_posix_spawn():
  
  
