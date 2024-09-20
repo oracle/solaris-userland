@@ -31,14 +31,14 @@ include ../../make-rules/test-x11.mk
 LD_Z_IGNORE=
 
 COMPONENT_NAME=		gnuplot
-COMPONENT_VERSION=	5.4.8
+COMPONENT_VERSION=	6.0.1
 COMPONENT_PROJECT_URL=  https://gnuplot.sourceforge.net/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:931279c7caad1aff7d46cb4766f1ff41c26d9be9daf0bcf0c79deeee3d91f5cf
+	sha256:e85a660c1a2a1808ff24f7e69981ffcbac66a45c9dcf711b65610b26ea71379a
 COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	1216
 
-COMPONENT_BAID=		145481
+COMPONENT_BAID=		173989
 
 CXXFLAGS += -std=c++14
 
@@ -70,8 +70,12 @@ CONFIGURE_OPTIONS  += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS  += --x-libraries=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS  += --without-qt
 CONFIGURE_OPTIONS  += WX_CONFIG="$(USRBINDIR64)/wx-config"
+CONFIGURE_OPTIONS  += --without-libcerf
 
+REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += image/library/libwebp
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
+REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
@@ -84,13 +88,12 @@ REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/lua
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/font/truetype/liberation
 REQUIRED_PACKAGES += system/font/xorg/xorg-core
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
