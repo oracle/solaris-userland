@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mod_jk
-COMPONENT_VERSION=	1.2.49
+COMPONENT_VERSION=	1.2.50
 COMPONENT_PROJECT_URL=	https://tomcat.apache.org/connectors-doc/
 COMPONENT_SRC_NAME=	tomcat-connectors
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:43cb0283c92878e9d4ef110631dbd2beb6b55713c127ce043190b2b308757e9c
+    sha256:c669727b432c729a4b9f4fa663991298222fc40bd8101b33350074bf5a444b03
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/tomcat/tomcat-connectors/jk/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	13296
 
-COMPONENT_BAID=		150483
+COMPONENT_BAID=		177570
 
 CONFIGURE_DEFAULT_DIRS=no
 MODULES_INSTALL=
