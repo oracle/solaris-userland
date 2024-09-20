@@ -43,7 +43,7 @@ TEST_TARGET = $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 REQUIRED_PACKAGES += gnome/gnome-shell
-REQUIRED_PACKAGES += library/desktop/clutter
+REQUIRED_PACKAGES += gnome/window-manager/mutter
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
