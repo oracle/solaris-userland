@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		popt
-COMPONENT_VERSION=	1.16
-COMPONENT_PROJECT_URL=	http://freecode.com/projects/popt/
+COMPONENT_VERSION=	1.19
+COMPONENT_PROJECT_URL=	https://rpm.org/index.html
 COMPONENT_ARCHIVE_HASH= \
-    sha256:e728ed296fe9f069a0e005003c3d6b2dde3d9cad453422a10d6558616d304cc8
-COMPONENT_ARCHIVE_URL=	https://launchpad.net/$(COMPONENT_NAME)/head/$(COMPONENT_VERSION)/+download/$(COMPONENT_ARCHIVE)
+	sha256:c25a4838fc8e4c1c8aacb8bd620edb3084a3d63bf8987fdad3ca2758c63240f9
+COMPONENT_ARCHIVE_URL=	https://ftp.osuosl.org/pub/rpm/$(COMPONENT_NAME)/releases/$(COMPONENT_NAME)-1.x/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/popt
 COMPONENT_ANITYA_ID=	3689
 
-COMPONENT_BAID=		29696
+COMPONENT_BAID=	175783	
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
