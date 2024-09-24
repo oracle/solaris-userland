@@ -1,0 +1,283 @@
+https://gitlab.gnome.org/GNOME/localsearch/-/merge_requests/179
+
+--- a/meson.build	2024-09-06 16:08:32.118386060 -0700
++++ b/meson.build	2024-09-06 16:08:57.735550740 -0700
+@@ -402,6 +402,8 @@
+ tracker_uninstalled_writeback_modules_dir = join_paths(meson.current_build_dir(), 'src', 'tracker-writeback')
+ 
+ gsettings_schema_dir = join_paths(get_option('prefix'), get_option('datadir'), 'glib-2.0', 'schemas')
++po_dir = join_paths(meson.current_source_dir(), 'po')
++xdg_autostart_dir = join_paths(get_option('sysconfdir'), 'xdg', 'autostart')
+ 
+ glib_compile_schemas = find_program('glib-compile-schemas')
+ glib_mkenums = find_program('glib-mkenums')
+--- a/po/POTFILES.in	2024-09-06 16:09:52.292469490 -0700
++++ b/po/POTFILES.in	2024-09-06 16:10:26.966829445 -0700
+@@ -5,16 +5,10 @@
+ data/org.freedesktop.Tracker.Writeback.gschema.xml
+ src/libtracker-miners-common/tracker-dbus.c
+ src/libtracker-miners-common/tracker-utils.c
+-src/miners/fs/org.freedesktop.Tracker1.Miner.Files.service.in.in
+ src/miners/fs/tracker-main.c
+ src/miners/fs/tracker-miner-files.c
+-src/miners/fs/tracker-miner-fs.desktop.in.in
+-src/miners/rss/org.freedesktop.Tracker1.Miner.RSS.service.in.in
+ src/miners/rss/tracker-main.c
+ src/miners/rss/tracker-miner-rss.c
+-src/miners/rss/tracker-miner-rss.desktop.in.in
+-src/tracker-extract/org.freedesktop.Tracker1.Miner.Extract.service.in.in
+ src/tracker-extract/tracker-extract.c
+ src/tracker-extract/tracker-main.c
+-src/tracker-extract/tracker-extract.desktop.in.in
+ src/tracker-writeback/tracker-main.c
+--- a/po/POTFILES.skip	2024-09-06 16:09:56.235550450 -0700
++++ b/poPOTFILES.skip	2024-09-06 16:10:57.634597800 -0700
+@@ -1,9 +1,2 @@
+ # List of source files that should NOT be translated.
+ # Please keep this file sorted alphabetically.
+-src/miners/apps/org.freedesktop.Tracker1.Miner.Applications.service.in
+-src/miners/fs/org.freedesktop.Tracker1.Miner.Files.service.in
+-src/miners/fs/tracker-miner-fs.desktop.in
+-src/miners/rss/org.freedesktop.Tracker1.Miner.RSS.service.in
+-src/miners/rss/tracker-miner-rss.desktop.in
+-src/tracker-extract/org.freedesktop.Tracker1.Miner.Extract.service.in
+-src/tracker-extract/tracker-extract.desktop.in
+--- a/po/meson.build	2024-09-06 16:11:38.855343240 -0700
++++ b/po/meson.build	2024-09-06 16:11:55.785709190 -0700
+@@ -1 +1,5 @@
+-i18n.gettext('tracker-miners', preset: 'glib')
++i18n.gettext(
++  'tracker-miners',
++  preset: 'glib',
++  args: '--keyword=DisplayName',
++)
+--- a/src/tracker-extract/tracker-extract.desktop.in	2024-09-06 18:52:41.865342120 -0700
++++ b/dev/null
+@@ -1,18 +0,0 @@
+-[Desktop Entry]
+-_Name=Tracker Metadata Extractor
+-_Comment=Extracts metadata from local files
+-Icon=
+-Exec=@libexecdir@/tracker-extract
+-Terminal=false
+-Type=Application
+-Categories=Utility;
+-X-GNOME-Autostart-enabled=true
+-X-KDE-autostart-after=panel
+-X-KDE-StartupNotify=false
+-X-KDE-UniqueApplet=true
+-NoDisplay=true
+-OnlyShowIn=GNOME;KDE;XFCE;X-IVI;Unity;
+-X-GNOME-Bugzilla-Bugzilla=GNOME
+-X-GNOME-Bugzilla-Product=tracker
+-X-GNOME-Bugzilla-Component=Extractor
+-X-GNOME-Bugzilla-Version=@VERSION@
+--- a/src/miners/fs/meson.build	2024-09-09 10:01:12.910067990 -0700
++++ b/src/miners/fs/meson.build	2024-09-09 10:03:40.394945125 -0700
+@@ -34,28 +34,22 @@
+     install_rpath: tracker_install_rpath,
+ )
+ 
+-dbus_service_file_untranslated = configure_file(
+-    input: 'org.freedesktop.Tracker1.Miner.Files.service.in.in',
+-    output: 'org.freedesktop.Tracker1.Miner.Files.service.in',
+-    configuration: conf)
+-
+-dbus_service_file = custom_target('tracker-miner-files-dbus-service-file',
+-    input: dbus_service_file_untranslated,
++# This file allows starting the service with D-Bus autoactivation.
++# It's also used by tracker-control to identify the miner.
++dbus_service_file = configure_file(
++    input: 'org.freedesktop.Tracker1.Miner.Files.service.in',
+     output: 'org.freedesktop.Tracker1.Miner.Files.service',
+-    command: ['intltool-merge', '--quiet', '--desktop-style', '--utf8', join_paths(meson.source_root(), 'po'), '@INPUT@', '@OUTPUT@'],
++    configuration: conf,
+     install: true,
+     install_dir: dbus_services_dir)
+ 
+-desktop_file_untranslated = configure_file(
+-    input: 'tracker-miner-fs.desktop.in.in',
+-    output: 'tracker-miner-fs.desktop.in',
++# This file allows starting the service automatically using XDG autostart.
++# systemd user service activation is preferred if available.
++desktop_file = configure_file(
++    input: 'tracker-miner-fs.desktop.in',
++    output: 'tracker-miner-fs.desktop',
+     configuration: conf)
+ 
+-desktop_file = custom_target('tracker-miner-fs-desktop-file',
+-    input: desktop_file_untranslated,
+-    output: 'tracker-miner-fs.desktop',
+-    command: ['intltool-merge', '--quiet', '--desktop-style', '--utf8', join_paths(meson.source_root(), 'po'), '@INPUT@', '@OUTPUT@'])
+-
+ if get_option('autostart')
+   install_data(desktop_file,
+       install: true,
+@@ -63,6 +57,7 @@
+ endif
+ 
+ if install_systemd_user_services
++  # This file allows starting the service as a systemd user service.
+   configure_file(
+       input: 'tracker-miner-fs.service.in',
+       output: 'tracker-miner-fs.service',
+--- a/src/miners/rss/meson.build	2024-09-09 10:04:25.248355590 -0700
++++ b/src/miners/rss/meson.build	2024-09-09 10:05:43.314063395 -0700
+@@ -11,28 +11,21 @@
+     install_rpath: tracker_install_rpath,
+ )
+ 
+-dbus_service_file_untranslated = configure_file(
+-    input: 'org.freedesktop.Tracker1.Miner.RSS.service.in.in',
+-    output: 'org.freedesktop.Tracker1.Miner.RSS.service.in',
+-    configuration: conf)
+-
+-dbus_service_file = custom_target('tracker-miner-rss-dbus-service-file',
+-    input: dbus_service_file_untranslated,
++# This file allows starting the service with D-Bus autoactivation.
++# It's also used by tracker-control to identify the miner.
++dbus_service_file = configure_file(
+     output: 'org.freedesktop.Tracker1.Miner.RSS.service',
+-    command: ['intltool-merge', '--quiet', '--desktop-style', '--utf8', join_paths(meson.source_root(), 'po'), '@INPUT@', '@OUTPUT@'],
++    configuration: conf,
+     install: true,
+     install_dir: dbus_services_dir)
+ 
+-desktop_file_untranslated = configure_file(
+-    input: 'tracker-miner-rss.desktop.in.in',
+-    output: 'tracker-miner-rss.desktop.in',
++# This file allows starting the service automatically using XDG autostart.
++# systemd user service activation is preferred if available.
++desktop_file = configure_file(
++    input: 'tracker-miner-rss.desktop.in',
++    output: 'tracker-miner-rss.desktop',
+     configuration: conf)
+ 
+-desktop_file = custom_target('tracker-miner-rss-desktop-file',
+-    input: desktop_file_untranslated,
+-    output: 'tracker-miner-rss.desktop',
+-    command: ['intltool-merge', '--quiet', '--desktop-style', '--utf8', join_paths(meson.source_root(), 'po'), '@INPUT@', '@OUTPUT@'])
+-
+ if get_option('autostart')
+   install_data(desktop_file,
+       install: true,
+@@ -40,6 +33,7 @@
+ endif
+ 
+ if install_systemd_user_services
++  # This file allows starting the service as a systemd user service.
+   configure_file(
+       input: 'tracker-miner-rss.service.in',
+       output: 'tracker-miner-rss.service',
+--- a/src/tracker-extract/meson.build	2024-09-09 10:06:31.551068285 -0700
++++ b/src/tracker-extract/meson.build	2024-09-09 10:07:35.776166990 -0700
+@@ -169,35 +169,17 @@
+   install_dir: join_paths(get_option('prefix'), get_option('libexecdir')),
+   install_rpath: tracker_install_rpath)
+ 
+-dbus_service_file_untranslated = configure_file(
+-  input: 'org.freedesktop.Tracker1.Miner.Extract.service.in.in',
+-  output: 'org.freedesktop.Tracker1.Miner.Extract.service.in',
+-  configuration: conf)
+-
+-dbus_service_file = custom_target('tracker-extract-dbus-service-file',
+-  input: dbus_service_file_untranslated,
++# This file allows starting the service with D-Bus autoactivation.
++# It's also used by tracker-control to identify the miner.
++dbus_service_file = configure_file(
++  input: 'org.freedesktop.Tracker1.Miner.Extract.service.in',
+   output: 'org.freedesktop.Tracker1.Miner.Extract.service',
+-  command: ['intltool-merge', '--quiet', '--desktop-style', '--utf8', join_paths(meson.source_root(), 'po'), '@INPUT@', '@OUTPUT@'],
++  configuration: conf,
+   install: true,
+   install_dir: dbus_services_dir)
+ 
+-desktop_file_untranslated = configure_file(
+-  input: 'tracker-extract.desktop.in.in',
+-  output: 'tracker-extract.desktop.in',
+-  configuration: conf)
+-
+-desktop_file = custom_target('tracker-extract-desktop-file',
+-  input: desktop_file_untranslated,
+-  output: 'tracker-extract.desktop',
+-  command: ['intltool-merge', '--quiet', '--desktop-style', '--utf8', join_paths(meson.source_root(), 'po'), '@INPUT@', '@OUTPUT@'])
+-
+-if get_option('autostart')
+-  install_data(desktop_file,
+-      install: true,
+-      install_dir: join_paths(get_option('sysconfdir'), 'xdg/autostart'))
+-endif
+-
+ if install_systemd_user_services
++  # This file allows starting the service as a systemd user service.
+   configure_file(
+     input: 'tracker-extract.service.in',
+     output: 'tracker-extract.service',
+--- a/src/miners/fs/org.freedesktop.Tracker1.Miner.Files.service.in	2024-09-10 17:08:18.142852811 -0700
++++ b/src/miners/fs/org.freedesktop.Tracker1.Miner.Files.service.in	2024-09-10 17:08:28.469800038 -0700
+@@ -6,5 +6,5 @@
+ # Miner details needed for tracker-control
+ Path=/org/freedesktop/Tracker1/Miner/Files
+ NameSuffix=Miner.Files
+-_DisplayName=File System
+-_Comment=File system data miner
++DisplayName=File System
++Comment=File system data miner
+--- a/src/miners/rss/org.freedesktop.Tracker1.Miner.RSS.service.in	2024-09-10 17:09:01.921337588 -0700
++++ b/src/miners/rss/org.freedesktop.Tracker1.Miner.RSS.service.in	2024-09-10 17:09:08.254329588 -0700
+@@ -6,5 +6,5 @@
+ # Miner details needed for tracker-control
+ Path=/org/freedesktop/Tracker1/Miner/RSS
+ NameSuffix=Miner.RSS
+-_DisplayName=RSS/ATOM Feeds
+-_Comment=Fetch RSS/ATOM Feeds
++DisplayName=RSS/ATOM Feeds
++Comment=Fetch RSS/ATOM Feeds
+--- a/src/miners/rss/tracker-miner-rss.desktop.in	2024-09-10 17:09:23.236820460 -0700
++++ b/src/miners/rss/tracker-miner-rss.desktop.in	2024-09-10 17:09:41.181824851 -0700
+@@ -1,6 +1,6 @@
+ [Desktop Entry]
+-_Name=Tracker RSS/ATOM Feeds Miner
+-_Comment=Fetch RSS/ATOM feeds
++Name=Tracker RSS/ATOM Feeds Miner
++Comment=Fetch RSS/ATOM feeds
+ Icon=
+ Exec=@libexecdir@/tracker-miner-rss
+ Hidden=true
+@@ -13,7 +13,3 @@
+ X-KDE-UniqueApplet=true
+ NoDisplay=true
+ OnlyShowIn=GNOME;KDE;XFCE;Unity;
+-X-GNOME-Bugzilla-Bugzilla=GNOME
+-X-GNOME-Bugzilla-Product=tracker
+-X-GNOME-Bugzilla-Component=Miners
+-X-GNOME-Bugzilla-Version=@VERSION@
+--- a/src/tracker-extract/org.freedesktop.Tracker1.Miner.Extract.service.in	2024-09-10 17:10:10.830175840 -0700
++++ b/src/tracker-extract/org.freedesktop.Tracker1.Miner.Extract.service.in	2024-09-10 17:10:19.022193996 -0700
+@@ -6,5 +6,5 @@
+ # Miner details needed for tracker-control
+ Path=/org/freedesktop/Tracker1/Miner/Extract
+ NameSuffix=Miner.Extract
+-_DisplayName=Extractor
+-_Comment=Metadata extractor
++DisplayName=Extractor
++Comment=Metadata extractor
+--- a/src/miners/fs/tracker-miner-fs.desktop.in	2024-09-10 17:14:10.802900607 -0700
++++ b/src/miners/fs/tracker-miner-fs.desktop.in	2024-09-10 17:14:29.423200167 -0700
+@@ -1,6 +1,6 @@
+ [Desktop Entry]
+-_Name=Tracker File System Miner
+-_Comment=Crawls and processes files on the file system
++Name=Tracker File System Miner
++Comment=Crawls and processes files on the file system
+ Icon=
+ Exec=@libexecdir@/tracker-miner-fs
+ Hidden=true
+@@ -13,7 +13,3 @@
+ X-KDE-UniqueApplet=true
+ NoDisplay=true
+ OnlyShowIn=GNOME;KDE;XFCE;X-IVI;Unity;
+-X-GNOME-Bugzilla-Bugzilla=GNOME
+-X-GNOME-Bugzilla-Product=tracker
+-X-GNOME-Bugzilla-Component=Miners
+-X-GNOME-Bugzilla-Version=@VERSION@

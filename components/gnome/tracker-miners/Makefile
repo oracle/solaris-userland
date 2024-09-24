@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -52,12 +52,25 @@ CONFIGURE_OPTIONS += -Dminer_rss=false
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 LDFLAGS += -z gnu-version-script-compat
 
+RENAME_FILES = \
+	tracker-extract/tracker-extract.desktop.in.in \
+	tracker-extract/org.freedesktop.Tracker1.Miner.Extract.service.in.in \
+	miners/fs/org.freedesktop.Tracker1.Miner.Files.service.in.in \
+	miners/fs/tracker-miner-fs.desktop.in.in \
+	miners/rss/org.freedesktop.Tracker1.Miner.RSS.service.in.in \
+	miners/rss/tracker-miner-rss.desktop.in.in
+
+COMPONENT_POST_UNPACK_ACTION += \
+	(cd $(COMPONENT_SRC)/src; \
+	for file in $(RENAME_FILES); do \
+	    rename_file=$$(echo $$file | $(GSED) 's/\(.*\)\.in\.in/\1.in/'); \
+	    $(MV) "$$file" "$$rename_file";\
+	done;)
+	
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += codec/flac
 REQUIRED_PACKAGES += codec/libvorbis
-# tr-miners < 2.99.1 requires intltool to build - remove when upgrading to later
-REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
 REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += image/library/libjpeg
