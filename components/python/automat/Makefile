@@ -20,32 +20,32 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		Automat
-COMPONENT_VERSION=	22.10.0
+COMPONENT_NAME=		automat
+COMPONENT_VERSION=	24.8.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e56beb84edad19dcc11d30e8d9b895f75deeb5ef5e96b84a467066b3b84bb04e
+    sha256:69cd3a4760c5f70e9a20319dbef865f2981529dfb20cb4b028bee1ebf3a72c86
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/glyph/Automat
 COMPONENT_BUGDB=	python-mod/automat
 COMPONENT_ANITYA_ID=	15101
-COMPONENT_BAID=		138414
+COMPONENT_BAID=		177673
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # make executable for each Python version
 COMPONENT_POST_INSTALL_ACTION += \
 	$(MV) $(PROTOUSRBINDIR)/automat-visualize $(PROTOUSRBINDIR)/automat-visualize-$(PYTHON_VERSION)
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/automat
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/src/automat
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
@@ -60,5 +60,4 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
+REQUIRED_PACKAGES += library/python/typing-extensions-39

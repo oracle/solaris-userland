@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		incremental
-COMPONENT_VERSION=	22.10.0
+COMPONENT_VERSION=	24.7.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:912feeb5e0f7e0188e6f42241d2f450002e11bbc0937c65865045854c24c0bd0
+    sha256:fb4f1d47ee60efe87d4f6f0ebb5f70b9760db2b2574c59c8e8912be4ebd464c9
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/twisted/incremental
 COMPONENT_BUGDB=	python-mod/incremental
 COMPONENT_ANITYA_ID=	19663
-COMPONENT_BAID=		138416
+COMPONENT_BAID=		177672
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -55,6 +55,8 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TEST_NO_ARCH)
+
+REQUIRED_PACKAGES += library/python/tomli-39
 
 # testing dependencies
 REQUIRED_PACKAGES += library/python/python-twisted
