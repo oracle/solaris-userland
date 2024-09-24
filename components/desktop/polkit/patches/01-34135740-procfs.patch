@@ -11,9 +11,9 @@
 +#include <procfs.h>
 +#include <fcntl.h>
 +#endif
- #include <stdlib.h>
- #include <string.h>
- #include <errno.h>
+ #ifdef HAVE_PIDFD_OPEN
+ #include <sys/syscall.h>
+ #endif /* HAVE_PIDFD_OPEN */
 @@ -611,7 +615,7 @@
    int  procfd;
  

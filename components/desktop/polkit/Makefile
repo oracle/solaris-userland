@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,42 +30,44 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		polkit
-COMPONENT_VERSION=	0.118
+COMPONENT_VERSION=	125
 COMPONENT_PROJECT_URL=	http://www.freedesktop.org/wiki/Software/polkit/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:bd1cc7cea8468e2978cb273fde94ee43a74e2737a4b6914708da6114ee7ed605
-COMPONENT_ARCHIVE_URL=	http://www.freedesktop.org/software/polkit/releases/$(COMPONENT_ARCHIVE)
+	sha256:ea5cd6e6e2afa6bad938ee770bf0c2cd9317910f37956faeba2869adcf3747d1
+COMPONENT_ARCHIVE_URL=	https://github.com/polkit-org/polkit/archive/refs/tags/$(COMPONENT_VERSION).tar.gz
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sign
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	3682
 COMPONENT_SIG_URL=
 
-COMPONENT_BAID=		98296
+COMPONENT_BAID=		178240
+
+BUILD_STYLE=		meson
 
 # Tests don't work on Solaris
 TEST_TARGET = $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Regenerate configure after applying patches that modify configure.ac
-COMPONENT_PREP_ACTION += ( cd $(@D); autoreconf -fiv);
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Need C99 or later to get fpclassify() & isfinite() in <math.h>
 CFLAGS += -ggdb
 CFLAGS.gcc += -std=gnu11
 CFLAGS.studio += -std=c11 -xlang=c11
 
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-gtk-doc
-CONFIGURE_OPTIONS += --enable-man-pages
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-authfw=pam
-CONFIGURE_OPTIONS += --with-polkitd-user=_polkitd
-CONFIGURE_OPTIONS += --with-os-type=solaris
-CONFIGURE_OPTIONS += --disable-libsystemd-login
-CONFIGURE_OPTIONS += --disable-libelogind
+CONFIGURE_OPTIONS += -Dgtk_doc=true
+CONFIGURE_OPTIONS += -Dman=true
+CONFIGURE_OPTIONS += -Dauthfw=pam
+CONFIGURE_OPTIONS += -Dpolkitd_user=_polkitd
+CONFIGURE_OPTIONS += -Dpolkitd_uid=63
+CONFIGURE_OPTIONS += -Dos_type=solaris
+CONFIGURE_OPTIONS += -Djs_engine=mozjs
+CONFIGURE_OPTIONS += -Dsession_tracking=ConsoleKit
+CONFIGURE_OPTIONS += -Dexamples=true
 CONFIGURE_OPTIONS += --sysconfdir="$(ETCDIR)"
 
 # Workaround the mozjs issue described in 24935318
@@ -87,12 +89,10 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
                 $(PROTO_DIR)/lib/svc/method/svc-polkit; \
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-# polkit < 0.120 requires intltool to build - remove when upgrading to later
-REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libmozjs-78
+REQUIRED_PACKAGES += library/libmozjs-115
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/dbus
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

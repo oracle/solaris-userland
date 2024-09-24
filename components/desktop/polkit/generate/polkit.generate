@@ -31,7 +31,7 @@
 
 # Drop 32-bit binaries and polkit-1
 <transform file path=usr/bin/\$\(MACH32\)/* -> drop>
-<transform file path=etc/pam.d/polkit-1 -> drop>
+<transform file path=usr/lib/pam.d/polkit-1 -> drop>
 
 # transform for the binaries and daemon pkglint errors of not being ASLR enabled
 <transform file path=usr/lib/polkit-1/polkit-agent-helper-1 -> \
@@ -48,3 +48,8 @@
     set pkg.linted.userland.action001.5 true>
 <transform file path=usr/bin/pkttyagent -> \
     set pkg.linted.userland.action001.5 true>
+
+# Drop systemd files
+<transform file path=usr/lib/systemd/system/polkit.service -> drop>
+<transform file path=usr/lib/sysusers.d/polkit.conf -> drop>
+<transform file path=usr/lib/tmpfiles.d/polkit-tmpfiles.conf -> drop>
