@@ -156,7 +156,7 @@ regen-patches:
 	    $(MV) tmp-regen/next tmp-regen/prev ; \
 	    CUR_LIST+="$$p " ; \
 	    $(MAKE) unpack patch ALL_PATCHES="$${CUR_LIST}" \
-		GPATCH_BACKUP="--no-backup-if-mismatch" ; \
+		GPATCH_BACKUP="--no-backup-if-mismatch" || { echo "Error applying patch $$p"; exit 1; }; \
 	    $(MKDIR) tmp-regen/next ; \
 	    $(MV) $${sd} tmp-regen/next ;  \
 	    $(RM) tmp-regen/*/*/.patched* $(COMPONENT_DIR)/.patched* ; \
