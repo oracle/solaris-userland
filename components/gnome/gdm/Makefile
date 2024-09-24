@@ -41,7 +41,7 @@ COMPONENT_BAID=		158393
 BUILD_STYLE=		meson
 
 # gcc 14
-CFLAGS += -Wno-incompatible-pointer-types -Wno-implicit-function-declaration
+CFLAGS += -Wno-incompatible-pointer-types
 
 # g-ir-scanner
 CC_PIC_MODE = $(CC_PIC_DISABLE)

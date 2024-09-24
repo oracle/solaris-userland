@@ -2304,6 +2304,18 @@ Subject: [PATCH 02/19] disable systemd
  
          preferred_display_server = get_preferred_display_server (factory);
  
+@@ -860,7 +925,11 @@ ensure_display_for_seat (GdmLocalDisplayFactory *factory,
+         if (!waiting_on_udev) {
+                 int ret;
+ 
++#ifdef WITH_SYSTEMD
+                 ret = sd_seat_can_graphical (seat_id);
++#else
++                ret = 1;
++#endif
+ 
+                 if (ret < 0) {
+                         g_critical ("Failed to query CanGraphical information for seat %s", seat_id);
 @@ -967,6 +1032,7 @@
          return;
  }

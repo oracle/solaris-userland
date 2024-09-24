@@ -236,11 +236,20 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
  #endif /* __GDM_DISPLAY_ACCESS_FILE_H__ */
 --- a/daemon/main.c	2024-01-18 15:16:24.029772100 -0800
 +++ b/daemon/main.c	2024-01-18 15:16:38.674300295 -0800
-@@ -470,6 +470,8 @@
+@@ -48,6 +48,8 @@ #include "gdm-settings.h"
+ #include "gdm-settings-direct.h"
+ #include "gdm-settings-keys.h"
+ 
++#include "gdm-display-access-file.h"
++
+ #define GDM_DBUS_NAME "org.gnome.DisplayManager"
+ 
+ static GDBusConnection *get_system_bus (void);
+@@ -409,6 +411,8 @@ g_clear_object (&settings);
          gdm_settings_direct_shutdown ();
          gdm_log_shutdown ();
  
-+ 	gdm_display_access_file_cleanup_xauth ();
++        gdm_display_access_file_cleanup_xauth ();
 +
          g_main_loop_unref (main_loop);
  
