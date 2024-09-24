@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -41,14 +41,6 @@ COMPONENT_BAID=		141687
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-ifeq ($(OS_VERSION),11.3)
-OLD_DESKTOP_BUILD=	0.5.11,5.11-0.175.2.0.0.20.0
-else
-OLD_DESKTOP_BUILD=	5.12-5.12.0.0.0.14.0
-endif
-
-PKG_MACROS +=		OLD_DESKTOP_BUILD=$(OLD_DESKTOP_BUILD)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/$(COMPONENT_NAME)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
