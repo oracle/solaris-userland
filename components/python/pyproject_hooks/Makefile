@@ -40,9 +40,12 @@ COMPONENT_BAID=		157255
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-venv-test.mk
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+PYTHON_VENV_TEST_COMPONENTS = testpath
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_CMD =	$(VENV_PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
@@ -52,10 +55,9 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# Test requires testpath that hasn't been integrated yet.
-test:		$(NO_TESTS)
+venv-test:	$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+venv-system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += library/python/tomli-39
 
