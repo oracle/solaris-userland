@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -42,12 +42,6 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-ifeq ($(MACH),sparc)
-# Webkit expects that only 48 bits from the address are effectively used.
-# This is not true on Solaris SPARC platform, so we use a mapfile to limit virtual address space.
-LD_EXEC_OPTIONS += -M $(WS_COMPONENTS)/desktop/webkitgtk4/mapfile_sparc_48bits
-endif
-
 # Assumes GNU msgfmt in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
@@ -68,7 +62,6 @@ REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libgweather
 REQUIRED_PACKAGES += library/desktop/librest
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts

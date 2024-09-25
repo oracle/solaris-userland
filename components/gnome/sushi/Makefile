@@ -48,10 +48,6 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-# Although sushi is not written in C++, it does link against webkitgtk4 which
-# which is compiled as C++11.
-CXXFLAGS += -std=c++11
-
 # Workaround the mozjs issue described in 24935318
 # without which sushi has issues described in 28062328
 LD_EXEC_OPTIONS += -M $(COMPONENT_DIR)/mapfile
@@ -74,7 +70,6 @@ REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/gtksourceview
 REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += x11/library/libepoxy

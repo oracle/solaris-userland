@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -47,13 +47,7 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CONFIGURE_ENV += PERL="$(PERL)"
 
 CONFIGURE_OPTIONS += -Dlibnotify=true
-CONFIGURE_OPTIONS += -Dwebkitgtk=true
-
-ifeq ($(MACH),sparc)
-# Webkit expects that only 48 bits from the address are effectively used.
-# This is not true on Solaris SPARC platform, so we use a mapfile to limit virtual address space.
-LD_EXEC_OPTIONS += -M $(WS_COMPONENTS)/desktop/webkitgtk4/mapfile_sparc_48bits
-endif
+CONFIGURE_OPTIONS += -Dwebkitgtk=false
 
 # Assumes GNU msgfmt in PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
@@ -67,7 +61,6 @@ REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libnotify
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += $(PERL_PKG)

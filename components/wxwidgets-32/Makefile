@@ -65,6 +65,7 @@ CONFIGURE_OPTIONS += --without-gtkprint
 CONFIGURE_OPTIONS += --without-gnomevfs
 CONFIGURE_OPTIONS += --with-opengl
 CONFIGURE_OPTIONS += --with-regex=sys
+CONFIGURE_OPTIONS += --disable-webviewwebkit
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
@@ -76,7 +77,6 @@ REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libnotify
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/libsecret

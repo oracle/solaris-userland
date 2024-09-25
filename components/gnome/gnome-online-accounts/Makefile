@@ -47,18 +47,14 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
 LD_OPTIONS += -lresolv
 
-ifeq ($(MACH),sparc)
-# Webkit expects that only 48 bits from the address are effectively used.
-# This is not true on Solaris SPARC platform, so we use a mapfile to limit virtual address space.
-LD_EXEC_OPTIONS += -M $(WS_COMPONENTS)/desktop/webkitgtk4/mapfile_sparc_48bits
-endif
-
 # Doesn't build currently; conflicts between Solaris krb5.h and p11-kit.
 CONFIGURE_OPTIONS += --disable-kerberos
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-exchange
 CONFIGURE_OPTIONS += --enable-documentation
 CONFIGURE_OPTIONS += --enable-gtk-doc
+# This requires webkitgtk and is used for the online accounts registration
+CONFIGURE_OPTIONS += --disable-backend
 # Required for other components.
 CONFIGURE_OPTIONS += --enable-introspection
 CONFIGURE_OPTIONS += --enable-facebook
@@ -81,7 +77,6 @@ REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/librest
 REQUIRED_PACKAGES += library/desktop/p11-kit
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/json-glib

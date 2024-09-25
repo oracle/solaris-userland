@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -46,19 +46,13 @@ include $(WS_MAKE_RULES)/test-x11.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-ifeq ($(MACH),sparc)
-# Webkit expects that only 48 bits from the address are effectively used.
-# This is not true on Solaris SPARC platform, so we use a mapfile to limit virtual address space.
-LD_EXEC_OPTIONS.64 += -M $(WS_COMPONENTS)/desktop/webkitgtk4/mapfile_sparc_48bits
-LD_EXEC_OPTIONS = $(LD_EXEC_OPTIONS.$(BITS))
-endif
-
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CONFIGURE_OPTIONS += -Dgtk_doc=true
 CONFIGURE_OPTIONS += -Dgladeui=true
+CONFIGURE_OPTIONS += -Dwebkit2gtk=disabled
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/cairo
@@ -66,7 +60,6 @@ REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gjs
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += runtime/python-311
