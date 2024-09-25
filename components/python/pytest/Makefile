@@ -84,5 +84,5 @@ REQUIRED_PACKAGES += library/python/tomli-39
 # Testing related components
 REQUIRED_PACKAGES += library/python/hypothesis
 REQUIRED_PACKAGES += library/python/mock
-REQUIRED_PACKAGES += library/python/nose
+REQUIRED_PACKAGES += library/python/pynose
 REQUIRED_PACKAGES += library/python/requests

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -65,4 +65,4 @@ REQUIRED_PACKAGES += system/library
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/coverage
-REQUIRED_PACKAGES += library/python/nose
+REQUIRED_PACKAGES += library/python/pynose
