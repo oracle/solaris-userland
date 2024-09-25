@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdb
-COMPONENT_VERSION=	13.1
+COMPONENT_VERSION=	15.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4cc3d7143d6d54d289d227b1e7289dbc0fa4cbd46131ab87136e1ea831cf46d4
+    sha256:8b61b0c2bdd9d9c83b113c9167866bdb474651d291fedcaa5eb7cde49bd47036
 COMPONENT_ANITYA_ID=	11798
 
-COMPONENT_BAID=		140926
+COMPONENT_BAID=		177948
 
 # The traditional output from gmake test omits some
 # test results information that is contained in the 
@@ -98,9 +98,6 @@ CFLAGS_EXTRA = -Wall -Wno-long-long -Wcast-align -fno-omit-frame-pointer
 CFLAGS = $(CC_BITS) $(CFLAGS_EXTRA) $(CFLAGS_$(MACH))
 CXXFLAGS = $(CC_BITS) $(CFLAGS_EXTRA) $(CFLAGS_$(MACH))
 CPPFLAGS = -D_REENTRANT -I$(USRINCDIR)/ncurses
-
-# gdb/python/py-block.c now requires C++ 11.
-CXXFLAGS += -std=c++11
 
 CONFIGURE_OPTIONS += --with-x=no
 CONFIGURE_OPTIONS += --with-curses

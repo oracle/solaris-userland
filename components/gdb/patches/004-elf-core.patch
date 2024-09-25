@@ -1,9 +1,9 @@
 # Solaris-specific core file processing.
 # Will contribute upstream if possible.
 
---- gdb-13.1/bfd/elf-bfd.h
-+++ gdb-13.1/bfd/elf-bfd.h
-@@ -1427,6 +1427,11 @@ note is found in a core file.  */
+--- gdb-15.1/bfd/elf-bfd.h
++++ gdb-15.1/bfd/elf-bfd.h
+@@ -1447,6 +1447,11 @@ note is found in a core file.  */
    bool (*elf_backend_grok_freebsd_prstatus)
      (bfd *, Elf_Internal_Note *);
  
@@ -15,9 +15,9 @@
    /* This function, if defined, is called to write a note to a corefile.  */
    char *(*elf_backend_write_core_note)
      (bfd *abfd, char *buf, int *bufsiz, int note_type, ...);
---- gdb-13.1/bfd/elf.c
-+++ gdb-13.1/bfd/elf.c
-@@ -9828,7 +9828,10 @@ data structure apart.  */
+--- gdb-15.1/bfd/elf.c
++++ gdb-15.1/bfd/elf.c
+@@ -10516,7 +10516,10 @@ data structure apart.  */
  static bool
  elfcore_grok_prfpreg (bfd *abfd, Elf_Internal_Note *note)
  {
@@ -29,7 +29,7 @@
  }
  
  /* Linux dumps the Intel SSE regs in a note named "LINUX" with a note
-@@ -10502,6 +10505,9 @@ #endif
+@@ -11211,6 +11214,9 @@ #endif
  
  #if defined (HAVE_LWPSTATUS_T)
      case NT_LWPSTATUS:
@@ -39,9 +39,9 @@
        return elfcore_grok_lwpstatus (abfd, note);
  #endif
  
---- gdb-13.1/bfd/elfxx-target.h
-+++ gdb-13.1/bfd/elfxx-target.h
-@@ -628,6 +628,9 @@ #endif
+--- gdb-15.1/bfd/elfxx-target.h
++++ gdb-15.1/bfd/elfxx-target.h
+@@ -630,6 +630,9 @@ #endif
  #ifndef elf_backend_grok_psinfo
  #define elf_backend_grok_psinfo			NULL
  #endif
@@ -51,7 +51,7 @@
  #ifndef elf_backend_grok_freebsd_prstatus
  #define elf_backend_grok_freebsd_prstatus	NULL
  #endif
-@@ -884,6 +887,7 @@ elf_backend_count_additional_relocs,
+@@ -894,6 +897,7 @@ elf_backend_count_additional_relocs,
    elf_backend_sort_relocs_p,
    elf_backend_grok_prstatus,
    elf_backend_grok_psinfo,

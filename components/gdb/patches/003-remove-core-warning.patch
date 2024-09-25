@@ -4,9 +4,9 @@
 # Note: this patch may not be appropriate for upstream;
 # it may eventually be removed.
 
---- gdb-13.1/gdb/corelow.c
-+++ gdb-13.1/gdb/corelow.c
-@@ -712,11 +712,14 @@ warning (_("Section `%s' in core file to
+--- gdb-15.1/gdb/corelow.c
++++ gdb-15.1/gdb/corelow.c
+@@ -869,11 +869,14 @@ warning (_("Section `%s' in core file to
  	       section_name.c_str ());
        return;
      }
@@ -20,4 +20,4 @@
 +#endif
  
    gdb::byte_vector contents (size);
-   if (!bfd_get_section_contents (core_bfd, section, contents.data (),
+   if (!bfd_get_section_contents (current_program_space->core_bfd (), section,
