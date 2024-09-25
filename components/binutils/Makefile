@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		binutils
-COMPONENT_VERSION=	2.40
+COMPONENT_VERSION=	2.43.1
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0f8a4c272d7f17f369ded10a4aca28b8e304828e95526da482b0ccc4dfc9d8e1
+    sha256:13f74202a3c4c51118b797a39ea4200d3f6cfbe224da6d1d95bb938480132dfd
 COMPONENT_BUGDB=	utility/gnu-binutils
 COMPONENT_ANITYA_ID=	7981
 
-COMPONENT_BAID=		142292
+COMPONENT_BAID=		178493
 
 #
 # for platform and cross platform support
