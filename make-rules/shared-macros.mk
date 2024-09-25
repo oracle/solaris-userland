@@ -1468,7 +1468,7 @@ ifneq ($(strip $(BUILD_BITS)),NO_ARCH)
 # Only a default dependency if component being built produces binaries.
 
 ifeq ($(COMPILER),gcc)
-REQUIRED_PACKAGES += developer/gcc-11
+REQUIRED_PACKAGES += developer/gcc-$(subst /usr/gcc/,,$(GCC_ROOT))
 endif
 
 # We do not add studio compiler to required packages as it is not part of
