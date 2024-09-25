@@ -1,0 +1,144 @@
+This is slightly modified patch from Fedora:
+
+https://bugzilla.opensuse.org/show_bug.cgi?id=1225909#c1
+
+The patch can be removed once perl::tk adopts it.
+
+Index: config/signedchar.c
+===================================================================
+--- a/config/signedchar.c.orig
++++ a/config/signedchar.c
+@@ -1,4 +1,4 @@
+-main()
++int main()
+ {
+  signed char x = 'a';
+  return (x - 'a');
+Index: config/unsigned.c
+===================================================================
+--- a/config/unsigned.c.orig
++++ a/config/unsigned.c
+@@ -1,3 +1,5 @@
++#include <stdlib.h>
++
+ int main()
+ {
+  char x[] = "\377";
+Index: pTk/config/Hstrdup.c
+===================================================================
+--- a/pTk/config/Hstrdup.c.orig
++++ a/pTk/config/Hstrdup.c
+@@ -1,4 +1,5 @@
+ #include <string.h>
++#include <stdlib.h>
+ 
+ #define STRING "Whatever"
+ 
+Index: pTk/config/Hstrtoul.c
+===================================================================
+--- a/pTk/config/Hstrtoul.c.orig
++++ a/pTk/config/Hstrtoul.c
+@@ -1,3 +1,4 @@
++#include <string.h>
+ #include <stdlib.h>
+ 
+ int main()
+Index: pTk/mTk/generic/tkEvent.c
+===================================================================
+--- a/pTk/mTk/generic/tkEvent.c.orig
++++ a/pTk/mTk/generic/tkEvent.c
+@@ -1153,6 +1153,7 @@ TkEventDeadWindow(winPtr)
+ Time
+ TkCurrentTime(dispPtr, fallbackCurrent)
+     TkDisplay *dispPtr;		/* Display for which the time is desired. */
++    int fallbackCurrent;
+ {
+     register XEvent *eventPtr;
+     ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
+Index: pTk/mTk/generic/tkImage.c
+===================================================================
+--- a/pTk/mTk/generic/tkImage.c.orig
++++ a/pTk/mTk/generic/tkImage.c
+@@ -1083,6 +1083,8 @@ int x;
+ int y;
+ int width;
+ int height;
++int imgWidth;
++int imgHeight;
+ {
+     Tk_Tile tile = (Tk_Tile) clientData;
+     Tk_TileChange *handler;
+Index: Event/Event.xs
+===================================================================
+--- a/Event/Event.xs.orig
++++ a/Event/Event.xs
+@@ -1532,7 +1532,7 @@ PROTOTYPES: DISABLE
+ BOOT:
+  {
+ #ifdef pWARN_NONE
+-  SV *old_warn = PL_curcop->cop_warnings;
++  char *old_warn = PL_curcop->cop_warnings;
+   PL_curcop->cop_warnings = pWARN_NONE;
+ #endif
+   newXS("Tk::Event::INIT", XS_Tk__Event_INIT, file);
+Index: config/pregcomp2.c
+===================================================================
+--- a/config/pregcomp2.c.orig
++++ a/config/pregcomp2.c
+@@ -4,5 +4,5 @@
+ 
+ int main() {
+     SV* sv = newSViv(0);
+-    regexp* rx = pregcomp(sv, 0);
++    void *rx = (void *) pregcomp(sv, 0);
+ }
+Index: pTk/Xlib.t
+===================================================================
+--- a/pTk/Xlib.t.orig
++++ a/pTk/Xlib.t
+@@ -331,7 +331,7 @@ VFUNC(int,XIntersectRegion,V_XIntersectR
+ #endif /* !DO_X_EXCLUDE */
+ 
+ #ifndef XKeycodeToKeysym
+-VFUNC(KeySym,XKeycodeToKeysym,V_XKeycodeToKeysym,_ANSI_ARGS_((Display *, unsigned int, int)))
++VFUNC(KeySym,XKeycodeToKeysym,V_XKeycodeToKeysym,_ANSI_ARGS_((Display *, unsigned int, int)))
+ #endif /* #ifndef XKeycodeToKeysym */
+ 
+ #ifndef XKeysymToString
+Index: pTk/mTk/generic/tkCanvText.c
+===================================================================
+--- a/pTk/mTk/generic/tkCanvText.c.orig
++++ a/pTk/mTk/generic/tkCanvText.c
+@@ -1250,7 +1250,7 @@ GetTextIndex(interp, canvas, itemPtr, ob
+ 	goto doxy;
+     }
+ 
+-    string = Tcl_GetStringFromObj(obj, &length);
++    string = Tcl_GetStringFromObj(obj, NULL);
+     c = string[0];
+     length = strlen(string);
+ 
+Index: tkGlue.c
+===================================================================
+--- a/tkGlue.c.orig
++++ a/tkGlue.c
+@@ -5549,7 +5549,7 @@ _((pTHX))
+ #define COP_WARNINGS_TYPE SV*
+ #endif
+ #ifdef pWARN_NONE
+- COP_WARNINGS_TYPE old_warn = PL_curcop->cop_warnings;
++ void *old_warn = PL_curcop->cop_warnings;
+  PL_curcop->cop_warnings = pWARN_NONE;
+ #endif
+
+--- Tk-804.036/objGlue.c
++++ Tk-804.036/objGlue.c
+@@ -627,7 +627,7 @@ Tcl_GetByteArrayFromObj(Tcl_Obj * objPtr
+  sv_utf8_downgrade(objPtr, 0);
+  if (lengthPtr)
+   {
+-   return (unsigned char *) SvPV(objPtr, *lengthPtr);
++   return (unsigned char *) SvPV(objPtr, *(STRLEN *)lengthPtr);
+   }
+  else
+   {

@@ -42,9 +42,6 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/makemaker.mk
 
-# Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS += -Wno-incompatible-pointer-types
-
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # man pages go in the common area

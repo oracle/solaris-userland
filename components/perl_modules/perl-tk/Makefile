@@ -45,9 +45,6 @@ include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/makemaker.mk
 include $(WS_MAKE_RULES)/test-x11.mk
 
-# Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS += -Wno-implicit-int -Wno-incompatible-pointer-types
-
 CLONEY = echo
 COMPONENT_PRE_CONFIGURE_ACTION = $(CP) -rp $(SOURCE_DIR)/. $(@D)
 
