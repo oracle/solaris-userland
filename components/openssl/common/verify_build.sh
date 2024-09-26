@@ -48,26 +48,19 @@ function disallowed_check()
 		fail "libcrypto contains disallowed ciphers"
 	fi
 
-	if [[ ! -r $PKG_MANIFEST_FILE ]]; then
-		fail "Cannot read package manifest file $PKG_MANIFEST_FILE"
+	if [[ $TYPE == "wanboot" ]]; then
+		return
 	fi
-
-	# Make sure the header files are not delivered. This is necesssary
-	# to do since OpenSSL build system delivers the header files even though
-	# Configure was run with 'no-xxx' option.
+	# Unfortunately the header files need to be delivered
+	# even though # Configure was run with 'no-xxx' option. Several upstream
+	# components that use OpenSSL still have #include directives for old
+	# algorithms and won't build without those headers present.
+	# So at least ensure they aren't in our lint libraries.
 	for item in ${disallowed[*]} whrlpool; do
 		header_file="${item}.h"
-		echo "Checking header file $header_file in pkg manifest file"
-		if grep $( echo $header_file | sed 's/\./\\./' ) \
-		    $PKG_MANIFEST_FILE >/dev/null; then
-			fail "Header file $header_file should not be delivered"
-		fi
-
-		if [[ $TYPE != "wanboot" ]]; then
-			echo "Checking header file $header_file in lint library files"
-			if grep $( echo $header_file | sed 's/\./\\./' ) llib-*; then
-				fail "Header file $header_file present in lint library files"
-			fi
+		echo "Checking header file $header_file in lint library files"
+		if grep $( echo $header_file | sed 's/\./\\./' ) llib-*; then
+			fail "Header file $header_file present in lint library files"
 		fi
 	done
 }

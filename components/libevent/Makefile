@@ -52,10 +52,6 @@ COMPONENT_PRE_CONFIGURE_ACTION =  \
 #
 # /usr/bin/event_rpcgen.py
 
-SSL_PKG_CONFIG_PATH.64 = /usr/openssl/3/lib/64/pkgconfig
-SSL_PKG_CONFIG_PATH.32 = /usr/openssl/3/lib/pkgconfig
-PKG_CONFIG_PATHS += $(SSL_PKG_CONFIG_PATH.$(BITS))
-
 CONFIGURE_OPTIONS	+= CFLAGS="$(CFLAGS)"
 CONFIGURE_OPTIONS	+= --disable-static
 

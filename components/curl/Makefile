@@ -65,11 +65,6 @@ LDFLAGS	+= $(LD_Z_DEFS)
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
-# Automatically detect OpenSSL 3 headers and libs.
-SSL_PKG_CONFIG_PATH.64 = /usr/openssl/3/lib/64/pkgconfig
-SSL_PKG_CONFIG_PATH.32 = /usr/openssl/3/lib/pkgconfig
-PKG_CONFIG_PATHS += $(SSL_PKG_CONFIG_PATH.$(BITS))
-
 CONFIGURE_OPTIONS += --localstatedir=$(VARDIR) --enable-shared --disable-static
 CONFIGURE_OPTIONS += --enable-http --enable-ftp
 CONFIGURE_OPTIONS += --enable-file --enable-dict

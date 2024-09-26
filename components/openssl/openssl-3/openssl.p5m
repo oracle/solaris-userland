@@ -1,0 +1,98 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
+#
+
+# This package should only deliver compliation symlinks and dependencies
+# on the real OpenSSL packages.  Its version number should match that
+# of the OpenSSL it sets as the default.
+# Until OpenSSL 1.0.2 is no longer delivered pkglint tags are needed for
+# the symlinks due to use of mediators in earlier versions.
+set name=pkg.fmri \
+    value=pkg:/library/security/openssl@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary \
+    value="OpenSSL - a Toolkit for Transport Layer (TLS v1+) protocols and general purpose cryptographic library"
+set name=pkg.description value="OpenSSL default compliation and scripting links"
+set name=pkg.depend.runpath value=$PKGDEPEND_RUNPATH:/usr/openssl/3/lib
+set name=pkg.human-version value=$(COMPONENT_VERSION)
+set name=pkg.linted.userland.action001.PIE value=true
+set name=info.classification value=org.opensolaris.category.2008:System/Security
+set name=org.opensolaris.arc-caseid value=PSARC/2024/002
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+dir  path=etc/openssl/certs group=sys mode=0755 \
+    pkg.linted.pkglint.dupaction001.1=true
+dir  path=etc/openssl/private group=sys mode=0700 \
+    pkg.linted.pkglint.dupaction001.1=true
+link path=lib/$(MACH64)/libcrypto.so target=libcrypto.so.3 \
+    pkg.linted.pkglint.dupaction010.2=true \
+    pkg.linted.pkglint.dupaction010.3=true
+link path=lib/$(MACH64)/libssl.so target=libssl.so.3 \
+    pkg.linted.pkglint.dupaction010.2=true \
+    pkg.linted.pkglint.dupaction010.3=true
+link path=lib/libcrypto.so target=libcrypto.so.3 \
+    pkg.linted.pkglint.dupaction010.2=true \
+    pkg.linted.pkglint.dupaction010.3=true
+link path=lib/libssl.so target=libssl.so.3 \
+    pkg.linted.pkglint.dupaction010.2=true \
+    pkg.linted.pkglint.dupaction010.3=true
+link path=usr/bin/openssl target=../../usr/openssl/3/bin/64/openssl \
+    pkg.linted.pkglint.dupaction010.2=true \
+    pkg.linted.pkglint.dupaction010.3=true
+link path=usr/include/openssl target=../openssl/3/include/openssl \
+    pkg.linted.pkglint.dupaction010.2=true \
+    pkg.linted.pkglint.dupaction010.3=true
+link path=usr/lib/$(MACH64)/libcrypto.so \
+    target=../../../usr/openssl/3/lib/$(MACH64)/libcrypto.so.3 \
+    pkg.linted.pkglint.dupaction010.2=true \
+    pkg.linted.pkglint.dupaction010.3=true
+link path=usr/lib/$(MACH64)/libssl.so \
+    target=../../../usr/openssl/3/lib/$(MACH64)/libssl.so.3 \
+    pkg.linted.pkglint.dupaction010.2=true \
+    pkg.linted.pkglint.dupaction010.3=true
+link path=usr/lib/$(MACH64)/llib-lcrypto.ln \
+    target=../../../usr/openssl/3/lib/$(MACH64)/llib-lcrypto.ln
+link path=usr/lib/$(MACH64)/llib-lssl.ln \
+    target=../../../usr/openssl/3/lib/$(MACH64)/llib-lssl.ln
+link path=usr/lib/$(MACH64)/pkgconfig//libcrypto.pc \
+    target=../../../../usr/openssl/3/lib/$(MACH64)/pkgconfig/libcrypto.pc
+link path=usr/lib/$(MACH64)/pkgconfig//libssl.pc \
+    target=../../../../usr/openssl/3/lib/$(MACH64)/pkgconfig/libssl.pc
+link path=usr/lib/$(MACH64)/pkgconfig//openssl.pc \
+    target=../../../../usr/openssl/3/lib/$(MACH64)/pkgconfig/openssl.pc
+link path=usr/lib/libcrypto.so target=../../usr/openssl/3/lib/libcrypto.so.3 \
+    pkg.linted.pkglint.dupaction010.2=true \
+    pkg.linted.pkglint.dupaction010.3=true
+link path=usr/lib/libssl.so target=../../usr/openssl/3/lib/libssl.so.3 \
+    pkg.linted.pkglint.dupaction010.2=true \
+    pkg.linted.pkglint.dupaction010.3=true
+link path=usr/lib/llib-lcrypto.ln target=../../usr/openssl/3/lib/llib-lcrypto.ln
+link path=usr/lib/llib-lssl.ln target=../../usr/openssl/3/lib/llib-lssl.ln
+link path=usr/lib/pkgconfig/libcrypto.pc \
+    target=../../../usr/openssl/3/lib/pkgconfig/libcrypto.pc
+link path=usr/lib/pkgconfig/libssl.pc \
+    target=../../../usr/openssl/3/lib/pkgconfig/libssl.pc
+link path=usr/lib/pkgconfig/openssl.pc \
+    target=../../../usr/openssl/3/lib/pkgconfig/openssl.pc
+file files/openssl.7 path=usr/share/man/man7/openssl.7 mangler.bypass=true \
+    pkg.linted.pkglint.dupaction001.1=true
+license openssl-3.license license=Apache2.0
+depend type=group fmri=library/security/openssl-1
+depend type=require fmri=library/security/openssl-3

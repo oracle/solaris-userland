@@ -18,21 +18,21 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
-
+<transform file path=usr/openssl/3/share/man/(.*)/(.+) -> emit link path=usr/share/man/%<1>/%<2> target=../../../openssl/3/share/man/%<1>/%<2>>
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through uncommitted">
 set name=pkg.fmri \
     value=pkg:/library/security/openssl-3@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
-    value="OpenSSL - a Toolkit for Transport Layer (TLS v1+) protocols and general purpose cryptographic library"
+    value="Runtime Libraries for OpenSSL 3.x - a Toolkit for Transport Layer (TLS v1+) protocols and general purpose cryptographic library"
 set name=pkg.description \
     value="OpenSSL is a full-featured toolkit implementing the Transport Layer Security (TLS v1+) protocols as well as a full-strength general purpose cryptography library."
 set name=pkg.depend.runpath value=$PKGDEPEND_RUNPATH:/usr/openssl/3/lib
 set name=pkg.human-version value=$(COMPONENT_VERSION)
 set name=pkg.linted.userland.action001.PIE value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
-set name=com.oracle.info.description value="OpenSSL 3.0.0"
+set name=com.oracle.info.description value="OpenSSL 3"
 set name=info.classification value=org.opensolaris.category.2008:System/Security
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
@@ -40,7 +40,6 @@ set name=org.opensolaris.arc-caseid value=PSARC/2021/120
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=etc/openssl/3/certs target=../certs
 dir  path=etc/openssl/3/conf.d
-file path=etc/openssl/3/ct_log_list.cnf
 file files/openssl.cnf path=etc/openssl/3/openssl.cnf group=sys mode=0644 \
     overlay=allow preserve=true
 link path=etc/openssl/3/private target=../private
@@ -54,9 +53,12 @@ link path=lib/$(MACH64)/libssl.so.3 \
     target=../../usr/openssl/3/lib/$(MACH64)/libssl.so.3
 link path=lib/libcrypto.so.3 target=../usr/openssl/3/lib/libcrypto.so.3
 link path=lib/libssl.so.3 target=../usr/openssl/3/lib/libssl.so.3
+dir  path=usr/openssl
+dir  path=usr/openssl/3
 file path=usr/openssl/3/bin/32/openssl pkg.linted.userland.action001.PIE=true
 file path=usr/openssl/3/bin/64/openssl pkg.linted.userland.action001.PIE=true
 hardlink path=usr/openssl/3/bin/openssl target=64/openssl
+dir  path=usr/openssl/3/include
 file path=usr/openssl/3/include/openssl/aes.h
 file path=usr/openssl/3/include/openssl/asn1.h
 file path=usr/openssl/3/include/openssl/asn1_mac.h
@@ -125,11 +127,15 @@ file path=usr/openssl/3/include/openssl/fipskey.h
 file path=usr/openssl/3/include/openssl/hmac.h
 file path=usr/openssl/3/include/openssl/http.h
 file path=usr/openssl/3/include/openssl/httperr.h
+file path=usr/openssl/3/include/openssl/idea.h
 file path=usr/openssl/3/include/openssl/kdf.h
 file path=usr/openssl/3/include/openssl/kdferr.h
 file path=usr/openssl/3/include/openssl/lhash.h
 file path=usr/openssl/3/include/openssl/macros.h
+file path=usr/openssl/3/include/openssl/md2.h
+file path=usr/openssl/3/include/openssl/md4.h
 file path=usr/openssl/3/include/openssl/md5.h
+file path=usr/openssl/3/include/openssl/mdc2.h
 file path=usr/openssl/3/include/openssl/modes.h
 file path=usr/openssl/3/include/openssl/obj_mac.h
 file path=usr/openssl/3/include/openssl/objects.h
@@ -153,10 +159,14 @@ file path=usr/openssl/3/include/openssl/proverr.h
 file path=usr/openssl/3/include/openssl/provider.h
 file path=usr/openssl/3/include/openssl/rand.h
 file path=usr/openssl/3/include/openssl/randerr.h
+file path=usr/openssl/3/include/openssl/rc2.h
+file path=usr/openssl/3/include/openssl/rc4.h
+file path=usr/openssl/3/include/openssl/rc5.h
 file path=usr/openssl/3/include/openssl/ripemd.h
 file path=usr/openssl/3/include/openssl/rsa.h
 file path=usr/openssl/3/include/openssl/rsaerr.h
 file path=usr/openssl/3/include/openssl/safestack.h
+file path=usr/openssl/3/include/openssl/seed.h
 file path=usr/openssl/3/include/openssl/self_test.h
 file path=usr/openssl/3/include/openssl/sha.h
 file path=usr/openssl/3/include/openssl/srp.h
@@ -178,11 +188,14 @@ file path=usr/openssl/3/include/openssl/txt_db.h
 file path=usr/openssl/3/include/openssl/types.h
 file path=usr/openssl/3/include/openssl/ui.h
 file path=usr/openssl/3/include/openssl/uierr.h
+file path=usr/openssl/3/include/openssl/whrlpool.h
 file path=usr/openssl/3/include/openssl/x509.h
 file path=usr/openssl/3/include/openssl/x509_vfy.h
 file path=usr/openssl/3/include/openssl/x509err.h
 file path=usr/openssl/3/include/openssl/x509v3.h
 file path=usr/openssl/3/include/openssl/x509v3err.h
+dir  path=usr/openssl/3/lib
+dir  path=usr/openssl/3/lib/$(MACH64)
 file path=usr/openssl/3/lib/$(MACH64)/engines-3/loader_attic.so
 link path=usr/openssl/3/lib/$(MACH64)/libcrypto.so target=libcrypto.so.3
 file path=usr/openssl/3/lib/$(MACH64)/libcrypto.so.3
@@ -191,6 +204,7 @@ file path=usr/openssl/3/lib/$(MACH64)/libssl.so.3
 file path=usr/openssl/3/lib/$(MACH64)/llib-lcrypto.ln
 file path=usr/openssl/3/lib/$(MACH64)/llib-lssl.ln
 dir  path=usr/openssl/3/lib/$(MACH64)/ossl-modules
+dir  path=usr/openssl/3/lib/$(MACH64)/pkgconfig
 file path=usr/openssl/3/lib/$(MACH64)/pkgconfig/libcrypto.pc
 file path=usr/openssl/3/lib/$(MACH64)/pkgconfig/libssl.pc
 file path=usr/openssl/3/lib/$(MACH64)/pkgconfig/openssl.pc
@@ -204,15 +218,20 @@ file path=usr/openssl/3/lib/libssl.so.3
 file path=usr/openssl/3/lib/llib-lcrypto.ln
 file path=usr/openssl/3/lib/llib-lssl.ln
 dir  path=usr/openssl/3/lib/ossl-modules
+dir  path=usr/openssl/3/lib/pkgconfig
 file path=usr/openssl/3/lib/pkgconfig/libcrypto.pc
 file path=usr/openssl/3/lib/pkgconfig/libssl.pc
 file path=usr/openssl/3/lib/pkgconfig/openssl.pc
 file etc/openssl/3/misc/CA.pl path=usr/openssl/3/misc/CA.pl
 link path=usr/openssl/3/misc/tsget target=tsget.pl
 file etc/openssl/3/misc/tsget.pl path=usr/openssl/3/misc/tsget.pl
+dir  path=usr/openssl/3/share/man
+dir  path=usr/openssl/3/share/man/man1
 file path=usr/openssl/3/share/man/man1/CA.pl.1openssl
 link path=usr/openssl/3/share/man/man1/asn1parse.1openssl \
     target=openssl-cmds.1openssl
+link path=usr/openssl/3/share/man/man1/c_rehash.1openssl \
+    target=openssl-rehash.1openssl
 link path=usr/openssl/3/share/man/man1/ca.1openssl target=openssl-cmds.1openssl
 link path=usr/openssl/3/share/man/man1/ciphers.1openssl \
     target=openssl-cmds.1openssl
@@ -357,6 +376,7 @@ link path=usr/openssl/3/share/man/man1/version.1openssl \
     target=openssl-cmds.1openssl
 link path=usr/openssl/3/share/man/man1/x509.1openssl \
     target=openssl-cmds.1openssl
+dir  path=usr/openssl/3/share/man/man3
 link path=usr/openssl/3/share/man/man3/ACCESS_DESCRIPTION_free.3openssl \
     target=X509_dup.3openssl
 link path=usr/openssl/3/share/man/man3/ACCESS_DESCRIPTION_new.3openssl \
@@ -10691,9 +10711,11 @@ link path=usr/openssl/3/share/man/man3/sk_TYPE_zero.3openssl \
     target=DEFINE_STACK_OF.3openssl
 link path=usr/openssl/3/share/man/man3/ssl_ct_validation_cb.3openssl \
     target=SSL_CTX_set_ct_validation_callback.3openssl
+dir  path=usr/openssl/3/share/man/man5
 file path=usr/openssl/3/share/man/man5/config.5openssl
 file path=usr/openssl/3/share/man/man5/fips_config.5openssl
 file path=usr/openssl/3/share/man/man5/x509v3_config.5openssl
+dir  path=usr/openssl/3/share/man/man7
 file path=usr/openssl/3/share/man/man7/EVP_ASYM_CIPHER-RSA.7openssl
 file path=usr/openssl/3/share/man/man7/EVP_ASYM_CIPHER-SM2.7openssl
 file path=usr/openssl/3/share/man/man7/EVP_CIPHER-AES.7openssl
@@ -10893,8 +10915,4 @@ file path=usr/openssl/3/share/man/man7/provider.7openssl
 file path=usr/openssl/3/share/man/man7/proxy-certificates.7openssl
 file path=usr/openssl/3/share/man/man7/ssl.7openssl
 file path=usr/openssl/3/share/man/man7/x509.7openssl
-file files/openssl.7 path=usr/openssl/3/share/man/man7openssl/openssl.7openssl \
-    mangler.bypass=true
 license openssl-3.license license=Apache2.0
-depend type=require fmri=__TBD pkg.debug.depend.file=perl \
-    pkg.debug.depend.path=usr/bin

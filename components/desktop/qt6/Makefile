@@ -75,6 +75,7 @@ CONFIGURE_OPTIONS +=  -datadir /usr/share/qt6
 CONFIGURE_OPTIONS +=  -translationdir /usr/share/qt6/translations
 
 CONFIGURE_OPTIONS +=  -sysconfdir /etc/xdg
+CONFIGURE_OPTIONS +=  -no-openssl
 CONFIGURE_OPTIONS +=  -no-pch
 CONFIGURE_OPTIONS +=  -no-rpath
 CONFIGURE_OPTIONS +=  -no-use-gold-linker

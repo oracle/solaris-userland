@@ -174,10 +174,10 @@ build:		$(BUILD_32_and_64)
 # OpenSSL uses sections man[1357] by default so we must create the man
 # directories we use for OpenSSL man pages in Solaris. Note that we patch the
 # OpenSSL man page install script to use the correct directories.
-MANDIR_SECTIONS =  $(PROTO_DIR)/usr/share/man/man1openssl
-MANDIR_SECTIONS += $(PROTO_DIR)/usr/share/man/man3openssl
-MANDIR_SECTIONS += $(PROTO_DIR)/usr/share/man/man5openssl
-MANDIR_SECTIONS += $(PROTO_DIR)/usr/share/man/man7openssl
+MANDIR_SECTIONS =  $(PROTO_DIR)/usr/openssl/1.0.2/share/man/man1openssl
+MANDIR_SECTIONS += $(PROTO_DIR)/usr/openssl/1.0.2/share/man/man3openssl
+MANDIR_SECTIONS += $(PROTO_DIR)/usr/openssl/1.0.2/share/man/man5openssl
+MANDIR_SECTIONS += $(PROTO_DIR)/usr/openssl/1.0.2/share/man/man7openssl
 
 # We must create man page directories manually since we patched OpenSSL install
 # code to install into manXopenssl instead of manX. Also, OpenSSL does not
@@ -199,7 +199,7 @@ COMPONENT_POST_INSTALL_ACTION += $(COMPONENT_POST_INSTALL_ACTION.$(BITS))
 # also add /usr/perl5/bin to PATH so that OpenSSL install code can locate the
 # system pod2man. If not set, OpenSSL make would use an internal implementation
 # from the tarball which would corrupt some man pages.
-COMPONENT_INSTALL_ARGS += PATH=$(PATH) MANDIR=/usr/share/man
+COMPONENT_INSTALL_ARGS += PATH=$(PATH) MANDIR=/usr/openssl/1.0.2/share/man
 
 # manual pages. However, lint libraries depend on install stamps so we run
 # install for 64 bit as well. Note that we must take built binary files from
