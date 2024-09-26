@@ -20,22 +20,24 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pycodestyle
-COMPONENT_VERSION=	2.10.0
+COMPONENT_VERSION=	2.12.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:347187bdb476329d98f695c213d7295a846d1152ff4fe9bacb8a9590b8ee7053
-COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pycodestyle.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	python-mod/pycodestyle
 COMPONENT_ANITYA_ID=	11773
-COMPONENT_BAID=		138413
+COMPONENT_BAID=		178103
+
+# pypi archive doesn't include the test suite
+GIT_REPO=	https://github.com/PyCQA/pycodestyle
+GIT_COMMIT_ID=	$(COMPONENT_VERSION)
+GIT_HASH=	sha256:85af4e592999f56f4e810a2e2523d8243ce499f70fb183e4b8357f2e12c7552a
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -56,11 +58,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 COMPONENT_POST_INSTALL_ACTION += \
 	$(MV) $(PROTOUSRBINDIR)/pycodestyle $(PROTOUSRBINDIR)/pycodestyle-$(PYTHON_VERSION)
-
-# Master test results are the same for all versions of Python, so override
-# here, rather than create multiple identical master files.
-COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS = "-n -e '/^testsuite/p'"
 
 COMPONENT_TEST_DIR =	$(COMPONENT_SRC)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
