@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libksba
-COMPONENT_VERSION=	1.6.2
+COMPONENT_VERSION=	1.6.7
 COMPONENT_PROJECT_URL=	http://www.gnupg.org/related_software/libksba/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:fce01ccac59812bddadffacff017dac2e4762bdb6ebc6ffe06f6ed4f6192c971
+    sha256:cf72510b8ebb4eb6693eef765749d83677a03c79291a311040a5bfd79baab763
 COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/libksba/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	utility/gnupg
 COMPONENT_ANITYA_ID=	1649
 
-COMPONENT_BAID=		132468
+COMPONENT_BAID=		178873
 
 include $(WS_MAKE_RULES)/common.mk
 
