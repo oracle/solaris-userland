@@ -28,18 +28,18 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		serf
-COMPONENT_VERSION=	1.3.9
+COMPONENT_VERSION=	1.3.10
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://serf.apache.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:549c2d21c577a8a9c0450facb5cca809f26591f048e466552240947bdf7a87cc
+	sha256:be81ef08baa2516ecda76a77adf7def7bc3227eeb578b9a33b45f7b41dc064e6
 COMPONENT_ARCHIVE_URL=	https://www.apache.org/dist/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libserf
 COMPONENT_ANITYA_ID=	1720
 
-COMPONENT_BAID=		38440
+COMPONENT_BAID=	178266
 
 include $(WS_MAKE_RULES)/prep.mk
 # Needed by the test: target. We override build and install.
@@ -54,7 +54,6 @@ APR_64 =		$(USED_APR)/bin/$(MACH64)/apr-1-config
 APU_32 =		$(USED_APU)/bin/apu-1-config
 APU_64 =		$(USED_APU)/bin/$(MACH64)/apu-1-config
 SERFLIBPATH_32 =	-R$(USED_APR)/lib -R$(USED_APU)/lib
-SERFLIBPATH_64 =	-R$(USED_APR)/lib/64 -R$(USED_APU)/lib/64
 SERFLIBDIR_32 =		/usr/lib
 SERFLIBDIR_64 =		/usr/lib/64
 OPENSSL_LIBDIR_32 =	/usr/openssl/3/lib
