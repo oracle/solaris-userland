@@ -1,0 +1,48 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2024, Oracle and/or its affiliates.
+#
+
+<transform file link path=.+3\.11.* -> edit path 3\\.11 \$\(PYVER\)>
+
+<transform file path=usr/share/man/man.*/.* -> set mangler.man.stability uncommitted>
+
+# Following lines could be removed once the rename from psutils to pspdfutils is finished
+<transform file path=usr/bin/epsffit -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/bin/includeres -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/bin/extractres -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/bin/psbook -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/bin/psresize -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/bin/psnup -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/bin/psselect -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/bin/pstops -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/man/man1/epsffit.1 -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/man/man1/extractres.1 -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/man/man1/includeres.1 -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/man/man1/psbook.1 -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/man/man1/psnup.1 -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/man/man1/psresize.1 -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/man/man1/psselect.1 -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/man/man1/pstops.1 -> set pkg.linted.pkglint.dupaction001.1 true>
+
+<include ../generate/common.transform>

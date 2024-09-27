@@ -1,0 +1,19 @@
+This is just a temporary patch to accept the new version of psutils. The new
+version of a2ps fixes that.
+
+--- a/configure	2024-09-05 10:07:59.289674229 +0200
++++ b/configure	2024-09-05 10:09:41.985994879 +0200
+@@ -32474,11 +32474,8 @@
+   COM_PSUTILS="#"
+ else
+   # There is one.  Check version > MAJOR.MINOR
+-  ac_prog_psselect_banner=`psselect -v 2>&1 | sed 1q`
+-  ac_prog_psselect_release=`set -- $ac_prog_psselect_banner && echo $3`
+-  ac_prog_psselect_patch=`set -- $ac_prog_psselect_banner && echo $5`
+-  test ${ac_prog_psselect_release}0 -lt 10 && COM_PSUTILS="#"
+-  test ${ac_prog_psselect_patch}0 -lt 170 && COM_PSUTILS="#"
++  # We just know there is the new version of psutils, don't need to run non-functional version test
++  :
+ fi
+ if test "$COM_PSUTILS" = "#"; then
+   { echo "$as_me:$LINENO: WARNING: ===========================================================" >&5

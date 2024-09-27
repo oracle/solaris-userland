@@ -50,7 +50,6 @@ CONFIGURE_OPTIONS  +=		--enable-shared
 CONFIGURE_OPTIONS  +=		--disable-static
 CONFIGURE_OPTIONS  +=		--sysconfdir=$(ETCDIR)/gnu
 CONFIGURE_OPTIONS  +=		--infodir=$(CONFIGURE_INFODIR)
-CONFIGURE_OPTIONS  +=		--with-medium=letter
 
 # because viewpathing isn't quite right in this version of a2ps
 COMPONENT_PREP_ACTION = \
@@ -72,6 +71,8 @@ PERL_SCRIPTS = \
 
 REQUIRED_PACKAGES += developer/gperf
 REQUIRED_PACKAGES += editor/gnu-emacs
+REQUIRED_PACKAGES += library/libpaper
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += image/pspdfutils

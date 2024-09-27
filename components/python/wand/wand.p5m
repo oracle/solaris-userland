@@ -1,0 +1,72 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2024, Oracle and/or its affiliates.
+#
+
+set name=pkg.fmri \
+    value=pkg:/library/python/wand@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="Python ImageMagick binding"
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
+set name=com.oracle.info.description \
+    value="Ctypes-based simple ImageMagick binding for Python"
+set name=info.classification \
+    value=org.opensolaris.category.2008:Development/Python
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2024/110
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/lib/python$(PYVER)/vendor-packages/Wand-$(COMPONENT_VERSION).dist-info/INSTALLER
+file path=usr/lib/python$(PYVER)/vendor-packages/Wand-$(COMPONENT_VERSION).dist-info/LICENSE
+file path=usr/lib/python$(PYVER)/vendor-packages/Wand-$(COMPONENT_VERSION).dist-info/METADATA
+file path=usr/lib/python$(PYVER)/vendor-packages/Wand-$(COMPONENT_VERSION).dist-info/RECORD
+file path=usr/lib/python$(PYVER)/vendor-packages/Wand-$(COMPONENT_VERSION).dist-info/WHEEL
+file path=usr/lib/python$(PYVER)/vendor-packages/Wand-$(COMPONENT_VERSION).dist-info/_solaris_dep
+file path=usr/lib/python$(PYVER)/vendor-packages/Wand-$(COMPONENT_VERSION).dist-info/top_level.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/api.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/assertions.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/cdefs/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/cdefs/core.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/cdefs/drawing_wand.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/cdefs/magick_image.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/cdefs/magick_property.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/cdefs/magick_wand.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/cdefs/pixel_iterator.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/cdefs/pixel_wand.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/cdefs/structures.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/cdefs/wandtypes.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/color.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/compat.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/display.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/drawing.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/exceptions.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/font.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/image.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/resource.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/sequence.py
+file path=usr/lib/python$(PYVER)/vendor-packages/wand/version.py
+license wand.license license=MIT
+
+# force a dependency on the Python runtime
+depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
+    pkg.debug.depend.path=usr/bin

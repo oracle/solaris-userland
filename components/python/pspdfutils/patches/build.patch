@@ -1,0 +1,40 @@
+We do not deliver some python modules. They are not necessary to build the
+component.
+--- a/setup.py	2024-08-26 16:08:12.948997035 +0200
++++ b/setup.py	2024-08-26 16:08:30.687314878 +0200
+@@ -3,20 +3,9 @@
+ """
+ 
+ import subprocess
+-from build_manpages.build_manpages import (  # type: ignore
+-    build_manpages,
+-    get_install_cmd,
+-    get_build_py_cmd,
+-)
+ from setuptools import setup
+ 
+-setup(
+-    cmdclass={
+-        "build_manpages": build_manpages,
+-        "build_py": get_build_py_cmd(),
+-        "install": get_install_cmd(),
+-    }
+-)
++setup()
+ 
+ # Test we have 'paper' (from libpaper) installed
+ try:
+--- a/pyproject.toml	2024-08-19 22:52:01.000000000 +0200
++++ b/pyproject.toml	2024-09-04 12:21:56.251713179 +0200
+@@ -31,9 +31,9 @@
+ 
+ [build-system]
+ requires = [
+-    "argparse-manpage[setuptools] >= 4.2",
++#    "argparse-manpage[setuptools] >= 4.2",
+     "setuptools >= 60; python_version >= \"3.12\"",
+-    "pytest-datafiles",
++#    "pytest-datafiles",
+     "puremagic >= 1.26",
+     "pypdf >= 4.3.0",
+     "Wand",
