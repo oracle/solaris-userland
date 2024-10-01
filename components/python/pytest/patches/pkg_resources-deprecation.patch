@@ -1,0 +1,48 @@
+From e03f82c359ee2b6596dbf3aeece8537f4b8fb7ab Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Miro=20Hron=C4=8Dok?= <miro@hroncok.cz>
+Date: Tue, 25 Apr 2023 10:51:10 +0200
+Subject: [PATCH] Filter new pkg_resources deprecations (#10938)
+
+Fixes https://github.com/pytest-dev/pytest/issues/10815
+---
+ testing/acceptance_test.py  | 8 ++++++--
+ testing/test_monkeypatch.py | 4 +---
+ 2 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/testing/acceptance_test.py b/testing/acceptance_test.py
+index 4dac2cee33f..680afe13391 100644
+--- a/testing/acceptance_test.py
++++ b/testing/acceptance_test.py
+@@ -695,11 +695,15 @@ def test_cmdline_python_namespace_package(
+         monkeypatch.chdir("world")
+ 
+         # pgk_resources.declare_namespace has been deprecated in favor of implicit namespace packages.
++        # pgk_resources has been deprecated entirely.
+         # While we could change the test to use implicit namespace packages, seems better
+         # to still ensure the old declaration via declare_namespace still works.
+-        ignore_w = r"-Wignore:Deprecated call to `pkg_resources.declare_namespace"
++        ignore_w = (
++            r"-Wignore:Deprecated call to `pkg_resources.declare_namespace",
++            r"-Wignore:pkg_resources is deprecated",
++        )
+         result = pytester.runpytest(
+-            "--pyargs", "-v", "ns_pkg.hello", "ns_pkg/world", ignore_w
++            "--pyargs", "-v", "ns_pkg.hello", "ns_pkg/world", *ignore_w
+         )
+         assert result.ret == 0
+         result.stdout.fnmatch_lines(
+diff --git a/testing/test_monkeypatch.py b/testing/test_monkeypatch.py
+index 3d09ef4263a..500e244531a 100644
+--- a/testing/test_monkeypatch.py
++++ b/testing/test_monkeypatch.py
+@@ -425,9 +425,7 @@ class A:
+     assert A.x == 1
+ 
+ 
+-@pytest.mark.filterwarnings(
+-    "ignore:Deprecated call to `pkg_resources.declare_namespace"
+-)
++@pytest.mark.filterwarnings(r"ignore:.*\bpkg_resources\b:DeprecationWarning")
+ def test_syspath_prepend_with_namespace_packages(
+     pytester: Pytester, monkeypatch: MonkeyPatch
+ ) -> None:

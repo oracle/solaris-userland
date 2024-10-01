@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		setuptools-rust
-COMPONENT_VERSION=	1.3.0
+COMPONENT_NAME=		setuptools_rust
+COMPONENT_VERSION=	1.10.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7366f8dbcbdee3ac0295919f08dcd845d0ec2ee2d35ace875b4b731ff62fd0fb
+    sha256:8d87c6be511916b64d8a4061de617090d8b6a1fa2baecaf2fed121f4e6b0b57b
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/PyO3/setuptools-rust
 COMPONENT_BUGDB=	python-mod/setup-rust
 COMPONENT_ANITYA_ID=	122284
-COMPONENT_BAID=		121662
+COMPONENT_BAID=		178670
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
@@ -54,4 +54,3 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/semantic_version-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/setuptools-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)

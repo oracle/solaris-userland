@@ -20,26 +20,25 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		setuptools_scm
-COMPONENT_VERSION=	6.4.2
+COMPONENT_VERSION=	8.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:b60e8bdcd6f87553a3e8f5c46029b1c1520dbfe9845dc2064d3b25b797e43045
+	sha256:20c7018be099048b4fc10c0968734ee76a887f1abf8d149725756c3e458d1d06
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/setuptools_scm/
 COMPONENT_BUGDB=	python-mod/setuptools_scm
 COMPONENT_ANITYA_ID=	7874
-COMPONENT_BAID=		121660
-
+COMPONENT_BAID=		178886
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # Tests require a network access.
@@ -69,4 +68,5 @@ system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/setuptools-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/tomli-%)
+REQUIRED_PACKAGES += library/python/tomli-39
+REQUIRED_PACKAGES += library/python/typing-extensions-39

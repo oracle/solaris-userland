@@ -1,27 +1,24 @@
-From 47bf9a3a5e7930fbe426377cb07259d6a815ed4b Mon Sep 17 00:00:00 2001
-From: Stanislav Levin <slev@altlinux.org>
-Date: Thu, 7 Apr 2022 16:14:22 +0300
-Subject: [PATCH] test_pyproject_support: Make correct PEP621 project definition
+The test suite seems to not handle our userland hg repository in some cases.
 
---- a/testing/test_integration.py
-+++ b/testing/test_integration.py
-@@ -21,7 +21,7 @@ def wd(wd):
+Should be reported upstream.
+
+--- setuptools_scm-8.1.0/testing/test_basic_api.py
++++ setuptools_scm-8.1.0/testing/test_basic_api.py
+@@ -137,6 +137,7 @@ setup(name="myscm", use_scm_version={"fa
+     assert res.stdout == "12.34"
  
  
- def test_pyproject_support(tmpdir, monkeypatch):
--    pytest.importorskip("toml")
-+    pytest.importorskip("tomli")
-     monkeypatch.delenv("SETUPTOOLS_SCM_DEBUG")
-     pkg = tmpdir.ensure("package", dir=42)
-     pkg.join("pyproject.toml").write_text(
-@@ -30,8 +30,10 @@ def test_pyproject_support(tmpdir, monkeypatch):
-             [tool.setuptools_scm]
-             fallback_version = "12.34"
-             [project]
-+            name = "foo"
-             description = "Factory ⸻ A code generator 🏭"
-             authors = [{name = "Łukasz Langa"}]
-+            dynamic = ["version"]
-             """
-         ),
-         encoding="utf-8",
++@pytest.mark.skip("doesn't work with our component archives")
+ def test_get_version_blank_tag_regex() -> None:
+     with pytest.warns(
+         DeprecationWarning, match="empty regex for tag regex is invalid, using default"
+--- setuptools_scm-8.1.0/testing/test_mercurial.py
++++ setuptools_scm-8.1.0/testing/test_mercurial.py
+@@ -137,6 +137,7 @@ def test_version_in_merge(wd: WorkDir) -
+ 
+ 
+ @pytest.mark.issue(128)
++@pytest.mark.skip("doesn't work in our infrastructure")
+ def test_parse_no_worktree(tmp_path: Path) -> None:
+     config = Configuration()
+     ret = parse(os.fspath(tmp_path), config)
