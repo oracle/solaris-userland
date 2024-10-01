@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -29,16 +29,16 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		meson
-COMPONENT_VERSION=	1.2.2
+COMPONENT_VERSION=	1.5.2
 COMPONENT_PROJECT_URL=	http://mesonbuild.com/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4a0f04de331fbc7af3b802a844fc8838f4ccd1ded1e792ba4f8f2faf8c5fe4d6
+    sha256:f955e09ab0d71ef180ae85df65991d58ed8430323de7d77a37e11c9ea630910b
 COMPONENT_ARCHIVE_URL=	https://github.com/mesonbuild/meson/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
 COMPONENT_BUGDB=	utility/meson
 COMPONENT_ANITYA_ID=	6472
-COMPONENT_BAID=		151928
+COMPONENT_BAID=		179980
 
 # As of 0.62.0, meson requires Python 3.7 or newer, and we only need
 # to build for a single version, not all of them.
