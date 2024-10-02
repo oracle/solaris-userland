@@ -30,9 +30,9 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups
 
-COMPONENT_VERSION=	2.4.10
-COMPONENT_ARCHIVE_HASH=	sha256:d75757c2bc0f7a28b02ee4d52ca9e4b1aa1ba2affe16b985854f5336940e5ad7
-COMPONENT_BAID=		175789
+COMPONENT_VERSION=	2.4.11
+COMPONENT_ARCHIVE_HASH=	sha256:9a88fe1da3a29a917c3fc67ce6eb3178399d68e1a548c6d86c70d9b13651fd71
+COMPONENT_BAID=		180216
 
 COMPONENT_PROJECT_URL=	http://www.cups.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-source.tar.gz
@@ -57,6 +57,7 @@ CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS +=	--with-smfmanifestdir=$(LIBDIR)/svc/manifest/application
 CONFIGURE_OPTIONS +=	--with-tls=gnutls
+CONFIGURE_OPTIONS +=	--enable-libpaper
 
 COMPONENT_PREP_ACTION += (cd $(@D) ; \
 	PATH="/usr/gnu/bin:$(PATH)" autoconf -f )
@@ -81,6 +82,7 @@ cups.license: $(SOURCE_DIR)/LICENSE $(SOURCE_DIR)/NOTICE
 	cat $? > $@
 
 REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += library/libpaper
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
