@@ -46,6 +46,9 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 PYTHON_VERSION = 3.11
 
+# Disable map plugin so we don't need libchamplain or clutter
+CONFIGURE_OPTIONS += -Dplugin_map=false
+
 # Set runpath to find libeog.so library.
 LDFLAGS += -Wl,-R$(USRLIBDIR64)/eog
 
@@ -60,12 +63,9 @@ REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += image/viewer/eog
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += library/desktop/clutter
-REQUIRED_PACKAGES += library/desktop/clutter/clutter-gtk
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/desktop/libchamplain
 REQUIRED_PACKAGES += library/desktop/libgdata
 REQUIRED_PACKAGES += library/exempi
 REQUIRED_PACKAGES += library/glib2
