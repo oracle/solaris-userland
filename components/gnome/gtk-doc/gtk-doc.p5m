@@ -20,6 +20,8 @@
 #
 # Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
+<transform file path=usr.*/bin/.+ -> \
+    default pkg.depend.bypass-generate .*gtkdoc_uninstalled.*>
 <transform file path=usr.*/man/.+ -> \
     default mangler.man.stability "pass-through volatile">
 set name=pkg.fmri \
@@ -27,6 +29,7 @@ set name=pkg.fmri \
 set name=pkg.summary value="A tool to generate API documentation for C code."
 set name=pkg.description \
     value="GtkDoc is a tool used to extract API documentation from C-code like Doxygen, but handles documentation of GObject (including signals and properties) that makes it very suitable for GTK+ apps and libraries. It uses docbook for intermediate files and can produce html by default and pdf/man-pages with some extra work. "
+set name=pkg.depend.runpath value=$PKGDEPEND_RUNPATH:/usr/share/gtk-doc/python
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value="the GTK-Doc Project"
 set name=info.classification \
@@ -35,18 +38,18 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/288
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/bin/gtkdoc-check pkg.depend.bypass-generate=.*
-file path=usr/bin/gtkdoc-depscan pkg.depend.bypass-generate=.*
-file path=usr/bin/gtkdoc-fixxref pkg.depend.bypass-generate=.*
-file path=usr/bin/gtkdoc-mkdb pkg.depend.bypass-generate=.*
-file path=usr/bin/gtkdoc-mkhtml pkg.depend.bypass-generate=.*
-file path=usr/bin/gtkdoc-mkhtml2 pkg.depend.bypass-generate=.*
-file path=usr/bin/gtkdoc-mkman pkg.depend.bypass-generate=.*
-file path=usr/bin/gtkdoc-mkpdf pkg.depend.bypass-generate=.*
-file path=usr/bin/gtkdoc-rebase pkg.depend.bypass-generate=.*
-file path=usr/bin/gtkdoc-scan pkg.depend.bypass-generate=.*
-file path=usr/bin/gtkdoc-scangobj pkg.depend.bypass-generate=.*
-file path=usr/bin/gtkdocize pkg.depend.bypass-generate=.*
+file path=usr/bin/gtkdoc-check
+file path=usr/bin/gtkdoc-depscan
+file path=usr/bin/gtkdoc-fixxref
+file path=usr/bin/gtkdoc-mkdb
+file path=usr/bin/gtkdoc-mkhtml
+file path=usr/bin/gtkdoc-mkhtml2
+file path=usr/bin/gtkdoc-mkman
+file path=usr/bin/gtkdoc-mkpdf
+file path=usr/bin/gtkdoc-rebase
+file path=usr/bin/gtkdoc-scan
+file path=usr/bin/gtkdoc-scangobj
+file path=usr/bin/gtkdocize
 file path=usr/lib/cmake/GtkDoc/GtkDocConfig.cmake
 file path=usr/lib/cmake/GtkDoc/GtkDocConfigVersion.cmake
 file path=usr/lib/cmake/GtkDoc/GtkDocScanGObjWrapper.cmake
@@ -123,11 +126,11 @@ file path=usr/share/pkgconfig/gtk-doc.pc
 license gtk-doc.license license="GPLv3, FDLv1.1"
 
 
-# gtkdoc-mkhtml runs /usr/bin/openjade
-depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/openjade
 # gtkdoc-mk{html,man,pdf} run /usr/bin/xsltproc
 depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/xsltproc
 # various scripts use the docbook dtds to process docbook docs
 depend type=require fmri=data/docbook/docbook-dtds
-# gtkdoc-fixxref requires syntax.vim for syntax highlighting code in docs
-depend type=require fmri=editor/vim
+# pkgdepend doesn't autodetect these dependencies from the "import" lines
+# in usr/share/gtk-doc/python/gtkdoc/*.py files due to bug 15724943
+depend type=require fmri=library/python/lxml-$(PYV)
+depend type=require fmri=library/python/pygments-$(PYV)

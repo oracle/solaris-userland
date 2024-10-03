@@ -63,20 +63,17 @@ COMPONENT_POST_INSTALL_ACTION += \
         $(PYTHON) -m compileall $(PROTO_DIR)$(USRSHAREDIR)/gtk-doc/python;
 
 # For autopyc transformation
-PKG_MACROS += PYVER=$(PYTHON_VERSION)
+PKG_MACROS += PYVER=$(PYTHON_VERSION) PYV="$(PYTHON_VERSION:3.%=3%)"
 
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
-REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl
 REQUIRED_PACKAGES += data/docbook/docbook-style-xsl 
 REQUIRED_PACKAGES += data/sgml-common
 REQUIRED_PACKAGES += data/xml-common
 REQUIRED_PACKAGES += developer/documentation-tool/itstool
-REQUIRED_PACKAGES += developer/documentation-tool/openjade
-REQUIRED_PACKAGES += developer/intltool
-REQUIRED_PACKAGES += editor/vim
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += library/python/libxml2-311
+REQUIRED_PACKAGES += library/python/lxml-311
+REQUIRED_PACKAGES += library/python/pygments-311
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += text/gnu-gettext
