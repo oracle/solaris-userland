@@ -20,23 +20,27 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xmlto
-COMPONENT_VERSION=	0.0.28
+COMPONENT_VERSION=	0.0.29
 COMPONENT_PROJECT_URL=	https://pagure.io/xmlto
 COMPONENT_ARCHIVE_HASH= \
-    sha256:2f986b7c9a0e9ac6728147668e776d405465284e13c74d4146c9cbc51fd8aad3
-COMPONENT_ARCHIVE_URL=	https://releases.pagure.org/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+    sha256:40504db68718385a4eaa9154a28f59e51e59d006d1aa14f5bc9d6fded1d6017a
+COMPONENT_ARCHIVE_URL=	\
+    https://pagure.io/$(COMPONENT_NAME)/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13307
 
-COMPONENT_BAID=		29616
+COMPONENT_BAID=		180219
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/common.mk
+
+# configure script is not distributed
+COMPONENT_PREP_ACTION = (cd $(@D); LC_ALL=C autoreconf -fiv)
 
 # These will be used by the xmlto script.
 CONFIGURE_ENV += FIND="$(GNUBIN)/find"

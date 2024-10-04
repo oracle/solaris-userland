@@ -1,0 +1,20 @@
+Automake is not able to finish without error.
+
+autoreconf: running: automake --add-missing --copy --force-missing
+...
+Makefile.am: error: required file './NEWS' not found
+Makefile.am: error: required file './README' not found
+Makefile.am: error: required file './AUTHORS' not found
+...
+autoreconf: error: automake failed with exit status: 1
+
+--- a/configure.ac	2024-10-02 16:12:15.118848232 +0200
++++ b/configure.ac	2024-10-02 16:12:27.879539146 +0200
+@@ -1,6 +1,6 @@
+ AC_INIT([xmlto],[0.0.29])
+ AC_CONFIG_SRCDIR(xmlto.spec.in)
+-AM_INIT_AUTOMAKE([dist-bzip2 subdir-objects 1.6])
++AM_INIT_AUTOMAKE([foreign dist-bzip2 subdir-objects 1.6])
+ AC_CONFIG_HEADERS(config.h)
+ 
+ AC_PROG_CC
