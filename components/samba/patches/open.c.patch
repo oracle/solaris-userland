@@ -9,19 +9,19 @@ as common user. The results is EACCES on Solaris.
 The workaround is to avoid re-opening a file using /proc filesystem
 on Solaris. Instead fall back to fd_open_atomic().
 
---- samba-4.19.8/source3/smbd/open.c
-+++ samba-4.19.8/source3/smbd/open.c
-@@ -1233,6 +1233,7 @@ if (p_file_created == NULL) {
- 		p_file_created = &__unused_file_created;
- 	}
+--- samba-4.20.5/source3/smbd/open.c
++++ samba-4.20.5/source3/smbd/open.c
+@@ -1171,6 +1171,7 @@ {
+ 	NTSTATUS status;
+ 	int old_fd;
  
 +#if 0
- 	/*
- 	 * TODO: should we move this to the VFS layer?
- 	 *       SMB_VFS_REOPEN_FSP()?
-@@ -1244,6 +1245,7 @@ mode);
- 	if (!NT_STATUS_EQUAL(status, NT_STATUS_MORE_PROCESSING_REQUIRED)) {
- 		return status;
+ 	if (fsp->fsp_flags.have_proc_fds &&
+ 	    ((old_fd = fsp_get_pathref_fd(fsp)) != -1)) {
+ 
+@@ -1211,6 +1212,7 @@ }
+ 		fsp_set_fd(fsp, new_fd);
+ 		return NT_STATUS_OK;
  	}
 +#endif
  

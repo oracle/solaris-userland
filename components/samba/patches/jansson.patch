@@ -1,8 +1,8 @@
 Fixes build, adds missing dependency on 'jansson'.
 
---- samba-4.19.8/source3/utils/wscript_build
-+++ samba-4.19.8/source3/utils/wscript_build
-@@ -299,6 +299,7 @@ ''',
+--- samba-4.20.5/source3/utils/wscript_build
++++ samba-4.20.5/source3/utils/wscript_build
+@@ -300,6 +300,7 @@ ''',
                    install=False)
  
  smbstatus_source = 'status.c'
@@ -10,7 +10,7 @@ Fixes build, adds missing dependency on 'jansson'.
  
  if bld.CONFIG_GET("WITH_PROFILE"):
      smbstatus_source += ' status_profile.c'
-@@ -307,6 +308,7 @@ smbstatus_source += ' status_profile_dum
+@@ -308,6 +309,7 @@ smbstatus_source += ' status_profile_dum
  
  if bld.CONFIG_GET("HAVE_JANSSON"):
      smbstatus_source += ' status_json.c'
@@ -18,7 +18,7 @@ Fixes build, adds missing dependency on 'jansson'.
  else:
      smbstatus_source += ' status_json_dummy.c'
  
-@@ -321,7 +323,7 @@ smbd_base
+@@ -322,7 +324,7 @@ smbd_base
                        LOCKING
                        PROFILE
                        CONN_TDB
