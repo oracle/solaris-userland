@@ -28,14 +28,16 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		seahorse
-COMPONENT_VERSION=	43.0
+COMPONENT_VERSION=	47.0.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Seahorse
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5b1d1bfba74f3658227f3c82e296f330dd0fcd1ef4636b6a218228fee5ea832d
+	sha256:9c1917e4a61f7febb787849ce36ce717fce706c346880b991d056d54dadbcacc
+COMPONENT_ARCHIVE_URL= \
+	https://download.gnome.org/sources/$(COMPONENT_NAME)/$(basename $(COMPONENT_MAJOR_MINOR))/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	9548
 
-COMPONENT_BAID=		138002
+COMPONENT_BAID=		180287
 
 BUILD_STYLE=            meson
 
