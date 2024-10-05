@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64_and_32
@@ -29,14 +29,14 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libical
-COMPONENT_VERSION=	3.0.16
+COMPONENT_VERSION=	3.0.18
 COMPONENT_PROJECT_URL=	http://libical.github.io/libical/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b44705dd71ca4538c86fb16248483ab4b48978524fb1da5097bd76aa2e0f0c33
+	sha256:72b7dc1a5937533aee5a2baefc990983b66b141dd80d43b51f80aced4aae219c
 COMPONENT_ARCHIVE_URL=	https://github.com/$(COMPONENT_NAME)/$(COMPONENT_NAME)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	1637
-COMPONENT_BAID=		133528
+COMPONENT_BAID=		180256
 
 BUILD_STYLE= cmake
 
@@ -98,15 +98,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
                 $(PROTO_DIR)/usr/share/man/man3lib/libicalss.3lib; \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libicalvcal.3lib \
                 $(PROTO_DIR)/usr/share/man/man3lib/libicalvcal.3lib;
-
-# Check upstream test case from https://github.com/libical/libical/issues/253
-COMPONENT_POST_TEST_ACTION += \
-	(cd $(COMPONENT_TEST_DIR) ; \
-	  printf 'Extra Test: parser-heap-use-after-free ...........   ' ; \
-	  $(COMPONENT_TEST_ENV_CMD) $(COMPONENT_TEST_ENV) $(TEST_MEMCHECK_ENV) \
-	  ./src/test/parser \
-	  $(COMPONENT_DIR)/files/test-data/heap-use-after-free.ics \
-	  >> /dev/null && print 'Passed' ) &>> $(COMPONENT_TEST_OUTPUT)
 
 # Remove time measurements from results when comparing
 COMPONENT_TEST_TRANSFORMS += '-e "s|  *[\.0-9]* sec||g" '
