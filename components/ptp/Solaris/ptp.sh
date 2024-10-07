@@ -20,7 +20,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 # Standard prolog
@@ -35,20 +35,6 @@ if [ -z $SMF_FMRI ]; then
         exit $SMF_EXIT_ERR_NOSMF
 fi
 
-FMRI_DEFAULT='svc:/network/ntp:default'
-FMRI_MONITOR='svc:/network/ntp:monitor'
-
-default_enabled=`svcprop -c -p general/enabled $FMRI_DEFAULT 2>/dev/null`
-if [ "$default_enabled" = "true" ]; then
-	echo "Error: Both $SMF_FMRI and $FMRI_DEFAULT may not be" \
-       	    " enabled at the same time."
-	exit $SMF_EXIT_ERR_CONFIG
-fi
-monitor_enabled=`svcprop -c -p general/enabled $FMRI_MONITOR 2>/dev/null`
-if [ "$monitor_enabled" = "true" ]; then
-	export NTP_MONITOR_ONLY=1
-fi
-
 #
 # get_prop fmri propname
 #
@@ -60,31 +46,48 @@ get_prop () {
 	fi
 }
 
-errlog () {
-	echo $1 >&2
-}
-
-#Do not refresh IGMP group
-CMD_LINE_ARGS=" -j"
-
-LISTEN_IFNAME="`get_prop listen_ifname`"
-if [  -n "$LISTEN_IFNAME" ]; then
-		CMD_LINE_ARGS="$CMD_LINE_ARGS -b $LISTEN_IFNAME"
-fi
-
 NODE_TYPE="`get_prop node_type`"
 if [ -n "$NODE_TYPE" ]; then
 	if [ "$NODE_TYPE" = "master" ]; then
 		CMD_LINE_ARGS="$CMD_LINE_ARGS -W"
 	elif [ "$NODE_TYPE" = "slave" ]; then
 		CMD_LINE_ARGS="$CMD_LINE_ARGS -g"
+	elif [ "$NODE_TYPE" = "master-ntp" ]; then
+		CMD_LINE_ARGS="$CMD_LINE_ARGS -G"
 	else
-		errlog "node_type needs to be either slave or master. See ptp (1M). Exiting."
+		errlog "node_type needs to be either slave or master. See ptpd (1M). Exiting."
 		exit $SMF_EXIT_ERR_CONFIG
 	fi
 else
 	CMD_LINE_ARGS="$CMD_LINE_ARGS -g"
 fi
+
+FMRI_DEFAULT='svc:/network/ntp:default'
+FMRI_MONITOR='svc:/network/ntp:monitor'
+
+default_enabled=`svcprop -c -p general/enabled $FMRI_DEFAULT 2>/dev/null`
+if [ "$default_enabled" = "true" -a "$NODE_TYPE" != "master-ntp" ]; then
+	echo "Error: Both $SMF_FMRI and $FMRI_DEFAULT may not be"\
+       	    "enabled at the same time unless PTP is running in mode master-ntp."
+	exit $SMF_EXIT_ERR_CONFIG
+fi
+monitor_enabled=`svcprop -c -p general/enabled $FMRI_MONITOR 2>/dev/null`
+if [ "$monitor_enabled" = "true" ]; then
+	export NTP_MONITOR_ONLY=1
+fi
+
+errlog () {
+	echo $1 >&2
+}
+
+#Do not refresh IGMP group
+CMD_LINE_ARGS="$CMD_LINE_ARGS -j"
+
+LISTEN_IFNAME="`get_prop listen_ifname`"
+if [  -n "$LISTEN_IFNAME" ]; then
+		CMD_LINE_ARGS="$CMD_LINE_ARGS -b $LISTEN_IFNAME"
+fi
+
 
 USE_HW="`get_prop use_hw`"
 if [ "$USE_HW" = "true" ];then

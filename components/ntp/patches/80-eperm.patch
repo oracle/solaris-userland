@@ -69,102 +69,77 @@ if the privilege is missing.
   		    break;
   		    default:
   			msyslog(LOG_NOTICE, "%s: %s line %d: unhandled errno value %d after failed ntp_adjtime call",
-*** libntp/systime.c
 --- libntp/systime.c
-***************
-*** 17,22 ****
---- 17,23 ----
-  #include "timespecops.h"
-  #include "ntp_calendar.h"
-  #include "lib_strbuf.h"
-+ #include "ntp_machine.h"
-  
-  #ifdef HAVE_SYS_PARAM_H
-  # include <sys/param.h>
-*************** int	enable_panic_check = TRUE;	/* Can we
-*** 34,39 ****
---- 35,46 ----
-  u_long	sys_lamport;			/* Lamport violation */
-  u_long	sys_tsrounding;			/* timestamp rounding errors */
-  
-+ /* Count how many EPERM error we have had. Only log an error on the first
-+  * one. Don't even try after the first ten. To suppress the log, initialize
-+  * the count to one.
-+  */
-+ int	eperm_count=0;
-+ 
-  #ifndef USE_COMPILETIME_PIVOT
-  # define USE_COMPILETIME_PIVOT 1
-  #endif
-*************** adj_systime(
-*** 353,370 ****
-  		adjtv.tv_usec = -adjtv.tv_usec;
-  		sys_residual = -sys_residual;
-  	}
-  	if (adjtv.tv_sec != 0 || adjtv.tv_usec != 0) {
-! 		if (adjtime(&adjtv, &oadjtv) < 0) {
-! 			msyslog(LOG_ERR, "adj_systime: %m");
-! 			if (enable_panic_check && allow_panic) {
-! 				msyslog(LOG_ERR, "adj_systime: allow_panic is TRUE!");
-  			}
-  			return FALSE;
-  		}
-  	}
-- 	if (enable_panic_check && allow_panic) {
-- 		msyslog(LOG_ERR, "adj_systime: allow_panic is TRUE!");
-- 	}
-  	return TRUE;
-  }
-  #endif
---- 360,387 ----
-  		adjtv.tv_usec = -adjtv.tv_usec;
-  		sys_residual = -sys_residual;
-  	}
-+ 	if (enable_panic_check && allow_panic) {
-+ 		msyslog(LOG_ERR, "adj_systime: allow_panic is TRUE!");
-+ 	}
-  	if (adjtv.tv_sec != 0 || adjtv.tv_usec != 0) {
-! 		/* After a few tries, give up */
-! 		if (eperm_count < 10) {
-! 			if (adjtime(&adjtv, &oadjtv) < 0) {
-! 				if (errno == EPERM || errno == ENOTSUP) {
-! 				       	if (!eperm_count) {
-! 						msyslog(LOG_ERR,
-! 						    "adj_systime: %m");
-! 					}
-! 					eperm_count++;
-! 				} else {
-! 					msyslog(LOG_ERR, "adj_systime: %m");
-! 				}
-! 				return FALSE;
-  			}
-+ 		} else {
-  			return FALSE;
-  		}
-  	}
-  	return TRUE;
-  }
-  #endif
-*************** step_systime(
-*** 562,568 ****
-  
-  	/* now set new system time */
-  	if (ntp_set_tod(&timetv, NULL) != 0) {
-! 		msyslog(LOG_ERR, "step-systime: %m");
-  		if (enable_panic_check && allow_panic) {
-  			msyslog(LOG_ERR, "step_systime: allow_panic is TRUE!");
-  		}
---- 579,588 ----
-  
-  	/* now set new system time */
-  	if (ntp_set_tod(&timetv, NULL) != 0) {
-! 		if ((errno == EPERM || errno == ENOTSUP) && !eperm_count) {
-! 			msyslog(LOG_ERR, "step-systime: %m");
-! 			eperm_count++;
-! 		}
-  		if (enable_panic_check && allow_panic) {
-  			msyslog(LOG_ERR, "step_systime: allow_panic is TRUE!");
-  		}
++++ libntp/systime.c
+@@ -16,6 +16,7 @@
+ #include "timevalops.h"
+ #include "timespecops.h"
+ #include "ntp_calendar.h"
++#include "ntp_machine.h"
+ 
+ #ifdef HAVE_SYS_PARAM_H
+ # include <sys/param.h>
+@@ -33,6 +34,12 @@ int	enable_panic_check = TRUE;	/* Can we
+ u_long	sys_lamport;			/* Lamport violation */
+ u_long	sys_tsrounding;			/* timestamp rounding errors */
+ 
++/* Count how many EPERM error we have had. Only log an error on the first
++ * one. Don't even try after the first ten. To suppress the log, initialize
++ * the count to one.
++ */
++int	eperm_count=0;
++
+ #ifndef USE_COMPILETIME_PIVOT
+ # define USE_COMPILETIME_PIVOT 1
+ #endif
+@@ -352,18 +359,28 @@ adj_systime(
+ 		adjtv.tv_usec = -adjtv.tv_usec;
+ 		sys_residual = -sys_residual;
+ 	}
++	if (enable_panic_check && allow_panic) {
++		msyslog(LOG_ERR, "adj_systime: allow_panic is TRUE!");
++	}
+ 	if (adjtv.tv_sec != 0 || adjtv.tv_usec != 0) {
+-		if (adjtime(&adjtv, &oadjtv) < 0) {
+-			msyslog(LOG_ERR, "adj_systime: %m");
+-			if (enable_panic_check && allow_panic) {
+-				msyslog(LOG_ERR, "adj_systime: allow_panic is TRUE!");
++		/* After a few tries, give up */
++		if (eperm_count < 10) {
++			if (adjtime(&adjtv, &oadjtv) < 0) {
++				if (errno == EPERM || errno == ENOTSUP) {
++				       	if (!eperm_count) {
++						msyslog(LOG_ERR,
++						    "adj_systime: %m");
++					}
++					eperm_count++;
++				} else {
++					msyslog(LOG_ERR, "adj_systime: %m");
++				}
++				return FALSE;
+ 			}
++		} else {
+ 			return FALSE;
+ 		}
+ 	}
+-	if (enable_panic_check && allow_panic) {
+-		msyslog(LOG_ERR, "adj_systime: allow_panic is TRUE!");
+-	}
+ 	return TRUE;
+ }
+ #endif
+@@ -561,7 +578,10 @@ step_systime(
+ 
+ 	/* now set new system time */
+ 	if (ntp_set_tod(&timetv, NULL) != 0) {
+-		msyslog(LOG_ERR, "step-systime: %m");
++		if ((errno == EPERM || errno == ENOTSUP) && !eperm_count) {
++			msyslog(LOG_ERR, "step-systime: %m");
++			eperm_count++;
++		}
+ 		if (enable_panic_check && allow_panic) {
+ 			msyslog(LOG_ERR, "step_systime: allow_panic is TRUE!");
+ 		}
 *** ntpd/ntpd.c
 --- ntpd/ntpd.c
 *************** ntpdmain(

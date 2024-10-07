@@ -1,6 +1,6 @@
---- ntpd/ntpd.c.fcs	2023-06-06 10:53:31.178914311 -0700
-+++ ntpd/ntpd.c	2023-06-06 11:00:32.009966951 -0700
-@@ -912,16 +912,10 @@ ntpdmain(
+--- ntpd/ntpd.c
++++ ntpd/ntpd.c
+@@ -898,17 +902,10 @@ ntpdmain(
  		msyslog(LOG_NOTICE, "%s", buf);
  	}
  
@@ -11,13 +11,14 @@
 -	msyslog(LOG_NOTICE, "available at https://www.nwtime.org/support");
 -	msyslog(LOG_NOTICE, "----------------------------------------------------");
 -#ifdef DEBUG
--	msyslog(LOG_NOTICE, "DEBUG behavior is enabled - a violation of any");
--	msyslog(LOG_NOTICE, "diagnostic assertion will cause %s to abort", progname);
+-	msyslog(LOG_NOTICE, "DEBUG behavior is enabled - a violation of any"
+-			    " diagnostic assertion will cause %s to abort", 
+-			    progname);
 -#endif
 +	msyslog(LOG_NOTICE, "ntp-4 is maintained by Network Time Foundation,"
 +	    " Inc. (NTF), a non-profit 501(c)(3) public-benefit"
 +	    " corporation.  Support and training for ntp-4 are"
 +	    " available at https://www.nwtime.org/support");
  
- 	/*
- 	 * Install trap handlers to log errors and assertion failures.
+ 	ssl_check_version();
+ 

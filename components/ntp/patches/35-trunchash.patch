@@ -1,0 +1,141 @@
+This patch fixes a regression that prevents NTP from using disgest
+algorithms that return a hash longer than 20 bytes.
+
+The problem was reported at NTP community bug 3940,
+"Digest algorithms that return a digest longer than current MD5 fail."
+https://bugs.ntp.org/show_bug.cgi?id=3940
+This patch may be removed when upgrading to a version of NTP with this
+bug fixed.
+
+--- libntp/a_md5encrypt.c	2024-07-31 09:52:27 +0000
++++ libntp/a_md5encrypt.c	2024-07-31 09:52:27 +0000
+@@ -208,11 +208,20 @@
+ 	size_t	dlen;
+ 
+ 	dlen = make_mac(&digb, type, &keyb, &msgb);
+-	if (0 == dlen) {
+-		return 0;
++	/*
++	 * If the digest is longer than the 20 octets truncate it.  NTPv4
++	 * MACs consist of a 4-octet key ID and a digest, total up to 24
++	 * octets.  See RFC 7822 7.5.1.3 and 7.5.1.4.
++	 * Use of a digest algorithm which produces more than 20 octets
++	 * provides increased difficulty to forge even when truncated.
++	 * The fleeting lifetime of an individual packet's MAC makes offline
++	 * attack difficult.  The basic NTP packet is 48 octets, so it is
++	 * not obvious that a digest of more than 20 octets is warranted.
++	 */
++	if (dlen > MAX_MDG_LEN) {
++		dlen = MAX_MDG_LEN;
+ 	}
+-	memcpy((u_char *)pkt + length + KEY_MAC_LEN, digest,
+-	       min(dlen, MAX_MDG_LEN));
++	memcpy((u_char *)pkt + length + KEY_MAC_LEN, digest, dlen);
+ 	return (dlen + KEY_MAC_LEN);
+ }
+ 
+@@ -240,7 +249,12 @@
+ 	size_t	dlen = 0;
+ 
+ 	dlen = make_mac(&digb, type, &keyb, &msgb);
+-	if (0 == dlen || size != dlen + KEY_MAC_LEN) {
++
++	/* If the digest is longer than 20 octets truncate. */
++	if (dlen > MAX_MDG_LEN) {
++		dlen = MAX_MDG_LEN;
++	}
++	if (size != (size_t)dlen + KEY_MAC_LEN) {
+ 		msyslog(LOG_ERR,
+ 			"MAC decrypt: MAC length error: %u not %u for key %u",
+ 			(u_int)size, (u_int)(dlen + KEY_MAC_LEN), keyno);
+--- tests/libntp/data/ntp.keys	2024-07-31 09:52:27 +0000
++++ tests/libntp/data/ntp.keys	2024-07-31 09:52:27 +0000
+@@ -22,6 +22,7 @@
+  8 DSA		306+^SHLV5{"v7W`U3aY
+  9 DSA-SHA	lGyKZgsI_Pi"y"8JAT98
+ 10 SHA		2:VO]Q5u%/b&}.<P?T~9
++11 SHA256	pth`LC__7"9_+R}hrn9d
+ 
+ 51 AES128CMAC 	d0cd9f3ee181769ca7cccaada09f093c5fe8e628
+ 52 MD4		7080bc47eea6b379b2ff841805a144fb4a241a16
+@@ -33,3 +34,4 @@
+ 58 DSA		7ce5deea7569d7423d5e1b497c8eb3bfeff852d5
+ 59 DSA-SHA	9fd568e8f371deae54a65bc50b52bbe1f6529589
+ 60 SHA		ce85046978a4df8366e102c4f1267399bbc25737
++61 SHA256	ba767141a68f8d6229c7bdfd2a9cd95a06854195
+--- tests/libntp/digests.c	2024-07-31 09:52:27 +0000
++++ tests/libntp/digests.c	2024-07-31 09:52:27 +0000
+@@ -111,8 +111,7 @@
+ 									\
+ 	res_sz = authencrypt((key), pkt, pkt_sz);			\
+ 	if (0 == res_sz) {						\
+-		TEST_IGNORE_MESSAGE("Likely OpenSSL 3 failed digest "	\
+-				    "init.");				\
++		TEST_IGNORE_MESSAGE("authencrypt failure");		\
+ 		return;							\
+ 	}								\
+ 	TEST_ASSERT_EQUAL_UINT((u_int)((exp_sz) + KEY_MAC_LEN), res_sz);\
+@@ -497,6 +496,45 @@
+ }
+ 
+ 
++#define SHA256_KEYID		11
++#undef KEYID_A
++#define KEYID_A			SHA256_KEYID
++#undef DG_SZ
++#define DG_SZ			20
++#undef KEYID_B
++#define KEYID_B			(KEYID_A + HEX_KEYID_OFFSET)
++void test_Digest_SHA256(void);
++void test_Digest_SHA256(void)
++{
++#ifdef OPENSSL
++	u_char expectedA[MAX_MAC_LEN] =
++		{
++			0, 0, 0, KEYID_A,
++			0x3c, 0xbf, 0xff, 0xf4, 
++			0x11, 0x3e, 0xb8, 0xe3, 
++			0xe4, 0xc5, 0x09, 0x3c, 
++			0xa1, 0x6b, 0x8c, 0x48, 
++			0x21, 0x0d, 0x67, 0x1a
++		};
++	u_char expectedB[MAX_MAC_LEN] =
++		{
++			0, 0, 0, KEYID_B,
++			0x68, 0xa9, 0xd9, 0xf3, 
++			0x06, 0x97, 0x80, 0x0a, 
++			0xa4, 0x1d, 0x51, 0x3a, 
++			0x1a, 0x41, 0x1e, 0x93, 
++			0x4a, 0xb6, 0x96, 0x71
++		};
++
++	TEST_ASSERT(setup);
++	TEST_ONE_DIGEST(KEYID_A, DG_SZ, expectedA);
++	TEST_ONE_DIGEST(KEYID_B, DG_SZ, expectedB);
++#else	/* ! OPENSSL follows  */
++	TEST_IGNORE_MESSAGE("Skipping, no OPENSSL");
++#endif
++}
++
++
+ /*
+  * Dump a MAC in a form easy to cut and paste into the expected declaration.
+  */
+--- tests/libntp/run-digests.c	2024-07-31 09:52:27 +0000
++++ tests/libntp/run-digests.c	2024-07-31 09:52:27 +0000
+@@ -43,6 +43,7 @@
+ extern void test_Digest_DSA(void);
+ extern void test_Digest_DSA_SHA(void);
+ extern void test_Digest_SHA(void);
++extern void test_Digest_SHA256(void);
+ 
+ 
+ //=======Suite Setup=====
+@@ -81,6 +82,7 @@
+   RUN_TEST(test_Digest_DSA, 390);
+   RUN_TEST(test_Digest_DSA_SHA, 429);
+   RUN_TEST(test_Digest_SHA, 468);
++  RUN_TEST(test_Digest_SHA256, 507);
+ 
+   return (UnityEnd());
+ }

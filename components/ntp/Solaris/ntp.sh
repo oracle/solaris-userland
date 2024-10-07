@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2009, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2024, Oracle and/or its affiliates.
 #
 
 # Standard prolog
@@ -36,28 +36,39 @@ fi
 FMRI_DEFAULT='svc:/network/ntp:default'
 FMRI_MONITOR='svc:/network/ntp:monitor'
 FMRI_PTP='svc:/network/ptp:default'
+FMRI_MDNS='svc:/network/dns/multicast:default'
 # The redirect file must be in /sysem/volatile
 REDIRECT="/system/volatile/ntp_redirect.conf"
 
 if [ "$SMF_FMRI" = "$FMRI_DEFAULT" ]; then
 	monitor_enabled=`svcprop -c -p general/enabled $FMRI_MONITOR`
 	if [ "$monitor_enabled" = "true" ]; then
-		echo "Error: Both $SMF_FMRI and $FMRI_MONITOR may not be" \
-	       	    " enabled at the same time."
+		echo "Error: Both $SMF_FMRI and $FMRI_MONITOR may not be"\
+	       	    "enabled at the same time."
 		exit $SMF_EXIT_ERR_CONFIG
 	fi
-	ptp_enabled=`svcprop -c -p general/enabled $FMRI_PTP 2>&1`
-	if [ "$ptp_enabled" = "true" ]; then
-		echo "Error: Both $SMF_FMRI and $FMRI_PTP may not be" \
-	       	    " enabled at the same time."
-		exit $SMF_EXIT_ERR_CONFIG
+	# IF NTP is running a default instance, PTP may not be enabled unless
+	# PTP is running in master-ntp mode. This indicates that PTP will
+	# serve time to downstream clients, but it will not attempt to set
+	# the system time and will instead defer to NTP to keep the system
+	# time in sync. If PTP is in master-ntp mode, then NTP doesn't really
+	# care if PTP is enabled or not.
+	ptp_mode=`svcprop -c -p config/node_type $FMRI_PTP 2>&1`
+	if [ "$ptp_mode" != "master-ntp" ]; then
+		ptp_enabled=`svcprop -c -p general/enabled $FMRI_PTP 2>&1`
+		if [ "$ptp_enabled" = "true" ]; then
+			echo "Error: Both $SMF_FMRI and $FMRI_PTP may not be"\
+		       	    "enabled at the same time unless PTP is running"\
+			    "in master-ntp mode."
+			exit $SMF_EXIT_ERR_CONFIG
+		fi
 	fi
 fi
 if [ "$SMF_FMRI" = "$FMRI_MONITOR" ]; then
 	default_enabled=`svcprop -c -p general/enabled $FMRI_DEFAULT`
 	if [ "$default_enabled" = "true" ]; then
-		echo "Error: Both $SMF_FMRI and $FMRI_DEFAULT may not be" \
-	       	    " enabled at the same time."
+		echo "Error: Both $SMF_FMRI and $FMRI_DEFAULT may not be"\
+	       	    "enabled at the same time."
 		exit $SMF_EXIT_ERR_CONFIG
 	fi
 fi
@@ -78,8 +89,8 @@ fi
 #
 conffile=`svcprop -c -p config/configfile $SMF_FMRI`
 if [ ! -f $conffile ]; then
-	echo "Error: Configuration file $conffile not found." \
-	    "  See ntpd(1M)."
+	echo "Error: Configuration file $conffile not found."\
+	    " See ntpd(1M)."
 	exit $SMF_EXIT_ERR_CONFIG
 fi
 
@@ -97,8 +108,8 @@ if [ "$val" = "true" ]; then
 else
 	ppriv -q sys_time
 	if (($? > 0)); then
-		echo "Error: Insufficient privilege to adjust the system clock." \
-	    	" Set the disable_local_time_adjustment property to run anyway."
+		echo "Error: Insufficient privilege to adjust the system clock."\
+	    	"Set the disable_local_time_adjustment property to run anyway."
 		exit $SMF_EXIT_ERR_CONFIG
 	fi
 fi
@@ -150,8 +161,16 @@ val=`svcprop -c -p config/verbose_logging $SMF_FMRI`
 
 # Register with mDNS.
 val=`svcprop -c -p config/mdnsregister $SMF_FMRI`
-mdns=`svcprop -c -p general/enabled svc:/network/dns/multicast:default`
-[ "$val" = "true" ] && [ "$mdns" = "true" ] && set -- "$@" --mdns
+mdns=`svcprop -c -p general/enabled $FMRI_MDNS`
+if [ "$val" = "true" ]; then 
+	if [ "$mdns" = "true" ]; then
+		set -- "$@" --mdns
+		export AVAHI_COMPAT_NOWARN=1
+	else
+		echo "Warning: MDNS registration configured but $FMRI_MDNS"\
+		    "is not enabled."
+	fi
+fi
 
 # We used to support the slewalways keyword, but that was a Sun thing
 # and not in V4. Look for "slewalways yes" and set the new slew option.

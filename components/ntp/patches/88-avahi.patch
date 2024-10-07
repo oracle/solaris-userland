@@ -1,0 +1,41 @@
+This issue has been reported to the NTP community as 
+Bug 3921 - NTP could use Avahi if available instead of Bonjour.
+https://bugs.ntp.org/show_bug.cgi?id=3921
+This patch may be removed when upgrading to a version of NTP with bug 3921
+already fixed.
+
+--- configure
++++ configure
+@@ -26480,7 +26480,7 @@ then :
+ 
+ fi
+ 
+-ac_fn_c_check_header_compile "$LINENO" "dns_sd.h" "ac_cv_header_dns_sd_h" "$ac_includes_default"
++ac_fn_c_check_header_compile "$LINENO" "avahi-compat-libdns_sd/dns_sd.h" "ac_cv_header_dns_sd_h" "$ac_includes_default"
+ if test "x$ac_cv_header_dns_sd_h" = xyes
+ then :
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing DNSServiceRegister" >&5
+--- ntpd/ntpd.c
++++ ntpd/ntpd.c
+@@ -157,7 +157,7 @@
+ #endif
+ 
+ #ifdef HAVE_DNSREGISTRATION
+-# include <dns_sd.h>
++# include <avahi-compat-libdns_sd/dns_sd.h>
+ DNSServiceRef mdns;
+ #endif
+ 
+--- configure
++++ configure
+@@ -27293,8 +27294,8 @@ then :
+ 
+ fi
+ 
+-ac_fn_c_check_header_compile "$LINENO" "avahi-compat-libdns_sd/dns_sd.h" "ac_cv_header_dns_sd_h" "$ac_includes_default"
+-if test "x$ac_cv_header_dns_sd_h" = xyes
++ac_fn_c_check_header_compile "$LINENO" "avahi-compat-libdns_sd/dns_sd.h" "ac_cv_header_avahi_compat_libdns_sd_dns_sd_h" "$ac_includes_default"
++if test "x$ac_cv_header_avahi_compat_libdns_sd_dns_sd_h" = xyes
+ then :
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing DNSServiceRegister" >&5
+ printf %s "checking for library containing DNSServiceRegister... " >&6; }
