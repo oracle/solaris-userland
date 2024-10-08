@@ -75,3 +75,4 @@ venv-system-test: $(SYSTEM_TEST_NO_ARCH)
 REQUIRED_PACKAGES += library/libpaper
 REQUIRED_PACKAGES += library/python/puremagic
 REQUIRED_PACKAGES += library/python/pypdf
+REQUIRED_PACKAGES += library/python/wand
