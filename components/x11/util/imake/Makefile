@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		imake
-COMPONENT_VERSION=	1.0.9
+COMPONENT_VERSION=	1.0.10
 COMPONENT_ARCHIVE_HASH= \
-    sha256:72de9d278f74d95d320ec7b0d745296f582264799eab908260dbea0ce8e08f83
+    sha256:75decbcea8d7b354cf36adc9675e53c4790ee3de56a14bd87b42c8e8aad2ecf5
 COMPONENT_BUGDB=        x11/builds
 COMPONENT_ANITYA_ID=	1373
-COMPONENT_BAID=		132968
+COMPONENT_BAID=		180593
 
 COMPONENT_NAME_1=       xorg-cf-files
 COMPONENT_VERSION_1=    1.0.8

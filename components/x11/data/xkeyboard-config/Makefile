@@ -20,24 +20,25 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xkeyboard-config
-COMPONENT_VERSION=	2.37
+COMPONENT_VERSION=	2.43
 COMPONENT_PROJECT_URL=	https://www.freedesktop.org/wiki/Software/XKeyboardConfig/
 COMPONENT_ARCHIVE_URL=	https://www.x.org/releases/individual/$(COMPONENT_CATEGORY)/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:eb1383a5ac4b6210d7c7302b9d6fab052abdf51c5d2c9b55f1f779997ba68c6c
+	sha256:c810f362c82a834ee89da81e34cd1452c99789339f46f6037f4b9e227dd06c01
 COMPONENT_BUGDB=        x11/i18n
 COMPONENT_ANITYA_ID=	5191
 
-COMPONENT_BAID=		132959
+COMPONENT_BAID=		180588
 
 BUILD_STYLE=		meson
+PYTHON_VERSION=         3.11
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/compat
 PKG_PROTO_DIRS += $(SOURCE_DIR)
@@ -45,6 +46,10 @@ PKG_PROTO_DIRS += $(SOURCE_DIR)
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+COMPONENT_POST_UNPACK_ACTION += \
+        $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
+                $(COMPONENT_SRC)/rules/generate-options-symbols.py; \
 
 # Assumes xgettext is first in $PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"

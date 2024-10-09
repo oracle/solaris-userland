@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		x11perf
-COMPONENT_VERSION=	1.6.2
+COMPONENT_VERSION=	1.7.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5a0e7cea47716ad07ceca38bbd07ae06459ee4d837b9c9dfc21ccb94e3e24fcc
+	sha256:24f80d84b0e96171a998932ff007698fd1776da9975ed42e51d57b9cfca91828
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/releases/individual/test/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15035
-COMPONENT_BAID=		150810
+COMPONENT_BAID=		180002
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -41,6 +41,7 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_OPTIONS += --libdir=$(CONFIGURE_LIBDIR.32)
 
+REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11
