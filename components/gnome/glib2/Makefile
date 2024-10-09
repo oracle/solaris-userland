@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER =      	gcc
@@ -117,7 +117,6 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
-REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl
 REQUIRED_PACKAGES += data/docbook/docbook-style-xsl
 REQUIRED_PACKAGES += data/sgml-common
 REQUIRED_PACKAGES += data/xml-common
