@@ -1,8 +1,8 @@
 Support for updated nscd interfaces in Solaris
 
---- samba-4.19.7/nsswitch/winbind_nss_solaris.c	2023-07-18 10:14:54.602091800 +0200
-+++ samba-4.19.7.new/nsswitch/winbind_nss_solaris.c	2024-07-25 12:34:31.301288869 +0200
-@@ -2,6 +2,9 @@
+--- samba-4.19.8/nsswitch/winbind_nss_solaris.c
++++ samba-4.19.8/nsswitch/winbind_nss_solaris.c
+@@ -2,6 +2,9 @@ /*
    Solaris NSS wrapper for winbind
    - Shirish Kalele 2000
  
@@ -12,7 +12,7 @@ Support for updated nscd interfaces in Solaris
    Based on Luke Howard's ldap_nss module for Solaris
    */
  
-@@ -26,7 +29,6 @@
+@@ -26,7 +29,6 @@ */
  
  #undef DEVELOPER
  
@@ -20,7 +20,7 @@ Support for updated nscd interfaces in Solaris
  #include "winbind_client.h"
  #include <stdlib.h>
  #include <sys/types.h>
-@@ -34,6 +36,7 @@
+@@ -34,6 +36,7 @@ #include <sys/param.h>
  #include <string.h>
  #include <pwd.h>
  #include <syslog.h>
@@ -28,7 +28,7 @@ Support for updated nscd interfaces in Solaris
  
  #if !defined(HPUX)
  #include <sys/syslog.h>
-@@ -55,6 +58,60 @@
+@@ -55,6 +58,60 @@ #endif
  
  #define NSS_ARGS(args) ((nss_XbyY_args_t *)args)
  
@@ -89,7 +89,7 @@ Support for updated nscd interfaces in Solaris
  #ifdef HPUX
  
  /*
-@@ -90,30 +147,86 @@ _nss_winbind_endpwent_solwrap (nss_backe
+@@ -90,30 +147,91 @@ NSS_DEBUG("_nss_winbind_endpwent_solwrap
  	return _nss_winbind_endpwent();
  }
  
@@ -162,11 +162,16 @@ Support for updated nscd interfaces in Solaris
 +		goto out;
 +	}
 +
++	/*
++	 * passwd(5) format does not permit colon within gecos data field
++	 */
++	for (char *p = result->pw_gecos; (p = strchr(p, ':')) != NULL; *p = ' ');
+ 
 +	snprintf(logmsg, 79,
 +	    "_nss_winbind_getpwent_solwrap: Returning user: %s\n",
 +	    result->pw_name);
 +	NSS_DEBUG(logmsg);
- 
++
 +	if (res_needed) {
 +		NSS_ARGS(args)->returnval = (void*) result;
 +	} else {
@@ -190,7 +195,7 @@ Support for updated nscd interfaces in Solaris
  	return ret;
  }
  
-@@ -122,17 +235,51 @@ _nss_winbind_getpwnam_solwrap (nss_backe
+@@ -122,17 +240,56 @@ _nss_winbind_getpwnam_solwrap (nss_backe
  {
  	NSS_STATUS ret;
  	struct passwd* result = (struct passwd*) NSS_ARGS(args)->buf.result;
@@ -221,6 +226,11 @@ Support for updated nscd interfaces in Solaris
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		goto out;
 +	}
++
++	/*
++	 * passwd(5) format does not permit colon within gecos data field
++	 */
++	for (char *p = result->pw_gecos; (p = strchr(p, ':')) != NULL; *p = ' ');
  
 +	if (res_needed) {
 +		NSS_ARGS(args)->returnval = (void*) result;
@@ -246,7 +256,7 @@ Support for updated nscd interfaces in Solaris
  	return ret;
  }
  
-@@ -141,16 +288,52 @@ _nss_winbind_getpwuid_solwrap(nss_backen
+@@ -141,16 +298,57 @@ _nss_winbind_getpwuid_solwrap(nss_backen
  {
  	NSS_STATUS ret;
  	struct passwd* result = (struct passwd*) NSS_ARGS(args)->buf.result;
@@ -279,6 +289,11 @@ Support for updated nscd interfaces in Solaris
 +		goto out;
 +	}
 +
++	/*
++	 * passwd(5) format does not permit colon within gecos data field
++	 */
++	for (char *p = result->pw_gecos; (p = strchr(p, ':')) != NULL; *p = ' ');
++
 +	if (res_needed) {
 +		NSS_ARGS(args)->returnval = (void*) result;
 +	} else {
@@ -303,7 +318,7 @@ Support for updated nscd interfaces in Solaris
  	return ret;
  }
  
-@@ -205,29 +388,96 @@ _nss_winbind_endgrent_solwrap (nss_backe
+@@ -205,29 +403,96 @@ NSS_DEBUG("_nss_winbind_endgrent_solwrap
  	return _nss_winbind_endgrent();
  }
  
@@ -385,13 +400,13 @@ Support for updated nscd interfaces in Solaris
 +
 +	ret = _nss_winbind_getgrent_r(result, buffer, buflen,
 +	    &NSS_ARGS(args)->erange);
-+
+ 
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning error: %d.\n", ret);
 +		NSS_DEBUG(logmsg);
 +		goto out;
 +	}
- 
++
 +	snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning group: %s\n", result->gr_name);
 +	NSS_DEBUG(logmsg);
 +	if (res_needed) {
@@ -414,7 +429,7 @@ Support for updated nscd interfaces in Solaris
  	return ret;
  
  }
-@@ -236,17 +486,50 @@ static NSS_STATUS
+@@ -236,17 +501,50 @@ static NSS_STATUS
  _nss_winbind_getgrnam_solwrap(nss_backend_t* be, void* args)
  {
  	NSS_STATUS ret;
@@ -444,12 +459,12 @@ Support for updated nscd interfaces in Solaris
 +	    buffer,
 +	    buflen,
 +	    &NSS_ARGS(args)->erange);
-+
+ 
+-	if(ret == NSS_STATUS_SUCCESS)
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		goto out;
 +	}
- 
--	if(ret == NSS_STATUS_SUCCESS)
++
 +	if (res_needed) {
  		NSS_ARGS(args)->returnval = (void*) result;
 +	} else {
@@ -470,7 +485,7 @@ Support for updated nscd interfaces in Solaris
  
  	if (NSS_ARGS(args)->erange == ERANGE && ret == NSS_STATUS_TRYAGAIN)
  		return NSS_STATUS_UNAVAIL;
-@@ -258,17 +541,50 @@ static NSS_STATUS
+@@ -258,17 +556,50 @@ static NSS_STATUS
  _nss_winbind_getgrgid_solwrap(nss_backend_t* be, void* args)
  {
  	NSS_STATUS ret;
@@ -527,7 +542,7 @@ Support for updated nscd interfaces in Solaris
  
  	if (NSS_ARGS(args)->erange == ERANGE && ret == NSS_STATUS_TRYAGAIN)
  		return NSS_STATUS_UNAVAIL;
-@@ -374,12 +690,20 @@ parse_response(int af, nss_XbyY_args_t*
+@@ -374,12 +705,20 @@ and newline at the end. so at first we w
  	   then construct list of addresses for hostent.
  	*/
  	p = strchr(response->data.winsresp, '\n');
@@ -550,7 +565,7 @@ Support for updated nscd interfaces in Solaris
  	for(; p != response->data.winsresp; p--) {
  		if(*p == '\t') addrcount++;
  	}
-@@ -488,6 +812,8 @@ _nss_winbind_ipnodes_getbyname(nss_backe
+@@ -488,6 +827,8 @@ };
  	NSS_STATUS ret;
  	int af;
  
@@ -559,7 +574,7 @@ Support for updated nscd interfaces in Solaris
  	/* I assume there that AI_ADDRCONFIG cases are handled in nss
  	   frontend code, at least it seems done so in solaris...
  
-@@ -533,6 +859,8 @@ _nss_winbind_hosts_getbyname(nss_backend
+@@ -533,6 +874,8 @@ .length = 0,
  	};
  	NSS_STATUS ret;
  
@@ -568,7 +583,7 @@ Support for updated nscd interfaces in Solaris
  	strncpy(request.data.winsreq, argp->key.name, sizeof(request.data.winsreq) - 1);
  	request.data.winsreq[sizeof(request.data.winsreq) - 1] = '\0';
  
-@@ -559,6 +887,8 @@ _nss_winbind_hosts_getbyaddr(nss_backend
+@@ -559,6 +902,8 @@ };
  	nss_XbyY_args_t	*argp = (nss_XbyY_args_t *)args;
  	const char *p;
  
@@ -577,7 +592,7 @@ Support for updated nscd interfaces in Solaris
  #if defined(AF_INET6)
  	/* winbindd currently does not resolve IPv6 */
  	if(argp->key.hostaddr.type == AF_INET6) {
-@@ -591,18 +921,21 @@ _nss_winbind_hosts_getbyaddr(nss_backend
+@@ -591,18 +936,21 @@ /* winbind does not provide setent, gete
  static NSS_STATUS
  _nss_winbind_common_endent(nss_backend_t* be, void *args)
  {
@@ -599,7 +614,7 @@ Support for updated nscd interfaces in Solaris
          return (NSS_STATUS_UNAVAIL);
  }
  
-@@ -611,6 +944,8 @@ _nss_winbind_common_constr (nss_backend_
+@@ -611,6 +959,8 @@ _nss_winbind_common_constr (nss_backend_
  {
  	nss_backend_t* be;
  
@@ -608,7 +623,7 @@ Support for updated nscd interfaces in Solaris
  	if(!(be = SMB_MALLOC_P(nss_backend_t)) )
  	return NULL;
  
-@@ -624,6 +959,7 @@ static NSS_STATUS
+@@ -624,6 +974,7 @@ static NSS_STATUS
  _nss_winbind_common_destr (nss_backend_t* be, void* args)
  {
  	SAFE_FREE(be);
@@ -616,7 +631,7 @@ Support for updated nscd interfaces in Solaris
  	return NSS_STATUS_SUCCESS;
  }
  
-@@ -640,6 +976,7 @@ nss_backend_t *
+@@ -640,6 +991,7 @@ nss_backend_t *
  _nss_winbind_ipnodes_constr(dummy1, dummy2, dummy3)
          const char      *dummy1, *dummy2, *dummy3;
  {
@@ -624,7 +639,7 @@ Support for updated nscd interfaces in Solaris
  	return (_nss_winbind_common_constr(ipnodes_ops,
  		sizeof (ipnodes_ops) / sizeof (ipnodes_ops[0])));
  }
-@@ -657,6 +994,7 @@ nss_backend_t *
+@@ -657,6 +1009,7 @@ nss_backend_t *
  _nss_winbind_hosts_constr(dummy1, dummy2, dummy3)
          const char      *dummy1, *dummy2, *dummy3;
  {
@@ -632,3 +647,16 @@ Support for updated nscd interfaces in Solaris
  	return (_nss_winbind_common_constr(host_ops,
  		sizeof (host_ops) / sizeof (host_ops[0])));
  }
+--- samba-4.19.8/docs-xml/manpages/winbindd.8.xml	2024-10-03 17:41:10.799845757 +0200
++++ samba-4.19.8/docs-xml/manpages/winbindd.8.xml	2024-10-03 17:46:36.766464205 +0200
+@@ -384,6 +384,10 @@
+ 
+ 	<para>If the Windows NT SID to UNIX user and group id mapping
+ 	file is damaged or destroyed then the mappings will be lost. </para>
++
++	<para>Any colon <literal>(:)</literal> character in the
++	<filename>passwd</filename> <literal>gecos</literal> field will be
++	replaced with a space &shy;<literal>(&nbsp;)</literal> character.</para>
+ </refsect1>
+ 
+ 
