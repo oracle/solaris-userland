@@ -166,7 +166,7 @@
 + * The 'gssapi_keyex' userauth mechanism.
 + */
 +static int
-+userauth_gsskeyex(struct ssh *ssh)
++userauth_gsskeyex(struct ssh *ssh, const char *method)
 +{
 +	Authctxt *authctxt = ssh->authctxt;
 +	int r, authenticated = 0;
@@ -1179,7 +1179,7 @@
 +/* Stuff for PAM */
 +
 +#ifdef USE_PAM
-+static int ssh_gssapi_simple_conv(int n, const struct pam_message **msg,
++static int ssh_gssapi_simple_conv(int n, struct pam_message **msg,
 +    struct pam_response **resp, void *data)
  {
 -	ctx->major = gss_verify_mic(&ctx->minor, ctx->context,

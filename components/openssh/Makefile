@@ -59,9 +59,6 @@ TEST_TARGET= $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Required by GCC 14 - needs to be evaluated and properly fixed via 37063515.
-CFLAGS += -Wno-incompatible-pointer-types
-
 CFLAGS += -DSET_USE_PAM
 CFLAGS += -DDEPRECATE_SUNSSH_OPT
 CFLAGS += -DKRB5_BUILD_FIX
@@ -89,9 +86,6 @@ LD_Z_PIE_MODE =	$(LD_Z_PIE_ENABLE)
 
 # Fix 64-bit linking via compiler.
 LDFLAGS += $(CC_BITS)
-
-# Link OpenSSH with libumem
-LDFLAGS += -lumem
 
 CONFIGURE_OPTIONS += --with-ssl-dir=/usr/openssl/3
 CONFIGURE_OPTIONS += --with-audit=solaris
