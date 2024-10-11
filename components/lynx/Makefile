@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=   gcc
@@ -28,17 +28,15 @@ COMPILER=   gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lynx
-COMPONENT_VERSION=	2.9.0
-COMPONENT_PATCHREL=	12
-COMPONENT_BAID=		152908
-COMPONENT_ARCHIVE_HASH=	sha256:a084e3b4a865969c4e30a733de3d4fe4a1f20ded14fbed6c320de5f7134c7716
-COMPONENT_SRC=		$(COMPONENT_NAME)$(COMPONENT_VERSION)dev.$(COMPONENT_PATCHREL)
+COMPONENT_VERSION=	2.9.2
+COMPONENT_BAID=		180633
+COMPONENT_ARCHIVE_HASH=	sha256:99f8f28f860094c533100d1cedf058c27fb242ce25e991e2d5f30ece4457a3bf
+COMPONENT_SRC=		$(COMPONENT_NAME)$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=	https://invisible-mirror.net/archives/lynx/tarballs/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_PROJECT_URL=	https://lynx.browser.org/
-IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).$(COMPONENT_PATCHREL)
-COMPONENT_ANITYA_ID=	1863
+COMPONENT_ANITYA_ID=		1863
 
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
@@ -66,23 +64,25 @@ CONFIGURE_OPTIONS +=	--with-screen=ncurses
 # http://www.w3.org/2005/MWI/Tests/. Use the US proxy to avoid HTTP 401 errors.
 COMPONENT_TEST_CMD = $(@D)/src/lynx
 COMPONENT_TEST_ARGS = --display_charset=utf-8 -dump \
-	http://www.cameronmoll.com/articles/mobile/mkp/pg1.html \
-	http://www.cameronmoll.com/articles/mobile/mkp/pg2.html \
-	http://www.cameronmoll.com/articles/mobile/mkp/pg3.html \
-	http://www.cameronmoll.com/articles/mobile/mkp/pg4.html \
+	https://www.cameronmoll.com/articles/mobile/mkp/pg1.html \
+	https://www.cameronmoll.com/articles/mobile/mkp/pg2.html \
+	https://www.cameronmoll.com/articles/mobile/mkp/pg3.html \
+	https://www.cameronmoll.com/articles/mobile/mkp/pg4.html \
 	https://www.w3.org/Provider/Style/dummy.html
 COMPONENT_TEST_TARGETS =
 
 COMPONENT_SYSTEM_TEST_DIR =
 COMPONENT_SYSTEM_TEST_CMD =		$(USRBINDIR)/lynx
 COMPONENT_SYSTEM_TEST_ARGS =		--display_charset=utf-8 -dump \
-	http://www.cameronmoll.com/articles/mobile/mkp/pg1.html \
-	http://www.cameronmoll.com/articles/mobile/mkp/pg2.html \
-	http://www.cameronmoll.com/articles/mobile/mkp/pg3.html \
-	http://www.cameronmoll.com/articles/mobile/mkp/pg4.html \
+	https://www.cameronmoll.com/articles/mobile/mkp/pg1.html \
+	https://www.cameronmoll.com/articles/mobile/mkp/pg2.html \
+	https://www.cameronmoll.com/articles/mobile/mkp/pg3.html \
+	https://www.cameronmoll.com/articles/mobile/mkp/pg4.html \
 	https://www.w3.org/Provider/Style/dummy.html
 COMPONENT_SYSTEM_TEST_TARGETS =
 
+REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/ncurses
+REQUIRED_PACKAGES += library/zlib
