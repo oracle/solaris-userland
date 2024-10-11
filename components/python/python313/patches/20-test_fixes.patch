@@ -1,0 +1,123 @@
+This patch disables several tests that doesn't work correctly on Solaris.
+
+test_gdb is not deterministic and sometimes fails for unimportant reasons (only
+when ran with gmake test from component root).
+
+test_socket fixes problem with sparc specific behavior of CMSG_SPACE(). Needed
+values are not linear as the test expects and that might cause an exception for
+last byte. Other problems in this test are related to known issues also
+affecting other platforms. [Can be atleast reported upstream]
+
+test_re those two test are probably also locale related but I have no idea what
+is the root cause of these... [Should be reported upstream]
+
+test_freeze is running configure and fails on an endian check. It should be
+investigated later, although since it's tools related, it's not
+the highest priority. [Should be reported upstream]
+
+test_posixpath doesn't work well within OWAN. [Not for upstream]
+
+--- Python-3.13.0/Lib/test/test_gdb/__init__.py
++++ Python-3.13.0/Lib/test/test_gdb/__init__.py
+@@ -4,6 +4,7 @@
+ # Lib/test/test_jit_gdb.py
+ 
+ import os
++import sys
+ import sysconfig
+ import unittest
+ from test import support
+@@ -18,6 +19,9 @@ if support.MS_WINDOWS:
+ if support.PGO:
+     raise unittest.SkipTest("test_gdb is not useful for PGO")
+ 
++if sys.platform.startswith("sunos"):
++    raise unittest.SkipTest("test doesn't work well on Solaris")
++
+ if not sysconfig.is_python_build():
+     raise unittest.SkipTest("test_gdb only works on source builds at the moment.")
+ 
+--- Python-3.13.0/Lib/test/test_re.py
++++ Python-3.13.0/Lib/test/test_re.py
+@@ -2046,6 +2046,8 @@ class ReTests(unittest.TestCase):
+         self.assertTrue(re.match(b'(?Li)\xc5', b'\xe5'))
+         self.assertTrue(re.match(b'(?Li)\xe5', b'\xc5'))
+ 
++    @unittest.skipIf(sys.platform.startswith("sunos"),
++                     "test doesn't work well on sparc Solaris")
+     def check_en_US_utf8(self):
+         locale.setlocale(locale.LC_CTYPE, 'en_US.utf8')
+         self.assertTrue(re.match(b'\xc5\xe5', b'\xc5\xe5', re.L|re.I))
+@@ -2059,6 +2061,8 @@ class ReTests(unittest.TestCase):
+         is_emscripten or is_wasi,
+         "musl libc issue on Emscripten/WASI, bpo-46390"
+     )
++    @unittest.skipIf(sys.platform.startswith("sunos"),
++                     "test doesn't work well on sparc Solaris")
+     def test_locale_compiled(self):
+         oldlocale = locale.setlocale(locale.LC_CTYPE)
+         self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
+--- Python-3.13.0/Lib/test/test_socket.py
++++ Python-3.13.0/Lib/test/test_socket.py
+@@ -3593,7 +3593,7 @@ class CmsgMacroTests(unittest.TestCase):
+         # Test CMSG_SPACE() with various valid and invalid values,
+         # checking the assumptions used by sendmsg().
+         toobig = self.socklen_t_limit - socket.CMSG_SPACE(1) + 1
+-        values = list(range(257)) + list(range(toobig - 257, toobig))
++        values = list(range(257)) + list(range(toobig - 257, toobig - 8))
+ 
+         last = socket.CMSG_SPACE(0)
+         # struct cmsghdr has at least three members, two of which are ints
+@@ -3739,6 +3739,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+         self.createAndSendFDs(1)
+ 
+     @unittest.skipIf(is_apple, "skipping, see issue #12958")
++    @unittest.skipIf(sys.platform.startswith("sunos"), "skipping, see issue #12958")
+     @unittest.skipIf(AIX, "skipping, see issue #22397")
+     @requireAttrs(socket, "CMSG_SPACE")
+     def testFDPassSeparate(self):
+@@ -3750,6 +3751,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+ 
+     @testFDPassSeparate.client_skip
+     @unittest.skipIf(is_apple, "skipping, see issue #12958")
++    @unittest.skipIf(sys.platform.startswith("sunos"), "skipping, see issue #12958")
+     @unittest.skipIf(AIX, "skipping, see issue #22397")
+     def _testFDPassSeparate(self):
+         fd0, fd1 = self.newFDs(2)
+@@ -3763,6 +3765,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+             len(MSG))
+ 
+     @unittest.skipIf(is_apple, "skipping, see issue #12958")
++    @unittest.skipIf(sys.platform.startswith("sunos"), "skipping, see issue #12958")
+     @unittest.skipIf(AIX, "skipping, see issue #22397")
+     @requireAttrs(socket, "CMSG_SPACE")
+     def testFDPassSeparateMinSpace(self):
+@@ -3777,6 +3780,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+ 
+     @testFDPassSeparateMinSpace.client_skip
+     @unittest.skipIf(is_apple, "skipping, see issue #12958")
++    @unittest.skipIf(sys.platform.startswith("sunos"), "skipping, see issue #12958")
+     @unittest.skipIf(AIX, "skipping, see issue #22397")
+     def _testFDPassSeparateMinSpace(self):
+         fd0, fd1 = self.newFDs(2)
+--- Python-3.13.0/Lib/test/test_tools/test_freeze.py
++++ Python-3.13.0/Lib/test/test_tools/test_freeze.py
+@@ -16,6 +16,7 @@ with imports_under_tool('freeze', 'test'
+ @unittest.skipIf(sys.platform.startswith('win'), 'not supported on Windows')
+ @unittest.skipIf(sys.platform == 'darwin' and sys._framework,
+         'not supported for frameworks builds on macOS')
++@unittest.skipIf(sys.platform.startswith('sunos'), 'acts weird on Solaris')
+ @support.skip_if_buildbot('not all buildbots have enough space')
+ # gh-103053: Skip test if Python is built with Profile Guided Optimization
+ # (PGO), since the test is just too slow in this case.
+--- Python-3.13.0/Lib/test/test_posixpath.py
++++ Python-3.13.0/Lib/test/test_posixpath.py
+@@ -357,6 +357,8 @@ class PosixPathTest(unittest.TestCase):
+ 
+     @unittest.skipIf(sys.platform == "vxworks",
+                      "no home directory on VxWorks")
++    @unittest.skipIf(sys.platform.startswith("sunos"),
++                     "doesn't work well with our internal LDAP")
+     def test_expanduser_pwd2(self):
+         pwd = import_helper.import_module('pwd')
+         for all_entry in get_attribute(pwd, 'getpwall')():

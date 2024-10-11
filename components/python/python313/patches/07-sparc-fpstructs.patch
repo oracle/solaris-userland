@@ -1,0 +1,23 @@
+On SPARC, structs with floating-point fields with a total size of 32 bytes
+or less are passed in floating-point registers.
+
+This was merged upstream into main branch, and might be backported to 3.13 later:
+https://github.com/python/cpython/issues/110190
+https://github.com/python/cpython/pull/118233
+
+From f15fff3f13431385b64837a2a69bf68924195ec2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jakub=20Kul=C3=ADk?= <Kulikjak@gmail.com>
+Date: Tue, 17 Sep 2024 19:06:53 +0200
+Subject: [PATCH] gh-110190: Fix ctypes structs with array on SPARC (GH-118233)
+
+--- Python-3.13.0/Modules/_ctypes/stgdict.c
++++ Python-3.13.0/Modules/_ctypes/stgdict.c
+@@ -606,7 +606,7 @@ PyCStructUnionType_update_stginfo(PyObje
+ /*
+  * The value of MAX_STRUCT_SIZE depends on the platform Python is running on.
+  */
+-#if defined(__aarch64__) || defined(__arm__) || defined(_M_ARM64)
++#if defined(__aarch64__) || defined(__arm__) || defined(_M_ARM64) || defined(__sparc__)
+ #  define MAX_STRUCT_SIZE 32
+ #elif defined(__powerpc64__)
+ #  define MAX_STRUCT_SIZE 64

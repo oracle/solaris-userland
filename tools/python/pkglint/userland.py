@@ -747,10 +747,11 @@ class UserlandManifestChecker(base.ManifestChecker):
 
     def __validate_pyc(self, pypath, pycpath, engine, _pkglint_id):
         # Magic values of all versions of Python can be found here:
-        # https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap_external.py
+        # https://github.com/python/cpython/blob/main/Include/internal/pycore_magic_number.h
         MAGIC_NUMBERS = {
             "39": (3425).to_bytes(2, "little") + b"\r\n",
             "311": (3495).to_bytes(2, "little") + b"\r\n",
+            "313": (3571).to_bytes(2, "little") + b"\r\n",
         }
 
         # Find both files in given proto areas. Both files can be in a different
