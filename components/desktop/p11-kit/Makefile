@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -73,6 +73,8 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/PASS:/p" ' \
         '-e "/FAIL:/p" ' \
         '-e "/ERROR:/p" '
+# Avoid failures for users using csh or tcsh as their shell
+COMPONENT_TEST_ENV += SHELL=/bin/sh
 
 REQUIRED_PACKAGES += developer/build/gnu-make
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc 
