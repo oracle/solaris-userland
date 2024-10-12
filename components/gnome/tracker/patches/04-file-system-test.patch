@@ -1,0 +1,38 @@
+Check /export/home (an actual file system) instead of /home (an autofs mount
+point on our build systems), so that checks for free space work as expected
+when running tests.
+
+Not suitable for upstream in this form, would need to make filesystem path
+configurable somehow.
+
+--- tracker-2.3.6/tests/libtracker-common/tracker-file-utils-test.c	2020-09-07 03:44:36.108654700 -0700
++++ tracker-2.3.6/tests/libtracker-common/tracker-file-utils-test.c	2024-10-11 10:31:43.076455039 -0700
+@@ -344,7 +344,7 @@
+ {
+         guint64 space;
+ 
+-        space = tracker_file_system_get_remaining_space ("/home");
++        space = tracker_file_system_get_remaining_space ("/export/home");
+         g_assert_cmpint (space, >, 0);
+ 
+         // This is a critical (aborts the process)
+@@ -356,7 +356,7 @@
+ {
+         gdouble space;
+ 
+-        space = tracker_file_system_get_remaining_space_percentage ("/home");
++        space = tracker_file_system_get_remaining_space_percentage ("/export/home");
+         g_assert_cmpfloat (space, >=, 0);
+         g_assert_cmpfloat (space, <=, 100);
+ 
+@@ -368,8 +368,8 @@
+ test_file_system_has_enough_space ()
+ {
+         /* Hopefully we will always have 1 byte free... */
+-        g_assert (tracker_file_system_has_enough_space ("/home", 1, FALSE));
+-        g_assert (tracker_file_system_has_enough_space ("/home", 1, TRUE));
++        g_assert (tracker_file_system_has_enough_space ("/export/home", 1, FALSE));
++        g_assert (tracker_file_system_has_enough_space ("/export/home", 1, TRUE));
+ 
+         /* gulong goes only up to 4Gb. Cannot ask for unreasonable amount of space */
+         //g_assert (!tracker_file_system_has_enough_space ("/home", G_MAXULONG, FALSE));
