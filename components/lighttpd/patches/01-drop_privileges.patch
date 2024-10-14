@@ -14,7 +14,7 @@ privileges are unnecessary and should be dropped.
  
  #ifdef _WIN32
  /* (Note: assume overwrite == 1 in this setenv() replacement) */
-@@ -927,6 +928,17 @@ }
+@@ -927,6 +928,18 @@ }
  
      } while (0);
  
@@ -24,7 +24,8 @@ privileges are unnecessary and should be dropped.
 +    priv_emptyset(tset);
 +    priv_addset(tset, PRIV_NET_PRIVADDR);
 +    if (setppriv(PRIV_OFF, PRIV_PERMITTED, tset) != 0) {
-+        perror("Unable to set privileges: ");
++        log_perror(srv->errh, __FILE__, __LINE__,
++                   "Unable to set privileges");
 +        return -1;
 +    }
 +    priv_freeset(tset);

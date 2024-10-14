@@ -1,0 +1,15 @@
+Needed to avoid implicit-function-declaration error from gcc 14.
+
+Should upstream once we're updated to a recent version
+
+--- tracker-2.3.6/src/libtracker-data/tracker-vtab-triples.c	2020-09-07 03:44:36.051653400 -0700
++++ tracker-2.3.6/src/libtracker-data/tracker-vtab-triples.c	2024-10-05 12:08:55.608555343 -0700
+@@ -22,6 +22,8 @@
+ 
+ #include "tracker-vtab-triples.h"
+ 
++#include <strings.h> /* for bzero() */
++
+ /* Define some constraints for older SQLite, we will never get
+  * those in older versions, and simplifies checks in code.
+  */

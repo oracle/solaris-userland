@@ -1,20 +1,32 @@
-GCC 14 fixes which resolve:
+Backport to 1.22.12 of patch offered and accepted upstream for 1.25.1 in
+https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/7553
 
-../../gstreamer-1.22.5/tests/misc/../../libs/gst/net/gstnetutils.c: In function 'gst_net_utils_set_socket_tos':
-../../gstreamer-1.22.5/tests/misc/../../libs/gst/net/gstnetutils.c:71:7: error: implicit declaration of function 'setsockopt' [-Wimplicit-function-declaration]
+From 9c0fbfd2eb3ae7a88099db86b7e21c2e7e5c8909 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Thu, 19 Sep 2024 14:06:51 -0700
+Subject: [PATCH] gstreamer: netclock-replay: use gst_c_args when building
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Need HAVE_CONFIG_H to avoid build failure on Solaris 11.4 with gcc 14.1:
+
+../tests/misc/../../libs/gst/net/gstnetutils.c:71:7:
+ error: implicit declaration of function ‘setsockopt’
+ [-Wimplicit-function-declaration]
    71 |   if (setsockopt (fd, IPPROTO_IP, IP_TOS, &tos, sizeof (tos)) < 0) {
       |       ^~~~~~~~~~
 
-Should be investigated and proper fix offered to upstream.
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/7553>
+---
+ tests/misc/meson.build | 1 +
+ 1 file changed, 1 insertion(+)
 
---- gstreamer-1.22.5/libs/gst/net/gstnetutils.c
-+++ gstreamer-1.22.5/libs/gst/net/gstnetutils.c
-@@ -37,7 +37,7 @@
- #include <gst/gstinfo.h>
- #include <errno.h>
- 
--#ifdef HAVE_SYS_SOCKET_H
-+#ifdef __sun
- #include <sys/socket.h>
- #endif
- 
+--- gstreamer-1.22.12/tests/misc/meson.build
++++ gstreamer-1.22.12/tests/misc/meson.build
+@@ -1,3 +1,4 @@
+ executable('netclock-replay', 'netclock-replay.c',
++    c_args : gst_c_args,
+     include_directories: libsinc,
+     dependencies : [gio_dep, gst_dep])

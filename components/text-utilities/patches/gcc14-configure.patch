@@ -1,0 +1,29 @@
+Upstream patch from:
+https://github.com/util-linux/util-linux/commit/1632856ef19efb50c57c939b82a9ff712b3c0b09
+
+From 1632856ef19efb50c57c939b82a9ff712b3c0b09 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 5 Jul 2019 17:20:27 +0200
+Subject: [PATCH] build-sys: Include <stdlib.h> in ./configure wchar_t test
+
+Without #include <stdlib.h>, this configure check fails for strict
+C99/C11 compilers which do not support implicit function declarations
+(which are a C90 feature removed from C99).
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ configure.ac | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configure.ac b/configure.ac
+index a840e20ee8b..997b6388cb0 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -756,6 +756,7 @@ UL_REQUIRES_COMPILE([widechar], [[
+   #include <wchar.h>
+   #include <wctype.h>
+   #include <stdio.h>
++  #include <stdlib.h>
+   ]], [[
+     wchar_t wc;
+     wint_t w;

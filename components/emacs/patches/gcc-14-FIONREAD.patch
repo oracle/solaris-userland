@@ -1,0 +1,38 @@
+Submitted upstream:
+https://lists.gnu.org/archive/html/emacs-devel/2024-10/msg00195.html
+
+From 2212eebaeb463cf271e6c963eadbdc1d0cdc8893 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 8 Oct 2024 13:25:58 -0700
+Subject: [PATCH] configure.ac: Fix FIONREAD check to work with gcc-14 on
+ Solaris
+
+Before this fix, it would fail to build with gcc-14 with the error:
+conftest.c: In function 'main':
+conftest.c:265:11: error: implicit declaration of function 'ioctl'
+ [-Wimplicit-function-declaration]
+  265 | int foo = ioctl (0, FIONREAD, &foo);
+      |           ^~~~~
+
+Solaris documents ioctl() as being defined in <unistd.h>
+---
+ configure.ac | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index 8a5ba7db3d1..947c2827b8e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -7117,6 +7117,9 @@ AC_DEFUN
+ 			    #ifdef USG5_4
+ 			    # include <sys/filio.h>
+ 			    #endif
++			    #ifdef HAVE_UNISTD_H
++			    # include <unistd.h> /* defines ioctl() on Solaris */
++			    #endif
+ 			  ]],
+ 			  [[int foo = ioctl (0, FIONREAD, &foo);]])],
+ 	 [emacs_cv_usable_FIONREAD=yes],
+-- 
+2.45.2
+

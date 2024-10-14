@@ -1,0 +1,39 @@
+Submitted & accepted upstream in:
+https://gitlab.com/gnutls/gnutls/-/merge_requests/1882
+
+From c6dfd48cc57864484c61877d4f0a49c69cff405d Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Subject: [PATCH] lib/nettle/int/nettle-internal.h: include alloca.h if
+ configure found it
+
+Needed for alloca definition on Solaris, to avoid build error with gcc 14:
+
+lib/nettle/int/nettle-internal.h:59:39: error: implicit declaration of
+ function 'alloca' [-Wimplicit-function-declaration]
+   59 | #define TMP_ALLOC(name, size) (name = alloca(sizeof(*name) * (size)))
+      |                                       ^~~~~~
+
+Closes #782
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ lib/nettle/int/nettle-internal.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/lib/nettle/int/nettle-internal.h b/lib/nettle/int/nettle-internal.h
+index b0eaaad90..5cf16961e 100644
+--- a/lib/nettle/int/nettle-internal.h
++++ b/lib/nettle/int/nettle-internal.h
+@@ -36,6 +36,9 @@
+ #define GNUTLS_NETTLE_INT_NETTLE_INTERNAL_H_INCLUDED
+ 
+ #include <assert.h>
++#ifdef HAVE_ALLOCA_H
++#include <alloca.h>
++#endif
+ /* Needed for alloca on bsd systems. */
+ #include <stdlib.h>
+ 
+-- 
+2.45.2
+

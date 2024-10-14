@@ -39,8 +39,8 @@ COMPONENT_BAID=		143590
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS += -Wno-incompatible-pointer-types
+# Required by GCC 14 due to incompatible PAM types between Solaris & Linux
+CFLAGS += -Wno-error=incompatible-pointer-types
 
 PAM_MODULE_DIR.32 = $(USRLIBDIR)/security
 PAM_MODULE_DIR.64 = $(PAM_MODULE_DIR.32)/$(MACH64)

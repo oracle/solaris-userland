@@ -1,0 +1,39 @@
+From 53ccbafc594b599f845aae57130387cb92c2c3d0 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 24 Sep 2024 19:01:15 -0700
+Subject: [PATCH] solaris: include ctype.h for declaration of isdigit()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fixes build error with gcc 14 on Solaris 11.4:
+
+netload.c:110:34: error: implicit declaration of function ‘isdigit’
+ [-Wimplicit-function-declaration]
+  110 |         while( (ptr > module) && isdigit( (int) *ptr ) ) {
+      |                                  ^~~~~~~
+netload.c:39:1: note: include ‘<ctype.h>’ or provide a declaration of ‘isdigit’
+   38 | #include <net/if.h>
+  +++ |+#include <ctype.h>
+   39 |
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ sysdeps/solaris/netload.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sysdeps/solaris/netload.c b/sysdeps/solaris/netload.c
+index 8ad8dbf2..90361cfd 100644
+--- a/sysdeps/solaris/netload.c
++++ b/sysdeps/solaris/netload.c
+@@ -26,6 +26,7 @@
+ 
+ #include "glibtop_private.h"
+ 
++#include <ctype.h>
+ #include <errno.h>
+ #include <string.h>
+ #include <kstat.h>
+-- 
+2.45.2
+

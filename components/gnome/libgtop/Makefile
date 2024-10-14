@@ -43,9 +43,6 @@ TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS += -Wno-implicit-function-declaration -Wno-incompatible-pointer-types
-
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 

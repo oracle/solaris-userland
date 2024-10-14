@@ -1,27 +1,57 @@
-GCC 14 fixes which resolve:
+Patch offered and accepted upstream for a release after 0.11.5 in:
+https://github.com/brailcom/speechd/pull/957
 
-espeak.c: In function 'espeak_list_synthesis_voices':
-espeak.c:901:40: error: implicit declaration of function 'index' [-Wimplicit-function-declaration]
-  901 |                                 dash = index(voicename, '-');
-      |                                        ^~~~~
 
---- speech-dispatcher-0.11.5/src/modules/espeak.c
-+++ speech-dispatcher-0.11.5/src/modules/espeak.c
-@@ -32,6 +32,7 @@
+From f5a3cf429a60a000fbcf9cad034025a5161cb42b Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 17 Sep 2024 17:10:20 -0700
+Subject: [PATCH] Use strchr() instead of deprecated index()
+
+Fixes build failures on Solaris with gcc 14 since the legacy index()
+function is only defined in the legacy strings.h header, but these
+files only include the standard string.h header which defines the
+standard strchr() function.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ src/clients/say/say.c | 6 +++---
+ src/modules/espeak.c  | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/clients/say/say.c b/src/clients/say/say.c
+index e08157dc..fcb8ed54 100644
+--- a/src/clients/say/say.c
++++ b/src/clients/say/say.c
+@@ -131,13 +131,13 @@ int main(int argc, char **argv)
+ 			printf("Invalid language!\n");
+ 	} else {
+ 		char *locale = strdup(setlocale(LC_MESSAGES, NULL));
+-		char *dot = index(locale, '.');
++		char *dot = strchr(locale, '.');
+ 		if (dot)
+ 			*dot = 0;
+-		char *at = index(locale, '@');
++		char *at = strchr(locale, '@');
+ 		if (at)
+ 			*at = 0;
+-		char *underscore = index(locale, '_');
++		char *underscore = strchr(locale, '_');
+ 		if (underscore)
+ 			*underscore = '-';
+ 		if (spd_set_language(conn, locale))
+diff --git a/src/modules/espeak.c b/src/modules/espeak.c
+index c19201bc..471b0c06 100644
+--- a/src/modules/espeak.c
++++ b/src/modules/espeak.c
+@@ -906,7 +906,7 @@ static SPDVoice **espeak_list_synthesis_voices()
  
- /* System includes. */
- #include <string.h>
-+#include <strings.h>
- #include <ctype.h>
- #include <glib.h>
- #include <fcntl.h>
---- speech-dispatcher-0.11.5/src/clients/say/say.c
-+++ speech-dispatcher-0.11.5/src/clients/say/say.c
-@@ -26,6 +26,7 @@
- 
- #include <stdio.h>
- #include <string.h>
-+#include <strings.h>
- #include <stdlib.h>
- #include <assert.h>
- #include <semaphore.h>
+ 			if (!strncmp(identifier, "mb/mb-", 6)) {
+ 				voicename = g_strdup(identifier + 6);
+-				dash = index(voicename, '-');
++				dash = strchr(voicename, '-');
+ 				if (dash)
+ 					/* Ignore "-en" language specification */
+ 					*dash = 0;
+-- 
+2.45.2
+

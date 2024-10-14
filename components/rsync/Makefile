@@ -43,6 +43,9 @@ ifeq ($(DEBUG), yes)
 gcc_OPT= -Og -g
 endif
 
+# Needed because we patch configure.ac in patches/gcc-14.patch
+COMPONENT_PREP_ACTION += (cd $(@D) ; ./prepare-source build);
+
 CONFIGURE_OPTIONS  +=		SHELL_PATH=$(BINDIR)/sh
 CONFIGURE_OPTIONS  +=		--with-included-popt
 CONFIGURE_OPTIONS  +=		--enable-xattr-support

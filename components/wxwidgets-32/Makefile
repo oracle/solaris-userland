@@ -44,9 +44,6 @@ PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 CXXFLAGS += -std=c++11
 
-# patch 002-gst1.0.2.patch modifies configure.in
-COMPONENT_PREP_ACTION += (cd $(@D); autoconf);
-
 TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk

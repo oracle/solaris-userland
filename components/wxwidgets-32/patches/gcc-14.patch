@@ -1,0 +1,148 @@
+Backport to 3.2.4 of patches submitted and accepted upstream in
+https://github.com/wxWidgets/wxWidgets/pull/24869
+
+
+From a2951c0e226d7aad040851b0662d15ed5c3abcc5 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 8 Oct 2024 18:54:17 -0700
+Subject: [PATCH 1/2] Fix WX_C_BIGENDIAN to work with gcc 14
+
+Before this fix, running configure on Solaris 11.4 x86 with gcc 14
+claimed x86 systems were big endian, because the test failed to compile:
+
+conftest.c:38:1: error: return type defaults to 'int' [-Wimplicit-int]
+   38 | main () {
+      | ^~~~
+conftest.c: In function 'main':
+conftest.c:46:3: error: implicit declaration of function 'exit' [-Wimplicit-function-declaration]
+   46 |   exit (u.c[sizeof (long) - 1] == 1);
+      |   ^~~~
+---
+ acinclude.m4 | 4 ++--
+ configure    | 9 ++++++++-
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/acinclude.m4 b/acinclude.m4
+index d8841d1f7e..3bc5538e59 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -269,7 +269,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <sys/types.h>
+  not big endian
+ #endif], ac_cv_c_bigendian=yes, ac_cv_c_bigendian=no)])
+ if test $ac_cv_c_bigendian = unknown; then
+-AC_TRY_RUN([main () {
++AC_TRY_RUN(AC_LANG_PROGRAM([[#include <stdlib.h>]],[[
+   /* Are we little or big endian?  From Harbison&Steele.  */
+   union
+   {
+@@ -278,7 +278,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[main () {
+   } u;
+   u.l = 1;
+   exit (u.c[sizeof (long) - 1] == 1);
+-}], [ac_cv_c_bigendian=no], [ac_cv_c_bigendian=yes], [ac_cv_c_bigendian=unknown])
++]])], [ac_cv_c_bigendian=no], [ac_cv_c_bigendian=yes], [ac_cv_c_bigendian=unknown])
+ fi])
+ if test $ac_cv_c_bigendian = unknown; then
+   AC_MSG_WARN([Assuming little-endian target machine - this may be overridden by adding the line "ac_cv_c_bigendian=${ac_cv_c_bigendian='yes'}" to config.cache file])
+diff --git a/configure b/configure
+index 645d0c9bc8..f4c4c93e7a 100755
+--- a/configure
++++ b/configure
+@@ -24703,7 +24703,11 @@ ac_cv_c_bigendian=unknown
+ else
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+-main () {
++#include <stdlib.h>
++int
++main (void)
++{
++
+   /* Are we little or big endian?  From Harbison&Steele.  */
+   union
+   {
+@@ -24712,6 +24716,9 @@ char c[sizeof (long)];
+   } u;
+   u.l = 1;
+   exit (u.c[sizeof (long) - 1] == 1);
++
++  ;
++  return 0;
+ }
+ _ACEOF
+ if ac_fn_c_try_run "$LINENO"; then :
+-- 
+2.45.2
+
+From 0c458f006c0f418bd66133504dcd8808f9f1c032 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 8 Oct 2024 19:09:40 -0700
+Subject: [PATCH 2/2] Fix SNDCTL_DSP_SPEED configure check on Solaris with gcc
+ 14
+
+Before this fix, running configure on Solaris 11.4 x86 with gcc 14
+reported that SNDCTL_DSP_SPEED was not supported because the test
+program failed to compile, with the error:
+
+conftest.c: In function 'main':
+conftest.c:156:25: error: implicit declaration of function 'ioctl' [-Wimplicit-function-declaration]
+  156 |                         ioctl(0, SNDCTL_DSP_SPEED, 0);
+      |                         ^~~~~
+
+On Solaris, ioctl() is declared in <unistd.h>
+---
+ configure    | 6 ++++++
+ configure.in | 6 ++++++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/configure b/configure
+index f4c4c93e7a..f3cd272a7a 100755
+--- a/configure
++++ b/configure
+@@ -38374,6 +38381,9 @@ /* end confdefs.h.  */
+ 
+                 #include <sys/ioctl.h>
+                 #include <sys/soundcard.h>
++                #ifdef HAVE_UNISTD_H
++                # include <unistd.h> /* needed for ioctl() on Solaris */
++                #endif
+ 
+ int
+ main ()
+@@ -38396,6 +38406,9 @@ /* end confdefs.h.  */
+ 
+                         #include <sys/ioctl.h>
+                         #include <sys/soundcard.h>
++                        #ifdef HAVE_UNISTD_H
++                        # include <unistd.h> /* needed for ioctl() on Solaris */
++                        #endif
+ 
+ int
+ main ()
+diff --git a/configure.in b/configure.in
+index 11a42d5c81..73707d6668 100644
+--- a/configure.in
++++ b/configure.in
+@@ -5802,6 +5802,9 @@ AC_CACHE_CHECK([for SNDCTL_DSP_SPEED in
+         AC_TRY_LINK([
+                 #include <sys/ioctl.h>
+                 #include <sys/soundcard.h>
++                #ifdef HAVE_UNISTD_H
++                # include <unistd.h> /* needed for ioctl() on Solaris */
++                #endif
+             ],
+             [
+                 ioctl(0, SNDCTL_DSP_SPEED, 0);
+@@ -5813,6 +5816,9 @@ LIBS="$saveLibs -lossaudio"
+                 AC_TRY_LINK([
+                         #include <sys/ioctl.h>
+                         #include <sys/soundcard.h>
++                        #ifdef HAVE_UNISTD_H
++                        # include <unistd.h> /* needed for ioctl() on Solaris */
++                        #endif
+                     ],
+                     [
+                         ioctl(0, SNDCTL_DSP_SPEED, 0);
+-- 
+2.45.2
+

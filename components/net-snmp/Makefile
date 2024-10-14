@@ -49,9 +49,6 @@ TEST_TARGET= $(TEST_32_and_64)
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS += -Wno-implicit-function-declaration -Wno-incompatible-pointer-types
-
 PYTHON_VERSION = 3.9
 
 studio_C99MODE= $(studio_C99_ENABLE)
@@ -95,6 +92,11 @@ CONFIGURE_OPTIONS.32  +=	--without-perl-modules
 CONFIGURE_OPTIONS.64  +=	PERLPROG="$(PERL)"
 CONFIGURE_OPTIONS.64  +=	--with-perl-modules="$(PERL_ARGS)"
 CONFIGURE_OPTIONS.64  +=	--disable-perl-cc-checks
+
+# Workaround -Wimplicit-function-declaration error from gcc 14 that
+# causes this check to fail and return incorrect answer.
+# Fixed upstream in 5.9.1 by commit a7c8c26c48c954a19bca5fd
+CONFIGURE_OPTIONS  += ac_cv_have_ip_recvdstaddr=yes
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D); $(CLONEY) $(COMPONENT_DIR)/sun $(@D)/sun);

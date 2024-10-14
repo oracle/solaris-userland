@@ -40,12 +40,15 @@ COMPONENT_BAID=		89377
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
-# Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS += -Wno-implicit-function-declaration
-
 PATCH_LEVEL =   0
 
 CONFIGURE_OPTIONS  +=		--localedir=$(CONFIGURE_LOCALEDIR)
+
+# Workaround gcc 14 errors in m4/needtrio.m4 in 4.9.2 (fixed in git in 2023)
+CONFIGURE_OPTIONS += ac_cv_need_trio=no
+
+# Workaround gcc 14 errors in m4/select.m4 from gnulib
+CONFIGURE_OPTIONS += gl_cv_func_select_detects_ebadf=yes
 
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/gnutls-3

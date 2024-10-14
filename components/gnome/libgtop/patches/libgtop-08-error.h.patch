@@ -1,0 +1,38 @@
+From 4113b08b01007cafcdf0ef7db6cb57d0b7292d2d Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Wed, 25 Sep 2024 12:35:15 -0700
+Subject: [PATCH] solaris: include glibtop/error.h for glibtop_warn_io_r
+ declaration
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fixes build error from gcc 14 on Solaris 11.4:
+
+netlist.c: In function ‘glibtop_get_netlist_s’:
+netlist.c:54:17: error: implicit declaration of function ‘glibtop_warn_io_r’;
+ did you mean ‘glibtop_init_r’? [-Wimplicit-function-declaration]
+   54 |                 glibtop_warn_io_r(server, "kstat_open()");
+      |                 ^~~~~~~~~~~~~~~~~
+      |                 glibtop_init_r
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ sysdeps/solaris/netlist.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sysdeps/solaris/netlist.c b/sysdeps/solaris/netlist.c
+index 17d00d49..a8f2f5f3 100644
+--- a/sysdeps/solaris/netlist.c
++++ b/sysdeps/solaris/netlist.c
+@@ -21,6 +21,7 @@
+ #include <string.h>
+ #include <kstat.h>
+ 
++#include <glibtop/error.h>
+ #include <glibtop/netlist.h>
+ 
+ 
+-- 
+2.45.2
+

@@ -1,0 +1,50 @@
+Submitted upstream:
+https://lists.gnupg.org/pipermail/gnupg-devel/2024-October/035650.html
+
+From 4f975c4777c7d48237027f2b1e59afa6e6669c3f Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 8 Oct 2024 15:01:23 -0700
+Subject: [PATCH GnuPG] build: Fix GNUPG_CHECK_ENDIAN to work with gcc 14
+
+Before this fix, running configure on Solaris 11.4 x86 with gcc 14
+claimed x86 systems were big endian, because the test failed to compile:
+
+conftest.c:103:1: error: return type defaults to 'int' [-Wimplicit-int]
+  103 | main () {
+      | ^~~~
+conftest.c: In function 'main':
+conftest.c:111:15: error: implicit declaration of function 'exit'
+ [-Wimplicit-function-declaration]
+  111 |               exit (u.c[sizeof (long) - 1] == 1);
+      |               ^~~~
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ acinclude.m4 | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/acinclude.m4 b/acinclude.m4
+index 98a87f673..a63edbe28 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -84,7 +84,7 @@ AC_DEFUN([GNUPG_CHECK_ENDIAN],
+          not big endian
+         #endif]])], gnupg_cv_c_endian=big, gnupg_cv_c_endian=little)])
+         if test "$gnupg_cv_c_endian" = unknown; then
+-            AC_RUN_IFELSE([AC_LANG_SOURCE([[main () {
++            AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]],[[
+               /* Are we little or big endian?  From Harbison&Steele.  */
+               union
+               {
+@@ -93,7 +93,7 @@ AC_DEFUN([GNUPG_CHECK_ENDIAN],
+               } u;
+               u.l = 1;
+               exit (u.c[sizeof (long) - 1] == 1);
+-              }]])],
++              ]])],
+               gnupg_cv_c_endian=little,
+               gnupg_cv_c_endian=big,
+               gnupg_cv_c_endian=$tmp_assumed_endian
+-- 
+2.45.2
+

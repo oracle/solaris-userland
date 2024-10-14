@@ -56,9 +56,6 @@ endif
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS += -Wno-implicit-function-declaration
-
 CFLAGS += -I$(USRINCDIR)/idn
 
 COMPONENT_BUILD_TARGETS = all info
@@ -117,6 +114,10 @@ CONFIGURE_OPTIONS += --disable-tests
 CONFIGURE_OPTIONS += --with-default-trust-store-file=/etc/certs/ca-certificates.crt
 CONFIGURE_OPTIONS += --enable-hardware-acceleration
 
+# Workaround gcc 14 errors in m4/select.m4 from gnulib
+CONFIGURE_OPTIONS += gl_cv_func_select_detects_ebadf=yes
+CONFIGURE_OPTIONS += gl_cv_func_pselect_detects_ebadf=yes
+
 CFLAGS.grub += -D_BOOT
 CFLAGS.grub += -g
 CFLAGS.grub += -falign-jumps=1
@@ -150,8 +151,6 @@ CFLAGS.grub += -mcmodel=large
 CFLAGS.grub += -mno-red-zone
 CFLAGS.grub += -fno-stack-protector
 CFLAGS.grub += -mno-stack-arg-probe
-# Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS.grub += -Wno-implicit-function-declaration
 
 # set of the configure options as needed for grub
 
@@ -260,8 +259,6 @@ CONFIGURE_OPTIONS.grub += ac_cv_func_getservbyname=no
 CONFIGURE_OPTIONS.grub += ac_cv_func_getuid=no
 CONFIGURE_OPTIONS.grub += ac_cv_func_iconv=no
 CONFIGURE_OPTIONS.grub += am_cv_func_iconv=no
-CONFIGURE_OPTIONS.grub += ac_cv_func_inet_ntop=no
-CONFIGURE_OPTIONS.grub += ac_cv_func_inet_pton=no
 CONFIGURE_OPTIONS.grub += ac_cv_func_issetugid=no
 CONFIGURE_OPTIONS.grub += ac_cv_func_kqueue=no
 CONFIGURE_OPTIONS.grub += ac_cv_func_localtime=no

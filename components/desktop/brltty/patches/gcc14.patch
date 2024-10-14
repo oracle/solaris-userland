@@ -1,12 +1,39 @@
-GCC 14 fixes.
+Backport to 6.4 of patch submitted & accepted upstream for a release
+after 6.6 in:
+https://github.com/brltty/brltty/pull/446
+
+
+From b703e3daa4e863122599f8dd460de8b7663fc1df Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 17 Sep 2024 16:15:04 -0700
+Subject: [PATCH] brlapi_client.c: include alloca.h if the system has it
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fixes build error on Solaris with gcc 14:
+
+brlapi_client.c: In function ‘brlapi__enterTtyModeWithPath’:
+brlapi_client.c:1836:12: error: implicit declaration of function ‘alloca’
+ [-Wimplicit-function-declaration]
+ 1836 |   packet = alloca(size);
+      |            ^~~~~~
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ Programs/brlapi_client.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 --- brltty-6.4/Programs/brlapi_client.c
 +++ brltty-6.4/Programs/brlapi_client.c
-@@ -26,6 +26,7 @@
- #define WIN_ERRNO_STORAGE_CLASS static
- #include "prologue.h"
+@@ -37,6 +37,10 @@ #include <locale.h>
+ #include <assert.h>
+ #include <limits.h>
  
++#ifdef HAVE_ALLOCA_H
 +#include <alloca.h>
- #include <stdio.h>
- #include <stddef.h>
- #include <stdarg.h>
++#endif /* HAVE_ALLOCA_H */
++
+ #ifndef __MINGW32__
+ #ifdef HAVE_LANGINFO_H
+ #include <langinfo.h>

@@ -1,0 +1,22 @@
+Fix gcc 14 build error:
+
+../../source3/libsmb/pylibsmb.c: In function 'py_cli_mknod':
+../../source3/libsmb/pylibsmb.c:2604:15: error: implicit declaration of
+ function 'makedev' [-Wimplicit-function-declaration]
+ 2604 |         dev = makedev(major, minor);
+      |               ^~~~~~~
+
+
+--- samba-4.19.8/source3/libsmb/pylibsmb.c	2023-11-27 04:09:10.608013000 -0800
++++ samba-4.19.8/source3/libsmb/pylibsmb.c	2024-10-06 17:24:32.793332598 -0700
+@@ -61,6 +61,10 @@
+ #include "libsmb/clirap.h"
+ #include "librpc/rpc/pyrpc_util.h"
+ 
++#if defined(HAVE_MAKEDEV) && defined(SUNOS5)
++#include <sys/mkdev.h>
++#endif
++
+ #define LIST_ATTRIBUTE_MASK \
+ 	(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_SYSTEM|FILE_ATTRIBUTE_HIDDEN)
+ 

@@ -51,7 +51,7 @@ TEST_TARGET=		$(NO_TESTS)
 include	$(WS_MAKE_RULES)/common.mk
 
 # Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS += -Wno-incompatible-pointer-types -Wno-implicit-function-declaration -Wno-int-conversion
+CFLAGS += -Wno-incompatible-pointer-types -Wno-int-conversion
 
 #
 # Linker refuses to link 32-bit binaries without explicit -m32 LDFLAGS.

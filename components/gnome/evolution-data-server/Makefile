@@ -52,9 +52,6 @@ BUILD_STYLE= cmake
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS += -Wno-incompatible-pointer-types
-
 # __EXTENSIONS__ required for timezone, altzone variables.
 CFLAGS += -D__EXTENSIONS__ -DHAVE_SUN_KRB5
 CXXFLAGS += -std=c++11 -D__EXTENSIONS__ -DHAVE_SUN_KRB5

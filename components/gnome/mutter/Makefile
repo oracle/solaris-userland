@@ -52,7 +52,7 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 CFLAGS += -Wno-incompatible-pointer-types
 
 # Requires non-standard extensions.
-CFLAGS += -std=c99 -D__EXTENSIONS__
+CFLAGS += -D__EXTENSIONS__
 
 CONFIGURE_OPTIONS += -Dnative_backend=false
 CONFIGURE_OPTIONS += -Dsystemd=false

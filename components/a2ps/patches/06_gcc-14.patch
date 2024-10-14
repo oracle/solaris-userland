@@ -1,0 +1,50 @@
+Needed to avoid -Wimplicit-function-declaration errors from gcc 14
+
+Not needed upstream as they added these includes as part of larger changes
+in later versions.
+
+
+--- a2ps-4.14/lib/obstack.c	2007-12-28 17:37:54.000000000 -0800
++++ a2ps-4.14/lib/obstack.c	2024-10-06 10:59:43.704945908 -0700
+@@ -19,6 +19,10 @@
+    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.  */
+ 
++#ifdef HAVE_CONFIG_H
++# include <config.h>
++#endif
++
+ #include "obstack.h"
+ 
+ /* NOTE BEFORE MODIFYING THIS FILE: This version number must be
+--- a2ps-4.14/lib/path-concat.c	2007-12-28 17:37:54.000000000 -0800
++++ a2ps-4.14/lib/path-concat.c	2024-10-06 10:33:06.296435808 -0700
+@@ -31,7 +31,7 @@
+ #endif
+ #include <sys/types.h>
+ 
+-/* char *malloc (); */
++#include <stdlib.h>
+ 
+ #ifndef DIRECTORY_SEPARATOR
+ # define DIRECTORY_SEPARATOR '/'
+--- a2ps-4.14/lib/title.c	2007-12-28 17:37:54.000000000 -0800
++++ a2ps-4.14/lib/title.c	2024-10-06 10:47:21.316080272 -0700
+@@ -28,6 +28,7 @@
+ #endif
+ 
+ #include <stdio.h>
++#include <string.h>
+ 
+ #if HAVE_VPRINTF || HAVE_DOPRNT || _LIBC
+ # if __STDC__
+--- a2ps-4.14/src/long-options.c	2007-12-28 17:33:58.000000000 -0800
++++ a2ps-4.14/src/long-options.c	2024-10-06 11:14:49.661342763 -0700
+@@ -23,6 +23,7 @@
+ 
+ #include <stdio.h>
+ #include <getopt.h>
++#include <stdlib.h>
+ #include "closeout.h"
+ #include "long-options.h"
+ #include "version-etc.h"

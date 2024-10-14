@@ -53,6 +53,9 @@ INSTALL_64 = $(VARIANTS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
+# We patch the configure.ac file. Get the new configure generated during prep.
+COMPONENT_PREP_ACTION = (cd $(@D) ; aclocal -I m4; autoconf )
+
 # emacs creates a directory in usr/lib/emacs/$(COMPONENT_VERSION) that
 # contains the platform name. Although the name is platform dependent,
 # the files inside it are the same on all platforms. By adding this

@@ -1,0 +1,63 @@
+Patch from gnulib upstream:
+
+https://git.savannah.gnu.org/gitweb/?p=gnulib.git;a=commitdiff;h=807cacc083db1515f15b8fd2e03333dd69184688
+
+Needed to build with gcc 14 to avoid:
+
+argmatch.c:59:23: error: implicit declaration of function 'exit' [-Wimplicit-function-declaration]
+   59 | # define ARGMATCH_DIE exit (EXIT_FAILURE)
+      |                       ^~~~
+
+
+From 807cacc083db1515f15b8fd2e03333dd69184688 Mon Sep 17 00:00:00 2001
+From: Paul Eggert <eggert@cs.ucla.edu>
+Date: Thu, 21 Nov 2002 07:19:33 +0000
+Subject: [PATCH] Include config.h here, not in argmatch.h. Include stdlib.h,
+ for EXIT_FAILURE. Always include <string.h>, since we assume C89.
+ (EXIT_FAILURE): Remove pre-C89 bug workaround.
+
+---
+ lib/argmatch.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/lib/argmatch.c b/lib/argmatch.c
+index 2293f67cc0..35787842ea 100644
+--- a/lib/argmatch.c
++++ b/lib/argmatch.c
+@@ -18,12 +18,15 @@
+ /* Written by David MacKenzie <djm@ai.mit.edu>
+    Modified by Akim Demaille <demaille@inf.enst.fr> */
+ 
++#if HAVE_CONFIG_H
++# include <config.h>
++#endif
++
+ #include "argmatch.h"
+ 
+ #include <stdio.h>
+-#ifdef STDC_HEADERS
+-# include <string.h>
+-#endif
++#include <stdlib.h>
++#include <string.h>
+ 
+ #include "gettext.h"
+ #define _(msgid) gettext (msgid)
+@@ -40,14 +43,6 @@
+ # define ARGMATCH_QUOTING_STYLE locale_quoting_style
+ #endif
+ 
+-/* The following test is to work around the gross typo in
+-   systems like Sony NEWS-OS Release 4.0C, whereby EXIT_FAILURE
+-   is defined to 0, not 1.  */
+-#if !EXIT_FAILURE
+-# undef EXIT_FAILURE
+-# define EXIT_FAILURE 1
+-#endif
+-
+ /* Non failing version of argmatch call this function after failing. */
+ #ifndef ARGMATCH_DIE
+ # define ARGMATCH_DIE exit (EXIT_FAILURE)
+-- 
+2.34.1
+

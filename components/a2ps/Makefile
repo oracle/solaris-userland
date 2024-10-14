@@ -36,9 +36,6 @@ COMPONENT_BAID=		161033
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
-# Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS += -Wno-implicit-function-declaration
-
 # don't use LD_Z_IGNORE: causes linker problems
 LD_Z_IGNORE=
 
@@ -50,6 +47,14 @@ CONFIGURE_OPTIONS  +=		--enable-shared
 CONFIGURE_OPTIONS  +=		--disable-static
 CONFIGURE_OPTIONS  +=		--sysconfdir=$(ETCDIR)/gnu
 CONFIGURE_OPTIONS  +=		--infodir=$(CONFIGURE_INFODIR)
+
+# These autoconf checks in a2ps 4.14 hit build errors with gcc 14
+# and incorrectly fail.  They've been fixed in later upstream releases
+# and the old autoconf files in 4.14 fail to rebuild with modern
+# autoconf versions, so we workaround them until we upgrade.
+CONFIGURE_OPTIONS  +=		ac_cv_func_rename_works=yes
+CONFIGURE_OPTIONS  +=		jm_cv_func_working_malloc=yes
+CONFIGURE_OPTIONS  +=		jm_cv_func_working_realloc=yes
 
 # because viewpathing isn't quite right in this version of a2ps
 COMPONENT_PREP_ACTION = \

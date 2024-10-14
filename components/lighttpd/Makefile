@@ -45,9 +45,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Required by GCC 14 - needs to be evaluated and properly fixed.
-CFLAGS += -Wno-implicit-function-declaration
-
 # Some binaries (like lemon) are built by compiler in CC_FOR_BUILD. That
 # does not respect our PIE config so we need to work around it
 COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'

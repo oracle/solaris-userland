@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 COMPILER= gcc
 BUILD_BITS= 64
@@ -50,6 +50,9 @@ PROGRAMS =	colcrt colrm column hexdump rev tailf
 
 # Build a utility program used by one of the hexdump tests.
 PROGRAMS +=	test_sysinfo
+
+# Needed because we patch configure.ac in patches/gcc14-configure.patch
+COMPONENT_PREP_ACTION += (cd $(@D) ; PATH="$(GNUBIN):$(PATH)" ./autogen.sh);
 
 # Limit translations to the text utilities (and lib/* and include/* ) only.
 COMPONENT_PRE_INSTALL_ACTION = \

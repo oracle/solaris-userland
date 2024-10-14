@@ -1,12 +1,31 @@
-GCC 14 fixes which resolve:
+Patch submitted upstream as part of:
+https://gitlab.freedesktop.org/pulseaudio/pulseaudio/-/merge_requests/834
 
-modules/gsettings/module-gsettings.c: In function 'module_gsettings_LTX_pa__done':
-modules/gsettings/module-gsettings.c:95:9: error: implicit declaration of function 'kill' [-Wimplicit-function-declaration]
+From 0e852afce3f4de3c3f8a39a9bebb966a6a1af698 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Wed, 18 Sep 2024 14:11:47 -0700
+Subject: [PATCH] module-gsettings: include signal.h for definition of kill()
+ on Solaris
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fixes build failure with gcc-14 on Solaris 11.4:
+
+../src/modules/gsettings/module-gsettings.c:95:9: error: implicit declaration
+ of function ‘kill’ [-Wimplicit-function-declaration]
    95 |         kill(u->pid, SIGTERM);
       |         ^~~~
 
---- pulseaudio-14.2/src/modules/gsettings/module-gsettings.c
-+++ pulseaudio-14.2/src/modules/gsettings/module-gsettings.c
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ src/modules/gsettings/module-gsettings.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/modules/gsettings/module-gsettings.c b/src/modules/gsettings/module-gsettings.c
+index 6cfac77bb..1500e7636 100644
+--- a/src/modules/gsettings/module-gsettings.c
++++ b/src/modules/gsettings/module-gsettings.c
 @@ -23,6 +23,7 @@
  
  #include <sys/types.h>
@@ -15,3 +34,6 @@ modules/gsettings/module-gsettings.c:95:9: error: implicit declaration of functi
  
  #include <pulsecore/core-error.h>
  #include <pulsecore/core-util.h>
+-- 
+2.45.2
+

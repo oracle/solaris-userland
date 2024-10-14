@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -41,6 +41,9 @@ COMPONENT_ANITYA_ID=	1215
 COMPONENT_BAID=		132293
 
 include $(WS_MAKE_RULES)/gnu-component.mk
+
+# Needed because we patch acinclude.m4 in patches/001-gcc-14.patch
+COMPONENT_PREP_ACTION += (cd $(@D) ; autoreconf -fiv) ;
 
 # Enable C99 mode 
 CC += -std=gnu99
