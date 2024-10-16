@@ -1,0 +1,103 @@
+#!/usr/bin/python3.13
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2024, Oracle and/or its affiliates.
+#
+
+import argparse
+import os
+import re
+import subprocess
+import sys
+import tempfile
+
+
+def sort_history_file(infile: str, outfile: str) -> None:
+
+    with open(infile, "r", encoding="utf-8") as ifile:
+        content = ifile.readlines()
+
+    comment = ""
+    header = ""
+    inheader = True
+    lines: list[tuple[str, str]] = []
+
+    for line in content:
+        # the file header must remain at top of the file
+        if inheader and (line == "\n" or line.startswith("#")):
+            header += line
+            continue
+        inheader = False
+
+        if line == "\n":
+            pass
+        if line.startswith("#"):
+            # this is a comment that should be attached to the line below
+            comment += line
+        else:
+            lines.append((line, comment))
+            comment = ""
+
+    def natural_key(line: tuple[str, str]) -> list[int | str]:
+        # based on https://en.wikipedia.org/wiki/Natural_sort_order
+
+        def try_int(string: str) -> int | str:
+            return int(string) if string.isdigit() else string
+
+        # only the part before '@' is relevant for sorting
+        key = line[0].split("@")[0]
+        return [try_int(part) for part in re.split(r"(\d+)", key)]
+
+    lines.sort(key=natural_key)
+
+    with open(outfile, "w", encoding="utf-8") as ofile:
+        ofile.write(header)
+        for line, comment in lines:
+            if comment:
+                ofile.write(comment)
+            ofile.write(line)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--diff', action='store_true',
+        help="Display differences rather than formatting the file.")
+    parser.add_argument('files', nargs='+')
+
+    args = parser.parse_args()
+
+    for file in args.files:
+        if args.diff:
+            fd, tmpfile = tempfile.mkstemp()
+            os.close(fd)
+            sort_history_file(file, tmpfile)
+            res = subprocess.run(["/usr/gnu/bin/diff", "-u", file, tmpfile])
+            os.remove(tmpfile)
+            if res.returncode:
+                sys.exit(res.returncode)
+        else:
+            sort_history_file(file, file)
+
+
+if __name__ == "__main__":
+    main()

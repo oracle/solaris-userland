@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -108,6 +108,9 @@ $(BUILD_DIR)/.linted-$(MACH): $(MOGRIFIED) $(HISTOGRIFIED) | $(BUILD_DIR)
 			-e $(WS_TOOLS)/python/ -f $(WS_TOOLS)/pkglintrc $(MOGRIFIED)
 	$(TOUCH) $@
 
+history-check:
+	./historyfmt -d $(HISTORY)
+
 $(BUILD_DIR)/.published-$(MACH):
 	$(MAKE) -j $(COMPONENT_MAKE_JOBS) $(PUBLISHED) $(BUILD_DIR)/.linted-$(MACH)
 ifndef DISABLE_IPS_CATALOG_AND_INDEX_UPDATES
@@ -115,7 +118,7 @@ ifndef DISABLE_IPS_CATALOG_AND_INDEX_UPDATES
 endif
 	$(TOUCH) $@
 
-publish: $(BUILD_DIR)/.published-$(MACH)
+publish: history-check $(BUILD_DIR)/.published-$(MACH)
 
 %.p5m: 	%.p5m.$(MACH)
 	$(CP) $< $@
