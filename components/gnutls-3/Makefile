@@ -152,6 +152,9 @@ CFLAGS.grub += -mno-red-zone
 CFLAGS.grub += -fno-stack-protector
 CFLAGS.grub += -mno-stack-arg-probe
 
+# This is needed in order to make gnutls static library compiled by GCC 14.
+CFLAGS.grub += -Wno-implicit-function-declaration
+
 # set of the configure options as needed for grub
 
 CONFIGURE_OPTIONS.grub += --enable-largefile
@@ -259,6 +262,8 @@ CONFIGURE_OPTIONS.grub += ac_cv_func_getservbyname=no
 CONFIGURE_OPTIONS.grub += ac_cv_func_getuid=no
 CONFIGURE_OPTIONS.grub += ac_cv_func_iconv=no
 CONFIGURE_OPTIONS.grub += am_cv_func_iconv=no
+CONFIGURE_OPTIONS.grub += ac_cv_func_inet_ntop=no
+CONFIGURE_OPTIONS.grub += ac_cv_func_inet_pton=no
 CONFIGURE_OPTIONS.grub += ac_cv_func_issetugid=no
 CONFIGURE_OPTIONS.grub += ac_cv_func_kqueue=no
 CONFIGURE_OPTIONS.grub += ac_cv_func_localtime=no
