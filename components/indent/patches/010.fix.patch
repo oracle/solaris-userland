@@ -1,0 +1,13 @@
+Patch created for building texinfo2man with the LDFLAGS and CFLAGS.
+
+--- indent-2.2.13/man/Makefile.am.orig	2024-09-26 10:17:40.187383137 -0700
++++ indent-2.2.13/man/Makefile.am	2024-09-26 10:17:46.766873075 -0700
+@@ -9,7 +9,7 @@
+ MAINTAINERCLEANFILES = @PACKAGE@.1 Makefile.in texinfo2man
+ 
+ texinfo2man: texinfo2man.c
+-	$(CC_FOR_BUILD) -o $@ ${srcdir}/texinfo2man.c
++	$(CC_FOR_BUILD) -o $@ ${srcdir}/texinfo2man.c ${LDFLAGS} ${CFLAGS}
+ 
+ @PACKAGE@.1: ${srcdir}/@PACKAGE@.1.in  ${srcdir}/../doc/@PACKAGE@.texi texinfo2man  Makefile.am
+ 	./texinfo2man ${srcdir}/@PACKAGE@.1.in ${srcdir}/../doc/@PACKAGE@.texi > $@

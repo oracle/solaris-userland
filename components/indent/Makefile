@@ -20,23 +20,27 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		indent
-COMPONENT_VERSION=	2.2.10
+COMPONENT_VERSION=	2.2.13
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8a9b41be5bfcab5d8c1be74204b10ae78789fc3deabea0775fdced8677292639
+	sha256:9e64634fc4ce6797b204bcb8897ce14fdd0ab48ca57696f78767c59cae578095
 COMPONENT_BUGDB=	utility/gnu-indent
 COMPONENT_ANITYA_ID=	1378
 
-COMPONENT_BAID=		30875
+COMPONENT_BAID=	178874
 
 TEST_TARGET= install $(TEST_64)
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
+
+# Patches to configure.in require configure script re-creation.
+COMPONENT_PREP_ACTION +=(cd $(@D); autoreconf -vfi);
 
 # Needed to get "gmake test" working.
 COMPONENT_PRE_CONFIGURE_ACTION =	($(CLONEY) $(SOURCE_DIR) $(@D))
