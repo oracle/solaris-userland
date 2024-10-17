@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	\
 COMPONENT_ARCHIVE_HASH= \
 	sha256:3df9eabee19bbcae6e9be81eb123a7de42026d8c265a65ecb4f7df292708ac6e
 COMPONENT_BUGDB=	gnome/gnome-shell
-COMPONENT_ANITYA_ID=	281317
+COMPONENT_ANITYA_ID=	311451
 COMPONENT_BAID=		128909
 
 PYTHON_VERSION = 3.9

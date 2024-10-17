@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:3ca8b4771b2bf39383a3c383d36d308fa113de5c481e16fdef9cabd643359d09
 COMPONENT_ARCHIVE_URL=	https://github.com/chaos/$(COMPONENT_NAME)/archive/refs/tags/$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	library/libgenders
-COMPONENT_ANITYA_ID=	13282
+COMPONENT_ANITYA_ID=	374593
 
 COMPONENT_BAID=		123417
 
