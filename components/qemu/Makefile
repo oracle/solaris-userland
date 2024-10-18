@@ -56,6 +56,7 @@ CONFIGURE_OPTIONS =  --disable-system
 CONFIGURE_OPTIONS += --without-default-features
 CONFIGURE_OPTIONS += --enable-tools
 CONFIGURE_OPTIONS += --enable-vdi
+CONFIGURE_OPTIONS += --enable-vmdk
 
 # Tests are focused on emulator, don't cover tools
 TEST_TARGET= $(NO_TESTS)
