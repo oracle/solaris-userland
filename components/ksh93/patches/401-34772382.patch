@@ -1,0 +1,25 @@
+# If the last command of a script fails with a signal, ksh93 likes
+# to make the parent think there was a signal and so it sends the same
+# signal to itself.  When the signal causes a core dump, ksh93 will
+# also core dump.  This has several bad side effects: the ksh core
+# dump might override the core of the failing application, it causes a
+# FMA event as ksh93 is a elf signed Oracle binary and this then may
+# cause support calls.
+#
+# This is patch is not up-streamed as it already fixed in the current ksh93
+# branch.
+
+--- INIT.2012-08-01/src/cmd/ksh93/sh/fault.c.org	2024-10-16 13:51:11.615146625 +0200
++++ INIT.2012-08-01/src/cmd/ksh93/sh/fault.c	2024-10-16 14:32:55.081540820 +0200
+@@ -659,10 +659,7 @@
+ 			vlimit(RLIMIT_CORE,0);
+ #endif
+ 		}
+-		signal(sig,SIG_DFL);
+-		sigrelease(sig);
+-		kill(getpid(),sig);
+-		pause();
++		exit(savxit);
+ 	}
+ #if SHOPT_KIA
+ 	if(sh_isoption(SH_NOEXEC))
