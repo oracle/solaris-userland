@@ -20,27 +20,26 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lazy-object-proxy
-COMPONENT_VERSION=	1.9.0
+COMPONENT_VERSION=	1.10.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:659fb5809fa4629b8a1ac5106f669cfc7bef26fbb389dda53b3e010d1ac4ebae
+    sha256:78247b6d45f43a52ef35c25b5581459e85117225408a4128a3daf8bf9648ac69
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/lazy-object-proxy
 COMPONENT_BUGDB=	python-mod/lazy-obj-proxy
 COMPONENT_ANITYA_ID=	8265
-COMPONENT_BAID=		141682
-
+COMPONENT_BAID=		179047
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =    $(SOURCE_DIR)/tests

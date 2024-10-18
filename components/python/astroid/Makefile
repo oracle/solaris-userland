@@ -20,27 +20,27 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		astroid
-COMPONENT_VERSION=	2.12.5
+COMPONENT_VERSION=	3.3.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	https://github.com/PyCQA/astroid
 COMPONENT_BUGDB=	python-mod/astroid
 COMPONENT_ANITYA_ID=	12725
-COMPONENT_BAID=		129340
+COMPONENT_BAID=		179051
 
 # pypi archive doesn't include the test suite
 GIT_REPO=	$(COMPONENT_PROJECT_URL)
 GIT_COMMIT_ID=	v$(COMPONENT_VERSION)
-GIT_HASH=	sha256:3f2eb8f6ef55734c15e6a0caf705e96734ec7559a22dc6a7995bf8fff3b47c65
+GIT_HASH=	sha256:d32de833715d7cf735610c95baba84a213ae10f6f4694e137f3fd24b2a266cec
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 
@@ -59,6 +59,4 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/lazy-object-proxy-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/wrapt-%)
+REQUIRED_PACKAGES += library/python/typing-extensions-39

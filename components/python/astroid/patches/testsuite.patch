@@ -1,0 +1,15 @@
+On Solaris, urllib3 doesn't vendor six; it uses the system copy instead.
+
+Not intended for upstream.
+
+--- astroid-3.3.2/tests/test_modutils.py
++++ astroid-3.3.2/tests/test_modutils.py
+@@ -581,7 +581,7 @@ class ExtensionPackageWhitelistTest(unit
+         )
+ 
+ 
+-@pytest.mark.skipif(not HAS_URLLIB3_V1, reason="This test requires urllib3 < 2.")
++@pytest.mark.skip(reason="On Solaris, urllib3 doesn't vendor six.")
+ def test_file_info_from_modpath__SixMetaPathImporter() -> None:
+     """Six is not backported anymore in urllib3 v2.0.0+"""
+     assert modutils.file_info_from_modpath(["urllib3.packages.six.moves.http_client"])
