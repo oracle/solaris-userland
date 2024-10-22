@@ -29,7 +29,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		unbound
 COMPONENT_VERSION=	1.21.1
-COMPONENT_BAID=		180638
+COMPONENT_BAID=		181493
 COMPONENT_PROJECT_URL=	https://nlnetlabs.nl/projects/unbound/about/
 COMPONENT_ARCHIVE_HASH= \
     sha256:3036d23c23622b36d3c87e943117bdec1ac8f819636eb978d806416b0fa9ea46
