@@ -1,0 +1,69 @@
+From 5ca3df2f69b6124d0c3c4cca90c144cbae4850fc Mon Sep 17 00:00:00 2001
+From: Bryan Banda <bryan.banda007@gmail.com>
+Date: Mon, 22 Jul 2024 17:04:15 +0200
+Subject: [PATCH] fix: Update the import path for TripleDES Cipher
+
+--- paramiko-3.4.0/paramiko/pkey.py
++++ paramiko-3.4.0/paramiko/pkey.py
+@@ -43,6 +43,20 @@ from paramiko.ssh_exception import SSHEx
+ from paramiko.message import Message
+ 
+ 
++# TripleDES is moving from `cryptography.hazmat.primitives.ciphers.algorithms`
++# in cryptography>=43.0.0 to `cryptography.hazmat.decrepit.ciphers.algorithms`
++# It will be removed from `cryptography.hazmat.primitives.ciphers.algorithms`
++# in cryptography==48.0.0.
++#
++# Source References:
++# - https://github.com/pyca/cryptography/commit/722a6393e61b3ac
++# - https://github.com/pyca/cryptography/pull/11407/files
++try:
++    from cryptography.hazmat.decrepit.ciphers.algorithms import TripleDES
++except ImportError:
++    from cryptography.hazmat.primitives.ciphers.algorithms import TripleDES
++
++
+ OPENSSH_AUTH_MAGIC = b"openssh-key-v1\x00"
+ 
+ 
+@@ -97,7 +111,7 @@ class PKey:
+             "mode": modes.CBC,
+         },
+         "DES-EDE3-CBC": {
+-            "cipher": algorithms.TripleDES,
++            "cipher": TripleDES,
+             "keysize": 24,
+             "blocksize": 8,
+             "mode": modes.CBC,
+--- paramiko-3.4.0/paramiko/transport.py
++++ paramiko-3.4.0/paramiko/transport.py
+@@ -121,6 +121,20 @@ from paramiko.util import (
+ )
+ 
+ 
++# TripleDES is moving from `cryptography.hazmat.primitives.ciphers.algorithms`
++# in cryptography>=43.0.0 to `cryptography.hazmat.decrepit.ciphers.algorithms`
++# It will be removed from `cryptography.hazmat.primitives.ciphers.algorithms`
++# in cryptography==48.0.0.
++#
++# Source References:
++# - https://github.com/pyca/cryptography/commit/722a6393e61b3ac
++# - https://github.com/pyca/cryptography/pull/11407/files
++try:
++    from cryptography.hazmat.decrepit.ciphers.algorithms import TripleDES
++except ImportError:
++    from cryptography.hazmat.primitives.ciphers.algorithms import TripleDES
++
++
+ # for thread cleanup
+ _active_threads = []
+ 
+@@ -256,7 +270,7 @@ class Transport(threading.Thread, Closin
+             "key-size": 32,
+         },
+         "3des-cbc": {
+-            "class": algorithms.TripleDES,
++            "class": TripleDES,
+             "mode": modes.CBC,
+             "block-size": 8,
+             "key-size": 24,

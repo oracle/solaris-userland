@@ -25,22 +25,19 @@
 
 COMPILER=		gcc
 
-# Component uses ABI3 naming.
-PYTHON3_SOABI=abi3
-
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cryptography
-COMPONENT_VERSION=	37.0.2
+COMPONENT_VERSION=	43.0.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c1380f02ce9e1771bdbaa788c4d602a3e2456e291c81562dcf4c3dea9d844645
+    sha256:203e92a75716d8cfb491dc47c79e17d0d9207ccffcbcb35f598fbe463ae3444d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://cryptography.io/
 COMPONENT_BUGDB=	python-mod/cryptography
 COMPONENT_ANITYA_ID=	5532
-COMPONENT_BAID=		124574
+COMPONENT_BAID=		180165
 
 # cryptography_vectors package is being used for testing only
 # and is not delivered with cryptography
@@ -49,7 +46,7 @@ COMPONENT_VERSION_VECTORS=	$(COMPONENT_VERSION)
 COMPONENT_SRC_VECTORS=		$(COMPONENT_NAME_VECTORS)-$(COMPONENT_VERSION_VECTORS)
 COMPONENT_ARCHIVE_VECTORS=	$(COMPONENT_SRC_VECTORS).tar.gz
 COMPONENT_ARCHIVE_HASH_VECTORS=	\
-	sha256:02dafd1955edf0060304b3aacc0c6a0411529c918274197beafff32fe3f92439
+	sha256:54cf7b9ded04aafc9b21dd83cf88c511300810167e940833c93b5f1d3542874c
 COMPONENT_ARCHIVE_URL_VECTORS=	$(call pypi_url,VECTORS)
 
 
@@ -57,9 +54,10 @@ COMPONENT_ARCHIVE_URL_VECTORS=	$(call pypi_url,VECTORS)
 include $(WS_MAKE_RULES)/cargo-vendored.mk
 VENDORED_SOURCES_NAME = $(COMPONENT_SRC)-rust-sources
 VENDORED_CARGO_LOCK_LOCATION = $(COMPONENT_SRC)/src/rust
+COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
@@ -71,12 +69,15 @@ TARGET_311 = $(BUILD_DIR)/%-3.11/
 # OpenSSL 3 temporarily lives in non-standard directory.
 CFLAGS += -I/usr/openssl/3/include
 LDFLAGS += -L/usr/openssl/3/lib/$(BITS)
+
 COMPONENT_BUILD_ENV += LDFLAGS="$(LDFLAGS)"
-
+COMPONENT_BUILD_ENV += OPENSSL_DIR="/usr/openssl/3"
+COMPONENT_BUILD_ENV += OPENSSL_LIB_DIR="/usr/openssl/3/lib/$(BITS)"
 COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
-COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 
-COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
+COMPONENT_INSTALL_ENV += OPENSSL_DIR="/usr/openssl/3"
+COMPONENT_INSTALL_ENV += OPENSSL_LIB_DIR="/usr/openssl/3/lib/$(BITS)"
+COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -96,13 +97,7 @@ test:		$(TEST_64)
 system-test:    $(SYSTEM_TEST_64)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cffi-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
 REQUIRED_PACKAGES += library/python/setuptools-rust
-REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-
-# Testing related components
-REQUIRED_PACKAGES += library/python/iso8601
-REQUIRED_PACKAGES += library/python/pytz

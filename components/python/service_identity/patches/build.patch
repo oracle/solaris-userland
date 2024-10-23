@@ -1,0 +1,36 @@
+We do not have hatchling on Solaris, and it doesn't seem necessary
+to deliver it at this point. This patch modifies the build metadata
+to use setuptools instead.
+
+Also, the GitHub archive we use doesn't contain all the info necessary
+to guess the package version automatically, which is why it's explicitly
+listed here.
+
+Not intended for upstream.
+
+--- service_identity-23.1.0/pyproject.toml
++++ service_identity-23.1.0/pyproject.toml
+@@ -1,11 +1,12 @@
+ [build-system]
+-requires = ["hatchling", "hatch-vcs", "hatch-fancy-pypi-readme"]
+-build-backend = "hatchling.build"
++requires = ["setuptools"]
++build-backend = "setuptools.build_meta"
+ 
+ [project]
+ name = "service-identity"
++version = "24.1.0"
+ authors = [{ name = "Hynek Schlawack", email = "hs@ox.cx" }]
+-license = "MIT"
++license = {text = "MIT"}
+ requires-python = ">=3.8"
+ description = "Service identity verification for pyOpenSSL & cryptography."
+ keywords = ["cryptography", "openssl", "pyopenssl"]
+@@ -31,7 +32,6 @@ dependencies = [
+     "pyasn1",
+     "cryptography",
+ ]
+-dynamic = ["version", "readme"]
+ 
+ [project.optional-dependencies]
+ idna = ["idna"]

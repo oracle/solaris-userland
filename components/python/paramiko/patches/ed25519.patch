@@ -60,7 +60,7 @@ https://github.com/paramiko/paramiko/pull/972/files
                  for directory in [".ssh", "ssh"]:
 --- paramiko-3.4.0/paramiko/pkey.py
 +++ paramiko-3.4.0/paramiko/pkey.py
-@@ -128,7 +128,7 @@ class PKey:
+@@ -142,7 +142,7 @@ class PKey:
          # TODO: make sure sphinx is reading Path right in param list...
  
          # Lazy import to avoid circular import issues
@@ -69,7 +69,7 @@ https://github.com/paramiko/paramiko/pull/972/files
  
          # Normalize to string, as cert suffix isn't quite an extension, so
          # pathlib isn't useful for this.
-@@ -171,8 +171,6 @@ class PKey:
+@@ -185,8 +185,6 @@ class PKey:
              key_class = DSSKey
          elif isinstance(loaded, asymmetric.rsa.RSAPrivateKey):
              key_class = RSAKey
@@ -88,7 +88,7 @@ https://github.com/paramiko/paramiko/pull/972/files
  from paramiko.kex_curve25519 import KexCurve25519
  from paramiko.kex_gex import KexGex, KexGexSHA256
  from paramiko.kex_group1 import KexGroup1
-@@ -178,7 +177,6 @@ class Transport(threading.Thread, Closin
+@@ -192,7 +191,6 @@ class Transport(threading.Thread, Closin
      )
      # ~= HostKeyAlgorithms in OpenSSH land
      _preferred_keys = (
@@ -96,7 +96,7 @@ https://github.com/paramiko/paramiko/pull/972/files
          "ecdsa-sha2-nistp256",
          "ecdsa-sha2-nistp384",
          "ecdsa-sha2-nistp521",
-@@ -189,7 +187,6 @@ class Transport(threading.Thread, Closin
+@@ -203,7 +201,6 @@ class Transport(threading.Thread, Closin
      )
      # ~= PubKeyAcceptedAlgorithms
      _preferred_pubkeys = (
@@ -104,7 +104,7 @@ https://github.com/paramiko/paramiko/pull/972/files
          "ecdsa-sha2-nistp256",
          "ecdsa-sha2-nistp384",
          "ecdsa-sha2-nistp521",
-@@ -293,8 +290,6 @@ class Transport(threading.Thread, Closin
+@@ -307,8 +304,6 @@ class Transport(threading.Thread, Closin
          "ecdsa-sha2-nistp384-cert-v01@openssh.com": ECDSAKey,
          "ecdsa-sha2-nistp521": ECDSAKey,
          "ecdsa-sha2-nistp521-cert-v01@openssh.com": ECDSAKey,
@@ -123,18 +123,18 @@ https://github.com/paramiko/paramiko/pull/972/files
      ECDSAKey,
      PKey,
  )
-@@ -122,11 +121,6 @@ key_data = [
- key_data = [
+@@ -123,11 +122,6 @@ key_data = [
      ["ssh-rsa", RSAKey, "SHA256:OhNL391d/beeFnxxg18AwWVYTAHww+D4djEE7Co0Yng"],
      ["ssh-dss", DSSKey, "SHA256:uHwwykG099f4M4kfzvFpKCTino0/P03DRbAidpAmPm0"],
--    [
+     [
 -        "ssh-ed25519",
 -        Ed25519Key,
 -        "SHA256:J6VESFdD3xSChn8y9PzWzeF+1tl892mOy2TqkMLO4ow",
 -    ],
-     [
+-    [
          "ecdsa-sha2-nistp256",
          ECDSAKey,
+         "SHA256:BrQG04oNKUETjKCeL4ifkARASg3yxS/pUHl3wWM26Yg",
 --- paramiko-3.4.0/tests/pkey.py
 +++ paramiko-3.4.0/tests/pkey.py
 @@ -7,7 +7,6 @@ from cryptography.hazmat.primitives.asym

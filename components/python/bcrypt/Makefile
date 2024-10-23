@@ -20,32 +20,38 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
 
-# Component uses ABI3 naming.
-PYTHON3_SOABI=abi3
-
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bcrypt
-COMPONENT_VERSION=	3.2.2
+COMPONENT_VERSION=	4.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:cc9660e436b1c238433f9c7d2f2cddc996df6658b0c81193b2866799979ddae4
+    sha256:cf69eaf5185fd58f268f805b505ce31f9b9fc2d64b376642164e9244540c1221
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	hhttps://github.com/pyca/bcrypt/
 COMPONENT_BUGDB=	python-mod/bcrypt
 COMPONENT_ANITYA_ID=	9047
-COMPONENT_BAID=		125145
+COMPONENT_BAID=		180170
 
+
+# This is necessary for vendored rust dependencies
+include $(WS_MAKE_RULES)/cargo-vendored.mk
+VENDORED_SOURCES_NAME = $(COMPONENT_SRC)-rust-sources
+VENDORED_CARGO_LOCK_LOCATION = $(COMPONENT_SRC)/src/_bcrypt
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
+COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
+COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -62,4 +68,5 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/cffi-%)
+REQUIRED_PACKAGES += library/python/setuptools-rust
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
