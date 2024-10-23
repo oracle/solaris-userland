@@ -1,41 +1,49 @@
-ALso disables GCC 7 format-nonliteral error.
+Submitted & accepted upstream for 2.83.0 in:
+https://gitlab.gnome.org/GNOME/glib/-/merge_requests/4351
 
-Not suitable for upstream
+From b6004c70ccb2feee298cd900b981644f9ed59200 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Mon, 14 Oct 2024 17:54:15 -0700
+Subject: [PATCH 4/5] tests: add casts to avoid -Wformat errors on 32-bit
+ Solaris builds
 
---- a/glib/tests/mapping.c      2023-06-01 17:40:40.907059794 -0700
-+++ b/glib/tests/mapping.c      2023-06-01 17:43:55.365968296 -0700
-@@ -225,7 +225,9 @@
-   signal (SIGUSR1, handle_usr1);
- #endif
+For historical reasons, pid_t & mode_t are defined as long instead
+of int for 32-bit processes in the Solaris headers, and even though
+they are the same size, gcc issues -Wformat headers if you try to
+print them with "%d" and "%u" instead of "%ld" & "%lu".
 
-+#pragma GCC diagnostic warning "-Wformat"
-   g_snprintf (pid, sizeof(pid), "%d", getpid ());
-+#pragma GCC diagnostic pop
-   child_argv[0] = local_argv[0];
-   child_argv[1] = "mapchild";
-   child_argv[2] = pid;
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ gio/tests/file.c     | 2 +-
+ glib/tests/mapping.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/gio/tests/file.c	2020-09-17 16:33:33.060284970 -0700
-+++ b/gio/tests/file.c	2020-09-17 16:34:24.747513461 -0700
-@@ -881,7 +881,10 @@
+diff --git a/gio/tests/file.c b/gio/tests/file.c
+index 2967406fb..0ef75dfca 100644
+--- a/gio/tests/file.c
++++ b/gio/tests/file.c
+@@ -2469,7 +2469,7 @@ test_copy_preserve_mode (void)
    /* Reset the umask after querying it above. There’s no way to query it without
     * changing it. */
    umask (current_umask);
-+
-+#pragma GCC diagnostic warning "-Wformat"
-   g_test_message ("Current umask: %u", current_umask);
-+#pragma GCC diagnostic pop
+-  g_test_message ("Current umask: %u", current_umask);
++  g_test_message ("Current umask: %u", (unsigned int) current_umask);
  
    for (i = 0; i < G_N_ELEMENTS (vectors); i++)
      {
---- a/glib/gspawn.c     2023-06-01 16:57:00.471203613 -0700
-+++ b/glib/gspawn.c     2023-06-01 16:57:20.908832159 -0700
-@@ -1483,6 +1483,7 @@
-  */
-   gint fd;
-   gint res = 0;
-+  gint open_max = -1;
-
-   open_max = fcntl (INT_MAX, F_PREVFD); /* find the maximum fd */
-   if (open_max < 0) /* No open files */
+diff --git a/glib/tests/mapping.c b/glib/tests/mapping.c
+index bbd4de8b0..af5dd60c3 100644
+--- a/glib/tests/mapping.c
++++ b/glib/tests/mapping.c
+@@ -228,7 +228,7 @@ test_child_private (void)
+   spawn_flags |= G_SPAWN_DO_NOT_REAP_CHILD;
+ #endif
+ 
+-  g_snprintf (pid, sizeof(pid), "%d", getpid ());
++  g_snprintf (pid, sizeof (pid), "%d", (int) getpid ());
+   child_argv[0] = local_argv[0];
+   child_argv[1] = "mapchild";
+   child_argv[2] = pid;
+-- 
+2.45.2
 

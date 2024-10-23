@@ -1,16 +1,58 @@
-Remove Unix standard settings for Solaris 11.4, so we don't exclude all
-features added between XPG2 & XPG7, now that these are exposed by default.
+Submitted & accepted upstream for 2.83.0 in:
+https://gitlab.gnome.org/GNOME/glib/-/merge_requests/4351
 
-To send upstream, need to adjust to right version for each OS level
+From 5aabd288ad89bb405efd4771578455a1f7bdac8a Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Mon, 14 Oct 2024 17:19:16 -0700
+Subject: [PATCH 3/5] build: update _XOPEN_SOURCE setting for modern Solaris &
+ illumos
 
---- a/meson.build	2019-09-25 15:21:05.190853342 -0700
-+++ b/meson.build	2019-09-25 15:21:13.619238512 -0700
-@@ -1905,8 +1905,6 @@
+Previously the build was requesting interfaces matching SUSv1/Unix95,
+as implemented in Solaris 2.6 and later.  This changes it to try the
+most recent version supported, and limits to the versions supported
+by OS versions that meson supports.  This includes these _XOPEN_SOURCE
+versions:
+
+800 (2024): supported by illumos starting in July 2024
+700 (2008): supported by Solaris 11.4 & illumos from 2014-2024
+600 (2001): supported by Solaris 10-11.3 & illumos prior to 2014
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ meson.build | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 8836c26d2..cb70f9b24 100644
+--- a/meson.build
++++ b/meson.build
+@@ -2483,10 +2483,23 @@ have_pkg_config = find_program('pkg-config', required: false).found()
+ # Some installed tests require a custom environment
+ env_program = find_program('env', required: installed_tests_enabled)
  
- # FIXME: How to detect Solaris? https://github.com/mesonbuild/meson/issues/1578
+-# FIXME: How to detect Solaris? https://github.com/mesonbuild/meson/issues/1578
++# illumos & Solaris may need extra definitions to expose some SUS/POSIX
++# interfaces in headers that conflict with previous Solaris headers.
++# But if we define them to request an older version of the standards,
++# we may hide things introduced in newer versions.  We only check the
++# versions that are supported on systems new enough that meson runs on them.
  if host_system == 'sunos'
 -  glib_conf.set('_XOPEN_SOURCE_EXTENDED', 1)
 -  glib_conf.set('_XOPEN_SOURCE', 2)
++  xopen_test_code = '''#include <unistd.h>
++  #if _XOPEN_VERSION != _XOPEN_SOURCE
++  #error "XOPEN_SOURCE of _XOPEN_SOURCE not supported"
++  #endif'''
++  foreach std : ['800', '700', '600']
++    if cc.compiles(xopen_test_code, args: '-D_XOPEN_SOURCE=' + std, name: 'building with _XOPEN_SOURCE=' + std)
++      xopen_version = std
++      break
++    endif
++  endforeach
++  glib_conf.set('_XOPEN_SOURCE', xopen_version)
    glib_conf.set('__EXTENSIONS__',1)
  endif
  
+-- 
+2.45.2
+

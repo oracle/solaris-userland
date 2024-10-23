@@ -2433,3 +2433,13 @@ Subject: [PATCH 02/19] disable systemd
  void
  gdm_session_select_session (GdmSession *self,
                              const char *text)
+--- gdm-45.0.1/meson.build
++++ gdm-45.0.1/meson.build
+@@ -233,6 +233,7 @@ conf.set('HAVE_UT_UT_TV', utmp_has_tv_fi
+ conf.set('HAVE_UT_UT_SYSLEN', utmp_has_syslen_field)
+ conf.set('ENABLE_IPV6', get_option('ipv6'))
+ conf.set('HAVE_SYS_SOCKIO_H', cc.has_header('sys/sockio.h'))
++conf.set('WITH_CONSOLE_KIT', '1')
+ configure_file(output: 'config.h', configuration: conf)
+ 
+ # Subdirs

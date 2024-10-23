@@ -1,18 +1,35 @@
-libelf large file support only exists in 64-bit on Solaris.
+Submitted & accepted upstream for 2.83.0 in:
+https://gitlab.gnome.org/GNOME/glib/-/merge_requests/4351
 
---- a/gio/meson.build	2019-12-08 01:16:38.553436116 -0800
-+++ b/gio/meson.build	2019-12-08 01:16:30.455379986 -0800
-@@ -896,6 +896,13 @@
+From f46ea74586c8590b135c099083a818eae22ee308 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Mon, 14 Oct 2024 18:16:57 -0700
+Subject: [PATCH 5/5] build: verify #include <libelf.h> works before deciding
+ to use it
+
+This check is necessary for Solaris & illumos, where 32-bit libelf
+is incompatible with large-file mode, which meson forces to be enabled,
+but 64-bit libelf works fine.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ gio/meson.build | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/gio/meson.build b/gio/meson.build
+index 447ddd6b2..a56c210a0 100644
+--- a/gio/meson.build
++++ b/gio/meson.build
+@@ -969,6 +969,9 @@ else
+   have_libelf = have_libelf and cc.has_function('elf_getshdrstrndx', dependencies : libelf)
+   have_libelf = have_libelf and cc.has_function('elf_getshdrnum', dependencies : libelf)
    have_libelf = have_libelf and cc.has_header('libelf.h')
++  # This check is necessary for Solaris & illumos, where 32-bit libelf
++  # is incompatible with large-file mode, which meson forces to be enabled
++  have_libelf = have_libelf and cc.compiles('#include <libelf.h>', name: 'libelf.h')
  endif
  
-+# Large file support only on 64-bit
-+if '-m32' in get_option('c_args')
-+  have_libelf = false
-+else
-+  have_libelf = true
-+endif
-+
  if have_libelf
-   glib_conf.set('HAVE_LIBELF', 1)
- else
+-- 
+2.45.2
+

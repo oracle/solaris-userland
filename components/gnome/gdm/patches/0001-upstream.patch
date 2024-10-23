@@ -1,5 +1,35 @@
-Patch offered & accepted upstream for a release after 47.0 in:
+Patches offered & accepted upstream for a release after 47.0 in:
 https://gitlab.gnome.org/GNOME/gdm/-/merge_requests/267
+
+From 78d89897d76a0856d28b9a71a45075883ec65cb3 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Fri, 13 Sep 2024 15:59:56 -0700
+Subject: [PATCH 1/7] meson: define HAVE_SYS_SOCKIO_H if system has
+ <sys/sockio.h>
+
+Needed on Solaris for definitions of SIOCGIFADDR, SIOCGIFCONF,
+and SIOCGIFFLAGS.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ meson.build | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/meson.build b/meson.build
+index 33c7ba09b..e294dd07d 100644
+--- a/meson.build
++++ b/meson.build
+@@ -304,6 +304,7 @@ conf.set('HAVE_UT_UT_TIME', utmp_has_time_field)
+ conf.set('HAVE_UT_UT_TV', utmp_has_tv_field)
+ conf.set('HAVE_UT_UT_SYSLEN', utmp_has_syslen_field)
+ conf.set('ENABLE_IPV6', get_option('ipv6'))
++conf.set('HAVE_SYS_SOCKIO_H', cc.has_header('sys/sockio.h'))
+ configure_file(output: 'config.h', configuration: conf)
+ 
+ # Subdirs
+-- 
+2.45.2
+
 
 From 2fd38433e149a75a71c71f68a3a0ceb04055d4a5 Mon Sep 17 00:00:00 2001
 From: Alan Coopersmith <alan.coopersmith@oracle.com>
@@ -30,6 +60,102 @@ index 8390ab3fe..9f8ff8f89 100644
  
  #include <syslog.h>
  #include <security/pam_appl.h>
+-- 
+2.45.2
+
+From d75fc84b9529d258869113ccc526de3dd1456a65 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Thu, 19 Sep 2024 17:21:00 -0700
+Subject: [PATCH 4/7] gdm-session-solaris-auditor: link with libbsm
+
+The adt functions called by this module are found in libbsm on Solaris
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ daemon/meson.build | 1 +
+ meson.build        | 3 +++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/daemon/meson.build b/daemon/meson.build
+index 31f9baa0a..aaf990e25 100644
+--- a/daemon/meson.build
++++ b/daemon/meson.build
+@@ -139,6 +139,7 @@ if libaudit_dep.found()
+ endif
+ 
+ if have_adt
++  gdm_session_worker_deps += adt_dep
+   gdm_session_worker_src += 'gdm-session-solaris-auditor.c'
+ endif
+ 
+diff --git a/meson.build b/meson.build
+index e294dd07d..2aa6ede4d 100644
+--- a/meson.build
++++ b/meson.build
+@@ -149,6 +149,9 @@ plymouth_dep = dependency('ply-boot-client', required: get_option('plymouth'))
+ # required.  Solaris auditing is only supported on systems that
+ # support the ADT_USER enumeration value.
+ have_adt = cc.has_header_symbol('bsm/adt.h', 'ADT_USER')
++if have_adt
++  adt_dep = cc.find_library('bsm')
++endif
+ # libaudit
+ libaudit_dep = dependency('audit', required: get_option('libaudit'))
+ # unit testsheadername
+-- 
+2.45.2
+
+From 4f448e82c5184d8391967a5ad1f244f1826d4433 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Fri, 20 Sep 2024 13:26:29 -0700
+Subject: [PATCH 6/7] daemon: use _POSIX_HOST_NAME_MAX instead of HOST_NAME_MAX
+
+Solaris only defines _POSIX_HOST_NAME_MAX while Linux defines both.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ daemon/gdm-display-access-file.c | 4 ++--
+ daemon/gdm-x-session.c           | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/daemon/gdm-display-access-file.c b/daemon/gdm-display-access-file.c
+index eb0580f49..781a633fa 100644
+--- a/daemon/gdm-display-access-file.c
++++ b/daemon/gdm-display-access-file.c
+@@ -430,9 +430,9 @@ _get_auth_info_for_display (GdmDisplayAccessFile *file,
+                  *
+                  * https://bugs.freedesktop.org/show_bug.cgi?id=43425
+                  */
+-                char localhost[HOST_NAME_MAX + 1] = "";
++                char localhost[_POSIX_HOST_NAME_MAX + 1] = "";
+                 *family = FamilyLocal;
+-                if (gethostname (localhost, HOST_NAME_MAX) == 0) {
++                if (gethostname (localhost, _POSIX_HOST_NAME_MAX) == 0) {
+                         *address = g_strdup (localhost);
+                 } else {
+                         *address = g_strdup ("localhost");
+diff --git a/daemon/gdm-x-session.c b/daemon/gdm-x-session.c
+index 0b07ab5be..faa6809b5 100644
+--- a/daemon/gdm-x-session.c
++++ b/daemon/gdm-x-session.c
+@@ -114,7 +114,7 @@ prepare_auth_file (void)
+         GError   *error = NULL;
+         gboolean  prepared = FALSE;
+         Xauth     auth_entry = { 0 };
+-        char      localhost[HOST_NAME_MAX + 1] = "";
++        char      localhost[_POSIX_HOST_NAME_MAX + 1] = "";
+ 
+         g_debug ("Preparing auth file for X server");
+ 
+@@ -124,7 +124,7 @@ prepare_auth_file (void)
+                 return NULL;
+         }
+ 
+-        if (gethostname (localhost, HOST_NAME_MAX) < 0) {
++        if (gethostname (localhost, _POSIX_HOST_NAME_MAX) < 0) {
+                 strncpy (localhost, "localhost", sizeof (localhost) - 1);
+         }
+ 
 -- 
 2.45.2
 

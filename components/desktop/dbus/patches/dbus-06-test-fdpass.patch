@@ -1,21 +1,50 @@
 The tests expect themselves to be executed on Linux where you have maximally
-1024 allowable file descriptors. If executed in Solaris, the soft limit is set
-to 256 by default which makes the test fail.
+1024 allowable file descriptors. If executed in Solaris, the soft limit was
+set to 256 by default (before Solaris 11.4) which makes the test fail.
 
 This patch increases the number of available file descriptors to a process.
 
 This is filed as https://bugs.freedesktop.org/show_bug.cgi?id=101221
+which became https://gitlab.freedesktop.org/dbus/dbus/-/issues/176
+and the patch has been submitted & accepted upstream in
+https://gitlab.freedesktop.org/dbus/dbus/-/merge_requests/479
 
---- dbus-1.10.0/test/fdpass.c	2017-05-25 21:51:08.806467183 +0000
-+++ dbus-1.10.0/test/fdpass.c	2017-05-25 21:50:46.967550466 +0000
-@@ -813,6 +813,10 @@ main (int argc,
+From f851484bf5aa0ef40eca1c34a215be5346095b2f Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Subject: [PATCH 1/2] test: raise fd limit to maximum before running fdpass
+ tests
+
+Many of these tests require more than the default fd limit on some systems,
+so raise the limit, if we can, to give them a better chance of being able
+to run.
+
+Closes #176
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ test/fdpass.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/test/fdpass.c b/test/fdpass.c
+index cf344dae..664fd136 100644
+--- a/test/fdpass.c
++++ b/test/fdpass.c
+@@ -910,6 +910,16 @@ main (int argc,
        if (getrlimit (RLIMIT_NOFILE, &lim) < 0)
          g_error ("Failed to get RLIMIT_NOFILE limit: %s", g_strerror (errno));
-
-+      lim.rlim_cur = 65535;
-+      lim.rlim_max = 65535;
-+      setrlimit(RLIMIT_NOFILE, &lim);
+ 
++      if ((lim.rlim_cur != RLIM_INFINITY) && (lim.rlim_cur < lim.rlim_max))
++        {
++          /* Many test require large number of file descriptors,
++           * so max out what they can use */
++          lim.rlim_cur = lim.rlim_max;
++          if (setrlimit (RLIMIT_NOFILE, &lim) < 0)
++            g_error ("Failed to set RLIMIT_NOFILE limit to %ld: %s",
++                     (long) lim.rlim_cur, g_strerror (errno));
++        }
 +
        if (lim.rlim_cur != RLIM_INFINITY &&
            /* only run if we have a fairly generous margin of error
             * for stdout, stderr, duplicates, the D-Bus connection, etc. */
+-- 
+2.45.2
+

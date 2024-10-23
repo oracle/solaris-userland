@@ -49,9 +49,6 @@ endif
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CFLAGS += $(CPP_XPG6MODE)
-CFLAGS.gcc += -std=gnu11
-
 # using the setting from shared-macros.mk results in 23665701
 # overriding it here till we can get gdm rebuilt
 gcc_STACK_ALIGN.i386.32 =

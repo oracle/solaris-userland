@@ -20,10 +20,10 @@ For sparc reverting back to what was done before this change.
 - * fcntl(fd, F_PREVFD)
 - * - return highest allocated file descriptor < fd.
 - */
+-  gint open_max;
 +  gint open_max = -1;
    gint fd;
    gint res = 0;
--  gint open_max = -1;
  
 -  open_max = fcntl (INT_MAX, F_PREVFD); /* find the maximum fd */
 -  if (open_max < 0) /* No open files */
