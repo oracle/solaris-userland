@@ -38,7 +38,7 @@ COMPONENT_BUGDB=	gnome/gnome-shell
 COMPONENT_ANITYA_ID=	311451
 COMPONENT_BAID=		128909
 
-PYTHON_VERSION = 3.9
+PYTHON_VERSION = 3.11
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -57,8 +57,8 @@ PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-browser-connector-host
 # Deliver into vendor-packages instead of site-packages
 # Note: meson 0.60.0 will support this
 COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRLIBDIR)/python3.9/vendor-packages; \
-	$(MV) $(PROTOUSRLIBDIR)/python3.9/site-packages/* $(PROTOUSRLIBDIR)/python3.9/vendor-packages/
+	$(MKDIR) $(PROTOUSRLIBDIR)/python3.11/vendor-packages; \
+	$(MV) $(PROTOUSRLIBDIR)/python3.11/site-packages/* $(PROTOUSRLIBDIR)/python3.11/vendor-packages/
 
-REQUIRED_PACKAGES += library/python/pygobject-3-39
-REQUIRED_PACKAGES += runtime/python-39
+REQUIRED_PACKAGES += library/python/pygobject-3-311
+REQUIRED_PACKAGES += runtime/python-311
