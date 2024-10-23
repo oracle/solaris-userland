@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-keyring
-COMPONENT_VERSION=	42.1
+COMPONENT_VERSION=	46.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeKeyring
 COMPONENT_ARCHIVE_HASH= \
-sha256:c7f4d040cc76a6b7fe67e08ef9106911c3c80d40fc88cbfc8e2684a4c946e3e6
+sha256:bf26c966b8a8b7f3285ecc8bb3e467b9c20f9535b94dc451c9c559ddcff61925
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	13133
 
-COMPONENT_BAID=		143590
+COMPONENT_BAID=		182081
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
