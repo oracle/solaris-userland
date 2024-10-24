@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -29,19 +29,19 @@ BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cffi
-COMPONENT_VERSION=	1.15.1
+COMPONENT_VERSION=	1.17.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d400bfb9a37b1351253cb402671cea7e89bdecc294e8016a707f6d1d8ac934f9
+    sha256:1c39c6016c32bc48dd54561950ebd6836e1670f2ae46128f67cf49e789c52824
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://cffi.readthedocs.org/
 COMPONENT_BUGDB=	python-mod/cffi
 COMPONENT_ANITYA_ID=	5536
-COMPONENT_BAID=		141674
+COMPONENT_BAID=		181188
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
@@ -57,7 +57,7 @@ COMPONENT_TEST_ENV +=	TESTOWNLIB_CC="$(CC) $(CC_PIC) %s $(CC_BITS) -shared -o %s
 
 COMPONENT_TEST_ARGS =	-p no:codechecker
 COMPONENT_TEST_ARGS +=	-v
-COMPONENT_TEST_ARGS +=	c testing
+COMPONENT_TEST_ARGS +=	src/c testing
 
 COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_SYSTEM_TEST_ENV +=	TESTOWNLIB_CC="$(CC) $(CC_PIC) %s $(CC_BITS) -shared -o %s.so"
@@ -74,7 +74,7 @@ ifneq ($(TOP_LEVEL_TEST),yes)
 # directory so running the tests don't leave turds in the source directory.
 COMPONENT_PRE_TEST_ACTION = \
 	$(MKDIR) $(@D)/tests/doc/source; \
-	$(CP) -r $(SOURCE_DIR)/c $(SOURCE_DIR)/testing $(SOURCE_DIR)/cffi $(@D)/tests; \
+	$(CP) -r $(SOURCE_DIR)/src $(SOURCE_DIR)/testing $(@D)/tests; \
 	$(CP) $(SOURCE_DIR)/setup.py $(@D)/tests; \
 	$(CP) \
 	    $(SOURCE_DIR)/doc/source/conf.py \
@@ -91,4 +91,3 @@ endif
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pycparser-%)
 REQUIRED_PACKAGES += library/libffi
-REQUIRED_PACKAGES += system/library
