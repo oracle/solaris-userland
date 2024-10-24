@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -74,19 +74,19 @@ proto/.prepared: Makefile source.c
 	$(MKDIR) proto/usr/lib/python
 	$(TOUCH) proto/usr/lib/python/without.py
 	$(TOUCH) proto/usr/lib/python/orphan.py
-	$(PYTHON.3.9) -m compileall proto/usr/lib/python/orphan.py
+	$(PYTHON.3.11) -m compileall proto/usr/lib/python/orphan.py
 	$(RM) proto/usr/lib/python/orphan.py
 
 	$(TOUCH) proto/usr/lib/python/magicmismatch.py
-	$(PYTHON.3.9) -m compileall proto/usr/lib/python/magicmismatch.py
-	$(MV) proto/usr/lib/python/__pycache__/magicmismatch.cpython-39.pyc \
-		proto/usr/lib/python/__pycache__/magicmismatch.cpython-37.pyc
+	$(PYTHON.3.11) -m compileall proto/usr/lib/python/magicmismatch.py
+	$(MV) proto/usr/lib/python/__pycache__/magicmismatch.cpython-311.pyc \
+		proto/usr/lib/python/__pycache__/magicmismatch.cpython-313.pyc
 
 	$(TOUCH) proto/usr/lib/python/correct3.py
-	$(PYTHON.3.9) -m compileall proto/usr/lib/python/correct3.py
+	$(PYTHON.3.11) -m compileall proto/usr/lib/python/correct3.py
 
 	$(TOUCH) proto/usr/lib/python/stale3.py
-	$(PYTHON.3.9) -m compileall proto/usr/lib/python/stale3.py
+	$(PYTHON.3.11) -m compileall proto/usr/lib/python/stale3.py
 	# wait, otherwise timestamp might be unchanged
 	sleep 1
 	$(TOUCH) proto/usr/lib/python/stale3.py

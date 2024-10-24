@@ -1,4 +1,4 @@
-#!/usr/bin/python3.9
+#!/usr/bin/python3.11
 #
 # CDDL HEADER START
 #
@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 # Tests for Userland pkglint check extension (from userland.py)
@@ -386,14 +386,14 @@ class TestUserlandPkglint(unittest.TestCase):
             "file usr/lib/python/without.py doesn't have corresponding .pyc file\n", stderr)
         self.assertIn(
             "ERROR userland.manifest006.9      "
-            "file usr/lib/python/__pycache__/orphan.cpython-39.pyc doesn't have corresponding .py source file\n", stderr)  # noqa
+            "file usr/lib/python/__pycache__/orphan.cpython-311.pyc doesn't have corresponding .py source file\n", stderr)  # noqa
         self.assertIn(
             "ERROR userland.manifest006.1      "
-            "bad pyc magic number in usr/lib/python/__pycache__/magicmismatch.cpython-37.pyc\n",
+            "bad pyc magic number in usr/lib/python/__pycache__/magicmismatch.cpython-313.pyc\n",
             stderr)
         self.assertIn(
             "ERROR userland.manifest006.5      "
-            "bytecode is stale (timestamp) in usr/lib/python/__pycache__/stale3.cpython-39.pyc\n",
+            "bytecode is stale (timestamp) in usr/lib/python/__pycache__/stale3.cpython-311.pyc\n",
             stderr)
 
 
