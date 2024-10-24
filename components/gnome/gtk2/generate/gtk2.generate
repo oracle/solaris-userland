@@ -18,7 +18,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -35,3 +35,14 @@
 <transform file path=.*/immodules\.cache$ -> set group root>
 <transform file path=.*/im-multipress\.conf$ -> set preserve true>
 <transform file path=(.*/im-multipress\.conf)$ -> set original_name SUNWgtk2:%<1>>
+
+
+<transform file path=usr/bin.*/gtk-update-icon-cache -> \
+    set action.hash %(path)>
+<transform file path=usr/bin.*/gtk-update-icon-cache -> \
+    edit path gtk-update-icon-cache$ gtk-update-icon-cache-2.0>
+
+<transform file path=usr/share/man/man1/gtk-update-icon-cache.1 -> \
+    set action.hash %(path)>
+<transform file path=usr/share/man/man1/gtk-update-icon-cache.1 -> \
+    edit path ^.*$ usr/share/man/man1/gtk-update-icon-cache-2.0.1>

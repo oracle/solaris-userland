@@ -79,6 +79,10 @@ COMPONENT_POST_INSTALL_ACTION += \
 COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gnome-std-options.7 \
                 $(PROTO_DIR)/usr/share/man/man7/gnome-std-options.7; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/icon-cache.sh  \
+                $(PROTO_DIR)/lib/svc/method/icon-cache; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/icon-cache.xml \
+                $(PROTO_DIR)/lib/svc/manifest/application/desktop-cache/icon-cache.xml ; \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gtk3-input-method-cache.8s \
                 $(PROTO_DIR)/usr/share/man/man8s/application/desktop-cache/gtk3-input-method-cache.8s; \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gtk3-input-method-cache.sh  \
