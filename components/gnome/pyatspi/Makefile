@@ -84,9 +84,8 @@ REQUIRED_PACKAGES += runtime/python-311
 
 # These are needed to build & run tests, but not for distributed packages
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
-REQUIRED_PACKAGES += library/desktop/gtk2
+REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/python/dbus-python
 REQUIRED_PACKAGES += system/library/libdbus
-REQUIRED_PACKAGES += system/library/libdbus-glib
