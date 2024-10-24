@@ -20,8 +20,10 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
 #
+
+COMPILER= gcc
 
 include ../make-rules/shared-macros.mk
 
