@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		eog-plugins
-COMPONENT_VERSION=	44.0
+COMPONENT_VERSION=	44.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/EyeOfGnome
 COMPONENT_ARCHIVE_HASH= \
-	sha256:db31cbf7bb9652db0a87113e9b51f4df2586763a261b0cbf04327d82cb38b047
+	sha256:c4c384155fabb34889d76b616065483f94c8310fa0147236d009c68cd4a85c93
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13120
 
-COMPONENT_BAID=		143448
+COMPONENT_BAID=		182869
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -58,20 +58,10 @@ CONFIGURE_ENV += PYTHON=$(PYTHON)
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += image/library/libexif
-REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += image/viewer/eog
-REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libgdata
-REQUIRED_PACKAGES += library/exempi
-REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/desktop/libpeas
-REQUIRED_PACKAGES += library/lcms2
-REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += x11/library/libx11
+REQUIRED_PACKAGES += library/glib2
