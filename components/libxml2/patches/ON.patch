@@ -1,0 +1,26 @@
+Reverts changing xmlDefaultSAXHandler to const as ON is not yet ready for this.
+
+https://github.com/GNOME/libxml2/commit/c011e7605d42030cf21acdece466aaddaeb5a360
+
+--- libxml2-2.13.4/include/libxml/parser.h
++++ libxml2-2.13.4/include/libxml/parser.h
+@@ -840,7 +840,7 @@ XML_DEPRECATED
+ XMLPUBVAR const xmlSAXLocator xmlDefaultSAXLocator;
+ #ifdef LIBXML_SAX1_ENABLED
+ XML_DEPRECATED
+-XMLPUBVAR const xmlSAXHandlerV1 xmlDefaultSAXHandler;
++XMLPUBVAR xmlSAXHandlerV1 xmlDefaultSAXHandler;
+ #endif
+ 
+ #ifdef LIBXML_THREAD_ENABLED
+--- libxml2-2.13.4/globals.c.orig	2024-10-17 13:52:45.656691606 +0200
++++ libxml2-2.13.4/globals.c	2024-10-17 13:52:49.577229446 +0200
+@@ -458,7 +458,7 @@
+  *
+  * Default SAX version1 handler for XML, builds the DOM tree
+  */
+-const xmlSAXHandlerV1 xmlDefaultSAXHandler = {
++xmlSAXHandlerV1 xmlDefaultSAXHandler = {
+     xmlSAX2InternalSubset,
+     xmlSAX2IsStandalone,
+     xmlSAX2HasInternalSubset,

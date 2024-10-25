@@ -1,67 +1,60 @@
 Making check in libxslt
 Making check in libexslt
 Making check in xsltproc
+/usr/gnu/bin/make  testThreads
+/usr/gnu/bin/make  check-local
+## Running testThreads
 Making check in doc
 Making check in devhelp
 Making check in EXSLT/devhelp
 Making check in tests
-Making check in docs
-Making check in REC1
-Making check in REC2
-Making check in REC
-Making check in general
-Making check in namespaces
-Making check in keys
-Making check in numbers
-Making check in documents
-Making check in extensions
-Making check in reports
 Making check in xmlspec
+/usr/gnu/bin/make  check-local
+## Running xmlspec tests
 Making check in multiple
+/usr/gnu/bin/make  check-local
+## Running multiple tests
 Making check in xinclude
+/usr/gnu/bin/make  check-local
+## Running XInclude test
 Making check in XSLTMark
+/usr/gnu/bin/make  check-local
+## Running XSLTMark tests
+perl $(SOURCE_DIR)/tests/XSLTMark/dbgen.pl 100 > db100.xml
+perl $(SOURCE_DIR)/tests/XSLTMark/dbgen.pl 10000 > db10000.xml
+perl $(SOURCE_DIR)/tests/XSLTMark/dbgen.pl 1000 > db1000.xml
 Making check in docbook
-Making check in exslt
-Making check in common
-Making check in functions
-Making check in math
-Making check in saxon
-Making check in sets
-Making check in strings
-Making check in dynamic
-Making check in date
-Making check in plugins
+/usr/gnu/bin/make  check-local
+## Running single docbook tests
+## Running xtchunk docbook tests
 Making check in fuzz
 /usr/gnu/bin/make  testTargets
 /usr/gnu/bin/make  check-local
-## Running the regression test suite
-## Running REC1 tests
+## Running fuzz target tests
+/usr/gnu/bin/make  runtest xmlsoft_org_xslt_testplugin.la
+/usr/gnu/bin/make  check-local
+cd $(SOURCE_DIR)/tests && LIBXSLT_PLUGINS_PATH=$(@D)/tests/.libs $(@D)/tests/runtest
 ## Running REC2 tests
 ## Running REC tests
+## Running REC tests (standalone)
 ## Running REC tests without dictionaries
+## Running REC tests without dictionaries (standalone)
 ## Running general tests
 ## Running general tests without dictionaries
-## Running namespaces tests
-## Running keys tests
+## Running encoding tests
+## Running documents tests
 ## Running numbers tests
+## Running keys tests
+## Running namespaces tests
 ## Running extensions tests
 ## Running reports tests
-## Running xmlspec tests
-## Running multiple tests
-## Running XInclude test
-## Running XSLTMark tests
-## Running single docbook tests
-## Running xtchunk docbook tests
 ## Running exslt common tests
-## Running exslt function tests
+## Running exslt date tests
+## Running exslt dynamic tests
+## Running exslt functions tests
 ## Running exslt math tests
 ## Running exslt saxon tests
 ## Running exslt sets tests
-## Running exslt string tests
-## Running exslt dynamic tests
-#
-# Inspect the following for correctness
-#
-## Running exslt date tests
+## Running exslt strings tests
 ## Running plugin tests
-## Running testThreads
+Total 745 tests, no errors
