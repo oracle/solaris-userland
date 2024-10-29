@@ -1,0 +1,20 @@
+With Python 3.11 and later, mercurial can fail with recursion depth
+exceeded error when one of the extensions includes lxml.
+
+This only happens when lxml.etree is lazy loaded, so we include it on
+the list of modules that are loaded immediately.
+
+This was reported upstream:
+https://bz.mercurial-scm.org/show_bug.cgi?id=6932
+
+--- mercurial-6.8/hgdemandimport/__init__.py
++++ mercurial-6.8/hgdemandimport/__init__.py
+@@ -58,6 +58,8 @@ IGNORES = {
+     # setuptools uses this hack to inject it's own distutils at import time
+     'setuptools',
+     '_distutils_hack.override',
++    # not compatible with on-demand loading
++    'lxml.etree',
+ }
+ 
+ _pypy = '__pypy__' in sys.builtin_module_names
