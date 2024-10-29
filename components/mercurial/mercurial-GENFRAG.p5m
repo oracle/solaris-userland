@@ -41,6 +41,11 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2006/417 value=PSARC/2020/001 \
     value=PSARC/2021/090
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+#
+# When we change this link, we need to make sure that we also ship
+# hg-git for the same version of python.  Building hg-git requires
+# the appropriate version of dulwich installed in the CBE.
+#
 link path=usr/bin/hg target=../lib/python3.11/vendor-packages/mercurial/hg
 file path=usr/demo/mercurial$(VERSION_DIRECTORY)/automation/README.rst \
     pkg.depend.bypass-generate=.*

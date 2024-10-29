@@ -39,7 +39,7 @@ COMPONENT_ANITYA_ID=	1314
 COMPONENT_BAID=		164456
 
 # hg-git mirrors Mercurial versions.
-PYTHON_VERSIONS = 3.9
+PYTHON_VERSIONS = 3.9 3.11
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
