@@ -24,7 +24,7 @@
 #
 
 TOPTARGETS := prep build install publish test clean clobber
-SUBDIRS=openssl-3 openssl-1 openssl-fips-140 wanboot
+SUBDIRS=openssl-3 wanboot
 
 $(TOPTARGETS): $(SUBDIRS)
 $(SUBDIRS):

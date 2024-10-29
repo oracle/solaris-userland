@@ -1,35 +1,17 @@
-Copyright (c) 2009, 2023, Oracle and/or its affiliates.
+Copyright (c) 2009, 2024, Oracle and/or its affiliates.
 
 # Build layout
 
 OpenSSL build is run multiple times:
-  - twice for regular dynamic non-FIPS (1.0 and 3.0)
+  - once regular dynamic
   - once for static bits to link with standalone wanboot binary
-  - once for fips-140
-  - once for FIPS-140 canister (in the openssl-fips component) needed to build FIPS-140 certified libraries.
 
 All builds apart from static libraries for wanboot are done for 32 and 64 bits.
 OpenSSL for wanboot is only built on SPARC.
 
 See also comments in all the Makefiles for more information.
 
-## The non-fips 1.0 build
-
-The non-fips build is the 'default' build of OpenSSL 1.0 and includes the regular
-binaries, libraries, man pages, and header files.
-
-## The FIPS 1.0 build
-
-We are now shipping FIPS-140 certified OpenSSL 1.0 with S11.2 and later.
-The admin may choose to activate 'openssl-fips' implementation using 'pkg mediator'.
-
-This is different than FIPS mode in OpenSSL 3.0, which does not require
-special build and is not activated using IPS mediator.
-
 ## The wanboot build
-
-wanboot loader was converted to OpenSSL 3.0 API so this is OpenSSL 3.0 specific
-build.
 
 There are some significant differences when building OpenSSL for wanboot.
 
@@ -84,7 +66,7 @@ This is very hard to troubleshoot.
 
 ### Testing wanboot with new OpenSSL
 
-With every upgrade of OpenSSL 3.0, it is necessary to make sure wanboot builds and
+With every upgrade of OpenSSL, it is necessary to make sure wanboot builds and
 works well with the new bits.
 
 Provided you have a freshly built ON and Userland (UL) workspace, you can link wanboot
@@ -108,27 +90,3 @@ Next, rebuild and run the wanboot unit tests from the test/wanboot-test package.
 Finally, the resulting wanboot binary shall be deployed on an install server and
 wanbooting from this server shall be tested. Specifically, the wanboot loader
 should be able to successfully download miniroot over TLS.
-
-# Patches
-
-## Common patches for 1.0
-
-Common patch files for OpenSSL 1.0 are located in the `components/openssl/common/patches`
-directory, and they are copied to both FIPS and non-FIPS `patches` directory
-as soon as the Makefile is parsed.
-
-The Common patch filename has prefix '0'.
-
-## Non-FIPS specific patches for 1.0
-
-Non-FIPS specific patch files for OpenSSL 1.0 are located in the
-`components/openssl/openssl-default/patches` directory.
-
-The Non-FIPS specific patch filename has prefix '1'.
-
-## FIPS specific Patches for 1.0
-
-FIPS specific patch files for OpenSSL 1.0 are located in the
-`components/openssl/openssl-fips-140/patches` directory.
-
-The FIPS specific patch filename has prefix '2'.
