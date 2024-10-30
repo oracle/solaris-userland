@@ -20,13 +20,15 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
-<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+<transform file path=usr.*/man/.+ -> \
+    default mangler.man.stability "obsolete volatile">
 set name=pkg.fmri \
     value=pkg:/developer/documentation-tool/opensp@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="The OpenJade group's SGML and XML parsing tools"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="The OpenSP package delivers utilities for validating, parsing and manipulating SGML and XML documents."
@@ -34,7 +36,7 @@ set name=info.classification \
     value="org.opensolaris.category.2008:System/Text Tools"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=LSARC/2005/734
+set name=org.opensolaris.arc-caseid value=LSARC/2005/734 value=PSARC/2024/120
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=usr/bin/nsgmls target=onsgmls
 file path=usr/bin/onsgmls
@@ -194,6 +196,11 @@ file path=usr/lib/$(MACH64)/libosp.so.4.0.0
 link path=usr/lib/libosp.so target=libosp.so.4.0.0
 link path=usr/lib/libosp.so.4 target=libosp.so.4.0.0
 file path=usr/lib/libosp.so.4.0.0
+file release-notes/developer-documentation-tool-openjade.txt \
+    path=usr/share/doc/release-notes/developer-documentation-tool-openjade.txt \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/man/man1/nsgmls.1
 file path=usr/share/man/man1/onsgmls.1
 file path=usr/share/man/man1/osgml2xml.1

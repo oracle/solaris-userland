@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
-    default mangler.man.stability "pass-through volatile">
+    default mangler.man.stability "obsolete pass-through volatile">
 <transform file path=usr/share/sgml/docbook/dsssl-stylesheets-1.79/(.*) -> \
     set action.hash docbook-dsssl-1.79/%<1>>
 <transform file path=usr/share/sgml/docbook/dsssl-stylesheets-.*/catalog$ -> \
@@ -37,6 +37,7 @@ set name=pkg.fmri \
 set name=pkg.summary value="Norman Walsh's modular stylesheets for DocBook"
 set name=pkg.description \
     value="These DSSSL stylesheets allow to convert any DocBook document to another printed (for example, RTF or PostScript) or online (for example, HTML) format. They are highly customizable."
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="Norman Walsh's modular stylesheets for DocBook"
@@ -44,7 +45,7 @@ set name=info.classification \
     value="org.opensolaris.category.2008:Desktop (GNOME)/Documentation"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2010/143
+set name=org.opensolaris.arc-caseid value=PSARC/2010/143 value=PSARC/2024/120
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 
 
