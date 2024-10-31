@@ -20,22 +20,29 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 #
 
-<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+<transform file path=usr.*/man/.+ -> \
+    default mangler.man.stability "obsolete volatile">
 set name=pkg.fmri \
     value=pkg:/x11/server/xorg/driver/xorg-video-cirrus@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
     value="xf86-video-cirrus - Cirrus Logic video driver for the Xorg X server"
 set name=pkg.description value="Xorg driver for Cirrus Logic video chips"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value="the xf86-video-cirrus driver"
 set name=info.classification value=org.opensolaris.category.2008:Drivers/Display
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2017/212
+set name=org.opensolaris.arc-caseid value=PSARC/2017/212 value=PSARC/2024/129
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/lib/xorg/modules/drivers/cirrus_drv.so
+file release-notes/xf86-video-cirrus.txt \
+    path=usr/share/doc/release-notes/xf86-video-cirrus.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/man/man4/cirrus.4
 license COPYING license=MIT,Other
