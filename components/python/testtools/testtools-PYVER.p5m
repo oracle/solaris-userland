@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -38,22 +38,19 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/020
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
-file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION).dist-info/AUTHORS
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION).dist-info/LICENSE
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION).dist-info/RECORD
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION).dist-info/WHEEL
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION).dist-info/_solaris_dep
-file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION).dist-info/pbr.json
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION).dist-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/testtools/_version.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/assertions.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/compat.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/content.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/content_type.py
-file path=usr/lib/python$(PYVER)/vendor-packages/testtools/deferredruntest.py
-file path=usr/lib/python$(PYVER)/vendor-packages/testtools/distutilscmd.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/helpers.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/_basic.py
@@ -84,6 +81,9 @@ file path=usr/lib/python$(PYVER)/vendor-packages/testtools/twistedsupport/_spinn
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/utils.py
 #
 license testtools.license license=MIT
+
+# force a group dependency on the optional fixtures.
+depend type=group fmri=library/python/fixtures-$(PYV)
 
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \

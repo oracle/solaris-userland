@@ -4,55 +4,30 @@ test_pdb_continue_with_recursive_debug breaks for yet unknown reasons and
 should be investigated more (though it's not a core functionality we are
 using Pytest for).
 
-Other test_debugging tests, while marked xfail, sometimes pass causing the
-test to fail. This is known in upsteam:
-https://github.com/pytest-dev/pytest/issues/10042
-
 Two tests need to be skipped because cwd is not removable on Solaris.
 
---- pytest-7.3.1/testing/test_junitxml.py
-+++ pytest-7.3.1/testing/test_junitxml.py
-@@ -10,9 +10,8 @@ from typing import TYPE_CHECKING
- from typing import Union
+--- pytest-8.3.3/testing/test_junitxml.py
++++ pytest-8.3.3/testing/test_junitxml.py
+@@ -10,8 +10,6 @@ from typing import cast
+ from typing import TYPE_CHECKING
  from xml.dom import minidom
  
 -import xmlschema
 -
- import pytest
-+pytest.skip("Xmlschema is not available", allow_module_level=True)
  from _pytest.config import Config
  from _pytest.junitxml import bin_xml_escape
  from _pytest.junitxml import LogXML
---- pytest-7.3.1/testing/test_debugging.py
-+++ pytest-7.3.1/testing/test_debugging.py
-@@ -372,7 +372,7 @@ class TestPDB:
-         result = pytester.runpytest_subprocess("--pdb", ".")
-         result.stdout.fnmatch_lines(["-> import unknown"])
+@@ -22,6 +20,7 @@ from _pytest.reports import BaseReport
+ from _pytest.reports import TestReport
+ from _pytest.stash import Stash
+ import pytest
++pytest.skip("Xmlschema is not available", allow_module_level=True)
  
--    @pytest.mark.xfail(reason="#10042")
-+    @pytest.mark.skip("Doesn't work well")
-     def test_pdb_interaction_capturing_simple(self, pytester: Pytester) -> None:
-         p1 = pytester.makepyfile(
-             """
-@@ -541,7 +541,7 @@ class TestPDB:
-         assert "BdbQuit" not in rest
-         assert "UNEXPECTED EXCEPTION" not in rest
  
--    @pytest.mark.xfail(reason="#10042")
-+    @pytest.mark.skip("Doesn't work well")
-     def test_pdb_interaction_capturing_twice(self, pytester: Pytester) -> None:
-         p1 = pytester.makepyfile(
-             """
-@@ -577,7 +577,7 @@ class TestPDB:
-         assert "1 failed" in rest
-         self.flush(child)
- 
--    @pytest.mark.xfail(reason="#10042")
-+    @pytest.mark.skip("Doesn't work well")
-     def test_pdb_with_injected_do_debug(self, pytester: Pytester) -> None:
-         """Simulates pdbpp, which injects Pdb into do_debug, and uses
-         self.__class__ in do_continue.
-@@ -669,6 +669,7 @@ class TestPDB:
+ @pytest.fixture(scope="session")
+--- pytest-8.3.3/testing/test_debugging.py
++++ pytest-8.3.3/testing/test_debugging.py
+@@ -667,6 +667,7 @@ class TestPDB:
          child.expect("1 passed")
          self.flush(child)
  
@@ -60,27 +35,9 @@ Two tests need to be skipped because cwd is not removable on Solaris.
      @pytest.mark.parametrize("capture_arg", ("", "-s", "-p no:capture"))
      def test_pdb_continue_with_recursive_debug(
          self, capture_arg, pytester: Pytester
-@@ -1022,7 +1023,7 @@ class TestDebuggingBreakpoints:
-         assert "reading from stdin while output" not in rest
-         TestPDB.flush(child)
- 
--    @pytest.mark.xfail(reason="#10042")
-+    @pytest.mark.skip("Doesn't work well")
-     def test_pdb_not_altered(self, pytester: Pytester) -> None:
-         p1 = pytester.makepyfile(
-             """
-@@ -1182,7 +1183,7 @@ def test_quit_with_swallowed_SystemExit(
- 
- 
- @pytest.mark.parametrize("fixture", ("capfd", "capsys"))
--@pytest.mark.xfail(reason="#10042")
-+@pytest.mark.skip("Doesn't work well")
- def test_pdb_suspends_fixture_capturing(pytester: Pytester, fixture: str) -> None:
-     """Using "-s" with pytest should suspend/resume fixture capturing."""
-     p1 = pytester.makepyfile(
---- pytest-7.3.1/testing/_py/test_local.py
-+++ pytest-7.3.1/testing/_py/test_local.py
-@@ -600,6 +600,7 @@ class TestLocalPath(CommonFSTests):
+--- pytest-8.3.3/testing/_py/test_local.py
++++ pytest-8.3.3/testing/_py/test_local.py
+@@ -621,6 +621,7 @@ class TestLocalPath(CommonFSTests):
          assert str(local()) == os.getcwd()
  
      @skiponwin32
@@ -88,7 +45,7 @@ Two tests need to be skipped because cwd is not removable on Solaris.
      def test_chdir_gone(self, path1):
          p = path1.ensure("dir_to_be_removed", dir=1)
          p.chdir()
-@@ -613,6 +614,7 @@ class TestLocalPath(CommonFSTests):
+@@ -634,6 +635,7 @@ class TestLocalPath(CommonFSTests):
                  raise NotImplementedError
  
      @skiponwin32

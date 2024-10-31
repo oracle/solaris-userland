@@ -26,20 +26,20 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pytest
-COMPONENT_VERSION=	7.3.1
+COMPONENT_VERSION=	8.3.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:434afafd78b1d78ed0addf160ad2b77a30d35d4bdf8af234fe621919d9ed15e3
+    sha256:70b98107bd648308a7952b06e6ca9a50bc660be218d53c257cc1fc94fda10181
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pytest.org/latest/
 COMPONENT_BUGDB=	python-mod/pytest
 COMPONENT_ANITYA_ID=	3765
-COMPONENT_BAID=		144492
+COMPONENT_BAID=		183131
 
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # New version of pytest no longer generates -$(PYVER) script for
@@ -48,7 +48,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(MV) $(PROTOUSRBINDIR)/pytest $(PROTOUSRBINDIR)/pytest-$(PYTHON_VERSION); \
 	$(MV) $(PROTOUSRBINDIR)/py.test $(PROTOUSRBINDIR)/py.test-$(PYTHON_VERSION)
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/testing
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PROTOUSRBINDIR)/py.test-$(PYTHON_VERSION)
 COMPONENT_TEST_ARGS =
 
@@ -56,13 +56,6 @@ COMPONENT_SYSTEM_TEST_CMD =	$(USRBINDIR)/py.test-$(PYTHON_VERSION)
 
 # Do not use tmp directory for tests to avoid persistent RAM usage.
 COMPONENT_TEST_ENV += PYTEST_DEBUG_TEMPROOT=$(BUILD_DIR)/$(MACH)-$(PYTHON_VERSION)/
-COMPONENT_TEST_ENV += INPUTRC=$(BUILD_DIR)/.inputrc
-
-# In Bash 5.1, bracketed paste mode is enabled by default, which is not
-# anticipated by the pexpect test suite. There is no fix yet, but
-# workaround is available:
-# https://github.com/pexpect/pexpect/issues/669
-COMPONENT_PRE_TEST_ACTION += echo "set enable-bracketed-paste off" > $(BUILD_DIR)/.inputrc
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -84,5 +77,6 @@ REQUIRED_PACKAGES += library/python/tomli-39
 # Testing related components
 REQUIRED_PACKAGES += library/python/hypothesis
 REQUIRED_PACKAGES += library/python/mock
+REQUIRED_PACKAGES += library/python/pygments
 REQUIRED_PACKAGES += library/python/pynose
 REQUIRED_PACKAGES += library/python/requests

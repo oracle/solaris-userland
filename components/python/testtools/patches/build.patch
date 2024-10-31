@@ -1,0 +1,28 @@
+We do not have hatchling on Solaris; this patch modifies the build
+metadata to use setuptools instead.
+
+Not intended for upstream.
+
+--- testtools-2.7.2/pyproject.toml
++++ testtools-2.7.2/pyproject.toml
+@@ -12,8 +12,8 @@ module = [
+ ignore_missing_imports = true
+ 
+ [build-system]
+-requires = ["setuptools>=61", "hatchling", "hatch_vcs"]
+-build-backend = "hatchling.build"
++requires = ["setuptools"]
++build-backend = "setuptools.build_meta"
+ 
+ [project]
+ name = "testtools"
+@@ -56,6 +56,9 @@ exclude = ["man*"]
+ [tool.files]
+ packages = "testtools"
+ 
++[tool.setuptools.dynamic]
++version = {attr = "testtools.__version__"}
++
+ [tool.hatch.version]
+ source = "vcs"
+ 

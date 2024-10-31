@@ -20,26 +20,34 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		testtools
-COMPONENT_VERSION=	2.6.0
+COMPONENT_VERSION=	2.7.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:28b65e14c0f2d3ecbbfb5f55c9dcde5e4faa80ac16a37a823909a1fe3cbcb30a
+    sha256:5be5bbc1f0fa0f8b60aca6ceec07845d41d0c475cf445bfadb4d2c45ec397ea3
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/testing-cabal/testtools
 COMPONENT_BUGDB=	python-mod/testtools
 COMPONENT_ANITYA_ID=	4047
-COMPONENT_BAID=		141689
+COMPONENT_BAID=		183536
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-venv-test.mk
+
+# This component uses venv installed packages for testing
+PYTHON_VENV_TEST_COMPONENTS = testscenarios
+
+COMPONENT_TEST_DIR =    $(SOURCE_DIR)
+COMPONENT_TEST_CMD =    $(VENV_PYTHON) -m testtools.run
+COMPONENT_TEST_ARGS =   testtools.tests.test_suite
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -48,7 +56,4 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(NO_TESTS)
-
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/fixtures-%)
+venv-test:		$(TEST_NO_ARCH)
