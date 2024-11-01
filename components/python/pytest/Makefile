@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pytest.org/latest/
 COMPONENT_BUGDB=	python-mod/pytest
 COMPONENT_ANITYA_ID=	3765
-COMPONENT_BAID=		183131
+COMPONENT_BAID=		184289
 
 
 include $(WS_MAKE_RULES)/prep.mk
