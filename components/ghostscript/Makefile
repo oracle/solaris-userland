@@ -28,11 +28,11 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=	10.03.1
+COMPONENT_VERSION=	10.04.0
 IPS_COMPONENT_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\.0\([^.]\)/.\1/g')
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
 COMPONENT_DOWNLOAD_URL= https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
-COMPONENT_ARCHIVE_HASH= sha256:31cd01682ad23a801cc3bbc222a55f07c4ea3e068bdfb447792d54db21a2e8ad
+COMPONENT_ARCHIVE_HASH= sha256:c764dfbb7b13fc71a7a05c634e014f9bb1fb83b899fe39efc0b6c3522a9998b1
 COMPONENT_ARCHIVE_URL=	\
 	$(COMPONENT_DOWNLOAD_URL)/gs$(subst .,,$(COMPONENT_VERSION))/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
@@ -41,7 +41,7 @@ COMPONENT_NAME_1=	tessdata_best
 GIT_REPO_1=		https://github.com/tesseract-ocr/$(COMPONENT_NAME_1)
 GIT_COMMIT_ID_1=	fa8481f
 
-COMPONENT_BAID=		175547
+COMPONENT_BAID=		184345
 
 include $(WS_MAKE_RULES)/common.mk
 # some backup files are copied to proto
