@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=   gcc
@@ -64,8 +64,7 @@ CXXFLAGS = -D__EXTENSIONS__
 COMPONENT_POST_BUILD_ACTION += \
   ( cd $(@D)/docs && $(ENV) $(GMAKE) man-pages )
 
-# Python scripts are no longer 3.7 compatible.
-PYTHON_VERSION = 3.9
+PYTHON_VERSION = 3.11
 PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/cg_annotate
 PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/cg_diff
 PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/cg_merge
@@ -82,5 +81,6 @@ COMPONENT_TEST_TRANSFORMS += \
   '-e "/^\.\.\./d" -e "/^make\[/d" -e "1,/^== / d"'
 
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc

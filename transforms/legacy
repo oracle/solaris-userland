@@ -43,6 +43,9 @@
 # Perl 5.36 and all related packages
 <transform set name=pkg.fmri value=(pkg:/+)?.*(-536).* -> set mark_legacy true>
 
+# Python 3.9 and all related packages
+<transform set name=pkg.fmri value=(pkg:/+)?.*(-39).* -> set mark_legacy true>
+
 # Beware that it's not easy to put python (or perl/ruby) module to legacy if
 # you are at the same time putting to legacy one python (perl/ruby) version.
 # For example if you put 'set name=pkg.legacy value=true' into
@@ -52,9 +55,6 @@
 # build fails as pkglint throws an error on that duplicate line. So it's
 # probably easier for such modules to list them here instead of putting the
 # legacy to *.p5m.
-
-# Mark packages which are unnecessary in newer runtimes.
-<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/backports.functools_lru_cache).* -> set mark_legacy true>
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # Automatic processing starts here, no change is needed beyond this line
