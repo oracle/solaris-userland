@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		NO_ARCH
@@ -38,7 +38,7 @@ COMPONENT_BAID=		155729
 BUILD_STYLE=		meson
 
 # Use explicit Python version rather than the default one
-PYTHON_VERSION = 3.9
+PYTHON_VERSION = 3.11
 CONFIGURE_ENV += PYTHON=$(PYTHON)
 
 # pkgdepend complains if it doesn't find a version of python specified
@@ -48,5 +48,5 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-REQUIRED_PACKAGES += runtime/python-39
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/ksh93
