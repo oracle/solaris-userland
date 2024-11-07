@@ -1,0 +1,20 @@
+This is a temporary fix for:
+
+37161489 IdleExitTimeout should not be set in /etc/cups/cupsd.conf
+
+An upstream bug was filed to get this resolved:
+
+https://github.com/apple/cups/issues/6231
+
+--- a/conf/cupsd.conf.in	2024-11-04 17:33:05.649045964 +0100
++++ b/conf/cupsd.conf.in	2024-11-04 17:33:26.342742347 +0100
+@@ -28,9 +28,6 @@
+ # Web interface setting...
+ WebInterface @CUPS_WEBIF@
+ 
+-# Timeout after cupsd exits if idle (applied only if cupsd runs on-demand - with -l)
+-IdleExitTimeout @EXIT_TIMEOUT@
+-
+ # Restrict access to the server...
+ <Location />
+   Order allow,deny
