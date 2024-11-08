@@ -26,20 +26,28 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		platformdirs
-COMPONENT_VERSION=	4.0.0
+COMPONENT_VERSION=	4.3.6
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6564f4f2d1e39de860aeec736fde447741249da713257d40dd0595be651a281b
+    sha256:357fb2acbc885b0419afd3ce3ed34564c13c9b95c89360cd9563f73aa5e2b907
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/platformdirs/platformdirs
 COMPONENT_BUGDB=	python-mod/platformdirs
 COMPONENT_ANITYA_ID=	200932
-COMPONENT_BAID=		158059
+COMPONENT_BAID=		184901
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-venv-test.mk
+
+# This component uses venv installed packages for testing
+PYTHON_VENV_TEST_COMPONENTS = appdirs pytest-mock
+
+COMPONENT_TEST_DIR =    $(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =    $(VENV_PYTHON) -m pytest
+COMPONENT_TEST_ARGS =   --ignore test_android.py
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -48,4 +56,4 @@ build:          $(BUILD_NO_ARCH)
 
 install:        $(INSTALL_NO_ARCH)
 
-test:           $(SKIP_TEST)
+venv-test:           $(TEST_NO_ARCH)

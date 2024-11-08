@@ -3,15 +3,28 @@ this package specifically for Solaris (Unix).
 
 Not intended for upstream.
 
---- platformdirs-4.0.0/src/platformdirs/__init__.py
-+++ platformdirs-4.0.0/src/platformdirs/__init__.py
-@@ -43,7 +43,8 @@ def _set_platform_dir_class() -> type[Pl
-     return Result
+--- platformdirs-4.3.6/src/platformdirs/__init__.py
++++ platformdirs-4.3.6/src/platformdirs/__init__.py
+@@ -19,12 +19,7 @@ if TYPE_CHECKING:
+     from pathlib import Path
+     from typing import Literal
+ 
+-if sys.platform == "win32":
+-    from platformdirs.windows import Windows as _Result
+-elif sys.platform == "darwin":
+-    from platformdirs.macos import MacOS as _Result
+-else:
+-    from platformdirs.unix import Unix as _Result
++from platformdirs.unix import Unix as _Result
  
  
--PlatformDirs = _set_platform_dir_class()  #: Currently active platform
-+from platformdirs.unix import Unix as Result
-+PlatformDirs = Result
+ def _set_platform_dir_class() -> type[PlatformDirsABC]:
+@@ -46,7 +41,7 @@ if TYPE_CHECKING:
+     # Work around mypy issue: https://github.com/python/mypy/issues/10962
+     PlatformDirs = _Result
+ else:
+-    PlatformDirs = _set_platform_dir_class()  #: Currently active platform
++    PlatformDirs = _Result
  AppDirs = PlatformDirs  #: Backwards compatibility with appdirs
  
  

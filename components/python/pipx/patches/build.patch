@@ -4,30 +4,36 @@ to use setuptools instead.
 
 Not intended for upstream.
 
---- pipx-1.2.1/pyproject.toml
-+++ pipx-1.2.1/pyproject.toml
-@@ -1,12 +1,12 @@
+--- pipx-1.7.1/pyproject.toml
++++ pipx-1.7.1/pyproject.toml
+@@ -1,9 +1,6 @@
  [build-system]
--requires = ["hatchling>=0.15.0"]
 -build-backend = "hatchling.build"
-+requires = ["setuptools"]
+-requires = [
+-  "hatch-vcs>=0.4",
+-  "hatchling>=1.18",
+-]
 +build-backend = "setuptools.build_meta"
++requires = ["setuptools"]
  
  [project]
  name = "pipx"
- description = "Install and Run Python Applications in Isolated Environments"
- readme = "README.md"
+@@ -16,7 +13,7 @@ keywords = [
+   "Virtual Environment",
+   "workflow",
+ ]
 -license = "MIT"
 +license = {text = "MIT"}
- requires-python = ">=3.7"
- keywords = ["pip", "install", "cli", "workflow", "Virtual Environment"]
- authors = [{ name = "Chad Smith", email = "chadsmith.software@gmail.com" }]
-@@ -42,6 +42,9 @@ pipx = "pipx.main:cli"
- source = "code"
- path = "src/pipx/version.py"
+ authors = [
+   { name = "Chad Smith", email = "chadsmith.software@gmail.com" },
+ ]
+@@ -50,6 +47,9 @@ urls."Release Notes" = "https://pipx.pyp
+ urls."Source Code" = "https://github.com/pypa/pipx"
+ scripts.pipx = "pipx.main:cli"
  
 +[tool.setuptools.dynamic]
 +version = {attr = "pipx.version.__version__"}
 +
- [tool.hatch.build.targets.sdist]
- include = ["/src", "/logo.png", "/pipx_demo.gif", "/*.md"]
+ [tool.hatch]
+ build.hooks.vcs.version-file = "src/pipx/version.py"
+ build.targets.sdist.include = [
