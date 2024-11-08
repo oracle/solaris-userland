@@ -20,10 +20,14 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
+
+# don't deliver bandit-baseline executable. It depends on GitPython
+# module, which is not available on Solaris.
+<transform file path=usr/bin/bandit-baseline -> drop>
 
 # we use python3 mediator instead of python
 <transform link mediator=python -> edit mediator python python3>

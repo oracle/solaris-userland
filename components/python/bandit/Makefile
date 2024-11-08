@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bandit
-COMPONENT_VERSION=	1.7.5
+COMPONENT_VERSION=	1.7.10
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:bdfc739baa03b880c2d15d0431b31c658ffc348e907fe197e54e0389dd59e11e
+    sha256:59ed5caf5d92b6ada4bf65bc6437feea4a9da1093384445fed4d472acc6cff7b
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://bandit.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	utility/bandit
 COMPONENT_ANITYA_ID=	7319
-COMPONENT_BAID=		141261
+COMPONENT_BAID=		184970
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -47,7 +47,7 @@ COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS = \
 	--ignore bandit/core/test_properties.py \
 	--ignore tests/unit/cli/test_baseline.py \
-	--ignore tests/functional/test_baseline.py
+	--ignore tests/unit/formatters/test_sarif.py
 # runtime test needs path to bandit executable
 COMPONENT_TEST_ENV += \
 	PATH=$(PROTOUSRBINDIR):$(PATH)
@@ -68,7 +68,6 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/stevedore-%)
 

@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		stevedore
-COMPONENT_VERSION=	3.5.1
+COMPONENT_VERSION=	5.3.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:84c4b0a86bbb62412fbb133e523725f6332e5eb31aaf647447be38b513e85c2e
+    sha256:9a64265f4060312828151c204efbe9b7a9852a0d9228756344dbc7e4023e375a
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/dreamhost/stevedore
 COMPONENT_BUGDB=	python-mod/stevedore
 COMPONENT_ANITYA_ID=	4040
-COMPONENT_BAID=		131556
+COMPONENT_BAID=		184968
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -57,4 +57,3 @@ test:		$(TEST_NO_ARCH)
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/importlib-metadata-%)

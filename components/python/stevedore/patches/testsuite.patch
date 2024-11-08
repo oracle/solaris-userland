@@ -2,20 +2,16 @@ We do not support stevedore.sphinxext on Solaris.
 
 Not intended for upstream
 
---- stevedore-3.4.0/stevedore/tests/test_sphinxext.py
-+++ stevedore-3.4.0/stevedore/tests/test_sphinxext.py
-@@ -12,6 +12,9 @@
+--- stevedore-5.3.0/stevedore/tests/test_sphinxext.py
++++ stevedore-5.3.0/stevedore/tests/test_sphinxext.py
+@@ -12,10 +12,13 @@
  """Tests for the sphinx extension
  """
  
 +import pytest
 +pytestmark = pytest.mark.skip("We do not support sphinxext on Solaris")
 +
- try:
-     # For python 3.8 and later
-     import importlib.metadata as importlib_metadata
-@@ -20,7 +23,7 @@ except ImportError:
-     import importlib_metadata
+ import importlib.metadata as importlib_metadata
  
  from stevedore import extension
 -from stevedore import sphinxext
