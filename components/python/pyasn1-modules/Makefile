@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyasn1-modules
-COMPONENT_VERSION=	0.3.0
+COMPONENT_VERSION=	0.4.1
 COMPONENT_SRC=		pyasn1_modules-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8d804f99905a636f3b30d68f1242e82407232067846d578f5c81d12b6f8dbb4f
+    sha256:c28e2dbf9c06ad61c71a075c7e0f9fd0f1b0bb2d2ad4377f240d33ac2ab60a7c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pyasn1/pyasn1-modules
 COMPONENT_BUGDB=	python-mod/pyasn1
 COMPONENT_ANITYA_ID=	11987
-COMPONENT_BAID=		144917
+COMPONENT_BAID=		184986
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
