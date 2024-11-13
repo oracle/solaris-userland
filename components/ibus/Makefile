@@ -54,7 +54,7 @@ CONFIGURE_ENV +=	PATH=$(GNUBIN):$(USRBINDIR)
 CONFIGURE_ENV +=	GI_SCANNER_DISABLE_CACHE=1
 
 CONFIGURE_OPTIONS +=	--disable-static
-CONFIGURE_OPTIONS +=	--enable-gtk2
+CONFIGURE_OPTIONS +=	--disable-gtk2
 CONFIGURE_OPTIONS +=	--enable-gtk3
 CONFIGURE_OPTIONS.64 +=	--enable-gtk4
 CONFIGURE_OPTIONS +=	--enable-gtk-doc
@@ -84,7 +84,6 @@ REQUIRED_PACKAGES +=	library/desktop/cairo
 REQUIRED_PACKAGES +=	library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES +=	library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES +=	library/desktop/graphene
-REQUIRED_PACKAGES +=	library/desktop/gtk2
 REQUIRED_PACKAGES +=	library/desktop/gtk3
 REQUIRED_PACKAGES +=	library/desktop/gtk4
 REQUIRED_PACKAGES +=	library/desktop/libnotify
