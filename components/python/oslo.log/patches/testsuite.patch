@@ -1,0 +1,26 @@
+eventlet is not available on Solaris.
+
+--- oslo.log-6.1.2/oslo_log/tests/unit/test_pipe_mutex.py
++++ oslo.log-6.1.2/oslo_log/tests/unit/test_pipe_mutex.py
+@@ -17,12 +17,6 @@ import contextlib
+ import unittest
+ from unittest import mock
+ 
+-import eventlet
+-from eventlet import debug as eventlet_debug
+-from eventlet import greenpool
+-
+-from oslo_log import pipe_mutex
+-
+ 
+ @contextlib.contextmanager
+ def quiet_eventlet_exceptions():
+@@ -34,6 +28,8 @@ def quiet_eventlet_exceptions():
+         eventlet_debug.hub_exceptions(orig_state)
+ 
+ 
++import unittest
++@unittest.skip("eventlet is not available on Solaris")
+ class TestPipeMutex(unittest.TestCase):
+     """From  Swift's test/unit/common/test_utils.py"""
+     def setUp(self):

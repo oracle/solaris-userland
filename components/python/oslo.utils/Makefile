@@ -20,26 +20,34 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.utils
-COMPONENT_VERSION=	6.1.0
+COMPONENT_VERSION=	7.4.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:76bc0108d50aca972b68fec8298e791b5fbcbeb9a51a27c6986b41b0a6a62eeb
+    sha256:aa5dcb5daa05ddf4b534f2cdeda56f7f21485c96f5cbaf6a8c0871d803b73ece
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.utils/
 COMPONENT_BUGDB=	python-mod/oslo.utils
 COMPONENT_ANITYA_ID=	3951
-COMPONENT_BAID=		140843
+COMPONENT_BAID=		185484
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-venv-test.mk
+
+PYTHON_VENV_TEST_COMPONENTS = \
+    ddt oslotest testscenarios
+
+COMPONENT_TEST_DIR =    $(SOURCE_DIR)
+COMPONENT_TEST_CMD =    $(VENV_PYTHON) -m unittest -v
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -48,18 +56,15 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# See $(COMPONENT_SRC)/test-requirements.txt for the Python modules
-# required to execute unittests.
-test:		$(NO_TESTS)
+venv-test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/debtcollector-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/iso8601-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/netaddr-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/netifaces-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.i18n-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/psutil-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyparsing-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pytz-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)

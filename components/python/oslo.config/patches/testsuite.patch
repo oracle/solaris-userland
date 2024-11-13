@@ -1,0 +1,30 @@
+Several tests expect specific terminal size.
+
+Not intended for upstream.
+
+--- oslo.config-9.6.0/oslo_config/tests/test_cfg.py
++++ oslo.config-9.6.0/oslo_config/tests/test_cfg.py
+@@ -138,6 +138,7 @@ class BaseTestCase(base.BaseTestCase):
+ 
+ class UsageTestCase(BaseTestCase):
+ 
++    @unittest.skip("expects specific terminal size")
+     def test_print_usage(self):
+         f = io.StringIO()
+         self.conf([])
+@@ -162,6 +163,7 @@ class UsageTestCase(BaseTestCase):
+         self.assertNotIn('tepilog', f.getvalue())
+         self.assertNotIn('optional:', f.getvalue())
+ 
++    @unittest.skip("expects specific terminal size")
+     def test_print_help(self):
+         f = io.StringIO()
+         self.conf([])
+@@ -177,6 +179,7 @@ class UsageTestCase(BaseTestCase):
+ 
+ class HelpTestCase(BaseTestCase):
+ 
++    @unittest.skip("expects specific terminal size")
+     def test_print_help(self):
+         f = io.StringIO()
+         self.conf([])

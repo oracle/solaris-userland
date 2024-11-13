@@ -20,26 +20,33 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.serialization
-COMPONENT_VERSION=	5.1.1
+COMPONENT_VERSION=	5.5.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8abbda8b1763a06071fc28c5d8a9be547ba285f4830e68a70ff88fe11f16bf43
+    sha256:9e752fc5d8a975956728dd96a82186783b3fefcacbb3553acd933058861e15a6
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.serialization/
 COMPONENT_BUGDB=	python-mod/oslo.serial
 COMPONENT_ANITYA_ID=	13181
-COMPONENT_BAID=		140845
+COMPONENT_BAID=		185485
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-venv-test.mk
+
+PYTHON_VENV_TEST_COMPONENTS = oslotest
+
+COMPONENT_TEST_DIR =    $(SOURCE_DIR)
+COMPONENT_TEST_CMD =    $(VENV_PYTHON) -m unittest -v
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -48,13 +55,10 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# See $(COMPONENT_SRC)/test-requirements.txt for the Python modules
-# required to execute unittests.
-test:		$(NO_TESTS)
+venv-test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/msgpack-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.utils-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pytz-%)

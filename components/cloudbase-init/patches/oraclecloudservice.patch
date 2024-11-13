@@ -4,8 +4,8 @@ Could be upstreamed in cooperation with OCI image team.
 
 diff --git a/cloudbaseinit/conf/factory.py b/cloudbaseinit/conf/factory.py
 index ad2b37e..57aa5a9 100644
---- cloudbase-init-1.1.4/cloudbaseinit/conf/factory.py
-+++ cloudbase-init-1.1.4/cloudbaseinit/conf/factory.py
+--- cloudbase-init-1.1.6/cloudbaseinit/conf/factory.py
++++ cloudbase-init-1.1.6/cloudbaseinit/conf/factory.py
 @@ -21,6 +21,7 @@ _OPT_PATHS = (
      'cloudbaseinit.conf.ec2.EC2Options',
      'cloudbaseinit.conf.maas.MAASOptions',
@@ -14,9 +14,9 @@ index ad2b37e..57aa5a9 100644
      'cloudbaseinit.conf.azure.AzureOptions',
      'cloudbaseinit.conf.ovf.OvfOptions',
      'cloudbaseinit.conf.packet.PacketOptions',
---- cloudbase-init-1.1.4/cloudbaseinit/metadata/services/base.py
-+++ cloudbase-init-1.1.4/cloudbaseinit/metadata/services/base.py
-@@ -50,7 +50,7 @@ class BaseMetadataService(object):
+--- cloudbase-init-1.1.6/cloudbaseinit/metadata/services/base.py
++++ cloudbase-init-1.1.6/cloudbaseinit/metadata/services/base.py
+@@ -48,7 +48,7 @@ class BaseMetadataService(object, metacl
          self._cache = {}
  
      @abc.abstractmethod
@@ -25,7 +25,7 @@ index ad2b37e..57aa5a9 100644
          pass
  
      def _exec_with_retry(self, action):
-@@ -67,14 +67,14 @@ class BaseMetadataService(object):
+@@ -65,14 +65,14 @@ class BaseMetadataService(object, metacl
                  else:
                      raise
  
@@ -43,7 +43,7 @@ index ad2b37e..57aa5a9 100644
              if decode:
                  data = encoding.get_as_string(data)
              self._cache[key] = data
-@@ -319,10 +319,10 @@ class BaseHTTPMetadataService(BaseMetada
+@@ -317,10 +317,10 @@ class BaseHTTPMetadataService(BaseMetada
          response.raise_for_status()
          return response.content
  
@@ -56,7 +56,7 @@ index ad2b37e..57aa5a9 100644
          except requests.HTTPError as exc:
              if exc.response.status_code == 404:
                  raise NotExistingMetadataException(
-@@ -352,7 +352,7 @@ class EmptyMetadataService(BaseMetadataS
+@@ -350,7 +350,7 @@ class EmptyMetadataService(BaseMetadataS
      def __init__(self):
          super(EmptyMetadataService, self).__init__()
  
@@ -65,9 +65,9 @@ index ad2b37e..57aa5a9 100644
          pass
  
      def load(self):
---- cloudbase-init-1.1.4/cloudbaseinit/metadata/services/opennebulaservice.py
-+++ cloudbase-init-1.1.4/cloudbaseinit/metadata/services/opennebulaservice.py
-@@ -141,7 +141,7 @@ class OpenNebulaService(base.BaseMetadat
+--- cloudbase-init-1.1.6/cloudbaseinit/metadata/services/opennebulaservice.py
++++ cloudbase-init-1.1.6/cloudbaseinit/metadata/services/opennebulaservice.py
+@@ -139,7 +139,7 @@ class OpenNebulaService(base.BaseMetadat
              )
              self._dict_content.update(vardict)
  
@@ -76,9 +76,9 @@ index ad2b37e..57aa5a9 100644
          # Return the requested field's value or raise an error if not found.
          if name not in self._dict_content:
              msg = "Metadata {} not found".format(name)
---- cloudbase-init-1.1.4/cloudbaseinit/tests/metadata/services/test_cloudstack.py
-+++ cloudbase-init-1.1.4/cloudbaseinit/tests/metadata/services/test_cloudstack.py
-@@ -124,7 +124,7 @@ class CloudStackTest(unittest.TestCase):
+--- cloudbase-init-1.1.6/cloudbaseinit/tests/metadata/services/test_cloudstack.py
++++ cloudbase-init-1.1.6/cloudbaseinit/tests/metadata/services/test_cloudstack.py
+@@ -120,7 +120,7 @@ class CloudStackTest(unittest.TestCase):
  
          response = self._service._get_cache_data(mock.sentinel.metadata)
          self.assertEqual(mock.sentinel.metadata, response)

@@ -4,9 +4,9 @@ This has not been committed upstream, but has been filed in launchpad:
 
 https://bugs.launchpad.net/cloudbase-init/+bug/1630006
 
---- cloudbase-init-1.1.0/cloudbaseinit/metadata/services/base.py
-+++ cloudbase-init-1.1.0/cloudbaseinit/metadata/services/base.py
-@@ -315,7 +315,7 @@ class BaseHTTPMetadataService(BaseMetada
+--- cloudbase-init-1.1.6/cloudbaseinit/metadata/services/base.py
++++ cloudbase-init-1.1.6/cloudbaseinit/metadata/services/base.py
+@@ -313,7 +313,7 @@ class BaseHTTPMetadataService(BaseMetada
          LOG.debug('Executing http request %s at %s', method, url)
          response = requests.request(method=method, url=url, data=data,
                                      headers=headers,
@@ -15,3 +15,14 @@ https://bugs.launchpad.net/cloudbase-init/+bug/1630006
          response.raise_for_status()
          return response.content
  
+--- cloudbase-init-1.1.6/cloudbaseinit/tests/metadata/services/test_base.py
++++ cloudbase-init-1.1.6/cloudbaseinit/tests/metadata/services/test_base.py
+@@ -142,7 +142,7 @@ class TestBaseHTTPMetadataService(unitte
+ 
+         mock_request.assert_called_once_with(
+             method=expected_method, url=mock_url, data=mock_data,
+-            headers=mock_headers, verify=mock.sentinel.verify)
++            headers=mock_headers, verify=mock.sentinel.verify, timeout=1)
+ 
+         mock_response_status.assert_called_once_with()
+         self.assertEqual(response, mock.sentinel.content)

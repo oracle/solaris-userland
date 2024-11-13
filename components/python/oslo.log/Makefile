@@ -20,30 +20,37 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.log
-COMPONENT_VERSION=	5.2.0
+COMPONENT_VERSION=	6.1.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6226336d5b6ee1885f057b65dbede84c4a9c5e4e4ae75a0e8e7f383c163ec480
+    sha256:f768047df9d706c484dd6665dcbbea289021d48cb7ce5abf7a1f69a09491f5fe
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.log/
 COMPONENT_BUGDB=	python-mod/oslo.log
 COMPONENT_ANITYA_ID=	7001
-COMPONENT_BAID=		140849
+COMPONENT_BAID=		185494
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-venv-test.mk
 
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; \
 	$(MV) -f convert-json convert-json-$(PYTHON_VERSION))
+
+PYTHON_VENV_TEST_COMPONENTS = oslotest
+
+COMPONENT_TEST_DIR =    $(SOURCE_DIR)
+COMPONENT_TEST_CMD =    $(VENV_PYTHON) -m unittest -v
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -52,14 +59,11 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# See $(COMPONENT_SRC)/test-requirements.txt for the Python modules
-# required to execute unittests.
-test:		$(NO_TESTS)
+venv-test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/dateutil-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/debtcollector-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.config-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.context-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.i18n-%)

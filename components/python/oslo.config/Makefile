@@ -26,26 +26,34 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.config
-COMPONENT_VERSION=	9.1.1
+COMPONENT_VERSION=	9.6.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b07654b53d87792ae8e739962ad729c529c9938a118d891ece9ee31d59716bc9
+    sha256:9f05ef70e48d9a61a8d0c9bed389da24f2ef5a89df5b6e8deb7c741d6113667e
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.config/
 COMPONENT_BUGDB=	python-mod/oslo.config
 COMPONENT_ANITYA_ID=	3946
-COMPONENT_BAID=		140840
+COMPONENT_BAID=		185492
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-venv-test.mk
 
 COMPONENT_POST_INSTALL_ACTION += \
     ($(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES); \
      cd $(PROTO_DIR)/usr/bin ; \
      $(MV) -f oslo-config-generator oslo-config-generator-$(PYTHON_VERSION); \
      $(MV) -f oslo-config-validator oslo-config-validator-$(PYTHON_VERSION))
+
+PYTHON_VENV_TEST_COMPONENTS = \
+   oslotest requests_mock testscenarios docutils sphinx
+
+COMPONENT_TEST_DIR =    $(SOURCE_DIR)
+COMPONENT_TEST_CMD =    $(VENV_PYTHON) -m unittest -v
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -54,9 +62,7 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# See $(COMPONENT_SRC)/test-requirements.txt for the Python modules
-# required to execute unittests.
-test:		$(NO_TESTS)
+venv-test:      $(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 

@@ -1,9 +1,9 @@
 In-house patch to allow the TCP keepalive parameters to be used on Solaris.
 Patch has not yet been submitted upstream.
 
---- oslo.utils-4.10.0/oslo_utils/netutils.py
-+++ oslo.utils-4.10.0/oslo_utils/netutils.py
-@@ -21,6 +21,7 @@ import logging
+--- oslo.utils-7.4.0/oslo_utils/netutils.py
++++ oslo.utils-7.4.0/oslo_utils/netutils.py
+@@ -22,6 +22,7 @@ import logging
  import os
  import re
  import socket
@@ -11,7 +11,7 @@ Patch has not yet been submitted upstream.
  from urllib import parse
  
  import netaddr
-@@ -496,26 +497,44 @@ def set_tcp_keepalive(sock, tcp_keepaliv
+@@ -586,26 +587,44 @@ def set_tcp_keepalive(sock, tcp_keepaliv
      if not tcp_keepalive:
          return
  
@@ -22,7 +22,20 @@ Patch has not yet been submitted upstream.
 -            sock.setsockopt(socket.IPPROTO_TCP,
 -                            socket.TCP_KEEPIDLE,
 -                            tcp_keepidle)
--        else:
++    if sys.platform == 'sunos5':
++        # Should match definitions in <netinet/tcp.h>
++        TCP_KEEPALIVE_THRESHOLD = 0x16
++        TCP_KEEPALIVE_ABORT_THRESHOLD = 0x17
++
++        if tcp_keepidle is not None:
++            sock.setsockopt(socket.IPPROTO_TCP, TCP_KEEPALIVE_THRESHOLD,
++                            tcp_keepidle * 1000)
++        if tcp_keepalive_interval is None and tcp_keepalive_count is None:
++            return
++        if tcp_keepalive_interval is None or tcp_keepalive_count is None:
++            LOG.warning('tcp_keepintvl and tcp_keepknt must be set '
++                            'together')
+         else:
 -            LOG.warning('tcp_keepidle not available on your system')
 -    if tcp_keepalive_interval is not None:
 -        if hasattr(socket, 'TCP_KEEPINTVL'):
@@ -38,20 +51,6 @@ Patch has not yet been submitted upstream.
 -                            tcp_keepalive_count)
 -        else:
 -            LOG.warning('tcp_keepcnt not available on your system')
-+    if sys.platform == 'sunos5':
-+        # Should match definitions in <netinet/tcp.h>
-+        TCP_KEEPALIVE_THRESHOLD = 0x16
-+        TCP_KEEPALIVE_ABORT_THRESHOLD = 0x17
-+
-+        if tcp_keepidle is not None:
-+            sock.setsockopt(socket.IPPROTO_TCP, TCP_KEEPALIVE_THRESHOLD,
-+                            tcp_keepidle * 1000)
-+        if tcp_keepalive_interval is None and tcp_keepalive_count is None:
-+            return
-+        if tcp_keepalive_interval is None or tcp_keepalive_count is None:
-+            LOG.warning('tcp_keepintvl and tcp_keepknt must be set '
-+                            'together')
-+        else:
 +            sock.setsockopt(
 +                socket.IPPROTO_TCP, TCP_KEEPALIVE_ABORT_THRESHOLD,
 +                tcp_keepalive_interval * tcp_keepalive_count * 1000)
@@ -79,3 +78,59 @@ Patch has not yet been submitted upstream.
 +                                tcp_keepalive_count)
 +            else:
 +                LOG.warning('tcp_keepcnt not available on your system')
+--- oslo.utils-7.4.0/oslo_utils/tests/test_netutils.py
++++ oslo.utils-7.4.0/oslo_utils/tests/test_netutils.py
+@@ -17,6 +17,7 @@ from collections import namedtuple
+ import contextlib
+ import io
+ import socket
++import sys
+ from unittest import mock
+ 
+ import netaddr
+@@ -133,21 +134,36 @@ class NetworkUtilsTest(test_base.BaseTes
+             mock.call.setsockopt(socket.SOL_SOCKET,
+                                  socket.SO_KEEPALIVE, True),
+         ]
+-        if hasattr(socket, 'TCP_KEEPIDLE'):
++        if sys.platform == 'sunos5':
++            # Should match definitions in <netinet/tcp.h>
++            TCP_KEEPALIVE_THRESHOLD = 0x16
++            TCP_KEEPALIVE_ABORT_THRESHOLD = 0x17
+             calls += [
+                 mock.call.setsockopt(socket.IPPROTO_TCP,
+-                                     socket.TCP_KEEPIDLE, 100)
++                                     TCP_KEEPALIVE_THRESHOLD,
++                                     100 * 1000)
+             ]
+-        if hasattr(socket, 'TCP_KEEPINTVL'):
+             calls += [
+                 mock.call.setsockopt(socket.IPPROTO_TCP,
+-                                     socket.TCP_KEEPINTVL, 10),
+-            ]
+-        if hasattr(socket, 'TCP_KEEPCNT'):
+-            calls += [
+-                mock.call.setsockopt(socket.IPPROTO_TCP,
+-                                     socket.TCP_KEEPCNT, 5)
++                                     TCP_KEEPALIVE_ABORT_THRESHOLD,
++                                     10 * 5 * 1000)
+             ]
++        else:
++            if hasattr(socket, 'TCP_KEEPIDLE'):
++                calls += [
++                    mock.call.setsockopt(socket.IPPROTO_TCP,
++                                         socket.TCP_KEEPIDLE, 100)
++                ]
++            if hasattr(socket, 'TCP_KEEPINTVL'):
++                calls += [
++                    mock.call.setsockopt(socket.IPPROTO_TCP,
++                                         socket.TCP_KEEPINTVL, 10),
++                ]
++            if hasattr(socket, 'TCP_KEEPCNT'):
++                calls += [
++                    mock.call.setsockopt(socket.IPPROTO_TCP,
++                                         socket.TCP_KEEPCNT, 5)
++                ]
+         mock_sock.assert_has_calls(calls)
+ 
+         mock_sock.reset_mock()

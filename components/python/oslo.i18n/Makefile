@@ -20,26 +20,34 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.i18n
-COMPONENT_VERSION=	6.0.0
+COMPONENT_VERSION=	6.4.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-   sha256:ed10686b75f7c607825177a669155f4e259ce39f6143a375f6359bbcaa4a35cd
+   sha256:66e04c041e9ff17d07e13ec7f48295fbc36169143c72ca2352a3efcc98e7b608
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.i18n/
 COMPONENT_BUGDB=	python-mod/oslo.i18n
 COMPONENT_ANITYA_ID=	3948
-COMPONENT_BAID=		140837
+COMPONENT_BAID=		185475
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-venv-test.mk
+
+PYTHON_VENV_TEST_COMPONENTS = \
+   oslotest testscenarios
+
+COMPONENT_TEST_DIR =    $(SOURCE_DIR)
+COMPONENT_TEST_CMD =    $(VENV_PYTHON) -m unittest -v
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -48,9 +56,7 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# See $(COMPONENT_SRC)/test-requirements.txt for the Python modules
-# required to execute unittests.
-test:		$(NO_TESTS)
+venv-test:	$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 

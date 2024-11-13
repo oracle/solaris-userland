@@ -1,0 +1,20 @@
+eventlet is not available on Solaris.
+
+--- oslo.utils-7.4.0/oslo_utils/tests/test_eventletutils.py
++++ oslo.utils-7.4.0/oslo_utils/tests/test_eventletutils.py
+@@ -16,13 +16,12 @@ import threading
+ from unittest import mock
+ import warnings
+ 
+-import eventlet
+-from eventlet import greenthread
+ from oslotest import base as test_base
+ 
+ from oslo_utils import eventletutils
+ 
+-
++import unittest
++@unittest.skip("eventlet is not available on Solaris")
+ class EventletUtilsTest(test_base.BaseTestCase):
+     def setUp(self):
+         super(EventletUtilsTest, self).setUp()
