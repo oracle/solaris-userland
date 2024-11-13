@@ -26,10 +26,10 @@
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		ansible-core
-COMPONENT_VERSION=	2.16.3
+COMPONENT_NAME=		ansible_core
+COMPONENT_VERSION=	2.18.0
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:76a8765a8586064ef073a299562e308fa2c180a75b5f7569bbd0f61d4171cdb3
+    sha256:87fbebbfe8d961e9b153e84b4438ba3a327dbfdcd4ad05a6065d9ff5d9d02e7b
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
@@ -37,19 +37,22 @@ COMPONENT_PROJECT_URL=	https://www.ansible.com/
 COMPONENT_BUGDB=	utility/ansible
 COMPONENT_ANITYA_ID=	165410
 
-COMPONENT_BAID=		158275
+COMPONENT_BAID=		185478
 PKG_MACROS+= MICRO_VERSION=$(MICRO_VERSION)
 
 # We need just a single Python version
 PYTHON_VERSIONS=	3.11
 
-TEST_TARGET= $(NO_TESTS)
-
-BUILD_STYLE= setup.py
+include $(WS_MAKE_RULES)/prep.mk
+include $(WS_MAKE_RULES)/pybuild.mk
+include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE= $(ASLR_NOT_APPLICABLE)
 
-include $(WS_MAKE_RULES)/common.mk
+# common targets
+build:          $(BUILD_NO_ARCH)
+install:        $(INSTALL_NO_ARCH)
+test:           $(NO_TESTS)
 
 PKG_MACROS +=		PYVER=$(PYTHON_VERSIONS)
 PKG_MACROS +=		PYV=$(shell echo $(PYTHON_VERSIONS) | tr -d .)
