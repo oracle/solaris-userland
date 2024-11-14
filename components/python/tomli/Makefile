@@ -20,27 +20,27 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tomli
-COMPONENT_VERSION=	2.0.1
+COMPONENT_VERSION=	2.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	https://github.com/hukkin/tomli
 COMPONENT_BUGDB=	python-mod/tomli
 COMPONENT_ANITYA_ID=	207408
-COMPONENT_BAID=		116639
+COMPONENT_BAID=		185696
 
 # pypi archive doesn't include the test suite
 GIT_REPO=   $(COMPONENT_PROJECT_URL)
 GIT_COMMIT_ID=  $(COMPONENT_VERSION)
-GIT_HASH=   sha256:ad22dbc128623e0c156ffaff019f29f456eba8a5d5a05164dd34f63e560449df
+GIT_HASH=   sha256:cafacdaaee96af5ed9aa194f3a6dae9b07c9d07340753fd0162d74f1d76435bc
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
