@@ -1,0 +1,30 @@
+We do not have hatchling on Solaris, and it doesn't seem necessary
+to deliver it at this point. This patch modifies the build metadata
+to use setuptools instead.
+
+Not intended for upstream.
+
+--- pygments-2.18.0/pyproject.toml
++++ pygments-2.18.0/pyproject.toml
+@@ -1,6 +1,6 @@
+ [build-system]
+-requires = ["hatchling"]
+-build-backend = "hatchling.build"
++requires = ["setuptools"]
++build-backend = "setuptools.build_meta"
+ 
+ [project]
+ name = "Pygments"
+@@ -57,6 +57,12 @@ pygmentize = "pygments.cmdline:main"
+ [tool.hatch.build.targets.wheel]
+ packages = ["pygments"]
+ 
++[tool.setuptools.packages.find]
++include = ["pygments", "pygments.*"]
++
++[tool.setuptools.dynamic]
++version = {attr = "pygments.__version__"}
++
+ [tool.hatch.version]
+ path = "pygments/__init__.py"
+ 

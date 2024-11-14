@@ -1,0 +1,13 @@
+While nsgmls is available on Solaris, the necessary openjade files
+are not installed on our build machines.
+
+--- pygments-2.18.0/tests/test_html_formatter.py
++++ pygments-2.18.0/tests/test_html_formatter.py
+@@ -119,6 +119,7 @@ def test_lineanchors_with_startnum():
+     assert re.search("<pre>\\s*<span>\\s*</span>\\s*<a id=\"foo-5\" name=\"foo-5\" href=\"#foo-5\">", html)
+ 
+ 
++@pytest.mark.skip("skip on Solaris")
+ def test_valid_output():
+     # test all available wrappers
+     fmt = HtmlFormatter(full=True, linenos=True, noclasses=True,

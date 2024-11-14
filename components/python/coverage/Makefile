@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		coverage
-COMPONENT_VERSION=	7.0.5
+COMPONENT_VERSION=	7.6.4
 COMPONENT_PROJECT_URL=	http://nedbatchelder.com/code/coverage/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1098412b73475881a9a3460fc7c490d8d26aa49958c06c398575b8c30f249dd4
+    sha256:29fc0f17b1d3fea332f8001d4558f8214af7f1d87a345f3a133c901d60347c73
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/coverage
 COMPONENT_ANITYA_ID=	3811
-COMPONENT_BAID=		136696
+COMPONENT_BAID=		185369
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
