@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		parallel
-COMPONENT_VERSION=	20221122
+COMPONENT_VERSION=	20241022
 # A leading "0." is included to make it easier to upgrade the package, should
 # the maintainers decide to go to a more standard version numbering system.
-IPS_COMPONENT_VERSION=  0.2022.11.22
+IPS_COMPONENT_VERSION=  0.2024.10.22
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:aa3d9d22434df148d693f1a6232331a126729b6a22d2f7261b17fba9ad99539d
+	sha256:6de22bf1c67f7f316670d21ed1a2a32f1214dfbd3e420939ba937925c0a57a12
 COMPONENT_ANITYA_ID=	5448
-COMPONENT_BAID=		133591
+COMPONENT_BAID=	185329	
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnu-component.mk
