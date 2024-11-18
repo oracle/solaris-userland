@@ -20,28 +20,28 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		flit_core
-COMPONENT_VERSION=	3.9.0
+COMPONENT_VERSION=	3.10.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:72ad266176c4a3fcfab5f2930d76896059851240570ce9a98733b658cb786eba
+    sha256:66e5b87874a0d6e39691f0e22f09306736b633548670ad3c09ec9db03c5662f7
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pypa/flit
 COMPONENT_BUGDB=	python-mod/flit_core
 COMPONENT_ANITYA_ID=	44841
-COMPONENT_BAID=		154443
+COMPONENT_BAID=		185615
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/flit_core/tests
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
@@ -56,4 +56,4 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/tomli-%)
+REQUIRED_PACKAGES += library/python/tomli-39

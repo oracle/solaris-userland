@@ -26,17 +26,17 @@ COMPILER =		gcc
 BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		Cython
-COMPONENT_VERSION=	3.0.10
+COMPONENT_NAME=		cython
+COMPONENT_VERSION=	3.0.11
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=		\
-    sha256:bb8d981cceaa70e73ff36730a55a1b0adee88ff90ffcae3f9b41dbb5ae215bec
+    sha256:2af4f1c0dadb8613126d345da3cd93b0658685e8b34a7a6b083694a8188ac83e
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=  http://cython.org/
 COMPONENT_BUGDB=	python-mod/cython
 COMPONENT_ANITYA_ID=	12679
-COMPONENT_BAID=		164460
+COMPONENT_BAID=		185614
 
 # Avoid warnings about use of the deprecated NumPy API. Please see
 # http://docs.cython.org/en/latest/src/reference/compilation.html#configuring-the-c-build
