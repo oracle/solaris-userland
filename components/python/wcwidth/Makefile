@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wcwidth
-COMPONENT_VERSION=	0.2.6
+COMPONENT_VERSION=	0.2.13
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a5220780a404dbe3353789870978e472cfe477761f06ee55077256e509b156d0
+    sha256:72ea0c06399eb286d978fdedb6923a9eb47e1c486ce63e9b4e64fc18303972b5
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/jquast/wcwidth
 COMPONENT_BUGDB=	python-mod/wcwidth
 COMPONENT_ANITYA_ID=	8743
-COMPONENT_BAID=		137944
+COMPONENT_BAID=		185585
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

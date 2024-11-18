@@ -1,0 +1,34 @@
+Hatchling is not available on Solaris. This patch modifies
+the build metadata to use setuptools instead.
+
+Not intended for upstream.
+
+--- attrs-24.2.0/pyproject.toml
++++ attrs-24.2.0/pyproject.toml
+@@ -1,14 +1,15 @@
+ # SPDX-License-Identifier: MIT
+ 
+ [build-system]
+-requires = ["hatchling", "hatch-vcs", "hatch-fancy-pypi-readme>=23.2.0"]
+-build-backend = "hatchling.build"
++requires = ["setuptools"]
++build-backend = "setuptools.build_meta"
+ 
+ 
+ [project]
+ name = "attrs"
++version = "24.2.0"
+ authors = [{ name = "Hynek Schlawack", email = "hs@ox.cx" }]
+-license = "MIT"
++license = {text = "MIT"}
+ requires-python = ">=3.7"
+ description = "Classes Without Boilerplate"
+ keywords = ["class", "attribute", "boilerplate"]
+@@ -27,7 +28,6 @@ classifiers = [
+   "Typing :: Typed",
+ ]
+ dependencies = ["importlib_metadata;python_version<'3.8'"]
+-dynamic = ["version", "readme"]
+ 
+ [project.optional-dependencies]
+ tests-mypy = [

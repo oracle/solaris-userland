@@ -25,20 +25,24 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cmd2
-COMPONENT_VERSION=	2.4.3
+COMPONENT_VERSION=	2.5.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:71873c11f72bd19e2b1db578214716f0d4f7c8fa250093c601265a9a717dee52
+	sha256:405016f6cee5d4155534a39c8089ebedcfffbb3e24c37150a2b61df32ec90122
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/cmd2
 COMPONENT_BUGDB=	python-mod/cmd2
 COMPONENT_ANITYA_ID=	13187
-COMPONENT_BAID=		154748
+COMPONENT_BAID=		185588
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# The test suite has some expectations about files in the component
+# directory and backup files break those.
+GPATCH_BACKUP =
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -55,6 +59,5 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyperclip-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/wcwidth-%)
