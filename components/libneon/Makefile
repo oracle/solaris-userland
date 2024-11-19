@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME = libneon
-COMPONENT_VERSION = 0.32.4
+COMPONENT_VERSION = 0.33.0
 COMPONENT_PROJECT_URL=	https://notroj.github.io/neon/
 COMPONENT_SRC_NAME = neon
 COMPONENT_ARCHIVE_HASH = \
-    sha256:b1e2120e4ae07df952c4a858731619733115c5f438965de4fab41d6bf7e7a508
+    sha256:659a5cc9cea05e6e7864094f1e13a77abbbdbab452f04d751a8c16a9447cf4b8
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/neon
 COMPONENT_ANITYA_ID=	7604
 
-COMPONENT_BAID=		136487
+COMPONENT_BAID=		177629
 
 include $(WS_MAKE_RULES)/common.mk
 
