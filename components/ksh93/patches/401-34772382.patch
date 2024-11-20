@@ -11,7 +11,7 @@
 
 --- INIT.2012-08-01/src/cmd/ksh93/sh/fault.c.org	2024-10-16 13:51:11.615146625 +0200
 +++ INIT.2012-08-01/src/cmd/ksh93/sh/fault.c	2024-10-16 14:32:55.081540820 +0200
-@@ -659,10 +659,7 @@
+@@ -659,10 +659,27 @@
  			vlimit(RLIMIT_CORE,0);
  #endif
  		}
@@ -19,7 +19,27 @@
 -		sigrelease(sig);
 -		kill(getpid(),sig);
 -		pause();
-+		exit(savxit);
++		/* Make sure we do not dump core. */
++		switch (sig) {
++		case SIGQUIT:
++		case SIGILL:
++		case SIGTRAP:
++		case SIGABRT:
++		case SIGEMT:
++		case SIGFPE:
++		case SIGBUS:
++		case SIGSEGV:
++		case SIGSYS:
++		case SIGXCPU:
++		case SIGXFSZ:
++			exit(sig + 128);
++			break;
++		default:
++			signal(sig,SIG_DFL);
++			sigrelease(sig);
++			kill(getpid(),sig);
++			pause();
++		}
  	}
  #if SHOPT_KIA
  	if(sh_isoption(SH_NOEXEC))
