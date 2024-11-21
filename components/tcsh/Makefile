@@ -20,21 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tcsh
-COMPONENT_VERSION=	6.24.07
-IPS_COMPONENT_VERSION=	6.24.7
+COMPONENT_VERSION=	6.24.13
 COMPONENT_PROJECT_URL=	http://www.tcsh.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8847f6574afd2651fa7dc3321a7d12d0e42aa41f2b2c03d37cc1b254aba4e64d
+	sha256:1e927d52e9c85d162bf985f24d13c6ccede9beb880d86fec492ed15480a5c71a
 COMPONENT_ARCHIVE_URL=	https://astron.com/pub/tcsh/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4945
-COMPONENT_BAID=		135568
+COMPONENT_BAID=	184607
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -1,13 +1,14 @@
-Set PATH to test environment
+Set PATH to test environment and make the test suite use system's default locale.
 
---- tcsh-6.24.07/Makefile.in.orig	2023-01-03 13:54:58.650908401 +0100
-+++ tcsh-6.24.07/Makefile.in	2023-01-03 13:57:34.426843706 +0100
-@@ -721,7 +721,7 @@
- 
- check test: atconfig $(srcdir)/tests/testsuite
+--- tcsh-6.24.13/Makefile.in.orig	2024-11-18 19:25:27.216070261 +0100
++++ tcsh-6.24.13/Makefile.in	2024-11-18 19:26:44.131783703 +0100
+@@ -728,7 +728,8 @@
  	$(ENVCMD) - \
--		USER="$(USER)" \
-+		USER="$(USER)" PATH="$(PATH)" \
+ 		TESTSUITEREGEN="$(TESTSUITEREGEN)" \
+ 		USER="$(USER)" \
+-		LC_ALL=C \
++		PATH="$(PATH)" \
++		LC_ALL=C.UTF-8 \
  		$(SHELL) $(srcdir)/tests/testsuite $(TESTSUITEFLAGS)
  
  #
