@@ -27,18 +27,18 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wireshark
-COMPONENT_VERSION=	4.2.6
-COMPONENT_BAID=		171833
+COMPONENT_VERSION=	4.4.2
+COMPONENT_BAID=		186332
 COMPONENT_PROJECT_URL=	http://www.wireshark.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5ec6028df29068d889c98489bf194a884b00831106fea1e921fea3c65f2003f5
+    sha256:6053d97499c83feb87ce1d7f732d9c889c6c18bb334de67e65dca11483b0514e
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/src/all-versions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5137
 
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-docs-generated.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:d17d621ae07f06683b02b79e8eccd568943e135049399c2bcb0a6ab0c968eb5c
+    sha256:c8c401ecb81329bfb95380b4c31774c584dec2ea31a5e73fffdd219a5f0ede0a
 COMPONENT_ARCHIVE_URL_1 =  make://docs-generated/$(COMPONENT_ARCHIVE_1)
 
 BUILD_STYLE=	cmake
@@ -60,9 +60,9 @@ COMPONENT_PREP_ACTION += gtar xvf $(COMPONENT_ARCHIVE_1) ;
 
 COMPONENT_POST_INSTALL_ACTION += ( \
 	$(MKDIR) $(PROTOUSRSHAREMAN1DIR) $(PROTOUSRSHAREMAN4DIR); \
-	$(CP) $(SOURCE_DIR)/doc/*.1 $(PROTOUSRSHAREMAN1DIR); \
-	$(CP) $(SOURCE_DIR)/doc/*.4 $(PROTOUSRSHAREMAN4DIR); \
-	$(CP) $(SOURCE_DIR)/doc/*.html $(PROTOUSRSHAREDIR)/wireshark; )
+	$(CP) $(SOURCE_DIR)/doc//man_pages/*.1 $(PROTOUSRSHAREMAN1DIR); \
+	$(CP) $(SOURCE_DIR)/doc/man_pages/*.4 $(PROTOUSRSHAREMAN4DIR); \
+	$(CP) $(SOURCE_DIR)/doc/man_pages/*.html $(PROTOUSRSHAREDIR)/wireshark; )
 
 TEST_TARGET= $(NO_TESTS)
 
@@ -103,8 +103,8 @@ docs-generated:
 	    PATH="$(PATH):$(SOURCE_DIR)/home/.local/share/gem/ruby/$(RUBY_VERSION).0/bin" $(CMAKE) $(CMAKE_OPTIONS) . ; \
 	  $(ENV) $(COMPONENT_BUILD_ENV) HOME=$(SOURCE_DIR)/home $(GMAKE) docs
 	TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1) --sort=name \
-	  --mtime='1970-01-01' --owner=root --group=root $(COMPONENT_SRC)/doc/*.1 \
-	  $(COMPONENT_SRC)/doc/*.4 $(COMPONENT_SRC)/doc/*.html
+	  --mtime='1970-01-01' --owner=root --group=root $(COMPONENT_SRC)/doc/man_pages/*.1 \
+	  $(COMPONENT_SRC)/doc/man_pages/*.4 $(COMPONENT_SRC)/doc/man_pages/*.html
 	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)
 
 REQUIRED_PACKAGES += compress/zstd
