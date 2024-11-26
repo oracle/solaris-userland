@@ -7,8 +7,8 @@ It might be some general problem (need to be investigated). Similar but
 not the same issue:
 http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
 
---- php-8.1.29/Zend/tests/arginfo_zpp_mismatch.phpt
-+++ php-8.1.29/Zend/tests/arginfo_zpp_mismatch.phpt
+--- php-8.1.31/Zend/tests/arginfo_zpp_mismatch.phpt
++++ php-8.1.31/Zend/tests/arginfo_zpp_mismatch.phpt
 @@ -4,6 +4,8 @@ --SKIPIF--
  <?php
  if (getenv('SKIP_ASAN')) die("skip Intermittently crashes lsan");
@@ -18,8 +18,45 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  ?>
  --FILE--
  <?php
---- php-8.1.29/ext/date/tests/bug33532.phpt
-+++ php-8.1.29/ext/date/tests/bug33532.phpt
+--- php-8.1.31/ext/curl/tests/bug48203_multi.phpt
++++ php-8.1.31/ext/curl/tests/bug48203_multi.phpt
+@@ -1,5 +1,9 @@
+ --TEST--
+ Variation of bug #48203 with curl_multi_exec (Crash when file pointers passed to curl are closed before calling curl_multi_exec)
++--SKIPIF--
++<?php
++if (PHP_OS == 'SunOS') die('skip.. Hangs on Solaris');
++?>
+ --EXTENSIONS--
+ curl
+ --FILE--
+--- php-8.1.31/ext/curl/tests/curl_basic_018.phpt
++++ php-8.1.31/ext/curl/tests/curl_basic_018.phpt
+@@ -1,5 +1,9 @@
+ --TEST--
+ Test curl_setopt() with curl_multi function with basic functionality
++--SKIPIF--
++<?php
++if (PHP_OS == 'SunOS') die('skip.. Hangs on Solaris');
++?>
+ --CREDITS--
+ TestFest 2009 - AFUP - Thomas Rabaix <thomas.rabaix@gmail.com>
+ --EXTENSIONS--
+--- php-8.1.31/ext/curl/tests/curl_multi_getcontent_basic3.phpt
++++ php-8.1.31/ext/curl/tests/curl_multi_getcontent_basic3.phpt
+@@ -3,6 +3,10 @@ Curl_multi_getcontent() basic test with
+ --CREDITS--
+ Rein Velt (rein@velt.org)
+ #TestFest Utrecht 20090509
++--SKIPIF--
++<?php
++if (PHP_OS == 'SunOS') die('skip.. Hangs on Solaris');
++?>
+ --EXTENSIONS--
+ curl
+ --FILE--
+--- php-8.1.31/ext/date/tests/bug33532.phpt
++++ php-8.1.31/ext/date/tests/bug33532.phpt
 @@ -5,7 +5,7 @@ error_reporting=2047
  date.timezone=UTC
  --SKIPIF--
@@ -29,8 +66,19 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  if (!@strftime('%Z')) die('skip strftime does not support %Z');
  ?>
  --FILE--
---- php-8.1.29/ext/openssl/tests/bug77390.phpt
-+++ php-8.1.29/ext/openssl/tests/bug77390.phpt
+--- php-8.1.31/ext/openssl/tests/bug72333.phpt
++++ php-8.1.31/ext/openssl/tests/bug72333.phpt
+@@ -4,7 +4,7 @@ --EXTENSIONS--
+ openssl
+ --SKIPIF--
+ <?php
+-if (!function_exists("proc_open")) die("skip no proc_open");
++if (PHP_OS == 'SunOS') die('skip.. Sometime fails on Solaris');
+ ?>
+ --FILE--
+ <?php
+--- php-8.1.31/ext/openssl/tests/bug77390.phpt
++++ php-8.1.31/ext/openssl/tests/bug77390.phpt
 @@ -5,6 +5,8 @@ openssl
  --SKIPIF--
  <?php
@@ -40,8 +88,8 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  ?>
  --FILE--
  <?php
---- php-8.1.29/ext/sockets/tests/socket_cmsg_rights.phpt
-+++ php-8.1.29/ext/sockets/tests/socket_cmsg_rights.phpt
+--- php-8.1.31/ext/sockets/tests/socket_cmsg_rights.phpt
++++ php-8.1.31/ext/sockets/tests/socket_cmsg_rights.phpt
 @@ -11,6 +11,9 @@ }
  if (strtolower(substr(PHP_OS, 0, 3)) == 'aix') {
  die('skip not for AIX');
@@ -52,8 +100,8 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  --FILE--
  <?php
  include __DIR__."/mcast_helpers.php.inc";
---- php-8.1.29/ext/standard/tests/file/lstat_stat_variation10.phpt
-+++ php-8.1.29/ext/standard/tests/file/lstat_stat_variation10.phpt
+--- php-8.1.31/ext/standard/tests/file/lstat_stat_variation10.phpt
++++ php-8.1.31/ext/standard/tests/file/lstat_stat_variation10.phpt
 @@ -3,6 +3,8 @@ Test lstat() and stat() functions: usage
  --SKIPIF--
  <?php
@@ -63,8 +111,8 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  ?>
  --FILE--
  <?php
---- php-8.1.29/ext/standard/tests/file/lstat_stat_variation18.phpt
-+++ php-8.1.29/ext/standard/tests/file/lstat_stat_variation18.phpt
+--- php-8.1.31/ext/standard/tests/file/lstat_stat_variation18.phpt
++++ php-8.1.31/ext/standard/tests/file/lstat_stat_variation18.phpt
 @@ -1,5 +1,10 @@
  --TEST--
  Test lstat() and stat() functions: usage variations - dir/file name stored in object
@@ -76,8 +124,8 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  --FILE--
  <?php
  /* test for stats of dir/file when their names are stored in objects */
---- php-8.1.29/ext/standard/tests/file/touch_basic.phpt
-+++ php-8.1.29/ext/standard/tests/file/touch_basic.phpt
+--- php-8.1.31/ext/standard/tests/file/touch_basic.phpt
++++ php-8.1.31/ext/standard/tests/file/touch_basic.phpt
 @@ -5,8 +5,8 @@ Dave Kelsey <d_kelsey@uk.ibm.com>
  --SKIPIF--
  <?php
@@ -89,8 +137,8 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  }
  ?>
  --FILE--
---- php-8.1.29/ext/standard/tests/streams/gh9590-001.phpt
-+++ php-8.1.29/ext/standard/tests/streams/gh9590-001.phpt
+--- php-8.1.31/ext/standard/tests/streams/gh9590-001.phpt
++++ php-8.1.31/ext/standard/tests/streams/gh9590-001.phpt
 @@ -7,6 +7,7 @@ <?php
  if (!function_exists('posix_setrlimit') || !posix_setrlimit(POSIX_RLIMIT_NOFILE, 2048, -1)) {
      die('skip Failed to set POSIX_RLIMIT_NOFILE');
@@ -99,8 +147,8 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  ?>
  --FILE--
  <?php
---- php-8.1.29/ext/standard/tests/streams/gh9590-002.phpt
-+++ php-8.1.29/ext/standard/tests/streams/gh9590-002.phpt
+--- php-8.1.31/ext/standard/tests/streams/gh9590-002.phpt
++++ php-8.1.31/ext/standard/tests/streams/gh9590-002.phpt
 @@ -7,6 +7,7 @@ <?php
  if (!function_exists('posix_setrlimit') || !posix_setrlimit(POSIX_RLIMIT_NOFILE, 2048, -1)) {
      die('skip Failed to set POSIX_RLIMIT_NOFILE');
@@ -109,8 +157,8 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  ?>
  --FILE--
  <?php
---- php-8.1.29/ext/standard/tests/streams/proc_open_bug60120.phpt
-+++ php-8.1.29/ext/standard/tests/streams/proc_open_bug60120.phpt
+--- php-8.1.31/ext/standard/tests/streams/proc_open_bug60120.phpt
++++ php-8.1.31/ext/standard/tests/streams/proc_open_bug60120.phpt
 @@ -1,5 +1,12 @@
  --TEST--
  Bug #60120 proc_open hangs with stdin/out with >2048 bytes
@@ -124,8 +172,8 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  --FILE--
  <?php
  error_reporting(E_ALL);
---- php-8.1.29/ext/standard/tests/streams/proc_open_bug64438.phpt
-+++ php-8.1.29/ext/standard/tests/streams/proc_open_bug64438.phpt
+--- php-8.1.31/ext/standard/tests/streams/proc_open_bug64438.phpt
++++ php-8.1.31/ext/standard/tests/streams/proc_open_bug64438.phpt
 @@ -1,8 +1,14 @@
  --TEST--
  Bug #64438 proc_open hangs with stdin/out with 4097+ bytes
@@ -142,8 +190,8 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  error_reporting(E_ALL);
  
  if (substr(PHP_OS, 0, 3) == 'WIN') {
---- php-8.1.29/sapi/fpm/tests/bug80024-socket-reduced-inherit.phpt
-+++ php-8.1.29/sapi/fpm/tests/bug80024-socket-reduced-inherit.phpt
+--- php-8.1.31/sapi/fpm/tests/bug80024-socket-reduced-inherit.phpt
++++ php-8.1.31/sapi/fpm/tests/bug80024-socket-reduced-inherit.phpt
 @@ -1,7 +1,12 @@
  --TEST--
  FPM: bug80024 - Duplication of info about inherited socket after pool removing
@@ -158,8 +206,8 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  --FILE--
  <?php
  
---- php-8.1.29/tests/output/stream_isatty_out-err.phpt
-+++ php-8.1.29/tests/output/stream_isatty_out-err.phpt
+--- php-8.1.31/tests/output/stream_isatty_out-err.phpt
++++ php-8.1.31/tests/output/stream_isatty_out-err.phpt
 @@ -5,6 +5,7 @@ <?php
  if (getenv("SKIP_IO_CAPTURE_TESTS")) {
      die("skip I/O capture test");

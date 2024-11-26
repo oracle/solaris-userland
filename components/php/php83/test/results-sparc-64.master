@@ -4,12 +4,12 @@ Exts skipped    :    15
 Exts tested     :    58
 ---------------------------------------------------------------------
 
-Number of tests : 18904             16104
-Tests skipped   :  2800 ( 14.8%) --------
-Tests warned    :     1 (  0.0%) (  0.0%)
-Tests failed    :   199 (  1.1%) (  1.2%)
+Number of tests : 19154             16310
+Tests skipped   :  2844 ( 14.8%) --------
+Tests warned    :     3 (  0.0%) (  0.0%)
+Tests failed    :   200 (  1.0%) (  1.2%)
 Expected fail   :    11 (  0.1%) (  0.1%)
-Tests passed    : 15893 ( 84.1%) ( 98.7%)
+Tests passed    : 16096 ( 84.0%) ( 98.7%)
 ---------------------------------------------------------------------
 =====================================================================
 
@@ -107,7 +107,6 @@ RFC: DateTime and Daylight Saving Time Transitions (zone type 2) [ext/date/tests
 RFC: DateTime and Daylight Saving Time Transitions (zone type 3, bd2) [ext/date/tests/rfc-datetime_and_daylight_saving_time-type3-bd2.phpt]
 RFC: DateTime and Daylight Saving Time Transitions (zone type 3, bs) [ext/date/tests/rfc-datetime_and_daylight_saving_time-type3-bs.phpt]
 Test strftime() function : usage variation - Checking time related formats which are supported other than on Windows. [ext/date/tests/strftime_variation16.phpt]
-strtotime() on date constants [ext/date/tests/strtotime2.phpt]
 Test timezone_open() function : basic functionality [ext/date/tests/timezone_open_basic1.phpt]
 DBA DB4 handler test [ext/dba/tests/dba_db4_000.phpt]
 DBA FlatFile handler test [ext/dba/tests/dba_flatfile.phpt]
@@ -136,7 +135,7 @@ Bug #53504 imagettfbbox/imageftbbox gives incorrect values for bounding box [ext
 Bug #65148 (imagerotate may alter image dimensions) [ext/gd/tests/bug65148.phpt]
 Bug #73272 (imagescale() is not affected by, but affects imagesetinterpolation()) [ext/gd/tests/bug73272.phpt]
 Bug #79676 (imagescale adds black border with IMG_BICUBIC) [ext/gd/tests/bug79676.phpt]
-GH-13082 - imagefontwidth/height unexpectedly throwing an exception on a valid GdFont object. [ext/gd/tests/gh13082.phpt]
+GH-16559 (UBSan abort in ext/gd/libgd/gd_interpolation.c:1007) [ext/gd/tests/gh16559.phpt]
 imagegetinterpolation() and imagesetinterpolation() basic test [ext/gd/tests/imageinterpolation_basic.phpt]
 Scale images and preserve aspect ratio [ext/gd/tests/imagescale_preserve_ratio.phpt]
 Bug #37773 (iconv_substr() gives "Unknown error" when string length = 1") [ext/iconv/tests/bug37773.phpt]
@@ -162,6 +161,7 @@ pcntl: pcntl_sigprocmask(), pcntl_sigwaitinfo(), pcntl_sigtimedwait() [ext/pcntl
 pcntl_getpriority() - Wrong mode passed and also for non existing process id provided [ext/pcntl/tests/pcntl_getpriority_error.phpt]
 pcntl_setpriority() - Check for errors [ext/pcntl/tests/pcntl_setpriority_error.phpt]
 Bug #74183 - preg_last_error not returning error code after error [ext/pcre/tests/bug74183.phpt]
+Bug #62900 (Wrong namespace on xsd import error message) [ext/soap/tests/bugs/bug62900.phpt]
 Test socket_addrinfo_explain() [ext/sockets/tests/socket_addrinfo_explain.phpt]
 Test parameter handling in socket_create_pair() [ext/sockets/tests/socket_create_pair-wrongparams.phpt]
 socket_export_stream: effects of closing [ext/sockets/tests/socket_export_stream-4.phpt]
@@ -235,10 +235,13 @@ FPM: UNIX socket owner and group settings can be numeric [sapi/fpm/tests/socket-
 FPM: Status pool is inheriting FPM setting overrides test - expose_php = off [sapi/fpm/tests/status-listen-expose-php-off.phpt]
 FPM: Status pool is inheriting FPM setting overrides test - expose_php = on [sapi/fpm/tests/status-listen-expose-php-on.phpt]
 FPM: Status listen test [sapi/fpm/tests/status-listen.phpt]
+FPM: Ping on the status invisible pool [sapi/fpm/tests/status-ping.phpt]
 =====================================================================
 
 =====================================================================
 WARNED TEST SUMMARY
 ---------------------------------------------------------------------
+Bug #71523 (Copied handle with new option CURLOPT_HTTPHEADER crashes while curl_multi_exec) [ext/curl/tests/bug71523.phpt] (warn: XFAIL section but test passes)
+GH-14930: Custom stream wrapper dir_readdir output truncated to 255 characters in PHP 8.3 [ext/standard/tests/streams/gh14930.phpt] (warn: XFAIL section but test passes)
 FPM: Buffered worker output decorated log with multiple continuous messages (stdout/stderr mixed) [sapi/fpm/tests/log-bwd-multiple-msgs-stdout-stderr.phpt] (warn: XFAIL section but test passes)
 =====================================================================
