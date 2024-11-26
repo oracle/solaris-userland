@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
-COMPONENT_NAME=		MarkupSafe
-COMPONENT_VERSION=	2.1.2
+COMPONENT_NAME=		markupsafe
+COMPONENT_VERSION=	3.0.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:abcabc8c2b26036d62d4c746381a6f7cf60aafcc653198ad678306986b09450d
+    sha256:9622f8a5c93cea7509d2fc5beff40d350c7f0f9ba8dc5c37aadba197b82a6007
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/markupsafe/
 COMPONENT_BUGDB=	python-mod/markupsafe
 COMPONENT_ANITYA_ID=	3918
-COMPONENT_BAID=		140827
+COMPONENT_BAID=		185744
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

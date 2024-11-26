@@ -27,16 +27,16 @@ include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		zope.interface
-COMPONENT_VERSION=	5.5.2
+COMPONENT_VERSION=	7.1.1
 COMPONENT_PROJECT_URL=	http://zope.org/Wikis/Interfaces/FrontPage
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:bfee1f3ff62143819499e348f5b8a7f3aa0259f9aca5e0ddae7391d059dce671
+    sha256:4284d664ef0ff7b709836d4de7b13d80873dc5faeffc073abdb280058bfac5e3
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/zope
 COMPONENT_ANITYA_ID=	4112
-COMPONENT_BAID=		140578
+COMPONENT_BAID=		185742
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -60,8 +60,6 @@ install:	$(INSTALL_64)
 test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += system/library
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/coverage
