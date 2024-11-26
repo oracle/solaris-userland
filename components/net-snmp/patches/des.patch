@@ -1,0 +1,204 @@
+This patch does two things
+
+ - removes DES from command line options and man pages
+ - makes AES the default encryption algorythm
+
+This patch would need some more work to remove DES traces conditionally in
+order to offer it to upstream.
+
+--- net-snmp-5.8/net-snmp-create-v3-user.in
++++ net-snmp-5.8/net-snmp-create-v3-user.in
+@@ -10,8 +10,8 @@
+     exit 1
+ fi
+ 
+ Aalgorithm="MD5"
+-Xalgorithm="DES"
++Xalgorithm="AES"
+ token=rwuser
+ 
+ while test "x$done" = "x" -a "x$1" != "x" -a "x$usage" != "xyes"; do
+@@ -53,11 +53,11 @@ case $1 in
+ 	    exit 1
+ 	fi
+         case $1 in
+-            DES|AES|AES128)
++            AES|AES128)
+ 	    Xalgorithm=$1
+ 	    shift
+ 	    ;;
+-            des|aes|aes128)
++            aes|aes128)
+ 	    Xalgorithm=`echo $1 | tr a-z A-Z`
+ 	    shift
+ 	    ;;
+@@ -86,7 +86,7 @@ if test "x$usage" = "xyes"; then
+     echo ""
+     echo "Usage:"
+     echo "  net-snmp-create-v3-user [-ro] [-A authpass] [-X privpass]"
+-    echo "                          [-a MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224] [-x DES|AES] [username]"
++    echo "                          [-a MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224] [-x AES] [username]"
+     echo ""
+     exit
+ fi
+--- net-snmp-5.9.4/man/net-snmp-config.1.def
++++ net-snmp-5.9.4/man/net-snmp-config.1.def
+@@ -30,7 +30,7 @@ code for a list of available debug token
+ SNMP Setup commands:
+ .TP
+ \fB\-\-create\-snmpv3\-user\fR [\-ro] [\-a authpass] [\-x privpass]
+-[\-X DES|AES] [\-A MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224] [username]
++[\-X AES] [\-A MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224] [username]
+ .PP
+ These options produce the various compilation flags needed when
+ building external SNMP applications:
+--- net-snmp-5.9.4/man/snmpcmd.1.def
++++ net-snmp-5.9.4/man/snmpcmd.1.def
+@@ -311,7 +311,7 @@ Overrides the \fIdefSecurityName\fR toke
+ file.
+ .TP
+ .BI \-x " privProtocol"
+-Set the privacy protocol (DES or AES) used for encrypted SNMPv3 messages. 
++Set the privacy protocol (AES) used for encrypted SNMPv3 messages. 
+ Overrides the \fIdefPrivType\fR token in the
+ .I snmp.conf
+ file. This option is only valid if the Net-SNMP software was build
+--- net-snmp-5.9.4/man/net-snmp-create-v3-user.1.def
++++ net-snmp-5.9.4/man/net-snmp-create-v3-user.1.def
+@@ -3,7 +3,7 @@
+ net-snmp-create-v3-user \- create a SNMPv3 user in net-snmp configuration file
+ .SH SYNOPSIS
+ .PP
+-.B net-snmp-create-v3-user [-ro] [-a authpass] [-x privpass] [-X DES|AES]
++.B net-snmp-create-v3-user [-ro] [-a authpass] [-x privpass] [-X AES]
+ .B [username]
+ .SH DESCRIPTION
+ .PP
+@@ -24,5 +24,5 @@ specify authentication password
+ \fB\-x privpass\fR
+ specify encryption password
+ .TP
+-\fB\-X DES|AES\fR
++\fB\-X AES\fR
+ specify encryption algorithm
+--- net-snmp-5.9.4/man/snmptrapd.conf.5.def
++++ net-snmp-5.9.4/man/snmptrapd.conf.5.def
+@@ -117,7 +117,7 @@ to trigger the types of processing liste
+ See
+ .IR snmpd.conf (5)
+ for more details.
+-.IP "createUser [-e  ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [DES|AES]"
++.IP "createUser [-e  ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [AES]"
+ See the 
+ .IR snmpd.conf (5)
+ manual page for a description of how to create SNMPv3 users.  This
+--- net-snmp-5.9.4/man/snmpd.conf.5.def
++++ net-snmp-5.9.4/man/snmpd.conf.5.def
+@@ -284,16 +284,16 @@ them.  It is recommended you
+ .B "use the net\-snmp\-config command"
+ to do this, but you can also do it by directly specifying createUser
+ directives yourself instead:
+-.IP "createUser [\-e ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [DES|AES] [privpassphrase]"
++.IP "createUser [\-e ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [AES] [privpassphrase]"
+ .IP
+ MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224 are the authentication types to use.
+-DES and AES are the privacy protocols to use.  If the privacy
++AES are the privacy protocols to use.  If the privacy
+ passphrase is not specified, it is assumed to be the same as the
+ authentication passphrase.  Note that the users created will be
+ useless unless they are also added to the VACM access control tables
+ described above.
+ .IP
+-SHA|SHA-512|SHA-384|SHA-256|SHA-224 authentication and DES/AES privacy
++SHA|SHA-512|SHA-384|SHA-256|SHA-224 authentication and AES privacy
+ require OpenSSL to be installed and
+ the agent to be built with OpenSSL support.  MD5 authentication may be
+ used without OpenSSL.
+--- net-snmp-5.9.4/man/snmp.conf.5.def
++++ net-snmp-5.9.4/man/snmp.conf.5.def
+@@ -221,13 +221,13 @@ The
+ value will be used for the authentication and/or privacy pass phrases
+ if either of the other directives are not specified.
+ .IP "defAuthType MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224"
+-.IP "defPrivType DES|AES"
++.IP "defPrivType AES"
+ define the default authentication and privacy protocols to use for
+ SNMPv3 requests.
+ These can be overridden using the \fB\-a\fR and \fB\-x\fR options respectively.
+ .IP
+ If not specified, SNMPv3 requests will default to MD5 authentication
+-and DES encryption.
++and AES encryption.
+ .RS
+ .IP "Note:
+ If the software has not been compiled to use the OpenSSL libraries,
+@@ -262,8 +262,7 @@ master keys which have been converted to
+ suitable for on particular SNMP engine (agent).  The length of the key
+ needs to be appropriate for the authentication or encryption type
+ being used (auth keys: MD5=16 bytes, SHA1=20 bytes;
+-priv keys: DES=16 bytes (8
+-bytes of which is used as an IV and not a key), and AES=16 bytes).
++priv keys: AES=16 bytes).
+ .IP "sshtosnmpsocket PATH"
+ Sets the path of the \fBsshtosnmp\fR socket created by an application
+ (e.g. snmpd) listening for incoming ssh connections through the
+--- net-snmp-5.9.4/perl/SNMP/SNMP.pm
++++ net-snmp-5.9.4/perl/SNMP/SNMP.pm
+@@ -1698,9 +1698,9 @@ default <none>, authentication passphras
+ 
+ =item PrivProto
+ 
+-The SNMPv3/USM privacy protocol to use [DES, AES].
++The SNMPv3/USM privacy protocol to use [AES].
+ 
+-The default is 'DES'.
++The default is 'AES'.
+ 
+ =item PrivPass
+ 
+--- net-snmp-5.9.4/man/snmpusm.1.def
++++ net-snmp-5.9.4/man/snmpusm.1.def
+@@ -216,7 +216,7 @@ rwuser initial
+ # lets add the new user we'll create too:
+ rwuser wes
+ # USM configuration entries
+-createUser initial MD5 setup_passphrase DES
++createUser initial MD5 setup_passphrase AES
+ .fi
+ .RE
+ .PP
+--- net-snmp-5.9.4/man/snmpd.examples.5.def
++++ net-snmp-5.9.4/man/snmpd.examples.5.def
+@@ -87,8 +87,8 @@ the same authentication and encryption s
+ .RS
+ .nf
+ createUser me     MD5 "single pass phrase"
+-createUser myself MD5 "single pass phrase" DES
+-createUser andI   MD5 "single pass phrase" DES "single pass phrase"
++createUser myself MD5 "single pass phrase" AES
++createUser andI   MD5 "single pass phrase" AES "single pass phrase"
+ .fi
+ .RE
+ Note that this defines three \fIdistinct\fR users, who could be granted
+--- net-snmp-5.9.4/snmplib/snmp_parse_args.c
++++ net-snmp-5.9.4/snmplib/snmp_parse_args.c
+@@ -115,7 +115,7 @@ snmp_parse_args_descriptions(FILE * outf
+     fprintf(outf, "  -n CONTEXT\t\tset context name (e.g. bridge1)\n");
+     fprintf(outf, "  -u USER-NAME\t\tset security name (e.g. bert)\n");
+ #ifdef HAVE_AES
+-    fprintf(outf, "  -x PROTOCOL\t\tset privacy protocol (DES|AES"
++    fprintf(outf, "  -x PROTOCOL\t\tset privacy protocol (AES"
+ #ifdef NETSNMP_DRAFT_BLUMENTHAL_AES_04
+             "|AES-192|AES-256"
+ #endif
+--- net-snmp-5.9.4/snmplib/snmpusm.c
++++ net-snmp-5.9.4/snmplib/snmpusm.c
+@@ -4860,7 +4860,7 @@ init_usm_conf(const char *app)
+                                   usm_parse_config_usmUser, NULL, NULL);
+     register_config_handler(app, "createUser",
+                                   usm_parse_create_usmUser, NULL,
+-                                  "username [-e ENGINEID] (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224|default) authpassphrase [(DES|AES|default) [privpassphrase]]");
++                                  "username [-e ENGINEID] (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224|default) authpassphrase [(AES|default) [privpassphrase]]");
+ 
+     /*
+      * we need to be called back later
