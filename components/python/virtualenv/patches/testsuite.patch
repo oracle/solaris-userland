@@ -6,9 +6,9 @@ to changes in the working directory, so it is disabled.
 
 Not intended for upstream.
 
---- virtualenv-20.26.2/pyproject.toml
-+++ virtualenv-20.26.2/pyproject.toml
-@@ -165,7 +165,7 @@ count = true
+--- virtualenv-20.27.1/pyproject.toml
++++ virtualenv-20.27.1/pyproject.toml
+@@ -172,7 +172,7 @@ markers = [
    "slow",
  ]
  timeout = 600
@@ -17,8 +17,8 @@ Not intended for upstream.
  env = [
    "PYTHONIOENCODING=utf-8",
  ]
---- virtualenv-20.26.2/tests/integration/test_zipapp.py
-+++ virtualenv-20.26.2/tests/integration/test_zipapp.py
+--- virtualenv-20.27.1/tests/integration/test_zipapp.py
++++ virtualenv-20.27.1/tests/integration/test_zipapp.py
 @@ -6,7 +6,6 @@ from contextlib import suppress
  from pathlib import Path
  
@@ -35,10 +35,10 @@ Not intended for upstream.
  def test_zipapp_help(call_zipapp, capsys):
      call_zipapp("-h")
      _out, err = capsys.readouterr()
---- virtualenv-20.26.2/tests/conftest.py
-+++ virtualenv-20.26.2/tests/conftest.py
-@@ -362,3 +362,11 @@ else:
-     @pytest.fixture()
+--- virtualenv-20.27.1/tests/conftest.py
++++ virtualenv-20.27.1/tests/conftest.py
+@@ -366,3 +366,11 @@ else:
+     @pytest.fixture
      def time_freeze(time_machine):
          return lambda s: time_machine.move_to(s, tick=False)
 +
@@ -49,8 +49,8 @@ Not intended for upstream.
 +@pytest.fixture()
 +def mocker(*args, **kwargs):
 +    pytest.skip("pytest-mock is not available on Solaris")
---- virtualenv-20.26.2/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
-+++ virtualenv-20.26.2/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
+--- virtualenv-20.27.1/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
++++ virtualenv-20.27.1/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
 @@ -215,6 +215,7 @@ def test_base_bootstrap_link_via_app_dat
          assert (result.creator.purelib / key).exists()
  
