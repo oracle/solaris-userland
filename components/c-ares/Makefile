@@ -27,15 +27,15 @@ COMPILER = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		c-ares
-COMPONENT_VERSION=	1.27.0
+COMPONENT_VERSION=	1.34.3
 COMPONENT_PROJECT_URL=	https://c-ares.org
 COMPONENT_ARCHIVE_HASH= \
-    sha256:0a72be66959955c43e2af2fbd03418e82a2bd5464604ec9a62147e37aceb420b
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
+    sha256:26e1f7771da23e42a18fdf1e58912a396629e53a2ac71b130af93bbcfb90adbe
+COMPONENT_ARCHIVE_URL=	https://github.com/c-ares/c-ares/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/c-ares
 COMPONENT_ANITYA_ID=	5840
 
-COMPONENT_BAID=		160210
+COMPONENT_BAID=		186894
 
 # Since C-ares 1.24.0 GoogleTest is no longer bundled. For now it's possible
 # to build it separately and provide path to it to be able to run tests.
