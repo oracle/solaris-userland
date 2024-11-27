@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		asciidoc
-COMPONENT_VERSION=	10.2.0
+COMPONENT_VERSION=	10.2.1
 COMPONENT_PROJECT_URL=	https://asciidoc.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:237b2ba5c35c0ae7ccd4cd44ebf1d87c20b2695dae01798954416d492ef7fa0e
+    sha256:aa7be8ae894f6cc1e67784d76ffa6c6b9e9f96efdc695db43c6bd63820e5072b
 COMPONENT_ARCHIVE_URL=	\
     https://github.com/asciidoc/asciidoc-py3/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13262
-COMPONENT_BAID=		133659
+COMPONENT_BAID=		186078
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
 
