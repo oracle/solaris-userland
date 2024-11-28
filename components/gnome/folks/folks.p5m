@@ -20,22 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
-    default mangler.man.stability "pass-through volatile">
+    default mangler.man.stability "obsolete pass-through volatile">
 set name=pkg.fmri \
     value=pkg:/library/gnome/folks@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
     value="A library for aggregating contact information from multiple sources"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=$(COMPONENT_NAME)
 set name=info.classification \
     value="org.opensolaris.category.2008:Desktop (GNOME)/Libraries"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2016/413
+set name=org.opensolaris.arc-caseid value=PSARC/2016/413 value=PSARC/2024/137
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/folks-import
 file path=usr/include/folks/folks-dummy.h
@@ -69,6 +70,11 @@ file path=usr/lib/$(MACH64)/pkgconfig/folks-eds.pc
 file path=usr/lib/$(MACH64)/pkgconfig/folks-telepathy.pc
 file path=usr/lib/$(MACH64)/pkgconfig/folks.pc
 file path=usr/share/GConf/gsettings/folks.convert
+file release-notes/library-gnome-folks.txt \
+    path=usr/share/doc/release-notes/library-gnome-folks.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/gir-1.0/Folks-0.7.gir
 file path=usr/share/gir-1.0/FolksDummy-0.7.gir
 file path=usr/share/gir-1.0/FolksEds-0.7.gir
