@@ -1,0 +1,15 @@
+Patch created to solve the discrepancy between dev_t being unsigned while ttydev is being initialized to -1.
+Bug opened to upstream:
+https://bugzilla.sudo.ws/show_bug.cgi?id=1074
+
+--- sudo-1.9.16p2/src/regress/ttyname/check_ttyname.c.orig	2024-11-25 14:15:57.388364407 +0100
++++ sudo-1.9.16p2/src/regress/ttyname/check_ttyname.c	2024-11-25 14:16:31.093947973 +0100
+@@ -69,7 +69,7 @@
+     char *tty_libc = NULL, *tty_sudo = NULL;
+     char pathbuf[PATH_MAX];
+     bool verbose = false;
+-    dev_t ttydev = -1;
++    dev_t ttydev = NODEV;
+     int ch, errors = 0, ntests = 1;
+ 
+     initprogname(argc > 0 ? argv[0] : "check_ttyname");
