@@ -1,6 +1,6 @@
 #!/usr/bin/ksh
 #
-# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2024, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -47,12 +47,6 @@ PATH=/usr/bin:/usr/sbin
 
 METHOD="$1"
 
-ARCH64=`/bin/isainfo -k`
-
-if [[ $ARCH64 != "amd64" ]] && [[ "$ARCH64" != "sparcv9" ]]; then
-  ARCH64=""
-fi
-
 case "$METHOD" in
     start)
 	if ! is_self_assembly_boot; then
@@ -65,60 +59,34 @@ case "$METHOD" in
         ;;
 esac
 
-for DIR in "" $ARCH64; do
-  if [[ ! -w /etc/$DIR/gtk-2.0 ]]; then
-      echo "/etc/$DIR/gtk-2.0 is not writable, skipping."
-      return
+
+ARCH64=`/bin/isainfo -k`
+
+for BITNESS in "" "$ARCH64"; do
+
+  FILE=/usr/lib/$BITNESS/gdk-pixbuf-2.0/2.10.0/loaders.cache
+
+  # Check if directory is writable
+  if [[ ! -w "$(dirname "$FILE")" ]]; then
+    echo "Error, $(dirname "$FILE") is not writable, skipping."
+    continue
   fi
-  if [[ -a "/etc/$DIR/gtk-2.0/gdk-pixbuf.loaders" && \
-      ! -w "/etc/$DIR/gtk-2.0/gdk-pixbuf.loaders" ]]; then
-    echo "/etc/$DIR/gtk-2.0/gdk-pixbuf.loaders is not writable, skipping."
-    return
+
+  # Check if file is writable
+  if [[ -a "$FILE" && ! -w "$FILE" ]]; then
+    echo "$FILE is not writable, skipping."
+    continue
   fi
-  if [[ -a "/etc/$DIR/gtk-2.0/gdk-pixbuf.loaders" ]]; then
-    RESULT="$(find /usr/lib/$DIR/gdk-pixbuf-2.0/*/loaders/*.so ! -type d \
-	   -follow -print 2>/dev/null)"
+
+  echo "updating/creating gdk pixbuf loaders file"
+  /usr/bin/$BITNESS/gdk-pixbuf-query-loaders --update-cache
+  if [[ $? -ne 0 ]]; then
+    echo "gdk-pixbuf-query-loaders exited with an error while generating the installer file $FILE."
+    exit $SMF_EXIT_ERR_FATAL
   else
-    RESULT="no gdk pixbuf loaders file"
+    echo "gdk pixbuf loaders installed in $FILE."
   fi
 
-  if [[ -n "$RESULT" ]]; then
-    echo "updating/creating gdk pixbuf loaders file"
-    /usr/bin/$DIR/gdk-pixbuf-query-loaders > /etc/$DIR/gtk-2.0/gdk-pixbuf.loaders
-    if [[ $? -ne 0 ]]; then
-      echo "gdk-pixbuf-query-loaders exited with an error while generating the installer file /etc/$DIR/gtk-2.0/gdk-pixbuf.loaders"
-      exit $SMF_EXIT_ERR_FATAL
-    else
-      echo "gdk pixbuf loaders installed in /etc/$DIR/gtk-2.0/gdk-pixbuf.loaders"
-    fi
-  fi
-
-  if [[ ! -w /usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0 ]] ; then
-      echo "/usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0 is not writable, skipping."
-      return
-  fi
-  if [[ -a "/usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0/loaders.cache" && \
-      ! -w "/usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0/loaders.cache" ]]; then
-    echo "/usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0/loaders.cache is not writable, skipping."
-    return
-  fi
-  if [[ -a "/usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0/loaders.cache" ]]; then
-    RESULT="$(find /usr/lib/$DIR/gdk-pixbuf-2.0/*/loaders/*.so ! -type d \
-           -follow -print 2>/dev/null)"
-  else
-    RESULT="no loaders cache file"
-  fi
-
-  if [[ -n "$RESULT" ]]; then
-    echo "updating/creating loaders cache file"
-    /usr/bin/$DIR/gdk-pixbuf-query-loaders > /usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0/loaders.cache
-    if [[ $? -ne 0 ]]; then
-      echo "gdk-pixbuf-query-loaders exited with an error while generating the installer file /usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0/loaders.cache"
-      exit $SMF_EXIT_ERR_FATAL
-    else
-      echo "loaders cache installed in /usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0/loaders.cache"
-    fi
-  fi
 done
 
 exit $SMF_EXIT_OK
