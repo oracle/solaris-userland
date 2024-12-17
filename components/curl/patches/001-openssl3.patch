@@ -6,19 +6,21 @@ https://github.com/curl/curl/pull/9045
 sent to community.
 
 --- a/m4/curl-openssl.m4	2024-09-11 07:37:35.000000000 +0200
-+++ b/m4/curl-openssl.m4	2024-09-11 09:04:57.413034055 +0200
-@@ -137,8 +137,8 @@
++++ b/m4/curl-openssl.m4	2024-12-11 22:01:14.331160048 +0100
+@@ -138,9 +138,9 @@
    fi
  
    dnl finally, set flags to use SSL
 -  CPPFLAGS="$CPPFLAGS $SSL_CPPFLAGS"
 -  LDFLAGS="$LDFLAGS $SSL_LDFLAGS"
+-  LDFLAGSPC="$LDFLAGSPC $SSL_LDFLAGS"
 +  CPPFLAGS="$SSL_CPPFLAGS $CPPFLAGS"
 +  LDFLAGS="$SSL_LDFLAGS $LDFLAGS"
++  LDFLAGSPC="$SSL_LDFLAGS $LDFLAGSPC"
  
    AC_CHECK_LIB(crypto, HMAC_Update,[
      HAVECRYPTO="yes"
-@@ -340,7 +340,7 @@
+@@ -344,7 +344,7 @@
        dnl linker doesn't search through, we need to add it to CURL_LIBRARY_PATH
        dnl to prevent further configure tests to fail due to this
        if test "x$cross_compiling" != "xyes"; then
