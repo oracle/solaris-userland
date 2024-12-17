@@ -323,10 +323,12 @@ components/meta-packages/history/docbook.p5m:
   set name=pkg.fmri value=pkg:/data/docbook@2.30.0,5.11-0.175.0.0.0.0.0
 
 The problem is that engineer does not know into which build his change will go
-so can't specify the FMRI manually. In such situations he can use AUTO_FMRI
-keyword. This is replaced by transforms/auto_fmri script by current build
-number. During gate close the gatekeeper replaces all the AUTO_FMRI keywords by
-the current build number and so the FMRI value is 'fixed' since that moment.
+into so they can't specify the FMRI manually. In such situations they can use
+AUTO_FMRI keyword. This is replaced by transforms/auto_fmri script by current
+build number while the package is published.
+
+When the default branch splits into new SRU branch the keyword AUTO_FMRI is
+removed from all files and replaced by current build number.
 
 Gatekeeper uses $(hg root)/tools/replace_auto_fmri for that job.
 
@@ -393,7 +395,7 @@ This stage consists of two steps:
  - you need to mark the legacy package by
    set name=pkg.legacy value=true
  - at the same time we create release note telling customer that the package is
-   going away soon-ish. That note is displayed to customer once he updates the
+   going away soon-ish. That note is displayed to customer once they update the
    component to legacy one.
 
 Since PSARC/2020/053, we don't have to rename packages, making this stage of
