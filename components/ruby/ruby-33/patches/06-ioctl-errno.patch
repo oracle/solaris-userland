@@ -1,0 +1,16 @@
+On Solaris, calling TIOCGWINSZ ioctl on a pipe doesn't return ENOTTY
+as it does on Linux, but rather EINVAL.
+
+Should be offered usptream.
+
+--- ruby-3.3.6/lib/reline/io/ansi.rb
++++ ruby-3.3.6/lib/reline/io/ansi.rb
+@@ -234,7 +234,7 @@ class Reline::ANSI < Reline::IO
+     s = [ENV["LINES"].to_i, ENV["COLUMNS"].to_i]
+     return s if s[0] > 0 && s[1] > 0
+     [24, 80]
+-  rescue Errno::ENOTTY, Errno::ENODEV
++  rescue Errno::ENOTTY, Errno::ENODEV, Errno::EINVAL
+     [24, 80]
+   end
+ 
