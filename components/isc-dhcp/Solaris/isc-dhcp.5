@@ -1,6 +1,6 @@
 '\" te
-.\" Copyright (c) 2011, 2023, Oracle and/or its affiliates.
-.TH isc-dhcp 5 "28 Feb 2018" "Oracle Solaris 11.4"
+.\" Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+.TH isc-dhcp 5 "2 Dec 2024" "Oracle Solaris 11.4"
 .SH NAME
 isc\-dhcp \- ISC Dynamic Host Configuration Protocol Software
 
@@ -225,7 +225,7 @@ character (\\) to pass-in values correctly.  An alternative option is
 to use svccfg's \fBeditprop\fR feature to edit the values in an
 editor, where escaping is then not necessary. For example, the
 shell-escaped value
-of \fB\\(\\"10.0.0.1%e10000g#0\\"\\"bge0\\"\\"iprb#1\\"\\)\fR can be
+of \fB\\(\\"10.0.0.1%e10000g#0\\" \\"bge0\\" \\"iprb#1\\"\\)\fR can be
 entered as \fB("10.0.0.1%e10000g#0" "bge0" "iprb#1")\fR.  Refer to
 \fIsvccfg\fP(8) for further details.
 .LP
@@ -268,7 +268,7 @@ to the dhcrelay command-line "\fI-l 10.0.0.1%e10000g#0 -l bge0 -l iprb#1\fR".
 .nf
 example# \fBsvccfg -s dhcp/relay:ipv6 setprop \\\fR
     \fBconfig/receive_query_links= \\\fR
-    \fB\\(\\"10.0.0.1%e10000g#0\\"\\"bge0\\"\\"iprb#1\\"\\)\fR
+    \fB\\(\\"10.0.0.1%e10000g#0\\" \\"bge0\\" \\"iprb#1\\"\\)\fR
 example# \fBsvccfg -s dhcp/relay:ipv6 refresh\fR
 
 NOTE: spaces are not allowed in the string within quotes in the
@@ -291,7 +291,7 @@ The following commands will set the listen_ifnames property to
 .in +2
 .nf
 example# \fBsvccfg -s dhcp/server:ipv4 setprop \\\fR
-    \fBconfig/listen_ifnames = \\(\\"bge0\\"\\"bge1\\"\\)\fR
+    \fBconfig/listen_ifnames = \\(\\"bge0\\" \\"bge1\\"\\)\fR
 example# \fBsvccfg -s dhcp/server:ipv4 refresh\fR
 
 NOTE: spaces are not allowed in the string within quotes in the
@@ -319,5 +319,5 @@ example# \fBsvcadm restart dhcp/server:ipv4\fR
 .SH SEE ALSO
 .LP
 .[
-svccfg(8), svcprop(1), svcadm(8), dhcpd(8), dhcrelay(8)
+svcprop(1), dhcpd(8), dhcrelay(8), svcadm(8), svccfg(8)
 .]
