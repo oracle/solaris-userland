@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=64
@@ -33,18 +33,19 @@ include ../../make-rules/shared-macros.mk
 PATH=$(dir $(CC)):$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		subversion
-COMPONENT_VERSION=	1.14.2
+COMPONENT_VERSION=	1.14.5
 COMPONENT_PROJECT_URL=	https://subversion.apache.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6da5f396e4e3f20490d6f4a7521733e5e58bb7b771151d2bbc1279291a21216d
+    sha256:654a3a9fec9b7faac70678e81c387d89d4427d07bbaa7a3d370760acc79b1fb9
 COMPONENT_ARCHIVE_URL=	https://www.apache.org/dist/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
-COMPONENT_PUBLIC_KEY_URL= https://www.apache.org/dist/subversion/subversion-1.14.2.KEYS
+COMPONENT_PUBLIC_KEY_URL= \
+    https://www.apache.org/dist/subversion/subversion-$(COMPONENT_VERSION).KEYS
 COMPONENT_BUGDB=	utility/svn
 COMPONENT_ANITYA_ID=	4905
-COMPONENT_BAID=		128859
+COMPONENT_BAID=		191373
 
-PYTHON_VERSION =	3.9
+PYTHON_VERSION =	3.11
 PYTHON_VERSIONS =	$(PYTHON_VERSION)
 
 include $(WS_MAKE_RULES)/common.mk
@@ -217,7 +218,7 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libserf
 REQUIRED_PACKAGES += library/py3c
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/python-39
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

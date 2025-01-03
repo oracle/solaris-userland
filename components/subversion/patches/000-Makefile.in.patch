@@ -1,7 +1,7 @@
 Modify rules with Solaris specific changes, not for upstream.
 
---- subversion-1.14.1/Makefile.in.orig	2021-02-11 17:20:05.731873350 +0100
-+++ subversion-1.14.1/Makefile.in	2021-02-11 17:53:31.009403329 +0100
+--- subversion-1.14.5/Makefile.in
++++ subversion-1.14.5/Makefile.in
 @@ -21,6 +21,14 @@
  # ====================================================================
  #
@@ -17,14 +17,14 @@ Modify rules with Solaris specific changes, not for upstream.
  top_builddir = .
  top_srcdir = @top_srcdir@
  abs_builddir = @abs_builddir@
-@@ -89,15 +97,14 @@
+@@ -89,15 +97,14 @@ swig_pl_libdir = @libdir@
  swig_rb_libdir = @libdir@
  
  ### these possibly need further discussion
 -swig_pydir = @libdir@/svn-python/libsvn
 -swig_pydir_extra = @libdir@/svn-python/svn
-+swig_pydir = /usr/lib/python3.9/vendor-packages/libsvn
-+swig_pydir_extra = /usr/lib/python3.9/vendor-packages/svn
++swig_pydir = /usr/lib/python3.11/vendor-packages/libsvn
++swig_pydir_extra = /usr/lib/python3.11/vendor-packages/svn
  swig_pldir = @libdir@/svn-perl
  swig_rbdir = $(SWIG_RB_SITE_ARCH_DIR)/svn/ext
  toolsdir = @bindir@/svn-tools
@@ -36,7 +36,7 @@ Modify rules with Solaris specific changes, not for upstream.
  javahl_javadir = @libdir@/svn-javahl
  javahl_javahdir = @libdir@/svn-javahl/include
  javahl_libdir = @libdir@
-@@ -150,8 +157,8 @@
+@@ -150,8 +157,8 @@ BOOST_TEST_LDFLAGS = @BOOST_LDFLAGS@ @BO
  SWIG = @SWIG@
  SWIG_PY_INCLUDES = @SWIG_PY_INCLUDES@ @SVN_PY3C_INCLUDES@ -I$(SWIG_SRC_DIR)/python/libsvn_swig_py
  SWIG_PY_COMPILE = @SWIG_PY_COMPILE@
@@ -47,7 +47,7 @@ Modify rules with Solaris specific changes, not for upstream.
  SWIG_PY_ERRMSG = @SWIG_PY_ERRMSG@
  SWIG_PL_INCLUDES = @SWIG_PL_INCLUDES@
  SWIG_PL_ERRMSG = @SWIG_PL_ERRMSG@
-@@ -198,6 +205,7 @@
+@@ -198,6 +205,7 @@ CXXMAINTAINERFLAGS = @CXXMAINTAINERFLAGS
  ### suppressed (but they may come from httpd or APR).
  CPPFLAGS = @CPPFLAGS@ $(EXTRA_CPPFLAGS)
  LDFLAGS = @LDFLAGS@ $(EXTRA_LDFLAGS)
@@ -55,7 +55,7 @@ Modify rules with Solaris specific changes, not for upstream.
  SWIG_LDFLAGS = @SWIG_LDFLAGS@ $(EXTRA_SWIG_LDFLAGS)
  SWIG_FEATURES = @SWIG_FEATURES@
  SWIG_PY_FEATURES = @SWIG_PY_FEATURES@
-@@ -205,6 +213,8 @@
+@@ -205,6 +213,8 @@ SWIG_PL_FEATURES = @SWIG_PL_FEATURES@
  SWIG_RB_FEATURES = @SWIG_RB_FEATURES@
  SWIG_PY_OPTS = @SWIG_PY_OPTS@
  
@@ -64,7 +64,7 @@ Modify rules with Solaris specific changes, not for upstream.
  COMPILE = $(CC) $(CMODEFLAGS) $(CPPFLAGS) $(CMAINTAINERFLAGS) $(CFLAGS) $(INCLUDES)
  COMPILE_NOWARN = $(CC) $(CMODEFLAGS) $(CPPFLAGS) $(CNOWARNFLAGS) $(CFLAGS) $(INCLUDES)
  COMPILE_CXX = $(CXX) $(CXXMODEFLAGS) $(CPPFLAGS) $(CXXMAINTAINERFLAGS) $(CXXFLAGS) $(INCLUDES)
-@@ -279,7 +289,7 @@
+@@ -279,7 +289,7 @@ LINK_CXX_LIB = $(LINK_CXX) $(LT_SO_VERSI
  LINK_SVNXX_TEST = $(LINK_CXX) $(BOOST_TEST_LDFLAGS)
  
  # special link rule for mod_dav_svn
@@ -73,7 +73,7 @@ Modify rules with Solaris specific changes, not for upstream.
  
  # Special LDFLAGS for some libraries
  libsvn_client_LDFLAGS = @libsvn_client_LDFLAGS@
-@@ -306,7 +316,7 @@
+@@ -306,7 +316,7 @@ COMPILE_PY_WRAPPER = $(LIBTOOL) $(LTFLAG
  COMPILE_RB_WRAPPER = $(LIBTOOL) $(LTFLAGS) --mode=compile $(SWIG_RB_COMPILE) $(LT_CFLAGS) $(CPPFLAGS) $(SWIG_RB_INCLUDES) -prefer-pic -c -o $@
  
  # these commands link the wrapper objects into an extension library/module
@@ -82,11 +82,11 @@ Modify rules with Solaris specific changes, not for upstream.
  LINK_RB_WRAPPER = $(LIBTOOL) $(LTFLAGS) --mode=link $(SWIG_RB_LINK) $(SWIG_LDFLAGS) -rpath $(swig_rbdir) -avoid-version -module
  
  LINK_JAVAHL_CXX = $(LIBTOOL) $(LTCXXFLAGS) --mode=link $(CXX) $(LT_LDFLAGS) $(CXXFLAGS) $(LDFLAGS) $(LT_CXX_LIBADD) -rpath $(libdir)
-@@ -882,6 +892,14 @@
+@@ -885,6 +895,14 @@ $(SWIG_PL_DIR)/native/Makefile.PL: $(SWI
  
  $(SWIG_PL_DIR)/native/Makefile: libsvn_swig_perl $(SWIG_PL_DIR)/native/Makefile.PL
- 	cd $(SWIG_PL_DIR)/native; $(PERL) Makefile.PL PREFIX=$(prefix)
-+	( cd $(SWIG_PL_DIR)/native; $(PERL) Makefile.PL )
+ 	cd $(SWIG_PL_DIR)/native; $(SWIG_PL_PERL) Makefile.PL PREFIX=$(prefix)
++	( cd $(SWIG_PL_DIR)/native; $(SWIG_PL_PERL) Makefile.PL )
 +	(	cd $(SWIG_PL_DIR)/native; \
 +		for file in Makefile Makefile.client Makefile.delta \
 +			Makefile.fs Makefile.ra Makefile.repos Makefile.wc ; do \
@@ -97,7 +97,7 @@ Modify rules with Solaris specific changes, not for upstream.
  
  # There is a "readlink -f" command on some systems for the same purpose,
  # but it's not as portable (e.g. Mac OS X doesn't have it).  These should
-@@ -897,13 +915,13 @@
+@@ -900,13 +918,13 @@ swig-pl: autogen-swig-pl $(SWIG_PL_DIR)/
  	    fi; \
  	  done; \
  	fi
