@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -80,7 +80,8 @@ PYTHON_SCRIPTS+=	\
 	$(SAMBA_PROTO_PYDIR)/site-packages/tests/*.py
 
 CONFIGURE_ENV+=		\
-	PATH=$(GNUBIN):$(USRBINDIR):/usr/perl5/$(PERL_VERSION)/bin
+	PATH=$(GNUBIN):$(USRBINDIR):/usr/perl5/$(PERL_VERSION)/bin \
+	ADDITIONAL_CFLAGS='-DDISABLE_PROC_FDS=1'
 CONFIGURE_ENV+=		PYTHON="$(PYTHON)"
 CONFIGURE_OPTIONS+=	--localstatedir=/var/samba
 CONFIGURE_OPTIONS+=	--includedir=/usr/include/samba
