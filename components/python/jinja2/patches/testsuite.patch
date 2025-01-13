@@ -1,0 +1,40 @@
+trio is not available on Solaris, no need to test with it.
+
+--- jinja2-3.1.5/tests/test_async.py
++++ jinja2-3.1.5/tests/test_async.py
+@@ -1,7 +1,6 @@
+ import asyncio
+ 
+ import pytest
+-import trio
+ 
+ from jinja2 import ChainableUndefined
+ from jinja2 import DictLoader
+@@ -18,7 +17,7 @@ def _asyncio_run(async_fn, *args):
+     return asyncio.run(async_fn(*args))
+ 
+ 
+-@pytest.fixture(params=[_asyncio_run, trio.run], ids=["asyncio", "trio"])
++@pytest.fixture(params=[_asyncio_run], ids=["asyncio"])
+ def run_async_fn(request):
+     return request.param
+ 
+--- jinja2-3.1.5/tests/test_async_filters.py
++++ jinja2-3.1.5/tests/test_async_filters.py
+@@ -3,7 +3,6 @@ import contextlib
+ from collections import namedtuple
+ 
+ import pytest
+-import trio
+ from markupsafe import Markup
+ 
+ from jinja2 import Environment
+@@ -33,7 +32,7 @@ def _asyncio_run(async_fn, *args):
+     return asyncio.run(async_fn(*args))
+ 
+ 
+-@pytest.fixture(params=[_asyncio_run, trio.run], ids=["asyncio", "trio"])
++@pytest.fixture(params=[_asyncio_run], ids=["asyncio"])
+ def run_async_fn(request):
+     return request.param
+ 

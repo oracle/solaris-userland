@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jinja2
-COMPONENT_VERSION=	3.1.4
+COMPONENT_VERSION=	3.1.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ef63087285686b749c983f228d13681867b3a76d2684fa8d90c1538b465de154
+    sha256:8fefff8dc3034e27bb80d67c671eb8a9bc424c0ef4c0826edbff304cceff43bb
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://jinja.pocoo.org/
 COMPONENT_BUGDB=	python-mod/jinja2
 COMPONENT_ANITYA_ID=	3894
-COMPONENT_BAID=		165933
+COMPONENT_BAID=		191377
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
