@@ -5,9 +5,9 @@ https://bugzilla.samba.org/show_bug.cgi?id=14820
 
 Signed-off-by: David Gajewski <dgajews@math.utoledo.edu>
 
---- samba-4.20.5/source3/wscript
-+++ samba-4.20.5/source3/wscript
-@@ -158,6 +158,8 @@ if host_os.rfind('sunos') == -1:
+--- samba-4.21.3/source3/wscript
++++ samba-4.21.3/source3/wscript
+@@ -154,6 +154,8 @@ if host_os.rfind('sunos') == -1:
          conf.CHECK_HEADERS('sys/inotify.h')
          if conf.env.HAVE_SYS_INOTIFY_H:
             conf.DEFINE('HAVE_INOTIFY', 1)
@@ -16,7 +16,7 @@ Signed-off-by: David Gajewski <dgajews@math.utoledo.edu>
  
      # Check for Linux kernel oplocks
      if conf.CHECK_DECLS('F_SETLEASE', headers='linux/fcntl.h', reverse=True):
-@@ -1620,8 +1622,8 @@ # if standard interfaces are not support
+@@ -1573,8 +1575,8 @@ # if standard interfaces are not support
          #
          if not conf.CONFIG_SET('WITH_QUOTAS'):
              if host_os.rfind('sunos5') > -1:

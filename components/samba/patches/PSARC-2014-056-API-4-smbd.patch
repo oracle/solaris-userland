@@ -4,10 +4,10 @@ can not be copied into the buffer to move it on aligned address location.
 
 This feature can not be misused for "daily" use because of its expesiveness.
 
---- samba-4.19.8/source3/smbd/server.c
-+++ samba-4.19.8/source3/smbd/server.c
-@@ -1539,6 +1539,9 @@ */
- 	return NT_STATUS_OK;
+--- samba-4.21.3/source3/smbd/server.c
++++ samba-4.21.3/source3/smbd/server.c
+@@ -1758,6 +1758,9 @@ }
+ 	tevent_req_set_callback(req, smbd_addr_changed, state);
  }
  
 +#ifdef __sparcv9	/* works on 64bit SPARC !only! */
@@ -16,7 +16,7 @@ This feature can not be misused for "daily" use because of its expesiveness.
  /****************************************************************************
   main program.
  ****************************************************************************/
-@@ -1695,6 +1698,17 @@ DEBUG(0,("ERROR: Can't log to stdout (-S
+@@ -1914,6 +1917,17 @@ DEBUG(0,("ERROR: Can't log to stdout (-S
  		exit(1);
  	}
  

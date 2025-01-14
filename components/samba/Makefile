@@ -32,11 +32,11 @@ COMPONENT_NAME=		samba
 COMPONENT_PROJECT_URL=	http://www.samba.org/
 COMPONENT_BUGDB=	utility/samba
 COMPONENT_ANITYA_ID=	4758
-COMPONENT_BAID=		180144
-COMPONENT_VERSION=	4.20.5
+COMPONENT_BAID=		191590
+COMPONENT_VERSION=	4.21.3
 COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:0697a8a57ff8b268cc268d508ee4f9ec86fd82350e84eba47a709242b71f6962
+	sha256:ae2179a613e7a5d4088735ab100d4ca1cae0f92374d6307e22eaec13ad90125c
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
 #
@@ -95,6 +95,7 @@ CONFIGURE_OPTIONS+=	--with-pammodulesdir=$(PREFIX)/security/$(MACH64)
 CONFIGURE_OPTIONS+=	--with-ads
 CONFIGURE_OPTIONS+=	--with-winbind
 CONFIGURE_OPTIONS+=	--with-ldap
+CONFIGURE_OPTIONS+=	--without-ldb-lmdb
 CONFIGURE_OPTIONS+=	--without-ad-dc
 CONFIGURE_OPTIONS+=	--without-quotas
 CONFIGURE_OPTIONS+=	--bundled-libraries=ALL
@@ -145,20 +146,20 @@ COMPONENT_POST_BUILD_ACTION.32+=	\
 #
 PKG_MACROS += PYVER=$(PYTHON_VERSION)
 
-REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += library/desktop/search/tracker
+REQUIRED_PACKAGES += library/file-monitor/gamin
+REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/jansson
+REQUIRED_PACKAGES += library/libarchive
+REQUIRED_PACKAGES += library/perl-5/parse-yapp
+REQUIRED_PACKAGES += library/print/cups-libs
+REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/avahi
 REQUIRED_PACKAGES += system/network/ldap/openldap
-REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += security/kerberos-5
-REQUIRED_PACKAGES += library/print/cups-libs
-REQUIRED_PACKAGES += library/icu
-REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/desktop/search/tracker
-REQUIRED_PACKAGES += library/file-monitor/gamin
-REQUIRED_PACKAGES += library/libarchive
-REQUIRED_PACKAGES += library/perl-5/parse-yapp
-REQUIRED_PACKAGES += system/core-os
