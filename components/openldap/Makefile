@@ -32,19 +32,19 @@ include ../../make-rules/shared-macros.mk
 #   openLDAP <x>.<y>.<z>        =>   IPS <x>.<y>.<z>.0.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		openldap
-COMPONENT_VERSION=	2.6.8
+COMPONENT_VERSION=	2.6.9
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_PROJECT_URL=	http://www.openldap.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:48969323e94e3be3b03c6a132942dcba7ef8d545f2ad35401709019f696c3c4e
+    sha256:2cb7dc73e9c8340dff0d99357fbaa578abf30cc6619f0521972c555681e6b2ff
 COMPONENT_ARCHIVE_URL=	\
     ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/openldap
 # For check_anitya target, https://release-monitoring.org/project/2551
 COMPONENT_ANITYA_ID=	2551
-COMPONENT_BAID=		168741
+COMPONENT_BAID=		188651
 
 #
 # Cyrus-SASL is a requirement.
@@ -209,21 +209,42 @@ COMPONENT_POST_INSTALL_ACTION.64 +=	\
 		$(PROTO_DIR)/$(USRLIB)/slapd
 endif
 
-# Conversion of openldap-transition.org to ASCII.
-# Creates copy in proto directory, as emacs creates in place, then removed.
+# Post install action for conversion of openldap-transition.org to ASCII.
+#
+# Creates a copy of org file in proto directory, as emacs creates in
+# place, this copy is then removed.
+#
 # ORGABS makes argument to --eval fit into the 80 column guideline.
 ORGABS =	org-ascii--box-string
 ORGSRC =	openldap-transition.org
 ORGSRCDIR =	$(COMPONENT_DIR)/Solaris
-ORGPUBDIR = 	$(PROTO_DIR)$(USRSHAREDOCDIR)/release-notes
-COMPONENT_POST_INSTALL_ACTION.64 +=	\
-  $(MKDIR) $(PROTO_DIR)/$(USRSHAREDOCDIR)/release-notes; \
+ORGDSTDIR =	$(USRSHAREDOCDIR)/release-notes
+ORGPUBDIR = 	$(PROTO_DIR)$(ORGDSTDIR)
+ORGEXPORT =	\
+  $(MKDIR) $(ORGPUBDIR); \
   $(CP) $(ORGSRCDIR)/$(ORGSRC) $(ORGPUBDIR); \
   /usr/bin/emacs $(ORGPUBDIR)/$(ORGSRC) -Q -batch \
     --eval '(require `ox-ascii)' \
     --eval '(advice-add `$(ORGABS) :override (defun my-$(ORGABS) (s info) s))' \
     --eval '(org-ascii-export-to-ascii)'; \
-  $(RM) $(ORGPUBDIR)/$(ORGSRC); \
+  $(RM) $(ORGPUBDIR)/$(ORGSRC);
+COMPONENT_POST_INSTALL_ACTION.64 += $(ORGEXPORT)
+
+.PHONY: test-org-export
+# See README.md for information on using this target.
+ORGTXT =	$(ORGSRC:%.org=%.txt)
+ORGCMP =	/usr/share/doc/release-notes/openldap-transition.txt
+test-org-export:
+	$(ORGEXPORT)
+	@$e exported to $(ORGPUBDIR)/$(ORGTXT)
+	@if [[ -f $(ORGCMP) ]]; then \
+		if diff -u $(ORGCMP) $(ORGPUBDIR)/$(ORGTXT); then \
+		    $e No changes!; \
+		fi; \
+	    else \
+		$e File Not Found: $(ORGCMP); \
+	    fi;
+
 #
 # Testing
 # Uses test-and-compare framework as per ../../doc/testing.txt
@@ -334,9 +355,8 @@ republish:
 	$(GMAKE) publish PKGREPO_REMOVE_BEFORE_PUBLISH=yes
 
 
+REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += system/network
-REQUIRED_PACKAGES += text/groff/groff-core

@@ -1,11 +1,12 @@
-Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 
 # OpenLDAP notes.
 
 These notes are for engineering only.  They are not distributed with the
 packaging but are available with the source code.
 
-## OpenLDAP compatibility
+
+# OpenLDAP compatibility
 
 DATABASE compatibility between versions of OpenLDAP is not guaranteed.  When
 upgrading OpenLDAP server it is imperative that before upgrade its database
@@ -18,7 +19,8 @@ future update will hopefully move that check to within slapd(8oldap), until
 that time version updates will need to modify those checks.  See also
 openldap-server.p5m below.
 
-## Packaging
+
+# Packaging
 
 Originally packaged within a single package (openldap.p5m,
 pkg:/library/openldap) it has subsequently been broken up into:
@@ -33,14 +35,15 @@ step which is after the p5m file is used to package up (the generation is a
 cross check, not the author).
 
 
-### openldap-server.p5m
+## Packaging file openldap-server.p5m
+
+### Solaris/openldap-notice.txt has two entries:
 
 When the OpenLDAP server package is installed or updated it logs a short note
 (Solaris/openldap-notice.txt), also viewable via "pkg history", to review
-openldap-transition.txt (Solaris/openldap-transition.txt).  The short note is
-displayed as the full instructions are rather long.
-
-Note: source file Solaris/openldap-notice.txt has two entries
+/usr/share/doc/release-notes/openldap-transition.txt
+(Solaris/openldap-transition.org).  The short note is displayed as the full
+instructions are rather long.
 
   - usr/share/doc/release-notes/openldap-install.txt
 
@@ -62,6 +65,24 @@ Note: source file Solaris/openldap-notice.txt has two entries
     erroneously caused every build to display the release-note as
     BUILD\_VERSION includes the branch-id (BRANCHID).
 
+
+### Solaris/openldap-transition.org
+
+The source for /usr/share/doc/release-notes/openldap-transition.txt.  This is
+built as a post installation action within the Makefile.  There is also a
+`test-org-export` target which can be used to test against a previous version
+of the file.  For example:
+
+    cd $(hg root)/components/openldap
+    hg cat -r 'last(file("./Solaris/openldap-transition.org"))' \
+     ./Solaris/openldap-transition.org > openldap-transition.org
+    gmake test-org-export ORGSRCDIR=$PWD
+    cp build/prototype/*/usr/share/doc/release-notes/openldap-transition.txt .
+    gmake test-org-export ORGCMP=./openldap-transition.txt
+
+
+### Dependency on cyrus-sasl
+
 OpenLDAP requires a specific version of cyrus-sasl library (libsasl2.so)
 because it stashes away the version number from compilation and refuses to work
 if that is not the version used at load time.  Hence at the end of the file
@@ -70,15 +91,16 @@ fmri=.../libsasl2@...).  This does however then require additional
 `pkg.depend.bypass-generate=libsasl2.so.3` entries to prevent pkglint from
 reporting error "duplicate depend actions".
 
-### openldap-client.p5m
+
+## Packaging file openldap-client.p5m
 
 Includes the same dependeny as openldap-server.p5m on libsasl2.
 
-*OpenLDAP library libldap*
+### /usr/lib/libldap_r*.so
 
-Up until now (2.4.x) in Solaris distribution the libldap.so library has been a
-link to the MT HOT library libldap_r.so.  With 2.6.x libldap_r.so has
-officially been renamed libldap.so.  For backward compatibility we continue to
-provide libldap\_r.so and also the SONAME compatibility links to
-libldap_r-2.4.so.2 and liblber-2.1.so.2
+In the Solaris distribution of OpenLDAP 2.4.x the libldap.so library was a
+link to the MT HOT library `libldap_r.so`.  With 2.6.x `libldap_r.so` has
+officially been renamed `libldap.so`.  For backward compatibility we continue
+to provide `libldap_r.so` and also the SONAME compatibility links to
+`libldap_r-2.4.so.2` and `liblber-2.1.so.2`.
 
