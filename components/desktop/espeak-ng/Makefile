@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 # parfait doesn't like sketchy code (25158912)
@@ -36,15 +36,15 @@ include ../../../make-rules/shared-macros.mk
 
 GIT_REPO=		https://github.com/espeak-ng/espeak-ng
 GIT_COMMIT_ID=		$(COMPONENT_VERSION)
-GIT_HASH= sha256:addcefe6303361b3f22654d606d0cade215b0b52e72fdb086f7c244287b06ac3
+GIT_HASH= sha256:339ebe5ec0816ba48869e16578909bc8e91daeeed30b5ebd0acb14c3b06b5995
 
 COMPONENT_NAME=		espeak-ng
-COMPONENT_VERSION=	1.51.1
+COMPONENT_VERSION=	1.52.0
 COMPONENT_PROJECT_URL=	https://github.com/espeak-ng/espeak-ng
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	12958
-COMPONENT_BAID= 	164045
+COMPONENT_BAID= 	191394
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,16 +28,16 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pcaudiolib
-COMPONENT_VERSION=	1.2
+COMPONENT_VERSION=	1.3
 COMPONENT_PROJECT_URL=	https://github.com/espeak-ng/pcaudiolib
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:81f2e6885b099b3d183894bd6c76f1d45fde7e1772f730bac778882e5d18df5c
+	sha256:e8bd15f460ea171ccd0769ea432e188532a7fb27fa73ec2d526088a082abaaad
 COMPONENT_ARCHIVE_URL=	\
 	$(COMPONENT_PROJECT_URL)/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	11776
-COMPONENT_BAID=		112682
+COMPONENT_BAID=		191385
 
 TEST_TARGET = $(SKIP_TEST)
 include $(WS_MAKE_RULES)/common.mk
