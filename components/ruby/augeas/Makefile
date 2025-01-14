@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,17 +29,16 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 COMPONENT_NAME=		ruby-augeas
-COMPONENT_VERSION=	0.5.0
+COMPONENT_VERSION=	0.6.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).gem
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:42b0973c8ff88c5a903a1b126f1418a69eb3c8f4d45999055bfdce9b70e57101
+    sha256:002bd237d8dce4b918384cc3043254bf5264efe81f663d1c9ac7b41cbe4df8d2
 COMPONENT_ARCHIVE_URL=	https://rubygems.org/gems/$(COMPONENT_SRC).gem
 COMPONENT_PROJECT_URL=  https://github.com/hercules-team/ruby-augeas
 COMPONENT_BUGDB=	utility/augeas
 COMPONENT_ANITYA_ID=	17146
-
-COMPONENT_BAID=                   22571
+COMPONENT_BAID=		187396
 
 # No gemspec is shipped with the gem. Create one
 COMPONENT_POST_UNPACK_ACTION= \
@@ -49,6 +48,8 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/gem.mk
 include $(WS_MAKE_RULES)/ruby.mk
+
+GEM_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_TEST_CMD = /usr/bin/rake
 COMPONENT_TEST_DIR = $(SOURCE_DIR)
