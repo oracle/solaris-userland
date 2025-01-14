@@ -27,14 +27,14 @@ BUILD_BITS= 		NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mm-common
-COMPONENT_VERSION=	1.0.5
+COMPONENT_VERSION=	1.0.6
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/glibmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:705c6d29f4116a29bde4e36cfc1b046c92b6ef8c6dae4eaec85018747e6da5aa
+    sha256:b55c46037dbcdabc5cee3b389ea11cc3910adb68ebe883e9477847aa660862e7
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13152
 
-COMPONENT_BAID=		155729
+COMPONENT_BAID=		186076
 BUILD_STYLE=		meson
 
 # Use explicit Python version rather than the default one
