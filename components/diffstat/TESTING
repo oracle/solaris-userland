@@ -1,0 +1,24 @@
+1. Create two files that are slightly different.
+2. Compare them using diff -u.
+3. Now apply diffstat to the diff -u like below and see if it works:
+$ diff -u file update | diffstat
+
+4. Export the differences into a file.
+$ diff -u file update > test.diff
+
+5. Check using the format flag 
+(
+    0 for concise output that shows only values with histogram signs +, -, and !
+    1 is the default output format of the diffstat command
+    2 fills out the histogram with dots
+    4 prints value with histogram
+):
+$ diffstat -f 0 test.diff
+
+6. Use -C for colors, -t for tabular, -l for listing, -m to merge the inserts and deletes, or -o to output in file:
+$ diffstat -C test.diff 
+$ diffstat -t test.diff
+$ diffstat -l test.diff
+$ diffstat -m test.diff
+$ diffstat -m test.diff -o output.stat
+
