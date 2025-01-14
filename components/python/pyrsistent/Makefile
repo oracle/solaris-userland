@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyrsistent
-COMPONENT_VERSION=	0.19.3
+COMPONENT_VERSION=	0.20.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1a2994773706bbb4995c31a97bc94f1418314923bd1048c6d964837040376440
+    sha256:4c48f78f62ab596c679086084d0dd13254ae4f3d6c72a83ffdf5ebdef8f265a4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/tobgu/pyrsistent/
 COMPONENT_BUGDB=	python-mod/pyrsistent
 COMPONENT_ANITYA_ID=	19676
-COMPONENT_BAID=		141686
+COMPONENT_BAID=		190198
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
