@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -33,9 +33,9 @@ set name=com.oracle.info.description \
     value="System which facilitates service discovery on a local network."
 set name=info.classification \
     value=org.opensolaris.category.2008:Applications/Internet
-set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.source-url value=$(GIT_REPO)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=LSARC/2007/464
+set name=org.opensolaris.arc-caseid value=LSARC/2007/464 value=PSARC/2023/117
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file path=etc/avahi/avahi-daemon.conf
@@ -43,7 +43,6 @@ file path=etc/avahi/avahi-dnsconfd.action mode=0555
 file path=etc/avahi/hosts
 file path=etc/avahi/services/sftp-ssh.service
 file path=etc/avahi/services/ssh.service
-file path=etc/dbus-1/system.d/avahi-dbus.conf
 file files/multicast.xml path=lib/svc/manifest/network/dns/multicast.xml \
     mode=0444 restart_fmri=svc:/system/manifest-import:default
 file path=usr/bin/avahi-bookmarks
@@ -155,6 +154,7 @@ file path=usr/lib/python3.11/vendor-packages/avahi/ServiceTypeDatabase.py \
 file path=usr/lib/python3.11/vendor-packages/avahi/__init__.py
 file path=usr/sbin/avahi-daemon
 file path=usr/sbin/avahi-dnsconfd
+file path=usr/share/dbus-1/system.d/avahi-dbus.conf
 file path=usr/share/gir-1.0/Avahi-0.6.gir
 file path=usr/share/gir-1.0/AvahiCore-0.6.gir
 file path=usr/share/locale/ach/LC_MESSAGES/avahi.mo
@@ -176,12 +176,17 @@ file path=usr/share/locale/fa/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/fi/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/fo/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/fr/LC_MESSAGES/avahi.mo
+file path=usr/share/locale/fur/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/gl/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/he/LC_MESSAGES/avahi.mo
+file path=usr/share/locale/hi/LC_MESSAGES/avahi.mo
+file path=usr/share/locale/hr/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/hu/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/id/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/it/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/ja/LC_MESSAGES/avahi.mo
+file path=usr/share/locale/ka/LC_MESSAGES/avahi.mo
+file path=usr/share/locale/kab/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/ko/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/lv/LC_MESSAGES/avahi.mo
 file path=usr/share/locale/ms/LC_MESSAGES/avahi.mo
@@ -216,6 +221,4 @@ file path=usr/share/man/man5/avahi.service.5
 file path=usr/share/man/man8/avahi-daemon.8
 file path=usr/share/man/man8/avahi-dnsconfd.8
 file path=usr/share/man/man8/avahi-dnsconfd.action.8
-#
-#
-license LICENSE license=LGPLv2.1
+license avahi.license license=LGPLv2.1

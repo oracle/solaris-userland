@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -29,17 +29,25 @@ BUILD_BITS=	64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		avahi
-COMPONENT_VERSION=	0.8
-COMPONENT_BAID=		134572
-COMPONENT_ARCHIVE_HASH=	sha256:060309d7a333d38d951bc27598c677af1796934dbd98e1024e7ad8de798fedda
-COMPONENT_ARCHIVE_URL=	http://avahi.org/download/$(COMPONENT_ARCHIVE)
+COMPONENT_VERSION=	0.8.2024.12
+COMPONENT_BAID=		191476
+GIT_REPO=		https://github.com/avahi/avahi
+GIT_COMMIT_ID=		1dade81
 COMPONENT_PROJECT_URL=	http://www.avahi.org/
 COMPONENT_BUGDB=	library/avahi
 COMPONENT_ANITYA_ID=	147
 
+COMPONENT_NAME_1=	xmltoman
+GIT_REPO_1=		https://github.com/atsb/xmltoman
+GIT_COMMIT_ID_1=	46403b9
+
 PYTHON_VERSION=		3.11
 
 include $(WS_MAKE_RULES)/common.mk
+
+# Give xmltoman script executable rights
+COMPONENT_PRE_CONFIGURE_ACTION += \
+	$(CHMOD) +x $(COMPONENT_SRC_1)/xmltoman;
 
 # service-type-database/build-db is missing from distribution, but is available
 # on github. That must have some reason because other distribution deliver it
@@ -56,6 +64,7 @@ COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 CONFIGURE_ENV		+=	MAKE=gmake
 
 CONFIGURE_ENV		+=	PYTHON=$(PYTHON.$(PYTHON_VERSION))
+CONFIGURE_ENV		+=	PATH="$(PATH):$(COMPONENT_DIR)/$(COMPONENT_SRC_1)"
 # Avahi doesn't know sunos
 CONFIGURE_OPTIONS	+=	--with-distro=none
 CONFIGURE_OPTIONS	+=	--sysconfdir="$(ETCDIR)"
@@ -67,14 +76,16 @@ CONFIGURE_OPTIONS	+=	--with-avahi-group=other
 CONFIGURE_OPTIONS	+=	--enable-tests
 CONFIGURE_OPTIONS	+=	--disable-autoipd
 CONFIGURE_OPTIONS	+=	--enable-compat-libdns_sd
+CONFIGURE_OPTIONS	+=	--disable-libsystemd
 CONFIGURE_OPTIONS.32	+=	--disable-python
 CONFIGURE_OPTIONS.32	+=	--disable-pygobject
-CONFIGURE_OPTIONS.64	+=	--enable-doxygen-man
-CONFIGURE_OPTIONS.32	+=	--disable-doxygen-man
 CONFIGURE_ENV.64	+=	PKG_CONFIG_PATH=/usr/lib/$(MACH64)/pkgconfig
+
+COMPONENT_BUILD_ENV	+=	PATH="$(PATH):$(COMPONENT_DIR)/$(COMPONENT_SRC_1)"
 
 # Move site-packages into vendor-packages, compile to satisfy pkgdepend
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
+	$(RM) -rf $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages; \
 	$(MV) $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/site-packages \
 		$(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages; \
 	$(PYTHON) -m compileall $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages;
@@ -92,6 +103,7 @@ REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/python/dbus-python-311
 REQUIRED_PACKAGES += library/python/pygobject-3-311
 REQUIRED_PACKAGES += library/python/python-twisted-311
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
@@ -101,5 +113,3 @@ REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/network
-REQUIRED_PACKAGES += system/network/avahi
-REQUIRED_PACKAGES += system/network/avahi/gui
