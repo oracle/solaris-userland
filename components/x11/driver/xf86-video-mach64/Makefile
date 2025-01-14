@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,12 +28,12 @@ BUILD_ARCH =		i386
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-mach64
-COMPONENT_VERSION=	6.9.7
+COMPONENT_VERSION=	6.10.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:50d78abffa7c8227e6f187976f23a244ae2095e97f08de275529b70fba9481ba
+	sha256:d6b96b47a27cd2dc6dea612f5dc51fcc1a8561d5ad1d48d04ec2d47751222724
 COMPONENT_BUGDB=        x11/devices-x86
 COMPONENT_ANITYA_ID=	5225
-COMPONENT_BAID=		134588
+COMPONENT_BAID=		191035
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)
 

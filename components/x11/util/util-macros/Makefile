@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		util-macros
-COMPONENT_VERSION=	1.20.1
+COMPONENT_VERSION=	1.20.2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0b308f62dce78ac0f4d9de6888234bf170f276b64ac7c96e99779bb4319bcef5
+	sha256:9ac269eba24f672d7d7b3574e4be5f333d13f04a7712303b1821b2a51ac82e8e
 COMPONENT_BUGDB=        x11/builds
 COMPONENT_ANITYA_ID=	15037
-COMPONENT_BAID=		180674
+COMPONENT_BAID=		191037
 COMPONENT_SIG_URL=
 
 TEST_TARGET = $(NO_TESTS)

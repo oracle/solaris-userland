@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lndir
-COMPONENT_VERSION=	1.0.4
+COMPONENT_VERSION=	1.0.5
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3e3437a9d3bb377755dd04a2c90d4c014d9fe90987ff73450bf5b8d161795e87
+	sha256:3b65577a5575cce095664f5492164a96941800fe6290a123731d47f3e7104ddb
 COMPONENT_BUGDB=        x11/builds
 COMPONENT_ANITYA_ID=	374579
-COMPONENT_BAID=		140606
+COMPONENT_BAID=		191036
 
 TEST_TARGET = $(NO_TESTS)
 

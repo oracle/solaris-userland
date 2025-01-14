@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXrender
-COMPONENT_VERSION=	0.9.11
+COMPONENT_VERSION=	0.9.12
 COMPONENT_ARCHIVE_HASH= \
-	sha256:bc53759a3a83d1ff702fb59641b3d2f7c56e05051fa0cfa93501166fa782dc24
+	sha256:b832128da48b39c8d608224481743403ad1691bf4e554e4be9c174df171d1b97
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1789
-COMPONENT_BAID=		132601
+COMPONENT_BAID=		191060
 
 TEST_TARGET = $(NO_TESTS)
 

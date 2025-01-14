@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xlogo
-COMPONENT_VERSION=	1.0.6
+COMPONENT_VERSION=	1.0.7
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c16ae461a7f7ea275f55c82acf3ee86ce0eb5e406f3a91ab2bb4d332693f32a0
+	sha256:8a3f67b20407a53286a7de1a04dbda12d272234d59ef35e68ecfaf7633d83624
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	14991
-COMPONENT_BAID=		139172
+COMPONENT_BAID=		191044
 
 COMPONENT_NAME_1=       xeyes
 COMPONENT_VERSION_1=    1.3.0

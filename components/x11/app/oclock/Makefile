@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oclock
-COMPONENT_VERSION=	1.0.5
+COMPONENT_VERSION=	1.0.6
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8f09979655e889d056b7a1e50b57f38b32529453e756b53ec659070fb3c3965c
+	sha256:3ee85e5e2d211eca7bdb8b2fe0e3baf31998829af48198b5fa9bbee2aa0d24be
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15042
-COMPONENT_BAID=		130801
+COMPONENT_BAID=		191040
 
 TEST_TARGET = $(NO_TESTS)
 

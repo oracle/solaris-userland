@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,12 +28,12 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxcvt
-COMPONENT_VERSION=	0.1.2
+COMPONENT_VERSION=	0.1.3
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0561690544796e25cfbd71806ba1b0d797ffe464e9796411123e79450f71db38
+	sha256:a929998a8767de7dfa36d6da4751cdbeef34ed630714f2f4a767b351f2442e01
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	235147
-COMPONENT_BAID=		131761
+COMPONENT_BAID=		191057
 
 BUILD_STYLE=		meson
 

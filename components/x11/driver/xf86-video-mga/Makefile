@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-mga
-COMPONENT_VERSION=	2.0.1
+COMPONENT_VERSION=	2.1.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:27a33b70837965bb4a5f27fd260be085ca5bba837a4e62907f093c2f205603ab
+	sha256:7bf85dbf4efa17b7cdd483be8f61cf11fd73d0310514b6ae10d89358de63ab73
 COMPONENT_BUGDB=        x11/devices-matrox
 COMPONENT_ANITYA_ID=	5226
-COMPONENT_BAID=		134599
+COMPONENT_BAID=		191034
 
 TEST_TARGET = $(NO_TESTS)
 

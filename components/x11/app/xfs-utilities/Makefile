@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -29,11 +29,11 @@ include ../../../../make-rules/shared-macros.mk
 COMPONENT_BUGDB=        x11/xclients
 
 COMPONENT_NAME=         fslsfonts
-COMPONENT_VERSION=      1.0.6
+COMPONENT_VERSION=      1.0.7
 COMPONENT_ARCHIVE_HASH=         \
-    sha256:01cb0c5a7dbddadef846ca3b52c2ab9c60f2c32c3f16584cd97a6c7f293341ee
+    sha256:67cddb1aa7fccab5d107beef32fa2c143e8a132a2b974a557557b24c6f306b63
 COMPONENT_ANITYA_ID=    17157
-COMPONENT_BAID=         130798
+COMPONENT_BAID=         191041
 
 COMPONENT_NAME_2=       showfont
 COMPONENT_VERSION_2=    1.0.6

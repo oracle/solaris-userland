@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXv
-COMPONENT_VERSION=	1.0.12
+COMPONENT_VERSION=	1.0.13
 COMPONENT_ARCHIVE_HASH= \
-	sha256:aaf7fa09f689f7a2000fe493c0d64d1487a1210db154053e9e2336b860c63848
+	sha256:7d34910958e1c1f8d193d828fea1b7da192297280a35437af0692f003ba03755
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1795
-COMPONENT_BAID=		140565
+COMPONENT_BAID=		191055
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -29,13 +29,12 @@ COMPILER = 		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-vboxvideo
-COMPONENT_VERSION=	1.0.0
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_VERSION=	1.0.1
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7fb6a3bfbcbe95438617f55a2f7ace4c0edec8ea8b7007777f389438b40cbfa4
+	sha256:8efc65fc7d2bc56bd883c31170dc367f03b3dba85f8268eff36d55138a7b7f8a
 COMPONENT_BUGDB=        x11/devices-x86
 COMPONENT_ANITYA_ID=	374581
-COMPONENT_BAID=		44644
+COMPONENT_BAID=		191031
 
 TEST_TARGET = $(NO_TESTS)
 
