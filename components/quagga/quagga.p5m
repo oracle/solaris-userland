@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -46,10 +46,10 @@ file path=etc/quagga/ripd.conf.sample
 file path=etc/quagga/ripngd.conf.sample
 file path=etc/quagga/zebra.conf.sample
 file Solaris/exec_attr path=etc/security/exec_attr.d/quagga
-file $(MACH32)/solaris/quagga.xml \
+file $(MACH64)/solaris/quagga.xml \
     path=lib/svc/manifest/network/routing/quagga.xml
-file $(MACH32)/solaris/trill.xml path=lib/svc/manifest/network/routing/trill.xml
-file $(MACH32)/solaris/quagga.init path=lib/svc/method/quagga
+file $(MACH64)/solaris/trill.xml path=lib/svc/manifest/network/routing/trill.xml
+file $(MACH64)/solaris/quagga.init path=lib/svc/method/quagga
 file path=usr/include/quagga/buffer.h
 file path=usr/include/quagga/checksum.h
 file path=usr/include/quagga/command.h
@@ -98,6 +98,16 @@ file path=usr/include/quagga/workqueue.h
 file path=usr/include/quagga/zassert.h
 file path=usr/include/quagga/zclient.h
 file path=usr/include/quagga/zebra.h
+link path=usr/lib/$(MACH64)/libospf.so target=libospf.so.0.0.0
+link path=usr/lib/$(MACH64)/libospf.so.0 target=libospf.so.0.0.0
+file path=usr/lib/$(MACH64)/libospf.so.0.0.0
+link path=usr/lib/$(MACH64)/libospfapiclient.so target=libospfapiclient.so.0.0.0
+link path=usr/lib/$(MACH64)/libospfapiclient.so.0 \
+    target=libospfapiclient.so.0.0.0
+file path=usr/lib/$(MACH64)/libospfapiclient.so.0.0.0
+link path=usr/lib/$(MACH64)/libzebra.so target=libzebra.so.0.0.0
+link path=usr/lib/$(MACH64)/libzebra.so.0 target=libzebra.so.0.0.0
+file path=usr/lib/$(MACH64)/libzebra.so.0.0.0
 link path=usr/lib/libospf.so target=libospf.so.0.0.0
 link path=usr/lib/libospf.so.0 target=libospf.so.0.0.0
 file path=usr/lib/libospf.so.0.0.0
@@ -119,6 +129,7 @@ file path=usr/sbin/zebra
 link path=usr/sbin/zebraadm target=quaggaadm
 file path=usr/share/info/quagga.info
 file path=usr/share/info/quagga.info-1
+file path=usr/share/info/quagga.info-2
 file path=usr/share/man/man8/bgpd.8
 file path=usr/share/man/man8/isisd.8
 file path=usr/share/man/man8/ospf6d.8
