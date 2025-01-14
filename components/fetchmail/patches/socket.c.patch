@@ -1,31 +1,23 @@
 This is Solaris specific patch to use acceptable OpenSSL options by
 default.
 
---- fetchmail-6.4.22/socket.c
-+++ fetchmail-6.4.22/socket.c
-@@ -926,7 +926,7 @@ static const char *SSLCertGetCN(const ch
- static int OSSL10X_proto_version_logic(int sock, const char **myproto, int *avoid_ssl_versions)
- {
- 	if (!*myproto) {
--	    *myproto = "auto";
-+	    *myproto = "TLS1.2+";
- 	}
- 
- 	if (!strcasecmp("ssl3", *myproto)) {
-@@ -1001,7 +1001,7 @@ static int OSSL110_proto_version_logic(i
- 	SSL_CTX_set_min_proto_version(_ctx[sock], TLS1_VERSION);
+--- fetchmail-6.5.1/socket.c.orig	2024-11-25 08:58:06.416854758 +0100
++++ fetchmail-6.5.1/socket.c	2024-11-25 09:15:51.216205558 +0100
+@@ -1000,7 +1000,7 @@
+ 	SSL_CTX_set_max_proto_version(_ctx[sock], 0);
  
  	if (!*myproto) {
 -	    *myproto = "auto";
 +	    *myproto = "TLS1.2+";
  	}
  
- 	if (!strcasecmp("ssl3", *myproto)) {
-@@ -1149,6 +1149,7 @@ int SSLOpen(int sock, char *mycert, char
+ 	if        (!strcasecmp("tls1", *myproto)) { // RFC 7525 SHOULD NOT
+@@ -1250,7 +1250,7 @@
  	}
  
- 	SSL_CTX_set_options(_ctx[sock], sslopts | avoid_ssl_versions);
+ 	(void)SSL_CTX_set_options(_ctx[sock], sslopts | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
+-
 +	SSL_CTX_set_cipher_list(_ctx[sock], "ALL:!aNULL:!eNULL:!EXPORT:!LOW:!MD5:!DES:!3DES:!RC2:!RC4:!PSK:!kDH");
+ 	(void)SSL_CTX_set_mode(_ctx[sock], SSL_MODE_AUTO_RETRY);
  
  	if (certck) {
- 		SSL_CTX_set_verify(_ctx[sock], SSL_VERIFY_PEER, SSL_ck_verify_callback);

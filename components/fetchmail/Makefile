@@ -20,21 +20,22 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fetchmail
-COMPONENT_VERSION=	6.4.22
+COMPONENT_VERSION=	6.5.1
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-    sha256:cc6818bd59435602169fa292d6d163d56b21c7f53112829470a3aceabe612c84
-COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/$(COMPONENT_NAME)/files/branch_6.4/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_HASH=	\
+	sha256:ca3fdb95141c277aca109be77f4d45b47e03ee010043058dd90bc182db518d4a
+COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/$(COMPONENT_NAME)/files/branch_6.5/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://www.fetchmail.info/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	801
 
-COMPONENT_BAID=		108533
+COMPONENT_BAID=	190043
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
