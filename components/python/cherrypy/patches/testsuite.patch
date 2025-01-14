@@ -122,11 +122,11 @@ locking issue
  
      def test_static(self):
          self.getPage('/static/index.html')
---- CherryPy-18.8.0/cherrypy/test/test_session.py
-+++ CherryPy-18.8.0/cherrypy/test/test_session.py
+--- cherrypy-18.10.0/cherrypy/test/test_session.py
++++ cherrypy-18.10.0/cherrypy/test/test_session.py
 @@ -6,7 +6,7 @@ from http.client import HTTPConnection
  
- from distutils.spawn import find_executable
+ from shutil import which
  import pytest
 -from path import Path
 +from pathlib import Path
@@ -142,12 +142,18 @@ locking issue
  
  
  def http_methods_allowed(methods=['GET', 'HEAD']):
-@@ -147,11 +147,11 @@ class SessionTest(helper.CPWebCase):
+@@ -146,17 +146,12 @@ class SessionTest(helper.CPWebCase):
+     def teardown_class(cls):
          """Clean up sessions."""
          super(cls, cls).teardown_class()
+-        try:
+-            files_to_clean = localDir.iterdir()  # Python 3.8+
+-        except AttributeError:
+-            files_to_clean = localDir.listdir()  # Python 3.6-3.7
+-
          consume(
 -            file.remove_p()
--            for file in localDir.listdir()
+-            for file in files_to_clean
 -            if file.basename().startswith(
 +            os.unlink(file)
 +            for file in os.listdir(localDir)

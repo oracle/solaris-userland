@@ -7,9 +7,9 @@ https://github.com/jaraco/jaraco.collections
 
 Not intended for upstream.
 
---- CherryPy-18.9.0/cherrypy/lib/httputil.py
-+++ CherryPy-18.9.0/cherrypy/lib/httputil.py
-@@ -17,8 +17,6 @@ from email.header import decode_header
+--- cherrypy-18.10.0/cherrypy/lib/httputil.py
++++ cherrypy-18.10.0/cherrypy/lib/httputil.py
+@@ -16,8 +16,6 @@ from email.header import decode_header
  from http.server import BaseHTTPRequestHandler
  from urllib.parse import unquote_plus
  
@@ -17,8 +17,8 @@ Not intended for upstream.
 -
  import cherrypy
  from cherrypy._cpcompat import ntob, ntou
- 
-@@ -387,7 +385,69 @@ def parse_query_string(query_string, kee
+ from .headers import parse_header
+@@ -383,7 +381,69 @@ def parse_query_string(query_string, kee
      return pm
  
  
@@ -86,16 +86,16 @@ Not intended for upstream.
 +
 +
 +class CaseInsensitiveDict(KeyTransformingDict):
- 
      """A case-insensitive dict subclass.
  
---- CherryPy-18.9.0/setup.py
-+++ CherryPy-18.9.0/setup.py
+     Each key is changed on entry to title case.
+--- cherrypy-18.10.0/setup.py
++++ cherrypy-18.10.0/setup.py
 @@ -69,7 +69,6 @@ params = dict(
          'portend>=2.1.1',
          'more_itertools',
          'zc.lockfile',
 -        'jaraco.collections',
+         'importlib-metadata; python_version<="3.7"',
      ],
      extras_require={
-         'docs': [
