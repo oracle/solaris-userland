@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libexpat
-COMPONENT_VERSION=	2.6.3
+COMPONENT_VERSION=	2.6.4
 COMPONENT_PROJECT_URL=	https://libexpat.github.io/
 COMPONENT_SRC_NAME=	expat
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b8baef92f328eebcf731f4d18103951c61fa8c8ec21d5ff4202fb6f2198aeb2d
+    sha256:8dc480b796163d4436e6f1352e71800a774f73dbae213f1860b60607d2a83ada
 COMPONENT_ARCHIVE_URL= \
     http://downloads.sourceforge.net/project/expat/expat/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libexpat
 COMPONENT_ANITYA_ID=	770
-COMPONENT_BAID=		177514
+COMPONENT_BAID=		191238
 
 include $(WS_MAKE_RULES)/common.mk
 
