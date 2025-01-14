@@ -48,19 +48,17 @@
 +LDFLAGS0= 
  # Read my libs :-)
  LIBS=
- 
---- procmail-3.22/config.h.rhconfig	2001-09-10 22:53:50.000000000 -0600
-+++ procmail-3.22/config.h	2003-09-12 07:41:40.000000000 -0600
-@@ -35,7 +35,8 @@
+
+--- procmail-3.24/config.h.orig	2024-10-23 16:13:57.910003621 +0200
++++ procmail-3.24/config.h	2024-10-23 16:16:40.446476088 +0200
+@@ -35,6 +35,7 @@
   */
- /*#define DEFSPATH	"PATH=/bin:/usr/bin"			/* */
- /*#define DEFPATH	"PATH=$HOME/bin:/bin:/usr/bin"		/* */
--
-+#define DEFPATH	"PATH=$HOME/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin"		/* */
-+ 
+ /*#define DEFSPATH "PATH=/usr/local/bin:/bin:/usr/bin"			/* */
+ /*#define DEFPATH  "PATH=$HOME/bin:/usr/local/bin:/bin:/usr/bin"	/* */
++#define DEFPATH  "PATH=$HOME/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin"            /* */
+ 
  /* every environment variable appearing in PRESTENV will be set or wiped
   * out of the environment (variables without an '=' sign will be thrown
-  * out), e.g. you could define PRESTENV as follows:
 @@ -46,13 +47,13 @@
   */
  #define PRESTENV	{"IFS","ENV","PWD",0}
@@ -86,7 +84,7 @@
  				/* If you set LOCKINGTEST to a binary number
  	than there's no need to set these.  These #defines are only useful
  	if you want to disable particular locking styles but are unsure which
-@@ -91,14 +92,14 @@
+@@ -91,7 +92,7 @@
  	restriction does not apply to the /etc/procmailrc and
  	/etc/procmailrcs files) */
  
@@ -95,6 +93,7 @@
  				   NFS mounted filesystems and can't afford
  	procmail to sleep for 1 sec. before writing to an empty regular
  	mailbox.  This lets programs correctly judge whether there is unread
+@@ -98,7 +99,7 @@
  	mail present.  procmail automatically suppresses this when it isn't
  	needed or under heavy load. */
  

@@ -20,24 +20,22 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		procmail
-COMPONENT_VERSION=	3.22
+COMPONENT_VERSION=	3.24
 COMPONENT_PROJECT_URL=	http://www.procmail.org
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:087c75b34dd33d8b9df5afe9e42801c9395f4bf373a784d9bc97153b0062e117
+	sha256:514ea433339783e95df9321e794771e4887b9823ac55fdb2469702cf69bd3989
 COMPONENT_ANITYA_ID=	3713
 
 # ftp://ftp.procmail.org/pub/procmail/procmail-3.22.tar.gz no longer works.
-COMPONENT_ARCHIVE_URL=	ftp://ftp.fu-berlin.de/pub/unix/mail/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+COMPONENT_ARCHIVE_URL=	https://github.com/BuGlessRB/$(COMPONENT_NAME)/archive/refs/tags/v$(COMPONENT_VERSION).tar.gz
 
-
-COMPONENT_BAID=		7959
+COMPONENT_BAID=	185326	
 
 # Use libmapmalloc instead of libc malloc to avoid a huge heap
 # fragmentation caused by repeated reallocs with 16 kB increments.
