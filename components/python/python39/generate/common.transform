@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 
 # By default everything is in main package
@@ -28,3 +28,7 @@
 
 # Everything with tkinter in its path is in 'tkinter' package
 <transform hardlink file link path=.*tkinter.* -> set pkg.type tkinter>
+
+# Allow 64-bit objects in 32-bit paths
+<transform file path=usr/lib/python3.9/lib-dynload/.*\.so \
+	-> add pkg.linted.userland.action001.2 true>

@@ -20,15 +20,11 @@
 #
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 
-# Fix a problem with false positive unresolved dependency error.
-<transform file path=usr/lib/python3.9/(cProfile|platform|profile|pdb|trace|smtpd).py -> \
-    set pkg.depend.bypass-generate .*>
-<transform file path=usr/lib/python3.9/lib-dynload/.*\.so -> \
-    add pkg.linted.userland.action001.2 true>
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
+# Move all test related files behind the optional.test facet.
 <transform file path=.*/(idle_)?tests?/.* -> default facet.optional.test true>
 set name=pkg.fmri \
     value=pkg:/runtime/python-39@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
@@ -298,7 +294,7 @@ file path=usr/lib/python3.9/bdb.py
 file path=usr/lib/python3.9/binhex.py
 file path=usr/lib/python3.9/bisect.py
 file path=usr/lib/python3.9/bz2.py
-file path=usr/lib/python3.9/cProfile.py
+file path=usr/lib/python3.9/cProfile.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.9/calendar.py
 file path=usr/lib/python3.9/cgi.py
 file path=usr/lib/python3.9/cgitb.py
@@ -834,7 +830,8 @@ file path=usr/lib/python3.9/idlelib/percolator.py
 file path=usr/lib/python3.9/idlelib/pyparse.py
 # pkgdepend would (incorrectly) turn our conditional dependency on tkinter
 # into a require dependency.
-file path=usr/lib/python3.9/idlelib/pyshell.py pkg.depend.bypass-generate=.*
+file path=usr/lib/python3.9/idlelib/pyshell.py \
+    pkg.depend.bypass-generate=.*tkinter.*
 file path=usr/lib/python3.9/idlelib/query.py
 file path=usr/lib/python3.9/idlelib/redirector.py
 file path=usr/lib/python3.9/idlelib/replace.py
@@ -878,85 +875,164 @@ file path=usr/lib/python3.9/json/encoder.py
 file path=usr/lib/python3.9/json/scanner.py
 file path=usr/lib/python3.9/json/tool.py
 file path=usr/lib/python3.9/keyword.py
-file path=usr/lib/python3.9/lib-dynload/_asyncio.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_bisect.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_blake2.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_bz2.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_codecs_cn.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_codecs_hk.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_codecs_iso2022.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_codecs_jp.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_codecs_kr.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_codecs_tw.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_contextvars.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_crypt.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_csv.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_ctypes.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_ctypes_test.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_curses.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_curses_panel.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_datetime.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_dbm.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_decimal.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_elementtree.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_gdbm.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_hashlib.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_heapq.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_json.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_lsprof.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_lzma.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_md5.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_multibytecodec.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_multiprocessing.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_opcode.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_pickle.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_posixshmem.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_posixsubprocess.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_queue.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_random.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_sha1.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_sha256.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_sha3.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_sha512.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_socket.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_sqlite3.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_ssl.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_statistics.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_struct.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_testbuffer.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_testcapi.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_testimportmultiple.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_testinternalcapi.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_testmultiphase.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_uuid.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_xxsubinterpreters.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_xxtestfuzz.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/_zoneinfo.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/array.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/audioop.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/binascii.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/cmath.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/dlpi.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/fcntl.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/grp.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/math.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/mmap.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/nis.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/ossaudiodev.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/parser.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/privileges.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/pyexpat.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/rbac.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/readline.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/resource.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/select.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/spwd.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/syslog.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/termios.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/ucred.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/unicodedata.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/xxlimited.cpython-39.so
-file path=usr/lib/python3.9/lib-dynload/zlib.cpython-39.so
+file path=usr/lib/python3.9/lib-dynload/_asyncio.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_bisect.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_blake2.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_bz2.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_codecs_cn.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_codecs_hk.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_codecs_iso2022.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_codecs_jp.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_codecs_kr.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_codecs_tw.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_contextvars.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_crypt.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_csv.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_ctypes.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_ctypes_test.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_curses.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_curses_panel.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_datetime.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_dbm.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_decimal.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_elementtree.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_gdbm.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_hashlib.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_heapq.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_json.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_lsprof.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_lzma.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_md5.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_multibytecodec.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_multiprocessing.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_opcode.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_pickle.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_posixshmem.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_posixsubprocess.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_queue.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_random.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_sha1.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_sha256.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_sha3.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_sha512.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_socket.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_sqlite3.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_ssl.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_statistics.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_struct.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_testbuffer.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_testcapi.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_testimportmultiple.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_testinternalcapi.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_testmultiphase.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_uuid.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_xxsubinterpreters.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_xxtestfuzz.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/_zoneinfo.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/array.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/audioop.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/binascii.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/cmath.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/dlpi.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/fcntl.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/grp.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/math.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/mmap.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/nis.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/ossaudiodev.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/parser.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/privileges.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/pyexpat.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/rbac.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/readline.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/resource.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/select.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/spwd.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/syslog.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/termios.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/ucred.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/unicodedata.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/xxlimited.cpython-39.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.9/lib-dynload/zlib.cpython-39.so \
+    pkg.linted.userland.action001.2=true
 file path=usr/lib/python3.9/lib2to3/Grammar$(COMPONENT_VERSION).final.0.pickle
 file path=usr/lib/python3.9/lib2to3/Grammar.txt
 file path=usr/lib/python3.9/lib2to3/PatternGrammar$(COMPONENT_VERSION).final.0.pickle
@@ -1040,9 +1116,8 @@ file path=usr/lib/python3.9/lib2to3/tests/data/README
 file path=usr/lib/python3.9/lib2to3/tests/data/bom.py pkg.tmp.autopyc=false
 file path=usr/lib/python3.9/lib2to3/tests/data/crlf.py pkg.tmp.autopyc=false
 #
-# The {different,false}_encoding.py files needs bypass-generate because they
-# contains an intentional SyntaxError with a invalid string that cannot be
-# parsed.
+# The {different,false}_encoding.py files need a bypass-generate because they
+# intentionally contain python 2 code which python 3 reports as Syntax Error.
 #
 file path=usr/lib/python3.9/lib2to3/tests/data/different_encoding.py \
     pkg.depend.bypass-generate=.* pkg.tmp.autopyc=false
@@ -1128,17 +1203,17 @@ file path=usr/lib/python3.9/operator.py
 file path=usr/lib/python3.9/optparse.py
 file path=usr/lib/python3.9/os.py
 file path=usr/lib/python3.9/pathlib.py
-file path=usr/lib/python3.9/pdb.py
+file path=usr/lib/python3.9/pdb.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.9/pickle.py
 file path=usr/lib/python3.9/pickletools.py
 file path=usr/lib/python3.9/pipes.py
 file path=usr/lib/python3.9/pkgutil.py
-file path=usr/lib/python3.9/platform.py
+file path=usr/lib/python3.9/platform.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.9/plistlib.py
 file path=usr/lib/python3.9/poplib.py
 file path=usr/lib/python3.9/posixpath.py
 file path=usr/lib/python3.9/pprint.py
-file path=usr/lib/python3.9/profile.py
+file path=usr/lib/python3.9/profile.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.9/pstats.py
 file path=usr/lib/python3.9/pty.py
 file path=usr/lib/python3.9/py_compile.py
@@ -1164,7 +1239,7 @@ file path=usr/lib/python3.9/signal.py
 file path=usr/lib/python3.9/site-packages/README.txt
 file path=usr/lib/python3.9/site-packages/vendor-packages.pth
 file path=usr/lib/python3.9/site.py
-file path=usr/lib/python3.9/smtpd.py
+file path=usr/lib/python3.9/smtpd.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.9/smtplib.py
 file path=usr/lib/python3.9/sndhdr.py
 file path=usr/lib/python3.9/socket.py
@@ -2342,7 +2417,7 @@ file path=usr/lib/python3.9/threading.py
 file path=usr/lib/python3.9/timeit.py
 file path=usr/lib/python3.9/token.py
 file path=usr/lib/python3.9/tokenize.py
-file path=usr/lib/python3.9/trace.py
+file path=usr/lib/python3.9/trace.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.9/traceback.py
 file path=usr/lib/python3.9/tracemalloc.py
 file path=usr/lib/python3.9/tty.py
@@ -2350,7 +2425,8 @@ file path=usr/lib/python3.9/turtle.py
 file path=usr/lib/python3.9/turtledemo/__init__.py
 # pkgdepend would (incorrectly) turn our conditional dependency on tkinter
 # into a require dependency.
-file path=usr/lib/python3.9/turtledemo/__main__.py pkg.depend.bypass-generate=.*
+file path=usr/lib/python3.9/turtledemo/__main__.py \
+    pkg.depend.bypass-generate=.*tkinter.*
 file path=usr/lib/python3.9/turtledemo/bytedesign.py
 file path=usr/lib/python3.9/turtledemo/chaos.py
 file path=usr/lib/python3.9/turtledemo/clock.py
@@ -2492,5 +2568,3 @@ file path=usr/share/man/man1/python3.9.1
 license python39.license license=PSFv2
 depend type=require fmri=pkg:/runtime/python-39-incorporation
 depend type=require fmri=pkg:/system/library/iconv
-# Temporary dependency on our fork of xdrlib to ease the ON transition.
-depend type=require fmri=pkg:/system/library/python/solaris-xdrlib-39

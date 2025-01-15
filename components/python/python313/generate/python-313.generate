@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -71,26 +71,28 @@
 <transform link path=usr/lib/pkgconfig/python-3.13.pc \
 	-> emit link path=usr/lib/pkgconfig/python3.pc target=python-3.13.pc mediator=python3 mediator-version=3.13>
 
-# Add pkg.linted.userland.action variables
-<transform file path=usr/lib/python3.13/config-3.13/python.o -> set pkg.linted.userland.action001.2 true>
+# Allow 64-bit objects in 32-bit paths
+<transform file path=usr/lib/python3.13/config-3.13/python.o$ \
+	-> set pkg.linted.userland.action001.2 true>
 
 # Add mediated libpython3.so
 <transform file path=.*/libpython3.so$ -> set action.hash %(path)>
 <transform file path=.*/libpython3.so$ -> edit path libpython3.so libpython3-313.so>
 <transform file path=.*/libpython3-313.so$ \
-       -> emit link path=usr/lib/$(MACH64)/libpython3.so target=libpython3-313.so mediator=python3 mediator-version=3.13>
+	-> emit link path=usr/lib/$(MACH64)/libpython3.so target=libpython3-313.so mediator=python3 mediator-version=3.13>
 
 # move and rename ln lib
 <transform file path=.*/llib-lpython313.ln -> set action.hash \$\(MACH64\)/llib-lpython313.ln>
 <transform file path=(.*)/llib-lpython313.ln -> set path %<1>/llib-lpython3.13.ln>
 
-# remove incorrect conditional dependency on tkinter
-<transform file path=.*/idlelib/pyshell.py -> set pkg.depend.bypass-generate .*>
-<transform file path=.*/turtledemo/__main__.py -> set pkg.depend.bypass-generate .*>
-
-<transform file path=.*/(different_encoding|false_encoding|pytree_idempotency).py \
-	-> set pkg.depend.bypass-generate .*>
-
 # remove dtrace related tests as they won't work on Solaris (see 30640154)
 <transform file path=.*/test/test_dtrace.py$ -> drop>
 <transform file path=.*/test/dtracedata/.* -> drop>
+
+# ignore false positive unresolved dependency errors
+<transform file path=usr/lib/python3.13/(cProfile|platform|profile|pdb|trace|test/support/smtpd).py \
+	-> set pkg.depend.bypass-generate .*>
+
+# remove optional dependency on tkinter
+<transform file path=.*/idlelib/pyshell.py -> set pkg.depend.bypass-generate .*tkinter.*>
+<transform file path=.*/turtledemo/__main__.py -> set pkg.depend.bypass-generate .*tkinter.*>

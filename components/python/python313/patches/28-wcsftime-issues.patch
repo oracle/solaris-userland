@@ -1,0 +1,101 @@
+Many tests will fail with non-Unicode locale due to a bug in wcsftime (see 37153811).
+
+Also, Solaris has different amount of ERAs for Japanese locales.
+This was offered and accepted upstream:
+https://github.com/python/cpython/issues/126727
+
+Other recent strptime/wcsftime issues were solved with upstream here:
+https://github.com/python/cpython/issues/53203
+
+--- Python-3.13.1/Lib/test/test_strptime.py
++++ Python-3.13.1/Lib/test/test_strptime.py
+@@ -329,7 +329,7 @@ class StrptimeTests(unittest.TestCase):
+         # Test for month directives
+         self.roundtrip('%m', 1)
+ 
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP', 'he_IL', '')
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR.UTF-8', 'de_DE.UTF-8', 'ja_JP.UTF-8', 'he_IL.UTF-8', '')
+     def test_month_locale(self):
+         # Test for month directives
+         self.roundtrip('%B', 1)
+@@ -347,7 +347,7 @@ class StrptimeTests(unittest.TestCase):
+         self.roundtrip('%H', 3)
+ 
+     # NB: Only works on locales with AM/PM
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'ja_JP')
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'ja_JP.UTF-8')
+     def test_hour_locale(self):
+         # Test hour directives
+         self.roundtrip('%I %p', 3)
+@@ -372,7 +372,7 @@ class StrptimeTests(unittest.TestCase):
+         self.roundtrip('%w', 6)
+         self.roundtrip('%u', 6)
+ 
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP', '')
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP.UTF-8', '')
+     def test_weekday_locale(self):
+         # Test weekday directives
+         self.roundtrip('%A', 6)
+@@ -489,8 +489,8 @@ class StrptimeTests(unittest.TestCase):
+     #
+     # BUG: Generates regexp that does not match the current date and time
+     # for lzh_TW.
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP',
+-                      'he_IL', 'eu_ES', 'ar_AE', 'mfe_MU', 'yo_NG',
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR.UTF-8', 'de_DE.UTF-8', 'ja_JP.UTF-8',
++                      'he_IL.UTF-8', 'eu_ES', 'ar_AE', 'mfe_MU', 'yo_NG',
+                       'csb_PL', 'br_FR', 'gez_ET', 'brx_IN',
+                       'my_MM', 'or_IN', 'shn_MM', 'az_IR')
+     def test_date_time_locale(self):
+@@ -516,8 +516,8 @@ class StrptimeTests(unittest.TestCase):
+     # NB: Dates before 1969 do not roundtrip on some locales:
+     # az_IR, bo_CN, bo_IN, dz_BT, eu_ES, eu_FR, fa_IR, or_IN.
+     @support.run_with_tz('STD-1DST,M4.1.0,M10.1.0')
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP',
+-                      'he_IL', 'ar_AE', 'mfe_MU', 'yo_NG',
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR.UTF-8', 'de_DE.UTF-8', 'ja_JP.UTF-8',
++                      'he_IL.UTF-8', 'ar_AE', 'mfe_MU', 'yo_NG',
+                       'csb_PL', 'br_FR', 'gez_ET', 'brx_IN',
+                       'my_MM', 'shn_MM')
+     def test_date_time_locale2(self):
+@@ -533,7 +533,7 @@ class StrptimeTests(unittest.TestCase):
+     # lo_LA, thai, th_TH. On Windows: ar_IN, ar_SA, fa_IR, ps_AF.
+     # BUG: Generates regexp that does not match the current date
+     # for lzh_TW.
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP',
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP.UTF-8',
+                       'he_IL', 'eu_ES', 'ar_AE',
+                       'az_IR', 'my_MM', 'or_IN', 'shn_MM')
+     def test_date_locale(self):
+@@ -554,7 +554,7 @@ class StrptimeTests(unittest.TestCase):
+         support.is_emscripten or support.is_wasi,
+         "musl libc issue on Emscripten, bpo-46390"
+     )
+-    @run_with_locales('LC_TIME', 'en_US', 'fr_FR', 'de_DE', 'ja_JP',
++    @run_with_locales('LC_TIME', 'en_US', 'fr_FR', 'de_DE', 'ja_JP.UTF-8',
+                       'eu_ES', 'ar_AE', 'my_MM', 'shn_MM')
+     def test_date_locale2(self):
+         # Test %x directive
+@@ -572,7 +572,7 @@ class StrptimeTests(unittest.TestCase):
+     # * Hours are in 12-hour notation without AM/PM indication: hy_AM,
+     #   ms_MY, sm_WS.
+     # BUG: Generates regexp that does not match the current time for lzh_TW.
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP',
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP.UTF-8',
+                       'aa_ET', 'am_ET', 'az_IR', 'byn_ER', 'fa_IR', 'gez_ET',
+                       'my_MM', 'om_ET', 'or_IN', 'shn_MM', 'sid_ET', 'so_SO',
+                       'ti_ET', 'tig_ER', 'wal_ET')
+--- Python-3.13.1/Lib/test/test__locale.py
++++ Python-3.13.1/Lib/test/test__locale.py
+@@ -102,6 +102,11 @@ def accept(loc):
+     # ps_AF doesn't work on Windows: see bpo-38324 (msg361830)
+     del known_numerics['ps_AF']
+ 
++if sys.platform == 'sunos5':
++    # On Solaris, Japanese ERAs start with the year 1927,
++    # and thus there's less of them.
++    known_era['ja_JP'] = (5, '+:1:2019/05/01:2019/12/31:令和:%EC元年')
++
+ class _LocaleTests(unittest.TestCase):
+ 
+     def setUp(self):

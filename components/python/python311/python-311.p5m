@@ -20,15 +20,11 @@
 #
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 
-# Fix a problem with false positive unresolved dependency error.
-<transform file path=usr/lib/python3.11/(cProfile|platform|profile|pdb|trace|smtpd).py -> \
-    set pkg.depend.bypass-generate .*>
-<transform file path=usr/lib/python3.11/lib-dynload/.*\.so -> \
-    add pkg.linted.userland.action001.2 true>
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
+# Move all test related files behind the optional.test facet.
 <transform file path=.*/(idle_)?tests?/.* -> default facet.optional.test true>
 set name=pkg.fmri \
     value=pkg:/runtime/python-311@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
@@ -335,7 +331,7 @@ file path=usr/lib/python3.11/base64.py
 file path=usr/lib/python3.11/bdb.py
 file path=usr/lib/python3.11/bisect.py
 file path=usr/lib/python3.11/bz2.py
-file path=usr/lib/python3.11/cProfile.py
+file path=usr/lib/python3.11/cProfile.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.11/calendar.py
 file path=usr/lib/python3.11/cgi.py
 file path=usr/lib/python3.11/cgitb.py
@@ -867,7 +863,8 @@ file path=usr/lib/python3.11/idlelib/percolator.py
 file path=usr/lib/python3.11/idlelib/pyparse.py
 # pkgdepend would (incorrectly) turn our conditional dependency on tkinter
 # into a require dependency.
-file path=usr/lib/python3.11/idlelib/pyshell.py pkg.depend.bypass-generate=.*
+file path=usr/lib/python3.11/idlelib/pyshell.py \
+    pkg.depend.bypass-generate=.*tkinter.*
 file path=usr/lib/python3.11/idlelib/query.py
 file path=usr/lib/python3.11/idlelib/redirector.py
 file path=usr/lib/python3.11/idlelib/replace.py
@@ -926,87 +923,168 @@ file path=usr/lib/python3.11/json/encoder.py
 file path=usr/lib/python3.11/json/scanner.py
 file path=usr/lib/python3.11/json/tool.py
 file path=usr/lib/python3.11/keyword.py
-file path=usr/lib/python3.11/lib-dynload/_asyncio.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_bisect.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_blake2.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_bz2.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_codecs_cn.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_codecs_hk.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_codecs_iso2022.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_codecs_jp.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_codecs_kr.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_codecs_tw.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_contextvars.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_crypt.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_csv.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_ctypes.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_ctypes_test.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_curses.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_curses_panel.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_datetime.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_dbm.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_decimal.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_elementtree.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_gdbm.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_hashlib.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_heapq.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_json.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_lsprof.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_lzma.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_md5.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_multibytecodec.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_multiprocessing.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_opcode.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_pickle.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_posixshmem.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_posixsubprocess.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_queue.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_random.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_sha1.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_sha256.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_sha3.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_sha512.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_socket.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_sqlite3.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_ssl.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_statistics.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_struct.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_testbuffer.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_testcapi.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_testclinic.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_testimportmultiple.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_testinternalcapi.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_testmultiphase.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_typing.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_uuid.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_xxsubinterpreters.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_xxtestfuzz.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/_zoneinfo.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/array.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/audioop.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/binascii.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/cmath.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/dlpi.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/fcntl.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/grp.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/math.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/mmap.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/nis.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/ossaudiodev.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/privileges.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/pyexpat.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/rbac.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/readline.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/resource.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/select.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/spwd.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/syslog.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/termios.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/ucred.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/unicodedata.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/xxlimited.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/xxlimited_35.cpython-311.so
-file path=usr/lib/python3.11/lib-dynload/zlib.cpython-311.so
+file path=usr/lib/python3.11/lib-dynload/_asyncio.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_bisect.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_blake2.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_bz2.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_codecs_cn.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_codecs_hk.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_codecs_iso2022.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_codecs_jp.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_codecs_kr.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_codecs_tw.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_contextvars.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_crypt.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_csv.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_ctypes.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_ctypes_test.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_curses.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_curses_panel.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_datetime.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_dbm.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_decimal.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_elementtree.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_gdbm.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_hashlib.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_heapq.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_json.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_lsprof.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_lzma.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_md5.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_multibytecodec.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_multiprocessing.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_opcode.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_pickle.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_posixshmem.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_posixsubprocess.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_queue.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_random.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_sha1.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_sha256.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_sha3.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_sha512.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_socket.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_sqlite3.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_ssl.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_statistics.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_struct.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_testbuffer.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_testcapi.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_testclinic.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_testimportmultiple.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_testinternalcapi.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_testmultiphase.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_typing.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_uuid.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_xxsubinterpreters.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_xxtestfuzz.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/_zoneinfo.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/array.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/audioop.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/binascii.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/cmath.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/dlpi.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/fcntl.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/grp.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/math.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/mmap.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/nis.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/ossaudiodev.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/privileges.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/pyexpat.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/rbac.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/readline.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/resource.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/select.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/spwd.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/syslog.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/termios.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/ucred.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/unicodedata.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/xxlimited.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/xxlimited_35.cpython-311.so \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/python3.11/lib-dynload/zlib.cpython-311.so \
+    pkg.linted.userland.action001.2=true
 file path=usr/lib/python3.11/lib2to3/Grammar$(COMPONENT_VERSION).final.0.pickle
 file path=usr/lib/python3.11/lib2to3/Grammar.txt
 file path=usr/lib/python3.11/lib2to3/PatternGrammar$(COMPONENT_VERSION).final.0.pickle
@@ -1089,6 +1167,10 @@ file path=usr/lib/python3.11/lib2to3/tests/__main__.py
 file path=usr/lib/python3.11/lib2to3/tests/data/README
 file path=usr/lib/python3.11/lib2to3/tests/data/bom.py pkg.tmp.autopyc=false
 file path=usr/lib/python3.11/lib2to3/tests/data/crlf.py pkg.tmp.autopyc=false
+#
+# The {different,false}_encoding.py files need a bypass-generate because they
+# intentionally contain python 2 code which python 3 reports as Syntax Error.
+#
 file path=usr/lib/python3.11/lib2to3/tests/data/different_encoding.py \
     pkg.depend.bypass-generate=.* pkg.tmp.autopyc=false
 file path=usr/lib/python3.11/lib2to3/tests/data/false_encoding.py \
@@ -1117,11 +1199,6 @@ file path=usr/lib/python3.11/lib2to3/tests/data/py2_test_grammar.py \
     pkg.tmp.autopyc=false
 file path=usr/lib/python3.11/lib2to3/tests/data/py3_test_grammar.py \
     pkg.tmp.autopyc=false
-#
-# The {different,false}_encoding.py files needs bypass-generate because they
-# contains an intentional SyntaxError with a invalid string that cannot be
-# parsed.
-#
 #
 # bypass-generate needed due to issue with __main__.
 #
@@ -1178,17 +1255,17 @@ file path=usr/lib/python3.11/operator.py
 file path=usr/lib/python3.11/optparse.py
 file path=usr/lib/python3.11/os.py
 file path=usr/lib/python3.11/pathlib.py
-file path=usr/lib/python3.11/pdb.py
+file path=usr/lib/python3.11/pdb.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.11/pickle.py
 file path=usr/lib/python3.11/pickletools.py
 file path=usr/lib/python3.11/pipes.py
 file path=usr/lib/python3.11/pkgutil.py
-file path=usr/lib/python3.11/platform.py
+file path=usr/lib/python3.11/platform.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.11/plistlib.py
 file path=usr/lib/python3.11/poplib.py
 file path=usr/lib/python3.11/posixpath.py
 file path=usr/lib/python3.11/pprint.py
-file path=usr/lib/python3.11/profile.py
+file path=usr/lib/python3.11/profile.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.11/pstats.py
 file path=usr/lib/python3.11/pty.py
 file path=usr/lib/python3.11/py_compile.py
@@ -1218,7 +1295,7 @@ file path=usr/lib/python3.11/signal.py
 file path=usr/lib/python3.11/site-packages/README.txt
 file path=usr/lib/python3.11/site-packages/vendor-packages.pth
 file path=usr/lib/python3.11/site.py
-file path=usr/lib/python3.11/smtpd.py
+file path=usr/lib/python3.11/smtpd.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.11/smtplib.py
 file path=usr/lib/python3.11/sndhdr.py
 file path=usr/lib/python3.11/socket.py
@@ -2622,7 +2699,7 @@ file path=usr/lib/python3.11/tomllib/__init__.py
 file path=usr/lib/python3.11/tomllib/_parser.py
 file path=usr/lib/python3.11/tomllib/_re.py
 file path=usr/lib/python3.11/tomllib/_types.py
-file path=usr/lib/python3.11/trace.py
+file path=usr/lib/python3.11/trace.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.11/traceback.py
 file path=usr/lib/python3.11/tracemalloc.py
 file path=usr/lib/python3.11/tty.py
@@ -2631,7 +2708,7 @@ file path=usr/lib/python3.11/turtledemo/__init__.py
 # pkgdepend would (incorrectly) turn our conditional dependency on tkinter
 # into a require dependency.
 file path=usr/lib/python3.11/turtledemo/__main__.py \
-    pkg.depend.bypass-generate=.*
+    pkg.depend.bypass-generate=.*tkinter.*
 file path=usr/lib/python3.11/turtledemo/bytedesign.py
 file path=usr/lib/python3.11/turtledemo/chaos.py
 file path=usr/lib/python3.11/turtledemo/clock.py
@@ -2761,5 +2838,3 @@ file path=usr/share/man/man1/python3.11.1
 license python311.license license=PSFv2
 depend type=require fmri=pkg:/runtime/python-311-incorporation
 depend type=require fmri=pkg:/system/library/iconv
-# Temporary dependency on our fork of xdrlib to ease the ON transition.
-depend type=require fmri=pkg:/system/library/python/solaris-xdrlib-311
