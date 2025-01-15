@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xdebug
-COMPONENT_VERSION=	3.3.0
+COMPONENT_VERSION=	3.4.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:46f839657ff1c42d45a209e5e760a9d96c97fe66f3168ff92754de5a9ca40228
+	sha256:89667b8d04aaf04c023eb109900e1cce97ca39f97f2f3f24199630cc0e1cc77d
 COMPONENT_ARCHIVE_URL=	http://xdebug.org/files/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://xdebug.org/
 COMPONENT_BUGDB=	utility/php
 COMPONENT_ANITYA_ID=	13302
 
-COMPONENT_BAID=		155315
+COMPONENT_BAID=		190415
 
 TEST_TARGET= $(NO_TESTS)
 include $(PHP_TOP_DIR)/phpize.mk
@@ -50,3 +50,4 @@ REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/php-81
 REQUIRED_PACKAGES += web/php-82
 REQUIRED_PACKAGES += web/php-83
+REQUIRED_PACKAGES += web/php-84
