@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 
 #
@@ -62,7 +62,8 @@ COPYRIGHT_TEMPLATE =		$(WS_TOP)/transforms/copyright-template
 GENERATE_TRANSFORMS +=		$(WS_TOP)/transforms/generate-cleanup
 MANIFEST_CLEANUP_TRANSFORM +=   $(WS_TOP)/transforms/manifest-check-cleanup
 
-PKGMOGRIFY_TRANSFORMS +=	$(WS_TOP)/transforms/libtool-drop
+PKGMOGRIFY_TRANSFORMS_LIBTOOL_DROP = $(WS_TOP)/transforms/libtool-drop
+PKGMOGRIFY_TRANSFORMS +=	$(PKGMOGRIFY_TRANSFORMS_LIBTOOL_DROP)
 
 COMPARISON_TRANSFORMS +=	$(WS_TOP)/transforms/comparison-cleanup
 COMPARISON_TRANSFORMS +=	$(PKGMOGRIFY_TRANSFORMS)

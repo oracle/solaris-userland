@@ -1,18 +1,21 @@
 cd /var/tmp
 
-identify --version # see we have correct version installed
+magick identify --version # see we have correct version installed
 
-convert -list font | wc -l  # ~ 200 lines of output
+magick identify -list format # should output extensive list
+
+magick -list font | wc -l  # over 2000 lines of output
 
 # Make sure that all the config files can be found. The next line should print
 # no output
-for i in $(convert -list list); do convert -list $i; done 2>&1 | grep 'convert: unable to access'
+for i in $(magick -list list); do magick -list $i; done 2>&1 |
+grep 'convert: unable to access'
 
 # List all xml files opened during the operation. Both files found and not
 # found
 A=$(
-   for i in $(convert -list list); do
-      truss -'t!all' -t open convert -list $i
+   for i in $(magick -list list); do
+      truss -'t!all' -t open magick -list $i
    done 2>&1 |
    grep ".xml\"," |
    sed -e 's,.*/,,' |
@@ -27,40 +30,43 @@ NOT_FOUND=$( ggrep -v -P '\d$' <<<"$A" | sed -e 's/".*//' )
 # display it's name. The output should be empty
 ggrep -F -x -v -f <(echo "$FOUND") <(echo "$NOT_FOUND")
 
-convert -size 170x100 xc:black \
-   -fill white -draw 'circle 50,50 13,50' \
-   -draw 'circle 120,50 157,50' \
-   -draw 'rectangle 50,13 120,87' \
-   -fill black -draw 'circle 50,50 25,50' \
-   -draw 'circle 120,50 145,50' \
-   -draw 'rectangle 50,25 120,75' \
-   -fill white -draw 'circle 60,50 40,50' \
-   -draw 'circle 110,50 130,50' \
-   -draw 'rectangle 60,30 110,70' \
-   -gaussian 1x1 +matte logo_mask.png
+# Ensure that both Purisa and DejaVu-Sans font is available for the next tests
+magick -list font | ggrep -E 'Font: (Purisa|DejaVu-Sans)$'
 
-convert logo_mask.png -background red -alpha shape \
-   -font Times-Roman -pointsize 36 -fill white -stroke black \
-   -gravity Center -annotate 0 "Ant" \
-   logo.png
+# Following commands are taken from https://usage.imagemagick.org/advanced/#3d-logos
+magick -size 170x100 xc:black \
+        -fill white -draw 'circle    50,50  13,50' \
+                    -draw 'circle   120,50 157,50' \
+                    -draw 'rectangle 50,13 120,87' \
+        -fill black -draw 'circle    50,50  25,50' \
+                    -draw 'circle   120,50 145,50' \
+                    -draw 'rectangle 50,25 120,75' \
+        -fill white -draw 'circle    60,50  40,50' \
+                    -draw 'circle   110,50 130,50' \
+                    -draw 'rectangle 60,30 110,70' \
+        -gaussian-blur 1x1 -alpha off logo_mask.png
 
-convert logo.png -alpha extract -blur 0x6 -shade 110x30 -normalize \
-   logo.png -compose Overlay -composite \
-   logo.png -alpha on -compose Dst_In -composite \
-   logo_3D.png
+magick logo_mask.png -background red -alpha shape \
+        -font Purisa  -pointsize 36  -fill white  -stroke black \
+        -gravity Center  -annotate 0 "Ant" \
+        logo.png
 
-convert logo_3D.png \( +clone -background navy -shadow 80x4+6+6 \) \
-   +swap -background none -layers merge +repage logo_3D_shadowed.png
+magick logo.png  -alpha extract -blur 0x6  -shade 110x30  -normalize \
+        logo.png  -compose Overlay -composite \
+        logo.png  -alpha on  -compose Dst_In  -composite \
+        logo_3D.png
 
-convert logo_3D_shadowed.png \
-    \( +clone +repage -alpha off -fx 'rand()' -shade 120x30 \
-    -fill grey70 -colorize 60 \
-    -fill lavender -tint 100 \) \
-    +swap -composite logo_3D_bg.jpg
+magick logo_3D.png \( +clone -background navy -shadow 80x4+6+6 \) +swap \
+        -background none  -layers merge +repage logo_3D_shadowed.png
+
+magick logo_3D_shadowed.png \
+        \( +clone +repage -alpha off -fx 'rand()' -shade 120x30 \
+           -fill grey70 -colorize 60 \
+           -fill lavender -tint 100 \) \
+        +swap -composite logo_3D_bg.jpg
 
 # Now compare logo_3D_bg.jpg to the image at
 # http://www.imagemagick.org/Usage/advanced/#3d-logos
-
 
 cat > a.pl <<'EOT'
 #!/usr/bin/perl
@@ -82,7 +88,7 @@ $image->Draw(primitive=>'Polygon',fill=>'none',stroke=>'black',strokewidth=>5,
 $image->FloodfillPaint(geometry=>'+132+62',fill=>'blue',bordercolor=>'black',
   invert=>'true');
 
-$image->Annotate(fill=>'red',geometry=>'+280+120',font=>'Generic.ttf',
+$image->Annotate(fill=>'red',geometry=>'+280+120',font=>'DejaVu-Sans',
   pointsize=>14,text=>''.localtime(),rotate=>90.0);
 
 $image->Write('shapes.gif');

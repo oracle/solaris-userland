@@ -20,101 +20,60 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64_and_32
-COMPILER=gcc
+
+BUILD_BITS=		64
+COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ImageMagick
-COMPONENT_VERSION=	6.9.13
-COMPONENT_MAJOR_VERSION=$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.[0-9]\+\.[0-9]\+/\1/')
-COMPONENT_SUBVERSION=	11
-HUMAN_VERSION=		$(COMPONENT_VERSION)-$(COMPONENT_SUBVERSION)
+COMPONENT_VERSION=	7.1.1-43
 COMPONENT_PROJECT_URL=	https://www.imagemagick.org/
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-$(COMPONENT_SUBVERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:5bb0b13528e0761d8d9bc7134093a9f6d96ade0e3bbbf172b85787a14ee11172
-COMPONENT_ARCHIVE_URL=	https://download.imagemagick.org/archive/releases/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
+COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
+COMPONENT_ARCHIVE_HASH=	sha256:ceb972266b23dc7c1cfce0da5a7f0c9acfb4dc81f40eb542a49476fedbc2618f
+COMPONENT_ARCHIVE_URL=	https://github.com/ImageMagick/ImageMagick/archive/refs/tags/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/imagemagick
 COMPONENT_ANITYA_ID=	1372
 
-COMPONENT_BAID=		167741
+COMPONENT_BAID=		191495
 
-# Enable adiheap security extension.
-# adistack fails with libgcc exception unwinding code.
+IPS_COMPONENT_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/-/./')
+COMPONENT_MAJOR_VERSION=$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\..*//')
+COMPONENT_BASE_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/-.*//')
+
+# Enable ADI security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
-ADISTACK_MODE =	$(ADISTACK_DISABLE)
+ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 include $(WS_MAKE_RULES)/common.mk
 
-PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
-
-ifeq   ($(strip $(PARFAIT_BUILD)),yes)
-CFLAGS += -U__i386__ -U__x86_64__
-CXXFLAGS += -U__i386__ -U__x86_64__
-endif
-
-# IPS_COMPONENT_VERSION is by default set to $(COMPONENT_VERSION) but in
-# this case we need to replace the '-' by '.'.
-IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).$(COMPONENT_SUBVERSION)
-
-# To get the Perl modules built it is necessary to copy the PerlMagick
-# directory to the build directory
-COMPONENT_PRE_CONFIGURE_ACTION += ($(CP) -R $(SOURCE_DIR)/PerlMagick $(@D))
-
-# Don't use rpath, or relink!
-COMPONENT_POST_CONFIGURE_ACTION = \
-        (cd $(BUILD_DIR_$(BITS)) ; \
-        $(GSED) -i \
-	-e 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' \
-	-e 's|need_relink=yes|need_relink=not_on_solaris|' \
-	libtool)
-
-LIBS += $(LIBSOCKET) $(LIBNSL)
-CONFIGURE_ENV += LIBS="$(LIBS)"
-
-# Prevent older versions of libMagick{Core,Wand}-6.Q16.so from the build
-# machine from being found ahead of new versions from the proto area.
-LD_OPTIONS_SO=		-L. -L../../magick/.libs
-COMPONENT_BUILD_ENV +=	LD_OPTIONS_SO="$(LD_OPTIONS_SO)"
-
-# To remove the compiler complaints about __restrict keyword,
-# -D_magickcore_restrict should be used.
-CPPFLAGS_USER += -D_magickcore_restrict=
-CONFIGURE_ENV += CPPFLAGS_USER=$(CPPFLAGS_USER)
-
 CONFIGURE_OPTIONS+= --with-modules
-CONFIGURE_OPTIONS+= --enable-shared
 CONFIGURE_OPTIONS+= --disable-static
+CONFIGURE_OPTIONS+= --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS+= --with-fftw
 CONFIGURE_OPTIONS+= --with-gslib
 CONFIGURE_OPTIONS+= --with-rsvg
-CONFIGURE_OPTIONS+= --x-libraries=$(CONFIGURE_LIBDIR.$(BITS)) 
-# 32bit platforms has limited address space, Sparcv7 unit tests fail
-CONFIGURE_OPTIONS.32+= --disable-openmp
-CONFIGURE_OPTIONS.32+= --without-perl
-CONFIGURE_OPTIONS.64+= --with-perl=$(PERL)
-CONFIGURE_OPTIONS.64+= --with-perl-options="INSTALLDIRS=vendor"
+CONFIGURE_OPTIONS+= --with-perl=$(PERL)
 
-# Tests hang waiting for input unless stdin is redirected.
-COMPONENT_TEST_TARGETS = check < /dev/null
+# Remove wrong RUNPATH and RPATH
+COMPONENT_POST_INSTALL_ACTION = (\
+	p=$$($(PERL) -E 'use Config; say "$(PROTO_DIR)" . \
+		"$$Config{sitelib}/$$Config{archname}/auto/Image/Magick"'); \
+	for i in $$p/Magick.so $$p/Q16HDRI/Q16HDRI.so; do \
+		$(CHMOD) +w $$i; \
+		$(ELFEDIT) -e "dyn:delete RUNPATH" -e "dyn:delete RPATH" $$i; \
+	done);
 
-# Master test transforms
-COMPONENT_TEST_TRANSFORMS += \
-	'-n '\
-	'-e "/TOTAL/p" ' \
-	'-e "/SKIP/p" ' \
-	'-e "/PASS/p" ' \
-	'-e "/FAIL/p" ' \
-	'-e "/ERROR/p" ' 
+# Get .la files back to package otherwise modules loading will not work
+PUBLISH_TRANSFORMS += $(COMPONENT_DIR)/deliver_la_files
+PKGMOGRIFY_TRANSFORMS_LIBTOOL_DROP =
 
 PKG_MACROS += COMPONENT_MAJOR_VERSION=$(COMPONENT_MAJOR_VERSION)
-PKG_MACROS += COMPONENT_SUBVERSION=$(COMPONENT_SUBVERSION)
-PKG_MACROS += PERL_PKG=$(PERL_PKG)
+PKG_MACROS += COMPONENT_BASE_VERSION=$(COMPONENT_BASE_VERSION)
 
 REQUIRED_PACKAGES += compress/bzip2
+REQUIRED_PACKAGES += compress/libzip
 REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += image/ghostscript
 REQUIRED_PACKAGES += image/graphviz

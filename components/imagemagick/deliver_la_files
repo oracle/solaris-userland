@@ -1,0 +1,8 @@
+#
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+
+# For each .so file in coders and filters directory emit a line of its .la
+# counterpart. We need to deliver them otherwise libltdl will not be able to
+# load them in runtime.
+<transform file path=(.*(coders|filters)/.*)\.so$ -> emit file path=%<1>.la group=bin mode=0444 owner=root>

@@ -20,12 +20,12 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
-# Replace variables used through the p5m file. We need to do it now so that the
-# action.hash will pick the path already modified
+# Replace variables used through the p5m file
 <transform dir file link hardlink -> edit path "/ImageMagick-$(COMPONENT_MAJOR_VERSION)/" "/ImageMagick-$!(COMPONENT_MAJOR_VERSION)/">
+<transform dir file link hardlink -> edit path "/ImageMagick-$(COMPONENT_BASE_VERSION)/" "/ImageMagick-$!(COMPONENT_BASE_VERSION)/">
 <transform dir file link hardlink -> edit path "/$(PERL_VERSION)/" "/$!(PERL_VERSION)/">
 <transform dir file link hardlink -> edit path "/$(PERL_ARCH)/" "/$!(PERL_ARCH)/">
 
@@ -33,27 +33,8 @@
 <transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
 <transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
 
-# Drop 32bit binaries, we keep libraries only
-<transform file path=usr/bin/\$\(MACH32\)/ -> drop>
-<transform file path=usr/bin/(.*) -> emit link path=usr/sfw/bin/%<1> target=../../bin/%<1>>
-
-# Duplicate every xml action with 'X' prepended to the path so that the
-# following transforms won't apply
-<transform file path=usr/etc/.*/([^/]+).xml -> emit file path=X%(path)>
-
-# Set current action hash
-<transform file path=usr/etc/.*/([^/]+).xml -> set action.hash %(path)>
-<transform file path=usr/etc/.*/([^/]+).xml -> set path usr/lib/$!(MACH64)/ImageMagick-$!(COMPONENT_VERSION)/config-Q16/%<1>.xml>
-
-# Set hash for the duplicated action for 32bit libraries
-<transform file path=X(usr/etc/.*/)([^/]+).xml$ -> set action.hash %<1>%<2>.xml>
-<transform file path=X(usr/etc/.*/)([^/]+).xml$ -> set path usr/lib/ImageMagick-$!(COMPONENT_VERSION)/config-Q16/%<2>.xml>
-
 # Move man pages from usr/man to usr/share/man
 <transform file path=usr/man/(.*) -> set action.hash %(path)>
 <transform file path=usr/man/(.*) -> edit path usr/man usr/share/man>
 
-# Fix $!(...). It needs to be called twice because there are two such strings
-# in single action
-<transform file path=.*\.xml$ -> edit path "\$!\((.*)\)" "$(\1)">
-<transform file path=.*\.xml$ -> edit path "\$!\((.*)\)" "$(\1)">
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
