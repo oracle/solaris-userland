@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS=		64
 COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		iperf
-COMPONENT_VERSION=	3.17.1
+COMPONENT_VERSION=	3.18
 COMPONENT_PROJECT_URL=	http://software.es.net/iperf/
-COMPONENT_ARCHIVE_HASH=	sha256:84404ca8431b595e86c473d8f23d8bb102810001f15feaf610effd3b318788aa
+COMPONENT_ARCHIVE_HASH=	sha256:c0618175514331e766522500e20c94bfb293b4424eb27d7207fb427b88d20bab
 COMPONENT_ARCHIVE_URL=	https://downloads.es.net/pub/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/iperf
 COMPONENT_ANITYA_ID=	1389
-COMPONENT_BAID=	167411
+COMPONENT_BAID=	191414
 
 # See the TESTING file.
 TEST_TARGET= $(NO_TESTS)
