@@ -1,0 +1,15 @@
+Build occasionally fails during the pgo task due to test_raise_and_yield_from test failure.
+
+This will need to be investigated further, but for now, let's just disable the offending test.
+
+--- Python-3.13.1/Lib/test/test_generators.py
++++ Python-3.13.1/Lib/test/test_generators.py
+@@ -22,6 +22,8 @@ except ImportError:
+ @unittest.skipUnless(_testcapi is not None and
+                      hasattr(_testcapi, "raise_SIGINT_then_send_None"),
+                      "needs _testcapi.raise_SIGINT_then_send_None")
++# This test causes occasional unexpected build failures during the PGO build.
++@support.skip_if_pgo_task
+ class SignalAndYieldFromTest(unittest.TestCase):
+ 
+     def generator1(self):
