@@ -20,7 +20,7 @@
  */
 
 /*
- * Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025, Oracle and/or its affiliates.
  */
 
 /*
@@ -161,6 +161,7 @@ void
 Init_PuppetAudit()
 {
 	cPuppetAudit = rb_define_class("PuppetAudit", rb_cObject);
+	rb_undef_alloc_func(cPuppetAudit);
 	rb_define_singleton_method(cPuppetAudit, "new", audit_new, 0);
 	rb_define_method(cPuppetAudit, "initialize", audit_init, 0);
 	rb_define_method(cPuppetAudit, "audit_start", audit_start, 0);

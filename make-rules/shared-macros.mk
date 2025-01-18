@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 
 .PHONY: void
@@ -687,11 +687,11 @@ endif
 CC =		$(CC.$(COMPILER).$(BITS))
 CXX =		$(CXX.$(COMPILER).$(BITS))
 
-RUBY_VERSION =	3.1
-RUBY_PUPPET_VERSION = 3.1
+RUBY_VERSION =	3.3
+RUBY_PUPPET_VERSION = 3.3
 
 # The default version should go last.
-RUBY_VERSIONS = 3.3 3.1
+RUBY_VERSIONS = 3.1 3.3
 RUBY.3.1 =	/usr/ruby/3.1/bin/ruby
 RUBY.3.3 =	/usr/ruby/3.3/bin/ruby
 RUBY =		$(RUBY.$(RUBY_VERSION))
