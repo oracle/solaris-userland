@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -58,7 +58,7 @@ SYSTEM_TEST_TARGET = $(SYSTEM_TEST_64)
 
 include $(WS_MAKE_RULES)/common.mk
 
-PATH =		/usr/php/8.3/bin:/usr/bin:/usr/gnu/bin
+PATH =		/usr/php/8.4/bin:/usr/bin:/usr/gnu/bin
 
 # Java header files (--with-javaincludedir allows for only one directory)
 CPPFLAGS +=	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/solaris
@@ -117,6 +117,12 @@ PHP_82_INSTALL_DIR := $(shell $(PHP_82_CONFIG) --extension-dir)
 PHP_82_LDFLAGS := $(shell $(PHP_82_CONFIG) --ldflags)
 PHP_82_LIBS := $(shell $(PHP_82_CONFIG) --libs)
 
+PHP_83_CONFIG = /usr/php/8.3/bin/php-config
+PHP_83_INCLUDES := $(shell $(PHP_83_CONFIG) --includes)
+PHP_83_INSTALL_DIR := $(shell $(PHP_83_CONFIG) --extension-dir)
+PHP_83_LDFLAGS := $(shell $(PHP_83_CONFIG) --ldflags)
+PHP_83_LIBS := $(shell $(PHP_83_CONFIG) --libs)
+
 PKG_CONFIG = /usr/bin/pkg-config
 PYTHON_311_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.11)
 PYTHON_311_LIBS = $(shell $(PKG_CONFIG) --libs python-3.11)
@@ -138,7 +144,13 @@ $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
      -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.11)|' \
      -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_311_INCLUDES)|' \
      -e '/^PYTHON3_LIBS =/s|=.*$$|= $(PYTHON_311_LIBS)|' \
-     `find tclpkg/gv2 -name Makefile` ) ;
+     `find tclpkg/gv2 -name Makefile` ) ; \
+    (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv3 ; \
+    $(GSED) -i '/^SUBDIRS =/s|$$| gv3|' tclpkg/Makefile ; \
+    $(GSED) -i \
+     -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_83_INCLUDES)|' \
+     -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_83_LDFLAGS) $(PHP_83_LIBS)|' \
+     `find tclpkg/gv3 -name Makefile` ) ; \
 
 # Install Python bindings for each version into vendor-packages directories
 # and generate pyc files. The default version is already installed, but
@@ -160,16 +172,20 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
 PHP_GRAPHVIZ_PROTO = $(PROTO_DIR)$(USRLIBDIR64)/graphviz/php
 PHP81_VENDOR_PROTO = $(PROTO_DIR)$(PHP_81_INSTALL_DIR)
 PHP82_VENDOR_PROTO = $(PROTO_DIR)$(PHP_82_INSTALL_DIR)
+PHP83_VENDOR_PROTO = $(PROTO_DIR)$(PHP_83_INSTALL_DIR)
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
 	$(MKDIR) $(PHP81_VENDOR_PROTO); \
 	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_php.soT $(PHP81_VENDOR_PROTO)/gv.so; \
 	$(MKDIR) $(PHP82_VENDOR_PROTO); \
 	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_php.soT $(PHP82_VENDOR_PROTO)/gv.so; \
+	$(MKDIR) $(PHP83_VENDOR_PROTO); \
+	$(INSTALL) $(@D)/tclpkg/gv3/.libs/libgv_php.soT $(PHP83_VENDOR_PROTO)/gv.so; \
 	$(RM) -r $(PHP_GRAPHVIZ_PROTO); $(MKDIR) $(PHP_GRAPHVIZ_PROTO); \
-	$(INSTALL) $(@D)/tclpkg/gv/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php83.so; \
+	$(INSTALL) $(@D)/tclpkg/gv/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php84.so; \
 	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php81.so; \
-	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php82.so;
+	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php82.so; \
+	$(INSTALL) $(@D)/tclpkg/gv3/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php83.so;
 
 # Create the config file once the 32-bit build is complete.  This runs the bits
 # we just built, so we have to set a handful of variables to the right place.
@@ -227,6 +243,7 @@ REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/php-81
 REQUIRED_PACKAGES += web/php-82
 REQUIRED_PACKAGES += web/php-83
+REQUIRED_PACKAGES += web/php-84
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxmu
 REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
