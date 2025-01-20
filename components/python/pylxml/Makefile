@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lxml
-COMPONENT_VERSION=	4.9.3
+COMPONENT_VERSION=	5.3.0
 COMPONENT_PROJECT_URL=	http://lxml.de/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:48628bd53a426c9eb9bc066a923acaa0878d1e86129fd5359aee99285f4eed9c
+    sha256:4e109ca30d1edec1ac60cdbe341905dc3b8f55b16855e03a54aaf59e51ec8c6f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/lxml
 COMPONENT_ANITYA_ID=	3914
-COMPONENT_BAID=		149901
+COMPONENT_BAID=		185773
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -66,6 +66,8 @@ COMPONENT_TEST_ENV+=	http_proxy=
 COMPONENT_TEST_ENV+=	https_proxy=
 COMPONENT_TEST_ENV+=	HTTP_PROXY=
 COMPONENT_TEST_ENV+=	HTTPS_PROXY=
+# Do not create the test coverage report.
+COMPONENT_TEST_ENV+=	CYTHON_WITH_COVERAGE=
 
 # Use the correct version of Python each time.
 COMPONENT_TEST_ENV+=	PYTHON=$(PYTHON)

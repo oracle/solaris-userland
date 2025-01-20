@@ -1,0 +1,22 @@
+Python lxml 5.3.0 deprecated the strip_cdata option in HTMLParser as it didn't do anything.
+
+--- beautifulsoup4-4.12.2/bs4/builder/_lxml.py
++++ beautifulsoup4-4.12.2/bs4/builder/_lxml.py
+@@ -108,7 +108,7 @@ class LXMLTreeBuilderForXML(TreeBuilder)
+         if self._default_parser is not None:
+             return self._default_parser
+         return etree.XMLParser(
+-            target=self, strip_cdata=False, recover=True, encoding=encoding)
++            target=self, recover=True, encoding=encoding)
+ 
+     def parser_for(self, encoding):
+         """Instantiate an appropriate parser for the given encoding.
+@@ -122,7 +122,7 @@ class LXMLTreeBuilderForXML(TreeBuilder)
+         if isinstance(parser, Callable):
+             # Instantiate the parser with default arguments
+             parser = parser(
+-                target=self, strip_cdata=False, recover=True, encoding=encoding
++                target=self, recover=True, encoding=encoding
+             )
+         return parser
+ 
