@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -62,7 +62,6 @@ CONFIGURE_OPTIONS += --enable-flickr
 CONFIGURE_OPTIONS += --enable-google
 CONFIGURE_OPTIONS += --enable-imap-smtp
 CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --enable-telepathy
 CONFIGURE_OPTIONS += --enable-windows-live
 CONFIGURE_OPTIONS += --with-pic
 
@@ -82,6 +81,5 @@ REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/telepathy-glib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
