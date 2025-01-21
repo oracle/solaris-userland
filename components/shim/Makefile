@@ -25,36 +25,22 @@
 
 BUILD_ARCH= i386
 BUILD_BITS= 64
-# component fails to build with Studio
-COMPILER= gcc
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		shim
-COMPONENT_VERSION=	0.9
-COMPONENT_PROJECT_URL=  https://github.com/rhinstaller/$(COMPONENT_NAME)
-COMPONENT_ARCHIVE_HASH= \
-    sha256:d277d7bea0b5d554dacf284d84252a5e995fb4ef54b6de5ec6296c6c2a9a21bd
-COMPONENT_ARCHIVE_URL=  https://github.com/rhinstaller/$(COMPONENT_NAME)/archive/$(COMPONENT_VERSION).tar.gz
+COMPONENT_VERSION=	15.8
+COMPONENT_PROJECT_URL=  https://github.com/rhboot/$(COMPONENT_NAME)
 COMPONENT_BUGDB=	kernel/shim
 COMPONENT_ANITYA_ID=	10719
+COMPONENT_BAID=		170209
 
-COMPONENT_BAID=		27343
-
-BUILD_STYLE= justmake
+BUILD_STYLE= pkg
 TEST_TARGET= $(NO_TESTS)
+
+publish: $(COMPONENT_NAME)-$(COMPONENT_VERSION)
+
+$(COMPONENT_NAME)-$(COMPONENT_VERSION): FRC
+	$(MKDIR) $@
+
 include $(WS_MAKE_RULES)/common.mk
-
-COMPONENT_PREP_ACTION +=(cp elf_x86_64_efi_sol2.lds $(SOURCE_DIR))
-
-ORACLE_CERT=$(SOURCE_DIR)/../OL7Secureboot.cer
-export VENDOR_CERT_FILE=$(ORACLE_CERT)
-PATH=$(dir $(CC)):$(GNUBIN):/usr/bin
-
-COMPONENT_BUILD_ARGS += CC="$(CC)"
-
-REQUIRED_PACKAGES += developer/gcc
-REQUIRED_PACKAGES += developer/gnu-binutils
-ifeq ($(MACH), i386)
-REQUIRED_PACKAGES += library/libgnuefi
-endif
-REQUIRED_PACKAGES += text/text-utilities

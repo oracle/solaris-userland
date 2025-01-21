@@ -1,13 +1,37 @@
-The Makefile for shim is patched to not produce signed executables.
+shim is now built on Oracle Linux and the resulting binaries are checked
+into the Userland gate.
 
-To produce a signed shim executable for internal testing:
+The linux_build directory contains the files needed for the Linux build.
+In order to run the OL build:
 
-1. Obtain access to an Oracle Linux system and install pesign
-2. Copy build/amd64/shim.p12, build/amd64/shim.crt and build/amd64/shim.efi to the OL system
-3. On the OL system:
+- Launch an OL9 x86 instance on OCI with an ssh key that's loaded in your ssh-agent
+- export https_proxy in your environment if required to reach the OL package server
+- Run build.sh with the argument being the name or IP address of the OL9 instance
 
-	mkdir certdb
-	pk12util -d certdb/ -i shim.p12 -W "" -K ""
-	certutil -d certdb/ -A -i shim.crt -n shim -t u
-	pesign -n certdb -i shim.efi -c "shim" -s -o shim.efi.signed -f
+The resulting binaries will be copied to the files directory here for checkin.
+Before checkin, the shimx64.efi file must be signed through Microsoft's signing
+service, which first requires review of the build by the shim review group.  See
+https://github.com/rhboot/shim-review for instructions.  The review of 15.8
+is at https://github.com/rhboot/shim-review/issues/447.  The fbx64.efi and mmx64.efi
+files are signed by release engineering through the Oracle CSSHUB service by
+virtue of the pkg.uefisign tag in the package manifest.  Signatures can be examined
+using the Linux tool sbverify, which is part of the sbsigntools package.
 
+The vendor_db.esl file is an EFI signature list, which must be constructed from
+the CSSHUB certificate(s) used to sign the efi binaries and GRUB.  It must be
+updated as new certificates are rotated into service.  The tool to create this is
+cert-to-efi-sig-list from the efitools project, hosted at
+https://github.com/mjg59/efitools.
+
+The sbat.oracle.csv file specifies the generation number for this shim release as
+per https://github.com/rhboot/shim/blob/main/SBAT.md.  We are starting with 3 for
+shim as this aligns with the OL shim's generation number.
+
+The .spec file is modified from the OL9 spec file to use ORACLE as the efidir and
+to add the DISABLE_EBS_PROTECTION make flag, as this is not compatible with 
+Solaris Verified Boot.
+
+The Dockerfile is copied from OL9's shim review submission and modified to insert
+our spec file, vendor_db and sbat.  The latter portion of the file that verifies
+the build against the original is commented out for our build purposes but would be
+uncommented for submission to the shim community review.

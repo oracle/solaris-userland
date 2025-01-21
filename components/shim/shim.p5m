@@ -20,25 +20,31 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri value=pkg:/boot/shim@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Binaries for UEFI Secure Boot"
 # avoid duplicate file lint error with install-image/solaris-auto-install package
 set name=pkg.linted.pkglint.dupaction001.1 value=true
+set name=pkg.linted.pkglint.dupaction008 value=true
+set name=pkg.linted.pkglint.dupaction010.1 value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="First-stage bootloader for UEFI Secure Boot"
 set name=info.classification value=org.opensolaris.category.2008:System/Security
-set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.source-url \
+    value=https://github.com/rhboot/shim/releases/download/15.8/shim-15.8.tar.bz2
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/563
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=boot/grub/.MokManager.uefi target=MokManager.efi variant.arch=i386
 link path=boot/grub/.fallback.uefi target=fallback.efi variant.arch=i386
-file BOOT.csv path=boot/grub/BOOT.csv variant.arch=i386
-file MokManager.efi path=boot/grub/MokManager.efi variant.arch=i386
-file fallback.efi path=boot/grub/fallback.efi variant.arch=i386
-file shim.ms path=boot/grub/shim.efi variant.arch=i386
+file files/BOOTX64.CSV path=boot/grub/BOOTX64.CSV variant.arch=i386
+file files/fbx64.efi path=boot/grub/fbx64.efi pkg.uefisign=true \
+    variant.arch=i386
+file files/mmx64.efi path=boot/grub/mmx64.efi pkg.uefisign=true \
+    variant.arch=i386
+link path=boot/grub/shim.efi target=shimx64.efi variant.arch=i386
+file files/shimx64.efi path=boot/grub/shimx64.efi variant.arch=i386
 license shim.license license=BSD
