@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -66,17 +66,8 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 TARGET_39 = $(BUILD_DIR)/%-3.9/
 TARGET_311 = $(BUILD_DIR)/%-3.11/
 
-# OpenSSL 3 temporarily lives in non-standard directory.
-CFLAGS += -I/usr/openssl/3/include
-LDFLAGS += -L/usr/openssl/3/lib/$(BITS)
-
-COMPONENT_BUILD_ENV += LDFLAGS="$(LDFLAGS)"
-COMPONENT_BUILD_ENV += OPENSSL_DIR="/usr/openssl/3"
-COMPONENT_BUILD_ENV += OPENSSL_LIB_DIR="/usr/openssl/3/lib/$(BITS)"
 COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 
-COMPONENT_INSTALL_ENV += OPENSSL_DIR="/usr/openssl/3"
-COMPONENT_INSTALL_ENV += OPENSSL_LIB_DIR="/usr/openssl/3/lib/$(BITS)"
 COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)

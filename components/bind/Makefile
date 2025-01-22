@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 # Refer to ../../doc/makefile-variables.txt
@@ -83,10 +83,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 # Patches to configure.in require configure script re-creation.
 # COMPONENT_PREP_ACTION +=(cd $(@D); autoreconf -vfi);
-
-# OpenSSL configuration. Required for DNSSEC features, used by libisc.
-# Use OpenSSL 3, Setting --with-openssl=/usr/openssl/3 was not sufficient.
-PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 
 # Specify "configure" options and features, sorted as per configure usage.
 # FYI, The configure options applied are displayed by 'named -V'.

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -69,7 +69,7 @@ CONFIGURE_OPTIONS  +=	--libexecdir=$(USRLIBDIR)
 CONFIGURE_OPTIONS  +=	--with-libpcre2
 CONFIGURE_OPTIONS  +=	--with-perl=$(PERL)
 CONFIGURE_OPTIONS  +=	--with-python=$(PYTHON)
-CONFIGURE_OPTIONS  +=	--with-openssl=/usr/openssl/3
+CONFIGURE_OPTIONS  +=	--with-openssl
 
 # Build fails if environment variable PROFILE is set.
 COMPONENT_BUILD_ENV+=	PROFILE=

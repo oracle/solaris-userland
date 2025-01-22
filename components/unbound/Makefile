@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -51,7 +51,6 @@ PATH = /usr/gnu/bin:/usr/bin
 
 CONFIGURE_OPTIONS +=	--sysconfdir=/etc
 CONFIGURE_OPTIONS +=	--with-libevent
-CONFIGURE_OPTIONS +=	--with-ssl=/usr/openssl/3
 CONFIGURE_OPTIONS +=	--with-username=_unbound
 
 COMPONENT_TEST_TRANSFORMS += '-e "0,/^\.\/unittest$$/d"'

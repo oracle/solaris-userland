@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -47,7 +47,6 @@ PYTHON_DATA = /usr
 
 # make sure that correct SSL backend is used (see 32568507)
 COMPONENT_SETUP_ARGS += --with-openssl
-COMPONENT_SETUP_ARGS += --openssl-dir=/usr/openssl/3
 
 # Testing environment must be clean
 test: ENV += -i

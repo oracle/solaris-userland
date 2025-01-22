@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -79,7 +79,7 @@ CONFIGURE_OPTIONS += --enable-cookies
 CONFIGURE_OPTIONS += --with-random=/dev/urandom
 CONFIGURE_OPTIONS += --with-zlib
 CONFIGURE_OPTIONS += --with-gssapi
-CONFIGURE_OPTIONS += --with-openssl=/usr/openssl/3
+CONFIGURE_OPTIONS += --with-openssl
 CONFIGURE_OPTIONS += --with-ca-path=$(ETCDIR)/openssl/certs
 CONFIGURE_OPTIONS += --enable-ldap
 CONFIGURE_OPTIONS += --with-libidn2

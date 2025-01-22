@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 # For this component, prefer 32-bit over 64-bit for now until sufficient
 # testing has been performed.
@@ -46,10 +46,9 @@ include $(WS_MAKE_RULES)/common.mk
 # and due to patches to autoconf and automake files.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 
-OPENSSL_CFLAGS= -I/usr/openssl/3/include
-OPENSSL_LIBS.32= -L/usr/openssl/3/lib/ -lssl -lcrypto
+OPENSSL_LIBS.32= -lssl -lcrypto
 OPENSSL_LIBS.32 += $(LIBSOCKET) $(LIBNSL)
-OPENSSL_LIBS.64= -L/usr/openssl/3/lib/64/ -lssl -lcrypto
+OPENSSL_LIBS.64= -lssl -lcrypto
 OPENSSL_LIBS.64 += $(LIBSOCKET) $(LIBNSL)
 
 CONFIGURE_BINDIR.32= $(USRLIB.32)/pam_pkcs11

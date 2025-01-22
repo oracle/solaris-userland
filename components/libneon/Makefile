@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 32_and_64
@@ -44,8 +44,6 @@ CLONEY = true
 COMPONENT_PRE_CONFIGURE_ACTION += $(CP) -rp $(SOURCE_DIR)/. $(@D);
 CONFIGURE_SCRIPT = ./configure
 
-$(BUILD_32): PKG_CONFIG_PATHS += /usr/openssl/3/lib/pkgconfig
-$(BUILD_64): PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 $(BUILD_64): LDFLAGS = -m64
 
 # Make test results a little bit easier to parse

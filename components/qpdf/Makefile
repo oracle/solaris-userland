@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS=	64_and_32
 COMPILER=	gcc
@@ -42,10 +42,6 @@ COMPONENT_TEST_TARGET= $(TEST_64_and_32)
 BUILD_STYLE = cmake
 
 include $(WS_MAKE_RULES)/common.mk
-
-PKG_CONFIG_PATHS.64 = /usr/openssl/3/lib/64/pkgconfig
-PKG_CONFIG_PATHS.32 = /usr/openssl/3/lib/pkgconfig
-PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 
 COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH) 
 COMPONENT_TEST_ENV += LC_ALL=C

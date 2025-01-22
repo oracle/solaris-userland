@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -36,8 +36,6 @@ COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	1997
 
 COMPONENT_BAID=		147132
-
-PKG_CONFIG_PATHS=	/usr/openssl/3/lib/64/pkgconfig:/usr/lib/64/pkgconfig
 
 MODULES_INSTALL=
 include ../modules.mk

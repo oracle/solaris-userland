@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -151,17 +151,7 @@ endef
 
 define SITE_CONFIG_M4 +=
 
-APPENDDEF(`confLIBDIRS', `-L/usr/openssl/3/lib/64')
-APPENDDEF(`confLIBDIRS', ` -R/usr/openssl/3/lib/64')
-APPENDDEF(`confINCDIRS', `-I/usr/openssl/3/include')
 endef
-# Fix-up site-config for the 32bit build.
-# Removes the link created by cloney and creates 32bit specific file.
-COMPONENT_PRE_BUILD_ACTION.32 = \
-	rm $(BUILD_DIR_32)/devtools/Site/site.config.m4; \
-	gsed -e "s:/usr/openssl/3/lib/64:/usr/openssl/3/lib/32:" \
-		$(SOURCE_DIR)/devtools/Site/site.config.m4 > \
-		$(BUILD_DIR_32)/devtools/Site/site.config.m4;
 
 define SITE_CONFIG_M4 +=
 

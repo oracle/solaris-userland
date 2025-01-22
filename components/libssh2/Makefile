@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -42,7 +42,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS +=   --enable-shared
 CONFIGURE_OPTIONS +=   --disable-docker-tests
-CONFIGURE_OPTIONS +=   --with-libssl-prefix=/usr/openssl/3
 
 # Adjust the .so line in the libssh2_sftp_fstatvfs man page to correctly find
 # the file it references (as we place it in the man3ssh2 section on Solaris).

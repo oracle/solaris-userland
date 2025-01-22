@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -56,8 +56,6 @@ COMPONENT_PREP_ACTION = (cd $(@D); autoconf);
 LD_B_DIRECT=
 
 CONFIGURE_OPTIONS	+= --with-user=nobody
-CONFIGURE_OPTIONS	+= --with-crypto=/usr/openssl/3
-CONFIGURE_ENV		+= LDFLAGS="-L/usr/openssl/3/lib/64"
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "/tcpdump version/d" ' \

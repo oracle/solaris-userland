@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -57,11 +57,8 @@ COMPONENT_PRE_CONFIGURE_ACTION= \
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L$${libdir} ;;' $(@D)/xmlsec1-config ;
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/lib/$(MACH64);;' $(@D)/xmlsec1-openssl.pc ;
 COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/lib/$(MACH64);;' $(@D)/src/openssl/Makefile ;
-COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib ;-L/usr/openssl/3/lib/64 ;' $(@D)/xmlsec1-config
-COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib ;-L/usr/openssl/3/lib/64 ;' $(@D)/xmlsec1-openssl.pc ;
-COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib ;-L/usr/openssl/3/lib/64 ;' $(@D)/src/openssl/Makefile ;
 COMPONENT_POST_CONFIGURE_ACTION += $(COMPONENT_POST_CONFIGURE_ACTION.$(BITS))
-CONFIGURE_OPTIONS+=	--with-openssl=/usr/openssl/3
+CONFIGURE_OPTIONS+=	--with-openssl
 CONFIGURE_OPTIONS+=	PATH="$(GNUBIN):$$PATH"
 
 COMPONENT_PRE_TEST_ACTION+= $(MKDIR) $(@D)/tests-tmp ;

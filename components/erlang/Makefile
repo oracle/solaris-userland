@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 # Built in SFW with gcc and builds cleanly now only with gcc
@@ -85,7 +85,6 @@ CONFIGURE_OPTIONS += --enable-threads
 CONFIGURE_OPTIONS += --enable-fips
 CONFIGURE_OPTIONS += --enable-dynamic-ssl-lib
 
-CONFIGURE_OPTIONS += --with-ssl=/usr/openssl/3
 # Disable disallowed cyphers (headers are not available)
 CFLAGS += -DOPENSSL_NO_MD4 -DOPENSSL_NO_RC2 -DOPENSSL_NO_RC4
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Because the Studio compiler generates thousands of lines of warnings.
@@ -39,12 +39,6 @@ TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 PATCH_LEVEL =		0
-
-# Without this, linker flags from pkgconfig are added too late to take effect
-LDFLAGS += -L/usr/openssl/3/lib/64
-COMPONENT_BUILD_ARGS += LDFLAGS="$(LDFLAGS)"
-
-CONFIGURE_OPTIONS +=	--with-ssl=/usr/openssl/3
 
 # Configure in links does not understand CC, CXX, etc.  Need to generate a
 # new configure for it to configure and build properly.

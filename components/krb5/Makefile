@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -99,8 +99,7 @@ CONFIGURE_OPTIONS += --localstatedir=/var
 CONFIGURE_OPTIONS.32 += --libexecdir=$(USRLIBDIR)
 CONFIGURE_OPTIONS.64 += --libexecdir=$(USRLIBDIR)/$(MACH64)
 CONFIGURE_OPTIONS += --includedir=$(USRINCDIR)/kerberosv5
-CONFIGURE_OPTIONS.32 += --with-tls-impl=openssl3
-CONFIGURE_OPTIONS.64 += --with-tls-impl=openssl3.64
+CONFIGURE_OPTIONS += --with-tls-impl=openssl
 CONFIGURE_OPTIONS += --with-crypto-impl=ucrypto
 CONFIGURE_OPTIONS += --with-ldap
 CONFIGURE_OPTIONS += --without-system-verto

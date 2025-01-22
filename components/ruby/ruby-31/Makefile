@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS = 64
 COMPILER = gcc
@@ -80,9 +80,6 @@ CONFIGURE_OPTIONS += --with-tclConfig-file=$(USRLIBDIR)/64/tclConfig.sh
 CONFIGURE_OPTIONS += --with-mantype=man
 # Enable installation of libruby-static.a file
 CONFIGURE_OPTIONS += --enable-install-static-library
-
-# Build against OpenSSL 3.
-PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 
 # default LD_OPTION $(LD_B_DIRECT) causes problems during install of ruby,
 # ruby is executed and will core dump after compiling with this option

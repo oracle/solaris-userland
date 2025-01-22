@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -50,8 +50,8 @@ CCARGS =	-DDEF_DAEMON_DIR=\\\"/usr/lib/postfix\\\"
 CCARGS +=	-DDEF_MANPAGE_DIR=\\\"/usr/share/man\\\"
 CCARGS +=	-DDEF_NEWALIAS_PATH=\\\"/usr/sbin/newaliases\\\"
 # TLS (openssl3 API)
-CCARGS +=	-DUSE_TLS -I/usr/openssl/3/include/
-AUXLIBS =	-L/usr/openssl/3/lib/64/ -lssl -lcrypto
+CCARGS +=	-DUSE_TLS
+AUXLIBS =	-lssl -lcrypto
 # Berkeley DB
 CCARGS +=	-DHAS_DB
 AUXLIBS +=	-ldb-5.3

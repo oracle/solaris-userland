@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS=		64_and_32
 COMPILER=		gcc
@@ -38,9 +38,6 @@ COMPONENT_BUGDB=	library/lasso
 COMPONENT_ANITYA_ID=	96894
 
 COMPONENT_BAID=		146907
-
-PKG_CONFIG_PATH.32 = 	/usr/openssl/3/lib/pkgconfig:/usr/lib/pkgconfig
-PKG_CONFIG_PATH.64 = 	/usr/openssl/3/lib/64/pkgconfig:/usr/lib/64/pkgconfig
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk

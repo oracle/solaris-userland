@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 # Parallel build jobs are supported only if GNU make is used.
@@ -56,8 +56,6 @@ APU_64 =		$(USED_APU)/bin/$(MACH64)/apu-1-config
 SERFLIBPATH_32 =	-R$(USED_APR)/lib -R$(USED_APU)/lib
 SERFLIBDIR_32 =		/usr/lib
 SERFLIBDIR_64 =		/usr/lib/64
-OPENSSL_LIBDIR_32 =	/usr/openssl/3/lib
-OPENSSL_LIBDIR_64 =	/usr/openssl/3/lib/$(MACH64)
 
 # We have to roll our own as serf is built with scons.
 SCONS =			/usr/bin/scons
@@ -69,8 +67,6 @@ COMPONENT_BUILD_ARGS += APR=$(APR_$(BITS))
 COMPONENT_BUILD_ARGS += APU=$(APU_$(BITS))
 COMPONENT_BUILD_ARGS += PREFIX=/usr
 COMPONENT_BUILD_ARGS += LIBDIR=$(SERFLIBDIR_$(BITS))
-COMPONENT_BUILD_ARGS += OPENSSL=/usr/openssl/3
-COMPONENT_BUILD_ARGS += OPENSSL_LIBDIR=$(OPENSSL_LIBDIR_$(BITS))
 
 COMPONENT_TEST_CMD =	$(SCONS)
 # Serf test test_ssl_handshake doesn't work correctly with OpenSSL 3.

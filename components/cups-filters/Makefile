@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -55,11 +55,6 @@ CONFIGURE_OPTIONS +=	--with-rcdir=no
 # Use GNU make to avoid the configuration error when makefile fragments are
 # processed.
 CONFIGURE_OPTIONS +=  MAKE=$(GMAKE)
-
-# Needed for compilation with libqpdf
-PKG_CONFIG_PATHS.64 = /usr/openssl/3/lib/64/pkgconfig
-PKG_CONFIG_PATHS.32 = /usr/openssl/3/lib/pkgconfig
-PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
    ($(CLONEY) $(SOURCE_DIR) $(@D))

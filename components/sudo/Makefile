@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -56,8 +56,6 @@ endif
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
-
-PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 
 # Allows zero-sized struct/union declarations and void functions with return
 # statements returning a value to work.

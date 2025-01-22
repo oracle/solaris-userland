@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 
 # Prefer 32-bit over 64-bit as apr-util has its own custom package layout.
@@ -53,14 +53,7 @@ PATCH_LEVEL=0
 
 CONFIGURE_PREFIX=$(USRDIR)/apr-util/1
 
-# OpenSSL 3 tweaks
-COMPONENT_POST_CONFIGURE_ACTION += $(GSED) -i 's;-I/usr/include ;;' $(@D)/apu-1-config ;
-COMPONENT_POST_CONFIGURE_ACTION += $(GSED) -i 's;-I/usr/include ;;' $(@D)/Makefile ;
-COMPONENT_POST_CONFIGURE_ACTION += $(GSED) -i 's;-I/usr/include ;;' $(@D)/test/Makefile ;
-COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/apu-1-config ;
-COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/Makefile ;
-COMPONENT_POST_CONFIGURE_ACTION.64 += $(GSED) -i 's;-L/usr/openssl/3/lib;-L/usr/openssl/3/lib/64;' $(@D)/test/Makefile ;
-CONFIGURE_OPTIONS +=    --with-openssl=/usr/openssl/3
+CONFIGURE_OPTIONS +=    --with-openssl
 CONFIGURE_OPTIONS +=    --with-nss
 
 CONFIGURE_OPTIONS.64 +=	--with-mysql=$(USRDIR)/mysql/8.0

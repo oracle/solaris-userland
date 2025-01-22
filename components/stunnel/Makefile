@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -48,7 +48,6 @@ PATCH_LEVEL = 0
 COMPONENT_BUILD_ENV +=  PATH=$(USRDIR)/perl5/bin:$(PATH)
 
 CPPFLAGS +=	"-DPIDFILE='\"/var/run/stunnel.pid\"'"
-CPPFLAGS +=	-I/usr/openssl/3/include
 
 # used to generate the 64-bit interposer location
 CPPFLAGS += -DMACH64='\"$(MACH64)\"'
@@ -56,7 +55,6 @@ CPPFLAGS += -DMACH64='\"$(MACH64)\"'
 CONFIGURE_OPTIONS +=	--disable-fips
 CONFIGURE_OPTIONS +=	--enable-ipv6
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
-CONFIGURE_OPTIONS +=	--with-ssl=/usr/openssl/3
 
 # used to generate LD_PRELOAD_* interposer pathnames
 COMPONENT_BUILD_ARGS += pkglibdir=$(USRLIBDIR)/stunnel

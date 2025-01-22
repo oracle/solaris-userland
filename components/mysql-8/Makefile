@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER= gcc
@@ -92,7 +92,6 @@ CMAKE_OPTIONS += -DWITH_LZ4=system
 CMAKE_OPTIONS += -DWITH_ZLIB=system
 CMAKE_OPTIONS += -DWITH_ZSTD=system
 CMAKE_OPTIONS += -DWITH_ICU=system
-CMAKE_OPTIONS += -DWITH_SSL=/usr/openssl/3
 CMAKE_OPTIONS += -DWITH_INNODB_MEMCACHED=1
 CMAKE_OPTIONS += -DWITH_BOOST=$(SOURCE_DIR)/boost
 CMAKE_OPTIONS += -DWITH_ROUTER=OFF

@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -64,9 +64,6 @@ COMPONENT_PREP_ACTION +=(cd $(@D); autoreconf);
 CONFIGURE_ENV +=	DESTDIR="$(PROTO_DIR)"
 
 CONFIGURE_OPTIONS +=	--with-libdir=$(USRLIBDIR64)
-
-OPENSSL_CFLAGS= -I/usr/openssl/3/include
-OPENSSL_LIBS= -L/usr/openssl/3/lib/64/ -lssl -lcrypto
 
 CONFIGURE_OPTIONS += OPENSSL_CFLAGS="$(OPENSSL_CFLAGS)"
 CONFIGURE_OPTIONS += OPENSSL_LIBS="$(OPENSSL_LIBS)"

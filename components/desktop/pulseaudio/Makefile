@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 		64_and_32
@@ -73,10 +73,6 @@ CONFIGURE_OPTIONS += --disable-tests
 CONFIGURE_ENV += PYTHON=$(PYTHON)
 
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
-
-PKG_CONFIG_PATHS.32 += /usr/openssl/3/lib/pkgconfig
-PKG_CONFIG_PATHS.64 += /usr/openssl/3/lib/64/pkgconfig
-PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 
 # Required due to patches; must use special bootstrap script! If
 # you use standard autoreconf, configure will fail.

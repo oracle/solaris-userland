@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 COMPILER=		gcc
 BUILD_BITS=		64
@@ -56,7 +56,6 @@ CONFIGURE_OPTIONS  +=		--enable-sidebar
 CONFIGURE_OPTIONS  +=		--with-gdbm
 CONFIGURE_OPTIONS  +=		--with-regex
 CONFIGURE_OPTIONS  +=		--with-curses
-CONFIGURE_OPTIONS  +=		--with-ssl=/usr/openssl/3
 CONFIGURE_OPTIONS  +=		--with-idn
 CFLAGS +=			-I"$(USRINCDIR)/idn"
 CONFIGURE_OPTIONS  +=		--with-wc-funcs

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -116,10 +116,7 @@ $(BUILD_DIR_32)/%:	CPPFLAGS += -I$(BUILD_DIR_32)/include
 
 # Configuration options to be applied, default option in [brackets]
 #
-# Need openssl directory to become before /usr/lib which holds libssl.so
-# See also the LDFLAGS fixup below on COMPONENT_PRE_BUILD_ACTION.
-PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
-CONFIGURE_OPTIONS += --with-openssl=/usr/openssl/3
+CONFIGURE_OPTIONS += --with-openssl
 
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 
@@ -204,13 +201,6 @@ COMPONENT_PREP_ACTION += (cd $(@D) && pwd && \
 		-I $(COMPONENT_DIR)/m4 \
 		-I $(SOURCE_DIR)/config \
 	    );
-# This is not ideal, but a hack that is working for our needs.
-# change LDFLAGS so that it includes OPENSSL3 path first.
-$(BUILD_DIR_64)/%:	SSL3LIB = -L/usr/openssl/3/lib/64 -L/usr/lib
-$(BUILD_DIR_32)/%:	SSL3LIB = -L/usr/openssl/3/lib -L/usr/lib
-COMPONENT_PRE_BUILD_ACTION +=  $(FIND) $(@D) -name Makefile -exec \
-	gsed --in-place -e \
-	's:^\(LDFLAGS[[:space:]]*=\)\(.*\):\1 $(SSL3LIB):' {} +;
 
 # Remove some things we don't use and aren't in the BAID
 COMPONENT_PREP_ACTION += $(RM) -r $(DONOTUSE);

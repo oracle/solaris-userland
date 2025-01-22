@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -135,8 +135,6 @@ TS_CONFIGURE_OPTIONS += --disable-libgcrypt
 TS_CONFIGURE_OPTIONS += --disable-generate-man-pages
 
 CONFIGURE_ENV += "MYSQL_CONFIG=/usr/mysql/8.0/bin/mysql_config"
-
-PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 
 # Make the build verbose, show executed commands
 COMPONENT_BUILD_ARGS += AM_DEFAULT_VERBOSITY=1

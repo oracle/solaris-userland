@@ -68,12 +68,10 @@ ifeq ($(OS_VERSION), 11.3)
 CFLAGS += -D_POSIX_PTHREAD_SEMANTICS
 endif
 CFLAGS += -DPR_TUNABLE_PATH_MAX=16384	# current ~1k is not sufficient for GSSAPI
-CFLAGS += -I/usr/openssl/3/include/
 LDFLAGS +=	-m$(BITS)
 # Force immediate (no-lazy) binding because of chroot() can loose the access
 # into (/usr)/lib
 LDFLAGS +=	-z now -z guidance=nolazyload -z nolazyload -lbsm
-LDFLAGS +=	-L/usr/openssl/3/lib/64
 
 #
 # forces build process to pickup /usr/gnu/bin/msgfmt

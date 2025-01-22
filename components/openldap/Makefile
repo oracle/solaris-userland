@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS= 64_and_32
@@ -183,15 +183,7 @@ CONFIGURE_OPTIONS	+= --with-threads
 CONFIGURE_OPTIONS	+= --with-tls=openssl
 
 # Append Configuration variables
-CONFIGURE_OPTIONS	+= CPPFLAGS="$(CPPFLAGS)"
 CONFIGURE_OPTIONS	+= CFLAGS="$(CFLAGS)"
-LDFLAGS			+= $(LDFLAGS.$(BITS))
-CONFIGURE_OPTIONS	+= LDFLAGS="$(LDFLAGS)"
-
-# Link against the desired OpenSSL library.
-CPPFLAGS		+= -I/usr/openssl/3/include
-LDFLAGS.64		+= -L/usr/openssl/3/lib/64
-LDFLAGS.32		+= -L/usr/openssl/3/lib
 
 # After configure make announces that `depend` should be used.
 COMPONENT_POST_CONFIGURE_ACTION += \

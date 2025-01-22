@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =	64
@@ -90,12 +90,6 @@ COMPONENT_PRE_BUILD_ACTION = $(VENDORED_SOURCES_ENFORCE)
 COMPONENT_BUILD_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
 COMPONENT_INSTALL_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
 COMPONENT_TEST_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
-
-# Use OpenSSL 3
-COMPONENT_BUILD_ENV += OPENSSL_LIB_DIR=/usr/openssl/3/lib/64
-COMPONENT_BUILD_ENV += OPENSSL_INCLUDE_DIR=/usr/openssl/3/include
-COMPONENT_INSTALL_ENV += OPENSSL_LIB_DIR=/usr/openssl/3/lib/64
-COMPONENT_INSTALL_ENV += OPENSSL_INCLUDE_DIR=/usr/openssl/3/include
 
 # Rust library names (and some other file names) contain hash which differs
 # between intel and sparc. Therefore library list need to be created to be

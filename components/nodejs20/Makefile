@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -59,8 +59,6 @@ NODE_MAJOR_VERSION=	$(word 1,$(VERSION_NUMBERS))
 
 CONFIGURE_SCRIPT=	./configure
 CONFIGURE_PREFIX=	/usr/nodejs/$(NODE_MAJOR_VERSION)
-
-PKG_CONFIG_PATHS+=	/usr/openssl/3/lib/64/pkgconfig
 
 CONFIGURE_OPTIONS+=	--shared-nghttp2
 CONFIGURE_OPTIONS+=	--shared-openssl
@@ -104,7 +102,6 @@ COMPONENT_PRE_CONFIGURE_ACTION= \
 LINK.OPENSSL3=		\
 	"$(GCC_ROOT)/bin/g++ $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	pkg-config --libs-only-L --libs-only-other openssl)"
-BINDIR.OPENSSL3=	/usr/openssl/3/bin
 
 COMPONENT_BUILD_ARGS+=	LINK=$(LINK.OPENSSL3)
 COMPONENT_INSTALL_ARGS+=LINK=$(LINK.OPENSSL3)

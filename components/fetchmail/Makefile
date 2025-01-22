@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -51,9 +51,6 @@ PYTHON_VERSION = 3.11
 CONFIGURE_OPTIONS  +=		PYTHON="$(PYTHON)"
 CONFIGURE_OPTIONS  +=		--with-kerberos5
 CONFIGURE_OPTIONS  +=		--enable-NTLM
-CONFIGURE_OPTIONS  +=		--with-libssl-prefix=/usr/openssl/3
-CONFIGURE_ENV      +=	SSL_LIBS="-L/usr/openssl/3/lib/64 -lssl -lcrypto -R/lib/$(MACH64)"
-CONFIGURE_ENV      +=	SSL_CFLAGS="-I/usr/openssl/3/include"
 
 COMPONENT_POST_INSTALL_ACTION = \
     $(MV) $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/site-packages/fetchmailconf.py \

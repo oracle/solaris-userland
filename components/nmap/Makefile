@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Can't use the Studio compilers as they don't support the GNU 
@@ -54,7 +54,7 @@ CONFIGURE_OPTIONS  +=   --srcdir=$(BUILD_DIR_64)
 CONFIGURE_OPTIONS  +=   --localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS  +=   --without-localdirs
 CONFIGURE_OPTIONS  +=   --without-zenmap
-CONFIGURE_OPTIONS  +=   --with-openssl=/usr/openssl/3
+CONFIGURE_OPTIONS  +=   --with-openssl
 CONFIGURE_OPTIONS  +=   --with-libpcap
 CONFIGURE_OPTIONS  +=   --with-libpcre
 CONFIGURE_OPTIONS  +=   --with-liblua

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -87,7 +87,6 @@ LD_Z_PIE_MODE =	$(LD_Z_PIE_ENABLE)
 # Fix 64-bit linking via compiler.
 LDFLAGS += $(CC_BITS)
 
-CONFIGURE_OPTIONS += --with-ssl-dir=/usr/openssl/3
 CONFIGURE_OPTIONS += --with-audit=solaris
 CONFIGURE_OPTIONS += --with-libedit
 CONFIGURE_OPTIONS += --with-kerberos5

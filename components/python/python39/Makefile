@@ -133,10 +133,6 @@ CONFIGURE_OPTIONS += "ac_cv_func_getentropy=no"
 # from Linux Kernel and might cause problems.
 CONFIGURE_OPTIONS += "ac_cv_func_pthread_getcpuclockid=no"
 
-# Automatically detect OpenSSL 3 headers and libs. Note that pkgconfig
-# is not invoked when --with-openssl flag is present.
-PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
-
 COMPONENT_BUILD_ENV += DFLAGS="-$(BITS)"
 COMPONENT_BUILD_ENV += XPROFILE_DIR="$(XPROFILE_DIR)"
 COMPONENT_BUILD_ENV += PATH="$(PATH)"

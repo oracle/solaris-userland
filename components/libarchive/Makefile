@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -56,10 +56,6 @@ CONFIGURE_OPTIONS += --without-nettle
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-xml2
 CONFIGURE_OPTIONS += --with-zlib
-CFLAGS += -I/usr/openssl/3/include
-CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)"
-CONFIGURE_OPTIONS.64 += LDFLAGS="$(LDFLAGS) -L/usr/openssl/3/lib/$(BITS)"
-CONFIGURE_OPTIONS.32 += LDFLAGS="$(LDFLAGS) -L/usr/openssl/3/lib/"
 # Commands bsdtar, bsdcpio, bsdcat and bsdunzip are not delivered.
 CONFIGURE_OPTIONS += --disable-bsdtar
 CONFIGURE_OPTIONS += --disable-bsdcpio

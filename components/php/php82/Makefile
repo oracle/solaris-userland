@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Must use gcc because of 21090206
@@ -121,8 +121,6 @@ CFLAGS += -DOPENSSL_NO_SSL3
 PROTOUSRPHPVERDIR = $(PROTO_DIR)/$(CONFIGURE_PREFIX)
 
 COMPONENT_PRE_CONFIGURE_ACTION += $(MKDIR) $(BUILD_DIR)/temp;
-
-PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 
 # Remove unnecessary default library path which breaks OpenSSL 3 linking.
 COMPONENT_POST_CONFIGURE_ACTION += \

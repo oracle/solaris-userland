@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -69,11 +69,8 @@ CONFIGURE_OPTIONS  +=	--enable-ucd-snmp-compatibility
 CONFIGURE_OPTIONS  +=	--enable-ipv6
 CONFIGURE_OPTIONS  +=	--enable-mfd-rewrites
 
-CONFIGURE_OPTIONS  +=	--with-openssl=/usr/openssl/3
+CONFIGURE_OPTIONS  +=	--with-openssl
 CONFIGURE_OPTIONS  +=	--disable-des
-OPENSSL_LIB_PATH.32=/usr/openssl/3/lib
-OPENSSL_LIB_PATH.64=/usr/openssl/3/lib/64
-CONFIGURE_OPTIONS += OPENSSL_LIB_PATH=$(OPENSSL_LIB_PATH.$(BITS))
 
 CONFIGURE_OPTIONS  +=	--with-transports="UDP TCP UDPIPv6 TCPIPv6"
 
@@ -168,8 +165,7 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION= \
 	(cd $(@D)/python3.11 ; env PYTHON=$(PYTHON.3.11.$(BITS)) \
 	 $(PYTHON.3.11.$(BITS)) ./setup.py install \
 		--root $(PROTO_DIR) \
-		--install-lib=$(PYTHON.3.11.VENDOR_PACKAGES) \
-		--openssl_lib_dir=$(OPENSSL_LIB_PATH.$(BITS))) ;
+		--install-lib=$(PYTHON.3.11.VENDOR_PACKAGES)) ;
 
 $(INSTALL_64): COMPONENT_INSTALL_ARGS += DESTDIR=$(BUILD_DIR)/prototype/$(MACH64)
 

@@ -1,0 +1,15 @@
+Fix libopts compilation. This is broken because our out-of-the three build process.
+Should be provided to upstream.
+
+
+--- sntp/libopts/Makefile.in
++++ sntp/libopts/Makefile.in
+@@ -836,7 +836,7 @@ uninstall-am: uninstall-libLTLIBRARIES
+ .PRECIOUS: Makefile
+ 
+ 
+-libopts.c:		$(BUILT_SOURCES)
++$(srcdir)/libopts.c:		$(BUILT_SOURCES)
+ 	@: do-nothing rule to avoid default SCCS get
+ @GL_GENERATE_STDNORETURN_H_TRUE@stdnoreturn.h: stdnoreturn.in.h $(top_builddir)/config.status $(_NORETURN_H)
+ @GL_GENERATE_STDNORETURN_H_TRUE@	$(AM_V_GEN)rm -f $@-t $@ && \

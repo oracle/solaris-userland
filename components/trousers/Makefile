@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -63,8 +63,6 @@ CONFIGURE_OPTIONS += --sbindir=$(USRLIBDIR)
 CONFIGURE_OPTIONS += --with-gui=openssl
 CONFIGURE_OPTIONS += LD="$(CC)"
 CONFIGURE_OPTIONS += LIBS="$(LIBS)"
-CONFIGURE_OPTIONS.64 += OPENSSL_LIB_DIR="/usr/openssl/3/lib/64"
-CONFIGURE_OPTIONS += --with-openssl=/usr/openssl/3
 CONFIGURE_OPTIONS += MAKE="$(GMAKE)"
 
 COMPONENT_POST_CONFIGURE_ACTION = (cd $(COMPONENT_SRC); \
