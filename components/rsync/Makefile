@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2009, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2025, Oracle and/or its affiliates.
 #
 
 # Use GNU compiler to automatically remove the build path from macros and debug information.
@@ -29,9 +29,9 @@ BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rsync
-COMPONENT_VERSION=	3.3.0
-COMPONENT_BAID=	168359
-COMPONENT_ARCHIVE_HASH=	sha256:7399e9a6708c32d678a72a63219e96f23be0be2336e50fd1348498d07041df90
+COMPONENT_VERSION=	3.4.1
+COMPONENT_BAID=	192526
+COMPONENT_ARCHIVE_HASH=	sha256:2924bcb3a1ed8b551fc101f740b9f0fe0a202b115027647cf69850d65fd88c52
 COMPONENT_PROJECT_URL=	http://rsync.samba.org/
 COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/rsync/src/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
@@ -42,9 +42,6 @@ include $(WS_MAKE_RULES)/common.mk
 ifeq ($(DEBUG), yes)
 gcc_OPT= -Og -g
 endif
-
-# Needed because we patch configure.ac in patches/gcc-14.patch
-COMPONENT_PREP_ACTION += (cd $(@D) ; ./prepare-source build);
 
 CONFIGURE_OPTIONS  +=		SHELL_PATH=$(BINDIR)/sh
 CONFIGURE_OPTIONS  +=		--with-included-popt
