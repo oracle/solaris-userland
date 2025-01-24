@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 
 # Even though the component is pure python, some
@@ -39,6 +39,9 @@ COMPONENT_PROJECT_URL=	https://github.com/pypa/virtualenv
 COMPONENT_BUGDB=	python-mod/virtualenv
 COMPONENT_ANITYA_ID=	6904
 COMPONENT_BAID=		186691
+
+# virtualenv is not Python 3.13 ready yet
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.13)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

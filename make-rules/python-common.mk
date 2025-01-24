@@ -20,33 +20,39 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 
 CONSOLIDATION = python
 
 $(BUILD_DIR)/%-3.9/.built:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.built:		PYTHON_VERSION=3.11
+$(BUILD_DIR)/%-3.13/.built:		PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.built:	BITS=64
 
 $(BUILD_DIR)/%-3.9/.installed:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.installed:		PYTHON_VERSION=3.11
+$(BUILD_DIR)/%-3.13/.installed:		PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.installed:	BITS=64
 
 $(BUILD_DIR)/%-3.9/.tested:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.tested:		PYTHON_VERSION=3.11
+$(BUILD_DIR)/%-3.13/.tested:		PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.tested:	BITS=64
 
 $(BUILD_DIR)/%-3.9/.tested-and-compared:	PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.tested-and-compared:	PYTHON_VERSION=3.11
+$(BUILD_DIR)/%-3.13/.tested-and-compared:	PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.tested-and-compared:	BITS=64
 
 $(BUILD_DIR)/%-3.9/.system-tested:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.system-tested:		PYTHON_VERSION=3.11
+$(BUILD_DIR)/%-3.13/.system-tested:		PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.system-tested:	BITS=64
 
 $(BUILD_DIR)/%-3.9/.system-tested-and-compared:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.system-tested-and-compared:	PYTHON_VERSION=3.11
+$(BUILD_DIR)/%-3.13/.system-tested-and-compared:	PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.system-tested-and-compared:	BITS=64
 
 BUILD_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
@@ -207,4 +213,9 @@ ifneq ($(findstring 3.11, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += library/python/setuptools-311
 REQUIRED_PACKAGES += library/python/pytest-311
+endif
+ifneq ($(findstring 3.13, $(PYTHON_VERSIONS)),)
+REQUIRED_PACKAGES += runtime/python-313
+REQUIRED_PACKAGES += library/python/setuptools-313
+REQUIRED_PACKAGES += library/python/pytest-313
 endif

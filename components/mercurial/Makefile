@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -43,6 +43,7 @@ COMPONENT_ANITYA_ID=	1969
 
 COMPONENT_BAID=		174608
 
+PYTHON_VERSIONS= 3.9 3.11
 BUILD_STYLE= setup.py
 
 # Add install dependency when system-test target is implemented.

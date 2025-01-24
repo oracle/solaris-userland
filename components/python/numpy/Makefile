@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -38,6 +38,9 @@ COMPONENT_PROJECT_URL=	http://www.numpy.org/
 COMPONENT_BUGDB=	python-mod/numpy
 COMPONENT_ANITYA_ID=	2509
 COMPONENT_BAID=		164569
+ 
+# this version of numpy is not Python 3.13 ready yet
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.13)
 
 BUILD_STYLE= setup.py
 include $(WS_MAKE_RULES)/common.mk

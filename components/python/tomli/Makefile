@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,6 +38,9 @@ COMPONENT_BAID=		185696
 GIT_REPO=   $(COMPONENT_PROJECT_URL)
 GIT_COMMIT_ID=  $(COMPONENT_VERSION)
 GIT_HASH=   sha256:cafacdaaee96af5ed9aa194f3a6dae9b07c9d07340753fd0162d74f1d76435bc
+
+# Backport library that doesn't bring anything new to 3.13.
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.13)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

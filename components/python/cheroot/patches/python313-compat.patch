@@ -1,0 +1,30 @@
+These issues were reported upstream:
+https://github.com/cherrypy/cheroot/issues/733
+https://github.com/cherrypy/cheroot/issues/734
+
+--- cheroot-10.0.0/pytest.ini
++++ cheroot-10.0.0/pytest.ini
+@@ -69,6 +69,11 @@ filterwarnings =
+   ignore:unclosed <socket.socket fd=:ResourceWarning
+   ignore:unclosed <ssl.SSLSocket fd=:ResourceWarning
+ 
++  # Python 3.13 no longer ignores IOBase errors raised by the close(),
++  # which exposed a possible race condition in test_conn tests.
++  # https://github.com/cherrypy/cheroot/issues/734
++  ignore:Exception ignored in. <function IOBase.__del__:pytest.PytestUnraisableExceptionWarning
++
+ junit_duration_report = call
+ junit_family = xunit2
+ junit_suite_name = cheroot_test_suite
+--- cheroot-10.0.0/cheroot/test/test_makefile.py
++++ cheroot-10.0.0/cheroot/test/test_makefile.py
+@@ -30,6 +30,9 @@ class MockSocket:
+         """Simulate a send."""
+         return len(val)
+ 
++    def _decref_socketios(self):
++        pass
++
+ 
+ def test_bytes_read():
+     """Reader should capture bytes read."""

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,6 +36,8 @@ COMPONENT_PROJECT_URL=	https://github.com/python/importlib_metadata
 COMPONENT_BUGDB=	python-mod/importlib_meta
 COMPONENT_ANITYA_ID=	50323
 COMPONENT_BAID=		167651
+
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.13)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

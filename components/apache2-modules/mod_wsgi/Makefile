@@ -35,6 +35,9 @@ COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	2001
 COMPONENT_BAID=		191665
 
+# Not 3.13 ready due to gcc/studio related SPARC linking issues.
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.13)
+
 # Don't use default CPPFLAGS; it causes Apache's custom CPP to fail.
 CONFIGURE_CPPFLAGS=
 VARIANTS_64 += $(BUILD_DIR)/apache24-python39

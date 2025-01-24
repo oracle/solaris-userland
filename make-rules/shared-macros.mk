@@ -249,10 +249,11 @@ endif
 
 # The default version should go last.
 PYTHON_VERSION =	3.9
-PYTHON_VERSIONS =	3.9 3.11
+PYTHON_VERSIONS =	3.9 3.11 3.13
 
-# Convenience variable for builds without Python 3.9 and 3.11
+# Convenience variable for builds without newer runtimes
 WITHOUT_PYTHON3.11 = 3.9
+WITHOUT_PYTHON3.13 = 3.9 3.11
 
 # PYTHON3_SOABI variable defines the naming scheme
 # of python3 extension libraries: cpython or abi3.
@@ -712,6 +713,10 @@ PYTHON.3.11.VENDOR_PACKAGES.32 =
 PYTHON.3.11.VENDOR_PACKAGES.64 = /usr/lib/python3.11/vendor-packages
 PYTHON.3.11.VENDOR_PACKAGES = $(PYTHON.3.11.VENDOR_PACKAGES.64)
 
+PYTHON.3.13.VENDOR_PACKAGES.32 =
+PYTHON.3.13.VENDOR_PACKAGES.64 = /usr/lib/python3.13/vendor-packages
+PYTHON.3.13.VENDOR_PACKAGES = $(PYTHON.3.13.VENDOR_PACKAGES.64)
+
 # Base path to vendor packages shared between all Python versions
 PYTHON_VENDOR_PACKAGES_BASE = /usr/lib/python$(PYTHON_VERSION)/vendor-packages
 
@@ -721,6 +726,7 @@ PYTHON_VENDOR_PACKAGES = $(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES)
 
 PYTHON.3.9.TEST = /usr/lib/python3.9/test
 PYTHON.3.11.TEST = /usr/lib/python3.11/test
+PYTHON.3.13.TEST = /usr/lib/python3.13/test
 
 USRBIN.32 =	/usr/bin
 USRBIN.64 =	/usr/bin/$(MACH64)

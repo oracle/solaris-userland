@@ -126,6 +126,8 @@ PHP_83_LIBS := $(shell $(PHP_83_CONFIG) --libs)
 PKG_CONFIG = /usr/bin/pkg-config
 PYTHON_311_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.11)
 PYTHON_311_LIBS = $(shell $(PKG_CONFIG) --libs python-3.11)
+PYTHON_313_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.13)
+PYTHON_313_LIBS = $(shell $(PKG_CONFIG) --libs python-3.13)
 
 # Create additional gv directories for non-default php and python
 # versions and update all relevant Makefile variables.
@@ -135,6 +137,9 @@ $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
     $(GSED) -i \
      -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_81_INCLUDES)|' \
      -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_81_LDFLAGS) $(PHP_81_LIBS)|' \
+     -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.13)|' \
+     -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_313_INCLUDES)|' \
+     -e '/^PYTHON3_LIBS =/s|=.*$$|= $(PYTHON_313_LIBS)|' \
      `find tclpkg/gv1 -name Makefile` ) ; \
     (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv2 ; \
     $(GSED) -i '/^SUBDIRS =/s|$$| gv2|' tclpkg/Makefile ; \
@@ -157,14 +162,19 @@ $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
 # without the .pyc file and without .so version tag.
 39_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.9.VENDOR_PACKAGES)
 311_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.11.VENDOR_PACKAGES)
+313_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.13.VENDOR_PACKAGES)
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
 	$(PYTHON.3.9) -m compileall -l -d $(PYTHON.3.9.VENDOR_PACKAGES) $(39_VENDOR_PROTO); \
 	$(MV) $(39_VENDOR_PROTO)/_gv.so $(39_VENDOR_PROTO)/_gv.cpython-39.so; \
 	$(RM) -r $(311_VENDOR_PROTO); $(MKDIR) $(311_VENDOR_PROTO); \
-	$(INSTALL) -m 644 $(@D)/tclpkg/gv2/gv.py $(311_VENDOR_PROTO)/gv.py; \
+	$(INSTALL) -m 644 $(@D)/tclpkg/gv1/gv.py $(311_VENDOR_PROTO)/gv.py; \
 	$(PYTHON.3.11) -m compileall -l -d $(PYTHON.3.11.VENDOR_PACKAGES) $(311_VENDOR_PROTO); \
-	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_python3.soT $(311_VENDOR_PROTO)/_gv.cpython-311.so;
+	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_python3.soT $(311_VENDOR_PROTO)/_gv.cpython-311.so; \
+	$(RM) -r $(313_VENDOR_PROTO); $(MKDIR) $(313_VENDOR_PROTO); \
+	$(INSTALL) -m 644 $(@D)/tclpkg/gv2/gv.py $(313_VENDOR_PROTO)/gv.py; \
+	$(PYTHON.3.13) -m compileall -l -d $(PYTHON.3.13.VENDOR_PACKAGES) $(313_VENDOR_PROTO); \
+	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_python3.soT $(313_VENDOR_PROTO)/_gv.cpython-313.so;
 
 # Similarly, install PHP bindings for each version. _gv.so for default version
 # is already installed by Graphviz. Additional mediated links are handled
@@ -233,6 +243,7 @@ REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += runtime/python-313
 REQUIRED_PACKAGES += runtime/ruby-31
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library

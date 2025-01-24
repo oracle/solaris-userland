@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -36,6 +36,10 @@ COMPONENT_BUGDB=	python-mod/lockfile
 COMPONENT_ANITYA_ID=	6854
 
 COMPONENT_BAID=		31609
+
+# lockfile is being considered for removal; because of that,
+# we won't deliver it for Python 3.13 for now.
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.13)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
