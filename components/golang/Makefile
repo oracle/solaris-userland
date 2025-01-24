@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 BUILD_ARCH= i386
@@ -31,17 +31,17 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		golang
-COMPONENT_VERSION=	1.23.1
+COMPONENT_VERSION=	1.23.5
 COMPONENT_MAJOR_VERSION= \
 	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\.[0-9]\+\).*/\1/')
 COMPONENT_PROJECT_URL=	https://golang.org/
 COMPONENT_ARCHIVE=	go$(COMPONENT_VERSION).src.tar.gz
 COMPONENT_ARCHIVE_URL=	https://storage.googleapis.com/golang/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	 \
-	sha256:6ee44e298379d146a5e5aa6b1c5b5d5f5d0a3365eabdd70741e6e21340ec3b0d
+	sha256:a6f3f4bbd3e6bdd626f79b668f212fbb5649daf75084fb79b678a0ae4d97423b
 COMPONENT_PROJECT_URL=	https://golang.org
 COMPONENT_ANITYA_ID=	1227
-COMPONENT_BAID=		178101
+COMPONENT_BAID=		192877
 
 # Use a simple copy instead of cloney.
 CLONEY := echo
