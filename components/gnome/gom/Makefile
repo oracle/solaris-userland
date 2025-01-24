@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,17 +30,16 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gom
-COMPONENT_VERSION=	0.4
-# Below line containing COMPONENT_MAJOR_MINOR is added 
-# so that gmake download does not fail during tarball download.
-COMPONENT_MAJOR_MINOR=  $(COMPONENT_VERSION)
+COMPONENT_VERSION=	0.5.3
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Gom
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:68d08006aaa3b58169ce7cf1839498f45686fba8115f09acecb89d77e1018a9d
+	sha256:069d0909fbdc6b4d27edf7a879366194e3ab508b03548bf5b89ff63546d20177
+COMPONENT_ARCHIVE_URL=	\
+	https://download.gnome.org/sources/$(COMPONENT_NAME)/$(COMPONENT_MAJOR_MINOR)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13230
 
-COMPONENT_BAID=		87254
+COMPONENT_BAID=		193243
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -56,7 +55,8 @@ CONFIGURE_ENV +=	PYTHON=$(PYTHON.3.11)
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += -Denable-gtk-doc=true
+# Requires gi-docgen
+CONFIGURE_OPTIONS += -Denable-gtk-doc=false
 CONFIGURE_OPTIONS.32 += -Denable-introspection=false
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
