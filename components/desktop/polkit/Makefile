@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -48,6 +48,14 @@ BUILD_STYLE=		meson
 # Tests don't work on Solaris
 TEST_TARGET = $(SKIP_TEST)
 
+# Workaround the mozjs issue described in 24935318
+ifeq ($(MACH), sparc)
+ADDITIONAL_PATCHES += patches/08-mozjs-workaround.sparc
+COMPONENT_POST_UNPACK_ACTION += \
+	xargs -n 1 $(CP) /usr/lib/ld/map.vas47<<< "$(SOURCE_DIR)/src/polkitbackend $(SOURCE_DIR)/src/programs $(SOURCE_DIR)/src/polkitagent";
+LD_EXEC_OPTIONS.64 += -M /usr/lib/ld/map.vas47
+endif
+
 include $(WS_MAKE_RULES)/common.mk
 
 # g-ir-scanner
@@ -70,12 +78,6 @@ CONFIGURE_OPTIONS += -Dsession_tracking=ConsoleKit
 CONFIGURE_OPTIONS += -Dexamples=true
 CONFIGURE_OPTIONS += --sysconfdir="$(ETCDIR)"
 
-# Workaround the mozjs issue described in 24935318
-ifeq ($(MACH), sparc)
-LD_EXEC_OPTIONS.64 += -M $(WS_COMPONENTS)/desktop/polkit/mapfile
-COMPONENT_BUILD_ENV.64 += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS.64)"
-COMPONENT_INSTALL_ENV.64 += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS.64)"
-endif
 ADIHEAP_MODE = $(ADIHEAP_DISABLE)
 ADISTACK_MODE = $(ADISTACK_DISABLE)
 

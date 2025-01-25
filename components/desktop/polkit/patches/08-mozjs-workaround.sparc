@@ -1,0 +1,67 @@
+Internal bug references:
+ - 24935318 - running gjs-console on sparc results in a coredump 
+ - 36078952 - /usr/lib/ld could use a RESERVE_SEGMENT example 
+
+Use RESERVE_SEGMENT on SPARC to limit stack below 47bits of address space.
+
+https://bugzilla.mozilla.org/show_bug.cgi?id=577056
+Bug 577056 fatval: Memory layout for 64-bit Solaris is different than other 64-bit systems.
+
+--- a/src/polkitbackend/meson.build	2025-01-22 20:58:39.792684828 -0800
++++ b/src/polkitbackend/meson.build	2025-01-22 21:00:57.421734836 -0800
+@@ -71,6 +71,9 @@
+   '-DPOLKIT_BACKEND_I_KNOW_API_IS_SUBJECT_TO_CHANGE',
+ ]
+ 
++mapfile = 'map.vas47'
++map_flag = '-Wl,-M,@0@/@1@'.format(meson.current_source_dir(), mapfile)
++
+ executable(
+   program,
+   program + '.c',
+@@ -77,7 +80,7 @@
+   include_directories: top_inc,
+   dependencies: libpolkit_gobject_dep,
+   c_args: c_flags,
+-  link_with: libpolkit_backend,
++  link_with: libpolkit_backend, link_args: map_flag, link_depends: mapfile,
+   install: true,
+   install_dir: pk_libprivdir,
+ )
+--- a/src/programs/meson.build	2025-01-23 18:45:00.924645195 -0800
++++ b/src/programs/meson.build	2025-01-23 18:45:55.238827902 -0800
+@@ -5,12 +5,15 @@
+   ['pkttyagent', [libpolkit_agent_dep]],
+ ]
+ 
++mapfile = 'map.vas47'
++map_flag = '-Wl,-M,@0@/@1@'.format(meson.current_source_dir(), mapfile)
+ foreach program: programs
+   executable(
+     program[0],
+     program[0] + '.c',
+     include_directories: top_inc,
+-    dependencies: program[1],
++    dependencies: program[1],
++    link_args: map_flag, link_depends: mapfile,
+     install: true,
+   )
+ endforeach
+--- a/src/polkitagent/meson.build	2025-01-23 18:46:12.264773894 -0800
++++ b/src/polkitagent/meson.build	2025-01-23 18:46:44.952662202 -0800
+@@ -108,11 +108,14 @@
+ 
+   deps = auth_deps + [libpolkit_gobject_dep]
+ 
++mapfile = 'map.vas47'
++map_flag = '-Wl,-M,@0@/@1@'.format(meson.current_source_dir(), mapfile)
+   executable(
+     '@0@-agent-helper-@1@'.format(meson.project_name(), pk_api_version),
+     sources,
+     include_directories: top_inc,
+-    dependencies: deps,
++    dependencies: deps,
++    link_args: map_flag, link_depends: mapfile,
+     c_args: '-D_POLKIT_COMPILATION',
+     install: true,
+     install_dir: pk_libprivdir,
