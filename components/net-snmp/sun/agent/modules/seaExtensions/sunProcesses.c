@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2024, Oracle and/or its affiliates.
+ * Copyright (c) 2003, 2025, Oracle and/or its affiliates.
  *
  * U.S. Government Rights - Commercial software. Government users are subject
  * to the Sun Microsystems, Inc. standard license agreement and applicable
@@ -39,6 +39,7 @@
 #include <pwd.h>
 #include <signal.h>
 #include <syslog.h>
+#include <unistd.h>
 
 #include "snmpvars.h"
 #include "agent.h"

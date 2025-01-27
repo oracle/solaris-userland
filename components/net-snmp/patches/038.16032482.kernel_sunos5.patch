@@ -16,8 +16,8 @@
  
  FEATUREFILE     = $(top_builddir)/include/net-snmp/library/features.h
  
---- net-snmp-5.4.1.old/agent/mibgroup/kernel_sunos5.c	2014-02-25 06:04:49.253524010 -0500
-+++ net-snmp-5.4.1/agent/mibgroup/kernel_sunos5.c	2014-02-26 05:32:10.697219080 -0500
+--- net-snmp-5.9.4/agent/mibgroup/kernel_sunos5.c
++++ net-snmp-5.9.4/agent/mibgroup/kernel_sunos5.c
 @@ -60,6 +60,8 @@
  #include <net/if.h>
  #include <netinet/in.h>
@@ -27,18 +27,22 @@
  /*-
   * Includes of local application header files 
   */
-@@ -172,7 +174,7 @@
+@@ -188,9 +190,11 @@ getif(mib2_ifEntry_t *ifbuf, size_t size
+       size_t *length, int (*comp)(void *, void *), void *arg);
+ static void 
  set_if_info(mib2_ifEntry_t *ifp, unsigned index, char *name, uint64_t flags,
-             boolean_t flags_unknown, int mtu);
+-            boolean_t flags_unknown, int mtu);
++            boolean_t flags_unknown, int mtu);
  static int get_if_stats(mib2_ifEntry_t *ifp);
--
+ 
 +static int link_to_phydev(char *link, char *phy_devname);
- #if defined(HAVE_IF_NAMEINDEX) && defined(NETSNMP_INCLUDE_IFTABLE_REWRITES)
++
+ #if defined(HAVE_IF_NAMEINDEX)
  static int _dlpi_open(const char *devname);
  static int _dlpi_get_phys_address(int fd, char *paddr, int maxlen,
-@@ -1724,11 +1726,155 @@
+@@ -1621,13 +1767,158 @@ getif(mib2_ifEntry_t *ifbuf, size_t size
  }
- #endif /*defined(HAVE_IF_NAMEINDEX)&&defined(NETSNMP_INCLUDE_IFTABLE_REWRITES)*/
+ #endif /*defined(HAVE_IF_NAMEINDEX)*/
  
 +int link_to_phydev(char *link, char *phy_devname)
 +{
@@ -183,16 +187,20 @@
 +
  static void
  set_if_info(mib2_ifEntry_t *ifp, unsigned index, char *name, uint64_t flags,
-             boolean_t flags_unknown, int mtu)
+-            boolean_t flags_unknown, int mtu)
++            boolean_t flags_unknown, int mtu)
  { 
      boolean_t havespeed = B_FALSE;
+     uint64_t ifspeed = 0;
+ 
 +    char phydevname[100];
 +    char devbasename[100];
 +    int instance = -1;
- 
++
      /*
       * Set basic information 
-@@ -1770,6 +1916,16 @@
+      */
+@@ -1673,6 +1967,16 @@ set_if_info(mib2_ifEntry_t *ifp, unsigne
          /* only UPed interfaces get correct link status - if any */
          if (getKstatInt(NULL, name,"link_up",&i_tmp) == 0) {
              ifp->ifOperStatus = i_tmp ? 1 : 2;

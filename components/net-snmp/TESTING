@@ -1,30 +1,109 @@
-##Sanity testing
-For sanity testing, the snmpwalk command can be run over the entire MIB tree
-as given below.
-snmpwalk -v1 -c public localhost
+# create v3 user
+$ svcadm disable svc:/application/management/net-snmp:default
+$ net-snmp-config --create-snmpv3-user -a "my_password" myuser
 
-##SNMP v3 Encryption/Authentication
-Please refer the following link for detailed instructions for
-testing authentication and encryption.
-http://net-snmp.sourceforge.net/docs/README.snmpv3.html
+# disable any other access to snmp
+perl -pi -e 's/^(r.community)/#$1/' /etc/net-snmp/snmp/snmpd.conf
 
-##Traps/Informs
-Instructions for setting up a TRAP/INFORM can be found at
-http://net-snmp.sourceforge.net/wiki/index.php/TUT:Configuring_snmptrapd_to_receive_SNMPv3_notifications.
+# verify that the user can access snmp data
+$ svcadm enable svc:/application/management/net-snmp:default
+$ snmpget -v 3 -u myuser -l authNoPriv -a MD5 -A my_password localhost UCD-SNMP-MIB::versionCDate.0
+UCD-SNMP-MIB::versionCDate.0 = STRING: Thu Jan 16 14:50:33 2025
 
-Please refer the "Real World Examples" for a sample output. 
+# verify that public acces does not work now
+$ snmpwalk -v 2c -c public localhost UCD-SNMP-MIB::versionCDate.0
+Timeout: No Response from localhost
 
-## Dependencies:
-Userland components:
-The hplip, php and python components have build time dependencies on net-snmp, thus any 
-uprev/interface change should be tested by creating a build machine with the updated 
-net-snmp packages and then building the dependent component on that build setup.
+# enable public access for easier testing
+$ echo 'rwcommunity public' >> /etc/net-snmp/snmp/snmpd.conf
+$ svcadm restart svc:/application/management/net-snmp:default
+$ snmpwalk -v 2c -c public localhost ifdescr
+IF-MIB::ifDescr.1 = STRING: lo0
+IF-MIB::ifDescr.2 = STRING: net0
 
-ZFSSA:
-We need to build and test net-snmp on a ZFSSA system out of ON with the new packages. 
-The appliance package can be created by running a ON default build. 
-Package location : $SRC/data/pkg/fish-i386-nondebug/<pkgname>.pkg, where $SRC is the workspace root.
+# memory statistics
+$ snmpwalk -v 2c -c public localhost  .1.3.6.1.4.1.2021.4
 
-Please refer the "Installing Appliance Media as an Update" section at
-http://fgw.us.oracle.com/twiki-bin/view/FishDevelopers/BuildIka 
-for more instructions on how to actually update the ZFSSA with the newly built package.
+# snmptranslte tests
+$ snmptranslate 1.3.6.1.2.1.1.1.0
+SNMPv2-MIB::sysDescr.0
+
+$ snmptranslate -On HOST-RESOURCES-MIB::hrSystemUptime.0
+.1.3.6.1.2.1.25.1.1.0
+
+$ snmptable -v1 -c public localhost udpTable
+SNMP table: UDP-MIB::udpTable
+
+ udpLocalAddress udpLocalPort
+         0.0.0.0           68
+         0.0.0.0          111
+...
+
+
+# snmpset test
+$ snmpget -v 2c -c public localhost IF-MIB::ifAlias.1
+IF-MIB::ifAlias.1 = STRING:
+
+$ snmpset -v 2c -c public localhost IF-MIB::ifAlias.1 s aha
+IF-MIB::ifAlias.1 = STRING: aha
+
+$ snmpget -v 2c -c public localhost IF-MIB::ifAlias.1
+IF-MIB::ifAlias.1 = STRING: test
+
+
+# snmpbulkget
+$ snmpbulkget -v2c -c public localhost system
+SNMPv2-MIB::sysDescr.0 = STRING: SunOS ST-ul-cbe 5.11 11.4.78.188.0 i86pc
+...
+
+
+# fma
+$ echo 'dlmod sunFM /usr/lib/fm/amd64/libfmd_snmp.so.1' >> /etc/net-snmp/snmp/snmpd.conf
+$ svcadm restart svc:/application/management/net-snmp:default
+$ cat /var/log/snmpd.log # no error loading module shoud be seen
+$ echo '
+ fmridef dev_t {
+         uint8_t version;
+         string scheme;
+         string device-path;
+ };
+
+ evdef ereport.io.pciex.rc.ce-msg {
+         fmri dev_t detector;
+         uint32_t rc-status;
+         uint16_t source-id;
+         boolean source-valid;
+ };
+
+ event ereport.io.pciex.rc.ce-msg er1 = {
+         { 0, "dev", "/pci@0,0" },
+         0x1,
+         0x1602,
+         true
+ };
+
+ er1;' > /tmp/file
+$ /usr/lib/fm/fmd/fminject /tmp/file
+
+$ snmpwalk -c public -v 2c localhost SUN-FM-MIB::sunFmProblemTable
+SUN-FM-MIB::sunFmProblemUUID."02546836-742a-48d5-a8c1-ae936eb6c4b0" = STRING: "02546836-742a-48d5-a8c1-ae936eb6c4b0"
+SUN-FM-MIB::sunFmProblemUUID."690d6c12-c070-4a97-bc11-f8593fc2f13d" = STRING: "690d6c12-c070-4a97-bc11-f8593fc2f13d"
+...
+
+
+
+# trap
+$ echo $'createUser informtest SHA mypassword AES\nauthuser log informtest' > /tmp/snmptrapd.conf
+$ snmptrapd -f -C -c /tmp/snmptrapd.conf -Le
+( now from another window )
+$ snmptrap -Ci -v 3 -a SHA -A mypassword -x AES -X mypassword -l authPriv -u informtest localhost 0 linkUp.0
+( back in original window we should see )
+DISMAN-EVENT-MIB::sysUpTimeInstance = Timeticks: (0) 0:00:00.00 SNMPv2-MIB::snmpTrapOID.0 = OID: IF-MIB::linkUp.0
+
+
+# python
+$ python3.11 -c "import netsnmp; print(netsnmp.snmpget(netsnmp.Varbind('sysDescr.0'), Version=2, DestHost = 'localhost', Community='public'))"
+('SunOS ST-ul-cbe 5.11 11.4.78.188.0 i86pc',)
+
+$ python3.9 -c "import netsnmp; print(netsnmp.snmpget(netsnmp.Varbind('sysDescr.0'), Version=2, DestHost = 'localhost', Community='public'))"
+('SunOS ST-ul-cbe 5.11 11.4.78.188.0 i86pc',)

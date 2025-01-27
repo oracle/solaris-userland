@@ -33,9 +33,9 @@
  miblib: $(MIBLIB)
  
  libs: $(AGENTLIB) $(MIBLIB)
---- net-snmp-5.7.2/agent/helpers/Makefile.in	Sun Dec 30 22:37:05 2012
-+++ net-snmp-5.7.2/agent/helpers/Makefile.in	Mon Dec 31 00:02:37 2012
-@@ -31,8 +31,11 @@
+--- net-snmp-5.9.4/agent/helpers/Makefile.in
++++ net-snmp-5.9.4/agent/helpers/Makefile.in
+@@ -29,8 +29,11 @@ OBJS = dummy.o
  
  LOBJS = dummy.lo
  
@@ -45,13 +45,13 @@
  all: standardall
  
  libnetsnmphelpers.$(LIB_EXTENSION)$(LIB_VERSION):    $(LOBJS)
--	$(LIB_LD_CMD) $@ $(LOBJS) @LD_NO_UNDEFINED@ $(LDFLAGS) $(LIB_LD_LIBS)
+-	$(LIB_LD_CMD) $@ $(LOBJS) $(LDFLAGS)
 -	$(RANLIB) $@
-+	$(LIB_LD_CMD) $@ $(LIB_LD_ADD_PATH) $(LOBJS) @LD_NO_UNDEFINED@ $(LDFLAGS) $(LIB_LD_LIBS) $(LIB_LD_ADD)
++	$(LIB_LD_CMD) $@ $(LIB_LD_ADD_PATH) $(LOBJS) $(LDFLAGS) $(LIB_LD_ADD)
 +	$(RANLIB) $@ $(LIB_LD_ADD)
---- net-snmp-5.7.2/snmplib/Makefile.in	Sun Dec 30 22:37:08 2012
-+++ net-snmp-5.7.2/agent/helpers/Makefile.in	Mon Dec 31 00:06:01 2012
-@@ -221,6 +221,9 @@
+--- net-snmp-5.9.4/snmplib/Makefile.in
++++ net-snmp-5.9.4/snmplib/Makefile.in
+@@ -221,6 +221,9 @@ FTOBJS=	snmp_client.ft mib.ft parse.ft s
  # just in case someone wants to remove libtool, change this to OBJS.
  TOBJS=$(LOBJS)
  
@@ -61,14 +61,14 @@
  FEATUREFILE     = $(top_builddir)/include/net-snmp/library/features.h
  
  # 
-@@ -230,8 +233,8 @@
+@@ -230,8 +233,8 @@ all: standardall
  
  # how to build the libraries.
  libnetsnmp.$(LIB_EXTENSION)$(LIB_VERSION):    $(TOBJS)
--	$(LIB_LD_CMD) $@ $(TOBJS) @LD_NO_UNDEFINED@ $(LDFLAGS) @LNETSNMPLIBS@
+-	$(LIB_LD_CMD) $@ $(TOBJS) $(LDFLAGS) @LNETSNMPLIBS@
 -	$(RANLIB) $@
-+	$(LIB_LD_CMD) $@ $(TOBJS) @LD_NO_UNDEFINED@ $(LDFLAGS) @LNETSNMPLIBS@ } $(LIB_LD_ADD)
++	$(LIB_LD_CMD) $@ $(TOBJS) $(LDFLAGS) @LNETSNMPLIBS@ $(LIB_LD_ADD)
 +	$(RANLIB) $@ $(LIB_LD_ADD)
  
  libsnmp.$(LIB_EXTENSION)$(LIB_VERSION):    $(TOBJS)
- 	$(LIB_LD_CMD) $@ $(TOBJS) @LD_NO_UNDEFINED@ $(LDFLAGS) @LNETSNMPLIBS@
+ 	$(LIB_LD_CMD) $@ $(TOBJS) $(LDFLAGS) @LNETSNMPLIBS@

@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -33,9 +33,11 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2008/355 value=PSARC/2014/169 \
     value=PSARC/2019/050
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-
-
 file $(MACH64)/sun/agent/modules/seaExtensions/libseaExtensions.so \
     path=usr/lib/$(MACH64)/libseaExtensions.so
-file path=usr/lib/libseaExtensions.so
+
+
+#file $(MACH64)/sun/agent/modules/seaExtensions/libseaExtensions.so #    path=usr/lib/$(MACH64)/libseaExtensions.so
+file $(MACH32)/sun/agent/modules/seaExtensions/libseaExtensions.so \
+    path=usr/lib/libseaExtensions.so
 license COPYING license="BSD, BSD-like"

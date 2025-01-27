@@ -33,26 +33,29 @@ PATH=$(GNUBIN):$(USRBINDIR)
 COMPILER=gcc
 
 COMPONENT_NAME=		net-snmp
-COMPONENT_VERSION=	5.8
+COMPONENT_VERSION=	5.9.4
 COMPONENT_PROJECT_URL=	http://www.net-snmp.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:b2fc3500840ebe532734c4786b0da4ef0a5f67e51ef4c86b3345d697e4976adf
+    sha256:8b4de01391e74e3c7014beb43961a2d6d6fa03acc34280b9585f4930745b0544
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/net-snmp/files/net-snmp/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/net-snmp utility/net-snmp library/net-snmp
 COMPONENT_ANITYA_ID=	2062
 
-COMPONENT_BAID=		59754
+COMPONENT_BAID=		192942
 
-BUILD_32_and_64 += $(BUILD_DIR_32)/.docs
-INSTALL_TARGET= build $(INSTALL_32_and_64)
-TEST_TARGET= $(TEST_32_and_64)
+BUILD_64 += $(BUILD_DIR_64)/.docs
 
 include $(WS_MAKE_RULES)/common.mk
+
+# Required by GCC 14 - needs to be evaluated and properly fixed.
+CFLAGS += -Wno-implicit-function-declaration -Wno-incompatible-pointer-types
 
 PYTHON_VERSION = 3.9
 
 studio_C99MODE= $(studio_C99_ENABLE)
 CPPFLAGS += "-DFALSE_SHARING_ALIGN=64"
+
+COMPONENT_PREP_ACTION += (cd $(@D) ; autoreconf -fiv);
 
 CONFIGURE_ENV +=	PYTHONPROG=$(PYTHON.$(BITS))
 
@@ -78,32 +81,27 @@ CONFIGURE_OPTIONS  +=	--with-transports="UDP TCP UDPIPv6 TCPIPv6"
 MIB_MODULES = host disman/event-mib ucd-snmp/diskio udp-mib tcp-mib if-mib
 CONFIGURE_OPTIONS  +=	--with-mib-modules="$(MIB_MODULES)"
 
-# Python bindings support.
-PYTHON_ARGS =		--basedir=/usr/bin
-CONFIGURE_OPTIONS  +=	--with-python-modules="$(PYTHON_ARGS)"
-
-# Only build 64 bit Perl support
-PERL_ARGS =			DESTDIR=$(PROTO_DIR) INSTALLDIRS=vendor
+# Only build 64 bit Perl and Python support
 CONFIGURE_OPTIONS.32  +=	--disable-embedded-perl
 CONFIGURE_OPTIONS.32  +=	--without-perl-modules
+PERL_ARGS =			DESTDIR=$(PROTO_DIR) INSTALLDIRS=vendor
 CONFIGURE_OPTIONS.64  +=	PERLPROG="$(PERL)"
 CONFIGURE_OPTIONS.64  +=	--with-perl-modules="$(PERL_ARGS)"
 CONFIGURE_OPTIONS.64  +=	--disable-perl-cc-checks
 
-# Workaround -Wimplicit-function-declaration error from gcc 14 that
-# causes this check to fail and return incorrect answer.
-# Fixed upstream in 5.9.1 by commit a7c8c26c48c954a19bca5fd
-CONFIGURE_OPTIONS  += ac_cv_have_ip_recvdstaddr=yes
-
-COMPONENT_PRE_CONFIGURE_ACTION = \
-	($(CLONEY) $(SOURCE_DIR) $(@D); $(CLONEY) $(COMPONENT_DIR)/sun $(@D)/sun);
-
-# Make a copy of the python bits so we can build separate python 3.11 support
-COMPONENT_PREP_ACTION += (cd $(@D) ; cp -rp python python3.11);
-
 # for the goofy definition of ARCH in the extra Makefiles
 ARCH=32
 ARCH=$(BITS:64=$(MACH64))
+
+COMPONENT_PRE_CONFIGURE_ACTION += (echo "COMPONENT_PRE_CONFIGURE_ACTION - BITS=$(BITS)");
+COMPONENT_PRE_CONFIGURE_ACTION.32 = \
+	($(CLONEY) $(SOURCE_DIR) $(@D); $(CLONEY) $(COMPONENT_DIR)/sun $(@D)/sun);
+COMPONENT_PRE_CONFIGURE_ACTION.64 = \
+	($(CLONEY) $(SOURCE_DIR) $(@D); $(CLONEY) $(COMPONENT_DIR)/sun $(@D)/sun);
+COMPONENT_PRE_CONFIGURE_ACTION += $(COMPONENT_PRE_CONFIGURE_ACTION.$(BITS))
+
+# Make a copy of the python bits so we can build separate python 3.11 support
+COMPONENT_PREP_ACTION += (cd $(@D) ; cp -rp python python3.11);
 
 CCSMAKE_ARGS =	CC="$(CC)" CFGPREFIX=$(USRDIR) CFGLIB64=$(USRLIBDIR64)
 CCSMAKE_ARGS +=	CFGLIB=$(USRLIBDIR) ARCH=$(ARCH) ROOT=$(PROTO_DIR)
@@ -137,40 +135,59 @@ PKG_PROTO_DIRS += $(BUILD_DIR)/prototype/$(MACH64)
 # need to add more sources (see doc/manifest-check.txt for description):
 #
 # Add documentation
-GENERATE_PROTO_DIRS += build/$(MACH32)/docs^build/$$(MACH32)/docs
-# Add 64 bit libraries from build/prototype/$(MACH64) into usr/bin/$(MACH64)
-GENERATE_PROTO_DIRS += build/prototype/$(MACH64)/usr/lib/$(MACH64)/^usr/lib/$$!(MACH64)
-# Add 64 bit binaries from build/prototype/$(MACH64)
-GENERATE_PROTO_DIRS += build/prototype/$(MACH64)/usr/bin^usr/bin
-# Add perl deliverables from build/prototype/$(MACH64)
-GENERATE_PROTO_DIRS += build/prototype/$(MACH64)/usr/perl5^usr/perl5
+GENERATE_PROTO_DIRS += build/$(MACH64)/docs^build/$$(MACH64)/docs
 # Add demo files
 GENERATE_PROTO_DIRS += sun/sdk/demo^sun/sdk/demo
 
-$(BUILD_32): COMPONENT_POST_BUILD_ACTION= \
-	(cd $(BUILD_DIR)/$(MACH32)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS))
 
-$(BUILD_64): COMPONENT_POST_BUILD_ACTION= \
-	(cd $(BUILD_DIR)/$(MACH64)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS))
+COMPONENT_PRE_BUILD_ACTION += (echo "COMPONENT_PRE_BUILD_ACTION - BITS=$(BITS)");
+COMPONENT_PRE_BUILD_ACTION += \
+	(cd $(BUILD_DIR_$(BITS)); rm -rf python3.9; gcp -vr python python3.9); \
+	(cd $(BUILD_DIR_$(BITS)); rm -rf python3.11; gcp -vr python python3.11);
 
-$(INSTALL_32): COMPONENT_INSTALL_ARGS += PYTHON_VENDOR_PACKAGES=$(PYTHON_VENDOR_PACKAGES)
+COMPONENT_POST_BUILD_ACTION.64 += \
+	(cd $(BUILD_DIR_64)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS));
+COMPONENT_POST_BUILD_ACTION.32 += \
+	(cd $(BUILD_DIR_32)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS));
 
-$(INSTALL_32): COMPONENT_POST_INSTALL_ACTION= \
-	($(MKDIR) -p $(BUILD_DIR)/prototype/$(MACH)/etc/net-snmp/snmp/mibs; \
-	cd $(BUILD_DIR)/$(MACH32)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS) install)
+COMPONENT_POST_BUILD_ACTION.64 += \
+	(cd $(BUILD_DIR_64)/python ; find . -name \*.so | gxargs --verbose rm);
+COMPONENT_POST_BUILD_ACTION.64 += \
+	(cd $(BUILD_DIR_$(BITS))/python3.9 ; $(PYTHON.3.9) setup.py build --basedir=$(BUILD_DIR)/$(MACH64)); \
+	(cd $(BUILD_DIR_$(BITS))/python3.11 ; $(PYTHON.3.11) setup.py build --basedir=$(BUILD_DIR)/$(MACH64));
 
-$(INSTALL_64): COMPONENT_POST_INSTALL_ACTION= \
-	($(MKDIR) -p $(BUILD_DIR)/prototype/$(MACH64)/etc/net-snmp/snmp/mibs; \
-	 cd $(BUILD_DIR)/$(MACH64)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS) install) ; \
+COMPONENT_POST_BUILD_ACTION += (echo "COMPONENT_POST_BUILD_ACTION - BITS=$(BITS)");
+COMPONENT_POST_BUILD_ACTION += $(COMPONENT_POST_BUILD_ACTION.$(BITS))
+
+# Build sun agent and python modules
+COMPONENT_POST_INSTALL_ACTION += \
+	($(MKDIR) $(BUILD_DIR)/prototype/$(MACH64)/etc/net-snmp/snmp/mibs; \
+	 cd $(BUILD_DIR)/$(MACH64)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS) install);
+
+COMPONENT_POST_INSTALL_ACTION.64 = \
+	(cd $(@D)/python3.9 ; env PYTHON=$(PYTHON.3.9.$(BITS)) \
+	 $(PYTHON.3.9.$(BITS)) ./setup.py install \
+		--root $(PROTO_DIR) \
+		--install-lib=$(PYTHON.3.9.VENDOR_PACKAGES)); \
 	(cd $(@D)/python3.11 ; env PYTHON=$(PYTHON.3.11.$(BITS)) \
 	 $(PYTHON.3.11.$(BITS)) ./setup.py install \
 		--root $(PROTO_DIR) \
 		--install-lib=$(PYTHON.3.11.VENDOR_PACKAGES)) ;
 
-$(INSTALL_64): COMPONENT_INSTALL_ARGS += DESTDIR=$(BUILD_DIR)/prototype/$(MACH64)
+COMPONENT_POST_INSTALL_ACTION.64 += \
+    $(CP) /usr/lib/$(MACH64)/libnetsnmp.so.35.0.0 $(PROTO_DIR)/usr/lib/$(MACH64); \
+    $(CP) /usr/lib/libnetsnmp.so.35.0.0 $(PROTO_DIR)/usr/lib; \
+    $(CP) /usr/lib/$(MACH64)/libnetsnmpagent.so.35.0.0 $(PROTO_DIR)/usr/lib/$(MACH64); \
+    $(CP) /usr/lib/libnetsnmpagent.so.35.0.0 $(PROTO_DIR)/usr/lib; \
+    $(CP) /usr/lib/$(MACH64)/libnetsnmphelpers.so.35.0.0 $(PROTO_DIR)/usr/lib/$(MACH64); \
+    $(CP) /usr/lib/libnetsnmphelpers.so.35.0.0 $(PROTO_DIR)/usr/lib;
+
+COMPONENT_POST_INSTALL_ACTION += (echo "COMPONENT_POST_INSTALL_ACTION - BITS=$(BITS)");
+COMPONENT_POST_INSTALL_ACTION += $(COMPONENT_POST_INSTALL_ACTION.$(BITS))
+
 
 # build the docs
-$(BUILD_DIR_32)/.docs:
+$(BUILD_DIR_64)/.docs:
 	# We can not use srcdir=$(@D) because that path is platform specific
 	# and would produce differently named html files on x86 and sparc.
 	(cd $(@D) ; $(ENV) srcdir=../../$(COMPONENT_SRC) $(DOXYGEN) -u $(@D)/doxygen.conf ; \

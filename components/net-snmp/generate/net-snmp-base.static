@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 # These are mib files which are not installed by net-snmp, but we were used to
@@ -37,27 +37,42 @@ file mibs/NET-SNMP-SYSTEM-MIB.txt path=etc/net-snmp/snmp/mibs/NET-SNMP-SYSTEM-MI
 file mibs/NETWORK-SERVICES-MIB.txt path=etc/net-snmp/snmp/mibs/NETWORK-SERVICES-MIB.txt
 file mibs/UCD-IPFILTER-MIB.txt path=etc/net-snmp/snmp/mibs/UCD-IPFILTER-MIB.txt
 file mibs/UCD-SNMP-MIB-OLD.txt path=etc/net-snmp/snmp/mibs/UCD-SNMP-MIB-OLD.txt
-file $(MACH32)/sun/agent/mibs/health-monitor-mib.mib path=etc/net-snmp/snmp/mibs/health-monitor-mib.mib
+file $(MACH64)/sun/agent/mibs/health-monitor-mib.mib path=etc/net-snmp/snmp/mibs/health-monitor-mib.mib
 
 # configuration file
 file local/net-snmp-cert.conf path=etc/net-snmp/snmp/net-snmp-cert.conf
 
 # SMF infrastructure
-file $(MACH32)/sun/snmpd.conf path=etc/net-snmp/snmp/snmpd.conf mode=0600 \
+file $(MACH64)/sun/snmpd.conf path=etc/net-snmp/snmp/snmpd.conf mode=0600 \
     overlay=allow preserve=renamenew
 file net-snmp.xml path=lib/svc/manifest/application/management/net-snmp.xml \
     restart_fmri=svc:/system/manifest-import:default
-
-# net-snmp-config
-link path=usr/bin/net-snmp-config target=net-snmp-config-64
-file usr/bin/$(MACH32)/net-snmp-config path=usr/bin/net-snmp-config-32
-file usr/bin/net-snmp-config path=usr/bin/net-snmp-config-64
 
 # add 64 bit binaries into /usr/lib/$(MACH64)
 file usr/bin/net-snmp-cert path=usr/lib/$(MACH64)/net-snmp-cert mode=0555
 file usr/bin/snmp-bridge-mib path=usr/lib/$(MACH64)/snmp-bridge-mib mode=0555
 file usr/bin/agentxtrap path=usr/lib/$(MACH64)/agentxtrap mode=0555
 
-# 64 bit build is in non-standard location
+# libentity.so is in non-standard location
+file $(MACH32)/sun/agent/modules/entityMib/libentity.so \
+    path=usr/lib/libentity.so
 file $(MACH64)/sun/agent/modules/entityMib/libentity.so \
     path=usr/lib/$(MACH64)/libentity.so
+
+# This is part of transition from old net-snmp to new one. Can be removed once
+# we stop delivering the old libraries
+link path=usr/lib/libnetsnmp.so.35 target=libnetsnmp.so.35.0.0
+link path=usr/lib/libnetsnmp.so.35.0 target=libnetsnmp.so.35.0.0
+link path=usr/lib/$(MACH64)/libnetsnmp.so.35 target=libnetsnmp.so.35.0.0
+link path=usr/lib/$(MACH64)/libnetsnmp.so.35.0 target=libnetsnmp.so.35.0.0
+
+link path=usr/lib/libnetsnmpagent.so.35 target=libnetsnmpagent.so.35.0.0
+link path=usr/lib/libnetsnmpagent.so.35.0 target=libnetsnmpagent.so.35.0.0
+link path=usr/lib/$(MACH64)/libnetsnmpagent.so.35 target=libnetsnmpagent.so.35.0.0
+link path=usr/lib/$(MACH64)/libnetsnmpagent.so.35.0 target=libnetsnmpagent.so.35.0.0
+
+link path=usr/lib/libnetsnmphelpers.so.35 target=libnetsnmphelpers.so.35.0.0
+link path=usr/lib/libnetsnmphelpers.so.35.0 target=libnetsnmphelpers.so.35.0.0
+link path=usr/lib/$(MACH64)/libnetsnmphelpers.so.35 target=libnetsnmphelpers.so.35.0.0
+link path=usr/lib/$(MACH64)/libnetsnmphelpers.so.35.0 target=libnetsnmphelpers.so.35.0.0
+
