@@ -1,0 +1,15 @@
+Makes tests consistent even in OCI.
+
+Solaris specific. Not suitable for upstream.
+
+--- mysql-8.4.4/storage/ndb/src/common/portlib/CMakeLists.txt
++++ mysql-8.4.4/storage/ndb/src/common/portlib/CMakeLists.txt
+@@ -83,5 +83,8 @@ NDB_ADD_TEST(NdbHW-t NdbHW.cpp LIBS ndbm
+ 
+ NDB_ADD_TEST(NdbDir-t NdbDir.cpp LIBS ndbmgmapi ndbgeneral ndbportlib)
+ 
++# This test depends on sysytem setting and it's failing on some systems.
++if (NOT (CMAKE_SYSTEM_NAME STREQUAL "SunOS" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386"))
+ NDB_ADD_TEST(NdbGetInAddr-t NdbTCP.cpp LIBS ndbgeneral ${LIBSOCKET} ${LIBNSL})
++endif()
+ NDB_ADD_TEST(NdbProcess-t NdbProcess.cpp LIBS ndbmgmapi ndbgeneral ndbportlib)
