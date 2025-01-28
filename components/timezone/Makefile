@@ -21,21 +21,32 @@
 #
 
 #
-# Copyright (c) 2005, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2005, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME= 	timezone
-HUMAN_VERSION=		2024a
+HUMAN_VERSION=		2025a
 # The last digit of COMPONENT_VERSION corresponds to the last letter of the
 # upstream archive name. 'a' -> 1, 'b' -> 2, etc.
-COMPONENT_VERSION=    	2024.1
+COMPONENT_VERSION=    	2025.1
 COMPONENT_PROJECT_URL=	http://www.iana.org/time-zones
 COMPONENT_ARCHIVE_URL=	https://data.iana.org/time-zones/releases/tzdata$(HUMAN_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH= sha256:0d0434459acbd2059a7a8da1f3304a84a86591f6ed69c6248fffa502b6edffe3
+COMPONENT_ARCHIVE_HASH= sha256:4d5fcbc72c7c450ebfe0b659bd0f1c02fbf52fd7f517a9ea13fe71c21eb5f0d0
+# The archive has no directory so create our own and unpack it there
+UNPACK_ARGS=		--relocate-to $(SOURCE_DIR)
 
-COMPONENT_BAID=		158453
+#COMPONENT_SRC_CODE=		$(COMPONENT_NAME)-doc-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE_CODE=		tzcode$(HUMAN_VERSION).tar.gz
+COMPONENT_ARCHIVE_URL_CODE= 	https://data.iana.org/time-zones/releases/$(COMPONENT_ARCHIVE_CODE)
+COMPONENT_ARCHIVE_HASH_CODE=	sha256:119679d59f76481eb5e03d3d2a47d7870d592f3999549af189dbd31f2ebf5061
+COMPONENT_SRC_CODE=		tzcode-$(COMPONENT_VERSION)
+# The archive has no directory so create our own and unpack it there
+UNPACK_ARGS_CODE=		--relocate-to $(SOURCE_DIR_CODE)
+
+COMPONENT_BAID=		193763
 COMPONENT_ANITYA_ID=	5021
 
 # The timezone packages do not have normal FMRI version. This is because the
@@ -44,9 +55,7 @@ COMPONENT_ANITYA_ID=	5021
 OS_META_VERSION=	-$(PKG_SOLARIS_VERSION)
 PKG_MACROS +=		OS_META_VERSION=$(OS_META_VERSION)
 
-
-# The archive has no directory so create our own and unpack it there
-UNPACK_ARGS=		--relocate-to $(SOURCE_DIR)
+COMPILER=gcc
 
 # Include all files from the tarball into the package at
 # usr/share/lib/zoneinfo/src prefix. Exceptions will be handled by generate
@@ -77,8 +86,12 @@ ZONEINFO_TAB_DIR=$(PROTO_DIR)/usr/share/lib/zoneinfo/tab
 
 build: $(SOURCE_DIR)/.prep $(BUILD_DIR)
 	( \
+		cd $(SOURCE_DIR_CODE); \
+		gmake CC=$(CC) VERSION_DEPS= zic; \
+	); \
+	( \
 		cd $(SOURCE_DIR); \
-		/usr/sbin/zic -d $(PROTOUSRSHARELIBDIR)/zoneinfo $(TZFILES) \
+		$(SOURCE_DIR_CODE)/zic -d $(PROTOUSRSHARELIBDIR)/zoneinfo $(TZFILES) \
 	)
 
 	$(MKDIR) -p $(ZONEINFO_TAB_DIR)
