@@ -1,0 +1,28 @@
+33875487 changed the location for shm files from /tmp/ to /tmp/.LIBRT/SHM
+and the files created are pulse-shm-* and not .SHMDpulse-shm-*
+
+--- a/src/pulsecore/shm.c       2025-01-24 14:54:20.050186097 -0800
++++ b/src/pulsecore/shm.c  2025-01-24 14:54:04.868690645 -0800
+@@ -70,8 +70,8 @@
+ #define SHM_PATH "/dev/shm/"
+ #define SHM_ID_LEN 10
+ #elif defined(__sun)
+-#define SHM_PATH "/tmp"
+-#define SHM_ID_LEN 15
++#define SHM_PATH "/tmp/.LIBRT/SHM"
++#define SHM_ID_LEN 10
+ #else
+ #undef SHM_PATH
+ #undef SHM_ID_LEN
+@@ -443,11 +443,7 @@
+         char fn[128];
+         struct shm_marker *m;
+ 
+-#if defined(__sun)
+-        if (strncmp(de->d_name, ".SHMDpulse-shm-", SHM_ID_LEN))
+-#else
+         if (strncmp(de->d_name, "pulse-shm-", SHM_ID_LEN))
+-#endif
+             continue;
+ 
+         if (pa_atou(de->d_name + SHM_ID_LEN, &id) < 0)
