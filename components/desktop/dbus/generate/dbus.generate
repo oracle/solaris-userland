@@ -20,11 +20,19 @@
 #
 
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 <include generate/common.generate>
 
 <transform file link pkg.type=(?!main) -> drop>
 <transform file link -> delete pkg.type .*>
+
+<transform file path=usr/bin/dbus-daemon -> drop>
+
+<transform file path=usr/share/doc/dbus/api/html/dir_6a12105eecb15b0b2b31ba0fad96c427.html -> set variant.arch i386>
+<transform file path=usr/share/doc/dbus/api/html/dir_dedec0acc707674e086dc03694fbc6fc.html -> set variant.arch i386>
+
+<transform file path=usr/share/doc/dbus/api/html/dir_b91f6b46c9e21d5ebe157656d0186178.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/dbus/api/html/dir_e50a23a057f04054fbc19e977c5db2bb.html -> set variant.arch sparc>
 

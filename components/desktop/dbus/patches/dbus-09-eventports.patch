@@ -4,73 +4,53 @@ automatically re-read them when necessary.
 
 Should be offered upstream once we are sure it works as expected.
 
---- dbus-1.14.6/configure.ac
-+++ dbus-1.14.6/configure.ac
-@@ -214,6 +214,7 @@ AC_ARG_ENABLE([apparmor],
- AC_ARG_ENABLE(libaudit,AS_HELP_STRING([--enable-libaudit],[build audit daemon support for SELinux]),enable_libaudit=$enableval,enable_libaudit=auto)
- AC_ARG_ENABLE(inotify, AS_HELP_STRING([--enable-inotify],[build with inotify support (linux only)]),enable_inotify=$enableval,enable_inotify=auto)
- AC_ARG_ENABLE(kqueue, AS_HELP_STRING([--enable-kqueue],[build with kqueue support]),enable_kqueue=$enableval,enable_kqueue=auto)
-+AC_ARG_ENABLE(evports, AS_HELP_STRING([--enable-evports],[build with evports support]),enable_evports=$enableval,enable_evports=auto)
- AC_ARG_ENABLE(console-owner-file, AS_HELP_STRING([--enable-console-owner-file],[enable console owner file]),enable_console_owner_file=$enableval,enable_console_owner_file=auto)
- AC_ARG_ENABLE(launchd, AS_HELP_STRING([--enable-launchd],[build with launchd auto-launch support]),enable_launchd=$enableval,enable_launchd=auto)
- AC_ARG_ENABLE(systemd, AS_HELP_STRING([--enable-systemd],[build with systemd at_console support]),enable_systemd=$enableval,enable_systemd=auto)
-@@ -934,6 +935,26 @@ fi
- 
- AM_CONDITIONAL(DBUS_BUS_ENABLE_KQUEUE, test x$have_kqueue = xyes)
- 
-+# evports checks
-+if test x$enable_evports = xno ; then
-+    have_evports=no
-+else
-+    have_evports=yes
-+    AC_CHECK_HEADER(port.h, , have_evports=no)
-+    AC_CHECK_FUNC(port_create, , have_evports=no)
-+
-+    if test x$enable_evports = xyes -a x$have_evports = xno; then
-+        AC_MSG_ERROR(evports support explicitly enabled but not available)
-+    fi
-+fi
-+
-+dnl check if evports backend is enabled
-+if test x$have_evports = xyes; then
-+   AC_DEFINE(DBUS_BUS_ENABLE_EVPORTS,1,[Use evports])
-+fi
-+
-+AM_CONDITIONAL(DBUS_BUS_ENABLE_EVPORTS, test x$have_evports = xyes)
-+
- # launchd checks
- if test x$enable_launchd = xno ; then
-     have_launchd=no
-@@ -1807,6 +1828,7 @@ echo "
-         Building AppArmor support: ${have_apparmor}
-         Building inotify support: ${have_inotify}
-         Building kqueue support:  ${have_kqueue}
-+        Building evports support: ${have_evports}
-         Building systemd support: ${have_systemd}
-         Traditional activation:   ${enable_traditional_activation}
-         Building X11 code:        ${have_x11}
---- dbus-1.14.6/bus/Makefile.am
-+++ dbus-1.14.6/bus/Makefile.am
-@@ -79,12 +79,16 @@ endif
- if DBUS_BUS_ENABLE_KQUEUE
- DIR_WATCH_SOURCE=dir-watch-kqueue.c
- else
-+if DBUS_BUS_ENABLE_EVPORTS
-+DIR_WATCH_SOURCE=dir-watch-evports.c
-+else
- if DBUS_BUS_ENABLE_INOTIFY
- DIR_WATCH_SOURCE=dir-watch-inotify.c
- else
- DIR_WATCH_SOURCE=dir-watch-default.c
+--- a/meson.build	2025-01-16 06:02:01.559706697 -0800
++++ b/meson.build	2025-01-16 06:10:56.458041009 -0800
+@@ -462,6 +462,22 @@
+     endif
  endif
- endif
+ 
++if get_option('evports').disabled()
++    use_evports = false
++else
++    use_evports = (
++      cc.has_header('port.h', args: compile_args_c) and
++      cc.has_function(
++          'port_create',
++          args: compile_args_c,
++      )
++    )
++    if get_option('evports').enabled() and not use_evports
++        error('evports support requested but not found')
++    endif
 +endif
++config.set('DBUS_BUS_ENABLE_EVPORTS', use_evports)
++
+ if get_option('launchd').disabled()
+     use_launchd = false
+ else
+@@ -1358,6 +1374,7 @@
+     'Building AppArmor support': apparmor.found(),
+     'Building inotify support': use_inotify,
+     'Building kqueue support':  use_kqueue,
++    'Building evports support': use_evports,
+     'Building systemd support': use_systemd,
+     'Traditional activation':   use_traditional_activation,
+     'Building X11 code':        config.get('DBUS_BUILD_X11'),
+--- a/bus/meson.build	2025-01-16 06:11:19.669653816 -0800
++++ b/bus/meson.build	2025-01-16 06:13:50.747578715 -0800
+@@ -111,6 +111,8 @@
  
- noinst_LTLIBRARIES = libdbus-daemon-internal.la
- 
---- dbus-1.14.6/bus/CMakeLists.txt
-+++ dbus-1.14.6/bus/CMakeLists.txt
-@@ -30,6 +30,8 @@ if(DBUS_BUS_ENABLE_INOTIFY)
+ if use_kqueue
+     libdbus_daemon_internal_sources += 'dir-watch-kqueue.c'
++elif use_evports
++    libdbus_daemon_internal_sources += 'dir-watch-evports.c'
+ elif use_inotify
+     libdbus_daemon_internal_sources += 'dir-watch-inotify.c'
+ else
+--- a/bus/CMakeLists.txt	2025-01-16 06:14:08.636249268 -0800
++++ b/bus/CMakeLists.txt	2025-01-16 06:14:24.181456759 -0800
+@@ -30,6 +30,8 @@
      set(DIR_WATCH_SOURCE dir-watch-inotify.c)
  elseif(DBUS_BUS_ENABLE_KQUEUE)
      set(DIR_WATCH_SOURCE dir-watch-kqueue.c)
@@ -79,56 +59,20 @@ Should be offered upstream once we are sure it works as expected.
  else(DBUS_BUS_ENABLE_INOTIFY)
      set(DIR_WATCH_SOURCE dir-watch-default.c)
  endif()
---- dbus-1.14.6/README.cmake
-+++ dbus-1.14.6/README.cmake
-@@ -211,6 +211,10 @@ DBUS_BUS_ENABLE_INOTIFY:BOOL=ON
- // enable kqueue as dir watch backend
- DBUS_BUS_ENABLE_KQUEUE:BOOL=ON
- 
-+*Solaris only:
-+// enable evports as dir watch backend
-+DBUS_BUS_ENABLE_EVPORTS:BOOL=ON
-+
- x11 only:
- // Build with X11 auto launch support
- DBUS_BUILD_X11:BOOL=ON
---- dbus-1.14.6/cmake/ConfigureChecks.cmake
-+++ dbus-1.14.6/cmake/ConfigureChecks.cmake
-@@ -27,6 +27,7 @@ check_include_file(string.h     HAVE_STR
- check_include_file(strings.h     HAVE_STRINGS_H)
- check_include_file(syslog.h     HAVE_SYSLOG_H)
+--- a/cmake/ConfigureChecks.cmake	2025-01-16 06:15:35.688044360 -0800
++++ b/cmake/ConfigureChecks.cmake	2025-01-16 06:15:57.098000443 -0800
+@@ -24,6 +24,7 @@
+ check_include_file(stdatomic.h  HAVE_STDATOMIC_H)
+ check_include_file(stdio.h      HAVE_STDIO_H)   # dbus-sysdeps.h
  check_include_files("stdint.h;sys/types.h;sys/event.h" HAVE_SYS_EVENT_H)
 +check_include_files("port.h"    HAVE_PORT_H)
  check_include_file(sys/inotify.h     HAVE_SYS_INOTIFY_H)
- check_include_file(sys/random.h     HAVE_SYS_RANDOM_H)
- check_include_file(sys/resource.h     HAVE_SYS_RESOURCE_H)
---- dbus-1.14.6/CMakeLists.txt
-+++ dbus-1.14.6/CMakeLists.txt
-@@ -510,6 +510,13 @@ endif()
- 
- string(TOUPPER ${CMAKE_SYSTEM_NAME} sysname)
- if("${sysname}" MATCHES ".*SOLARIS.*")
-+    option(DBUS_BUS_ENABLE_EVPORTS "build with evports support (solaris only)" ON)
-+    if(DBUS_BUS_ENABLE_EVPORTS)
-+        if(NOT HAVE_PORT_H)
-+            message(FATAL_ERROR "port.h not found!")
-+        endif()
-+    endif()
+ check_include_file(sys/inotify.h DBUS_BUS_ENABLE_INOTIFY)
+ check_include_file(sys/prctl.h  HAVE_SYS_PRCTL_H)
+--- a/bus/dir-watch-evports.c	2025-01-16 06:49:35.296577220 -0800
++++ b/bus/dir-watch-evports.c	2025-01-16 06:49:22.229389212 -0800
+@@ -0,0 +1,323 @@
 +
-     option(HAVE_CONSOLE_OWNER_FILE "enable console owner file(solaris only)" ON)
-     if(HAVE_CONSOLE_OWNER_FILE)
-         set(DBUS_CONSOLE_OWNER_FILE "/dev/console" CACHE STRING "Directory to check for console ownerhip")
-@@ -765,6 +772,7 @@ message("        Building bus stats API:
- message("        installing system libs:   ${DBUS_INSTALL_SYSTEM_LIBS}         ")
- message("        Building inotify support: ${DBUS_BUS_ENABLE_INOTIFY}          ")
- message("        Building kqueue support:  ${DBUS_BUS_ENABLE_KQUEUE}           ")
-+message("        Building evports support: ${DBUS_BUS_ENABLE_EVPORTS}          ")
- message("        Building systemd support: ${DBUS_BUS_ENABLE_SYSTEMD}          ")
- message("        systemd system install dir:${DBUS_SYSTEMD_SYSTEMUNITDIR}      ")
- message("        systemd user install dir: ${DBUS_SYSTEMD_USERUNITDIR}         ")
---- dbus-1.14.6/bus/dir-watch-evports.c
-+++ dbus-1.14.6/bus/dir-watch-evports.c
-@@ -0,0 +1,322 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/* dir-watch-evports.c  OS specific directory change notification for message bus
 + *
@@ -451,3 +395,46 @@ Should be offered upstream once we are sure it works as expected.
 +      _dbus_warn ("Too many files and directories to watch them all, only watching first %d.", MAX_OBJECTS_TO_WATCH);
 +    }
 +}
+--- a/CMakeLists.txt	2025-01-16 06:16:11.913132005 -0800
++++ b/CMakeLists.txt	2025-01-16 06:46:40.224194525 -0800
+@@ -493,7 +493,14 @@
+ endif()
+ 
+ string(TOUPPER ${CMAKE_SYSTEM_NAME} sysname)
+-if("${sysname}" MATCHES ".*SOLARIS.*")
++f("${sysname}" MATCHES ".*SOLARIS.*")
++    option(DBUS_BUS_ENABLE_EVPORTS "build with evports support (solaris only)" ON)
++    if(DBUS_BUS_ENABLE_EVPORTS)
++        if(NOT HAVE_PORT_H)
++            message(FATAL_ERROR "port.h not found!")
++        endif()
++    endif()
++
+     option(HAVE_CONSOLE_OWNER_FILE "enable console owner file(solaris only)" ON)
+     if(HAVE_CONSOLE_OWNER_FILE)
+         set(DBUS_CONSOLE_OWNER_FILE "/dev/console" CACHE STRING "Directory to check for console ownerhip")
+@@ -761,6 +768,7 @@
+ message("        installing system libs:   ${DBUS_INSTALL_SYSTEM_LIBS}         ")
+ message("        Building inotify support: ${DBUS_BUS_ENABLE_INOTIFY}          ")
+ message("        Building kqueue support:  ${DBUS_BUS_ENABLE_KQUEUE}           ")
++message("        Building evports support:  ${DBUS_BUS_ENABLE_EVPORTS}           ")
+ message("        Building systemd support: ${DBUS_BUS_ENABLE_SYSTEMD}          ")
+ message("        systemd system install dir:${DBUS_SYSTEMD_SYSTEMUNITDIR}      ")
+ message("        systemd user install dir: ${DBUS_SYSTEMD_USERUNITDIR}         ")
+--- a/meson_options.txt	2025-01-16 07:45:04.262834991 -0800
++++ b/meson_options.txt	2025-01-16 07:45:45.324688344 -0800
+@@ -117,6 +117,14 @@
+ )
+ 
+ option(
++  'evports',
++  type: 'feature',
++  value: 'auto',
++  description: 'evports support'
++) 
++
++
++option(
+   'launchd',
+   type: 'feature',
+   value: 'auto',

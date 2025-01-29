@@ -19,43 +19,32 @@ Solaris-specific
  /**
   * @addtogroup DBusInternalsUtils
   * @{
-@@ -542,8 +546,31 @@ _dbus_user_at_console (const char *usern
+--- a/dbus/dbus-userdb-util.c	2025-01-15 08:58:47.349300651 -0800
++++ b/dbus/dbus-userdb-util.c	2025-01-15 20:09:03.623855420 -0800
+@@ -94,6 +94,18 @@
+   DBusString f;
+   DBusStat st;
  
-   DBusString u, f;
-   dbus_bool_t result;
 +#ifdef __sun
-+  struct passwd *passwd_entry;
-+#endif
- 
-   result = FALSE;
-+
-+#ifdef __sun
-+  passwd_entry = getpwnam (username);
-+  if (passwd_entry != NULL)
++  if (stat ("/dev/vt/console_user", &st) == 0 && st.st_uid == uid)
 +    {
-+      struct stat st;
-+      uid_t uid;
-+
-+      uid = passwd_entry->pw_uid;
-+
-+      if (stat ("/dev/vt/console_user", &st) == 0 && st.st_uid == uid)
-+        {
 +         /*
 +          * Owner is allowed to take over. Before we have real
 +          * ownership in HAL, assume it's the console owner.
 +          */
-+          result = TRUE;
-+        }
++          return TRUE;
 +    }
 +#else
++
++
    if (!_dbus_string_init (&f))
      {
        _DBUS_SET_OOM (error);
-@@ -568,6 +595,7 @@ _dbus_user_at_console (const char *usern
+@@ -114,6 +126,7 @@
+     }
  
-  out:
-   _dbus_string_free (&f);
+   _dbus_string_free(&f);
 +#endif
  
-   return result;
- }
+ #endif /* HAVE_CONSOLE_OWNER_FILE */
+ 
