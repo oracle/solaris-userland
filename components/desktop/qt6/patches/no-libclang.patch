@@ -1,0 +1,26 @@
+We don't want Qt (which is solely used for Wireshark) to depend on libclang/libLLVM which is now
+delivered also as 32bits and due cmake bug/feature it's discovered in /usr/lib/cmake/(llvm|clang)
+during Qt configure phase.
+
+Solaris specific. Not suitable for Qt upstream.
+
+--- qt-everywhere-src-6.8.0/qttools/cmake/FindWrapLibClang.cmake
++++ qt-everywhere-src-6.8.0/qttools/cmake/FindWrapLibClang.cmake
+@@ -1,11 +1,17 @@
+ # Copyright (C) 2022 The Qt Company Ltd.
+ # SPDX-License-Identifier: BSD-3-Clause
+ 
++# No need for Qt to use libclang/libLLVM (with cmake bug it finds now /usr/lib/(cmake|llvm).
++return()
++
+ if(TARGET WrapLibClang::WrapLibClang)
+     set(WrapLibClang_FOUND TRUE)
+     return()
+ endif()
+ 
++# If we were to use it with the cmake bug we would need to force correct location.
++list(PREPEND CMAKE_PREFIX_PATH "/usr/lib/64/cmake")
++
+ if(DEFINED ENV{LLVM_INSTALL_DIR})
+     set(__qt_wrap_clang_backup_prefix "${CMAKE_PREFIX_PATH}")
+     list(PREPEND CMAKE_PREFIX_PATH "$ENV{LLVM_INSTALL_DIR}")

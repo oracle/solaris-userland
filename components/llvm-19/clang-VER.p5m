@@ -1,0 +1,621 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
+<transform link path=usr/bin/.+ -> set pkg.linted.pkglint.dupaction010 true>
+set name=pkg.fmri \
+    value=pkg:/developer/llvm/clang-$(LLVM_VERSION)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary \
+    value="clang $(COMPONENT_VERSION) runtime - The clang LLVM Compiler"
+set name=pkg.linted.userland.action001.PIE value=true
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
+set name=com.oracle.info.description \
+    value="clang - The C/C++/Objective-C/Objective-C++ compiler based on the LLVM Compiler Infrastructure Framework"
+set name=info.classification value=org.opensolaris.category.2008:Development/C \
+    value=org.opensolaris.category.2008:Development/C++ \
+    value=org.opensolaris.category.2008:Development/GNU \
+    value="org.opensolaris.category.2008:Development/Objective C"
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2025/007
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/bin/clang target=../llvm/$(LLVM_VERSION)/bin/clang mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang++ target=../llvm/$(LLVM_VERSION)/bin/clang++ \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-19 target=../llvm/$(LLVM_VERSION)/bin/clang-19 \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-check target=../llvm/$(LLVM_VERSION)/bin/clang-check \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-cl target=../llvm/$(LLVM_VERSION)/bin/clang-cl \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-cpp target=../llvm/$(LLVM_VERSION)/bin/clang-cpp \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-extdef-mapping \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-extdef-mapping mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-format target=../llvm/$(LLVM_VERSION)/bin/clang-format \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-installapi \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-installapi mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-linker-wrapper \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-linker-wrapper mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-nvlink-wrapper \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-nvlink-wrapper mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-offload-bundler \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-offload-bundler mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-offload-packager \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-offload-packager mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-refactor \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-refactor mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-rename target=../llvm/$(LLVM_VERSION)/bin/clang-rename \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-repl target=../llvm/$(LLVM_VERSION)/bin/clang-repl \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-scan-deps \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-scan-deps mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-tblgen target=../llvm/$(LLVM_VERSION)/bin/clang-tblgen \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+file path=usr/llvm/$(LLVM_VERSION)/bin/analyze-build \
+    pkg.depend.bypass-generate=.*
+file path=usr/llvm/$(LLVM_VERSION)/bin/c-index-test
+link path=usr/llvm/$(LLVM_VERSION)/bin/clang target=clang-19
+link path=usr/llvm/$(LLVM_VERSION)/bin/clang++ target=clang
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-19
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-check
+link path=usr/llvm/$(LLVM_VERSION)/bin/clang-cl target=clang
+link path=usr/llvm/$(LLVM_VERSION)/bin/clang-cpp target=clang
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-extdef-mapping
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-format
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-installapi
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-linker-wrapper
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-nvlink-wrapper
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-offload-bundler
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-offload-packager
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-refactor
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-rename
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-repl
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-scan-deps
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-tblgen
+file path=usr/llvm/$(LLVM_VERSION)/bin/diagtool
+file path=usr/llvm/$(LLVM_VERSION)/bin/git-clang-format
+file path=usr/llvm/$(LLVM_VERSION)/bin/hmaptool
+file path=usr/llvm/$(LLVM_VERSION)/bin/intercept-build \
+    pkg.depend.bypass-generate=.*
+file path=usr/llvm/$(LLVM_VERSION)/bin/scan-build
+file path=usr/llvm/$(LLVM_VERSION)/bin/scan-build-py \
+    pkg.depend.bypass-generate=.*
+file path=usr/llvm/$(LLVM_VERSION)/bin/scan-view pkg.depend.bypass-generate=.*
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_cuda_builtin_vars.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_cuda_cmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_cuda_complex_builtins.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_cuda_device_functions.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_cuda_intrinsics.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_cuda_libdevice_declares.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_cuda_math.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_cuda_math_forward_declares.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_cuda_runtime_wrapper.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_cuda_texture_intrinsics.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_hip_cmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_hip_libdevice_declares.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_hip_math.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_hip_runtime_wrapper.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__clang_hip_stdlib.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stdarg___gnuc_va_list.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stdarg___va_copy.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stdarg_header_macro.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stdarg_va_arg.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stdarg_va_copy.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stdarg_va_list.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stddef_header_macro.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stddef_max_align_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stddef_null.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stddef_nullptr_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stddef_offsetof.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stddef_ptrdiff_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stddef_rsize_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stddef_size_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stddef_unreachable.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stddef_wchar_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__stddef_wint_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__wmmintrin_aes.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/__wmmintrin_pclmul.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/adcintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/adxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/altivec.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ammintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/amxcomplexintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/amxfp16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/amxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/arm64intr.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/arm_acle.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/arm_cmse.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/arm_neon_sve_bridge.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/armintr.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512bf16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512bitalgintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512bwintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512cdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512dqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512fintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512fp16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512ifmaintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512ifmavlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vbmi2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vbmiintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vbmivlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vlbf16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vlbitalgintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vlbwintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vlcdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vldqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vlfp16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vlvbmi2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vlvnniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vlvp2intersectintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vnniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vp2intersectintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vpopcntdqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avx512vpopcntdqvlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avxifmaintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avxneconvertintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avxvnniint16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avxvnniint8intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/avxvnniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/bmi2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/bmiintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/builtins.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cet.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cetintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cldemoteintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/clflushoptintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/clwbintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/clzerointrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cmpccxaddintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cpuid.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/crc32intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cuda_wrappers/algorithm
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cuda_wrappers/bits/basic_string.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cuda_wrappers/bits/basic_string.tcc
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cuda_wrappers/bits/shared_ptr_base.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cuda_wrappers/cmath
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cuda_wrappers/complex
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/cuda_wrappers/new
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/emmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/enqcmdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/f16cintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/float.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/fma4intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/fmaintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/fxsrintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/gfniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/hexagon_circ_brev_intrinsics.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/hexagon_protos.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/hexagon_types.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/hresetintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/htmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/htmxlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/hvx_hexagon_protos.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ia32intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/immintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/intrin0.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/inttypes.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/invpcidintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/iso646.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/keylockerintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/larchintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/lasxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/limits.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/llvm_libc_wrappers/assert.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/llvm_libc_wrappers/ctype.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/llvm_libc_wrappers/inttypes.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/llvm_libc_wrappers/stdio.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/llvm_libc_wrappers/stdlib.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/llvm_libc_wrappers/string.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/llvm_libc_wrappers/time.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/lsxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/lwpintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/lzcntintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/mm3dnow.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/mm_malloc.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/mmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/module.modulemap
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/movdirintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/msa.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/mwaitxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/nmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/opencl-c-base.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/opencl-c.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/openmp_wrappers/__clang_openmp_device_functions.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/openmp_wrappers/cmath
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/openmp_wrappers/complex
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/openmp_wrappers/complex.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/openmp_wrappers/complex_cmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/openmp_wrappers/math.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/openmp_wrappers/new
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/pconfigintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/pkuintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/pmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/popcntintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/bmi2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/bmiintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/emmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/immintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/mm_malloc.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/mmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/nmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/pmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/smmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/tmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/x86gprintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/x86intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ppc_wrappers/xmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/prfchiintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/prfchwintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ptrauth.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/ptwriteintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/raointintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/rdpruintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/rdseedintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/riscv_bitmanip.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/riscv_crypto.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/riscv_ntlh.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/rtmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/s390intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/serializeintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/sgxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/sha512intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/shaintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/sifive_vector.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/sm3intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/sm4intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/smmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/stdalign.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/stdarg.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/stdatomic.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/stdbool.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/stdckdint.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/stddef.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/stdint.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/stdnoreturn.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/tbmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/tgmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/tmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/tsxldtrkintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/uintrintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/unwind.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/usermsrintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/vadefs.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/vaesintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/varargs.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/vecintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/velintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/velintrin_approx.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/velintrin_gen.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/vpclmulqdqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/waitpkgintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/wasm_simd128.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/wbnoinvdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/wmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/x86gprintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/x86intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/xmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/xopintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/xsavecintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/xsaveintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/xsaveoptintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/xsavesintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/xtestintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/yvals_core.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/19/include/zos_wrappers/builtins.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_cuda_builtin_vars.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_cuda_cmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_cuda_complex_builtins.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_cuda_device_functions.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_cuda_intrinsics.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_cuda_libdevice_declares.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_cuda_math.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_cuda_math_forward_declares.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_cuda_runtime_wrapper.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_cuda_texture_intrinsics.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_hip_cmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_hip_libdevice_declares.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_hip_math.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_hip_runtime_wrapper.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__clang_hip_stdlib.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stdarg___gnuc_va_list.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stdarg___va_copy.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stdarg_header_macro.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stdarg_va_arg.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stdarg_va_copy.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stdarg_va_list.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stddef_header_macro.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stddef_max_align_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stddef_null.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stddef_nullptr_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stddef_offsetof.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stddef_ptrdiff_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stddef_rsize_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stddef_size_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stddef_unreachable.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stddef_wchar_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__stddef_wint_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__wmmintrin_aes.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/__wmmintrin_pclmul.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/adcintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/adxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/altivec.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ammintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/amxcomplexintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/amxfp16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/amxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/arm64intr.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/arm_acle.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/arm_cmse.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/arm_neon_sve_bridge.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/armintr.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512bf16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512bitalgintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512bwintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512cdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512dqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512fintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512fp16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512ifmaintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512ifmavlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vbmi2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vbmiintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vbmivlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vlbf16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vlbitalgintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vlbwintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vlcdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vldqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vlfp16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vlvbmi2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vlvnniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vlvp2intersectintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vnniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vp2intersectintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vpopcntdqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avx512vpopcntdqvlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avxifmaintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avxneconvertintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avxvnniint16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avxvnniint8intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/avxvnniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/bmi2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/bmiintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/builtins.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cet.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cetintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cldemoteintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/clflushoptintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/clwbintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/clzerointrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cmpccxaddintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cpuid.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/crc32intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cuda_wrappers/algorithm
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cuda_wrappers/bits/basic_string.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cuda_wrappers/bits/basic_string.tcc
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cuda_wrappers/bits/shared_ptr_base.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cuda_wrappers/cmath
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cuda_wrappers/complex
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/cuda_wrappers/new
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/emmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/enqcmdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/f16cintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/float.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/fma4intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/fmaintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/fxsrintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/gfniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/hexagon_circ_brev_intrinsics.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/hexagon_protos.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/hexagon_types.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/hresetintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/htmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/htmxlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/hvx_hexagon_protos.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ia32intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/immintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/intrin0.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/inttypes.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/invpcidintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/iso646.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/keylockerintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/larchintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/lasxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/limits.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/llvm_libc_wrappers/assert.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/llvm_libc_wrappers/ctype.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/llvm_libc_wrappers/inttypes.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/llvm_libc_wrappers/stdio.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/llvm_libc_wrappers/stdlib.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/llvm_libc_wrappers/string.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/llvm_libc_wrappers/time.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/lsxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/lwpintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/lzcntintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/mm3dnow.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/mm_malloc.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/mmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/module.modulemap
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/movdirintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/msa.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/mwaitxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/nmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/opencl-c-base.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/opencl-c.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/openmp_wrappers/__clang_openmp_device_functions.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/openmp_wrappers/cmath
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/openmp_wrappers/complex
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/openmp_wrappers/complex.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/openmp_wrappers/complex_cmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/openmp_wrappers/math.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/openmp_wrappers/new
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/pconfigintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/pkuintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/pmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/popcntintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/bmi2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/bmiintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/emmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/immintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/mm_malloc.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/mmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/nmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/pmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/smmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/tmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/x86gprintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/x86intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ppc_wrappers/xmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/prfchiintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/prfchwintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ptrauth.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/ptwriteintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/raointintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/rdpruintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/rdseedintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/riscv_bitmanip.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/riscv_crypto.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/riscv_ntlh.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/rtmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/s390intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/serializeintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/sgxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/sha512intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/shaintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/sifive_vector.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/sm3intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/sm4intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/smmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/stdalign.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/stdarg.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/stdatomic.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/stdbool.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/stdckdint.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/stddef.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/stdint.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/stdnoreturn.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/tbmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/tgmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/tmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/tsxldtrkintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/uintrintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/unwind.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/usermsrintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/vadefs.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/vaesintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/varargs.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/vecintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/velintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/velintrin_approx.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/velintrin_gen.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/vpclmulqdqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/waitpkgintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/wasm_simd128.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/wbnoinvdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/wmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/x86gprintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/x86intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/xmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/xopintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/xsavecintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/xsaveintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/xsaveoptintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/xsavesintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/xtestintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/yvals_core.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/19/include/zos_wrappers/builtins.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/libear/__init__.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libear/config.h.in
+file path=usr/llvm/$(LLVM_VERSION)/lib/libear/ear.c
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/__init__.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/analyze.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/arguments.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/clang.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/compilation.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/intercept.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/report.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/resources/scanview.css
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/resources/selectable.js
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/resources/sorttable.js
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/shell.py
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/bash-autocomplete.sh
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-format-bbedit.applescript
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-format-diff.py
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-format-sublime.py
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-format.el
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-format.py
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-rename.el
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-rename.py
+file path=usr/llvm/$(LLVM_VERSION)/share/man/man1/clang-tblgen.1
+file path=usr/llvm/$(LLVM_VERSION)/share/man/man1/clang.1
+file path=usr/llvm/$(LLVM_VERSION)/share/man/man1/diagtool.1
+file path=usr/llvm/$(LLVM_VERSION)/share/man/man1/scan-build.1
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-build/scanview.css
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-build/sorttable.js
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-view/Reporter.py
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-view/ScanView.py
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-view/bugcatcher.ico
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-view/startfile.py
+link path=usr/share/man/man1/clang-tblgen.1 \
+    target=../../../llvm/$(LLVM_VERSION)/share/man/man1/clang-tblgen.1 \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/share/man/man1/clang.1 \
+    target=../../../llvm/$(LLVM_VERSION)/share/man/man1/clang.1 mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/share/man/man1/diagtool.1 \
+    target=../../../llvm/$(LLVM_VERSION)/share/man/man1/diagtool.1 \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/share/man/man1/scan-build.1 \
+    target=../../../llvm/$(LLVM_VERSION)/share/man/man1/scan-build.1 \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+license llvm.license license="Apache License v2.0 with LLVM Exceptions"
+depend type=require fmri=pkg:/developer/gcc/gcc-c++
+depend type=require fmri=pkg:/developer/gnu-binutils
+# pkgdepend doesn't find the dependency on libiomp5 although
+# it is listed in REQUIRED_PACKAGES. So, we set it as an
+# explicit dependency here.
+depend type=require fmri=pkg:/library/libiomp5
+depend type=require fmri=pkg:/system/header

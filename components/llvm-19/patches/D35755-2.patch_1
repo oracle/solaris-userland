@@ -1,0 +1,14 @@
+Additional fix building on not yet approved submission: 
+https://reviews.llvm.org/D35755?id=110190
+
+--- clang-19.1.2.src/lib/Driver/ToolChains/Solaris.cpp
++++ clang-19.1.2.src/lib/Driver/ToolChains/Solaris.cpp
+@@ -327,7 +327,7 @@ }
+   // If we are currently running Clang inside of the requested system root,
+   // add its parent library path to those searched.
+   if (StringRef(D.Dir).starts_with(D.SysRoot))
+-    addPathIfExists(D, D.Dir + "/../lib", Paths);
++    addPathIfExists(D, D.Dir + "/../lib" + LibSuffix, Paths);
+ 
+   addPathIfExists(D, D.SysRoot + "/usr/lib" + LibSuffix, Paths);
+ }

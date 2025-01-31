@@ -20,11 +20,15 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
 COMPILER=		gcc
+
+# Temporary opt out till llvm-13 packages are in CBE.
+SKIP_REQUIRED_PACKAGES_CHECK=
+
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mesa
@@ -51,10 +55,10 @@ FIX_PC_FILES += src/mesa/gl.pc.in
 FIX_PC_FILES += src/mapi/es1api/glesv1_cm.pc.in
 FIX_PC_FILES += src/mapi/es2api/glesv2.pc.in
 
-COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="/usr/llvm/13/bin:$(GNUBIN):$(PATH)"
 
 # to find gnu egrep and gsed
-CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+CONFIGURE_ENV += PATH="/usr/llvm/13/bin:$(GNUBIN):$(PATH)"
 
 CONFIGURE_OPTIONS.32 += -Ddri-drivers-path='/usr/lib/xorg/modules/dri'
 CONFIGURE_OPTIONS.64 += -Ddri-drivers-path='/usr/lib/xorg/modules/dri/$(MACH64)'
@@ -71,6 +75,9 @@ CONFIGURE_OPTIONS += -Dglx='auto'
 CONFIGURE_OPTIONS += -Degl='true'
 CONFIGURE_OPTIONS += -Ddri-drivers=''
 
+CFLAGS += -I/usr/llvm-13/include
+CPPFLAGS += -I/usr/llvm-13/include
+
 CFLAGS += -D__EXTENSIONS__ -Wno-incompatible-pointer-types
 CPPFLAGS += -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS
 LDFLAGS += -Wl,-zgnu-version-script-compat
@@ -80,7 +87,7 @@ LDFLAGS += -Wl,-zgnu-version-script-compat
 LDFLAGS += -Wl,-znolazyload
 LDFLAGS += -Wl,-z,rescan-now
 CFLAGS.64 += -Wstack-protector -fdata-sections -fstack-protector-all
-LD_OPTIONS.64+=	-z nodefs -z ignore -lLLVM -lssp
+LD_OPTIONS.64+=	-z nodefs -z ignore -L/usr/llvm/13/lib/$(MACH64) -lLLVM -lssp
 LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 LD_OPTIONS += -z discard-unused=dependencies
 LD_OPTIONS += -M $(COMPONENT_DIR)/mapfile.externs
@@ -110,6 +117,9 @@ REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += developer/llvm/llvm
 REQUIRED_PACKAGES += developer/llvm/llvm-libs
 REQUIRED_PACKAGES += developer/llvm/llvm-build
+REQUIRED_PACKAGES += developer/llvm/llvm-13
+REQUIRED_PACKAGES += developer/llvm/llvm-libs-13
+REQUIRED_PACKAGES += developer/llvm/llvm-build-13
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/graphics/libvdpau
 REQUIRED_PACKAGES += library/zlib

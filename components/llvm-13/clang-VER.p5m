@@ -1,0 +1,343 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
+<transform link path=usr/bin/.+ -> set pkg.linted.pkglint.dupaction010 true>
+<transform link path=usr/share/man/man1/.+ -> set pkg.linted.pkglint.dupaction010 true>
+<transform link path=usr/share/man/man1/.+ -> set pkg.linted.pkglint.dupaction008 true>
+set name=pkg.fmri \
+    value=pkg:/developer/llvm/clang-$(LLVM_VERSION)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary \
+    value="clang $(COMPONENT_VERSION) runtime - The clang LLVM Compiler"
+set name=pkg.linted.userland.action001.PIE value=true
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
+set name=com.oracle.info.description \
+    value="clang - The C/C++/Objective-C/Objective-C++ compiler based on the LLVM Compiler Infrastructure Framework"
+set name=info.classification value=org.opensolaris.category.2008:Development/C \
+    value=org.opensolaris.category.2008:Development/C++ \
+    value=org.opensolaris.category.2008:Development/GNU \
+    value="org.opensolaris.category.2008:Development/Objective C"
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2013/188 value=PSARC/2021/058 \
+    value=PSARC/2025/007
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/bin/clang target=../llvm/$(LLVM_VERSION)/bin/clang mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang++ target=../llvm/$(LLVM_VERSION)/bin/clang++ \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-13 target=../llvm/$(LLVM_VERSION)/bin/clang-13 \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-check target=../llvm/$(LLVM_VERSION)/bin/clang-check \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-cl target=../llvm/$(LLVM_VERSION)/bin/clang-cl \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-cpp target=../llvm/$(LLVM_VERSION)/bin/clang-cpp \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-extdef-mapping \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-extdef-mapping mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-format target=../llvm/$(LLVM_VERSION)/bin/clang-format \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-offload-bundler \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-offload-bundler mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-offload-wrapper \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-offload-wrapper mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-refactor \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-refactor mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-rename target=../llvm/$(LLVM_VERSION)/bin/clang-rename \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-repl target=../llvm/$(LLVM_VERSION)/bin/clang-repl \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/bin/clang-scan-deps \
+    target=../llvm/$(LLVM_VERSION)/bin/clang-scan-deps mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+file path=usr/llvm/$(LLVM_VERSION)/bin/analyze-build \
+    pkg.depend.bypass-generate=.*
+file path=usr/llvm/$(LLVM_VERSION)/bin/c-index-test
+link path=usr/llvm/$(LLVM_VERSION)/bin/clang target=clang-13
+link path=usr/llvm/$(LLVM_VERSION)/bin/clang++ target=clang
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-13
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-check
+link path=usr/llvm/$(LLVM_VERSION)/bin/clang-cl target=clang
+link path=usr/llvm/$(LLVM_VERSION)/bin/clang-cpp target=clang
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-extdef-mapping
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-format
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-offload-bundler
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-offload-wrapper
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-refactor
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-rename
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-repl
+file path=usr/llvm/$(LLVM_VERSION)/bin/clang-scan-deps
+file path=usr/llvm/$(LLVM_VERSION)/bin/diagtool
+file path=usr/llvm/$(LLVM_VERSION)/bin/git-clang-format
+file path=usr/llvm/$(LLVM_VERSION)/bin/hmaptool
+file path=usr/llvm/$(LLVM_VERSION)/bin/intercept-build \
+    pkg.depend.bypass-generate=.*
+file path=usr/llvm/$(LLVM_VERSION)/bin/scan-build
+file path=usr/llvm/$(LLVM_VERSION)/bin/scan-build-py \
+    pkg.depend.bypass-generate=.*
+file path=usr/llvm/$(LLVM_VERSION)/bin/scan-view pkg.depend.bypass-generate=.*
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_builtin_vars.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_cmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_complex_builtins.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_device_functions.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_intrinsics.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_libdevice_declares.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_math.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_math_forward_declares.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_runtime_wrapper.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_hip_cmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_hip_libdevice_declares.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_hip_math.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_hip_runtime_wrapper.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__stddef_max_align_t.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__wmmintrin_aes.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__wmmintrin_pclmul.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/adxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/altivec.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ammintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/amxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm64intr.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_acle.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_bf16.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_cde.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_cmse.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_fp16.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_mve.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_neon.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_sve.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/armintr.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512bf16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512bitalgintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512bwintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512cdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512dqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512erintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512fintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512ifmaintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512ifmavlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512pfintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vbmi2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vbmiintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vbmivlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vlbf16intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vlbitalgintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vlbwintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vlcdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vldqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vlvbmi2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vlvnniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vlvp2intersectintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vnniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vp2intersectintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vpopcntdqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vpopcntdqvlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avxvnniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/bmi2intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/bmiintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/builtins.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cet.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cetintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cldemoteintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/clflushoptintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/clwbintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/clzerointrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cpuid.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cuda_wrappers/algorithm
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cuda_wrappers/complex
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cuda_wrappers/new
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/emmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/enqcmdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/f16cintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/float.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/fma4intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/fmaintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/fxsrintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/gfniintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/hexagon_circ_brev_intrinsics.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/hexagon_protos.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/hexagon_types.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/hresetintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/htmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/htmxlintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/hvx_hexagon_protos.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ia32intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/immintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/inttypes.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/invpcidintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/iso646.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/keylockerintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/limits.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/lwpintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/lzcntintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/mm3dnow.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/mm_malloc.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/mmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/module.modulemap
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/movdirintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/msa.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/mwaitxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/nmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/opencl-c-base.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/opencl-c.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/__clang_openmp_device_functions.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/cmath
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/complex
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/complex.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/complex_cmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/math.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/new
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/pconfigintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/pkuintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/pmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/popcntintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ppc_wrappers/emmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ppc_wrappers/mm_malloc.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ppc_wrappers/mmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ppc_wrappers/pmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ppc_wrappers/smmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ppc_wrappers/tmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ppc_wrappers/xmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/prfchwintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ptwriteintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/rdseedintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/riscv_vector.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/rtmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/s390intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/serializeintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/sgxintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/shaintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/smmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/stdalign.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/stdarg.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/stdatomic.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/stdbool.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/stddef.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/stdint.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/stdnoreturn.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tbmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tgmath.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tsxldtrkintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/uintrintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/unwind.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/vadefs.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/vaesintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/varargs.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/vecintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/vpclmulqdqintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/waitpkgintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/wasm_simd128.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/wbnoinvdintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/wmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/x86gprintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/x86intrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xmmintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xopintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xsavecintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xsaveintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xsaveoptintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xsavesintrin.h
+file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xtestintrin.h
+file usr/llvm/$(LLVM_VERSION)/libexec/analyze-c++ \
+    path=usr/llvm/$(LLVM_VERSION)/lib/analyze-c++ mode=0555
+file usr/llvm/$(LLVM_VERSION)/libexec/analyze-cc \
+    path=usr/llvm/$(LLVM_VERSION)/lib/analyze-cc mode=0555
+file usr/llvm/$(LLVM_VERSION)/libexec/c++-analyzer \
+    path=usr/llvm/$(LLVM_VERSION)/lib/c++-analyzer mode=0555
+file usr/llvm/$(LLVM_VERSION)/libexec/ccc-analyzer \
+    path=usr/llvm/$(LLVM_VERSION)/lib/ccc-analyzer mode=0555
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/$(MACH64)/cxa_finalize.o
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/$(MACH64)/cxa_finalize_pic.o
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/cxa_finalize.o
+file path=usr/llvm/$(LLVM_VERSION)/lib/clang/cxa_finalize_pic.o
+file usr/llvm/$(LLVM_VERSION)/libexec/intercept-c++ \
+    path=usr/llvm/$(LLVM_VERSION)/lib/intercept-c++ mode=0555
+file usr/llvm/$(LLVM_VERSION)/libexec/intercept-cc \
+    path=usr/llvm/$(LLVM_VERSION)/lib/intercept-cc mode=0555
+file path=usr/llvm/$(LLVM_VERSION)/lib/libear/__init__.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libear/config.h.in mode=0555
+file path=usr/llvm/$(LLVM_VERSION)/lib/libear/ear.c mode=0555
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/__init__.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/analyze.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/arguments.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/clang.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/compilation.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/intercept.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/report.py
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/resources/scanview.css \
+    mode=0555
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/resources/selectable.js \
+    mode=0555
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/resources/sorttable.js \
+    mode=0555
+file path=usr/llvm/$(LLVM_VERSION)/lib/libscanbuild/shell.py
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/bash-autocomplete.sh mode=0555
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-format-bbedit.applescript \
+    mode=0555
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-format-diff.py
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-format-sublime.py
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-format.el mode=0555
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-format.py
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-rename.el mode=0555
+file path=usr/llvm/$(LLVM_VERSION)/share/clang/clang-rename.py
+file path=usr/llvm/$(LLVM_VERSION)/share/man/man1/clang-tblgen.1
+file path=usr/llvm/$(LLVM_VERSION)/share/man/man1/clang.1
+file path=usr/llvm/$(LLVM_VERSION)/share/man/man1/diagtool.1
+file path=usr/llvm/$(LLVM_VERSION)/share/man/man1/scan-build.1
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-build/scanview.css
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-build/sorttable.js
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-view/Reporter.py
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-view/ScanView.py
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-view/bugcatcher.ico
+file path=usr/llvm/$(LLVM_VERSION)/share/scan-view/startfile.py
+link path=usr/share/man/man1/clang-tblgen.1 \
+    target=../../../llvm/$(LLVM_VERSION)/share/man/man1/clang-tblgen.1 \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/share/man/man1/clang.1 \
+    target=../../../llvm/$(LLVM_VERSION)/share/man/man1/clang.1 mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/share/man/man1/diagtool.1 \
+    target=../../../llvm/$(LLVM_VERSION)/share/man/man1/diagtool.1 \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/share/man/man1/scan-build.1 \
+    target=../../../llvm/$(LLVM_VERSION)/share/man/man1/scan-build.1 \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+license llvm.license license="Apache License v2.0 with LLVM Exceptions"
+depend type=require fmri=pkg:/developer/gcc/gcc-c++
+depend type=require fmri=pkg:/developer/gnu-binutils
+# pkgdepend doesn't find the dependency on libiomp5 although
+# it is listed in REQUIRED_PACKAGES. So, we set it as an
+# explicit dependency here.
+depend type=require fmri=pkg:/library/libiomp5
+depend type=require fmri=pkg:/system/header
