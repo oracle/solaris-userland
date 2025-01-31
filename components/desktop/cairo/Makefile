@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 # Cairo uses atomic intrinsics not supported in Studio 12.4 (ER 19201298)
@@ -29,20 +29,18 @@ BUILD_BITS =            64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cairo
-COMPONENT_VERSION=	1.17.8
+COMPONENT_VERSION=	1.18.2
 COMPONENT_PROJECT_URL=	http://cairographics.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:5b10c8892d1b58d70d3f0ba5b47863a061262fa56b9dc7944161f8c8b783bc64
-COMPONENT_ARCHIVE_URL=	https://cairographics.org/snapshots/$(COMPONENT_ARCHIVE)
+    sha256:a62b9bb42425e844cc3d6ddde043ff39dbabedd1542eba57a2eb79f85889d45a
+COMPONENT_ARCHIVE_URL=	https://www.cairographics.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/cairo
 COMPONENT_ANITYA_ID=	247
 
-COMPONENT_BAID=		153973
+COMPONENT_BAID=		194215
 BUILD_STYLE= 	 	meson	
 
-# Cairo tests currently require an X display & require more work to run properly
-TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 LDFLAGS += $(CC_BITS)
@@ -54,6 +52,16 @@ CONFIGURE_OPTIONS += -Dtests=disabled
 COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libcairo.3lib\
                 $(PROTO_DIR)/usr/share/man/man3lib/libcairo.3lib;
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Ok:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Timeout:/p" '
+
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += image/library/libpng16
