@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -148,13 +148,10 @@ file path=usr/lib/python$(PYVER)/vendor-packages/Pillow-$(COMPONENT_VERSION)-py$
 #
 license LICENSE license="Historical Permission Notice and Disclaimer"
 
-# force the rename with an optional dependency on the old name
-depend type=optional fmri=library/python/python-imaging@1.1.7-11.4.9.0.1.2.0
-
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
-# force a dependency on the python-imaging package
+# force a dependency on the pillow package
 depend type=require \
     fmri=library/python/pillow@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
