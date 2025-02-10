@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -66,8 +66,8 @@ file postfix.exec_attr path=etc/security/exec_attr.d/postfix group=sys
 file postfix.prof_attr path=etc/security/prof_attr.d/postfix group=sys
 file postfix.xml path=lib/svc/manifest/network/postfix.xml
 file start-method path=lib/svc/method/postfix
-link path=usr/bin/mailq target=../../usr/lib/postfix/sendmail \
-    mediator=sendmail mediator-implementation=postfix
+link path=usr/bin/mailq target=../lib/postfix/sendmail mediator=sendmail \
+    mediator-implementation=postfix
 dir  path=usr/lib/postfix
 file path=usr/lib/postfix/anvil mode=0555
 file path=usr/lib/postfix/bounce mode=0555
@@ -106,8 +106,8 @@ file path=usr/lib/postfix/verify mode=0555
 file path=usr/lib/postfix/virtual mode=0555
 link path=usr/lib/sendmail target=postfix/sendmail mediator=sendmail \
     mediator-implementation=postfix
-link path=usr/sbin/newaliases target=../../usr/lib/postfix/sendmail \
-    mediator=sendmail mediator-implementation=postfix
+link path=usr/sbin/newaliases target=../lib/postfix/sendmail mediator=sendmail \
+    mediator-implementation=postfix
 file path=usr/sbin/postalias
 file path=usr/sbin/postcat
 file path=usr/sbin/postconf
@@ -120,6 +120,8 @@ file path=usr/sbin/postmap
 file path=usr/sbin/postmulti
 file path=usr/sbin/postqueue group=postdrop mode=02555
 file path=usr/sbin/postsuper
+link path=usr/sbin/sendmail target=../lib/postfix/sendmail mediator=sendmail \
+    mediator-implementation=postfix
 link path=usr/share/man/man1/mailq.1 target=postfix-mailq.1 mediator=sendmail \
     mediator-implementation=postfix
 file path=usr/share/man/man1/newaliases.1

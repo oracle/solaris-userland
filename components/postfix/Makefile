@@ -69,8 +69,13 @@ AUXLIBS +=	-lsasl2
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
-# gnu-grep is needed
-PATH =		$(GNUBIN):$(USRBINDIR64):$(USRBINDIR)
+# As documented in postfix's RELEASE_NOTES grep is assumed to be GNU grep.  The
+# following patches use of 'grep -E' and 'grep -F' to use ggrep explicitly.
+COMPONENT_PREP_ACTION += \
+	$(GNUBIN)/find $(@D) ! -name .hg ! -name HISTORY \
+	! -name fix-grep.sh ! -name RELEASE_NOTES -type f | \
+	xargs $(GNU_GREP) -l '\bgrep -[EF]' | \
+	xargs $(PERL) -pi -e 's/\bgrep -E/ggrep -E/g;s/\bgrep -F/ggrep -F/g;'
 
 COMPONENT_BUILD_ENV += CCARGS="$(CCARGS)"
 COMPONENT_BUILD_ENV += OPT="$(CFLAGS)"
@@ -91,3 +96,4 @@ REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/ldap/openldap
+REQUIRED_PACKAGES += text/gnu-grep

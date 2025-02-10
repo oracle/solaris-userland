@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
 #
 
 dir  path=etc/postfix/postfix-files.d
@@ -39,12 +39,14 @@ dir  path=usr/lib/postfix
 file usr/lib/sendmail path=usr/lib/postfix/sendmail
 
 # sendmail mediation
-link path=usr/bin/mailq target=../../usr/lib/postfix/sendmail \
+link path=usr/bin/mailq target=../lib/postfix/sendmail \
     mediator=sendmail mediator-implementation=postfix
 link path=usr/lib/sendmail target=postfix/sendmail mediator=sendmail \
     mediator-implementation=postfix
-link path=usr/sbin/newaliases target=../../usr/lib/postfix/sendmail \
+link path=usr/sbin/newaliases target=../lib/postfix/sendmail \
     mediator=sendmail mediator-implementation=postfix
+link path=usr/sbin/sendmail target=../lib/postfix/sendmail mediator=sendmail \
+    mediator-implementation=postfix
 link path=usr/share/man/man1/mailq.1 target=postfix-mailq.1 mediator=sendmail \
     mediator-implementation=postfix
 link path=usr/share/man/man5/aliases.5 target=postfix-aliases.5 \
