@@ -1,0 +1,36 @@
+This patch is created by Oracle to direct users to base64(1) as
+we do not ship mmencode(1).
+
+The ISC have previously been informed, it is an Oracle specific patch.
+
+--- bind-9.18.33/bin/rndc/rndc.conf.rst	2025-01-20 05:39:30.943351359 -0800
++++ rndc.conf.rst	2025-02-05 06:57:21.999514655 -0800
+@@ -77,8 +77,8 @@
+ 
+ There are two common ways to generate the base-64 string for the secret.
+ The BIND 9 program :iscman:`rndc-confgen` can be used to generate a random
+-key, or the ``mmencode`` program, also known as ``mimencode``, can be
+-used to generate a base-64 string from known input. ``mmencode`` does
+++key, or the ``base64`` program, can be
++used to generate a base-64 string from known input. ``base64`` does
+ not ship with BIND 9 but is available on many systems. See the Example
+ section for sample command lines for each.
+ 
+@@ -139,9 +139,9 @@
+ is written to the standard output. Commented-out ``key`` and
+ ``controls`` statements for :iscman:`named.conf` are also printed.
+ 
+-To generate a base-64 secret with ``mmencode``:
++To generate a base-64 secret with ``base64``:
+ 
+-``echo "known plaintext for a secret" | mmencode``
++``echo "known plaintext for a secret" | base64``
+ 
+ Name Server Configuration
+ ~~~~~~~~~~~~~~~~~~~~~~~~~
+@@ -155,4 +155,4 @@
+ See Also
+ ~~~~~~~~
+ 
+-:iscman:`rndc(8) <rndc>`, :iscman:`rndc-confgen(8) <rndc-confgen>`, :manpage:`mmencode(1)`, BIND 9 Administrator Reference Manual.
++:iscman:`rndc(8) <rndc>`, :iscman:`rndc-confgen(8) <rndc-confgen>`, :manpage:`base64(1)`, BIND 9 Administrator Reference Manual.

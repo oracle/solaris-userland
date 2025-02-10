@@ -41,15 +41,15 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.18.29
+COMPONENT_VERSION=	9.18.33
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-COMPONENT_BAID=		176484
+COMPONENT_BAID=		195442
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:c39ce5d09a8cb10108116fa533445de9f7fdfe0063e8d7c4c46ba1fd20d7bf6d
+	sha256:fb373fac5ebbc41c645160afd5a9fb451918f6c0e69ab1d9474154e2b515de40
 COMPONENT_ARCHIVE_URL=	\
 	http://downloads.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 # For check_anitya target, https://release-monitoring.org/project/242117
@@ -140,9 +140,9 @@ endif
 # place of $(SOURCE_DIR).
 component_version_	=	$(subst .,_,$(COMPONENT_VERSION))
 COMPONENT_PREP_ACTION += \
-	if grep -q COMPONENT_VERSION  $(@D)/doc/man/named.8in; then \
+	if grep -q COMPONENT_VERSION  $(@D)/bin/named/named.rst; then \
 	    gsed --in-place -e "s/COMPONENT_VERSION/$(component_version_)/" \
-		$(@D)/doc/man/named.8in; \
+		$(@D)/bin/named/named.rst; \
 	fi;
 
 # Test configuration.
