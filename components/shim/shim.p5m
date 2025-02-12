@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri value=pkg:/boot/shim@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
@@ -28,7 +28,6 @@ set name=pkg.summary value="Binaries for UEFI Secure Boot"
 # avoid duplicate file lint error with install-image/solaris-auto-install package
 set name=pkg.linted.pkglint.dupaction001.1 value=true
 set name=pkg.linted.pkglint.dupaction008 value=true
-set name=pkg.linted.pkglint.dupaction010.1 value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="First-stage bootloader for UEFI Secure Boot"
@@ -38,8 +37,6 @@ set name=info.source-url \
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/563
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-link path=boot/grub/.MokManager.uefi target=MokManager.efi variant.arch=i386
-link path=boot/grub/.fallback.uefi target=fallback.efi variant.arch=i386
 file files/BOOTX64.CSV path=boot/grub/BOOTX64.CSV variant.arch=i386
 file files/fbx64.efi path=boot/grub/fbx64.efi pkg.uefisign=true \
     variant.arch=i386
