@@ -8,19 +8,19 @@ One of the tests need patching:
 
 Unclear whether this patch should be sent upstream.
 
---- git-2.39.3/t/Makefile
-+++ git-2.39.3/t/Makefile
-@@ -52,6 +52,9 @@ all: $(DEFAULT_TEST_TARGET)
- test: pre-clean check-chainlint $(TEST_LINT)
+--- git-2.48.1/t/Makefile.orig	2025-02-05 17:27:28.401553370 +0100
++++ git-2.48.1/t/Makefile	2025-02-05 17:29:05.094205327 +0100
+@@ -62,6 +62,9 @@
+ test: pre-clean check-chainlint check-meson $(TEST_LINT)
  	$(CHAINLINTSUPPRESS) $(MAKE) aggregate-results-and-cleanup
  
 +test-noclean: pre-clean $(TEST_LINT)
-+	$(MAKE) T
++		$(MAKE) T
 +
  failed:
  	@failed=$$(cd '$(TEST_RESULTS_DIRECTORY_SQ)' && \
  		grep -l '^failed [1-9]' *.counts | \
-@@ -124,6 +127,8 @@ echo >&2 "non-executable tests:" $$bad;
+@@ -151,6 +154,8 @@
  test-lint-shell-syntax:
  	@'$(PERL_PATH_SQ)' check-non-portable-shell.pl $(T) $(THELPERS) $(TPERF)
  
@@ -29,19 +29,19 @@ Unclear whether this patch should be sent upstream.
  test-lint-filenames:
  	@# We do *not* pass a glob to ls-files but use grep instead, to catch
  	@# non-ASCII characters (which are quoted within double-quotes)
---- git-2.39.3/t/t4018-diff-funcname.sh
-+++ git-2.39.3/t/t4018-diff-funcname.sh
-@@ -80,8 +80,11 @@ done > .gitattributes &&
+--- git-2.48.1/t/t4018-diff-funcname.sh.orig	2025-02-05 17:29:20.578919102 +0100
++++ git-2.48.1/t/t4018-diff-funcname.sh	2025-02-05 17:36:12.229457645 +0100
+@@ -99,8 +99,11 @@
  
  	# add all test files to the index
  	(
 -		cd "$TEST_DIRECTORY"/t4018 &&
 -		git --git-dir="$TRASH_DIRECTORY/.git" add .
 +		( cd "$TEST_DIRECTORY"/t4018 && printf "%s\n" * ) | while read f
-+			do
-+				cat "$TEST_DIRECTORY"/t4018/$f > $f
-+				git add -v $f
-+			done	
++				do
++					cat "$TEST_DIRECTORY"/t4018/$f > $f
++					git add -v $f
++				done	
  	) &&
  
  	# place modified files in the worktree
