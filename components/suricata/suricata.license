@@ -6284,6 +6284,80 @@ table offers a brief comparison to a few alternatives.
 
 
 ## Files:
+rust/vendor/num-derive/README.md
+
+# num-derive
+
+[![crate](https://img.shields.io/crates/v/num-derive.svg)](https://crates.io/crates/num-derive)
+[![documentation](https://docs.rs/num-derive/badge.svg)](https://docs.rs/num-derive)
+[![minimum rustc 1.56](https://img.shields.io/badge/rustc-1.56+-red.svg)](https://rust-lang.github.io/rfcs/2495-min-rust-version.html)
+[![build status](https://github.com/rust-num/num-derive/workflows/master/badge.svg)](https://github.com/rust-num/num-derive/actions)
+
+Procedural macros to derive numeric traits in Rust.
+
+## Usage
+
+Add this to your `Cargo.toml`:
+
+```toml
+[dependencies]
+num-traits = "0.2"
+num-derive = "0.4"
+```
+
+and this to your crate root:
+
+```rust
+#[macro_use]
+extern crate num_derive;
+```
+
+Then you can derive traits on your own types:
+
+```rust
+#[derive(FromPrimitive, ToPrimitive)]
+enum Color {
+    Red,
+    Blue,
+    Green,
+}
+```
+
+## Optional features
+
+- **`full-syntax`** — Enables `num-derive` to handle enum discriminants
+  represented by complex expressions. Usually can be avoided by
+  [utilizing constants], so only use this feature if namespace pollution is
+  undesired and [compile time doubling] is acceptable.
+
+[utilizing constants]: https://github.com/rust-num/num-derive/pull/3#issuecomment-359044704
+[compile time doubling]: https://github.com/rust-num/num-derive/pull/3#issuecomment-359172588
+
+## Releases
+
+Release notes are available in [RELEASES.md](RELEASES.md).
+
+## Compatibility
+
+The `num-derive` crate is tested for rustc 1.56 and greater.
+
+## License
+
+Licensed under either of
+
+ * [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+ * [MIT license](http://opensource.org/licenses/MIT)
+
+at your option.
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.
+
+
+## Files:
 rust/vendor/num-integer/README.md
 
 # num-integer
@@ -7103,111 +7177,6 @@ be dual licensed as above, without any additional terms or conditions.
 
 
 ## Files:
-rust/vendor/proc-macro2-0.4.30/README.md
-
-# proc-macro2
-
-[![Build Status](https://api.travis-ci.com/alexcrichton/proc-macro2.svg?branch=master)](https://travis-ci.com/alexcrichton/proc-macro2)
-[![Latest Version](https://img.shields.io/crates/v/proc-macro2.svg)](https://crates.io/crates/proc-macro2)
-[![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/proc-macro2)
-
-A wrapper around the procedural macro API of the compiler's `proc_macro` crate.
-This library serves three purposes:
-
-- **Bring proc-macro-like functionality to other contexts like build.rs and
-  main.rs.** Types from `proc_macro` are entirely specific to procedural macros
-  and cannot ever exist in code outside of a procedural macro. Meanwhile
-  `proc_macro2` types may exist anywhere including non-macro code. By developing
-  foundational libraries like [syn] and [quote] against `proc_macro2` rather
-  than `proc_macro`, the procedural macro ecosystem becomes easily applicable to
-  many other use cases and we avoid reimplementing non-macro equivalents of
-  those libraries.
-
-- **Make procedural macros unit testable.** As a consequence of being specific
-  to procedural macros, nothing that uses `proc_macro` can be executed from a
-  unit test. In order for helper libraries or components of a macro to be
-  testable in isolation, they must be implemented using `proc_macro2`.
-
-- **Provide the latest and greatest APIs across all compiler versions.**
-  Procedural macros were first introduced to Rust in 1.15.0 with an extremely
-  minimal interface. Since then, many improvements have landed to make macros
-  more flexible and easier to write. This library tracks the procedural macro
-  API of the most recent stable compiler but employs a polyfill to provide that
-  API consistently across any compiler since 1.15.0.
-
-[syn]: https://github.com/dtolnay/syn
-[quote]: https://github.com/dtolnay/quote
-
-## Usage
-
-```toml
-[dependencies]
-proc-macro2 = "0.4"
-```
-
-The skeleton of a typical procedural macro typically looks like this:
-
-```rust
-extern crate proc_macro;
-
-#[proc_macro_derive(MyDerive)]
-pub fn my_derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let input = proc_macro2::TokenStream::from(input);
-
-    let output: proc_macro2::TokenStream = {
-        /* transform input */
-    };
-
-    proc_macro::TokenStream::from(output)
-}
-```
-
-If parsing with [Syn], you'll use [`parse_macro_input!`] instead to propagate
-parse errors correctly back to the compiler when parsing fails.
-
-[`parse_macro_input!`]: https://docs.rs/syn/0.15/syn/macro.parse_macro_input.html
-
-## Unstable features
-
-The default feature set of proc-macro2 tracks the most recent stable compiler
-API. Functionality in `proc_macro` that is not yet stable is not exposed by
-proc-macro2 by default.
-
-To opt into the additional APIs available in the most recent nightly compiler,
-the `procmacro2_semver_exempt` config flag must be passed to rustc. As usual, we
-will polyfill those nightly-only APIs all the way back to Rust 1.15.0. As these
-are unstable APIs that track the nightly compiler, minor versions of proc-macro2
-may make breaking changes to them at any time.
-
-```
-RUSTFLAGS='--cfg procmacro2_semver_exempt' cargo build
-```
-
-Note that this must not only be done for your crate, but for any crate that
-depends on your crate. This infectious nature is intentional, as it serves as a
-reminder that you are outside of the normal semver guarantees.
-
-Semver exempt methods are marked as such in the proc-macro2 documentation.
-
-# License
-
-This project is licensed under either of
-
- * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or
-   http://www.apache.org/licenses/LICENSE-2.0)
- * MIT license ([LICENSE-MIT](LICENSE-MIT) or
-   http://opensource.org/licenses/MIT)
-
-at your option.
-
-### Contribution
-
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in this crate by you, as defined in the Apache-2.0 license, shall
-be dual licensed as above, without any additional terms or conditions.
-
-
-## Files:
 rust/vendor/quote/README.md
 
 Rust Quasi-Quoting
@@ -7465,254 +7434,6 @@ fs::write(dest_path, formatted).unwrap();
 ```
 
 [prettyplease]: https://github.com/dtolnay/prettyplease
-
-<br>
-
-#### License
-
-<sup>
-Licensed under either of <a href="LICENSE-APACHE">Apache License, Version
-2.0</a> or <a href="LICENSE-MIT">MIT license</a> at your option.
-</sup>
-
-<br>
-
-<sub>
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in this crate by you, as defined in the Apache-2.0 license, shall
-be dual licensed as above, without any additional terms or conditions.
-</sub>
-
-
-## Files:
-rust/vendor/quote-0.6.13/README.md
-
-Rust Quasi-Quoting
-==================
-
-[![Build Status](https://api.travis-ci.org/dtolnay/quote.svg?branch=master)](https://travis-ci.org/dtolnay/quote)
-[![Latest Version](https://img.shields.io/crates/v/quote.svg)](https://crates.io/crates/quote)
-[![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/quote/)
-
-This crate provides the [`quote!`] macro for turning Rust syntax tree data
-structures into tokens of source code.
-
-[`quote!`]: https://docs.rs/quote/0.6/quote/macro.quote.html
-
-Procedural macros in Rust receive a stream of tokens as input, execute arbitrary
-Rust code to determine how to manipulate those tokens, and produce a stream of
-tokens to hand back to the compiler to compile into the caller's crate.
-Quasi-quoting is a solution to one piece of that -- producing tokens to return
-to the compiler.
-
-The idea of quasi-quoting is that we write *code* that we treat as *data*.
-Within the `quote!` macro, we can write what looks like code to our text editor
-or IDE. We get all the benefits of the editor's brace matching, syntax
-highlighting, indentation, and maybe autocompletion. But rather than compiling
-that as code into the current crate, we can treat it as data, pass it around,
-mutate it, and eventually hand it back to the compiler as tokens to compile into
-the macro caller's crate.
-
-This crate is motivated by the procedural macro use case, but is a
-general-purpose Rust quasi-quoting library and is not specific to procedural
-macros.
-
-*Version requirement: Quote supports any compiler version back to Rust's very
-first support for procedural macros in Rust 1.15.0.*
-
-[*Release notes*](https://github.com/dtolnay/quote/releases)
-
-```toml
-[dependencies]
-quote = "0.6"
-```
-
-## Syntax
-
-The quote crate provides a [`quote!`] macro within which you can write Rust code
-that gets packaged into a [`TokenStream`] and can be treated as data. You should
-think of `TokenStream` as representing a fragment of Rust source code.
-
-[`TokenStream`]: https://docs.rs/proc-macro2/0.4/proc_macro2/struct.TokenStream.html
-
-Within the `quote!` macro, interpolation is done with `#var`. Any type
-implementing the [`quote::ToTokens`] trait can be interpolated. This includes
-most Rust primitive types as well as most of the syntax tree types from [`syn`].
-
-[`quote::ToTokens`]: https://docs.rs/quote/0.6/quote/trait.ToTokens.html
-[`syn`]: https://github.com/dtolnay/syn
-
-```rust
-let tokens = quote! {
-    struct SerializeWith #generics #where_clause {
-        value: &'a #field_ty,
-        phantom: core::marker::PhantomData<#item_ty>,
-    }
-
-    impl #generics serde::Serialize for SerializeWith #generics #where_clause {
-        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::Serializer,
-        {
-            #path(self.value, serializer)
-        }
-    }
-
-    SerializeWith {
-        value: #value,
-        phantom: core::marker::PhantomData::<#item_ty>,
-    }
-};
-```
-
-## Repetition
-
-Repetition is done using `#(...)*` or `#(...),*` similar to `macro_rules!`. This
-iterates through the elements of any variable interpolated within the repetition
-and inserts a copy of the repetition body for each one. The variables in an
-interpolation may be anything that implements `IntoIterator`, including `Vec` or
-a pre-existing iterator.
-
-- `#(#var)*` — no separators
-- `#(#var),*` — the character before the asterisk is used as a separator
-- `#( struct #var; )*` — the repetition can contain other things
-- `#( #k => println!("{}", #v), )*` — even multiple interpolations
-
-Note that there is a difference between `#(#var ,)*` and `#(#var),*`—the latter
-does not produce a trailing comma. This matches the behavior of delimiters in
-`macro_rules!`.
-
-## Returning tokens to the compiler
-
-The `quote!` macro evaluates to an expression of type
-`proc_macro2::TokenStream`. Meanwhile Rust procedural macros are expected to
-return the type `proc_macro::TokenStream`.
-
-The difference between the two types is that `proc_macro` types are entirely
-specific to procedural macros and cannot ever exist in code outside of a
-procedural macro, while `proc_macro2` types may exist anywhere including tests
-and non-macro code like main.rs and build.rs. This is why even the procedural
-macro ecosystem is largely built around `proc_macro2`, because that ensures the
-libraries are unit testable and accessible in non-macro contexts.
-
-There is a [`From`]-conversion in both directions so returning the output of
-`quote!` from a procedural macro usually looks like `tokens.into()` or
-`proc_macro::TokenStream::from(tokens)`.
-
-[`From`]: https://doc.rust-lang.org/std/convert/trait.From.html
-
-## Examples
-
-### Combining quoted fragments
-
-Usually you don't end up constructing an entire final `TokenStream` in one
-piece. Different parts may come from different helper functions. The tokens
-produced by `quote!` themselves implement `ToTokens` and so can be interpolated
-into later `quote!` invocations to build up a final result.
-
-```rust
-let type_definition = quote! {...};
-let methods = quote! {...};
-
-let tokens = quote! {
-    #type_definition
-    #methods
-};
-```
-
-### Constructing identifiers
-
-Suppose we have an identifier `ident` which came from somewhere in a macro
-input and we need to modify it in some way for the macro output. Let's consider
-prepending the identifier with an underscore.
-
-Simply interpolating the identifier next to an underscore will not have the
-behavior of concatenating them. The underscore and the identifier will continue
-to be two separate tokens as if you had written `_ x`.
-
-```rust
-// incorrect
-quote! {
-    let mut _#ident = 0;
-}
-```
-
-The solution is to perform token-level manipulations using the APIs provided by
-Syn and proc-macro2.
-
-```rust
-let concatenated = format!("_{}", ident);
-let varname = syn::Ident::new(&concatenated, ident.span());
-quote! {
-    let mut #varname = 0;
-}
-```
-
-### Making method calls
-
-Let's say our macro requires some type specified in the macro input to have a
-constructor called `new`. We have the type in a variable called `field_type` of
-type `syn::Type` and want to invoke the constructor.
-
-```rust
-// incorrect
-quote! {
-    let value = #field_type::new();
-}
-```
-
-This works only sometimes. If `field_type` is `String`, the expanded code
-contains `String::new()` which is fine. But if `field_type` is something like
-`Vec<i32>` then the expanded code is `Vec<i32>::new()` which is invalid syntax.
-Ordinarily in handwritten Rust we would write `Vec::<i32>::new()` but for macros
-often the following is more convenient.
-
-```rust
-quote! {
-    let value = <#field_type>::new();
-}
-```
-
-This expands to `<Vec<i32>>::new()` which behaves correctly.
-
-A similar pattern is appropriate for trait methods.
-
-```rust
-quote! {
-    let value = <#field_type as core::default::Default>::default();
-}
-```
-
-## Hygiene
-
-Any interpolated tokens preserve the `Span` information provided by their
-`ToTokens` implementation. Tokens that originate within a `quote!` invocation
-are spanned with [`Span::call_site()`].
-
-[`Span::call_site()`]: https://docs.rs/proc-macro2/0.4/proc_macro2/struct.Span.html#method.call_site
-
-A different span can be provided explicitly through the [`quote_spanned!`]
-macro.
-
-[`quote_spanned!`]: https://docs.rs/quote/0.6/quote/macro.quote_spanned.html
-
-### Limitations
-
-- A non-repeating variable may not be interpolated inside of a repeating block
-  ([#7]).
-- The same variable may not be interpolated more than once inside of a repeating
-  block ([#8]).
-
-[#7]: https://github.com/dtolnay/quote/issues/7
-[#8]: https://github.com/dtolnay/quote/issues/8
-
-### Recursion limit
-
-The `quote!` macro relies on deep recursion so some large invocations may fail
-with "recursion limit reached" when you compile. If it fails, bump up the
-recursion limit by adding `#![recursion_limit = "128"]` to your crate. An even
-higher limit may be necessary for especially large invocations. You don't need
-this unless the compiler tells you that you need it.
 
 <br>
 
@@ -9225,281 +8946,6 @@ The proc-macro2 crate will automatically detect and use the compiler's data
 structures when a procedural macro is active.
 
 [proc-macro2]: https://docs.rs/proc-macro2/1.0/proc_macro2/
-
-<br>
-
-#### License
-
-<sup>
-Licensed under either of <a href="LICENSE-APACHE">Apache License, Version
-2.0</a> or <a href="LICENSE-MIT">MIT license</a> at your option.
-</sup>
-
-<br>
-
-<sub>
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in this crate by you, as defined in the Apache-2.0 license, shall
-be dual licensed as above, without any additional terms or conditions.
-</sub>
-
-
-## Files:
-rust/vendor/syn-0.15.44/README.md
-
-Parser for Rust source code
-===========================
-
-[![Build Status](https://api.travis-ci.org/dtolnay/syn.svg?branch=master)](https://travis-ci.org/dtolnay/syn)
-[![Latest Version](https://img.shields.io/crates/v/syn.svg)](https://crates.io/crates/syn)
-[![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/syn/0.15/syn/)
-[![Rustc Version 1.15+](https://img.shields.io/badge/rustc-1.15+-lightgray.svg)](https://blog.rust-lang.org/2017/02/02/Rust-1.15.html)
-
-Syn is a parsing library for parsing a stream of Rust tokens into a syntax tree
-of Rust source code.
-
-Currently this library is geared toward use in Rust procedural macros, but
-contains some APIs that may be useful more generally.
-
-[custom derive]: https://github.com/rust-lang/rfcs/blob/master/text/1681-macros-1.1.md
-
-- **Data structures** — Syn provides a complete syntax tree that can represent
-  any valid Rust source code. The syntax tree is rooted at [`syn::File`] which
-  represents a full source file, but there are other entry points that may be
-  useful to procedural macros including [`syn::Item`], [`syn::Expr`] and
-  [`syn::Type`].
-
-- **Custom derives** — Of particular interest to custom derives is
-  [`syn::DeriveInput`] which is any of the three legal input items to a derive
-  macro. An example below shows using this type in a library that can derive
-  implementations of a trait of your own.
-
-- **Parsing** — Parsing in Syn is built around [parser functions] with the
-  signature `fn(ParseStream) -> Result<T>`. Every syntax tree node defined by
-  Syn is individually parsable and may be used as a building block for custom
-  syntaxes, or you may dream up your own brand new syntax without involving any
-  of our syntax tree types.
-
-- **Location information** — Every token parsed by Syn is associated with a
-  `Span` that tracks line and column information back to the source of that
-  token. These spans allow a procedural macro to display detailed error messages
-  pointing to all the right places in the user's code. There is an example of
-  this below.
-
-- **Feature flags** — Functionality is aggressively feature gated so your
-  procedural macros enable only what they need, and do not pay in compile time
-  for all the rest.
-
-[`syn::File`]: https://docs.rs/syn/0.15/syn/struct.File.html
-[`syn::Item`]: https://docs.rs/syn/0.15/syn/enum.Item.html
-[`syn::Expr`]: https://docs.rs/syn/0.15/syn/enum.Expr.html
-[`syn::Type`]: https://docs.rs/syn/0.15/syn/enum.Type.html
-[`syn::DeriveInput`]: https://docs.rs/syn/0.15/syn/struct.DeriveInput.html
-[parser functions]: https://docs.rs/syn/0.15/syn/parse/index.html
-
-If you get stuck with anything involving procedural macros in Rust I am happy to
-provide help even if the issue is not related to Syn. Please file a ticket in
-this repo.
-
-*Version requirement: Syn supports any compiler version back to Rust's very
-first support for procedural macros in Rust 1.15.0. Some features especially
-around error reporting are only available in newer compilers or on the nightly
-channel.*
-
-[*Release notes*](https://github.com/dtolnay/syn/releases)
-
-## Example of a custom derive
-
-The canonical custom derive using Syn looks like this. We write an ordinary Rust
-function tagged with a `proc_macro_derive` attribute and the name of the trait
-we are deriving. Any time that derive appears in the user's code, the Rust
-compiler passes their data structure as tokens into our macro. We get to execute
-arbitrary Rust code to figure out what to do with those tokens, then hand some
-tokens back to the compiler to compile into the user's crate.
-
-[`TokenStream`]: https://doc.rust-lang.org/proc_macro/struct.TokenStream.html
-
-```toml
-[dependencies]
-syn = "0.15"
-quote = "0.6"
-
-[lib]
-proc-macro = true
-```
-
-```rust
-extern crate proc_macro;
-
-use proc_macro::TokenStream;
-use quote::quote;
-use syn::{parse_macro_input, DeriveInput};
-
-#[proc_macro_derive(MyMacro)]
-pub fn my_macro(input: TokenStream) -> TokenStream {
-    // Parse the input tokens into a syntax tree
-    let input = parse_macro_input!(input as DeriveInput);
-
-    // Build the output, possibly using quasi-quotation
-    let expanded = quote! {
-        // ...
-    };
-
-    // Hand the output tokens back to the compiler
-    TokenStream::from(expanded)
-}
-```
-
-The [`heapsize`] example directory shows a complete working Macros 1.1
-implementation of a custom derive. It works on any Rust compiler 1.15+. The
-example derives a `HeapSize` trait which computes an estimate of the amount of
-heap memory owned by a value.
-
-[`heapsize`]: examples/heapsize
-
-```rust
-pub trait HeapSize {
-    /// Total number of bytes of heap memory owned by `self`.
-    fn heap_size_of_children(&self) -> usize;
-}
-```
-
-The custom derive allows users to write `#[derive(HeapSize)]` on data structures
-in their program.
-
-```rust
-#[derive(HeapSize)]
-struct Demo<'a, T: ?Sized> {
-    a: Box<T>,
-    b: u8,
-    c: &'a str,
-    d: String,
-}
-```
-
-## Spans and error reporting
-
-The token-based procedural macro API provides great control over where the
-compiler's error messages are displayed in user code. Consider the error the
-user sees if one of their field types does not implement `HeapSize`.
-
-```rust
-#[derive(HeapSize)]
-struct Broken {
-    ok: String,
-    bad: std::thread::Thread,
-}
-```
-
-By tracking span information all the way through the expansion of a procedural
-macro as shown in the `heapsize` example, token-based macros in Syn are able to
-trigger errors that directly pinpoint the source of the problem.
-
-```
-error[E0277]: the trait bound `std::thread::Thread: HeapSize` is not satisfied
- --> src/main.rs:7:5
-  |
-7 |     bad: std::thread::Thread,
-  |     ^^^^^^^^^^^^^^^^^^^^^^^^ the trait `HeapSize` is not implemented for `std::thread::Thread`
-```
-
-## Parsing a custom syntax
-
-The [`lazy-static`] example directory shows the implementation of a
-`functionlike!(...)` procedural macro in which the input tokens are parsed using
-Syn's parsing API.
-
-[`lazy-static`]: examples/lazy-static
-
-The example reimplements the popular `lazy_static` crate from crates.io as a
-procedural macro.
-
-```
-lazy_static! {
-    static ref USERNAME: Regex = Regex::new("^[a-z0-9_-]{3,16}$").unwrap();
-}
-```
-
-The implementation shows how to trigger custom warnings and error messages on
-the macro input.
-
-```
-warning: come on, pick a more creative name
-  --> src/main.rs:10:16
-   |
-10 |     static ref FOO: String = "lazy_static".to_owned();
-   |                ^^^
-```
-
-## Testing
-
-When testing macros, we often care not just that the macro can be used
-successfully but also that when the macro is provided with invalid input it
-produces maximally helpful error messages. Consider using the [`trybuild`] crate
-to write tests for errors that are emitted by your macro or errors detected by
-the Rust compiler in the expanded code following misuse of the macro. Such tests
-help avoid regressions from later refactors that mistakenly make an error no
-longer trigger or be less helpful than it used to be.
-
-[`trybuild`]: https://github.com/dtolnay/trybuild
-
-## Debugging
-
-When developing a procedural macro it can be helpful to look at what the
-generated code looks like. Use `cargo rustc -- -Zunstable-options
---pretty=expanded` or the [`cargo expand`] subcommand.
-
-[`cargo expand`]: https://github.com/dtolnay/cargo-expand
-
-To show the expanded code for some crate that uses your procedural macro, run
-`cargo expand` from that crate. To show the expanded code for one of your own
-test cases, run `cargo expand --test the_test_case` where the last argument is
-the name of the test file without the `.rs` extension.
-
-This write-up by Brandon W Maister discusses debugging in more detail:
-[Debugging Rust's new Custom Derive system][debugging].
-
-[debugging]: https://quodlibetor.github.io/posts/debugging-rusts-new-custom-derive-system/
-
-## Optional features
-
-Syn puts a lot of functionality behind optional features in order to optimize
-compile time for the most common use cases. The following features are
-available.
-
-- **`derive`** *(enabled by default)* — Data structures for representing the
-  possible input to a custom derive, including structs and enums and types.
-- **`full`** — Data structures for representing the syntax tree of all valid
-  Rust source code, including items and expressions.
-- **`parsing`** *(enabled by default)* — Ability to parse input tokens into a
-  syntax tree node of a chosen type.
-- **`printing`** *(enabled by default)* — Ability to print a syntax tree node as
-  tokens of Rust source code.
-- **`visit`** — Trait for traversing a syntax tree.
-- **`visit-mut`** — Trait for traversing and mutating in place a syntax tree.
-- **`fold`** — Trait for transforming an owned syntax tree.
-- **`clone-impls`** *(enabled by default)* — Clone impls for all syntax tree
-  types.
-- **`extra-traits`** — Debug, Eq, PartialEq, Hash impls for all syntax tree
-  types.
-- **`proc-macro`** *(enabled by default)* — Runtime dependency on the dynamic
-  library libproc_macro from rustc toolchain.
-
-## Proc macro shim
-
-Syn uses the [proc-macro2] crate to emulate the compiler's procedural macro API
-in a stable way that works all the way back to Rust 1.15.0. This shim makes it
-possible to write code without regard for whether the current compiler version
-supports the features we use.
-
-In general all of your code should be written against proc-macro2 rather than
-proc-macro. The one exception is in the signatures of procedural macro entry
-points, which are required by the language to use `proc_macro::TokenStream`.
-
-The proc-macro2 crate will automatically detect and use the compiler's data
-structures on sufficiently new compilers.
-
-[proc-macro2]: https://github.com/alexcrichton/proc-macro2
 
 <br>
 
@@ -11535,6 +10981,78 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## Files:
 libhtp/test/gtest/gtest-all.cc
+libhtp/test/gtest/gtest.h
+
+Copyright 2008 Google Inc.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+    * Neither the name of Google Inc. nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Author: wan@google.com (Zhanyong Wan)
+
+
+## Files:
+libhtp/test/gtest/gtest-all.cc
+libhtp/test/gtest/gtest.h
+
+Copyright 2007, Google Inc.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+    * Neither the name of Google Inc. nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Author: wan@google.com (Zhanyong Wan)
+
+
+## Files:
+libhtp/test/gtest/gtest-all.cc
 
 Copyright 2008, Google Inc.
 All rights reserved.
@@ -11791,42 +11309,6 @@ Author: wan@google.com (Zhanyong Wan)
 
 ## Files:
 libhtp/test/gtest/gtest-all.cc
-libhtp/test/gtest/gtest.h
-
-Copyright 2007, Google Inc.
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-    * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the
-distribution.
-    * Neither the name of Google Inc. nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-Author: wan@google.com (Zhanyong Wan)
-
-
-## Files:
-libhtp/test/gtest/gtest-all.cc
 
 Copyright 2008, Google Inc.
 All rights reserved.
@@ -11860,42 +11342,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Author: mheule@google.com (Markus Heule)
 
 The Google C++ Testing Framework (Google Test)
-
-
-## Files:
-libhtp/test/gtest/gtest-all.cc
-libhtp/test/gtest/gtest.h
-
-Copyright 2008 Google Inc.
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-    * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the
-distribution.
-    * Neither the name of Google Inc. nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-Author: wan@google.com (Zhanyong Wan)
 
 
 ## Files:
@@ -12836,7 +12282,7 @@ LibHTP changes:
 libhtp/ltmain.sh
 ltmain.sh
 
-Copyright (C) 1996-2019, 2021-2022 Free Software Foundation, Inc.
+Copyright (C) 1996-2015 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
@@ -12868,90 +12314,84 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 libhtp/ltmain.sh
 ltmain.sh
 
-This is free software.  There is NO warranty; not even for
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-Copyright (C) 2004-2019, 2021 Bootstrap Authors
-
-This file is dual licensed under the terms of the MIT license
-<https://opensource.org/license/MIT>, and GPL version 2 or later
-<http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
-these licenses when using or redistributing this software or any of
-the files within it.  See the URLs above, or the file `LICENSE`
-included in the Bootstrap distribution for the full license texts.
+Copyright (C) 2004-2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 
 ## Files:
 libhtp/ltmain.sh
 ltmain.sh
 
-This is free software.  There is NO warranty; not even for
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-Copyright (C) 2010-2019, 2021 Bootstrap Authors
-
-This file is dual licensed under the terms of the MIT license
-<https://opensource.org/license/MIT>, and GPL version 2 or later
-<http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
-these licenses when using or redistributing this software or any of
-the files within it.  See the URLs above, or the file `LICENSE`
-included in the Bootstrap distribution for the full license texts.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
 
 
 ## Files:
 libhtp/ltmain.sh
 ltmain.sh
 
-This file is a library for parsing options in your shell scripts along
-with assorted other useful supporting features that you can make use
-of too.
-
-For the simplest scripts you might need only:
-
-  #!/bin/sh
-  . relative/path/to/funclib.sh
-  . relative/path/to/options-parser
-  scriptversion=1.0
-  func_options ${1+"$@"}
-  eval set dummy "$func_options_result"; shift
-  ...rest of your script...
-
-In order for the '--version' option to work, you will need to have a
-suitably formatted comment like the one at the top of this file
-starting with '# Written by ' and ending with '# Copyright'.
-
-For '-h' and '--help' to work, you will also need a one line
-description of your script's purpose in a comment directly above the
-'# Written by ' line, like the one at the top of this file.
-
-The default options also support '--debug', which will turn on shell
-execution tracing (see the comment above debug_cmd below for another
-use), and '--verbose' and the func_verbose function to allow your script
-to display verbose messages only when your user has specified
-'--verbose'.
-
-After sourcing this file, you can plug in processing for additional
-options by amending the variables from the 'Configuration' section
-below, and following the instructions in the 'Option parsing'
-section further down.
+As a special exception to the GNU General Public License, if you distribute
+this file as part of a program or library that is built using GNU Libtool,
+you may include this file under the same distribution terms that you use
+for the rest of that program.
 
 
 ## Files:
 libhtp/ltmain.sh
 ltmain.sh
 
-func_version
-------------
-Echo version message to standard output and exit.
-The version message is extracted from the calling file's header
-comments, with leading '# ' stripped:
-  1. First display the progname and version
-  2. Followed by the header comment line matching  /^# Written by /
-  3. Then a blank line followed by the first following line matching
-     /^# Copyright /
-  4. Immediately followed by any lines between the previous matches,
-     except lines preceding the intervening completely blank line.
-For example, see the header comments of this file.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNES FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+
+## Files:
+libhtp/ltmain.sh
+ltmain.sh
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+
+## Files:
+libhtp/ltmain.sh
+ltmain.sh
+
+Copyright (C) 2010-2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+## Files:
+libhtp/ltmain.sh
+ltmain.sh
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+
+## Files:
+libhtp/ltmain.sh
+ltmain.sh
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+
+## Files:
+libhtp/ltmain.sh
+ltmain.sh
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 ## Files:
@@ -13023,38 +12463,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
-
-## Files:
-rust/vendor/unicode-xid-0.1.0/scripts/unicode.py
-
-Copyright 2011-2015 The Rust Project Developers. See the COPYRIGHT
-file at the top-level directory of this distribution and at
-http://rust-lang.org/COPYRIGHT.
-
-Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-<LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-option. This file may not be copied, modified, or distributed
-except according to those terms.
-
-
-## Files:
-rust/vendor/unicode-xid-0.1.0/scripts/unicode.py
-
-// Copyright 2012-2015 The Rust Project Developers. See the COPYRIGHT
-// file at the top-level directory of this distribution and at
-// http://rust-lang.org/COPYRIGHT.
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
-// NOTE: The following code was generated by "scripts/unicode.py", do not edit directly
-
-#![allow(missing_docs, non_upper_case_globals, non_snake_case)]
 
 
 ## Files:

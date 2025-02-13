@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -29,12 +29,12 @@ COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		suricata
-COMPONENT_VERSION=	7.0.7
+COMPONENT_VERSION=	7.0.8
 COMPONENT_PROJECT_URL=	https://suricata.io/
-COMPONENT_ARCHIVE_HASH=	sha256:26d0a36194d53080fc8b09b999b2b5a83c4049f40ad07ef6ae69c7225a728b86
+COMPONENT_ARCHIVE_HASH=	sha256:492928c622e170bd9c45d3530bc2b1033c5582dc18085c436fceafb62829d3ce
 COMPONENT_ARCHIVE_URL=	https://www.openinfosecfoundation.org/download/$(COMPONENT_ARCHIVE)
 
-COMPONENT_BAID=		181887
+COMPONENT_BAID=		196050
 
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
@@ -53,7 +53,7 @@ SYSTEM_TEST_TARGET=	$(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 # Disable AVX as our platforms doesn't need to support it. At least VirtualBox does not.
-CFLAGS.gcc.i386 += -mno-avx
+CFLAGS.gcc.i386 += -mno-avx -mno-bmi -mno-bmi2
 LDFLAGS += -lm
 
 # Requires a reconf due to patch to configure.ac.
