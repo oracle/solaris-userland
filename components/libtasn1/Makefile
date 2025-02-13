@@ -19,19 +19,19 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libtasn1
-COMPONENT_VERSION=	4.13
+COMPONENT_VERSION=	4.20.0
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ff8072dd30d73c87f717b5940275bacd390b31794a2c890e51c010b71e319c16
+    sha256:92e0e3bd4c02d4aeee76036b2ddd83f0c732ba4cda5cb71d583272b23587a76c
 COMPONENT_BUGDB=	library/libtasn1
 COMPONENT_ANITYA_ID=	1734
 
-COMPONENT_BAID=		46328
+COMPONENT_BAID=		195971
 
 COMPONENT_BUILD_TARGETS = all info
 
