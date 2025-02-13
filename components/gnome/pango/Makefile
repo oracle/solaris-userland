@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -30,22 +30,22 @@ BUILD_BITS =		64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pango
-COMPONENT_VERSION=	1.51.0
+COMPONENT_VERSION=	1.55.5
 COMPONENT_PROJECT_URL=	http://www.pango.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:74efc109ae6f903bbe6af77eaa2ac6094b8ee245a2e23f132a7a8f0862d1a9f5
+    sha256:e396126ea08203cbd8ef12638e6222e2e1fd8aa9cac6743072fedc5f2d820dd8
 COMPONENT_BUGDB=	gnome/pango
 COMPONENT_ANITYA_ID=	11783
 
-COMPONENT_BAID=		155742
+COMPONENT_BAID=		195946
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # doc build requires python modules we don't have (markdown, typogrify)
-CONFIGURE_OPTIONS += -Dgtk_doc=false
+CONFIGURE_OPTIONS += -Ddocumentation=false
 CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
-CONFIGURE_OPTIONS += -Dinstall-tests=true
+CONFIGURE_OPTIONS += -Dbuild-testsuite=true
 
 # Workaround for build failures due to pango Makefiles not passing CFLAGS or
 # LDFLAGS, especially the -m32/64 flag, to g-ir-scanner
