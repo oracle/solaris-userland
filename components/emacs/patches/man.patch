@@ -1,0 +1,41 @@
+# Quoting issue with man.el. See:
+#
+#    https://debbugs.gnu.org/cgi/bugreport.cgi?bug=66390
+#    https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=820f0793f0b46448928905552726c1f1b999062f
+#
+--- emacs-29.3.orig/lisp/man.el	2024-01-06 05:56:30.000000000 -0700
++++ emacs-29.3/lisp/man.el	2025-02-14 12:02:14.824412701 -0700
+@@ -684,7 +684,11 @@
+       (setq name (match-string 2 ref)
+ 	    section (match-string 1 ref))))
+     (if (string= name "")
+-	ref				; Return the reference as is
++        ;; see Bug#66390
++        (mapconcat 'identity
++                    (mapcar #'shell-quote-argument
++                            (split-string ref "\\s-+"))
++                    " ")                 ; Return the reference as is
+       (if Man-downcase-section-letters-flag
+ 	  (setq section (downcase section)))
+       (while slist
+--- emacs-29.3.orig/test/lisp/man-tests.el	2024-01-06 05:56:31.000000000 -0700
++++ emacs-29.3/test/lisp/man-tests.el	2025-02-14 12:07:42.744365262 -0700
+@@ -161,6 +161,18 @@
+           (let ((button (button-at (match-beginning 0))))
+             (should (and button (eq 'Man-xref-header-file (button-type button))))))))))
+ 
++(ert-deftest man-tests-Man-translate-references ()
++  (should (equal (Man-translate-references "basename")
++                 "basename"))
++  (should (equal (Man-translate-references "basename(3)")
++                 "3 basename"))
++  (should (equal (Man-translate-references "basename(3v)")
++                 "3v basename"))
++  (should (equal (Man-translate-references ";id")
++                 "\\;id"))
++  (should (equal (Man-translate-references "-k basename")
++                 "-k basename")))
++
+ (provide 'man-tests)
+ 
+ ;;; man-tests.el ends here
