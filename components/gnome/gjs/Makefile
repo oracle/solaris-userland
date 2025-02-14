@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gjs
-COMPONENT_VERSION=	1.78.1
+COMPONENT_VERSION=	1.78.5
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Gjs
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7e90511c429127c39eac0068c4ac9a353df7e6fbbc646f5f18e8962882c18641
+	sha256:3deddc60907684a0ecaad70d9be3661d3e3b314726184fd311cdcd020c1a8fae
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	9532
 
-COMPONENT_BAID=		156453
+COMPONENT_BAID=		196070
 BUILD_STYLE=		meson
 
 # Workaround the mozjs issue described in 24935318
