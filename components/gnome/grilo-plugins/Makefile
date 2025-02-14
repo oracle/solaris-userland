@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -56,7 +56,6 @@ REQUIRED_PACKAGES += library/desktop/libgdata
 REQUIRED_PACKAGES += library/desktop/librest
 REQUIRED_PACKAGES += library/desktop/search/tracker
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gmime
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/desktop/gom
 REQUIRED_PACKAGES += library/desktop/grilo
