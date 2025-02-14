@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -28,16 +28,16 @@ BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk4
-COMPONENT_VERSION=	4.12.4
+COMPONENT_VERSION=	4.14.5
 COMPONENT_PROJECT_URL=	https://www.gtk.org/
 COMPONENT_SRC=		gtk-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ba67c6498e5599f928edafb9e08a320adfaa50ab2f0da6fc6ab2252fc2d57520
-COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk/4.12/$(COMPONENT_ARCHIVE)
+    sha256:5547f2b9f006b133993e070b87c17804e051efda3913feaca1108fa2be41e24d
+COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk/4.14/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gtk+
 COMPONENT_ANITYA_ID=	13942
 
-COMPONENT_BAID=		156481
+COMPONENT_BAID=		195850
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -52,6 +52,7 @@ CONFIGURE_OPTIONS += -Dwayland-backend=false
 CONFIGURE_OPTIONS += -Dmedia-gstreamer=disabled
 CONFIGURE_OPTIONS += -Dman-pages=true
 CONFIGURE_OPTIONS += -Dintrospection=enabled
+CONFIGURE_OPTIONS += -Dvulkan=disabled
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH64).master
 COMPONENT_TEST_TRANSFORMS += \
