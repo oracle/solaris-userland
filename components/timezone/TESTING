@@ -27,6 +27,30 @@ diff -u \
   <(zdump -v Asia/Gaza_new | perl -p -e 's,^[^/]+,,')
 
 
+Testing that both 32 and 64bit works
+============-----===================
+On a machine where new timezones are installed commpile this code:
+------------------------------------- a.c --------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+int
+main(int argc, char **argv)
+{
+        char buf[100];
+        time_t t = 1182118920;
+        struct tm *local = localtime(&t);
+        strftime(buf, sizeof (buf), "(%Z)", local);
+        printf("%s\n", buf);
+        exit(0);
+}
+--------------------------------------------------------------------------------
+$ gcc -o a.32 -m32 a.c
+$ gcc -o a.64 -m64 a.c
+
+Both a.32 and a.64 binaries should print local timezone and not just an empty
+string '()'.
+
 
 Testing text installer
 ======================

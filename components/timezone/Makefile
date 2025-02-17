@@ -84,6 +84,8 @@ TZFILES= africa antarctica asia australasia etcetera europe \
 
 ZONEINFO_TAB_DIR=$(PROTO_DIR)/usr/share/lib/zoneinfo/tab
 
+# Please note that the -b fat option is necessary in order to support 32bit
+# applications. See TESTING for description how to verify that.
 build: $(SOURCE_DIR)/.prep $(BUILD_DIR)
 	( \
 		cd $(SOURCE_DIR_CODE); \
@@ -91,7 +93,7 @@ build: $(SOURCE_DIR)/.prep $(BUILD_DIR)
 	); \
 	( \
 		cd $(SOURCE_DIR); \
-		$(SOURCE_DIR_CODE)/zic -d $(PROTOUSRSHARELIBDIR)/zoneinfo $(TZFILES) \
+		$(SOURCE_DIR_CODE)/zic -b fat -d $(PROTOUSRSHARELIBDIR)/zoneinfo $(TZFILES) \
 	)
 
 	$(MKDIR) -p $(ZONEINFO_TAB_DIR)
