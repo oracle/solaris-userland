@@ -25,6 +25,9 @@
 
 COMPILER=		gcc
 
+# Component uses ABI3 naming.
+PYTHON3_SOABI=abi3
+
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cryptography
@@ -88,7 +91,7 @@ test:		$(TEST_64)
 system-test:    $(SYSTEM_TEST_64)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cffi-%)
-REQUIRED_PACKAGES += library/python/setuptools-rust
+REQUIRED_PACKAGES += developer/python/maturin
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
