@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER= gcc
@@ -68,12 +68,7 @@ links:
 	done
 
 pkglint:
-	@rm -f pkglint
-	@sed -e "s,WS_TOP_XXX,$(WS_TOP)/$(MACH)," \
-	    < pkglint.sh \
-	    > pkglint
 	@chmod +x pkglint
-
 
 time-$(MACH64).o:			BITS=64
 time-$(MACH32).o time-$(MACH64).o:	CFLAGS += $(CC_PIC)
@@ -86,9 +81,10 @@ time-%.so:	time-%.o
 
 clean:
 	@$(RM) time-*.o time*.bc
-	@$(RM) pkglint
 
 clobber:	clean
 	@$(RM) time-*.so python/pkglint/*.pyc
 	@$(RM) -r $(PARFAIT_TOOLS) $(MACH)
 	@$(RM) .gnupg/pubring.gpg~ .gnupg/secring.gpg .gnupg/trustdb.gpg
+
+.PHONY: pkglint
