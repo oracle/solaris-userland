@@ -29,19 +29,16 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		virtualenv
-COMPONENT_VERSION=	20.27.1
+COMPONENT_VERSION=	20.29.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:142c6be10212543b32c6c45d3d3893dff89112cc588b7d0879ae5a1ec03a47ba
+    sha256:fdaabebf6d03b5ba83ae0a02cfe96f48a716f4fae556461d180825866f75b728
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pypa/virtualenv
 COMPONENT_BUGDB=	python-mod/virtualenv
 COMPONENT_ANITYA_ID=	6904
-COMPONENT_BAID=		186691
-
-# virtualenv is not Python 3.13 ready yet
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.13)
+COMPONENT_BAID=		196554
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -52,12 +49,6 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 
 COMPONENT_TEST_ENV +=	PATH=$(GNUBIN):$(PATH)
 COMPONENT_SYSTEM_TEST_ENV +=	PATH=$(GNUBIN):$(PATH)
-
-# Force use of native distutils rather than the setuptools one
-# that otherwise takes over and breaks some tests.
-# https://github.com/pypa/setuptools/issues/3007
-COMPONENT_TEST_ENV +=	SETUPTOOLS_USE_DISTUTILS=stdlib
-COMPONENT_SYSTEM_TEST_ENV +=	SETUPTOOLS_USE_DISTUTILS=stdlib
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
