@@ -20,26 +20,25 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rpdb
-COMPONENT_VERSION=	0.1.6
+COMPONENT_VERSION=	0.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5d1a1cee34378ab075879dc30fa6328d448a9f680a66c4e84cac7382ad92f15f
+    sha256:123be4e17bf64dd2dfd43414b6baafd308c9bbc3b1a068f5f4342855890d2405
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://tamentis.com/projects/rpdb
 COMPONENT_BUGDB=	python-mod/rpdb
 COMPONENT_ANITYA_ID=	8118
-
-COMPONENT_BAID=		35303
+COMPONENT_BAID=		196751
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)

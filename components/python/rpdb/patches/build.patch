@@ -1,0 +1,32 @@
+Poetry is not available on Solaris; this patch modifies the build metadata
+to use setuptools instead.
+
+Not intended for upstream.
+
+--- rpdb-0.2.0/pyproject.toml
++++ rpdb-0.2.0/pyproject.toml
+@@ -1,15 +1,19 @@
+-[tool.poetry]
++[project]
+ name = "rpdb"
+ version = "0.2.0"
+ description = "pdb wrapper with remote access via tcp socket"
+-authors = ["Bertrand Janin <b@janin.com>", "Michael Bianco <mike@mikebian.co>"]
++authors = [
++	{ name = "Bertrand Janin", email = "b@janin.com" },
++	{ name = "Michael Bianco", email = "mike@mikebian.co" },
++]
+ readme = "README.md"
++
++[project.urls]
+ homepage = "http://tamentis.com/projects/rpdb"
+-packages = [{ include = "rpdb" }]
+ 
+ [tool.poetry.dependencies]
+ python = ">=3.8"
+ 
+ [build-system]
+-requires = ["poetry-core>=1.0.0"]
+-build-backend = "poetry.core.masonry.api"
++requires = ["setuptools"]
++build-backend = "setuptools.build_meta"
