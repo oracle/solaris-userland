@@ -1,0 +1,105 @@
+Partially reverted following commit:
+https://github.com/python-jsonschema/jsonschema/commit/eb004479645a4e1f0d842e4434b909f476569dcc
+
+--- jsonschema-4.23.0/jsonschema/_types.py
++++ jsonschema-4.23.0/jsonschema/_types.py
+@@ -4,19 +4,20 @@ from typing import Any, Callable, Mappin
+ import numbers
+ 
+ from attrs import evolve, field, frozen
+-from rpds import HashTrieMap
++from pyrsistent import pmap
++from pyrsistent.typing import PMap
+ 
+ from jsonschema.exceptions import UndefinedTypeCheck
+ 
+ 
+-# unfortunately, the type of HashTrieMap is generic, and if used as an attrs
++# unfortunately, the type of pmap is generic, and if used as an attrs
+ # converter, the generic type is presented to mypy, which then fails to match
+ # the concrete type of a type checker mapping
+ # this "do nothing" wrapper presents the correct information to mypy
+-def _typed_map_converter(
++def _typed_pmap_converter(
+     init_val: Mapping[str, Callable[[TypeChecker, Any], bool]],
+-) -> HashTrieMap[str, Callable[[TypeChecker, Any], bool]]:
+-    return HashTrieMap.convert(init_val)
++) -> PMap[str, Callable[[TypeChecker, Any], bool]]:
++    return pmap(init_val)
+ 
+ 
+ def is_array(checker, instance):
+@@ -79,9 +80,9 @@ class TypeChecker:
+ 
+     """
+ 
+-    _type_checkers: HashTrieMap[
++    _type_checkers: PMap[
+         str, Callable[[TypeChecker, Any], bool],
+-    ] = field(default=HashTrieMap(), converter=_typed_map_converter)
++    ] = field(default=pmap(), converter=_typed_pmap_converter)
+ 
+     def __repr__(self):
+         types = ", ".join(repr(k) for k in sorted(self._type_checkers))
+--- jsonschema-4.23.0/jsonschema/validators.py
++++ jsonschema-4.23.0/jsonschema/validators.py
+@@ -18,7 +18,7 @@ import warnings
+ 
+ from attrs import define, field, fields
+ from jsonschema_specifications import REGISTRY as SPECIFICATIONS
+-from rpds import HashTrieMap
++from pyrsistent import m
+ import referencing.exceptions
+ import referencing.jsonschema
+ 
+@@ -922,7 +922,7 @@ class _RefResolver:
+         self,
+         base_uri,
+         referrer,
+-        store=HashTrieMap(),
++        store=m(),
+         cache_remote=True,
+         handlers=(),
+         urljoin_cache=None,
+--- jsonschema-4.23.0/jsonschema/benchmarks/subcomponents.py
++++ jsonschema-4.23.0/jsonschema/benchmarks/subcomponents.py
+@@ -3,7 +3,7 @@ A benchmark which tries to compare the p
+ """
+ from referencing import Registry
+ from referencing.jsonschema import DRAFT202012
+-from rpds import HashTrieMap, HashTrieSet
++from pyrsistent import pmap, pset
+ 
+ from jsonschema import Draft202012Validator
+ 
+@@ -14,8 +14,8 @@ schema = {
+     "items": {"type": "integer"},
+ }
+ 
+-hmap = HashTrieMap()
+-hset = HashTrieSet()
++hmap = pmap()
++hset = pset()
+ 
+ registry = Registry()
+ 
+@@ -23,7 +23,7 @@ v = Draft202012Validator(schema)
+ 
+ 
+ def registry_data_structures():
+-    return hmap.insert("foo", "bar"), hset.insert("foo")
++    return hmap.set("foo", "bar"), hset.add("foo")
+ 
+ 
+ def registry_add():
+--- jsonschema-4.23.0/pyproject.toml
++++ jsonschema-4.23.0/pyproject.toml
+@@ -46,7 +46,7 @@ dependencies = [
+   "attrs>=22.2.0",
+   "jsonschema-specifications>=2023.03.6",
+   "referencing>=0.28.4",
+-  "rpds-py>=0.7.1",
++  "pyrsistent",
+ 
+   "importlib_resources>=1.4.0;python_version<'3.9'",
+   "pkgutil_resolve_name>=1.3.10;python_version<'3.9'",

@@ -1,0 +1,197 @@
+Partially reverted following commit:
+https://github.com/python-jsonschema/referencing/commit/598b82ace60195384638996b6e319c5f85f71574
+
+--- referencing-0.36.1/pyproject.toml
++++ referencing-0.36.1/pyproject.toml
+@@ -36,7 +36,7 @@ classifiers = [
+ ]
+ dependencies = [
+   "attrs>=22.2.0",
+-  "rpds-py>=0.7.0",
++  "pyrsistent",
+   "typing-extensions>=4.4.0; python_version<'3.13'",
+ ]
+ 
+--- referencing-0.36.1/referencing/tests/test_core.py
++++ referencing-0.36.1/referencing/tests/test_core.py
+@@ -1,4 +1,4 @@
+-from rpds import HashTrieMap
++from pyrsistent import pmap
+ import pytest
+ 
+ from referencing import Anchor, Registry, Resource, Specification, exceptions
+@@ -233,7 +233,7 @@ class TestRegistry:
+ 
+     def test_dict_conversion(self):
+         """
+-        Passing a `dict` to `Registry` gets converted to a `HashTrieMap`.
++        Passing a `dict` to `Registry` gets converted to a `pmap`.
+ 
+         So continuing to use the registry works.
+         """
+@@ -289,7 +289,7 @@ class TestRegistry:
+                 ("http://example.com/baz", three),
+                 ("http://example.com/foo/quux", four),
+             ],
+-            anchors=HashTrieMap(
++            anchors=pmap(
+                 {
+                     ("http://example.com/foo/quux", "foo"): Anchor(
+                         name="foo",
+--- referencing-0.36.1/referencing/_core.py
++++ referencing-0.36.1/referencing/_core.py
+@@ -6,7 +6,8 @@ from typing import Any, Callable, ClassV
+ from urllib.parse import unquote, urldefrag, urljoin
+ 
+ from attrs import evolve, field
+-from rpds import HashTrieMap, HashTrieSet, List
++from pyrsistent import PMap as PMapType, plist, pmap, pset
++from pyrsistent.typing import PList, PMap, PSet
+ 
+ try:
+     from typing_extensions import TypeVar
+@@ -17,9 +18,8 @@ from referencing import exceptions
+ from referencing._attrs import frozen
+ from referencing.typing import URI, Anchor as AnchorType, D, Mapping, Retrieve
+ 
+-EMPTY_UNCRAWLED: HashTrieSet[URI] = HashTrieSet()
+-EMPTY_PREVIOUS_RESOLVERS: List[URI] = List()
+-
++EMPTY_UNCRAWLED: PSet[URI] = pset(pre_size=128)
++EMPTY_PREVIOUS_RESOLVERS: PList[URI] = plist()
+ 
+ class _Unset(Enum):
+     """
+@@ -294,6 +294,14 @@ def _fail_to_retrieve(uri: URI):
+     raise exceptions.NoSuchResource(ref=uri)
+ 
+ 
++def _to_pmap(
++    value: dict[URI, Resource[D]]
++    | PMap[URI, Resource[D]]
++    | list[tuple[URI, Resource[D]]],
++):
++    return value if isinstance(value, PMapType) else pmap(value)
++
++
+ @frozen
+ class Registry(Mapping[URI, Resource[D]]):
+     r"""
+@@ -319,13 +327,13 @@ class Registry(Mapping[URI, Resource[D]]
+     even according to the retrieval logic.
+     """
+ 
+-    _resources: HashTrieMap[URI, Resource[D]] = field(
+-        default=HashTrieMap(),
+-        converter=HashTrieMap.convert,  # type: ignore[reportGeneralTypeIssues]
++    _resources: PMap[URI, Resource[D]] = field(
++        default=pmap({}, pre_size=64),
++        converter=_to_pmap,
+         alias="resources",
+     )
+-    _anchors: HashTrieMap[tuple[URI, str], AnchorType[D]] = HashTrieMap()
+-    _uncrawled: HashTrieSet[URI] = EMPTY_UNCRAWLED
++    _anchors: PMap[tuple[URI, str], AnchorType[D]] = pmap({}, pre_size=64)
++    _uncrawled: PSet[URI] = EMPTY_UNCRAWLED
+     _retrieve: Retrieve[D] = field(default=_fail_to_retrieve, alias="retrieve")
+ 
+     def __getitem__(self, uri: URI) -> Resource[D]:
+@@ -384,15 +392,15 @@ class Registry(Mapping[URI, Resource[D]]
+         if isinstance(new, Resource):
+             new = (new,)
+ 
+-        resources = self._resources
+-        uncrawled = self._uncrawled
++        resources = self._resources.evolver()
++        uncrawled = self._uncrawled.evolver()
+         for resource in new:
+             id = resource.id()
+             if id is None:
+                 raise exceptions.NoInternalID(resource=resource)
+-            uncrawled = uncrawled.insert(id)
+-            resources = resources.insert(id, resource)
+-        return evolve(self, resources=resources, uncrawled=uncrawled)
++            uncrawled = uncrawled.add(id)
++            resources = resources.set(id, resource)
++        return evolve(self, resources=resources.persistent(), uncrawled=uncrawled.persistent())
+ 
+     def __repr__(self) -> str:
+         size = len(self)
+@@ -448,7 +456,7 @@ class Registry(Mapping[URI, Resource[D]]
+             self,
+             resources=self._resources.remove(uri),
+             uncrawled=self._uncrawled.discard(uri),
+-            anchors=HashTrieMap(
++            anchors=pmap(
+                 (k, v) for k, v in self._anchors.items() if k[0] != uri
+             ),
+         )
+@@ -491,8 +499,8 @@ class Registry(Mapping[URI, Resource[D]]
+         """
+         Crawl all added resources, discovering subresources.
+         """
+-        resources = self._resources
+-        anchors = self._anchors
++        resources = self._resources.evolver()
++        anchors = self._anchors.evolver()
+         uncrawled = [(uri, resources[uri]) for uri in self._uncrawled]
+         while uncrawled:
+             uri, resource = uncrawled.pop()
+@@ -500,14 +508,14 @@ class Registry(Mapping[URI, Resource[D]]
+             id = resource.id()
+             if id is not None:
+                 uri = urljoin(uri, id)
+-                resources = resources.insert(uri, resource)
++                resources = resources.set(uri, resource)
+             for each in resource.anchors():
+-                anchors = anchors.insert((uri, each.name), each)
++                anchors = anchors.set((uri, each.name), each)
+             uncrawled.extend((uri, each) for each in resource.subresources())
+         return evolve(
+             self,
+-            resources=resources,
+-            anchors=anchors,
++            resources=resources.persistent(),
++            anchors=anchors.persistent(),
+             uncrawled=EMPTY_UNCRAWLED,
+         )
+ 
+@@ -524,15 +532,15 @@ class Registry(Mapping[URI, Resource[D]]
+         r"""
+         Add the given `Resource`\ s to the registry, without crawling them.
+         """
+-        resources = self._resources
+-        uncrawled = self._uncrawled
++        resources = self._resources.evolver()
++        uncrawled = self._uncrawled.evolver()
+         for uri, resource in pairs:
+             # Empty fragment URIs are equivalent to URIs without the fragment.
+             # TODO: Is this true for non JSON Schema resources? Probably not.
+             uri = uri.rstrip("#")
+-            uncrawled = uncrawled.insert(uri)
+-            resources = resources.insert(uri, resource)
+-        return evolve(self, resources=resources, uncrawled=uncrawled)
++            uncrawled = uncrawled.add(uri)
++            resources = resources.set(uri, resource)
++        return evolve(self, resources=resources.persistent(), uncrawled=uncrawled.persistent())
+ 
+     def with_contents(
+         self,
+@@ -648,7 +656,7 @@ class Resolver(Generic[D]):
+ 
+     _base_uri: URI = field(alias="base_uri")
+     _registry: Registry[D] = field(alias="registry")
+-    _previous: List[URI] = field(default=List(), repr=False, alias="previous")
++    _previous: PList[URI] = field(default=EMPTY_PREVIOUS_RESOLVERS, repr=False, alias="previous")
+ 
+     def lookup(self, ref: URI) -> Resolved[D]:
+         """
+@@ -719,7 +727,7 @@ class Resolver(Generic[D]):
+         """
+         previous = self._previous
+         if self._base_uri and (not previous or base_uri != self._base_uri):
+-            previous = previous.push_front(self._base_uri)
++            previous = previous.cons(self._base_uri)
+         return evolve(self, base_uri=base_uri, previous=previous, **kwargs)
+ 
+ 

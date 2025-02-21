@@ -1,0 +1,77 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+
+set name=pkg.fmri \
+    value=pkg:/library/python/jsonschema-specifications-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="The JSON Schema meta-schemas and vocabularies."
+set name=pkg.description \
+    value="JSON support files from the JSON Schema Specifications (metaschemas, vocabularies, etc.), packaged for runtime access from Python as a referencing-based Schema Registry."
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
+set name=com.oracle.info.description \
+    value="the Python jsonschema_specifications module"
+set name=info.classification \
+    value=org.opensolaris.category.2008:Development/Python
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2025/010
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications-$(COMPONENT_VERSION).dist-info/COPYING
+#
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications-$(COMPONENT_VERSION).dist-info/INSTALLER
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications-$(COMPONENT_VERSION).dist-info/METADATA
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications-$(COMPONENT_VERSION).dist-info/RECORD
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications-$(COMPONENT_VERSION).dist-info/WHEEL
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications-$(COMPONENT_VERSION).dist-info/_solaris_dep
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications-$(COMPONENT_VERSION).dist-info/top_level.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/_core.py
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft201909/metaschema.json
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft201909/vocabularies/applicator
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft201909/vocabularies/content
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft201909/vocabularies/core
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft201909/vocabularies/meta-data
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft201909/vocabularies/validation
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft202012/metaschema.json
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft202012/vocabularies/applicator
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft202012/vocabularies/content
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft202012/vocabularies/core
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft202012/vocabularies/format
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft202012/vocabularies/format-annotation
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft202012/vocabularies/format-assertion
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft202012/vocabularies/meta-data
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft202012/vocabularies/unevaluated
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft202012/vocabularies/validation
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft3/metaschema.json
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft4/metaschema.json
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft6/metaschema.json
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/schemas/draft7/metaschema.json
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/tests/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/jsonschema_specifications/tests/test_jsonschema_specifications.py
+#
+license COPYING license=MIT
+
+# force a dependency on the Python runtime
+depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
+    pkg.debug.depend.path=usr/bin

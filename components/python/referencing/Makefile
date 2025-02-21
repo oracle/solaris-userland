@@ -20,34 +20,30 @@
 #
 
 #
-# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
+
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		jsonschema
-COMPONENT_VERSION=	4.23.0
+COMPONENT_NAME=		referencing
+COMPONENT_VERSION=	0.36.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d71497fef26351a33265337fa77ffeb82423f3ea21283cd9467bb03999266bc4
+    sha256:df2e89862cd09deabbdba16944cc3f10feb6b3e6f18e902f7cc25609a34775aa
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://github.com/python-jsonschema/jsonschema
-COMPONENT_BUGDB=	python-mod/jsonschema
-COMPONENT_ANITYA_ID=	3898
-COMPONENT_BAID=		187834
+COMPONENT_PROJECT_URL=	https://github.com/python-jsonschema/referencing
+COMPONENT_BUGDB=	python-mod/referencing
+COMPONENT_ANITYA_ID=	304263
+COMPONENT_BAID=		194594
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Substitute package version in the __init__ script.
-# See patches for more info.
-COMPONENT_PRE_BUILD_ACTION = \
-	$(GSED) -i 's/JSONSCHEMA_VERSION/$(COMPONENT_VERSION)/' $(SOURCE_DIR)/jsonschema/__init__.py
-
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+COMPONENT_TEST_ARGS =	--ignore=referencing/tests/test_referencing_suite.py
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -61,9 +57,5 @@ test:		$(TEST_NO_ARCH)
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/jsonschema-specifications-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyrsistent-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/referencing-%)
-
-# Testing related components
-REQUIRED_PACKAGES += library/python/pip
+REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
