@@ -1,35 +1,25 @@
 Patch origin: in-house
 Patch status: deflate.c part: Solaris-specific; not suitable for upstream
 
---- zlib-1.2.13/deflate.c
-+++ zlib-1.2.13/deflate.c
-@@ -60,6 +60,7 @@ include such an acknowledgment, I would
+--- zlib-1.3.1/deflate.c
++++ zlib-1.3.1/deflate.c
+@@ -60,6 +60,7 @@
    copyright string in the executable of your product.
   */
  
 +#ifndef LONGEST_MATCH_ONLY
- /* ===========================================================================
-  *  Function prototypes.
-  */
-@@ -87,12 +88,17 @@ local void lm_init        OF((deflate_st
- local void putShortMSB    OF((deflate_state *s, uInt b));
- local void flush_pending  OF((z_streamp strm));
- local unsigned read_buf   OF((z_streamp strm, Bytef *buf, unsigned size));
-+#ifdef ORIG_LONGEST_MATCH
- local uInt longest_match  OF((deflate_state *s, IPos cur_match));
-+#else
-+uInt longest_match  OF((deflate_state *s, IPos cur_match));
-+#endif
- 
- #ifdef ZLIB_DEBUG
- local  void check_match OF((deflate_state *s, IPos start, IPos match,
-                             int length));
+ typedef enum {
+     need_more,      /* block not completed, need more input or more output */
+     block_done,     /* block flush performed */
+@@ -77,6 +78,7 @@
  #endif
+ local block_state deflate_rle(deflate_state *s, int flush);
+ local block_state deflate_huff(deflate_state *s, int flush);
 +#endif /* ! LONGEST_MATCH_ONLY */
  
  /* ===========================================================================
   * Local data
-@@ -101,6 +107,7 @@ */
+@@ -85,6 +87,7 @@
  #define NIL 0
  /* Tail of hash chains */
  
@@ -37,9 +27,9 @@ Patch status: deflate.c part: Solaris-specific; not suitable for upstream
  #ifndef TOO_FAR
  #  define TOO_FAR 4096
  #endif
-@@ -1264,7 +1271,9 @@ s->match_length = s->prev_length = MIN_M
-     s->match_available = 0;
-     s->ins_h = 0;
+@@ -1334,7 +1337,9 @@
+     return Z_OK;
+ #endif /* MAXSEG_64K */
  }
 +#endif /* ! LONGEST_MATCH_ONLY */
  
@@ -47,19 +37,21 @@ Patch status: deflate.c part: Solaris-specific; not suitable for upstream
  #ifndef FASTEST
  /* ===========================================================================
   * Set match_start to the longest match starting at the given string and
-@@ -1275,7 +1284,11 @@ * IN assertions: cur_match is the head o
+@@ -1345,7 +1350,12 @@
   *   string (strstart) and its distance is <= MAX_DIST, and prev_length >= 1
   * OUT assertion: the match length is not greater than s->lookahead.
   */
+-local uInt longest_match(deflate_state *s, IPos cur_match) {
 +#ifdef ORIG_LONGEST_MATCH_GLOBAL
-+uInt longest_match(s, cur_match)
++uInt longest_match(deflate_state *s, IPos cur_match)
 +#else
- local uInt longest_match(s, cur_match)
++local uInt longest_match(deflate_state *s, IPos cur_match)
 +#endif
-     deflate_state *s;
-     IPos cur_match;                             /* current match */
- {
-@@ -1420,6 +1433,7 @@ && --chain_length != 0);
++{
+     unsigned chain_length = s->max_chain_length;/* max hash chain length */
+     register Bytef *scan = s->window + s->strstart; /* current string */
+     register Bytef *match;                      /* matched string */
+@@ -1487,6 +1497,7 @@
      if ((uInt)best_len <= s->lookahead) return (uInt)best_len;
      return s->lookahead;
  }
@@ -67,7 +59,7 @@ Patch status: deflate.c part: Solaris-specific; not suitable for upstream
  
  #else /* FASTEST */
  
-@@ -1482,6 +1496,7 @@ }
+@@ -1546,6 +1557,7 @@
  
  #endif /* FASTEST */
  
@@ -75,8 +67,9 @@ Patch status: deflate.c part: Solaris-specific; not suitable for upstream
  #ifdef ZLIB_DEBUG
  
  #define EQUAL 0
-@@ -2215,3 +2230,4 @@ if (s->sym_next)
+@@ -2137,3 +2149,5 @@
          FLUSH_BLOCK(s, 0);
      return block_done;
  }
++
 +#endif /* ! LONGEST_MATCH_ONLY */
