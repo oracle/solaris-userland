@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -53,7 +53,7 @@ include $(WS_MAKE_RULES)/x11-component.mk
 # Requires a grep command that accepts -E
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += --enable-freetype-config
+CONFIGURE_OPTIONS += --disable-freetype-config
 CONFIGURE_OPTIONS += --with-zlib
 CONFIGURE_OPTIONS += --with-bzip2
 CONFIGURE_OPTIONS += --with-png
