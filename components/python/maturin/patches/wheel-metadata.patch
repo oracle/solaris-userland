@@ -1,0 +1,17 @@
+Maturin currently generates packages with incorrect WHEEL metadata;
+the platform is `solaris_5_11`, while it should be `solaris_2_11`.
+
+This was offered and accepted upstream:
+https://github.com/PyO3/maturin/pull/2483
+
+--- maturin-1.7.8/src/build_context.rs
++++ maturin-1.7.8/src/build_context.rs
+@@ -562,7 +562,7 @@ impl BuildContext {
+ 
+                 let mut os = target.target_os().to_string().to_ascii_lowercase();
+                 // See https://github.com/python/cpython/blob/46c8d915715aa2bd4d697482aa051fe974d440e1/Lib/sysconfig.py#L722-L730
+-                if os.starts_with("sunos") {
++                if target.target_os() == Os::Solaris || target.target_os() == Os::Illumos {
+                     // Solaris / Illumos
+                     if let Some((major, other)) = release.split_once('_') {
+                         let major_ver: u64 = major.parse().context("illumos major version is not a number")?;
