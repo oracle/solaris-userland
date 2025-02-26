@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xorg-server
-COMPONENT_VERSION=	21.1.14
+COMPONENT_VERSION=	21.1.16
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8f2102cebdc4747d1656c1099ef610f5063c7422c24a177e300de569b354ee35
+	sha256:b14a116d2d805debc5b5b2aac505a279e69b217dae2fae2dfcb62400471a9970
 COMPONENT_BUGDB=        x11/xorg-server
 COMPONENT_ANITYA_ID=	5250
 COMPONENT_SIG_URL=
 
-COMPONENT_BAID=		184031
+COMPONENT_BAID=		261125
 
 # Remove compiler specific visibility flag that breaks builds of drivers
 # with other compilers
