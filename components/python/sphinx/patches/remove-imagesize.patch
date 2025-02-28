@@ -5,40 +5,40 @@ remove this dependency.
 
 Not intended for upstream.
 
---- Sphinx-6.1.3/PKG-INFO
-+++ Sphinx-6.1.3/PKG-INFO
-@@ -47,7 +47,6 @@ Requires-Dist: docutils>=0.18,<0.20
- Requires-Dist: snowballstemmer>=2.0
- Requires-Dist: babel>=2.9
- Requires-Dist: alabaster>=0.7,<0.8
+--- sphinx-8.2.0/PKG-INFO
++++ sphinx-8.2.0/PKG-INFO
+@@ -56,7 +56,6 @@ Requires-Dist: docutils>=0.20,<0.22
+ Requires-Dist: snowballstemmer>=2.2
+ Requires-Dist: babel>=2.13
+ Requires-Dist: alabaster>=0.7.14
 -Requires-Dist: imagesize>=1.3
- Requires-Dist: requests>=2.25.0
- Requires-Dist: packaging>=21.0
- Requires-Dist: importlib-metadata>=4.8; python_version < '3.10'
---- Sphinx-6.1.3/pyproject.toml
-+++ Sphinx-6.1.3/pyproject.toml
-@@ -61,7 +61,6 @@ dependencies = [
-     "snowballstemmer>=2.0",
-     "babel>=2.9",
-     "alabaster>=0.7,<0.8",
+ Requires-Dist: requests>=2.30.0
+ Requires-Dist: roman-numerals-py>=1.0.0
+ Requires-Dist: packaging>=23.0
+--- sphinx-8.2.0/pyproject.toml
++++ sphinx-8.2.0/pyproject.toml
+@@ -71,7 +71,6 @@ dependencies = [
+     "snowballstemmer>=2.2",
+     "babel>=2.13",
+     "alabaster>=0.7.14",
 -    "imagesize>=1.3",
-     "requests>=2.25.0",
-     "packaging>=21.0",
-     "importlib-metadata>=4.8; python_version < '3.10'",
---- Sphinx-6.1.3/sphinx/util/images.py
-+++ Sphinx-6.1.3/sphinx/util/images.py
-@@ -8,8 +8,6 @@ from collections import OrderedDict
- from os import path
- from typing import IO, BinaryIO, NamedTuple
+     "requests>=2.30.0",
+     "roman-numerals-py>=1.0.0",
+     "packaging>=23.0",
+--- sphinx-8.2.0/sphinx/util/images.py
++++ sphinx-8.2.0/sphinx/util/images.py
+@@ -6,8 +6,6 @@ import base64
+ from pathlib import Path
+ from typing import TYPE_CHECKING, NamedTuple, overload
  
 -import imagesize
 -
- try:
-     from PIL import Image
- except ImportError:
-@@ -34,17 +32,10 @@ class DataURI(NamedTuple):
+ if TYPE_CHECKING:
+     from os import PathLike
  
- def get_image_size(filename: str) -> tuple[int, int] | None:
+@@ -40,17 +38,10 @@ class DataURI(NamedTuple):
+ def get_image_size(filename: str | PathLike[str]) -> tuple[int, int] | None:
+     filename = Path(filename)
      try:
 -        size = imagesize.get(filename)
 -        if size[0] == -1:
@@ -46,8 +46,8 @@ Not intended for upstream.
 -        elif isinstance(size[0], float) or isinstance(size[1], float):
 -            size = (int(size[0]), int(size[1]))
 -
--        if size is None and Image:  # fallback to Pillow
-+        if Image:
+-        if size is None and PILLOW_AVAILABLE:  # fallback to Pillow
++        if PILLOW_AVAILABLE:
              with Image.open(filename) as im:
 -                size = im.size
 -

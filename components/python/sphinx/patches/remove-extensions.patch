@@ -15,36 +15,23 @@ makes the Sphinx dependency tree much simpler.
 Details about builders here:
 https://www.sphinx-doc.org/en/master/usage/builders/index.html
 
---- Sphinx-6.1.3/sphinx/application.py
-+++ Sphinx-6.1.3/sphinx/application.py
-@@ -99,15 +99,18 @@ builtin_extensions = (
-     'sphinx.environment.collectors.metadata',
-     'sphinx.environment.collectors.title',
-     'sphinx.environment.collectors.toctree',
-+    # Strictly, alabaster theme is not a builtin extension,
-+    # but it is loaded automatically to use it as default theme.
-+    'alabaster',
-+)
-+
-+builtin_extensions_optional = (
-     # 1st party extensions
-     'sphinxcontrib.applehelp',
-     'sphinxcontrib.devhelp',
-     'sphinxcontrib.htmlhelp',
-     'sphinxcontrib.serializinghtml',
-     'sphinxcontrib.qthelp',
--    # Strictly, alabaster theme is not a builtin extension,
--    # but it is loaded automatically to use it as default theme.
--    'alabaster',
+--- sphinx-8.2.0/sphinx/application.py
++++ sphinx-8.2.0/sphinx/application.py
+@@ -131,7 +131,7 @@ _first_party_themes = (
+     'alabaster',
  )
+ builtin_extensions += _first_party_themes
+-builtin_extensions += _first_party_extensions
++#builtin_extensions += _first_party_extensions
  
  ENV_PICKLE_FILENAME = 'environment.pickle'
-@@ -218,6 +221,13 @@ class Sphinx:
+ 
+@@ -286,6 +286,13 @@ class Sphinx:
          for extension in builtin_extensions:
              self.setup_extension(extension)
  
 +        # load all optional built-in extension modules
-+        for extension in builtin_extensions_optional:
++        for extension in _first_party_extensions:
 +            try:
 +                self.setup_extension(extension)
 +            except sphinx.errors.ExtensionError:
@@ -53,65 +40,77 @@ https://www.sphinx-doc.org/en/master/usage/builders/index.html
          # load all user-given extension modules
          for extension in self.config.extensions:
              self.setup_extension(extension)
---- Sphinx-6.1.3/PKG-INFO
-+++ Sphinx-6.1.3/PKG-INFO
-@@ -41,12 +41,6 @@ Classifier: Topic :: Text Processing ::
- Classifier: Topic :: Text Processing :: Markup :: HTML
- Classifier: Topic :: Text Processing :: Markup :: LaTeX
+--- sphinx-8.2.0/PKG-INFO
++++ sphinx-8.2.0/PKG-INFO
+@@ -50,12 +50,6 @@ Classifier: Topic :: Text Processing ::
+ Classifier: Topic :: Text Processing :: Markup :: XML
  Classifier: Topic :: Utilities
--Requires-Dist: sphinxcontrib-applehelp
--Requires-Dist: sphinxcontrib-devhelp
--Requires-Dist: sphinxcontrib-jsmath
--Requires-Dist: sphinxcontrib-htmlhelp>=2.0.0
--Requires-Dist: sphinxcontrib-serializinghtml>=1.1.5
--Requires-Dist: sphinxcontrib-qthelp
- Requires-Dist: Jinja2>=3.0
- Requires-Dist: Pygments>=2.13
- Requires-Dist: docutils>=0.18,<0.22
---- Sphinx-6.1.3/pyproject.toml
-+++ Sphinx-6.1.3/pyproject.toml
-@@ -55,12 +55,6 @@ classifiers = [
-     "Topic :: Utilities",
+ Classifier: Typing :: Typed
+-Requires-Dist: sphinxcontrib-applehelp>=1.0.7
+-Requires-Dist: sphinxcontrib-devhelp>=1.0.6
+-Requires-Dist: sphinxcontrib-htmlhelp>=2.0.6
+-Requires-Dist: sphinxcontrib-jsmath>=1.0.1
+-Requires-Dist: sphinxcontrib-qthelp>=1.0.6
+-Requires-Dist: sphinxcontrib-serializinghtml>=1.1.9
+ Requires-Dist: Jinja2>=3.1
+ Requires-Dist: Pygments>=2.17
+ Requires-Dist: docutils>=0.20,<0.22
+--- sphinx-8.2.0/pyproject.toml
++++ sphinx-8.2.0/pyproject.toml
+@@ -65,12 +65,6 @@ classifiers = [
+     "Typing :: Typed",
  ]
  dependencies = [
--    "sphinxcontrib-applehelp",
--    "sphinxcontrib-devhelp",
--    "sphinxcontrib-jsmath",
--    "sphinxcontrib-htmlhelp>=2.0.0",
--    "sphinxcontrib-serializinghtml>=1.1.5",
--    "sphinxcontrib-qthelp",
-     "Jinja2>=3.0",
-     "Pygments>=2.13",
-     "docutils>=0.18,<0.22",
---- Sphinx-6.1.3/sphinx/builders/html/__init__.py
-+++ Sphinx-6.1.3/sphinx/builders/html/__init__.py
-@@ -1323,7 +1323,10 @@ def deprecate_html_4(_app: Sphinx, confi
+-    "sphinxcontrib-applehelp>=1.0.7",
+-    "sphinxcontrib-devhelp>=1.0.6",
+-    "sphinxcontrib-htmlhelp>=2.0.6",
+-    "sphinxcontrib-jsmath>=1.0.1",
+-    "sphinxcontrib-qthelp>=1.0.6",
+-    "sphinxcontrib-serializinghtml>=1.1.9",
+     "Jinja2>=3.1",
+     "Pygments>=2.17",
+     "docutils>=0.20,<0.22",
+--- sphinx-8.2.0/tests/test_builders/test_build_html_maths.py
++++ sphinx-8.2.0/tests/test_builders/test_build_html_maths.py
+@@ -37,6 +37,7 @@ def test_html_math_renderer_is_imgmath(a
+     assert app.builder.math_renderer_name == 'imgmath'
  
  
- # for compatibility
--import sphinxcontrib.serializinghtml  # noqa: E402,F401
-+try:
-+    import sphinxcontrib.serializinghtml  # noqa: E402,F401
-+except:
-+    pass
++@pytest.mark.skip(reason='sphinxcontrib.jsmath is not available on Solaris')
+ @pytest.mark.sphinx(
+     'html',
+     testroot='basic',
+@@ -62,6 +63,7 @@ def test_html_math_renderer_is_duplicate
+     assert app.builder.math_renderer_name == 'imgmath'  # The another one is chosen
  
- import sphinx.builders.dirhtml  # noqa: E402,F401,RUF100
- import sphinx.builders.singlehtml  # noqa: E402,F401
---- Sphinx-6.1.3/tests/test_api_translator.py
-+++ Sphinx-6.1.3/tests/test_api_translator.py
-@@ -36,6 +36,7 @@ def test_singlehtml_set_translator_for_s
+ 
++@pytest.mark.skip(reason='sphinxcontrib.jsmath is not available on Solaris')
+ @pytest.mark.sphinx(
+     'html',
+     testroot='basic',
+@@ -75,6 +77,7 @@ def test_html_math_renderer_is_chosen(ap
+     assert app.builder.math_renderer_name == 'imgmath'
+ 
+ 
++@pytest.mark.skip(reason='sphinxcontrib.jsmath is not available on Solaris')
+ @pytest.mark.sphinx(
+     'html',
+     testroot='basic',
+--- sphinx-8.2.0/tests/test_writers/test_api_translator.py
++++ sphinx-8.2.0/tests/test_writers/test_api_translator.py
+@@ -47,6 +47,7 @@ def test_singlehtml_set_translator_for_s
      assert translator_class.__name__ == 'ConfSingleHTMLTranslator'
  
  
 +@pytest.mark.skip(reason='sphinxcontrib.serializinghtml is not available on Solaris')
  @pytest.mark.sphinx('pickle', testroot='api-set-translator')
- def test_pickle_set_translator_for_pickle(app, status, warning):
+ def test_pickle_set_translator_for_pickle(app: SphinxTestApp) -> None:
      translator_class = app.builder.get_translator_class()
-@@ -43,6 +44,7 @@ def test_pickle_set_translator_for_pickl
+@@ -54,6 +55,7 @@ def test_pickle_set_translator_for_pickl
      assert translator_class.__name__ == 'ConfPickleTranslator'
  
  
 +@pytest.mark.skip(reason='sphinxcontrib.serializinghtml is not available on Solaris')
  @pytest.mark.sphinx('json', testroot='api-set-translator')
- def test_json_set_translator_for_json(app, status, warning):
+ def test_json_set_translator_for_json(app: SphinxTestApp) -> None:
      translator_class = app.builder.get_translator_class()

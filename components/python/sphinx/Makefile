@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		Sphinx
-COMPONENT_VERSION=	6.1.3
+COMPONENT_NAME=		sphinx
+COMPONENT_VERSION=	8.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0dac3b698538ffef41716cf97ba26c1c7788dba73ce6f150c1ff5b4720786dd2
+    sha256:30c93548c3005ceaa525d102d1f14f005bcc92dc141852e6b73fd0dbcdfddbd3
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://www.sphinx-doc.org/en/master/
 COMPONENT_BUGDB=	utility/sphinx
 COMPONENT_ANITYA_ID=	4031
-COMPONENT_BAID=		143164
+COMPONENT_BAID=		200846
 
 # We need just a single version
 PYTHON_VERSION =	3.11
@@ -55,12 +55,11 @@ COMPONENT_SYSTEM_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
 COMPILER =	gcc
 BITS =		64
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
 PKG_MACROS +=	PYVER=$(PYTHON_VERSION)
-PKG_MACROS +=	PYV=$(shell echo $(PYTHON_VERSION) | tr -d .)
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

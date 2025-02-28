@@ -4,31 +4,31 @@ is patched out.
 
 Not intended for upstream.
 
---- Sphinx-6.1.3/PKG-INFO
-+++ Sphinx-6.1.3/PKG-INFO
-@@ -44,7 +44,6 @@ Classifier: Topic :: Text Processing ::
- Requires-Dist: Jinja2>=3.0
- Requires-Dist: Pygments>=2.13
- Requires-Dist: docutils>=0.18,<0.22
--Requires-Dist: snowballstemmer>=2.0
- Requires-Dist: babel>=2.9
- Requires-Dist: alabaster>=0.7,<0.8
- Requires-Dist: requests>=2.25.0
---- Sphinx-6.1.3/pyproject.toml
-+++ Sphinx-6.1.3/pyproject.toml
-@@ -58,7 +58,6 @@ classifiers = [
-     "Jinja2>=3.0",
-     "Pygments>=2.13",
-     "docutils>=0.18,<0.22",
--    "snowballstemmer>=2.0",
-     "babel>=2.9",
-     "alabaster>=0.7,<0.8",
-     "requests>=2.25.0",
---- Sphinx-6.1.3/sphinx/search/da.py
-+++ Sphinx-6.1.3/sphinx/search/da.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/PKG-INFO
++++ sphinx-8.2.0/PKG-INFO
+@@ -53,7 +53,6 @@
+ Requires-Dist: Jinja2>=3.1
+ Requires-Dist: Pygments>=2.17
+ Requires-Dist: docutils>=0.20,<0.22
+-Requires-Dist: snowballstemmer>=2.2
+ Requires-Dist: babel>=2.13
+ Requires-Dist: alabaster>=0.7.14
+ Requires-Dist: requests>=2.30.0
+--- sphinx-8.2.0/pyproject.toml
++++ sphinx-8.2.0/pyproject.toml
+@@ -68,7 +68,6 @@
+     "Jinja2>=3.1",
+     "Pygments>=2.17",
+     "docutils>=0.20,<0.22",
+-    "snowballstemmer>=2.2",
+     "babel>=2.13",
+     "alabaster>=0.7.14",
+     "requests>=2.30.0",
+--- sphinx-8.2.0/sphinx/search/da.py
++++ sphinx-8.2.0/sphinx/search/da.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -38,10 +38,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -114,7 +117,14 @@ class SearchDanish(SearchLanguage):
+@@ -112,7 +115,14 @@ class SearchDanish(SearchLanguage):
      stopwords = danish_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('danish')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('danish')
@@ -54,11 +54,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/de.py
-+++ Sphinx-6.1.3/sphinx/search/de.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/de.py
++++ sphinx-8.2.0/sphinx/search/de.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -68,10 +68,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -297,7 +300,14 @@ class SearchGerman(SearchLanguage):
+@@ -295,7 +298,14 @@ class SearchGerman(SearchLanguage):
      stopwords = german_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('german')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('german')
@@ -84,11 +84,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/en.py
-+++ Sphinx-6.1.3/sphinx/search/en.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/en.py
++++ sphinx-8.2.0/sphinx/search/en.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -98,10 +98,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage
  
-@@ -214,7 +217,14 @@ class SearchEnglish(SearchLanguage):
+@@ -212,7 +215,14 @@ class SearchEnglish(SearchLanguage):
      stopwords = english_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('porter')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('porter')
@@ -114,11 +114,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/es.py
-+++ Sphinx-6.1.3/sphinx/search/es.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/es.py
++++ sphinx-8.2.0/sphinx/search/es.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -128,10 +128,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -357,7 +360,14 @@ class SearchSpanish(SearchLanguage):
+@@ -355,7 +358,14 @@ class SearchSpanish(SearchLanguage):
      stopwords = spanish_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('spanish')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('spanish')
@@ -144,11 +144,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/fi.py
-+++ Sphinx-6.1.3/sphinx/search/fi.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/fi.py
++++ sphinx-8.2.0/sphinx/search/fi.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -158,10 +158,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -107,7 +110,14 @@ class SearchFinnish(SearchLanguage):
+@@ -105,7 +108,14 @@ class SearchFinnish(SearchLanguage):
      stopwords = finnish_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('finnish')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('finnish')
@@ -174,11 +174,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/fr.py
-+++ Sphinx-6.1.3/sphinx/search/fr.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/fr.py
++++ sphinx-8.2.0/sphinx/search/fr.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -188,10 +188,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -193,7 +196,14 @@ class SearchFrench(SearchLanguage):
+@@ -191,7 +194,14 @@ class SearchFrench(SearchLanguage):
      stopwords = french_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('french')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('french')
@@ -204,11 +204,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/hu.py
-+++ Sphinx-6.1.3/sphinx/search/hu.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/hu.py
++++ sphinx-8.2.0/sphinx/search/hu.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -218,10 +218,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -220,7 +223,14 @@ class SearchHungarian(SearchLanguage):
+@@ -218,7 +221,14 @@ class SearchHungarian(SearchLanguage):
      stopwords = hungarian_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('hungarian')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('hungarian')
@@ -234,11 +234,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/it.py
-+++ Sphinx-6.1.3/sphinx/search/it.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/it.py
++++ sphinx-8.2.0/sphinx/search/it.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -248,10 +248,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -310,7 +313,14 @@ class SearchItalian(SearchLanguage):
+@@ -308,7 +311,14 @@ class SearchItalian(SearchLanguage):
      stopwords = italian_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('italian')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('italian')
@@ -264,11 +264,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/nl.py
-+++ Sphinx-6.1.3/sphinx/search/nl.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/nl.py
++++ sphinx-8.2.0/sphinx/search/nl.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -278,10 +278,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -121,7 +124,14 @@ class SearchDutch(SearchLanguage):
+@@ -119,7 +122,14 @@ class SearchDutch(SearchLanguage):
      stopwords = dutch_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('dutch')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('dutch')
@@ -294,11 +294,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/no.py
-+++ Sphinx-6.1.3/sphinx/search/no.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/no.py
++++ sphinx-8.2.0/sphinx/search/no.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -308,10 +308,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -196,7 +199,14 @@ class SearchNorwegian(SearchLanguage):
+@@ -194,7 +197,14 @@ class SearchNorwegian(SearchLanguage):
      stopwords = norwegian_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('norwegian')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('norwegian')
@@ -324,11 +324,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/pt.py
-+++ Sphinx-6.1.3/sphinx/search/pt.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/pt.py
++++ sphinx-8.2.0/sphinx/search/pt.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -338,10 +338,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -255,7 +258,14 @@ class SearchPortuguese(SearchLanguage):
+@@ -253,7 +256,14 @@ class SearchPortuguese(SearchLanguage):
      stopwords = portuguese_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('portuguese')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('portuguese')
@@ -354,11 +354,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/ro.py
-+++ Sphinx-6.1.3/sphinx/search/ro.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/ro.py
++++ sphinx-8.2.0/sphinx/search/ro.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict, Set
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -368,10 +368,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage
  
-@@ -16,7 +19,14 @@ class SearchRomanian(SearchLanguage):
+@@ -14,7 +17,14 @@ class SearchRomanian(SearchLanguage):
      stopwords: set[str] = set()
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('romanian')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('romanian')
@@ -384,11 +384,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/ru.py
-+++ Sphinx-6.1.3/sphinx/search/ru.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/ru.py
++++ sphinx-8.2.0/sphinx/search/ru.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -398,10 +398,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -245,7 +248,14 @@ class SearchRussian(SearchLanguage):
+@@ -243,7 +246,14 @@ class SearchRussian(SearchLanguage):
      stopwords = russian_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('russian')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('russian')
@@ -414,11 +414,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/sv.py
-+++ Sphinx-6.1.3/sphinx/search/sv.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/sv.py
++++ sphinx-8.2.0/sphinx/search/sv.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -428,10 +428,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage, parse_stop_word
  
-@@ -134,7 +137,14 @@ class SearchSwedish(SearchLanguage):
+@@ -132,7 +135,14 @@ class SearchSwedish(SearchLanguage):
      stopwords = swedish_stopwords
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('swedish')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('swedish')
@@ -444,11 +444,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/tr.py
-+++ Sphinx-6.1.3/sphinx/search/tr.py
-@@ -4,7 +4,10 @@ from __future__ import annotations
+--- sphinx-8.2.0/sphinx/search/tr.py
++++ sphinx-8.2.0/sphinx/search/tr.py
+@@ -2,7 +2,10 @@
  
- from typing import Dict, Set
+ from __future__ import annotations
  
 -import snowballstemmer
 +try:
@@ -458,10 +458,10 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage
  
-@@ -16,7 +19,14 @@ class SearchTurkish(SearchLanguage):
+@@ -14,7 +17,14 @@ class SearchTurkish(SearchLanguage):
      stopwords: set[str] = set()
  
-     def init(self, options: dict) -> None:
+     def init(self, options: dict[str, str]) -> None:
 -        self.stemmer = snowballstemmer.stemmer('turkish')
 +        if snowballstemmer is not None:
 +            self.stemmer = snowballstemmer.stemmer('turkish')
@@ -474,11 +474,11 @@ Not intended for upstream.
 +        if self.stemmer is None:
 +            return word.lower()
          return self.stemmer.stemWord(word.lower())
---- Sphinx-6.1.3/sphinx/search/zh.py
-+++ Sphinx-6.1.3/sphinx/search/zh.py
-@@ -6,7 +6,10 @@ import os
+--- sphinx-8.2.0/sphinx/search/zh.py
++++ sphinx-8.2.0/sphinx/search/zh.py
+@@ -5,7 +5,10 @@ from __future__ import annotations
  import re
- from typing import Dict, List
+ from pathlib import Path
  
 -import snowballstemmer
 +try:
@@ -488,8 +488,8 @@ Not intended for upstream.
  
  from sphinx.search import SearchLanguage
  
-@@ -233,7 +236,12 @@ class SearchChinese(SearchLanguage):
-             if dict_path and os.path.isfile(dict_path):
+@@ -236,7 +239,12 @@ class SearchChinese(SearchLanguage):
+             if dict_path and Path(dict_path).is_file():
                  jieba.load_userdict(dict_path)
  
 -        self.stemmer = snowballstemmer.stemmer('english')
@@ -501,24 +501,25 @@ Not intended for upstream.
 +            self.stemmer = None
  
      def split(self, input: str) -> list[str]:
-         chinese: list[str] = []
-@@ -255,6 +263,7 @@ class SearchChinese(SearchLanguage):
+         if JIEBA:
+@@ -255,6 +263,8 @@ class SearchChinese(SearchLanguage):
+         # Don't stem Latin words that are long enough to be relevant for search
+         # if not stemmed, but would be too short after being stemmed
+         # avoids some issues with acronyms
++        if self.stemmer is None:
++            return word.lower()
+         stemmed = self.stemmer.stemWord(word.lower())
          should_not_be_stemmed = (
-             word in self.latin_terms and
-             len(word) >= 3 and
-+            self.stemmer is not None and
-             len(self.stemmer.stemWord(word.lower())) < 3
-         )
-         if should_not_be_stemmed:
---- Sphinx-6.1.3/tests/test_search.py
-+++ Sphinx-6.1.3/tests/test_search.py
-@@ -11,6 +11,9 @@ from docutils.parsers import rst
- 
- from sphinx.search import IndexBuilder
+             len(word) >= 3 > len(stemmed) and word in self.latin_terms
+--- sphinx-8.2.0/tests/test_search.py
++++ sphinx-8.2.0/tests/test_search.py
+@@ -29,6 +29,9 @@ JAVASCRIPT_TEST_ROOTS = [
+     if (directory / 'conf.py').exists()
+ ]
  
 +import pytest
 +pytestmark = pytest.mark.skip("snowballstemmer is not available on Solaris")
 +
  
- class DummyEnvironment(namedtuple('DummyEnvironment', ['version', 'domains'])):
-     def __getattr__(self, name):
+ class DummyDomainsContainer:
+     def __init__(self, **domains: DummyDomain) -> None:
