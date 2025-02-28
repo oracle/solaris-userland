@@ -174,14 +174,6 @@ COMPONENT_POST_INSTALL_ACTION.64 = \
 		--root $(PROTO_DIR) \
 		--install-lib=$(PYTHON.3.11.VENDOR_PACKAGES)) ;
 
-COMPONENT_POST_INSTALL_ACTION.64 += \
-    $(CP) /usr/lib/$(MACH64)/libnetsnmp.so.35.0.0 $(PROTO_DIR)/usr/lib/$(MACH64); \
-    $(CP) /usr/lib/libnetsnmp.so.35.0.0 $(PROTO_DIR)/usr/lib; \
-    $(CP) /usr/lib/$(MACH64)/libnetsnmpagent.so.35.0.0 $(PROTO_DIR)/usr/lib/$(MACH64); \
-    $(CP) /usr/lib/libnetsnmpagent.so.35.0.0 $(PROTO_DIR)/usr/lib; \
-    $(CP) /usr/lib/$(MACH64)/libnetsnmphelpers.so.35.0.0 $(PROTO_DIR)/usr/lib/$(MACH64); \
-    $(CP) /usr/lib/libnetsnmphelpers.so.35.0.0 $(PROTO_DIR)/usr/lib;
-
 COMPONENT_POST_INSTALL_ACTION += (echo "COMPONENT_POST_INSTALL_ACTION - BITS=$(BITS)");
 COMPONENT_POST_INSTALL_ACTION += $(COMPONENT_POST_INSTALL_ACTION.$(BITS))
 
