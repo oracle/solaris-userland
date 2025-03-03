@@ -131,14 +131,3 @@ Index: tkGlue.c
   PL_curcop->cop_warnings = pWARN_NONE;
  #endif
 
---- Tk-804.036/objGlue.c
-+++ Tk-804.036/objGlue.c
-@@ -627,7 +627,7 @@ Tcl_GetByteArrayFromObj(Tcl_Obj * objPtr
-  sv_utf8_downgrade(objPtr, 0);
-  if (lengthPtr)
-   {
--   return (unsigned char *) SvPV(objPtr, *lengthPtr);
-+   return (unsigned char *) SvPV(objPtr, *(STRLEN *)lengthPtr);
-   }
-  else
-   {
