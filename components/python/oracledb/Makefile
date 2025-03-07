@@ -19,23 +19,23 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oracledb
-COMPONENT_VERSION=	2.5.0
+COMPONENT_VERSION=	3.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:f3181a50268202fee224e5e9e7a66ecc20c482ec55cdfcb6615671284cd11cfc
+	sha256:64dc86ee5c032febc556798b06e7b000ef6828bb0252084f6addacad3363db85
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=  https://oracle.github.io/python-oracledb
 COMPONENT_BUGDB=	python-mod/oracledb
 COMPONENT_ANITYA_ID=	248660
-COMPONENT_BAID=		184609
+COMPONENT_BAID=		323233
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
