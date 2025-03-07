@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 <transform path=.*/php/8.1 -> edit path php/8.1 php/\$\(MAJOR_VERSION\)>
@@ -51,9 +51,6 @@
 <transform file path=files/php.conf -> edit path files/php.conf etc/apache2/2.4/samples-conf.d/php\$\(MAJOR_VERSION\).conf>
 <transform file path=files/extensions.ini -> edit path files etc/php/\$\(MAJOR_VERSION\)/conf.d>
 <transform file path=usr/apache2/2.4/libexec/libphp.so -> edit path libphp libphp\$\(MAJOR_VERSION\)>
-
-# prevent 64-bit object in 32-bit path errors
-<transform path=usr/apache2/2.4/libexec/libphp\$\(MAJOR_VERSION\).so -> set pkg.linted.userland.action001.2 true>
 
 # Drop hidden pear files we are not shipping
 <transform path=\..* -> drop>

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 
 # Set perms and owner
@@ -32,22 +32,6 @@
 # Drop 32-bit binaries and polkit-1
 <transform file path=usr/bin/\$\(MACH32\)/* -> drop>
 <transform file path=usr/lib/pam.d/polkit-1 -> drop>
-
-# transform for the binaries and daemon pkglint errors of not being ASLR enabled
-<transform file path=usr/lib/polkit-1/polkit-agent-helper-1 -> \
-    set pkg.linted.userland.action001.5 true>
-<transform file path=usr/lib/polkit-1/polkitd -> \
-    set pkg.linted.userland.action001.5 true>
-<transform file path=usr/bin/pk-example-frobnicate -> \
-    set pkg.linted.userland.action001.5 true>
-<transform file path=usr/bin/pkaction -> \  
-    set pkg.linted.userland.action001.5 true>
-<transform file path=usr/bin/pkcheck -> \
-    set pkg.linted.userland.action001.5 true>
-<transform file path=usr/bin/pkexec-> \
-    set pkg.linted.userland.action001.5 true>
-<transform file path=usr/bin/pkttyagent -> \
-    set pkg.linted.userland.action001.5 true>
 
 # Drop systemd files
 <transform file path=usr/lib/systemd/system/polkit.service -> drop>

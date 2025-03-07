@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 
 # Some userland consolidation specific lint checks
@@ -100,6 +100,7 @@ class UserlandActionChecker(base.ActionChecker):
             "amd64-solaris-" + solaris_ver,  # ruby path
             "sparcv9-solaris-" + solaris_ver,  # ruby path
             "x86_64-pc-solaris" + solaris_ver,  # GCC path
+            "apache2",  # usr/apache2/2.4/libexec
         ]
         #
         # This list is used to check if all actions are installed

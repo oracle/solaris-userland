@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 
@@ -30,7 +30,6 @@ set name=pkg.fmri \
 set name=pkg.summary value="polkit authorization toolkit"
 set name=pkg.description \
     value="polkit is a toolkit for defining and handling authorizations for desktop software.  It is used for allowing unprivileged processes to speak to privileged processes."
-set name=pkg.linted.userland.action001.PIE value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=polkit
 set name=info.classification \
@@ -42,12 +41,11 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 dir  path=etc/polkit-1/rules.d owner=_polkitd mode=700
 file path=lib/svc/manifest/system/polkit.xml
 file path=lib/svc/method/svc-polkit
-file path=usr/bin/pk-example-frobnicate pkg.linted.userland.action001.5=true
-file path=usr/bin/pkaction pkg.linted.userland.action001.5=true
-file path=usr/bin/pkcheck pkg.linted.userland.action001.5=true
-file path=usr/bin/pkexec owner=root mode=4555 \
-    pkg.linted.userland.action001.5=true
-file path=usr/bin/pkttyagent pkg.linted.userland.action001.5=true
+file path=usr/bin/pk-example-frobnicate
+file path=usr/bin/pkaction
+file path=usr/bin/pkcheck
+file path=usr/bin/pkexec owner=root mode=4555
+file path=usr/bin/pkttyagent
 file path=usr/include/polkit-1/polkit/polkit.h
 file path=usr/include/polkit-1/polkit/polkitactiondescription.h
 file path=usr/include/polkit-1/polkit/polkitauthority.h
@@ -89,10 +87,8 @@ link path=usr/lib/$(MACH64)/libpolkit-gobject-1.so.0 \
 file path=usr/lib/$(MACH64)/libpolkit-gobject-1.so.0.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/polkit-agent-1.pc
 file path=usr/lib/$(MACH64)/pkgconfig/polkit-gobject-1.pc
-file path=usr/lib/polkit-1/polkit-agent-helper-1 owner=root mode=4555 \
-    pkg.linted.userland.action001.5=true
-file path=usr/lib/polkit-1/polkitd mode=0555 \
-    pkg.linted.userland.action001.5=true
+file path=usr/lib/polkit-1/polkit-agent-helper-1 owner=root mode=4555
+file path=usr/lib/polkit-1/polkitd mode=0555
 file path=usr/share/dbus-1/system-services/org.freedesktop.PolicyKit1.service
 file path=usr/share/dbus-1/system.d/org.freedesktop.PolicyKit1.conf
 file path=usr/share/gettext/its/polkit.its

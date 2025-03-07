@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -31,8 +31,6 @@ set name=pkg.summary \
     value="The Assistive Technology Service Provider Interface (AT-SPI) Core"
 set name=pkg.description \
     value="The Assistive Technology Service Provider Interface (AT-SPI) is a toolkit-neutral way of facilitating accessibility in applications, by using native accessibility APIs. AT-SPI can also be used for automated testing of user interfaces, with tools such as the Linux Desktop Testing Project and Dogtail. AT-SPI is currently supported by GTK+ 2, Java/Swing, the Mozilla suite, and StarOffice/OpenOffice.org. Developers, such as Trolltech, are developing support for AT-SPI using Trolltech's accessible toolkit library."
-set name=pkg.linted.pkglint.dupaction001.1 value=true
-set name=pkg.linted.pkglint.dupaction010.2 value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=at-spi2-core
 set name=info.classification \
@@ -127,12 +125,8 @@ file path=usr/lib/$(MACH64)/libatspi.so.0.0.1
 file path=usr/lib/$(MACH64)/pkgconfig/atk-bridge-2.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/atk.pc
 file path=usr/lib/$(MACH64)/pkgconfig/atspi-2.pc
-# To avoid pkglint error of ERROR userland.action001.2
-# 64-bit object 'usr/lib/at-spi-bus-launcher' in 32-bit path
-file path=usr/lib/at-spi-bus-launcher mode=0555 \
-    pkg.linted.userland.action001.2=true
-file path=usr/lib/at-spi2-registryd mode=0555 \
-    pkg.linted.userland.action001.2=true
+file path=usr/lib/at-spi-bus-launcher mode=0555
+file path=usr/lib/at-spi2-registryd mode=0555
 file path=usr/lib/gnome-settings-daemon-3.0/gtk-modules/at-spi2-atk.desktop
 file path=usr/lib/gtk-2.0/modules/libatk-bridge.so
 link path=usr/lib/libatk-1.0.so target=libatk-1.0.so.0
