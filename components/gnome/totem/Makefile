@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,13 +30,13 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		totem
-COMPONENT_VERSION=	43.0
+COMPONENT_VERSION=	43.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Totem
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b36d3655928b5896462a4d39f83b6ad66d37dbc9c99dceb02ea8a2e37394a41e
+	sha256:5668291e9c6444985cb3ffe4ea4f0212f54c2bbe60dd01114c1a950f94759e6d
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	13162
-COMPONENT_BAID=		155412
+COMPONENT_BAID=		323188
 
 BUILD_STYLE=		meson
 
