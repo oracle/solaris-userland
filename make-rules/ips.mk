@@ -272,11 +272,12 @@ publish:		build install manifest-check mangle $(PUBLISH_STAMP)
 sample-manifest:	$(GENERATED).p5m
 
 $(GENERATED).p5m:	install | $(PROTO_DIR)
+	set -o pipefail; \
 	$(MANIFEST_GENERATE) \
 	    $(PKG_OPTIONS) \
 	    $(PKG_HARDLINKS:%=--target %) \
 	    $(PROTO_DIR) $(GENERATE_PROTO_DIRS) | \
-	set -o pipefail; $(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 $(GENERATE_TRANSFORMS) | \
+	$(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 $(GENERATE_TRANSFORMS) | \
 		sed -e '/^$$/d' -e '/^#.*$$/d' | $(PKGFMT) | \
 		cat $(METADATA_TEMPLATE) - >$@
 
