@@ -1,6 +1,6 @@
-1..433
-ok 1 - platform_output
-# ELIDED
+1..442
+ok # - platform_output
+# ELIDED platform_output
 ok # - active
 ok # - async
 ok # - async_null_cb
@@ -53,7 +53,6 @@ ok # - fs_copyfile
 ok # - fs_event_close_in_callback
 ok # - fs_event_close_with_pending_delete_event
 ok # - fs_event_close_with_pending_event
-ok # - fs_event_error_reporting
 ok # - fs_event_getpath
 ok # - fs_event_immediate_close
 ok # - fs_event_no_callback_after_close
@@ -61,6 +60,9 @@ ok # - fs_event_no_callback_on_close
 ok # - fs_event_ref
 ok # - fs_event_start_and_close
 ok # - fs_event_stop_in_cb
+not ok # - fs_event_watch_delete_dir
+# exit code 139
+# Output from process `fs_event_watch_delete_dir`: (no output)
 ok # - fs_event_watch_dir
 ok # - fs_event_watch_dir_recursive # SKIP Recursive directory watching not supported on this platform.
 ok # - fs_event_watch_file
@@ -95,6 +97,7 @@ ok # - fs_poll_close_request_multi_stop_start
 ok # - fs_poll_close_request_stop_when_active
 ok # - fs_poll_getpath
 ok # - fs_poll_ref
+ok # - fs_posix_delete
 ok # - fs_read_bufs
 ok # - fs_read_dir
 ok # - fs_read_file_eof
@@ -150,8 +153,9 @@ ok # - idle_check
 ok # - idle_ref
 ok # - idle_starvation
 ok # - idna_toascii
+ok # - iouring_pollhup
 ok # - ip4_addr
-# ignore ip6_addr_link_local!
+# IGNORED ip6_addr_link_local
 ok # - ip6_pton
 ok # - ip6_sin6_len
 ok # - ip_name
@@ -196,6 +200,7 @@ ok # - pipe_connect_on_prepare
 ok # - pipe_connect_to_file
 ok # - pipe_getsockname
 ok # - pipe_getsockname_abstract
+ok # - pipe_getsockname_autobind
 ok # - pipe_getsockname_blocking
 ok # - pipe_listen_without_bind
 ok # - pipe_overlong_path
@@ -307,7 +312,7 @@ ok # - tcp_close_reset_client
 ok # - tcp_close_reset_client_after_shutdown
 ok # - tcp_close_while_connecting
 ok # - tcp_connect6_error_fault
-# ignore tcp_connect6_link_local!
+# IGNORED tcp_connect6_link_local
 ok # - tcp_connect_error_after_write
 ok # - tcp_connect_error_fault
 ok # - tcp_connect_timeout
@@ -332,6 +337,7 @@ ok # - tcp_ref2
 ok # - tcp_ref2b
 ok # - tcp_ref3
 ok # - tcp_ref4
+ok # - tcp_reuseport
 ok # - tcp_rst
 ok # - tcp_shutdown_after_write
 ok # - tcp_try_write
@@ -347,10 +353,13 @@ ok # - tcp_writealot
 ok # - test_macros
 ok # - thread_affinity
 ok # - thread_create
+ok # - thread_detach
 ok # - thread_equal
 ok # - thread_local_storage
 ok # - thread_mutex
 ok # - thread_mutex_recursive
+ok # - thread_name
+ok # - thread_name_threadpool
 ok # - thread_priority
 ok # - thread_rwlock
 ok # - thread_rwlock_trylock
@@ -403,7 +412,7 @@ ok # - udp_mmsg
 ok # - udp_multicast_interface
 ok # - udp_multicast_interface6
 ok # - udp_multicast_join
-# ignore udp_multicast_join6!
+# IGNORED udp_multicast_join6
 ok # - udp_multicast_ttl
 ok # - udp_no_autobind
 ok # - udp_open
@@ -416,6 +425,7 @@ ok # - udp_recv_in_a_row
 ok # - udp_ref
 ok # - udp_ref2
 ok # - udp_ref3
+ok # - udp_reuseport
 ok # - udp_send_and_recv
 ok # - udp_send_hang_loop
 ok # - udp_send_immediate
@@ -433,4 +443,5 @@ ok # - we_get_signal
 ok # - we_get_signal_one_shot
 ok # - we_get_signals
 ok # - we_get_signals_mixed
+ok # - wtf8
 # run-tests summary ELIDED.

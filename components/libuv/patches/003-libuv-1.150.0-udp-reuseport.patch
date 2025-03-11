@@ -1,0 +1,44 @@
+unix,sunos: For LB prefer SO_REUSEPORT when available
+
+Solaris 11.4 has Load Balancing for SO_REUSEPORT, but setting
+SO_REUSEADDR disables load balancing.  As per comments in
+test/test-udp-reuseport.c prefer SO_REUSEPORT when available.
+
+Patch to be shared upstream following further investigation.
+diff --git a/src/unix/udp.c b/src/unix/udp.c
+index 67c01f7d..0acb5fc1 100644
+--- a/src/unix/udp.c
++++ b/src/unix/udp.c
+@@ -300,6 +300,9 @@ static void uv__udp_recvmsg(uv_udp_t* handle) {
+  *
+  * zOS does not support getsockname with SO_REUSEPORT option when using
+  * AF_UNIX.
++ *
++ * Solaris 11.4: SO_REUSEPORT will not load balance when SO_REUSEADDR
++ * is also set, but it's not valid for every socket type.
+  */
+ static int uv__sock_reuseaddr(int fd) {
+   int yes;
+@@ -317,8 +320,20 @@ static int uv__sock_reuseaddr(int fd) {
+     if (setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes)))
+        return UV__ERR(errno);
+   }
+-#elif defined(SO_REUSEPORT) && !defined(__linux__) && !defined(__GNU__) && \
+-	!defined(__sun__) && !defined(__DragonFly__) && !defined(_AIX73)
++#elif defined(SO_REUSEPORT) && (defined(UV__SOLARIS_11_4) && UV__SOLARIS_11_4)
++  if (setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes))) {
++    if (errno != ENOPROTOOPT) {
++      return UV__ERR(errno);
++    }
++    /* Not all socket types accept SO_REUSEPORT. */
++    errno = 0;
++    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes))) {
++      return UV__ERR(errno);
++    }
++  }
++#elif defined(SO_REUSEPORT) && \
++  !defined(__linux__) && !defined(__GNU__) && \
++  !defined(__illumos__) && !defined(__DragonFly__) && !defined(_AIX73)
+   if (setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes)))
+     return UV__ERR(errno);
+ #else

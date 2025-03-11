@@ -1,0 +1,125 @@
+Patch to place textual images into libuv manual page.
+Shared upstream https://github.com/libuv/libuv/issues/4708
+diff --git a/docs/Makefile b/docs/Makefile
+index d23c6948..63743d21 100644
+--- a/docs/Makefile
++++ b/docs/Makefile
+@@ -17,7 +17,9 @@ endif
+ # Internal variables.
+ PAPEROPT_a4     = -D latex_paper_size=a4
+ PAPEROPT_letter = -D latex_paper_size=letter
+-ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SRCDIR)
++FORM	= -t Graphical
++man:	FORM = -t Textual
++ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(FORM) $(SPHINXOPTS) $(SRCDIR)
+ # the i18n builder cannot share the environment and doctrees with the others
+ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SRCDIR)
+ 
+diff --git a/docs/src/design.rst b/docs/src/design.rst
+index 5a20595c..0c0d4224 100644
+--- a/docs/src/design.rst
++++ b/docs/src/design.rst
+@@ -16,10 +16,16 @@ cross-platform file I/O and threading functionality is also provided, amongst ot
+ Here is a diagram illustrating the different parts that compose libuv and what subsystem they
+ relate to:
+ 
+-.. image:: static/architecture.png
+-    :scale: 75%
+-    :align: center
++.. only:: Graphical
+ 
++   .. image:: static/architecture.png
++   :scale: 75%
++   :align: center
++   :alt: Picture of libuv architecture
++
++.. only:: Textual
++
++   .. literalinclude:: static/architecture.txt
+ 
+ Handles and requests
+ ^^^^^^^^^^^^^^^^^^^^
+@@ -55,10 +61,16 @@ which have been added to the poller and callbacks will be fired indicating socke
+ In order to better understand how the event loop operates, the following diagram illustrates all
+ stages of a loop iteration:
+ 
+-.. image:: static/loop_iteration.png
+-    :scale: 75%
+-    :align: center
++.. only:: Graphical
++
++   .. image:: static/loop_iteration.png
++      :scale: 75%
++      :align: center
++      :alt: Picture of libuv loop iteration
++
++.. only:: Textual
+ 
++   .. literalinclude:: static/loop_iteration.txt
+ 
+ #. The loop concept of 'now' is initially set.
+ 
+--- /dev/null	2025-02-21 16:17:02
++++ libuv/docs/src/static/architecture.txt	2025-02-21 15:33:58
+@@ -0,0 +1,23 @@
++LIBUV
++
+++----------------------------------------------+ +---+ +---+ +---+
++|                                              | |   | |   | |   |
++| Network I/O                                  | | F | | D | | U |
++|                                              | | i | | N | | s |
++|                                              | | l | | S | | e |
++|                                              | | e | |   | | r |
++|                                              | |   | | O | |   |
++|                                              | | I | | p | | C |
++| +------+ +------+ +------+ +------+ +------+ | | / | | s | | o |
++| | TCP  | | UDP  | | TTY  | | Pipe | | ...  | | | O | |   | | d |
++| +------+ +------+ +------+ +------+ +------+ | |   | |   | | e |
++|                                              | |   | |   | |   |
+++----------------------------------------------+ +---+ +---+ +---+
++
+++----------------------------------+  +--------+ +---------------+
++|           uv__io_t               |  |        | |               |
+++----------------------------------+  |        | |               |
++                                      |  IOCP  | |  Thread Pool  |
+++-------+ +--------+ +-------------+  |        | |               |
++| epoll | | kqueue | | event ports |  |        | |               |
+++-------+ +--------+ +-------------+  +--------+ +---------------+
+--- /dev/null	2025-02-21 16:17:02
++++ libuv/docs/src/static/loop_iteration.txt	2025-02-21 15:49:30
+@@ -0,0 +1,35 @@
++           +------------------------+
++           | Initialze loop time    |
++           +------------------------+
++           | Run due timers         |
++           +------------------------+
++                       |
++                       v
++                       __
++   _____              /  \
++  /     \            /    \
++ /       \  No      / Loop \
++ | end    |<-------| alive? |<----------+
++ \       /          \      /            |
++  \     /            \    /             |
++   -----              \__/              |
++                       |                |
++                       | Yes            |
++                       v                |
++           +------------------------+   |
++           | Call pending callbacks |   |
++           +------------------------+   |
++           | Run idle handles       |   |
++           +------------------------+   |
++           | Run prepare handles    |   |
++           +------------------------+   |
++           | Poll for I/O           |   |
++           +------------------------+   |
++           | Run check handles      |   |
++           +------------------------+   |
++           | Call close callbacks   |   |
++           +------------------------+   |
++           | Update loop time       |   |
++           +------------------------+   |
++           | Run due timers         |---+
++           +------------------------+

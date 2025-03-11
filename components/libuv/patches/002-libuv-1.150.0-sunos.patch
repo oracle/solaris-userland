@@ -1,0 +1,15 @@
+Inhouse patch to silence an incorrect warning from gcc as the only time
+user_timeout is used it requires reset_timeout to be non 0. 
+Not sharing with upstream as this appears to be a gcc issue.
+diff --git a/src/unix/sunos.c b/src/unix/sunos.c
+index 2d6bae79..5c6ba405 100644
+--- a/src/unix/sunos.c
++++ b/src/unix/sunos.c
+@@ -207,6 +207,7 @@ void uv__io_poll(uv_loop_t* loop, int timeout) {
+     timeout = 0;
+   } else {
+     reset_timeout = 0;
++    user_timeout = 0;	/* Only to appease gcc maybe-uninitialized warning! */
+   }
+ 
+   for (;;) {

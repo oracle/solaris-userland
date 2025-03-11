@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS=		64
@@ -30,19 +30,20 @@ include ../../make-rules/shared-macros.mk
 # Component information, used for download and packaging.
 # -------------------------------------------------------
 COMPONENT_NAME=		libuv
-COMPONENT_VERSION=	1.48.0
+COMPONENT_VERSION=	1.50.0
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-v$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	library/libuv
-COMPONENT_BAID=		158792
+COMPONENT_BAID=		321128
 COMPONENT_PROJECT_URL=	https://libuv.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=	\
 	https://dist.libuv.org/dist/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+# For check_anitya target, https://release-monitoring.org/project/10784
 COMPONENT_ANITYA_ID=	10784
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:7f1db8ac368d89d1baf163bac1ea5fe5120697a73910c8ae6b2fffb3551d59fb
+	sha256:6dc2b39aa7fa66c04e2e015bf47738b84e1c6b86b8987d57dd432d149d77ee25
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -73,6 +74,12 @@ COMPONENT_TEST_TRANSFORMER =	$(NAWK)
 COMPONENT_TEST_TRANSFORMS =	\
   -v dir=$(@D) -v perl=$(PERL) -v src=$(SOURCE_DIR) \
   -f $(COMPONENT_DIR)/Solaris/test-transform.awk
+
+.PHONY: test-transform test-license show-man
+# Test modified Solaris/test-transform.awk without rerunning tests.
+test-transform:
+	$(COMPONENT_TEST_PERFORM_TRANSFORM)
+	$(COMPONENT_TEST_COMPARE)
 
 # license verification, consistent license file build and check
 e = /usr/gnu/bin/echo

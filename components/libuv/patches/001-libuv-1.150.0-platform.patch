@@ -1,0 +1,48 @@
+test-platform-output: UV_ENOTSUP is a valid response from uv_getrusage_thread()
+
+Patch shared upstream: https://github.com/libuv/libuv/issues/4713
+diff --git a/test/test-platform-output.c b/test/test-platform-output.c
+index d9b39c74..3fab8330 100644
+--- a/test/test-platform-output.c
++++ b/test/test-platform-output.c
+@@ -236,21 +236,24 @@ TEST_IMPL(platform_output) {
+   printf("  version: %s\n", uname.version);
+   printf("  machine: %s\n", uname.machine);
+ 
+-  ASSERT_OK(uv_getrusage_thread(&rusage));
+-  ASSERT_UINT64_GE(rusage.ru_utime.tv_sec, 0);
+-  ASSERT_UINT64_GE(rusage.ru_utime.tv_usec, 0);
+-  ASSERT_UINT64_GE(rusage.ru_stime.tv_sec, 0);
+-  ASSERT_UINT64_GE(rusage.ru_stime.tv_usec, 0);
+-  printf("uv_getrusage_thread:\n");
+-  printf("  user: %llu sec %llu microsec\n",
+-         (unsigned long long) rusage.ru_utime.tv_sec,
+-         (unsigned long long) rusage.ru_utime.tv_usec);
+-  printf("  system: %llu sec %llu microsec\n",
+-         (unsigned long long) rusage.ru_stime.tv_sec,
+-         (unsigned long long) rusage.ru_stime.tv_usec);
+-  printf("  page faults: %llu\n", (unsigned long long) rusage.ru_majflt);
+-  printf("  maximum resident set size: %llu\n",
+-         (unsigned long long) rusage.ru_maxrss);
+-
++  err = uv_getrusage_thread(&rusage);
++  if (err == UV_ENOTSUP) {
++    printf("uv_getrusage_thread: Not Supported\n");
++  } else {
++    ASSERT_UINT64_GE(rusage.ru_utime.tv_sec, 0);
++    ASSERT_UINT64_GE(rusage.ru_utime.tv_usec, 0);
++    ASSERT_UINT64_GE(rusage.ru_stime.tv_sec, 0);
++    ASSERT_UINT64_GE(rusage.ru_stime.tv_usec, 0);
++    printf("uv_getrusage_thread:\n");
++    printf("  user: %llu sec %llu microsec\n",
++	   (unsigned long long) rusage.ru_utime.tv_sec,
++	   (unsigned long long) rusage.ru_utime.tv_usec);
++    printf("  system: %llu sec %llu microsec\n",
++	   (unsigned long long) rusage.ru_stime.tv_sec,
++	   (unsigned long long) rusage.ru_stime.tv_usec);
++    printf("  page faults: %llu\n", (unsigned long long) rusage.ru_majflt);
++    printf("  maximum resident set size: %llu\n",
++	   (unsigned long long) rusage.ru_maxrss);
++  }
+   return 0;
+ }
