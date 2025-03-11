@@ -60,6 +60,7 @@ CONFIGURE_OPTIONS  +=		--with-idn
 CFLAGS +=			-I"$(USRINCDIR)/idn"
 CONFIGURE_OPTIONS  +=		--with-wc-funcs
 CONFIGURE_OPTIONS  +=		--with-sasl
+CONFIGURE_OPTIONS  +=		--with-ssl
 
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += data/docbook/docbook-style-xsl
@@ -72,5 +73,4 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += system/library/security/libsasl
 REQUIRED_PACKAGES += system/library/security/libsasl2
