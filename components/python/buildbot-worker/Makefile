@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		buildbot-worker
-COMPONENT_VERSION=	3.7.0
+COMPONENT_NAME=		buildbot_worker
+COMPONENT_VERSION=	4.2.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2dcf8536b7d72df7849c3a8d06cf51f7a8eda0510e086daf2d15862a2a7ff953
+    sha256:3d21c5c4caae568f667bac9c97d5dc7d019cff6a5102e9257b143fd2f61614d9
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://buildbot.net/
 COMPONENT_BUGDB=	utility/buildbot
 COMPONENT_ANITYA_ID=	48000
-COMPONENT_BAID=		139815
+COMPONENT_BAID=		323565
 
 # all we need is a single variant
 PYTHON_VERSION = 3.11
