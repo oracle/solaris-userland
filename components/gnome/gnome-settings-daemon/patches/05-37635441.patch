@@ -1,0 +1,14 @@
+https://gitlab.gnome.org/GNOME/gnome-settings-daemon/-/issues/792
+
+--- a/plugins/usb-protection/gsd-usb-protection-manager.c	2025-03-06 04:50:04.425189318 +0000
++++ b/plugins/usb-protection/gsd-usb-protection-manager.c	2025-03-06 04:55:54.095599443 +0000
+@@ -1089,8 +1089,7 @@
+ 
+         manager->screensaver_proxy = gnome_settings_bus_get_screen_saver_proxy ();
+         if (!manager->screensaver_proxy) {
+-                if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+-                        g_warning ("Failed to connect to screensaver service: %s", error->message);
++		g_warning ("Failed to connect to screensaver service");
+                 g_clear_object (&manager->usb_protection);
+                 return;
+         }
