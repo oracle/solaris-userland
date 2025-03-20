@@ -1,0 +1,17 @@
+Revert https://gitlab.gnome.org/GNOME/mutter/-/commit/57fdd7efd2d2ef05df86c60e36e200a15a9918a0
+
+This is causing a regression with Java/Swing apps where occasionally windows are stuck in the minimzed state.  There are outstanding issues with mutter-x11-frames starting Gnome 44 (still present in Gnome 47) which result in this behaviour -  https://gitlab.gnome.org/GNOME/mutter/-/issues/3922
+
+Reverting to the default GSK_RENDERER works around this issue on Solaris with no obvious rendering issues with nvidia devices on Solaris.
+
+--- a/src/frames/main.c	2025-03-17 15:18:00.726594199 -0700
++++ b/src/frames/main.c	2025-03-17 15:18:29.942399837 -0700
+@@ -42,8 +42,6 @@
+   GMainLoop *loop;
+   Display *xdisplay;
+ 
+-  g_setenv ("GSK_RENDERER", "cairo", TRUE);
+-
+   /* We do know the desired GDK backend, don't let
+    * anyone tell us otherwise.
+    */
