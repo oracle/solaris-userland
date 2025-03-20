@@ -19,7 +19,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 #
 
@@ -178,11 +178,19 @@ $(BUILD_DIR)/.ldesc: $(COMPONENT_DIR)/locale.list $(BUILD_DIR)/core/.prep $(BUIL
 # find common parts and share them between locales
 #  (PSARC/2013/016 XPG7 I18N and C11/C++11 Uchar)
 #
-$(BUILD_DIR)/common.list: $(COMPONENT_DIR)/prepare_localedef.py $(LOCALES:%=$(BUILD_DIR)/%/posix.src)
+$(BUILD_DIR)/common.list: $(COMPONENT_DIR)/prepare_localedef.py $(LOCALES:%=$(BUILD_DIR)/%/posix.src) $(BUILD_DIR)/th_TH.UTF-8/.fixed
 	$(RM) -r $(BUILD_DIR)/include $(BUILD_DIR)/common
 	$(MKDIR) $(BUILD_DIR)/include $(BUILD_DIR)/common
 	$(CLONEY) $(COMPONENT_DIR)/include $(@D)/include
 	$(PYTHON.3.11) $(COMPONENT_DIR)/prepare_localedef.py $(BUILD_DIR) $(LOCALES) >$@
+	touch $@
+
+#
+# Add missing era and fix %c output in Thai UTF-8 locale
+#
+$(BUILD_DIR)/th_TH.UTF-8/.fixed: $(BUILD_DIR)/th_TH.UTF-8/posix.src
+	$(GSED) -i -e 's|date_fmt\(.*\)|date_fmt\1\n\nera "+:0:-543/01/01:+*:<THAI_CHARACTER_PHO_PHAN><FULL_STOP><THAI_CHARACTER_SO_SALA><FULL_STOP>:%EC %Ey"|' \
+	           -e 's|%B %N %Y|%B %EY|' $(BUILD_DIR)/th_TH.UTF-8/posix.src
 	touch $@
 
 #
