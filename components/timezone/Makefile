@@ -29,9 +29,18 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME= 	timezone
 HUMAN_VERSION=		2025a
-# The last digit of COMPONENT_VERSION corresponds to the last letter of the
+# The second digit of COMPONENT_VERSION corresponds to the last letter of the
 # upstream archive name. 'a' -> 1, 'b' -> 2, etc.
-COMPONENT_VERSION=    	2025.1
+#
+# The third digit is a revision of given package.
+# 2025.1 <-> 2025a
+# 2025.1.1 <-> 2025a with some change applied
+# ...
+#
+# Because timezone uses non-standard FMRI we have to change it manually with
+# ever change to the package. The contents will not be delivered unless we do
+# so.
+COMPONENT_VERSION=    	2025.1.1
 COMPONENT_PROJECT_URL=	http://www.iana.org/time-zones
 COMPONENT_ARCHIVE_URL=	https://data.iana.org/time-zones/releases/tzdata$(HUMAN_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= sha256:4d5fcbc72c7c450ebfe0b659bd0f1c02fbf52fd7f517a9ea13fe71c21eb5f0d0
