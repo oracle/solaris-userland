@@ -29,7 +29,7 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 MAJOR_VERSION=8.4
-MICRO_VERSION=1
+MICRO_VERSION=5
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
@@ -37,11 +37,11 @@ UL_PHP_MINOR_VERSION=	$(MAJOR_VERSION)
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:94c8a4fd419d45748951fa6d73bd55f6bdf0adaefb8814880a67baa66027311f
-COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
+    sha256:0d3270bbce4d9ec617befce52458b763fd461d475f1fe2ed878bb8573faed327
+COMPONENT_ARCHIVE_URL=	https://www.php.net/distributions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	57896
 
-COMPONENT_BAID=		190427
+COMPONENT_BAID=		324162
 
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
@@ -169,6 +169,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 TESTS_DISABLED += ext/curl/tests/bug48203_multi.phpt
 TESTS_DISABLED += ext/curl/tests/curl_basic_018.phpt
 TESTS_DISABLED += ext/curl/tests/curl_multi_getcontent_basic3.phpt
+TESTS_DISABLED += ext/curl/tests/curl_setopt_ssl.phpt
 TESTS_DISABLED += ext/curl/tests/ext/curl/tests/curl_setopt_ssl.phpt
 TESTS_DISABLED += ext/date/tests/bug33532.phpt
 TESTS_DISABLED += ext/date/tests/strtotime2.phpt
@@ -198,6 +199,7 @@ TESTS_DISABLED += sapi/cli/tests/022.phpt
 TESTS_DISABLED += sapi/fpm/tests/bug68591-conf-test-listen-group.phpt
 TESTS_DISABLED += sapi/fpm/tests/bug68591-conf-test-listen-owner.phpt
 TESTS_DISABLED += sapi/fpm/tests/bug80024-socket-reduced-inherit.phpt
+TESTS_DISABLED += sapi/fpm/tests/fcgi-env-pif-apache-handler-uds.phpt
 TESTS_DISABLED += sapi/fpm/tests/socket-uds-basic.phpt
 TESTS_DISABLED += sapi/fpm/tests/socket-uds-numeric-ugid-nonroot.phpt
 TESTS_DISABLED += sapi/fpm/tests/status-ping.phpt

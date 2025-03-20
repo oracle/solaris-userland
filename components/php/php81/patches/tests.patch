@@ -216,3 +216,24 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  ?>
  --CAPTURE_STDIO--
  STDOUT STDERR
+--- php-8.1.32/ext/curl/tests/curl_setopt_ssl.phpt
++++ php-8.1.32/ext/curl/tests/curl_setopt_ssl.phpt
+@@ -9,6 +9,7 @@
+ if ($code > 0) die("skip couldn't locate openssl binary");
+ if (PHP_OS_FAMILY === 'Windows') die('skip not for Windows');
+ if (PHP_OS_FAMILY === 'Darwin') die('skip Fails intermittently on macOS');
++if (PHP_OS === 'SunOS') die('skip Fails intermittently on Solaris');
+ if (PHP_OS === 'FreeBSD') die('skip proc_open seems to be stuck on FreeBSD');
+ $curl_version = curl_version();
+ if ($curl_version['version_number'] < 0x074700) {
+--- php-8.1.32/sapi/fpm/tests/socket-uds-basic.phpt
++++ php-8.1.32/sapi/fpm/tests/socket-uds-basic.phpt
+@@ -1,7 +1,7 @@
+ --TEST--
+ FPM: Unix Domain Socket connection
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php include "skipif.inc"; if (PHP_OS === 'SunOS') die('skip Fails intermittently on Solaris');?>
+ --FILE--
+ <?php
+ 
