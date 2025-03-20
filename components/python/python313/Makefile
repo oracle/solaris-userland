@@ -91,6 +91,9 @@ CFLAGS.sparc += -O3
 
 # Python puts its header files in a special place.
 LINT_FLAGS += -I$(SOURCE_DIR)/Include
+# C11 atomic intrinsics cause our linter to fail (see 37651387). Forcing
+# Py_LIMITED_API works around that issue and provides at least limited coverage.
+LINT_FLAGS += -DPy_LIMITED_API
 
 # PYTHONPATH in the environment can be harmful, but setting it to empty via
 # _INSTALL_ENV causes problems too, so just ignore the entire environment.
