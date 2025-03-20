@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -46,6 +46,11 @@ include $(WS_MAKE_RULES)/ips.mk
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/src/twisted/test
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =	--verbose
+
+# Move executables into demo directory.
+COMPONENT_POST_INSTALL_ACTION += \
+	$(MKDIR) $(PROTOUSRDIR)/demo/twisted-python$(PYTHON_VERSION); \
+	$(MV) $(PROTOUSRBINDIR)/* $(PROTOUSRDIR)/demo/twisted-python$(PYTHON_VERSION)/
 
 # Unfortunately the master test results files are not only different for
 # each version of Python, they can also be different for x86 and SPARC platforms.
