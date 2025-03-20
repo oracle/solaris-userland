@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		asgiref
-COMPONENT_VERSION=	3.6.0
+COMPONENT_VERSION=	3.8.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9567dfe7bd8d3c8c892227827c41cce860b368104c3431da67a0c5a65a949506
+    sha256:c343bd80a0bec947a9860adb4c432ffa7db769836c64238fc34bdc3fec84d590
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/django/asgiref/
 COMPONENT_BUGDB=	python-mod/asgiref
 COMPONENT_ANITYA_ID=	18462
-COMPONENT_BAID=		139057
+COMPONENT_BAID=		323676
 
 PYTHON_VERSIONS = 3.9 3.11
 
@@ -57,3 +57,5 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
+
+REQUIRED_PACKAGES += library/python/typing-extensions-39
