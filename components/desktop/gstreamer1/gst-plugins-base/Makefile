@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -30,17 +30,17 @@ COMPILER =              gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-plugins-base
-COMPONENT_VERSION=	1.22.12
+COMPONENT_VERSION=	1.24.12
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:73cfadc3a6ffe77ed974cfd6fb391c605e4531f48db21dd6b9f42b8cb69bd8c1
+	sha256:f6efbaa8fea8d00bc380bccca76a530527b1f083e8523eafb3e9b1e18bc653d3
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1263
 
-COMPONENT_BAID=		167484
+COMPONENT_BAID=		324177
 
 BUILD_STYLE=		meson
 PYTHON_VERSION = 3.11
@@ -60,6 +60,7 @@ CONFIGURE_OPTIONS += -Dtheora=enabled
 CONFIGURE_OPTIONS += -Dvorbis=enabled
 CONFIGURE_OPTIONS += -Dx11=enabled
 CONFIGURE_OPTIONS += -Dexamples=disabled
+CONFIGURE_OPTIONS += -Ddrm=disabled
 
 # We EOF'ed libvisual - no need for generating visualizations for audio
 CONFIGURE_OPTIONS += -Dlibvisual=disabled

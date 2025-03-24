@@ -30,17 +30,17 @@ COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-python
-COMPONENT_VERSION=	1.22.12
+COMPONENT_VERSION=	1.24.12
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d98d3226efea20d5c440a28988a20319a953f7c594895df2bba4538633108e9f
+	sha256:d679e2ca3e655a7328627c4670c324fc22f588d2cb8ecd2fa7a6a42df51132cc
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	3881
 
-COMPONENT_BAID=		167486
+COMPONENT_BAID=		324180
 
 BUILD_STYLE=		meson
 
@@ -69,6 +69,12 @@ include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS += -Dpython=$(PYTHON)
 CONFIGURE_OPTIONS += -Dpygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES_BASE)/gi/overrides/64
+
+# Python module is installed on non-standard place
+COMPONENT_POST_INSTALL_ACTION += \
+        $(MV) $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/site-packages/gi/overrides/*.py \
+                $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)/gi/overrides/64 && \
+	$(RM) -r $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/site-packages ;
 
 # Generate python's bytecode manually since Meson does not support it.
 COMPONENT_POST_INSTALL_ACTION += \

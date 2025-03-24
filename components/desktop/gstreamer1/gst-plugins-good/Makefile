@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -30,17 +30,17 @@ COMPILER =              gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-plugins-good
-COMPONENT_VERSION=	1.22.12
+COMPONENT_VERSION=	1.24.12
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9c1913f981900bd8867182639b20907b28ed78ef7a222cfbf2d8ba9dab992fa7
+	sha256:d0e66e2f935d1575f6adbef7d0a2b3faba7360344383c51bf0233b39e0489a64
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1263
 
-COMPONENT_BAID=		167485
+COMPONENT_BAID=		324179
 
 BUILD_STYLE=		meson
 PYTHON_VERSION = 3.11
@@ -110,4 +110,5 @@ REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxdamage
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxfixes
+REQUIRED_PACKAGES += x11/library/libxtst
 REQUIRED_PACKAGES += x11/library/libxv

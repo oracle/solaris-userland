@@ -20,7 +20,10 @@
 #
 
 #
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 
-<transform file path=usr/lib/\$\(MACH64\)/gstreamer-1.0/gst-ptp-helper -> set mode 4555>
+<transform file path=usr/lib/\$\(MACH64\)/gstreamer-1.0/gst-ptp-helper -> set mode 0555>
+
+# gst-ptp-helper is not PIE compiled
+<transform file path=usr/lib/\$\(MACH64\)/gstreamer-1.0/gst-ptp-helper -> default pkg.linted.userland.action001.PIE true>

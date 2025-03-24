@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -30,18 +30,18 @@ COMPILER=gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gstreamer
-COMPONENT_VERSION=	1.22.12
+COMPONENT_VERSION=	1.24.12
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ac352f3d02caa67f3b169daa9aa78b04dea0fc08a727de73cb28d89bd54c6f61
+	sha256:b3522d1b4fe174fff3b3c7f0603493e2367bd1c43f5804df15b634bd22b1036f
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1263
 
-COMPONENT_BAID=		167480
+COMPONENT_BAID=		324170
 
 BUILD_STYLE=		meson
 PYTHON_VERSION=		3.11
@@ -55,7 +55,8 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 # Required for other components.
 CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 CONFIGURE_OPTIONS.64 += -Dintrospection=enabled
-CONFIGURE_OPTIONS += -Dptp-helper-permissions=solaris-privileges
+CONFIGURE_OPTIONS.32 += -Dptp-helper=disabled
+CONFIGURE_OPTIONS.64 += -Dptp-helper=enabled
 CONFIGURE_OPTIONS += --libexecdir="$(CONFIGURE_LIBDIR.$(BITS))"
 
 # Requires GNU version of msgfmt...
@@ -68,7 +69,6 @@ COMPONENT_POST_INSTALL_ACTION += ( \
 		$(PERL) -i -pe 's|\#!/usr/bin/env python3|\#!$(PYTHON)|' $(PROTOUSRLIBDIR64)/gstreamer-1.0/gst-plugins-doc-cache-generator \
 	);
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ENV = -i
 COMPONENT_TEST_ARGS = -k 0
 
