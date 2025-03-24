@@ -28,7 +28,7 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME= 	timezone
-HUMAN_VERSION=		2025a
+HUMAN_VERSION=		2025b
 # The second digit of COMPONENT_VERSION corresponds to the last letter of the
 # upstream archive name. 'a' -> 1, 'b' -> 2, etc.
 #
@@ -40,22 +40,22 @@ HUMAN_VERSION=		2025a
 # Because timezone uses non-standard FMRI we have to change it manually with
 # ever change to the package. The contents will not be delivered unless we do
 # so.
-COMPONENT_VERSION=    	2025.1.1
+COMPONENT_VERSION=    	2025.2
 COMPONENT_PROJECT_URL=	http://www.iana.org/time-zones
 COMPONENT_ARCHIVE_URL=	https://data.iana.org/time-zones/releases/tzdata$(HUMAN_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH= sha256:4d5fcbc72c7c450ebfe0b659bd0f1c02fbf52fd7f517a9ea13fe71c21eb5f0d0
+COMPONENT_ARCHIVE_HASH= sha256:11810413345fc7805017e27ea9fa4885fd74cd61b2911711ad038f5d28d71474
 # The archive has no directory so create our own and unpack it there
 UNPACK_ARGS=		--relocate-to $(SOURCE_DIR)
 
 #COMPONENT_SRC_CODE=		$(COMPONENT_NAME)-doc-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_CODE=		tzcode$(HUMAN_VERSION).tar.gz
 COMPONENT_ARCHIVE_URL_CODE= 	https://data.iana.org/time-zones/releases/$(COMPONENT_ARCHIVE_CODE)
-COMPONENT_ARCHIVE_HASH_CODE=	sha256:119679d59f76481eb5e03d3d2a47d7870d592f3999549af189dbd31f2ebf5061
+COMPONENT_ARCHIVE_HASH_CODE=	sha256:05f8fedb3525ee70d49c87d3fae78a8a0dbae4fe87aa565c65cda9948ae135ec
 COMPONENT_SRC_CODE=		tzcode-$(COMPONENT_VERSION)
 # The archive has no directory so create our own and unpack it there
 UNPACK_ARGS_CODE=		--relocate-to $(SOURCE_DIR_CODE)
 
-COMPONENT_BAID=		193763
+COMPONENT_BAID=		324501
 COMPONENT_ANITYA_ID=	5021
 
 # The timezone packages do not have normal FMRI version. This is because the
