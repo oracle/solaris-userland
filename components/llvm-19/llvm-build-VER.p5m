@@ -45,7 +45,18 @@ link path=usr/include/llvm-c target=../llvm/$(LLVM_VERSION)/include/llvm-c \
 link path=usr/lib/$(MACH64)/cmake/llvm \
     target=../../../llvm/$(LLVM_VERSION)/lib/cmake/llvm mediator=llvm \
     mediator-version=$(LLVM_VERSION)
+link path=usr/lib/$(MACH64)/libLLVM.so \
+    target=../../llvm/$(LLVM_VERSION)/lib/$(MACH64)/libLLVM.so.19.1 \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/lib/$(MACH64)/libLTO.so \
+    target=../../llvm/$(LLVM_VERSION)/lib/$(MACH64)/libLTO.so.19.1 \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
 link path=usr/lib/cmake/llvm target=../../llvm/$(LLVM_VERSION)/lib/cmake/llvm \
+    mediator=llvm mediator-version=$(LLVM_VERSION)
+link path=usr/lib/libLLVM.so \
+    target=../llvm/$(LLVM_VERSION)/lib/libLLVM.so.19.1 mediator=llvm \
+    mediator-version=$(LLVM_VERSION)
+link path=usr/lib/libLTO.so target=../llvm/$(LLVM_VERSION)/lib/libLTO.so.19.1 \
     mediator=llvm mediator-version=$(LLVM_VERSION)
 file path=usr/llvm/$(LLVM_VERSION)/include/llvm-c/Analysis.h
 file path=usr/llvm/$(LLVM_VERSION)/include/llvm-c/BitReader.h
@@ -2205,10 +2216,6 @@ file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/libLLVMipo.a
 link path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/libRemarks.so \
     target=libRemarks.so.19.1
 file path=usr/llvm/$(LLVM_VERSION)/lib/$(MACH64)/libRemarks.so.19.1
-file path=usr/llvm/$(LLVM_VERSION)/lib/analyze-c++ mode=0555
-file path=usr/llvm/$(LLVM_VERSION)/lib/analyze-cc mode=0555
-file path=usr/llvm/$(LLVM_VERSION)/lib/c++-analyzer mode=0555
-file path=usr/llvm/$(LLVM_VERSION)/lib/ccc-analyzer mode=0555
 file path=usr/llvm/$(LLVM_VERSION)/lib/cmake/llvm/AddLLVM.cmake
 file path=usr/llvm/$(LLVM_VERSION)/lib/cmake/llvm/AddOCaml.cmake
 file path=usr/llvm/$(LLVM_VERSION)/lib/cmake/llvm/AddSphinxTarget.cmake
@@ -2247,8 +2254,6 @@ file path=usr/llvm/$(LLVM_VERSION)/lib/cmake/llvm/TensorFlowCompile.cmake
 file path=usr/llvm/$(LLVM_VERSION)/lib/cmake/llvm/UseLibtool.cmake
 file path=usr/llvm/$(LLVM_VERSION)/lib/cmake/llvm/VersionFromVCS.cmake
 file path=usr/llvm/$(LLVM_VERSION)/lib/cmake/llvm/llvm-driver-template.cpp.in
-file path=usr/llvm/$(LLVM_VERSION)/lib/intercept-c++ mode=0555
-file path=usr/llvm/$(LLVM_VERSION)/lib/intercept-cc mode=0555
 file path=usr/llvm/$(LLVM_VERSION)/lib/libLLVMAggressiveInstCombine.a
 file path=usr/llvm/$(LLVM_VERSION)/lib/libLLVMAnalysis.a
 file path=usr/llvm/$(LLVM_VERSION)/lib/libLLVMAsmParser.a

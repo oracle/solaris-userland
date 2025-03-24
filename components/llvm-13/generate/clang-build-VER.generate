@@ -25,6 +25,9 @@
 
 <include generate/common.transform>
 
+<transform file path=usr/llvm/\$\(LLVM_VERSION\)/libexec -> set action.hash %(path)>
+<transform file path=usr/llvm/\$\(LLVM_VERSION\)/libexec -> edit path libexec lib>
+
 # delete everything not belonging to this package
 <transform file link hardlink pkg.type=(?!build-clang) -> drop>
 <transform file link hardlink -> delete pkg.type .*>
