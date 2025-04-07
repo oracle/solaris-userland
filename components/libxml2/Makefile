@@ -23,6 +23,7 @@
 # Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxml2
@@ -83,11 +84,19 @@ COMPONENT_POST_CONFIGURE_ACTION.64 += \
      -e 's|usr/include/python3[.]9|usr/include/python3.11|' \
      -e 's/3[.]9/3.11/g' \
      `find python3.11 -name Makefile` ; \
+    cd $(@D) ; cp -rp python python3.13 ; \
+    $(GSED) -i -e 's|-lpython3[.]9|-lpython3.13|' \
+     -e 's|usr/bin/$(MACH64)/python3[.]9|usr/bin/python3.13|' \
+     -e 's|usr/include/python3[.]9|usr/include/python3.13|' \
+     -e 's/3[.]9/3.13/g' \
+     `find python3.13 -name Makefile` ; \
 )
 
 # It's also nice to test another python 3 modules (LC_ALL is set to avoid test failure).
 COMPONENT_POST_TEST_ACTION.64 += \
     ( cd $(@D)/python3.11 ; \
+	LC_ALL=en_US.utf8  $(GMAKE) $(COMPONENT_TEST_ARGS) check ; \
+      cd $(@D)/python3.13 ; \
 	LC_ALL=en_US.utf8  $(GMAKE) $(COMPONENT_TEST_ARGS) check ; ) ;
 
 COMPONENT_PRE_TEST_ACTION += \
@@ -103,11 +112,16 @@ COMPONENT_SYSTEM_TEST_TARGETS = system-test
 COMPONENT_PRE_SYSTEM_TEST_ACTION += $(COMPONENT_PRE_TEST_ACTION)
 
 # After we have built/installed libxml2, build/install the python
-# support for python 3.9 and 3.11.
+# support for python 3.11 and 3.13.
 COMPONENT_POST_INSTALL_ACTION.64 += \
 	cd $(@D)/python3.11 ; \
 	$(GMAKE) pythondir=$(PYTHON.3.11.VENDOR_PACKAGES) \
 	         pyexecdir=$(PYTHON.3.11.VENDOR_PACKAGES) \
+	         DESTDIR=$(PROTO_DIR) \
+	         install ; \
+	cd $(@D)/python3.13 ; \
+	$(GMAKE) pythondir=$(PYTHON.3.13.VENDOR_PACKAGES) \
+	         pyexecdir=$(PYTHON.3.13.VENDOR_PACKAGES) \
 	         DESTDIR=$(PROTO_DIR) \
 	         install ;
 
@@ -115,5 +129,6 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += runtime/python-313
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math
