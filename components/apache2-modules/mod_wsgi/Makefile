@@ -23,6 +23,9 @@
 # Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+# Python 3.13 module doesn't build with Studio compiler without needing Studio specific atomic library.
+# This can be avoided by using GCC.
+COMPILER= gcc
 CONSOLIDATION = python
 include ../../../make-rules/shared-macros.mk
 
@@ -35,24 +38,42 @@ COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	2001
 COMPONENT_BAID=		191665
 
-# Not 3.13 ready due to gcc/studio related SPARC linking issues.
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.13)
+GCC_APXS=gcc-apxs
+CLEAN_PATHS += $(GCC_APXS)
+
+# Since the Studio compiler and flags are hardcoded in Apache apxs, APR libtool, and apr-1-config,
+# they need to be modified before the build to enable compilation with GCC.
+COMPONENT_PREP_ACTION += ( \
+	$(MKDIR)  $(GCC_APXS); \
+	$(CP) $(APACHE_24_USR_PREFIX)/bin/apxs $(GCC_APXS); \
+	$(GSED) -i "/^get_config_vars/c\get_config_vars(\"$(COMPONENT_DIR)/$(GCC_APXS)/config_vars.mk\",\\\%config_vars);" $(GCC_APXS)/apxs; \
+	$(CP)  $(APACHE_24_USR_PREFIX)/build/config_vars.mk $(GCC_APXS); \
+	$(GSED) -i "/^CC = cc/c\CC = $(GCC_ROOT)/bin/gcc" $(GCC_APXS)/config_vars.mk; \
+	$(GSED) -i "/^APR_CONFIG = /c\APR_CONFIG = $(COMPONENT_DIR)/$(GCC_APXS)/apr-1-config" $(GCC_APXS)/config_vars.mk; \
+	$(GSED) -i "/^CFLAGS = /s/KPIC/fPIC/" $(GCC_APXS)/config_vars.mk; \
+	$(GSED) -i "/^CFLAGS = /s/-xO4 -xchip=generic//" $(GCC_APXS)/config_vars.mk; \
+	$(GSED) -i "/^CFLAGS = /s/-xregs=no%frameptr -mt -xcheck=no%stkovf//" $(GCC_APXS)/config_vars.mk; \
+	$(GSED) -i "/^CFLAGS = /s/-xO4 -xtarget=generic -xarch=sparcvis -xchip=generic -Qoption cg -xregs=no%appl -W2,-xwrap_int -xmemalign=16s -mt -xcheck=no%stkovf//" $(GCC_APXS)/config_vars.mk; \
+	$(CP) /usr/apr/1/bin/$(BUILD64)/apr-1-config $(GCC_APXS); \
+	$(GSED) -i 's;echo "$${installbuilddir}/libtool";echo "$(COMPONENT_DIR)/$(GCC_APXS)/libtool";' $(GCC_APXS)/apr-1-config; \
+	$(CP) /usr/apr/1/build/$(BUILD64)/libtool $(GCC_APXS); \
+	$(GSED) -i "/^CC=\"cc\"/c\CC=\"$(GCC_ROOT)/bin/gcc\"" $(GCC_APXS)/libtool; \
+	$(GSED) -i "/^pic_flag=/s/KPIC/fPIC/" $(GCC_APXS)/libtool; );
 
 # Don't use default CPPFLAGS; it causes Apache's custom CPP to fail.
 CONFIGURE_CPPFLAGS=
 VARIANTS_64 += $(BUILD_DIR)/apache24-python39
 VARIANTS_64 += $(BUILD_DIR)/apache24-python311
+VARIANTS_64 += $(BUILD_DIR)/apache24-python313
 include ../modules.mk
 
-# Python is now built in C99 mode and we need it too (24743682).
-studio_C99MODE= $(studio_C99_ENABLE)
-
-$(BUILD_DIR)/apache24-%/$(MACH64)/.configured: APXS=$(APACHE_24_USR_PREFIX)/bin/apxs BITS=64
+$(BUILD_DIR)/apache24-%/$(MACH64)/.configured: APXS=$(COMPONENT_DIR)/$(GCC_APXS)/apxs BITS=64
 $(BUILD_DIR)/apache24-%/$(MACH64)/.built: BITS=64
 $(BUILD_DIR)/apache24-%/$(MACH64)/.tested: BITS=64
 
 $(BUILD_DIR)/apache2%-python39/$(MACH64)/.configured: PYTHON=$(PYTHON.3.9.64)
 $(BUILD_DIR)/apache2%-python311/$(MACH64)/.configured: PYTHON=$(PYTHON.3.11.64)
+$(BUILD_DIR)/apache2%-python313/$(MACH64)/.configured: PYTHON=$(PYTHON.3.13.64)
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
@@ -61,4 +82,5 @@ CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 
 REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += runtime/python-313
 REQUIRED_PACKAGES += system/library/math
