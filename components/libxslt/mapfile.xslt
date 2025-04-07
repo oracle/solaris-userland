@@ -1,4 +1,6 @@
 #
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+#
 # MAPFILE HEADER START
 #
 # WARNING:  STOP NOW.  DO NOT MODIFY THIS FILE.
@@ -92,7 +94,6 @@ SYMBOL_VERSION SUNW_1.2 {
 		xsltSetCtxtParseOptions;
 		xsltSetCtxtSecurityPrefs;
 		xsltSetCtxtSortFunc;
-		xsltSetDebuggerStatus;
 		xsltSetDefaultSecurityPrefs;
 		xsltSetSecurityPrefs;
 		xsltSetSortFunc;
@@ -104,9 +105,6 @@ SYMBOL_VERSION SUNW_1.2 {
 
 SYMBOL_VERSION SUNW_1.1 {
 	global:
-		xslAddCall;
-		xslDropCall;
-		xslHandleDebugger;
 		xsltAddKey;
 		xsltAddStackElemList;
 		xsltAddTemplate;
@@ -252,7 +250,6 @@ SYMBOL_VERSION SUNW_1.1 {
 		xsltSaveResultToFile;
 		xsltSaveResultToFilename;
 		xsltSaveResultToString;
-		xsltSetDebuggerCallbacks;
 		xsltSetGenericDebugFunc;
 		xsltSetGenericErrorFunc;
 		xsltSetXIncludeDefault;

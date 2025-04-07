@@ -20,22 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxslt
-COMPONENT_VERSION=	1.1.42
+COMPONENT_VERSION=	1.1.43
 COMPONENT_PROJECT_URL=	http://xmlsoft.org/XSLT/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:85ca62cac0d41fc77d3f6033da9df6fd73d20ea2fc18b0a3609ffb4110e1baeb
+    sha256:5a3d6b383ca5afc235b171118e90f5ff6aa27e9fea3303065231a6d403f0183a
 COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/libxslt/1.1/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libxslt
 COMPONENT_ANITYA_ID=	13301
 
-COMPONENT_BAID=		181951
+COMPONENT_BAID=		324583
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
 
