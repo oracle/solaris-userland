@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		beautifulsoup4
-COMPONENT_VERSION=	4.12.2
+COMPONENT_VERSION=	4.13.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:df16e0b7bfc652436016728e67cf62f9225432a435a0a0675e12b7ca65822238
+    sha256:2291291610935d71c36e5edb6933d72a402fecfe54e7dbe66e8b828a448cc107
 COMPONENT_ARCHIVE_URL=	\
-    https://www.crummy.com/software/BeautifulSoup/bs4/download/4.12/$(COMPONENT_ARCHIVE)
+    https://www.crummy.com/software/BeautifulSoup/bs4/download/4.13/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/beautifulsoup4
 COMPONENT_BUGDB=	python-mod/beautifulsoup4
 COMPONENT_ANITYA_ID=	3779
-COMPONENT_BAID=		157353
+COMPONENT_BAID=		324052
 
 
 include $(WS_MAKE_RULES)/prep.mk
@@ -56,3 +56,5 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
