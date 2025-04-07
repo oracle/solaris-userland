@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=            	32_and_64
@@ -28,16 +28,16 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libtheora
-COMPONENT_VERSION=	1.1.1
-COMPONENT_PROJECT_URL=	http://theora.org/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_VERSION=	1.2.0
+COMPONENT_PROJECT_URL=	https://theora.org/
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b6ae1ee2fa3d42ac489287d3ec34c5885730b1296f0801ae577a35193d3affbc
-COMPONENT_ARCHIVE_URL=	http://downloads.xiph.org/releases/theora/$(COMPONENT_ARCHIVE)
+	sha256:ebdf77a8f5c0a8f7a9e42323844fa09502b34eb1d1fece7b5f54da41fe2122ec
+COMPONENT_ARCHIVE_URL=	https://downloads.xiph.org/releases/theora/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	11793
 
-COMPONENT_BAID=		8535
+COMPONENT_BAID=		325758
 
 ifeq ($(MACH),i386)
 # Disable tests since there are some crashes.
@@ -45,6 +45,8 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 endif
 
 include $(WS_MAKE_RULES)/common.mk
+
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 # Assumes GNU versions of utilities in PATH (e.g. tail).
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
