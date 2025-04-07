@@ -2,21 +2,19 @@ add the Solaris location of 64 bit shared libraries
 reported as
 https://www.stunnel.org/mailman3/hyperkitty/list/stunnel-users@stunnel.org/thread/LLU4QUMYCDN4JONA5OAGK4AYYXALARDE/
 
-diff -r ab157a44e82f configure
---- configure	Thu May 13 19:26:50 2021 +0200
-+++ configure	Thu May 13 19:28:07 2021 +0200
-@@ -16320,7 +16320,7 @@
+--- stunnel-5.74/configure.orig	2025-01-15 10:04:40.547296114 +0100
++++ stunnel-5.74/configure	2025-01-15 10:05:09.558501252 +0100
+@@ -18018,7 +18018,7 @@
  
  
- valid_CPPFLAGS="$CPPFLAGS"; CPPFLAGS="$CPPFLAGS -I$SSLDIR/include"
--valid_LIBS="$LIBS"; LIBS="$LIBS -L$SSLDIR/lib64 -L$SSLDIR/lib -lssl -lcrypto"
-+valid_LIBS="$LIBS"; LIBS="$LIBS -L$SSLDIR/lib64 -L$SSLDIR/lib/64 -L$SSLDIR/lib -lssl -lcrypto"
+ valid_CPPFLAGS="${CPPFLAGS}"; CPPFLAGS="${CPPFLAGS} -I${SSLDIR}/include"
+-valid_LIBS="${LIBS}"; LIBS="${LIBS} -L${SSLDIR}/lib64 -L${SSLDIR}/lib -lssl -lcrypto"
++valid_LIBS="${LIBS}"; LIBS="${LIBS} -L${SSLDIR}/lib64 -L${SSLDIR}/lib/64 -L${SSLDIR}/lib -lssl -lcrypto"
  
- for ac_func in FIPS_mode_set OSSL_PROVIDER_available
- do :
-diff -r 3a6bef0d95ad src/Makefile.am
---- src/Makefile.am	Thu May 13 19:37:54 2021 +0200
-+++ src/Makefile.am	Thu May 13 19:40:14 2021 +0200
+ ac_fn_c_check_func "$LINENO" "FIPS_mode_set" "ac_cv_func_FIPS_mode_set"
+ if test "x$ac_cv_func_FIPS_mode_set" = xyes
+--- stunnel-5.74/src/Makefile.am.orig	2025-01-15 10:16:54.533429349 +0100
++++ stunnel-5.74/src/Makefile.am	2025-01-15 10:17:40.755333582 +0100
 @@ -35,7 +35,7 @@
  stunnel_CPPFLAGS += -DCONFDIR='"$(sysconfdir)/stunnel"'
  
@@ -24,17 +22,16 @@ diff -r 3a6bef0d95ad src/Makefile.am
 -stunnel_LDFLAGS = -L$(SSLDIR)/lib64 -L$(SSLDIR)/lib -lssl -lcrypto
 +stunnel_LDFLAGS = -L$(SSLDIR)/lib64 -L$(SSLDIR)/lib/64 -L$(SSLDIR)/lib -lssl -lcrypto
  
- # stunnel3 script
+ # Apply substitutions
  edit = sed \
-diff -r 3a6bef0d95ad src/Makefile.in
---- src/Makefile.in	Thu May 13 19:37:54 2021 +0200
-+++ src/Makefile.in	Thu May 13 19:40:14 2021 +0200
-@@ -397,7 +397,7 @@
- 	-DCONFDIR='"$(sysconfdir)/stunnel"'
+--- stunnel-5.74/src/Makefile.in.orig   2025-01-15 10:08:21.164609320 +0100
++++ stunnel-5.74/src/Makefile.in        2025-01-15 10:09:21.502011490 +0100
+@@ -403,7 +403,7 @@
+        -DCONFDIR='"$(sysconfdir)/stunnel"'
  
  # TLS library
 -stunnel_LDFLAGS = -L$(SSLDIR)/lib64 -L$(SSLDIR)/lib -lssl -lcrypto
 +stunnel_LDFLAGS = -L$(SSLDIR)/lib64 -L$(SSLDIR)/lib/64 -L$(SSLDIR)/lib -lssl -lcrypto
  
- # stunnel3 script
+ # Apply substitutions
  edit = sed \

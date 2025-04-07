@@ -22,26 +22,25 @@
 #
 # Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
+COMPILER=	gcc
 BUILD_BITS= 64
 
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		stunnel
-COMPONENT_VERSION=	5.62
+COMPONENT_VERSION=	5.74
 COMPONENT_PROJECT_URL=	https://www.stunnel.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:9cf5bb949022aa66c736c1326554cca27d0641605a6370274edc4951eb5bd339
+	sha256:9bef235ab5d24a2a8dff6485dfd782ed235f4407e9bc8716deb383fc80cd6230
 COMPONENT_ANITYA_ID=	4901
 
 COMPONENT_ARCHIVE_URL=	https://www.stunnel.org/downloads/$(COMPONENT_ARCHIVE)
 
 #COMPONENT_PREP_ACTION += (cd $(@D) ; autoreconf -f)
 
-COMPONENT_BAID=		115681
+COMPONENT_BAID=	322876	
 
 include $(WS_MAKE_RULES)/common.mk
-
-PATCH_LEVEL = 0
 
 # need /usr/perl5/bin on path to access pod2man perl script, used by 
 # the build to create docs
@@ -80,3 +79,4 @@ REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/library
 # any Perl will do, use the default one
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

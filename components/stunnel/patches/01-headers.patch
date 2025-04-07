@@ -1,0 +1,26 @@
+Added headers alloca and termios.
+alloca.h gives access to the function alloca()
+termios.h gives access to the function openpty()
+
+--- stunnel-5.74/src/log.c.orig	2025-01-29 10:24:29.088699062 +0100
++++ stunnel-5.74/src/log.c	2025-01-29 10:25:43.489262639 +0100
+@@ -34,7 +34,7 @@
+  *   also makes it possible to release a modified version which carries
+  *   forward this exception.
+  */
+-
++#include <alloca.h>
+ #include "prototypes.h"
+ 
+ NOEXPORT void log_queue(SERVICE_OPTIONS *, int, char *, char *, char *);
+--- stunnel-5.74/src/pty.c.orig	2025-01-29 10:31:47.357203170 +0100
++++ stunnel-5.74/src/pty.c	2025-01-29 10:32:07.982924923 +0100
+@@ -34,7 +34,7 @@
+  *   also makes it possible to release a modified version which carries
+  *   forward this exception.
+  */
+-
++#include <termios.h>
+ #include "prototypes.h"
+ 
+ #ifdef HAVE_UTIL_H

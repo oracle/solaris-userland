@@ -1,0 +1,28 @@
+1. On the vm where stunnel is updated go to the following path:
+$ cd /etc/stunnel
+
+2. Create a pem file containing the certificate and private key.
+ 2.a. Generate a Private Key using openSSL:
+$ openssl genpkey -algorithm RSA -out private.key -pkeyopt rsa_keygen_bits:2048
+ 2.b. Generate a Certificate Signing Request (there will start a prompt to enter information - no need to use accurate information for testing):
+$ openssl req -new -key private.key -out certificate.csr
+ 2.c. Generate a self signed certificate (signing the certificate with your own private key):
+$ openssl x509 -req -days 365 -in certificate.csr -signkey private.key -out certificate.crt
+ 2.d. Combine the private key file and certificate into a PEM File:
+$ cat private.key certificate.crt > stunnel.pem
+ 2.e. Add this line to the /etc/stunnel/stunnel.conf file:
+    cert = /etc/stunnel/stunnel.pem
+
+3. Create a configuration file /etc/stunnel/stunnel.conf and add:
+[https]
+accept = 127.0.0.1:4443
+connect = 127.0.0.1:443
+
+4. Start stunnel with the following command:
+$ sudo stunnel /etc/stunnel/stunnel.conf
+
+5.Verify with tcpdump:
+$ python3 -m http.server 443 &
+
+6. Verify  with a Web Browser:
+$ curl -k https://127.0.0.1:4443
