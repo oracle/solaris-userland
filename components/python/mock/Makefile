@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mock
-COMPONENT_VERSION=	5.0.1
+COMPONENT_VERSION=	5.2.0
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e3ea505c03babf7977fd21674a69ad328053d414f05e6433c30d8fa14a534a6b
+    sha256:4e460e818629b4b173f32d08bf30d3af8123afbb8e04bb5707a1fd4799e503f0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.voidspace.org.uk/python/mock/
 COMPONENT_BUGDB=	python-mod/mock
 COMPONENT_ANITYA_ID=	21272
-COMPONENT_BAID=		136841
+COMPONENT_BAID=		324060
 
 # mock has been subsumed into Python starting with 3.3. However, the community
 # is still using this package rather than the included one, mostly because it
