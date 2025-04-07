@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -28,22 +28,42 @@ COMPILER  = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         snappy
-COMPONENT_VERSION=      1.1.3
+COMPONENT_VERSION=      1.2.1
 COMPONENT_ARCHIVE_HASH= \
-    sha256:2f1e82adf0868c9e26a5a7a3115111b6da7e432ddbac268a7ca2fae2a247eef3
-COMPONENT_ARCHIVE_URL=  https://github.com/google/snappy/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+    sha256:736aeb64d86566d2236ddffa2865ee5d7a82d26c9016b36218fcc27ea4f09f86
+COMPONENT_ARCHIVE_URL=  https://github.com/google/snappy/archive/refs/tags/$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=  http://google.github.io/snappy/
 COMPONENT_BUGDB=	library/libsnappy
 COMPONENT_ANITYA_ID=	4844
 
-COMPONENT_BAID = 35662
+COMPONENT_BAID = 323909
 
-# Reduce the compiler optimization to avoid unit tests failures.
-CXXFLAGS += -O2
-CONFIGURE_OPTIONS.64 +=    --prefix=$(USRLIBDIR64)
-CONFIGURE_OPTIONS    +=    --prefix=$(USRLIBDIR)
+# Internal testing requires Googletest.
+COMPONENT_NAME_TESTS=		googletest
+COMPONENT_VERSION_TESTS=	1.16.0
+COMPONENT_PROJECT_URL_TESTS=	https://github.com/google/googletest
+COMPONENT_SRC_TESTS=		$(COMPONENT_NAME_TESTS)-$(COMPONENT_VERSION_TESTS)
+COMPONENT_ARCHIVE_TESTS=	$(COMPONENT_SRC_TESTS).tar.gz
+COMPONENT_ARCHIVE_HASH_TESTS= \
+     sha256:78c676fc63881529bf97bf9d45948d905a66833fbfa5318ea2cd7478cb98f399
+COMPONENT_ARCHIVE_URL_TESTS=	$(COMPONENT_PROJECT_URL_TESTS)/archive/v$(COMPONENT_VERSION_TESTS).tar.gz
+
+COMPONENT_POST_UNPACK_ACTION_TESTS = \
+         ( cd $(COMPONENT_SRC)/third_party; $(RM) -r $(COMPONENT_NAME_TESTS);  $(SYMLINK) ../../$(COMPONENT_SRC_TESTS) $(COMPONENT_NAME_TESTS) )
+
+CLEAN_PATHS += $(COMPONENT_SRC_TESTS)
+
+BUILD_STYLE=    cmake
 
 include $(WS_MAKE_RULES)/common.mk
+
+CMAKE_OPTIONS += -DBUILD_SHARED_LIBS=ON
+CMAKE_OPTIONS += -DSNAPPY_BUILD_BENCHMARKS=OFF
+CMAKE_OPTIONS += -DINSTALL_GTEST=OFF
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_ENV += CLICOLOR=0
+COMPONENT_TEST_TRANSFORMS += -e '"s/[[:space:]]\+[0-9]\+\(\.[0-9]\+\)\? sec/ X sec/g" '
 
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

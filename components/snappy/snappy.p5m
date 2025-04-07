@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2025, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -39,12 +39,19 @@ file path=usr/include/snappy-c.h
 file path=usr/include/snappy-sinksource.h
 file path=usr/include/snappy-stubs-public.h
 file path=usr/include/snappy.h
+file path=usr/lib/$(MACH64)/cmake/Snappy/SnappyConfig.cmake
+file path=usr/lib/$(MACH64)/cmake/Snappy/SnappyConfigVersion.cmake
+file path=usr/lib/$(MACH64)/cmake/Snappy/SnappyTargets-relwithdebinfo.cmake
+file path=usr/lib/$(MACH64)/cmake/Snappy/SnappyTargets.cmake
 link path=usr/lib/$(MACH64)/libsnappy.so target=libsnappy.so.1
-file path=usr/lib/$(MACH64)/libsnappy.so.1
+file path=usr/lib/$(MACH64)/libsnappy.so.$(COMPONENT_VERSION)
+link path=usr/lib/$(MACH64)/libsnappy.so.1 \
+    target=libsnappy.so.$(COMPONENT_VERSION)
+file path=usr/lib/cmake/Snappy/SnappyConfig.cmake
+file path=usr/lib/cmake/Snappy/SnappyConfigVersion.cmake
+file path=usr/lib/cmake/Snappy/SnappyTargets-relwithdebinfo.cmake
+file path=usr/lib/cmake/Snappy/SnappyTargets.cmake
 link path=usr/lib/libsnappy.so target=libsnappy.so.1
-file path=usr/lib/libsnappy.so.1
-dir  path=usr/share/doc/snappy
-file path=usr/share/doc/snappy/README
-file path=usr/share/doc/snappy/format_description.txt
-file path=usr/share/doc/snappy/framing_format.txt
+file path=usr/lib/libsnappy.so.$(COMPONENT_VERSION)
+link path=usr/lib/libsnappy.so.1 target=libsnappy.so.$(COMPONENT_VERSION)
 license COPYING license=BSD
