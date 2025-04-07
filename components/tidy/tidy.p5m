@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -36,25 +36,21 @@ set name=org.opensolaris.arc-caseid value=PSARC/2007/134
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file tab2space path=usr/bin/tab2space
 file path=usr/bin/tidy
-# The current version of PHP uses old tidy header file names. Provide links
-# to previous names for backward compatibility. When PHP in Solaris is updated
-# to a more recent version where this is no longer a problem, then these two
-# links should be removed.
-link path=usr/include/tidy/buffio.h target=tidybuffio.h
-link path=usr/include/tidy/platform.h target=tidyplatform.h
-file include/tidy.h path=usr/include/tidy/tidy.h
-file include/tidybuffio.h path=usr/include/tidy/tidybuffio.h
-file include/tidyenum.h path=usr/include/tidy/tidyenum.h
-file include/tidyplatform.h path=usr/include/tidy/tidyplatform.h
-link path=usr/lib/$(MACH64)/libtidy.so target=libtidy.so.5
+file path=usr/include/tidy.h
+file path=usr/include/tidybuffio.h
+file path=usr/include/tidyenum.h
+file path=usr/include/tidyplatform.h
+link path=usr/lib/$(MACH64)/libtidy.so target=libtidy.so.58
 file path=usr/lib/$(MACH64)/libtidy.so.$(COMPONENT_VERSION)
-link path=usr/lib/$(MACH64)/libtidy.so.5 target=libtidy.so.$(COMPONENT_VERSION)
+link path=usr/lib/$(MACH64)/libtidy.so.58 target=libtidy.so.$(COMPONENT_VERSION)
 file path=usr/lib/$(MACH64)/llib-ltidy.ln
-link path=usr/lib/libtidy.so target=libtidy.so.5
+file path=usr/lib/$(MACH64)/pkgconfig/tidy.pc
+link path=usr/lib/libtidy.so target=libtidy.so.58
 file path=usr/lib/libtidy.so.$(COMPONENT_VERSION)
-link path=usr/lib/libtidy.so.5 target=libtidy.so.$(COMPONENT_VERSION)
+link path=usr/lib/libtidy.so.58 target=libtidy.so.$(COMPONENT_VERSION)
 file path=usr/lib/llib-ltidy.ln
+file path=usr/lib/pkgconfig/tidy.pc
 file files/tab2space.1 path=usr/share/man/man1/tab2space.1
 file path=usr/share/man/man1/tidy.1
 file files/libtidy.3 path=usr/share/man/man3/libtidy.3
-license tidy.license license=W3C
+license README/LICENSE.txt license=W3C
