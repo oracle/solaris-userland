@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -31,11 +31,10 @@ PATH=$(USRBINDIR):$(GNUBIN):$(USRSBINDIR):$(USRDIR)/perl5/bin
 
 COMPONENT_NAME=         squid
 COMPONENT_PROJECT_URL=  http://www.squid-cache.org/
-COMPONENT_VERSION=      6.9
-COMPONENT_BAID=		168354
-COMPONENT_ARCHIVE_HASH= sha256:ac24b2a54aa835c3fb948bb205a178689d70d912f9fa6e20115d6d37aa70c38f
-COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)Versions/v6/$(COMPONENT_ARCHIVE)
+COMPONENT_VERSION=      6.13
+COMPONENT_BAID=		325733
+COMPONENT_ARCHIVE_HASH= sha256:9b33de09d733b5933f6c2b54ebe0be51a9fa4751f183f3aead90b3c5d930aa72
+COMPONENT_ARCHIVE_URL=  https://github.com/squid-cache/squid/releases/download/SQUID_$(subst .,_,$(COMPONENT_VERSION))/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4880
 COMPONENT_PUBLIC_KEY_URL=	http://www.squid-cache.org/pgp.asc
@@ -111,30 +110,10 @@ COMPONENT_POST_INSTALL_ACTION += \
 # Adjust '#!/usr/bin/perl'
 PERL_SCRIPTS= $(PROTOUSRDIR)/squid/libexec/helper-mux
 
-# Clean test-suite directory to get the same results regardless of
-# how many times 'gmake test' command was called (some tests are
-# skipped in the second and further runs if not cleaned).
-COMPONENT_PRE_TEST_ACTION += (cd $(@D)/test-suite; gmake clean);
-
-COMPONENT_TEST_TRANSFORMS += \
-	'-n ' \
-	'-e "/=====/d" ' \
-	'-e "/\# TOTAL/p" ' \
-	'-e "/\# SKIP/p" ' \
-	'-e "/\# PASS/p" ' \
-	'-e "/\# XPASS/p" ' \
-	'-e "/\# FAIL/p" ' \
-	'-e "/\# XFAIL/p" ' \
-	'-e "/Can not open file/d" ' \
-	'-e "/Testsuite summary/d" ' \
-	'-E -e "/^(\# )?ERROR/p" '
-
 # cppunit is required for testing
 REQUIRED_PACKAGES += developer/c++/cppunit
-REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libtool/libltdl
-REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/security/nettle
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += security/kerberos-5
@@ -142,7 +121,6 @@ REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/library/security/libsasl2
