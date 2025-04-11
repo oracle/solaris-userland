@@ -98,6 +98,7 @@ CONFIGURE_OPTIONS+=	--with-ldap
 CONFIGURE_OPTIONS+=	--without-ldb-lmdb
 CONFIGURE_OPTIONS+=	--without-ad-dc
 CONFIGURE_OPTIONS+=	--without-quotas
+CONFIGURE_OPTIONS+=	--without-fam
 CONFIGURE_OPTIONS+=	--bundled-libraries=ALL
 CONFIGURE_OPTIONS+=	--with-system-mitkrb5
 CONFIGURE_OPTIONS+=	--with-shared-modules=vfs_worm,vfs_zfsacl,vfs_cacheprime,vfs_commit,idmap_ldap,idmap_tdb2,idmap_rid,idmap_ad,idmap_hash,idmap_adex
@@ -147,7 +148,6 @@ COMPONENT_POST_BUILD_ACTION.32+=	\
 PKG_MACROS += PYVER=$(PYTHON_VERSION)
 
 REQUIRED_PACKAGES += library/desktop/search/tracker
-REQUIRED_PACKAGES += library/file-monitor/gamin
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/icu
