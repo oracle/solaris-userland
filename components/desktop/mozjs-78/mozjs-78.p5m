@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -31,13 +31,14 @@ set name=pkg.summary \
     value="Mozilla's SpiderMonkey engine JavaScript library v78"
 set name=pkg.description \
     value="SpiderMonkey is Mozilla's JavaScript engine written in C/C++. It is used in various Mozilla products, including Firefox"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=$(COMPONENT_NAME)
 set name=info.classification \
     value="org.opensolaris.category.2008:Development/Other Languages"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2020/142
+set name=org.opensolaris.arc-caseid value=PSARC/2020/142 value=PSARC/2025/033
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file usr/bin/js$(COMPONENT_VERSION)-config \
     path=usr/bin/$(MACH64)/js$(COMPONENT_VERSION)-config
@@ -285,4 +286,8 @@ file path=usr/include/mozjs-78/mozmemory.h
 file path=usr/include/mozjs-78/mozmemory_wrap.h
 file path=usr/lib/$(MACH64)/libmozjs-78.so
 file path=usr/lib/$(MACH64)/pkgconfig/mozjs-78.pc
+file release-notes/mozjs-78.txt path=usr/share/doc/release-notes/mozjs-78.txt \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 license mozjs-78.license license="MPLv2, LGPLv2, BSD"
