@@ -1139,31 +1139,15 @@ Copyright 2010-2013 Qualys, Inc.
 ============================================================================
 
 LibHTP is a security-aware parser for the HTTP protocol and the related bits
-and pieces. The goals of the project, in the order of importance, are as
-follows:
+and pieces. The goal of the project is mainly to support the Suricata use case.
+Other use cases might not fully be supported, and we encourage you to cover these.
 
- 1. Completeness of coverage; LibHTP must be able to parse virtually all
-    traffic that is found in practice.
+   |   STATUS
+   |
+   |   We are currently in the process of migrating LibHTP to a Rust version and thus
+   |   support will be discontinued.
 
- 2. Permissive parsing; LibHTP must never fail to parse a stream that would
-    be parsed by some other web server.
-
- 3. Awareness of evasion techniques; LibHTP must be able to detect and
-    effectively deal with various evasion techniques, producing, where
-    practical, identical or practically identical results as the web
-    server processing the same traffic stream.
-
- 4. Performance; The performance must be adequate for the desired tasks.
-    Completeness and security are often detrimental to performance. Our
-    idea of handling the conflicting requirements is to put the library
-    user in control, allowing him to choose the most desired library
-    characteristic.
-
- | STATUS      LIBHTP IS VERY YOUNG AT THIS POINT. IT WILL BE SOME TIME BEFORE
- |             IT CAN BE CONSIDER COMPLETE. AT THE MOMENT, THE FOCUS OF DEVELOPMENT
- |             IS ON ACHIEVING THE FIRST TWO GOALS.
-
-See the LICENSE, COPYING and NOTICE files distributed with this work for
+See the LICENSE, COPYING, and NOTICE files distributed with this work for
 information regarding licensing, copying and copyright ownership.
 
 
@@ -13622,7 +13606,6 @@ src/detect-http-server-body.c
 src/detect-within.c
 src/detect.h
 src/flow-hash.c
-src/flow-manager.c
 src/flow-spare-pool.c
 src/output-json-drop.c
 src/output-json.c
@@ -13849,6 +13832,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ## Files:
 src/decode-ppp.c
 src/detect-noalert.c
+src/flow-manager.c
 src/runmodes.c
 
 Copyright (C) 2007-2024 Open Information Security Foundation

@@ -1,0 +1,57 @@
+Check the installed suricata version:
+
+  # suricata -V
+  This is Suricata version 7.0.10 RELEASE
+
+Enable service and check that it is running:
+
+  # svcadm enable suricata:default
+  # svcs -xv
+
+Check that the suricata daemon is running:
+
+  # pgrep suricata
+  1361
+
+Check that suricata logs and keep the tail running:
+
+  # tail -f /var/log/suricata/suricata.log &
+
+Update suricata rules and reload the daemon (you must give that an HTTP proxy):
+
+  # su - _suricata
+  _suricata@ST-ul-cbe:~$ HTTPS_PROXY=http://www-proxy-ams.nl.oracle.com:80 suricata-update --reload-command="/usr/bin/suricatasc -c ruleset-reload-rules"
+  9/4/2025 -- 15:41:20 - <Warning> -- No suricata application binary found on path.
+  9/4/2025 -- 15:41:20 - <Info> -- Using Suricata configuration /etc/suricata/suricata.yaml
+  9/4/2025 -- 15:41:20 - <Info> -- Using /usr/share/suricata/rules for Suricata provided rules.
+  9/4/2025 -- 15:41:20 - <Info> -- Using default Suricata version of 6.0.0
+  9/4/2025 -- 15:41:20 - <Info> -- No sources configured, will use Emerging Threats Open
+  9/4/2025 -- 15:41:20 - <Info> -- Fetching https://rules.emergingthreats.net/open/suricata-6.0.0/emerging.rules.tar.gz.
+  ...
+  9/4/2025 -- 15:41:27 - <Info> -- Writing rules to /var/lib/suricata/rules/suricata.rules: total: 58105; enabled: 42915; added: 58105; removed 0; modified: 0
+  ...
+  9/4/2025 -- 15:41:28 - <Info> -- Running /usr/bin/suricatasc -c ruleset-reload-rules.
+  ...
+  [1 - Suricata-Main] 2025-04-09 15:41:28 Notice: detect: rule reload starting
+  ...
+  [1 - Suricata-Main] 2025-04-09 15:41:31 Info: detect: 42905 signatures processed. 1245 are IP-only rules, 5072 are inspecting packet payload, 36372 inspect application layer, 109 are decoder event only
+  {"message": "done", "return": "OK"}
+  ...
+  _suricata@ST-ul-cbe:~$ exit
+
+Check that suricata generates alerts:
+
+  # less /var/log/suricata/fast.log
+
+  If there are no lines, let's generate some by hand.
+
+  On the terminal of different machine:
+
+    mrehak@unix:~$ echo "uid=0(root) gid=0(root) groups=0(root)" | netcat -q 0 -l unix 8888
+
+  On the terminal where suricata daemon is running:
+
+    # tail -f /var/log/suricata/fast.log | grep GPL &
+    # netcat unix 8888
+    uid=0(root) gid=0(root) groups=0(root)
+    # 04/09/2025-15:58:02.830711  [**] [1:2100498:7] GPL ATTACK_RESPONSE id check returned root [**] [Classification: Potentially Bad Traffic] [Priority: 2] {TCP} 10.163.102.144:8888 -> 10.0.2.15:51975
