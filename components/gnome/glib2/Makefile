@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER =      	gcc
@@ -28,30 +28,30 @@ BUILD_BITS =            32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glib
-COMPONENT_VERSION=	2.76.4
+COMPONENT_VERSION=	2.78.6
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GLib/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5a5a191c96836e166a7771f7ea6ca2b0069c603c7da3cba1cd38d1694a395dda
+    sha256:244854654dd82c7ebcb2f8e246156d2a05eb9cd1ad07ed7a779659b4602c9fae
 COMPONENT_BUGDB=	gnome/glib
 COMPONENT_ANITYA_ID=	10024
 
-COMPONENT_BAID=		147282
+COMPONENT_BAID=		325889
 BUILD_STYLE=		meson
 
 # No need to build for older versions.
 PYTHON_VERSION= 3.11
-
-# sparc specific patch to workaround the problem with Fujitsu running
-# Xorg AND VNC/XDMCP simultaneously
-ifeq ($(MACH), sparc)
-ADDITIONAL_PATCHES += patches/21-fdwalk-workaround.sparc
-endif
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # using the setting from shared-macros.mk results in 23665701
 # overriding it here till we can get gdm rebuilt
 gcc_STACK_ALIGN.i386.32 =
+
+CFLAGS += -D__EXTENSIONS__
+
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # The problem with not enough of FDs seems to show only during full build and
 # only on sparc
