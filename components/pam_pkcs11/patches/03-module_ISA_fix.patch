@@ -4,8 +4,8 @@
 # component, so that the PAM_PKCS11 module can be used for both 32 and 
 # 64 bit applications at the same time. This patch is for Solaris only. 
 #
---- old/src/common/strings.h	2022-08-02 15:52:38.549259315 +0200
-+++ new/src/common/strings.h	2022-08-02 15:54:04.245936839 +0200
+--- old/src/common/strings.h	2025-04-03 10:46:13.293447287 +0200
++++ new/src/common/strings.h	2025-04-03 10:46:56.686057736 +0200
 @@ -125,6 +125,16 @@ M_EXTERN char **split_static(const char
   */
  M_EXTERN char *trim(const char *str);
@@ -23,8 +23,8 @@
  #undef M_EXTERN
  
  #endif
---- old/src/common/strings.c	2022-08-02 15:52:38.558078631 +0200
-+++ new/src/common/strings.c	2022-08-02 15:54:04.252838042 +0200
+--- old/src/common/strings.c	2025-04-03 10:46:13.296219523 +0200
++++ new/src/common/strings.c	2025-04-03 10:46:56.688739616 +0200
 @@ -34,6 +34,17 @@
  #include <unistd.h>
  #include "strings.h"
@@ -77,8 +77,8 @@
 +#endif
 +
  #endif /* __STRINGS_C_ */
---- old/src/pam_pkcs11/pam_pkcs11.c	2022-08-02 15:52:38.564693602 +0200
-+++ new/src/pam_pkcs11/pam_pkcs11.c	2022-08-02 15:54:04.261267813 +0200
+--- old/src/pam_pkcs11/pam_pkcs11.c	2025-04-03 10:46:13.298941867 +0200
++++ new/src/pam_pkcs11/pam_pkcs11.c	2025-04-03 10:46:56.691450463 +0200
 @@ -61,6 +61,10 @@
  #endif
  #define LOGNAME   "PAM-PKCS11"  /* name for log-file entries */
@@ -90,7 +90,7 @@
  /*
  * comodity function that returns 1 on null, empty o spaced string
  */
-@@ -225,6 +229,9 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
+@@ -233,6 +237,9 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
    char env_temp[256] = "";
    char **issuer, **serial;
    const char *login_token_name = NULL;
@@ -100,8 +100,8 @@
  
  #ifdef ENABLE_NLS
    setlocale(LC_ALL, "");
-@@ -342,9 +349,28 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
-     return PAM_IGNORE;
+@@ -333,9 +340,28 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
+ 	  goto exit_ignore;
    }
  
 +#ifdef MODULE_ISA_FIX
@@ -129,8 +129,8 @@
    if (rv != 0) {
      ERR2("load_pkcs11_module() failed loading %s: %s",
  		configuration->pkcs11_modulepath, get_error());
---- old/src/pam_pkcs11/mapper_mgr.c	2022-08-02 15:52:38.573399770 +0200
-+++ new/src/pam_pkcs11/mapper_mgr.c	2022-08-02 15:54:04.270019474 +0200
+--- old/src/pam_pkcs11/mapper_mgr.c	2025-04-03 10:46:13.301602412 +0200
++++ new/src/pam_pkcs11/mapper_mgr.c	2025-04-03 10:46:56.694009306 +0200
 @@ -38,6 +38,10 @@
  #include "../mappers/mapperlist.h"
  #include "mapper_mgr.h"
@@ -170,8 +170,8 @@
  	    if (!handler) {
  		DBG3("dlopen failed for module:  %s path: %s Error: %s",name,libname,dlerror());
  		return NULL;
---- old/src/tools/pkcs11_inspect.c	2022-08-02 15:52:38.582281493 +0200
-+++ new/src/tools/pkcs11_inspect.c	2022-08-02 15:54:04.279137432 +0200
+--- old/src/tools/pkcs11_inspect.c	2025-04-03 10:46:13.304226425 +0200
++++ new/src/tools/pkcs11_inspect.c	2025-04-03 10:46:56.696556320 +0200
 @@ -32,6 +32,10 @@
  #include "../pam_pkcs11/pam_config.h"
  #include "../pam_pkcs11/mapper_mgr.h"
@@ -213,8 +213,8 @@
    if (rv != 0) {
      ERR2("load_pkcs11_module(%s) failed: %s", configuration->pkcs11_modulepath,
        get_error());
---- old/src/tools/pklogin_finder.c	2022-08-02 15:52:38.591372140 +0200
-+++ new/src/tools/pklogin_finder.c	2022-08-02 15:54:04.288539588 +0200
+--- old/src/tools/pklogin_finder.c	2025-04-03 10:46:13.306814442 +0200
++++ new/src/tools/pklogin_finder.c	2025-04-03 10:46:56.699097700 +0200
 @@ -32,6 +32,10 @@
  #include "../pam_pkcs11/pam_config.h"
  #include "../pam_pkcs11/mapper_mgr.h"

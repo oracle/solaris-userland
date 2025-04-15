@@ -1,0 +1,19 @@
+#
+# This patch fixes bug https://github.com/OpenSC/pam_pkcs11/issues/83
+# in openssh mapper.
+# The patch can be removed once the issue is addressed by upstream.
+#
+--- old/src/common/cert_info.c	2025-04-08 12:13:49.212662768 +0200
++++ new/src/common/cert_info.c	2025-04-08 12:15:22.920382856 +0200
+@@ -766,7 +766,10 @@ static char **cert_info_sshpuk(X509 *x50
+ 	ret = entries;
+ 
+ sshpuk_exit:
+-    free_entries(maillist, CERT_INFO_SIZE);
++	if (maillist) {
++		free_entries(maillist, CERT_INFO_SIZE);
++	}
++
+ 	EVP_PKEY_free(pubk);
+     free(blob);
+     free(data);

@@ -10,50 +10,14 @@
 # Changes from smartcard to "smart card" in pam_prompt messages are for
 # Solaris message style compliance and they are Solaris specific. 
 #
---- old/src/pam_pkcs11/pam_pkcs11.c	2022-08-02 16:04:34.687896773 +0200
-+++ new/src/pam_pkcs11/pam_pkcs11.c	2022-08-02 16:07:23.653822722 +0200
-@@ -239,7 +239,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
-   textdomain(PACKAGE);
- #endif
+--- old/src/pam_pkcs11/pam_pkcs11.c	2025-04-03 10:52:42.712145720 +0200
++++ new/src/pam_pkcs11/pam_pkcs11.c	2025-04-03 10:59:28.840438215 +0200
+@@ -841,7 +841,7 @@ auth_failed:
  
--  pam_prompt(pamh, PAM_TEXT_INFO , NULL, _("Smartcard authentication starts"));
-+  pam_prompt(pamh, PAM_TEXT_INFO , NULL, _("Smart card authentication starts"));
- 
-   /* first of all check whether debugging should be enabled */
-   for (i = 0; i < argc; i++)
-@@ -445,7 +445,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
-       }
-     } else if (user) {
- 		if (!configuration->quiet) {
--			pam_prompt(pamh, PAM_ERROR_MSG , NULL, _("Error 2308: No smartcard found"));
-+			pam_prompt(pamh, PAM_ERROR_MSG , NULL, _("Error 2308: No smart card found"));
- 			sleep(configuration->err_display_time);
- 		}
- 
-@@ -472,7 +472,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
-       if (rv != 0) {
-         /* user gave us a user id and no smart card go to next module */
- 		if (!configuration->quiet) {
--			pam_prompt(pamh, PAM_ERROR_MSG , NULL, _("Error 2310: No smartcard found"));
-+			pam_prompt(pamh, PAM_ERROR_MSG , NULL, _("Error 2310: No smart card found"));
- 			sleep(configuration->err_display_time);
- 		}
- 
-@@ -548,7 +548,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
- 			pam_syslog(pamh, LOG_ERR,
- 					"password length is zero but the 'nullok' argument was not defined.");
- 			if (!configuration->quiet) {
--				pam_prompt(pamh, PAM_ERROR_MSG , NULL, _("Error 2318: Empty smartcard PIN not allowed."));
-+				pam_prompt(pamh, PAM_ERROR_MSG , NULL, _("Error 2318: Empty smart card PIN not allowed."));
- 				sleep(configuration->err_display_time);
- 			}
- 			return PAM_AUTH_ERR;
-@@ -576,7 +576,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_h
-       ERR1("open_pkcs11_login() failed: %s", get_error());
- 		if (!configuration->quiet) {
- 			pam_syslog(pamh, LOG_ERR, "open_pkcs11_login() failed: %s", get_error());
--			pam_prompt(pamh, PAM_ERROR_MSG , NULL, _("Error 2320: Wrong smartcard PIN"));
-+			pam_prompt(pamh, PAM_ERROR_MSG , NULL, _("Error 2320: Wrong smart card PIN"));
- 			sleep(configuration->err_display_time);
- 		}
-       goto auth_failed_nopw;
+  exit_ignore:
+ 	pam_prompt( pamh, PAM_TEXT_INFO, NULL,
+-				_("Smartcard authentication cancelled") );
++				_("Smart card authentication cancelled") );
+ 	configure_free(configuration);
+ 	configuration = NULL;
+ 	return PAM_IGNORE;
