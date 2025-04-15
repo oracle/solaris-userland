@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -154,7 +154,7 @@ REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += runtime/ruby-31
+REQUIRED_PACKAGES += runtime/ruby-33
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math

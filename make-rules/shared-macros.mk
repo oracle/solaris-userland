@@ -692,8 +692,7 @@ RUBY_VERSION =	3.3
 RUBY_PUPPET_VERSION = 3.3
 
 # The default version should go last.
-RUBY_VERSIONS = 3.1 3.3
-RUBY.3.1 =	/usr/ruby/3.1/bin/ruby
+RUBY_VERSIONS = 3.3
 RUBY.3.3 =	/usr/ruby/3.3/bin/ruby
 RUBY =		$(RUBY.$(RUBY_VERSION))
 
