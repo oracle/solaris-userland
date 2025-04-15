@@ -20,25 +20,24 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		which
-COMPONENT_VERSION=	2.21
+COMPONENT_VERSION=	2.23
 COMPONENT_PROJECT_URL=	https://savannah.gnu.org/projects/which/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f4a245b94124b377d8b49646bf421f9155d36aa7614b6ebf83705d3ffc76eaad
+	sha256:a2c558226fc4d9e4ce331bd2fd3c3f17f955115d2c00e447618a4ef9978a2a73
 COMPONENT_BUGDB=	utility/gnu-which
 COMPONENT_ANITYA_ID=	5127
 
-COMPONENT_BAID=		29655
+COMPONENT_BAID=	324911
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnu-component.mk
 
 CONFIGURE_PREFIX    =	$(USRDIR)/gnu
 CONFIGURE_OPTIONS  +=	--infodir=$(CONFIGURE_INFODIR)
-CONFIGURE_OPTIONS  +=	--disable-iberty
 CONFIGURE_OPTIONS  +=	--disable-dependency-tracking
