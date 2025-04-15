@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.numpy.org/
 COMPONENT_BUGDB=	python-mod/numpy
 COMPONENT_ANITYA_ID=	2509
-COMPONENT_BAID=		164569
+COMPONENT_BAID=		326363
  
 # this version of numpy is not Python 3.13 ready yet
 PYTHON_VERSIONS = $(WITHOUT_PYTHON3.13)
