@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 # This code is built with gcc. See README.
 #
@@ -32,12 +32,12 @@ BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		emacs
-COMPONENT_VERSION=	29.3
+COMPONENT_VERSION=	30.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2de8df5cab8ac697c69a1c46690772b0cf58fe7529f1d1999582c67d927d22e4
+    sha256:54404782ea5de37e8fcc4391fa9d4a41359a4ba9689b541f6bc97dd1ac283f6c
 COMPONENT_ANITYA_ID=	675
 
-COMPONENT_BAID=		162570
+COMPONENT_BAID=		323231
 
 INSTALL_TARGET=
 # The upstream emacs distribution does not have tests to be run
@@ -53,7 +53,8 @@ INSTALL_64 = $(VARIANTS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
-# We patch the configure.ac file. Get the new configure generated during prep.
+# If a patch is present that alters the configure.ac file, get the new
+# configure generated during prep. Otherwise, comment this out.
 COMPONENT_PREP_ACTION = (cd $(@D) ; aclocal -I m4; autoconf )
 
 # emacs creates a directory in usr/lib/emacs/$(COMPONENT_VERSION) that
@@ -70,13 +71,6 @@ PKG_MACROS +=	EMACS_ULEVDIR=$(EMACS_ULEVDIR)
 # the 'gmake build' stage.
 #
 #CONFIGURE_PREFIX =	$(PROTO_DIR)/usr
-
-# Starting with emacs 25.2, the emacs executable uses trig functions (sin, cos)
-# that are not satisfied by libc. Rather than patch the configure process
-# or Makefiles, supply libm via the environment, and allow the use of -zignore,
-# inherited from the top level Userland Makefiles, to remove it from binaries
-# that don't need it.
-LDFLAGS += -lm
 
 # Never use xmkmf to find X11 libraries from autoconf. They are all available
 # from standard system locations, and we don't want the ld -L option that
@@ -98,16 +92,12 @@ ifeq   ($(strip $(PARFAIT_BUILD)),yes)
 CONFIGURE_OPTIONS +=	emacs_cv_prog_cc_o=no
 endif
 
-# Starting with Emacs 29.1, we see crashing at startup, on sparc only,
-# with the GTK and Lucid versions. See:
-#
-#	https://debbugs.gnu.org/cgi/bugreport.cgi?bug=69762
-#
-# Once the underlying server issue is resolved, this can be removed.
-#
-ifeq ($(MACH),sparc)
-CONFIGURE_OPTIONS +=	--without-xinput2
-endif
+# Starting with Emacs 30.1, the Elisp native compiler is enabled by default,
+# subject to the availability of libgccjit. This does not impact Solaris yet,
+# because libgccjit is not present, but if libgccjit appears, the emacs build
+# will try to use it. To prevent an unplanned or tested switch, explicitly
+# disable it for now.
+CONFIGURE_OPTIONS +=	--with-native-compilation=no
 
 # The emacs INSTALL says
 #
@@ -273,7 +263,6 @@ REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/gnutls-3
-REQUIRED_PACKAGES += library/jansson
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/zlib
@@ -281,13 +270,11 @@ REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
-REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
-REQUIRED_PACKAGES += x11/library/xcb-util
 REQUIRED_PACKAGES += x11/library/libxcomposite
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxfixes

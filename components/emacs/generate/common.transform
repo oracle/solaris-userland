@@ -1,0 +1,70 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+
+# Replace EMACS_ULEVDIR path with variable
+#
+# On sparc, generated manifests use the following pattern rather than
+# $(EMACS_ULEVDIR), which is used in the manifests:
+#	$(MACH)-$(PLAT)-solaris$(SOLARIS_RELEASE)
+# This expands to the same string, but the difference breaks generate.
+# Replace that pattern with $(EMACS_ULEVDIR).
+#
+<transform dir file link hardlink -> edit path "/$(EMACS_ULEVDIR)/" "/$!(EMACS_ULEVDIR)/">
+<transform dir file link hardlink -> edit path "/\$\(MACH\)\-\$\(PLAT\)-solaris\$\(SOLARIS_RELEASE\)/" "/$!(EMACS_ULEVDIR)/">
+<transform -> edit path "\$!\((.*)\)" "$(\1)">
+
+# Man pages we do not ship (clash with ctags?)
+<transform path=usr/share/man/man1/ctags.1 -> drop>
+<transform path=usr/share/man/man1/etags.1 -> drop>
+
+# Every man page is uncommitted, this one man page is an exception
+<transform path=usr/share/man/man1/emacs.1 -> set mangler.man.stability committed>
+
+# By default everything is in main package
+<transform -> default pkg.type main>
+
+# Mark files belonging to gtk
+<transform path=usr/bin/emacs-gtk -> set pkg.type gtk>
+<transform path=usr/bin/emacs-gtk-.* -> set pkg.type gtk>
+<transform path=.*/emacs-gtk-.*.pdmp -> set pkg.type gtk>
+<transform path=.*/emacs-gtk.1 -> set pkg.type gtk>
+<transform path=.*/emacs-gtk.pdmp -> set pkg.type gtk>
+
+# Mark files belonging to no-x11
+<transform path=usr/bin/emacs-nox -> set pkg.type no-x11>
+<transform path=usr/bin/emacs-nox-.* -> set pkg.type no-x11>
+<transform path=.*/emacs-nox-.*.pdmp -> set pkg.type no-x11>
+<transform path=.*/emacs-nox.1 -> set pkg.type no-x11>
+<transform path=.*/emacs-nox.pdmp -> set pkg.type no-x11>
+
+# Mark files belonging to x11
+<transform path=usr/bin/emacs-x -> set pkg.type x11>
+<transform path=usr/bin/emacs-x-.* -> set pkg.type x11>
+<transform path=.*/emacs-x-.*.pdmp -> set pkg.type x11>
+<transform path=.*/emacs-x.1 -> set pkg.type x11>
+<transform path=.*/emacs-x.pdmp -> set pkg.type x11>
+
+# Mark files belonging to lisp
+<transform path=.*/lisp/.*\.gz$ -> set pkg.type lisp>
