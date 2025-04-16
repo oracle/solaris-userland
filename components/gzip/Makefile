@@ -20,16 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+# GCC produces faster gzip on amd64 (not on SPARC).
+ifeq ($(shell uname -p),i386)
+COMPILER= gcc
+endif
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gzip
-COMPONENT_VERSION=	1.12
-COMPONENT_BAID=		120790
+COMPONENT_VERSION=	1.14
+COMPONENT_BAID=	326223
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5b4fb14d38314e09f2fc8a1c510e7cd540a3ea0e3eb9b0420046b82c3bf41085
+    sha256:613d6ea44f1248d7370c7ccdeee0dd0017a09e6c39de894b3c6f03f981191c6b
 COMPONENT_ANITYA_ID=	1290
 
 # Enable adiheap and adistack security extensions
