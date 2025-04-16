@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 #
@@ -121,7 +121,7 @@ PKG_MACROS += VENDOR_GEM_DIR=$(VENDOR_GEM_DIR)
 
 # RUBY_VERSION is passed on to userland-unpack to ensure it uses
 # the correct gem command for the ruby version specified
-UNPACK_ENV = RUBY_VERSION=$(RUBY_VERSION)
+UNPACK_ENV += RUBY_VERSION=$(RUBY_VERSION)
 
 # RUBY_VERSION without the dot
 RUBYV = $(shell echo $(RUBY_VERSION) | tr -d .)

@@ -20,10 +20,13 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 
 UNPACK =		$(WS_TOOLS)/userland-unpack
+
+# Preserve multibyte characters when unpacking archives.
+UNPACK_ENV +=		LC_ALL=C.UTF-8
 
 #
 # Anything that we downloaded and want to unpack must have a

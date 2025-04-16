@@ -18,18 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
-#
 
-set name=pkg.fmri \
-    value=pkg:/runtime/nodejs@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
-set name=pkg.summary value=Node.js
-set name=com.oracle.info.description \
-    value="JavaScript runtime built on Chrome's V8 JavaScript engine"
-set name=info.classification value=org.opensolaris.category.2008:Development/C \
-    value="org.opensolaris.category.2008:Development/Other Languages"
-set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
-set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2023/133
-set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-depend type=require fmri=pkg:/runtime/nodejs/nodejs-$(NODE_MAJOR_VERSION)
+#
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
+#
+<transform path=usr/nodejs/$(NODE_MAJOR_VERSION) -> edit path ^usr/nodejs/$(NODE_MAJOR_VERSION) usr/nodejs/\$\(NODE_MAJOR_VERSION\)>
+<transform file path=^usr/nodejs/\$\(NODE_MAJOR_VERSION\)/lib/node_modules -> delete mode 0555>
