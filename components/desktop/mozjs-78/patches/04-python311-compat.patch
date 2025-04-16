@@ -150,3 +150,16 @@ Changes are based on newer versions of mozbuild available in newer Mozilla codeb
              pp.processFile(input=input, output=dest, depfile=deps_out)
  
          dest.close()
+--- mozjs-78.11.0/js/src/configure
++++ mozjs-78.11.0/js/src/configure
+@@ -20,8 +20,9 @@
+ 
+ SRCDIR=$(dirname $0)
+ TOPSRCDIR="$SRCDIR"/../..
++PYTHON3="${PYTHON3:-python3}"
+ export OLD_CONFIGURE="$SRCDIR"/old-configure
+ 
+ set -- "$@" --enable-project=js
+ 
+-exec python3 "$TOPSRCDIR/configure.py" "$@"
++exec "$PYTHON3" "$TOPSRCDIR/configure.py" "$@"
