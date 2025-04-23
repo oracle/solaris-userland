@@ -2,8 +2,8 @@ Python pretend is not available on Solaris.
 
 Not for upstream.
 
---- packaging-24.1/tests/test_manylinux.py
-+++ packaging-24.1/tests/test_manylinux.py
+--- packaging-25.0/tests/test_manylinux.py
++++ packaging-25.0/tests/test_manylinux.py
 @@ -9,7 +9,6 @@ import sys
  import types
  import warnings
@@ -28,8 +28,8 @@ Not for upstream.
  )
  def test_glibc_version_string_confstr_fail(monkeypatch, failure):
      monkeypatch.setattr(os, "confstr", failure, raising=False)
---- packaging-24.1/tests/test_version.py
-+++ packaging-24.1/tests/test_version.py
+--- packaging-25.0/tests/test_version.py
++++ packaging-25.0/tests/test_version.py
 @@ -5,7 +5,6 @@
  import itertools
  import operator
@@ -38,7 +38,7 @@ Not for upstream.
  import pytest
  
  from packaging.version import InvalidVersion, Version, parse
-@@ -752,6 +751,7 @@ class TestVersion:
+@@ -748,6 +747,7 @@ class TestVersion:
          method = getattr(Version, f"__{op}__")
          assert method(Version("1"), 1) is NotImplemented
  
@@ -46,8 +46,8 @@ Not for upstream.
      @pytest.mark.parametrize(("op", "expected"), [("eq", False), ("ne", True)])
      def test_compare_other(self, op, expected):
          other = pretend.stub(**{f"__{op}__": lambda other: NotImplemented})
---- packaging-24.1/tests/test_tags.py
-+++ packaging-24.1/tests/test_tags.py
+--- packaging-25.0/tests/test_tags.py
++++ packaging-25.0/tests/test_tags.py
 @@ -19,7 +19,6 @@ import sys
  import sysconfig
  import types
@@ -56,7 +56,7 @@ Not for upstream.
  import pytest
  
  from packaging import tags
-@@ -342,12 +341,14 @@ class TestManylinuxPlatform:
+@@ -522,12 +521,14 @@ class TestManylinuxPlatform:
          # Clear the version cache
          tags._manylinux._get_glibc_version.cache_clear()
  
@@ -71,7 +71,7 @@ Not for upstream.
      def test_get_config_var_does_log(self, monkeypatch):
          debug = pretend.call_recorder(lambda *a: None)
          monkeypatch.setattr(tags.logger, "debug", debug)
-@@ -536,6 +537,7 @@ class TestManylinuxPlatform:
+@@ -716,6 +717,7 @@ class TestManylinuxPlatform:
          )
          assert platforms == expected
  
@@ -79,8 +79,8 @@ Not for upstream.
      @pytest.mark.parametrize(
          "native_arch, cross32_arch, musl_version",
          [
---- packaging-24.1/tests/test_musllinux.py
-+++ packaging-24.1/tests/test_musllinux.py
+--- packaging-25.0/tests/test_musllinux.py
++++ packaging-25.0/tests/test_musllinux.py
 @@ -2,7 +2,6 @@ import collections
  import pathlib
  import subprocess
