@@ -48,6 +48,10 @@ include $(WS_MAKE_RULES)/common.mk
 
 CMAKE_OPTIONS += -DBUILD_TAB2SPACE=ON
 
+# Override values from make-rules/cmake.mk to get correct pkgconfig files.
+CMAKE_OPTIONS.32 += -DLIB_INSTALL_DIR="lib"
+CMAKE_OPTIONS.64 += -DLIB_INSTALL_DIR="lib/$(MACH64)"
+
 # Tests need to download some Ruby gems which is not supported.
 # To run tests individually comment out above TEST_TARGET settings.
 COMPONENT_PRE_TEST_ACTION += ( \

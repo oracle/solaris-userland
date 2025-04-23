@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32_and_64
 # For now, all things built for C++11 require gcc.
@@ -49,6 +49,10 @@ include $(WS_MAKE_RULES)/common.mk
 
 CXXFLAGS += -std=c++11
 CMAKE_OPTIONS += -DBUILD_SHARED_LIBS=ON
+
+# Override values from make-rules/cmake.mk to get correct pkgconfig files.
+CMAKE_OPTIONS.32 += -DCMAKE_INSTALL_LIBDIR="lib"
+CMAKE_OPTIONS.64 += -DCMAKE_INSTALL_LIBDIR="lib/$(MACH64)"
 
 REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += library/zlib

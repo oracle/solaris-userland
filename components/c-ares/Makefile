@@ -20,37 +20,50 @@
 #
 
 #
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		c-ares
-COMPONENT_VERSION=	1.34.3
+COMPONENT_VERSION=	1.34.5
 COMPONENT_PROJECT_URL=	https://c-ares.org
 COMPONENT_ARCHIVE_HASH= \
-    sha256:26e1f7771da23e42a18fdf1e58912a396629e53a2ac71b130af93bbcfb90adbe
+    sha256:7d935790e9af081c25c495fd13c2cfcda4792983418e96358ef6e7320ee06346
 COMPONENT_ARCHIVE_URL=	https://github.com/c-ares/c-ares/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/c-ares
 COMPONENT_ANITYA_ID=	5840
 
-COMPONENT_BAID=		186894
+COMPONENT_BAID=		325880
 
-# Since C-ares 1.24.0 GoogleTest is no longer bundled. For now it's possible
-# to build it separately and provide path to it to be able to run tests.
-#
-# GoogleTest can be configured like this (define GOOGLETEST and MACH64):
-# cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_INSTALL_PREFIX=${GOOGLETEST} -DCMAKE_CXX_FLAGS=-m32 .
-# cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_LIBDIR=lib/${MACH64} -DCMAKE_INSTALL_PREFIX=${GOOGLETEST} .
+# Internal testing requires Googletest.
+COMPONENT_NAME_TESTS=		googletest
+COMPONENT_VERSION_TESTS=	1.16.0
+COMPONENT_PROJECT_URL_TESTS=	https://github.com/google/googletest
+COMPONENT_SRC_TESTS=		$(COMPONENT_NAME_TESTS)-$(COMPONENT_VERSION_TESTS)
+COMPONENT_ARCHIVE_TESTS=	$(COMPONENT_SRC_TESTS).tar.gz
+COMPONENT_ARCHIVE_HASH_TESTS= \
+     sha256:78c676fc63881529bf97bf9d45948d905a66833fbfa5318ea2cd7478cb98f399
+COMPONENT_ARCHIVE_URL_TESTS=	$(COMPONENT_PROJECT_URL_TESTS)/archive/v$(COMPONENT_VERSION_TESTS).tar.gz
 
-ifdef GOOGLETEST
-PKG_CONFIG_PATH.32 += $(GOOGLETEST)/lib/pkgconfig
-PKG_CONFIG_PATH.64 += $(GOOGLETEST)/lib/$(MACH64)/pkgconfig
-COMPONENT_TEST_ENV.32 = LD_LIBRARY_PATH=$(GOOGLETEST)/lib
-COMPONENT_TEST_ENV.64 = LD_LIBRARY_PATH=$(GOOGLETEST)/lib/$(MACH64)
-COMPONENT_TEST_ENV += $(COMPONENT_TEST_ENV.$(BITS))
-PATH=/usr/gnu/bin:/usr/bin
-endif
+COMPONENT_POST_UNPACK_ACTION_TESTS = \
+         ( cd $(COMPONENT_SRC)/test; $(RM) -r $(COMPONENT_NAME_TESTS);  $(SYMLINK) ../../$(COMPONENT_SRC_TESTS) $(COMPONENT_NAME_TESTS) )
+
+CLEAN_PATHS += $(COMPONENT_SRC_TESTS)
+
+BUILD_STYLE=    cmake
 
 include $(WS_MAKE_RULES)/common.mk
+
+CMAKE_OPTIONS += -DCARES_BUILD_TESTS=ON
+CMAKE_OPTIONS += -DINSTALL_GTEST=OFF
+
+# Override values from make-rules/cmake.mk to get correct pkgconfig files.
+CMAKE_OPTIONS += -DCMAKE_INSTALL_BINDIR="bin"
+CMAKE_OPTIONS.32 += -DCMAKE_INSTALL_LIBDIR="lib"
+CMAKE_OPTIONS.64 += -DCMAKE_INSTALL_LIBDIR="lib/$(MACH64)"
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_ENV += CLICOLOR=0
+COMPONENT_TEST_TRANSFORMS += -e '"s/[[:space:]]\+[0-9]\+\(\.[0-9]\+\)\? sec/ X sec/g" '
