@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 	      	64_and_32
@@ -30,14 +30,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsoup
-COMPONENT_VERSION=	3.4.4
+COMPONENT_VERSION=	3.6.5
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libsoup
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:291c67725f36ed90ea43efff25064b69c5a2d1981488477c05c481a3b4b0c5aa
+    sha256:6891765aac3e949017945c3eaebd8cc8216df772456dc9f460976fbdb7ada234
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	11483
 
-COMPONENT_BAID=		156988
+COMPONENT_BAID=		325677
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
