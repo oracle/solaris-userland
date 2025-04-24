@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 # 32-bit preferred as only *-config and source generation scripts delivered.
 BUILD_BITS= 32_and_64
@@ -28,16 +28,16 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wxWidgets
-COMPONENT_VERSION=	3.2.4
+COMPONENT_VERSION=	3.2.7
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0640e1ab716db5af2ecb7389dbef6138d7679261fbff730d23845ba838ca133e
+    sha256:69a1722f874d91cd1c9e742b72df49e0fab02890782cf794791c3104cee868c6
 COMPONENT_ARCHIVE_URL=	https://github.com/wxWidgets/wxWidgets/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  http://www.wxwidgets.org/
 COMPONENT_BUGDB=	library/wxwidgets
 COMPONENT_ANITYA_ID=	5150
 
-COMPONENT_BAID=		163725
+COMPONENT_BAID=		327079
 
 # GNU grep features are expected
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
