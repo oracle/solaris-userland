@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		32_and_64
@@ -30,9 +30,9 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups
 
-COMPONENT_VERSION=	2.4.11
-COMPONENT_ARCHIVE_HASH=	sha256:9a88fe1da3a29a917c3fc67ce6eb3178399d68e1a548c6d86c70d9b13651fd71
-COMPONENT_BAID=		180216
+COMPONENT_VERSION=	2.4.12
+COMPONENT_ARCHIVE_HASH=	sha256:b1dde191a4ae2760c47220c82ca6155a28c382701e6c1a0159d1054990231d59
+COMPONENT_BAID=		327354
 
 COMPONENT_PROJECT_URL=	http://www.cups.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-source.tar.gz
