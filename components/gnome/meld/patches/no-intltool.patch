@@ -1,0 +1,22 @@
+replace intltool 
+
+--- a/meld/build_helpers.py	2025-04-24 10:33:22.314235000 -0700
++++ b/meld/build_helpers.py	2025-04-24 10:33:44.454492110 -0700
+@@ -330,7 +330,7 @@
+         # Update po(t) files and print a report
+         # We have to change the working dir to the po dir for intltool
+         cmd = [
+-            "intltool-update",
++            "msgmerge",
+             (self.merge_po and "-r" or "-p"), "-g", self.domain
+         ]
+         wd = os.getcwd()
+@@ -396,7 +396,7 @@
+                     if file_merged.endswith(".in"):
+                         file_merged = file_merged[:-3]
+                     file_merged = os.path.join(build_target, file_merged)
+-                    cmd = ["intltool-merge", switch, self.po_dir, file,
++                    cmd = ["gmsgfmt", switch, self.po_dir, file,
+                            file_merged]
+                     mtime_merged = (os.path.exists(file_merged) and
+                                     os.path.getmtime(file_merged) or 0)
