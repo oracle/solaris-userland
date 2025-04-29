@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_ARCH= i386
@@ -34,13 +34,18 @@ COMPONENT_PROJECT_URL=  https://github.com/rhboot/$(COMPONENT_NAME)
 COMPONENT_BUGDB=	kernel/shim
 COMPONENT_ANITYA_ID=	10719
 COMPONENT_BAID=		170209
+COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.bz2
 
 BUILD_STYLE= pkg
 TEST_TARGET= $(NO_TESTS)
 
+CLEAN_PATHS += $(COMPONENT_ARCHIVE)
+
+$(COMPONENT_ARCHIVE):
+	rpm2cpio linux_build/shim-unsigned-x64-15.8-1.0.3.el9.src.rpm | cpio -idm $@
+
 publish: $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 
-$(COMPONENT_NAME)-$(COMPONENT_VERSION): FRC
-	$(MKDIR) $@
+$(COMPONENT_NAME)-$(COMPONENT_VERSION): unpack
 
 include $(WS_MAKE_RULES)/common.mk
