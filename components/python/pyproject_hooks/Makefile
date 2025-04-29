@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyproject_hooks
-COMPONENT_VERSION=	1.0.0
+COMPONENT_VERSION=	1.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7dbb06fe7b7e341595c94e81bf4f84a0d0e4d212da967431ba0e9b34ff53601f
+    sha256:1e859bd5c40fae9448642dd871adf459e5e2084186e8d2c2a79a824c970da1f8
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pyproject-hooks.readthedocs.io
 COMPONENT_BUGDB=	python-mod/pyprojecthooks
 COMPONENT_ANITYA_ID=	320474
-COMPONENT_BAID=		157255
+COMPONENT_BAID=		327566
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

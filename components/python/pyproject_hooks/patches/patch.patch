@@ -1,0 +1,20 @@
+The current implementation of the find_distributions method incorrectly
+forgets part of the given context, resulting in problems in components
+with custom build backends.
+
+This was reported upstream:
+https://github.com/pypa/pyproject-hooks/issues/211
+https://github.com/pypa/pyproject-hooks/pull/212
+
+--- pyproject_hooks-1.2.0/src/pyproject_hooks/_in_process/_in_process.py
++++ pyproject_hooks-1.2.0/src/pyproject_hooks/_in_process/_in_process.py
+@@ -112,7 +112,8 @@ class _BackendPathFinder:
+             # Delayed import: Python 3.7 does not contain importlib.metadata
+             from importlib.metadata import DistributionFinder, MetadataPathFinder
+ 
+-            context = DistributionFinder.Context(path=self.backend_path)
++            name = context.name if context else None
++            context = DistributionFinder.Context(name=name, path=self.backend_path)
+             return MetadataPathFinder.find_distributions(context=context)
+ 
+ 
