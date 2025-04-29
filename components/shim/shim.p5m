@@ -25,8 +25,11 @@
 
 set name=pkg.fmri value=pkg:/boot/shim@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Binaries for UEFI Secure Boot"
-# avoid duplicate file lint error with install-image/solaris-auto-install package
+# Avoid duplicate file lint error with install-image/solaris-auto-install
+# package. Please note that the exceptions may not be needed for Trunk build
+# but may be necessary for SRU build.
 set name=pkg.linted.pkglint.dupaction001.1 value=true
+set name=pkg.linted.pkglint.dupaction008 value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="First-stage bootloader for UEFI Secure Boot"
