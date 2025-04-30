@@ -29,14 +29,14 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 MAJOR_VERSION=8.0
-MICRO_VERSION=41
+MICRO_VERSION=42
 
 COMPONENT_NAME        = mysql
 COMPONENT_VERSION     = $(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_NAME)-boost-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-			sha256:719589993b1a6769edb82b59f28e0dab8d47df94fa53ac4e9340b7c5eaba937c
+			sha256:c2aa67c618edfa1bc379107fe819ca8e94cba5d85f156d1053b8fedc88cc5f8f
 COMPONENT_ARCHIVE_URL = https://dev.mysql.com/get/Downloads/MySQL-$(MAJOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL = https://dev.mysql.com/
 COMPONENT_BUGDB       = database/mysql
@@ -44,11 +44,35 @@ COMPONENT_ANITYA_ID=	334
 
 BUILD_STYLE= cmake
 SYSTEM_TEST_TARGET= $(NO_TESTS)
-include $(WS_MAKE_RULES)/common.mk
 
 # MySQL being one of Oracle's own product doesn't require to have a BAID
-# License number, but it uses Boost, which does have such a requirement.
-COMPONENT_BAID=136501
+# License number, but it uses Boost and others, which do have such a requirement.
+COMPONENT_BAID_BOOST=136501
+COMPONENT_BAID_GOOGLE_TEST=177141
+COMPONENT_BAID_LIBBACTRACE=177079
+COMPONENT_BAID_LIBCNO=177135
+COMPONENT_BAID_LZ4=189541 # this covers lz4 xxhash.h usage (elsewhere system lz4 is used)
+COMPONENT_BAID_PROTOBUF=177136 # this covers also Abseil
+COMPONENT_BAID_RAPID_JSON=177138
+COMPONENT_BAID_UNORDERED_DENSE=177139
+COMPONENT_BAID_XXHASH=326758
+
+include $(WS_MAKE_RULES)/common.mk
+
+# Not all contents from "extra" directory is really needed for MySQL Server.
+NOT_NEEDED_EXTRAS += curl
+NOT_NEEDED_EXTRAS += icu
+NOT_NEEDED_EXTRAS += libedit
+NOT_NEEDED_EXTRAS += libevent
+NOT_NEEDED_EXTRAS += libfido2
+NOT_NEEDED_EXTRAS += zlib
+NOT_NEEDED_EXTRAS += zstd
+NOT_NEEDED_EXTRAS += tirpc
+NOT_NEEDED_EXTRAS += libcbor
+NOT_NEEDED_EXTRAS += gperftools
+
+# Make it clear which BAIDs are really needed.
+COMPONENT_PREP_ACTION = (cd $(SOURCE_DIR)/extra; $(RM) -r $(NOT_NEEDED_EXTRAS));
 
 PKG_MACROS+= MAJOR_VERSION=$(MAJOR_VERSION)
 
