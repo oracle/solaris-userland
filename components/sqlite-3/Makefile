@@ -84,6 +84,7 @@ LDFLAGS+= $(CC_BITS)
 CONFIGURE_OPTIONS +=	--enable-threadsafe
 CONFIGURE_OPTIONS +=	--enable-shared
 CONFIGURE_OPTIONS +=	--disable-static
+CONFIGURE_OPTIONS +=	--enable-fts5 # https://blogs.gnome.org/carlosg/2017/08/22/tracker-requires-sqlite-3-20-to-be-compiled-with-enable-fts5/
 CONFIGURE_OPTIONS +=   CC=$(CC)
 
 TEA_CONFIGURE_OPTIONS.32 += --with-tcl="$(USRLIBDIR)"
