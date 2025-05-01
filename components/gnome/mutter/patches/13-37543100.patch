@@ -1,0 +1,162 @@
+https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/3329
+
+diff --git a/src/compositor/meta-compositor-x11.c b/src/compositor/meta-compositor-x11.c
+index 657f9bdb65c7e72e309c3ca759aaacd27f7f3d70..ea06c85fd3014b9783e8c2ac2b8539a0cf2e1068 100644
+--- a/src/compositor/meta-compositor-x11.c
++++ b/src/compositor/meta-compositor-x11.c
+@@ -190,6 +190,8 @@ meta_compositor_x11_manage (MetaCompositor  *compositor,
+ 
+   compositor_x11->have_x11_sync_object = meta_sync_ring_init (cogl_context, xdisplay);
+ 
++  meta_x11_display_redirect_windows (x11_display, display);
++
+   return TRUE;
+ }
+ 
+diff --git a/src/core/display.c b/src/core/display.c
+index 8c0364621562683a6fc5e66795f732d3164d7838..8a86d3736bbb5ffe58a994ab412be7a938327f5e 100644
+--- a/src/core/display.c
++++ b/src/core/display.c
+@@ -910,9 +910,9 @@ meta_display_init_x11 (MetaDisplay         *display,
+ }
+ 
+ static void
+-on_x11_initialized (MetaDisplay  *display,
+-                    GAsyncResult *result,
+-                    gpointer      user_data)
++on_mandatory_x11_initialized (MetaDisplay  *display,
++                              GAsyncResult *result,
++                              gpointer      user_data)
+ {
+   g_autoptr (GError) error = NULL;
+ 
+@@ -945,9 +945,6 @@ meta_display_new (MetaContext  *context,
+   MetaDisplay *display;
+   MetaDisplayPrivate *priv;
+   guint32 timestamp;
+-#ifdef HAVE_X11_CLIENT
+-  Window old_active_xwindow = None;
+-#endif
+   MetaMonitorManager *monitor_manager;
+   MetaSettings *settings;
+   MetaInputCapture *input_capture;
+@@ -1039,7 +1036,7 @@ meta_display_new (MetaContext  *context,
+       if (x11_display_policy == META_X11_DISPLAY_POLICY_MANDATORY)
+         {
+           meta_display_init_x11 (display, NULL,
+-                                 (GAsyncReadyCallback) on_x11_initialized,
++                                 (GAsyncReadyCallback) on_mandatory_x11_initialized,
+                                  NULL);
+         }
+ #endif /* HAVE_XWAYLAND */
+@@ -1066,14 +1063,6 @@ meta_display_new (MetaContext  *context,
+   display->last_focus_time = timestamp;
+   display->last_user_time = timestamp;
+ 
+-#ifdef HAVE_X11
+-  if (!meta_is_wayland_compositor ())
+-    meta_prop_get_window (display->x11_display,
+-                          display->x11_display->xroot,
+-                          display->x11_display->atom__NET_ACTIVE_WINDOW,
+-                          &old_active_xwindow);
+-#endif
+-
+   if (!meta_compositor_manage (display->compositor, error))
+     {
+       g_object_unref (display);
+@@ -1094,30 +1083,7 @@ meta_display_new (MetaContext  *context,
+   g_signal_connect (display->gesture_tracker, "state-changed",
+                     G_CALLBACK (gesture_tracker_state_changed), display);
+ 
+-  /* We know that if mutter is running as a Wayland compositor,
+-   * we start out with no windows.
+-   */
+-#ifdef HAVE_X11_CLIENT
+-  if (!meta_is_wayland_compositor ())
+-    meta_display_manage_all_xwindows (display);
+-
+-  if (old_active_xwindow != None)
+-    {
+-      MetaWindow *old_active_window;
+-      old_active_window = meta_x11_display_lookup_x_window (display->x11_display,
+-                                                            old_active_xwindow);
+-      if (old_active_window)
+-        meta_window_focus (old_active_window, timestamp);
+-      else
+-        meta_display_unset_input_focus (display, timestamp);
+-    }
+-  else
+-    {
+-      meta_display_unset_input_focus (display, timestamp);
+-    }
+-#else
+   meta_display_unset_input_focus (display, timestamp);
+-#endif
+ 
+   g_signal_connect (stage, "notify::is-grabbed",
+                     G_CALLBACK (on_is_grabbed_changed), display);
+diff --git a/src/tests/x11-test.sh b/src/tests/x11-test.sh
+index 59e460fc33668e5c459ba2fbbe88ffd3d99b4404..d95b2460f6e4ccd25158b9e005864e9c581e761e 100755
+--- a/src/tests/x11-test.sh
++++ b/src/tests/x11-test.sh
+@@ -34,6 +34,9 @@ echo \# Launched with pid $MUTTER2_PID
+ MUTTER2_PID=$!
+ wait $MUTTER1_PID
+ 
++echo \# Waiting for the second mutter to finish loading
++gdbus wait --session org.gnome.Mutter.IdleMonitor
++
+ sleep 2
+ 
+ echo \# Terminating clients > /dev/stderr
+diff --git a/src/wayland/meta-xwayland.c b/src/wayland/meta-xwayland.c
+index 3366f11adc71ce3433d10020400532ff70333a19..db0a4a271a40c128ffad98f923f0604d0cad265a 100644
+--- a/src/wayland/meta-xwayland.c
++++ b/src/wayland/meta-xwayland.c
+@@ -1179,6 +1179,7 @@ on_x11_display_setup (MetaDisplay         *display,
+ {
+   MetaX11Display *x11_display = meta_display_get_x11_display (display);
+ 
++  meta_x11_display_redirect_windows (x11_display, display);
+   meta_xwayland_init_dnd (x11_display);
+   meta_xwayland_init_xrandr (manager, x11_display);
+ }
+diff --git a/src/x11/meta-x11-display.c b/src/x11/meta-x11-display.c
+index 6b8d7faf5565cab8125d76d01d646288772d3bdc..267fa1b8355ad72ecfea779fbcb27388010f8375 100644
+--- a/src/x11/meta-x11-display.c
++++ b/src/x11/meta-x11-display.c
+@@ -307,8 +307,32 @@ static void
+ on_x11_display_opened (MetaX11Display *x11_display,
+                        MetaDisplay    *display)
+ {
++  Window old_active_xwindow = None;
++
++  if (!meta_is_wayland_compositor ())
++    {
++      meta_prop_get_window (display->x11_display,
++                            display->x11_display->xroot,
++                            display->x11_display->atom__NET_ACTIVE_WINDOW,
++                            &old_active_xwindow);
++    }
++
+   meta_display_manage_all_xwindows (display);
+-  meta_x11_display_redirect_windows (x11_display, display);
++
++  if (old_active_xwindow != None)
++    {
++      MetaWindow *old_active_window;
++
++      old_active_window = meta_x11_display_lookup_x_window (x11_display,
++                                                            old_active_xwindow);
++      if (old_active_window)
++        {
++          uint32_t timestamp;
++
++          timestamp = display->x11_display->timestamp;
++          meta_window_focus (old_active_window, timestamp);
++        }
++    }
+ }
+ 
+ static void
+
