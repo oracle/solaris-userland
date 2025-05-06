@@ -20,41 +20,36 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pixman
-COMPONENT_VERSION=	0.42.2
+COMPONENT_VERSION=	0.46.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5747d2ec498ad0f1594878cc897ef5eb6c29e91c53b899f7f71b506785fc1376
+	sha256:d2eab57e1ce79de991f8ceb3fcd726a6978b970382c8ac8c8f112b61ceaa9167
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	3648
-COMPONENT_BAID=		132429
+COMPONENT_BAID=		213646
 COMPONENT_SIG_URL= 
 
-FIX_PC_FILES=pixman-1.pc.in
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-# Regenerate configure script after patching in patches/0001-hwcap.patch
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
-
-CONFIGURE_OPTIONS += --disable-gtk
-
-# added to avoid the build failure of a void function returning value
-CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
+CONFIGURE_OPTIONS += -Dgtk=disabled
 
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+        '-e "/Ok:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Timeout:/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += system/library/math
