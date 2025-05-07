@@ -336,15 +336,20 @@ $(MANIFEST_BASE)-%.p5m: %-PYVER.p5m $(BUILD_DIR)/mkgeneric-python
 
 # Define and execute a macro that generates a rule to create a manifest for a
 # perl module specific to a particular version of the perl runtime.
+# There are two parameters. Full version and version without dot. So it is
+# called for example as
+# $(call perl-manifest-rule,5.40,540)
 define perl-manifest-rule
-$(MANIFEST_BASE)-%-$(shell echo $(1) | tr -d .).p5m: %-PERLVER.p5m | $(BUILD_DIR)
+$(MANIFEST_BASE)-%-$(2).mogrified: PERL_VERSION=$(1)
+
+$(MANIFEST_BASE)-%-$(2).p5m: %-PERLVER.p5m | $(BUILD_DIR)
 	$(PKGFMT) $(PKGFMT_CHECK_ARGS) $$<
 	$(PKGMOGRIFY) -D PERLVER=$(1) -D MAYBE_PERLVER_SPACE="$(1) " \
 		-D MAYBE_SPACE_PERLVER=" $(1)" \
-		-D PLV=$(shell echo $(1) | tr -d .) \
-		-D PERL_ARCH=$(call PERL_ARCH_FUNC,$(PERL.$(1))) $$< > $$@
+		-D PLV=$(2) \
+		-D PERL_ARCH=$(PERL_ARCH) $$< > $$@
 endef
-$(foreach ver,$(PERL_VERSIONS),$(eval $(call perl-manifest-rule,$(ver))))
+$(foreach ver,$(PERL_VERSIONS),$(eval $(call perl-manifest-rule,$(ver),$(shell echo $(ver) | tr -d .))))
 
 # A rule to create a helper transform package for perl, that will insert the
 # appropriate conditional dependencies into a perl library's

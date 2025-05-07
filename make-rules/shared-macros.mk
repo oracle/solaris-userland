@@ -803,6 +803,8 @@ PERL_VERSION_NODOT = $(subst .,,$(PERL_VERSION))
 # multiple packages for each version of perl listed here.  Used by
 # perl_modules/* but also used for those components that deliver a perl
 # package like graphviz and openscap.
+# When updating this line do not forget to update also
+# perl_modules/generate/common.transform
 PERL_VERSIONS = 5.38
 
 PERL.5.38 =     /usr/perl5/5.38/bin/perl
@@ -823,7 +825,6 @@ PERL_PKG =	$(PERL_VERSION:5.%=runtime/perl-5%)
 
 # PERL_ARCH is perl's architecture string.  Use in ips manifests.
 PERL_ARCH :=	$(shell $(PERL) -e 'use Config; print $$Config{archname}')
-PERL_ARCH_FUNC=	$(shell $(1) -e 'use Config; print $$Config{archname}')
 
 PKG_MACROS +=   PERL_ARCH=$(PERL_ARCH)
 PKG_MACROS +=   PERL_VERSION=$(PERL_VERSION)

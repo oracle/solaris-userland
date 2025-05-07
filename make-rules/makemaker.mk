@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 # makemaker.mk is used to build, install, test perl modules for
@@ -50,7 +50,6 @@ TEST_64 =
 SYSTEM_TEST_64 =
 
 define define-perl-targets
-ifneq ($$(findstring $(1),$(PERL_VERSIONS)),)
 $(BUILD_DIR)/$(MACH64)-$(1)/.configured: PERL_VERSION=$(1)
 $(BUILD_DIR)/$(MACH64)-$(1)/.tested: PERL_VERSION=$(1)
 $(BUILD_DIR)/$(MACH64)-$(1)/.tested-and-compared: PERL_VERSION=$(1)
@@ -65,17 +64,12 @@ else
 TEST_64 +=	$(BUILD_DIR)/$(MACH64)-$(1)/.tested-and-compared
 SYSTEM_TEST_64 +=	$(BUILD_DIR)/$(MACH64)-$(1)/.system-tested-and-compared
 endif
-endif
+PERL_REQUIRED_PACKAGES_$(1) += runtime/perl-$(subst .,,$(1))
 endef
 
 $(foreach perlver, $(PERL_VERSIONS), \
 	$(eval $(call define-perl-targets,$(perlver))) \
 )
-
-# Map each $(PERL_VERSIONS) to REQUIRED_PACKAGES needed
-PERL_REQUIRED_PACKAGES_5.36 += runtime/perl-536
-PERL_REQUIRED_PACKAGES_5.38 += runtime/perl-538
-
 
 CONFIGURE_ENV += $(COMMON_PERL_ENV)
 CONFIGURE_ENV += PERL="$(PERL)"
