@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 # gobject-introspection must be built with gcc as gobject-introspection does
@@ -31,14 +31,14 @@ BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gobject-introspection
-COMPONENT_VERSION=	1.76.1
+COMPONENT_VERSION=	1.78.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GObjectIntrospection
 COMPONENT_ARCHIVE_HASH= \
-    sha256:196178bf64345501dcdc4d8469b36aa6fe80489354efe71cb7cb8ab82a3738bf
+    sha256:bd7babd99af7258e76819e45ba4a6bc399608fe762d83fde3cac033c50841bb4
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1223
 
-COMPONENT_BAID=		149149
+COMPONENT_BAID=		326447
 BUILD_STYLE=		meson
 
 PYTHON_VERSION = 3.11
