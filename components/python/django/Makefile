@@ -25,23 +25,23 @@
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		Django
-COMPONENT_VERSION=	4.2.20
+COMPONENT_NAME=		django
+COMPONENT_VERSION=	4.2.21
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:92bac5b4432a64532abb73b2ac27203f485e40225d2640a7fbef2b62b876e789
+    sha256:b88c129373fe3cdc821f45bb9c29169322928e00149f6cac1ae9d29cbb1f1fb3
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.djangoproject.com/
 COMPONENT_BUGDB=	python-mod/django
 COMPONENT_ANITYA_ID=	371326
-COMPONENT_BAID=		323677
+COMPONENT_BAID=		328509
 
 
 PYTHON_VERSIONS=	3.9 3.11
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # Replace "#!/usr/bin/env ..." shebang lines with properly versioned ones.

@@ -1,0 +1,19 @@
+Remove the version requirement for setuptools necessary to build Django.
+
+The version available on Solaris is sufficient to build Django; the newer
+version is necessary to solve an issue that doesn't affect us.
+
+https://code.djangoproject.com/ticket/35980
+https://github.com/django/django/commit/3456eee4a3a00dc14e72d4f7d6eecc15ed9571e7
+
+--- django-4.2.21/pyproject.toml
++++ django-4.2.21/pyproject.toml
+@@ -1,7 +1,6 @@
+ [build-system]
+ requires = [
+-    "setuptools>=75.8.1; python_version >= '3.9'",
+-    "setuptools<75.4.0; python_version < '3.9'",
++    "setuptools",
+ ]
+ build-backend = "setuptools.build_meta"
+ 
