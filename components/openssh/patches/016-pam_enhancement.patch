@@ -9,9 +9,9 @@
 # In the future, if these enhancements are accepted by the upstream in a
 # later release, we will remove this patch when we upgrade to that release.
 #
---- old/auth-pam.c	2023-12-19 12:03:35.052212979 +0100
-+++ new/auth-pam.c	2023-12-19 12:04:07.669107594 +0100
-@@ -622,6 +622,66 @@ sshpam_null_conv(int n, sshpam_const str
+--- old/auth-pam.c	2025-03-21 09:29:50.954296050 +0100
++++ new/auth-pam.c	2025-03-21 09:29:51.089387275 +0100
+@@ -618,6 +618,66 @@ sshpam_null_conv(int n, sshpam_const str
  
  static struct pam_conv null_conv = { sshpam_null_conv, NULL };
  
@@ -78,7 +78,7 @@
  static int
  sshpam_store_conv(int n, sshpam_const struct pam_message **msg,
      struct pam_response **resp, void *data)
-@@ -694,6 +754,15 @@ sshpam_init(struct ssh *ssh, Authctxt *a
+@@ -690,8 +750,19 @@ sshpam_init(struct ssh *ssh, Authctxt *a
  	const char **ptr_pam_user = &pam_user;
  	int r;
  
@@ -89,43 +89,47 @@
 +
 +	svc = derive_pam_service_name(authctxt);
 +	debug3("PAM service is %s", svc);
++#else /* PAM_ENHANCEMENT */
++
+ 	if (options.pam_service_name == NULL)
+ 		fatal_f("internal error: NULL PAM service name");
 +#endif /* PAM_ENHANCEMENT */
 +
  #if defined(PAM_SUN_CODEBASE) && defined(PAM_MAX_RESP_SIZE)
  	/* Protect buggy PAM implementations from excessively long usernames */
  	if (strlen(user) >= PAM_MAX_RESP_SIZE)
-@@ -706,17 +775,61 @@ sshpam_init(struct ssh *ssh, Authctxt *a
- 			    "packet context", __func__);
+@@ -705,18 +776,61 @@ sshpam_init(struct ssh *ssh, Authctxt *a
  		}
- 	} if (sshpam_handle != NULL) {
+ 	}
+ 	if (sshpam_handle != NULL) {
 +#ifdef PAM_ENHANCEMENT
 +		/* get the pam service name */
-+		sshpam_err = pam_get_item(sshpam_handle,
++		sshpam_err = pam_get_item(sshpam_handle, 
 +		    PAM_SERVICE, (sshpam_const void **)ptr_pam_service);
 +		if (sshpam_err != PAM_SUCCESS) 
-+			fatal("Failed to get the PAM service name");
++			fatal("Failed to get the PAM service name"); 
 +		debug3("Previous pam_service is %s", pam_service ?
 +		    pam_service : "NULL");
-+
++      
 +		/* get the pam user name */
 +		sshpam_err = pam_get_item(sshpam_handle,
 +		    PAM_USER, (sshpam_const void **)ptr_pam_user);
-+
-+		/*
-+		 * only need to re-start if either user or service is 
++		
++		/*  
++		 * only need to re-start if either user or service is
 +		 * different.
-+		 */
++		 */ 
 +		if (sshpam_err == PAM_SUCCESS && strcmp(user, pam_user) == 0
 +		    && strncmp(svc, pam_service, strlen(svc)) == 0) {
 +			free(svc);
-+			return (0);
++			return (0); 
 +		}
-+
++		 
 +		/*
-+		 * Clean up previous PAM state.  No need to clean up session 
++		 * Clean up previous PAM state.  No need to clean up session
 +		 * and creds.
 +		 */
-+		sshpam_authenticated = 0;
++		sshpam_authenticated = 0; 
 +		sshpam_account_status = -1;
 +
 +		sshpam_err = pam_set_item(sshpam_handle, PAM_CONV, NULL);
@@ -141,23 +145,23 @@
  		pam_end(sshpam_handle, sshpam_err);
  		sshpam_handle = NULL;
  	}
- 	debug("PAM: initializing for \"%s\"", user);
+ 	debug("PAM: initializing for \"%s\" with service \"%s\"", user,
+ 	    options.pam_service_name);
 +
 +#ifdef PAM_ENHANCEMENT
-+	debug3("Starting PAM service %s for user %s method %s", svc, user,
-+	    authctxt->authmethod_name);
-+	sshpam_err =
-+	    pam_start(svc, user, &store_conv, &sshpam_handle);
-+	free(svc);
++        debug3("Starting PAM service %s for user %s method %s", svc, user,
++            authctxt->authmethod_name);
++        sshpam_err = pam_start(svc, user, &store_conv, &sshpam_handle);
++        free(svc);
 +#else /* Original */
- 	sshpam_err =
- 	    pam_start(SSHD_PAM_SERVICE, user, &store_conv, &sshpam_handle);
+ 	sshpam_err = pam_start(options.pam_service_name, user,
+ 	    &store_conv, &sshpam_handle);
 +#endif /* PAM_ENHANCEMENT */
  	sshpam_authctxt = authctxt;
  
  	if (sshpam_err != PAM_SUCCESS) {
---- old/auth.h	2023-12-19 12:03:35.057593500 +0100
-+++ new/auth.h	2023-12-19 12:04:07.674471682 +0100
+--- old/auth.h	2025-02-18 09:15:08.000000000 +0100
++++ new/auth.h	2025-03-21 09:29:51.089797915 +0100
 @@ -95,6 +95,9 @@ struct Authctxt {
  
  	/* Information exposed to session */
@@ -168,8 +172,8 @@
  };
  
  /*
---- old/auth2.c	2023-12-19 12:03:35.062853258 +0100
-+++ new/auth2.c	2023-12-19 12:04:07.679771125 +0100
+--- old/auth2.c	2025-02-18 09:15:08.000000000 +0100
++++ new/auth2.c	2025-03-21 09:29:51.090396880 +0100
 @@ -305,7 +305,15 @@ input_userauth_request(int type, u_int32
  #endif
  		}
@@ -183,10 +187,10 @@
 +#else
  		if (options.use_pam)
 +#endif /* PAM_ENHANCEMENT */
- 			PRIVSEP(start_pam(ssh));
+ 			mm_start_pam(ssh);
  #endif
  		ssh_packet_set_log_preamble(ssh, "%suser %s",
-@@ -344,6 +352,17 @@ input_userauth_request(int type, u_int32
+@@ -342,6 +350,16 @@ input_userauth_request(int type, u_int32
  	/* try to authenticate user */
  	m = authmethod_lookup(authctxt, method);
  	if (m != NULL && authctxt->failures < options.max_authtries) {
@@ -196,15 +200,14 @@
 +			if (authctxt->authmethod_name != NULL)
 +				free(authctxt->authmethod_name);
 +			authctxt->authmethod_name = xstrdup(method);
-+			if (use_privsep)
-+				mm_inform_authmethod(method);
-+			PRIVSEP(start_pam(ssh));
++			mm_inform_authmethod(method);
++			mm_start_pam(ssh);
 +		}
 +#endif
  		debug2("input_userauth_request: try method %s", method);
  		authenticated =	m->userauth(ssh, method);
  	}
-@@ -369,6 +388,10 @@ userauth_finish(struct ssh *ssh, int aut
+@@ -367,6 +385,10 @@ userauth_finish(struct ssh *ssh, int aut
  	char *methods;
  	int r, partial = 0;
  
@@ -215,18 +218,18 @@
  	if (authenticated) {
  		if (!authctxt->valid) {
  			fatal("INTERNAL ERROR: authenticated invalid user %s",
-@@ -392,6 +415,30 @@ userauth_finish(struct ssh *ssh, int aut
+@@ -390,6 +412,30 @@ userauth_finish(struct ssh *ssh, int aut
  	}
  
  	if (authenticated && options.num_auth_methods != 0) {
 +
 +#if defined(USE_PAM) && defined(PAM_ENHANCEMENT)
 +		/*
-+		 * If each userauth has its own PAM service, then PAM need to 
++		 * If each userauth has its own PAM service, then PAM need to
 +		 * perform account check for this service.
 +		 */
 +		if (options.use_pam && options.pam_service_per_authmethod &&
-+		    !PRIVSEP(do_pam_account())) {
++		    !mm_do_pam_account()) {
 +			/* if PAM returned a message, send it to the user */
 +			if (sshbuf_len(loginmsg) > 0) {
 +				if ((r = sshbuf_put(loginmsg, "\0", 1)) != 0)
@@ -246,29 +249,29 @@
  		if (!auth2_update_methods_lists(authctxt, method, submethod)) {
  			authenticated = 0;
  			partial = 1;
-@@ -409,7 +456,19 @@ userauth_finish(struct ssh *ssh, int aut
+@@ -407,7 +453,19 @@ userauth_finish(struct ssh *ssh, int aut
  		return;
  
  #ifdef USE_PAM
 +#ifdef PAM_ENHANCEMENT
-+	/*
++	/*              
 +	 * PAM needs to perform account checks after auth. However, if each
 +	 * userauth has its own PAM service and options.num_auth_methods != 0,
-+	 * then no need to perform account checking, because it was done 
++	 * then no need to perform account checking, because it was done
 +	 * already.
 +	 */
-+	if (options.use_pam && authenticated && 
++	if (options.use_pam && authenticated &&
 +	    !(options.num_auth_methods != 0 &&
 +	    options.pam_service_per_authmethod)){
 +#else
  	if (options.use_pam && authenticated) {
 +#endif /* PAM_ENHANCEMENT */
- 		int r, success = PRIVSEP(do_pam_account());
+ 		int r, success = mm_do_pam_account();
  
  		/* If PAM returned a message, send it to the user. */
---- old/monitor.c	2023-12-19 12:03:35.068190115 +0100
-+++ new/monitor.c	2023-12-19 12:04:07.685125849 +0100
-@@ -117,6 +117,9 @@ int mm_answer_sign(struct ssh *, int, st
+--- old/monitor.c	2025-02-18 09:15:08.000000000 +0100
++++ new/monitor.c	2025-03-21 09:29:51.091367695 +0100
+@@ -118,6 +118,9 @@ int mm_answer_sign(struct ssh *, int, st
  int mm_answer_pwnamallow(struct ssh *, int, struct sshbuf *);
  int mm_answer_auth2_read_banner(struct ssh *, int, struct sshbuf *);
  int mm_answer_authserv(struct ssh *, int, struct sshbuf *);
@@ -296,7 +299,7 @@
      {MONITOR_REQ_PAM_ACCOUNT, 0, mm_answer_pam_account},
      {MONITOR_REQ_PAM_INIT_CTX, MON_ONCE, mm_answer_pam_init_ctx},
      {MONITOR_REQ_PAM_QUERY, 0, mm_answer_pam_query},
-@@ -300,6 +310,25 @@ monitor_child_preauth(struct ssh *ssh, s
+@@ -304,6 +314,25 @@ monitor_child_preauth(struct ssh *ssh, s
  
  		/* Special handling for multiple required authentications */
  		if (options.num_auth_methods != 0) {
@@ -322,7 +325,7 @@
  			if (authenticated &&
  			    !auth2_update_methods_lists(authctxt,
  			    auth_method, auth_submethod)) {
-@@ -317,8 +346,21 @@ monitor_child_preauth(struct ssh *ssh, s
+@@ -321,8 +350,21 @@ monitor_child_preauth(struct ssh *ssh, s
  			    !auth_root_allowed(ssh, auth_method))
  				authenticated = 0;
  #ifdef USE_PAM
@@ -345,7 +348,7 @@
  				struct sshbuf *m;
  
  				if ((m = sshbuf_new()) == NULL)
-@@ -801,6 +843,10 @@ mm_answer_pwnamallow(struct ssh *ssh, in
+@@ -826,6 +868,10 @@ mm_answer_pwnamallow(struct ssh *ssh, in
  	/* Allow service/style information on the auth context */
  	monitor_permit(mon_dispatch, MONITOR_REQ_AUTHSERV, 1);
  	monitor_permit(mon_dispatch, MONITOR_REQ_AUTH2_READ_BANNER, 1);
@@ -356,7 +359,7 @@
  
  #ifdef USE_PAM
  	if (options.use_pam)
-@@ -825,6 +871,27 @@ int mm_answer_auth2_read_banner(struct s
+@@ -850,6 +896,27 @@ int mm_answer_auth2_read_banner(struct s
  	return (0);
  }
  
@@ -384,8 +387,8 @@
  int
  mm_answer_authserv(struct ssh *ssh, int sock, struct sshbuf *m)
  {
---- old/monitor.h	2023-12-19 12:03:35.073439925 +0100
-+++ new/monitor.h	2023-12-19 12:04:07.690396149 +0100
+--- old/monitor.h	2025-02-18 09:15:08.000000000 +0100
++++ new/monitor.h	2025-03-21 09:29:51.091673815 +0100
 @@ -63,6 +63,9 @@ enum monitor_reqtype {
  	MONITOR_REQ_PAM_FREE_CTX = 110, MONITOR_ANS_PAM_FREE_CTX = 111,
  	MONITOR_REQ_AUDIT_EVENT = 112, MONITOR_REQ_AUDIT_COMMAND = 113,
@@ -396,9 +399,9 @@
  };
  
  struct ssh;
---- old/monitor_wrap.c	2023-12-19 12:03:35.078671441 +0100
-+++ new/monitor_wrap.c	2023-12-19 12:04:07.695607480 +0100
-@@ -396,6 +396,27 @@ mm_inform_authserv(char *service, char *
+--- old/monitor_wrap.c	2025-02-18 09:15:08.000000000 +0100
++++ new/monitor_wrap.c	2025-03-21 09:29:51.092170255 +0100
+@@ -452,6 +452,27 @@ mm_inform_authserv(char *service, char *
  	sshbuf_free(m);
  }
  
@@ -426,9 +429,9 @@
  /* Do the password authentication */
  int
  mm_auth_password(struct ssh *ssh, char *password)
---- old/monitor_wrap.h	2023-12-19 12:03:35.083810699 +0100
-+++ new/monitor_wrap.h	2023-12-19 12:04:07.700831324 +0100
-@@ -48,6 +48,7 @@ DH *mm_choose_dh(int, int, int);
+--- old/monitor_wrap.h	2025-02-18 09:15:08.000000000 +0100
++++ new/monitor_wrap.h	2025-03-21 09:29:51.092472355 +0100
+@@ -45,6 +45,7 @@ DH *mm_choose_dh(int, int, int);
  int mm_sshkey_sign(struct ssh *, struct sshkey *, u_char **, size_t *,
      const u_char *, size_t, const char *, const char *,
      const char *, u_int compat);
@@ -436,14 +439,13 @@
  void mm_inform_authserv(char *, char *);
  struct passwd *mm_getpwnamallow(struct ssh *, const char *);
  char *mm_auth2_read_banner(void);
---- old/servconf.c	2023-12-19 12:03:35.089191626 +0100
-+++ new/servconf.c	2023-12-19 12:04:07.706131302 +0100
-@@ -184,6 +184,18 @@ initialize_server_options(ServerOptions
- 	options->revoked_keys_file = NULL;
- 	options->sk_provider = NULL;
- 	options->trusted_user_ca_keys = NULL;
+--- old/servconf.c	2025-03-21 09:29:50.257414235 +0100
++++ new/servconf.c	2025-03-21 09:33:11.426313825 +0100
+@@ -93,6 +93,17 @@ initialize_server_options(ServerOptions
+ 	/* Portable-specific options */
+ 	options->use_pam = -1;
+ 	options->pam_service_name = NULL;
 +#ifdef PAM_ENHANCEMENT
-+	options->pam_service_name = NULL;
 +	options->pam_service_prefix = NULL;
 +
 +	/* 
@@ -454,69 +456,54 @@
 +	 */
 +	options->pam_service_per_authmethod = 1;
 +#endif /* PAM_ENHANCEMENT */
- 	options->authorized_principals_file = NULL;
- 	options->authorized_principals_command = NULL;
- 	options->authorized_principals_command_user = NULL;
-@@ -436,6 +448,12 @@ fill_default_server_options(ServerOption
- 		options->ip_qos_bulk = IPTOS_DSCP_CS1;
- 	if (options->version_addendum == NULL)
- 		options->version_addendum = xstrdup("");
-+
+ 
+ 	/* Standard Options */
+ 	options->num_ports = 0;
+@@ -304,8 +315,14 @@ fill_default_server_options(ServerOption
+ 		options->use_pam = 0;
+ #endif
+ 
 +#ifdef PAM_ENHANCEMENT
-+	if (options->pam_service_prefix == NULL)
-+		options->pam_service_prefix = _SSH_PAM_SERVICE_PREFIX;
-+#endif
-+
- 	if (options->fwd_opts.streamlocal_bind_mask == (mode_t)-1)
- 		options->fwd_opts.streamlocal_bind_mask = 0177;
- 	if (options->fwd_opts.streamlocal_bind_unlink == -1)
-@@ -527,6 +545,9 @@ typedef enum {
++	if (options->pam_service_prefix == NULL &&
++	    options->pam_service_name == NULL)
++		options->pam_service_prefix = xstrdup(SSHD_PAM_SERVICE);
++#else /* PAM_ENHANCEMENT */
+ 	if (options->pam_service_name == NULL)
+ 		options->pam_service_name = xstrdup(SSHD_PAM_SERVICE);
++#endif /* PAM_ENHANCEMENT */
+ 
+ 	/* Standard Options */
+ 	if (options->num_host_key_files == 0) {
+@@ -574,6 +591,9 @@ typedef enum {
  	sMatch, sPermitOpen, sPermitListen, sForceCommand, sChrootDirectory,
  	sUsePrivilegeSeparation, sAllowAgentForwarding,
  	sHostCertificate, sInclude,
 +#ifdef PAM_ENHANCEMENT
-+	sPAMServicePrefix, sPAMServiceName,
++	sPAMServicePrefix,
 +#endif
  	sRevokedKeys, sTrustedUserCAKeys, sAuthorizedPrincipalsFile,
  	sAuthorizedPrincipalsCommand, sAuthorizedPrincipalsCommandUser,
  	sKexAlgorithms, sCASignatureAlgorithms, sIPQoS, sVersionAddendum,
-@@ -674,6 +695,10 @@ static struct {
+@@ -726,6 +746,9 @@ static struct {
  	{ "forcecommand", sForceCommand, SSHCFG_ALL },
  	{ "chrootdirectory", sChrootDirectory, SSHCFG_ALL },
  	{ "hostcertificate", sHostCertificate, SSHCFG_GLOBAL },
 +#ifdef PAM_ENHANCEMENT
 +	{ "pamserviceprefix", sPAMServicePrefix, SSHCFG_GLOBAL },
-+	{ "pamservicename", sPAMServiceName, SSHCFG_GLOBAL },
 +#endif
  	{ "revokedkeys", sRevokedKeys, SSHCFG_ALL },
  	{ "trustedusercakeys", sTrustedUserCAKeys, SSHCFG_ALL },
  	{ "authorizedprincipalsfile", sAuthorizedPrincipalsFile, SSHCFG_ALL },
-@@ -2553,6 +2578,37 @@ process_server_config_line_depth(ServerO
+@@ -1397,10 +1420,41 @@ process_server_config_line_depth(ServerO
+ 			fatal("%s line %d: missing argument.",
+ 			    filename, linenum);
  		}
- 		goto parse_time;
- 
-+	case sPAMServicePrefix:
-+		arg = argv_next(&ac, &av);
-+		if (!arg || *arg == '\0')
-+			fatal("%s line %d: Missing argument.",
-+			    filename, linenum);
-+		if (options->pam_service_name != NULL)
-+			fatal("%s line %d: PAMServiceName and PAMServicePrefix"
-+			    " are mutually exclusive.", filename, linenum);
-+		if (options->pam_service_prefix == NULL)
-+			options->pam_service_prefix = xstrdup(arg);
-+		break;
-+
-+	case sPAMServiceName:
-+		arg = argv_next(&ac, &av);
-+		if (!arg || *arg == '\0')
-+			fatal("%s line %d: Missing argument.",
-+			    filename, linenum);
++#ifdef PAM_ENHANCEMENT
 +		if (options->pam_service_prefix != NULL)
 +			fatal("%s line %d: PAMServiceName and PAMServicePrefix"
 +			    " are mutually exclusive.", filename, linenum);
-+		if (options->pam_service_name == NULL) {
-+			options->pam_service_name = xstrdup(arg);
++		if (*activep && *charptr == NULL) {
++			*charptr = xstrdup(arg);
 +
 +			/*
 +			* When this option is specified, we will not have
@@ -524,40 +511,74 @@
 +			*/
 +			options->pam_service_per_authmethod = 0;
 +		}
++#else
++		if (*activep && *charptr == NULL)
++			*charptr = xstrdup(arg);
++#endif /* PAM_ENHANCEMENT */
 +		break;
 +
- 	case sDeprecated:
- 	case sIgnore:
- 	case sUnsupported:
---- old/servconf.h	2023-12-19 12:03:35.094400804 +0100
-+++ new/servconf.h	2023-12-19 12:04:07.711358059 +0100
-@@ -51,6 +51,10 @@
- #define PUBKEYAUTH_TOUCH_REQUIRED	(1)
- #define PUBKEYAUTH_VERIFY_REQUIRED	(1<<1)
- 
 +#ifdef PAM_ENHANCEMENT
-+#define _SSH_PAM_SERVICE_PREFIX "sshd"
-+#endif
++	case sPAMServicePrefix:
++		charptr = &options->pam_service_prefix;
++		arg = argv_next(&ac, &av);
++		if (!arg || *arg == '\0')
++			fatal("%s line %d: Missing argument.",
++			    filename, linenum);
++		if (options->pam_service_name != NULL)
++			fatal("%s line %d: PAMServiceName and PAMServicePrefix"
++			    " are mutually exclusive.", filename, linenum);
+ 		if (*activep && *charptr == NULL)
+ 			*charptr = xstrdup(arg);
+ 		break;
+ 
++#endif /* PAM_ENHANCEMENT */
 +
- struct ssh;
- struct fwd_perm_list;
+ 	/* Standard Options */
+ 	case sBadOption:
+ 		goto out;
+@@ -3216,8 +3270,18 @@ dump_config(ServerOptions *o)
+ 	/* integer arguments */
+ #ifdef USE_PAM
+ 	dump_cfg_fmtint(sUsePAM, o->use_pam);
++#ifdef PAM_ENHANCEMENT
++	/* Print at most one and not if they are the default setting. */
++	if (o->pam_service_name != NULL) {
++		dump_cfg_string(sPAMServiceName, o->pam_service_name);
++	} else if (o->pam_service_prefix != NULL &&
++	    strcmp(o->pam_service_prefix, SSHD_PAM_SERVICE) != 0) {
++		dump_cfg_string(sPAMServicePrefix, o->pam_service_prefix);
++	}
++#else
+ 	dump_cfg_string(sPAMServiceName, o->pam_service_name);
+ #endif
++#endif
+ 	dump_cfg_int(sLoginGraceTime, o->login_grace_time);
+ 	dump_cfg_int(sX11DisplayOffset, o->x11_display_offset);
+ 	dump_cfg_int(sMaxAuthTries, o->max_authtries);
+--- old/servconf.h	2025-02-18 09:15:08.000000000 +0100
++++ new/servconf.h	2025-03-21 09:29:51.094069840 +0100
+@@ -212,6 +212,10 @@ typedef struct {
  
-@@ -223,6 +227,12 @@ typedef struct {
- 	u_int	num_auth_methods;
- 	char   **auth_methods;
- 
+ 	int	use_pam;		/* Enable auth via PAM */
+ 	char   *pam_service_name;
 +#ifdef PAM_ENHANCEMENT
 +	char	*pam_service_prefix;
-+	char	*pam_service_name;
 +	int	pam_service_per_authmethod;
 +#endif
-+
- 	int	fingerprint_hash;
- 	int	expose_userauth_info;
- 	u_int64_t timing_secret;
---- old/sshd.8	2023-12-19 12:03:35.099586259 +0100
-+++ new/sshd.8	2023-12-19 12:04:07.716529974 +0100
-@@ -1017,6 +1017,33 @@ concurrently for different ports, this c
+ 
+ 	int	permit_tun;
+ 
+@@ -300,6 +304,7 @@ TAILQ_HEAD(include_list, include_item);
+ 		M_CP_STROPT(routing_domain); \
+ 		M_CP_STROPT(permit_user_env_allowlist); \
+ 		M_CP_STROPT(pam_service_name); \
++		M_CP_STROPT(pam_service_prefix); \
+ 		M_CP_STRARRAYOPT(authorized_keys_files, num_authkeys_files); \
+ 		M_CP_STRARRAYOPT(allow_users, num_allow_users); \
+ 		M_CP_STRARRAYOPT(deny_users, num_deny_users); \
+--- old/sshd.8	2025-02-18 09:15:08.000000000 +0100
++++ new/sshd.8	2025-03-21 09:29:51.094545430 +0100
+@@ -1018,6 +1018,33 @@ concurrently for different ports, this c
  started last).
  The content of this file is not sensitive; it can be world-readable.
  .El
@@ -591,31 +612,44 @@
  .Sh SEE ALSO
  .Xr scp 1 ,
  .Xr sftp 1 ,
---- old/sshd_config.5	2023-12-19 12:03:35.104872308 +0100
-+++ new/sshd_config.5	2023-12-19 12:04:07.721896011 +0100
-@@ -1359,6 +1359,21 @@ and
- key exchange methods.
+--- old/sshd_config.5	2025-03-21 09:29:50.391451320 +0100
++++ new/sshd_config.5	2025-03-21 09:29:51.095261530 +0100
+@@ -1315,6 +1315,7 @@ Available keywords are
+ .Cm MaxAuthTries ,
+ .Cm MaxSessions ,
+ .Cm PAMServiceName ,
++.Cm PAMServicePrefix ,
+ .Cm PasswordAuthentication ,
+ .Cm PermitEmptyPasswords ,
+ .Cm PermitListen ,
+@@ -1383,12 +1384,20 @@ key exchange methods.
  The default is
  .Pa /etc/moduli .
-+.It Cm PAMServiceName
-+Specifies the PAM service name for the PAM session. The PAMServiceName and 
+ .It Cm PAMServiceName
+-Specifies the service name used for Pluggable Authentication Modules (PAM)
+-authentication, authorisation and session controls when
+-.Cm UsePAM
+-is enabled.
+-The default is
+-.Cm sshd .
++Specifies the PAM service name for the PAM session. The PAMServiceName and
 +PAMServicePrefix options are mutually exclusive and if both set, sshd does not
-+start. If this option is set the service name is the same for all user 
-+authentication methods. The option has no default value. See PAMServicePrefix 
++start. If this option is set the service name is the same for all user
++authentication methods. The option has no default value. See PAMServicePrefix
 +for more information.
 +.It Cm PAMServicePrefix
-+Specifies the PAM service name prefix for service names used for individual 
-+user authentication methods. The default is sshd. The PAMServiceName and 
-+PAMServicePrefix options are mutually exclusive and if both set, sshd does not 
++Specifies the PAM service name prefix for service names used for individual
++user authentication methods. The default is sshd. The PAMServiceName and
++PAMServicePrefix options are mutually exclusive and if both set, sshd does not
 +start.
-+.Pp
-+For example, if this option is set to admincli, the service name for the 
-+keyboard-interactive authentication method is admincli-kbdint instead of the 
++.Pp 
++For example, if this option is set to admincli, the service name for the
++keyboard-interactive authentication method is admincli-kbdint instead of the
 +default sshd-kbdint.
  .It Cm PasswordAuthentication
  Specifies whether password authentication is allowed.
  The default is
-@@ -1894,8 +1909,7 @@ If
+@@ -2036,8 +2045,7 @@ If
  is enabled, you will not be able to run
  .Xr sshd 8
  as a non-root user.

@@ -1,19 +1,21 @@
---- old/Makefile.in	2023-12-19 13:24:58.365058664 +0100
-+++ new/Makefile.in	2023-12-19 13:26:20.861247462 +0100
-@@ -195,6 +195,9 @@ $(LIBSSH_OBJS): Makefile.in config.h
+--- old/Makefile.in	2025-04-16 10:15:35.102189450 +0200
++++ new/Makefile.in	2025-04-16 10:16:26.310634900 +0200
+@@ -219,6 +219,11 @@ $(LIBSSH_OBJS): Makefile.in config.h
  $(SSHOBJS): Makefile.in config.h
  $(SSHDOBJS): Makefile.in config.h
  
 +# For chroot(), make sure all libraries are loaded.
 +sshd : LDFLAGS += -Wl,-z,now
++sshd-session : LDFLAGS += -Wl,-z,now
++sshd-auth : LDFLAGS += -Wl,-z,now
 +
  .c.o:
  	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
  
---- old/configure.ac	2023-12-19 13:24:58.370888050 +0100
-+++ new/configure.ac	2023-12-19 13:26:20.867290964 +0100
-@@ -220,7 +220,6 @@ if test "$GCC" = "yes" || test "$GCC" =
- 	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,retpolineplt])
+--- old/configure.ac	2025-04-16 10:15:33.361885885 +0200
++++ new/configure.ac	2025-04-16 10:15:35.470193795 +0200
+@@ -219,7 +219,6 @@ if test "$GCC" = "yes" || test "$GCC" =
+     if test "x$use_toolchain_hardening" = "x1"; then
  	OSSH_CHECK_CFLAG_COMPILE([-D_FORTIFY_SOURCE=2])
  	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,relro])
 -	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,now])

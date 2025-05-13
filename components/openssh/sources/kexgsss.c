@@ -23,7 +23,7 @@
  */
 
 /*
- * Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+ * Copyright (c) 2016, 2025, Oracle and/or its affiliates.
  */
 
 #include "includes.h"
@@ -103,7 +103,7 @@ kexgss_server(struct ssh *ssh)
 
 	debug2("%s: Acquiring credentials", __func__);
 
-	if (GSS_ERROR(PRIVSEP(ssh_gssapi_server_ctx(&ctxt, oid))))
+	if (GSS_ERROR(mm_ssh_gssapi_server_ctx(&ctxt, oid)))
 		fatal("Unable to acquire credentials for the server");
 
 	do {
@@ -157,8 +157,8 @@ kexgss_server(struct ssh *ssh)
 			    type);
 		}
 
-		maj_status = PRIVSEP(ssh_gssapi_accept_ctx(ctxt, &recv_tok,
-		    &send_tok, &ret_flags));
+		maj_status = mm_ssh_gssapi_accept_ctx(ctxt, &recv_tok,
+		    &send_tok, &ret_flags);
 
 		gss_release_buffer(&min_status, &recv_tok);
 
@@ -215,7 +215,7 @@ kexgss_server(struct ssh *ssh)
 	gssbuf.value = hash;
 	gssbuf.length = hashlen;
 
-	if (GSS_ERROR(PRIVSEP(ssh_gssapi_sign(ctxt, &gssbuf, &msg_tok))))
+	if (GSS_ERROR(mm_ssh_gssapi_sign(ctxt, &gssbuf, &msg_tok)))
 		fatal("Couldn't get MIC");
 
 	if ((r = sshpkt_start(ssh, SSH2_MSG_KEXGSS_COMPLETE)) != 0 ||
@@ -306,7 +306,7 @@ kexgssgex_server(struct ssh *ssh)
 
 	debug2("%s: Acquiring credentials", __func__);
 
-	if (GSS_ERROR(PRIVSEP(ssh_gssapi_server_ctx(&ctxt, oid))))
+	if (GSS_ERROR(mm_ssh_gssapi_server_ctx(&ctxt, oid)))
 		fatal("Unable to acquire credentials for the server");
 
 	/* 5. S generates an ephemeral key pair (do the allocations early) */
@@ -331,7 +331,7 @@ kexgssgex_server(struct ssh *ssh)
 	if (max < min || nbits < min || max < nbits)
 		fatal("GSS_GEX, bad parameters: %d !< %d !< %d",
 		    min, nbits, max);
-	kex->dh = PRIVSEP(choose_dh(min, nbits, max));
+	kex->dh = mm_choose_dh(min, nbits, max);
 	if (kex->dh == NULL) {
 		sshpkt_disconnect(ssh, "Protocol error: no matching"
 		    " group found");
@@ -381,8 +381,8 @@ kexgssgex_server(struct ssh *ssh)
 			    type);
 		}
 
-		maj_status = PRIVSEP(ssh_gssapi_accept_ctx(ctxt, &recv_tok,
-		    &send_tok, &ret_flags));
+		maj_status = mm_ssh_gssapi_accept_ctx(ctxt, &recv_tok,
+		    &send_tok, &ret_flags);
 
 		gss_release_buffer(&min_status, &recv_tok);
 
@@ -451,7 +451,7 @@ kexgssgex_server(struct ssh *ssh)
 	gssbuf.value = hash;
 	gssbuf.length = hashlen;
 
-	if (GSS_ERROR(PRIVSEP(ssh_gssapi_sign(ctxt, &gssbuf, &msg_tok))))
+	if (GSS_ERROR(mm_ssh_gssapi_sign(ctxt, &gssbuf, &msg_tok)))
 		fatal("Couldn't get MIC");
 
 	if ((r = sshpkt_start(ssh, SSH2_MSG_KEXGSS_COMPLETE)) != 0 ||

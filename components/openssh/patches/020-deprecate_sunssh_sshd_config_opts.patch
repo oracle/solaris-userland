@@ -15,23 +15,10 @@
 #
 --- openssh-9.4p1/servconf.c
 +++ openssh-9.4p1/servconf.c
-@@ -633,10 +633,12 @@ { "kerberostgtpassing", sUnsupported, SS
- 	{ "afstokenpassing", sUnsupported, SSHCFG_GLOBAL },
- #ifdef GSSAPI
- 	{ "gssapiauthentication", sGssAuthentication, SSHCFG_ALL },
-+	{ "gssauthentication", sGssAuthentication, SSHCFG_ALL },   /* alias */
- 	{ "gssapicleanupcredentials", sGssCleanupCreds, SSHCFG_GLOBAL },
- 	{ "gssapistrictacceptorcheck", sGssStrictAcceptor, SSHCFG_GLOBAL },
- #else
- 	{ "gssapiauthentication", sUnsupported, SSHCFG_ALL },
-+	{ "gssauthentication", sUnsupported, SSHCFG_ALL },          /* alias */
- 	{ "gssapicleanupcredentials", sUnsupported, SSHCFG_GLOBAL },
- 	{ "gssapistrictacceptorcheck", sUnsupported, SSHCFG_GLOBAL },
+@@ -616,6 +616,30 @@
+ 	{ "pamservicename", sUnsupported, SSHCFG_ALL },
  #endif
-@@ -707,6 +709,30 @@ #ifdef PAM_ENHANCEMENT
- 	{ "pamserviceprefix", sPAMServicePrefix, SSHCFG_GLOBAL },
- 	{ "pamservicename", sPAMServiceName, SSHCFG_GLOBAL },
- #endif
+ 	{ "pamauthenticationviakbdint", sDeprecated, SSHCFG_GLOBAL },
 +#ifdef DEPRECATE_SUNSSH_OPT
 +	/*
 +	 * On Solaris, to make the transition from SunSSH to OpenSSH as smooth
@@ -56,6 +43,19 @@
 +	{ "gssapistoredelegatedcredentials", sDeprecated, SSHCFG_ALL },
 +	{ "gssstoredelegcreds", sDeprecated, SSHCFG_ALL },
 +#endif
- 	{ "revokedkeys", sRevokedKeys, SSHCFG_ALL },
- 	{ "trustedusercakeys", sTrustedUserCAKeys, SSHCFG_ALL },
- 	{ "authorizedprincipalsfile", sAuthorizedPrincipalsFile, SSHCFG_ALL },
+ 	/* Standard Options */
+ 	{ "port", sPort, SSHCFG_GLOBAL },
+ 	{ "hostkey", sHostKeyFile, SSHCFG_GLOBAL },
+@@ -633,10 +633,12 @@ { "kerberostgtpassing", sUnsupported, SS
+ 	{ "afstokenpassing", sUnsupported, SSHCFG_GLOBAL },
+ #ifdef GSSAPI
+ 	{ "gssapiauthentication", sGssAuthentication, SSHCFG_ALL },
++	{ "gssauthentication", sGssAuthentication, SSHCFG_ALL },   /* alias */
+ 	{ "gssapicleanupcredentials", sGssCleanupCreds, SSHCFG_GLOBAL },
+ 	{ "gssapistrictacceptorcheck", sGssStrictAcceptor, SSHCFG_GLOBAL },
+ #else
+ 	{ "gssapiauthentication", sUnsupported, SSHCFG_ALL },
++	{ "gssauthentication", sUnsupported, SSHCFG_ALL },          /* alias */
+ 	{ "gssapicleanupcredentials", sUnsupported, SSHCFG_GLOBAL },
+ 	{ "gssapistrictacceptorcheck", sUnsupported, SSHCFG_GLOBAL },
+ #endif

@@ -1,0 +1,202 @@
+OpenSSH 9.9 was released on 2024-09-19. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Future deprecation notice
+=========================
+
+OpenSSH plans to remove support for the DSA signature algorithm in
+early 2025. This release disables DSA by default at compile time.
+
+DSA, as specified in the SSHv2 protocol, is inherently weak - being
+limited to a 160 bit private key and use of the SHA1 digest. Its
+estimated security level is only 80 bits symmetric equivalent.
+
+OpenSSH has disabled DSA keys by default since 2015 but has retained
+run-time optional support for them. DSA was the only mandatory-to-
+implement algorithm in the SSHv2 RFCs, mostly because alternative
+algorithms were encumbered by patents when the SSHv2 protocol was
+specified.
+
+This has not been the case for decades at this point and better
+algorithms are well supported by all actively-maintained SSH
+implementations. We do not consider the costs of maintaining DSA
+in OpenSSH to be justified and hope that removing it from OpenSSH
+can accelerate its wider deprecation in supporting cryptography
+libraries.
+
+Currently DSA is disabled at compile time. The final step of
+removing DSA support entirely is planned for the first OpenSSH
+release of 2025.
+
+DSA support may be re-enabled on OpenBSD by setting "DSAKEY=yes"
+in Makefile.inc. To enable DSA support in portable OpenSSH, pass
+the "--enable-dsa-keys" option to configure.
+
+Potentially-incompatible changes
+--------------------------------
+
+ * ssh(1): remove support for pre-authentication compression.
+   OpenSSH has only supported post-authentication compression in
+   the server for some years. Compression before authentication
+   significantly increases the attack surface of SSH servers and risks
+   creating oracles that reveal information about information sent
+   during authentication.
+
+ * ssh(1), sshd(8): processing of the arguments to the "Match"
+   configuration directive now follows more shell-like rules for
+   quoted strings, including allowing nested quotes and \-escaped
+   characters. If configurations contained workarounds for the
+   previous simplistic quote handling then they may need to be
+   adjusted. If this is the case, it's most likely to be in the
+   arguments to a "Match exec" confition. In this case, moving the
+   command to be evaluated from the Match line to an external shell
+   script is easiest way to preserve compatibility with both the old
+   and new versions.
+
+Changes since OpenSSH 9.8
+=========================
+
+This release contains a number of new features and bugfixes.
+
+New features
+------------
+
+ * ssh(1), sshd(8): add support for a new hybrid post-quantum key
+   exchange based on the FIPS 203 Module-Lattice Key Enapsulation
+   mechanism (ML-KEM) combined with X25519 ECDH as described by
+   https://datatracker.ietf.org/doc/html/draft-kampanakis-curdle-ssh-pq-ke-03
+   This algorithm "mlkem768x25519-sha256" is available by default.
+
+ * ssh(1): the ssh_config "Include" directive can now expand
+   environment as well as the same set of %-tokens "Match Exec"
+   supports.
+
+ * sshd(8): add a sshd_config "RefuseConnection" option that, if set
+   will terminate the connection at the first authentication request.
+
+ * sshd(8): add a "refuseconnection" penalty class to sshd_config
+   PerSourcePenalties that is applied when a connection is dropped by
+   the new RefuseConnection keyword.
+
+ * sshd(8): add a "Match invalid-user" predicate to sshd_config Match
+   options that matches when the target username is not valid on the
+   server.
+
+ * ssh(1), sshd(8): update the Streamlined NTRUPrime code to a
+   substantially faster implementation.
+
+ * ssh(1), sshd(8): the hybrid Streamlined NTRUPrime/X25519 key
+   exchange algorithm now has an IANA-assigned name in addition to
+   the "@openssh.com" vendor extension name. This algorithm is now
+   also available under this name "sntrup761x25519-sha512"
+
+ * ssh(1), sshd(8), ssh-agent(1): prevent private keys from being
+   included in core dump files for most of their lifespans. This is
+   in addition to pre-existing controls in ssh-agent(1) and sshd(8)
+   that prevented coredumps. This feature is supported on OpenBSD,
+   Linux and FreeBSD.
+
+ * All: convert key handling to use the libcrypto EVP_PKEY API, with
+   the exception of DSA.
+
+ * sshd(8): add a random amount of jitter (up to 4 seconds) to the
+   grace login time to make its expiry unpredictable.
+
+Bugfixes
+--------
+
+ * sshd(8): relax absolute path requirement back to what it was prior
+   to OpenSSH 9.8, which incorrectly required that sshd was started
+   with an absolute path in inetd mode. bz3717
+
+ * sshd(8): fix regression introduced in openssh-9.8 that swapped the
+   order of source and destination addresses in some sshd log messages.
+
+ * sshd(8): do not apply authorized_keys options when signature
+   verification fails. Prevents more restrictive key options being
+   incorrectly applied to subsequent keys in authorized_keys. bz3733
+
+ * ssh-keygen(1): include pathname in some of ssh-keygen's passphrase
+   prompts. Helps the user know what's going on when ssh-keygen is
+   invoked via other tools. Requested in GHPR503
+
+ * ssh(1), ssh-add(1): make parsing user@host consistently look for
+   the last '@' in the string rather than the first. This makes it
+   possible to more consistently use usernames that contain '@'
+   characters.
+
+ * ssh(1), sshd(8): be more strict in parsing key type names. Only
+   allow short names (e.g "rsa") in user-interface code and require
+   full SSH protocol names (e.g. "ssh-rsa") everywhere else. bz3725
+
+ * regress: many performance and correctness improvements to the
+   re-keying regression test.
+
+ * ssh-keygen(1): clarify that ed25519 is the default key type
+   generated and clarify that rsa-sha2-512 is the default signature
+   scheme when RSA is in use. GHPR505
+
+ * sshd(8): fix minor memory leak in Subsystem option parsing; GHPR515
+
+ * All: additional hardening and consistency checks for the sshbuf
+   code.
+
+ * sshd(8): reduce default logingrace penalty to ensure that a single
+   forgotton login that times out will be below the penalty threshold.
+
+ * ssh(1): fix proxy multiplexing (-O proxy) bug. If a mux started with
+   ControlPersist then later has a forwarding added using mux proxy
+   connection and the forwarding was used, then when the mux proxy
+   session terminated, the mux master process would issue a bad message
+   that terminated the connection.
+
+Portability
+-----------
+
+ * sync contrib/ssh-copy-id to the latest upstream version.
+
+ * regress: improve portablility for some awk(1) usage (e.g. Solaris)
+
+ * In the contrib/redhat RPM spec file, without_openssl was previously
+   incorrectly enabled unconditionally.
+
+ * sshd(8) restore audit call before exit that regressed in openssh-9.8
+   Fixes an issue where the SSH_CONNECTION_ABANDON event was not
+   recorded.
+
+ * sshd(8): add support for class-imposed loging restrictions on FreeBSD.
+   Allowing auth_hostok(3) and auth_timeok(3) to control logins.
+
+ * Build fixes for Musl libc.
+
+ * Fix detection of setres*id on GNU/Hurd
+
+Checksums:
+==========
+
+ - SHA1 (openssh-9.9.tar.gz) = 080acf6ff0b862e8faa3baa3920a079536d28e85
+ - SHA256 (openssh-9.9.tar.gz) = h1xwa7CVcJfN7I9MgxxPBpUELzo+tnmLy+6slYHTUtw=
+
+ - SHA1 (openssh-9.9p1.tar.gz) = 5ded7eb0add0b02b5d1a1c4bf5cb2c89d2117b53
+ - SHA256 (openssh-9.9p1.tar.gz) = s0P7zb/4fxWxmG5uFdbU/Jp9NgZr5rf7UHCHuo+WbAI=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com
+

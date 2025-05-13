@@ -9,9 +9,9 @@
 # Patch source: in-house
 # Solaris specific, upstream already has per-session ccache.
 #
---- old/gss-serv.c	2023-12-19 13:14:17.784952473 +0100
-+++ new/gss-serv.c	2023-12-19 13:15:18.295087374 +0100
-@@ -51,6 +51,8 @@
+--- old/gss-serv.c	2025-03-05 10:49:41.029664110 +0100
++++ new/gss-serv.c	2025-03-05 10:49:42.375750460 +0100
+@@ -52,6 +52,8 @@
  #include "ssh-gss.h"
  #include "monitor_wrap.h"
  
@@ -20,7 +20,7 @@
  extern ServerOptions options;
  
  static ssh_gssapi_client gssapi_client =
-@@ -400,6 +402,12 @@ ssh_gssapi_cleanup_creds(void)
+@@ -401,6 +403,12 @@ ssh_gssapi_cleanup_creds(void)
  	krb5_ccache ccache = NULL;
  	krb5_error_code problem;
  
@@ -33,7 +33,7 @@
  	if (gssapi_client.store.data != NULL) {
  		if ((problem = krb5_cc_resolve(gssapi_client.store.data, gssapi_client.store.envval, &ccache))) {
  			debug("%s: krb5_cc_resolve(): %.100s", __func__,
-@@ -418,10 +426,66 @@ ssh_gssapi_cleanup_creds(void)
+@@ -419,10 +427,66 @@ ssh_gssapi_cleanup_creds(void)
  void
  ssh_gssapi_storecreds(void)
  {
@@ -104,27 +104,26 @@
  }
  
  /* This allows GSSAPI methods to do things to the child's environment based
---- old/servconf.c	2023-12-19 13:14:17.790543683 +0100
-+++ new/servconf.c	2023-12-19 13:15:18.300878719 +0100
-@@ -200,6 +200,7 @@ initialize_server_options(ServerOptions
- 	 */
- 	options->pam_service_per_authmethod = 1;
- #endif /* PAM_ENHANCEMENT */
+--- old/servconf.c	2025-03-05 10:49:41.656143515 +0100
++++ new/servconf.c	2025-03-05 10:51:40.912514445 +0100
+@@ -215,6 +215,7 @@ initialize_server_options(ServerOptions
+ 	options->revoked_keys_file = NULL;
+ 	options->sk_provider = NULL;
+ 	options->trusted_user_ca_keys = NULL;
 +	options->gss_use_default_ccache = -1;
  	options->authorized_principals_file = NULL;
  	options->authorized_principals_command = NULL;
  	options->authorized_principals_command_user = NULL;
-@@ -473,7 +474,8 @@ fill_default_server_options(ServerOption
- 	if (options->pam_service_prefix == NULL)
- 		options->pam_service_prefix = _SSH_PAM_SERVICE_PREFIX;
- #endif
--
+@@ -517,6 +518,8 @@ fill_default_server_options(ServerOption
+ 		options->ip_qos_bulk = IPTOS_DSCP_CS1;
+ 	if (options->version_addendum == NULL)
+ 		options->version_addendum = xstrdup("");
 +	if (options->gss_use_default_ccache == -1)
 +		options->gss_use_default_ccache = 1;
  	if (options->fwd_opts.streamlocal_bind_mask == (mode_t)-1)
  		options->fwd_opts.streamlocal_bind_mask = 0177;
  	if (options->fwd_opts.streamlocal_bind_unlink == -1)
-@@ -572,6 +574,7 @@ typedef enum {
+@@ -617,6 +620,7 @@ typedef enum {
  	sRevokedKeys, sTrustedUserCAKeys, sAuthorizedPrincipalsFile,
  	sAuthorizedPrincipalsCommand, sAuthorizedPrincipalsCommandUser,
  	sKexAlgorithms, sCASignatureAlgorithms, sIPQoS, sVersionAddendum,
@@ -132,7 +131,7 @@
  	sAuthorizedKeysCommand, sAuthorizedKeysCommandUser,
  	sAuthenticationMethods, sHostKeyAgent, sPermitUserRC,
  	sStreamLocalBindMask, sStreamLocalBindUnlink,
-@@ -767,6 +770,7 @@ static struct {
+@@ -816,6 +820,7 @@ static struct {
  	{ "authorizedprincipalscommand", sAuthorizedPrincipalsCommand, SSHCFG_ALL },
  	{ "authorizedprincipalscommanduser", sAuthorizedPrincipalsCommandUser, SSHCFG_ALL },
  	{ "versionaddendum", sVersionAddendum, SSHCFG_GLOBAL },
@@ -140,7 +139,7 @@
  	{ "authenticationmethods", sAuthenticationMethods, SSHCFG_ALL },
  	{ "streamlocalbindmask", sStreamLocalBindMask, SSHCFG_ALL },
  	{ "streamlocalbindunlink", sStreamLocalBindUnlink, SSHCFG_ALL },
-@@ -1727,6 +1731,10 @@ process_server_config_line_depth(ServerO
+@@ -1774,6 +1779,10 @@ process_server_config_line_depth(ServerO
  		intptr = &options->gss_strict_acceptor;
  		goto parse_flag;
  
@@ -151,28 +150,28 @@
  	case sGssStoreRekey:
  		intptr = &options->gss_store_rekey;
  		goto parse_flag;
-@@ -3237,6 +3245,7 @@ dump_config(ServerOptions *o)
- 	dump_cfg_fmtint(sStreamLocalBindUnlink, o->fwd_opts.streamlocal_bind_unlink);
+@@ -3414,6 +3423,7 @@ dump_config(ServerOptions *o)
  	dump_cfg_fmtint(sFingerprintHash, o->fingerprint_hash);
  	dump_cfg_fmtint(sExposeAuthInfo, o->expose_userauth_info);
+ 	dump_cfg_fmtint(sRefuseConnection, o->refuse_connection);
 +	dump_cfg_fmtint(sGssUseDefaultCCache, o->gss_use_default_ccache);
  
  	/* string arguments */
  	dump_cfg_string(sPidFile, o->pid_file);
---- old/servconf.h	2023-12-19 13:14:17.795831524 +0100
-+++ new/servconf.h	2023-12-19 13:15:18.306426526 +0100
-@@ -246,6 +246,8 @@ typedef struct {
- 	u_int	num_channel_timeouts;
+--- old/servconf.h	2025-03-05 10:49:41.038558445 +0100
++++ new/servconf.h	2025-03-05 10:49:42.378831475 +0100
+@@ -258,6 +258,8 @@ typedef struct {
+ 	char   *sshd_session_path;
  
- 	int	unused_connection_timeout;
+ 	int	refuse_connection;
 +
 +	int	gss_use_default_ccache;
  }       ServerOptions;
  
  /* Information about the incoming connection as used by Match */
---- old/sshd.c	2023-12-19 13:14:17.801276016 +0100
-+++ new/sshd.c	2023-12-19 13:15:18.311877813 +0100
-@@ -2298,9 +2298,19 @@ main(int ac, char **av)
+--- old/sshd-session.c	2025-03-05 10:49:41.787837830 +0100
++++ new/sshd-session.c	2025-03-05 10:49:42.379596295 +0100
+@@ -1350,9 +1350,19 @@ main(int ac, char **av)
  
  #ifdef GSSAPI
  	if (options.gss_authentication) {
@@ -192,9 +191,9 @@
  	}
  #endif
  #ifdef USE_PAM
---- old/sshd_config.5	2023-12-19 13:14:17.806646789 +0100
-+++ new/sshd_config.5	2023-12-19 13:15:18.317335250 +0100
-@@ -744,6 +744,18 @@ Specifies whether to automatically destr
+--- old/sshd_config.5	2025-03-05 10:49:41.789634105 +0100
++++ new/sshd_config.5	2025-03-05 10:49:42.380264770 +0100
+@@ -752,6 +752,18 @@ Specifies whether to automatically destr
  on logout.
  The default is
  .Cm yes .

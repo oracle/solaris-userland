@@ -3,18 +3,27 @@
 # Solaris-specific, we will not contribute the changes to the upstream
 # community. 
 #
---- old/Makefile.in	2023-12-19 13:20:10.137227747 +0100
-+++ new/Makefile.in	2023-12-19 13:20:47.800272712 +0100
-@@ -131,7 +131,7 @@ SSHDOBJS=sshd.o auth-rhosts.o auth-passw
+--- old/Makefile.in	2025-04-15 15:18:19.346113065 +0200
++++ new/Makefile.in	2025-04-15 15:19:08.518864590 +0200
+@@ -142,7 +142,7 @@ SSHD_SESSION_OBJS=sshd-session.o auth-rh
  	monitor.o monitor_wrap.o auth-krb5.o \
  	auth2-gss.o gss-serv.o gss-serv-krb5.o kexgsss.o \
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o \
--	srclimit.o sftp-server.o sftp-common.o sftp_provider.o \
-+	srclimit.o sftp-server.o sftp-common.o sftp_provider.o sftp-audit-solaris.o \
- 	sandbox-null.o sandbox-rlimit.o sandbox-systrace.o sandbox-darwin.o \
- 	sandbox-seccomp-filter.o sandbox-capsicum.o sandbox-pledge.o \
- 	sandbox-solaris.o uidswap.o $(SKOBJS)
-@@ -154,7 +154,8 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o
+-	sftp-server.o sftp-common.o sftp_provider.o \
++	sftp-server.o sftp-common.o sftp_provider.o sftp-audit-solaris.o \
+ 	uidswap.o platform-listen.o $(SKOBJS)
+ 
+ SSHD_AUTH_OBJS=sshd-auth.o \
+@@ -157,7 +157,7 @@ SSHD_AUTH_OBJS=sshd-auth.o \
+ 	loginrec.o auth-pam.o auth-shadow.o auth-sia.o \
+ 	sandbox-null.o sandbox-rlimit.o sandbox-darwin.o \
+ 	sandbox-seccomp-filter.o sandbox-capsicum.o  sandbox-solaris.o \
+-	sftp-server.o sftp-common.o sftp_provider.o \
++	sftp-server.o sftp-common.o sftp_provider.o sftp-audit-solaris.o \
+ 	uidswap.o $(SKOBJS)
+ 
+ SFTP_CLIENT_OBJS=sftp-common.o sftp-client.o sftp-glob.o
+@@ -178,7 +178,8 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o
  
  SSHKEYSCAN_OBJS=ssh-keyscan.o $(SKOBJS)
  
@@ -24,7 +33,7 @@
  
  SFTP_OBJS=	sftp.o sftp-usergroup.o progressmeter.o $(SFTP_CLIENT_OBJS)
  
-@@ -207,28 +208,28 @@ libssh.a: $(LIBSSH_OBJS)
+@@ -231,46 +232,46 @@ libssh.a: $(LIBSSH_OBJS)
  	$(RANLIB) $@
  
  ssh$(EXEEXT): $(LIBCOMPAT) libssh.a $(SSHOBJS)
@@ -32,11 +41,20 @@
 +	$(LD) -o $@ $(SSHOBJS) $(LDFLAGS) -lbsm -lssh -lopenbsd-compat $(LIBS) $(GSSLIBS) $(CHANNELLIBS)
  
  sshd$(EXEEXT): libssh.a	$(LIBCOMPAT) $(SSHDOBJS)
--	$(LD) -o $@ $(SSHDOBJS) $(LDFLAGS) -lssh -lopenbsd-compat $(SSHDLIBS) $(LIBS) $(GSSLIBS) $(K5LIBS) $(CHANNELLIBS)
-+	$(LD) -o $@ $(SSHDOBJS) $(LDFLAGS) -lbsm -lssh -lopenbsd-compat $(SSHDLIBS) $(LIBS) $(GSSLIBS) $(K5LIBS) $(CHANNELLIBS)
+-	$(LD) -o $@ $(SSHDOBJS) $(LDFLAGS) -lssh -lopenbsd-compat $(SSHDLIBS) $(LIBS) $(CHANNELLIBS)
++	$(LD) -o $@ $(SSHDOBJS) $(LDFLAGS) -lbsm -lssh -lopenbsd-compat $(SSHDLIBS) $(LIBS) $(CHANNELLIBS)
+ 
+ sshd-session$(EXEEXT): libssh.a	$(LIBCOMPAT) $(SSHD_SESSION_OBJS)
+-	$(LD) -o $@ $(SSHD_SESSION_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat $(SSHDLIBS) $(LIBS) $(GSSLIBS) $(K5LIBS) $(CHANNELLIBS) $(LIBWTMPDB)
++	$(LD) -o $@ $(SSHD_SESSION_OBJS) $(LDFLAGS) -lbsm -lssh -lopenbsd-compat $(SSHDLIBS) $(LIBS) $(GSSLIBS) $(K5LIBS) $(CHANNELLIBS) $(LIBWTMPDB)
+ 
+ sshd-auth$(EXEEXT): libssh.a $(LIBCOMPAT) $(SSHD_AUTH_OBJS)
+-	$(LD) -o $@ $(SSHD_AUTH_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat $(SSHDLIBS) $(LIBS) $(GSSLIBS) $(K5LIBS) $(CHANNELLIBS) $(LIBWTMPDB)
++	$(LD) -o $@ $(SSHD_AUTH_OBJS) $(LDFLAGS) -lbsm -lssh -lopenbsd-compat $(SSHDLIBS) $(LIBS) $(GSSLIBS) $(K5LIBS) $(CHANNELLIBS) $(LIBWTMPDB)
  
  scp$(EXEEXT): $(LIBCOMPAT) libssh.a $(SCP_OBJS)
- 	$(LD) -o $@ $(SCP_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS) $(CHANNELLIBS)
+-	$(LD) -o $@ $(SCP_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS) $(CHANNELLIBS)
++	$(LD) -o $@ $(SCP_OBJS) $(LDFLAGS) -lbsm -lssh -lopenbsd-compat $(LIBS) $(CHANNELLIBS)
  
  ssh-add$(EXEEXT): $(LIBCOMPAT) libssh.a $(SSHADD_OBJS)
 -	$(LD) -o $@ $(SSHADD_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS) $(CHANNELLIBS)
@@ -59,18 +77,25 @@
 +	$(LD) -o $@ $(P11HELPER_OBJS) $(LDFLAGS) -lbsm -lssh -lopenbsd-compat -lssh -lopenbsd-compat $(LIBS) $(CHANNELLIBS)
  
  ssh-sk-helper$(EXEEXT): $(LIBCOMPAT) libssh.a $(SKHELPER_OBJS)
- 	$(LD) -o $@ $(SKHELPER_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat -lssh -lopenbsd-compat $(LIBS) $(LIBFIDO2) $(CHANNELLIBS)
-@@ -237,7 +238,7 @@ ssh-keyscan$(EXEEXT): $(LIBCOMPAT) libss
- 	$(LD) -o $@ $(SSHKEYSCAN_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat -lssh $(LIBS) $(CHANNELLIBS)
+-	$(LD) -o $@ $(SKHELPER_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat -lssh -lopenbsd-compat $(LIBS) $(LIBFIDO2) $(CHANNELLIBS)
++	$(LD) -o $@ $(SKHELPER_OBJS) $(LDFLAGS) -lbsm -lssh -lopenbsd-compat -lssh -lopenbsd-compat $(LIBS) $(LIBFIDO2) $(CHANNELLIBS)
+ 
+ ssh-keyscan$(EXEEXT): $(LIBCOMPAT) libssh.a $(SSHKEYSCAN_OBJS)
+-	$(LD) -o $@ $(SSHKEYSCAN_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat -lssh $(LIBS) $(CHANNELLIBS)
++	$(LD) -o $@ $(SSHKEYSCAN_OBJS) $(LDFLAGS) -lbsm -lssh -lopenbsd-compat -lssh $(LIBS) $(CHANNELLIBS)
  
  sftp-server$(EXEEXT): $(LIBCOMPAT) libssh.a $(SFTPSERVER_OBJS)
 -	$(LD) -o $@ $(SFTPSERVER_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat -lssh $(LIBS) $(CHANNELLIBS)
 +	$(LD) -o $@ $(SFTPSERVER_OBJS) $(LDFLAGS) -lbsm -lssh -lopenbsd-compat -lssh $(LIBS) $(CHANNELLIBS)
  
  sftp$(EXEEXT): $(LIBCOMPAT) libssh.a $(SFTP_OBJS)
- 	$(LD) -o $@ $(SFTP_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS) $(CHANNELLIBS) $(LIBEDIT)
---- old/openbsd-compat/port-solaris.c	2023-12-19 13:20:10.142607198 +0100
-+++ new/openbsd-compat/port-solaris.c	2023-12-19 13:20:47.805690920 +0100
+-	$(LD) -o $@ $(SFTP_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS) $(CHANNELLIBS) $(LIBEDIT)
++	$(LD) -o $@ $(SFTP_OBJS) $(LDFLAGS) -lbsm -lssh -lopenbsd-compat $(LIBS) $(CHANNELLIBS) $(LIBEDIT)
+ 
+ # test driver for the loginrec code - not built by default
+ logintest: logintest.o $(LIBCOMPAT) libssh.a loginrec.o
+--- old/openbsd-compat/port-solaris.c	2025-04-09 09:02:43.000000000 +0200
++++ new/openbsd-compat/port-solaris.c	2025-04-15 15:18:20.354752165 +0200
 @@ -36,6 +36,11 @@
  #include <sys/contract/process.h>
  #include <sys/ctfs.h>
@@ -173,8 +198,8 @@
 +#endif /* SFTP_AUDIT */
 +
  #endif
---- old/openbsd-compat/port-solaris.h	2023-12-19 13:20:10.147843252 +0100
-+++ new/openbsd-compat/port-solaris.h	2023-12-19 13:20:47.811013803 +0100
+--- old/openbsd-compat/port-solaris.h	2025-04-09 09:02:43.000000000 +0200
++++ new/openbsd-compat/port-solaris.h	2025-04-15 15:18:20.355064120 +0200
 @@ -30,6 +30,10 @@ priv_set_t *solaris_basic_privset(void);
  void solaris_drop_privs_pinfo_net_fork_exec(void);
  void solaris_drop_privs_root_pinfo_net(void);
@@ -186,8 +211,8 @@
  # endif /* USE_SOLARIS_PRIVS */
  
  #endif
---- old/session.c	2023-12-19 13:20:10.153095092 +0100
-+++ new/session.c	2023-12-19 13:20:47.816499290 +0100
+--- old/session.c	2025-04-15 15:18:19.741123960 +0200
++++ new/session.c	2025-04-15 15:18:20.356007275 +0200
 @@ -99,6 +99,10 @@
  #include "sftp.h"
  #include "atomicio.h"
@@ -199,7 +224,7 @@
  #if defined(KRB5) && defined(USE_AFS)
  #include <kafs.h>
  #endif
-@@ -1439,8 +1443,19 @@ do_setusercontext(struct passwd *pw)
+@@ -1428,8 +1432,19 @@ do_setusercontext(struct passwd *pw)
  		if (!in_chroot && set_id(pw->pw_name) != 0)
  			fatal("set_id(%s) Failed", pw->pw_name);
  # endif /* USE_LIBIAF */
@@ -219,7 +244,7 @@
  #endif
  	} else if (options.chroot_directory != NULL &&
  	    strcasecmp(options.chroot_directory, "none") != 0) {
-@@ -1991,12 +2006,18 @@ session_subsystem_req(struct ssh *ssh, S
+@@ -1975,12 +1990,18 @@ session_subsystem_req(struct ssh *ssh, S
  					    prog, strerror(errno));
  				s->is_subsystem = SUBSYSTEM_EXT;
  				debug("subsystem: exec() %s", cmd);
@@ -238,9 +263,9 @@
  			break;
  		}
  	}
-@@ -2834,6 +2855,14 @@ do_cleanup(struct ssh *ssh, Authctxt *au
+@@ -2815,6 +2836,14 @@ do_cleanup(struct ssh *ssh, Authctxt *au
  	 */
- 	if (!use_privsep || mm_is_monitor())
+ 	if (mm_is_monitor())
  		session_destroy_all(ssh, session_pty_cleanup2);
 +
 +#ifdef SFTP_AUDIT
@@ -253,8 +278,8 @@
  }
  
  /* Return a name for the remote host that fits inside utmp_size */
---- old/sftp-server.c	2023-12-19 13:20:10.158318784 +0100
-+++ new/sftp-server.c	2023-12-19 13:20:47.822164402 +0100
+--- old/sftp-server.c	2025-04-15 15:18:17.657076340 +0200
++++ new/sftp-server.c	2025-04-15 15:18:20.357862460 +0200
 @@ -65,6 +65,12 @@ char *sftp_realpath(const char *, char *
  /* Maximum data read that we are willing to accept */
  #define SFTP_MAX_READ_LENGTH (SFTP_MAX_MSG_LENGTH - 1024)
@@ -961,7 +986,7 @@
  	send_status(id, status);
  	free(oldpath);
  	free(newpath);
-@@ -1903,6 +2257,9 @@ sftp_server_cleanup_exit(int i)
+@@ -1905,6 +2259,9 @@ sftp_server_cleanup_exit(int i)
  		logit("session closed for local user %s from [%s]",
  		    pw->pw_name, client_addr);
  	}
@@ -971,7 +996,7 @@
  	_exit(i);
  }
  
-@@ -2008,6 +2365,14 @@ sftp_server_main(int argc, char **argv,
+@@ -2010,6 +2367,14 @@ sftp_server_main(int argc, char **argv,
  
  	log_init(__progname, log_level, log_facility, log_stderr);
  
@@ -986,9 +1011,9 @@
  	/*
  	 * On platforms where we can, avoid making /proc/self/{mem,maps}
  	 * available to the user so that sftp access doesn't automatically
---- old/sshd.c	2023-12-19 13:20:10.163545881 +0100
-+++ new/sshd.c	2023-12-19 13:20:47.827970293 +0100
-@@ -556,7 +556,12 @@ privsep_preauth_child(void)
+--- old/sshd-auth.c	2025-04-15 15:18:19.357522350 +0200
++++ new/sshd-auth.c	2025-04-15 15:18:20.358323470 +0200
+@@ -205,7 +205,12 @@ privsep_child_demote(void)
  		gidset[0] = privsep_pw->pw_gid;
  		if (setgroups(1, gidset) == -1)
  			fatal("setgroups: %.100s", strerror(errno));
@@ -999,10 +1024,10 @@
  		permanently_set_uid(privsep_pw);
 +#endif
  	}
- }
  
---- old/uidswap.c	2023-12-19 13:20:10.168677299 +0100
-+++ new/uidswap.c	2023-12-19 13:20:47.833306543 +0100
+ 	/* sandbox ourselves */
+--- old/uidswap.c	2025-04-09 09:02:43.000000000 +0200
++++ new/uidswap.c	2025-04-15 15:18:20.358723085 +0200
 @@ -24,6 +24,11 @@
  
  #include <grp.h>
@@ -1069,8 +1094,8 @@
 +	}
 +}
 +#endif
---- old/uidswap.h	2023-12-19 13:20:10.173796145 +0100
-+++ new/uidswap.h	2023-12-19 13:20:47.838758555 +0100
+--- old/uidswap.h	2025-04-09 09:02:43.000000000 +0200
++++ new/uidswap.h	2025-04-15 15:18:20.359007380 +0200
 @@ -15,3 +15,7 @@
  void	 temporarily_use_uid(struct passwd *);
  void	 restore_uid(void);

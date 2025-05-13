@@ -1,0 +1,71 @@
+OpenSSH 9.9p2 was released on 2025-02-18. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Changes since OpenSSH 9.9p1
+===========================
+
+This release fixes two security bugs.
+
+Security
+========
+
+* Fix CVE-2025-26465 - ssh(1) in OpenSSH versions 6.8p1 to 9.9p1
+  (inclusive) contained a logic error that allowed an on-path
+  attacker (a.k.a MITM) to impersonate any server when the
+  VerifyHostKeyDNS option is enabled. This option is off by default.
+
+* Fix CVE-2025-26466 - sshd(8) in OpenSSH versions 9.5p1 to 9.9p1
+  (inclusive) is vulnerable to a memory/CPU denial-of-service related
+  to the handling of SSH2_MSG_PING packets. This condition may be
+  mitigated using the existing PerSourcePenalties feature.
+
+Both vulnerabilities were discovered and demonstrated to be exploitable
+by the Qualys Security Advisory team. We thank them for their detailed
+review of OpenSSH.
+
+For OpenBSD, fixes to these problems are available as errata; refer
+to https://www.openbsd.org/errata.html
+ 
+Bugfixes
+========
+
+ * ssh(1), sshd(8): fix regression in Match directive that caused
+   failures when predicates and their arguments were separated by '='
+   characters instead of whitespace (bz3739).
+
+ * sshd(8): fix the "Match invalid-user" predicate, which was matching
+   incorrectly in the initial pass of config evaluation.
+
+ * ssh(1), sshd(8), ssh-keyscan(1): fix mlkem768x25519-sha256 key
+   exchange on big-endian systems.
+
+ * Fix a number of build problems on particular operating systems /
+   configurations.
+
+Checksums:
+==========
+
+ - SHA1 (openssh-9.9p2.tar.gz) = edefe960645780dee78059c444d4261667ad3056
+ - SHA256 (openssh-9.9p2.tar.gz) = karbYD4IzChe3fll4RmdAlhfqU2ZTWyuW0Hhch4hVnM=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com
+
+

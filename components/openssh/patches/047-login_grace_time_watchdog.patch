@@ -16,11 +16,11 @@
 # Per agreement with upstream developers, filed:
 #    https://bugzilla.mindrot.org/show_bug.cgi?id=2615
 #
---- openssh-9.4p1/sshd.c
-+++ openssh-9.4p1/sshd.c
-@@ -257,7 +257,14 @@ struct sshbuf *loginmsg;
- /* Unprivileged user */
- struct passwd *privsep_pw = NULL;
+--- old/sshd-session.c	2025-02-27 14:20:09.439698625 +0100
++++ new/sshd-session.c	2025-02-27 14:20:13.293150720 +0100
+@@ -190,7 +190,14 @@
+ /* message to be displayed after login */
+ struct sshbuf *loginmsg;
  
 +/* Pid of process backing up login_grace_time alarm. */
 +pid_t grace_watchdog_pid = -1;
@@ -33,16 +33,12 @@
  void destroy_sensitive_data(void);
  void demote_sensitive_data(void);
  static void do_ssh2_kex(struct ssh *);
-@@ -360,6 +367,7 @@ if (getpgid(0) == getpid()) {
- 		ssh_signal(SIGTERM, SIG_IGN);
+@@ -220,9 +227,98 @@
+ 		(void)sigaction(SIGTERM, &sa, NULL);
  		kill(0, SIGTERM);
  	}
 +	stop_grace_watchdog();
- 
- 	/* Log error and exit. */
- 	sigdie("Timeout before authentication for %s port %d",
-@@ -367,6 +375,94 @@ ssh_remote_ipaddr(the_active_state),
- 	    ssh_remote_port(the_active_state));
+ 	_exit(EXIT_LOGIN_GRACE);
  }
  
 +static inline void
@@ -118,7 +114,7 @@
 +
 +/* kill grace watchdog process */
 +static void
-+stop_grace_watchdog()
++stop_grace_watchdog(void)
 +{
 +	if (grace_watchdog_pid == -1) {
 +		debug3("login_grace_time watchdog process not running");
@@ -136,7 +132,7 @@
  /* Destroy the host and server keys.  They will no longer be needed. */
  void
  destroy_sensitive_data(void)
-@@ -519,6 +615,7 @@ } else {
+@@ -374,6 +470,7 @@
  		/* child */
  		close(pmonitor->m_sendfd);
  		close(pmonitor->m_log_recvfd);
@@ -144,23 +140,19 @@
  
  		/* Arrange for logging to be sent to the monitor */
  		set_log_handler(mm_log_handler, pmonitor);
-@@ -2225,8 +2322,10 @@ * mode; it is just annoying to have the
- 	 * are about to discover the bug.
- 	 */
- 	ssh_signal(SIGALRM, grace_alarm_handler);
--	if (!debug_flag)
-+	if (!debug_flag) {
- 		alarm(options.login_grace_time);
+@@ -1287,6 +1384,7 @@
+ 
+ 		if (setitimer(ITIMER_REAL, &itv, NULL) == -1)
+ 			fatal("login grace time setitimer failed");
 +		start_grace_watchdog(options.login_grace_time);
-+	}
+ 	}
  
  	if ((r = kex_exchange_identification(ssh, -1,
- 	    options.version_addendum)) != 0)
-@@ -2284,6 +2383,7 @@ * authentication.
- 	 */
- 	alarm(0);
+@@ -1336,6 +1434,7 @@
+ 	if (setitimer(ITIMER_REAL, &itv, NULL) == -1)
+ 		fatal("login grace time clear failed");
  	ssh_signal(SIGALRM, SIG_DFL);
 +	stop_grace_watchdog();
  	authctxt->authenticated = 1;
  	if (startup_pipe != -1) {
- 		close(startup_pipe);
+ 		/* signal listener that authentication completed successfully */

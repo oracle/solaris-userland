@@ -5,21 +5,18 @@
 # This is a Solaris specific patch and will not be contributed back to the
 # upstream community.
 #
---- openssh-9.4p1/ssh_config
-+++ openssh-9.4p1/ssh_config
-@@ -22,9 +22,9 @@ #   ForwardAgent no
+--- old/ssh_config	2025-04-15 16:04:45.123510360 +0200
++++ new/ssh_config	2025-04-15 16:04:46.308726640 +0200
+@@ -22,7 +22,7 @@
  #   ForwardX11 no
  #   PasswordAuthentication yes
  #   HostbasedAuthentication no
 -#   GSSAPIAuthentication no
 +#   GSSAPIAuthentication yes
  #   GSSAPIDelegateCredentials no
--#   GSSAPIKeyExchange no
-+#   GSSAPIKeyExchange yes
+ #   GSSAPIKeyExchange no
  #   GSSAPITrustDNS no
- #   BatchMode no
- #   CheckHostIP no
-@@ -46,3 +46,7 @@ #   VisualHostKey no
+@@ -46,3 +46,7 @@
  #   ProxyCommand ssh -q -W %h:%p gateway.example.com
  #   RekeyLimit 1G 1h
  #   UserKnownHostsFile ~/.ssh/known_hosts.d/%k
@@ -27,9 +24,9 @@
 +# Send the LANG and LC_* environment variables to server.
 +SendEnv LANG
 +SendEnv LC_*
---- openssh-9.4p1/sshd_config
-+++ openssh-9.4p1/sshd_config
-@@ -3,114 +3,88 @@ #	$OpenBSD: sshd_config,v 1.104 2021/07/
+--- old/sshd_config	2025-04-09 09:02:43.000000000 +0200
++++ new/sshd_config	2025-04-15 16:22:52.831878105 +0200
+@@ -3,116 +3,88 @@
  # This is the sshd server system-wide configuration file.  See
  # sshd_config(5) for more information.
  
@@ -125,7 +122,7 @@
 +# Ensure secure permissions on users .ssh directory.
 +#StrictModes yes
  
--# To disable tunneled clear text passwords, change to no here!
+-# To disable tunneled clear text passwords, change to "no" here!
 -#PasswordAuthentication yes
 +# Length of time in seconds before a client that hasn't completed
 +# authentication is disconnected.
@@ -141,7 +138,9 @@
 +# to pam_authenticate(3PAM).
  #PermitEmptyPasswords no
  
--# Change to no to disable s/key passwords
+-# Change to "no" to disable keyboard-interactive authentication.  Depending on
+-# the system's configuration, this may involve passwords, challenge-response,
+-# one-time passwords or some combination of these and other methods.
 -#KbdInteractiveAuthentication yes
 -
 -# Kerberos options

@@ -3,14 +3,15 @@
 # so that user can be informed why the call really failed.
 # Without these changes, all errors are mapped to PAM_ACCT_EXPIRED.
 #
-# This issue is tracked by upstream via bz3210.
+# This issue is tracked by upstream via
+# https://bugzilla.mindrot.org/show_bug.cgi?id=3210
 #
-# The patch can be removed in case bz3210 gets fixed and the fix
+# The patch can be removed in case the above bugzilla gets fixed and the fix
 # addresses the problem in desired way. 
 #
---- old/auth-pam.c	2024-10-07 11:58:59.926145217 +0200
-+++ new/auth-pam.c	2024-10-07 13:01:01.013455309 +0200
-@@ -423,10 +423,10 @@ do_pam_auth(struct pam_ctxt *ctxt)
+--- old/auth-pam.c	2025-03-06 11:44:42.907013110 +0100
++++ new/auth-pam.c	2025-03-06 11:44:43.475514830 +0100
+@@ -418,10 +418,10 @@ do_pam_auth(struct pam_ctxt *ctxt)
  	if (sshpam_err != PAM_SUCCESS)
  		goto auth_fail;
  
@@ -62,29 +63,29 @@
  }
  
  void
---- old/auth2.c	2024-10-07 11:59:18.471771270 +0200
-+++ new/auth2.c	2024-10-08 08:26:16.878960766 +0200
-@@ -432,7 +432,7 @@ userauth_finish(struct ssh *ssh, int aut
+--- old/auth2.c	2025-03-06 11:44:40.592102180 +0100
++++ new/auth2.c	2025-03-06 11:44:43.475998160 +0100
+@@ -421,7 +421,7 @@ userauth_finish(struct ssh *ssh, int aut
  		 * perform account check for this service.
  		 */
  		if (options.use_pam && options.pam_service_per_authmethod &&
--		    !PRIVSEP(do_pam_account())) {
-+		    PRIVSEP(do_pam_account()) != PAM_SUCCESS) {
+-		    !mm_do_pam_account()) {
++		    mm_do_pam_account() != PAM_SUCCESS) {
  			/* if PAM returned a message, send it to the user */
  			if (sshbuf_len(loginmsg) > 0) {
  				if ((r = sshbuf_put(loginmsg, "\0", 1)) != 0)
-@@ -479,7 +479,7 @@ userauth_finish(struct ssh *ssh, int aut
+@@ -468,7 +468,7 @@ userauth_finish(struct ssh *ssh, int aut
  #else
  	if (options.use_pam && authenticated) {
  #endif /* PAM_ENHANCEMENT */
--		int r, success = PRIVSEP(do_pam_account());
-+		int r, success = (PRIVSEP(do_pam_account()) == PAM_SUCCESS);
+-		int r, success = mm_do_pam_account();
++		int r, success = mm_do_pam_account() == PAM_SUCCESS;
  
  		/* If PAM returned a message, send it to the user. */
  		if (sshbuf_len(loginmsg) > 0) {
---- old/monitor.c	2024-10-07 15:42:57.876547607 +0200
-+++ new/monitor.c	2024-10-08 08:23:57.316989336 +0200
-@@ -1111,7 +1111,7 @@ mm_answer_pam_account(struct ssh *ssh, i
+--- old/monitor.c	2025-03-06 11:44:41.735677570 +0100
++++ new/monitor.c	2025-03-06 11:44:43.476687545 +0100
+@@ -1136,7 +1136,7 @@ mm_answer_pam_account(struct ssh *ssh, i
  
  	mm_request_send(sock, MONITOR_ANS_PAM_ACCOUNT, m);
  

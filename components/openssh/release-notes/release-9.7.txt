@@ -1,0 +1,110 @@
+OpenSSH 9.7 was released on 2024-03-11. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Future deprecation notice
+=========================
+
+OpenSSH plans to remove support for the DSA signature algorithm in
+early 2025 and compile-time disable it later this year.
+
+DSA, as specified in the SSHv2 protocol, is inherently weak - being
+limited to a 160 bit private key and use of the SHA1 digest. Its
+estimated security level is only 80 bits symmetric equivalent.
+
+OpenSSH has disabled DSA keys by default since 2015 but has retained
+run-time optional support for them. DSA was the only mandatory-to-
+implement algorithm in the SSHv2 RFCs[3], mostly because alternative
+algorithms were encumbered by patents when the SSHv2 protocol was
+specified.
+
+This has not been the case for decades at this point and better
+algorithms are well supported by all actively-maintained SSH
+implementations. We do not consider the costs of maintaining DSA in
+OpenSSH to be justified and hope that removing it from OpenSSH can
+accelerate its wider deprecation in supporting cryptography
+libraries.
+
+This release makes DSA support in OpenSSH compile-time optional,
+defaulting to on. We intend the next release to change the default
+to disable DSA at compile time. The first OpenSSH release of 2025
+will remove DSA support entirely.
+
+Changes since OpenSSH 9.6
+=========================
+
+This release contains mostly bugfixes.
+
+New features
+------------
+
+ * ssh(1), sshd(8): add a "global" ChannelTimeout type that watches
+   all open channels and will close all open channels if there is no
+   traffic on any of them for the specified interval. This is in
+   addition to the existing per-channel timeouts added recently.
+
+   This supports situations like having both session and x11
+   forwarding channels open where one may be idle for an extended
+   period but the other is actively used. The global timeout could
+   close both channels when both have been idle for too long.
+
+ * All: make DSA key support compile-time optional, defaulting to on.
+
+Bugfixes
+--------
+
+ * sshd(8): don't append an unnecessary space to the end of subsystem
+   arguments (bz3667)
+
+ * ssh(1): fix the multiplexing "channel proxy" mode, broken when
+   keystroke timing obfuscation was added. (GHPR#463)
+
+ * ssh(1), sshd(8): fix spurious configuration parsing errors when
+   options that accept array arguments are overridden (bz3657).
+
+ * ssh-agent(1): fix potential spin in signal handler (bz3670)
+
+ * Many fixes to manual pages and other documentation, including
+   GHPR#462, GHPR#454, GHPR#442 and GHPR#441.
+
+ * Greatly improve interop testing against PuTTY.
+
+Portability
+-----------
+
+ * Improve the error message when the autoconf OpenSSL header check
+   fails (bz#3668)
+
+ * Improve detection of broken toolchain -fzero-call-used-regs support
+   (bz3645).
+
+ * Fix regress/misc/fuzz-harness fuzzers and make them compile without
+   warnings when using clang16
+
+Checksums:
+==========
+
+ - SHA1 (openssh-9.7.tar.gz) = 163272058edc20a8fde81661734a6684c9b4db11
+ - SHA256 (openssh-9.7.tar.gz) = gXDWrF4wN2UWyPjyjvVhpjjKd7D2qI6LyZiIYhbJQVg=
+
+ - SHA1 (openssh-9.7p1.tar.gz) = ce8985ea0ea2f16a5917fd982ade0972848373cc
+ - SHA256 (openssh-9.7p1.tar.gz) = SQQm92bYKidj/KzY2D6j1weYdQx70q/y5X3FZg93P/0=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com

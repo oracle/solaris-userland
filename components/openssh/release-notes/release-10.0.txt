@@ -1,0 +1,271 @@
+OpenSSH 10.0 was released on 2025-04-09. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Potentially-incompatible changes
+--------------------------------
+
+ * This release removes support for the weak DSA signature
+   algorithm, completing the deprecation process that began in
+   2015 (when DSA was disabled by default) and repeatedly warned
+   over the last 12 months.
+
+ * scp(1), sftp(1): pass "ControlMaster no" to ssh when invoked by
+   scp & sftp. This disables implicit session creation by these
+   tools when ControlMaster was set to yes/auto by configuration,
+   which some users found surprising. This change will not prevent
+   scp/sftp from using an existing multiplexing session if one had
+   already been created. GHPR557
+
+ * This release has the version number 10.0 and announces itself
+   as "SSH-2.0-OpenSSH_10.0". Software that naively matches
+   versions using patterns like "OpenSSH_1*" may be confused by
+   this.
+
+ * sshd(8): this release removes the code responsible for the
+   user authentication phase of the protocol from the per-
+   connection sshd-session binary to a new sshd-auth binary.
+   Splitting this code into a separate binary ensures that the
+   crucial pre-authentication attack surface has an entirely
+   disjoint address space from the code used for the rest of the
+   connection. It also yields a small runtime memory saving as the
+   authentication code will be unloaded after the authentication
+   phase completes. This change should be largely invisible to
+   users, though some log messages may now come from "sshd-auth"
+   instead of "sshd-session". Downstream distributors of OpenSSH
+   will need to package the sshd-auth binary.
+
+ * sshd(8): this release disables finite field (a.k.a modp)
+   Diffie-Hellman key exchange in sshd by default. Specifically,
+   this removes the "diffie-hellman-group*" and
+   "diffie-hellman-group-exchange-*" methods from the default
+   KEXAlgorithms list. The client is unchanged and continues to
+   support these methods by default. Finite field Diffie Hellman
+   is slow and computationally expensive for the same security
+   level as Elliptic Curve DH or PQ key agreement while offering
+   no redeeming advantages. ECDH has been specified for the SSH
+   protocol for 15 years and some form of ECDH has been the default
+   key exchange in OpenSSH for the last 14 years.
+
+ * sshd(8): this release removes the implicit fallback to compiled-
+   in groups for Diffie-Hellman Group Exchange KEX when the moduli
+   file exists but does not contain moduli within the client-
+   requested range.  The fallback behaviour remains for the case
+   where the moduli file does not exist at all. This allows
+   administrators more explicit control over which DH groups will
+   be selected, but can lead to connection failures if the moduli
+   file is edited incorrectly. bz#2793
+
+Changes since OpenSSH 9.9
+=========================
+
+This release contains a minor security fix as well as a number of
+feature improvements and bugfixes.
+
+Security
+========
+
+* sshd(8): fix the DisableForwarding directive, which was failing
+  to disable X11 forwarding and agent forwarding as documented.
+  X11 forwarding is disabled by default in the server and agent
+  forwarding is off by default in the client.
+
+New features
+------------
+
+ * ssh(1): the hybrid post-quantum algorithm mlkem768x25519-sha256
+   is now used by default for key agreement. This algorithm is
+   considered to be safe against attack by quantum computers,
+   is guaranteed to be no less strong than the popular
+   curve25519-sha256 algorithm, has been standardised by NIST
+   and is considerably faster than the previous default.
+
+ * ssh(1): prefer AES-GCM to AES-CTR mode when selecting a cipher
+   for the connection. The default cipher preference list is now
+   Chacha20/Poly1305, AES-GCM (128/256) followed by AES-CTR
+   (128/192/256).
+
+ * ssh(1): add %-token and environment variable expansion to the
+   ssh_config SetEnv directive.
+
+ * ssh(1): allow %-token and environment variable expansion in
+   the ssh_config User directive, with the exception of %r and %C
+   which would be self-referential. bz#3477
+
+ * ssh(1), sshd(8): add "Match version" support to ssh_config and
+   sshd_config. Allows matching on the local version of OpenSSH,
+   e.g. "Match version OpenSSH_10.*".
+
+ * ssh(1): add support for "Match sessiontype" to ssh_config.
+   Allows matching on the type of session initially requested,
+   either "shell" for interactive sessions, "exec" for command
+   execution sessions, "subsystem" for subsystem requests, such as
+   sftp, or "none" for transport/forwarding-only sessions.
+
+ * ssh(1): add support for "Match command ..." support to
+   ssh_config, allowing matching on the remote command as specified
+   on the command-line.
+
+ * ssh(1): allow 'Match tagged ""' and 'Match command ""' to match
+   empty tag and command values respectively.
+
+ * sshd(8): allow glob(3) patterns to be used in sshd_config
+   AuthorizedKeysFile and AuthorizedPrincipalsFile directives.
+   bz2755
+
+ * sshd(1): support the VersionAddendum in the client, mirroring
+   the option of the same name in the server; bz2745
+
+ * ssh-agent(1): the agent will now delete all loaded keys when
+   signaled with SIGUSR1. This allows deletion of keys without
+   having access to $SSH_AUTH_SOCK.
+
+ * Portable OpenSSH, ssh-agent(1): support systemd-style socket
+   activation in ssh-agent using the LISTEN_PID/LISTEN_FDS
+   mechanism. Activated when these environment variables are set,
+   the agent is started with the -d or -D option and no socket path
+   is set. GHPR502
+
+ * ssh-keygen(1): support FIDO tokens that return no attestation
+   data, e.g. recent WinHello. GHPR542
+
+ * ssh-agent(1): add a "-Owebsafe-allow=..." option to allow the
+   default FIDO application ID allow-list to be overridden.
+
+ * Add a work-in-progress tool to verify FIDO attestation blobs
+   that ssh-keygen can optionally write when enrolling FIDO keys.
+   This tool is available under regress/misc/ssh-verify-attestation
+   for experimentation but is not installed by "make install".
+
+ * ssh-keygen(1): allow "-" as output file for moduli screening.
+   GHPR393
+
+Bugfixes
+--------
+
+ * sshd(8): remove assumption that the sshd_config and any configs
+   it includes can fit in a (possibly enlarged) socket buffer.
+   Previously it was possible to create a sufficiently large
+   configuration that could cause sshd to fail to accept any
+   connection. sshd(8) will now actively manage sending its config
+   to the sshd-session sub-process.
+
+ * ssh(1): don't start the ObscureKeystrokeTiming mitigations if
+   there has been traffic on a X11 forwarding channel recently.
+   Should fix X11 forwarding performance problems when this setting
+   is enabled. bz3655
+
+ * ssh(1): prohibit the comma character in hostnames accepted, but
+   allow an underscore as the first character in a hostname.
+
+ * sftp(1): set high-water when resuming a "put". Prevents bogus
+   "server reordered acks" debug message.
+
+ * ssh(1), sshd(8): fix regression in openssh-9.8, which would fail
+   to accept "Match criteria=argument" as well as the documented
+   "Match criteria argument" syntax in ssh_config and sshd_config.
+   bz3739
+
+ * sftp(1), ssh(1): fix a number possible NULL dereference bugs,
+   including Coverity CIDs 405019 and 477813.
+
+ * sshd(8): fix PerSourcePenalty incorrectly using "crash" penalty
+   when LoginGraceTime was exceeded. bz3797
+
+ * sshd(8): fix "Match invalid-user" from incorrectly being
+   activated in initial configuration pass when no other predicates
+   were present on the match line
+
+ * sshd(8): fix debug logging of user specific delay. GHPR#552
+
+ * sshd(8): improve debug logging across sub-process boundaries.
+   Previously some log messages were lost early in the sshd-auth and
+   sshd-session processes' life.
+
+ * ssh(1): require control-escape character sequences passed via
+   the '-e ^x' command-line to be exactly two characters long. Avoids
+   one byte out-of-bounds read if ssh is invoked as "ssh -e^ ..."
+   GHPR368
+
+ * ssh(1), sshd(8): prevent integer overflow in x11 port handling.
+   These are theoretically possible if the admin misconfigured
+   X11DisplayOffset or the user misconfigures their own $DISPLAY,
+   but don't happen in normal operation. bz#3730
+
+ * ssh-keygen(1): don't mess up ssh-keygen -l output when the file
+   contains CR characters; GHPR236 bz3385.
+
+ * sshd(8): add rate limits to logging of connections dropped by
+   PerSourcePenalties. Previously these could be noisy in logs.
+
+ * ssh(1): fix argument of "Compression" directive in ssh -G config
+   dump, which regressed in openssh-9.8.
+
+ * sshd(8): fix a corner-case triggered by UpdateHostKeys when sshd
+   refuses to accept the signature returned by an agent holding host
+   keys during the hostkey rotation sub-protocol. This situation
+   could occur in situations where a PKCS#11 smartcard that lacked
+   support for particular signature algorithms was used to store
+   host keys.
+
+ * ssh-keygen(1): when using RSA keys to sign messages with
+   "ssh-keygen -Y", select the signature algorithm based on the
+   requested hash algorithm ("-Ohashalg=xxx"). This allows using
+   something other than the default of rsa-sha2-512, which may not
+   be supported on all signing backends, e.g. some smartcards only
+   support SHA256.
+
+ * ssh(1), sshd(8), ssh-keyscan(1): fix ML-KEM768x25519 KEX on
+   big-endian systems.
+
+ * Many regression and interop test improvements.
+
+Portability
+-----------
+
+ * All: add support for AWS-LC (AWS libcrypto). bz3784
+
+ * sshd(8): add wtmpdb support as a Y2038 safe wtmp replacement.
+
+ * sshd(8): add support for locking sshd into memory, enabled with
+   the --with-linux-memlock-onfault configure flag.
+
+ * Add support for building a standalone sk-libfido2 library,
+   enabled by --with-security-key-standalone
+
+ * ssh(1), sshd(8), ssh-keyscan(1): include __builtin_popcount
+   replacement function. for compilers that lack it.
+
+ * All: Check for and replace le32toh, le64toh, htole64 separately.
+   It appears that at least some versions of endian.h in glibc do
+   not have the latter two. bz#3794
+
+ * Remove ancient RHL 6.x config in RPM spec.
+
+Checksums:
+==========
+
+ - SHA1 (openssh-10.0.tar.gz) = 933f4fded0497ef6a588381257276e156a70f9c3
+ - SHA256 (openssh-10.0.tar.gz) = oaJ+cXLCVoCZAz9W5W1vF7ko4GJW6iq7JmblrPUA34Q=
+
+ - SHA1 (openssh-10.0p1.tar.gz) = ac4205e827aea383bf316a33a0e2d5b66b85fcf8
+ - SHA256 (openssh-10.0p1.tar.gz) = AhoucJoO30JQsSVr1anlAEEakN3avqgw7VnO+Q652Fw=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com

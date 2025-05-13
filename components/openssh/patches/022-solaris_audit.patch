@@ -20,9 +20,9 @@
 # An additional patch relying on the --with-audit=solaris configuration
 #  should/will be created for sftp Solaris Audit and password change.
 #
---- old/INSTALL	2023-12-19 12:12:50.409935690 +0100
-+++ new/INSTALL	2023-12-19 12:13:26.257852105 +0100
-@@ -103,9 +103,13 @@ http://www.gnu.org/software/automake/
+--- old/INSTALL	2025-04-09 09:02:43.000000000 +0200
++++ new/INSTALL	2025-04-15 15:34:02.363461765 +0200
+@@ -105,9 +105,13 @@ http://www.gnu.org/software/automake/
  
  Basic Security Module (BSM):
  
@@ -39,7 +39,7 @@
  
  makedepend:
  
-@@ -171,8 +175,9 @@ name).
+@@ -173,8 +177,9 @@ name).
  There are a few other options to the configure script:
  
  --with-audit=[module] enable additional auditing via the specified module.
@@ -51,20 +51,29 @@
  
  --with-pam enables PAM support. If PAM support is compiled in, it must
  also be enabled in sshd_config (refer to the UsePAM directive).
---- old/Makefile.in	2023-12-19 12:12:50.415544998 +0100
-+++ new/Makefile.in	2023-12-19 12:13:26.263240259 +0100
-@@ -121,7 +121,7 @@ SSHOBJS= ssh.o readconf.o clientloop.o s
- 	sshconnect.o sshconnect2.o mux.o $(SKOBJS)
+--- old/Makefile.in	2025-04-15 15:34:01.621886785 +0200
++++ new/Makefile.in	2025-04-15 15:34:30.988967335 +0200
+@@ -132,7 +132,7 @@ SSHDOBJS=sshd.o \
+ 	$(SKOBJS)
  
- SSHDOBJS=sshd.o auth-rhosts.o auth-passwd.o \
+ SSHD_SESSION_OBJS=sshd-session.o auth-rhosts.o auth-passwd.o \
 -	audit.o audit-bsm.o audit-linux.o platform.o \
 +	audit.o audit-bsm.o audit-linux.o audit-solaris.o platform.o \
  	sshpty.o sshlogin.o servconf.o serverloop.o \
- 	auth.o auth2.o auth-options.o session.o \
+ 	auth.o auth2.o auth2-methods.o auth-options.o session.o \
  	auth2-chall.o groupaccess.o \
---- old/README.platform	2023-12-19 12:12:50.420901869 +0100
-+++ new/README.platform	2023-12-19 12:13:26.268537292 +0100
-@@ -71,8 +71,8 @@ zlib-devel and pam-devel, on Debian base
+@@ -152,7 +152,7 @@ SSHD_AUTH_OBJS=sshd-auth.o \
+ 	auth2-none.o auth2-passwd.o auth2-pubkey.o auth2-pubkeyfile.o \
+ 	auth2-gss.o gss-serv.o gss-serv-krb5.o \
+ 	monitor_wrap.o auth-krb5.o \
+-	audit.o audit-bsm.o audit-linux.o platform.o \
++	audit.o audit-bsm.o audit-linux.o audit-solaris.o platform.o \
+ 	loginrec.o auth-pam.o auth-shadow.o auth-sia.o \
+ 	sandbox-null.o sandbox-rlimit.o sandbox-darwin.o \
+ 	sandbox-seccomp-filter.o sandbox-capsicum.o  sandbox-solaris.o \
+--- old/README.platform	2025-04-09 09:02:43.000000000 +0200
++++ new/README.platform	2025-04-15 15:34:02.364448240 +0200
+@@ -72,8 +72,8 @@ zlib-devel and pam-devel, on Debian base
  libssl-dev, libz-dev and libpam-dev.
  
  
@@ -75,7 +84,7 @@
  If you enable BSM auditing on Solaris, you need to update audit_event(4)
  for praudit(1m) to give sensible output.  The following line needs to be
  added to /etc/security/audit_event:
-@@ -86,6 +86,11 @@ number is already in use on your system,
+@@ -87,6 +87,11 @@ number is already in use on your system,
  by configure'ing --with-cflags=-DAUE_openssh=32801 then rebuilding.
  
  
@@ -87,9 +96,9 @@
  Platforms using PAM
  -------------------
  As of OpenSSH 4.3p1, sshd will no longer check /etc/nologin itself when
---- old/config.h.in	2023-12-19 12:12:50.426254411 +0100
-+++ new/config.h.in	2023-12-19 12:13:26.273871602 +0100
-@@ -1933,6 +1933,9 @@
+--- old/config.h.in	2025-04-09 09:02:43.000000000 +0200
++++ new/config.h.in	2025-04-15 15:34:02.365067680 +0200
+@@ -1957,6 +1957,9 @@
  /* Use Linux audit module */
  #undef USE_LINUX_AUDIT
  
@@ -99,18 +108,18 @@
  /* Enable OpenSSL engine support */
  #undef USE_OPENSSL_ENGINE
  
---- old/configure	2023-12-19 12:12:50.433074378 +0100
-+++ new/configure	2023-12-19 12:13:26.280709181 +0100
-@@ -1497,7 +1497,7 @@ Optional Packages:
-   --without-zlib-version-check Disable zlib version check
+--- old/configure	2025-04-09 09:02:43.000000000 +0200
++++ new/configure	2025-04-15 15:34:02.369943025 +0200
+@@ -1508,7 +1508,7 @@ Optional Packages:
    --with-ldns[=PATH]      Use ldns for DNSSEC support (optionally in PATH)
    --with-libedit[=PATH]   Enable libedit support for sftp
+   --with-wtmpdb[=PATH]   Enable wtmpdb support for sshd
 -  --with-audit=module     Enable audit support (modules=debug,bsm,linux)
 +  --with-audit=module     Enable audit support (modules=debug,bsm,linux,solaris)
    --with-pie              Build Position Independent Executables if possible
    --with-security-key-builtin include builtin U2F/FIDO support
-   --with-ssl-dir=PATH     Specify path to OpenSSL installation
-@@ -14786,6 +14786,31 @@ then :
+   --with-security-key-standalone build standalone sk-libfido2 SecurityKeyProvider
+@@ -15523,6 +15523,31 @@ then :
  	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for supported audit module" >&5
  printf %s "checking for supported audit module... " >&6; }
  	  case "$withval" in
@@ -142,9 +151,9 @@
  	  bsm)
  		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: bsm" >&5
  printf "%s\n" "bsm" >&6; }
---- old/configure.ac	2023-12-19 12:12:50.438883643 +0100
-+++ new/configure.ac	2023-12-19 12:13:26.286497259 +0100
-@@ -1758,10 +1758,21 @@ AC_ARG_WITH([libedit],
+--- old/configure.ac	2025-04-09 09:02:43.000000000 +0200
++++ new/configure.ac	2025-04-15 15:34:02.371221085 +0200
+@@ -1850,10 +1850,21 @@ AC_ARG_WITH([wtmpdb],
  
  AUDIT_MODULE=none
  AC_ARG_WITH([audit],
@@ -167,9 +176,9 @@
  	  bsm)
  		AC_MSG_RESULT([bsm])
  		AUDIT_MODULE=bsm
---- old/defines.h	2023-12-19 12:12:50.444144496 +0100
-+++ new/defines.h	2023-12-19 12:13:26.291822478 +0100
-@@ -715,6 +715,11 @@ struct winsize {
+--- old/defines.h	2025-04-09 09:02:43.000000000 +0200
++++ new/defines.h	2025-04-15 15:34:02.371669225 +0200
+@@ -757,6 +757,11 @@ struct winsize {
  # define CUSTOM_SSH_AUDIT_EVENTS
  #endif
  
@@ -181,26 +190,27 @@
  #if !defined(HAVE___func__) && defined(HAVE___FUNCTION__)
  #  define __func__ __FUNCTION__
  #elif !defined(HAVE___func__)
---- old/sshd.c	2023-12-19 12:12:50.449443027 +0100
-+++ new/sshd.c	2023-12-19 12:13:26.297144973 +0100
-@@ -2286,7 +2286,9 @@ main(int ac, char **av)
- 	}
+--- old/sshd-session.c	2025-04-09 09:02:43.000000000 +0200
++++ new/sshd-session.c	2025-04-15 15:34:02.372214985 +0200
+@@ -1317,9 +1317,6 @@ main(int ac, char **av)
+ 	if (options.routing_domain != NULL)
+ 		set_process_rdomain(ssh, options.routing_domain);
  
- #ifdef SSH_AUDIT_EVENTS
-+#ifndef USE_SOLARIS_AUDIT
- 	audit_event(ssh, SSH_AUTH_SUCCESS);
-+#endif /* !USE_SOLARIS_AUDIT */
- #endif
+-#ifdef SSH_AUDIT_EVENTS
+-	audit_event(ssh, SSH_AUTH_SUCCESS);
+-#endif
  
  #ifdef GSSAPI
-@@ -2302,6 +2304,10 @@ main(int ac, char **av)
- 		do_pam_session(ssh);
+ 	if (options.gss_authentication) {
+@@ -1335,6 +1332,11 @@ main(int ac, char **av)
  	}
  #endif
-+#ifdef USE_SOLARIS_AUDIT
+ 
++#ifdef SSH_AUDIT_EVENTS
 +	/* Audit should take place after all successful pam */
 +	audit_event(ssh, SSH_AUTH_SUCCESS);
-+#endif /* USE_SOLARIS_AUDIT */
- 
++#endif
++
  	/*
  	 * In privilege separation, we fork another child and prepare
+ 	 * file descriptor passing.

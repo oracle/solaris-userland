@@ -3,9 +3,9 @@
 # always on and not configurable on Solaris.  This is for Solaris only, so we
 # will not contribute the changes to the upstream community.
 #
---- old/servconf.c	2023-12-19 11:47:02.555761330 +0100
-+++ new/servconf.c	2023-12-19 11:47:42.727000832 +0100
-@@ -279,7 +279,12 @@ fill_default_server_options(ServerOption
+--- old/servconf.c	2025-02-18 09:15:08.000000000 +0100
++++ new/servconf.c	2025-02-24 11:45:40.301784450 +0100
+@@ -297,7 +297,13 @@
  
  	/* Portable-specific options */
  	if (options->use_pam == -1)
@@ -15,10 +15,11 @@
 +#else
  		options->use_pam = 0;
 +#endif
++
+ 	if (options->pam_service_name == NULL)
+ 		options->pam_service_name = xstrdup(SSHD_PAM_SERVICE);
  
- 	/* Standard Options */
- 	if (options->num_host_key_files == 0) {
-@@ -1366,8 +1371,16 @@ process_server_config_line_depth(ServerO
+@@ -1374,8 +1380,16 @@
  	switch (opcode) {
  	/* Portable-specific options */
  	case sUsePAM:
@@ -32,6 +33,6 @@
  		intptr = &options->use_pam;
  		goto parse_flag;
 +#endif
- 
- 	/* Standard Options */
- 	case sBadOption:
+ 	case sPAMServiceName:
+ 		charptr = &options->pam_service_name;
+ 		arg = argv_next(&ac, &av);
