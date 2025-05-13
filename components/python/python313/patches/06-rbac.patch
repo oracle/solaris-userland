@@ -1,8 +1,8 @@
 This patch provides Python RBAC support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-3.13.0/Modules/authattr.c
-+++ Python-3.13.0/Modules/authattr.c
+--- Python-3.13.3/Modules/authattr.c
++++ Python-3.13.3/Modules/authattr.c
 @@ -0,0 +1,254 @@
 +/*
 + * CDDL HEADER START
@@ -258,8 +258,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	0,                            /* tp_free */
 +	0,                            /* tp_is_gc */
 +};
---- Python-3.13.0/Modules/execattr.c
-+++ Python-3.13.0/Modules/execattr.c
+--- Python-3.13.3/Modules/execattr.c
++++ Python-3.13.3/Modules/execattr.c
 @@ -0,0 +1,305 @@
 +/*
 + * CDDL HEADER START
@@ -566,8 +566,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	0,                            /* tp_free */
 +	0,                            /* tp_is_gc */
 +};
---- Python-3.13.0/Modules/privileges.c
-+++ Python-3.13.0/Modules/privileges.c
+--- Python-3.13.3/Modules/privileges.c
++++ Python-3.13.3/Modules/privileges.c
 @@ -0,0 +1,237 @@
 +/*
 + * CDDL HEADER START
@@ -806,8 +806,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +
 +       return m;
 +}
---- Python-3.13.0/Modules/pyrbac.c
-+++ Python-3.13.0/Modules/pyrbac.c
+--- Python-3.13.3/Modules/pyrbac.c
++++ Python-3.13.3/Modules/pyrbac.c
 @@ -0,0 +1,81 @@
 +/*
 + * CDDL HEADER START
@@ -890,8 +890,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	return m;
 +
 +}
---- Python-3.13.0/Modules/pyrbac.h
-+++ Python-3.13.0/Modules/pyrbac.h
+--- Python-3.13.3/Modules/pyrbac.h
++++ Python-3.13.3/Modules/pyrbac.h
 @@ -0,0 +1,45 @@
 +/*
 + * CDDL HEADER START
@@ -938,8 +938,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +extern PyTypeObject UserattrType;
 +
 +#endif
---- Python-3.13.0/Modules/userattr.c
-+++ Python-3.13.0/Modules/userattr.c
+--- Python-3.13.3/Modules/userattr.c
++++ Python-3.13.3/Modules/userattr.c
 @@ -0,0 +1,301 @@
 +/*
 + * CDDL HEADER START
@@ -1242,8 +1242,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	0,                            /* tp_free */
 +	0,                            /* tp_is_gc */
 +};
---- Python-3.13.0/Lib/test/privrbactest.py
-+++ Python-3.13.0/Lib/test/privrbactest.py
+--- Python-3.13.3/Lib/test/privrbactest.py
++++ Python-3.13.3/Lib/test/privrbactest.py
 @@ -0,0 +1,267 @@
 +#!/usr/bin/python3.13
 +
@@ -1512,9 +1512,9 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    or not test_getuseruid() or not test_userattr_iter():
 +    print("*** Failures detected in rbac.userattr\n")
 +    sys.exit(1)
---- Python-3.13.0/configure.ac
-+++ Python-3.13.0/configure.ac
-@@ -7674,6 +7674,8 @@ PY_STDLIB_MOD([termios], [], [test "$ac_
+--- Python-3.13.3/configure.ac
++++ Python-3.13.3/configure.ac
+@@ -7695,6 +7695,8 @@ PY_STDLIB_MOD([termios], [], [test "$ac_
  dnl Solaris specific extensions
  PY_STDLIB_MOD_SIMPLE([ucred], [], [-ltsol])
  PY_STDLIB_MOD_SIMPLE([dlpi], [], [-ldlpi])
@@ -1523,8 +1523,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  
  dnl _elementtree loads libexpat via CAPI hook in pyexpat
  PY_STDLIB_MOD([pyexpat],
---- Python-3.13.0/Modules/Setup.stdlib.in
-+++ Python-3.13.0/Modules/Setup.stdlib.in
+--- Python-3.13.3/Modules/Setup.stdlib.in
++++ Python-3.13.3/Modules/Setup.stdlib.in
 @@ -160,6 +160,8 @@
  
  @MODULE_UCRED_TRUE@ucred ucred.c

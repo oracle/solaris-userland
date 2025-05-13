@@ -85,17 +85,3 @@ https://github.com/python/cpython/issues/53203
                        'aa_ET', 'am_ET', 'az_IR', 'byn_ER', 'fa_IR', 'gez_ET',
                        'my_MM', 'om_ET', 'or_IN', 'shn_MM', 'sid_ET', 'so_SO',
                        'ti_ET', 'tig_ER', 'wal_ET')
---- Python-3.13.1/Lib/test/test__locale.py
-+++ Python-3.13.1/Lib/test/test__locale.py
-@@ -102,6 +102,11 @@ def accept(loc):
-     # ps_AF doesn't work on Windows: see bpo-38324 (msg361830)
-     del known_numerics['ps_AF']
- 
-+if sys.platform == 'sunos5':
-+    # On Solaris, Japanese ERAs start with the year 1927,
-+    # and thus there's less of them.
-+    known_era['ja_JP'] = (5, '+:1:2019/05/01:2019/12/31:令和:%EC元年')
-+
- class _LocaleTests(unittest.TestCase):
- 
-     def setUp(self):

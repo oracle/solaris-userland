@@ -5,11 +5,11 @@ slightly tweaked form at some point in the future.
 Note that this can also have wrong impact on other tests (e.g., imap which
 tries to allocate huge chunks of virtual memory).
 
---- Python-3.11.8/Lib/test/libregrtest/setup.py
-+++ Python-3.11.8/Lib/test/libregrtest/setup.py
-@@ -70,6 +70,19 @@ def setup_process():
+--- Python-3.13.3/Lib/test/libregrtest/setup.py
++++ Python-3.13.3/Lib/test/libregrtest/setup.py
+@@ -71,6 +71,19 @@ def setup_process() -> None:
          if getattr(module, '__file__', None):
-             module.__file__ = os.path.abspath(module.__file__)
+             module.__file__ = os.path.abspath(module.__file__)  # type: ignore[type-var]
  
 +    # The socket test goes crazy on Solaris, slurping up VM until the system
 +    # dies or the test is killed.  So limit it to 8GB.  While we could do this

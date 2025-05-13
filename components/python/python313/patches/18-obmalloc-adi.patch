@@ -6,9 +6,9 @@ Use an explicit nonfaulting load to ignore the ADI tag.
 This patch should now work with both Studio and gcc compilers (and possibly
 many others). It might be pushed upstream.
 
---- Python-3.13.0/Objects/obmalloc.c
-+++ Python-3.13.0/Objects/obmalloc.c
-@@ -1900,6 +1900,38 @@ obmalloc controls.  Since this test is n
+--- Python-3.13.3/Objects/obmalloc.c
++++ Python-3.13.3/Objects/obmalloc.c
+@@ -1914,6 +1914,38 @@ obmalloc controls.  Since this test is n
  extremely desirable that it be this fast.
  */
  
@@ -47,7 +47,7 @@ many others). It might be pushed upstream.
  static bool _Py_NO_SANITIZE_ADDRESS
              _Py_NO_SANITIZE_THREAD
              _Py_NO_SANITIZE_MEMORY
-@@ -1910,7 +1942,7 @@ address_in_range(OMState *state, void *p
+@@ -1924,7 +1956,7 @@ address_in_range(OMState *state, void *p
      // another thread may be concurrently modifying the value without holding
      // the GIL. The following dance forces the compiler to read pool->arenaindex
      // only once.

@@ -1,0 +1,41 @@
+Handle deprecation warnings raised by setuptools._distutils.
+
+This is already known upstream:
+https://github.com/python/cpython/pull/132906
+https://github.com/python/cpython/pull/132923
+
+--- Python-3.13.3/Tools/peg_generator/pegen/build.py
++++ Python-3.13.3/Tools/peg_generator/pegen/build.py
+@@ -95,7 +95,10 @@ def compile_c_extension(
+     import setuptools.logging
+ 
+     from setuptools import Extension, Distribution
+-    from setuptools._distutils.dep_util import newer_group
++    try:
++        from setuptools.modified import newer_group
++    except ImportError:
++        from setuptools._distutils.dep_util import newer_group
+     from setuptools._distutils.ccompiler import new_compiler
+     from setuptools._distutils.sysconfig import customize_compiler
+ 
+--- Python-3.13.3/Lib/test/support/__init__.py
++++ Python-3.13.3/Lib/test/support/__init__.py
+@@ -1893,7 +1893,8 @@ def missing_compiler_executable(cmd_name
+     missing.
+ 
+     """
+-    from setuptools._distutils import ccompiler, sysconfig, spawn
++    import shutil
++    from setuptools._distutils import ccompiler, sysconfig
+     from setuptools import errors
+ 
+     compiler = ccompiler.new_compiler()
+@@ -1913,7 +1914,7 @@ def missing_compiler_executable(cmd_name
+                     "the '%s' executable is not configured" % name
+         elif not cmd:
+             continue
+-        if spawn.find_executable(cmd[0]) is None:
++        if shutil.which(cmd[0]) is None:
+             return cmd[0]
+ 
+ 

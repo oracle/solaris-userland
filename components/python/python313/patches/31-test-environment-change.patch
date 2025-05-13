@@ -1,0 +1,22 @@
+When setuptools_scm is available on the build machine, calling setuptools
+Distribution has a side effect of creating a new logging Handler, which
+changes the execution environment. This is then detected by the test
+suite, and the test failed.
+
+In order to make the test suite clean, this test is disabled for now.
+
+This was reported upstream:
+https://github.com/python/cpython/issues/133509
+https://github.com/pypa/setuptools-scm/issues/1139
+
+--- Python-3.13.3/Lib/test/test_peg_generator/test_c_parser.py
++++ Python-3.13.3/Lib/test/test_peg_generator/test_c_parser.py
+@@ -16,6 +16,8 @@ from test.support.script_helper import a
+ if support.check_cflags_pgo():
+     raise unittest.SkipTest("peg_generator test disabled under PGO build")
+ 
++raise unittest.SkipTest("peg_generator tests are disabled on Solaris")
++
+ test_tools.skip_if_missing("peg_generator")
+ with test_tools.imports_under_tool("peg_generator"):
+     from pegen.grammar_parser import GeneratedParser as GrammarParser
