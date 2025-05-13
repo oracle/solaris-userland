@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -30,3 +30,7 @@
 <transform file path=.*\.bat -> drop>
 
 <transform file link -> delete pkg.type .*>
+
+# We are dropping the script because it uses csh which is undergoing
+# restructuralization and it has very little value for users
+<transform path=.*tools/vim132$ -> drop>
