@@ -1,15 +1,18 @@
-Following patch works around an issue with long-ish path names.
-Patch provided by upstream maitainer Michael Albinus:
-https://lists.gnu.org/archive/html/tramp-devel/2025-04/msg00001.html
+Following patches address issues when the command line exceed 256 characters.
+Patches provided by upstream maitainer Michael Albinus.
+They have been added to mainstream tramp gate and will
+appear with Emacs 30.2 and Tramp 2.7.2.4 on GNU ELPA.
 
-diff --git a/lisp/net/tramp-sh.el b/lisp/net/tramp-sh.el
-index 047d93a5..481a3979 100644
---- a/lisp/net/tramp-sh.el
-+++ b/lisp/net/tramp-sh.el
-@@ -648,6 +648,14 @@ we have this shell function.
+https://lists.gnu.org/archive/html/tramp-devel/2025-04/msg00001.html
+https://lists.gnu.org/archive/html/tramp-devel/2025-05/msg00017.html
+
+diff -r b1a28f8a774d lisp/net/tramp-sh.el
+--- a/lisp/net/tramp-sh.el	Tue May 13 05:05:01 2025 -0700
++++ b/lisp/net/tramp-sh.el	Tue May 13 05:19:00 2025 -0700
+@@ -643,6 +643,14 @@
  Format specifiers are replaced by `tramp-expand-script', percent
  characters need to be doubled.")
-
+ 
 +(defconst tramp-readlink-file-truename
 +  "if %s -h \"$1\"; then echo t; else echo nil; fi
 +%s --canonicalize-missing \"$1\""
@@ -21,7 +24,7 @@ index 047d93a5..481a3979 100644
  (defconst tramp-perl-file-truename
    "%p -e '
  use File::Spec;
-@@ -1291,14 +1299,12 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
+@@ -1286,15 +1294,13 @@
      (cond
       ;; Use GNU readlink --canonicalize-missing where available.
       ((tramp-get-remote-readlink v)
@@ -42,4 +45,28 @@ index 047d93a5..481a3979 100644
 +		 (tramp-shell-quote-argument localname)))
        (with-current-buffer (tramp-get-connection-buffer v)
  	(goto-char (point-min))
-	(tramp-set-file-property v localname "file-symlink-marker" (read (current-buffer)))
+ 	(tramp-set-file-property v localname "file-symlink-marker" (read (current-buffer)))
+@@ -3096,7 +3102,9 @@
+ 			  (setq p (tramp-get-connection-process v))
+ 			  (process-put p 'remote-pid pid)
+ 			  (tramp-set-connection-property p "remote-pid" pid))
+-			(when (memq connection-type '(nil pipe))
++			(when
++                            (or (memq connection-type '(nil pipe))
++                                (tramp-check-remote-uname v tramp-sunos-unames))
+ 			  ;; Disable carriage return to newline
+ 			  ;; translation.  This does not work on
+ 			  ;; macOS, see Bug#50748.
+@@ -3110,8 +3118,11 @@
+ 			  ;; character to read.  When a process does
+ 			  ;; not read from stdin, like magit, it
+ 			  ;; should set a timeout
+-			  ;; instead. See`tramp-pipe-stty-settings'.
++			  ;; instead.  See `tramp-pipe-stty-settings'.
+ 			  ;; (Bug#62093)
++			  ;; On Solaris, the maximum line length
++			  ;; depends also on MAX_CANON (256).  So we
++			  ;; disable buffering as well.
+ 			  ;; FIXME: Shall we rather use "stty raw"?
+ 			  (tramp-send-command
+ 			   v (format
