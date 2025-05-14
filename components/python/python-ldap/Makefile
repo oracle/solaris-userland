@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 
 # Build requirements, needed before inclusion of shared-macros.
@@ -30,16 +30,16 @@ COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		python-ldap
-COMPONENT_VERSION=	3.4.2
+COMPONENT_VERSION=	3.4.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b16470a0983aaf09a00ffb8f40b69a2446f3d0be639a229256bce381fcb268f7
+    sha256:7edb0accec4e037797705f3a05cbf36a9fde50d08c8f67f2aef99a2628fab828
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.python-ldap.org/
 COMPONENT_BUGDB=	python-mod/python-ldap
 COMPONENT_ANITYA_ID=	13261
-COMPONENT_BAID=		126501
+COMPONENT_BAID=		327439
 
 
 include $(WS_MAKE_RULES)/prep.mk
@@ -49,6 +49,15 @@ include $(WS_MAKE_RULES)/ips.mk
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
+
+# Redact time taken, platform and plugins as version numbers are
+# likely to change.
+COMPONENT_TEST_TRANSFORMS +=	\
+	'-e "/^platform sunos/d" ' \
+	'-e "/^plugins: /d" ' \
+	'-e "s|failed in .*[^=]|failed in REDACTED |" '
+# Currently all version of python report the same results.
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)/$(PYTHON_LIB)
 # Update test PATH for slapd (/usr/lib) and slapadd, etc. (/usr/sbin).
