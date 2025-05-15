@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,15 +28,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fribidi
-COMPONENT_VERSION=	1.0.13
+COMPONENT_VERSION=	1.0.16
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_URL=  https://github.com/fribidi/fribidi/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f24e8e381bcf76533ae56bd776196f3a0369ec28e9c0fdb6edd163277e008314
+	sha256:5a1d187a33daa58fcee2ad77f0eb9d136dd6fa4096239199ba31e850d397e8a8
 COMPONENT_BUGDB=        library/fribidi
 COMPONENT_ANITYA_ID=	857
 
-COMPONENT_BAID=		152874
+COMPONENT_BAID=		329085
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
