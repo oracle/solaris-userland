@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
 # Not all python scripts have executable set
@@ -31,5 +31,7 @@
 <transform file path=usr/share/hplip/.+\.py$ -> default pkg.depend.bypass-generate .*>
 <transform file path=usr/lib/cups/backend/hpfax -> default pkg.depend.bypass-generate .*>
 
-# Manifest contains only generic version with $(PYVER) variable.
-<transform file path=.*/vendor-packages -> edit path $(PYVER) \$\(PYVER\)>
+# aclocal.m4 now contains auto detection mechanism where to install python
+# module libraries without any way how to override it without patching
+<transform file path=.*/site-packages/.* -> set action.hash %(path)>
+<transform file path=.*/site-packages/(.*) -> set path \$\(PYLIB\)/%<1>>

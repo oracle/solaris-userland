@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=	64
@@ -31,9 +31,9 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         hplip
-COMPONENT_VERSION=      3.24.4
-COMPONENT_BAID=		175791
-COMPONENT_ARCHIVE_HASH= sha256:5d7643831893a5e2addf9d42d581a5dbfe5aaf023626886b8762c5645da0f1fb
+COMPONENT_VERSION=      3.25.2
+COMPONENT_BAID=		327928
+COMPONENT_ARCHIVE_HASH= sha256:e872ff28eb2517705a95f6e1839efa1e50a77a33aae8905278df2bd820919653
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hplipopensource.com/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
@@ -51,8 +51,6 @@ CONFIGURE_OPTIONS +=	--enable-cups-ppd-install
 CONFIGURE_OPTIONS +=	--disable-gui-build
 CONFIGURE_OPTIONS +=    --disable-imageProcessor-build
 CONFIGURE_OPTIONS +=	PYTHON=$(PYTHON)
-CONFIGURE_OPTIONS +=	am_cv_python_pythondir="$(PYTHON_VENDOR_PACKAGES)"
-CONFIGURE_OPTIONS +=	am_cv_python_pyexecdir="$(PYTHON_VENDOR_PACKAGES)"
 # bye, bye SANE backends
 CONFIGURE_OPTIONS +=	--disable-scan-build
 
@@ -64,10 +62,6 @@ COMPONENT_PREP_ACTION = (cd $(@D) ; \
     aclocal ; \
     automake --foreign --add-missing ; \
     autoconf );
-
-# Convert the license file from Windows-1252 encoding to utf-8
-COMPONENT_PREP_ACTION += \
-    (iconv -f WINDOWS-1252 -t UTF-8 $(SOURCE_DIR)/COPYING > $(SOURCE_DIR)/COPYING.UTF8 );
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
@@ -82,7 +76,7 @@ PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/cups/filter/pstotiff
 COMPONENT_POST_INSTALL_ACTION += \
 	$(PYTHON) -m compileall $(PROTO_DIR)/usr/share/hplip;
 
-# For autopyc transformation
+PKG_MACROS +=	PYLIB=$(PYTHON_LIB)
 PKG_MACROS +=	PYVER=$(PYTHON_VERSION)
 
 REQUIRED_PACKAGES += image/library/libjpeg

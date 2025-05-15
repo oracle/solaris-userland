@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -33,6 +33,9 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2004/262 value=PSARC/2019/152
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file usr/lib/python3.11/site-packages/cupsext.so path=$(PYLIB)/cupsext.so
+file usr/lib/python3.11/site-packages/hpmudext.so path=$(PYLIB)/hpmudext.so
+file usr/lib/python3.11/site-packages/pcardext.so path=$(PYLIB)/pcardext.so
 file path=etc/hp/hplip.conf
 file path=etc/udev/rules.d/56-hpmud.rules
 link path=usr/bin/hp-align target=../share/hplip/align.py
@@ -91,9 +94,6 @@ file path=usr/lib/cups/filter/hpcups mode=0555
 file path=usr/lib/cups/filter/hpcupsfax mode=0555
 file path=usr/lib/cups/filter/hpps mode=0555
 file path=usr/lib/cups/filter/pstotiff mode=0555
-file path=usr/lib/python$(PYVER)/vendor-packages/cupsext.so
-file path=usr/lib/python$(PYVER)/vendor-packages/hpmudext.so
-file path=usr/lib/python$(PYVER)/vendor-packages/pcardext.so
 file path=usr/lib/systemd/system/hplip-printer@.service
 file path=usr/share/cups/drv/hp/hpcups.drv
 file path=usr/share/cups/mime/pstotiff.convs
@@ -313,6 +313,7 @@ file path=usr/share/cups/model/hplip/hp-color_laserjet_m856-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_5800-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_6800-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_6801-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_8801-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_e47528-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_e57540-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-color_laserjet_mfp_e77422-ps.ppd.gz
@@ -806,6 +807,7 @@ file path=usr/share/cups/model/hplip/hp-laserjet_8100_series-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_8150_mfp-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_8150_mfp.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_8150_series-pcl3.ppd.gz
+file path=usr/share/cups/model/hplip/hp-laserjet_8501-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_9000_mfp-pcl3.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_9000_mfp-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_9000_series-pcl3.ppd.gz
@@ -901,6 +903,7 @@ file path=usr/share/cups/model/hplip/hp-laserjet_m9050_mfp-pcl3.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_m9050_mfp-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_m9059_mfp-pcl3.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_m9059_mfp-ps.ppd.gz
+file path=usr/share/cups/model/hplip/hp-laserjet_mfp_8601-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_mfp_e42540-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_mfp_e72425-ps.ppd.gz
 file path=usr/share/cups/model/hplip/hp-laserjet_mfp_e72430-ps.ppd.gz
