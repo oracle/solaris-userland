@@ -54,10 +54,6 @@ PYTHON_DATA =		/usr
 COMPONENT_SETUP_ARGS += --no-compile-schemas
 COMPONENT_SETUP_ARGS += --no-update-icon-cache
 
-CONFIGURE_OPTIONS += -Dpython.purelibdir=$(PYTHON_VENDOR_PACKAGES)
-COMPONENT_POST_INSTALL_ACTION += \
-	$(PYTHON) -m compileall $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)
-
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/meld
 
 # To find py3cairo

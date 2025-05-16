@@ -75,12 +75,6 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 CONFIGURE_OPTIONS += -Dpython=$(PYTHON)
 CONFIGURE_OPTIONS += -Dtests=true
 
-# Move into vendor-packages and pycompile all python sources
-COMPONENT_POST_INSTALL_ACTION += \
-	$(MV) $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/site-packages \
-		$(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages; \
-	$(PYTHON) -m compileall $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages
-
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -53,12 +53,6 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 # Need to convert "#! /usr/bin/env python" to actual path for pkgdepend to work
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-browser-connector
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-browser-connector-host
-
-# Deliver into vendor-packages instead of site-packages
-# Note: meson 0.60.0 will support this
-COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRLIBDIR)/python3.11/vendor-packages; \
-	$(MV) $(PROTOUSRLIBDIR)/python3.11/site-packages/* $(PROTOUSRLIBDIR)/python3.11/vendor-packages/
 
 REQUIRED_PACKAGES += library/python/pygobject-3-311
 REQUIRED_PACKAGES += runtime/python-311

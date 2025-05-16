@@ -70,16 +70,6 @@ include $(WS_MAKE_RULES)/common.mk
 CONFIGURE_OPTIONS += -Dpython=$(PYTHON)
 CONFIGURE_OPTIONS += -Dpygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES_BASE)/gi/overrides/64
 
-# Python module is installed on non-standard place
-COMPONENT_POST_INSTALL_ACTION += \
-        $(MV) $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/site-packages/gi/overrides/*.py \
-                $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)/gi/overrides/64 && \
-	$(RM) -r $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/site-packages ;
-
-# Generate python's bytecode manually since Meson does not support it.
-COMPONENT_POST_INSTALL_ACTION += \
-	$(PYTHON) -m compileall $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
-
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += library/desktop/gstreamer-1

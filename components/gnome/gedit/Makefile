@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -52,15 +52,6 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
-
-# Compile all python sources to .pyc files
-COMPONENT_POST_INSTALL_ACTION += \
-        $(MV) $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/site-packages \
-              $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/vendor-packages; \
-        $(PYTHON) -m compileall $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/vendor-packages/gi/overrides;
-PLUGINS_DIR = snippets; quickopen; externaltools
-COMPONENT_POST_INSTALL_ACTION += $(foreach i,$(PLUGINS_DIR),\
-        $(PYTHON) -m compileall $(PROTO_DIR)$(USRLIBDIR64)/gedit/plugins/$(i));
 
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/at-spi2-core

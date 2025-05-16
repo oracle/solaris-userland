@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 
 #
@@ -108,6 +108,10 @@ endif
 CONFIGURE_OPTIONS += -Ddefault_library=shared
 CONFIGURE_OPTIONS += -Db_pie=$(MESON_BUILDPIE)
 
+# Python bytecode optimization level, 0 for none, 2 for best
+MESON_PYTHON_BYTECOMPILE ?= 2
+CONFIGURE_OPTIONS += -Dpython.bytecompile=$(MESON_PYTHON_BYTECOMPILE)
+
 # The PIE mode is enabled by -Db_pie. If we force our PIE flags onto meson this
 # way it might break build because g-ir-scanner is not aware of PIE. Plus we
 # have a pklint check making sure that all binaries are PIE so if -Db_pie is
@@ -126,6 +130,9 @@ CONFIGURE_OPTIONS += --libexecdir="$(CONFIGURE_LIBDIR.32)"
 CONFIGURE_OPTIONS += --localstatedir="$(VARDIR)"
 CONFIGURE_OPTIONS += --mandir="$(CONFIGURE_MANDIR)"
 CONFIGURE_OPTIONS += --sysconfdir="$(CONFIGURE_ETCDIR.$(BITS))"
+# Deliver into vendor-packages instead of site-packages
+CONFIGURE_OPTIONS += -Dpython.platlibdir=$(PYTHON_LIB)
+CONFIGURE_OPTIONS += -Dpython.purelibdir=$(PYTHON_LIB)
 endif
 CONFIGURE_OPTIONS += $(CONFIGURE_OPTIONS.$(BITS))
 CONFIGURE_OPTIONS += $(CONFIGURE_OPTIONS.$(MACH))

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -46,8 +46,6 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # Assumes GNU msgfmt & xgettext is first in $PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
-
-CONFIGURE_OPTIONS += -Dpython.purelibdir=$(PYTHON_VENDOR_PACKAGES)
 
 # pkgdepend doesn't like the first line of a Python script to be:
 # '#!/usr/bin/env python3' so turn it into '#!/usr/bin/python3.11'
