@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,13 +28,13 @@ BUILD_BITS=		64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libpaper
-COMPONENT_VERSION=	2.2.5
-COMPONENT_ARCHIVE_HASH=	sha256:7be50974ce0df0c74e7587f10b04272cd53fd675cb6a1273ae1cc5c9cc9cab09
+COMPONENT_VERSION=	2.2.6
+COMPONENT_ARCHIVE_HASH=	sha256:500d39dc58768ee09688738c8b5bfe07640ba2fd6c25a6dc78810eb69c719e93
 COMPONENT_ARCHIVE_URL=	https://github.com/rrthomas/libpaper/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://github.com/rrthomas/libpaper
 COMPONENT_BUGDB=        library/libpaper
 COMPONENT_ANITYA_ID=	15136
-COMPONENT_BAID=		178176
+COMPONENT_BAID=		329220
 
 include $(WS_MAKE_RULES)/common.mk
 
