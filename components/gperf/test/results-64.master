@@ -1,4 +1,5 @@
 cd lib; /usr/gnu/bin/make check
+/usr/gnu/bin/make  check-am
 cd src; /usr/gnu/bin/make check
 cd tests; /usr/gnu/bin/make check
 testing ANSI C reserved words, all items should be found in the set
@@ -71,4 +72,6 @@ diff $(SOURCE_DIR)/tests/test-6.exp test-6.out
 only if, do, for, case, goto, else, while, and return should be found 
 ./aout -v < $(SOURCE_DIR)/tests/c.gperf | LC_ALL=C tr -d '\r' | LC_ALL=C sed -e 's|[^ ]*[/\\][\\]*src[/\\][\\]*gperf[^ ]*|gperf|' > test-7.out
 diff $(SOURCE_DIR)/tests/test-7.exp test-7.out
+gperf -m 10 < $(SOURCE_DIR)/tests/5000.gperf | LC_ALL=C tr -d '\r' | LC_ALL=C sed -e 's|[^ ]*[/\\][\\]*src[/\\][\\]*gperf[^ ]*|gperf|' > 5000.out
+diff $(SOURCE_DIR)/tests/5000.exp 5000.out
 cd doc; /usr/gnu/bin/make check

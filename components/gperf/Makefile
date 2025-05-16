@@ -20,18 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
+
 BUILD_BITS= 64
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gperf
-COMPONENT_VERSION=	3.1
+COMPONENT_VERSION=	3.3
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:588546b945bba4b70b6a3a616e80b4ab466e3f33024a352fc2198112cdbb3ae2
+    sha256:fd87e0aba7e43ae054837afd6cd4db03a3f2693deb3619085e6ed9d8d9604ad8
 COMPONENT_ANITYA_ID=	1237
 
-COMPONENT_BAID=		38303
+COMPONENT_BAID=		329161
 
 # must build tests before use
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
