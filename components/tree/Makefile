@@ -20,15 +20,15 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tree
-COMPONENT_VERSION=	2.1.1
-COMPONENT_BAID=		161730
-COMPONENT_ARCHIVE_HASH=	sha256:bcd2a0327ad40592a9c43e09a4d2ef834e6f17aa9a59012a5fb1007950b5eced
+COMPONENT_VERSION=	2.2.1
+COMPONENT_BAID=		329088
+COMPONENT_ARCHIVE_HASH=	sha256:70d9c6fc7c5f4cb1f7560b43e2785194594b9b8f6855ab53376f6bd88667ee04
 COMPONENT_SRC_NAME=	unix-$(COMPONENT_NAME)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=	https://gitlab.com/OldManProgrammer/unix-tree
