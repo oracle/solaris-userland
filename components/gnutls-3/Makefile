@@ -20,16 +20,16 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnutls
-COMPONENT_VERSION=	3.8.4
-COMPONENT_BAID=		163707
-COMPONENT_ARCHIVE_HASH= sha256:2bea4e154794f3f00180fa2a5c51fe8b005ac7a31cd58bd44cdfa7f36ebc3a9b
+COMPONENT_VERSION=	3.8.9
+COMPONENT_BAID=		329222
+COMPONENT_ARCHIVE_HASH= sha256:69e113d802d1670c4d5ac1b99040b1f2d5c7c05daec5003813c049b5184820ed
 COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gnutls/v3.8/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  https://www.gnutls.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
@@ -313,9 +313,7 @@ include ../../make-rules/shared-targets.mk
 
 PKG_MACROS += COMPONENT_VERSION=$(COMPONENT_VERSION)
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
-# test-memset_explicit fails on sparcv7
-$(BUILD_DIR)/sparcv7/.tested-and-compared: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-sparcv7.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n -e "/SKIP/p" ' \
