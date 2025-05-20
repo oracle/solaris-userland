@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -61,15 +61,13 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
+REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += library/c++/glibmm
 REQUIRED_PACKAGES += library/c++/sigcpp
+# atkmm dependency can be removed when upgrading to 46.0 or later
 REQUIRED_PACKAGES += library/desktop/c++/atkmm
-REQUIRED_PACKAGES += library/desktop/c++/cairomm
 REQUIRED_PACKAGES += library/desktop/c++/gtkmm3
-REQUIRED_PACKAGES += library/desktop/c++/mm-common
-REQUIRED_PACKAGES += library/desktop/c++/pangomm
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3

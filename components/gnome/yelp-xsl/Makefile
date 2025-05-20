@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -47,4 +47,5 @@ CONFIGURE_OPTIONS += --enable-doc
 
 REQUIRED_PACKAGES += developer/documentation-tool/itstool
 REQUIRED_PACKAGES += developer/documentation-tool/mallard/ducktype
+REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt

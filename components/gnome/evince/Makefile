@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -78,7 +78,6 @@ COMPONENT_BUILD_ENV += PATH="/usr/gnu/bin:$(PATH)"
 
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
@@ -97,6 +96,4 @@ REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/libspectre
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += print/filter/poppler
-REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

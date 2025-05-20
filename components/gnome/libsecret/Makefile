@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -82,11 +82,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Fail:/p" ' \
 	'-e "/Pass:/p" '
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/perl-5/xml-parser
-REQUIRED_PACKAGES += library/security/libgpg-error
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library/security/libgcrypt

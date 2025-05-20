@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -45,5 +45,4 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += library/perl-5/xml-parser
+REQUIRED_PACKAGES += text/gnu-gettext

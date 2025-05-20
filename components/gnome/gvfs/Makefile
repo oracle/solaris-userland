@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -76,10 +76,9 @@ CONFIGURE_OPTIONS += -Dmtp=false
 CONFIGURE_OPTIONS += -Dafc=false
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libgdata
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/libarchive
@@ -87,5 +86,3 @@ REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += system/library/security/libgcrypt
 REQUIRED_PACKAGES += system/network/avahi
-REQUIRED_PACKAGES += system/network/avahi/gui
-REQUIRED_PACKAGES += library/gnome/gcr

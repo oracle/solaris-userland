@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 32_and_64
@@ -57,6 +57,10 @@ COMPONENT_TEST_TRANSFORMS += \
        '-e "/FAIL: /p" ' \
        '-e "/ERROR: /p" ' \
 
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
+REQUIRED_PACKAGES += developer/documentation-tool/help2man
+REQUIRED_PACKAGES += developer/lexer/flex
+REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += image/graphviz
+REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/libxslt

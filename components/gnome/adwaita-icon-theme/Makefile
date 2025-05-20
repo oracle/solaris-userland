@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -44,5 +44,5 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 # Required so that configure can find and use 64-bit version
 CONFIGURE_ENV += ac_cv_path_GTK_ENCODE_SYMBOLIC_SVG=$(USRBINDIR64)/gtk-encode-symbolic-svg
 
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += library/perl-5/xml-parser
+# Needed for gtk-update-icon-cache
+REQUIRED_PACKAGES += library/desktop/gtk3

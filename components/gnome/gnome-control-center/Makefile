@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -48,7 +48,6 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CONFIGURE_OPTIONS += -Ddocumentation=true
 CONFIGURE_OPTIONS += -Dibus=true
-# Required for other components.
 # No webcam support.
 CONFIGURE_OPTIONS += -Dcheese=false
 CONFIGURE_OPTIONS += -Dwayland=false
@@ -64,23 +63,17 @@ REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/colord-gtk
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
-REQUIRED_PACKAGES += library/desktop/grilo
 REQUIRED_PACKAGES += library/desktop/gsound
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libhandy
-REQUIRED_PACKAGES += library/desktop/libgweather
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
-REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/libgtop
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += service/image/colord
-REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/input-method/ibus
 REQUIRED_PACKAGES += system/library/accountsservice
 REQUIRED_PACKAGES += system/library/fontconfig
@@ -92,4 +85,3 @@ REQUIRED_PACKAGES += system/library/upower
 REQUIRED_PACKAGES += x11/library/libepoxy
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxi
-REQUIRED_PACKAGES += x11/library/mesa

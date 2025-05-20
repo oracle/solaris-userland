@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 		64
 # All components using gobject-introspection must be built with gcc as
@@ -86,7 +86,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D $(COMPONENT_DIR)/files/org.gnome.login-screen.gschema.override \
                 $(PROTO_DIR)/usr/share/glib-2.0/schemas/org.gnome.login-screen.gschema.override;
 
-REQUIRED_PACKAGES += data/iso-codes
 REQUIRED_PACKAGES += developer/documentation-tool/itstool
 REQUIRED_PACKAGES += file/gnu-coreutils
 REQUIRED_PACKAGES += gnome/accessibility/orca
@@ -114,10 +113,7 @@ REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxau
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxdmcp
-REQUIRED_PACKAGES += x11/library/libxft
-REQUIRED_PACKAGES += x11/library/libxi
-REQUIRED_PACKAGES += x11/library/libxinerama
-REQUIRED_PACKAGES += x11/server/xephyr
+REQUIRED_PACKAGES += x11/server/xorg
 REQUIRED_PACKAGES += x11/server/xserver-common
 REQUIRED_PACKAGES += x11/session/xinit
 REQUIRED_PACKAGES += x11/x11-server-utilities

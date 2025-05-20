@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -55,18 +55,13 @@ CONFIGURE_OPTIONS += -Dhkp-support=false -Dmanpage=true
 
 
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
-REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += library/gnome/libsecret
-REQUIRED_PACKAGES += library/libsoup
 # for manpage
 REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/security/gpgme
-REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/network/avahi
-REQUIRED_PACKAGES += system/network/avahi/gui
 REQUIRED_PACKAGES += system/network/ldap/openldap

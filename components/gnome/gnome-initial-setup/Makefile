@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -55,19 +55,11 @@ CONFIGURE_OPTIONS += -Dcheese=disabled
 CPPFLAGS += -DUT_NAMESIZE=_UTMP_USER_LEN
 
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
-REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/geoclue
 REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/desktop/libgweather
-REQUIRED_PACKAGES += library/desktop/librest
-REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
-REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/gnome/libsecret
-REQUIRED_PACKAGES += library/json-glib
-REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/display-manager/gdm
 REQUIRED_PACKAGES += system/input-method/ibus
 REQUIRED_PACKAGES += system/library/accountsservice
