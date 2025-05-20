@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS=	64
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		foomatic-db
-DAILY_VERSION=		20240820
+DAILY_VERSION=		20250519
 # foomatic-db creates only the daily snapshots
 COMPONENT_VERSION=	$(DAILY_VERSION)
 FOO_VERSION=		4.0
 IPS_COMPONENT_VERSION=	$(FOO_VERSION).$(DAILY_VERSION)
-COMPONENT_BAID=		175810
+COMPONENT_BAID=		329524
 # version (4.0) is relative to foomatic-db-engine
 #  ...do not combine foomatic-db with foomatic-db-engine of the different versions
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(FOO_VERSION)-$(DAILY_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:0513bb39d6051b3d43bd2f825a78773e36818b5ac035d2b013477ce8299f4b86
+COMPONENT_ARCHIVE_HASH=	sha256:3d8ab424708af682bef59fb24d3634c7dd5a0db07d5f5bb87ed068db34f5ead2
 COMPONENT_ARCHIVE_URL=	http://www.openprinting.org/download/foomatic/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://wiki.linuxfoundation.org/openprinting/database/foomatic
 COMPONENT_BUGDB=	utility/foomatic
