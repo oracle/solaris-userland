@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -49,6 +49,9 @@ PYTHON_VERSION = 3.11
 # Disable map plugin so we don't need libchamplain or clutter
 CONFIGURE_OPTIONS += -Dplugin_map=false
 
+# Disable plugin for PicasaWeb service that Google shut down in 2016
+CONFIGURE_OPTIONS += -Dplugin_postasa=false
+
 # Set runpath to find libeog.so library.
 LDFLAGS += -Wl,-R$(USRLIBDIR64)/eog
 
@@ -62,6 +65,5 @@ REQUIRED_PACKAGES += image/viewer/eog
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/desktop/libgdata
 REQUIRED_PACKAGES += library/desktop/libpeas
 REQUIRED_PACKAGES += library/glib2
