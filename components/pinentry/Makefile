@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -30,18 +30,18 @@ include ../../make-rules/shared-macros.mk
 PATH = $(GNUBIN):$(USRBINDIR)
 
 COMPONENT_NAME=		pinentry
-COMPONENT_VERSION=	1.2.1
+COMPONENT_VERSION=	1.3.1
 COMPONENT_PROJECT_URL=	https://www.gnupg.org/related_software/pinentry/
 COMPONENT_ARCHIVE=     $(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:457a185e5a85238fb945a955dc6352ab962dc8b48720b62fc9fa48c7540a4067
+    sha256:bc72ee27c7239007ab1896c3c2fae53b076e2c9bd2483dc2769a16902bce8c04
 COMPONENT_ARCHIVE_URL=	https://gnupg.org/ftp/gcrypt/pinentry/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=      $(COMPONENT_ARCHIVE_URL).sig
 
 COMPONENT_BUGDB=	utility/gnupg
 COMPONENT_ANITYA_ID=	3643
 
-COMPONENT_BAID=		160260
+COMPONENT_BAID=		329795
 
 TEST_TARGET= $(NO_TESTS)
 
@@ -61,7 +61,7 @@ CONFIGURE_OPTIONS  +=		--enable-libsecret
 CONFIGURE_BINDIR.64 = /usr/lib
 
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gnome/gcr
+REQUIRED_PACKAGES += library/gnome/gcr-4
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/security/libassuan

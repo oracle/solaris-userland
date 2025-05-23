@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libassuan
-COMPONENT_VERSION=	2.5.7
+COMPONENT_VERSION=	3.0.2
 COMPONENT_PROJECT_URL=	http://www.gnupg.org/related_software/libassuan/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0103081ffc27838a2e50479153ca105e873d3d65d8a9593282e9c94c7e6afb76
+    sha256:d2931cdad266e633510f9970e1a2f346055e351bb19f9b78912475b8074c36f6
 COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/libassuan/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/gnupg
 COMPONENT_ANITYA_ID=	1559
 
-COMPONENT_BAID=		161669
+COMPONENT_BAID=		329736
 
 include $(WS_MAKE_RULES)/common.mk
 

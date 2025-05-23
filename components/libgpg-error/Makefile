@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgpg-error
-COMPONENT_VERSION=	1.50
+COMPONENT_VERSION=	1.55
 COMPONENT_PROJECT_URL=  https://gnupg.org/software/libgpg-error/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:69405349e0a633e444a28c5b35ce8f14484684518a508dc48a089992fe93e20a
+    sha256:95b178148863f07d45df0cea67e880a79b9ef71f5d230baddc0071128516ef78
 COMPONENT_ARCHIVE_URL=  https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	library/libgpg-error
 COMPONENT_ANITYA_ID=	1628
 
-COMPONENT_BAID=		174322
+COMPONENT_BAID=		329706
 
 COMPONENT_BUILD_TARGETS = all info
 

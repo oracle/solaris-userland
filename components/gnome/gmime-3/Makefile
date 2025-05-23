@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -74,4 +74,5 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/security/gpgme
+REQUIRED_PACKAGES += library/security/libassuan
 REQUIRED_PACKAGES += library/zlib

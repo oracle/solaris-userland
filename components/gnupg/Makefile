@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -29,21 +29,18 @@ include ../../make-rules/shared-macros.mk
 PATH=$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		gnupg
-COMPONENT_VERSION=	2.3.8
+COMPONENT_VERSION=	2.5.6
 COMPONENT_PROJECT_URL=	http://www.gnupg.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:540b7a40e57da261fb10ef521a282e0021532a80fd023e75fb71757e8a4969ed
+    sha256:377f9d79af0ce494c0946dbe7c92197425bb522d7edd6f54acbc9869695131a8
 COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gnupg/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1215
 
-COMPONENT_BAID=		132293
+COMPONENT_BAID=		329938
 
 include $(WS_MAKE_RULES)/gnu-component.mk
-
-# Needed because we patch acinclude.m4 in patches/001-gcc-14.patch
-COMPONENT_PREP_ACTION += (cd $(@D) ; autoreconf -fiv) ;
 
 # Enable C99 mode 
 CC += -std=gnu99

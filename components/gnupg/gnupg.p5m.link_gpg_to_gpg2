@@ -18,13 +18,11 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
-# Link 'gpg' with 'gpg2' to workaround GnuPG tools directly executing
-# gpg from the source code. gpg2 also presents itself as a gpg command
-# in the help messages.
-link path=usr/bin/gpg target=gpg2
-link path=usr/bin/gpgv target=gpgv2
-link path=usr/share/man/man1/gpg.1 target=gpg2.1
-link path=usr/share/man/man1/gpgv.1 target=gpgv2.1
+# Link 'gpg2' with 'gpg' for compatibility with older version.
+link path=usr/bin/gpg2 target=gpg
+link path=usr/bin/gpgv2 target=gpgv
+link path=usr/share/man/man1/gpg2.1 target=gpg.1
+link path=usr/share/man/man1/gpgv2.1 target=gpgv.1

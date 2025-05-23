@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -36,16 +36,16 @@ gcc_OPT.i386.64 = -O2
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgcrypt
-COMPONENT_VERSION=	1.10.3
+COMPONENT_VERSION=	1.11.1
 COMPONENT_PROJECT_URL=  https://gnupg.org/software/libgcrypt/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:8b0870897ac5ac67ded568dcfadf45969cfa8a6beb0fd60af2a9eadc2a3272aa
+    sha256:24e91c9123a46c54e8371f3a3a2502f1198f2893fbfbf59af95bc1c21499b00e
 COMPONENT_ARCHIVE_URL=  https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libgcrypt
 COMPONENT_ANITYA_ID=	1623
 
-COMPONENT_BAID= 			167549
+COMPONENT_BAID= 			329709
 
 COMPONENT_BUILD_TARGETS = all info
 
@@ -65,6 +65,9 @@ CONFIGURE_OPTIONS += --enable-maintainer-mode
 CONFIGURE_OPTIONS += --disable-asm
 
 include ../../make-rules/shared-targets.mk
+
+# GNU sed is need (to manage optimization for jitterentropy.c).
+PATH=$(GNUBIN):$(USRBINDIR)
 
 # Some binaries (like gost-s-box) are built by compiler in CC_FOR_BUILD. That
 # does not respect our PIE config so we need to work around it

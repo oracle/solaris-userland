@@ -11,9 +11,9 @@ information see: https://bugs.gnupg.org/gnupg/issue2378
 The fix was created internally and offered for integration to the
 upstream.  It has not been accepted yet.
 
---- ./src/gen-posix-lock-obj.c.orig	Mon Jun 13 08:07:53 2016
-+++ ./src/gen-posix-lock-obj.c	Mon Jun 13 08:08:40 2016
-@@ -42,21 +42,8 @@
+--- libgpg-error-1.55/src/gen-posix-lock-obj.c
++++ libgpg-error-1.55/src/gen-posix-lock-obj.c
+@@ -44,21 +44,8 @@ # error sizeof pthread_mutex_t is not kn
  #endif
  #endif
  
@@ -36,7 +36,7 @@ upstream.  It has not been accepted yet.
  # error compiler is not able to enforce a 16 byte alignment
  #endif
  
-@@ -122,12 +109,14 @@
+@@ -124,12 +111,14 @@ "} gpgrt_lock_t;\n"
            "\n"
            "#define GPGRT_LOCK_INITIALIZER {%d,{{",
            SIZEOF_PTHREAD_MUTEX_T,

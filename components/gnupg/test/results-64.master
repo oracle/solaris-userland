@@ -8,6 +8,7 @@ PASS: t-sexputil
     > XAUTHORITY(xauthority) XMODIFIERS WAYLAND_DISPLAY XDG_SESSION_TYPE
     > QT_QPA_PLATFORM GTK_IM_MODULE DBUS_SESSION_BUS_ADDRESS
     > QT_IM_MODULE INSIDE_EMACS PINENTRY_USER_DATA(pinentry-user-data)
+    > PINENTRY_GEOM_HINT
 PASS: t-session-env
 PASS: t-openpgp-oid
 PASS: t-ssh-utils
@@ -21,7 +22,6 @@ PASS: t-ccparray
 PASS: t-recsel
 PASS: t-w32-cmdline
 PASS: t-exechelp
-error running '/bin/false': exit status 255
 PASS: t-exectool
 ===================
 All 21 tests passed
@@ -31,12 +31,24 @@ can't allocate lock for '$(SOURCE_DIR)/g10/t-keydb-keyring.kbx'
 PASS: t-keydb
 PASS: t-keydb-get-keyblock
 PASS: t-stutter
+PASS: t-keyid
 ==================
-All 4 tests passed
+All 5 tests passed
 ==================
-==================
-All 0 tests passed
-==================
+PASS: $(SOURCE_DIR)/sm/../tests/cms/samplekeys/ov-user.p12
+PASS: $(SOURCE_DIR)/sm/../tests/cms/samplekeys/ov-server.p12
+PASS: $(SOURCE_DIR)/sm/../tests/cms/samplekeys/opensc-test.p12
+PASS: $(SOURCE_DIR)/sm/../tests/cms/samplekeys/t5793-openssl.pfx
+PASS: $(SOURCE_DIR)/sm/../tests/cms/samplekeys/t5793-test.pfx
+PASS: $(SOURCE_DIR)/sm/../tests/cms/samplekeys/edward.tester@demo.gnupg.com.p12
+PASS: $(SOURCE_DIR)/sm/../tests/cms/samplekeys/nistp256-openssl-self-signed.p12
+PASS: $(SOURCE_DIR)/sm/../tests/cms/samplekeys/t6752-ov-user-ff.p12
+PASS: $(SOURCE_DIR)/sm/../tests/cms/samplekeys/credential_private_encrypted_AES256.p12
+PASS: $(SOURCE_DIR)/sm/../tests/cms/samplekeys/credential_private_encrypted_3DES.p12
+PASS: t-minip12
+=============
+1 test passed
+=============
 PASS: t-protect
 =============
 1 test passed
@@ -68,6 +80,9 @@ PASS: <standard>tests/openpgp/mds.scm
 Checking decryption of supplied files 
     > plain-1 plain-2 plain-3 plain-large <  
 PASS: <standard>tests/openpgp/decrypt.scm 
+Checking decryption of symmetric encrypted files 
+    > enc-sym-cfb-1 enc-sym-cfb-2 enc-sym-ocb-1 enc-sym-ocb-2 <  
+PASS: <standard>tests/openpgp/decrypt-sym.scm 
 Checking decryption of supplied files using --multifile. 
 Verifying files: 
     > plain-1 plain-2 plain-3 plain-large <  
@@ -96,6 +111,15 @@ Checking encryption
 Checking encryption using a specific cipher algorithm 
     > IDEA ........ 3DES ........ CAST5 ........ BLOWFISH ........ AES ........ AES192 ........ AES256 ........ TWOFISH ........ CAMELLIA128 ........ CAMELLIA192 ........ CAMELLIA256 ........ <  
     > plain-1 plain-2 plain-3 plain-large <  
+Importing additional sample keys for OCB tests 
+Checking OCB mode 
+    > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
+Checking two OCB capable keys 
+    > plain-1 <  
+Checking two OCB capable keys plus one not capable 
+    > plain-1 <  
+Checking non OCB capable key with --force-ocb 
+    > plain-1 <  
 PASS: <standard>tests/openpgp/encrypt.scm 
 Checking encryption of supplied files using --multifile. 
 Verifying files: 
@@ -307,6 +331,6 @@ Checking invocation with invalid file descriptors (issue2941).
     > status-fd attribute-fd logger-fd override-session-key-fd passphrase-fd command-fd <  
 PASS: <standard>tests/openpgp/issue2941.scm 
 =================== 
-61 tests run, 60 succeeded, 1 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
-Failed tests: <standard>tests/openpgp/trust-pgp-4.scm 
+62 tests run, 61 succeeded, 1 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
+Failed tests: tests/openpgp/trust-pgp-4.scm 
 =================== 
