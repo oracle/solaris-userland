@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		iniconfig
-COMPONENT_VERSION=	2.0.0
+COMPONENT_VERSION=	2.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	https://github.com/pytest-dev/iniconfig
 COMPONENT_BUGDB=	python-mod/iniconfig
 COMPONENT_ANITYA_ID=	114778
-COMPONENT_BAID=		140181
+COMPONENT_BAID=		329983
 
 # pypi archive doesn't include the test suite
 GIT_REPO=	https://github.com/pytest-dev/iniconfig
 GIT_COMMIT_ID=	v$(COMPONENT_VERSION)
-GIT_HASH=	sha256:19b0bbce4df0434b821290bb935eb69a9d42b079135d902d959f2df6ec47629c
+GIT_HASH=	sha256:6f3733b641f57bc5ec282c29e84532c20ea154443a6c1309233109063a9d6090
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

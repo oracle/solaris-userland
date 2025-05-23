@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fixtures
-COMPONENT_VERSION=	4.1.0
+COMPONENT_VERSION=	4.2.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:82b1c5e69f615526ef6c067188a1e6c6067df7f88332509c99f8b8fdbb9776f3
+    sha256:646a54035166aacd91b87126592449df1d1d4e376bb32db1816124785900493f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/testing-cabal/fixtures
 COMPONENT_BUGDB=	python-mod/fixtures
 COMPONENT_ANITYA_ID=	8047
-COMPONENT_BAID=		157364
+COMPONENT_BAID=		329982
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

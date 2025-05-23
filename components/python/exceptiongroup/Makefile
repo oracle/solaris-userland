@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		exceptiongroup
-COMPONENT_VERSION=	1.1.1
+COMPONENT_VERSION=	1.3.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:04cffd60878114a029cb88ac4d0ee779a2d4e71827ca85b9b0c94fb73dc51ba9
+	sha256:b241f5885f560bc56a59ee63ca4c6a8bfa46ae4ad651af316d4e81817bb9fd88
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/agronholm/exceptiongroup
 COMPONENT_BUGDB=	python-mod/exceptiongroup
 COMPONENT_ANITYA_ID=	245950
-COMPONENT_BAID=		144426
+COMPONENT_BAID=		329965
 
 # This component is not necessary for Python 3.11
 PYTHON_VERSIONS = $(WITHOUT_PYTHON3.11)
@@ -57,3 +57,5 @@ system-test:	$(NO_TESTS)
 
 # build dependencies
 REQUIRED_PACKAGES += library/python/flit_core
+
+REQUIRED_PACKAGES += library/python/typing-extensions-39
