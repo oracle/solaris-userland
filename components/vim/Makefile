@@ -80,6 +80,7 @@ CONFIGURE_OPTIONS +=	--enable-pythoninterp=dynamic
 CONFIGURE_OPTIONS +=	--enable-python3interp=dynamic
 CONFIGURE_OPTIONS +=	--enable-rubyinterp=dynamic
 CONFIGURE_OPTIONS +=	--disable-canberra
+CONFIGURE_OPTIONS +=	--disable-libsodium
 
 # We build two variants: with and without X support.
 $(NOX_VARIANT)/.configured:	CONFIGURE_OPTIONS += --without-x
@@ -151,7 +152,6 @@ REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/ncurses
-REQUIRED_PACKAGES += library/security/libsodium
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-311
