@@ -33,8 +33,6 @@ set name=pkg.fmri \
     value=pkg:/library/desktop/gdk-pixbuf@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
     value="GdkPixbuf library for image loading and manipulation"
-set name=com.oracle.info.baid value=$(COMPONENT_BAID)
-set name=com.oracle.info.description value=gdk-pixbuf
 set name=info.classification \
     value="org.opensolaris.category.2008:Desktop (GNOME)/Libraries"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
@@ -708,8 +706,16 @@ file path=usr/share/man/man1/gdk-pixbuf-query-loaders.1
 file path=usr/share/man/man3lib/libgdk_pixbuf-2.0.3lib
 file path=usr/share/man/man3lib/libgdk_pixbuf_xlib-2.0.3lib
 file path=usr/share/thumbnailers/gdk-pixbuf-thumbnailer.thumbnailer
-license gdk-pixbuf.license license=LGPLv2
+license gdk-pixbuf.license license=LGPLv2 \
+    com.oracle.info.baid=$(COMPONENT_BAID) \
+    com.oracle.info.description=gdk-pixbuf \
+    com.oracle.info.name=$(COMPONENT_NAME) \
+    com.oracle.info.version=$(IPS_COMPONENT_VERSION)
+license gdk-pixbuf-xlib.license license="LGPLv2 " \
+    com.oracle.info.baid=$(COMPONENT_BAID_1) \
+    com.oracle.info.description=gdk-pixbuf-xlib \
+    com.oracle.info.name=$(COMPONENT_NAME_1) \
+    com.oracle.info.version=$(COMPONENT_VERSION_1)
 # The pixbuf-loaders-installer service was moved from the desktop-cache
 # package, so we depend on the post-split version to avoid conflicts
 depend type=optional fmri=service/gnome/desktop-cache@0.4.0
-
