@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         rlwrap
-COMPONENT_VERSION=      0.46.1
+COMPONENT_VERSION=      0.46.2
 COMPONENT_PROJECT_URL=  https://github.com/hanslub42/rlwrap
 COMPONENT_ARCHIVE=      $(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:2711986a1248f6ac59e2aecf5586205835970040d300a42b4bf8014397e73e37
+    sha256:9abb0a0dc19e85794d9b8e72e480530563eb4ee1bf243e87c0e0dd05ea4a2f09
 COMPONENT_ARCHIVE_URL=  \
-	$(COMPONENT_PROJECT_URL)/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+	$(COMPONENT_PROJECT_URL)/archive/refs/tags/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ANITYA_ID=	4199
 
-COMPONENT_BAID=		144923
+COMPONENT_BAID=		330257
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -44,6 +44,18 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
+
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Testsuite /p" ' \
+        '-e "/=====/p" ' \
+        '-e "/TOTAL:/p" ' \
+        '-e "/PASS:/p" ' \
+        '-e "/SKIP:/p" ' \
+        '-e "/XFAIL:/p" ' \
+        '-e "/FAIL:/p" ' \
+        '-e "/XPASS:/p" ' \
+        '-e "/ERROR/p" '
 
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += system/library
