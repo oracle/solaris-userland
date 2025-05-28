@@ -3,10 +3,12 @@ upstream. This is because it implements Solaris oddity - having the binaries
 available both without prefix and with 'g' prefix at the same time, only in
 different paths.
 
---- grep-2.22-orig/src/egrep.sh	Wed Oct 21 22:00:20 2015
-+++ grep-2.22/src/egrep.sh	Tue Jan 19 14:42:27 2016
-@@ -1,2 +1,29 @@
+--- grep-3.12/src/egrep.sh
++++ grep-3.12/src/egrep.sh
+@@ -1,4 +1,31 @@
  #!@SHELL@
+ cmd=${0##*/}
+ echo "$cmd: warning: $cmd is obsolescent; using @grep@ @option@" >&2
 -exec @grep@ @option@ "$@"
 +# The script is a wrapper to GNU grep to be called with apropriate (-E or -F)
 +# command line option. We can't just run 'ggrep' as the path may not contain

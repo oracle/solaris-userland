@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		grep
-COMPONENT_VERSION=	3.11
+COMPONENT_VERSION=	3.12
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:1db2aedde89d0dea42b16d9528f894c8d15dae4e190b59aecc78f5a951276eab
+    sha256:2649b27c0e90e632eadcd757be06c6e9a4f48d941de51e7c0f83ff76408a07b9
 COMPONENT_BUGDB=	utility/ggrep
 COMPONENT_ANITYA_ID=	1251
 
-COMPONENT_BAID=	173634
+COMPONENT_BAID=	330122
 
 SYSTEM_TEST_TARGET= $(SOURCE_DIR)/.system-test-patched configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
