@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,17 +30,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		geoclue
-COMPONENT_VERSION=	2.5.7
+COMPONENT_VERSION=	2.7.2
 COMPONENT_PROJECT_URL=	http://freedesktop.org/wiki/Software/GeoClue/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-        sha256:6cc7dbe4177b4e7f3532f7fe42262049789a3cd6c55afe60a3564d7394119c27
+        sha256:01d24a44a036769049411899ae83c9a86f73d272cca3df6af5a03bfac32456d2
 COMPONENT_ARCHIVE_URL=	https://gitlab.freedesktop.org/$(COMPONENT_NAME)/$(COMPONENT_NAME)/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13108
 
-COMPONENT_BAID=		112999
+COMPONENT_BAID=		328386
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -67,6 +67,6 @@ CONFIGURE_OPTIONS += -Ddemo-agent=false
 CONFIGURE_OPTIONS.32 += -Dintrospection=false
 
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libsoup
+REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += system/library/math

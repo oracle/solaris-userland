@@ -1,0 +1,67 @@
+disable gio for 32-bit build
+
+--- a/libgeoclue/meson.build	2025-05-08 08:15:28.482749742 -0700
++++ b/libgeoclue/meson.build	2025-05-08 08:35:23.912093038 -0700
+@@ -71,32 +71,38 @@
+                                                libgeoclue_priv_sources,
+                                                libgeoclue_headers ])
+ 
+-gir = find_program('g-ir-scanner', required: get_option('introspection'))
+-pkg_requirements = ['glib-2.0', 'gio-2.0', 'gio-unix-2.0']
+-gir_sources = [ libgeoclue_sources,
+-                libgeoclue_headers,
+-                libgeoclue_public_api_gen_sources[1] ]
++if get_option('introspection')
++  gir = find_program('g-ir-scanner', required: get_option('introspection'))
++  pkg_requirements = ['glib-2.0', 'gio-2.0', 'gio-unix-2.0']
++  gir_sources = [ libgeoclue_sources,
++                  libgeoclue_headers,
++                  libgeoclue_public_api_gen_sources[1] ]
++else
++  pkg_requirements = ['glib-2.0']
++endif
+ 
+-if gir.found()
+-  geo_gir = gnome.generate_gir(libgeoclue,
+-                               sources: gir_sources,
+-                               namespace: 'Geoclue',
+-                               nsversion: gclue_api_version,
+-                               identifier_prefix: 'GClue',
+-                               symbol_prefix: 'gclue',
+-                               export_packages: 'libgeoclue-' + gclue_api_version,
+-                               dependencies: [libgeoclue_dep] + base_deps,
+-                               includes: [ 'GObject-2.0', 'Gio-2.0' ],
+-                               install: true,
+-                               header: 'geoclue.h',
+-                               extra_args: [ '--quiet' ])
++if get_option('introspection')
++  if gir.found()
++    geo_gir = gnome.generate_gir(libgeoclue,
++                                 sources: gir_sources,
++                                 namespace: 'Geoclue',
++                                 nsversion: gclue_api_version,
++                                 identifier_prefix: 'GClue',
++                                 symbol_prefix: 'gclue',
++                                 export_packages: 'libgeoclue-' + gclue_api_version,
++                                 dependencies: [libgeoclue_dep] + base_deps,
++                                 includes: [ 'GObject-2.0', 'Gio-2.0' ],
++                                 install: true,
++                                 header: 'geoclue.h',
++                                 extra_args: [ '--quiet' ])
+ 
+-  vapigen = find_program('vapigen', required: get_option('vapi'))
+-  if vapigen.found()
+-    gnome.generate_vapi('libgeoclue-' + gclue_api_version,
+-                        sources: geo_gir[0],
+-                        packages: pkg_requirements,
+-                        install: true)
++    vapigen = find_program('vapigen', required: get_option('vapi'))
++    if vapigen.found()
++      gnome.generate_vapi('libgeoclue-' + gclue_api_version,
++                          sources: geo_gir[0],
++                          packages: pkg_requirements,
++                          install: true)
++    endif
+   endif
+ endif
+ 
