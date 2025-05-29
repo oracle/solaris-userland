@@ -1,0 +1,27 @@
+Several test's seen to fail due to incomplete tr filter.
+
+The same issue is seen with the latest source (bind 9.21)
+under bin/tests/system/conf.sh#L443
+
+Looged issue with upstream
+https://gitlab.isc.org/isc-projects/bind9/-/issues/5326
+
+*** bind-9.18.37.old/bin/tests/system/conf.sh.common	Tue May 27 18:38:54 2025
+--- bind-9.18.37.new/bin/tests/system/conf.sh.common	Tue May 27 18:38:54 2025
+***************
+*** 647,653 ****
+  	__ret=0
+  	__dump_complete=0
+  	__server="${1}"
+! 	__ip="10.53.0.$(echo "${__server}" | tr -c -d "0-9")"
+  
+  	shift
+  	${RNDC} -c ../_common/rndc.conf -p "${CONTROLPORT}" -s "${__ip}" dumpdb "$@" > "rndc.out.test${n}" 2>&1 || __ret=1
+--- 647,653 ----
+  	__ret=0
+  	__dump_complete=0
+  	__server="${1}"
+! 	__ip="10.53.0.$(echo "${__server}" | tr -c -d '[0-9]')"
+  
+  	shift
+  	${RNDC} -c ../_common/rndc.conf -p "${CONTROLPORT}" -s "${__ip}" dumpdb "$@" > "rndc.out.test${n}" 2>&1 || __ret=1

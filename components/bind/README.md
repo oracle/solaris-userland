@@ -1,4 +1,4 @@
-Copyright (c) 2022, 2024, Oracle and/or its affiliates.
+Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 
 # BIND notes.
 
@@ -22,16 +22,16 @@ bug fixes and no new features.
 
 The three current branches are, from https://www.isc.org/download/ :
 
-- 9.16.x EOL - April 2024
-- 9.18.x Current-Stable, ESV, including OpenSSL 3.0 support.
-- 9.19.x Development version
+- 9.18.x Current-Stable, ESV, EOL - Q2 2026
+- 9.20.x New Stable, EOL - Q2 2028
+- 9.21.x Development version, EOL Q2 2028
 
-## Packaging
+## Solaris Image Packaging
 
-- bind.p5m (pkg:/service/network/dns/bind)
-- bindc.p5m (pkg:/network/dns/bind)
+- [bind.p5m](#ips_server) (pkg:/service/network/dns/bind)
+- [bindc.p5m](#ips_client) (pkg:/network/dns/bind)
 
-### bind.p5m - Server package
+### bind.p5m - Server package - {#ips_server}
 
 Provides BIND server (in.named), server specific tools, and SMF
 features.
@@ -54,14 +54,14 @@ updates do not have to be applied incrementally it is not possible
 to use the version as a definitive comparison to the
 compatibility.
 
-### bindc.p5m - Client Package
+### bindc.p5m - Client Package - {#ips_client}
 
 Provides DNS tools, utilities, manual pages and libraries.
 
 
 ## Testing
 
-### Makefile testing
+### Makefile test targets
 
 `gmake test` runs a very simple set of tests by executing
 ./Solaris/testing.ksh.  This is really just to confirm the common
@@ -69,6 +69,14 @@ commands have built and linked correctly.
 
 `gmake test-version` Runs `named -V` which shows its version number
 and additional library, compiler, and configuration information.
+
+`gmake test-license` Compares the checked in UTF8 bind.license file
+with the version provided from the downloaded source tar ball.  Minor
+differences in white-space is to be tolerated so check manually with
+`diff -w bind.license build/bind.license.new` afterwards.
+
+`gmake test-tar` Creates a tar ball of the source and build directory
+for use with full testing as documented below.
 
 ### Full testing
 
@@ -81,7 +89,7 @@ either on your own build machine or a suitably configured machine
 where you have re-created the build machines directory structure and
 copied "build" and the source directory over.
 
-Note that these tests will not run when executed by root.
+Note that these *tests will not run when executed by root*.
 
 For example
 
@@ -100,7 +108,7 @@ For example
 	$ cp test.bind-*.tar.gz ~/.
 	```
 
-2. ON your test machine, create directory structure to mimic that of
+2. On your test machine, create directory structure to mimic that of
    the build machine.
 
 	```
@@ -125,12 +133,11 @@ For example
 	$ sudo ./ifconfig.sh up
 	```
 
-5. Set PATH so that GNU utilities are used, unset http\_proxy, and
-   confirm required packages are installed.
+5. Set PATH so that GNU utilities are used and confirm required
+   packages are installed.
 
 	```
 	$ PATH=/usr/gnu/bin:/usr/bin:/usr/sbin; export PATH
-	$ unset http_proxy
 	```
 
     Ensure required packages and GNU utilities are installed.  Version
@@ -138,16 +145,18 @@ For example
     example:
 
 	```
-	pkgs=library/python/dnspython
+	pkgs="library/python/dnspython library/python/jinja2"
+	pkgs=$pkgs library/python/hypothesis"
 	grep '^CC = ' Makefile | read var sym cmd rest
 	ver=${cmd#/usr/gcc/};ver=${ver%%/*}
 	test -x $cmd || pkgs="$pkgs developer/gcc/gcc-c-$ver"
 	test -x /usr/gnu/bin/make || pkgs="$pkgs developer/build/gnu-make"
-	test -x /usr/bin/pytest || library/python/pytest
+	test -x /usr/bin/pytest || pkgs="$pkgs library/python/pytest
 	test -x /usr/gnu/bin/tar || pkgs="$pkgs archiver/gnu-tar"
 	test -x /usr/gnu/bin/sed || pkgs="$pkgs text/gnu-sed"
 	test -x /usr/gnu/bin/find || pkgs=$pkgs file/gnu-findutils"
 	test -x /usr/gnu/bin/grep || pkgs=$pkgs text/gnu-grep"
+	test -x /usr/bin/seq || pkgs=$pkgs gnu-coreutils"
 	sudo pkg install $pkgs
 	```
 
@@ -186,8 +195,18 @@ For example
 	cd $mark
 	```
 
-7. Optionally run all tests, individual test, or a bunch of tests by
-   naming them on the command line:
+7. Unset http\_proxy and https_proxy
+
+   As some tests use curl(1) without un-setting it.
+
+   ```
+   unset https_proxy http_proxy
+   ```
+
+8. Run tests.
+
+   By default all test are run.  Optionally specify individual test,
+   or a bunch of tests by naming them on the command line, for example:
 
    ```
    $ /usr/bin/pytest
@@ -209,26 +228,30 @@ bin/tests/system directory.
 
 ### Skipped tests
 
-Some of tests require additional software to be installed, such as
+Some tests require additional software to be installed, such as
 `dnspython` and Perl modules `Net::DNS` and `Digest-HMAC`.
 
 With those packages and modules installed (as per instructions above)
-there are a dozen or so skipped tests at this time:
+there are a dozen or so skipped tests at this time (BIND-9.18.37):
 
-- wildcard/tests_wildcard.py:42: could not import 'hypothesis': No module named 'hypothesis'
-- rpz/tests_sh_rpz_dnsrps.py:17: dnsrps disabled in the build
-- rpzrecurse/tests_sh_rpzrecurse_dnsrps.py:17: dnsrps disabled in the build
-- timeouts/tests_tcp_timeouts.py:215: CI_ENABLE_ALL_TESTS not set
-- timeouts/tests_tcp_timeouts.py:249: CI_ENABLE_ALL_TESTS not set
-- dnstap/tests_dnstap.py:37: Prerequisites missing.
-- dnstap/tests_sh_dnstap.py:13: Prerequisites missing.
-- doth/tests_sslyze.py:60: sslyze not found in PATH
-- doth/tests_sslyze.py:64: sslyze not found in PATH
-- enginepkcs11/tests_sh_enginepkcs11.py:13: Prerequisites missing.
-- geoip2/tests_sh_geoip2.py:13: Prerequisites missing.
-- keyfromlabel/tests_sh_keyfromlabel.py:13: Prerequisites missing.
-- nzd2nzf/tests_sh_nzd2nzf.py:13: Prerequisites missing.
+- names/tests_names.py:14: module 'dns' has __version__ '2.6.1', required is: '2.7.0'
+- statschannel/tests_json.py:23: could not import 'requests': No module named 'requests'
+- statschannel/tests_xml.py:24: could not import 'requests': No module named 'requests'
+- wildcard/tests_wildcard.py:46: could not import 'hypothesis': No module named 'hypothesis'
+- rpz/tests_sh_rpz_dnsrps.py:73: dnsrps disabled in the build
+- rpzrecurse/tests_sh_rpzrecurse_dnsrps.py:34: dnsrps disabled in the build
+- timeouts/tests_tcp_timeouts.py:218: CI_ENABLE_ALL_TESTS not set
+- timeouts/tests_tcp_timeouts.py:250: CI_ENABLE_ALL_TESTS not set
+- cpu/tests_sh_cpu.py:22: Prerequisites missing.
+- dnstap/tests_dnstap.py:47: Prerequisites missing.
+- dnstap/tests_sh_dnstap.py:29: Prerequisites missing.
+- doth/tests_sslyze.py:69: sslyze not found in PATH
+- doth/tests_sslyze.py:73: sslyze not found in PATH
+- enginepkcs11/tests_sh_enginepkcs11.py:48: Prerequisites missing.
+- geoip2/tests_sh_geoip2.py:23: Prerequisites missing.
+- keyfromlabel/tests_keyfromlabel.py:93: SOFTHSM2_CONF and SOFTHSM2_MODULE environmental variables must be set and pkcs11-tool and softhsm2-util tools present
+- nzd2nzf/tests_sh_nzd2nzf.py:23: Prerequisites missing.
 
 ### Failed tests
 
-On amd64 platform seeing `fetchlimit` test fail.
+None at this time.
