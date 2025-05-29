@@ -2,17 +2,17 @@ Solaris specific patch, not suitable for upstream.
 
 freezegun module is not in Solaris -> skip tests using it.
 
---- tempora-5.5.1/tests/test_schedule.py
-+++ tempora-5.5.1/tests/test_schedule.py
-@@ -5,7 +5,6 @@ from unittest import mock
+--- tempora-5.8.0/tests/test_schedule.py
++++ tempora-5.8.0/tests/test_schedule.py
+@@ -5,7 +5,6 @@ import zoneinfo
+ from unittest import mock
  
  import pytest
- import pytz
 -import freezegun
  
  from tempora import schedule
  
-@@ -64,6 +63,7 @@ class TestCommands:
+@@ -62,6 +61,7 @@ class TestCommands:
          two_days_from_now = day_from_now + daily
          assert day_from_now < next_cmd < two_days_from_now
  
@@ -20,7 +20,7 @@ freezegun module is not in Solaris -> skip tests using it.
      @pytest.mark.parametrize("hour", range(10, 14))
      @pytest.mark.parametrize("tz_offset", (14, -14))
      def test_command_at_noon_distant_local(self, hour, tz_offset):
-@@ -88,6 +88,7 @@ class TestTimezones:
+@@ -86,6 +86,7 @@ class TestTimezones:
          cmd = schedule.DelayedCommand.at_time(target, target=None)
          assert cmd.due()
  
@@ -28,7 +28,7 @@ freezegun module is not in Solaris -> skip tests using it.
      def test_daylight_savings(self):
          """
          A command at 9am should always be 9am regardless of
-@@ -128,6 +129,7 @@ class TestScheduler:
+@@ -140,6 +141,7 @@ class TestScheduler:
          sched.run_pending()
          callback.assert_called_once_with(target)
  

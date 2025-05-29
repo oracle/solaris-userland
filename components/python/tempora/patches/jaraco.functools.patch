@@ -3,19 +3,11 @@ can be very easily moved directly into tempora.
 
 Not suitable for upstream.
 
---- tempora-5.5.1/tempora.egg-info/requires.txt
-+++ tempora-5.5.1/tempora.egg-info/requires.txt
-@@ -1,5 +1,4 @@
- pytz
--jaraco.functools>=1.20
- 
- [docs]
- sphinx>=3.5
---- tempora-5.5.1/tempora/timing.py
-+++ tempora-5.5.1/tempora/timing.py
-@@ -5,7 +5,18 @@ import functools
- import numbers
- import time
+--- tempora-5.8.0/tempora/timing.py
++++ tempora-5.8.0/tempora/timing.py
+@@ -9,7 +9,18 @@ import time
+ from types import TracebackType
+ from typing import TYPE_CHECKING
  
 -import jaraco.functools
 +
@@ -31,24 +23,24 @@ Not suitable for upstream.
 +
 +    return wrapper
  
- 
- class Stopwatch:
-@@ -228,7 +239,7 @@ class BackoffDelay(collections.abc.Itera
-     jitter = 0
-     "Number or callable returning extra seconds to add to delay"
+ if TYPE_CHECKING:
+     from typing_extensions import Self
+@@ -238,7 +249,7 @@ class BackoffDelay(collections.abc.Itera
+     jitter: collections.abc.Callable[[], float]
+     "Callable returning extra seconds to add to delay"
  
 -    @jaraco.functools.save_method_args
 +    @save_method_args
-     def __init__(self, delay=0, factor=1, limit=float('inf'), jitter=0):
-         self.delay = delay
-         self.factor = factor
---- tempora-5.5.1/setup.cfg
-+++ tempora-5.5.1/setup.cfg
-@@ -17,7 +17,6 @@ include_package_data = true
- python_requires = >=3.8
- install_requires = 
- 	pytz
--	jaraco.functools>=1.20
- 
- [options.extras_require]
- testing = 
+     def __init__(
+         self,
+         delay: float = 0,
+--- tempora-5.8.0/pyproject.toml
++++ tempora-5.8.0/pyproject.toml
+@@ -18,7 +18,6 @@ classifiers = [
+ ]
+ requires-python = ">=3.9"
+ dependencies = [
+-	"jaraco.functools>=1.20",
+ 	"python-dateutil",
+ ]
+ dynamic = ["version"]

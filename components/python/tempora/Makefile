@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tempora
-COMPONENT_VERSION=	5.5.1
+COMPONENT_VERSION=	5.8.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:a2bb51e2121976d931347b3e433917c364b83fdd5f64ef27336c865bf1fb0f75
+	sha256:1e9606e65a3f2063460961d68515dee07bdaca0859305a8d3e6604168175fef1
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/tempora
 COMPONENT_BUGDB=	python-mod/tempora
 COMPONENT_ANITYA_ID=	21225
-COMPONENT_BAID=		161744
+COMPONENT_BAID=		330621
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -56,7 +56,7 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pytz-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/dateutil-%)
 
 # Setup related components
 REQUIRED_PACKAGES += library/python/setuptools_scm
