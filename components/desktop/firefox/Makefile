@@ -33,14 +33,14 @@ include ../../../make-rules/shared-macros.mk
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	128.10.0
-COMPONENT_BAID=		327739
+COMPONENT_VERSION =	128.11.0
+COMPONENT_BAID=		330474
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:2ed83e26e41a8b3e2c7c0d13448a84dbb9b7ed65ed46bc162d629b0c6b071caf
+    sha256:f2ed90374a670fe5eccfd5bf36d2e311affd955d1f3507861c738b9aa7a1ffec
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -57,7 +57,7 @@ COMPONENT_ANITYA_ID =	16838
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:16919ddea3afaa50e87b203ccf0aefc1ea5626eaf212df1f67a1d6d6b2abe1b2
+    sha256:9e157548f4a3f32ef273be2961362106c549b642853f5dac481c30f8f7bb080d
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
@@ -102,6 +102,8 @@ MOZCONFIG_DEBUG =	/dev/null
 MOZCONFIG_NON_DEBUG =	$(MOZCONFIG)
 endif
 
+# System libvpx can be enabled (--with-system-libvpx) after it's updated and contains:
+# https://github.com/webmproject/libvpx/commit/1c758781c428c0e895645b95b8ff1512b6bdcecb
 COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options MOZILLA_OFFICIAL=1" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --prefix=/usr" >> $(MOZCONFIG) ; \
@@ -127,7 +129,6 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-system-libvpx" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --without-wasm-sandboxed-libraries" >> $(MOZCONFIG) ; \
 
 CXXFLAGS += -Wno-invalid-offsetof -fpermissive
