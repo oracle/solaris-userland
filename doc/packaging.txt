@@ -257,6 +257,23 @@ Renames
     impact on packages created, but it might make sense to do so.
 
 
+    Handle pkglint errors about file duplications.
+    ----------------------------------------------
+    Pkglint crosschecks that your just-to-be-published package is in line with
+    other packages in the IPS repository. If you rename aaa->bbb, pkglint sees
+    old aaa package in IPS repo delivering files and your new bbb delivering
+    the same files. It is not smart enough to recognise that it is a rename
+    operation and shows an error:
+
+    ERROR pkglint.dupaction001.1      path usr/lib/python3.11/vendor-packages/psutils/command/psbook.py is a duplicate delivered by pkg:/image/psutils@3.3.10,11.4-11.4.84.0.0.198.0 pkg://solaris/image/pspdfutils@3.3.5,11.4-11.4.84.0.0.197.0:20250515T205540Z under all variant combinations
+
+    Workaround it to add exception to your new bbb package as:
+
+    set name=pkg.linted.pkglint.dupaction001.1 value=true
+
+    It would be nice to remember and remove the exception in two builds when
+    both new aaa and bbb appears in IPS repo.
+
     Backport.
     ---------
     Special care has to be taken when rename is brought from Trunk to SRU
