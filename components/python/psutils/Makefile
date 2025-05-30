@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		pspdfutils
-COMPONENT_VERSION=	3.3.5
+COMPONENT_NAME=		psutils
+COMPONENT_VERSION=	3.3.10
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:49d0ed8254df3fe60eb4fd74d4dc1ccaf08cc7802ea9d79d83670b45685d5e35
+    sha256:698a18f291183d48d63cd43b6a2e43d133e89ab438d5aef5baa24374660729f7
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/rrthomas/psutils
 COMPONENT_BUGDB=	utility/psutils
 COMPONENT_ANITYA_ID=	12921
-COMPONENT_BAID=		178177
+COMPONENT_BAID=		330304
 
 # We need just a single version
 PYTHON_VERSIONS=	3.11
@@ -64,14 +64,15 @@ PKG_MACROS += PYVER=$(PYTHON_VERSIONS)
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # Common targets
-build:		$(BUILD_NO_ARCH)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_NO_ARCH)
+install:	$(INSTALL_64)
 
-venv-test:	$(TEST_NO_ARCH)
+venv-test:	$(TEST_64)
 
-venv-system-test: $(SYSTEM_TEST_NO_ARCH)
+venv-system-test: $(SYSTEM_TEST_64)
 
+REQUIRED_PACKAGES += image/imagemagick
 REQUIRED_PACKAGES += library/libpaper
 REQUIRED_PACKAGES += library/python/puremagic
 REQUIRED_PACKAGES += library/python/pypdf
