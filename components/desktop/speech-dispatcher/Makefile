@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             64
@@ -28,16 +28,16 @@ COMPILER=               gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		speech-dispatcher
-COMPONENT_VERSION=	0.11.5
+COMPONENT_VERSION=	0.12.1
 COMPONENT_PROJECT_URL=	https://devel.freebsoft.org/speechd
 COMPONENT_ARCHIVE_HASH= \
-   sha256:1ce4759ffabbaf1aeb433a5ec0739be0676e9bdfbae9444a7b3be1b2af3ec12b
+   sha256:b14a5238d287d2dcce4dd42bbd66ca65fa228e7e683708267f7b34036f7ba4b4
 COMPONENT_ARCHIVE_URL=	\
    https://github.com/brailcom/speechd/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=    13411
 
-COMPONENT_BAID=		154349
+COMPONENT_BAID=		330771
 
 TEST_TARGET = $(NO_TESTS)
 

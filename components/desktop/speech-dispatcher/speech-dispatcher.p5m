@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2025, Oracle and/or its affiliates.
 #
 <transform file path=usr/lib/$(MACH64)/speech-dispatcher-modules/.* -> \
     default mode 0555>
@@ -54,6 +54,7 @@ file path=etc/speech-dispatcher/modules/flite.conf
 file path=etc/speech-dispatcher/modules/llia_phon-generic.conf
 file path=etc/speech-dispatcher/modules/mary-generic.conf
 file path=etc/speech-dispatcher/modules/mimic3-generic.conf
+file path=etc/speech-dispatcher/modules/openjtalk.conf
 file path=etc/speech-dispatcher/modules/swift-generic.conf
 file path=etc/speech-dispatcher/speechd.conf
 file path=usr/bin/spd-conf
@@ -63,11 +64,17 @@ file path=usr/bin/speech-dispatcher
 file path=usr/include/speech-dispatcher/libspeechd.h
 file path=usr/include/speech-dispatcher/libspeechd_version.h
 file path=usr/include/speech-dispatcher/spd_audio_plugin.h
+file path=usr/include/speech-dispatcher/spd_module_main.h
 file path=usr/include/speech-dispatcher/speechd_defines.h
 file path=usr/include/speech-dispatcher/speechd_types.h
 link path=usr/lib/$(MACH64)/libspeechd.so target=libspeechd.so.2.6.0
 link path=usr/lib/$(MACH64)/libspeechd.so.2 target=libspeechd.so.2.6.0
 file path=usr/lib/$(MACH64)/libspeechd.so.2.6.0
+link path=usr/lib/$(MACH64)/libspeechd_module.so \
+    target=libspeechd_module.so.0.0.0
+link path=usr/lib/$(MACH64)/libspeechd_module.so.0 \
+    target=libspeechd_module.so.0.0.0
+file path=usr/lib/$(MACH64)/libspeechd_module.so.0.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/speech-dispatcher.pc
 file path=usr/lib/$(MACH64)/speech-dispatcher-modules/sd_cicero mode=0555
 file path=usr/lib/$(MACH64)/speech-dispatcher-modules/sd_dummy mode=0555
@@ -76,6 +83,7 @@ link path=usr/lib/$(MACH64)/speech-dispatcher-modules/sd_espeak-ng-mbrola \
     target=sd_espeak-ng
 file path=usr/lib/$(MACH64)/speech-dispatcher-modules/sd_festival mode=0555
 file path=usr/lib/$(MACH64)/speech-dispatcher-modules/sd_generic mode=0555
+file path=usr/lib/$(MACH64)/speech-dispatcher-modules/sd_openjtalk mode=0555
 file path=usr/lib/$(MACH64)/speech-dispatcher/spd_oss.so
 file path=usr/lib/$(MACH64)/speech-dispatcher/spd_pulse.so
 file path=usr/lib/python$(PYVER)/vendor-packages/speechd/__init__.py
@@ -95,10 +103,13 @@ file path=usr/share/locale/de/LC_MESSAGES/speech-dispatcher.mo
 file path=usr/share/locale/eo/LC_MESSAGES/speech-dispatcher.mo
 file path=usr/share/locale/fr/LC_MESSAGES/speech-dispatcher.mo
 file path=usr/share/locale/hu/LC_MESSAGES/speech-dispatcher.mo
+file path=usr/share/locale/ka/LC_MESSAGES/speech-dispatcher.mo
 file path=usr/share/locale/nb_NO/LC_MESSAGES/speech-dispatcher.mo
 file path=usr/share/locale/pt/LC_MESSAGES/speech-dispatcher.mo
 file path=usr/share/locale/pt_BR/LC_MESSAGES/speech-dispatcher.mo
 file path=usr/share/locale/ru/LC_MESSAGES/speech-dispatcher.mo
+file path=usr/share/locale/sv/LC_MESSAGES/speech-dispatcher.mo
+file path=usr/share/locale/tr/LC_MESSAGES/speech-dispatcher.mo
 file path=usr/share/man/man1/spd-conf.1
 file path=usr/share/man/man1/spd-say.1
 file path=usr/share/man/man1/speech-dispatcher.1
@@ -134,6 +145,7 @@ file path=usr/share/speech-dispatcher/locale/base/symbols.dic
 file path=usr/share/speech-dispatcher/locale/be/emojis.dic
 file path=usr/share/speech-dispatcher/locale/be/orca-chars.dic
 file path=usr/share/speech-dispatcher/locale/be/orca.dic
+file path=usr/share/speech-dispatcher/locale/bew/emojis.dic
 file path=usr/share/speech-dispatcher/locale/bg/emojis.dic
 file path=usr/share/speech-dispatcher/locale/bg/orca-chars.dic
 file path=usr/share/speech-dispatcher/locale/bg/orca.dic
@@ -164,6 +176,7 @@ file path=usr/share/speech-dispatcher/locale/cs/emojis.dic
 file path=usr/share/speech-dispatcher/locale/cs/orca-chars.dic
 file path=usr/share/speech-dispatcher/locale/cs/orca.dic
 file path=usr/share/speech-dispatcher/locale/cs/symbols.dic
+file path=usr/share/speech-dispatcher/locale/cv/emojis.dic
 file path=usr/share/speech-dispatcher/locale/cy/emojis.dic
 file path=usr/share/speech-dispatcher/locale/da/emojis.dic
 file path=usr/share/speech-dispatcher/locale/da/orca-chars.dic
@@ -381,6 +394,7 @@ file path=usr/share/speech-dispatcher/locale/pt_PT/emojis.dic
 file path=usr/share/speech-dispatcher/locale/pt_PT/symbols.dic
 file path=usr/share/speech-dispatcher/locale/qu/emojis.dic
 file path=usr/share/speech-dispatcher/locale/quc/emojis.dic
+file path=usr/share/speech-dispatcher/locale/rhg/emojis.dic
 file path=usr/share/speech-dispatcher/locale/rm/emojis.dic
 file path=usr/share/speech-dispatcher/locale/ro/emojis.dic
 file path=usr/share/speech-dispatcher/locale/ro/orca-chars.dic
@@ -424,6 +438,7 @@ file path=usr/share/speech-dispatcher/locale/sw/emojis.dic
 file path=usr/share/speech-dispatcher/locale/sw_KE/emojis.dic
 file path=usr/share/speech-dispatcher/locale/ta/emojis.dic
 file path=usr/share/speech-dispatcher/locale/ta/orca-chars.dic
+file path=usr/share/speech-dispatcher/locale/ta/orca.dic
 file path=usr/share/speech-dispatcher/locale/ta/symbols.dic
 file path=usr/share/speech-dispatcher/locale/te/emojis.dic
 file path=usr/share/speech-dispatcher/locale/te/orca-chars.dic
