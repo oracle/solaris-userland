@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -31,16 +31,14 @@ include ../../make-rules/test-x11.mk
 LD_Z_IGNORE=
 
 COMPONENT_NAME=		gnuplot
-COMPONENT_VERSION=	6.0.1
+COMPONENT_VERSION=	6.0.3
 COMPONENT_PROJECT_URL=  https://gnuplot.sourceforge.net/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e85a660c1a2a1808ff24f7e69981ffcbac66a45c9dcf711b65610b26ea71379a
+	sha256:ec52e3af8c4083d4538152b3f13db47f6d29929a3f6ecec5365c834e77f251ab
 COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	1216
 
-COMPONENT_BAID=		173989
-
-CXXFLAGS += -std=c++14
+COMPONENT_BAID=		331430
 
 COMPONENT_BUILD_TARGETS = all info
 PKG_MACROS +=	GNUPLOT_VERSION=$(shell echo $(COMPONENT_VERSION) | cut -d. -f1-2)
