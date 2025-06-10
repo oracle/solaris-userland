@@ -6973,7 +6973,6 @@ base/gxidata.c
 base/gximage.c
 base/gximage.h
 base/gximage1.c
-base/gximage3.c
 base/gximage3.h
 base/gximage4.c
 base/gximask.c
@@ -7737,10 +7736,8 @@ base/gxclimag.c
 base/gxclip.c
 base/gxclip.h
 base/gxclist.c
-base/gxclist.h
 base/gxclmem.c
 base/gxclpage.c
-base/gxclpath.c
 base/gxclread.c
 base/gxclrect.c
 base/gxclthrd.c
@@ -7758,12 +7755,9 @@ base/gxftype.h
 base/gxicolor.c
 base/gxifast.c
 base/gximag3x.c
-base/gximag3x.h
 base/gximono.c
-base/gxiparam.h
 base/gxipixel.c
 base/gxiscale.c
-base/gxp1fill.c
 base/gxpath.c
 base/gxpcmap.c
 base/gxpcolor.h
@@ -7802,7 +7796,6 @@ devices/vector/gdevpdfd.c
 devices/vector/gdevpdfj.c
 devices/vector/gdevpdfo.h
 devices/vector/gdevpdfr.c
-devices/vector/gdevpdft.c
 devices/vector/gdevpdfv.c
 devices/vector/gdevpdtb.c
 devices/vector/gdevpdtb.h
@@ -7861,10 +7854,16 @@ CA 94129, USA, for further information.
 base/gscdefs.h
 base/gsicc_create.c
 base/gstype1.c
+base/gxclist.h
+base/gxclpath.c
 base/gxcmap.c
 base/gxfapi.c
 base/gxfapi.h
 base/gxfapiu.h
+base/gximag3x.h
+base/gximage3.c
+base/gxiparam.h
+base/gxp1fill.c
 base/scommon.h
 base/write_t1.c
 devices/gdevpdfimg.c
@@ -7876,6 +7875,7 @@ devices/vector/gdevpdfi.c
 devices/vector/gdevpdfm.c
 devices/vector/gdevpdfo.c
 devices/vector/gdevpdfp.c
+devices/vector/gdevpdft.c
 devices/vector/gdevpdfu.c
 devices/vector/gdevpdfx.h
 devices/vector/gdevpdtc.c
@@ -14751,6 +14751,20 @@ understand and accept it fully.
 
 ## Files:
 freetype/devel/ftoption.h
+freetype/include/freetype/config/ftoption.h
+
+Define `TT_CONFIG_OPTION_SFNT_NAMES` if your applications need to access
+the internal name table in a SFNT-based format like TrueType or
+OpenType.  The name table contains various strings used to describe the
+font, like family name, copyright, version, etc.  It does not contain
+any glyph name though.
+
+Accessing SFNT names is done through the functions declared in
+`ftsnames.h`.
+
+
+## Files:
+freetype/devel/ftoption.h
 
 ftoption.h (for development)
 
@@ -14764,20 +14778,6 @@ modified, and distributed under the terms of the FreeType project
 license, LICENSE.TXT.  By continuing to use, modify, or distribute
 this file you indicate that you have read the license and
 understand and accept it fully.
-
-
-## Files:
-freetype/devel/ftoption.h
-freetype/include/freetype/config/ftoption.h
-
-Define `TT_CONFIG_OPTION_SFNT_NAMES` if your applications need to access
-the internal name table in a SFNT-based format like TrueType or
-OpenType.  The name table contains various strings used to describe the
-font, like family name, copyright, version, etc.  It does not contain
-any glyph name though.
-
-Accessing SFNT names is done through the functions declared in
-`ftsnames.h`.
 
 
 ## Files:
