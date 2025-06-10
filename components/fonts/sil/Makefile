@@ -20,26 +20,25 @@
 #
 
 #
-# Copyright (c) 2017, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sil
-COMPONENT_VERSION=	0.1
+COMPONENT_VERSION=	0.2
 
 # due to 27244651 the IPS version should be the solaris version
 IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
 
 COMPONENT_PROJECT_URL=	https://scripts.sil.org
 
-
-COMPONENT_SRC=		ttf-sil-abyssinica-1.0
-COMPONENT_ARCHIVE=	ttf-sil-abyssinica_1.0.orig.tar.bz2
-COMPONENT_ARCHIVE_URL=	http://archive.debian.org/debian/pool/main/t/ttf-sil-abyssinica/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_HASH=	sha256:8cdcdc58f9cef10350ff9abc6bccf87141aac2ae75d0e01c46317a82c4249a98
-COMPONENT_BAID_ABYSSINICA=	167893
+COMPONENT_SRC=		AbyssinicaSIL-2.300
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
+COMPONENT_ARCHIVE_URL=	https://software.sil.org/downloads/r/abyssinica/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_HASH=	sha256:725e6cd58be6495e0e53f367608db36d9f818498bccba739d742892c5a3d8151
+COMPONENT_BAID_ABYSSINICA=	331182
 
 COMPONENT_SRC_1=	ttf-sil-andika-1.0.basic
 COMPONENT_ARCHIVE_1=	ttf-sil-andika_1.0.basic.orig.tar.gz
