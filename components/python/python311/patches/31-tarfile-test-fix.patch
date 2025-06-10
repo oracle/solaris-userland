@@ -1,0 +1,59 @@
+One of the tarfile tests was backported to 3.11 without slight
+modifications needed to make it pass there.
+
+This patch is from Python 3.10, as suggested upstream:
+https://github.com/python/cpython/pull/135068
+
+From dff62a1ede34f99ad342125a814f6fd6bba05981 Mon Sep 17 00:00:00 2001
+From: Petr Viktorin <encukou@gmail.com>
+Date: Tue, 3 Jun 2025 17:54:36 +0200
+Subject: [PATCH] Work around Path.glob() failure in 3.10
+
+--- Python-3.11.13/Lib/test/test_tarfile.py
++++ Python-3.11.13/Lib/test/test_tarfile.py
+@@ -3429,7 +3429,7 @@ class TestExtractionFilters(unittest.Tes
+     destdir = outerdir / 'dest'
+ 
+     @contextmanager
+-    def check_context(self, tar, filter, *, check_flag=True):
++    def check_context(self, tar, filter, *, check_flag=True, ignored_trees=()):
+         """Extracts `tar` to `self.destdir` and allows checking the result
+ 
+         If an error occurs, it must be checked using `expect_exception`
+@@ -3442,6 +3442,10 @@ class TestExtractionFilters(unittest.Tes
+         A file called 'flag' is made in outerdir (i.e. outside destdir)
+         before extraction; it should not be altered nor should its contents
+         be read/copied.
++
++        *ignored_trees* is a set of directories to remove (including their
++        contents) right after the archive is extracted. It is a workaround
++        for Path.glob() failing to get all files in Python 3.10 and below.
+         """
+         with os_helper.temp_dir(self.outerdir):
+             flag_path = self.outerdir / 'flag'
+@@ -3453,6 +3457,8 @@ class TestExtractionFilters(unittest.Tes
+                 self.reraise_exception = True
+                 self.expected_paths = set()
+             else:
++                for ignored_tree in ignored_trees:
++                    os_helper.rmtree((self.destdir / ignored_tree).resolve())
+                 self.raised_exception = None
+                 self.reraise_exception = False
+                 self.expected_paths = set(self.outerdir.glob('**/*'))
+@@ -3661,7 +3667,7 @@ class TestExtractionFilters(unittest.Tes
+ 
+         with (self.subTest('fully_trusted'),
+               self.check_context(arc.open(), filter='fully_trusted',
+-                                 check_flag=False)):
++                                 check_flag=False, ignored_trees={component})):
+             if sys.platform == 'win32':
+                 self.expect_exception((FileNotFoundError, FileExistsError))
+             elif self.raised_exception:
+@@ -3669,7 +3675,6 @@ class TestExtractionFilters(unittest.Tes
+                 self.expect_exception(KeyError)
+                 # Otherwise, this block should never enter.
+             else:
+-                self.expect_any_tree(component)
+                 self.expect_file('flaglink', content='overwrite')
+                 self.expect_file('../newfile', content='new')
+                 self.expect_file('escape', type=tarfile.SYMTYPE)
