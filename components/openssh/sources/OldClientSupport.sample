@@ -1,0 +1,22 @@
+#
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+# Older ssh clients are not supported in the default server configuration;
+# however, the needed algorithms are still available with the exception of
+# the ssh-dss public key algorithm.
+#
+# If such older clients needed to be supported by this server,
+# verify that /etc/ssh/sshd_config has the following line:
+#
+#	Include /etc/ssh/sshd_config.d/*.conf
+#
+# and copy this sample file in /etc/ssh/sshd_config.d to a file
+# with a name ending in .conf:
+#
+#	cd /etc/ssh/sshd_config.d
+#	cp OldClientSupport.sample OldClientSupport.conf
+#	svcadm restart ssh
+#
+PubkeyAcceptedKeyTypes	+ssh-rsa
+HostKeyAlgorithms	+ssh-rsa
+KexAlgorithms		+diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1
