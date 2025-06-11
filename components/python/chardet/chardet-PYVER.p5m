@@ -20,9 +20,11 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 
+# Use transform to prevent duplicate pkg.legacy action error
+<transform set name=pkg.fmri -> set mark_legacy true>
 set name=pkg.fmri \
     value=pkg:/library/python/chardet-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Character encoding auto-detection in Python."
@@ -34,7 +36,7 @@ set name=info.classification \
     value=org.opensolaris.category.2008:Development/Python
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2020/033
+set name=org.opensolaris.arc-caseid value=PSARC/2020/033 value=PSARC/2025/061
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file path=usr/lib/python$(PYVER)/vendor-packages/chardet-$(COMPONENT_VERSION).dist-info/INSTALLER
@@ -103,7 +105,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/chardet/utf1632prober.py
 file path=usr/lib/python$(PYVER)/vendor-packages/chardet/utf8prober.py
 file path=usr/lib/python$(PYVER)/vendor-packages/chardet/version.py
 #
-license LICENSE license=MIT
+license LICENSE license=LGPLv2.1
 
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
