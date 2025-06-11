@@ -1,0 +1,26 @@
+#
+# Sudo should prevent itself from killing the world.
+#
+--- old/src/exec.c	2024-08-17 22:08:49.000000000 +0200
++++ new/src/exec.c	2025-05-27 10:44:27.106972655 +0200
+@@ -526,7 +526,7 @@ terminate_command(pid_t pid, bool use_pg
+     debug_decl(terminate_command, SUDO_DEBUG_EXEC);
+ 
+     /* Avoid killing more than a single process or process group. */
+-    if (pid <= 0)
++    if (pid <= 1)
+ 	debug_return;
+ 
+     /*
+--- old/src/exec_pty.c	2024-08-17 22:08:52.000000000 +0200
++++ new/src/exec_pty.c	2025-05-27 10:45:58.681511180 +0200
+@@ -355,7 +355,8 @@ revoke_pty(struct exec_closure *ec)
+     }
+     sudo_debug_printf(SUDO_DEBUG_NOTICE, "%s: killpg(%d, SIGHUP)",
+ 	__func__, (int)pgrp);
+-    kill(pgrp, SIGHUP);
++    if (pgrp > 1)
++	kill(pgrp, SIGHUP);
+ }
+ 
+ /*
