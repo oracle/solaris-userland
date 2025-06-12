@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2006, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2006, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -43,6 +43,7 @@ PATCH_LEVEL = 0
 # without this we bus error on sparc. Until the code in all of Quagga
 # does not have any misaligned code we will need the following flag.
 studio_ALIGN.sparc.32=  -xmemalign=8i
+studio_ALIGN.sparc.64=  -xmemalign=8i
 
 # These options are carried over from the SFW consolidation. Using -xO4 was
 # explicitly commented out, but no reason was documented.
