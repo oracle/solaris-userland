@@ -71,6 +71,7 @@ CONFIGURE_OPTIONS  +=	--enable-agentx-dom-sock-only
 CONFIGURE_OPTIONS  +=	--enable-ucd-snmp-compatibility
 CONFIGURE_OPTIONS  +=	--enable-ipv6
 CONFIGURE_OPTIONS  +=	--enable-mfd-rewrites
+CONFIGURE_OPTIONS  +=	--without-kmem-usage
 
 CONFIGURE_OPTIONS  +=	--with-openssl
 CONFIGURE_OPTIONS  +=	--disable-des

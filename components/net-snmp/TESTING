@@ -56,6 +56,9 @@ $ snmpbulkget -v2c -c public localhost system
 SNMPv2-MIB::sysDescr.0 = STRING: SunOS ST-ul-cbe 5.11 11.4.78.188.0 i86pc
 ...
 
+# IP-MIB test
+snmpwalk -v 2c -c public localhost IP-MIB::ipAddressPrefix
+# compare to 'ipadm' output. Both IPv4 and IPv6 should be seen
 
 # fma
 $ echo 'dlmod sunFM /usr/lib/fm/amd64/libfmd_snmp.so.1' >> /etc/net-snmp/snmp/snmpd.conf
@@ -107,3 +110,12 @@ $ python3.11 -c "import netsnmp; print(netsnmp.snmpget(netsnmp.Varbind('sysDescr
 
 $ python3.9 -c "import netsnmp; print(netsnmp.snmpget(netsnmp.Varbind('sysDescr.0'), Version=2, DestHost = 'localhost', Community='public'))"
 ('SunOS ST-ul-cbe 5.11 11.4.78.188.0 i86pc',)
+
+
+# Verify that snmp does NOT read /dev/kmem or /dev/mem
+$ svcadm disable svc:/application/management/net-snmp:default
+$ truss -deafl -'t!all' -t open /usr/sbin/snmpd -f -Le -V 2>&1 | grep mem
+# Press ctrl+c after few moments
+# The output should be empty and NOT something like
+29099/1:         0.008591    openat(AT_FDCWD, "/dev/kmem", O_RDONLY)            = 3
+29099/1:         0.008662    openat(AT_FDCWD, "/dev/mem", O_RDONLY)             = 4
