@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -29,13 +29,14 @@ set name=pkg.fmri \
     value=pkg:/library/desktop/libgdata@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
     value="A GLib-based library for accessing online service APIs using the GData protocol"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=$(COMPONENT_NAME)
 set name=info.classification \
     value="org.opensolaris.category.2008:Desktop (GNOME)/Libraries"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2010/143
+set name=org.opensolaris.arc-caseid value=PSARC/2010/143 value=PSARC/2025/074
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/include/libgdata/gdata/app/gdata-app-categories.h
 file path=usr/include/libgdata/gdata/atom/gdata-author.h
@@ -486,6 +487,10 @@ file path=usr/lib/installed-tests/libgdata/traces/youtube/upload-async
 file path=usr/lib/installed-tests/libgdata/traces/youtube/upload-async-cancellation
 file path=usr/lib/installed-tests/libgdata/traces/youtube/upload-simple
 file path=usr/lib/installed-tests/libgdata/youtube
+file release-notes/libgdata.txt path=usr/share/doc/release-notes/libgdata.txt \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/gir-1.0/GData-0.0.gir
 file path=usr/share/gtk-doc/html/gdata/GDataAPPCategories.html
 file path=usr/share/gtk-doc/html/gdata/GDataAccessHandler.html

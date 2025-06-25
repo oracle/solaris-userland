@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -31,13 +31,14 @@ set name=pkg.summary \
     value="A library for mocking web service APIs which use HTTP or HTTPS"
 set name=pkg.description \
     value="uhttpmock is a project for mocking web service APIs which use HTTP or HTTPS. It provides a library, libuhttpmock, which implements recording and playback of HTTP request-response traces."
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=uhttpmock
 set name=info.classification \
     value=org.opensolaris.category.2008:System/Libraries
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2016/382
+set name=org.opensolaris.arc-caseid value=PSARC/2016/382 value=PSARC/2025/074
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/include/libuhttpmock-0.0/uhttpmock/uhm-resolver.h
 file path=usr/include/libuhttpmock-0.0/uhttpmock/uhm-server.h
@@ -53,6 +54,11 @@ link path=usr/lib/libuhttpmock-0.0.so target=libuhttpmock-0.0.so.0.2.1
 link path=usr/lib/libuhttpmock-0.0.so.0 target=libuhttpmock-0.0.so.0.2.1
 file path=usr/lib/libuhttpmock-0.0.so.0.2.1
 file path=usr/lib/pkgconfig/libuhttpmock-0.0.pc
+file release-notes/uhttpmock.txt \
+    path=usr/share/doc/release-notes/uhttpmock.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/gir-1.0/Uhm-0.0.gir
 file path=usr/share/gtk-doc/html/libuhttpmock-0.0/UhmResolver.html
 file path=usr/share/gtk-doc/html/libuhttpmock-0.0/UhmServer.html
