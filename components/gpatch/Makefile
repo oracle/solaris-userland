@@ -20,25 +20,24 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		patch
-COMPONENT_VERSION=	2.7.6
+COMPONENT_VERSION=	2.8
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8cf86e00ad3aaa6d26aca30640e86b0e3e1f395ed99f189b06d4c9f74bc58a4e
+    sha256:308a4983ff324521b9b21310bfc2398ca861798f02307c79eb99bb0e0d2bf980
 COMPONENT_BUGDB=	utility/gpatch
 COMPONENT_ANITYA_ID=	2597
+COMPONENT_BAID=		332684
 
-COMPONENT_BAID=		48739
-
-# The .1 refers to version 2.7.6-1 to distinguish between community version
+# The .1 refers to version 2.8-1 to distinguish between community version
 # binutils and this package, which contains all known fixes.  A similar approach
 # is adopted by some Linux distros.
-IPS_COMPONENT_VERSION=	2.7.6.1
+IPS_COMPONENT_VERSION=	2.8.0.1
 HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 
 # Although system-test doesn't run against the built bits, the tests
