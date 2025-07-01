@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -75,7 +75,9 @@ link path=usr/gnu/share/man/man1/reset.1 target=tset.1
 file path=usr/gnu/share/man/man1/tabs.1
 file path=usr/gnu/share/man/man1/tput.1
 file path=usr/gnu/share/man/man1/tset.1
+link path=usr/gnu/share/man/man3x/A_COLOR.3x target=curs_color.3x
 link path=usr/gnu/share/man/man3x/BC.3x target=curs_termcap.3x
+link path=usr/gnu/share/man/man3x/CCHARW_MAX.3x target=curs_variables.3x
 link path=usr/gnu/share/man/man3x/COLORS.3x target=curs_variables.3x
 link path=usr/gnu/share/man/man3x/COLOR_BLACK.3x target=curs_color.3x
 link path=usr/gnu/share/man/man3x/COLOR_BLUE.3x target=curs_color.3x
@@ -92,6 +94,7 @@ link path=usr/gnu/share/man/man3x/ERR.3x target=curs_variables.3x
 link path=usr/gnu/share/man/man3x/ESCDELAY.3x target=curs_variables.3x
 link path=usr/gnu/share/man/man3x/FALSE.3x target=curs_variables.3x
 link path=usr/gnu/share/man/man3x/LINES.3x target=curs_variables.3x
+link path=usr/gnu/share/man/man3x/MEVENT.3x target=curs_mouse.3x
 link path=usr/gnu/share/man/man3x/NCURSES_SCREEN_CB.3x target=curs_threads.3x
 link path=usr/gnu/share/man/man3x/NCURSES_WINDOW_CB.3x target=curs_threads.3x
 link path=usr/gnu/share/man/man3x/OK.3x target=curs_variables.3x
@@ -542,6 +545,7 @@ file path=usr/gnu/share/man/man3x/mitem_opts.3x
 file path=usr/gnu/share/man/man3x/mitem_userptr.3x
 file path=usr/gnu/share/man/man3x/mitem_value.3x
 file path=usr/gnu/share/man/man3x/mitem_visible.3x
+link path=usr/gnu/share/man/man3x/mmask_t.3x target=curs_mouse.3x
 link path=usr/gnu/share/man/man3x/mouse_trafo.3x target=curs_mouse.3x
 link path=usr/gnu/share/man/man3x/mouseinterval.3x target=curs_mouse.3x
 link path=usr/gnu/share/man/man3x/mouseinterval_sp.3x target=curs_sp_funcs.3x
@@ -561,7 +565,7 @@ link path=usr/gnu/share/man/man3x/mvaddnwstr.3x target=curs_addwstr.3x
 link path=usr/gnu/share/man/man3x/mvaddstr.3x target=curs_addstr.3x
 link path=usr/gnu/share/man/man3x/mvaddwstr.3x target=curs_addwstr.3x
 link path=usr/gnu/share/man/man3x/mvchgat.3x target=curs_attr.3x
-link path=usr/gnu/share/man/man3x/mvcur.3x target=curs_terminfo.3x
+link path=usr/gnu/share/man/man3x/mvcur.3x target=curs_kernel.3x
 link path=usr/gnu/share/man/man3x/mvcur_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/mvdelch.3x target=curs_delch.3x
 link path=usr/gnu/share/man/man3x/mvderwin.3x target=curs_window.3x
@@ -1904,7 +1908,9 @@ file path=usr/gnu/share/terminfo/e/ecma+color
 file path=usr/gnu/share/terminfo/e/ecma+index
 file path=usr/gnu/share/terminfo/e/ecma+italics
 file path=usr/gnu/share/terminfo/e/ecma+sgr
+file path=usr/gnu/share/terminfo/e/ecma+standout
 file path=usr/gnu/share/terminfo/e/ecma+strikeout
+file path=usr/gnu/share/terminfo/e/ecma+underline
 file path=usr/gnu/share/terminfo/e/elks
 file path=usr/gnu/share/terminfo/e/elks-ansi
 file path=usr/gnu/share/terminfo/e/elks-glasstty
@@ -1965,6 +1971,7 @@ file path=usr/gnu/share/terminfo/g/gator
 file path=usr/gnu/share/terminfo/g/gator-52
 file path=usr/gnu/share/terminfo/g/gator-52t
 file path=usr/gnu/share/terminfo/g/gator-t
+file path=usr/gnu/share/terminfo/g/ghostty
 file path=usr/gnu/share/terminfo/g/gigi
 file path=usr/gnu/share/terminfo/g/glasstty
 file path=usr/gnu/share/terminfo/g/gnome
@@ -2220,6 +2227,7 @@ link path=usr/gnu/share/terminfo/i/icl6402 target=icl6404
 file path=usr/gnu/share/terminfo/i/icl6404
 file path=usr/gnu/share/terminfo/i/icl6404-w
 file path=usr/gnu/share/terminfo/i/ifmr
+file path=usr/gnu/share/terminfo/i/illumos
 file path=usr/gnu/share/terminfo/i/ims-ansi
 file path=usr/gnu/share/terminfo/i/ims950
 file path=usr/gnu/share/terminfo/i/ims950-b
@@ -2296,6 +2304,7 @@ link path=usr/gnu/share/terminfo/l/lft-pc850 target=lft
 file path=usr/gnu/share/terminfo/l/linux
 file path=usr/gnu/share/terminfo/l/linux+decid
 file path=usr/gnu/share/terminfo/l/linux+kbs
+file path=usr/gnu/share/terminfo/l/linux+lockeys
 file path=usr/gnu/share/terminfo/l/linux+sfkeys
 file path=usr/gnu/share/terminfo/l/linux-16color
 file path=usr/gnu/share/terminfo/l/linux-basic
@@ -2383,6 +2392,7 @@ file path=usr/gnu/share/terminfo/m/minix-old
 file path=usr/gnu/share/terminfo/m/minix-old-am
 file path=usr/gnu/share/terminfo/m/mintty
 file path=usr/gnu/share/terminfo/m/mintty+common
+file path=usr/gnu/share/terminfo/m/mintty+keypad
 file path=usr/gnu/share/terminfo/m/mintty-direct
 file path=usr/gnu/share/terminfo/m/mlterm
 file path=usr/gnu/share/terminfo/m/mlterm+pcfkeys
@@ -2405,7 +2415,9 @@ file path=usr/gnu/share/terminfo/m/mostlike
 link path=usr/gnu/share/terminfo/m/mouse-sun target=mterm
 file path=usr/gnu/share/terminfo/m/mrxvt
 file path=usr/gnu/share/terminfo/m/mrxvt-256color
+file path=usr/gnu/share/terminfo/m/ms+terminal
 file path=usr/gnu/share/terminfo/m/ms-terminal
+file path=usr/gnu/share/terminfo/m/ms-terminal-direct
 file path=usr/gnu/share/terminfo/m/ms-vt-utf8
 file path=usr/gnu/share/terminfo/m/ms-vt100
 file path=usr/gnu/share/terminfo/m/ms-vt100+
@@ -2689,6 +2701,9 @@ link path=usr/gnu/share/terminfo/p/p9 target=prism9
 link path=usr/gnu/share/terminfo/p/p9-8 target=prism9-8
 link path=usr/gnu/share/terminfo/p/p9-8-w target=prism9-8-w
 link path=usr/gnu/share/terminfo/p/p9-w target=prism9-w
+file path=usr/gnu/share/terminfo/p/pangoterm
+file path=usr/gnu/share/terminfo/p/pangoterm-256color
+file path=usr/gnu/share/terminfo/p/pangoterm-direct
 file path=usr/gnu/share/terminfo/p/pc-coherent
 file path=usr/gnu/share/terminfo/p/pc-minix
 file path=usr/gnu/share/terminfo/p/pc-venix
@@ -2875,6 +2890,7 @@ file path=usr/gnu/share/terminfo/r/report+da2
 file path=usr/gnu/share/terminfo/r/report+version
 file path=usr/gnu/share/terminfo/r/rio
 file path=usr/gnu/share/terminfo/r/rio-direct
+file path=usr/gnu/share/terminfo/r/rlogin-color
 file path=usr/gnu/share/terminfo/r/rt6221
 file path=usr/gnu/share/terminfo/r/rt6221-w
 file path=usr/gnu/share/terminfo/r/rtpc
@@ -2897,6 +2913,7 @@ link path=usr/gnu/share/terminfo/s/sbobcat target=../b/bobcat
 link path=usr/gnu/share/terminfo/s/sc410 target=scanset
 link path=usr/gnu/share/terminfo/s/sc415 target=scanset
 file path=usr/gnu/share/terminfo/s/scanset
+file path=usr/gnu/share/terminfo/s/sclp
 file path=usr/gnu/share/terminfo/s/scoansi
 file path=usr/gnu/share/terminfo/s/scoansi-new
 file path=usr/gnu/share/terminfo/s/scoansi-old
@@ -2974,6 +2991,7 @@ file path=usr/gnu/share/terminfo/s/st
 file path=usr/gnu/share/terminfo/s/st-0.6
 file path=usr/gnu/share/terminfo/s/st-0.7
 file path=usr/gnu/share/terminfo/s/st-0.8
+file path=usr/gnu/share/terminfo/s/st-0.8.5
 file path=usr/gnu/share/terminfo/s/st-16color
 file path=usr/gnu/share/terminfo/s/st-256color
 file path=usr/gnu/share/terminfo/s/st-direct
@@ -2990,14 +3008,17 @@ file path=usr/gnu/share/terminfo/s/sun
 file path=usr/gnu/share/terminfo/s/sun+sl
 file path=usr/gnu/share/terminfo/s/sun-1
 file path=usr/gnu/share/terminfo/s/sun-12
+file path=usr/gnu/share/terminfo/s/sun-16color
 file path=usr/gnu/share/terminfo/s/sun-17
 file path=usr/gnu/share/terminfo/s/sun-24
+file path=usr/gnu/share/terminfo/s/sun-256color
 file path=usr/gnu/share/terminfo/s/sun-34
 file path=usr/gnu/share/terminfo/s/sun-48
 file path=usr/gnu/share/terminfo/s/sun-c
 file path=usr/gnu/share/terminfo/s/sun-cgsix
 link path=usr/gnu/share/terminfo/s/sun-cmd target=sun-c
 file path=usr/gnu/share/terminfo/s/sun-color
+file path=usr/gnu/share/terminfo/s/sun-direct
 file path=usr/gnu/share/terminfo/s/sun-e
 file path=usr/gnu/share/terminfo/s/sun-e-s
 file path=usr/gnu/share/terminfo/s/sun-il
@@ -3087,6 +3108,7 @@ file path=usr/gnu/share/terminfo/t/teraterm-256color
 file path=usr/gnu/share/terminfo/t/teraterm2.3
 file path=usr/gnu/share/terminfo/t/teraterm4.59
 file path=usr/gnu/share/terminfo/t/teraterm4.97
+file path=usr/gnu/share/terminfo/t/teraterm5.0
 file path=usr/gnu/share/terminfo/t/terminator
 link path=usr/gnu/share/terminfo/t/terminet target=terminet1200
 file path=usr/gnu/share/terminfo/t/terminet1200
@@ -3360,6 +3382,7 @@ file path=usr/gnu/share/terminfo/v/vt100+fnkeys
 file path=usr/gnu/share/terminfo/v/vt100+keypad
 file path=usr/gnu/share/terminfo/v/vt100+noapp
 file path=usr/gnu/share/terminfo/v/vt100+noapp+pc
+file path=usr/gnu/share/terminfo/v/vt100+pf1-pf4
 file path=usr/gnu/share/terminfo/v/vt100+pfkeys
 link path=usr/gnu/share/terminfo/v/vt100-am target=vt100
 link path=usr/gnu/share/terminfo/v/vt100-bm target=../n/nwp512
@@ -3398,6 +3421,8 @@ file path=usr/gnu/share/terminfo/v/vt220+cvis
 file path=usr/gnu/share/terminfo/v/vt220+cvis8
 file path=usr/gnu/share/terminfo/v/vt220+keypad
 file path=usr/gnu/share/terminfo/v/vt220+pcedit
+file path=usr/gnu/share/terminfo/v/vt220+sfkeys
+file path=usr/gnu/share/terminfo/v/vt220+ufkeys
 file path=usr/gnu/share/terminfo/v/vt220+vtedit
 link path=usr/gnu/share/terminfo/v/vt220-8 target=vt220-8bit
 file path=usr/gnu/share/terminfo/v/vt220-8bit
@@ -3437,8 +3462,10 @@ file path=usr/gnu/share/terminfo/v/vt52+arrows
 file path=usr/gnu/share/terminfo/v/vt52+keypad
 file path=usr/gnu/share/terminfo/v/vt52-basic
 file path=usr/gnu/share/terminfo/v/vt520
+file path=usr/gnu/share/terminfo/v/vt520-w
 file path=usr/gnu/share/terminfo/v/vt520ansi
 file path=usr/gnu/share/terminfo/v/vt525
+file path=usr/gnu/share/terminfo/v/vt525-w
 file path=usr/gnu/share/terminfo/v/vt61
 link path=usr/gnu/share/terminfo/v/vt61.5 target=vt61
 file path=usr/gnu/share/terminfo/v/vte
@@ -3449,6 +3476,7 @@ file path=usr/gnu/share/terminfo/v/vte-2012
 file path=usr/gnu/share/terminfo/v/vte-2014
 file path=usr/gnu/share/terminfo/v/vte-2017
 file path=usr/gnu/share/terminfo/v/vte-2018
+file path=usr/gnu/share/terminfo/v/vte-2022
 file path=usr/gnu/share/terminfo/v/vte-256color
 file path=usr/gnu/share/terminfo/v/vte-direct
 link path=usr/gnu/share/terminfo/v/vtnt target=../m/ms-vt100-color
@@ -3592,6 +3620,7 @@ file path=usr/gnu/share/terminfo/w/wy99gt-vb
 file path=usr/gnu/share/terminfo/w/wy99gt-w
 file path=usr/gnu/share/terminfo/w/wy99gt-w-vb
 link path=usr/gnu/share/terminfo/w/wy99gt-wvb target=wy99gt-w-vb
+file path=usr/gnu/share/terminfo/w/wyse+cvis
 file path=usr/gnu/share/terminfo/w/wyse+sl
 link path=usr/gnu/share/terminfo/w/wyse-325 target=wy325-25
 link path=usr/gnu/share/terminfo/w/wyse-75ap target=wy75ap
@@ -3767,6 +3796,7 @@ file path=usr/gnu/share/terminfo/x/xterm
 file path=usr/gnu/share/terminfo/x/xterm+256color
 file path=usr/gnu/share/terminfo/x/xterm+256color2
 file path=usr/gnu/share/terminfo/x/xterm+256setaf
+file path=usr/gnu/share/terminfo/x/xterm+256setaf2
 file path=usr/gnu/share/terminfo/x/xterm+88color
 file path=usr/gnu/share/terminfo/x/xterm+88color2
 file path=usr/gnu/share/terminfo/x/xterm+acs
@@ -3800,6 +3830,8 @@ file path=usr/gnu/share/terminfo/x/xterm+pce2
 file path=usr/gnu/share/terminfo/x/xterm+pcf0
 file path=usr/gnu/share/terminfo/x/xterm+pcf2
 file path=usr/gnu/share/terminfo/x/xterm+pcfkeys
+file path=usr/gnu/share/terminfo/x/xterm+r5+fkeys
+file path=usr/gnu/share/terminfo/x/xterm+r5+lockeys
 file path=usr/gnu/share/terminfo/x/xterm+r6f2
 file path=usr/gnu/share/terminfo/x/xterm+sl
 file path=usr/gnu/share/terminfo/x/xterm+sl-alt

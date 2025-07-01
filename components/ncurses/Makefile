@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ncurses
-COMPONENT_VERSION=	6.4-20240309
-IPS_COMPONENT_VERSION=	6.4.0.20240309
+COMPONENT_VERSION=	6.5-20250614
+IPS_COMPONENT_VERSION=	6.5.0.20250614
 COMPONENT_PROJECT_URL=	https://invisible-island.net/ncurses/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7e24ab24663e7125b18c10574bac0d3929fa5162f6e863672c8c802e4a4d3511
+    sha256:c78a054fd86b0d6cbaad4a2489c0fe685a8e5ad123da20083f7b443f6223da3c
 COMPONENT_ARCHIVE_URL=	https://invisible-mirror.net/archives/ncurses/current/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/ncurses
 COMPONENT_ANITYA_ID=	2057
-COMPONENT_BAID=		162486
+COMPONENT_BAID=		332302
 
 # Tests are interactive and require ncurses to be installed in CBE.
 # You can compile and run them from ncurses' test directory.
