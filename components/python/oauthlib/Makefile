@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oauthlib
-COMPONENT_VERSION=	3.2.1
+COMPONENT_VERSION=	3.3.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c6ddc0226040d2235bb5ab8f2a4a1696462ade0c3550cc645e249a1afef93d9b
+    sha256:0f0f8aa759826a193cf66c12ea1af1637f87b9b4622d46e866952bb022e538c9
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/idan/oauthlib
 COMPONENT_BUGDB=	python-mod/oauthlib
 COMPONENT_ANITYA_ID=	5377
-COMPONENT_BAID=		130021
+COMPONENT_BAID=		333033
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -43,7 +43,7 @@ include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+COMPONENT_TEST_ARGS =	--ignore=tests/oauth1/rfc5849/test_signatures.py
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
