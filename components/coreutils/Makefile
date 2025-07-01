@@ -20,21 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		coreutils
-COMPONENT_VERSION=	8.30
+COMPONENT_VERSION=	9.7
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e831b3a86091496cdba720411f9748de81507798f6130adeaef872d206e1b057
+    sha256:e8bb26ad0293f9b5a1fc43fb42ba970e312c66ce92c1b0b16713d7500db251bf
 COMPONENT_BUGDB=	utility/gnu-coreutils
 COMPONENT_ANITYA_ID=	343
-
-COMPONENT_BAID=		53513
+COMPONENT_BAID=		331051
 
 TEST_TARGET= install $(TEST_64)
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
@@ -49,10 +48,10 @@ PATCH_LEVEL=		0
 CPPFLAGS += -I$(USRINCDIR)/gmp
 CONFIGURE_PREFIX	 =	$(USRGNUDIR)
 CONFIGURE_OPTIONS	+=	--infodir=$(CONFIGURE_INFODIR)
+CONFIGURE_OPTIONS	+=	--without-openssl
 
 # Acknowledge that 32bit version will build with 32bit time_t type
-# This is needed since version 8.29 because of 'year2038' warning
-CONFIGURE_OPTIONS.32 += TIME_T_32_BIT_OK=yes
+CONFIGURE_OPTIONS.32 += --disable-year2038
 
 # Recreate configure and Makefile to pick up changes in .../src/local.mk
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -f && automake)
@@ -79,8 +78,6 @@ COMPONENT_TEST_CMD = $(COMPONENT_DIR)/coreutils_test_wrapper
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/TOTAL/p" ' \
-	'-e "/SKIP/p" ' \
-	'-e "/PASS/p" ' \
 	'-e "/FAIL/p" ' \
 	'-e "/ERROR/p" '
 

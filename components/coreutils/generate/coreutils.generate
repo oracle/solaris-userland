@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 # Do not add 32 bit versions of coreutils
@@ -32,14 +32,14 @@
 
 
 # Move programs without non-gnu variant from gnu folder
-<transform file link path=usr/gnu/bin/(b2sum|base32|base64|dir|dircolors|install|md5sum|nproc|numfmt|pinky|printenv|ptx|readlink|realpath|seq|sha1sum|sha224sum|sha256sum|sha384sum|sha512sum|shred|shuf|stat|stdbuf|tac|timeout|truncate|users|vdir|whoami)$ -> set pkg.type nongnu>
+<transform file link path=usr/gnu/bin/(b2sum|base32|base64|basenc|dir|dircolors|install|md5sum|nproc|numfmt|pinky|printenv|ptx|readlink|realpath|seq|sha1sum|sha224sum|sha256sum|sha384sum|sha512sum|shred|shuf|stat|stdbuf|tac|timeout|truncate|users|vdir|whoami)$ -> set pkg.type nongnu>
 
 <transform file link pkg.type=nongnu -> set action.hash %(path)>
 <transform file link pkg.type=nongnu -> edit path gnu/bin bin>
 <transform file link -> delete pkg.type .*>
 
 # Move man pages for programs without non-gnu variant from gnu folder
-<transform file link path=usr/gnu/share/man/man1/(b2sum|base32|base64|dir|dircolors|install|md5sum|nproc|numfmt|pinky|printenv|ptx|readlink|realpath|seq|sha1sum|sha224sum|sha256sum|sha384sum|sha512sum|shred|shuf|stat|stdbuf|tac|timeout|truncate|users|vdir|whoami).1 -> set man.type nongnu>
+<transform file link path=usr/gnu/share/man/man1/(b2sum|base32|base64|basenc|dir|dircolors|install|md5sum|nproc|numfmt|pinky|printenv|ptx|readlink|realpath|seq|sha1sum|sha224sum|sha256sum|sha384sum|sha512sum|shred|shuf|stat|stdbuf|tac|timeout|truncate|users|vdir|whoami).1 -> set man.type nongnu>
 
 <transform file link man.type=nongnu -> set action.hash %(path)>
 <transform file link man.type=nongnu -> edit path gnu/share share>
