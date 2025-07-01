@@ -71,7 +71,6 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/libgtop
-REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += service/image/colord
 REQUIRED_PACKAGES += system/input-method/ibus
