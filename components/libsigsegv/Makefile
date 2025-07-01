@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -28,13 +28,13 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsigsegv
-COMPONENT_VERSION=	2.14
+COMPONENT_VERSION=	2.15
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:cdac3941803364cf81a908499beb79c200ead60b6b5b40cad124fd1e06caa295
+    sha256:036855660225cb3817a190fc00e6764ce7836051bacb48d35e26444b8c1729d9
 COMPONENT_BUGDB=	library/libsigsegv
 COMPONENT_ANITYA_ID=	1722
 
-COMPONENT_BAID=		137685
+COMPONENT_BAID=		332608
 
 GENERATE_PROTO_DIRS += man3
 
@@ -43,6 +43,18 @@ include $(WS_MAKE_RULES)/gnu-component.mk
 # Disable Address Space Layout Randomization
 # since it breaks the detection of stack overflows.
 ASLR_MODE= $(ASLR_DISABLE)
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/TOTAL:/p" ' \
+        '-e "/PASS:/p" ' \
+        '-e "/SKIP:/p" ' \
+        '-e "/XFAIL:/p" ' \
+        '-e "/FAIL:/p" ' \
+        '-e "/XPASS:/p" ' \
+        '-e "/ERROR/p" '
 
 CONFIGURE_OPTIONS  +=		--disable-static
 CONFIGURE_OPTIONS  +=		--enable-shared
