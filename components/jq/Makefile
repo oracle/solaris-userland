@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS = 64
 COMPILER = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	jq
-COMPONENT_VERSION =	1.7.1
+COMPONENT_VERSION =	1.8.0
 COMPONENT_PROJECT_URL =	https://github.com/stedolan/jq
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_SRC=		jq-jq-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH =	\
-    sha256:fc75b1824aba7a954ef0886371d951c3bf4b6e0a921d1aefc553f309702d6ed1
+    sha256:6f4137cfb1744e9729d177707c3880957ec3fab621db921fcb4c04e62ed9e636
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	utility/jq
 COMPONENT_ANITYA_ID=	13252
 
-COMPONENT_BAID =	156495
+COMPONENT_BAID =	331276
 
 include $(WS_MAKE_RULES)/common.mk
 
