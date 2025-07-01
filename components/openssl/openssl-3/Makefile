@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -90,3 +90,13 @@ LINT_FLAGS += -I$(@D)/include -erroff=E_STATIC_UNUSED
 #
 COMPONENT_TEST_TARGETS = test
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+#
+# Avoid test failures on a system behind a proxy. Some tests may spawn a local
+# HTTP server instance and try to connect to it.
+#
+COMPONENT_TEST_ENV+=	http_proxy=
+COMPONENT_TEST_ENV+=	https_proxy=
+COMPONENT_TEST_ENV+=	HTTP_PROXY=
+COMPONENT_TEST_ENV+=	HTTPS_PROXY=
+
