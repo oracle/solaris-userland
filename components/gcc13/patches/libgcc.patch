@@ -3,36 +3,10 @@ Reverts gcc/libgcc/unwind-dw2-fde.(c|h) to version from GCC 12.
 This is temporary workaround for: 
 
 https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110955
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
 
---- gcc-13.2.0/libgcc/unwind-dw2-fde.h
-+++ gcc-13.2.0/libgcc/unwind-dw2-fde.h
-@@ -1,5 +1,5 @@
- /* Subroutines needed for unwinding stack frames for exception handling.  */
--/* Copyright (C) 1997-2023 Free Software Foundation, Inc.
-+/* Copyright (C) 1997-2022 Free Software Foundation, Inc.
-    Contributed by Jason Merrill <jason@cygnus.com>.
- 
- This file is part of GCC.
-@@ -166,7 +166,7 @@
- extern const fde * _Unwind_Find_FDE (void *, struct dwarf_eh_bases *);
- 
- static inline int
--last_fde (const struct object *obj __attribute__ ((__unused__)), const fde *f)
-+last_fde (struct object *obj __attribute__ ((__unused__)), const fde *f)
- {
- #ifdef DWARF2_OBJECT_END_PTR_EXTENSION
-   return f == (const fde *) obj->fde_end || f->length == 0;
---- gcc-13.2.0/libgcc/unwind-dw2-fde.c
-+++ gcc-13.2.0/libgcc/unwind-dw2-fde.c
-@@ -1,5 +1,5 @@
- /* Subroutines needed for unwinding stack frames for exception handling.  */
--/* Copyright (C) 1997-2023 Free Software Foundation, Inc.
-+/* Copyright (C) 1997-2022 Free Software Foundation, Inc.
-    Contributed by Jason Merrill <jason@cygnus.com>.
- 
- This file is part of GCC.
-@@ -42,38 +42,14 @@
+--- gcc-13.4.0/libgcc/unwind-dw2-fde.c
++++ gcc-13.4.0/libgcc/unwind-dw2-fde.c
+@@ -42,40 +42,14 @@ #define ATOMIC_FDE_FAST_PATH 1
  #endif
  #endif
  
@@ -42,6 +16,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
 -#include "unwind-dw2-btree.h"
 -
 -static struct btree registered_frames;
+-static struct btree registered_objects;
 -static bool in_shutdown;
 -
 -static void
@@ -52,6 +27,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
 -  /* Release the b-tree and all frames. Frame releases that happen later are
 -   * silently ignored */
 -  btree_destroy (&registered_frames);
+-  btree_destroy (&registered_objects);
 -  in_shutdown = true;
 -}
 -
@@ -73,15 +49,34 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  #endif
  
  #ifdef __GTHREAD_MUTEX_INIT
-@@ -123,20 +99,23 @@
+@@ -105,21 +79,6 @@ static __gthread_mutex_t object_mutex;
+ #endif
+ #endif
+ 
+-#ifdef ATOMIC_FDE_FAST_PATH
+-// Register the pc range for a given object in the lookup structure.
+-static void
+-register_pc_range_for_object (uintptr_type begin, struct object *ob)
+-{
+-  // Register the object itself to know the base pointer on deregistration.
+-  btree_insert (&registered_objects, begin, 1, ob);
+-
+-  // Register the frame in the b-tree
+-  uintptr_type range[2];
+-  get_pc_range (ob, range);
+-  btree_insert (&registered_frames, range[0], range[1] - range[0], ob);
+-}
+-#endif
+-
+ /* Called from crtbegin.o to register the unwind info for an object.  */
+ 
+ void
+@@ -140,17 +99,23 @@ #ifdef DWARF2_OBJECT_END_PTR_EXTENSION
    ob->fde_end = NULL;
  #endif
  
 -#ifdef ATOMIC_FDE_FAST_PATH
--  // Register the frame in the b-tree
--  uintptr_type range[2];
--  get_pc_range (ob, range);
--  btree_insert (&registered_frames, range[0], range[1] - range[0], ob);
+-  register_pc_range_for_object ((uintptr_type) begin, ob);
 -#else
    init_object_mutex_once ();
    __gthread_mutex_lock (&object_mutex);
@@ -104,15 +99,12 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  }
  
  void
-@@ -174,20 +153,23 @@
+@@ -188,17 +153,23 @@ ob->s.i = 0;
    ob->s.b.from_array = 1;
    ob->s.b.encoding = DW_EH_PE_omit;
  
 -#ifdef ATOMIC_FDE_FAST_PATH
--  // Register the frame in the b-tree
--  uintptr_type range[2];
--  get_pc_range (ob, range);
--  btree_insert (&registered_frames, range[0], range[1] - range[0], ob);
+-  register_pc_range_for_object ((uintptr_type) begin, ob);
 -#else
    init_object_mutex_once ();
    __gthread_mutex_lock (&object_mutex);
@@ -135,7 +127,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  }
  
  void
-@@ -218,40 +200,16 @@
+@@ -229,35 +200,16 @@ implements __register_frame_info_bases.
  void *
  __deregister_frame_info_bases (const void *begin)
  {
@@ -147,22 +139,17 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
      return ob;
  
 -#ifdef ATOMIC_FDE_FAST_PATH
--  // Find the corresponding PC range
--  struct object lookupob;
--  lookupob.tbase = 0;
--  lookupob.dbase = 0;
--  lookupob.u.single = begin;
--  lookupob.s.i = 0;
--  lookupob.s.b.encoding = DW_EH_PE_omit;
--#ifdef DWARF2_OBJECT_END_PTR_EXTENSION
--  lookupob.fde_end = NULL;
--#endif
--  uintptr_type range[2];
--  get_pc_range (&lookupob, range);
+-  // Find the originally registered object to get the base pointer.
+-  ob = btree_remove (&registered_objects, (uintptr_type) begin);
 -
--  // And remove
--  ob = btree_remove (&registered_frames, range[0]);
--  bool empty_table = (range[1] - range[0]) == 0;
+-  // Remove the corresponding PC range.
+-  if (ob)
+-    {
+-      uintptr_type range[2];
+-      get_pc_range (ob, range);
+-      if (range[0] != range[1])
+-	btree_remove (&registered_frames, range[0]);
+-    }
 -
 -  // Deallocate the sort array if any.
 -  if (ob && ob->s.b.sorted)
@@ -177,21 +164,20 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
    for (p = &unseen_objects; *p ; p = &(*p)->next)
      if ((*p)->u.single == begin)
        {
-@@ -283,12 +241,7 @@
+@@ -289,11 +241,7 @@ }
  
   out:
    __gthread_mutex_unlock (&object_mutex);
--  const int empty_table = 0; // The non-atomic path stores all tables.
 -#endif
 -
 -  // If we didn't find anything in the lookup data structures then they
 -  // were either already destroyed or we tried to remove an empty range.
--  gcc_assert (in_shutdown || (empty_table || ob));
+-  gcc_assert (in_shutdown || ob);
 +  gcc_assert (ob);
    return (void *) ob;
  }
  
-@@ -311,7 +264,7 @@
+@@ -316,7 +264,7 @@ /* Like base_of_encoded_value, but take
     instead of an _Unwind_Context.  */
  
  static _Unwind_Ptr
@@ -200,7 +186,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  {
    if (encoding == DW_EH_PE_omit)
      return 0;
-@@ -458,52 +411,22 @@
+@@ -463,52 +411,21 @@ }
  
  typedef int (*fde_compare_t) (struct object *, const fde *, const fde *);
  
@@ -241,7 +227,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
 -
 -typedef void (*fde_extractor_t) (struct object *, _Unwind_Ptr *, const fde **,
 -				 int);
- 
+-
 -// Data is is sorted using radix sort if possible, using an temporary
 -// auxiliary data structure of the same size as the input. When running
 -// out of memory do in-place heap sort.
@@ -264,7 +250,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  };
  
  static inline int
-@@ -517,8 +440,8 @@
+@@ -522,8 +439,8 @@ size = sizeof (struct fde_vector) + size
    if ((accu->linear = malloc (size)))
      {
        accu->linear->count = 0;
@@ -275,7 +261,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
        return 1;
      }
    else
-@@ -532,6 +455,59 @@
+@@ -537,6 +454,59 @@ if (accu->linear)
      accu->linear->array[accu->linear->count++] = this_fde;
  }
  
@@ -335,7 +321,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  #define SWAP(x,y) do { const fde * tmp = x; x = y; y = tmp; } while (0)
  
  /* Convert a semi-heap to a heap.  A semi-heap is a heap except possibly
-@@ -594,130 +570,71 @@
+@@ -599,130 +569,71 @@ }
  #undef SWAP
  }
  
@@ -378,15 +364,15 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
 -	  i += chunk;
 -	  last = ptrs[chunk];
 -	}
-+  size_t i1, i2;
-+  const fde * fde2;
- 
+-
 -      // Stop if we are already sorted.
 -      if (!violations)
 -	{
 -	  break;
 -	}
--
++  size_t i1, i2;
++  const fde * fde2;
+ 
 -      // Compute the prefix sum.
 -      unsigned sum = 0;
 -      for (unsigned i = 0; i != FANOUT; ++i)
@@ -506,7 +492,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  {
    const struct dwarf_cie *last_cie = 0;
    size_t count = 0;
-@@ -743,18 +660,14 @@
+@@ -748,18 +659,14 @@ encoding = get_cie_encoding (this_cie);
  	  if (encoding == DW_EH_PE_omit)
  	    return -1;
  	  base = base_from_object (encoding, ob);
@@ -531,7 +517,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  
        /* Take care to ignore link-once functions that were removed.
  	 In these cases, the function address will be NULL, but if
-@@ -770,29 +683,8 @@
+@@ -775,29 +682,8 @@ if ((pc_begin & mask) == 0)
  	continue;
  
        count += 1;
@@ -563,7 +549,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
      }
  
    return count;
-@@ -877,7 +769,7 @@
+@@ -882,7 +768,7 @@ {
  	  fde **p = ob->u.array;
  	  for (count = 0; *p; ++p)
  	    {
@@ -572,7 +558,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  	      if (cur_count == (size_t) -1)
  		goto unhandled_fdes;
  	      count += cur_count;
-@@ -885,7 +777,7 @@
+@@ -890,7 +776,7 @@ }
  	}
        else
  	{
@@ -581,7 +567,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  	  if (count == (size_t) -1)
  	    {
  	      static const fde terminator;
-@@ -926,43 +818,9 @@
+@@ -931,42 +817,8 @@ DSO will deregister the object.  */
    accu.linear->orig_data = ob->u.single;
    ob->u.sort = accu.linear;
  
@@ -594,8 +580,8 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
 -#else
    ob->s.b.sorted = 1;
 -#endif
- }
- 
+-}
+-
 -#ifdef ATOMIC_FDE_FAST_PATH
 -/* Get the PC range for lookup */
 -static void
@@ -619,13 +605,12 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
 -    {
 -      classify_object_over_fdes (ncob, ob->u.single, range);
 -    }
--}
+ }
 -#endif
--
+ 
  /* A linear search through a set of FDEs for the given PC.  This is
     used when there was insufficient memory to allocate and sort an
-    array.  */
-@@ -1127,9 +985,6 @@
+@@ -1132,9 +984,6 @@ }
  static const fde *
  search_object (struct object* ob, void *pc)
  {
@@ -635,7 +620,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
    /* If the data hasn't been sorted, try to do this now.  We may have
       more memory available than last time we tried.  */
    if (! ob->s.b.sorted)
-@@ -1142,7 +997,6 @@
+@@ -1147,7 +996,6 @@ check is in order.  */
        if (pc < ob->pc_begin)
  	return NULL;
      }
@@ -643,7 +628,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  
    if (ob->s.b.sorted)
      {
-@@ -1172,21 +1026,6 @@
+@@ -1177,21 +1025,6 @@ return linear_search_fdes (ob, ob->u.sin
      }
  }
  
@@ -665,7 +650,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  const fde *
  _Unwind_Find_FDE (void *pc, struct dwarf_eh_bases *bases)
  {
-@@ -1194,27 +1033,17 @@
+@@ -1199,27 +1032,17 @@ struct object *ob;
    const fde *f = NULL;
  
  #ifdef ATOMIC_FDE_FAST_PATH
@@ -703,7 +688,7 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  
    init_object_mutex_once ();
    __gthread_mutex_lock (&object_mutex);
-@@ -1252,7 +1081,6 @@
+@@ -1257,7 +1080,6 @@ }
  
   fini:
    __gthread_mutex_unlock (&object_mutex);
@@ -711,3 +696,14 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110956
  
    if (f)
      {
+--- gcc-13.4.0/libgcc/unwind-dw2-fde.h
++++ gcc-13.4.0/libgcc/unwind-dw2-fde.h
+@@ -166,7 +166,7 @@ }
+ extern const fde * _Unwind_Find_FDE (void *, struct dwarf_eh_bases *);
+ 
+ static inline int
+-last_fde (const struct object *obj __attribute__ ((__unused__)), const fde *f)
++last_fde (struct object *obj __attribute__ ((__unused__)), const fde *f)
+ {
+ #ifdef DWARF2_OBJECT_END_PTR_EXTENSION
+   return f == (const fde *) obj->fde_end || f->length == 0;
