@@ -53,11 +53,8 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS.32 += -Dgoa=false
 CONFIGURE_OPTIONS += -Dsmb=false
 CONFIGURE_OPTIONS += -Dnfs=false
-# google backend requires goa which is only 64-bit in Solaris
-CONFIGURE_OPTIONS.32 += -Dgoogle=false
+CONFIGURE_OPTIONS += -Dgoogle=false
 CONFIGURE_OPTIONS += -Dman=true
-# requires libgdata which we only deliver 64-bit
-CONFIGURE_OPTIONS.64 += -Ddevel_utils=true
 # admin requires libcap
 CONFIGURE_OPTIONS += -Dadmin=false
 CONFIGURE_OPTIONS += -Dbluray=false
@@ -76,7 +73,6 @@ CONFIGURE_OPTIONS += -Dmtp=false
 CONFIGURE_OPTIONS += -Dafc=false
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
-REQUIRED_PACKAGES += library/desktop/libgdata
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
