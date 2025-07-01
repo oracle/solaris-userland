@@ -30,16 +30,16 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgweather
-COMPONENT_VERSION=	4.4.0
+COMPONENT_VERSION=	4.4.4
 # This is being hardcoded here since we are updating from 40.0 to 4.4.0
-IPS_COMPONENT_VERSION=  44.0
+IPS_COMPONENT_VERSION=  44.4
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/LibGWeather
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:366e866ff2a708b894cfea9475b8e8ff54cb3e2b477ea72a8ade0dabee5f48a4
+	sha256:7017677753cdf7d1fdc355e4bfcdb1eba8369793a8df24d241427a939cbf4283
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13147
 
-COMPONENT_BAID=		157183
+COMPONENT_BAID=		329214
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -54,6 +54,7 @@ CPPFLAGS += -std=gnu99 -D_XOPEN_SOURCE=700 -D__EXTENSIONS__
 CONFIGURE_OPTIONS += -Dgtk_doc=false
 CONFIGURE_OPTIONS += -Dzoneinfo_dir=/usr/share/lib/zoneinfo
 CONFIGURE_OPTIONS += -Dtests=true
+CONFIGURE_OPTIONS += -Dsoup2=false
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_TRANSFORMS += \
