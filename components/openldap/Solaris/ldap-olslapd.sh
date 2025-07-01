@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 # -*- mode: shell-script; sh-shell: ksh93 -*-
-# Copyright (c) 2007, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2007, 2025, Oracle and/or its affiliates.
 #
 # DEBUG.  Set for example using setenv
 #    svccfg -s network/ldap/server:openldap setenv -i DEBUG log
@@ -223,7 +223,7 @@ function version_check
 		oldvers=$(grep 'OpenLDAP: slapd' $VERSION_FILE | cut -d" " -f4)
 		if [[ "$curvers" == "$oldvers" ]]; then
 			:
-		elif [[ $oldvers == "2.6."@([4-8]) ]]; then
+		elif [[ $oldvers == "2.6."@([4-9]) ]]; then
 			logit "Notice: Compatible version $oldvers with $curvers"
 			version_update
 		else
@@ -239,7 +239,7 @@ function version_check
 		elif [[ $db == "MDB" ]]; then
 			# Is current version a recognised version?
 			case $curvers in
-			    ("2.6."@([4-9]))
+			    ("2.6."@([4-9]|10))
 				logit "Notice: $db database compatible for " \
 					$curvers
 				version_update

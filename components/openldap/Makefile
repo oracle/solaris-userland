@@ -32,19 +32,19 @@ include ../../make-rules/shared-macros.mk
 #   openLDAP <x>.<y>.<z>        =>   IPS <x>.<y>.<z>.0.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		openldap
-COMPONENT_VERSION=	2.6.9
+COMPONENT_VERSION=	2.6.10
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
-COMPONENT_PROJECT_URL=	http://www.openldap.org/
+COMPONENT_PROJECT_URL=	https://www.openldap.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2cb7dc73e9c8340dff0d99357fbaa578abf30cc6619f0521972c555681e6b2ff
+    sha256:c065f04aad42737aebd60b2fe4939704ac844266bc0aeaa1609f0cad987be516
 COMPONENT_ARCHIVE_URL=	\
-    ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
+    https://www.openldap.org/software/download/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/openldap
 # For check_anitya target, https://release-monitoring.org/project/2551
 COMPONENT_ANITYA_ID=	2551
-COMPONENT_BAID=		188651
+COMPONENT_BAID=		330773
 
 #
 # Cyrus-SASL is a requirement.
