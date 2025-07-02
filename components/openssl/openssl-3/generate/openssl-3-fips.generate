@@ -20,8 +20,14 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
-# all files are handled in openssl-3-fips.static
-<transform file dir link hardlink -> drop>
+<include generate/common.transform>
+
+# Delete everything not belonging to this package
+<transform pkg.type=(?!fips) -> drop>
+<transform -> delete pkg.type .*>
+
+# We have our own fipsmodule.cnf set in openssl-3-fips.static
+<transform file link path=.*/fipsmodule.cnf$ -> drop>

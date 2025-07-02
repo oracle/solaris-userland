@@ -20,8 +20,35 @@
 #
 
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 #
 
-# all files are handled in openssl-3.static
-<transform file dir link hardlink -> drop>
+<include generate/common.transform>
+
+# Delete everything not belonging to this package
+<transform pkg.type=(?!main) -> drop>
+<transform -> delete pkg.type .*>
+
+# Add PIE exception to the openssl binaries
+<transform path=.*/bin/.*/openssl$ -> set pkg.linted.userland.action001.PIE true>
+
+# We use hardlink to 64/openssl so drop the file found in proto area
+<transform path=usr/openssl/3/bin/openssl$ -> drop>
+
+# Not needed?
+<transform path=usr/openssl/3/bin/c_rehash$ -> drop>
+
+# Drop some files from /etc/openssl/3/... We ship our own configuration files
+<transform path=etc/openssl/3/ct_log_list.cnf(.dist)?$ -> drop>
+<transform path=etc/openssl/3/openssl.cnf(.dist)?$ -> drop>
+# Move some files from /etc/openssl to /usr/openssl
+<transform path=etc/openssl/3/misc/tsget(.pl)?$ -> set action.hash %(path)>
+<transform path=etc/openssl/3/misc/tsget(.pl)?$ -> delete mode .*>
+<transform path=etc/openssl/3/misc/tsget(.pl)?$ -> edit path ^etc usr>
+<transform path=etc/openssl/3/misc/CA.pl$ -> set action.hash %(path)>
+<transform path=etc/openssl/3/misc/CA.pl$ -> delete mode .*>
+<transform path=etc/openssl/3/misc/CA.pl$ -> edit path ^etc usr>
+
+# We do not ship html documentation
+<transform path=usr/openssl/3/share/doc/openssl/html/.* -> drop>
+

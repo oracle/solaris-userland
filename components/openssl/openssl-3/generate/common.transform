@@ -20,9 +20,16 @@
 #
 
 #
-# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
 
-file files/legacymodule.cnf path=etc/openssl/3/conf.d/legacymodule.cnf group=sys mode=0644 preserve=true overlay=allow
-dir  path=usr/openssl/3/lib/ossl-modules
-dir  path=usr/openssl/3/lib/$(MACH64)/ossl-modules
+# By default everything is in main package
+<transform -> default pkg.type main>
+
+# Except for fips package
+<transform path=.*/fips.so$ -> set pkg.type fips>
+# We have our own fipsmodule.cnf
+<transform file link path=.*/fipsmodule.cnf$ -> set pkg.type fips>
+# Except for legacy package
+<transform path=.*/legacy.so$ -> set pkg.type legacy>
+
