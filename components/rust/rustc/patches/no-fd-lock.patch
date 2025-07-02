@@ -1,0 +1,83 @@
+Workaround for:
+
+https://github.com/yoshuawuyts/fd-lock/issues/49
+
+diff --git a/src/bootstrap/Cargo.toml b/src/bootstrap/Cargo.toml
+index fcd97b7b589..ff404a80825 100644
+--- a/src/bootstrap/Cargo.toml
++++ b/src/bootstrap/Cargo.toml
+@@ -38,7 +38,6 @@
+ build_helper = { path = "../build_helper" }
+ clap = { version = "4.4", default-features = false, features = ["std", "usage", "help", "derive", "error-context"] }
+ clap_complete = "4.4"
+-fd-lock = "4.0"
+ home = "0.5"
+ ignore = "0.4"
+ libc = "0.2"
+diff --git a/src/bootstrap/Cargo.lock b/src/bootstrap/Cargo.lock
+index 86d23d9bd02..b0546317cdc 100644
+--- a/src/bootstrap/Cargo.lock
++++ b/src/bootstrap/Cargo.lock
+@@ -41,7 +41,6 @@ dependencies = [
+  "clap",
+  "clap_complete",
+  "cmake",
+- "fd-lock",
+  "home",
+  "ignore",
+  "junction",
+diff --git a/src/bootstrap/src/bin/main.rs b/src/bootstrap/src/bin/main.rs
+index 409a644b9be..d331411f230 100644
+--- a/src/bootstrap/src/bin/main.rs
++++ b/src/bootstrap/src/bin/main.rs
+@@ -8,7 +8,7 @@
+ use std::fs::{self, OpenOptions};
+ use std::io::{self, BufRead, BufReader, IsTerminal, Write};
+ use std::str::FromStr;
+-use std::{env, process};
++use std::{env};
+ 
+ use bootstrap::{
+     Build, CONFIG_CHANGE_HISTORY, ChangeId, Config, Flags, Subcommand, debug,
+@@ -33,41 +33,6 @@
+     debug!("parsing config based on flags");
+     let config = Config::parse(flags);
+ 
+-    let mut build_lock;
+-    let _build_lock_guard;
+-
+-    if !config.bypass_bootstrap_lock {
+-        // Display PID of process holding the lock
+-        // PID will be stored in a lock file
+-        let lock_path = config.out.join("lock");
+-        let pid = fs::read_to_string(&lock_path);
+-
+-        build_lock = fd_lock::RwLock::new(t!(fs::OpenOptions::new()
+-            .write(true)
+-            .truncate(true)
+-            .create(true)
+-            .open(&lock_path)));
+-        _build_lock_guard = match build_lock.try_write() {
+-            Ok(mut lock) => {
+-                t!(lock.write(process::id().to_string().as_ref()));
+-                lock
+-            }
+-            err => {
+-                drop(err);
+-                // #135972: We can reach this point when the lock has been taken,
+-                // but the locker has not yet written its PID to the file
+-                if let Some(pid) = pid.ok().filter(|pid| !pid.is_empty()) {
+-                    println!("WARNING: build directory locked by process {pid}, waiting for lock");
+-                } else {
+-                    println!("WARNING: build directory locked, waiting for lock");
+-                }
+-                let mut lock = t!(build_lock.write());
+-                t!(lock.write(process::id().to_string().as_ref()));
+-                lock
+-            }
+-        };
+-    }
+-
+     // check_version warnings are not printed during setup, or during CI
+     let changelog_suggestion = if matches!(config.cmd, Subcommand::Setup { .. })
+         || config.is_running_on_ci

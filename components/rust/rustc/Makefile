@@ -28,13 +28,13 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	rustc
-COMPONENT_VERSION =	1.78.0
-COMPONENT_BAID =	166008
+COMPONENT_VERSION =	1.87.0
+COMPONENT_BAID =	330476
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_PROJECT_URL =	http://www.rust-lang.org/
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:8065824f0255faa3901db8206e6f9423f6f8c07cec28bc6f2797c6c948310ece
+    sha256:8623b8651893e8c6aebfa45b6a90645a4f652f7b18189a0992a90d11ac2631f4
 COMPONENT_ARCHIVE_URL =	https://static.rust-lang.org/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL =	$(COMPONENT_ARCHIVE_URL).asc
 
@@ -69,7 +69,7 @@ endif
 # The configure Rust uses isn't autoconf; it's hand-rolled, and doesn't
 # recognize all the autoconf options, so we start from scratch.
 CONFIGURE_OPTIONS =	--prefix=$(CONFIGURE_PREFIX)
-CONFIGURE_OPTIONS +=	--libdir=$(USRLIBDIR64)
+CONFIGURE_OPTIONS +=	--libdir=lib/$(MACH64)
 CONFIGURE_OPTIONS +=	--default-linker=gcc
 CONFIGURE_OPTIONS +=	--enable-local-rust
 CONFIGURE_OPTIONS +=	--release-channel=stable
