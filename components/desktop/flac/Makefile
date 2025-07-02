@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796395)
@@ -32,16 +32,16 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		flac
-COMPONENT_VERSION=	1.4.3
+COMPONENT_VERSION=	1.5.0
 COMPONENT_PROJECT_URL=	https://xiph.org/flac/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-       sha256:6c58e69cd22348f441b861092b825e591d0b822e106de6eb0ee4d05d27205b70
+       sha256:f2c1c76592a82ffff8413ba3c4a1299b6c7ab06c734dee03fd88630485c2b920
 COMPONENT_ARCHIVE_URL=	http://downloads.xiph.org/releases/flac/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	817
 
-COMPONENT_BAID=		180262
+COMPONENT_BAID=		331461
 
 # tests work but take hours to run and use a lot of disk space
 TEST_TARGET = $(SKIP_TEST)
