@@ -28,16 +28,16 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wxWidgets
-COMPONENT_VERSION=	3.2.7
+COMPONENT_VERSION=	3.2.8.1
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:69a1722f874d91cd1c9e742b72df49e0fab02890782cf794791c3104cee868c6
+    sha256:ad0cf6c18815dcf1a6a89ad3c3d21a306cd7b5d99a602f77372ef1d92cb7d756
 COMPONENT_ARCHIVE_URL=	https://github.com/wxWidgets/wxWidgets/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  http://www.wxwidgets.org/
 COMPONENT_BUGDB=	library/wxwidgets
 COMPONENT_ANITYA_ID=	5150
 
-COMPONENT_BAID=		327079
+COMPONENT_BAID=		334417
 
 # GNU grep features are expected
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
