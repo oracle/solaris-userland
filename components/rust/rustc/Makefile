@@ -98,6 +98,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR); \
 	ls -1 usr/lib/$(MACH64)/lib* \
 	  usr/lib/$(MACH64)/rustlib/$(RUST_PLATFORM)/lib/lib* \
+	  usr/share/doc/rust/html/rustc/searchindex-* \
 	  usr/share/doc/rust/html/static.files/* | \
 	  awk '{ print "file path="$$1 " variant.arch=$(MACH)" }' > ../../libraries-hashed.$(MACH64); )
 

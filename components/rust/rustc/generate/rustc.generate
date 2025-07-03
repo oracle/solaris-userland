@@ -29,6 +29,7 @@
 <transform path=usr/lib/\$\(MACH64\)/lib.*\.so$ -> drop>
 <transform path=usr/lib/\$\(MACH64\)/rustlib/(sparcv9-sun|x86_64-pc)-solaris/lib.* -> drop>
 <transform path=usr/share/doc/rust/html/static.files/.* -> drop>
+<transform path=usr/share/doc/rust/html/rustc/searchindex-.* -> drop>
 
 <transform path=usr/lib/\$\(MACH64\)/rustlib/sparcv9-sun-solaris -> edit path sparcv9-sun-solaris \$\(RUST_PLATFORM\)>
 <transform path=usr/lib/\$\(MACH64\)/rustlib/x86_64-pc-solaris -> edit path x86_64-pc-solaris \$\(RUST_PLATFORM\)>
@@ -46,14 +47,10 @@
 
 # i386 files only 
 <transform file path=usr/share/doc/rust/html/src/core/portable-simd/crates/core_simd/src/vendor/x86\.rs\.html -> set variant.arch i386>
-<transform file path=usr/share/doc/rust/html/rustc/searchindex-2a45a8bf.js -> set variant.arch i386>
-<transform file path=usr/share/doc/rust/html/rustc/searchindex-349b053d.json -> set variant.arch i386>
 
 # sparc files only
 <transform file path=usr/share/doc/rust/html/std/os/linux/raw/arch/fn.stat.html -> set variant.arch sparc>
 <transform file path=usr/share/doc/rust/html/std/os/linux/raw/fn.stat.html -> set variant.arch sparc>
-<transform file path=usr/share/doc/rust/html/rustc/searchindex-444018a2.js -> set variant.arch sparc>
-<transform file path=usr/share/doc/rust/html/rustc/searchindex-1bf97713.json -> set variant.arch sparc>
 
 # delete everything not belonging to this package
 <transform file link pkg.type=(?!rustc) -> drop>
