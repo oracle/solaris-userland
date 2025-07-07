@@ -1,0 +1,1261 @@
+This patch fixes the deadlock that is reported in NTP community
+bug 3982: https://bugs.ntp.org/show_bug.cgi?id=3982
+This patch can be removed when upgrading to a version of NTP with that bug
+marked as fixed.
+
+diff -u -r include/lib_strbuf.h include/lib_strbuf.h
+--- include/lib_strbuf.h	2024-05-07 04:21:03.000000000 -0700
++++ include/lib_strbuf.h	2025-06-11 22:00:01.000000000 -0700
+@@ -5,7 +5,6 @@
+ #define LIB_STRBUF_H
+ 
+ #include <ntp_types.h>
+-#include <ntp_malloc.h>			/* for zero_mem() */
+ 
+ #define	LIB_BUFLENGTH	128
+ 
+@@ -22,7 +21,7 @@
+  * no need to churn the history with a mechanical switch away from
+  * LIB_GETBUF(buf).
+  */
+-extern	char* lib_getbuf(void);
++extern	char *	lib_getbuf(void);
+ 
+ #define	LIB_GETBUF(bufp)		\
+ 	do {				\
+diff -u -r include/ntp_types.h include/ntp_types.h
+--- include/ntp_types.h	2024-05-07 04:21:39.000000000 -0700
++++ include/ntp_types.h	2025-06-11 22:00:01.000000000 -0700
+@@ -19,6 +19,9 @@
+ #if defined(HAVE_STDINT_H)
+ # include <stdint.h>
+ #endif
++#ifdef HAVE_STDATOMIC_H
++# include <stdatomic.h>
++#endif
+ 
+ /* Bug 2813 */
+ #ifdef HAVE_LIMITS_H
+@@ -28,19 +31,23 @@
+ #include "ntp_machine.h"
+ 
+ 
+-#ifndef TRUE
+-# define	TRUE	1
+-#endif
+-#ifndef FALSE
+-# define	FALSE	0
+-#endif
+-
+ #ifdef HAVE_STDBOOL_H
+ # include <stdbool.h>
+ #else
+-typedef int bool;	/* Can't use enum TRUE/FALSE because of above */
++  typedef int _Bool; /* C99 apparently typically uses signed char */
++# define bool _Bool;
++# define true	1
++# define false	0
++# define __bool_true_false_are_defined 1
+ #endif
+ 
++# ifndef TRUE
++#  define	TRUE	true
++# endif
++# ifndef FALSE
++#  define	FALSE	false
++# endif
++
+ 
+ /*
+  * This is another naming conflict.
+@@ -254,6 +261,28 @@
+ 	return base + ALIGN_UNITS((minsize < 1) ? 1 : minsize);
+ }
+ 
++#ifdef HAVE_STDATOMIC_H
++# define NTP_ATOMIC _Atomic
++#else
++# define NTP_ATOMIC _Atomic
++#endif
++
++/*
++ * Atomic increment of a 32-bit value, safe for use across
++ * threads and signals.  The type is unsigned, but given
++ * the practical universality of twos-complement representation,
++ * it works as well for signed 32-bit values.  Returns the value
++ * after incrementing.
++ */
++static inline u_int32
++ntp_atomic_inc_32(volatile NTP_ATOMIC u_int32 *pu32) {
++#ifndef SYS_WINNT
++	return ++(*pu32);
++#else	/* SYS_WINNT follows */
++	return (u_int32)InterlockedIncrement((volatile LONG *)pu32);
++#endif
++}
++
+ /*
+  * On Unix struct sock_timeval is equivalent to struct timeval.
+  * On Windows built with 64-bit time_t, sock_timeval.tv_sec is a long
+diff -u -r libntp/lib_strbuf.c libntp/lib_strbuf.c
+--- libntp/lib_strbuf.c	2024-05-07 04:21:39.000000000 -0700
++++ libntp/lib_strbuf.c	2025-06-11 22:00:01.000000000 -0700
+@@ -5,7 +5,6 @@
+ #include <config.h>
+ #endif
+ 
+-#include <isc/mutex.h>
+ #include <isc/net.h>
+ #include <isc/result.h>
+ 
+@@ -13,15 +12,23 @@
+ #include "ntp_stdlib.h"
+ #include "lib_strbuf.h"
+ 
+-#define LIB_NUMBUF	10
++/*
++ * Keep the number of buffers a power of 2 so a mask can be used for modulo
++ * in lib_getbuf().  With 16 buffers even a large number of printf/syslog
++ * args being from lib_getbuf() consumers nesting in a few threads there
++ * should be no overuse, though there's no way to catch it.
++ */
++#define LIB_NUMBUF_EXP	4
++#define LIB_NUMBUF	(1 << LIB_NUMBUF_EXP)
+ 
+ /*
+- * Storage declarations
++ * Storage declarations.  To avoid spurious strict aliasing warnings,
++ * lib_getbuf accesses lib_stringbuf_storage via the array of pointers
++ * lib_stringbuf.
+  */
+ static char		lib_stringbuf_storage[LIB_NUMBUF][LIB_BUFLENGTH];
+ static char *		lib_stringbuf[LIB_NUMBUF];
+ int			lib_inited;
+-static isc_mutex_t	lib_mutex;
+ int			ipv4_works;
+ int			ipv6_works;
+ int			debug;
+@@ -48,25 +55,21 @@
+ 	for (u = 0; u < COUNTOF(lib_stringbuf); u++) {
+ 		lib_stringbuf[u] = lib_stringbuf_storage[u];
+ 	}
+-	isc_mutex_init(&lib_mutex);
+ 	lib_inited = TRUE;
+ }
+ 
+-
++/*
++ * Thread-safe fetch of the next round-robin string buffer of LIB_BUFLENGTH.
++ */
+ char *
+ lib_getbuf(void)
+ {
+-	static int	lib_nextbuf;
+-	int		mybuf;
++	static volatile NTP_ATOMIC u_int32	lib_nextbuf;
++	u_int32					mybuf;
+ 
+-	if (!lib_inited) {
+-		init_lib();
+-	}
+-	isc_mutex_lock(&lib_mutex);
+-	mybuf = lib_nextbuf;
+-	lib_nextbuf = (1 + mybuf) % COUNTOF(lib_stringbuf);
+-	isc_mutex_unlock(&lib_mutex);
+-	zero_mem(lib_stringbuf[mybuf], LIB_BUFLENGTH);
++	mybuf = ntp_atomic_inc_32(&lib_nextbuf);
++	mybuf &= COUNTOF(lib_stringbuf) - 1;	/* faster than modulo */
++	lib_stringbuf[mybuf][0] = '\0';
+ 
+ 	return lib_stringbuf[mybuf];
+ }
+\ No newline at end of file
+diff -u -r ntpd/ntpd.c ntpd/ntpd.c
+--- ntpd/ntpd.c	2024-05-24 23:59:48.000000000 -0700
++++ ntpd/ntpd.c	2025-06-11 22:12:22.000000000 -0700
+@@ -836,6 +836,7 @@
+ 	int		zero;
+ # endif
+ 
++	init_lib();
+ # ifdef NEED_PTHREAD_WARMUP
+ 	my_pthread_warmup();
+ # endif
+@@ -1006,7 +1007,6 @@
+ 	}
+ # endif	/* HAVE_WORKING_FORK */
+ 
+-	init_lib();
+ # ifdef SYS_WINNT
+ 	/*
+ 	 * Make sure the service is initialized before we do anything else
+diff -u -r ntpq/ntpq-subs.c ntpq/ntpq-subs.c
+--- ntpq/ntpq-subs.c	2024-05-24 23:59:48.000000000 -0700
++++ ntpq/ntpq-subs.c	2025-06-11 22:12:22.000000000 -0700
+@@ -367,9 +367,9 @@
+  */
+ static u_int	mru_count;
+ static u_int	mru_dupes;
+-volatile int	mrulist_interrupted;
+ static mru	mru_list;		/* listhead */
+ static mru **	hash_table;
++volatile NTP_ATOMIC bool mrulist_interrupted;
+ 
+ /*
+  * qsort comparison function table for mrulist().  The first two
+diff -u -r ntpq/ntpq.c ntpq/ntpq.c
+--- ntpq/ntpq.c	2024-05-24 23:59:48.000000000 -0700
++++ ntpq/ntpq.c	2025-06-11 22:12:22.000000000 -0700
+@@ -4133,8 +4133,8 @@
+ #endif /* !defined(BUILD_AS_LIB) */
+ 
+ #define CTRLC_STACK_MAX 4
+-static volatile size_t		ctrlc_stack_len = 0;
+-static volatile Ctrl_C_Handler	ctrlc_stack[CTRLC_STACK_MAX];
++static volatile NTP_ATOMIC u_int32		ctrlc_stack_len;
++static volatile NTP_ATOMIC Ctrl_C_Handler	ctrlc_stack[CTRLC_STACK_MAX];
+ 
+ 
+ 
+@@ -4143,10 +4143,9 @@
+ 	Ctrl_C_Handler func
+ 	)
+ {
+-	size_t size = ctrlc_stack_len;
+-	if (func && (size < CTRLC_STACK_MAX)) {
+-		ctrlc_stack[size] = func;
+-		ctrlc_stack_len = size + 1;
++	if (func && ctrlc_stack_len < CTRLC_STACK_MAX) {
++		ctrlc_stack[ctrlc_stack_len] = func;
++		ntp_atomic_inc_32(&ctrlc_stack_len);
+ 		return TRUE;
+ 	}
+ 	return FALSE;
+@@ -4157,25 +4156,32 @@
+ 	Ctrl_C_Handler func
+ 	)
+ {
+-	size_t size = ctrlc_stack_len;
+-	if (size) {
+-		--size;
+-		if (func == NULL || func == ctrlc_stack[size]) {
+-			ctrlc_stack_len = size;
++	u_int32 len = ctrlc_stack_len;
++	if (len > 0) {
++		--len;
++		if (func == NULL || func == ctrlc_stack[len]) {
++			ctrlc_stack_len = len;
+ 			return TRUE;
+ 		}
+ 	}
+ 	return FALSE;
+ }
+ 
++/*
++ * on_ctrlc() is in signal-handler context on POSIX systems, and
++ * in a transient thread on Windows (not the initial/main thread).
++ */
+ #ifndef BUILD_AS_LIB
+ static void
+ on_ctrlc(void)
+ {
+-	size_t size = ctrlc_stack_len;
+-	while (size)
+-		if ((*ctrlc_stack[--size])())
++	u_int32 idx = ctrlc_stack_len;
++
++	while (idx > 0) {
++		if ((*ctrlc_stack[--idx])()) {
+ 			break;
++		}
++	}
+ }
+ #endif /* !defined(BUILD_AS_LIB) */
+ 
+diff -u -r ntpsnmpd/ntpsnmpd.c ntpsnmpd/ntpsnmpd.c
+--- ntpsnmpd/ntpsnmpd.c	2024-05-24 23:59:48.000000000 -0700
++++ ntpsnmpd/ntpsnmpd.c	2025-06-11 22:12:22.000000000 -0700
+@@ -48,6 +48,7 @@
+   int background = 0; /* start as background process */
+   int use_syslog = 1; /* use syslog for logging */
+ 
++  init_lib();
+ 	{
+ 		int optct = optionProcess(&ntpsnmpdOptions, argc, argv);
+ 		argc -= optct;
+diff -u -r sntp/tests/run-crypto.c sntp/tests/run-crypto.c
+--- sntp/tests/run-crypto.c	2024-05-24 23:59:48.000000000 -0700
++++ sntp/tests/run-crypto.c	2025-06-11 22:12:22.000000000 -0700
+@@ -43,8 +43,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r sntp/tests/run-keyFile.c sntp/tests/run-keyFile.c
+--- sntp/tests/run-keyFile.c	2024-05-24 23:59:48.000000000 -0700
++++ sntp/tests/run-keyFile.c	2025-06-11 22:12:22.000000000 -0700
+@@ -41,8 +41,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r sntp/tests/run-kodDatabase.c sntp/tests/run-kodDatabase.c
+--- sntp/tests/run-kodDatabase.c	2024-05-24 23:59:48.000000000 -0700
++++ sntp/tests/run-kodDatabase.c	2025-06-11 22:12:22.000000000 -0700
+@@ -44,8 +44,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r sntp/tests/run-kodFile.c sntp/tests/run-kodFile.c
+--- sntp/tests/run-kodFile.c	2024-05-24 23:59:48.000000000 -0700
++++ sntp/tests/run-kodFile.c	2025-06-11 22:12:22.000000000 -0700
+@@ -42,8 +42,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r sntp/tests/run-networking.c sntp/tests/run-networking.c
+--- sntp/tests/run-networking.c	2024-05-24 23:59:48.000000000 -0700
++++ sntp/tests/run-networking.c	2025-06-11 22:12:22.000000000 -0700
+@@ -34,8 +34,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r sntp/tests/run-packetHandling.c sntp/tests/run-packetHandling.c
+--- sntp/tests/run-packetHandling.c	2024-05-24 23:59:48.000000000 -0700
++++ sntp/tests/run-packetHandling.c	2025-06-11 22:12:22.000000000 -0700
+@@ -50,8 +50,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r sntp/tests/run-packetProcessing.c sntp/tests/run-packetProcessing.c
+--- sntp/tests/run-packetProcessing.c	2024-05-24 23:59:48.000000000 -0700
++++ sntp/tests/run-packetProcessing.c	2025-06-11 22:12:22.000000000 -0700
+@@ -55,8 +55,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r sntp/tests/run-t-log.c sntp/tests/run-t-log.c
+--- sntp/tests/run-t-log.c	2024-05-24 23:59:48.000000000 -0700
++++ sntp/tests/run-t-log.c	2025-06-11 22:12:22.000000000 -0700
+@@ -36,8 +36,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+@@ -59,9 +61,9 @@
+   progname = argv[0];
+   suite_setup();
+   UnityBegin("t-log.c");
+-  RUN_TEST(testChangePrognameInMysyslog, 10);
+-  RUN_TEST(testOpenLogfileTest, 11);
+-  RUN_TEST(testWriteInCustomLogfile, 12);
++  RUN_TEST(testChangePrognameInMysyslog, 9);
++  RUN_TEST(testOpenLogfileTest, 10);
++  RUN_TEST(testWriteInCustomLogfile, 11);
+ 
+   return (UnityEnd());
+ }
+diff -u -r sntp/tests/run-utilities.c sntp/tests/run-utilities.c
+--- sntp/tests/run-utilities.c	2024-05-24 23:59:48.000000000 -0700
++++ sntp/tests/run-utilities.c	2025-06-11 22:12:22.000000000 -0700
+@@ -44,8 +44,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r sntp/tests/testconf.yml sntp/tests/testconf.yml
+--- sntp/tests/testconf.yml	2020-03-03 15:41:29.000000000 -0800
++++ sntp/tests/testconf.yml	2025-06-11 22:00:01.000000000 -0700
+@@ -4,8 +4,10 @@
+ --- 
+ :unity:
+   :suite_setup:
++    - extern void init_lib(void);
+     - extern int change_iobufs(int);
+     - extern int change_logfile(const char*, int);
++    - init_lib();
+     - change_iobufs(1);
+     - change_logfile("stderr", 0);
+ 
+diff -u -r tests/bug-2803/testconf.yml tests/bug-2803/testconf.yml
+--- tests/bug-2803/testconf.yml	2020-03-03 15:41:29.000000000 -0800
++++ tests/bug-2803/testconf.yml	2025-06-11 22:00:01.000000000 -0700
+@@ -4,7 +4,10 @@
+ --- 
+ :unity:
+   :suite_setup:
++    - extern void init_lib(void);
+     - extern int change_iobufs(int);
+     - extern int change_logfile(const char*, int);
++    - init_lib();
+     - change_iobufs(1);
+     - change_logfile("stderr", 0);
++
+diff -u -r tests/libntp/run-a_md5encrypt.c tests/libntp/run-a_md5encrypt.c
+--- tests/libntp/run-a_md5encrypt.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-a_md5encrypt.c	2025-06-11 22:12:22.000000000 -0700
+@@ -39,8 +39,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-atoint.c tests/libntp/run-atoint.c
+--- tests/libntp/run-atoint.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-atoint.c	2025-06-11 22:12:22.000000000 -0700
+@@ -40,8 +40,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-atouint.c tests/libntp/run-atouint.c
+--- tests/libntp/run-atouint.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-atouint.c	2025-06-11 22:12:22.000000000 -0700
+@@ -40,8 +40,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-authkeys.c tests/libntp/run-authkeys.c
+--- tests/libntp/run-authkeys.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-authkeys.c	2025-06-11 22:12:22.000000000 -0700
+@@ -49,8 +49,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-buftvtots.c tests/libntp/run-buftvtots.c
+--- tests/libntp/run-buftvtots.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-buftvtots.c	2025-06-11 22:12:22.000000000 -0700
+@@ -41,8 +41,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-calendar.c tests/libntp/run-calendar.c
+--- tests/libntp/run-calendar.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-calendar.c	2025-06-11 22:12:22.000000000 -0700
+@@ -72,8 +72,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-caljulian.c tests/libntp/run-caljulian.c
+--- tests/libntp/run-caljulian.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-caljulian.c	2025-06-11 22:12:22.000000000 -0700
+@@ -40,8 +40,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-caltontp.c tests/libntp/run-caltontp.c
+--- tests/libntp/run-caltontp.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-caltontp.c	2025-06-11 22:12:22.000000000 -0700
+@@ -37,8 +37,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-calyearstart.c tests/libntp/run-calyearstart.c
+--- tests/libntp/run-calyearstart.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-calyearstart.c	2025-06-11 22:12:22.000000000 -0700
+@@ -38,8 +38,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-clocktime.c tests/libntp/run-clocktime.c
+--- tests/libntp/run-clocktime.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-clocktime.c	2025-06-11 22:12:22.000000000 -0700
+@@ -43,8 +43,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-decodenetnum.c tests/libntp/run-decodenetnum.c
+--- tests/libntp/run-decodenetnum.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-decodenetnum.c	2025-06-11 22:12:22.000000000 -0700
+@@ -43,8 +43,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-digests.c tests/libntp/run-digests.c
+--- tests/libntp/run-digests.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-digests.c	2025-06-11 22:12:22.000000000 -0700
+@@ -48,8 +48,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-hextoint.c tests/libntp/run-hextoint.c
+--- tests/libntp/run-hextoint.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-hextoint.c	2025-06-11 22:12:22.000000000 -0700
+@@ -40,8 +40,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-hextolfp.c tests/libntp/run-hextolfp.c
+--- tests/libntp/run-hextolfp.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-hextolfp.c	2025-06-11 22:12:22.000000000 -0700
+@@ -41,8 +41,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-humandate.c tests/libntp/run-humandate.c
+--- tests/libntp/run-humandate.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-humandate.c	2025-06-11 22:12:22.000000000 -0700
+@@ -36,8 +36,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-lfpfunc.c tests/libntp/run-lfpfunc.c
+--- tests/libntp/run-lfpfunc.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-lfpfunc.c	2025-06-11 22:12:22.000000000 -0700
+@@ -45,8 +45,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-lfptostr.c tests/libntp/run-lfptostr.c
+--- tests/libntp/run-lfptostr.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-lfptostr.c	2025-06-11 22:12:22.000000000 -0700
+@@ -45,8 +45,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-modetoa.c tests/libntp/run-modetoa.c
+--- tests/libntp/run-modetoa.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-modetoa.c	2025-06-11 22:12:22.000000000 -0700
+@@ -35,8 +35,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-msyslog.c tests/libntp/run-msyslog.c
+--- tests/libntp/run-msyslog.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-msyslog.c	2025-06-11 22:12:22.000000000 -0700
+@@ -41,8 +41,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-netof.c tests/libntp/run-netof.c
+--- tests/libntp/run-netof.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-netof.c	2025-06-11 22:12:22.000000000 -0700
+@@ -37,8 +37,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-numtoa.c tests/libntp/run-numtoa.c
+--- tests/libntp/run-numtoa.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-numtoa.c	2025-06-11 22:12:22.000000000 -0700
+@@ -36,8 +36,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-octtoint.c tests/libntp/run-octtoint.c
+--- tests/libntp/run-octtoint.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-octtoint.c	2025-06-11 22:12:22.000000000 -0700
+@@ -40,8 +40,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-prettydate.c tests/libntp/run-prettydate.c
+--- tests/libntp/run-prettydate.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-prettydate.c	2025-06-11 22:12:22.000000000 -0700
+@@ -36,8 +36,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-realpath.c tests/libntp/run-realpath.c
+--- tests/libntp/run-realpath.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-realpath.c	2025-06-11 22:12:22.000000000 -0700
+@@ -40,8 +40,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-recvbuff.c tests/libntp/run-recvbuff.c
+--- tests/libntp/run-recvbuff.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-recvbuff.c	2025-06-11 22:12:22.000000000 -0700
+@@ -36,8 +36,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-refidsmear.c tests/libntp/run-refidsmear.c
+--- tests/libntp/run-refidsmear.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-refidsmear.c	2025-06-11 22:12:22.000000000 -0700
+@@ -37,8 +37,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-refnumtoa.c tests/libntp/run-refnumtoa.c
+--- tests/libntp/run-refnumtoa.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-refnumtoa.c	2025-06-11 22:12:22.000000000 -0700
+@@ -36,8 +36,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-sbprintf.c tests/libntp/run-sbprintf.c
+--- tests/libntp/run-sbprintf.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-sbprintf.c	2025-06-11 22:12:22.000000000 -0700
+@@ -42,8 +42,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-sfptostr.c tests/libntp/run-sfptostr.c
+--- tests/libntp/run-sfptostr.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-sfptostr.c	2025-06-11 22:12:22.000000000 -0700
+@@ -42,8 +42,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-socktoa.c tests/libntp/run-socktoa.c
+--- tests/libntp/run-socktoa.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-socktoa.c	2025-06-11 22:12:22.000000000 -0700
+@@ -41,8 +41,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-ssl_init.c tests/libntp/run-ssl_init.c
+--- tests/libntp/run-ssl_init.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-ssl_init.c	2025-06-11 22:12:22.000000000 -0700
+@@ -40,8 +40,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-statestr.c tests/libntp/run-statestr.c
+--- tests/libntp/run-statestr.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-statestr.c	2025-06-11 22:12:22.000000000 -0700
+@@ -39,8 +39,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-strtolfp.c tests/libntp/run-strtolfp.c
+--- tests/libntp/run-strtolfp.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-strtolfp.c	2025-06-11 22:12:22.000000000 -0700
+@@ -42,8 +42,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-timespecops.c tests/libntp/run-timespecops.c
+--- tests/libntp/run-timespecops.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-timespecops.c	2025-06-11 22:12:22.000000000 -0700
+@@ -65,8 +65,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-timevalops.c tests/libntp/run-timevalops.c
+--- tests/libntp/run-timevalops.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-timevalops.c	2025-06-11 22:12:22.000000000 -0700
+@@ -64,8 +64,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-tsafememcmp.c tests/libntp/run-tsafememcmp.c
+--- tests/libntp/run-tsafememcmp.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-tsafememcmp.c	2025-06-11 22:12:22.000000000 -0700
+@@ -40,8 +40,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-tstotv.c tests/libntp/run-tstotv.c
+--- tests/libntp/run-tstotv.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-tstotv.c	2025-06-11 22:12:22.000000000 -0700
+@@ -37,8 +37,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-tvtots.c tests/libntp/run-tvtots.c
+--- tests/libntp/run-tvtots.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-tvtots.c	2025-06-11 22:12:22.000000000 -0700
+@@ -38,8 +38,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-uglydate.c tests/libntp/run-uglydate.c
+--- tests/libntp/run-uglydate.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-uglydate.c	2025-06-11 22:12:22.000000000 -0700
+@@ -35,8 +35,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-vi64ops.c tests/libntp/run-vi64ops.c
+--- tests/libntp/run-vi64ops.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-vi64ops.c	2025-06-11 22:12:22.000000000 -0700
+@@ -37,8 +37,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/run-ymd2yd.c tests/libntp/run-ymd2yd.c
+--- tests/libntp/run-ymd2yd.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/libntp/run-ymd2yd.c	2025-06-11 22:12:22.000000000 -0700
+@@ -37,8 +37,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/libntp/testconf.yml tests/libntp/testconf.yml
+--- tests/libntp/testconf.yml	2020-03-03 15:41:29.000000000 -0800
++++ tests/libntp/testconf.yml	2025-06-11 22:00:01.000000000 -0700
+@@ -4,8 +4,10 @@
+ --- 
+ :unity:
+   :suite_setup:
++    - extern void init_lib(void);
+     - extern int change_iobufs(int);
+     - extern int change_logfile(const char*, int);
++    - init_lib();
+     - change_iobufs(1);
+     - change_logfile("stderr", 0);
+ 
+diff -u -r tests/ntpd/run-leapsec.c tests/ntpd/run-leapsec.c
+--- tests/ntpd/run-leapsec.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/ntpd/run-leapsec.c	2025-06-11 22:12:22.000000000 -0700
+@@ -71,8 +71,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/ntpd/run-ntp_prio_q.c tests/ntpd/run-ntp_prio_q.c
+--- tests/ntpd/run-ntp_prio_q.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/ntpd/run-ntp_prio_q.c	2025-06-11 22:12:22.000000000 -0700
+@@ -44,8 +44,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/ntpd/run-ntp_restrict.c tests/ntpd/run-ntp_restrict.c
+--- tests/ntpd/run-ntp_restrict.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/ntpd/run-ntp_restrict.c	2025-06-11 22:12:22.000000000 -0700
+@@ -42,8 +42,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/ntpd/run-rc_cmdlength.c tests/ntpd/run-rc_cmdlength.c
+--- tests/ntpd/run-rc_cmdlength.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/ntpd/run-rc_cmdlength.c	2025-06-11 22:12:22.000000000 -0700
+@@ -39,8 +39,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/ntpd/run-t-ntp_scanner.c tests/ntpd/run-t-ntp_scanner.c
+--- tests/ntpd/run-t-ntp_scanner.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/ntpd/run-t-ntp_scanner.c	2025-06-11 22:12:22.000000000 -0700
+@@ -43,8 +43,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/ntpd/run-t-ntp_signd.c tests/ntpd/run-t-ntp_signd.c
+--- tests/ntpd/run-t-ntp_signd.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/ntpd/run-t-ntp_signd.c	2025-06-11 22:12:22.000000000 -0700
+@@ -42,8 +42,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/ntpd/testconf.yml tests/ntpd/testconf.yml
+--- tests/ntpd/testconf.yml	2020-03-03 15:41:29.000000000 -0800
++++ tests/ntpd/testconf.yml	2025-06-11 22:00:01.000000000 -0700
+@@ -4,8 +4,10 @@
+ --- 
+ :unity:
+   :suite_setup:
++    - extern void init_lib(void);
+     - extern int change_iobufs(int);
+     - extern int change_logfile(const char*, int);
++    - init_lib();
+     - change_iobufs(1);
+     - change_logfile("stderr", 0);
+ 
+diff -u -r tests/ntpq/run-t-ntpq.c tests/ntpq/run-t-ntpq.c
+--- tests/ntpq/run-t-ntpq.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/ntpq/run-t-ntpq.c	2025-06-11 22:12:22.000000000 -0700
+@@ -35,8 +35,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/ntpq/testconf.yml tests/ntpq/testconf.yml
+--- tests/ntpq/testconf.yml	2020-03-03 15:41:29.000000000 -0800
++++ tests/ntpq/testconf.yml	2025-06-11 22:00:01.000000000 -0700
+@@ -4,7 +4,10 @@
+ --- 
+ :unity:
+   :suite_setup:
++    - extern void init_lib(void);
+     - extern int change_iobufs(int);
+     - extern int change_logfile(const char*, int);
++    - init_lib();
+     - change_iobufs(1);
+     - change_logfile("stderr", 0);
++
+diff -u -r tests/sandbox/run-modetoa.c tests/sandbox/run-modetoa.c
+--- tests/sandbox/run-modetoa.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/sandbox/run-modetoa.c	2025-06-11 22:12:22.000000000 -0700
+@@ -33,8 +33,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/sandbox/run-uglydate.c tests/sandbox/run-uglydate.c
+--- tests/sandbox/run-uglydate.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/sandbox/run-uglydate.c	2025-06-11 22:12:22.000000000 -0700
+@@ -35,8 +35,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/sandbox/run-ut-2803.c tests/sandbox/run-ut-2803.c
+--- tests/sandbox/run-ut-2803.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/sandbox/run-ut-2803.c	2025-06-11 22:12:22.000000000 -0700
+@@ -37,8 +37,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/sandbox/testconf.yml tests/sandbox/testconf.yml
+--- tests/sandbox/testconf.yml	2020-03-03 15:41:29.000000000 -0800
++++ tests/sandbox/testconf.yml	2025-06-11 22:00:01.000000000 -0700
+@@ -4,7 +4,10 @@
+ --- 
+ :unity:
+   :suite_setup:
++    - extern void init_lib(void);
+     - extern int change_iobufs(int);
+     - extern int change_logfile(const char*, int);
++    - init_lib();
+     - change_iobufs(1);
+     - change_logfile("stderr", 0);
++
+diff -u -r tests/sec-2853/run-sec-2853.c tests/sec-2853/run-sec-2853.c
+--- tests/sec-2853/run-sec-2853.c	2024-05-24 23:59:48.000000000 -0700
++++ tests/sec-2853/run-sec-2853.c	2025-06-11 22:12:22.000000000 -0700
+@@ -34,8 +34,10 @@
+ //=======Suite Setup=====
+ static void suite_setup(void)
+ {
++extern void init_lib(void);
+ extern int change_iobufs(int);
+ extern int change_logfile(const char*, int);
++init_lib();
+ change_iobufs(1);
+ change_logfile("stderr", 0);
+ }
+diff -u -r tests/sec-2853/testconf.yml tests/sec-2853/testconf.yml
+--- tests/sec-2853/testconf.yml	2020-03-03 15:41:29.000000000 -0800
++++ tests/sec-2853/testconf.yml	2025-06-11 22:00:01.000000000 -0700
+@@ -4,7 +4,10 @@
+ --- 
+ :unity:
+   :suite_setup:
++    - extern void init_lib(void);
+     - extern int change_iobufs(int);
+     - extern int change_logfile(const char*, int);
++    - init_lib();
+     - change_iobufs(1);
+     - change_logfile("stderr", 0);
++
+diff -u -r util/ntp-keygen.c util/ntp-keygen.c
+--- util/ntp-keygen.c	2024-05-24 23:59:48.000000000 -0700
++++ util/ntp-keygen.c	2025-06-11 22:12:22.000000000 -0700
+@@ -340,6 +340,7 @@
+ #endif /* OPENSSL */
+ 
+ 	progname = argv[0];
++	init_lib();
+ 
+ #ifdef SYS_WINNT
+ 	/* Initialize before OpenSSL checks */
