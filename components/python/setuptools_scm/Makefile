@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		setuptools_scm
-COMPONENT_VERSION=	8.1.0
+COMPONENT_VERSION=	8.3.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:20c7018be099048b4fc10c0968734ee76a887f1abf8d149725756c3e458d1d06
+	sha256:3d555e92b75dacd037d32bafdf94f97af51ea29ae8c7b234cf94b7a5bd242a63
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/setuptools_scm/
 COMPONENT_BUGDB=	python-mod/setuptools_scm
 COMPONENT_ANITYA_ID=	7874
-COMPONENT_BAID=		178886
+COMPONENT_BAID=		331417
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -68,5 +68,6 @@ system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/setuptools-%)
+REQUIRED_PACKAGES += library/python/importlib-metadata-39
 REQUIRED_PACKAGES += library/python/tomli-39
 REQUIRED_PACKAGES += library/python/typing-extensions-39

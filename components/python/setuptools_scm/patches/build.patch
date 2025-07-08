@@ -1,19 +1,16 @@
-In 8.0.0, finders were refactored and moved into a different place, resulting
-in build breakage when building the new version with the old one in the CBE.
+The version pin is irrelevant to how we build and deliver setuptools-scm.
 
-https://github.com/pypa/setuptools_scm/commit/3b5b8a7cb3ec62c7a655d51ee272f08a1c44034b
+https://github.com/pypa/setuptools-scm/issues/1090
+https://github.com/pypa/setuptools-scm/commit/c766df10c18c3c5a6b5741e9f372e193412c0f69
 
-This workaround that can be removed once the new version gets into the CBE.
-
---- setuptools_scm-8.1.0/src/setuptools_scm/_file_finders/__init__.py
-+++ setuptools_scm-8.1.0/src/setuptools_scm/_file_finders/__init__.py
-@@ -106,6 +106,9 @@ def find_files(path: _t.PathT = "") -> l
-         iter_entry_points("setuptools_scm.files_command"),
-         iter_entry_points("setuptools_scm.files_command_fallback"),
-     ):
-+        # don't look for finders in the old place (temporary workaround)
-+        if ep.value.startswith("setuptools_scm.file_finder_"):
-+            continue
-         command: Callable[[_t.PathT], list[str]] = ep.load()
-         res: list[str] = command(path)
-         if res:
+--- setuptools_scm-8.3.1/pyproject.toml
++++ setuptools_scm-8.3.1/pyproject.toml
+@@ -4,7 +4,7 @@
+ build-backend = "_own_version_helper:build_meta"
+ requires = [
+   "setuptools>=61",
+-  'tomli<=2.0.2; python_version < "3.11"',
++  'tomli; python_version < "3.11"',
+ ]
+ backend-path = [
+   ".",
