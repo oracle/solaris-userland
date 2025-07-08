@@ -75,7 +75,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 # You may need to set the forward address in /etc/privoxy/config to the 
 # Oracle proxy to access pages in your web browser with privoxy running. 
 
-REQUIRED_PACKAGES += library/pcre
+REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

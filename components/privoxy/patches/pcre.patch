@@ -1,0 +1,62 @@
+The pcre2 detection and usage with pcre2.h in a subdirectory
+needs some tweaking to make it work.
+
+Also, on Solaris, we deliver the header into pcre/pcre2.h
+rather than pcre2/pcre2.h.
+
+Parts of this patch were offered and accepted upstream:
+https://sourceforge.net/p/ijbswa/bugs/946
+
+--- privoxy-4.0.0-stable/configure.in
++++ privoxy-4.0.0-stable/configure.in
+@@ -886,9 +886,9 @@ AC_CHECK_LIB(pcre2-8, pcre2_compile_8, [
+    AC_CHECK_HEADER(pcre2.h, [
+       AC_EGREP_HEADER(pcre2_pattern_info, pcre2.h,[have_pcre2=yes; AC_DEFINE(HAVE_PCRE2)], [AC_MSG_WARN([[pcre2 old version installed]]); have_pcre2=no])
+    ], [
+-      AC_CHECK_HEADER(pcre2/pcre2.h, [
+-         AC_EGREP_HEADER(pcre2_pattern_info, pcre2/pcre2.h, [have_pcre2=yes; AC_DEFINE(PCRE2_H_IN_SUBDIR)], [AC_MSG_WARN([[pcre2 old version installed]]); have_pcre2=no])
+-      ], [have_pcre2=no])
++      AC_CHECK_HEADER(pcre/pcre2.h, [
++         AC_EGREP_HEADER(pcre2_pattern_info, pcre/pcre2.h, [have_pcre2=yes; AC_DEFINE(HAVE_PCRE2) AC_DEFINE(PCRE2_H_IN_SUBDIR)], [AC_MSG_WARN([[pcre2 old version installed]]); have_pcre2=no])
++      ], [have_pcre2=no], [#define PCRE2_CODE_UNIT_WIDTH 8])
+    ], [#define PCRE2_CODE_UNIT_WIDTH 8])
+ ], [have_pcre2=no])
+ 
+@@ -897,7 +897,7 @@ AC_CHECK_LIB(pcre2-posix, regcomp, [
+       AC_EGREP_HEADER(pcre2_regerror, pcre2posix.h, [have_pcre2posix=yes],[AC_MSG_WARN([[pcre2posix old version installed]]); have_pcre2posix=no])
+    ], [
+       AC_CHECK_HEADER(pcre/pcre2posix.h, [
+-         AC_EGREP_HEADER(pcre2_regerror, pcre2/pcre2posix.h,  [have_pcre2posix=yes; AC_DEFINE(PCRE2POSIX_H_IN_SUBDIR)],[AC_MSG_WARN([[pcre2posix old version installed]]); have_pcre2posix=no])
++         AC_EGREP_HEADER(pcre2_regerror, pcre/pcre2posix.h,  [have_pcre2posix=yes; AC_DEFINE(PCRE2POSIX_H_IN_SUBDIR)],[AC_MSG_WARN([[pcre2posix old version installed]]); have_pcre2posix=no])
+       ], [have_pcre2posix=no])
+    ])
+ ], [have_pcre2posix=no], -lpcre2-8)
+--- privoxy-4.0.0-stable/project.h
++++ privoxy-4.0.0-stable/project.h
+@@ -114,13 +114,13 @@
+ #  ifdef HAVE_PCRE2
+ #    ifdef PCRE2_H_IN_SUBDIR
+ #      define PCRE2_CODE_UNIT_WIDTH 8
+-#      include <pcre2/pcre2.h>
++#      include <pcre/pcre2.h>
+ #    else
+ #      define PCRE2_CODE_UNIT_WIDTH 8
+ #      include <pcre2.h>
+ #    endif
+ #    ifdef PCRE2POSIX_H_IN_SUBDIR
+-#        include <pcre2/pcre2posix.h>
++#        include <pcre/pcre2posix.h>
+ #    else
+ #        include <pcre2posix.h>
+ #    endif
+--- privoxy-4.0.0-stable/pcrs.h
++++ privoxy-4.0.0-stable/pcrs.h
+@@ -37,7 +37,7 @@
+ #define PCRE2_CODE_UNIT_WIDTH 8
+ #define PCREn(x) PCRE2_ ## x
+ #ifndef _PCRE2_H
+-#include <pcre2.h>
++#include <pcre/pcre2.h>
+ #endif
+ #else
+ #define PCREn(x) PCRE_ ## x
