@@ -20,31 +20,34 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		scons
-COMPONENT_VERSION=	4.6.0
+COMPONENT_VERSION=	4.9.1
 COMPONENT_PROJECT_URL=	http://www.scons.org/
-COMPONENT_SRC=		SCons-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_ARCHIVE=	SCons-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7db28958b188b800f803c287d0680cc3ac7c422ed0b1cf9895042c52567803ec
+    sha256:e2d78aa56e4646e5dbaf50c0758c6d1e4b0418464d8d6d07a09beb6cf257538f
 COMPONENT_ARCHIVE_URL=	\
     https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	4770
-COMPONENT_BAID=		157458
+COMPONENT_BAID=		333777
 
 # we only need a single version of SCons
-PYTHON_VERSION = 3.11
+PYTHON_VERSION = 3.13
 PYTHON_VERSIONS = $(PYTHON_VERSION)
 
-BUILD_STYLE= setup.py
+BUILD_STYLE= pybuild
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 PKG_MACROS += PYVER=$(PYTHON_VERSION)
 
-PKG_PROTO_DIRS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)
+# man pages are not installed automatically
+COMPONENT_POST_INSTALL_ACTION += ( \
+    $(MKDIR) $(PROTO_DIR)/usr/share/man/man1; \
+    $(CP) $(SOURCE_DIR)/*\.1 $(PROTO_DIR)/usr/share/man/man1; \
+);

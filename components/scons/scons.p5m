@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -38,14 +38,6 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/scons pkg.depend.bypass-generate=.*importlib.*
 file path=usr/bin/scons-configure-cache pkg.depend.bypass-generate=.*importlib.*
 file path=usr/bin/sconsign pkg.depend.bypass-generate=.*importlib.*
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons-$(COMPONENT_VERSION)-py$(PYVER).egg-info/_solaris_dep
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons-$(COMPONENT_VERSION)-py$(PYVER).egg-info/entry_points.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons-$(COMPONENT_VERSION)-py$(PYVER).egg-info/not-zip-safe
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Action.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Builder.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/CacheDir.py
@@ -105,6 +97,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/JavaCommon.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/MSCommon/MSVC/Config.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/MSCommon/MSVC/Dispatcher.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/MSCommon/MSVC/Exceptions.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/MSCommon/MSVC/Kind.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/MSCommon/MSVC/Policy.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/MSCommon/MSVC/Registry.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/MSCommon/MSVC/ScriptArguments.py
@@ -1504,16 +1497,16 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/msvs.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/mwcc.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/mwld.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/nasm.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja/Globals.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja/Methods.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja/NinjaState.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja/Overrides.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja/Rules.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja/Utils.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja/ninja_daemon_build.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja/ninja_run_daemon.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja/ninja_scons_daemon.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja_tool/Globals.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja_tool/Methods.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja_tool/NinjaState.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja_tool/Overrides.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja_tool/Rules.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja_tool/Utils.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja_tool/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja_tool/ninja_daemon_build.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja_tool/ninja_run_daemon.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/ninja_tool/ninja_scons_daemon.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/ipk.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/msi.py
@@ -1582,12 +1575,17 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/compat/win32.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/cpp.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/dblite.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/exitfuncs.py
-file usr/lib/python$(PYVER)/vendor-packages/scons-time.1 \
-    path=usr/share/man/man1/scons-time.1
-file usr/lib/python$(PYVER)/vendor-packages/scons.1 \
-    path=usr/share/man/man1/scons.1
-file usr/lib/python$(PYVER)/vendor-packages/sconsign.1 \
-    path=usr/share/man/man1/sconsign.1
+file path=usr/lib/python$(PYVER)/vendor-packages/scons-$(COMPONENT_VERSION).dist-info/INSTALLER
+file path=usr/lib/python$(PYVER)/vendor-packages/scons-$(COMPONENT_VERSION).dist-info/METADATA
+file path=usr/lib/python$(PYVER)/vendor-packages/scons-$(COMPONENT_VERSION).dist-info/RECORD
+file path=usr/lib/python$(PYVER)/vendor-packages/scons-$(COMPONENT_VERSION).dist-info/WHEEL
+file path=usr/lib/python$(PYVER)/vendor-packages/scons-$(COMPONENT_VERSION).dist-info/_solaris_dep
+file path=usr/lib/python$(PYVER)/vendor-packages/scons-$(COMPONENT_VERSION).dist-info/entry_points.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/scons-$(COMPONENT_VERSION).dist-info/licenses/LICENSE
+file path=usr/lib/python$(PYVER)/vendor-packages/scons-$(COMPONENT_VERSION).dist-info/top_level.txt
+file path=usr/share/man/man1/scons-time.1
+file path=usr/share/man/man1/scons.1
+file path=usr/share/man/man1/sconsign.1
 license LICENSE license=MIT
 
 # force a dependency on the scons package
