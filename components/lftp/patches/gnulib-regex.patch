@@ -1,0 +1,33 @@
+https://github.com/coreutils/gnulib/commit/500d839fdfbc507e53ca1d3cf502e6b190b0fcf5
+
+From 500d839fdfbc507e53ca1d3cf502e6b190b0fcf5 Mon Sep 17 00:00:00 2001
+From: Bruno Haible <bruno@clisp.org>
+Date: Mon, 14 Apr 2025 16:00:13 +0200
+Subject: [PATCH] regex: Fix undefined behaviour.
+
+* lib/regex.h (_REGEX_NELTS): Define to empty; don't use ISO C99
+variable-length arrays.
+---
+ ChangeLog   | 6 ++++++
+ lib/regex.h | 8 ++++++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/lib/regex.h b/lib/regex.h
+index ff7e43b534..0eb72ce908 100644
+--- a/lib/regex.h
++++ b/lib/regex.h
+@@ -523,8 +523,12 @@ typedef struct
+ /* Declarations for routines.  */
+ 
+ #ifndef _REGEX_NELTS
+-# if (defined __STDC_VERSION__ && 199901L <= __STDC_VERSION__ \
+-	&& !defined __STDC_NO_VLA__)
++/* The macro _REGEX_NELTS denotes the number of elements in a variable-length
++   array passed to a function.
++   It was meant to make use of ISO C99 variable-length arrays, but this does
++   not work: ISO C23 § 6.7.6.2.(5) requires the number of elements to be > 0,
++   but the NMATCH argument to regexec() is allowed to be 0.  */
++# if 0
+ #  define _REGEX_NELTS(n) n
+ # else
+ #  define _REGEX_NELTS(n)

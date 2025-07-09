@@ -20,35 +20,27 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lftp
-COMPONENT_VERSION=	4.9.2
+COMPONENT_VERSION=	4.9.3
 COMPONENT_PROJECT_URL=	https://lftp.yar.ru/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a37589c61914073f53c5da0e68bd233b41802509d758a022000e1ae2076da733
+    sha256:68116cc184ab660a78a4cef323491e89909e5643b59c7b5f0a14f7c2b20e0a29
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)ftp/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	1555
 
-COMPONENT_BAID=		89377
+COMPONENT_BAID=		335183
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
-PATCH_LEVEL =   0
-
 CONFIGURE_OPTIONS  +=		--localedir=$(CONFIGURE_LOCALEDIR)
-
-# Workaround gcc 14 errors in m4/needtrio.m4 in 4.9.2 (fixed in git in 2023)
-CONFIGURE_OPTIONS += ac_cv_need_trio=no
-
-# Workaround gcc 14 errors in m4/select.m4 from gnulib
-CONFIGURE_OPTIONS += gl_cv_func_select_detects_ebadf=yes
 
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/gnutls-3
