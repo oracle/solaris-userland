@@ -20,26 +20,24 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		iso-codes
-COMPONENT_VERSION=	4.6.0
+COMPONENT_VERSION=	4.18.0
 COMPONENT_PROJECT_URL=	https://salsa.debian.org/iso-codes-team/iso-codes
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_SRC=		$(COMPONENT_NAME)-v$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:451f0ef3259074eed14e30d6eb6a8c7da731402b0e9517be3f4746c0c3c560b6
+    sha256:06f606e733e7da5f9e133ab9401896e2a0b47cc13429807f08e1db398ff4de57
 COMPONENT_ARCHIVE_URL=	\
-    https://salsa.debian.org/iso-codes-team/$(COMPONENT_NAME)/-/archive/$(COMPONENT_NAME)-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+    https://salsa.debian.org/iso-codes-team/$(COMPONENT_NAME)/-/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	utility/docbook
 COMPONENT_ANITYA_ID=	1406
-
-COMPONENT_BAID=		106361
+COMPONENT_BAID=		335264
 
 TEST_TARGET = $(NO_TESTS)
 
