@@ -28,15 +28,18 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dbus-python
-COMPONENT_VERSION=	1.3.2
+COMPONENT_VERSION=	1.4.0
 COMPONENT_PROJECT_URL=	http://dbus.freedesktop.org
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ad67819308618b5069537be237f8e68ca1c7fcc95ee4a121fe6845b1418248f8
+    sha256:d6e2ccba3da2427499849a5fb22c04fec9e662a299c5e5546fc91bc80490ccb6
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/dbus
 COMPONENT_ANITYA_ID=	402
-COMPONENT_BAID=		147070
+COMPONENT_BAID=		333337
+
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 # Do not transform .so files to include standard Python 3 ABI version tag.
 PY3_CPYTHON_NAMING = \#
@@ -67,7 +70,7 @@ COMPONENT_TEST_SNAPSHOT = \
 COMPONENT_TEST_TRANSFORM_CMD = \
     $(COMPONENT_TEST_BUILD_DIR)/transform-$(PYTHON_VERSION)-$(BITS)-results
 COMPONENT_TEST_MASTER = \
-    $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+    $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION).master
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -81,6 +84,15 @@ CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES_BASE)
 COMPONENT_TEST_ENV +=   PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
 # necessary due to 'dbus-daemon' executable
 COMPONENT_TEST_ENV +=   PATH=$(PATH):$(USRLIB.32)
+
+# The .service file needs to be moved to its own subdirectory
+# to prevent unnecessary configuration reloads.
+# https://gitlab.freedesktop.org/dbus/dbus-python/-/issues/56
+COMPONENT_PRE_TEST_ACTION += ( \
+    $(MKDIR) $(COMPONENT_TEST_DIR)/test/servicedir; \
+    $(MV) $(COMPONENT_TEST_DIR)/test/TestSuitePythonService.service \
+          $(COMPONENT_TEST_DIR)/test/servicedir; \
+)
 
 # Standard automake test framework results transform
 COMPONENT_TEST_TRANSFORMS += \

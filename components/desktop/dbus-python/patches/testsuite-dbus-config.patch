@@ -1,0 +1,24 @@
+The directory specified with <servicedir> is not only searched by the dbus
+daemon for .service files but also tracked for changes in order to
+automatically reload the configuration when necessary.
+
+The issue is that this directory also contains the test logs which forces
+a configuration reload with each write.
+
+To fix that, we move the service file into its own subdirectory (via our
+Makefile) and point dbus to it instead.
+
+This issue was reported upstream:
+https://gitlab.freedesktop.org/dbus/dbus-python/-/issues/56
+
+--- dbus-python-1.4.0/test/tmp-session-bus.conf.in
++++ dbus-python-1.4.0/test/tmp-session-bus.conf.in
+@@ -6,7 +6,7 @@
+   <type>session</type>
+   <listen>unix:tmpdir=/tmp</listen>
+ 
+-  <servicedir>@G_TEST_BUILDDIR@/test</servicedir>
++  <servicedir>@G_TEST_BUILDDIR@/test/servicedir</servicedir>
+ 
+   <policy context="default">
+     <!-- Allow everything to be sent -->
