@@ -25,6 +25,7 @@
 
 COMPILER =		gcc
 BUILD_BITS =		64
+CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk4

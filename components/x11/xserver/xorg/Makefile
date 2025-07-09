@@ -24,6 +24,7 @@
 #
 
 BUILD_BITS =            64
+CTF_MODE =		off	# Breaks config
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xorg-server
@@ -112,7 +113,6 @@ COMPONENT_BUILD_ENV += LD_SHARED_UNSET="$(LD_B_DIRECT)"
 LD_EXEC_OPTIONS +=     -zdiscard-unused=dependencies -zdiscard-unused=files
 LD_PIE_OPTIONS +=      -zdiscard-unused=dependencies -zdiscard-unused=files
 LD_SHARED_OPTIONS +=   -zdiscard-unused=dependencies -zdiscard-unused=files
-COMPONENT_BUILD_ENV += LD_SHARED_OPTIONS="$(LD_SHARED_OPTIONS)"
 
 # Don't include build date & time in delivered binaries as it just causes
 # unnecessary binary differences to be pulled into package updates, but

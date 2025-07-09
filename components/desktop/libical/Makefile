@@ -20,12 +20,13 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS=		64_and_32
+BUILD_BITS =		64_and_32
 # For now, all things built for C++11 require gcc.
-COMPILER= 		gcc
+COMPILER = 		gcc
+CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libical

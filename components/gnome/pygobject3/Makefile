@@ -25,6 +25,7 @@
 
 COMPILER =		gcc
 BUILD_BITS =		64
+CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pygobject

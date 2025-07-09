@@ -20,11 +20,12 @@
 #
 
 #
-# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
+CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
-COMPILER=	gcc
+COMPILER =		gcc
 
 COMPONENT_NAME=		python_rapidjson
 COMPONENT_VERSION=	1.20

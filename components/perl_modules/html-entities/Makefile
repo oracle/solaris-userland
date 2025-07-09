@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 
+CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		HTML-Parser

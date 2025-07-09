@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64
+BUILD_BITS =		64
+CTF_MODE =		off	# Has no effect
 
 include ../../../make-rules/shared-macros.mk
 

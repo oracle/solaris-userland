@@ -23,7 +23,8 @@
 # Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
-BUILD_BITS= 32_and_64
+BUILD_BITS =		32_and_64
+CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libassuan

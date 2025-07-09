@@ -18,9 +18,10 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2025, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64
+BUILD_BITS =		64
+CTF_MODE =		off	# Has no effect
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		smartmontools

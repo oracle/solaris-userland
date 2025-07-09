@@ -20,12 +20,13 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 
 # The Makefile of this component does not support multiple build jobs.
 COMPONENT_MAKE_JOBS=1
 
+CTF_MODE =		off	# Has no effect
 include ../../make-rules/shared-macros.mk
 
 LD_Z_IGNORE =

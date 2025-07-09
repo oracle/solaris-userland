@@ -22,9 +22,10 @@
 #
 # Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
-BUILD_BITS= 32_and_64
+BUILD_BITS =		32_and_64
 # For now, all things built for C++11 require gcc.
-COMPILER= gcc
+COMPILER =		gcc
+CTF_MODE =		off	# C++
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		taglib

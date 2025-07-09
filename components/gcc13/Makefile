@@ -22,11 +22,12 @@
 #
 # Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
-export PARFAIT_BUILD=no
-BUILD_BITS= 64
-COMPILER= gcc
+export PARFAIT_BUILD =	no
+BUILD_BITS =		64
+COMPILER =		gcc
+CTF_MODE =		off	# Breaks config
 
-# Gcc often fails when it is _not_ built in mulitple parallel jobs. This can
+# Gcc often fails when it is _not_ built in multiple parallel jobs. This can
 # happen when full gate is built.
 ifeq ($(strip $(COMPONENT_MAKE_JOBS)),1)
     COMPONENT_MAKE_JOBS=4

@@ -24,7 +24,8 @@
 #
 
 # Prefer 32-bit over 64-bit as apr-util has its own custom package layout.
-BUILD_BITS= 32_and_64
+BUILD_BITS =		32_and_64
+CTF_MODE =		off	# Has no effect
 include ../../make-rules/shared-macros.mk
 
 APU_VERSION=1

@@ -20,13 +20,15 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS= 64
+BUILD_BITS =		64
 
 # Parallel mode can be enabled only if GNU make is used.
-COMPONENT_MAKE_JOBS=1
+COMPONENT_MAKE_JOBS =	1
+
+CTF_MODE =		off	# Breaks config
 
 include ../../make-rules/shared-macros.mk
 

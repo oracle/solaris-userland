@@ -26,9 +26,10 @@
 # parfait is a bit unhappy (24796395)
 export PARFAIT_BUILD=no
 
-BUILD_BITS=		64_and_32
+BUILD_BITS =		64_and_32
 # Upstream requires gcc flags that Studio doesn't support
-COMPILER=		gcc
+COMPILER =		gcc
+CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		flac

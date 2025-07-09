@@ -20,11 +20,12 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS = 64_and_32
-COMPILER=gcc
+BUILD_BITS =		64_and_32
+COMPILER =		gcc
+CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 BUILD_STYLE=            meson
 

@@ -25,6 +25,7 @@
 
 COMPILER =      	gcc
 BUILD_BITS =            32_and_64
+CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glib

@@ -20,11 +20,12 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
-COMPILER=		gcc
+COMPILER =		gcc
+CTF_MODE =		relaxed
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fltk

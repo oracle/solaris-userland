@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 #
@@ -123,9 +123,6 @@ ifneq ($(filter -g,$(CFLAGS)),)
 LD_SHARED_OPTIONS += -lpixman-1
 REQUIRED_PACKAGES += library/graphics/pixman
 endif
-
-COMPONENT_BUILD_ENV +=	 LD_SHARED_OPTIONS="$(LD_SHARED_OPTIONS)"
-COMPONENT_INSTALL_ENV += LD_SHARED_OPTIONS="$(LD_SHARED_OPTIONS)"
 endif
 
 # Special options for Xorg library components

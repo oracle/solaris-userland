@@ -20,13 +20,14 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=          	64
 # brltty-5.4/Headers/bitfield.h has a field with a zero-sized array that
 # Studio 12.4 refuses to deal with.
 COMPILER=		gcc
+CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		brltty

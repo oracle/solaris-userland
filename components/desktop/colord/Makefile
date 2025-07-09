@@ -20,15 +20,16 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64_and_32
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
 # Additionally, colord requires support for __attribute__(cleanup), which
 # Studio does not yet support until 12.5 (ER 17630845).
 COMPILER =              gcc
+BUILD_BITS =            64_and_32
+CTF_MODE =		off	# Breaks config
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		colord

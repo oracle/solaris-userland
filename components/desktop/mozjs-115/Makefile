@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796622)
@@ -26,6 +26,7 @@ export PARFAIT_BUILD=no
 
 BUILD_BITS =		64
 COMPILER =		gcc
+CTF_MODE =		off	# C++
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mozjs

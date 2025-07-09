@@ -24,8 +24,9 @@
 # Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS=	64
-COMPILER=	gcc
+BUILD_BITS =		64
+COMPILER =		gcc
+CTF_MODE =		off	# Has no effect
 # parallel build will not survive the build process atrocity 
 COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk

@@ -20,14 +20,15 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 export PARFAIT_BUILD=no
-BUILD_BITS= 64
-COMPILER= gcc
-GCC_ROOT=/usr/gcc/12
+BUILD_BITS =		64
+COMPILER =		gcc
+GCC_ROOT =		/usr/gcc/12
+CTF_MODE =		off	# Breaks config
 
-# Gcc 12 often fails when it is _not_ built in mulitple parallel jobs. This can
+# Gcc 12 often fails when it is _not_ built in multiple parallel jobs. This can
 # happen when full gate is built.
 ifeq ($(strip $(COMPONENT_MAKE_JOBS)),1)
     COMPONENT_MAKE_JOBS=4

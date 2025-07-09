@@ -23,8 +23,9 @@
 # Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =	64
-COMPILER =	gcc
+BUILD_BITS =		64
+COMPILER =		gcc
+CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	rustc

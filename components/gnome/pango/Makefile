@@ -27,6 +27,7 @@
 # gobject-introspection does not produce correct results when using Studio.
 COMPILER =		gcc
 BUILD_BITS =		64_and_32
+CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pango

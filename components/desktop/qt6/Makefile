@@ -22,8 +22,9 @@
 #
 # Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
-BUILD_BITS=64
-COMPILER=gcc
+BUILD_BITS =		64
+COMPILER =		gcc
+CTF_MODE =		relaxed	# Spotty coverage, C++
 
 include ../../../make-rules/shared-macros.mk
 

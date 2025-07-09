@@ -20,14 +20,15 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 # This variable has no impact on perl build, it is here merely to satisfy
 # "modernized" gate infrastructure. The bitness of the module is driven by the
 # bitness of perl interpreter itself. That is hardcoded in
 # $(WS_MAKE_RULES)/makemaker.mk
-BUILD_BITS = 64
+BUILD_BITS =		64
+CTF_MODE =		off	# Has no effect
 
 include ../../../make-rules/shared-macros.mk
 

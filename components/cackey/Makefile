@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 # TESTING:
@@ -70,8 +70,8 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
 
 # requires PC/SC libraries and headers
-CONFIGURE_ENV += CFLAGS="-I$(USRINCDIR)/PCSC" 
-CONFIGURE_ENV += LDFLAGS="-lpcsclite"
+CFLAGS += -I$(USRINCDIR)/PCSC
+LDFLAGS += -lpcsclite
 
 # options needed for configure, library location, PC/SC library and headers    
 CONFIGURE_OPTIONS +=    --exec-prefix=$(USRLIBDIR64)

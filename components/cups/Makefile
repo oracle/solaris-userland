@@ -23,9 +23,10 @@
 # Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS=		32_and_64
-PREFERRED_BITS=		64
-COMPILER=		gcc
+BUILD_BITS =		32_and_64
+PREFERRED_BITS =	64
+COMPILER =		gcc
+CTF_MODE =		off	# C++
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups

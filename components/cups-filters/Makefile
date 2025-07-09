@@ -22,9 +22,10 @@
 #
 # Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64
-COMPILER= gcc
-gcc_OPT= -O2
+BUILD_BITS =		64
+COMPILER =		gcc
+gcc_OPT =		-O2
+CTF_MODE =		off	# Breaks config
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups-filters

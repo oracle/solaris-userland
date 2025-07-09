@@ -26,6 +26,7 @@
 BUILD_BITS =            32_and_64
 # FreeType uses various gcc-isms for optimizations
 COMPILER =		gcc
+CTF_MODE =		relaxed
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freetype

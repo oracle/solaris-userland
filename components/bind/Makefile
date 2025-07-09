@@ -31,6 +31,7 @@ ifeq ($(BINDDEBUG), yes)
 gcc_OPT.sparc.64 =	-g
 gcc_OPT.i386.64 =	-g
 endif
+CTF_MODE =		relaxed
 
 include ../../make-rules/shared-macros.mk
 

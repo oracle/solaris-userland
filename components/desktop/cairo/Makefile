@@ -26,6 +26,7 @@
 # Cairo uses atomic intrinsics not supported in Studio 12.4 (ER 19201298)
 COMPILER =              gcc
 BUILD_BITS =            64_and_32
+CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cairo

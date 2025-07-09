@@ -20,12 +20,12 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
-BUILD_BITS= 32_and_64
+BUILD_BITS =		32_and_64
 # gcc will handle src/cpuinfo.
-COMPILER= gcc
+COMPILER =		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	SDL2

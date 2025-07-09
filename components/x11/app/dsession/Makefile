@@ -20,11 +20,12 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS= 		64
-BUILD_ARCH= 		sparc
+BUILD_BITS = 		64
+BUILD_ARCH = 		sparc
+CTF_MODE =		off	# Breaks config
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         dsession

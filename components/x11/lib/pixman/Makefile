@@ -24,6 +24,7 @@
 #
 
 BUILD_BITS =            64_and_32
+#XXXCTF_MODE =		off	# Breaks config
 COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 

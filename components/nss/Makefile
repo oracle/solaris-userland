@@ -23,9 +23,9 @@
 # Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS=		32_and_64
-
-COMPILER= gcc
+BUILD_BITS =		32_and_64
+COMPILER =		gcc
+CTF_MODE =		off
 
 # The Makefile of this component does not support multiple build jobs.
 COMPONENT_MAKE_JOBS=1

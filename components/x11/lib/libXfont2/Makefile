@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -47,8 +47,6 @@ include $(WS_MAKE_RULES)/x11-component.mk
 # Use mapfile instead of -fvisibility to control symbol visibility
 # so that we can expose symbols needed by our installalias program.
 LD_SHARED_OPTIONS += -M$(COMPONENT_DIR)/mapfile
-COMPONENT_BUILD_ENV +=   LD_SHARED_OPTIONS="$(LD_SHARED_OPTIONS)"
-COMPONENT_INSTALL_ENV += LD_SHARED_OPTIONS="$(LD_SHARED_OPTIONS)"
 COMPONENT_BUILD_ARGS +=  OS_CFLAGS="-fvisibility=default"
 COMPONENT_INSTALL_ARGS += OS_CFLAGS="-fvisibility=default"
 

@@ -1381,18 +1381,119 @@ LD_SECEXT_OPTIONS =	$(LD_Z_ASLR) $(LD_Z_NXSTACK) $(LD_Z_NXHEAP) \
 LD_EXEC_OPTIONS =	$(LD_Z_PIE_MODE) $(LD_SECEXT_OPTIONS)
 LD_PIE_OPTIONS =	$(LD_SECEXT_OPTIONS)
 
+# Generate CTF sections for executables, PIE, and shared objects.
+#
+# Two variables control CTF generation for Userland. Component makefiles
+# should set these before the include of shared-macros.mk:
+#
+#  CTF_MODE = on|off|relaxed	[default: on]
+#	Determines whether CTF is produced (on, relaxed) or disabled (off).
+#	'on' includes the -zctf=require option, which ensures that all
+#	input objects deliver CTF content. 'relaxed' drops the require
+#	option, enabling partial "best effort" results. This can be convenient
+#	in cases where CTF is only partially present. However, the lack
+#	of CTF becomes a silent failure, and so, 'on' is preferred.
+#
+#	CTF_MODE=off: The most common reason for this is to work around FOSS
+#	makefiles that ignore the CFLAGS we try to pass in, or filter
+#	the LD_xxx_OPTIONS environment variables we use. To get CTF into
+#	those components, you will need to figure out why the flags and/or
+#	environment variables are being dropped. There can also be other
+#	reasons for failure. With the Studio compilers, the CTF convert/merge
+#	process may fail. In the case of gcc, the -gctf option may not
+#	be supported for all languages. We have seen this with C++. When
+#	'off' is specified, you should include a comment explaining the
+#	reason. Grep for CTF_MODE in existing makefiles for examples.
+#
+#	CTF_MODE=relaxed: In some components, the flags or environment
+#	variables may reach the important parts of the build, but not
+#	penetrate every corner. If the missed part is unimportant
+#	(e.g. a test or minor utility), 'relaxed' will produce useful CTF
+#	with minimum effort. Therefore, whether 'relaxed' is a good idea
+#	or not is a judgement call. If interested, try it, and use ctfdump
+#	to check the resulting objects.
+#
+#  CTF_STRIP_DEBUG =0|1		[default: 0, not stripped ]
+#	If CTF_MODE is not off, and the Studio compilers are used, the -g
+#	option is added to CFLAGS in order to produce dwarf debug sections
+#	that can be converted to CTF. CTF_STRIP_DEBUG determines whether
+#	these dwarf sections are stripped from the resulting object, or
+#	left in place for use by dbx. A value of 0 retains the dwarf
+#	sections, while a value of 1 causes them to be removed.
+
+# Supply defaults for CTF_MODE and CTF_STRIP_DEBUG.
+ifndef CTF_MODE
+CTF_MODE=on
+endif
+
+ifndef CTF_STRIP_DEBUG
+# Default to leaving debug sections in the result.
+#
+# Studio dwarf is compatible with CTF and dbx.
+#
+# With gcc, use the -gctf option to generate the CTF. The alternative of
+# producing dwarf sections and converting them is a poor choice, since
+# gcc dwarf must be version 2 for CTF, and the resulting objects will
+# have debug sections considered to be obsolete by gdb.
+CTF_STRIP_DEBUG = 0
+endif
+
+# Link-editor option for CTF generation
+ifeq ($(strip $(CTF_MODE)),off)
+ZCTF_LDFLAGS.studio =
+ZCTF_LDFLAGS.gcc =
+else ifeq ($(strip $(CTF_MODE)),on)
+ZCTF_LDFLAGS.studio =		-zctf=compress,convert,ignore-non-c,require
+ZCTF_LDFLAGS.gcc =		-zctf=compress,ignore-non-c,require
+else ifeq ($(strip $(CTF_MODE)),relaxed)
+ZCTF_LDFLAGS.studio =		-zctf=compress,convert,ignore-non-c
+ZCTF_LDFLAGS.gcc =		-zctf=compress,ignore-non-c
+else
+$(error invalid CTF_MODE, expect on, off, or relaxed: $(CTF_MODE))
+endif
+ZCTF_LDFLAGS = $(ZCTF_LDFLAGS.$(COMPILER))
+
+# Link-editor option for dropping dwarf sections due to CTF generation
+ifeq ($(strip $(CTF_STRIP_DEBUG)),0)
+ZCTF_STRIP.studio =
+ZCTF_STRIP.gcc =
+else ifeq ($(CTF_STRIP_DEBUG),1)
+ZCTF_STRIP.studio =	-zstrip-class=debug
+ZCTF_STRIP.gcc =
+else
+$(error invalid CTF_STRIP_DEBUG, expect 1 or 0: $(CTF_STRIP_DEBUG))
+endif
+ZCTF_STRIP = $(ZCTF_STRIP.$(COMPILER))
+
+# If CTF generation is enabled, set up the necessary macros to pass
+# options to the compiler and link-editor.
+ifneq ($(strip $(CTF_MODE)),off)
+ZCTF_CFLAGS.gcc =	-gctf
+CFLAGS.gcc +=		$(ZCTF_CFLAGS.gcc)
+CXXFLAGS.gcc +=		$(ZCTF_CFLAGS.gcc)
+
+ZCTF_CFLAGS.studio =	-g
+CFLAGS.studio +=	$(ZCTF_CFLAGS.studio)
+CXXFLAGS.studio +=	$(ZCTF_CFLAGS.studio)
+
+LD_EXEC_OPTIONS +=	$(ZCTF_LDFLAGS) $(ZCTF_STRIP)
+LD_PIE_OPTIONS +=	$(ZCTF_LDFLAGS) $(ZCTF_STRIP)
+LD_SHARED_OPTIONS +=	$(ZCTF_LDFLAGS) $(ZCTF_STRIP)
+endif
 
 # Environment variables and arguments passed into the build and install
 # environment(s).  These are the initial settings.
 COMPONENT_BUILD_ENV= \
     LD_OPTIONS="$(LD_OPTIONS)" \
     LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)" \
-    LD_PIE_OPTIONS="$(LD_PIE_OPTIONS)"
+    LD_PIE_OPTIONS="$(LD_PIE_OPTIONS)" \
+    LD_SHARED_OPTIONS="$(LD_SHARED_OPTIONS)"
 
 COMPONENT_INSTALL_ENV= \
     LD_OPTIONS="$(LD_OPTIONS)" \
     LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)" \
-    LD_PIE_OPTIONS="$(LD_PIE_OPTIONS)"
+    LD_PIE_OPTIONS="$(LD_PIE_OPTIONS)" \
+    LD_SHARED_OPTIONS="$(LD_SHARED_OPTIONS)"
 
 # Add any bit-specific settings
 COMPONENT_BUILD_ENV += $(COMPONENT_BUILD_ENV.$(BITS))

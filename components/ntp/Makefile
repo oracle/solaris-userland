@@ -108,7 +108,7 @@ CFLAGS +=	 -D_XOPEN_SOURCE=600 -D__EXTENSIONS__
 CFLAGS +=	 -DHAVE_CLOSEFROM
 
 studio_C99MODE= $(studio_C99_ENABLE)
-CFLAGS.studio.i386 =	-preserve_argvalues=complete
+CFLAGS.studio.i386 +=	-preserve_argvalues=complete
 
 CONFIGURE_BINDIR.64 = $(USRSBINDIR)
 

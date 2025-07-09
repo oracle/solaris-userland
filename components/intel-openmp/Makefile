@@ -20,13 +20,14 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 export PARFAIT_BUILD=no
 
-BUILD_BITS = 64_and_32
-COMPILER = gcc
+BUILD_BITS =		64_and_32
+COMPILER =		gcc
+CTF_MODE =		off	# Has no effect
 
 # The Makefile of this component does not support multiple build jobs.
 COMPONENT_MAKE_JOBS=1

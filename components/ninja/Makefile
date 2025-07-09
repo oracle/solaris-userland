@@ -20,11 +20,12 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
-COMPILER= gcc
-BUILD_BITS= 64
+COMPILER =		gcc
+BUILD_BITS =		64
+CTF_MODE =		off	# C++
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ninja
@@ -52,7 +53,7 @@ COMPONENT_ARCHIVE_TESTS=	v$(COMPONENT_VERSION_TESTS).tar.gz
 COMPONENT_ARCHIVE_HASH_TESTS= \
     sha256:8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7
 COMPONENT_ARCHIVE_URL_TESTS=	$(COMPONENT_PROJECT_URL_TESTS)/archive/v$(COMPONENT_VERSION_TESTS).tar.gz
-	
+
 PKG_PROTO_DIRS += $(BUILD_DIR_64)
 PKG_PROTO_DIRS += $(BUILD_DIR_64)/doc
 PKG_PROTO_DIRS += $(BUILD_DIR_64)/misc

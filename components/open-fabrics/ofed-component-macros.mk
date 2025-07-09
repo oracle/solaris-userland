@@ -18,10 +18,11 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 # OFED only builds with GCC
-COMPILER= gcc
+COMPILER =		gcc
+CTF_MODE =		off
 
 include ../../../make-rules/shared-macros.mk

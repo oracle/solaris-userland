@@ -23,9 +23,10 @@
 # Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
-COMPILER= gcc
-BUILD_BITS= 64
-export PARFAIT_BUILD=no
+COMPILER =		gcc
+BUILD_BITS =		64
+CTF_MODE =		off	# C++
+export PARFAIT_BUILD =	no
 include ../../make-rules/shared-macros.mk
 
 MAJOR_VERSION=8.0

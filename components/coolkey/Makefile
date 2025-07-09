@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 # TESTING:
@@ -43,7 +43,8 @@
 #   Search for "failed" in testoutput.log to see the actual failures, then
 #   review any failed messages to determine if the test ran successfully or not.
 
-BUILD_BITS= 64_and_32
+BUILD_BITS =		64_and_32
+CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		coolkey

@@ -22,7 +22,8 @@
 #
 # Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64_and_32
+BUILD_BITS =		64_and_32
+CTF_MODE =		relaxed
 
 # GCC 5.3 with the default optimization -O3 (set via shared-macros.mk),
 # inlines _gcry_cipher_ocb_get_l, double_block_cpy and double_block to

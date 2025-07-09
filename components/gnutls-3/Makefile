@@ -22,8 +22,9 @@
 #
 # Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64_and_32
-COMPILER= gcc
+BUILD_BITS =		64_and_32
+COMPILER =		gcc
+CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnutls

@@ -23,7 +23,8 @@
 # Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 
-COMPILER=		gcc
+COMPILER =		gcc
+CTF_MODE =		relaxed
 
 # Component uses ABI3 naming.
 PYTHON3_SOABI=abi3

@@ -20,14 +20,15 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS=		64
+BUILD_BITS =		64
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
 # Also, for now, all things built for C++11 require gcc.
-COMPILER=gcc
+COMPILER =		gcc
+CTF_MODE =		relaxed
 
 # The Makefile of this component does not support multiple build jobs.
 COMPONENT_MAKE_JOBS=1

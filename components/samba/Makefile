@@ -23,8 +23,9 @@
 # Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
-COMPILER=		gcc
-BUILD_BITS=		64_and_32
+COMPILER =		gcc
+BUILD_BITS =		64_and_32
+CTF_MODE =		relaxed
 
 include			../../make-rules/shared-macros.mk
 
