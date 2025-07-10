@@ -29,18 +29,18 @@ CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	cbindgen
-COMPONENT_VERSION =	0.26.0
-COMPONENT_BAID =	164728
-COMPONENT_PROJECT_URL =	https://github.com/eqrion/cbindgen
+COMPONENT_VERSION =	0.29.0
+COMPONENT_BAID =	334424
+COMPONENT_PROJECT_URL =	https://github.com/mozilla/cbindgen
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:b45e1a64875b615702a86ac3084ef69ae32926241cd2b687a30c12474be15105
+    sha256:6697f449d4a15d814d991249a611af961c97e36d9344c7ced6df35c5c25b40cc
 COMPONENT_ARCHIVE_URL =	https://github.com/eqrion/cbindgen/archive/v$(COMPONENT_VERSION).tar.gz
 
 # hash for vendored sources
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:0943529f59f1fcf74ff1bb833eebd4c2d94a3dd893f9f8702024dc101e9acdf8
+    sha256:05af6896ca6ba6681c88b0ac4c743473b60a9480279572f86783357481ae8e77
 
 COMPONENT_BUGDB =	utility/rust
 COMPONENT_ANITYA_ID =	16690
@@ -60,8 +60,10 @@ COMPONENT_TEST_TARGETS += -- --test-threads=1
 PATH = $(RUST_ALT_PATH):/usr/gnu/bin:/usr/bin
 
 COMPONENT_TEST_TRANSFORMS += \
+	'-e "s;$(BUILD_DIR)/.cargo;\$$\(BUILKD_DIR\)/.cargo;" ' \
+	'-e "/^cbindgen failed:/d" ' \
 	'-e "/ *Compiling /d" ' \
-	'-e "/Finished test/s; in .*;;" ' \
+	'-e "/Finished /s; in .*;;" ' \
 	'-e "/^test result:/s; finished in .*;;" ' \
 	'-e "/Running /s;-................)$$;-xxxxxxxxxxxxxxxx);" '
 

@@ -1,4 +1,15 @@
-    Finished test [unoptimized + debuginfo] target(s)
+warning: `$(BUILKD_DIR)/.cargo/config` is deprecated in favor of `config.toml`
+note: if you need to support cargo 1.38 or earlier, you can symlink `config` to `config.toml`
+warning: function `build_using_lib` is never used
+ --> tests/profile.rs:8:4
+  |
+8 | fn build_using_lib(config: fn(Builder) -> Builder) -> tempfile::TempDir {
+  |    ^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(dead_code)]` on by default
+
+warning: `cbindgen` (test "profile") generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s)
      Running unittests src/lib.rs (target/debug/deps/cbindgen-xxxxxxxxxxxxxxxx)
 
 running 2 tests
@@ -26,29 +37,28 @@ test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;
 
      Running tests/profile.rs (target/debug/deps/profile-xxxxxxxxxxxxxxxx)
 
-running 6 tests
+running 4 tests
 test bin_default_uses_debug_build ... ok
 test bin_explicit_debug_build ... ok
 test bin_explicit_release_build ... ok
-test lib_default_uses_debug_build ... ok
-test lib_explicit_debug_build ... ok
-test lib_explicit_release_build ... ok
+test bin_ignore_cargo_build_target_in_tests ... ok
 
-test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;
 
      Running tests/tests.rs (target/debug/deps/tests-xxxxxxxxxxxxxxxx)
 
-running 144 tests
+running 152 tests
 test test_abi_string ... ok
 test test_alias ... ok
 test test_annotation ... ok
 test test_array ... ok
+test test_as_ty ... ok
 test test_asserted_cast ... ok
 test test_assoc_const_conflict ... ok
 test test_assoc_constant ... ok
 test test_associated_constant_panic ... ok
 test test_associated_in_body ... ok
-test test_bitfield ... ok
+test test_bitfield ... FAILED
 test test_bitflags ... ok
 test test_body ... ok
 test test_box ... ok
@@ -93,12 +103,12 @@ test test_enum_discriminant ... ok
 test test_enum_self ... ok
 test test_euclid ... ok
 test test_exclude_generic_monomorph ... ok
-test test_expand ... ok
-test test_expand_default_features ... ok
-test test_expand_dep ... ok
-test test_expand_dep_v2 ... ok
+test test_expand ... FAILED
+test test_expand_default_features ... FAILED
+test test_expand_dep ... FAILED
+test test_expand_dep_v2 ... FAILED
 test test_expand_features ... ok
-test test_expand_no_default_features ... ok
+test test_expand_no_default_features ... FAILED
 test test_export_name ... ok
 test test_extern ... ok
 test test_extern_2 ... ok
@@ -110,10 +120,12 @@ test test_function_noreturn ... ok
 test test_function_ptr ... ok
 test test_function_sort_name ... ok
 test test_function_sort_none ... ok
+test test_generic_defaults ... ok
 test test_generic_pointer ... ok
 test test_global_attr ... ok
 test test_global_variable ... ok
 test test_ignore ... ok
+test test_impl_unsafe_attr_method ... ok
 test test_include ... ok
 test test_include_guard ... ok
 test test_include_item ... ok
@@ -149,7 +161,10 @@ test test_non_pub_extern ... ok
 test test_nonnull ... ok
 test test_nonnull_attribute ... ok
 test test_nonzero ... ok
+test test_nullable ... ok
+test test_nullable_attribute ... ok
 test test_opaque ... ok
+test test_package_version ... ok
 test test_pin ... ok
 test test_pragma_once_skip_warning_as_error ... ok
 test test_prefix ... ok
@@ -159,6 +174,7 @@ test test_ptrs_as_arrays ... ok
 test test_raw_ident ... ok
 test test_raw_lines ... ok
 test test_rename ... ok
+test test_rename_associated_constant ... ok
 test test_rename_case ... ok
 test test_rename_crate ... ok
 test test_renaming_overrides_prefixing ... ok
@@ -179,17 +195,66 @@ test test_transparent ... ok
 test test_typedef ... ok
 test test_union ... ok
 test test_union_self ... ok
+test test_unsafe_cell ... ok
 test test_using_namespaces ... ok
 test test_va_list ... ok
 test test_workspace ... ok
 test test_zst ... ok
 
-test result: ok. 144 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;
+failures:
 
-   Doc-tests cbindgen
+---- test_bitfield stdout ----
+Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/bitfield.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/bitfield"
 
-running 1 test
-test src/bindgen/config.rs - bindgen::config::Config::only_target_dependencies (line 994) ... ignored
+thread 'test_bitfield' panicked at tests/tests.rs:99:5:
+ERROR: Couldn't generate bindings for $(@D)/tests/rust/bitfield.
 
-test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out;
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
+---- test_expand stdout ----
+Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/expand.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/expand"
+
+thread 'test_expand' panicked at tests/tests.rs:99:5:
+ERROR: Couldn't generate bindings for $(@D)/tests/rust/expand.
+
+
+---- test_expand_default_features stdout ----
+Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/expand_default_features.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/expand_default_features"
+
+thread 'test_expand_default_features' panicked at tests/tests.rs:99:5:
+ERROR: Couldn't generate bindings for $(@D)/tests/rust/expand_default_features.
+
+
+---- test_expand_dep stdout ----
+Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/expand_dep.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/expand_dep"
+
+thread 'test_expand_dep' panicked at tests/tests.rs:99:5:
+ERROR: Couldn't generate bindings for $(@D)/tests/rust/expand_dep.
+
+
+---- test_expand_dep_v2 stdout ----
+Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/expand_dep_v2.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/expand_dep_v2"
+
+thread 'test_expand_dep_v2' panicked at tests/tests.rs:99:5:
+ERROR: Couldn't generate bindings for $(@D)/tests/rust/expand_dep_v2.
+
+
+---- test_expand_no_default_features stdout ----
+Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/expand_no_default_features.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/expand_no_default_features"
+
+thread 'test_expand_no_default_features' panicked at tests/tests.rs:99:5:
+ERROR: Couldn't generate bindings for $(@D)/tests/rust/expand_no_default_features.
+
+
+
+failures:
+    test_bitfield
+    test_expand
+    test_expand_default_features
+    test_expand_dep
+    test_expand_dep_v2
+    test_expand_no_default_features
+
+test result: FAILED. 146 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out;
+
+error: test failed, to rerun pass `--test tests`

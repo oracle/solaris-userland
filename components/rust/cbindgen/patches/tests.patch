@@ -1,0 +1,28 @@
+https://github.com/mozilla/cbindgen/issues/1087
+
+--- cbindgen-0.29.0/tests/profile.rs
++++ cbindgen-0.29.0/tests/profile.rs
+@@ -69,6 +69,7 @@ .filter(|name| !name.starts_with('.'))
+         .collect()
+ }
+ 
++#[cfg(not(target_os = "solaris"))]
+ #[test]
+ #[serial]
+ fn lib_default_uses_debug_build() {
+@@ -76,6 +77,7 @@ let target_dir = build_using_lib(|b| b);
+     assert_eq!(get_contents_of_dir(target_dir.path()), &["debug"]);
+ }
+ 
++#[cfg(not(target_os = "solaris"))]
+ #[test]
+ #[serial]
+ fn lib_explicit_debug_build() {
+@@ -83,6 +85,7 @@ let target_dir = build_using_lib(|b| b.w
+     assert_eq!(get_contents_of_dir(target_dir.path()), &["debug"]);
+ }
+ 
++#[cfg(not(target_os = "solaris"))]
+ #[test]
+ #[serial]
+ fn lib_explicit_release_build() {
