@@ -3,17 +3,17 @@
 #
 
 COMPONENT_NAME=		openssl-3
-COMPONENT_VERSION=	3.0.16
+COMPONENT_VERSION=	3.0.17
 COMPONENT_PROJECT_URL=	https://www.openssl.org/
 COMPONENT_SRC=		openssl-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:57e03c50feab5d31b152af2b764f10379aecd8ee92f16c985983ce4a99f7ef86
+	sha256:dfdd77e4ea1b57ff3a6dbde6b0bdc3f31db5ac99e7fdd4eaf9e1fbb6ec2db8ce
 COMPONENT_DOWNLOAD_URL=	https://github.com/openssl/openssl/releases/download
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	2566
-COMPONENT_BAID=		196545
+COMPONENT_BAID=		335354
 
 #
 # The extra .1 the version in is to distinguish between the community version
