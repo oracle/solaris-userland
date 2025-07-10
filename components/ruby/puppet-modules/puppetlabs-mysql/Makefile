@@ -20,13 +20,13 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../../make-rules/shared-macros.mk
 GIT_REPO=       https://github.com/puppetlabs/puppetlabs-mysql
-GIT_COMMIT_ID=  v15.0.0
-GIT_HASH=sha256:41be1024079ac210d2262e86e2663cec8e09ba101321e88fd26aa1b11c3354d3
+GIT_COMMIT_ID=  v16.2.0
+GIT_HASH=sha256:0f78af5aa1317a51d11ca3a26012b163b75282c2d403edff273a7c82ea0beff0
 
 COMPONENT_NAME=		puppetlabs-mysql
 COMPONENT_VERSION=	$(GIT_COMMIT_ID:v%=%)
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	238617
 
-COMPONENT_BAID=		165781
+COMPONENT_BAID=		335124
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/puppetmodule.mk
