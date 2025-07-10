@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		urllib3
-COMPONENT_VERSION=	2.2.3
+COMPONENT_VERSION=	2.5.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2f4d25ada2a875f60de47e641dd904d6b3b53545fb1fe191076316453f578f14
+    sha256:3fc47733c7e419d4bc3f6b3dc2b4f890bb743906a30d56ba4a5bfa4bbff92760
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/shazow/urllib3
 COMPONENT_BUGDB=	python-mod/urllib3
 COMPONENT_ANITYA_ID=	4078
-COMPONENT_BAID=		185774
+COMPONENT_BAID=		333051
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
