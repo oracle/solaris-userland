@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 
 GPATCH =	/usr/bin/patch
@@ -164,7 +164,7 @@ regen-patches:
 	    gawk '/^--- /	{exit} \
 		  /^diff -/	{exit} \
 				{print}' $$p > "new/$${p#$(PATCH_DIR)/}" ; \
-	    LC_COLLATE=C gdiff -ur --show-function-line=. \
+	    LC_COLLATE=C gdiff -urN --show-function-line=. \
 		tmp-regen/prev tmp-regen/next \
 		| $(GSED) -E -e 's%^(---|\+\+\+) tmp-regen/(prev|next)/(.*?)\s+\S+\s+\S+\s+\S+$$%\1 \3%g' \
 		| grep -v '^diff' \
