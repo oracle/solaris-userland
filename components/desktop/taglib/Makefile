@@ -41,11 +41,6 @@ COMPONENT_BAID=		146742
 
 BUILD_STYLE= cmake
 
-# integrated tests pass when built now 
-# but building tests and shared libs seems to be mutually exclusive
-# disabling the tests 
-TEST_TARGET= $(SKIP_TEST)
-
 include $(WS_MAKE_RULES)/common.mk
 
 CXXFLAGS += -std=c++11
