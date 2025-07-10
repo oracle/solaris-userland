@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -55,8 +55,7 @@ function populate_texinfo_directory() {
 	/var/info/*)	# Only process if the link resolves inside /var/info.
 		echo "populating ${dir_file} from ${directory}"
 		rm -f ${dir_file}.new
-		for info_file in $(find ${directory} -type f | \
-				   egrep -v -e '-[0-9]+$') ; do
+		for info_file in $(find ${directory} -type f -name '*.info'); do
 			install-info --dir-file=${dir_file}.new \
 				--info-file=${info_file}
 		done
