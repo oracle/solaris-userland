@@ -20,35 +20,38 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64_and_32
+BUILD_BITS =		64_and_32
+COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fontconfig
-COMPONENT_VERSION=	2.15.0
+COMPONENT_VERSION=	2.17.1
 COMPONENT_PROJECT_URL=	https://fontconfig.org/
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
+COMPONENT_ARCHIVE_URL=	\
+ https://gitlab.freedesktop.org/api/v4/projects/890/packages/generic/fontconfig/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:63a0658d0e06e0fa886106452b58ef04f21f58202ea02a94c39de0d3335d7c0e
-COMPONENT_BUGDB=        x11/font
+	sha256:9f5cae93f4fffc1fbc05ae99cdfc708cd60dfd6612ffc0512827025c026fa541
+COMPONENT_BUGDB=	x11/font
 COMPONENT_ANITYA_ID=	827
-COMPONENT_BAID=		176037
+COMPONENT_BAID=		335831
 
 CONFIGURE_BINDIR.32 =  $(CONFIGURE_PREFIX)/bin/$(MACH32)
 CONFIGURE_BINDIR.64 =  $(CONFIGURE_PREFIX)/bin/$(MACH64)
 
 # Set here so we only have to update this one line, instead of multiple lines
 # in the *.p5m file on every new version
-FONTCONFIG_SOVERSION =    1.12.0
+FONTCONFIG_SOVERSION =    1.16.1
 PKG_VARS += FONTCONFIG_SOVERSION
 
-include $(WS_MAKE_RULES)/x11-component.mk
+include $(WS_MAKE_RULES)/common.mk
 
-# Python is used only to generate fcblanks.h, however downloaded
-# tarball already contains it. The detected version is irrelevant.
-
+CONFIGURE_OPTIONS += --libexecdir="$(USRLIB)"
+CONFIGURE_OPTIONS += --localstatedir="$(VARDIR)"
+CONFIGURE_OPTIONS += --sysconfdir="$(ETCDIR)"
 CONFIGURE_OPTIONS += --with-baseconfigdir='/etc/fonts'
 CONFIGURE_OPTIONS += --with-templatedir='/etc/fonts/conf.avail'
 CONFIGURE_OPTIONS += --with-xmldir='/etc/fonts'
@@ -95,6 +98,9 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL:/p" ' \
         '-e "/ERROR:/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
+# Set packages to be part of the X consolidation incorporation
+PKGMOGRIFY_TRANSFORMS += $(WS_TOP)/transforms/X-incorporation
 
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += system/core-os

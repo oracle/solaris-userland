@@ -1,6 +1,6 @@
 #!/usr/bin/ksh
 #
-# Copyright (c) 2008, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2025, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -63,8 +63,8 @@ case "$(uname -p)" in
     		exit $SMF_EXIT_ERR_FATAL ;;
 esac
 
-# Clean out obsolete cache-file versions - current version is *.cache-8
-/usr/bin/find /var/cache/fontconfig -name '*.cache-[2-7]' -exec /bin/rm \{\} \+
+# Clean out obsolete cache-file versions - current version is *.cache-9
+/usr/bin/find /var/cache/fontconfig -name '*.cache-[2-8]' -exec /bin/rm \{\} \+
 
 # Run 32-bit & 64-bit cache builds in parallel
 /usr/bin/${ARCH32}/fc-cache $ARGS &
