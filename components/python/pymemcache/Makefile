@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,9 +36,6 @@ COMPONENT_PROJECT_URL=	https://github.com/pinterest/pymemcache
 COMPONENT_BUGDB=	python-mod/pymemcache
 COMPONENT_ANITYA_ID=	3989
 COMPONENT_BAID=		132191
-
-# mirrors Django versions we deliver
-PYTHON_VERSIONS = 3.9 3.11
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

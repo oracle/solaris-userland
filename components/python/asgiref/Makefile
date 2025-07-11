@@ -37,8 +37,6 @@ COMPONENT_BUGDB=	python-mod/asgiref
 COMPONENT_ANITYA_ID=	18462
 COMPONENT_BAID=		323676
 
-PYTHON_VERSIONS = 3.9 3.11
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

@@ -20,10 +20,28 @@
 #
 
 #
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 
-# Keep only Django 4.2 related files.
-<transform file link path=.+3\.11.* -> edit path 3\\.11 \$\(PYVER\)>
+# Keep only Django 5.2 related files.
+<transform file link path=.+3\.13.* -> edit path 3\\.13 \$\(PYVER\)>
 
-<include generate/common.transform>
+# Remove everything remaining without the $(PYVER) variable in its path
+<transform file path=usr/lib/python3\.[0-9]+/.+ -> drop>
+
+# Handle versioned usr/bin executables
+<transform file path=usr/bin/.*-3\.[0-9]+$ -> drop>
+<transform file path=usr/bin/(.*)-\$\(PYVER\)$ -> \
+	emit link path=usr/bin/%<1> target=%<1>-$(PYVER) mediator=python mediator-version=$(PYVER)>
+
+# Bypass pkgdepend detection of importlib in executable entry scripts
+<transform file path=usr/bin/.* -> set pkg.depend.bypass-generate .*importlib.*>
+
+# We are not shipping .po locale files
+<transform file path=.+/LC_MESSAGES/django(|js).po -> drop>
+
+# Drop all patch backup files
+<transform file path=.+~$ -> drop>
+
+# Remove unnecessary executable bit
+<transform file path=.*/vendor-packages/django/conf/project_template/manage.py-tpl$ -> delete mode 0555>

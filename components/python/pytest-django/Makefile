@@ -20,27 +20,25 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		pytest-django
-COMPONENT_VERSION=	4.7.0
+COMPONENT_NAME=		pytest_django
+COMPONENT_VERSION=	4.11.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:92d6fd46b1d79b54fb6b060bbb39428073396cec717d5f2e122a990d4b6aa5e8
+    sha256:354a5432fe58f031d7e3095b383a9c167e0e75af903fd39cc9feb1627f78dceb
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pytest-dev/pytest-django
 COMPONENT_BUGDB=	python-mod/pytestdjango
 COMPONENT_ANITYA_ID=	40846
-COMPONENT_BAID=		154379
-
-PYTHON_VERSIONS = 3.9 3.11
+COMPONENT_BAID=		331287
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES):$(SOURCE_DIR)

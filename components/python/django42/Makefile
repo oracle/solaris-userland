@@ -26,23 +26,23 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		django
-COMPONENT_VERSION=	5.2.4
+COMPONENT_VERSION=	4.2.23
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:af273796b9d48119d25cc07e15bec5af891f5d23ed89ddfcbfe30816c7765fdf
+    sha256:42fdeaba6e6449d88d4f66de47871015097dc6f1b87910db00a91946295cfae4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.djangoproject.com/
 COMPONENT_BUGDB=	python-mod/django
-COMPONENT_ANITYA_ID=	378573
-COMPONENT_BAID=		335171
+COMPONENT_ANITYA_ID=	371326
+COMPONENT_BAID=		331535
 
-PYTHON_VERSIONS=	3.13
+PYTHON_VERSIONS=	3.9 3.11
 
 # As per PSARC/2021/051, different LTS version of Django is to
 # be delivered with each Python runtime.
 #
-# Django 4.2 based variants are delivered from a separate directory.
+# Python 3.13 variant is available from separate directory.
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -59,7 +59,7 @@ COMPONENT_POST_INSTALL_ACTION = \
 
 # add 1 extra transform to get rid of the facet created on
 # locale/__init__.py
-PUBLISH_TRANSFORMS +=	$(COMPONENT_DIR)/django-locale-transform
+PUBLISH_TRANSFORMS +=	$(COMPONENT_DIR)/../django/django-locale-transform
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_ARGS +=	--settings test_sqlite

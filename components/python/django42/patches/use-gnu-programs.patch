@@ -3,9 +3,9 @@ suitable for upstream contribution.
 
 It also addresses similar problem with xgettext.
 
---- django-5.2.4/django/core/management/commands/compilemessages.py
-+++ django-5.2.4/django/core/management/commands/compilemessages.py
-@@ -31,7 +31,7 @@ class Command(BaseCommand):
+--- Django-4.2/django/core/management/commands/compilemessages.py
++++ Django-4.2/django/core/management/commands/compilemessages.py
+@@ -32,7 +32,7 @@ class Command(BaseCommand):
  
      requires_system_checks = []
  
@@ -14,9 +14,9 @@ It also addresses similar problem with xgettext.
      program_options = ["--check-format"]
  
      def add_arguments(self, parser):
---- django-5.2.4/django/core/management/commands/makemessages.py
-+++ django-5.2.4/django/core/management/commands/makemessages.py
-@@ -411,7 +411,7 @@ class Command(BaseCommand):
+--- Django-4.2/django/core/management/commands/makemessages.py
++++ Django-4.2/django/core/management/commands/makemessages.py
+@@ -424,7 +424,7 @@ class Command(BaseCommand):
          if locales:
              check_programs("msguniq", "msgmerge", "msgattrib")
  
@@ -25,7 +25,7 @@ It also addresses similar problem with xgettext.
  
          try:
              potfiles = self.build_potfiles()
-@@ -467,7 +467,7 @@ class Command(BaseCommand):
+@@ -480,7 +480,7 @@ class Command(BaseCommand):
          # Gettext tools will output system-encoded bytestrings instead of UTF-8,
          # when looking up the version. It's especially a problem on Windows.
          out, err, status = popen_wrapper(
@@ -34,16 +34,16 @@ It also addresses similar problem with xgettext.
              stdout_encoding=DEFAULT_LOCALE_ENCODING,
          )
          m = re.search(r"(\d+)\.(\d+)\.?(\d+)?", out)
-@@ -623,7 +623,7 @@ class Command(BaseCommand):
- 
+@@ -637,7 +637,7 @@ class Command(BaseCommand):
          if self.domain == "djangojs":
+             is_templatized = build_file.is_templatized
              args = [
 -                "xgettext",
 +                "/usr/gnu/bin/xgettext",
                  "-d",
                  self.domain,
-                 "--language=JavaScript",
-@@ -636,7 +636,7 @@ class Command(BaseCommand):
+                 "--language=%s" % ("C" if is_templatized else "JavaScript",),
+@@ -650,7 +650,7 @@ class Command(BaseCommand):
              ]
          elif self.domain == "django":
              args = [

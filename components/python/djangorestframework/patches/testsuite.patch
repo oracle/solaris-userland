@@ -1,0 +1,27 @@
+The following test skip condition needs some adjustment for the suite to pass.
+
+The fix was offered upstream:
+https://github.com/encode/django-rest-framework/pull/9715
+
+--- djangorestframework-3.16.0/tests/test_fields.py
++++ djangorestframework-3.16.0/tests/test_fields.py
+@@ -16,6 +16,7 @@ try:
+ except ImportError:
+     pytz = None
+ 
++import django
+ from django.core.exceptions import ValidationError as DjangoValidationError
+ from django.db.models import IntegerChoices, TextChoices
+ from django.http import QueryDict
+@@ -1633,7 +1634,10 @@ class TestCustomTimezoneForDateTimeField
+         assert rendered_date == rendered_date_in_timezone
+ 
+ 
+-@pytest.mark.skipif(pytz is None, reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.")
++@pytest.mark.skipif(
++    condition=django.VERSION >= (5,),
++    reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.",
++)
+ class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
+     """
+     Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.

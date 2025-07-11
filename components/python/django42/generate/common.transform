@@ -20,16 +20,12 @@
 #
 
 #
-# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
 #
 
-# Remove everything remaining without the $(PYVER) variable in its path
-<transform file path=usr/lib/python[23]\.[0-9]+/.+ -> drop>
-
 # Handle versioned usr/bin executables
-<transform file path=usr/bin/.*-[23]\.[0-9]+$ -> drop>
-<transform file path=usr/bin/(.*)-\$\(PYVER\)$ -> \
-	emit link path=usr/bin/%<1> target=%<1>-$(PYVER) mediator=python mediator-version=$(PYVER)>
+<transform file path=usr/bin/(.*)-(3\.[0-9]+)$ -> \
+    emit link path=usr/bin/%<1> target=%<1>-%<2> mediator=python mediator-version=%<2>>
 
 # Bypass pkgdepend detection of importlib in executable entry scripts
 <transform file path=usr/bin/.* -> set pkg.depend.bypass-generate .*importlib.*>
@@ -37,11 +33,13 @@
 # We are not shipping .po locale files
 <transform file path=.+/LC_MESSAGES/django(|js).po -> drop>
 
-# Drop now deprecated django-admin.py
-<transform file path=usr/bin/django-admin.py$ -> drop>
-
 # Drop all patch backup files
 <transform file path=.+~$ -> drop>
 
 # Remove unnecessary executable bit
 <transform file path=.*/vendor-packages/django/conf/project_template/manage.py-tpl$ -> delete mode 0555>
+
+# Split files into separate versioned packages
+<transform file link path=usr/lib/python3.([0-9]+)/.+ -> set pkg.type python3%<1>>
+<transform file path=usr/bin/.*3.([0-9]+)$ -> set pkg.type python3%<1>>
+<transform link target=.*3.([0-9]+)$ -> set pkg.type python3%<1>>
