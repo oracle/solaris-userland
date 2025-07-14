@@ -255,6 +255,7 @@ $(MANIFEST_BASE)-%.constructed: install | $(PROTO_DIR)
 	    GENERATE_TRANSFORMS PROTO_DIR PKG_HARDLINKS PKG_AUTO_HARDLINKS \
 	    MANIFEST_BASE COMPONENT_DIR MANIFEST_CLEANUP_TRANSFORM \
 	    MANIFEST_GENERATE GENERATE_PROTO_DIRS) $(MANIFEST_COMPARE) "$@" $(MANIFEST_UPDATE) $(PKG_OPTIONS)
+	$(POST_CHECK_ACTION)
 
 # Make manifest-check perform any action only in components built for the
 # current architecture we run on

@@ -36,12 +36,14 @@ have defaults, but can be overridden.
   matter which hash is being used.
 
 * COMPONENT_ARCHIVE_SRC defines what kind of object delivers the source.  This
-  can be "git", "hg", or "svn" if the source comes from an SCM repository, and
-  must be "none" if the source is checked into the Userland repository
-  directly.
+  can be "git", "hg", or "svn" if the source comes from an SCM repository. It
+  can be "none" if there are no sources to unpack. Default is not set which
+  means source archive is regular file to unpack.
 
 * COMPONENT_ARCHIVE_URL is where the archive can be downloaded from.  This is
   typically constructed from $(COMPONENT_PROJECT_URL) and $(COMPONENT_ARCHIVE).
+  If the source is placed directly into source cache, this variable is set
+  empty.
 
 * COMPONENT_BUGDB is the lowercase rendering of the BugDB cat/subcat; it has
   a default value of "utility/$(COMPONENT_NAME)".

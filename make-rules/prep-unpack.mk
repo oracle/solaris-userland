@@ -33,7 +33,7 @@ UNPACK_ENV +=		LC_ALL=C.UTF-8
 # COMPONENT_ARCHIVE{_[0-9]+} macro.  Filter out a handful of
 # well-known macros that don't correspond to extra archives.
 #
-PCK_SUFFIXES = $(filter-out HASH OVERRIDE SRC URL, $(subst COMPONENT_ARCHIVE_,, \
+PCK_SUFFIXES = $(filter-out HASH HASH_% OVERRIDE SRC SRC_% URL URL_%, $(subst COMPONENT_ARCHIVE_,, \
                 $(filter COMPONENT_ARCHIVE_%, $(.VARIABLES))))
 
 # Templates for unpacking variables and rules.  We separate the variable
