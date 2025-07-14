@@ -8,19 +8,19 @@ One of the tests need patching:
 
 Unclear whether this patch should be sent upstream.
 
---- git-2.48.1/t/Makefile.orig	2025-02-05 17:27:28.401553370 +0100
-+++ git-2.48.1/t/Makefile	2025-02-05 17:29:05.094205327 +0100
+--- git-2.50.1/t/Makefile.orig	2025-07-09 11:25:02.515332981 +0200
++++ git-2.50.1/t/Makefile	2025-07-09 11:29:12.228513779 +0200
 @@ -62,6 +62,9 @@
- test: pre-clean check-chainlint check-meson $(TEST_LINT)
+ test: pre-clean check-meson $(TEST_LINT)
  	$(CHAINLINTSUPPRESS) $(MAKE) aggregate-results-and-cleanup
  
 +test-noclean: pre-clean $(TEST_LINT)
-+		$(MAKE) T
++	$(MAKE) T
 +
- failed:
- 	@failed=$$(cd '$(TEST_RESULTS_DIRECTORY_SQ)' && \
- 		grep -l '^failed [1-9]' *.counts | \
-@@ -151,6 +154,8 @@
+ ifneq ($(PERL_PATH),)
+ test: check-chainlint
+ prove: check-chainlint
+@@ -161,6 +164,8 @@
  test-lint-shell-syntax:
  	@'$(PERL_PATH_SQ)' check-non-portable-shell.pl $(T) $(THELPERS) $(TPERF)
  
