@@ -1192,9 +1192,6 @@ studio_CXXLIB_NONE =	-xnolib
 # default for "standard" mode.
 studio_CXXLIB_CSTD =	-library=Cstd,Crun
 
-# link C++ with the Studio  C++ Runtime and Apache Standard C++ library
-studio_CXXLIB_APACHE =	-library=stdcxx4,Crun
-
 # Tell the compiler that we don't want the studio runpath added to the
 # linker flags.  We never want the Studio location added to the RUNPATH.
 CXXFLAGS +=	$($(COMPILER)_NORUNPATH)
