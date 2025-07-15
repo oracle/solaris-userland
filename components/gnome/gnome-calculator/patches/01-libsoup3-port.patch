@@ -1,0 +1,134 @@
+
+From 4fff5e1993ba839be81613ebb48571581d70abcd Mon Sep 17 00:00:00 2001
+From: AppleME <me@amesite.me>
+Date: Tue, 19 Jul 2022 10:35:37 +1000
+Subject: [PATCH] port to libsoup-3.0
+
+---
+ lib/currency-provider.vala | 4 ++--
+ meson.build                | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/lib/currency-provider.vala b/lib/currency-provider.vala
+index bcef3630b..66ec631a7 100644
+--- a/lib/currency-provider.vala
++++ b/lib/currency-provider.vala
+@@ -123,7 +123,7 @@ public abstract class AbstractCurrencyProvider : Object, CurrencyProvider {
+         var message = new Soup.Message ("GET", uri);
+         try
+         {
+-            var bodyinput = session.send (message);
++            var bodyinput = session.send (message, new GLib.Cancellable());
+             var output = dest.replace (null, false, FileCreateFlags.REPLACE_DESTINATION);
+             output.splice (bodyinput, OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET);
+             loading = false;
+@@ -147,7 +147,7 @@ public abstract class AbstractCurrencyProvider : Object, CurrencyProvider {
+         var message = new Soup.Message ("GET", uri);
+         try
+         {
+-            var bodyinput = yield session.send_async (message);
++            var bodyinput = yield session.send_async (message, 1, new GLib.Cancellable());
+             var output = yield dest.replace_async (null, false, FileCreateFlags.REPLACE_DESTINATION, Priority.DEFAULT);
+             yield output.splice_async (bodyinput,
+                                        OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
+diff --git a/meson.build b/meson.build
+index 29b8c5416..8c4816739 100644
+--- a/meson.build
++++ b/meson.build
+@@ -35,7 +35,7 @@ glib = dependency('glib-2.0', version: '>= ' + glib_min_version)
+ gmodule_export = dependency('gmodule-export-2.0')
+ gobject = dependency('gobject-2.0', version: '>= ' + glib_min_version)
+ libxml = dependency('libxml-2.0')
+-libsoup = dependency('libsoup-2.4', version: '>= 2.42')
++libsoup = dependency('libsoup-3.0')
+ gee = dependency('gee-0.8', version: '>= 0.20.0')
+ gobject_introspection = dependency('gobject-introspection-1.0', required: false)
+ 
+-- 
+GitLab
+
+
+From 3745230c77514a26a86fcfe8081f105a4b8af5fc Mon Sep 17 00:00:00 2001
+From: Robert Roth <robert.roth.off@gmail.com>
+Date: Thu, 12 Oct 2023 23:17:30 +0300
+Subject: [PATCH] libsoup: use combined libsoup send and splice
+
+---
+ lib/currency-provider.vala | 26 ++++++++++++++------------
+ meson.build                |  3 ++-
+ 2 files changed, 16 insertions(+), 13 deletions(-)
+
+diff --git a/lib/currency-provider.vala b/lib/currency-provider.vala
+index 4fea439a8..2a0edcef0 100644
+--- a/lib/currency-provider.vala
++++ b/lib/currency-provider.vala
+@@ -126,14 +126,16 @@ public abstract class AbstractCurrencyProvider : Object, CurrencyProvider {
+         var directory = Path.get_dirname (filename);
+         DirUtils.create_with_parents (directory, 0755);
+ 
+-        var dest = File.new_for_path (filename);
+-        var session = new Soup.Session ();
+-        var message = new Soup.Message ("GET", uri);
+         try
+         {
+-            var bodyinput = session.send (message, new GLib.Cancellable());
++            var dest = File.new_for_path (filename);
++            var session = new Soup.Session ();
++            var message = new Soup.Message ("GET", uri);
+             var output = dest.replace (null, false, FileCreateFlags.REPLACE_DESTINATION);
+-            output.splice (bodyinput, OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET);
++            session.send_and_splice (message, output,
++                OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
++                new GLib.Cancellable());
++
+             loading = false;
+             do_load_rates ();
+             debug ("%s rates updated", source);
+@@ -150,16 +152,16 @@ public abstract class AbstractCurrencyProvider : Object, CurrencyProvider {
+         var directory = Path.get_dirname (filename);
+         DirUtils.create_with_parents (directory, 0755);
+ 
+-        var dest = File.new_for_path (filename);
+-        var session = new Soup.Session ();
+-        var message = new Soup.Message ("GET", uri);
+         try
+         {
+-            var bodyinput = yield session.send_async (message, 1, new GLib.Cancellable());
++            var dest = File.new_for_path (filename);
++            var session = new Soup.Session ();
++            var message = new Soup.Message ("GET", uri);
+             var output = yield dest.replace_async (null, false, FileCreateFlags.REPLACE_DESTINATION, Priority.DEFAULT);
+-            yield output.splice_async (bodyinput,
+-                                       OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
+-                                       Priority.DEFAULT);
++            yield session.send_and_splice_async (message, output,
++                                                 OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
++                                                 Priority.DEFAULT, new GLib.Cancellable());
++
+             loading = false;
+             do_load_rates ();
+             debug ("%s rates updated", source);
+diff --git a/meson.build b/meson.build
+index 2b6c1a094..b6f0c7e3b 100644
+--- a/meson.build
++++ b/meson.build
+@@ -29,13 +29,14 @@ gcalc_vapi_dir = join_paths(meson.current_source_dir(), 'vapi')
+ 
+ # Dependencies
+ glib_min_version = '2.40.0'
++libsoup_min_version = '3.4.0'
+ 
+ gio = dependency('gio-2.0', version: '>= ' + glib_min_version)
+ glib = dependency('glib-2.0', version: '>= ' + glib_min_version)
+ gmodule_export = dependency('gmodule-export-2.0')
+ gobject = dependency('gobject-2.0', version: '>= ' + glib_min_version)
+ libxml = dependency('libxml-2.0')
+-libsoup = dependency('libsoup-3.0')
++libsoup = dependency('libsoup-3.0', version: '>= ' + libsoup_min_version)
+ gee = dependency('gee-0.8', version: '>= 0.20.0')
+ gobject_introspection = dependency('gobject-introspection-1.0', required: false)
+ 
+-- 
+GitLab
+
+

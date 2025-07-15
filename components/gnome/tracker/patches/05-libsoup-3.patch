@@ -1,0 +1,69 @@
+rework https://gitlab.gnome.org/GNOME/tinysparql/-/commit/c39f93b8a4b3cbd89aa5af642ccb4edeb75c6132 for the version of tracker we ship
+
+--- a/meson.build	2025-06-10 19:10:12.261625615 -0700
++++ b/meson.build	2025-06-10 19:11:18.149068660 -0700
+@@ -46,7 +46,7 @@
+ icu_i18n = dependency('icu-i18n', version: '> 4.8.1.1', required: false)
+ icu_uc = dependency('icu-uc', version: '> 4.8.1.1', required: false)
+ json_glib = dependency('json-glib-1.0', version: '>= 1.0', required: true)
+-libsoup = dependency('libsoup-2.4', version: '> 2.40', required: true)
++libsoup = dependency('libsoup-3.0', version: '>= 2.99.2', required: true)
+ libxml2 = dependency('libxml-2.0', version: '> 2.6')
+ sqlite = dependency('sqlite3', version: '>' + sqlite_required)
+ 
+--- a/src/libtracker-remote/tracker-remote.vala	2025-06-10 19:28:36.448643135 -0700
++++ b/src/libtracker-remote/tracker-remote.vala	2025-06-10 19:31:56.577212545 -0700
+@@ -34,7 +34,7 @@
+ 	private Soup.Message create_request (string sparql) {
+ 		var uri = _base_uri + sparql;
+ 		var message = new Soup.Message ("GET", uri);
+-		var headers = message.request_headers;
++		var headers = message.get_request_headers();
+ 
+ 		headers.append ("Accept", JSON_TYPE);
+ 		headers.append ("Accept", XML_TYPE);
+@@ -42,15 +42,15 @@
+ 		return message;
+ 	}
+ 
+-	private Sparql.Cursor create_cursor (Soup.Message message) throws GLib.Error, Sparql.Error {
+-		string document = (string) message.response_body.flatten ().data;
++	private Sparql.Cursor create_cursor (Soup.Message message, string document) throws GLib.Error, Sparql.Error {
++                var status_code = message.get_status();
++                var headers = message.get_response_headers();
+ 
+-		if (message.status_code != Soup.Status.OK) {
++		if (status_code != Soup.Status.OK) {
+ 			throw new Sparql.Error.UNSUPPORTED ("Unhandled status code %u, document is: %s",
+-			                                    message.status_code, document);
++			                                    status_code, document);
+ 		}
+ 
+-		var headers = message.response_headers;
+ 		var content_type = headers.get_content_type (null);
+ 		long length = document.length;
+ 
+@@ -66,19 +66,18 @@
+ 	public override Sparql.Cursor query (string sparql, Cancellable? cancellable) throws GLib.Error, Sparql.Error, IOError {
+ 		var message = create_request (sparql);
+ 
+-		_session.send_message (message);
++		var body = _session.send_and_read (message);
+ 
+ 		if (cancellable != null && cancellable.is_cancelled ())
+ 			throw new IOError.CANCELLED ("Operation was cancelled");
+ 
+-		return create_cursor (message);
++		return create_cursor (message, (string) body.get_data());
+ 	}
+ 
+ 	public async override Sparql.Cursor query_async (string sparql, Cancellable? cancellable) throws GLib.Error, Sparql.Error, IOError {
+ 		var message = create_request (sparql);
+ 
+-		yield _session.send_async (message, cancellable);
+-
+-		return create_cursor (message);
++		var body = yield _session.send_and_read_async (message, GLib.Priority.DEFAULT, cancellable);
++                return create_cursor (message, (string) body.get_data());
+ 	}
+ }
