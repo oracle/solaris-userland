@@ -1,0 +1,626 @@
+i386: Support -msave-args
+
+Original idea:
+https://gcc.gnu.org/legacy-ml/gcc-patches/2005-06/msg02218.html
+
+Should be submitted to upstream.
+
+--- gcc-15.1.0/gcc/config/i386/i386-options.cc
++++ gcc-15.1.0/gcc/config/i386/i386-options.cc
+@@ -2180,6 +2180,10 @@ error ("%<-muintr%> not supported for 32
+   if (ix86_lam_type && !TARGET_LP64_P (opts->x_ix86_isa_flags))
+     error ("%<-mlam=%> option: [u48|u57] not supported for 32-bit code");
+ 
++  if (TARGET_SAVE_ARGS_P (opts->x_ix86_isa_flags2)
++      && !TARGET_LP64_P (opts->x_ix86_isa_flags))
++    error ("%<-msave-args%> is not supported for 32-bit code");
++
+   if (!opts->x_ix86_arch_string)
+     opts->x_ix86_arch_string
+       = TARGET_64BIT_P (opts->x_ix86_isa_flags)
+--- gcc-15.1.0/gcc/config/i386/i386.cc
++++ gcc-15.1.0/gcc/config/i386/i386.cc
+@@ -5958,7 +5958,7 @@ return 0;
+ 
+   struct ix86_frame &frame = cfun->machine->frame;
+   return (frame.stack_pointer_offset == UNITS_PER_WORD
+-	  && (frame.nregs + frame.nsseregs) == 0);
++	  && (frame.nregs + frame.nsseregs + frame.nmsave_args) == 0);
+ }
+ 
+ /* Return stack frame size.  get_frame_size () returns used stack slots
+@@ -6017,6 +6017,10 @@ frame, so we cannot allow profiling with
+   if (crtl->profile && !flag_fentry)
+     return true;
+ 
++  /* Saved args need the frame pointer.  */
++  if (TARGET_SAVE_ARGS)
++    return true;
++
+   return false;
+ }
+ 
+@@ -6757,6 +6761,36 @@ && !call_used_or_fixed_reg_p (regno)
+ 	  && (regno != HARD_FRAME_POINTER_REGNUM || !frame_pointer_needed));
+ }
+ 
++/* Return number of arguments to be saved on the stack with -msave-args.  */
++static int
++ix86_nsaved_args (void)
++{
++  if (TARGET_SAVE_ARGS)
++    {
++      int nsaved = 0;
++
++      /* Walk all the arguments for current function.  */
++      for (tree arg = DECL_ARGUMENTS(current_function_decl); arg;
++	   arg = TREE_CHAIN(arg))
++	{
++	  tree type = TREE_TYPE (arg);
++	  machine_mode mode = TYPE_MODE (type);
++	  int intregs, sseregs;
++
++	  /* Get the actual register count for this arg.  */
++	  if (!examine_argument (mode, type, 0, &intregs, &sseregs))
++	    nsaved += intregs;
++	}
++
++      if (nsaved > 6)
++	nsaved = 6;
++
++      return nsaved - cfun->returns_struct;
++    }
++  else
++    return 0;
++}
++
+ /* Return number of saved general prupose registers.  */
+ 
+ static int
+@@ -6936,6 +6970,7 @@ }
+ 
+   frame->nregs = ix86_nsaved_regs ();
+   frame->nsseregs = ix86_nsaved_sseregs ();
++  frame->nmsave_args = ix86_nsaved_args ();
+ 
+   /* 64-bit MS ABI seem to require stack alignment to be always 16,
+      except for function prologues, leaf functions and when the defult
+@@ -7023,6 +7058,13 @@ }
+   frame->save_regs_using_mov
+     = TARGET_PROLOGUE_USING_MOVE && m->use_fast_prologue_epilogue;
+ 
++  /* save_args is useful only using mov.  */
++  if (TARGET_SAVE_ARGS)
++    {
++      cfun->machine->use_fast_prologue_epilogue = true;
++      frame->save_regs_using_mov = true;
++    }
++
+   /* Skip return address and error code in exception handler.  */
+   offset = INCOMING_FRAME_SP_OFFSET;
+ 
+@@ -7038,6 +7080,17 @@ frame->hfp_save_offset = offset;
+   /* The traditional frame pointer location is at the top of the frame.  */
+   frame->hard_frame_pointer_offset = offset;
+ 
++  /* Argument save area.  */
++  if (TARGET_SAVE_ARGS)
++    {
++      offset += frame->nmsave_args * UNITS_PER_WORD;
++      frame->padding_msa = (frame->nmsave_args % 2) * UNITS_PER_WORD;
++      offset += frame->padding_msa;
++      frame->arg_save_offset = offset;
++    }
++  else
++    frame->padding_msa = 0;
++
+   /* Register save area */
+   offset += frame->nregs * UNITS_PER_WORD;
+   frame->reg_save_offset = offset;
+@@ -7171,20 +7224,21 @@ frame->stack_pointer_offset = offset;
+   /* Size prologue needs to allocate.  */
+   to_allocate = offset - frame->sse_reg_save_offset;
+ 
+-  if ((!to_allocate && frame->nregs <= 1)
+-      || (TARGET_64BIT && to_allocate >= HOST_WIDE_INT_C (0x80000000))
+-       /* If static stack checking is enabled and done with probes,
+-	  the registers need to be saved before allocating the frame.  */
+-      || flag_stack_check == STATIC_BUILTIN_STACK_CHECK
+-      /* If stack clash probing needs a loop, then it needs a
+-	 scratch register.  But the returned register is only guaranteed
+-	 to be safe to use after register saves are complete.  So if
+-	 stack clash protections are enabled and the allocated frame is
+-	 larger than the probe interval, then use pushes to save
+-	 callee saved registers.  */
+-      || (flag_stack_clash_protection
+-	  && !ix86_target_stack_probe ()
+-	  && to_allocate > get_probe_interval ()))
++  if (!TARGET_SAVE_ARGS
++      && ((!to_allocate && frame->nregs <= 1)
++	  || (TARGET_64BIT && to_allocate >= HOST_WIDE_INT_C (0x80000000))
++	  /* If static stack checking is enabled and done with probes,
++	     the registers need to be saved before allocating the frame.  */
++	  || flag_stack_check == STATIC_BUILTIN_STACK_CHECK
++	  /* If stack clash probing needs a loop, then it needs a
++	     scratch register.  But the returned register is only guaranteed
++	     to be safe to use after register saves are complete.  So if
++	     stack clash protections are enabled and the allocated frame is
++	     larger than the probe interval, then use pushes to save
++	     callee saved registers.  */
++	  || (flag_stack_clash_protection
++	      && !ix86_target_stack_probe ()
++	      && to_allocate > get_probe_interval ())))
+     frame->save_regs_using_mov = false;
+ 
+   if (ix86_using_red_zone ()
+@@ -7196,7 +7250,14 @@ && !ix86_current_function_calls_tls_desc
+     {
+       frame->red_zone_size = to_allocate;
+       if (frame->save_regs_using_mov)
+-	frame->red_zone_size += frame->nregs * UNITS_PER_WORD;
++	{
++	  frame->red_zone_size += frame->nregs * UNITS_PER_WORD;
++	  if (TARGET_SAVE_ARGS)
++	    {
++	      frame->red_zone_size += frame->nmsave_args * UNITS_PER_WORD;
++	      frame->red_zone_size += frame->padding_msa;
++	    }
++	}
+       if (frame->red_zone_size > RED_ZONE_SIZE - RED_ZONE_RESERVE)
+ 	frame->red_zone_size = RED_ZONE_SIZE - RED_ZONE_RESERVE;
+     }
+@@ -7632,6 +7693,27 @@ add_reg_note (insn, REG_CFA_OFFSET, gen_
+     }
+ }
+ 
++/* Emit code to save argument registers using MOV insns.
++   First register is stored at CFA - CFA_OFFSET.  */
++static void
++ix86_emit_save_args_using_mov (HOST_WIDE_INT cfa_offset)
++{
++  unsigned int regno;
++  int nsaved = ix86_nsaved_args();
++  int start = cfun->returns_struct;
++
++  if (nsaved % 2 != 0)
++      cfa_offset -= UNITS_PER_WORD;
++
++  for (int i = nsaved + start - 1; i >= start; i--)
++    {
++      regno = x86_64_int_parameter_registers[i];
++
++      ix86_emit_save_reg_using_mov (word_mode, regno, cfa_offset);
++      cfa_offset -= UNITS_PER_WORD;
++    }
++}
++
+ /* Emit code to save registers using MOV insns.
+    First register is stored at CFA - CFA_OFFSET.  */
+ static void
+@@ -8996,6 +9078,9 @@ }
+     }
+ 
+   int_registers_saved = (frame.nregs == 0);
++  if (TARGET_SAVE_ARGS)
++    int_registers_saved = false;
++
+   sse_registers_saved = (frame.nsseregs == 0);
+   save_stub_call_needed = (m->call_ms2sysv);
+   gcc_assert (sse_registers_saved || !save_stub_call_needed);
+@@ -9038,6 +9123,8 @@ else if (ix86_using_red_zone ()
+ 	       && (! TARGET_STACK_PROBE
+ 		   || frame.stack_pointer_offset < CHECK_STACK_LIMIT))
+ 	{
++          if (TARGET_SAVE_ARGS)
++            ix86_emit_save_args_using_mov (frame.arg_save_offset);
+ 	  ix86_emit_save_regs_using_mov (frame.reg_save_offset);
+ 	  cfun->machine->red_zone_used = true;
+ 	  int_registers_saved = true;
+@@ -9338,7 +9425,11 @@ m->fs.fp_valid = true;
+     }
+ 
+   if (!int_registers_saved)
+-    ix86_emit_save_regs_using_mov (frame.reg_save_offset);
++    {
++      if (TARGET_SAVE_ARGS)
++	ix86_emit_save_args_using_mov (frame.arg_save_offset);
++      ix86_emit_save_regs_using_mov (frame.reg_save_offset);
++    }
+   if (!sse_registers_saved)
+     ix86_emit_save_sse_regs_using_mov (frame.sse_reg_save_offset);
+   else if (save_stub_call_needed)
+--- gcc-15.1.0/gcc/config/i386/i386.h
++++ gcc-15.1.0/gcc/config/i386/i386.h
+@@ -2640,6 +2640,10 @@ saved static chain			if ix86_static_chai
+ 
+    saved frame pointer			if frame_pointer_needed
+ 					<- HARD_FRAME_POINTER
++   [saved args]
++
++   [saved args padding]
++
+    [saved regs]
+ 					<- reg_save_offset
+    [padding0]
+@@ -2685,6 +2689,7 @@ HOST_WIDE_INT hard_frame_pointer_offset;
+   HOST_WIDE_INT stack_pointer_offset;
+   HOST_WIDE_INT hfp_save_offset;
+   HOST_WIDE_INT reg_save_offset;
++  HOST_WIDE_INT arg_save_offset;
+   HOST_WIDE_INT stack_realign_allocate;
+   HOST_WIDE_INT stack_realign_offset;
+   HOST_WIDE_INT sse_reg_save_offset;
+@@ -2697,6 +2702,8 @@ /* Assume without checking that:
+        EXPENSIVE_P = expensive_function_p (EXPENSIVE_COUNT).  */
+   bool expensive_p;
+   int expensive_count;
++  int nmsave_args;
++  int padding_msa;
+ };
+ 
+ /* Machine specific frame tracking during prologue/epilogue generation.  All
+--- gcc-15.1.0/gcc/config/i386/i386.opt
++++ gcc-15.1.0/gcc/config/i386/i386.opt
+@@ -1407,3 +1407,11 @@ Support MOVRS built-in functions and cod
+ mamx-movrs
+ Target Mask(ISA2_AMX_MOVRS) Var(ix86_isa_flags2) Save
+ Support AMX-MOVRS built-in functions and code generation.
++
++msave-args
++Target Mask(SAVE_ARGS) Var(ix86_isa_flags2) Save
++Save integer arguments on the stack at function entry.
++
++mpreserve-args
++Target Alias(msave-args)
++Save integer arguments on the stack at function entry.
+--- gcc-15.1.0/gcc/config/i386/i386.opt.urls
++++ gcc-15.1.0/gcc/config/i386/i386.opt.urls
+@@ -626,3 +626,6 @@ UrlSuffix(gcc/x86-Options.html#index-mmo
+ mamx-movrs
+ UrlSuffix(gcc/x86-Options.html#index-mamx-movrs)
+ 
++msave-args
++UrlSuffix(gcc/x86-Options.html#index-msave-args)
++
+--- gcc-15.1.0/gcc/doc/invoke.texi
++++ gcc-15.1.0/gcc/doc/invoke.texi
+@@ -1501,7 +1501,7 @@ -mcldemote  -mms-bitfields  -mno-align-s
+ -minline-stringops-dynamically  -mstringop-strategy=@var{alg}
+ -mkl -mwidekl
+ -mmemcpy-strategy=@var{strategy}  -mmemset-strategy=@var{strategy}
+--mpush-args  -maccumulate-outgoing-args  -m128bit-long-double
++-mpush-args  -msave-args  -maccumulate-outgoing-args  -m128bit-long-double
+ -m96bit-long-double  -mlong-double-64  -mlong-double-80  -mlong-double-128
+ -mregparm=@var{num}  -msseregparm
+ -mveclibabi=@var{type}  -mvect8-ret-in-mem
+@@ -36469,6 +36469,15 @@ and usually equally fast as method using
+ by default.  In some cases disabling it may improve performance because of
+ improved scheduling and reduced dependencies.
+ 
++@opindex msave-args
++@item -msave-args
++Save integer registers containing function arguments on the stack at
++the function entry.  This option forces storing registers using
++@code{mov}, which is necessary for the ability to decode stack offset
++from the instruction opcode.  This is only supported for 64-bit
++environments.  For compatibility with other targets,
++@option{-mpreserve-args} is an alias for this option.
++
+ @opindex maccumulate-outgoing-args
+ @item -maccumulate-outgoing-args
+ If enabled, the maximum amount of space required for outgoing arguments is
+--- gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-1.c
++++ gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-1.c
+@@ -0,0 +1,27 @@
++/* { dg-do run { target { ! ia32 } } } */
++/* { dg-options "-O2 -msave-args" } */
++
++#include "saveargs.h"
++
++int test_1arg(uint64_t a1)
++{
++	int ret = 0;
++	uint64_t in_vec[1] = {a1};
++
++	READ_RBP();
++
++	COMPARE_SAVED(in_vec, 1, ret);
++
++	return ret;
++}
++
++int main(void)
++{
++	int ret;
++
++	GET_RAND_ARG(arg);
++
++	ret = test_1arg(arg);
++
++	return ret;
++}
+--- gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-2.c
++++ gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-2.c
+@@ -0,0 +1,27 @@
++/* { dg-do run { target { ! ia32 } } } */
++/* { dg-options "-O2 -msave-args" } */
++
++#include "saveargs.h"
++
++int test_2args(uint64_t a1, uint64_t a2)
++{
++	int ret = 0;
++	uint64_t in_vec[2] = {a1, a2};
++
++	READ_RBP();
++
++	COMPARE_SAVED(in_vec, 2, ret);
++
++	return ret;
++}
++
++int main(void)
++{
++	int ret;
++
++	GET_RAND_ARG(arg);
++
++	ret = test_2args(arg, arg+1);
++
++	return ret;
++}
+--- gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-3.c
++++ gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-3.c
+@@ -0,0 +1,27 @@
++/* { dg-do run { target { ! ia32 } } } */
++/* { dg-options "-O2 -msave-args" } */
++
++#include "saveargs.h"
++
++int test_3args(uint64_t a1, uint64_t a2, uint64_t a3)
++{
++	int ret = 0;
++	uint64_t in_vec[3] = {a1, a2, a3};
++
++	READ_RBP();
++
++	COMPARE_SAVED(in_vec, 3, ret);
++
++	return ret;
++}
++
++int main(void)
++{
++	int ret;
++
++	GET_RAND_ARG(arg);
++
++	ret = test_3args(arg, arg+1, arg+2);
++
++	return ret;
++}
+--- gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-4.c
++++ gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-4.c
+@@ -0,0 +1,27 @@
++/* { dg-do run { target { ! ia32 } } } */
++/* { dg-options "-O2 -msave-args" } */
++
++#include "saveargs.h"
++
++int test_4args(uint64_t a1, uint64_t a2, uint64_t a3, uint64_t a4)
++{
++	int ret = 0;
++	uint64_t in_vec[4] = {a1, a2, a3, a4};
++
++	READ_RBP();
++
++	COMPARE_SAVED(in_vec, 4, ret);
++
++	return ret;
++}
++
++int main(void)
++{
++	int ret;
++
++	GET_RAND_ARG(arg);
++
++	ret = test_4args(arg, arg+1, arg+2, arg+3);
++
++	return ret;
++}
+--- gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-5.c
++++ gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-5.c
+@@ -0,0 +1,27 @@
++/* { dg-do run { target { ! ia32 } } } */
++/* { dg-options "-O2 -msave-args" } */
++
++#include "saveargs.h"
++
++int test_5args(uint64_t a1, uint64_t a2, uint64_t a3, uint64_t a4, uint64_t a5)
++{
++	int ret = 0;
++	uint64_t in_vec[5] = {a1, a2, a3, a4, a5};
++
++	READ_RBP();
++
++	COMPARE_SAVED(in_vec, 5, ret);
++
++	return ret;
++}
++
++int main(void)
++{
++	int ret;
++
++	GET_RAND_ARG(arg);
++
++	ret = test_5args(arg, arg+1, arg+2, arg+3, arg+4);
++
++	return ret;
++}
+--- gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-6.c
++++ gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-6.c
+@@ -0,0 +1,27 @@
++/* { dg-do run { target { ! ia32 } } } */
++/* { dg-options "-O2 -msave-args" } */
++
++#include "saveargs.h"
++
++int test_6args(uint64_t a1, uint64_t a2, uint64_t a3, uint64_t a4, uint64_t a5, uint64_t a6)
++{
++	int ret = 0;
++	uint64_t in_vec[6] = {a1, a2, a3, a4, a5, a6};
++
++	READ_RBP();
++
++	COMPARE_SAVED(in_vec, 6, ret);
++
++	return ret;
++}
++
++int main(void)
++{
++	int ret;
++
++	GET_RAND_ARG(arg);
++
++	ret = test_6args(arg, arg+1, arg+2, arg+3, arg+4, arg+5);
++
++	return ret;
++}
+--- gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-argstruct.c
++++ gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-argstruct.c
+@@ -0,0 +1,41 @@
++/* { dg-do run { target { ! ia32 } } } */
++/* { dg-options "-O2 -msave-args" } */
++
++#include "saveargs.h"
++
++typedef struct arg {
++	uint64_t arg1;
++	uint64_t arg2;
++} arg_t;
++
++int test_retstruct(arg_t as, uint64_t a2, uint64_t a3, uint64_t a4, uint64_t a5, uint64_t a6)
++{
++	int ret = 0;
++
++	/*
++	 * This struct should be stored in argument registers as well.
++	 */
++	uint64_t in_vec[6] = {as.arg1, as.arg2, a2, a3, a4, a5};
++
++	READ_RBP();
++
++	COMPARE_SAVED(in_vec, 6, ret);
++
++	return ret;
++}
++
++int main(void)
++{
++	int ret;
++
++	GET_RAND_ARG(arg);
++
++	arg_t argstruct = {
++		.arg1 = arg,
++		.arg2 = arg+1
++	};
++
++	ret = test_retstruct(argstruct, arg+2, arg+3, arg+4, arg+5, arg+6);
++
++	return ret;
++}
+--- gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-retstruct.c
++++ gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs-retstruct.c
+@@ -0,0 +1,47 @@
++/* { dg-do run { target { ! ia32 } } } */
++/* { dg-options "-O2 -msave-args" } */
++
++#include "saveargs.h"
++
++typedef struct ret {
++	uint64_t arg1;
++	uint64_t arg2;
++	int retval;
++} ret_t;
++
++ret_t test_retstruct(uint64_t a1, uint64_t a2, uint64_t a3, uint64_t a4, uint64_t a5, uint64_t a6)
++{
++	ret_t retstruct = {
++		.arg1 = a1,
++		.arg2 = a2,
++		.retval = 0
++	};
++
++	/*
++	 * There should be only 5 register stored.
++	 * From stack point of view it does not matter that the first saved is
++	 * RSI.
++	 */
++	uint64_t in_vec[5] = {a1, a2, a3, a4, a5};
++
++	READ_RBP();
++
++	COMPARE_SAVED(in_vec, 5, retstruct.retval);
++
++	return retstruct;
++}
++
++int main(void)
++{
++	ret_t retstruct;
++
++	GET_RAND_ARG(arg);
++
++	retstruct = test_retstruct(arg, arg+1, arg+2, arg+3, arg+4, arg+5);
++
++	if (retstruct.arg1 != arg) {
++		return 1;
++	}
++
++	return retstruct.retval;
++}
+--- gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs.h
++++ gcc-15.1.0/gcc/testsuite/gcc.target/i386/saveargs.h
+@@ -0,0 +1,38 @@
++#include <stdio.h>
++#include <stdint.h>
++#include <stdlib.h>
++#include <time.h>
++
++/*
++ * Save the RBP register to a rbp variable
++ */
++#define READ_RBP() \
++	uint64_t *rbp; \
++	__asm__ volatile ( \
++	    "mov %%rbp, %0" \
++	    : "=r" (rbp) \
++	    );
++
++/*
++ * Compare registers saved on stack and in the array in_vec[].
++ *
++ * params:
++ *   in_vec ... array of saved function arguments
++ *   args ... number of saved arguments
++ *   ret ... return variable to be changed in case of mismatch
++ *
++ */
++#define	COMPARE_SAVED(in_vec, args, ret) \
++	printf("%s\n", __FUNCTION__); \
++	for (int i=0 ; i<args ; i++) { \
++		uint64_t addr = (uint64_t)--rbp; \
++		uint64_t saved = *(rbp); \
++		printf("arg_no=%d, stack_addr=%lx, saved=%lx, actual=%lx\n", i, addr, saved, in_vec[i]); \
++		if (saved != in_vec[i]) { \
++			ret = 1; \
++		} \
++	}
++
++#define GET_RAND_ARG(arg) \
++	srand(time(NULL)); \
++	uint64_t arg = rand();
