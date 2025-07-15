@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -47,7 +47,6 @@ CONFIGURE_OPTIONS +=	--enable-xdebug
 
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/php-81
 REQUIRED_PACKAGES += web/php-82
 REQUIRED_PACKAGES += web/php-83
 REQUIRED_PACKAGES += web/php-84

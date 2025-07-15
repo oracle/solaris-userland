@@ -858,9 +858,8 @@ COMPONENT_POST_INSTALL_ACTION += $(PERL_SCRIPTS_PROCESS)
 PHP_TOP_DIR = $(WS_COMPONENTS)/php
 
 # All versions of PHP for building extension packages.
-PHP_VERSIONS = 8.1 8.2 8.3 8.4
+PHP_VERSIONS = 8.2 8.3 8.4
 
-PHP.8.1 = /usr/php/8.1/bin/php
 PHP.8.2 = /usr/php/8.2/bin/php
 PHP.8.3 = /usr/php/8.3/bin/php
 PHP.8.4 = /usr/php/8.4/bin/php
