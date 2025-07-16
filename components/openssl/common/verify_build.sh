@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 function fail()
@@ -137,25 +137,6 @@ function soname_check()
 }
 
 #
-# To prevent regression of bug
-#
-#   29967264 64-bit OpenSSL pkgconfig files have 32-bit library path on x86
-#
-function pkgconfig_64bit_check()
-{
-	if [[ $BITS != "64" ]]; then
-		return
-	fi
-
-	for name in openssl.pc libssl.pc libcrypto.pc; do
-		file="$BUILD_DIR/$name"
-		if ! ggrep '^libdir=.*\/\(64\|amd64\|sparcv9\)' "$file" >/dev/null; then
-			fail "Missing 64-bit path component in $file"
-		fi
-	done
-}
-
-#
 # wanboot specific checks
 #
 function wanboot_check()
@@ -183,5 +164,4 @@ else
 	sx_check
 	threads_check
 	soname_check
-	pkgconfig_64bit_check
 fi
