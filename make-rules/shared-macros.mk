@@ -1422,6 +1422,13 @@ ifndef CTF_MODE
 CTF_MODE=on
 endif
 
+# Note: Until further notice, disable CTF when using the Studio compilers.
+# The use of -g can introduce unsatisfied symbols that prevent running the
+# resulting object.
+ifeq ($(strip $(COMPILER)),studio)
+CTF_MODE=off
+endif
+
 ifndef CTF_STRIP_DEBUG
 # Default to leaving debug sections in the result.
 #
