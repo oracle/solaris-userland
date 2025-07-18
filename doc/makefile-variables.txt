@@ -45,8 +45,10 @@ have defaults, but can be overridden.
   If the source is placed directly into source cache, this variable is set
   empty.
 
-* COMPONENT_BUGDB is the lowercase rendering of the BugDB cat/subcat; it has
-  a default value of "utility/$(COMPONENT_NAME)".
+* COMPONENT_BUGDB is the lowercase rendering of the BugDB product/cat/subcat.
+  For example '10026/crss-oci/core'. The product may not be specified, in which
+  case it is assumed to be 10006 (Solaris Operating System). It has a default
+  value of "utility/$(COMPONENT_NAME)".
 
 * COMPONENT_ANITYA_ID is the project id for this software at
   https://release-monitoring.org which is used to track when a new version
@@ -266,10 +268,9 @@ The following variables alter the compilation or build process for components:
 
 * ASLR_MODE controls the application of Address Space Layout Randomization to
   ELF binaries during the build.  The possible values are: $(ASLR_ENABLE),
-  $(ASLR_DISABLE), $(ASLR_NOT_APPLICABLE).  If $(BUILD_BITS) is $(NO_ARCH),
-  $(BUILD_STYLE) is 'ant', or $(COMPONENT_BUGDB) starts with 'library',
-  $(ASLR_NOT_APPLICABLE) is the default.  Otherwise, the default is
-  $(ASLR_ENABLE).
+  $(ASLR_DISABLE), $(ASLR_NOT_APPLICABLE).  If $(BUILD_BITS) is $(NO_ARCH) or
+  $(BUILD_STYLE) is 'ant' then $(ASLR_NOT_APPLICABLE) is the default.
+  Otherwise, the default is $(ASLR_ENABLE).
 
 When using a source code management system as the canonical source for a
 component, the build automatically generates a source archive for the
