@@ -40,18 +40,6 @@ COMPONENT_ANITYA_ID=	9533
 
 COMPONENT_BAID=		153551
 
-COMPONENT_NAME_1=	gdk-pixbuf-xlib
-COMPONENT_VERSION_1=	2.40.2
-COMPONENT_PROJECT_URL_1=https://wiki.gnome.org/Projects/GdkPixbuf
-COMPONENT_SRC_1=	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
-COMPONENT_ARCHIVE_1=    $(COMPONENT_SRC_1).tar.xz
-COMPONENT_ARCHIVE_URL_1=https://download.gnome.org/sources/gdk-pixbuf-xlib/2.40/$(COMPONENT_ARCHIVE_1)
-COMPONENT_ARCHIVE_HASH_1= \
-     sha256:8b8e1c270ec16a06f665ea841f8e4e167eaa0118d0cbfeeade43745f09198ff7
-COMPONENT_BUGDB_1=	gnome/libraries
-COMPONENT_ANITYA_ID_1=	229509
-COMPONENT_BAID_1=	111708
-
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -62,14 +50,11 @@ COMPONENT_BUILD_ENV += CFLAGS="$(strip $(CFLAGS))"
 COMPONENT_BUILD_ENV += LDFLAGS="$(strip $(LDFLAGS))"
 
 # Don't build the gi-docgen subproject for docs
-DISABLE_DOCS = --wrap-mode=nofallback 
+DISABLE_DOCS = --wrap-mode=nofallback
 CONFIGURE_OPTIONS += $(DISABLE_DOCS)
-CONFIGURE_OPTIONS_1 = $(filter-out $(DISABLE_DOCS),$(CONFIGURE_OPTIONS))
 
-# Only gdk-pixbuf recognizes -Dintrospection=disabled, not gdk-pixbuf-xlib
 DISABLE_INTROSPECTION = -Dintrospection=disabled
 CONFIGURE_OPTIONS.32 += $(DISABLE_INTROSPECTION)
-CONFIGURE_OPTIONS_1 = $(filter-out $(DISABLE_INTROSPECTION),$(CONFIGURE_OPTIONS))
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
@@ -101,35 +86,10 @@ install: $(PROTOLCACHECONF.32) $(PROTOLCACHECONF.64)
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgdk_pixbuf-2.0.3lib \
-                $(PROTO_DIR)/usr/share/man/man3lib/libgdk_pixbuf-2.0.3lib; \
-        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgdk_pixbuf_xlib-2.0.3lib \
-                $(PROTO_DIR)/usr/share/man/man3lib/libgdk_pixbuf_xlib-2.0.3lib;
-
-COMPONENT_POST_INSTALL_ACTION.32 += \
-        (cd $(COMPONENT_DIR)/$(COMPONENT_SRC_1); \
-	$(ENV) $(CONFIGURE_ENV) meson setup ../build_32 . $(CONFIGURE_OPTIONS_1);  \
-	$(COMPONENT_POST_CONFIGURE_ACTION) cd ../build_32; \
-	$(ENV) $(COMPONENT_BUILD_ENV) $(NINJA) $(COMPONENT_BUILD_ARGS) \
-		$(COMPONENT_BUILD_TARGETS); \
-	$(ENV) $(COMPONENT_INSTALL_ENV) $(NINJA) $(COMPONENT_INSTALL_ARGS) \
-		$(COMPONENT_INSTALL_TARGETS) install)
-
-COMPONENT_POST_INSTALL_ACTION.64 += \
-        (cd $(COMPONENT_DIR)/$(COMPONENT_SRC_1); \
-	$(ENV) $(CONFIGURE_ENV) meson setup ../build_64 . $(CONFIGURE_OPTIONS_1);  \
-	$(COMPONENT_POST_CONFIGURE_ACTION) cd ../build_64; \
-	$(ENV) $(COMPONENT_BUILD_ENV) $(NINJA) $(COMPONENT_BUILD_ARGS) \
-		$(COMPONENT_BUILD_TARGETS); \
-	$(ENV) $(COMPONENT_INSTALL_ENV) $(NINJA) $(COMPONENT_INSTALL_ARGS) \
-		$(COMPONENT_INSTALL_TARGETS) install)
+                $(PROTO_DIR)/usr/share/man/man3lib/libgdk_pixbuf-2.0.3lib;
 
 # Standard automake test framework results transform
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-clean:: $(SUBDIRS)
-	$(RM) -r build build_32 build_64
-
-clobber:: $(SUBDIRS) clean
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
@@ -139,4 +99,3 @@ REQUIRED_PACKAGES += library/glib2
 # Needed for minimal-fs dependency in pixbuf-loaders-installer.xml SMF manifest:
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += x11/library/libx11
