@@ -1,12 +1,10 @@
-Copyright (c) 2010, 2022, Oracle and/or its affiliates.
-
-README content (required to be distributed if any of the JPEG source code is distributed)
---------------------------------------------------------------------------------
+## Files:
+README
 
 The Independent JPEG Group's JPEG software
 ==========================================
 
-README for release 9e of 16-Jan-2022
+README for release 9f of 14-Jan-2024
 ====================================
 
 This distribution contains the ninth public release of the Independent JPEG
@@ -121,7 +119,7 @@ with respect to this software, its quality, accuracy, merchantability, or
 fitness for a particular purpose.  This software is provided "AS IS", and you,
 its user, assume the entire risk as to its quality and accuracy.
 
-This software is copyright (C) 1991-2022, Thomas G. Lane, Guido Vollbeding.
+This software is copyright (C) 1991-2024, Thomas G. Lane, Guido Vollbeding.
 All Rights Reserved except as specified below.
 
 Permission is hereby granted to use, copy, modify, and distribute this
@@ -245,9 +243,9 @@ The "official" archive site for this software is www.ijg.org.
 The most recent released version can always be found there in
 directory "files".  This particular version will be archived
 in Windows-compatible "zip" archive format as
-https://www.ijg.org/files/jpegsr9e.zip, and
+https://www.ijg.org/files/jpegsr9f.zip, and
 in Unix-compatible "tar.gz" archive format as
-https://www.ijg.org/files/jpegsrc.v9e.tar.gz.
+https://www.ijg.org/files/jpegsrc.v9f.tar.gz.
 
 The JPEG FAQ (Frequently Asked Questions) article is a source of some
 general information about JPEG.
@@ -376,4 +374,1864 @@ to overcome the limitations of the original JPEG specification,
 and is the first true source reference JPEG codec.
 More features are being prepared for coming releases...
 
-Please send bug reports, offers of help, etc. to jpeg-info@jpegclub.org.
+Please send bug reports, offers of help, etc. to jpeg-info@ijg.org.
+
+
+## Files:
+cderror.h
+
+cderror.h
+
+Copyright (C) 1994-1997, Thomas G. Lane.
+Modified 2009-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file defines the error and message codes for the cjpeg/djpeg
+applications.  These strings are not needed as part of the JPEG library
+proper.
+Edit this file to add new codes, or to translate the message strings to
+some other language.
+
+
+## Files:
+cdjpeg.c
+
+cdjpeg.c
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains common support routines used by the IJG application
+programs (cjpeg, djpeg, jpegtran).
+
+
+## Files:
+cdjpeg.h
+
+cdjpeg.h
+
+Copyright (C) 1994-1997, Thomas G. Lane.
+Modified 2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains common declarations for the sample applications
+cjpeg and djpeg.  It is NOT used by the core JPEG library.
+
+
+## Files:
+cjpeg.c
+
+ cjpeg.c
+
+ Copyright (C) 1991-1998, Thomas G. Lane.
+ Modified 2003-2013 by Guido Vollbeding.
+ This file is part of the Independent JPEG Group's software.
+ For conditions of distribution and use, see the accompanying README file.
+
+ This file contains a command-line user interface for the JPEG compressor.
+ It should work on any system with Unix- or MS-DOS-style command lines.
+
+ Two different command line styles are permitted, depending on the
+ compile-time switch TWO_FILE_COMMANDLINE:
+	cjpeg [options]  inputfile outputfile
+	cjpeg [options]  [inputfile]
+ In the second style, output is always to standard output, which you'd
+ normally redirect to a file or pipe to some other program.  Input is
+ either from a named file or from standard input (typically redirected).
+ The second style is convenient on Unix but is unhelpful on systems that
+ don't support pipes.  Also, you MUST use the first style if your system
+ doesn't do binary I/O to stdin/stdout.
+ To simplify script writing, the "-outfile" switch is provided.  The syntax
+	cjpeg [options]  -outfile outputfile  inputfile
+ works regardless of which command line style is used.
+
+
+## Files:
+cjpegalt.c
+
+alternate cjpeg.c
+
+Copyright (C) 1991-1998, Thomas G. Lane.
+Modified 2009-2023 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains an alternate user interface for the JPEG compressor.
+One or more input files are named on the command line, and output file
+names are created by substituting ".jpg" for the input file's extension.
+
+
+## Files:
+ckconfig.c
+
+ckconfig.c
+
+Copyright (C) 1991-1994, Thomas G. Lane.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+
+## Files:
+djpeg.c
+
+ djpeg.c
+
+ Copyright (C) 1991-1997, Thomas G. Lane.
+ Modified 2009-2019 by Guido Vollbeding.
+ This file is part of the Independent JPEG Group's software.
+ For conditions of distribution and use, see the accompanying README file.
+
+ This file contains a command-line user interface for the JPEG decompressor.
+ It should work on any system with Unix- or MS-DOS-style command lines.
+
+ Two different command line styles are permitted, depending on the
+ compile-time switch TWO_FILE_COMMANDLINE:
+	djpeg [options]  inputfile outputfile
+	djpeg [options]  [inputfile]
+ In the second style, output is always to standard output, which you'd
+ normally redirect to a file or pipe to some other program.  Input is
+ either from a named file or from standard input (typically redirected).
+ The second style is convenient on Unix but is unhelpful on systems that
+ don't support pipes.  Also, you MUST use the first style if your system
+ doesn't do binary I/O to stdin/stdout.
+ To simplify script writing, the "-outfile" switch is provided.  The syntax
+	djpeg [options]  -outfile outputfile  inputfile
+ works regardless of which command line style is used.
+
+
+## Files:
+djpegalt.c
+
+alternate djpeg.c
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 2009-2023 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains an alternate user interface for the JPEG decompressor.
+One or more input files are named on the command line, and output file
+names are created by substituting an appropriate extension.
+
+
+## Files:
+jcapimin.c
+
+jcapimin.c
+
+Copyright (C) 1994-1998, Thomas G. Lane.
+Modified 2003-2010 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains application interface code for the compression half
+of the JPEG library.  These are the "minimum" API routines that may be
+needed in either the normal full-compression case or the transcoding-only
+case.
+
+Most of the routines intended to be called directly by an application
+are in this file or in jcapistd.c.  But also see jcparam.c for
+parameter-setup helper routines, jcomapi.c for routines shared by
+compression and decompression, and jctrans.c for the transcoding case.
+
+
+## Files:
+jcapistd.c
+
+jcapistd.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2013 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains application interface code for the compression half
+of the JPEG library.  These are the "standard" API routines that are
+used in the normal full-compression case.  They are not used by a
+transcoding-only application.  Note that if an application links in
+jpeg_start_compress, it will end up linking in the entire compressor.
+We thus must separate this file from jcapimin.c to avoid linking the
+whole compression library into a transcoder.
+
+
+## Files:
+jccoefct.c
+
+jccoefct.c
+
+Copyright (C) 1994-1997, Thomas G. Lane.
+Modified 2003-2022 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains the coefficient buffer controller for compression.
+This controller is the top level of the JPEG compressor proper.
+The coefficient buffer lies between forward-DCT and entropy encoding steps.
+
+
+## Files:
+jccolor.c
+
+jccolor.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2011-2023 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains input colorspace conversion routines.
+
+
+## Files:
+jcdctmgr.c
+
+jcdctmgr.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2003-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains the forward-DCT management logic.
+This code selects a particular DCT implementation to be used,
+and it performs related housekeeping chores including coefficient
+quantization.
+
+
+## Files:
+jchuff.c
+
+jchuff.c
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 2006-2023 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains Huffman entropy encoding routines.
+Both sequential and progressive modes are supported in this single module.
+
+Much of the complexity here has to do with supporting output suspension.
+If the data destination module demands suspension, we want to be able to
+back up to the start of the current MCU.  To do this, we copy state
+variables into local working storage, and update them back to the
+permanent JPEG objects only upon successful completion of an MCU.
+
+We do not support output suspension for the progressive JPEG mode, since
+the library currently does not allow multiple-scan files to be written
+with output suspension.
+
+
+## Files:
+jcinit.c
+
+jcinit.c
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 2003-2017 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains initialization logic for the JPEG compressor.
+This routine is in charge of selecting the modules to be executed and
+making an initialization call to each one.
+
+Logically, this code belongs in jcmaster.c.  It's split out because
+linking this routine implies linking the entire compression library.
+For a transcoding-only application, we want to be able to use jcmaster.c
+without linking in the whole library.
+
+
+## Files:
+jcmainct.c
+
+jcmainct.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2003-2012 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains the main buffer controller for compression.
+The main buffer lies between the pre-processor and the JPEG
+compressor proper; it holds downsampled data in the JPEG colorspace.
+
+
+## Files:
+jcmarker.c
+
+jcmarker.c
+
+Copyright (C) 1991-1998, Thomas G. Lane.
+Modified 2003-2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to write JPEG datastream markers.
+
+
+## Files:
+jcmaster.c
+
+jcmaster.c
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 2003-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains master control logic for the JPEG compressor.
+These routines are concerned with parameter validation, initial setup,
+and inter-pass control (determining the number of passes and the work
+to be done in each pass).
+
+
+## Files:
+jcomapi.c
+
+jcomapi.c
+
+Copyright (C) 1994-1997, Thomas G. Lane.
+Modified 2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains application interface routines that are used for both
+compression and decompression.
+
+
+## Files:
+jcparam.c
+
+jcparam.c
+
+Copyright (C) 1991-1998, Thomas G. Lane.
+Modified 2003-2022 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains optional default-setting code for the JPEG compressor.
+Applications do not have to use this file, but those that don't use it
+must know a lot more about the innards of the JPEG code.
+
+
+## Files:
+jcprepct.c
+
+jcprepct.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2003-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains the compression preprocessing controller.
+This controller manages the color conversion, downsampling,
+and edge expansion steps.
+
+Most of the complexity here is associated with buffering input rows
+as required by the downsampler.  See the comments at the head of
+jcsample.c for the downsampler's needs.
+
+
+## Files:
+jcsample.c
+
+jcsample.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2003-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains downsampling routines.
+
+Downsampling input data is counted in "row groups".  A row group
+is defined to be max_v_samp_factor pixel rows of each component,
+from which the downsampler produces v_samp_factor sample rows.
+A single row group is processed in each call to the downsampler module.
+
+The downsampler is responsible for edge-expansion of its output data
+to fill an integral number of DCT blocks horizontally.  The source buffer
+may be modified if it is helpful for this purpose (the source buffer is
+allocated wide enough to correspond to the desired output width).
+The caller (the prep controller) is responsible for vertical padding.
+
+The downsampler may request "context rows" by setting need_context_rows
+during startup.  In this case, the input arrays will contain at least
+one row group's worth of pixels above and below the passed-in data;
+the caller will create dummy rows at image top and bottom by replicating
+the first or last real pixel row.
+
+An excellent reference for image resampling is
+  Digital Image Warping, George Wolberg, 1990.
+  Pub. by IEEE Computer Society Press, Los Alamitos, CA. ISBN 0-8186-8944-7.
+
+The downsampling algorithm used here is a simple average of the source
+pixels covered by the output pixel.  The hi-falutin sampling literature
+refers to this as a "box filter".  In general the characteristics of a box
+filter are not very good, but for the specific cases we normally use (1:1
+and 2:1 ratios) the box is equivalent to a "triangle filter" which is not
+nearly so bad.  If you intend to use other sampling ratios, you'd be well
+advised to improve this code.
+
+A simple input-smoothing capability is provided.  This is mainly intended
+for cleaning up color-dithered GIF input files (if you find it inadequate,
+we suggest using an external filtering program such as pnmconvol).  When
+enabled, each input pixel P is replaced by a weighted sum of itself and its
+eight neighbors.  P's weight is 1-8*SF and each neighbor's weight is SF,
+where SF = (smoothing_factor / 1024).
+Currently, smoothing is only supported for 2h2v sampling factors.
+
+
+## Files:
+jctrans.c
+
+jctrans.c
+
+Copyright (C) 1995-1998, Thomas G. Lane.
+Modified 2000-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains library routines for transcoding compression,
+that is, writing raw DCT coefficient arrays to an output JPEG file.
+The routines in jcapimin.c will also be needed by a transcoder.
+
+
+## Files:
+jdapimin.c
+
+jdapimin.c
+
+Copyright (C) 1994-1998, Thomas G. Lane.
+Modified 2009-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains application interface code for the decompression half
+of the JPEG library.  These are the "minimum" API routines that may be
+needed in either the normal full-decompression case or the
+transcoding-only case.
+
+Most of the routines intended to be called directly by an application
+are in this file or in jdapistd.c.  But also see jcomapi.c for routines
+shared by compression and decompression, and jdtrans.c for the transcoding
+case.
+
+
+## Files:
+jdapistd.c
+
+jdapistd.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2002-2013 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains application interface code for the decompression half
+of the JPEG library.  These are the "standard" API routines that are
+used in the normal full-decompression case.  They are not used by a
+transcoding-only application.  Note that if an application links in
+jpeg_start_decompress, it will end up linking in the entire decompressor.
+We thus must separate this file from jdapimin.c to avoid linking the
+whole decompression library into a transcoder.
+
+
+## Files:
+jdatadst.c
+
+jdatadst.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2009-2022 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains compression data destination routines for the case of
+emitting JPEG data to memory or to a file (or any stdio stream).
+While these routines are sufficient for most applications,
+some will want to use a different destination manager.
+IMPORTANT: we assume that fwrite() will correctly transcribe an array of
+JOCTETs into 8-bit-wide elements on external storage.  If char is wider
+than 8 bits on your machine, you may need to do some tweaking.
+
+
+## Files:
+jdatasrc.c
+
+jdatasrc.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2009-2022 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains decompression data source routines for the case of
+reading JPEG data from memory or from a file (or any stdio stream).
+While these routines are sufficient for most applications,
+some will want to use a different source manager.
+IMPORTANT: we assume that fread() will correctly transcribe an array of
+JOCTETs from 8-bit-wide elements on external storage.  If char is wider
+than 8 bits on your machine, you may need to do some tweaking.
+
+
+## Files:
+jdcoefct.c
+
+jdcoefct.c
+
+Copyright (C) 1994-1997, Thomas G. Lane.
+Modified 2002-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains the coefficient buffer controller for decompression.
+This controller is the top level of the JPEG decompressor proper.
+The coefficient buffer lies between entropy decoding and inverse-DCT steps.
+
+In buffered-image mode, this controller is the interface between
+input-oriented processing and output-oriented processing.
+Also, the input side (only) is used when reading a file for transcoding.
+
+
+## Files:
+jdcolor.c
+
+jdcolor.c
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 2011-2023 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains output colorspace conversion routines.
+
+
+## Files:
+jdct.h
+
+jdct.h
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2002-2023 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This include file contains common declarations for the forward and
+inverse DCT modules.  These declarations are private to the DCT managers
+(jcdctmgr.c, jddctmgr.c) and the individual DCT algorithms.
+The individual DCT algorithms are kept in separate files to ease
+machine-dependent tuning (e.g., assembly coding).
+
+
+## Files:
+jddctmgr.c
+
+jddctmgr.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2002-2013 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains the inverse-DCT management logic.
+This code selects a particular IDCT implementation to be used,
+and it performs related housekeeping chores.  No code in this file
+is executed per IDCT step, only during output pass setup.
+
+Note that the IDCT routines are responsible for performing coefficient
+dequantization as well as the IDCT proper.  This module sets up the
+dequantization multiplier table needed by the IDCT routine.
+
+
+## Files:
+jdhuff.c
+
+jdhuff.c
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 2006-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains Huffman entropy decoding routines.
+Both sequential and progressive modes are supported in this single module.
+
+Much of the complexity here has to do with supporting input suspension.
+If the data source module demands suspension, we want to be able to back
+up to the start of the current MCU.  To do this, we copy state variables
+into local working storage, and update them back to the permanent
+storage only upon successful completion of an MCU.
+
+
+## Files:
+jdinput.c
+
+jdinput.c
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 2002-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains input control logic for the JPEG decompressor.
+These routines are concerned with controlling the decompressor's input
+processing (marker reading and coefficient decoding).  The actual input
+reading is done in jdmarker.c, jdhuff.c, and jdarith.c.
+
+
+## Files:
+jdmainct.c
+
+jdmainct.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2002-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains the main buffer controller for decompression.
+The main buffer lies between the JPEG decompressor proper and the
+post-processor; it holds downsampled data in the JPEG colorspace.
+
+Note that this code is bypassed in raw-data mode, since the application
+supplies the equivalent of the main buffer in that case.
+
+
+## Files:
+jdmarker.c
+
+jdmarker.c
+
+Copyright (C) 1991-1998, Thomas G. Lane.
+Modified 2009-2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to decode JPEG datastream markers.
+Most of the complexity arises from our desire to support input
+suspension: if not all of the data for a marker is available,
+we must exit back to the application.  On resumption, we reprocess
+the marker.
+
+
+## Files:
+jdmaster.c
+
+jdmaster.c
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 2002-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains master control logic for the JPEG decompressor.
+These routines are concerned with selecting the modules to be executed
+and with determining the number of passes and the work to be done in each
+pass.
+
+
+## Files:
+jdmerge.c
+
+ jdmerge.c
+
+ Copyright (C) 1994-1996, Thomas G. Lane.
+ Modified 2013-2022 by Guido Vollbeding.
+ This file is part of the Independent JPEG Group's software.
+ For conditions of distribution and use, see the accompanying README file.
+
+ This file contains code for merged upsampling/color conversion.
+
+ This file combines functions from jdsample.c and jdcolor.c;
+ read those files first to understand what's going on.
+
+ When the chroma components are to be upsampled by simple replication
+ (ie, box filtering), we can save some work in color conversion by
+ calculating all the output pixels corresponding to a pair of chroma
+ samples at one time.  In the conversion equations
+	R = Y           + K1 * Cr
+	G = Y + K2 * Cb + K3 * Cr
+	B = Y + K4 * Cb
+ only the Y term varies among the group of pixels corresponding to a pair
+ of chroma samples, so the rest of the terms can be calculated just once.
+ At typical sampling ratios, this eliminates half or three-quarters
+ of the multiplications needed for color conversion.
+
+ This file currently provides implementations for the following cases:
+	YCC => RGB color conversion only (YCbCr or BG_YCC).
+	Sampling ratios of 2h1v or 2h2v.
+	No scaling needed at upsample time.
+	Corner-aligned (non-CCIR601) sampling alignment.
+ Other special cases could be added, but in most applications these
+ are the only common cases.  (For uncommon cases we fall back on
+ the more general code in jdsample.c and jdcolor.c.)
+
+
+## Files:
+jdpostct.c
+
+jdpostct.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains the decompression postprocessing controller.
+This controller manages the upsampling, color conversion, and color
+quantization/reduction steps; specifically, it controls the buffering
+between upsample/color conversion and color quantization/reduction.
+
+If no color quantization/reduction is required, then this module has no
+work to do, and it just hands off to the upsample/color conversion code.
+An integrated upsample/convert/quantize process would replace this module
+entirely.
+
+
+## Files:
+jdsample.c
+
+jdsample.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2002-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains upsampling routines.
+
+Upsampling input data is counted in "row groups".  A row group
+is defined to be (v_samp_factor * DCT_v_scaled_size / min_DCT_v_scaled_size)
+sample rows of each component.  Upsampling will normally produce
+max_v_samp_factor pixel rows from each row group (but this could vary
+if the upsampler is applying a scale factor of its own).
+
+An excellent reference for image resampling is
+  Digital Image Warping, George Wolberg, 1990.
+  Pub. by IEEE Computer Society Press, Los Alamitos, CA. ISBN 0-8186-8944-7.
+
+
+## Files:
+jdtrans.c
+
+jdtrans.c
+
+Copyright (C) 1995-1997, Thomas G. Lane.
+Modified 2000-2009 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains library routines for transcoding decompression,
+that is, reading raw DCT coefficient arrays from an input JPEG file.
+The routines in jdapimin.c will also be needed by a transcoder.
+
+
+## Files:
+jerror.c
+
+jerror.c
+
+Copyright (C) 1991-1998, Thomas G. Lane.
+Modified 2012-2015 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains simple error-reporting and trace-message routines.
+These are suitable for Unix-like systems and others where writing to
+stderr is the right thing to do.  Many applications will want to replace
+some or all of these routines.
+
+If you define USE_WINDOWS_MESSAGEBOX in jconfig.h or in the makefile,
+you get a Windows-specific hack to display error messages in a dialog box.
+It ain't much, but it beats dropping error messages into the bit bucket,
+which is what happens to output to stderr under most Windows C compilers.
+
+These routines are used by both the compression and decompression code.
+
+
+## Files:
+jerror.h
+
+jerror.h
+
+Copyright (C) 1994-1997, Thomas G. Lane.
+Modified 1997-2018 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file defines the error and message codes for the JPEG library.
+Edit this file to add new codes, or to translate the message strings to
+some other language.
+A set of error-reporting macros are defined too.  Some applications using
+the JPEG library may wish to include this file to get the error codes
+and/or the macros.
+
+
+## Files:
+jfdctflt.c
+
+jfdctflt.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2003-2017 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains a floating-point implementation of the
+forward DCT (Discrete Cosine Transform).
+
+This implementation should be more accurate than either of the integer
+DCT implementations.  However, it may not give the same results on all
+machines because of differences in roundoff behavior.  Speed will depend
+on the hardware's floating point capacity.
+
+A 2-D DCT can be done by 1-D DCT on each row followed by 1-D DCT
+on each column.  Direct algorithms are also available, but they are
+much more complex and seem not to be any faster when reduced to code.
+
+This implementation is based on Arai, Agui, and Nakajima's algorithm for
+scaled DCT.  Their original paper (Trans. IEICE E-71(11):1095) is in
+Japanese, but the algorithm is described in the Pennebaker & Mitchell
+JPEG textbook (see REFERENCES section in file README).  The following code
+is based directly on figure 4-8 in P&M.
+While an 8-point DCT cannot be done in less than 11 multiplies, it is
+possible to arrange the computation so that many of the multiplies are
+simple scalings of the final outputs.  These multiplies can then be
+folded into the multiplications or divisions by the JPEG quantization
+table entries.  The AA&N method leaves only 5 multiplies and 29 adds
+to be done in the DCT itself.
+The primary disadvantage of this method is that with a fixed-point
+implementation, accuracy is lost due to imprecise representation of the
+scaled quantization values.  However, that problem does not arise if
+we use floating point arithmetic.
+
+
+## Files:
+jfdctfst.c
+
+jfdctfst.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2003-2017 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains a fast, not so accurate integer implementation of the
+forward DCT (Discrete Cosine Transform).
+
+A 2-D DCT can be done by 1-D DCT on each row followed by 1-D DCT
+on each column.  Direct algorithms are also available, but they are
+much more complex and seem not to be any faster when reduced to code.
+
+This implementation is based on Arai, Agui, and Nakajima's algorithm for
+scaled DCT.  Their original paper (Trans. IEICE E-71(11):1095) is in
+Japanese, but the algorithm is described in the Pennebaker & Mitchell
+JPEG textbook (see REFERENCES section in file README).  The following code
+is based directly on figure 4-8 in P&M.
+While an 8-point DCT cannot be done in less than 11 multiplies, it is
+possible to arrange the computation so that many of the multiplies are
+simple scalings of the final outputs.  These multiplies can then be
+folded into the multiplications or divisions by the JPEG quantization
+table entries.  The AA&N method leaves only 5 multiplies and 29 adds
+to be done in the DCT itself.
+The primary disadvantage of this method is that with fixed-point math,
+accuracy is lost due to imprecise representation of the scaled
+quantization values.  The smaller the quantization table entry, the less
+precise the scaled value, so this implementation does worse with high-
+quality-setting files than with low-quality ones.
+
+
+## Files:
+jfdctint.c
+
+jfdctint.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modification developed 2003-2018 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains a slow-but-accurate integer implementation of the
+forward DCT (Discrete Cosine Transform).
+
+A 2-D DCT can be done by 1-D DCT on each row followed by 1-D DCT
+on each column.  Direct algorithms are also available, but they are
+much more complex and seem not to be any faster when reduced to code.
+
+This implementation is based on an algorithm described in
+  C. Loeffler, A. Ligtenberg and G. Moschytz, "Practical Fast 1-D DCT
+  Algorithms with 11 Multiplications", Proc. Int'l. Conf. on Acoustics,
+  Speech, and Signal Processing 1989 (ICASSP '89), pp. 988-991.
+The primary algorithm described there uses 11 multiplies and 29 adds.
+We use their alternate method with 12 multiplies and 32 adds.
+The advantage of this method is that no data path contains more than one
+multiplication; this allows a very simple and accurate implementation in
+scaled fixed-point arithmetic, with a minimal number of shifts.
+
+We also provide FDCT routines with various input sample block sizes for
+direct resolution reduction or enlargement and for direct resolving the
+common 2x1 and 1x2 subsampling cases without additional resampling: NxN
+(N=1...16), 2NxN, and Nx2N (N=1...8) pixels for one 8x8 output DCT block.
+
+For N<8 we fill the remaining block coefficients with zero.
+For N>8 we apply a partial N-point FDCT on the input samples, computing
+just the lower 8 frequency coefficients and discarding the rest.
+
+We must scale the output coefficients of the N-point FDCT appropriately
+to the standard 8-point FDCT level by 8/N per 1-D pass.  This scaling
+is folded into the constant multipliers (pass 2) and/or final/initial
+shifting.
+
+CAUTION: We rely on the FIX() macro except for the N=1,2,4,8 cases
+since there would be too many additional constants to pre-calculate.
+
+
+## Files:
+jidctflt.c
+
+jidctflt.c
+
+Copyright (C) 1994-1998, Thomas G. Lane.
+Modified 2010-2017 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains a floating-point implementation of the
+inverse DCT (Discrete Cosine Transform).  In the IJG code, this routine
+must also perform dequantization of the input coefficients.
+
+This implementation should be more accurate than either of the integer
+IDCT implementations.  However, it may not give the same results on all
+machines because of differences in roundoff behavior.  Speed will depend
+on the hardware's floating point capacity.
+
+A 2-D IDCT can be done by 1-D IDCT on each column followed by 1-D IDCT
+on each row (or vice versa, but it's more convenient to emit a row at
+a time).  Direct algorithms are also available, but they are much more
+complex and seem not to be any faster when reduced to code.
+
+This implementation is based on Arai, Agui, and Nakajima's algorithm for
+scaled DCT.  Their original paper (Trans. IEICE E-71(11):1095) is in
+Japanese, but the algorithm is described in the Pennebaker & Mitchell
+JPEG textbook (see REFERENCES section in file README).  The following code
+is based directly on figure 4-8 in P&M.
+While an 8-point DCT cannot be done in less than 11 multiplies, it is
+possible to arrange the computation so that many of the multiplies are
+simple scalings of the final outputs.  These multiplies can then be
+folded into the multiplications or divisions by the JPEG quantization
+table entries.  The AA&N method leaves only 5 multiplies and 29 adds
+to be done in the DCT itself.
+The primary disadvantage of this method is that with a fixed-point
+implementation, accuracy is lost due to imprecise representation of the
+scaled quantization values.  However, that problem does not arise if
+we use floating point arithmetic.
+
+
+## Files:
+jidctfst.c
+
+jidctfst.c
+
+Copyright (C) 1994-1998, Thomas G. Lane.
+Modified 2015-2017 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains a fast, not so accurate integer implementation of the
+inverse DCT (Discrete Cosine Transform).  In the IJG code, this routine
+must also perform dequantization of the input coefficients.
+
+A 2-D IDCT can be done by 1-D IDCT on each column followed by 1-D IDCT
+on each row (or vice versa, but it's more convenient to emit a row at
+a time).  Direct algorithms are also available, but they are much more
+complex and seem not to be any faster when reduced to code.
+
+This implementation is based on Arai, Agui, and Nakajima's algorithm for
+scaled DCT.  Their original paper (Trans. IEICE E-71(11):1095) is in
+Japanese, but the algorithm is described in the Pennebaker & Mitchell
+JPEG textbook (see REFERENCES section in file README).  The following code
+is based directly on figure 4-8 in P&M.
+While an 8-point DCT cannot be done in less than 11 multiplies, it is
+possible to arrange the computation so that many of the multiplies are
+simple scalings of the final outputs.  These multiplies can then be
+folded into the multiplications or divisions by the JPEG quantization
+table entries.  The AA&N method leaves only 5 multiplies and 29 adds
+to be done in the DCT itself.
+The primary disadvantage of this method is that with fixed-point math,
+accuracy is lost due to imprecise representation of the scaled
+quantization values.  The smaller the quantization table entry, the less
+precise the scaled value, so this implementation does worse with high-
+quality-setting files than with low-quality ones.
+
+
+## Files:
+jidctint.c
+
+jidctint.c
+
+Copyright (C) 1991-1998, Thomas G. Lane.
+Modification developed 2002-2018 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains a slow-but-accurate integer implementation of the
+inverse DCT (Discrete Cosine Transform).  In the IJG code, this routine
+must also perform dequantization of the input coefficients.
+
+A 2-D IDCT can be done by 1-D IDCT on each column followed by 1-D IDCT
+on each row (or vice versa, but it's more convenient to emit a row at
+a time).  Direct algorithms are also available, but they are much more
+complex and seem not to be any faster when reduced to code.
+
+This implementation is based on an algorithm described in
+  C. Loeffler, A. Ligtenberg and G. Moschytz, "Practical Fast 1-D DCT
+  Algorithms with 11 Multiplications", Proc. Int'l. Conf. on Acoustics,
+  Speech, and Signal Processing 1989 (ICASSP '89), pp. 988-991.
+The primary algorithm described there uses 11 multiplies and 29 adds.
+We use their alternate method with 12 multiplies and 32 adds.
+The advantage of this method is that no data path contains more than one
+multiplication; this allows a very simple and accurate implementation in
+scaled fixed-point arithmetic, with a minimal number of shifts.
+
+We also provide IDCT routines with various output sample block sizes for
+direct resolution reduction or enlargement and for direct resolving the
+common 2x1 and 1x2 subsampling cases without additional resampling: NxN
+(N=1...16), 2NxN, and Nx2N (N=1...8) pixels for one 8x8 input DCT block.
+
+For N<8 we simply take the corresponding low-frequency coefficients of
+the 8x8 input DCT block and apply an NxN point IDCT on the sub-block
+to yield the downscaled outputs.
+This can be seen as direct low-pass downsampling from the DCT domain
+point of view rather than the usual spatial domain point of view,
+yielding significant computational savings and results at least
+as good as common bilinear (averaging) spatial downsampling.
+
+For N>8 we apply a partial NxN IDCT on the 8 input coefficients as
+lower frequencies and higher frequencies assumed to be zero.
+It turns out that the computational effort is similar to the 8x8 IDCT
+regarding the output size.
+Furthermore, the scaling and descaling is the same for all IDCT sizes.
+
+CAUTION: We rely on the FIX() macro except for the N=1,2,4,8 cases
+since there would be too many additional constants to pre-calculate.
+
+
+## Files:
+jinclude.h
+
+jinclude.h
+
+Copyright (C) 1991-1994, Thomas G. Lane.
+Modified 2017-2022 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file exists to provide a single place to fix any problems with
+including the wrong system include files.  (Common problems are taken
+care of by the standard jconfig symbols, but on really weird systems
+you may have to edit this file.)
+
+NOTE: this file is NOT intended to be included by applications using
+the JPEG library.  Most applications need only include jpeglib.h.
+
+
+## Files:
+jmemansi.c
+
+jmemansi.c
+
+Copyright (C) 1992-1996, Thomas G. Lane.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file provides a simple generic implementation of the system-
+dependent portion of the JPEG memory manager.  This implementation
+assumes that you have the ANSI-standard library routine tmpfile().
+Also, the problem of determining the amount of memory available
+is shoved onto the user.
+
+
+## Files:
+jmemdos.c
+
+jmemdos.c
+
+Copyright (C) 1992-1997, Thomas G. Lane.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file provides an MS-DOS-compatible implementation of the system-
+dependent portion of the JPEG memory manager.  Temporary data can be
+stored in extended or expanded memory as well as in regular DOS files.
+
+If you use this file, you must be sure that NEED_FAR_POINTERS is defined
+if you compile in a small-data memory model; it should NOT be defined if
+you use a large-data memory model.  This file is not recommended if you
+are using a flat-memory-space 386 environment such as DJGCC or Watcom C.
+Also, this code will NOT work if struct fields are aligned on greater than
+2-byte boundaries.
+
+Based on code contributed by Ge' Weijers.
+
+
+## Files:
+jmemmac.c
+
+jmemmac.c
+
+Copyright (C) 1992-1997, Thomas G. Lane.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+jmemmac.c provides an Apple Macintosh implementation of the system-
+dependent portion of the JPEG memory manager.
+
+If you use jmemmac.c, then you must define USE_MAC_MEMMGR in the
+JPEG_INTERNALS part of jconfig.h.
+
+jmemmac.c uses the Macintosh toolbox routines NewPtr and DisposePtr
+instead of malloc and free.  It accurately determines the amount of
+memory available by using CompactMem.  Notice that if left to its
+own devices, this code can chew up all available space in the
+application's zone, with the exception of the rather small "slop"
+factor computed in jpeg_mem_available().  The application can ensure
+that more space is left over by reducing max_memory_to_use.
+
+Large images are swapped to disk using temporary files and System 7.0+'s
+temporary folder functionality.
+
+Note that jmemmac.c depends on two features of MacOS that were first
+introduced in System 7: FindFolder and the FSSpec-based calls.
+If your application uses jmemmac.c and is run under System 6 or earlier,
+and the jpeg library decides it needs a temporary file, it will abort,
+printing error messages about requiring System 7.  (If no temporary files
+are created, it will run fine.)
+
+If you want to use jmemmac.c in an application that might be used with
+System 6 or earlier, then you should remove dependencies on FindFolder
+and the FSSpec calls.  You will need to replace FindFolder with some
+other mechanism for finding a place to put temporary files, and you
+should replace the FSSpec calls with their HFS equivalents:
+
+    FSpDelete     ->  HDelete
+    FSpGetFInfo   ->  HGetFInfo
+    FSpCreate     ->  HCreate
+    FSpOpenDF     ->  HOpen      *** Note: not HOpenDF ***
+    FSMakeFSSpec  ->  (fill in spec by hand.)
+
+(Use HOpen instead of HOpenDF.  HOpen is just a glue-interface to PBHOpen,
+which is on all HFS macs.  HOpenDF is a System 7 addition which avoids the
+ages-old problem of names starting with a period.)
+
+Contributed by Sam Bushell (jsam@iagu.on.net) and
+Dan Gildor (gyld@in-touch.com).
+
+
+## Files:
+jmemmgr.c
+
+jmemmgr.c
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 2011-2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains the JPEG system-independent memory management
+routines.  This code is usable across a wide variety of machines; most
+of the system dependencies have been isolated in a separate file.
+The major functions provided here are:
+  * pool-based allocation and freeing of memory;
+  * policy decisions about how to divide available memory among the
+    virtual arrays;
+  * control logic for swapping virtual arrays between main memory and
+    backing storage.
+The separate system-dependent file provides the actual backing-storage
+access code, and it contains the policy decision about how much total
+main memory to use.
+This file is system-dependent in the sense that some of its functions
+are unnecessary in some systems.  For example, if there is enough virtual
+memory so that backing storage will never be used, much of the virtual
+array control logic could be removed.  (Of course, if you have that much
+memory then you shouldn't care about a little bit of unused code...)
+
+
+## Files:
+jmemname.c
+
+jmemname.c
+
+Copyright (C) 1992-1997, Thomas G. Lane.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file provides a generic implementation of the system-dependent
+portion of the JPEG memory manager.  This implementation assumes that
+you must explicitly construct a name for each temp file.
+Also, the problem of determining the amount of memory available
+is shoved onto the user.
+
+
+## Files:
+jmemnobs.c
+
+jmemnobs.c
+
+Copyright (C) 1992-1996, Thomas G. Lane.
+Modified 2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file provides a really simple implementation of the system-
+dependent portion of the JPEG memory manager.  This implementation
+assumes that no backing-store files are needed: all required space
+can be obtained from malloc().
+This is very portable in the sense that it'll compile on almost anything,
+but you'd better have lots of main memory (or virtual memory) if you want
+to process big images.
+Note that the max_memory_to_use option is respected by this implementation.
+
+
+## Files:
+jmemsys.h
+
+jmemsys.h
+
+Copyright (C) 1992-1997, Thomas G. Lane.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This include file defines the interface between the system-independent
+and system-dependent portions of the JPEG memory manager.  No other
+modules need include it.  (The system-independent portion is jmemmgr.c;
+there are several different versions of the system-dependent portion.)
+
+This file works as-is for the system-dependent memory managers supplied
+in the IJG distribution.  You may need to modify it if you write a
+custom memory manager.  If system-dependent changes are needed in
+this file, the best method is to #ifdef them based on a configuration
+symbol supplied in jconfig.h, as we have done with USE_MSDOS_MEMMGR
+and USE_MAC_MEMMGR.
+
+
+## Files:
+jmorecfg.h
+
+jmorecfg.h
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 1997-2022 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains additional configuration options that customize the
+JPEG software for special applications or support machine-dependent
+optimizations.  Most users will not need to touch this file.
+
+
+## Files:
+jpegint.h
+
+jpegint.h
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 1997-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file provides common declarations for the various JPEG modules.
+These declarations are considered internal to the JPEG library; most
+applications using the library shouldn't need to include this file.
+
+
+## Files:
+jpeglib.h
+
+jpeglib.h
+
+Copyright (C) 1991-1998, Thomas G. Lane.
+Modified 2002-2022 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file defines the application interface for the JPEG library.
+Most applications using the library need only include this file,
+and perhaps jerror.h if they want to know the exact error codes.
+
+
+## Files:
+jpegtran.c
+
+jpegtran.c
+
+Copyright (C) 1995-2019, Thomas G. Lane, Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains a command-line user interface for JPEG transcoding.
+It is very similar to cjpeg.c, and partly to djpeg.c, but provides
+lossless transcoding between different JPEG file formats.  It also
+provides some lossless and sort-of-lossless transformations of JPEG data.
+
+
+## Files:
+jquant1.c
+
+jquant1.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2011-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains 1-pass color quantization (color mapping) routines.
+These routines provide mapping to a fixed color map using equally spaced
+color values.  Optional Floyd-Steinberg or ordered dithering is available.
+
+
+## Files:
+jquant2.c
+
+jquant2.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2011-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains 2-pass color quantization (color mapping) routines.
+These routines provide selection of a custom color map for an image,
+followed by mapping of the image to that color map, with optional
+Floyd-Steinberg dithering.
+It is also possible to use just the second pass to map to an arbitrary
+externally-given color map.
+
+Note: ordered dithering is not supported, since there isn't any fast
+way to compute intercolor distances; it's unclear that ordered dither's
+fundamental assumptions even hold with an irregularly spaced color map.
+
+
+## Files:
+jutils.c
+
+jutils.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2009-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains tables and miscellaneous utility routines needed
+for both compression and decompression.
+Note we prefix all global names with "j" to minimize conflicts with
+a surrounding application.
+
+
+## Files:
+jversion.h
+
+jversion.h
+
+Copyright (C) 1991-2024, Thomas G. Lane, Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains software version identification.
+
+
+## Files:
+ltmain.sh
+
+Copyright (C) 1996-2019, 2021-2022 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+## Files:
+ltmain.sh
+
+GNU Libtool is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+As a special exception to the GNU General Public License,
+if you distribute this file as part of a program or library that
+is built using GNU Libtool, you may include this file under the
+same distribution terms that you use for the rest of that program.
+
+GNU Libtool is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+## Files:
+ltmain.sh
+
+This is free software.  There is NO warranty; not even for
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Copyright (C) 2004-2019, 2021 Bootstrap Authors
+
+This file is dual licensed under the terms of the MIT license
+<https://opensource.org/license/MIT>, and GPL version 2 or later
+<http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+these licenses when using or redistributing this software or any of
+the files within it.  See the URLs above, or the file `LICENSE`
+included in the Bootstrap distribution for the full license texts.
+
+
+## Files:
+ltmain.sh
+
+This is free software.  There is NO warranty; not even for
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Copyright (C) 2010-2019, 2021 Bootstrap Authors
+
+This file is dual licensed under the terms of the MIT license
+<https://opensource.org/license/MIT>, and GPL version 2 or later
+<http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+these licenses when using or redistributing this software or any of
+the files within it.  See the URLs above, or the file `LICENSE`
+included in the Bootstrap distribution for the full license texts.
+
+
+## Files:
+ltmain.sh
+
+This file is a library for parsing options in your shell scripts along
+with assorted other useful supporting features that you can make use
+of too.
+
+For the simplest scripts you might need only:
+
+  #!/bin/sh
+  . relative/path/to/funclib.sh
+  . relative/path/to/options-parser
+  scriptversion=1.0
+  func_options ${1+"$@"}
+  eval set dummy "$func_options_result"; shift
+  ...rest of your script...
+
+In order for the '--version' option to work, you will need to have a
+suitably formatted comment like the one at the top of this file
+starting with '# Written by ' and ending with '# Copyright'.
+
+For '-h' and '--help' to work, you will also need a one line
+description of your script's purpose in a comment directly above the
+'# Written by ' line, like the one at the top of this file.
+
+The default options also support '--debug', which will turn on shell
+execution tracing (see the comment above debug_cmd below for another
+use), and '--verbose' and the func_verbose function to allow your script
+to display verbose messages only when your user has specified
+'--verbose'.
+
+After sourcing this file, you can plug in processing for additional
+options by amending the variables from the 'Configuration' section
+below, and following the instructions in the 'Option parsing'
+section further down.
+
+
+## Files:
+ltmain.sh
+
+func_version
+------------
+Echo version message to standard output and exit.
+The version message is extracted from the calling file's header
+comments, with leading '# ' stripped:
+  1. First display the progname and version
+  2. Followed by the header comment line matching  /^# Written by /
+  3. Then a blank line followed by the first following line matching
+     /^# Copyright /
+  4. Immediately followed by any lines between the previous matches,
+     except lines preceding the intervening completely blank line.
+For example, see the header comments of this file.
+
+
+## Files:
+rdbmp.c
+
+rdbmp.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2009-2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to read input images in Microsoft "BMP"
+format (MS Windows 3.x, OS/2 1.x, and OS/2 2.x flavors).
+Currently, only 8-, 24-, and 32-bit images are supported, not 1-bit or
+4-bit (feeding such low-depth images into JPEG would be silly anyway).
+Also, we don't support RLE-compressed files.
+
+These routines may need modification for non-Unix environments or
+specialized applications.  As they stand, they assume input from
+an ordinary stdio stream.  They further assume that reading begins
+at the start of the file; start_input may need work if the
+user interface has already read some data (e.g., to determine that
+the file is indeed BMP format).
+
+This code contributed by James Arthur Boucher.
+
+
+## Files:
+rdcolmap.c
+
+rdcolmap.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file implements djpeg's "-map file" switch.  It reads a source image
+and constructs a colormap to be supplied to the JPEG decompressor.
+
+Currently, these file formats are supported for the map file:
+  GIF: the contents of the GIF's global colormap are used.
+  PPM (either text or raw flavor): the entire file is read and
+     each unique pixel value is entered in the map.
+Note that reading a large PPM file will be horrendously slow.
+Typically, a PPM-format map file should contain just one pixel
+of each desired color.  Such a file can be extracted from an
+ordinary image PPM file with ppmtomap(1).
+
+Rescaling a PPM that has a maxval unequal to MAXJSAMPLE is not
+currently implemented.
+
+
+## Files:
+rdcolmap.c
+rdppm.c
+
+  Portions of this code are based on the PBMPLUS library, which is:
+*
+* Copyright (C) 1988 by Jef Poskanzer.
+*
+* Permission to use, copy, modify, and distribute this software and its
+* documentation for any purpose and without fee is hereby granted, provided
+* that the above copyright notice appear in all copies and that both that
+* copyright notice and this permission notice appear in supporting
+* documentation.  This software is provided "as is" without express or
+* implied warranty.
+
+
+## Files:
+rdgif.c
+
+rdgif.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2019-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to read input images in GIF format.
+
+These routines may need modification for non-Unix environments or
+specialized applications.  As they stand, they assume input from
+an ordinary stdio stream.  They further assume that reading begins
+at the start of the file; start_input may need work if the
+user interface has already read some data (e.g., to determine that
+the file is indeed GIF format).
+
+
+## Files:
+rdgif.c
+
+This code is loosely based on giftoppm from the PBMPLUS distribution
+of Feb. 1991.  That file contains the following copyright notice:
++-------------------------------------------------------------------+
+| Copyright 1990, David Koblas.                                     |
+|   Permission to use, copy, modify, and distribute this software   |
+|   and its documentation for any purpose and without fee is hereby |
+|   granted, provided that the above copyright notice appear in all |
+|   copies and that both that copyright notice and this permission  |
+|   notice appear in supporting documentation.  This software is    |
+|   provided "as is" without express or implied warranty.           |
++-------------------------------------------------------------------+
+
+
+## Files:
+rdjpgcom.c
+
+rdjpgcom.c
+
+Copyright (C) 1994-1997, Thomas G. Lane.
+Modified 2009 by Bill Allombert, Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains a very simple stand-alone application that displays
+the text in COM (comment) markers in a JFIF file.
+This may be useful as an example of the minimum logic needed to parse
+JPEG markers.
+
+
+## Files:
+rdppm.c
+
+rdppm.c
+
+Copyright (C) 1991-1997, Thomas G. Lane.
+Modified 2009-2020 by Bill Allombert, Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to read input images in PPM/PGM format.
+The extended 2-byte-per-sample raw PPM/PGM formats are supported.
+The PBMPLUS library is NOT required to compile this software
+(but it is highly useful as a set of PPM image manipulation programs).
+
+These routines may need modification for non-Unix environments or
+specialized applications.  As they stand, they assume input from
+an ordinary stdio stream.  They further assume that reading begins
+at the start of the file; start_input may need work if the
+user interface has already read some data (e.g., to determine that
+the file is indeed PPM format).
+
+
+## Files:
+rdrle.c
+
+rdrle.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to read input images in Utah RLE format.
+The Utah Raster Toolkit library is required (version 3.1 or later).
+
+These routines may need modification for non-Unix environments or
+specialized applications.  As they stand, they assume input from
+an ordinary stdio stream.  They further assume that reading begins
+at the start of the file; start_input may need work if the
+user interface has already read some data (e.g., to determine that
+the file is indeed RLE format).
+
+Based on code contributed by Mike Lijewski,
+with updates from Robert Hutchinson.
+
+
+## Files:
+rdswitch.c
+
+ rdswitch.c
+
+ Copyright (C) 1991-1996, Thomas G. Lane.
+ Modified 2003-2020 by Guido Vollbeding.
+ This file is part of the Independent JPEG Group's software.
+ For conditions of distribution and use, see the accompanying README file.
+
+ This file contains routines to process some of cjpeg's more complicated
+ command-line switches.  Switches processed here are:
+	-qtables file		Read quantization tables from text file
+	-scans file		Read scan script from text file
+	-quality N[,N,...]	Set quality ratings
+	-qslots N[,N,...]	Set component quantization table selectors
+	-sample HxV[,HxV,...]	Set component sampling factors
+
+
+## Files:
+rdtarga.c
+
+rdtarga.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2017-2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to read input images in Targa format.
+
+These routines may need modification for non-Unix environments or
+specialized applications.  As they stand, they assume input from
+an ordinary stdio stream.  They further assume that reading begins
+at the start of the file; start_input may need work if the
+user interface has already read some data (e.g., to determine that
+the file is indeed Targa format).
+
+Based on code contributed by Lee Daniel Crocker.
+
+
+## Files:
+transupp.c
+
+transupp.c
+
+Copyright (C) 1997-2023, Thomas G. Lane, Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains image transformation routines and other utility code
+used by the jpegtran sample application.  These are NOT part of the core
+JPEG library.  But we keep these routines separate from jpegtran.c to
+ease the task of maintaining jpegtran-like programs that have other user
+interfaces.
+
+
+## Files:
+transupp.h
+
+transupp.h
+
+Copyright (C) 1997-2019, Thomas G. Lane, Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains declarations for image transformation routines and
+other utility code used by the jpegtran sample application.  These are
+NOT part of the core JPEG library.  But we keep these routines separate
+from jpegtran.c to ease the task of maintaining jpegtran-like programs
+that have other user interfaces.
+
+NOTE: all the routines declared here have very specific requirements
+about when they are to be executed during the reading and writing of the
+source and destination files.  See the comments in transupp.c, or see
+jpegtran.c for an example of correct usage.
+
+
+## Files:
+wrbmp.c
+
+wrbmp.c
+
+Copyright (C) 1994-1996, Thomas G. Lane.
+Modified 2017-2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to write output images in Microsoft "BMP"
+format (MS Windows 3.x and OS/2 1.x flavors).
+Either 8-bit colormapped or 24-bit full-color format can be written.
+No compression is supported.
+
+These routines may need modification for non-Unix environments or
+specialized applications.  As they stand, they assume output to
+an ordinary stdio stream.
+
+This code contributed by James Arthur Boucher.
+
+
+## Files:
+wrgif.c
+
+wrgif.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2015-2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to write output images in GIF format.
+
+These routines may need modification for non-Unix environments or
+specialized applications.  As they stand, they assume output to
+an ordinary stdio stream.
+
+
+## Files:
+wrgif.c
+
+This code is loosely based on ppmtogif from the PBMPLUS distribution
+of Feb. 1991.  That file contains the following copyright notice:
+   Based on GIFENCODE by David Rowley <mgardi@watdscu.waterloo.edu>.
+   Lempel-Ziv compression based on "compress" by Spencer W. Thomas et al.
+   Copyright (C) 1989 by Jef Poskanzer.
+   Permission to use, copy, modify, and distribute this software and its
+   documentation for any purpose and without fee is hereby granted, provided
+   that the above copyright notice appear in all copies and that both that
+   copyright notice and this permission notice appear in supporting
+   documentation.  This software is provided "as is" without express or
+   implied warranty.
+
+
+## Files:
+wrjpgcom.c
+
+wrjpgcom.c
+
+Copyright (C) 1994-1997, Thomas G. Lane.
+Modified 2015-2017 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains a very simple stand-alone application that inserts
+user-supplied text as a COM (comment) marker in a JFIF file.
+This may be useful as an example of the minimum logic needed to parse
+JPEG markers.
+
+
+## Files:
+wrppm.c
+
+wrppm.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2009-2020 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to write output images in PPM/PGM format.
+The extended 2-byte-per-sample raw PPM/PGM formats are supported.
+The PBMPLUS library is NOT required to compile this software
+(but it is highly useful as a set of PPM image manipulation programs).
+
+These routines may need modification for non-Unix environments or
+specialized applications.  As they stand, they assume output to
+an ordinary stdio stream.
+
+
+## Files:
+wrrle.c
+
+wrrle.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2017-2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to write output images in RLE format.
+The Utah Raster Toolkit library is required (version 3.1 or later).
+
+These routines may need modification for non-Unix environments or
+specialized applications.  As they stand, they assume output to
+an ordinary stdio stream.
+
+Based on code contributed by Mike Lijewski,
+with updates from Robert Hutchinson.
+
+
+## Files:
+wrtarga.c
+
+wrtarga.c
+
+Copyright (C) 1991-1996, Thomas G. Lane.
+Modified 2015-2019 by Guido Vollbeding.
+This file is part of the Independent JPEG Group's software.
+For conditions of distribution and use, see the accompanying README file.
+
+This file contains routines to write output images in Targa format.
+
+These routines may need modification for non-Unix environments or
+specialized applications.  As they stand, they assume output to
+an ordinary stdio stream.
+
+Based on code contributed by Lee Daniel Crocker.
+
+

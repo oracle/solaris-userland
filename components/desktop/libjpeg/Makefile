@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 	64_and_32
@@ -29,17 +29,17 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	jpeg
-COMPONENT_VERSION =	9.5
-PROJECT_VERSION =	9e
+COMPONENT_VERSION =	9.6
+PROJECT_VERSION =	9f
 COMPONENT_PROJECT_URL =	https://www.ijg.org/
 COMPONENT_SRC =		jpeg-$(PROJECT_VERSION)
 COMPONENT_ARCHIVE =	jpegsrc.v$(PROJECT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH =\
-	sha256:4077d6a6a75aeb01884f708919d25934c93305e49f7e3f36db9129320e6f4f3d
+	sha256:04705c110cb2469caa79fb71fba3d7bf834914706e9641a4589485c1f832565b
 COMPONENT_ARCHIVE_URL =	https://www.ijg.org/files/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	library/libjpeg
 
-COMPONENT_BAID =	129210
+COMPONENT_BAID =	336344
 
 include $(WS_MAKE_RULES)/common.mk
 
