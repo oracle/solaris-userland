@@ -14,3 +14,12 @@ APR is installed in nonstandard path. -R is required.
      elif test "$location" = "crosscompile"; then
          flags="$flags -L$APR_TARGET_DIR/$libdir -l${APR_LIBNAME}"
      else
+--- apr-1.7.5/apr.pc.in
++++ apr-1.7.5/apr.pc.in
+@@ -7,5 +7,5 @@ includedir=@includedir@
+ Name: APR
+ Description: The Apache Portable Runtime library
+ Version: @APR_DOTTED_VERSION@
+-Libs: -L${libdir} -l@APR_LIBNAME@ @EXTRA_LIBS@
++Libs: -L${libdir} -R${libdir} -l@APR_LIBNAME@ @EXTRA_LIBS@
+ Cflags: @EXTRA_CPPFLAGS@ @EXTRA_CFLAGS@ -I${includedir}

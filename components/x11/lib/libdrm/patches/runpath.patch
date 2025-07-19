@@ -1,0 +1,17 @@
+We compile our X libraries in /usr/lib/xorg so we must teach the .pc files to
+say both -L -R in linkflags. This is normally done by modifying the *.pc.in
+files by script in make-rules/x11-component.mk. But libdrm is using meson which
+generates the *.pc file from scratch.
+
+This is probably not suitable for upstream.
+
+--- libdrm-2.4.120/meson.build
++++ libdrm-2.4.120/meson.build
+@@ -305,6 +305,7 @@ pkg.generate(
+   libdrm,
+   name : 'libdrm',
+   subdirs : ['.', 'libdrm'],
++  libraries : ['-R${libdir}', libdrm],
+   description : 'Userspace interface to kernel DRM services',
+ )
+ 

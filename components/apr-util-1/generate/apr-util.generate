@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -38,3 +38,9 @@
 # Delete everything not belonging to this package
 <transform file link pkg.type=(?!main) -> drop>
 <transform file link -> delete pkg.type .*>
+
+<transform path=.*/lib/pkgconfig/apr-util-1.pc -> set action.hash %(path)>
+<transform path=.*/lib/pkgconfig/(apr-util-1.pc) -> set path usr/lib/pkgconfig/%<1>>
+
+<transform path=.*/lib/\$\(MACH64\)/pkgconfig/apr-util-1.pc -> set action.hash %(path)>
+<transform path=.*/lib/\$\(MACH64\)/pkgconfig/(apr-util-1.pc) -> set path usr/lib/$\(MACH64)/pkgconfig/%<1>>

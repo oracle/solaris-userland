@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -139,8 +139,10 @@ file dtrace/ftp.d path=usr/lib/dtrace/ftp.d
 # servicing daemon
 file usr/sbin/proftpd path=usr/lib/inet/proftpd
 #
-# pkg-config
-file usr/lib/$(MACH64)/pkgconfig/proftpd.pc path=usr/lib/pkgconfig/proftpd.pc
+# pkg-config expects the libraries to be in usr/lib/pkgconfig/$(MACH64). We
+# could fix it, but the chances to have anything using proftpd pkgconfig is low
+# so drop it instead.
+#file usr/lib/$(MACH64)/pkgconfig/proftpd.pc path=usr/lib/pkgconfig/proftpd.pc
 #
 # modules
 file path=usr/lib/proftpd/$(MACH64)/mod_auth_gss.so

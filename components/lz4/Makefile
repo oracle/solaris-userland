@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -55,6 +55,7 @@ CLONEY = echo
 COMPONENT_PRE_BUILD_ACTION = $(CP) -rp $(SOURCE_DIR)/. $(@D)
 
 
+COMPONENT_BUILD_ENV   +=	PREFIX=$(USRDIR)
 COMPONENT_INSTALL_ENV +=	PREFIX=$(USRDIR)
 COMPONENT_INSTALL_ENV +=	LIBDIR=$(USRLIBDIR64)
 

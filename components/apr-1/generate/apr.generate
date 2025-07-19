@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 # Not needed for Solaris linking
@@ -33,3 +33,9 @@
 
 # Decorate some files
 <transform link file path=.*libapr-1.so -> set facet.devel false>
+
+<transform path=.*/lib/pkgconfig/apr-1.pc -> set action.hash %(path)>
+<transform path=.*/lib/pkgconfig/(apr-1.pc) -> set path usr/lib/pkgconfig/%<1>>
+
+<transform path=.*/lib/\$\(MACH64\)/pkgconfig/apr-1.pc -> set action.hash %(path)>
+<transform path=.*/lib/\$\(MACH64\)/pkgconfig/(apr-1.pc) -> set path usr/lib/$\(MACH64)/pkgconfig/%<1>>

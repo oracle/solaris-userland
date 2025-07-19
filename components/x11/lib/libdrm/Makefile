@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -42,8 +42,6 @@ BUILD_STYLE=		meson
 
 CONFIGURE_LIBDIR.32 = $(USRLIBDIR)/xorg
 CONFIGURE_LIBDIR.64 = $(USRLIBDIR)/xorg/$(MACH64)
-
-FIX_PC_FILES=libdrm.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 

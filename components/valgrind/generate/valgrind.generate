@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
 # valgrind tools are not ASLR enabled
@@ -31,3 +31,6 @@
 
 # don't deliver doc files that were brought in due to initial symlink cloning
 <transform file link path=usr/share/doc/.* -> drop>
+
+# don't deliver the .pc files as they point to incorrect library path
+<transform path=.*\.pc$ -> drop>

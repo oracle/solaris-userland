@@ -1,0 +1,12 @@
+There is no need to add -R to link flags as we use standard library path. But
+for Solaris it is the default. It would be good to file this to upstream.
+
+--- SDL2-2.26.4/sdl2.pc.in
++++ SDL2-2.26.4/sdl2.pc.in
+@@ -10,5 +10,5 @@ Description: Simple DirectMedia Layer is
+ Version: @SDL_VERSION@
+ Requires:
+ Conflicts:
+-Libs: -L${libdir} @SDL_RLD_FLAGS@ @SDL_LIBS@ @PKGCONFIG_LIBS_PRIV@ @SDL_STATIC_LIBS@
++Libs: -L${libdir} @SDL_LIBS@ @PKGCONFIG_LIBS_PRIV@ @SDL_STATIC_LIBS@
+ Cflags: -I${includedir} -I${includedir}/SDL2 @SDL_CFLAGS@
