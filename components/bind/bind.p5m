@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 # Package information.
 set name=pkg.fmri \
@@ -36,11 +36,14 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2009/308 value=PSARC/2016/261 \
     value=PSARC/2017/175 value=PSARC/2022/174
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file Solaris/check-bind.xml path=lib/svc/manifest/network/dns/check-bind.xml \
+    restart_fmri=svc:/system/manifest-import:default
+file Solaris/server.xml path=lib/svc/manifest/network/dns/server.xml \
+    restart_fmri=svc:/system/manifest-import:default
 
 # Solaris additions
-file Solaris/server.xml path=lib/svc/manifest/network/dns/server.xml
+file Solaris/check-bind.sh path=lib/svc/method/check-bind mode=0555
 file Solaris/dns-server.sh path=lib/svc/method/dns-server mode=0555
-
 # Tools
 file path=usr/bin/dnssec-cds
 file path=usr/bin/dnssec-dsfromkey

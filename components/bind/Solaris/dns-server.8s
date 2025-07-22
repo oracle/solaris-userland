@@ -1,6 +1,6 @@
 '\" te
-.\" Copyright (c) 2016, 2024, Oracle and/or its affiliates.
-.TH dns-server 8s "12 Jan 2024" "Solaris 11.4" "Standards, Environments, and Macros"
+.\" Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+.TH dns-server 8s "26 Jun 2025" "Solaris 11.4" "Standards, Environments, and Macros"
 .SH NAME
 dns-server \- Domain Name Server service
 .SH DESCRIPTION
@@ -15,10 +15,10 @@ svc:/network/dns/server:default
 .in -2
 .sp
 .LP
-The service starts, monitors and manages an instance of \fBnamed\fR(8) with command line
-options as per service properties configured in the SMF configuration
-repository.  Use \fBsvcprop\fR(1) to list the properties and
-\fBsvccfg\fR(8) to make changes.  See EXAMPLES below.
+The service starts, monitors and manages an instance of \fBnamed\fR(8)
+with command line options as per service properties configured in the
+SMF configuration repository.  Use \fBsvcprop\fR(1) to list the
+properties and \fBsvccfg\fR(8) to make changes.  See EXAMPLES below.
 .sp
 .LP
 Administrative actions on this service, such as enabling, disabling,
@@ -27,14 +27,13 @@ service's status can be queried using the \fBsvcs\fR(1) command.
 .SH SERVICE
 .sp
 .LP
-The \fBdns-server\fR SMF service supports the \fBstart\fR,
-\fBstop\fR, \fBrefresh\fR and \fBrestart\fR methods.  The methods are
-invoked using \fBsvcadm\fR(8).
+The \fBdns-server\fR SMF service supports the \fBenable\fR,
+\fBdisable\fR, \fBrefresh\fR and \fBrestart\fR operations using \fBsvcadm\fR(8).
 .sp
 .ne 2
 .mk
 .na
-\fB\fBstart\fR\fR
+\fB\fBenable\fR\fR
 .ad
 .RS 11n
 .rt
@@ -47,11 +46,11 @@ neither exist), starts named(8) with created options and monitors process.
 .ne 2
 .mk
 .na
-\fB\fBstop\fR\fR
+\fB\fBdisable\fR\fR
 .ad
 .RS 11n
 .rt
-stops instance.
+stops \fBnamed\fR(8) and disables the instance.
 .RE
 
 .sp
@@ -443,17 +442,25 @@ Interface StabilityVolatile
 .SH SEE ALSO
 .sp
 .LP
-\fBsvcs\fR(1), \fBnamed\fR(8), \fBnamed-checkconf\fR(8),
-\fBnamed-checkzone\fR(8), \fBrndc\fR(8), \fBrndc-confgen\fR(8),
-\fBsvcadm\fR(8), \fBsvccfg\fR(8), \fBsvcprop\fR(1), \fBchroot\fR(2),
-\fBsetuid\fR(2), \fBbind\fR(3c), \fBattributes\fR(7),
-\fBsmf\fR(7), \fBsmf_method\fR(7)
+\fBsvcprop\fR(1),
+\fBsvcs\fR(1),
+\fBchroot\fR(2),
+\fBsetuid\fR(2),
+\fBbind\fR(3c),
+\fBattributes\fR(7),
+\fBsmf\fR(7),
+\fBsmf_method\fR(7)
+\fBnamed-checkconf\fR(8),
+\fBnamed-checkzone\fR(8),
+\fBnamed\fR(8),
+\fBrndc-confgen\fR(8),
+\fBrndc\fR(8),
+\fBsvcadm\fR(8),
+\fBsvccfg\fR(8),
 .sp
 .LP
 See the BIND 9 \fIAdministrator's Reference Manual\fR. Available
-online or optionally within package installation at
-file:///usr/share/doc/bind/html/Bv9ARM.html and
-file:///usr/share/doc/bind/Bv9ARM.pdf.
+online at https://bind9.readthedocs.io/
 .sp
 \fBNote\fR: some compile-time features documented in the ARM are not
 available; to see a list of enabled features run '\fB/usr/sbin/named

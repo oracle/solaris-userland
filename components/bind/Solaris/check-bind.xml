@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<!--
+ Copyright (c) 2025, Oracle and/or its affiliates.
+
+  NOTE:  This service manifest is not editable; its contents will
+  be overwritten by package or patch operations, including
+  operating system upgrade.  Make customizations in a different
+  file.
+-->
+<!DOCTYPE service_bundle
+  SYSTEM '/usr/share/lib/xml/dtd/service_bundle.dtd.1'>
+<service_bundle name="system/check/bind" type="manifest">
+  <service
+      name="system/check/bind"
+      type="service"
+      version="1">
+    <single_instance />
+
+    <dependency
+	name="required_dependencies"
+	grouping="require_all"
+	restart_on="none"
+	type="service">
+      <service_fmri value="svc:/milestone/multi-user"/>
+    </dependency>
+    <dependency
+	name='BIND dns server'
+	grouping='optional_all'
+	restart_on='restart'
+	type='service'>
+      <service_fmri value='svc:/network/dns/server:default' />
+    </dependency>
+
+    <instance name='default' enabled='true'>
+      <method_context>
+      	<method_credential
+	    privileges='basic,!proc_session,!proc_info,!file_link_any,file_dac_read,file_dac_search,sys_resource' />
+      </method_context>
+      <exec_method name="start" type="method" timeout_seconds="0"
+		   exec="/lib/svc/method/check-bind"/>
+      <exec_method name="stop" type="method" timeout_seconds="60"
+		   exec=":true"/>
+      <exec_method name="refresh" type="method" timeout_seconds="0"
+		   exec="/lib/svc/method/check-bind"/>
+      <property_group name='startd' type='framework'>
+	<propval name='duration' type='astring' value='transient' />
+      </property_group>
+      <template>
+            <common_name>
+                <loctext xml:lang="C">
+                        check BIND configuration service
+                </loctext>
+            </common_name>
+            <description>
+                <loctext xml:lang="C">
+                        The system/check/bind service runs
+                        named-checkconf(1) to check named(8)
+                        configuration file for deprecated features and
+                        errors.  Any issues are logged to the SMF log file.
+                </loctext>
+            </description>
+	    <documentation>
+	      <manpage title='check-bind' section='8s'
+		       manpath='/usr/man' />
+	    </documentation>
+      </template>
+    </instance>
+  </service>
+</service_bundle>

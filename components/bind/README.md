@@ -108,36 +108,36 @@ For example
 	$ cp test.bind-*.tar.gz ~/.
 	```
 
-2. On your test machine, create directory structure to mimic that of
-   the build machine.
+2. On your test machine, create directory structure to *mimic* that of
+   the *build machine*.
 
 	```
-	$ WS=/builds/user/workspace
-	$ sudo mkdir -p $WS
-	$ sudo chown $USER $WS
-	$ mkdir -p $WS/components/bind
+	WS=/builds/$USER/workspace  # <--- set as per build machine!
+	sudo mkdir -p $WS
+	sudo chown $USER $WS
+	mkdir -p $WS/components/bind
 	```
 
 3. Unpack tar ball from build machine
 
 	```
-	$ cd $WS/components/bind
-	$ tar zxf ~/test.bind-*.`uname -p`.tar.gz
+	cd $WS/components/bind
+	tar zxf ~/test.bind-*.`uname -p`.tar.gz
 	```
 
 4. Change to architecture directory, configure the interfaces.
 
 	```
-	$ cd build/amd64 || cd build/sparcv9
-	$ cd bin/tests/system
-	$ sudo ./ifconfig.sh up
+	cd build/amd64 || cd build/sparcv9
+	cd bin/tests/system
+	sudo ./ifconfig.sh up
 	```
 
 5. Set PATH so that GNU utilities are used and confirm required
    packages are installed.
 
 	```
-	$ PATH=/usr/gnu/bin:/usr/bin:/usr/sbin; export PATH
+	PATH=/usr/gnu/bin:/usr/bin:/usr/sbin; export PATH
 	```
 
     Ensure required packages and GNU utilities are installed.  Version
@@ -146,7 +146,7 @@ For example
 
 	```
 	pkgs="library/python/dnspython library/python/jinja2"
-	pkgs=$pkgs library/python/hypothesis"
+	pkgs="$pkgs library/python/hypothesis"
 	grep '^CC = ' Makefile | read var sym cmd rest
 	ver=${cmd#/usr/gcc/};ver=${ver%%/*}
 	test -x $cmd || pkgs="$pkgs developer/gcc/gcc-c-$ver"
@@ -195,7 +195,7 @@ For example
 	cd $mark
 	```
 
-7. Unset http\_proxy and https_proxy
+7. Unset http\_proxy and https\_proxy
 
    As some tests use curl(1) without un-setting it.
 
@@ -209,13 +209,13 @@ For example
    or a bunch of tests by naming them on the command line, for example:
 
    ```
-   $ /usr/bin/pytest
+   /usr/bin/pytest
    ```
 
    or
 
    ```
-   $ /usr/bin/pytest doth acl addzone
+   /usr/bin/pytest doth acl addzone
    ```
 
   See `/usr/bin/pytest -h` for additional options, such as `--last-failed`
@@ -232,25 +232,28 @@ Some tests require additional software to be installed, such as
 `dnspython` and Perl modules `Net::DNS` and `Digest-HMAC`.
 
 With those packages and modules installed (as per instructions above)
-there are a dozen or so skipped tests at this time (BIND-9.18.37):
+there are 20 skipped tests at this time (BIND-9.18.38):
 
-- names/tests_names.py:14: module 'dns' has __version__ '2.6.1', required is: '2.7.0'
-- statschannel/tests_json.py:23: could not import 'requests': No module named 'requests'
-- statschannel/tests_xml.py:24: could not import 'requests': No module named 'requests'
-- wildcard/tests_wildcard.py:46: could not import 'hypothesis': No module named 'hypothesis'
-- rpz/tests_sh_rpz_dnsrps.py:73: dnsrps disabled in the build
-- rpzrecurse/tests_sh_rpzrecurse_dnsrps.py:34: dnsrps disabled in the build
-- timeouts/tests_tcp_timeouts.py:218: CI_ENABLE_ALL_TESTS not set
-- timeouts/tests_tcp_timeouts.py:250: CI_ENABLE_ALL_TESTS not set
-- cpu/tests_sh_cpu.py:22: Prerequisites missing.
-- dnstap/tests_dnstap.py:47: Prerequisites missing.
-- dnstap/tests_sh_dnstap.py:29: Prerequisites missing.
-- doth/tests_sslyze.py:69: sslyze not found in PATH
-- doth/tests_sslyze.py:73: sslyze not found in PATH
-- enginepkcs11/tests_sh_enginepkcs11.py:48: Prerequisites missing.
-- geoip2/tests_sh_geoip2.py:23: Prerequisites missing.
-- keyfromlabel/tests_keyfromlabel.py:93: SOFTHSM2_CONF and SOFTHSM2_MODULE environmental variables must be set and pkcs11-tool and softhsm2-util tools present
-- nzd2nzf/tests_sh_nzd2nzf.py:23: Prerequisites missing.
+```
+names/tests_names.py:14: module 'dns' has __version__ '2.6.1', required is: '2.7.0'
+tsig/tests_tsig_hypothesis.py:18: module 'dns' has __version__ '2.6.1', required is: '2.7.0'
+rpz/tests_sh_rpz_dnsrps.py:73: dnsrps disabled in the build
+rpzrecurse/tests_sh_rpzrecurse_dnsrps.py:34: dnsrps disabled in the build
+timeouts/tests_tcp_timeouts.py:224: CI_ENABLE_LONG_TESTS not set
+timeouts/tests_tcp_timeouts.py:256: CI_ENABLE_LONG_TESTS not set
+cpu/tests_sh_cpu.py:22: Prerequisites missing.
+dnstap/tests_dnstap.py:47: Prerequisites missing.
+dnstap/tests_sh_dnstap.py:29: Prerequisites missing.
+doth/tests_sslyze.py:69: sslyze not found in PATH
+doth/tests_sslyze.py:73: sslyze not found in PATH
+enginepkcs11/tests_sh_enginepkcs11.py:48: Prerequisites missing.
+geoip2/tests_sh_geoip2.py:23: Prerequisites missing.
+keyfromlabel/tests_keyfromlabel.py:94: SOFTHSM2_CONF and SOFTHSM2_MODULE environmental variables must be set and pkcs11-tool and softhsm2-util tools present
+mirror-root-zone/tests_mirror_root_zone.py:18: CI_ENABLE_LIVE_INTERNET_TESTS not set
+nzd2nzf/tests_sh_nzd2nzf.py:23: Prerequisites missing.
+rfc5011/tests_rfc5011.py:22: CI_ENABLE_LIVE_INTERNET_TESTS not set
+257 passed, 20 skipped, 10 warnings
+```
 
 ### Failed tests
 

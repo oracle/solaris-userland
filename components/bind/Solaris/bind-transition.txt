@@ -1,8 +1,16 @@
-BIND version 9.18.19 ESV using OpenSSL 3.
+BIND version 9.18.38 ESV using OpenSSL 3.
 
-Solaris tracks ISC's BIND Extended Support Version (ESV). As BIND 9.11
-ESV reached end-of-life in March 2022 Solaris 11.4 has been updated to
-provided the latest ESV version, which was 9.16 and is now 9.18.
+Solaris tracks ISC's BIND Extended Support Version (ESV). As a result
+the version of BIND is updated as is necessary.
+
+table 1: BIND Minor version and First Solaris 11.4 release
+| Version | SRU | Notes                         |
+|---------+-----+-------------------------------|
+|    9.10 | FCS | EOL July 2018                 |
+|    9.11 |   8 | EOL March 2022                |
+|    9.16 |  48 |                               |
+|    9.18 |  57 | SSL v3 support, EOL June 2026 |
+|    9.20 |     | Next ESV release              |
 
 BIND versions  are for  the most part  compatible.  Some  features may
 however be deprecated.  Most configurable  features that are no longer
@@ -13,9 +21,23 @@ following this update.  For more  detailed information please refer to
 the  Release  Notes  within  the  BIND documentation  at  one  of  the
 following locations:
 
-- https://bind9.readthedocs.io/en/v9_18_16/notes.html
-- https://downloads.isc.org/isc/bind9/9.18.19/doc/arm/html/notes.html
+- https://bind9.readthedocs.io/en/v9.18.38/notes.html
+- https://downloads.isc.org/isc/bind9/9.18.38/doc/arm/html/notes.html
 
+Upcoming deprecated features
+----------------------------
+
+In BIND  9.18 named-checkconf(8)  is being  updated with  knowledge of
+upcoming deprecated features that have  been removed in BIND 9.20.  To
+aid Solaris  administrators a  new service system/check/bind  has been
+introduced  to  check  and  place  itself  into  degraded  state  when
+configuration  errors   or  deprecated  features  are   found  in  the
+configuration   file  pointed   to   by  network/dns/server   property
+`options/configuration_file`      or     the      default     location
+`/etc/named.conf'.  Refer to check-bind(8s)  for further details about
+this SMF services.
+
+The aforementioned release notes document deprecated features.
 
 Known Issues
 ------------
@@ -42,8 +64,9 @@ Important note regarding chroot environments
    environment as  BIND's libraries and its  fourth party dependencies
    are subject  to change.  With  BIND 9.16 the network  interface was
    completely refactored  to use  libuv and so  this is  an additional
-   dependency  that will  need  to  be catered  for.   With BIND  9.18
-   OpenSSL 3 libraries are needed too.
+   dependency that  will need to be  catered for.  With BIND  9.18 and
+   above OpenSSL  3 libraries  are needed.   BIND 9.20  has additional
+   requirements.
 
    Oracle  recommends using  Solaris  Zones which  provide a  security
    boundary with  a Common Criteria evaluation  for containment. Zones
@@ -71,14 +94,15 @@ https://kb.isc.org/docs/changes-to-be-aware-of-when-moving-from-911-to-916
 - Note that BIND  9.16 and 9.18 can read BIND  9.11 journal files, but
   BIND 9.11 can not read BIND 9.16 or 9.18 journal files.
 
-Once booted  into the updated BE  check the SMF service  dns/server is
-enabled and online.
+Once booted into the updated BE  check the SMF services check/bind and
+dns/server are enabled and online.
 
-      # svcs svc:/network/dns/server:default
+      # svcs svc:/network/dns/server:default svc:/system/check/bind
 
 Then  check the  configuration  using  named-checkconf(8) command  and
-modify the configuration accordingly, do this if the service is online
-or in maintenance as it may indicate statements that are deprecated.
+modify     the    configuration     accordingly,     do    this     if
+svc:/network/dns/service  is  online  or  in  maintenance  as  it  may
+indicate statements that are deprecated.
 
       # named-checkconf -zj
 
@@ -115,7 +139,7 @@ And from another terminal
 - Note  $hostname should  be  some viable  fully  qualified name,  for
   example "host.example.com."
 
-Once  `dig`  has  retuned  quit (Ctrl-c)  the  `named`  process,  exit
+Once  `dig`  has returned  quit  (Ctrl-c)  the `named`  process,  exit
 `script` and look  at the information collected  in `typescript` file.
 Do re-enable dns/service.
 
@@ -129,8 +153,8 @@ documentation:
 
 - What to do with a misbehaving BIND server
   https://kb.isc.org/docs/aa-00341
-- Troubleshooting - BIND 9 9.18.19 documentation
-  https://downloads.isc.org/isc/bind9/9.18.19/doc/arm/html/chapter9.html
+- Troubleshooting - BIND 9 9.18.38 documentation
+  https://downloads.isc.org/isc/bind9/9.18.38/doc/arm/html/chapter9.html
 - BIND Logging - some basic recommendations
   https://kb.isc.org/docs/aa-01526
 
@@ -156,6 +180,11 @@ Significant work included in the 9.18 branch
        of notification, working with partners, and gradual deprecation
        to avoid disruption in the DNS.
 
+    4. The working directory must be writable by the user running
+       named.  The `directory' option should specify absolute path,
+       and must be writable by the effective user ID of the named
+       process.
+
 Removal of pkcs11 commands:
 
     The  following  commands and  associated  manual  pages have  been
@@ -174,6 +203,10 @@ If updating from BIND 9.11 refer to the ISC Knowledge Base Document:
 
   - https://kb.isc.org/docs/changes-to-be-aware-of-when-moving-from-911-to-916
 
+If updating from BIND 9.16 refer to the ISC Knowledge Base Document:
+
+  - https://kb.isc.org/docs/changes-to-be-aware-of-when-moving-from-bind-916-to-918
+
 For BIND 9 Significant Features Matrix, see ISC Knowledge Base
 
   - https://kb.isc.org/v1/docs/aa-01310
@@ -181,6 +214,6 @@ For BIND 9 Significant Features Matrix, see ISC Knowledge Base
 Read more details about BIND  9.18 in the BIND Administrator Reference
 Manual (ARM) at one of these locations:
 
-  - https://bind9.readthedocs.io/en/v9_18_19/
-  - https://downloads.isc.org/isc/bind9/9.18.19/doc/arm/html/
+  - https://bind9.readthedocs.io/en/v9.18.38/
+  - https://downloads.isc.org/isc/bind9/9.18.38/doc/arm/html/
 

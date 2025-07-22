@@ -20,14 +20,18 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 
 # components/bind/generate/bind.static, Fixed set of package actions.
 
 # Manually add SMF files as they are not copied into proto area.
-file Solaris/server.xml path=lib/svc/manifest/network/dns/server.xml
+file Solaris/check-bind.sh path=lib/svc/method/check-bind mode=0555
+file Solaris/check-bind.xml path=lib/svc/manifest/network/dns/check-bind.xml \
+    restart_fmri=svc:/system/manifest-import:default
 file Solaris/dns-server.sh path=lib/svc/method/dns-server mode=0555
+file Solaris/server.xml path=lib/svc/manifest/network/dns/server.xml \
+    restart_fmri=svc:/system/manifest-import:default
 
 # Transition documentation referenced in notice.
 file Solaris/bind-transition.txt \

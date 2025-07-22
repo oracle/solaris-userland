@@ -31,7 +31,6 @@ ifeq ($(BINDDEBUG), yes)
 gcc_OPT.sparc.64 =	-g
 gcc_OPT.i386.64 =	-g
 endif
-CTF_MODE =		relaxed
 
 include ../../make-rules/shared-macros.mk
 
@@ -42,15 +41,15 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.18.37
+COMPONENT_VERSION=	9.18.38
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-COMPONENT_BAID=		330362
+COMPONENT_BAID=		336653
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:b322aaa4b0a98dba7507a18107b06283ec969af9af4797992e0a200fabace646
+	sha256:b11fce934773ec25dd6d7253caeaf9c5bbf073fd327acc29daffeca3987e31a1
 COMPONENT_ARCHIVE_URL=	\
 	http://downloads.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 # For check_anitya target, https://release-monitoring.org/project/242117
@@ -119,11 +118,10 @@ PATH=$(GNUBIN):$(USRBINDIR)
 ADIHEAP_MODE =		$(ADIHEAP_ENABLE)
 ADISTACK_MODE =		$(ADISTACK_ENABLE)
 
-# $(SOURCE_DIR)/configure is using CC_FOR_BUILD which does not respect
-# our compilation flags and causes linker failure. This is a
-# workaround to have it use PIC build flags.
+# $(SOURCE_DIR)/configure is using CC_FOR_BUILD, so append our flags to enable
+# PIC, apply CTF_MODE, etc; see ../../make-rules/shared-macros.mk
 COMPONENT_BUILD_ARGS += \
-	CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
+	CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CFLAGS)'
 
 # Verbose gmake, the default is not show the executed commands.
 ifneq ($(strip $(GMAKE_VERBOSE_MAKEFILE)),)
