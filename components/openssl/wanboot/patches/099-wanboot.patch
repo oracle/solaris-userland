@@ -329,3 +329,41 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  #  if defined(__GLIBC__)
  #   if defined(__GLIBC_PREREQ)
  #    if __GLIBC_PREREQ(2, 17)
+--- openssl-3.5.1/crypto/sleep.c
++++ openssl-3.5.1/crypto/sleep.c
+@@ -15,6 +15,7 @@
+ 
+ # if defined(OPENSSL_USE_USLEEP)                        \
+     || defined(__DJGPP__)                               \
++    || defined(_BOOT)                               \
+     || (defined(__TANDEM) && defined(_REENTRANT))
+ 
+ /*
+--- openssl-3.5.1/crypto/http/http_lib.c
++++ openssl-3.5.1/crypto/http/http_lib.c
+@@ -54,6 +54,7 @@ int OSSL_parse_url(const char *url, char
+                    char **pport, int *pport_num,
+                    char **ppath, char **pquery, char **pfrag)
+ {
++#ifndef _BOOT
+     const char *p, *tmp;
+     const char *scheme, *scheme_end;
+     const char *user, *user_end;
+@@ -177,7 +178,9 @@ int OSSL_parse_url(const char *url, char
+     return 1;
+ 
+  parse_err:
++#endif /* _BOOT */
+     ERR_raise(ERR_LIB_HTTP, HTTP_R_ERROR_PARSING_URL);
++#ifndef _BOOT
+ 
+  err:
+     free_pstring(pscheme);
+@@ -188,6 +191,7 @@ int OSSL_parse_url(const char *url, char
+     free_pstring(pquery);
+     free_pstring(pfrag);
+     return 0;
++#endif /* _BOOT */
+ }
+ 
+ #ifndef OPENSSL_NO_HTTP
