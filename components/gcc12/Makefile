@@ -37,16 +37,16 @@ endif
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
-COMPONENT_VERSION=	12.4.0
+COMPONENT_VERSION=	12.5.0
 COMPONENT_PROJECT_URL=	https://gcc.gnu.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:5a30de2be740062bb3ddd3fd13c9b1bb4584d8f85616d33f23a713439d714148
+    sha256:f2dfac9c026c58b04251732aa459db614ae1017d32a18a296b1ae5af3dcad927
 COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/gcc/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	6502
 
-COMPONENT_BAID=		170521
+COMPONENT_BAID=		336223
 
 # Use gcc's default flags instead of userland's.
 CFLAGS=
