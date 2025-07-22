@@ -247,29 +247,6 @@ endif
 # corresponding file in make-rules for details.
 # BUILD_STYLE=
 
-# The default version should go last.
-PYTHON_VERSION =	3.9
-PYTHON_VERSIONS =	3.9 3.11 3.13
-
-# Convenience variable for builds without newer runtimes
-WITHOUT_PYTHON3.11 = 3.9
-WITHOUT_PYTHON3.13 = 3.9 3.11
-
-# PYTHON3_SOABI variable defines the naming scheme
-# of python3 extension libraries: cpython or abi3.
-# Currently, most of the components use cpython naming scheme by default,
-# only python/xattr and python/cryptography require abi3 naming.
-PYTHON3_SOABI ?= cpython
-ifeq ($(PYTHON3_SOABI),cpython)
-PY3_CPYTHON_NAMING=
-PY3_ABI3_NAMING=\#
-else ifeq ($(PYTHON3_SOABI),abi3)
-PY3_CPYTHON_NAMING=\#
-PY3_ABI3_NAMING=
-else
-$(error "Invalid python naming scheme '$(PYTHON3_SOABI)' selected!")
-endif
-
 USERLAND_COMPONENTS = $(WS_TOOLS)/userland-components
 MANIFEST_GENERATE = $(WS_TOOLS)/manifest-generate
 MANIFEST_COMPARE = $(WS_TOOLS)/manifest-check
@@ -704,29 +681,6 @@ RUBY_SCRIPT_FIX_FUNC = \
         '1s%^\#! */usr/bin/env ruby%\#!/usr/ruby/$(RUBY_VERSION)/bin/ruby%' \
         \{\}
 
-PYTHON.3.9.VENDOR_PACKAGES.32 =
-PYTHON.3.9.VENDOR_PACKAGES.64 = /usr/lib/python3.9/vendor-packages
-PYTHON.3.9.VENDOR_PACKAGES = $(PYTHON.3.9.VENDOR_PACKAGES.64)
-
-PYTHON.3.11.VENDOR_PACKAGES.32 =
-PYTHON.3.11.VENDOR_PACKAGES.64 = /usr/lib/python3.11/vendor-packages
-PYTHON.3.11.VENDOR_PACKAGES = $(PYTHON.3.11.VENDOR_PACKAGES.64)
-
-PYTHON.3.13.VENDOR_PACKAGES.32 =
-PYTHON.3.13.VENDOR_PACKAGES.64 = /usr/lib/python3.13/vendor-packages
-PYTHON.3.13.VENDOR_PACKAGES = $(PYTHON.3.13.VENDOR_PACKAGES.64)
-
-# Base path to vendor packages shared between all Python versions
-PYTHON_VENDOR_PACKAGES_BASE = /usr/lib/python$(PYTHON_VERSION)/vendor-packages
-
-PYTHON_VENDOR_PACKAGES.32 = $(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES.32)
-PYTHON_VENDOR_PACKAGES.64 = $(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES.64)
-PYTHON_VENDOR_PACKAGES = $(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES)
-
-PYTHON.3.9.TEST = /usr/lib/python3.9/test
-PYTHON.3.11.TEST = /usr/lib/python3.11/test
-PYTHON.3.13.TEST = /usr/lib/python3.13/test
-
 USRBIN.32 =	/usr/bin
 USRBIN.64 =	/usr/bin/$(MACH64)
 USRBIN =	$(USRBIN.$(BITS))
@@ -735,31 +689,30 @@ USRLIB.32 =	$(USRLIBDIR)
 USRLIB.64 =	$(USRLIBDIR64)
 USRLIB =	$(USRLIB.$(BITS))
 
-# Although we build Python 3 64-bit only, the BUILD_NO_ARCH macro is written
-# in such a way that we still need the .32 macro below.  And since we build
-# 64-bit only, we stick it directly in usr/bin (i.e., the 32-bit path) rather
-# than the 64-bit path.
-PYTHON.3.9.32 =	$(USRBIN.32)/python3.9
-PYTHON.3.9.64 =	$(USRBIN.32)/python3.9
-PYTHON.3.9 =	$(USRBIN.32)/python3.9
+# The default version should go last.
+PYTHON_VERSION =	3.13
+PYTHON_VERSIONS =	3.9 3.11 3.13
 
-PYTHON.3.11.32 =	$(USRBIN.32)/python3.11
-PYTHON.3.11.64 =	$(USRBIN.32)/python3.11
-PYTHON.3.11 =	$(USRBIN.32)/python3.11
+PYTHON.3.9 =	/usr/bin/python3.9
+PYTHON.3.11 =	/usr/bin/python3.11
+PYTHON.3.13 =	/usr/bin/python3.13
+PYTHON ?=	$(PYTHON.$(PYTHON_VERSION))
 
-PYTHON.3.13.32 =	$(USRBIN.32)/python3.13
-PYTHON.3.13.64 =	$(USRBIN.32)/python3.13
-PYTHON.3.13 =	$(USRBIN.32)/python3.13
+PYTHON.3.9.VENDOR_PACKAGES =  /usr/lib/python3.9/vendor-packages
+PYTHON.3.11.VENDOR_PACKAGES =  /usr/lib/python3.11/vendor-packages
+PYTHON.3.13.VENDOR_PACKAGES =  /usr/lib/python3.13/vendor-packages
 
-PYTHON.32 ?=	$(PYTHON.$(PYTHON_VERSION).32)
-PYTHON.64 ?=	$(PYTHON.$(PYTHON_VERSION).64)
-PYTHON ?=	$(PYTHON.$(PYTHON_VERSION).$(BITS))
+PYTHON_VENDOR_PACKAGES = $(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES)
 
 # The default is site-packages, but that directory belongs to the end-user.
 # Modules which are shipped by the OS but not with the core Python distribution
 # belong in vendor-packages.
-PYTHON_LIB= /usr/lib/python$(PYTHON_VERSION)/vendor-packages
-PYTHON_DATA= $(PYTHON_LIB)
+PYTHON_LIB ?= $(PYTHON_VENDOR_PACKAGES)
+PYTHON_DATA ?= $(PYTHON_VENDOR_PACKAGES)
+
+# Convenience variable for builds without newer runtimes.
+WITHOUT_PYTHON3.11 = 3.9
+WITHOUT_PYTHON3.13 = 3.9 3.11
 
 # If the component has python scripts then the first line should probably
 # point at the userland default build python so as not to be influenced
@@ -790,6 +743,25 @@ PYTHON_SCRIPTS_PROCESS= \
 # COMPONENT_POST_INSTALL_ACTION =
 # and re-add $(PYTHON_SCRIPTS_PROCESS)
 COMPONENT_POST_INSTALL_ACTION += $(PYTHON_SCRIPTS_PROCESS)
+
+# PYTHON3_SOABI variable defines the naming scheme
+# of python3 extension libraries:
+#   cpython - lib.cpython-311.so (default)
+#   abi3 - lib.abi3.so
+#   bare - lib.so
+PYTHON3_SOABI ?= cpython
+ifeq ($(PYTHON3_SOABI),cpython)
+PY3_CPYTHON_NAMING=
+PY3_ABI3_NAMING=\#
+else ifeq ($(PYTHON3_SOABI),abi3)
+PY3_CPYTHON_NAMING=\#
+PY3_ABI3_NAMING=
+else ifeq ($(PYTHON3_SOABI),bare)
+PY3_CPYTHON_NAMING=\#
+PY3_ABI3_NAMING=\#
+else
+$(error "Invalid python naming scheme '$(PYTHON3_SOABI)' selected!")
+endif
 
 JAVA8_HOME =	/usr/jdk/instances/jdk1.8.0
 JAVA_HOME = $(JAVA8_HOME)

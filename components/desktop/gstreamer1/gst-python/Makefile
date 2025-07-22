@@ -68,7 +68,7 @@ $(BUILD_DIR)/%-3.13/.tested-and-compared:		PYTHON_VERSION=3.13
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS += -Dpython=$(PYTHON)
-CONFIGURE_OPTIONS += -Dpygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES_BASE)/gi/overrides/64
+CONFIGURE_OPTIONS += -Dpygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES)/gi/overrides/64
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 

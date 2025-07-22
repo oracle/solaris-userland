@@ -65,7 +65,7 @@ COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_ARGS +=	--settings test_sqlite
 # reset the test environment to only contain PATH, PYTHONPATH, and LC_ALL
 # (because many tests need to be able to access non-ASCII codepoints).
-COMPONENT_TEST_ENV =	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
+COMPONENT_TEST_ENV =	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)
 COMPONENT_TEST_ENV +=	LC_ALL=en_US.UTF-8
 
 # Prevent HTTP 502: cannotconnect errors when unit testing on live server

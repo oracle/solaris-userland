@@ -80,10 +80,10 @@ COMPONENT_INSTALL_TARGETS = install install-conf
 
 # Python module is installed on non-standard place
 COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) "$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)" && \
+	$(MKDIR) "$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)" && \
 	$(MV) "$(PROTO_DIR)/usr/lib/suricata/python/"* \
-		"$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)" && \
-	$(PYTHON) -m compileall "$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)" ;
+		"$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)" && \
+	$(PYTHON) -m compileall "$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)" ;
 
 REQUIRED_PACKAGES += compress/lz4
 REQUIRED_PACKAGES += library/jansson

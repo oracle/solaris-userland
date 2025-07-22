@@ -25,6 +25,7 @@
 
 BUILD_BITS =		64
 COMPILER =		gcc
+PYTHON3_SOABI =		bare
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dbus-python
@@ -40,9 +41,6 @@ COMPONENT_ANITYA_ID=	402
 COMPONENT_BAID=		333337
 
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
-
-# Do not transform .so files to include standard Python 3 ABI version tag.
-PY3_CPYTHON_NAMING = \#
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/doc/
 
@@ -78,10 +76,10 @@ CONFIGURE_OPTIONS += PYTHON="$(PYTHON)"
 CONFIGURE_OPTIONS += --disable-dependency-tracking
 
 # Ensure Python modules are installed into vendor package directories.
-CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES_BASE)
-CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES_BASE)
+CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
+CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
-COMPONENT_TEST_ENV +=   PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
+COMPONENT_TEST_ENV +=   PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)
 # necessary due to 'dbus-daemon' executable
 COMPONENT_TEST_ENV +=   PATH=$(PATH):$(USRLIB.32)
 

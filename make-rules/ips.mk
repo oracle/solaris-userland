@@ -85,7 +85,6 @@ PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/depends
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/devel
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/docs
 PUBLISH_TRANSFORMS +=	$(LOCALE_TRANSFORMS)
-PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/python-3-groups
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/python-3-soabi
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/python-3-no-32bit
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/ruby-tests

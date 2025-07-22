@@ -29,6 +29,7 @@
 COMPILER =		gcc
 BUILD_BITS =		64
 CTF_MODE =		relaxed
+PYTHON3_SOABI =		bare
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gobject-introspection
@@ -56,8 +57,6 @@ PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-annotation-tool
 
 CONFIGURE_OPTIONS += -Dcairo=enabled
 CONFIGURE_OPTIONS += -Dpython=$(PYTHON)
-
-PY3_CPYTHON_NAMING=\#
 
 COMPONENT_TEST_ENV += GI_SCANNER_DISABLE_CACHE=""
 COMPONENT_TEST_ENV += CC="$(CC)"

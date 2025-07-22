@@ -27,6 +27,7 @@
 BUILD_BITS =		64
 COMPILER =		gcc
 CTF_MODE =		off	# Has no effect
+PYTHON3_SOABI =		bare
 # parallel build will not survive the build process atrocity 
 COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
@@ -66,9 +67,6 @@ COMPONENT_PREP_ACTION = (cd $(@D) ; \
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
-
-# Do not use transform to create standard ABI version tagged .so files from Python 3 ABI
-PY3_CPYTHON_NAMING=\#
 
 # Fix python script shebang
 PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/cups/filter/pstotiff

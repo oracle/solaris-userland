@@ -58,7 +58,7 @@ CPPFLAGS += "-DFALSE_SHARING_ALIGN=64"
 
 COMPONENT_PREP_ACTION += (cd $(@D) ; autoreconf -fiv);
 
-CONFIGURE_ENV +=	PYTHONPROG=$(PYTHON.$(BITS))
+CONFIGURE_ENV +=	PYTHONPROG=$(PYTHON)
 
 CONFIGURE_OPTIONS  +=	--with-default-snmp-version=3
 CONFIGURE_OPTIONS  +=	--with-sys-contact="root@localhost"
@@ -167,12 +167,12 @@ COMPONENT_POST_INSTALL_ACTION += \
 	 cd $(BUILD_DIR)/$(MACH64)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS) install);
 
 COMPONENT_POST_INSTALL_ACTION.64 = \
-	(cd $(@D)/python3.9 ; env PYTHON=$(PYTHON.3.9.$(BITS)) \
-	 $(PYTHON.3.9.$(BITS)) ./setup.py install \
+	(cd $(@D)/python3.9 ; env PYTHON=$(PYTHON.3.9) \
+	 $(PYTHON.3.9) ./setup.py install \
 		--root $(PROTO_DIR) \
 		--install-lib=$(PYTHON.3.9.VENDOR_PACKAGES)); \
-	(cd $(@D)/python3.11 ; env PYTHON=$(PYTHON.3.11.$(BITS)) \
-	 $(PYTHON.3.11.$(BITS)) ./setup.py install \
+	(cd $(@D)/python3.11 ; env PYTHON=$(PYTHON.3.11) \
+	 $(PYTHON.3.11) ./setup.py install \
 		--root $(PROTO_DIR) \
 		--install-lib=$(PYTHON.3.11.VENDOR_PACKAGES)) ;
 

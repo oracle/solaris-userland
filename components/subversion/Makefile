@@ -26,6 +26,7 @@
 BUILD_BITS =		64
 COMPILER =		gcc
 CTF_MODE =		off
+PYTHON3_SOABI =		bare
 
 # The Makefile of this component does not support multiple build jobs.
 COMPONENT_MAKE_JOBS=1
@@ -111,7 +112,7 @@ endif
 COMPONENT_POST_CONFIGURE_ACTION = \
     ( $(CLONEY) $(SOURCE_DIR) $(@D) ; \
     cd $(SOURCE_DIR) ; \
-    $(PYTHON.$(BITS)) ./build/transform_sql.py ./subversion/libsvn_fs_fs/rep-cache-db.sql < ./subversion/libsvn_fs_fs/rep-cache-db.sql > $(BUILD_DIR_$(BITS))/subversion/libsvn_fs_fs/rep-cache-db.h 2>&1 ; \
+    $(PYTHON) ./build/transform_sql.py ./subversion/libsvn_fs_fs/rep-cache-db.sql < ./subversion/libsvn_fs_fs/rep-cache-db.sql > $(BUILD_DIR_$(BITS))/subversion/libsvn_fs_fs/rep-cache-db.h 2>&1 ; \
     cd $(BUILD_DIR_$(BITS)) ; \
     find . -type f -name "*.class" -exec rm -f {} \; > /dev/null 2>&1 ; \
     cd $(BUILD_DIR_$(BITS)) ; \
@@ -151,7 +152,7 @@ LDFLAGS += -R$(CONFIGURE_LIBDIR.$(BITS)) -R$(APR-CONFIG-RPATH.$(BITS)) \
 LD_OPTIONS += -R$(CONFIGURE_LIBDIR.$(BITS)) -R$(APR-CONFIG-RPATH.$(BITS)) \
 	      -R$(APU-CONFIG-RPATH.$(BITS))
 
-CONFIGURE_ENV += PYTHON="$(PYTHON.$(BITS))"
+CONFIGURE_ENV += PYTHON="$(PYTHON)"
 CONFIGURE_ENV += PYMODS="$(PYMODS)"
 CONFIGURE_ENV += PYTHONPATH="$(PYTHON_VENDOR_PACKAGES)"
 CONFIGURE_ENV += JAVA_ROOT="$(JAVA_ROOT)"
@@ -188,7 +189,7 @@ CONFIGURE_OPTIONS += --without-gnome-keyring
 
 COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS)"
 COMPONENT_BUILD_ENV += CXXFLAGS="$(CXXFLAGS)"
-COMPONENT_BUILD_ENV += PYTHON="$(PYTHON.$(BITS))"
+COMPONENT_BUILD_ENV += PYTHON="$(PYTHON)"
 COMPONENT_BUILD_ENV += PYMODS="$(PYMODS)"
 COMPONENT_BUILD_ENV += PYTHONPATH="$(PYTHON_VENDOR_PACKAGES)"
 COMPONENT_BUILD_ENV += JAVA_ROOT="$(JAVA_ROOT)"
@@ -201,9 +202,6 @@ COMPONENT_BUILD_ENV += LDFLAGS="$(LDFLAGS)"
 
 COMPONENT_TEST_ENV += LD_LIBRARY_PATH_32="$(LD_TEST_PATH_32)"
 COMPONENT_TEST_ENV += LD_LIBRARY_PATH_64="$(LD_TEST_PATH_64)"
-
-# Do not transform .so files to include standard Python 3 ABI version tag.
-PY3_CPYTHON_NAMING = \#
 
 PKG_MACROS += PERL_ARCH_22="$(PERL_ARCH_22)"
 PKG_MACROS += PYVER=$(PYTHON_VERSION)

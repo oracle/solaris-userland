@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -48,12 +48,12 @@ include $(WS_MAKE_RULES)/ips.mk
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 # Required to setup the prefix path to generate valid *.pc files.
-COMPONENT_INSTALL_ARGS+= --prefix $(PYTHON_VENDOR_PACKAGES_BASE)
+COMPONENT_INSTALL_ARGS+= --prefix $(PYTHON_VENDOR_PACKAGES)
 
 # Build testing related binary files
 COMPONENT_PRE_TEST_ACTION = (\
 	cd $(SOURCE_DIR) ; $(ENV) HOME=$(BUILD_DIR)/config-$* $(COMPONENT_BUILD_ENV) \
-	$(PYTHON.$(BITS)) ./setup.py $(COMPONENT_SETUP_ARGS) build_tests)
+	$(PYTHON) ./setup.py $(COMPONENT_SETUP_ARGS) build_tests)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest

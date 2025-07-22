@@ -39,7 +39,7 @@ COMPONENT_ANITYA_ID=	13158
 COMPONENT_BAID=		163884
 BUILD_STYLE=		meson
 
-PKG_CONFIG_PATHS+=$(PYTHON_VENDOR_PACKAGES_BASE)/lib/pkgconfig/
+PKG_CONFIG_PATHS+=$(PYTHON_VENDOR_PACKAGES)/lib/pkgconfig/
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)

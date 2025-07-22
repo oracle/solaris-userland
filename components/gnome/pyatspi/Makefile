@@ -79,8 +79,8 @@ CONFIGURE_OPTIONS += --enable-tests
 CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 
 # Ensure Python modules are installed into vendor package directories.
-CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES_BASE)
-CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES_BASE)
+CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
+CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
 REQUIRED_PACKAGES += library/python/pygobject-3
 REQUIRED_PACKAGES += runtime/python-39

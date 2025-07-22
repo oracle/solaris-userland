@@ -19,11 +19,12 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
 COMPILER= gcc
+PYTHON3_SOABI= bare
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openscap
@@ -52,9 +53,6 @@ PERL_VERSIONS =		$(PERL_VERSION)
 
 # Tests require xpath tool that is not available on Solaris.
 TEST_TARGET = $(NO_TESTS)
-
-# openscap is not adding cpython-XX suffix to shared libraries
-PY3_CPYTHON_NAMING = \#
 
 include $(WS_MAKE_RULES)/common.mk
 
