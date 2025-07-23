@@ -1,0 +1,32 @@
+# Since Solaris 9, Solaris has an implementation of "closefrom()" which
+# closes all file descriptors >= the argument.  Originally, it was defined
+# only in <stdlib.h> but now also defined in <unistd.h>.
+--- old/agent/netsnmp_close_fds.c	2023-08-15 22:32:01.000000000 +0200
++++ new/agent/netsnmp_close_fds.c	2025-07-22 18:46:38.164788275 +0200
+@@ -7,6 +7,9 @@
+ #ifdef HAVE_UNISTD_H
+ #include <unistd.h>
+ #endif
++#ifdef solaris2
++#include <stdlib.h>
++#endif
+ 
+ #include <net-snmp/agent/netsnmp_close_fds.h>
+ 
+@@ -16,6 +19,9 @@
+ void netsnmp_close_fds(int fd)
+ {
+ #if defined(HAVE_FORK)
++#ifdef solaris2
++    (void) closefrom(fd + 1);
++#else
+     DIR            *dir NETSNMP_ATTRIBUTE_UNUSED;
+     struct dirent  *ent NETSNMP_ATTRIBUTE_UNUSED;
+     int             i, largest_fd = -1;
+@@ -54,5 +60,6 @@ void netsnmp_close_fds(int fd)
+ 
+     for (i = largest_fd; i > fd && i >= 0; i--)
+         close(i);
++#endif /* solaris2 */
+ #endif
+ }
