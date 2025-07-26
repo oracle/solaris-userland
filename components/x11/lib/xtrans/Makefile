@@ -24,6 +24,7 @@
 #
 
 BUILD_BITS =            32
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xtrans

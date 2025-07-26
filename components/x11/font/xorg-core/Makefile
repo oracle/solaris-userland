@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2009, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 COMPONENT_BUGDB=	x11/font
 

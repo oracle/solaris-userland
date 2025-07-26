@@ -24,6 +24,7 @@
 #
 
 BUILD_BITS =            64
+COMPILER=		gcc
 BUILD_ARCH =		i386
 include ../../../../make-rules/shared-macros.mk
 

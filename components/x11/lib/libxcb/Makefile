@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxcb
@@ -61,6 +62,7 @@ COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 
 CONFIGURE_ENV += LIB_MAN_SUFFIX=3xcb
 
+CONFIGURE_OPTIONS += --enable-shared=yes --enable-static=no
 CONFIGURE_OPTIONS += --disable-libtool-lock
 CONFIGURE_OPTIONS += --enable-devel-docs=no
 CONFIGURE_OPTIONS += --enable-composite

@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xcb-util
@@ -83,6 +84,8 @@ COMPONENT_ANITYA_ID_6=  5170
 COMPONENT_BAID_6=      	132836        
 
 TEST_TARGET = $(NO_TESTS)
+
+CONFIGURE_OPTIONS += --enable-shared=yes --enable-static=no
 
 FIX_PC_FILES=	xcb-atom.pc.in xcb-aux.pc.in xcb-event.pc.in xcb-util.pc.in
 FIX_PC_FILES_1=	cursor/xcb-cursor.pc.in
