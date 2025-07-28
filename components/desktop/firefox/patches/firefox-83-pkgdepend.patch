@@ -3,25 +3,14 @@ default search path for libraries.
 
 Note that it's not problem for Firefox itself which can cope with it.
 
---- firefox-128.0/js/src/old-configure.in
-+++ firefox-128.0/js/src/old-configure.in
-@@ -405,7 +405,7 @@ fi
-     ;;
+--- firefox-140.1.0/build/moz.configure/flags.configure
++++ firefox-140.1.0/build/moz.configure/flags.configure
+@@ -436,7 +436,7 @@ return []
+     if target.kernel == "WINNT":
+         return []
+     if target.kernel == "SunOS":
+-        return [f"-L{dist}/bin"]
++        return [f"-L{dist}/bin", "-Wl,-R,$ORIGIN"]
+     if target.os == "WASI":
+         return []
  
- *-solaris*)
--    MOZ_FIX_LINK_PATHS="-L${DIST}/bin"
-+    MOZ_FIX_LINK_PATHS="-L${DIST}/bin -Wl,-R,'\$ORIGIN'"
-     ;;
- 
- *-wasi*)
---- firefox-128.0/old-configure.in
-+++ firefox-128.0/old-configure.in
-@@ -428,7 +428,7 @@ fi
-     ;;
- 
- *-solaris*)
--    MOZ_FIX_LINK_PATHS="-L${DIST}/bin"
-+    MOZ_FIX_LINK_PATHS="-L${DIST}/bin -Wl,-R,'\$ORIGIN'"
-     ;;
- 
- esac

@@ -6,8 +6,8 @@
 # Parent  20d81e68da033746bf81acbb08490f16679853da
 Bug 1716707 [s390x] Software WebRender does not support big endian
 
---- firefox-128.0/gfx/webrender_bindings/RenderCompositorSWGL.cpp
-+++ firefox-128.0/gfx/webrender_bindings/RenderCompositorSWGL.cpp
+--- firefox-140.1.0/gfx/webrender_bindings/RenderCompositorSWGL.cpp
++++ firefox-140.1.0/gfx/webrender_bindings/RenderCompositorSWGL.cpp
 @@ -7,6 +7,7 @@ * file, You can obtain one at http://moz
  #include "RenderCompositorSWGL.h"
  
@@ -16,7 +16,7 @@ Bug 1716707 [s390x] Software WebRender does not support big endian
  #include "mozilla/widget/CompositorWidget.h"
  
  #ifdef MOZ_WIDGET_GTK
-@@ -242,6 +243,17 @@ mDT->ReleaseBits(mMappedData);
+@@ -240,6 +241,17 @@ mDT->ReleaseBits(mMappedData);
    }
    mDT->Flush();
  
@@ -34,9 +34,9 @@ Bug 1716707 [s390x] Software WebRender does not support big endian
    // Done with the DT. Hand it back to the widget and clear out any trace of it.
    mWidget->EndRemoteDrawingInRegion(mDT, mDirtyRegion);
    mDirtyRegion.SetEmpty();
---- firefox-128.0/image/imgFrame.cpp
-+++ firefox-128.0/image/imgFrame.cpp
-@@ -372,6 +372,17 @@ mAborted = true;
+--- firefox-140.1.0/image/imgFrame.cpp
++++ firefox-140.1.0/image/imgFrame.cpp
+@@ -382,6 +382,17 @@ mAborted = true;
      return NS_ERROR_OUT_OF_MEMORY;
    }
  
