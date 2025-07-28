@@ -24,7 +24,7 @@
  */
 
 /*
- * Copyright (c) 1990, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1990, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -125,7 +125,9 @@ static int IsMultiVis (int multivisFromMvLib);
 static void MapPixWindow (Window wind, int bot);
 static void DrawPixWindow (char *str);
 static void UnmapPixWindow (void);
+#ifdef IGNORE_X_ERRORS
 static int shhh(Display *dsp, XErrorEvent *err); /* quiet IO error handler */
+#endif
 
 static void
 Exit (int status)
@@ -137,7 +139,7 @@ Exit (int status)
     (void) exit (status);
 }
 
-static void
+static void __attribute__((__noreturn__))
 Usage (void)
 {
     static const char *help_message[] = {
@@ -242,13 +244,13 @@ main (int argc, char **argv)
 		 ProgramName, XDisplayName (displayname));
 	Exit (1);
     }
+#ifdef IGNORE_X_ERRORS
      /*
       * set the fatal error handler to be an innocuous wimp that
       * exits quietly
      */
-     /*
-     XSetIOErrorHandler(shhh);
-     */
+    XSetIOErrorHandler(shhh);
+#endif
 #ifdef ALLPLANES
     {  
     int tmp;
@@ -638,7 +640,7 @@ magnify(
       /* This visual is no good for us */
       if (w1) {
         XDestroyWindow(dpy, w1);
-	w1 = NULL;
+	w1 = None;
       }
     }
     else {
@@ -853,7 +855,6 @@ do_magnify (
     int dw = DisplayWidth (dpy, screen), dh = DisplayHeight (dpy, screen);
     XImage *image;
     Bool done, domore;
-    int i;
 
     /* 
      * Don't get bits that are off the edges of the screen
@@ -912,12 +913,12 @@ do_magnify (
 	XSync (dpy, 0);
     }
 
-if (!image) { /* clean up */
+    if (!image) { /* clean up */
 /* start MultiVisual fix */
 /* Nothing to do, as we assume that the program will exit when we return */
 /* end MultiVisual fix */
-  return (False);
-}
+	return (False);
+    }
 
     /*
      * Map the window and do the work.  Space means do another;
@@ -1290,6 +1291,7 @@ CreateImageFromImg(void)
   return image;
 }
 
+#ifdef IGNORE_X_ERRORS
 static int
 shhh(
     Display *dsp,
@@ -1298,6 +1300,7 @@ shhh(
   /* be quiet */
   exit(1);
 }
+#endif
 
 
 /*

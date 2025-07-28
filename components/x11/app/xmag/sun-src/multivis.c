@@ -10,7 +10,7 @@
  * 11-15-90 Written
  */
  
-/* Copyright (c) 1990, 2011, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (c) 1990, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -128,7 +128,7 @@ mvCreatImg(int wd, int ht, int x, int y)
   request_height = ht;
   request_x = x;
   request_y = y;
-  if ((mvImg = (MVPel *) calloc(sizeof(MVPel), request_width * request_height))
+  if ((mvImg = calloc(request_width * request_height, sizeof(MVPel)))
       != NULL) {
     return 1;
   }
@@ -192,7 +192,7 @@ mvWalkTree(
   XWindowAttributes xwa;
   int width, height, x1, y1;
   Window root, parent, *children;
-  int  n;
+  unsigned int n;
   unsigned int nchild;
   MVWinVisInfo *pWinInfo;
 #ifdef SHAPE
@@ -395,7 +395,7 @@ mvDoWindowsFrontToBack(void)
 #endif /* UPDATE_HACK */
       for (xi = 0; xi < pWI->width; xi++) {
 	MVPel *pPel = mvFindPel(xi+pWI->x1-request_x, yi+pWI->y1-request_y);
-	/* If the pixel hasn't been labelled before */
+	/* If the pixel hasn't been labeled before */
 	if (!pPel->colmap) { /* pPel->colmap serves as a 'Label' */
 	  /* label the pixel in the map with this window's cmap */
 	  /* 
@@ -452,7 +452,7 @@ mvGetColormap(MVWinVisInfo *pWI)
     int size = pVis->colormap_size;
 
     /* Allocate enough memory */
-    pCmp->Colors = pCol = (XColor *)calloc((sizeof(XColor)), size);
+    pCmp->Colors = pCol = calloc(size, (sizeof(XColor)));
     if (pVis->class == TrueColor || pVis->class == DirectColor) {
       unsigned long i;
       /* We have to create a composite pixel value */
@@ -580,7 +580,7 @@ mvFindColormap(Colormap cmap)
       return pCmap;
   }
   /* First time for this cmap, creat & link */
-  pCmap = (MVColmap *) calloc(sizeof(MVColmap), 1);
+  pCmap = calloc(1, sizeof(MVColmap));
   pCmap->next = colMaps;
   pCmap->cmap = cmap;
   colMaps = pCmap;
@@ -605,7 +605,7 @@ mvFindColorInColormap(int x, int y)
     /* Treat the pixel value as 3 separate indices, composite
        the color into scratch, return a pointer to scratch */
     unsigned long pix = pPel->pixel;
-    unsigned long index = (pix & pCmap->red_mask) >> pCmap->rshft; 
+
     scratch.red=pCmap->Colors[(pix & pCmap->red_mask)>>pCmap->rshft].red;
     scratch.green=pCmap->Colors[(pix & pCmap->green_mask)>>pCmap->gshft].green;
     scratch.blue=pCmap->Colors[(pix & pCmap->blue_mask)>>pCmap->bshft].blue;

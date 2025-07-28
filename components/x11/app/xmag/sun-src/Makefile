@@ -1,4 +1,4 @@
-# Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -23,7 +23,7 @@
 SRCS = 	xmag_multivis.c multivis.c
 OBJS = $(SRCS:.c=.o)
 
-MULTIVIS_CPPFLAGS = -DSHAPE -DALLPLANES
+MULTIVIS_CPPFLAGS = -DSHAPE -DALLPLANES -Wall
 LIBS = -lXext -lX11
 
 all:: xmag_multivis
