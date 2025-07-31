@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -29,8 +29,8 @@ COMPONENT_NAME=         hwdata
 COMPONENT_VERSION=      0.5.11
 COMPONENT_ARCHIVE_SRC=	none
 
-COMPONENT_BAID_PCI=	186294
-COMPONENT_BAID_USB=	186295
+COMPONENT_BAID_PCI=	338731
+COMPONENT_BAID_USB=	338732
 
 BUILD_STYLE= archive
 include $(WS_MAKE_RULES)/common.mk
