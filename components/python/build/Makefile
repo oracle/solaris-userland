@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		build
-COMPONENT_VERSION=	1.0.3
+COMPONENT_VERSION=	1.2.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:538aab1b64f9828977f84bc63ae570b060a8ed1be419e7870b8b4fc5e6ea553b
+    sha256:119b2fb462adef986483438377a13b2f42064a2a3a4161f24a0cca698a07ac8c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pypa/build
 COMPONENT_BUGDB=	python-mod/build
 COMPONENT_ANITYA_ID=	132276
-COMPONENT_BAID=		157371
+COMPONENT_BAID=		338843
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
