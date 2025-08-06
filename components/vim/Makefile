@@ -29,16 +29,16 @@ include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=		vim
 COMPONENT_VERSION=	9.1
 # Remove any leading zeros in IPS_COMPONENT_VERSION
-IPS_COMPONENT_VERSION=	9.1.652
+IPS_COMPONENT_VERSION=	9.1.1591
 COMPONENT_FULL_VERSION=$(shell echo $(IPS_COMPONENT_VERSION) | awk -F. '{printf("%d.%d.%04d\n", $$1, $$2, $$3)}')
 COMPONENT_SRC=	vim-$(COMPONENT_FULL_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_URL=	https://github.com/vim/vim/archive/v$(COMPONENT_FULL_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:2fd4b3e3df5c3eaa653445d3cbd6dcc33dc3152eec19c6e171539b2441282cda
+COMPONENT_ARCHIVE_HASH=	sha256:f373b926cee2be62a46bb2cea37c32cadedd0bd00f917d3a0d0ec31ac9ab8d50
 COMPONENT_PROJECT_URL=	http://www.vim.org/
 COMPONENT_ANITYA_ID=	5092
 
-COMPONENT_BAID=		174004
+COMPONENT_BAID=		339142
 
 PKG_MACROS +=	VIMVER=vim$(subst .,,$(COMPONENT_VERSION))
 
@@ -143,7 +143,7 @@ $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_sea
 #$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_termdebug.vim:/d" '
 # We keep in the filtered output just names of the failed tests. So we at least
 # know that it's not getting worse.
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/^\tFrom /p" '
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/^From /p" '
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 REQUIRED_PACKAGES += library/desktop/cairo

@@ -4,9 +4,9 @@ make the tests pass in our infrastructure.
 
 Not suitable for upstream.
 
---- vim-9.0.1174/src/testdir/test_suspend.vim
-+++ vim-9.0.1174/src/testdir/test_suspend.vim
-@@ -20,7 +20,7 @@ endfunc
+--- vim-9.1.1591/src/testdir/test_suspend.vim
++++ vim-9.1.1591/src/testdir/test_suspend.vim
+@@ -16,7 +16,7 @@ endfunc
  
  func Test_suspend()
    CheckFeature terminal
@@ -15,7 +15,7 @@ Not suitable for upstream.
  
    " Somehow the modifyOtherKeys response may get to the terminal when using
    " Mac OS.  Make t_RK and 'keyprotocol' empty to avoid that.
-@@ -28,7 +28,7 @@ func Test_suspend()
+@@ -24,7 +24,7 @@ set t_RK= keyprotocol=
  
    call WaitForResponses()
  
@@ -24,7 +24,7 @@ Not suitable for upstream.
    " Wait for shell prompt.
    call WaitForAssert({-> assert_match('[$#] $', term_getline(buf, '.'))})
  
-@@ -70,7 +70,7 @@ endfunc
+@@ -66,7 +66,7 @@ endfunc
  
  func Test_suspend_autocmd()
    CheckFeature terminal
@@ -33,7 +33,7 @@ Not suitable for upstream.
  
    " Somehow the modifyOtherKeys response may get to the terminal when using
    " Mac OS.  Make t_RK and 'keyprotocol' empty to avoid that.
-@@ -78,7 +78,7 @@ func Test_suspend_autocmd()
+@@ -74,7 +74,7 @@ set t_RK= keyprotocol=
  
    call WaitForResponses()
  
