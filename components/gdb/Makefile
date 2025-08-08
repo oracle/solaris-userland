@@ -28,12 +28,12 @@ CTF_MODE =		off	# Breaks config
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdb
-COMPONENT_VERSION=	15.1
+COMPONENT_VERSION=	16.3
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8b61b0c2bdd9d9c83b113c9167866bdb474651d291fedcaa5eb7cde49bd47036
+    sha256:86015081217dc82c5485db9ce864dcc0b703759d2bdbe4441b095c5f900a6a37
 COMPONENT_ANITYA_ID=	11798
 
-COMPONENT_BAID=		177948
+COMPONENT_BAID=		334306
 
 # The traditional output from gmake test omits some
 # test results information that is contained in the 
