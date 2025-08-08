@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -79,8 +79,8 @@ REQUIRED_PACKAGES += developer/versioning/mercurial
 # Utils to generate IPS packages
 REQUIRED_PACKAGES += package/pkg
 
-# Some of our tools need python 3.9, bash or ksh
-REQUIRED_PACKAGES += runtime/python-39
+# Some of our tools need python 3.11, bash or ksh
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 

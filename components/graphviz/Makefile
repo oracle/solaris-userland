@@ -64,8 +64,8 @@ PATH =		/usr/php/8.4/bin:/usr/bin:/usr/gnu/bin
 # Java header files (--with-javaincludedir allows for only one directory)
 CPPFLAGS +=	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/solaris
 
-CONFIGURE_ENV +=	PYTHON3=$(PYTHON.3.9)
-CONFIGURE_ENV +=	PYTHON3_INSTALL_DIR=$(PYTHON.3.9.VENDOR_PACKAGES)
+CONFIGURE_ENV +=	PYTHON3=$(PYTHON.3.11)
+CONFIGURE_ENV +=	PYTHON3_INSTALL_DIR=$(PYTHON.3.11.VENDOR_PACKAGES)
 CONFIGURE_OPTIONS +=	--without-included-ltdl
 CONFIGURE_OPTIONS +=	--with-qt=no
 CONFIGURE_OPTIONS +=	--enable-go=no
@@ -149,17 +149,12 @@ $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
 # Install Python bindings for each version into vendor-packages directories
 # and generate pyc files. The default version is already installed, but
 # without the .pyc file and without .so version tag.
-39_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.9.VENDOR_PACKAGES)
 311_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.11.VENDOR_PACKAGES)
 313_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.13.VENDOR_PACKAGES)
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
-	$(PYTHON.3.9) -m compileall -l -d $(PYTHON.3.9.VENDOR_PACKAGES) $(39_VENDOR_PROTO); \
-	$(MV) $(39_VENDOR_PROTO)/_gv.so $(39_VENDOR_PROTO)/_gv.cpython-39.so; \
-	$(RM) -r $(311_VENDOR_PROTO); $(MKDIR) $(311_VENDOR_PROTO); \
-	$(INSTALL) -m 644 $(@D)/tclpkg/gv1/gv.py $(311_VENDOR_PROTO)/gv.py; \
 	$(PYTHON.3.11) -m compileall -l -d $(PYTHON.3.11.VENDOR_PACKAGES) $(311_VENDOR_PROTO); \
-	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_python3.soT $(311_VENDOR_PROTO)/_gv.cpython-311.so; \
+	$(MV) $(311_VENDOR_PROTO)/_gv.so $(311_VENDOR_PROTO)/_gv.cpython-311.so; \
 	$(RM) -r $(313_VENDOR_PROTO); $(MKDIR) $(313_VENDOR_PROTO); \
 	$(INSTALL) -m 644 $(@D)/tclpkg/gv2/gv.py $(313_VENDOR_PROTO)/gv.py; \
 	$(PYTHON.3.13) -m compileall -l -d $(PYTHON.3.13.VENDOR_PACKAGES) $(313_VENDOR_PROTO); \
@@ -226,7 +221,6 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += print/filter/poppler
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += runtime/python-313
 REQUIRED_PACKAGES += runtime/ruby-33

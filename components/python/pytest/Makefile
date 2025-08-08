@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -71,8 +71,6 @@ system-test:    $(SYSTEM_TEST_NO_ARCH)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/iniconfig-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pluggy-%)
-REQUIRED_PACKAGES += library/python/exceptiongroup-39
-REQUIRED_PACKAGES += library/python/tomli-39
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/hypothesis

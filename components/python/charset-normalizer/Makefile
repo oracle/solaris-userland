@@ -37,9 +37,6 @@ COMPONENT_BUGDB=	python-mod/charset-norm
 COMPONENT_ANITYA_ID=	55366
 COMPONENT_BAID=		329958
 
-# Python 3.9 is legacy and will be removed soon.
-PYTHON_VERSIONS = 3.11 3.13
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk

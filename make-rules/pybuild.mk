@@ -54,11 +54,6 @@ $(BUILD_DIR)/%/.installed:	$(BUILD_DIR)/%/.built $(BUILD_DIR)/config-%/$(CFG)
 	$(PYDEPEND) $(PYTHON_VERSION) $(PROTO_DIR)$(PYTHON_LIB)
 	$(TOUCH) $@
 
-ifneq ($(findstring 3.9, $(PYTHON_VERSIONS)),)
-REQUIRED_PACKAGES += library/python/build-39
-REQUIRED_PACKAGES += library/python/installer-39
-REQUIRED_PACKAGES += library/python/wheel-39
-endif
 ifneq ($(findstring 3.11, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += library/python/build-311
 REQUIRED_PACKAGES += library/python/installer-311

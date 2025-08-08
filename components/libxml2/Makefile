@@ -64,7 +64,7 @@ CONFIGURE_OPTIONS += --with-threads
 # Cannot link to lzma since it's not in /lib and install media still has separate /usr.
 CONFIGURE_OPTIONS += --without-lzma
 
-PYTHON_VERSION = 3.9
+PYTHON_VERSION = 3.11
 CONFIGURE_OPTIONS.32 += --without-python
 CONFIGURE_OPTIONS.64 += --with-python
 CONFIGURE_ENV.64     += PYTHON=$(PYTHON.$(PYTHON_VERSION))
@@ -76,27 +76,19 @@ COMPONENT_BUILD_ARGS.64 += pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 COMPONENT_PREP_ACTION += (cd $(@D) ; cp ../mapfile libxml2.syms ; autoreconf -if)
 
 # After we have configured, make a copy of the python bits so we can build and
-# test another python 3 versions.
+# test other python 3 versions.
 COMPONENT_POST_CONFIGURE_ACTION.64 += \
-    (cd $(@D) ; cp -rp python python3.11 ; \
-    $(GSED) -i -e 's|-lpython3[.]9|-lpython3.11|' \
-     -e 's|usr/bin/$(MACH64)/python3[.]9|usr/bin/python3.11|' \
-     -e 's|usr/include/python3[.]9|usr/include/python3.11|' \
-     -e 's/3[.]9/3.11/g' \
-     `find python3.11 -name Makefile` ; \
-    cd $(@D) ; cp -rp python python3.13 ; \
-    $(GSED) -i -e 's|-lpython3[.]9|-lpython3.13|' \
-     -e 's|usr/bin/$(MACH64)/python3[.]9|usr/bin/python3.13|' \
-     -e 's|usr/include/python3[.]9|usr/include/python3.13|' \
-     -e 's/3[.]9/3.13/g' \
+    (cd $(@D) ; cp -rp python python3.13 ; \
+    $(GSED) -i -e 's|-lpython3[.]11|-lpython3.13|' \
+     -e 's|usr/bin/$(MACH64)/python3[.]11|usr/bin/python3.13|' \
+     -e 's|usr/include/python3[.]11|usr/include/python3.13|' \
+     -e 's/3[.]11/3.13/g' \
      `find python3.13 -name Makefile` ; \
 )
 
-# It's also nice to test another python 3 modules (LC_ALL is set to avoid test failure).
+# It's also nice to test other python 3 modules (LC_ALL is set to avoid test failure).
 COMPONENT_POST_TEST_ACTION.64 += \
-    ( cd $(@D)/python3.11 ; \
-	LC_ALL=en_US.utf8  $(GMAKE) $(COMPONENT_TEST_ARGS) check ; \
-      cd $(@D)/python3.13 ; \
+    ( cd $(@D)/python3.13 ; \
 	LC_ALL=en_US.utf8  $(GMAKE) $(COMPONENT_TEST_ARGS) check ; ) ;
 
 COMPONENT_PRE_TEST_ACTION += \
@@ -112,13 +104,8 @@ COMPONENT_SYSTEM_TEST_TARGETS = system-test
 COMPONENT_PRE_SYSTEM_TEST_ACTION += $(COMPONENT_PRE_TEST_ACTION)
 
 # After we have built/installed libxml2, build/install the python
-# support for python 3.11 and 3.13.
+# support for other runtimes.
 COMPONENT_POST_INSTALL_ACTION.64 += \
-	cd $(@D)/python3.11 ; \
-	$(GMAKE) pythondir=$(PYTHON.3.11.VENDOR_PACKAGES) \
-	         pyexecdir=$(PYTHON.3.11.VENDOR_PACKAGES) \
-	         DESTDIR=$(PROTO_DIR) \
-	         install ; \
 	cd $(@D)/python3.13 ; \
 	$(GMAKE) pythondir=$(PYTHON.3.13.VENDOR_PACKAGES) \
 	         pyexecdir=$(PYTHON.3.13.VENDOR_PACKAGES) \
@@ -127,7 +114,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += runtime/python-313
 REQUIRED_PACKAGES += shell/ksh93

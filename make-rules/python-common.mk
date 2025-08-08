@@ -25,32 +25,26 @@
 
 CONSOLIDATION = python
 
-$(BUILD_DIR)/%-3.9/.built:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.built:		PYTHON_VERSION=3.11
 $(BUILD_DIR)/%-3.13/.built:		PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.built:	BITS=64
 
-$(BUILD_DIR)/%-3.9/.installed:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.installed:		PYTHON_VERSION=3.11
 $(BUILD_DIR)/%-3.13/.installed:		PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.installed:	BITS=64
 
-$(BUILD_DIR)/%-3.9/.tested:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.tested:		PYTHON_VERSION=3.11
 $(BUILD_DIR)/%-3.13/.tested:		PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.tested:	BITS=64
 
-$(BUILD_DIR)/%-3.9/.tested-and-compared:	PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.tested-and-compared:	PYTHON_VERSION=3.11
 $(BUILD_DIR)/%-3.13/.tested-and-compared:	PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.tested-and-compared:	BITS=64
 
-$(BUILD_DIR)/%-3.9/.system-tested:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.system-tested:		PYTHON_VERSION=3.11
 $(BUILD_DIR)/%-3.13/.system-tested:		PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.system-tested:	BITS=64
 
-$(BUILD_DIR)/%-3.9/.system-tested-and-compared:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.system-tested-and-compared:	PYTHON_VERSION=3.11
 $(BUILD_DIR)/%-3.13/.system-tested-and-compared:	PYTHON_VERSION=3.13
 $(BUILD_DIR)/$(MACH64)-%/.system-tested-and-compared:	BITS=64
@@ -204,11 +198,6 @@ pypi_url_multi = pypi:///$(if $(COMPONENT_NAME_$(1)),$(COMPONENT_NAME_$(1)),$(CO
 pypi_url_single = pypi:///$(COMPONENT_NAME)==$(COMPONENT_VERSION)
 pypi_url = $(if $(COMPONENT_VERSION_$(1)),$(pypi_url_multi),$(pypi_url_single))
 
-ifneq ($(findstring 3.9, $(PYTHON_VERSIONS)),)
-REQUIRED_PACKAGES += runtime/python-39
-REQUIRED_PACKAGES += library/python/setuptools-39
-REQUIRED_PACKAGES += library/python/pytest-39
-endif
 ifneq ($(findstring 3.11, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += library/python/setuptools-311

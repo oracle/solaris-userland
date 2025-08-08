@@ -43,7 +43,7 @@ COMPONENT_ANITYA_ID=	1969
 
 COMPONENT_BAID=		174608
 
-PYTHON_VERSIONS= 3.9 3.11
+PYTHON_VERSIONS= 3.11
 BUILD_STYLE= setup.py
 
 # Add install dependency when system-test target is implemented.

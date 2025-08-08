@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
 #
@@ -28,7 +28,7 @@
 # This is done by defining multiple variables with a postfix; like
 # COMPONENT_VERSION_XXX, COMPONENT_SRC_XXX, and so on. This file builds on top
 # of this mechanism by making the variables with postfix "_OLD" compile with
-# python 3.9. Regular variables (COMPONENT_VERSION, COMPONENT_SRC, ...) refer
+# python 3.11. Regular variables (COMPONENT_VERSION, COMPONENT_SRC, ...) refer
 # to stuff compiled by other runtime versions defined in PYTHON_VERSIONS.
 #
 # In order to make use of this, one has to:
@@ -44,24 +44,24 @@
 
 # Can we make this version independent?
 
-# Support for different component versions in 3.9 and newer 3.x variants.
+# Support for different component versions in 3.11 and newer 3.x variants.
 ifneq ($(COMPONENT_VERSION_OLD),)
 
 SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
-$(BUILD_DIR)/%-3.9/.built: SOURCE_DIR=$(SOURCE_DIR_OLD)
-$(BUILD_DIR)/%-3.9/.installed: SOURCE_DIR=$(SOURCE_DIR_OLD)
-$(BUILD_DIR)/%-3.9/.tested: SOURCE_DIR=$(SOURCE_DIR_OLD)
-$(BUILD_DIR)/%-3.9/.tested-and-compared: SOURCE_DIR=$(SOURCE_DIR_OLD)
-$(BUILD_DIR)/%-3.9/.system-tested: SOURCE_DIR=$(SOURCE_DIR_OLD)
-$(BUILD_DIR)/%-3.9/.system-tested-and-compared: SOURCE_DIR=$(SOURCE_DIR_OLD)
+$(BUILD_DIR)/%-3.11/.built: SOURCE_DIR=$(SOURCE_DIR_OLD)
+$(BUILD_DIR)/%-3.11/.installed: SOURCE_DIR=$(SOURCE_DIR_OLD)
+$(BUILD_DIR)/%-3.11/.tested: SOURCE_DIR=$(SOURCE_DIR_OLD)
+$(BUILD_DIR)/%-3.11/.tested-and-compared: SOURCE_DIR=$(SOURCE_DIR_OLD)
+$(BUILD_DIR)/%-3.11/.system-tested: SOURCE_DIR=$(SOURCE_DIR_OLD)
+$(BUILD_DIR)/%-3.11/.system-tested-and-compared: SOURCE_DIR=$(SOURCE_DIR_OLD)
 
-$(MANIFEST_BASE)-%-39.mogrified: COMPONENT_ARCHIVE_URL=$(COMPONENT_ARCHIVE_URL_OLD)
-$(MANIFEST_BASE)-%-39.mogrified: COMPONENT_VERSION=$(COMPONENT_VERSION_OLD)
-$(MANIFEST_BASE)-%-39.mogrified: COMPONENT_BAID=$(COMPONENT_BAID_OLD)
+$(MANIFEST_BASE)-%-311.mogrified: COMPONENT_ARCHIVE_URL=$(COMPONENT_ARCHIVE_URL_OLD)
+$(MANIFEST_BASE)-%-311.mogrified: COMPONENT_VERSION=$(COMPONENT_VERSION_OLD)
+$(MANIFEST_BASE)-%-311.mogrified: COMPONENT_BAID=$(COMPONENT_BAID_OLD)
 
-$(MANIFEST_BASE)-%-39.mangled: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
-$(MANIFEST_BASE)-%-39.depend: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
-$(MANIFEST_BASE)-%-39.published: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
+$(MANIFEST_BASE)-%-311.mangled: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
+$(MANIFEST_BASE)-%-311.depend: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
+$(MANIFEST_BASE)-%-311.published: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
 
 # Make sure that prep is always executed correctly and entirely (see 34726564).
 build install publish test: prep
@@ -70,8 +70,8 @@ build install publish test: prep
 # distinguish files that are only available in a single version.
 NEW_ONLY =
 OLD_ONLY = \#
-$(MANIFEST_BASE)-%-39.mogrified: NEW_ONLY = \#
-$(MANIFEST_BASE)-%-39.mogrified: OLD_ONLY =
+$(MANIFEST_BASE)-%-311.mogrified: NEW_ONLY = \#
+$(MANIFEST_BASE)-%-311.mogrified: OLD_ONLY =
 
 PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
 PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
@@ -85,7 +85,7 @@ $(META_MOGRIFIED):	$(META_MANIFEST) | $(BUILD_DIR)
 	$(PKGMOGRIFY) $(PKG_OPTIONS) $< \
 		$(PUBLISH_TRANSFORMS) | \
 		sed -e '/^$$/d' -e '/^#.*$$/d' | uniq > $@-temp
-	echo "<transform depend fmri=(.*)-39@(.*) \
+	echo "<transform depend fmri=(.*)-311@(.*) \
 		-> edit fmri @$(COMPONENT_VERSION) @$(COMPONENT_VERSION_OLD)>" | \
 	$(PKGMOGRIFY) /dev/fd/0 $@-temp > $@
 	$(RM) $@-temp

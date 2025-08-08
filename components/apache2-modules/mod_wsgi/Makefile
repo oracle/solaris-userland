@@ -62,7 +62,6 @@ COMPONENT_PREP_ACTION += ( \
 
 # Don't use default CPPFLAGS; it causes Apache's custom CPP to fail.
 CONFIGURE_CPPFLAGS=
-VARIANTS_64 += $(BUILD_DIR)/apache24-python39
 VARIANTS_64 += $(BUILD_DIR)/apache24-python311
 VARIANTS_64 += $(BUILD_DIR)/apache24-python313
 include ../modules.mk
@@ -71,7 +70,6 @@ $(BUILD_DIR)/apache24-%/$(MACH64)/.configured: APXS=$(COMPONENT_DIR)/$(GCC_APXS)
 $(BUILD_DIR)/apache24-%/$(MACH64)/.built: BITS=64
 $(BUILD_DIR)/apache24-%/$(MACH64)/.tested: BITS=64
 
-$(BUILD_DIR)/apache2%-python39/$(MACH64)/.configured: PYTHON=$(PYTHON.3.9)
 $(BUILD_DIR)/apache2%-python311/$(MACH64)/.configured: PYTHON=$(PYTHON.3.11)
 $(BUILD_DIR)/apache2%-python313/$(MACH64)/.configured: PYTHON=$(PYTHON.3.13)
 
@@ -80,7 +78,6 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 
 CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 
-REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += runtime/python-313
 REQUIRED_PACKAGES += system/library/math

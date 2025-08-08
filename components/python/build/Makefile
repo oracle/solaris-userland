@@ -58,5 +58,3 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyproject_hooks-%)
-REQUIRED_PACKAGES += library/python/importlib-metadata-39
-REQUIRED_PACKAGES += library/python/tomli-39

@@ -58,4 +58,3 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/sortedcontainers-%)
-REQUIRED_PACKAGES += library/python/exceptiongroup-39

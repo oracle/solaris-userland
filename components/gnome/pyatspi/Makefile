@@ -40,22 +40,18 @@ COMPONENT_BAID=		163473
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
-$(BUILD_DIR)/%-3.9/.configured:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.configured:           PYTHON_VERSION=3.11
 $(BUILD_DIR)/%-3.13/.configured:           PYTHON_VERSION=3.13
 
 BUILD_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
-$(BUILD_DIR)/%-3.9/.built:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.built:         PYTHON_VERSION=3.11
 $(BUILD_DIR)/%-3.13/.built:         PYTHON_VERSION=3.13
 
 INSTALL_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
-$(BUILD_DIR)/%-3.9/.installed:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.installed:            PYTHON_VERSION=3.11
 $(BUILD_DIR)/%-3.13/.installed:            PYTHON_VERSION=3.13
 
 TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested-and-compared)
-$(BUILD_DIR)/%-3.9/.tested-and-compared:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/%-3.11/.tested-and-compared:         PYTHON_VERSION=3.11
 $(BUILD_DIR)/%-3.13/.tested-and-compared:         PYTHON_VERSION=3.13
 
@@ -83,7 +79,6 @@ CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
 REQUIRED_PACKAGES += library/python/pygobject-3
-REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += runtime/python-313
 

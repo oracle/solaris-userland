@@ -59,7 +59,5 @@ venv-test:	$(TEST_NO_ARCH)
 
 venv-system-test:	$(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += library/python/tomli-39
-
 # build dependencies
 REQUIRED_PACKAGES += library/python/flit_core

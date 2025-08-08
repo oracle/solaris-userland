@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -50,5 +50,3 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
-
-REQUIRED_PACKAGES += library/python/typing-extensions-39

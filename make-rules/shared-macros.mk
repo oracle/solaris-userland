@@ -691,14 +691,12 @@ USRLIB =	$(USRLIB.$(BITS))
 
 # The default version should go last.
 PYTHON_VERSION =	3.13
-PYTHON_VERSIONS =	3.9 3.11 3.13
+PYTHON_VERSIONS =	3.11 3.13
 
-PYTHON.3.9 =	/usr/bin/python3.9
 PYTHON.3.11 =	/usr/bin/python3.11
 PYTHON.3.13 =	/usr/bin/python3.13
 PYTHON ?=	$(PYTHON.$(PYTHON_VERSION))
 
-PYTHON.3.9.VENDOR_PACKAGES =  /usr/lib/python3.9/vendor-packages
 PYTHON.3.11.VENDOR_PACKAGES =  /usr/lib/python3.11/vendor-packages
 PYTHON.3.13.VENDOR_PACKAGES =  /usr/lib/python3.13/vendor-packages
 
@@ -711,8 +709,7 @@ PYTHON_LIB ?= $(PYTHON_VENDOR_PACKAGES)
 PYTHON_DATA ?= $(PYTHON_VENDOR_PACKAGES)
 
 # Convenience variable for builds without newer runtimes.
-WITHOUT_PYTHON3.11 = 3.9
-WITHOUT_PYTHON3.13 = 3.9 3.11
+WITHOUT_PYTHON3.13 = 3.11
 
 # If the component has python scripts then the first line should probably
 # point at the userland default build python so as not to be influenced

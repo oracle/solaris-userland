@@ -37,7 +37,7 @@ COMPONENT_BUGDB=	python-mod/django
 COMPONENT_ANITYA_ID=	371326
 COMPONENT_BAID=		331535
 
-PYTHON_VERSIONS=	3.9 3.11
+PYTHON_VERSIONS=	3.11
 
 # As per PSARC/2021/051, different LTS version of Django is to
 # be delivered with each Python runtime.

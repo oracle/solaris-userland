@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -39,7 +39,7 @@ COMPONENT_ANITYA_ID=	1314
 COMPONENT_BAID=		164456
 
 # hg-git mirrors Mercurial versions.
-PYTHON_VERSIONS = 3.9 3.11
+PYTHON_VERSIONS = 3.11
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

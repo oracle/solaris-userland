@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
@@ -78,5 +78,3 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/isort-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/mccabe-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/platformdirs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/tomlkit-%)
-REQUIRED_PACKAGES += library/python/tomli-39
-REQUIRED_PACKAGES += library/python/typing-extensions-39

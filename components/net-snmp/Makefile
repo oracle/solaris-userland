@@ -51,7 +51,7 @@ include $(WS_MAKE_RULES)/common.mk
 # Required by GCC 14 - needs to be evaluated and properly fixed.
 CFLAGS += -Wno-implicit-function-declaration -Wno-incompatible-pointer-types
 
-PYTHON_VERSION = 3.9
+PYTHON_VERSION = 3.11
 
 studio_C99MODE= $(studio_C99_ENABLE)
 CPPFLAGS += "-DFALSE_SHARING_ALIGN=64"
@@ -144,7 +144,6 @@ GENERATE_PROTO_DIRS += sun/sdk/demo^sun/sdk/demo
 
 COMPONENT_PRE_BUILD_ACTION += (echo "COMPONENT_PRE_BUILD_ACTION - BITS=$(BITS)");
 COMPONENT_PRE_BUILD_ACTION += \
-	(cd $(BUILD_DIR_$(BITS)); rm -rf python3.9; gcp -vr python python3.9); \
 	(cd $(BUILD_DIR_$(BITS)); rm -rf python3.11; gcp -vr python python3.11);
 
 COMPONENT_POST_BUILD_ACTION.64 += \
@@ -155,7 +154,6 @@ COMPONENT_POST_BUILD_ACTION.32 += \
 COMPONENT_POST_BUILD_ACTION.64 += \
 	(cd $(BUILD_DIR_64)/python ; find . -name \*.so | gxargs --verbose rm);
 COMPONENT_POST_BUILD_ACTION.64 += \
-	(cd $(BUILD_DIR_$(BITS))/python3.9 ; $(PYTHON.3.9) setup.py build --basedir=$(BUILD_DIR)/$(MACH64)); \
 	(cd $(BUILD_DIR_$(BITS))/python3.11 ; $(PYTHON.3.11) setup.py build --basedir=$(BUILD_DIR)/$(MACH64));
 
 COMPONENT_POST_BUILD_ACTION += (echo "COMPONENT_POST_BUILD_ACTION - BITS=$(BITS)");
@@ -167,10 +165,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 	 cd $(BUILD_DIR)/$(MACH64)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS) install);
 
 COMPONENT_POST_INSTALL_ACTION.64 = \
-	(cd $(@D)/python3.9 ; env PYTHON=$(PYTHON.3.9) \
-	 $(PYTHON.3.9) ./setup.py install \
-		--root $(PROTO_DIR) \
-		--install-lib=$(PYTHON.3.9.VENDOR_PACKAGES)); \
 	(cd $(@D)/python3.11 ; env PYTHON=$(PYTHON.3.11) \
 	 $(PYTHON.3.11) ./setup.py install \
 		--root $(PROTO_DIR) \
@@ -195,7 +189,6 @@ REQUIRED_PACKAGES += developer/build/make
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93

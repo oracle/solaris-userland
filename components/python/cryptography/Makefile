@@ -66,10 +66,6 @@ include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-# Convenience variables
-TARGET_39 = $(BUILD_DIR)/%-3.9/
-TARGET_311 = $(BUILD_DIR)/%-3.11/
-
 COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 
 COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
