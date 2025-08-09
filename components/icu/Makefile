@@ -23,23 +23,24 @@
 # Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64_and_32
+COMPILER =		gcc
 CTF_MODE =		relaxed
 
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		icu4c
-COMPONENT_VERSION=	73_1
-IPS_COMPONENT_VERSION=	73.1
+COMPONENT_VERSION=	77_1
+IPS_COMPONENT_VERSION=	77.1
 COMPONENT_PROJECT_URL=  http://site.icu-project.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tgz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a457431de164b4aa7eca00ed134d00dfbf88a77c6986a10ae7774fc076bb8c45
-COMPONENT_ARCHIVE_URL=  https://github.com/unicode-org/icu/releases/download/release-73-1/$(COMPONENT_ARCHIVE)
+	sha256:588e431f77327c39031ffbb8843c0e3bc122c211374485fa87dc5f3faff24061
+COMPONENT_ARCHIVE_URL=  https://github.com/unicode-org/icu/releases/download/release-77-1/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/icu
 COMPONENT_ANITYA_ID=	16134
 
-COMPONENT_BAID=		144580
+COMPONENT_BAID=		336525
 
 # OpenPGP Key obtained from https://ssl.icu-project.org/KEYS
 
@@ -59,10 +60,11 @@ CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --disable-samples
 CONFIGURE_OPTIONS += --disable-renaming
 
-COMPILER = gcc
-
-CFLAGS += -D__EXTENSIONS__ -DDECCHECK -D_XOPEN_SOURCE=600
-CXXFLAGS += -D__EXTENSIONS__ -DDECCHECK -D_XOPEN_SOURCE=600 -std=c++11
+# Workaround: ICU tests fail in 32-bit with C++17 due to stricter floating-point rules
+# (C++17 enforces standard double-precision rounding on intermediates, unlike earlier C++11)
+# Add -fexcess-precision=fast to relax precision and allow legacy ICU tests to pass.
+# This resolves failures like: expect 1234.56, got 1234.5599999999999
+CXXFLAGS.gcc.32 += -fexcess-precision=fast
 
 include ../../make-rules/shared-targets.mk
 

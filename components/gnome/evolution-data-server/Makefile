@@ -59,6 +59,9 @@ CXXFLAGS += -std=c++11 -D__EXTENSIONS__ -DHAVE_SUN_KRB5
 CPPFLAGS += -I/usr/include/kerberosv5/
 CFLAGS += $(XPG6MODE)
 
+# ICU now requires C++17
+CXXFLAGS += -std=c++17
+
 # to find gnu xgettext
 CMAKE_OPTIONS += -DGETTEXT_XGETTEXT_EXECUTABLE=/usr/gnu/bin/xgettext
 CMAKE_OPTIONS += -DENABLE_GOOGLE_AUTH=OFF

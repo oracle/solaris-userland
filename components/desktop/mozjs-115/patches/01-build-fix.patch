@@ -1,3 +1,7 @@
+Fixes two issue:
+- Fixes build issue related to libreadline
+- Allows build with ICU 77 (adds now needed -licuuc)
+
 --- mozjs-78.4.0/js/moz.configure
 +++ mozjs-78.4.0/js/moz.configure
 @@ -919,12 +919,12 @@
@@ -11,7 +15,7 @@
  )
  
 -set_config("EDITLINE_LIBS", ["-lreadline"], when=has_readline)
-+set_config("EDITLINE_LIBS", ["-lreadline", "-lcurses"], when=has_readline)
++set_config("EDITLINE_LIBS", ["-lreadline", "-lcurses", "-licuuc"], when=has_readline)
  
  
  @depends("--enable-readline", editline, when=editline)

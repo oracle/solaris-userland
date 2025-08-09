@@ -1,14 +1,11 @@
-#
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
-#
 Fix a memory leak
 http://bugs.icu-project.org/trac/ticket/12374
---- icu4c-73_1/icu/source/common/rbbiscan.cpp
-+++ icu4c-73_1/icu/source/common/rbbiscan.cpp
-@@ -782,7 +782,13 @@ //
+--- icu4c-77_1/icu/source/common/rbbiscan.cpp
++++ icu4c-77_1/icu/source/common/rbbiscan.cpp
+@@ -804,7 +804,13 @@ //
      // Add the new set to the set hash table.
      //
-     el      = (RBBISetTableEl *)uprv_malloc(sizeof(RBBISetTableEl));
+     el = static_cast<RBBISetTableEl*>(uprv_malloc(sizeof(RBBISetTableEl)));
 -    UnicodeString *tkey = new UnicodeString(s);
 +    UnicodeString *tkey;
 +    try

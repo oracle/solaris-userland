@@ -1,0 +1,13 @@
+Allows to build with ICU 77.1.
+
+--- evolution-data-server-3.50.3/CMakeLists.txt
++++ evolution-data-server-3.50.3/CMakeLists.txt
+@@ -946,7 +946,7 @@ set(CALENDAR_CFLAGS ${CALENDAR_CFLAGS} -
+ 
+ pkg_check_modules(CAMEL REQUIRED gio-2.0 gmodule-2.0 ${mozilla_nss} ${mozilla_nspr} sqlite3>=${sqlite_minimum_version})
+ set(CAMEL_CFLAGS ${CAMEL_CFLAGS} ${KRB5_CFLAGS} ${MANUAL_NSS_INCLUDES} ${MANUAL_NSPR_INCLUDES} ${ICU_CFLAGS} -L/usr/lib/mps/64 -lnss3 -lnspr4 -R/usr/lib/mps/64) 
+-set(CAMEL_LDFLAGS ${CAMEL_LDFLAGS} -lz ${KRB5_LDFLAGS} ${MANUAL_NSS_LIBS} ${MANUAL_NSPR_LIBS} ${ICU_LDFLAGS})
++set(CAMEL_LDFLAGS ${CAMEL_LDFLAGS} -lz ${KRB5_LDFLAGS} ${MANUAL_NSS_LIBS} ${MANUAL_NSPR_LIBS} ${ICU_LDFLAGS} -licuuc)
+ 
+ if(NOT (MANUAL_NSPR_INCLUDES STREQUAL ""))
+ 	list(APPEND CAMEL_INCLUDE_DIRS ${MANUAL_NSPR_INCLUDES})

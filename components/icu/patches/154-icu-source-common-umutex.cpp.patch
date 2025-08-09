@@ -18,9 +18,9 @@ https://gcc.gnu.org/pipermail/gcc-patches/2020-November/557928.html
 The patch is not suitable for upstream.
 It only fixes the problem in ICU library.
 
---- a/icu/source/common/umutex.cpp	2021-02-02 22:43:50.662337159 +0000
-+++ b/icu/source/common/umutex.cpp	2021-02-02 22:43:41.120200571 +0000
-@@ -26,6 +26,7 @@
+--- icu4c-77_1/icu/source/common/umutex.cpp
++++ icu4c-77_1/icu/source/common/umutex.cpp
+@@ -26,6 +26,7 @@ #include "unicode/utypes.h"
  #include "uassert.h"
  #include "ucln_cmn.h"
  #include "cmemory.h"
@@ -28,7 +28,7 @@ It only fixes the problem in ICU library.
  
  U_NAMESPACE_BEGIN
  
-@@ -51,21 +52,54 @@ std::condition_variable *initCondition;
+@@ -51,21 +52,54 @@ // The ICU global mutex.
  // Used when ICU implementation code passes nullptr for the mutex pointer.
  UMutex globalMutex;
  
@@ -96,7 +96,7 @@ It only fixes the problem in ICU library.
          std::lock_guard<std::mutex> guard(*initMutex);
          retPtr = fMutex.load(std::memory_order_acquire);
          if (retPtr == nullptr) {
-@@ -143,7 +181,11 @@ umtx_unlock(UMutex* mutex)
+@@ -143,7 +181,11 @@ //   the caller needs to call the Init f
  //
  U_COMMON_API UBool U_EXPORT2
  umtx_initImplPreInit(UInitOnce &uio) {

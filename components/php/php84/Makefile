@@ -99,13 +99,6 @@ ifdef DEBUG
 CONFIGURE_OPTIONS +=    --enable-debug
 endif
 
-# icu's switch to g++
-# 21090206 icu should build C++ to C++11
-# causes this in php forcing php to switch also
-# 23003672 PHP fails all or most tests
-CXXFLAGS += -std=c++11
-CONFIGURE_OPTIONS += CXXFLAGS="$(CXXFLAGS)"
-
 # Use openldap
 LDFLAGS += -lldap
 # but ensure "make" gets the point

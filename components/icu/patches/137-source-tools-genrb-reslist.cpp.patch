@@ -1,13 +1,10 @@
-#
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
-#
 getBuffer handling is tracked upstream as
 http://www.icu-project.org/trac/ticket/12378
---- icu4c-73_1/icu/source/tools/genrb/reslist.cpp
-+++ icu4c-73_1/icu/source/tools/genrb/reslist.cpp
-@@ -1507,8 +1507,16 @@ compareStringSuffixes(const void * /*con
-     const StringResource *left = *((const StringResource **)l);
-     const StringResource *right = *((const StringResource **)r);
+--- icu4c-77_1/icu/source/tools/genrb/reslist.cpp
++++ icu4c-77_1/icu/source/tools/genrb/reslist.cpp
+@@ -1509,8 +1509,16 @@ compareStringSuffixes(const void * /*con
+     const StringResource *left = *static_cast<const StringResource* const*>(l);
+     const StringResource *right = *static_cast<const StringResource* const*>(r);
      const char16_t *lStart = left->getBuffer();
 +    if ( lStart == NULL ) {
 +        fprintf(stderr, "Could not allocate memory!!");
