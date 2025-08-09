@@ -1351,13 +1351,15 @@ LD_PIE_OPTIONS =	$(LD_SECEXT_OPTIONS)
 # Two variables control CTF generation for Userland. Component makefiles
 # should set these before the include of shared-macros.mk:
 #
-#  CTF_MODE = on|off|relaxed	[default: on]
+#  CTF_MODE = on|off|relaxed	[default: on for gcc, off for studio]
 #	Determines whether CTF is produced (on, relaxed) or disabled (off).
 #	'on' includes the -zctf=require option, which ensures that all
 #	input objects deliver CTF content. 'relaxed' drops the require
 #	option, enabling partial "best effort" results. This can be convenient
 #	in cases where CTF is only partially present. However, the lack
-#	of CTF becomes a silent failure, and so, 'on' is preferred.
+#	of CTF becomes a silent failure, and so, 'on' is preferred. The
+#	default for CTF_MODE is compiler dependent. See "Studio Compiler
+#	Notes" below.
 #
 #	CTF_MODE=off: The most common reason for this is to work around FOSS
 #	makefiles that ignore the CFLAGS we try to pass in, or filter
@@ -1385,17 +1387,35 @@ LD_PIE_OPTIONS =	$(LD_SECEXT_OPTIONS)
 #	these dwarf sections are stripped from the resulting object, or
 #	left in place for use by dbx. A value of 0 retains the dwarf
 #	sections, while a value of 1 causes them to be removed.
+#
+# Studio Compiler Notes:
+#	Due to the risk of silent failure, where objects build cleanly, but
+#	fail to load at runtime, CTF_MODE defaults to off for Studio. The
+#	use of $(LD_Z_DEFS) eliminates this risk, and is highly recommended,
+#	but many components do not do that.
+#
+#	With the Studio compilers, CTF generation requires the use of the
+#	-g option. When -g is used, Studio retains unused code that would
+#	otherwise be thrown away. In particular, static inline functions
+#	from headers end up being kept. In a case where a main program
+#	loads "plugin" objects, and mapfiles are used to scope reduce
+#	unwanted global symbols to local, this -g behavior can result in
+#	plugins with external references to symbols that have been made
+#	local in the parent.
+#
+#	Studio components can explicitly set CTF_MODE to a value other
+#	than 'off' to enable CTF. In that case, any extra symbols need to
+#	be resolved by adding them to mapfiles, or by using -xF (compiler)
+#	and -zdiscard-unused=sections (ld) options to allow unused code
+#	to be detected and discarded.
 
 # Supply defaults for CTF_MODE and CTF_STRIP_DEBUG.
 ifndef CTF_MODE
+ifeq ($(strip $(COMPILER)),gcc)
 CTF_MODE=on
-endif
-
-# Note: Until further notice, disable CTF when using the Studio compilers.
-# The use of -g can introduce unsatisfied symbols that prevent running the
-# resulting object.
-ifeq ($(strip $(COMPILER)),studio)
+else
 CTF_MODE=off
+endif
 endif
 
 ifndef CTF_STRIP_DEBUG
@@ -1405,8 +1425,8 @@ ifndef CTF_STRIP_DEBUG
 #
 # With gcc, use the -gctf option to generate the CTF. The alternative of
 # producing dwarf sections and converting them is a poor choice, since
-# gcc dwarf must be version 2 for CTF, and the resulting objects will
-# have debug sections considered to be obsolete by gdb.
+# ctfconvert is limited to version 2 gcc dwarf, and resulting objects will
+# have debug sections that are considered to be obsolete by gdb.
 CTF_STRIP_DEBUG = 0
 endif
 
