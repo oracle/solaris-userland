@@ -7,18 +7,18 @@ of similar functionality.
 
 Not intended for upstream.
 
---- importlib_metadata-7.1.0/tests/test_main.py
-+++ importlib_metadata-7.1.0/tests/test_main.py
-@@ -7,8 +7,6 @@ import importlib_metadata
- import contextlib
- from .compat.py39 import os_helper
+--- importlib_metadata-8.7.0/tests/test_main.py
++++ importlib_metadata-8.7.0/tests/test_main.py
+@@ -3,8 +3,6 @@ import pickle
+ import re
+ import unittest
  
 -import pyfakefs.fake_filesystem_unittest as ffs
 -
- from . import fixtures
- from ._context import suppress
- from ._path import Symlink
-@@ -249,7 +247,8 @@ class MissingSysPath(fixtures.OnSysPath,
+ import importlib_metadata
+ from importlib_metadata import (
+     Distribution,
+@@ -272,7 +270,8 @@ class MissingSysPath(fixtures.OnSysPath,
          importlib_metadata.distributions()
  
  
@@ -28,9 +28,9 @@ Not intended for upstream.
      site_dir = '/access-denied'
  
      def setUp(self):
---- importlib_metadata-7.1.0/tests/test_api.py
-+++ importlib_metadata-7.1.0/tests/test_api.py
-@@ -58,7 +58,7 @@ class APITests(
+--- importlib_metadata-8.7.0/tests/test_api.py
++++ importlib_metadata-8.7.0/tests/test_api.py
+@@ -51,7 +51,7 @@ class APITests(
                  assert distribution(name).metadata['Name'] == 'pkg.dot'
  
      def test_prefix_not_matched(self):
@@ -39,13 +39,19 @@ Not intended for upstream.
          for prefix in prefixes:
              with self.subTest(prefix):
                  with self.assertRaises(PackageNotFoundError):
---- importlib_metadata-7.1.0/tests/compat/py39.py
-+++ importlib_metadata-7.1.0/tests/compat/py39.py
-@@ -1,9 +1,22 @@
+--- importlib_metadata-8.7.0/tests/compat/py39.py
++++ importlib_metadata-8.7.0/tests/compat/py39.py
+@@ -1,8 +1,23 @@
 -from jaraco.test.cpython import from_test_support, try_import
 +import test.support
 +import types
  
+-os_helper = try_import('os_helper') or from_test_support(
+-    'FS_NONASCII', 'skip_unless_symlink', 'temp_dir'
+-)
+-import_helper = try_import('import_helper') or from_test_support(
+-    'modules_setup', 'modules_cleanup'
+-)
 +try:
 +    from test.support import os_helper
 +except ImportError:
@@ -53,15 +59,10 @@ Not intended for upstream.
 +        **{
 +            "FS_NONASCII": test.support.FS_NONASCII,
 +            "skip_unless_symlink": test.support.skip_unless_symlink,
++            "temp_dir": test.support.temp_dir,
 +        }
 +    )
- 
--os_helper = try_import('os_helper') or from_test_support(
--    'FS_NONASCII', 'skip_unless_symlink'
--)
--import_helper = try_import('import_helper') or from_test_support(
--    'modules_setup', 'modules_cleanup'
--)
++
 +try:
 +    from test.support import import_helper
 +except ImportError:

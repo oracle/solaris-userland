@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pygments
-COMPONENT_VERSION=	2.18.0
+COMPONENT_VERSION=	2.19.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1805b4e729fc51be42a56871cc89f825b4bee09e300d9aa1c1c9e49c0d9fae7b
+    sha256:636cb2477cec7f8952536970bc533bc43743542f70392ae026374600add5b887
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pygments.org/
 COMPONENT_BUGDB=	python-mod/pygments
 COMPONENT_ANITYA_ID=	3986
-COMPONENT_BAID=		185368
+COMPONENT_BAID=		338829
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

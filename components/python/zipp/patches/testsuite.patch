@@ -4,19 +4,17 @@ are not available on Solaris.
 The compose() code below is taken directly from jaraco.functools.
 https://github.com/jaraco/jaraco.functools
 
---- zipp-3.19.2/tests/test_path.py
-+++ zipp-3.19.2/tests/test_path.py
-@@ -1,6 +1,7 @@
- import io
- import itertools
+--- zipp-3.23.0/tests/test_path.py
++++ zipp-3.23.0/tests/test_path.py
+@@ -1,4 +1,5 @@
  import contextlib
 +import functools
+ import io
+ import itertools
  import pathlib
- import pickle
- import stat
-@@ -10,8 +11,33 @@ from .compat.overlay import zipfile
- 
- from .compat.py39.os_helper import temp_dir, FakePath
+@@ -7,8 +8,33 @@ import stat
+ import sys
+ import unittest
  
 -import jaraco.itertools
 -from jaraco.functools import compose
@@ -48,9 +46,9 @@ https://github.com/jaraco/jaraco.functools
 +
 +    return functools.reduce(compose_two, funcs)
  
- from ._test_params import parameterize, Invoked
+ from zipp.compat.overlay import zipfile
  
-@@ -319,17 +345,6 @@ class TestPath(unittest.TestCase):
+@@ -320,17 +346,6 @@ class TestPath(unittest.TestCase):
          zf.mode = 'r'
          return zf
  
@@ -68,13 +66,12 @@ https://github.com/jaraco/jaraco.functools
      @pass_alpharep
      def test_read_does_not_close(self, alpharep):
          alpharep = self.zipfile_ondisk(alpharep)
---- zipp-3.19.2/tests/compat/py39.py
-+++ zipp-3.19.2/tests/compat/py39.py
-@@ -1,11 +1,15 @@
+--- zipp-3.23.0/tests/compat/py39.py
++++ zipp-3.23.0/tests/compat/py39.py
+@@ -1,10 +1,15 @@
  import sys
  
 -from jaraco.test.cpython import from_test_support, try_import
--
 -
 -os_helper = try_import('os_helper') or from_test_support(
 -    'FakePath',
