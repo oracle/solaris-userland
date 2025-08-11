@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2015, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (c) 2009, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -41,7 +41,6 @@
 #include <X11/extensions/Xv.h>
 #include "vbe.h"
 
-#include "xf86PciInfo.h"
 #include "xf86Pci.h"
 
 /* framebuffer offscreen manager */
@@ -138,30 +137,17 @@ struct pci_device *ASTGetPciInfo(ASTRecPtr info)
     return pciInfo;
 }
 
-static ScrnInfoPtr
-ast_get_scrninfo(int entity_num)
-{
-    ScrnInfoPtr   pScrn = NULL;
-    EntityInfoPtr pEnt;
-
-    pScrn = xf86ConfigFbEntity(NULL,0,entity_num, NULL,NULL,NULL,NULL);
-    return pScrn;
-}
-
 ScrnInfoPtr
 ASTAllocScreen(DriverPtr drv, GDevPtr pDev)
 {
-    int i;
-    int foundScreen = FALSE;
-
-    char * dev;
+    const char *dev;
     int entity;
     ASTRecPtr info;
     int fd;
     ScrnInfoPtr pScrn = NULL;
 
     entity = xf86ClaimFbSlot(drv, 0, pDev, TRUE);
-    if (pScrn = xf86ConfigFbEntity(NULL, 0, entity, NULL, NULL, NULL, NULL)) {
+    if ((pScrn = xf86ConfigFbEntity(NULL, 0, entity, NULL, NULL, NULL, NULL))) {
         dev = xf86FindOptionValue(pDev->options, "device");
         if (dev == NULL) {
             dev = AST_DEFAULT_DEVICE_PATH;
@@ -169,7 +155,6 @@ ASTAllocScreen(DriverPtr drv, GDevPtr pDev)
 
         if (((fd = open(dev, O_RDWR, 0)) >= 0)) {
             if (ASTGetRec(pScrn)) {
-                foundScreen = TRUE;
                 info = ASTPTR(pScrn);
                 info->deviceName = dev;
                 info->fd = fd;
@@ -255,7 +240,7 @@ ASTSaveHW(ScrnInfoPtr pScrn)
 {
    ASTRecPtr pAST = ASTPTR(pScrn);
    ASTRegPtr astReg;
-   int i, icount=0;
+   int i;
    UCHAR jReg;
 
    astReg = &pAST->SavedReg;
@@ -293,7 +278,7 @@ ASTRestoreHW(ScrnInfoPtr pScrn)
 {
    ASTRecPtr pAST = ASTPTR(pScrn);
    ASTRegPtr astReg;
-   int i, icount=0;
+   int i;
    UCHAR jReg;
 
    astReg = &pAST->SavedReg;

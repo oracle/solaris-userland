@@ -5,9 +5,9 @@ https://gitlab.freedesktop.org/xorg/driver/xf86-video-ast/-/commit/0bbae30ffc6a1
 
 Would need to make optional to be submitted upstream.
 
---- xf86-video-ast-1.1.5/src/ast.h
-+++ xf86-video-ast-1.1.5/src/ast.h
-@@ -81,13 +81,6 @@ AST2500,
+--- xf86-video-ast-1.2.0/src/ast.h
++++ xf86-video-ast-1.2.0/src/ast.h
+@@ -75,13 +75,6 @@ AST2500,
      AST1180
  } CHIP_ID;
  
@@ -21,7 +21,7 @@ Would need to make optional to be submitted upstream.
  /* AST REC Info */
  #define AST_NAME 			"AST"
  #define AST_DRIVER_NAME 		"ast"
-@@ -105,10 +98,6 @@ #define MIN_CMDQ_SIZE			0x00040000
+@@ -99,10 +92,6 @@ #define MIN_CMDQ_SIZE			0x00040000
  #define CMD_QUEUE_GUARD_BAND    	0x00000020
  #define DEFAULT_HWC_NUM			0x00000002
  
@@ -32,7 +32,7 @@ Would need to make optional to be submitted upstream.
  /* Patch Info */
  #define ABI_VIDEODRV_VERSION_PATCH	SET_ABI_VERSION(0, 5)
  
-@@ -292,10 +281,6 @@ int				clip_bottom;
+@@ -279,10 +268,6 @@ int				clip_bottom;
      int				mon_h_active;		/* Monitor Info. */
      int				mon_v_active;
  
@@ -43,9 +43,15 @@ Would need to make optional to be submitted upstream.
  #ifdef AstVideo
      XF86VideoAdaptorPtr adaptor;
      Atom        	xvBrightness, xvContrast, xvColorKey, xvHue, xvSaturation;
---- xf86-video-ast-1.1.5/src/ast_driver.c
-+++ xf86-video-ast-1.1.5/src/ast_driver.c
-@@ -1313,8 +1313,6 @@ if (!pScrn)
+--- xf86-video-ast-1.2.0/src/ast_driver.c
++++ xf86-video-ast-1.2.0/src/ast_driver.c
+@@ -1229,14 +1229,10 @@ }
+ static void
+ ASTFreeRec(ScrnInfoPtr pScrn)
+ {
+-   ASTRecPtr pAST = ASTPTR(pScrn);
+-
+    if (!pScrn)
        return;
     if (!pScrn->driverPrivate)
        return;
@@ -54,7 +60,7 @@ Would need to make optional to be submitted upstream.
     free(pScrn->driverPrivate);
     pScrn->driverPrivate = 0;
  }
-@@ -1579,12 +1577,6 @@ if (xf86LoadSubModule(pScrn, "ddc"))
+@@ -1495,12 +1491,6 @@ if (xf86LoadSubModule(pScrn, "ddc"))
     {
        if (pAST->jChipType == AST1180)
            Flags = ASTGetVGA2EDID(pScrn, DDC_data);
@@ -67,7 +73,7 @@ Would need to make optional to be submitted upstream.
        else
            Flags = ASTGetVGAEDID(pScrn, DDC_data);
  
-@@ -1635,14 +1627,6 @@ if (xf86LoadSubModule(pScrn, "ddc"))
+@@ -1551,14 +1541,6 @@ if (xf86LoadSubModule(pScrn, "ddc"))
     {
        if (pAST->jChipType == AST1180)
            Flags = ASTGetVGA2EDID(pScrn, DDC_data);
@@ -82,9 +88,9 @@ Would need to make optional to be submitted upstream.
        else
            Flags = ASTGetVGAEDID(pScrn, DDC_data);
  
---- xf86-video-ast-1.1.5/src/ast_mode.c
-+++ xf86-video-ast-1.1.5/src/ast_mode.c
-@@ -515,8 +515,6 @@ {
+--- xf86-video-ast-1.2.0/src/ast_mode.c
++++ xf86-video-ast-1.2.0/src/ast_mode.c
+@@ -517,8 +517,6 @@ {
          vASTOpenKey(pScrn);
          bASTRegInit(pScrn);
  
@@ -93,7 +99,7 @@ Would need to make optional to be submitted upstream.
          vSetStdReg(pScrn, mode, &vgamodeinfo);
          vSetCRTCReg(pScrn, mode, &vgamodeinfo);
          vSetOffsetReg(pScrn, mode, &vgamodeinfo);
-@@ -528,7 +526,6 @@ bSetDACReg(pScrn, mode, &vgamodeinfo);
+@@ -530,7 +528,6 @@ bSetDACReg(pScrn, mode, &vgamodeinfo);
          /* clear video buffer to avoid display noise */
          memset(pAST->FBVirtualAddr, 0x00, pAST->VideoModeInfo.ScreenPitch*pAST->VideoModeInfo.ScreenHeight);
  
@@ -101,7 +107,7 @@ Would need to make optional to be submitted upstream.
      }
  
      /* post set mode */
-@@ -549,6 +546,8 @@ }
+@@ -551,6 +548,8 @@ }
     }
  #endif
  
@@ -110,8 +116,8 @@ Would need to make optional to be submitted upstream.
      return (TRUE);
  }
  
---- xf86-video-ast-1.1.5/src/ast_vgatool.c
-+++ xf86-video-ast-1.1.5/src/ast_vgatool.c
+--- xf86-video-ast-1.2.0/src/ast_vgatool.c
++++ xf86-video-ast-1.2.0/src/ast_vgatool.c
 @@ -53,7 +53,6 @@ #include <unistd.h>
  /* Driver specific headers */
  #include "ast.h"
@@ -436,7 +442,7 @@ Would need to make optional to be submitted upstream.
   * VGA Modules
   */
  void
-@@ -600,12 +290,6 @@ else
+@@ -616,12 +306,6 @@ else
             ulDCLK = ActualDRAMBandwidth / ((pScrn->bitsPerPixel+1) / 8);
     }
  
@@ -449,7 +455,46 @@ Would need to make optional to be submitted upstream.
     /* Add for AST2100, ycchen@061807 */
     if ((pAST->jChipType == AST2100) || (pAST->jChipType == AST2200) || (pAST->jChipType == AST2300) || (pAST->jChipType == AST2400) || (pAST->jChipType == AST2500) || (pAST->jChipType == AST1180) )
     {
-@@ -754,10 +406,6 @@ {
+@@ -680,38 +364,6 @@ GetIndexRegMask(CRTC_PORT, 0x90, 0xFF, j
+    if (jReg & 0x10)
+        pAST->VGA2Clone = TRUE;
+ 
+-   /* 3rd Tx Check */
+-   pAST->pDP501FWBufferVirtualAddress = NULL;
+-   pAST->jTxChipType = Tx_NONE;
+-   /* Get 3rd Tx Info from HW Reg. */
+-   GetIndexRegMask(CRTC_PORT, 0xA3, 0xFF, jReg);
+-   if (jReg & 0x80)
+-       pAST->jTxChipType = Tx_Sil164;
+-   /* Get 3rd Tx Info from BMC Scratch */
+-   if ((pAST->jChipType == AST2300) || (pAST->jChipType == AST2400) || (pAST->jChipType == AST2500))
+-   {
+-       GetIndexRegMask(CRTC_PORT, 0xD1, 0x0E, jReg);
+-       switch (jReg)
+-       {
+-       case 0x04:
+-           pAST->jTxChipType = Tx_Sil164;
+-           break;
+-       case 0x08:
+-           pAST->pDP501FWBufferVirtualAddress = (UCHAR*) calloc(1, 32*1024);
+-           if	(pAST->pDP501FWBufferVirtualAddress)
+-           {
+-               if (BackupM68KFW(pScrn, pAST->pDP501FWBufferVirtualAddress, 32*1024) == FALSE)
+-               {
+-                   free(pAST->pDP501FWBufferVirtualAddress);
+-                   pAST->pDP501FWBufferVirtualAddress = NULL;
+-               }
+-           } /* Backup DP501 FW */
+-       case 0x0c:
+-           pAST->jTxChipType = Tx_DP501;
+-           break;
+-       }
+-   }
+-
+    /* WideScreen Support */
+    switch (pAST->jChipType)
+    {
+@@ -770,10 +422,6 @@ {
      ASTRecPtr pAST = ASTPTR(pScrn);
      ULONG ulData;
  
@@ -460,7 +505,7 @@ Would need to make optional to be submitted upstream.
      if (pAST->jChipType == AST1180)
      {
          ReadAST1180SOC(AST1180_GFX_BASE + AST1180_VGA1_CTRL, ulData);
-@@ -785,9 +433,6 @@ }
+@@ -801,9 +449,6 @@ }
      else
          SetIndexRegMask(SEQ_PORT,0x01, 0xDF, 0x00);
  
@@ -470,7 +515,7 @@ Would need to make optional to be submitted upstream.
  }
  
  void ASTBlankScreen(ScrnInfoPtr pScrn, Bool unblack)
-@@ -904,11 +549,6 @@ ulData = 0x001C0000;
+@@ -920,11 +565,6 @@ ulData = 0x001C0000;
        break;
     }
  
@@ -482,7 +527,7 @@ Would need to make optional to be submitted upstream.
     if (pAST->jChipType == AST1180)
     {
         ReadAST1180SOC(AST1180_GFX_BASE + AST1180_VGA1_CTRL, ulTemp);
-@@ -922,10 +562,6 @@ SetIndexRegMask(SEQ_PORT,0x01, 0xDF, SEQ
+@@ -938,10 +578,6 @@ SetIndexRegMask(SEQ_PORT,0x01, 0xDF, SEQ
         SetIndexRegMask(CRTC_PORT,0xB6, 0xFC, CRB6);
     }
  
@@ -493,7 +538,7 @@ Would need to make optional to be submitted upstream.
  #endif
  }
  
-@@ -3450,109 +3086,6 @@ }
+@@ -3457,109 +3093,6 @@ }
  
  } /* vGetDefaultSettings */
  
@@ -603,7 +648,7 @@ Would need to make optional to be submitted upstream.
  /*
   * Flags: 0: POST init
   *        1: resume from power management
-@@ -3589,7 +3122,6 @@ vInitAST2300DRAMReg(pScrn);
+@@ -3596,7 +3129,6 @@ vInitAST2300DRAMReg(pScrn);
         else
             vInitDRAMReg(pScrn);
  
@@ -611,9 +656,9 @@ Would need to make optional to be submitted upstream.
     }
  
     return (TRUE);
---- xf86-video-ast-1.1.5/src/ast_vgatool.h
-+++ xf86-video-ast-1.1.5/src/ast_vgatool.h
-@@ -257,9 +257,5 @@ *(ULONG *) (pAST->MMIOVirtualAddr + 0xF0
+--- xf86-video-ast-1.2.0/src/ast_vgatool.h
++++ xf86-video-ast-1.2.0/src/ast_vgatool.h
+@@ -257,8 +257,4 @@ *(ULONG *) (pAST->MMIOVirtualAddr + 0xF0
          *(ULONG *) (pAST->MMIOVirtualAddr + 0x10000 + ((addr) & 0x0000FFFF)) = (data);	\
  }
  
@@ -621,46 +666,4 @@ Would need to make optional to be submitted upstream.
 -#define DelayUS(x)		usleep(x)
 -#define DelayMS(x)		DelayUS(1000*x)
 -
- #endif /* ASTVGATOOL_H */
-
---- a/src/ast_vgatool.c	2022-12-09 15:50:18.848154859 -0800
-+++ b/src/ast_vgatool.c	2022-12-09 15:50:40.572902620 -0800
-@@ -364,38 +364,6 @@
-    if (jReg & 0x10)
-        pAST->VGA2Clone = TRUE;
- 
--   /* 3rd Tx Check */
--   pAST->pDP501FWBufferVirtualAddress = NULL;
--   pAST->jTxChipType = Tx_NONE;
--   /* Get 3rd Tx Info from HW Reg. */
--   GetIndexRegMask(CRTC_PORT, 0xA3, 0xFF, jReg);
--   if (jReg & 0x80)
--       pAST->jTxChipType = Tx_Sil164;
--   /* Get 3rd Tx Info from BMC Scratch */
--   if ((pAST->jChipType == AST2300) || (pAST->jChipType == AST2400) || (pAST->jChipType == AST2500))
--   {
--       GetIndexRegMask(CRTC_PORT, 0xD1, 0x0E, jReg);
--       switch (jReg)
--       {
--       case 0x04:
--           pAST->jTxChipType = Tx_Sil164;
--           break;
--       case 0x08:
--           pAST->pDP501FWBufferVirtualAddress = (UCHAR*) calloc(1, 32*1024);
--           if	(pAST->pDP501FWBufferVirtualAddress)
--           {
--               if (BackupM68KFW(pScrn, pAST->pDP501FWBufferVirtualAddress, 32*1024) == FALSE)
--               {
--                   free(pAST->pDP501FWBufferVirtualAddress);
--                   pAST->pDP501FWBufferVirtualAddress = NULL;
--               }
--           } /* Backup DP501 FW */
--       case 0x0c:
--           pAST->jTxChipType = Tx_DP501;
--           break;
--       }
--   }
--
-    /* WideScreen Support */
-    switch (pAST->jChipType)
-    {
+ #endif /* AST_VGATOOL_H */

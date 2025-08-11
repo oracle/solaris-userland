@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-ast
-COMPONENT_VERSION=	1.1.6
+COMPONENT_VERSION=	1.2.1
 COMPONENT_ARCHIVE_HASH= \
-	sha256:75754fa9c7f9a94fcc706d32cc118942d16c71934d88110442443a143b930daf
+	sha256:df6b630e193c32972a20b02fa6db7fd38d026e835464e26d469de32e31c87cb6
 COMPONENT_BUGDB=        x11/devices-ast
 COMPONENT_ANITYA_ID=	17163
-COMPONENT_BAID=		134667
+COMPONENT_BAID=		340006
 
 TEST_TARGET = $(NO_TESTS)
 
