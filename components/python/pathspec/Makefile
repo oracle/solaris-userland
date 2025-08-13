@@ -20,35 +20,32 @@
 #
 
 #
-# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
+
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		PrettyTable
-COMPONENT_VERSION=	3.10.0
-COMPONENT_SRC=		prettytable-$(COMPONENT_VERSION)
+COMPONENT_NAME=		pathspec
+COMPONENT_VERSION=	0.12.1
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9665594d137fb08a1117518c25551e0ede1687197cf353a4fdc78d27e1073568
+    sha256:9bfcafd9de37219094f10994f4d351c4be3d228c3f753d3b0282bb03ffe5ad44
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	http://code.google.com/p/prettytable/
-COMPONENT_BUGDB=	python-mod/prettytable
-COMPONENT_ANITYA_ID=	19994
-COMPONENT_BAID=		164671
+COMPONENT_PROJECT_URL=	https://github.com/cpburnz/python-pathspec
+COMPONENT_BUGDB=	python-mod/pathspec
+COMPONENT_ANITYA_ID=	23424
+COMPONENT_BAID=		338691
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
-# Non-ascii symbols can break the depthlimiter.py when ran with
-# Python 3.7+ unless UTF-8 locale is set (see bug 31983111):
-COMPONENT_PUBLISH_ENV  +=	LC_ALL=en_US.UTF-8
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
@@ -57,10 +54,4 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TEST_NO_ARCH)
-
-REQUIRED_PACKAGES += $(PYVS:%=library/python/wcwidth-%)
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/hatchling
-REQUIRED_PACKAGES += library/python/hatch-vcs
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)

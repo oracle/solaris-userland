@@ -1,36 +1,50 @@
-We do not have hatchling on Solaris, and it doesn't seem necessary
-to deliver it at this point. This patch modifies the build metadata
-to use setuptools instead.
-
-Also, the GitHub archive we use doesn't contain all the info necessary
-to guess the package version automatically, which is why it's explicitly
-listed here.
+hatch-fancy-pypi-readme is not available on Solaris.
 
 Not intended for upstream.
 
---- service_identity-23.1.0/pyproject.toml
-+++ service_identity-23.1.0/pyproject.toml
-@@ -1,11 +1,12 @@
+--- service_identity-24.1.0/pyproject.toml
++++ service_identity-24.1.0/pyproject.toml
+@@ -1,5 +1,5 @@
  [build-system]
 -requires = ["hatchling", "hatch-vcs", "hatch-fancy-pypi-readme"]
--build-backend = "hatchling.build"
-+requires = ["setuptools"]
-+build-backend = "setuptools.build_meta"
++requires = ["hatchling", "hatch-vcs"]
+ build-backend = "hatchling.build"
  
  [project]
- name = "service-identity"
-+version = "24.1.0"
- authors = [{ name = "Hynek Schlawack", email = "hs@ox.cx" }]
--license = "MIT"
-+license = {text = "MIT"}
- requires-python = ">=3.8"
- description = "Service identity verification for pyOpenSSL & cryptography."
- keywords = ["cryptography", "openssl", "pyopenssl"]
-@@ -31,7 +32,6 @@ dependencies = [
-     "pyasn1",
-     "cryptography",
- ]
--dynamic = ["version", "readme"]
+@@ -54,36 +54,6 @@ Twitter = "https://twitter.com/hynek"
+ source = "vcs"
+ raw-options = { local_scheme = "no-local-version" }
  
- [project.optional-dependencies]
- idna = ["idna"]
+-[tool.hatch.metadata.hooks.fancy-pypi-readme]
+-content-type = "text/markdown"
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-text = "# Service Identity Verification for pyOpenSSL & *cryptography*\n"
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-path = "README.md"
+-start-after = "spiel-begin -->\n"
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-text = """
+-
+-
+-## Release Information
+-
+-"""
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-path = "CHANGELOG.md"
+-pattern = "\n(###.+?\n)## "
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-text = """
+-----
+-
+-[Complete Changelog →](https://service-identity.readthedocs.io/en/stable/changelog.html)
+-"""
+-
+-
+ [tool.pytest.ini_options]
+ addopts = ["-ra", "--strict-markers", "--strict-config"]
+ xfail_strict = true

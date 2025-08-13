@@ -1,34 +1,62 @@
-Hatchling is not available on Solaris. This patch modifies
-the build metadata to use setuptools instead.
+hatch-fancy-pypi-readme is not available on Solaris.
 
 Not intended for upstream.
 
 --- attrs-24.2.0/pyproject.toml
 +++ attrs-24.2.0/pyproject.toml
-@@ -1,14 +1,15 @@
+@@ -1,7 +1,7 @@
  # SPDX-License-Identifier: MIT
  
  [build-system]
 -requires = ["hatchling", "hatch-vcs", "hatch-fancy-pypi-readme>=23.2.0"]
--build-backend = "hatchling.build"
-+requires = ["setuptools"]
-+build-backend = "setuptools.build_meta"
++requires = ["hatchling", "hatch-vcs"]
+ build-backend = "hatchling.build"
  
  
- [project]
- name = "attrs"
-+version = "24.2.0"
- authors = [{ name = "Hynek Schlawack", email = "hs@ox.cx" }]
--license = "MIT"
-+license = {text = "MIT"}
- requires-python = ">=3.7"
- description = "Classes Without Boilerplate"
- keywords = ["class", "attribute", "boilerplate"]
-@@ -27,7 +28,6 @@ classifiers = [
-   "Typing :: Typed",
- ]
- dependencies = ["importlib_metadata;python_version<'3.8'"]
--dynamic = ["version", "readme"]
+@@ -84,46 +84,6 @@ raw-options = { local_scheme = "no-local
+ [tool.hatch.build.targets.wheel]
+ packages = ["src/attr", "src/attrs"]
  
- [project.optional-dependencies]
- tests-mypy = [
+-[tool.hatch.metadata.hooks.fancy-pypi-readme]
+-content-type = "text/markdown"
+-
+-# PyPI doesn't support the <picture> tag.
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-text = """<p align="center">
+-  <a href="https://www.attrs.org/">
+-    <img src="https://raw.githubusercontent.com/python-attrs/attrs/main/docs/_static/attrs_logo.svg" width="35%" alt="attrs" />
+-  </a>
+-</p>
+-"""
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-path = "README.md"
+-start-after = "<!-- teaser-begin -->"
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-text = """
+-
+-## Release Information
+-
+-"""
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-path = "CHANGELOG.md"
+-pattern = "\n(###.+?\n)## "
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-text = """
+-
+----
+-
+-[Full changelog →](https://www.attrs.org/en/stable/changelog.html)
+-"""
+-
+-# Point sponsor image URLs to versions.
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+-pattern = 'docs\/_static\/sponsors'
+-replacement = 'https://www.attrs.org/en/$HFPR_VERSION/_static/sponsors'
+-
+ [[tool.sponcon.sponsors]]
+ title = "Variomedia AG"
+ url = "https://www.variomedia.de/"

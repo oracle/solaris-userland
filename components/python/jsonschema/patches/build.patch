@@ -1,38 +1,44 @@
-We do not have hatchling on Solaris, and it doesn't seem necessary
-to deliver it at this point. This patch modifies the build metadata
-to use setuptools instead.
+hatch-fancy-pypi-readme is not available on Solaris.
 
 Not intended for upstream.
 
 --- jsonschema-4.23.0/pyproject.toml
 +++ jsonschema-4.23.0/pyproject.toml
-@@ -1,14 +1,19 @@
+@@ -1,5 +1,5 @@
  [build-system]
 -requires = ["hatchling", "hatch-vcs", "hatch-fancy-pypi-readme"]
--build-backend = "hatchling.build"
-+requires = ["setuptools"]
-+build-backend = "setuptools.build_meta"
++requires = ["hatchling", "hatch-vcs"]
+ build-backend = "hatchling.build"
  
  [tool.hatch.version]
- source = "vcs"
+@@ -82,30 +82,6 @@ Tidelift = "https://tidelift.com/subscri
+ Changelog = "https://github.com/python-jsonschema/jsonschema/blob/main/CHANGELOG.rst"
+ Source = "https://github.com/python-jsonschema/jsonschema"
  
-+[tool.setuptools]
-+packages = ["jsonschema"]
-+
- [project]
- name = "jsonschema"
-+version = "4.23.0"
- description = "An implementation of JSON Schema validation for Python"
- requires-python = ">=3.8"
-+readme = "README.rst"
- license = {text = "MIT"}
- keywords = [
-     "validation",
-@@ -37,7 +42,6 @@ classifiers = [
-   "Topic :: File Formats :: JSON",
-   "Topic :: File Formats :: JSON :: JSON Schema",
- ]
--dynamic = ["version", "readme"]
- dependencies = [
-   "attrs>=22.2.0",
-   "jsonschema-specifications>=2023.03.6",
+-[tool.hatch.metadata.hooks.fancy-pypi-readme]
+-content-type = "text/x-rst"
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-path = "README.rst"
+-end-before = ".. start cut from PyPI"
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-path = "README.rst"
+-start-after = ".. end cut from PyPI\n\n\n"
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-text = """
+-
+-
+-Release Information
+--------------------
+-
+-"""
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+-path = "CHANGELOG.rst"
+-pattern = "(^v.+?)\nv"
+-
+ [tool.coverage.html]
+ show_contexts = true
+ skip_covered = false

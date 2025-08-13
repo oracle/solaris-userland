@@ -90,3 +90,6 @@ REQUIRED_PACKAGES += system/library
 # Testing related components
 REQUIRED_PACKAGES += library/python/python-hamcrest
 REQUIRED_PACKAGES += library/python/service_identity
+
+# build dependencies
+REQUIRED_PACKAGES += library/python/hatchling

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -62,3 +62,7 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyasn1-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyasn1-modules-%)
+
+# build dependencies
+REQUIRED_PACKAGES += library/python/hatchling
+REQUIRED_PACKAGES += library/python/hatch-vcs

@@ -59,3 +59,7 @@ system-test:    $(SYSTEM_TEST_NO_ARCH)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyrsistent-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
+
+# build dependencies
+REQUIRED_PACKAGES += library/python/hatchling
+REQUIRED_PACKAGES += library/python/hatch-vcs

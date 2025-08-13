@@ -1,51 +1,35 @@
-We do not have hatchling on Solaris; this patch modifies the build
-metadata to use setuptools instead.
-
-Our version of incremental is fully sufficient here.
-
-MANIFEST.in is currently the simplest way to force the inclusion of
-all files. Newer setuptools will make it achievable directly
-in pyproject.toml as well.
+hatch-fancy-pypi-readme is not available on Solaris.
 
 Not intended for upstream.
 
 --- twisted-24.7.0/pyproject.toml
 +++ twisted-24.7.0/pyproject.toml
-@@ -1,19 +1,13 @@
+@@ -1,7 +1,6 @@
  [build-system]
  requires = [
--    "hatchling >= 1.10.0",
+     "hatchling >= 1.10.0",
 -    "hatch-fancy-pypi-readme >= 22.5.0",
--    "incremental >= 24.7.0",
-+    "setuptools",
-+    "incremental >= 22.10.0",
+     "incremental >= 24.7.0",
  ]
--build-backend = "hatchling.build"
-+build-backend = "setuptools.build_meta"
+ build-backend = "hatchling.build"
+@@ -160,20 +159,6 @@ allow-ambiguous-features = true
+ [tool.hatch.version]
+ source = "incremental"
  
- [project]
- name = "Twisted"
--dynamic = [
--    "version",
--    "readme",
--    # Remove this when the legacy optional dependency names are removed
--    "optional-dependencies",
+-[tool.hatch.metadata.hooks.fancy-pypi-readme]
+-content-type = "text/x-rst"
+-fragments = [
+-    { path = "README.rst" },
 -]
-+version = "24.7.0"
- description = "An asynchronous networking framework written in Python"
- license = { text = "MIT License" }
- # When updating this value, make sure our CI matrix includes a matching minimum version.
-@@ -33,7 +27,7 @@ classifiers = [
- dependencies = [
-     "zope.interface >= 5",
-     "constantly >= 15.1",
--    "incremental >= 24.7.0",
-+    "incremental >= 22.10.0",
-     "Automat >= 0.8.0",
-     "hyperlink >= 17.1.1",
-     "attrs >= 21.3.0",
---- twisted-24.7.0/MANIFEST.in
-+++ twisted-24.7.0/MANIFEST.in
-@@ -0,0 +1,2 @@
-+graft src
-+global-exclude *.bat
+-
+-[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+-# Munge links of the form `NEWS <NEWS.rst>`_ to point at the appropriate
+-# location on GitHub so that they function when the long description is
+-# displayed on PyPI.
+-pattern = '`([^`]+)\s+<(?!https?://)([^>]+)>`_'
+-replacement = '`\1 <https://github.com/twisted/twisted/blob/trunk/\2>`_'
+-ignore-case = true
+-
+ [tool.hatch.build.targets.wheel]
+ packages = [
+     "src/twisted",

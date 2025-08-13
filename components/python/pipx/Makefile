@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -60,3 +60,7 @@ REQUIRED_PACKAGES += library/python/argcomplete
 REQUIRED_PACKAGES += library/python/packaging-$(PYV)
 REQUIRED_PACKAGES += library/python/platformdirs-$(PYV)
 REQUIRED_PACKAGES += library/python/userpath
+
+# build dependencies
+REQUIRED_PACKAGES += library/python/hatchling
+REQUIRED_PACKAGES += library/python/hatch-vcs

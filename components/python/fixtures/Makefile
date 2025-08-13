@@ -60,3 +60,7 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
 
 # Test related dependencies
 REQUIRED_PACKAGES += library/python/testtools
+
+# build dependencies
+REQUIRED_PACKAGES += library/python/hatchling
+REQUIRED_PACKAGES += library/python/hatch-vcs

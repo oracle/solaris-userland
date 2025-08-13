@@ -20,47 +20,43 @@
 #
 
 #
-# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
+
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		PrettyTable
-COMPONENT_VERSION=	3.10.0
-COMPONENT_SRC=		prettytable-$(COMPONENT_VERSION)
+COMPONENT_NAME=		hatchling
+COMPONENT_VERSION=	1.27.0
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9665594d137fb08a1117518c25551e0ede1687197cf353a4fdc78d27e1073568
+    sha256:7b37768d12b5a3d1dc1e5dfcf55ce6f6fbfbd028aaad34efb6191c13521db27e
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	http://code.google.com/p/prettytable/
-COMPONENT_BUGDB=	python-mod/prettytable
-COMPONENT_ANITYA_ID=	19994
-COMPONENT_BAID=		164671
+COMPONENT_PROJECT_URL=	https://hatch.pypa.io/latest/
+COMPONENT_BUGDB=	python-mod/hatchling
+COMPONENT_ANITYA_ID=	185085
+COMPONENT_BAID=		337328
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+COMPONENT_POST_INSTALL_ACTION += $(MV) \
+	$(PROTOUSRBINDIR)/hatchling \
+	$(PROTOUSRBINDIR)/hatchling-$(PYTHON_VERSION);
+
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
-
-# Non-ascii symbols can break the depthlimiter.py when ran with
-# Python 3.7+ unless UTF-8 locale is set (see bug 31983111):
-COMPONENT_PUBLISH_ENV  +=	LC_ALL=en_US.UTF-8
 
 # common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_NO_ARCH)
+test:		$(NO_TESTS)
 
-system-test:    $(SYSTEM_TEST_NO_ARCH)
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/wcwidth-%)
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/hatchling
-REQUIRED_PACKAGES += library/python/hatch-vcs
+REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pathspec-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pluggy-%)
+REQUIRED_PACKAGES += library/python/tomli-39

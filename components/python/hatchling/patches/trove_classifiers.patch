@@ -1,0 +1,33 @@
+Trove-classifiers package is not available on Solaris and seems unnecessary
+for downstream redistributors, so we are not adding it at this point.
+This change makes it optional.
+
+Not intended for upstream.
+
+--- hatchling-1.27.0/pyproject.toml
++++ hatchling-1.27.0/pyproject.toml
+@@ -39,7 +39,6 @@ dependencies = [
+   "pathspec>=0.10.1",
+   "pluggy>=1.0.0",
+   "tomli>=1.2.2; python_version < '3.11'",
+-  "trove-classifiers",
+ ]
+ 
+ [project.urls]
+--- hatchling-1.27.0/src/hatchling/metadata/core.py
++++ hatchling-1.27.0/src/hatchling/metadata/core.py
+@@ -967,8 +967,13 @@ class CoreMetadata:
+ 
+             verify_classifiers = not os.environ.get('HATCH_METADATA_CLASSIFIERS_NO_VERIFY')
+             if verify_classifiers:
+-                import trove_classifiers
++                try:
++                    import trove_classifiers
++                except ImportError:
++                    print("Skipping classifier verification - trove_classifiers is not available.")
++                    verify_classifiers = False
+ 
++            if verify_classifiers:
+                 known_classifiers = trove_classifiers.classifiers | self._extra_classifiers
+                 sorted_classifiers = list(trove_classifiers.sorted_classifiers)
+ 

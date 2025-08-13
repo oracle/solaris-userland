@@ -58,3 +58,6 @@ test:		$(TEST_NO_ARCH)
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
+
+# build dependencies
+REQUIRED_PACKAGES += library/python/hatchling

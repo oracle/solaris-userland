@@ -1,0 +1,60 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+
+set name=pkg.fmri \
+    value=pkg:/library/python/hatch-vcs-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary \
+    value="Hatch plugin for versioning with your preferred VCS."
+set name=pkg.description \
+    value="Hatch VCS is a plugin for Hatch that uses your preferred version control system (like Git) to determine project versions."
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
+set name=com.oracle.info.description value="the Python hatch-vcs module"
+set name=info.classification \
+    value=org.opensolaris.category.2008:Development/Python
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2025/092
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+#
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs-$(COMPONENT_VERSION).dist-info/INSTALLER
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs-$(COMPONENT_VERSION).dist-info/METADATA
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs-$(COMPONENT_VERSION).dist-info/RECORD
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs-$(COMPONENT_VERSION).dist-info/WHEEL
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs-$(COMPONENT_VERSION).dist-info/_solaris_dep
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs-$(COMPONENT_VERSION).dist-info/entry_points.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs-$(COMPONENT_VERSION).dist-info/licenses/LICENSE.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs/__about__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs/build_hook.py
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs/hooks.py
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs/metadata_hook.py
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs/vcs_utils.py
+file path=usr/lib/python$(PYVER)/vendor-packages/hatch_vcs/version_source.py
+#
+license LICENSE.txt license=MIT
+
+# force a dependency on the Python runtime
+depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
+    pkg.debug.depend.path=usr/bin
