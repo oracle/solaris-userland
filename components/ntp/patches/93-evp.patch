@@ -1,0 +1,17 @@
+This patch fixes the handling of the libraries after the upgrade
+of OpenSSL to 3.5.1. This issue has been reported to the NTP community
+as bug 3988 - EVP_MD_do_all_sorted not found with OpenSSL 3.5.1
+https://bugs.ntp.org/show_bug.cgi?id=3988
+This patch may be removed when upgrading to a version of NTP with that bug
+fixed.
+
+--- configure
++++ configure
+@@ -26592,6 +26592,7 @@ printf "%s\n" "#define OPENSSL /**/" >>c
+ printf "%s\n" "#define OPENSSL_SUPPRESS_DEPRECATED 1" >>confdefs.h
+ 
+         CFLAGS="$NTPSSL_SAVED_CFLAGS"
++	LIBS="$ntp_ssl_libs $NTPSSL_SAVED_LIBS"
+     ac_fn_c_check_func "$LINENO" "EVP_MD_do_all_sorted" "ac_cv_func_EVP_MD_do_all_sorted"
+ if test "x$ac_cv_func_EVP_MD_do_all_sorted" = xyes
+ then :
