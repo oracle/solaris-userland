@@ -1,0 +1,119 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+
+set name=pkg.fmri \
+    value=pkg:/print/cups/braille-printer-app@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="OpenPrinting Braille Printer Application"
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
+set name=com.oracle.info.description value="Braille embosser support"
+set name=info.classification value=org.opensolaris.category.2008:System/Printing
+set name=info.source-url value=$(GIT_REPO)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2024/127
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/lib/cups/backend/cups-brf mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/lib/cups/filter/brftoembosser mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/lib/cups/filter/brftopagedbrf mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+link path=usr/lib/cups/filter/cgmtopdf target=vectortopdf \
+    pkg.linted.pkglint.dupaction010.2=true
+link path=usr/lib/cups/filter/cmxtopdf target=vectortopdf \
+    pkg.linted.pkglint.dupaction010.2=true
+link path=usr/lib/cups/filter/emftopdf target=vectortopdf \
+    pkg.linted.pkglint.dupaction010.2=true
+file path=usr/lib/cups/filter/imagetobrf mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+link path=usr/lib/cups/filter/imagetoubrl target=imagetobrf \
+    pkg.linted.pkglint.dupaction010.2=true
+file path=usr/lib/cups/filter/imageubrltoindexv3 mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/lib/cups/filter/imageubrltoindexv4 mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+link path=usr/lib/cups/filter/svgtopdf target=vectortopdf \
+    pkg.linted.pkglint.dupaction010.2=true
+file path=usr/lib/cups/filter/textbrftoindexv3 mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+link path=usr/lib/cups/filter/textbrftoindexv4 target=textbrftoindexv3 \
+    pkg.linted.pkglint.dupaction010.2=true
+file path=usr/lib/cups/filter/texttobrf mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/lib/cups/filter/vectortobrf mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/lib/cups/filter/vectortopdf mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+link path=usr/lib/cups/filter/vectortoubrl target=vectortobrf \
+    pkg.linted.pkglint.dupaction010.2=true
+link path=usr/lib/cups/filter/wmftopdf target=vectortopdf \
+    pkg.linted.pkglint.dupaction010.2=true
+link path=usr/lib/cups/filter/xfigtopdf target=vectortopdf \
+    pkg.linted.pkglint.dupaction010.2=true
+file path=usr/share/cups/braille/cups-braille.sh mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/braille/index.sh mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/braille/indexv3.sh mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/braille/indexv4.sh mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/drv/generic-brf.drv \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/drv/generic-ubrl.drv \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/drv/indexv3.drv pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/drv/indexv4.drv pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/mime/braille.convs \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/mime/braille.types \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/ppdc/braille.defs \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/ppdc/fr-braille.po \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/ppdc/imagemagick.defs \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/ppdc/index.defs pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/ppdc/liblouis.defs \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/ppdc/liblouis1.defs \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/ppdc/liblouis2.defs \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/ppdc/liblouis3.defs \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/ppdc/liblouis4.defs \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/cups/ppdc/media-braille.defs \
+    pkg.linted.pkglint.dupaction001.1=true
+file path=usr/share/doc/braille-printer-app/ABOUT-NLS
+file path=usr/share/doc/braille-printer-app/AUTHORS
+file path=usr/share/doc/braille-printer-app/CHANGES-1.x.md
+file path=usr/share/doc/braille-printer-app/CHANGES.md
+file path=usr/share/doc/braille-printer-app/CONTRIBUTING.md
+file path=usr/share/doc/braille-printer-app/COPYING
+file path=usr/share/doc/braille-printer-app/DEVELOPING.md
+file path=usr/share/doc/braille-printer-app/INSTALL
+file path=usr/share/doc/braille-printer-app/README.md
+#
+license braille-printer-app.license license="Apache v2.0"

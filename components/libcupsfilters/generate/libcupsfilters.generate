@@ -1,0 +1,59 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+
+# Install pc file into common location
+<transform file path=.+/pkgconfig/(.+\.pc) -> set action.hash %(path)>
+<transform file path=.+/pkgconfig/(.+\.pc) -> set path usr/lib/pkgconfig/%<1>>
+
+# Following lines could be removed once the cups-filters stops delivering these files
+<transform file path=usr/include/cupsfilters/colord.h -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/include/cupsfilters/colormanager.h -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/include/cupsfilters/driver.h -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/include/cupsfilters/image.h -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/include/cupsfilters/ipp.h -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/include/cupsfilters/raster.h -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/lib/pkgconfig/libcupsfilters.pc -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/banners/classified -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/banners/confidential -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/banners/form -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/banners/secret -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/banners/standard -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/banners/topsecret -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/banners/unclassified -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/charsets/pdf.utf-8.simple -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/charsets/pdf.utf-8.heavy -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/classified.pdf -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/confidential.pdf -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/default-testpage.pdf -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/default.pdf -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/form_english.pdf -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/form_english_in.odt -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/form_russian.pdf -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/form_russian_in.odt -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/secret.pdf -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/standard.pdf -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/testprint -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/topsecret.pdf -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/cups/data/unclassified.pdf -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform link path=usr/share/cups/charsets/pdf.utf-8 -> set pkg.linted.pkglint.dupaction010.2 true>
+<transform link path=usr/lib/cups/\$\(MACH64\)/libcupsfilters.so -> set pkg.linted.pkglint.dupaction010.2 true>

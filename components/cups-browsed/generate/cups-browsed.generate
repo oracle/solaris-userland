@@ -18,8 +18,17 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
 
 # Setup manual page stability, see attributes(7).
 <transform file path=usr/share/man/man.*/.* -> set mangler.man.stability uncommitted>
+
+# Following lines could be removed once the cups-filters stops delivering these files
+<transform file path=etc/cups/cups-browsed.conf -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=lib/svc/manifest/application/cups-multicast.xml -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=lib/svc/method/svc-cups-browsed -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/sbin/cups-browsed -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/lib/cups/backend/implicitclass -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/man/man5/cups-browsed.conf.5 -> set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/share/man/man8/cups-browsed.8 -> set pkg.linted.pkglint.dupaction001.1 true>

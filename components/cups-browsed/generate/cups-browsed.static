@@ -18,22 +18,10 @@
 #
 # CDDL HEADER END
 #
-
-#
-# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
 
-<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
-
-# remove 32bit utils
-<transform file link path=usr/bin/\$\(MACH32\)/(?!cups-config) -> drop>
-
-# by default everything is in main package
-<transform file link -> default pkg.type cups>
-
-# includes and libs belong to cups-libs
-<transform file link path=usr/include/.* -> set pkg.type libs>
-<transform file link path=usr/lib/.* -> set pkg.type libs>
-
-# but usr/lib/cups belong to cups
-<transform file link path=usr/lib/cups/.* -> set pkg.type cups>
+# cups-browsed SMF service manifest and start script
+file files/cups-multicast.xml path=lib/svc/manifest/application/cups-multicast.xml mode=0444 \
+    restart_fmri=svc:/system/manifest-import:defaul pkg.linted.pkglint.dupaction001.1=true
+file files/svc-cups-browsed path=lib/svc/method/svc-cups-browsed pkg.linted.pkglint.dupaction001.1=true

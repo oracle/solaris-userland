@@ -1,0 +1,22 @@
+Solaris `echo' does not support -en.
+
+--- a/utils/driverless.c
++++ b/utils/driverless.c
+@@ -419,7 +419,7 @@
+   ippfind_argv[i++] = "application/pdf";  /* PDF */
+   ippfind_argv[i++] = ")";
+   ippfind_argv[i++] = "-x";
+-  ippfind_argv[i++] = "echo";             /* Output the needed data fields */
++  ippfind_argv[i++] = "gecho";             /* Output the needed data fields */
+   ippfind_argv[i++] = "-en";              /* separated by tab characters */
+   if (mode < 0) {
+     if (isFax)
+@@ -440,7 +440,7 @@
+   if (mode < 0) {
+     ippfind_argv[i++] = "--local";        /* Rest only if local service */
+     ippfind_argv[i++] = "-x";
+-    ippfind_argv[i++] = "echo";           /* Output an 'L' at the end of the */
++    ippfind_argv[i++] = "gecho";           /* Output an 'L' at the end of the */
+     ippfind_argv[i++] = "-en";            /* line */
+     ippfind_argv[i++] = "L";
+     ippfind_argv[i++] = ";";

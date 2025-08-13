@@ -1,11 +1,14 @@
 Changes implement the Trusted Extension functionality in cupsd and related
 tools. Trusted data are gathered from the system and are added to the print
-job. Security checks are done to enforce the rules of Trusted environment.
+job. job-sheets option is pre-set to 'labeled,labeled' for newly added
+printers. Security checks are done to enforce the rules of Trusted
+environment.
 
-Index: Makedefs.in
-===================================================================
---- cups-2.4.1/Makedefs.in
-+++ cups-2.4.1/Makedefs.in
+This patch together with tx.patch in libcupsfilters and cups-filters makes the
+Trusted Extension implementation complete.
+
+--- a/Makedefs.in
+--- b/Makedefs.in
 @@ -162,7 +162,7 @@ ARFLAGS		=	@ARFLAGS@
  BACKLIBS	=	@BACKLIBS@
  BUILDDIRS	=	@BUILDDIRS@
@@ -15,8 +18,8 @@ Index: Makedefs.in
  CXXFLAGS	=	@CPPFLAGS@ @CXXFLAGS@
  CXXLIBS		=	@CXXLIBS@
  DBUS_NOTIFIER	=	@DBUS_NOTIFIER@
---- cups-2.4.1/berkeley/lpq.c
-+++ cups-2.4.1/berkeley/lpq.c
+--- a/berkeley/lpq.c
+--- b/berkeley/lpq.c
 @@ -15,6 +15,10 @@ */
  
  #include <cups/cups-private.h>
@@ -58,9 +61,9 @@ Index: Makedefs.in
 +		AC_CHECK_HEADER(tsol/label.h)
 +		AC_DEFINE(HAVE_TSOL, 1, [Define if Trusted Solaris is enabled.])])
 +fi
---- cups-2.4.1/config.h.in
-+++ cups-2.4.1/config.h.in
-@@ -712,4 +712,10 @@ */
+--- a/config.h.in
+--- b/config.h.in
+@@ -719,4 +719,10 @@ */
  #undef HAVE_SNAPD_CLIENT_RUN_SNAPCTL2_SYNC
  
  
@@ -71,8 +74,8 @@ Index: Makedefs.in
 +#undef HAVE_TSOL
 +
  #endif /* !_CUPS_CONFIG_H_ */
---- cups-2.4.1/configure.ac
-+++ cups-2.4.1/configure.ac
+--- a/configure.ac
+--- b/configure.ac
 @@ -39,6 +39,7 @@ sinclude(config-scripts/cups-dnssd.m4)
  sinclude(config-scripts/cups-container.m4)
  sinclude(config-scripts/cups-startup.m4)
@@ -81,8 +84,8 @@ Index: Makedefs.in
  
  dnl See what languages are available and make sure we generate the localization
  dnl files as needed...
---- cups-2.4.1/scheduler/auth.c
-+++ cups-2.4.1/scheduler/auth.c
+--- a/scheduler/auth.c
+--- b/scheduler/auth.c
 @@ -60,6 +60,9 @@
  #  include <snapd-glib/snapd-glib.h>
  #endif /* HAVE_LIBSNAPDGLIB */
@@ -93,7 +96,7 @@ Index: Makedefs.in
  
  /*
   * Local functions...
-@@ -1698,8 +1698,38 @@ if (!con->username[0])
+@@ -1692,8 +1695,38 @@ if (!con->username[0])
  #endif /* HAVE_AUTHORIZATION_H */
      {
        if (best->satisfy == CUPSD_AUTH_SATISFY_ALL || auth == CUPSD_AUTH_DENY)
@@ -133,8 +136,8 @@ Index: Makedefs.in
  	return (HTTP_OK);		/* unless overridden with Satisfy */
      }
  
---- cups-2.4.1/scheduler/client.c
-+++ cups-2.4.1/scheduler/client.c
+--- a/scheduler/client.c
+--- b/scheduler/client.c
 @@ -27,6 +27,11 @@ #ifdef HAVE_TCPD_H
  #  include <tcpd.h>
  #endif /* HAVE_TCPD_H */
@@ -213,7 +216,7 @@ Index: Makedefs.in
  
  /*
   * 'cupsdAcceptClient()' - Accept a new client.
-@@ -266,6 +330,21 @@ return;
+@@ -264,6 +328,21 @@ return;
    }
  #endif /* HAVE_TCPD_H */
  
@@ -235,7 +238,7 @@ Index: Makedefs.in
  #ifdef AF_LOCAL
    if (httpAddrFamily(httpGetAddress(con->http)) == AF_LOCAL)
    {
-@@ -474,6 +553,12 @@ con->http = NULL;
+@@ -487,6 +566,12 @@ con->http = NULL;
      }
    }
  
@@ -248,9 +251,9 @@ Index: Makedefs.in
    if (!partial)
    {
     /*
---- cups-2.4.1/scheduler/client.h
-+++ cups-2.4.1/scheduler/client.h
-@@ -64,6 +64,8 @@ #endif /* HAVE_GSSAPI */
+--- a/scheduler/client.h
+--- b/scheduler/client.h
+@@ -66,6 +66,8 @@ #endif /* HAVE_GSSAPI */
  #ifdef HAVE_AUTHORIZATION_H
    AuthorizationRef	authref;	/* Authorization ref */
  #endif /* HAVE_AUTHORIZATION_H */
@@ -259,9 +262,9 @@ Index: Makedefs.in
  };
  
  #define HTTP(con) ((con)->http)
---- cups-2.4.1/scheduler/cupsd.h
-+++ cups-2.4.1/scheduler/cupsd.h
-@@ -39,6 +39,9 @@ #if defined(HAVE_CDSASSL)
+--- a/scheduler/cupsd.h
+--- b/scheduler/cupsd.h
+@@ -40,6 +40,9 @@ #if defined(HAVE_CDSASSL)
  #  include <CoreFoundation/CoreFoundation.h>
  #endif /* HAVE_CDSASSL */
  
@@ -271,8 +274,8 @@ Index: Makedefs.in
  
  /*
   * Some OS's don't have hstrerror(), most notably Solaris...
---- cups-2.4.1/scheduler/ipp.c
-+++ cups-2.4.1/scheduler/ipp.c
+--- a/scheduler/ipp.c
+--- b/scheduler/ipp.c
 @@ -28,6 +28,11 @@ extern int mbr_group_name_to_uuid(const
  extern int mbr_check_membership_by_id(uuid_t user, gid_t group, int* ismember);
  #endif /* __APPLE__ */
@@ -285,7 +288,7 @@ Index: Makedefs.in
  
  /*
   * Local functions...
-@@ -714,17 +719,37 @@ return (-1);
+@@ -660,17 +665,37 @@ return (-1);
    printer = cupsdFindDest(job->dest);
    attr    = ippFindAttribute(job->attrs, "job-sheets", IPP_TAG_NAME);
  
@@ -330,7 +333,7 @@ Index: Makedefs.in
        return (-1);
  
      cupsdUpdateQuota(printer, job->username, 0, kbytes);
-@@ -733,6 +758,50 @@ }
+@@ -679,6 +704,50 @@ }
    return (0);
  }
  
@@ -381,8 +384,8 @@ Index: Makedefs.in
  
  /*
   * 'accept_jobs()' - Accept print jobs to a printer.
-@@ -1249,6 +1318,17 @@ con, con->number, printer, printer->name
- 		  filetype, filetype ? filetype->super : "none",
+@@ -1195,6 +1264,17 @@ (void *)con, con->number, (void *)printe
+ 		  (void *)filetype, filetype ? filetype->super : "none",
  		  filetype ? filetype->type : "none");
  
 +  /*
@@ -399,7 +402,7 @@ Index: Makedefs.in
   /*
    * Check remote printing to non-shared printer...
    */
-@@ -1293,6 +1373,50 @@ return (NULL);
+@@ -1239,6 +1319,50 @@ return (NULL);
    }
  #endif /* HAVE_TLS */
  
@@ -450,7 +453,7 @@ Index: Makedefs.in
   /*
    * See if the printer is accepting jobs...
    */
-@@ -1578,6 +1702,19 @@ printer->name);
+@@ -1524,6 +1648,19 @@ printer->name);
      return (NULL);
    }
  
@@ -470,7 +473,7 @@ Index: Makedefs.in
    job->dtype   = printer->type & (CUPS_PRINTER_CLASS | CUPS_PRINTER_REMOTE);
    job->attrs   = con->request;
    job->dirty   = 1;
-@@ -1639,7 +1776,7 @@ */
+@@ -1585,7 +1722,7 @@ */
  
      if (attr->value_tag != IPP_TAG_NAME ||
          attr->num_values != 1 ||
@@ -479,7 +482,7 @@ Index: Makedefs.in
      {
       /*
        * Can't override the value if we aren't connected via localhost.
-@@ -1882,10 +2019,24 @@ */
+@@ -1828,10 +1965,24 @@ */
  
      if (!(printer->type & CUPS_PRINTER_REMOTE))
      {
@@ -506,7 +509,7 @@ Index: Makedefs.in
        {
          cupsdSetJobState(job, IPP_JOB_ABORTED, CUPSD_JOB_PURGE,
  	                 "Aborting job because the start banner could not be "
-@@ -3041,6 +3192,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -3024,6 +3175,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -522,7 +525,7 @@ Index: Makedefs.in
   /*
    * See if the job has been completed...
    */
-@@ -3513,6 +3673,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -3496,6 +3656,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -539,7 +542,7 @@ Index: Makedefs.in
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -5942,6 +6112,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -6152,6 +6322,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
  	                jobid);
  	return;
        }
@@ -556,7 +559,7 @@ Index: Makedefs.in
      }
      else
        job = NULL;
-@@ -6490,6 +6670,15 @@ }
+@@ -6699,6 +6879,15 @@ }
  
    exclude = cupsdGetPrivateAttrs(policy, con, printer, job->username);
  
@@ -572,7 +575,7 @@ Index: Makedefs.in
   /*
    * Copy attributes...
    */
-@@ -6749,6 +6938,21 @@ strlcpy(username, get_username(con), siz
+@@ -6958,6 +7147,21 @@ strlcpy(username, get_username(con), siz
    else
      username[0] = '\0';
  
@@ -594,7 +597,7 @@ Index: Makedefs.in
    ra = create_requested_array(con->request);
    for (job_attr = (char *)cupsArrayFirst(ra); job_attr; job_attr = (char *)cupsArrayNext(ra))
      if (strcmp(job_attr, "job-id") &&
-@@ -6817,6 +7021,14 @@ if (need_load_job && !job->attrs)
+@@ -7026,6 +7230,14 @@ if (need_load_job && !job->attrs)
        {
          cupsdLoadJob(job);
  
@@ -609,7 +612,7 @@ Index: Makedefs.in
  	if (!job->attrs)
  	{
  	  cupsdLogMessage(CUPSD_LOG_DEBUG2, "get_jobs: No attributes for job %d", job->id);
-@@ -6885,7 +7097,11 @@ continue;
+@@ -7094,7 +7306,11 @@ continue;
  	}
        }
  
@@ -622,7 +625,7 @@ Index: Makedefs.in
  	continue;
  
        if (count > 0)
-@@ -7983,6 +8199,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -8193,6 +8409,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -638,7 +641,7 @@ Index: Makedefs.in
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -8253,6 +8478,14 @@ */
+@@ -8463,6 +8688,14 @@ */
        send_ipp_status(con, IPP_NOT_FOUND, _("Job #%d does not exist."), jobid);
        return;
      }
@@ -653,7 +656,7 @@ Index: Makedefs.in
      else
      {
       /*
-@@ -8275,6 +8508,27 @@ send_http_error(con, status, dprinter);
+@@ -8485,6 +8718,27 @@ send_http_error(con, status, dprinter);
      return;
    }
  
@@ -681,7 +684,7 @@ Index: Makedefs.in
   /*
    * Now move the job or jobs...
    */
-@@ -9121,6 +9375,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9335,6 +9589,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -698,7 +701,7 @@ Index: Makedefs.in
   /*
    * See if job is "held"...
    */
-@@ -9345,6 +9609,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9559,6 +9823,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -714,7 +717,7 @@ Index: Makedefs.in
   /*
    * See if job is in any of the "completed" states...
    */
-@@ -9696,6 +9969,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9910,6 +10183,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -730,7 +733,7 @@ Index: Makedefs.in
    printer = cupsdFindDest(job->dest);
  
   /*
-@@ -10305,6 +10587,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -10599,6 +10881,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -746,15 +749,23 @@ Index: Makedefs.in
   /*
    * See if the job has been completed...
    */
-@@ -10649,7 +10940,6 @@ }
-  /*
-   * Return a list of attributes that can be set via Set-Printer-Attributes.
-   */
--
-   if ((attr = ippFindAttribute(con->request, "printer-location",
-                                IPP_TAG_TEXT)) != NULL)
-   {
-@@ -11489,6 +11779,11 @@ */
+@@ -11051,8 +11342,14 @@ cupsdSetString(&printer->job_sheets[0],
+ 
+       if (attr->num_values > 1)
+ 	cupsdSetString(&printer->job_sheets[1], attr->values[1].string.text);
+-      else
++      else {
++#if defined(HAVE_TSOL)
++        if (is_system_labeled())
++	  cupsdSetString(&printer->job_sheets[1], "labeled");
++	else
++#endif
+ 	cupsdSetString(&printer->job_sheets[1], "none");
++      }
+     }
+     else if (!strcmp(attr->name, "requesting-user-name-allowed"))
+     {
+@@ -11828,6 +12125,11 @@ */
  
    strlcpy(username, get_username(con), userlen);
  
@@ -766,9 +777,9 @@ Index: Makedefs.in
   /*
    * Check the username against the owner...
    */
---- cups-2.4.1/scheduler/job.c
-+++ cups-2.4.1/scheduler/job.c
-@@ -1063,7 +1063,13 @@ "CUPS_FILETYPE=document";
+--- a/scheduler/job.c
+--- b/scheduler/job.c
+@@ -1069,7 +1069,13 @@ "CUPS_FILETYPE=document";
    if (final_content_type[0])
      envp[envc ++] = final_content_type;
  
@@ -783,9 +794,9 @@ Index: Makedefs.in
    {
      if ((attr = ippFindAttribute(job->attrs, "job-sheets",
                                   IPP_TAG_NAME)) == NULL)
-@@ -1413,6 +1419,12 @@ free(job->filetypes);
-     job->num_files = 0;
-   }
+@@ -1421,6 +1427,12 @@ }
+ 
+   unload_job(job);
  
 +  if (job->slabel)
 +  {
@@ -796,8 +807,8 @@ Index: Makedefs.in
    if (job->history)
      free_job_history(job);
  
-@@ -1841,6 +1853,10 @@ else
-       ippSetString(job->attrs, &job->reasons, 0, "none");
+@@ -1855,6 +1867,10 @@ */
+     ippSetString(job->attrs, &job->reasons, 0, "job-completed-successfully");
    }
  
 +  if ((attr = ippFindAttribute(job->attrs, "security-label",
@@ -807,7 +818,7 @@ Index: Makedefs.in
    job->impressions = ippFindAttribute(job->attrs, "job-impressions-completed", IPP_TAG_INTEGER);
    job->sheets      = ippFindAttribute(job->attrs, "job-media-sheets-completed", IPP_TAG_INTEGER);
    job->job_sheets  = ippFindAttribute(job->attrs, "job-sheets", IPP_TAG_NAME);
-@@ -3870,6 +3886,25 @@ newlength = ipp_length(job->attrs);
+@@ -3914,6 +3930,25 @@ newlength = ipp_length(job->attrs);
    for (i = num_pwgppds, pwgppd = pwgppds; i > 0; i --, pwgppd ++)
      newlength += 1 + strlen(pwgppd->name) + 1 + strlen(pwgppd->value);
  
@@ -833,7 +844,7 @@ Index: Makedefs.in
   /*
    * Then allocate/reallocate the option buffer as needed...
    */
-@@ -4110,6 +4145,25 @@ }
+@@ -4151,6 +4186,25 @@ }
  
    cupsFreeOptions(num_pwgppds, pwgppds);
  
@@ -859,7 +870,7 @@ Index: Makedefs.in
   /*
    * Return the options string...
    */
-@@ -4814,6 +4868,18 @@ */
+@@ -4859,6 +4913,18 @@ */
    if (!cupsdLoadJob(job))
      return;
  
@@ -878,9 +889,9 @@ Index: Makedefs.in
    if (!job->printer_message)
      job->printer_message = ippFindAttribute(job->attrs,
                                              "job-printer-state-message",
---- cups-2.4.1/scheduler/job.h
-+++ cups-2.4.1/scheduler/job.h
-@@ -84,6 +84,8 @@ cups_array_t		*history;	/* Debug log his
+--- a/scheduler/job.h
+--- b/scheduler/job.h
+@@ -85,6 +85,8 @@ cups_array_t		*history;	/* Debug log his
    int			progress;	/* Printing progress */
    int			num_keywords;	/* Number of PPD keywords */
    cups_option_t		*keywords;	/* PPD keywords */
@@ -891,7 +902,26 @@ Index: Makedefs.in
  typedef struct cupsd_joblog_s		/**** Job log message ****/
 --- a/scheduler/printers.c
 +++ b/scheduler/printers.c
-@@ -933,6 +933,91 @@ else
+@@ -104,8 +104,16 @@
+ 
+   _cupsRWUnlock(&MimeDatabase->lock);
+ 
+-  cupsdSetString(&p->job_sheets[0], "none");
+-  cupsdSetString(&p->job_sheets[1], "none");
++#if defined(HAVE_TSOL)
++  if (is_system_labeled()) {
++    cupsdSetString(&p->job_sheets[0], "labeled");
++    cupsdSetString(&p->job_sheets[1], "labeled");
++  } else
++#endif
++  {
++    cupsdSetString(&p->job_sheets[0], "none");
++    cupsdSetString(&p->job_sheets[1], "none");
++  }
+ 
+   cupsdSetString(&p->error_policy, ErrorPolicy);
+   cupsdSetString(&p->op_policy, DefaultPolicy);
+@@ -828,6 +837,91 @@ else
      return (p);
  }
  
@@ -983,7 +1013,7 @@ Index: Makedefs.in
  
  /*
   * 'cupsdLoadAllPrinters()' - Load printers from the printers.conf file.
-@@ -2602,12 +2687,22 @@ }
+@@ -2502,12 +2596,22 @@ }
      ippDelete(oldattrs);
    }
  
@@ -1009,9 +1039,9 @@ Index: Makedefs.in
  
   /*
    * Populate the document-format-supported attribute...
---- cups-2.4.1/scheduler/printers.h
-+++ cups-2.4.1/scheduler/printers.h
-@@ -163,6 +163,8 @@ extern cupsd_printer_t	*cupsdFindPrinter
+--- a/scheduler/printers.h
+--- b/scheduler/printers.h
+@@ -161,6 +161,8 @@ extern cupsd_printer_t	*cupsdFindPrinter
  extern cupsd_quota_t	*cupsdFindQuota(cupsd_printer_t *p,
  			                const char *username);
  extern void		cupsdFreeQuotas(cupsd_printer_t *p);
@@ -1020,3 +1050,27 @@ Index: Makedefs.in
  extern void		cupsdLoadAllPrinters(void);
  extern void		cupsdRenamePrinter(cupsd_printer_t *p,
  			                   const char *name);
+--- a/tools/ippeveprinter.c
++++ b/tools/ippeveprinter.c
+@@ -85,6 +85,9 @@ #include "printer-png.h"
+ #include "printer-lg-png.h"
+ #include "printer-sm-png.h"
+ 
++#if defined (HAVE_TSOL)
++#include <tsol/label.h>
++#endif /* HAVE_TSOL */
+ 
+ /*
+  * Constants...
+@@ -1913,6 +1916,11 @@ /* job-priority-supported */
+   ippAddInteger(printer->attrs, IPP_TAG_PRINTER, IPP_TAG_INTEGER, "job-priority-supported", 1);
+ 
+   /* job-sheets-default */
++#if defined(HAVE_TSOL)
++  if (is_system_labeled())
++    ippAddString(printer->attrs, IPP_TAG_PRINTER, IPP_CONST_TAG(IPP_TAG_NAME), "job-sheets-default", NULL, "labeled");
++  else
++#endif
+   ippAddString(printer->attrs, IPP_TAG_PRINTER, IPP_CONST_TAG(IPP_TAG_NAME), "job-sheets-default", NULL, "none");
+ 
+   /* job-sheets-supported */

@@ -20,36 +20,35 @@
 #
 
 #
-# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		cups-filters
-COMPONENT_VERSION=	2.0.1
-COMPONENT_ARCHIVE_HASH=	sha256:3de1cbb889d06e5a6a945dcb921292544477ab89da95ca89f1eec2de29937afb
-COMPONENT_PROJECT_URL=	http://www.openprinting.org/
+COMPONENT_NAME=		braille-printer-app
+COMPONENT_VERSION=	2.0.0
+COMPONENT_PROJECT_URL=	https://github.com/OpenPrinting/$(COMPONENT_NAME)
+GIT_REPO=		https://github.com/OpenPrinting/$(COMPONENT_NAME)
+GIT_COMMIT_ID=		3df7f94
+GIT_HASH=		sha256:3e526fd90c08f07e4eee557923a43faf9fd8ee460c51d3995b505990e534ac0b
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE_URL=	https://github.com/OpenPrinting/cups-filters/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/cups
-COMPONENT_BAID=		182119
+COMPONENT_BAID=		182118
 COMPONENT_ANITYA_ID=	5541
 
 include $(WS_MAKE_RULES)/common.mk
 
-COMPONENT_PRE_CONFIGURE_ACTION = \
-	($(CLONEY) $(SOURCE_DIR) $(@D))
-
+# configure script is not distributed
+COMPONENT_PREP_ACTION = (cd $(@D); LC_ALL=C autoreconf -fiv)
 
 CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
-CONFIGURE_OPTIONS +=    --disable-mutool
 
-# patches/porting.patch uses gecho
-REQUIRED_PACKAGES += file/gnu-coreutils
-REQUIRED_PACKAGES += library/print/cups-libs
-REQUIRED_PACKAGES += print/cups/libcupsfilters
-REQUIRED_PACKAGES += print/cups/libppd
-REQUIRED_PACKAGES += system/library/math
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are
+# processed.
+CONFIGURE_OPTIONS +=	MAKE=$(GMAKE)
+
+COMPONENT_BUILD_ENV +=	PATH="$(GNUBIN):$(PATH)"

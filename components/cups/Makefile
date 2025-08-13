@@ -79,9 +79,6 @@ COMPONENT_TEST_TRANSFORMS = \
 	'-e "/ tests failed./p" ' \
 	'-e "d" '
 
-cups.license: $(SOURCE_DIR)/LICENSE $(SOURCE_DIR)/NOTICE
-	cat $? > $@
-
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libpaper
 REQUIRED_PACKAGES += library/libusb-1

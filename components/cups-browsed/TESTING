@@ -1,0 +1,18 @@
+Cups-browsed unit tests require running avahi-daemon and NSS mdns setup. Both steps need root. We don't want to do this on build machines, so automatic tests are disabled by default.
+
+Follow these steps to run the tests by hand on your personal machine:
+1. Log into a VM machine, ex. virtual.cz or virtuals.cz.
+2. vm create ST_userland_build cups-browsed
+3. vm start cups-browsed
+4. vm ssh cups-browsed
+5. Complete the instructions it gaves you in motd.
+6. sudo svcadm enable network/dns/multicast
+7. sudo svccfg -s svc:/system/name-service/switch
+8. setprop config/host = astring: "files mdns dns"
+9. select system/name-service/switch:default
+10. refresh
+11. quit
+12. cd /scratch/userland-gate/components/openprinting/cups-browsed && gmake publish
+13. (build/amd64; /usr/bin/env /usr/gnu/bin/make check)
+
+All tests must PASS.

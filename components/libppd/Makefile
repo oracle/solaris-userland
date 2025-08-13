@@ -20,36 +20,38 @@
 #
 
 #
-# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		cups-filters
-COMPONENT_VERSION=	2.0.1
-COMPONENT_ARCHIVE_HASH=	sha256:3de1cbb889d06e5a6a945dcb921292544477ab89da95ca89f1eec2de29937afb
+COMPONENT_NAME=		libppd
+COMPONENT_VERSION=	2.1.1
+COMPONENT_ARCHIVE_HASH=	sha256:b356aeed1335ef0ca7f799741782a2544e7acee63fb4b047b94e4e0395a9cb62
 COMPONENT_PROJECT_URL=	http://www.openprinting.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE_URL=	https://github.com/OpenPrinting/cups-filters/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://github.com/OpenPrinting/libppd/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/cups
-COMPONENT_BAID=		182119
-COMPONENT_ANITYA_ID=	5541
+COMPONENT_BAID=		182114
+COMPONENT_ANITYA_ID=	328127
 
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
-	($(CLONEY) $(SOURCE_DIR) $(@D))
-
+        ($(CLONEY) $(SOURCE_DIR) $(@D))
 
 CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
-CONFIGURE_OPTIONS +=    --disable-mutool
+CONFIGURE_OPTIONS +=	--with-cups-rundir=/system/volatile/cups
+# use gs or poppler according to printer PPD make-and-model; see README
+CONFIGURE_OPTIONS +=	--with-pdftops=hybrid
+CONFIGURE_OPTIONS +=	--disable-mutool
 
-# patches/porting.patch uses gecho
-REQUIRED_PACKAGES += file/gnu-coreutils
 REQUIRED_PACKAGES += library/print/cups-libs
+REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += print/cups/libcupsfilters
-REQUIRED_PACKAGES += print/cups/libppd
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
