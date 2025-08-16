@@ -26,11 +26,6 @@
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS=		64
 COMPILER=		gcc
-# Set BINDDEBUG=yes in environment to make this a debug build.
-ifeq ($(DEBUG), yes)
-gcc_OPT.sparc.64 =	-g
-gcc_OPT.i386.64 =	-g
-endif
 CTF_MODE =		relaxed
 
 include ../../make-rules/shared-macros.mk
@@ -42,7 +37,7 @@ COMPONENT_NAME=		userspace-rcu
 COMPONENT_VERSION=	0.15.3
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
-COMPONENT_BUGDB=	service/dns-server
+COMPONENT_BUGDB=	LIBRARY/LIBURCU
 COMPONENT_BAID=		336112
 COMPONENT_PROJECT_URL=	https://liburcu.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
@@ -71,6 +66,9 @@ COMPONENT_TEST_MASTER = \
 republish:
 	$(GMAKE) publish PKGREPO_REMOVE_BEFORE_PUBLISH=yes
 
+# Test configuration
+COMPONENT_TEST_TRANSFORMS +=	\
+	'-e "s|^\(.* \- get_possible_cpus_array_len (\)\([0-9]*\)\(.*\)|\1ELIDED\3|" '
 
 # license verification, consistent license file build and check
 e = /usr/gnu/bin/echo
