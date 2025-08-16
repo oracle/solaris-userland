@@ -43,6 +43,10 @@ BUILD_STYLE=            meson
 
 TEST_TARGET = $(NO_TESTS)
 
+ifeq ($(MACH), i386)
+ADDITIONAL_PATCHES += patches/12-37245012.patch.i386
+endif
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # g-ir-scanner

@@ -1,3 +1,7 @@
+Updating this path to apply only in i386 since its causing rendering and performance issues on sparc as documented in 38309186 & 38167835
+
+The cairo fix from upstream recorded in 38167835 is still causing the EFI failure so we cannot revert the below change yet, but can atleast restrict it to be on i386 and resolve issues seen on sparc with the GL renderer.
+
 Revert https://gitlab.gnome.org/GNOME/mutter/-/commit/57fdd7efd2d2ef05df86c60e36e200a15a9918a0
 
 This is causing a regression with Java/Swing apps where occasionally windows are stuck in the minimzed state.  There are outstanding issues with mutter-x11-frames starting Gnome 44 (still present in Gnome 47) which result in this behaviour -  https://gitlab.gnome.org/GNOME/mutter/-/issues/3922
