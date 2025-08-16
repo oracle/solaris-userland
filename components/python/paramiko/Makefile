@@ -20,31 +20,34 @@
 #
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		paramiko
-COMPONENT_VERSION=	3.4.0
+COMPONENT_VERSION=	4.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:0ae53a326e9e8beab52395023d84e76c87f30b00852d663c2c58353e83cc556c
+	sha256:6a25f07b380cc9c9a88d2b920ad37167ac4667f8d9886ccebd8f90f654b5d69f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/paramiko/paramiko/
 COMPONENT_BUGDB=	python-mod/paramiko
 COMPONENT_ANITYA_ID=	3954
-COMPONENT_BAID=		156930
+COMPONENT_BAID=		339822
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # set LC_ALL for unicode sftp tests test_K_utf8 and test_L_utf8_chdir
 COMPONENT_TEST_ENV =	LC_ALL=en_US.UTF-8
 COMPONENT_TEST_ENV +=	PYTHONPATH=$(SOURCE_DIR)
 COMPONENT_SYSTEM_TEST_ENV =	LC_ALL=en_US.UTF-8
+
+# Testing environment must be clean
+test: ENV += -i
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest

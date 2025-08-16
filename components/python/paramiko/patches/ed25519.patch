@@ -4,91 +4,83 @@ that, we have to disable Ed25519 for now.
 Original introduction pull request:
 https://github.com/paramiko/paramiko/pull/972/files
 
---- paramiko-3.4.0/paramiko/__init__.py
-+++ paramiko-3.4.0/paramiko/__init__.py
-@@ -68,7 +68,6 @@ from paramiko.server import ServerInterf
+--- paramiko-4.0.0/paramiko/__init__.py
++++ paramiko-4.0.0/paramiko/__init__.py
+@@ -69,7 +69,6 @@ from paramiko.ssh_exception import (
+ from paramiko.server import ServerInterface, SubsystemHandler, InteractiveQuery
  from paramiko.rsakey import RSAKey
- from paramiko.dsskey import DSSKey
  from paramiko.ecdsakey import ECDSAKey
 -from paramiko.ed25519key import Ed25519Key
  from paramiko.sftp import SFTPError, BaseSFTP
  from paramiko.sftp_client import SFTP, SFTPClient
  from paramiko.sftp_server import SFTPServer
-@@ -112,7 +111,7 @@ from paramiko.common import io_sleep
+@@ -113,7 +112,7 @@ from paramiko.common import io_sleep
  
  
  # TODO: I guess a real plugin system might be nice for future expansion...
--key_classes = [DSSKey, RSAKey, Ed25519Key, ECDSAKey]
-+key_classes = [DSSKey, RSAKey, ECDSAKey]
+-key_classes = [RSAKey, Ed25519Key, ECDSAKey]
++key_classes = [RSAKey, ECDSAKey]
  
  
  __author__ = "Jeff Forcier <jeff@bitprophet.org>"
-@@ -133,7 +132,6 @@ __all__ = [
-     "CouldNotCanonicalize",
-     "DSSKey",
-     "ECDSAKey",
--    "Ed25519Key",
-     "HostKeys",
-     "Message",
-     "MissingHostKeyPolicy",
---- paramiko-3.4.0/paramiko/client.py
-+++ paramiko-3.4.0/paramiko/client.py
-@@ -33,7 +33,6 @@ from paramiko.common import DEBUG
+--- paramiko-4.0.0/paramiko/client.py
++++ paramiko-4.0.0/paramiko/client.py
+@@ -32,7 +32,6 @@ from paramiko.agent import Agent
+ from paramiko.common import DEBUG
  from paramiko.config import SSH_PORT
- from paramiko.dsskey import DSSKey
  from paramiko.ecdsakey import ECDSAKey
 -from paramiko.ed25519key import Ed25519Key
  from paramiko.hostkeys import HostKeys
  from paramiko.rsakey import RSAKey
  from paramiko.ssh_exception import (
-@@ -725,7 +724,7 @@ class SSHClient(ClosingContextManager):
+@@ -722,7 +721,7 @@ class SSHClient(ClosingContextManager):
              for key_filename in key_filenames:
                  # TODO 4.0: leverage PKey.from_path() if we don't end up just
                  # killing SSHClient entirely
--                for pkey_class in (RSAKey, DSSKey, ECDSAKey, Ed25519Key):
-+                for pkey_class in (RSAKey, DSSKey, ECDSAKey):
+-                for pkey_class in (RSAKey, ECDSAKey, Ed25519Key):
++                for pkey_class in (RSAKey, ECDSAKey):
                      try:
                          key = self._key_from_filepath(
                              key_filename, pkey_class, passphrase
-@@ -767,7 +766,6 @@ class SSHClient(ClosingContextManager):
+@@ -763,7 +762,6 @@ class SSHClient(ClosingContextManager):
+             for keytype, name in [
                  (RSAKey, "rsa"),
-                 (DSSKey, "dsa"),
                  (ECDSAKey, "ecdsa"),
 -                (Ed25519Key, "ed25519"),
              ]:
                  # ~/ssh/ is for windows
                  for directory in [".ssh", "ssh"]:
---- paramiko-3.4.0/paramiko/pkey.py
-+++ paramiko-3.4.0/paramiko/pkey.py
-@@ -142,7 +142,7 @@ class PKey:
+--- paramiko-4.0.0/paramiko/pkey.py
++++ paramiko-4.0.0/paramiko/pkey.py
+@@ -140,7 +140,7 @@ class PKey:
          # TODO: make sure sphinx is reading Path right in param list...
  
          # Lazy import to avoid circular import issues
--        from paramiko import DSSKey, RSAKey, Ed25519Key, ECDSAKey
-+        from paramiko import DSSKey, RSAKey, ECDSAKey
+-        from paramiko import RSAKey, Ed25519Key, ECDSAKey
++        from paramiko import RSAKey, ECDSAKey
  
          # Normalize to string, as cert suffix isn't quite an extension, so
          # pathlib isn't useful for this.
-@@ -185,8 +185,6 @@ class PKey:
-             key_class = DSSKey
-         elif isinstance(loaded, asymmetric.rsa.RSAPrivateKey):
+@@ -181,8 +181,6 @@ class PKey:
+         key_class = None
+         if isinstance(loaded, asymmetric.rsa.RSAPrivateKey):
              key_class = RSAKey
 -        elif isinstance(loaded, asymmetric.ed25519.Ed25519PrivateKey):
 -            key_class = Ed25519Key
          elif isinstance(loaded, asymmetric.ec.EllipticCurvePrivateKey):
              key_class = ECDSAKey
          else:
---- paramiko-3.4.0/paramiko/transport.py
-+++ paramiko-3.4.0/paramiko/transport.py
-@@ -91,7 +91,6 @@ from paramiko.common import (
+--- paramiko-4.0.0/paramiko/transport.py
++++ paramiko-4.0.0/paramiko/transport.py
+@@ -95,7 +95,6 @@ from paramiko.common import (
+     byte_ord,
  )
  from paramiko.compress import ZlibCompressor, ZlibDecompressor
- from paramiko.dsskey import DSSKey
 -from paramiko.ed25519key import Ed25519Key
  from paramiko.kex_curve25519 import KexCurve25519
  from paramiko.kex_gex import KexGex, KexGexSHA256
  from paramiko.kex_group1 import KexGroup1
-@@ -192,7 +191,6 @@ class Transport(threading.Thread, Closin
+@@ -198,7 +197,6 @@ class Transport(threading.Thread, Closin
      )
      # ~= HostKeyAlgorithms in OpenSSH land
      _preferred_keys = (
@@ -96,7 +88,7 @@ https://github.com/paramiko/paramiko/pull/972/files
          "ecdsa-sha2-nistp256",
          "ecdsa-sha2-nistp384",
          "ecdsa-sha2-nistp521",
-@@ -203,7 +201,6 @@ class Transport(threading.Thread, Closin
+@@ -208,7 +206,6 @@ class Transport(threading.Thread, Closin
      )
      # ~= PubKeyAcceptedAlgorithms
      _preferred_pubkeys = (
@@ -104,7 +96,7 @@ https://github.com/paramiko/paramiko/pull/972/files
          "ecdsa-sha2-nistp256",
          "ecdsa-sha2-nistp384",
          "ecdsa-sha2-nistp521",
-@@ -307,8 +304,6 @@ class Transport(threading.Thread, Closin
+@@ -323,8 +320,6 @@ class Transport(threading.Thread, Closin
          "ecdsa-sha2-nistp384-cert-v01@openssh.com": ECDSAKey,
          "ecdsa-sha2-nistp521": ECDSAKey,
          "ecdsa-sha2-nistp521-cert-v01@openssh.com": ECDSAKey,
@@ -113,19 +105,19 @@ https://github.com/paramiko/paramiko/pull/972/files
      }
  
      _kex_info = {
---- paramiko-3.4.0/tests/conftest.py
-+++ paramiko-3.4.0/tests/conftest.py
-@@ -13,7 +13,6 @@ from paramiko import (
+--- paramiko-4.0.0/tests/conftest.py
++++ paramiko-4.0.0/tests/conftest.py
+@@ -12,7 +12,6 @@ from paramiko import (
+     SFTP,
      Transport,
-     DSSKey,
      RSAKey,
 -    Ed25519Key,
      ECDSAKey,
      PKey,
  )
-@@ -123,11 +122,6 @@ key_data = [
+@@ -121,11 +120,6 @@ def sftp(sftp_server):
+ key_data = [
      ["ssh-rsa", RSAKey, "SHA256:OhNL391d/beeFnxxg18AwWVYTAHww+D4djEE7Co0Yng"],
-     ["ssh-dss", DSSKey, "SHA256:uHwwykG099f4M4kfzvFpKCTino0/P03DRbAidpAmPm0"],
      [
 -        "ssh-ed25519",
 -        Ed25519Key,
@@ -135,31 +127,29 @@ https://github.com/paramiko/paramiko/pull/972/files
          "ecdsa-sha2-nistp256",
          ECDSAKey,
          "SHA256:BrQG04oNKUETjKCeL4ifkARASg3yxS/pUHl3wWM26Yg",
---- paramiko-3.4.0/tests/pkey.py
-+++ paramiko-3.4.0/tests/pkey.py
-@@ -7,7 +7,6 @@ from cryptography.hazmat.primitives.asym
+--- paramiko-4.0.0/tests/pkey.py
++++ paramiko-4.0.0/tests/pkey.py
+@@ -6,7 +6,6 @@ from pytest import raises
+ from cryptography.hazmat.primitives.asymmetric.ed448 import Ed448PrivateKey
  from paramiko import (
-     DSSKey,
      ECDSAKey,
 -    Ed25519Key,
      Message,
      PKey,
      PublicBlob,
-@@ -156,12 +155,6 @@ class PKey_:
-             msg.rewind()
+@@ -156,8 +155,8 @@ class PKey_:
              assert key.verify_ssh_sig(b"ice weasels", msg)  # our data verified
  
--        def loading_cert_of_different_type_from_key_raises_ValueError(self):
+         def loading_cert_of_different_type_from_key_raises_ValueError(self):
 -            edkey = Ed25519Key.from_private_key_file(_support("ed25519.key"))
 -            err = "PublicBlob type ssh-rsa-cert-v01@openssh.com incompatible with key type ssh-ed25519"  # noqa
--            with raises(ValueError, match=err):
--                edkey.load_certificate(_support("rsa.key-cert.pub"))
--
-     def fingerprint(self, keys):
-         # NOTE: Hardcoded fingerprint expectation stored in fixture.
-         assert keys.pkey.fingerprint == keys.expected_fp
-@@ -174,8 +167,6 @@ class PKey_:
-             assert key.algorithm_name == "DSS"
++            edkey = ECDSAKey.from_private_key_file(_support("ecdsa-256.key"))
++            err = "PublicBlob type ssh-rsa-cert-v01@openssh.com incompatible with key type ecdsa-sha2-nistp256"  # noqa
+             with raises(ValueError, match=err):
+                 edkey.load_certificate(_support("rsa.key-cert.pub"))
+ 
+@@ -171,8 +170,6 @@ class PKey_:
+             assert key.algorithm_name == "RSA"
          elif isinstance(key, ECDSAKey):
              assert key.algorithm_name == "ECDSA"
 -        elif isinstance(key, Ed25519Key):
@@ -167,9 +157,9 @@ https://github.com/paramiko/paramiko/pull/972/files
          # TODO: corner case: AgentKey, whose .name can be cert-y (due to the
          # value of the name field passed via agent protocol) and thus
          # algorithm_name is eg "RSA-CERT" - keys loaded directly from disk will
-@@ -218,9 +209,6 @@ class PKey_:
-         def dss_is_protocol_name(self):
-             assert DSSKey.identifiers() == ["ssh-dss"]
+@@ -212,9 +209,6 @@ class PKey_:
+                 "rsa-sha2-512-cert-v01@openssh.com",
+             ]
  
 -        def ed25519_is_protocol_name(self):
 -            assert Ed25519Key.identifiers() == ["ssh-ed25519"]
@@ -177,17 +167,17 @@ https://github.com/paramiko/paramiko/pull/972/files
          def ecdsa_is_all_curve_names(self):
              assert ECDSAKey.identifiers() == [
                  "ecdsa-sha2-nistp256",
---- paramiko-3.4.0/tests/test_client.py
-+++ paramiko-3.4.0/tests/test_client.py
-@@ -52,7 +52,6 @@ FINGERPRINTS = {
-     "ssh-dss": b"\x44\x78\xf0\xb9\xa2\x3c\xc5\x18\x20\x09\xff\x75\x5b\xc1\xd2\x6c",  # noqa
+--- paramiko-4.0.0/tests/test_client.py
++++ paramiko-4.0.0/tests/test_client.py
+@@ -51,7 +51,6 @@ requires_gss_auth = unittest.skipUnless(
+ FINGERPRINTS = {
      "ssh-rsa": b"\x60\x73\x38\x44\xcb\x51\x86\x65\x7f\xde\xda\xa2\x2b\x5a\x57\xd5",  # noqa
      "ecdsa-sha2-nistp256": b"\x25\x19\xeb\x55\xe6\xa1\x47\xff\x4f\x38\xd2\x75\x6f\xa5\xd5\x60",  # noqa
 -    "ssh-ed25519": b'\xb3\xd5"\xaa\xf9u^\xe8\xcd\x0e\xea\x02\xb9)\xa2\x80',
  }
  
  
-@@ -271,10 +270,6 @@ class SSHClientTest(ClientTest):
+@@ -263,10 +262,6 @@ class SSHClientTest(ClientTest):
          self._test_connection(key_filename=_support("ecdsa-256.key"))
  
      @requires_sha1_signing
@@ -198,27 +188,54 @@ https://github.com/paramiko/paramiko/pull/972/files
      def test_multiple_key_files(self):
          """
          verify that SSHClient accepts and tries multiple key files.
-@@ -327,7 +322,7 @@ class SSHClientTest(ClientTest):
+@@ -274,25 +269,13 @@ class SSHClientTest(ClientTest):
+         # This is dumb :(
+         types_ = {
+             "rsa": "ssh-rsa",
+-            "ed25519": "ssh-ed25519",
+             "ecdsa": "ecdsa-sha2-nistp256",
+         }
+         # Various combos of attempted & valid keys
+         # TODO: try every possible combo using itertools functions
+         # TODO: use new key(s) fixture(s)
+         for attempt, accept in (
+-            (
+-                ["rsa", "ed25519"],
+-                ["ed25519"],
+-            ),  # Original test #3 (but s/DSA/Ed25519/)
+-            (
+-                ["ed25519", "rsa"],
+-                ["ed25519"],
+-            ),  # Ordering matters sometimes, sadly
+-            (
+-                ["ed25519", "rsa", "ecdsa-256"],
+-                ["ed25519"],
+-            ),  # Try ECDSA but fail
++            (["ecdsa-256", "rsa"], ["ecdsa"]),  # Ordering matters sometimes, sadly
+             (["rsa", "ecdsa-256"], ["ecdsa"]),  # ECDSA success
+         ):
+             try:
+@@ -328,7 +311,7 @@ class SSHClientTest(ClientTest):
          # They're similar except for which path is given; the expected auth and
          # server-side behavior is 100% identical.)
          # NOTE: only bothered whipping up one cert per overall class/family.
--        for type_ in ("rsa", "dss", "ecdsa-256", "ed25519"):
-+        for type_ in ("rsa", "dss", "ecdsa-256"):
+-        for type_ in ("rsa", "ecdsa-256", "ed25519"):
++        for type_ in ("rsa", "ecdsa-256"):
              key_path = _support(f"{type_}.key")
              self._test_connection(
                  key_filename=key_path,
-@@ -342,7 +337,7 @@ class SSHClientTest(ClientTest):
+@@ -343,7 +326,7 @@ class SSHClientTest(ClientTest):
          # about the server-side key object's public blob. Thus, we can prove
          # that a specific cert was found, along with regular authorization
          # succeeding proving that the overall flow works.
--        for type_ in ("rsa", "dss", "ecdsa-256", "ed25519"):
-+        for type_ in ("rsa", "dss", "ecdsa-256"):
+-        for type_ in ("rsa", "ecdsa-256", "ed25519"):
++        for type_ in ("rsa", "ecdsa-256"):
              key_path = _support(f"{type_}.key")
              self._test_connection(
                  key_filename=key_path,
---- paramiko-3.4.0/tests/test_hostkeys.py
-+++ paramiko-3.4.0/tests/test_hostkeys.py
-@@ -36,8 +36,6 @@ broken.example.com ssh-rsa AAAA
+--- paramiko-4.0.0/tests/test_hostkeys.py
++++ paramiko-4.0.0/tests/test_hostkeys.py
+@@ -38,8 +38,6 @@ broken.example.com ssh-rsa AAAA
  happy.example.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEA8bP1ZA7DCZDB9J0s50l31M\
  BGQ3GQ/Fc7SX6gkpXkwcZryoi4kNFhHu5LvHcZPdxXV1D+uTMfGS1eyd2Yz/DoNWXNAl8TI0cAsW\
  5ymME3bQ4J/k1IKxCtz/bAlAqFgKoc+EolMziDYqWIATtW0rYTJvzGAzTmMj80/QpsFH+Pc2M=
@@ -227,7 +244,7 @@ https://github.com/paramiko/paramiko/pull/972/files
  curvy.example.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlz\
  dHAyNTYAAABBBAa+pY7djSpbg5viAcZhPt56AO3U3Sd7h7dnlUp0EjfDgyYHYQxl2QZ4JGgfwR5iv9\
  T9iRZjQzvJd5s+kBAZtpk=
-@@ -50,8 +48,6 @@ D+jrpI9cycZHqilK0HmxDeCuxbwyMuaCygU9gS2q
+@@ -52,8 +50,6 @@ D+jrpI9cycZHqilK0HmxDeCuxbwyMuaCygU9gS2q
  happy.example.com\tssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEA8bP1ZA7DCZDB9J0s50l31M\
  BGQ3GQ/Fc7SX6gkpXkwcZryoi4kNFhHu5LvHcZPdxXV1D+uTMfGS1eyd2Yz/DoNWXNAl8TI0cAsW\
  5ymME3bQ4J/k1IKxCtz/bAlAqFgKoc+EolMziDYqWIATtW0rYTJvzGAzTmMj80/QpsFH+Pc2M=
@@ -236,7 +253,7 @@ https://github.com/paramiko/paramiko/pull/972/files
  curvy.example.com\tecdsa-sha2-nistp256\tAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbml\
  zdHAyNTYAAABBBAa+pY7djSpbg5viAcZhPt56AO3U3Sd7h7dnlUp0EjfDgyYHYQxl2QZ4JGgfwR5iv\
  9T9iRZjQzvJd5s+kBAZtpk=
-@@ -83,7 +79,7 @@ class HostKeysTest(unittest.TestCase):
+@@ -75,7 +71,7 @@ class HostKeysTest(unittest.TestCase):
  
      def test_load(self):
          hostdict = paramiko.HostKeys("hostfile.temp")
@@ -245,7 +262,7 @@ https://github.com/paramiko/paramiko/pull/972/files
          self.assertEqual(1, len(list(hostdict.values())[0]))
          self.assertEqual(1, len(list(hostdict.values())[1]))
          fp = hexlify(
-@@ -96,7 +92,7 @@ class HostKeysTest(unittest.TestCase):
+@@ -88,7 +84,7 @@ class HostKeysTest(unittest.TestCase):
          hh = "|1|BMsIC6cUIP2zBuXR3t2LRcJYjzM=|hpkJMysjTk/+zzUUzxQEa2ieq6c="
          key = paramiko.RSAKey(data=decodebytes(keyblob))
          hostdict.add(hh, "ssh-rsa", key)
@@ -254,7 +271,7 @@ https://github.com/paramiko/paramiko/pull/972/files
          x = hostdict["foo.example.com"]
          fp = hexlify(x["ssh-rsa"].get_fingerprint()).upper()
          self.assertEqual(b"7EC91BB336CB6D810B124B1353C32396", fp)
-@@ -113,7 +109,7 @@ class HostKeysTest(unittest.TestCase):
+@@ -105,22 +101,22 @@ class HostKeysTest(unittest.TestCase):
          fp = hexlify(x["ssh-rsa"].get_fingerprint()).upper()
          self.assertEqual(b"E6684DB30E109B67B70FF1DC5C7F1363", fp)
          assert list(hostdict) == hostdict.keys()
@@ -263,7 +280,17 @@ https://github.com/paramiko/paramiko/pull/972/files
  
      def test_dict_set(self):
          hostdict = paramiko.HostKeys("hostfile.temp")
-@@ -123,7 +119,7 @@ class HostKeysTest(unittest.TestCase):
+         key = paramiko.RSAKey(data=decodebytes(keyblob))
+-        key_ed25519 = paramiko.Ed25519Key.from_private_key_file(
+-            _support("ed25519.key")
++        key_ecdsa = paramiko.ECDSAKey.from_private_key_file(
++            _support("ecdsa-256.key")
+         )
+         hostdict["secure.example.com"] = {
+             "ssh-rsa": key,
+-            "ssh-ed25519": key_ed25519,
++            "ssh-ecdsa": key_ecdsa,
+         }
          hostdict["fake.example.com"] = {}
          hostdict["fake.example.com"]["ssh-rsa"] = key
  
@@ -272,17 +299,29 @@ https://github.com/paramiko/paramiko/pull/972/files
          self.assertEqual(2, len(list(hostdict.values())[0]))
          self.assertEqual(1, len(list(hostdict.values())[1]))
          self.assertEqual(1, len(list(hostdict.values())[2]))
---- paramiko-3.4.0/tests/test_pkey.py
-+++ paramiko-3.4.0/tests/test_pkey.py
-@@ -32,7 +32,6 @@ from paramiko import (
+@@ -129,9 +125,9 @@ class HostKeysTest(unittest.TestCase):
+         ).upper()
+         self.assertEqual(b"7EC91BB336CB6D810B124B1353C32396", fp)
+         fp = hexlify(
+-            hostdict["secure.example.com"]["ssh-ed25519"].get_fingerprint()
++            hostdict["secure.example.com"]["ecdsa-sha2-nistp256"].get_fingerprint()
+         ).upper()
+-        self.assertEqual(b"B3D522AAF9755EE8CD0EEA02B929A280", fp)
++        self.assertEqual(b"2519EB55E6A147FF4F38D2756FA5D560", fp)
+ 
+     def test_delitem(self):
+         hostdict = paramiko.HostKeys("hostfile.temp")
+--- paramiko-4.0.0/tests/test_pkey.py
++++ paramiko-4.0.0/tests/test_pkey.py
+@@ -31,7 +31,6 @@ from io import StringIO
+ from paramiko import (
      RSAKey,
-     DSSKey,
      ECDSAKey,
 -    Ed25519Key,
      Message,
      util,
      SSHException,
-@@ -567,65 +566,6 @@ class KeyTest(unittest.TestCase):
+@@ -476,65 +475,6 @@ class KeyTest(unittest.TestCase):
          comparable = TEST_KEY_BYTESTR
          self.assertEqual(str(key), comparable)
  
@@ -348,33 +387,99 @@ https://github.com/paramiko/paramiko/pull/972/files
      def test_keyfile_is_actually_encrypted(self):
          # Read an existing encrypted private key
          file_ = _support("test_rsa_password.key")
---- paramiko-3.4.0/tests/test_transport.py
-+++ paramiko-3.4.0/tests/test_transport.py
-@@ -1244,7 +1244,7 @@ class TestExtInfo(unittest.TestCase):
+--- paramiko-4.0.0/tests/test_transport.py
++++ paramiko-4.0.0/tests/test_transport.py
+@@ -1243,7 +1243,7 @@ class TestExtInfo(unittest.TestCase):
              # data stored on Transport after hearing back from a compatible
              # server (such as ourselves in server mode)
              assert tc.server_extensions == {
--                "server-sig-algs": b"ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,rsa-sha2-512,rsa-sha2-256,ssh-rsa,ssh-dss"  # noqa
-+                "server-sig-algs": b"ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,rsa-sha2-512,rsa-sha2-256,ssh-rsa,ssh-dss"  # noqa
+-                "server-sig-algs": b"ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,rsa-sha2-512,rsa-sha2-256,ssh-rsa"  # noqa
++                "server-sig-algs": b"ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,rsa-sha2-512,rsa-sha2-256,ssh-rsa"  # noqa
              }
  
      def test_client_uses_server_sig_algs_for_pubkey_auth(self):
---- paramiko-3.4.0/setup.py
-+++ paramiko-3.4.0/setup.py
-@@ -89,7 +89,6 @@ setup(
-     install_requires=[
-         "bcrypt>=3.2",
-         "cryptography>=3.3",
--        "pynacl>=1.5",
-     ],
-     extras_require=extras_require,
- )
---- paramiko-3.4.0/paramiko.egg-info/requires.txt
-+++ paramiko-3.4.0/paramiko.egg-info/requires.txt
-@@ -1,6 +1,5 @@
- bcrypt>=3.2
- cryptography>=3.3
--pynacl>=1.5
+--- paramiko-4.0.0/pyproject.toml
++++ paramiko-4.0.0/pyproject.toml
+@@ -12,7 +12,6 @@ authors = [{name = "Jeff Forcier", email
+     "bcrypt>=3.2",
+     "cryptography>=3.3",
+     "invoke>=2.0",
+-    "pynacl>=1.5",
+ ]
+ optional-dependencies = {gssapi = [
+     "pyasn1>=0.1.7",
+--- paramiko-4.0.0/tests/_util.py
++++ paramiko-4.0.0/tests/_util.py
+@@ -10,7 +10,7 @@ import unittest
+ import time
+ import threading
  
- [all]
- pyasn1>=0.1.7
+-from paramiko import Ed25519Key
++from paramiko import ECDSAKey
+ import pytest
+ 
+ from paramiko import (
+@@ -211,7 +211,7 @@ unicodey = "\u2022"
+ class TestServer(ServerInterface):
+     paranoid_did_password = False
+     paranoid_did_public_key = False
+-    paranoid_key = Ed25519Key.from_private_key_file(_support("ed25519.key"))
++    paranoid_key = ECDSAKey.from_private_key_file(_support("ecdsa-256.key"))
+ 
+     def __init__(self, allowed_keys=None):
+         self.allowed_keys = allowed_keys if allowed_keys is not None else []
+--- paramiko-4.0.0/tests/auth.py
++++ paramiko-4.0.0/tests/auth.py
+@@ -7,7 +7,7 @@ Thus, they concern AuthHandler and AuthS
+ from logging import Logger
+ from unittest.mock import Mock
+ 
+-from paramiko import Ed25519Key
++from paramiko import ECDSAKey
+ from pytest import raises
+ 
+ from paramiko import (
+@@ -85,7 +85,7 @@ class AuthHandler_:
+             assert tc.auth_password(
+                 username="paranoid", password="paranoid"
+             ) == ["publickey"]
+-            key = Ed25519Key.from_private_key_file(_support("ed25519.key"))
++            key = ECDSAKey.from_private_key_file(_support("ecdsa-256.key"))
+             assert tc.auth_publickey(username="paranoid", key=key) == []
+ 
+     def interactive_auth(self):
+@@ -400,20 +400,20 @@ class AuthSource_:
+             assert source.pkey is pkey
+ 
+         def repr_shows_pkey_repr(self):
+-            pkey = PKey.from_path(_support("ed25519.key"))
++            pkey = PKey.from_path(_support("ecdsa-256.key"))
+             source = InMemoryPrivateKey("foo", pkey)
+             assert (
+                 repr(source)
+-                == "InMemoryPrivateKey(pkey=PKey(alg=ED25519, bits=256, fp=SHA256:J6VESFdD3xSChn8y9PzWzeF+1tl892mOy2TqkMLO4ow))"  # noqa
++                == "InMemoryPrivateKey(pkey=PKey(alg=ECDSA, bits=256, fp=SHA256:BrQG04oNKUETjKCeL4ifkARASg3yxS/pUHl3wWM26Yg))"  # noqa
+             )
+ 
+         def repr_appends_agent_flag_when_AgentKey(self):
+-            real_key = PKey.from_path(_support("ed25519.key"))
++            real_key = PKey.from_path(_support("ecdsa-256.key"))
+             pkey = AgentKey(agent=None, blob=bytes(real_key))
+             source = InMemoryPrivateKey("foo", pkey)
+             assert (
+                 repr(source)
+-                == "InMemoryPrivateKey(pkey=PKey(alg=ED25519, bits=256, fp=SHA256:J6VESFdD3xSChn8y9PzWzeF+1tl892mOy2TqkMLO4ow)) [agent]"  # noqa
++                == "InMemoryPrivateKey(pkey=PKey(alg=ECDSA, bits=256, fp=SHA256:BrQG04oNKUETjKCeL4ifkARASg3yxS/pUHl3wWM26Yg)) [agent]"  # noqa
+             )
+ 
+     class OnDiskPrivateKey_:
+--- paramiko-4.0.0/tests/test_util.py
++++ paramiko-4.0.0/tests/test_util.py
+@@ -63,7 +63,6 @@ class UtilTest(unittest.TestCase):
+             "ConfigParseError",
+             "CouldNotCanonicalize",
+             "ECDSAKey",
+-            "Ed25519Key",
+             "HostKeys",
+             "InMemoryPrivateKey",
+             "Message",
