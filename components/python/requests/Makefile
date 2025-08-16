@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		requests
-COMPONENT_VERSION=	2.32.1
+COMPONENT_VERSION=	2.32.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:eb97e87e64c79e64e5b8ac75cee9dd1f97f49e289b083ee6be96268930725685
+    sha256:27d0316682c8a29834d3264820024b62a36942083d52caf2f14c0591336d3422
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://python-requests.org/
 COMPONENT_BUGDB=	python-mod/requests
 COMPONENT_ANITYA_ID=	4004
-COMPONENT_BAID=		166657
+COMPONENT_BAID=		331547
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -53,6 +53,6 @@ test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/chardet-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/charset-normalizer-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/idna-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/urllib3-%)
