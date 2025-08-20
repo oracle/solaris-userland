@@ -59,4 +59,3 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pathspec-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pluggy-%)
-REQUIRED_PACKAGES += library/python/tomli-39
