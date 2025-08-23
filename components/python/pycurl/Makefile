@@ -23,8 +23,11 @@
 # Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
-include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
+include ../../../make-rules/shared-macros.mk
+
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		pycurl
 COMPONENT_VERSION=	7.45.2

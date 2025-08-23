@@ -29,6 +29,9 @@ COMPILER =		gcc
 CTF_MODE =		off	# C++
 include ../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		mozjs
 COMPONENT_VERSION=	115.2.0
 COMPONENT_PROJECT_URL=	https://spidermonkey.dev/

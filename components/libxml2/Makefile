@@ -26,6 +26,9 @@ BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		libxml2
 COMPONENT_VERSION=	2.13.8
 COMPONENT_BAID=		326785

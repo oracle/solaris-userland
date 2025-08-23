@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -36,6 +36,9 @@ COMPILER= gcc
 gcc_OPT =	-O2
 
 include ../../make-rules/shared-macros.mk
+
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
 
 # Separate build for test with --enable-test configured
 CONFIGURE_32_and_64 += $(BUILD_DIR)/test-$(MACH32)/.configured

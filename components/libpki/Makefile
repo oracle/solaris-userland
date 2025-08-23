@@ -28,6 +28,9 @@ BUILD_BITS= 64
 COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 # COMPONENT_VERSION number in ./history must be >= s11 COMPONENT_VERSION
 # at all times, so update ./history if planning to backport an update.
 

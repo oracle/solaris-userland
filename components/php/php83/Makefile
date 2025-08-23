@@ -29,6 +29,9 @@ CTF_MODE =		off	# Breaks config
 
 include ../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 MAJOR_VERSION=8.3
 MICRO_VERSION=23
 

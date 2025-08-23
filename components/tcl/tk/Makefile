@@ -26,6 +26,9 @@ BUILD_BITS =		64_and_32
 CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		tk
 COMPONENT_VERSION=	8.6.13
 COMPONENT_BAID=		148006

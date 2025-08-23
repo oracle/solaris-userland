@@ -23,9 +23,12 @@
 # Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
+COMPILER =		gcc
 CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
-COMPILER =		gcc
+
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		python_rapidjson
 COMPONENT_VERSION=	1.20

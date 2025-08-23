@@ -264,7 +264,6 @@ LIBFFI_LIBDIR = $(LIBFFI_LIBDIR_$(BITS))
 LD_B_DIRECT =
 LD_OPTIONS = -M /usr/lib/ld/map.noexstk
 LD_OPTIONS += -M /usr/lib/ld/map.pagealign
-LD_OPTIONS_SO = $(LD_Z_DEFS) $(LD_DEF_LIBS)
 
 # The default target triple must be set so that the OS release is included by
 # default as LLVM will use this to find the installed gcc internal libraries

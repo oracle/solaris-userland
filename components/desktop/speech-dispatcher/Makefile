@@ -27,6 +27,9 @@ BUILD_BITS=             64
 COMPILER=               gcc
 include ../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		speech-dispatcher
 COMPONENT_VERSION=	0.12.1
 COMPONENT_PROJECT_URL=	https://devel.freebsoft.org/speechd

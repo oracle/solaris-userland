@@ -1201,9 +1201,6 @@ LD_Z_RESCAN_NOW =	-zrescan-now
 
 LD_Z_TEXT =		-ztext
 
-# make sure that -lc is always present when building shared objects.
-LD_DEF_LIBS +=		-lc
-
 # make sure all symbols are defined.
 LD_Z_DEFS =		-zdefs
 
@@ -1325,9 +1322,6 @@ LD_MAP_NOEXDATA.sparc =	$(LD_MAP_NOEXBSS.$(MACH))
 # Page alignment
 LD_MAP_PAGEALIGN =	-M /usr/lib/ld/map.pagealign
 
-# Linker options to add when only building libraries
-LD_OPTIONS_SO +=	$(LD_Z_TEXT) $(LD_Z_DEFS) $(LD_DEF_LIBS)
-
 # Default linker options that everyone should get.  Do not add additional
 # libraries to this macro, as it will apply to everything linked during the
 # component build.
@@ -1339,12 +1333,34 @@ LD_SECEXT_OPTIONS.sparc = $(LD_Z_ADIHEAP) $(LD_Z_ADISTACK)
 LD_SECEXT_OPTIONS =	$(LD_Z_ASLR) $(LD_Z_NXSTACK) $(LD_Z_NXHEAP) \
 			$(LD_SECEXT_OPTIONS.$(MACH))
 
-# only used on executables
-# executables can be ET_EXEC or ET_DYN (PIE). LD_EXEC_OPTIONS and
+# Object type specific options that should be applied through the link-editor
+# LD_xxx_OPTIONS environment variables.
+#
+# Executables can be ET_EXEC or ET_DYN (PIE). LD_EXEC_OPTIONS and
 # LD_PIE_OPTIONS apply respectively. A small trick is used to link
 # binaries with -ztype=pie, by passing it on the LD_EXEC_OPTIONS list.
+#
+# All dynamic objects should enable -ztext (pure text that does not need
+# runtime fixups) and -zdefs (no undefined symbols). These options are
+# the default for executables, but need to be specified for shared objects.
+# -zdefs will expose a number of problem shared objects that do not specify
+# their dependencies. If possible, those things should be fixed. If not,
+# their component makefile can allow it by clearing the macro provided for
+# that purpose here:
+#
+#	LD_SHARED_OPTIONS_Z_TEXT =
+#	LD_SHARED_OPTIONS_Z_DEFS =
+#
+# This indirection, rather than clearing LD_Z_TEXT or LD_Z_DEFS directly,
+# is done so that those macros retain their meaning when used in other
+# contexts.
+#
 LD_EXEC_OPTIONS =	$(LD_Z_PIE_MODE) $(LD_SECEXT_OPTIONS)
 LD_PIE_OPTIONS =	$(LD_SECEXT_OPTIONS)
+
+LD_SHARED_OPTIONS_Z_TEXT = $(LD_Z_TEXT)
+LD_SHARED_OPTIONS_Z_DEFS = $(LD_Z_DEFS)
+LD_SHARED_OPTIONS +=	$(LD_SHARED_OPTIONS_Z_TEXT) $(LD_SHARED_OPTIONS_Z_DEFS)
 
 # Generate CTF sections for executables, PIE, and shared objects.
 #

@@ -29,6 +29,9 @@ CTF_MODE =		off	# C++
 export PARFAIT_BUILD =	no
 include ../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 MAJOR_VERSION=8.0
 MICRO_VERSION=43
 

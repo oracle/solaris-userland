@@ -96,7 +96,7 @@ CONFIGURE_ENV += LDSHARED="$(CC) $(CFLAGS) -G"
 # This LDSHARED definitions is forced to get all required options plus
 # mapfile for result linking. While the one used with configure is just
 # to allow Zlib detect capability of creating shared libraries.
-COMPONENT_BUILD_ARGS = LDSHARED="$(CC) $(CFLAGS) -G -h libz.so.1 $(LD_OPTIONS_SO) -M ../../mapfile -L." PIC_OBJA=$(PIC_OBJA)
+COMPONENT_BUILD_ARGS = LDSHARED="$(CC) $(CFLAGS) -G -h libz.so.1 $(LD_Z_TEXT) $(LD_Z_DEFS) -M ../../mapfile -L." PIC_OBJA=$(PIC_OBJA)
 
 $(BUILD_DIR)/sparc%/.built: COMPONENT_PRE_BUILD_ACTION = ( \
 	cd capabilities; \

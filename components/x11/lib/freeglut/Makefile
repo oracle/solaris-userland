@@ -27,6 +27,9 @@ BUILD_BITS =            64_and_32
 COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		freeglut
 COMPONENT_VERSION=	3.6.0
 COMPONENT_PROJECT_URL=  http://freeglut.sourceforge.net

@@ -27,6 +27,9 @@ BUILD_BITS =            64
 CTF_MODE =		off	# Breaks config
 include ../../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		xorg-server
 COMPONENT_VERSION=	21.1.18
 COMPONENT_ARCHIVE_HASH= \

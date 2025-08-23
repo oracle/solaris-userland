@@ -20,12 +20,15 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER=gcc
 
 include ../../../make-rules/shared-macros.mk
+
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		pyyaml
 COMPONENT_VERSION=	6.0.2

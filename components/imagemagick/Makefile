@@ -28,6 +28,9 @@ COMPILER=		gcc
 CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		ImageMagick
 COMPONENT_VERSION=	7.1.2-0
 COMPONENT_PROJECT_URL=	https://www.imagemagick.org/

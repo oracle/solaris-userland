@@ -29,6 +29,12 @@ COMPILER= gcc
 CONSOLIDATION = python
 include ../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
+# This component produces impure text
+LD_SHARED_OPTIONS_Z_TEXT=
+
 COMPONENT_NAME=		mod_wsgi
 COMPONENT_VERSION=	5.0.2
 COMPONENT_ARCHIVE_HASH=	sha256:6fe5557c3ef25c184c2c994905fe52be1c06ae5c46235ecafe558e84789e2159

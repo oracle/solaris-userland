@@ -28,6 +28,9 @@ COMPILER =		gcc
 PYTHON3_SOABI =		bare
 include ../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		dbus-python
 COMPONENT_VERSION=	1.4.0
 COMPONENT_PROJECT_URL=	http://dbus.freedesktop.org

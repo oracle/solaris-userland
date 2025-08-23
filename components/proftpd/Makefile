@@ -27,6 +27,9 @@ BUILD_BITS =		64
 CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		proftpd
 COMPONENT_VERSION=	1.3.8c
 IPS_COMPONENT_VERSION=	1.3.8.3.0

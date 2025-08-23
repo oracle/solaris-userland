@@ -20,11 +20,13 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
-
-include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
+include ../../../make-rules/shared-macros.mk
+
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		coverage
 COMPONENT_VERSION=	7.6.4

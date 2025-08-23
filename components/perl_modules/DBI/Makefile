@@ -25,6 +25,9 @@
 CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		DBI
 COMPONENT_VERSION=	1.647
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)

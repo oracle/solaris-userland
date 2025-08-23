@@ -26,6 +26,9 @@
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		lxml
 COMPONENT_VERSION=	5.3.0
 COMPONENT_PROJECT_URL=	http://lxml.de/

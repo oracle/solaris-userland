@@ -25,6 +25,9 @@ BUILD_BITS =		64_and_32
 CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		pcre
 COMPONENT_VERSION=	8.45
 COMPONENT_ARCHIVE_HASH=	\

@@ -28,6 +28,12 @@ BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
+# This component produces impure text
+LD_SHARED_OPTIONS_Z_TEXT=
+
 PATH=$(JAVA_HOME)/bin:$(USRBINDIR)
 
 COMPONENT_NAME=			erlang

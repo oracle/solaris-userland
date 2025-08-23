@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -81,7 +81,6 @@ LDFLAGS += $(studio_PIC)
 LDFLAGS += $(studio_OPT)
 LDFLAGS += $(LD_Z_TEXT)
 LDFLAGS += $(LD_Z_DEFS)
-LDFLAGS += $(LD_DEF_LIBS)
 
 STUDIO_LIBS_PATH.32 =	$(USRLIBDIR)/studio
 STUDIO_LIBS_PATH.64 =	$(USRLIBDIR)/studio/64

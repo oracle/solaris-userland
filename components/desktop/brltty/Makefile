@@ -30,6 +30,9 @@ COMPILER=		gcc
 CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		brltty
 COMPONENT_VERSION=	6.4
 COMPONENT_PROJECT_URL=	http://mielke.cc/brltty/

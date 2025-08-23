@@ -25,6 +25,9 @@
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		mod_auth_mellon
 COMPONENT_VERSION=	0.18.1
 COMPONENT_PROJECT_URL=	https://github.com/latchset/mod_auth_mellon

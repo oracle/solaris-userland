@@ -19,12 +19,15 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64_and_32
 COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
+
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		libusb
 COMPONENT_VERSION=	1.0.23

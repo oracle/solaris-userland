@@ -26,6 +26,9 @@
 CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		gettext
 COMPONENT_VERSION=	1.0.7
 HUMAN_VERSION=		1.07

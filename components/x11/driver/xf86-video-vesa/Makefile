@@ -20,13 +20,16 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 BUILD_ARCH =		i386
 COMPILER = 		gcc
 include ../../../../make-rules/shared-macros.mk
+
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		xf86-video-vesa
 COMPONENT_VERSION=	2.6.0

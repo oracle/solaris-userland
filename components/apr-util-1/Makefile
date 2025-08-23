@@ -28,6 +28,9 @@ BUILD_BITS =		32_and_64
 CTF_MODE =		off	# Has no effect
 include ../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 APU_VERSION=1
 MINOR_VERSION=6
 MICRO_VERSION=3

@@ -32,6 +32,9 @@ PYTHON3_SOABI =		bare
 COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=         hplip
 COMPONENT_VERSION=      3.25.2
 COMPONENT_BAID=		327928

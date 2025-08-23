@@ -27,6 +27,10 @@ BUILD_BITS =		64
 COMPILER =		gcc
 CTF_MODE =		off	# Has little effect
 include ../../make-rules/shared-macros.mk
+
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 COMPONENT_NAME=		texinfo
 COMPONENT_VERSION=	7.2
 COMPONENT_PROJECT_URL=	https://www.gnu.org/software/texinfo/ 

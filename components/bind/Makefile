@@ -34,6 +34,9 @@ endif
 
 include ../../make-rules/shared-macros.mk
 
+# This component does not fully specify dependencies of shared objects
+LD_SHARED_OPTIONS_Z_DEFS=
+
 # Component information, used for download and packaging.
 # -------------------------------------------------------
 # BIND version encoding within IPS, our rule is:
