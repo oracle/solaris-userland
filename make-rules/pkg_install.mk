@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 
 #
@@ -31,10 +31,22 @@ PKG=			/usr/bin/pkg
 PKGCMD=			$(PKG)
 PKG_INST_DIRS=		. $(foreach wc, $(REQUIRED_COMPONENTS), \
 				$(wildcard $(WS_COMPONENTS)/$(wc)))
-PKG_INST_SET_PUBLISHER=	$(PKGCMD) set-publisher --non-sticky solaris
-PKG_INST_CHANGE_FACET=	$(PKGCMD) change-facet $(PKG_INST_FACETS)
-PKG_INST_INSTALL=	$(PKGCMD) install --accept -g $(PKG_REPO) \
-				$(PKG_INST_FLAGS) $(PKG_INST_PACKAGES)
+
+# pkg(1) exit codes 3 and 4 mean that IPS operation was completed only
+# partially or there is nothing to do. In practice that means that for example
+# given facet was already set, no need to set it twice. Or publisher. Or
+# package is already installed. It generally means what we wanted is already
+# there. But it still triggers make to think that we failed. So we want to have
+# exit codes 3 and 4 to behave as if 0 was returned. This is a little shell
+# trickery to do that:
+PKG_IGNORE_3_AND_4= { RET=$$?; [[ $$RET == [34] ]] || exit $$RET; }
+
+PKG_INST_SET_PUBLISHER=	$(PKGCMD) set-publisher --non-sticky solaris \
+				|| $(PKG_IGNORE_3_AND_4)
+PKG_INST_CHANGE_FACET=	$(PKGCMD) change-facet $(PKG_INST_FACETS) \
+				|| $(PKG_IGNORE_3_AND_4)
+PKG_INST_INSTALL=	$(PKGCMD) install --accept -g $(PKG_REPO) $(PKG_INST_FLAGS) $(PKG_INST_PACKAGES) \
+				|| $(PKG_IGNORE_3_AND_4)
 #
 # Existing nightly publisher on the system or its attributes might cause
 # conflicts when resolving dependencies. Rely on passing full fmris to pkg
@@ -60,8 +72,8 @@ PKG_INST_FACETS=	$(PKG_INST_VERSION_LOCKS) $(PKG_INST_EXTRA_FACETS)
 
 pkg_inst::
 	$(PKG_INST_NIGHTLY_CHECK)
-	-$(PKG_INST_SET_PUBLISHER)
-	-$(PKG_INST_CHANGE_FACET)
+	$(PKG_INST_SET_PUBLISHER)
+	$(PKG_INST_CHANGE_FACET)
 	$(PKG_INST_INSTALL)
 
 #
