@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
 #
 
 include ../make-rules/shared-macros.mk
@@ -49,18 +49,16 @@ $(WS_MACH)/depends.mk:     $(WS_MACH)/components.mk
 -include $(WS_MACH)/depends.mk
 
 #
-# Walk through all of the components echoing the REQUIRED_PACKAGES for each one.
-# Pass all output through sed to drop lines with whitespace between words,
-# remove whitespace from lines, drop empty lines, and REQUIRED_PACKAGES +=
-# to the lines.  Pass that through sort -u
+# 1. Iterate over every component and print its REQUIRED_PACKAGES list.
+# 2. Pipe the entire output into a helper script.
+# 3. The script extracts each dependency and appends a comment that lists the
+#    component(s) that require that dependency.
 #
 $(WS_MACH)/requires.mk:	$(WS_MACH)
 	@echo "Generating list of required packages to build consolidation..."
-	@$(GMAKE) component-hook \
-		COMPONENT_HOOK='@echo $$(REQUIRED_PACKAGES:%="%\\n")' | \
-		$(GSED) -e '/\S\s\S/d' -e 's/^ //g' -e '/^\s*$$/d' \
-		    -e 's/^/REQUIRED_PACKAGES += /' | \
-		sort -u >$(@)
+	$(GMAKE) -j 5 --no-print-directory component-hook \
+		COMPONENT_HOOK='@echo $$(REQUIRED_PACKAGES:%="%:$$(subst $$(WS_TOP)/components/,,$$(COMPONENT_DIR))\\n")'  \
+		| perl $(WS_TOP)/tools/process-required-packages.pl > "$(@)"
 
 system-check::	$(WS_MACH)/requires.mk
 	@$(GMAKE) -f $(WS_MAKE_RULES)/environment.mk -f $< component-environment-check
