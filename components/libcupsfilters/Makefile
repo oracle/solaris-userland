@@ -49,6 +49,7 @@ CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--with-cups-rundir=/system/volatile/cups
 CONFIGURE_OPTIONS +=	--disable-mutool
+CONFIGURE_OPTIONS +=	LIBS="-ltsol"
 
 REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += image/library/libjpeg
