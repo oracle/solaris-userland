@@ -1,0 +1,18 @@
+Missing include for getloadavg() call.
+
+An upstream bug was filled:
+Missing include for getloadavg() call on Solaris
+https://github.com/ImageMagick/ImageMagick/issues/8315
+
+--- a/MagickCore/cache.c
++++ b/MagickCore/cache.c
+@@ -78,6 +78,9 @@
+ #if defined(MAGICKCORE_ZLIB_DELEGATE)
+ #include "zlib.h"
+ #endif
++#if defined(MAGICKCORE_HAVE_GETLOADAVG) && defined(__sun)
++#include <sys/loadavg.h>
++#endif
+ 
+ /*
+   Define declarations.
