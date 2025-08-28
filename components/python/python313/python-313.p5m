@@ -24,8 +24,11 @@
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
-# Move all test related files behind the optional.test facet.
+# Move all test related files behind the optional.test facet ...
 <transform file path=.*/(idle_)?tests?/.* -> default facet.optional.test true>
+# except for the main test support and test_subprocess related files (see 38357917).
+<transform file path=.*/test/(__pycache__/)?test_subprocess.* -> delete facet.optional.test .*>
+<transform file path=.*/test/(support|subprocessdata) -> delete facet.optional.test .*>
 set name=pkg.fmri \
     value=pkg:/runtime/python-313@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="The Python interpreter, libraries and utilities"
