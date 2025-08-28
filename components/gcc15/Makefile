@@ -33,7 +33,7 @@ ifeq ($(strip $(COMPONENT_MAKE_JOBS)),1)
     COMPONENT_MAKE_JOBS=4
 endif
 
-# Temporary opt out till gcc-gnat-13 is in CBE.
+# Temporary opt out till gcc-gnat-15 is in CBE.
 SKIP_REQUIRED_PACKAGES_CHECK=
 
 include ../../make-rules/shared-macros.mk
@@ -42,16 +42,16 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		gcc
-COMPONENT_VERSION=	15.1.0
+COMPONENT_VERSION=	15.2.0
 COMPONENT_PROJECT_URL=	https://gcc.gnu.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:51b9919ea69c980d7a381db95d4be27edf73b21254eb13d752a08003b4d013b1
+    sha256:7294d65cc1a0558cb815af0ca8c7763d86f7a31199794ede3f630c0d1b0a5723
 COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/gcc/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	6502
 
-COMPONENT_BAID=		331619
+COMPONENT_BAID=		341329
 
 # Use gcc's default flags instead of userland's.
 CFLAGS=

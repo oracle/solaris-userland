@@ -1,5 +1,5 @@
 cat <<'EOF' |
-LAST_UPDATED: Obtained from git: releases/gcc-15.1.0 revision 1b306039ac49f8ad91ca71d3de3150a3c9fa792a
+LAST_UPDATED: Obtained from git: releases/gcc-15.2.0 revision 5115c7e447fc07457443df874bf57840e8316d5f
 
 		=== acats tests ===
 
@@ -12,6 +12,14 @@ Native configuration is sparcv9-sun-solaris2.11
 
 
 Running target unix
+FAIL: g++.dg/coroutines/torture/pr119916.C execution test
+FAIL: g++.dg/coroutines/torture/pr119916.C   -O0  execution test
+FAIL: g++.dg/coroutines/torture/pr119916.C   -O1  execution test
+FAIL: g++.dg/coroutines/torture/pr119916.C   -O2  execution test
+FAIL: g++.dg/coroutines/torture/pr119916.C   -O3 -g  execution test
+FAIL: g++.dg/coroutines/torture/pr119916.C   -Os  execution test
+FAIL: g++.dg/coroutines/torture/pr119916.C   -O2 -flto -flto-partition=none  execution test
+FAIL: g++.dg/coroutines/torture/pr119916.C   -O2 -flto  execution test
 FAIL: g++.dg/cpp0x/constexpr-nsdmi5.C  -std=c++11 (test for excess errors)
 FAIL: g++.dg/cpp0x/constexpr-nsdmi5.C  -std=c++17 (test for excess errors)
 FAIL: g++.dg/cpp0x/constexpr-nsdmi5.C  -std=c++26 (test for excess errors)
@@ -91,11 +99,11 @@ FAIL: g++.dg/guality/redeclaration1.C  -Og  line 15 i == 42
 
 		=== g++ Summary ===
 
-# of expected passes		239045
-# of unexpected failures	76
-# of expected failures		2175
-# of unsupported tests		2540
-$(@D)/gcc/xg++  version 15.1.0 (GCC) 
+# of expected passes		239576
+# of unexpected failures	84
+# of expected failures		2180
+# of unsupported tests		2548
+$(@D)/gcc/xg++  version 15.2.0 (GCC) 
 
 		=== gcc tests ===
 
@@ -418,7 +426,8 @@ FAIL: gcc.dg/guality/vla-1.c   -O2 -flto -flto-partition=none  -DPREVENT_OPTIMIZ
 FAIL: gcc.dg/guality/vla-1.c   -O2 -flto  -DPREVENT_OPTIMIZATION line 24 i == 5
 FAIL: gcc.dg/guality/vla-1.c   -O2 -flto  -DPREVENT_OPTIMIZATION line 24 sizeof (a) == 17 * sizeof (short)
 XPASS: gcc.dg/ipa/iinline-attr.c scan-ipa-dump inline "hooray[^\\\\n]*inline copy in test"
-FAIL: gcc.dg/ipa/pr119318.c execution test
+FAIL: gcc.dg/ipa/pr120295.c (test for excess errors)
+FAIL: gcc.dg/plugin/must-tail-call-2.c -fplugin=./must_tail_call_plugin.so (test for excess errors)
 FAIL: gcc.dg/plugin/cpython-plugin-test-PyList_Append.c -fplugin=./analyzer_cpython_plugin.so (internal compiler error: Segmentation Fault)
 FAIL: gcc.dg/plugin/cpython-plugin-test-PyList_Append.c -fplugin=./analyzer_cpython_plugin.so  (test for warnings, line 17)
 FAIL: gcc.dg/plugin/cpython-plugin-test-PyList_Append.c -fplugin=./analyzer_cpython_plugin.so  at line 18 (test for warnings, line 17)
@@ -443,11 +452,11 @@ FAIL: gcc.dg/plugin/cpython-plugin-test-PyLong_FromLong.c -fplugin=./analyzer_cp
 FAIL: gcc.dg/plugin/cpython-plugin-test-PyLong_FromLong.c -fplugin=./analyzer_cpython_plugin.so  (test for warnings, line 29)
 FAIL: gcc.dg/plugin/cpython-plugin-test-PyLong_FromLong.c -fplugin=./analyzer_cpython_plugin.so  at line 37 (test for warnings, line 36)
 FAIL: gcc.dg/plugin/cpython-plugin-test-PyLong_FromLong.c -fplugin=./analyzer_cpython_plugin.so (test for excess errors)
-FAIL: gcc.dg/sarif-output/bad-pragma.c bad-pragma.py::test_messages_have_embedded_urls - assert "unknown opti...s.html)' kind" == "unknown opti...s.html)' kind
 XPASS: gcc.dg/vect/pr33804.c scan-tree-dump-times vect "vectorized 1 loops" 1
 XPASS: gcc.dg/vect/pr33804.c scan-tree-dump-times vect "vectorizing stmts using SLP" 1
 FAIL: gcc.dg/vect/vect-117.c scan-tree-dump-not optimized "Invalid sum"
 FAIL: gcc.dg/vect/vect-33.c scan-tree-dump-not optimized "Invalid sum"
+FAIL: gcc.dg/vect/vect-86.c scan-tree-dump-not optimized "Invalid sum"
 XPASS: gcc.dg/vect/vect-alias-check-1.c scan-tree-dump vect "using an address-based overlap test"
 FAIL: gcc.dg/vect/slp-19c.c scan-tree-dump-times vect "vectorized 2 loops" 1
 FAIL: gcc.dg/vect/slp-19c.c scan-tree-dump-times vect "vectorizing stmts using SLP" 4
@@ -457,6 +466,7 @@ XPASS: gcc.dg/vect/pr33804.c -flto -ffat-lto-objects  scan-tree-dump-times vect 
 XPASS: gcc.dg/vect/pr33804.c -flto -ffat-lto-objects  scan-tree-dump-times vect "vectorizing stmts using SLP" 1
 FAIL: gcc.dg/vect/vect-117.c -flto -ffat-lto-objects  scan-tree-dump-not optimized "Invalid sum"
 FAIL: gcc.dg/vect/vect-33.c -flto -ffat-lto-objects  scan-tree-dump-not optimized "Invalid sum"
+FAIL: gcc.dg/vect/vect-86.c -flto -ffat-lto-objects  scan-tree-dump-not optimized "Invalid sum"
 XPASS: gcc.dg/vect/vect-alias-check-1.c -flto -ffat-lto-objects  scan-tree-dump vect "using an address-based overlap test"
 FAIL: gcc.dg/vect/slp-19c.c -flto -ffat-lto-objects  scan-tree-dump-times vect "vectorized 2 loops" 1
 FAIL: gcc.dg/vect/slp-19c.c -flto -ffat-lto-objects  scan-tree-dump-times vect "vectorizing stmts using SLP" 4
@@ -465,12 +475,12 @@ XPASS: gcc.dg/vect/slp-multitypes-3.c -flto -ffat-lto-objects  scan-tree-dump-ti
 
 		=== gcc Summary ===
 
-# of expected passes		171585
-# of unexpected failures	321
+# of expected passes		171849
+# of unexpected failures	323
 # of unexpected successes	40
 # of expected failures		1383
-# of unsupported tests		6108
-$(@D)/gcc/xgcc  version 15.1.0 (GCC) 
+# of unsupported tests		6128
+$(@D)/gcc/xgcc  version 15.2.0 (GCC) 
 
 		=== gfortran tests ===
 
@@ -479,10 +489,10 @@ Running target unix
 
 		=== gfortran Summary ===
 
-# of expected passes		72613
+# of expected passes		72828
 # of expected failures		343
-# of unsupported tests		200
-$(@D)/gcc/gfortran  version 15.1.0 (GCC) 
+# of unsupported tests		207
+$(@D)/gcc/gfortran  version 15.2.0 (GCC) 
 
 		=== gnat tests ===
 
@@ -491,10 +501,10 @@ Running target unix
 
 		=== gnat Summary ===
 
-# of expected passes		3486
-# of expected failures		24
+# of expected passes		3503
+# of expected failures		25
 # of unsupported tests		33
-$(@D)/gcc/gnatmake version 15.1.0
+$(@D)/gcc/gnatmake version 15.2.0
 
 		=== go tests ===
 
@@ -502,15 +512,14 @@ $(@D)/gcc/gnatmake version 15.1.0
 Running target unix
 FAIL: go.test/test/fixedbugs/issue27836.dir/Äfoo.go  -O -I. (test for excess errors)
 FAIL: go.test/test/fixedbugs/issue27836.dir/Ämain.go  -O -I. (test for excess errors)
-FAIL: go.test/test/fixedbugs/issue4562.go execution,  -O2 -g 
 
 		=== go Summary ===
 
-# of expected passes		8874
-# of unexpected failures	3
+# of expected passes		8875
+# of unexpected failures	2
 # of untested testcases		12
 # of unsupported tests		34
-$(@D)/gcc/gccgo  version 15.1.0 (GCC) 
+$(@D)/gcc/gccgo  version 15.2.0 (GCC) 
 
 		=== objc tests ===
 
@@ -521,7 +530,7 @@ Running target unix
 
 # of expected passes		2849
 # of unsupported tests		70
-$(@D)/gcc/xgcc  version 15.1.0 (GCC) 
+$(@D)/gcc/xgcc  version 15.2.0 (GCC) 
 
 		=== gotools tests ===
 
@@ -578,7 +587,7 @@ FAIL: go test embed/internal/embedtest
 # of expected passes		159
 # of unexpected failures	48
 # of untested testcases		59
-$(@D)/./gcc/gccgo version 15.1.0 (GCC)
+$(@D)/./gcc/gccgo version 15.2.0 (GCC)
 
 		=== libatomic tests ===
 
@@ -626,20 +635,21 @@ FAIL: sync/atomic
 
 # of expected passes		383
 # of unexpected failures	9
-$(@D)/./gcc/gccgo version 15.1.0 (GCC)
+$(@D)/./gcc/gccgo version 15.2.0 (GCC)
 
 		=== libgomp tests ===
 
 
 Running target unix
 FAIL: libgomp.c++/pr58706.C execution test
+FAIL: libgomp.c++/target-cdtor-2.C output pattern test
 
 		=== libgomp Summary ===
 
-# of expected passes		16817
-# of unexpected failures	1
+# of expected passes		17002
+# of unexpected failures	2
 # of expected failures		286
-# of unsupported tests		737
+# of unsupported tests		777
 		=== libitm tests ===
 
 
@@ -658,15 +668,15 @@ FAIL: 26_numerics/headers/cmath/equivalent_functions.cc  -std=gnu++17 execution 
 
 		=== libstdc++ Summary ===
 
-# of expected passes		18953
+# of expected passes		18990
 # of unexpected failures	1
 # of expected failures		132
 # of unsupported tests		823
 
-Compiler version: 15.1.0 (GCC) 
+Compiler version: 15.2.0 (GCC) 
 Platform: sparcv9-sun-solaris2.11
 configure flags: --prefix=/usr/gcc/15 --mandir=/usr/gcc/15/share/man --bindir=/usr/gcc/15/bin --sbindir=/usr/gcc/15/sbin --libdir=/usr/gcc/15/lib --infodir=/usr/gcc/15/share/info --libexecdir=/usr/gcc/15/lib --enable-languages=ada,c,c++,fortran,go,objc --enable-shared --enable-initfini-array --disable-rpath --with-system-zlib --with-build-config=no --without-gnu-ld --with-ld=/usr/bin/ld --with-gnu-as --with-as=/usr/gnu/bin/as 'BOOT_CFLAGS=-g -O2' sparcv9-sun-solaris2.11
 BOOT_CFLAGS=-g -O2
 EOF
-Mail -s "Results for 15.1.0 (GCC) testsuite on sparcv9-sun-solaris2.11" gcc-testresults@gcc.gnu.org &&
+Mail -s "Results for 15.2.0 (GCC) testsuite on sparcv9-sun-solaris2.11" gcc-testresults@gcc.gnu.org &&
 true
