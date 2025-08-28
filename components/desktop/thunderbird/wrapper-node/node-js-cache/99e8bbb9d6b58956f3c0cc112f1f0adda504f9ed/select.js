@@ -116,7 +116,7 @@ function selectMayBePrettyPrintedLocation(location) {
       });
     }
 
-    await dispatch(selectLocation(location));
+    await dispatch(selectSpecificLocation(location));
   };
 }
 /**
