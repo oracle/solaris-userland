@@ -1,0 +1,53 @@
+Fixes ply failures on fips-140 enabled machines.
+
+From upstream:
+https://github.com/dabeaz/ply/commit/3335be2931e42803ddc64ce2df61f7b0aad1f30c
+
+From 3335be2931e42803ddc64ce2df61f7b0aad1f30c Mon Sep 17 00:00:00 2001
+From: David Beazley <dave@dabeaz.com>
+Date: Tue, 31 Jan 2017 12:18:55 -0600
+Subject: [PATCH] Reworked signature code to not use digests or hashes.
+
+---
+ ply/yacc.py | 20 ++++++--------------
+ 1 file changed, 6 insertions(+), 14 deletions(-)
+
+diff --git a/ply/yacc.py b/ply/yacc.py
+index 62ebc88..2c525ba 100644
+--- a/ply/yacc.py
++++ b/ply/yacc.py
+@@ -2968,28 +2968,20 @@ def validate_all(self):
+ 
+     # Compute a signature over the grammar
+     def signature(self):
++        parts = []
+         try:
+-            from hashlib import md5
+-        except ImportError:
+-            from md5 import md5
+-        try:
+-            sig = md5()
+             if self.start:
+-                sig.update(self.start.encode('latin-1'))
++                parts.append(self.start)
+             if self.prec:
+-                sig.update(''.join([''.join(p) for p in self.prec]).encode('latin-1'))
++                parts.append(''.join([''.join(p) for p in self.prec]))
+             if self.tokens:
+-                sig.update(' '.join(self.tokens).encode('latin-1'))
++                parts.append(' '.join(self.tokens))
+             for f in self.pfuncs:
+                 if f[3]:
+-                    sig.update(f[3].encode('latin-1'))
++                    parts.append(f[3])
+         except (TypeError, ValueError):
+             pass
+-
+-        digest = base64.b16encode(sig.digest())
+-        if sys.version_info[0] >= 3:
+-            digest = digest.decode('latin-1')
+-        return digest
++        return ''.join(parts)
+ 
+     # -----------------------------------------------------------------------------
+     # validate_modules()
