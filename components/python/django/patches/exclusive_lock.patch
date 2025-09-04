@@ -3,9 +3,9 @@ on non-writable file.
 
 This is a Solaris specific patch.
 
---- django-5.2.4/django/test/testcases.py
-+++ django-5.2.4/django/test/testcases.py
-@@ -1880,7 +1880,7 @@ class SerializeMixin:
+--- django-5.2.6/django/test/testcases.py
++++ django-5.2.6/django/test/testcases.py
+@@ -1884,7 +1884,7 @@ class SerializeMixin:
  
      @classmethod
      def setUpClass(cls):
@@ -14,8 +14,8 @@ This is a Solaris specific patch.
          cls.addClassCleanup(cls._lockfile.close)
          locks.lock(cls._lockfile, locks.LOCK_EX)
          super().setUpClass()
---- django-5.2.4/tests/files/tests.py
-+++ django-5.2.4/tests/files/tests.py
+--- django-5.2.6/tests/files/tests.py
++++ django-5.2.6/tests/files/tests.py
 @@ -189,6 +189,7 @@ class FileTests(unittest.TestCase):
              test_file.seek(0)
              self.assertEqual(test_file.read(), (content * 2).encode())
