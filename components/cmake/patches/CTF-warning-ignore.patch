@@ -1,0 +1,24 @@
+The issue was filed as https://gitlab.kitware.com/cmake/cmake/-/issues/27156
+
+It will be fixed in cmake 4.2.0
+
+This patch differs from official fix because official fix can not be applied to
+our 3.24.
+
+--- cmake-3.24.0/Modules/Internal/CheckSourceCompiles.cmake
++++ cmake-3.24.0/Modules/Internal/CheckSourceCompiles.cmake
+@@ -102,6 +102,14 @@ function(CMAKE_CHECK_SOURCE_COMPILES _la
+       "${CHECK_${LANG}_SOURCE_COMPILES_ADD_INCLUDES}"
+       OUTPUT_VARIABLE OUTPUT)
+ 
++    # The ctf warning is irrelevant to whether the just tested option works or
++    # not. But it is tripping the regex "option.*not supported" (defined in
++    # CMakeCheckCompilerFlagCommonPatterns.cmake) if the workspace (or any part
++    # of path) contains the word 'option'
++    # THe actual warning looked like:
++    #   cc1plus: note: CTF debug info requested, but not supported for 'GNU C++20' frontend
++    string(REPLACE "cc1plus: note: CTF debug info requested, but not supported for" "---removed---" OUTPUT ${OUTPUT})
++
+     foreach(_regex ${_FAIL_REGEX})
+       if("${OUTPUT}" MATCHES "${_regex}")
+         set(${_var} 0)
