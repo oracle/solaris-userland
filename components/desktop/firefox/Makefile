@@ -37,14 +37,14 @@ LD_SHARED_OPTIONS_Z_DEFS=
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	140.2.0
-COMPONENT_BAID=		341117
+COMPONENT_VERSION =	140.3.0
+COMPONENT_BAID=		344441
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:956dce675c3b706d563caf07ed3ca9af632ab830be710dfd4351da78a0a2ef55
+    sha256:efc6eb3c93756311bd2f9db3796c0bbee6e3f182975d857284168b3dec672316
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -61,7 +61,7 @@ COMPONENT_ANITYA_ID =	16838
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:db1afcfc0a78b1750b76b9a8d4919e3b0a37757cc4ed34e3a815c296970ea2c4
+    sha256:ffebf24cb9fe9e05bacea498eba763a59fce8a7e1ca43fe5e380333c79e29ad7
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
@@ -106,7 +106,6 @@ MOZCONFIG_DEBUG =	/dev/null
 MOZCONFIG_NON_DEBUG =	$(MOZCONFIG)
 endif
 
-# ICU can be re-enabled once it's updated to new version.
 COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options MOZILLA_OFFICIAL=1" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --prefix=/usr" >> $(MOZCONFIG) ; \
@@ -129,7 +128,7 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-update-channel=esr" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-system-icu" >> /dev/null ; \
+	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libvpx" >> $(MOZCONFIG) ; \
