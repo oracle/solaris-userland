@@ -26,27 +26,26 @@
 BUILD_BITS =            32_and_64
 # FreeType uses various gcc-isms for optimizations
 COMPILER =		gcc
-CTF_MODE =		relaxed
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freetype
-COMPONENT_VERSION=	2.13.3
+COMPONENT_VERSION=	2.14.1
 COMPONENT_PROJECT_URL=	https://www.freetype.org/
 COMPONENT_ARCHIVE_URL=	https://download.savannah.gnu.org/releases/freetype/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0550350666d427c74daeb85d5ac7bb353acba5f76956395995311a9c6f063289
-#COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+	sha256:32427e8c471ac095853212a37aef816c60b42052d4d9e48230bab3bdf2936ccc
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        x11/font
 COMPONENT_ANITYA_ID=	854
-COMPONENT_BAID=		176492
+COMPONENT_BAID=		345966
+
+BUILD_STYLE=            meson
 
 TEST_TARGET = $(NO_TESTS)
 
-FIX_PC_FILES=builds/unix/freetype2.in
-
 # Set here so we only have to update this one line, instead of multiple lines
 # in the *.p5m file on every new version
-FREETYPE_SOVERSION =	6.19.0
+FREETYPE_SOVERSION =	6.20.4
 PKG_VARS += FREETYPE_SOVERSION
 
 include $(WS_MAKE_RULES)/x11-component.mk
@@ -54,18 +53,12 @@ include $(WS_MAKE_RULES)/x11-component.mk
 # Requires a grep command that accepts -E
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += --disable-freetype-config
-CONFIGURE_OPTIONS += --with-zlib
-CONFIGURE_OPTIONS += --with-bzip2
-CONFIGURE_OPTIONS += --with-png
-CONFIGURE_OPTIONS += --with-pic
-# Avoid to bring a desktop dependency (harfbuzz links glib)
-# into poppler that links libfreetype library.
-CONFIGURE_OPTIONS += --without-harfbuzz
-
-COMPONENT_BUILD_ARGS += CCraw_build='$(CC) $(CC_PIC_ENABLE)'
-
-LDFLAGS += -lc
+CONFIGURE_OPTIONS += -Dzlib=system
+CONFIGURE_OPTIONS += -Dbzip2=enabled
+CONFIGURE_OPTIONS += -Dpng=enabled
+CONFIGURE_OPTIONS += -Dmmap=enabled
+# attempt to dlopen harfbuzz at runtime to avoid dependency loop
+CONFIGURE_OPTIONS += -Dharfbuzz=dynamic
 
 PROTO_FREETYPE_DOCDIR = $(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)
 
