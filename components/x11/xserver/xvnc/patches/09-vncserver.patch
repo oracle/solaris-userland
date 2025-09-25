@@ -29,18 +29,21 @@ not suitable for upstream
  &SanityCheck();
  
  #
-@@ -35,15 +49,66 @@
+@@ -50,6 +50,8 @@
  # your site
  #
  
 +$geometry = "1024x768";
 +
-+
- $vncUserDir = "$ENV{HOME}/.vnc";
+ $vncUserDir = rindex("$ENV{XDG_CONFIG_HOME}", "/", 0) == 0
+   ? "$ENV{XDG_CONFIG_HOME}/tigervnc"
+   : "$ENV{HOME}/.config/tigervnc";
+@@ -61,12 +63,61 @@
+ 
  $vncUserConfig = "$vncUserDir/config";
  
 -$vncSystemConfigDir = "@CMAKE_INSTALL_FULL_SYSCONFDIR@/tigervnc";
-+$vncSystemConfigDir = "/etc/tigervnc";
++$vncSystemConfigDir = "etc/tigervnc";
  $vncSystemConfigDefaultsFile = "$vncSystemConfigDir/vncserver-config-defaults";
  $vncSystemConfigMandatoryFile = "$vncSystemConfigDir/vncserver-config-mandatory";
  
@@ -51,7 +54,7 @@ not suitable for upstream
 +$defaultXStartup
 +    = ("#!/bin/sh\n\n".
 +       "unset SESSION_MANAGER\n".
-+       "unset DBUS_SESSION_BUS_ADDRESS\n".
++       "unset DBUS_SESSION_BUS_ADDRESS\n". 
 +       "OS=`uname -s`\n".
 +       "if [ \$OS = 'Linux' ]; then\n".
 +       "  case \"\$WINDOWMANAGER\" in\n".
@@ -93,6 +96,7 @@ not suitable for upstream
 +       "# geometry=2000x1200\n".
 +       "# localhost\n".
 +       "# alwaysshared\n");
++
 +
  chop($host = `uname -n`);
  
@@ -304,149 +308,6 @@ not suitable for upstream
  # Make an X server cookie and set up the Xauthority file
  # mcookie is a part of util-linux, usually only GNU/Linux systems have it.
  $cookie = `mcookie`;
-@@ -228,38 +329,126 @@
- print XAUTH "add $host/unix:$displayNumber . $cookie\n";
- close(XAUTH);
- 
--$ENV{XAUTHORITY} = $xauthorityFile;
--
- # Now start the X VNC Server
- 
--@cmd = ("xinit");
--
--push(@cmd, $Xsession, $session{'Exec'});
--
--push(@cmd, '--');
--
- # We build up our Xvnc command with options
--push(@cmd, "@CMAKE_INSTALL_FULL_BINDIR@/Xvnc", ":$displayNumber");
-+$cmd = $exedir."Xvnc :$displayNumber";
- 
- foreach my $k (sort keys %config) {
--  push(@cmd, "-$k");
--  push(@cmd, $config{$k}) if defined($config{$k});
-+  $cmd .= " -$k $config{$k}";
-   delete $default_opts{$k}; # file options take precedence
- }
- 
- foreach my $k (sort keys %default_opts) {
--  push(@cmd, "-$k");
--  push(@cmd, $default_opts{$k}) if defined($default_opts{$k});
-+  $cmd .= " -$k $default_opts{$k}";
- }
- 
-+# Add color database stuff here, e.g.:
-+# $cmd .= " -co /usr/lib/X11/rgb";
-+
-+foreach $arg (@ARGV) {
-+  $cmd .= " " . &quotedString($arg);
-+}
-+$cmd .= " >> " . &quotedString($desktopLog) . " 2>&1";
-+
-+# Run $cmd and record the process ID.
-+$pidFile = "$vncUserDir/$host:$displayNumber.pid";
-+system("$cmd & echo \$! >$pidFile");
-+
-+# Give Xvnc a chance to start up
-+
-+sleep(3);
-+if ($fontPath ne $defFontPath) {
-+    unless (kill 0, `cat $pidFile`) {
-+        if ($fpArgSpecified) {
-+	    warn "\nWARNING: The first attempt to start Xvnc failed, probably because the font\n";
-+	    warn "path you specified using the -fp argument is incorrect.  Attempting to\n";
-+	    warn "determine an appropriate font path for this system and restart Xvnc using\n";
-+	    warn "that font path ...\n";
-+        } else {
-+	    warn "\nWARNING: The first attempt to start Xvnc failed, possibly because the font\n";
-+	    warn "catalog is not properly configured.  Attempting to determine an appropriate\n";
-+	    warn "font path for this system and restart Xvnc using that font path ...\n";
-+        }
-+	$cmd =~ s@-fp [^ ]+@@;
-+	$cmd .= " -fp $defFontPath" if ($defFontPath);
-+	system("$cmd & echo \$! >$pidFile");
-+	sleep(3);
-+    }
-+}
-+unless (kill 0, `cat $pidFile`) {
-+    warn "Could not start Xvnc.\n\n";
-+    unlink $pidFile;
-+    open(LOG, "<$desktopLog");
-+    while (<LOG>) { print; }
-+    close(LOG);
-+    die "\n";
-+}
-+
- warn "\nNew '$desktopName' desktop is $host:$displayNumber\n\n";
- 
--warn "Starting desktop session $sessionname\n";
-+# Create the user's xstartup script if necessary.
-+if (! $skipxstartup) {
-+    if (!(-e "$xstartupFile")) {
-+	warn "Creating default startup script $xstartupFile\n";
-+	open(XSTARTUP, ">$xstartupFile");
-+        print XSTARTUP $defaultXStartup;
-+        close(XSTARTUP);
-+        chmod 0755, "$xstartupFile";
-+    }
-+}
- 
--exec(@cmd);
-+# Create the user's config file if necessary.
-+if (!(-e "$vncUserDir/config")) {
-+    warn "Creating default config $vncUserDir/config\n";
-+    open(VNCUSERCONFIG, ">$vncUserDir/config");
-+    print VNCUSERCONFIG $defaultConfig;
-+    close(VNCUSERCONFIG);
-+    chmod 0644, "$vncUserDir/config";
-+}
- 
--die "Failed to start session.\n";
-+# Run the X startup script.
-+if (! $skipxstartup) {
-+    warn "Starting applications specified in $xstartupFile\n";
-+}
-+warn "Log file is $desktopLog\n\n";
- 
-+# If the unix domain socket exists then use that (DISPLAY=:n) otherwise use
-+# TCP (DISPLAY=host:n)
-+
-+if (-e "/tmp/.X11-unix/X$displayNumber" ||
-+    -e "/usr/spool/sockets/X11/$displayNumber")
-+{
-+    $ENV{DISPLAY}= ":$displayNumber";
-+} else {
-+    $ENV{DISPLAY}= "$host:$displayNumber";
-+}
-+$ENV{VNCDESKTOP}= $desktopName;
-+
-+if ($opt{'-fg'}) {
-+    if (! $skipxstartup) {
-+        system("$xstartupFile >> " . &quotedString($desktopLog) . " 2>&1");
-+    }
-+    if (kill 0, `cat $pidFile`) {
-+        $opt{'-kill'} = ':'.$displayNumber;
-+        &Kill();
-+    }
-+} else {
-+    if ($opt{'-autokill'}) {
-+    	if (! $skipxstartup) {
-+            system("($xstartupFile; $0 -kill :$displayNumber) >> "
-+	     . &quotedString($desktopLog) . " 2>&1 &");
-+    	}
-+    } else {
-+    	if (! $skipxstartup) {
-+            system("$xstartupFile >> " . &quotedString($desktopLog)
-+	     . " 2>&1 &");
-+    	}
-+    }
-+}
-+
-+exit;
-+
- ###############################################################################
- # Functions
- ###############################################################################
 @@ -292,7 +481,7 @@
            # current config file being loaded defined the logical opposite setting
            # (NeverShared vs. AlwaysShared, etc etc).

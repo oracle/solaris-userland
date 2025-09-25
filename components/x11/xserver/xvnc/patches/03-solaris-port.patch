@@ -1,30 +1,5 @@
 Changes for Solaris builds.  Not suitable for upstream
 
---- a/unix/xserver/hw/vnc/Makefile.am	2020-01-31 23:13:37.135370809 -0800
-+++ b/unix/xserver/hw/vnc/Makefile.am	2020-01-31 23:16:58.882282063 -0800
-@@ -23,7 +23,7 @@
- 
- libvnccommon_la_CPPFLAGS = -DVENDOR_RELEASE="$(VENDOR_RELEASE)" -I$(TIGERVNC_SRCDIR)/unix/common \
- 	-DVENDOR_STRING="\"$(VENDOR_STRING)\"" -I$(TIGERVNC_SRCDIR)/common -UHAVE_CONFIG_H \
--	-I$(TIGERVNC_SRCDIR)/unix/vncconfig $(XVNC_CPPFLAGS) ${XSERVERLIBS_CFLAGS} \
-+	-I$(TIGERVNC_SRCDIR)/unix/vncconfig $(XVNC_CPPFLAGS) ${XSERVERLIBS_CFLAGS} -I$(includedir) -I/usr/include/xorg \
- 	-I$(top_srcdir)/include
- 
- bin_PROGRAMS = Xvnc
-@@ -64,10 +68,12 @@
- 	-I$(top_srcdir)/hw/xfree86/os-support \
- 	-I$(top_srcdir)/hw/xfree86/os-support/bus \
- 	-I$(top_srcdir)/include \
--	${XSERVERLIBS_CFLAGS}
-+	${XSERVERLIBS_CFLAGS} \
-+	-I/usr/include/xorg
- 
- libvnc_la_LDFLAGS = -module -avoid-version -Wl,-z,now
- 
- libvnc_la_LIBADD = libvnccommon.la $(COMMON_LIBS)
-+endif
- 
- EXTRA_DIST = Xvnc.man
 --- a/cmake/StaticBuild.cmake	2020-01-31 23:17:43.467000788 -0800
 +++ b/cmake/StaticBuild.cmake	2020-01-31 23:18:00.924420953 -0800
 @@ -7,6 +7,11 @@
@@ -39,30 +14,67 @@ Changes for Solaris builds.  Not suitable for upstream
  option(BUILD_STATIC
      "Link statically against most libraries, if possible" OFF)
  
---- a/unix/xserver/hw/vnc/Makefile.am	2023-03-28 10:30:20.681002781 -0700
-+++ b/unix/xserver/hw/vnc/Makefile.am	2023-03-28 10:32:32.502191397 -0700
-@@ -42,7 +42,8 @@
- 	-UHAVE_CONFIG_H \
- 	-DXFree86Server -DVENDOR_RELEASE="$(VENDOR_RELEASE)" \
- 	-DVENDOR_STRING="\"$(VENDOR_STRING)\"" -I$(TIGERVNC_SRCDIR)/common -I$(TIGERVNC_SRCDIR)/unix/common \
--	-I$(top_srcdir)/include ${XSERVERLIBS_CFLAGS}
-+	-I$(top_srcdir)/include ${XSERVERLIBS_CFLAGS} \
-+	-I/usr/include/xorg
+--- a/unix/tx/TXDialog.h        2025-05-20 15:27:54.618465335 -0700
++++ b/unix/tx/TXDialog.h        2025-05-20 15:28:04.387189143 -0700
+@@ -32,6 +32,7 @@
  
- LOCAL_LIBS = \
- 	$(XVNC_LIBS) \
-@@ -51,10 +52,13 @@
- 	$(COMMON_LIBS)
+ #include "TXWindow.h"
+ #include <errno.h>
++#include <cstring>
+
+ class TXDialog : public TXWindow, public TXDeleteWindowCallback {
+ public:
+--- a/unix/xserver/hw/vnc/Makefile.am	2025-05-20 18:22:01.948328965 -0700
++++ b/unix/xserver/hw/vnc/Makefile.am	2025-05-20 18:26:38.598282570 -0700
+@@ -32,7 +32,10 @@
+ 	vncInput.c vncInputXKB.c qnum_to_xorgevdev.c qnum_to_xorgkbd.c
  
- Xvnc_DEPENDENCIES = $(LOCAL_LIBS)
--Xvnc_LDADD = $(LOCAL_LIBS) $(XSERVER_SYS_LIBS) $(XVNC_SYS_LIBS) -lX11
-+Xvnc_LDADD = $(LOCAL_LIBS) $(XSERVER_SYS_LIBS) $(XVNC_SYS_LIBS) -lX11 \
-+	     -ljpeg -lz ../../IA/libIA.la 
+ libvnccommon_la_CPPFLAGS = $(AM_CPPFLAGS) \
+-	-I$(TIGERVNC_SRCDIR)/unix/vncconfig
++	-I$(TIGERVNC_SRCDIR)/unix/vncconfig \
++	$(XVNC_CPPFLAGS) ${XSERVERLIBS_CFLAGS} \
++	-I$(includedir) -I/usr/include/xorg \
++	-I$(top_srcdir)/include
+ 
+ bin_PROGRAMS = Xvnc
+ 
+@@ -60,9 +63,11 @@
+ 	$(LOCAL_LIBS) \
+ 	$(XSERVER_SYS_LIBS) \
+ 	$(XVNC_SYS_LIBS) \
+-	$(LIBXCVT_LIBS)
++	$(LIBXCVT_LIBS) \
++	-ljpeg -lz -lX11 ../../IA/libIA.la
  
  Xvnc_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 +Xvnc_LDFLAGS += $(GNUTLS_LDFLAGS)
+ 
+ if DRI3
+ Xvnc_SOURCES += vncDRI3.h vncDRI3.c vncDRI3Draw.c
+@@ -72,6 +77,7 @@
+ Xvnc_LDADD += $(GBM_LIBS)
+ endif
  
 +if XORG
  libvnc_la_LTLIBRARIES = libvnc.la
  libvnc_ladir = $(moduledir)/extensions
  
+@@ -81,12 +87,17 @@
+ nodist_EXTRA_libvnc_la_SOURCES = dummy.cxx
+ 
+ libvnc_la_CPPFLAGS = $(AM_CPPFLAGS) \
++	$(XVNC_CPPFLAGS) \
+ 	-I$(top_srcdir)/hw/xfree86/common \
+ 	-I$(top_srcdir)/hw/xfree86/os-support \
+-	-I$(top_srcdir)/hw/xfree86/os-support/bus
++	-I$(top_srcdir)/hw/xfree86/os-support/bus \
++	-I$(top_srcdir)/include \
++	${XSERVERLIBS_CFLAGS} \
++	-I/usr/include/xorg
+ 
+ libvnc_la_LDFLAGS = -module -avoid-version -Wl,-z,now
+ 
+ libvnc_la_LIBADD = libvnccommon.la $(COMMON_LIBS)
++endif
+ 
+ EXTRA_DIST = Xvnc.man

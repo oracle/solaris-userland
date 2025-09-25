@@ -1,15 +1,5 @@
 Changes required to build Xvnc with xorg-server 21.1.x
 
---- xserver/hw/Makefile.am    2022-12-06 17:47:55.752397410 -0800
-+++ xserver/hw/Makefile.am 2022-12-06 17:57:39.148554544 -0800
-@@ -34,3 +34,5 @@
- 
- relink:
-        $(AM_V_at)for i in $(SUBDIRS) ; do $(MAKE) -C $$i relink || exit 1 ; done
-+
-+SUBDIRS += vnc
-Index: xserver/configure.ac
-===================================================================
 --- xserver.orig/configure.ac
 +++ xserver/configure.ac
 @@ -74,6 +74,7 @@ dnl forcing an entire recompile.x
@@ -56,19 +46,6 @@ Index: xserver/configure.ac
  hw/xnest/Makefile
  hw/xnest/man/Makefile
  hw/xwin/Makefile
-Index: xserver/hw/Makefile.am
-===================================================================
---- xserver.orig/hw/Makefile.am
-+++ xserver/hw/Makefile.am
-@@ -38,7 +38,8 @@ SUBDIRS =			\
- 	$(DMX_SUBDIRS)		\
- 	$(KDRIVE_SUBDIRS)	\
- 	$(XQUARTZ_SUBDIRS)	\
--	$(XWAYLAND_SUBDIRS)
-+	$(XWAYLAND_SUBDIRS)	\
-+	vnc
- 
- DIST_SUBDIRS = dmx xfree86 vfb xnest xwin xquartz kdrive xwayland
  
 Index: xserver/mi/miinitext.c
 ===================================================================

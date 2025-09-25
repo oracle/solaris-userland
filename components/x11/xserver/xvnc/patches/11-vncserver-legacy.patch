@@ -1,0 +1,361 @@
+Maintain legacy vncserver as we have shipped, with ~/.vnc versus xdg based paths
+
+--- a/unix/vncserver/vncserver.in	2025-09-16 15:10:29.181866281 -0700
++++ b/unix/vncserver/vncserver.in	2025-09-16 15:16:02.524252596 -0700
+@@ -52,15 +52,7 @@
+ 
+ $geometry = "1024x768";
+ 
+-$vncUserDir = rindex("$ENV{XDG_CONFIG_HOME}", "/", 0) == 0
+-  ? "$ENV{XDG_CONFIG_HOME}/tigervnc"
+-  : "$ENV{HOME}/.config/tigervnc";
+-$vncLegacyDir = "$ENV{HOME}/.vnc";
+-if (!stat($vncUserDir) && stat($vncLegacyDir)) {
+-  warn "~/.vnc is deprecated, please consult 'man vncsession' for paths to migrate to.";
+-  $vncUserDir = $vncLegacyDir;
+-}
+-
++$vncUserDir = "$ENV{HOME}/.vnc";
+ $vncUserConfig = "$vncUserDir/config";
+ 
+ $vncSystemConfigDir = "etc/tigervnc";
+@@ -341,35 +333,123 @@
+ $ENV{XAUTHORITY} = $xauthorityFile;
+ 
+ # Now start the X VNC Server
+-
+-@cmd = ("xinit");
+-
+-push(@cmd, $Xsession, $session{'Exec'});
+-
+-push(@cmd, '--');
+-
+ # We build up our Xvnc command with options
+-push(@cmd, "@CMAKE_INSTALL_FULL_BINDIR@/Xvnc", ":$displayNumber");
++$cmd = $exedir."Xvnc :$displayNumber";
+ 
+ foreach my $k (sort keys %config) {
+-  push(@cmd, "-$k");
+-  push(@cmd, $config{$k}) if defined($config{$k});
++  $cmd .= " -$k $config{$k}";
+   delete $default_opts{$k}; # file options take precedence
+ }
+ 
+ foreach my $k (sort keys %default_opts) {
+-  push(@cmd, "-$k");
+-  push(@cmd, $default_opts{$k}) if defined($default_opts{$k});
++  $cmd .= " -$k $default_opts{$k}";
+ }
+ 
++# Add color database stuff here, e.g.:
++# $cmd .= " -co /usr/lib/X11/rgb";
++
++foreach $arg (@ARGV) {
++  $cmd .= " " . &quotedString($arg);
++}
++$cmd .= " >> " . &quotedString($desktopLog) . " 2>&1";
++
++# Run $cmd and record the process ID.
++$pidFile = "$vncUserDir/$host:$displayNumber.pid";
++system("$cmd & echo \$! >$pidFile");
++
++# Give Xvnc a chance to start up
++
++sleep(3);
++if ($fontPath ne $defFontPath) {
++    unless (kill 0, `cat $pidFile`) {
++        if ($fpArgSpecified) {
++            warn "\nWARNING: The first attempt to start Xvnc failed, probably because the font\n";
++            warn "path you specified using the -fp argument is incorrect.  Attempting to\n";
++            warn "determine an appropriate font path for this system and restart Xvnc using\n";
++            warn "that font path ...\n";
++        } else {
++            warn "\nWARNING: The first attempt to start Xvnc failed, possibly because the font\n";
++            warn "catalog is not properly configured.  Attempting to determine an appropriate\n";
++            warn "font path for this system and restart Xvnc using that font path ...\n";
++        }
++        $cmd =~ s@-fp [^ ]+@@;
++        $cmd .= " -fp $defFontPath" if ($defFontPath);
++        system("$cmd & echo \$! >$pidFile");
++        sleep(3);
++    }
++}
++unless (kill 0, `cat $pidFile`) {
++    warn "Could not start Xvnc.\n\n";
++    unlink $pidFile;
++    open(LOG, "<$desktopLog");
++    while (<LOG>) { print; }
++    close(LOG);
++    die "\n";
++}
++
+ warn "\nNew '$desktopName' desktop is $host:$displayNumber\n\n";
+ 
+-warn "Starting desktop session $sessionname\n";
++# Create the user's xstartup script if necessary.
++if (! $skipxstartup) {
++    if (!(-e "$xstartupFile")) {
++        warn "Creating default startup script $xstartupFile\n";
++        open(XSTARTUP, ">$xstartupFile");
++        print XSTARTUP $defaultXStartup;
++        close(XSTARTUP);
++        chmod 0755, "$xstartupFile";
++    }
++}
+ 
+-exec(@cmd);
++# Create the user's config file if necessary.
++if (!(-e "$vncUserDir/config")) {
++    warn "Creating default config $vncUserDir/config\n";
++    open(VNCUSERCONFIG, ">$vncUserDir/config");
++    print VNCUSERCONFIG $defaultConfig;
++    close(VNCUSERCONFIG);
++    chmod 0644, "$vncUserDir/config";
++}
+ 
+-die "Failed to start session.\n";
++# Run the X startup script.
++if (! $skipxstartup) {
++    warn "Starting applications specified in $xstartupFile\n";
++}
++warn "Log file is $desktopLog\n\n";
+ 
++# If the unix domain socket exists then use that (DISPLAY=:n) otherwise use
++# TCP (DISPLAY=host:n)
++
++if (-e "/tmp/.X11-unix/X$displayNumber" ||
++    -e "/usr/spool/sockets/X11/$displayNumber")
++{
++    $ENV{DISPLAY}= ":$displayNumber";
++} else {
++    $ENV{DISPLAY}= "$host:$displayNumber";
++}
++$ENV{VNCDESKTOP}= $desktopName;
++
++if ($opt{'-fg'}) {
++    if (! $skipxstartup) {
++        system("$xstartupFile >> " . &quotedString($desktopLog) . " 2>&1");
++    }
++    if (kill 0, `cat $pidFile`) {
++        $opt{'-kill'} = ':'.$displayNumber;
++        &Kill();
++    }
++} else {
++    if ($opt{'-autokill'}) {
++        if (! $skipxstartup) {
++            system("($xstartupFile; $0 -kill :$displayNumber) >> "
++             . &quotedString($desktopLog) . " 2>&1 &");
++        }
++    } else {
++        if (! $skipxstartup) {
++            system("$xstartupFile >> " . &quotedString($desktopLog)
++             . " 2>&1 &");
++        }
++    }
++}
++
++exit;
+ ###############################################################################
+ # Functions
+ ###############################################################################
+--- a/java/com/tigervnc/vncviewer/FileUtils.java	2025-09-18 16:06:39.316530307 -0700
++++ b/java/com/tigervnc/vncviewer/FileUtils.java	2025-09-18 17:55:02.442513195 -0700
+@@ -80,7 +80,7 @@
+       return newDir.getPath();
+     } else {
+       if (legacyDir.exists()) {
+-        vlog.info("WARNING: ~/.vnc is deprecated, please consult 'man vncviewer' for paths to migrate to.");
++        vlog.debug("WARNING: ~/.vnc is deprecated, please consult 'man vncviewer' for paths to migrate to.");
+         return legacyDir.getPath();
+       }
+       String xdgBaseDir = System.getenv(xdgEnv);
+--- a/vncviewer/vncviewer.cxx	2025-09-18 16:06:45.709047376 -0700
++++ b/vncviewer/vncviewer.cxx	2025-09-18 17:58:31.809298936 -0700
+@@ -542,7 +542,7 @@
+ #ifndef WIN32
+   const char *dotdir = strrchr(dir, '.');
+   if (dotdir != NULL && strcmp(dotdir, ".vnc") == 0)
+-    vlog.info(_("~/.vnc is deprecated, please consult 'man vncviewer' for paths to migrate to."));
++    vlog.debug(_("~/.vnc is deprecated, please consult 'man vncviewer' for paths to migrate to."));
+ #else
+   const char *vncdir = strrchr(dir, '\\');
+   if (vncdir != NULL && strcmp(vncdir, "vnc") == 0)
+--- a/unix/vncserver/vncsession.c	2025-09-18 16:06:28.446448278 -0700
++++ b/unix/vncserver/vncsession.c	2025-09-18 20:00:09.748133590 -0700
+@@ -415,7 +415,9 @@
+ 
+     snprintf(legacy, sizeof(legacy), "%s/.vnc", homedir);
+     if (stat(logfile, &st) != 0 && stat(legacy, &st) == 0) {
++#ifdef DEBUG
+         syslog(LOG_WARNING, "~/.vnc is deprecated, please consult 'man vncsession' for paths to migrate to.");
++#endif
+         strcpy(logfile, legacy);
+ 
+ #ifdef HAVE_SELINUX
+--- a/unix/vncserver/HOWTO.md	2025-09-19 14:29:52.040401244 -0700
++++ b/unix/vncserver/HOWTO.md	2025-09-19 14:31:42.199075526 -0700
+@@ -30,8 +30,7 @@
+ you did the user mapping and open `vncserver-config-defaults`
+ configuration file. This file is for the default Xvnc configuration and
+ will be applied to every user unless any of the following applies:
+-* The user has its own configuration in `$XDG_CONFIG_HOME/tigervnc/config`
+-  or `$HOME/.config/tigervnc/config`.
++* The user has its own configuration in `$HOME/.vnc/config`
+ * The same option with different value is configured in 
+   `vncserver-config-mandatory` configuration file, which replaces the
+   default configuration and has even a higher priority than the per-user
+--- a/unix/vncserver/vncserver-config-defaults	2025-09-19 14:32:32.654670389 -0700
++++ b/unix/vncserver/vncserver-config-defaults	2025-09-19 14:33:16.194483910 -0700
+@@ -1,7 +1,7 @@
+ ## Default settings for VNC servers started by the vncserver service
+ #
+ # Any settings given here will override the builtin defaults, but can
+-# also be overriden by ~/.config/tigervnc/config and vncserver-config-mandatory.
++# also be overriden by ~/.vnc/config and vncserver-config-mandatory.
+ #
+ # See HOWTO.md and the following manpages for more details:
+ #     vncsession(8) Xvnc(1)
+--- a/unix/vncserver/vncserver-config-mandatory	2025-09-19 14:33:46.500781756 -0700
++++ b/unix/vncserver/vncserver-config-mandatory	2025-09-19 14:34:00.449513063 -0700
+@@ -1,7 +1,7 @@
+ ## Mandatory settings for VNC servers started by the vncserver service
+ #
+ # Any settings given here will override the builtin defaults and
+-# settings specified in ~/.config/tigervnc/config or vnc-config-defaults.
++# settings specified in ~/.vnc/config or vnc-config-defaults.
+ #
+ # See HOWTO.md and the following manpages for more details:
+ #     vncsession(8) Xvnc(1)
+--- a/unix/vncserver/vncsession.man.in	2025-09-19 14:35:03.692723490 -0700
++++ b/unix/vncserver/vncsession.man.in	2025-09-19 14:36:43.912325807 -0700
+@@ -27,21 +27,21 @@
+ from a terminal as an ordinary user.
+ 
+ .SH FILES
+-Several VNC-related files are found in the directory \fI$HOME/.config/tigervnc\fP:
++Several VNC-related files are found in the directory \fI$HOME/.vnc\fP:
+ .TP
+ \fI@CMAKE_INSTALL_FULL_SYSCONFDIR@/tigervnc/vncserver-config-defaults\fP
+-The optional system-wide equivalent of \fI$HOME/.config/tigervnc/config\fP.
++The optional system-wide equivalent of \fI$HOME/.vnc/config\fP.
+ If this file exists and defines options to be passed to Xvnc, they will be used
+-as defaults for users. The user's \fI$HOME/.config/tigervnc/config\fP overrides
++as defaults for users. The user's \fI$HOME/.vnc/config\fP overrides
+ settings configured in this file. The overall configuration file load order is:
+-this file, \fI$HOME/.config/tigervnc/config\fP, and then
++this file, \fI$HOME/.vnc/config\fP, and then
+ \fI@CMAKE_INSTALL_FULL_SYSCONFDIR@/tigervnc/vncserver-config-mandatory\fP.
+ None are required to exist.
+ .TP
+ \fI@CMAKE_INSTALL_FULL_SYSCONFDIR@/tigervnc/vncserver-config-mandatory\fP
+-The optional system-wide equivalent of \fI$HOME/.config/tigervnc/config\fP.
++The optional system-wide equivalent of \fI$HOME/.vnc/config\fP.
+ If this file exists and defines options to be passed to Xvnc, they will override
+-any of the same options defined in a user's \fI$HOME/.config/tigervnc/config\fP.
++any of the same options defined in a user's \fI$HOME/.vnc/config\fP.
+ This file offers a mechanism to establish some basic form of system-wide policy.
+ WARNING! There is nothing stopping users from constructing their own
+ vncsession-like script that calls Xvnc directly to bypass any options defined in
+@@ -48,12 +48,11 @@
+ \fI@CMAKE_INSTALL_FULL_SYSCONFDIR@/tigervnc/vncserver-config-mandatory\fP. The
+ overall configuration file load order is:
+ \fI@CMAKE_INSTALL_FULL_SYSCONFDIR@/tigervnc/vncserver-config-defaults\fP,
+-\fI$HOME/.config/tigervnc/config\fP, and then this file. None are required to
++\fI$HOME/.vnc/config\fP, and then this file. None are required to
+ exist.
+ .TP
+-\fI$XDG_CONFIG_HOME/tigervnc/config\fP
++\fI$HOME/.vnc/config\fP
+ .TQ
+-\fI$HOME/.config/tigervnc/config\fP
+ An optional server config file wherein options to be passed to Xvnc are listed
+ to avoid hard-coding them to the physical invocation. List options in this file
+ one per line. For those requiring an argument, simply separate the option from
+@@ -67,14 +66,12 @@
+ one of the files in \fI/usr/share/xsessions\fP. E.g. if there is a file called
+ "gnome.desktop", then "session=gnome" would be set to use that session type.
+ .TP
+-\fI$XDG_CONFIG_HOME/tigervnc/passwd\fP
++\fI$HOME/.vnc/passwd\fP
+ .TQ
+-\fI$HOME/.config/tigervnc/passwd\fP
+ The VNC password file.
+ .TP
+-\fI$XDG_STATE_HOME/tigervnc/\fIBhost\fI:\fIBdisplay#\fI.log\fP
++\fI$HOME/.vnc/\fIBhost\fI:\fIBdisplay#\fI.log\fP
+ .TQ
+-\fI$HOME/.local/state/tigervnc/\fIBhost\fI:\fIBdisplay#\fI.log\fP
+ The log file for Xvnc and the session.
+ 
+ .SH SEE ALSO
+--- a/unix/xserver/hw/vnc/Xvnc.man	2025-09-19 14:37:18.128671207 -0700
++++ b/unix/xserver/hw/vnc/Xvnc.man	2025-09-19 14:38:26.619125040 -0700
+@@ -373,7 +373,7 @@
+ the X session in the normal way.  It is important to use a VNC password in this
+ case.  A typical entry in inetd.conf might be:
+ 
+-5951   stream   tcp wait   james     /usr/local/bin/Xvnc Xvnc -inetd -query localhost -once passwordFile=/home/james/.config/tigervnc/passwd
++5951   stream   tcp wait   james     /usr/bin/Xvnc -inetd -query localhost -once passwordFile=/home/james/.vnc/passwd
+ 
+ In fact typically, you would have one entry for each user who uses VNC
+ regularly, each of whom has their own dedicated TCP port which they use.  In
+--- a/vncviewer/vncviewer.man	2025-09-19 14:38:57.844463019 -0700
++++ b/vncviewer/vncviewer.man	2025-09-19 14:41:04.689893061 -0700
+@@ -147,7 +147,7 @@
+ .B \-passwd, \-PasswordFile \fIpassword-file\fP
+ If you are on a filesystem which gives you access to the password file used by
+ the server, you can specify it here to avoid typing it in.  It will usually be
+-\fI$XDG_CONFIG_HOME/tigervnc/passwd\fP, or \fI~/.config/tigervnc/passwd\fP
++\fI$HOME/.vnc/passwd\fP, or \fI~/.vnc/passwd\fP
+ if the former is unset.
+ .
+ .TP
+@@ -154,15 +154,15 @@
+ .B \-X509CA \fIpath\fP
+ Path to CA certificate to use when authenticating remote servers using any
+ of the X509 security schemes (X509None, X509Vnc, etc.). Must be in PEM
+-format. Default is \fI$XDG_CONFIG_HOME/tigervnc/x509_ca.pem\fP, or
+-\fI~/.config/tigervnc/x509_ca.pem\fP.
++format. Default is \fI$HOME/.vnc/x509_ca.pem\fP, or
++\fI~/.vnc/x509_ca.pem\fP.
+ .
+ .TP
+ .B \-X509CRL \fIpath\fP
+ Path to certificate revocation list to use in conjunction with
+ \fB-X509CA\fP. Must also be in PEM format. Default is
+-\fI$XDG_CONFIG_HOME/tigervnc/x509_crl.pem\fP, or
+-\fI~/.config/tigervnc/x509_crl.pem\fP.
++\fI$HOME/.vnc/x509_crl.pem\fP, or
++\fI~/.vnc/x509_crl.pem\fP.
+ .
+ .TP
+ .B \-Shared
+@@ -341,22 +341,22 @@
+ 
+ .SH FILES
+ .TP
+-\fI$XDG_CONFIG_HOME/tigervnc/default.tigervnc\fP
++\fI$HOME/tigervnc/default.tigervnc\fP
+ .TQ
+-\fI$HOME/.config/tigervnc/default.tigervnc\fP
++\fI$HOME/.vnc/default.tigervnc\fP
+ Default configuration options. This file must have a "magic" first line of
+ "TigerVNC Configuration file Version 1.0" (without quotes), followed by simple
+ <setting>=<value> pairs of your choosing. The available settings are those
+ shown in this man page.
+ .TP
+-\fI$XDG_CONFIG_HOME/tigervnc/x509_ca.pem\fP
++\fI$HOME/tigervnc/x509_ca.pem\fP
+ .TQ
+-\fI$HOME/.config/tigervnc/x509_ca.pem\fP
++\fI$HOME/.vnc/x509_ca.pem\fP
+ Default CA certificate for authenticating servers.
+ .TP
+-\fI$XDG_CONFIG_HOME/tigervnc/x509_crl.pem\fP
++\fI$HOME/tigervnc/x509_crl.pem\fP
+ .TQ
+-\fI$HOME/.config/tigervnc/x509_crl.pem\fP
++\fI$HOME/.vnc/x509_crl.pem\fP
+ Default certificate revocation list.
+ .TP
+ \fI$XDG_DATA_HOME/tigervnc/x509_known_hosts\fP

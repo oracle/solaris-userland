@@ -28,16 +28,16 @@ CTF_MODE =		off
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tigervnc
-COMPONENT_VERSION=	1.13.1
+COMPONENT_VERSION=	1.14.1
 COMPONENT_PROJECT_URL=	http://tigervnc.org/
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b7c5b8ed9e4e2c2f48c7b2c9f21927db345e542243b4be88e066b2daa3d1ae25
+	sha256:579d0d04eb5b806d240e99a3c756b38936859e6f7db2f4af0d5656cc9a989d7c
 COMPONENT_ARCHIVE_URL=	https://github.com/TigerVNC/tigervnc/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        x11/vnc
 COMPONENT_ANITYA_ID=	4970
 
-COMPONENT_BAID=		141621
+COMPONENT_BAID=		344118
 
 XORG_DIR=		$(COMPONENT_DIR:xvnc=xorg)
 get-xorg-value=		$(MAKE) --no-print-directory -C $(XORG_DIR) print-$(1) \
@@ -126,7 +126,7 @@ CONFIGURE_OPTIONS += $(shell $(call get-xorg-value,CONFIGURE_OPTIONS))
 CONFIGURE_OPTIONS += --disable-builddocs --disable-xfree86-utils
 CONFIGURE_OPTIONS += --disable-xorg --disable-xnest --disable-xvfb --disable-dmx
 CONFIGURE_OPTIONS += --disable-xwin --disable-xephyr --disable-kdrive
-CONFIGURE_OPTIONS += --disable-dri3 --disable-present
+CONFIGURE_OPTIONS += --disable-dri3
 CONFIGURE_OPTIONS += --disable-all-encodings
 # Disable building Xorg hardware device support that Xvnc can't use
 CONFIGURE_OPTIONS += --without-int10 --disable-config-hal --disable-dga
