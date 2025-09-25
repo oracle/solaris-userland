@@ -8,8 +8,8 @@ This patch together with tx.patch in libcupsfilters and cups-filters makes the
 Trusted Extension implementation complete.
 
 --- a/Makedefs.in
---- b/Makedefs.in
-@@ -162,7 +162,7 @@ ARFLAGS		=	@ARFLAGS@
++++ b/Makedefs.in
+@@ -160,7 +160,7 @@ ARFLAGS		=	@ARFLAGS@
  BACKLIBS	=	@BACKLIBS@
  BUILDDIRS	=	@BUILDDIRS@
  CFLAGS		=	@CPPFLAGS@ @CFLAGS@
@@ -19,7 +19,7 @@ Trusted Extension implementation complete.
  CXXLIBS		=	@CXXLIBS@
  DBUS_NOTIFIER	=	@DBUS_NOTIFIER@
 --- a/berkeley/lpq.c
---- b/berkeley/lpq.c
++++ b/berkeley/lpq.c
 @@ -15,6 +15,10 @@ */
  
  #include <cups/cups-private.h>
@@ -51,7 +51,7 @@ Trusted Extension implementation complete.
    for (i = 1; i < argc; i ++)
    {
      if (argv[i][0] == '+')
---- /dev/null
+--- a/config-scripts/cups-labeling.m4
 +++ b/config-scripts/cups-labeling.m4
 @@ -0,0 +1,7 @@
 +AC_ARG_ENABLE(labeling, [   --enable-labeling      enable support for Solaris Trusted Extensions, default=auto])
@@ -62,8 +62,8 @@ Trusted Extension implementation complete.
 +		AC_DEFINE(HAVE_TSOL, 1, [Define if Trusted Solaris is enabled.])])
 +fi
 --- a/config.h.in
---- b/config.h.in
-@@ -719,4 +719,10 @@ */
++++ b/config.h.in
+@@ -712,4 +712,10 @@ */
  #undef HAVE_SNAPD_CLIENT_RUN_SNAPCTL2_SYNC
  
  
@@ -75,7 +75,7 @@ Trusted Extension implementation complete.
 +
  #endif /* !_CUPS_CONFIG_H_ */
 --- a/configure.ac
---- b/configure.ac
++++ b/configure.ac
 @@ -39,6 +39,7 @@ sinclude(config-scripts/cups-dnssd.m4)
  sinclude(config-scripts/cups-container.m4)
  sinclude(config-scripts/cups-startup.m4)
@@ -85,8 +85,8 @@ Trusted Extension implementation complete.
  dnl See what languages are available and make sure we generate the localization
  dnl files as needed...
 --- a/scheduler/auth.c
---- b/scheduler/auth.c
-@@ -60,6 +60,9 @@
++++ b/scheduler/auth.c
+@@ -60,6 +60,9 @@ #  include <glib.h>
  #  include <snapd-glib/snapd-glib.h>
  #endif /* HAVE_LIBSNAPDGLIB */
  
@@ -96,7 +96,7 @@ Trusted Extension implementation complete.
  
  /*
   * Local functions...
-@@ -1692,8 +1695,38 @@ if (!con->username[0])
+@@ -1711,8 +1714,38 @@ if (!con->username[0])
  #endif /* HAVE_AUTHORIZATION_H */
      {
        if (best->satisfy == CUPSD_AUTH_SATISFY_ALL || auth == CUPSD_AUTH_DENY)
@@ -137,7 +137,7 @@ Trusted Extension implementation complete.
      }
  
 --- a/scheduler/client.c
---- b/scheduler/client.c
++++ b/scheduler/client.c
 @@ -27,6 +27,11 @@ #ifdef HAVE_TCPD_H
  #  include <tcpd.h>
  #endif /* HAVE_TCPD_H */
@@ -252,7 +252,7 @@ Trusted Extension implementation complete.
    {
     /*
 --- a/scheduler/client.h
---- b/scheduler/client.h
++++ b/scheduler/client.h
 @@ -66,6 +66,8 @@ #endif /* HAVE_GSSAPI */
  #ifdef HAVE_AUTHORIZATION_H
    AuthorizationRef	authref;	/* Authorization ref */
@@ -263,7 +263,7 @@ Trusted Extension implementation complete.
  
  #define HTTP(con) ((con)->http)
 --- a/scheduler/cupsd.h
---- b/scheduler/cupsd.h
++++ b/scheduler/cupsd.h
 @@ -40,6 +40,9 @@ #if defined(HAVE_CDSASSL)
  #  include <CoreFoundation/CoreFoundation.h>
  #endif /* HAVE_CDSASSL */
@@ -275,7 +275,7 @@ Trusted Extension implementation complete.
  /*
   * Some OS's don't have hstrerror(), most notably Solaris...
 --- a/scheduler/ipp.c
---- b/scheduler/ipp.c
++++ b/scheduler/ipp.c
 @@ -28,6 +28,11 @@ extern int mbr_group_name_to_uuid(const
  extern int mbr_check_membership_by_id(uuid_t user, gid_t group, int* ismember);
  #endif /* __APPLE__ */
@@ -453,9 +453,9 @@ Trusted Extension implementation complete.
   /*
    * See if the printer is accepting jobs...
    */
-@@ -1524,6 +1648,19 @@ printer->name);
-     return (NULL);
-   }
+@@ -1527,6 +1651,19 @@ }
+   if (ippGetBoolean(ippFindAttribute(con->request, "print-as-raster", IPP_TAG_BOOLEAN), 0))
+     job->print_as_raster = 1;
  
 +  /*
 +   *  Add the label to the job...
@@ -473,7 +473,7 @@ Trusted Extension implementation complete.
    job->dtype   = printer->type & (CUPS_PRINTER_CLASS | CUPS_PRINTER_REMOTE);
    job->attrs   = con->request;
    job->dirty   = 1;
-@@ -1585,7 +1722,7 @@ */
+@@ -1588,7 +1725,7 @@ */
  
      if (attr->value_tag != IPP_TAG_NAME ||
          attr->num_values != 1 ||
@@ -482,7 +482,7 @@ Trusted Extension implementation complete.
      {
       /*
        * Can't override the value if we aren't connected via localhost.
-@@ -1828,10 +1965,24 @@ */
+@@ -1831,10 +1968,24 @@ */
  
      if (!(printer->type & CUPS_PRINTER_REMOTE))
      {
@@ -509,7 +509,7 @@ Trusted Extension implementation complete.
        {
          cupsdSetJobState(job, IPP_JOB_ABORTED, CUPSD_JOB_PURGE,
  	                 "Aborting job because the start banner could not be "
-@@ -3024,6 +3175,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -3027,6 +3178,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -525,7 +525,7 @@ Trusted Extension implementation complete.
   /*
    * See if the job has been completed...
    */
-@@ -3496,6 +3656,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -3499,6 +3659,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -542,7 +542,7 @@ Trusted Extension implementation complete.
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -6152,6 +6322,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -6188,6 +6358,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
  	                jobid);
  	return;
        }
@@ -559,7 +559,7 @@ Trusted Extension implementation complete.
      }
      else
        job = NULL;
-@@ -6699,6 +6879,15 @@ }
+@@ -6735,6 +6915,15 @@ }
  
    exclude = cupsdGetPrivateAttrs(policy, con, printer, job->username);
  
@@ -575,7 +575,7 @@ Trusted Extension implementation complete.
   /*
    * Copy attributes...
    */
-@@ -6958,6 +7147,21 @@ strlcpy(username, get_username(con), siz
+@@ -6994,6 +7183,21 @@ strlcpy(username, get_username(con), siz
    else
      username[0] = '\0';
  
@@ -597,7 +597,7 @@ Trusted Extension implementation complete.
    ra = create_requested_array(con->request);
    for (job_attr = (char *)cupsArrayFirst(ra); job_attr; job_attr = (char *)cupsArrayNext(ra))
      if (strcmp(job_attr, "job-id") &&
-@@ -7026,6 +7230,14 @@ if (need_load_job && !job->attrs)
+@@ -7062,6 +7266,14 @@ if (need_load_job && !job->attrs)
        {
          cupsdLoadJob(job);
  
@@ -612,7 +612,7 @@ Trusted Extension implementation complete.
  	if (!job->attrs)
  	{
  	  cupsdLogMessage(CUPSD_LOG_DEBUG2, "get_jobs: No attributes for job %d", job->id);
-@@ -7094,7 +7306,11 @@ continue;
+@@ -7130,7 +7342,11 @@ continue;
  	}
        }
  
@@ -625,7 +625,7 @@ Trusted Extension implementation complete.
  	continue;
  
        if (count > 0)
-@@ -8193,6 +8409,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -8237,6 +8453,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -641,7 +641,7 @@ Trusted Extension implementation complete.
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -8463,6 +8688,14 @@ */
+@@ -8507,6 +8732,14 @@ */
        send_ipp_status(con, IPP_NOT_FOUND, _("Job #%d does not exist."), jobid);
        return;
      }
@@ -656,7 +656,7 @@ Trusted Extension implementation complete.
      else
      {
       /*
-@@ -8485,6 +8718,27 @@ send_http_error(con, status, dprinter);
+@@ -8529,6 +8762,27 @@ send_http_error(con, status, dprinter);
      return;
    }
  
@@ -684,7 +684,7 @@ Trusted Extension implementation complete.
   /*
    * Now move the job or jobs...
    */
-@@ -9335,6 +9589,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9379,6 +9633,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -701,7 +701,7 @@ Trusted Extension implementation complete.
   /*
    * See if job is "held"...
    */
-@@ -9559,6 +9823,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9607,6 +9871,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -717,7 +717,7 @@ Trusted Extension implementation complete.
   /*
    * See if job is in any of the "completed" states...
    */
-@@ -9910,6 +10183,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9958,6 +10231,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -733,7 +733,7 @@ Trusted Extension implementation complete.
    printer = cupsdFindDest(job->dest);
  
   /*
-@@ -10599,6 +10881,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -10647,6 +10929,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -749,7 +749,7 @@ Trusted Extension implementation complete.
   /*
    * See if the job has been completed...
    */
-@@ -11051,8 +11342,14 @@ cupsdSetString(&printer->job_sheets[0],
+@@ -11099,8 +11390,14 @@ cupsdSetString(&printer->job_sheets[0],
  
        if (attr->num_values > 1)
  	cupsdSetString(&printer->job_sheets[1], attr->values[1].string.text);
@@ -765,7 +765,7 @@ Trusted Extension implementation complete.
      }
      else if (!strcmp(attr->name, "requesting-user-name-allowed"))
      {
-@@ -11828,6 +12125,11 @@ */
+@@ -11876,6 +12173,11 @@ */
  
    strlcpy(username, get_username(con), userlen);
  
@@ -778,7 +778,7 @@ Trusted Extension implementation complete.
    * Check the username against the owner...
    */
 --- a/scheduler/job.c
---- b/scheduler/job.c
++++ b/scheduler/job.c
 @@ -1069,7 +1069,13 @@ "CUPS_FILETYPE=document";
    if (final_content_type[0])
      envp[envc ++] = final_content_type;
@@ -870,7 +870,7 @@ Trusted Extension implementation complete.
   /*
    * Return the options string...
    */
-@@ -4859,6 +4913,18 @@ */
+@@ -4860,6 +4914,18 @@ */
    if (!cupsdLoadJob(job))
      return;
  
@@ -890,8 +890,8 @@ Trusted Extension implementation complete.
      job->printer_message = ippFindAttribute(job->attrs,
                                              "job-printer-state-message",
 --- a/scheduler/job.h
---- b/scheduler/job.h
-@@ -85,6 +85,8 @@ cups_array_t		*history;	/* Debug log his
++++ b/scheduler/job.h
+@@ -86,6 +86,8 @@ cups_array_t		*history;	/* Debug log his
    int			progress;	/* Printing progress */
    int			num_keywords;	/* Number of PPD keywords */
    cups_option_t		*keywords;	/* PPD keywords */
@@ -902,7 +902,7 @@ Trusted Extension implementation complete.
  typedef struct cupsd_joblog_s		/**** Job log message ****/
 --- a/scheduler/printers.c
 +++ b/scheduler/printers.c
-@@ -104,8 +104,16 @@
+@@ -104,8 +104,16 @@ p->filetype    = mimeAddType(MimeDatabas
  
    _cupsRWUnlock(&MimeDatabase->lock);
  
@@ -921,7 +921,7 @@ Trusted Extension implementation complete.
  
    cupsdSetString(&p->error_policy, ErrorPolicy);
    cupsdSetString(&p->op_policy, DefaultPolicy);
-@@ -828,6 +837,91 @@ else
+@@ -831,6 +839,91 @@ else
      return (p);
  }
  
@@ -1013,7 +1013,7 @@ Trusted Extension implementation complete.
  
  /*
   * 'cupsdLoadAllPrinters()' - Load printers from the printers.conf file.
-@@ -2502,12 +2596,22 @@ }
+@@ -2505,12 +2598,22 @@ }
      ippDelete(oldattrs);
    }
  
@@ -1040,7 +1040,7 @@ Trusted Extension implementation complete.
   /*
    * Populate the document-format-supported attribute...
 --- a/scheduler/printers.h
---- b/scheduler/printers.h
++++ b/scheduler/printers.h
 @@ -161,6 +161,8 @@ extern cupsd_printer_t	*cupsdFindPrinter
  extern cupsd_quota_t	*cupsdFindQuota(cupsd_printer_t *p,
  			                const char *username);
