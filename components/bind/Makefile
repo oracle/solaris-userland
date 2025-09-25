@@ -26,6 +26,11 @@
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS=		64
 COMPILER=		gcc
+
+# libcmocka is requested for testing purposes. As it is not generally
+# available at this time the package check needs to be bypassed.
+SKIP_REQUIRED_PACKAGES_CHECK=
+
 # Set BINDDEBUG=yes in environment to make this a debug build.
 ifeq ($(BINDDEBUG), yes)
 gcc_OPT.sparc.64 =	-g
@@ -44,19 +49,19 @@ LD_SHARED_OPTIONS_Z_DEFS=
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.18.38
+COMPONENT_VERSION=	9.20.13
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-COMPONENT_BAID=		336653
+COMPONENT_BAID=	343804
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:b11fce934773ec25dd6d7253caeaf9c5bbf073fd327acc29daffeca3987e31a1
+	sha256:151f9376ead317e646a5d0c9f01c060386d891118d7437a7f829bb9727c7b34c
 COMPONENT_ARCHIVE_URL=	\
 	http://downloads.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
-# For check_anitya target, https://release-monitoring.org/project/242117
-COMPONENT_ANITYA_ID=	242117
+# For check_anitya target, https://release-monitoring.org/project/374094
+COMPONENT_ANITYA_ID=	374094
 
 # ISC OpenPGP Key obtained from https://ftp.isc.org/isc/pgpkeys
 # Added to repository using command:
@@ -146,6 +151,42 @@ COMPONENT_PREP_ACTION += \
 		$(@D)/bin/named/named.rst; \
 	fi;
 
+# Post install action for conversion of bind-transition.org to ASCII.
+#
+# Creates a copy of org file in proto directory, as emacs creates in
+# place, this copy is then removed.
+#
+# ORGABS makes argument to --eval fit into the 80 column guideline.
+ORGABS =	org-ascii--box-string
+ORGSRC =	bind-transition.org
+ORGSRCDIR =	$(COMPONENT_DIR)/Solaris
+ORGDSTDIR =	$(USRSHAREDOCDIR)/release-notes
+ORGPUBDIR =	$(PROTO_DIR)$(ORGDSTDIR)
+ORGEXPORT =	\
+  $(MKDIR) $(ORGPUBDIR); \
+  $(CP) $(ORGSRCDIR)/$(ORGSRC) $(ORGPUBDIR); \
+  /usr/bin/emacs $(ORGPUBDIR)/$(ORGSRC) -Q -batch \
+    --eval '(require `ox-ascii)' \
+    --eval '(advice-add `$(ORGABS) :override (defun my-$(ORGABS) (s info) s))' \
+    --eval '(org-ascii-export-to-ascii)'; \
+  $(RM) $(ORGPUBDIR)/$(ORGSRC);
+COMPONENT_POST_INSTALL_ACTION.64 += $(ORGEXPORT)
+
+.PHONY: test-org-export
+# See README.md for information on using this target.
+ORGTXT =	$(ORGSRC:%.org=%.txt)
+ORGCMP =	./$(BUILD_dir)/bind-transition.txt
+test-org-export:
+	$(ORGEXPORT)
+	@$e exported to $(ORGPUBDIR)/$(ORGTXT)
+	@if [[ -f $(ORGCMP) ]]; then \
+		if diff -u $(ORGCMP) $(ORGPUBDIR)/$(ORGTXT); then \
+		    $e No changes!; \
+		fi; \
+	    else \
+		$e "File Not Found: $(ORGCMP) (ORGCMP)"; \
+	    fi;
+
 # Test configuration.
 # -------------------
 #
@@ -179,7 +220,7 @@ COMPONENT_TEST_TRANSFORMS +=	\
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ENV +=	\
 	LD_LIBRARY_PATH=$(PROTO_DIR)$(CONFIGURE_LIBDIR.64)
-COMPONENT_TEST_CMD =	ksh  $(COMPONENT_DIR)/Solaris/testing.ksh
+COMPONENT_TEST_CMD =	/usr/bin/bash  $(COMPONENT_DIR)/Solaris/testing.sh
 COMPONENT_TEST_ARGS =	-k -d $(BUILD_DIR)/test/config
 COMPONENT_TEST_ARGS +=	-p $(PROTO_DIR)
 
@@ -192,14 +233,16 @@ COMPONENT_TEST_TRANSFORMS +=	\
 	'-e "s|/tmp/BIND|\\$$(BUILD_DIR)|g" '
 
 # This is a handy test target for developer.  Please leave functional.
-test-named-version test-version: build
+test-named-version test-version: install
 	LD_LIBRARY_PATH=$(PROTO_DIR)$(CONFIGURE_LIBDIR.64) \
 		$(PROTO_DIR)$(CONFIGURE_SBINDIR.64)/named -V; \
 
 # Check bind.license against source files. The real source should be that
 # obtained from the TPNO database . This serves as a reminder.
 e = /usr/gnu/bin/echo
-test-license: unpack
+test-license: $(BUILD_DIR)/bind.license.new
+
+$(BUILD_DIR)/bind.license.new: unpack bind.license
 	@$(MKDIR) -p $(BUILD_DIR)
 	@( \
 		$e -n '-------------------------------';\
@@ -210,17 +253,17 @@ test-license: unpack
 		$e 'Copyright notices --------------------------'; \
 		$e; \
 		iconv -sct UTF-8 $(SOURCE_DIR)/COPYRIGHT; \
-	)  > $(BUILD_DIR)/bind.license.new;
-	@cmp $(COMPONENT_DIR)/bind.license \
-	    $(BUILD_DIR)/bind.license.new >/dev/null || \
+	)  > $@;
+	@/usr/bin/cmp $(COMPONENT_DIR)/bind.license $@ >/dev/null || \
 		( \
-		$e 'WARNING: Built license differs:'; \
-		$e -n 'diff -w bind.license '; \
-		$e '$(subst $(COMPONENT_DIR)/,,$(BUILD_DIR))/bind.license.new'; \
-		$e 'ACTION: Check $(BUILD_DIR)/bind.license'; \
-		$e ' against TPNO:'; \
-		$e '   /ws/bugdb-tools/bin/tpno --arn -ba $(COMPONENT_BAID)';\
-		)
+		$e 'WARNING: Built license differs according to cmp(1):';\
+		$e -n 'Running: ';\
+		$e 'diff -w bind.license $(subst $(COMPONENT_DIR)/,,$@)';\
+		/usr/bin/diff -w bind.license $@ && \
+			$e '  Only whitespace differences!' || \
+			$e '  More than just whitespace differences!';\
+		$e 'ACTION: Check bind.license against TPNO';\
+	)
 
 # Create bind tar file of build directory and source for testing else where.
 test-tar: build
@@ -245,22 +288,25 @@ republish:
 # Package dependencies.
 # ---------------------
 REQUIRED_PACKAGES += system/library/smf
-# Created by 'gmake REQUIRED_PACKAGES', manually verified.
+# Service package requires client package for libraries.
+REQUIRED_PACKAGES += network/dns/bind
+# libcmocka is used for testing purposes only, not for delivery.
+REQUIRED_PACKAGES += library/libcmocka
+
+# Remaining packages are identified by 'gmake REQUIRED_PACKAGES',
+# manually verified. These should also be reflected in `gmake
+# configure` output log.
 REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libedit
+REQUIRED_PACKAGES += library/liburcu
 REQUIRED_PACKAGES += library/libuv
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
-# Service package requires client package for libraries.
-REQUIRED_PACKAGES += network/dns/bind
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/core-os
 
 # The following are already identified in ../../make-rules/shared-macros.mk
-# REQUIRED_PACKAGES += shell/ksh93
 # REQUIRED_PACKAGES += system/library
 # REQUIRED_PACKAGES += system/library/libc
-
-

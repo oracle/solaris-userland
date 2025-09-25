@@ -1,28 +1,32 @@
 Notice: LD_LIBRARY_PATH not being overridden: $(PROTO_DIR)/usr/lib/dns/$(MACH64)
+TEST: Checking linkage
+Running: /usr/bin/ldd $(PROTO_DIR)/usr/sbin/named
+RESULT: 0: Checking linkage
+=====================================================================
 Reading domain and nameservers from /etc/resolv.conf.
-Verifying initial named.conf file.
+TEST: Verifying initial named.conf file.
 RUNNING: $(PROTO_DIR)/usr/bin/named-checkconf -z $(BUILD_DIR)/test/config/named.conf
 zone example.com/IN: loaded serial 20
 zone 0.0.127.in-addr.arpa/IN: loaded serial 20
-RESULT: 0
+RESULT: 0: Verifying initial named.conf file.
 =====================================================================
-Verifying configuration after key and controls added.
+TEST: Verifying configuration after key and controls added.
 RUNNING: $(PROTO_DIR)/usr/bin/named-checkconf -z $(BUILD_DIR)/test/config/named.conf
 zone example.com/IN: loaded serial 20
 zone 0.0.127.in-addr.arpa/IN: loaded serial 20
-RESULT: 0
+RESULT: 0: Verifying configuration after key and controls added.
 =====================================================================
-starting DNS server
+TEST: starting DNS server
 RUNNING: $(PROTO_DIR)/usr/sbin/named -c $(BUILD_DIR)/test/config/named.conf -p 5353
-RESULT: 0
+RESULT: 0: starting DNS server
 =====================================================================
 checking for pid file
 read named.pid
-Turning on tracing
+TEST: Turning on tracing
 RUNNING: $(PROTO_DIR)/usr/sbin/rndc -c $(BUILD_DIR)/test/config/rndc.conf trace 3
-RESULT: 0
+RESULT: 0: Turning on tracing
 =====================================================================
-Look-up IPv4 (A) record
+TEST: Look-up IPv4 (A) record
 RUNNING: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t A ipboth.example.com.
 
 ; <<>> DiG $(COMPONENT_VERSION) <<>> @0 -p 5353 -t A ipboth.example.com.
@@ -44,9 +48,9 @@ ipboth.example.com.	172800	IN	A	192.168.4.10
 ;; SERVER: 0.0.0.0#5353(0) (UDP)
 ;; MSG SIZE  rcvd: REDACTED
 
-RESULT: 0
+RESULT: 0: Look-up IPv4 (A) record
 =====================================================================
-Look-up IPv6 (AAAA) record
+TEST: Look-up IPv6 (AAAA) record
 RUNNING: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t AAAA ipboth.example.com.
 
 ; <<>> DiG $(COMPONENT_VERSION) <<>> @0 -p 5353 -t AAAA ipboth.example.com.
@@ -68,16 +72,16 @@ ipboth.example.com.	172800	IN	AAAA	fd10:45df:879f:661d::10
 ;; SERVER: 0.0.0.0#5353(0) (UDP)
 ;; MSG SIZE  rcvd: REDACTED
 
-RESULT: 0
+RESULT: 0: Look-up IPv6 (AAAA) record
 =====================================================================
-Look-up known (ANY) records
+TEST: Look-up known (ANY) records
 Running: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t ANY ipboth.example.com. |SORT
 ipboth.example.com.	172800	IN	A	192.168.4.10
 ipboth.example.com.	172800	IN	AAAA	fd10:45df:879f:661d::10
 ipboth.example.com.	172800	IN	TXT	"Both IP address types"
-RESULT: 0
+RESULT: 0: Look-up known (ANY) records
 =====================================================================
-Request zone transfer (axfr)
+TEST: Request zone transfer (axfr)
 Running: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t axfr example.com. |SORT
 dname.example.com.	172800	IN	DNAME	sub.example.com.
 example.com.		172800	IN	NS	$(HOSTNAME)
@@ -94,9 +98,9 @@ manny.sub.example.com.	172800	IN	TXT	"Manny has alias of jack."
 mo.bar.example.com.	172800	IN	A	192.168.5.17
 xxx.example.com.	172800	IN	A	192.168.0.1
 xxx.example.com.	172800	IN	TXT	"text for xxx.example.com"
-RESULT: 0
+RESULT: 0: Request zone transfer (axfr)
 =====================================================================
-looking up host known to have DNAME
+TEST: looking up host known to have DNAME
 RUNNING: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t a jack.dname.example.com.
 
 ; <<>> DiG $(COMPONENT_VERSION) <<>> @0 -p 5353 -t a jack.dname.example.com.
@@ -121,55 +125,62 @@ manny.sub.example.com.	172800	IN	A	192.168.7.11
 ;; SERVER: 0.0.0.0#5353(0) (UDP)
 ;; MSG SIZE  rcvd: REDACTED
 
-RESULT: 0
+RESULT: 0: looking up host known to have DNAME
 =====================================================================
-Requesting status
-Requesting dump of server's caches and zones
+TEST: Requesting status, output to $(BUILD_DIR)/test/config/rndc_status
+RESULT: 0: Requesting status, output to $(BUILD_DIR)/test/config/rndc_status
+TEST: Requesting dump of server's caches and zones
 RUNNING: $(PROTO_DIR)/usr/sbin/rndc -c $(BUILD_DIR)/test/config/rndc.conf dumpdb -all
-RESULT: 0
+RESULT: 0: Requesting dump of server's caches and zones
 =====================================================================
-Requesting BIND to stop
+TEST: Requesting BIND to stop
 RUNNING: $(PROTO_DIR)/usr/sbin/rndc -c $(BUILD_DIR)/test/config/rndc.conf stop
-RESULT: 0
+RESULT: 0: Requesting BIND to stop
 =====================================================================
-Requesting status - should fail as server has stopped.
+TEST: Requesting status - should fail as server has stopped.
 RUNNING: $(PROTO_DIR)/usr/sbin/rndc -c $(BUILD_DIR)/test/config/rndc.conf status
 rndc: connect failed: 127.0.0.1#8953: connection refused
-RESULT: 1
+RESULT: 1: Requesting status - should fail as server has stopped.
 =====================================================================
+TEST: keygen RSASHA1
 RUNNING: $(PROTO_DIR)/usr/bin/dnssec-keygen -K /tmp -q -a RSASHA1 -n ZONE -fk secure.example
+WARNING: DNSKEY algorithm 'RSASHA1' is deprecated. Please migrate to another algorithm
 Ksecure.example.+nnn.+nnn
-RESULT: 0
+RESULT: 0: keygen RSASHA1
 =====================================================================
+TEST: keygen NSEC3RSASHA1
 RUNNING: $(PROTO_DIR)/usr/bin/dnssec-keygen -K /tmp -q -a NSEC3RSASHA1 -n ZONE -fk secure.example
+WARNING: DNSKEY algorithm 'NSEC3RSASHA1' is deprecated. Please migrate to another algorithm
 Ksecure.example.+nnn.+nnn
-RESULT: 0
+RESULT: 0: keygen NSEC3RSASHA1
 =====================================================================
+TEST: keygen RSASHA256
 RUNNING: $(PROTO_DIR)/usr/bin/dnssec-keygen -K /tmp -q -a RSASHA256 -n ZONE -fk secure.example
 Ksecure.example.+nnn.+nnn
-RESULT: 0
+RESULT: 0: keygen RSASHA256
 =====================================================================
+TEST: keygen RSASHA512
 RUNNING: $(PROTO_DIR)/usr/bin/dnssec-keygen -K /tmp -q -a RSASHA512 -n ZONE -fk secure.example
 Ksecure.example.+nnn.+nnn
-RESULT: 0
+RESULT: 0: keygen RSASHA512
 =====================================================================
+TEST: keygen ECDSAP256SHA256
 RUNNING: $(PROTO_DIR)/usr/bin/dnssec-keygen -K /tmp -q -a ECDSAP256SHA256 -n ZONE -fk secure.example
 Ksecure.example.+nnn.+nnn
-RESULT: 0
+RESULT: 0: keygen ECDSAP256SHA256
 =====================================================================
+TEST: keygen ECDSAP384SHA384
 RUNNING: $(PROTO_DIR)/usr/bin/dnssec-keygen -K /tmp -q -a ECDSAP384SHA384 -n ZONE -fk secure.example
 Ksecure.example.+nnn.+nnn
-RESULT: 0
+RESULT: 0: keygen ECDSAP384SHA384
 =====================================================================
+TEST: keygen ED25519
 RUNNING: $(PROTO_DIR)/usr/bin/dnssec-keygen -K /tmp -q -a ED25519 -n ZONE -fk secure.example
 Ksecure.example.+nnn.+nnn
-RESULT: 0
+RESULT: 0: keygen ED25519
 =====================================================================
+TEST: keygen ED448
 RUNNING: $(PROTO_DIR)/usr/bin/dnssec-keygen -K /tmp -q -a ED448 -n ZONE -fk secure.example
 Ksecure.example.+nnn.+nnn
-RESULT: 0
-=====================================================================
-RUNNING: $(PROTO_DIR)/usr/bin/dnssec-keygen -K /tmp -q -a DH -n ZONE -fk secure.example
-dnssec-keygen: fatal: key size not specified (-b option)
-RESULT: 1
+RESULT: 0: keygen ED448
 =====================================================================

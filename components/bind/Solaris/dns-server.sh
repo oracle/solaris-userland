@@ -1,25 +1,6 @@
 #!/sbin/sh
-
-# CDDL HEADER START
 #
-# The contents of this file are subject to the terms of the
-# Common Development and Distribution License (the "License").
-# You may not use this file except in compliance with the License.
-#
-# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-# or http://www.opensolaris.org/os/licensing.
-# See the License for the specific language governing permissions
-# and limitations under the License.
-#
-# When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
-# If applicable, add the following below this CDDL HEADER, with the
-# fields enclosed by brackets "[]" replaced with your own identifying
-# information: Portions Copyright [yyyy] [name of copyright owner]
-#
-# CDDL HEADER END
-#
-# Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2007, 2025, Oracle and/or its affiliates.
 #
 
 # smf_method(7) start/stop script required for server DNS
@@ -47,10 +28,9 @@ case "$method" in
     rndc_cmd_opts="-a"
     cmdopts=""
     properties="debug_level ip_interfaces listen_on_port
-	threads chroot_dir configuration_file server
-	listener_threads crypto_engine"
-
-    for prop in $properties
+	threads chroot_dir configuration_file server crypto_engine"
+    obsolete="listener_threads"
+    for prop in $properties $obsolete
     do
 	value=`/usr/bin/svcprop -p options/${prop} ${SMF_FMRI}`
 	if [ -z "${value}" -o "${value}" = '""' ]; then
@@ -103,7 +83,8 @@ case "$method" in
 	    ;;
 	'listener_threads')
 	    if [ ${value} -gt 0 ]; then
-		cmdopts="${cmdopts} -U ${value}"
+		echo "$I: Obsolete property ignored:  BIND 9.20" >&2
+		echo "$I: options/${prop} : ${value}" >&2
 	    fi
 	    ;;
 	'crypto_engine')

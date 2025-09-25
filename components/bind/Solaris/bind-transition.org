@@ -1,0 +1,488 @@
+BIND version 9.20 ESV using OpenSSL 3.
+
+Copyright (c) 2022, 2025, Oracle and/or its affiliates.
+
+* BIND version and compatibility
+
+The version of BIND installed is dependent on the version of SRU.
+This guide is to help you update from one version to another.
+
+Solaris tracks ISC's BIND Extended Support Version (ESV). As a result
+the version of BIND is updated as is necessary accordingly.
+
+table 1: Solaris version compared to BIND Minor version
+|     SRU | Version | Notes                              |
+|---------+---------+------------------------------------|
+|     FCS |    9.10 | EOL 2018-07                        |
+|  11.4.8 |    9.11 | EOL 2022-03                        |
+| 11.4.48 |    9.16 | libuv required                     |
+| 11.4.57 |    9.18 | SSL v3 support, EOL 2026-06        |
+| 11.4.90 |    9.20 | ESV, requires liburcu, EOL 2026-03 |
+
+
+Thus it is possible that when skipping a number of SRU's, an update
+may jump one or more of BIND's minor version numbers.
+
+Since BIND 9.11 some features have been deprecated and or removed.
+While most elementary configurations will be fine there are
+configurations that will require changes to named.conf(5) following
+package updates.  For more detailed information please refer to the
+BIND Administrator Reference Manual (ARM) [fn:1] and the Release
+Notes [fn:2] within it.
+
+
+* How to manually verify BIND configuration
+
+Each minor version of bind may contain changes that require
+configuration changes.  Some of these changes have been known to cause
+issues where DNSSEC is being used.  Therefore we recommend the
+following steps be taken:
+
+1. Following package update, and before rebooting into the new Boot
+   Environment (BE) it is recommended that you shutdown BIND using the
+   rndc(8) command as below to quiesce and flush any dynamic zone
+   journal files.
+
+   #+begin_verse
+   rndc stop -p
+   #+end_verse
+
+   Proceed once the named(8) process id, as displayed by rndc output,
+   has stopped running.  If rndc is not configured then continue to
+   next step.  If ~rndc~ fails due to an error in ~rndc.conf~ address
+   that first and restart the service before continuing with ~rndc
+   stop -p~.
+
+2. Disable ~svc:/network/dns/server:default~ before rebooting
+
+   #+begin_verse
+   svcadm disable svc:/network/dns/server:default
+   #+end_verse
+
+3. Reboot into the updated BE
+
+   Carrying out any other required actions first.
+
+4. Check the BIND configuration
+
+   Using named-checkconf(8) command check and as necessary modify the
+   configuration accordingly.
+
+   # Block against BOL as otherwise the config line is indented in output!
+   #+begin_verse
+listprop="/usr/sbin/svccfg -s network/dns/server:default listprop"
+chrootdir=$($listprop -o value options/chroot_dir)
+config=$($listprop -o value options/configuration_file)
+named-checkconf -zj ${chrootdir}${config:-/etc/named.conf}
+   #+end_verse
+
+  Fix any issues indicated and re-test using ~named-checkconf~
+   command.
+
+   - Note that while ~named-checkconf~ may pass, some configuration
+     statements may cause the service to stop working.  For example if
+     using a stale DNSSEC configuration.
+
+5. Enable the BIND DNS service
+
+   #+begin_verse
+   svcadm enable network/dns/server:default
+   #+end_verse
+
+6. Check dns/server service
+
+   #+begin_verse
+   svcs network/dns/server system/check/bind
+   #+end_verse
+
+   If ~network/dns/server~ is in maintenance or named(8) is failing to
+   resolve queries post upgrade refer to Troubleshooting below.
+
+7. Check system/check/bind service
+
+   Command named-checkconf(8) has been updated with knowledge of
+   upcoming deprecated features that have been removed in the next
+   release.  To aid Solaris administrators a new SMF service
+   ~svc:system/check/bind~ has been introduced to check and place
+   itself into degraded state when configuration errors or deprecated
+   features are found.  Refer to check-bind(8s) for further details
+   about this SMF services.
+
+   The service should be online, if it is in a degraded state then
+   check its log.  Resolve the issues as applicable, some deprecated
+   issues may be put off until the next minor release.
+
+   #+begin_verse
+   svcs system/check/bind
+   svcs -Lv system/check/bind
+   #+end_verse
+
+   The ARM Release Notes [fn:2] document deprecated features.
+
+
+* Significant work included in the 9.20 branch
+
+The information in this section is from\\
+Changes to be aware of when moving from BIND 9.18 to 9.20 [fn:3].
+
+*Refer to that source document for further information and latest
+updates*.
+
+# This is rather long, Could simply leave the link, but then the
+# information is important.
+** Changes around the inline-signing feature
+
+- inline-signing can now also be set inside ~dnssec-policy~, where it
+  defaults to *yes*
+- If also set at the ~zone~ level, that overrides the setting in
+  ~dnssec-policy~
+
+*Use Caution With Existing DNSSEC Zones*
+
+Operators with existing DNSSEC-signed zones are advised to review
+their configuration with regards to zone content and DNSSEC signature
+maintenance. The new behavior may unexpectedly convert existing zones
+to inline-signed if defaults are kept.
+
+Prior to BIND 9.20, if using ~dnssec-policy~ (or the legacy
+~auto-dnssec maintain~), it was required that *either* zone content
+was maintained using dynamic updates, *or* that the ~inline-signing~
+feature was enabled (or both).  If *neither* was set, named would
+report an invalid configuration.
+
+As of BIND 9.20, all DNSSEC-signed zones configured to use
+~dnssec-policy~ *will* now become inline-signed, *unless* explicitly
+configured not to have this feature enabled. This will also result in
+journal files [fn:4] alongside the zone files.
+
+Operators wishing to avoid the above scenario following their upgrade
+should ensure that they have explicitly set ~inline-signing no~ as
+appropriate.
+
+Operators who have not configured use of any dnssec-policy are not
+affected by this change.
+
+For more information, see the DNSSEC Key and Signing Policy [fn:5].
+
+** named.conf(5) - Run-time configuration changes
+
+- ~allow-transfer~ now defaults to ~none~
+- ~dnssec-validation~
+  - When set to ~yes~, now requires explicit ~trust-anchors~.
+  - The default of ~auto~ is recommended for most resolvers.
+- Separate logging categories for ~notify~ and ~xfer-in~ are now used.
+- The options ~parental-agents~ and ~primaries~ now have a new
+  preferred name ~remote-servers~. The older names will continue to be
+  supported as aliases.
+
+*** Deprecated named.conf(5) settings
+
+The following features or statements are now deprecated and will be
+removed in a future release. Their use is still supported for now, but
+may cause a warning to be emitted.  Operators using these features
+should plan for their eventual removal.
+
+- Using NSEC3 with an iteration count other than 0 (zero) is no longer
+  supported.
+- ~max-zone-ttl~ in the options or a zone block (use ~dnssec-policy~
+  instead).
+- ~sortlist~
+- ~rrset-order~ with a value of ~fixed~.
+- DLZ (Dynamically Loadable Zones).
+
+*** Removed named.conf(5) settings
+
+The following features have been removed entirely.  Attempting to use
+them will result in an error or abort and named will refuse to start.
+
+- ~auto-dnssec~
+- ~dnskey-sig-validity~
+- ~dnssec-dnskey-kskonly~
+- ~dnssec-update-mode~
+- ~sig-validity-interval~
+- ~update-check-ksk~
+- ~dnssec-secure-to-insecure~
+- ~glue-cache~
+- ~alt-transfer-source~
+- ~alt-transfer-source-v6~
+- ~use-alt-transfer-source~
+- ~resolver-nonbackoff-tries~
+- ~resolver-retry-interval~
+- ~stale-answer-client-timeout == 0~
+- ~keep-response-order~
+- ~cookie-algorithm aes~
+- ~delegation-only~
+- ~root-delegation-only~
+- ~coresize~
+- ~datasize~
+- ~files~
+- ~stacksize~
+- ~lock-file~
+- ~dscp~
+- ~ip_dscp~
+
+** named-compilezone(1)
+
+- ~named-compilezone~ Integrity checks are now omitted by default.
+
+* Significant work included in the 9.18 branch
+
+1. The new Key and Signing Policy (KASP) feature provides simplified
+   DNSSEC key and signing management using policies defined by the
+   ~dnssec-policy~ statement. This tool is intended to significantly
+   facilitate ongoing key and signing maintenance.
+
+2. The way that DNSSEC trust anchors are managed has been
+   improved. Please note the updated CLI for this.
+
+3. DLV (Domain Look-aside Verification) has been deprecated since BIND
+   9.12.  dlv.isc.org (the main service used by those previously
+   relying on DLV, operated by ISC) was turned off in 2017. Support
+   for DLV has now been removed from BIND 9 completely. Removing this
+   feature required a multi-year process of notification, working with
+   partners, and gradual deprecation to avoid disruption in the DNS.
+
+4. The working directory must be writable by the user running named.
+   The ~directory~ option should specify absolute path, and must be
+   writable by the effective user ID of the named process.
+
+5. Removal of pkcs11 commands:
+
+   The following commands and associated manual pages have been
+   removed with immediate effect.
+
+   - /usr/sbin/pkcs11-destroy
+   - /usr/sbin/pkcs11-keygen
+   - /usr/sbin/pkcs11-list
+   - /usr/sbin/pkcs11-tokens
+
+
+* Important note regarding chroot environments
+
+Any update to BIND requires a re-evaluation to the chroot environment
+as BIND's libraries and its fourth party dependencies are subject to
+change.  With BIND 9.16 the network interface was completely
+refactored to use libuv and so this is an additional dependency that
+will need to be catered for.  With BIND 9.18 and above OpenSSL 3
+libraries are needed.  BIND 9.20 has a requirement on liburcu.
+
+Oracle recommends using Solaris Zones, instead of chroot environments,
+which provide a security boundary with a Common Criteria evaluation
+for containment.  Zones are automatically updated by pkg(1) ensuring
+they have the correct dependencies and fixes therein.
+
+
+* Troubleshooting
+
+If the previous state was maintenance and changes have been made
+following ~named-checkconf~ then clear the service instance and check
+its state after a minute or two.
+
+#+begin_verse
+svcs clear svc:/network/dns/server:default
+sleep 60; svcs svc:/network/dns/server:default
+#+end_verse
+
+If problems persist then disable the service and run named in debug
+mode and observe what occurs while a lookup is attempted.
+
+#+begin_verse
+svcadm disable -t svc:/network/dns/server:default
+script
+/usr/sbin/named -g -d 4
+#+end_verse
+
+And from another terminal
+
+#+begin_verse
+dig @0 $hostname
+#+end_verse
+
+- Note $hostname should be some viable fully qualified name, for
+  example "host.example.com."
+
+Once ~dig~ has returned quit (Ctrl-c) the ~named~ process, exit
+~script~ and look at the information collected in ~typescript~ file.
+Do re-enable dns/service.
+
+#+begin_verse
+svcadm enable svc:/network/dns/server:default
+#+end_verse
+
+Hopefully the collected information will provide sufficient
+information needed to address the issue.  It may be necessary to use a
+more verbose debug level, and or instead configure logging.  For
+further information on troubleshooting BIND refer to the following
+documentation:
+
+- What to do with a misbehaving BIND server [fn:6]
+- Troubleshooting - BIND 9.20 documentation [fn:7]
+- BIND Logging - some basic recommendations [fn:8]
+
+* Additional information and resources
+
+The following ISC Knowledge documents are useful when updating minor
+version numbers:
+
+- Changes to be aware of when moving from BIND 9.11 to 9.16 [fn:9]
+  - Note that BIND 9.16 and 9.18 can read BIND 9.11 journal files, but
+    BIND 9.11 can not read BIND 9.16 or later journal files.
+- Changes to be aware of when moving from BIND 9.16 to 9.18 [fn:10]
+- Changes to be aware of when moving from BIND 9.18 to 9.20 [fn:3]
+- BIND 9 Significant Features Matrix [fn:11]
+
+[fn:1] BIND 9 Administrator Reference Guide (ARM)
+https://downloads.isc.org/isc/bind9/cur/9.20/doc/arm/html/ or
+https://bind9.readthedocs.io/en/
+
+[fn:2] BIND 9 Administrator. Reference Guide - Release Notes
+https://downloads.isc.org/isc/bind9/cur/9.20/doc/arm/html/notes.html
+or https://bind9.readthedocs.io/en/v9.20.10/notes.html
+
+[fn:9] Changes to be aware of when moving from BIND 9.11 to 9.16
+https://kb.isc.org/docs/changes-to-be-aware-of-when-moving-from-911-to-916
+
+[fn:10] Changes to be aware of when moving from BIND 9.16 to 9.18
+https://kb.isc.org/docs/changes-to-be-aware-of-when-moving-from-bind-916-to-918
+
+[fn:3] Changes to be aware of when moving from BIND 9.18 to 9.20
+https://kb.isc.org/docs/bind-920-changes
+
+[fn:11] BIND 9 Significant Features Matrix
+https://kb.isc.org/v1/docs/aa-01310
+
+[fn:6] What to do with a misbehaving BIND server
+https://kb.isc.org/docs/aa-00341
+
+[fn:7] Troubleshooting - BIND ARM documentation
+https://downloads.isc.org/isc/bind9/cur/9.20/doc/arm/html/chapter9.html
+
+[fn:8] BIND Logging - some basic recommendations
+https://kb.isc.org/docs/aa-01526
+
+[fn:4] Journal Files
+https://bind9.readthedocs.io/en/v9.20.0/chapter6.html#the-journal-file
+
+[fn:5] DNSSEC Key and Signing Policy
+https://kb.isc.org/docs/dnssec-key-and-signing-policy
+
+* Org-mode settings                                                :noexport:
+This heading and content is not exported to the bind-transition.txt
+file (:noexport: tag on heading line).
+
+For more information regarding the export settings refer to
+[[https://orgmode.org/manual/Export-Settings.html][Export Settings]]
+in The Org Manual.
+
+Not using smart quotes.
+#+OPTIONS: ':nil
+
+Heading default level is 3, increased to 5 to keep export structure as
+intended.  Number all headings, note ASCII export does not underline
+headings above level 3 by default.
+#+OPTIONS: H:5 num:t
+
+Not using subscript or superscript.
+#+OPTIONS: ^:{}
+
+No table-of-contents, include tables
+#+OPTIONS: toc:nil |:t
+
+Suppress conversion of title, as otherwise the ASCII exporter
+displaces the copyright lines. The title has its own explicit source
+instead.
+#+OPTIONS: title:nil
+
+Setting of TITLE here is for the HTML page heading.
+#+TITLE: REQUIREMENTS TO TRANSITION FROM ONE VERSION OF BIND TO ANOTHER.
+
+Author's name and details not needed, nor is the date of creation
+#+OPTIONS: author:nil creator:nil e:t email:nil date:nil
+
+No log book entries should be present, but just in case lets not
+include those.
+#+OPTIONS: d:(not "LOGBOOK")
+
+Include footnotes.
+#+OPTIONS: f:t
+
+Remove tags from the headings, they are for author or control mostly.
+#+OPTIONS: tags:nil
+
+Remove other ORG marks (most not actually used within).
+#+OPTIONS: tasks:nil todo:nil timestamp:nil
+#+LANGUAGE: en
+
+Some additional information regarding org mode formatting.
+
+Section headings in Org (lines beginning with one or more asterisk
+characters followed by a space character) can have /:tags:/ associated
+with them.
+- /:ignore:/ tag causes export to drop the heading but not the section
+  content within, useful for formatting and management of the org
+  file. It is an Org Mode 9.6 feature.  As previous versions do not
+  recognize it I have added an unnumbered property too - the heading
+  will be shown but not numbered.
+
+- /:noexport:/ tag removes the heading and contents, but may execute
+  source blocks.  A heading beginning with the *COMMENT* keyword
+  prevents it from being exported and from any source blocks within it
+  being executed.
+
+Some notes on the formatting regarding ASCII export.
+
+- ~begin_center~ is not working correctly on the *bold* text, the
+  first asterisk appears at the beginning of the line making it look
+  like a bullet point.  Therefore I have used ~verse~ rather than
+  ~center~.
+
+- Within org a ~tilde~ is emphasis, which on ASCII export becomes
+  `tilde'.
+
+- Alas /italic/ does not get any special treatment and just gets
+  exported as ~/italic/~ and so I have not used it.
+
+- Quoted text is within ~begin_quote~/~end_quote~ blocks.  Those are
+  reformatted by the exporter and indented slightly, the ASCII
+  exporter does not otherwise make quoted text all that obvious and
+  hence they are placed after a list item which states there source.
+
+- src blocks, ASCII export by default puts a box-string around the
+  exported code and examples. e.g.
+
+  #+begin_example
+   ,----
+   | $ echo Example of box-string
+   |   Example of box-string
+   `----
+  #+end_example
+
+  The following emacs-lisp prevents that.  It needs to be evaluated
+  before exporting; see also [[batch-mode]] below.
+
+  #+begin_src elisp :exports code :eval no
+  (require 'ox-ascii) (advice-add 'org-ascii--box-string :override
+				  (defun my-org-ascii--box-string (s info) s))
+  #+end_src
+
+-  <<batch-mode>> Batch-Mode is used within ../Makefile to make the
+  conversion, use ~gmake test-org-export~ to execute:
+
+  #+begin_src sh :exports code :eval no
+  /usr/bin/emacs bind-transition.org -Q -batch --eval '(require `ox-ascii)' \
+     --eval '(advice-add `org-ascii--box-string :override (defun my-org-ascii--box-string (s info) s))' \
+     --eval '(org-ascii-export-to-ascii)'
+  #+end_src
+
+Make the source and examples exported to HTML have a black background.
+#+HTML_HEAD_EXTRA: <style> pre.src { background-color: black; color: white; }</style>
+
+View this file on Github at
+https://github.com/oracle/solaris-userland/blob/master/components/bind/Solaris/bind-transition.org
+* EOF                                                              :noexport:
+Emacs settings
+#+begin_verse
+Local Variables:
+fill-column:70
+End:
+#+end_verse

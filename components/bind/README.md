@@ -7,12 +7,16 @@ the packaging but are available with the source code and publicly
 available on Github
 https://github.com/oracle/solaris-userland/blob/master/components/bind/README.md
 
+## BIND 9 useful links
+
+- https://gitlab.isc.org/isc-projects/bind9/-/blob/main/CONTRIBUTING.md
+- https://gitlab.isc.org/isc-projects/bind9/-/issues
+
 ## BIND compatibility
 
-BIND 9 configuration (named.conf) during a micro version update should
-remain compatible.  And indeed for the most part between minor version
-updates too; some features might no longer work but the keywords are
-ignored.
+BIND  9 configuration  (named.conf)  during a  *micro* version  update
+should remain compatible.  Prior to BIND 9.18 this was mostly true for
+some *minor* version number changes too.
 
 BIND source has three major branches, Stable, Extended Support Version
 (ESV), and development. As of BIND 9.13, the minor odd number is the
@@ -34,13 +38,13 @@ The three current branches are, from https://www.isc.org/download/ :
 ### bind.p5m - Server package - {#ips_server}
 
 Provides BIND server (in.named), server specific tools, and SMF
-features.
+services svc:/network/dns/server and svc:/system/check/bind.
 
 When the BIND server package is updated, using pkg(1) command, it logs
 a short note as the full instructions are rather long.  The short note
 is located in ./Solaris/bind-notice.txt, which following an update is
 also viewable via `pkg history` command.  The source of the longer
-note is in ./Solaris/bind-transition.txt.
+note is in ./Solaris/bind-transition.org.
 
 The short note is delivered as
 usr/share/doc/release-notes/bind-update.txt, and includes attribute
@@ -91,21 +95,17 @@ copied "build" and the source directory over.
 
 Note that these *tests will not run when executed by root*.
 
-For example
+The steps below are written in such a way to provide for easy
+copy-and-paste:
 
 1. Create tar ball of build and source directory and copy to shared
    location as necessary.
 
 	```
-	$ cd $(hg root)/components/bind
-	$ pwd
-	/builds/user/workspace/components/bind
-	$ gmake test-tar
-	/usr/bin/tar zcf test.bind-9.18.27.i386.tar.gz build bind-9.18.27
-	created test.bind-9.18.27.i386.tar.gz
-	unpack into identical directory name on test machine:
-	/builds/user/workspace/components/bind
-	$ cp test.bind-*.tar.gz ~/.
+	cd $(hg root)/components/bind
+	gmake test-tar
+	cp test.bind-*.tar.gz ~/.
+	hg root # --> Create same directory on test machine in next step.
 	```
 
 2. On your test machine, create directory structure to *mimic* that of

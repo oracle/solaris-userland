@@ -1,12 +1,13 @@
-#!/bin/ksh
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
+#!/usr/bin/bash
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
-# Written to be compatible with ksh on Solaris 10.
+# Written to be compatible with Solaris 10.
+testname=""
 
 function usage
 {
     # Display usage
-    print "
+    echo "
 usage ${I##*/} -d directory -p PROTO_DIR
         [-X] [-b bind-port] [-r rndc-port]
 
@@ -34,10 +35,9 @@ function newdir
     # Exits shell on error.
     typeset directory=$1
     if [[ ! -d $directory ]]; then
-	mkdir -p $directory || ret=$?
+	/usr/bin/mkdir -p $directory || ret=$?
 	if [[ $ret -ne 0 ]]; then
-	    print -u2 \
-		  "Failed to create configuration directory: $directory: $ret"
+	    e "Failed to create configuration directory: $directory: $ret"
 	    exit $ret
 	fi
     fi
@@ -45,19 +45,28 @@ function newdir
 function e
 {
     # e is for error. print to FD2 (standard error).
-    print -u2 $@
+    echo $@ >&2
 }
+function t
+{
+    # t is for title. Saves line to testname for use in result().
+    testname=$@
+    echo TEST: $@
+}
+
 function d
 {
     # d is for display.
-    print $@
+    echo $@
 }
 
 function result {
+    # Display result of command, expected result and testname.
+    # Thus parsing output for '^RESULT:' provides summary of results.
     if (( $1 != $2 )); then
-	e "RESULT: $1 (UNEXPECTED)"
+	e "RESULT: $1 (UNEXPECTED): $testname"
     else
-	d "RESULT: $1"
+	e "RESULT: $1: $testname"
     fi
     d '====================================================================='
     return $1
@@ -65,30 +74,35 @@ function result {
 
 function run
 {
-    # Display command, execute it and display exit code.
+    # Display command, execute it and call result() with exit code.
+    typeset -i ret
     typeset -i exp=0
     if [[ $1 == "-e" ]]; then
 	exp=$2
 	shift 2
     fi
     typeset cmd=$1
-    typeset -i ret=0
     shift
     d "RUNNING: $cmd $@"
-    $cmd $@ || ret=$?
+    $cmd $@
+    ret=$?
     result $ret $exp
     return $ret
 }
 
 # Main procedure.
-typeset -r I=${0}
-integer bind_port_d=5353
-integer rndc_port_d=8953
-integer bind_port=$bind_port_d
-integer rndc_port=$rndc_port_d
-integer fail
+typeset -r I=${0}	# Name of this script.
+typeset -i ret=0	# Return code.
+bind_port_d=5353	# Default DNS port to be used.
+rndc_port_d=8953	# Default RNDC port to be used.
+bind_port=$bind_port_d	# Configurable DNS port via -b option.
+rndc_port=$rndc_port_d	# Configurable RNDC port via -r option.
+typeset -i fail=0	# Tally of failures seen.
+typeset -i t=0		# loop counter.
 
+# Thou shall not use PATH.
 grep=/usr/bin/grep
+ldd=/usr/bin/ldd
 mktemp=/usr/bin/mktemp
 rm=/usr/bin/rm
 sort=/usr/bin/sort
@@ -101,17 +115,16 @@ while getopts :b:d:kp:r:r:X opt; do
 	(k) opt_k=$opt;;
 	(p) PROTO=$OPTARG;;
 	(r) rndc_port=$OPTARG;;
-	(X) set -x; typeset -ft $(typeset +f);;
+	(X) set -xT;;
 	(?) usage; exit 0;;
     esac
 done
-shift `expr $OPTIND - 1`	# Skip over option arguments
+shift $((OPTIND - 1))	# Skip over option arguments
 
 if [[ -z $directory || -z $PROTO ]]; then
     usage; exit 2
 fi
 
-ret=0
 # Create directories as needed.
 newdir $directory
 if [[ ! -f $runlog ]]; then
@@ -159,14 +172,26 @@ else
     e "Notice: LD_LIBRARY_PATH not being overridden: $LD_LIBRARY_PATH"
 fi
 
-# Check linkage
-run ldd ${named} | $grep '(file not found)' && e linkage error $named && exit 1
-
+if tmp=$($mktemp); then
+    t Checking linkage
+    d "Running: $ldd ${named}"
+    $ldd ${named} >$tmp
+    result $? 0
+    if $grep '(file not found)' $tmp; then
+	e "linking error!  Abort!"
+	rm $tmp
+	exit 1
+    else
+	rm $tmp
+    fi
+else
+    e "$mktemp failed! linking check skipped! $?"
+fi
 
 # Discover name servers and domain name from resolv.conf
 resconf=/etc/resolv.conf
 d "Reading domain and nameservers from $resconf."
-integer servercount
+servercount=0
 while read cmd value rest; do
     case $cmd in
 	(domain|search): :
@@ -198,7 +223,7 @@ d "REDACT: Using nameservers : $nameservers"
 
 # Create named.conf file
 named_conf=${directory:+$directory/}named.conf
-print "
+echo "
 acl \"loopback\" { 127.0.0.1; };
 options {
 	${directory:+directory \"${directory}\";} // working directory
@@ -225,6 +250,7 @@ logging {
 zone \"example.com\" {
 	type master;
 	file \"example.com.zone\";
+	allow-transfer { any; };
 };
 
 // All servers should master loopback zones
@@ -240,7 +266,7 @@ email='root'.${server}
 # keep serial number simple.
 serial=20
 # Create localhost zone.
-print "
+echo "
 \$TTL 2D
 0.0.127.IN-ADDR.ARPA.   IN      SOA     ${server} ${email} (
                                                 ${serial} ; Serial
@@ -252,7 +278,7 @@ print "
 1                       IN      PTR     localhost.
 " > ${directory:+$directory/}localhost.zone
 # Create example.com zone
-print "
+echo "
 \$TTL 2D
 example.com. IN    SOA     ${server} ${email}  (
                                 ${serial}      ; Serial
@@ -280,7 +306,7 @@ dname.example.com.		IN      DNAME   sub.example.com.
 
 " > ${directory:+$directory/}example.com.zone
 
-d "Verifying initial named.conf file."
+t "Verifying initial named.conf file."
 run ${checkconf} -z ${named_conf} || ret=$?
 if [[ $ret -ne 0 ]]; then
     e "Error: named-checkconf returned with non-zero exit code: $ret"
@@ -294,7 +320,7 @@ fi
 rndc_conf=${directory:+$directory/}rndc.conf
 key_value='LydFuYW4OBuN26vWfyMnhQ=='
 key_name='rndc-key'
-print "
+echo "
 key \"${key_name}\" {
       algorithm hmac-md5;
       secret \"${key_value}\";
@@ -306,7 +332,7 @@ controls {
 };
 " >> ${named_conf}
 # Write rndc.conf file with key and options.
-print "
+echo "
 key \"${key_name}\" {
         algorithm hmac-md5;
         secret \"${key_value}\";
@@ -319,15 +345,14 @@ options {
 };
 " > ${rndc_conf}
 
-d "Verifying configuration after key and controls added."
+t "Verifying configuration after key and controls added."
 run ${checkconf} -z ${named_conf}
 
-d "starting DNS server"
+t "starting DNS server"
 run ${named} -c ${named_conf} -p ${bind_port}
 
 d "checking for pid file"
-let t=0
-while [[ $t -lt 5 ]]; do
+for (( t=0; t < 5; t++ )); do
     if [[ -f $directory/named.pid ]]; then
 	pid=$(<$directory/named.pid)
 	d "read named.pid"
@@ -335,32 +360,31 @@ while [[ $t -lt 5 ]]; do
     else
 	sleep 1
     fi
-    let t=t+1
 done
 if [[ -z $pid ]]; then
     e 'failed to read named.pid'
     # carry on regardless
 fi
 
-d "Turning on tracing"
+t "Turning on tracing"
 run ${rndc} -c ${rndc_conf} trace 3
 
-d "Look-up IPv4 (A) record"
+t "Look-up IPv4 (A) record"
 run ${dig} @0 -p ${bind_port} -t A ipboth.example.com.
 
-d "Look-up IPv6 (AAAA) record"
+t "Look-up IPv6 (AAAA) record"
 run ${dig} @0 -p ${bind_port} -t AAAA ipboth.example.com.
 
 # The order of returned records keeps changing, so sort the output for these
 # as only interested in confirming the expected records are present.
 if tmp=$($mktemp); then
-    d "Look-up known (ANY) records"
+    t "Look-up known (ANY) records"
     d "Running: ${dig} @0 -p ${bind_port} -t ANY ipboth.example.com. |SORT"
     ${dig} @0 -p ${bind_port} -t ANY ipboth.example.com. > $tmp
     ret=$?
     $grep -v '^;' $tmp | $sort | $grep -v '^$'
     result $ret 0
-    d "Request zone transfer (axfr)"
+    t "Request zone transfer (axfr)"
     d "Running: ${dig} @0 -p ${bind_port} -t axfr example.com. |SORT"
     ${dig} @0 -p ${bind_port} -t axfr example.com. > $tmp
     ret=$?
@@ -371,34 +395,32 @@ else
     e "$mktemp failed! tests skipped! $?"
 fi
 
-d "looking up host known to have DNAME"
+t "looking up host known to have DNAME"
 run ${dig} @0 -p ${bind_port} -t a jack.dname.example.com.
 
-d "Requesting status"
+t "Requesting status, output to $directory/rndc_status"
 run ${rndc} -c ${rndc_conf} status > $directory/rndc_status
 
-d "Requesting dump of server's caches and zones"
+t "Requesting dump of server's caches and zones"
 run ${rndc} -c ${rndc_conf} dumpdb -all
 
-d "Requesting BIND to stop"
+t "Requesting BIND to stop"
 run ${rndc} -c ${rndc_conf} stop
 
 # Wait for upto five seconds for server to shutdown.
 if [[ -n $pid && -f $directory/named.pid ]]; then
-    let t=0
-    while [[ $t -lt 5 ]]; do
+    for (( t=0; t < 5; t++ )); do
 	if [[ -f $directory/named.pid ]]; then
 	    sleep 1 # Give it a second to shutdown...
 	else
 	    break
 	fi
-	let t=t+1
     done
 fi
 
 d "REDACT: $directory/named.pid counter $t"
 
-d "Requesting status - should fail as server has stopped."
+t "Requesting status - should fail as server has stopped."
 run -e 1 ${rndc} -c ${rndc_conf} status
 
 # Make sure named has exited.
@@ -423,11 +445,8 @@ if [[ -n $opt_k ]]; then
 	imps="$imps ECDSAP384SHA384 ED25519 ED448"
 	# tests expected to pass (OpenSSL 3)
 	for i in $imps; do
+	    t "keygen $i"
 	    run ${keygen} -K $tmp -q -a $i -n ZONE -fk secure.example
-	done
-	# Tests expected to fail.
-	for i in DH; do
-	    run -e 1 ${keygen} -K $tmp -q -a $i -n ZONE -fk secure.example
 	done
 	$rm -rf $tmp
     fi
