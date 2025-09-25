@@ -10,13 +10,13 @@ Subject: [PATCH] 7162172
 diff --git Xtranssock.c Xtranssock.c
 --- a/Xtranssock.c	2023-09-19 13:34:19.760227324 -0700
 +++ b/Xtranssock.c	2023-09-19 13:45:07.489738999 -0700
-@@ -1639,7 +1639,7 @@
+@@ -1653,7 +1653,7 @@
  	 * only affect one of a set of addresses.
  	 */
  
 -	if (olderrno == ECONNREFUSED || olderrno == EINTR
 +	if (olderrno == ECONNREFUSED
- #if defined(IPv6) && defined(AF_INET6)
+ #ifdef HAVE_GETADDRINFO
  	  || (((addrlist->addr->ai_next != NULL) ||
  	        (addrlist->addr != addrlist->firstaddr)) &&
 @@ -1652,7 +1652,7 @@

@@ -26,29 +26,14 @@ Somehow we shipped in Solaris libXfixes.so.1 the same version the open
 source community shipped as libXfixes.so.3.   This thus maintains ABI
 compatibility with the existing Solaris binaries.
 
-diff --git a/src/Makefile.am b/src/Makefile.am
-index 4e3f542..6c8842c 100644
---- a/src/Makefile.am
-+++ b/src/Makefile.am
-@@ -12,7 +12,7 @@ AM_CFLAGS = $(CWARNFLAGS) @FIXESEXT_CFLAGS@
- AM_CPPFLAGS = -I$(top_srcdir)/include/X11/extensions
+--- a/meson.build	2025-09-07 19:39:17.366714014 -0700
++++ b/meson.build	2025-09-07 19:39:43.197026188 -0700
+@@ -74,7 +74,7 @@
+   lib_sources,
+   include_directories: 'include/X11/extensions/',
+   dependencies: [dep_xproto, dep_fixesproto, dep_xextproto, dep_libx11],
+-  version: '3.1.0',
++  version: '1.0.0',
+   install: true,
+ )
  
- libXfixes_la_LIBADD = @FIXESEXT_LIBS@
--libXfixes_la_LDFLAGS = -version-number 3:1:0 -no-undefined
-+libXfixes_la_LDFLAGS = -version-number 1 -no-undefined
- 
- libXfixesincludedir = $(includedir)/X11/extensions
- libXfixesinclude_HEADERS = $(top_srcdir)/include/X11/extensions/Xfixes.h
-diff --git a/src/Makefile.in b/src/Makefile.in
-index fbf8351..2077f2c 100644
---- a/src/Makefile.in
-+++ b/src/Makefile.in
-@@ -342,7 +342,7 @@ libXfixes_la_SOURCES = \
- AM_CFLAGS = $(CWARNFLAGS) @FIXESEXT_CFLAGS@
- AM_CPPFLAGS = -I$(top_srcdir)/include/X11/extensions
- libXfixes_la_LIBADD = @FIXESEXT_LIBS@
--libXfixes_la_LDFLAGS = -version-number 3:1:0 -no-undefined
-+libXfixes_la_LDFLAGS = -version-number 1 -no-undefined
- libXfixesincludedir = $(includedir)/X11/extensions
- libXfixesinclude_HEADERS = $(top_srcdir)/include/X11/extensions/Xfixes.h
- all: all-am
