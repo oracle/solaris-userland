@@ -47,6 +47,9 @@ include ../../make-rules/common.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
+# Allow build with GCC >= 15
+CFLAGS += -std=gnu17
+
 # general
 CCARGS =	-DDEF_DAEMON_DIR=\\\"/usr/lib/postfix\\\"
 CCARGS +=	-DDEF_MANPAGE_DIR=\\\"/usr/share/man\\\"

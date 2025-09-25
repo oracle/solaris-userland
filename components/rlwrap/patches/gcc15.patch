@@ -1,0 +1,23 @@
+Fixes build issue with GCC 15:
+
+readline.c:192:5: error: too many arguments to function 'rl_message'; expected 0, have 2
+  192 |     rl_message("%s", message);
+      |     ^~~~~~~~~~ ~~~~
+In file included from rlwrap.h:189,
+                 from readline.c:23:
+/usr/include/readline/readline.h:410:12: note: declared here
+  410 | extern int rl_message ();
+      |            ^~~~~~~~~~
+
+--- rlwrap-0.46.2/src/readline.c
++++ rlwrap-0.46.2/src/readline.c
+@@ -19,6 +19,9 @@ You may contact the author by:
+     e-mail:  hanslub42@gmail.com
+ */
+ 
++// Workaround for GCC 15 (see readline.h)
++#define USE_VARARGS 1
++#define PREFER_STDARG 1
+ 
+ #include "rlwrap.h"
+ 

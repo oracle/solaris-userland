@@ -1,0 +1,46 @@
+From aac5446e8c98db934912b9b15a1ef92c3b7e4c8c Mon Sep 17 00:00:00 2001
+From: fujiwarat <takao.fujiwara1@gmail.com>
+Date: Fri, 24 Jan 2025 09:40:31 +0900
+Subject: [PATCH] src: Fix declaration errors with GCC 15
+
+BUG=rhbz#2340629
+---
+ src/ibuscomposetable.c | 2 +-
+ src/ibusenginesimple.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/ibuscomposetable.c b/src/ibuscomposetable.c
+index abf51244c..cf865c371 100644
+--- a/src/ibuscomposetable.c
++++ b/src/ibuscomposetable.c
+@@ -1362,7 +1362,7 @@ ibus_compose_table_new_with_list (GList   *compose_list,
+     gsize s_size_total, s_size_16bit, v_size_32bit, v_index_32bit;
+     guint n = 0, m = 0;
+     int i, j;
+-    gpointer rawdata;
++    gpointer rawdata = NULL;
+     guint16 *ibus_compose_seqs = NULL;
+     guint16 *ibus_compose_seqs_32bit_first = NULL;
+     guint32 *ibus_compose_seqs_32bit_second = NULL;
+diff --git a/src/ibusenginesimple.c b/src/ibusenginesimple.c
+index a2715ab60..ec4a70ac6 100644
+--- a/src/ibusenginesimple.c
++++ b/src/ibusenginesimple.c
+@@ -501,7 +501,7 @@ check_hex (IBusEngineSimple *simple,
+ }
+ 
+ static IBusEngineDict *
+-load_emoji_dict ()
++load_emoji_dict (void)
+ {
+     IBusEngineDict *emoji_dict;
+     GList *keys;
+@@ -544,7 +544,7 @@ check_emoji_table (IBusEngineSimple       *simple,
+         g_object_ref_sink (priv->lookup_table);
+     }
+     if (emoji_dict == NULL)
+-        emoji_dict = priv->emoji_dict = load_emoji_dict (simple);
++        emoji_dict = priv->emoji_dict = load_emoji_dict ();
+ 
+     if (emoji_dict == NULL || emoji_dict->dict == NULL)
+         return FALSE;

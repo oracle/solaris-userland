@@ -1,0 +1,30 @@
+From 975039ce0d3587c42e11f2922240957fc8f74166 Mon Sep 17 00:00:00 2001
+From: Pierre Wendling <pierre.wendling.4@gmail.com>
+Date: Mon, 27 Mar 2023 11:51:19 -0400
+Subject: [PATCH] SDL_hidapi_steam.c: Fix compilation under c2x.
+
+When N2935 is implemented, the enum breaks compilation. Use a #define of
+the SDL booleans instead.
+---
+ src/joystick/hidapi/SDL_hidapi_steam.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/src/joystick/hidapi/SDL_hidapi_steam.c b/src/joystick/hidapi/SDL_hidapi_steam.c
+index 006cb7412a9b0..54d3e40f3251a 100644
+--- a/src/joystick/hidapi/SDL_hidapi_steam.c
++++ b/src/joystick/hidapi/SDL_hidapi_steam.c
+@@ -31,11 +31,9 @@
+ 
+ #include <stdint.h>
+ 
+-typedef enum
+-{
+-    false,
+-    true
+-} bool;
++#define bool SDL_bool
++#define true SDL_TRUE
++#define false SDL_FALSE
+ 
+ typedef uint32_t uint32;
+ typedef uint64_t uint64;

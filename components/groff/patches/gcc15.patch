@@ -1,0 +1,13 @@
+Fix getenv() prototype to avoid GCC 15 error.
+
+--- groff-1.23.0/src/libs/libgroff/getopt.c
++++ groff-1.23.0/src/libs/libgroff/getopt.c
+@@ -122,7 +122,7 @@ /* Avoid depending on library functions
+    whose names are inconsistent.  */
+ 
+ #ifndef getenv
+-extern char *getenv ();
++extern char *getenv (const char*);
+ #endif
+ 
+ #endif /* not __GNU_LIBRARY__ */

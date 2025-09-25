@@ -40,6 +40,11 @@ COMPONENT_BAID=		330257
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Avoid using Solaris curses library
+# GCC 15 complains about its incompatibility
+CFLAGS += -I/usr/include/ncurses
+LDFLAGS += -lncursesw
+
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
@@ -57,6 +62,7 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/XPASS:/p" ' \
         '-e "/ERROR/p" '
 
+REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc

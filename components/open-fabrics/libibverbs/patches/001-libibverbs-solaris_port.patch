@@ -1739,7 +1739,7 @@ diff -r 714ac8a9d237 src/verbs.c
  		    int index, union ibv_gid *gid)
  {
 +#if defined(__SVR4) && defined(__sun)
-+	extern int sol_ibv_query_gid();
++	extern int sol_ibv_query_gid(struct ibv_context *, uint8_t, int, union ibv_gid *);
 +
 +	return sol_ibv_query_gid(context, port_num, index, gid);
 +
@@ -1759,7 +1759,7 @@ diff -r 714ac8a9d237 src/verbs.c
  		     int index, uint16_t *pkey)
  {
 +#if defined(__SVR4) && defined(__sun)
-+	extern int sol_ibv_query_pkey();
++	extern int sol_ibv_query_pkey(struct ibv_context *, uint8_t, int, uint16_t *);
 +
 +	return sol_ibv_query_pkey(context, port_num, index, pkey);
 +

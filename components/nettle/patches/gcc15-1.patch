@@ -1,0 +1,50 @@
+From 815865715ddf31ad5b5ff096b24a16925d961fae Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Niels=20M=C3=B6ller?= <nisse@lysator.liu.se>
+Date: Tue, 24 Jun 2025 20:41:41 +0200
+Subject: [PATCH] Fix non-prototype declarations in getopt files.
+
+(cherry picked from commit 6d2d88588037edaf0f7795d90887f47b254c08d0)
+---
+ ChangeLog |  8 ++++++++
+ getopt.c  | 11 -----------
+ getopt.h  |  2 +-
+ 3 files changed, 9 insertions(+), 12 deletions(-)
+
+diff --git a/getopt.c b/getopt.c
+index 9d29de7c..6d1c9218 100644
+--- a/getopt.c
++++ b/getopt.c
+@@ -129,17 +129,6 @@ int optopt = '?';
+ 
+ static struct _getopt_data getopt_data;
+ 
+-
+-#ifndef __GNU_LIBRARY__
+-
+-/* Avoid depending on library functions or files
+-   whose names are inconsistent.  */
+-
+-#ifndef getenv
+-extern char *getenv ();
+-#endif
+-
+-#endif /* not __GNU_LIBRARY__ */
+ 
+ #ifdef _LIBC
+ /* Stored original parameters.
+diff --git a/getopt.h b/getopt.h
+index da1a01ff..da812bc9 100644
+--- a/getopt.h
++++ b/getopt.h
+@@ -166,7 +166,7 @@ extern int __posix_getopt (int ___argc, char *const *___argv,
+ #  endif
+ # endif
+ #else /* not __GNU_LIBRARY__ */
+-extern int getopt ();
++extern int getopt (int ___argc, char *const *___argv, const char *__shortopts);
+ #endif /* __GNU_LIBRARY__ */
+ 
+ #ifndef __need_getopt
+-- 
+GitLab
+

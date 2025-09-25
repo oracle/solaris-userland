@@ -67,7 +67,7 @@ int read_tmp_file(int fd, char *bp, unsigned int bs);
 
 static struct psinfo info; /* process information structure from /proc */
 
-char *ttyname();
+//char *ttyname();
 static char *psfile = "/tmp/mibiisa_ps_data";
 
 
@@ -90,7 +90,7 @@ int cache_lifetime = 45;
 
 static void call_ftw_for_dev(void);
 static void wrdata();
-static void write_tmp_file();
+static void write_tmp_file(int fd, char *bp, unsigned bs);
 static int isprocdir();
 static void get_ps_data(void);
 static void clean_ps(ps_ldata_t *);
@@ -116,8 +116,10 @@ clean_ps(ps_ldata_t *head)
 }
 
 static int
-pscomp(ps_data_t *i, ps_data_t *j)
+pscomp(const void *a, const void *b)
 {
+    const ps_data_t *i = a;
+    const ps_data_t *j = b;
     return (i->pid - j->pid);
 }
 
@@ -190,7 +192,7 @@ static ps_data_t * find_ps_data(pid_t pid)
 
     psp = (ps_data_t *)bsearch((char *)&key, (char *)pstable,
                             pstable_lines, sizeof (ps_data_t),
-                            (int (*)())pscomp);
+                            pscomp);
     return (psp);
 }
 
@@ -208,7 +210,7 @@ get_ps_data(void)
     struct dirent *dentp;
     char pname[MAXNAMELEN];
     int pdlen;
-    char *gettty();
+    char *gettty(int *ip);
 
     if (pstable != PS_NULL) {  /* Don't run ps unless we need to */
         if ((cache_now - ps_cache_time) <= cache_lifetime)
@@ -312,7 +314,7 @@ retry:
         memcpy((char *)pstp, (char *)&(psp->pdata), sizeof (ps_data_t));
     }
     clean_ps(ps_head);
-    qsort(pstable, pstable_lines, sizeof (ps_data_t), (int (*)())pscomp);
+    qsort(pstable, pstable_lines, sizeof (ps_data_t), pscomp);
 }
 
 int
@@ -363,7 +365,7 @@ readata()
 static void
 call_ftw_for_dev(void)
 {
-    int gdev();
+    int gdev(const char *objptr, const struct stat *statp, int numb);
     int rcode;
 
     ndev = 0;
@@ -393,8 +395,8 @@ call_ftw_for_dev(void)
  */
 int
 gdev(objptr, statp, numb)
-    char        *objptr;
-    struct stat *statp;
+    const char *objptr;
+    const struct stat *statp;
     int        numb;
 {
     int i;

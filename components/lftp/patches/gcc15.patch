@@ -1,0 +1,14 @@
+Fix build on Solaris: GCC 15 defaults to C++17, which requires two-argument
+static_assert. Add message to satisfy this requirement.
+
+--- lftp-4.9.3/lib/dirent.in.h
++++ lftp-4.9.3/lib/dirent.in.h
+@@ -96,7 +96,7 @@ && DT_BLK != DT_REG && DT_BLK != DT_LNK
+                && DT_BLK != DT_WHT
+                && DT_REG != DT_LNK && DT_REG != DT_SOCK && DT_REG != DT_WHT
+                && DT_LNK != DT_SOCK && DT_LNK != DT_WHT
+-               && DT_SOCK != DT_WHT);
++               && DT_SOCK != DT_WHT, "DT_* values must be unique");
+ 
+ /* Other optional information about a directory entry.  */
+ #define _GL_DT_NOTDIR 0x100   /* Not a directory */

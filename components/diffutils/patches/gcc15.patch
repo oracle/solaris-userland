@@ -1,0 +1,19 @@
+GCC 15 changed how it handles static_assert in C11 and now always expands the  
+static_assert macro from Solaris /usr/include/assert.h, which requires two  
+arguments. Previously, GCC 14 would sometimes treat static_assert as a keyword  
+and allow a single-argument form, so builds succeeded even on Solaris.
+
+Solaris specific.
+
+--- diffutils-3.10/lib/exclude.c
++++ diffutils-3.10/lib/exclude.c
+@@ -57,7 +57,8 @@ #endif
+ static_assert (((EXCLUDE_ANCHORED | EXCLUDE_INCLUDE | EXCLUDE_WILDCARDS)
+                 & (FNM_PATHNAME | FNM_NOESCAPE | FNM_PERIOD | FNM_LEADING_DIR
+                    | FNM_CASEFOLD | FNM_EXTMATCH))
+-               == 0);
++               == 0,
++               "EXCLUDE_* option bits must not overlap with FNM_* option bits");
+ 
+ 
+ /* Exclusion patterns are grouped into a singly-linked list of

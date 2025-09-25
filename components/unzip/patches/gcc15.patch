@@ -1,0 +1,14 @@
+Removes the incorrect declarations. Fixes build with GCC >= 15.
+
+--- unzip610c25/unix/unxcfg.h
++++ unzip610c25/unix/unxcfg.h
+@@ -128,9 +128,6 @@ #  if (defined(HAVE_SYS_TIMEB_H))
+ #   include <sys/timeb.h>
+ #  endif
+ #  include <time.h>
+-#  if (!defined(__IBMC__))
+-   struct tm *gmtime(), *localtime();
+-#  endif
+ # endif
+ 
+ # if (defined(BSD4_4) || (defined(SYSV) && defined(MODERN)))

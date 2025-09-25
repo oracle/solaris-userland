@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -63,6 +63,9 @@ CONFIGURE_OPTIONS.32 += --with-module-path=/usr/lib/security
 CONFIGURE_OPTIONS.64 += --with-module-path=/usr/lib/security/$(MACH64)
 CONFIGURE_OPTIONS += --with-trust-paths=/etc/certs/ca-certificates.crt
 CONFIGURE_OPTIONS += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
+
+# Can be removed once new autoconf is released and included with test for stdbool.h being C23 compatible.
+CONFIGURE_OPTIONS += ac_cv_header_stdbool_h=yes
 
 $(SKIP_TEST_AT_TOP_LEVEL)
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master

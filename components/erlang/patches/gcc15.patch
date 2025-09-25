@@ -1,0 +1,25 @@
+From 454128ff0598c371786e728b8c1b622f1cfe0b8a Mon Sep 17 00:00:00 2001
+From: William Yang <mscame@gmail.com>
+Date: Thu, 20 Apr 2023 10:08:51 +0200
+Subject: [PATCH] erts: avoid use 'bool' keyword when compiling with lttng
+
+rename var name `bool` to `spawns_monitor`
+---
+ erts/emulator/beam/dist.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- otp_src_24.3.4.16/erts/emulator/beam/dist.c
++++ otp_src_24.3.4.16/erts/emulator/beam/dist.c
+@@ -5694,10 +5694,10 @@ if (BIF_ARG_4 == am_spawn_request)
+         ok_result = ref;
+     else {
+         Eterm *hp = HAlloc(BIF_P, 3);
+-        Eterm bool = ((monitor_oflags & ERTS_ML_FLG_SPAWN_MONITOR)
++        Eterm spawns_monitor = ((monitor_oflags & ERTS_ML_FLG_SPAWN_MONITOR)
+                       ? am_true : am_false);
+         ASSERT(BIF_ARG_4 == am_spawn_opt);
+-        ok_result = TUPLE2(hp, ref, bool);
++        ok_result = TUPLE2(hp, ref, spawns_monitor);
+     }
+ 
+     code = erts_dsig_prepare(&ctx, dep,

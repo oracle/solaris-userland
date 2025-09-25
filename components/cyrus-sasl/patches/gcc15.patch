@@ -1,0 +1,60 @@
+Convert old-style PROTO_LIST function declarations to ANSI C prototypes.  
+Fixes "too many arguments" errors with GCC 15 on modern C standards.       
+
+--- cyrus-sasl-2.1.28/lib/md5.c
++++ cyrus-sasl-2.1.28/lib/md5.c
+@@ -54,13 +54,11 @@ #define S42 10
+ #define S43 15
+ #define S44 21
+ 
+-static void MD5Transform PROTO_LIST ((UINT4 [4], const unsigned char [64]));
+-static void Encode PROTO_LIST
+-       ((unsigned char *, UINT4 *, unsigned int)); 
+-static void Decode PROTO_LIST
+-       ((UINT4 *, const unsigned char *, unsigned int)); 
+-static void MD5_memcpy PROTO_LIST ((POINTER, POINTER, unsigned int));
+-static void MD5_memset PROTO_LIST ((POINTER, int, unsigned int));
++static void MD5Transform (UINT4 [4], const unsigned char [64]);
++static void Encode (unsigned char *, UINT4 *, unsigned int); 
++static void Decode (UINT4 *, const unsigned char *, unsigned int); 
++static void MD5_memcpy (POINTER, POINTER, unsigned int);
++static void MD5_memset (POINTER, int, unsigned int);
+ 
+ static unsigned char PADDING[64] = {
+        0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+--- cyrus-sasl-2.1.28/saslauthd/md5.c
++++ cyrus-sasl-2.1.28/saslauthd/md5.c
+@@ -54,13 +54,11 @@ #define S42 10
+ #define S43 15
+ #define S44 21
+ 
+-static void MD5Transform PROTO_LIST ((UINT4 [4], unsigned char [64]));
+-static void Encode PROTO_LIST
+-       ((unsigned char *, UINT4 *, unsigned int)); 
+-static void Decode PROTO_LIST
+-       ((UINT4 *, unsigned char *, unsigned int)); 
+-static void MD5_memcpy PROTO_LIST ((POINTER, POINTER, unsigned int));
+-static void MD5_memset PROTO_LIST ((POINTER, int, unsigned int));
++static void MD5Transform  (UINT4 [4], unsigned char [64]);
++static void Encode (unsigned char *, UINT4 *, unsigned int); 
++static void Decode (UINT4 *, unsigned char *, unsigned int); 
++static void MD5_memcpy (POINTER, POINTER, unsigned int);
++static void MD5_memset (POINTER, int, unsigned int);
+ 
+ static unsigned char PADDING[64] = {
+        0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+--- cyrus-sasl-2.1.28/saslauthd/saslauthd_md5.h
++++ cyrus-sasl-2.1.28/saslauthd/saslauthd_md5.h
+@@ -29,9 +29,8 @@ UINT4 count[2];        /* number of bits
+   unsigned char buffer[64];                         /* input buffer */
+ } MD5_CTX;
+ 
+-void _saslauthd_MD5Init PROTO_LIST ((MD5_CTX *));
+-void _saslauthd_MD5Update PROTO_LIST
+-  ((MD5_CTX *, unsigned char *, unsigned int));
+-void _saslauthd_MD5Final PROTO_LIST ((unsigned char [16], MD5_CTX *));
++void _saslauthd_MD5Init (MD5_CTX *);
++void _saslauthd_MD5Update (MD5_CTX *, unsigned char *, unsigned int);
++void _saslauthd_MD5Final (unsigned char [16], MD5_CTX *);
+ 
+ void _saslauthd_hmac_md5 PROTO_LIST ((unsigned char *, int, unsigned char *, int, caddr_t));
