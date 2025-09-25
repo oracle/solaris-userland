@@ -27,12 +27,12 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		a2ps
-COMPONENT_VERSION=	4.15.6
+COMPONENT_VERSION=	4.15.7
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:87ff9d801cb11969181d5b8cf8b65e65e5b24bb0c76a1b825e8098f2906fbdf4
+    sha256:715f38670afd950b4ca71c01f468feefad265ca52d3f112934c63c0a8bfbb8af
 COMPONENT_ANITYA_ID=	5
 
-COMPONENT_BAID=		193786
+COMPONENT_BAID=		342922
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -69,6 +69,8 @@ REQUIRED_PACKAGES += editor/gnu-emacs
 REQUIRED_PACKAGES += image/psutils
 REQUIRED_PACKAGES += library/bdw-gc
 REQUIRED_PACKAGES += library/libpaper
+# a2ps-lpr-wrapper needs bash
+REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/math
