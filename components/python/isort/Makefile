@@ -26,19 +26,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		isort
-COMPONENT_VERSION=	5.13.2
+COMPONENT_VERSION=	6.0.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:48fdfcb9face5d58a4f6dde2e72a1fb8dcaf8ab26f95ab49fab84c2ddefb0109
+    sha256:1cb5df28dfbc742e490c5e41bad6da41b805b0a8be7bc93cd0fb2a8a890ac450
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/isort
 COMPONENT_BUGDB=	python-mod/isort
 COMPONENT_ANITYA_ID=	11430
-COMPONENT_BAID=		179045
+COMPONENT_BAID=		342762
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # Rename isort to its versioned name; mediated links (depending on

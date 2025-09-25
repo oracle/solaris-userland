@@ -26,18 +26,18 @@ BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pylint
-COMPONENT_VERSION=	3.3.1
+COMPONENT_VERSION=	3.3.8
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=  https://www.pylint.org/
 COMPONENT_BUGDB=	utility/pylint
 COMPONENT_ANITYA_ID=	5344
-COMPONENT_BAID=		179054
+COMPONENT_BAID=		342764
 
 # pypi archive doesn't include the test suite
 GIT_REPO=	https://github.com/PyCQA/pylint
 GIT_COMMIT_ID=	v$(COMPONENT_VERSION)
-GIT_HASH=	sha256:6a2b0712f80992d3ef2f78ca5db10cc2042b26231d31321c14c0b006980df68a
+GIT_HASH=	sha256:e547852743b29b094b68044422e83207514f62644236809290b8ad19a5564115
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -58,7 +58,6 @@ COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 # as those are not available on Solaris
 COMPONENT_TEST_ARGS =	-v \
 	--ignore=tests/benchmark/test_baseline_benchmarks.py \
-	--ignore=tests/profile/test_profile_against_externals.py \
 	--ignore=tests/testutils/_primer
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
