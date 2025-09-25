@@ -1,0 +1,56 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+
+set name=pkg.fmri \
+    value=pkg:/library/libcmocka@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value=cmocka
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
+set name=com.oracle.info.description \
+    value="cmocka, an elegant unit testing framework for C with support for mock objects. "
+set name=info.classification \
+    value=org.opensolaris.category.2008:System/Libraries
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2025/104
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/include/cmocka.h
+file path=usr/include/cmocka_pbc.h
+file path=usr/lib/$(MACH64)/cmake/cmocka/cmocka-config-version.cmake
+file path=usr/lib/$(MACH64)/cmake/cmocka/cmocka-config.cmake
+file path=usr/lib/$(MACH64)/cmake/cmocka/cmocka-targets-relwithdebinfo.cmake
+file path=usr/lib/$(MACH64)/cmake/cmocka/cmocka-targets.cmake
+link path=usr/lib/$(MACH64)/libcmocka.so target=libcmocka.so.0
+link path=usr/lib/$(MACH64)/libcmocka.so.0 target=libcmocka.so.0.8.1
+file path=usr/lib/$(MACH64)/libcmocka.so.0.8.1
+file path=usr/lib/$(MACH64)/pkgconfig/cmocka.pc
+file path=usr/lib/cmake/cmocka/cmocka-config-version.cmake
+file path=usr/lib/cmake/cmocka/cmocka-config.cmake
+file path=usr/lib/cmake/cmocka/cmocka-targets-relwithdebinfo.cmake
+file path=usr/lib/cmake/cmocka/cmocka-targets.cmake
+link path=usr/lib/libcmocka.so target=libcmocka.so.0
+link path=usr/lib/libcmocka.so.0 target=libcmocka.so.0.8.1
+file path=usr/lib/libcmocka.so.0.8.1
+file path=usr/lib/pkgconfig/cmocka.pc
+license cmocka.license license="Apache v2.0, MIT"

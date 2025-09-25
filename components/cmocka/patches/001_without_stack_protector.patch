@@ -1,0 +1,41 @@
+Solaris linker fails to link 32 bit code reporting the following:
+
+Building C object example/mock/uptime/CMakeFiles/uptime.dir/uptime.c.o
+Linking C executable uptime
+Undefined                       first referenced
+ symbol                             in file
+__stack_chk_fail_local              CMakeFiles/uptime.dir/uptime.c.o  (symbol scope specifies local binding)
+ld: fatal: symbol referencing errors
+
+The symbol would be provided by the gcc linker, which is not being used.
+
+Issue is specific to our use case and so not reporting upstream.
+
+diff -r 3248faeb7e9e CompilerChecks.cmake
+--- a/CompilerChecks.cmake	Tue Sep 09 02:45:08 2025 -0700
++++ b/CompilerChecks.cmake	Tue Sep 09 02:48:56 2025 -0700
+@@ -64,24 +64,6 @@
+         endif()
+     endif()
+ 
+-    check_c_compiler_flag_ssp("-fstack-protector-strong" WITH_STACK_PROTECTOR_STRONG)
+-    if (WITH_STACK_PROTECTOR_STRONG)
+-        list(APPEND SUPPORTED_COMPILER_FLAGS "-fstack-protector-strong")
+-        # This is needed as Solaris has a seperate libssp
+-        if (SOLARIS)
+-            list(APPEND SUPPORTED_LINKER_FLAGS "-fstack-protector-strong")
+-        endif()
+-    else (WITH_STACK_PROTECTOR_STRONG)
+-        check_c_compiler_flag_ssp("-fstack-protector" WITH_STACK_PROTECTOR)
+-        if (WITH_STACK_PROTECTOR)
+-            list(APPEND SUPPORTED_COMPILER_FLAGS "-fstack-protector")
+-            # This is needed as Solaris has a seperate libssp
+-            if (SOLARIS)
+-                list(APPEND SUPPORTED_LINKER_FLAGS "-fstack-protector")
+-            endif()
+-        endif()
+-    endif (WITH_STACK_PROTECTOR_STRONG)
+-
+     check_c_compiler_flag_ssp("-fstack-clash-protection" WITH_STACK_CLASH_PROTECTION)
+     if (WITH_STACK_CLASH_PROTECTION)
+         list(APPEND SUPPORTED_COMPILER_FLAGS "-fstack-clash-protection")
