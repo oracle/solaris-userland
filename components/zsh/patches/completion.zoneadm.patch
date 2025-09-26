@@ -1,0 +1,185 @@
+diff --git a/Completion/Solaris/Command/_zoneadm b/Completion/Solaris/Command/_zoneadm
+index ab63dc0..3265aa6 100644
+--- a/Completion/Solaris/Command/_zoneadm
++++ b/Completion/Solaris/Command/_zoneadm
+@@ -1,20 +1,22 @@
+ #compdef zoneadm
+-# Synced with the S11U1 man page
++# Synced with the S11U2 build 34 man page
+ 
+ _zoneadm_bootargs() {
+ 	# This is a subset of the arguments to kernel(1M)
+ 	_arguments -A "-*" \
+-		'-i[Alternate init]:path:_path_files' \
+ 		'-m[SMF options]:option:_values "SMF option" debug milestone= quiet verbose' \
+-		'-s[Boot single user]'
++		'-s[Boot single user]' \
++		'-L[List available boot environments]' \
++		'-Z[Boot a named environment]:boot environment: '
+ }
+ 
+ _zoneadm() {
+ 	local context state line expl
+ 	typeset -A opt_args
+-	local -a subcmds fields
+-	local -a solaris_attach solaris_install
+-	local -a solaris10_attach solaris10_install
++	local -a subcmds subcmds_solariskz fields
++	local -a solaris_attach solaris_clone solaris_install
++	local -a solariskz_attach solariskz_clone solariskz_install
++	local -a solaris10_attach solaris10_clone solaris10_install
+ 	local -a extended_create_options extended_destroy_options
+ 	local brand brand_args
+ 
+@@ -22,11 +24,19 @@ _zoneadm() {
+ 		attach boot clone detach halt help install list mark move
+ 		ready reboot uninstall verify
+ 	)
++	subcmds_solariskz=(
++		savecore suspend
++	)
+ 
+ 	extended_create_options=(
++		"cert:certificate:_path_files"
++		"cacert:CA certificate:_path_files"
++		"force-takeover"
+ 		"force-zpool-import"
+ 		"force-zpool-create:ZFS pool: "
+ 		"force-zpool-create-all"
++		"initialize-hostdata"
++		"key:key:_path_files"
+ 	)
+ 
+ 	extended_destroy_options=(
+@@ -35,28 +45,44 @@ _zoneadm() {
+ 	)
+ 
+ 	solaris_attach=(
+-		'(-d)-a[Path to archive]:path:_path_files'
+-		'(-a)-d[Path to zonepath]:directory:_path_files -/'
++		'-c[Specify configuration profile]:path:_files -g \*.xml'
++		'-U[Update all packages to latest versions]'
++		'-z[Attach existing zone boot environment]:zone boot environment: '
++	)
++	solaris_clone=(
++		'-c[Specify configuration profile]:path:_files -g \*.xml'
+ 	)
+ 	solaris_install=(
++		'-c[Specify configuration profile]:path:_files -g \*.xml'
+ 		- set1
+-		'-c[Path to certificate]:path:_path_files'
+-		'*-e[Additional package]:package:'
+-		'-k[Path to key]:path:_path_files'
+-		'-P[Publisher/URI mapping]:publisher:'
++		'-m[Specify install (AI) manifest]:path:_files -g \*.xml'
+ 		- set2
+ 		'(-d)-a[Path to archive]:path:_path_files'
+-		'(-a)-d[Path to installed zone root]:directory:path_files -/'
++		'(-a -z)-d[Path to installed zone root]:directory:path_files -/'
+ 		'-p[Preserve system configuration]'
+ 		'-s[Install silently]'
+ 		'-u[Unconfigure after installation]'
+ 		'-v[Verbose]'
++		'(-d)-z[Name of zone in unified archive]:zone: '
++	)
++
++	solariskz_attach=()
++	solariskz_clone=( $solaris_clone )
++	solariskz_install=(
++		'(-m)-a[Specify unified archive]:path:_path_files'
++		'-b[Specify boot media]:path:_path_files'
++		'-c[Specify configuration profile]:path:_path_files'
++		'(-a)-m[Specify install (AI) manifest]:path:_path_files'
++		'-S[Specify root filesystem size]:size: '
++		'-v[Verbose]'
++		'-z[Name of zone in unified archive]:zone: '
+ 	)
+ 
+ 	solaris10_attach=(
+ 		'(-d)-a[Path to archive]:path:_path_files'
+ 		'(-a)-d[Path to zonepath]:directory:_path_files -/'
+ 	)
++	solaris10_clone=()
+ 	solaris10_install=(
+ 		'(-d)-a[Path to archive]:path:_path_files'
+ 		'(-a)-d[Path to installed zone root]:directory:path_files -/'
+@@ -70,9 +96,15 @@ _zoneadm() {
+ 		_arguments -C -A "-*" \
+ 			'-R[Alternate root]:alternate root:_path_files -/' \
+ 			'-u[Zone UUID]:zone UUID: ' \
+-			'-z[Zone name]:zone name:_zones' \
++			'-z[Zone name]:zone name:_zones -t c' \
+ 			'*::command:->subcmd' && return 0
+ 
++		if [[ -n $opt_args[-z] ]]; then
++			brand=${${"${(@s,:,)$(zoneadm -z $opt_args[-z] list -p)}"[6]}//-/}
++			brand_args=subcmds_${brand}
++			subcmds=( ${(P)brand_args} $subcmds )
++		fi
++
+ 		if (( CURRENT == 1 )); then
+ 			_wanted commands expl "zoneadm subcommand" compadd -a subcmds
+ 			return
+@@ -85,22 +117,28 @@ _zoneadm() {
+ 	("boot")
+ 		# Completion of boot arguments after -- is kinda hacky.
+ 		_arguments -S -A "-*" \
++			'-R[Force new boot instead of resume]' \
+ 			'-w[Force writable root]' \
+ 			'-W[Boot in transient r/w mode]' \
+ 			'*:boot options:_zoneadm_bootargs'
+ 		;;
+ 
+ 	("clone")
++		if [[ -n $opt_args[-z] ]]; then
++			brand=${${"${(@s,:,)$(zoneadm -z $opt_args[-z] list -p)}"[6]}//-/}
++			brand_args=${brand}_clone
++		fi
+ 		_arguments -A "-*" \
+ 			'-m[Clone mode]:mode:_values "mode" copy' \
+ 			'-s[Source snapshot]:snapshot:_zfs_dataset -t snap' \
+ 			'-x[Extended options]:extended option:_values -w "extended option" $extended_create_options' \
+-			':source zone:_zones'
++			${(P)brand_args} \
++			':source zone:_zones -t i'
+ 		;;
+ 
+ 	("attach")
+ 		if [[ -n $opt_args[-z] ]]; then
+-			brand=${"${(@s,:,)$(zoneadm -z $opt_args[-z] list -p)}"[6]}
++			brand=${${"${(@s,:,)$(zoneadm -z $opt_args[-z] list -p)}"[6]}//-/}
+ 			brand_args=${brand}_attach
+ 		fi
+ 		_arguments -A "-*" \
+@@ -116,7 +154,7 @@ _zoneadm() {
+ 			'-n[Dry run]'
+ 		;;
+ 
+-	("halt"|"ready"|"reboot"|"verify")
++	("halt"|"ready"|"reboot"|"verify"|"suspend")
+ 		;;
+ 
+ 
+@@ -126,7 +164,7 @@ _zoneadm() {
+ 
+ 	("install")
+ 		if [[ -n $opt_args[-z] ]]; then
+-			brand=${"${(@s,:,)$(zoneadm -z $opt_args[-z] list -p)}"[6]}
++			brand=${${"${(@s,:,)$(zoneadm -z $opt_args[-z] list -p)}"[6]}//-/}
+ 			brand_args=${brand}_install
+ 		fi
+ 		_arguments -A "-*" \
+@@ -152,6 +190,12 @@ _zoneadm() {
+ 			':new zone path:_path_files -/'
+ 		;;
+ 
++	("savecore")
++		_arguments -A "-*" \
++			"-L[Don't pause zone]" \
++			'-f[Path to dumpfile]:path:_path_files'
++		;;
++
+ 	("uninstall")
+ 		_arguments -A "-*" \
+ 			'-F[Force]' \
+

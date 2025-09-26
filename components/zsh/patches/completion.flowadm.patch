@@ -1,0 +1,23 @@
+diff --git a/Completion/Solaris/Command/_flowadm b/Completion/Solaris/Command/_flowadm
+index e4d682f..3dc5741 100644
+--- a/Completion/Solaris/Command/_flowadm
++++ b/Completion/Solaris/Command/_flowadm
+@@ -12,7 +12,7 @@ subcmds=(
+   reset-flowprop show-flowprop
+ )
+ tr=( tcp udp sctp icmp icmpv6 )
+-props=( maxbw )
++props=( maxbw priority hwflow )
+ 
+ if [[ $service == "flowadm" ]]; then
+ 	_arguments -C -A "-*" \
+@@ -33,7 +33,7 @@ case $service in
+ 
+ 	("show-flow")
+ 	_arguments -A "-*" \
+-		'-o[specify field to display]:field:(flow link ipaddr proto port dsfield)' \
++		'-o[specify field to display]:field:(flow link proto laddr lport raddr rport port dsfield pid)' \
+ 		'-p[parsable output]' \
+ 		'-P[persistent flow property information]' \
+ 		- set1 \
+

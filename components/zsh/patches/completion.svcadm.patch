@@ -1,0 +1,75 @@
+--- zsh-5.9/Completion/Solaris/Command/_svcadm.orig	2025-09-10 15:36:39.170229601 +0200
++++ zsh-5.9/Completion/Solaris/Command/_svcadm	2025-09-10 15:42:32.517375331 +0200
+@@ -22,17 +22,17 @@
+   (enable)
+     _arguments -A "-*" \
+       '-r[recursively enable dependencies]' \
+-      '-s[wait for service to come online]' \
+-      '-T[timeout for -s]:timeout (seconds)' \
+-      '-t[state change is temporary]' \
++      '-s[Synchronous mode: wait for service to come online]' \
++      '-T[Timeout for synchronous mode]:seconds:' \
++			'-t[state change is temporary]' \
+       '*:instance FMRI:_svcs_fmri -i'
+     ;;
+ 
+   (disable)
+     _arguments -A "-*" \
+-      '-s[wait for service to become disabled]' \
+-      '-T[timeout for -s]:timeout (seconds)' \
+-      '-t[state change is temporary]' \
++      '-s[Synchronous mode: wait for service to become disabled]' \
++      '-T[Timeout for synchronous mode]:seconds:' \
++			'-t[state change is temporary]' \
+       '*:instance FMRI:_svcs_fmri -i'
+   ;;
+ 
+@@ -39,9 +39,9 @@
+   (mark)
+     _arguments -A "-*" \
+       '-I[change state immediately]' \
+-      "-s[wait for service to reach the new state]" \
+-      '-T[timeout for -s]:timeout (seconds)' \
+-      '-t[state change is temporary]' \
++      "-s[Synchronous mode: wait for service to reach the new state]" \
++      '-T[Timeout for synchronous mode]:seconds:' \
++			'-t[state change is temporary]' \
+       ':state:(degraded maintenance)' \
+       ':instance FMRI:_svcs_fmri -i'
+   ;;
+@@ -48,16 +48,16 @@
+ 
+   (restart|refresh|clear)
+     _arguments \
+-      "-s[wait for service to $service]" \
+-      '-T[timeout for -s]:timeout (seconds)' \
+-      '*:instance FMRI:_svcs_fmri -i'
++      "-s[Synchronous mode: wait for service to $service]" \
++      '-T[Timeout for synchronous mode]:seconds:' \
++			'*:instance FMRI:_svcs_fmri -i'
+   ;;
+ 
+   (delegate)
+     _arguments -A "-*" \
+-      '-s[wait for instances to come online]' \
+-      '-T[timeout for -s]:timeout (seconds)' \
+-      ':restarter FMRI:_svcs_fmri -r' \
++      '-s[Synchronous mode: wait for instances to come online]' \
++      '-T[Timeout for synchronous mode]:seconds:' \
++			':restarter FMRI:_svcs_fmri -r' \
+       '*:FMRI:_svcs_fmri -i'
+   ;;
+ 
+@@ -64,9 +64,9 @@
+   (milestone)
+     _arguments -A "-*" \
+       '-d[make milestone the default]' \
+-      '-s[wait for the transition to the new milestone]' \
+-      '-T[timeout for -s]:timeout (seconds)' \
+-      '*:milestone FMRI:_svcs_fmri -m'
++      '-s[Synchronous mode: wait for the transition to the new milestone]' \
++      '-T[Timeout for synchronous mode]:seconds:' \
++			'*:milestone FMRI:_svcs_fmri -m'
+   ;;
+ 
+   (*)

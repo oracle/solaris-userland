@@ -13,9 +13,9 @@ Not intended for upstream as they fixed this while doing bigger refactoring.
    for LANG in $langs; do
      if [[ é = ? ]]; then
        mb_ok=1
---- zsh-5.8.1/Test/E01options.ztst
-+++ zsh-5.8.1/Test/E01options.ztst
-@@ -649,7 +649,7 @@
+--- zsh-5.9/Test/E01options.ztst.orig   2025-09-12 17:40:46.064071462 +0200
++++ zsh-5.9/Test/E01options.ztst        2025-09-12 17:41:45.755618271 +0200
+@@ -651,7 +651,7 @@
  >noktarg1
  >0 1
  
@@ -35,28 +35,6 @@ Not intended for upstream as they fixed this while doing bigger refactoring.
    for LANG in $langs; do
      if [[ é = ? ]]; then
        ZSH_TEST_LANG=$LANG 
---- zsh-5.8.1/Test/X03zlebindkey.ztst
-+++ zsh-5.8.1/Test/X03zlebindkey.ztst
-@@ -5,7 +5,7 @@
- %prep
-   ZSH_TEST_LANG=
-   langs=(en_{US,GB}.{UTF-,utf}8 en.UTF-8
--	 $(locale -a 2>/dev/null | egrep 'utf8|UTF-8'))
-+	 $(locale -a 2>/dev/null | grep -E 'utf8|UTF-8'))
-   for LANG in $langs; do
-     if [[ é = ? ]]; then
-       ZSH_TEST_LANG=$LANG
---- zsh-5.8.1/Test/V07pcre.ztst
-+++ zsh-5.8.1/Test/V07pcre.ztst
-@@ -13,7 +13,7 @@
-   unset -m LC_\*
-   mb_ok=
-   langs=(en_{US,GB}.{UTF-,utf}8 en.UTF-8
--	 $(locale -a 2>/dev/null | egrep 'utf8|UTF-8'))
-+	 $(locale -a 2>/dev/null | grep -E 'utf8|UTF-8'))
-   for LANG in $langs; do
-     if [[ é = ? ]]; then
-       mb_ok=1
 --- zsh-5.8.1/Test/Y01completion.ztst
 +++ zsh-5.8.1/Test/Y01completion.ztst
 @@ -4,7 +4,7 @@
@@ -68,3 +46,25 @@ Not intended for upstream as they fixed this while doing bigger refactoring.
    for LANG in $langs; do
      if [[ é = ? ]]; then
        ZSH_TEST_LANG=$LANG
+--- zsh-5.9/Test/X03zlebindkey.ztst.orig	2025-09-12 18:19:41.106202363 +0200
++++ zsh-5.9/Test/X03zlebindkey.ztst	2025-09-12 18:20:44.607649387 +0200
+@@ -6,7 +6,7 @@
+   unset -m LC_\*
+   ZSH_TEST_LANG=
+   langs=(en_{US,GB}.{UTF-,utf}8 en.UTF-8
+-	 $(locale -a 2>/dev/null | egrep 'utf8|UTF-8'))
++	 $(locale -a 2>/dev/null | grep -E 'utf8|UTF-8'))
+   for LANG in $langs; do
+     if [[ é = ? ]]; then
+       ZSH_TEST_LANG=$LANG
+--- zsh-5.9/Test/V07pcre.ztst.orig	2025-09-17 17:25:49.583234282 +0200
++++ zsh-5.9/Test/V07pcre.ztst	2025-09-17 17:26:52.583672054 +0200
+@@ -12,7 +12,7 @@
+   unset -m LC_\*
+   mb_ok=
+   langs=(en_{US,GB}.{UTF-,utf}8 en.UTF-8
+-	 $(locale -a 2>/dev/null | egrep 'utf8|UTF-8'))
++	 $(locale -a 2>/dev/null | grep -E 'utf8|UTF-8'))
+   for LANG in $langs; do
+     if [[ é = ? ]]; then
+       mb_ok=1

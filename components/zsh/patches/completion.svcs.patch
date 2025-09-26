@@ -1,0 +1,40 @@
+diff --git a/Completion/Solaris/Command/_svcs b/Completion/Solaris/Command/_svcs
+index c1f01ad..eab561a 100644
+--- a/Completion/Solaris/Command/_svcs
++++ b/Completion/Solaris/Command/_svcs
+@@ -1,4 +1,5 @@
+ #compdef svcs
++# Synced with the S11U2 build 34 man page
+ 
+ local -a cols
+ 
+@@ -12,17 +13,18 @@ cols=(
+ )
+ 
+ _arguments -s \
+-  '(-l -x -d -D)-a[list all instances]' \
+-  '(-l -x -D -a -R)-d[list dependencies]' \
+-  '(-l -x -d -a -R)-D[list dependents]' \
+-  '(-l -x)-H[suppress header line]' \
++  '(-l -L -x -d -D)-a[list all instances]' \
++  '(-l -L -x -D -a -R)-d[list dependencies]' \
++  '(-l -L -x -d -a -R)-D[list dependents]' \
++  '(-l -L -x)-H[suppress header line]' \
+   '(-x -d -D -a -R -s)-l[print detailed status about services and instances]' \
+-  '(-l -x)-o[display specific columns]:column:_values -s , "column" ${^cols/\:/[}\]' \
+-  '(-l -x)-p[list processes]' \
+-  '(-l -x -d -D)-R[list services with the given restarter]:instance FMRI:_svcs_fmri -i' \
+-  '(-l -x)-s[sort by a column]:column:(($cols))' \
+-  '(-l -x)-S[reverse sort by a column]:column:(($cols))' \
++  '(-a -d -D -H -l -o -p -R -s -S)-L[print path to service logfile]' \
++  '(-l -L -x)-o[display specific columns]:column:_values -s , "column" ${^cols/\:/[}\]' \
++  '(-l -L -x)-p[list processes]' \
++  '(-l -L -x -d -D)-R[list services with the given restarter]:instance FMRI:_svcs_fmri -i' \
++  '(-l -L -x)-s[sort by a column]:column:(($cols))' \
++  '(-l -L -x)-S[reverse sort by a column]:column:(($cols))' \
+   '-v[verbose columns]' \
+   '(-l)-x[display explanation for service states]' \
+-  '(-l -x)-\?[print help]' \
++  '(-l -L -x)-\?[print help]' \
+   '*:FMRI or pattern:_svcs_fmri -i'
+

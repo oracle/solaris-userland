@@ -1,0 +1,63 @@
+diff --git a/Completion/Solaris/Command/_ipadm b/Completion/Solaris/Command/_ipadm
+index 34d1eac..bb9508a 100644
+--- a/Completion/Solaris/Command/_ipadm
++++ b/Completion/Solaris/Command/_ipadm
+@@ -1,5 +1,5 @@
+ #compdef ipadm
+-# Synced with the S11U1 build 19 man page
++# Synced with the S11U2 build 34 man page
+ 
+ _ipadm_ifs() {
+ 	local -a extra
+@@ -122,11 +122,13 @@ _ipadm() {
+ 
+ 	addrobj_properties=(
+ 		"addrobj" "type" "state" "current" "persistent" "addr"
+-		"cid-type" "cid-value" "begin" "expire" "renew"
++		"cid-type" "cid-value" "begin" "expire" "renew" "vrrp-router"
+ 	)
+ 
+-	proto_ipv4_properties=( "hostmodel" "ttl" "forwarding" )
+-	proto_ipv6_properties=( "hostmodel" "hoplimit" "forwarding" )
++	proto_ipv4_properties=( "arp_publish_count" "arp_publish_interval" "hostmodel"
++		"ttl" "forwarding" "ndp_unsolicit_count" "ndp_unsolicit_interval" "send_redirects" )
++	proto_ipv6_properties=( "arp_publish_count" "arp_publish_interval" "hostmodel"
++		"hoplimit" "forwarding" "ndp_unsolicit_count" "ndp_unsolicit_interval" "send_redirects" )
+ 	proto_tcp_properties=( "cong_default" "cong_enabled" "ecn" "extra_priv_ports" "max_buf" "recv_buf"
+ 		"send_buf" "sack" "smallest_anon_port" "largest_anon_port" "smallest_nonpriv_port" )
+ 	proto_udp_properties=( "extra_priv_ports" "max_buf" "recv_buf" "send_buf" "smallest_anon_port"
+@@ -265,7 +267,7 @@ _ipadm() {
+ 			case ${opt_args[-T]#-T:} in
+ 			("static:"*)
+ 				local -a addrthingsv4
+-				addrthingsv4=( "local:address: " "remote:address: ")
++				addrthingsv4=( "local:address: " "remote:address: " )
+ 				_arguments -A "-*" \
+ 				'(-d --down)'{-d,--down}'[Address should be marked down]' \
+ 				'(-a --address)'{-a,--address}'[Address specification]:address:_values -s , "address" $addrthingsv4' \
+@@ -281,13 +283,23 @@ _ipadm() {
+ 
+ 			("addrconf:"*)
+ 				local -a addrthingsv6 statefulness
+-				addrthingsv6=( "local:interface id: " "remote:interface id: ")
++				addrthingsv6=( "local:interface id: " "remote:interface id: " )
+ 				statefulness=( "stateful:statefulness:(yes no)" "stateless:statelessness:(yes no)" )
+ 				_arguments -A "-*" \
+ 				'(-i --interface-id)'{-i,--interface-id}'[Interface ID]:address:_values -s , "interface id" $addrthingsv6' \
+ 				'(-p --prop)'{-p,--prop}'[Statefulness configuration]:statefulness configuration:_values -s , "statefulness" $statefulness' \
+ 				':address object name:_ipadm_addrobjs_or_ifs'
+ 				;;
++
++			("vrrp:"*)
++				local -a addrthingsvrrp
++				addrthingsvrrp=( "local:address: " )
++				_arguments -A "-*" \
++				'(-a --address)'{-a,--address}'[Address specification]:address:_values -s , "address" $addrthingsvrrp' \
++				'-n[VRRP router name]:router name: ' \
++				':address object name:_ipadm_addrobjs_or_ifs'
++				;;
++
+ 			(*)
+ 				_wanted commands expl "address type" compadd static dhcp addrconf
+ 				;;
+
