@@ -1,0 +1,44 @@
+#
+# Avoid running unit tests which do not pass on Solaris Userland CBE.
+# In particular:
+#  - k_kdb fails for LDAP SASL DIGEST-MD5 authentication. This
+#    authentication mechanism was obsoleted long time ago
+#    and would require that Userland CBE contains
+#    library/security/openssl-3/legacy-provider
+#    and system/library/security/sasl/digestmd5 packages
+#    which is not desirable.
+#
+--- old/src/tests/t_kdb.py	2025-09-25 12:34:03.800589739 +0200
++++ new/src/tests/t_kdb.py	2025-09-25 12:34:48.174735001 +0200
+@@ -580,31 +580,6 @@ realm.kinit(realm.user_princ, password('
+ realm.stop()
+ realm.run([kdb5_ldap_util, 'destroy', '-f'])
+ 
+-# Test SASL DIGEST-MD5 auth.  We need to set a clear-text password for
+-# the admin DN, so create a person entry (requires the core schema).
+-# Restore the service password file in the config and set authcids.
+-mark('LDAP SASL DIGEST-MD5 auth')
+-ldap_add('cn=admin,cn=krb5', 'person',
+-         ['sn: dummy', 'userPassword: admin'])
+-dbmod['ldap_kdc_sasl_mech'] = dbmod['ldap_kadmind_sasl_mech'] = 'DIGEST-MD5'
+-dbmod['ldap_kdc_sasl_authcid'] = 'digestuser'
+-dbmod['ldap_kadmind_sasl_authcid'] = 'digestuser'
+-dbmod['ldap_service_password_file'] = ldap_pwfile
+-realm = K5Realm(create_kdb=False, kdc_conf=conf)
+-input = admin_pw + '\n' + admin_pw + '\n'
+-realm.run([kdb5_ldap_util, 'stashsrvpw', 'digestuser'], input=input)
+-realm.run([kdb5_ldap_util, 'create', '-s', '-P', 'master'])
+-realm.start_kdc()
+-realm.addprinc(realm.user_princ, password('user'))
+-realm.kinit(realm.user_princ, password('user'))
+-realm.stop()
+-# Exercise DB options, which should cause binding to fail.
+-realm.run([kadminl, '-x', 'sasl_authcid=ab', 'getprinc', 'user'],
+-          expected_code=1, expected_msg='Cannot bind to LDAP server')
+-realm.run([kadminl, '-x', 'bindpwd=wrong', 'getprinc', 'user'],
+-          expected_code=1, expected_msg='Cannot bind to LDAP server')
+-realm.run([kdb5_ldap_util, 'destroy', '-f'])
+-
+ # We could still use tests to exercise:
+ # * DB arg handling in krb5_ldap_create
+ # * krbAllowedToDelegateTo attribute processing

@@ -8,8 +8,8 @@
 # This patch is not meant for upstream contribution.
 # Patch source: in-house
 #
---- a/src/lib/krb5/os/sn2princ.c
-+++ b/src/lib/krb5/os/sn2princ.c
+--- old/src/lib/krb5/os/sn2princ.c	2025-09-25 12:22:37.468736785 +0200
++++ new/src/lib/krb5/os/sn2princ.c	2025-09-25 12:23:05.938930983 +0200
 @@ -39,6 +39,14 @@
  #define DEFAULT_RDNS_LOOKUP 1
  #endif
@@ -52,7 +52,7 @@
  /* Append a domain suffix to host and return the result in allocated memory.
   * Return NULL if no suffix is configured or on failure. */
  static char *
-@@ -93,6 +121,9 @@ expand_hostname(krb5_context context, const char *host, krb5_boolean use_dns,
+@@ -93,6 +121,9 @@ expand_hostname(krb5_context context, co
      char namebuf[NI_MAXHOST], *qualified = NULL, *copy, *p;
      int err;
      const char *canonhost;
@@ -62,7 +62,7 @@
  
      *canonhost_out = NULL;
  
-@@ -117,7 +148,31 @@ expand_hostname(krb5_context context, const char *host, krb5_boolean use_dns,
+@@ -117,7 +148,31 @@ expand_hostname(krb5_context context, co
              if (!err)
                  canonhost = namebuf;
          }
@@ -95,7 +95,7 @@
      }
  
      /* If we didn't use DNS and the name is just one component, try to add a
-@@ -148,10 +203,13 @@ expand_hostname(krb5_context context, const char *host, krb5_boolean use_dns,
+@@ -148,10 +203,13 @@ expand_hostname(krb5_context context, co
      *canonhost_out = copy;
  
  cleanup:
@@ -110,8 +110,8 @@
      return (*canonhost_out == NULL) ? ENOMEM : 0;
  }
  
---- a/src/tests/gssapi/t_ccselect.py
-+++ b/src/tests/gssapi/t_ccselect.py
+--- old/src/tests/gssapi/t_ccselect.py	2025-09-25 12:22:37.472345612 +0200
++++ new/src/tests/gssapi/t_ccselect.py	2025-09-25 12:23:05.943354486 +0200
 @@ -46,7 +46,14 @@ foobar = "foo.bar.krbtest.com"
  gssserver = 'h:host@' + foo
  gssserver2 = 'h:host@' + foo2
@@ -128,8 +128,8 @@
  
  # refserver specifies the target as a principal in the referral realm.
  # The principal won't be treated as a host principal by the
---- a/src/tests/t_rdreq.py
-+++ b/src/tests/t_rdreq.py
+--- old/src/tests/t_rdreq.py	2025-09-25 12:22:37.476940693 +0200
++++ new/src/tests/t_rdreq.py	2025-09-25 12:23:05.947316437 +0200
 @@ -27,7 +27,7 @@ def test(tserver, server, expected):
  mark('no keytab')
  nokeytab_err = "45 Key table file '%s' not found" % realm.keytab
@@ -179,8 +179,8 @@
  
  # Ticket server, kvno, and enctype matched, but key does not work.
  mark('wrong key')
---- a/src/tests/t_referral.py
-+++ b/src/tests/t_referral.py
+--- old/src/tests/t_referral.py	2025-09-25 12:22:37.481506774 +0200
++++ new/src/tests/t_referral.py	2025-09-25 12:23:05.951839832 +0200
 @@ -29,6 +29,11 @@ def testfail(realm, nametype):
      realm.run(['./gcred', nametype, 'a/x.d@'], expected_code=1,
                expected_msg='not found in Kerberos database')
@@ -216,18 +216,17 @@
  restart_kdc(realm, {'kdcdefaults': {'no_host_referral': 'b,c'}})
  testref(realm, 'srv-hst')
  
---- a/src/util/k5test.py
-+++ b/src/util/k5test.py
-@@ -401,6 +401,8 @@ import socket
+--- old/src/util/k5test.py	2025-09-25 12:22:37.486380572 +0200
++++ new/src/util/k5test.py	2025-09-25 12:23:43.385037278 +0200
+@@ -401,6 +401,7 @@ import socket
  import string
  import subprocess
  import sys
-+import imp
 +import re
  
  # Used when most things go wrong (other than programming errors) so
  # that the user sees an error message rather than a Python traceback,
-@@ -561,6 +563,36 @@ def _find_srctop():
+@@ -561,6 +562,36 @@ def _find_srctop():
      return os.path.abspath(root)
  
  

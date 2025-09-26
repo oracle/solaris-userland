@@ -49,6 +49,10 @@ COMPONENT_BUGDB=	utility/kerberos
 
 COMPONENT_BAID=	147202
 
+# t_imp_name test fails with -x04 on Sparc - both in 64-bit and 32-bit mode
+studio_OPT.sparc.32 =	-xO3
+studio_OPT.sparc.64 =	-xO3
+
 # The unit tests are not python 3 friendly.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
