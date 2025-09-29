@@ -1,4 +1,4 @@
-/* Copyright (c) 1996, 2015, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (c) 1996, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -109,7 +109,7 @@ typedef struct {
 static int  close_display(Display *dpy, XExtCodes *codes);
 
 static XExtensionInfo	*ext_info;
-static char		*ext_name = OVLNAME;
+static const char	*ext_name = OVLNAME;
 static XExtensionHooks	 ext_hooks = {
     NULL,			/* create_gc */
     NULL,			/* copy_gc */
@@ -889,7 +889,7 @@ XSolarisOvlCreateWindow(
     }
     wid = req->wid = XAllocID(dpy);
     valuemask &= AllMaskBits;
-    if (req->mask = valuemask) {
+    if ((req->mask = valuemask) != 0) {
 
 /* BugId 4130905 - There were only 3 args to this call instead of 4 -
 the last argument attr was missing - causing Bad Xerror Request. When
@@ -1219,14 +1219,10 @@ XSolarisOvlSelectPartner(
     XOvlVisPair		*vispair;
     int			 i,
     			 j;
-    Depth		*depth;
-    XOvlVisInfo		 partner;
     XOvlVisualMatch	 curMatch,
     			 betterMatch,
     			 bestMatch;
     XOvlVisEnumData	 visEnumData;
-    unsigned long	 hardpreferred,
-    			 softpreferred;
 
     OvlCheckExtension(dpy, info, XSolarisOvlFailure);
 

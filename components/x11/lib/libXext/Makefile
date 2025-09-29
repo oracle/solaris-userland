@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXext
@@ -45,8 +46,7 @@ COMPONENT_POST_UNPACK_ACTION = \
         $(CP) sun-src/man/* $(SOURCE_DIR)/man; \
         $(CP) sun-src/include/X11/extensions/xinerama.h $(SOURCE_DIR)/include/X11/extensions/;
 
-# GNU Build System files have to be regenerated for automake 1.16.
-# It can be removed when the upstream starts to use a newer automake version.
+# Regenerate */Makefile.in after 02-sun-exts.patch changes */Makefile.am
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 
 CONFIGURE_ENV += LIB_MAN_SUFFIX=3xext

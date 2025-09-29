@@ -1,4 +1,4 @@
-/* Copyright (c) 1990, 2015, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (c) 1990, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -50,6 +50,19 @@
 #define X_UnGrabWindow	126	/* just before X_NoOperation */
 
 #define BadCookie	0
+
+/*
+ * Since these are only maintained for binary compatibility, there is no
+ * longer a header file for them, so we add prototypes here to avoid
+ * -Wmissing-prototypes complaints from gcc.
+ */
+int XGrabWindow(Display *dpy, Window win);
+int XUnGrabWindow(Display *dpy, Window win);
+int XGrabColormap(Display *dpy, Colormap cmap);
+int XUnGrabColormap(Display *dpy, Colormap cmap);
+int XGrabRetainedWindow(Display *dpy, Window win);
+int XUnGrabRetainedWindow(Display *dpy, Window win);
+int XGetRetainedPath(Display *dpy, Window win, char *path);
 
 static int X_WxExtensionCode;
 
@@ -296,7 +309,7 @@ XGetRetainedPath(
 		   (SIZEOF(xOWGXRtndPathReply) - SIZEOF(xReply)) >> 2, xFalse);
     UnlockDisplay(dpy);
     SyncHandle();
-    strcpy(path, rep.path);
+    strcpy(path, (char *) rep.path);
     return Success;
   case USE_EXTRA_PROTOCOL:
   case NOT_INITIALIZED:

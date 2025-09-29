@@ -1,4 +1,4 @@
-/* Copyright (c) 1990, 2015, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (c) 1990, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -36,7 +36,7 @@
 static int  close_display(Display *dpy, XExtCodes *codes);
 
 static XExtensionInfo *ext_info;
-static char *ext_name = ALLPLANESNAME;
+static const char *ext_name = ALLPLANESNAME;
 static XExtensionHooks ext_hooks = {
     NULL,			/* create_gc */
     NULL,			/* copy_gc */

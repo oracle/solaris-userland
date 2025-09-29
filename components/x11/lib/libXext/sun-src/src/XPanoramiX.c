@@ -26,7 +26,7 @@ dealings in this Software without prior written authorization from Digital
 Equipment Corporation.
 
 ******************************************************************/
-/* Copyright (c) 1999, 2015, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (c) 1999, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -63,7 +63,7 @@ Bool XGetXineramaInfo(Display *dpy, int screen_number, XID VirtualWID, XineramaI
 
 static XExtensionInfo _panoramiX_ext_info_data;
 static XExtensionInfo *panoramiX_ext_info = &_panoramiX_ext_info_data;
-static /* const */ char *panoramiX_extension_name = PANORAMIX_PROTOCOL_NAME;
+static const char *panoramiX_extension_name = PANORAMIX_PROTOCOL_NAME;
 
 #define PanoramiXCheckExtension(dpy,i,val) \
   XextCheckExtension (dpy, i, panoramiX_extension_name, val)
@@ -71,8 +71,6 @@ static /* const */ char *panoramiX_extension_name = PANORAMIX_PROTOCOL_NAME;
   XextSimpleCheckExtension (dpy, i, panoramiX_extension_name)
 
 static int close_display(Display *dpy, XExtCodes *codes);
-static Bool wire_to_event(Display *dpy, XEvent *libevent, xEvent *netevent);
-static Status event_to_wire(Display *dpy, XEvent *libevent, xEvent *netevent);
 static /* const */ XExtensionHooks panoramiX_extension_hooks = {
     NULL,				/* create_gc */
     NULL,				/* copy_gc */
@@ -297,7 +295,10 @@ Status XPanoramiXGetScreenSize (
 }
 
 
-/* new api for xinerama */
+/* Sun-created api for xinerama
+   Mostly deprecated in favor of X.Org standard libXinerama API. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 Bool XineramaGetState(Display * display, int screen_number)
 {
@@ -439,7 +440,8 @@ Status XineramaGetInfo(Display * display, int screen_number, XRectangle *
 }
 
 Bool
-XGetXineramaInfo(Display *dpy ,int  screen_number,XID VirtualWID,XineramaInfo *info )
+XGetXineramaInfo(Display *dpy, int screen_number, XID VirtualWID,
+		 XineramaInfo *info)
 {
     xXineramaInfoReq 	*req;
     xXineramaInfoReply 	*rep;
@@ -456,21 +458,20 @@ XGetXineramaInfo(Display *dpy ,int  screen_number,XID VirtualWID,XineramaInfo *i
     req->xXineramaReqType = X_XineramaInfo;
     req->visual = VirtualWID;
 
-    if (!_XReply(dpy, (xReply *)rep, (sizeof(xXineramaInfoReply)-32) >> 2
-,
+    if (!_XReply(dpy, (xReply *)rep, (sizeof(xXineramaInfoReply)-32) >> 2,
         xFalse))
     {
         UnlockDisplay(dpy);
         SyncHandle();
         Xfree(rep);
-        return NULL;
+        return False;
     }
     info->wid = VirtualWID;
     memcpy(&info->subs[0],&rep->subs[0],(MAXSCREEN-1) * sizeof(SubWID));
     UnlockDisplay(dpy);
     SyncHandle();
     free(rep);
-    return 1;
+    return True;
 }
 
 Status XineramaGetCenterHint(Display* display, int screen_number,
@@ -496,7 +497,7 @@ Status XineramaGetCenterHint(Display* display, int screen_number,
    xiGetState = XineramaGetState(display, screen_number);
    xiGetInfo = XineramaGetInfo(display, screen_number, rects, hints, &fbs);
 
-   if (xrdb = XrmGetDatabase(display))
+   if ((xrdb = XrmGetDatabase(display)) != NULL)
    {
       if (XrmGetResource(xrdb, "xineramaDefaultFramebuffer",
 		"XineramaDefaultFramebuffer", &vtype, &value))
@@ -592,6 +593,8 @@ Status XineramaGetCenterHint(Display* display, int screen_number,
    }
    return 1;
 }
+
+#pragma GCC diagnostic pop
 
 /**** Code taken from xc/lib/Xinerama/Xinerama.c in Xorg for compatibility with
       XFree86 & Xorg Xinerama 1.1 protocol ****/
