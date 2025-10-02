@@ -25,22 +25,22 @@ make sense.
 
 Need to evaluate for submission upstream.
 
---- a/src/Display.c	2022-11-07 19:09:53.543560261 -0800
-+++ b/src/Display.c	2022-11-07 19:11:41.337732726 -0800
-@@ -346,12 +346,16 @@
+--- libXt-1.3.1/src/Display.c
++++ libXt-1.3.1/src/Display.c
+@@ -346,12 +346,16 @@ Display *dpy;
      /*
       * Save away argv and argc so we can set the properties later
       */
 -    saved_argv = XtMallocArray((Cardinal) *argc_in_out + 1,
 -                               (Cardinal) sizeof(_XtString));
 +    if (*argv_in_out != NULL) {
-+       saved_argv = (String *)
-+               __XtMalloc( (Cardinal)((*argc_in_out + 1) * sizeof(String)) );
++       saved_argv = XtMallocArray((Cardinal) *argc_in_out + 1,
++                                  (Cardinal) sizeof(_XtString));
  
 -    for (i = 0; i < *argc_in_out; i++)
 -        saved_argv[i] = (*argv_in_out)[i];
 -    saved_argv[i] = NULL;       /* NULL terminate that sucker. */
-+    for (i = 0 ; i < *argc_in_out ; i++)
++       for (i = 0; i < *argc_in_out; i++)
 +               saved_argv[i] = (*argv_in_out)[i];
 +       saved_argv[i] = NULL;   /* NULL terminate that sucker. */
 +    } else {

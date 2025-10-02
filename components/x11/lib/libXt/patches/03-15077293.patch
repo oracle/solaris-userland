@@ -44,9 +44,9 @@ Note that the change could have been done more simply if _XtTableAddConverter()
 were not already an exported interface, because it could then simply have been
 enhanced without the creation of TableAddConverter().
 
---- a/include/X11/Intrinsic.h	2022-11-07 12:17:01.624802131 -0800
-+++ b/include/X11/Intrinsic.h	2022-11-07 12:26:00.376664222 -0800
-@@ -134,6 +134,7 @@
+--- libXt-1.3.1/include/X11/Intrinsic.h
++++ libXt-1.3.1/include/X11/Intrinsic.h
+@@ -138,6 +138,7 @@ #define			XtCacheNone	  0x001
  #define			XtCacheAll	  0x002
  #define			XtCacheByDisplay  0x003
  #define			XtCacheRefCount	  0x100
@@ -54,7 +54,7 @@ enhanced without the creation of TableAddConverter().
  
  /****************************************************************
   *
-@@ -256,6 +257,8 @@
+@@ -265,6 +266,8 @@ XrmValue*		/* args */,
      Cardinal*		/* num_args */
  );
  
@@ -63,7 +63,7 @@ enhanced without the creation of TableAddConverter().
  typedef Opaque XtCacheRef;
  
  typedef Opaque XtActionHookId;
-@@ -659,6 +662,17 @@
+@@ -668,6 +671,17 @@ XtCacheType 	/* cache_type */,
      XtDestructor 	/* destructor */
  );
  
@@ -81,9 +81,9 @@ enhanced without the creation of TableAddConverter().
  extern void XtAppSetTypeConverter(
      XtAppContext 	/* app_context */,
      _Xconst _XtString 	/* from_type */,
---- a/src/Convert.c	2022-11-08 17:05:15.492789475 -0800
-+++ b/src/Convert.c	2022-11-08 17:25:27.254721387 -0800
-@@ -88,6 +88,7 @@
+--- libXt-1.3.1/src/Convert.c
++++ libXt-1.3.1/src/Convert.c
+@@ -88,6 +88,7 @@ ConverterPtr next;
      XrmRepresentation from, to;
      XtTypeConverter converter;
      XtDestructor destructor;
@@ -91,7 +91,7 @@ enhanced without the creation of TableAddConverter().
      unsigned short num_args;
      unsigned int do_ref_count:1;
      unsigned int new_style:1;
-@@ -100,6 +101,20 @@
+@@ -100,6 +101,20 @@ #define ConvertArgs(p) ((XtConvertArgLis
  /* used for old-style type converter cache only */
  static Heap globalHeap = { NULL, NULL, 0 };
  
@@ -112,7 +112,7 @@ enhanced without the creation of TableAddConverter().
  void
  _XtSetDefaultConverterTable(ConverterTable *table)
  {
-@@ -119,13 +134,11 @@
+@@ -119,13 +134,11 @@ XtCacheType cache_type;
  
          for (i = CONVERTHASHSIZE; --i >= 0;) {
              for (rec = *globalConverterTable++; rec; rec = rec->next) {
@@ -129,22 +129,18 @@ enhanced without the creation of TableAddConverter().
              }
          }
      }
-@@ -158,10 +171,14 @@
+@@ -158,6 +171,10 @@ CachePtr next;
      XtPointer tag;
      int hash;
      XtTypeConverter converter;
 +    XtDestructor destructor;
 +    XtReplicator replicator;
 +    XtPointer closure;
++    unsigned int ref_count;
      unsigned short num_args;
      unsigned int conversion_succeeded:1;
      unsigned int has_ext:1;
-     unsigned int is_refcounted:1;
-+    unsigned int ref_count;
-     unsigned int must_be_freed:1;
-     unsigned int from_is_value:1;
-     unsigned int to_is_value:1;
-@@ -169,16 +186,8 @@
+@@ -169,15 +186,7 @@ XrmValue from;
      XrmValue to;
  } CacheRec;
  
@@ -154,25 +150,17 @@ enhanced without the creation of TableAddConverter().
 -    XtPointer closure;
 -    long ref_count;
 -} CacheRecExt;
-+#define CARGS(p) (XrmValue *)((p)+(ptrdiff_t)1)
- 
+-
 -#define CEXT(p) ((CacheRecExt *)((p)+1))
 -#define CARGS(p) ((p)->has_ext ? (XrmValue *)(CEXT(p)+1) : (XrmValue *)((p)+1))
--
++#define CARGS(p) (XrmValue *)((p)+(ptrdiff_t)1)
+ 
  #define CACHEHASHSIZE   256
  #define CACHEHASHMASK   255
- typedef CachePtr CacheHashTable[CACHEHASHSIZE];
-@@ -197,29 +206,51 @@
+@@ -197,6 +206,23 @@ XtCacheType cache_type,
                       XtDestructor destructor,
                       _XtBoolean global)
  {
--    register ConverterPtr *pp;
--    register ConverterPtr p;
-+    unsigned short     cache_flags;
-+
-+    cache_flags = cache_type & (XtCacheNone | XtCacheAll |
-+                               XtCacheByDisplay | XtCacheRefCount);
-+
 +    TableAddConverter(table, from_type, to_type, converter, convert_args, num_args,
 +                       new_style, cache_type, destructor, 0, global);
 +}
@@ -190,57 +178,28 @@ enhanced without the creation of TableAddConverter().
 +    XtReplicator        replicator,
 +    _XtBoolean          global)
 +{
-+    register ConverterPtr       *pp;
-+    register ConverterPtr       p;
+     register ConverterPtr *pp;
+     register ConverterPtr p;
      XtConvertArgList args;
- 
--    pp = &table[ProcHash(from_type, to_type) & CONVERTHASHMASK];
-+    pp= &table[ProcHash(from_type, to_type) & CONVERTHASHMASK];
-     while ((p = *pp) && (p->from != from_type || p->to != to_type))
-         pp = &p->next;
- 
-     if (p) {
-         *pp = p->next;
--        XtFree((char *) p);
-+        XtFree((char *)p);
-     }
- 
--    p = (ConverterPtr) __XtMalloc((Cardinal) (sizeof(ConverterRec) +
--                                              sizeof(XtConvertArgRec) *
--                                              num_args));
--    p->next = *pp;
-+    p = (ConverterPtr) __XtMalloc(sizeof(ConverterRec) +
-+                                sizeof(XtConvertArgRec) * num_args);
-+    p->next         = *pp;
-     *pp = p;
--    p->from = from_type;
--    p->to = to_type;
--    p->converter = converter;
--    p->destructor = destructor;
--    p->num_args = (unsigned short) num_args;
-+    p->from         = from_type;
-+    p->to           = to_type;
-+    p->converter    = converter;
-+    p->destructor   = destructor;
+@@ -219,6 +245,7 @@ p->from = from_type;
+     p->to = to_type;
+     p->converter = converter;
+     p->destructor = destructor;
 +    p->replicator   = replicator;
-+    p->num_args     = (unsigned short) num_args;
+     p->num_args = (unsigned short) num_args;
      XtSetBit(p->global, global);
  
-     args = ConvertArgs(p);
-@@ -228,23 +259,22 @@
-     XtSetBit(p->new_style, new_style);
+@@ -229,8 +256,7 @@ *args++ = *convert_args++;
      p->do_ref_count = False;
      if (destructor || (cache_type & 0xff)) {
--        p->cache_type = (char) (cache_type & 0xff);
+         p->cache_type = (char) (cache_type & 0xff);
 -        if (cache_type & XtCacheRefCount)
 -            p->do_ref_count = True;
--    }
--    else {
-+        p->cache_type = cache_type & 0xff;
 +        p->do_ref_count = cache_type & 0xff00;
-+    } else {
-         p->cache_type = XtCacheNone;
      }
+     else {
+         p->cache_type = XtCacheNone;
+@@ -238,13 +264,14 @@ }
  }
  
  void
@@ -253,11 +212,11 @@ enhanced without the creation of TableAddConverter().
                     XtCacheType cache_type,
 -                   XtDestructor destructor)
 +                   XtDestructor destructor,
-+		   XtReplicator replicator)
++                   XtReplicator replicator)
  {
      ProcessContext process;
      XtAppContext app;
-@@ -261,18 +291,37 @@
+@@ -261,18 +288,37 @@ if (!process->globalConverterTable) {
          process->globalConverterTable = (ConverterTable)
              __XtCalloc(CONVERTHASHSIZE, (unsigned) sizeof(ConverterPtr));
      }
@@ -301,7 +260,7 @@ enhanced without the creation of TableAddConverter().
  void
  XtAppSetTypeConverter(XtAppContext app,
                        register _Xconst char *from_type,
-@@ -357,6 +406,7 @@
+@@ -357,6 +403,7 @@ register int hash,
             Boolean do_ref,
             Boolean do_free,
             XtDestructor destructor,
@@ -309,7 +268,7 @@ enhanced without the creation of TableAddConverter().
             XtPointer closure)
  {
      register CachePtr *pHashEntry;
-@@ -365,23 +415,9 @@
+@@ -365,36 +412,23 @@ register CachePtr p;
      LOCK_PROCESS;
      pHashEntry = &cacheHashTable[hash & CACHEHASHMASK];
  
@@ -336,7 +295,6 @@ enhanced without the creation of TableAddConverter().
      if (!to->addr)
          succeeded = False;
      XtSetBit(p->conversion_succeeded, succeeded);
-@@ -388,13 +424,14 @@
      XtSetBit(p->is_refcounted, do_ref);
      XtSetBit(p->must_be_freed, do_free);
      p->next = *pHashEntry;
@@ -353,7 +311,7 @@ enhanced without the creation of TableAddConverter().
      p->from.size = from->size;
      if (from->size <= sizeof(p->from.addr)) {
          p->from_is_value = True;
-@@ -487,17 +543,17 @@
+@@ -487,17 +544,17 @@ _XtCacheFlushTag(XtAppContext app, XtPoi
  {
      int i;
      register CachePtr rec;
@@ -377,7 +335,7 @@ enhanced without the creation of TableAddConverter().
      }
      UNLOCK_PROCESS;
  }
-@@ -706,7 +762,7 @@
+@@ -702,7 +759,7 @@ * or app context from which to compute t
      {
          CacheEnter(&globalHeap, (XtTypeConverter) converter, args, num_args,
                     from, to, (to->addr != NULL), hash, False, False,
@@ -386,7 +344,7 @@ enhanced without the creation of TableAddConverter().
      }
      UNLOCK_PROCESS;
  }
-@@ -743,6 +799,7 @@
+@@ -739,6 +796,7 @@ {
      CachePtr p;
      int hash;
      Boolean retval;
@@ -394,7 +352,7 @@ enhanced without the creation of TableAddConverter().
  
      if (!cP || ((cP->cache_type == XtCacheNone) && !cP->destructor)) {
          XtPointer closure;
-@@ -799,14 +856,18 @@
+@@ -791,14 +849,18 @@ to->size = p->to.size;
                                  UNLOCK_PROCESS;
                                  return False;
                              }
@@ -418,7 +376,7 @@ enhanced without the creation of TableAddConverter().
                          }
                          else {  /* old-style call */
                              to->size = p->to.size;
-@@ -817,7 +878,7 @@
+@@ -809,7 +871,7 @@ to->addr = p->to.addr;
                          }
                      }
                      if (p->is_refcounted) {
@@ -427,7 +385,7 @@ enhanced without the creation of TableAddConverter().
                          if (cache_ref_return)
                              *cache_ref_return = (XtCacheRef) p;
                          else
-@@ -840,7 +901,7 @@
+@@ -832,7 +894,7 @@ {
          Heap *heap;
          XtPointer closure = NULL;
          unsigned int supplied_size = to->size;
@@ -436,7 +394,7 @@ enhanced without the creation of TableAddConverter().
          Boolean do_free = False;
  
          retval =
-@@ -855,6 +916,8 @@
+@@ -847,6 +909,8 @@ UNLOCK_PROCESS;
              return False;
          }
  
@@ -445,7 +403,7 @@ enhanced without the creation of TableAddConverter().
          if ((cP->cache_type == XtCacheNone) || do_ref) {
              heap = NULL;
              do_free = True;
-@@ -866,8 +929,12 @@
+@@ -858,8 +922,12 @@ heap = &globalHeap;
          else
              heap = &XtDisplayToApplicationContext(dpy)->heap;
  
@@ -460,7 +418,7 @@ enhanced without the creation of TableAddConverter().
          if (do_ref)
              *cache_ref_return = (XtCacheRef) p;
          else if (cache_ref_return)
-@@ -1103,8 +1170,8 @@
+@@ -1095,8 +1163,8 @@ register CachePtr p;
      LOCK_APP(app);
      LOCK_PROCESS;
      for (r = (CachePtr *) refs; (p = *r); r++) {
@@ -471,9 +429,9 @@ enhanced without the creation of TableAddConverter().
          }
      }
      UNLOCK_PROCESS;
---- a/src/Convert.c	2024-08-23 17:09:07.282194470 -0700
-+++ b/src/Convert.c	2024-08-23 17:13:15.389361355 -0700
-@@ -458,48 +458,68 @@
+--- libXt-1.3.1/src/Convert.c
++++ libXt-1.3.1/src/Convert.c
+@@ -455,47 +455,67 @@ if (!succeeded) {
          p->to_is_value = False;
          p->to.addr = NULL;
      }
@@ -523,18 +481,7 @@ enhanced without the creation of TableAddConverter().
 -            Cardinal num_args = p->num_args;
 -            XrmValue *args = NULL;
 -            XrmValue toc;
-+    if (clean_table) {
-+        CachePtr cachep, *cachepp;
-+        cachepp = &cacheHashTable[p->hash & CACHEHASHMASK];
-+        while (cachep = *cachepp) {
-+            if (p == cachep) {
-+               *cachepp = cachep->next;
-+                break;
-+            }
-+           cachepp = &cachep->next;
-+        }
-+    }
- 
+-
 -            if (num_args)
 -                args = CARGS(p);
 -            toc.size = p->to.size;
@@ -544,6 +491,27 @@ enhanced without the creation of TableAddConverter().
 -                toc.addr = p->to.addr;
 -            (*CEXT(p)->destructor) (app, &toc, CEXT(p)->closure, args,
 -                                    &num_args);
+-        }
+-        *(CEXT(p)->prev) = p->next;
+-        if (p->next && p->next->has_ext)
+-            CEXT(p->next)->prev = CEXT(p)->prev;
+-    }
+-    else if (prev) {
+-        *prev = p->next;
+-        if (p->next && p->next->has_ext)
+-            CEXT(p->next)->prev = prev;
++    if (clean_table) {
++        CachePtr cachep, *cachepp;
++        cachepp = &cacheHashTable[p->hash & CACHEHASHMASK];
++        while ((cachep = *cachepp)) {
++            if (p == cachep) {
++               *cachepp = cachep->next;
++                break;
++            }
++           cachepp = &cachep->next;
++        }
++    }
++
 +    if (p->destructor) {
 +        Cardinal num_args=p->num_args;
 +        XrmValue *args=NULL;
@@ -552,10 +520,7 @@ enhanced without the creation of TableAddConverter().
 +        if (num_args) {
 +               args = CARGS(p);
 +
-         }
--        *(CEXT(p)->prev) = p->next;
--        if (p->next && p->next->has_ext)
--            CEXT(p->next)->prev = CEXT(p)->prev;
++        }
 +        toc.size = p->to.size;
 +        if (p->to_is_value) {
 +                toc.addr = (XPointer)&p->to.addr;
@@ -564,11 +529,5 @@ enhanced without the creation of TableAddConverter().
 +        }
 +       (*p->destructor)(app, &toc, p->closure, args, &num_args);
      }
--    else if (prev) {
--        *prev = p->next;
--        if (p->next && p->next->has_ext)
--            CEXT(p->next)->prev = prev;
--    }
      if (p->must_be_freed) {
          register int i;
- 

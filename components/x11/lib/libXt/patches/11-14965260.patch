@@ -13,9 +13,9 @@ argv before setting XtNargv resource.
 
 Need to evaluate for submission upstream.
 
---- a/src/Initialize.c	2022-11-07 19:18:10.104481416 -0800
-+++ b/src/Initialize.c	2022-11-07 19:18:57.904521930 -0800
-@@ -1025,11 +1025,15 @@
+--- libXt-1.3.1/src/Initialize.c
++++ libXt-1.3.1/src/Initialize.c
+@@ -972,10 +972,14 @@ argc_in_out, &argv_in_out, fallback_reso
      LOCK_APP(app_con);
      XtSetArg(args[num], XtNscreen, DefaultScreenOfDisplay(dpy));
      num++;
@@ -23,7 +23,7 @@ Need to evaluate for submission upstream.
 -    num++;
 -    XtSetArg(args[num], XtNargv, argv_in_out);
 -    num++;
- 
++
 +    /* only set argc and argv if argv_in_out[0] is not NULL */
 +    if (argv_in_out && argv_in_out[0]) {
 +       XtSetArg(args[num], XtNargc, saved_argc);
@@ -31,7 +31,6 @@ Need to evaluate for submission upstream.
 +       XtSetArg(args[num], XtNargv, argv_in_out);
 +       num++;
 +    }
-+
+ 
      merged_args = XtMergeArgLists(args_in, num_args_in, args, num);
      num += num_args_in;
- 

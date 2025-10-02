@@ -1,0 +1,38 @@
+This is the gcc replacement for the Studio flag
+        -xinline=no%_XtAppCreateShell,no%XtAppNextEvent,no%XtAppProcessEvent
+from the libXt component Makefile.
+
+This is here to fix bug 15508570, No Hands lib
+needs to interpose on these functions, and if they are inline
+then the loader can't find them.
+
+
+
+--- libXt-1.3.1/src/Create.c
++++ libXt-1.3.1/src/Create.c
+@@ -688,6 +688,7 @@ UNLOCK_APP(app);
+     return retval;
+ }
+ 
++__attribute__((noinline, noipa))
+ Widget
+ _XtAppCreateShell(String name,
+                   String class,
+--- libXt-1.3.1/src/NextEvent.c
++++ libXt-1.3.1/src/NextEvent.c
+@@ -1409,6 +1409,7 @@ (XtPointer) event);
+     UNLOCK_PROCESS;
+ }
+ 
++__attribute__((noinline, noipa))
+ void
+ XtAppNextEvent(XtAppContext app, XEvent *event)
+ {
+@@ -1460,6 +1461,7 @@ {
+     XtAppProcessEvent(_XtDefaultAppContext(), mask);
+ }
+ 
++__attribute__((noinline, noipa))
+ void
+ XtAppProcessEvent(XtAppContext app, XtInputMask mask)
+ {

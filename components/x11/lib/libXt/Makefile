@@ -24,6 +24,7 @@
 #
 
 BUILD_BITS =            64_and_32
+COMPILER=		gcc
 
 include ../../../../make-rules/shared-macros.mk
 
@@ -49,7 +50,7 @@ CPPFLAGS += -DGETVALUES_BUG -DNO_ALLOCA
 # the xinline option is here to fix bug 15508570, No Hands lib
 # needs to interpose on these functions, and if they are inline
 # then the loader can't find them.  It complains silently.
-CFLAGS += \
+CFLAGS.studio += \
         -xinline=no%_XtAppCreateShell,no%XtAppNextEvent,no%XtAppProcessEvent
 
 # Add tests

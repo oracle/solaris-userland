@@ -24,45 +24,53 @@ Oracle Bug 14974628 - SUNBT4185875 _XtwaitForSomething implemented incorrectly
 
 which added the missing "return" keywords.
 
---- a/src/Event.c	2022-11-07 19:12:33.474188705 -0800
-+++ b/src/Event.c	2022-11-07 19:13:39.893732706 -0800
-@@ -590,6 +590,14 @@
+--- libXt-1.3.1/src/Event.c
++++ libXt-1.3.1/src/Event.c
+@@ -593,6 +593,17 @@ UNLOCK_PROCESS;
      UNLOCK_APP(app);
  }
  
 +/* need this for backward compatability */
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wmissing-prototypes"
 +void _XtRegisterWindow(
 +    Window window,
 +    Widget widget)
 +{
 +    XtRegisterDrawable(XtDisplay(widget), (Drawable)window, widget);
 +}
++#pragma GCC diagnostic pop
 +
  void
  XtUnregisterDrawable(Display *display, Drawable drawable)
  {
-@@ -641,6 +649,14 @@
+@@ -644,6 +652,17 @@ UNLOCK_PROCESS;
      UNLOCK_APP(app);
  }
  
 +/* need this for backward compatability */
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wmissing-prototypes"
 +void _XtUnregisterWindow(
 +    register Window window,
 +    register Widget widget)
 +{
 +    XtUnregisterDrawable(XtDisplay(widget), (Drawable)window);
 +}
++#pragma GCC diagnostic pop
 +
  static void
  ExpandWWTable(register WWTable tab)
  {
---- a/src/NextEvent.c	2022-11-07 19:13:50.529610200 -0800
-+++ b/src/NextEvent.c	2022-11-07 19:14:35.844822484 -0800
-@@ -782,6 +782,33 @@
+--- libXt-1.3.1/src/NextEvent.c
++++ libXt-1.3.1/src/NextEvent.c
+@@ -780,6 +780,36 @@ (*ptr->te_proc) (ptr->te_closure, (XtInt
  #define SeCallProc(ptr) \
      (*ptr->se_proc) (ptr->se_closure, (XtSignalId*)&ptr);
  
-+#ifdef sun /*SUNSOFT */
++#ifdef __sun /*SUNSOFT */
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wmissing-prototypes"
 +int _XtwaitForSomething(
 +    _XtBoolean ignoreTimers,
 +    _XtBoolean ignoreInputs,
@@ -87,6 +95,7 @@ which added the missing "return" keywords.
 +#endif
 +
 +}
++#pragma GCC diagnostic pop
 +#endif /* SUNSOFT */
 +
  /*
