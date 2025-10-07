@@ -2,9 +2,9 @@ Make the library configuration universal for 32/64bits.
 
 Solaris specific. Not suitable for upstream.
 
---- libxml2-2.10.2/xml2-config.in
-+++ libxml2-2.10.2/xml2-config.in
-@@ -82,16 +82,7 @@
+--- libxml2-2.14.1/xml2-config.in
++++ libxml2-2.14.1/xml2-config.in
+@@ -82,16 +82,7 @@ echo @WITH_MODULES@
         	;;
  
      --libs)
@@ -12,10 +12,10 @@ Solaris specific. Not suitable for upstream.
 -            shift
 -            libs="@XML_LIBS@ @XML_PRIVATE_LIBS_NO_SHARED@"
 -        else
--            libs="@XML_LIBS@ @XML_PRIVATE_LIBS@ @MODULE_PLATFORM_LIBS@ @LIBS@"
+-            libs="@XML_LIBS@ @XML_PRIVATE_LIBS@ @LIBS@"
 -        fi
 -
--        if [ "@XML_LIBDIR@" != "-L/usr/lib" -a "@XML_LIBDIR@" != "-L/usr/lib64" ]; then
+-        if [ "@libdir@" != "/usr/lib" -a "@libdir@" != "/usr/lib64" ]; then
 -            libs="@XML_LIBDIR@ $libs"
 -        fi
 +        libs="@XML_LIBS@"

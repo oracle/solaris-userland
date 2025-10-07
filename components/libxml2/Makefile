@@ -29,14 +29,17 @@ include ../../make-rules/shared-macros.mk
 # This component does not fully specify dependencies of shared objects
 LD_SHARED_OPTIONS_Z_DEFS=
 
+MAJOR_VERSION=2.14
+MICRO_VERSION=6
+
 COMPONENT_NAME=		libxml2
-COMPONENT_VERSION=	2.13.8
-COMPONENT_BAID=		326785
+COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
+COMPONENT_BAID=		348648
 COMPONENT_PROJECT_URL=	http://xmlsoft.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:277294cb33119ab71b2bc81f2f445e9bc9435b893ad15bb2cd2b0e859a0ee84a
+    sha256:7ce458a0affeb83f0b55f1f4f9e0e55735dbfc1a9de124ee86fb4a66b597203a
 COMPONENT_ARCHIVE =     $(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
-COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/libxml2/2.13/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/libxml2/$(MAJOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libxml
 COMPONENT_ANITYA_ID=	1783
 
@@ -47,6 +50,7 @@ COMPONENT_ARCHIVE_HASH_1= \
 COMPONENT_ARCHIVE_URL_1= http://www.w3.org/XML/Test/$(COMPONENT_ARCHIVE_1)
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # xmlversion.h is generated into proto area.
@@ -59,13 +63,9 @@ CONFIGURE_OPTIONS += --disable-static
 # See comments in:
 # https://github.com/GNOME/libxml2/commit/865520f04830531fc0a610129202b645521e435f
 CONFIGURE_OPTIONS += --sysconfdir=/etc
-CONFIGURE_OPTIONS += --with-ftp
 CONFIGURE_OPTIONS += --with-legacy
-CONFIGURE_OPTIONS += --with-xptr-locs
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-threads
-# Cannot link to lzma since it's not in /lib and install media still has separate /usr.
-CONFIGURE_OPTIONS += --without-lzma
 
 PYTHON_VERSION = 3.11
 CONFIGURE_OPTIONS.32 += --without-python
@@ -75,8 +75,6 @@ COMPONENT_INSTALL_ARGS.64 += pythondir=$(PYTHON_VENDOR_PACKAGES)
 COMPONENT_INSTALL_ARGS.64 += pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 COMPONENT_BUILD_ARGS.64 += pythondir=$(PYTHON_VENDOR_PACKAGES)
 COMPONENT_BUILD_ARGS.64 += pyexecdir=$(PYTHON_VENDOR_PACKAGES)
-
-COMPONENT_PREP_ACTION += (cd $(@D) ; cp ../mapfile libxml2.syms ; autoreconf -if)
 
 # After we have configured, make a copy of the python bits so we can build and
 # test other python 3 versions.
@@ -95,16 +93,13 @@ COMPONENT_POST_TEST_ACTION.64 += \
 	LC_ALL=en_US.utf8  $(GMAKE) $(COMPONENT_TEST_ARGS) check ; ) ;
 
 COMPONENT_PRE_TEST_ACTION += \
-    (cd $(@D) ; gtar xf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1));
+    (cd $(SOURCE_DIR) ; gtar xf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1));
 
-COMPONENT_TEST_TRANSFORMS = \
+COMPONENT_TEST_TRANSFORMS += \
 	'-e "s/^make\[.*$$/[EnD]/" ' \
 	'-e "/^\#\# XML regression tests/,/^\[EnD\]/p" ' \
 	'-e "/^\#\# running Python regression tests/,/^\[EnD\]/p" ' \
         '-e "/.*/d" '
-
-COMPONENT_SYSTEM_TEST_TARGETS = system-test 
-COMPONENT_PRE_SYSTEM_TEST_ACTION += $(COMPONENT_PRE_TEST_ACTION)
 
 # After we have built/installed libxml2, build/install the python
 # support for other runtimes.
@@ -114,6 +109,18 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 	         pyexecdir=$(PYTHON.3.13.VENDOR_PACKAGES) \
 	         DESTDIR=$(PROTO_DIR) \
 	         install ;
+
+# Libraries need to be delivered in /lib for use during boot.
+COMPONENT_POST_INSTALL_ACTION.64 += \
+	$(MKDIR) $(PROTOLIBDIR) $(PROTOLIBDIR)/$(MACH64) ; \
+	$(MV) $(PROTOUSRLIBDIR)/libxml2.so* $(PROTOLIBDIR) ; \
+	$(MV) $(PROTOUSRLIBDIR64)/libxml2.so* $(PROTOLIBDIR)/$(MACH64) ;
+
+# For few builds we need to deliver original libxml2.so.2 to avoid cross
+# consolidation seeding.
+COMPONENT_POST_INSTALL_ACTION.64 += \
+	$(CP) $(LIBDIR)/libxml2.so.2 $(PROTOLIBDIR) ; \
+	$(CP) $(LIBDIR)/$(MACH64)/libxml2.so.2 $(PROTOLIBDIR)/$(MACH64) ;
 
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib

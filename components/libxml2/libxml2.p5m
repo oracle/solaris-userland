@@ -33,12 +33,16 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2009/630
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-link path=lib/$(MACH64)/libxml2.so target=libxml2.so.2
-file usr/lib/$(MACH64)/libxml2.so.2 path=lib/$(MACH64)/libxml2.so.2
+link path=lib/$(MACH64)/libxml2.so target=libxml2.so.16.0.6
+link path=lib/$(MACH64)/libxml2.so.16 target=libxml2.so.16.0.6
+file path=lib/$(MACH64)/libxml2.so.16.0.6
+file path=lib/$(MACH64)/libxml2.so.2
 link path=lib/$(MACH64)/llib-lxml2.ln \
     target=../../usr/lib/$(MACH64)/llib-lxml2.ln
-link path=lib/libxml2.so target=libxml2.so.2
-file usr/lib/libxml2.so.2 path=lib/libxml2.so.2
+link path=lib/libxml2.so target=libxml2.so.16.0.6
+link path=lib/libxml2.so.16 target=libxml2.so.16.0.6
+file path=lib/libxml2.so.16.0.6
+file path=lib/libxml2.so.2
 link path=lib/llib-lxml2.ln target=../usr/lib/llib-lxml2.ln
 # xml2-config contains embedded paths, so swap these around.
 file usr/bin/xml2-config path=usr/bin/$(MACH64)/xml2-config facet.devel=true
@@ -91,16 +95,18 @@ file path=usr/include/libxml2/libxml/xmlwriter.h
 file path=usr/include/libxml2/libxml/xpath.h
 file path=usr/include/libxml2/libxml/xpathInternals.h
 file path=usr/include/libxml2/libxml/xpointer.h
-link path=usr/lib/$(MACH64)/libxml2.so target=libxml2.so.2
+link path=usr/lib/$(MACH64)/libxml2.so target=../../../lib/$(MACH64)/libxml2.so
+link path=usr/lib/$(MACH64)/libxml2.so.16 \
+    target=../../../lib/$(MACH64)/libxml2.so.16
 link path=usr/lib/$(MACH64)/libxml2.so.2 \
     target=../../../lib/$(MACH64)/libxml2.so.2
 file path=usr/lib/$(MACH64)/llib-lxml2.ln
 file path=usr/lib/$(MACH64)/pkgconfig/libxml-2.0.pc
-link path=usr/lib/libxml2.so target=./libxml2.so.2
+link path=usr/lib/libxml2.so target=../../lib/libxml2.so
+link path=usr/lib/libxml2.so.16 target=../../lib/libxml2.so.16
 link path=usr/lib/libxml2.so.2 target=../../lib/libxml2.so.2
 file path=usr/lib/llib-lxml2.ln
 file path=usr/lib/pkgconfig/libxml-2.0.pc
-file path=usr/share/aclocal/libxml.m4
 file path=usr/share/man/man1/xml2-config.1 facet.devel=all
 file path=usr/share/man/man1/xmlcatalog.1
 file path=usr/share/man/man1/xmllint.1
