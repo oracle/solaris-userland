@@ -42,11 +42,9 @@ Another area besides the functions in Context.c are the functions in
 Xrm.c. A similar fix was added to them as well.
 
 
-diff --git a/src/Context.c b/src/Context.c
-index 8a07871..dd4df6b 100644
---- a/src/Context.c
-+++ b/src/Context.c
-@@ -190,6 +190,9 @@ int XSaveContext(
+--- libX11-1.8.12/src/Context.c
++++ libX11-1.8.12/src/Context.c
+@@ -191,6 +191,9 @@ Xfree(db);
  	    return XCNOMEM;
  	}
  	db->numentries = 0;
@@ -56,11 +54,9 @@ index 8a07871..dd4df6b 100644
  	_XCreateMutex(&db->linfo);
  #ifdef MOTIFBC
  	if (!display) *pdb = db; else
-diff --git a/src/Xrm.c b/src/Xrm.c
-index 36b71d6..b3283e6 100644
---- a/src/Xrm.c
-+++ b/src/Xrm.c
-@@ -497,6 +497,9 @@ static XrmDatabase NewDatabase(void)
+--- libX11-1.8.12/src/Xrm.c
++++ libX11-1.8.12/src/Xrm.c
+@@ -497,6 +497,9 @@ register XrmDatabase db;
  
      db = Xmalloc(sizeof(XrmHashBucketRec));
      if (db) {
@@ -70,11 +66,19 @@ index 36b71d6..b3283e6 100644
  	_XCreateMutex(&db->linfo);
  	db->table = (NTable)NULL;
  	db->mbstate = (XPointer)NULL;
-diff --git a/src/locking.c b/src/locking.c
-index e4e0444..eb875e3 100644
---- a/src/locking.c
-+++ b/src/locking.c
-@@ -104,6 +104,16 @@ static void _XLockMutex(
+--- libX11-1.8.12/src/locking.c
++++ libX11-1.8.12/src/locking.c
+@@ -61,6 +61,9 @@ #else
+ # define XTHREADS_FILE_LINE_ARGS /* None */
+ #endif
+ 
++#ifdef SUNSOFT
++static void _XCreateMutex(LockInfoPtr lip); /* Forward declaration */
++#endif /* SUNSOFT */
+ 
+ #define NUM_FREE_CVLS 4
+ 
+@@ -107,6 +110,15 @@ LockInfoPtr lip
      XTHREADS_FILE_LINE_ARGS
      )
  {
@@ -84,7 +88,6 @@ index e4e0444..eb875e3 100644
 +     * to XInitThreads after other Xlib calls (Sun bugs 1234757 & 4010755)
 +     */
 +    if (lip->lock == NULL) {
-+	static void _XCreateMutex(LockInfoPtr lip); /* Forward declaration */
 +	_XCreateMutex(lip);
 +    }
 +#endif /* SUNSOFT */

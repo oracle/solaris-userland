@@ -43,17 +43,17 @@
  *    End:   0xE3329A35 = 0x10FFFF
  */
 
+#ifndef __sun
 #include "gb18030ext.h"
+#endif
 #include "gb18030uni.h"
-
-#define sun
 
 static int
 gb18030_mbtowc (conv_t conv, ucs4_t *pwc, const unsigned char *s, int n)
 {
   int ret;
 
-#ifdef sun
+#ifdef __sun
   int v = (s[0] << 8 | s[1]);
   unsigned char buf[4];
 
@@ -128,7 +128,7 @@ gb18030_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
 {
   int ret;
 
-#ifndef sun
+#ifndef __sun
   /* Code set 0 (ASCII) */
   ret = ascii_wctomb(conv,r,wc,n);
   if (ret != RET_ILUNI)
@@ -147,7 +147,7 @@ gb18030_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
   /* Code set 2 (remainder of Unicode U+0000..U+FFFF) */
   ret = gb18030uni_wctomb(conv,r,wc,n);
   if (ret != RET_ILSEQ)
-#ifdef sun
+#ifdef __sun
     {
 	int v = 12600 * (r[0] - 0x81) + 1260 * (r[1] - 0x30) + 10 * (r[2] - 0x81) + (r[3] - 0x30);
 
@@ -158,7 +158,7 @@ gb18030_wctomb (conv_t conv, unsigned char *r, ucs4_t wc, int n)
 #endif
     return ret;
 
-#ifndef sun
+#ifndef __sun
   /* Code set 3 (Unicode U+10000..U+10FFFF) */
   if (n >= 4) {
     if (wc >= 0x10000 && wc < 0x110000) {

@@ -34,10 +34,10 @@ For Example, in order for XIL 1.3 to be MT HOT, it must be able to
 make the call to XInitThreads, even if the client has already made
 other Xlib calls.
 
---- libX11-1.7.2/include/X11/Xlibint.h
-+++ libX11-1.7.2/include/X11/Xlibint.h
-@@ -209,6 +209,10 @@ XIOErrorExitHandler exit_handler;
- 	void *exit_handler_data;
+--- libX11-1.8.12/include/X11/Xlibint.h
++++ libX11-1.8.12/include/X11/Xlibint.h
+@@ -217,6 +217,10 @@ xthread_t ifevent_thread;
+ #endif
  };
  
 +#if defined(XTHREADS) && defined(SUNSOFT)
@@ -47,8 +47,8 @@ other Xlib calls.
  #define XAllocIDs(dpy,ids,n) (*(dpy)->idlist_alloc)(dpy,ids,n)
  
  /*
---- libX11-1.7.2/src/OpenDis.c
-+++ libX11-1.7.2/src/OpenDis.c
+--- libX11-1.8.12/src/OpenDis.c
++++ libX11-1.8.12/src/OpenDis.c
 @@ -38,6 +38,21 @@ #ifdef XKB
  #include "XKBlib.h"
  #endif /* XKB */
@@ -71,7 +71,7 @@ other Xlib calls.
  #ifdef XTHREADS
  #include "locking.h"
  int  (*_XInitDisplayLock_fn)(Display *dpy) = NULL;
-@@ -211,6 +226,13 @@ OutOfMemory (dpy);
+@@ -212,6 +227,13 @@ OutOfMemory (dpy);
  		return(NULL);
  	}
  
@@ -80,23 +80,23 @@ other Xlib calls.
 +                OutOfMemory (dpy);
 +                return(NULL);
 +        }
-+#endif XTHREADS
++#endif /* XTHREADS */
 +
  	if (!_XPollfdCacheInit(dpy)) {
  	        OutOfMemory (dpy);
  		return(NULL);
-@@ -579,6 +601,10 @@ */
+@@ -584,6 +606,10 @@ */
  
  void _XFreeDisplayStructure(Display *dpy)
  {
 +#ifdef XTHREADS
 +        RemoveFromDisplayLink(dpy);
-+#endif XTHREADS
++#endif /* XTHREADS */
 +
  	/* move all cookies in the EQ to the jar, then free them. */
  	if (dpy->qfree) {
  	    _XQEvent *qelt = dpy->qfree;
-@@ -699,6 +725,103 @@ _XFreeX11XCBStructure(dpy);
+@@ -704,6 +730,102 @@ _XFreeX11XCBStructure(dpy);
  	Xfree (dpy);
  }
  
@@ -179,7 +179,6 @@ other Xlib calls.
 +InitDisplayArrayLock(void)
 +{
 +    DisplayPtrLink *tmp_display  = HeadDisplay;
-+    DisplayPtrLink *prev_display = HeadDisplay;
 +
 +    while ( tmp_display ) {
 +        if ((tmp_display->dpy) && (!tmp_display->dpy->lock)) {
@@ -200,9 +199,9 @@ other Xlib calls.
  /* OutOfMemory is called if malloc fails.  XOpenDisplay returns NULL
     after this returns. */
  
---- libX11-1.7.2/src/locking.c
-+++ libX11-1.7.2/src/locking.c
-@@ -640,6 +640,11 @@ setlinebuf(stdout);		/* for debugging me
+--- libX11-1.8.12/src/locking.c
++++ libX11-1.8.12/src/locking.c
+@@ -648,6 +648,11 @@ setlinebuf(stdout);		/* for debugging me
  #endif
  #endif
  

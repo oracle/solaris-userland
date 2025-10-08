@@ -1,0 +1,71 @@
+Submitted and accepted upstream:
+https://gitlab.freedesktop.org/xorg/lib/libx11/-/merge_requests/290
+
+Resolves warnings from gcc 15 in 32-bit builds on Solaris of:
+../../src/config.h:306:9: warning: "_FILE_OFFSET_BITS" redefined
+  306 | #define _FILE_OFFSET_BITS 64
+      |         ^~~~~~~~~~~~~~~~~
+In file included from /usr/include/sys/int_types.h:31,
+                 from /usr/include/sys/stdint.h:14,
+                 from /usr/include/stdint.h:14,
+                 from /usr/gcc/14/lib/gcc/x86_64-pc-solaris2.11/14.2.0/include/stdint.h:9,
+                 from /builds/alanc/x11-gcc/components/x11/lib/libX11/libX11-1.8.12/include/X11/Xlibint.h:41,
+                 from /builds/alanc/x11-gcc/components/x11/lib/libX11/libX11-1.8.12/src/xkb/XKBSetGeom.c:34:
+/usr/gcc/14/lib/gcc/x86_64-pc-solaris2.11/14.2.0/include-fixed/sys/feature_tests.h:243:9: note: this is the location of the previous definition
+  243 | #define _FILE_OFFSET_BITS       32
+      |         ^~~~~~~~~~~~~~~~~
+
+From 98c3ab0ed370e5eb612b43809f301638676c3aa6 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 23 Sep 2025 15:14:34 -0700
+Subject: [PATCH libX11] xkb: fix include of config.h and drop unused DEBUG
+ check
+
+I can find nowhere in the source history where there was DEBUG code
+that needed to include <stdio.h>, but the include of config.h should
+never have been inside the DEBUG ifdef.
+
+Fixes: 7eee605e ("Conditionally include config.h in Xlib source")
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ src/xkb/XKBGeom.c    | 3 ---
+ src/xkb/XKBSetGeom.c | 3 ---
+ 2 files changed, 6 deletions(-)
+
+diff --git a/src/xkb/XKBGeom.c b/src/xkb/XKBGeom.c
+index ab3bbc7c..8b008e6a 100644
+--- a/src/xkb/XKBGeom.c
++++ b/src/xkb/XKBGeom.c
+@@ -24,12 +24,9 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ 
+ ********************************************************/
+ 
+-#ifdef DEBUG
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+ #endif
+-#include <stdio.h>
+-#endif
+ 
+ #define NEED_MAP_READERS
+ #include "Xlibint.h"
+diff --git a/src/xkb/XKBSetGeom.c b/src/xkb/XKBSetGeom.c
+index 2400c9d0..bc02f922 100644
+--- a/src/xkb/XKBSetGeom.c
++++ b/src/xkb/XKBSetGeom.c
+@@ -24,12 +24,9 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ 
+ ********************************************************/
+ 
+-#ifdef DEBUG
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+ #endif
+-#include <stdio.h>
+-#endif
+ 
+ #include "Xlibint.h"
+ #include "XKBlibint.h"
+-- 
+2.50.1
+

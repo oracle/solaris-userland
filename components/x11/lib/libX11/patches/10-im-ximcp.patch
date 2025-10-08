@@ -21,11 +21,9 @@
 # DEALINGS IN THE SOFTWARE.
 #
 
-diff --git a/modules/im/ximcp/imThaiFlt.c b/modules/im/ximcp/imThaiFlt.c
-index f134e84..898fc1f 100644
---- a/modules/im/ximcp/imThaiFlt.c
-+++ b/modules/im/ximcp/imThaiFlt.c
-@@ -76,6 +76,12 @@ SOFTWARE.
+--- libX11-1.8.12/modules/im/ximcp/imThaiFlt.c
++++ libX11-1.8.12/modules/im/ximcp/imThaiFlt.c
+@@ -76,6 +76,12 @@ #include "Ximint.h"
  #include "XimThai.h"
  #include "XlcPubI.h"
  
@@ -38,7 +36,7 @@ index f134e84..898fc1f 100644
  
  #define SPACE   32
  
-@@ -516,6 +522,47 @@ static Bool ThaiComposeConvert(
+@@ -516,6 +522,48 @@ ((c)<=0x7F) ? \
       (wchar_t)(c) : \
       ((0x0A1<=(c)) ? ((wchar_t)(c)-0xA0+0x0E00) : 0))
  
@@ -72,6 +70,7 @@ index f134e84..898fc1f 100644
 +        CodeSet GR_codeset = XLC_GENERIC(lcd, initial_state_GR);
 +        if ( 0<=*ch && *ch<=0x7F ) {
 +            *pwc=(wchar_t)*ch;
++            return 1;
 +        } else {
 +            if (0xA1<=*ch) {
 +                *pwc = (wchar_t)*ch&wc_mask|GR_codeset->wc_encoding;
@@ -86,7 +85,7 @@ index f134e84..898fc1f 100644
  /*
   * Macros to save and recall last input character in XIC
   */
-@@ -1210,6 +1257,42 @@ static void InitIscMode(Xic ic)
+@@ -1208,6 +1256,42 @@ IC_IscMode(ic) = WTT_ISC1;
      return;
  }
  
@@ -129,7 +128,7 @@ index f134e84..898fc1f 100644
  /*
   * Helper functions for _XimThaiFilter()
   */
-@@ -1217,8 +1300,20 @@ static Bool
+@@ -1215,8 +1299,20 @@ static Bool
  ThaiFltAcceptInput(Xic ic, unsigned char new_char, KeySym symbol)
  {
      DefTreeBase *b = &ic->private.local.base;
@@ -150,7 +149,7 @@ index f134e84..898fc1f 100644
  
      if ((new_char <= 0x1f) || (new_char == 0x7f))
          b->tree[ic->private.local.composed].keysym = symbol;
-@@ -1233,9 +1328,23 @@ ThaiFltReorderInput(Xic ic, unsigned char previous_char, unsigned char new_char)
+@@ -1231,9 +1327,23 @@ ThaiFltReorderInput(Xic ic, unsigned cha
  {
      DefTreeBase *b = &ic->private.local.base;
      if (!IC_DeletePreviousChar(ic)) return False;
@@ -174,7 +173,7 @@ index f134e84..898fc1f 100644
  
      b->tree[ic->private.local.composed].keysym = NoSymbol;
  
-@@ -1247,8 +1356,20 @@ ThaiFltReplaceInput(Xic ic, unsigned char new_char, KeySym symbol)
+@@ -1245,8 +1355,20 @@ ThaiFltReplaceInput(Xic ic, unsigned cha
  {
      DefTreeBase *b = &ic->private.local.base;
      if (!IC_DeletePreviousChar(ic)) return False;
@@ -195,7 +194,7 @@ index f134e84..898fc1f 100644
  
      if ((new_char <= 0x1f) || (new_char == 0x7f))
          b->tree[ic->private.local.composed].keysym = symbol;
-@@ -1374,7 +1495,15 @@ _XimThaiFilter(Display *d, Window w, XEvent *ev, XPointer client_data)
+@@ -1372,7 +1494,15 @@ *  Thai Input sequence check
       */
      isc_mode = IC_IscMode(ic);
      if (!(previous_char = IC_GetPreviousChar(ic))) previous_char = ' ';

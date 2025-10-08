@@ -23,7 +23,8 @@
 # Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64_and_32
+BUILD_BITS =		64_and_32
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libX11
