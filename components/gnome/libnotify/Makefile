@@ -30,14 +30,14 @@ include ../../../make-rules/shared-macros.mk
 BUILD_STYLE=            meson
 
 COMPONENT_NAME=		libnotify
-COMPONENT_VERSION=	0.8.3
+COMPONENT_VERSION=	0.8.6
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libnotify/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:ee8f3ef946156ad3406fdf45feedbdcd932dbd211ab4f16f75eba4f36fb2f6c0
+	sha256:c5540aaefb60e1d63b1c587c05f2284ebe72ece7d0c0e5e4a778cfd5844b6b58
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13149
 
-COMPONENT_BAID=		152515
+COMPONENT_BAID=		349306
 
 # Tests do not work on Solaris yet
 TEST_TARGET= $(SKIP_TEST)
