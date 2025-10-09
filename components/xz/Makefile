@@ -20,27 +20,22 @@
 #
 
 #
-# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xz
-COMPONENT_VERSION=	5.2.5
-COMPONENT_BAID=		121288
+COMPONENT_VERSION=	5.8.1
+COMPONENT_BAID=		348932
 COMPONENT_PROJECT_URL=	https://tukaani.org/xz/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f6f4910fd033078738bd82bfba4f49219d03b17eb0794eb91efbae419f4aba10
+    sha256:507825b599356c10dca1cd720c9d0d0c9d5400b9de300af00e4d1ea150795543
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	5277
 
-# The .1 refers to version 5.2.5-1 to distinguish between community version
-# and this package, which contain fix for CVE-2022-1271.
-IPS_COMPONENT_VERSION=	5.2.5.1
-HUMAN_VERSION=		$(COMPONENT_VERSION)-1
-
-SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_TEST_DIR =		$(@D)/tests
@@ -56,16 +51,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|^.*source=.*libtool=no.*$$|XXX_CC_XXX|g" ' \
 	'-e "s|^.*DEPDIR=.deps.*$$|XXX_CC_XXX|g" ' \
 	'-e "/^XXX_CC_XXX$$/d" '
-
-# Needed to build the test programs.
-COMPONENT_PRE_SYSTEM_TEST_ACTION += \
-	(cd $(@D)/src/liblzma ; $(GMAKE) liblzma.la )
-
-COMPONENT_SYSTEM_TEST_DIR =	$(@D)/tests
-COMPONENT_SYSTEM_TEST_ENV +=	XZ_SCRIPT=$(USRBINDIR)/xz
-COMPONENT_SYSTEM_TEST_ENV +=	XZDEC_SCRIPT=$(USRBINDIR)/xzdec
-COMPONENT_SYSTEM_TEST_ENV +=	XZDIFF_SCRIPT=$(USRBINDIR)/xzdiff
-COMPONENT_SYSTEM_TEST_ENV +=	XZGREP_SCRIPT=$(USRBINDIR)/xzgrep
 
 include $(WS_MAKE_RULES)/shared-targets.mk
 

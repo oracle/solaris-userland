@@ -1,26 +1,58 @@
 make[1]: Entering directory '$(@D)/tests'
-/usr/gnu/bin/make  create_compress_files test_check test_stream_flags test_filter_flags test_block_header test_index test_bcj_exact_size
+/usr/gnu/bin/make  create_compress_files test_check test_hardware test_stream_flags test_filter_flags test_filter_str test_block_header test_index test_index_hash test_bcj_exact_size test_memlimit test_lzip_decoder test_vli test_microlzma
 make[2]: Entering directory '$(@D)/tests'
+mv -f .deps/create_compress_files.Tpo .deps/create_compress_files.Po
+mv -f .deps/test_check.Tpo .deps/test_check.Po
+mv -f .deps/test_hardware.Tpo .deps/test_hardware.Po
+mv -f .deps/test_stream_flags.Tpo .deps/test_stream_flags.Po
+mv -f .deps/test_filter_flags.Tpo .deps/test_filter_flags.Po
+mv -f .deps/test_filter_str.Tpo .deps/test_filter_str.Po
+mv -f .deps/test_block_header.Tpo .deps/test_block_header.Po
+mv -f .deps/test_index.Tpo .deps/test_index.Po
+mv -f .deps/test_index_hash.Tpo .deps/test_index_hash.Po
+$(SOURCE_DIR)/tests/test_bcj_exact_size.c: In function 'test_exact_size':
+$(SOURCE_DIR)/tests/test_bcj_exact_size.c:30:32: warning: initializer-string for array of 'unsigned char' truncates NUL terminator but destination lacks 'nonstring' attribute (17 chars into 16 available) [-Wunterminated-string-initialization]
+   30 |         const uint8_t in[16] = "0123456789ABCDEF";
+      |                                ^~~~~~~~~~~~~~~~~~
+mv -f .deps/test_bcj_exact_size.Tpo .deps/test_bcj_exact_size.Po
+mv -f .deps/test_memlimit.Tpo .deps/test_memlimit.Po
+mv -f .deps/test_lzip_decoder.Tpo .deps/test_lzip_decoder.Po
+mv -f .deps/test_vli.Tpo .deps/test_vli.Po
+mv -f .deps/test_microlzma.Tpo .deps/test_microlzma.Po
 make[2]: Leaving directory '$(@D)/tests'
 /usr/gnu/bin/make  check-TESTS
 make[2]: Entering directory '$(@D)/tests'
+make[3]: Entering directory '$(@D)/tests'
 PASS: test_check
+PASS: test_hardware
 PASS: test_stream_flags
 PASS: test_filter_flags
+PASS: test_filter_str
 PASS: test_block_header
 PASS: test_index
+PASS: test_index_hash
 PASS: test_bcj_exact_size
+PASS: test_memlimit
+PASS: test_lzip_decoder
+PASS: test_vli
 PASS: test_files.sh
-test_compress.sh:
-  generated_abc.............
-  generated_random.............
-  generated_text.............
-  prepared_bcj_sparc.............
-  prepared_bcj_x86.............
-PASS: test_compress.sh
+PASS: test_suffix.sh
+PASS: test_compress_generated_abc
+PASS: test_compress_generated_random
+PASS: test_compress_generated_text
+PASS: test_microlzma
 PASS: test_scripts.sh
-==================
-All 9 tests passed
-==================
+============================================================================
+Testsuite summary for XZ Utils 5.8.1
+============================================================================
+# TOTAL: 19
+# PASS:  19
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+make[3]: Leaving directory '$(@D)/tests'
 make[2]: Leaving directory '$(@D)/tests'
 make[1]: Leaving directory '$(@D)/tests'
