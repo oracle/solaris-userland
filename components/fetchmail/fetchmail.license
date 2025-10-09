@@ -6,23 +6,28 @@ Copyright (C) 2002, 2003 Eric S. Raymond
 Copyright (C) 2004 Matthias Andree, Eric S. Raymond,
                    Robert M. Funk, Graham Wilson
 Copyright (C) 2005 - 2012 Sunil Shetye
-Copyright (C) 2005 - 2024 Matthias Andree
+Copyright (C) 2005 - 2025 Matthias Andree
 
 Some older portions not explicitly mentioned above are copyrighted by
 Carl E. Harris, George M. Sipe, Graham Wilson, Matthias Andree and Sunil Shetye.
 
 
 SSL library considerations
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 |Linking fetchmail statically or dynamically with other modules is making
 |a combined work based on fetchmail. Thus, the terms and conditions
 |of the GNU General Public License cover the whole combination.
 |
 |In addition, as a special exception, the copyright holders of fetchmail
-|give you permission to combine fetchmail with free software programs or 
-|libraries that are released with code included in the standard release of 
+|give you permission to combine fetchmail with free software programs or
+|libraries that are released with code included in the standard release of
 |OpenSSL under the OpenSSL or SSLeay license (or modified versions of such
 |code, with unchanged license).
+
+Note that this applied to OpenSSL 1.x.y and older only.
+OpenSSL 3.n.m is no longer distributed under that license,
+but under Apache License 2.0.
+
 |
 |You may copy and distribute such a system following the terms of the GNU GPL
 |for fetchmail and the licenses of the other code concerned,
@@ -37,25 +42,29 @@ SSL library considerations
 |
 |In short:
 Specific permission is granted for the GPLed code in this distribution to
-be linked to OpenSSL without invoking GPL clause 2(b).
+be linked to OpenSSL/SSLeay-licensed parts of OpenSSL without invoking GPL
+clause 2(b).
+  Note that this permission practically applies only to EOL versions of
+OpenSSL 1.x, and OpenSSL only, and does not apply to Apache 2.0 Licensed
+distributions of OpenSSL 3.y.
 
-Note that this permission applies to OpenSSL, and OpenSSL only.
+If linking against OpenSSL versions licensed under the Apache License version
+2.0 (for instance, OpenSSL 3.x), note that this library is considered as
+incompatible with the GPLv2 by the FSF, a stance respected by the Apache
+Software Foundation, so that effectively, distributors need to use the "or any
+later version" grant in the GPLv2 and apply the GPLv3 which is considered
+compatible with the Apache License 2.0 by the FSF and the ASF.
 
 The Free Software Foundation asserts that a GPL v2 clause 2b exception is
 required even for dynamically linked binaries. See
 https://www.gnu.org/licenses/gpl-faq.en.html#GPLStaticVsDynamic
 
 
-If linking against OpenSSL versions licensed under the Apache License version
-2.0 (for instance, OpenSSL 3.0.x), note that this library is incompatible with
-the GPLv2, so that effectively, distributors need to use the "or any later version"
-grant in the GPLv2 and apply the GPLv3 which is considered compatible with the
-Apache License 2.0 by the FSF and the ASF.
-
-
-Fetchmail can be linked against wolfSSL,
-which is under GNU General Public License v2, or optionally, any later version.
-~~~~~~~~~~~~~~~~~~~~~~~~
+Fetchmail can be linked against wolfSSL, which is under GNU General Public
+License v3 (as of 5.8.2), or optionally, any later version.  Be sure to check
+the license of your version of wolfSSL to see what license version the combined 
+work of fetchmail and wolfSSL version can be distributed under.
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The support for SMB authentication is copyright by Andrew Tridgell and
 is under GPL version 2 (or any later version).  Andrew Tridgell has
@@ -85,15 +94,22 @@ All other code in the distribution incorporates the copy of GPL version 2
 below by reference.
 
 -------------------------------------------------------------------------------
-		    GNU GENERAL PUBLIC LICENSE
-		       Version 2, June 1991
+A copy of the GPL version 3 is shipped in a separate file, gpl-3.0.txt because
+while most of the fetchmail components are under GPLv2-or-later license
+as described above, many SSL-enabled distributions will have to use GPLv3.
 
- Copyright (C) 1989, 1991 Free Software Foundation, Inc.
-                          675 Mass Ave, Cambridge, MA 02139, USA
+Below is a copy of the GPL version 2 as downloaded from the FSF on 2025-09-06
+from <https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt>
+-------------------------------------------------------------------------------
+                    GNU GENERAL PUBLIC LICENSE
+                       Version 2, June 1991
+
+ Copyright (C) 1989, 1991 Free Software Foundation, Inc.,
+ <https://fsf.org/>
  Everyone is permitted to copy and distribute verbatim copies
  of this license document, but changing it is not allowed.
 
-			    Preamble
+                            Preamble
 
   The licenses for most software are designed to take away your
 freedom to share and change it.  By contrast, the GNU General Public
@@ -102,7 +118,7 @@ software--to make sure the software is free for all its users.  This
 General Public License applies to most of the Free Software
 Foundation's software and to any other program whose authors commit to
 using it.  (Some other Free Software Foundation software is covered by
-the GNU Library General Public License instead.)  You can apply it to
+the GNU Lesser General Public License instead.)  You can apply it to
 your programs, too.
 
   When we speak of free software, we are referring to freedom, not
@@ -142,8 +158,8 @@ patent must be licensed for everyone's free use or not licensed at all.
 
   The precise terms and conditions for copying, distribution and
 modification follow.
-
-		    GNU GENERAL PUBLIC LICENSE
+
+                    GNU GENERAL PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
   0. This License applies to any program or other work which contains
@@ -197,7 +213,7 @@ above, provided that you also meet all of these conditions:
     License.  (Exception: if the Program itself is interactive but
     does not normally print such an announcement, your work based on
     the Program is not required to print an announcement.)
-
+
 These requirements apply to the modified work as a whole.  If
 identifiable sections of that work are not derived from the Program,
 and can be reasonably considered independent and separate works in
@@ -255,7 +271,7 @@ access to copy from a designated place, then offering equivalent
 access to copy the source code from the same place counts as
 distribution of the source code, even though third parties are not
 compelled to copy the source along with the object code.
-
+
   4. You may not copy, modify, sublicense, or distribute the Program
 except as expressly provided under this License.  Any attempt
 otherwise to copy, modify, sublicense or distribute the Program is
@@ -312,7 +328,7 @@ impose that choice.
 
 This section is intended to make thoroughly clear what is believed to
 be a consequence of the rest of this License.
-
+
   8. If the distribution and/or use of the Program is restricted in
 certain countries either by patents or by copyrighted interfaces, the
 original copyright holder who places the Program under this License
@@ -342,7 +358,7 @@ make exceptions for this.  Our decision will be guided by the two goals
 of preserving the free status of all derivatives of our free software and
 of promoting the sharing and reuse of software generally.
 
-			    NO WARRANTY
+                            NO WARRANTY
 
   11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
 FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
@@ -363,6 +379,66 @@ TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
 YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
 PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGES.
+
+                     END OF TERMS AND CONDITIONS
+
+            How to Apply These Terms to Your New Programs
+
+  If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these terms.
+
+  To do so, attach the following notices to the program.  It is safest
+to attach them to the start of each source file to most effectively
+convey the exclusion of warranty; and each file should have at least
+the "copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, see <https://www.gnu.org/licenses/>.
+
+Also add information on how to contact you by electronic and paper mail.
+
+If the program is interactive, make it output a short notice like this
+when it starts in an interactive mode:
+
+    Gnomovision version 69, Copyright (C) year name of author
+    Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions; type `show c' for details.
+
+The hypothetical commands `show w' and `show c' should show the appropriate
+parts of the General Public License.  Of course, the commands you use may
+be called something other than `show w' and `show c'; they could even be
+mouse-clicks or menu items--whatever suits your program.
+
+You should also get your employer (if you work as a programmer) or your
+school, if any, to sign a "copyright disclaimer" for the program, if
+necessary.  Here is a sample; alter the names:
+
+  Yoyodyne, Inc., hereby disclaims all copyright interest in the program
+  `Gnomovision' (which makes passes at compilers) written by James Hacker.
+
+  <signature of Moe Ghoul>, 1 April 1989
+  Moe Ghoul, President of Vice
+
+This General Public License does not permit incorporating your program into
+proprietary programs.  If your program is a subroutine library, you may
+consider it more useful to permit linking proprietary applications with the
+library.  If this is what you want to do, use the GNU Lesser General
+Public License instead of this License.
 -------------------------------------------------------------------------------
 
 
@@ -470,6 +546,18 @@ contrib/PopDel.py
  author: Richard Harris (rover@emptydog.com)
  The author releases this file under the GPL
  license. See COPYING for specifics.
+
+## Files:
+dist-tools/git-commit-po-updates.sh
+
+dist-tools/git-commit-po-updates.sh
+A helper script to commit translation updates into Git.
+Assumes translation updates are visible to git,
+and one directory above.
+
+© Copyright 2019 - 2020 by Matthias Andree.
+Licensed under the GNU General Public License V2 or,
+at your choice, any later version.
 
 
 ## Files:
@@ -689,11 +777,11 @@ Keith Bowes <zooplah@gmail.com>, 2020, 2021, 2023–2024.
 po/es.po
 
 Fetchmail Spanish Translation
-Copyright (C) 2022, 2023, 2024 Eric S. Raymond (msgids)
+Copyright (C) 2022, 2023, 2024, 2025 Eric S. Raymond (msgids)
 This file is distributed under the same license as the fetchmail package.
 Javier Kohen <jkohen@users.sourceforge.net>, 1999.
 Francisco Molinero <paco@byasl.com>, 2009.
-Cristian Othón Martínez Vera <cfuga@cfuga.mx>, 2022, 2023, 2024.
+Cristian Othón Martínez Vera <cfuga@cfuga.mx>, 2022, 2023, 2024, 2025.
 
 
 ## Files:
@@ -717,7 +805,7 @@ Japanese messages for fetchmail.
 Copyright (C) 2005-2013 Eric S. Raymond
 Copyright (C) 2020 Free Software Foundation, Inc.
 This file is distributed under the same license as the fetchmail package.
-Takeshi Hamasaki <hmatrjp@users.sourceforge.jp>, 2005-2013, 2019, 2020, 2021, 2022, 2023, 2024.
+Takeshi Hamasaki <Takeshi.Ken.Hamasaki+hmatrjp@gmail.com>, 2005-2013, 2019, 2020, 2021, 2022, 2023, 2024, 2025.
   based on the work by Jumpei Baba <jbaba@wb3.so-net.ne.jp>, 2002
 
 
@@ -1064,12 +1152,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ## Files:
 smtp.c
 
-smtp.c -- code for speaking SMTP to a listener port
+\file smtp.c -- code for speaking SMTP, ESMTP or LMTP to a listener port
 
 Concept due to Harry Hochheiser.  Implementation by ESR.  Cleanup and
 strict RFC821 compliance by Cameron MacPherson.
 
-Copyright 1997 Eric S. Raymond, 2009 - 2019 Matthias Andree
+Copyright 1997 Eric S. Raymond, 2009 - 2025 Matthias Andree
 Contribution 2004 by Phil Endecott (by way of Rob Funk)
 Contributions 2005, 2011 by Sunil Shetye
 Contributions 2012, 2021 by Earl Chew
