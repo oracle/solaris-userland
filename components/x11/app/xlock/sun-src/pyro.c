@@ -15,7 +15,7 @@
  */
 
 /*
- * Copyright (c) 1991, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1991, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -262,7 +262,7 @@ ignite(pyrostruct *pp)
     x = random() % pp->width;
     xvel = FLOATRAND(-pp->maxvelx, pp->maxvelx);
 /* All this to stop too many rockets going offscreen: */
-    if (x < pp->lmargin && xvel < 0.0 || x > pp->rmargin && xvel > 0.0)
+    if ((x < pp->lmargin && xvel < 0.0) || (x > pp->rmargin && xvel > 0.0))
 	xvel = -xvel;
     yvel = FLOATRAND(pp->minvely, pp->maxvely);
     fuse = INTRAND(MINFUSE, MAXFUSE);

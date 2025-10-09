@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1988, 2020, Oracle and/or its affiliates.
+ * Copyright (c) 1988, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -1100,7 +1100,7 @@ lockDisplay(void)
 
 	XGrabHosts(dsp);
 
-	sigprocmask(SIG_SETMASK, &oldsigmask, &oldsigmask);
+	sigprocmask(SIG_SETMASK, &oldsigmask, NULL);
     }
 #ifdef	sun
     seteuid(0);
