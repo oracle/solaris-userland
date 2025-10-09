@@ -11,8 +11,23 @@ Updated to include changes to ensure xkb directory & files are writable
 by gid 0, to fix bug:
 6916317 Changing xkb settings after login not working on snv130
 
---- a/xkb/Makefile.am	2022-11-11 13:30:56.504613368 -0800
-+++ b/xkb/Makefile.am	2022-11-11 13:31:15.238255954 -0800
+--- xorg-server-21.1.18/os/xstrans.c
++++ xorg-server-21.1.18/os/xstrans.c
+@@ -15,3 +15,12 @@ #define TRANS_REOPEN
+ #define TRANS_SERVER
+ #define XSERV_t
+ #include <X11/Xtrans/transport.c>
++
++#ifdef SUNSOFT
++/* Allow xkb/ddxLoad.c to call the static function defined in transport.c */
++_X_HIDDEN int
++Xorg_mkdir(const char *path, int mode)
++{
++    return trans_mkdir(path, mode);
++}
++#endif
+--- xorg-server-21.1.18/xkb/Makefile.am
++++ xorg-server-21.1.18/xkb/Makefile.am
 @@ -1,6 +1,7 @@
  noinst_LTLIBRARIES = libxkb.la libxkbstubs.la
  
@@ -21,19 +36,17 @@ by gid 0, to fix bug:
  
  DDX_SRCS = \
          ddxBeep.c \
---- a/xkb/ddxLoad.c	2022-11-11 13:31:04.354186328 -0800
-+++ b/xkb/ddxLoad.c	2022-11-11 13:56:58.069006921 -0800
-@@ -56,6 +56,18 @@
+--- xorg-server-21.1.18/xkb/ddxLoad.c
++++ xorg-server-21.1.18/xkb/ddxLoad.c
+@@ -56,6 +56,16 @@ #else
  #define PATHSEPARATOR "/"
  #endif
  
 +#ifdef MAKE_XKM_OUTPUT_DIR
-+/* Borrow trans_mkdir from Xtransutil.c to more safely make directories */
-+# undef X11_t
-+# define TRANS_SERVER
-+# define prmsg(lvl,...) \
-+        if (lvl <= 1) { LogMessage(X_ERROR, __VA_ARGS__); } else ((void)0)
-+# include <X11/Xtrans/Xtransutil.c>
++#include <errno.h>
++/* Wrapper around trans_mkdir() from Xtransutil.c
++   to more safely make directories */
++_X_HIDDEN int Xorg_mkdir(const char *path, int mode);
 +# ifndef XKM_OUTPUT_DIR_MODE
 +#  define XKM_OUTPUT_DIR_MODE 0775
 +# endif
@@ -42,12 +55,14 @@ by gid 0, to fix bug:
  static unsigned
  LoadXKM(unsigned want, unsigned need, const char *keymap, XkbDescPtr *xkbRtrn);
  
-@@ -67,8 +79,12 @@
+@@ -67,8 +77,14 @@ const char *pathsep = "";
      int r = -1;
  
  #ifndef WIN32
 +#ifdef MAKE_XKM_OUTPUT_DIR
-+    if (geteuid() == 0 && trans_mkdir(XKM_OUTPUT_DIR, XKM_OUTPUT_DIR_MODE) == 0 && (strlen(XKM_OUTPUT_DIR) < size)) {
++    if ((geteuid() == 0) &&
++        (Xorg_mkdir(XKM_OUTPUT_DIR, XKM_OUTPUT_DIR_MODE) == 0) &&
++        (strlen(XKM_OUTPUT_DIR) < size)) {
 +#else
      /* Can we write an xkm and then open it too? */
      if (access(XKM_OUTPUT_DIR, W_OK | X_OK) == 0) {
@@ -55,7 +70,7 @@ by gid 0, to fix bug:
          directory = XKM_OUTPUT_DIR;
          if (XKM_OUTPUT_DIR[strlen(XKM_OUTPUT_DIR) - 1] != '/')
              pathsep = "/";
-@@ -115,6 +131,15 @@
+@@ -115,6 +129,15 @@ #else
      const char *xkmfile = "-";
  #endif
  
@@ -71,7 +86,7 @@ by gid 0, to fix bug:
      snprintf(keymap, sizeof(keymap), "server-%s", display);
  
      OutputDirectory(xkm_output_dir, sizeof(xkm_output_dir));
-@@ -166,6 +191,11 @@
+@@ -166,6 +189,11 @@ #else
      out = fopen(tmpname, "w");
  #endif
  
