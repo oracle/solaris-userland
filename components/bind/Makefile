@@ -97,6 +97,8 @@ include $(WS_MAKE_RULES)/common.mk
 #
 # Optional Features
 #
+# Enable Internationalized Domain Names
+CONFIGURE_OPTIONS +=   --with-libidn2
 # We have no need of static libraries.
 CONFIGURE_OPTIONS +=	--disable-static
 # use pthread rwlock instead of internal rwlock implementation
@@ -223,11 +225,13 @@ COMPONENT_TEST_ENV +=	\
 COMPONENT_TEST_CMD =	/usr/bin/bash  $(COMPONENT_DIR)/Solaris/testing.sh
 COMPONENT_TEST_ARGS =	-k -d $(BUILD_DIR)/test/config
 COMPONENT_TEST_ARGS +=	-p $(PROTO_DIR)
+COMPONENT_TEST_ARGS +=	-I
 
 COMPONENT_SYSTEM_TEST_TARGETS =
 COMPONENT_SYSTEM_TEST_CMD =	$(COMPONENT_TEST_CMD)
 COMPONENT_SYSTEM_TEST_ARGS =	-d /tmp/BIND/test/config
 COMPONENT_SYSTEM_TEST_ARGS +=	-p /
+COMPONENT_SYSTEM_TEST_ARGS +=	-I
 
 COMPONENT_TEST_TRANSFORMS +=	\
 	'-e "s|/tmp/BIND|\\$$(BUILD_DIR)|g" '
@@ -298,6 +302,7 @@ REQUIRED_PACKAGES += library/libcmocka
 # configure` output log.
 REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libedit
+REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/liburcu
 REQUIRED_PACKAGES += library/libuv
 REQUIRED_PACKAGES += library/libxml2

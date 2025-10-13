@@ -96,9 +96,107 @@ jack.sub.example.com.	172800	IN	CNAME	manny.sub.example.com.
 manny.sub.example.com.	172800	IN	A	192.168.7.11
 manny.sub.example.com.	172800	IN	TXT	"Manny has alias of jack."
 mo.bar.example.com.	172800	IN	A	192.168.5.17
+xn--casa-8oa.example.com. 172800 IN	A	192.168.20.2
+xn--mnchen-3ya.example.com. 172800 IN	A	192.168.20.1
 xxx.example.com.	172800	IN	A	192.168.0.1
 xxx.example.com.	172800	IN	TXT	"text for xxx.example.com"
 RESULT: 0: Request zone transfer (axfr)
+=====================================================================
+TEST: IDN test 1/4: dig +idn casaè.example.com.
+RUNNING: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t A +idn casaè.example.com.
+
+; <<>> DiG $(COMPONENT_VERSION) <<>> @0 -p 5353 -t A +idn casaè.example.com.
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: REDACTED
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+; COOKIE: REDACTED (good)
+;; QUESTION SECTION:
+;casaè.example.com.		IN	A
+
+;; ANSWER SECTION:
+casaè.example.com.	172800	IN	A	192.168.20.2
+
+;; SERVER: 0.0.0.0#5353(0) (UDP)
+;; MSG SIZE  rcvd: REDACTED
+
+RESULT: 0: IDN test 1/4: dig +idn casaè.example.com.
+=====================================================================
+TEST: IDN test 2/4: dig münchen.example.com.
+RUNNING: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t A münchen.example.com.
+
+; <<>> DiG $(COMPONENT_VERSION) <<>> @0 -p 5353 -t A münchen.example.com.
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: REDACTED
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+; COOKIE: REDACTED (good)
+;; QUESTION SECTION:
+;xn--mnchen-3ya.example.com.	IN	A
+
+;; ANSWER SECTION:
+xn--mnchen-3ya.example.com. 172800 IN	A	192.168.20.1
+
+;; SERVER: 0.0.0.0#5353(0) (UDP)
+;; MSG SIZE  rcvd: REDACTED
+
+RESULT: 0: IDN test 2/4: dig münchen.example.com.
+=====================================================================
+TEST: IDN test 3/4: dig +idn xn--casa-8oa.example.com.
+RUNNING: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t A +idn xn--casa-8oa.example.com.
+
+; <<>> DiG $(COMPONENT_VERSION) <<>> @0 -p 5353 -t A +idn xn--casa-8oa.example.com.
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: REDACTED
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+; COOKIE: REDACTED (good)
+;; QUESTION SECTION:
+;casaè.example.com.		IN	A
+
+;; ANSWER SECTION:
+casaè.example.com.	172800	IN	A	192.168.20.2
+
+;; SERVER: 0.0.0.0#5353(0) (UDP)
+;; MSG SIZE  rcvd: REDACTED
+
+RESULT: 0: IDN test 3/4: dig +idn xn--casa-8oa.example.com.
+=====================================================================
+TEST: IDN test 4/4: dig xn--mnchen-3ya.example.com.
+RUNNING: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t A xn--mnchen-3ya.example.com.
+
+; <<>> DiG $(COMPONENT_VERSION) <<>> @0 -p 5353 -t A xn--mnchen-3ya.example.com.
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: REDACTED
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+; COOKIE: REDACTED (good)
+;; QUESTION SECTION:
+;xn--mnchen-3ya.example.com.	IN	A
+
+;; ANSWER SECTION:
+xn--mnchen-3ya.example.com. 172800 IN	A	192.168.20.1
+
+;; SERVER: 0.0.0.0#5353(0) (UDP)
+;; MSG SIZE  rcvd: REDACTED
+
+RESULT: 0: IDN test 4/4: dig xn--mnchen-3ya.example.com.
 =====================================================================
 TEST: looking up host known to have DNAME
 RUNNING: $(PROTO_DIR)/usr/bin/dig @0 -p 5353 -t a jack.dname.example.com.

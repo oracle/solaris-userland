@@ -24,6 +24,7 @@ Optional options:
     -b bind-port    Port named will listen on for requests. [$bind_port_d]
     -k              Run keygen test on various ciphers.
     -r rndc_port    Port named will listen on for control [$rndc_port_d]
+    -I              Include Internationalized Domain Name test
     -X              Debug
     -?              Display this usage
 "
@@ -108,13 +109,14 @@ rm=/usr/bin/rm
 sort=/usr/bin/sort
 
 # Read command line arguments.
-while getopts :b:d:kp:r:r:X opt; do
+while getopts :b:d:kp:r:r:IX opt; do
     case $opt in
 	(b) bind_port=$OPTARG;;
 	(d) directory=$OPTARG;;
 	(k) opt_k=$opt;;
 	(p) PROTO=$OPTARG;;
 	(r) rndc_port=$OPTARG;;
+	(I) idn_test=$opt;;
 	(X) set -xT;;
 	(?) usage; exit 0;;
     esac
@@ -306,6 +308,17 @@ dname.example.com.		IN      DNAME   sub.example.com.
 
 " > ${directory:+$directory/}example.com.zone
 
+if [[ -n $idn_test ]]; then
+    # Punycode names created using python thus:
+    # python3 -c 'print("casaè".encode("idna").decode("utf8"))'
+    # python3 -c 'print("münchen".encode("idna").decode("utf8"))'
+    echo "
+; IDN testing
+xn--mnchen-3ya		IN	A	192.168.20.1
+xn--casa-8oa		IN	A	192.168.20.2
+" >> ${directory:+$directory/}example.com.zone
+fi
+
 t "Verifying initial named.conf file."
 run ${checkconf} -z ${named_conf} || ret=$?
 if [[ $ret -ne 0 ]]; then
@@ -393,6 +406,29 @@ if tmp=$($mktemp); then
     $rm $tmp
 else
     e "$mktemp failed! tests skipped! $?"
+fi
+
+# Internationalized Domain Names test.
+if [[ -n $idn_test ]]; then
+    if [[ -n $LC_ALL ]]; then
+	# shared-macros.mk sets LC_ALL=C which env(1) passes through.
+	# If left that way then test 1 and 2 here fail.  So set it to
+	# C.UTF8 as seen in prep-unpack.mk, and these tests work.
+	saved_lc=$LC_ALL
+	LC_ALL="C.UTF-8"
+    fi
+    t "IDN test 1/4: dig +idn casaè.example.com."
+    run ${dig} @0 -p ${bind_port} -t A +idn "casaè.example.com."
+    # An example without +idn option.
+    t "IDN test 2/4: dig münchen.example.com."
+    run ${dig} @0 -p ${bind_port} -t A münchen.example.com.
+    t "IDN test 3/4: dig +idn xn--casa-8oa.example.com."
+    run ${dig} @0 -p ${bind_port} -t A +idn xn--casa-8oa.example.com.
+    t "IDN test 4/4: dig xn--mnchen-3ya.example.com."
+    run ${dig} @0 -p ${bind_port} -t A xn--mnchen-3ya.example.com.
+    if [[ -n $saved_lc ]]; then
+	LC_ALL=$saved_lc
+    fi
 fi
 
 t "looking up host known to have DNAME"
