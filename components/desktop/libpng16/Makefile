@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -28,16 +28,16 @@ BUILD_BITS = 		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libpng
-COMPONENT_VERSION=	1.6.40
+COMPONENT_VERSION=	1.6.50
 COMPONENT_PROJECT_URL=	http://www.libpng.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8f720b363aa08683c9bf2a563236f45313af2c55d542b5481ae17dd8d183bb42
+    sha256:708f4398f996325819936d447f982e0db90b6b8212b7507e7672ea232210949a
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/libpng/files/libpng16/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libpng
 COMPONENT_ANITYA_ID=	15294
 
-COMPONENT_BAID=		146943
+COMPONENT_BAID=		336664
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 include $(WS_MAKE_RULES)/common.mk
