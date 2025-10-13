@@ -30,12 +30,12 @@ include ../../make-rules/shared-macros.mk
 # Component information, used for download and packaging.
 # -------------------------------------------------------
 COMPONENT_NAME=		libuv
-COMPONENT_VERSION=	1.50.0
+COMPONENT_VERSION=	1.51.0
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-v$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	library/libuv
-COMPONENT_BAID=		321128
+COMPONENT_BAID=		350708
 COMPONENT_PROJECT_URL=	https://libuv.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=	\
@@ -43,7 +43,7 @@ COMPONENT_ARCHIVE_URL=	\
 # For check_anitya target, https://release-monitoring.org/project/10784
 COMPONENT_ANITYA_ID=	10784
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:6dc2b39aa7fa66c04e2e015bf47738b84e1c6b86b8987d57dd432d149d77ee25
+	sha256:5f0557b90b1106de71951a3c3931de5e0430d78da1d9a10287ebc7a3f78ef8eb
 
 include $(WS_MAKE_RULES)/common.mk
 
