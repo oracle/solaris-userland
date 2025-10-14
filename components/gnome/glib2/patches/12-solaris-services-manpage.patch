@@ -2,91 +2,40 @@ Local patch to add pointers to our SMF services into upstream man pages.
 
 Not appropriate for upstream, since it's specific to our SMF & IPS setup.
 
-diff --git a/docs/reference/gio/gio-querymodules.xml b/docs/reference/gio/gio-querymodules.xml
-index c9c5eec..d5ac0e9 100644
---- a/docs/reference/gio/gio-querymodules.xml
-+++ b/docs/reference/gio/gio-querymodules.xml
-@@ -41,5 +41,39 @@ all modules just to find out which extension points they are implementing.
- GIO modules are usually installed in the <filename>gio/modules</filename>
- subdirectory of libdir.
- </para>
-+<refsect2><title>SMF Management and IPS Packaging</title>
-+<para>In Oracle Solaris, the transient
-+<systemitem>gio-module-cache</systemitem> service
-+runs <command>gio-querymodules</command>
-+when necessary to update the <filename>giomodule.cache</filename> file with
-+information about the installed GIO extension modules.  An example of when the
-+<systemitem>gio-module-cache</systemitem> service runs is when a package that
-+specifies the
-+<systemitem>svc:/application/desktop-cache/gio-module-cache</systemitem>
-+service as the value of a <property>restart_fmri</property> attribute on is
-+being installed.  A package that installs a GIO extension module should have
-+such an attribute.  See the
-+<citerefentry>
-+        <refentrytitle>application/desktop-cache/gio-module-cache</refentrytitle>
-+        <manvolnum>8s</manvolnum>
-+</citerefentry>
-+man page for details about the
-+<systemitem>gio-module-cache</systemitem> service.  See the
-+<citerefentry>
-+        <refentrytitle>smf</refentrytitle>
-+        <manvolnum>7</manvolnum>
-+</citerefentry>
-+man page for information about the Oracle Solaris Service Management Facility.
-+</para>
-+</refsect2>
- </refsect1>
-+  <refsect1>
-+    <title>See also</title>
-+    <para>
-+      <citerefentry>
-+        <refentrytitle>application/desktop-cache/gio-module-cache</refentrytitle>
-+        <manvolnum>8s</manvolnum>
-+      </citerefentry>
-+    </para>
-+  </refsect1>
- </refentry>
-diff --git a/docs/reference/gio/glib-compile-schemas.xml b/docs/reference/gio/glib-compile-schemas.xml
-index 24b3bf5..f7f090d 100644
---- a/docs/reference/gio/glib-compile-schemas.xml
-+++ b/docs/reference/gio/glib-compile-schemas.xml
-@@ -114,5 +114,39 @@
- </varlistentry>
+--- a/docs/reference/gio/glib-compile-schemas.rst	2025-08-22 05:29:34.000000000 -0700
++++ b/docs/reference/gio/glib-compile-schemas.rst	2025-10-02 11:42:29.351804836 -0700
+@@ -50,6 +50,14 @@
+ override is made in a file numbered 10 and then again in a file numbered 20, the
+ override from 20 will take precedence).
  
- </variablelist>
-+<refsect2><title>SMF Management and IPS Packaging</title>
-+<para>In Oracle Solaris, the transient
-+<systemitem>glib-compile-schemas</systemitem> service
-+runs <command>glib-compile-schemas</command>
-+when necessary to update the <filename>gschemas.compiled</filename> file with
-+information about the installed GSettings XML schema and vendor override files.
-+An example of when the <systemitem>glib-compile-schemas</systemitem> service
-+runs is when a package that specifies the
-+<systemitem>svc:/application/desktop-cache/glib-compile-schemas</systemitem>
-+service as the value of a <property>restart_fmri</property> attribute on is
-+being installed.  A package that installs a GSettings schema XML file should
-+have such an attribute.  See the
-+<citerefentry>
-+        <refentrytitle>application/desktop-cache/glib-compile-schemas</refentrytitle>
-+        <manvolnum>8s</manvolnum>
-+</citerefentry>
-+man page for details about the <systemitem>glib-compile-schemas</systemitem>
-+service.  See the
-+<citerefentry>
-+        <refentrytitle>smf</refentrytitle>
-+        <manvolnum>7</manvolnum>
-+</citerefentry>
++In Oracle Solaris, the transient ``glib-compile-schemas`` service runs when
++necessary to update the ``gschemas.compiled`` file with information about the
++GSettings XML schema and vendor override files.  
++
++See the ``application/desktop-cache/glib-compile-schemas`` man page for
++details about the ``glib-compile-schemas`` service.  See the ``smf``
 +man page for information about the Oracle Solaris Service Management Facility.
-+</para>
-+</refsect2>
- </refsect1>
-+  <refsect1>
-+    <title>See also</title>
-+    <para>
-+      <citerefentry>
-+        <refentrytitle>application/desktop-cache/glib-compile-schemas</refentrytitle>
-+        <manvolnum>8s</manvolnum>
-+      </citerefentry>
-+    </para>
-+  </refsect1>
- </refentry>
++
+ OPTIONS
+ -------
+
+--- a/docs/reference/gio/gio-querymodules.rst	2025-10-08 13:47:07.063214745 -0700
++++ b/docs/reference/gio/gio-querymodules.rst	2025-10-08 13:51:53.581262070 -0700
+@@ -28,3 +28,17 @@
+ that has been found. It is used by GIO at runtime to avoid opening all modules
+ just to find out which extension points they are implementing.
+ 
++In Oracle Solaris, the transient ``gio-module-cache`` service runs 
++``gio-querymodules`` when necessary to update the ``giomodule.cache`` file
++with information about the installed GIO extension modules.  And example of 
++when the ``gio-module-cache`` service runs is when a package that specifies
++the ``svc:/application/desktop-cache/gio-module-cache`` service as the value
++of a ``restart_fmri`` attribute on is being installed.  A package that installs
++a GIO extension module should have such an attribute.
++ 
++See the ``application/desktop-cache/gio-module-cache`` man page for details
++about the ``gio-module-cache`` service.  See the ``smf`` man page for
++information about the Oracle Solaris Service Management Facility.
++
++GIO modules are usually installed in the ``gio/modules`` subdirectory of libdir.
++

@@ -7,9 +7,9 @@ penalty at startup.  Need to file upstream bug for that.
 
 --- a/gmodule/gmodule-dl.c	2019-09-25 15:16:54.477612239 -0700
 +++ b/gmodule/gmodule-dl.c	2019-09-25 15:18:01.146526372 -0700
-@@ -133,8 +133,17 @@
+@@ -135,8 +135,17 @@
    gpointer handle;
-   
+
    lock_dlerror ();
 +
 +#if defined(sun) && defined(__SVR4)
@@ -21,8 +21,9 @@ penalty at startup.  Need to file upstream bug for that.
 +#endif
 +
    handle = dlopen (file_name,
--		   (bind_local ? 0 : RTLD_GLOBAL) | (bind_lazy ? RTLD_LAZY : RTLD_NOW));
-+		   (bind_local ? 0 : RTLD_GLOBAL) | (bind_lazy ? RTLD_LAZY | RTLD_FIRST : RTLD_NOW));
+-                   (bind_local ? RTLD_LOCAL : RTLD_GLOBAL) | (bind_lazy ? RTLD_LAZY : RTLD_NOW));
++                   (bind_local ? RTLD_LOCAL : RTLD_GLOBAL) | (bind_lazy ? RTLD_LAZY | RTLD_FIRST : RTLD_NOW));
    if (!handle)
      {
        const gchar *message = fetch_dlerror (TRUE);
+

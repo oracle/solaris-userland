@@ -33,14 +33,14 @@ PYTHON3_SOABI =		bare
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gobject-introspection
-COMPONENT_VERSION=	1.78.1
+COMPONENT_VERSION=	1.84.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GObjectIntrospection
 COMPONENT_ARCHIVE_HASH= \
-    sha256:bd7babd99af7258e76819e45ba4a6bc399608fe762d83fde3cac033c50841bb4
+    sha256:945b57da7ec262e5c266b89e091d14be800cc424277d82a02872b7d794a84779
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1223
 
-COMPONENT_BAID=		326447
+COMPONENT_BAID=		342239
 BUILD_STYLE=		meson
 
 PYTHON_VERSION = 3.11

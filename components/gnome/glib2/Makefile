@@ -29,14 +29,14 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glib
-COMPONENT_VERSION=	2.78.6
+COMPONENT_VERSION=	2.85.4
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GLib/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:244854654dd82c7ebcb2f8e246156d2a05eb9cd1ad07ed7a779659b4602c9fae
+    sha256:432d84c8e44fe689ff70a5d88dab6d0f70d5efcf7460b965ac560dbac3c6c185
 COMPONENT_BUGDB=	gnome/glib
 COMPONENT_ANITYA_ID=	10024
 
-COMPONENT_BAID=		325889
+COMPONENT_BAID=		342340
 BUILD_STYLE=		meson
 
 # No need to build for older versions.
@@ -74,12 +74,18 @@ CONFIGURE_OPTIONS += -Dlibmount=disabled
 CONFIGURE_OPTIONS += -Dbsymbolic_functions=false
 CONFIGURE_OPTIONS += -Dman=true
 CONFIGURE_OPTIONS += -Dfam=true
+CONFIGURE_OPTIONS += -Dsysprof=disabled
 
 # Need to convert "#! /usr/bin/env python" to actual path for pkgdepend to work
 PYTHON_SCRIPTS += $(PROTO_DIR)$(CONFIGURE_BINDIR.$(BITS))/gtester-report
 PYTHON_SCRIPTS += $(PROTO_DIR)$(CONFIGURE_BINDIR.$(BITS))/gdbus-codegen
 PYTHON_SCRIPTS += $(PROTO_DIR)$(CONFIGURE_BINDIR.$(BITS))/glib-genmarshal
 PYTHON_SCRIPTS += $(PROTO_DIR)$(CONFIGURE_BINDIR.$(BITS))/glib-mkenums
+
+# Without this, there is an issue with patching gio-querymodules.rst
+COMPONENT_POST_UNPACK_ACTION += \
+        (cd $(COMPONENT_SRC)/docs/reference/gio/; \
+        sed '$a\' gio-querymodules.rst > gio-querymodules.rst.tmp && mv gio-querymodules.rst.tmp gio-querymodules.rst;)
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgio-2.0.3lib \
@@ -128,3 +134,4 @@ REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/dbus
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/math

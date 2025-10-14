@@ -1,0 +1,69 @@
+From b4717d098950aaa6beb84f237df919ac077e069d Mon Sep 17 00:00:00 2001
+From: Emmanuele Bassi <ebassi@gnome.org>
+Date: Wed, 10 Jul 2024 12:48:09 +0100
+Subject: [PATCH] Fix (closure) annotations
+
+The unary closure annotation is for callback types; the closure argument
+name is specified on the callback parameter of the function.
+---
+ json-glib/json-array.c  | 4 ++--
+ json-glib/json-object.c | 4 ++--
+ json-glib/json-types.h  | 4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/json-glib/json-array.c b/json-glib/json-array.c
+index ddc29d6..21003f7 100644
+--- a/json-glib/json-array.c
++++ b/json-glib/json-array.c
+@@ -708,8 +708,8 @@ json_array_remove_element (JsonArray *array,
+ /**
+  * json_array_foreach_element:
+  * @array: a JSON array
+- * @func: (scope call): the function to be called on each element
+- * @data: (closure): data to be passed to the function
++ * @func: (scope call) (closure data): the function to be called on each element
++ * @data: data to be passed to the function
+  *
+  * Iterates over all elements of an array, and calls a function on
+  * each one of them.
+diff --git a/json-glib/json-object.c b/json-glib/json-object.c
+index 8f664c3..2794c7a 100644
+--- a/json-glib/json-object.c
++++ b/json-glib/json-object.c
+@@ -939,8 +939,8 @@ json_object_remove_member (JsonObject  *object,
+ /**
+  * json_object_foreach_member:
+  * @object: a JSON object
+- * @func: (scope call): the function to be called on each member
+- * @data: (closure): data to be passed to the function
++ * @func: (scope call) (closure data): the function to be called on each member
++ * @data: data to be passed to the function
+  *
+  * Iterates over all members of @object and calls @func on
+  * each one of them.
+diff --git a/json-glib/json-types.h b/json-glib/json-types.h
+index b507845..f365ccc 100644
+--- a/json-glib/json-types.h
++++ b/json-glib/json-types.h
+@@ -122,7 +122,7 @@ typedef enum {
+  * @object: the iterated JSON object
+  * @member_name: the name of the member
+  * @member_node: the value of the member
+- * @user_data: data passed to the function
++ * @user_data: (closure): data passed to the function
+  *
+  * The function to be passed to [method@Json.Object.foreach_member].
+  *
+@@ -143,7 +143,7 @@ typedef void (* JsonObjectForeach) (JsonObject  *object,
+  * @array: the iterated JSON array
+  * @index_: the index of the element
+  * @element_node: the value of the element at the given @index_
+- * @user_data: data passed to the function
++ * @user_data: (closure): data passed to the function
+  *
+  * The function to be passed to [method@Json.Array.foreach_element].
+  *
+-- 
+GitLab
+
+

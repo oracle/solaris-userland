@@ -1,7 +1,11 @@
 PASS: basic-types/gassert.vala
 PASS: basic-types/integer-literals.vala
+PASS: basic-types/integer-negative-rank-incompatible.test
+PASS: basic-types/integer-negative-rank-incompatible2.test
+PASS: basic-types/integer-negative-rank-incompatible3.test
 PASS: basic-types/integers.vala
 PASS: basic-types/integers-boxed-cast.vala
+PASS: basic-types/integers-negative-rank.vala
 PASS: basic-types/escape-chars.vala
 PASS: basic-types/float-literals.vala
 PASS: basic-types/floats.vala
@@ -99,6 +103,7 @@ PASS: arrays/in-operator-with-boxed-needle.vala
 PASS: arrays/length-inline-assignment.vala
 PASS: arrays/length-type.vala
 PASS: arrays/length-type-include.vala
+PASS: arrays/length-type-no-integer.test
 PASS: arrays/length-no-int-type.test
 PASS: arrays/struct-field-length-cname.vala
 PASS: arrays/struct-field-initializer.vala
@@ -149,10 +154,13 @@ PASS: methods/ellipsis-preceding.test
 PASS: methods/extern.vala
 PASS: methods/iterator.vala
 PASS: methods/local-functions.vala
+PASS: methods/local-functions-to-delegate.vala
 PASS: methods/parameter-fixed-array-initializer.vala
 PASS: methods/parameter-out-free-on-error.vala
+PASS: methods/parameter-out-array-resize-null-terminated.vala
 PASS: methods/parameter-ref-array-resize.vala
 PASS: methods/parameter-ref-array-resize-captured.vala
+PASS: methods/parameter-ref-array-resize-null-terminated.vala
 PASS: methods/parameter-ref-delegate.vala
 PASS: methods/parameter-ref-element-access.vala
 PASS: methods/preconditions-temp-variables.vala
@@ -455,6 +463,7 @@ PASS: objects/class-partial-conflict-access.test
 PASS: objects/class-partial-conflict-partial.test
 PASS: objects/class-partial-conflict-sealed.test
 PASS: objects/class-partial-nested.vala
+PASS: objects/class-ref-void.vala
 PASS: objects/class-vfunc-base-access.vala
 PASS: objects/classes.vala
 PASS: objects/classes-interfaces.vala
@@ -720,6 +729,7 @@ PASS: asynchronous/bug793158.vala
 PASS: asynchronous/captured-fixed-array.vala
 PASS: asynchronous/catch-error-scope.vala
 PASS: asynchronous/catch-in-finally.vala
+PASS: asynchronous/creation-method-uncaught.vala
 PASS: asynchronous/creation-missing-yield.test
 PASS: asynchronous/closures.vala
 PASS: asynchronous/constructor-argument-check.vala
@@ -748,6 +758,7 @@ PASS: generics/constructor-chain-up.vala
 PASS: generics/floating-type-cast.vala
 PASS: generics/gvariant-serialization.test
 PASS: generics/inference-argument-may-fail.vala
+PASS: generics/inference-argument-may-fail-2.vala
 PASS: generics/inference-static-function.vala
 PASS: generics/integer-member-access.vala
 PASS: generics/integer-type-cast.vala
@@ -827,14 +838,18 @@ PASS: gir/delegate-anonymous.gir
 PASS: gir/delegate-array-length-type.gir
 PASS: gir/delegate-closure-destroy-index-conflict.gir
 PASS: gir/delegate-error-pos.gir
+PASS: gir/doc-format.gir
 PASS: gir/enum.gir
 PASS: gir/errordomain.gir
 PASS: gir/gtype-struct-name.gir
 PASS: gir/instance-parameter-owned.gir
 PASS: gir/method-array-length-type.gir
+PASS: gir/method-array-return.gir
 PASS: gir/method-class.gir
 PASS: gir/method-nowrapper.gir
+PASS: gir/off_t.gir
 PASS: gir/parameter-array-length-type.gir
+PASS: gir/parameter-array-out.gir
 PASS: gir/parameter-nullable-out-simple-type.gir
 PASS: gir/property-non-readable.gir
 PASS: gir/signal-virtual.gir
@@ -842,6 +857,7 @@ PASS: gir/record-copy-free-func.gir
 PASS: gir/symbol-redefined.gir
 PASS: gir/symbol-type-csuffix.gir
 PASS: gir/symbol-without-name.gir
+PASS: gir/time_t.gir
 PASS: gir/union.gir
 PASS: gir/union-transparent.gir
 PASS: girwriter/class-final.test
@@ -1031,6 +1047,7 @@ PASS: semantic/assignment-same-variable.vala
 PASS: semantic/assignment-signal-incompatible-method.test
 PASS: semantic/assignment-signal-incompatible-type.test
 PASS: semantic/assignment-invalid-type.test
+PASS: semantic/assignment-invalid-type-2.test
 PASS: semantic/cast-gvalue-unsupported.test
 PASS: semantic/cast-gvariant-unsupported.test
 PASS: semantic/cast-void-not-allowed.test
@@ -1046,6 +1063,7 @@ PASS: semantic/class-compact-field-class.test
 PASS: semantic/class-compact-field-lock.test
 PASS: semantic/class-compact-field-private.test
 PASS: semantic/class-compact-derived-instance-field.test
+PASS: semantic/class-compact-inheritance.test
 PASS: semantic/class-compact-interface.test
 PASS: semantic/class-compact-method-baseaccess.test
 PASS: semantic/class-compact-property-baseaccess.test
@@ -1400,8 +1418,8 @@ PASS: genie/typeof.gs
 PASS: genie/while.gs
 PASS: glib/conditional-glib-api.vala
 PASS: bindings/gio/memoryoutputstream.vala
-# TOTAL: 1402
-# PASS:  1376
+# TOTAL: 1420
+# PASS:  1394
 # SKIP:  0
 # XFAIL: 0
 # FAIL:  26

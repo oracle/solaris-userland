@@ -1,9 +1,9 @@
 Revert 6aa210e6af965a972a1c3a03e9abd556c45872ac 
 Required for some customers - see 31814220
 
---- a/meson_options.txt	2023-06-26 07:39:05.868503104 -0700
-+++ b/meson_options.txt	2023-06-26 07:39:26.039681486 -0700
-@@ -77,6 +77,11 @@
+--- a/meson.options	2025-07-17 17:38:15.511345790 -0700
++++ b/meson.options	2025-07-17 17:39:04.797227221 -0700
+@@ -93,6 +93,11 @@
         value : false,
         description : 'Also use posix threads in case the platform defaults to another implementation (on Windows for example)')
  
@@ -15,9 +15,9 @@ Required for some customers - see 31814220
  option('tests',
         type : 'boolean',
         value : true,
---- a/gio/meson.build	2023-06-26 07:39:55.405741615 -0700
-+++ b/gio/meson.build	2023-06-26 07:40:20.914170757 -0700
-@@ -1100,6 +1100,7 @@
+--- a/gio/meson.build	2025-07-17 17:39:23.748327888 -0700
++++ b/gio/meson.build	2025-07-17 17:39:40.879957590 -0700
+@@ -1125,6 +1125,7 @@
    endforeach
  endif
  
@@ -25,49 +25,58 @@ Required for some customers - see 31814220
  if build_tests
      subdir('tests')
  endif
---- a/docs/reference/gio/overview.xml	2023-06-26 07:43:32.574491070 -0700
-+++ b/docs/reference/gio/overview.xml	2023-06-26 07:44:52.171474717 -0700
-@@ -392,7 +392,7 @@
-         The #GFileMonitor implementation for local files that is included
-         in GIO on Linux has the name <literal>inotify</literal>, others that are built
-         are built as modules (depending on the platform) are called
--        <literal>kqueue</literal> and <literal>win32filemonitor</literal>.
-+        <literal>fam</literal>, <literal>kqueue</literal> and <literal>win32filemonitor</literal>.
-       </para><para>
-         The special value <literal>help</literal> can be used to print a list of
-         available implementations to standard output.
-@@ -665,7 +665,7 @@
-       </para>
-       <para>
-         GIO uses this extension point internally, to switch between
--        its kqueue-based and inotify-based file monitoring implementations.
-+        its fam-based and inotify-based file monitoring implementations.
-       </para>
-    </formalpara>
- 
---- a/docs/reference/gio/meson.build	2023-06-26 07:45:17.347220450 -0700
-+++ b/docs/reference/gio/meson.build	2023-06-26 07:45:33.867624140 -0700
-@@ -3,6 +3,7 @@
-   subdir('xml')
- 
-   ignore_headers = [
-+    'fam',
-     'gdbus-2.0',
-     'inotify',
-     'kqueue',
---- a/gio/fam/gfamfilemonitor.map	2023-06-26 07:48:33.508579231 -0700
-+++ b/gio/fam/gfamfilemonitor.map	2023-06-26 07:42:21.369994717 -0700
-@@ -0,0 +1,8 @@
-+{
-+global:
-+  g_io_module_load;
-+  g_io_module_unload;
-+  g_io_module_query;
-+local:
-+  *;
-+};
---- a/gio/fam/gfamfilemonitor.c	2023-06-26 07:48:25.344771924 -0700
-+++ b/gio/fam/gfamfilemonitor.c	2023-06-26 07:42:21.365393800 -0700
+--- a/docs/reference/gio/overview.md	2025-07-17 18:37:02.580276547 -0700
++++ b/docs/reference/gio/overview.md	2025-07-17 18:39:46.925423264 -0700
+@@ -268,7 +268,7 @@
+   [class@Gio.FileMonitor] implementation to override the default for debugging
+   purposes. The [class@Gio.FileMonitor] implementation for local files that is included
+   in GIO on Linux has the name `inotify`, others that are built are built as
+-  modules (depending on the platform) are called `kqueue` and `win32`. The
++  modules (depending on the platform) are called 'fam', `kqueue` and `win32`. The
+   special value `help` can be used to print a list of available
+   implementations to standard output.
+ - `GIO_USE_VOLUME_MONITOR`.  This variable can be set to the name of a
+--- a/gio/fam/meson.build	2025-07-17 18:42:02.318069609 -0700
++++ b/gio/fam/meson.build	2025-07-17 18:41:10.838279766 -0700
+@@ -0,0 +1,36 @@
++if not get_option('fam')
++  subdir_done()
++endif
++
++fam_dep = cc.find_library('fam')
++fam_c_args = gio_c_args
++if cc.has_function('FAMNoExists', dependencies : fam_dep)
++  fam_c_args += '-DHAVE_FAM_NO_EXISTS=1'
++endif
++
++deps = [
++  fam_dep,
++  libglib_dep,
++  libgobject_dep,
++  libgio_dep,
++]
++
++symbol_map = join_paths(meson.current_source_dir(), 'gfamfilemonitor.map')
++fam_ldflags = cc.get_supported_link_arguments([
++  '-Wl,--version-script,' + symbol_map,
++  '-Wl,-no-undefined',
++])
++
++module = shared_module('giofam', 'gfamfilemonitor.c',
++  include_directories : [gmoduleinc],
++  dependencies : deps,
++  c_args : [fam_c_args, gio_c_args_internal],
++  link_args : fam_ldflags,
++  link_depends : symbol_map,
++  install_dir : glib_giomodulesdir,
++  install : true,
++)
++
++if not meson.is_cross_build()
++  meson.add_install_script('../gio-querymodules-wrapper.py', gio_querymodules.full_path(), glib_giomodulesdir)
++endif
+--- a/gio/fam/gfamfilemonitor.c	2025-07-17 18:42:02.318069609 -0700
++++ b/gio/fam/gfamfilemonitor.c	2025-07-17 18:41:10.830102103 -0700
 @@ -0,0 +1,235 @@
 +/*
 + * Copyright © 2015 Canonical Limited
@@ -304,47 +313,19 @@ Required for some customers - see 31814220
 +
 +  return g_strdupv (eps);
 +}
---- a/gio/fam/meson.build	2023-06-26 07:51:35.321884298 -0700
-+++ b/gio/fam/meson.build	2023-06-26 07:42:21.397568522 -0700
-@@ -0,0 +1,36 @@
-+if not get_option('fam')
-+  subdir_done()
-+endif
-+
-+fam_dep = cc.find_library('fam')
-+fam_c_args = gio_c_args
-+if cc.has_function('FAMNoExists', dependencies : fam_dep)
-+  fam_c_args += '-DHAVE_FAM_NO_EXISTS=1'
-+endif
-+
-+deps = [
-+  fam_dep,
-+  libglib_dep,
-+  libgobject_dep,
-+  libgio_dep,
-+]
-+
-+symbol_map = join_paths(meson.current_source_dir(), 'gfamfilemonitor.map')
-+fam_ldflags = cc.get_supported_link_arguments([
-+  '-Wl,--version-script,' + symbol_map,
-+  '-Wl,-no-undefined',
-+])
-+
-+module = shared_module('giofam', 'gfamfilemonitor.c',
-+  include_directories : [gmoduleinc],
-+  dependencies : deps,
-+  c_args : [fam_c_args, gio_c_args_internal],
-+  link_args : fam_ldflags,
-+  link_depends : symbol_map,
-+  install_dir : glib_giomodulesdir,
-+  install : true,
-+)
-+
-+if not meson.is_cross_build()
-+  meson.add_install_script('../gio-querymodules-wrapper.py', gio_querymodules.full_path(), glib_giomodulesdir)
-+endif
---- a/gio/gio-querymodules-wrapper.py	2023-06-26 08:02:42.885690403 -0700
-+++ b/gio/gio-querymodules-wrapper.py	2023-06-26 08:02:36.411976824 -0700
+--- a/gio/fam/gfamfilemonitor.map 2025-07-17 18:42:02.318069609 -0700
++++ b/gio/fam/gfamfilemonitor.map	2025-07-17 18:41:10.831540576 -0700
+@@ -0,0 +1,8 @@
++{
++global:
++  g_io_module_load;
++  g_io_module_unload;
++  g_io_module_query;
++local:
++  *;
++};
+--- a/gio/gio-querymodules-wrapper.py	2025-07-17 18:42:02.318069609 -0700
++++ b/gio/gio-querymodules-wrapper.py	2025-07-17 18:43:59.118230481 -0700
 @@ -0,0 +1,9 @@
 +#!/usr/bin/env python3
 +

@@ -1,8 +1,12 @@
 glib:fuzzing / fuzz_bookmark                                           OK
 glib:fuzzing / fuzz_canonicalize_filename                              OK
+glib:fuzzing / fuzz_data_input_stream_read_line                        OK
+glib:fuzzing / fuzz_data_input_stream_read_line_utf8                   OK
+glib:fuzzing / fuzz_data_input_stream_read_upto                        OK
 glib:fuzzing / fuzz_date_parse                                         OK
 glib:fuzzing / fuzz_date_time_new_from_iso8601                         OK
 glib:fuzzing / fuzz_dbus_message                                       OK
+glib:fuzzing / fuzz_get_locale_variants                                OK
 glib:fuzzing / fuzz_inet_address_mask_new_from_string                  OK
 glib:fuzzing / fuzz_inet_address_new_from_string                       OK
 glib:fuzzing / fuzz_inet_socket_address_new_from_string                OK
@@ -11,6 +15,7 @@ glib:fuzzing / fuzz_network_address_parse                              OK
 glib:fuzzing / fuzz_network_address_parse_uri                          OK
 glib:fuzzing / fuzz_paths                                              OK
 glib:fuzzing / fuzz_resolver                                           OK
+glib:fuzzing / fuzz_string                                             OK
 glib:fuzzing / fuzz_uri_escape                                         OK
 glib:fuzzing / fuzz_uri_parse                                          OK
 glib:fuzzing / fuzz_uri_parse_params                                   OK
@@ -31,15 +36,18 @@ glib:gio / buffered-output-stream                                      OK
 glib:gio / cancellable                                                 OK   
 glib:gio / contenttype                                                 OK   
 glib:gio / contexts                                                    OK   
+glib:gio / converter                                                   OK   
 glib:gio / converter-stream                                            ERROR   killed by signal 6 SIGABRT
 glib:gio / credentials                                                 OK   
 glib:gio / data-input-stream                                           OK   
 glib:gio / data-output-stream                                          OK   
-glib:gio / desktop-app-info                                            ERROR   killed by signal 6 SIGABRT
+glib:gio / desktop-app-info                                            OK   
 glib:gio / error                                                       OK   
 glib:gio / file                                                        OK   
+glib:gio / file-enumerator                                             OK   
 glib:gio / file-thumbnail                                              OK   
 glib:gio / fileattributematcher                                        OK   
+glib:gio / filenamecompleter                                           OK   
 glib:gio / filter-streams                                              OK   
 glib:gio / g-file                                                      OK   
 glib:gio / g-file-info                                                 OK   
@@ -61,12 +69,13 @@ glib:gio / gschema-compile                                             OK
 glib:gio / gsettings                                                   ERROR   killed by signal 5 SIGTRAP
 glib:gio / gsocketclient-slow                                          OK   
 glib:gio / gsubprocess                                                 OK   
-glib:gio / inet-address                                                OK   
+glib:gio / inet-address                                                ERROR   killed by signal 6 SIGABRT
 glib:gio / io-stream                                                   OK   
 glib:gio / live-g-file                                                 OK   
 glib:gio / max-version                                                 OK   
 glib:gio / memory-input-stream                                         OK   
 glib:gio / memory-monitor                                              OK   
+glib:gio / memory-monitor-poll                                         OK   
 glib:gio / memory-output-stream                                        OK   
 glib:gio / memory-settings-backend                                     OK   
 glib:gio / mimeapps                                                    OK   
@@ -88,7 +97,7 @@ glib:gio / simple-proxy                                                OK
 glib:gio / sleepy-stream                                               OK   
 glib:gio / socket                                                      OK   
 glib:gio / socket-address                                              OK   
-glib:gio / socket-listener                                             OK   
+glib:gio / socket-listener                                             ERROR   killed by signal 6 SIGABRT
 glib:gio / socket-service                                              OK   
 glib:gio / srvtarget                                                   OK   
 glib:gio / stream-rw_all                                               OK   
@@ -100,7 +109,7 @@ glib:gio / tls-database                                                OK
 glib:gio / tls-interaction                                             OK   
 glib:gio / trash                                                       OK   
 glib:gio / unix-fd                                                     OK   
-glib:gio / unix-mounts                                                 OK   
+glib:gio / unix-mounts                                                 ERROR   killed by signal 6 SIGABRT
 glib:gio / unix-streams                                                OK   
 glib:gio / vfs                                                         OK   
 glib:gio / volumemonitor                                               OK   
@@ -113,6 +122,7 @@ glib:gio+cpp / cxx-17                                                  OK
 glib:gio+cpp / cxx-20                                                  OK
 glib:gio+cpp / cxx-2b                                                  OK
 glib:gio+cpp / cxx-98                                                  OK
+glib:gio+no-valgrind / gio-tool.py                                     OK   
 glib:gio+no-valgrind+gdbus-codegen+slow / codegen.py                   OK   
 glib:gio+no-valgrind+pkg-config / gio-2.0-pkg-config                   FAIL
 glib:gio+no-valgrind+pkg-config / gio-unix-2.0-pkg-config              OK
@@ -124,6 +134,23 @@ glib:gio+portal-support / portal-support-flatpak-none                  OK
 glib:gio+portal-support / portal-support-none                          OK   
 glib:gio+portal-support / portal-support-snap                          OK   
 glib:gio+portal-support / portal-support-snap-classic                  OK   
+glib:gio+slow / testfilemonitor                                        ERROR   killed by signal 6 SIGABRT
+glib:girepository+core / autoptr-girepository                          OK   
+glib:girepository+core / callable-info                                 OK   
+glib:girepository+core / cmph-bdz                                      OK   
+glib:girepository+core / dump                                          OK   
+glib:girepository+core / function-info                                 OK   
+glib:girepository+core / gthash                                        OK   
+glib:girepository+core / ir-parser                                     OK   
+glib:girepository+core / object-info                                   OK   
+glib:girepository+core / registered-type-info                          OK   
+glib:girepository+core / repository                                    OK   
+glib:girepository+core / repository-search-paths                       OK   
+glib:girepository+core / struct-info                                   OK   
+glib:girepository+core / throws                                        OK   
+glib:girepository+core / union-info                                    OK   
+glib:girepository+no-valgrind+compiler / gi-compile-repository.py      OK   
+glib:girepository+no-valgrind+inspector / gi-inspect-typelib.py        OK   
 glib:glib+core / 1bit-mutex                                            OK   
 glib:glib+core / array-test                                            OK   
 glib:glib+core / asyncqueue                                            OK   
@@ -139,6 +166,7 @@ glib:glib+core / checksum                                              OK
 glib:glib+core / collate                                               ERROR   killed by signal 6 SIGABRT
 glib:glib+core / completion                                            OK   
 glib:glib+core / cond                                                  OK   
+glib:glib+core / constructor                                           OK   
 glib:glib+core / convert                                               ERROR   killed by signal 6 SIGABRT
 glib:glib+core / dataset                                               OK   
 glib:glib+core / date                                                  ERROR   killed by signal 6 SIGABRT
@@ -161,7 +189,7 @@ glib:glib+core / keyfile                                               OK
 glib:glib+core / list                                                  OK   
 glib:glib+core / logging                                               OK   
 glib:glib+core / macros                                                OK   
-glib:glib+core / mainloop                                              OK   
+glib:glib+core / mainloop                                              ERROR   killed by signal 6 SIGABRT
 glib:glib+core / mappedfile                                            OK   
 glib:glib+core / mapping                                               ERROR   killed by signal 16 SIGUSR1
 glib:glib+core / markup                                                OK   
@@ -182,6 +210,7 @@ glib:glib+core / overflow                                              OK
 glib:glib+core / overflow-fallback                                     OK   
 glib:glib+core / pathbuf                                               OK   
 glib:glib+core / pattern                                               OK   
+glib:glib+core / print                                                 SKIP   
 glib:glib+core / private                                               OK   
 glib:glib+core / protocol                                              OK   
 glib:glib+core / queue                                                 OK   
@@ -205,12 +234,11 @@ glib:glib+core / spawn-path-search                                     OK
 glib:glib+core / spawn-singlethread                                    OK   
 glib:glib+core / spawn-test                                            OK   
 glib:glib+core / strfuncs                                              OK   
-glib:glib+core / string                                                OK   
-glib:glib+core / string-macro                                          OK   
+glib:glib+core / string                                                ERROR   killed by signal 6 SIGABRT
 glib:glib+core / strvbuilder                                           OK   
 glib:glib+core / test-printf                                           ERROR   killed by signal 6 SIGABRT
 glib:glib+core / testing                                               OK   
-glib:glib+core / testing-macro                                         OK   
+glib:glib+core / testing-nonfatal                                      OK
 glib:glib+core / thread                                                OK   
 glib:glib+core / thread-deprecated                                     OK   
 glib:glib+core / thread-pool                                           OK   
@@ -221,25 +249,26 @@ glib:glib+core / types                                                 OK
 glib:glib+core / unicode                                               OK   
 glib:glib+core / unicode-encoding                                      OK   
 glib:glib+core / unicode-normalize                                     OK   
-glib:glib+core / unix                                                  OK   
+glib:glib+core / unix                                                  ERROR   killed by signal 11 SIGSEGV
 glib:glib+core / uri                                                   OK   
 glib:glib+core / utf8-misc                                             OK   
 glib:glib+core / utf8-performance                                      OK   
 glib:glib+core / utf8-pointer                                          OK   
+glib:glib+core / utf8-private                                          OK   
 glib:glib+core / utf8-validate                                         OK   
 glib:glib+core / utils                                                 OK   
 glib:glib+core / utils-isolated                                        OK   
 glib:glib+core+cc / atomic-c-11                                        OK   
 glib:glib+core+cc / atomic-c-17                                        OK   
-glib:glib+core+cc / atomic-c-90                                        OK   
+glib:glib+core+cc / atomic-c-89                                        OK   
 glib:glib+core+cc / atomic-c-99                                        OK   
 glib:glib+core+cc / macros-c-11                                        OK   
 glib:glib+core+cc / macros-c-17                                        OK   
-glib:glib+core+cc / macros-c-90                                        OK   
+glib:glib+core+cc / macros-c-89                                        OK   
 glib:glib+core+cc / macros-c-99                                        OK   
 glib:glib+core+cc / utils-c-11                                         OK   
 glib:glib+core+cc / utils-c-17                                         OK   
-glib:glib+core+cc / utils-c-90                                         OK   
+glib:glib+core+cc / utils-c-89                                         OK   
 glib:glib+core+cc / utils-c-99                                         OK   
 glib:glib+core+cpp / cxx                                               OK   
 glib:glib+core+cpp / cxx-03                                            OK   
@@ -299,6 +328,7 @@ glib:gobject / objects-refcount1                                       OK
 glib:gobject / override                                                OK   
 glib:gobject / param                                                   OK   
 glib:gobject / properties                                              OK   
+glib:gobject / properties-introspection                                OK   
 glib:gobject / properties-refcount1                                    OK   
 glib:gobject / properties-refcount4                                    OK   
 glib:gobject / qdata                                                   OK   
@@ -336,10 +366,15 @@ glib:gobject+slow / properties-refcount2                               OK
 glib:gobject+slow / properties-refcount3                               OK   
 glib:gthread / init                                                    OK   
 glib:gthread+no-valgrind+pkg-config / gthread-2.0-pkg-config           OK
+glib:lint+no-valgrind / black.sh                                       SKIP
+glib:lint+no-valgrind / check-missing-install-tag.py                   OK   
+glib:lint+no-valgrind / flake8.sh                                      SKIP
+glib:lint+no-valgrind / reuse.sh                                       SKIP
+glib:lint+no-valgrind / shellcheck.sh                                  SKIP
 
-Ok:                 323
+Ok:                 347
 Expected Fail:      0
-Fail:               14
+Fail:               20
 Unexpected Pass:    0
-Skipped:            1
+Skipped:            6
 Timeout:            0

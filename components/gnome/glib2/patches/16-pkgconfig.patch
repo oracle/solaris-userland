@@ -4,12 +4,10 @@ Not suitable for upstream
 
 --- a/glib/meson.build	2019-10-31 16:01:22.777037273 -0700
 +++ b/glib/meson.build	2019-10-31 16:01:38.923014840 -0700
-@@ -445,14 +445,9 @@
+@@ -463,12 +463,9 @@
    subdirs : ['glib-2.0'],
    extra_cflags : ['-I${libdir}/glib-2.0/include'] + win32_cflags,
    variables : [
--    'bindir=' + '${prefix}' / get_option('bindir'),
--    'datadir=' + '${prefix}' / get_option('datadir'),
 -    'glib_genmarshal=' + '${bindir}' / 'glib-genmarshal',
 -    'gobject_query=' + '${bindir}' / 'gobject-query',
 -    'glib_mkenums=' + '${bindir}' / 'glib-mkenums',
@@ -20,13 +18,13 @@ Not suitable for upstream
 +    'gobject_query=gobject-query',
 +    'glib_mkenums=glib-mkenums',
    ],
-   version : glib_version,
-   install_dir : glib_pkgconfigreldir,
---- a/gio/meson.build	2025-02-19 07:14:05.372796863 -0800
-+++ b/gio/meson.build	2025-02-19 07:15:37.134233746 -0800
-@@ -876,14 +876,14 @@
+   uninstalled_variables : [
+     'glib_genmarshal=${prefix}/gobject/glib-genmarshal',
+--- a/gio/meson.build   2025-07-17 17:30:29.345634475 -0700
++++ b/gio/meson.build   2025-07-17 17:34:48.172102102 -0700
+@@ -904,14 +904,14 @@
+     'schemasdir=' + '${datadir}' / schemas_subdir,
      'dtdsdir=' + '${datadir}' / dtds_subdir,
-     'bindir=' + '${prefix}' / get_option('bindir'),
      'giomoduledir=' + pkgconfig_giomodulesdir,
 -    'gio=' + '${bindir}' / 'gio',
 -    'gio_querymodules=' + pkgconfig_multiarch_bindir / 'gio-querymodules',
@@ -43,13 +41,13 @@ Not suitable for upstream
 +    'gdbus=gdbus',
 +    'gdbus_codegen=gdbus-codegen',
 +    'gresource=gresource',
-+    'gsettings=gsettings',
++    'gsettings=gsettings',   
    ],
-   version : glib_version,
-   install_dir : glib_pkgconfigreldir,
---- a/meson.build	2025-02-19 07:15:49.680327215 -0800
-+++ b/meson.build	2025-02-19 07:16:06.147493359 -0800
-@@ -1974,7 +1974,7 @@
+   uninstalled_variables : [
+     'gio=${prefix}/gio/gio',
+--- a/meson.build       2025-07-17 17:35:11.758075818 -0700
++++ b/meson.build       2025-07-17 17:35:33.872339073 -0700
+@@ -2125,7 +2125,7 @@
    glibconfig_conf.set('g_threads_impl_def', 'WIN32')
    glib_conf.set('THREADS_WIN32', 1)
  else
