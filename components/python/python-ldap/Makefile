@@ -32,17 +32,17 @@ include ../../../make-rules/shared-macros.mk
 # This component does not fully specify dependencies of shared objects
 LD_SHARED_OPTIONS_Z_DEFS=
 
-COMPONENT_NAME=		python-ldap
-COMPONENT_VERSION=	3.4.4
+COMPONENT_NAME=		python_ldap
+COMPONENT_VERSION=	3.4.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7edb0accec4e037797705f3a05cbf36a9fde50d08c8f67f2aef99a2628fab828
+    sha256:b2f6ef1c37fe2c6a5a85212efe71311ee21847766a7d45fcb711f3b270a5f79a
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.python-ldap.org/
 COMPONENT_BUGDB=	python-mod/python-ldap
 COMPONENT_ANITYA_ID=	13261
-COMPONENT_BAID=		327439
+COMPONENT_BAID=		350737
 
 
 include $(WS_MAKE_RULES)/prep.mk
@@ -82,6 +82,36 @@ install:	$(INSTALL_64)
 test:		$(TEST_64)
 
 system-test:	$(SYSTEM_TEST_64)
+
+# Check python-ldap.license (US English) against source files (British English).
+# The real source should be that obtained from the TPNO database.
+# This serves as a reminder.
+e = /usr/gnu/bin/echo
+license = python-ldap.license
+test-license: $(BUILD_DIR)/$(license).new
+
+$(BUILD_DIR)/$(license).new: unpack $(license)
+	@$(MKDIR) -p $(BUILD_DIR)
+	@( \
+		$e -n '-------------------------------';\
+		$e ' Top-level LICENSE --------------------------'; \
+		$e ; \
+		/usr/bin/iconv -sct UTF-8 $(SOURCE_DIR)/LICENCE; $e; $e; \
+		$e -n '-------------------------------'; \
+		$e ' LICENSE.MIT --------------------------------'; \
+		$e; \
+		/usr/bin/iconv -sct UTF-8 $(SOURCE_DIR)/LICENCE.MIT; \
+	)  > $@;
+	@/usr/bin/cmp $(COMPONENT_DIR)/$(license) $@ >/dev/null || \
+		( \
+		$e 'WARNING: Built license differs according to cmp(1):';\
+		$e -n 'Running: ';\
+		$e 'diff -w $(license) $(subst $(COMPONENT_DIR)/,,$@)';\
+		/usr/bin/diff -w $(license) $@ && \
+			$e '  Only whitespace differences!' || \
+			$e '  More than just whitespace differences!';\
+		$e 'ACTION: Check $(license) against TPNO';\
+	)
 
 # Package dependencies.
 # ---------------------
