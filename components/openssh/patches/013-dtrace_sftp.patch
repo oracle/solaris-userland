@@ -4,8 +4,8 @@
 # Because this is Solaris-specific and not suitable for upstream, we will not
 # contribute the changes to the upstream community.
 #
---- old/Makefile.in	2025-04-15 11:13:00.184179520 +0200
-+++ new/Makefile.in	2025-04-15 11:16:32.270340665 +0200
+--- old/Makefile.in	2025-10-09 18:59:19.355706215 +0200
++++ new/Makefile.in	2025-10-09 18:59:42.426198250 +0200
 @@ -27,6 +27,7 @@ SSHD_SESSION=$(libexecdir)/sshd-session
  SSHD_AUTH=$(libexecdir)/sshd-auth
  SSH_PKCS11_HELPER=$(libexecdir)/ssh-pkcs11-helper
@@ -14,42 +14,34 @@
  PRIVSEP_PATH=@PRIVSEP_PATH@
  SSH_PRIVSEP_USER=@SSH_PRIVSEP_USER@
  STRIP_OPT=@STRIP_OPT@
-@@ -108,6 +109,7 @@ LIBSSH_OBJS=${LIBOPENSSH_OBJS} \
- 	monitor_fdpass.o rijndael.o ssh-dss.o ssh-ecdsa.o ssh-ecdsa-sk.o \
- 	ssh-ed25519-sk.o ssh-rsa.o dh.o \
- 	msg.o progressmeter.o dns.o entropy.o gss-genr.o umac.o umac128.o \
-+	sftp_provider.o \
- 	ssh-pkcs11.o smult_curve25519_ref.o \
- 	poly1305.o chacha.o cipher-chachapoly.o cipher-chachapoly-libcrypto.o \
- 	ssh-ed25519.o digest-openssl.o digest-libc.o \
-@@ -139,7 +141,7 @@ SSHD_SESSION_OBJS=sshd-session.o auth-rh
+@@ -132,7 +133,7 @@ SSHD_SESSION_OBJS=sshd-session.o auth-rh
  	monitor.o monitor_wrap.o auth-krb5.o \
  	auth2-gss.o gss-serv.o gss-serv-krb5.o \
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o \
 -	sftp-server.o sftp-common.o \
 +	sftp-server.o sftp-common.o sftp_provider.o \
- 	uidswap.o platform-listen.o $(SKOBJS)
+ 	uidswap.o platform-listen.o $(P11OBJS) $(SKOBJS)
  
  SSHD_AUTH_OBJS=sshd-auth.o \
-@@ -154,7 +156,7 @@ SSHD_AUTH_OBJS=sshd-auth.o \
+@@ -147,7 +148,7 @@ SSHD_AUTH_OBJS=sshd-auth.o \
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o \
  	sandbox-null.o sandbox-rlimit.o sandbox-darwin.o \
  	sandbox-seccomp-filter.o sandbox-capsicum.o  sandbox-solaris.o \
 -	sftp-server.o sftp-common.o \
 +	sftp-server.o sftp-common.o sftp_provider.o \
- 	uidswap.o $(SKOBJS)
+ 	uidswap.o $(P11OBJS) $(SKOBJS)
  
  SFTP_CLIENT_OBJS=sftp-common.o sftp-client.o sftp-glob.o
-@@ -175,7 +177,7 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o
+@@ -168,7 +169,7 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o
  
- SSHKEYSCAN_OBJS=ssh-keyscan.o $(SKOBJS)
+ SSHKEYSCAN_OBJS=ssh-keyscan.o $(P11OBJS) $(SKOBJS)
  
 -SFTPSERVER_OBJS=sftp-common.o sftp-server.o sftp-server-main.o
 +SFTPSERVER_OBJS=sftp-common.o sftp-server.o sftp-server-main.o sftp_provider.o
  
  SFTP_OBJS=	sftp.o sftp-usergroup.o progressmeter.o $(SFTP_CLIENT_OBJS)
  
-@@ -304,9 +306,20 @@ $(CONFIGFILES): $(CONFIGFILES_IN) Makefi
+@@ -296,9 +297,20 @@ $(CONFIGFILES): $(CONFIGFILES_IN) Makefi
  moduli:
  	echo
  
@@ -71,7 +63,7 @@
  	rm -f regress/check-perm$(EXEEXT)
  	rm -f regress/mkdtemp$(EXEEXT)
  	rm -f regress/unittests/test_helper/*.a
-@@ -473,6 +486,7 @@ install-files:
+@@ -465,6 +477,7 @@ install-files:
  	$(INSTALL) -m 644 ssh-keysign.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-keysign.8
  	$(INSTALL) -m 644 ssh-pkcs11-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-pkcs11-helper.8
  	$(INSTALL) -m 644 ssh-sk-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-sk-helper.8
@@ -79,9 +71,9 @@
  
  install-sysconf:
  	$(MKDIR_P) $(DESTDIR)$(sysconfdir)
---- old/sftp-server.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/sftp-server.c	2025-04-15 11:13:00.845488300 +0200
-@@ -56,6 +56,9 @@
+--- old/sftp-server.c	2025-10-06 04:25:16.000000000 +0200
++++ new/sftp-server.c	2025-10-09 18:59:20.095695060 +0200
+@@ -52,6 +52,9 @@
  
  #include "sftp.h"
  #include "sftp-common.h"
@@ -91,7 +83,7 @@
  
  char *sftp_realpath(const char *, char *); /* sftp-realpath.c */
  
-@@ -803,14 +806,16 @@ process_read(u_int32_t id)
+@@ -799,14 +802,16 @@ process_read(u_int32_t id)
  	u_int32_t len;
  	int r, handle, fd, ret, status = SSH2_FX_FAILURE;
  	u_int64_t off;
@@ -109,7 +101,7 @@
  	if ((fd = handle_to_fd(handle)) == -1)
  		goto out;
  	if (len > SFTP_MAX_READ_LENGTH) {
-@@ -832,14 +837,23 @@ process_read(u_int32_t id)
+@@ -828,14 +833,23 @@ process_read(u_int32_t id)
  	if (len == 0) {
  		/* weird, but not strictly disallowed */
  		ret = 0;
@@ -141,7 +133,7 @@
  	}
  	send_data(id, buf, ret);
  	handle_update_read(handle, ret);
-@@ -857,14 +871,16 @@ process_write(u_int32_t id)
+@@ -853,14 +867,16 @@ process_write(u_int32_t id)
  	size_t len;
  	int r, handle, fd, ret, status;
  	u_char *data;
@@ -159,7 +151,7 @@
  	fd = handle_to_fd(handle);
  
  	if (fd < 0)
-@@ -877,7 +893,13 @@ process_write(u_int32_t id)
+@@ -873,7 +889,13 @@ process_write(u_int32_t id)
  			    strerror(errno));
  		} else {
  /* XXX ATOMICIO ? */

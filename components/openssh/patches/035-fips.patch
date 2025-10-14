@@ -4,9 +4,9 @@
 #
 # This patch is unlikely to be accepted upstream.
 #
---- old/Makefile.in	2025-04-23 11:26:40.909196600 +0200
-+++ new/Makefile.in	2025-04-23 11:26:41.732438655 +0200
-@@ -243,7 +243,7 @@ sshd-auth$(EXEEXT): libssh.a $(LIBCOMPAT
+--- old/Makefile.in	2025-10-09 15:47:10.888485210 +0200
++++ new/Makefile.in	2025-10-09 15:47:11.773821310 +0200
+@@ -234,7 +234,7 @@ sshd-auth$(EXEEXT): libssh.a $(LIBCOMPAT
  	$(LD) -o $@ $(SSHD_AUTH_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat $(SSHDLIBS) $(LIBS) $(GSSLIBS) $(K5LIBS) $(CHANNELLIBS) $(LIBWTMPDB)
  
  scp$(EXEEXT): $(LIBCOMPAT) libssh.a $(SCP_OBJS)
@@ -15,7 +15,7 @@
  
  ssh-add$(EXEEXT): $(LIBCOMPAT) libssh.a $(SSHADD_OBJS)
  	$(LD) -o $@ $(SSHADD_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS) $(CHANNELLIBS)
-@@ -267,10 +267,10 @@ ssh-keyscan$(EXEEXT): $(LIBCOMPAT) libss
+@@ -258,10 +258,10 @@ ssh-keyscan$(EXEEXT): $(LIBCOMPAT) libss
  	$(LD) -o $@ $(SSHKEYSCAN_OBJS) $(LDFLAGS) -lssh -lopenbsd-compat -lssh $(LIBS) $(CHANNELLIBS)
  
  sftp-server$(EXEEXT): $(LIBCOMPAT) libssh.a $(SFTPSERVER_OBJS)
@@ -28,8 +28,8 @@
  
  # test driver for the loginrec code - not built by default
  logintest: logintest.o $(LIBCOMPAT) libssh.a loginrec.o
---- old/cipher.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/cipher.c	2025-04-23 11:26:41.732908410 +0200
+--- old/cipher.c	2025-10-06 04:25:16.000000000 +0200
++++ new/cipher.c	2025-10-09 15:47:11.774625400 +0200
 @@ -83,7 +83,39 @@ struct sshcipher {
  #endif
  };
@@ -70,8 +70,8 @@
  #ifdef WITH_OPENSSL
  #ifndef OPENSSL_NO_DES
  	{ "3des-cbc",		8, 24, 0, 0, CFLAG_CBC, EVP_des_ede3_cbc },
---- old/digest-openssl.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/digest-openssl.c	2025-04-23 11:26:41.733375870 +0200
+--- old/digest-openssl.c	2025-10-06 04:25:16.000000000 +0200
++++ new/digest-openssl.c	2025-10-09 15:47:11.775109060 +0200
 @@ -31,6 +31,7 @@
  #include "sshbuf.h"
  #include "digest.h"
@@ -122,11 +122,11 @@
  	int alg;
  
  	for (alg = 0; digests[alg].id != -1; alg++) {
---- old/kex-names.c	2025-04-23 11:26:40.916959355 +0200
-+++ new/kex-names.c	2025-04-23 11:26:41.733821520 +0200
-@@ -52,7 +52,38 @@ struct kexalg {
- 	int ec_nid;
+--- old/kex-names.c	2025-10-09 15:47:10.896891315 +0200
++++ new/kex-names.c	2025-10-09 15:57:02.993809165 +0200
+@@ -53,7 +53,38 @@ struct kexalg {
  	int hash_alg;
+ 	int pq_alg;
  };
 +
 +#ifdef ENABLE_OPENSSL_FIPS
@@ -161,23 +161,26 @@
  static const struct kexalg kexalgs[] = {
 +#endif 
  #ifdef WITH_OPENSSL
- 	{ KEX_DH1, KEX_DH_GRP1_SHA1, 0, SSH_DIGEST_SHA1 },
- 	{ KEX_DH14_SHA1, KEX_DH_GRP14_SHA1, 0, SSH_DIGEST_SHA1 },
-@@ -88,6 +119,11 @@ static const struct kexalg kexalgs[] = {
- 	    SSH_DIGEST_SHA256 },
+ 	{ KEX_DH1, KEX_DH_GRP1_SHA1, 0, SSH_DIGEST_SHA1, KEX_NOT_PQ },
+ 	{ KEX_DH14_SHA1, KEX_DH_GRP14_SHA1, 0, SSH_DIGEST_SHA1, KEX_NOT_PQ },
+@@ -89,6 +120,14 @@ static const struct kexalg kexalgs[] = {
+ 	    SSH_DIGEST_SHA256, KEX_IS_PQ },
  #endif
  #endif /* HAVE_EVP_SHA256 || !WITH_OPENSSL */
 +#ifdef GSSAPI
-+	{ KEX_GSS_GEX_SHA1_ID, KEX_GSS_GEX_SHA1, 0, SSH_DIGEST_SHA1 },
-+	{ KEX_GSS_GRP1_SHA1_ID, KEX_GSS_GRP1_SHA1, 0, SSH_DIGEST_SHA1 },
-+	{ KEX_GSS_GRP14_SHA1_ID, KEX_GSS_GRP14_SHA1, 0, SSH_DIGEST_SHA1 },
++	{ KEX_GSS_GEX_SHA1_ID, KEX_GSS_GEX_SHA1, 0, SSH_DIGEST_SHA1,
++	    KEX_NOT_PQ },
++	{ KEX_GSS_GRP1_SHA1_ID, KEX_GSS_GRP1_SHA1, 0, SSH_DIGEST_SHA1,
++	    KEX_NOT_PQ },
++	{ KEX_GSS_GRP14_SHA1_ID, KEX_GSS_GRP14_SHA1, 0, SSH_DIGEST_SHA1,
++	    KEX_NOT_PQ },
 +#endif
- 	{ NULL, 0, -1, -1},
+ 	{ NULL, 0, -1, -1, 0 },
  };
  
---- old/kex.c	2025-04-23 11:26:40.917566010 +0200
-+++ new/kex.c	2025-04-23 11:26:41.734377855 +0200
-@@ -1257,10 +1257,18 @@ kex_exchange_identification(struct ssh *
+--- old/kex.c	2025-10-09 15:47:10.897501515 +0200
++++ new/kex.c	2025-10-09 15:47:11.776921475 +0200
+@@ -1256,10 +1256,18 @@ kex_exchange_identification(struct ssh *
  	sshbuf_reset(our_version);
  	if (version_addendum != NULL && *version_addendum == '\0')
  		version_addendum = NULL;
@@ -196,9 +199,9 @@
  		oerrno = errno;
  		error_fr(r, "sshbuf_putf");
  		goto out;
---- old/mac.c	2025-04-23 11:26:40.919190510 +0200
-+++ new/mac.c	2025-04-23 11:26:41.734757935 +0200
-@@ -55,8 +55,33 @@ struct macalg {
+--- old/mac.c	2025-10-06 04:25:16.000000000 +0200
++++ new/mac.c	2025-10-09 15:47:11.777578820 +0200
+@@ -54,8 +54,33 @@ struct macalg {
  	int		len;		/* just for UMAC */
  	int		etm;		/* Encrypt-then-MAC */
  };
@@ -232,9 +235,9 @@
  	/* Encrypt-and-MAC (encrypt-and-authenticate) variants */
  	{ "hmac-sha1",				SSH_DIGEST, SSH_DIGEST_SHA1, 0, 0, 0, 0 },
  	{ "hmac-sha1-96",			SSH_DIGEST, SSH_DIGEST_SHA1, 96, 0, 0, 0 },
---- old/misc.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/misc.c	2025-04-23 11:26:41.735624740 +0200
-@@ -49,6 +49,7 @@
+--- old/misc.c	2025-10-06 04:25:16.000000000 +0200
++++ new/misc.c	2025-10-09 15:47:11.778966275 +0200
+@@ -41,6 +41,7 @@
  #include <string.h>
  #include <time.h>
  #include <unistd.h>
@@ -242,7 +245,7 @@
  
  #include <netinet/in.h>
  #include <netinet/in_systm.h>
-@@ -56,6 +57,10 @@
+@@ -48,6 +49,10 @@
  #include <netinet/tcp.h>
  #include <arpa/inet.h>
  
@@ -253,7 +256,7 @@
  #include <ctype.h>
  #include <errno.h>
  #include <fcntl.h>
-@@ -128,6 +133,28 @@ strprefix(const char *s, const char *pre
+@@ -121,6 +126,28 @@ strprefix(const char *s, const char *pre
  	return s + prefixlen;
  }
  
@@ -282,8 +285,8 @@
  /* set/unset filedescriptor to non-blocking */
  int
  set_nonblock(int fd)
---- old/misc.h	2025-04-09 09:02:43.000000000 +0200
-+++ new/misc.h	2025-04-23 11:26:41.735973310 +0200
+--- old/misc.h	2025-10-06 04:25:16.000000000 +0200
++++ new/misc.h	2025-10-09 15:47:11.779560875 +0200
 @@ -59,6 +59,10 @@ void	skip_space(char **);
  const char *strprefix(const char *, const char *, int);
  char	*strdelim(char **);
@@ -295,8 +298,8 @@
  int	 set_nonblock(int);
  int	 unset_nonblock(int);
  void	 set_nodelay(int);
---- old/myproposal.h	2025-04-09 09:02:43.000000000 +0200
-+++ new/myproposal.h	2025-04-23 11:26:41.736487000 +0200
+--- old/myproposal.h	2025-10-06 04:25:16.000000000 +0200
++++ new/myproposal.h	2025-10-09 15:47:11.780098805 +0200
 @@ -24,7 +24,7 @@
   * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
@@ -421,8 +424,8 @@
  
  /* Not a KEX value, but here so all the algorithm defaults are together */
  #define	SSH_ALLOWED_CA_SIGALGS	\
---- old/ssh-add.1	2025-04-09 09:02:43.000000000 +0200
-+++ new/ssh-add.1	2025-04-23 11:26:41.736870160 +0200
+--- old/ssh-add.1	2025-10-06 04:25:16.000000000 +0200
++++ new/ssh-add.1	2025-10-09 15:47:11.780478860 +0200
 @@ -132,6 +132,8 @@ and
  .Dq sha256 .
  The default is
@@ -432,9 +435,9 @@
  .It Fl e Ar pkcs11
  Remove keys provided by the PKCS#11 shared library
  .Ar pkcs11 .
---- old/ssh-agent.1	2025-04-09 09:02:43.000000000 +0200
-+++ new/ssh-agent.1	2025-04-23 11:26:41.737219315 +0200
-@@ -99,6 +99,8 @@ and
+--- old/ssh-agent.1	2025-10-06 04:25:16.000000000 +0200
++++ new/ssh-agent.1	2025-10-09 15:47:11.780878895 +0200
+@@ -102,6 +102,8 @@ and
  .Dq sha256 .
  The default is
  .Dq sha256 .
@@ -443,9 +446,9 @@
  .It Fl k
  Kill the current agent (given by the
  .Ev SSH_AGENT_PID
---- old/ssh-agent.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/ssh-agent.c	2025-04-23 11:26:41.737944400 +0200
-@@ -2442,6 +2442,9 @@ main(int ac, char **av)
+--- old/ssh-agent.c	2025-10-06 04:25:16.000000000 +0200
++++ new/ssh-agent.c	2025-10-09 15:47:11.781917525 +0200
+@@ -2468,6 +2468,9 @@ main(int ac, char **av)
  			printf("echo Agent pid %ld;\n", (long)parent_pid);
  			fflush(stdout);
  		}
@@ -455,8 +458,8 @@
  		goto skip;
  	}
  	pid = fork();
---- old/ssh-keygen.1	2025-04-09 09:02:43.000000000 +0200
-+++ new/ssh-keygen.1	2025-04-23 11:26:41.738540035 +0200
+--- old/ssh-keygen.1	2025-10-06 04:25:16.000000000 +0200
++++ new/ssh-keygen.1	2025-10-09 15:47:11.782735850 +0200
 @@ -185,7 +185,8 @@ The type of key to be generated is speci
  option.
  If invoked without any arguments,
@@ -485,10 +488,10 @@
  .It Fl e
  This option will read a private or public OpenSSH key file and
  print to stdout a public key in one of the formats specified by the
---- old/ssh-keygen.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/ssh-keygen.c	2025-04-23 11:34:10.957411185 +0200
+--- old/ssh-keygen.c	2025-10-06 04:25:16.000000000 +0200
++++ new/ssh-keygen.c	2025-10-09 15:53:48.719781815 +0200
 @@ -68,6 +68,9 @@
- #include "cipher.h"
+ #endif
  
  #define DEFAULT_KEY_TYPE_NAME "ed25519"
 +#ifdef ENABLE_OPENSSL_FIPS
@@ -496,8 +499,8 @@
 +#endif
  
  /*
-  * Default number of bits in the RSA, DSA and ECDSA keys.  These value can be
-@@ -1088,7 +1091,12 @@ do_gen_all_hostkeys(struct passwd *pw)
+  * Default number of bits in the RSA and ECDSA keys.  These value can be
+@@ -1007,7 +1010,12 @@ do_gen_all_hostkeys(struct passwd *pw)
  		char *key_type;
  		char *key_type_display;
  		char *path;
@@ -511,30 +514,30 @@
  #ifdef WITH_OPENSSL
  		{ "rsa", "RSA" ,_PATH_HOST_RSA_KEY_FILE },
  #ifdef OPENSSL_HAS_ECC
-@@ -1099,8 +1107,20 @@ do_gen_all_hostkeys(struct passwd *pw)
- #ifdef WITH_XMSS
- 		{ "xmss", "XMSS",_PATH_HOST_XMSS_KEY_FILE },
- #endif /* WITH_XMSS */
--		{ NULL, NULL, NULL }
--	};
+@@ -1016,7 +1024,22 @@ do_gen_all_hostkeys(struct passwd *pw)
+ #endif /* WITH_OPENSSL */
+ 		{ "ed25519", "ED25519",_PATH_HOST_ED25519_KEY_FILE },
+ 		{ NULL, NULL, NULL }
 +#ifndef ENABLE_OPENSSL_FIPS
-+		{ NULL, NULL, NULL }};
-+#else /* ENABLE_OPENSSL_FIPS */
-+		{ NULL, NULL, NULL }},
-+	key_types_fips[] = {
+ 	};
++#else
++	},
++        key_types_fips[] = {
 +#ifdef WITH_OPENSSL
-+		{ "rsa", "RSA" ,_PATH_HOST_RSA_KEY_FILE },
++                { "rsa", "RSA" ,_PATH_HOST_RSA_KEY_FILE },
 +#ifdef OPENSSL_HAS_ECC
-+		{ "ecdsa", "ECDSA",_PATH_HOST_ECDSA_KEY_FILE },
++                { "ecdsa", "ECDSA",_PATH_HOST_ECDSA_KEY_FILE },
 +#endif /* OPENSSL_HAS_ECC */
 +#endif /* WITH_OPENSSL */
-+		{ NULL, NULL, NULL }},
-+	*key_types = ssh_FIPS_mode() ? key_types_fips : key_types_dflt;
++                { NULL, NULL, NULL }
++	},
++        *key_types = ssh_FIPS_mode() ? key_types_fips : key_types_dflt;
 +#endif /* ENABLE_OPENSSL_FIPS */
++
  
  	u_int32_t bits = 0;
  	int first = 0;
-@@ -3413,6 +3433,10 @@ main(int argc, char **argv)
+@@ -3321,6 +3344,10 @@ main(int argc, char **argv)
  
  	log_init(argv[0], SYSLOG_LEVEL_INFO, SYSLOG_FACILITY_USER, 1);
  
@@ -545,7 +548,7 @@
  	msetlocale();
  
  	/* we need this for the home * directory.  */
-@@ -3846,7 +3870,12 @@ main(int argc, char **argv)
+@@ -3757,7 +3784,12 @@ main(int argc, char **argv)
  	}
  
  	if (key_type_name == NULL)
@@ -558,9 +561,9 @@
  
  	type = sshkey_type_from_shortname(key_type_name);
  	type_bits_valid(type, key_type_name, &bits);
---- old/ssh-keysign.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/ssh-keysign.c	2025-04-23 11:26:41.740017460 +0200
-@@ -239,6 +239,12 @@ main(int argc, char **argv)
+--- old/ssh-keysign.c	2025-10-06 04:25:16.000000000 +0200
++++ new/ssh-keysign.c	2025-10-09 15:47:11.785477625 +0200
+@@ -235,6 +235,12 @@ main(int argc, char **argv)
  	if (found == 0)
  		fatal("could not open any host key");
  
@@ -573,8 +576,8 @@
  	found = 0;
  	for (i = 0; i < NUM_KEYTYPES; i++) {
  		keys[i] = NULL;
---- old/ssh.1	2025-04-23 11:26:40.926702300 +0200
-+++ new/ssh.1	2025-04-23 11:26:41.740608400 +0200
+--- old/ssh.1	2025-10-09 15:47:10.906588945 +0200
++++ new/ssh.1	2025-10-09 15:47:11.786323595 +0200
 @@ -103,6 +103,9 @@ or it may have additional arguments.
  If supplied, the arguments will be appended to the command, separated by
  spaces, before it is sent to the server to be executed.
@@ -585,9 +588,9 @@
  The options are as follows:
  .Pp
  .Bl -tag -width Ds -compact
---- old/ssh.c	2025-04-23 11:26:41.609891790 +0200
-+++ new/ssh.c	2025-04-23 11:26:41.741312305 +0200
-@@ -1227,6 +1227,10 @@ main(int ac, char **av)
+--- old/ssh.c	2025-10-09 15:47:11.636797315 +0200
++++ new/ssh.c	2025-10-09 15:47:11.787148190 +0200
+@@ -1243,6 +1243,10 @@ main(int ac, char **av)
  	debug3("Started with: %s", args);
  	free(args);
  
@@ -598,8 +601,8 @@
  	/* Parse the configuration files */
  	process_config_files(options.host_arg, pw, 0, &want_final_pass);
  	if (want_final_pass)
---- old/ssh_api.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/ssh_api.c	2025-04-23 11:26:41.741717440 +0200
+--- old/ssh_api.c	2025-10-06 04:25:16.000000000 +0200
++++ new/ssh_api.c	2025-10-09 15:47:11.787788720 +0200
 @@ -94,6 +94,9 @@ ssh_init(struct ssh **sshp, int is_serve
  	int r;
  
@@ -610,8 +613,8 @@
  		seed_rng();
  		called = 1;
  	}
---- old/ssh_config.5	2025-04-23 11:26:40.928534985 +0200
-+++ new/ssh_config.5	2025-04-23 11:26:41.742509455 +0200
+--- old/ssh_config.5	2025-10-09 15:47:10.908530140 +0200
++++ new/ssh_config.5	2025-10-09 15:47:11.788722005 +0200
 @@ -623,6 +623,13 @@ aes128-gcm@openssh.com,aes256-gcm@openss
  aes128-ctr,aes192-ctr,aes256-ctr
  .Ed
@@ -644,7 +647,7 @@
  .It Cm GSSAPIRenewalForcesRekey
  If set to
  .Cm yes
-@@ -1544,6 +1555,16 @@ umac-64@openssh.com,umac-128@openssh.com
+@@ -1543,6 +1554,16 @@ umac-64@openssh.com,umac-128@openssh.com
  hmac-sha2-256,hmac-sha2-512,hmac-sha1
  .Ed
  .Pp
@@ -661,7 +664,7 @@
  The list of available MAC algorithms may also be obtained using
  .Qq ssh -Q mac .
  .It Cm NoHostAuthenticationForLocalhost
-@@ -1653,6 +1674,9 @@ The default is:
+@@ -1652,6 +1673,9 @@ The default is:
  publickey,gssapi-keyex,gssapi-with-mic,password,
  keyboard-interactive,hostbased
  .Ed
@@ -671,8 +674,8 @@
  .It Cm ProxyCommand
  Specifies the command to use to connect to the server.
  The command
---- old/sshconnect2.c	2025-04-23 11:26:40.929548745 +0200
-+++ new/sshconnect2.c	2025-04-23 11:26:41.743222975 +0200
+--- old/sshconnect2.c	2025-10-09 15:47:10.909538290 +0200
++++ new/sshconnect2.c	2025-10-09 15:47:11.789664350 +0200
 @@ -268,29 +268,36 @@ ssh_kex2(struct ssh *ssh, char *host, st
  
  #if defined(GSSAPI) && defined(WITH_OPENSSL)
@@ -730,9 +733,9 @@
  		}
  
  		free(gss);
---- old/sshd-auth.c	2025-04-23 11:26:40.930060095 +0200
-+++ new/sshd-auth.c	2025-04-23 11:26:41.743693630 +0200
-@@ -855,10 +855,15 @@ do_ssh2_kex(struct ssh *ssh)
+--- old/sshd-auth.c	2025-10-09 15:47:10.910080600 +0200
++++ new/sshd-auth.c	2025-10-09 15:47:11.790163925 +0200
+@@ -834,10 +834,15 @@ do_ssh2_kex(struct ssh *ssh)
  	if (strlen(myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS]) == 0)
  		orig = NULL;
  	
@@ -752,9 +755,9 @@
  
  	if (gss && orig)
  		xasprintf(&newstr, "%s,%s", gss, orig);
---- old/sshd-session.c	2025-04-23 11:26:40.930591605 +0200
-+++ new/sshd-session.c	2025-04-23 11:26:41.744218585 +0200
-@@ -1035,6 +1035,10 @@ main(int ac, char **av)
+--- old/sshd-session.c	2025-10-09 15:47:10.910606665 +0200
++++ new/sshd-session.c	2025-10-09 15:47:11.791013015 +0200
+@@ -1011,6 +1011,10 @@ main(int ac, char **av)
  	    SYSLOG_FACILITY_AUTH : options.log_facility,
  	    log_stderr || !inetd_flag || debug_flag);
  
@@ -765,8 +768,8 @@
  	/* Fetch our configuration */
  	if ((cfg = sshbuf_new()) == NULL)
  		fatal("sshbuf_new config buf failed");
---- old/sshd.8	2025-04-23 11:26:40.931058090 +0200
-+++ new/sshd.8	2025-04-23 11:26:41.744687650 +0200
+--- old/sshd.8	2025-10-09 15:47:10.911084310 +0200
++++ new/sshd.8	2025-10-09 15:47:11.791727660 +0200
 @@ -83,6 +83,9 @@ rereads its configuration file when it r
  by executing itself with the name and options it was started with, e.g.\&
  .Pa /usr/sbin/sshd .
@@ -777,9 +780,9 @@
  The options are as follows:
  .Bl -tag -width Ds
  .It Fl 4
---- old/sshd.c	2025-04-23 11:26:40.931661510 +0200
-+++ new/sshd.c	2025-04-23 11:26:41.745287380 +0200
-@@ -1497,6 +1497,10 @@ main(int ac, char **av)
+--- old/sshd.c	2025-10-09 15:47:10.911738520 +0200
++++ new/sshd.c	2025-10-09 15:47:11.792404850 +0200
+@@ -1499,6 +1499,10 @@ main(int ac, char **av)
  	    SYSLOG_FACILITY_AUTH : options.log_facility,
  	    log_stderr || !inetd_flag || debug_flag);
  
@@ -790,8 +793,8 @@
  	/*
  	 * Unset KRB5CCNAME, otherwise the user's session may inherit it from
  	 * root's environment
---- old/sshd_config.5	2025-04-23 11:26:40.932416220 +0200
-+++ new/sshd_config.5	2025-04-23 11:26:41.746163500 +0200
+--- old/sshd_config.5	2025-10-09 15:47:10.912505620 +0200
++++ new/sshd_config.5	2025-10-09 15:47:11.793509495 +0200
 @@ -238,6 +238,9 @@ is enabled),
  .Qq password
  and
@@ -834,7 +837,7 @@
  .It Cm GSSAPIStrictAcceptorCheck
  Determines whether to be strict about the identity of the GSSAPI acceptor
  a client authenticates against.
-@@ -1248,6 +1262,16 @@ umac-64@openssh.com,umac-128@openssh.com
+@@ -1247,6 +1261,16 @@ umac-64@openssh.com,umac-128@openssh.com
  hmac-sha2-256,hmac-sha2-512,hmac-sha1
  .Ed
  .Pp
@@ -851,9 +854,9 @@
  The list of available MAC algorithms may also be obtained using
  .Qq ssh -Q mac .
  .It Cm Match
---- old/sshkey.c	2025-04-23 11:26:40.933339560 +0200
-+++ new/sshkey.c	2025-04-23 11:26:41.747340400 +0200
-@@ -99,11 +99,9 @@ extern const struct sshkey_impl sshkey_e
+--- old/sshkey.c	2025-10-09 15:47:10.913442940 +0200
++++ new/sshkey.c	2025-10-09 15:47:11.794987250 +0200
+@@ -92,11 +92,9 @@ extern const struct sshkey_impl sshkey_e
  extern const struct sshkey_impl sshkey_ed25519_sk_cert_impl;
  #ifdef WITH_OPENSSL
  # ifdef OPENSSL_HAS_ECC
@@ -865,7 +868,7 @@
  extern const struct sshkey_impl sshkey_ecdsa_nistp256_impl;
  extern const struct sshkey_impl sshkey_ecdsa_nistp256_cert_impl;
  extern const struct sshkey_impl sshkey_ecdsa_nistp384_impl;
-@@ -141,13 +139,42 @@ const struct sshkey_impl sshkey_null_imp
+@@ -126,13 +124,42 @@ const struct sshkey_impl sshkey_null_imp
  	/* .funcs = */		NULL,
  };
  
@@ -910,7 +913,7 @@
  #ifdef WITH_OPENSSL
  # ifdef OPENSSL_HAS_ECC
  	&sshkey_ecdsa_nistp256_impl,
-@@ -158,11 +185,9 @@ const struct sshkey_impl * const keyimpl
+@@ -143,11 +170,9 @@ const struct sshkey_impl * const keyimpl
  	&sshkey_ecdsa_nistp521_impl,
  	&sshkey_ecdsa_nistp521_cert_impl,
  #  endif /* OPENSSL_HAS_NISTP521 */
@@ -920,5 +923,5 @@
  	&sshkey_ecdsa_sk_webauthn_impl,
 -#  endif /* ENABLE_SK */
  # endif /* OPENSSL_HAS_ECC */
- # ifdef WITH_DSA
- 	&sshkey_dss_impl,
+ 	&sshkey_rsa_impl,
+ 	&sshkey_rsa_cert_impl,

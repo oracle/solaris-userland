@@ -37,22 +37,21 @@ include ../../make-rules/shared-macros.mk
 # Then add a line to network-ssh.p5m to deliver them.
 
 COMPONENT_NAME=		openssh
-COMPONENT_VERSION=	10.0p1
+COMPONENT_VERSION=	10.2p1
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_ANITYA_ID=	2565
 
 # Version for IPS.  The encoding rules are:
 #   OpenSSH <x>.<y>p<n>     => IPS <x>.<y>.0.<n>
 #   OpenSSH <x>.<y>.<z>p<n> => IPS <x>.<y>.<z>.<n>
-# The original version of release 10.0 advertises itself as 10.0p2
-IPS_COMPONENT_VERSION=	10.0.0.2
+IPS_COMPONENT_VERSION=	10.2.0.1
 
 COMPONENT_PROJECT_URL=	https://www.openssh.com/
-COMPONENT_ARCHIVE_HASH= sha256:021a2e709a0edf4250b1256bd5a9e500411a90dddabea830ed59cef90eb9d85c
+COMPONENT_ARCHIVE_HASH= sha256:ccc42c0419937959263fa1dbd16dafc18c56b984c03562d2937ce56a60f798b2
 COMPONENT_ARCHIVE_URL=	https://mirrors.sonic.net/pub/OpenBSD/OpenSSH/portable/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
-COMPONENT_BAID_OPENSSH=	326773
+COMPONENT_BAID_OPENSSH=	350735
 COMPONENT_BAID_GSSKEX=	20735
 
 # Because of set up requirements, test suite is in stc gate.

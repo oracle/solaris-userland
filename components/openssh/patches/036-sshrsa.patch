@@ -3,9 +3,9 @@
 # This should be temporary and should be removed later on and so it is not
 # part of the FIPS patch.
 #
---- old/readconf.c	2025-04-25 12:28:16.759426150 +0200
-+++ new/readconf.c	2025-04-25 12:28:56.749814145 +0200
-@@ -1744,6 +1744,22 @@ parse_pubkey_algos:
+--- old/readconf.c	2025-10-10 11:53:51.322206760 +0200
++++ new/readconf.c	2025-10-10 11:53:52.357323145 +0200
+@@ -1750,6 +1750,22 @@ parse_pubkey_algos:
  			    filename, linenum, arg ? arg : "<NONE>");
  			goto out;
  		}
@@ -28,9 +28,9 @@
  		if (*activep && *charptr == NULL)
  			*charptr = xstrdup(arg);
  		break;
---- old/servconf.c	2025-04-25 12:28:17.423451165 +0200
-+++ new/servconf.c	2025-04-25 12:29:04.337082950 +0200
-@@ -1714,6 +1714,21 @@ process_server_config_line_depth(ServerO
+--- old/servconf.c	2025-10-10 11:53:52.046943355 +0200
++++ new/servconf.c	2025-10-10 11:53:52.358323300 +0200
+@@ -1708,6 +1708,21 @@ process_server_config_line_depth(ServerO
  		    arg + 1 : arg, 1, ca_only))
  			fatal("%s line %d: Bad key types '%s'.",
  			    filename, linenum, arg ? arg : "<NONE>");
@@ -52,9 +52,9 @@
  		if (*activep && *charptr == NULL)
  			*charptr = xstrdup(arg);
  		break;
---- old/sshkey.c	2025-04-25 12:28:17.565837700 +0200
-+++ new/sshkey.c	2025-04-25 12:31:28.922824440 +0200
-@@ -158,6 +158,7 @@ const struct sshkey_impl * const keyimpl
+--- old/sshkey.c	2025-10-10 11:53:52.204265040 +0200
++++ new/sshkey.c	2025-10-10 11:54:21.011716610 +0200
+@@ -143,6 +143,7 @@ const struct sshkey_impl * const keyimpl
  	&sshkey_ecdsa_sk_cert_impl,
  	&sshkey_ecdsa_sk_webauthn_impl,
  # endif /* OPENSSL_HAS_ECC */
@@ -62,10 +62,10 @@
  	&sshkey_rsa_sha256_impl,
  	&sshkey_rsa_sha256_cert_impl,
  	&sshkey_rsa_sha512_impl,
-@@ -371,11 +372,18 @@ sshkey_alg_list(int certs_only, int plai
- 	char *tmp, *ret = NULL;
- 	size_t i, nlen, rlen = 0;
+@@ -349,11 +350,18 @@ sshkey_alg_list(int certs_only, int plai
+ 	size_t i;
  	const struct sshkey_impl *impl;
+ 	char sep_str[2] = {sep, '\0'};
 +#ifdef ENABLE_OPENSSL_FIPS
 +	boolean_t filter_ssh_rsa = ssh_FIPS_mode() != 0;
 +#endif
@@ -81,7 +81,7 @@
  		if (!include_sigonly && impl->sigonly)
  			continue;
  		if ((certs_only && !impl->cert) || (plain_only && impl->cert))
-@@ -394,6 +402,55 @@ sshkey_alg_list(int certs_only, int plai
+@@ -363,6 +371,55 @@ sshkey_alg_list(int certs_only, int plai
  	return ret;
  }
  
@@ -100,7 +100,7 @@
 +{
 +	const char *p, *q;
 +	size_t len;
-+	char *new, *endp;
++	char *new;
 +
 +	*newp = NULL;
 +
@@ -137,9 +137,9 @@
  int
  sshkey_names_valid2(const char *names, int allow_wildcard, int plain_only)
  {
---- old/sshkey.h	2025-04-25 12:28:16.771413065 +0200
-+++ new/sshkey.h	2025-04-25 12:28:17.706732290 +0200
-@@ -271,6 +271,9 @@ int		 sshkey_ec_validate_private(const E
+--- old/sshkey.h	2025-10-10 11:53:51.333264950 +0200
++++ new/sshkey.h	2025-10-10 11:53:52.359706855 +0200
+@@ -251,6 +251,9 @@ int		 sshkey_ec_validate_private(const E
  const char	*sshkey_ssh_name(const struct sshkey *);
  const char	*sshkey_ssh_name_plain(const struct sshkey *);
  int		 sshkey_names_valid2(const char *, int, int);

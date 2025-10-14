@@ -15,9 +15,9 @@
 # Reported upstream:
 # https://bugzilla.mindrot.org/show_bug.cgi?id=2549
 #
---- openssh-9.4p1/auth-pam.c
-+++ openssh-9.4p1/auth-pam.c
-@@ -432,6 +432,9 @@ if (sshpam_err != PAM_SUCCESS)
+--- old/auth-pam.c	2025-10-10 20:54:14.837805110 +0200
++++ new/auth-pam.c	2025-10-10 20:54:34.876537460 +0200
+@@ -456,6 +456,9 @@ do_pam_auth(struct pam_ctxt *ctxt)
  			goto auth_fail;
  		sshpam_password_change_required(0);
  	}
@@ -27,9 +27,9 @@
  
  	ctxt->pam_done = 1;
  
-@@ -1089,6 +1092,8 @@ }
+@@ -1105,6 +1108,8 @@ do_pam_account(void)
  void
- do_pam_setcred(int init)
+ do_pam_setcred(void)
  {
 +	if (sshpam_authenticated == 1)
 +		return;	/* pam_setcred already done */

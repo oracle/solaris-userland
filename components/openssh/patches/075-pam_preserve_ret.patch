@@ -9,10 +9,10 @@
 # The patch can be removed in case the above bugzilla gets fixed and the fix
 # addresses the problem in desired way. 
 #
---- old/auth-pam.c	2025-03-06 11:44:42.907013110 +0100
-+++ new/auth-pam.c	2025-03-06 11:44:43.475514830 +0100
-@@ -418,10 +418,10 @@ do_pam_auth(struct pam_ctxt *ctxt)
- 	if (sshpam_err != PAM_SUCCESS)
+--- old/auth-pam.c	2025-10-13 15:17:03.295642180 +0200
++++ new/auth-pam.c	2025-10-13 15:17:03.907708030 +0200
+@@ -447,10 +447,10 @@ do_pam_auth(struct pam_ctxt *ctxt)
+ 	if ((sshpam_err = check_pam_user(sshpam_authctxt)) != PAM_SUCCESS)
  		goto auth_fail;
  
 -	if (!do_pam_account()) {
@@ -25,13 +25,13 @@
  	if (sshpam_authctxt->force_pwchange) {
  		if ((buffer = sshbuf_new()) == NULL)
  			fatal("%s: sshbuf_new failed", __func__);
-@@ -1078,26 +1078,32 @@ finish_pam(void)
+@@ -1099,26 +1099,32 @@ finish_pam(void)
  u_int
  do_pam_account(void)
  {
 +	static int sshpam_err_saved = PAM_SUCCESS;
 +
- 	debug("%s: called", __func__);
+ 	debug_f("called");
 -	if (sshpam_account_status != -1)
 -		return (sshpam_account_status);
 +	if (sshpam_account_status != -1) {
@@ -63,8 +63,8 @@
  }
  
  void
---- old/auth2.c	2025-03-06 11:44:40.592102180 +0100
-+++ new/auth2.c	2025-03-06 11:44:43.475998160 +0100
+--- old/auth2.c	2025-10-13 15:17:00.703503750 +0200
++++ new/auth2.c	2025-10-13 15:17:03.908503660 +0200
 @@ -421,7 +421,7 @@ userauth_finish(struct ssh *ssh, int aut
  		 * perform account check for this service.
  		 */
@@ -83,9 +83,9 @@
  
  		/* If PAM returned a message, send it to the user. */
  		if (sshbuf_len(loginmsg) > 0) {
---- old/monitor.c	2025-03-06 11:44:41.735677570 +0100
-+++ new/monitor.c	2025-03-06 11:44:43.476687545 +0100
-@@ -1136,7 +1136,7 @@ mm_answer_pam_account(struct ssh *ssh, i
+--- old/monitor.c	2025-10-13 15:17:02.021609510 +0200
++++ new/monitor.c	2025-10-13 15:17:03.909342635 +0200
+@@ -1229,7 +1229,7 @@ mm_answer_pam_account(struct ssh *ssh, i
  
  	mm_request_send(sock, MONITOR_ANS_PAM_ACCOUNT, m);
  
