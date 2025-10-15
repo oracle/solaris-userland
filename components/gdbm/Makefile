@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdbm
-COMPONENT_VERSION=	1.23
+COMPONENT_VERSION=	1.26
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:74b1081d21fff13ae4bd7c16e5d6e504a4c26f7cde1dca0d963a484174bbcacd
+    sha256:6a24504a14de4a744103dcb936be976df6fbe88ccff26065e54c1c47946f4a5e
+COMPONENT_ARCHIVE_URL=	https://ftpmirror.gnu.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libgdbm
 COMPONENT_ANITYA_ID=	882
 
-COMPONENT_BAID=		122551
+COMPONENT_BAID=		350199
 
 build:		$(BUILD_32_and_64)
 
