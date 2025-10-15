@@ -31,14 +31,14 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pango
-COMPONENT_VERSION=	1.55.5
+COMPONENT_VERSION=	1.56.4
 COMPONENT_PROJECT_URL=	http://www.pango.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:e396126ea08203cbd8ef12638e6222e2e1fd8aa9cac6743072fedc5f2d820dd8
+    sha256:17065e2fcc5f5a5bdbffc884c956bfc7c451a96e8c4fb2f8ad837c6413cb5a01
 COMPONENT_BUGDB=	gnome/pango
 COMPONENT_ANITYA_ID=	11783
 
-COMPONENT_BAID=		195946
+COMPONENT_BAID=		342341
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -46,7 +46,9 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # doc build requires python modules we don't have (markdown, typogrify)
 CONFIGURE_OPTIONS += -Ddocumentation=false
 CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
+CONFIGURE_OPTIONS.64 += -Dintrospection=enabled
 CONFIGURE_OPTIONS += -Dbuild-testsuite=true
+CONFIGURE_OPTIONS += -Dman-pages=true
 
 # Workaround for build failures due to pango Makefiles not passing CFLAGS or
 # LDFLAGS, especially the -m32/64 flag, to g-ir-scanner

@@ -1,3 +1,4 @@
+
 ## Files:
 COPYING
 
@@ -484,88 +485,6 @@ necessary.  Here is a sample; alter the names:
 
 That's all there is to it!
 
-
-## Files:
-README.md
-
-Pango
-=====
-
-Pango is a library for layout and rendering of text, with an emphasis
-on internationalization. Pango can be used anywhere that text layout
-is needed; however, most of the work on Pango so far has been done using
-the GTK widget toolkit as a test platform. Pango forms the core of text
-and font handling for GTK.
-
-Pango is designed to be modular; the core Pango layout can be used
-with different font backends. There are three basic backends, with
-multiple options for rendering with each.
-
-- Client-side fonts using the FreeType and FontConfig libraries.
-  Rendering can be with with Cairo or Xft libraries, or directly
-  to an in-memory buffer with no additional libraries.
-- Native fonts on Microsoft Windows. Rendering can be done via Cairo
-  or directly using the native Win32 API.
-- Native fonts on MacOS X with the CoreText framework, rendering via
-  Cairo.
-
-The integration of Pango with [Cairo](https://cairographics.org)
-provides a complete solution with high quality text handling and
-graphics rendering.
-
-As well as the low level layout rendering routines, Pango includes
-PangoLayout, a high level driver for laying out entire blocks of text,
-and routines to assist in editing internationalized text.
-
-For more information about Pango, see:
-
- https://www.pango.org/
-
-Dependencies
-------------
-Pango depends on the GLib library; more information about GLib can
-be found at https://www.gtk.org/.
-
-To use the Free Software stack backend, Pango depends on the following
-libraries:
-
-- [FontConfig](https://www.fontconfig.org) for font discovery,
-- [FreeType](https://www.freetype.org) for font access,
-- [HarfBuzz](http://www.harfbuzz.org) for complex text shaping
-- [fribidi](http://fribidi.org) for bidirectional text handling
-
-Cairo support depends on the [Cairo](https://cairographics.org) library.
-The Cairo backend is the preferred backend to use Pango with and is
-subject of most of the development in the future.  It has the
-advantage that the same code can be used for display and printing.
-
-We suggest using Pango with Cairo as described above, but you can also
-do X-specific rendering using the Xft library. The Xft backend uses
-version 2 of the Xft library to manage client side fonts. Version 2 of
-Xft is available from https://xlibs.freedesktop.org/release/.  You'll
-need the libXft package, and possibly the libXrender and renderext
-packages as well.  You'll also need FontConfig.
-
-Installation of Pango on Win32 is possible, see README.win32.
-
-License
--------
-Most of the code of Pango is licensed under the terms of the
-GNU Lesser Public License (LGPL) - see the file COPYING for details.
-
-Versioning
-----------
-
-Historically, Pango was following the traditionally even/odd library
-versioning scheme where stable releases are marked by even minor
-and development releases by an odd minor.
-
-In recent years, Pango development has slowed down so much that it
-no longer makes sense to have unstable cycles, or even unstable releases.
-Going forward, pango versions will simply be increasing triples, with
-no particular significance to the parity of the minor version.
-
-
 ## Files:
 pango/pango-script.c
 
@@ -590,9 +509,6 @@ pango/pango-script.c
  Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  Boston, MA 02111-1307, USA.
 
- Implementation of pango_script_iter is derived from ICU:
-
-  icu/sources/common/usc_impl.c
 
 *********************************************************************
    Corporation and others.  All Rights Reserved.
@@ -647,10 +563,6 @@ tests/testscript.c
  License along with this library; if not, write to the
  Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  Boston, MA 02111-1307, USA.
-
- The test strings here come from ICU:
-
-  icu/sources/test/cintltst/cucdtst.c
 
 *******************************************************************
  COPYRIGHT:
@@ -1106,10 +1018,8 @@ License along with this library; if not, write to the
 Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.
 
-## Files:
-pango/pango-break.h
 
-Pango
+## Files:
 pango-break.h:
 
 Copyright (C) 1999 Red Hat Software
@@ -1336,7 +1246,7 @@ version 2 of the License, or (at your option) any later version.
 
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
@@ -1418,6 +1328,21 @@ Boston, MA 02111-1307, USA.
 
 
 ## Files:
+pango/pango-emoji-table.h
+
+# emoji-data.txt
+# Date: 2024-05-01, 21:25:24 GMT
+# © 2024 Unicode®, Inc.
+# Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+# For terms of use and license, see https://www.unicode.org/terms_of_use.html
+#
+# Emoji Data for UTS #51
+# Used with Emoji Version 16.0 and subsequent minor revisions (if any)
+#
+# For documentation and usage, see https://www.unicode.org/reports/tr51
+
+
+## Files:
 pango/pango-emoji.c
 
 Pango
@@ -1439,6 +1364,7 @@ You should have received a copy of the GNU Library General Public
 License along with this library; if not, write to the
 Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.
+
 
 // Copyright 2015 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
@@ -2097,8 +2023,6 @@ Boston, MA 02111-1307, USA.
 
 ## Files:
 pango/pango-matrix.c
-
-Based on cairo-matrix.c:_cairo_matrix_compute_scale_factors()
 
 Copyright 2005, Keith Packard
 
@@ -3149,10 +3073,6 @@ Boston, MA 02111-1307, USA.
 ## Files:
 pango/pangofc-font.c
 
-For Xft, it would be slightly more efficient to simply to
-call Xft, and also more robust against changes in Xft.
-But for now, we simply use the same code for all backends.
-
 The code in this function is partly based on code from Xft,
 Copyright 2000 Keith Packard
 
@@ -4020,6 +3940,27 @@ Boston, MA 02111-1307, USA.
 
 
 ## Files:
+tests/test-layout2.c
+
+Copyright (C) 2025 Red Hat, Inc
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the
+Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+Boston, MA 02111-1307, USA.
+
+
+## Files:
 tests/test-no-fonts.c
 
 Pango
@@ -4441,7 +4382,7 @@ version 2 of the License, or (at your option) any later version.
 
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
@@ -4739,3 +4680,4 @@ You should have received a copy of the GNU Library General Public
 License along with this library; if not, write to the
 Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.
+
