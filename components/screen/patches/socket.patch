@@ -1,0 +1,18 @@
+https://savannah.gnu.org/bugs/index.php?67527
+
+--- screen-5.0.1/socket.c
++++ screen-5.0.1/socket.c
+@@ -1154,7 +1154,12 @@ AddStr(prompt);
+ }
+ 
+ #if ENABLE_PAM
+-static int screen_conv(int num_msg, const struct pam_message **msg,
++#if defined(__sun) || defined(__sun__)    /* Solaris */
++# define PAM_MSG_CONST
++#else                                     /* Linux, *BSD, etc. */
++# define PAM_MSG_CONST const
++#endif
++static int screen_conv(int num_msg, PAM_MSG_CONST struct pam_message **msg,
+ 		struct pam_response **resp, void *data)
+ {
+ 	(void)num_msg;	/* unused */

@@ -1,0 +1,16 @@
+https://savannah.gnu.org/bugs/index.php?67525
+
+--- screen-5.0.1/tty.c
++++ screen-5.0.1/tty.c
+@@ -41,6 +41,11 @@ #include <sys/file.h>
+ #include <sys/ioctl.h>
+ #include <unistd.h>
+ 
++/* For SRIOCSREDIR on Solaris */
++#if defined(__sun__)
++# include <sys/strredir.h>
++#endif
++
+ #include "screen.h"
+ #include "fileio.h"
+ #include "misc.h"

@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+COMPILER = gcc
 
 # The Makefile of this component does not support multiple build jobs.
 COMPONENT_MAKE_JOBS=1
@@ -30,13 +31,12 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		screen
-COMPONENT_VERSION=	4.9.1
+COMPONENT_VERSION=	5.0.1
+COMPONENT_ARCHIVE_URL=	https://ftpmirror.gnu.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:26cef3e3c42571c0d484ad6faf110c5c15091fbf872b06fa7aa4766c7405ac69
+    sha256:2dae36f4db379ffcd14b691596ba6ec18ac3a9e22bc47ac239789ab58409869d
 COMPONENT_ANITYA_ID=	4772
-COMPONENT_BAID=		150694
-
-COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) $(AUTORECONF) -fiv);
+COMPONENT_BAID=		344424
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -45,13 +45,11 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnu-component.mk
 
-# Use standard XPG5MODE makefile macro during the build
-CFLAGS += $(XPG5MODE) 
+COMPONENT_PREP_ACTION= (cd $(@D) ; autoconf)
 
-# Fix 64-bit linking via compiler.
-LDFLAGS += $(CC_BITS)
+# Allow build outside of source directory
+CFLAGS += -I$(SOURCE_DIR)
 
-CONFIGURE_OPTIONS +=	--enable-colors256
 CONFIGURE_OPTIONS +=	--with-sys-screenrc=$(ETCDIR)/screenrc
 CONFIGURE_OPTIONS +=	--disable-socket-dir
 CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
@@ -62,3 +60,5 @@ $(PROTOTERMINFODIR):
 	$(MKDIR) $@
 
 $(INSTALL_64):	$(PROTOTERMINFODIR)
+
+REQUIRED_PACKAGES += system/library/pam-core

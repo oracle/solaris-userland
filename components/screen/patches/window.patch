@@ -1,0 +1,39 @@
+https://savannah.gnu.org/bugs/index.php?67567
+
+Reverts:
+
+https://cgit.git.savannah.gnu.org/cgit/screen.git/commit/?id=4cc0a2897f661d94870071cd93cd4d0bd50429a1
+
+--
+
+It avoids timeout during windows closure.
+
+screen
+<return>
+<ctrl>-a c
+<ctrl>-d
+<ctrl>-d
+# it waits for cca 10s before it exits
+
+--- screen-5.0.1/window.c
++++ screen-5.0.1/window.c
+@@ -1505,7 +1505,7 @@ WriteString(p, p->w_outbuf, len);
+ 		return;
+ 	}
+ 
+-	if ((len = read(event->fd, buf, size)) <= 0) {
++	if ((len = read(event->fd, buf, size)) < 0) {
+ 		if (errno == EINTR || errno == EAGAIN)
+ 			return;
+ #if defined(EWOULDBLOCK) && (EWOULDBLOCK != EAGAIN)
+@@ -1527,6 +1527,10 @@ bp++;
+ 		len--;
+ 	}
+ #endif
++	if (len == 0) {
++		WindowDied(p, 0, 0);
++		return;
++	}
+ #ifdef ENABLE_TELNET
+ 	if (p->w_type == W_TYPE_TELNET)
+ 		len = TelIn(p, bp, len, buf + ARRAY_SIZE(buf) - (bp + len));

@@ -1,0 +1,39 @@
+https://savannah.gnu.org/bugs/index.php?67566
+
+Fixes xterm-256color which seem to worked before:
+https://cgit.git.savannah.gnu.org/cgit/screen.git/commit/?id=86ce25b620c52c9bdea94bf1185a274466f69b80
+
+cat > test.sh << EOF
+for i in {0..255}; do
+    printf "\x1b[48;5;\${i}m%4d" \$i
+    if (( (\$i + 1) % 16 == 0 )); then
+        printf "\x1b[0m\n"
+    fi
+done
+printf "\x1b[0m\n"
+EOF
+export TERM=xterm-256color
+bash test.sh
+
+--- screen-5.0.1/display.c
++++ screen-5.0.1/display.c
+@@ -1341,8 +1341,7 @@ if (f > 15 && D_CCO != 256) {
+ 			f = D_CCO == 88 && D_CAF ? color256to88(f) : color256to16(f);
+ 		}
+ 		if (D_CAF) {
+-			//AddCStr2(D_CAF, f); //FIXME
+-			tputs(tparm("\033[38;5;%dm", f), 1, DoAddChar);
++			AddCStr2(D_CAF, f);
+ 		}
+ 		
+ 	}
+@@ -1379,8 +1378,7 @@ if (b > 15 && D_CCO != 256) {
+ 			b = D_CCO == 88 && D_CAB ? color256to88(b) : color256to16(b);
+ 		}
+ 		if (D_CAB) {
+-		//	AddCStr2(D_CAB, b); // FIXME
+-			tputs(tparm("\033[48;5;%dm", b), 1, DoAddChar);
++			AddCStr2(D_CAB, b);
+ 		}
+ 	}
+ 	if (b != ob && (b & 0x04000000) && hastruecolor) {

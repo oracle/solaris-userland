@@ -1,0 +1,55 @@
+Submitted to upstream via
+
+https://savannah.gnu.org/bugs/?67124
+
+--- screen-5.0.1/configure.ac
++++ screen-5.0.1/configure.ac
+@@ -62,6 +62,9 @@ AC_CHECK_FUNCS([execvpe])
+ dnl
+ AC_CHECK_FUNCS([seteuid setegid setreuid setresuid])
+ 
++dnl
++AC_CHECK_FUNCS([fdwalk])
++
+ dnl curses compatible lib, we do forward declaration ourselves, only need to link to proper library
+ AC_SEARCH_LIBS([tgetent], [curses termcap termlib ncursesw tinfow ncurses tinfo], [], [
+ 	AC_MSG_ERROR([unable to find tgetent() function])
+--- screen-5.0.1/misc.c
++++ screen-5.0.1/misc.c
+@@ -150,8 +150,28 @@ return;
+ 	(void)kill(pid, sig);
+ }
+ 
++#ifdef HAVE_FDWALK
++int
++close_func(void *except_pointer, int fd)
++{
++	/* Protect stdin, stdout and stderr */
++	if (fd < 3)
++		return 0;
++
++	/* Skip the protected FD */
++	if (fd == *(int *)except_pointer)
++		return 0;
++
++	(void)close(fd);
++	return 0;
++}
++#endif /* HAVE_FDWALK */
++
+ void closeallfiles(int except)
+ {
++#ifdef HAVE_FDWALK
++	fdwalk(close_func, &except);
++#else
+ 	struct pollfd pfd[1024];
+ 	int maxfd, i, fd, ret, z;
+ 
+@@ -176,6 +196,7 @@ close(fd);
+ 
+ 		i = fd;
+ 	}
++#endif /* HAVE_FDWALK */
+ }
+ 
+ /*
