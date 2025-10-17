@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,17 +29,17 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 COMPONENT_NAME=		thor
-COMPONENT_VERSION=      1.3.0
+COMPONENT_VERSION=      1.4.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).gem
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1adc7f9e5b3655a68c71393fee8bd0ad088d14ee8e83a0b73726f23cbb3ca7c3
+    sha256:8763e822ccb0f1d7bee88cde131b19a65606657b847cc7b7b4b82e772bcd8a3d
 COMPONENT_ARCHIVE_URL=	https://rubygems.org/downloads/$(COMPONENT_SRC).gem
-COMPONENT_PROJECT_URL=  https://github.com/erikhuda/thor/tree/v1.0.1
+COMPONENT_PROJECT_URL=  https://github.com/erikhuda/thor/
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	4425
 
-COMPONENT_BAID=         152810
+COMPONENT_BAID=         351432
 
 # Create gemspec.
 COMPONENT_POST_UNPACK_ACTION= \
