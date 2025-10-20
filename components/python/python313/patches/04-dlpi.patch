@@ -1,8 +1,8 @@
 This patch provides Python dlpi support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-3.13.3/Modules/dlpimodule.c
-+++ Python-3.13.3/Modules/dlpimodule.c
+--- Python-3.13.9/Modules/dlpimodule.c
++++ Python-3.13.9/Modules/dlpimodule.c
 @@ -0,0 +1,1224 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1228,8 +1228,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +
 +	return mod;
 +}
---- Python-3.13.3/Lib/test/dlpitest.py
-+++ Python-3.13.3/Lib/test/dlpitest.py
+--- Python-3.13.9/Lib/test/dlpitest.py
++++ Python-3.13.9/Lib/test/dlpitest.py
 @@ -0,0 +1,96 @@
 +#!/usr/bin/python3.13
 +
@@ -1327,9 +1327,9 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +testlink.unbind()
 +print("sap is %x" % testlink.get_sap())
 +print("state is: %d"  % testlink.get_state())
---- Python-3.13.3/configure.ac
-+++ Python-3.13.3/configure.ac
-@@ -7694,6 +7694,7 @@ PY_STDLIB_MOD([termios], [], [test "$ac_
+--- Python-3.13.9/configure.ac
++++ Python-3.13.9/configure.ac
+@@ -7811,6 +7811,7 @@ PY_STDLIB_MOD([termios], [], [test "$ac_
  
  dnl Solaris specific extensions
  PY_STDLIB_MOD_SIMPLE([ucred], [], [-ltsol])
@@ -1337,8 +1337,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  
  dnl _elementtree loads libexpat via CAPI hook in pyexpat
  PY_STDLIB_MOD([pyexpat],
---- Python-3.13.3/Modules/Setup.stdlib.in
-+++ Python-3.13.3/Modules/Setup.stdlib.in
+--- Python-3.13.9/Modules/Setup.stdlib.in
++++ Python-3.13.9/Modules/Setup.stdlib.in
 @@ -159,6 +159,7 @@
  # Solaris specific modules
  

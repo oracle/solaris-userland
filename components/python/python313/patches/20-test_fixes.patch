@@ -17,8 +17,8 @@ the highest priority. [Should be reported upstream]
 
 test_posixpath doesn't work well within OWAN. [Not for upstream]
 
---- Python-3.13.4/Lib/test/test_gdb/__init__.py
-+++ Python-3.13.4/Lib/test/test_gdb/__init__.py
+--- Python-3.13.9/Lib/test/test_gdb/__init__.py
++++ Python-3.13.9/Lib/test/test_gdb/__init__.py
 @@ -4,6 +4,7 @@
  # Lib/test/test_jit_gdb.py
  
@@ -37,8 +37,8 @@ test_posixpath doesn't work well within OWAN. [Not for upstream]
  if not sysconfig.is_python_build():
      raise unittest.SkipTest("test_gdb only works on source builds at the moment.")
  
---- Python-3.13.4/Lib/test/test_re.py
-+++ Python-3.13.4/Lib/test/test_re.py
+--- Python-3.13.9/Lib/test/test_re.py
++++ Python-3.13.9/Lib/test/test_re.py
 @@ -2207,6 +2207,8 @@ class ReTests(unittest.TestCase):
          self.assertTrue(re.match(b'(?Li)\xc5', b'\xe5'))
          self.assertTrue(re.match(b'(?Li)\xe5', b'\xc5'))
@@ -57,8 +57,8 @@ test_posixpath doesn't work well within OWAN. [Not for upstream]
      def test_locale_compiled(self):
          oldlocale = locale.setlocale(locale.LC_CTYPE)
          self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
---- Python-3.13.4/Lib/test/test_socket.py
-+++ Python-3.13.4/Lib/test/test_socket.py
+--- Python-3.13.9/Lib/test/test_socket.py
++++ Python-3.13.9/Lib/test/test_socket.py
 @@ -3768,7 +3768,7 @@ class CmsgMacroTests(unittest.TestCase):
          # Test CMSG_SPACE() with various valid and invalid values,
          # checking the assumptions used by sendmsg().
@@ -100,8 +100,8 @@ test_posixpath doesn't work well within OWAN. [Not for upstream]
      @unittest.skipIf(AIX, "skipping, see issue #22397")
      def _testFDPassSeparateMinSpace(self):
          fd0, fd1 = self.newFDs(2)
---- Python-3.13.4/Lib/test/test_tools/test_freeze.py
-+++ Python-3.13.4/Lib/test/test_tools/test_freeze.py
+--- Python-3.13.9/Lib/test/test_tools/test_freeze.py
++++ Python-3.13.9/Lib/test/test_tools/test_freeze.py
 @@ -16,6 +16,7 @@ with imports_under_tool('freeze', 'test'
  @unittest.skipIf(sys.platform.startswith('win'), 'not supported on Windows')
  @unittest.skipIf(sys.platform == 'darwin' and sys._framework,
@@ -110,9 +110,9 @@ test_posixpath doesn't work well within OWAN. [Not for upstream]
  @support.skip_if_buildbot('not all buildbots have enough space')
  # gh-103053: Skip test if Python is built with Profile Guided Optimization
  # (PGO), since the test is just too slow in this case.
---- Python-3.13.4/Lib/test/test_posixpath.py
-+++ Python-3.13.4/Lib/test/test_posixpath.py
-@@ -375,6 +375,8 @@ class PosixPathTest(unittest.TestCase):
+--- Python-3.13.9/Lib/test/test_posixpath.py
++++ Python-3.13.9/Lib/test/test_posixpath.py
+@@ -359,6 +359,8 @@ class PosixPathTest(unittest.TestCase):
  
      @unittest.skipIf(sys.platform == "vxworks",
                       "no home directory on VxWorks")
