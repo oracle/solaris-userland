@@ -56,7 +56,9 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Everything expects GNU utilities, so make sure those are preferred.
 # BOOTSTRAP_PATH is used during updates before new version is seeded.
-PATH = $(BOOTSTRAP_PATH):/usr/gnu/bin:/usr/bin
+# GCC 14 is still needed for Oniguruma. To be resolved with new Rust
+# version.
+PATH = $(BOOTSTRAP_PATH):/usr/gcc/14/bin:/usr/gnu/bin:/usr/bin
 
 # LD_B_DIRECT breaks the build.
 LD_B_DIRECT =
@@ -116,6 +118,7 @@ COMPONENT_TEST_CMD =	$(PYTHON) $(SOURCE_DIR)/x.py
 COMPONENT_TEST_ARGS =	test --no-fail-fast -j 8
 COMPONENT_TEST_TARGETS =
 
+REQUIRED_PACKAGES += developer/gcc-14
 REQUIRED_PACKAGES += developer/llvm/llvm
 REQUIRED_PACKAGES += developer/rust/rustc
 REQUIRED_PACKAGES += library/libssh2
