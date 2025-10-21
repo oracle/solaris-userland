@@ -27,14 +27,20 @@ COMPILER =		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		binutils
-COMPONENT_VERSION=	2.43.1
+COMPONENT_VERSION=	2.45
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
+COMPONENT_ARCHIVE_URL=	https://sourceware.org/pub/binutils/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:13f74202a3c4c51118b797a39ea4200d3f6cfbe224da6d1d95bb938480132dfd
+    sha256:c50c0e7f9cb188980e2cc97e4537626b1672441815587f1eab69d2a1bfbef5d2
 COMPONENT_BUGDB=	utility/gnu-binutils
 COMPONENT_ANITYA_ID=	7981
 
-COMPONENT_BAID=		178493
+COMPONENT_BAID=		349249
+
+# The .0.1 refers to version 2.45-1 to distinguish between community version
+# and this package, which contain fix for CVE-2025-1147.
+IPS_COMPONENT_VERSION=	2.45.0.1
+HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 
 #
 # for platform and cross platform support

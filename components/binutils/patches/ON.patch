@@ -1,0 +1,17 @@
+This temporarily reverts
+
+https://github.com/bminor/binutils-gdb/commit/d5cbf916be4a049580dfed8682f3f8795e57ecfa
+
+before ON is prepared for that (38537173).
+
+--- binutils-2.45/gas/config/obj-elf.c
++++ binutils-2.45/gas/config/obj-elf.c
+@@ -1334,7 +1334,7 @@ else
+ 		{
+ 		  entsize = get_absolute_expression ();
+ 		  SKIP_WHITESPACE ();
+-		  if (entsize <= 0)
++		  if (entsize < 0)
+ 		    {
+ 		      as_warn (_("invalid merge / string entity size"));
+ 		      attr &= ~(SHF_MERGE | SHF_STRINGS);
