@@ -49,15 +49,15 @@ LD_SHARED_OPTIONS_Z_DEFS=
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.20.13
+COMPONENT_VERSION=	9.20.15
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-COMPONENT_BAID=	343804
+COMPONENT_BAID=		352302
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:151f9376ead317e646a5d0c9f01c060386d891118d7437a7f829bb9727c7b34c
+	sha256:d62b38fae48ba83fca6181112d0c71018d8b0f2ce285dc79dc6a0367722ccabb
 COMPONENT_ARCHIVE_URL=	\
 	http://downloads.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 # For check_anitya target, https://release-monitoring.org/project/374094
