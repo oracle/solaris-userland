@@ -1,0 +1,16 @@
+legacy-cgi module works as drop in replacement for the standard cgi
+module, which was removed from Python 3.13.
+
+Not intended for upstream as they are already aware of this issue:
+https://github.com/Pylons/webob/issues/437
+
+--- webob-1.8.8/setup.py
++++ webob-1.8.8/setup.py
+@@ -52,6 +52,7 @@ setup(
+     packages=find_packages('src', exclude=['tests']),
+     package_dir={'': 'src'},
+     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
++    install_requires=['legacy-cgi; python_version >= "3.13"'],
+     zip_safe=True,
+     extras_require={
+         'testing': testing_extras,

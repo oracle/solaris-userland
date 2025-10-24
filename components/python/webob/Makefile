@@ -37,9 +37,6 @@ COMPONENT_BUGDB=	python-mod/webob
 COMPONENT_ANITYA_ID=	6181
 COMPONENT_BAID=		175676
 
-# Webob is not Python 3.13 ready yet (cgi standard module was removed)
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.13)
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -58,3 +55,5 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
+
+REQUIRED_PACKAGES += library/python/legacy-cgi-313
