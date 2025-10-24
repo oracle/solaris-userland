@@ -19,28 +19,28 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		argcomplete
-COMPONENT_VERSION=	3.2.2
+COMPONENT_VERSION=	3.6.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:f3e49e8ea59b4026ee29548e24488af46e30c9de57d48638e24f54a1ea1000a2
+    sha256:62e8ed4fd6a45864acc8235409461b72c9a28ee785a2011cc5eb78318786c89c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/kislyuk/argcomplete
 COMPONENT_BUGDB=	python-mod/argcomplete
 COMPONENT_ANITYA_ID=	3773
-COMPONENT_BAID=		158056
+COMPONENT_BAID=		352410
 
 # No need for multiple versions, we need just the one used py pipx
-PYTHON_VERSIONS= 3.11
+PYTHON_VERSIONS= 3.13
 PYV=$(shell echo $(PYTHON_VERSIONS) | tr -d .)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 PKG_MACROS += PYVER=$(PYTHON_VERSIONS)

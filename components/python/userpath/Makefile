@@ -36,7 +36,7 @@ COMPONENT_ANITYA_ID=	37501
 COMPONENT_BAID=		184900
 
 # No need for multiple versions, we need just the one used py pipx
-PYTHON_VERSIONS= 3.11
+PYTHON_VERSIONS= 3.13
 PYV=$(shell echo $(PYTHON_VERSIONS) | tr -d .)
 
 include $(WS_MAKE_RULES)/prep.mk
