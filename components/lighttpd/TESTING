@@ -9,7 +9,7 @@ ssl.engine = "enable"
 ssl.pemfile = "$ETCDIR/server.pem"
 }
 EOF
-gsed -i '/server.modules = (/a\ \ "mod_openssl",' $ETCDIR/modules.conf
+gsed -i '/server.modules += (/a\ \ "mod_openssl",' $ETCDIR/modules.conf
 
 # Configure LDAP auth
 ldap_hostname=$(svcprop -p config/server_list ldap/client | gawk '{print $1}')
@@ -27,8 +27,8 @@ auth.require = ( "" =>
         )
 )
 EOF
-gsed -i '/server.modules = (/a\ \ "mod_authn_ldap",' $ETCDIR/modules.conf
-gsed -i '/server.modules = (/a\ \ "mod_auth",' $ETCDIR/modules.conf
+gsed -i '/server.modules += (/a\ \ "mod_authn_ldap",' $ETCDIR/modules.conf
+gsed -i '/server.modules += (/a\ \ "mod_auth",' $ETCDIR/modules.conf
 
 # Prepare SSL certificate
 HOSTNAME=$(host `/usr/sbin/ifconfig -a | awk 'BEGIN { count=0; } { if ( $1 ~ /inet/ ) { count++; if( count==2 ) { print $2; } } }'` |   cut -d ' ' -f 5 | sed 's/\.$//') \

@@ -25,19 +25,25 @@
 BUILD_BITS =		64
 COMPILER =		gcc
 CTF_MODE =		relaxed
+
+# Temporary opt out till mysql-84 is in CBE
+SKIP_REQUIRED_PACKAGES_CHECK=
+
 include ../../make-rules/shared-macros.mk
 
 # This component does not fully specify dependencies of shared objects
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		lighttpd
-COMPONENT_VERSION=	1.4.71
+COMPONENT_VERSION=	1.4.82
 COMPONENT_PROJECT_URL=	http://www.lighttpd.net/
-COMPONENT_ARCHIVE_HASH=	sha256:3855dfed5ce7a4b006e3d434b00985852b5a91c2abc56d92071f98bfe79f9d80
+COMPONENT_ARCHIVE_HASH=	sha256:4f07f2d61ee8d136d105d9a62f139a46ad8216fe9e346476ee5340f87bcabd79
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1817
 
-COMPONENT_BAID=		144376
+COMPONENT_BAID=		352770
+
+BUILD_STYLE=	cmake
 
 LIGHTTPD_INSTALLDIR =	$(USRDIR)/lighttpd/1.4
 LIGHTTPD_ETC =		$(ETCDIR)/lighttpd/1.4
@@ -49,32 +55,28 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Some binaries (like lemon) are built by compiler in CC_FOR_BUILD. That
-# does not respect our PIE config so we need to work around it
-COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
+# Need to have in PATH mysql_config for cmake and exact perl version for tests
+PATH = /usr/perl/$(PERL_VERSION)/bin:/usr/mysql/8.0/bin:/usr/gnu/bin:/usr/bin:/usr/sbin
 
-# lighttpd is logging using __FILE__ macro. Cloning will make this happen
-# using just source file names (without full absolute paths).
-COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
+CMAKE_PREFIX= $(LIGHTTPD_INSTALLDIR)
 
-CONFIGURE_PREFIX= $(LIGHTTPD_INSTALLDIR)
-CONFIGURE_MANDIR= $(CONFIGURE_PREFIX)/man
-
-# Force lighttpd binaries and private modules to standard path
-CONFIGURE_LIBDIR.64 = $(CONFIGURE_PREFIX)/lib
-
-CONFIGURE_OPTIONS +=	--with-pic
-CONFIGURE_OPTIONS +=	--with-lua
-CONFIGURE_OPTIONS +=	--with-openssl
-CONFIGURE_OPTIONS +=	--with-ldap
-CONFIGURE_OPTIONS +=	--with-mysql=$(USRDIR)/mysql/8.0/bin/mysql_config
+CMAKE_OPTIONS += -DCMAKE_INSTALL_MANDIR="man"
+CMAKE_OPTIONS += -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+CMAKE_OPTIONS += -DLIGHTTPD_MODULES_DIR="lib"
+CMAKE_OPTIONS += -DWITH_MYSQL=ON
+CMAKE_OPTIONS += -DWITH_OPENSSL=ON
+CMAKE_OPTIONS += -DWITH_LDAP=ON
+CMAKE_OPTIONS += -DWITH_LUA=ON
 
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "s/, *[0-9][0-9]* wallclock secs (.*CPU)$$/, <TIMINGS REMOVED>/" ' \
-	'-e "/^preparing infrastructure/,//p" ' \
-	'-e "/.*/d" '
+	'-e "s/\x1B\[[0-9;]*[A-Za-z]//g" '  \
+	'-e "s/   [0-9]\.[0-9][0-9] sec//" '  \
+	'-e "s/  [0-9][0-9]\.[0-9][0-9] sec//" '
 
+REQUIRED_PACKAGES += database/mysql-80
 REQUIRED_PACKAGES += database/mysql-80/library
+REQUIRED_PACKAGES += database/mysql-84
+REQUIRED_PACKAGES += database/mysql-84/library
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
