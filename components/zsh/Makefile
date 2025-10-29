@@ -47,6 +47,8 @@ BUILD_TARGET=
 INSTALL_TARGET=
 include $(WS_MAKE_RULES)/common.mk
 
+COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) $(AUTORECONF) -fiv);
+
 # We need to get also the man pages copied, so they can be installed
 COMPONENT_PRE_CONFIGURE_ACTION = \
     ($(CLONEY) $(SOURCE_DIR) $(@D))
@@ -97,5 +99,5 @@ COMPONENT_TEST_TRANSFORMS += \
         '-n -e "/^.* successful test scripts, .* failures, .* skipped/p"'
 
 REQUIRED_PACKAGES += library/ncurses
-REQUIRED_PACKAGES += library/pcre
+REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += system/library/math
