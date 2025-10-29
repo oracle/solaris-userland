@@ -31,14 +31,14 @@ include ../../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		xorg-server
-COMPONENT_VERSION=	21.1.18
+COMPONENT_VERSION=	21.1.20
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c878d1930d87725d4a5bf498c24f4be8130d5b2646a9fd0f2994deff90116352
+	sha256:7695bc61824b3a81b6bad2f78b05400ca015003de402d1b322117105b702e937
 COMPONENT_BUGDB=        x11/xorg-server
 COMPONENT_ANITYA_ID=	5250
 COMPONENT_SIG_URL=
 
-COMPONENT_BAID=		332973
+COMPONENT_BAID=		353193
 
 # Remove compiler specific visibility flag that breaks builds of drivers
 # with other compilers
