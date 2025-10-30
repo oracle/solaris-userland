@@ -28,11 +28,11 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		unbound
-COMPONENT_VERSION=	1.23.1
-COMPONENT_BAID=		344188
+COMPONENT_VERSION=	1.24.1
+COMPONENT_BAID=		353487
 COMPONENT_PROJECT_URL=	https://nlnetlabs.nl/projects/unbound/about/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6a6b117c799d8de3868643397e0fd71591f6d42f4473f598bdb22609ff362590
+    sha256:7f2b1633e239409619ae0527f67878b0f33ae0ec0ee5a3a51c042c359ba1eeab
 COMPONENT_ARCHIVE_URL= \
     https://nlnetlabs.nl/downloads/unbound/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/unbound
@@ -44,8 +44,6 @@ ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 include $(WS_MAKE_RULES)/common.mk
-
-COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 PATH = /usr/gnu/bin:/usr/bin
 
