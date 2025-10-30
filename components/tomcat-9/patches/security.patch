@@ -2,9 +2,9 @@ Disable the use of ciphers unacceptable according to Oracle standards by default
 
 Not intended for upstream.
 
---- apache-tomcat-9.0.107-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
-+++ apache-tomcat-9.0.107-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
-@@ -56,7 +56,7 @@ // they are case-insensitive but are use
+--- apache-tomcat-9.0.111-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
++++ apache-tomcat-9.0.111-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
+@@ -57,7 +57,7 @@ // they are case-insensitive but are use
      // keys in Maps.
      protected static final String DEFAULT_SSL_HOST_NAME = "_default_";
      protected static final Set<String> SSL_PROTO_ALL_SET = new HashSet<>();
@@ -13,8 +13,8 @@ Not intended for upstream.
  
      static {
          /*
---- apache-tomcat-9.0.107-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
-+++ apache-tomcat-9.0.107-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
+--- apache-tomcat-9.0.111-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
++++ apache-tomcat-9.0.111-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
 @@ -556,7 +556,7 @@ addListAlias(SRP, filterByKeyExchange(al
          initialized = true;
          // Despite what the OpenSSL docs say, DEFAULT also excludes SSLv2
@@ -24,9 +24,9 @@ Not intended for upstream.
          // COMPLEMENTOFDEFAULT is also not exactly as defined by the docs
          LinkedHashSet<Cipher> complementOfDefault =
                  filterByKeyExchange(all, new HashSet<>(Arrays.asList(KeyExchange.EDH, KeyExchange.EECDH)));
---- apache-tomcat-9.0.107-src/webapps/docs/config/http.xml
-+++ apache-tomcat-9.0.107-src/webapps/docs/config/http.xml
-@@ -1459,7 +1459,7 @@ <code>WARNING</code> message when the Co
+--- apache-tomcat-9.0.111-src/webapps/docs/config/http.xml
++++ apache-tomcat-9.0.111-src/webapps/docs/config/http.xml
+@@ -1466,7 +1466,7 @@ <code>WARNING</code> message when the Co
        avoided by providing an explicit list of ciphers that are supported by the
        configured SSL implementation.</p>
        <p>If not specified, a default (using the OpenSSL notation) of
