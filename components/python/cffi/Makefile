@@ -33,16 +33,16 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		cffi
-COMPONENT_VERSION=	1.17.1
+COMPONENT_VERSION=	2.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1c39c6016c32bc48dd54561950ebd6836e1670f2ae46128f67cf49e789c52824
+    sha256:44d1b5909021139fe36001ae048dbdde8214afa20200eda0f64c068cac5d5529
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://cffi.readthedocs.org/
 COMPONENT_BUGDB=	python-mod/cffi
 COMPONENT_ANITYA_ID=	5536
-COMPONENT_BAID=		181188
+COMPONENT_BAID=		352415
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -79,7 +79,7 @@ ifneq ($(TOP_LEVEL_TEST),yes)
 COMPONENT_PRE_TEST_ACTION = \
 	$(MKDIR) $(@D)/tests/doc/source; \
 	$(CP) -r $(SOURCE_DIR)/src $(SOURCE_DIR)/testing $(@D)/tests; \
-	$(CP) $(SOURCE_DIR)/setup.py $(@D)/tests; \
+	$(CP) $(SOURCE_DIR)/pyproject.toml $(@D)/tests; \
 	$(CP) \
 	    $(SOURCE_DIR)/doc/source/conf.py \
 	    $(SOURCE_DIR)/doc/source/index.rst \

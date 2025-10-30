@@ -1,0 +1,16 @@
+On Solaris, openat returns ENOENT when the extended attribute is not present.
+
+Should be offered upstream.
+
+--- xattr-1.3.0/xattr/__init__.py
++++ xattr-1.3.0/xattr/__init__.py
+@@ -27,6 +27,9 @@ __all__ = [
+ 
+ _SENTINEL_MISSING = object()
+ ERRNO_MISSING = set()
++# On Solaris, openat returns ENOENT when the extended
++# attribute is not present.
++ERRNO_MISSING.add(errno.ENOENT)
+ try:
+     ERRNO_MISSING.add(errno.ENOATTR)
+ except AttributeError:
