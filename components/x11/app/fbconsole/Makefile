@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS= 64
+BUILD_BITS=		64
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         fbconsole
@@ -41,6 +42,8 @@ TEST_TARGET= $(NO_TESTS)
 PKG_PROTO_DIRS += $(BUILD_DIR_64)
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+CFLAGS.gcc += -Wall
 
 COMPONENT_INSTALL_ENV += 	INSTALL="$(INSTALL)"
 COMPONENT_INSTALL_ENV += 	PREFIX="$(USRDIR)"

@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
 #
 
-BUILD_BITS= 64
+BUILD_BITS=		64
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         kbd_mode
@@ -37,6 +38,8 @@ COMPONENT_ANITYA_ID=	N/A
 # nothing to download ; just build & package
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)
+
+CFLAGS.gcc += -Wall
 
 COMPONENT_BUILD_ENV +=		LD="$(CC)"
 COMPONENT_INSTALL_ENV += 	INSTALL="$(INSTALL)"

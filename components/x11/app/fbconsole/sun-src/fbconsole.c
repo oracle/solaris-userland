@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1992, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1992, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -59,7 +59,7 @@ static struct termios	termios_dflt = {
 	OPOST|ONLCR,				    	/* output modes */
 	B9600|(B9600 << IBSHIFT)|CS8|HUPCL|CREAD,    	/* control modes */
 	ISIG|ICANON|ECHO|IEXTEN|ECHOE|ECHOK|ECHOCTL|ECHOKE, /* local modes */
-						       /* control characters */
+    {						       /* control characters */
 	CINTR,		/* VINTR */
 	CQUIT,		/* VQUIT */
 	CERASE,		/* VERASE */
@@ -76,6 +76,7 @@ static struct termios	termios_dflt = {
 	CFLUSH,		/* VDISCARD */
 	CWERASE,	/* VWERASE */
 	CLNEXT,		/* VLNEXT */
+    }
 };
 
 
@@ -298,7 +299,7 @@ CleanupAndExit(void)
  */
 /*ARGSUSED*/
 void
-SignalHandler(int sig)
+SignalHandler(_X_UNUSED int sig)
 {
 	CleanupAndExit();
 }
@@ -310,7 +311,7 @@ SignalHandler(int sig)
  */
 /*ARGSUSED*/
 int
-DisplayErrorHandler(Display *dpy)
+DisplayErrorHandler(_X_UNUSED Display *dpy)
 {
 	CleanupAndExit();
 	return 0;
