@@ -20,10 +20,13 @@
 #
 
 #
-# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
+
+# no need for mysql copy of openssl
+<transform file path=usr/mysql/.*/bin/my_openssl -> drop>
 
 # delete everything not belonging to this package
 <transform file link pkg.type=(?!mysql) -> drop>
