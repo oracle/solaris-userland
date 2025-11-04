@@ -31,14 +31,14 @@ include ../../../make-rules/shared-macros.mk
 BUILD_STYLE=            meson
 
 COMPONENT_NAME=		gdk-pixbuf
-COMPONENT_VERSION=	2.42.10
+COMPONENT_VERSION=	2.44.4
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GdkPixbuf
 COMPONENT_ARCHIVE_HASH= \
-     sha256:ee9b6c75d13ba096907a2e3c6b27b61bcd17f5c7ebeab5a5b439d2f2e39fe44b
+     sha256:93a1aac3f1427ae73457397582a2c38d049638a801788ccbd5f48ca607bdbd17
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	9533
 
-COMPONENT_BAID=		153551
+COMPONENT_BAID=		353950
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
@@ -52,6 +52,7 @@ COMPONENT_BUILD_ENV += LDFLAGS="$(strip $(LDFLAGS))"
 # Don't build the gi-docgen subproject for docs
 DISABLE_DOCS = --wrap-mode=nofallback
 CONFIGURE_OPTIONS += $(DISABLE_DOCS)
+CONFIGURE_OPTIONS += -Dothers=enabled
 
 DISABLE_INTROSPECTION = -Dintrospection=disabled
 CONFIGURE_OPTIONS.32 += $(DISABLE_INTROSPECTION)
