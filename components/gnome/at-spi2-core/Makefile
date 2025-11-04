@@ -31,14 +31,14 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		at-spi2-core
-COMPONENT_VERSION=	2.50.2
+COMPONENT_VERSION=	2.58.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Accessibility
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5b81b1461a62dd8fbed1a276fa9ef5b7112f9ae5ff86e1e32ad9644b654ff78c
+    sha256:7f374a6a38cd70ff4b32c9d3a0310bfa804d946fed4c9e69a7d49facdcb95e9c
 COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	7841
 
-COMPONENT_BAID=		171874
+COMPONENT_BAID=		351213
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
