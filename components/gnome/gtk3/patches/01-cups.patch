@@ -6,12 +6,12 @@ find 32/64 cups libs
  endif
  
  if enabled_print_backends.contains('cups')
--  cups_dep = dependency('cups', version : '>=1.7', required: print_strict_deps)
+-  cups_dep = dependency('cups', version : ['>=1.7', '<3.0'], required: false)
 +  if '-m32' in get_option('c_args')
-+    cups_dep = cc.find_library('cups', dirs: ['/usr/lib'], required: print_strict_deps)
++	cups_dep = cc.find_library('cups', dirs: ['/usr/lib'], required: print_strict_deps)
 +  else
-+    cups_dep = cc.find_library('cups', dirs: ['/usr/lib/64'], required: print_strict_deps)
++	cups_dep = cc.find_library('cups', dirs: ['/usr/lib/64'], required: print_strict_deps)
 +  endif
-   if cups_dep.found()
-     cups_extra_deps = []
- 
+   if not cups_dep.found()
+     cups_dep = dependency('cups3', version : '>=3.0', required: false)
+     if not cups_dep.found() and print_strict_deps
