@@ -20,22 +20,25 @@
 #
 
 #
-# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
 
-# f2py versioned executables do not have a dash in their name
-# thus they are handled here and not globally
-<transform file path=usr/bin/f2py(|3.*)$ -> drop>
+# f2py and numpy-config versioned executables do not have a dash in
+# their name thus they are handled here and not globally
+<transform file path=usr/bin/(f2py|numpy-config)(|3.*)$ -> drop>
 <transform file path=usr/bin/f2py\$\(PYVER\) -> \
 	emit link path=usr/bin/f2py target=f2py$(PYVER) mediator=python mediator-version=$(PYVER)>
+<transform file path=usr/bin/numpy-config\$\(PYVER\) -> \
+	emit link path=usr/bin/numpy-config target=numpy-config$(PYVER) mediator=python mediator-version=$(PYVER)>
 
 # pyx and pxd files are not parsable by pkgdepend.
 <transform file path=.*\.(pxd|pyx)$ -> set pkg.depend.bypass-generate .*>
 
+# NumPy distutils is only available with Python 3.11 and thus
+# handled inside the static file.
+<transform file path=.*/numpy/distutils -> drop>
+
 # bypass dependency detection in files with #!/usr/bin/pythonXX header
-<transform file path=.*/numpy/f2py/[^/]*.py$ -> set pkg.depend.bypass-generate .*>
-<transform file path=.*/numpy/core/generate_numpy_api.py$ -> set pkg.depend.bypass-generate .*>
-<transform file path=.*/numpy/random/_examples/cython/setup.py$ -> set pkg.depend.bypass-generate .*>
-<transform file path=.*/numpy/distutils/(cpuinfo|system_info).py$ -> set pkg.depend.bypass-generate .*>
+<transform file path=.*/numpy/f2py/diagnose.py$ -> set pkg.depend.bypass-generate .*>

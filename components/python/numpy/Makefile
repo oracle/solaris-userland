@@ -24,6 +24,7 @@
 #
 
 COMPILER =		gcc
+CTF_MODE =		relaxed
 BUILD_BITS = 		64
 include ../../../make-rules/shared-macros.mk
 
@@ -31,21 +32,18 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		numpy
-COMPONENT_VERSION=	1.26.4
+COMPONENT_VERSION=	2.3.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7e96b748c09ccadedfb3878ea107a3c9423ab4342efc342eef8e46320d98ff4e
+    sha256:a7d018bfedb375a8d979ac758b120ba846a7fe764911a64465fd87b8729f4a6a
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.numpy.org/
 COMPONENT_BUGDB=	python-mod/numpy
 COMPONENT_ANITYA_ID=	2509
-COMPONENT_BAID=		326363
- 
-# this version of numpy is not Python 3.13 ready yet
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.13)
+COMPONENT_BAID=		352127
 
-BUILD_STYLE= setup.py
+BUILD_STYLE= pybuild
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_BUILD_ARGS.gcc	+= --compiler=gnu --fcompiler=gnu95
@@ -58,7 +56,9 @@ PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)/numpy/*/*.py
 PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)/numpy/*/*/*.py
 
 COMPONENT_POST_INSTALL_ACTION += \
-	(cd $(PROTO_DIR)/usr/bin ; $(MV) -f f2py f2py$(PYTHON_VERSION));
+	(cd $(PROTO_DIR)/usr/bin ; \
+	$(MV) -f f2py f2py$(PYTHON_VERSION); \
+	$(MV) -f numpy-config numpy-config$(PYTHON_VERSION));
 
 # Our PYTHON_SCRIPTS processing modifies some files after they have been
 # compiled, making the previously created pyc files stale. Because of that,
@@ -76,7 +76,7 @@ COMPONENT_TEST_ENV += PYTEST_DEBUG_TEMPROOT=$(BUILD_DIR)/$(MACH64)-$(PYTHON_VERS
 COMPONENT_TEST_TRANSFORMS += \
 	'-nE -e "s/ ?=+ ?//g" ' \
 	'-e "s/ in [0-9]+(\.[0-9]*)?s.*//" ' \
-	'-e "s/[0-9]+ (deselected|passed|skipped|warnings|xfailed|xpassed)/XXX \1/g" ' \
+	'-e "s/[0-9]+ (deselected|passed|skipped|warning|xfailed|xpassed)/XXX \1/g" ' \
 	'-e "/^FAILED/p" ' \
 	'-e "/^ERROR/p" ' \
 	'-e "/passed,/p"'
@@ -84,5 +84,6 @@ COMPONENT_TEST_TRANSFORMS += \
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION).$(MACH).master
 
 REQUIRED_PACKAGES += library/python/cython
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
