@@ -20,13 +20,13 @@
 #
 
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
 
 # bypass pkg.depend for toml related imports handled within try-except block
-<transform file path=.*/maturin/__init__.py$ -> set pkg.depend.bypass-generate .*toml.*>
+<transform file path=.*/maturin/__init__.py$ -> set pkg.depend.bypass-generate .*(puccinialin|toml).*>
 
 # maturin executable is delivered via the GENFRAG file
 <transform file path=usr/bin/maturin -> drop>

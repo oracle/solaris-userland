@@ -28,20 +28,20 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		maturin
-COMPONENT_VERSION=	1.7.8
+COMPONENT_VERSION=	1.9.6
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:649c6ef3f0fa4c5f596140d761dc5a4d577c485cc32fb5b9b344a8280352880d
+    sha256:2c2ae37144811d365509889ed7220b0598487f1278c2441829c3abf56cc6324a
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pyo3/maturin
 COMPONENT_BUGDB=	utility/maturin
 COMPONENT_ANITYA_ID=	323858
-COMPONENT_BAID=		190702
+COMPONENT_BAID=		354112
 
 # hash for vendored sources
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:94a210dda8e43f47476885aeddd756400326f8319b458ed5cab907c5f656e8c5
+    sha256:6aebff4594e9c66e51566266a5bf782731a0514716e25dfd8a25cac2f5a8b610
 
 # This is necessary for vendored rust dependencies
 include $(WS_MAKE_RULES)/cargo-vendored.mk
@@ -64,5 +64,6 @@ install:	$(INSTALL_64)
 
 test:		$(NO_TESTS)
 
+REQUIRED_PACKAGES += library/python/setuptools-rust
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math

@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		setuptools_rust
-COMPONENT_VERSION=	1.10.1
+COMPONENT_VERSION=	1.12.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8d87c6be511916b64d8a4061de617090d8b6a1fa2baecaf2fed121f4e6b0b57b
+    sha256:d94a93f0c97751c17014565f07bdc324bee45d396cd1bba83d8e7af92b945f0c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/PyO3/setuptools-rust
 COMPONENT_BUGDB=	python-mod/setup-rust
 COMPONENT_ANITYA_ID=	122284
-COMPONENT_BAID=		178670
+COMPONENT_BAID=		352424
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
