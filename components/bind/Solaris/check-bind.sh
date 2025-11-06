@@ -20,7 +20,8 @@ IAM=${0##*/}
 SVCPROP=/usr/bin/svcprop
 CHECKCONF=/usr/bin/named-checkconf
 DNS_SERVER_FMRI=svc:/network/dns/server:default
-TMP=$(/usr/bin/mktemp)
+TMP=$(/usr/bin/mktemp ${IAM}.XXXXXX)
+trap '/usr/bin/rm -f $TMP' EXIT
 
 configuration_file=/etc/named.conf
 
@@ -60,9 +61,9 @@ logit "Performing check with ${CHECKCONF##*/} version $($CHECKCONF -v)"
 # If there is an error in the configuration then named-checkconf will
 # fail, so check for errors.
 $CHECKCONF $configuration_file >$TMP 2>&1
-if [ $? != 0 ]; then
+if [ $? -ne 0 ]; then
     logit "Error detected in $configuration_file:"
-    /usr/bin/cat $TMP; /usr/bin/rm $TMP
+    /usr/bin/cat $TMP
     echo "Errors prevent named(8) from starting up."
     echo "Modifications and corrections should be applied to the configuration."
     echo "Refer to named.conf(5) for further details."
@@ -82,8 +83,7 @@ $CHECKCONF -px $configuration_file 2>/dev/null |
 		   END{exit err}' >>$TMP
 # check for deprecated messages in initial (possibly appended) output
 /usr/bin/grep deprecated $TMP
-if [ $? = 0  ]; then
-    /usr/bin/rm $TMP
+if [ $? -eq 0  ]; then
     logit "Deprecated feature detected in $configuration_file"
     echo "This may prevent the current or a future version of BIND from running."
     echo "Modifications and corrections should be applied to the configuration."
@@ -93,5 +93,4 @@ if [ $? = 0  ]; then
     # Not Reached.
 fi
 
-/usr/bin/rm $TMP
 exit $SMF_EXIT_OK
