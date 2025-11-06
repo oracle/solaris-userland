@@ -111,6 +111,7 @@ COMPONENT_TEST_ENV += CLICOLOR=0
 COMPONENT_TEST_CMD = $(BUILD_DIR)/$(MACH64)/bin/ctest --output-on-failure
 COMPONENT_TEST_TRANSFORMS += ' -n '
 COMPONENT_TEST_TRANSFORMS += ' -e "/tests failed out of/p" '
+COMPONENT_TEST_TRANSFORMS += ' -e "/(Failed)/p" '
 
 # Add path to libgfortran.so.[0-9] library to avoid Fortran test failures.
 # The library preload can be removed after bug 30144732 is fixed.
