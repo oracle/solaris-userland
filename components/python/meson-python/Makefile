@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:5cc0751df004c30a27dcf0ffbacbd3eb5ae168b48783e4625eec10ec1a4fe7fa
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://mesonbuild.com/meson-python/
-COMPONENT_BUGDB=	python-mod/meson_python
+COMPONENT_BUGDB=	python-mod/meson-python
 COMPONENT_ANITYA_ID=	248985
 COMPONENT_BAID=		329660
 
