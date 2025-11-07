@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
@@ -28,15 +28,15 @@ include ../../make-rules/shared-macros.mk
 PATH=$(dir $(CC)):$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		unixODBC
-COMPONENT_VERSION=	2.3.11
+COMPONENT_VERSION=	2.3.14
 COMPONENT_PROJECT_URL=	http://www.unixodbc.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d9e55c8e7118347e3c66c87338856dad1516b490fb7c756c1562a2c267c73b5c
+    sha256:4e2814de3e01fc30b0b9f75e83bb5aba91ab0384ee951286504bb70205524771
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	library/unixodbc
 COMPONENT_ANITYA_ID=	7344
 
-COMPONENT_BAID=		142158
+COMPONENT_BAID=		354290
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk

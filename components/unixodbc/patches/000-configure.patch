@@ -1,20 +1,8 @@
 We seem to historically prefer pthreads instead of native threads.
 
-https://github.com/lurcher/unixODBC/commit/7d72255824cb96599e71d19fbbc94405db658274#r108478182
-
-Historically we were suggesting -lsocket -lnsl -lgen -z ignore for our users.
-
---- unixODBC-2.3.11/DriverManager/odbc.pc.in
-+++ unixODBC-2.3.11/DriverManager/odbc.pc.in
-@@ -17,4 +17,4 @@ URL: http://unixodbc.org
- Version: @PACKAGE_VERSION@
- Cflags: -I${includedir}
- Libs: -L${libdir} -lodbc
--Libs.private: @LIBLTDL@ @LIBS@
-+Libs.private: @LIBLTDL@ @LIBS@ -lsocket -lnsl -lgen -z ignore
---- unixODBC-2.3.11/configure.ac
-+++ unixODBC-2.3.11/configure.ac
-@@ -394,9 +394,9 @@ AC_DEFINE([HAVE_LIBPTH], [1], [Use the -
+--- unixODBC-2.3.14/configure.ac
++++ unixODBC-2.3.14/configure.ac
+@@ -438,9 +438,9 @@ AC_DEFINE([HAVE_LIBPTH], [1], [Use the -
    else
      gotthread="no";
  
@@ -26,20 +14,3 @@ Historically we were suggesting -lsocket -lnsl -lgen -z ignore for our users.
  			raw_threads="no";
  			AC_MSG_RESULT( yes - disable check for libthread );
      	;;
-@@ -508,7 +508,7 @@ ;;
- esac
- 
- if test "x$stats" = "xtrue"; then
--  AC_CHECK_FUNCS( ftok semget shmget semop [],[stats=false])
-+  AC_CHECK_FUNCS( ftok semget shmget semop,[],[stats=false])
- fi
- 
- if test "x$stats" = "xtrue"; then
---- unixODBC-2.3.11/odbcinst/odbcinst.pc.in
-+++ unixODBC-2.3.11/odbcinst/odbcinst.pc.in
-@@ -9,4 +9,4 @@ URL: http://unixodbc.org
- Version: @PACKAGE_VERSION@
- Cflags: -I${includedir}
- Libs: -L${libdir} -lodbcinst
--Libs.private: @LIBLTDL@ @LIBS@
-+Libs.private: @LIBLTDL@ @LIBS@ -lsocket -lnsl -lgen -z ignore
