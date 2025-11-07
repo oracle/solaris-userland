@@ -1,10 +1,10 @@
 Solaris doesn't have pretend, or pytest-benchmark packages,
 hence all tests/options depending on those are disabled.
 
---- cryptography-43.0.1/pyproject.toml
-+++ cryptography-43.0.1/pyproject.toml
-@@ -93,7 +93,7 @@ py-limited-api = "auto"
- rust-version = ">=1.65.0"
+--- cryptography-46.0.3/pyproject.toml
++++ cryptography-46.0.3/pyproject.toml
+@@ -134,7 +134,7 @@ exclude = [
+ ]
  
  [tool.pytest.ini_options]
 -addopts = "-r s --capture=no --strict-markers --benchmark-disable"
@@ -12,8 +12,8 @@ hence all tests/options depending on those are disabled.
  console_output_style = "progress-even-when-capture-no"
  markers = [
      "skip_fips: this test is not executed in FIPS mode",
---- cryptography-43.0.1/tests/test_fernet.py
-+++ cryptography-43.0.1/tests/test_fernet.py
+--- cryptography-46.0.3/tests/test_fernet.py
++++ cryptography-46.0.3/tests/test_fernet.py
 @@ -9,7 +9,6 @@ import json
  import os
  import time
@@ -30,8 +30,8 @@ hence all tests/options depending on those are disabled.
      def test_timestamp_ignored_no_ttl(self, monkeypatch, backend):
          f = Fernet(base64.urlsafe_b64encode(b"\x00" * 32), backend=backend)
          pt = b"encrypt me"
---- cryptography-43.0.1/tests/test_utils.py
-+++ cryptography-43.0.1/tests/test_utils.py
+--- cryptography-46.0.3/tests/test_utils.py
++++ cryptography-46.0.3/tests/test_utils.py
 @@ -8,7 +8,6 @@ import inspect
  import os
  import textwrap
@@ -56,8 +56,8 @@ hence all tests/options depending on those are disabled.
  def test_check_backend_support_no_skip():
      supported = pretend.stub(
          kwargs={"only_if": lambda backend: True, "skip_message": "Nope"}
---- cryptography-43.0.1/tests/x509/test_x509_ext.py
-+++ cryptography-43.0.1/tests/x509/test_x509_ext.py
+--- cryptography-46.0.3/tests/x509/test_x509_ext.py
++++ cryptography-46.0.3/tests/x509/test_x509_ext.py
 @@ -9,7 +9,6 @@ import ipaddress
  import os
  import typing
@@ -66,7 +66,7 @@ hence all tests/options depending on those are disabled.
  import pytest
  
  from cryptography import x509
-@@ -1753,6 +1752,7 @@ class TestSubjectKeyIdentifierExtension:
+@@ -1752,6 +1751,7 @@ class TestSubjectKeyIdentifierExtension:
          ski = x509.SubjectKeyIdentifier.from_public_key(cert.public_key())
          assert ext.value == ski
  

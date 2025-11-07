@@ -1,0 +1,33 @@
+This partially reverts the following change:
+https://github.com/pyca/cryptography/commit/d20fcd0b439c6140772413aae589e3c617b39ac1
+
+RFC 5280 prohibits the certificate serial number from being negative or zero,
+and recent versions of cryptography have started enforcing that, raising
+warnings when it's not the case. Similar to other systems, Solaris delivers
+several root certificates with a serial number set to zero. As such, any Python
+script that loads root certificates with cryptography would start raising warnings.
+
+Since adding warning filters to all potentially affected places is fairly
+laborious, and we cannot do much about those certificates at the moment anyway,
+this patch reverts the check to negative values only.
+
+Additional reading:
+https://github.com/pyca/cryptography/issues/12948
+https://datatracker.ietf.org/doc/html/rfc5280#section-4.1.2.2
+
+Not intended for upstream.
+
+--- cryptography-46.0.3/src/rust/src/x509/certificate.rs
++++ cryptography-46.0.3/src/rust/src/x509/certificate.rs
+@@ -440,9 +440,9 @@ pub(crate) fn load_der_x509_certificate(
+ }
+ 
+ fn warn_if_not_positive(py: pyo3::Python<'_>, bytes: &[u8]) -> pyo3::PyResult<()> {
+-    if bytes[0] & 0x80 != 0 || bytes == [0] {
++    if bytes[0] & 0x80 != 0 {
+         let warning_cls = types::DEPRECATED_IN_36.get(py)?;
+-        let message = cstr_from_literal!("Parsed a serial number which wasn't positive (i.e., it was negative or zero), which is disallowed by RFC 5280. Loading this certificate will cause an exception in a future release of cryptography.");
++        let message = cstr_from_literal!("Parsed a negative serial number, which is disallowed by RFC 5280. Loading this certificate will cause an exception in a future release of cryptography.");
+         pyo3::PyErr::warn(py, &warning_cls, message, 1)?;
+     }
+     Ok(())

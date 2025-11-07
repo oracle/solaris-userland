@@ -26,18 +26,18 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		service_identity
-COMPONENT_VERSION=	24.1.0
+COMPONENT_VERSION=	24.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	https://service-identity.readthedocs.io/en/stable/
 COMPONENT_BUGDB=	python-mod/serv_identity
 COMPONENT_ANITYA_ID=	7917
-COMPONENT_BAID=		161993
+COMPONENT_BAID=		354195
 
 # pypi archive doesn't include the test suite
 GIT_REPO=   https://github.com/pyca/service-identity.git
 GIT_COMMIT_ID=  $(COMPONENT_VERSION)
-GIT_HASH=   sha256:73c2723e6a0362d2ca97edda99ea079cf62388c64dd24a7f6215acb571a52e3b
+GIT_HASH=   sha256:2330647394038b9913a6ec7364da0af22596a720a07106ba4387779a56b4128a
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

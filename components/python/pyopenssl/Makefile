@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		pyopenssl
-COMPONENT_VERSION=	24.2.1
+COMPONENT_VERSION=	25.3.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:fcf3b813bcb6a7bda4f9526cdf410eddc0615f7397610d07962ffe397c194512
+	sha256:c981cb0a3fd84e8602d7afc209522773b94c1c2446a3c710a75b06fe1beae329
 COMPONENT_ARCHIVE_URL=  $(call pypi_url)
 COMPONENT_PROJECT_URL=  https://pyopenssl.org/
 COMPONENT_BUGDB=	python-mod/pyopenssl
 COMPONENT_ANITYA_ID=	5535
-COMPONENT_BAID=		180163
+COMPONENT_BAID=		354196
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -60,5 +60,6 @@ test:		$(TEST_64)
 system-test:    $(SYSTEM_TEST_64)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
+REQUIRED_PACKAGES += library/python/typing-extensions-311
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += system/library

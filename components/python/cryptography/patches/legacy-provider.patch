@@ -1,72 +1,26 @@
-By default, cryptography loads both default and legacy providers and breaks if
-one of those is not available. Since we don't want to force the legacy provider
-on Solaris, this unnecessary restriction was reported upstream:
+By default, cryptography tries to load the OpenSSL legacy provider and
+emits a warning when it's not available.
+
+The warning can be suppressed by setting the CRYPTOGRAPHY_OPENSSL_NO_LEGACY
+environment variable, but since Solaris considers the legacy provider
+an extra package that should only be installed when really necessary,
+this patch removes the warning.
+
+Several related upstream issues for reference:
 https://github.com/pyca/cryptography/issues/7358
-
 https://github.com/pyca/cryptography/pull/7650
+https://github.com/pyca/cryptography/pull/12601
 
-The fix allowed for missing legacy provider by setting the
-CRYPTOGRAPHY_OPENSSL_NO_LEGACY environment variable; however, we do want
-the default on Solaris to be non-legacy.
-
---- cryptography-43.0.1/src/rust/src/lib.rs
-+++ cryptography-43.0.1/src/rust/src/lib.rs
-@@ -9,8 +9,6 @@ use crate::error::CryptographyResult;
- use crate::error::CryptographyResult;
- #[cfg(CRYPTOGRAPHY_OPENSSL_300_OR_GREATER)]
- use openssl::provider;
--#[cfg(CRYPTOGRAPHY_OPENSSL_300_OR_GREATER)]
--use std::env;
- 
- mod asn1;
- mod backend;
-@@ -56,15 +55,9 @@ fn _initialize_providers() -> Cryptograp
-     // serialization), RC4, Blowfish, IDEA, SEED, etc. These things
-     // are ugly legacy, but we aren't going to get rid of them
-     // any time soon.
--    let load_legacy = env::var("CRYPTOGRAPHY_OPENSSL_NO_LEGACY")
--        .map(|v| v.is_empty() || v == "0")
--        .unwrap_or(true);
--    let legacy = if load_legacy {
--        let legacy_result = provider::Provider::load(None, "legacy");
--        _legacy_provider_error(legacy_result.is_ok())?;
--        Some(legacy_result?)
--    } else {
--        None
-+    let legacy = match provider::Provider::load(None, "legacy") {
-+        Ok(legacy) => Some(legacy),
-+        Err(_) => None,
-     };
-     let _default = provider::Provider::load(None, "default")?;
-     Ok(LoadedProviders {
-@@ -74,15 +67,6 @@ fn _initialize_providers() -> Cryptograp
-     })
- }
- 
--fn _legacy_provider_error(success: bool) -> pyo3::PyResult<()> {
--    if !success {
--        return Err(pyo3::exceptions::PyRuntimeError::new_err(
--            "OpenSSL 3.0's legacy provider failed to load. This is a fatal error by default, but cryptography supports running without legacy algorithms by setting the environment variable CRYPTOGRAPHY_OPENSSL_NO_LEGACY. If you did not expect this error, you have likely made a mistake with your OpenSSL configuration."
--        ));
--    }
--    Ok(())
--}
+--- cryptography-46.0.3/src/rust/src/lib.rs
++++ cryptography-46.0.3/src/rust/src/lib.rs
+@@ -68,10 +68,6 @@ fn _initialize_providers(py: pyo3::Pytho
+     let legacy = if load_legacy {
+         let legacy_result = provider::Provider::load(None, "legacy");
+         if legacy_result.is_err() {
+-            let message = crate::utils::cstr_from_literal!("OpenSSL 3's legacy provider failed to load. Legacy algorithms will not be available. If you need those algorithms, check your OpenSSL configuration.");
+-            let warning_cls = pyo3::exceptions::PyWarning::type_object(py).into_any();
+-            pyo3::PyErr::warn(py, &warning_cls, message, 1)?;
 -
- #[cfg(CRYPTOGRAPHY_OPENSSL_300_OR_GREATER)]
- #[pyo3::pyfunction]
- fn enable_fips(providers: &mut LoadedProviders) -> CryptographyResult<()> {
-@@ -233,14 +217,3 @@ mod _rust {
-         Ok(())
-     }
- }
--
--#[cfg(test)]
--mod tests {
--    use super::_legacy_provider_error;
--
--    #[test]
--    fn test_legacy_provider_error() {
--        assert!(_legacy_provider_error(true).is_ok());
--        assert!(_legacy_provider_error(false).is_err());
--    }
--}
+             None
+         } else {
+             Some(legacy_result?)

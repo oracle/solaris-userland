@@ -8,9 +8,9 @@
 * test_set_default_verify_paths tries to connect to an external server, which
   does not work within OWAN, even if proxy variables are set.
 
---- pyopenssl-24.2.1/tests/test_crypto.py
-+++ pyopenssl-24.2.1/tests/test_crypto.py
-@@ -78,7 +78,7 @@ def utcnow():
+--- pyopenssl-25.3.0/tests/test_crypto.py
++++ pyopenssl-25.3.0/tests/test_crypto.py
+@@ -71,7 +71,7 @@ def utcnow() -> datetime:
      return datetime.now(timezone.utc).replace(tzinfo=None)
  
  
@@ -19,41 +19,41 @@
  BAD_CIPHER = "zippers"
  
  GOOD_DIGEST = "SHA256"
-@@ -1995,7 +1995,6 @@ class TestX509(_PKeyInteractionTestsMixi
+@@ -2010,7 +2010,6 @@ class TestX509:
          with pytest.raises(TypeError):
-             cert.gmtime_adj_notBefore(None)
+             cert.gmtime_adj_notBefore(None)  # type: ignore[arg-type]
  
 -    @pytest.mark.flaky(reruns=2)
-     def test_gmtime_adj_notBefore(self):
+     def test_gmtime_adj_notBefore(self) -> None:
          """
          `X509.gmtime_adj_notBefore` changes the not-before timestamp to be the
-@@ -2021,7 +2020,6 @@ class TestX509(_PKeyInteractionTestsMixi
+@@ -2038,7 +2037,6 @@ class TestX509:
          with pytest.raises(TypeError):
-             cert.gmtime_adj_notAfter(None)
+             cert.gmtime_adj_notAfter(None)  # type: ignore[arg-type]
  
 -    @pytest.mark.flaky(reruns=2)
-     def test_gmtime_adj_notAfter(self):
+     def test_gmtime_adj_notAfter(self) -> None:
          """
          `X509.gmtime_adj_notAfter` changes the not-after timestamp
---- pyopenssl-24.2.1/tests/test_ssl.py
-+++ pyopenssl-24.2.1/tests/test_ssl.py
-@@ -39,7 +39,6 @@ from cryptography import x509
+--- pyopenssl-25.3.0/tests/test_ssl.py
++++ pyopenssl-25.3.0/tests/test_ssl.py
+@@ -46,7 +46,6 @@ from cryptography import x509
  from cryptography.hazmat.primitives import hashes, serialization
- from cryptography.hazmat.primitives.asymmetric import rsa
+ from cryptography.hazmat.primitives.asymmetric import ec, rsa
  from cryptography.x509.oid import NameOID
 -from pretend import raiser
  
  from OpenSSL import SSL
  from OpenSSL._util import ffi as _ffi
-@@ -509,7 +508,6 @@ class TestContext:
+@@ -620,7 +619,6 @@ class TestContext:
          with pytest.raises(TypeError):
-             context.set_cipher_list(object())
+             context.set_cipher_list(object())  # type: ignore[arg-type]
  
 -    @pytest.mark.flaky(reruns=2)
-     def test_set_cipher_list_no_cipher_match(self, context):
+     def test_set_cipher_list_no_cipher_match(self, context: Context) -> None:
          """
          `Context.set_cipher_list` raises `OpenSSL.SSL.Error` with a
-@@ -845,7 +843,7 @@ class TestContext:
+@@ -966,7 +964,7 @@ class TestContext:
          """
          key = PKey()
          key.generate_key(TYPE_RSA, 1024)
@@ -62,21 +62,21 @@
          with open(tmpfile, "w") as fObj:
              fObj.write(pem.decode("ascii"))
          return tmpfile
-@@ -1221,6 +1219,7 @@ class TestContext:
+@@ -1374,6 +1372,7 @@ class TestContext:
          assert context._check_env_vars_set(dir_var, file_var) is True
          assert context._check_env_vars_set(dir_var, file_var) is True
  
 +    @pytest.mark.skip(reason="We don't have pretend python package in Solaris")
-     def test_verify_no_fallback_if_env_vars_set(self, monkeypatch):
-         """
-         Test that we don't use the fallback path if env vars are set.
-@@ -1249,6 +1248,9 @@ class TestContext:
+     def test_verify_no_fallback_if_env_vars_set(
+         self, monkeypatch: pytest.MonkeyPatch
+     ) -> None:
+@@ -1398,6 +1397,9 @@ class TestContext:
          reason="set_default_verify_paths appears not to work on Windows.  "
          "See LP#404343 and LP#404344.",
      )
 +    @pytest.mark.skip(
 +        reason="This test doesn't work within OWAN, even with proxy set"
 +    )
-     def test_set_default_verify_paths(self):
+     def test_set_default_verify_paths(self) -> None:
          """
          `Context.set_default_verify_paths` causes the platform-specific CA
