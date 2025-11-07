@@ -1,0 +1,14 @@
+https://gitlab.com/wireshark/wireshark/-/issues/20773
+
+--- wireshark-4.6.0/writecap/pcapio.c
++++ wireshark-4.6.0/writecap/pcapio.c
+@@ -438,7 +438,8 @@ #endif /* HAVE_LZ4FRAME_H */
+         default:
+             nwritten = fwrite(data, data_length, 1, pfile->fh);
+             if (nwritten != 1) {
+-                if (ferror(pfile->fh)) {
++                /* Solaris has: #define ferror(p) ((p)->_flag & _IOERR) */
++                if (ferror((FILE *)pfile->fh)) {
+                     *err = errno;
+                 } else {
+                     *err = WTAP_ERR_SHORT_WRITE;

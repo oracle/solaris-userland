@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -37,17 +37,17 @@ set name=org.opensolaris.arc-caseid value=PSARC/2007/334
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file exec_attr.dumpcap \
     path=etc/security/exec_attr.d/diagnostic:wireshark:wireshark-common
-link path=usr/lib/$(MACH64)/libwireshark.so target=libwireshark.so.18
-link path=usr/lib/$(MACH64)/libwireshark.so.18 \
-    target=libwireshark.so.18.0.$(MICRO_VERSION)
-file path=usr/lib/$(MACH64)/libwireshark.so.18.0.$(MICRO_VERSION)
-link path=usr/lib/$(MACH64)/libwiretap.so target=libwiretap.so.15
-link path=usr/lib/$(MACH64)/libwiretap.so.15 \
-    target=libwiretap.so.15.0.$(MICRO_VERSION)
-file path=usr/lib/$(MACH64)/libwiretap.so.15.0.$(MICRO_VERSION)
-link path=usr/lib/$(MACH64)/libwsutil.so target=libwsutil.so.16
-link path=usr/lib/$(MACH64)/libwsutil.so.16 target=libwsutil.so.16.0.0
-file path=usr/lib/$(MACH64)/libwsutil.so.16.0.0
+link path=usr/lib/$(MACH64)/libwireshark.so target=libwireshark.so.19
+link path=usr/lib/$(MACH64)/libwireshark.so.19 \
+    target=libwireshark.so.19.0.$(MICRO_VERSION)
+file path=usr/lib/$(MACH64)/libwireshark.so.19.0.$(MICRO_VERSION)
+link path=usr/lib/$(MACH64)/libwiretap.so target=libwiretap.so.16
+link path=usr/lib/$(MACH64)/libwiretap.so.16 \
+    target=libwiretap.so.16.0.$(MICRO_VERSION)
+file path=usr/lib/$(MACH64)/libwiretap.so.16.0.$(MICRO_VERSION)
+link path=usr/lib/$(MACH64)/libwsutil.so target=libwsutil.so.17
+link path=usr/lib/$(MACH64)/libwsutil.so.17 target=libwsutil.so.17.0.0
+file path=usr/lib/$(MACH64)/libwsutil.so.17.0.0
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(MAJOR_VERSION)/codecs/g711.so
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(MAJOR_VERSION)/codecs/l16mono.so
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(MAJOR_VERSION)/epan/ethercat.so
@@ -74,19 +74,12 @@ file path=usr/share/doc/wireshark/COPYING
 file path=usr/share/doc/wireshark/README.xml-output
 file path=usr/share/doc/wireshark/pdml2html.xsl
 file path=usr/share/doc/wireshark/ws.css
-file path=usr/share/man/man1/androiddump.1
 file path=usr/share/man/man1/capinfos.1
-file path=usr/share/man/man1/ciscodump.1
 file path=usr/share/man/man1/dumpcap.1
 file path=usr/share/man/man1/editcap.1
-file path=usr/share/man/man1/etwdump.1
-file path=usr/share/man/man1/falcodump.1
 file path=usr/share/man/man1/mergecap.1
-file path=usr/share/man/man1/randpkt.1
 file path=usr/share/man/man1/rawshark.1
-file path=usr/share/man/man1/sshdump.1
 file path=usr/share/man/man1/text2pcap.1
-file path=usr/share/man/man1/wifidump.1
 file path=usr/share/man/man4/extcap.4
 file path=usr/share/man/man4/wireshark-filter.4
 file path=usr/share/metainfo/org.wireshark.Wireshark.metainfo.xml
@@ -100,7 +93,6 @@ file path=usr/share/wireshark/dfilters
 file path=usr/share/wireshark/diameter/AlcatelLucent.xml
 file path=usr/share/wireshark/diameter/Cisco.xml
 file path=usr/share/wireshark/diameter/CiscoSystems.xml
-file path=usr/share/wireshark/diameter/Custom.xml
 file path=usr/share/wireshark/diameter/Ericsson.xml
 file path=usr/share/wireshark/diameter/HP.xml
 file path=usr/share/wireshark/diameter/Huawei.xml
@@ -121,6 +113,7 @@ file path=usr/share/wireshark/diameter/VerizonWireless.xml
 file path=usr/share/wireshark/diameter/Vodafone.xml
 file path=usr/share/wireshark/diameter/chargecontrol.xml
 file path=usr/share/wireshark/diameter/dictionary.dtd
+file path=usr/share/wireshark/diameter/dictionary.ent
 file path=usr/share/wireshark/diameter/dictionary.xml
 file path=usr/share/wireshark/diameter/eap.xml
 file path=usr/share/wireshark/diameter/etsie2e4.xml
@@ -185,6 +178,7 @@ file path=usr/share/wireshark/radius/dictionary.arista
 file path=usr/share/wireshark/radius/dictionary.aruba
 file path=usr/share/wireshark/radius/dictionary.ascend
 file path=usr/share/wireshark/radius/dictionary.ascend.illegal
+file path=usr/share/wireshark/radius/dictionary.ascend.illegal.extended
 file path=usr/share/wireshark/radius/dictionary.asn
 file path=usr/share/wireshark/radius/dictionary.audiocodes
 file path=usr/share/wireshark/radius/dictionary.avaya
@@ -262,6 +256,7 @@ file path=usr/share/wireshark/radius/dictionary.iea
 file path=usr/share/wireshark/radius/dictionary.infinera
 file path=usr/share/wireshark/radius/dictionary.infoblox
 file path=usr/share/wireshark/radius/dictionary.infonet
+file path=usr/share/wireshark/radius/dictionary.ingate
 file path=usr/share/wireshark/radius/dictionary.ipunplugged
 file path=usr/share/wireshark/radius/dictionary.issanni
 file path=usr/share/wireshark/radius/dictionary.itk
@@ -408,7 +403,10 @@ file path=usr/share/wireshark/randpktdump.html
 file path=usr/share/wireshark/rawshark.html
 file path=usr/share/wireshark/reordercap.html
 file path=usr/share/wireshark/smi_modules
+file path=usr/share/wireshark/sshdig.html
 file path=usr/share/wireshark/sshdump.html
+file path=usr/share/wireshark/strato.html
+file path=usr/share/wireshark/stratoshark.html
 file path=usr/share/wireshark/text2pcap.html
 file path=usr/share/wireshark/tpncp/tpncp.dat
 file path=usr/share/wireshark/tshark.html
