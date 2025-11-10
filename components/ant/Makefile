@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 
@@ -30,17 +30,17 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ant
-COMPONENT_VERSION=	1.10.13
+COMPONENT_VERSION=	1.10.15
 COMPONENT_PROJECT_URL=	https://ant.apache.org/
 COMPONENT_SRC_NAME=	apache-ant
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:06a8f6f11529aeadcd10f96335dcd8b166188e2b970d27a648006a1be79b29f7
+    sha256:58f53e9212a80055bf14e92789c7f504206ab35b8bc3975fa3b728720d80efd7
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/ant/source/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	50
 
-COMPONENT_BAID=		146684
+COMPONENT_BAID=		354230
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
@@ -83,6 +83,7 @@ COMPONENT_TEST_ENV +=		LC_ALL=en_US.UTF-8
 COMPONENT_TEST_TRANSFORMS +=  \
 	'-e "/=/d" ' \
 	'-e "s/, Time elapsed: [0-9][0-9]*\.*[0-9]* sec//" '  \
+	'-e "/\[null\] Loading stylesheet/d" '  \
 	'-e "/propertyfilecli/d" ' \
 	'-e "/Building .*\.zip/d" ' \
 	'-e "/Processing /d" ' \
