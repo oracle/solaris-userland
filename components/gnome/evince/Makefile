@@ -24,18 +24,19 @@
 #
 
 BUILD_BITS =		64
+COMPILER =		gcc
 CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		evince
-COMPONENT_VERSION=	45.0
+COMPONENT_VERSION=	48.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Evince
 COMPONENT_ARCHIVE_HASH= \
-    sha256:d18647d4275cbddf0d32817b1d04e307342a85be914ec4dad2d8082aaf8aa4a8
+    sha256:7d8b9a6fa3a05d3f5b9048859027688c73a788ff6e923bc3945126884943fa10
 COMPONENT_BUGDB=	gnome/evince
 COMPONENT_ANITYA_ID=	8178
 
-COMPONENT_BAID=		153144
+COMPONENT_BAID=		354764
 BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)
@@ -45,19 +46,8 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # Need to pick up the GNU version of xgettext.
 PATH=$(GNUBIN):$(USRBINDIR)
 
-# For now, all things built for C++11 require gcc.
-# Also, all components using gobject-introspection must be built with gcc as
-# gobject-introspection does not produce correct results when using Studio.
-COMPILER=gcc
-CXXFLAGS += -std=c++11
-
 # g-ir-scanner
-CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
-
-
-CPPFLAGS +=	"-I$(USRINCDIR)/libxml2"
-LDFLAGS +=	$(CC_BITS) -lgmodule-2.0 -lm
 
 CONFIGURE_OPTIONS +=	--libexecdir="$(USRLIB)"
 CONFIGURE_OPTIONS +=	--sysconfdir="$(ETCDIR)"
