@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -28,19 +28,19 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nasm
-COMPONENT_VERSION=	2.16.01
-IPS_COMPONENT_VERSION=	2.16.1
+COMPONENT_VERSION=	3.01
+IPS_COMPONENT_VERSION=	3.1
 COMPONENT_PROJECT_URL=	https://www.nasm.us/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d833bf0f5716e89dbcd345b7f545f25fe348c6e2ef16dbc293e1027bcd22d881
+    sha256:aea120d4adb0241f08ae24d6add09e4a993bc1c4d9f754dbfc8020d6916c9be1
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/pub/nasm/releasebuilds/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2048
 
-COMPONENT_BAID= 139126
+COMPONENT_BAID= 354222
 
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-test-results.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:03503e13addb95d3127c3e8a9b3a51a64c0581c4d7d0faa1660e9b9fd76fa3ae
+    sha256:c0ddd5f8fd78437f5bac68a51904838cafe812e5d5662b5e9a86efdc98dc5687
 COMPONENT_ARCHIVE_URL_1 =  make://golden-test-results/$(COMPONENT_ARCHIVE_1)
 
 include $(WS_MAKE_RULES)/common.mk
@@ -67,3 +67,5 @@ golden-test-results:
 	TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1) --sort=name \
 	  --mtime='1970-01-01' --owner=root --group=root $(COMPONENT_SRC)/test/golden
 	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)
+
+REQUIRED_PACKAGES += library/zlib
