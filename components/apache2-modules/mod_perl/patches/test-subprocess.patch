@@ -1,0 +1,45 @@
+Fixes test: subproc's stdin -> stderr + list context
+
+Problem is with perl warning:
+
+$ locale
+LANG=C
+LC_CTYPE="C"
+LC_NUMERIC="C"
+LC_TIME="C"
+LC_COLLATE="C"
+LC_MONETARY="C"
+LC_MESSAGES="C"
+LC_ALL=
+$ perl -e 'print "hello\n";'
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LC_ALL = "",
+        LC_MONETARY = "",
+        LC_MESSAGES = "",
+        LC_CTYPE = "UTF-8",
+        LC_TIME = "",
+        LC_COLLATE = "",
+        LC_NUMERIC = "",
+        LANG = "C"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+hello
+
+--- mod_perl-2.0.13/t/response/TestApache/subprocess.pm
++++ mod_perl-2.0.13/t/response/TestApache/subprocess.pm
+@@ -4,6 +4,14 @@ package TestApache::subprocess;
+ use strict;
+ use warnings FATAL => 'all';
+ 
++BEGIN {
++    # Force a consistent, valid locale to avoid Solaris warnings
++    $ENV{LC_ALL}   = 'C.UTF-8' if $ENV{LC_ALL};
++    $ENV{LC_CTYPE} = 'C.UTF-8' if $ENV{LC_CTYPE};
++    $ENV{LANG}     = 'C.UTF-8' if $ENV{LANG};
++    delete $ENV{LC_MESSAGES};   # optional, avoids stray warnings
++}
++
+ use Apache::Test;
+ use Apache::TestUtil;
+ use Apache2::Build;
