@@ -20,29 +20,29 @@
 #
 
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		puremagic
-COMPONENT_VERSION=	1.27
+COMPONENT_VERSION=	1.30
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7cb316f40912f56f34149f8ebdd77a91d099212d2ed936feb2feacfc7cbce2c1
+    sha256:f9ff7ac157d54e9cf3bff1addfd97233548e75e685282d84ae11e7ffee1614c9
 COMPONENT_PROJECT_URL=	https://github.com/cdgriffith/puremagic
 COMPONENT_BUGDB=	python-mod/puremagic
 COMPONENT_ANITYA_ID=	86511
-COMPONENT_BAID=		178175
+COMPONENT_BAID=		355607
 
 # We need just a version pspdfutils is delivered with
-PYTHON_VERSIONS=	3.11
+PYTHON_VERSIONS=	3.13
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/test
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 

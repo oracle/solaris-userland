@@ -36,7 +36,7 @@ COMPONENT_ANITYA_ID=	9335
 COMPONENT_BAID=		178171
 
 # We need just a version pspdfutils is delivered with
-PYTHON_VERSIONS=	3.11
+PYTHON_VERSIONS=	3.13
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
