@@ -25,17 +25,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		beautifulsoup4
-COMPONENT_VERSION=	4.13.3
+COMPONENT_VERSION=	4.14.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2291291610935d71c36e5edb6933d72a402fecfe54e7dbe66e8b828a448cc107
+    sha256:d502360dc50ce8e9e704f10fb7d8ca5f90026ec1378d3069e9e2093c1ed2da24
 COMPONENT_ARCHIVE_URL=	\
-    https://www.crummy.com/software/BeautifulSoup/bs4/download/4.13/$(COMPONENT_ARCHIVE)
+    https://www.crummy.com/software/BeautifulSoup/bs4/download/4.14/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/beautifulsoup4
 COMPONENT_BUGDB=	python-mod/beautifulsoup4
 COMPONENT_ANITYA_ID=	3779
-COMPONENT_BAID=		324052
+COMPONENT_BAID=		355817
 
 
 include $(WS_MAKE_RULES)/prep.mk
