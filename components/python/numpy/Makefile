@@ -83,6 +83,7 @@ COMPONENT_TEST_TRANSFORMS += \
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION).$(MACH).master
 
+REQUIRED_PACKAGES += $(PYVS:%=library/python/meson-python-%)
 REQUIRED_PACKAGES += library/python/cython
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
