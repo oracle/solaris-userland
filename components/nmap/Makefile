@@ -76,7 +76,7 @@ COMPONENT_TEST_TRANSFORMS += -E \
 	'-e "s|Nmap .* \\( https://nmap.org \\) at .*\\$$|Nmap VERSION ( https://nmap.org ) at DATETIME|g" ' \
 	'-e "/Initiating NSE at .*/d" ' '-e "/Completed NSE at .*/d" ' \
 	'-e "s|scanned in (.*) seconds|scanned in TIME seconds|g" ' \
-	'-e "/ WARNING **/d" ' '-e "/warnings\.warn/d" ' \
+	'-e "/ WARNING **/d" ' '-e "/warnings\.warn/d" ' '-e "/cc1plus: note/d" ' \
 	'-e "/\/usr\/gcc\/[0-9]+\/bin\/gcc/d" ' '-e "/\/usr\/gcc\/[0-9]+\/bin\/g\+\+/d" '
 
 REQUIRED_PACKAGES += library/libssh2

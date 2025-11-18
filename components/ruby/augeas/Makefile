@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -50,6 +50,7 @@ include $(WS_MAKE_RULES)/gem.mk
 include $(WS_MAKE_RULES)/ruby.mk
 
 GEM_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_TEST_CMD = /usr/bin/rake
 COMPONENT_TEST_DIR = $(SOURCE_DIR)
