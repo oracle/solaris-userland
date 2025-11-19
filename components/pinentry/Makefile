@@ -47,6 +47,8 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
+# since we patch configure.ac
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 
 CONFIGURE_OPTIONS  +=		--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS  +=		--infodir=$(CONFIGURE_INFODIR)

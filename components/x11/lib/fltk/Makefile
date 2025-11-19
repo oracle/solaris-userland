@@ -29,15 +29,15 @@ CTF_MODE =		relaxed
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fltk
-COMPONENT_VERSION=	1.3.9
+COMPONENT_VERSION=	1.4.4
 COMPONENT_PROJECT_URL=  http://fltk.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-source.tar.bz2
-COMPONENT_ARCHIVE_URL=	http://fltk.org/pub/fltk/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	http://github.com/$(COMPONENT_NAME)/$(COMPONENT_NAME)/releases/download/release-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:103441134915402808fd45424d4061778609437e804334434e946cfd26b196c2
+	sha256:2b302c80b7ea937a8bdc01ed6718fd995035bf63e9a2895491c1001821725f1f
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	823
-COMPONENT_BAID=		176032
+COMPONENT_BAID=		355770
 
 # Tests exists but need work to get hooked up
 TEST_TARGET = $(SKIP_TEST)
@@ -59,10 +59,12 @@ $(PROTOUSRLIBDIR)/64: $(INSTALL_TARGET)
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
+REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += x11/library/libglu
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcursor
 REQUIRED_PACKAGES += x11/library/libxext
