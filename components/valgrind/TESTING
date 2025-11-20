@@ -1,0 +1,53 @@
+Basic functionality:
+
+create memleak.c:
+
+  #include <stdlib.h>
+
+  void f(void)
+  {
+     int* x = malloc(10 * sizeof(int));
+     x[10] = 0;        // problem 1: heap block overrun
+  }                    // problem 2: memory leak -- x not freed
+
+  int main(void)
+  {
+     f();
+     return 0;
+  }
+
+compile it and run
+
+$ gcc -g -o memleak memleak.c
+$ valgrind ./memleak
+==1377== Memcheck, a memory error detector
+==1377== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==1377== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==1377== Command: ./memleak
+==1377==
+==1377== Invalid write of size 4
+==1377==    at 0x401030: f (memleak.c:6)
+==1377==    by 0x401041: main (memleak.c:11)
+==1377==  Address 0xfff200068 is 0 bytes after a block of size 40 alloc'd
+==1377==    at 0xFFFA05352: malloc (vg_replace_malloc.c:463)
+==1377==    by 0x401023: f (memleak.c:5)
+==1377==    by 0x401041: main (memleak.c:11)
+==1377==
+==1377==
+==1377== HEAP SUMMARY:
+==1377==     in use at exit: 40 bytes in 1 blocks
+==1377==   total heap usage: 1 allocs, 0 frees, 40 bytes allocated
+==1377==
+==1377== LEAK SUMMARY:
+==1377==    definitely lost: 40 bytes in 1 blocks
+==1377==    indirectly lost: 0 bytes in 0 blocks
+==1377==      possibly lost: 0 bytes in 0 blocks
+==1377==    still reachable: 0 bytes in 0 blocks
+==1377==         suppressed: 0 bytes in 0 blocks
+==1377== Rerun with --leak-check=full to see details of leaked memory
+==1377==
+==1377== For lists of detected and suppressed errors, rerun with: -s
+==1377== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+
+
