@@ -1,0 +1,110 @@
+Macro `sun' is used across the project. That works just on Oracle Studio
+compiler but not on GCC. __sun should be used which works on both of them.
+
+--- a/src/threads.h
++++ b/src/threads.h
+@@ -243,7 +243,7 @@
+     unsigned long _scgetthread_tid = (unsigned long)tpid; \
+     _scgetthread_tid; \
+ })
+-#elif defined(sun)
++#elif defined(__sun)
+ #include <thread.h>
+ #define SCGetThreadIdLong(...) ({ \
+     thread_t tmpthid = thr_self(); \
+--- a/src/util-affinity.h
++++ b/src/util-affinity.h
+@@ -75,7 +75,7 @@
+     struct ThreadsAffinityType_ *parent; // e.g. worker-cpu-set for interfaces
+     SCMutex taf_mutex;
+ 
+-#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined sun
++#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined __sun
+     cpu_set_t cpu_set;
+     cpu_set_t lowprio_cpu;
+     cpu_set_t medprio_cpu;
+--- a/src/util-affinity.c
++++ b/src/util-affinity.c
+@@ -65,7 +65,7 @@ ThreadsAffinityType thread_affinity[MAX_
+ 
+ int thread_affinity_init_done = 0;
+ 
+-#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined sun
++#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined __sun
+ #ifdef HAVE_HWLOC
+ static hwloc_topology_t topology = NULL;
+ #endif /* HAVE_HWLOC */
+@@ -206,7 +206,7 @@ ThreadsAffinityType *GetOrAllocAffinityT
+     return parent_affinity;
+ }
+ 
+-#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined sun
++#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined __sun
+ static void AffinitySetupInit(void)
+ {
+     int i, j;
+@@ -587,7 +587,7 @@ static bool AffinityConfigIsLegacy(void)
+  */
+ void AffinitySetupLoadFromConfig(void)
+ {
+-#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined sun
++#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined __sun
+     if (thread_affinity_init_done == 0) {
+         AffinitySetupInit();
+         AffinityConfigIsLegacy();
+@@ -643,7 +643,7 @@ void AffinitySetupLoadFromConfig(void)
+ #endif /* OS_WIN32 and __OpenBSD__ */
+ }
+ 
+-#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined sun
++#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined __sun
+ #ifdef HAVE_HWLOC
+ static int HwLocDeviceNumaGet(hwloc_topology_t topo, hwloc_obj_t obj)
+ {
+@@ -1006,7 +1006,7 @@ static bool AutopinEnabled(void)
+ uint16_t AffinityGetNextCPU(ThreadVars *tv, ThreadsAffinityType *taf)
+ {
+     uint16_t ncpu = 0;
+-#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined sun
++#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined __sun
+     int iface_numa = -1;
+     if (AutopinEnabled()) {
+ #ifdef HAVE_HWLOC
+@@ -1043,7 +1043,7 @@ uint16_t AffinityGetNextCPU(ThreadVars *
+ uint16_t UtilAffinityGetAffinedCPUNum(ThreadsAffinityType *taf)
+ {
+     uint16_t ncpu = 0;
+-#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined sun
++#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined __sun
+     SCMutexLock(&taf->taf_mutex);
+     for (int i = UtilCpuGetNumProcessorsOnline(); i >= 0; i--)
+         if (CPU_ISSET(i, &taf->cpu_set)) {
+--- a/src/tm-threads.c
++++ b/src/tm-threads.c
+@@ -699,7 +699,7 @@ void TmSlotSetFuncAppend(ThreadVars *tv,
+     }
+ }
+ 
+-#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined sun
++#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined __sun
+ static int SetCPUAffinitySet(cpu_set_t *cs)
+ {
+ #if defined OS_FREEBSD
+@@ -733,7 +733,7 @@ static int SetCPUAffinitySet(cpu_set_t *
+  */
+ static int SetCPUAffinity(uint16_t cpuid)
+ {
+-#if defined __OpenBSD__ || defined sun
++#if defined __OpenBSD__ || defined __sun
+     return 0;
+ #else
+     int cpu = (int)cpuid;
+@@ -869,7 +869,7 @@ TmEcode TmThreadSetupOptions(ThreadVars
+         SetCPUAffinity(tv->cpu_affinity);
+     }
+ 
+-#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined sun
++#if !defined __CYGWIN__ && !defined OS_WIN32 && !defined __OpenBSD__ && !defined __sun
+     if (tv->thread_setup_flags & THREAD_SET_PRIORITY)
+         TmThreadSetPrio(tv);
+     if (tv->thread_setup_flags & THREAD_SET_AFFTYPE) {

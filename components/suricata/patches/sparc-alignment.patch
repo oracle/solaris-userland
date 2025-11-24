@@ -8,19 +8,20 @@ and:
 
 This change needs to be sent upstream.
 
---- a/src/main.c	2024-02-20 10:09:38.161133595 +0100
-+++ b/src/main.c	2024-02-20 10:13:06.734861565 +0100
-@@ -19,5 +19,13 @@
+--- a/src/suricata.c
++++ b/src/suricata.c
+@@ -3002,6 +3002,14 @@
  
- int main(int argc, char **argv)
+ void SuricataPreInit(const char *progname)
  {
-+/*
-+ * 'ta 6' tells the kernel to synthesize any unaligned accesses this process
-+ * makes, instead of just signalling an error and terminating the process.
-+ */
++    /*
++     * 'ta 6' tells the kernel to synthesize any unaligned accesses this process
++     * makes, instead of just signalling an error and terminating the process.
++     */
 +#ifdef __sparc
 +    __asm("ta 6");
 +#endif
 +
-     return SuricataMain(argc, argv);
- }
+     SCInstanceInit(&suricata, progname);
+ 
+     if (InitGlobal() != 0) {

@@ -1,8 +1,8 @@
 Solaris doesn't define d_type dirent member and DT_REG type.
 
---- a/src/source-pcap-file-directory-helper.c	2024-01-04 16:41:19.843528082 +0100
-+++ b/src/source-pcap-file-directory-helper.c	2024-01-04 16:42:29.054578407 +0100
-@@ -302,7 +302,7 @@
+--- a/src/source-pcap-file-directory-helper.c
++++ b/src/source-pcap-file-directory-helper.c
+@@ -304,7 +304,7 @@ struct dirent * dir = NULL;
      PendingFile *file_to_add = NULL;
  
      while ((dir = readdir(pv->directory)) != NULL) {
@@ -11,9 +11,9 @@ Solaris doesn't define d_type dirent member and DT_REG type.
          if (dir->d_type != DT_REG) {
              continue;
          }
---- a/src/util-path.c	2024-01-08 17:18:59.712020322 +0100
-+++ b/src/util-path.c	2024-01-08 17:19:23.262288062 +0100
-@@ -235,7 +235,7 @@
+--- a/src/util-path.c
++++ b/src/util-path.c
+@@ -199,7 +199,7 @@ *          and parent directory will ret
   */
  bool SCIsRegularDirectory(const struct dirent *const dir_entry)
  {
@@ -22,7 +22,7 @@ Solaris doesn't define d_type dirent member and DT_REG type.
      if ((dir_entry->d_type == DT_DIR) &&
          (strcmp(dir_entry->d_name, ".") != 0) &&
          (strcmp(dir_entry->d_name, "..") != 0)) {
-@@ -253,7 +253,7 @@
+@@ -217,7 +217,7 @@ * \retval True if the object is a regula
   */
  bool SCIsRegularFile(const struct dirent *const dir_entry)
  {

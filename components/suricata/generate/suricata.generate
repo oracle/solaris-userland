@@ -20,8 +20,13 @@
 #
 
 #
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
+
+# Suricata is not PIE compiled, see Makefile
+<transform file path=usr/bin/suricata -> default pkg.linted.userland.action001.PIE true>
+<transform file path=usr/bin/suricatactl -> default pkg.linted.userland.action001.PIE true>
+<transform file path=usr/bin/suricatasc -> default pkg.linted.userland.action001.PIE true>
 
 # Install suricata daemon to /usr/sbin
 <transform file path=usr/bin/suricata$ -> set action.hash %(path)>

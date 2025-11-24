@@ -1,12 +1,12 @@
 Solaris cp doesn't know -a, but GNU does.
+When I set PATH to reach /usr/gnu/bin/cp rust fails to build.
 
 Not for upstream.
-
---- suricata-7.0.6/rust/Makefile.am
-+++ suricata-7.0.6/rust/Makefile.am
-@@ -51,11 +51,11 @@ $(CARGO) build $(RELEASE) $(NIGHTLY_ARGS
+--- a/rust/Makefile.am
++++ b/rust/Makefile.am
+@@ -72,11 +72,11 @@ $(CARGO_ENV) \
+ 		$(CARGO) build $(RELEASE) $(NIGHTLY_ARGS) \
  			--features "$(RUST_FEATURES)" $(RUST_TARGET)
- endif
  	if test -e $(RUST_SURICATA_LIBDIR)/suricata.lib; then \
 -		cp -a $(RUST_SURICATA_LIBDIR)/suricata.lib \
 +		gcp -a $(RUST_SURICATA_LIBDIR)/suricata.lib \

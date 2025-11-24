@@ -1,0 +1,34 @@
+Nix-0.28 contains a bug fixed upstream, but suricata still depends on this
+version.
+
+https://github.com/nix-rust/nix/commit/0f4559386404f58803b27807201b4dd6d1411f50
+
+--- a/rust/vendor/nix/src/sys/termios.rs
++++ b/rust/vendor/nix/src/sys/termios.rs
+@@ -418,8 +418,6 @@
+         VEOL,
+         VEOL2,
+         VERASE,
+-        #[cfg(any(freebsdlike, solarish))]
+-        VERASE2,
+         VINTR,
+         VKILL,
+         #[cfg(not(target_os = "haiku"))]
+@@ -431,8 +429,6 @@
+         #[cfg(not(target_os = "haiku"))]
+         VREPRINT,
+         VSTART,
+-        #[cfg(any(bsd, solarish))]
+-        VSTATUS,
+         VSTOP,
+         VSUSP,
+         #[cfg(target_os = "linux")]
+--- a/rust/Cargo.toml
++++ b/rust/Cargo.toml
+@@ -91,3 +91,6 @@
+ 
+ [dev-dependencies]
+ test-case = "~3.3.1"
++
++[patch.crates-io]
++nix = { path = "vendor/nix" }

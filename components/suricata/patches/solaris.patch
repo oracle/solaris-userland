@@ -1,0 +1,18 @@
+This is necessary compiler settings to make it build. Together with rest
+related settings in component Makefile it makes it build including unit tests.
+
+For upstream.
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -296,7 +296,9 @@
+             ;;
+         *-*-solaris*)
+             AC_MSG_WARN([support for Solaris/Illumos/SunOS is experimental])
+-            LDFLAGS="${LDFLAGS} -lsocket -lnsl"
++            CPPFLAGS="${CPPFLAGS} -D__EXTENSIONS__"
++            LDFLAGS="${LDFLAGS} -lsocket -lnsl -lm"
++            RUST_LDADD="-lc -lsocket -lnsl -lm -lpcap -llua -ljansson -lpcre2-8"
+             ;;
+         *)
+             AC_MSG_WARN([unsupported OS this may or may not work])

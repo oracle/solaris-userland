@@ -1,0 +1,17 @@
+Suricata enforces unsigned char for the whole project. Solaris headers do not
+detect that and will define int8_t type as unsigned.
+
+https://redmine.openinfosecfoundation.org/issues/8126
+
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -1454,8 +1454,7 @@ AM_CFLAGS = ${OPTIMIZATION_CFLAGS} ${GCC
+     ${SECCFLAGS} ${PCAP_CFLAGS} ${EXTRA_CFLAGS}								\
+     -Wall -Wno-unused-parameter -Wmissing-prototypes -Wmissing-declarations \
+     -Wstrict-prototypes -Wwrite-strings -Wbad-function-cast                 \
+-    -Wformat-security -Wno-format-nonliteral -Wmissing-format-attribute     \
+-    -funsigned-char
++    -Wformat-security -Wno-format-nonliteral -Wmissing-format-attribute
+ 
+ # different flags for different cases
+ if DEBUG
