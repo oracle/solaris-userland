@@ -18,11 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
-<transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
-<transform file path=usr/squid/libexec/.+ ->default mode 0555>
 set name=pkg.fmri \
     value=pkg:/web/proxy/squid@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Squid Web Proxy Cache"
@@ -36,9 +34,6 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2009/130
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=etc/squid/cachemgr.conf group=webservd mode=0644 \
-    original_name=SUNWsquid:etc/squid/cachemgr.conf preserve=renamenew
-file path=etc/squid/cachemgr.conf.default
 file path=etc/squid/errorpage.css
 file path=etc/squid/errorpage.css.default
 file path=etc/squid/mime.conf group=webservd mode=0644 \
@@ -51,25 +46,31 @@ file path=etc/squid/squid.conf.documented
 file files/http-squid.xml path=lib/svc/manifest/network/http-squid.xml
 file files/http-squid path=lib/svc/method/http-squid \
     restart_fmri=svc:/network/http:squid
-file path=usr/squid/bin/purge
-file path=usr/squid/bin/squidclient
 file path=usr/squid/libexec/basic_db_auth mode=0555
+file path=usr/squid/libexec/basic_fake_auth mode=0555
 file path=usr/squid/libexec/basic_getpwnam_auth mode=0555
 file path=usr/squid/libexec/basic_ldap_auth mode=0555
 file path=usr/squid/libexec/basic_ncsa_auth mode=0555
 file path=usr/squid/libexec/basic_nis_auth mode=0555
 file path=usr/squid/libexec/basic_pam_auth mode=0555
 file path=usr/squid/libexec/basic_pop3_auth mode=0555
+file path=usr/squid/libexec/basic_radius_auth mode=0555
 file path=usr/squid/libexec/basic_sasl_auth mode=0555
 file path=usr/squid/libexec/basic_smb_auth mode=0555
 file path=usr/squid/libexec/basic_smb_auth.sh mode=0555
-file path=usr/squid/libexec/basic_smb_lm_auth mode=0555
-file path=usr/squid/libexec/cachemgr.cgi mode=0555
+file path=usr/squid/libexec/cert_tool mode=0555
+file path=usr/squid/libexec/digest_edirectory_auth mode=0555
 file path=usr/squid/libexec/digest_file_auth mode=0555
 file path=usr/squid/libexec/digest_ldap_auth mode=0555
 file path=usr/squid/libexec/diskd mode=0555
+file path=usr/squid/libexec/ext_delayer_acl mode=0555
+file path=usr/squid/libexec/ext_edirectory_userip_acl mode=0555
 file path=usr/squid/libexec/ext_file_userip_acl mode=0555
+file path=usr/squid/libexec/ext_kerberos_ldap_group_acl mode=0555
+file path=usr/squid/libexec/ext_kerberos_sid_group_acl mode=0555
 file path=usr/squid/libexec/ext_ldap_group_acl mode=0555
+file path=usr/squid/libexec/ext_session_acl mode=0555
+file path=usr/squid/libexec/ext_sql_session_acl mode=0555
 file path=usr/squid/libexec/ext_unix_group_acl mode=0555
 file path=usr/squid/libexec/ext_wbinfo_group_acl mode=0555
 file path=usr/squid/libexec/helper-mux mode=0555
@@ -77,8 +78,8 @@ file path=usr/squid/libexec/log_db_daemon mode=0555
 file path=usr/squid/libexec/log_file_daemon mode=0555
 file path=usr/squid/libexec/negotiate_kerberos_auth mode=0555
 file path=usr/squid/libexec/negotiate_kerberos_auth_test mode=0555
+file path=usr/squid/libexec/negotiate_wrapper_auth mode=0555
 file path=usr/squid/libexec/ntlm_fake_auth mode=0555
-file path=usr/squid/libexec/ntlm_smb_lm_auth mode=0555
 file path=usr/squid/libexec/pinger mode=0555
 file path=usr/squid/libexec/security_fake_certverify mode=0555
 file path=usr/squid/libexec/storeid_file_rewrite mode=0555
@@ -86,28 +87,44 @@ file path=usr/squid/libexec/unlinkd mode=0555
 file path=usr/squid/libexec/url_fake_rewrite mode=0555
 file path=usr/squid/libexec/url_fake_rewrite.sh mode=0555
 file path=usr/squid/libexec/url_lfs_rewrite mode=0555
-file path=usr/squid/man/man1/purge.1
-file path=usr/squid/man/man1/squidclient.1
-file path=usr/squid/man/man8/basic_db_auth.8
-file path=usr/squid/man/man8/basic_getpwnam_auth.8
-file path=usr/squid/man/man8/basic_ldap_auth.8
-file path=usr/squid/man/man8/basic_ncsa_auth.8
-file path=usr/squid/man/man8/basic_pam_auth.8
-file path=usr/squid/man/man8/basic_pop3_auth.8
-file path=usr/squid/man/man8/basic_sasl_auth.8
-file path=usr/squid/man/man8/cachemgr.cgi.8
-file path=usr/squid/man/man8/digest_file_auth.8
-file path=usr/squid/man/man8/ext_file_userip_acl.8
-file path=usr/squid/man/man8/ext_ldap_group_acl.8
-file path=usr/squid/man/man8/ext_unix_group_acl.8
-file path=usr/squid/man/man8/ext_wbinfo_group_acl.8
-file path=usr/squid/man/man8/helper-mux.8
-file path=usr/squid/man/man8/log_db_daemon.8
-file path=usr/squid/man/man8/negotiate_kerberos_auth.8
-file path=usr/squid/man/man8/security_fake_certverify.8
-file path=usr/squid/man/man8/squid.8
-file path=usr/squid/man/man8/storeid_file_rewrite.8
-file path=usr/squid/man/man8/url_lfs_rewrite.8
+file path=usr/squid/man/man8/basic_db_auth.8 mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/basic_getpwnam_auth.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/basic_ldap_auth.8 mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/basic_ncsa_auth.8 mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/basic_pam_auth.8 mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/basic_pop3_auth.8 mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/basic_radius_auth.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/basic_sasl_auth.8 mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/digest_file_auth.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/ext_delayer_acl.8 mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/ext_edirectory_userip_acl.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/ext_file_userip_acl.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/ext_kerberos_sid_group_acl.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/ext_ldap_group_acl.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/ext_session_acl.8 mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/ext_sql_session_acl.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/ext_unix_group_acl.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/ext_wbinfo_group_acl.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/helper-mux.8 mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/log_db_daemon.8 mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/negotiate_kerberos_auth.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/security_fake_certverify.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/squid.8 mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/storeid_file_rewrite.8 \
+    mangler.man.stability=uncommitted
+file path=usr/squid/man/man8/url_lfs_rewrite.8 mangler.man.stability=uncommitted
 file path=usr/squid/sbin/squid
 file path=usr/squid/share/errors/COPYRIGHT
 file path=usr/squid/share/errors/TRANSLATORS
@@ -207,6 +224,7 @@ file path=usr/squid/share/icons/silk/script_gear.png
 file path=usr/squid/share/icons/silk/script_palette.png
 file path=usr/squid/share/mib.txt
 dir  path=var/squid/cache owner=webservd group=webservd mode=0755
+dir  path=var/squid/cache/squid owner=webservd group=webservd mode=0755
 dir  path=var/squid/logs owner=webservd group=webservd mode=0755
 #
 license squid.license \

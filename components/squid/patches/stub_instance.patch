@@ -1,0 +1,14 @@
+tests/testRock fails with
+stub time| FATAL: Ipc::Mem::Segment::create failed to shm_open(squid-0-tr_rebuild_stats.shm): (22) Invalid argument
+
+https://bugs.squid-cache.org/show_bug.cgi?id=5528
+
+--- a/src/tests/stub_Instance.cc
++++ b/src/tests/stub_Instance.cc
+@@ -16,5 +16,5 @@
+ void Instance::ThrowIfAlreadyRunning() STUB
+ void Instance::WriteOurPid() STUB
+ pid_t Instance::Other() STUB_RETVAL({})
+-SBuf Instance::NamePrefix(const char *, const char *) STUB_RETVAL_NOP(SBuf("squid-0"))
++SBuf Instance::NamePrefix(const char *, const char *) STUB_RETVAL_NOP(SBuf("/squid-0"))
+ 

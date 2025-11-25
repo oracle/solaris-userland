@@ -1,14 +1,14 @@
 Internally produced patch to handle updated kerberos.
 Will offer to upstream.
 
---- squid-6.9/src/auth/negotiate/kerberos/negotiate_kerberos.h
-+++ squid-6.9/src/auth/negotiate/kerberos/negotiate_kerberos.h
-@@ -124,7 +124,7 @@ const char *function, int log, int sout)
+--- a/src/auth/negotiate/kerberos/negotiate_kerberos.h
++++ b/src/auth/negotiate/kerberos/negotiate_kerberos.h
+@@ -112,7 +112,7 @@ const char *function, int log, int sout)
  
  char *gethost_name(void);
  
 -#if (HAVE_GSSKRB5_EXTRACT_AUTHZ_DATA_FROM_SEC_CONTEXT || HAVE_GSS_MAP_NAME_TO_ANY) && HAVE_KRB5_PAC
 +#if HAVE_GSSKRB5_EXTRACT_AUTHZ_DATA_FROM_SEC_CONTEXT && HAVE_GSS_MAP_NAME_TO_ANY && HAVE_KRB5_PAC
  #define HAVE_PAC_SUPPORT 1
- #define MAX_PAC_GROUP_SIZE 200*60
- typedef struct {
+ 
+ /**
