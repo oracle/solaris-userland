@@ -28,11 +28,11 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		unbound
-COMPONENT_VERSION=	1.24.1
-COMPONENT_BAID=		353487
+COMPONENT_VERSION=	1.24.2
+COMPONENT_BAID=		358164
 COMPONENT_PROJECT_URL=	https://nlnetlabs.nl/projects/unbound/about/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7f2b1633e239409619ae0527f67878b0f33ae0ec0ee5a3a51c042c359ba1eeab
+    sha256:44e7b53e008a6dcaec03032769a212b46ab5c23c105284aa05a4f3af78e59cdb
 COMPONENT_ARCHIVE_URL= \
     https://nlnetlabs.nl/downloads/unbound/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/unbound
