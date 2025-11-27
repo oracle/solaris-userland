@@ -25,22 +25,23 @@
 
 BUILD_BITS=		64
 COMPILER=		gcc
-CTF_MODE =		relaxed
+CTF_MODE =		off # not supported for 'GNU C++17' frontend
+
 include ../../make-rules/shared-macros.mk
 
 # This component does not fully specify dependencies of shared objects
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		ImageMagick
-COMPONENT_VERSION=	7.1.2-3
+COMPONENT_VERSION=	7.1.2-8
 COMPONENT_PROJECT_URL=	https://www.imagemagick.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:b16415e8694a2e15e5282d64fc7b358f309ff3a514a90eb5da268676c772de3d
+COMPONENT_ARCHIVE_HASH=	sha256:acf76a9dafbd18f4dd7b24c45ca10c77e31289fc28e4da0ce5cc3929fd0aef16
 COMPONENT_ARCHIVE_URL=	https://github.com/ImageMagick/ImageMagick/archive/refs/tags/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/imagemagick
 COMPONENT_ANITYA_ID=	1372
 
-COMPONENT_BAID=		344684
+COMPONENT_BAID=		358298
 
 IPS_COMPONENT_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/-/./')
 COMPONENT_MAJOR_VERSION=$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\..*//')
