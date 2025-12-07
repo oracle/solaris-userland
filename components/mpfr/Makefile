@@ -19,7 +19,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=	gcc
@@ -80,3 +80,5 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/TOTAL/p" '
 
 REQUIRED_PACKAGES += library/gmp
+# Needed for only running autoreconf during build, not at runtime or to test:
+REQUIRED_PACKAGES += developer/build/autoconf-archive
