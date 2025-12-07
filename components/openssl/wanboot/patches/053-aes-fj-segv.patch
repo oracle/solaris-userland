@@ -1,0 +1,62 @@
+#
+# This patch provides an interim internal fix for issue
+# https://github.com/openssl/openssl/issues/29085
+#
+# On Fujitsu Sparc machine, when the input buffer to EVP_EncryptUpdate()
+# is a multiple of 8k the Fujitsu SPARC64 X optimizations cause a SEGV.
+#
+# This patch can be removed once the final fix is provided by upstream.
+#
+--- old/crypto/aes/asm/aesfx-sparcv9.pl	2025-11-10 12:57:12.673402914 +0100
++++ new/crypto/aes/asm/aesfx-sparcv9.pl	2025-11-10 15:07:42.195963826 +0100
+@@ -479,11 +479,16 @@ aes_fx_cbc_encrypt:
+ 	ldd		[$end + 24], %f12
+ 
+ 	movrz		$len, 0, $inc
++
++	brz,pn		$len, .Lcbc_enc_skip_load
++	nop
++
+ 	fmovd		$intail, $in0
+ 	ldd		[$inp - 8], $in1	! load next input block
+ 	ldda		[$inp]0x82, $intail	! non-faulting load
+ 	add		$inp, $inc, $inp	! inp+=16
+ 
++.Lcbc_enc_skip_load:
+ 	fmovd		%f0, %f4
+ 	faesencx	%f2, %f6, %f0
+ 	faesencx	%f4, %f8, %f2
+@@ -694,11 +699,16 @@ aes_fx_cbc_encrypt:
+ 	fmovd		$in1, $iv1
+ 
+ 	movrz		$len, 0, $inc
++
++	brz,pn		$len, .Lcbc_dec_skip_load
++	nop
++
+ 	fmovd		$intail, $in0
+ 	ldd		[$inp - 8], $in1	! load next input block
+ 	ldda		[$inp]0x82, $intail	! non-faulting load
+ 	add		$inp, $inc, $inp	! inp+=16
+ 
++.Lcbc_dec_skip_load:
+ 	fmovd		%f0, %f4
+ 	faesdecx	%f2, %f10, %f0
+ 	faesdecx	%f4, %f12, %f2
+@@ -953,11 +963,16 @@ aes_fx_ctr32_encrypt_blocks:
+ 	fxor		$in1, $rllo, %f8
+ 
+ 	movrz		$len, 0, $inc
++
++	brz,pn		$len, .Lctr32_enc_skip_load
++	nop
++
+ 	fmovd		$intail, $in0
+ 	ldd		[$inp - 8], $in1	! load next input block
+ 	ldda		[$inp]0x82, $intail	! non-faulting load
+ 	add		$inp, $inc, $inp	! inp+=16
+ 
++.Lctr32_enc_skip_load:
+ 	fmovd		%f0, %f4
+ 	faesencx	%f2, %f10, %f0
+ 	faesencx	%f4, %f12, %f2
