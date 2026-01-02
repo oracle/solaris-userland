@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
 #
 
 
@@ -36,7 +36,7 @@ while (<>) {
 	my $original_line = $_;
 
 	# Transliterate any utf-8 characters we have met
-	tr/Åôçéü/Aoceu/;
+	tr/Åôçéü‘’“”/Aoceu''""/;
 
 	# Remove any ascii characters to verify that there is no more utf-8
 	my $non_ascii = s/[[:ascii:]]//gr;
