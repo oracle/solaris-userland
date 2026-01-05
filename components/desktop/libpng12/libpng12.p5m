@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -28,6 +28,7 @@ set name=pkg.fmri \
 set name=pkg.summary value="Portable Network Graphics library version 1.2"
 set name=pkg.description \
     value="libpng is a C library for working with PNG (Portable Network Graphics) format images."
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=libpng
 set name=info.classification \
@@ -35,7 +36,7 @@ set name=info.classification \
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2003/085 value=LSARC/2003/568 \
-    value=PSARC/2010/313 value=PSARC/2016/174
+    value=PSARC/2010/313 value=PSARC/2016/174 value=PSARC/2025/146
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=usr/lib/$(MACH64)/libpng.so.3 target=libpng.so.3.59.0
 file path=usr/lib/$(MACH64)/libpng.so.3.59.0
@@ -45,4 +46,9 @@ link path=usr/lib/libpng.so.3 target=libpng.so.3.59.0
 file path=usr/lib/libpng.so.3.59.0
 link path=usr/lib/libpng12.so.0 target=libpng12.so.0.59.0
 file path=usr/lib/libpng12.so.0.59.0
+file release-notes/image-library-libpng12.txt \
+    path=usr/share/doc/release-notes/image-library-libpng12.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 license LICENSE license=libpng
