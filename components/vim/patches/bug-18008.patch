@@ -1,0 +1,49 @@
+Patch taken from
+https://github.com/vim/vim/commit/1c222f6a6cf6a5e64fcf82cde20b231e0833808e.patch
+
+From 1c222f6a6cf6a5e64fcf82cde20b231e0833808e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Joakim=20Nohlg=C3=A5rd?= <joakim@nohlgard.se>
+Date: Fri, 15 Aug 2025 12:16:30 +0200
+Subject: [PATCH] xxd: Avoid null dereference in autoskip colorless
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fixes bug introduced in 6897f18ee6e5bb78b32c97616e484030fd514750
+(v9.1.1459) which does a memcpy from NULL when color=never and the
+autoskip option is used.
+
+Before:
+
+dd if=/dev/zero bs=100 count=1 status=none | xxd -a -R never
+00000000: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+Segmentation fault (core dumped)
+
+After:
+
+dd if=/dev/zero bs=100 count=1 status=none | ./xxd/xxd -a -R never
+00000000: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+*
+00000060: 0000 0000                                ....
+
+Signed-off-by: Joakim Nohlgård <joakim@nohlgard.se>
+---
+ src/xxd/xxd.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/xxd/xxd.c b/src/xxd/xxd.c
+index 36a5a88ec95c55..3fb31e2c255549 100644
+--- a/src/xxd/xxd.c
++++ b/src/xxd/xxd.c
+@@ -597,7 +597,10 @@ xxdline(FILE *fp, char *l, char *colors, int nz)
+   if (!nz && zero_seen == 1)
+     {
+       strcpy(z, l);
+-      memcpy(z_colors, colors, strlen(z));
++      if (colors)
++	{
++	  memcpy(z_colors, colors, strlen(z));
++	}
+     }
+ 
+   if (nz || !zero_seen++)
