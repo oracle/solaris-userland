@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
 #
 
 <transform dir file path=usr/share/lib/java/javadoc* -> default group other>
@@ -33,6 +33,7 @@
 set name=pkg.fmri \
     value=pkg:/library/java/memcached-java@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="memcached client for the Java platform"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="the memcached client for the Java platform"
@@ -40,8 +41,13 @@ set name=info.classification \
     value=org.opensolaris.category.2008:Development/Java
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=LSARC/2008/126
+set name=org.opensolaris.arc-caseid value=LSARC/2008/126 value=PSARC/2025/138
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file release-notes/library-java-memcached-java.txt \
+    path=usr/share/doc/release-notes/library-java-memcached-java.txt \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 
 
 file java_memcached-release_2.0.1.jar \
