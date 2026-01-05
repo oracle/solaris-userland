@@ -1,0 +1,19 @@
+This is workaround for bug
+
+38464607 - Add support for single argument invocation of static_assert for gcc using C23
+
+Not suitable for upstream, we have to fix our headers.
+
+--- gnutls-3.8.10/src/gl/tests/test-assert.c
++++ gnutls-3.8.10/src/gl/tests/test-assert.c
+@@ -20,9 +20,7 @@
+ 
+ #define STATIC_ASSERT_TESTS \
+   static_assert (2 + 2 == 4, "arithmetic does not work"); \
+-  static_assert (2 + 2 == 4); \
+-  static_assert (sizeof (char) == 1, "sizeof does not work"); \
+-  static_assert (sizeof (char) == 1)
++  static_assert (sizeof (char) == 1, "sizeof does not work")
+ 
+ STATIC_ASSERT_TESTS;
+ 
