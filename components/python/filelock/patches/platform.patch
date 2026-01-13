@@ -1,43 +1,60 @@
 Since the platform is known at this point, we can simplify the logic
 and not deliver the windows related locking.
 
---- filelock-3.13.4/src/filelock/__init__.py
-+++ filelock-3.13.4/src/filelock/__init__.py
-@@ -15,23 +15,14 @@ from typing import TYPE_CHECKING
+--- filelock-3.20.1/src/filelock/__init__.py
++++ filelock-3.20.1/src/filelock/__init__.py
+@@ -15,13 +15,11 @@ from typing import TYPE_CHECKING
  from ._api import AcquireReturnProxy, BaseFileLock
  from ._error import Timeout
  from ._soft import SoftFileLock
 -from ._unix import UnixFileLock, has_fcntl
 -from ._windows import WindowsFileLock
 +from ._unix import UnixFileLock
+ from .asyncio import (
+     AsyncAcquireReturnProxy,
+     AsyncSoftFileLock,
+     AsyncUnixFileLock,
+-    AsyncWindowsFileLock,
+     BaseAsyncFileLock,
+ )
  from .version import version
- 
- #: version of the project as a string
+@@ -30,18 +28,8 @@ from .version import version
  __version__: str = version
  
  
 -if sys.platform == "win32":  # pragma: win32 cover
 -    _FileLock: type[BaseFileLock] = WindowsFileLock
+-    _AsyncFileLock: type[BaseAsyncFileLock] = AsyncWindowsFileLock
 -else:  # pragma: win32 no cover # noqa: PLR5501
 -    if has_fcntl:
 -        _FileLock: type[BaseFileLock] = UnixFileLock
+-        _AsyncFileLock: type[BaseAsyncFileLock] = AsyncUnixFileLock
 -    else:
 -        _FileLock = SoftFileLock
+-        _AsyncFileLock = AsyncSoftFileLock
 -        if warnings is not None:
 -            warnings.warn("only soft file lock is available", stacklevel=2)
 +_FileLock: type[BaseFileLock] = UnixFileLock
++_AsyncFileLock: type[BaseAsyncFileLock] = AsyncUnixFileLock
  
  if TYPE_CHECKING:
      FileLock = SoftFileLock
-@@ -47,6 +38,5 @@ __all__ = [
+@@ -58,13 +46,11 @@ __all__ = [
+     "AsyncFileLock",
+     "AsyncSoftFileLock",
+     "AsyncUnixFileLock",
+-    "AsyncWindowsFileLock",
+     "BaseAsyncFileLock",
+     "BaseFileLock",
+     "FileLock",
      "SoftFileLock",
      "Timeout",
      "UnixFileLock",
 -    "WindowsFileLock",
      "__version__",
  ]
---- filelock-3.13.4/tests/test_filelock.py
-+++ filelock-3.13.4/tests/test_filelock.py
+--- filelock-3.20.1/tests/test_filelock.py
++++ filelock-3.20.1/tests/test_filelock.py
 @@ -18,7 +18,7 @@ from weakref import WeakValueDictionary
  
  import pytest
@@ -46,8 +63,8 @@ and not deliver the windows related locking.
 +from filelock import BaseFileLock, FileLock, SoftFileLock, Timeout, UnixFileLock
  
  if TYPE_CHECKING:
-     from pytest_mock import MockerFixture
-@@ -521,6 +521,7 @@ def test_umask_soft(tmp_path: Path) -> N
+     from collections.abc import Callable, Iterator
+@@ -586,6 +586,7 @@ def test_umask_soft(tmp_path: Path) -> N
      lock.release()
  
  
@@ -55,3 +72,28 @@ and not deliver the windows related locking.
  def test_wrong_platform(tmp_path: Path) -> None:
      assert not inspect.isabstract(UnixFileLock)
      assert not inspect.isabstract(WindowsFileLock)
+--- filelock-3.20.1/src/filelock/asyncio.py
++++ filelock-3.20.1/src/filelock/asyncio.py
+@@ -16,7 +16,6 @@ from ._api import BaseFileLock, FileLock
+ from ._error import Timeout
+ from ._soft import SoftFileLock
+ from ._unix import UnixFileLock
+-from ._windows import WindowsFileLock
+ 
+ if TYPE_CHECKING:
+     import sys
+@@ -331,14 +330,9 @@ class AsyncUnixFileLock(UnixFileLock, Ba
+     """Uses the :func:`fcntl.flock` to hard lock the lock file on unix systems."""
+ 
+ 
+-class AsyncWindowsFileLock(WindowsFileLock, BaseAsyncFileLock):
+-    """Uses the :func:`msvcrt.locking` to hard lock the lock file on windows systems."""
+-
+-
+ __all__ = [
+     "AsyncAcquireReturnProxy",
+     "AsyncSoftFileLock",
+     "AsyncUnixFileLock",
+-    "AsyncWindowsFileLock",
+     "BaseAsyncFileLock",
+ ]

@@ -26,24 +26,27 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		filelock
-COMPONENT_VERSION=	3.13.4
+COMPONENT_VERSION=	3.20.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d13f466618bfde72bd2c18255e269f72542c6e70e7bac83a0232d6b1cc5c8cf4
+    sha256:b8360948b351b80f420878d8516519a2204b07aefcdcfd24912a5d33127f188c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/tox-dev/py-filelock
 COMPONENT_BUGDB=	python-mod/filelock
 COMPONENT_ANITYA_ID=	11739
-COMPONENT_BAID=		164674
+COMPONENT_BAID=		361409
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-venv-test.mk
+
+PYTHON_VENV_TEST_COMPONENTS = pytest-asyncio pytest-timeout
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =   -v
+COMPONENT_TEST_CMD =	$(VENV_PYTHON) -m pytest
+COMPONENT_TEST_ARGS =	--ignore=test_virtualenv.py
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -52,9 +55,9 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_NO_ARCH)
+venv-test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TEST_NO_ARCH)
+venv-system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 # build dependencies
 REQUIRED_PACKAGES += library/python/hatchling
