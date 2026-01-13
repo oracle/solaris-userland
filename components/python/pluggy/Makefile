@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		pluggy
-COMPONENT_VERSION=	1.5.0
+COMPONENT_VERSION=	1.6.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1
+    sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pytest-dev/pluggy
 COMPONENT_BUGDB=	python-mod/pluggy
 COMPONENT_ANITYA_ID=	7500
-COMPONENT_BAID=		183030
+COMPONENT_BAID=		363556
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

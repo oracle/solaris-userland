@@ -3,6 +3,10 @@ Solaris specific patch, not suitable for upstream.
 The pytest.ini changes are required as some of the
 default options are not available in Solaris.
 
+Also, the warning filter needs to be adjusted a little
+to reflect changes in latest Pytest:
+https://github.com/cherrypy/cherrypy/issues/2076
+
 pytest-services and requests_toolbelt are not available
 on Solaris and thus skipped.
 
@@ -25,8 +29,8 @@ the same process).
              'pytest-forked',
              'pytest-sugar',
              'path.py',
---- CherryPy-18.8.0/pytest.ini
-+++ CherryPy-18.8.0/pytest.ini
+--- cherrypy-18.10.0/pytest.ini
++++ cherrypy-18.10.0/pytest.ini
 @@ -27,19 +27,6 @@ addopts =
    # Dump the test results in junit format:
    --junitxml=.test-results/pytest/results.xml
@@ -47,6 +51,15 @@ the same process).
  doctest_optionflags = ALLOW_UNICODE ELLIPSIS
  
  filterwarnings =
+@@ -49,7 +36,7 @@ filterwarnings =
+   # Ref: https://docs.pytest.org/en/stable/usage.html#unraisable
+   # Ref: https://github.com/pytest-dev/pytest/issues/5299
+   ignore:Exception ignored in. <socket.socket fd=-1, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6>:pytest.PytestUnraisableExceptionWarning:_pytest.unraisableexception
+-  ignore:Exception ignored in. <_io.FileIO .closed.>:pytest.PytestUnraisableExceptionWarning:_pytest.unraisableexception
++  ignore:Exception ignored in. <_io.FileIO.*>:pytest.PytestUnraisableExceptionWarning:_pytest.unraisableexception
+ 
+   ignore:Use cheroot.test.webtest:DeprecationWarning
+   ignore:This method will be removed in future versions.*:DeprecationWarning
 --- CherryPy-18.8.0/cherrypy/test/test_session.py
 +++ CherryPy-18.8.0/cherrypy/test/test_session.py
 @@ -407,6 +407,11 @@ def is_memcached_present():

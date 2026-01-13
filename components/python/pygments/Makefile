@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2026, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -42,9 +42,9 @@ include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =	--ignore=contrast/test_contrasts.py
+COMPONENT_TEST_ARGS =	--ignore=tests/contrast/test_contrasts.py
 
 COMPONENT_POST_INSTALL_ACTION = \
 	(cd $(PROTO_DIR)/usr/bin ; \

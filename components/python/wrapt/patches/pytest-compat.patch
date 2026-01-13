@@ -1,0 +1,67 @@
+Eliminate deprecation warnings on pytest conftest file.
+
+Modified based on:
+https://github.com/GrahamDumpleton/wrapt/commit/63acfc2430c146ae0543e6df323e96cca1a81a4b
+
+--- wrapt-1.17.2/tests/conftest.py
++++ wrapt-1.17.2/tests/conftest.py
+@@ -13,33 +13,33 @@ class DummyCollector(FileCollector):
+ 
+ def construct_dummy(path, parent):
+     if hasattr(DummyCollector, "from_parent"):
+-        item = DummyCollector.from_parent(parent, fspath=path)
++        item = DummyCollector.from_parent(parent, path=path)
+         return item
+     else:
+         return DummyCollector(path, parent=parent)
+ 
+-def pytest_pycollect_makemodule(path, parent):
+-    if '_py33' in path.basename and version < (3, 3):
+-        return construct_dummy(path, parent)
+-    if '_py34' in path.basename and version < (3, 4):
+-        return construct_dummy(path, parent)
+-    if '_py35' in path.basename and version < (3, 5):
+-        return construct_dummy(path, parent)
+-    if '_py36' in path.basename and version < (3, 6):
+-        return construct_dummy(path, parent)
+-    if '_py37' in path.basename and version < (3, 7):
+-        return construct_dummy(path, parent)
+-    if '_py38' in path.basename and version < (3, 8):
+-        return construct_dummy(path, parent)
+-    if '_py39' in path.basename and version < (3, 9):
+-        return construct_dummy(path, parent)
+-    if '_py310' in path.basename and version < (3, 10):
+-        return construct_dummy(path, parent)
+-    if '_py311' in path.basename and version < (3, 11):
+-        return construct_dummy(path, parent)
+-    if '_py312' in path.basename and version < (3, 12):
+-        return construct_dummy(path, parent)
+-    if '_py3' in path.basename and version < (3, 0):
+-        return construct_dummy(path, parent)
+-    if '_py2' in path.basename and version >= (3, 0):
+-        return construct_dummy(path, parent)
++def pytest_pycollect_makemodule(module_path, parent):
++    if '_py33' in module_path.name and version < (3, 3):
++        return construct_dummy(module_path, parent)
++    if '_py34' in module_path.name and version < (3, 4):
++        return construct_dummy(module_path, parent)
++    if '_py35' in module_path.name and version < (3, 5):
++        return construct_dummy(module_path, parent)
++    if '_py36' in module_path.name and version < (3, 6):
++        return construct_dummy(module_path, parent)
++    if '_py37' in module_path.name and version < (3, 7):
++        return construct_dummy(module_path, parent)
++    if '_py38' in module_path.name and version < (3, 8):
++        return construct_dummy(module_path, parent)
++    if '_py39' in module_path.name and version < (3, 9):
++        return construct_dummy(module_path, parent)
++    if '_py310' in module_path.name and version < (3, 10):
++        return construct_dummy(module_path, parent)
++    if '_py311' in module_path.name and version < (3, 11):
++        return construct_dummy(module_path, parent)
++    if '_py312' in module_path.name and version < (3, 12):
++        return construct_dummy(module_path, parent)
++    if '_py3' in module_path.name and version < (3, 0):
++        return construct_dummy(module_path, parent)
++    if '_py2' in module_path.name and version >= (3, 0):
++        return construct_dummy(module_path, parent)

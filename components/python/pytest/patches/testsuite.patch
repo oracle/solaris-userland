@@ -6,8 +6,8 @@ using Pytest for).
 
 Two tests need to be skipped because cwd is not removable on Solaris.
 
---- pytest-8.3.3/testing/test_junitxml.py
-+++ pytest-8.3.3/testing/test_junitxml.py
+--- pytest-9.0.2/testing/test_junitxml.py
++++ pytest-9.0.2/testing/test_junitxml.py
 @@ -10,8 +10,6 @@ from typing import cast
  from typing import TYPE_CHECKING
  from xml.dom import minidom
@@ -17,17 +17,17 @@ Two tests need to be skipped because cwd is not removable on Solaris.
  from _pytest.config import Config
  from _pytest.junitxml import bin_xml_escape
  from _pytest.junitxml import LogXML
-@@ -22,6 +20,7 @@ from _pytest.reports import BaseReport
- from _pytest.reports import TestReport
+@@ -23,6 +21,7 @@ from _pytest.reports import TestReport
  from _pytest.stash import Stash
+ import _pytest.timing
  import pytest
 +pytest.skip("Xmlschema is not available", allow_module_level=True)
  
  
  @pytest.fixture(scope="session")
---- pytest-8.3.3/testing/test_debugging.py
-+++ pytest-8.3.3/testing/test_debugging.py
-@@ -667,6 +667,7 @@ class TestPDB:
+--- pytest-9.0.2/testing/test_debugging.py
++++ pytest-9.0.2/testing/test_debugging.py
+@@ -690,6 +690,7 @@ class TestPDB:
          child.expect("1 passed")
          self.flush(child)
  
@@ -35,9 +35,9 @@ Two tests need to be skipped because cwd is not removable on Solaris.
      @pytest.mark.parametrize("capture_arg", ("", "-s", "-p no:capture"))
      def test_pdb_continue_with_recursive_debug(
          self, capture_arg, pytester: Pytester
---- pytest-8.3.3/testing/_py/test_local.py
-+++ pytest-8.3.3/testing/_py/test_local.py
-@@ -621,6 +621,7 @@ class TestLocalPath(CommonFSTests):
+--- pytest-9.0.2/testing/_py/test_local.py
++++ pytest-9.0.2/testing/_py/test_local.py
+@@ -616,6 +616,7 @@ class TestLocalPath(CommonFSTests):
          assert str(local()) == os.getcwd()
  
      @skiponwin32
@@ -45,7 +45,7 @@ Two tests need to be skipped because cwd is not removable on Solaris.
      def test_chdir_gone(self, path1):
          p = path1.ensure("dir_to_be_removed", dir=1)
          p.chdir()
-@@ -634,6 +635,7 @@ class TestLocalPath(CommonFSTests):
+@@ -629,6 +630,7 @@ class TestLocalPath(CommonFSTests):
                  raise NotImplementedError
  
      @skiponwin32

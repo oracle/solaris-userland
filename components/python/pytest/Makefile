@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pytest
-COMPONENT_VERSION=	8.3.3
+COMPONENT_VERSION=	9.0.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:70b98107bd648308a7952b06e6ca9a50bc660be218d53c257cc1fc94fda10181
+    sha256:75186651a92bd89611d1d9fc20f0b4345fd827c41ccd5c299a868a05d70edf11
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pytest.org/latest/
 COMPONENT_BUGDB=	python-mod/pytest
 COMPONENT_ANITYA_ID=	3765
-COMPONENT_BAID=		184289
+COMPONENT_BAID=		363557
 
 
 include $(WS_MAKE_RULES)/prep.mk
@@ -48,9 +48,20 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(MV) $(PROTOUSRBINDIR)/pytest $(PROTOUSRBINDIR)/pytest-$(PYTHON_VERSION); \
 	$(MV) $(PROTOUSRBINDIR)/py.test $(PROTOUSRBINDIR)/py.test-$(PYTHON_VERSION)
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/testing
 COMPONENT_TEST_CMD =	$(PROTOUSRBINDIR)/py.test-$(PYTHON_VERSION)
 COMPONENT_TEST_ARGS =
+
+# Due to the existence of the 'pkg' package on Solaris, several tests
+# fail with 3.11 due to incorrect expectations.
+$(BUILD_DIR)/$(MACH)-3.11/.tested: COMPONENT_TEST_ARGS = \
+	--ignore=test_collection.py \
+	--ignore=test_config.py \
+	--ignore=test_main.py \
+	--ignore=test_terminal.py \
+	--ignore=test_threadexception.py \
+	--ignore=test_unraisableexception.py \
+	--ignore=test_warnings.py
 
 COMPONENT_SYSTEM_TEST_CMD =	$(USRBINDIR)/py.test-$(PYTHON_VERSION)
 
@@ -71,10 +82,10 @@ system-test:    $(SYSTEM_TEST_NO_ARCH)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/iniconfig-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pluggy-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pygments-%)
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/hypothesis
 REQUIRED_PACKAGES += library/python/mock
-REQUIRED_PACKAGES += library/python/pygments
 REQUIRED_PACKAGES += library/python/pynose
 REQUIRED_PACKAGES += library/python/requests
