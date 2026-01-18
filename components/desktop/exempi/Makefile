@@ -28,17 +28,17 @@ CTF_MODE =		off	# C++
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		exempi
-COMPONENT_VERSION=	2.6.1
+COMPONENT_VERSION=	2.6.6
 COMPONENT_PROJECT_URL=	https://libopenraw.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:072451ac1e0dc97ed69a2e5bfc235fd94fe093d837f65584d0e3581af5db18cd
+	sha256:7513b7e42c3bd90a58d77d938c60d2e87c68f81646e7cb8b12d71fe334391c6f
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/exempi
 COMPONENT_ANITYA_ID=	767
 
-COMPONENT_BAID=		119389
+COMPONENT_BAID=		359906
 
 # disable for now since it requires boost C++ libraries
 TEST_TARGET= $(SKIP_TEST)
@@ -54,6 +54,7 @@ CONFIGURE_OPTIONS += --with-pic
 # Unit tests require boost C++ libraries.
 CONFIGURE_OPTIONS += --disable-unittest
 CONFIGURE_OPTIONS += --without-boost
+CONFIGURE_OPTIONS += --disable-dependency-tracking
 
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/zlib

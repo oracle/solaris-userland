@@ -1,86 +1,62 @@
 do not build 4th party MD5 code, use the Solaris md5 library instead
 https://gitlab.freedesktop.org/libopenraw/exempi/issues/19
 
-diff -ur exempi-2.5.1/exempi/Makefile.am exempi-2.5.1.bak/exempi/Makefile.am
---- exempi-2.5.1/exempi/Makefile.am	2016-12-07 05:07:54.000000000 +0000
-+++ exempi-2.5.1.bak/exempi/Makefile.am	2020-01-27 18:34:57.440947177 +0000
+--- a/exempi/Makefile.am	2025-12-10 11:47:19.259035396 -0800
++++ b/exempi/Makefile.am	2025-12-10 11:47:58.437710612 -0800
 @@ -60,8 +60,7 @@
  libexempi_la_LIBADD = $(top_builddir)/source/libxmpcommon.la \
  	$(top_builddir)/XMPCore/source/libXMPCore.la \
  	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
 -	$(top_builddir)/third-party/zuid/interfaces/libmd5.la \
--	-lexpat -lz -ldl
-+	-lexpat -lz -ldl -lmd5
+-	-lexpat -lz
++	-lexpat -lz -lmd5
  
- if UNIX_ENV
- libexempi_la_LIBADD += -lrt
-diff -ur exempi-2.5.1/exempi/Makefile.in exempi-2.5.1.bak/exempi/Makefile.in
---- exempi-2.5.1/exempi/Makefile.in	2019-07-28 13:00:55.000000000 +0000
-+++ exempi-2.5.1.bak/exempi/Makefile.in	2020-01-27 18:34:57.445012334 +0000
-@@ -186,7 +186,6 @@
- libexempi_la_DEPENDENCIES = $(top_builddir)/source/libxmpcommon.la \
- 	$(top_builddir)/XMPCore/source/libXMPCore.la \
- 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
--	$(top_builddir)/third-party/zuid/interfaces/libmd5.la \
- 	$(am__DEPENDENCIES_1)
- am_libexempi_la_OBJECTS = exempi.lo
- libexempi_la_OBJECTS = $(am_libexempi_la_OBJECTS)
-@@ -469,8 +468,8 @@
- libexempi_la_LIBADD = $(top_builddir)/source/libxmpcommon.la \
- 	$(top_builddir)/XMPCore/source/libXMPCore.la \
- 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
--	$(top_builddir)/third-party/zuid/interfaces/libmd5.la -lexpat \
--	-lz -ldl $(am__append_1)
-+	-lexpat \
-+	-lz -ldl -lmd5 $(am__append_1)
- libexempi_la_LDFLAGS = -version-info @EXEMPI_VERSION_INFO@ \
- 	$(am__append_2)
- dist_man1_MANS = exempi.1
-diff -ur exempi-2.5.1/samples/source/Makefile.am exempi-2.5.1.bak/samples/source/Makefile.am
---- exempi-2.5.1/samples/source/Makefile.am	2016-12-07 05:07:54.000000000 +0000
-+++ exempi-2.5.1.bak/samples/source/Makefile.am	2020-01-27 18:34:57.442024269 +0000
+ libexempi_la_LDFLAGS = -version-info @EXEMPI_VERSION_INFO@
+ 
+--- a/samples/source/Makefile.am	2025-12-10 11:49:24.453745486 -0800
++++ b/samples/source/Makefile.am	2025-12-10 11:49:55.660572213 -0800
 @@ -50,7 +50,7 @@
  XMPLIBS = $(top_builddir)/XMPCore/source/libXMPCore.la \
  	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
  	$(top_builddir)/source/libxmpcommon.la -lexpat -lz \
--	$(top_builddir)/third-party/zuid/interfaces/libmd5.la \
-+	-lmd5 \
- 	-ldl
+-	$(top_builddir)/third-party/zuid/interfaces/libmd5.la
++	-lmd5
  
- if UNIX_ENV
-diff -ur exempi-2.5.1/samples/source/Makefile.in exempi-2.5.1.bak/samples/source/Makefile.in
---- exempi-2.5.1/samples/source/Makefile.in	2019-07-28 13:00:55.000000000 +0000
-+++ exempi-2.5.1.bak/samples/source/Makefile.in	2020-01-27 18:34:57.443554315 +0000
-@@ -166,7 +166,6 @@
- am__DEPENDENCIES_2 = $(top_builddir)/XMPCore/source/libXMPCore.la \
- 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
- 	$(top_builddir)/source/libxmpcommon.la \
--	$(top_builddir)/third-party/zuid/interfaces/libmd5.la \
- 	$(am__DEPENDENCIES_1)
- customschema_DEPENDENCIES = $(am__DEPENDENCIES_2)
- am_dumpmainxmp_OBJECTS = DumpMainXMP.$(OBJEXT)
-@@ -438,7 +437,7 @@
- XMPLIBS = $(top_builddir)/XMPCore/source/libXMPCore.la \
- 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
- 	$(top_builddir)/source/libxmpcommon.la -lexpat -lz \
--	$(top_builddir)/third-party/zuid/interfaces/libmd5.la -ldl \
-+	-lmd5 -ldl \
- 	$(am__append_1)
  noinst_LTLIBRARIES = libsamplescommon.la
  libsamplescommon_la_SOURCES = common/DumpFile.cpp common/DumpFile.h \
-diff -ur exempi-2.5.1/third-party/Makefile.am exempi-2.5.1.bak/third-party/Makefile.am
---- exempi-2.5.1/third-party/Makefile.am	2016-12-07 05:07:54.000000000 +0000
-+++ exempi-2.5.1.bak/third-party/Makefile.am	2020-01-27 18:34:57.438445693 +0000
-@@ -1,4 +1,3 @@
+--- a/samples/source/Makefile.in	2025-12-10 11:51:32.524679869 -0800
++++ b/samples/source/Makefile.in	2025-12-10 11:52:17.657448142 -0800
+@@ -162,8 +162,7 @@
+ customschema_OBJECTS = $(am_customschema_OBJECTS)
+ am__DEPENDENCIES_1 = $(top_builddir)/XMPCore/source/libXMPCore.la \
+ 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
+-	$(top_builddir)/source/libxmpcommon.la \
+-	$(top_builddir)/third-party/zuid/interfaces/libmd5.la
++	$(top_builddir)/source/libxmpcommon.la
+ customschema_DEPENDENCIES = $(am__DEPENDENCIES_1)
+ am_dumpmainxmp_OBJECTS = DumpMainXMP.$(OBJEXT)
+ dumpmainxmp_OBJECTS = $(am_dumpmainxmp_OBJECTS)
+@@ -435,8 +434,7 @@
+ 
+ XMPLIBS = $(top_builddir)/XMPCore/source/libXMPCore.la \
+ 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
+-	$(top_builddir)/source/libxmpcommon.la -lexpat -lz \
+-	$(top_builddir)/third-party/zuid/interfaces/libmd5.la
++	$(top_builddir)/source/libxmpcommon.la -lexpat -lz -lmd5
+ 
+ noinst_LTLIBRARIES = libsamplescommon.la
+ libsamplescommon_la_SOURCES = common/DumpFile.cpp common/DumpFile.h \
+--- a/third-party/Makefile.am	2025-12-10 11:52:39.810108564 -0800
++++ b/third-party/Makefile.am	2025-12-10 11:52:56.283603410 -0800
+@@ -1,4 +1,2 @@
  
 -SUBDIRS = zuid/interfaces
- 
+-
 -DIST_SUBDIRS = zuid/interfaces zlib expat
 +DIST_SUBDIRS = zlib expat
-diff -ur exempi-2.5.1/third-party/Makefile.in exempi-2.5.1.bak/third-party/Makefile.in
---- exempi-2.5.1/third-party/Makefile.in	2019-07-28 13:00:55.000000000 +0000
-+++ exempi-2.5.1.bak/third-party/Makefile.in	2020-01-27 18:34:57.439729065 +0000
-@@ -327,8 +327,7 @@
+--- a/third-party/Makefile.in	2025-12-10 11:53:07.944843274 -0800
++++ b/third-party/Makefile.in	2025-12-10 11:53:19.487517931 -0800
+@@ -328,8 +328,7 @@
  top_build_prefix = @top_build_prefix@
  top_builddir = @top_builddir@
  top_srcdir = @top_srcdir@
@@ -90,13 +66,12 @@ diff -ur exempi-2.5.1/third-party/Makefile.in exempi-2.5.1.bak/third-party/Makef
  all: all-recursive
  
  .SUFFIXES:
-diff -ur exempi-2.5.1/third-party/zuid/interfaces/MD5.h exempi-2.5.1.bak/third-party/zuid/interfaces/MD5.h
---- exempi-2.5.1/third-party/zuid/interfaces/MD5.h	2016-12-01 01:44:02.000000000 +0000
-+++ exempi-2.5.1.bak/third-party/zuid/interfaces/MD5.h	2020-01-27 18:34:57.437318756 +0000
-@@ -1,48 +1,4 @@
+--- a/third-party/zuid/interfaces/MD5.h	2025-12-10 11:53:51.640385405 -0800
++++ b/third-party/zuid/interfaces/MD5.h	2025-12-10 11:54:19.574520973 -0800
+@@ -1,48 +1,5 @@
  #ifndef __MD5_h__
  #define __MD5_h__
--
+ 
 -/******************************************************************************/
 -
 -/*
@@ -143,3 +118,25 @@ diff -ur exempi-2.5.1/third-party/zuid/interfaces/MD5.h exempi-2.5.1.bak/third-p
 -
 +#include <md5.h>
  #endif
+--- a/exempi/Makefile.in	2025-12-10 12:02:24.785076885 -0800
++++ b/exempi/Makefile.in	2025-12-10 12:02:46.332755851 -0800
+@@ -204,8 +204,7 @@
+ LTLIBRARIES = $(lib_LTLIBRARIES)
+ libexempi_la_DEPENDENCIES = $(top_builddir)/source/libxmpcommon.la \
+ 	$(top_builddir)/XMPCore/source/libXMPCore.la \
+-	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
+-	$(top_builddir)/third-party/zuid/interfaces/libmd5.la
++	$(top_builddir)/XMPFiles/source/libXMPFiles.la
+ am_libexempi_la_OBJECTS = exempi.lo
+ libexempi_la_OBJECTS = $(am_libexempi_la_OBJECTS)
+ AM_V_lt = $(am__v_lt_@AM_V@)
+@@ -798,8 +797,7 @@
+ libexempi_la_LIBADD = $(top_builddir)/source/libxmpcommon.la \
+ 	$(top_builddir)/XMPCore/source/libXMPCore.la \
+ 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
+-	$(top_builddir)/third-party/zuid/interfaces/libmd5.la \
+-	-lexpat -lz
++	-lexpat -lz -lmd5
+ 
+ libexempi_la_LDFLAGS = -version-info @EXEMPI_VERSION_INFO@
+ dist_man1_MANS = exempi.1
