@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
@@ -29,18 +29,18 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		XML-LibXML
-COMPONENT_VERSION=	2.208
-HUMAN_VERSION=		2.0208
+COMPONENT_VERSION=	2.210
+HUMAN_VERSION=		2.0210
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0c006b03bf8d0eb531fb56bda3ae15754ca56d888dd7b9e805ab9eb19d5fd653
+    sha256:a29bf3f00ab9c9ee04218154e0afc8f799bf23674eb99c1a9ed4de1f4059a48d
 COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/S/SH/SHLOMIF/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/~shlomif/XML-LibXML/
 COMPONENT_BUGDB=	perl-mod/xml-libxml
 COMPONENT_ANITYA_ID=	3527
 
-COMPONENT_BAID=		137477
+COMPONENT_BAID=		363576
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
