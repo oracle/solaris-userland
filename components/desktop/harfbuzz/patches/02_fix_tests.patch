@@ -9,12 +9,13 @@ it is not suitable for upstream.
 
 --- a/src/check-symbols.py.orig	2021-12-01 17:18:34.610354693 +0100
 +++ b/src/check-symbols.py	2021-12-01 17:21:05.352903702 +0100
-@@ -11,6 +11,8 @@
- 	'__bss_start', '__bss_start__', '__bss_end__', '_edata', '_end', '_bss_end__',
- 	'__end__', '__gcov_.*', 'llvm_.*', 'flush_fn_list', 'writeout_fn_list', 'mangle_path',
- 	'lprofDirMode', 'reset_fn_list'])
+@@ -35,6 +35,9 @@
+     "reset_fn_list",
+ ]
+ 
 +# Ignore also Solaris specific symbols in .SUNW_ldynsym and .SUNW_dynsymsort sections.
 +IGNORED_SYMBOLS += '|_DYNAMIC|_GLOBAL_OFFSET_TABLE_|_PROCEDURE_LINKAGE_TABLE_|_etext|_lib_version|__xpg4|__xpg6'
- 
- nm = os.getenv ('NM', shutil.which ('nm'))
- if not nm:
++
+ # Rust
+ IGNORED_SYMBOLS += [
+     "rust_eh_personality",

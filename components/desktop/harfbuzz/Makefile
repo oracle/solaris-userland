@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64_and_32
@@ -32,49 +32,39 @@ CTF_MODE =		off	# C++
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		harfbuzz
-COMPONENT_VERSION=	8.4.0
+COMPONENT_VERSION=	12.3.0
 COMPONENT_PROJECT_URL=	https://github.com/harfbuzz/harfbuzz
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:af4ea73e25ab748c8c063b78c2f88e48833db9b2ac369e29bd115702e789755e
+    sha256:8660ebd3c27d9407fc8433b5d172bafba5f0317cb0bb4339f28e5370c93d42b7
 COMPONENT_ARCHIVE_URL=	https://github.com/harfbuzz/harfbuzz/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/harfbuzz
 COMPONENT_ANITYA_ID=	1299
 
-COMPONENT_BAID=		163169
+COMPONENT_BAID=		361719
+BUILD_STYLE=		meson
 
-CXXFLAGS += -std=c++11
+CXXFLAGS += -std=c++17
 
 include $(WS_MAKE_RULES)/common.mk
 
-CONFIGURE_ENV += CC="$(CC) $(CC_BITS)"
-CONFIGURE_ENV += MAKE=gmake
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-# Required by other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-# Required by other components.
-CONFIGURE_OPTIONS += --with-gobject
-# Requires GNU-ABI compatible build of ICU.
-CONFIGURE_OPTIONS += --with-icu
-# Required by other components.
-CONFIGURE_OPTIONS += --with-glib
-# build the API documentation
-CONFIGURE_OPTIONS += --enable-gtk-doc
+CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
+CONFIGURE_OPTIONS.64 += -Dintrospection=enabled
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
-
-COMPONENT_TEST_ENV = PATH=/usr/gnu/bin:/usr/bin
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/XFAIL:/p" ' \
-        '-e "/XERROR:/p" ' \
-        '-e "/ERROR:/p" '
+        '-e "/Summary /p" ' \
+        '-e "/Ok:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Timeout:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" '
 
 REQUIRED_PACKAGES += developer/build/autoconf
 REQUIRED_PACKAGES += developer/build/automake
