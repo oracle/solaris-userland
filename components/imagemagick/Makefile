@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -33,15 +33,15 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		ImageMagick
-COMPONENT_VERSION=	7.1.2-8
+COMPONENT_VERSION=	7.1.2-12
 COMPONENT_PROJECT_URL=	https://www.imagemagick.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:acf76a9dafbd18f4dd7b24c45ca10c77e31289fc28e4da0ce5cc3929fd0aef16
+COMPONENT_ARCHIVE_HASH=	sha256:521fa7a8c0f664a3f5cf7437cbcc219f12bd6d5fe0c1fb014f212fa145076e60
 COMPONENT_ARCHIVE_URL=	https://github.com/ImageMagick/ImageMagick/archive/refs/tags/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/imagemagick
 COMPONENT_ANITYA_ID=	1372
 
-COMPONENT_BAID=		358298
+COMPONENT_BAID=		362721
 
 IPS_COMPONENT_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/-/./')
 COMPONENT_MAJOR_VERSION=$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\..*//')
