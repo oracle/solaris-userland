@@ -1,0 +1,67 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
+#
+
+# Remove Python ABI tags from .so files (like .cpython-311);
+# these are handled with transforms.
+<transform file path=(.*)\.cpython-\d+\.so$ -> set path %<1>.so>
+
+# Unexpand the $(VERSION_DIRECTORY) variable
+<transform dir file link hardlink -> edit path mercurial$(VERSION_DIRECTORY) mercurial\$\(VERSION_DIRECTORY\)>
+
+# Some directories are not interesting to us completely
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./(benchmarks|debian|docker|fuzz)/ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./(plan9|python-zstandard|win32|wix)/ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./(macosx|vagrant|packaging)/ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./(openvms|editmergeps|docker).* -> drop>
+
+# Build infrastructure
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./Makefile.python$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./asv.conf.json$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./byteify-strings.py$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./(all|base)-revsets.txt -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./check-code.py -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./check-config.py$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./check-py3-compat.py$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./clang-format-ignorelist$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./genosxversion.py$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./hg-test-mode.el$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./hgperf$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./import-checker.py$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./phabricator.py$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./python3-ratchet.py$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./python3-whitelist$ -> drop>
+<transform file path=usr/demo/mercurial..VERSION_DIRECTORY./revsetbenchmarks.py$ -> drop>
+
+# Do not make any attept at finding dependencies in demo directory. This is not
+# needed, the files serve as an example only.
+<transform file path=usr/demo/mercurial.* -> set pkg.depend.bypass-generate .*>
+
+# The completion is installed in a special way via the .static file
+<transform file path=.*/zsh_completion$ -> drop>
+
+# Remove the mangled man pages so that we don't have duplicates in the output
+<transform file path=^[^/]*\.\d$ -> drop>
+
+<transform file path=.*/vendor-packages/mercurial/hg$ -> set mode 0555>

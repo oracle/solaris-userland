@@ -1,0 +1,33 @@
+Some tests that run run-tests.py themselves get confused by PYTHONPATH
+environment variable, which results in the following unexpected output:
+
+  warning: Testing with unexpected mercurial lib: /..../build/prototype/i386/usr/lib/python3.11/vendor-packages/mercurial (esc)
+          (expected /tmp/hgtests.stew3jsa/install/lib/python3.11/site-packages/mercurial)
+
+Resetting PYTHONPATH seems to solve the issue.
+
+This was reported upstream:
+https://foss.heptapod.net/mercurial/mercurial-devel/-/issues/10056
+
+--- mercurial-7.1.2/tests/test-hghave.t
++++ mercurial-7.1.2/tests/test-hghave.t
+@@ -28,7 +28,7 @@ Testing hghave extensibility for third p
+ 
+   $ ( \
+   > testrepohgenv; \
+-  > "$PYTHON" $TESTDIR/run-tests.py \
++  > PYTHONPATH= "$PYTHON" $TESTDIR/run-tests.py \
+   >     --with-hg=$HGTEST_REAL_HG \
+   >     --jobs 1 \
+   >     --pure \
+--- mercurial-7.1.2/tests/test-run-tests.t
++++ mercurial-7.1.2/tests/test-run-tests.t
+@@ -11,7 +11,7 @@ Smoke test with install
+   $ PIP_NO_CACHE_DIR=1
+   $ export PIP_NO_CACHE_DIR
+ 
+-  $ (testrepohgenv; "$PYTHON" $TESTDIR/run-tests.py --pure)
++  $ (testrepohgenv; PYTHONPATH= "$PYTHON" $TESTDIR/run-tests.py --pure)
+   installed Mercurial in * seconds  (glob)
+   running 0 tests using 0 parallel processes 
+   

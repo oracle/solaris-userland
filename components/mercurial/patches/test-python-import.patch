@@ -1,0 +1,17 @@
+Ever since the 'heredoctest.py' was moved to its own subdirectory,
+it can no longer import files that remained in 'tests'.
+
+This issue was reported upstream:
+https://foss.heptapod.net/mercurial/mercurial-devel/-/issues/6975
+
+--- mercurial-7.1.2/tests/testlib/heredoctest.py
++++ mercurial-7.1.2/tests/testlib/heredoctest.py
+@@ -1,4 +1,8 @@
+ import sys
++import os
++
++# allow import of Python scripts from the parent 'tests' directory
++sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+ 
+ 
+ def flush():

@@ -22,8 +22,8 @@ Solaris, or remove sections that are of no relevance to Solaris.
  
    [hgk]
    path = /location/of/hgk
---- mercurial-5.7.1/mercurial/helptext/config.txt	2021-03-25 08:59:45.739092719 +0000
-+++ mercurial-5.7.1/mercurial/helptext/config.txt	2021-03-25 08:59:06.239608762 +0000
+--- mercurial-7.1.2/mercurial/helptext/config.txt
++++ mercurial-7.1.2/mercurial/helptext/config.txt
 @@ -36,10 +36,6 @@ Local configuration is put into the per-
  
  Global configuration like the username setting is typically put into:
@@ -109,7 +109,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
  order until one or more configuration files are detected.
  
  Per-system configuration files are for the system on which Mercurial
-@@ -704,14 +662,6 @@ filtered by the command. The string ``OU
+@@ -710,14 +668,6 @@ filtered by the command. The string ``OU
  of an empty temporary file, where the filtered data must be written by
  the command.
  
@@ -124,7 +124,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
  This filter mechanism is used internally by the ``eol`` extension to
  translate line ending characters between Windows (CRLF) and Unix (LF)
  format. We suggest you use the ``eol`` extension for convenience.
-@@ -1214,23 +1164,6 @@ They contain the type of hook which trig
+@@ -1222,23 +1172,6 @@ They contain the type of hook which trig
  of the hook in the config, respectively. In the example above, this will
  be ``$HG_HOOKTYPE=incoming`` and ``$HG_HOOKNAME=incoming.email``.
  
@@ -148,7 +148,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
  ``changegroup``
    Run after a changegroup has been added via push, pull or unbundle.  The ID of
    the first new changeset is in ``$HG_NODE`` and last is in ``$HG_NODE_LAST``.
-@@ -1452,13 +1385,6 @@ called in the appropriate contexts for i
+@@ -1460,13 +1393,6 @@ be ``$HG_HOOKTYPE=incoming`` and ``$HG_H
     Also, hooks like "commit" will be called in all contexts that
     generate a commit (e.g. tag) and not just the commit command.
  
@@ -162,7 +162,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
  The syntax for Python hooks is as follows::
  
    hookname = python:modulename.submodule.callable
-@@ -1717,7 +1643,6 @@ vimdiff.disabled = yes
+@@ -1727,7 +1653,6 @@ Example ``~/.hgrc``::
  
    # Define new tool
    myHtmlTool.args = -m $local $other $base $output
@@ -170,7 +170,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
    myHtmlTool.priority = 1
  
  Supported arguments:
-@@ -1729,11 +1654,6 @@ (default: 0)
+@@ -1739,11 +1664,6 @@ Supported arguments:
  ``executable``
    Either just the name of the executable or its pathname.
  
@@ -182,7 +182,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
    (default: the tool name)
  
  ``args``
-@@ -1802,30 +1722,6 @@ ``$label``-prefixed variables and to the
+@@ -1812,30 +1732,6 @@ Supported arguments:
    if ``premerge`` is ``keep` or ``keep-merge3``. See the corresponding variable
    in ``[ui]`` for more information.
  
@@ -213,7 +213,16 @@ Solaris, or remove sections that are of no relevance to Solaris.
  ``pager``
  ---------
  
-@@ -2897,10 +2793,6 @@ Alias for ``warn``.
+@@ -2104,7 +2000,7 @@ statistical text report generated from t
+ 
+ ``time-track``
+     Control if the stat profiler track ``cpu`` or ``real`` time.
+-    (default: ``cpu`` on Windows, otherwise ``real``)
++    (default: ``real``)
+ 
+ ``limit``
+     Number of lines to show. Specific to the ``ls`` instrumenting profiler.
+@@ -2924,10 +2820,6 @@ User interface controls.
      ``false``
        Alias for ``ignore``.
  
@@ -224,6 +233,15 @@ Solaris, or remove sections that are of no relevance to Solaris.
  ``pre-merge-tool-output-template``
      (DEPRECATED) Use ``command-template.pre-merge-tool-output`` instead.
  
+@@ -3476,7 +3368,7 @@ helps performance.
+     operations. Some platforms aren't very efficient at closing file
+     handles that have been written or appended to. By performing file closing
+     on background threads, file write rate can increase substantially.
+-    (default: true on Windows, false elsewhere)
++    (default: false)
+ 
+ ``backgroundcloseminfilecount``
+     Minimum number of files required to trigger background file closing.
 --- mercurial-5.1.1/mercurial/helptext/hg.1.txt
 +++ mercurial-5.1.1/mercurial/helptext/hg.1.txt
 @@ -85,6 +85,11 @@ This file can be used to define local ta

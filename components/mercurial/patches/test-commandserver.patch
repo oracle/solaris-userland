@@ -1,0 +1,27 @@
+When running the test suite with $PYTHONPATH and --with-hg option,  the test gets confused and the 'mercurial/hook.py' tries to import itself rather than the test hook saved in the file of the same name.py
+
+Renaming the test hook file to hgext_hook makes it unique and still importable with no other changes.
+
+This was reported upstream:
+https://foss.heptapod.net/mercurial/mercurial-devel/-/issues/10056
+
+--- mercurial-7.1.2/tests/test-commandserver.t
++++ mercurial-7.1.2/tests/test-commandserver.t
+@@ -265,7 +265,7 @@ check that local configs for the cached
+   $ PYTHONPATH="$TESTTMP/repo:$PYTHONPATH"
+ #endif
+ 
+-  $ cat <<EOF > hook.py
++  $ cat <<EOF > hgext_hook.py
+   > import sys
+   > from hgclient import bprint
+   > def hook(**args):
+@@ -287,7 +287,7 @@ check that local configs for the cached
+   now try to read something: ''
+ 
+ Clean hook cached version
+-  $ rm hook.py*
++  $ rm hgext_hook.py*
+   $ rm -Rf __pycache__
+ 
+   $ echo a >> a

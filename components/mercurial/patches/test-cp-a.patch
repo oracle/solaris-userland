@@ -1,18 +1,19 @@
 In Solaris the /tmp is special, cp -a does not work there. We had to adjust
 these files for it:
- test-dirstate-status-write-race.t
- test-revlog-delta-find.t
- test-dirstate.t
- test-dirstate-read-race.t
  test-bundle-phase-internal.t
+ test-dirstate-read-race.t
+ test-dirstate-status-write-race.t
+ test-dirstate.t
+ test-narrow-expanddirstate.t
+ test-revlog-delta-find.t
 
 
 On the other hand running the tests in build directory breaks the tests too, so
 the easiest thing is to remove the '-a' from cp.
 
---- mercurial-6.8/tests/test-bundle-phase-internal.t
-+++ mercurial-6.8/tests/test-bundle-phase-internal.t
-@@ -99,7 +99,7 @@ ========================
+--- mercurial-7.1.2/tests/test-bundle-phase-internal.t
++++ mercurial-7.1.2/tests/test-bundle-phase-internal.t
+@@ -99,7 +99,7 @@ backup bundle from strip
  strip an ancestors of the internal changeset
  --------------------------------------------
  
@@ -21,7 +22,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd strip-ancestor
  
  The internal change is stripped, yet it should be skipped from the backup bundle.
-@@ -154,7 +154,7 @@ $ cd ..
+@@ -154,7 +154,7 @@ Shelve should still work
  strip an unrelated changeset with a lower revnum
  ------------------------------------------------
  
@@ -30,7 +31,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd strip-unrelated
  
  The internal change is not directly stripped, but it is affected by the strip
-@@ -200,7 +200,7 @@ $ cd ..
+@@ -200,7 +200,7 @@ Shelve should still work
  explicitly strip the internal changeset
  ---------------------------------------
  
@@ -39,9 +40,9 @@ the easiest thing is to remove the '-a' from cp.
    $ cd strip-explicit
  
  The internal change is directly selected for stripping.
---- mercurial-6.8/tests/test-dirstate-read-race.t
-+++ mercurial-6.8/tests/test-dirstate-read-race.t
-@@ -139,7 +139,7 @@ ==============
+--- mercurial-7.1.2/tests/test-dirstate-read-race.t
++++ mercurial-7.1.2/tests/test-dirstate-read-race.t
+@@ -139,7 +139,7 @@ Actual Testing
  Race with a `hg add`
  -------------------
  
@@ -50,7 +51,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd race-with-add
  
  spin a `hg status` with some caches to update
-@@ -210,7 +210,7 @@ $ cd ..
+@@ -192,7 +192,7 @@ final cleanup
  Race with a `hg commit`
  -----------------------
  
@@ -58,8 +59,8 @@ the easiest thing is to remove the '-a' from cp.
 +  $ cp -r --preserve=ownership,timestamps reference-repo race-with-commit
    $ cd race-with-commit
  
- spin a `hg status with some cache to update
-@@ -283,7 +283,7 @@ $ cd ..
+   $ hg status
+@@ -251,7 +251,7 @@ final cleanup
  Race with a `hg update`
  -----------------------
  
@@ -67,8 +68,8 @@ the easiest thing is to remove the '-a' from cp.
 +  $ cp -r --preserve=ownership,timestamps reference-repo race-with-update
    $ cd race-with-update
  
- spin a `hg status` with some caches to update
-@@ -370,7 +370,7 @@ --------------------------------------
+   $ hg status
+@@ -333,7 +333,7 @@ Race with a cache updating `hg status`
  
  It is interesting to race with "read-only" operation (that still update its cache)
  
@@ -77,9 +78,9 @@ the easiest thing is to remove the '-a' from cp.
    $ cd race-with-status
  
  spin a `hg status` with some caches to update
---- mercurial-6.8/tests/test-dirstate-status-write-race.t
-+++ mercurial-6.8/tests/test-dirstate-status-write-race.t
-@@ -129,7 +129,7 @@ ------------------------------------
+--- mercurial-7.1.2/tests/test-dirstate-status-write-race.t
++++ mercurial-7.1.2/tests/test-dirstate-status-write-race.t
+@@ -129,7 +129,7 @@ Explain / verify the test principles
  
  First, we can properly copy the reference
  
@@ -88,7 +89,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd sanity-check
    $ hg debugstate
    n 644          0 2000-01-01 00:00:00 dir/b
-@@ -221,7 +221,7 @@ ==============
+@@ -221,7 +221,7 @@ Actual Testing
  Race with a `hg add`
  -------------------
  
@@ -97,7 +98,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd race-with-add
  
  spin a `hg status` with some caches to update
-@@ -266,7 +266,7 @@ $ cd ..
+@@ -266,7 +266,7 @@ final cleanup
  Race with a `hg commit`
  ----------------------
  
@@ -106,7 +107,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd race-with-commit
  
  spin a `hg status` with some caches to update
-@@ -317,7 +317,7 @@ $ cd ..
+@@ -317,7 +317,7 @@ final cleanup
  Race with a `hg update`
  ----------------------
  
@@ -115,7 +116,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd race-with-update
  
  spin a `hg status` with some caches to update
-@@ -369,7 +369,7 @@ $ cd ..
+@@ -369,7 +369,7 @@ final cleanup
  Race with another status
  ------------------------
  
@@ -124,7 +125,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd race-with-status
  
  spin a `hg status` with some caches to update
-@@ -416,7 +416,7 @@ $ cd ..
+@@ -416,7 +416,7 @@ final cleanup
  Race with the removal of an ambiguous file
  ----------------------è-------------------
  
@@ -133,9 +134,9 @@ the easiest thing is to remove the '-a' from cp.
    $ cd race-with-remove
  
  spin a `hg status` with some caches to update
---- mercurial-6.8/tests/test-dirstate.t
-+++ mercurial-6.8/tests/test-dirstate.t
-@@ -238,7 +238,7 @@ number of unused bytes: 0
+--- mercurial-7.1.2/tests/test-dirstate.t
++++ mercurial-7.1.2/tests/test-dirstate.t
+@@ -230,7 +230,7 @@ append would happen and check that it do
  
  Check with the option in "auto" mode
  ------------------------------------
@@ -144,7 +145,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd append-mostly-no-force-rewrite
    $ current_uid=$(find_dirstate_uuid)
  
-@@ -268,7 +268,7 @@ $ cd ..
+@@ -260,7 +260,7 @@ The pure python implementation never app
  Check the same scenario with the option set to "force-new"
  ---------------------------------------------------------
  
@@ -153,7 +154,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd append-mostly-force-rewrite
    $ current_uid=$(find_dirstate_uuid)
  
-@@ -300,7 +300,7 @@ ----------------------------------------
+@@ -292,7 +292,7 @@ Check the same scenario with the option
  
  (should behave the same as "auto" here)
  
@@ -162,7 +163,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd append-mostly-force-append
    $ current_uid=$(find_dirstate_uuid)
  
-@@ -329,7 +329,7 @@ $ cd ..
+@@ -321,7 +321,7 @@ The pure python implementation never app
  
  Check with the option in "auto" mode
  ------------------------------------
@@ -171,7 +172,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd append-mostly-no-force-rewrite
    $ current_uid=$(find_dirstate_uuid)
  
-@@ -359,7 +359,7 @@ ----------------------------------------
+@@ -351,7 +351,7 @@ Check the same scenario with the option
  
  (should be the same as auto)
  
@@ -180,7 +181,7 @@ the easiest thing is to remove the '-a' from cp.
    $ cd append-mostly-force-rewrite
    $ current_uid=$(find_dirstate_uuid)
  
-@@ -390,7 +390,7 @@ ----------------------------------------
+@@ -382,7 +382,7 @@ Check the same scenario with the option
  
  Should append even if "auto" did not
  
@@ -189,9 +190,9 @@ the easiest thing is to remove the '-a' from cp.
    $ cd append-mostly-force-append
    $ current_uid=$(find_dirstate_uuid)
  
---- mercurial-6.8/tests/test-narrow-expanddirstate.t
-+++ mercurial-6.8/tests/test-narrow-expanddirstate.t
-@@ -109,9 +109,9 @@ > EOF
+--- mercurial-7.1.2/tests/test-narrow-expanddirstate.t
++++ mercurial-7.1.2/tests/test-narrow-expanddirstate.t
+@@ -109,9 +109,9 @@ have this method available in narrowhg p
  Since we do not have the ability to rely on a virtual filesystem or
  remotefilelog in the test, we just fake it by copying the data from the 'master'
  repo.
@@ -203,9 +204,9 @@ the easiest thing is to remove the '-a' from cp.
  
  `hg status` will now add outside, but not patchdir.
    $ DIRSTATEINCLUDES=path:outside hg status
---- mercurial-6.8/tests/test-revlog-delta-find.t
-+++ mercurial-6.8/tests/test-revlog-delta-find.t
-@@ -191,7 +191,7 @@ ========================================
+--- mercurial-7.1.2/tests/test-revlog-delta-find.t
++++ mercurial-7.1.2/tests/test-revlog-delta-find.t
+@@ -211,7 +211,7 @@ Check the path.*:pulled-delta-reuse-poli
  
  Get a repository with the bad parent picked and a clone ready to pull the merge
  
@@ -214,7 +215,7 @@ the easiest thing is to remove the '-a' from cp.
    $ hg clone peer-bad-delta local-pre-pull --rev `cat large.node` --rev `cat small.node` --quiet
    DBG-DELTAS: CHANGELOG: * (glob)
    DBG-DELTAS: CHANGELOG: * (glob)
-@@ -215,7 +215,7 @@ -----------------------------------
+@@ -235,7 +235,7 @@ Pull with no value (so the default)
  
  default is to reuse the (bad) delta
  
@@ -223,7 +224,7 @@ the easiest thing is to remove the '-a' from cp.
    $ hg -R local-no-value pull --quiet
    DBG-DELTAS: CHANGELOG: * (glob)
    DBG-DELTAS: MANIFESTLOG: * (glob)
-@@ -226,7 +226,7 @@ --------------------------------
+@@ -247,7 +247,7 @@ Pull with explicitly the default
  
  default is to reuse the (bad) delta
  
@@ -232,7 +233,7 @@ the easiest thing is to remove the '-a' from cp.
    $ hg -R local-default pull --quiet --config 'paths.default:pulled-delta-reuse-policy=default'
    DBG-DELTAS: CHANGELOG: * (glob)
    DBG-DELTAS: MANIFESTLOG: * (glob)
-@@ -237,7 +237,7 @@ ------------------
+@@ -259,7 +259,7 @@ Pull with no-reuse
  
  We don't reuse the base, so we get a better delta
  
@@ -241,7 +242,7 @@ the easiest thing is to remove the '-a' from cp.
    $ hg -R local-no-reuse pull --quiet --config 'paths.default:pulled-delta-reuse-policy=no-reuse'
    DBG-DELTAS: CHANGELOG: * (glob)
    DBG-DELTAS: MANIFESTLOG: * (glob)
-@@ -248,7 +248,7 @@ ------------------
+@@ -270,7 +270,7 @@ Pull with try-base
  
  We requested to use the (bad) delta
  
@@ -250,7 +251,7 @@ the easiest thing is to remove the '-a' from cp.
    $ hg -R local-try-base pull --quiet --config 'paths.default:pulled-delta-reuse-policy=try-base'
    DBG-DELTAS: CHANGELOG: * (glob)
    DBG-DELTAS: MANIFESTLOG: * (glob)
-@@ -259,8 +259,8 @@ ========================================
+@@ -282,8 +282,8 @@ Case where we force a "bad" delta to be
  
  We build a very different file content to force a full snapshot
  
@@ -261,7 +262,7 @@ the easiest thing is to remove the '-a' from cp.
    $ echo '[paths]' >> local-pre-pull-full/.hg/hgrc
    $ echo 'default=../peer-bad-delta-with-full' >> local-pre-pull-full/.hg/hgrc
  
-@@ -279,7 +279,7 @@ The bundling process creates a delta aga
+@@ -302,7 +302,7 @@ The bundling process creates a delta aga
  is an invalid chain for the client, so it is not considered and we do a full
  snapshot again.
  
@@ -270,7 +271,7 @@ the easiest thing is to remove the '-a' from cp.
    $ hg -R local-try-base-full pull --quiet \
    > --config 'paths.default:pulled-delta-reuse-policy=try-base'
    DBG-DELTAS: CHANGELOG: * (glob)
-@@ -294,7 +294,7 @@ ----------------------------------------
+@@ -318,7 +318,7 @@ Check that "forced" behavior do not chal
  
  A full bundle should be accepted as full bundle without recomputation
  
@@ -279,7 +280,7 @@ the easiest thing is to remove the '-a' from cp.
    $ hg -R local-forced-full pull --quiet \
    > --config 'paths.default:pulled-delta-reuse-policy=forced'
    DBG-DELTAS: CHANGELOG: * (glob)
-@@ -315,7 +315,7 @@ more subtle to test this behavior.
+@@ -340,7 +340,7 @@ more subtle to test this behavior.
  
    $ hg bundle -R peer-bad-delta-with-full --all --config devel.bundle.delta=p1 all-p1.hg
    5 changesets found

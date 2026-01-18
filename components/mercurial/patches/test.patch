@@ -15,19 +15,24 @@ test-revlog-mmapindex.t: The order of how is the result of a single test
 printed to stdout is not consistent. So this test is simplified to match every
 time:
 
+test-eol.t: GNU chmod at some point started reporting when recursive call did
+not change permission on a link:
+  $ chmod -R -w .hg
+  chmod: .hg/wcache/checklink: new permissions are r-xrwxrwx, not r-xr-xr-x
+This is not the case with our chmod, so let's just use that one...
 
---- mercurial-6.8/tests/run-tests.py
-+++ mercurial-6.8/tests/run-tests.py
-@@ -311,7 +311,7 @@ def Popen4(cmd, wd, timeout, env=None):
-             while time.time() - start < timeout and p.returncode is None:
+--- mercurial-7.1.2/tests/run-tests.py
++++ mercurial-7.1.2/tests/run-tests.py
+@@ -371,7 +371,7 @@ def Popen4(cmd, wd, timeout, env=None):
                  time.sleep(0.1)
-             p.timeout = True
--            vlog('# Timout reached for process %d' % p.pid)
-+            vlog('# Timout %d seconds reached for process %d after %d seconds' % (timeout, p.pid, time.time() - start))
              if p.returncode is None:
+                 p.timeout = True
+-                vlog('# Timout reached for process %d' % p.pid)
++                vlog('# Timout %d seconds reached for process %d after %d seconds' % (timeout, p.pid, time.time() - start))
                  terminate(p)
  
-@@ -1368,7 +1368,7 @@ class Test(unittest.TestCase):
+         threading.Thread(target=t).start()
+@@ -1497,7 +1497,7 @@ class Test(unittest.TestCase):
          name_regex = re.compile('^[a-zA-Z][a-zA-Z0-9_]*$')
  
          # Do not restore these variables; otherwise tests would fail.
@@ -36,20 +41,20 @@ time:
  
          with open(scriptpath, 'w') as envf:
              for name, value in origenviron.items():
---- mercurial-6.8/tests/test-merge1.t
-+++ mercurial-6.8/tests/test-merge1.t
+--- mercurial-7.1.2/tests/test-merge1.t
++++ mercurial-7.1.2/tests/test-merge1.t
 @@ -30,7 +30,7 @@ of the files in a commit we're updating
    $ mkdir b && touch b/nonempty
    $ hg up
    abort: Unlinking directory not permitted: *$TESTTMP/t/b* (glob) (windows !)
--  abort: Directory not empty: '?\$TESTTMP/t/b'? (re) (no-windows !)
+-  abort: Directory not empty: '?\$TESTTMP/t/b'? (re) (no-windows no-rust !)
 +  abort: File exists: '$TESTTMP/t/b'
+   abort: conflicting unknown directory '$TESTTMP/t/b' is not empty (no-windows rust !)
    [255]
    $ hg ci
-   abort: last update was interrupted
---- mercurial-6.8/tests/test-push-race.t
-+++ mercurial-6.8/tests/test-push-race.t
-@@ -59,7 +59,7 @@ >             test_default_timeout is no
+--- mercurial-7.1.2/tests/test-push-race.t
++++ mercurial-7.1.2/tests/test-push-race.t
+@@ -59,7 +59,7 @@ A set of extension and shell functions e
    >             and test_timeout is not None
    >             and test_default_timeout < test_timeout
    >         ):
@@ -58,50 +63,52 @@ time:
    >         while 0 < limit and not os.path.exists(watchpath):
    >             limit -= 1
    >             time.sleep(0.1)
---- mercurial-6.8/tests/test-upgrade-repo.t
-+++ mercurial-6.8/tests/test-upgrade-repo.t
-@@ -2100,7 +2100,7 @@ ----------------------------------------
+--- mercurial-7.1.2/tests/test-upgrade-repo.t
++++ mercurial-7.1.2/tests/test-upgrade-repo.t
+@@ -2267,7 +2267,7 @@ Attempting Auto-upgrade on a locked repo
+ ----------------------------------------------
  
    $ hg -R auto-upgrade debuglock --set-lock --quiet &
-   $ echo $! >> $DAEMON_PIDS
 -  $ $RUNTESTDIR/testlib/wait-on-file 10 auto-upgrade/.hg/store/lock
 +  $ $RUNTESTDIR/testlib/wait-on-file 100 auto-upgrade/.hg/store/lock
    $ hg status -R auto-upgrade \
    >     --config format.use-dirstate-v2.automatic-upgrade-of-mismatching-repositories=yes \
    >     --config format.use-dirstate-v2=no
---- mercurial-6.8/tests/test-update-names.t
-+++ mercurial-6.8/tests/test-update-names.t
+--- mercurial-7.1.2/tests/test-update-names.t
++++ mercurial-7.1.2/tests/test-update-names.t
 @@ -51,7 +51,7 @@ make sure that this does not erase untra
    ? name/file
    $ hg up 1
    abort: Unlinking directory not permitted: *$TESTTMP/r1/r2/name* (glob) (windows !)
--  abort: Directory not empty: '?\$TESTTMP/r1/r2/name'? (re) (no-windows !)
+-  abort: Directory not empty: '?\$TESTTMP/r1/r2/name'? (re) (no-windows no-rust !)
 +  abort: File exists: '$TESTTMP/r1/r2/name'
+   abort: conflicting unknown directory '$TESTTMP/r1/r2/name' is not empty (no-windows rust !)
    [255]
    $ cat name/file
-   text
---- mercurial-6.8/tests/test-revlog-mmapindex.t
-+++ mercurial-6.8/tests/test-revlog-mmapindex.t
-@@ -36,9 +36,7 @@ set up verbosemmap extension
+--- mercurial-7.1.2/tests/test-revlog-mmapindex.t
++++ mercurial-7.1.2/tests/test-revlog-mmapindex.t
+@@ -36,11 +36,7 @@ set up verbosemmap extension
    > EOF
  
  mmap index which is now more than 4k long
--  $ hg log -l 5 -T '{rev}\n' --config experimental.mmapindexthreshold=4k
+-  $ hg log -l 5 -T '{rev}\n' \
+-  >     --config storage.revlog.mmap.index=yes \
+-  >     --config storage.revlog.mmap.index:size-threshold=4k
 -  mmapping $TESTTMP/a/.hg/store/00changelog.i (no-pure !)
 -  mmapping $TESTTMP/a/.hg/store/00changelog-????????.nd (glob) (rust !)
 +  $ hg log -l 5 -T '{rev}\n'
    100
    99
    98
---- mercurial-6.8/tests/testlib/wait-on-file
-+++ mercurial-6.8/tests/testlib/wait-on-file
+--- mercurial-7.1.2/tests/testlib/wait-on-file
++++ mercurial-7.1.2/tests/testlib/wait-on-file
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  #
  # wait up to TIMEOUT seconds until a WAIT_ON_FILE is created.
  #
-@@ -31,7 +31,7 @@ create=""
+@@ -34,7 +34,7 @@ if [ -n "$create" ]; then
  fi
  while [ "$timer" -gt 0 ] && !([ -e "$wait_on" ] || [ -L "$wait_on" ]) ; do
      timer=$(( $timer - 1))
@@ -109,10 +116,10 @@ time:
 +    /usr/gnu/bin/sleep 1
  done
  if [ "$timer" -le 0 ]; then
-     echo "file not created after $1 seconds: $wait_on" >&2
---- mercurial-6.8/mercurial/testing/__init__.py
-+++ mercurial-6.8/mercurial/testing/__init__.py
-@@ -9,7 +9,7 @@ import time
+     echo "file not created after $max_time seconds: $wait_on" >&2
+--- mercurial-7.1.2/mercurial/testing/__init__.py
++++ mercurial-7.1.2/mercurial/testing/__init__.py
+@@ -11,7 +11,7 @@ import time
  environ = getattr(os, 'environ')
  
  
@@ -121,7 +128,7 @@ time:
      """synchronize on the `cfg` config path
  
      Use this to synchronize commands during race tests.
-@@ -33,7 +33,7 @@ def _timeout_factor():
+@@ -35,7 +35,7 @@ def _timeout_factor():
      return current / float(default)
  
  
@@ -130,3 +137,14 @@ time:
      timeout *= _timeout_factor()
      start = time.time()
      while not os.path.exists(path):
+--- mercurial-7.1.2/tests/test-eol.t
++++ mercurial-7.1.2/tests/test-eol.t
+@@ -399,7 +399,7 @@ Test issue2569 -- eol extension takes wr
+   $ touch .hgeol
+   $ hg status
+   ? .hgeol
+-  $ chmod -R -w .hg
++  $ /usr/bin/chmod -R -w .hg
+   $ sleep 1
+   $ touch .hgeol
+   $ hg status --traceback

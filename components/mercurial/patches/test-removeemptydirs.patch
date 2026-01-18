@@ -1,0 +1,37 @@
+On Solaris. it's not possible to remove the current working directory, which
+causes several test-removeemptydirs.t failures.
+
+This was reported upstream:
+https://foss.heptapod.net/mercurial/mercurial-devel/-/issues/10055
+
+--- mercurial-7.1.2/tests/test-removeemptydirs.t
++++ mercurial-7.1.2/tests/test-removeemptydirs.t
+@@ -111,7 +111,7 @@ directory (reordering nodes):
+ A directory with the right pass exists at the end of the run, but it is a
+ different directory than the current one.
+ 
+-Windows is not affected
++Windows and Solaris is not affected
+ 
+   $ hg init hghistedit
+   $ cd hghistedit
+@@ -132,8 +132,8 @@ Windows is not affected
+   > EOF
+   $ cd $TESTTMP/hghistedit/somedir
+   $ hg $DO_RM --config extensions.histedit= histedit -q --commands ../histedit_commands
+-  current directory was removed (no-windows !)
+-  (consider changing to repo root: $TESTTMP/hghistedit) (no-windows !)
++  current directory was removed (rmcwd !)
++  (consider changing to repo root: $TESTTMP/hghistedit) (rmcwd !)
+   $ ls -A $TESTTMP/hghistedit/
+   .hg
+   histedit_commands
+@@ -141,7 +141,7 @@ Windows is not affected
+   r1
+   r2
+   somedir
+-#if windows
++#if no-rmcwd
+   $ "$PYTHON" "$TESTTMP/pwd.py"
+   $TESTTMP/hghistedit/somedir
+   $ ls -A $TESTTMP/hghistedit/somedir

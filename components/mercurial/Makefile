@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -34,20 +34,19 @@ LD_SHARED_OPTIONS_Z_DEFS=
 PATH=$(USRBINDIR):$(GNUBIN):$(USRSBINDIR)
 
 COMPONENT_NAME=		mercurial
-COMPONENT_VERSION=	6.8
-VERSION_DIRECTORY=	68
+COMPONENT_VERSION=	7.1.2
+VERSION_DIRECTORY=	71
 COMPONENT_PROJECT_URL=	http://mercurial-scm.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:08e4d0e5da8af1132b51e6bc3350180ad57adcd935f097b6d0bc119a2c2c0a10
+    sha256:ce27b9a4767cf2ea496b51468bae512fa6a6eaf0891e49f8961dc694b4dc81ca
 COMPONENT_ARCHIVE_URL=	https://www.mercurial-scm.org/release/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/hg
 COMPONENT_ANITYA_ID=	1969
+COMPONENT_BAID=		358191
 
-COMPONENT_BAID=		174608
-
-PYTHON_VERSIONS= 3.11
-BUILD_STYLE= setup.py
+PYTHON_VERSIONS= 3.11 3.13
+BUILD_STYLE= pybuild
 
 # Add install dependency when system-test target is implemented.
 include $(WS_MAKE_RULES)/common.mk
@@ -76,20 +75,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(SOURCE_DIR); $(RM) -r relnotes);
 
 
-# The tests which are failing and we do not want to fix or investigate deeper
-# test-debugcommands.t - sometimes fails, looks like a race condition? It seems to work with Python 3.11
-# test-commandserver.t - guess is that the test does not expect us to built outside of directory
-# test-removeemptydirs.t - empty directories seem to behave differently in Solaris
-# test-dirstate-read-race.t - needs more investigation
-TEST_BLACKLIST = \
-	test-debugcommands.t \
-	test-commandserver.t \
-	test-removeemptydirs.t \
-	test-dirstate-read-race.t
-
 COMPONENT_PRE_TEST_ACTION = \
-	(cd $(BUILD_DIR); rm -f sh; ln -s /bin/bash sh; \
-	printf "%s\n" $(TEST_BLACKLIST) > blacklist);
+	(cd $(BUILD_DIR); rm -f sh; ln -s /bin/bash sh);
 
 HGTEST_JOBS = 20
 HGTEST_TIMEOUT = 720
@@ -100,7 +87,7 @@ COMPONENT_TEST_ENV +=	TERM=dumb
 COMPONENT_TEST_ENV +=	HGTEST_JOBS=$(or $(HGTEST_JOBS),1)
 COMPONENT_TEST_ENV +=	HGTEST_TIMEOUT=$(or $(HGTEST_TIMEOUT),360)
 # We need GNU false(1) and diff(1)
-COMPONENT_TEST_ENV += PATH=/usr/gnu/bin:/usr/bin
+COMPONENT_TEST_ENV +=	PATH=/usr/gnu/bin:/usr/bin
 
 # The extra large timeout is needed for test test-copies-chain-merge.t which is
 # very slow on sparc. It takes 700+ seconds.
@@ -109,8 +96,7 @@ COMPONENT_TEST_ARGS =	./run-tests.py \
 			--timeout 4800 \
 			--slowtimeout 4800 \
 			--shell $(BUILD_DIR)/sh \
-			--with-hg $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/mercurial/hg \
-			--blacklist $(BUILD_DIR)/blacklist
+			--with-hg $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/mercurial/hg
 
 # Print just total test count and tests which failed
 COMPONENT_TEST_TRANSFORMS += \
