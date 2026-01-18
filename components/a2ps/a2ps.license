@@ -678,6 +678,137 @@ Public License instead of this License.  But first, please read
 
 
 ## Files:
+README
+
+		    a2ps README
+
+           (or PRINTME if a2ps runs fine :)
+
+
+Please send problem reports to bug-a2ps@gnu.org.  Ask questions on
+a2ps@gnu.org.  Submit changes on a2ps-patches@gnu.org.
+
+GNU a2ps is an Any to PostScript filter.  Of course it processes plain
+text files, but also pretty prints quite a few popular languages.
+
+Its slogan is precisely "Do The Right Thing", which means that
+though it is highly configurable, everything was made so that a novice
+user can do complicated PostScript manipulations.  For instance, it
+has the ability to delegate the processing of some files to other
+filters (such as groff, texi2dvi, dvips, gzip etc.), what allows a
+uniform treatment (n-up, page selection, duplex etc.) of heterogeneous
+files.
+
+a2ps is distributed under the GNU Public License, version 3, or, at your
+option, any later version. See the file COPYING for more details.
+
+
+Contents:
+=========
+
+1. Installation
+2. Distribution content
+3. More?
+
+
+1. Installation
+===============
+
+*NOTE* If you are installing from a git clone, see README-git.
+
+The following dependencies are required to build a2ps:
+
+  - BDW GC (libgc): https://www.hboehm.info/gc
+  - libpaper: https://github.com/rrthomas/libpaper
+  - help2man: https://www.gnu.org/software/help2man
+
+The following dependencies are highly recommended:
+
+  - psutils: https://github.com/rrthomas/psutils
+  - GNU roff: https://www.gnu.org/software/groff
+
+Most of the work for the installation is done by ./configure.  If you
+never ever read the file `INSTALL', then you really should do it
+*now*.
+
+Some key options for ./configure are:
+
+    --disable-nls
+    	if you do not want to use Native Language Support
+    	(i.e. the ability to speak another tongue than English)
+    --with-gnu-gettext
+    	if you want to use the GNU gettext library for
+    	NLS, instead of available NLS services.  I recommend it.
+    --without-extensions
+    	Fewer files will get installed.  a2ps is still usable
+    	for Western Europe and American.  You should avoid unless
+    	you are really short on disk.  This does not imply
+    	--disable-nls, you have to add it yourself.
+
+The following choices *are not irreversible*.  They just correspond to
+settings in the file etc/a2ps-site.cfg:
+
+    --with-encoding=ENCODING
+    	define the default encoding (ascii, latin1..., latin6,
+    	hp, mac, ibmpc, pcg, cp1250).
+
+Note (for novices). If you are not root, you should give
+./configure the option --prefix=$HOME to be able to install.
+
+Remember that `make install' is mandatory for a2ps to work correctly.
+Once the `make install' is done, you may remove the build directory (the
+one which has been extracted from the .gz, which you can also remove,
+BTW).
+
+
+2. Distribution content
+=======================
+
+Some interesting files/directories you might want to look at are:
+
+README		This file
+README-git	Instructions for installing directly from git
+INSTALL		Information on the installation process
+ABOUT_NLS	A presentation of GNU's Native Language Support
+		project
+TODO		Some things to be done
+afm/		Files that describe the width of the chars of a font
+doc/		The whole documentation
+encoding/	Description of the encodings.
+etc/a2ps_cfg	The default configuration (after configure/make)
+po/		Files for the translation
+sheets/		Style sheets for pretty printing support
+tests/          Sanity checks of a2ps
+contrib/emacs/	Useful emacs files for a2ps
+ogonkify/	The full distribution of the fantastic
+		ogonkify package, that fixes a font designed for
+		Latin1 so that other Latin encodings are supported.
+
+
+3. More?
+========
+
+a2ps has a home page where the latest version may be found.
+
+	https://www.gnu.org/software/a2ps/
+
+There, you will also find the documentation in various formats.
+
+Bug reports should be sent to bug-a2ps@gnu.org
+
+There is also a mailing list, to subscribe please see
+
+	https://lists.gnu.org/mailman/listinfo/a2ps
+
+*NOTE* The mailing list is for discussion about a2ps, and for
+announcements.
+
+Local Variables:
+mode: indented-text
+End:
+
+
+## Files:
 ogonkify/README
 
                   Composite fonts and Ogonkify
@@ -722,9 +853,8 @@ afm/make_fonts_map.sh
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program; see the file COPYING.  If not, write to
- the Free Software Foundation, 59 Temple Place - Suite 330,
- Boston, MA 02111-1307, USA.
+ along with this program; see the file COPYING.  If not, see
+ <https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -745,9 +875,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.
+along with this program; see the file COPYING.  If not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -769,7 +898,7 @@ included in the Bootstrap distribution for the full license texts.
 ## Files:
 build-aux/gendocs.sh
 
-Copyright 2003-2023 Free Software Foundation, Inc.
+Copyright 2003-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -797,7 +926,7 @@ https://git.savannah.gnu.org/cgit/gnulib.git/tree/doc/gendocs_template
 ## Files:
 build-aux/ltmain.sh
 
-Copyright (C) 1996-2015 Free Software Foundation, Inc.
+Copyright (C) 1996-2019, 2021-2024 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
@@ -827,83 +956,94 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ## Files:
 build-aux/ltmain.sh
 
-Copyright (C) 2004-2015 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This is free software.  There is NO warranty; not even for
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Copyright (C) 2004-2019, 2021, 2023-2024 Bootstrap Authors
+
+This file is dual licensed under the terms of the MIT license
+<https://opensource.org/licenses/MIT>, and GPL version 2 or later
+<https://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+these licenses when using or redistributing this software or any of
+the files within it.  See the URLs above, or the file `LICENSE`
+included in the Bootstrap distribution for the full license texts.
 
 
 ## Files:
 build-aux/ltmain.sh
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+This is free software.  There is NO warranty; not even for
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Copyright (C) 2010-2019, 2021, 2023-2024 Bootstrap Authors
+
+This file is dual licensed under the terms of the MIT license
+<https://opensource.org/licenses/MIT>, and GPL version 2 or later
+<https://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+these licenses when using or redistributing this software or any of
+the files within it.  See the URLs above, or the file `LICENSE`
+included in the Bootstrap distribution for the full license texts.
 
 
 ## Files:
 build-aux/ltmain.sh
 
-As a special exception to the GNU General Public License, if you distribute
-this file as part of a program or library that is built using GNU Libtool,
-you may include this file under the same distribution terms that you use
-for the rest of that program.
+This file is a library for parsing options in your shell scripts along
+with assorted other useful supporting features that you can make use
+of too.
+
+For the simplest scripts you might need only:
+
+  #!/bin/sh
+  . relative/path/to/funclib.sh
+  . relative/path/to/options-parser
+  scriptversion=1.0
+  func_options ${1+"$@"}
+  eval set dummy "$func_options_result"; shift
+  ...rest of your script...
+
+In order for the '--version' option to work, you will need to have a
+suitably formatted comment like the one at the top of this file
+starting with '# Written by ' and ending with '# Copyright'.
+
+For '-h' and '--help' to work, you will also need a one line
+description of your script's purpose in a comment directly above the
+'# Written by ' line, like the one at the top of this file.
+
+The default options also support '--debug', which will turn on shell
+execution tracing (see the comment above debug_cmd below for another
+use), and '--verbose' and the func_verbose function to allow your script
+to display verbose messages only when your user has specified
+'--verbose'.
+
+After sourcing this file, you can plug in processing for additional
+options by amending the variables from the 'Configuration' section
+below, and following the instructions in the 'Option parsing'
+section further down.
 
 
 ## Files:
 build-aux/ltmain.sh
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNES FOR A PARTICULAR PURPOSE. See the GNU
-General Public License for more details.
-
-
-## Files:
-build-aux/ltmain.sh
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-
-## Files:
-build-aux/ltmain.sh
-
-Copyright (C) 2010-2015 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-
-## Files:
-build-aux/ltmain.sh
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-
-## Files:
-build-aux/ltmain.sh
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-
-## Files:
-build-aux/ltmain.sh
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+func_version
+------------
+Echo version message to standard output and exit.
+The version message is extracted from the calling file's header
+comments, with leading '# ' stripped:
+  1. First display the progname and version
+  2. Followed by the header comment line matching  /^# Written by /
+  3. Then a blank line followed by the first following line matching
+     /^# Copyright /
+  4. Immediately followed by any lines between the previous matches,
+     except lines preceding the intervening completely blank line.
+For example, see the header comments of this file.
 
 
 ## Files:
 lib/_Noreturn.h
 
 A C macro for declaring that a function does not return.
-Copyright (C) 2011-2023 Free Software Foundation, Inc.
+Copyright (C) 2011-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -920,31 +1060,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/alignof.h
-
-Determine alignment of types.
-Copyright (C) 2003-2004, 2006, 2009-2023 Free Software Foundation, Inc.
-
-This file is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as
-published by the Free Software Foundation; either version 2.1 of the
-License, or (at your option) any later version.
-
-This file is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
 lib/alloca.in.h
 
 Memory allocation on the stack.
 
-Copyright (C) 1995, 1999, 2001-2004, 2006-2023 Free Software Foundation,
+Copyright (C) 1995, 1999, 2001-2004, 2006-2025 Free Software Foundation,
 Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -965,7 +1085,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/arg-nonnull.h
 
 A C macro for declaring that specific arguments must not be NULL.
-Copyright (C) 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -986,7 +1106,7 @@ lib/argmatch.c
 
 argmatch.c -- find a match for a string in an array
 
-Copyright (C) 1990, 1998-1999, 2001-2007, 2009-2023 Free Software
+Copyright (C) 1990, 1998-1999, 2001-2007, 2009-2025 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -1008,7 +1128,7 @@ lib/argmatch.h
 
 argmatch.h -- definitions and prototypes for argmatch.c
 
-Copyright (C) 1990, 1998-1999, 2001-2002, 2004-2005, 2009-2023 Free Software
+Copyright (C) 1990, 1998-1999, 2001-2002, 2004-2005, 2009-2025 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -1029,7 +1149,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/assert.in.h
 
 Substitute for and wrapper around <assert.h>
-Copyright (C) 2011-2023 Free Software Foundation, Inc.
+Copyright (C) 2011-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1050,7 +1170,7 @@ lib/assure.h
 
 Run-time assert-like macros.
 
-Copyright (C) 2014-2023 Free Software Foundation, Inc.
+Copyright (C) 2014-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1070,7 +1190,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/at-func.c
 
 Define at-style functions like fstatat, unlinkat, fchownat, etc.
-Copyright (C) 2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2006, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1090,7 +1210,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/at-func2.c
 
 Define 2-FD at-style functions like linkat or renameat.
-Copyright (C) 2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2006, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1111,7 +1231,7 @@ lib/attribute.h
 
 ATTRIBUTE_* macros for using attributes in GCC and similar compilers
 
-Copyright 2020-2023 Free Software Foundation, Inc.
+Copyright 2020-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1132,7 +1252,7 @@ lib/backup-find.c
 
 backupfile.c -- make Emacs style backup file names
 
-Copyright 2017-2023 Free Software Foundation, Inc.
+Copyright 2017-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1153,7 +1273,7 @@ lib/backup-internal.h
 
 Backup files.
 
-Copyright (C) 2017-2023 Free Software Foundation, Inc.
+Copyright (C) 2017-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published
@@ -1174,7 +1294,7 @@ lib/backupfile.c
 
 backupfile.c -- make Emacs style backup file names
 
-Copyright (C) 1990-2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1990-2006, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1195,7 +1315,7 @@ lib/backupfile.h
 
 backupfile.h -- declarations for making Emacs style backup file names
 
-Copyright (C) 1990-1992, 1997-1999, 2003-2004, 2009-2023 Free Software
+Copyright (C) 1990-1992, 1997-1999, 2003-2004, 2009-2025 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -1217,7 +1337,7 @@ lib/basename-lgpl.c
 
 basename.c -- return the last element in a file name
 
-Copyright (C) 1990, 1998-2001, 2003-2006, 2009-2023 Free Software
+Copyright (C) 1990, 1998-2001, 2003-2006, 2009-2025 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -1239,7 +1359,7 @@ lib/basename-lgpl.h
 
 Extract the last component (base name) of a file name.
 
-Copyright (C) 1998, 2001, 2003-2006, 2009-2023 Free Software Foundation,
+Copyright (C) 1998, 2001, 2003-2006, 2009-2025 Free Software Foundation,
 Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -1261,7 +1381,7 @@ lib/basename.c
 
 basename.c -- return the last element in a file name
 
-Copyright (C) 1990, 1998-2001, 2003-2006, 2009-2023 Free Software
+Copyright (C) 1990, 1998-2001, 2003-2006, 2009-2025 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -1282,7 +1402,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c++defs.h
 
 C++ compatible function declaration macros.
-Copyright (C) 2010-2023 Free Software Foundation, Inc.
+Copyright (C) 2010-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -1303,7 +1423,7 @@ lib/c-ctype.c
 
 Character handling in C locale.
 
-Copyright (C) 2003-2023 Free Software Foundation, Inc.
+Copyright (C) 2003-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1329,7 +1449,7 @@ except that they have the C (POSIX) locale hardwired, whereas the
 <ctype.h> functions' behaviour depends on the current locale set via
 setlocale.
 
-Copyright (C) 2000-2003, 2006, 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2000-2003, 2006, 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1349,7 +1469,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c-strcase.h
 
 Case-insensitive string comparison functions in C locale.
-Copyright (C) 1995-1996, 2001, 2003, 2005, 2009-2023 Free Software
+Copyright (C) 1995-1996, 2001, 2003, 2005, 2009-2025 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -1370,7 +1490,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c-strcasecmp.c
 
 c-strcasecmp.c -- case insensitive string comparator in C locale
-Copyright (C) 1998-1999, 2005-2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1998-1999, 2005-2006, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1390,7 +1510,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c-strcaseeq.h
 
 Optimized case-insensitive string comparison in C locale.
-Copyright (C) 2001-2002, 2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2001-2002, 2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1407,10 +1527,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/c-strncasecmp.c
+lib/c32is-impl.h
 
-c-strncasecmp.c -- case insensitive string comparator in C locale
-Copyright (C) 1998-1999, 2005-2006, 2009-2023 Free Software Foundation, Inc.
+Test whether a 32-bit wide character belongs to a specific character class.
+Copyright (C) 2020-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/c32isprint.c
+
+Test 32-bit wide character for being printable.
+Copyright (C) 2020-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1430,8 +1570,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/calloc.c
 
 calloc() function that is glibc compatible.
-This wrapper function is required at least on Tru64 UNIX 5.1 and mingw.
-Copyright (C) 2004-2007, 2009-2023 Free Software Foundation, Inc.
+This wrapper function is required at least on mingw.
+Copyright (C) 2004-2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1451,7 +1591,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/canonicalize-lgpl.c
 
 Return the canonical absolute name of a given file.
-Copyright (C) 1996-2023 Free Software Foundation, Inc.
+Copyright (C) 1996-2025 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -1472,7 +1612,7 @@ License along with the GNU C Library; if not, see
 ## Files:
 lib/cdefs.h
 
-Copyright (C) 1992-2023 Free Software Foundation, Inc.
+Copyright (C) 1992-2025 Free Software Foundation, Inc.
 Copyright The GNU Toolchain Authors.
 This file is part of the GNU C Library.
 
@@ -1495,7 +1635,7 @@ License along with the GNU C Library; if not, see
 lib/chdir-long.c
 
 provide a chdir function that tries not to fail due to ENAMETOOLONG
-Copyright (C) 2004-2023 Free Software Foundation, Inc.
+Copyright (C) 2004-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1515,7 +1655,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/chdir-long.h
 
 provide a chdir function that tries not to fail due to ENAMETOOLONG
-Copyright (C) 2004-2005, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2004-2005, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1536,7 +1676,7 @@ lib/cloexec.c
 
 cloexec.c - set or clear the close-on-exec descriptor flag
 
-Copyright (C) 1991, 2004-2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1991, 2004-2006, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1557,7 +1697,7 @@ lib/cloexec.h
 
 cloexec.c - set or clear the close-on-exec descriptor flag
 
-Copyright (C) 2004, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2004, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1577,7 +1717,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/close.c
 
 close replacement.
-Copyright (C) 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1597,7 +1737,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/closedir.c
 
 Stop reading the entries of a directory.
-Copyright (C) 2006-2023 Free Software Foundation, Inc.
+Copyright (C) 2006-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1614,31 +1754,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/creat-safer.c
-
-Invoke creat, but avoid some glitches.
-
-Copyright (C) 2005-2006, 2009-2023 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
 lib/dirent-private.h
 
 Private details of the DIR type.
-Copyright (C) 2011-2023 Free Software Foundation, Inc.
+Copyright (C) 2011-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1658,7 +1777,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/dirent.in.h
 
 A GNU-like <dirent.h>.
-Copyright (C) 2006-2023 Free Software Foundation, Inc.
+Copyright (C) 2006-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1679,7 +1798,7 @@ lib/dirfd.c
 
 dirfd.c -- return the file descriptor associated with an open DIR*
 
-Copyright (C) 2001, 2006, 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2001, 2006, 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1700,7 +1819,7 @@ lib/dirname-lgpl.c
 
 dirname.c -- return all but the last element in a file name
 
-Copyright (C) 1990, 1998, 2000-2001, 2003-2006, 2009-2023 Free Software
+Copyright (C) 1990, 1998, 2000-2001, 2003-2006, 2009-2025 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -1722,7 +1841,7 @@ lib/dirname.c
 
 dirname.c -- return all but the last element in a file name
 
-Copyright (C) 1990, 1998, 2000-2001, 2003-2006, 2009-2023 Free Software
+Copyright (C) 1990, 1998, 2000-2001, 2003-2006, 2009-2025 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -1744,7 +1863,7 @@ lib/dirname.h
 
 Take file names apart into directory and base names.
 
-Copyright (C) 1998, 2001, 2003-2006, 2009-2023 Free Software Foundation,
+Copyright (C) 1998, 2001, 2003-2006, 2009-2025 Free Software Foundation,
 Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -1762,54 +1881,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/dup-safer-flag.c
-
-Duplicate a file descriptor result, avoiding clobbering
-STD{IN,OUT,ERR}_FILENO, with specific flags.
-
-Copyright (C) 2001, 2004-2006, 2009-2023 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/dup-safer.c
-
-Invoke dup, but avoid some glitches.
-
-Copyright (C) 2001, 2004-2006, 2009-2023 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
 lib/dup.c
 
 Duplicate an open file descriptor.
 
-Copyright (C) 2011-2023 Free Software Foundation, Inc.
+Copyright (C) 2011-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1830,7 +1906,7 @@ lib/dup2.c
 
 Duplicate an open file descriptor to a specified file descriptor.
 
-Copyright (C) 1999, 2004-2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1999, 2004-2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1850,7 +1926,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/eloop-threshold.h
 
 Threshold at which to diagnose ELOOP.  Generic version.
-Copyright (C) 2012-2023 Free Software Foundation, Inc.
+Copyright (C) 2012-2025 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -1873,7 +1949,7 @@ lib/errno.in.h
 
 A POSIX-like <errno.h>.
 
-Copyright (C) 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1893,28 +1969,29 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/error.c
 
 Error handler for noninteractive utilities
-Copyright (C) 1990-1998, 2000-2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1990-2025 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
-This file is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as
-published by the Free Software Foundation; either version 2.1 of the
-License, or (at your option) any later version.
+The GNU C Library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
 
-This file is distributed in the hope that it will be useful,
+The GNU C Library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Lesser General Public
+License along with the GNU C Library; if not, see
+<https://www.gnu.org/licenses/>.
 
 
 ## Files:
 lib/error.in.h
 
 Declarations for error-reporting functions.
-Copyright (C) 1995-1997, 2003, 2006, 2008-2023 Free Software Foundation,
+Copyright (C) 1995-1997, 2003, 2006, 2008-2025 Free Software Foundation,
 Inc.
 This file is part of the GNU C Library.
 
@@ -1937,7 +2014,7 @@ lib/exitfail.c
 
 Failure exit status
 
-Copyright (C) 2002-2003, 2005-2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2002-2003, 2005-2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1958,7 +2035,7 @@ lib/exitfail.h
 
 Failure exit status
 
-Copyright (C) 2002, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2002, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1978,7 +2055,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/fchdir.c
 
 fchdir replacement.
-Copyright (C) 2006-2023 Free Software Foundation, Inc.
+Copyright (C) 2006-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1995,53 +2072,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/fcntl--.h
-
-Like fcntl.h, but redefine some names to avoid glitches.
-
-Copyright (C) 2005, 2009-2023 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/fcntl-safer.h
-
-Invoke fcntl-like functions, but avoid some glitches.
-
-Copyright (C) 2005, 2009-2023 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
 lib/fcntl.c
 
 Provide file descriptor control.
 
-Copyright (C) 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2062,7 +2097,7 @@ lib/fcntl.in.h
 
 Like <fcntl.h>, but with non-working flags defined to 0.
 
-Copyright (C) 2006-2023 Free Software Foundation, Inc.
+Copyright (C) 2006-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2082,7 +2117,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/fd-hook.c
 
 Hook for making file descriptor functions close(), ioctl() extensible.
-Copyright (C) 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2009-2025 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2009.
 
 This file is free software: you can redistribute it and/or modify
@@ -2103,7 +2138,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/fd-hook.h
 
 Hook for making file descriptor functions close(), ioctl() extensible.
-Copyright (C) 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2120,53 +2155,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/fd-safer-flag.c
-
-Adjust a file descriptor result so that it avoids clobbering
-STD{IN,OUT,ERR}_FILENO, with specific flags.
-
-Copyright (C) 2005-2006, 2009-2023 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/fd-safer.c
-
-Return a safer copy of a file descriptor.
-
-Copyright (C) 2005-2006, 2009-2023 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
 lib/fdopendir.c
 
 provide a replacement fdopendir function
-Copyright (C) 2004-2023 Free Software Foundation, Inc.
+Copyright (C) 2004-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -2186,7 +2178,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/filename.h
 
 Basic filename support macros.
-Copyright (C) 2001-2023 Free Software Foundation, Inc.
+Copyright (C) 2001-2025 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -2209,7 +2201,7 @@ lib/filenamecat-lgpl.c
 
 Concatenate two arbitrary file names.
 
-Copyright (C) 1996-2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1996-2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2230,7 +2222,7 @@ lib/filenamecat.c
 
 Concatenate two arbitrary file names.
 
-Copyright (C) 1996-2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1996-2007, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -2251,7 +2243,7 @@ lib/filenamecat.h
 
 Concatenate two arbitrary file names.
 
-Copyright (C) 1996-1997, 2003, 2005, 2007, 2009-2023 Free Software
+Copyright (C) 1996-1997, 2003, 2005, 2007, 2009-2025 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -2269,11 +2261,77 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
+lib/flexmember.h
+
+Sizes of structs with flexible array members.
+
+Copyright 2016-2025 Free Software Foundation, Inc.
+
+This file is part of the GNU C Library.
+
+The GNU C Library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+The GNU C Library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with the GNU C Library; if not, see
+<https://www.gnu.org/licenses/>.
+
+Written by Paul Eggert.
+
+
+## Files:
 lib/free.c
 
 Make free() preserve errno.
 
-Copyright (C) 2003, 2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2003, 2006, 2009-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/fseterr.c
+
+Set the error indicator of a stream.
+Copyright (C) 2007-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/fseterr.h
+
+Set the error indicator of a stream.
+Copyright (C) 2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2293,7 +2351,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/fstat.c
 
 fstat() replacement.
-Copyright (C) 2011-2023 Free Software Foundation, Inc.
+Copyright (C) 2011-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2314,7 +2372,7 @@ lib/fstatat.c
 
 Work around an fstatat bug on Solaris 9.
 
-Copyright (C) 2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2006, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -2333,7 +2391,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/getcwd-lgpl.c
 
-Copyright (C) 2011-2023 Free Software Foundation, Inc.
+Copyright (C) 2011-2025 Free Software Foundation, Inc.
 This file is part of gnulib.
 
 This file is free software: you can redistribute it and/or modify
@@ -2354,7 +2412,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/getdtablesize.c
 
 getdtablesize() function: Return maximum possible file descriptor value + 1.
-Copyright (C) 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2008-2025 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2008.
 
 This file is free software: you can redistribute it and/or modify
@@ -2376,7 +2434,7 @@ lib/gethostname.c
 
 gethostname emulation for SysV and POSIX.1.
 
-Copyright (C) 1992, 2003, 2006, 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 1992, 2003, 2006, 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2397,7 +2455,7 @@ lib/getprogname.c
 lib/getprogname.h
 
 Program name management.
-Copyright (C) 2016-2023 Free Software Foundation, Inc.
+Copyright (C) 2016-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -2417,8 +2475,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/gettext.h
 
 Convenience header for conditional use of GNU <libintl.h>.
-Copyright (C) 1995-1998, 2000-2002, 2004-2006, 2009-2023 Free Software
-Foundation, Inc.
+Copyright (C) 1995-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2439,7 +2496,7 @@ lib/hard-locale.c
 
 hard-locale.c -- Determine whether a locale is hard.
 
-Copyright (C) 1997-1999, 2002-2004, 2006-2007, 2009-2023 Free Software
+Copyright (C) 1997-1999, 2002-2004, 2006-2007, 2009-2025 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -2461,7 +2518,7 @@ lib/hard-locale.h
 
 Determine whether a locale is hard.
 
-Copyright (C) 1999, 2003-2004, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1999, 2003-2004, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2482,7 +2539,7 @@ lib/ialloc.c
 
 malloc with idx_t rather than size_t
 
-Copyright 2021-2023 Free Software Foundation, Inc.
+Copyright 2021-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2503,7 +2560,7 @@ lib/ialloc.h
 
 ialloc.h -- malloc with idx_t rather than size_t
 
-Copyright 2021-2023 Free Software Foundation, Inc.
+Copyright 2021-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2523,7 +2580,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/idx.h
 
 A type for indices and sizes.
-Copyright (C) 2020-2023 Free Software Foundation, Inc.
+Copyright (C) 2020-2025 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -2546,7 +2603,7 @@ lib/intprops-internal.h
 
 intprops-internal.h -- properties of integer types not visible to users
 
-Copyright (C) 2001-2023 Free Software Foundation, Inc.
+Copyright (C) 2001-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -2567,7 +2624,7 @@ lib/intprops.h
 
 intprops.h -- properties of integer types
 
-Copyright (C) 2001-2023 Free Software Foundation, Inc.
+Copyright (C) 2001-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -2586,7 +2643,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/inttypes.in.h
 
-Copyright (C) 2006-2023 Free Software Foundation, Inc.
+Copyright (C) 2006-2025 Free Software Foundation, Inc.
 Written by Paul Eggert, Bruno Haible, Derek Price.
 This file is part of gnulib.
 
@@ -2609,7 +2666,7 @@ lib/isdir.c
 
 isdir.c -- determine whether a directory exists
 
-Copyright (C) 1990, 1998, 2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1990, 1998, 2006, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -2630,7 +2687,48 @@ lib/isdir.h
 
 Determine whether a directory exists.
 
-Copyright (C) 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2009-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published
+by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/issymlink.c
+lib/issymlink.h
+
+Test whether a file is a symbolic link.
+Copyright (C) 2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/issymlinkat.c
+
+Test whether a file is a symbolic link.
+Copyright (C) 2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published
@@ -2651,7 +2749,7 @@ lib/lc-charset-dispatch.c
 lib/lc-charset-dispatch.h
 
 Dispatching based on the current locale's character encoding.
-Copyright (C) 2018-2023 Free Software Foundation, Inc.
+Copyright (C) 2018-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2672,7 +2770,7 @@ lib/libc-config.h
 
 System definitions for code taken from the GNU C Library
 
-Copyright 2017-2023 Free Software Foundation, Inc.
+Copyright 2017-2025 Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -2694,7 +2792,7 @@ lib/limits.in.h
 
 A GNU-like <limits.h>.
 
-Copyright 2016-2023 Free Software Foundation, Inc.
+Copyright 2016-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2715,7 +2813,7 @@ lib/localcharset.c
 
 Determine a canonical name for the current locale's character encoding.
 
-Copyright (C) 2000-2006, 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2000-2006, 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2735,7 +2833,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/localcharset.h
 
 Determine a canonical name for the current locale's character encoding.
-Copyright (C) 2000-2003, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2000-2003, 2009-2025 Free Software Foundation, Inc.
 This file is part of the GNU CHARSET Library.
 
 This file is free software: you can redistribute it and/or modify
@@ -2756,7 +2854,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/locale.in.h
 
 A POSIX <locale.h>.
-Copyright (C) 2007-2023 Free Software Foundation, Inc.
+Copyright (C) 2007-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2777,7 +2875,7 @@ lib/lstat.c
 
 Work around a bug of lstat on some systems
 
-Copyright (C) 1997-2006, 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 1997-2006, 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2800,7 +2898,7 @@ lib/malloc/scratch_buffer_grow_preserve.c
 lib/malloc/scratch_buffer_set_array_size.c
 
 Variable-sized buffer with on-stack default allocation.
-Copyright (C) 2015-2023 Free Software Foundation, Inc.
+Copyright (C) 2015-2025 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -2823,7 +2921,7 @@ lib/malloc.c
 
 malloc() function that is glibc compatible.
 
-Copyright (C) 1997-1998, 2006-2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1997-1998, 2006-2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2843,7 +2941,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/malloca.c
 
 Safe automatic memory allocation.
-Copyright (C) 2003, 2006-2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2003, 2006-2007, 2009-2025 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2003, 2018.
 
 This file is free software: you can redistribute it and/or modify
@@ -2864,8 +2962,28 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/malloca.h
 
 Safe automatic memory allocation.
-Copyright (C) 2003-2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2003-2007, 2009-2025 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2003.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/mbrtoc32.c
+
+Convert multibyte character to 32-bit wide character.
+Copyright (C) 2020-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2886,7 +3004,7 @@ lib/mbrtowc-impl-utf8.h
 lib/mbrtowc-impl.h
 
 Convert multibyte character to wide character.
-Copyright (C) 1999-2002, 2005-2023 Free Software Foundation, Inc.
+Copyright (C) 1999-2002, 2005-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2906,7 +3024,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbrtowc.c
 
 Convert multibyte character to wide character.
-Copyright (C) 1999-2002, 2005-2023 Free Software Foundation, Inc.
+Copyright (C) 1999-2002, 2005-2025 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2008.
 
 This file is free software: you can redistribute it and/or modify
@@ -2927,8 +3045,28 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbsinit.c
 
 Test for initial conversion state.
-Copyright (C) 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2008-2025 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2008.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/mbszero.c
+
+Put an mbstate_t into an initial conversion state.
+Copyright (C) 2023-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2948,7 +3086,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbtowc-lock.c
 
 Return the internal lock used by mbrtowc and mbrtoc32.
-Copyright (C) 2019-2023 Free Software Foundation, Inc.
+Copyright (C) 2019-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2968,7 +3106,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbtowc-lock.h
 
 Use the internal lock used by mbrtowc and mbrtoc32.
-Copyright (C) 2019-2023 Free Software Foundation, Inc.
+Copyright (C) 2019-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2987,7 +3125,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/memchr.c
 
-Copyright (C) 1991, 1993, 1996-1997, 1999-2000, 2003-2004, 2006, 2008-2023
+Copyright (C) 1991, 1993, 1996-1997, 1999-2000, 2003-2004, 2006, 2008-2025
 Free Software Foundation, Inc.
 
 Based on strlen implementation by Torbjorn Granlund (tege@sics.se),
@@ -3017,7 +3155,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mempcpy.c
 
 Copy memory area and return pointer after last written byte.
-Copyright (C) 2003, 2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2003, 2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3038,7 +3176,7 @@ lib/memrchr.c
 
 memrchr -- find the last occurrence of a byte in a memory block
 
-Copyright (C) 1991, 1993, 1996-1997, 1999-2000, 2003-2023 Free Software
+Copyright (C) 1991, 1993, 1996-1997, 1999-2000, 2003-2025 Free Software
 Foundation, Inc.
 
 Based on strlen implementation by Torbjorn Granlund (tege@sics.se),
@@ -3065,7 +3203,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/minmax.h
 
 MIN, MAX macros.
-Copyright (C) 1995, 1998, 2001, 2003, 2005, 2009-2023 Free Software
+Copyright (C) 1995, 1998, 2001, 2003, 2005, 2009-2025 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -3087,7 +3225,7 @@ lib/msvc-inval.c
 lib/msvc-inval.h
 
 Invalid parameter handler for MSVC runtime libraries.
-Copyright (C) 2011-2023 Free Software Foundation, Inc.
+Copyright (C) 2011-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3109,7 +3247,7 @@ lib/msvc-nothrow.h
 
 Wrappers that don't throw invalid parameter notifications
 with MSVC runtime libraries.
-Copyright (C) 2011-2023 Free Software Foundation, Inc.
+Copyright (C) 2011-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3129,70 +3267,51 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/obstack.c
 
 obstack.c - subroutines used implicitly by object stack macros
-Copyright (C) 1988-2023 Free Software Foundation, Inc.
+Copyright (C) 1988-2025 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
-This file is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+The GNU C Library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
 
-This file is distributed in the hope that it will be useful,
+The GNU C Library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Lesser General Public
+License along with the GNU C Library; if not, see
+<https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/obstack.h
+lib/obstack.in.h
 
 obstack.h - object stack macros
-Copyright (C) 1988-2023 Free Software Foundation, Inc.
+Copyright (C) 1988-2025 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
-This file is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+The GNU C Library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
 
-This file is distributed in the hope that it will be useful,
+The GNU C Library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/open-safer.c
-
-Invoke open, but avoid some glitches.
-
-Copyright (C) 2005-2006, 2008-2023 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Lesser General Public
+License along with the GNU C Library; if not, see
+<https://www.gnu.org/licenses/>.
 
 
 ## Files:
 lib/open.c
 
 Open a descriptor to a file.
-Copyright (C) 2007-2023 Free Software Foundation, Inc.
+Copyright (C) 2007-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3213,7 +3332,7 @@ lib/openat-die.c
 
 Report a save- or restore-cwd failure in our openat replacement and then exit.
 
-Copyright (C) 2005-2006, 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2005-2006, 2008-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3234,7 +3353,7 @@ lib/openat-priv.h
 
 Internals for openat-like functions.
 
-Copyright (C) 2005-2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2005-2006, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3255,28 +3374,7 @@ lib/openat-proc.c
 
 Create /proc/self/fd-related names for subfiles of open directories.
 
-Copyright (C) 2006, 2009-2023 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/openat-safer.c
-
-Invoke openat, but avoid some glitches.
-
-Copyright (C) 2005-2006, 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2006, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3296,7 +3394,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/openat.c
 
 provide a replacement openat function
-Copyright (C) 2004-2023 Free Software Foundation, Inc.
+Copyright (C) 2004-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3316,7 +3414,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/openat.h
 
 provide a replacement openat function
-Copyright (C) 2004-2006, 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2004-2006, 2008-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3336,7 +3434,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/opendir.c
 
 Start reading the entries of a directory.
-Copyright (C) 2006-2023 Free Software Foundation, Inc.
+Copyright (C) 2006-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3357,7 +3455,7 @@ lib/opendirat.c
 
 Open a directory relative to another directory.
 
-Copyright 2006-2023 Free Software Foundation, Inc.
+Copyright 2006-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3380,7 +3478,7 @@ lib/opendirat.h
 
 Open a directory relative to another directory.
 
-Copyright (C) 2018-2023 Free Software Foundation, Inc.
+Copyright (C) 2018-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published
@@ -3400,48 +3498,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/pathmax.h
 
 Define PATH_MAX somehow.  Requires sys/types.h.
-Copyright (C) 1992, 1999, 2001, 2003, 2005, 2009-2023 Free Software
+Copyright (C) 1992, 1999, 2001, 2003, 2005, 2009-2025 Free Software
 Foundation, Inc.
-
-This file is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as
-published by the Free Software Foundation; either version 2.1 of the
-License, or (at your option) any later version.
-
-This file is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/pipe-safer.c
-
-Invoke pipe, but avoid some glitches.
-Copyright (C) 2005-2006, 2009-2023 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/pipe.c
-
-Create a pipe.
-Copyright (C) 2009-2023 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3462,7 +3520,7 @@ lib/quote.h
 
 quote.h - prototypes for quote.c
 
-Copyright (C) 1998-2001, 2003, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1998-2001, 2003, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3483,7 +3541,7 @@ lib/quotearg.c
 
 quotearg.c - quote arguments for output
 
-Copyright (C) 1998-2002, 2004-2023 Free Software Foundation, Inc.
+Copyright (C) 1998-2002, 2004-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3504,7 +3562,7 @@ lib/quotearg.h
 
 quotearg.h - quote arguments for output
 
-Copyright (C) 1998-2002, 2004, 2006, 2008-2023 Free Software Foundation,
+Copyright (C) 1998-2002, 2004, 2006, 2008-2025 Free Software Foundation,
 Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -3525,7 +3583,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/rawmemchr.c
 
 Searching in a string.
-Copyright (C) 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3545,7 +3603,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/readdir.c
 
 Read the next entry of a directory.
-Copyright (C) 2011-2023 Free Software Foundation, Inc.
+Copyright (C) 2011-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3565,7 +3623,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/readlink.c
 
 Read the contents of a symbolic link.
-Copyright (C) 2003-2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2003-2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3585,7 +3643,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/readlinkat.c
 
 Read a symlink relative to an open directory.
-Copyright (C) 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3606,7 +3664,7 @@ lib/realloc.c
 
 realloc() function that is glibc compatible.
 
-Copyright (C) 1997, 2003-2004, 2006-2007, 2009-2023 Free Software
+Copyright (C) 1997, 2003-2004, 2006-2007, 2009-2025 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -3628,7 +3686,7 @@ lib/reallocarray.c
 
 reallocarray function that is glibc compatible.
 
-Copyright (C) 2017-2023 Free Software Foundation, Inc.
+Copyright (C) 2017-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3649,7 +3707,7 @@ lib/rename.c
 
 Work around rename bugs in some systems.
 
-Copyright (C) 2001-2003, 2005-2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2001-2003, 2005-2006, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3669,7 +3727,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/renameatu.c
 
 Rename a file relative to open directories.
-Copyright (C) 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3689,7 +3747,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/renameatu.h
 
 Rename a file relative to open directories.
-Copyright 2017-2023 Free Software Foundation, Inc.
+Copyright 2017-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3710,8 +3768,29 @@ lib/rmdir.c
 
 Work around rmdir bugs.
 
-Copyright (C) 1988, 1990, 1999, 2003-2006, 2009-2023 Free Software
+Copyright (C) 1988, 1990, 1999, 2003-2006, 2009-2025 Free Software
 Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/same-inode.c
+
+Determine whether two stat buffers are known to refer to the same file.
+
+Copyright (C) 2023-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3732,7 +3811,7 @@ lib/same-inode.h
 
 Determine whether two stat buffers are known to refer to the same file.
 
-Copyright (C) 2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2006, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3753,7 +3832,7 @@ lib/save-cwd.c
 
 save-cwd.c -- Save and restore current working directory.
 
-Copyright (C) 1995, 1997-1998, 2003-2006, 2009-2023 Free Software
+Copyright (C) 1995, 1997-1998, 2003-2006, 2009-2025 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -3775,7 +3854,7 @@ lib/save-cwd.h
 
 Save and restore current working directory.
 
-Copyright (C) 1995, 1997-1998, 2003, 2009-2023 Free Software Foundation,
+Copyright (C) 1995, 1997-1998, 2003, 2009-2025 Free Software Foundation,
 Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -3796,7 +3875,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/scratch_buffer.h
 
 Variable-sized buffer with on-stack default allocation.
-Copyright (C) 2017-2023 Free Software Foundation, Inc.
+Copyright (C) 2017-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3816,7 +3895,27 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/setlocale-lock.c
 
 Return the internal lock used by setlocale_null_r.
-Copyright (C) 2019-2023 Free Software Foundation, Inc.
+Copyright (C) 2019-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/setlocale_null-unlocked.c
+
+Query the name of the current global locale, without locking.
+Copyright (C) 2019-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3837,7 +3936,7 @@ lib/setlocale_null.c
 lib/setlocale_null.h
 
 Query the name of the current global locale.
-Copyright (C) 2019-2023 Free Software Foundation, Inc.
+Copyright (C) 2019-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3858,7 +3957,7 @@ lib/sig2str.c
 
 sig2str.c -- convert between signal names and numbers
 
-Copyright (C) 2002, 2004, 2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2002, 2004, 2006, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3879,7 +3978,7 @@ lib/sig2str.h
 
 sig2str.h -- convert between signal names and numbers
 
-Copyright (C) 2002, 2005, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2002, 2005, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3896,11 +3995,32 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
+lib/signal.in.h
+
+A GNU-like <signal.h>.
+
+Copyright (C) 2006-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
 lib/sockets.c
 
 sockets.c --- wrappers for Windows socket functions
 
-Copyright (C) 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3921,7 +4041,7 @@ lib/sockets.h
 
 sockets.h - wrappers for Windows socket functions
 
-Copyright (C) 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3942,7 +4062,7 @@ lib/stat-time.c
 
 stat-related time functions.
 
-Copyright (C) 2012-2023 Free Software Foundation, Inc.
+Copyright (C) 2012-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3963,7 +4083,7 @@ lib/stat-time.h
 
 stat-related time functions.
 
-Copyright (C) 2005, 2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2005, 2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3984,7 +4104,7 @@ lib/stat-w32.c
 lib/stat-w32.h
 
 Core of implementation of fstat and stat for native Windows.
-Copyright (C) 2017-2023 Free Software Foundation, Inc.
+Copyright (C) 2017-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4004,7 +4124,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/stat.c
 
 Work around platform bugs in stat.
-Copyright (C) 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4024,7 +4144,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/stdarg.in.h
 
 Substitute for and wrapper around <stdarg.h>.
-Copyright (C) 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4045,7 +4165,7 @@ lib/stdckdint.in.h
 
 stdckdint.h -- checked integer arithmetic
 
-Copyright 2022-2023 Free Software Foundation, Inc.
+Copyright 2022-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -4066,7 +4186,7 @@ lib/stddef.in.h
 
 A substitute for POSIX 2008 <stddef.h>, for platforms that have issues.
 
-Copyright (C) 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4085,9 +4205,49 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/stdint.in.h
 
-Copyright (C) 2001-2002, 2004-2023 Free Software Foundation, Inc.
+Copyright (C) 2001-2002, 2004-2025 Free Software Foundation, Inc.
 Written by Paul Eggert, Bruno Haible, Sam Steingold, Peter Burwood.
 This file is part of gnulib.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/stdio-consolesafe.c
+
+msvcrt workarounds.
+Copyright (C) 2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/stdio-impl.h
+
+Implementation details of FILE streams.
+Copyright (C) 2007-2008, 2010-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4107,7 +4267,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/stdio-read.c
 
 POSIX compatible FILE stream read function.
-Copyright (C) 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2008-2025 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2011.
 
 This file is free software: you can redistribute it and/or modify
@@ -4128,7 +4288,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/stdio-write.c
 
 POSIX compatible FILE stream write function.
-Copyright (C) 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2008-2025 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2008.
 
 This file is free software: you can redistribute it and/or modify
@@ -4150,7 +4310,28 @@ lib/stdio.in.h
 
 A GNU-like <stdio.h>.
 
-Copyright (C) 2004, 2007-2023 Free Software Foundation, Inc.
+Copyright (C) 2004, 2007-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/stdlib.c
+
+Inline functions for <stdlib.h>.
+
+Copyright (C) 2024-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4171,7 +4352,7 @@ lib/stdlib.in.h
 
 A GNU-like <stdlib.h>.
 
-Copyright (C) 1995, 2001-2004, 2006-2023 Free Software Foundation, Inc.
+Copyright (C) 1995, 2001-2004, 2006-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4190,7 +4371,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/stpncpy.c
 
-  Copyright (C) 1993, 1995-1997, 2002-2003, 2005-2007, 2009-2023 Free Software
+  Copyright (C) 1993, 1995-1997, 2002-2003, 2005-2007, 2009-2025 Free Software
 * Foundation, Inc.
 
   NOTE: The canonical source of this file is maintained with the GNU C Library.
@@ -4214,7 +4395,7 @@ lib/stpncpy.c
 lib/strchrnul.c
 
 Searching in a string.
-Copyright (C) 2003, 2007-2023 Free Software Foundation, Inc.
+Copyright (C) 2003, 2007-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4233,7 +4414,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/strdup.c
 
-Copyright (C) 1991, 1996-1998, 2002-2004, 2006-2007, 2009-2023 Free Software
+Copyright (C) 1991, 1996-1998, 2002-2004, 2006-2007, 2009-2025 Free Software
 Foundation, Inc.
 
 This file is part of the GNU C Library.
@@ -4256,7 +4437,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/streq.h
 
 Optimized string comparison.
-Copyright (C) 2001-2002, 2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2001-2002, 2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4277,7 +4458,7 @@ lib/strerror-override.c
 
 strerror-override.c --- POSIX compatible system error routine
 
-Copyright (C) 2010-2023 Free Software Foundation, Inc.
+Copyright (C) 2010-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4298,7 +4479,7 @@ lib/strerror-override.h
 
 strerror-override.h --- POSIX compatible system error routine
 
-Copyright (C) 2010-2023 Free Software Foundation, Inc.
+Copyright (C) 2010-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4319,7 +4500,27 @@ lib/strerror.c
 
 strerror.c --- POSIX compatible system error routine
 
-Copyright (C) 2007-2023 Free Software Foundation, Inc.
+Copyright (C) 2007-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/string.c
+
+streq and memeq functions.
+Copyright (C) 2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4340,7 +4541,7 @@ lib/string.in.h
 
 A GNU-like <string.h>.
 
-Copyright (C) 1995-1996, 2001-2023 Free Software Foundation, Inc.
+Copyright (C) 1995-1996, 2001-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4361,7 +4562,7 @@ lib/stripslash.c
 
 stripslash.c -- remove redundant trailing slashes from a file name
 
-Copyright (C) 1990, 2001, 2003-2006, 2009-2023 Free Software Foundation,
+Copyright (C) 1990, 2001, 2003-2006, 2009-2025 Free Software Foundation,
 Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -4379,11 +4580,31 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
+lib/strncpy.c
+
+Copy a size-bounded string.
+Copyright (C) 1999, 2011-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
 lib/strndup.c
 
 A replacement function, for systems that lack strndup.
 
-Copyright (C) 1996-1998, 2001-2003, 2005-2007, 2009-2023 Free Software
+Copyright (C) 1996-1998, 2001-2003, 2005-2007, 2009-2025 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -4404,8 +4625,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/strnlen.c
 
 Find the length of STRING, but scan at most MAXLEN characters.
-Copyright (C) 2005-2007, 2009-2023 Free Software Foundation, Inc.
-Written by Simon Josefsson.
+Copyright (C) 2005-2007, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4425,7 +4645,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/strverscmp.c
 
 Compare strings while treating digits characters numerically.
-Copyright (C) 1997-2023 Free Software Foundation, Inc.
+Copyright (C) 1997-2025 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 Contributed by Jean-François Bignolles <bignolle@ecoledoc.ibp.fr>, 1997.
 
@@ -4449,7 +4669,7 @@ lib/sys_socket.c
 
 Inline functions for <sys/socket.h>.
 
-Copyright (C) 2012-2023 Free Software Foundation, Inc.
+Copyright (C) 2012-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4470,7 +4690,7 @@ lib/sys_socket.in.h
 
 Provide a sys/socket header file for systems lacking it (read: MinGW)
 and for systems where it is incomplete.
-Copyright (C) 2005-2023 Free Software Foundation, Inc.
+Copyright (C) 2005-2025 Free Software Foundation, Inc.
 Written by Simon Josefsson.
 
 This file is free software: you can redistribute it and/or modify
@@ -4498,7 +4718,7 @@ Code taken from glibc sysdeps/unix/sysv/linux/bits/socket.h on
 lib/sys_stat.in.h
 
 Provide a more complete sys/stat.h header file.
-Copyright (C) 2005-2023 Free Software Foundation, Inc.
+Copyright (C) 2005-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4519,7 +4739,7 @@ lib/sys_types.in.h
 
 Provide a more complete sys/types.h.
 
-Copyright (C) 2011-2023 Free Software Foundation, Inc.
+Copyright (C) 2011-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4539,7 +4759,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/sys_uio.in.h
 
 Substitute for <sys/uio.h>.
-Copyright (C) 2011-2023 Free Software Foundation, Inc.
+Copyright (C) 2011-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4560,7 +4780,7 @@ lib/time.in.h
 
 A more-standard <time.h>.
 
-Copyright (C) 2007-2023 Free Software Foundation, Inc.
+Copyright (C) 2007-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4577,44 +4797,103 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/unistd--.h
+lib/uchar.in.h
 
-Like unistd.h, but redefine some names to avoid glitches.
+<uchar.h> substitute - 16-bit and 32-bit wide character types.
+Copyright (C) 2019-2025 Free Software Foundation, Inc.
 
-Copyright (C) 2005, 2009-2023 Free Software Foundation, Inc.
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
+This file is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License
+You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/unistd-safer.h
+lib/unictype/bitmap.h
 
-Invoke unistd-like functions, but avoid some glitches.
+Three-level bitmap lookup.
+Copyright (C) 2000-2002, 2005-2007, 2009-2025 Free Software Foundation, Inc.
+Written by Bruno Haible <bruno@clisp.org>, 2000-2002.
 
-Copyright (C) 2001, 2003, 2005, 2009-2023 Free Software Foundation, Inc.
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
+This file is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/unictype/ctype_print.c
+
+ISO C <ctype.h> like properties of Unicode characters.
+Copyright (C) 2002, 2006-2007, 2009-2025 Free Software Foundation, Inc.
+Written by Bruno Haible <bruno@clisp.org>, 2002.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/unictype/ctype_print.h
+
+Copyright (C) 2000-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/unictype.in.h
+
+Unicode character classification and properties.
+Copyright (C) 2002, 2005-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
@@ -4623,7 +4902,7 @@ lib/unistd.c
 
 Inline functions for <unistd.h>.
 
-Copyright (C) 2012-2023 Free Software Foundation, Inc.
+Copyright (C) 2012-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4643,7 +4922,27 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistd.in.h
 
 Substitute for and wrapper around <unistd.h>.
-Copyright (C) 2003-2023 Free Software Foundation, Inc.
+Copyright (C) 2003-2025 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/unitypes.in.h
+
+Elementary types and macros for the GNU UniString library.
+Copyright (C) 2002, 2005-2006, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4664,7 +4963,7 @@ lib/verify.h
 
 Compile-time assert-like macros.
 
-Copyright (C) 2005-2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2005-2006, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4684,7 +4983,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/version-etc-fsf.c
 
 Variable with FSF copyright information, for version-etc.
-Copyright (C) 1999-2006, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1999-2006, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4718,7 +5017,7 @@ year.
 lib/version-etc.c
 
 Print --version and bug-reporting information in a consistent format.
-Copyright (C) 1999-2023 Free Software Foundation, Inc.
+Copyright (C) 1999-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4752,7 +5051,7 @@ TRANSLATORS: The %s placeholder is the web address of the GPL license.
 lib/version-etc.h
 
 Print --version and bug-reporting information in a consistent format.
-Copyright (C) 1999, 2003, 2005, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 1999, 2003, 2005, 2009-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4773,7 +5072,7 @@ lib/w32sock.h
 
 w32sock.h --- internal auxiliary functions for Windows socket functions
 
-Copyright (C) 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 2008-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4793,7 +5092,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/warn-on-use.h
 
 A C macro for emitting warnings if a function is used.
-Copyright (C) 2010-2023 Free Software Foundation, Inc.
+Copyright (C) 2010-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -4814,7 +5113,7 @@ lib/wchar.in.h
 
 A substitute for ISO C99 <wchar.h>, for platforms that have issues.
 
-Copyright (C) 2007-2023 Free Software Foundation, Inc.
+Copyright (C) 2007-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4835,7 +5134,7 @@ lib/wctype-h.c
 
 Inline functions for <wctype.h>.
 
-Copyright (C) 2012-2023 Free Software Foundation, Inc.
+Copyright (C) 2012-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4856,7 +5155,7 @@ lib/wctype.in.h
 
 A substitute for ISO C99 <wctype.h>, for platforms that lack it.
 
-Copyright (C) 2006-2023 Free Software Foundation, Inc.
+Copyright (C) 2006-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4876,7 +5175,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/windows-initguard.h
 
 Init guards, somewhat like spinlocks (native Windows implementation).
-Copyright (C) 2005-2023 Free Software Foundation, Inc.
+Copyright (C) 2005-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4897,7 +5196,7 @@ lib/xalloc-die.c
 
 Report a memory allocation failure and exit.
 
-Copyright (C) 1997-2000, 2002-2004, 2006, 2009-2023 Free Software
+Copyright (C) 1997-2000, 2002-2004, 2006, 2009-2025 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -4919,7 +5218,7 @@ lib/xalloc-oversized.h
 
 xalloc-oversized.h -- memory allocation size checking
 
-Copyright (C) 1990-2000, 2003-2004, 2006-2023 Free Software Foundation, Inc.
+Copyright (C) 1990-2000, 2003-2004, 2006-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4940,7 +5239,7 @@ lib/xalloc.h
 
 xalloc.h -- malloc with out-of-memory checking
 
-Copyright (C) 1990-2000, 2003-2004, 2006-2023 Free Software Foundation, Inc.
+Copyright (C) 1990-2000, 2003-2004, 2006-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -4961,7 +5260,7 @@ lib/xgetaname-impl.h
 
 xgetaname-impl.c -- common implementation of xgethostname and xgetdomainname
 
-Copyright (C) 1992, 1996, 2000-2001, 2003-2006, 2009-2023 Free Software
+Copyright (C) 1992, 1996, 2000-2001, 2003-2006, 2009-2025 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -4983,7 +5282,7 @@ lib/xgethostname.c
 
 xgethostname.c -- return current hostname with unlimited length
 
-Copyright (C) 1992, 1996, 2000-2001, 2003-2006, 2009-2023 Free Software
+Copyright (C) 1992, 1996, 2000-2001, 2003-2006, 2009-2025 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -5005,7 +5304,7 @@ lib/xgethostname.h
 
 Return current hostname with unlimited length.
 
-Copyright (C) 2003-2023 Free Software Foundation, Inc.
+Copyright (C) 2003-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published
@@ -5026,7 +5325,7 @@ lib/xmalloc.c
 
 xmalloc.c -- malloc with out of memory checking
 
-Copyright (C) 1990-2000, 2002-2006, 2008-2023 Free Software Foundation, Inc.
+Copyright (C) 1990-2000, 2002-2006, 2008-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -5047,7 +5346,7 @@ lib/xstrndup.c
 
 Duplicate a bounded initial segment of a string, with out-of-memory
 checking.
-Copyright (C) 2003, 2006-2007, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2003, 2006-2007, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -5068,7 +5367,7 @@ lib/xstrndup.h
 
 Duplicate a bounded initial segment of a string, with out-of-memory
 checking.
-Copyright (C) 2003, 2009-2023 Free Software Foundation, Inc.
+Copyright (C) 2003, 2009-2025 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -5089,7 +5388,7 @@ lib/xstrtol.c
 
 A more useful interface to strtol.
 
-Copyright (C) 1995-1996, 1998-2001, 2003-2007, 2009-2023 Free Software
+Copyright (C) 1995-1996, 1998-2001, 2003-2007, 2009-2025 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -5111,7 +5410,7 @@ lib/xstrtol.h
 
 A more useful interface to strtol.
 
-Copyright (C) 1995-1996, 1998-1999, 2001-2004, 2006-2023 Free Software
+Copyright (C) 1995-1996, 1998-1999, 2001-2004, 2006-2025 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -5133,7 +5432,7 @@ lib/xstrtoul.c
 
 Convert string to 'unsigned long', with error checking.
 
-Copyright (C) 1994-2023 Free Software Foundation, Inc.
+Copyright (C) 1994-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published
@@ -5166,9 +5465,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5188,9 +5486,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5210,9 +5507,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5232,9 +5528,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5254,9 +5549,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5276,9 +5570,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5298,9 +5591,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5321,9 +5613,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5343,9 +5634,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5365,9 +5655,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5387,9 +5676,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5409,9 +5697,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5431,9 +5718,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5453,9 +5739,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5475,9 +5760,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5497,9 +5781,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5519,9 +5802,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5541,9 +5823,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5563,9 +5844,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5585,9 +5865,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5607,9 +5886,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5629,9 +5907,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5651,9 +5928,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5673,9 +5949,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5695,9 +5970,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5717,9 +5991,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5743,9 +6016,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.
+along with this program; see the file COPYING.  If not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5774,9 +6046,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5800,9 +6071,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5823,9 +6093,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5845,9 +6114,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5867,9 +6135,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5889,9 +6156,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5911,9 +6177,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5933,9 +6198,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5955,9 +6219,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5977,9 +6240,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -5999,9 +6261,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6021,9 +6282,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6043,9 +6303,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6074,9 +6333,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6108,9 +6366,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6130,9 +6387,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6152,9 +6408,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6174,9 +6429,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6196,9 +6450,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6218,9 +6471,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6240,9 +6492,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6262,9 +6513,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6284,9 +6534,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6306,9 +6555,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6328,9 +6576,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6350,9 +6597,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6372,9 +6618,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6394,9 +6639,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6416,9 +6660,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6438,9 +6681,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6460,9 +6702,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6482,9 +6723,28 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
+
+
+## Files:
+liba2ps/parseppd.c
+liba2ps/parseppd.h
+src/parsessh.c
+src/parsessh.h
+
+As a special exception, you may create a larger work that contains
+part or all of the Bison parser skeleton and distribute that work
+under terms of your choice, so long as that work isn't itself a
+parser generator using the skeleton or a modified version thereof
+as a parser skeleton.  Alternatively, if you modify or redistribute
+the parser skeleton itself, you may (at your option) remove this
+special exception, which will cause the skeleton and the resulting
+Bison output files to be licensed under the GNU General Public
+License without this special exception.
+
+This special exception was added by the Free Software Foundation in
+version 2.2 of Bison.
 
 
 ## Files:
@@ -6508,26 +6768,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-liba2ps/parseppd.c
-liba2ps/parseppd.h
-src/parsessh.c
-src/parsessh.h
-
-As a special exception, you may create a larger work that contains
-part or all of the Bison parser skeleton and distribute that work
-under terms of your choice, so long as that work isn't itself a
-parser generator using the skeleton or a modified version thereof
-as a parser skeleton.  Alternatively, if you modify or redistribute
-the parser skeleton itself, you may (at your option) remove this
-special exception, which will cause the skeleton and the resulting
-Bison output files to be licensed under the GNU General Public
-License without this special exception.
-
-This special exception was added by the Free Software Foundation in
-version 2.2 of Bison.
 
 
 ## Files:
@@ -6557,9 +6797,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.
+along with this program; see the file COPYING.  If not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6602,9 +6841,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6624,9 +6862,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6646,9 +6883,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6668,9 +6904,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6690,9 +6925,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6712,9 +6946,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6734,9 +6967,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6756,9 +6988,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6778,9 +7009,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6800,9 +7030,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6822,9 +7051,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6844,9 +7072,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6866,9 +7093,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6888,9 +7114,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6910,9 +7135,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6932,9 +7156,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -6984,8 +7207,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with the GNU C Library; see the file COPYING.LIB.  If not,
-write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.
+see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7005,9 +7227,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7027,9 +7248,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7049,9 +7269,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7071,9 +7290,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7093,9 +7311,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7115,9 +7332,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7137,9 +7353,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7159,9 +7374,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7181,9 +7395,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7203,9 +7416,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7225,9 +7437,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7247,9 +7458,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7269,9 +7479,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7291,9 +7500,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7313,9 +7521,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7335,9 +7542,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7357,9 +7563,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7379,9 +7584,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7401,9 +7605,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -7423,20 +7626,20 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
 po/be.po
 po/en_GB.po
-po/fr.po
 po/gl.po
 po/it.po
 po/pt_BR.po
 
-~ msgid "Copyright (C) 1999 Free Software Foundation, Inc."
+, fuzzy
+~| msgid "Copyright (C) 1999 Free Software Foundation, Inc."
+~ msgid "Copyright (C) 1988-2017 Free Software Foundation, Inc."
 ~ msgstr "Copyright (C) 1999 Free Software Foundation, Inc."
 
 
@@ -7579,6 +7782,15 @@ Keld Simonsen <keld@dkuug.dk>, 2001, 2008.
 ## Files:
 po/da.po
 
+, fuzzy
+~| msgid "Copyright (C) 1999 Free Software Foundation, Inc."
+~ msgid "Copyright (C) 1988-2017 Free Software Foundation, Inc."
+~ msgstr "Ophavsret (C) 1999 Free Software Foundation, Inc."
+
+
+## Files:
+po/da.po
+
 ~ msgid ""
 ~ "Copyright (c) 1988-1993 Miguel Santana\n"
 ~ "Copyright (c) 1995-2000 Akim Demaille, Miguel Santana\n"
@@ -7587,6 +7799,19 @@ po/da.po
 ~ "Ophavsret (c) 1988-1993 Miguel Santana\n"
 ~ "Ophavsret (c) 1995-2000 Akim Demaille og Miguel Santana Copyright (c) "
 ~ "2007- Akim Demaille, Miguel Santana and Masayuki Hatta"
+
+
+## Files:
+po/de.po
+po/el.po
+po/es.po
+po/ja.po
+po/nl.po
+po/pl.po
+po/ru.po
+
+~ msgid "Copyright (C) 1988-2017 Free Software Foundation, Inc."
+~ msgstr "Copyright (C) 1988-2017 Free Software Foundation, Inc."
 
 
 ## Files:
@@ -7603,19 +7828,6 @@ po/pt_BR.po
 ~ "Copyright (c) 1988-1993 Miguel Santana\n"
 ~ "Copyright (c) 1995-2000 Akim Demaille, Miguel Santana\n"
 ~ "Copyright (c) 2007- Akim Demaille, Miguel Santana and Masayuki Hatta"
-
-
-## Files:
-po/de.po
-po/el.po
-po/es.po
-po/ja.po
-po/nl.po
-po/pl.po
-po/ru.po
-
-~ msgid "Copyright (C) 1988-2017 Free Software Foundation, Inc."
-~ msgstr "Copyright (C) 1988-2017 Free Software Foundation, Inc."
 
 
 ## Files:
@@ -7655,6 +7867,15 @@ Esperanto translation
 Copyright (C) 2012 Free Software Foundation, Inc.
 This file is distributed under the same license as the a2ps package.
 Felipe Castro <fefcas@gmail.com>, 2012.
+
+
+## Files:
+po/eo.po
+
+, fuzzy
+~| msgid "Copyright (C) 1999 Free Software Foundation, Inc."
+~ msgid "Copyright (C) 1988-2017 Free Software Foundation, Inc."
+~ msgstr "Kopyrajto (C) 1999 Free Software Foundation, Inc."
 
 
 ## Files:
@@ -7700,7 +7921,7 @@ po/et.po
 This file is distributed under the same license as the a2ps package.
 Estonian translations for a2ps.
 Copyright (C) 2000 Free Software Foundation, Inc.
-Toomas Soome <Toomas.Soome@microlink.ee>, 2022.
+Toomas Soome <tsoome@me.com>, 2025.
 
 
 ## Files:
@@ -7728,7 +7949,6 @@ po/fi.po
 
 ## Files:
 po/fi.po
-po/sl.po
 
 ~ msgid "Copyright (C) 1999 Free Software Foundation, Inc."
 ~ msgstr "Copyright © 1999 Free Software Foundation, Inc."
@@ -7747,6 +7967,13 @@ Christian Wiatr <w9204-fs@yahoo.com>, 2023.
 
 Relecture complète 09/2008 N. Provost
 Réencodage ISO-8859-1 => UTF-8 et typos, S. Aulery, 2015
+
+
+## Files:
+po/fr.po
+
+~ msgid "Copyright (C) 1999 Free Software Foundation, Inc."
+~ msgstr "Copyright (C) 1999 Free Software Foundation, Inc."
 
 
 ## Files:
@@ -7835,6 +8062,15 @@ Pesan bahasa indonesia untuk a2ps.
 Copyright (C) 2008 Free Software Foundation, Inc.
 This file is distributed under the same license as the a2ps package.
 Arif E. Nugroho <arif_endro@yahoo.com>, 2008.
+
+
+## Files:
+po/id.po
+
+, fuzzy
+~| msgid "Copyright (C) 1999 Free Software Foundation, Inc."
+~ msgid "Copyright (C) 1988-2017 Free Software Foundation, Inc."
+~ msgstr "Hak Cipta (C) 1999 Free Software Foundation, Inc."
 
 
 ## Files:
@@ -8047,6 +8283,15 @@ Paulo Matos <pjsm@students.fct.unl.pt>, 2000.
 po/pt.po
 
 , fuzzy
+~| msgid "Copyright (C) 1999 Free Software Foundation, Inc."
+~ msgid "Copyright (C) 1988-2017 Free Software Foundation, Inc."
+~ msgstr "Copyright � 1999 Free Software Foundation, Inc."
+
+
+## Files:
+po/pt.po
+
+, fuzzy
 ~ msgid ""
 ~ "Copyright (c) 1988-1993 Miguel Santana\n"
 ~ "Copyright (c) 1995-2000 Akim Demaille, Miguel Santana\n"
@@ -8054,13 +8299,6 @@ po/pt.po
 ~ msgstr ""
 ~ "Copyright � 1988-93 Miguel Santana\n"
 ~ "Copyright � 1995-99 Akim Demaille, Miguel Santana"
-
-
-## Files:
-po/pt.po
-
-~ msgid "Copyright (C) 1999 Free Software Foundation, Inc."
-~ msgstr "Copyright � 1999 Free Software Foundation, Inc."
 
 
 ## Files:
@@ -8192,6 +8430,15 @@ $Id: a2ps-4.14.sl.po,v 1.2 2009/05/05 14:06:11 peterlin Exp $
 ## Files:
 po/sl.po
 
+, fuzzy
+~| msgid "Copyright (C) 1999 Free Software Foundation, Inc."
+~ msgid "Copyright (C) 1988-2017 Free Software Foundation, Inc."
+~ msgstr "Copyright © 1999 Free Software Foundation, Inc."
+
+
+## Files:
+po/sl.po
+
 ~ msgid ""
 ~ "Copyright (c) 1988-1993 Miguel Santana\n"
 ~ "Copyright (c) 1995-2000 Akim Demaille, Miguel Santana\n"
@@ -8260,10 +8507,10 @@ Peter Krefting <peter@softwolves.pp.se>, 2001-2023.
 ## Files:
 po/th.po
 
-Translation of a2ps to Thai.
-Copyright (C) 2010 Free Software Foundation, Inc.
+Translation of a2ps messages to Thai.
+Copyright (C) 2024 Free Software Foundation, Inc.
 This file is distributed under the same license as the a2ps package.
-Seksan Poltree <seksan.poltree@gmail.com>, 2010.
+Seksan Poltree <seksan.poltree@gmail.com>, 2010-2024.
 
 
 ## Files:
@@ -8293,6 +8540,15 @@ Mehmet Kececi <mkececi@mehmetkececi.com>, 2017.
 ## Files:
 po/tr.po
 
+, fuzzy
+~| msgid "Copyright (C) 1999 Free Software Foundation, Inc."
+~ msgid "Copyright (C) 1988-2017 Free Software Foundation, Inc."
+~ msgstr "Telif Hakk� � 1999 Free Software Foundation, Inc."
+
+
+## Files:
+po/tr.po
+
 ~ msgid ""
 ~ "Copyright (c) 1988-1993 Miguel Santana\n"
 ~ "Copyright (c) 1995-2000 Akim Demaille, Miguel Santana\n"
@@ -8301,13 +8557,6 @@ po/tr.po
 ~ "Telif Hakk� (c) 1988-1993 Miguel Santana\n"
 ~ "Telif Hakk� (c) 1995-2000 Akim Demaille, Miguel Santana\n"
 ~ "Telif Hakk� (c) 2007- Akim Demaille, Miguel Santana ve Masayuki Hatta"
-
-
-## Files:
-po/tr.po
-
-~ msgid "Copyright (C) 1999 Free Software Foundation, Inc."
-~ msgstr "Telif Hakk� � 1999 Free Software Foundation, Inc."
 
 
 ## Files:
@@ -8353,6 +8602,15 @@ Clytie Siddall <clytie@riverland.net.au>, 2005-2008.
 ## Files:
 po/vi.po
 
+, fuzzy
+~| msgid "Copyright (C) 1999 Free Software Foundation, Inc."
+~ msgid "Copyright (C) 1988-2017 Free Software Foundation, Inc."
+~ msgstr "Tác quyền © năm 1999 Tổ Chức Phần Mềm Tự Do."
+
+
+## Files:
+po/vi.po
+
 ~ msgid ""
 ~ "Copyright (c) 1988-1993 Miguel Santana\n"
 ~ "Copyright (c) 1995-2000 Akim Demaille, Miguel Santana\n"
@@ -8372,6 +8630,7 @@ Copyright (C) 2008 Free Software Foundation, Inc.
 This file is distributed under the same license as the a2ps package.
 YueGuang <ygxyvesuvius@gmail.com>, 2008.
 Boyuan Yang <073plan@gmail.com>, 2018.
+Mingye Wang (Artoria2e5) <arthur200126@gmail.com>, 2024.
 
 
 ## Files:
@@ -8464,6 +8723,7 @@ po-gnulib/sr.po
 po-gnulib/sv.po
 po-gnulib/tr.po
 po-gnulib/uk.po
+po-gnulib/zh_CN.po
 po-gnulib/zh_TW.po
 
 . TRANSLATORS: The %s placeholder is the web address of the GPL license.
@@ -8474,7 +8734,7 @@ po-gnulib/zh_TW.po
 ## Files:
 po-gnulib/af.po
 
-coreutils-5.2.1.af.po.
+Afrikaans translation for gnulib.
 Copyright (C) 2004 Free Software Foundation, Inc.
 This file is distributed under the same license as the PACKAGE package.
 Petri Jooste <rkwjpj@puknet.puk.ac.za>, 2004.
@@ -8483,7 +8743,7 @@ Petri Jooste <rkwjpj@puknet.puk.ac.za>, 2004.
 ## Files:
 po-gnulib/be.po
 
-SOME DESCRIPTIVE TITLE.
+Belarusian translation for gnulib.
 Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 This file is distributed under the same license as the coreutils package.
 Ales Nyakhaychyk <nab@mail.by>, 2002, 2003.
@@ -8493,15 +8753,15 @@ Ales Nyakhaychyk <nab@mail.by>, 2002, 2003.
 po-gnulib/bg.po
 
 Bulgarian translation of GNU gnulib po-file.
-Copyright (C) 2019 Free Software Foundation, Inc.
+Copyright (C) 2019, 2024 Free Software Foundation, Inc.
 This file is distributed under the same license as the gnulib package.
-Alexander Shopov <ash@kambanaria.org>, 2019.
+Alexander Shopov <ash@kambanaria.org>, 2019, 2024.
 
 
 ## Files:
 po-gnulib/ca.po
 
-GNU Mailutils Catalan translation.
+Catalan translation for gnulib.
 Copyright © 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 This file is distributed under the same license as the mailutils package.
 Jordi Mallach <jordi@gnu.org>, 2002, 2003, 2004, 2005.
@@ -8537,15 +8797,14 @@ po-gnulib/hu.po
 po-gnulib/ja.po
 po-gnulib/sl.po
 po-gnulib/vi.po
-po-gnulib/zh_CN.po
 
 . TRANSLATORS: The %s placeholder is the web address of the GPL license.
 : lib/version-etc.c:88
 , fuzzy, c-format
 | msgid ""
 | "\n"
-| "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
-| "html>.\n"
+| "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/"
+| "gpl.html>.\n"
 | "This is free software: you are free to change and redistribute it.\n"
 | "There is NO WARRANTY, to the extent permitted by law.\n"
 | "\n"
@@ -8554,9 +8813,9 @@ po-gnulib/zh_CN.po
 ## Files:
 po-gnulib/cs.po
 
-Czech translations for GNU textutils
+Czech translations for gnulib.
+Copyright (C) 2011 Free Software Foundation, Inc.
 This file is distributed under the same license as the gnulib package.
-Copyright (C) 1996 Free Software Foundation, Inc.
 
 Vladimir Michl <Vladimir.Michl@seznam.cz>, 1996.
 Marek Černocký <marek@manet.cz>, 2011.
@@ -8589,7 +8848,7 @@ Michael Schmidt <michael@guug.de>, 1996, 1997, 1998, 1999, 2000.
 Michael Piefel <piefel@informatik.hu-berlin.de>, 2001, 2002, 2003, 2009.
 Kai Wasserbäch <debian@carbon-project.org>, 2009.
 Arun Persaud <arun@nubati.net>, 2012.
-Roland Illig <roland.illig@gmx.de>, 2019.
+Roland Illig <roland.illig@gmx.de>, 2019, 2024.
 
 TAB: spell it out („Tabulatoren“). -ke-
 Don't use obscure abbreviations, please.  -ke-
@@ -8635,10 +8894,10 @@ Felipe Castro <fefcas@gmail.com>, 2013, 2019.
 ## Files:
 po-gnulib/es.po
 
-Mensajes en español para gnulib 4.0.0.2567
-Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2022 Free Software Foundation, Inc.
-This file is distributed under the same license as the gnulib package.
-Cristian Othón Martínez Vera <cfuga@cfuga.mx>, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2022.
+Mensajes en español para gnulib 20241209.
+Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2022, 2023, 2024, 2025 Free Software Foundation, Inc.
+This file is distributed under the LGPLv2+ license.
+Cristian Othón Martínez Vera <cfuga@cfuga.mx>, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2022, 2023, 2024, 2025.
 
 Los mensajes iniciales de esta traducción provienen de la traducción
 de mailutils.
@@ -8670,17 +8929,16 @@ po-gnulib/es.po
 ## Files:
 po-gnulib/et.po
 
-This file is distributed under the same license as the gnulib package.
 Estonian translations for gnulib
 Copyright (C) 2000 Free Software Foundation, Inc.
+This file is distributed under the same license as the gnulib package.
 Toomas Soome <Toomas.Soome@microlink.ee>, 2011.
 
 
 ## Files:
 po-gnulib/eu.po
 
-translation of coreutils-5.2.1.po to Euskara
-Basque translation of 5.2.1.
+Euskara translation for gnulib.
 Copyright (C) 2004 Free Software Foundation, Inc.
 This file is distributed under the same license as the Coreutils-5.2.1 package.
 Mikel Olasagasti <hey_neken@mundurat.net>, 2004.
@@ -8766,9 +9024,9 @@ po-gnulib/ga.po
 po-gnulib/gl.po
 
 Galician translation of gnulib.
-This file is distributed under the same license as the gnulib package.
 Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
 Copyright (C) 2012 Leandro Regueiro.
+This file is distributed under the same license as the gnulib package.
 
 Jacobo Tarrio <jtarrio@trasno.net>, 2000, 2001, 2002.
 Leandro Regueiro <leandro.regueiro@gmail.com>, 2012.
@@ -8863,7 +9121,7 @@ Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022.
 ## Files:
 po-gnulib/ko.po
 
-Korean messages for GNU textutils
+Korean messages for gnulib.
 Copyright (C) 1996, 2001, 2002 Free Software Foundation, Inc.
 Bang Jun-Young <bangjy@nownuri.nowcom.co.kr>, 1996-1997.
 Changwoo Ryu <cwryu@debian.org>, 2001-2002.
@@ -8891,7 +9149,7 @@ po-gnulib/ko.po
 ## Files:
 po-gnulib/ms.po
 
-Terjemahan coreutils untuk Bahasa Melayu.
+Terjemahan gnulib untuk Bahasa Melayu.
 Copyright (C) 2001 Free Software Foundation, Inc.
 Hasbullah Bin Pit <sebol@ikhlas.com>, 2003.
 
@@ -8899,7 +9157,7 @@ Hasbullah Bin Pit <sebol@ikhlas.com>, 2003.
 ## Files:
 po-gnulib/nb.po
 
-Norwegian messages for GNU textutils (bokm�l dialect)
+Norwegian messages for gnulib.
 Copyright (C) 1996 Free Software Foundation, Inc.
 Eivind Tagseth <eivindt@multinet.no>, 1996, 1997, 1999.
 
@@ -8927,14 +9185,16 @@ po-gnulib/nb.po
 po-gnulib/nl.po
 
 Dutch translations for gnulib.
-Copyright (C) 2019 Free Software Foundation, Inc.
-This file is distributed under the same license as the gnulib package.
+Copyright (C) 2025 Free Software Foundation, Inc.
+This file is distributed under the LGPLv2+ license.
+
+"Find your elephant, then vanish, so that you may live to find another."
 
 Erick Branderhorst <branderh@debian.org>, 1996.
 Ivo Timmermans <ivo@o2w.nl>, 2000.
 Freek de Kruijf <f.de.kruijf@hetnet.nl>, 2004, 2005.
 Erwin Poeze <erwin.poeze@gmail.com>, 2009, 2010.
-Benno Schulenberg <benno@vertaalt.nl>, 2007, 2008, 2010, 2011, 2019.
+Benno Schulenberg <benno@vertaalt.nl>, 2007, 2008, 2010, 2011, 2019, 2024.
 
 
 ## Files:
@@ -8955,8 +9215,8 @@ po-gnulib/pt.po
 
 Portuguese (Portugal) Translation for the gnulib Package.
 Copyright (C)  2019 Free Software Foundation, Inc.
-This file is distributed under the same license as the gnulib package.
-Pedro Albuquerque <palbuquerque73@gmail.com>, 2019.
+This file is distributed under the LGPLv2+ license.
+Pedro Albuquerque <pmra@protonmail.com>, 2019, 2025.
 
 
 ## Files:
@@ -8964,12 +9224,12 @@ po-gnulib/pt_BR.po
 
 Brazilian Portuguese translations for gnulib package
 Traduções em português brasileiro para o pacote gnulib
-Copyright (C) 2019 Free Software Foundation, Inc.
+Copyright (C) 2024 Free Software Foundation, Inc.
 This file is distributed under the same license as the gnulib package.
 Cyro Mendes De Moraes Neto <neto@conectiva.com.br>, 1998.
 Rodrigo Stulzer Lopes <rodrigo@conectiva.com.br>, 2001.
 Juan Carlos Castro y Castro <jcastro@vialink.com.br>, 2003.
-Rafael Fontenelle <rafaelff@gnome.org>, 2013, 2017, 2019.
+Rafael Fontenelle <rafaelff@gnome.org>, 2013-2024.
 
 
 ## Files:
@@ -8995,12 +9255,15 @@ po-gnulib/pt_BR.po
 ## Files:
 po-gnulib/ro.po
 
-Mesajele în limba română pentru pachetul mailutils.
-Copyright (C) 2003 Free Software Foundation, Inc.
+Mesajele în limba română pentru pachetul gnulib.
+Copyright (C) 2003, 2022, 2024 Free Software Foundation, Inc.
 This file is distributed under the same license as the gnulib package.
 
 Eugen Hoanca <eugenh@urban-grafx.ro>, 2003.
-Traducere făcută de EH, pentru versiunea mailutis 0.4/coreutils  5.2.1.
+Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2022, 2024.
+
+Cronologia traducerii fișierului „trader”:
+Traducere inițială, făcută de EH, pentru versiunea mailutis 0.4/coreutils  5.2.1.
 Notă, R-GC: se pare că în perioada 2000-2005 a făcut parte din suita altor
 pachete, înainte de-a deveni un pachet de sine stătător.
 Actualizare a mesajelor, de la fișierul „gnulib-4.0.0.2567.pot”.
@@ -9010,7 +9273,9 @@ Actualizare a algoritmului formelor de plural (de la „două” la „trei”).
 NU și a mesajelor traduse (acestea au rămas neschimbate).
 Eliminare a mesajelor ce-au dispărut în ultima versiune.
 Actualizări realizate de Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 15.01.2022.
-Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2022.
+Actualizare a traducerii pentru versiunea 4.0.0.2567, făcută de R-GC, feb-2022.
+Actualizare a traducerii pentru versiunea 20241209, făcută de R-GC, dec-2024.
+Actualizare a traducerii pentru versiunea Y, făcută de X, Z(luna-anul).
 
 
 ## Files:
@@ -9018,10 +9283,10 @@ po-gnulib/ru.po
 
 translation of gnulib-2.0.0.3462.e9796.ru.po to Russian
 Copyright (C) 2005, 2010 Free Software Foundation, Inc.
-This file is distributed under the same license as the gnulib package.
+This file is distributed under the LGPLv2+ license.
 
 Sergey Poznyakoff <gray@gnu.org>, 2003,2004,2005.
-Yuri Kozlov <yuray@komyakino.ru>, 2010, 2011, 2019, 2023.
+Yuri Kozlov <yuray@komyakino.ru>, 2010, 2011, 2019, 2023, 2025.
 
 
 ## Files:
@@ -9061,7 +9326,7 @@ po-gnulib/rw.po
 ## Files:
 po-gnulib/sk.po
 
-Slovak translations for GNU textutils
+Slovak translations for gnulib.
 Copyright (C) 1996 Free Software Foundation, Inc.
 Miroslav Vasko <vasko@debian.cz>, 1999
 
@@ -9133,7 +9398,7 @@ po-gnulib/sr.po
 
 Serbian translation of gnulib.
 Copyright © 2020 Free Software Foundation, Inc.
-This file is distributed under the same license as the gnulib package.
+This file is distributed under the LGPLv2+ license.
 Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013—2020.
 
 
@@ -9141,20 +9406,20 @@ This file is distributed under the same license as the gnulib package.
 po-gnulib/sv.po
 
 Swedish messages for gnulib.
-Copyright © 1997, 2002, 2003, 2004, 2005, 2007, 2009, 2010, 2011, 2019, 2020 Free Software Foundation, Inc.
+Copyright © 1997, 2002, 2003, 2004, 2005, 2007, 2009, 2010, 2011, 2019, 2020, 2024 Free Software Foundation, Inc.
 This file is distributed under the same license as the gnulib package.
 Peter Antman <peter.antman@abc.se>, 1997.
 Thomas Olsson <cid95tho@lustudat.student.lu.se>, 1997.
 Daniel Resare <daniel@resare.com>, 1999, 2000.
-Göran Uddeborg <goeran@uddeborg.se>, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2009, 2010, 2011, 2019, 2020.
+Göran Uddeborg <goeran@uddeborg.se>, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2009, 2010, 2011, 2019, 2020, 2024.
 
-$Revision: 1.19 $
+$Revision: 1.21 $
 
 
 ## Files:
 po-gnulib/tr.po
 
-translation of coreutils-5.3.0.tr.po to Turkish
+Turkish translation for gnulib.
 Copyright (C) 2003, 2005 Free Software Foundation, Inc.
 Ali Devin Sezer <Ali_Sezer@brown.edu>, 2002.
 Nilgün Belma Bugüner <nilgun@superonline.com>, 2001, 2002.
@@ -9191,7 +9456,7 @@ This file is distributed under the same license as the gnulib package.
 Copyright (C) 2010 Free Software Foundation, Inc.
 
 Sergey Poznyakoff <gray@gnu.org>, 2010.
-Yuri Chornoivan <yurchor@ukr.net>, 2011, 2019.
+Yuri Chornoivan <yurchor@ukr.net>, 2011, 2019, 2024.
 
 
 ## Files:
@@ -9216,12 +9481,13 @@ Abel Cheung <maddog@linux.org.hk>, 2002.
 Anthony Fok <anthony@thizlinux.com>, 2002.
 Funda Wang <fundawang@linux.net.cn>, 2004, 2005.
 Ji ZhengYu <zhengyuji@gmail.com>, 2009, 2010.
+Mingye Wang <arthur200126@gmail.com>, 2024.
 
 
 ## Files:
 po-gnulib/zh_TW.po
 
-traditional Chinese translation of coreutils.
+traditional Chinese translation for gnulib.
 Copyright (C) 1998, 2002, 2005 Free Software Foundation, Inc.
 This file is distributed under the same license as the gnulib package.
 
@@ -9270,9 +9536,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9292,9 +9557,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9314,9 +9578,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9336,9 +9599,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9358,9 +9620,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9380,9 +9641,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9402,9 +9662,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9424,9 +9683,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9455,9 +9713,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9486,9 +9743,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9508,9 +9764,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9530,9 +9785,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9558,9 +9812,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9580,9 +9833,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9602,9 +9854,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9631,9 +9882,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9653,9 +9903,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9675,9 +9924,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9697,9 +9945,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9719,9 +9966,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:
@@ -9741,9 +9987,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-02110-1301, USA.
+along with this program; if not, see
+<https://www.gnu.org/licenses/gpl-3.0.html>.
 
 
 ## Files:

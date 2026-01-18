@@ -27,12 +27,12 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		a2ps
-COMPONENT_VERSION=	4.15.7
+COMPONENT_VERSION=	4.15.8
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:715f38670afd950b4ca71c01f468feefad265ca52d3f112934c63c0a8bfbb8af
+    sha256:8d13915a36ebbfa8e7b236b350cc81adc714acb217a18e8d8c60747c0ad353f9
 COMPONENT_ANITYA_ID=	5
 
-COMPONENT_BAID=		342922
+COMPONENT_BAID=		359346
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -47,9 +47,6 @@ CONFIGURE_OPTIONS  +=		--enable-shared
 CONFIGURE_OPTIONS  +=		--disable-static
 CONFIGURE_OPTIONS  +=		--sysconfdir=$(ETCDIR)/gnu
 CONFIGURE_OPTIONS  +=		--infodir=$(CONFIGURE_INFODIR)
-
-# Because of change in malloc.m4
-COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) $(AUTORECONF) -fiv);
 
 COMPONENT_TEST_ARGS += -k
 COMPONENT_TEST_DIR =	$(@D)/tests
