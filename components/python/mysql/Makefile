@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -30,16 +30,16 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		mysqlclient
-COMPONENT_VERSION=	2.2.4
+COMPONENT_VERSION=	2.2.7
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:33bc9fb3464e7d7c10b1eaf7336c5ff8f2a3d3b88bab432116ad2490beb3bf41
+    sha256:24ae22b59416d5fcce7e99c9d37548350b4565baac82f95e149cac6ce4163845
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/PyMySQL/mysqlclient-python
 COMPONENT_BUGDB=	python-mod/mysql
 COMPONENT_ANITYA_ID=	7972
-COMPONENT_BAID=		164454
+COMPONENT_BAID=		361709
 
 
 include $(WS_MAKE_RULES)/prep.mk

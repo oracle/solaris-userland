@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		more-itertools
-COMPONENT_VERSION=	10.2.0
+COMPONENT_NAME=		more_itertools
+COMPONENT_VERSION=	10.8.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:8fccb480c43d3e99a00087634c06dd02b0d50fbf088b380de5a41a015ec239e1
+	sha256:9c6291ce113d41bedabc32079ced997fbbd4a48bb7aa87094e5d69ceb4711cfa
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/more-itertools/
 COMPONENT_BUGDB=	python-mod/moreitertools
 COMPONENT_ANITYA_ID=	12201
-COMPONENT_BAID=		167655
+COMPONENT_BAID=		361786
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

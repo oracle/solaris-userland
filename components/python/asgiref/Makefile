@@ -20,29 +20,32 @@
 #
 
 #
-# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		asgiref
-COMPONENT_VERSION=	3.8.1
+COMPONENT_VERSION=	3.11.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c343bd80a0bec947a9860adb4c432ffa7db769836c64238fc34bdc3fec84d590
+    sha256:13acff32519542a1736223fb79a715acdebe24286d98e8b164a73085f40da2c4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/django/asgiref/
 COMPONENT_BUGDB=	python-mod/asgiref
 COMPONENT_ANITYA_ID=	18462
-COMPONENT_BAID=		323676
+COMPONENT_BAID=		361695
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-venv-test.mk
+
+PYTHON_VENV_TEST_COMPONENTS = pytest-asyncio
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_CMD =	$(VENV_PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
@@ -52,6 +55,6 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_NO_ARCH)
+venv-test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TEST_NO_ARCH)
+venv-system-test:    $(SYSTEM_TEST_NO_ARCH)

@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2026, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		PrettyTable
-COMPONENT_VERSION=	3.10.0
+COMPONENT_VERSION=	3.17.0
 COMPONENT_SRC=		prettytable-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9665594d137fb08a1117518c25551e0ede1687197cf353a4fdc78d27e1073568
+    sha256:59f2590776527f3c9e8cf9fe7b66dd215837cca96a9c39567414cbc632e8ddb0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://code.google.com/p/prettytable/
 COMPONENT_BUGDB=	python-mod/prettytable
 COMPONENT_ANITYA_ID=	19994
-COMPONENT_BAID=		164671
+COMPONENT_BAID=		361796
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

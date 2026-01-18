@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		typing_extensions
-COMPONENT_VERSION=	4.12.0
+COMPONENT_VERSION=	4.15.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e2fcbf4b8138cda665600d94560610694dbc44d3eb8cdfa026adbd8230eaa17d
+    sha256:fa1c376027d3f3eb1ab03679fbfb37a8a961dcd80cb8239e14f7c3e96d3a2aeb
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/python/typing
 COMPONENT_BUGDB=	python-mod/typing
-COMPONENT_ANITYA_ID=	33844
-COMPONENT_BAID=		167657
+COMPONENT_ANITYA_ID=	19755
+COMPONENT_BAID=		361798
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

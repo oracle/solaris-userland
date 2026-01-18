@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		testtools
-COMPONENT_VERSION=	2.7.2
+COMPONENT_VERSION=	2.8.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5be5bbc1f0fa0f8b60aca6ceec07845d41d0c475cf445bfadb4d2c45ec397ea3
+    sha256:b5c73332456ff54152062d47a58bc4f15f8e23514afec4e84775af124fb7db43
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/testing-cabal/testtools
 COMPONENT_BUGDB=	python-mod/testtools
 COMPONENT_ANITYA_ID=	4047
-COMPONENT_BAID=		183536
+COMPONENT_BAID=		361712
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -47,7 +47,7 @@ PYTHON_VENV_TEST_COMPONENTS = testscenarios
 
 COMPONENT_TEST_DIR =    $(SOURCE_DIR)
 COMPONENT_TEST_CMD =    $(VENV_PYTHON) -m testtools.run
-COMPONENT_TEST_ARGS =   testtools.tests.test_suite
+COMPONENT_TEST_ARGS =   tests.test_suite
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

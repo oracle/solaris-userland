@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2012, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jsonrpclib
-COMPONENT_VERSION=	0.4.3.3
+COMPONENT_VERSION=	1.0.0
 COMPONENT_PROJECT_URL=	https://github.com/tcalmant/jsonrpclib
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:826086c3ac03640fd3b8c53b11ae17d8283a6abd677a2b3c871101e37a7f3b57
+    sha256:859255d48f89aae2810dd737e5c489be40fa0fb68c2c336a831b9d95207a0605
 COMPONENT_ARCHIVE_URL=https://github.com/tcalmant/jsonrpclib/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	python-mod/jsonrpclib
 COMPONENT_ANITYA_ID=	19644
-COMPONENT_BAID=		175877
+COMPONENT_BAID=		361708
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
