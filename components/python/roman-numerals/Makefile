@@ -20,42 +20,32 @@
 #
 
 #
-# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		sphinx
-COMPONENT_VERSION=	9.0.4
+COMPONENT_NAME=		roman_numerals
+COMPONENT_VERSION=	4.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b7202ad83b2fe1d9cb9d0f5b1a7503bdaceca2350091063a3c1ca366b396796b
+    sha256:231287018a8788bf8c0718482a08c15b90458523ea1d840a18a791a86d4583b3
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://www.sphinx-doc.org/en/master/
-COMPONENT_BUGDB=	utility/sphinx
-COMPONENT_ANITYA_ID=	4031
-COMPONENT_BAID=		360454
+COMPONENT_PROJECT_URL=	https://pypi.org/project/roman-numerals/
+COMPONENT_BUGDB=	python-mod/roman-numerals
+COMPONENT_ANITYA_ID=	378005
+COMPONENT_BAID=		360455
 
 # We need just a single version
-PYTHON_VERSION =	3.13
-PYTHON_VERSIONS =	$(PYTHON_VERSION)
+PYTHON_VERSION =    3.13
+PYTHON_VERSIONS =   $(PYTHON_VERSION)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-COMPONENT_TEST_ENV +=	no_proxy=localhost
-COMPONENT_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
-COMPONENT_SYSTEM_TEST_ENV +=	no_proxy=localhost
-COMPONENT_SYSTEM_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
-
-# While the Sphinx itself is pure python only, tests using
-# Cython need the following setup properly.
-COMPILER =	gcc
-BITS =		64
-
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
@@ -69,17 +59,3 @@ build:		$(BUILD_NO_ARCH)
 install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
-
-system-test:	$(SYSTEM_TEST_NO_ARCH)
-
-REQUIRED_PACKAGES += $(PYVS:%=library/python/babel-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/jinja2-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pygments-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/requests-%)
-REQUIRED_PACKAGES += developer/documentation-tool/docutils
-REQUIRED_PACKAGES += developer/documentation-tool/sphinx/alabaster
-REQUIRED_PACKAGES += library/python/roman-numerals
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/flit_core

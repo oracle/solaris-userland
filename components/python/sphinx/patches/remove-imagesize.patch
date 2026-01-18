@@ -5,38 +5,38 @@ remove this dependency.
 
 Not intended for upstream.
 
---- sphinx-8.2.0/PKG-INFO
-+++ sphinx-8.2.0/PKG-INFO
-@@ -56,7 +56,6 @@ Requires-Dist: docutils>=0.20,<0.22
+--- sphinx-9.0.4/PKG-INFO
++++ sphinx-9.0.4/PKG-INFO
+@@ -58,7 +58,6 @@ Requires-Dist: docutils>=0.20,<0.23
  Requires-Dist: snowballstemmer>=2.2
  Requires-Dist: babel>=2.13
  Requires-Dist: alabaster>=0.7.14
 -Requires-Dist: imagesize>=1.3
  Requires-Dist: requests>=2.30.0
- Requires-Dist: roman-numerals-py>=1.0.0
+ Requires-Dist: roman-numerals>=1.0.0
  Requires-Dist: packaging>=23.0
---- sphinx-8.2.0/pyproject.toml
-+++ sphinx-8.2.0/pyproject.toml
-@@ -71,7 +71,6 @@ dependencies = [
+--- sphinx-9.0.4/pyproject.toml
++++ sphinx-9.0.4/pyproject.toml
+@@ -74,7 +74,6 @@ dependencies = [
      "snowballstemmer>=2.2",
      "babel>=2.13",
      "alabaster>=0.7.14",
 -    "imagesize>=1.3",
      "requests>=2.30.0",
-     "roman-numerals-py>=1.0.0",
+     "roman-numerals>=1.0.0",
      "packaging>=23.0",
---- sphinx-8.2.0/sphinx/util/images.py
-+++ sphinx-8.2.0/sphinx/util/images.py
-@@ -6,8 +6,6 @@ import base64
- from pathlib import Path
+--- sphinx-9.0.4/sphinx/util/images.py
++++ sphinx-9.0.4/sphinx/util/images.py
+@@ -7,8 +7,6 @@ from pathlib import Path
  from typing import TYPE_CHECKING, NamedTuple, overload
+ from urllib.parse import unquote_to_bytes
  
 -import imagesize
 -
  if TYPE_CHECKING:
      from os import PathLike
  
-@@ -40,17 +38,10 @@ class DataURI(NamedTuple):
+@@ -41,17 +39,10 @@ class DataURI(NamedTuple):
  def get_image_size(filename: str | PathLike[str]) -> tuple[int, int] | None:
      filename = Path(filename)
      try:

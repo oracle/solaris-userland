@@ -15,9 +15,9 @@ makes the Sphinx dependency tree much simpler.
 Details about builders here:
 https://www.sphinx-doc.org/en/master/usage/builders/index.html
 
---- sphinx-8.2.0/sphinx/application.py
-+++ sphinx-8.2.0/sphinx/application.py
-@@ -131,7 +131,7 @@ _first_party_themes = (
+--- sphinx-9.0.4/sphinx/application.py
++++ sphinx-9.0.4/sphinx/application.py
+@@ -138,7 +138,7 @@ _first_party_themes = (
      'alabaster',
  )
  builtin_extensions += _first_party_themes
@@ -26,7 +26,7 @@ https://www.sphinx-doc.org/en/master/usage/builders/index.html
  
  ENV_PICKLE_FILENAME = 'environment.pickle'
  
-@@ -286,6 +286,13 @@ class Sphinx:
+@@ -294,6 +294,13 @@ class Sphinx:
          for extension in builtin_extensions:
              self.setup_extension(extension)
  
@@ -40,12 +40,12 @@ https://www.sphinx-doc.org/en/master/usage/builders/index.html
          # load all user-given extension modules
          for extension in self.config.extensions:
              self.setup_extension(extension)
---- sphinx-8.2.0/PKG-INFO
-+++ sphinx-8.2.0/PKG-INFO
-@@ -50,12 +50,6 @@ Classifier: Topic :: Text Processing ::
- Classifier: Topic :: Text Processing :: Markup :: XML
+--- sphinx-9.0.4/PKG-INFO
++++ sphinx-9.0.4/PKG-INFO
+@@ -52,12 +52,6 @@ Classifier: Topic :: Text Processing ::
  Classifier: Topic :: Utilities
  Classifier: Typing :: Typed
+ License-File: LICENSE.rst
 -Requires-Dist: sphinxcontrib-applehelp>=1.0.7
 -Requires-Dist: sphinxcontrib-devhelp>=1.0.6
 -Requires-Dist: sphinxcontrib-htmlhelp>=2.0.6
@@ -54,10 +54,10 @@ https://www.sphinx-doc.org/en/master/usage/builders/index.html
 -Requires-Dist: sphinxcontrib-serializinghtml>=1.1.9
  Requires-Dist: Jinja2>=3.1
  Requires-Dist: Pygments>=2.17
- Requires-Dist: docutils>=0.20,<0.22
---- sphinx-8.2.0/pyproject.toml
-+++ sphinx-8.2.0/pyproject.toml
-@@ -65,12 +65,6 @@ classifiers = [
+ Requires-Dist: docutils>=0.20,<0.23
+--- sphinx-9.0.4/pyproject.toml
++++ sphinx-9.0.4/pyproject.toml
+@@ -68,12 +68,6 @@ classifiers = [
      "Typing :: Typed",
  ]
  dependencies = [
@@ -69,10 +69,10 @@ https://www.sphinx-doc.org/en/master/usage/builders/index.html
 -    "sphinxcontrib-serializinghtml>=1.1.9",
      "Jinja2>=3.1",
      "Pygments>=2.17",
-     "docutils>=0.20,<0.22",
---- sphinx-8.2.0/tests/test_builders/test_build_html_maths.py
-+++ sphinx-8.2.0/tests/test_builders/test_build_html_maths.py
-@@ -37,6 +37,7 @@ def test_html_math_renderer_is_imgmath(a
+     "docutils>=0.20,<0.23",
+--- sphinx-9.0.4/tests/test_builders/test_build_html_maths.py
++++ sphinx-9.0.4/tests/test_builders/test_build_html_maths.py
+@@ -40,6 +40,7 @@ def test_html_math_renderer_is_imgmath(a
      assert app.builder.math_renderer_name == 'imgmath'
  
  
@@ -80,7 +80,7 @@ https://www.sphinx-doc.org/en/master/usage/builders/index.html
  @pytest.mark.sphinx(
      'html',
      testroot='basic',
-@@ -62,6 +63,7 @@ def test_html_math_renderer_is_duplicate
+@@ -67,6 +68,7 @@ def test_html_math_renderer_is_duplicate
      assert app.builder.math_renderer_name == 'imgmath'  # The another one is chosen
  
  
@@ -88,7 +88,7 @@ https://www.sphinx-doc.org/en/master/usage/builders/index.html
  @pytest.mark.sphinx(
      'html',
      testroot='basic',
-@@ -75,6 +77,7 @@ def test_html_math_renderer_is_chosen(ap
+@@ -80,6 +82,7 @@ def test_html_math_renderer_is_chosen(ap
      assert app.builder.math_renderer_name == 'imgmath'
  
  
@@ -96,8 +96,8 @@ https://www.sphinx-doc.org/en/master/usage/builders/index.html
  @pytest.mark.sphinx(
      'html',
      testroot='basic',
---- sphinx-8.2.0/tests/test_writers/test_api_translator.py
-+++ sphinx-8.2.0/tests/test_writers/test_api_translator.py
+--- sphinx-9.0.4/tests/test_writers/test_api_translator.py
++++ sphinx-9.0.4/tests/test_writers/test_api_translator.py
 @@ -47,6 +47,7 @@ def test_singlehtml_set_translator_for_s
      assert translator_class.__name__ == 'ConfSingleHTMLTranslator'
  

@@ -1,0 +1,54 @@
+From 294b6db53345fa97913ae6b5df0208337cb6b4a6 Mon Sep 17 00:00:00 2001
+From: Brad King <brad.king@kitware.com>
+Date: Mon, 10 Oct 2022 16:21:35 -0400
+Subject: [PATCH] Utilities/Sphinx: Avoid deprecated docutils error handling
+ helpers
+
+The `SafeString` and `ErrorString` classes are deprecated and will be
+removed in Docutils 0.21 or later.  They help avoid encoding errors
+during exception handling in Python <= 2.7, but these days we always
+use Python 3 to build the documentation, at least during development,
+when error cases are most likely to occur.
+
+Fixes: #24039
+---
+ Utilities/Sphinx/cmake.py | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
+
+diff --git a/Utilities/Sphinx/cmake.py b/Utilities/Sphinx/cmake.py
+index 9215e149863..c7b12335094 100644
+--- a/Utilities/Sphinx/cmake.py
++++ b/Utilities/Sphinx/cmake.py
+@@ -59,12 +59,6 @@
+ 
+ from docutils.parsers.rst import Directive, directives
+ from docutils.transforms import Transform
+-try:
+-    from docutils.utils.error_reporting import SafeString, ErrorString
+-except ImportError:
+-    # error_reporting was not in utils before version 0.11:
+-    from docutils.error_reporting import SafeString, ErrorString
+-
+ from docutils import io, nodes
+ 
+ from sphinx.directives import ObjectDescription
+@@ -130,13 +124,13 @@ def run(self):
+             f = io.FileInput(source_path=path, encoding=encoding,
+                              error_handler=e_handler)
+         except UnicodeEncodeError as error:
+-            raise self.severe('Problems with "%s" directive path:\n'
+-                              'Cannot encode input file path "%s" '
+-                              '(wrong locale?).' %
+-                              (self.name, SafeString(path)))
++            msg = ('Problems with "%s" directive path:\n'
++                   'Cannot encode input file path "%s" '
++                   '(wrong locale?).' % (self.name, path))
++            raise self.severe(msg)
+         except IOError as error:
+-            raise self.severe('Problems with "%s" directive path:\n%s.' %
+-                      (self.name, ErrorString(error)))
++            msg = 'Problems with "%s" directive path:\n%s.' % (self.name, error)
++            raise self.severe(msg)
+         raw_lines = f.read().splitlines()
+         f.close()
+         rst = None

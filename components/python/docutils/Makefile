@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		docutils
-COMPONENT_VERSION=	0.21.2
+COMPONENT_VERSION=	0.22.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3a6b18732edf182daa3cd12775bbb338cf5691468f91eeeb109deff6ebfa986f
+    sha256:21486ae730e4ca9f622677b1412b879af1791efcfba517e4c6f60be543fc8cdd
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://docutils.sourceforge.io/
 COMPONENT_ANITYA_ID=	3849
 COMPONENT_BUGDB=	python-mod/docutils
-COMPONENT_BAID=		164670
+COMPONENT_BAID=		355827
 
 # We need just a single version
-PYTHON_VERSION =	3.11
+PYTHON_VERSION =	3.13
 PYTHON_VERSIONS =	$(PYTHON_VERSION)
 
 include $(WS_MAKE_RULES)/prep.mk
