@@ -1,0 +1,33 @@
+Solaris defines lock_t in one of its headers, so we need
+to rename the Graphviz one to something else.
+
+This issue was reported upstream:
+https://gitlab.com/graphviz/graphviz/-/issues/2802
+
+--- graphviz-14.1.1/lib/gvpr/compile.h
++++ graphviz-14.1.1/lib/gvpr/compile.h
+@@ -38,11 +38,11 @@ extern "C" {
+ typedef struct {
+   bool locked: 1; ///< is the lock currently taken?
+   bool zombie: 1; ///< was a deletion request recorded while locked?
+-} lock_t;
++} gvlock_t;
+ 
+     typedef struct {
+ 	Agrec_t h;
+-	lock_t lock;
++	gvlock_t lock;
+     } gval_t;
+ 
+     typedef struct {
+--- graphviz-14.1.1/lib/gvpr/actions.c
++++ graphviz-14.1.1/lib/gvpr/actions.c
+@@ -491,7 +491,7 @@ int lockGraph(Agraph_t *g, int v) {
+     if (data->lock.zombie)
+       agclose(g);
+     else
+-      data->lock = (lock_t){0};
++      data->lock = (gvlock_t){0};
+   }
+   return oldv;
+ }

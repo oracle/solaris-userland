@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64_and_32
 COMPILER =		gcc
@@ -32,20 +32,19 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME        = graphviz
-COMPONENT_VERSION     = 10.0.1
+COMPONENT_VERSION     = 14.1.1
 COMPONENT_PROJECT_URL = http://www.graphviz.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:28f452ef1cb12288c8758a62f8c3fcfefdb91b251f7aae61d0d703f851bde931
+    sha256:8a212d58ada30df56511d6a581f3e4417e82802d6560e5720c19195bc593e1cc
 COMPONENT_ARCHIVE_URL = \
     http://gitlab.com/graphviz/graphviz/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID   = 1249
-
-COMPONENT_BAID = 161633
+COMPONENT_BAID        = 362367
 
 COMPONENT_PREP_ACTION += \
-	( cd $(@D) ; PATH="$(PATH)" $(CONFIG_SHELL) autogen.sh NOCONFIG)
+	( cd $(@D) ; $(LN) -s README.md README ; PATH="$(PATH)" $(CONFIG_SHELL) autogen.sh NOCONFIG)
 
 # publish for only one version of perl
 PERL_VERSIONS = $(PERL_VERSION)
@@ -53,7 +52,7 @@ PERL_VERSIONS = $(PERL_VERSION)
 # We want to build a couple of extra things after the installs are done, so set
 # the install targets appropriately.
 INSTALL_TARGET = $(INSTALL_$(MK_BITS))
-INSTALL_TARGET += $(PROTOUSRLIBDIR)/graphviz/config6
+INSTALL_TARGET += $(PROTOUSRLIBDIR)/graphviz/config8
 
 # The test infrastructure doesn't run well in our out-of-source build
 # environment. The system test, on the other hand, is trivial to run.
@@ -82,6 +81,13 @@ CONFIGURE_OPTIONS +=	--enable-man-pdfs
 CONFIGURE_OPTIONS +=	MAKE=$(GMAKE)
 
 COMPONENT_BUILD_ARGS +=	GREP=$(USRBINDIR)/ggrep
+
+# While the configure script correctly outputs this definition for a 32-bit
+# build, Graphviz includes the resulting header file after other GCC headers
+# have already set it to a different value, resulting in redefinition warnings
+# during the build. This gets rid of those warnings.
+# See: https://gitlab.com/graphviz/graphviz/-/issues/2803
+CFLAGS += -D_FILE_OFFSET_BITS=64
 
 # perl, ruby, php ship 64-bit only.
 $(CONFIGURE_32): CONFIGURE_OPTIONS +=	--enable-perl=no
@@ -184,7 +190,7 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
 # we just built, so we have to set a handful of variables to the right place.
 # The 32-bit executables are in their own directory, so we have to point to
 # that version of dot explicitly.
-$(PROTOUSRLIBDIR)/graphviz/config6: $(INSTALL_32)
+$(PROTOUSRLIBDIR)/graphviz/config8: $(INSTALL_32)
 	env LD_LIBRARY_PATH=$(PROTOUSRLIBDIR) GVBINDIR=$(PROTOUSRLIBDIR)/graphviz \
 		$(PROTOUSRBINDIR)/$(MACH32)/dot -c
 
@@ -192,6 +198,8 @@ $(PROTOUSRLIBDIR)/graphviz/config6: $(INSTALL_32)
 # 'gvpr' uses HOSTCC variable instead of our configured compiler and options so
 # PIE build fails. This is a workaround for that.
 COMPONENT_BUILD_ARGS += HOSTCC='$(CC) $(CC_PIC_ENABLE)'
+
+PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/dot_sandbox
 
 PKG_MACROS += PERL_PKG=$(PERL_PKG)
 PKG_MACROS += PERL_VERSION_NODOT=$(PERL_VERSION_NODOT)
