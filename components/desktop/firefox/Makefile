@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (22527218)
@@ -37,14 +37,14 @@ LD_SHARED_OPTIONS_Z_DEFS=
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	140.6.0
-COMPONENT_BAID=		359788
+COMPONENT_VERSION =	140.7.0
+COMPONENT_BAID=		365143
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:6c35c9ab507521033c8fd49f1b4c85ee158f33ed36f5781a663f116c3d604dc9
+    sha256:608a739071726f30236f7100ec5e30e1b8ec342d4e91e715948c287909cb1529
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -61,7 +61,7 @@ COMPONENT_ANITYA_ID =	16838
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:f399eb64a970a1a7d831920e7bd7ccecd3bc8f739a2b27d482a805757522ec36
+    sha256:3acb43202b5a181ba7a829f0553c39f35c7f36866185fec456030b5f4c990a9c
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (22527218)
@@ -37,12 +37,12 @@ LD_SHARED_OPTIONS_Z_DEFS=
 ESR = esr
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	140.6.0
-COMPONENT_BAID =	359790
+COMPONENT_VERSION =	140.7.0
+COMPONENT_BAID =	365211
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:c5ff00249b032009f34486c927e0d6566ac9c5f0b1d036548b5a880d4bbbddc6
+    sha256:97a9be86fae8881d3aa0f899dfa864b51723596cdeb6a09b3ecc2a0e81f45c18
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -59,7 +59,7 @@ COMPONENT_ANITYA_ID =	4967
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:ee564fb95a43bb61c8405472c8c83d17fb604357ea5313bd5c18ca64b228db6a
+    sha256:3e2e9900240656acca1bad9333338b99d001e83c8202e3ef18b8e6e398961131
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
