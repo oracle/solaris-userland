@@ -1,0 +1,20 @@
+vcr_mods import is apparently required for the upstream automation, but
+it's not available and seemingly not necessary.
+
+This is known upstream:
+https://github.com/oracle/oci-python-sdk/issues/164
+
+--- oci-2.164.2/tests/test_config_container.py
++++ oci-2.164.2/tests/test_config_container.py
+@@ -6,7 +6,10 @@
+ # can figure out what kind of recording (via VCR) is being done and also so that they can take actions (e.g. waiting)
+ # in a VCR compatible/friendly way
+ 
+-from . import vcr_mods  # noqa: F401
++try:
++    from . import vcr_mods  # noqa: F401
++except ImportError:
++    pass
+ 
+ import oci
+ import time

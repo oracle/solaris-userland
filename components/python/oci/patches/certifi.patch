@@ -1,0 +1,28 @@
+This patch file adjusts the where() routine in certs.py to return the
+location of the standard certs bundle on Solaris.
+
+Not intended for upstream.
+
+--- oci-2.164.2/src/oci/_vendor/requests/certs.py
++++ oci-2.164.2/src/oci/_vendor/requests/certs.py
+@@ -17,7 +17,9 @@ If you are packaging Requests, e.g., for
+ environment, you can change the definition of where() to return a separately
+ packaged CA bundle.
+ """
+-from certifi import where
++def where():
++    """Return the preferred certificate bundle."""
++    return "/etc/certs/ca-certificates.crt"
+ 
+ if __name__ == '__main__':
+     print(where())
+--- oci-2.164.2/pyproject.toml
++++ oci-2.164.2/pyproject.toml
+@@ -26,7 +26,6 @@ classifiers=[
+     "Programming Language :: Python :: 3.9",
+ ]
+ dependencies = [
+-    "certifi",
+     "configparser==4.0.2 ; python_version < '3'",
+     "cryptography>=3.2.1,<46.0.0",
+     "pyOpenSSL>=17.5.0,<=25.1.0",

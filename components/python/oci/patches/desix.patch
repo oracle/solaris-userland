@@ -1,0 +1,50 @@
+Oci vendors its own copy of six, but not all imports are using it. This change
+is necessary, because six is no longer available on Solaris.
+
+This change was offered upstream:
+https://github.com/oracle/oci-python-sdk/pull/810
+
+--- a/src/oci/base_client.py
++++ b/src/oci/base_client.py
+@@ -24,7 +24,7 @@ from ._vendor import requests, six, urllib3, sseclient
+ from dateutil.parser import parse
+ from dateutil import tz
+ import functools
+-from six.moves.http_client import HTTPResponse
++from ._vendor.six.moves.http_client import HTTPResponse
+ 
+ from . import constants, exceptions, regions, retry
+ from .auth import signers
+--- a/src/oci/object_storage/transfer/internal/download/DownloadManager.py
++++ b/src/oci/object_storage/transfer/internal/download/DownloadManager.py
+@@ -3,7 +3,6 @@
+ # This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
+ 
+ import io
+-import six
+ import math
+ import time
+ import warnings
+@@ -11,6 +10,7 @@ from multiprocessing.dummy import Pool
+ from oci.object_storage.transfer.internal.download.DownloadThread import (ParallelDownloader, SequentialDownloader,
+                                                                           DownloadState)
+ from oci.exceptions import (ResumableDownloadException, DownloadTerminated, DownloadFailedIncorrectDownloadSize)
++from oci._vendor import six
+ 
+ 
+ class DownloadManager(object):
+--- a/src/oci/object_storage/transfer/internal/download/DownloadThread.py
++++ b/src/oci/object_storage/transfer/internal/download/DownloadThread.py
+@@ -2,11 +2,11 @@
+ # Copyright (c) 2016, 2025, Oracle and/or its affiliates.  All rights reserved.
+ # This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
+ 
+-import six
+ import time
+ import multiprocessing
+ from enum import Enum
+ from oci.exceptions import DownloadTerminated, DownloadFailedIncorrectDownloadSize
++from oci._vendor import six
+ 
+ 
+ class DownloadState(Enum):
