@@ -1,0 +1,22 @@
+Revert https://gitlab.gnome.org/GNOME/libsecret/-/commit/35381ee638ed9c7e01cdacd24230ca39a6e6b96c
+
+--- a/meson.build	2025-12-31 12:54:25.177342771 -0800
++++ b/meson.build	2025-12-31 12:55:06.151846961 -0800
+@@ -101,17 +101,6 @@
+ test_env = environment()
+ test_env.set('abs_top_builddir', meson.build_root())
+ 
+-# Most tests require a D-Bus session, so try to wrap automatically with dbus-run-session
+-dbus_run_session = find_program('dbus-run-session', required: false)
+-if dbus_run_session.found()
+-  add_test_setup('dbus',
+-    exe_wrapper: dbus_run_session,
+-    is_default: true,
+-  )
+-else
+-  message('dbus-run-session not found. Please note that tests might fail if you don\'t set up a D-Bus session.')
+-endif
+-
+ # Subfolders
+ subdir('po')
+ subdir('egg')

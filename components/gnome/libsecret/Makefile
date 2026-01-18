@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64_and_32
@@ -31,14 +31,14 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsecret
-COMPONENT_VERSION=	0.21.4
+COMPONENT_VERSION=	0.21.7
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Libsecret
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:163d08d783be6d4ab9a979ceb5a4fecbc1d9660d3c34168c581301cd53912b20
+    sha256:6b452e4750590a2b5617adc40026f28d2f4903de15f1250e1d1c40bfd68ed55e
 COMPONENT_BUGDB=        gnome/security
 COMPONENT_ANITYA_ID=	13150
 
-COMPONENT_BAID=		165187
+COMPONENT_BAID=		361662
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
