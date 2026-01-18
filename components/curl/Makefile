@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -29,10 +29,10 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		curl
-COMPONENT_VERSION=	8.17.0
+COMPONENT_VERSION=	8.18.0
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:230032528ce5f85594d4f3eace63364c4244ccc3c801b7f8db1982722f2761f4
-COMPONENT_BAID=		358123
+	sha256:ffd671a3dad424fb68e113a5b9894c5d1b5e13a88c6bdf0d4af6645123b31faf
+COMPONENT_BAID=		362431
 COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_URL=	https://curl.se/download/$(COMPONENT_ARCHIVE)
