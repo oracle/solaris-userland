@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 # Functions to prepare environment for components which need X11 for their
@@ -47,6 +47,12 @@ COMPONENT_PRE_TEST_ACTION += \
 		echo xterm > myhome/.vnc/xstartup; \
 		chmod +x myhome/.vnc/xstartup; \
 		export HOME=$(@D)/myhome; \
+		if [[ $${\#HOME} -gt 115 ]]; then \
+			: tigervnc has maximum argument length 128 - see MAX_ARG_LENGTH macro; \
+			: and we need to append string "/.Xauthority"; \
+			echo "The workspace path '$$HOME' is too long to run Xvnc"; \
+			exit 1; \
+		fi; \
 		: ; \
 		: Create passwd file. If you want to connect to the VNC do this:; \
 		:  1 - disable COMPONENT_POST_TEST_ACTION; \

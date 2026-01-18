@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 .PHONY: void
@@ -765,7 +765,7 @@ JAVA_HOME = $(JAVA8_HOME)
 
 # This is the default BUILD version of perl
 # Not necessarily the system's default version, i.e. /usr/bin/perl
-PERL_VERSION ?= 5.38
+PERL_VERSION ?= 5.42
 PERL_VERSION_NODOT = $(subst .,,$(PERL_VERSION))
 
 # Used for versionless perl packages.  Processed by ips.mk to stamp out
@@ -774,9 +774,10 @@ PERL_VERSION_NODOT = $(subst .,,$(PERL_VERSION))
 # package like graphviz and openscap.
 # When updating this line do not forget to update also
 # perl_modules/generate/common.transform
-PERL_VERSIONS = 5.38
+PERL_VERSIONS = 5.38 5.42
 
 PERL.5.38 =     /usr/perl5/5.38/bin/perl
+PERL.5.42 =     /usr/perl5/5.42/bin/perl
 
 define test-perl-availability
 TEST_PERL_PATH=$$(PERL.$(1))
