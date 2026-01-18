@@ -20,23 +20,21 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64
-# Use GCC until Studio supports large enums (23058232)
+BUILD_BITS=	64
 COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tmux
-COMPONENT_VERSION=	3.4
+COMPONENT_VERSION=	3.6a
 # tmux use letters instead of the patch-level
-#IPS_COMPONENT_VERSION=	3.4
-COMPONENT_BAID=		168231
-COMPONENT_ARCHIVE_HASH=	sha256:551ab8dea0bf505c0ad6b7bb35ef567cdde0ccb84357df142c254f35a23e19aa
+IPS_COMPONENT_VERSION=	3.6.1
+COMPONENT_BAID=		362266
+COMPONENT_ARCHIVE_HASH=	sha256:b6d8d9c76585db8ef5fa00d4931902fa4b8cbe8166f528f44fc403961a3f3759
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://tmux.github.io/
 COMPONENT_ANITYA_ID=	4980
-
 COMPONENT_ARCHIVE_URL=	https://github.com/tmux/tmux/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 
 TEST_TARGET= $(NO_TESTS)
