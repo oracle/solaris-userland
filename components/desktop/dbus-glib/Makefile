@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -26,16 +26,16 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dbus-glib
-COMPONENT_VERSION=	0.110
+COMPONENT_VERSION=	0.114
 COMPONENT_PROJECT_URL=	https://dbus.freedesktop.org
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7ce4760cf66c69148f6bd6c92feaabb8812dee30846b24cd0f7395c436d7e825
+    sha256:c09c5c085b2a0e391b8ee7d783a1d63fe444e96717cc1814d61b5e8fc2827a7c
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/dbus
 COMPONENT_ANITYA_ID=	1979
 
-COMPONENT_BAID=		65000
+COMPONENT_BAID=		359884
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libdbus-glib-1.3lib \
