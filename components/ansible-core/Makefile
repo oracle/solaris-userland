@@ -27,9 +27,9 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ansible_core
-COMPONENT_VERSION=	2.18.1
+COMPONENT_VERSION=	2.20.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:14cac1f92bbdae881cb0616eddeb17925e8cb507e486087975e724533d9de74f
+    sha256:a891e5f90cd46626778f0f3d545ec1115840c9b50e8adf25944c5e1748452106
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
@@ -37,11 +37,11 @@ COMPONENT_PROJECT_URL=	https://www.ansible.com/
 COMPONENT_BUGDB=	utility/ansible
 COMPONENT_ANITYA_ID=	165410
 
-COMPONENT_BAID=		325290
+COMPONENT_BAID=		360444
 PKG_MACROS+= MICRO_VERSION=$(MICRO_VERSION)
 
 # We need just a single Python version
-PYTHON_VERSIONS=	3.11
+PYTHON_VERSIONS=	3.13
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -65,10 +65,8 @@ COMPONENT_POST_INSTALL_ACTION += \
     LC_ALL=C.UTF-8 $(PYTHON) $(SOURCE_DIR)/packaging/cli-doc/build.py man \
     --output-dir $(PROTOUSRSHAREMAN1DIR)/
 
-REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/jinja2-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/importlib-metadata-%)
 REQUIRED_PACKAGES += library/python/resolvelib

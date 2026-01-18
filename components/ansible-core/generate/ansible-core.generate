@@ -20,10 +20,10 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
 #
 
-<transform file link path=.+3\.11.* -> edit path 3\\.11 \$\(PYVER\)>
+<transform file link path=.+3\.13.* -> edit path 3\\.13 \$\(PYVER\)>
 
 # We do not ship files for testing the component
 <transform path=.*/ansible_test/.* -> drop>
@@ -33,14 +33,7 @@
 # we do not plan to deliver ansible-connection utility in Solaris
 <transform path=usr/bin/ansible-connection -> drop>
 
-<transform path=.*/ansible_connection_cli_stub -> set pkg.depend.bypass-generate .*>
-<transform path=.*/apt.py  -> set pkg.depend.bypass-generate .*>
-<transform path=.*/apt_repository.py -> set pkg.depend.bypass-generate .*>
-<transform path=.*/cron.py -> set pkg.depend.bypass-generate .*>
-<transform path=.*/dnf.py -> set pkg.depend.bypass-generate .*>
-<transform path=.*/expect.p -> set pkg.depend.bypass-generate .*>
-<transform path=.*/get_url.py -> set pkg.depend.bypass-generate .*>
-<transform path=.*/uri.py -> set pkg.depend.bypass-generate .*>
-<transform path=.*/wait_for.py -> set pkg.depend.bypass-generate .*>
-<transform path=.*/yum.py -> set pkg.depend.bypass-generate .*>
-<transform path=.*/yum_repository.py -> set pkg.depend.bypass-generate .*>
+# collections.abc is delivered in a way that is impossible for pkgdepend to resolve.
+<transform file path=.*/ansible/cli/(config|doc).py$ -> set pkg.depend.bypass-generate .*abc.*>
+
+<transform file path=.*/ansible/cli/inventory.py$ -> set pkg.depend.bypass-generate .*>

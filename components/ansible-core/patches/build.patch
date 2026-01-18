@@ -1,12 +1,11 @@
-The upper version pin is irrelevant to how we build and deliver ansible.
-https://github.com/ansible/ansible/commit/cddcdb7f755e7df847d40a5449c2267e8e000d4e
+The wheel pin is not necessary for our much newer setuptools.
 
---- ansible_core-2.18.1/pyproject.toml
-+++ ansible_core-2.18.1/pyproject.toml
+--- ansible_core-2.20.1/pyproject.toml
++++ ansible_core-2.20.1/pyproject.toml
 @@ -1,5 +1,5 @@
  [build-system]
--requires = ["setuptools >= 66.1.0, <= 75.6.0"]  # lower bound to support controller Python versions, upper bound for latest version tested at release
-+requires = ["setuptools >= 66.1.0"]  # lower bound to support controller Python versions, upper bound for latest version tested at release
+-requires = ["setuptools >= 66.1.0, <= 80.9.0", "wheel == 0.45.1"]  # lower bound to support controller Python versions, upper bound for latest version tested at release
++requires = ["setuptools >= 66.1.0, <= 80.9.0"]  # lower bound to support controller Python versions, upper bound for latest version tested at release
  build-backend = "setuptools.build_meta"
  
  [project]

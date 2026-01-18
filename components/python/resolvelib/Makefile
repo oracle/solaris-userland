@@ -20,27 +20,27 @@
 #
 
 #
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		resolvelib
-COMPONENT_VERSION=	1.0.1
+COMPONENT_VERSION=	1.2.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	https://github.com/sarugaku/resolvelib
 COMPONENT_BUGDB=	python-mod/resolvelib
 COMPONENT_ANITYA_ID=	98018
-COMPONENT_BAID=		140947
+COMPONENT_BAID=		360447
 
 # pypi archive doesn't include the test suite
 GIT_REPO=   $(COMPONENT_PROJECT_URL)
 GIT_COMMIT_ID=  $(COMPONENT_VERSION)
-GIT_HASH=   sha256:09ad970cdb502ce24f2da956e547ec320c4ba001506b1327a0f3d2a38de9a0d6
+GIT_HASH=   sha256:6c466b1cec16a202eb79ada64ecd7ea4df0925b6aa9a5eabae4580e72a890f80
 
 # We need to mirror Ansible
-PYTHON_VERSION =	3.11
+PYTHON_VERSION =	3.13
 PYTHON_VERSIONS =	$(PYTHON_VERSION)
 
 include $(WS_MAKE_RULES)/prep.mk
