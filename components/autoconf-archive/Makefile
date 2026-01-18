@@ -20,21 +20,20 @@
 #
 
 #
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		autoconf-archive
-COMPONENT_VERSION=	2022.09.03
-IPS_COMPONENT_VERSION=	2022.9.3
+COMPONENT_VERSION=	2024.10.16
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e07454f00d8cae7907bed42d0747798927809947684d94c37207a4d63a32f423
+    sha256:7bcd5d001916f3a50ed7436f4f700e3d2b1bade3ed803219c592d62502a57363
 COMPONENT_BUGDB=  	utility/autoconf
 COMPONENT_SIG_URL=      $(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	142
 
-COMPONENT_BAID=		136245
+COMPONENT_BAID=		359713
 
 include $(WS_MAKE_RULES)/gnu-component.mk
