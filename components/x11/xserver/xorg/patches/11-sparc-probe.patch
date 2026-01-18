@@ -2,9 +2,9 @@ Allow probing for /dev/fb cards other than the traditional sbus devices.
 
 not suitable for upstream
 
---- a/hw/xfree86/common/xf86sbusBus.c	2019-02-12 11:23:28.411841320 -0800
-+++ b/hw/xfree86/common/xf86sbusBus.c	2019-02-12 11:24:39.237982867 -0800
-@@ -40,6 +40,10 @@
+--- xorg-server-21.1.20/hw/xfree86/common/xf86sbusBus.c
++++ xorg-server-21.1.20/hw/xfree86/common/xf86sbusBus.c
+@@ -40,6 +40,10 @@ #include "xf86Bus.h"
  #include "xf86sbusBus.h"
  #include "xf86Sbus.h"
  
@@ -15,13 +15,14 @@ not suitable for upstream
  Bool sbusSlotClaimed = FALSE;
  
  static int xf86nSbusInfo;
-@@ -231,8 +235,24 @@
+@@ -231,8 +235,26 @@ xf86ErrorF(" at %s", promPath);
                  free(promPath);
              }
          }
 -        else
 +        else 
 +#ifdef sun
++        {
 +            if (psdp->devId == SBUS_DEVICE_UNK) {
 +                int fbfd;
 +
@@ -35,15 +36,16 @@ not suitable for upstream
 +                }
 +            }
 +            xf86Msg(X_PROBED, "%s: %s", psdp->device, psdp->descr);
++        }
 +#else
              xf86Msg(X_PROBED, "SBUS: %s", psdp->descr);
 +#endif
          xf86ErrorF("\n");
      }
      if (useProm)
---- a/hw/xfree86/common/xf86sbusBus.h	2019-02-12 11:25:02.436844960 -0800
-+++ b/hw/xfree86/common/xf86sbusBus.h	2019-02-12 11:25:17.460746484 -0800
-@@ -39,6 +39,7 @@
+--- xorg-server-21.1.20/hw/xfree86/common/xf86sbusBus.h
++++ xorg-server-21.1.20/hw/xfree86/common/xf86sbusBus.h
+@@ -39,6 +39,7 @@ #define SBUS_DEVICE_TCX		0x000a
  #define SBUS_DEVICE_FFB		0x000b
  #define SBUS_DEVICE_GT		0x000c
  #define SBUS_DEVICE_MGX		0x000d
@@ -51,9 +53,9 @@ not suitable for upstream
  
  typedef struct sbus_prom_node {
      int node;
---- a/hw/xfree86/os-support/bus/Sbus.c	2019-02-12 11:25:43.152985575 -0800
-+++ b/hw/xfree86/os-support/bus/Sbus.c	2019-02-12 11:26:03.468568534 -0800
-@@ -71,6 +71,7 @@
+--- xorg-server-21.1.20/hw/xfree86/os-support/bus/Sbus.c
++++ xorg-server-21.1.20/hw/xfree86/os-support/bus/Sbus.c
+@@ -71,6 +71,7 @@ {SBUS_DEVICE_LEO, FBTYPE_SUNLEO, "leo",
      {SBUS_DEVICE_TCX, FBTYPE_TCXCOLOR, "tcx", "suntcx", "Sun TCX"},
      {SBUS_DEVICE_FFB, FBTYPE_CREATOR, "ffb", "sunffb", "Sun FFB"},
      {SBUS_DEVICE_FFB, FBTYPE_CREATOR, "afb", "sunffb", "Sun Elite3D"},

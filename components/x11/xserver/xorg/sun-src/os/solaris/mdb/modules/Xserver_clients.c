@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2004, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -23,6 +23,8 @@
 
 
 #include <sys/mdb_modapi.h>
+#undef lowbit /* definition from mdb headers clashes with Xorg headers */
+
 #include <sys/procfs.h>
 #include "Xserver_mdb.h"
 
@@ -38,6 +40,10 @@ struct client_walk_data {
     uintptr_t clients_end;
     ClientRec client_data;
 };
+
+#ifdef __SUNPRO_C
+/* GCC optimizes out unused inline functions so these are only needed
+   when building with Studio, which does not. */
 
 /* Just here to satisfy linkage from inlines in privates.h
    Should never ever be called from the module. */
@@ -59,7 +65,7 @@ LogMessage(MessageType type, const char *format, ...)
     mdb_vprintf(format, ap);
     va_end(ap);
 }
-
+#endif
 
 /*
  * Initialize the client walker by either using the given starting address,
@@ -74,7 +80,7 @@ client_walk_init(mdb_walk_state_t *wsp)
 
 # define CUR_MAX_CLIENTS "currentMaxClients"
 
-    if (wsp->walk_addr == NULL) {
+    if (wsp->walk_addr == (uintptr_t) NULL) {
        /* Xorg 1.6 - clients is the array itself */
        GElf_Sym clients_sym;
        if (mdb_lookup_by_name("clients", &clients_sym) == -1) {
@@ -109,7 +115,7 @@ client_walk_step(mdb_walk_state_t *wsp)
 	struct client_walk_data *cwda =
 	  (struct client_walk_data *) wsp->walk_data;
 
-	if (wsp->walk_addr == NULL)
+	if (wsp->walk_addr == (uintptr_t) NULL)
 		return (WALK_DONE);
 
 	do {
@@ -117,7 +123,7 @@ client_walk_step(mdb_walk_state_t *wsp)
 		mdb_warn("failed to read client table entry at %p", wsp->walk_addr);
 		return (WALK_DONE);
 	    }
-	    if (clientPtr == NULL) {
+	    if (clientPtr == (uintptr_t) NULL) {
 #ifdef DEBUG
 		mdb_printf("NULL entry at %p", wsp->walk_addr);
 #endif
@@ -129,9 +135,9 @@ client_walk_step(mdb_walk_state_t *wsp)
 #endif
 		return (WALK_DONE);
 	    }
-	} while (clientPtr == NULL);
+	} while (clientPtr == (uintptr_t) NULL);
 
-	if (clientPtr == NULL) {
+	if (clientPtr == (uintptr_t) NULL) {
 	    return (WALK_DONE);
 	}
 
@@ -306,7 +312,7 @@ client_pids(uintptr_t addr, uint_t flags, int argc, const mdb_arg_t *argv)
 			!= sizeof (cppaddr)) {
 			mdb_warn("failed to read "
 				 " client_data.devPrivates+offset");
-		    } else if (cppaddr == NULL) {
+		    } else if (cppaddr == (uintptr_t) NULL) {
 			/*
 			 * if osPrivate is NULL, client connection is closed,
 			 * and it's no surprise we can't find ClientProcessPtr

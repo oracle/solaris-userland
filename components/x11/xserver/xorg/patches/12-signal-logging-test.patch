@@ -1,0 +1,42 @@
+Backport to xorg-server-1.20 branch of patch submitted upstream
+(1.20 has this code in utils.c instead of fmt.c)
+
+From b657a07de59eb7d7ab66e26e60885f82c7574946 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Fri, 19 Dec 2025 17:10:43 -0800
+Subject: [PATCH xserver] os: make FormatInt64() handle LONG_MIN correctly
+
+When compiling with gcc 15.2.0 using -O3 -m64 on Solaris SPARC & x64,
+we'd get a test failure of:
+
+Assertion failed: strcmp(logmsg, expected) == 0,
+ file ../test/signal-logging.c, line 339, function logging_format
+
+because 'num *= 1' produced a value that was out of the range of the
+int64_t it was being stored in.  (Compiling with -O2 worked fine with
+the same compiler/configuration/platform though.)
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ os/utils.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+--- xorg-server-21.1.20/os/utils.c
++++ xorg-server-21.1.20/os/utils.c
+@@ -2100,12 +2100,14 @@ */
+ void
+ FormatInt64(int64_t num, char *string)
+ {
++    uint64_t unum = num;
++
+     if (num < 0) {
+         string[0] = '-';
+-        num *= -1;
++        unum = num * -1;
+         string++;
+     }
+-    FormatUInt64(num, string);
++    FormatUInt64(unum, string);
+ }
+ 
+ /* Format a number into a string in a signal safe manner. The string should be

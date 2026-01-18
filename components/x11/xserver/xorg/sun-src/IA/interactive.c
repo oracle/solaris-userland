@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1993, 2019, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1993, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -233,7 +233,6 @@ IAClientStateChange(CallbackListPtr *pcbl, void *nulldata, void *calldata)
     ClientPtr pClient = pci->client;
     ClientProcessPtr CurrentPids;
     IAClientPrivatePtr priv;
-    LocalClientCredRec *lcc;
 
     switch (pClient->clientState) {
       case ClientStateGone:

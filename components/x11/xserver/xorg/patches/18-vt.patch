@@ -3,9 +3,9 @@ Solaris specific patch
 not suitable for upstream
 
 
---- a/dix/main.c	2019-02-12 11:56:09.328185044 -0800
-+++ b/dix/main.c	2019-02-12 11:57:18.789153689 -0800
-@@ -78,6 +78,8 @@
+--- xorg-server-21.1.20/dix/main.c
++++ xorg-server-21.1.20/dix/main.c
+@@ -78,6 +78,8 @@ #include <dix-config.h>
  #include <version-config.h>
  #endif
  
@@ -14,7 +14,7 @@ not suitable for upstream
  #include <X11/X.h>
  #include <X11/Xos.h>            /* for unistd.h  */
  #include <X11/Xproto.h>
-@@ -125,6 +127,36 @@
+@@ -124,6 +126,34 @@ #endif /* SUNSOFT */
  
  extern void Dispatch(void);
  
@@ -29,10 +29,8 @@ not suitable for upstream
 + * actually auth file.
 +*/
 +static void
-+SetupXauthFile(char *filename)
++SetupXauthFile(const char *filename)
 +{
-+        struct stat buf;
-+
 +        snprintf(sym_authfile, 40, LOCK_PREFIX "%s", display);
 +
 +        mkdir(LOCK_PREFIX, S_IRWXU);
@@ -51,18 +49,18 @@ not suitable for upstream
  CallbackListPtr RootWindowFinalizeCallback = NULL;
  
  int
-@@ -133,6 +165,10 @@
+@@ -132,6 +162,10 @@ {
      int i;
      HWEventQueueType alwaysCheckForInput[2];
  
 +#if defined(sun)
-+    char *xauthfile = NULL;
++    const char *xauthfile = NULL;
 +#endif
 +
      display = "0";
  
      InitRegions();
-@@ -145,6 +181,12 @@
+@@ -142,6 +176,12 @@ CheckUserAuthorization();
  
      ProcessCommandLine(argc, argv);
  
@@ -75,9 +73,9 @@ not suitable for upstream
      alwaysCheckForInput[0] = 0;
      alwaysCheckForInput[1] = 1;
      while (1) {
---- a/hw/xfree86/os-support/solaris/sun_init.c	2019-02-12 11:57:33.263282065 -0800
-+++ b/hw/xfree86/os-support/solaris/sun_init.c	2019-02-12 11:58:32.822418762 -0800
-@@ -45,6 +45,9 @@
+--- xorg-server-21.1.20/hw/xfree86/os-support/solaris/sun_init.c
++++ xorg-server-21.1.20/hw/xfree86/os-support/solaris/sun_init.c
+@@ -50,6 +50,9 @@ */
  #define	CONSOLE_VTNO	1
  #define	SOL_CONSOLE_DEV	"/dev/console"
  
@@ -87,7 +85,7 @@ not suitable for upstream
  static Bool KeepTty = FALSE;
  static Bool UseConsole = FALSE;
  
-@@ -216,6 +219,8 @@
+@@ -221,6 +224,8 @@ FatalError("xf86OpenConsole: VT_SETMODE
  
              if (ioctl(xf86Info.consoleFd, VT_SETDISPINFO, atoi(display)) < 0)
                  xf86Msg(X_WARNING, "xf86OpenConsole: VT_SETDISPINFO failed\n");
@@ -96,10 +94,10 @@ not suitable for upstream
          }
  #endif
  
---- a/os/log.c	2019-02-12 11:58:52.550657011 -0800
-+++ b/os/log.c	2019-02-12 11:59:41.689337443 -0800
-@@ -108,6 +108,10 @@
- void (*OsVendorVErrorFProc) (const char *, va_list args) = NULL;
+--- xorg-server-21.1.20/os/log.c
++++ xorg-server-21.1.20/os/log.c
+@@ -115,6 +115,10 @@ #ifndef DEFAULT_LOG_FILE_VERBOSITY
+ #define DEFAULT_LOG_FILE_VERBOSITY	3
  #endif
  
 +#ifdef sun
@@ -109,7 +107,7 @@ not suitable for upstream
  static FILE *logFile = NULL;
  static int logFileFd = -1;
  static Bool logFlush = FALSE;
-@@ -1009,6 +1013,9 @@
+@@ -1009,6 +1013,9 @@ #endif
      VErrorFSigSafe(f, args);
      va_end(args);
      ErrorFSigSafe("\n");

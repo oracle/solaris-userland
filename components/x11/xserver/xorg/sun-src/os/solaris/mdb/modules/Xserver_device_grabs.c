@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -23,6 +23,7 @@
 
 
 #include <sys/mdb_modapi.h>
+#undef lowbit /* definition from mdb headers clashes with Xorg headers */
 
 #include "Xserver_mdb.h"
 #include "xorg-server.h"
@@ -54,7 +55,7 @@ inputdev_walk_init(mdb_walk_state_t *wsp)
 	return (WALK_ERR);
     }
 
-    if (wsp->walk_addr == NULL) {
+    if (wsp->walk_addr == (uintptr_t) NULL) {
 	wsp->walk_addr = (uintptr_t) iwda->inputInfo.devices;
     }
 
@@ -74,7 +75,7 @@ inputdev_walk_step(mdb_walk_state_t *wsp)
     struct inputdev_walk_data *iwda
 	= (struct inputdev_walk_data *) wsp->walk_data;
 
-    if (wsp->walk_addr == NULL)
+    if (wsp->walk_addr == (uintptr_t) NULL)
 	return (WALK_DONE);
 
     if (mdb_vread(&(iwda->dev), sizeof (DeviceIntRec), wsp->walk_addr) == -1) {
@@ -128,7 +129,12 @@ ilog2(int val)
     return bits - 1;
 }
 
+#ifdef __SUNPRO_C
+/* GCC optimizes out unused inline functions so these are only needed
+   when building with Studio, which does not. */
 
+/* Just here to satisfy linkage from inlines in privates.h
+   Should never ever be called from the module. */
 _X_HIDDEN unsigned int
 ResourceClientBits(void)
 {
@@ -142,6 +148,7 @@ ResourceClientBits(void)
 
     return (ilog2(LimitClients));
 }
+#endif
 
 _X_HIDDEN int
 inputdev_grabs(uintptr_t addr, uint_t flags, int argc, const mdb_arg_t *argv)

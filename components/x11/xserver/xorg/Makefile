@@ -24,7 +24,7 @@
 #
 
 BUILD_BITS =            64
-CTF_MODE =		off	# Breaks config
+COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 # This component does not fully specify dependencies of shared objects

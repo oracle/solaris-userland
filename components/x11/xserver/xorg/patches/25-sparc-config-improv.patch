@@ -2,9 +2,9 @@ Solaris sparc specific patch
 
 not suitable for upstream
 
---- a/hw/xfree86/os-support/solaris/sun_init.c	2019-02-12 12:21:45.119901156 -0800
-+++ b/hw/xfree86/os-support/solaris/sun_init.c	2019-02-12 12:24:42.174780903 -0800
-@@ -2,6 +2,7 @@
+--- xorg-server-21.1.20/hw/xfree86/os-support/solaris/sun_init.c
++++ xorg-server-21.1.20/hw/xfree86/os-support/solaris/sun_init.c
+@@ -2,6 +2,7 @@ /*
   * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany
   * Copyright 1993 by David Wexelblat <dwex@goblin.org>
   * Copyright 1999 by David Holland <davidh@iquest.net>
@@ -12,7 +12,7 @@ not suitable for upstream
   *
   * Permission to use, copy, modify, distribute, and sell this software and its
   * documentation for any purpose is hereby granted without fee, provided that
-@@ -64,6 +65,11 @@
+@@ -69,6 +70,11 @@ /* Set by -dev argument on CLI
     Used by hw/xfree86/common/xf86AutoConfig.c for VIS_GETIDENTIFIER */
  _X_HIDDEN char xf86SolarisFbDev[PATH_MAX] = "/dev/fb";
  
@@ -24,7 +24,7 @@ not suitable for upstream
  static void
  switch_to(int vt, const char *from)
  {
-@@ -97,6 +103,16 @@
+@@ -102,6 +108,16 @@ /* Check if we're run with euid==0 */
          if (geteuid() != 0)
              FatalError("xf86OpenConsole: Server must be suid root\n");
  
@@ -41,7 +41,7 @@ not suitable for upstream
  #ifdef HAS_USL_VTS
  
          /*
-@@ -376,6 +392,9 @@
+@@ -381,6 +397,9 @@ #endif                          /* HAS_U
      if ((i + 1) < argc) {
          if (!strcmp(argv[i], "-dev")) {
              strlcpy(xf86SolarisFbDev, argv[i + 1], sizeof(xf86SolarisFbDev));
@@ -51,7 +51,7 @@ not suitable for upstream
              return 2;
          }
      }
-@@ -383,6 +402,87 @@
+@@ -388,6 +407,87 @@ }
      return 0;
  }
  

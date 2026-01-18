@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2025, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -44,6 +44,5 @@ typedef struct {
 
 /* Set via xorg.conf option in loadable module */
 extern int IADebugLevel;
-extern void IAExtensionInit(void);
 
 #endif /* _INTERACTIVE_SRV_H */

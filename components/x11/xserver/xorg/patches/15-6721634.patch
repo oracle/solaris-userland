@@ -3,12 +3,12 @@ Bug 15491721 - SUNBT6721634 The Nvidia logo screen should *not* be displayed
 
 Not suitable for upstream
 
---- a/hw/xfree86/common/xf86AutoConfig.c        2019-02-12 11:44:32.590848767 -0800
-+++ b/hw/xfree86/common/xf86AutoConfig.c        2019-02-12 11:49:57.014895841 -0800
-@@ -61,6 +61,18 @@
-        "\tIdentifier\t" BUILTIN_DEVICE_NAME "\n" \
-        "\tDriver\t\"%s\"\n"
-
+--- xorg-server-21.1.20/hw/xfree86/common/xf86AutoConfig.c
++++ xorg-server-21.1.20/hw/xfree86/common/xf86AutoConfig.c
+@@ -61,6 +61,18 @@ "Section \"Device\"\n" \
+ 	"\tIdentifier\t" BUILTIN_DEVICE_NAME "\n" \
+ 	"\tDriver\t\"%s\"\n"
+ 
 +#ifdef sun
 +/*
 + * Allow setting an arbitrary number of options.
@@ -22,12 +22,12 @@ Not suitable for upstream
 +#endif
 +
  #define BUILTIN_DEVICE_SECTION_POST \
-        "EndSection\n\n"
-
-@@ -68,6 +80,13 @@
-        BUILTIN_DEVICE_SECTION_PRE \
-        BUILTIN_DEVICE_SECTION_POST
-
+ 	"EndSection\n\n"
+ 
+@@ -68,6 +80,13 @@ #define BUILTIN_DEVICE_SECTION \
+ 	BUILTIN_DEVICE_SECTION_PRE \
+ 	BUILTIN_DEVICE_SECTION_POST
+ 
 +#ifdef sun
 +/* Device section with options */
 +#define BUILTIN_DEVICE_SECTION_OPT \
@@ -36,16 +36,16 @@ Not suitable for upstream
 +#endif
 +
  #define BUILTIN_SCREEN_NAME \
-        "\"Builtin Default %s Screen %d\""
-
-@@ -184,6 +203,14 @@
+ 	"\"Builtin Default %s Screen %d\""
+ 
+@@ -184,6 +203,14 @@ }
      listPossibleVideoDrivers(&md);
-
+ 
      for (i = 0; i < md.nmatches; i++) {
 +#ifdef sun
 +        const char *nvidia_string = "nvidia";
 +        const char *nvidia_opt_no_logo = "\tOption \"NoLogo\" \"True\"\n";
-+        if (!strncmp(md.matches[i], nvidia_string, sizeof(nvidia_string)))
++        if (!strcmp(md.matches[i], nvidia_string))
 +            snprintf(buf, sizeof(buf), BUILTIN_DEVICE_SECTION_OPT,
 +                      md.matches[i], 0, md.matches[i], nvidia_opt_no_logo);
 +        else
@@ -53,4 +53,3 @@ Not suitable for upstream
          snprintf(buf, sizeof(buf), BUILTIN_DEVICE_SECTION,
                  md.matches[i], 0, md.matches[i]);
          AppendToConfig(buf);
-

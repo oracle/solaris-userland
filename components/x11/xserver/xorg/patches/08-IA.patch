@@ -2,9 +2,9 @@ Solaris-specific support for the SolarisIA extension
 
 Not suitable for upstream
 
---- a/Makefile.am	2019-02-12 11:06:48.069252402 -0800
-+++ b/Makefile.am	2019-02-12 11:07:02.819680328 -0800
-@@ -58,6 +58,7 @@
+--- xorg-server-21.1.20/Makefile.am
++++ xorg-server-21.1.20/Makefile.am
+@@ -58,6 +58,7 @@ $(COMPOSITE_DIR) \
  	$(GLX_DIR) \
  	$(PRESENT_DIR) \
  	$(DRI3_DIR) \
@@ -12,9 +12,9 @@ Not suitable for upstream
  	exa \
  	$(GLAMOR_DIR) \
  	config \
---- a/configure.ac	2019-02-12 11:07:15.756272730 -0800
-+++ b/configure.ac	2019-02-12 11:08:35.022110532 -0800
-@@ -1394,6 +1394,10 @@
+--- xorg-server-21.1.20/configure.ac
++++ xorg-server-21.1.20/configure.ac
+@@ -1341,6 +1341,10 @@ AC_DEFINE(XINPUT, 1, [Support X Input ex
  XI_LIB='$(top_builddir)/Xi/libXi.la'
  XI_INC='-I$(top_srcdir)/Xi'
  
@@ -24,17 +24,17 @@ Not suitable for upstream
 +
  AM_CONDITIONAL(XF86UTILS, test "x$XF86UTILS" = xyes)
  AM_CONDITIONAL(VGAHW, test "x$VGAHW" = xyes)
- AM_CONDITIONAL(VBE, test "x$VBE" = xyes)
-@@ -2593,3 +2597,6 @@
+ AM_CONDITIONAL(INT10MODULE, test "x$INT10MODULE" = xyes)
+@@ -2385,3 +2389,6 @@ xserver.ent
  xorg-server.pc
  ])
  AC_OUTPUT
 +
 +# Add Sun IA extension
 +AC_OUTPUT([IA/Makefile])
---- a/include/extinit.h	2019-02-12 11:09:17.830801151 -0800
-+++ b/include/extinit.h	2019-02-12 11:09:41.001574924 -0800
-@@ -115,6 +115,14 @@
+--- xorg-server-21.1.20/include/extinit.h
++++ xorg-server-21.1.20/include/extinit.h
+@@ -115,6 +115,14 @@ extern _X_EXPORT Bool noMITShmExtension;
  extern void ShmExtensionInit(void);
  #endif
  
@@ -49,9 +49,9 @@ Not suitable for upstream
  extern void SyncExtensionInit(void);
  
  extern void XCMiscExtensionInit(void);
---- a/mi/miinitext.c	2019-02-12 11:09:58.055428427 -0800
-+++ b/mi/miinitext.c	2019-02-12 11:14:03.884738651 -0800
-@@ -174,6 +174,9 @@
+--- xorg-server-21.1.20/mi/miinitext.c
++++ xorg-server-21.1.20/mi/miinitext.c
+@@ -167,6 +167,9 @@ #ifdef XV
      {XvExtensionInit, "XVideo", &noXvExtension},
      {XvMCExtensionInit, "XVideo-MotionCompensation", &noXvExtension},
  #endif
@@ -61,9 +61,9 @@ Not suitable for upstream
  #ifdef XSELINUX
      {SELinuxExtensionInit, "SELinux", &noSELinuxExtension},
  #endif
---- a/os/utils.c	2019-02-12 11:14:17.355625198 -0800
-+++ b/os/utils.c	2019-02-12 11:14:31.122468554 -0800
-@@ -173,6 +173,9 @@
+--- xorg-server-21.1.20/os/utils.c
++++ xorg-server-21.1.20/os/utils.c
+@@ -177,6 +177,9 @@ #endif
  #ifdef DRI2
  Bool noDRI2Extension = FALSE;
  #endif

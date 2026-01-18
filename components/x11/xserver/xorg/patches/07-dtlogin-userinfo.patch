@@ -3,9 +3,9 @@ with core server code - see sun-src/os/dtlogin.c for the main implementation.
 
 Not suitable for upstream
 
---- a/configure.ac	2019-02-12 10:44:52.641855979 -0800
-+++ b/configure.ac	2019-02-12 10:45:52.571531858 -0800
-@@ -1708,6 +1708,7 @@
+--- xorg-server-21.1.20/configure.ac
++++ xorg-server-21.1.20/configure.ac
+@@ -1659,6 +1659,7 @@ #
  XSERVER_CFLAGS="${XSERVER_CFLAGS} ${XSERVERCFLAGS_CFLAGS}"
  XSERVER_LIBS="$DIX_LIB $MI_LIB $OS_LIB"
  XSERVER_SYS_LIBS="${XSERVERLIBS_LIBS} ${SYS_LIBS} ${LIBS}"
@@ -13,9 +13,9 @@ Not suitable for upstream
  AC_SUBST([XSERVER_LIBS])
  AC_SUBST([XSERVER_SYS_LIBS])
  
---- a/dix/main.c	2019-02-12 10:46:02.034007612 -0800
-+++ b/dix/main.c	2019-02-12 10:47:32.650322430 -0800
-@@ -118,6 +118,11 @@
+--- xorg-server-21.1.20/dix/main.c
++++ xorg-server-21.1.20/dix/main.c
+@@ -117,6 +117,11 @@ #include <X11/extensions/dpmsconst.h>
  #include "dpmsproc.h"
  #endif
  
@@ -27,7 +27,7 @@ Not suitable for upstream
  extern void Dispatch(void);
  
  CallbackListPtr RootWindowFinalizeCallback = NULL;
-@@ -152,6 +157,13 @@
+@@ -149,6 +154,13 @@ ScreenSaverAllowExposures = defaultScree
          InitBlockAndWakeupHandlers();
          /* Perform any operating system dependent initializations you'd like */
          OsInit();
@@ -41,9 +41,9 @@ Not suitable for upstream
          if (serverGeneration == 1) {
              CreateWellKnownSockets();
              for (i = 1; i < LimitClients; i++)
-@@ -276,6 +288,11 @@
+@@ -276,6 +288,11 @@ Dispatch();
  
-         Dispatch();
+         UnrefCursor(rootCursor);
  
 +#ifdef SUNSOFT
 +        /* Return to root privs before calling the rest of close down */
@@ -53,9 +53,9 @@ Not suitable for upstream
          UndisplayDevices();
          DisableAllDevices();
  
---- a/os/Makefile.am	2019-02-12 10:47:42.997975674 -0800
-+++ b/os/Makefile.am	2019-02-12 10:48:08.451699210 -0800
-@@ -46,6 +46,9 @@
+--- xorg-server-21.1.20/os/Makefile.am
++++ xorg-server-21.1.20/os/Makefile.am
+@@ -46,6 +46,9 @@ if XDMCP
  libos_la_SOURCES += $(XDMCP_SRCS)
  endif
  
@@ -65,9 +65,9 @@ Not suitable for upstream
  if HAVE_LIBUNWIND
  AM_CFLAGS += $(LIBUNWIND_CFLAGS)
  libos_la_LIBADD += $(LIBUNWIND_LIBS)
---- a/os/auth.c	2019-02-12 10:48:24.613722135 -0800
-+++ b/os/auth.c	2019-02-12 10:48:48.955837504 -0800
-@@ -278,6 +278,19 @@
+--- xorg-server-21.1.20/os/auth.c
++++ xorg-server-21.1.20/os/auth.c
+@@ -283,6 +283,19 @@ }
      return 0;
  }
  
