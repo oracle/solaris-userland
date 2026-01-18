@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
@@ -76,7 +76,6 @@ COMPONENT_PREP_ACTION += \
 REQUIRED_PACKAGES += library/python/cryptography-$(PYV)
 REQUIRED_PACKAGES += library/python/jinja2-$(PYV)
 REQUIRED_PACKAGES += library/python/netaddr-$(PYV)
-REQUIRED_PACKAGES += library/python/netifaces-$(PYV)
 REQUIRED_PACKAGES += library/python/oauthlib-$(PYV)
 REQUIRED_PACKAGES += library/python/oslo.config-$(PYV)
 REQUIRED_PACKAGES += library/python/oslo.log-$(PYV)

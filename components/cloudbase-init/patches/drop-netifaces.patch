@@ -1,0 +1,223 @@
+From e17488c2394b1dc4f892cea427dd87c125fc564c Mon Sep 17 00:00:00 2001
+From: Lucian Petrut <lpetrut@cloudbasesolutions.com>
+Date: Mon, 3 Jun 2024 13:33:06 +0000
+Subject: [PATCH] Drop netifaces dependency
+
+The netifaces library is no longer maintained, which is why we
+need to drop this dependency.
+
+There is only one place in which netifaces is being used, a
+trivial function that retrives the mac address for a given ip
+address.
+
+Thankfully, we already have a cloudbase-init "get_adapter_addresses"
+function that uses ctypes to call GetAdaptersAddresses, which
+happens to be the same Windows function used by netifaces.
+
+Worth mentioning that netifaces is the only compilable cloudbase-init
+dependency that does not provide a wheel package.
+
+Fixes: https://github.com/cloudbase/cloudbase-init/issues/140
+Change-Id: Ie52ff722cbf42da7b9bfa9f9942adc1996ce5dd8
+---
+ cloudbaseinit/osutils/base.py               |  3 ++
+ cloudbaseinit/osutils/windows.py            |  7 ++++
+ cloudbaseinit/tests/osutils/test_windows.py | 38 +++++++++++++++++++++
+ cloudbaseinit/tests/utils/test_dhcp.py      | 29 ++++------------
+ cloudbaseinit/utils/dhcp.py                 | 14 +++-----
+ requirements.txt                            |  1 -
+ 6 files changed, 58 insertions(+), 34 deletions(-)
+
+diff --git a/cloudbaseinit/osutils/base.py b/cloudbaseinit/osutils/base.py
+index 52d65381e..3b386f8d4 100644
+--- a/cloudbaseinit/osutils/base.py
++++ b/cloudbaseinit/osutils/base.py
+@@ -91,6 +91,9 @@ def get_network_adapters(self):
+     def get_network_adapter_name_by_mac_address(self, mac_address):
+         raise NotImplementedError()
+ 
++    def get_mac_address_by_local_ip(self, ip_addr):
++        raise NotImplementedError()
++
+     def set_network_adapter_mtu(self, name, mtu):
+         raise NotImplementedError()
+ 
+diff --git a/cloudbaseinit/osutils/windows.py b/cloudbaseinit/osutils/windows.py
+index 409c71441..fc7597bcd 100644
+--- a/cloudbaseinit/osutils/windows.py
++++ b/cloudbaseinit/osutils/windows.py
+@@ -819,6 +819,13 @@ def get_network_adapter_name_by_mac_address(self, mac_address):
+ 
+         return iface_index_list[0]["friendly_name"]
+ 
++    def get_mac_address_by_local_ip(self, ip_addr):
++        for iface in network.get_adapter_addresses():
++            addrs = iface.get('unicast_addresses', [])
++            for addr, family in addrs:
++                if ip_addr and addr and ip_addr.lower() == addr.lower():
++                    return iface['mac_address'].lower()
++
+     @retry_decorator.retry_decorator(
+         max_retry_count=3, exceptions=exception.ItemNotFoundException)
+     def set_network_adapter_mtu(self, name, mtu):
+diff --git a/cloudbaseinit/tests/osutils/test_windows.py b/cloudbaseinit/tests/osutils/test_windows.py
+index 527a24265..c6a106573 100644
+--- a/cloudbaseinit/tests/osutils/test_windows.py
++++ b/cloudbaseinit/tests/osutils/test_windows.py
+@@ -2139,6 +2139,44 @@ def test_get_network_adapter_name_by_mac_address_multiple_adapters(self):
+         self._test_get_network_adapter_name_by_mac_address(
+             multiple_adapters_found=True)
+ 
++    @mock.patch("cloudbaseinit.utils.windows.network."
++                "get_adapter_addresses")
++    def test_get_mac_address_by_local_ip(self, mock_get_adapter_addresses):
++        fake_addresses = [
++            {
++                "friendly_name": "mgmt",
++                "mac_address": "24:6E:96:E0:FE:76",
++                "interface_type": 6,
++                "unicast_addresses": [("fe80::499d:b2f9:48c0:c88e%20", 23),
++                                      ("10.11.12.13", 2)],
++            },
++            {
++                "friendly_name": "Loopback Pseudo-Interface 1",
++                "mac_address": "",
++                "interface_type": 24,
++                "unicast_addresses": [("::1", 23), ("127.0.0.1", 2)],
++            },
++        ]
++
++        mock_get_adapter_addresses.return_value = fake_addresses
++
++        self.assertEqual(
++            "24:6e:96:e0:fe:76",
++            self._winutils.get_mac_address_by_local_ip("10.11.12.13"))
++        self.assertEqual(
++            "24:6e:96:e0:fe:76",
++            self._winutils.get_mac_address_by_local_ip(
++                "fe80::499d:b2f9:48c0:c88e%20"))
++        self.assertEqual(
++            "24:6e:96:e0:fe:76",
++            self._winutils.get_mac_address_by_local_ip(
++                "FE80::499D:B2F9:48C0:C88E%20"))
++        self.assertEqual(
++            "",
++            self._winutils.get_mac_address_by_local_ip("127.0.0.1"))
++        self.assertIsNone(
++            self._winutils.get_mac_address_by_local_ip("10.10.10.10"))
++
+     @mock.patch('cloudbaseinit.osutils.windows.WindowsUtils'
+                 '.execute_process')
+     @mock.patch('cloudbaseinit.osutils.windows.WindowsUtils'
+diff --git a/cloudbaseinit/tests/utils/test_dhcp.py b/cloudbaseinit/tests/utils/test_dhcp.py
+index 45bd0e0e8..ca4e1b0c4 100644
+--- a/cloudbaseinit/tests/utils/test_dhcp.py
++++ b/cloudbaseinit/tests/utils/test_dhcp.py
+@@ -12,7 +12,6 @@
+ #    License for the specific language governing permissions and limitations
+ #    under the License.
+ 
+-import netifaces
+ import socket
+ import struct
+ import unittest
+@@ -108,35 +107,19 @@ def test_parse_dhcp_reply_other_than_cookie(self):
+         self._test_parse_dhcp_reply(message_type=3, id_reply=111,
+                                     equals_cookie=False)
+ 
+-    @mock.patch('netifaces.ifaddresses')
+-    @mock.patch('netifaces.interfaces')
+-    def test_get_mac_address_by_local_ip(self, mock_interfaces,
+-                                         mock_ifaddresses):
+-        fake_addresses = {}
+-        fake_addresses[netifaces.AF_INET] = [{'addr': 'fake address'}]
+-        fake_addresses[netifaces.AF_LINK] = [{'addr': 'fake mac'}]
+-
+-        mock_interfaces.return_value = ['fake interface']
+-        mock_ifaddresses.return_value = fake_addresses
+-
+-        response = dhcp._get_mac_address_by_local_ip('fake address')
+-
+-        mock_interfaces.assert_called_once_with()
+-        mock_ifaddresses.assert_called_once_with('fake interface')
+-        self.assertEqual(fake_addresses[netifaces.AF_LINK][0]['addr'],
+-                         response)
+-
+     @mock.patch('random.randint')
+     @mock.patch('socket.socket')
+-    @mock.patch('cloudbaseinit.utils.dhcp._get_mac_address_by_local_ip')
+     @mock.patch('cloudbaseinit.utils.dhcp._get_dhcp_request_data')
+     @mock.patch('cloudbaseinit.utils.dhcp._parse_dhcp_reply')
+-    def test_get_dhcp_options(self, mock_parse_dhcp_reply,
++    @mock.patch('cloudbaseinit.osutils.factory.get_os_utils')
++    def test_get_dhcp_options(self, mock_get_os_utils,
++                              mock_parse_dhcp_reply,
+                               mock_get_dhcp_request_data,
+-                              mock_get_mac_address_by_local_ip, mock_socket,
+-                              mock_randint):
++                              mock_socket, mock_randint):
+         mock_randint.return_value = 'fake int'
+         mock_socket().getsockname.return_value = ['fake local ip']
++        mock_get_mac_address_by_local_ip = (
++            mock_get_os_utils.return_value.get_mac_address_by_local_ip)
+         mock_get_mac_address_by_local_ip.return_value = 'fake mac'
+         mock_get_dhcp_request_data.return_value = 'fake data'
+         mock_parse_dhcp_reply.return_value = (True, 'fake replied options')
+diff --git a/cloudbaseinit/utils/dhcp.py b/cloudbaseinit/utils/dhcp.py
+index c9fd1e140..5c4d7febd 100644
+--- a/cloudbaseinit/utils/dhcp.py
++++ b/cloudbaseinit/utils/dhcp.py
+@@ -13,7 +13,6 @@
+ #    under the License.
+ 
+ import datetime
+-import netifaces
+ import random
+ import socket
+ import struct
+@@ -21,6 +20,7 @@
+ 
+ from oslo_log import log as oslo_logging
+ 
++from cloudbaseinit.osutils import factory as osutils_factory
+ from cloudbaseinit.utils import network
+ 
+ _DHCP_COOKIE = b'\x63\x82\x53\x63'
+@@ -96,14 +96,6 @@ def _parse_dhcp_reply(data, id_req):
+     return True, options
+ 
+ 
+-def _get_mac_address_by_local_ip(ip_addr):
+-    for iface in netifaces.interfaces():
+-        addrs = netifaces.ifaddresses(iface)
+-        for addr in addrs.get(netifaces.AF_INET, []):
+-            if addr['addr'] == ip_addr:
+-                return addrs[netifaces.AF_LINK][0]['addr']
+-
+-
+ def _bind_dhcp_client_socket(s, max_bind_attempts, bind_retry_interval):
+     bind_attempts = 1
+     while True:
+@@ -138,7 +130,9 @@ def get_dhcp_options(dhcp_host=None, requested_options=[], timeout=5.0,
+         s.settimeout(timeout)
+ 
+         local_ip_addr = network.get_local_ip(dhcp_host)
+-        mac_address = _get_mac_address_by_local_ip(local_ip_addr)
++
++        osutils = osutils_factory.get_os_utils()
++        mac_address = osutils.get_mac_address_by_local_ip(local_ip_addr)
+ 
+         data = _get_dhcp_request_data(id_req, mac_address, requested_options,
+                                       vendor_id)
+diff --git a/requirements.txt b/requirements.txt
+index 79adbc625..28d9e5754 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -6,7 +6,6 @@ oslo.config
+ oslo.log
+ Babel>=1.3
+ oauthlib
+-netifaces
+ PyYAML
+ requests
+ untangle==1.2.1
