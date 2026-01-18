@@ -2,11 +2,20 @@ zope.testing is not available on Solaris; skip all related tests.
 
 Not suitable for upstream.
 
---- zope.interface-5.5.2/src/zope/interface/tests/test_ro.py
-+++ zope.interface-5.5.2/src/zope/interface/tests/test_ro.py
-@@ -190,6 +190,7 @@ class C3Setting(object):
-         from zope.interface import ro
+--- zope_interface-8.1.1/src/zope/interface/tests/test_ro.py
++++ zope_interface-8.1.1/src/zope/interface/tests/test_ro.py
+@@ -16,8 +16,6 @@ import doctest
+ import re
+ import unittest
+ 
+-import zope.testing.renormalizing
+-
+ 
+ # pylint:disable=blacklisted-name
+ # pylint:disable=protected-access
+@@ -225,6 +223,7 @@ class C3Setting:
          setattr(ro.C3, self._setting.__name__, self._setting)
+ 
  
 +@unittest.skip("zope.testing in not available on Solaris")
  class Test_c3_ro(Test_ro):

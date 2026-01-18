@@ -26,16 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		incremental
-COMPONENT_VERSION=	24.7.2
+COMPONENT_VERSION=	24.11.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:fb4f1d47ee60efe87d4f6f0ebb5f70b9760db2b2574c59c8e8912be4ebd464c9
+    sha256:87d3480dbb083c1d736222511a8cf380012a8176c2456d01ef483242abbbcf8c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/twisted/incremental
 COMPONENT_BUGDB=	python-mod/incremental
 COMPONENT_ANITYA_ID=	19663
-COMPONENT_BAID=		177672
+COMPONENT_BAID=		360890
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -55,6 +55,8 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TEST_NO_ARCH)
+
+REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 
 # testing dependencies
 REQUIRED_PACKAGES += library/python/python-twisted

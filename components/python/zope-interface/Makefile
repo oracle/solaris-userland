@@ -29,17 +29,17 @@ include ../../../make-rules/shared-macros.mk
 # This component does not fully specify dependencies of shared objects
 LD_SHARED_OPTIONS_Z_DEFS=
 
-COMPONENT_NAME=		zope.interface
-COMPONENT_VERSION=	7.1.1
+COMPONENT_NAME=		zope_interface
+COMPONENT_VERSION=	8.1.1
 COMPONENT_PROJECT_URL=	http://zope.org/Wikis/Interfaces/FrontPage
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:4284d664ef0ff7b709836d4de7b13d80873dc5faeffc073abdb280058bfac5e3
+    sha256:114dec07f6eda723fcdeee4e568ee168476dba251f1de5de2dbecaa50310c621
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/zope
 COMPONENT_ANITYA_ID=	4112
-COMPONENT_BAID=		185742
+COMPONENT_BAID=		360893
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
