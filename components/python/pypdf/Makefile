@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pypdf
-COMPONENT_VERSION=	6.4.0
+COMPONENT_VERSION=	6.6.0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:4769d471f8ddc3341193ecc5d6560fa44cf8cd0abfabf21af4e195cc0c224072
+    sha256:4c887ef2ea38d86faded61141995a3c7d068c9d6ae8477be7ae5de8a8e16592f
 COMPONENT_PROJECT_URL=	https://github.com/py-pdf/pypdf
 COMPONENT_BUGDB=	python-mod/pypdf
 COMPONENT_ANITYA_ID=	7703
-COMPONENT_BAID=		358724
+COMPONENT_BAID=		366045
 
 # We need just a version pspdfutils is delivered with
 PYTHON_VERSIONS= 3.13
