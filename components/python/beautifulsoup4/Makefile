@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -58,6 +58,3 @@ test:		$(TEST_NO_ARCH)
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/hatchling

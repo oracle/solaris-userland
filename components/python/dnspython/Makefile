@@ -57,6 +57,3 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/hatchling

@@ -52,7 +52,3 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(NO_TESTS)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/hatchling
-REQUIRED_PACKAGES += library/python/hatch-vcs

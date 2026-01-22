@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -59,6 +59,3 @@ install:	$(INSTALL_64)
 test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/flit_core

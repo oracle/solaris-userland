@@ -60,7 +60,3 @@ test:		$(TEST_NO_ARCH)
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/wcwidth-%)
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/hatchling
-REQUIRED_PACKAGES += library/python/hatch-vcs

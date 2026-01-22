@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -90,6 +90,3 @@ REQUIRED_PACKAGES += system/library
 # Testing related components
 REQUIRED_PACKAGES += library/python/python-hamcrest
 REQUIRED_PACKAGES += library/python/service_identity
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/hatchling

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2026, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -67,7 +67,3 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/referencing-%)
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/pip
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/hatchling
-REQUIRED_PACKAGES += library/python/hatch-vcs

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -80,6 +80,3 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/requests-%)
 REQUIRED_PACKAGES += developer/documentation-tool/docutils
 REQUIRED_PACKAGES += developer/documentation-tool/sphinx/alabaster
 REQUIRED_PACKAGES += library/python/roman-numerals
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/flit_core

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -58,6 +58,3 @@ install:	$(INSTALL_NO_ARCH)
 venv-test:	$(TEST_NO_ARCH)
 
 venv-system-test:	$(SYSTEM_TEST_NO_ARCH)
-
-# build dependencies
-REQUIRED_PACKAGES += library/python/flit_core
