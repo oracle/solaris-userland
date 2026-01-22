@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -33,13 +33,13 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 MAJOR_VERSION=8.4
-MICRO_VERSION=7
+MICRO_VERSION=8
 
 COMPONENT_NAME        = mysql
 COMPONENT_VERSION     = $(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH= \
-			sha256:c0bf33a94cdb908f149aea0797affb1b139262ccf0e0b9787a17246207542e69
+			sha256:be9d96cdf87f276952a2cdd960f106b960a8860e46c115ed39c1b5f2e0387a20
 COMPONENT_ARCHIVE_URL = https://dev.mysql.com/get/Downloads/MySQL-$(MAJOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL = https://dev.mysql.com/
 COMPONENT_BUGDB       = database/mysql
