@@ -1,9 +1,9 @@
 Pass -m32 to gcc to make it build 32 bit.
 May investigate and send upstream. Use correct runpaths.
 
---- nss-3.110/nss/cmd/platlibs.mk
-+++ nss-3.110/nss/cmd/platlibs.mk
-@@ -10,9 +10,9 @@ # version and in the mixed (static nss l
+--- nss-3_119_1/nss/cmd/platlibs.mk
++++ nss-3_119_1/nss/cmd/platlibs.mk
+@@ -10,9 +10,9 @@ ifeq ($(BUILD_SUN_PKG), 1)
  
  ifeq ($(OS_ARCH), SunOS) 
  ifeq ($(USE_64), 1)
@@ -15,9 +15,9 @@ May investigate and send upstream. Use correct runpaths.
  endif
  endif
  
---- nss-3.110/nss/coreconf/SunOS5.mk
-+++ nss-3.110/nss/coreconf/SunOS5.mk
-@@ -45,6 +45,15 @@ OPTIMIZER = -O2
+--- nss-3_119_1/nss/coreconf/SunOS5.mk
++++ nss-3_119_1/nss/coreconf/SunOS5.mk
+@@ -45,6 +45,15 @@ ifdef NS_USE_GCC
  	    # Enable this for accurate dtrace profiling
  	    # OPTIMIZER += -mno-omit-leaf-frame-pointer -fno-omit-frame-pointer
  	endif
@@ -33,7 +33,7 @@ May investigate and send upstream. Use correct runpaths.
  else
  	CC         = cc
  	CCC        = CC
-@@ -103,6 +112,8 @@ # -z defs: no unresolved symbols allowed
+@@ -103,6 +112,8 @@ PROCESS_MAP_FILE = grep -v ';-' $< | \
  ifdef NS_USE_GCC
  ifeq ($(USE_64), 1)
  	DSO_LDOPTS += -m64
@@ -61,9 +61,9 @@ May investigate and send upstream. Use correct runpaths.
  endif
  
  OS_LIBS += -lthread -lnsl -lsocket -lposix4 -ldl -lc
---- nss-3.110/nss/lib/freebl/Makefile
-+++ nss-3.110/nss/lib/freebl/Makefile
-@@ -510,7 +510,7 @@ # Solaris for non-sparc family CPUs
+--- nss-3_119_1/nss/lib/freebl/Makefile
++++ nss-3_119_1/nss/lib/freebl/Makefile
+@@ -506,7 +506,7 @@ else
      ifdef NS_USE_GCC
  	LD = gcc
  	AS = gcc
@@ -72,8 +72,8 @@ May investigate and send upstream. Use correct runpaths.
      endif
      ifeq ($(USE_64),1)
  	# Solaris for AMD64
---- nss-3.110/nss/lib/sysinit/config.mk
-+++ nss-3.110/nss/lib/sysinit/config.mk
+--- nss-3_119_1/nss/lib/sysinit/config.mk
++++ nss-3_119_1/nss/lib/sysinit/config.mk
 @@ -49,18 +49,10 @@ endif
  
  # $(PROGRAM) has explicit dependencies on $(EXTRA_LIBS)

@@ -2,8 +2,8 @@ There is no need to include $ORIGIN into RPATH. This should be sent to
 upstream, but given that we want to move the libs to /usr/lib we may rather
 wait for that.
 
---- nspr-4.35/nspr/lib/ds/Makefile.in
-+++ nspr-4.35/nspr/lib/ds/Makefile.in
+--- nspr-4.38.2/nspr/lib/ds/Makefile.in
++++ nspr-4.38.2/nspr/lib/ds/Makefile.in
 @@ -56,9 +56,11 @@ endif
  else
  MKSHLIB += -M $(MAPFILE)
@@ -18,9 +18,9 @@ wait for that.
 +endif
  endif
  
- ifeq ($(OS_ARCH),OS2)
---- nspr-4.35/nspr/lib/libc/src/Makefile.in
-+++ nspr-4.35/nspr/lib/libc/src/Makefile.in
+ EXTRA_LIBS = $(LIBNSPR)
+--- nspr-4.38.2/nspr/lib/libc/src/Makefile.in
++++ nspr-4.38.2/nspr/lib/libc/src/Makefile.in
 @@ -65,9 +65,11 @@ endif
  else
  MKSHLIB += -M $(MAPFILE)
@@ -35,4 +35,4 @@ wait for that.
 +endif
  endif
  
- ifeq ($(OS_ARCH),OS2)
+ EXTRA_LIBS = $(LIBNSPR)

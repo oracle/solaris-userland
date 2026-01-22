@@ -1,87 +1,87 @@
 Patch from sic team.
 Will not send upstream.
 
---- nspr-4.35/nspr/pr/src/pthreads/ptthread.c
-+++ nspr-4.35/nspr/pr/src/pthreads/ptthread.c
-@@ -1652,6 +1652,32 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
-     PRThread *thread;
-     size_t nameLen;
-     int result = 0;
+--- nspr-4.38.2/nspr/pr/src/pthreads/ptthread.c
++++ nspr-4.38.2/nspr/pr/src/pthreads/ptthread.c
+@@ -1485,6 +1485,32 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
+   PRThread* thread;
+   size_t nameLen;
+   int result = 0;
 +#if defined(DARWIN)
-+    int (*dynamic_pthread_setname_np)(const char*);
++  int (*dynamic_pthread_setname_np)(const char*);
 +#else
-+    int (*dynamic_pthread_setname_np)(pthread_t, const char*);
++  int (*dynamic_pthread_setname_np)(pthread_t, const char*);
 +#endif
 +
 +#if !defined(OPENBSD) && !defined(FREEBSD) && !defined(DRAGONFLY) && !defined(ANDROID) && !defined(NETBSD)
-+#if defined(DARWIN)
-+    /* Mac OS X has a length limit of 63 characters, but there is no API
-+     * exposing it.
-+     */
-+#define SETNAME_LENGTH_CONSTRAINT 63
-+#else
-+    /*
-+     * The 15-character name length limit is an experimentally determined
-+     * length of a null-terminated string that most linux distros accept
-+     * as an argument to pthread_setname_np.  Otherwise the E2BIG
-+     * error is returned by the function.
-+     */
-+#define SETNAME_LENGTH_CONSTRAINT 15
++#  if defined(DARWIN)
++  /* Mac OS X has a length limit of 63 characters, but there is no API
++   * exposing it.
++   */
++#    define SETNAME_LENGTH_CONSTRAINT 63
++#  else
++  /*
++   * The 15-character name length limit is an experimentally determined
++   * length of a null-terminated string that most linux distros accept
++   * as an argument to pthread_setname_np.  Otherwise the E2BIG
++   * error is returned by the function.
++   */
++#    define SETNAME_LENGTH_CONSTRAINT 15
++#  endif
++#  define SETNAME_FRAGMENT1_LENGTH (SETNAME_LENGTH_CONSTRAINT >> 1)
++#  define SETNAME_FRAGMENT2_LENGTH \
++      (SETNAME_LENGTH_CONSTRAINT - SETNAME_FRAGMENT1_LENGTH - 1)
++  char name_dup[SETNAME_LENGTH_CONSTRAINT + 1];
 +#endif
-+#define SETNAME_FRAGMENT1_LENGTH (SETNAME_LENGTH_CONSTRAINT >> 1)
-+#define SETNAME_FRAGMENT2_LENGTH \
-+    (SETNAME_LENGTH_CONSTRAINT - SETNAME_FRAGMENT1_LENGTH - 1)
-+    char name_dup[SETNAME_LENGTH_CONSTRAINT + 1];
-+#endif
  
-     if (!name) {
-         PR_SetError(PR_INVALID_ARGUMENT_ERROR, 0);
-@@ -1671,7 +1697,10 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
-     }
-     memcpy(thread->name, name, nameLen + 1);
+   if (!name) {
+     PR_SetError(PR_INVALID_ARGUMENT_ERROR, 0);
+@@ -1504,7 +1530,10 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
+   }
+   memcpy(thread->name, name, nameLen + 1);
  
--#if defined(OPENBSD) || defined(FREEBSD) || defined(DRAGONFLY)
-+#if defined(AIX)
-+    /* No pthread function to set thread name. */
-+    result = 0;
-+#elif defined(OPENBSD) || defined(FREEBSD) || defined(DRAGONFLY)
-     pthread_set_name_np(thread->id, name);
- #elif defined(ANDROID)
-     prctl(PR_SET_NAME, (unsigned long)(name));
-@@ -1682,11 +1711,6 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
-      * On OSX, pthread_setname_np is only available in 10.6 or later, so test
-      * for it at runtime.  It also may not be available on all linux distros.
-      */
--#if defined(DARWIN)
--    int (*dynamic_pthread_setname_np)(const char*);
--#else
--    int (*dynamic_pthread_setname_np)(pthread_t, const char*);
--#endif
+-#  if defined(OPENBSD) || defined(FREEBSD) || defined(DRAGONFLY)
++#  if defined(AIX)
++  /* No pthread function to set thread name. */
++  result = 0;
++#  elif defined(OPENBSD) || defined(FREEBSD) || defined(DRAGONFLY)
+   pthread_set_name_np(thread->id, name);
+ #  elif defined(ANDROID)
+   prctl(PR_SET_NAME, (unsigned long)(name));
+@@ -1515,11 +1544,6 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
+    * On OSX, pthread_setname_np is only available in 10.6 or later, so test
+    * for it at runtime.  It also may not be available on all linux distros.
+    */
+-#    if defined(DARWIN)
+-  int (*dynamic_pthread_setname_np)(const char*);
+-#    else
+-  int (*dynamic_pthread_setname_np)(pthread_t, const char*);
+-#    endif
  
-     *(void**)(&dynamic_pthread_setname_np) =
-         dlsym(RTLD_DEFAULT, "pthread_setname_np");
-@@ -1694,24 +1718,6 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
-         return PR_SUCCESS;
-     }
+   *(void**)(&dynamic_pthread_setname_np) =
+       dlsym(RTLD_DEFAULT, "pthread_setname_np");
+@@ -1527,24 +1551,6 @@ PR_IMPLEMENT(PRStatus) PR_SetCurrentThre
+     return PR_SUCCESS;
+   }
  
--#if defined(DARWIN)
--    /* Mac OS X has a length limit of 63 characters, but there is no API
--     * exposing it.
--     */
--#define SETNAME_LENGTH_CONSTRAINT 63
--#else
--    /*
--     * The 15-character name length limit is an experimentally determined
--     * length of a null-terminated string that most linux distros accept
--     * as an argument to pthread_setname_np.  Otherwise the E2BIG
--     * error is returned by the function.
--     */
--#define SETNAME_LENGTH_CONSTRAINT 15
--#endif
--#define SETNAME_FRAGMENT1_LENGTH (SETNAME_LENGTH_CONSTRAINT >> 1)
--#define SETNAME_FRAGMENT2_LENGTH \
--    (SETNAME_LENGTH_CONSTRAINT - SETNAME_FRAGMENT1_LENGTH - 1)
--    char name_dup[SETNAME_LENGTH_CONSTRAINT + 1];
-     if (nameLen > SETNAME_LENGTH_CONSTRAINT) {
-         memcpy(name_dup, name, SETNAME_FRAGMENT1_LENGTH);
-         name_dup[SETNAME_FRAGMENT1_LENGTH] = '~';
+-#    if defined(DARWIN)
+-  /* Mac OS X has a length limit of 63 characters, but there is no API
+-   * exposing it.
+-   */
+-#      define SETNAME_LENGTH_CONSTRAINT 63
+-#    else
+-  /*
+-   * The 15-character name length limit is an experimentally determined
+-   * length of a null-terminated string that most linux distros accept
+-   * as an argument to pthread_setname_np.  Otherwise the E2BIG
+-   * error is returned by the function.
+-   */
+-#      define SETNAME_LENGTH_CONSTRAINT 15
+-#    endif
+-#    define SETNAME_FRAGMENT1_LENGTH (SETNAME_LENGTH_CONSTRAINT >> 1)
+-#    define SETNAME_FRAGMENT2_LENGTH \
+-      (SETNAME_LENGTH_CONSTRAINT - SETNAME_FRAGMENT1_LENGTH - 1)
+-  char name_dup[SETNAME_LENGTH_CONSTRAINT + 1];
+   if (nameLen > SETNAME_LENGTH_CONSTRAINT) {
+     memcpy(name_dup, name, SETNAME_FRAGMENT1_LENGTH);
+     name_dup[SETNAME_FRAGMENT1_LENGTH] = '~';
