@@ -19,84 +19,65 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64_and_32
 COMPILER =		gcc
-CTF_MODE =		relaxed
+CTF_MODE =		off # C++
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libmemcached
-COMPONENT_VERSION=	1.0.18
+COMPONENT_VERSION=	1.1.4
+COMPONENT_BAID=		363466
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e22c0bb032fde08f53de9ffbc5a128233041d9f33b5de022c0978a2149885f82 
-COMPONENT_ARCHIVE_URL=	https://launchpad.net/libmemcached/1.0/$(COMPONENT_VERSION)/+download/libmemcached-$(COMPONENT_VERSION).tar.gz
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
-COMPONENT_PROJECT_URL=  http://libmemcached.org/libMemcached.html
+    sha256:c477e1f6510e1dc698e84f3717ce690a8f65b94c616ecaa62306cce0f5e3116a
+COMPONENT_PROJECT_URL=  https://github.com/awesomized/libmemcached
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/archive/refs/tags/$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	database/memcached
 COMPONENT_ANITYA_ID=	5412
 
-COMPONENT_BAID=		35392
+BUILD_STYLE= cmake
 
 include $(WS_MAKE_RULES)/common.mk
 
-LDFLAGS += $(LIBSOCKET) $(LIBNSL)
-ifeq ($(OS_VERSION),11.3)
-CONFIGURE_OPTIONS += ax_cv_check_cflags__Werror__fPIE=no
-CONFIGURE_OPTIONS += ax_cv_check_cflags__Werror__pie=no
-CONFIGURE_OPTIONS += ax_cv_check_cxxflags__Werror__fPIE=no
-CONFIGURE_OPTIONS += ax_cv_check_cxxflags__Werror__pie=no
-endif
-
-# Include _SOLARIS_ flag for byteorder.h.patch's ifdef to work
-CFLAGS+= -D_SOLARIS_
-CXXFLAGS+= -D_SOLARIS_
-
-CONFIGURE_ENV +=	MAKE=$(GMAKE)
-
-CONFIGURE_OPTIONS +=	--includedir=$(CONFIGURE_INCLUDEDIR)
+LDFLAGS+= -lumem
 
 # need some files in $(SOURCE_DIR)/docs during build
 COMPONENT_PRE_CONFIGURE_ACTION = \
     ($(CLONEY) $(SOURCE_DIR) $(@D))
 
-# need /usr/perl5/bin on path to access pod2man perl script, used by 
-# the build to create docs
-COMPONENT_BUILD_ENV +=	PATH=/usr/perl5/bin:$(PATH)
+# Disable parallel test run to get consistent test results.
+CONFIGURE_ENV += CIRRUS_CI=1
 
-COMPONENT_BUILD_ENV +=	MAKE="$(GMAKE)"	
+CMAKE_OPTIONS += -DBUILD_TESTING=ON
+CMAKE_OPTIONS += -DBUILD_DOCS_MAN=ON
+CMAKE_OPTIONS += -DBUILD_DOCS_MANGZ=OFF
+CMAKE_OPTIONS += -DENABLE_MEMASLAP=OFF
+CMAKE_OPTIONS += -DENABLE_SASL=ON
+CMAKE_OPTIONS += -DMEMCACHED_BINARY=/usr/lib/memcached
 
-# Libmemcached's configure script sets an incorrect CFLAGS in the Makefiles
-# it generates.  Make sure we use the correct one by passing CFLAGS in 
-# as a build argument (CFLAGS in the environment won't take precedence
-# over the Makefile one).
-COMPONENT_BUILD_ARGS +=	CFLAGS="$(CFLAGS)"
+RMRPATH= $(ELFEDIT) -e "dyn:delete RUNPATH" -e "dyn:delete RPATH"
 
-# Similarly, set pkglibdir in the arguments to gmake; otherwise
-# the Makefile sets runpath to a non-existent /usr/lib/libmemcached directory.
-COMPONENT_BUILD_ARGS +=	pkglibdir=$(USRLIBDIR)
+COMPONENT_POST_INSTALL_ACTION.64 += \
+	$(RMRPATH) $(PROTOUSRLIBDIR64)/libhashkit.so.2.0.0 ; \
+	$(RMRPATH) $(PROTOUSRLIBDIR64)/libmemcached.so.11.0.0 ; \
+	$(RMRPATH) $(PROTOUSRLIBDIR64)/libmemcachedprotocol.so.0.0.0 ; \
+	$(RMRPATH) $(PROTOUSRLIBDIR64)/libmemcachedutil.so.2.0.0; \
+	$(RMRPATH) $(PROTOUSRLIBDIR)/libhashkit.so.2.0.0 ; \
+	$(RMRPATH) $(PROTOUSRLIBDIR)/libmemcached.so.11.0.0 ; \
+	$(RMRPATH) $(PROTOUSRLIBDIR)/libmemcachedprotocol.so.0.0.0 ; \
+	$(RMRPATH) $(PROTOUSRLIBDIR)/libmemcachedutil.so.2.0.0;
 
-COMPONENT_INSTALL_ENV +=	DESTDIR=$(PROTO_DIR)
+# Allow to pass test memcached/options.cpp and find options.config
+# even when build in UL setup.
+COMPONENT_PRE_TEST_ACTION = \
+    ($(SYMLINK) $(SOURCE_DIR) $(@D)/test/$(COMPONENT_SRC))
 
-COMPONENT_TEST_ARGS +=		-k -i
-COMPONENT_TEST_TARGETS =	test
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/SKIP/p" ' \
-        '-e "/PASS/p" ' \
-	'-e "/FAIL/p" ' \
-	'-e "/ERROR/p" ' \
-	'-e "/TOTAL/p" '
-
-# Master test results are the same for both 32-bit and 64-bit, so override
-# here, rather than create multiple identical master files.
+COMPONENT_TEST_ENV += CLICOLOR=0
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += -e '"s/[[:space:]]\+[0-9]\+\(\.[0-9]\+\)\? sec//g" '
 
-# Tests fail, probably because memcached is not running.
-# XFAILS are due to servers or arguments not being provided. 
-
-REQUIRED_PACKAGES += developer/gcc
-REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += service/memcached
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math

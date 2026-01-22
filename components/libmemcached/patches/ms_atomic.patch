@@ -1,0 +1,13 @@
+https://github.com/awesomized/libmemcached/pull/157
+
+--- libmemcached-1.1.4/contrib/bin/memaslap/ms_atomic.h
++++ libmemcached-1.1.4/contrib/bin/memaslap/ms_atomic.h
+@@ -22,7 +22,7 @@ #if defined(__SUNPRO_C) || defined(HAVE_
+ #  define ATOMIC volatile
+ #  define _KERNEL
+ #  include <atomic.h>
+-#  if SIZEOF_SIZE_T == 8
++#  if SIZEOF_SIZE_T == 8 || __SIZEOF_SIZE_T__ == 8
+ #    define atomic_add_size(X, Y) atomic_add_64((X), (Y))
+ #  else
+ #    define atomic_add_size(X, Y) atomic_add_32((X), (Y))

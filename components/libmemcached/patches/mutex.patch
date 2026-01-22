@@ -1,0 +1,13 @@
+https://github.com/awesomized/libmemcached/pull/160
+
+--- libmemcached-1.1.4/test/lib/random.cpp
++++ libmemcached-1.1.4/test/lib/random.cpp
+@@ -5,7 +5,7 @@ #if HAVE_UNISTD_H
+ #  include <unistd.h> // getpid()
+ #endif
+ mt19937_64 rnd_eng;
+-mutex rnd_mtx;
++std::mutex rnd_mtx;
+ 
+ void random_setup() {
+   using namespace chrono;

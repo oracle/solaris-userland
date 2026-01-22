@@ -1,0 +1,38 @@
+https://github.com/awesomized/libmemcached/pull/158
+
+--- libmemcached-1.1.4/src/libmemcached/io.cc
++++ libmemcached-1.1.4/src/libmemcached/io.cc
+@@ -233,6 +233,19 @@ return rc;
+       }
+     }
+     if (pfd.revents & events || (events == IO_POLL_CONNECT && pfd.revents & POLLOUT)) {
++      if (events == IO_POLL_CONNECT) {
++        // Ensure connect actually succeeded
++        memcached_return_t rc = io_sock_err(inst, memcached_literal_param("SO_ERROR after connect"));
++        if (rc != MEMCACHED_SUCCESS) {
++          if (rc == MEMCACHED_TIMEOUT) {
++            // unlikely here, but keep behavior consistent
++            return rc;
++          }
++          // Propagate the real connect error (e.g., ECONNREFUSED)
++          return rc;
++        }
++      }
++
+       return MEMCACHED_SUCCESS;
+     }
+ #if DEBUG
+@@ -341,6 +354,13 @@ return false;
+       }
+       case ENOTCONN:
+       case EPIPE:
++      case ECONNRESET:
++        memcached_quit_server(instance, true);
++        // Report as a connection failure to match test expectations
++        error = memcached_set_error(*instance, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT);
++        WATCHPOINT_ASSERT(instance->fd == INVALID_SOCKET);
++        return false;
++
+       default:
+         memcached_quit_server(instance, true);
+         error = memcached_set_errno(*instance, local_errno, MEMCACHED_AT);
