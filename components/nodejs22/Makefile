@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -31,18 +31,18 @@ CTF_MODE =		off	# Has no effect
 include			../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		node
-COMPONENT_VERSION=	22.15.1
+COMPONENT_VERSION=	22.22.0
 COMPONENT_SUBVERSION=
 HUMAN_VERSION=		$(COMPONENT_VERSION)$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=	https://github.com/nodejs/node
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_HASH= \
-    sha256:539353a7d23bdc8818afeba495de8579563f80cd712b4411337b30f5b261faf1
+    sha256:9d63ac0e0ff2cf2227ca750a7cca2c172cb0d7fed3b54e1316fad3922894c11c
 COMPONENT_ARCHIVE_URL=	\
     $(COMPONENT_PROJECT_URL)/archive/v$(COMPONENT_VERSION).zip
 COMPONENT_BUGDB=	utility/nodejs
-COMPONENT_BAID=		329348
+COMPONENT_BAID=		365213
 COMPONENT_ANITYA_ID=	8251
 
 CONFIGURE_DEFAULT_DIRS=	no
@@ -86,10 +86,12 @@ COMPONENT_BUILD_ENV+=	PATH=$(PATH):/usr/sbin $(NPM_ENV)
 # Fix gmake test failure on systems behind proxy and using
 # local NPM repository.
 #
-COMPONENT_TEST_ENV+=	http_proxy=
-COMPONENT_TEST_ENV+=	https_proxy=
-COMPONENT_TEST_ENV+=	HTTP_PROXY=
-COMPONENT_TEST_ENV+=	HTTPS_PROXY=
+COMPONENT_TEST_ENV+=	--unset=http_proxy
+COMPONENT_TEST_ENV+=	--unset=https_proxy
+COMPONENT_TEST_ENV+=	--unset=HTTP_PROXY
+COMPONENT_TEST_ENV+=	--unset=HTTPS_PROXY
+COMPONENT_TEST_ENV+=	--unset=no_proxy
+COMPONENT_TEST_ENV+=	--unset=ftp_proxy
 
 # Make test does not like cloney, so a simple copy is used instead.
 COMPONENT_PRE_CONFIGURE_ACTION= \

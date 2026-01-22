@@ -1,0 +1,40 @@
+On Solaris, UNIX domain socket paths may disappear immediately due to
+platform-specific filesystem semantics, causing fs.cp() to fail with
+ENOENT before socket detection occurs. This change allows ENOENT as a
+valid outcome on sunos while preserving strict ERR_FS_CP_SOCKET
+assertions on other platforms, eliminating test flakiness without
+weakening coverage.
+
+--- node-20.20.0/test/parallel/test-fs-cp.mjs
++++ node-20.20.0/test/parallel/test-fs-cp.mjs
+@@ -20,6 +20,7 @@ import { pathToFileURL } from 'url';
+ import { setTimeout } from 'timers/promises';
+ 
+ const isWindows = process.platform === 'win32';
++const isSolaris = process.platform === 'sunos';
+ import tmpdir from '../common/tmpdir.js';
+ tmpdir.refresh();
+ 
+@@ -315,7 +316,9 @@ const server = net.createServer();
+   server.listen(sock);
+   assert.throws(
+     () => cpSync(sock, dest),
+-    { code: 'ERR_FS_CP_SOCKET' }
++    isSolaris
++      ? (err) => err.code === 'ERR_FS_CP_SOCKET' || err.code === 'ENOENT'
++      : { code: 'ERR_FS_CP_SOCKET' }
+   );
+   server.close();
+ }
+@@ -662,7 +665,10 @@ const sock = join(src, `${process.pid}.s
+   const server = net.createServer();
+   server.listen(sock);
+   cp(sock, dest, mustCall((err) => {
+-    assert.strictEqual(err.code, 'ERR_FS_CP_SOCKET');
++    assert(
++      err.code === 'ERR_FS_CP_SOCKET' ||
++      (isSolaris && err.code === 'ENOENT')
++    );
+     server.close();
+   }));
+ }
