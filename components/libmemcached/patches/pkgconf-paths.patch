@@ -1,0 +1,26 @@
+The .pc files expect the installation prefix to be added
+before BINDIR and LIBDIR. However, our make rules already apply that prefix, so
+it would appear twice. It is simpler to patch the .pc.in file rather than
+trying to modify our variables.
+
+Patch is not suitable for upstream.
+
+--- libmemcached-1.1.4/support/libmemcached.pc.in
++++ libmemcached-1.1.4/support/libmemcached.pc.in
+@@ -1,13 +1,13 @@
+ prefix=@CMAKE_INSTALL_PREFIX@
+-exec_prefix=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_BINDIR@
+-libdir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
++exec_prefix=@CMAKE_INSTALL_BINDIR@
++libdir=@CMAKE_INSTALL_LIBDIR@
+ includedir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@
+ 
+ Name: libmemcached
+ URL: https://awesomized.github.io/libmemcached/
+ Description: libmemcached C/C++ library
+ Version: @PROJECT_VERSION@
+-Libs: -L@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@ -lmemcached -lmemcachedutil
++Libs: -L@CMAKE_INSTALL_LIBDIR@ -lmemcached -lmemcachedutil
+ Cflags: -I@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@
+ Requires: @PKGCONFIG_REQUIRES@
+ Requires.private: @PKGCONFIG_REQUIRES_PRIVATE@
