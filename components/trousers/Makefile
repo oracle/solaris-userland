@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -47,10 +47,6 @@ ifeq ($(OS_VERSION),11.3)
 CFLAGS += "-D_POSIX_PTHREAD_SEMANTICS"
 endif
 
-# Trousers require automake 1.16 because of 02-configure.patch file.
-# Option "--add-missing" is needed to use default "compile" script.
-AUTOMAKE=/usr/bin/automake-1.16 --add-missing
-ACLOCAL=/usr/bin/aclocal-1.16
 COMPONENT_PREP_ACTION =     (cd $(@D); sh bootstrap.sh);
 
 LIBS += -lgen
@@ -75,10 +71,7 @@ COMPONENT_POST_CONFIGURE_ACTION = (cd $(COMPONENT_SRC); \
 	for f in `ls src/include/*.h` ; do \
 		/usr/bin/dos2unix $$f $$f; \
 	done; \
-	/usr/bin/libtoolize -f; \
-	$(ACLOCAL); \
-	$(AUTOMAKE) src/tspi/Makefile; \
-	$(AUTOCONF))	
+	)
 
 #
 # We had to use cc as the linker (see CONFIGURE_OPTIONS above) so the

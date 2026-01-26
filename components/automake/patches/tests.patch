@@ -1,0 +1,19 @@
+Disables problematic test on Solaris.
+
+Can be offered to upstream.
+
+--- automake-1.18.1/t/tap-stderr-prefix.tap
++++ automake-1.18.1/t/tap-stderr-prefix.tap
+@@ -160,8 +160,12 @@ command_ok_ "$desc: result counts are co
+   count_test_results total=1 pass=1 fail=0 xpass=0 xfail=0 skip=0 error=0
+ command_ok_ "$desc: '1..1' before 'stderr 1'" -- \
+   check_log_line_order '1\.\.1' '# stderr 1'
++if test "`uname -s`" = SunOS; then
++  skip_ "Solaris merges stdout/stderr out of order"
++else
+ command_ok_ "$desc: 'stderr 1' before 'ok 1'" -- \
+   check_log_line_order '# stderr 1' 'ok 1'
++fi
+ command_ok_ "$desc: 'ok 1' before 'stderr 2'" -- \
+   check_log_line_order 'ok 1' '# stderr 2'
+ 

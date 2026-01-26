@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2017, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64
 CTF_MODE =		off	# Has no effect
@@ -50,5 +50,8 @@ studio_ALIGN.sparc.64 = -xmemalign=16i
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv; automake)
 
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
+
+# Avoid using -std=c++11 with new autoconf 2.72
+CONFIGURE_OPTIONS +=   ac_cv_prog_cxx_cxx11=
 
 REQUIRED_PACKAGES += system/library/c++-runtime

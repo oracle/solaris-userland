@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2026, Oracle and/or its affiliates.
 #
 
 # The component does not deliver any architecture specific files but
@@ -33,21 +33,21 @@ BUILD_BITS= 64
 # which is better supported by GCC compiler...
 COMPILER= gcc
 
-include ../../../make-rules/shared-macros.mk
+include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		automake
-COMPONENT_SHORT_VERSION= 1.16
-COMPONENT_VERSION=	$(COMPONENT_SHORT_VERSION).3
+COMPONENT_VERSION=	1.18.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ce010788b51f64511a1e9bb2a1ec626037c6d0e7ede32c1c103611b9d3cba65f
+    sha256:63e585246d0fc8772dffdee0724f2f988146d1a3f1c756a3dc5cfbefa3c01915
 COMPONENT_ANITYA_ID=	144
 
-COMPONENT_BAID=		89361
+COMPONENT_BAID=		365214
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
-CONFIGURE_OPTIONS += --infodir=$(USRSHAREDIR)/$(COMPONENT_NAME)-$(COMPONENT_SHORT_VERSION)/info
+CONFIGURE_OPTIONS += --infodir=$(USRSHAREDIR)/$(COMPONENT_NAME)-$(COMPONENT_VERSION)/info
 CONFIGURE_OPTIONS += PERL="$(PERL)"
+CONFIGURE_OPTIONS += LEX=flex
 
 COMPONENT_TEST_ENV += -i
 COMPONENT_TEST_ENV += PATH=$(GCC_ROOT)/bin:$(GNUBIN):$(USRBINDIR)
@@ -56,9 +56,6 @@ COMPONENT_TEST_ENV += PKG_CONFIG_PATH=/usr/lib/64/pkgconfig
 # Directory 'share' is set 000 permissions during the unit tests.
 # Revert it to enable a clean removal of build directory.
 PRE_CLEAN_ACTION = chmod 755 $(BUILD_DIR)/*/t/uninstall-fail.dir/__inst-dir__/share &> /dev/null || :
-
-PKG_HARDLINKS += usr/bin/aclocal-1.16 usr/bin/automake-1.16
-PKG_MACROS += SVER=$(COMPONENT_SHORT_VERSION) LVER=$(COMPONENT_VERSION) MVER=$(COMPONENT_SHORT_VERSION).1
 
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93

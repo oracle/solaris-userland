@@ -109,6 +109,8 @@ PASS: t/instspc.tap 91 - miscglob1 in builddir
 PASS: t/instspc.tap 92 - miscglob1 in destdir
 PASS: t/instspc.tap 93 - miscglob2 in builddir
 PASS: t/instspc.tap 94 - miscglob2 in destdir
+a68-demo: skipped test: required program 'ga68' not available
+SKIP: t/a68-demo.sh
 PASS: t/aclocal.sh
 PASS: t/aclocal-I-order-1.sh
 PASS: t/aclocal-I-order-2.sh
@@ -137,7 +139,7 @@ PASS: t/aclocal-macrodir.tap 3 - '-I' option wins over AC_CONFIG_MACRO_DIR
 PASS: t/aclocal-macrodir.tap 4 - AC_CONFIG_MACRO_DIR([foo]) can create directory 'foo'
 PASS: t/aclocal-macrodir.tap 5 - AC_CONFIG_MACRO_DIR([non-existent]) warns with -Wunsupported
 PASS: t/aclocal-macrodir.tap 6 - AC_CONFIG_MACRO_DIR([not-exist]) and ACLOCAL_AMFLAGS = -I not-exist
-SKIP: t/aclocal-macrodir.tap 7 # SKIP autoconf is too old (AC_CONFIG_MACRO_DIRS not defined)
+PASS: t/aclocal-macrodir.tap 7 - AC_CONFIG_MACRO_DIR interaction with AC_REQUIRE
 PASS: t/aclocal-macrodirs.tap 1 - AC_CONFIG_MACRO_DIRS is honored
 PASS: t/aclocal-macrodirs.tap 2 - AC_CONFIG_MACRO_DIRS several arguments
 PASS: t/aclocal-macrodirs.tap 3 - AC_CONFIG_MACRO_DIRS several calls
@@ -152,7 +154,7 @@ PASS: t/aclocal-macrodirs.tap 11 - AC_CONFIG_MACRO_DIRS([non-existent]) warns (1
 PASS: t/aclocal-macrodirs.tap 12 - AC_CONFIG_MACRO_DIRS([non-existent]) warns (2)
 PASS: t/aclocal-macrodirs.tap 13 - AC_CONFIG_MACRO_DIRS([existent non-existent]) errors out
 PASS: t/aclocal-macrodirs.tap 14 - AC_CONFIG_MACRO_DIRS([not-exist]) and ACLOCAL_AMFLAGS = -I not-exist
-SKIP: t/aclocal-macrodirs.tap 15 # SKIP autoconf is too old (AC_CONFIG_MACRO_DIRS not defined)
+PASS: t/aclocal-macrodirs.tap 15 - AC_CONFIG_MACRO_DIRS interaction with AC_REQUIRE
 PASS: t/aclocal-missing-macros.sh
 PASS: t/aclocal-no-extra-scan.sh
 PASS: t/aclocal-no-force.sh
@@ -651,6 +653,7 @@ PASS: t/ar2.sh
 PASS: t/ar3.sh
 PASS: t/ar4.sh
 PASS: t/ar5.sh
+PASS: t/ar_override.sh
 PASS: t/asm.sh
 PASS: t/asm2.sh
 PASS: t/asm3.sh
@@ -692,8 +695,8 @@ XFAIL: t/auxdir-computed.tap 2 - automake -a # TODO long-standing limitation
 XFAIL: t/auxdir-computed.tap 3 - automake # TODO long-standing limitation
 PASS: t/auxdir-misplaced.sh
 PASS: t/auxdir-nonexistent.sh
-auxdir-pr19311: skipped test: this test passes with autoconf-2.69d and newer
-SKIP: t/auxdir-pr19311.sh
+PASS: t/auxdir-pr19311.sh
+PASS: t/auxdir-subsubdir.sh
 PASS: t/auxdir-unportable.tap 1 - automake exited 1
 PASS: t/auxdir-unportable.tap 2 - warn about non-existent unportable auxdir name
 PASS: t/auxdir-unportable.tap 3 - automake exited 1
@@ -774,7 +777,9 @@ PASS: t/comment8.sh
 PASS: t/comment9.sh
 PASS: t/commen10.sh
 PASS: t/commen11.sh
+PASS: t/comment12.sh
 PASS: t/comment-block.sh
+PASS: t/comments-escaped-in-var.sh
 PASS: t/comments-in-var-def.sh
 PASS: t/compile.sh
 PASS: t/compile2.sh
@@ -927,6 +932,8 @@ PASS: t/deprecated-acinit.sh
 PASS: t/destdir.sh
 PASS: t/dir-named-obj-is-bad.sh
 PASS: t/discover.sh
+dist-bzip3: skipped test: required program 'bzip3' not available
+SKIP: t/dist-bzip3.sh
 PASS: t/dist-formats.tap 1 - default [automake]
 PASS: t/dist-formats.tap 2 - default [autoconf]
 PASS: t/dist-formats.tap 3 - default [configure]
@@ -943,7 +950,7 @@ PASS: t/dist-formats.tap 13 - 'make dist-bzip2' work by default
 PASS: t/dist-formats.tap 14 - 'dist-zip' target always created
 PASS: t/dist-formats.tap 15 - 'make dist-zip' work by default
 PASS: t/dist-formats.tap 16 - 'dist-zstd' target always created
-SKIP: t/dist-formats.tap 17 - 'make dist-zstd' work by default # SKIP 'zstd' not available
+PASS: t/dist-formats.tap 17 - 'make dist-zstd' work by default
 PASS: t/dist-formats.tap 18 - no-dist-gzip (am) without other formats is an error
 PASS: t/dist-formats.tap 19 - no-dist-gzip (am) without other formats gives diagnostic
 PASS: t/dist-formats.tap 20 - no-dist-gzip (ac) without other formats is an error
@@ -980,8 +987,8 @@ PASS: t/dist-formats.tap 50 - ac=dist-zstd,no-dist-gzip [automake]
 PASS: t/dist-formats.tap 51 - ac=dist-zstd,no-dist-gzip [autoconf]
 PASS: t/dist-formats.tap 52 - ac=dist-zstd,no-dist-gzip [configure]
 PASS: t/dist-formats.tap 53 - ac=dist-zstd,no-dist-gzip [ark-name]
-SKIP: t/dist-formats.tap 54 - ac=dist-zstd,no-dist-gzip [distcheck] # SKIP 'zstd' not available
-SKIP: t/dist-formats.tap 55 - ac=dist-zstd,no-dist-gzip [ark-exists] # SKIP 'zstd' not available
+PASS: t/dist-formats.tap 54 - ac=dist-zstd,no-dist-gzip [distcheck]
+PASS: t/dist-formats.tap 55 - ac=dist-zstd,no-dist-gzip [ark-exists]
 PASS: t/dist-formats.tap 56 - ac=dist-zstd,no-dist-gzip [no .tar.gz]
 PASS: t/dist-formats.tap 57 - dist-gzip persistence [automake]
 PASS: t/dist-formats.tap 58 - dist-gzip persistence [autoconf]
@@ -1016,6 +1023,7 @@ PASS: t/dist-missing-m4.sh
 PASS: t/dist-readonly.sh
 PASS: t/dist-repeated.sh
 XFAIL: t/dist-pr109765.sh
+PASS: t/dist-no-built-sources.sh
 PASS: t/dist-vs-built-sources.sh
 PASS: t/distcleancheck.sh
 PASS: t/distcom2.sh
@@ -1109,18 +1117,13 @@ SKIP: t/gcj4.sh
 PASS: t/gcj5.sh
 gcj6: skipped test: GNU Java compiler unavailable
 SKIP: t/gcj6.sh
-gettext-macros: skipped test: couldn't find or get gettext macros
-SKIP: t/gettext-macros.sh
-gettext-basics: skipped test: couldn't find or get gettext macros
-SKIP: t/gettext-basics.sh
-gettext-config-rpath: skipped test: couldn't find or get gettext macros
-SKIP: t/gettext-config-rpath.sh
-gettext-external-pr338: skipped test: couldn't find or get gettext macros
-SKIP: t/gettext-external-pr338.sh
-gettext-intl-subdir: skipped test: couldn't find or get gettext macros
+PASS: t/gettext-macros.sh
+PASS: t/gettext-basics.sh
+PASS: t/gettext-config-rpath.sh
+PASS: t/gettext-external-pr338.sh
+gettext-intl-subdir: skipped test: your gettext macros are probably too old
 SKIP: t/gettext-intl-subdir.sh
-gettext-pr381: skipped test: couldn't find or get gettext macros
-SKIP: t/gettext-pr381.sh
+PASS: t/gettext-pr381.sh
 PASS: t/gnumake.sh
 PASS: t/gnuwarn.sh
 PASS: t/gnuwarn2.sh
@@ -1162,7 +1165,7 @@ instdir-no-empty: skipped test: TeX is required, but it wasn't found by configur
 SKIP: t/instdir-no-empty.sh
 PASS: t/instdir-java.sh
 PASS: t/instdir-lisp.sh
-PASS: t/instdir-ltlib.sh
+XFAIL: t/instdir-ltlib.sh
 PASS: t/instdir-prog.sh
 PASS: t/instdir-python.sh
 instdir-texi: skipped test: TeX is required, but it wasn't found by configure
@@ -1210,16 +1213,18 @@ PASS: t/lex3.sh
 PASS: t/lex5.sh
 PASS: t/lexcpp.sh
 PASS: t/lexvpath.sh
+PASS: t/lex-args.sh
 XFAIL: t/lex-subobj-nodep.sh
 PASS: t/lex-header.sh
 PASS: t/lex-lib.sh
-PASS: t/lex-lib-external.sh
+lex-lib-external: skipped test: no system-wide lex library found
+SKIP: t/lex-lib-external.sh
 PASS: t/lex-libobj.sh
 PASS: t/lex-multiple.sh
 PASS: t/lex-noyywrap.sh
-FAIL: t/lex-clean-cxx.sh
+PASS: t/lex-clean-cxx.sh
 PASS: t/lex-clean.sh
-FAIL: t/lex-depend-cxx.sh
+PASS: t/lex-depend-cxx.sh
 PASS: t/lex-depend-grep.sh
 PASS: t/lex-depend.sh
 PASS: t/lex-line.sh
@@ -1463,6 +1468,7 @@ PASS: t/no-extra-c-stuff.sh
 PASS: t/no-extra-makefile-code.sh
 PASS: t/no-spurious-install-recursive.sh
 PASS: t/nobase.sh
+PASS: t/nobase-dist.sh
 PASS: t/nobase-libtool.sh
 PASS: t/nobase-python.sh
 PASS: t/nobase-nodist.sh
@@ -1564,6 +1570,7 @@ PASS: t/parallel-tests-fork-bomb.sh
 PASS: t/parallel-tests-empty-testlogs.sh
 PASS: t/parallel-tests-driver-install.sh
 PASS: t/parallel-tests-no-color-in-log.sh
+PASS: t/parallel-tests-without-skipped-logs.sh
 PASS: t/parallel-tests-no-spurious-summary.sh
 PASS: t/parallel-tests-exit-statuses.sh
 PASS: t/parallel-tests-console-output.sh
@@ -1604,6 +1611,7 @@ PASS: t/test-trs-recover.sh
 PASS: t/test-trs-recover2.sh
 PASS: t/test-extensions.sh
 PASS: t/test-extensions-cond.sh
+PASS: t/toplevelmd.sh
 PASS: t/parse.sh
 PASS: t/percent.sh
 PASS: t/percent2.sh
@@ -1621,6 +1629,7 @@ PASS: t/pluseq8.sh
 PASS: t/pluseq9.sh
 PASS: t/pluseq10.sh
 PASS: t/pluseq11.sh
+PASS: t/posixtarget.sh
 PASS: t/posixsubst-data.sh
 PASS: t/posixsubst-extradist.sh
 PASS: t/posixsubst-ldadd.sh
@@ -1949,6 +1958,7 @@ PASS: t/py-compile-basic.sh
 PASS: t/py-compile-basedir.sh
 PASS: t/py-compile-destdir.sh
 PASS: t/py-compile-env.sh
+PASS: t/py-compile-files.sh
 PASS: t/py-compile-option-terminate.sh
 PASS: t/py-compile-usage.sh
 PASS: t/python.sh
@@ -1961,10 +1971,12 @@ PASS: t/python-am-path-iftrue.sh
 PASS: t/python-missing.sh
 PASS: t/python-too-old.sh
 PASS: t/python-dist.sh
+PASS: t/python-prefix.sh
 PASS: t/python-vars.sh
 python-virtualenv: skipped test: required program 'virtualenv' not available
 SKIP: t/python-virtualenv.sh
 PASS: t/python-pr10995.sh
+PASS: t/ranlib_override.sh
 PASS: t/recurs-user.sh
 PASS: t/recurs-user2.sh
 PASS: t/recurs-user-deeply-nested.sh
@@ -2180,6 +2192,7 @@ PASS: t/sanity.sh
 PASS: t/seenc.sh
 PASS: t/silent-c.sh
 PASS: t/silent-cxx.sh
+PASS: t/silent-defaults.sh
 PASS: t/silent-lt.sh
 PASS: t/silent-f77.sh
 PASS: t/silent-f90.sh
@@ -2223,16 +2236,15 @@ PASS: t/stdlib2.sh
 PASS: t/strictness-override.sh
 PASS: t/strictness-precedence.sh
 PASS: t/strip.sh
-FAIL: t/strip2.sh
-FAIL: t/strip3.sh
+PASS: t/strip2.sh
+PASS: t/strip3.sh
 PASS: t/subdir.sh
 PASS: t/subdir-ac-subst.sh
 PASS: t/subdir-add-pr46.sh
 PASS: t/subdir-add2-pr46.sh
 PASS: t/subdir-am-cond.sh
 PASS: t/subdir-cond-err.sh
-subdir-cond-gettext: skipped test: couldn't find or get gettext macros
-SKIP: t/subdir-cond-gettext.sh
+PASS: t/subdir-cond-gettext.sh
 PASS: t/subdir-env-interference.sh
 PASS: t/subdir-order.sh
 PASS: t/subdir-with-slash.sh
@@ -2402,6 +2414,24 @@ PASS: t/tap-planskip-whitespace.sh
 PASS: t/tap-planskip-badexit.sh
 PASS: t/tap-planskip-bailout.sh
 PASS: t/tap-planskip-later-errors.sh
+PASS: t/tap-stderr-prefix.tap 1 - no merge, no prefix: make check passes
+PASS: t/tap-stderr-prefix.tap 2 - no merge, no prefix: result counts are correct
+PASS: t/tap-stderr-prefix.tap 3 - no merge, no prefix: stderr in log
+PASS: t/tap-stderr-prefix.tap 4 - --merge: make check fails
+PASS: t/tap-stderr-prefix.tap 5 - --merge: stderr in log
+PASS: t/tap-stderr-prefix.tap 6 - --stderr-prefix "@%:@#@%@&t@:@ ": make check passes
+PASS: t/tap-stderr-prefix.tap 7 - --stderr-prefix "@%:@#@%@&t@:@ ": result counts are correct
+PASS: t/tap-stderr-prefix.tap 8 - --stderr-prefix "@%:@#@%@&t@:@ ": prefixed stderr in log
+PASS: t/tap-stderr-prefix.tap 9 - --stderr-prefix "@%:@#@%@&t@:@ ": missing final newline is added
+PASS: t/tap-stderr-prefix.tap 10 - --stderr-prefix "@%:@#@%@&t@:@ " --merge: make check passes
+PASS: t/tap-stderr-prefix.tap 11 - --stderr-prefix "@%:@#@%@&t@:@ " --merge: result counts are correct
+PASS: t/tap-stderr-prefix.tap 12 - --stderr-prefix "@%:@#@%@&t@:@ " --merge: prefixed stderr in log
+PASS: t/tap-stderr-prefix.tap 13 - --stderr-prefix "@%:@#@%@&t@:@ " --merge: missing final newline is added
+PASS: t/tap-stderr-prefix.tap 14 - --stderr-prefix "# " --merge stdout/stderr ordering: make check passes
+PASS: t/tap-stderr-prefix.tap 15 - --stderr-prefix "# " --merge stdout/stderr ordering: result counts are correct
+PASS: t/tap-stderr-prefix.tap 16 - --stderr-prefix "# " --merge stdout/stderr ordering: '1..1' before 'stderr 1'
+SKIP: t/tap-stderr-prefix.tap 17 - Solaris merges stdout/stderr out of order # SKIP
+PASS: t/tap-stderr-prefix.tap 18 - --stderr-prefix "# " --merge stdout/stderr ordering: 'ok 1' before 'stderr 2'
 PASS: t/tap-test-number-0.sh
 PASS: t/tap-recheck-logs.sh
 PASS: t/tap-result-comment.sh
@@ -2440,7 +2470,8 @@ PASS: t/tar-ustar-id-too-high.sh
 PASS: t/tar-override.sh
 PASS: t/target-cflags.sh
 PASS: t/targetclash.sh
-PASS: t/tests-environment-fd-redirect.sh
+tests-environment-fd-redirect: skipped test: skipping /bin/ksh to avoid hang
+SKIP: t/tests-environment-fd-redirect.sh
 PASS: t/tests-environment-and-log-compiler.sh
 PASS: t/txinfo-absolute-srcdir-pr408.sh
 PASS: t/txinfo-add-missing-and-dist.sh
@@ -2467,6 +2498,8 @@ PASS: t/txinfo-no-extra-dist.sh
 PASS: t/txinfo-no-installinfo.sh
 PASS: t/txinfo-no-repeated-targets.sh
 PASS: t/txinfo-no-setfilename.sh
+PASS: t/txinfo-no-setfilename-no-inputs.sh
+PASS: t/txinfo-no-texi-but-texi-in.sh
 PASS: t/txinfo-other-suffixes.sh
 PASS: t/txinfo-override-infodeps.sh
 txinfo-override-texinfo-tex: skipped test: TeX is required, but it wasn't found by configure
@@ -2518,6 +2551,7 @@ PASS: t/vala-per-target-flags.sh
 PASS: t/vala-recursive-setup.sh
 PASS: t/vala-vapi.sh
 PASS: t/vala-vpath.sh
+PASS: t/varempty.sh
 PASS: t/vars.sh
 PASS: t/vars3.sh
 PASS: t/var-recurs.sh
@@ -3022,21 +3056,15 @@ PASS: contrib/t/parallel-tests-html-recursive.sh
 PASS: contrib/t/help-multilib.sh
 PASS: contrib/t/multilib.sh
 ============================================================================
-Testsuite summary for GNU Automake 1.16.3
+Testsuite summary for GNU Automake 1.18.1
 ============================================================================
-# TOTAL: 2977
-# PASS:  2862
-# SKIP:  72
-# XFAIL: 39
-# FAIL:  4
+# TOTAL: 3014
+# PASS:  2909
+# SKIP:  65
+# XFAIL: 40
+# FAIL:  0
 # XPASS: 0
 # ERROR: 0
 ============================================================================
-See ./test-suite.log
-Please report to bug-automake@gnu.org
-============================================================================
-make[2]: *** [Makefile:3074: test-suite.log] Error 1
 make[2]: Leaving directory '$(@D)'
-make[1]: *** [Makefile:3182: check-TESTS] Error 2
 make[1]: Leaving directory '$(@D)'
-make: *** [Makefile:3422: check-am] Error 2

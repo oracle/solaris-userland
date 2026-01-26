@@ -1,0 +1,20 @@
+Should be in some form offered to upstream.
+
+--- m4-1.4.20/checks/stackovf.test
++++ m4-1.4.20/checks/stackovf.test
+@@ -23,6 +23,15 @@ # there is infinite macro call nesting,
+ 
+ m4="$1"
+ 
++# Skip on Solaris SPARC: hard project-enforced stack limits cause
++# unrecoverable SIGSEGV before m4 can detect stack overflow.
++case "$(uname -s 2>/dev/null):$(uname -p 2>/dev/null)" in
++  SunOS:sparc)
++    echo "$0: skipping test on Solaris SPARC (project stack limit)"
++    exit 77
++    ;;
++esac
++
+ # Skip this test if -L defaults to 1024 instead of 0, as that is our
+ # indicator that the OS does not support stack overflow detection.
+ ("$m4" --help | grep 'nesting.*\[0\]') >/dev/null 2>&1 \

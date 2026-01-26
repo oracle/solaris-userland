@@ -1,0 +1,17 @@
+Allow to build with new autoconf 2.72.
+
+Not suitable for upstream (should be removed with erlang version
+update).
+
+--- otp_src_24.3.4.16/otp_build
++++ otp_src_24.3.4.16/otp_build
+@@ -200,7 +200,8 @@ {
+     get_do_commit $1
+ 
+     export AUTOCONF_VERSION="$USE_AUTOCONF_VERSION"
+-    ac_ver_blob=`autoconf --version`
++    # For now pretend to be 2.71
++    ac_ver_blob="autoconf (GNU Autoconf) 2.71"
+     if [ $? -ne 0 ]; then
+ 	echo "ERROR: Failed to check autoconf version! You need to have autoconf of version $USE_AUTOCONF_VERSION in path." 1>&2
+ 	exit 1

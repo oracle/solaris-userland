@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		autoconf
-COMPONENT_VERSION=	2.71
+COMPONENT_VERSION=	2.72
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f14c83cfebcc9427f2c3cea7258bd90df972d92eb26752da4ddad81c87a0faa4
+    sha256:ba885c1319578d6c94d46e9b0dceb4014caafe2490e437a0dbca3f270a223f5a
 COMPONENT_ANITYA_ID=	141
 
-COMPONENT_BAID=		101615
+COMPONENT_BAID=		367586
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_NO_ARCH)
 
@@ -48,10 +48,7 @@ CONFIGURE_OPTIONS += M4="$(GNUBIN)/m4"
 COMPONENT_TEST_ENV +=		F77=/usr/bin/gfortran
 
 COMPONENT_TEST_TRANSFORMS += \
-        '-e "/check-local/d"' \
-        '-e "/ksh93/d"' \
-        '-e "/Entering directory/d"' \
-        '-e "/Leaving directory/d"' \
+        '-e "1,/^\#\# Test results. \#\#/d"' \
         '-e "/^make/d"'
 
 REQUIRED_PACKAGES += developer/macro/gnu-m4

@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 # TESTING:
@@ -84,6 +84,9 @@ CONFIGURE_ENV +=	PCSC_LIBS="-lpcsclite"
 
 # no dependency information exists the first time this package is built
 CONFIGURE_OPTIONS +=    --disable-dependency-tracking
+
+# Avoid using -std=c++11 with new autoconf 2.72
+CONFIGURE_OPTIONS +=    ac_cv_prog_cxx_cxx11=
 
 # required packages
 REQUIRED_PACKAGES += library/security/pcsc/pcsclite

@@ -20,20 +20,24 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		m4
-COMPONENT_VERSION=	1.4.18
+COMPONENT_VERSION=	1.4.20
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f2c1e86ca0a404ff281631bdc8377638992744b175afb806e25871a24a934e07
+    sha256:e236ea3a1ccf5f6c270b1c4bb60726f371fa49459a8eaaebc90b216b328daf2b
 COMPONENT_BUGDB=	utility/gnu-m4
 COMPONENT_ANITYA_ID=	1871
 
-COMPONENT_BAID=		38292
+COMPONENT_BAID=		365218
+
+# The default backup files after patching are causing troubles during build
+override GPATCH_BACKUP=
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
@@ -65,3 +69,4 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += library/libsigsegv
 REQUIRED_PACKAGES += system/library/math
+# Auto-generated contents below.  Please manually verify and remove this comment

@@ -1,0 +1,15 @@
+Reverts: https://github.com/arthenica/gnu-config/commit/9e4c79f5fc4ef734b2f3115ab9184b70789e21a3
+
+Should be submitted to upstream in some form.
+
+--- automake-1.18.1/lib/config.guess.orig	2026-01-13 16:22:34.148340406 +0000
++++ automake-1.18.1/lib/config.guess	2026-01-13 16:23:13.311479499 +0000
+@@ -443,7 +443,7 @@
+ 	# This test works for both compilers.
+ 	if test "$CC_FOR_BUILD" != no_compiler_found; then
+ 	    if (echo '#ifdef __amd64'; echo IS_64BIT_ARCH; echo '#endif') | \
+-		(CCOPTS="" $CC_FOR_BUILD -m64 -E - 2>/dev/null) | \
++		(CCOPTS="" $CC_FOR_BUILD -E - 2>/dev/null) | \
+ 		grep IS_64BIT_ARCH >/dev/null
+ 	    then
+ 		SUN_ARCH=x86_64
