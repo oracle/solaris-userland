@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -29,15 +29,15 @@ include ../../make-rules/shared-macros.mk
 # This component does not fully specify dependencies of shared objects
 LD_SHARED_OPTIONS_Z_DEFS=
 
-MAJOR_VERSION=2.14
-MICRO_VERSION=6
+MAJOR_VERSION=2.15
+MICRO_VERSION=1
 
 COMPONENT_NAME=		libxml2
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
-COMPONENT_BAID=		348648
+COMPONENT_BAID=		367001
 COMPONENT_PROJECT_URL=	http://xmlsoft.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7ce458a0affeb83f0b55f1f4f9e0e55735dbfc1a9de124ee86fb4a66b597203a
+    sha256:c008bac08fd5c7b4a87f7b8a71f283fa581d80d80ff8d2efd3b26224c39bc54c
 COMPONENT_ARCHIVE =     $(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/libxml2/$(MAJOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libxml
@@ -63,6 +63,7 @@ CONFIGURE_OPTIONS += --disable-static
 # See comments in:
 # https://github.com/GNOME/libxml2/commit/865520f04830531fc0a610129202b645521e435f
 CONFIGURE_OPTIONS += --sysconfdir=/etc
+CONFIGURE_OPTIONS += --with-docs
 CONFIGURE_OPTIONS += --with-legacy
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-threads
@@ -84,6 +85,7 @@ COMPONENT_POST_CONFIGURE_ACTION.64 += \
      -e 's|usr/bin/$(MACH64)/python3[.]11|usr/bin/python3.13|' \
      -e 's|usr/include/python3[.]11|usr/include/python3.13|' \
      -e 's/3[.]11/3.13/g' \
+     -e 's/cpython-311/cpython-313/g' \
      `find python3.13 -name Makefile` ; \
 )
 
@@ -115,12 +117,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 	$(MKDIR) $(PROTOLIBDIR) $(PROTOLIBDIR)/$(MACH64) ; \
 	$(MV) $(PROTOUSRLIBDIR)/libxml2.so* $(PROTOLIBDIR) ; \
 	$(MV) $(PROTOUSRLIBDIR64)/libxml2.so* $(PROTOLIBDIR)/$(MACH64) ;
-
-# For few builds we need to deliver original libxml2.so.2 to avoid cross
-# consolidation seeding.
-COMPONENT_POST_INSTALL_ACTION.64 += \
-	$(CP) $(LIBDIR)/libxml2.so.2 $(PROTOLIBDIR) ; \
-	$(CP) $(LIBDIR)/$(MACH64)/libxml2.so.2 $(PROTOLIBDIR)/$(MACH64) ;
 
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib

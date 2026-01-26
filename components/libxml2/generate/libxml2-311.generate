@@ -20,13 +20,13 @@
 #
 
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
-# move binary module to 64bit location
-<transform path=usr/lib/python([0-9]+\.[0-9]+)/vendor-packages/.*\.so$ -> set action.hash %(path)>
+# Handle PEP 3149 - ABI version tagged .so files (remove cpython-311 version tags)
+<transform file path=.+\.cpython-311\.so$ -> edit path \\.cpython-311\\.so$ .so>
 
 # delete everything not belonging to this package
 <transform file link pkg.type=(?!python311) -> drop>
