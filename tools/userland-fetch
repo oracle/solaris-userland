@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 #
@@ -54,6 +54,9 @@ from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
+ETC_USERLAND='/etc/userland'
+ENV_PROXY='USERLAND_HTTP_PROXY'
+ENV_NO_PROXY='USERLAND_NO_PROXY'
 
 def get_gpg_home() -> str:
     # Find the repo root so that we can point GnuPG at the right configuration and keyring.
@@ -536,6 +539,30 @@ def hash_validation(name: str, args: argparse.Namespace) -> bool:
 
     return False
 
+def set_http_proxy():
+    if os.environ.get('OVERRIDE_SUGGESTED_HTTP_PROXY') is not None:
+        print(f"Ignoring any proxy settings in {ETC_USERLAND} because {'OVERRIDE_SUGGESTED_HTTP_PROXY'} is set.")
+        return
+
+    shell = subprocess.run(
+            ['bash', '-c', f'[ -e {ETC_USERLAND} ] && source {ETC_USERLAND} && echo ${{{ENV_PROXY}:-}}'],
+            text=True,
+            stdout=subprocess.PIPE)
+    proxy_override = shell.stdout.rstrip()
+    if proxy_override and proxy_override != os.environ['https_proxy']:
+        print(f"Overriding http proxy '{os.environ['https_proxy']}' -> '{proxy_override}'.")
+        os.environ['http_proxy'] = proxy_override
+        os.environ['https_proxy'] = proxy_override
+        os.environ['ftp_proxy'] = proxy_override
+
+    shell = subprocess.run(
+            ['bash', '-c', f'[ -e {ETC_USERLAND} ] && source {ETC_USERLAND} && echo ${{{ENV_NO_PROXY}:-}}'],
+            text=True,
+            stdout=subprocess.PIPE)
+    no_proxy_override = shell.stdout.rstrip()
+    if no_proxy_override and no_proxy_override != os.environ['no_proxy']:
+        print(f"Overriding no proxy '{os.environ['no_proxy']}' -> '{no_proxy_override}'.")
+        os.environ['no_proxy'] = no_proxy_override
 
 def main():
     sys.stdout.flush()
@@ -560,6 +587,8 @@ def main():
         help="Timeout in seconds for blocking download operations.")
     parser.add_argument('-u', '--url',
         help="Fallback URL to file download location.")
+
+    set_http_proxy()
 
     args = parser.parse_args()
 
