@@ -549,8 +549,8 @@ def set_http_proxy():
             text=True,
             stdout=subprocess.PIPE)
     proxy_override = shell.stdout.rstrip()
-    if proxy_override and proxy_override != os.environ['https_proxy']:
-        print(f"Overriding http proxy '{os.environ['https_proxy']}' -> '{proxy_override}'.")
+    if proxy_override and proxy_override != os.environ.get('https_proxy'):
+        print(f"Overriding http proxy '{os.environ.get('https_proxy')}' -> '{proxy_override}'.")
         os.environ['http_proxy'] = proxy_override
         os.environ['https_proxy'] = proxy_override
         os.environ['ftp_proxy'] = proxy_override
@@ -560,8 +560,8 @@ def set_http_proxy():
             text=True,
             stdout=subprocess.PIPE)
     no_proxy_override = shell.stdout.rstrip()
-    if no_proxy_override and no_proxy_override != os.environ['no_proxy']:
-        print(f"Overriding no proxy '{os.environ['no_proxy']}' -> '{no_proxy_override}'.")
+    if no_proxy_override and no_proxy_override != os.environ.get('no_proxy'):
+        print(f"Overriding no proxy '{os.environ.get('no_proxy')}' -> '{no_proxy_override}'.")
         os.environ['no_proxy'] = no_proxy_override
 
 def main():
