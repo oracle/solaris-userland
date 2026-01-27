@@ -91,7 +91,7 @@ COMPONENT_TEST_TARGETS =
 COMPONENT_BUILD_TARGETS = all
 
 # These are packages required for building, not for use:
-REQUIRED_PACKAGES += developer/build/automake-116
+REQUIRED_PACKAGES += developer/build/automake
 REQUIRED_PACKAGES += developer/build/libtool
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += shell/ksh93
