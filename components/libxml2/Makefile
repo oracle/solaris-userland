@@ -118,6 +118,12 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 	$(MV) $(PROTOUSRLIBDIR)/libxml2.so* $(PROTOLIBDIR) ; \
 	$(MV) $(PROTOUSRLIBDIR64)/libxml2.so* $(PROTOLIBDIR)/$(MACH64) ;
 
+# For few builds we need to deliver original libxml2.so.2 to avoid cross
+# consolidation seeding.
+COMPONENT_POST_INSTALL_ACTION.64 += \
+	$(CP) $(LIBDIR)/libxml2.so.2 $(PROTOLIBDIR) ; \
+	$(CP) $(LIBDIR)/$(MACH64)/libxml2.so.2 $(PROTOLIBDIR)/$(MACH64) ;
+
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-311
