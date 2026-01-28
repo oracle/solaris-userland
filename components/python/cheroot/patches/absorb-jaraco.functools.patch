@@ -7,22 +7,22 @@ https://github.com/jaraco/jaraco.functools
 
 Not intended for upstream.
 
---- cheroot-10.0.0/setup.cfg
-+++ cheroot-10.0.0/setup.cfg
-@@ -59,7 +59,6 @@ setup_requires =
- install_requires = 
- 	importlib_metadata; python_version < '3.8'
- 	more_itertools >= 2.6
--	jaraco.functools
- 
- [options.extras_require]
- docs = 
---- cheroot-10.0.0/cheroot/workers/threadpool.py
-+++ cheroot-10.0.0/cheroot/workers/threadpool.py
-@@ -12,7 +12,20 @@ import socket
+--- cheroot-11.1.2/pyproject.toml
++++ cheroot-11.1.2/pyproject.toml
+@@ -48,7 +48,6 @@ keywords = [
+ requires-python = ">= 3.8"
+ dependencies = [
+   "more_itertools >= 2.6",
+-  "jaraco.functools",
+ ]
+ dynamic = [
+   "version",
+--- cheroot-11.1.2/cheroot/workers/threadpool.py
++++ cheroot-11.1.2/cheroot/workers/threadpool.py
+@@ -14,7 +14,20 @@ import threading
+ import time
  import warnings
- import queue
- 
+
 -from jaraco.functools import pass_none
 +
 +"""
@@ -38,17 +38,18 @@ Not intended for upstream.
 +            return func(param, *args, **kwargs)
 +
 +    return wrapper
- 
- 
- __all__ = ('WorkerThread', 'ThreadPool')
---- cheroot-10.0.0/cheroot/test/webtest.py
-+++ cheroot-10.0.0/cheroot/test/webtest.py
-@@ -30,7 +30,28 @@ import http.client
+
+
+ __all__ = ('ThreadPool', 'WorkerThread')
+--- cheroot-11.1.2/cheroot/test/webtest.py
++++ cheroot-11.1.2/cheroot/test/webtest.py
+@@ -30,9 +30,29 @@ import unittest  # pylint: disable=depre
  import urllib.parse
+ import warnings
  
- from more_itertools.more import always_iterable
 -import jaraco.functools
-+
+ from more_itertools.more import always_iterable
+ 
 +"""
 +The following function is taken from jaraco.functools
 +licensed under MIT license
@@ -71,9 +72,9 @@ Not intended for upstream.
 +    return func()
 +
  
- 
  def interface(host):
-@@ -479,7 +500,7 @@ def openURL(*args, raise_subcls=(), **kw
+     """Return an IP address for a client connection given the server host.
+@@ -487,7 +507,7 @@ def openURL(*args, raise_subcls=(), **kw
          time.sleep(0.5)
  
      # Try up to 10 times

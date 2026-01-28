@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2019, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cheroot
-COMPONENT_VERSION=	10.0.0
+COMPONENT_VERSION=	11.1.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:59c4a1877fef9969b3c3c080caaaf377e2780919437853fc0d32a9df40b311f0
+	sha256:bfb70c49663f63b0440f2b54dbc6b0d1650e56dfe4e2641f59b2c6f727b44aca
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/cherrypy/cheroot
 COMPONENT_BUGDB=	python-mod/cheroot
 COMPONENT_ANITYA_ID=	20163
-COMPONENT_BAID=		157286
+COMPONENT_BAID=		366261
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -44,9 +44,13 @@ include $(WS_MAKE_RULES)/ips.mk
 COMPONENT_POST_INSTALL_ACTION = \
         (cd $(PROTO_DIR)/usr/bin ; $(MV) cheroot cheroot-$(PYTHON_VERSION))
 
+# Some tests can fail with proxy set
+COMPONENT_TEST_ENV += http_proxy= HTTP_PROXY=
+COMPONENT_TEST_ENV += https_proxy= HTTPS_PROXY=
+
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+COMPONENT_TEST_ARGS =	-v
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
