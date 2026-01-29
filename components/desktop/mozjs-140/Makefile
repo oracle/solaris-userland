@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 
 
@@ -28,20 +28,20 @@ CTF_MODE =		off	# C++
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mozjs
-COMPONENT_VERSION=	140.3.0
+COMPONENT_VERSION=	140.6.0
 COMPONENT_PROJECT_URL=	https://spidermonkey.dev/
 COMPONENT_SRC=		firefox-$(COMPONENT_VERSION)		
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION)gnome1.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7263449811851d3be24971d82a293d2716f2115086be536391faa372ed267af1
+	sha256:015ffe7c36f3cb4c38853e8b919df1a406d128f8b19abfa494d3f6303ddf5724
 # Upstream no longer delivers mozjs archives; it needs to be extracted from
 # the firefox archive instead. Archives are hence only available directly in
 # the Userland package cache, and no online alternative is available.
 # Check the gnome releng location for tarballs if available
 # COMPONENT_ARCHIVE_URL=	https://download.gnome.org/teams/releng/tarballs-needing-help/mozjs/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_URL=  https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/mozjs140/140.3.0-1/mozjs140_140.3.0.orig.tar.xz
+COMPONENT_ARCHIVE_URL=  https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/mozjs140/140.6.0-1/mozjs140_140.6.0.orig.tar.xz
 COMPONENT_BUGDB=	library/libmozjs
-COMPONENT_ANITYA_ID=	235328
+COMPONENT_ANITYA_ID=	361619
 
 COMPONENT_BAID=		348523
 
