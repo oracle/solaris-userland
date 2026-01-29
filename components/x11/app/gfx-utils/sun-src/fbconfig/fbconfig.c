@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1999, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1999, 2026, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -645,7 +645,7 @@ GetConfigProgramPath(
 		 *    error code, whether and how it could be useful.
 		 */
 		sprintf(*config_prog_path, xorg_lib_fmt, vis_ident_name);
-		if (access(*config_prog_path, X_OK) != 0) {
+		if (access(*config_prog_path, R_OK) != 0) {
 			error_code = errno;
 		}
 
