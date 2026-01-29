@@ -20,7 +20,12 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 #
+
+# Idna currently has the same version as one of our runtimes, which turns
+# all "3.11"s into $(COMPONENT_VERSION). But some of them should be $(PYVER)
+# and we have to correct it here.
+<transform file link path=.+/python..COMPONENT_VERSION./.* -> edit path /python..COMPONENT_VERSION./ /python$(PYVER)/>
 
 <include ../generate/common.transform>

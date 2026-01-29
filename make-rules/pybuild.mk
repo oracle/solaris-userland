@@ -63,6 +63,7 @@ REQUIRED_PACKAGES += library/python/wheel-311
 REQUIRED_PACKAGES += library/python/flit_core-311
 REQUIRED_PACKAGES += library/python/hatch-vcs-311
 REQUIRED_PACKAGES += library/python/hatchling-311
+REQUIRED_PACKAGES += library/python/pbr-313
 endif
 ifneq ($(findstring 3.13, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += library/python/build-313
@@ -73,4 +74,5 @@ REQUIRED_PACKAGES += library/python/wheel-313
 REQUIRED_PACKAGES += library/python/flit_core-313
 REQUIRED_PACKAGES += library/python/hatch-vcs-313
 REQUIRED_PACKAGES += library/python/hatchling-313
+REQUIRED_PACKAGES += library/python/pbr-313
 endif

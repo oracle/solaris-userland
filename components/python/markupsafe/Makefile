@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
@@ -29,19 +29,19 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		markupsafe
-COMPONENT_VERSION=	3.0.2
+COMPONENT_VERSION=	3.0.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9622f8a5c93cea7509d2fc5beff40d350c7f0f9ba8dc5c37aadba197b82a6007
+    sha256:722695808f4b6457b320fdc131280796bdceb04ab50fe1795cd540799ebe1698
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/markupsafe/
 COMPONENT_BUGDB=	python-mod/markupsafe
 COMPONENT_ANITYA_ID=	3918
-COMPONENT_BAID=		185744
+COMPONENT_BAID=		366978
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
@@ -58,6 +58,3 @@ install:	$(INSTALL_64)
 test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)
-
-
-REQUIRED_PACKAGES += system/library

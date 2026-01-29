@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		oslo.i18n
-COMPONENT_VERSION=	6.4.0
+COMPONENT_NAME=		oslo_i18n
+COMPONENT_VERSION=	6.7.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-   sha256:66e04c041e9ff17d07e13ec7f48295fbc36169143c72ca2352a3efcc98e7b608
+   sha256:7ca17a2525b845069df903699c25ce9c774c09bad709b798994b7eacb83462b6
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.i18n/
 COMPONENT_BUGDB=	python-mod/oslo.i18n
 COMPONENT_ANITYA_ID=	3948
-COMPONENT_BAID=		185475
+COMPONENT_BAID=		366983
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/python-venv-test.mk
 

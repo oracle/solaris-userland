@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		oslo.serialization
-COMPONENT_VERSION=	5.5.0
+COMPONENT_NAME=		oslo_serialization
+COMPONENT_VERSION=	5.9.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9e752fc5d8a975956728dd96a82186783b3fefcacbb3553acd933058861e15a6
+    sha256:a348488a0f90e42c62269fb73957162b444c9511a17fe433370e673c37a2dcdc
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.serialization/
 COMPONENT_BUGDB=	python-mod/oslo.serial
 COMPONENT_ANITYA_ID=	13181
-COMPONENT_BAID=		185485
+COMPONENT_BAID=		366985
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/python-venv-test.mk
 
@@ -61,4 +61,3 @@ system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/msgpack-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.utils-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)

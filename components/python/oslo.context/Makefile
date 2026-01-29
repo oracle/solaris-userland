@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		oslo.context
-COMPONENT_VERSION=	5.6.0
+COMPONENT_NAME=		oslo_context
+COMPONENT_VERSION=	6.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5222c32636be070a230df9d3141a0b27a95f0a3b6978f4c1485bcada47a4c3cb
+    sha256:f4551c9a4da8d59ba951c9eeda82cb3409e73379a3da9349b76546cff81136a6
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.context/
 COMPONENT_BUGDB=	python-mod/oslo.context
 COMPONENT_ANITYA_ID=	6109
-COMPONENT_BAID=		185482
+COMPONENT_BAID=		366981
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/python-venv-test.mk
 
@@ -59,5 +59,5 @@ venv-test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/debtcollector-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)

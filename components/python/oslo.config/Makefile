@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		oslo.config
-COMPONENT_VERSION=	9.6.0
+COMPONENT_NAME=		oslo_config
+COMPONENT_VERSION=	10.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9f05ef70e48d9a61a8d0c9bed389da24f2ef5a89df5b6e8deb7c741d6113667e
+    sha256:fc0561fc448085d979e03a1bff420efcacbad71722a248aecee0572b871a00f7
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.config/
 COMPONENT_BUGDB=	python-mod/oslo.config
 COMPONENT_ANITYA_ID=	3946
-COMPONENT_BAID=		185492
+COMPONENT_BAID=		366980
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/python-venv-test.mk
 
@@ -66,7 +66,6 @@ venv-test:      $(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/debtcollector-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/netaddr-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.i18n-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
