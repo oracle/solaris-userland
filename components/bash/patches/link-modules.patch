@@ -1,0 +1,32 @@
+This patch is Solaris specific. Probably not suitable for upstream.
+
+Bash “loadable” modules aren’t standalone executables; they’re loaded at
+runtime with dlopen() by the Bash binary. Since these modules reference symbols
+defined in the main binary but aren’t linked against it, the linker reports
+undefined‑symbol errors such as:
+
+Undefined                       first referenced
+ symbol                             in file
+make_word_list                      print.o
+printf_builtin                      print.o
+make_word                           print.o
+dispose_words                       print.o
+loptend                             print.o
+...
+
+To allow the link to succeed despite the missing symbols, we need to disable
+the -zdefs option for the loadable targets while keeping it for the rest of
+Bash compilation. This can be done by removing -zdefs only for the loadables’
+build rule.
+
+--- Makefile.in
++++ Makefile.in
+@@ -871,7 +871,7 @@ reconfig: force
+ 
+ # force loadables to wait until the shell is built
+ loadables: .made
+-	cd $(LOADABLES_DIR) && $(MAKE) $(BASH_MAKEFLAGS) all
++	cd $(LOADABLES_DIR) && env LD_SHARED_OPTIONS="$${LD_SHARED_OPTIONS//-zdefs/}" $(MAKE) $(BASH_MAKEFLAGS) all
+ 
+ #newversion:	mkversion
+ #	$(RM) .build

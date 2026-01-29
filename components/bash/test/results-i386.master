@@ -1,6 +1,16 @@
+gmake[1]: Entering directory '$(@D)/builtins'
+gmake[1]: 'pipesize.h' is up to date.
+gmake[1]: Leaving directory '$(@D)/builtins'
+
+	  ***********************************************************
+	  *                                                         *
+	  * GNU bash, version 5.3.9(1)-release (x86_64-pc-solaris2.11)
+	  *                                                         *
+	  ***********************************************************
+
 Testing $(@D)/bash
-version: 5.2.37(1)-release
-versinfo: 5 2 37 1 release x86_64-pc-solaris2.11
+version: 5.3.9(1)-release
+versinfo: 5 3 9 1 release x86_64-pc-solaris2.11
 HOSTTYPE = x86_64
 OSTYPE = solaris2.11
 MACHTYPE = x86_64-pc-solaris2.11
@@ -14,20 +24,6 @@ warning: all of these tests will fail if arrays have not
 warning: been compiled into the shell
 warning: the BASH_ARGC and BASH_ARGV tests will fail if debugging support
 warning: has not been compiled into the shell
-9d8
-< egrep: warning: egrep is obsolescent; using grep -E
-31d29
-< egrep: warning: egrep is obsolescent; using grep -E
-34d31
-< egrep: warning: egrep is obsolescent; using grep -E
-37d33
-< egrep: warning: egrep is obsolescent; using grep -E
-41d36
-< egrep: warning: egrep is obsolescent; using grep -E
-65d59
-< egrep: warning: egrep is obsolescent; using grep -E
-84d77
-< egrep: warning: egrep is obsolescent; using grep -E
 run-array2
 warning: all of these tests will fail if arrays have not
 warning: been compiled into the shell
@@ -40,17 +36,38 @@ run-builtins
 warning: some of these tests may fail if process substitution has not
 warning: been compiled into the shell or if the OS does not provide
 warning: /dev/fd.
+431,434c431,434
+< These shell commands are defined internally.  Type ‘[1mhelp[0m’ to see this list.
+< Type ‘[1mhelp name[0m’ to find out more about the function ‘[1mname[0m’.
+< Use ‘[1minfo bash[0m’ to find out more about the shell in general.
+< Use ‘[1mman -k[0m’ or ‘[1minfo[0m’ to find out more about commands not in this list.
+---
+> These shell commands are defined internally.  Type `help' to see this list.
+> Type `help name' to find out more about the function `name'.
+> Use `info bash' to find out more about the shell in general.
+> Use `man -k' or `info' to find out more about commands not in this list.
+477c477
+< ./builtins10.sub: line 39: help: no help topics match ‘[1mbash[0m’.  Try ‘[1mhelp help[0m’ or ‘[1mman -k bash[0m’ or ‘[1minfo bash[0m’.
+---
+> ./builtins10.sub: line 39: help: no help topics match `bash'.  Try `help help' or `man -k bash' or `info bash'.
+485c485
+< ./builtins11.sub: line 39: ulimit: max user processes: cannot modify limit: Invalid argument
+---
+> ./builtins11.sub: line 39: ulimit: max user processes: cannot modify limit: Operation not permitted
 run-case
 run-casemod
 run-complete
 run-comsub
 run-comsub-eof
 run-comsub-posix
+run-comsub2
 run-cond
 warning: all of these tests will fail if the conditional command has not
 warning: been compiled into the shell
 warning: some of these tests will fail if extended pattern matching has not
 warning: been compiled into the shell
+warning: the text of system error messages may vary between systems and
+warning: produce diff output.
 run-coproc
 run-cprint
 run-dbg-support
@@ -59,6 +76,14 @@ run-dirstack
 run-dollars
 run-dynvar
 run-errors
+102c102
+< ./errors.tests: line 267: read: 42: invalid file descriptor: Bad file number
+---
+> ./errors.tests: line 267: read: 42: invalid file descriptor: Bad file descriptor
+104c104
+< ./errors.tests: line 271: mapfile: 42: invalid file descriptor: Bad file number
+---
+> ./errors.tests: line 271: mapfile: 42: invalid file descriptor: Bad file descriptor
 run-execscript
 warning: the text of a system error message may vary between systems and
 warning: produce diff output.
@@ -70,6 +95,18 @@ warning: `/tmp/bash-notthere' not being found or `/' being a directory
 warning: produce diff output, please do not consider this a test failure
 warning: if diff output differing only in the location of the bash
 warning: binary appears, please do not consider this a test failure
+255,256c255,256
+< ./exec17.sub: line 37: 4: Bad file number
+< ./exec17.sub: line 40: .: Invalid argument
+---
+> ./exec17.sub: line 37: 4: Bad file descriptor
+> ./exec17.sub: line 40: .: Is a directory
+266,267c266,267
+< ./exec17.sub: line 61: 4: Bad file number
+< ./exec17.sub: line 64: .: Invalid argument
+---
+> ./exec17.sub: line 61: 4: Bad file descriptor
+> ./exec17.sub: line 64: .: Is a directory
 run-exp-tests
 run-exportfunc
 run-extglob
@@ -80,10 +117,8 @@ warning: if you have exported functions defined in your environment,
 warning: they may show up as diff output.
 warning: if so, please do not consider this a test failure
 run-getopts
+run-glob-bracket
 run-glob-test
-2,3d1
-< glob2.sub: warning: you do not have the zh_HK.big5hkscs locale installed;
-< glob2.sub: warning: that will cause some of these tests to fail.
 run-globstar
 run-heredoc
 warning: UNIX versions number signals and schedule processes differently.
@@ -103,10 +138,19 @@ run-intl
 unicode1.sub: warning: you do not have the ja_JP.SJIS locale installed;
 unicode1.sub: that will cause some of these tests to be skipped.
 24c24
-< Passed all 1251 Unicode tests
+< Passed all 1580 Unicode tests
 ---
-> Passed all 1378 Unicode tests
+> Passed all 1770 Unicode tests
 run-invert
+run-invocation
+75,77c75,77
+< checkwinsize:cmdhist:complete_fullquote:extquote:force_fignore:globasciiranges:globskipdots:hostcomplete:interactive_comments:patsub_replacement:progcomp:promptvars:sourcepath:xpg_echo
+< checkhash:checkwinsize:cmdhist:complete_fullquote:extquote:force_fignore:globasciiranges:globskipdots:hostcomplete:interactive_comments:patsub_replacement:progcomp:promptvars:sourcepath:xpg_echo
+< cmdhist:complete_fullquote:extquote:force_fignore:globasciiranges:globskipdots:hostcomplete:interactive_comments:patsub_replacement:progcomp:promptvars:sourcepath:xpg_echo
+---
+> checkwinsize:cmdhist:complete_fullquote:extquote:force_fignore:globasciiranges:globskipdots:hostcomplete:interactive_comments:patsub_replacement:progcomp:promptvars:sourcepath
+> checkhash:checkwinsize:cmdhist:complete_fullquote:extquote:force_fignore:globasciiranges:globskipdots:hostcomplete:interactive_comments:patsub_replacement:progcomp:promptvars:sourcepath
+> cmdhist:complete_fullquote:extquote:force_fignore:globasciiranges:globskipdots:hostcomplete:interactive_comments:patsub_replacement:progcomp:promptvars:sourcepath
 run-iquote
 run-jobs
 warning: some of these tests may fail if job control has not been compiled

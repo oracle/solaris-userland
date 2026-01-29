@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bash
-COMPONENT_VERSION=	5.2
+COMPONENT_VERSION=	5.3
 COMPONENT_ARCHIVE_HASH = \
-    sha256:d287cbdfc2ebd175d574901baa925bda80907a5aaa5261b6cfa24b7484635241
+    sha256:5875e8d8328321cef4ae6ccc8d37bc6b4161bcf7e6cd7a5356aa735950c7113a
 COMPONENT_ANITYA_ID=	166
 
-COMPONENT_BAID=		178911
+COMPONENT_BAID=		344221
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -39,41 +40,19 @@ include $(WS_MAKE_RULES)/gnu-component.mk
 # configure-related files by running autoconf before we run configure.
 COMPONENT_PREP_ACTION += (cd $(@D); autoconf)
 
-BASH_PATCHLEVEL=$(shell grep -h "define PATCHLEVEL" $(COMPONENT_DIR)/patches/bash* | $(NAWK) '{print $$NF}' | sort -n | tail -1)
+BASH_PATCHLEVEL=$(shell grep -h "define PATCHLEVEL" $(COMPONENT_DIR)/patches/bash* 2>/dev/null | $(NAWK) '{print $$NF}' | sort -n | tail -1)
+ifneq ($(strip $(BASH_PATCHLEVEL)),)
+# Modify IPS_COMPONENT_VERSION only if there are any patches available
 IPS_COMPONENT_VERSION = $(COMPONENT_VERSION).$(BASH_PATCHLEVEL)
+endif
+
+# Bash releases updates as patches which are supposed to be applied with -p0.
 PATCH_LEVEL = 0
 
 PKG_PROTO_DIRS += $(COMPONENT_DIR)/Solaris
 
-# Enable C99 mode + -Xc for its additional warnings.
-studio_C99MODE = -Xc $(studio_C99_ENABLE)
-
-# Use the maximum number of registers on sparc since we have no libraries
-studio_XREGS.sparc = -xregs=appl
-
-# 8 byte memory alignment + interpretation of non-alignment instead of SIGBUS
-studio_ALIGN.sparc.32 = -xmemalign=8i
-studio_ALIGN.sparc.64 = -xmemalign=16i
-
-# -xinline=%auto -- we like inlining where appropriate
-CFLAGS += -xinline=%auto
-
-# -xbuiltin=%none -- builtins have been known to be buggy
-CFLAGS += -xbuiltin=%none
-
-CFLAGS += $(XPG6MODE)
-CFLAGS += $(CPP_C99_EXTENDED_MATH)
-CFLAGS += -I$(USRINCDIR)/ncurses
-
 # -z redlocsym -- let's shrink the SHT_SYMTAB as much as we can
 LDFLAGS =	$(LD_Z_REDLOCSYM)
-
-# Ignore tgetent() checks in configure and use libncurses on Solaris.
-CONFIGURE_ENV += ac_cv_func_tgetent=yes
-CONFIGURE_ENV += ac_cv_lib_termcap_tgetent=no
-CONFIGURE_ENV += ac_cv_lib_curses_tgetent=no
-CONFIGURE_ENV += ac_cv_lib_ncurses_tgetent=yes
-CONFIGURE_ENV += bash_cv_termcap_lib=libncurses
 
 CONFIGURE_OPTIONS += --disable-profiling
 CONFIGURE_OPTIONS += --disable-strict-posix-default
@@ -109,9 +88,7 @@ CONFIGURE_OPTIONS += --enable-prompt-string-decoding
 CONFIGURE_OPTIONS += --enable-readline
 CONFIGURE_OPTIONS += --enable-restricted
 CONFIGURE_OPTIONS += --enable-select
-CONFIGURE_OPTIONS += --enable-separate-helpfiles
 CONFIGURE_OPTIONS += --enable-single-help-strings
-CONFIGURE_OPTIONS += --enable-static-link
 CONFIGURE_OPTIONS += --enable-usg-echo-default=yes
 CONFIGURE_OPTIONS += --enable-xpg-echo-default=yes
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
@@ -119,6 +96,18 @@ CONFIGURE_OPTIONS += --localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS += --with-bash-malloc=yes
 CONFIGURE_OPTIONS += --with-curses
 CONFIGURE_OPTIONS += --with-installed-readline=no
+
+# The directory examples/loadables does contain bash modules. The modules do
+# use symbols from running bash. But since bash is a binary the modules can not
+# link to it (there is no libbash.so, just bash binary). Because of that the
+# modules must be linked without the linker option -zdefs. This is achieved by
+# the patch link-modules.patch. Slight problem is that there is a different
+# code path in bash's Makefile to compile/link the modules. One is target
+# 'loadables' the other is in target 'install'. It fits our infrastructure
+# better to build everything in our 'build' step. So we need to force the
+# modules to be built too with the rest of bash. Which is why we specify the
+# additional 'loadables' target here:
+COMPONENT_BUILD_TARGETS=all loadables
 
 COMPONENT_TEST_DIR		= $(BUILD_DIR_64)
 COMPONENT_TEST_ENV		= - $(TEST_PATH)
@@ -131,11 +120,6 @@ COMPONENT_TEST_MASTER		= \
 # Bash tests can't pass if they don't have tty available. This script makes
 # sure to provide a tty if we are missing one
 COMPONENT_TEST_CMD = $(COMPONENT_DIR)/bash_test_wrapper
-
-# Due to a bug in Makefile gmake tries to remake few targets after application
-# of upstream patches. Following transform removes build related lines from the
-# test output.
-COMPONENT_TEST_TRANSFORMS += "-e '/^rm -f/,/^[[:digit:]]\+[[:space:]].*bash$$/d'"
 
 # If the tests decided they need to execute itself in screen(1) then move the
 # resulting file to final location where the rest of userland infrastructure
