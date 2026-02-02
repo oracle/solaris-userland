@@ -4,11 +4,9 @@ Date:   Thu Jun 15 10:40:42 2023 +0200
 
     fragment of https://github.com/openssl/openssl/pull/21108
 
-diff --git a/Configure b/Configure
-index 4ddc275f78..008efb335d 100755
---- a/Configure
-+++ b/Configure
-@@ -447,6 +447,7 @@ my @disablables = (
+--- old/Configure	2026-01-28 10:42:27.833331560 +0100
++++ new/Configure	2026-01-28 10:43:25.139576103 +0100
+@@ -450,6 +450,7 @@ my @disablables = (
      "fuzz-afl",
      "fuzz-libfuzzer",
      "gost",
@@ -16,17 +14,15 @@ index 4ddc275f78..008efb335d 100755
      "idea",
      "ktls",
      "legacy",
-diff --git a/crypto/err/err_all.c b/crypto/err/err_all.c
-index 55aa2b8dbd..bbb7eda6d5 100644
---- a/crypto/err/err_all.c
-+++ b/crypto/err/err_all.c
+--- old/crypto/err/err_all.c	2026-01-28 10:42:48.647462823 +0100
++++ new/crypto/err/err_all.c	2026-01-28 10:44:50.662101640 +0100
 @@ -85,7 +85,9 @@ int ossl_err_load_crypto_strings(void)
- # ifndef OPENSSL_NO_ENGINE
+ #ifndef OPENSSL_NO_ENGINE
          || ossl_err_load_ENGINE_strings() == 0
- # endif
-+# ifndef OPENSSL_NO_HTTP
+ #endif
++#ifndef OPENSSL_NO_HTTP
          || ossl_err_load_HTTP_strings() == 0
-+# endif
- # ifndef OPENSSL_NO_OCSP
++#endif
+ #ifndef OPENSSL_NO_OCSP
          || ossl_err_load_OCSP_strings() == 0
- # endif
+ #endif

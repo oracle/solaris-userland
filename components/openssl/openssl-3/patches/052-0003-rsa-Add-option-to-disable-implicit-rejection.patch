@@ -19,12 +19,9 @@ Reviewed-by: Tomas Mraz <tomas@openssl.org>
  include/openssl/rsa.h                         |  5 ++++
  .../implementations/asymciphers/rsa_enc.c     | 26 +++++++++++++++++--
  10 files changed, 95 insertions(+), 8 deletions(-)
-
-diff --git a/crypto/cms/cms_env.c b/crypto/cms/cms_env.c
-index d25504a03f..c55511011f 100644
---- a/crypto/cms/cms_env.c
-+++ b/crypto/cms/cms_env.c
-@@ -608,6 +608,13 @@ static int cms_RecipientInfo_ktri_decrypt(CMS_ContentInfo *cms,
+--- old/crypto/cms/cms_env.c	2026-01-28 07:49:35.065978902 +0100
++++ new/crypto/cms/cms_env.c	2026-01-28 07:51:45.915335983 +0100
+@@ -576,6 +576,13 @@ static int cms_RecipientInfo_ktri_decryp
      if (!ossl_cms_env_asn1_ctrl(ri, 1))
          goto err;
  
@@ -36,15 +33,13 @@ index d25504a03f..c55511011f 100644
 +        EVP_PKEY_CTX_ctrl_str(ktri->pctx, "rsa_pkcs1_implicit_rejection", "0");
 +
      if (EVP_PKEY_decrypt(ktri->pctx, NULL, &eklen,
-                          ktri->encryptedKey->data,
-                          ktri->encryptedKey->length) <= 0)
-diff --git a/crypto/evp/ctrl_params_translate.c b/crypto/evp/ctrl_params_translate.c
-index 56ed5ea6d6..f64c1fcb2a 100644
---- a/crypto/evp/ctrl_params_translate.c
-+++ b/crypto/evp/ctrl_params_translate.c
-@@ -2201,6 +2201,12 @@ static const struct translation_st evp_pkey_ctx_translations[] = {
-       EVP_PKEY_CTRL_GET_RSA_OAEP_LABEL, NULL, NULL,
-       OSSL_ASYM_CIPHER_PARAM_OAEP_LABEL, OSSL_PARAM_OCTET_STRING, NULL },
+             ktri->encryptedKey->data,
+             ktri->encryptedKey->length)
+--- old/crypto/evp/ctrl_params_translate.c	2026-01-28 07:49:35.069286061 +0100
++++ new/crypto/evp/ctrl_params_translate.c	2026-01-28 07:51:45.918618693 +0100
+@@ -2249,6 +2249,12 @@ static const struct translation_st evp_p
+         EVP_PKEY_CTRL_GET_RSA_OAEP_LABEL, NULL, NULL,
+         OSSL_ASYM_CIPHER_PARAM_OAEP_LABEL, OSSL_PARAM_OCTET_PTR, NULL },
  
 +    { SET, EVP_PKEY_RSA, 0, EVP_PKEY_OP_TYPE_CRYPT,
 +      EVP_PKEY_CTRL_RSA_IMPLICIT_REJECTION, NULL,
@@ -53,13 +48,11 @@ index 56ed5ea6d6..f64c1fcb2a 100644
 +      NULL },
 +
      { SET, EVP_PKEY_RSA_PSS, 0, EVP_PKEY_OP_TYPE_GEN,
-       EVP_PKEY_CTRL_MD, "rsa_pss_keygen_md", NULL,
-       OSSL_ALG_PARAM_DIGEST, OSSL_PARAM_UTF8_STRING, fix_md },
-diff --git a/crypto/rsa/rsa_ossl.c b/crypto/rsa/rsa_ossl.c
-index 2b25dad893..094a6632b6 100644
---- a/crypto/rsa/rsa_ossl.c
-+++ b/crypto/rsa/rsa_ossl.c
-@@ -390,6 +390,12 @@ static int rsa_ossl_private_decrypt(int flen, const unsigned char *from,
+         EVP_PKEY_CTRL_MD, "rsa_pss_keygen_md", NULL,
+         OSSL_ALG_PARAM_DIGEST, OSSL_PARAM_UTF8_STRING, fix_md },
+--- old/crypto/rsa/rsa_ossl.c	2026-01-28 07:49:35.072289831 +0100
++++ new/crypto/rsa/rsa_ossl.c	2026-01-28 07:51:45.921605914 +0100
+@@ -391,6 +391,12 @@ static int rsa_ossl_private_decrypt(int
      BIGNUM *unblind = NULL;
      BN_BLINDING *blinding = NULL;
  
@@ -72,7 +65,7 @@ index 2b25dad893..094a6632b6 100644
      if ((ctx = BN_CTX_new_ex(rsa->libctx)) == NULL)
          goto err;
      BN_CTX_start(ctx);
-@@ -488,7 +494,7 @@ static int rsa_ossl_private_decrypt(int flen, const unsigned char *from,
+@@ -481,7 +487,7 @@ static int rsa_ossl_private_decrypt(int
       * derive the Key Derivation Key from private exponent and public
       * ciphertext
       */
@@ -81,7 +74,7 @@ index 2b25dad893..094a6632b6 100644
          /*
           * because we use d as a handle to rsa->d we need to keep it local and
           * free before any further use of rsa->d
-@@ -564,11 +570,11 @@ static int rsa_ossl_private_decrypt(int flen, const unsigned char *from,
+@@ -557,11 +563,11 @@ static int rsa_ossl_private_decrypt(int
          goto err;
  
      switch (padding) {
@@ -97,10 +90,8 @@ index 2b25dad893..094a6632b6 100644
          break;
      case RSA_PKCS1_OAEP_PADDING:
          r = RSA_padding_check_PKCS1_OAEP(to, num, buf, j, num, NULL, 0);
-diff --git a/crypto/rsa/rsa_pmeth.c b/crypto/rsa/rsa_pmeth.c
-index 8b35e5c3c6..c67b20baf5 100644
---- a/crypto/rsa/rsa_pmeth.c
-+++ b/crypto/rsa/rsa_pmeth.c
+--- old/crypto/rsa/rsa_pmeth.c	2026-01-28 07:49:35.075268687 +0100
++++ new/crypto/rsa/rsa_pmeth.c	2026-01-28 07:51:45.924662029 +0100
 @@ -52,6 +52,8 @@ typedef struct {
      /* OAEP label */
      unsigned char *oaep_label;
@@ -110,7 +101,7 @@ index 8b35e5c3c6..c67b20baf5 100644
  } RSA_PKEY_CTX;
  
  /* True if PSS parameters are restricted */
-@@ -72,6 +74,7 @@ static int pkey_rsa_init(EVP_PKEY_CTX *ctx)
+@@ -72,6 +74,7 @@ static int pkey_rsa_init(EVP_PKEY_CTX *c
      /* Maximum for sign, auto for verify */
      rctx->saltlen = RSA_PSS_SALTLEN_AUTO;
      rctx->min_saltlen = -1;
@@ -118,7 +109,7 @@ index 8b35e5c3c6..c67b20baf5 100644
      ctx->data = rctx;
      ctx->keygen_info = rctx->gentmp;
      ctx->keygen_info_count = 2;
-@@ -97,6 +100,7 @@ static int pkey_rsa_copy(EVP_PKEY_CTX *dst, const EVP_PKEY_CTX *src)
+@@ -97,6 +100,7 @@ static int pkey_rsa_copy(EVP_PKEY_CTX *d
      dctx->md = sctx->md;
      dctx->mgf1md = sctx->mgf1md;
      dctx->saltlen = sctx->saltlen;
@@ -126,17 +117,17 @@ index 8b35e5c3c6..c67b20baf5 100644
      if (sctx->oaep_label) {
          OPENSSL_free(dctx->oaep_label);
          dctx->oaep_label = OPENSSL_memdup(sctx->oaep_label, sctx->oaep_labellen);
-@@ -345,6 +349,7 @@ static int pkey_rsa_decrypt(EVP_PKEY_CTX *ctx,
-                             const unsigned char *in, size_t inlen)
+@@ -345,6 +349,7 @@ static int pkey_rsa_decrypt(EVP_PKEY_CTX
+     const unsigned char *in, size_t inlen)
  {
      int ret;
 +    int pad_mode;
      RSA_PKEY_CTX *rctx = ctx->data;
      /*
       * Discard const. Its marked as const because this may be a cached copy of
-@@ -365,7 +370,12 @@ static int pkey_rsa_decrypt(EVP_PKEY_CTX *ctx,
-                                                 rctx->oaep_labellen,
-                                                 rctx->md, rctx->mgf1md);
+@@ -365,7 +370,12 @@ static int pkey_rsa_decrypt(EVP_PKEY_CTX
+             rctx->oaep_labellen,
+             rctx->md, rctx->mgf1md);
      } else {
 -        ret = RSA_private_decrypt(inlen, in, out, rsa, rctx->pad_mode);
 +        if (rctx->pad_mode == RSA_PKCS1_PADDING &&
@@ -148,7 +139,7 @@ index 8b35e5c3c6..c67b20baf5 100644
      }
      *outlen = constant_time_select_s(constant_time_msb_s(ret), *outlen, ret);
      ret = constant_time_select_int(constant_time_msb(ret), ret, 1);
-@@ -585,6 +595,14 @@ static int pkey_rsa_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
+@@ -587,6 +597,14 @@ static int pkey_rsa_ctrl(EVP_PKEY_CTX *c
          *(unsigned char **)p2 = rctx->oaep_label;
          return rctx->oaep_labellen;
  
@@ -163,11 +154,9 @@ index 8b35e5c3c6..c67b20baf5 100644
      case EVP_PKEY_CTRL_DIGESTINIT:
      case EVP_PKEY_CTRL_PKCS7_SIGN:
  #ifndef OPENSSL_NO_CMS
-diff --git a/doc/man1/openssl-pkeyutl.pod.in b/doc/man1/openssl-pkeyutl.pod.in
-index b7c45caa23..dd87829798 100644
---- a/doc/man1/openssl-pkeyutl.pod.in
-+++ b/doc/man1/openssl-pkeyutl.pod.in
-@@ -272,6 +272,16 @@ explicitly set in PSS mode then the signing digest is used.
+--- old/doc/man1/openssl-pkeyutl.pod.in	2026-01-28 07:49:35.078376267 +0100
++++ new/doc/man1/openssl-pkeyutl.pod.in	2026-01-28 07:51:45.927549192 +0100
+@@ -305,6 +305,16 @@ explicitly set in PSS mode then the sign
  Sets the digest used for the OAEP hash function. If not explicitly set then
  SHA1 is used.
  
@@ -184,11 +173,9 @@ index b7c45caa23..dd87829798 100644
  =back
  
  =head1 RSA-PSS ALGORITHM
-diff --git a/doc/man3/EVP_PKEY_CTX_ctrl.pod b/doc/man3/EVP_PKEY_CTX_ctrl.pod
-index 12026174a5..f7957e95f7 100644
---- a/doc/man3/EVP_PKEY_CTX_ctrl.pod
-+++ b/doc/man3/EVP_PKEY_CTX_ctrl.pod
-@@ -399,6 +399,8 @@ instead of padding errors in case padding checks fail. Applications that
+--- old/doc/man3/EVP_PKEY_CTX_ctrl.pod	2026-01-28 07:49:35.081511797 +0100
++++ new/doc/man3/EVP_PKEY_CTX_ctrl.pod	2026-01-28 07:51:45.930642669 +0100
+@@ -392,6 +392,8 @@ instead of padding errors in case paddin
  want to remain secure while using earlier versions of OpenSSL, still need to
  handle both the error code from the RSA decryption operation and the
  returned message in a side channel secure manner.
@@ -197,11 +184,9 @@ index 12026174a5..f7957e95f7 100644
  
  =head2 DSA parameters
  
-diff --git a/doc/man7/provider-asym_cipher.pod b/doc/man7/provider-asym_cipher.pod
-index ac3f627196..cb770c9e85 100644
---- a/doc/man7/provider-asym_cipher.pod
-+++ b/doc/man7/provider-asym_cipher.pod
-@@ -235,6 +235,15 @@ The TLS protocol version first requested by the client.
+--- old/doc/man7/provider-asym_cipher.pod	2026-01-28 07:49:35.084502619 +0100
++++ new/doc/man7/provider-asym_cipher.pod	2026-01-28 07:51:45.933776075 +0100
+@@ -234,6 +234,15 @@ The TLS protocol version first requested
  
  The negotiated TLS protocol version.
  
@@ -217,53 +202,47 @@ index ac3f627196..cb770c9e85 100644
  =back
  
  OSSL_FUNC_asym_cipher_gettable_ctx_params() and OSSL_FUNC_asym_cipher_settable_ctx_params()
-diff --git a/include/openssl/core_names.h b/include/openssl/core_names.h
-index e6c4758a33..6e4a4f8539 100644
---- a/include/openssl/core_names.h
-+++ b/include/openssl/core_names.h
-@@ -302,6 +302,7 @@ extern "C" {
- #define OSSL_PKEY_PARAM_DIST_ID             "distid"
- #define OSSL_PKEY_PARAM_PUB_KEY             "pub"
- #define OSSL_PKEY_PARAM_PRIV_KEY            "priv"
-+#define OSSL_PKEY_PARAM_IMPLICIT_REJECTION  "implicit-rejection"
+--- old/include/openssl/core_names.h	2026-01-28 07:49:35.087506578 +0100
++++ new/include/openssl/core_names.h	2026-01-28 07:56:36.259469545 +0100
+@@ -292,6 +292,7 @@ extern "C" {
+ #define OSSL_PKEY_PARAM_DIST_ID "distid"
+ #define OSSL_PKEY_PARAM_PUB_KEY "pub"
+ #define OSSL_PKEY_PARAM_PRIV_KEY "priv"
++#define OSSL_PKEY_PARAM_IMPLICIT_REJECTION "implicit-rejection"
  
  /* Diffie-Hellman/DSA Parameters */
- #define OSSL_PKEY_PARAM_FFC_P               "p"
-@@ -482,6 +483,7 @@ extern "C" {
- #define OSSL_ASYM_CIPHER_PARAM_OAEP_LABEL               "oaep-label"
- #define OSSL_ASYM_CIPHER_PARAM_TLS_CLIENT_VERSION       "tls-client-version"
- #define OSSL_ASYM_CIPHER_PARAM_TLS_NEGOTIATED_VERSION   "tls-negotiated-version"
-+#define OSSL_ASYM_CIPHER_PARAM_IMPLICIT_REJECTION       "implicit-rejection"
+ #define OSSL_PKEY_PARAM_FFC_P "p"
+@@ -467,6 +468,7 @@ extern "C" {
+ #define OSSL_ASYM_CIPHER_PARAM_OAEP_LABEL "oaep-label"
+ #define OSSL_ASYM_CIPHER_PARAM_TLS_CLIENT_VERSION "tls-client-version"
+ #define OSSL_ASYM_CIPHER_PARAM_TLS_NEGOTIATED_VERSION "tls-negotiated-version"
++#define OSSL_ASYM_CIPHER_PARAM_IMPLICIT_REJECTION "implicit-rejection"
  
  /*
   * Encoder / decoder parameters
-diff --git a/include/openssl/rsa.h b/include/openssl/rsa.h
-index bce2125822..167427d3c4 100644
---- a/include/openssl/rsa.h
-+++ b/include/openssl/rsa.h
-@@ -189,6 +189,8 @@ int EVP_PKEY_CTX_get0_rsa_oaep_label(EVP_PKEY_CTX *ctx, unsigned char **label);
+--- old/include/openssl/rsa.h	2026-01-28 07:49:35.090390007 +0100
++++ new/include/openssl/rsa.h	2026-01-28 07:59:39.361102752 +0100
+@@ -183,6 +183,8 @@ int EVP_PKEY_CTX_get0_rsa_oaep_label(EVP
  
- # define EVP_PKEY_CTRL_RSA_KEYGEN_PRIMES  (EVP_PKEY_ALG_CTRL + 13)
+ #define EVP_PKEY_CTRL_RSA_KEYGEN_PRIMES (EVP_PKEY_ALG_CTRL + 13)
  
-+# define EVP_PKEY_CTRL_RSA_IMPLICIT_REJECTION (EVP_PKEY_ALG_CTRL + 14)
++#define EVP_PKEY_CTRL_RSA_IMPLICIT_REJECTION (EVP_PKEY_ALG_CTRL + 14)
 +
- # define RSA_PKCS1_PADDING          1
- # define RSA_NO_PADDING             3
- # define RSA_PKCS1_OAEP_PADDING     4
-@@ -198,6 +200,9 @@ int EVP_PKEY_CTX_get0_rsa_oaep_label(EVP_PKEY_CTX *ctx, unsigned char **label);
- # define RSA_PKCS1_PSS_PADDING      6
- # define RSA_PKCS1_WITH_TLS_PADDING 7
+ #define RSA_PKCS1_PADDING 1
+ #define RSA_NO_PADDING 3
+ #define RSA_PKCS1_OAEP_PADDING 4
+@@ -192,6 +194,9 @@ int EVP_PKEY_CTX_get0_rsa_oaep_label(EVP
+ #define RSA_PKCS1_PSS_PADDING 6
+ #define RSA_PKCS1_WITH_TLS_PADDING 7
  
 +/* internal RSA_ only */
-+# define RSA_PKCS1_NO_IMPLICIT_REJECT_PADDING 8
++#define RSA_PKCS1_NO_IMPLICIT_REJECT_PADDING 8
 +
- # define RSA_PKCS1_PADDING_SIZE    11
+ #define RSA_PKCS1_PADDING_SIZE 11
  
- # define RSA_set_app_data(s,arg)         RSA_set_ex_data(s,0,arg)
-diff --git a/providers/implementations/asymciphers/rsa_enc.c b/providers/implementations/asymciphers/rsa_enc.c
-index 3d331ea8df..fbafb84f8c 100644
---- a/providers/implementations/asymciphers/rsa_enc.c
-+++ b/providers/implementations/asymciphers/rsa_enc.c
+ #define RSA_set_app_data(s, arg) RSA_set_ex_data(s, 0, arg)
+--- old/providers/implementations/asymciphers/rsa_enc.c	2026-01-28 07:49:35.093296784 +0100
++++ new/providers/implementations/asymciphers/rsa_enc.c	2026-01-28 08:04:29.488641677 +0100
 @@ -75,6 +75,8 @@ typedef struct {
      /* TLS padding */
      unsigned int client_version;
@@ -273,7 +252,7 @@ index 3d331ea8df..fbafb84f8c 100644
  } PROV_RSA_CTX;
  
  static void *rsa_newctx(void *provctx)
-@@ -107,6 +109,7 @@ static int rsa_init(void *vprsactx, void *vrsa, const OSSL_PARAM params[],
+@@ -107,6 +109,7 @@ static int rsa_init(void *vprsactx, void
      RSA_free(prsactx->rsa);
      prsactx->rsa = vrsa;
      prsactx->operation = operation;
@@ -281,7 +260,7 @@ index 3d331ea8df..fbafb84f8c 100644
  
      switch (RSA_test_flags(prsactx->rsa, RSA_FLAG_TYPE_MASK)) {
      case RSA_FLAG_TYPE_RSA:
-@@ -195,6 +198,7 @@ static int rsa_decrypt(void *vprsactx, unsigned char *out, size_t *outlen,
+@@ -203,6 +206,7 @@ static int rsa_decrypt(void *vprsactx, u
  {
      PROV_RSA_CTX *prsactx = (PROV_RSA_CTX *)vprsactx;
      int ret;
@@ -289,12 +268,12 @@ index 3d331ea8df..fbafb84f8c 100644
      size_t len = RSA_size(prsactx->rsa);
  
      if (!ossl_prov_is_running())
-@@ -270,8 +274,12 @@ static int rsa_decrypt(void *vprsactx, unsigned char *out, size_t *outlen,
+@@ -280,8 +284,12 @@ static int rsa_decrypt(void *vprsactx, u
          }
          OPENSSL_free(tbuf);
      } else {
 -        ret = RSA_private_decrypt(inlen, in, out, prsactx->rsa,
--                                  prsactx->pad_mode);
+-            prsactx->pad_mode);
 +        if ((prsactx->implicit_rejection == 0) &&
 +                (prsactx->pad_mode == RSA_PKCS1_PADDING))
 +            pad_mode = RSA_PKCS1_NO_IMPLICIT_REJECT_PADDING;
@@ -304,7 +283,7 @@ index 3d331ea8df..fbafb84f8c 100644
      }
      *outlen = constant_time_select_s(constant_time_msb_s(ret), *outlen, ret);
      ret = constant_time_select_int(constant_time_msb(ret), 0, 1);
-@@ -395,6 +403,10 @@ static int rsa_get_ctx_params(void *vprsactx, OSSL_PARAM *params)
+@@ -403,6 +411,10 @@ static int rsa_get_ctx_params(void *vprs
      if (p != NULL && !OSSL_PARAM_set_uint(p, prsactx->alt_version))
          return 0;
  
@@ -315,15 +294,15 @@ index 3d331ea8df..fbafb84f8c 100644
      return 1;
  }
  
-@@ -406,6 +418,7 @@ static const OSSL_PARAM known_gettable_ctx_params[] = {
-                     NULL, 0),
+@@ -414,6 +426,7 @@ static const OSSL_PARAM known_gettable_c
+         NULL, 0),
      OSSL_PARAM_uint(OSSL_ASYM_CIPHER_PARAM_TLS_CLIENT_VERSION, NULL),
      OSSL_PARAM_uint(OSSL_ASYM_CIPHER_PARAM_TLS_NEGOTIATED_VERSION, NULL),
 +    OSSL_PARAM_uint(OSSL_ASYM_CIPHER_PARAM_IMPLICIT_REJECTION, NULL),
      OSSL_PARAM_END
  };
  
-@@ -543,6 +556,14 @@ static int rsa_set_ctx_params(void *vprsactx, const OSSL_PARAM params[])
+@@ -549,6 +562,14 @@ static int rsa_set_ctx_params(void *vprs
              return 0;
          prsactx->alt_version = alt_version;
      }
@@ -338,7 +317,7 @@ index 3d331ea8df..fbafb84f8c 100644
  
      return 1;
  }
-@@ -555,6 +576,7 @@ static const OSSL_PARAM known_settable_ctx_params[] = {
+@@ -562,6 +583,7 @@ static const OSSL_PARAM known_settable_c
      OSSL_PARAM_octet_string(OSSL_ASYM_CIPHER_PARAM_OAEP_LABEL, NULL, 0),
      OSSL_PARAM_uint(OSSL_ASYM_CIPHER_PARAM_TLS_CLIENT_VERSION, NULL),
      OSSL_PARAM_uint(OSSL_ASYM_CIPHER_PARAM_TLS_NEGOTIATED_VERSION, NULL),
@@ -346,6 +325,3 @@ index 3d331ea8df..fbafb84f8c 100644
      OSSL_PARAM_END
  };
  
--- 
-2.48.1
-

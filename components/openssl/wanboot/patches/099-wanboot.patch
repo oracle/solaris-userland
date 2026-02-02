@@ -3,9 +3,9 @@ Author: Vladimir Kotal <Vladimir.Kotal@Oracle.COM>
 Date:   Tue Jun 6 14:51:33 2023 +0200
 
     initial set of changes to build wanboot
---- old/crypto/bio/bio_addr.c	2025-02-17 12:34:05.118318269 +0100
-+++ new/crypto/bio/bio_addr.c	2025-02-17 12:34:56.511253998 +0100
-@@ -746,6 +746,29 @@ int BIO_lookup_ex(const char *host, cons
+--- old/crypto/bio/bio_addr.c	2026-01-28 11:32:52.569400734 +0100
++++ new/crypto/bio/bio_addr.c	2026-01-28 11:34:07.924799258 +0100
+@@ -749,6 +749,29 @@ int BIO_lookup_ex(const char *host, cons
          }
      } else {
  #endif
@@ -44,16 +44,16 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
                  se = getservbyname(service, proto);
  
 @@ -882,6 +906,7 @@ int BIO_lookup_ex(const char *host, cons
-                                    "calling getservbyname()");
+                         "calling getservbyname()");
                      goto err;
                  }
 +#endif
              } else {
                  ERR_raise(ERR_LIB_BIO, BIO_R_MALFORMED_HOST_OR_SERVICE);
                  goto err;
---- old/crypto/bio/bio_sock.c	2025-02-17 12:34:05.123350067 +0100
-+++ new/crypto/bio/bio_sock.c	2025-02-17 12:34:56.517282094 +0100
-@@ -392,6 +392,13 @@ int BIO_sock_info(int sock,
+--- old/crypto/bio/bio_sock.c	2026-01-28 11:32:52.572464443 +0100
++++ new/crypto/bio/bio_sock.c	2026-01-28 11:36:08.248171452 +0100
+@@ -391,6 +391,13 @@ int BIO_sock_info(int sock,
   */
  int BIO_socket_wait(int fd, int for_read, time_t max_time)
  {
@@ -67,17 +67,17 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
      fd_set confds;
      struct timeval tv;
      time_t now;
-@@ -415,5 +422,6 @@ int BIO_socket_wait(int fd, int for_read
+@@ -414,5 +421,6 @@ int BIO_socket_wait(int fd, int for_read
      tv.tv_sec = (long)(max_time - now); /* might overflow */
      return select(fd + 1, for_read ? &confds : NULL,
-                   for_read ? NULL : &confds, NULL, &tv);
+         for_read ? NULL : &confds, NULL, &tv);
 +#endif
  }
  #endif /* !defined(OPENSSL_NO_SOCK) */
---- old/crypto/cryptlib.c	2025-02-17 12:34:05.129138267 +0100
-+++ new/crypto/cryptlib.c	2025-02-17 12:34:56.522140249 +0100
-@@ -235,6 +235,12 @@ void OPENSSL_showfatal(const char *fmta,
- # endif
+--- old/crypto/cryptlib.c	2026-01-28 11:32:52.575710348 +0100
++++ new/crypto/cryptlib.c	2026-01-28 12:06:57.560911828 +0100
+@@ -233,6 +233,12 @@ void OPENSSL_showfatal(const char *fmta,
+ #endif
  }
  #else
 +/*
@@ -89,7 +89,7 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  void OPENSSL_showfatal(const char *fmta, ...)
  {
  #ifndef OPENSSL_NO_STDIO
-@@ -245,6 +251,7 @@ void OPENSSL_showfatal(const char *fmta,
+@@ -243,6 +249,7 @@ void OPENSSL_showfatal(const char *fmta,
      va_end(ap);
  #endif
  }
@@ -97,13 +97,13 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  
  int OPENSSL_isservice(void)
  {
-@@ -254,8 +261,14 @@ int OPENSSL_isservice(void)
+@@ -252,8 +259,14 @@ int OPENSSL_isservice(void)
  
  void OPENSSL_die(const char *message, const char *file, int line)
  {
 +#ifndef _BOOT
      OPENSSL_showfatal("%s:%d: OpenSSL internal error: %s\n",
-                       file, line, message);
+         file, line, message);
 +#else
 +    fprintf(stderr,
 +        "%s(%d): OpenSSL internal error, assertion failed: %s\n",
@@ -112,8 +112,8 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  #if !defined(_WIN32)
      abort();
  #else
---- old/crypto/evp/ctrl_params_translate.c	2025-02-17 12:34:05.134409290 +0100
-+++ new/crypto/evp/ctrl_params_translate.c	2025-02-17 12:34:56.527312542 +0100
+--- old/crypto/evp/ctrl_params_translate.c	2026-01-28 11:32:52.578888763 +0100
++++ new/crypto/evp/ctrl_params_translate.c	2026-01-28 11:44:54.504224355 +0100
 @@ -37,6 +37,52 @@
  #include "crypto/dh.h"
  #include "crypto/ec.h"
@@ -164,35 +164,38 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
 +}
 +#endif
 +
- struct translation_ctx_st;       /* Forwarding */
- struct translation_st;           /* Forwarding */
+ struct translation_ctx_st; /* Forwarding */
+ struct translation_st; /* Forwarding */
  
---- old/crypto/init.c	2025-02-17 12:34:05.139874457 +0100
-+++ new/crypto/init.c	2025-02-17 12:34:56.533832704 +0100
-@@ -107,8 +107,10 @@ DEFINE_RUN_ONCE_STATIC(ossl_init_registe
+--- old/crypto/init.c	2026-01-28 11:32:52.581898368 +0100
++++ new/crypto/init.c	2026-01-28 11:45:58.237284942 +0100
+@@ -107,11 +107,13 @@ DEFINE_RUN_ONCE_STATIC(ossl_init_registe
      if (_onexit(win32atexit) == NULL)
          return 0;
- #  else
+ #else
 +#ifndef _BOOT
      if (atexit(OPENSSL_cleanup) != 0)
          return 0;
-+#endif
- #  endif
- # endif
  #endif
---- old/crypto/o_dir.c	2025-02-17 12:34:05.145036530 +0100
-+++ new/crypto/o_dir.c	2025-02-17 12:34:56.538949102 +0100
-@@ -23,7 +23,7 @@
- #include "internal/o_dir.h"
+ #endif
+ #endif
++#endif
  
+     return 1;
+ }
+--- old/crypto/o_dir.c	2026-01-28 11:32:52.584797227 +0100
++++ new/crypto/o_dir.c	2026-01-28 11:34:07.940855396 +0100
+@@ -24,7 +24,7 @@
+ 
+ /* clang-format off */
  #define LPDIR_H
 -#if defined OPENSSL_SYS_UNIX || defined DJGPP \
 +#if (defined OPENSSL_SYS_UNIX && !defined _BOOT) || defined DJGPP \
      || (defined __VMS_VER && __VMS_VER >= 70000000)
  # include "LPdir_unix.c"
  #elif defined OPENSSL_SYS_VMS
---- old/crypto/sparccpuid.S	2025-02-17 12:34:05.149766547 +0100
-+++ new/crypto/sparccpuid.S	2025-02-17 12:34:56.544255982 +0100
+--- old/crypto/sparccpuid.S	2026-01-28 11:32:52.587708642 +0100
++++ new/crypto/sparccpuid.S	2026-01-28 11:34:07.944125056 +0100
 @@ -477,6 +477,7 @@ CRYPTO_memcmp:
  .type	CRYPTO_memcmp,#function
  .size	CRYPTO_memcmp,.-CRYPTO_memcmp
@@ -209,21 +212,23 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
 +        nop
 +        nop
 +#endif
---- old/crypto/sparcv9cap.c	2025-02-17 12:34:05.155268761 +0100
-+++ new/crypto/sparcv9cap.c	2025-02-17 12:34:56.549430179 +0100
-@@ -21,7 +21,11 @@
+--- old/crypto/sparcv9cap.c	2026-01-28 11:32:52.590725507 +0100
++++ new/crypto/sparcv9cap.c	2026-01-28 11:48:57.858488243 +0100
+@@ -21,8 +21,13 @@
  #if defined(__GNUC__) && defined(__linux)
- __attribute__ ((visibility("hidden")))
+ __attribute__((visibility("hidden")))
  #endif
 +#ifndef        _BOOT
- unsigned int OPENSSL_sparcv9cap_P[2] = { SPARCV9_TICK_PRIVILEGED, 0 };
+ unsigned int OPENSSL_sparcv9cap_P[2]
+     = { SPARCV9_TICK_PRIVILEGED, 0 };
 +#else
-+unsigned int OPENSSL_sparcv9cap_P[2] = { SPARCV9_VIS1, 0 };
++unsigned int OPENSSL_sparcv9cap_P[2]
++    = { SPARCV9_VIS1, 0 };
 +#endif
  
  unsigned long _sparcv9_rdtick(void);
  void _sparcv9_vis1_probe(void);
-@@ -38,7 +42,7 @@ size_t _sparcv9_vis1_instrument_bus2(uns
+@@ -39,7 +44,7 @@ size_t _sparcv9_vis1_instrument_bus2(uns
  uint32_t OPENSSL_rdtsc(void)
  {
      if (OPENSSL_sparcv9cap_P[0] & SPARCV9_TICK_PRIVILEGED)
@@ -232,13 +237,12 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
          return gethrtime();
  #else
          return 0;
-@@ -49,20 +53,28 @@ uint32_t OPENSSL_rdtsc(void)
+@@ -50,18 +55,26 @@ uint32_t OPENSSL_rdtsc(void)
  
  size_t OPENSSL_instrument_bus(unsigned int *out, size_t cnt)
  {
 +#ifndef _BOOT
-     if ((OPENSSL_sparcv9cap_P[0] & (SPARCV9_TICK_PRIVILEGED | SPARCV9_BLK)) ==
-         SPARCV9_BLK)
+     if ((OPENSSL_sparcv9cap_P[0] & (SPARCV9_TICK_PRIVILEGED | SPARCV9_BLK)) == SPARCV9_BLK)
          return _sparcv9_vis1_instrument_bus(out, cnt);
      else
          return 0;
@@ -250,8 +254,7 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  size_t OPENSSL_instrument_bus2(unsigned int *out, size_t cnt, size_t max)
  {
 +#ifndef _BOOT
-     if ((OPENSSL_sparcv9cap_P[0] & (SPARCV9_TICK_PRIVILEGED | SPARCV9_BLK)) ==
-         SPARCV9_BLK)
+     if ((OPENSSL_sparcv9cap_P[0] & (SPARCV9_TICK_PRIVILEGED | SPARCV9_BLK)) == SPARCV9_BLK)
          return _sparcv9_vis1_instrument_bus2(out, cnt, max);
      else
          return 0;
@@ -261,8 +264,8 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  }
  
  static sigjmp_buf common_jmp;
-@@ -82,6 +94,16 @@ static unsigned int (*getisax) (unsigned
- # endif
+@@ -81,6 +94,16 @@ static unsigned int (*getisax)(unsigned
+ #endif
  #endif
  
 +#if defined(_BOOT)
@@ -278,14 +281,14 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  void OPENSSL_cpuid_setup(void)
  {
      char *e;
-@@ -229,3 +251,4 @@ void OPENSSL_cpuid_setup(void)
+@@ -238,3 +261,4 @@ void OPENSSL_cpuid_setup(void)
      }
- # endif
+ #endif
  }
 +#endif
---- old/crypto/x509/v3_utl.c	2025-02-17 12:34:05.160417597 +0100
-+++ new/crypto/x509/v3_utl.c	2025-02-17 12:34:56.554534350 +0100
-@@ -1179,11 +1179,51 @@ int ossl_a2i_ipadd(unsigned char *ipout,
+--- old/crypto/x509/v3_utl.c	2026-01-28 11:32:52.593908076 +0100
++++ new/crypto/x509/v3_utl.c	2026-01-28 11:34:07.950080099 +0100
+@@ -1173,11 +1173,51 @@ int ossl_a2i_ipadd(unsigned char *ipout,
      }
  }
  
@@ -337,7 +340,7 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
      if (sscanf(in, "%d.%d.%d.%d%n", &a0, &a1, &a2, &a3, &n) != 4)
          return 0;
      if ((a0 < 0) || (a0 > 255) || (a1 < 0) || (a1 > 255)
-@@ -1196,6 +1236,7 @@ static int ipv4_from_asc(unsigned char *
+@@ -1190,6 +1230,7 @@ static int ipv4_from_asc(unsigned char *
      v4[1] = a1;
      v4[2] = a2;
      v4[3] = a3;
@@ -345,17 +348,17 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
      return 1;
  }
  
---- old/crypto/x509/x_all.c	2025-02-17 12:34:05.165233335 +0100
-+++ new/crypto/x509/x_all.c	2025-02-17 12:38:00.359502189 +0100
+--- old/crypto/x509/x_all.c	2026-01-28 11:32:52.596764384 +0100
++++ new/crypto/x509/x_all.c	2026-01-28 11:50:21.104258051 +0100
 @@ -92,6 +92,7 @@ int X509_sign_ctx(X509 *x, EVP_MD_CTX *c
  static ASN1_VALUE *simple_get_asn1(const char *url, BIO *bio, BIO *rbio,
-                                    int timeout, const ASN1_ITEM *it)
+     int timeout, const ASN1_ITEM *it)
  {
 +#ifndef OPENSSL_NO_HTTP
-     size_t max_resp_len = (it == ASN1_ITEM_rptr(X509_CRL)) ?
-         OSSL_HTTP_DEFAULT_MAX_CRL_LEN : OSSL_HTTP_DEFAULT_MAX_RESP_LEN;
+     size_t max_resp_len = (it == ASN1_ITEM_rptr(X509_CRL)) ? OSSL_HTTP_DEFAULT_MAX_CRL_LEN : OSSL_HTTP_DEFAULT_MAX_RESP_LEN;
      BIO *mem = OSSL_HTTP_get(url, NULL /* proxy */, NULL /* no_proxy */,
-@@ -103,6 +104,9 @@ static ASN1_VALUE *simple_get_asn1(const
+         bio, rbio, NULL /* cb */, NULL /* arg */,
+@@ -102,6 +103,9 @@ static ASN1_VALUE *simple_get_asn1(const
  
      BIO_free(mem);
      return res;
@@ -365,57 +368,57 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  }
  
  X509 *X509_load_http(const char *url, BIO *bio, BIO *rbio, int timeout)
---- old/include/internal/sockets.h	2025-02-17 12:34:05.170430723 +0100
-+++ new/include/internal/sockets.h	2025-02-17 12:34:56.564632202 +0100
+--- old/include/internal/sockets.h	2026-01-28 11:32:52.599803295 +0100
++++ new/include/internal/sockets.h	2026-01-28 11:53:07.775265808 +0100
 @@ -70,13 +70,15 @@ struct servent *PASCAL getservbyname(con
- #   include <time.h>
- #  endif
+ #include <time.h>
+ #endif
  
-+#  ifndef _BOOT
- #  include <netdb.h>
-+#  endif
- #  if defined(OPENSSL_SYS_VMS_NODECC)
- #   include <socket.h>
- #   include <in.h>
- #   include <inet.h>
- #  else
--#   include <sys/socket.h>
-+#   include "sys/socket.h"
- #   ifndef NO_SYS_UN_H
- #    include <sys/un.h>
- #    ifndef UNIX_PATH_MAX
++#ifndef _BOOT
+ #include <netdb.h>
++#endif
+ #if defined(OPENSSL_SYS_VMS_NODECC)
+ #include <socket.h>
+ #include <in.h>
+ #include <inet.h>
+ #else
+-#include <sys/socket.h>
++#include "sys/socket.h"
+ #ifndef NO_SYS_UN_H
+ #include <sys/un.h>
+ #ifndef UNIX_PATH_MAX
 @@ -135,6 +137,14 @@ struct servent *PASCAL getservbyname(con
- #  define clear_socket_error()    WSASetLastError(0)
- #  define readsocket(s,b,n)       recv((s),(b),(n),0)
- #  define writesocket(s,b,n)      send((s),(b),(n),0)
-+# elif defined(_BOOT)
+ #define clear_socket_error() WSASetLastError(0)
+ #define readsocket(s, b, n) recv((s), (b), (n), 0)
+ #define writesocket(s, b, n) send((s), (b), (n), 0)
++#elif defined(_BOOT)
 +extern int socket_read(int, void *, size_t, int);
 +extern int socket_close(int);
-+#  define ioctlsocket(a,b,c)	  (-1)
-+#  define closesocket(s)          socket_close(s)
-+#  define readsocket(s,b,n)       socket_read((s),(b),(n), 200)
-+#  define writesocket(s,b,n)      send((s),(b),(n), 0)
-+#  define __xnet_getsockopt	  getsockopt
- # elif defined(__DJGPP__)
- #  define closesocket(s)          close_s(s)
- #  define readsocket(s,b,n)       read_s(s,b,n)
---- old/providers/implementations/rands/seeding/rand_unix.c	2025-02-17 12:34:05.175968452 +0100
-+++ new/providers/implementations/rands/seeding/rand_unix.c	2025-02-17 12:34:56.569693299 +0100
++#define ioctlsocket(a,b,c) (-1)
++#define closesocket(s) socket_close(s)
++#define readsocket(s,b,n) socket_read((s),(b),(n), 200)
++#define writesocket(s,b,n) send((s),(b),(n), 0)
++#define __xnet_getsockopt getsockopt
+ #elif defined(__DJGPP__)
+ #define closesocket(s) close_s(s)
+ #define readsocket(s, b, n) read_s(s, b, n)
+--- old/providers/implementations/rands/seeding/rand_unix.c	2026-01-28 11:32:52.602990621 +0100
++++ new/providers/implementations/rands/seeding/rand_unix.c	2026-01-28 11:55:17.104014686 +0100
 @@ -78,7 +78,7 @@ static uint64_t get_timer_bits(void);
- # undef OSSL_POSIX_TIMER_OKAY
+ #undef OSSL_POSIX_TIMER_OKAY
  /* On some systems, _POSIX_TIMERS is defined but empty.
   * Subtracting by 0 when comparing avoids an error in this case. */
--# if defined(_POSIX_TIMERS) && _POSIX_TIMERS -0 > 0
-+# if defined(_POSIX_TIMERS) && _POSIX_TIMERS -0 > 0 && !defined(_BOOT)
- #  if defined(__GLIBC__)
- #   if defined(__GLIBC_PREREQ)
- #    if __GLIBC_PREREQ(2, 17)
+-#if defined(_POSIX_TIMERS) && _POSIX_TIMERS - 0 > 0
++#if defined(_POSIX_TIMERS) && _POSIX_TIMERS - 0 > 0 && !defined(_BOOT)
+ #if defined(__GLIBC__)
+ #if defined(__GLIBC_PREREQ)
+ #if __GLIBC_PREREQ(2, 17)
 @@ -842,7 +842,7 @@ static uint64_t get_timer_bits(void)
      if (res != 0)
          return res;
  
--# if defined(__sun) || defined(__hpux)
-+# if (defined(__sun) && !defined(_BOOT)) || defined(__hpux)
+-#if defined(__sun) || defined(__hpux)
++#if (defined(__sun) && !defined(_BOOT)) || defined(__hpux)
      return gethrtime();
- # elif defined(_AIX)
+ #elif defined(_AIX)
      {

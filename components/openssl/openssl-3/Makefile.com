@@ -1,19 +1,19 @@
 #
-# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 
 COMPONENT_NAME=		openssl-3
-COMPONENT_VERSION=	3.0.18
+COMPONENT_VERSION=	3.0.19
 COMPONENT_PROJECT_URL=	https://www.openssl.org/
 COMPONENT_SRC=		openssl-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:d80c34f5cf902dccf1f1b5df5ebb86d0392e37049e5d73df1b3abae72e4ffe8b
+	sha256:fa5a4143b8aae18be53ef2f3caf29a2e0747430b8bc74d32d88335b94ab63072
 COMPONENT_DOWNLOAD_URL=	https://github.com/openssl/openssl/releases/download
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	2566
-COMPONENT_BAID=		348530
+COMPONENT_BAID=		368095
 
 #
 # The extra .1 the version in is to distinguish between the community version

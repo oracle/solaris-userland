@@ -49,10 +49,8 @@ Reviewed-by: Tomas Mraz <tomas@openssl.org>
  .../30-test_evp_data/evppkey_rsa_common.txt   |   4 +-
  10 files changed, 395 insertions(+), 7 deletions(-)
 
-diff --git a/crypto/rsa/rsa_ossl.c b/crypto/rsa/rsa_ossl.c
-index 54e2a1c61c..2b25dad893 100644
---- a/crypto/rsa/rsa_ossl.c
-+++ b/crypto/rsa/rsa_ossl.c
+--- old/crypto/rsa/rsa_ossl.c	2026-01-28 07:30:20.572520802 +0100
++++ new/crypto/rsa/rsa_ossl.c	2026-01-28 07:37:11.602063209 +0100
 @@ -17,6 +17,9 @@
  #include "crypto/bn.h"
  #include "rsa_local.h"
@@ -62,8 +60,8 @@ index 54e2a1c61c..2b25dad893 100644
 +#include <openssl/hmac.h>
  
  static int rsa_ossl_public_encrypt(int flen, const unsigned char *from,
-                                   unsigned char *to, RSA *rsa, int padding);
-@@ -372,8 +375,13 @@ static int rsa_ossl_private_decrypt(int flen, const unsigned char *from,
+     unsigned char *to, RSA *rsa, int padding);
+@@ -373,8 +376,13 @@ static int rsa_ossl_private_decrypt(int
      BIGNUM *f, *ret;
      int j, num = 0, r = -1;
      unsigned char *buf = NULL;
@@ -77,7 +75,7 @@ index 54e2a1c61c..2b25dad893 100644
      /*
       * Used only if the blinding structure is shared. A non-NULL unblind
       * instructs rsa_blinding_convert() and rsa_blinding_invert() to store
-@@ -405,6 +413,11 @@ static int rsa_ossl_private_decrypt(int flen, const unsigned char *from,
+@@ -404,6 +412,11 @@ static int rsa_ossl_private_decrypt(int
          goto err;
      }
  
@@ -89,7 +87,7 @@ index 54e2a1c61c..2b25dad893 100644
      /* make data into a big number */
      if (BN_bin2bn(from, (int)flen, f) == NULL)
          goto err;
-@@ -471,13 +484,91 @@ static int rsa_ossl_private_decrypt(int flen, const unsigned char *from,
+@@ -464,13 +477,91 @@ static int rsa_ossl_private_decrypt(int
          if (!rsa_blinding_invert(blinding, ret, unblind, ctx))
              goto err;
  
@@ -182,19 +180,17 @@ index 54e2a1c61c..2b25dad893 100644
          break;
      case RSA_PKCS1_OAEP_PADDING:
          r = RSA_padding_check_PKCS1_OAEP(to, num, buf, j, num, NULL, 0);
-@@ -500,6 +591,8 @@ static int rsa_ossl_private_decrypt(int flen, const unsigned char *from,
+@@ -493,6 +584,8 @@ static int rsa_ossl_private_decrypt(int
  #endif
  
-  err:
+ err:
 +    HMAC_CTX_free(hmac);
 +    EVP_MD_free(md);
      BN_CTX_end(ctx);
      BN_CTX_free(ctx);
      OPENSSL_clear_free(buf, num);
-diff --git a/crypto/rsa/rsa_pk1.c b/crypto/rsa/rsa_pk1.c
-index 5f72fe1735..04fb0e4ed5 100644
---- a/crypto/rsa/rsa_pk1.c
-+++ b/crypto/rsa/rsa_pk1.c
+--- old/crypto/rsa/rsa_pk1.c	2026-01-28 07:30:20.575462068 +0100
++++ new/crypto/rsa/rsa_pk1.c	2026-01-28 07:31:38.177696738 +0100
 @@ -21,10 +21,14 @@
  #include <openssl/rand.h>
  /* Just for the SSL_MAX_MASTER_KEY_LENGTH value */
@@ -208,9 +204,9 @@ index 5f72fe1735..04fb0e4ed5 100644
  
 +
  int RSA_padding_add_PKCS1_type_1(unsigned char *to, int tlen,
-                                  const unsigned char *from, int flen)
+     const unsigned char *from, int flen)
  {
-@@ -271,6 +275,254 @@ int RSA_padding_check_PKCS1_type_2(unsigned char *to, int tlen,
+@@ -273,6 +277,254 @@ int RSA_padding_check_PKCS1_type_2(unsig
      return constant_time_select_int(good, mlen, -1);
  }
  
@@ -465,12 +461,10 @@ index 5f72fe1735..04fb0e4ed5 100644
  /*
   * ossl_rsa_padding_check_PKCS1_type_2_TLS() checks and removes the PKCS1 type 2
   * padding from a decrypted RSA message in a TLS signature. The result is stored
-diff --git a/doc/man1/openssl-pkeyutl.pod.in b/doc/man1/openssl-pkeyutl.pod.in
-index b0054ead66..b7c45caa23 100644
---- a/doc/man1/openssl-pkeyutl.pod.in
-+++ b/doc/man1/openssl-pkeyutl.pod.in
-@@ -240,6 +240,11 @@ signed or verified directly instead of using a B<DigestInfo> structure. If a
- digest is set then the a B<DigestInfo> structure is used and its the length
+--- old/doc/man1/openssl-pkeyutl.pod.in	2026-01-28 07:30:20.578532988 +0100
++++ new/doc/man1/openssl-pkeyutl.pod.in	2026-01-28 07:31:38.180697595 +0100
+@@ -273,6 +273,11 @@ signed or verified directly instead of u
+ digest is set, then the B<DigestInfo> structure is used and its length
  must correspond to the digest type.
  
 +Note, for B<pkcs1> padding, as a protection against Bleichenbacher attack,
@@ -481,11 +475,9 @@ index b0054ead66..b7c45caa23 100644
  For B<oaep> mode only encryption and decryption is supported.
  
  For B<x931> if the digest type is set it is used to format the block data
-diff --git a/doc/man1/openssl-rsautl.pod.in b/doc/man1/openssl-rsautl.pod.in
-index 186e49e5e4..eab34979de 100644
---- a/doc/man1/openssl-rsautl.pod.in
-+++ b/doc/man1/openssl-rsautl.pod.in
-@@ -105,6 +105,11 @@ The padding to use: PKCS#1 v1.5 (the default), PKCS#1 OAEP,
+--- old/doc/man1/openssl-rsautl.pod.in	2026-01-28 07:30:20.581690688 +0100
++++ new/doc/man1/openssl-rsautl.pod.in	2026-01-28 07:31:38.183726042 +0100
+@@ -105,6 +105,11 @@ The padding to use: PKCS#1 v1.5 (the def
  ANSI X9.31, or no padding, respectively.
  For signatures, only B<-pkcs> and B<-raw> can be used.
  
@@ -497,11 +489,9 @@ index 186e49e5e4..eab34979de 100644
  =item B<-hexdump>
  
  Hex dump the output data.
-diff --git a/doc/man3/EVP_PKEY_CTX_ctrl.pod b/doc/man3/EVP_PKEY_CTX_ctrl.pod
-index 9b96f42dbc..12026174a5 100644
---- a/doc/man3/EVP_PKEY_CTX_ctrl.pod
-+++ b/doc/man3/EVP_PKEY_CTX_ctrl.pod
-@@ -393,6 +393,13 @@ this behaviour should be tolerated then
+--- old/doc/man3/EVP_PKEY_CTX_ctrl.pod	2026-01-28 07:30:20.584658324 +0100
++++ new/doc/man3/EVP_PKEY_CTX_ctrl.pod	2026-01-28 07:31:38.186733810 +0100
+@@ -386,6 +386,13 @@ this behaviour should be tolerated then
  OSSL_ASYM_CIPHER_PARAM_TLS_NEGOTIATED_VERSION should be set to the actual
  negotiated protocol version. Otherwise it should be left unset.
  
@@ -515,11 +505,9 @@ index 9b96f42dbc..12026174a5 100644
  =head2 DSA parameters
  
  EVP_PKEY_CTX_set_dsa_paramgen_bits() sets the number of bits used for DSA
-diff --git a/doc/man3/EVP_PKEY_decrypt.pod b/doc/man3/EVP_PKEY_decrypt.pod
-index 0cd1a6548d..462265c5a6 100644
---- a/doc/man3/EVP_PKEY_decrypt.pod
-+++ b/doc/man3/EVP_PKEY_decrypt.pod
-@@ -51,6 +51,18 @@ return 1 for success and 0 or a negative value for failure. In particular a
+--- old/doc/man3/EVP_PKEY_decrypt.pod	2026-01-28 07:30:20.587909793 +0100
++++ new/doc/man3/EVP_PKEY_decrypt.pod	2026-01-28 07:31:38.189597945 +0100
+@@ -51,6 +51,18 @@ return 1 for success and 0 or a negative
  return value of -2 indicates the operation is not supported by the public key
  algorithm.
  
@@ -538,10 +526,8 @@ index 0cd1a6548d..462265c5a6 100644
  =head1 EXAMPLES
  
  Decrypt data using OAEP (for RSA keys):
-diff --git a/doc/man3/RSA_padding_add_PKCS1_type_1.pod b/doc/man3/RSA_padding_add_PKCS1_type_1.pod
-index 9f7025c497..36ae18563f 100644
---- a/doc/man3/RSA_padding_add_PKCS1_type_1.pod
-+++ b/doc/man3/RSA_padding_add_PKCS1_type_1.pod
+--- old/doc/man3/RSA_padding_add_PKCS1_type_1.pod	2026-01-28 07:30:20.590890673 +0100
++++ new/doc/man3/RSA_padding_add_PKCS1_type_1.pod	2026-01-28 07:31:38.192593259 +0100
 @@ -121,8 +121,8 @@ L<ERR_get_error(3)>.
  
  =head1 WARNINGS
@@ -553,7 +539,7 @@ index 9f7025c497..36ae18563f 100644
  padding oracle attack. This is an inherent weakness in the PKCS #1
  v1.5 padding design. Prefer PKCS1_OAEP padding. If that is not
  possible, the result of RSA_padding_check_PKCS1_type_2() should be
-@@ -137,6 +137,9 @@ as this would create a small timing side channel which could be
+@@ -137,6 +137,9 @@ as this would create a small timing side
  used to mount a Bleichenbacher attack against any padding mode
  including PKCS1_OAEP.
  
@@ -563,11 +549,9 @@ index 9f7025c497..36ae18563f 100644
  =head1 SEE ALSO
  
  L<RSA_public_encrypt(3)>,
-diff --git a/doc/man3/RSA_public_encrypt.pod b/doc/man3/RSA_public_encrypt.pod
-index 1d38073aea..bd3f835ac6 100644
---- a/doc/man3/RSA_public_encrypt.pod
-+++ b/doc/man3/RSA_public_encrypt.pod
-@@ -52,8 +52,8 @@ Encrypting user data directly with RSA is insecure.
+--- old/doc/man3/RSA_public_encrypt.pod	2026-01-28 07:30:20.593737622 +0100
++++ new/doc/man3/RSA_public_encrypt.pod	2026-01-28 07:31:38.195617467 +0100
+@@ -52,8 +52,8 @@ Encrypting user data directly with RSA i
  
  =back
  
@@ -578,7 +562,7 @@ index 1d38073aea..bd3f835ac6 100644
  RSA_PKCS1_OAEP_PADDING and exactly RSA_size(B<rsa>) for RSA_NO_PADDING.
  When a padding mode other than RSA_NO_PADDING is in use, then
  RSA_public_encrypt() will include some random bytes into the ciphertext
-@@ -92,6 +92,13 @@ which can potentially be used to mount a Bleichenbacher padding oracle
+@@ -92,6 +92,13 @@ which can potentially be used to mount a
  attack. This is an inherent weakness in the PKCS #1 v1.5 padding
  design. Prefer RSA_PKCS1_OAEP_PADDING.
  
@@ -592,27 +576,22 @@ index 1d38073aea..bd3f835ac6 100644
  =head1 CONFORMING TO
  
  SSL, PKCS #1 v2.0
-diff --git a/include/crypto/rsa.h b/include/crypto/rsa.h
-index 949873d0ee..f267e5d9d1 100644
---- a/include/crypto/rsa.h
-+++ b/include/crypto/rsa.h
-@@ -83,6 +83,10 @@ int ossl_rsa_param_decode(RSA *rsa, const X509_ALGOR *alg);
+--- old/include/crypto/rsa.h	2026-01-28 07:30:20.596841187 +0100
++++ new/include/crypto/rsa.h	2026-01-28 07:31:38.198499492 +0100
+@@ -83,6 +83,10 @@ int ossl_rsa_param_decode(RSA *rsa, cons
  RSA *ossl_rsa_key_from_pkcs8(const PKCS8_PRIV_KEY_INFO *p8inf,
-                              OSSL_LIB_CTX *libctx, const char *propq);
+     OSSL_LIB_CTX *libctx, const char *propq);
  
 +int ossl_rsa_padding_check_PKCS1_type_2(OSSL_LIB_CTX *ctx,
 +                                        unsigned char *to, int tlen,
 +                                        const unsigned char *from, int flen,
 +                                        int num, unsigned char *kdk);
  int ossl_rsa_padding_check_PKCS1_type_2_TLS(OSSL_LIB_CTX *ctx, unsigned char *to,
-                                             size_t tlen,
-                                             const unsigned char *from,
-diff --git a/test/recipes/30-test_evp_data/evppkey_rsa_common.txt b/test/recipes/30-test_evp_data/evppkey_rsa_common.txt
-index b8d8bb2993..080c4d02af 100644
---- a/test/recipes/30-test_evp_data/evppkey_rsa_common.txt
-+++ b/test/recipes/30-test_evp_data/evppkey_rsa_common.txt
-@@ -254,11 +254,11 @@ Input = 550AF55A2904E7B9762352F8FB7FA235A9CB053AACB2D5FCB8CA48453CB2EE3619746C70
- Output = "Hello World"
+     size_t tlen,
+     const unsigned char *from,
+--- old/test/recipes/30-test_evp_data/evppkey_rsa_common.txt	2026-01-28 07:30:20.599881492 +0100
++++ new/test/recipes/30-test_evp_data/evppkey_rsa_common.txt	2026-01-28 07:31:38.201561129 +0100
+@@ -255,10 +255,10 @@ Output = "Hello World"
  
  # Corrupted ciphertext
  FIPSversion = <3.2.0
@@ -625,6 +604,3 @@ index b8d8bb2993..080c4d02af 100644
  
  # OAEP padding
  Decrypt = RSA-2048
--- 
-2.48.1
-
