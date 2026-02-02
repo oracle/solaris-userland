@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64
 COMPILER =		gcc
@@ -28,20 +28,20 @@ CTF_MODE =		relaxed	# Spotty coverage, C++
 
 include ../../../make-rules/shared-macros.mk
 
-MAJOR_VERSION=6.9
-MICRO_VERSION=1
+MAJOR_VERSION=6.10
+MICRO_VERSION=2
 
 COMPONENT_NAME=		qt-everywhere
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_PROJECT_URL=  https://qt.io/
 COMPONENT_SRC=		$(COMPONENT_NAME)-src-$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH=	sha256:364fde2d7fa42dd7c9b2ea6db3d462dd54f3869e9fd0ca0a0ca62f750cd8329b
+COMPONENT_ARCHIVE_HASH=	sha256:c3df0f0e421130cc52ed81cb712358804471ce9bd2a41d97828f9f5b1bf7fed2
 COMPONENT_ARCHIVE_URL=	http://download.qt.io/official_releases/qt/$(MAJOR_VERSION)/$(COMPONENT_VERSION)/single/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/qt
 COMPONENT_ANITYA_ID=	7927
 
-COMPONENT_BAID=		332324
+COMPONENT_BAID=		368564
 
 TEST_TARGET= $(SKIP_TEST)
 
