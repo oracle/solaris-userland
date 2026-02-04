@@ -1,0 +1,17 @@
+Skip tests that require OpenSSL 3 'legacy' provider. It is not present on
+Solaris 11.4 by default.
+
+--- node-24.13.0/test/addons/addons.status.orig	2026-01-27 11:10:36.378516597 +0100
++++ node-24.13.0/test/addons/addons.status	2026-01-27 11:11:08.081269508 +0100
+@@ -30,3 +30,11 @@
+ stringbytes-external-exceed-max/test-stringbytes-external-exceed-max-by-2: PASS,FLAKY
+ stringbytes-external-exceed-max/test-stringbytes-external-exceed-max-by-1-ascii: PASS,FLAKY
+ stringbytes-external-exceed-max/test-stringbytes-external-exceed-max-by-1-binary: PASS,FLAKY
++
++[$system==solaris]
++#
++# On Solaris 11.4 OpenSSL 3 'legacy' provider is neither included in CBE
++# nor it is installed by default. Skip tests requiring it.
++#
++openssl-providers/test-legacy-provider-config: SKIP
++openssl-providers/test-legacy-provider-option: SKIP
