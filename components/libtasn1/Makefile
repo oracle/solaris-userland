@@ -19,19 +19,18 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libtasn1
-COMPONENT_VERSION=	4.20.0
+COMPONENT_VERSION=	4.21.0
 COMPONENT_ARCHIVE_HASH= \
-    sha256:92e0e3bd4c02d4aeee76036b2ddd83f0c732ba4cda5cb71d583272b23587a76c
+    sha256:1d8a444a223cc5464240777346e125de51d8e6abf0b8bac742ac84609167dc87
 COMPONENT_BUGDB=	library/libtasn1
 COMPONENT_ANITYA_ID=	1734
-
-COMPONENT_BAID=		195971
+COMPONENT_BAID=		369460
 
 COMPONENT_BUILD_TARGETS = all info
 
@@ -42,11 +41,13 @@ CONFIGURE_OPTIONS += --includedir=$(CONFIGURE_INCLUDEDIR)
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-shared
+CONFIGURE_OPTIONS += --disable-valgrind-tests
 
 include ../../make-rules/shared-targets.mk
 
 TEST_TARGET:	install
 
+COMPONENT_TEST_ENV += "PATH=$(GNUBIN):$(PATH)"
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 COMPONENT_TEST_TRANSFORMS += \
