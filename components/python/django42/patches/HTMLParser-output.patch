@@ -1,11 +1,11 @@
 The list of runtime versions that fixed the quadratic-time issue in HTMLParser
 needs to be adjusted because we backported the fix to older versions.
 
---- django-4.2.24/tests/utils_tests/test_html.py
-+++ django-4.2.24/tests/utils_tests/test_html.py
-@@ -94,9 +94,9 @@ class TestUtilsHtml(SimpleTestCase):
+--- django-4.2.28/tests/utils_tests/test_html.py
++++ django-4.2.28/tests/utils_tests/test_html.py
+@@ -95,9 +95,9 @@ class TestUtilsHtml(SimpleTestCase):
          # https://github.com/python/cpython/commit/6eb6c5db
-         min_fixed = {
+         min_fixed_security = {
              (3, 14): (3, 14),
 -            (3, 13): (3, 13, 6),
 +            (3, 13): (3, 13, 4),
@@ -14,4 +14,4 @@ needs to be adjusted because we backported the fix to older versions.
 +            (3, 11): (3, 11, 13),
              (3, 10): (3, 10, 19),
              (3, 9): (3, 9, 24),
-         }
+             # Not fixed in 3.8.
