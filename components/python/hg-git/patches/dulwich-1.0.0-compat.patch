@@ -1,0 +1,16 @@
+Commit.extra was deprecated and recently removed from Dulwich.
+Commit._extra is still available.
+
+https://github.com/jelmer/dulwich/commit/bad41f1875f4376551b9b316c269ee6a5a2d8d51
+
+--- hg-git-1.2.0/tests/test-extra.t
++++ hg-git-1.2.0/tests/test-extra.t
+@@ -158,7 +158,7 @@ lets you do that, though.
+   >>> c.parents = [b'$commit_sha']
+   >>> c.tree = b'$tree_sha'
+   >>> c.message = b'extra commit\n'
+-  >>> c.extra.extend([(b'zzz:zzz', b'data:zzz'), (b'aaa:aaa', b'data:aaa'),
++  >>> c._extra.extend([(b'zzz:zzz', b'data:zzz'), (b'aaa:aaa', b'data:aaa'),
+   ...                 (b'HG:extra', b'hgaaa:dataaaa'),
+   ...                 (b'HG:extra', b'hgzzz:datazzz')])
+   >>> repo.object_store.add_object(c)

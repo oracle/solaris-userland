@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
+CTF_MODE=		off	# Has no effect
 BUILD_BITS=		64
 
 include ../../../make-rules/shared-macros.mk
@@ -32,20 +33,29 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		dulwich
-COMPONENT_VERSION=	0.21.7
+COMPONENT_VERSION=	1.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a9e9c66833cea580c3ac12927e4b9711985d76afca98da971405d414de60e968
+    sha256:3d07104735525f22bfec35514ac611cf328c89b7acb059316a4f6e583c8f09bc
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://www.dulwich.io/
 COMPONENT_BUGDB=	python-mod/dulwich
 COMPONENT_ANITYA_ID=	6077
-COMPONENT_BAID=		157366
+COMPONENT_BAID=		366240
+
+
+# This is necessary for vendored rust dependencies
+include $(WS_MAKE_RULES)/cargo-vendored.mk
+VENDORED_SOURCES_NAME = $(COMPONENT_SRC)-rust-sources
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
+COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
+COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 
 # make executables for each Python version
 COMPONENT_POST_INSTALL_ACTION += \
@@ -57,9 +67,10 @@ COMPONENT_POST_INSTALL_ACTION += \
 test: ENV += -i
 system-test: ENV += -i
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/$(COMPONENT_NAME)/tests
+COMPONENT_TEST_ENV +=	PATH=$(GNUBIN):$(PATH)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+COMPONENT_TEST_ARGS =	--ignore=contrib/test_swift_smoke.py
 
 build:		$(BUILD_64)
 
@@ -70,3 +81,6 @@ test:		$(TEST_64)
 system-test:    $(SYSTEM_TEST_64)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/urllib3-%)
+REQUIRED_PACKAGES += library/python/setuptools-rust
+REQUIRED_PACKAGES += library/python/typing-extensions-311
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

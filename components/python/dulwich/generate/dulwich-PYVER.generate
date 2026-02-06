@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
@@ -32,3 +32,6 @@
 
 # bypass pkg.depend due to relative imports
 <transform file path=.*/dulwich/graph.py$ -> set pkg.depend.bypass-generate .*>
+
+# collections.abc is delivered in a way that is impossible for pkgdepend to resolve.
+<transform file path=.*/dulwich/diffstat.py$ -> set pkg.depend.bypass-generate .*abc.*>

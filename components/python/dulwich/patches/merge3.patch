@@ -1,0 +1,75 @@
+There are several tests that need optional merge3 to be available.
+
+This was offered and accepted upstream:
+https://github.com/jelmer/dulwich/pull/2075
+
+--- dulwich-1.0.0/tests/test_repository.py
++++ dulwich-1.0.0/tests/test_repository.py
+@@ -22,6 +22,7 @@
+ """Tests for the repository."""
+ 
+ import glob
++import importlib
+ import locale
+ import os
+ import shutil
+@@ -46,7 +47,7 @@ from dulwich.repo import (
+ )
+ from dulwich.tests.utils import open_repo, setup_warning_catcher, tear_down_repo
+ 
+-from . import TestCase, skipIf
++from . import TestCase, skipIf, DependencyMissing
+ 
+ missing_sha = b"b91fa4d900e17e99b433218e988c4eb4a3e9a097"
+ 
+@@ -939,6 +940,10 @@ exit 0
+         if os.name != "posix":
+             self.skipTest("shell hook tests requires POSIX shell")
+ 
++        # Check if merge3 module is available
++        if importlib.util.find_spec("merge3") is None:
++            raise DependencyMissing("merge3")
++
+         pre_commit_contents = """#!{executable}
+ import sys
+ sys.path.extend({path!r})
+--- dulwich-1.0.0/tests/test_rerere.py
++++ dulwich-1.0.0/tests/test_rerere.py
+@@ -1,5 +1,6 @@
+ """Tests for rerere functionality."""
+ 
++import importlib
+ import os
+ import tempfile
+ import unittest
+@@ -14,6 +15,8 @@ from dulwich.rerere import (
+     is_rerere_enabled,
+ )
+ 
++from . import DependencyMissing
++
+ 
+ class NormalizeConflictMarkersTests(unittest.TestCase):
+     """Tests for _normalize_conflict_markers function."""
+@@ -539,6 +542,10 @@ class RerereEndToEndTests(unittest.TestC
+         from dulwich.objects import Blob, Commit, Tree
+         from dulwich.rerere import rerere_auto
+ 
++        # Check if merge3 module is available
++        if importlib.util.find_spec("merge3") is None:
++            raise DependencyMissing("merge3")
++
+         # Create branch1: change "original line" to "branch1 change"
+         blob_branch1 = Blob.from_string(b"line 1\nbranch1 change\nline 3\n")
+         self.repo.object_store.add_object(blob_branch1)
+@@ -677,6 +684,10 @@ class RerereEndToEndTests(unittest.TestC
+         from dulwich.objects import Blob, Commit, Tree
+         from dulwich.rerere import RerereCache, rerere_auto
+ 
++        # Check if merge3 module is available
++        if importlib.util.find_spec("merge3") is None:
++            raise DependencyMissing("merge3")
++
+         # Enable autoupdate
+         config = self.repo.get_config()
+         config.set((b"rerere",), b"autoupdate", b"true")

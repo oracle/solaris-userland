@@ -1,0 +1,100 @@
+Hg-git is not yet ready for API changes made in Dulwich 0.24.
+
+Cherry-picked from:
+https://foss.heptapod.net/mercurial/hg-git/-/merge_requests/260
+https://salsa.debian.org/python-team/packages/hg-git/-/commit/a0fa9d7edee3714019035f2a9be57c7b00d98d52
+
+Also, one of the test outputs changed back to how it was before Dulwich 0.22.
+Since upstream notes that the first change was not intentional, this is a good thing.
+
+https://foss.heptapod.net/mercurial/hg-git/-/commit/fe9cb777b1ceb48a3f3a56f06251236fa5ea27d3
+
+--- hg-git-1.2.0/hggit/gc.py
++++ hg-git-1.2.0/hggit/gc.py
+@@ -56,7 +56,7 @@ def _process_batch(ui, object_store, sha
+     object_store.add_objects(list(objects))
+ 
+     for obj, path in objects:
+-        object_store._remove_loose_object(obj.id)
++        object_store.delete_loose_object(obj.id)
+ 
+     ui.debug(b'packed %d loose objects!\n' % len(shas))
+ 
+--- hg-git-1.2.0/hggit/_ssh.py
++++ hg-git-1.2.0/hggit/_ssh.py
+@@ -20,6 +20,7 @@ def generate_ssh_vendor(ui):
+         def run_command(
+             self, host, command, username=None, port=None, **kwargs
+         ):
++            command = command.decode()
+             assert isinstance(command, str)
+             command = command.encode(SSHGitClient.DEFAULT_ENCODING)
+             sshcmd = ui.config(b"ui", b"ssh", b"ssh")
+--- hg-git-1.2.0/hggit/git_handler.py
++++ hg-git-1.2.0/hggit/git_handler.py
+@@ -1622,7 +1622,7 @@ class GitHandler(object):
+         haveheads.extend(self.git.refs.as_dict(LOCAL_BRANCH_PREFIX).values())
+         graphwalker = self.git.get_graph_walker(heads=haveheads)
+ 
+-        def determine_wants(refs):
++        def determine_wants(refs, *args, **kwargs):
+             if refs is None:
+                 return None
+             filteredrefs = git2hg.filter_refs(refs, heads)
+@@ -2127,8 +2127,16 @@ class GitHandler(object):
+         )
+ 
+         for change in changes:
+-            oldfile, oldmode, oldsha = change.old
+-            newfile, newmode, newsha = change.new
++            if change.old is not None:
++                oldfile, oldmode, oldsha = change.old
++            else:
++                oldfile, oldmode, oldsha = None, None, None
++
++            if change.new is not None:
++                newfile, newmode, newsha = change.new
++            else:
++                newfile, newmode, newsha = None, None, None
++
+             # actions are described by the following table ('no' means 'does
+             # not exist'):
+             #    old        new     |    action
+@@ -2381,6 +2389,7 @@ class GitHandler(object):
+                 urlobj.host,
+                 urlobj.user,
+             )
++            auth = list(auth)
+ 
+             if self._http_auth_realm:
+                 # since we've tried an unauthenticated request, and
+@@ -2391,7 +2400,7 @@ class GitHandler(object):
+                     str_uri,
+                 )
+                 # NB: probably bytes here
+-            elif auth is not None:
++            elif auth is not None and len(auth) > 0:
+                 username, password = auth
+                 # NB: probably string here
+             else:
+--- hg-git-1.2.0/tests/test-renames.t
++++ hg-git-1.2.0/tests/test-renames.t
+@@ -414,14 +414,10 @@ Regenerate the Git metadata and compare
+   $ hg gexport
+   $ cd .hg/git
+   $ git log master --pretty=oneline
+-  f3f6592447685566af9447c03ae262aa5432511d delta/epsilon (dulwich-rust !)
+-  c51ce14ec367c5ea72bf428dee3f8576f2fe1bb0 gamma2 (dulwich-rust !)
+-  df749cae534e3c7a0ad664cd0f214dd36e0ac259 remove submodule and rename back (dulwich-rust !)
+-  8f9ec605ad0cc2532202f73cef8e35d3241797ee rename and add submodule (dulwich-rust !)
+-  8a00d0fb75377c51c9a46e92ff154c919007f0e2 delta/epsilon (no-dulwich-rust !)
+-  dd7d4f1adb942a8d349dce585019f6949184bc64 gamma2 (no-dulwich-rust !)
+-  3f1cdaf8b603816fcda02bd29e75198ae4cb13db remove submodule and rename back (no-dulwich-rust !)
+-  2a4abf1178a999e2054158ceb0c7768079665d03 rename and add submodule (no-dulwich-rust !)
++  8a00d0fb75377c51c9a46e92ff154c919007f0e2 delta/epsilon
++  dd7d4f1adb942a8d349dce585019f6949184bc64 gamma2
++  3f1cdaf8b603816fcda02bd29e75198ae4cb13db remove submodule and rename back
++  2a4abf1178a999e2054158ceb0c7768079665d03 rename and add submodule
+   88c416e8d5e0e9dd1187d45ebafaa46111764196 beta renamed back
+   027d2a6e050705bf6f7e226e7e97f02ce5ae3200 beta renamed
+   dc70e620634887e70ac5dd108bcc7ebd99c60ec3 move submodule

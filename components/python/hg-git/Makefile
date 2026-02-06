@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hg-git
-COMPONENT_VERSION=	1.0.5
+COMPONENT_VERSION=	1.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:eb389b349dd09bd318f62eb6b8fda55fb55cbcada497dc9de872c84bdff29691
+    sha256:d2f1ba00ed9dfdc61b2aff4a2e8809e27564394a609abdd7bbbfa97cd0c65e80
 COMPONENT_ARCHIVE_URL= \
     https://foss.heptapod.net/mercurial/$(COMPONENT_NAME)/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hg-git.github.io/
 COMPONENT_BUGDB=	python-mod/hg-git
 COMPONENT_ANITYA_ID=	1314
-COMPONENT_BAID=		164456
+COMPONENT_BAID=		356664
 
 # hg-git mirrors Mercurial versions.
 PYTHON_VERSIONS = 3.11
