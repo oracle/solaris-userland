@@ -59,6 +59,9 @@ PASS: t-ldap-misc
 ==================
 All 3 tests passed
 ==================
+=============
+1 test passed
+=============
 EXEEXT= GPGSCM_PATH=$(SOURCE_DIR)/tests/gpgscm \
 	./gpgscm $(SOURCE_DIR)/tests/gpgscm/t-child.scm
 Testing process and IPC primitives... 
@@ -139,7 +142,7 @@ PASS: <standard>tests/openpgp/seat.scm
 Checking signing and verifying plain text messages 
     > plain-1 plain-2 plain-3 plain-large plain-large <  
 Checking signing and verifying test vectors 
-    > 0 1 2 3 4 5 <  
+    > 0 1 2 3 4 <  
 PASS: <standard>tests/openpgp/clearsig.scm 
 Checking encryption and decryption using pipes 
     > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
@@ -265,8 +268,7 @@ PASS: <standard>tests/openpgp/trust-pgp-2.scm
 Checking max depth of trust signature chains...
 PASS: <standard>tests/openpgp/trust-pgp-3.scm 
 Checking trust signature with domain restrictions...
-0389C0B7990E10520B334F23756F1571EDA9184B : Expected trust to be f but got - 
-FAIL: <standard>tests/openpgp/trust-pgp-4.scm 
+PASS: <standard>tests/openpgp/trust-pgp-4.scm 
 Checking gpgtar without encryption 
 Checking gpgtar without encryption with nicer actions 
 Checking gpgtar with asymmetric encryption 
@@ -317,6 +319,12 @@ PASS: <standard>tests/openpgp/delete-keys.scm
 Checking reading and writing configuration via gpgconf...  
     > compliance ............. verbose ............. quiet ............. <  
 PASS: <standard>tests/openpgp/gpgconf.scm 
+Checking add-recipient 0/2 
+    > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
+Checking change-recipient 1/2 
+    > plain-1 plain-2 plain-3 plain-large data-500 data-9000 data-32000 data-80000 <  
+Checks complete 2/2 
+PASS: <standard>tests/openpgp/add-recipient.scm 
 Checking passphrase cache (issue2015)... 
 PASS: <standard>tests/openpgp/issue2015.scm 
 Checking import statistics (issue2346)... 
@@ -331,6 +339,74 @@ Checking invocation with invalid file descriptors (issue2941).
     > status-fd attribute-fd logger-fd override-session-key-fd passphrase-fd command-fd <  
 PASS: <standard>tests/openpgp/issue2941.scm 
 =================== 
-62 tests run, 61 succeeded, 1 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
-Failed tests: tests/openpgp/trust-pgp-4.scm 
+63 tests run, 63 succeeded, 0 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
 =================== 
+LC_ALL=C EXEEXT= PATH="../gpgscm:/usr/bin:/usr/gnu/bin" abs_top_srcdir="$(SOURCE_DIR)" objdir="$(@D)" GNUPG_BUILD_ROOT="$(@D)" GNUPG_IN_TEST_SUITE=fact GPGSCM_PATH="$(SOURCE_DIR)/tests/gpgscm" $(@D)/tests/gpgscm/gpgscm \
+  $(SOURCE_DIR)/tests/cms/run-tests.scm  
+PASS: tests/cms/setup.scm 
+Checking certificate import. 
+    > cert_dfn_pca01.der cert_dfn_pca15.der <  
+PASS: tests/cms/import.scm 
+Checking encryption 
+    > plain-1 ... plain-2 ... plain-3 ... plain-large ... data-500 ... data-9000 ... data-32000 ... data-80000 ... <  
+PASS: tests/cms/encrypt.scm 
+Checking bogus signature. 
+    > #x2d #xca <  
+Checking that a valid signature is verified as such. 
+Checking that an invalid signature is verified as such. 
+PASS: tests/cms/verify.scm 
+Checking decryption of supplied files. 
+    > plain-1 plain-2 plain-3 plain-large <  
+PASS: tests/cms/decrypt.scm 
+Checking signing. 
+    > plain-1 ...... plain-2 ...... plain-3 ...... plain-large ...... data-500 ...... data-9000 ...... data-32000 ...... data-80000 ...... <  
+PASS: tests/cms/sign.scm 
+Checking certificate export. 
+    > test cert 1 <  
+PASS: tests/cms/export.scm 
+=================== 
+6 tests run, 6 succeeded, 0 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
+=================== 
+GPG_AGENT_INFO= LC_ALL=C EXEEXT= PATH="../gpgscm:/usr/bin:/usr/gnu/bin" abs_top_srcdir="$(SOURCE_DIR)" objdir="$(@D)" GNUPG_BUILD_ROOT="$(@D)/tests" GNUPG_IN_TEST_SUITE=fact GPGSCM_PATH="$(SOURCE_DIR)/tests/gpgscm" $(@D)/tests/gpgscm/gpgscm \
+  $(SOURCE_DIR)/tests/migrations/run-tests.scm  
+Testing a clean migration ... 
+Testing a migration with existing private-keys-v1.d ... 
+Testing a migration with existing but weird private-keys-v1.d ... 
+Testing the extended private key format ... 
+PASS: tests/migrations/extended-pkf.scm 
+Checking migration with legacy key (issue2276)... 
+PASS: tests/migrations/issue2276.scm 
+=================== 
+3 tests run, 3 succeeded, 0 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
+=================== 
+LC_ALL=C EXEEXT= PATH="../gpgscm:/usr/bin:/usr/gnu/bin" abs_top_srcdir=$(SOURCE_DIR) objdir=$(@D) GNUPG_BUILD_ROOT="$(@D)" GNUPG_IN_TEST_SUITE=fact GPGSCM_PATH=$(SOURCE_DIR)/tests/gpgscm $(@D)/tests/gpgscm/gpgscm \
+  $(SOURCE_DIR)/tests/gpgme/run-tests.scm  
+SKIP: Environment variable 'XTEST_GPGME_SRCDIR' not set.  Please point it to a recent GPGME source tree to run the GPGME test suite. 
+=================== 
+0 tests run, 0 succeeded, 0 failed, 0 failed expectedly, 0 succeeded unexpectedly, 0 skipped. 
+=================== 
+==================
+All 0 tests passed
+==================
+(set -e; cd bin; \
+ for i in gpg gpgv; \
+     do ln -sf ../g10/$i .; done; \
+ for i in gpgsm; \
+     do ln -sf ../sm/$i .; done; \
+ for i in gpg-agent; \
+     do ln -sf ../agent/$i .; done; \
+ for i in dirmngr; \
+     do ln -sf ../dirmngr/$i .; done; \
+ for i in gpgconf gpg-connect-agent gpgtar gpg-card; \
+     do ln -sf ../tools/$i .; done; \
+ cd ../libexec ; \
+ for i in keyboxd; \
+     do ln -sf ../kbx/$i .; done; \
+ for i in scdaemon; \
+     do ln -sf ../scd/$i .; done; \
+ for i in gpg-preset-passphrase; \
+     do ln -sf ../agent/$i .; done; \
+ for i in tpm2daemon; \
+             do [ -f ../tpm2d/$i ] && ln -sf ../tpm2d/$i .; done; \
+ echo "created links to binaries" )
+created links to binaries

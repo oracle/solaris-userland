@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64_and_32
 CTF_MODE =		relaxed
@@ -37,16 +37,15 @@ gcc_OPT.i386.64 = -O2
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgcrypt
-COMPONENT_VERSION=	1.11.1
-COMPONENT_PROJECT_URL=  https://gnupg.org/software/libgcrypt/
+COMPONENT_VERSION=	1.12.0
+COMPONENT_PROJECT_URL=	https://gnupg.org/software/libgcrypt/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:24e91c9123a46c54e8371f3a3a2502f1198f2893fbfbf59af95bc1c21499b00e
-COMPONENT_ARCHIVE_URL=  https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+    sha256:0311454e678189bad62a7e9402a9dd793025efff6e7449898616e2fc75e0f4f5
+COMPONENT_ARCHIVE_URL=	https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libgcrypt
 COMPONENT_ANITYA_ID=	1623
-
-COMPONENT_BAID= 			329709
+COMPONENT_BAID= 	368999
 
 COMPONENT_BUILD_TARGETS = all info
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -30,18 +30,17 @@ include ../../make-rules/shared-macros.mk
 PATH = $(GNUBIN):$(USRBINDIR)
 
 COMPONENT_NAME=		pinentry
-COMPONENT_VERSION=	1.3.1
+COMPONENT_VERSION=	1.3.2
 COMPONENT_PROJECT_URL=	https://www.gnupg.org/related_software/pinentry/
-COMPONENT_ARCHIVE=     $(COMPONENT_SRC).tar.bz2
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:bc72ee27c7239007ab1896c3c2fae53b076e2c9bd2483dc2769a16902bce8c04
+    sha256:8e986ed88561b4da6e9efe0c54fa4ca8923035c99264df0b0464497c5fb94e9e
 COMPONENT_ARCHIVE_URL=	https://gnupg.org/ftp/gcrypt/pinentry/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=      $(COMPONENT_ARCHIVE_URL).sig
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 
 COMPONENT_BUGDB=	utility/gnupg
 COMPONENT_ANITYA_ID=	3643
-
-COMPONENT_BAID=		329795
+COMPONENT_BAID=		366856
 
 TEST_TARGET= $(NO_TESTS)
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64
 COMPILER =		gcc
@@ -30,16 +30,15 @@ include ../../make-rules/shared-macros.mk
 PATH=$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		gnupg
-COMPONENT_VERSION=	2.5.6
+COMPONENT_VERSION=	2.5.17
 COMPONENT_PROJECT_URL=	http://www.gnupg.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:377f9d79af0ce494c0946dbe7c92197425bb522d7edd6f54acbc9869695131a8
+    sha256:2c1fbe20e2958fd8fb53cf37d7c38e84a900edc0d561a1c4af4bc3a10888685d
 COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gnupg/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1215
-
-COMPONENT_BAID=		329938
+COMPONENT_BAID=		368554
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
