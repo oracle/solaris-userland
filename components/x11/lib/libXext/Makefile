@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,12 +28,12 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXext
-COMPONENT_VERSION=	1.3.6
+COMPONENT_VERSION=	1.3.7
 COMPONENT_ARCHIVE_HASH= \
-	sha256:edb59fa23994e405fdc5b400afdf5820ae6160b94f35e3dc3da4457a16e89753
+	sha256:6c643c7035cdacf67afd68f25d01b90ef889d546c9fcd7c0adf7c2cf91e3a32d
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1774
-COMPONENT_BAID=		175862
+COMPONENT_BAID=		369513
 
 TEST_TARGET = $(NO_TESTS)
 

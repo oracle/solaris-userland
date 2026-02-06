@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,12 +28,12 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xkill
-COMPONENT_VERSION=	1.0.6
+COMPONENT_VERSION=	1.0.7
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e5a8aa78c475677b11504646da8d93dacc30744258076a2ca418a24438aeb907
+	sha256:5ff264bc4eebc0459255a92036dc8dc84b6d48caef8509f88a783beaadea750b
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	14993
-COMPONENT_BAID=		139192
+COMPONENT_BAID=		369511
 
 TEST_TARGET = $(NO_TESTS)
 

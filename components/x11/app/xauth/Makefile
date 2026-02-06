@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,12 +28,12 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xauth
-COMPONENT_VERSION=	1.1.4
+COMPONENT_VERSION=	1.1.5
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e9318141464ad7b4dc0f8564a580f0d20f977c85a388cc40d5a766206151c690
+	sha256:a4000e2f441facebf569026bedecc23ba262cc6927be52070abe0002625cfbe0
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	5253
-COMPONENT_BAID=		342703
+COMPONENT_BAID=		369508
 
 TEST_TARGET = $(NO_TESTS)
 

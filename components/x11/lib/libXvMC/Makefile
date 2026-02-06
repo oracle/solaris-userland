@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,12 +28,14 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXvMC
-COMPONENT_VERSION=	1.0.14
+COMPONENT_VERSION=	1.0.15
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e4be9eb6b6bafdbbf81f47f7163047215376e45e2dc786d0ea6181c930725ed9
+	sha256:4f518afde3d7fd435346af7b368d2f73517f3d5f82647c962caf3f7bb8ff7078
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1796
-COMPONENT_BAID=		175860
+COMPONENT_BAID=		369515
+
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 

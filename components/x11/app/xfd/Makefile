@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,12 +28,12 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xfd
-COMPONENT_VERSION=	1.1.4
+COMPONENT_VERSION=	1.1.5
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d5470ffb66fd45a1e1b03d6df01f12d4caf0cf675cde0345cda237243e9076fd
+	sha256:9048aafba291e3baaab2e76fc298195ec58d82827649b9ee60af6838a1059475
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15024
-COMPONENT_BAID=		139189
+COMPONENT_BAID=		369510
 
 PKG_PROTO_DIRS += $(BUILD_DIR_64)
 
