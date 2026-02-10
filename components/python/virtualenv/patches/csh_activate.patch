@@ -3,9 +3,9 @@ available for environment variables.
 
 Can be offered upstream.
 
---- virtualenv-20.29.2/src/virtualenv/activation/cshell/activate.csh
-+++ virtualenv-20.29.2/src/virtualenv/activation/cshell/activate.csh
-@@ -12,15 +12,16 @@ deactivate nondestructive
+--- virtualenv-20.36.1/src/virtualenv/activation/cshell/activate.csh
++++ virtualenv-20.36.1/src/virtualenv/activation/cshell/activate.csh
+@@ -12,8 +12,8 @@ deactivate nondestructive
  
  setenv VIRTUAL_ENV __VIRTUAL_ENV__
  
@@ -14,8 +14,9 @@ Can be offered upstream.
 +set _OLD_VIRTUAL_PATH="$PATH"
 +setenv PATH "$VIRTUAL_ENV/"__BIN_NAME__":$PATH"
  
- 
- 
+ if (__TCL_LIBRARY__ != "") then
+     if ($?TCL_LIBRARY) then
+@@ -32,7 +32,8 @@ endif
  if (__VIRTUAL_PROMPT__ != "") then
      setenv VIRTUAL_ENV_PROMPT __VIRTUAL_PROMPT__
  else
@@ -25,7 +26,7 @@ Can be offered upstream.
  endif
  
  if ( $?VIRTUAL_ENV_DISABLE_PROMPT ) then
-@@ -42,7 +43,7 @@ if ( $do_prompt == "1" ) then
+@@ -54,7 +55,7 @@ if ( $do_prompt == "1" ) then
          if ( "$prompt:q" =~ *"$newline:q"* ) then
              :
          else
@@ -34,15 +35,21 @@ Can be offered upstream.
          endif
      endif
  endif
---- virtualenv-20.29.2/tests/unit/activation/test_csh.py
-+++ virtualenv-20.29.2/tests/unit/activation/test_csh.py
-@@ -28,3 +28,14 @@ def test_csh(activation_tester_class, ac
-             return "echo 'source \"$VIRTUAL_ENV/bin/activate.csh\"; echo $prompt' | csh -i ; echo"
+--- virtualenv-20.36.1/tests/unit/activation/test_csh.py
++++ virtualenv-20.36.1/tests/unit/activation/test_csh.py
+@@ -53,7 +53,7 @@ def test_cshell_tkinter_generation(tmp_p
+         assert "setenv TCL_LIBRARY ''" in content
  
-     activation_tester(Csh)
-+
-+
+ 
+-def test_csh(activation_tester_class, activation_tester):
 +def test_tcsh(activation_tester_class, activation_tester):
+     exe = f"tcsh{'.exe' if sys.platform == 'win32' else ''}"
+     if which(exe):
+         version_text = check_output([exe, "--version"], text=True, encoding="utf-8")
+@@ -61,6 +61,17 @@ def test_csh(activation_tester_class, ac
+         if version >= Version("6.24.14"):
+             pytest.skip("https://github.com/tcsh-org/tcsh/issues/117")
+ 
 +    class Tcsh(activation_tester_class):
 +        def __init__(self, session):
 +            super().__init__(CShellActivator, session, "tcsh", "activate.csh", "csh")
@@ -51,3 +58,9 @@ Can be offered upstream.
 +            return "echo 'source \"$VIRTUAL_ENV/bin/activate.csh\"; echo $prompt' | tcsh -i"
 +
 +    activation_tester(Tcsh)
++
++
++def test_csh(activation_tester_class, activation_tester):
+     class Csh(activation_tester_class):
+         def __init__(self, session) -> None:
+             super().__init__(CShellActivator, session, "csh", "activate.csh", "csh")

@@ -1,14 +1,14 @@
 Several test related components are not available on Solaris; those
-include flaky, pytest-mock and pytest-freezegun.
+include pytest-mock and pytest-freezegun.
 
 The pytest-django plugin is causing several tests to fail due
 to changes in the working directory, so it is disabled.
 
 Not intended for upstream.
 
---- virtualenv-20.29.2/pyproject.toml
-+++ virtualenv-20.29.2/pyproject.toml
-@@ -172,7 +172,7 @@ markers = [
+--- virtualenv-20.36.1/pyproject.toml
++++ virtualenv-20.36.1/pyproject.toml
+@@ -168,7 +168,7 @@ markers = [
    "slow",
  ]
  timeout = 600
@@ -17,27 +17,9 @@ Not intended for upstream.
  env = [
    "PYTHONIOENCODING=utf-8",
  ]
---- virtualenv-20.29.2/tests/integration/test_zipapp.py
-+++ virtualenv-20.29.2/tests/integration/test_zipapp.py
-@@ -6,7 +6,6 @@ from contextlib import suppress
- from pathlib import Path
- 
- import pytest
--from flaky import flaky
- 
- from virtualenv.discovery.py_info import PythonInfo
- from virtualenv.info import fs_supports_symlink
-@@ -105,7 +104,6 @@ def test_zipapp_in_symlink(capsys, call_
-     assert not err
- 
- 
--@flaky(max_runs=2, min_passes=1)
- def test_zipapp_help(call_zipapp, capsys):
-     call_zipapp("-h")
-     _out, err = capsys.readouterr()
---- virtualenv-20.29.2/tests/conftest.py
-+++ virtualenv-20.29.2/tests/conftest.py
-@@ -366,3 +366,11 @@ else:
+--- virtualenv-20.36.1/tests/conftest.py
++++ virtualenv-20.36.1/tests/conftest.py
+@@ -372,3 +372,11 @@ else:
      @pytest.fixture
      def time_freeze(time_machine):
          return lambda s: time_machine.move_to(s, tick=False)
@@ -49,9 +31,9 @@ Not intended for upstream.
 +@pytest.fixture()
 +def mocker(*args, **kwargs):
 +    pytest.skip("pytest-mock is not available on Solaris")
---- virtualenv-20.29.2/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
-+++ virtualenv-20.29.2/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
-@@ -215,6 +215,7 @@ def test_base_bootstrap_link_via_app_dat
+--- virtualenv-20.36.1/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
++++ virtualenv-20.36.1/tests/unit/seed/embed/test_bootstrap_link_via_app_data.py
+@@ -227,6 +227,7 @@ def test_base_bootstrap_link_via_app_dat
          assert (result.creator.purelib / key).exists()
  
  
