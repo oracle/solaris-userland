@@ -1,0 +1,60 @@
+Fixes CVE-2025-56005 by removing the dangerous and undocumented argument picklefile.
+
+Desc:
+  An undocumented and unsafe feature in the PLY (Python Lex-Yacc) library 3.11
+  allows Remote Code Execution (RCE) via the `picklefile` parameter in the
+  `yacc()` function. This parameter accepts a `.pkl` file that is deserialized
+  with `pickle.load()` without validation. Because `pickle` allows execution of
+  embedded code via `__reduce__()`, an attacker can achieve code execution by
+  passing a malicious pickle file. The parameter is not mentioned in official
+  documentation or the GitHub repository, yet it is active in the PyPI version.
+  This introduces a stealthy backdoor and persistence risk.
+
+--- ply-3.8/ply/yacc.py
++++ ply-3.8/ply/yacc.py
+@@ -3190,7 +3190,7 @@ class ParserReflect(object):
+ 
+ def yacc(method='LALR', debug=yaccdebug, module=None, tabmodule=tab_module, start=None,
+          check_recursion=True, optimize=False, write_tables=True, debugfile=debug_file,
+-         outputdir=None, debuglog=None, errorlog=None, picklefile=None):
++         outputdir=None, debuglog=None, errorlog=None):
+ 
+     if tabmodule is None:
+         tabmodule = tab_module
+@@ -3198,10 +3198,6 @@ def yacc(method='LALR', debug=yaccdebug,
+     # Reference to the parsing method of the last built parser
+     global parse
+ 
+-    # If pickling is enabled, table files are not created
+-    if picklefile:
+-        write_tables = 0
+-
+     if errorlog is None:
+         errorlog = PlyLogger(sys.stderr)
+ 
+@@ -3258,10 +3254,7 @@ def yacc(method='LALR', debug=yaccdebug,
+     # Read the tables
+     try:
+         lr = LRTable()
+-        if picklefile:
+-            read_signature = lr.read_pickle(picklefile)
+-        else:
+-            read_signature = lr.read_table(tabmodule)
++        read_signature = lr.read_table(tabmodule)
+         if optimize or (read_signature == signature):
+             try:
+                 lr.bind_callables(pinfo.pdict)
+@@ -3456,13 +3449,6 @@ def yacc(method='LALR', debug=yaccdebug,
+         except IOError as e:
+             errorlog.warning("Couldn't create %r. %s" % (tabmodule, e))
+ 
+-    # Write a pickled version of the tables
+-    if picklefile:
+-        try:
+-            lr.pickle_table(picklefile, signature)
+-        except IOError as e:
+-            errorlog.warning("Couldn't create %r. %s" % (picklefile, e))
+-
+     # Build the parser
+     lr.bind_callables(pinfo.pdict)
+     parser = LRParser(lr, pinfo.error_func)
