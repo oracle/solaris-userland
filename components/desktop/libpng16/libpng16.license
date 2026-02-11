@@ -38,6 +38,7 @@ subject to the following restrictions:
 
 PNG Reference Library License version 1 (for libpng 0.5 through 1.6.35)
 -----------------------------------------------------------------------
+
 libpng versions 1.0.7, July 1, 2000, through 1.6.35, July 15, 2018 are
 Copyright (c) 2000-2002, 2004, 2006-2018 Glenn Randers-Pehrson, are
 derived from libpng-1.0.6, and are distributed according to the same
@@ -132,7 +133,6 @@ to supporting the PNG file format in commercial products.  If you use
 this source code in a product, acknowledgment is not required but would
 be appreciated.
 
-
 ## Files:
 contrib/pngminus/LICENSE.txt
 
@@ -181,6 +181,7 @@ Authors, for copyright and licensing purposes.
  * Guy Eric Schalnat
  * James Yu
  * John Bowler
+ * Joshua Inscoe
  * Kevin Bracey
  * Lucas Chollet
  * Magnus Holmgren
@@ -773,8 +774,6 @@ SPDX-License-Identifier: MIT
 ## Files:
 contrib/arm-neon/android-ndk.c
 
-contrib/arm-neon/android-ndk.c
-
 Copyright (c) 2014 Glenn Randers-Pehrson
 Written by John Bowler, 2014.
 
@@ -782,26 +781,8 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-SEE contrib/arm-neon/README before reporting bugs
-
-STATUS: COMPILED, UNTESTED
-BUG REPORTS: png-mng-implement@sourceforge.net
-
-png_have_neon implemented for the Android NDK, see:
-
-Documentation:
-   http://www.kandroid.org/ndk/docs/CPU-ARM-NEON.html
-   https://code.google.com/p/android/issues/detail?id=49065
-
-NOTE: this requires that libpng is built against the Android NDK and linked
-with an implementation of the Android ARM 'cpu-features' library.  The code
-has been compiled only, not linked: no version of the library has been found,
-only the header files exist in the NDK.
-
 
 ## Files:
-contrib/arm-neon/linux-auxv.c
-
 contrib/arm-neon/linux-auxv.c
 
 Copyright (c) 2014 Glenn Randers-Pehrson
@@ -811,24 +792,8 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-SEE contrib/arm-neon/README before reporting bugs
-
-STATUS: COMPILED, TESTED
-BUG REPORTS: png-mng-implement@sourceforge.net
-
-png_have_neon implemented for Linux versions which allow access to
-/proc/self/auxv.  This is probably faster, cleaner and safer than the code to
-read /proc/cpuinfo in contrib/arm-neon/linux, however it is yet another piece
-of potentially untested code and has more complex dependencies than the code
-to read cpuinfo.
-
-This generic __linux__ implementation requires reading /proc/self/auxv and
-looking at each element for one that records NEON capabilities.
-
 
 ## Files:
-contrib/arm-neon/linux.c
-
 contrib/arm-neon/linux.c
 
 Copyright (c) 2014, 2017 Glenn Randers-Pehrson
@@ -838,42 +803,13 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-SEE contrib/arm-neon/README before reporting bugs
-
-STATUS: SUPPORTED
-BUG REPORTS: png-mng-implement@sourceforge.net
-
-png_have_neon implemented for Linux by reading the widely available
-pseudo-file /proc/cpuinfo.
-
-This code is strict ANSI-C and is probably moderately portable; it does
-however use <stdio.h> and it assumes that /proc/cpuinfo is never localized.
-
-
 ## Files:
 contrib/examples/iccfrompng.c
-
-- iccfrompng
 
  COPYRIGHT: Written by John Cunningham Bowler, 2011.
  To the extent possible under law, the author has waived all copyright and
  related or neighboring rights to this work.  This work is published from:
  United States.
-
- Extract any icc profiles found in the given PNG files.  This is a simple
- example of a program that extracts information from the header of a PNG file
- without processing the image.  Notice that some header information may occur
- after the image data. Textual data and comments are an example; the approach
- in this file won't work reliably for such data because it only looks for the
- information in the section of the file that precedes the image data.
-
- Compile and link against libpng and zlib, plus anything else required on the
- system you use.
-
- To use supply a list of PNG files containing iCCP chunks, the chunks will be
- extracted to a similarly named file with the extension replaced by 'icc',
- which will be overwritten without warning.
-
 
 ## Files:
 contrib/examples/pngpixel.c
@@ -884,20 +820,6 @@ contrib/examples/pngpixel.c
  To the extent possible under law, the author has waived all copyright and
  related or neighboring rights to this work.  This work is published from:
  United States.
-
- Read a single pixel value from a PNG file.
-
- This code illustrates basic 'by-row' reading of a PNG file using libpng.
- Rows are read until a particular pixel is found; the value of this pixel is
- then printed on stdout.
-
- The code illustrates how to do this on interlaced as well as non-interlaced
- images.  Normally you would call png_set_interlace_handling() to have libpng
- deal with the interlace for you, but that obliges you to buffer half of the
- image to assemble the interlaced rows.  In this code
- png_set_interlace_handling() is not called and, instead, the code handles
- the interlace passes directly looking for the required pixel.
-
 
 ## Files:
 contrib/examples/pngtopng.c
@@ -1085,9 +1007,12 @@ contrib/gregbook/readpng2.c
 
 ---------------------------------------------------------------------------
 
-
 ## Files:
 contrib/gregbook/readpng2.h
+
+ rpng2 - progressive-model PNG display program                 readpng2.h
+
+---------------------------------------------------------------------------
 
     Copyright (c) 1998-2008 Greg Roelofs.  All rights reserved.
 
@@ -1200,7 +1125,6 @@ contrib/gregbook/readppm.c
 ## Files:
 contrib/gregbook/rpng-win.c
 
-
     Copyright (c) 1998-2008, 2017 Greg Roelofs.  All rights reserved.
 
     This software is provided "as is," without warranty of any kind,
@@ -1252,6 +1176,8 @@ contrib/gregbook/rpng-win.c
 ## Files:
 contrib/gregbook/rpng-x.c
 
+ rpng - simple PNG display program                               rpng-x.c
+
     Copyright (c) 1998-2008, 2017 Greg Roelofs.  All rights reserved.
 
     This software is provided "as is," without warranty of any kind,
@@ -1299,7 +1225,64 @@ contrib/gregbook/rpng-x.c
     along with this program; if not, write to the Free Software Foundation,
     Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
----------------------------------------------------------------------------
+
+## Files:
+contrib/gregbook/rpng2-win.c
+
+ rpng2 - progressive-model PNG display program                rpng2-win.c
+
+    Copyright (c) 1998-2008, 2017 Greg Roelofs.  All rights reserved.
+
+    This software is provided "as is," without warranty of any kind,
+    express or implied.  In no event shall the author or contributors
+    be held liable for any damages arising in any way from the use of
+    this software.
+
+    The contents of this file are DUAL-LICENSED.  You may modify and/or
+    redistribute this software according to the terms of one of the
+    following two licenses (at your option):
+
+
+    LICENSE 1 ("BSD-like with advertising clause"):
+
+    Permission is granted to anyone to use this software for any purpose,
+    including commercial applications, and to alter it and redistribute
+    it freely, subject to the following restrictions:
+
+    1. Redistributions of source code must retain the above copyright
+       notice, disclaimer, and this list of conditions.
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, disclaimer, and this list of conditions in the documenta-
+       tion and/or other materials provided with the distribution.
+    3. All advertising materials mentioning features or use of this
+       software must display the following acknowledgment:
+
+          This product includes software developed by Greg Roelofs
+          and contributors for the book, "PNG: The Definitive Guide,"
+          published by O'Reilly and Associates.
+
+
+    LICENSE 2 (GNU GPL v2 or later):
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software Foundation,
+    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+
+## Files:
+contrib/gregbook/rpng2-x.c
+
+ rpng2 - progressive-model PNG display program                  rpng2-x.c
 
     Copyright (c) 1998-2010, 2014-2015, 2017 Greg Roelofs.  All rights
     reserved.
@@ -1354,6 +1337,10 @@ contrib/gregbook/rpng-x.c
 contrib/gregbook/wpng.c
 
  wpng - simple PNG-writing program                                 wpng.c
+
+ Thanks to Jean-loup Gailly for providing the necessary trick to read
+ interactive text from the keyboard while stdin is redirected.  Thanks
+ to Cosmin Truta for Cygwin fixes.
 
 ---------------------------------------------------------------------------
 
@@ -1580,30 +1567,14 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-Test the png_read_png and png_write_png interfaces.  Given a PNG file load it
-using png_read_png and then write with png_write_png.  Test all possible
-transforms.
-
-
 ## Files:
 contrib/libtests/pngstest-errors.h
 
 contrib/libtests/pngstest-errors.h
 
-BUILT USING: libpng version 1.6.19beta03 - September 25, 2015
-
 This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
-
-THIS IS A MACHINE GENERATED FILE: do not edit it directly!
-Instead run:
-
-   pngstest --accumulate
-
-on as many PNG files as possible; at least PNGSuite and
-contrib/libtests/testpngs.
-
 
 ## Files:
 contrib/libtests/pngstest.c
@@ -1633,13 +1604,6 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-NOTES:
-  This is a C program that is intended to be linked against libpng.  It
-  allows the libpng unknown handling code to be tested by interpreting
-  arguments to save or discard combinations of chunks.  The program is
-  currently just a minimal validation for the built-in libpng facilities.
-
-
 ## Files:
 contrib/libtests/pngvalid.c
 
@@ -1652,16 +1616,6 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-NOTES:
-  This is a C program that is intended to be linked against libpng.  It
-  generates bitmaps internally, stores them as PNG files (using the
-  sequential write code) then reads them back (using the sequential
-  read code) and validates that the result has the correct data.
-
-  The program can be modified and extended to test the correctness of
-  transformations performed by libpng.
-
-
 ## Files:
 contrib/libtests/readpng.c
 
@@ -1672,13 +1626,6 @@ Copyright (c) 2013 John Cunningham Bowler
 This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
-
-Load an arbitrary number of PNG files (from the command line, or, if there
-are no arguments on the command line, from stdin) then run a time test by
-reading each file by row.  The test does nothing with the read result and
-does no transforms.  The only output is a time as a floating point number of
-seconds with 9 decimal digits.
-
 
 ## Files:
 contrib/libtests/tarith.c
@@ -1694,13 +1641,6 @@ and license in png.h
 
 Test internal arithmetic functions of libpng.
 
-This code must be linked against a math library (-lm), but does not require
-libpng or zlib to work.  Because it includes the complete source of 'png.c'
-it tests the code with whatever compiler options are used to build it.
-Changing these options can substantially change the errors in the
-calculations that the compiler chooses!
-
-
 ## Files:
 contrib/libtests/timepng.c
 
@@ -1711,13 +1651,6 @@ Copyright (c) 2013,2016 John Cunningham Bowler
 This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
-
-Load an arbitrary number of PNG files (from the command line, or, if there
-are no arguments on the command line, from stdin) then run a time test by
-reading each file by row or by image (possibly with transforms in the latter
-case).  The only output is a time as a floating point number of seconds with
-9 decimal digits.
-
 
 ## Files:
 contrib/mips-mmi/linux.c
@@ -1746,47 +1679,6 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-On Linux, png_have_msa is implemented by reading the pseudo-file
-"/proc/self/auxv".
-
-See contrib/mips-msa/README before reporting bugs.
-
-STATUS: SUPPORTED
-BUG REPORTS: png-mng-implement@sourceforge.net
-
-
-## Files:
-contrib/oss-fuzz/build.sh
-
- Copyright 2017-2018 Glenn Randers-Pehrson
- Copyright 2016 Google Inc.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-
- Revisions by Glenn Randers-Pehrson, 2017:
- 1. Build only the library, not the tools (changed "make -j$(nproc) all" to
-     "make -j$(nproc) libpng16.la").
- 2. Disabled WARNING and WRITE options in pnglibconf.dfa.
- 3. Build zlib alongside libpng
-###############################################################################
-
-
-## Files:
-contrib/oss-fuzz/libpng_read_fuzzer.cc
-
-libpng_read_fuzzer.cc
-Copyright 2017-2018 Glenn Randers-Pehrson
-Copyright 2015 The Chromium Authors. All rights reserved.
 Use of this source code is governed by a BSD-style license that may
 be found in the LICENSE file https://cs.chromium.org/chromium/src/LICENSE
 
@@ -1898,15 +1790,6 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-STATUS: TESTED
-BUG REPORTS: png-mng-implement@sourceforge.net
-
-png_have_vsx implemented for Linux by reading the widely available
-pseudo-file /proc/cpuinfo.
-
-This code is strict ANSI-C and is probably moderately portable; it does
-however use <stdio.h> and it assumes that /proc/cpuinfo is never localized.
-
 
 ## Files:
 contrib/powerpc-vsx/linux_aux.c
@@ -1919,14 +1802,6 @@ Written by Vadim Barkov, 2017.
 This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
-
-STATUS: TESTED
-BUG REPORTS: png-mng-implement@sourceforge.net
-
-png_have_vsx implemented for Linux by using the auxiliary vector mechanism.
-
-This code is strict ANSI-C and is probably moderately portable; it does
-however use <stdio.h> and it assumes that /proc/cpuinfo is never localized.
 
 
 ## Files:
@@ -1992,6 +1867,7 @@ To the extent possible under law, the author has waived all copyright and
 related or neighboring rights to this work.  The author published this work
 from the United States.
 
+
 ## Files:
 contrib/tools/makesRGB.c
 
@@ -2012,7 +1888,6 @@ Copyright 2015 Glenn Randers-Pehrson
 This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
-
 
 ## Files:
 contrib/tools/pngcp.c
@@ -2036,9 +1911,6 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-Tool to check and fix the zlib inflate 'too far back' problem.
-See the usage message for more information.
-
 
 ## Files:
 contrib/tools/sRGB.h
@@ -2049,15 +1921,6 @@ COPYRIGHT: Written by John Cunningham Bowler, 2013.
 To the extent possible under law, the author has waived all copyright and
 related or neighboring rights to this work.  This work is published from:
 United States.
-
-Utility file; not actually a header, this contains definitions of sRGB
-calculation functions for inclusion in those test programs that need them.
-
-All routines take and return a floating point value in the range
-0 to 1.0, doing a calculation according to the sRGB specification
-(in fact the source of the numbers is the wikipedia article at
-https://en.wikipedia.org/wiki/SRGB).
-
 
 ## Files:
 contrib/visupng/PngFile.c
@@ -2097,7 +1960,30 @@ contrib/visupng/VisualPng.c
  and license in png.h
 
 
+## Files:
+contrib/visupng/cexcept.h
+
   ===
+cexcept.h 2.0.1 (2008-Jul-19-Sat)
+http://www.nicemice.net/cexcept/
+Adam M. Costello
+http://www.nicemice.net/amc/
+
+An interface for exception-handling in ANSI C (C89 and subsequent ISO
+standards), developed jointly with Cosmin Truta.
+
+    Copyright (c) 2000-2008 Adam M. Costello and Cosmin Truta.
+    This software may be modified only if its author and version
+    information is updated accurately, and may be redistributed
+    only if accompanied by this unaltered notice.  Subject to those
+    restrictions, permission is granted to anyone to do anything
+    with this software.  The copyright holders make no guarantees
+    regarding this software, and are not responsible for any damage
+    resulting from its use.
+
+===
+
+
 ## Files:
 example.c
 
@@ -2111,22 +1997,6 @@ Written 1995-1996 Guy Eric Schalnat, Group 42, Inc.
 To the extent possible under law, the authors have waived
 all copyright and related or neighboring rights to this file.
 This work is published from: United States, Canada.
-
-
-## Files:
-example.c
-
-This is an example of how to use libpng to read and write PNG files.
-The file libpng-manual.txt is much more verbose then this.  If you have
-not read it, do so first.  This was designed to be a starting point of an
-implementation.  This is not officially part of libpng, is hereby placed
-in the public domain, and therefore does not require a copyright notice.
-
-This file does not currently compile, because it is missing certain
-parts, like allocating memory to hold an image.  You will have to
-supply these parts to get it to compile.  For an example of a minimal
-working PNG reader/writer, see pngtest.c, included in this distribution;
-see also the programs in the contrib directory.
 
 
 ## Files:
@@ -2187,6 +2057,7 @@ Contributed by Jin Bo <jinbo@loongson.cn>
 This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
+
 
 ## Files:
 mips/filter_mmi_inline_assembly.c
@@ -2250,7 +2121,7 @@ png.h
 
 png.h - header file for PNG reference library
 
-libpng version 1.6.54
+libpng version 1.6.55
 
 Copyright (c) 2018-2026 Cosmin Truta
 Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson
@@ -2264,7 +2135,7 @@ Authors and maintainers:
   libpng versions 0.89, June 1996, through 0.96, May 1997: Andreas Dilger
   libpng versions 0.97, January 1998, through 1.6.35, July 2018:
     Glenn Randers-Pehrson
-  libpng versions 1.6.36, December 2018, through 1.6.54, January 2026:
+  libpng versions 1.6.36, December 2018, through 1.6.55, February 2026:
     Cosmin Truta
   See also "Contributing Authors", below.
 
@@ -2424,7 +2295,7 @@ pngconf.h
 
 pngconf.h - machine-configurable file for libpng
 
-libpng version 1.6.54
+libpng version 1.6.55
 
 Copyright (c) 2018-2026 Cosmin Truta
 Copyright (c) 1998-2002,2004,2006-2016,2018 Glenn Randers-Pehrson
@@ -2470,12 +2341,6 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-This file provides a location for all error handling.  Users who
-need special error handling are expected to write replacement functions
-and use png_set_error_fn() to use those functions.  See the instructions
-at each function.
-
-
 ## Files:
 pngget.c
 
@@ -2519,13 +2384,6 @@ Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
 This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
-
-This file provides a location for all memory allocation.  Users who
-need special memory handling are expected to supply replacement
-functions for png_malloc() and png_free(), and to use
-png_create_read_struct_2() and png_create_write_struct_2() to
-identify the replacement functions.
-
 
 ## Files:
 pngpread.c
@@ -2571,9 +2429,6 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-This file contains routines that an application calls directly to
-read a PNG file or stream.
-
 
 ## Files:
 pngrio.c
@@ -2589,20 +2444,12 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
-This file provides a location for all input.  Users who need
-special handling are expected to write a function that has the same
-arguments as this and performs a similar function, but that possibly
-has a different input method.  Note that you shouldn't change this
-function, but rather write a replacement function and then make
-libpng use it at run time with png_set_read_fn(...).
-
-
 ## Files:
 pngrtran.c
 
 pngrtran.c - transforms the data in a row for PNG readers
 
-Copyright (c) 2018-2025 Cosmin Truta
+Copyright (c) 2018-2026 Cosmin Truta
 Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson
 Copyright (c) 1996-1997 Andreas Dilger
 Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
@@ -2610,11 +2457,6 @@ Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
 This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
-
-This file contains functions optionally called by an application
-in order to tell libpng how to handle data when reading a PNG.
-Transformations that are used in both reading and writing are
-in pngtrans.c.
 
 
 ## Files:
@@ -2630,10 +2472,6 @@ Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
 This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
-
-This file contains routines that are only called from within
-libpng itself during the course of reading an image.
-
 
 ## Files:
 pngset.c
@@ -2684,6 +2522,27 @@ This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
 
+This program reads in a PNG image, writes it out again, and then
+compares the two files.  If the files are identical, this shows that
+the basic chunk handling, filtering, and (de)compression code is working
+properly.  It does not currently test all of the transforms, although
+it probably should.
+
+The program will report "FAIL" in certain legitimate cases:
+1) when the compression level or filter selection method is changed.
+2) when the maximum IDAT size (PNG_ZBUF_SIZE in pngconf.h) is not 8192.
+3) unknown unsafe-to-copy ancillary chunks or unknown critical chunks
+   exist in the input file.
+4) others not listed here...
+In these cases, it is best to check with another tool such as "pngcheck"
+to see what the differences between the two files are.
+
+If a filename is given on the command-line, then this file is used
+for the input, rather than the default "pngtest.png".  This allows
+testing a wide variety of files easily.  You can also test a number
+of files at once by typing "pngtest -m file1.png file2.png ..."
+
+
 ## Files:
 pngtrans.c
 
@@ -2712,13 +2571,6 @@ Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
 This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
-
-This file provides a location for all output.  Users who need
-special handling are expected to write functions that have the same
-arguments as these and perform similar functions, but that possibly
-use different output methods.  Note that you shouldn't change these
-functions, but rather write replacement functions and then change
-them at run time with png_set_write_fn(...).
 
 
 ## Files:
@@ -2764,9 +2616,6 @@ Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
 This code is released under the libpng license.
 For conditions of distribution and use, see the disclaimer
 and license in png.h
-
-This file contains routines that are only called from within
-libpng itself during the course of writing an image.
 
 
 ## Files:
