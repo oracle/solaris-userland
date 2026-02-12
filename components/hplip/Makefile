@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -36,15 +36,13 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=         hplip
-COMPONENT_VERSION=      3.25.6
-COMPONENT_BAID=		340898
-COMPONENT_ARCHIVE_HASH= sha256:a6af314a7af0572f2ab6967b2fe68760e64d74628ef0e6237f8504d81047edbe
+COMPONENT_VERSION=      3.25.8
+COMPONENT_BAID=		370065
+COMPONENT_ARCHIVE_HASH= sha256:1cf6d6c28735435c8eb6646e83bcfb721e51c4b1f0e8cf9105a6faf96dc9ad25
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hplipopensource.com/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	1327
-
-PYTHON_VERSION = 3.11
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -85,7 +83,7 @@ REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += runtime/python-313
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
