@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64
 COMPILER =		gcc
@@ -30,10 +30,10 @@ include ../../make-rules/shared-macros.mk
 PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN):$(USRSBINDIR)
 
 COMPONENT_NAME=		unrar
-COMPONENT_VERSION=	7.1.2
-COMPONENT_BAID=		189656
+COMPONENT_VERSION=	7.2.4
+COMPONENT_BAID=		370215
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:143dcacb3a9d9ca0af695adecabe1350b0a3e93d927a065ef8f7cc605ab2d322
+	sha256:b02e571a33af7711cd803080500370dc1d28eea82b2032480819d27462ad8b31
 COMPONENT_SRC=		$(COMPONENT_NAME)
 COMPONENT_PROJECT_URL=	https://www.rarlabs.com/rar_add.htm
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)src-$(COMPONENT_VERSION).tar.gz
