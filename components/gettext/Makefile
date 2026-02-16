@@ -20,25 +20,26 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gettext
-COMPONENT_VERSION=	0.22.5
+COMPONENT_VERSION=	1.0
 IPS_PKG_NAME=		text/gnu-gettext
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:fe10c37353213d78a5b83d48af231e005c4da84db5ce88037d88355938259640
+    sha256:71132a3fb71e68245b8f2ac4e9e97137d3e5c02f415636eb508ae607bc01add7
 COMPONENT_SIG_URL=
 COMPONENT_BUGDB=	utility/gnu-gettext
 COMPONENT_ANITYA_ID=	898
-COMPONENT_BAID=		167729
+COMPONENT_BAID=		369328
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
+CONFIGURE_OPTIONS  +=		--libexecdir=$(USRLIB)
 CONFIGURE_OPTIONS  +=		--disable-java
 CONFIGURE_OPTIONS  +=		--disable-libasprintf
 CONFIGURE_OPTIONS  +=		--without-emacs
@@ -65,13 +66,12 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/TOTAL/p" '
 
 
-REQUIRED_PACKAGES += developer/icu
 REQUIRED_PACKAGES += developer/vala
-REQUIRED_PACKAGES += library/expat
-REQUIRED_PACKAGES += library/icu
+REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += source/locale/localedef
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/locale
+REQUIRED_PACKAGES += web/curl
