@@ -1,99 +1,117 @@
-Python pretend is not available on Solaris.
+Python pretend and tomli_w is not available on Solaris.
 
 Not for upstream.
 
---- packaging-25.0/tests/test_manylinux.py
-+++ packaging-25.0/tests/test_manylinux.py
-@@ -9,7 +9,6 @@ import sys
- import types
- import warnings
+--- packaging-26.0/tests/test_manylinux.py
++++ packaging-26.0/tests/test_manylinux.py
+@@ -15,7 +15,6 @@ import typing
+ if typing.TYPE_CHECKING:
+     from collections.abc import Generator
  
 -import pretend
  import pytest
  
  from packaging import _manylinux
-@@ -120,10 +119,14 @@ def test_glibc_version_string_fail(monke
-     assert _glibc_version_string() is None
+@@ -143,9 +142,14 @@ def test_glibc_version_string_fail(monke
      assert _get_glibc_version() == (-1, -1)
+ 
  
 +def raiser(exception):
 +    def inner(*args, **kwargs):
 +        raise exception
 +    return inner
- 
++
  @pytest.mark.parametrize(
      "failure",
--    [pretend.raiser(ValueError), pretend.raiser(OSError), lambda x: "XXX"],
-+    [raiser(ValueError), raiser(OSError), lambda x: "XXX"],
+-    [pretend.raiser(ValueError), pretend.raiser(OSError), lambda _: "XXX"],
++    [raiser(ValueError), raiser(OSError), lambda _: "XXX"],
  )
- def test_glibc_version_string_confstr_fail(monkeypatch, failure):
-     monkeypatch.setattr(os, "confstr", failure, raising=False)
---- packaging-25.0/tests/test_version.py
-+++ packaging-25.0/tests/test_version.py
-@@ -5,7 +5,6 @@
- import itertools
- import operator
+ def test_glibc_version_string_confstr_fail(
+     monkeypatch: pytest.MonkeyPatch, failure: typing.Callable[[int], str | None]
+--- packaging-26.0/tests/test_version.py
++++ packaging-26.0/tests/test_version.py
+@@ -9,7 +9,6 @@ import operator
+ import sys
+ import typing
  
 -import pretend
  import pytest
  
- from packaging.version import InvalidVersion, Version, parse
-@@ -748,6 +747,7 @@ class TestVersion:
+ from packaging.version import InvalidVersion, Version, _VersionReplace, parse
+@@ -778,6 +777,7 @@ class TestVersion:
          method = getattr(Version, f"__{op}__")
          assert method(Version("1"), 1) is NotImplemented
  
 +    @pytest.mark.skip(reason="pretend is not available on Solaris")
      @pytest.mark.parametrize(("op", "expected"), [("eq", False), ("ne", True)])
-     def test_compare_other(self, op, expected):
-         other = pretend.stub(**{f"__{op}__": lambda other: NotImplemented})
---- packaging-25.0/tests/test_tags.py
-+++ packaging-25.0/tests/test_tags.py
-@@ -19,7 +19,6 @@ import sys
- import sysconfig
+     def test_compare_other(self, op: str, expected: bool) -> None:
+         other = pretend.stub(**{f"__{op}__": lambda _: NotImplemented})
+--- packaging-26.0/tests/test_tags.py
++++ packaging-26.0/tests/test_tags.py
+@@ -22,7 +22,6 @@ import sysconfig
  import types
+ import typing
  
 -import pretend
  import pytest
  
  from packaging import tags
-@@ -522,12 +521,14 @@ class TestManylinuxPlatform:
+@@ -543,12 +542,14 @@ class TestManylinuxPlatform:
          # Clear the version cache
-         tags._manylinux._get_glibc_version.cache_clear()
+         tags._manylinux._get_glibc_version.cache_clear()  # type: ignore[attr-defined]
  
 +    @pytest.mark.skip(reason="pretend is not available on Solaris")
-     def test_get_config_var_does_not_log(self, monkeypatch):
+     def test_get_config_var_does_not_log(self, monkeypatch: pytest.MonkeyPatch) -> None:
          debug = pretend.call_recorder(lambda *a: None)
          monkeypatch.setattr(tags.logger, "debug", debug)
          tags._get_config_var("missing")
          assert debug.calls == []
  
 +    @pytest.mark.skip(reason="pretend is not available on Solaris")
-     def test_get_config_var_does_log(self, monkeypatch):
+     def test_get_config_var_does_log(self, monkeypatch: pytest.MonkeyPatch) -> None:
          debug = pretend.call_recorder(lambda *a: None)
          monkeypatch.setattr(tags.logger, "debug", debug)
-@@ -716,6 +717,7 @@ class TestManylinuxPlatform:
+@@ -751,6 +752,7 @@ class TestManylinuxPlatform:
          )
          assert platforms == expected
  
 +    @pytest.mark.skip(reason="pretend is not available on Solaris")
      @pytest.mark.parametrize(
-         "native_arch, cross32_arch, musl_version",
+         ("native_arch", "cross32_arch", "musl_version"),
          [
---- packaging-25.0/tests/test_musllinux.py
-+++ packaging-25.0/tests/test_musllinux.py
-@@ -2,7 +2,6 @@ import collections
- import pathlib
+--- packaging-26.0/tests/test_musllinux.py
++++ packaging-26.0/tests/test_musllinux.py
+@@ -5,7 +5,6 @@ import pathlib
  import subprocess
+ import typing
  
 -import pretend
  import pytest
  
  from packaging import _musllinux
-@@ -47,6 +46,7 @@ def test_parse_musl_version(output, vers
+@@ -53,6 +52,7 @@ def test_parse_musl_version(output: str,
      assert _parse_musl_version(output) == version
  
  
 +@pytest.mark.skip(reason="pretend is not available on Solaris")
  @pytest.mark.parametrize(
-     "executable, output, version, ld_musl",
+     ("executable", "output", "version", "ld_musl"),
      [
+--- packaging-26.0/tests/test_pylock.py
++++ packaging-26.0/tests/test_pylock.py
+@@ -6,7 +6,6 @@ from pathlib import Path
+ from typing import Any
+ 
+ import pytest
+-import tomli_w
+ 
+ from packaging.markers import Marker
+ from packaging.pylock import (
+@@ -42,6 +41,7 @@ def test_pylock_file_name(file_name: str
+     assert is_valid_pylock_path(Path(file_name)) is valid
+ 
+ 
++@pytest.mark.skip(reason="tomli_w is not available on Solaris")
+ def test_toml_roundtrip() -> None:
+     pep751_example = (
+         Path(__file__).parent / "pylock" / "pylock.spec-example.toml"
