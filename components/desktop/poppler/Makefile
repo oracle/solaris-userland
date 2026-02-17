@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64_and_32
 COMPILER =		gcc
-CTF_MODE =		relaxed
+CTF_MODE =		off
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		poppler
-COMPONENT_VERSION=	25.10.0
+COMPONENT_VERSION=	26.02.0
 # must not be zero padded
 IPS_COMPONENT_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\.0\([^.]\)/.\1/g')
 COMPONENT_PROJECT_URL=	https://poppler.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH= sha256:6b5e9bb64dabb15787a14db1675291c7afaf9387438cc93a4fb7f6aec4ee6fe0
+COMPONENT_ARCHIVE_HASH= sha256:dded8621f7b2f695c91063aab1558691c8418374cd583501e89ed39487e7ab77
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/poppler
 COMPONENT_ANITYA_ID=	3686
-COMPONENT_BAID_POPPLER=	351423
+COMPONENT_BAID=		370376
 
 COMPONENT_NAME_1=	poppler-data
 COMPONENT_VERSION_1=	0.4.12
@@ -49,11 +49,11 @@ COMPONENT_ARCHIVE_HASH_1= \
 COMPONENT_ARCHIVE_URL_1= $(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 COMPONENT_ANITYA_ID_1=	3687
-COMPONENT_BAID_POPPLER_DATA=	151084
+COMPONENT_BAID_1=	151084
 
 COMPONENT_NAME_2=	testfiles
 GIT_REPO_2=		https://gitlab.freedesktop.org/poppler/test.git
-GIT_COMMIT_ID_2=	920c89f8
+GIT_COMMIT_ID_2=	b85e4d1c
 
 # Only cmake is currently supported to build libpoppler.
 BUILD_STYLE = cmake
@@ -61,7 +61,7 @@ BUILD_STYLE = cmake
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-COMPONENT_TEST_ENV =	LC_ALL=en_US.UTF-8
+PATH = /usr/gnu/bin:/usr/bin
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -96,8 +96,7 @@ COMPONENT_POST_BUILD_ACTION = \
 	(cd $(COMPONENT_DIR)/$(COMPONENT_SRC_1); \
 	$(GMAKE) prefix=/usr DESTDIR=$(PROTO_DIR) install)
 
-# Always show the build and link lines for easier debugging.
-COMPONENT_BUILD_ARGS += V=1
+COMPONENT_TEST_ENV = LC_ALL=en_US.UTF-8
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
@@ -114,6 +113,5 @@ REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/curl
