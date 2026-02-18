@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -32,16 +32,16 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		pillow
-COMPONENT_VERSION=	11.3.0
+COMPONENT_VERSION=	12.1.1
 COMPONENT_PROJECT_URL=	https://github.com/python-pillow/Pillow
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:3828ee7586cd0b2091b6209e5ad53e20d0649bbe87164a459d0676e035e8f523
+    sha256:9ad8fa5937ab05218e2b6a4cff30295ad35afd2f83ac592e68c0d871bb0fdbc4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/pil
 COMPONENT_ANITYA_ID=	7974
-COMPONENT_BAID=		335949
+COMPONENT_BAID=		370918
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
