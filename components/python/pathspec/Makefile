@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pathspec
-COMPONENT_VERSION=	0.12.1
+COMPONENT_VERSION=	1.0.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9bfcafd9de37219094f10994f4d351c4be3d228c3f753d3b0282bb03ffe5ad44
+    sha256:0210e2ae8a21a9137c0d470578cb0e595af87edaa6ebf12ff176f14a02e0e645
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/cpburnz/python-pathspec
 COMPONENT_BUGDB=	python-mod/pathspec
 COMPONENT_ANITYA_ID=	23424
-COMPONENT_BAID=		338691
+COMPONENT_BAID=		371470
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
