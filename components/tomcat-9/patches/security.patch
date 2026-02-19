@@ -2,20 +2,20 @@ Disable the use of ciphers unacceptable according to Oracle standards by default
 
 Not intended for upstream.
 
---- apache-tomcat-9.0.111-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
-+++ apache-tomcat-9.0.111-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
+--- apache-tomcat-9.0.115-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
++++ apache-tomcat-9.0.115-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
 @@ -57,7 +57,7 @@ // they are case-insensitive but are use
      // keys in Maps.
      protected static final String DEFAULT_SSL_HOST_NAME = "_default_";
      protected static final Set<String> SSL_PROTO_ALL_SET = new HashSet<>();
--    public static final String DEFAULT_TLS_CIPHERS = "HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA";
-+    public static final String DEFAULT_TLS_CIPHERS = "HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:!PSK";
- 
-     static {
-         /*
---- apache-tomcat-9.0.111-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
-+++ apache-tomcat-9.0.111-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
-@@ -556,7 +556,7 @@ addListAlias(SRP, filterByKeyExchange(al
+-    public static final String DEFAULT_TLS_CIPHERS_12 = "HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA";
++    public static final String DEFAULT_TLS_CIPHERS_12 = "HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:!PSK";
+     public static final String DEFAULT_TLS_CIPHERS_13 = "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256";
+     /**
+      * Default cipher list for TLS 1.2 and below.
+--- apache-tomcat-9.0.115-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
++++ apache-tomcat-9.0.115-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
+@@ -568,7 +568,7 @@ addListAlias(SRP, filterByKeyExchange(al
          initialized = true;
          // Despite what the OpenSSL docs say, DEFAULT also excludes SSLv2
          addListAlias(DEFAULT, parse(
@@ -24,14 +24,14 @@ Not intended for upstream.
          // COMPLEMENTOFDEFAULT is also not exactly as defined by the docs
          LinkedHashSet<Cipher> complementOfDefault =
                  filterByKeyExchange(all, new HashSet<>(Arrays.asList(KeyExchange.EDH, KeyExchange.EECDH)));
---- apache-tomcat-9.0.111-src/webapps/docs/config/http.xml
-+++ apache-tomcat-9.0.111-src/webapps/docs/config/http.xml
-@@ -1466,7 +1466,7 @@ <code>WARNING</code> message when the Co
-       avoided by providing an explicit list of ciphers that are supported by the
-       configured SSL implementation.</p>
+--- apache-tomcat-9.0.115-src/webapps/docs/config/http.xml
++++ apache-tomcat-9.0.115-src/webapps/docs/config/http.xml
+@@ -1485,7 +1485,7 @@ <code>WARNING</code> message when the Co
+       avoided by providing an explicit list of TLSv1.2 and below ciphers that
+       are supported by the configured SSL implementation.</p>
        <p>If not specified, a default (using the OpenSSL notation) of
--      <code>HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA</code> will be
-+      <code>HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:!PSK</code> will be
-       used.</p>
+-      <code>HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256</code>
++      <code>HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:!PSK:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256</code>
+       will be used.</p>
        <p>Note that, by default, the order in which ciphers are defined is
-       treated as an order of preference. See <code>honorCipherOrder</code>.</p>
+       not treated as an order of preference. See
