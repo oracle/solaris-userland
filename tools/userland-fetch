@@ -109,7 +109,7 @@ def validate_signature(path: str, signature: str) -> Tuple[bool, str]:
                            "--homedir", gpgdir, "--keyserver-options", proxy, signature, path],
                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-    subprocess.run(["gpgconf", "--homedir", gpgdir, "--kill", "gpg-agent"])
+    subprocess.run(["gpgconf", "--homedir", gpgdir, "--kill", "all"])
 
     if proc.returncode != 0:
         return False, proc.stdout.decode()
