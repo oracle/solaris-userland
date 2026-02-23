@@ -50,6 +50,8 @@ COMPONENT_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
 COMPONENT_SYSTEM_TEST_ENV +=	no_proxy=localhost
 COMPONENT_SYSTEM_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
 
+LOCALE_TRANSFORMS += fix-locale.transform
+
 # While the Sphinx itself is pure python only, tests using
 # Cython need the following setup properly.
 COMPILER =	gcc

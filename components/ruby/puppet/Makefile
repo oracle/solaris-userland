@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -45,6 +45,11 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/install.rb.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/ruby.mk
+
+# Gate automation incorrectly detects locales 'config' and 'puppet'. And
+# because there is only one file which could be covered by locales it is not
+# worth creating the facets at all.
+LOCALE_TRANSFORMS=
 
 # puppet requires facter and hiera as part of the install phase
 FACTER_LIB=$(WS_TOP)/components/ruby/facter/build/$(MACH)-$(RUBY_PUPPET_VERSION)/lib
