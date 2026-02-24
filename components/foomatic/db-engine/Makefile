@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS=	64
 COMPILER=	gcc
@@ -33,12 +33,12 @@ FOO_VERSION=		4.0
 # Latest foomatic-db-engine patchlevel where the snapshot is derived from.
 # Makes the IPS versioning monotonously growing.
 FOO_PATCHLEVEL=		14
-DAILY_VERSION=		20250519
+DAILY_VERSION=		20260218
 COMPONENT_VERSION=	$(FOO_VERSION)-$(DAILY_VERSION)
 IPS_COMPONENT_VERSION=	$(FOO_VERSION).$(FOO_PATCHLEVEL).$(DAILY_VERSION)
-COMPONENT_BAID=		329526
+COMPONENT_BAID=		371893
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:d5d9fce2a597cabef2f282c2482a1ec34c2061b118abc7a7c782efef529a4b8f
+COMPONENT_ARCHIVE_HASH=	sha256:31518df453a88cb1e327c90c7938d324fb748deedf19f4bcc63632f1ec441c97
 COMPONENT_ARCHIVE_URL=	http://www.openprinting.org/download/foomatic/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://wiki.linuxfoundation.org/openprinting/database/foomatic
 COMPONENT_BUGDB=	utility/foomatic
