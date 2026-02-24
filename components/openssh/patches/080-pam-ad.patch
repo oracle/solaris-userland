@@ -1,0 +1,19 @@
+#
+# Since OpenSSH 10.2, we fail when the user name no longer matches;
+# this check seems to fail with AD as it may return the username in all
+# CAPS.
+#
+# Filed upstream as  https://bugzilla.mindrot.org/show_bug.cgi?id=3930
+#
+--- old/auth-pam.c	2026-02-24 13:29:13.818175185 +0100
++++ new/auth-pam.c	2026-02-24 13:30:29.808543290 +0100
+@@ -349,7 +349,8 @@ check_pam_user(Authctxt *authctxt)
+ 		return PAM_USER_UNKNOWN;
+ 	}
+ 
+-	if (strcmp(authctxt->pw->pw_name, pam_user) != 0) {
++	/* For AD, we may get the username all in caps. */
++	if (strcasecmp(authctxt->pw->pw_name, pam_user) != 0) {
+ 		debug("PAM user \"%s\" does not match expected \"%s\"",
+ 		      pam_user, authctxt->pw->pw_name);
+ 		return PAM_USER_UNKNOWN;
