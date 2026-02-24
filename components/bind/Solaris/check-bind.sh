@@ -1,6 +1,6 @@
-#!/sbin/sh
+#!/usr/bin/sh
 #
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 
 # smf_method(7) start script for check-bind service.
@@ -20,9 +20,6 @@ IAM=${0##*/}
 SVCPROP=/usr/bin/svcprop
 CHECKCONF=/usr/bin/named-checkconf
 DNS_SERVER_FMRI=svc:/network/dns/server:default
-TMP=$(/usr/bin/mktemp ${IAM}.XXXXXX)
-trap '/usr/bin/rm -f $TMP' EXIT
-
 configuration_file=/etc/named.conf
 
 # Read configuration paths from dns/server
@@ -49,12 +46,25 @@ done
 # If chroot option is set, note zones(5) are preferred, then
 # configuration file lives under chroot directory.
 if [ "${chroot_dir}" != "" ]; then
+    if [ ! -d ${chroot_dir} ]; then
+	logit "${chroot_dir} is not a directory."
+        smf_method_exit $SMF_EXIT_DEGRADED "bind_config_error" \
+	    "options/chroot_dir property value is not a directory."
+    fi
     configuration_file=${chroot_dir}${configuration_file}
 fi
 
 if [ ! -f $configuration_file ]; then
     exit $SMF_EXIT_OK
 fi
+
+TMP=$(/usr/bin/mktemp -p /tmp ${IAM}.XXXXXX)
+if [ $? -ne 0 ]; then
+    logit "Could not create named check temp file."
+    smf_method_exit $SMF_EXIT_DEGRADED "bind_config_error" \
+	"Could not create named check temp file."
+fi
+trap '/usr/bin/rm -f $TMP' EXIT
 
 logit "Performing check with ${CHECKCONF##*/} version $($CHECKCONF -v)"
 

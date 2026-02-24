@@ -1,9 +1,40 @@
-#!/sbin/sh
+#!/usr/bin/sh
 #
-# Copyright (c) 2007, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2007, 2026, Oracle and/or its affiliates.
 #
 
 # smf_method(7) start/stop script required for server DNS
+
+# Find the options directory property in the named.conf file.
+# "options" directive should be near the beginning of named.conf,
+# and "directory" property should be near top of "options".
+# Immediate exit on any config file processing error.
+# Unfortunately bind does not deliver a "getprop" type tool.
+function named_dir
+{
+/usr/bin/python - ${1}<<'EOT'
+import sys
+try:
+    conf = open(sys.argv[1], 'r').read()
+    tokens = conf.split()
+    depth = 0
+    opti = tokens.index('options')
+    tokens = tokens[opti+1:]
+    for i in range(len(tokens)):
+        t = tokens[i]
+        if t == '{':
+            depth += 1
+        elif t.startswith('}'):
+            depth -= 1
+        if t == 'directory' and depth == 1:
+            dir = tokens[i+1].split('"')[1]
+            print(dir)
+            sys.exit(0)
+except Exception:
+    pass
+sys.exit(0)
+EOT
+}
 
 . /lib/svc/share/smf_include.sh
 
@@ -125,6 +156,20 @@ case "$method" in
       /usr/bin/logger -p daemon.error ${msg}
       # dns-server should be placed in maintenance state.
       result=${SMF_EXIT_ERR_CONFIG}
+    fi
+
+    # Verify writable directory specified in config file options.
+    workdir=$(named_dir $configuration_file)
+    if [ "${workdir}" != "" ]; then
+            tmpdir=${chroot_dir}/${workdir}
+    else
+            tmpdir=${chroot_dir}
+    fi
+    if [ ! -w ${tmpdir} ]; then
+        echo "Directory ${tmpdir} not writable by named." >&2
+        echo "The options \"directory\" property may be missing or wrong." >&2
+        smf_method_exit $SMF_EXIT_DEGRADED "bind_config_error" \
+            "Directory ${tmpdir} not writable by named."
     fi
 
     if [ ${result} = ${SMF_EXIT_OK} ]; then
