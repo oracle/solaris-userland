@@ -14,7 +14,7 @@
  
 --- a/src/cups/Makefile.in
 +++ b/src/cups/Makefile.in
-@@ -787,6 +787,7 @@ @BUILD_TRANSLATED_CUPS_PPDS_TRUE@TRANSLA
+@@ -803,6 +803,7 @@ @BUILD_TRANSLATED_CUPS_PPDS_TRUE@TRANSLA
  @BUILD_SIMPLIFIED_CUPS_PPDS_TRUE@BUILD_SIMPLE_PPDS = -DGENERATE_SIMPLIFIED_PPDS
  @BUILD_CUPS_TRUE@sbin_SCRIPTS = cups-genppdupdate
  @BUILD_CUPS_TRUE@AM_TESTS_ENVIRONMENT = $(STP_ENV)
@@ -45,7 +45,7 @@
  
 --- a/src/testpattern/Makefile.in
 +++ b/src/testpattern/Makefile.in
-@@ -668,6 +668,7 @@ testpattern_SOURCES = testpattern.c test
+@@ -684,6 +684,7 @@ testpattern_SOURCES = testpattern.c test
  testpattern_LDADD = $(GUTENPRINT_LIBS) $(LIBM)
  printers_LDADD = $(GUTENPRINT_LIBS)
  printer_options_LDADD = $(GUTENPRINT_LIBS)
@@ -65,15 +65,15 @@
  test-curve.log: run-testdither.log
 --- a/test/Makefile.in
 +++ b/test/Makefile.in
-@@ -668,6 +668,7 @@ top_builddir = @top_builddir@
+@@ -684,6 +684,7 @@ top_builddir = @top_builddir@
  top_srcdir = @top_srcdir@
- AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/include $(LOCAL_CPPFLAGS) $(GNUCFLAGS)
+ AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/include $(LOCAL_CPPFLAGS) $(GNUCFLAGS) -DPACKAGE_LOCALE_DIR=\"$(PACKAGE_LOCALE_DIR)\" -DPACKAGE_DATA_DIR=\"$(PACKAGE_DATA_DIR)\" -DPACKAGE_LIB_DIR=\"$(PACKAGE_LIB_DIR)\" -DPACKAGE_BIN_DIR=\"$(PACKAGE_BIN_DIR)\" -DPKGMODULEDIR=\"$(PKGMODULEDIR)\" -DPKGXMLDATADIR=\"$(PKGXMLDATADIR)\"
  LOCAL_CPPFLAGS = -I$(top_srcdir)/src/main $(GUTENPRINT_CFLAGS)
 +TESTS_ENVIRONMENT= STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
  TESTS = test-curve.test run-weavetest.test run-testdither.test
  @BUILD_TEST_TRUE@AM_TESTS_ENVIRONMENT = STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
  noinst_SCRIPTS = test-curve.test run-weavetest.test run-testdither.test
-@@ -692,7 +693,7 @@ pixma_parse_SOURCES = pixma_parse.c pixm
+@@ -708,7 +709,7 @@ pixma_parse_SOURCES = pixma_parse.c pixm
  #run-weavetest: escp2-weavetest
  CLEANFILES = mixed-color-1bit.ppm
  MAINTAINERCLEANFILES = Makefile.in

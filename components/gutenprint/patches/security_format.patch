@@ -1,5 +1,7 @@
-Fix printf and stp_eprintf, to avoid format string vulnerability. 
-Upstream candidate.
+Fix printf and stp_eprintf, to avoid format string vulnerability. Offered
+upstream.
+
+https://sourceforge.net/p/gimp-print/mailman/message/59298631/
 
 --- a/src/escputil/escputil.c
 +++ b/src/escputil/escputil.c
@@ -75,7 +77,7 @@ Upstream candidate.
      }
    else if (status < 0)
      {
-@@ -777,7 +777,7 @@ int fd;
+@@ -778,7 +778,7 @@ int fd;
  
    if (!raw_device)
     {
@@ -84,7 +86,7 @@ Upstream candidate.
        exit(1);
      }
  
-@@ -987,7 +987,7 @@ if (!pos)
+@@ -988,7 +988,7 @@ if (!pos)
  	    {
  	      if (!quiet && fail_if_not_found)
  		{
@@ -93,7 +95,7 @@ Upstream candidate.
  				    "Please use -m to specify your printer model.\n"));
  		  do_help(1);
  		}
-@@ -1109,43 +1109,43 @@ {
+@@ -1110,43 +1110,43 @@ {
    switch (param)
      {
      case 0:
@@ -150,7 +152,7 @@ Upstream candidate.
        break;
      default:
        printf(_("Status: Unknown (%d)\n"), param);
-@@ -1159,82 +1159,82 @@ {
+@@ -1160,82 +1160,82 @@ {
    switch (param)
      {
      case 0:
@@ -259,7 +261,7 @@ Upstream candidate.
        break;
      default:
        printf(_("Error: Unknown (%d)\n"), param);
-@@ -1268,10 +1268,10 @@ {
+@@ -1269,10 +1269,10 @@ {
        switch (param)
  	{
  	case 0x20:
@@ -271,8 +273,8 @@ Upstream candidate.
 +	  printf("%s", _("Warning: Maintenance request pending\n"));
  	  break;
  	default:
- 	  printf(_("Warning: Unknown (%d)\n"), param);
-@@ -1286,7 +1286,7 @@ {
+ 	  printf(_("Warning: Unknown (%lu)\n"), param);
+@@ -1287,7 +1287,7 @@ {
    switch (param)
      {
      case 0:
@@ -281,7 +283,7 @@ Upstream candidate.
        break;
      default:
        break;
-@@ -1388,7 +1388,7 @@ stp_string_list_add_string(color_list, "
+@@ -1389,7 +1389,7 @@ stp_string_list_add_string(color_list, "
  	    }
  
  	  if (cmd == CMD_STATUS)
@@ -290,7 +292,7 @@ Upstream candidate.
  	  printf("%20s    %20s\n", _("Ink color"), _("Percent remaining"));
  	  print_old_ink_levels(ind, color_list);
  	  stp_string_list_destroy(color_list);
-@@ -1433,7 +1433,7 @@ {
+@@ -1434,7 +1434,7 @@ {
  	  size_t count = (total_param_count - 1) / param;
  	  ind = buf + i + 3;
  	  if (cmd == CMD_STATUS)
@@ -299,7 +301,7 @@ Upstream candidate.
  	  printf("%25s    %20s\n", _("Ink color"), _("Percent remaining"));
  	  for (j = 0; j < count; j++)
  	    {
-@@ -1495,27 +1495,27 @@ break;
+@@ -1496,27 +1496,27 @@ break;
  	    case 0x19:	/* Job name */
  	      if (total_param_count > 5)
  		{
@@ -331,7 +333,7 @@ Upstream candidate.
                if (param > 2880)
                  printf("A4 / 210mm");
                else if (param > 2160)
-@@ -1891,7 +1891,7 @@ const stp_printer_t *printer;
+@@ -1892,7 +1892,7 @@ const stp_printer_t *printer;
  
    if (!raw_device)
      {
@@ -340,7 +342,7 @@ Upstream candidate.
        exit(1);
      }
  
-@@ -1918,7 +1918,7 @@ stp_string_list_t *color_list;
+@@ -1919,7 +1919,7 @@ stp_string_list_t *color_list;
  
    if (!raw_device)
      {
@@ -349,7 +351,7 @@ Upstream candidate.
        exit(1);
      }
  
-@@ -1966,7 +1966,7 @@ const stp_printer_t *printer;
+@@ -1967,7 +1967,7 @@ const stp_printer_t *printer;
    if (!raw_device)
      {
        fprintf(stderr,
@@ -358,7 +360,7 @@ Upstream candidate.
        exit(1);
      }
    if (printer_model)
-@@ -1984,7 +1984,7 @@ else if (printer_model)
+@@ -1985,7 +1985,7 @@ else if (printer_model)
      printf("EPSON %s\n", printer_model);
    else
      {
@@ -367,7 +369,7 @@ Upstream candidate.
        exit(1);
      }
  }
-@@ -2006,7 +2006,7 @@ else if (raw_device)
+@@ -2007,7 +2007,7 @@ else if (raw_device)
      (void) get_printer(1, 0);
    initialize_print_cmd(1);
    do_remote_cmd("CH", 2, 0, 0);
@@ -376,7 +378,7 @@ Upstream candidate.
    exit(do_print_cmd());
  }
  
-@@ -2023,7 +2023,7 @@ do_remote_cmd_only("VI", 2, 0, 0);
+@@ -2024,7 +2024,7 @@ do_remote_cmd_only("VI", 2, 0, 0);
    do_remote_cmd_only("NC", 2, 0, 0x10);
    do_remote_cmd_only("NC", 2, 0, 0);
    end_remote_sequence();
@@ -385,7 +387,7 @@ Upstream candidate.
    exit(do_print_cmd());
  }
  
-@@ -2106,7 +2106,7 @@ }
+@@ -2107,7 +2107,7 @@ }
  static void
  printer_error(void)
  {
@@ -394,7 +396,7 @@ Upstream candidate.
    exit(1);
  }
  
-@@ -2120,10 +2120,10 @@ char *inbuf;
+@@ -2121,10 +2121,10 @@ char *inbuf;
        retry_count++;
        if (retry_count > 10)
  	{
@@ -407,7 +409,7 @@ Upstream candidate.
  	       "printer is in proper alignment. You may now:\n"
  	       "  (s)ave the results in the printer,\n"
  	       "  (q)uit without saving the results, or\n"
-@@ -2138,21 +2138,21 @@ switch (inbuf[0])
+@@ -2139,21 +2139,21 @@ switch (inbuf[0])
  	{
  	case 'q':
  	case 'Q':
@@ -432,7 +434,7 @@ Upstream candidate.
  		   "alignment process:\n"));
  	  fflush(stdout);
  	  inbuf = do_get_input(_("> "));
-@@ -2160,13 +2160,13 @@ if (!inbuf)
+@@ -2161,13 +2161,13 @@ if (!inbuf)
  	    continue;
  	  if (inbuf[0] == 'r' || inbuf[0] == 'R')
  	    {
@@ -448,7 +450,7 @@ Upstream candidate.
  		   "WARNING: this procedure has not been approved by Seiko Epson, and\n"
  		   "it may damage your printer. Proceed?\n"
  		   "Please confirm by typing 's' again that you wish to save the settings\n"
-@@ -2178,27 +2178,27 @@ if (!inbuf)
+@@ -2179,27 +2179,27 @@ if (!inbuf)
  	    continue;
  	  if (inbuf[0] == 's' || inbuf[0] == 'S')
  	    {
@@ -483,7 +485,7 @@ Upstream candidate.
      }
  }
  
-@@ -2279,7 +2279,7 @@ for (curpass = 0; curpass < alignment_pa
+@@ -2280,7 +2280,7 @@ for (curpass = 0; curpass < alignment_pa
  	do_remote_cmd("DT", 3, 0, curpass, 0);
        if (do_print_cmd())
  	printer_error();
@@ -492,7 +494,7 @@ Upstream candidate.
  	       "Type a pair number, '?' for help, or 'r' to repeat the procedure.\n"));
        initialize_print_cmd(1);
        for (curpass = 1; curpass <= alignment_passes; curpass ++)
-@@ -2289,7 +2289,7 @@ reread:
+@@ -2290,7 +2290,7 @@ reread:
  	  retry_count++;
  	  if (retry_count > 10)
  	    {
@@ -501,7 +503,7 @@ Upstream candidate.
  	      return;
  	    }
  	  printf(_("Pass #%d"), curpass);
-@@ -2300,7 +2300,7 @@ switch (inbuf[0])
+@@ -2301,7 +2301,7 @@ switch (inbuf[0])
  	    {
  	    case 'r':
  	    case 'R':
@@ -510,7 +512,7 @@ Upstream candidate.
  	      fflush(stdout);
  	      initialize_print_cmd(1);
  	      (void) do_get_input(_("Press enter to continue > "));
-@@ -2319,12 +2319,12 @@ }
+@@ -2320,12 +2320,12 @@ }
  	  answer = strtol(inbuf, &endptr, 10);
  	  if (errno == ERANGE)
  	    {
@@ -525,7 +527,7 @@ Upstream candidate.
  	      fflush(stdout);
  	      goto reread;
  	    }
-@@ -2337,15 +2337,15 @@ goto reread;
+@@ -2338,15 +2338,15 @@ goto reread;
  	    }
  	  do_remote_cmd("DA", 4, 0, curpass - 1, 0, answer);
  	}
@@ -544,7 +546,7 @@ Upstream candidate.
        (void) do_get_input(_("Press enter to continue > "));
        initialize_print_cmd(1);
        for (curpass = 0; curpass < alignment_passes; curpass++)
-@@ -2387,7 +2387,7 @@ printf ("%s", prompt);
+@@ -2388,7 +2388,7 @@ printf ("%s", prompt);
  	fgets_status = fgets (input, BUFSIZ, stdin);
  	if (fgets_status == NULL)
  	{
@@ -555,7 +557,7 @@ Upstream candidate.
  	else if (strlen (input) == 1 && input[0] == '\n')
 --- a/src/main/print-dyesub.c
 +++ b/src/main/print-dyesub.c
-@@ -3510,7 +3510,7 @@ !strcmp(pagesize, "w576h1728") ||
+@@ -3853,7 +3853,7 @@ !strcmp(pagesize, "w576h1728") ||
          !strcmp(pagesize, "w576h2304") ||
          !strcmp(pagesize, "w576h2592"))
      {
@@ -564,7 +566,7 @@ Upstream candidate.
        return 0;
      }
    }
-@@ -4186,7 +4186,7 @@ /* Sanity check */
+@@ -4521,7 +4521,7 @@ /* Sanity check */
    if (stp_check_raw_parameter(v, "UserComment", STP_PARAMETER_ACTIVE)) {
      usercomment = stp_get_raw_parameter(v, "UserComment");
      if (usercomment->bytes > 34) {
@@ -573,7 +575,7 @@ Upstream candidate.
        return 0;
      }
    }
-@@ -4194,7 +4194,7 @@ }
+@@ -4529,7 +4529,7 @@ }
    if (stp_check_raw_parameter(v, "UserLUT", STP_PARAMETER_ACTIVE)) {
      userlut = stp_get_raw_parameter(v, "UserLUT");
      if (usercomment->bytes != 34) {
@@ -582,7 +584,7 @@ Upstream candidate.
        return 0;
      }
    }
-@@ -4599,7 +4599,7 @@ /* Sanity check */
+@@ -4934,7 +4934,7 @@ /* Sanity check */
    if (stp_check_raw_parameter(v, "UserComment", STP_PARAMETER_ACTIVE)) {
      usercomment = stp_get_raw_parameter(v, "UserComment");
      if (usercomment->bytes > 40) {
@@ -591,7 +593,7 @@ Upstream candidate.
        return 0;
      }
    }
-@@ -6892,7 +6892,7 @@ const char *quality = stp_get_string_par
+@@ -7326,7 +7326,7 @@ const char *quality = stp_get_string_par
    int match;
  
    if (use_lut && strcmp(matching, "Off")) {
@@ -600,7 +602,7 @@ Upstream candidate.
  	  return 0;
    } else if (use_lut && !strcmp(matching, "Off")) {
  	  match = 0;
-@@ -8140,7 +8140,7 @@ multicut = 20;
+@@ -8854,7 +8854,7 @@ multicut = 20;
    } else if (!strcmp(pagesize, "w576h842")) {
      multicut = 21;
    } else {
@@ -609,7 +611,7 @@ Upstream candidate.
      return 0;
    }
  
-@@ -8194,7 +8194,7 @@ pagenum = stp_get_int_parameter(v, "Page
+@@ -8908,7 +8908,7 @@ pagenum = stp_get_int_parameter(v, "Page
  
    if (!strcmp(media->name, "Roll")) {
      if (strcmp(duplex_mode, "None") && strcmp(duplex_mode, "Standard")) {
@@ -618,7 +620,7 @@ Upstream candidate.
        stp_set_string_parameter(v, "MediaType", "Sheet");
      } else {
        /* If we're not using duplex and roll media, this is
-@@ -8228,7 +8228,7 @@ multicut = 15;
+@@ -8942,7 +8942,7 @@ multicut = 15;
    } else if (!strcmp(pagesize, "w576h864-div3sheet")) {
      multicut = 28;
    } else {
@@ -627,7 +629,7 @@ Upstream candidate.
      return 0;
    }
  
-@@ -9950,7 +9950,7 @@ overcoat_hole = NULL;
+@@ -10954,7 +10954,7 @@ overcoat_hole = NULL;
    /* If overcoat is off, we can't use holokote or holopatch */
    if (lpar && strcmp("On", lpar)) {
      if ((holokote && strcmp(holokote, "Off")) || holopatch || overcoat_hole || holokote_custom) {
@@ -636,7 +638,7 @@ Upstream candidate.
        return 0;
      }
    }
-@@ -9959,21 +9959,21 @@ /* Sanity check magstripe */
+@@ -10963,21 +10963,21 @@ /* Sanity check magstripe */
    if (stp_check_raw_parameter(v, "MagStripe1", STP_PARAMETER_ACTIVE)) {
      magstripe1 = stp_get_raw_parameter(v, "MagStripe1");
      if (magstripe1->bytes >= 79) {
@@ -661,7 +663,7 @@ Upstream candidate.
        return 0;
      }
    }
-@@ -10020,16 +10020,16 @@ pd->privdata.magicard.mag1[magstripe1->b
+@@ -11024,16 +11024,16 @@ pd->privdata.magicard.mag1[magstripe1->b
      for (i = 0 ; i < magstripe1->bytes ; i++) {
        if (pd->privdata.magicard.mag1[i] < 0x20 ||
  	  pd->privdata.magicard.mag1[i] > 0x5f) {
@@ -681,7 +683,7 @@ Upstream candidate.
        return 0;
      }
    }
-@@ -10040,16 +10040,16 @@ pd->privdata.magicard.mag2[magstripe2->b
+@@ -11044,16 +11044,16 @@ pd->privdata.magicard.mag2[magstripe2->b
      for (i = 0 ; i < magstripe2->bytes ; i++) {
        if (pd->privdata.magicard.mag2[i] < 0x30 ||
  	  pd->privdata.magicard.mag2[i] > 0x3f) {
@@ -701,7 +703,7 @@ Upstream candidate.
        return 0;
      }
    }
-@@ -10060,16 +10060,16 @@ pd->privdata.magicard.mag3[magstripe3->b
+@@ -11064,16 +11064,16 @@ pd->privdata.magicard.mag3[magstripe3->b
      for (i = 0 ; i < magstripe3->bytes ; i++) {
        if (pd->privdata.magicard.mag3[i] < 0x30 ||
  	  pd->privdata.magicard.mag3[i] > 0x3f) {
@@ -721,7 +723,7 @@ Upstream candidate.
        return 0;
      }
    }
-@@ -12576,7 +12576,7 @@ dyesub_privdata_t *pd;
+@@ -13712,7 +13712,7 @@ dyesub_privdata_t *pd;
  
    if (!stp_verify(v))
      {
@@ -732,7 +734,7 @@ Upstream candidate.
  
 --- a/src/main/print-escp2.c
 +++ b/src/main/print-escp2.c
-@@ -4536,7 +4536,7 @@ }
+@@ -4540,7 +4540,7 @@ }
  
    if (!stp_verify(v))
      {
@@ -743,7 +745,7 @@ Upstream candidate.
  
 --- a/src/main/print-raw.c
 +++ b/src/main/print-raw.c
-@@ -240,14 +240,14 @@ stp_image_init(image);
+@@ -244,14 +244,14 @@ stp_image_init(image);
  
    if (!stp_verify(nv))
      {
@@ -762,7 +764,7 @@ Upstream candidate.
        return 0;
 --- a/src/main/printers.c
 +++ b/src/main/printers.c
-@@ -845,7 +845,7 @@
+@@ -846,7 +846,7 @@ stp_get_page_height(v) > height ||
  	  stp_get_page_width(v) <= min_width || stp_get_page_width(v) > width)
  	{
  	  answer = 0;
@@ -771,7 +773,7 @@ Upstream candidate.
  	}
        stp_dprintf(STP_DBG_PAPER, v,
  		  "page size max %f %f min %f %f actual %f %f\n",
-@@ -880,13 +880,13 @@
+@@ -881,13 +881,13 @@ }
    if (stp_get_height(v) <= -epsilon)
      {
        answer = 0;

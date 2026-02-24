@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -30,17 +30,17 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		gutenprint
-COMPONENT_VERSION=	5.3.4
-COMPONENT_SNAPSHOT=	2024-06-25T13-20-6665bfaa
-IPS_COMPONENT_VERSION=	5.3.4.2
+COMPONENT_VERSION=	5.3.6
+COMPONENT_SNAPSHOT=	2026-02-16T02-19-a019bf9c
+IPS_COMPONENT_VERSION=	5.3.6.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-$(COMPONENT_SNAPSHOT)
 COMPONENT_PROJECT_URL=	http://gimp-print.sourceforge.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH=	sha256:1ad94d160962744e868f9500e95d5af34725a1f457d47bb3d874fefe1e578574
+COMPONENT_ARCHIVE_HASH=	sha256:33d8bc45cb6fe53e57b8094212d6b47c6c137c88d6209a66df71278a0e823c7b
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/gimp-print/files/snapshots/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1285
 
-COMPONENT_BAID=	 	175809
+COMPONENT_BAID=	 	371477
 
 # Disable unit tests of gutenprint since they run extremely long (about a day).
 $(SKIP_TEST_AT_TOP_LEVEL)
