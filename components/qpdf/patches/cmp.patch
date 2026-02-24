@@ -1,0 +1,67 @@
+Consequence of signed char on Solaris. std::cmp_less and std::cmp_greater are
+forbidden in C++20.
+
+[ 72%] Building CXX object libtests/CMakeFiles/objects.dir/objects.cc.o                                                
+...
+In file included from /builds/mrehak/qpdf/components/qpdf/qpdf-12.3.2/libqpdf/qpdf/QPDFObjectHandle_private.hh:11,
+                 from /builds/mrehak/qpdf/components/qpdf/qpdf-12.3.2/libtests/objects.cc:10:
+/usr/gcc/15/include/c++/15.2.0/utility: In instantiation of 'constexpr bool std::cmp_less(_Tp, _Up) [with _Tp = long long int; _Up = char]':
+/builds/mrehak/qpdf/components/qpdf/qpdf-12.3.2/libqpdf/qpdf/QPDFObjectHandle_private.hh:344:30:   required from 'qpdf::Integer::operator T() const [with T = char]'
+  344 |             if (std::cmp_less(v, std::numeric_limits<T>::min())) {
+      |                 ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/builds/mrehak/qpdf/components/qpdf/qpdf-12.3.2/libtests/objects.cc:66:40:   required from here
+   66 |         [[maybe_unused]] int8_t q1_8 = Integer(q1);
+      |                                        ^~~~~~~~~~~
+/usr/gcc/15/include/c++/15.2.0/utility:157:49: error: static assertion failed
+  157 |       static_assert(__is_standard_integer<_Up>::value);
+      |                                                 ^~~~~
+/usr/gcc/15/include/c++/15.2.0/utility:157:49: note: 'std::integral_constant<bool, false>::value' evaluates to false
+...
+/usr/gcc/15/include/c++/15.2.0/utility: In instantiation of 'constexpr bool std::cmp_less(_Tp, _Up) [with _Tp = char; _Up = long long int]':
+/usr/gcc/15/include/c++/15.2.0/utility:170:27:   required from 'constexpr bool std::cmp_greater(_Tp, _Up) [with _Tp = long long int; _Up = char]'
+  170 |     { return std::cmp_less(__u, __t); }
+      |              ~~~~~~~~~~~~~^~~~~~~~~~
+/builds/mrehak/qpdf/components/qpdf/qpdf-12.3.2/libqpdf/qpdf/QPDFObjectHandle_private.hh:341:33:   required from 'qpdf::Integer::operator T() const [with T = char]'
+  341 |             if (std::cmp_greater(v, std::numeric_limits<T>::max())) {
+      |                 ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/builds/mrehak/qpdf/components/qpdf/qpdf-12.3.2/libtests/objects.cc:66:40:   required from here
+   66 |         [[maybe_unused]] int8_t q1_8 = Integer(q1);
+      |                                        ^~~~~~~~~~~
+/usr/gcc/15/include/c++/15.2.0/utility:156:49: error: static assertion failed
+  156 |       static_assert(__is_standard_integer<_Tp>::value);
+      |                                                 ^~~~~
+/usr/gcc/15/include/c++/15.2.0/utility:156:49: note: 'std::integral_constant<bool, false>::value' evaluates to false
+
+--- a/libqpdf/qpdf/QPDFObjectHandle_private.hh
++++ b/libqpdf/qpdf/QPDFObjectHandle_private.hh
+@@ -338,13 +338,23 @@ namespace qpdf
+         {
+             auto v = value();
+ 
+-            if (std::cmp_greater(v, std::numeric_limits<T>::max())) {
+-                throw std::overflow_error("Integer conversion overflow");
+-            }
+-            if (std::cmp_less(v, std::numeric_limits<T>::min())) {
+-                throw std::underflow_error("Integer conversion underflow");
+-            }
+-            return static_cast<T>(v);
++	    if constexpr (std::is_signed_v<T>) {
++		    if (v > static_cast<decltype(v)>(std::numeric_limits<T>::max())) {
++			    throw std::overflow_error("Integer conversion overflow");
++		    }
++		    if (v < static_cast<decltype(v)>(std::numeric_limits<T>::min())) {
++			    throw std::underflow_error("Integer conversion underflow");
++		    }
++	    } else {
++		    if (v < 0) {
++			    throw std::underflow_error("Integer conversion underflow");
++		    }
++		    using UV = std::make_unsigned_t<decltype(v)>;
++		    if (static_cast<UV>(v) > static_cast<UV>(std::numeric_limits<T>::max())) {
++			    throw std::overflow_error("Integer conversion overflow");
++		    }
++	    }
++	    return static_cast<T>(v);
+         }
+ 
+         // Return the integer value. If the object is not a valid integer, throw a

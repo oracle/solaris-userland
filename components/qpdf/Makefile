@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64_and_32
 COMPILER =		gcc
@@ -28,9 +28,9 @@ CTF_MODE =		off	# C++
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qpdf
-COMPONENT_VERSION=	12.1.0
-COMPONENT_BAID=		327937
-COMPONENT_ARCHIVE_HASH=	sha256:f1c2d3a26e67ce1b84b2a5165aeb2a1de79e51eeb782b46fcddff87069d7ea1e
+COMPONENT_VERSION=	12.3.2
+COMPONENT_BAID=		375181
+COMPONENT_ARCHIVE_HASH=	sha256:11ac1800f0d7334863fa1fce6a8b87b105897610bb6a25b9b883ba3f9f1aa4d7
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_URL=	https://github.com/qpdf/qpdf/archive/refs/tags/$(COMPONENT_ARCHIVE)
@@ -49,9 +49,10 @@ COMPONENT_TEST_ENV += LC_ALL=C
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/tests passed.*tests failed out of/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 # see TESTING
-test-complete: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-complete-$(BITS).master
+test-complete: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-complete-$(MACH).master
 test-complete: test
 
 REQUIRED_PACKAGES += image/library/libjpeg
