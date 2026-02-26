@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -32,46 +32,54 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		pycairo
-COMPONENT_VERSION=	1.26.0
+COMPONENT_VERSION=	1.29.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2dddd0a874fbddb21e14acd9b955881ee1dc6e63b9c549a192d613a907f9cbeb
-COMPONENT_ARCHIVE_URL=	$(call pypi_url)
+    sha256:f3f7fde97325cae80224c09f12564ef58d0d0f655da0e3b040f5807bd5bd3142
+COMPONENT_ARCHIVE_URL=	pypi:///pycairo==$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	http://cairographics.org/pycairo/
 COMPONENT_BUGDB=	python-mod/pycairo
 COMPONENT_ANITYA_ID=	13166
-COMPONENT_BAID=		161754
+COMPONENT_BAID=		371849
 
-include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
-include $(WS_MAKE_RULES)/ips.mk
+BUILD_STYLE=		meson
+CONSOLIDATION=		python
 
-# Disable tests since cairo fails to import.
-$(SKIP_TEST_AT_TOP_LEVEL)
+# replicated from $(WS_MAKE_RULES)/python-common.mk
+CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
+$(BUILD_DIR)/%-3.11/.configured:	PYTHON_VERSION=3.11
+$(BUILD_DIR)/%-3.13/.configured:	PYTHON_VERSION=3.13
 
-# Required to setup the prefix path to generate valid *.pc files.
-COMPONENT_INSTALL_ARGS+= --prefix $(PYTHON_VENDOR_PACKAGES)
+BUILD_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
+$(BUILD_DIR)/%-3.11/.built:		PYTHON_VERSION=3.11
+$(BUILD_DIR)/%-3.13/.built:		PYTHON_VERSION=3.13
 
-# Build testing related binary files
-COMPONENT_PRE_TEST_ACTION = (\
-	cd $(SOURCE_DIR) ; $(ENV) HOME=$(BUILD_DIR)/config-$* $(COMPONENT_BUILD_ENV) \
-	$(PYTHON) ./setup.py $(COMPONENT_SETUP_ARGS) build_tests)
+INSTALL_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
+$(BUILD_DIR)/%-3.11/.installed:		PYTHON_VERSION=3.11
+$(BUILD_DIR)/%-3.13/.installed:		PYTHON_VERSION=3.13
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested)
+$(BUILD_DIR)/%-3.11/.tested:		PYTHON_VERSION=3.11
+$(BUILD_DIR)/%-3.13/.tested:		PYTHON_VERSION=3.13
 
-# common targets
-build:		$(BUILD_64)
+include $(WS_MAKE_RULES)/common.mk
 
-install:	$(INSTALL_64)
+CONFIGURE_OPTIONS += -Dpython=$(PYTHON)
+CONFIGURE_OPTIONS += -Dtests=true
 
-test:		$(TEST_64)
+# Required to setup the prefix path to generate valid *.pc file.
+CONFIGURE_OPTIONS += --prefix $(PYTHON_VENDOR_PACKAGES)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+# The .pc file needs to be moved to respective vendor-packages directory.
+COMPONENT_POST_INSTALL_ACTION += \
+	$(MKDIR) $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/lib/pkgconfig; \
+	$(MV) $(PROTOPKGCONFIGDIR64)/py3cairo.pc \
+	$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/lib/pkgconfig/py3cairo.pc
 
 REQUIRED_PACKAGES += library/desktop/cairo
+REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += runtime/python-313
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/pytest
