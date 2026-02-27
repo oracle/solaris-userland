@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -48,11 +48,9 @@ include $(WS_MAKE_RULES)/common.mk
 studio_C99MODE=$(studio_C99_ENABLE)
 
 # Needed due to patch to automake-related files.
-# Remove the perl substitution when the patched gettext will get to CBE (bug 30997231).
 COMPONENT_PREP_ACTION += ( \
 	cd $(@D); \
 	autoreconf -fiv; \
-	perl -i -pe 's/\@MSGMERGE_FOR_MSGFMT_OPTION\@//' po/Makefile.in.in; \
 );
 
 CONFIGURE_ENV += CFLAGS="$(CFLAGS)"

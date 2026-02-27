@@ -1,0 +1,31 @@
+From d58329d238a555581b5b20818720711a89346d6b Mon Sep 17 00:00:00 2001
+From: Daiki Ueno <ueno@gnu.org>
+Date: Tue, 3 Feb 2026 13:30:32 +0900
+Subject: [PATCH] configure.ac: hide m4_ifdef from autopoint
+
+The recent version of autopoint warns about multiple invocation of
+AM_GNU_GETTEXT_REQUIRE_VERSION, without evaluating m4_ifdef. This
+obfuscates the first occurrence with a quote to work around that.
+
+Suggested by Bruno Haible.
+
+Signed-off-by: Daiki Ueno <ueno@gnu.org>
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 4650d541fa..15ddd53c24 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -409,7 +409,7 @@ GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
+ 
+ AM_GNU_GETTEXT([external])
+ AM_GNU_GETTEXT_VERSION([0.19])
+-m4_ifdef([AM_GNU_GETTEXT_REQUIRE_VERSION],[
++m4_ifdef([AM_GNU_GET][TEXT_REQUIRE_VERSION],[
+ AM_GNU_GETTEXT_REQUIRE_VERSION([0.19])
+ ])
+ 
+-- 
+GitLab
