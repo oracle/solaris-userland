@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -29,16 +29,16 @@ include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=		vim
 COMPONENT_VERSION=	9.1
 # Remove any leading zeros in IPS_COMPONENT_VERSION
-IPS_COMPONENT_VERSION=	9.1.1591
+IPS_COMPONENT_VERSION=	9.1.2148
 COMPONENT_FULL_VERSION=$(shell echo $(IPS_COMPONENT_VERSION) | awk -F. '{printf("%d.%d.%04d\n", $$1, $$2, $$3)}')
 COMPONENT_SRC=	vim-$(COMPONENT_FULL_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_URL=	https://github.com/vim/vim/archive/v$(COMPONENT_FULL_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:f373b926cee2be62a46bb2cea37c32cadedd0bd00f917d3a0d0ec31ac9ab8d50
+COMPONENT_ARCHIVE_HASH=	sha256:bcc8edf5902a53865d4effdcc6549019278063363f0feb7b8076e8292937fbfa
 COMPONENT_PROJECT_URL=	http://www.vim.org/
 COMPONENT_ANITYA_ID=	5092
 
-COMPONENT_BAID=		339142
+COMPONENT_BAID=		376692
 
 PKG_MACROS +=	VIMVER=vim$(subst .,,$(COMPONENT_VERSION))
 
