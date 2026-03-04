@@ -176,32 +176,18 @@ OS_VERSION ?=		$(OS_SUB_VERS_MINOR).$(OS_SUB_VERS_MICRO)
 # Define limiting variables. These allow you to write single makefile or p5m
 # manifest which can be used on multiple solaris releases even though their
 # contents differs
-ifeq ($(OS_VERSION),11.5)
-SOLARIS_11_3_ONLY =\#
-SOLARIS_11_4_ONLY =\#
-SOLARIS_11_5_ONLY =
-SOLARIS_11_3_4_ONLY =\#
-SOLARIS_11_4_5_ONLY =
-endif
-
 ifeq ($(OS_VERSION),11.4)
 SOLARIS_11_3_ONLY =\#
 SOLARIS_11_4_ONLY =
-SOLARIS_11_5_ONLY =\#
-SOLARIS_11_3_4_ONLY =
-SOLARIS_11_4_5_ONLY =
 endif
 
 ifeq ($(OS_VERSION),11.3)
 SOLARIS_11_3_ONLY =
 SOLARIS_11_4_ONLY =\#
-SOLARIS_11_5_ONLY =\#
-SOLARIS_11_3_4_ONLY =
-SOLARIS_11_4_5_ONLY =\#
 endif
 
-ifeq ($(strip $(SOLARIS_11_3_ONLY)$(SOLARIS_11_4_ONLY)$(SOLARIS_11_5_ONLY)),)
-$(error Unknown OS version "$(OS_VERSION)"; set OS_VERSION to "11.3" or "11.4" or "11.5")
+ifeq ($(strip $(SOLARIS_11_3_ONLY)$(SOLARIS_11_4_ONLY)),)
+$(error Unknown OS version "$(OS_VERSION)"; set OS_VERSION to "11.3" or "11.4")
 endif
 
 include $(WS_MAKE_RULES)/ips-buildinfo.mk
