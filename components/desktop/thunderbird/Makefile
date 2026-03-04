@@ -37,12 +37,12 @@ LD_SHARED_OPTIONS_Z_DEFS=
 ESR = esr
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	140.7.0
-COMPONENT_BAID =	365211
+COMPONENT_VERSION =	140.8.0
+COMPONENT_BAID =	377436
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:97a9be86fae8881d3aa0f899dfa864b51723596cdeb6a09b3ecc2a0e81f45c18
+    sha256:b18f42db8aa35c1ef4b6eeb01771d0ec47ceca053bbb7a04aac7afc5f294b2e8
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -59,7 +59,7 @@ COMPONENT_ANITYA_ID =	4967
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:3e2e9900240656acca1bad9333338b99d001e83c8202e3ef18b8e6e398961131
+    sha256:e8fec218f68a66674edcb2092645bc83a2326173bb08f8a286613ea2630f9c3c
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
@@ -152,6 +152,12 @@ LD_B_DIRECT=
 
 # SPARC build seems to require more open files for "Reticulating splines" phase
 ENV := ulimit -n 16384; $(ENV)
+
+# Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=2019922
+COMPONENT_PRE_CONFIGURE_ACTION += (find $(SOURCE_DIR)/comm/third_party/rust -name '.cargo-checksum.json' | while read f; do grep gitmodules $$f >> /dev/null && gsed -i 's/"tests\/\.gitmodules":"[^"]*",\?//g' $$f; done);
+COMPONENT_PRE_CONFIGURE_ACTION += (find $(SOURCE_DIR)/comm/third_party/rust -name '.cargo-checksum.json' | while read f; do grep gitmodules $$f >> /dev/null && gsed -i 's/"\.gitmodules":"[^"]*",\?//g' $$f; done);
+COMPONENT_PRE_CONFIGURE_ACTION += (find $(SOURCE_DIR)/comm/third_party/rust -name '.cargo-checksum.json' | while read f; do grep gitattributes $$f >> /dev/null && gsed -i 's/"\.gitattributes":"[^"]*",\?//g' $$f; done);
+COMPONENT_PRE_CONFIGURE_ACTION += (find $(SOURCE_DIR)/comm/third_party/rust -name '.cargo-checksum.json' | while read f; do grep gitattributes $$f >> /dev/null && gsed -i 's/"tests\/\.gitattributes":"[^"]*",\?//g' $$f; done);
 
 # UL works better with configure script (instead mach script)
 COMPONENT_PRE_CONFIGURE_ACTION += $(CP) $(SOURCE_DIR)/configure.in $(SOURCE_DIR)/configure ;
