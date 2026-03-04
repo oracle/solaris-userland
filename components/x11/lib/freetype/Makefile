@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -29,15 +29,15 @@ COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freetype
-COMPONENT_VERSION=	2.14.1
+COMPONENT_VERSION=	2.14.2
 COMPONENT_PROJECT_URL=	https://www.freetype.org/
 COMPONENT_ARCHIVE_URL=	https://download.savannah.gnu.org/releases/freetype/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:32427e8c471ac095853212a37aef816c60b42052d4d9e48230bab3bdf2936ccc
+	sha256:4b62dcab4c920a1a860369933221814362e699e26f55792516d671e6ff55b5e1
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        x11/font
 COMPONENT_ANITYA_ID=	854
-COMPONENT_BAID=		345966
+COMPONENT_BAID=		377933
 
 BUILD_STYLE=            meson
 
@@ -45,7 +45,7 @@ TEST_TARGET = $(NO_TESTS)
 
 # Set here so we only have to update this one line, instead of multiple lines
 # in the *.p5m file on every new version
-FREETYPE_SOVERSION =	6.20.4
+FREETYPE_SOVERSION =	6.20.5
 PKG_VARS += FREETYPE_SOVERSION
 
 include $(WS_MAKE_RULES)/x11-component.mk
