@@ -23,14 +23,14 @@
  */
 
 /*
- * Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+ * Copyright (c) 2016, 2026, Oracle and/or its affiliates.
  */
 
 #include "includes.h"
 
 #if defined(GSSAPI) && defined(WITH_OPENSSL)
 
-#include <signal.h>     /* for sig_atomic_t in kex.h */
+#include <signal.h>	/* for sig_atomic_t in kex.h */
 #include <string.h>
 #include <stdarg.h>	/* for va_list in xmalloc.h */
 
@@ -49,7 +49,7 @@
 #include "dh.h"
 #include "ssh-gss.h"
 #include "monitor_wrap.h"
-#include "misc.h"      /* servconf.h needs misc.h for struct ForwardOptions */
+#include "misc.h"	/* servconf.h needs misc.h for struct ForwardOptions */
 #include "servconf.h"
 #include "ssh-gss.h"
 #include "digest.h"
@@ -71,7 +71,8 @@ kexgss_server(struct ssh *ssh)
 	 */
 
 	OM_uint32 ret_flags = 0;
-	gss_buffer_desc gssbuf, recv_tok, msg_tok;
+	gss_buffer_desc gssbuf, msg_tok;
+	gss_buffer_desc recv_tok = GSS_C_EMPTY_BUFFER;
 	gss_buffer_desc send_tok = GSS_C_EMPTY_BUFFER;
 	Gssctxt *ctxt = NULL;
 	struct sshbuf *shared_secret = NULL;
@@ -115,7 +116,7 @@ kexgss_server(struct ssh *ssh)
 				fatal("Received KEXGSS_INIT after"
 				    " initialising");
 			if ((r = ssh_gssapi_sshpkt_get_buffer_desc(ssh,
-			        &recv_tok)) != 0 ||
+				&recv_tok)) != 0 ||
 			    (r = sshpkt_getb_froms(ssh, &client_pubkey)) != 0 ||
 			    (r = sshpkt_get_end(ssh)) != 0)
 				fatal("sshpkt failed: %s", ssh_err(r));
@@ -147,12 +148,12 @@ kexgss_server(struct ssh *ssh)
 			break;
 		case SSH2_MSG_KEXGSS_CONTINUE:
 			if ((r = ssh_gssapi_sshpkt_get_buffer_desc(ssh,
-			        &recv_tok)) != 0 ||
+				&recv_tok)) != 0 ||
 			    (r = sshpkt_get_end(ssh)) != 0)
 				fatal("sshpkt failed: %s", ssh_err(r));
 			break;
 		default:
-			sshpkt_disconnect(ssh,
+			ssh_packet_disconnect(ssh,
 			    "Protocol error: didn't expect packet type %d",
 			    type);
 		}
@@ -171,9 +172,9 @@ kexgss_server(struct ssh *ssh)
 		if (maj_status & GSS_S_CONTINUE_NEEDED) {
 			debug("Sending GSSAPI_CONTINUE");
 			if ((r = sshpkt_start(ssh,
-			        SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
+				SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
 			    (r = sshpkt_put_string(ssh, send_tok.value,
-			        send_tok.length)) != 0 ||
+				send_tok.length)) != 0 ||
 			    (r = sshpkt_send(ssh)) != 0)
 				fatal("sshpkt failed: %s", ssh_err(r));
 			gss_release_buffer(&min_status, &send_tok);
@@ -183,9 +184,9 @@ kexgss_server(struct ssh *ssh)
 	if (GSS_ERROR(maj_status)) {
 		if (send_tok.length > 0) {
 			if ((r = sshpkt_start(ssh,
-			        SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
+				SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
 			    (r = sshpkt_put_string(ssh, send_tok.value,
-			        send_tok.length)) != 0 ||
+				send_tok.length)) != 0 ||
 			    (r = sshpkt_send(ssh)) != 0)
 				fatal("sshpkt failed: %s", ssh_err(r));
 		}
@@ -226,7 +227,7 @@ kexgss_server(struct ssh *ssh)
 	if (send_tok.length != 0) {
 		if ((r = sshpkt_put_u8(ssh, 1)) != 0 || /* true */
 		    (r = sshpkt_put_string(ssh, send_tok.value,
-		        send_tok.length)) != 0)
+			send_tok.length)) != 0)
 			fatal("sshpkt failed: %s", ssh_err(r));
 	} else {
 		if ((r = sshpkt_put_u8(ssh, 0)) != 0) /* false */
@@ -273,7 +274,8 @@ kexgssgex_server(struct ssh *ssh)
 	 */
 
 	OM_uint32 ret_flags = 0;
-	gss_buffer_desc gssbuf, recv_tok, msg_tok;
+	gss_buffer_desc gssbuf, msg_tok;
+	gss_buffer_desc recv_tok = GSS_C_EMPTY_BUFFER;
 	gss_buffer_desc send_tok = GSS_C_EMPTY_BUFFER;
 	Gssctxt *ctxt = NULL;
 	struct sshbuf *shared_secret = NULL;
@@ -302,7 +304,7 @@ kexgssgex_server(struct ssh *ssh)
 	debug2("%s: Identifying %s", __func__, kex->name);
 	oid = ssh_gssapi_id_kex(NULL, kex->name, kex->kex_type);
 	if (oid == GSS_C_NO_OID)
-	   fatal("Unknown gssapi mechanism");
+	    fatal("Unknown gssapi mechanism");
 
 	debug2("%s: Acquiring credentials", __func__);
 
@@ -333,7 +335,7 @@ kexgssgex_server(struct ssh *ssh)
 		    min, nbits, max);
 	kex->dh = mm_choose_dh(min, nbits, max);
 	if (kex->dh == NULL) {
-		sshpkt_disconnect(ssh, "Protocol error: no matching"
+		ssh_packet_disconnect(ssh, "Protocol error: no matching"
 		    " group found");
 		fatal("Protocol error: no matching group found");
 	}
@@ -361,9 +363,9 @@ kexgssgex_server(struct ssh *ssh)
 				fatal("Received KEXGSS_INIT after"
 				    " initialising");
 			if ((r = ssh_gssapi_sshpkt_get_buffer_desc(ssh,
-			        &recv_tok)) != 0 ||
+				&recv_tok)) != 0 ||
 			    (r = sshpkt_get_bignum2(ssh,
-			        &dh_client_pub)) != 0 ||
+				&dh_client_pub)) != 0 ||
 			    (r = sshpkt_get_end(ssh)) != 0)
 				fatal("sshpkt failed: %s", ssh_err(r));
 
@@ -371,12 +373,12 @@ kexgssgex_server(struct ssh *ssh)
 			break;
 		case SSH2_MSG_KEXGSS_CONTINUE:
 			if ((r = ssh_gssapi_sshpkt_get_buffer_desc(ssh,
-			        &recv_tok)) != 0 ||
+				&recv_tok)) != 0 ||
 			    (r = sshpkt_get_end(ssh)) != 0)
 				fatal("sshpkt failed: %s", ssh_err(r));
 			break;
 		default:
-			sshpkt_disconnect(ssh,
+			ssh_packet_disconnect(ssh,
 			    "Protocol error: didn't expect packet type %d",
 			    type);
 		}
@@ -395,9 +397,9 @@ kexgssgex_server(struct ssh *ssh)
 		if (maj_status & GSS_S_CONTINUE_NEEDED) {
 			debug("Sending GSSAPI_CONTINUE");
 			if ((r = sshpkt_start(ssh,
-			        SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
+				SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
 			    (r = sshpkt_put_string(ssh, send_tok.value,
-			        send_tok.length)) != 0 ||
+				send_tok.length)) != 0 ||
 			    (r = sshpkt_send(ssh)) != 0)
 				fatal("sshpkt failed: %s", ssh_err(r));
 			gss_release_buffer(&min_status, &send_tok);
@@ -407,9 +409,9 @@ kexgssgex_server(struct ssh *ssh)
 	if (GSS_ERROR(maj_status)) {
 		if (send_tok.length > 0) {
 			if ((r = sshpkt_start(ssh,
-			        SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
+				SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
 			    (r = sshpkt_put_string(ssh, send_tok.value,
-			        send_tok.length)) != 0 ||
+				send_tok.length)) != 0 ||
 			    (r = sshpkt_send(ssh)) != 0)
 				fatal("sshpkt failed: %s", ssh_err(r));
 		}
@@ -462,7 +464,7 @@ kexgssgex_server(struct ssh *ssh)
 	if (send_tok.length != 0) {
 		if ((r = sshpkt_put_u8(ssh, 1)) != 0 || /* true */
 		    (r = sshpkt_put_string(ssh, send_tok.value,
-		        send_tok.length)) != 0)
+			send_tok.length)) != 0)
 			fatal("sshpkt failed: %s", ssh_err(r));
 	} else {
 		if ((r = sshpkt_put_u8(ssh, 0)) != 0) /* false */

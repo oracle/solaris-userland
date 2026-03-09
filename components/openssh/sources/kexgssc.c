@@ -23,7 +23,7 @@
  */
 
 /*
- * Copyright (c) 2004, 2024, Oracle and/or its affiliates.
+ * Copyright (c) 2004, 2026, Oracle and/or its affiliates.
  */
 
 #include "includes.h"
@@ -34,7 +34,7 @@
 #include <openssl/bn.h>
 #include <openssl/dh.h>
 
-#include <signal.h>     /* for sig_atomic_t in kex.h */
+#include <signal.h>	/* for sig_atomic_t in kex.h */
 #include <string.h>
 #include <stdarg.h>	/* for va_list in xmalloc.h */
 
@@ -119,9 +119,9 @@ kexgss_client(struct ssh *ssh)
 			/* XXX Useles code: Missing send? */
 			if (send_tok.length != 0) {
 				if ((r = sshpkt_start(ssh,
-				        SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
+					SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
 				    (r = sshpkt_put_string(ssh, send_tok.value,
-				        send_tok.length)) != 0)
+					send_tok.length)) != 0)
 					fatal("sshpkt failed: %s", ssh_err(r));
 			}
 			fatal("gss_init_context failed");
@@ -148,19 +148,19 @@ kexgss_client(struct ssh *ssh)
 		if (send_tok.length != 0) {
 			if (first) {
 				if ((r = sshpkt_start(ssh,
-				        SSH2_MSG_KEXGSS_INIT)) != 0 ||
+					SSH2_MSG_KEXGSS_INIT)) != 0 ||
 				    (r = sshpkt_put_string(ssh, send_tok.value,
-				        send_tok.length)) != 0 ||
+					send_tok.length)) != 0 ||
 				    (r = sshpkt_put_stringb(ssh,
-				        kex->client_pub)) != 0)
+					kex->client_pub)) != 0)
 					fatal("failed to construct packet: %s",
 					    ssh_err(r));
 				first = 0;
 			} else {
 				if ((r = sshpkt_start(ssh,
-				        SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
+					SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
 				    (r = sshpkt_put_string(ssh, send_tok.value,
-				        send_tok.length)) != 0)
+					send_tok.length)) != 0)
 					fatal("failed to construct packet: %s",
 					    ssh_err(r));
 			}
@@ -177,7 +177,7 @@ kexgss_client(struct ssh *ssh)
 						fatal("Server host key received"
 						    " more than once");
 					if ((r = sshpkt_getb_froms(ssh,
-					        &server_host_key_blob)) != 0)
+						&server_host_key_blob)) != 0)
 						fatal("Failed to read server "
 						    "host key: %s", ssh_err(r));
 				}
@@ -190,7 +190,7 @@ kexgss_client(struct ssh *ssh)
 					fatal("GSSAPI Continue received from"
 					    " server when complete");
 				if ((r = ssh_gssapi_sshpkt_get_buffer_desc(ssh,
-				        &recv_tok)) != 0 ||
+					&recv_tok)) != 0 ||
 				    (r = sshpkt_get_end(ssh)) != 0)
 					fatal("Failed to read token: %s",
 					    ssh_err(r));
@@ -198,11 +198,11 @@ kexgss_client(struct ssh *ssh)
 			case SSH2_MSG_KEXGSS_COMPLETE:
 				debug("Received GSSAPI_COMPLETE");
 				if (msg_tok.value != NULL)
-				        fatal("Received GSSAPI_COMPLETE twice");
+					fatal("Received GSSAPI_COMPLETE twice");
 				if ((r = sshpkt_getb_froms(ssh,
-				        &server_blob)) != 0 ||
+					&server_blob)) != 0 ||
 				    (r = ssh_gssapi_sshpkt_get_buffer_desc(ssh,
-				        &msg_tok)) != 0)
+					&msg_tok)) != 0)
 					fatal("Failed to read message: %s",
 					    ssh_err(r));
 
@@ -212,18 +212,18 @@ kexgss_client(struct ssh *ssh)
 				if (c) {
 					if ((r =
 					    ssh_gssapi_sshpkt_get_buffer_desc(
-					        ssh, &recv_tok)) != 0)
+						ssh, &recv_tok)) != 0)
 						fatal("Failed to read token:"
 						    " %s", ssh_err(r));
 					/* If we're already complete - error */
 					if (maj_status == GSS_S_COMPLETE)
-						sshpkt_disconnect(ssh,
+						ssh_packet_disconnect(ssh,
 						    "Protocol error: received"
 						    " token when complete");
 				} else {
 					/* No token included */
 					if (maj_status != GSS_S_COMPLETE)
-						sshpkt_disconnect(ssh,
+						ssh_packet_disconnect(ssh,
 						    "Protocol error: did not"
 						    " receive final token");
 				}
@@ -234,19 +234,20 @@ kexgss_client(struct ssh *ssh)
 			case SSH2_MSG_KEXGSS_ERROR:
 				debug("Received Error");
 				if ((r = sshpkt_get_u32(ssh,
-				        &maj_status)) != 0 ||
+					&maj_status)) != 0 ||
 				    (r = sshpkt_get_u32(ssh,
-				        &min_status)) != 0 ||
+					&min_status)) != 0 ||
 				    (r = sshpkt_get_string(ssh, &msg,
-				        NULL)) != 0 ||
+					NULL)) != 0 ||
 				    (r = sshpkt_get_string(ssh, NULL,
-				        NULL)) != 0 || /* lang tag */
+					NULL)) != 0 || /* lang tag */
 				    (r = sshpkt_get_end(ssh)) != 0)
 					fatal("sshpkt_get failed: %s",
 					    ssh_err(r));
 				fatal("GSSAPI Error: \n%.400s", msg);
 			default:
-				sshpkt_disconnect(ssh, "Protocol error: didn't"
+				ssh_packet_disconnect(ssh,
+				    "Protocol error: didn't"
 				    " expect packet type %d", type);
 			}
 			token_ptr = &recv_tok;
@@ -283,7 +284,7 @@ kexgss_client(struct ssh *ssh)
 		if (sshbuf_len(server_blob) != 65)
 			fatal("The received NIST-P256 key did not match"
 			    " expected length (expected 65, got %zu)",
-			     sshbuf_len(server_blob));
+			    sshbuf_len(server_blob));
 
 		if (sshbuf_ptr(server_blob)[0] != POINT_CONVERSION_UNCOMPRESSED)
 			fatal("The received NIST-P256 key does not have first"
@@ -317,7 +318,7 @@ kexgss_client(struct ssh *ssh)
 
 	/* Verify that the hash matches the MIC we just got. */
 	if (GSS_ERROR(ssh_gssapi_checkmic(ctxt, &gssbuf, &msg_tok)))
-		sshpkt_disconnect(ssh, "Hash's MIC didn't verify");
+		ssh_packet_disconnect(ssh, "Hash's MIC didn't verify");
 
 	gss_release_buffer(&min_status, &msg_tok);
 
@@ -350,7 +351,7 @@ kexgssgex_client(struct ssh *ssh)
 	struct kex *kex = ssh->kex;
 	gss_buffer_desc send_tok = GSS_C_EMPTY_BUFFER,
 	    recv_tok = GSS_C_EMPTY_BUFFER, gssbuf,
-            msg_tok = GSS_C_EMPTY_BUFFER, *token_ptr;
+	    msg_tok = GSS_C_EMPTY_BUFFER, *token_ptr;
 	Gssctxt *ctxt;
 	OM_uint32 maj_status, min_status, ret_flags;
 	struct sshbuf *shared_secret = NULL;
@@ -432,9 +433,9 @@ kexgssgex_client(struct ssh *ssh)
 			/* XXX Useles code: Missing send? */
 			if (send_tok.length != 0) {
 				if ((r = sshpkt_start(ssh,
-				        SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
+					SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
 				    (r = sshpkt_put_string(ssh, send_tok.value,
-				        send_tok.length)) != 0)
+					send_tok.length)) != 0)
 					fatal("sshpkt failed: %s", ssh_err(r));
 			}
 			fatal("gss_init_context failed");
@@ -461,17 +462,17 @@ kexgssgex_client(struct ssh *ssh)
 		if (send_tok.length != 0) {
 			if (first) {
 				if ((r = sshpkt_start(ssh,
-				        SSH2_MSG_KEXGSS_INIT)) != 0 ||
+					SSH2_MSG_KEXGSS_INIT)) != 0 ||
 				    (r = sshpkt_put_string(ssh, send_tok.value,
-				        send_tok.length)) != 0 ||
+					send_tok.length)) != 0 ||
 				    (r = sshpkt_put_bignum2(ssh, pub_key)) != 0)
 					fatal("sshpkt failed: %s", ssh_err(r));
 				first = 0;
 			} else {
 				if ((r = sshpkt_start(ssh,
-				        SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
+					SSH2_MSG_KEXGSS_CONTINUE)) != 0 ||
 				    (r = sshpkt_put_string(ssh,send_tok.value,
-				        send_tok.length)) != 0)
+					send_tok.length)) != 0)
 					fatal("sshpkt failed: %s", ssh_err(r));
 			}
 			if ((r = sshpkt_send(ssh)) != 0)
@@ -487,7 +488,7 @@ kexgssgex_client(struct ssh *ssh)
 						fatal("Server host key received"
 						   " more than once");
 					if ((r = sshpkt_getb_froms(ssh,
-					        &server_host_key_blob)) != 0)
+						&server_host_key_blob)) != 0)
 						fatal("sshpkt failed: %s",
 						    ssh_err(r));
 				}
@@ -500,18 +501,18 @@ kexgssgex_client(struct ssh *ssh)
 					fatal("GSSAPI Continue received from"
 					    " server when complete");
 				if ((r = ssh_gssapi_sshpkt_get_buffer_desc(ssh,
-				        &recv_tok)) != 0 ||
+					&recv_tok)) != 0 ||
 				    (r = sshpkt_get_end(ssh)) != 0)
 					fatal("sshpkt failed: %s", ssh_err(r));
 				break;
 			case SSH2_MSG_KEXGSS_COMPLETE:
 				debug("Received GSSAPI_COMPLETE");
 				if (msg_tok.value != NULL)
-				        fatal("Received GSSAPI_COMPLETE twice");
+					fatal("Received GSSAPI_COMPLETE twice");
 				if ((r = sshpkt_getb_froms(ssh,
-				        &server_blob)) != 0 ||
+					&server_blob)) != 0 ||
 				    (r = ssh_gssapi_sshpkt_get_buffer_desc(ssh,
-				        &msg_tok)) != 0)
+					&msg_tok)) != 0)
 					fatal("sshpkt failed: %s", ssh_err(r));
 
 				/* Is there a token included? */
@@ -520,19 +521,19 @@ kexgssgex_client(struct ssh *ssh)
 				if (c) {
 					if ((r =
 					    ssh_gssapi_sshpkt_get_buffer_desc(
-					        ssh, &recv_tok)) != 0 ||
+						ssh, &recv_tok)) != 0 ||
 					    (r = sshpkt_get_end(ssh)) != 0)
 						fatal("sshpkt failed: %s",
 						    ssh_err(r));
 					/* If we're already complete - error */
 					if (maj_status == GSS_S_COMPLETE)
-						sshpkt_disconnect(ssh,
+						ssh_packet_disconnect(ssh,
 						    "Protocol error: received"
 						    " token when complete");
 				} else {
 					/* No token included */
 					if (maj_status != GSS_S_COMPLETE)
-						sshpkt_disconnect(ssh,
+						ssh_packet_disconnect(ssh,
 						    "Protocol error: did not"
 						    " receive final token");
 				}
@@ -540,18 +541,19 @@ kexgssgex_client(struct ssh *ssh)
 			case SSH2_MSG_KEXGSS_ERROR:
 				debug("Received Error");
 				if ((r = sshpkt_get_u32(ssh,
-				        &maj_status)) != 0 ||
+					&maj_status)) != 0 ||
 				    (r = sshpkt_get_u32(ssh,
-				        &min_status)) != 0 ||
+					&min_status)) != 0 ||
 				    (r = sshpkt_get_string(ssh, &msg,
-				        NULL)) != 0 ||
+					NULL)) != 0 ||
 				    (r = sshpkt_get_string(ssh, NULL,
-				        NULL)) != 0 || /* lang tag */
+					NULL)) != 0 || /* lang tag */
 				    (r = sshpkt_get_end(ssh)) != 0)
 					fatal("sshpkt failed: %s", ssh_err(r));
 				fatal("GSSAPI Error: \n%.400s", msg);
 			default:
-				sshpkt_disconnect(ssh, "Protocol error: didn't"
+				ssh_packet_disconnect(ssh,
+				    "Protocol error: didn't"
 				    " expect packet type %d", type);
 			}
 			token_ptr = &recv_tok;
@@ -596,7 +598,7 @@ kexgssgex_client(struct ssh *ssh)
 	    kex->my,
 	    kex->peer,
 	    (server_host_key_blob ? server_host_key_blob : empty),
- 	    kex->min, kex->nbits, kex->max,
+	    kex->min, kex->nbits, kex->max,
 	    dh_p, dh_g,
 	    pub_key,
 	    dh_server_pub,
@@ -609,7 +611,7 @@ kexgssgex_client(struct ssh *ssh)
 
 	/* Verify that the hash matches the MIC we just got. */
 	if (GSS_ERROR(ssh_gssapi_checkmic(ctxt, &gssbuf, &msg_tok)))
-		sshpkt_disconnect(ssh, "Hash's MIC didn't verify");
+		ssh_packet_disconnect(ssh, "Hash's MIC didn't verify");
 
 	gss_release_buffer(&min_status, &msg_tok);
 
