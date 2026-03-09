@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64
 COMPILER =		gcc
@@ -28,15 +28,16 @@ CTF_MODE =		off	#C++
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		re2c
-COMPONENT_VERSION=	4.2
+COMPONENT_VERSION=	4.4
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_PROJECT_URL=	http://re2c.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c9dc2b24f340d135a07a1ac63ff53f7f8f74997fed5a4e9132a64050dbc3da1f
+    sha256:6b6b865924447ef992d5db4e52fb9307e5f65f26edd43efa91395da810f4280a
 COMPONENT_ARCHIVE_URL=	https://github.com/skvadrik/$(COMPONENT_NAME)/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	7664
+COMPONENT_BUGDB=	utility/re2c
 
-COMPONENT_BAID =	332416
+COMPONENT_BAID =	377834
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
 
