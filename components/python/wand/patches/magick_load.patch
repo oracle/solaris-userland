@@ -3,9 +3,9 @@ This is a Solaris specific patch to make 64bit only ImageMagick libraries load.
 It leverages the second undocumented argument on find_library() on sunos5
 platform. Find the definition in Lib/ctypes/util.py.
 
---- a/wand/api.py
-+++ b/wand/api.py
-@@ -116,8 +116,8 @@
+--- wand-0.7.0/wand/api.py
++++ wand-0.7.0/wand/api.py
+@@ -111,8 +111,8 @@ def library_paths():
              libmagick = ctypes.util.find_library('libMagickCore' + suffix)
              yield libwand, libmagick
          else:

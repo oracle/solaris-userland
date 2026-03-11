@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		Wand
-COMPONENT_VERSION=	0.6.13
+COMPONENT_NAME=		wand
+COMPONENT_VERSION=	0.7.0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:f5013484eaf7a20eb22d1821aaefe60b50cc329722372b5f8565d46d4aaafcca
+    sha256:b7225b88f81f2a922d64e405a774a54ae6a14dd240ee7a70f845c144d4f6d0d9
 COMPONENT_PROJECT_URL=	https://github.com/emcconville/wand
 COMPONENT_BUGDB=	python-mod/wand
 COMPONENT_ANITYA_ID=	9335
-COMPONENT_BAID=		178171
+COMPONENT_BAID=		380613
 
 # We need just a version pspdfutils is delivered with
 PYTHON_VERSIONS=	3.13
