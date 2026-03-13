@@ -1,0 +1,42 @@
+#
+# Support two connext subcodes: CLRSSONSTACK SETUJMPBUF
+# These are internal and we do not checking now.
+#
+--- old/coregrind/m_syswrap/syswrap-solaris.c	2025-10-24 20:43:21.000000000 +0200
++++ new/coregrind/m_syswrap/syswrap-solaris.c	2026-03-13 13:01:02.235620645 +0100
+@@ -4982,6 +4982,18 @@ PRE(sys_getsetcontext)
+          SET_STATUS_Success(0);
+       }
+       break;
++#ifdef VKI_CLRSSONSTACK
++   case VKI_CLRSSONSTACK:
++      /* Libc: int clrssonstack(void); */
++      SET_STATUS_Success(0);
++      break;
++#endif
++#ifdef VKI_SETUJMPBUF
++   case VKI_SETUJMPBUF:
++      /* Libc: int setujmpbuf(void *buf, void *func); */
++      SET_STATUS_Success(0);
++      break;
++#endif
+    default:
+       VG_(unimplemented)("Syswrap of the context call with flag %ld.", SARG1);
+       /*NOTREACHED*/
+--- old/include/vki/vki-solaris.h	2025-10-24 20:43:21.000000000 +0200
++++ new/include/vki/vki-solaris.h	2026-03-13 12:57:42.360390470 +0100
+@@ -1527,6 +1527,14 @@ struct sysv_ucontext {
+ #define VKI_SETCONTEXT SETCONTEXT
+ #define VKI_GETUSTACK GETUSTACK
+ #define VKI_SETUSTACK SETUSTACK
++#ifdef CLRSSONSTACK
++/* New in Oracle Solaris 11.4 SRU 30 */
++#define VKI_CLRSSONSTACK CLRSSONSTACK
++#endif
++#ifdef SETUJMPBUF
++/* New in Oracle Solaris 11.4 SRU 81 */
++#define VKI_SETUJMPBUF SETUJMPBUF
++#endif
+ 
+ #define VKI_UC_SIGMASK UC_SIGMASK
+ #define VKI_UC_STACK UC_STACK
