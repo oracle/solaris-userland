@@ -1,0 +1,42 @@
+PycURL must be prevented from running progress callback during
+Python runtime finalization.
+
+See upstream issue:
+https://github.com/pycurl/pycurl/issues/748
+
+--- pycurl-7.45.7/src/easycb.c
++++ pycurl-7.45.7/src/easycb.c
+@@ -681,6 +681,16 @@ progress_callback(void *stream,
+     int ret = 1;       /* assume error */
+     PYCURL_DECLARE_THREAD_STATE;
+ 
++#if PY_MINOR_VERSION >= 13
++    if (Py_IsFinalizing()) {
++#else
++    if (_Py_IsFinalizing()) {
++#endif
++        /* cURL can invoke callbacks during the runtime finalization;
++           those must be ignored. */
++        return 0;
++    }
++
+     /* acquire thread */
+     self = (CurlObject *)stream;
+     if (!PYCURL_ACQUIRE_THREAD()) {
+@@ -736,6 +746,16 @@ xferinfo_callback(void *stream,
+     int ret = 1;       /* assume error */
+     PYCURL_DECLARE_THREAD_STATE;
+ 
++#if PY_MINOR_VERSION >= 13
++    if (Py_IsFinalizing()) {
++#else
++    if (_Py_IsFinalizing()) {
++#endif
++        /* cURL can invoke callbacks during the runtime finalization;
++           those must be ignored. */
++        return 0;
++    }
++
+     /* acquire thread */
+     self = (CurlObject *)stream;
+     if (!PYCURL_ACQUIRE_THREAD()) {
