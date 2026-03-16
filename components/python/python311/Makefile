@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64
 COMPILER =		gcc
@@ -32,16 +32,16 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME        = Python
-COMPONENT_VERSION     = 3.11.14
+COMPONENT_VERSION     = 3.11.15
 COMPONENT_PROJECT_URL = https://python.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:8d3ed8ec5c88c1c95f5e558612a725450d2452813ddad5e58fdb1a53b1209b78
+    sha256:272179ddd9a2e41a0fc8e42e33dfbdca0b3711aa5abf372d3f2d51543d09b625
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)ftp/python/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB       = utility/python
 COMPONENT_ANITYA_ID   = 300958
-COMPONENT_BAID        = 351929
+COMPONENT_BAID        = 379668
 
 CONSOLIDATION = python
 

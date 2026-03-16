@@ -32,16 +32,16 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME        = Python
-COMPONENT_VERSION     = 3.13.9
+COMPONENT_VERSION     = 3.13.12
 COMPONENT_PROJECT_URL = https://python.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ed5ef34cda36cfa2f3a340f07cac7e7814f91c7f3c411f6d3562323a866c5c66
+    sha256:2a84cd31dd8d8ea8aaff75de66fc1b4b0127dd5799aa50a64ae9a313885b4593
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)ftp/python/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB       = utility/python
 COMPONENT_ANITYA_ID   = 374808
-COMPONENT_BAID        = 351928
+COMPONENT_BAID        = 379679
 
 CONSOLIDATION = python
 
@@ -192,7 +192,7 @@ COMPONENT_TEST_ENV = PATH="$(PATH)"
 # tests and tests that download additional resources.
 # The network tests contain many expected failures when run behind a firewall.
 # The "-v" ensures verbose mode.
-COMPONENT_TEST_ENV += EXTRATESTOPTS="-v -uall,-network,-urlfetch $(TESTOPTS_PYTHON_TEST)"
+COMPONENT_TEST_ENV += EXTRATESTOPTS="-v -uall,-network,-urlfetch --timeout=3600 $(TESTOPTS_PYTHON_TEST)"
 # Prevent the tests from getting stuck waiting for input.
 COMPONENT_TEST_TARGETS = test < /dev/null
 
