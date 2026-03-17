@@ -26,14 +26,14 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pypdf
-COMPONENT_VERSION=	6.7.5
+COMPONENT_VERSION=	6.9.0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:8e8d56235c89194da6e62e1f008e37249d71829b1756de44ca5b6615247a4ffd
+    sha256:a59257869fc575ba2ccc10100a36be0a47cd1bc1fb00f2950abf1d219fa94c01
 COMPONENT_PROJECT_URL=	https://github.com/py-pdf/pypdf
 COMPONENT_BUGDB=	python-mod/pypdf
 COMPONENT_ANITYA_ID=	7703
-COMPONENT_BAID=		377447
+COMPONENT_BAID=		381610
 
 # We need just a version pspdfutils is delivered with
 PYTHON_VERSIONS= 3.13
