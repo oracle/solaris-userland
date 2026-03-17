@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bandit
-COMPONENT_VERSION=	1.7.10
+COMPONENT_VERSION=	1.9.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:59ed5caf5d92b6ada4bf65bc6437feea4a9da1093384445fed4d472acc6cff7b
+    sha256:b589e5de2afe70bd4d53fa0c1da6199f4085af666fde00e8a034f152a52cd628
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://bandit.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	utility/bandit
 COMPONENT_ANITYA_ID=	7319
-COMPONENT_BAID=		184970
+COMPONENT_BAID=		376438
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -57,7 +57,12 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 COMPONENT_POST_INSTALL_ACTION = \
 	(cd $(PROTO_DIR)/usr/bin ; \
 	$(MV) -f bandit bandit-$(PYTHON_VERSION); \
-	$(MV) -f bandit-config-generator bandit-config-generator-$(PYTHON_VERSION))
+	$(MV) -f bandit-config-generator bandit-config-generator-$(PYTHON_VERSION));
+
+COMPONENT_POST_INSTALL_ACTION += \
+	($(MKDIR) $(PROTO_DIR)/usr/share/man/man1; \
+	$(CP) $(SOURCE_DIR)/doc/build/man/bandit.1 \
+	      $(PROTO_DIR)/usr/share/man/man1/bandit.1);
 
 # common targets
 build:		$(BUILD_NO_ARCH)

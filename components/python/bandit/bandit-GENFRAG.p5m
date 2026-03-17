@@ -17,20 +17,11 @@
 # information: Portions Copyright [yyyy] [name of copyright owner]
 #
 # CDDL HEADER END
-#
 
 #
-# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
+# Copyright (c) 2026, Oracle and/or its affiliates.
 #
 
-<include ../generate/common.transform>
-
-# don't deliver bandit-baseline executable. It depends on GitPython
-# module, which is not available on Solaris.
-<transform file path=usr/bin/bandit-baseline -> drop>
-
-# man page is delivered via the meta manifest
-<transform file path=.*/man/man1/bandit.1 -> drop>
-
-# we use python3 mediator instead of python
-<transform link mediator=python -> edit mediator python python3>
+<transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
+file path=usr/share/man/man1/bandit.1
+license bandit.license license="Apache v2.0"
