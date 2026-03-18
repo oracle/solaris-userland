@@ -16,11 +16,9 @@ Subject: [PATCH 2/3] gdevadmp-][ rev B: expose legacy driver suite through new
  8 files changed, 478 insertions(+), 26 deletions(-)
  create mode 100644 contrib/gdevadmpl.c
 
-diff --git a/configure.ac b/configure.ac
-index ddd0e76c16..1860a17c84 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -2829,7 +2829,7 @@ if test "x$driversfile" != x; then
+@@ -2848,7 +2848,7 @@ # Add drivers from file...
          drivers="`tr '\n' ',' <$driversfile`"
  fi
  
@@ -29,11 +27,9 @@ index ddd0e76c16..1860a17c84 100644
     APPLE_DEVICES_REQUESTED="yes"
  fi
  
-diff --git a/contrib/contrib.mak b/contrib/contrib.mak
-index 38b1dbe759..3fd62a10e8 100644
 --- a/contrib/contrib.mak
 +++ b/contrib/contrib.mak
-@@ -60,13 +60,17 @@ CONTDEV=$(AK) $(ECHOGS_XE) $(GDEVH)
+@@ -60,13 +60,17 @@ #	escpage  Epson ESC/Page driver for Gho
  #	fmpr	 Fujitsu FMPR (japanese)
  #	fmlbp	 Fujitsu FMLBP2xx Page Printer (japanese)
  #	gdevadmp suite (Apple dot matrix)
@@ -58,7 +54,7 @@ index 38b1dbe759..3fd62a10e8 100644
  #	gdi	 Samsung's old driver for their SmartGDI laser printers:
  #		 ML-4500, ML-2xx, ML-1xxx, ML-5080, ML-6040, ... and
  #		 Lexmark E210, same as "samsunggdi"
-@@ -158,22 +162,35 @@ CONTDEV=$(AK) $(ECHOGS_XE) $(GDEVH)
+@@ -158,22 +162,35 @@ ### http://press.jmoyer.nodomain.net/gde
  ###                                                                       ###
  
  appledmp_=$(DEVOBJ)gdevadmp.$(OBJ)
@@ -94,7 +90,7 @@ index 38b1dbe759..3fd62a10e8 100644
  $(DD)iwlow.dev : $(appledmp_) $(DD)page.dev $(CONTDEV) $(CONTRIB_MAK) $(MAKEDIRS)
  	$(SETPDEV) $(DD)iwlow $(appledmp_)
  
-@@ -183,6 +200,9 @@ $(DD)iwlq.dev : $(appledmp_) $(DD)page.dev $(CONTDEV) $(CONTRIB_MAK) $(MAKEDIRS)
+@@ -183,6 +200,9 @@ $(SETPDEV) $(DD)iwlq $(appledmp_)
  $(DD)iwlqc.dev : $(appledmp_) $(DD)page.dev $(CONTDEV) $(CONTRIB_MAK) $(MAKEDIRS)
  	$(SETPDEV) $(DD)iwlqc $(appledmp_)
  
@@ -104,11 +100,9 @@ index 38b1dbe759..3fd62a10e8 100644
  
  ### ----------------- The BJC-210/240/250/250ex/265/1000 ---------------- ###
  
-diff --git a/contrib/gdevadmp.c b/contrib/gdevadmp.c
-index df9e56bec4..435edaba20 100644
 --- a/contrib/gdevadmp.c
 +++ b/contrib/gdevadmp.c
-@@ -26,12 +26,16 @@
+@@ -26,12 +26,16 @@ * section of the ghostscript documentati
   *
   * The devices:
   *      appledmp:  120dpi x  72dpi - Dot Matrix Printer / C. Itoh 8510
@@ -125,7 +119,7 @@ index df9e56bec4..435edaba20 100644
   *
   * Thanks for support and inspiration to the folks on the ghostscript
   * developers list, including at least (in no particular order):
-@@ -66,12 +70,16 @@
+@@ -66,12 +70,16 @@ *   management.
   * + Improved comments and printer command macros in source.
   * + Other minor and miscellaneous changes.
   *
@@ -144,10 +138,7 @@ index df9e56bec4..435edaba20 100644
   * Known issues include:
   * + Rarely, some input files produce blank output unexpectedly.  I only ever
   *   saw it once in the course of many varied test prints, so probably an
-diff --git a/contrib/gdevadmpl.c b/contrib/gdevadmpl.c
-new file mode 100644
-index 0000000000..fdf3216734
---- /dev/null
+--- a/contrib/gdevadmpl.c
 +++ b/contrib/gdevadmpl.c
 @@ -0,0 +1,410 @@
 +/* Copyright (C) 2001-2023 Artifex Software, Inc.
@@ -560,11 +551,9 @@ index 0000000000..fdf3216734
 +        gs_free(pdev->memory, (char *)buf1, in_size, 1, "dmp_print_page(buf1)");
 +        return 0;
 +}
-diff --git a/doc/src/Devices.rst b/doc/src/Devices.rst
-index f9b4247d13..eabb2f3bac 100644
 --- a/doc/src/Devices.rst
 +++ b/doc/src/Devices.rst
-@@ -1147,17 +1147,23 @@ Credits for this documentation section and the associated driver(s) are at the t
+@@ -1147,17 +1147,23 @@ Credits for this documentation section a
  
  The Apple Dot Matrix Printer (DMP) was the parallel predecessor to the serial ImageWriters.  ImageWriter commands are a superset of the Dot Matrix Printer's, so the driver suite supports all of Apple's dot-matrix printers.  (And, in theory, the C. Itoh 8510 on which they were originally based.)  Each printer supports all the resolutions of its predecessors.  Additionally, the driver could possibly even be adapted to support the Scribe, Apple's CMY/K thermal transfer printer with the same command set.
  
@@ -599,11 +588,9 @@ index f9b4247d13..eabb2f3bac 100644
  
  The driver sets the printer for bidirectional (by default) or unidirectional (``-dUNIDIRECTIONAL``) printing and may vary the characters per inch (cpi) and line-height.  When finished, the driver sets the printer to bidirectional printing, 1/6-inch line feeds, and an elite character pitch (as suggested by Apple's documentation.)
  
-diff --git a/psi/msvc.mak b/psi/msvc.mak
-index 40b1b8ac73..fe559e0bb8 100644
 --- a/psi/msvc.mak
 +++ b/psi/msvc.mak
-@@ -1096,7 +1096,7 @@ DEVICE_DEVS19=$(DD)lbp8.dev $(DD)m8510.dev $(DD)necp6.dev $(DD)bjc600.dev $(DD)b
+@@ -1083,7 +1083,7 @@ DEVICE_DEVS19=$(DD)lbp8.dev $(DD)m8510.d
  DEVICE_DEVS20=$(DD)pnm.dev $(DD)pnmraw.dev $(DD)ppm.dev $(DD)ppmraw.dev $(DD)pamcmyk32.dev $(DD)pamcmyk4.dev $(DD)pnmcmyk.dev $(DD)pam.dev
  DEVICE_DEVS21=$(DD)spotcmyk.dev $(DD)devicen.dev $(DD)bmpsep1.dev $(DD)bmpsep8.dev $(DD)bmp16m.dev $(DD)bmp32b.dev $(DD)psdcmyk.dev $(DD)psdrgb.dev $(DD)psdcmyk16.dev $(DD)psdrgb16.dev $(DD)psdrgbtags.dev $(DD)psdcmyktags.dev $(DD)psdcmyktags16.dev $(DD)psdrgbtags16.dev
  !endif
@@ -612,6 +599,3 @@ index 40b1b8ac73..fe559e0bb8 100644
  
  !if "$(WITH_CONTRIB)" == "1"
  DEVICE_DEVS16=$(DEVICE_DEVS16) $(CONTRIB_DEVS)
--- 
-2.52.0.windows.1
-
