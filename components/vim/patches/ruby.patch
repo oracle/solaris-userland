@@ -3,9 +3,9 @@ https://github.com/vim/vim/issues/17906
 Make configure accept ruby linking arguments even if we link ruby
 via --enable-rubyinterp=dynamic.
 
---- vim-9.1.1591/src/auto/configure
-+++ vim-9.1.1591/src/auto/configure
-@@ -8602,10 +8602,6 @@ printf "%s\n" "$rubyhdrdir" >&6; }
+--- vim-9.2.0140/src/auto/configure
++++ vim-9.2.0140/src/auto/configure
+@@ -8601,10 +8601,6 @@ librubyarg="-lruby"
  	  RUBY_LIBS="$RUBY_LIBS -L$rubylibdir"
  	fi
  
@@ -16,7 +16,7 @@ via --enable-rubyinterp=dynamic.
  
  	RUBY_SRC="if_ruby.c"
  	RUBY_OBJ="objects/if_ruby.o"
-@@ -8622,6 +8618,11 @@ printf "%s\n" "$rubyhdrdir" >&6; }
+@@ -8620,6 +8616,11 @@ printf "%s\n" "#define DYNAMIC_RUBY 1" >
  	  RUBY_CFLAGS="-DDYNAMIC_RUBY_DLL=\\\"$libruby_soname\\\" $RUBY_CFLAGS"
  	  RUBY_LIBS=
  	fi
