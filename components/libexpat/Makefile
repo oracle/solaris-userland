@@ -27,17 +27,17 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libexpat
-COMPONENT_VERSION=	2.7.4
+COMPONENT_VERSION=	2.7.5
 COMPONENT_PROJECT_URL=	https://libexpat.github.io/
 COMPONENT_SRC_NAME=	expat
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e6af11b01e32e5ef64906a5cca8809eabc4beb7ff2f9a0e6aabbd42e825135d0
+    sha256:386a423d40580f1e392e8b512b7635cac5083fe0631961e74e036b0a7a830d77
 COMPONENT_ARCHIVE_URL= \
     http://downloads.sourceforge.net/project/expat/expat/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libexpat
 COMPONENT_ANITYA_ID=	770
-COMPONENT_BAID=		369102
+COMPONENT_BAID=		381864
 
 include $(WS_MAKE_RULES)/common.mk
 
