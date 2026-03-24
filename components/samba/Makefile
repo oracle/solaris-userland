@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -67,7 +67,6 @@ COMPONENT_PRE_CONFIGURE_ACTION+= \
 
 PREFIX=			/usr/lib/samba
 CONFIGURE_PREFIX=	$(PREFIX)
-CONFIGURE_DEFAULT_DIRS=	no
 
 PYTHON_VERSION=		3.11
 SAMBA_PROTO_PYDIR=	$(PROTO_DIR)$(PREFIX)/lib/python$(PYTHON_VERSION)

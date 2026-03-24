@@ -1,0 +1,22 @@
+Build time paths get to smb.conf.
+
+Default: dns update command =
+           /builds/11.4-SRU/11.4.76.0.1.182.1/components/samba/build/amd64/source4/scripting/bin/samba_dnsupdate
+
+smb.conf(5) is installed to prototype directory from source generated during
+build time, so get_override() mechanism in dynconfig/wscript will do its job.
+
+Bug 16036 - Build time paths get into smb.conf
+https://bugzilla.samba.org/show_bug.cgi?id=16036
+
+--- a/dynconfig/wscript
++++ b/dynconfig/wscript
+@@ -401,7 +400,7 @@ def get_override(bld):
+                  'LIBEXECDIR'    : 'bin',
+                  'SAMBA_LIBEXECDIR' : 'bin',
+                  'CODEPAGEDIR'   : 'codepages',
+-                 'SCRIPTSBINDIR' : 'source4/scripting/bin',
++                 #'SCRIPTSBINDIR' : 'source4/scripting/bin',
+                  'SETUPDIR'      : 'source4/setup'
+                  }
+     return override
