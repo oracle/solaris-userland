@@ -1,0 +1,54 @@
+https://github.com/traviscross/mtr/pull/567/
+
+commit 4750cc7d1853acbe91f3220182a90f16f458c029
+Author: Petr Sumbera <sumbera@volny.cz>
+Date:   Thu Mar 19 10:34:32 2026 +0100
+
+    packet: skip bind() on Solaris raw ICMPv4 sockets
+    
+    Commit d529dbeefc6d ("Change UDP and ICMP sockets binding to accept a
+    source IP from the -a CLI option") started binding the shared IPv4 raw
+    ICMP send socket in construct_ip4_packet().
+    
+    On Solaris/illumos this breaks default ICMP probes: bind() on that raw
+    socket can fail with EINVAL, and mtr exits with:
+    
+      mtr: mtr-packet reported invalid argument
+    
+    This does not affect TCP or UDP probes, and mtr 0.95 worked because the
+    raw ICMPv4 path did not bind the socket.
+    
+    Keep the pre-0.96 behavior on __sun by skipping bind() for raw ICMPv4
+    sockets. This restores default ICMP probing on Solaris/illumos without
+    changing Linux behavior.
+    
+    Note that -a source address selection is not enforced for raw ICMPv4 on
+    Solaris/illumos, since those platforms cannot reliably use bind() on the
+    shared raw ICMP socket in this code path.
+
+diff --git a/packet/construct_unix.c b/packet/construct_unix.c
+index 67019d3..f86fd52 100644
+--- a/packet/construct_unix.c
++++ b/packet/construct_unix.c
+@@ -725,6 +725,21 @@ int construct_ip4_packet(
+         }
+     }
+ 
++    /*
++       Solaris/illumos raw ICMP sockets are stricter than Linux and can reject
++       bind() on the shared send socket with EINVAL.  Pre-0.96 this raw ICMP
++       path did not bind the socket, so preserve that behavior there.
++
++       This restores default ICMP probing on Solaris/illumos, but the -a local
++       address selection is not enforced for raw ICMP on those platforms.
++     */
++#if defined(__sun)
++    if (net_state->platform.ip4_socket_raw &&
++        param->protocol == IPPROTO_ICMP) {
++        bind_send_socket = false;
++    }
++#endif
++
+     /*  Bind to our local address  */
+     if (bind_send_socket && bind(send_socket, (struct sockaddr *)&probe->local_addr,
+                 sizeof(struct sockaddr_in))) {

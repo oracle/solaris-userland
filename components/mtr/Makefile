@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mtr
-COMPONENT_VERSION=	0.95
+COMPONENT_VERSION=	0.96
 COMPONENT_PROJECT_URL=	http://www.bitwizard.nl/mtr/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:12490fb660ba5fb34df8c06a0f62b4f9cbd11a584fc3f6eceda0a99124e8596f
+    sha256:73e6aef3fb6c8b482acb5b5e2b8fa7794045c4f2420276f035ce76c5beae632d
 COMPONENT_ARCHIVE_URL=	https://github.com/traviscross/mtr/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ANITYA_ID=	2029
 
-COMPONENT_BAID=		142513
+COMPONENT_BAID=		347789
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
