@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		privoxy
-COMPONENT_VERSION=	4.0.0
+COMPONENT_VERSION=	4.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-stable
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tar.gz
 COMPONENT_PROJECT_URL=	https://www.privoxy.org/
-COMPONENT_ARCHIVE_HASH=	sha256:c08e2ba0049307017bf9d8a63dd2a0dfb96aa0cdeb34ae007776e63eba62a26f
+COMPONENT_ARCHIVE_HASH=	sha256:23e4686e5848c74cb680c09c2811f0357739ecfe641f9c4072ee42399092c97b
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/ijbswa/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	3712
-COMPONENT_BAID=		324893
+COMPONENT_BAID=		382181
 
 COMPILER= gcc
 
@@ -50,8 +50,7 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 
 COMPONENT_PREP_ACTION = \
         (cd $(@D) ; \
-            autoheader; \
-            autoconf )
+            autoreconf )
 
 # Needed to installed most of the files into the proto area.
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
