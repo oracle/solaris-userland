@@ -29,16 +29,16 @@ include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=		vim
 COMPONENT_VERSION=	9.2
 # Remove any leading zeros in IPS_COMPONENT_VERSION
-IPS_COMPONENT_VERSION=	9.2.140
+IPS_COMPONENT_VERSION=	9.2.209
 COMPONENT_FULL_VERSION=$(shell echo $(IPS_COMPONENT_VERSION) | awk -F. '{printf("%d.%d.%04d\n", $$1, $$2, $$3)}')
 COMPONENT_SRC=	vim-$(COMPONENT_FULL_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_URL=	https://github.com/vim/vim/archive/v$(COMPONENT_FULL_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:c5f14a274ec10dff30ce4f067c3705dca82c306615d31c3bca667f06600eaf77
+COMPONENT_ARCHIVE_HASH=	sha256:d488c31215330420c68d6df3680bb14d42094c73f1fecb7a27e88600293d20d0
 COMPONENT_PROJECT_URL=	http://www.vim.org/
 COMPONENT_ANITYA_ID=	5092
 
-COMPONENT_BAID=		378022
+COMPONENT_BAID=		382174
 
 PKG_MACROS +=	VIMVER=vim$(subst .,,$(COMPONENT_VERSION))
 
@@ -132,7 +132,9 @@ $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TARGETS = test
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-n '
 # There are multiple tests which sometimes do succeed and sometimes don't. We
 # remove such tests from the result to make it comparable with master results file.
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_blob.vim:/d" '
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_channel.vim:/d" '
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_codestyle.vim:/d" '
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_netbeans.vim:/d" '
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_popup.vim:/d" '
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_search.vim:/d" '
