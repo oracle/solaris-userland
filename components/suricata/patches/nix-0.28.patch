@@ -3,9 +3,18 @@ version.
 
 https://github.com/nix-rust/nix/commit/0f4559386404f58803b27807201b4dd6d1411f50
 
+--- a/rust/Cargo.toml
++++ b/rust/Cargo.toml
+@@ -92,3 +92,6 @@ htp = { package = "suricata-htp", path =
+ 
+ [dev-dependencies]
+ test-case = "~3.3.1"
++
++[patch.crates-io]
++nix = { path = "vendor/nix" }
 --- a/rust/vendor/nix/src/sys/termios.rs
 +++ b/rust/vendor/nix/src/sys/termios.rs
-@@ -418,8 +418,6 @@
+@@ -418,8 +418,6 @@ VEOF,
          VEOL,
          VEOL2,
          VERASE,
@@ -14,7 +23,7 @@ https://github.com/nix-rust/nix/commit/0f4559386404f58803b27807201b4dd6d1411f50
          VINTR,
          VKILL,
          #[cfg(not(target_os = "haiku"))]
-@@ -431,8 +429,6 @@
+@@ -431,8 +429,6 @@ VQUIT,
          #[cfg(not(target_os = "haiku"))]
          VREPRINT,
          VSTART,
@@ -23,12 +32,3 @@ https://github.com/nix-rust/nix/commit/0f4559386404f58803b27807201b4dd6d1411f50
          VSTOP,
          VSUSP,
          #[cfg(target_os = "linux")]
---- a/rust/Cargo.toml
-+++ b/rust/Cargo.toml
-@@ -91,3 +91,6 @@
- 
- [dev-dependencies]
- test-case = "~3.3.1"
-+
-+[patch.crates-io]
-+nix = { path = "vendor/nix" }

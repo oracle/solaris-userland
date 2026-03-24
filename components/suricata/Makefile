@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -30,14 +30,14 @@ CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	suricata
-COMPONENT_VERSION =	8.0.2
+COMPONENT_VERSION =	8.0.4
 COMPONENT_PROJECT_URL =	https://suricata.io/
-COMPONENT_ARCHIVE_HASH = sha256:9d450ca2cadbe101993e99033a62349d2bda9dfd90a6acc1bcb6cc6db76eb551
+COMPONENT_ARCHIVE_HASH = sha256:81cee7bae69848a9751b2ce0867620eefa52b192e79c20b5eac897600b28b191
 COMPONENT_ARCHIVE_URL =	https://www.openinfosecfoundation.org/download/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH_crates = \
-	sha256:70df60d331aad7efeb55d28b6081299814ae12bfa7946c866419b208036abf8c
+	sha256:0736300102198ab7cfd4747e32620b862c39f75890fc143dfba0310fc31095c7
 
-COMPONENT_BAID =	354980
+COMPONENT_BAID =	382164
 
 # Cargo don't have an internet access during non-download gmake targets so we need
 # to vendor dependencies

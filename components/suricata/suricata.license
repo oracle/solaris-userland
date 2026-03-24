@@ -5678,6 +5678,92 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
+hashbrown = "0.16"
+```
+
+Then:
+
+```rust
+use hashbrown::HashMap;
+
+let mut map = HashMap::new();
+map.insert(1, "one");
+```
+
+## Flags
+This crate has the following Cargo features:
+
+- `nightly`: Enables nightly-only features including: `#[may_dangle]`.
+- `serde`: Enables serde serialization support.
+- `rayon`: Enables rayon parallel iterator support.
+- `equivalent`: Allows comparisons to be customized with the `Equivalent` trait. (enabled by default)
+- `raw-entry`: Enables access to the deprecated `RawEntry` API.
+- `inline-more`: Adds inline hints to most functions, improving run-time performance at the cost
+  of compilation time. (enabled by default)
+- `default-hasher`: Compiles with foldhash as default hasher. (enabled by default)
+- `allocator-api2`: Enables support for allocators that support `allocator-api2`. (enabled by default)
+
+## License
+
+Licensed under either of:
+
+ * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or https://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](LICENSE-MIT) or https://opensource.org/licenses/MIT)
+
+at your option.
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any
+additional terms or conditions.
+
+
+## Files:
+rust/vendor/hashbrown-0.15.5/README.md
+
+hashbrown
+=========
+
+[![Build Status](https://github.com/rust-lang/hashbrown/actions/workflows/rust.yml/badge.svg)](https://github.com/rust-lang/hashbrown/actions)
+[![Crates.io](https://img.shields.io/crates/v/hashbrown.svg)](https://crates.io/crates/hashbrown)
+[![Documentation](https://docs.rs/hashbrown/badge.svg)](https://docs.rs/hashbrown)
+[![Rust](https://img.shields.io/badge/rust-1.65.0%2B-blue.svg?maxAge=3600)](https://github.com/rust-lang/hashbrown)
+
+This crate is a Rust port of Google's high-performance [SwissTable] hash
+map, adapted to make it a drop-in replacement for Rust's standard `HashMap`
+and `HashSet` types.
+
+The original C++ version of SwissTable can be found [here], and this
+[CppCon talk] gives an overview of how the algorithm works.
+
+Since Rust 1.36, this is now the `HashMap` implementation for the Rust standard
+library. However you may still want to use this crate instead since it works
+in environments without `std`, such as embedded systems and kernels.
+
+[SwissTable]: https://abseil.io/blog/20180927-swisstables
+[here]: https://github.com/abseil/abseil-cpp/blob/master/absl/container/internal/raw_hash_set.h
+[CppCon talk]: https://www.youtube.com/watch?v=ncHmEUmJZf4
+
+## [Change log](CHANGELOG.md)
+
+## Features
+
+- Drop-in replacement for the standard library `HashMap` and `HashSet` types.
+- Uses [foldhash](https://github.com/orlp/foldhash) as the default hasher, which is much faster than SipHash.
+  However, foldhash does *not provide the same level of HashDoS resistance* as SipHash, so if that is important to you, you might want to consider using a different hasher.
+- Around 2x faster than the previous standard library `HashMap`.
+- Lower memory usage: only 1 byte of overhead per entry instead of 8.
+- Compatible with `#[no_std]` (but requires a global allocator with the `alloc` crate).
+- Empty hash maps do not allocate any memory.
+- SIMD lookups to scan multiple hash entries in parallel.
+
+## Usage
+
+Add this to your `Cargo.toml`:
+
+```toml
+[dependencies]
 hashbrown = "0.15"
 ```
 
@@ -6028,6 +6114,79 @@ See [rust-lang/rust#43321].
 ## License
 
 MIT OR Apache-2.0
+
+
+## Files:
+rust/vendor/humantime/README.md
+
+Human Time
+==========
+
+**Status: stable**
+
+[Documentation](https://docs.rs/humantime) |
+[Github](https://github.com/tailhook/humantime) |
+[Crate](https://crates.io/crates/humantime)
+
+
+Features:
+
+* Parses durations in free form like `15days 2min 2s`
+* Formats durations in similar form `2years 2min 12us`
+* Parses and formats timestamp in `rfc3339` format: `2018-01-01T12:53:00Z`
+* Parses timestamps in a weaker format: `2018-01-01 12:53:00`
+
+Timestamp parsing/formatting is super-fast because format is basically
+fixed.
+
+Here are some micro-benchmarks:
+
+```
+test result: ok. 0 passed; 0 failed; 26 ignored; 0 measured; 0 filtered out
+
+     Running target/release/deps/datetime_format-8facb4ac832d9770
+
+running 2 tests
+test rfc3339_chrono            ... bench:         737 ns/iter (+/- 37)
+test rfc3339_humantime_seconds ... bench:          73 ns/iter (+/- 2)
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 2 measured; 0 filtered out
+
+     Running target/release/deps/datetime_parse-342628f877d7867c
+
+running 6 tests
+test datetime_utc_parse_millis  ... bench:         228 ns/iter (+/- 11)
+test datetime_utc_parse_nanos   ... bench:         236 ns/iter (+/- 10)
+test datetime_utc_parse_seconds ... bench:         204 ns/iter (+/- 18)
+test rfc3339_humantime_millis   ... bench:          28 ns/iter (+/- 1)
+test rfc3339_humantime_nanos    ... bench:          36 ns/iter (+/- 2)
+test rfc3339_humantime_seconds  ... bench:          24 ns/iter (+/- 1)
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 6 measured; 0 filtered out
+```
+
+See [humantime-serde] for serde integration (previous crate [serde-humantime] looks unmaintained).
+
+[serde-humantime]: https://docs.rs/serde-humantime/0.1.1/serde_humantime/
+[humantime-serde]: https://docs.rs/humantime-serde
+
+License
+=======
+
+Licensed under either of
+
+* Apache License, Version 2.0, (./LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
+* MIT license (./LICENSE-MIT or http://opensource.org/licenses/MIT)
+
+at your option.
+
+Contribution
+------------
+
+Unless you explicitly state otherwise, any contribution intentionally
+submitted for inclusion in the work by you, as defined in the Apache-2.0
+license, shall be dual licensed as above, without any additional terms or
+conditions.
 
 
 ## Files:
@@ -6736,7 +6895,6 @@ rust/vendor/lru/README.md
 # LRU Cache
 
 [![Build Badge]][build status]
-[![Codecov Badge]][coverage status]
 [![crates.io Badge]][crates.io package]
 [![docs.rs Badge]][docs.rs documentation]
 [![License Badge]][license]
@@ -6747,7 +6905,7 @@ An implementation of a LRU cache. The cache supports `put`, `get`, `get_mut` and
 all of which are O(1). This crate was heavily influenced by the [LRU Cache implementation in an
 earlier version of Rust's std::collections crate].
 
-The MSRV for this crate is 1.64.0.
+The MSRV for this crate is 1.70.0.
 
 ## Example
 
@@ -6786,8 +6944,6 @@ fn main() {
 
 [build badge]: https://github.com/jeromefroe/lru-rs/actions/workflows/main.yml/badge.svg
 [build status]: https://github.com/jeromefroe/lru-rs/actions/workflows/main.yml
-[codecov badge]: https://codecov.io/gh/jeromefroe/lru-rs/branch/master/graph/badge.svg
-[coverage status]: https://codecov.io/gh/jeromefroe/lru-rs
 [crates.io badge]: https://img.shields.io/crates/v/lru.svg
 [crates.io package]: https://crates.io/crates/lru/
 [documentation]: https://docs.rs/lru/
@@ -15993,7 +16149,7 @@ src/util-strlcpyu.c
 
 Copyright (C) 2011-2012 ANSSI
 Copyright (C) 2014 ANSSI
-Copyright (C) 2022 Open Information Security Foundation
+Copyright (C) 2022-2025 Open Information Security Foundation
 Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
 All rights reserved.
 
@@ -16273,7 +16429,7 @@ src/tests/detect-tls-certs.c
 src/tests/reputation.c
 suricata-update/suricata/update/commands/checkversions.py
 
-Copyright (C) 2019 Open Information Security Foundation
+ Copyright (C) 2019 Open Information Security Foundation
 
 You can copy, redistribute or modify this Program under the terms of
 the GNU General Public License version 2 as published by the Free
@@ -16333,6 +16489,96 @@ src/util-port-interval-tree.c
 src/util-port-interval-tree.h
 
 Copyright (C) 2024 Open Information Security Foundation
+
+You can copy, redistribute or modify this Program under the terms of
+the GNU General Public License version 2 as published by the Free
+Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+version 2 along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.
+
+
+## Files:
+examples/lib/live/main.c
+src/bindgen.h
+src/datasets-context-json.c
+src/decode-sll2.c
+src/decode-sll2.h
+src/detect-dns-name.c
+src/detect-dns-response.c
+src/detect-email.c
+src/detect-email.h
+src/detect-engine-buffer.c
+src/detect-engine-buffer.h
+src/detect-engine-inspect-buffer.c
+src/detect-engine-inspect-buffer.h
+src/detect-entropy.c
+src/detect-ftp-command-data.c
+src/detect-ftp-command-data.h
+src/detect-ftp-command.c
+src/detect-ftp-command.h
+src/detect-ftp-completion-code.c
+src/detect-ftp-completion-code.h
+src/detect-ftp-dynamic-port.c
+src/detect-ftp-dynamic-port.h
+src/detect-ftp-mode.c
+src/detect-ftp-mode.h
+src/detect-ftp-reply-received.c
+src/detect-ftp-reply-received.h
+src/detect-ftp-reply.c
+src/detect-ftp-reply.h
+src/detect-smtp.c
+src/detect-smtp.h
+src/output-eve-bindgen.h
+src/output-json-mdns.c
+src/output-json-mdns.h
+src/util-dpdk-common.c
+src/util-dpdk-common.h
+src/util-dpdk-mlx5.c
+src/util-dpdk-mlx5.h
+src/util-dpdk-rss.c
+src/util-dpdk-rss.h
+src/util-flow-rate.c
+src/util-flow-rate.h
+src/util-lua-base64lib.c
+src/util-lua-base64lib.h
+src/util-lua-builtins.c
+src/util-lua-builtins.h
+src/util-lua-bytevarlib.c
+src/util-lua-bytevarlib.h
+src/util-lua-config.c
+src/util-lua-config.h
+src/util-lua-dataset.c
+src/util-lua-dataset.h
+src/util-lua-filelib.c
+src/util-lua-filelib.h
+src/util-lua-flowintlib.c
+src/util-lua-flowintlib.h
+src/util-lua-flowlib.c
+src/util-lua-flowlib.h
+src/util-lua-flowvarlib.c
+src/util-lua-flowvarlib.h
+src/util-lua-hashlib.c
+src/util-lua-hashlib.h
+src/util-lua-log.c
+src/util-lua-log.h
+src/util-lua-packetlib.c
+src/util-lua-packetlib.h
+src/util-lua-rule.c
+src/util-lua-rule.h
+src/util-lua-util.c
+src/util-lua-util.h
+src/util-mpm-ac-queue.c
+src/util-mpm-ac-queue.h
+
+Copyright (C) 2025 Open Information Security Foundation
 
 You can copy, redistribute or modify this Program under the terms of
 the GNU General Public License version 2 as published by the Free
@@ -16966,15 +17212,6 @@ Kadatch and Jenkins (2010). See doc/crc-doc.1.0.pdf in this distribution.
 
 ## Files:
 rust/vendor/libz-sys/src/zlib-ng/deflate.c
-rust/vendor/libz-sys/src/zlib/deflate.c
-
-deflate.c -- compress data using the deflation algorithm
-Copyright (C) 1995-2024 Jean-loup Gailly and Mark Adler
-For conditions of distribution and use, see copyright notice in zlib.h
-
-
-## Files:
-rust/vendor/libz-sys/src/zlib-ng/deflate.c
 rust/vendor/libz-sys/src/zlib-ng/inftrees.c
 rust/vendor/libz-sys/src/zlib/deflate.c
 rust/vendor/libz-sys/src/zlib/inftrees.c
@@ -16983,6 +17220,15 @@ If you use the zlib library in a product, an acknowledgment is welcome
 in the documentation of your product. If for some reason you cannot
 include such an acknowledgment, I would appreciate that you keep this
 copyright string in the executable of your product.
+
+
+## Files:
+rust/vendor/libz-sys/src/zlib-ng/deflate.c
+rust/vendor/libz-sys/src/zlib/deflate.c
+
+deflate.c -- compress data using the deflation algorithm
+Copyright (C) 1995-2024 Jean-loup Gailly and Mark Adler
+For conditions of distribution and use, see copyright notice in zlib.h
 
 
 ## Files:
@@ -18848,7 +19094,6 @@ src/detect-icmp-seq.c
 src/detect-ipproto.c
 src/detect-lua-extensions.c
 src/detect-lua.h
-src/detect-tls-cert-issuer.c
 src/detect-tls-cert-subject.c
 src/detect-uricontent.c
 src/output-json-dns.c
@@ -19022,7 +19267,6 @@ src/app-layer.c
 src/counters.c
 src/decode-ipv4.c
 src/decode-ipv4.h
-src/decode-ipv6.c
 src/decode-ppp.c
 src/decode-tcp.c
 src/decode.c
@@ -19139,6 +19383,7 @@ src/app-layer-ftp.h
 src/app-layer-parser.c
 src/app-layer-parser.h
 src/app-layer-smtp.c
+src/decode-ipv6.c
 src/detect-app-layer-protocol.c
 src/detect-app-layer-state.c
 src/detect-app-layer-state.h
@@ -19149,11 +19394,12 @@ src/detect-flowbits.h
 src/detect-parse.c
 src/detect-pcre.c
 src/detect-tcp-wscale.c
+src/detect-tls-cert-issuer.c
+src/detect-tls-sni.c
 src/detect.c
 src/detect.h
 src/flow.h
 src/output-json-flow.c
-src/stream-tcp.c
 src/stream-tcp.h
 src/suricata.c
 src/tx-bit.h
@@ -19503,95 +19749,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 
 ## Files:
-src/bindgen.h
-src/datasets-context-json.c
-src/decode-sll2.c
-src/decode-sll2.h
-src/detect-dns-name.c
-src/detect-dns-response.c
-src/detect-email.c
-src/detect-email.h
-src/detect-engine-buffer.c
-src/detect-engine-buffer.h
-src/detect-engine-inspect-buffer.c
-src/detect-engine-inspect-buffer.h
-src/detect-entropy.c
-src/detect-ftp-command-data.c
-src/detect-ftp-command-data.h
-src/detect-ftp-command.c
-src/detect-ftp-command.h
-src/detect-ftp-completion-code.c
-src/detect-ftp-completion-code.h
-src/detect-ftp-dynamic-port.c
-src/detect-ftp-dynamic-port.h
-src/detect-ftp-mode.c
-src/detect-ftp-mode.h
-src/detect-ftp-reply-received.c
-src/detect-ftp-reply-received.h
-src/detect-ftp-reply.c
-src/detect-ftp-reply.h
-src/detect-smtp.c
-src/detect-smtp.h
-src/output-eve-bindgen.h
-src/output-json-mdns.c
-src/output-json-mdns.h
-src/util-dpdk-common.c
-src/util-dpdk-common.h
-src/util-dpdk-mlx5.c
-src/util-dpdk-mlx5.h
-src/util-dpdk-rss.c
-src/util-dpdk-rss.h
-src/util-flow-rate.c
-src/util-flow-rate.h
-src/util-lua-base64lib.c
-src/util-lua-base64lib.h
-src/util-lua-builtins.c
-src/util-lua-builtins.h
-src/util-lua-bytevarlib.c
-src/util-lua-bytevarlib.h
-src/util-lua-config.c
-src/util-lua-config.h
-src/util-lua-dataset.c
-src/util-lua-dataset.h
-src/util-lua-filelib.c
-src/util-lua-filelib.h
-src/util-lua-flowintlib.c
-src/util-lua-flowintlib.h
-src/util-lua-flowlib.c
-src/util-lua-flowlib.h
-src/util-lua-flowvarlib.c
-src/util-lua-flowvarlib.h
-src/util-lua-hashlib.c
-src/util-lua-hashlib.h
-src/util-lua-log.c
-src/util-lua-log.h
-src/util-lua-packetlib.c
-src/util-lua-packetlib.h
-src/util-lua-rule.c
-src/util-lua-rule.h
-src/util-lua-util.c
-src/util-lua-util.h
-src/util-mpm-ac-queue.c
-src/util-mpm-ac-queue.h
-
-Copyright (C) 2025 Open Information Security Foundation
-
-You can copy, redistribute or modify this Program under the terms of
-the GNU General Public License version 2 as published by the Free
-Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-version 2 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
-
-
-## Files:
 src/conf-yaml-loader.c
 src/conf.c
 src/conf.h
@@ -19602,7 +19759,6 @@ src/detect-engine-content-inspection.c
 src/detect-engine-content-inspection.h
 src/detect-filemagic.c
 src/detect-http-server-body.c
-src/detect-tls-sni.c
 src/detect-within.c
 src/flow-spare-pool.c
 src/output-json-drop.c
@@ -20823,8 +20979,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 ## Files:
 src/runmode-af-packet.c
+src/util-device-private.h
+src/util-device.h
 
-Copyright (C) 2011-2024 Open Information Security Foundation
+Copyright (C) 2011-2025 Open Information Security Foundation
 
 You can copy, redistribute or modify this Program under the terms of
 the GNU General Public License version 2 as published by the Free
@@ -20953,6 +21111,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 
 ## Files:
+src/stream-tcp.c
+
+Copyright (C) 2007-2026 Open Information Security Foundation
+
+You can copy, redistribute or modify this Program under the terms of
+the GNU General Public License version 2 as published by the Free
+Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+version 2 along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.
+
+
+## Files:
 src/tests/detect-tls-cert-validity.c
 
 Copyright (C) 2015-2019 Open Information Security Foundation
@@ -21051,27 +21229,6 @@ src/util-coredump-config.h
 * version 2 along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 * 02110-1301, USA.
-
-
-## Files:
-src/util-device-private.h
-src/util-device.h
-
-Copyright (C) 2011-2025 Open Information Security Foundation
-
-You can copy, redistribute or modify this Program under the terms of
-the GNU General Public License version 2 as published by the Free
-Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-version 2 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
 
 
 ## Files:
