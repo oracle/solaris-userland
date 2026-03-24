@@ -312,6 +312,7 @@ libarchive/test/test_read_format_7zip.c
 libarchive/test/test_read_format_7zip_encryption_data.c
 libarchive/test/test_read_format_7zip_encryption_header.c
 libarchive/test/test_read_format_7zip_encryption_partially.c
+libarchive/test/test_read_format_7zip_issue2765.c
 libarchive/test/test_read_format_7zip_malformed.c
 libarchive/test/test_read_format_7zip_packinfo_digests.c
 libarchive/test/test_read_format_cab.c
@@ -353,11 +354,13 @@ libarchive/test/test_read_format_lha.c
 libarchive/test/test_read_format_lha_bugfix_0.c
 libarchive/test/test_read_format_lha_filename.c
 libarchive/test/test_read_format_lha_filename_utf16.c
+libarchive/test/test_read_format_lha_oversize_header.c
 libarchive/test/test_read_format_mtree.c
 libarchive/test/test_read_format_mtree_crash747.c
 libarchive/test/test_read_format_pax_bz2.c
 libarchive/test/test_read_format_rar.c
 libarchive/test/test_read_format_rar5.c
+libarchive/test/test_read_format_rar5_loop_bug.c
 libarchive/test/test_read_format_rar_encryption_data.c
 libarchive/test/test_read_format_rar_encryption_header.c
 libarchive/test/test_read_format_rar_encryption_partially.c
@@ -365,6 +368,7 @@ libarchive/test/test_read_format_rar_filter.c
 libarchive/test/test_read_format_rar_invalid1.c
 libarchive/test/test_read_format_rar_overflow.c
 libarchive/test/test_read_format_tar.c
+libarchive/test/test_read_format_tar_V_negative_size.c
 libarchive/test/test_read_format_tar_concatenated.c
 libarchive/test/test_read_format_tar_empty_filename.c
 libarchive/test/test_read_format_tar_empty_pax.c
@@ -477,7 +481,7 @@ libarchive/test/test_write_open_memory.c
 libarchive/test/test_write_read_format_zip.c
 libarchive/test/test_xattr_platform.c
 libarchive/test/test_zip_filename_encoding.c
-libarchive_fe/err.h
+libarchive_fe/lafe_err.h
 libarchive_fe/lafe_platform.h
 libarchive_fe/line_reader.h
 libarchive_fe/passphrase.h
@@ -566,7 +570,9 @@ Copyright (c) 2023 Martin Matuska
 Copyright (c) 2023-2024 Klara, Inc.
 Copyright (c) 2024 Martin Matuska
 Copyright (c) 2024 Tobias Stoeckmann
+Copyright (c) 2025 Tim Kientzle
 Copyright (c) 2025 Tobias Stoeckmann
+Copyright (c) 2026 Tim Kientzle
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -632,7 +638,7 @@ libarchive/test/test_write_format_mtree_no_separator.c
 libarchive/test/test_write_format_mtree_quoted_filename.c
 libarchive/test/test_write_format_zip_entry_size_unset.c
 libarchive/test/test_write_format_zip_windows_path.c
-libarchive_fe/err.c
+libarchive_fe/lafe_err.c
 libarchive_fe/line_reader.c
 libarchive_fe/passphrase.c
 
@@ -1211,68 +1217,6 @@ You can contact the author at :
 
 
 ## Files:
-build/autoconf/ltmain.sh
-
-Copyright (C) 1996-2019, 2021-2022 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-
-## Files:
-build/autoconf/ltmain.sh
-
-GNU Libtool is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-As a special exception to the GNU General Public License,
-if you distribute this file as part of a program or library that
-is built using GNU Libtool, you may include this file under the
-same distribution terms that you use for the rest of that program.
-
-GNU Libtool is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-## Files:
-build/autoconf/ltmain.sh
-
-This is free software.  There is NO warranty; not even for
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-Copyright (C) 2004-2019, 2021 Bootstrap Authors
-
-This file is dual licensed under the terms of the MIT license
-<https://opensource.org/license/MIT>, and GPL version 2 or later
-<http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
-these licenses when using or redistributing this software or any of
-the files within it.  See the URLs above, or the file `LICENSE`
-included in the Bootstrap distribution for the full license texts.
-
-
-## Files:
-build/autoconf/ltmain.sh
-
-This is free software.  There is NO warranty; not even for
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-Copyright (C) 2010-2019, 2021 Bootstrap Authors
-
-This file is dual licensed under the terms of the MIT license
-<https://opensource.org/license/MIT>, and GPL version 2 or later
-<http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
-these licenses when using or redistributing this software or any of
-the files within it.  See the URLs above, or the file `LICENSE`
-included in the Bootstrap distribution for the full license texts.
-
-
-## Files:
 cat/bsdcat.c
 
 SPDX-License-Identifier: BSD-2-Clause
@@ -1440,6 +1384,24 @@ SPDX-License-Identifier: BSD-2-Clause
 
 Copyright (c) 2003-2017 Tim Kientzle
 All rights reserved.
+
+
+## Files:
+contrib/oss-fuzz/fuzz_helpers.h
+
+Copyright 2024 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 
 ## Files:
@@ -1704,6 +1666,15 @@ libarchive/archive_parse_date.c
 
 
 ## Files:
+libarchive/archive_platform_stat.h
+
+SPDX-License-Identifier: BSD-2-Clause
+
+Copyright (c) 2025 Tobias Stoeckmann
+All rights reserved.
+
+
+## Files:
 libarchive/archive_random.c
 
 Copyright (c) 1996, David Mazieres <dm@uun.org>
@@ -1791,6 +1762,24 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
 ## Files:
+libarchive/archive_write_set_format_iso9660.c
+
+Usage  : copyright-file=<value>
+Type   : string, max 37 bytes
+Default: Not specified
+COMPAT : mkisofs -copyright <value>
+
+Specifies Copyright Filename.
+This file shall be described in the Root Directory
+and containing a copyright statement.
+
+
+## Files:
+libarchive/archive_write_set_format_iso9660.c
+
+Copyright File Identifier
+
+## Files:
 libarchive/test/test_read_format_gtar_redundant_L.c
 
 SPDX-License-Identifier: BSD-2-Clause
@@ -1852,6 +1841,19 @@ All rights reserved.
 
 
 ## Files:
+tar/test/test_crlf_mtree.c
+tar/test/test_option_C_mtree.c
+
+SPDX-License-Identifier: BSD-2-Clause
+
+Copyright (c) 2018 The FreeBSD Foundation
+All rights reserved.
+
+This software was developed by Arshan Khanifar <arshankhanifar@gmail.com>
+under sponsorship from the FreeBSD Foundation.
+
+
+## Files:
 tar/test/test_leading_slash.c
 
 SPDX-License-Identifier: BSD-2-Clause
@@ -1863,21 +1865,9 @@ All rights reserved.
 ## Files:
 tar/test/test_list_item.c
 
-SPDX-License-Identifier: BSD-2-Clause
-Copyright (c) 2024 Tarsnap Backup Inc.
-All rights reserved.
-
-
-## Files:
-tar/test/test_option_C_mtree.c
-
-SPDX-License-Identifier: BSD-2-Clause
-
-Copyright (c) 2018 The FreeBSD Foundation
-All rights reserved.
-
-This software was developed by Arshan Khanifar <arshankhanifar@gmail.com>
-under sponsorship from the FreeBSD Foundation.
+-SPDX-License-Identifier: BSD-2-Clause
+ Copyright (c) 2024 Tarsnap Backup Inc.
+ All rights reserved.
 
 
 ## Files:
@@ -2049,3 +2039,5 @@ SPDX-License-Identifier: BSD-2-Clause
 
 Copyright (c) 2023 Aaron Lindros
 All rights reserved.
+
+
