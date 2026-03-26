@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -26,6 +26,7 @@ set name=pkg.fmri \
 set name=pkg.summary value="jQuery plugin for HTML table sorting"
 set name=pkg.description \
     value="Tablesorter is a jQuery plugin for turning a standard HTML table with THEAD and TBODY tags into a sortable table without page refreshes. Tablesorter can successfully parse and sort many types of data including linked data in a cell."
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="Tablesorter, a jQuery plugin for HTML table sorting"
@@ -33,9 +34,14 @@ set name=info.classification \
     value="org.opensolaris.category.2008:Development/Other Languages"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2021/009
+set name=org.opensolaris.arc-caseid value=PSARC/2021/009 value=PSARC/2026/031
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
+file release-notes/library-javascript-jquery-tablesorter.txt \
+    path=usr/share/doc/release-notes/library-javascript-jquery-tablesorter.txt \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/lib/javascript/jquery-tablesorter/$(COMPONENT_VERSION)/js/extras/jquery.dragtable.mod.min.js
 file path=usr/share/lib/javascript/jquery-tablesorter/$(COMPONENT_VERSION)/js/extras/jquery.metadata.min.js
 file path=usr/share/lib/javascript/jquery-tablesorter/$(COMPONENT_VERSION)/js/extras/jquery.tablesorter.pager.min.js
