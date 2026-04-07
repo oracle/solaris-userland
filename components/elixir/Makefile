@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 # Only executable scripts and bytecode files.
@@ -31,15 +31,15 @@ include ../../make-rules/shared-macros.mk
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 COMPONENT_NAME=		elixir
-COMPONENT_VERSION=	1.12.1
+COMPONENT_VERSION=	1.19.5
 COMPONENT_PROJECT_URL=	https://elixir-lang.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:96167d614b9c483efc54bd7898c3eea4768569a77dd8892ada85d7800d5e3ea4
+    sha256:10750b8bd74b10ac1e25afab6df03e3d86999890fa359b5f02aa81de18a78e36
 COMPONENT_ARCHIVE_URL=	https://github.com/elixir-lang/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID=	673
 
-COMPONENT_BAID=		102960
+COMPONENT_BAID=		370926
 
 BUILD_STYLE= justmake
 
@@ -58,6 +58,11 @@ endif
 GMAKE := $(WS_TOOLS)/repeat_cmd 4 15m $(GMAKE)
 COMPONENT_BUILD_ENV += REPEAT_CMD_CLEANUP="gmake clean"
 
+# Solaris: Erlang VM may hang during Elixir build when running under GNU make
+# with an interactive TTY (jobserver FD inheritance). Force non-interactive
+# Erlang startup to avoid erl_child_setup deadlock.
+COMPONENT_BUILD_ENV += ERL_FLAGS="-noshell -noinput"
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Elixir does not like cloney, so a simple copy is used instead.
@@ -73,18 +78,20 @@ COMPONENT_INSTALL_ENV +=	DESTDIR=$(PROTO_DIR)
 COMPONENT_INSTALL_ENV +=	MANDIR=/usr/share/man
 COMPONENT_INSTALL_ENV +=	PREFIX=$(USRDIR)
 
-COMPONENT_TEST_CMD = /usr/bin/gmake test
+COMPONENT_TEST_TARGETS = test
 COMPONENT_TEST_ENV += LC_ALL=en_US.UTF-8
-# Remove progress dots, make output, all empty lines, and git lines.
-COMPONENT_TEST_TRANSFORMS += '-e "/\.\./d" -e "/^make/d" -e "/^$$/d" -e "/git_repo/d"'
-# Ignore runtime statistics and random seeds used for the elixir testing.
-COMPONENT_TEST_TRANSFORMS += '-e "/^Finished in/d" -e "/^Randomized with seed/d" -e "/^hint:/d" '
-# Ignore the spurious error message (see issue #8183 on elixir github).
-COMPONENT_TEST_TRANSFORMS += '-e "/resides in sticky dir/d" -e "/^gmake/d"'
-# the hint isn't printed when gmake test is run the second time
-COMPONENT_TEST_TRANSFORMS += '-e "/^hint/d"'
-# there's a difference between i386 and sparc
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
+COMPONENT_TEST_TRANSFORMS += '-e "s/\x1B\[[0-9;]*[[:alpha:]]//g"'
+COMPONENT_TEST_TRANSFORMS += '-e "s/with seed: [0-9]\+, //"'
+COMPONENT_TEST_TRANSFORMS += '-e "s/ max_cases: [0-9]\+//"'
+COMPONENT_TEST_TRANSFORMS += '-e "s/^[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\.[0-9][0-9][0-9] //"'
+COMPONENT_TEST_TRANSFORMS += '-e "s|/tmp/mix-local-installer-fetcher-[^/]\+/|/tmp/mix-local-installer-fetcher-XXXX/|g"'
+COMPONENT_TEST_TRANSFORMS += '-e "s/^\.\+//"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^\[notice\] Application parsetools exited: :stopped/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^[[:space:]]*warning: redefining module .* (current version .*)$$/,+5d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^warning: using single-quoted strings to represent charlists is deprecated\.$$/,+4d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^warning: single-quoted string represent charlists\./,+1d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^Finished in/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^$$/d"'
 
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += shell/bash

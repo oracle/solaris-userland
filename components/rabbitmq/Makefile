@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -28,17 +28,17 @@ include ../../make-rules/shared-macros.mk
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 COMPONENT_NAME=		rabbitmq-server
-COMPONENT_VERSION=	3.8.35
+COMPONENT_VERSION=	4.2.4
 COMPONENT_SRC_NAME=	rabbitmq-server
 COMPONENT_PROJECT_URL=	https://www.rabbitmq.com/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_BUGDB=	service/rabbitmq
 COMPONENT_ANITYA_ID=	5585
-COMPONENT_ARCHIVE_HASH= sha256:2af5353a18ad54148d7c265209b715f9cecacb06e78d3acf1ce5a4993d32ebaa
+COMPONENT_ARCHIVE_HASH= sha256:5c806c0f5c66445e267b86f202d883a889e6438cb97712927b3736b59b9aa4b5
 COMPONENT_ARCHIVE_URL= https://github.com/rabbitmq/rabbitmq-server/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
-COMPONENT_BAID=		145962
+COMPONENT_BAID=		370947
 
 BUILD_STYLE= justmake
 
@@ -58,17 +58,12 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 CLONEY := echo
 # Copy the RabbitMQ source code, remove the bundled hex (bytecode),
 # and use the system hex to extract sources of Elixir dependencies.
-COMPONENT_PRE_BUILD_ACTION = (	\
-	cp -rd $(SOURCE_DIR)/. $(@D);	cd $(@D); \
-	gmake deps/.hex/cache.ets; \
-	rm -Rf deps/.mix/; cd deps/rabbitmq_cli/; \
-	env HEX_OFFLINE=1 HOME=../ DEPS_DIR=../ MIX_ENV=prod \
-	LC_ALL=en_US.UTF-8 mix deps.get --only prod \
-);
+COMPONENT_PRE_BUILD_ACTION = ( cp -rd $(SOURCE_DIR)/. $(@D) ) ;
 
-COMPONENT_BUILD_ACTION +=	/usr/bin/true
-COMPONENT_BUILD_TARGETS =	all
+COMPONENT_BUILD_TARGETS =	all install-cli
 COMPONENT_BUILD_ENV += LC_ALL=en_US.UTF-8
+COMPONENT_BUILD_ENV += PATH=$(PATH)
+COMPONENT_BUILD_ENV += RABBITMQ_VERSION=$(COMPONENT_VERSION)
 
 COMPONENT_INSTALL_TARGETS = install install-man
 COMPONENT_INSTALL_ENV +=	DESTDIR=$(PROTO_DIR)

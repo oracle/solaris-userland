@@ -19,7 +19,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 # Script rabbitmq-server requires GNU version of grep.
@@ -186,11 +186,10 @@ PONG
 
 # Copy and extract required plugin dependencies.
 cd "${RABBITMQ_PLUGINS_DIR}/"
-cp amqp_client* credentials_obfuscation* rabbit_common* lager* goldrush* jsx* ranch* recon* "${PINGPONG_TEST_DIR}"
+cp -r amqp_client* credentials_obfuscation* rabbit_common* ranch* recon* thoas* "${PINGPONG_TEST_DIR}"
 
 cd "${PINGPONG_TEST_DIR}/"
 find . -name '*.ez' -exec unzip {} > /dev/null \;
-rm *.ez
 
 # Find the directories required as dependencies and create version-free links.
 DEP_DIRS=($(find . -maxdepth 1 ! -path . -type d | perl -pe 's/\.\///'))
@@ -208,7 +207,12 @@ done
 perl -i -pe "s/%%%DEP_LINKS%%%/$(IFS=','; echo "${DEP_LINKS[*]}")/" pingpong_common.erl
 
 # Compile client applications.
-erlc -I amqp_client/include/ *.erl
+erlc \
+  -I "${RABBITMQ_SOURCE_DIR}/deps/amqp_client/include" \
+  -pa "${RABBITMQ_SOURCE_DIR}/deps/amqp_client/ebin" \
+  -pa "${RABBITMQ_SOURCE_DIR}/deps/rabbit_common/ebin" \
+  *.erl
+
 
 # Test that Erlang client applications can
 # send/receive messages to/from RabbitMQ server.

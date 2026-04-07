@@ -16,9 +16,13 @@ GNU make v3.82 introduced a change that caused this failure:
  
 This change will be passed upstream.
 
---- a/Makefile.in	2020-02-25 13:54:30.538784090 +0000
-+++ b/Makefile.in	2020-02-25 13:54:45.052248009 +0000
-@@ -1060,7 +1060,7 @@
+--
+
+Add smoke_test target.
+
+--- otp_src_28.4.1/Makefile.in
++++ otp_src_28.4.1/Makefile.in
+@@ -830,7 +830,7 @@ # --------------------------------------
  
  TEST_DIRS := \
  	lib/common_test/test_server \
@@ -27,3 +31,18 @@ This change will be passed upstream.
  	erts/test \
  	erts/epmd/test \
  	erts/emulator/test
+@@ -983,6 +983,14 @@ test: all release release_tests
+ 	MAKE="$(MAKE)" \
+ 	  $(ERL_TOP)/make/test_target_script.sh $(ERL_TOP)
+ 
++# Minimal testing per: https://www.erlang.org/doc/system/install.html#testing
++# tmux is workaround for internal BOB builds (erlang exits early when started via python).
++smoke_test: all release release_tests
++	cd $(ERL_TOP)/release/tests/test_server ; \
++	MAKE="$(MAKE)" \
++	  tmux -L "test_$$$$_tmux" new-session -d -s test '$(ERL_TOP)/bin/erl -s ts install -s ts smoke_test batch -s init stop >>smoke_test.log 2>&1'; \
++	while tmux -L "test_$$$$_tmux" has-session -t test 2>/dev/null; do sleep 1; done; cat smoke_test.log
++
+ ifeq ($(TYPE),)
+ dialyzer: all
+ 	$(ERL_TOP)/scripts/run-dialyzer

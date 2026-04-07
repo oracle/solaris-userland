@@ -20,12 +20,13 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
 # Built in SFW with gcc and builds cleanly now only with gcc
 BUILD_BITS= 64
 COMPILER= gcc
+CTF_MODE= off # C++
 include ../../make-rules/shared-macros.mk
 
 # This component does not fully specify dependencies of shared objects
@@ -34,15 +35,15 @@ LD_SHARED_OPTIONS_Z_DEFS=
 # This component produces impure text
 LD_SHARED_OPTIONS_Z_TEXT=
 
-PATH=$(JAVA_HOME)/bin:$(USRBINDIR)
+PATH=$(JAVA_HOME)/bin:/usr/gnu/bin:$(USRBINDIR)
 
 COMPONENT_NAME=			erlang
-COMPONENT_VERSION=		24.3.4.16
+COMPONENT_VERSION=		28.4.1
 COMPONENT_PROJECT_URL=	https://erlang.org/
 COMPONENT_SRC_NAME=	otp_src
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f434c19d62b29ad8ef5300a490b9ea9df9cbfdd497c68603b184d43448418fa2
+    sha256:a256e77201009050ef55602a57154614c215f611fda9f0fcda991bb647aa9fd9
 COMPONENT_ARCHIVE_URL=  https://github.com/erlang/otp/archive/OTP-${COMPONENT_VERSION}.tar.gz
 COMPONENT_BUGDB=	utility/erlang
 COMPONENT_ANITYA_ID=	707
@@ -55,7 +56,7 @@ COMPONENT_NAME_1=	otp_doc_man
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)_$(COMPONENT_VERSION_SHORT)
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1=	\
-    sha256:68ad2222eef77310c286411ad0e580865f3ba273e9fe42516ade0e5310cff614
+    sha256:8701271c88e041485de42382ee027e7dc4c62b7cb0427466b71e4d7603e83531
 COMPONENT_ARCHIVE_URL_1=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1=	-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
@@ -66,18 +67,13 @@ COMPONENT_NAME_2=	otp_doc_html
 COMPONENT_SRC_2=	$(COMPONENT_NAME_2)_$(COMPONENT_VERSION_SHORT)
 COMPONENT_ARCHIVE_2=	$(COMPONENT_SRC_2).tar.gz
 COMPONENT_ARCHIVE_HASH_2=	\
-    sha256:7a247113a0f90514aacb0656e98a1e4d63e2ebf4ac9981002d046599147dc177
+    sha256:d2b3f44683c53f4de92365a6e4edcd48327b1476a0ba6892c999a2f22f0bd440
 COMPONENT_ARCHIVE_URL_2=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_2)
 UNPACK_ARGS_2=	-r $(COMPONENT_SRC_2)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_2)
 COMPONENT_ANITYA_ID_2=	707
 
-COMPONENT_BAID=		159770
-
-SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
-
-# Unreproducible test results, many hours to finish.
-$(SKIP_TEST_AT_TOP_LEVEL)
+COMPONENT_BAID=		382315
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -85,11 +81,6 @@ include $(WS_MAKE_RULES)/common.mk
 LDFLAGS += $(CC_BITS)
 
 CXXFLAGS += -std=c++11
-
-CONFIGURE_OPTIONS += --enable-smp-support
-CONFIGURE_OPTIONS += --enable-threads
-CONFIGURE_OPTIONS += --enable-fips
-CONFIGURE_OPTIONS += --enable-dynamic-ssl-lib
 
 # Disable disallowed cyphers (headers are not available)
 CFLAGS += -DOPENSSL_NO_MD4 -DOPENSSL_NO_RC2 -DOPENSSL_NO_RC4
@@ -128,11 +119,9 @@ COMPONENT_BUILD_ARGS +=	V=1
 
 COMPONENT_INSTALL_ARGS += INSTALL_PREFIX=$(PROTO_DIR)
 
-# Run Erlang release tests; it takes many hours...
-COMPONENT_TEST_DIR = $(COMPONENT_DIR)
-COMPONENT_TEST_CMD = $(SHELL)
-COMPONENT_TEST_TARGETS = run_erlang_tests.sh $(BUILD_DIR_64)
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
+COMPONENT_TEST_TARGETS = smoke_test
+COMPONENT_TEST_ENV += LIBS=-lssp
+COMPONENT_TEST_ENV += SHLIB_EXTRA_LDFLAGS=-shared
 
 # Some header files are architecture specific, therefore,
 # we must avoid to rename some i386 directories to $(MACH).
@@ -141,26 +130,32 @@ GENERATE_TRANSFORMS := generate/pretrans $(GENERATE_TRANSFORMS)
 # Extra directories with documentation for 'gmake manifest-check'.
 GENERATE_PROTO_DIRS += otp_doc_man_$(COMPONENT_VERSION_SHORT)/man/ otp_doc_html_$(COMPONENT_VERSION_SHORT)/ files^files
 
+RMRPATH= $(ELFEDIT) -e "dyn:delete RUNPATH" -e "dyn:delete RPATH"
+
+COMPONENT_POST_INSTALL_ACTION += \
+	$(RMRPATH) $(PROTOUSRLIBDIR64)/erlang/lib/crypto-5.8.3/priv/lib/crypto.so ; \
+	$(RMRPATH) $(PROTOUSRLIBDIR64)/erlang/lib/crypto-5.8.3/priv/lib/otp_test_engine.so ;
+
 # remove INSTALL_PREFIX from path
 COMPONENT_POST_INSTALL_ACTION += \
 	$(PERL) -pi -e "s|$(PROTO_DIR)||g" \
 		$(PROTOUSRLIBDIR64)/erlang/bin/erl \
 		$(PROTOUSRLIBDIR64)/erlang/releases/RELEASES
 
-COMPONENT_TEST_TRANSFORMS += \
-        '-e "/^run_erlang_tests.sh/d" '
+COMPONENT_TEST_TRANSFORMS = \
+	'-e "/^TEST/p" ' \
+	'-e "/^Testing/p" ' \
+	'-e "/.*/d" '
 
 REQUIRED_PACKAGES += developer/java/jdk-8
 REQUIRED_PACKAGES += developer/lexer/flex
+REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/graphics/wxwidgets-32
-REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libglu
-REQUIRED_PACKAGES += x11/library/mesa
