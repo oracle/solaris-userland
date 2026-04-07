@@ -1,0 +1,21 @@
+gnome_parse_locale() leaves country untouched for locales without a territory,
+such as C.
+
+Solaris exposes this via 03-enable-existing-user-mode.patch, which enables the
+existing-user path through get_locale_infos(). That path can then pass stack
+garbage in country to gnome_xkb_info_get_layouts_for_country(), crashing in
+strlen().
+
+Initialize lang and country to NULL before calling gnome_parse_locale().
+
+--- a/gnome-initial-setup/pages/keyboard/cc-input-chooser.c
++++ b/gnome-initial-setup/pages/keyboard/cc-input-chooser.c
+@@ -399,7 +399,7 @@ get_locale_infos (CcInputChooser *chooser)
+         CcInputChooserPrivate *priv = cc_input_chooser_get_instance_private (chooser);
+ 	const gchar *type = NULL;
+ 	const gchar *id = NULL;
+-	gchar *lang, *country;
++	gchar *lang = NULL, *country = NULL;
+ 	GList *list;
+ 
+ 	if (gnome_get_input_source_from_locale (priv->locale, &type, &id)) {

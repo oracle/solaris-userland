@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,14 +28,16 @@ COMPILER=               gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxkbcommon
-COMPONENT_VERSION=	1.7.0
+COMPONENT_VERSION=	1.13.1
+COMPONENT_SRC=		libxkbcommon-xkbcommon-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	xkbcommon-$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=	http://xkbcommon.org
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://github.com/xkbcommon/libxkbcommon/archive/refs/tags/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:65782f0a10a4b455af9c6baab7040e2f537520caa2ec2092805cdfd36863b247
+	sha256:aeb951964c2f7ecc08174cb5517962d157595e9e3f38fc4a130b91dc2f9fec18
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1780
-COMPONENT_BAID=		176526
+COMPONENT_BAID=		382168
 
 BUILD_STYLE=		meson
 
@@ -49,8 +51,10 @@ CONFIGURE_ENV += $(COMPONENT_BUILD_ENV)
 # for tests
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
+# xvfb is needed for testing
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += x11/library/libxcb
+REQUIRED_PACKAGES += x11/server/xvfb
