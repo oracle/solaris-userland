@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		requests
-COMPONENT_VERSION=	2.32.4
+COMPONENT_VERSION=	2.33.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:27d0316682c8a29834d3264820024b62a36942083d52caf2f14c0591336d3422
+    sha256:c7ebc5e8b0f21837386ad0e1c8fe8b829fa5f544d8df3b2253bff14ef29d7652
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://python-requests.org/
 COMPONENT_BUGDB=	python-mod/requests
 COMPONENT_ANITYA_ID=	4004
-COMPONENT_BAID=		331547
+COMPONENT_BAID=		383433
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
