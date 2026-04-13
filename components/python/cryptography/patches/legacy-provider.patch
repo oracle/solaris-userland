@@ -11,9 +11,27 @@ https://github.com/pyca/cryptography/issues/7358
 https://github.com/pyca/cryptography/pull/7650
 https://github.com/pyca/cryptography/pull/12601
 
---- cryptography-46.0.3/src/rust/src/lib.rs
-+++ cryptography-46.0.3/src/rust/src/lib.rs
-@@ -68,10 +68,6 @@ fn _initialize_providers(py: pyo3::Pytho
+--- cryptography-46.0.7/src/rust/src/lib.rs
++++ cryptography-46.0.7/src/rust/src/lib.rs
+@@ -10,8 +10,6 @@ use std::env;
+ 
+ #[cfg(CRYPTOGRAPHY_OPENSSL_300_OR_GREATER)]
+ use openssl::provider;
+-#[cfg(CRYPTOGRAPHY_OPENSSL_300_OR_GREATER)]
+-use pyo3::PyTypeInfo;
+ 
+ #[cfg(CRYPTOGRAPHY_OPENSSL_300_OR_GREATER)]
+ use crate::error::CryptographyResult;
+@@ -55,7 +53,7 @@ fn is_fips_enabled() -> bool {
+ }
+ 
+ #[cfg(CRYPTOGRAPHY_OPENSSL_300_OR_GREATER)]
+-fn _initialize_providers(py: pyo3::Python<'_>) -> CryptographyResult<LoadedProviders> {
++fn _initialize_providers(_py: pyo3::Python<'_>) -> CryptographyResult<LoadedProviders> {
+     // As of OpenSSL 3.0.0 we must register a legacy cipher provider
+     // to get RC2 (needed for junk asymmetric private key
+     // serialization), RC4, Blowfish, IDEA, SEED, etc. These things
+@@ -68,10 +66,6 @@ fn _initialize_providers(py: pyo3::Pytho
      let legacy = if load_legacy {
          let legacy_result = provider::Provider::load(None, "legacy");
          if legacy_result.is_err() {
