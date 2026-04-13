@@ -2,8 +2,8 @@ Disable the use of ciphers unacceptable according to Oracle standards by default
 
 Not intended for upstream.
 
---- apache-tomcat-9.0.116-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
-+++ apache-tomcat-9.0.116-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
+--- apache-tomcat-9.0.117-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
++++ apache-tomcat-9.0.117-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
 @@ -57,7 +57,7 @@ // they are case-insensitive but are use
      // keys in Maps.
      protected static final String DEFAULT_SSL_HOST_NAME = "_default_";
@@ -13,22 +13,22 @@ Not intended for upstream.
      public static final String DEFAULT_TLS_CIPHERS_13 = "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256";
      /**
       * Default cipher list for TLS 1.2 and below.
---- apache-tomcat-9.0.116-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
-+++ apache-tomcat-9.0.116-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
-@@ -529,7 +529,7 @@ addListAlias(SRP, filterByKeyExchange(al
+--- apache-tomcat-9.0.117-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
++++ apache-tomcat-9.0.117-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
+@@ -527,7 +527,7 @@ addListAlias(aSRP, filterByAuthenticatio
+         addListAlias(kSRP, filterByKeyExchange(allCiphers, Collections.singleton(KeyExchange.SRP)));
+         addListAlias(SRP, filterByKeyExchange(allCiphers, Collections.singleton(KeyExchange.SRP)));
          initialized = true;
-         // Despite what the OpenSSL docs say, DEFAULT also excludes SSLv2
-         addListAlias(DEFAULT, parse(
--                "ALL:!eNULL:!aNULL:!DES:!RC2:!RC4:!DSS:!SEED:!IDEA:!CAMELLIA:!AESCCM:!3DES:!ARIA"));
-+                "ALL:!eNULL:!aNULL:!DES:!RC2:!RC4:!DSS:!SEED:!IDEA:!CAMELLIA:!AESCCM:!3DES:!ARIA:!PSK"));
+-        addListAlias(DEFAULT, parse("ALL:!eNULL:!aNULL:!DES:!RC2:!RC4:!DSS:!SEED:!IDEA:!CAMELLIA:!AESCCM:!3DES:!ARIA"));
++        addListAlias(DEFAULT, parse("ALL:!eNULL:!aNULL:!DES:!RC2:!RC4:!DSS:!SEED:!IDEA:!CAMELLIA:!AESCCM:!3DES:!ARIA:!PSK"));
          // COMPLEMENTOFDEFAULT is also not exactly as defined by the docs
          LinkedHashSet<Cipher> complementOfDefault =
                  filterByKeyExchange(all, new HashSet<>(Arrays.asList(KeyExchange.EDH, KeyExchange.EECDH)));
---- apache-tomcat-9.0.116-src/webapps/docs/config/http.xml
-+++ apache-tomcat-9.0.116-src/webapps/docs/config/http.xml
-@@ -1501,7 +1501,7 @@ <code>WARNING</code> message when the Co
-       avoided by providing an explicit list of TLSv1.2 and below ciphers that
-       are supported by the configured SSL implementation.</p>
+--- apache-tomcat-9.0.117-src/webapps/docs/config/http.xml
++++ apache-tomcat-9.0.117-src/webapps/docs/config/http.xml
+@@ -1501,7 +1501,7 @@ starts.  The warnings can be avoided by
+       TLSv1.2 and below ciphers that are supported by the configured SSL
+       implementation.</p>
        <p>If not specified, a default (using the OpenSSL notation) of
 -      <code>HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256</code>
 +      <code>HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!kRSA:!PSK:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256</code>
