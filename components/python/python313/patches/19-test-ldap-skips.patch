@@ -1,0 +1,57 @@
+test_posixpath doesn't work well within OWAN.
+
+Several tests are calling pwd.getpwall, which can get very slow on some
+test machines. Not intended for upstream.
+
+--- cpython-3.13/Lib/test/test_posixpath.py
++++ cpython-3.13/Lib/test/test_posixpath.py
+@@ -359,6 +359,8 @@ class PosixPathTest(unittest.TestCase):
+ 
+     @unittest.skipIf(sys.platform == "vxworks",
+                      "no home directory on VxWorks")
++    @unittest.skipIf(sys.platform.startswith("sunos"),
++                     "doesn't work well with internal LDAP entires")
+     def test_expanduser_pwd2(self):
+         pwd = import_helper.import_module('pwd')
+         getpwall = support.get_attribute(pwd, 'getpwall')
+--- cpython-3.13/Lib/test/test_pathlib/test_pathlib.py
++++ cpython-3.13/Lib/test/test_pathlib/test_pathlib.py
+@@ -1360,6 +1360,7 @@ class PathTest(test_pathlib_abc.DummyPat
+                          'pwd module does not expose getpwall()')
+     @unittest.skipIf(sys.platform == "vxworks",
+                      "no home directory on VxWorks")
++    @unittest.skipIf(sys.platform.startswith("sunos"), "slow within OWAN")
+     @needs_posix
+     def test_expanduser_posix(self):
+         P = self.cls
+--- cpython-3.13/Lib/test/test_pwd.py
++++ cpython-3.13/Lib/test/test_pwd.py
+@@ -4,6 +4,7 @@ from test.support import import_helper
+ 
+ pwd = import_helper.import_module('pwd')
+ 
++@unittest.skipIf(sys.platform.startswith("sunos"), "slow within OWAN")
+ @unittest.skipUnless(hasattr(pwd, 'getpwall'), 'Does not have getpwall()')
+ class PwdTest(unittest.TestCase):
+ 
+--- cpython-3.13/Lib/test/test_os.py
++++ cpython-3.13/Lib/test/test_os.py
+@@ -52,7 +52,7 @@ except ImportError:
+     _winapi = None
+ try:
+     import pwd
+-    all_users = [u.pw_uid for u in pwd.getpwall()]
++    all_users = []  # pwd.getpwall is slow within OWAN
+ except (ImportError, AttributeError):
+     all_users = []
+ try:
+--- Python-3.13.12/Lib/test/test_mailbox.py
++++ Python-3.13.12/Lib/test/test_mailbox.py
+@@ -1083,6 +1083,7 @@ class _TestSingleFile(TestMailbox):
+ 
+         self.assertEqual(os.stat(self._path).st_mode, mode)
+ 
++    @unittest.skipIf(sys.platform.startswith("sunos"), "slow within OWAN")
+     @unittest.skipUnless(hasattr(os, 'chown'), 'requires os.chown')
+     def test_ownership_after_flush(self):
+         # See issue gh-117467

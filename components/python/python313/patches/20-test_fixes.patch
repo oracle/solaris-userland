@@ -7,7 +7,8 @@ test_freeze is running configure and fails on an endian check. It should be
 investigated later, although since it's tools related, it's not
 the highest priority. [Should be reported upstream]
 
-test_posixpath doesn't work well within OWAN. [Not for upstream]
+test_pkgutil doesn't expect that pkg module exists on Solaris.
+[Not for upstream]
 
 --- Python-3.13.9/Lib/test/test_gdb/__init__.py
 +++ Python-3.13.9/Lib/test/test_gdb/__init__.py
@@ -39,14 +40,18 @@ test_posixpath doesn't work well within OWAN. [Not for upstream]
  @support.skip_if_buildbot('not all buildbots have enough space')
  # gh-103053: Skip test if Python is built with Profile Guided Optimization
  # (PGO), since the test is just too slow in this case.
---- Python-3.13.9/Lib/test/test_posixpath.py
-+++ Python-3.13.9/Lib/test/test_posixpath.py
-@@ -359,6 +359,8 @@ class PosixPathTest(unittest.TestCase):
- 
-     @unittest.skipIf(sys.platform == "vxworks",
-                      "no home directory on VxWorks")
-+    @unittest.skipIf(sys.platform.startswith("sunos"),
-+                     "doesn't work well with our internal LDAP")
-     def test_expanduser_pwd2(self):
-         pwd = import_helper.import_module('pwd')
-         getpwall = support.get_attribute(pwd, 'getpwall')
+--- cpython-3.13/Lib/test/test_pkgutil.py
++++ cpython-3.13/Lib/test/test_pkgutil.py
+@@ -592,7 +592,11 @@ class NestedNamespacePackageTest(unittes
+         sys.path.insert(0, os.path.join(self.basedir, 'b'))
+         import pkg
+         self.addCleanup(unload, 'pkg')
+-        self.assertEqual(len(pkg.__path__), 2)
++        # Solaris has its own pkg package that breaks this test
++        if os.path.exists("/usr/lib/python3.13/vendor-packages/pkg/"):
++            self.assertEqual(len(pkg.__path__), 3)
++        else:
++            self.assertEqual(len(pkg.__path__), 2)
+         import pkg.subpkg
+         self.addCleanup(unload, 'pkg.subpkg')
+         self.assertEqual(len(pkg.subpkg.__path__), 2)
