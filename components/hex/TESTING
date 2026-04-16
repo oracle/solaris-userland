@@ -1,18 +1,25 @@
-# Install hex package to the system.
-sudo pkg install -g $(hg root)/$(uname -p)/repo hex
+# Primary validation can be done directly from the prototype area without
+# installing the package to the system. This is useful on build systems where
+# you do not have the privileges required for pkg install/update.
+#
+# Build and populate the prototype area first.
+cd $(hg root)/components/hex
+gmake install
 
-# Verify that the hex is installed.
+# Point mix at the built Hex bytecode from the prototype area.
+PROTO=$(hg root)/components/hex/build/prototype/$(uname -p)
+HEX_EBIN=$PROTO/usr/lib/elixir/lib/hex/ebin
+
+# Verify that the built Hex is loaded.
 # Expected output:
 # Hex v$(COMPONENT_VERSION)
 # Hex is a package manager for the Erlang ecosystem.
 #
-# To list Hex tasks run: mix help --search hex.
-#
 # Further information can be found here: https://hex.pm/docs
-mix hex --help
+LC_ALL=en_US.UTF-8 MIX_PATH=$HEX_EBIN mix hex --help
 
 # Check the integrated tasks into mix command.
-# Expected output:
+# Expected output includes:
 # mix hex              # Prints Hex help information
 # mix hex.audit        # Shows retired Hex deps for the current project
 # mix hex.build        # Builds a new package version locally
@@ -28,10 +35,21 @@ mix hex --help
 # mix hex.search       # Searches for package names
 # mix hex.user         # Manages your Hex user account
 # mix local.hex        # Installs Hex locally
-mix help --search hex
+LC_ALL=en_US.UTF-8 MIX_PATH=$HEX_EBIN mix help --search hex
 
-# Currently, the only component that requires the Hex package manager is RabbitMQ.
-# Hence, to verify the basic functionality, RabbitMQ will be rebuilt and tested.
-echo ""
-cd $(hg root)/components/rabbitmq
-gmake test
+# Optional full-system validation can be done via IPS. This requires publishing
+# the package into the local repo and installing or updating it on the system.
+# That path is useful when you want to verify the delivered package, not only
+# the built prototype content.
+#
+# Example:
+#   cd $(hg root)/components/hex
+#   gmake publish
+#   sudo pkg install -g $(hg root)/$(uname -p)/repo developer/elixir/hex
+# or, if already installed:
+#   sudo pkg update -g $(hg root)/$(uname -p)/repo developer/elixir/hex
+#
+# After system installation, downstream validation can be done by rebuilding
+# and testing RabbitMQ, which depends on developer/elixir/hex:
+#   cd $(hg root)/components/rabbitmq
+#   gmake test
