@@ -6,9 +6,9 @@ which makes vim tests to hang on Solaris. More investigation is needed.
 This patch is not intended for upstream.
 
 
---- vim-9.2.0272/src/channel.c
-+++ vim-9.2.0272/src/channel.c
-@@ -3991,24 +3991,6 @@ #define DETACH_MSG_RAW "DETACH\n"
+--- vim-9.2.0340/src/channel.c
++++ vim-9.2.0340/src/channel.c
+@@ -3994,24 +3994,6 @@
  // Buffer size for reading incoming messages.
  #define MAXMSGSIZE 4096
  
@@ -33,7 +33,7 @@ This patch is not intended for upstream.
  #if defined(HAVE_SELECT)
  /*
   * Add write fds where we are waiting for writing to be possible.
-@@ -4024,7 +4006,8 @@ {
+@@ -4027,7 +4009,8 @@
  	chanpart_T  *in_part = &ch->ch_part[PART_IN];
  
  	if (in_part->ch_fd != INVALID_FD
@@ -43,7 +43,7 @@ This patch is not intended for upstream.
  	{
  	    FD_SET((int)in_part->ch_fd, wfds);
  	    if ((int)in_part->ch_fd >= maxfd)
-@@ -4048,7 +4031,8 @@ {
+@@ -4051,7 +4034,8 @@
  	chanpart_T  *in_part = &ch->ch_part[PART_IN];
  
  	if (in_part->ch_fd != INVALID_FD
@@ -53,7 +53,7 @@ This patch is not intended for upstream.
  	{
  	    in_part->ch_poll_idx = nfd;
  	    fds[nfd].fd = in_part->ch_fd;
-@@ -4355,6 +4339,8 @@ break;	// error or nothing more to read
+@@ -4362,6 +4346,8 @@
  	// Store the read message in the queue.
  	channel_save(channel, part, buf, len, FALSE, "RECV ");
  	readlen += len;
