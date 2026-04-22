@@ -32,20 +32,21 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		pillow
-COMPONENT_VERSION=	12.1.1
+COMPONENT_VERSION=	12.2.0
 COMPONENT_PROJECT_URL=	https://github.com/python-pillow/Pillow
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:9ad8fa5937ab05218e2b6a4cff30295ad35afd2f83ac592e68c0d871bb0fdbc4
+    sha256:a830b1a40919539d07806aa58e1b114df53ddd43213d9c8b75847eee6c0182b5
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/pil
 COMPONENT_ANITYA_ID=	7974
-COMPONENT_BAID=		370918
+COMPONENT_BAID=		387660
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/test-x11.mk
 
 COMPONENT_TEST_DIR =	$(COMPONENT_SRC)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -71,6 +72,7 @@ REQUIRED_PACKAGES += runtime/tcl-8
 REQUIRED_PACKAGES += runtime/tk-8
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libxcb
 
 # testing dependencies
