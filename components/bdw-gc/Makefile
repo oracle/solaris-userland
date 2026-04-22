@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 
 COMPILER= gcc
@@ -28,18 +28,18 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bdw-gc
-COMPONENT_VERSION=	8.2.8
-#COMPONENT_SRC=		gc-$(COMPONENT_VERSION)
-#COMPONENT_ARCHIVE_URL=	\
+COMPONENT_VERSION=	8.2.12
+COMPONENT_SRC=		gc-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE_URL=	\
     https://github.com/ivmai/bdwgc/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
-#COMPONENT_ARCHIVE_HASH=	\
-    sha256:7649020621cb26325e1fb5c8742590d92fb48ce5c259b502faf7d9fb5dabb160
-GIT_REPO=		https://github.com/ivmai/bdwgc
-GIT_COMMIT_ID=		64b73a16a413e7723d923052176c94fb3cd1d5dc
+COMPONENT_ARCHIVE_HASH=	\
+    sha256:42e5194ad06ab6ffb806c83eb99c03462b495d979cda782f3c72c08af833cd4e
+#GIT_REPO=		https://github.com/ivmai/bdwgc
+#GIT_COMMIT_ID=		64b73a16a413e7723d923052176c94fb3cd1d5dc
 COMPONENT_PROJECT_URL=	https://github.com/ivmai/bdwgc
 COMPONENT_BUGDB=	library/bdw-gc
 COMPONENT_ANITYA_ID=	336648
-COMPONENT_BAID=		193784
+COMPONENT_BAID=		383676
 
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
