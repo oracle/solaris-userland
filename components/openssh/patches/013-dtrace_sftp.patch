@@ -4,8 +4,8 @@
 # Because this is Solaris-specific and not suitable for upstream, we will not
 # contribute the changes to the upstream community.
 #
---- old/Makefile.in	2025-10-09 18:59:19.355706215 +0200
-+++ new/Makefile.in	2025-10-09 18:59:42.426198250 +0200
+--- old/Makefile.in	2026-04-03 10:35:34.303825890 +0200
++++ new/Makefile.in	2026-04-03 10:39:01.707335790 +0200
 @@ -27,6 +27,7 @@ SSHD_SESSION=$(libexecdir)/sshd-session
  SSHD_AUTH=$(libexecdir)/sshd-auth
  SSH_PKCS11_HELPER=$(libexecdir)/ssh-pkcs11-helper
@@ -31,13 +31,13 @@
 +	sftp-server.o sftp-common.o sftp_provider.o \
  	uidswap.o $(P11OBJS) $(SKOBJS)
  
- SFTP_CLIENT_OBJS=sftp-common.o sftp-client.o sftp-glob.o
+ SFTP_CLIENT_OBJS=sftp-common.o sftp-client.o sftp-glob.o ssherr-nolibcrypto.o
 @@ -168,7 +169,7 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o
  
  SSHKEYSCAN_OBJS=ssh-keyscan.o $(P11OBJS) $(SKOBJS)
  
--SFTPSERVER_OBJS=sftp-common.o sftp-server.o sftp-server-main.o
-+SFTPSERVER_OBJS=sftp-common.o sftp-server.o sftp-server-main.o sftp_provider.o
+-SFTPSERVER_OBJS=sftp-common.o sftp-server.o sftp-server-main.o ssherr-nolibcrypto.o
++SFTPSERVER_OBJS=sftp-common.o sftp-server.o sftp-server-main.o ssherr-nolibcrypto.o sftp_provider.o
  
  SFTP_OBJS=	sftp.o sftp-usergroup.o progressmeter.o $(SFTP_CLIENT_OBJS)
  
@@ -63,7 +63,7 @@
  	rm -f regress/check-perm$(EXEEXT)
  	rm -f regress/mkdtemp$(EXEEXT)
  	rm -f regress/unittests/test_helper/*.a
-@@ -465,6 +477,7 @@ install-files:
+@@ -466,6 +478,7 @@ install-files:
  	$(INSTALL) -m 644 ssh-keysign.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-keysign.8
  	$(INSTALL) -m 644 ssh-pkcs11-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-pkcs11-helper.8
  	$(INSTALL) -m 644 ssh-sk-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-sk-helper.8
@@ -71,9 +71,9 @@
  
  install-sysconf:
  	$(MKDIR_P) $(DESTDIR)$(sysconfdir)
---- old/sftp-server.c	2025-10-06 04:25:16.000000000 +0200
-+++ new/sftp-server.c	2025-10-09 18:59:20.095695060 +0200
-@@ -52,6 +52,9 @@
+--- old/sftp-server.c	2026-04-02 10:09:03.000000000 +0200
++++ new/sftp-server.c	2026-04-03 10:41:28.649048230 +0200
+@@ -48,6 +48,9 @@
  
  #include "sftp.h"
  #include "sftp-common.h"
@@ -83,10 +83,10 @@
  
  char *sftp_realpath(const char *, char *); /* sftp-realpath.c */
  
-@@ -799,14 +802,16 @@ process_read(u_int32_t id)
- 	u_int32_t len;
+@@ -795,14 +798,16 @@ process_read(uint32_t id)
+ 	uint32_t len;
  	int r, handle, fd, ret, status = SSH2_FX_FAILURE;
- 	u_int64_t off;
+ 	uint64_t off;
 +	char *fpath;
  
  	if ((r = get_handle(iqueue, &handle)) != 0 ||
@@ -101,7 +101,7 @@
  	if ((fd = handle_to_fd(handle)) == -1)
  		goto out;
  	if (len > SFTP_MAX_READ_LENGTH) {
-@@ -828,14 +833,23 @@ process_read(u_int32_t id)
+@@ -824,14 +829,23 @@ process_read(uint32_t id)
  	if (len == 0) {
  		/* weird, but not strictly disallowed */
  		ret = 0;
@@ -133,7 +133,7 @@
  	}
  	send_data(id, buf, ret);
  	handle_update_read(handle, ret);
-@@ -853,14 +867,16 @@ process_write(u_int32_t id)
+@@ -849,14 +863,16 @@ process_write(uint32_t id)
  	size_t len;
  	int r, handle, fd, ret, status;
  	u_char *data;
@@ -151,7 +151,7 @@
  	fd = handle_to_fd(handle);
  
  	if (fd < 0)
-@@ -873,7 +889,13 @@ process_write(u_int32_t id)
+@@ -869,7 +885,13 @@ process_write(uint32_t id)
  			    strerror(errno));
  		} else {
  /* XXX ATOMICIO ? */

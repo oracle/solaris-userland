@@ -13,9 +13,9 @@
 # This is a Solaris specific change to ease the transition and will not be
 # offered upstream.
 #
---- openssh-9.4p1/servconf.c
-+++ openssh-9.4p1/servconf.c
-@@ -616,6 +616,30 @@
+--- old/servconf.c	2026-04-03 11:25:46.405936355 +0200
++++ new/servconf.c	2026-04-03 11:31:58.381755745 +0200
+@@ -637,6 +637,30 @@ static struct {
  	{ "pamservicename", sUnsupported, SSHCFG_ALL },
  #endif
  	{ "pamauthenticationviakbdint", sDeprecated, SSHCFG_GLOBAL },
@@ -46,16 +46,17 @@
  	/* Standard Options */
  	{ "port", sPort, SSHCFG_GLOBAL },
  	{ "hostkey", sHostKeyFile, SSHCFG_GLOBAL },
-@@ -633,10 +633,12 @@ { "kerberostgtpassing", sUnsupported, SS
+@@ -683,11 +707,13 @@ static struct {
  	{ "afstokenpassing", sUnsupported, SSHCFG_GLOBAL },
  #ifdef GSSAPI
  	{ "gssapiauthentication", sGssAuthentication, SSHCFG_ALL },
-+	{ "gssauthentication", sGssAuthentication, SSHCFG_ALL },   /* alias */
++	{ "gssauthentication", sGssAuthentication, SSHCFG_ALL }, /* alias */
  	{ "gssapicleanupcredentials", sGssCleanupCreds, SSHCFG_GLOBAL },
+ 	{ "gssapidelegatecredentials", sGssDelegateCreds, SSHCFG_GLOBAL },
  	{ "gssapistrictacceptorcheck", sGssStrictAcceptor, SSHCFG_GLOBAL },
  #else
  	{ "gssapiauthentication", sUnsupported, SSHCFG_ALL },
-+	{ "gssauthentication", sUnsupported, SSHCFG_ALL },          /* alias */
++	{ "gssauthentication", sUnsupported, SSHCFG_ALL },	/* alias */
  	{ "gssapicleanupcredentials", sUnsupported, SSHCFG_GLOBAL },
+ 	{ "gssapidelegatecredentials", sUnsupported, SSHCFG_GLOBAL },
  	{ "gssapistrictacceptorcheck", sUnsupported, SSHCFG_GLOBAL },
- #endif

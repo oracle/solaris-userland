@@ -5,15 +5,15 @@
 #
 # Filed upstream as  https://bugzilla.mindrot.org/show_bug.cgi?id=3930
 #
---- old/auth-pam.c	2026-02-24 13:29:13.818175185 +0100
-+++ new/auth-pam.c	2026-02-24 13:30:29.808543290 +0100
-@@ -349,7 +349,8 @@ check_pam_user(Authctxt *authctxt)
- 		return PAM_USER_UNKNOWN;
- 	}
+--- old/auth-pam.c	2026-04-03 15:45:49.540575470 +0200
++++ new/auth-pam.c	2026-04-03 15:47:25.374783975 +0200
+@@ -340,7 +340,8 @@ check_pam_user(Authctxt *authctxt)
  
--	if (strcmp(authctxt->pw->pw_name, pam_user) != 0) {
+ 	if (sshpam_initial_user == NULL)
+ 		fatal_f("internal error: sshpam_initial_user NULL");
+-	if (strcmp(sshpam_initial_user, pam_user) != 0) {
 +	/* For AD, we may get the username all in caps. */
-+	if (strcasecmp(authctxt->pw->pw_name, pam_user) != 0) {
- 		debug("PAM user \"%s\" does not match expected \"%s\"",
- 		      pam_user, authctxt->pw->pw_name);
++	if (strcasecmp(sshpam_initial_user, pam_user) != 0) {
+ 		error_f("PAM user \"%s\" does not match previous \"%s\"",
+ 		      pam_user, sshpam_initial_user);
  		return PAM_USER_UNKNOWN;

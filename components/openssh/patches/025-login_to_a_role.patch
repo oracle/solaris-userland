@@ -9,9 +9,9 @@
 # Patch offered upstream:
 #     https://bugzilla.mindrot.org/show_bug.cgi?id=2378
 #
---- old/auth-pam.c	2025-03-05 10:52:41.955874495 +0100
-+++ new/auth-pam.c	2025-03-05 10:52:42.626351580 +0100
-@@ -1182,6 +1182,20 @@ start_pam(struct ssh *ssh)
+--- old/auth-pam.c	2026-04-03 11:53:57.886443675 +0200
++++ new/auth-pam.c	2026-04-03 11:53:58.595830625 +0200
+@@ -1160,6 +1160,20 @@ start_pam(struct ssh *ssh)
  		fatal("PAM: initialisation failed");
  }
  
@@ -32,19 +32,19 @@
  void
  finish_pam(void)
  {
---- old/auth-pam.h	2025-02-18 09:15:08.000000000 +0100
-+++ new/auth-pam.h	2025-03-05 10:52:42.626674245 +0100
-@@ -43,5 +43,8 @@ int sshpam_auth_passwd(Authctxt *, const
- int sshpam_get_maxtries_reached(void);
+--- old/auth-pam.h	2026-04-03 11:56:32.630920490 +0200
++++ new/auth-pam.h	2026-04-03 11:56:54.603141550 +0200
+@@ -43,5 +43,8 @@ int sshpam_get_maxtries_reached(void);
  void sshpam_set_maxtries_reached(int);
  int is_pam_session_open(void);
+ int sshpam_priv_kbdint_authdone(void *ctxtp);
 +#ifdef HAVE_PAM_AUSER
 +void do_pam_set_auser(const char *);
 +#endif
  
  #endif /* USE_PAM */
---- old/auth.h	2025-03-05 10:52:41.956246330 +0100
-+++ new/auth.h	2025-03-05 10:52:42.627000870 +0100
+--- old/auth.h	2026-04-03 11:53:57.886801395 +0200
++++ new/auth.h	2026-04-03 11:53:58.597382450 +0200
 @@ -98,6 +98,9 @@ struct Authctxt {
  #ifdef PAM_ENHANCEMENT
  	char		*authmethod_name;
@@ -55,8 +55,8 @@
  };
  
  /*
---- old/auth2-hostbased.c	2025-02-18 09:15:08.000000000 +0100
-+++ new/auth2-hostbased.c	2025-03-05 10:52:42.627364920 +0100
+--- old/auth2-hostbased.c	2026-04-02 10:09:03.000000000 +0200
++++ new/auth2-hostbased.c	2026-04-03 11:53:58.597783850 +0200
 @@ -81,6 +81,9 @@ userauth_hostbased(struct ssh *ssh, cons
  	debug("signature:");
  	sshbuf_dump_data(sig, slen, stderr);
@@ -67,7 +67,7 @@
  	pktype = sshkey_type_from_name(pkalg);
  	if (pktype == KEY_UNSPEC) {
  		/* this is perfectly legal */
-@@ -152,6 +155,13 @@ userauth_hostbased(struct ssh *ssh, cons
+@@ -153,6 +156,13 @@ userauth_hostbased(struct ssh *ssh, cons
  	    sshbuf_ptr(b), sshbuf_len(b), pkalg, ssh->compat, NULL) == 0)
  		authenticated = 1;
  
@@ -81,9 +81,9 @@
  	auth2_record_key(authctxt, authenticated, key);
  	sshbuf_free(b);
  done:
---- old/config.h.in	2025-03-05 10:52:42.317212695 +0100
-+++ new/config.h.in	2025-03-05 10:52:42.627940140 +0100
-@@ -1029,6 +1029,9 @@
+--- old/config.h.in	2026-04-03 11:53:58.269411925 +0200
++++ new/config.h.in	2026-04-03 11:53:58.598648795 +0200
+@@ -1064,6 +1064,9 @@
  /* Define if you have Digital Unix Security Integration Architecture */
  #undef HAVE_OSF_SIA
  
@@ -93,9 +93,9 @@
  /* Define to 1 if you have the `pam_getenvlist' function. */
  #undef HAVE_PAM_GETENVLIST
  
---- old/configure.ac	2025-03-05 10:52:42.461350615 +0100
-+++ new/configure.ac	2025-03-05 10:52:42.629252020 +0100
-@@ -1194,6 +1194,7 @@ mips-sony-bsd|mips-sony-newsos4)
+--- old/configure.ac	2026-04-03 11:53:58.424226045 +0200
++++ new/configure.ac	2026-04-03 11:53:58.600234190 +0200
+@@ -1307,6 +1307,7 @@ if (setsockopt(s, IPPROTO_IP, IP_TOS, &o
  		],
  	)
  	TEST_SHELL=$SHELL	# let configure find us a capable shell
@@ -103,9 +103,9 @@
  	;;
  *-*-sunos4*)
  	CPPFLAGS="$CPPFLAGS -DSUNOS4"
---- old/monitor.c	2025-03-05 10:52:42.467607830 +0100
-+++ new/monitor.c	2025-03-05 10:52:42.630351130 +0100
-@@ -408,6 +408,12 @@ monitor_child_preauth(struct ssh *ssh, s
+--- old/monitor.c	2026-04-03 11:53:58.430392455 +0200
++++ new/monitor.c	2026-04-03 11:53:58.601352120 +0200
+@@ -409,6 +409,12 @@ monitor_child_preauth(struct ssh *ssh, s
  		}
  	}
  
@@ -118,7 +118,7 @@
  	if (!authctxt->valid)
  		fatal_f("authenticated invalid user");
  	if (strcmp(auth_method, "unknown") == 0)
-@@ -616,14 +622,16 @@ monitor_reset_key_state(void)
+@@ -637,14 +643,16 @@ monitor_reset_key_state(void)
  {
  	/* reset state */
  	free(key_blob);
@@ -136,9 +136,9 @@
  	hostbased_chost = NULL;
  }
  
-@@ -1115,6 +1123,11 @@ mm_answer_pam_account(struct ssh *ssh, i
+@@ -1235,6 +1243,11 @@ mm_answer_pam_account(struct ssh *ssh, i
  	if (!options.use_pam)
- 		fatal("%s: PAM not enabled", __func__);
+ 		fatal_f("PAM not enabled");
  
 +#ifdef HAVE_PAM_AUSER
 +	if (hostbased_cuser != NULL)

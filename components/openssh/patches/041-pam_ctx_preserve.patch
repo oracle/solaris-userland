@@ -22,9 +22,9 @@
 # Reported upstream:
 # https://bugzilla.mindrot.org/show_bug.cgi?id=2548
 #
---- old/auth-pam.c	2025-10-10 12:02:52.899811705 +0200
-+++ new/auth-pam.c	2025-10-10 12:04:09.485675500 +0200
-@@ -112,42 +112,26 @@ extern u_int utmp_len;
+--- old/auth-pam.c	2026-04-03 16:54:13.830442845 +0200
++++ new/auth-pam.c	2026-04-03 16:55:20.653146455 +0200
+@@ -111,24 +111,13 @@ extern u_int utmp_len;
  #endif
  
  /*
@@ -53,17 +53,17 @@
 +# error "UNSUPPORTED_POSIX_THREADS_HACK no longer supported"
  #endif
  
+ typedef int SshPamDone;
+@@ -138,7 +127,7 @@ typedef int SshPamDone;
+ #define SshPamAgain 2
+ 
  struct pam_ctxt {
 -	sp_pthread_t	 pam_thread;
--	int		 pam_psock;
--	int		 pam_csock;
--	int		 pam_done;
-+	pid_t	pam_child;
-+	int	pam_psock;
-+	int	pam_csock;
-+	int	pam_done;
- };
- 
++	pid_t		 pam_child;
+ 	int		 pam_psock;
+ 	int		 pam_csock;
+ 	SshPamDone	 pam_done;
+@@ -147,12 +136,7 @@ struct pam_ctxt {
  static void sshpam_free_ctx(void *);
  static struct pam_ctxt *cleanup_ctxt;
  
@@ -77,14 +77,14 @@
  static sshsig_t sshpam_oldsig;
  
  static void
-@@ -156,85 +140,25 @@ sshpam_sigchld_handler(int sig)
+@@ -161,85 +145,25 @@ sshpam_sigchld_handler(int sig)
  	ssh_signal(SIGCHLD, SIG_DFL);
  	if (cleanup_ctxt == NULL)
  		return;	/* handler called after PAM cleanup, shouldn't happen */
 -	if (waitpid(cleanup_ctxt->pam_thread, &sshpam_thread_status, WNOHANG)
 +	if (waitpid(cleanup_ctxt->pam_child, &sshpam_child_status, WNOHANG)
  	    <= 0) {
--		/* PAM thread has not exitted, privsep slave must have */
+-		/* PAM thread has not exited, privsep slave must have */
 -		kill(cleanup_ctxt->pam_thread, SIGTERM);
 -		while (waitpid(cleanup_ctxt->pam_thread,
 -		    &sshpam_thread_status, 0) == -1) {
@@ -173,8 +173,8 @@
 -
  
  static pam_handle_t *sshpam_handle = NULL;
- static int sshpam_err = 0;
-@@ -323,72 +247,11 @@ sshpam_password_change_required(int reqd
+ static char *sshpam_initial_user;
+@@ -304,72 +228,11 @@ sshpam_password_change_required(int reqd
  	}
  }
  
@@ -249,7 +249,7 @@
      struct pam_response **resp, void *data)
  {
  	struct sshbuf *buffer;
-@@ -397,7 +260,7 @@ sshpam_thread_conv(int n, sshpam_const s
+@@ -378,7 +241,7 @@ sshpam_thread_conv(int n, sshpam_const s
  	int r, i;
  	u_char status;
  
@@ -258,7 +258,7 @@
  	*resp = NULL;
  
  	if (data == NULL) {
-@@ -467,6 +330,7 @@ sshpam_thread_conv(int n, sshpam_const s
+@@ -451,6 +314,7 @@ sshpam_thread_conv(int n, sshpam_const s
  	return (PAM_CONV_ERR);
  }
  
@@ -266,7 +266,7 @@
  static int
  check_pam_user(Authctxt *authctxt)
  {
-@@ -494,50 +358,81 @@ check_pam_user(Authctxt *authctxt)
+@@ -480,50 +344,81 @@ check_pam_user(Authctxt *authctxt)
  }
  
  /*
@@ -307,6 +307,9 @@
 -		goto auth_fail;
 +	if ((buffer = sshbuf_new()) == NULL)
 +		fatal_f("sshbuf_new failed");
++
++	if ((r = sshbuf_put_cstring(buffer, "OK")) != 0)
++		fatal_f("buffer error: %s", ssh_err(r));
  
 -	environ[0] = NULL;
 -	if (tz != NULL)
@@ -317,9 +320,6 @@
 -	if (sshpam_authctxt != NULL) {
 -		setproctitle("%s [pam]",
 -		    sshpam_authctxt->valid ? pam_user : "unknown");
-+	if ((r = sshbuf_put_cstring(buffer, "OK")) != 0)
-+		fatal_f("buffer error: %s", ssh_err(r));
-+
 +	type = (ctxt->pam_done == 1) ? PAM_SUCCESS : PAM_AUTH_ERR;
 +	if (ssh_msg_send(ctxt->pam_csock, type, buffer) == -1)
 +		fatal_f("cannnot terminate callback child (send)");
@@ -349,8 +349,7 @@
 +	struct pam_ctxt *pctxt = (struct pam_ctxt *)ctxt;
 +	return (pctxt->pam_done);
 +}
- 
--	sshpam_conv.conv = sshpam_thread_conv;
++
 +/*
 + * Perform PAM authentication.
 + *
@@ -365,7 +364,8 @@
 +	struct pam_conv sshpam_conv;
 +	int flags = (options.permit_empty_passwd == 0 ?
 +	    PAM_DISALLOW_NULL_AUTHTOK : 0);
-+
+ 
+-	sshpam_conv.conv = sshpam_thread_conv;
 +	sshpam_conv.conv = sshpam_child_conv;
  	sshpam_conv.appdata_ptr = ctxt;
  
@@ -380,7 +380,7 @@
  	sshpam_err = pam_set_item(sshpam_handle, PAM_CONV,
  	    (const void *)&sshpam_conv);
  	if (sshpam_err != PAM_SUCCESS)
-@@ -562,76 +457,34 @@ sshpam_thread(void *ctxtp)
+@@ -548,76 +443,34 @@ sshpam_thread(void *ctxtp)
  		sshpam_password_change_required(0);
  	}
  
@@ -477,7 +477,7 @@
  		cleanup_ctxt = NULL;
  	}
  }
-@@ -898,7 +751,8 @@ static void *
+@@ -913,7 +766,8 @@ static void *
  sshpam_init_ctx(Authctxt *authctxt)
  {
  	struct pam_ctxt *ctxt;
@@ -487,7 +487,7 @@
  
  	debug3_f("entering");
  	/*
-@@ -917,7 +771,7 @@ sshpam_init_ctx(Authctxt *authctxt)
+@@ -932,7 +786,7 @@ sshpam_init_ctx(Authctxt *authctxt)
  	expose_authinfo(__func__);
  	ctxt = xcalloc(1, sizeof *ctxt);
  
@@ -496,7 +496,7 @@
  	if (socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, socks) == -1) {
  		error("PAM: failed create sockets: %s", strerror(errno));
  		free(ctxt);
-@@ -925,16 +779,29 @@ sshpam_init_ctx(Authctxt *authctxt)
+@@ -940,16 +794,29 @@ sshpam_init_ctx(Authctxt *authctxt)
  	}
  	ctxt->pam_psock = socks[0];
  	ctxt->pam_csock = socks[1];
@@ -531,46 +531,28 @@
  	return (ctxt);
  }
  
-@@ -959,6 +826,17 @@ sshpam_query(void *ctx, char **name, cha
- 	**prompts = NULL;
- 	plen = 0;
- 	*echo_on = xmalloc(sizeof(u_int));
+@@ -971,7 +838,16 @@ sshpam_query(void *ctx, char **name, cha
+ 	*info = xstrdup("");
+ 	*prompts = NULL;
+ 	*num = 0;
+-	ctxt->pam_done = SshPamNone;
 +
 +	/* in case PAM was already done in callback child */
 +	switch (ctxt->pam_done) {
-+	case 1:
++	case SshPamAuthenticated:
 +		return (0);
-+	case 0:
++	case SshPamNone:
 +		break;
 +	default:
 +		return (-1);
 +	}
-+
+ 
  	while (ssh_msg_recv(ctxt->pam_psock, buffer) == 0) {
  		if (++nmesg > PAM_MAX_NUM_MSG)
- 			fatal_f("too many query messages");
-@@ -997,17 +875,6 @@ sshpam_query(void *ctx, char **name, cha
- 			/* FALLTHROUGH */
- 		case PAM_AUTH_ERR:
+@@ -1008,23 +884,16 @@ sshpam_query(void *ctx, char **name, cha
  			debug3("PAM: %s", pam_strerror(sshpam_handle, type));
--			if (**prompts != NULL && strlen(**prompts) != 0) {
--				free(*info);
--				*info = **prompts;
--				**prompts = NULL;
--				*num = 0;
--				**echo_on = 0;
--				ctxt->pam_done = -1;
--				free(msg);
--				sshbuf_free(buffer);
--				return 0;
--			}
  			/* FALLTHROUGH */
  		case PAM_SUCCESS:
- 			if (**prompts != NULL) {
-@@ -1020,25 +887,16 @@ sshpam_query(void *ctx, char **name, cha
- 				free(**prompts);
- 				**prompts = NULL;
- 			}
 -			if (type == PAM_SUCCESS) {
 -				if (!sshpam_authctxt->valid ||
 -				    (sshpam_authctxt->pw->pw_uid == 0 &&
@@ -579,9 +561,7 @@
 -					    "succeeded when it should have "
 -					    "failed");
 -				import_environments(buffer);
--				*num = 0;
--				**echo_on = 0;
--				ctxt->pam_done = 1;
+-				ctxt->pam_done = SshPamAuthenticated;
 -				free(msg);
 -				sshbuf_free(buffer);
 -				return (0);
@@ -601,9 +581,9 @@
 +			close(ctxt->pam_psock);
 +			exit(0);
  		default:
- 			*num = 0;
- 			**echo_on = 0;
-@@ -1126,7 +984,7 @@ sshpam_free_ctx(void *ctxtp)
+ 			free(msg);
+ 			ctxt->pam_done = SshPamError;
+@@ -1111,7 +980,7 @@ sshpam_free_ctx(void *ctxtp)
  	struct pam_ctxt *ctxt = ctxtp;
  
  	debug3_f("entering");
@@ -612,9 +592,9 @@
  	free(ctxt);
  	/*
  	 * We don't call sshpam_cleanup() here because we may need the PAM
---- old/auth-pam.h	2025-10-10 12:02:52.755387435 +0200
-+++ new/auth-pam.h	2025-10-10 12:02:54.045587160 +0200
-@@ -37,7 +37,8 @@ int do_pam_putenv(char *, char *);
+--- old/auth-pam.h	2026-04-03 16:54:13.695401060 +0200
++++ new/auth-pam.h	2026-04-03 16:54:14.764321165 +0200
+@@ -36,7 +36,8 @@ int do_pam_putenv(char *, char *);
  char ** fetch_pam_environment(void);
  char ** fetch_pam_child_environment(void);
  void free_pam_environment(char **);
@@ -624,9 +604,9 @@
  void sshpam_cleanup(void);
  int sshpam_auth_passwd(Authctxt *, const char *);
  int sshpam_get_maxtries_reached(void);
---- old/monitor.c	2025-10-10 12:02:52.760111955 +0200
-+++ new/monitor.c	2025-10-10 12:02:54.046551915 +0200
-@@ -1240,6 +1240,7 @@ mm_answer_pam_init_ctx(struct ssh *ssh,
+--- old/monitor.c	2026-04-03 16:54:13.698812175 +0200
++++ new/monitor.c	2026-04-03 16:54:14.765187280 +0200
+@@ -1268,6 +1268,7 @@ mm_answer_pam_init_ctx(struct ssh *ssh,
  {
  	u_int ok = 0;
  	int r;
@@ -634,7 +614,7 @@
  
  	debug3_f("entering");
  	if (!options.kbd_interactive_authentication)
-@@ -1256,6 +1257,33 @@ mm_answer_pam_init_ctx(struct ssh *ssh,
+@@ -1284,6 +1285,33 @@ mm_answer_pam_init_ctx(struct ssh *ssh,
  	}
  	if ((r = sshbuf_put_u32(m, ok)) != 0)
  		fatal_fr(r, "buffer error");
@@ -668,7 +648,7 @@
  	mm_request_send(sock, MONITOR_ANS_PAM_INIT_CTX, m);
  	return (0);
  }
-@@ -1935,7 +1963,8 @@ monitor_apply_keystate(struct ssh *ssh,
+@@ -1963,7 +1991,8 @@ monitor_apply_keystate(struct ssh *ssh,
  	int r;
  
  	debug3_f("packet_set_state");
@@ -678,9 +658,9 @@
  		fatal_fr(r, "packet_set_state");
  	sshbuf_free(child_state);
  	child_state = NULL;
---- old/packet.c	2025-10-10 12:02:53.304336105 +0200
-+++ new/packet.c	2025-10-10 12:02:54.047462625 +0200
-@@ -2350,7 +2350,7 @@ ssh_packet_get_output(struct ssh *ssh)
+--- old/packet.c	2026-04-03 16:54:14.205549745 +0200
++++ new/packet.c	2026-04-03 16:54:14.766020725 +0200
+@@ -2390,7 +2390,7 @@ ssh_packet_get_output(struct ssh *ssh)
  }
  
  /* Reset after_authentication and reset compression in post-auth privsep */
@@ -689,7 +669,7 @@
  ssh_packet_set_postauth(struct ssh *ssh)
  {
  	int r;
-@@ -2604,9 +2604,6 @@ ssh_packet_set_state(struct ssh *ssh, st
+@@ -2644,9 +2644,6 @@ ssh_packet_set_state(struct ssh *ssh, st
  	    (r = ssh_set_newkeys(ssh, MODE_OUT)) != 0)
  		return r;
  
@@ -699,9 +679,9 @@
  	sshbuf_reset(state->input);
  	sshbuf_reset(state->output);
  	if ((r = sshbuf_get_string_direct(m, &input, &ilen)) != 0 ||
---- old/packet.h	2025-10-06 04:25:16.000000000 +0200
-+++ new/packet.h	2025-10-10 12:02:54.047819145 +0200
-@@ -159,6 +159,7 @@ u_int	 ssh_packet_get_maxsize(struct ssh
+--- old/packet.h	2026-04-02 10:09:03.000000000 +0200
++++ new/packet.h	2026-04-03 16:54:14.766366355 +0200
+@@ -160,6 +160,7 @@ u_int	 ssh_packet_get_maxsize(struct ssh
  
  int	 ssh_packet_get_state(struct ssh *, struct sshbuf *);
  int	 ssh_packet_set_state(struct ssh *, struct sshbuf *);
@@ -709,9 +689,9 @@
  
  const char *ssh_remote_ipaddr(struct ssh *);
  int	 ssh_remote_port(struct ssh *);
---- old/session.c	2025-10-10 12:02:53.166544835 +0200
-+++ new/session.c	2025-10-10 12:02:54.048567540 +0200
-@@ -2731,7 +2731,7 @@ do_cleanup(struct ssh *ssh, Authctxt *au
+--- old/session.c	2026-04-03 16:54:14.075420940 +0200
++++ new/session.c	2026-04-03 16:54:14.767109590 +0200
+@@ -2739,7 +2739,7 @@ do_cleanup(struct ssh *ssh, Authctxt *au
  #ifdef USE_PAM
  	if (options.use_pam) {
  		sshpam_cleanup();

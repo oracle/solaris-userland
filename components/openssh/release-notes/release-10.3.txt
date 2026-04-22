@@ -1,0 +1,326 @@
+OpenSSH 10.3 was released on 2026-04-02. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Potentially-incompatible changes
+--------------------------------
+
+ * ssh(1), sshd(8): remove bug compatibility for implementations
+   that don't support rekeying. If such an implementation tries to
+   interoperate with OpenSSH, it will now eventually fail when the
+   transport needs rekeying.
+
+ * sshd(8): prior to this release, a certificate that had an empty
+   principals section would be treated as matching any principal
+   (i.e. as a wildcard) when used via authorized_keys principals=""
+   option. This was intentional, but created a surprising and
+   potentially risky situation if a CA accidentally issued a
+   certificate with an empty principals section: instead of being
+   useless as one might expect, it could be used to authenticate as
+   any user who trusted the CA via authorized_keys. [Note that this
+   condition did not apply to CAs trusted via the sshd_config(5)
+   TrustedUserCAKeys option.]
+
+   This release treats an empty principals section as never matching
+   any principal, and also fixes interpretation of wildcard
+   characters in certificate principals. Now they are consistently
+   implemented for host certificates and not supported for user
+   certificates.
+
+ * ssh(1): the -J and equivalent -oProxyJump="..." options now
+   validate user and host names for ProxyJump/-J options passed
+   via the command-line (no such validation is performed for this
+   option in configuration files). This prevents shell injection in
+   situations where these were directly exposed to adversarial
+   input, which would have been a terrible idea to begin with.
+   Reported by rabbit.
+
+Changes since OpenSSH 10.2
+==========================
+
+This release contains some relatively minor security fixes as well
+as a number of feature improvements and general bugfixes.
+
+Security
+========
+
+ * ssh(1): validation of shell metacharacters in user names supplied
+   on the command-line was performed too late to prevent some
+   situations where they could be expanded from %-tokens in
+   ssh_config. For certain configurations, such as those that use a
+   "%u" token in a "Match exec" block, an attacker who can control
+   the user name passed to ssh(1) could potentially execute arbitrary
+   shell commands.  Reported by Florian Kohnhäuser.
+
+   We continue to recommend against directly exposing ssh(1) and
+   other tools' command-lines to untrusted input. Mitigations such
+   as this can not be absolute given the variety of shells and user
+   configurations in use.
+
+ * sshd(8): when matching an authorized_keys principals="" option
+   against a list of principals in a certificate, an incorrect
+   algorithm was used that could allow inappropriate matching in
+   cases where a principal name in the certificate contains a
+   comma character. Exploitation of the condition requires an
+   authorized_keys principals="" option that lists more than one
+   principal *and* a CA that will issue a certificate that encodes
+   more than one of these principal names separated by a comma
+   (typical CAs stronly constrain which principal names they will
+   place in a certificate). This condition only applies to user-
+   trusted CA keys in authorized_keys, the main certificate
+   authentication path (TrustedUserCAKeys/AuthorizedPrincipalsFile)
+   is not affected. Reported by Vladimir Tokarev.
+
+ * scp(1): when downloading files as root in legacy (-O) mode and
+   without the -p (preserve modes) flag set, scp did not clear
+   setuid/setgid bits from downloaded files as one might typically
+   expect. This bug dates back to the original Berkeley rcp program.
+   Reported by Christos Papakonstantinou of Cantina and Spearbit.
+
+ * sshd(8): fix incomplete application of PubkeyAcceptedAlgorithms
+   and HostbasedAcceptedAlgorithms with regard to ECDSA keys.
+   Previously if one of these directives contains any ECDSA algorithm
+   name (say "ecdsa-sha2-nistp384"), then any other ECDSA algorithm
+   would be accepted in its place regardless of whether it was
+   listed or not.  Reported by Christos Papakonstantinou of Cantina
+   and Spearbit.
+
+ * ssh(1): connection multiplexing confirmation (requested using
+   "ControlMaster ask/autoask") was not being tested for proxy mode
+   multiplexing sessions (i.e. "ssh -O proxy ..."). Reported by
+   Michalis Vasileiadis.
+
+New features
+------------
+
+ * ssh(1), sshd(8): support IANA-assigned codepoints for SSH agent
+   forwarding, as per draft-ietf-sshm-ssh-agent. Support for the new
+   names is advertised via the EXT_INFO message. If a server offers
+   support for the new names, then they are used preferentially.
+
+   Support for the pre-standardisation "@openssh.com" extensions for
+   agent forwarding remains supported.
+
+ * ssh-agent(1): implement support for draft-ietf-sshm-ssh-agent
+   "query" extension.
+
+ * ssh-add(1): support querying the protocol extensions via the
+   agent "query" extension with a new -Q flag.
+
+ * ssh(1): support multiple files in a ssh_config RevokedHostKeys
+   directive. bz3918
+
+ * sshd(8): support multiple files in a sshd_config RevokedKeys
+   directive bz3918
+
+ * ssh(1): add a ~I escape option that shows information about the
+   current SSH connection.
+
+ * ssh(1): add an "ssh -Oconninfo user@host" multiplexing command
+   that shows connection information, similar to the ~I escapechar.
+
+ * ssh(1): add an "ssh -O channels user@host" multiplexing command to
+   get a running mux process to show information about what channels
+   are currently open.
+
+ * sshd(8): add 'invaliduser' penalty to PerSourcePenalties, which is
+   applied to login attempts for usernames that do not match real
+   accounts. Defaults to 5s to match 'authfail' but allows
+   administrators to block such attempts for longer if desired.
+
+ * sshd(8): add a GSSAPIDelegateCredentials option for the server,
+   controlling whether it accepts delegated credentials offered by
+   the client.  This option mirrors the same option in ssh_config.
+   GHPR614
+
+ * ssh(1), sshd(8): support the VA DSCP codepoint in the IPQoS
+   directive.
+
+ * sshd(8): convert PerSourcePenalties to using floating point time,
+   allowing penalties to be less than a second. This is useful if you
+   need to penalise things you expect to occur at >=1 QPS.
+
+ * ssh-keygen(1): support writing ED25519 keys in PKCS8 format.
+   GHPR570
+
+ * Support the ed25519 signature scheme via libcrypto.
+
+Bugfixes
+--------
+
+ * sshd(8): make IPQoS first-match-wins in sshd_config, like other
+   configuration directives. bz3924
+
+ * sshd(8): fix potential crash when MaxStartups is using a single
+   argument (i.e. not using the MaxStartps x:y:z form) to a value
+   below 10. bz3941
+
+ * sshd(8): fix a potential hang during key exchange if needed DH
+   group values were missing from /etc/moduli.
+
+ * ssh-agent(1): fix return values from extensions to be correct wrt
+   draft-ietf-sshm-ssh-agent: extension requests should indicate
+   failure using SSH_AGENT_EXTENSION_FAILURE rather than the generic
+   SSH_AGENT_FAILURE error code. This allows the client to discern
+   between "the request failed" and "the agent doesn't support this
+   extension".
+
+ * ssh(1): use fmprintf for showing challenge-response name and info
+   to preserve UTF-8 characters where appropriate. Prompted by GitHub
+   PR#452.
+
+ * scp(1): when uploading a directory using sftp/sftp (e.g. during a
+   recursive transfer), don't clobber the remote directory
+   permissions unless either we created the directory during the
+   transfer or the -p flag was set. bz3925
+
+ * All: implement missing pieces of FIDO/webauthn signature support,
+   mostly related to certificate handling and enable acceptance of this
+   signature format by default.  bz3748 GHPR624 GHPR625
+
+ * sshd_config(5): make it clear that DenyUsers/DenyGroups overrides
+   AllowUsers/AllowGroups. Previously we specified the order in which
+   the directives are processed but it was ambiguous as to what
+   happened if both matched.
+
+ * ssh(1): don't try to match certificates held in an agent to
+   private keys. This matching is done to support certificates that
+   were loaded without their private key material, but is
+   unnecessary for agent-hosted certificate which always have
+   private key material available in the agent. Worse, this matching
+   would mess up the request sent to the agent in such a way as to
+   break usage of these keys when the key usage was restricted in
+   the agent.  bz3752
+
+ * sftp(1): if editline has been switched to vi mode (i.e. via "bind
+   -v" in .editrc), setup a keybinding so that command mode can be
+   entered.
+
+ * ssh(1), sshd(8): improve performance of keying the sntrup761 key
+   agreement algorithm.
+
+ * ssh(1), sshd(8): enforce maximum packet/block limit during
+   pre-authentication phase.
+
+ * sftp(1): don't misuse the sftp limits extension's open-handles
+   field. This value is supposed to be the number of handles a
+   server will allow to be opened and not a number of outstanding
+   read/write requests that can be sent during an upload/download.
+
+ * sshd(8): don't crash at connection time if the main sshd_config
+   lacks any subsystem directive but one is defined in a Match block.
+   bz3906
+
+ * sshd_config(5): add a warning next to the ForceCommand directive
+   that forcing a command doesn't automatically disable forwarding.
+
+ * sshd_config(5): add a warning that TOKENS are replaced without
+   filtering or escaping and that it's the administrator's
+   responsibility to ensure they are used safely in context.
+
+ * scp(1): correctly quote filenames in verbose output for local->
+   local copies. bz3900
+
+ * sshd(8): don't mess up the PerSourceNetBlockSize IPv6 mask if
+   sscanf didn't decode it. GHPR598
+
+ * ssh-add(1): when loading FIDO2 resident keys, set the comment to
+   the FIDO application string. This matches the behaviour of
+   ssh-keygen -K. GHPR608
+
+ * sshd(8): don't strnvis() log messages that are going to be logged
+   by sshd-auth via its parent sshd-session process, as the parent
+   will also run them though strnvis(). Prevents double-escaping of
+   non-printing characters in some log messages. bz3896
+
+ * ssh-agent(1): escape SSH_AUTH_SOCK paths that are sent to the
+   shell as setenv commands. Unbreaks ssh-agent for home directory
+   paths that contain whitespace. bz3884
+
+ * All: Remove unnecessary checks for ECDSA public key validity.
+
+ * sshd(8): activate UnusedConnectionTimeout only after the last
+   channel has closed. Previously UnusedConnectionTimeout could fire
+   early after a ChannelTimeout. This was not a problem for the
+   OpenSSH client because it terminates once all channels have
+   closed but could cause problems for other clients (e.g. API
+   clients) that do things differently.  bz3827
+
+ * All: fix PKCS#11 key PIN entry problems introduced in
+   openssh-10.1/10.2.  bz3879
+
+ * scp(1): when using the SFTP protocol for transfers, fix implicit
+   destination path selection when source path ends with "..". bz3871
+
+ * sftp(1): when tab-completing a filename, ensure that the completed
+   string does not end up mid-way through a multibyte character, as
+   this will cause a fatal() later on. GHPR#587
+
+ * ssh-keygen(1): fix crash at exit (visible via ssh-keygen -D) when
+   multiple keys loaded.
+
+ * scp(1)/sftp(1): correctly display bandwidths >2GBps in the
+   progress meter.
+
+Portability
+-----------
+
+ * sshd(8): fix condition intoduced in openssh 10.2p1 stable branch
+   here a PAM module that changed the requested username between
+   SSH_MSG_USERAUTH_REQUEST messages during authentication could
+   confuse the PAM stack and let it proceed with a different
+   understanding of the active username than the rest of sshd.
+   Reported by Mike Damm.
+
+ * sshd(8): immediately report interactive instructions to clients
+   when using keyboard-interactive authentication with PAM. bz2876
+
+ * sshd(8): fix duplicate PAM messages under some situations.
+
+ * sshd(8): don't leak PAM handle on repeat invocations. bz3882
+
+ * All: support linking libcrypto implementations (e.g. BoringSSL)
+   that require libstdc++.
+
+ * sshd(8): fix ut_type for btmp records, correctly using
+   LOGIN_PROCESS and USER_PROCESS.
+
+ * sshd(8): allow uname(3) in the seccomp sandbox. This is needed by
+   zlib-ng on RISC-V platforms.
+
+ * All: remove remaining OpenSSL_add_all_algorithms() calls.
+   We already have OPENSSL_init_crypto() in the compat layer.
+   Prompted by github PR#606
+
+ * All: fix builds on older Mac OS wrt nfds_t.
+
+ * mdoc2man: several improvements including better support for Dl
+   and Ns inside Ic.
+
+Checksums:
+==========
+
+ - SHA1 (openssh-10.3.tar.gz) = 854863c04cd28242d73ac6c3ee9c37fa756f1a2f
+ - SHA256 (openssh-10.3.tar.gz) = aCU5P47rM+m4N8/i2JOHMOMhafMYqBhvQQSnPXczN5M=
+
+ - SHA1 (openssh-10.3p1.tar.gz) = 9c78838ec07af14aff54f3755ac56ce6812452a9
+ - SHA256 (openssh-10.3p1.tar.gz) = VmgqNruS3PS08Bb9jsjnQFm3mo3iXBXWcNcx59GORfQ=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com
