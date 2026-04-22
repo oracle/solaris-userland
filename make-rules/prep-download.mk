@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 FETCH =		$(WS_TOOLS)/userland-fetch
@@ -64,7 +64,7 @@ $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 		$$(COMPONENT_PUBLIC_KEY_URL$(1):%=--pubkey '%')
 	$$(TOUCH) $$@
 
-REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += runtime/python-313
 
 endif
 endef

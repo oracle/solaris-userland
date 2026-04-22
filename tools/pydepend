@@ -1,4 +1,4 @@
-#!/usr/bin/python3.11
+#!/usr/bin/python3.13
 #
 # CDDL HEADER START
 #
@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 #
 
 #
@@ -36,7 +36,7 @@ import sys
 
 from pathlib import Path
 
-import importlib_metadata
+import importlib.metadata
 import packaging.requirements
 
 # Map for components with different component and import names.
@@ -61,7 +61,7 @@ def main():
         if entry.endswith(".egg-info") or entry.endswith(".dist-info"):
             found = True
             path = os.path.join(fullpath, entry)
-            dist = importlib_metadata.PathDistribution(Path(path))
+            dist = importlib.metadata.PathDistribution(Path(path))
 
             if os.path.isfile(path):
                 # packages with metadata file (rather than a directory)
