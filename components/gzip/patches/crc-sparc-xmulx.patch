@@ -1,0 +1,436 @@
+gzip: add SPARC VIS3 XMULX CRC32 acceleration
+
+Add a SPARC VIS3 implementation of the CRC32 folding path based on the
+XMULX and XMULXHI instructions, and dispatch to it at runtime when VIS3
+support is present and the input is large enough to benefit.
+
+Teach configure.ac and lib/Makefile.am to detect the required compiler
+flags and build the SPARC-specific source file only when supported.
+Keep the inline assembly buildable with both GCC and Studio by using
+volatile asm with early-clobber outputs.
+
+On an Oracle sun4v SPARC T5-4 system, gzip -dc and gzip -t on
+gcc-12.1.0.tar.gz improved by about 9-10% versus the baseline build.
+
+diff -urN gzip-1.14/configure.ac gzip-1.14/configure.ac
+--- gzip-1.14/configure.ac	2026-04-14 16:29:14.895389588 +0200
++++ gzip-1.14/configure.ac	2026-04-15 07:13:00.475362942 +0200
+@@ -61,6 +61,46 @@
+ 
+ gl_INIT
+ 
++GL_CRC_SPARC_XMULX_CFLAGS=
++
++AC_CACHE_CHECK([if SPARC VIS3 xmulx instructions are supported],
++  [gl_cv_crc_sparc_vis3_xmulx],
++  [gl_cv_crc_sparc_vis3_xmulx=no
++   case "$host_cpu" in
++     sparc*)
++       gl_save_CFLAGS="$CFLAGS"
++       for gl_crc_sparc_flags in "-mvis3" "-mcpu=niagara7" \
++                                 "-xarch=sparcvis3"; do
++         CFLAGS="$gl_save_CFLAGS $gl_crc_sparc_flags"
++         AC_COMPILE_IFELSE(
++           [AC_LANG_PROGRAM(
++              [[]],
++              [[
++                unsigned long long lo;
++                unsigned long long hi;
++                __asm__ __volatile__ (
++                  "xmulx %2, %3, %0\n\t"
++                  "xmulxhi %2, %3, %1"
++                  : "=&r" (lo), "=&r" (hi)
++                  : "r" (1ULL), "r" (2ULL));
++                return (int) (lo ^ hi);
++              ]])],
++           [gl_cv_crc_sparc_vis3_xmulx=yes
++            GL_CRC_SPARC_XMULX_CFLAGS="$gl_crc_sparc_flags"
++            break])
++       done
++       CFLAGS="$gl_save_CFLAGS"
++       ;;
++   esac])
++
++if test "$gl_cv_crc_sparc_vis3_xmulx" = yes; then
++  AC_DEFINE([GL_CRC_SPARC_VIS3_XMULX], [1],
++    [CRC32 calculation by SPARC VIS3 XMULX hardware instruction enabled])
++fi
++AM_CONDITIONAL([GL_CRC_SPARC_VIS3_XMULX],
++  [test "$gl_cv_crc_sparc_vis3_xmulx" = yes])
++AC_SUBST([GL_CRC_SPARC_XMULX_CFLAGS])
++
+ # Ensure VLAs are not used.
+ # Note -Wvla is implicitly added by gl_MANYWARN_ALL_GCC
+ AC_DEFINE([GNULIB_NO_VLA], [1], [Define to 1 to disable use of VLAs])
+diff -urN gzip-1.14/lib/Makefile.am gzip-1.14/lib/Makefile.am
+--- gzip-1.14/lib/Makefile.am	2026-04-14 16:29:15.974310821 +0200
++++ gzip-1.14/lib/Makefile.am	2026-04-15 07:13:17.945334788 +0200
+@@ -30,6 +30,17 @@
+ libgzip_a_LIBADD += $(LIBOBJS)
+ libgzip_a_DEPENDENCIES += $(LIBOBJS)
+ AM_CFLAGS += $(GNULIB_WARN_CFLAGS) $(WERROR_CFLAGS)
++EXTRA_DIST += crc-sparc-xmulx.c crc-sparc.h
++
++if GL_CRC_SPARC_VIS3_XMULX
++libgzip_a_SOURCES += crc-sparc-xmulx.c
++endif
++
++libgzip_a-crc-sparc-xmulx.$(OBJEXT): crc-sparc-xmulx.c crc-sparc.h crc.h
++	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
++	  $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) \
++	  $(CFLAGS) $(GL_CRC_SPARC_XMULX_CFLAGS) -c -o $@ \
++	  $(srcdir)/crc-sparc-xmulx.c
+ 
+ match.$(OBJEXT): match.c
+ 	$(AM_V_GEN)cp $(srcdir)/match.c _match.S
+diff -urN gzip-1.14/lib/config.hin gzip-1.14/lib/config.hin
+--- gzip-1.14/lib/config.hin	2026-04-14 16:29:18.162123851 +0200
++++ gzip-1.14/lib/config.hin	2026-04-15 07:13:08.319143632 +0200
+@@ -104,6 +104,9 @@
+    declaration of the second argument to gettimeofday. */
+ #undef GETTIMEOFDAY_TIMEZONE
+ 
++/* CRC32 calculation by SPARC VIS3 XMULX hardware instruction enabled */
++#undef GL_CRC_SPARC_VIS3_XMULX
++
+ /* Define to get faster but larger CRC32 operation. */
+ #undef GL_CRC_SLICE_BY_8
+ 
+diff -urN gzip-1.14/lib/crc-sparc-xmulx.c gzip-1.14/lib/crc-sparc-xmulx.c
+--- gzip-1.14/lib/crc-sparc-xmulx.c	1970-01-01 01:00:00.000000000 +0100
++++ gzip-1.14/lib/crc-sparc-xmulx.c	2026-04-15 07:21:52.096537992 +0200
+@@ -0,0 +1,238 @@
++/* crc-sparc-xmulx.c -- CRC32 implementation for SPARC VIS3 using XMULX
++   Copyright (C) 2026 Free Software Foundation, Inc.
++
++   This file is free software: you can redistribute it and/or modify
++   it under the terms of the GNU Lesser General Public License as
++   published by the Free Software Foundation, either version 3 of the
++   License, or (at your option) any later version.
++
++   This file is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public License
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
++
++#include <config.h>
++
++#include "crc-sparc.h"
++
++#include <string.h>
++
++#include "crc.h"
++
++#if WORDS_BIGENDIAN
++# if defined __GNUC__ || defined __clang__
++#  define GF2_BSWAP64(x) __builtin_bswap64 (x)
++# else
++#  define GF2_BSWAP64(x) \
++    ((((x) & UINT64_C (0x00000000000000ff)) << 56) \
++     | (((x) & UINT64_C (0x000000000000ff00)) << 40) \
++     | (((x) & UINT64_C (0x0000000000ff0000)) << 24) \
++     | (((x) & UINT64_C (0x00000000ff000000)) << 8) \
++     | (((x) & UINT64_C (0x000000ff00000000)) >> 8) \
++     | (((x) & UINT64_C (0x0000ff0000000000)) >> 24) \
++     | (((x) & UINT64_C (0x00ff000000000000)) >> 40) \
++     | (((x) & UINT64_C (0xff00000000000000)) >> 56))
++# endif
++# define GF2_FROM_LE64(x) GF2_BSWAP64 (x)
++# define GF2_TO_LE64(x) GF2_BSWAP64 (x)
++#else
++# define GF2_FROM_LE64(x) (x)
++# define GF2_TO_LE64(x) (x)
++#endif
++
++struct gf2_u128
++{
++  uint64_t lo;
++  uint64_t hi;
++};
++
++#define GF2_U128_XOR(dst, a, b) \
++  do \
++    { \
++      (dst).lo = (a).lo ^ (b).lo; \
++      (dst).hi = (a).hi ^ (b).hi; \
++    } \
++  while (0)
++
++#define GF2_U128_FROM_LO(dst, lo_value) \
++  do \
++    { \
++      (dst).lo = (lo_value); \
++      (dst).hi = 0; \
++    } \
++  while (0)
++
++static struct gf2_u128
++gf2_clmul_64 (uint64_t a, uint64_t b)
++{
++  struct gf2_u128 dst;
++
++  __asm__ __volatile__ (
++    "xmulx %2, %3, %0\n\t"
++    "xmulxhi %2, %3, %1"
++    : "=&r" (dst.lo), "=&r" (dst.hi)
++    : "r" (a), "r" (b));
++
++  return dst;
++}
++
++#define GF2_CLMUL_64(dst, a, b) \
++  do \
++    { \
++      (dst) = gf2_clmul_64 ((a), (b)); \
++    } \
++  while (0)
++
++#define GF2_LOAD_LE(dst, buf) \
++  do \
++    { \
++      uint64_t gf2_load_le_lo; \
++      uint64_t gf2_load_le_hi; \
++      memcpy (&gf2_load_le_lo, (buf), sizeof (gf2_load_le_lo)); \
++      memcpy (&gf2_load_le_hi, (buf) + 8, sizeof (gf2_load_le_hi)); \
++      (dst).lo = GF2_FROM_LE64 (gf2_load_le_lo); \
++      (dst).hi = GF2_FROM_LE64 (gf2_load_le_hi); \
++    } \
++  while (0)
++
++#define GF2_STORE_LE(buf, value) \
++  do \
++    { \
++      uint64_t gf2_store_le_lo = GF2_TO_LE64 ((value).lo); \
++      uint64_t gf2_store_le_hi = GF2_TO_LE64 ((value).hi); \
++      memcpy ((buf), &gf2_store_le_lo, sizeof (gf2_store_le_lo)); \
++      memcpy ((buf) + 8, &gf2_store_le_hi, sizeof (gf2_store_le_hi)); \
++    } \
++  while (0)
++
++#define GF2_FOLD_128(dst, in, k_lo, k_hi, tmp_lo, tmp_hi) \
++  do \
++    { \
++      GF2_CLMUL_64 ((tmp_lo), (in).lo, (k_lo)); \
++      GF2_CLMUL_64 ((tmp_hi), (in).hi, (k_hi)); \
++      GF2_U128_XOR ((dst), (tmp_lo), (tmp_hi)); \
++    } \
++  while (0)
++
++uint32_t
++crc32_update_no_xor_xmulx (uint32_t crc, const void *buf, size_t len)
++{
++  const uint64_t shift544_lo = 0x8F352D95U;
++  const uint64_t shift544_hi = 0x1D9513D7U;
++  const uint64_t shift160_lo = 0xAE689191U;
++  const uint64_t shift160_hi = 0xCCAA009EU;
++  const uint64_t shift160_tail_lo = 0x1751997D0ULL;
++  const uint64_t shift160_tail_hi = 0x0CCAA009EULL;
++  const uint64_t shift96_lo = 0xCCAA009EU;
++  const uint64_t shift96_hi = 0xB8BC6765U;
++  const uint64_t mu_lo = 0x1F7011641ULL;
++  const uint64_t mu_hi = 0x1DB710641ULL;
++  const unsigned char *data = buf;
++  unsigned char *datarw;
++  unsigned char final_buf[12 * 16] = { 0 };
++  struct gf2_u128 in1, in2, in3, in4, tmp2, tmp3, prod;
++  size_t bytes_remaining = len;
++
++  if (bytes_remaining >= 128)
++    {
++      const unsigned char *tail;
++
++      GF2_LOAD_LE (in1, data);
++      GF2_LOAD_LE (in2, data + 16);
++      GF2_LOAD_LE (in3, data + 32);
++      GF2_LOAD_LE (in4, data + 48);
++      in1.lo ^= crc;
++
++      while (bytes_remaining >= 128)
++        {
++          struct gf2_u128 in5;
++          struct gf2_u128 in6;
++          struct gf2_u128 in7;
++          struct gf2_u128 in8;
++
++          GF2_LOAD_LE (in5, data + 64);
++          GF2_LOAD_LE (in6, data + 80);
++          GF2_LOAD_LE (in7, data + 96);
++          GF2_LOAD_LE (in8, data + 112);
++
++          GF2_FOLD_128 (prod, in1, shift544_lo, shift544_hi, tmp2, tmp3);
++          GF2_U128_XOR (in1, in5, prod);
++          GF2_FOLD_128 (prod, in2, shift544_lo, shift544_hi, tmp2, tmp3);
++          GF2_U128_XOR (in2, in6, prod);
++          GF2_FOLD_128 (prod, in3, shift544_lo, shift544_hi, tmp2, tmp3);
++          GF2_U128_XOR (in3, in7, prod);
++          GF2_FOLD_128 (prod, in4, shift544_lo, shift544_hi, tmp2, tmp3);
++          GF2_U128_XOR (in4, in8, prod);
++
++          bytes_remaining -= 64;
++          data += 64;
++        }
++
++      GF2_FOLD_128 (prod, in1, shift160_lo, shift160_hi, tmp2, tmp3);
++      GF2_U128_XOR (in2, in2, prod);
++      GF2_FOLD_128 (prod, in2, shift160_lo, shift160_hi, tmp2, tmp3);
++      GF2_U128_XOR (in3, in3, prod);
++      GF2_FOLD_128 (prod, in3, shift160_lo, shift160_hi, tmp2, tmp3);
++      GF2_U128_XOR (in4, in4, prod);
++      in1 = in4;
++      bytes_remaining -= 48;
++      tail = data + 64;
++
++      GF2_STORE_LE (final_buf, in1);
++      memcpy (final_buf + 16, tail, bytes_remaining - 16);
++      datarw = final_buf;
++    }
++  else
++    {
++      memcpy (final_buf, data, bytes_remaining);
++      GF2_LOAD_LE (in1, final_buf);
++      in1.lo ^= crc;
++      GF2_STORE_LE (final_buf, in1);
++      datarw = final_buf;
++    }
++
++  while (bytes_remaining >= 32)
++    {
++      GF2_LOAD_LE (in1, datarw);
++      GF2_LOAD_LE (in2, datarw + 16);
++      GF2_FOLD_128 (prod, in1, shift160_lo, shift160_hi, tmp2, tmp3);
++      GF2_U128_XOR (in2, in2, prod);
++      GF2_STORE_LE (datarw + 16, in2);
++      bytes_remaining -= 16;
++      datarw += 16;
++    }
++
++  if (bytes_remaining != 16)
++    {
++      unsigned char in256[32] = { 0 };
++
++      memcpy (in256 + (32 - bytes_remaining), datarw, bytes_remaining);
++      GF2_LOAD_LE (in1, in256);
++      GF2_LOAD_LE (in2, in256 + 16);
++      GF2_FOLD_128 (prod, in1, shift160_tail_lo, shift160_tail_hi,
++                    tmp2, tmp3);
++      GF2_U128_XOR (in1, in2, prod);
++    }
++  else
++    GF2_LOAD_LE (in1, datarw);
++
++  GF2_U128_FROM_LO (tmp2, in1.hi & 0xffffffffU);
++  GF2_U128_FROM_LO (tmp3, in1.hi >> 32);
++  GF2_CLMUL_64 (prod, shift96_lo, in1.lo);
++  tmp2.lo ^= prod.lo & 0xffffffffU;
++  prod.lo = (prod.lo >> 32) | (prod.hi << 32);
++  prod.hi = prod.hi >> 32;
++  GF2_U128_XOR (tmp3, tmp3, prod);
++  GF2_CLMUL_64 (in1, shift96_hi, tmp2.lo);
++  GF2_U128_XOR (in1, in1, tmp3);
++
++  GF2_CLMUL_64 (tmp2, mu_lo, in1.lo & 0xffffffffU);
++  GF2_U128_FROM_LO (tmp2, tmp2.lo & 0xffffffffU);
++  GF2_CLMUL_64 (tmp2, mu_hi, tmp2.lo);
++  GF2_U128_XOR (in1, in1, tmp2);
++
++  return (uint32_t) (in1.lo >> 32);
++}
+diff -urN gzip-1.14/lib/crc-sparc.h gzip-1.14/lib/crc-sparc.h
+--- gzip-1.14/lib/crc-sparc.h	1970-01-01 01:00:00.000000000 +0100
++++ gzip-1.14/lib/crc-sparc.h	2026-04-14 16:29:30.006480190 +0200
+@@ -0,0 +1,35 @@
++/* crc-sparc.h -- CRC32 implementation for SPARC VIS3 XMULX
++   Copyright (C) 2026 Free Software Foundation, Inc.
++
++   This file is free software: you can redistribute it and/or modify
++   it under the terms of the GNU Lesser General Public License as
++   published by the Free Software Foundation, either version 3 of the
++   License, or (at your option) any later version.
++
++   This file is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public License
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
++
++#ifndef CRC_SPARC_H
++#define CRC_SPARC_H 1
++
++#include <stddef.h>
++#include <stdint.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++extern uint32_t
++crc32_update_no_xor_xmulx (uint32_t crc, const void *buf, size_t len)
++  _GL_ATTRIBUTE_PURE;
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* CRC_SPARC_H */
+diff -urN gzip-1.14/lib/crc.c gzip-1.14/lib/crc.c
+--- gzip-1.14/lib/crc.c	2026-04-14 16:29:19.423643535 +0200
++++ gzip-1.14/lib/crc.c	2026-04-14 16:29:27.838899895 +0200
+@@ -26,6 +26,13 @@
+ static bool pclmul_enabled = false;
+ static bool pclmul_checked = false;
+ #endif
++#ifdef GL_CRC_SPARC_VIS3_XMULX
++# include "crc-sparc.h"
++# include <sys/auxv.h>
++# include <sys/auxv_SPARC.h>
++static bool xmulx_enabled = false;
++static bool xmulx_checked = false;
++#endif
+ 
+ #include <string.h>
+ 
+@@ -115,6 +122,19 @@
+ crc32_update_no_xor (uint32_t crc, const char *buf, size_t len)
+ {
+   size_t n, slice_alignment;
++#ifdef GL_CRC_SPARC_VIS3_XMULX
++  if (!xmulx_checked)
++    {
++      uint32_t hwcaps[AT_SUN_CAP_HW_MAX];
++      uint_t nhwcaps = getisax (hwcaps, AT_SUN_CAP_HW_MAX);
++      xmulx_enabled = (AV_HW1_IDX < nhwcaps
++                       && (hwcaps[AV_HW1_IDX] & AV_SPARC_VIS3) != 0);
++      xmulx_checked = true;
++    }
++
++  if (xmulx_enabled && len >= 128)
++    return crc32_update_no_xor_xmulx (crc, buf, len);
++#endif
+ #ifdef GL_CRC_X86_64_PCLMUL
+   if (!pclmul_checked)
+     {
+@@ -197,6 +217,19 @@
+ {
+   size_t n;
+ 
++#ifdef GL_CRC_SPARC_VIS3_XMULX
++  if (!xmulx_checked)
++    {
++      uint32_t hwcaps[AT_SUN_CAP_HW_MAX];
++      uint_t nhwcaps = getisax (hwcaps, AT_SUN_CAP_HW_MAX);
++      xmulx_enabled = (AV_HW1_IDX < nhwcaps
++                       && (hwcaps[AV_HW1_IDX] & AV_SPARC_VIS3) != 0);
++      xmulx_checked = true;
++    }
++
++  if (xmulx_enabled && len >= 128)
++    return crc32_update_no_xor_xmulx (crc, buf, len);
++#endif
+ #ifdef GL_CRC_X86_64_PCLMUL
+   if (!pclmul_checked)
+     {

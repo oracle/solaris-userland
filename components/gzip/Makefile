@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # GCC produces faster gzip on amd64 (not on SPARC).
@@ -42,6 +42,8 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
+
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 
