@@ -30,7 +30,7 @@
 #
 --- a/src/lib/krb5/rcache/Makefile.in
 +++ b/src/lib/krb5/rcache/Makefile.in
-@@ -10,14 +10,16 @@ STLIBOBJS = \
+@@ -10,14 +10,16 @@ memrcache.o	\
  	rc_base.o	\
  	rc_dfl.o 	\
  	rc_file2.o	\
@@ -50,9 +50,9 @@
  
  SRCS=	\
  	$(srcdir)/memrcache.c	\
-@@ -26,7 +28,8 @@ SRCS=	\
- 	$(srcdir)/rc_file2.c 	\
- 	$(srcdir)/rc_none.c	\
+@@ -28,7 +30,8 @@ $(srcdir)/rc_none.c
+ 
+ EXTRADEPSRCS=	\
  	$(srcdir)/t_memrcache.c	\
 -	$(srcdir)/t_rcfile2.c
 +	$(srcdir)/t_rcfile2.c	\
@@ -62,7 +62,7 @@
  
 --- a/src/lib/krb5/rcache/rc-int.h
 +++ b/src/lib/krb5/rcache/rc-int.h
-@@ -48,10 +48,12 @@ struct krb5_rc_st {
+@@ -48,10 +48,12 @@ };
  extern const krb5_rc_ops k5_rc_dfl_ops;
  extern const krb5_rc_ops k5_rc_file2_ops;
  extern const krb5_rc_ops k5_rc_none_ops;
@@ -77,7 +77,7 @@
  #endif /* RC_INT_H */
 --- a/src/lib/krb5/rcache/rc_base.c
 +++ b/src/lib/krb5/rcache/rc_base.c
-@@ -20,7 +20,8 @@ struct typelist {
+@@ -20,7 +20,8 @@ const krb5_rc_ops *ops;
      struct typelist *next;
  };
  static struct typelist none = { &k5_rc_none_ops, 0 };
@@ -87,7 +87,7 @@
  static struct typelist dfl = { &k5_rc_dfl_ops, &file2 };
  static struct typelist *typehead = &dfl;
  
-@@ -33,6 +34,14 @@ k5_rc_default(krb5_context context, krb5_rcache *rc_out)
+@@ -33,6 +34,14 @@ char *profstr, *rcname;
  
      *rc_out = NULL;
  

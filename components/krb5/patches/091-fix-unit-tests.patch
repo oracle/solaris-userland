@@ -8,9 +8,9 @@
 #    and system/library/security/sasl/digestmd5 packages
 #    which is not desirable.
 #
---- old/src/tests/t_kdb.py	2025-09-25 12:34:03.800589739 +0200
-+++ new/src/tests/t_kdb.py	2025-09-25 12:34:48.174735001 +0200
-@@ -580,31 +580,6 @@ realm.kinit(realm.user_princ, password('
+--- a/src/tests/t_kdb.py
++++ b/src/tests/t_kdb.py
+@@ -592,34 +592,6 @@ realm.kinit(realm.user_princ, password('
  realm.stop()
  realm.run([kdb5_ldap_util, 'destroy', '-f'])
  
@@ -25,6 +25,9 @@
 -dbmod['ldap_kadmind_sasl_authcid'] = 'digestuser'
 -dbmod['ldap_service_password_file'] = ldap_pwfile
 -realm = K5Realm(create_kdb=False, kdc_conf=conf)
+-# Work around https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1091694
+-if runenv.asan == 'yes':
+-    realm.env['ASAN_OPTIONS'] = 'detect_leaks=false'
 -input = admin_pw + '\n' + admin_pw + '\n'
 -realm.run([kdb5_ldap_util, 'stashsrvpw', 'digestuser'], input=input)
 -realm.run([kdb5_ldap_util, 'create', '-s', '-P', 'master'])

@@ -6,7 +6,7 @@
 # 
 --- a/src/util/support/threads.c
 +++ b/src/util/support/threads.c
-@@ -334,7 +334,8 @@ int k5_key_register (k5_key_t keynum, void (*destructor)(void *))
+@@ -332,7 +332,8 @@ return err;
  
  #ifndef ENABLE_THREADS
  
@@ -16,7 +16,7 @@
      destructors[keynum] = destructor;
      destructors_set[keynum] = 1;
  
-@@ -342,7 +343,8 @@ int k5_key_register (k5_key_t keynum, void (*destructor)(void *))
+@@ -340,7 +341,8 @@ #elif defined(_WIN32)
  
      /* XXX: This can raise EXCEPTION_POSSIBLE_DEADLOCK.  */
      EnterCriticalSection(&key_lock);
@@ -26,7 +26,7 @@
      destructors_set[keynum] = 1;
      destructors[keynum] = destructor;
      LeaveCriticalSection(&key_lock);
-@@ -350,7 +352,8 @@ int k5_key_register (k5_key_t keynum, void (*destructor)(void *))
+@@ -348,7 +350,8 @@ LeaveCriticalSection(&key_lock);
  #else /* POSIX */
  
      k5_mutex_lock(&key_lock);

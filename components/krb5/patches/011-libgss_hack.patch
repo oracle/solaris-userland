@@ -11,7 +11,7 @@
 #
 --- a/src/lib/gssapi/mechglue/g_initialize.c
 +++ b/src/lib/gssapi/mechglue/g_initialize.c
-@@ -1620,3 +1620,141 @@ addConfigEntry(const char *oidStr, const char *oid, const char *sharedLib,
+@@ -1617,3 +1617,141 @@ if (g_mechList == NULL)
  		g_mechList = aMech;
  }
  
@@ -155,11 +155,10 @@
 +} /* gssint_get_kmodName */
 --- a/src/lib/gssapi/mechglue/mglueP.h
 +++ b/src/lib/gssapi/mechglue/mglueP.h
-@@ -851,6 +851,28 @@ OM_uint32 gss_add_mech_name_type
-  * Sun extensions to GSS-API v2
+@@ -836,6 +836,28 @@ * Sun extensions to GSS-API v2
   */
  
-+OM_uint32
+ OM_uint32
 +gssint_mech_to_oid(
 +	const char *mech,		/* mechanism string name */
 +	gss_OID *oid			/* mechanism oid */
@@ -181,6 +180,7 @@
 +	const gss_OID oid		/* mechanism oid */
 +);
 +
- int
- gssint_get_der_length(
- 	unsigned char **,	/* buf */
++OM_uint32
+ gssint_wrap_aead (gss_mechanism,	/* mech */
+ 		  OM_uint32 *,		/* minor_status */
+ 		  gss_union_ctx_id_t,	/* ctx */

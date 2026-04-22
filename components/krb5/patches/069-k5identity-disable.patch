@@ -18,7 +18,7 @@
 #
 --- a/src/lib/krb5/ccache/ccselect.c
 +++ b/src/lib/krb5/ccache/ccselect.c
-@@ -59,12 +59,17 @@ load_modules(krb5_context context)
+@@ -59,12 +59,17 @@ struct ccselect_module_handle **list = N
      krb5_plugin_initvt_fn *modules = NULL, *mod;
      size_t count;
  
@@ -40,7 +40,7 @@
                               ccselect_realm_initvt);
 --- a/src/man/krb5.conf.man
 +++ b/src/man/krb5.conf.man
-@@ -947,11 +947,7 @@ dynamic modules, the following built\-in modules exist (and may be
+@@ -966,11 +966,7 @@ dynamic modules, the following built\-in
  disabled with the disable tag):
  .INDENT 0.0
  .TP
@@ -55,7 +55,7 @@
  .TP
 --- a/src/tests/gssapi/t_ccselect.py
 +++ b/src/tests/gssapi/t_ccselect.py
-@@ -151,21 +151,23 @@ r1.run(['./t_ccselect', gssserver_bar], expected_msg=alice)
+@@ -151,21 +151,23 @@ # Get a second cred in r1 (bob will be p
  r1.kinit(bob, password('bob'))
  
  # Try some cache selections using .k5identity.
@@ -97,7 +97,7 @@
  success('GSSAPI credential selection tests')
 --- a/src/tests/gssapi/t_client_keytab.py
 +++ b/src/tests/gssapi/t_client_keytab.py
-@@ -18,13 +18,15 @@ realm.run(['./t_ccselect', phost], expected_msg=realm.user_princ)
+@@ -18,13 +18,15 @@ realm.run(['./t_ccselect', phost], expec
  realm.run([kdestroy])
  
  # Test 2: no name/cache specified, pick principal from k5identity

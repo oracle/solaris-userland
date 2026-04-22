@@ -11,7 +11,7 @@
 #
 --- a/src/include/osconf.hin
 +++ b/src/include/osconf.hin
-@@ -40,6 +40,8 @@
+@@ -40,6 +40,8 @@ #if defined(__MACH__) && defined(__APPLE
  # include <TargetConditionals.h>
  #endif
  
@@ -20,7 +20,7 @@
  #if defined(_WIN32)
  #define DEFAULT_PROFILE_FILENAME "krb5.ini"
  #else /* !_WINDOWS */
-@@ -50,7 +52,7 @@
+@@ -50,7 +52,7 @@ #define KRB5_PLUGIN_BUNDLE_DIR       "/S
  #define KDB5_PLUGIN_BUNDLE_DIR       "/System/Library/KerberosPlugins/KerberosDatabasePlugins"
  #define KRB5_AUTHDATA_PLUGIN_BUNDLE_DIR  "/System/Library/KerberosPlugins/KerberosAuthDataPlugins"
  #else
@@ -29,7 +29,7 @@
  #define DEFAULT_PROFILE_PATH        DEFAULT_SECURE_PROFILE_PATH
  #endif
  #endif /* _WINDOWS  */
-@@ -69,7 +71,7 @@
+@@ -69,7 +71,7 @@ #else
  #define PLUGIN_EXT              "@DYNOBJEXT"
  #endif
  
@@ -38,7 +38,7 @@
  #define KDC_RUN_DIR             "@RUNSTATEDIR/krb5kdc"
  #define DEFAULT_KDB_FILE        KDC_DIR "/principal"
  #define DEFAULT_KEYFILE_STUB    KDC_DIR "/.k5."
-@@ -78,7 +80,7 @@
+@@ -78,7 +80,7 @@ /* Used by old admin server */
  #define DEFAULT_ADMIN_ACL       KDC_DIR "/kadm_old.acl"
  
  /* Location of KDC profile */
@@ -47,7 +47,7 @@
  #define KDC_PROFILE_ENV         "KRB5_KDC_PROFILE"
  
  #if TARGET_OS_MAC
-@@ -103,8 +105,8 @@
+@@ -102,8 +104,8 @@ #define DEFAULT_TCP_LISTEN_BACKLOG 5
  /*
   * Defaults for the KADM5 admin system.
   */
@@ -58,7 +58,7 @@
  #define DEFAULT_KADM5_PORT      749 /* assigned by IANA */
  
  #define KRB5_DEFAULT_SUPPORTED_ENCTYPES                 \
-@@ -113,7 +115,7 @@
+@@ -112,7 +114,7 @@ "aes128-cts-hmac-sha1-96:normal"
  
  #define MAX_DGRAM_SIZE  65536
  
@@ -67,7 +67,7 @@
  
  #define KRB5_PATH_TTY   "/dev/tty"
  #define KRB5_PATH_LOGIN "@SBINDIR/login.krb5"
-@@ -130,7 +132,7 @@
+@@ -129,7 +131,7 @@ #define KPROPD_DEFAULT_FILE KDC_DIR "/fr
  #define KPROPD_DEFAULT_KDB5_UTIL "@SBINDIR/kdb5_util"
  #define KPROPD_DEFAULT_KPROP "@SBINDIR/kprop"
  #define KPROPD_DEFAULT_KRB_DB DEFAULT_KDB_FILE
@@ -78,7 +78,7 @@
   * GSS mechglue
 --- a/src/kadmin/cli/k5srvutil.sh
 +++ b/src/kadmin/cli/k5srvutil.sh
-@@ -73,7 +73,7 @@ delete_keys() {
+@@ -73,7 +73,7 @@ done
      }
  
  

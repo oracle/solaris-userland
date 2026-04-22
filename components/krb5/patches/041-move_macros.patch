@@ -9,8 +9,8 @@
 #
 --- a/src/lib/gssapi/generic/gssapiP_generic.h
 +++ b/src/lib/gssapi/generic/gssapiP_generic.h
-@@ -49,10 +49,11 @@
- #include "k5-buf.h"
+@@ -50,10 +50,11 @@ #include "k5-buf.h"
+ #include "k5-input.h"
  
  /** helper macros **/
 -
@@ -20,11 +20,11 @@
          (memcmp((o1)->elements, (o2)->elements, (o1)->length) == 0))
 +#endif
  
- /* this code knows that an int on the wire is 32 bits.  The type of
-    num should be at least this big, or the extra shifts may do weird
+ /** malloc wrappers; these may actually do something later */
+ 
 --- a/src/lib/gssapi/generic/gssapi_ext.h
 +++ b/src/lib/gssapi/generic/gssapi_ext.h
-@@ -43,6 +43,26 @@ gss_pname_to_uid
+@@ -43,6 +43,26 @@ const gss_OID mech_type,
  	 uid_t *uidOut);
  #endif
  
@@ -53,7 +53,7 @@
   * given mechanism.
 --- a/src/lib/gssapi/generic/gssapi_generic.h
 +++ b/src/lib/gssapi/generic/gssapi_generic.h
-@@ -38,8 +38,10 @@
+@@ -38,8 +38,10 @@ #define GSSAPIGENERIC_BEGIN_DECLS
  #define GSSAPIGENERIC_END_DECLS
  #endif
  
@@ -66,7 +66,7 @@
  
 --- a/src/lib/gssapi/mechglue/mglueP.h
 +++ b/src/lib/gssapi/mechglue/mglueP.h
-@@ -14,11 +14,13 @@
+@@ -14,11 +14,13 @@ #include "autoconf.h"
  #include "mechglue.h"
  #include "gssapiP_generic.h"
  

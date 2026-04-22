@@ -13,28 +13,9 @@
 # presented to MIT.
 # Patch source: in-house
 #
---- a/src/kprop/kpropd.c
-+++ b/src/kprop/kpropd.c
-@@ -654,6 +654,7 @@ do_iprop()
-     if (pollin == 0)
-         pollin = 10;
- 
-+
-     retval = kadm5_get_kiprop_host_srv_name(kpropd_context, realm,
-                                             &primary_svc_princstr);
-     if (retval) {
-@@ -663,6 +664,8 @@ do_iprop()
-         goto done;
-     }
- 
-+
-+
-     retval = sn2princ_realm(kpropd_context, NULL, KIPROP_SVC_NAME, realm,
-                             &iprop_svc_principal);
-     if (retval) {
 --- a/src/lib/kadm5/clnt/client_init.c
 +++ b/src/lib/kadm5/clnt/client_init.c
-@@ -299,7 +299,7 @@ _kadm5_initialize_rpcsec_gss_handle(kadm5_server_handle_t handle,
+@@ -299,7 +299,7 @@ char *service_name)
  {
  	int code = 0;
  	generic_ret r = { 0, 0 };
@@ -43,7 +24,7 @@
  	boolean_t iprop_enable = B_FALSE;
  	char mech[] = "kerberos_v5";
  	gss_OID mech_oid;
-@@ -316,15 +316,13 @@ _kadm5_initialize_rpcsec_gss_handle(kadm5_server_handle_t handle,
+@@ -316,15 +316,13 @@ char *server;
  	int port;
  	struct timeval timeout;
  
@@ -62,7 +43,7 @@
  
   	/*
  	 * If the service_name and client_name are iprop-centric
-@@ -436,7 +434,7 @@ _kadm5_initialize_rpcsec_gss_handle(kadm5_server_handle_t handle,
+@@ -436,7 +434,7 @@ #endif /* ! INIT_TEST */
  
  	if (ccname_orig) {
  		gssstat = gss_krb5_ccache_name(&minor_stat, ccname_orig, NULL);
@@ -71,7 +52,7 @@
  		if (gssstat != GSS_S_COMPLETE) {
  			code = KADM5_GSS_ERROR;
  			goto error;
-@@ -541,7 +539,7 @@ free_handle(kadm5_server_handle_t handle)
+@@ -541,7 +539,7 @@ }
  
  static kadm5_ret_t
  init_any(krb5_context context, char *client_name, enum init_type init_type,
@@ -80,7 +61,7 @@
           kadm5_config_params *params_in, krb5_ui_4 struct_version,
           krb5_ui_4 api_version, char **db_args, void **server_handle)
  {
-@@ -556,8 +554,6 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+@@ -556,8 +554,6 @@ kadm5_server_handle_t handle = NULL;
      kadm5_config_params params_local;
  
      krb5_error_code code;
@@ -89,7 +70,7 @@
  
      initialize_ovk_error_table();
      initialize_ovku_error_table();
-@@ -619,15 +615,19 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+@@ -623,15 +619,19 @@ data_eq_string(client->data[0], KIPROP_S
          client->type = KRB5_NT_SRV_HST;
  
      /* NULL svcname means use host-based. */
@@ -116,7 +97,7 @@
      }
  
      /* Get credentials. */
-@@ -658,13 +658,51 @@ cleanup:
+@@ -662,14 +662,52 @@ /* Get initial credentials for authentic
  static kadm5_ret_t
  get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
                 enum init_type init_type, char *pass, krb5_ccache ccache_in,
@@ -130,7 +111,7 @@
  
      *server_out = NULL;
  
-+    /*
+     /*
 +     * Convert the RPCSEC_GSS version to the host based version as this
 +     * is what gic expects.
 +     */
@@ -166,10 +147,11 @@
 +    }
 +    free(svcname);
 +
-     /*
++    /*
       * Acquire a service ticket for svcname@realm for client, using password
       * pass (which could be NULL), and create a ccache to store them in.  If
-@@ -700,8 +738,7 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
+      * INIT_CREDS, use the ccache we were provided instead.
+@@ -704,8 +742,7 @@ handle->destroy_cache = 1;
      }
      handle->lhandle->cache_name = handle->cache_name;
  
@@ -181,7 +163,7 @@
      if (code == KRB5KRB_AP_ERR_BAD_INTEGRITY) code = KADM5_BAD_PASSWORD;
 --- a/src/lib/krb5/krb/gic_pwd.c
 +++ b/src/lib/krb5/krb/gic_pwd.c
-@@ -5,6 +5,17 @@
+@@ -5,6 +5,17 @@ #include "init_creds_ctx.h"
  #include "int-proto.h"
  #include "os-proto.h"
  
@@ -199,7 +181,7 @@
  krb5_error_code
  krb5_get_as_key_password(krb5_context context,
                           krb5_principal client,
-@@ -133,6 +144,113 @@ krb5_init_creds_set_password(krb5_context context,
+@@ -133,6 +144,113 @@ ctx->gak_data = &ctx->gakpw;
      return 0;
  }
  
@@ -313,11 +295,10 @@
  /*
   * Create a temporary options structure for getting a kadmin/changepw ticket,
   * based on the appplication-specified options.  Propagate all application
-@@ -180,6 +298,35 @@ krb5_get_init_creds_password(krb5_context context,
-                              krb5_deltat start_time,
+@@ -181,6 +299,35 @@ krb5_deltat start_time,
                               const char *in_tkt_service,
                               krb5_get_init_creds_opt *options)
-+{
+ {
 +    /*
 +     * We call our own private function that returns the as_reply back to
 +     * the caller.  This structure contains information, such as
@@ -346,10 +327,11 @@
 +                             const char *in_tkt_service,
 +                             krb5_get_init_creds_opt *options,
 +			     krb5_kdc_rep **ptr_as_reply)
- {
++{
      krb5_error_code ret;
-     int use_primary;
-@@ -388,13 +535,20 @@ krb5_get_init_creds_password(krb5_context context,
+     krb5_kdc_rep *as_reply;
+     int tries;
+@@ -338,13 +485,20 @@ if (ret)
          goto cleanup;
  
  cleanup:
@@ -369,6 +351,6 @@
 +	else
 +	    *ptr_as_reply = as_reply;
 +    }
-     k5_clear_error(&errsave);
  
      return(ret);
+ }

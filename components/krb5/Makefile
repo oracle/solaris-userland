@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -31,30 +31,23 @@ COMPONENT_NAME=		Kerberos
 # Encoding rule for MINOR: MIT KerberosV5 x.y[.z] => MINOR $MAJOR.y
 # Encoding rule for MICRO: MIT KerberosV5 x.y[.z] => MICRO $MINOR[.z]
 COMPONENT_MAJOR=	1
-COMPONENT_MINOR=	$(COMPONENT_MAJOR).20
+COMPONENT_MINOR=	$(COMPONENT_MAJOR).22
 COMPONENT_MICRO=	$(COMPONENT_MINOR).2
 COMPONENT_ANITYA_ID=	13287
 
-COMPONENT_VERSION=		$(COMPONENT_MICRO)
+COMPONENT_VERSION=	$(COMPONENT_MICRO)
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0
 
-COMPONENT_PROJECT_URL=	http://web.mit.edu/kerberos/
+COMPONENT_PROJECT_URL=	http://kerberos.org/
 COMPONENT_SRC=		krb5-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:7d8d687d42aed350c2525cb69a4fc3aa791694da6761dccc1c42c2ee7796b5dd
+	sha256:3243ffbc8ea4d4ac22ddc7dd2a1dc54c57874c40648b60ff97009763554eaf13
 COMPONENT_ARCHIVE_URL=	\
 	$(COMPONENT_PROJECT_URL)dist/krb5/$(COMPONENT_MINOR)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/kerberos
 
-COMPONENT_BAID=	147202
-
-# t_imp_name test fails with -x04 on Sparc - both in 64-bit and 32-bit mode
-studio_OPT.sparc.32 =	-xO3
-studio_OPT.sparc.64 =	-xO3
-
-# The unit tests are not python 3 friendly.
-$(SKIP_TEST_AT_TOP_LEVEL)
+COMPONENT_BAID=		370013
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -70,6 +63,9 @@ CONFIGURE_SCRIPT=	$(SOURCE_DIR)/src/configure
 # We need to enable large file support and build PIC for our shared libraries
 CFLAGS += $(CPP_LARGEFILES) $(CC_PIC)
 
+# test_cxx_krb5 requires libstatomic.so.1
+CXXFLAGS := $(filter-out -norunpath,$(CXXFLAGS))
+
 # MIT supports WARN_CFLAGS to set the compiler error/warning behavior
 WARN_CFLAGS = -errtags=yes -errwarn=%all
 WARN_CFLAGS += -errwarn=no%E_STATEMENT_NOT_REACHED
@@ -84,8 +80,6 @@ CONFIGURE_ENV += WARN_CFLAGS="$(WARN_CFLAGS)"
 
 # Include openldap headers instead of obsolete mozilla ldap headers.
 CPPFLAGS += -I$(USRINCDIR)/openldap
-# To enable support of memset_s, see PSARC/2014/043
-CPPFLAGS += -D__STDC_WANT_LIB_EXT1__
 
 # Temporary solution until we can fix this upstream with MIT, which currently
 # depends on implicit binding of libc.  Here we explicitly link with libc to
@@ -118,13 +112,13 @@ PROTOULD = $(PROTOUSRLIBDIR)
 
 COMPONENT_TEST_ARGS += LD_LIBRARY_PATH="$(PROTOULD):$(PROTOULD)/$(MACH64):"
 COMPONENT_TEST_ARGS += SLAPD="/usr/lib/slapd"
-
-# MIT's test suite is not well suited for master results processing/filtering
-# but since the test implementation will return failure to the uland build,
-# this is good enough.  The following disables master results processing.
-COMPONENT_TEST_CREATE_TRANSFORMS=
-COMPONENT_TEST_PERFORM_TRANSFORM=
-COMPONENT_TEST_COMPARE=
+# Studio linker must have bits explicitly set
+COMPONENT_TEST_ARGS += LDFLAGS="$(CC_BITS)"
+# t_imp_name test fails with -xO4 on Sparc. The test is built during publish
+# phase, is not distributed, but we don't want other binaries to build with
+# -xO3. So we remove the binaries to rebuild with -xO3.
+COMPONENT_PRE_TEST_ACTION += $(RM) $(@D)/tests/gssapi/t_imp_name*
+COMPONENT_TEST_ARGS += CFLAGS="-xO3"
 
 # Audit plugin directory for Solaris
 AUDIT_DIR = $(SOURCE_DIR)/src/plugins/audit/solaris
@@ -223,20 +217,10 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION= \
 
 REQUIRED_PACKAGES += library/libedit
 REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += network/dns/bind
-REQUIRED_PACKAGES += service/network/ldap/openldap
+REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += service/security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/pam-core
-REQUIRED_PACKAGES += system/library/security/crypto
 REQUIRED_PACKAGES += system/library/security/gss
-REQUIRED_PACKAGES += system/library/security/sasl/digestmd5
 REQUIRED_PACKAGES += system/network/ldap/openldap
-
-#
-# t_kdb.py tests require ldap tools (slapadd et. al.) in order to check
-# kerberos with LDAP. The ldap admin tools are found at /usr/sbin/ on Solaris.
-#
-export PATH := $(PATH):/usr/sbin

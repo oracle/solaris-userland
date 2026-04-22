@@ -20,7 +20,7 @@
  ##WIN32##	link $(EXE_LINKOPTS) -out:$@ $**
 --- a/src/clients/kdestroy/kdestroy.c
 +++ b/src/clients/kdestroy/kdestroy.c
-@@ -24,6 +24,12 @@
+@@ -24,6 +24,12 @@ * this software for any purpose.  It is
   * or implied warranty.
   */
  
@@ -33,7 +33,7 @@
  #include "k5-platform.h"
  #include <krb5.h>
  #include <com_err.h>
-@@ -37,6 +43,16 @@
+@@ -37,6 +43,16 @@ #else
  #define BELL_CHAR '\007'
  #endif
  
@@ -50,7 +50,7 @@
  #ifndef _WIN32
  #define GET_PROGNAME(x) (strrchr((x), '/') ? strrchr((x), '/') + 1 : (x))
  #else
-@@ -94,6 +110,13 @@ main(int argc, char *argv[])
+@@ -94,6 +110,13 @@ char *cache_name = NULL;
      const char *princ_name = NULL;
      int code = 0, errflg = 0, quiet = 0, all = 0, c;
  
@@ -64,7 +64,7 @@
      setlocale(LC_ALL, "");
      progname = GET_PROGNAME(argv[0]);
  
-@@ -184,6 +207,20 @@ main(int argc, char *argv[])
+@@ -184,6 +207,20 @@ krb5_free_context(context);
          return 0;
      }
  
@@ -85,7 +85,7 @@
      if (princ_name != NULL) {
          code = krb5_parse_name(context, princ_name, &princ);
          if (code) {
-@@ -206,6 +243,21 @@ main(int argc, char *argv[])
+@@ -206,6 +243,21 @@ exit(1);
          }
      }
  
@@ -107,7 +107,7 @@
      code = krb5_cc_destroy(context, cache);
      if (code != 0) {
          com_err(progname, code, _("while destroying cache"));
-@@ -220,10 +272,20 @@ main(int argc, char *argv[])
+@@ -220,10 +272,20 @@ errflg = 1;
          }
      }
  
@@ -144,7 +144,7 @@
  ##WIN32##	link $(EXE_LINKOPTS) -out:$@ $** advapi32.lib
 --- a/src/clients/kinit/kinit.c
 +++ b/src/clients/kinit/kinit.c
-@@ -35,6 +35,7 @@
+@@ -35,6 +35,7 @@ #include <stdio.h>
  #include <time.h>
  #include <errno.h>
  #include <com_err.h>
@@ -152,7 +152,7 @@
  
  #ifndef _WIN32
  #define GET_PROGNAME(x) (strrchr((x), '/') ? strrchr((x), '/') + 1 : (x))
-@@ -78,6 +79,9 @@ get_name_from_os()
+@@ -78,6 +79,9 @@ #endif /* HAVE_PWD_H */
  
  static char *progname;
  
@@ -162,7 +162,7 @@
  typedef enum { INIT_PW, INIT_KT, RENEW, VALIDATE } action_type;
  
  struct k_opts
-@@ -821,6 +825,15 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
+@@ -821,6 +825,15 @@ mcc = NULL;
          if (opts->verbose)
              fprintf(stderr, _("Stored credentials\n"));
      }
@@ -178,7 +178,7 @@
      notix = 0;
      if (k5->switch_to_cache) {
          ret = krb5_cc_switch(k5->ctx, k5->out_cc);
-@@ -890,3 +903,25 @@ main(int argc, char *argv[])
+@@ -890,3 +903,25 @@ if (!authed_k5)
          exit(1);
      return 0;
  }
@@ -206,8 +206,8 @@
 +/* Solaris Kerberos end */
 --- a/src/lib/gssapi/Makefile.in
 +++ b/src/lib/gssapi/Makefile.in
-@@ -27,7 +27,7 @@ STOBJLISTS=OBJS.ST generic/OBJS.ST mechglue/OBJS.ST krb5/OBJS.ST spnego/OBJS.ST
- SUBDIROBJLISTS=generic/OBJS.ST mechglue/OBJS.ST krb5/OBJS.ST spnego/OBJS.ST
+@@ -27,7 +27,7 @@ SUBDIROBJLISTS=generic/OBJS.ST mechglue/
+ STOBJLISTS=OBJS.ST $(SUBDIROBJLISTS)
  SHLIB_EXPDEPS=\
  	$(KRB5_DEPLIB) $(CRYPTO_DEPLIB) $(SUPPORT_DEPLIB) $(COM_ERR_DEPLIB)
 -SHLIB_EXPLIBS=-lkrb5 -lk5crypto $(COM_ERR_LIB) $(SUPPORT_LIB) $(DL_LIB) $(LIBS)
@@ -217,7 +217,7 @@
  all-unix: all-liblinks @MAINT@ verify-calling-conventions-gssapi
 --- a/src/lib/gssapi/krb5/store_cred.c
 +++ b/src/lib/gssapi/krb5/store_cred.c
-@@ -26,6 +26,8 @@
+@@ -26,6 +26,8 @@ */
  
  #include "k5-int.h"
  #include "gssapiP_krb5.h"
@@ -226,7 +226,7 @@
  
  static OM_uint32
  copy_initiator_creds(OM_uint32 *minor_status,
-@@ -43,6 +45,7 @@ copy_initiator_creds(OM_uint32 *minor_status,
+@@ -43,6 +45,7 @@ krb5_ccache cache = NULL, defcache = NUL
      krb5_principal princ = NULL;
      krb5_boolean switch_to_cache = FALSE;
      const char *ccache_name, *deftype;
@@ -234,7 +234,7 @@
  
      *minor_status = 0;
  
-@@ -132,6 +135,17 @@ copy_initiator_creds(OM_uint32 *minor_status,
+@@ -132,6 +135,17 @@ }
      *minor_status = 0;
      major_status = GSS_S_COMPLETE;
  

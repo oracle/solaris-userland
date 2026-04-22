@@ -1,0 +1,169 @@
+From 34d661676b1db04d870be3d7ad26616aa69d1f3d Mon Sep 17 00:00:00 2001
+From: Greg Hudson <ghudson@mit.edu>
+Date: Sun, 28 Sep 2025 15:39:10 -0400
+Subject: [PATCH] Add paChecksum2 to PKINIT ASN.1 tests
+
+Commit 310793ba63782af5ffa3a95d20e41f8f03ca7e00 added the paChecksum2
+field to krb5_pk_authenticator.  ktest_make_sample_pk_authenticator()
+does not initialize this field, leading to undefined behavior in the
+tests.  Initialize the field with a sample paChecksum2 value, and
+amend the expected output to include its encoding.
+
+Reported by Michael Osipov.
+---
+ src/tests/asn.1/krb5_decode_test.c |  2 +-
+ src/tests/asn.1/ktest.c            | 42 ++++++++++++++++++++++--------
+ src/tests/asn.1/ktest_equal.c      | 15 ++++++++++-
+ src/tests/asn.1/pkinit_encode.out  |  2 +-
+ src/tests/asn.1/pkinit_trval.out   |  6 +++++
+ 5 files changed, 53 insertions(+), 14 deletions(-)
+
+diff --git a/src/tests/asn.1/krb5_decode_test.c b/src/tests/asn.1/krb5_decode_test.c
+index 25ed30e422..daeab87c3d 100644
+--- a/src/tests/asn.1/krb5_decode_test.c
++++ b/src/tests/asn.1/krb5_decode_test.c
+@@ -1178,7 +1178,7 @@ main(int argc, char **argv)
+     /* decode_krb5_auth_pack */
+     {
+         setup(krb5_auth_pack,ktest_make_sample_auth_pack);
+-        decode_run("krb5_auth_pack","","30 81 89 A0 39 30 37 A0 05 02 03 01 E2 40 A1 11 18 0F 31 39 39 34 30 36 31 30 30 36 30 33 31 37 5A A2 03 02 01 2A A3 0A 04 08 6B 72 62 35 64 61 74 61 A4 0A 04 08 6B 72 62 35 64 61 74 61 A1 08 04 06 70 76 61 6C 75 65 A2 24 30 22 30 13 06 09 2A 86 48 86 F7 12 01 02 02 04 06 70 61 72 61 6D 73 30 0B 06 09 2A 86 48 86 F7 12 01 02 02 A3 0A 04 08 6B 72 62 35 64 61 74 61 A4 10 30 0E 30 0C A0 0A 06 08 6B 72 62 35 64 61 74 61",
++        decode_run("krb5_auth_pack","","30 81 B0 A0 60 30 5E A0 05 02 03 01 E2 40 A1 11 18 0F 31 39 39 34 30 36 31 30 30 36 30 33 31 37 5A A2 03 02 01 2A A3 0A 04 08 6B 72 62 35 64 61 74 61 A4 0A 04 08 6B 72 62 35 64 61 74 61 A5 25 30 23 A0 0A 04 08 6B 72 62 35 64 61 74 61 A1 15 30 13 06 09 2A 86 48 86 F7 12 01 02 02 04 06 70 61 72 61 6D 73 A1 08 04 06 70 76 61 6C 75 65 A2 24 30 22 30 13 06 09 2A 86 48 86 F7 12 01 02 02 04 06 70 61 72 61 6D 73 30 0B 06 09 2A 86 48 86 F7 12 01 02 02 A3 0A 04 08 6B 72 62 35 64 61 74 61 A4 10 30 0E 30 0C A0 0A 06 08 6B 72 62 35 64 61 74 61",
+                    acc.decode_krb5_auth_pack,
+                    ktest_equal_auth_pack,ktest_free_auth_pack);
+         ktest_empty_auth_pack(&ref);
+diff --git a/src/tests/asn.1/ktest.c b/src/tests/asn.1/ktest.c
+index 20360c8ffc..d607891d3a 100644
+--- a/src/tests/asn.1/ktest.c
++++ b/src/tests/asn.1/ktest.c
+@@ -694,17 +694,6 @@ ktest_make_maximal_pa_otp_req(krb5_pa_otp_req *p)
+ 
+ #ifndef DISABLE_PKINIT
+ 
+-static void
+-ktest_make_sample_pk_authenticator(krb5_pk_authenticator *p)
+-{
+-    p->cusec = SAMPLE_USEC;
+-    p->ctime = SAMPLE_TIME;
+-    p->nonce = SAMPLE_NONCE;
+-    ktest_make_sample_data(&p->paChecksum);
+-    p->freshnessToken = ealloc(sizeof(krb5_data));
+-    ktest_make_sample_data(p->freshnessToken);
+-}
+-
+ static void
+ ktest_make_sample_oid(krb5_data *p)
+ {
+@@ -726,6 +715,26 @@ ktest_make_sample_algorithm_identifier_no_params(krb5_algorithm_identifier *p)
+     p->parameters = empty_data();
+ }
+ 
++static void
++ktest_make_sample_pa_checksum2(krb5_pachecksum2 *p)
++{
++    ktest_make_sample_data(&p->checksum);
++    ktest_make_sample_algorithm_identifier(&p->algorithmIdentifier);
++}
++
++static void
++ktest_make_sample_pk_authenticator(krb5_pk_authenticator *p)
++{
++    p->cusec = SAMPLE_USEC;
++    p->ctime = SAMPLE_TIME;
++    p->nonce = SAMPLE_NONCE;
++    ktest_make_sample_data(&p->paChecksum);
++    p->freshnessToken = ealloc(sizeof(krb5_data));
++    ktest_make_sample_data(p->freshnessToken);
++    p->paChecksum2 = ealloc(sizeof(krb5_pachecksum2));
++    ktest_make_sample_pa_checksum2(p->paChecksum2);
++}
++
+ static void
+ ktest_make_sample_external_principal_identifier(
+     krb5_external_principal_identifier *p)
+@@ -1599,12 +1608,23 @@ ktest_empty_pa_otp_req(krb5_pa_otp_req *p)
+ 
+ #ifndef DISABLE_PKINIT
+ 
++static void
++ktest_empty_pa_checksum2(krb5_pachecksum2 *p)
++{
++    ktest_empty_data(&p->checksum);
++    ktest_empty_algorithm_identifier(&p->algorithmIdentifier);
++}
++
+ static void
+ ktest_empty_pk_authenticator(krb5_pk_authenticator *p)
+ {
+     ktest_empty_data(&p->paChecksum);
+     krb5_free_data(NULL, p->freshnessToken);
+     p->freshnessToken = NULL;
++    if (p->paChecksum2 != NULL)
++        ktest_empty_pa_checksum2(p->paChecksum2);
++    free(p->paChecksum2);
++    p->paChecksum2 = NULL;
+ }
+ 
+ static void
+diff --git a/src/tests/asn.1/ktest_equal.c b/src/tests/asn.1/ktest_equal.c
+index 13786dd1e5..72aa1ff6c6 100644
+--- a/src/tests/asn.1/ktest_equal.c
++++ b/src/tests/asn.1/ktest_equal.c
+@@ -834,6 +834,18 @@ ktest_equal_sequence_of_spake_factor(krb5_spake_factor **ref,
+ 
+ #ifndef DISABLE_PKINIT
+ 
++static int
++ktest_equal_pachecksum2(krb5_pachecksum2 *ref, krb5_pachecksum2 *var)
++{
++    int p = TRUE;
++    if (ref == var) return TRUE;
++    else if (ref == NULL || var == NULL) return FALSE;
++    p = p && equal_str(checksum);
++    p = p && struct_equal(algorithmIdentifier,
++                          ktest_equal_algorithm_identifier);
++    return p;
++}
++
+ static int
+ ktest_equal_pk_authenticator(krb5_pk_authenticator *ref,
+                              krb5_pk_authenticator *var)
+@@ -844,7 +856,8 @@ ktest_equal_pk_authenticator(krb5_pk_authenticator *ref,
+     p = p && scalar_equal(cusec);
+     p = p && scalar_equal(ctime);
+     p = p && scalar_equal(nonce);
+-    p = p && data_eq(ref->paChecksum, var->paChecksum);
++    p = p && equal_str(paChecksum);
++    p = p && ptr_equal(paChecksum2, ktest_equal_pachecksum2);
+     return p;
+ }
+ 
+diff --git a/src/tests/asn.1/pkinit_encode.out b/src/tests/asn.1/pkinit_encode.out
+index a764182e15..9ab0aee772 100644
+--- a/src/tests/asn.1/pkinit_encode.out
++++ b/src/tests/asn.1/pkinit_encode.out
+@@ -1,7 +1,7 @@
+ encode_krb5_pa_pk_as_req: 30 38 80 08 6B 72 62 35 64 61 74 61 A1 22 30 20 30 1E 80 08 6B 72 62 35 64 61 74 61 81 08 6B 72 62 35 64 61 74 61 82 08 6B 72 62 35 64 61 74 61 82 08 6B 72 62 35 64 61 74 61
+ encode_krb5_pa_pk_as_rep(dhInfo): A0 28 30 26 80 08 6B 72 62 35 64 61 74 61 A1 0A 04 08 6B 72 62 35 64 61 74 61 A2 0E 30 0C A0 0A 06 08 6B 72 62 35 64 61 74 61
+ encode_krb5_pa_pk_as_rep(encKeyPack): 81 08 6B 72 62 35 64 61 74 61
+-encode_krb5_auth_pack: 30 81 89 A0 39 30 37 A0 05 02 03 01 E2 40 A1 11 18 0F 31 39 39 34 30 36 31 30 30 36 30 33 31 37 5A A2 03 02 01 2A A3 0A 04 08 6B 72 62 35 64 61 74 61 A4 0A 04 08 6B 72 62 35 64 61 74 61 A1 08 04 06 70 76 61 6C 75 65 A2 24 30 22 30 13 06 09 2A 86 48 86 F7 12 01 02 02 04 06 70 61 72 61 6D 73 30 0B 06 09 2A 86 48 86 F7 12 01 02 02 A3 0A 04 08 6B 72 62 35 64 61 74 61 A4 10 30 0E 30 0C A0 0A 06 08 6B 72 62 35 64 61 74 61
++encode_krb5_auth_pack: 30 81 B0 A0 60 30 5E A0 05 02 03 01 E2 40 A1 11 18 0F 31 39 39 34 30 36 31 30 30 36 30 33 31 37 5A A2 03 02 01 2A A3 0A 04 08 6B 72 62 35 64 61 74 61 A4 0A 04 08 6B 72 62 35 64 61 74 61 A5 25 30 23 A0 0A 04 08 6B 72 62 35 64 61 74 61 A1 15 30 13 06 09 2A 86 48 86 F7 12 01 02 02 04 06 70 61 72 61 6D 73 A1 08 04 06 70 76 61 6C 75 65 A2 24 30 22 30 13 06 09 2A 86 48 86 F7 12 01 02 02 04 06 70 61 72 61 6D 73 30 0B 06 09 2A 86 48 86 F7 12 01 02 02 A3 0A 04 08 6B 72 62 35 64 61 74 61 A4 10 30 0E 30 0C A0 0A 06 08 6B 72 62 35 64 61 74 61
+ encode_krb5_kdc_dh_key_info: 30 25 A0 0B 03 09 00 6B 72 62 35 64 61 74 61 A1 03 02 01 2A A2 11 18 0F 31 39 39 34 30 36 31 30 30 36 30 33 31 37 5A
+ encode_krb5_reply_key_pack: 30 26 A0 13 30 11 A0 03 02 01 01 A1 0A 04 08 31 32 33 34 35 36 37 38 A1 0F 30 0D A0 03 02 01 01 A1 06 04 04 31 32 33 34
+ encode_krb5_sp80056a_other_info: 30 81 81 30 0B 06 09 2A 86 48 86 F7 12 01 02 02 A0 32 04 30 30 2E A0 10 1B 0E 41 54 48 45 4E 41 2E 4D 49 54 2E 45 44 55 A1 1A 30 18 A0 03 02 01 01 A1 11 30 0F 1B 06 68 66 74 73 61 69 1B 05 65 78 74 72 61 A1 32 04 30 30 2E A0 10 1B 0E 41 54 48 45 4E 41 2E 4D 49 54 2E 45 44 55 A1 1A 30 18 A0 03 02 01 01 A1 11 30 0F 1B 06 68 66 74 73 61 69 1B 05 65 78 74 72 61 A2 0A 04 08 6B 72 62 35 64 61 74 61
+diff --git a/src/tests/asn.1/pkinit_trval.out b/src/tests/asn.1/pkinit_trval.out
+index c47bd71f67..418be63546 100644
+--- a/src/tests/asn.1/pkinit_trval.out
++++ b/src/tests/asn.1/pkinit_trval.out
+@@ -40,6 +40,12 @@ encode_krb5_auth_pack:
+ .  .  [2] [Integer] 42
+ .  .  [3] [Octet String] "krb5data"
+ .  .  [4] [Octet String] "krb5data"
++.  .  [5] [Sequence/Sequence Of]
++.  .  .  [0] [Octet String] "krb5data"
++.  .  .  [1] [Sequence/Sequence Of]
++.  .  .  .  [Object Identifier] <9>
++               2a 86 48 86 f7 12 01 02 02                    *.H......
++.  .  .  .  [Octet String] "params"
+ .  [1] [Octet String] "pvalue"
+ .  [2] [Sequence/Sequence Of]
+ .  .  [Sequence/Sequence Of]

@@ -15,16 +15,16 @@
 
 --- a/src/include/k5-int.h
 +++ b/src/include/k5-int.h
-@@ -2394,4 +2394,6 @@ krb5_boolean
- k5_sname_compare(krb5_context context, krb5_const_principal sname,
-                  krb5_const_principal princ);
+@@ -2435,4 +2435,6 @@ /* Place a printable representation of s
+ void
+ k5_print_addr_port(const struct sockaddr *sa, char *buf, size_t len);
  
 +uid_t krb5_getuid();
 +
  #endif /* _KRB5_INT_H */
 --- a/src/lib/krb5/os/Makefile.in
 +++ b/src/lib/krb5/os/Makefile.in
-@@ -24,6 +24,7 @@ STLIBOBJS= \
+@@ -24,6 +24,7 @@ full_ipadr.o	\
  	gen_port.o	\
  	genaddrs.o	\
  	gen_rname.o	\
@@ -32,7 +32,7 @@
  	hostaddr.o	\
  	hostrealm.o	\
  	hostrealm_dns.o \
-@@ -71,6 +72,7 @@ OBJS= \
+@@ -72,6 +73,7 @@ $(OUTPRE)full_ipadr.$(OBJEXT)	\
  	$(OUTPRE)gen_port.$(OBJEXT)	\
  	$(OUTPRE)genaddrs.$(OBJEXT)	\
  	$(OUTPRE)gen_rname.$(OBJEXT)	\
@@ -40,7 +40,7 @@
  	$(OUTPRE)hostaddr.$(OBJEXT)	\
  	$(OUTPRE)hostrealm.$(OBJEXT)	\
  	$(OUTPRE)hostrealm_dns.$(OBJEXT) \
-@@ -118,6 +120,7 @@ SRCS= \
+@@ -120,6 +122,7 @@ $(srcdir)/full_ipadr.c	\
  	$(srcdir)/gen_port.c	\
  	$(srcdir)/genaddrs.c	\
  	$(srcdir)/gen_rname.c	\

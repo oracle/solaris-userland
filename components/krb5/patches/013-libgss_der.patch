@@ -1,0 +1,127 @@
+Series of commits in gssapi removed important functions necessary
+for libgsscred.so in /on-default/usr/src/cmd/gss/gsscred/.
+
+Use k5-der.h in GSS library
+Remove the DER implementations in lib/gssapi and use k5-der.h instead.
+https://github.com/krb5/krb5/commit/fdceb225f881e2b1337eebcb9a9443fa4a9be3fd
+
+There is a new header reimplementing the same functionality. Functions are not
+exported.
+
+Add a simple DER support header
+https://github.com/krb5/krb5/commit/548da160b52b25a106e9f6077d6a42c2c049586c
+
+This patch comes with wrappers libgsscred can link against. This patch is not
+suitable for upstream.
+
+--- a/src/lib/gssapi/mechglue/g_glue.c
++++ b/src/lib/gssapi/mechglue/g_glue.c
+@@ -31,6 +31,9 @@
+ #include <string.h>
+ #include <errno.h>
+ 
++#include "k5-der.h"
++#include "k5-input.h"
++
+ #define	MSO_BIT (8*(sizeof (int) - 1))  /* Most significant octet bit */
+ 
+ extern gss_mechanism *gssint_mechs_array;
+@@ -40,6 +43,98 @@ extern gss_mechanism *gssint_mechs_array
+  */
+ 
+ /*
++ * Compatibility helpers for older Solaris consumers (e.g. libgsscred).
++ * These were historically exported as gssint_* from mechglue.
++ *
++ * Semantics expected by old callers:
++ *  - gssint_der_length_size(len): bytes needed to encode len as DER length
++ *  - gssint_put_der_length(len, &p, size): write DER length, advance *p
++ *      returns 0 on success, nonzero on failure
++ *  - gssint_get_der_length(&p, avail, &bytes): decode DER length at *p,
++ *      advance *p past the DER length, set *bytes to consumed bytes,
++ *      return length, or -1 on failure
++ */
++
++unsigned int
++gssint_der_length_size(unsigned int len)
++{
++    return (unsigned int)k5_der_len_len((size_t)len);  /* [2] */
++}
++
++int
++gssint_put_der_length(unsigned int len, unsigned char **buf,
++    unsigned int der_len_size)
++{
++    size_t llen = k5_der_len_len((size_t)len);  /* [2] */
++    unsigned char *p = *buf;
++
++    if (der_len_size != (unsigned int)llen)
++        return 1;
++
++    if (len < 128) {
++        *p++ = (unsigned char)len;
++        *buf = p;
++        return 0;
++    }
++
++    /* Long form: first byte 0x80 | (number of subsequent length bytes) */
++    *p++ = (unsigned char)(0x80 | (llen - 1));
++
++    /* Emit length bytes MSB-first (same rule as k5-der.h). */
++    for (size_t i = llen - 1; i > 0; i--) {
++        *p++ = (unsigned char)((len >> ((i - 1) * 8)) & 0xFF);
++    }
++
++    *buf = p;
++    return 0;
++}
++
++int
++gssint_get_der_length(unsigned char **buf, unsigned int avail,
++    unsigned int *bytes)
++{
++    struct k5input in;
++    size_t len, i;
++    uint8_t lenbyte;
++
++    k5_input_init(&in, *buf, (size_t)avail);
++
++    /* Decode DER length (definite form), using the same rules as k5_der_get_taglen(). */
++    lenbyte = k5_input_get_byte(&in);
++    if (in.status)
++        return -1;
++
++    if (lenbyte < 128) {
++        if (bytes != NULL)
++            *bytes = 1;
++        *buf = (unsigned char *)in.ptr;
++        return (int)lenbyte;
++    }
++
++    len = 0;
++    for (i = 0; i < (lenbyte & 0x7F); i++) {
++        if (len > (SIZE_MAX >> 8)) {
++            k5_input_set_status(&in, EOVERFLOW);
++            break;
++        }
++        len = (len << 8) | k5_input_get_byte(&in);
++    }
++
++    if (in.status)
++        return -1;
++
++    if (bytes != NULL)
++        *bytes = 1 + (lenbyte & 0x7F);
++
++    *buf = (unsigned char *)in.ptr;
++
++    if (len > INT_MAX)
++        return -1;
++
++    return (int)len;
++}
++
++/*
+  * The following mechanisms do not always identify themselves
+  * per the GSS-API specification, when interoperating with MS
+  * peers. We include the OIDs here so we do not have to ilnk
