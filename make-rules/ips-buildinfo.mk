@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 
@@ -52,7 +52,7 @@ PKG_SOLARIS_VERSION ?= 11.$(UPDATENUM)
 # version string. Typically it should not be set unless all the packages
 # are being delivered within an SRU.
 #
-SRUNUM ?= 96
+SRUNUM ?= 95
 
 #
 # For distinguising between Server OS and Storage OS branches, and/or between
