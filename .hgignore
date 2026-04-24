@@ -1,0 +1,128 @@
+#
+# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
+#
+syntax: regexp
+
+################################################################################
+# Common files
+################################################################################
+
+# ignore make targets
+/\.patched.*$
+/\.prep$
+\.invalid-hash$
+
+# ignore archives
+\.tar.(gz|bz2|xz)$
+^(?!components/unzip/files/).*\.(zip|tgz|jar|gem)$ # Skip test archives in unzip component
+\.(sig|asc)$
+
+# ignore webrevs at the top level
+^[^/]*webrev[^/]*
+
+# hg merge turds
+\.bak$
+\.chg$
+\.orig$
+\.rej$
+
+# ignore vim swap and backup files
+\.sw[a-z]$
+\.~$
+
+# ignore emacs backup files
+\.~[0-9]+~$
+.*~$
+
+# ignore nohup.out files
+nohup\.out$
+
+# ignore compiled python
+\.pyc$
+
+# Ignore .nfs files
+^\.nfs[0-9A-F][0-9A-F][0-9A-F][0-9A-F]$
+/\.nfs[0-9A-F][0-9A-F][0-9A-F][0-9A-F]$
+
+
+################################################################################
+# Gate build artifacts
+################################################################################
+^(i386|sparc)/.*
+^tools/(i386|sparc)/parfait/(CC|cc|g\+\+|gcc|ld)$
+^tools/time-(amd64|i86|sparcv7|sparcv9).(o|so)$
+^tools/incorporator
+
+^components/(?!python/build/).*/build(/.*)?$ # Ignore 'build' dirs unless it is python/build
+
+# Unpacked sources. Any subcomponent having blah-1.2.3, or blah-v1.2.3 or blah-r1.2.3
+^components/(?!desktop|gnome|openssl|ruby)[^/]+/[^/]*-[vr]?[0-9][0-9a-zP._-]*/
+
+# Directories which do contain more components
+^components/apache2-modules/[^/]+/[^/]*-v?[0-9][0-9a-z.-]*/
+^components/closed/instantclient/instantclient-\d+/[^/]+_(x|sparc)(32|64)/
+^components/closed/oracle-cloud-agent/[^/]*-[0-9][0-9a-z.-]*/
+^components/desktop/[^/]+/[^/]*-v?[0-9][0-9a-z.-]*/
+^components/desktop/gstreamer1/[^/]+/[^/]*-[0-9][0-9a-z.-]*/
+^components/gnome/[^/]+/[^/]*-v?[0-9][0-9a-z.-]*/
+^components/javascript/[^/]+/[^/]*-v?[0-9][0-9a-z.-]*/
+^components/open-fabrics/[^/]+/[^/]*-[0-9][0-9a-z.-]*/
+^components/openssl/[^/]+/[^/]*-v?[0-9][0-9a-z.-]*/
+^components/perl_modules/[^/]+/[^/]*-v?[0-9][0-9a-z.-]*/
+^components/php/[^/]+/[^/]*-v?[0-9][0-9a-z.-]*/
+^components/python/[^/]+/[^/]*-v?[0-9][0-9a-z.-]*/
+^components/ruby/[^/]+/[^/]*-v?[0-9][0-9a-z.-]*/
+^components/ruby/puppet-modules/[^/]+/[^/]*-v?[0-9][0-9a-z.-]*/
+^components/rust/[^/]+/[^/]*-[0-9][0-9a-z.-]*/
+^components/x11/(app|data|driver|font|lib|util|xserver)/[^/]+/[^/]*-[0-9][0-9a-z.-]*/
+^components/x11/[^/]+/[^/]*-[0-9][0-9a-z.-]*/
+
+# Specialities
+^components/7zip/7z\d+-src
+^components/apache2-modules/mod_wsgi/gcc-apxs/
+^components/cdrtools/schilytools/
+^components/closed/oracle-cloud-agent/goproxy-download/
+^components/closed/scat/scat/
+^components/desktop/(firefox|thunderbird)/wrapper-node/node-js-cache/[^/]+/(buildGeneratedBindingList.js|build-query.js)$
+^components/desktop/(firefox|thunderbird)/xpi/
+^components/desktop/poppler/testfiles-[a-z0-9]+/
+^components/desktop/thunderbird/patches-all/
+^components/dictionaries/(en_US|es_ES|fr_FR|italiano_[^/]+)/
+^components/docbook/[^/]+/[^/]*-v?[0-9][0-9A-Za-z._-]*(/.*)?$
+^components/docbook/dtds/[^/]+-(sgml|xml)/
+^components/erlang/otp_(src|doc_html|doc_man)_[0-9.]+/
+^components/fonts/[^/]+/(?!(generate|files)(/|$))[^/]+/ # Match every subdirectory in components/fonts/*/... but skip 'generate' and 'files'
+^components/fonts/anonymous-pro/._AnonymousPro-1.002.001$
+^components/fonts/indic-fonts-core/MalOtf.ttf$
+^components/foomatic/db-engine/foomatic-db-engine-[0-9.-]+/
+^components/foomatic/db/foomatic-db-[0-9]+/
+^components/ftp-proxy/ftp-proxy-OPENBSD_[0-9_]+/
+^components/ghostscript/tessdata_best-[0-9a-z]+/
+^components/intel-openmp/libomp_[0-9]+/
+^components/libtecla/libtecla/
+^components/llvm-13/cxa_finalize/.*\.o$
+^components/llvm-[0-9]+/(cmake|third-party)$
+^components/locale/(keyboards|tools)/
+^components/locale/core/
+^components/lynx/lynx[0-9.]+/
+^components/memcached-java/java_memcached-release_[0-9.]+/
+^components/open-fabrics/prototype/
+^components/perl/perl[0-9]+/perl-[0-9.]+/
+^components/perl_modules/dbd-mysql/DBD-mysql.license$
+^components/perl_modules/dbd-sqlite/DBD-SQLite.license$
+^components/pflogd/pflogd-OPENBSD_[0-9_]+/
+^components/php/php[0-9]+/proto-scripts/(php-config-proto|phpize-proto)$
+^components/php/xdebug/package.xml$
+^components/postfix/postfix-3.9.1.tar.gz.gpg2$
+^components/ruby/puppet/ext/(Makefile|PuppetAudit.so|puppet_audit.o)$
+^components/ruby/ruby-33/Solaris/(gem.1|rbconfig.sedscript.mod|ruby.1.sedscript.mod)$
+^components/sendmail/files/aux/mailq$
+^components/stdcxx/(install.sh|stdcxx_(amd64|i386|sparc|sparcv9).h.sed)$
+^components/tcl/expect/expect[0-9.]+/
+^components/tcl/tcl/tcl[0-9.]+/
+^components/tcl/tk/tk[0-9.]+/
+^components/unrar/unrar/
+^components/unzip/unzip[0-9c]+/
+^components/zip/zip[0-9]+/
+^components/zlib/capabilities/sun4v/sparcv[79]/(longest_match_t4|objcap|symcap).o$
+^components/zlib/capabilities/sun4v/sparcv7/longest_match_t4.s$

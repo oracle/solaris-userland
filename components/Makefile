@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 include ../make-rules/shared-macros.mk
@@ -131,7 +131,7 @@ clobber:	$(COMPONENT_DIRS.nosetup) clean
 	@cd ../tools ; echo "clobbering tools..." ; $(GMAKE) clobber
 	$(RM) -r $(WS_REPO) $(WS_EXPERIMENTAL_REPO) $(WS_HOME) $(WS_LOGS) $(WS_LINT_CACHE)
 
-setup:	$(WS_MACH) $(WS_LOGS) $(WS_HOME) $(WS_REPO) $(WS_EXPERIMENTAL_REPO) tools $(WS_LINT_CACHE) $(WS_TOP)/.hgignore
+setup:	$(WS_MACH) $(WS_LOGS) $(WS_HOME) $(WS_REPO) $(WS_EXPERIMENTAL_REPO) tools $(WS_LINT_CACHE)
 
 $(WS_MACH) $(WS_LOGS) $(WS_HOME):
 	$(MKDIR) $@
@@ -170,9 +170,6 @@ tools:
 	@echo "building tools..."
 	+$(GMAKE) -C ../tools clean
 	+$(GMAKE) -C ../tools setup
-
-$(WS_TOP)/.hgignore: $(WS_TOP)/.hgignore.template
-	$(CP) $(WS_TOP)/.hgignore.template $(WS_TOP)/.hgignore
 
 # The default number of build jobs per component if the full workspace is built.
 # 1 disables parallel build in component, 0 lets the system autodetect number
