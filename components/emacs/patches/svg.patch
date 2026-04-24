@@ -1,0 +1,16 @@
+SVG CSS Off-by-One Heap Buffer Overflow
+https://debbugs.gnu.org/cgi/bugreport.cgi?bug=80851
+
+--- emacs-30.1.orig/src/image.c	2025-02-18 11:31:36.000000000 -0700
++++ emacs-30.1/src/image.c	2026-04-23 09:55:34.500109666 -0600
+@@ -12050,9 +12050,7 @@
+     }
+   else
+     {
+-      css = xmalloc (SBYTES (lcss) + 1);
+-      strncpy (css, SSDATA (lcss), SBYTES (lcss));
+-      *(css + SBYTES (lcss) + 1) = 0;
++      css = xstrdup (SSDATA (lcss));
+     }
+ #endif
+ 

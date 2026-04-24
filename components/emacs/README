@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2008, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2026, Oracle and/or its affiliates.
 #
 
 NAME:             emacs
@@ -66,6 +66,13 @@ information needed to understand how this component is put together.
 
             https://lists.gnu.org/archive/html/emacs-devel/2021-04/msg00875.html
 
+        svg.patch
+            Incorrect strncpy() use can cause svg_load_image() to overwrite
+            its buffer. This issue exists in emacs 28.1 through 30.2. This
+            patch can be removed on updated beyond that.
+
+            https://debbugs.gnu.org/cgi/bugreport.cgi?bug=80851
+
         tramp.patch
             A problem was found with the version of tramp delivered with
             Emacs 30.1. Path length limits in the shell break tramp with
@@ -80,7 +87,7 @@ information needed to understand how this component is put together.
 	    https://lists.gnu.org/archive/html/tramp-devel/2025-05/msg00017.html
 
 	man.patch
-	    The patch was taken from upstream and can be removed at
+	    This patch was taken from upstream and can be removed at
 	    the next update.  It Corrects an issue with man page
 	    processing which failed with an error from sed
 	    "/^[\o001-\o032][\o001-\ ...": RE error: invalid character range
