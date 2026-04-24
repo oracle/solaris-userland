@@ -1,0 +1,80 @@
+Suppress expected diagnostics from new 2.15.3 reader negative tests.
+
+Upstream libxml2 2.15.3 extended testparser.c with additional xmlTextReader
+coverage:
+
+- testReaderSchemaResourceLoader()
+- testReaderSchemaEntityExpansion()
+- testReaderRelaxNGResourceLoaderCtxt()
+
+The new tests are correct, but two of them intentionally do a first validation
+pass without a resource loader and expect that pass to fail before retrying
+with xmlTextReaderSetResourceLoader(). The schema/entity-expansion test also
+intentionally feeds invalid content to a schema-validating reader and checks
+that the reader reports the document as invalid.
+
+On Solaris these expected negative-path diagnostics become part of the captured
+component test output and cause results-32.master and results-64.master churn.
+The noisy lines are for example:
+
+- failed to load "http://example.invalid/imported.xsd"
+- failed to load "http://example.invalid/imported.rng"
+- The QName value '{urn:remote}RemoteType' does not resolve ...
+- 'not-an-intnot-an-int' is not a valid value of the atomic type ...
+- Reference docdef has no matching definition
+
+This patch keeps the new upstream test coverage but suppresses stderr only for
+the intentionally failing subcases by temporarily installing ignoreError() as
+the structured error callback around those calls.
+
+This is Solaris specific because it only keeps downstream test baselines stable.
+It does not change installed library code or libxml2 runtime behaviour.
+
+--- libxml2-2.15.3/testparser.c
++++ libxml2-2.15.3/testparser.c
+@@ -19,12 +19,10 @@
+ 
+ #include <string.h>
+ 
+-#ifdef LIBXML_SAX1_ENABLED
+ static void
+ ignoreError(void *ctxt ATTRIBUTE_UNUSED,
+             const xmlError *error ATTRIBUTE_UNUSED) {
+ }
+-#endif
+ 
+ static int
+ testNewDocNode(void) {
+@@ -1099,7 +1097,9 @@
+         fprintf(stderr, "xmlReaderForDoc failed without resource loader\n");
+         return 1;
+     }
++    xmlSetStructuredErrorFunc(NULL, ignoreError);
+     ret = xmlTextReaderSchemaValidate(reader, xsd);
++    xmlSetStructuredErrorFunc(NULL, NULL);
+     if (ret == 0) {
+         fprintf(stderr, "xmlTextReaderSchemaValidate unexpectedly succeeded\n");
+         err = 1;
+@@ -1156,10 +1156,12 @@
+ 
+     reader = xmlReaderForMemory(xml, (int) sizeof(xml) - 1, "doc.xml", NULL,
+                                 XML_PARSE_NOENT | XML_PARSE_DTDLOAD);
++    xmlSetStructuredErrorFunc(NULL, ignoreError);
+     xmlTextReaderSetSchema(reader, schema);
+ 
+     while ((ret = xmlTextReaderRead(reader)) == 1)
+         ;
++    xmlSetStructuredErrorFunc(NULL, NULL);
+     if (ret != 0) {
+         fprintf(stderr, "reader failed on entity-expanded document\n");
+         err = 1;
+@@ -1216,7 +1218,9 @@
+         fprintf(stderr, "xmlReaderForDoc failed without Relax NG loader\n");
+         return 1;
+     }
++    xmlSetStructuredErrorFunc(NULL, ignoreError);
+     ret = xmlTextReaderRelaxNGValidate(reader, rng);
++    xmlSetStructuredErrorFunc(NULL, NULL);
+     if (ret == 0) {
+         fprintf(stderr, "xmlTextReaderRelaxNGValidate unexpectedly succeeded\n");
+         err = 1;
