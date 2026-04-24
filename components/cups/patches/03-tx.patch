@@ -96,7 +96,7 @@ Trusted Extension implementation complete.
  
  /*
   * Local functions...
-@@ -1717,8 +1720,38 @@ if (!con->username[0])
+@@ -1716,8 +1719,38 @@ if (!con->username[0])
  #endif /* HAVE_AUTHORIZATION_H */
      {
        if (best->satisfy == CUPSD_AUTH_SATISFY_ALL || auth == CUPSD_AUTH_DENY)
@@ -509,7 +509,7 @@ Trusted Extension implementation complete.
        {
          cupsdSetJobState(job, IPP_JOB_ABORTED, CUPSD_JOB_PURGE,
  	                 "Aborting job because the start banner could not be "
-@@ -3036,6 +3187,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -3042,6 +3193,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -525,7 +525,7 @@ Trusted Extension implementation complete.
   /*
    * See if the job has been completed...
    */
-@@ -3508,6 +3668,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -3514,6 +3674,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -542,7 +542,7 @@ Trusted Extension implementation complete.
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -6197,6 +6367,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -6209,6 +6379,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
  	                jobid);
  	return;
        }
@@ -559,7 +559,7 @@ Trusted Extension implementation complete.
      }
      else
        job = NULL;
-@@ -6744,6 +6924,15 @@ }
+@@ -6756,6 +6936,15 @@ }
  
    exclude = cupsdGetPrivateAttrs(policy, con, printer, job->username);
  
@@ -575,7 +575,7 @@ Trusted Extension implementation complete.
   /*
    * Copy attributes...
    */
-@@ -7003,6 +7192,21 @@ strlcpy(username, get_username(con), siz
+@@ -7015,6 +7204,21 @@ strlcpy(username, get_username(con), siz
    else
      username[0] = '\0';
  
@@ -597,7 +597,7 @@ Trusted Extension implementation complete.
    ra = create_requested_array(con->request);
    for (job_attr = (char *)cupsArrayFirst(ra); job_attr; job_attr = (char *)cupsArrayNext(ra))
      if (strcmp(job_attr, "job-id") &&
-@@ -7071,6 +7275,14 @@ if (need_load_job && !job->attrs)
+@@ -7083,6 +7287,14 @@ if (need_load_job && !job->attrs)
        {
          cupsdLoadJob(job);
  
@@ -612,7 +612,7 @@ Trusted Extension implementation complete.
  	if (!job->attrs)
  	{
  	  cupsdLogMessage(CUPSD_LOG_DEBUG2, "get_jobs: No attributes for job %d", job->id);
-@@ -7139,7 +7351,11 @@ continue;
+@@ -7151,7 +7363,11 @@ continue;
  	}
        }
  
@@ -625,7 +625,7 @@ Trusted Extension implementation complete.
  	continue;
  
        if (count > 0)
-@@ -8246,6 +8462,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -8258,6 +8474,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -641,7 +641,7 @@ Trusted Extension implementation complete.
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -8516,6 +8741,14 @@ */
+@@ -8528,6 +8753,14 @@ */
        send_ipp_status(con, IPP_NOT_FOUND, _("Job #%d does not exist."), jobid);
        return;
      }
@@ -656,7 +656,7 @@ Trusted Extension implementation complete.
      else
      {
       /*
-@@ -8538,6 +8771,27 @@ send_http_error(con, status, dprinter);
+@@ -8550,6 +8783,27 @@ send_http_error(con, status, dprinter);
      return;
    }
  
@@ -684,7 +684,7 @@ Trusted Extension implementation complete.
   /*
    * Now move the job or jobs...
    */
-@@ -9388,6 +9642,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9400,6 +9654,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -701,7 +701,7 @@ Trusted Extension implementation complete.
   /*
    * See if job is "held"...
    */
-@@ -9616,6 +9880,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9628,6 +9892,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -717,7 +717,7 @@ Trusted Extension implementation complete.
   /*
    * See if job is in any of the "completed" states...
    */
-@@ -9967,6 +10240,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9979,6 +10252,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -733,7 +733,7 @@ Trusted Extension implementation complete.
    printer = cupsdFindDest(job->dest);
  
   /*
-@@ -10656,6 +10938,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -10668,6 +10950,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -749,7 +749,7 @@ Trusted Extension implementation complete.
   /*
    * See if the job has been completed...
    */
-@@ -11108,8 +11399,14 @@ cupsdSetString(&printer->job_sheets[0],
+@@ -11120,8 +11411,14 @@ cupsdSetString(&printer->job_sheets[0],
  
        if (attr->num_values > 1)
  	cupsdSetString(&printer->job_sheets[1], attr->values[1].string.text);
@@ -765,7 +765,7 @@ Trusted Extension implementation complete.
      }
      else if (!strcmp(attr->name, "requesting-user-name-allowed"))
      {
-@@ -11885,6 +12182,11 @@ */
+@@ -11897,6 +12194,11 @@ */
  
    strlcpy(username, get_username(con), userlen);
  
@@ -794,7 +794,7 @@ Trusted Extension implementation complete.
    {
      if ((attr = ippFindAttribute(job->attrs, "job-sheets",
                                   IPP_TAG_NAME)) == NULL)
-@@ -1421,6 +1427,12 @@ }
+@@ -1425,6 +1431,12 @@ }
  
    unload_job(job);
  
@@ -807,7 +807,7 @@ Trusted Extension implementation complete.
    if (job->history)
      free_job_history(job);
  
-@@ -1855,6 +1867,10 @@ */
+@@ -1859,6 +1871,10 @@ */
      ippSetString(job->attrs, &job->reasons, 0, "job-completed-successfully");
    }
  
@@ -818,7 +818,7 @@ Trusted Extension implementation complete.
    job->impressions = ippFindAttribute(job->attrs, "job-impressions-completed", IPP_TAG_INTEGER);
    job->sheets      = ippFindAttribute(job->attrs, "job-media-sheets-completed", IPP_TAG_INTEGER);
    job->job_sheets  = ippFindAttribute(job->attrs, "job-sheets", IPP_TAG_NAME);
-@@ -3914,6 +3930,25 @@ newlength = ipp_length(job->attrs);
+@@ -3918,6 +3934,25 @@ newlength = ipp_length(job->attrs);
    for (i = num_pwgppds, pwgppd = pwgppds; i > 0; i --, pwgppd ++)
      newlength += 1 + strlen(pwgppd->name) + 1 + strlen(pwgppd->value);
  
@@ -844,7 +844,7 @@ Trusted Extension implementation complete.
   /*
    * Then allocate/reallocate the option buffer as needed...
    */
-@@ -4151,6 +4186,25 @@ }
+@@ -4167,6 +4202,25 @@ }
  
    cupsFreeOptions(num_pwgppds, pwgppds);
  
@@ -870,7 +870,7 @@ Trusted Extension implementation complete.
   /*
    * Return the options string...
    */
-@@ -4860,6 +4914,18 @@ */
+@@ -4871,6 +4925,18 @@ */
    if (!cupsdLoadJob(job))
      return;
  
@@ -921,7 +921,7 @@ Trusted Extension implementation complete.
  
    cupsdSetString(&p->error_policy, ErrorPolicy);
    cupsdSetString(&p->op_policy, DefaultPolicy);
-@@ -831,6 +839,91 @@ else
+@@ -837,6 +845,91 @@ else
      return (p);
  }
  
@@ -1013,7 +1013,7 @@ Trusted Extension implementation complete.
  
  /*
   * 'cupsdLoadAllPrinters()' - Load printers from the printers.conf file.
-@@ -2505,12 +2598,22 @@ }
+@@ -2513,12 +2606,22 @@ }
      ippDelete(oldattrs);
    }
  
