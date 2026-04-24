@@ -1,0 +1,19 @@
+The test first decides whether it is running on a 'slow' machine. If so, it
+uses longer timeouts for the real tests that follow. However, it probes HTTP
+rather than HTTPS. On sparcv7, HTTP is fast enough that the test thinks it is
+on a 'fast' machine, so the later HTTPS checks fail. I believe that the
+intention here was to probe how fast the 'https' test is.
+
+Upstream pull request https://github.com/GNOME/libsoup/pull/5
+
+--- libsoup-3.6.5/tests/timeout-test.c
++++ libsoup-3.6.5/tests/timeout-test.c
+@@ -229,7 +229,7 @@ https_uri = soup_test_server_get_uri (se
+ 		/* The 1-second timeouts are too fast for some machines... */
+ 		test_session = soup_test_session_new (NULL);
+ 		start = g_get_monotonic_time ();
+-		do_message_to_session (test_session, uri, NULL, SOUP_STATUS_OK);
++		do_message_to_session (test_session, https_uri, NULL, SOUP_STATUS_OK);
+ 		end = g_get_monotonic_time ();
+ 		soup_test_session_abort_unref (test_session);
+ 		debug_printf (2, "  (https request took %0.3fs)\n", (end - start) / 1000000.0);

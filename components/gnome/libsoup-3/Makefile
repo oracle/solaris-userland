@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 	      	64_and_32
@@ -58,7 +58,7 @@ CONFIGURE_OPTIONS += -Ddocs=disabled
 CONFIGURE_OPTIONS += -Dpkcs11_tests=disabled
 CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/Ok:/p" ' \
