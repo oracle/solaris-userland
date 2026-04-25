@@ -49,7 +49,7 @@ endef
 # for a few components where the communities either no longer provide matching
 # source archives or we have changes that aren't reflected in their archives or
 # anywhere else.
-$(call read-config,INTERNAL_ARCHIVE_MIRROR,http://userland.us.oracle.com/source-archives)
+$(call read-config,INTERNAL_ARCHIVE_MIRROR,http://ul.webad1phx.solarisx86phx.oraclevcn.com/source-archives)
 
 # The location of an external mirror of community source archives that we build
 # in this gate.  The external mirror is a replica of the internal mirror.
