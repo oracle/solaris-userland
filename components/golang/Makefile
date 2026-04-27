@@ -24,7 +24,6 @@
 #
 BUILD_BITS= 64
 BUILD_ARCH= i386
-COMPILER= gcc
 # The golang build process doesn't work with Parfait.
 export PARFAIT_BUILD=no
 

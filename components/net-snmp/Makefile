@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64_and_32
 CTF_MODE =		relaxed
@@ -34,7 +34,6 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 PATH=$(GNUBIN):$(USRBINDIR)
-COMPILER=gcc
 
 COMPONENT_NAME=		net-snmp
 COMPONENT_VERSION=	5.9.4

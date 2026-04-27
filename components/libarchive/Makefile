@@ -46,7 +46,6 @@ include $(WS_MAKE_RULES)/common.mk
 # Use GNU compiler instead of Solaris Studio to get a properly aligned
 # uncompressed_size attribute (uint64_t) in alone_header structure.
 # See file: libarchive/archive_read_support_format_zip.c
-COMPILER=gcc
 
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-shared

@@ -20,10 +20,9 @@
 #
 
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
-COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 # Tests do require X11
 include ../../make-rules/test-x11.mk

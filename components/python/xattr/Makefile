@@ -20,12 +20,11 @@
 #
 
 #
-# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 
 # Component uses ABI3 naming.
 PYTHON3_SOABI=abi3
-COMPILER=gcc
 
 include ../../../make-rules/shared-macros.mk
 

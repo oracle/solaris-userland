@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64_and_32
 CTF_MODE =		relaxed
@@ -33,8 +33,6 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:661f5eb03f048a3b924c3a8ad2515d4068e40f67e774e8a26827658007e3bcf0
 COMPONENT_BUGDB=	library/nettle
 COMPONENT_ANITYA_ID=	2073
-
-COMPILER=	gcc
 
 COMPONENT_BAID=	107603
 
@@ -110,7 +108,6 @@ COMPONENT_TEST_TRANSFORMS += \
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 $(BUILD_DIR)/wanboot-amd64/.configured: BITS=64
-$(BUILD_DIR)/wanboot-amd64/.configured: COMPILER=gcc
 $(BUILD_DIR)/wanboot-amd64/.configured: CFLAGS += $(CFLAGS.wanboot)
 $(BUILD_DIR)/wanboot-amd64/.configured: CONFIGURE_OPTIONS += $(CONFIGURE_OPTIONS.wanboot)
 # Wanboot can not be built in PIC mode

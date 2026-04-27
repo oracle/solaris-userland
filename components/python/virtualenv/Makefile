@@ -25,7 +25,6 @@
 
 # Even though the component is pure python, some
 # tests compilate non pure extensions.
-COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		virtualenv

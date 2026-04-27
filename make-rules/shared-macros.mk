@@ -192,7 +192,7 @@ endif
 
 include $(WS_MAKE_RULES)/ips-buildinfo.mk
 
-COMPILER ?=		studio
+COMPILER ?=		gcc
 
 # The values of BITS changes during the build process for components that
 # are built 32-bit and 64-bit.  This macro makes it possible to determine

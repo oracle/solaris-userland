@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 # Cairo uses atomic intrinsics not supported in Studio 12.4 (ER 19201298)
-COMPILER =              gcc
 BUILD_BITS =            64_and_32
 CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk

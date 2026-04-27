@@ -20,13 +20,12 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
 # parfait is suddenly unhappy with us (21638460)
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
-COMPILER=	gcc
 
 include ../../make-rules/shared-macros.mk
 

@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 # gnupth only delivers scripts that embed paths, so prefer 32-bit.
 BUILD_BITS= 32_and_64
-COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		npth

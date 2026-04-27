@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS =		64
-COMPILER =		gcc
 CTF_MODE =		off	# Breaks config
 
 # Gcc often fails when it is _not_ built in multiple parallel jobs. This can

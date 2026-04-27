@@ -20,10 +20,9 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
-COMPILER =		gcc
 CTF_MODE =		relaxed
 BUILD_BITS = 		64
 include ../../../make-rules/shared-macros.mk
@@ -46,8 +45,7 @@ COMPONENT_BAID=		352127
 BUILD_STYLE= pybuild
 include $(WS_MAKE_RULES)/common.mk
 
-COMPONENT_BUILD_ARGS.gcc	+= --compiler=gnu --fcompiler=gnu95
-COMPONENT_BUILD_ARGS 		+= $(COMPONENT_BUILD_ARGS.$(COMPILER)) -lm
+COMPONENT_BUILD_ARGS		+= --compiler=gnu --fcompiler=gnu95 -lm
 
 PYTHON_ENV +=   CC="$(CC) $(CC_BITS)"
 

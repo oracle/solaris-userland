@@ -19,9 +19,10 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
+COMPILER= studio
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 

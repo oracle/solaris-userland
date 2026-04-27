@@ -19,11 +19,10 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
-COMPILER= gcc
 PYTHON3_SOABI= bare
 include ../../make-rules/shared-macros.mk
 

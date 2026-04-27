@@ -23,7 +23,6 @@
 # Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
-COMPILER= gcc
 # debug build? uncomment next line
 # GMAKE= /usr/gnu/bin/make V=1
 include ../../make-rules/shared-macros.mk

@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 # libtool only delivers scripts that embed paths, so prefer 32-bit.
+COMPILER= studio
 BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 

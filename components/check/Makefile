@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -44,7 +44,6 @@ CLONEY = echo
 COMPONENT_PRE_BUILD_ACTION = $(CP) -rp $(SOURCE_DIR)/. $(@D)
 
 # Several tests fail when the Studio compiler is used.
-COMPILER =      gcc
 
 # Override tests in m4/acx_pthread.m4 that try to set obsolete/incompatible
 # flags for linking threaded code on Solaris.

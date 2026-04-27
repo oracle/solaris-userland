@@ -23,7 +23,6 @@
 
 
 BUILD_BITS =		64
-COMPILER =		gcc
 CTF_MODE =		off	# C++
 include ../../../make-rules/shared-macros.mk
 

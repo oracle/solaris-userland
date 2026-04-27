@@ -24,7 +24,6 @@
 #
 
 BUILD_BITS= 64_and_32
-COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 # This component does not fully specify dependencies of shared objects

@@ -24,7 +24,6 @@
 #
 
 BUILD_BITS =		32_and_64
-COMPILER =		gcc
 CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 

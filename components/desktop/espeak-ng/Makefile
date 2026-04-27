@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 # parfait doesn't like sketchy code (25158912)
@@ -28,7 +28,6 @@ export PARFAIT_BUILD=no
 
 BUILD_BITS=		64
 # For now, all things built for C++11 require gcc.
-COMPILER =		gcc
 
 # The Makefile of this component does not support multiple build jobs.
 COMPONENT_MAKE_JOBS=1

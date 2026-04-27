@@ -26,7 +26,6 @@
 BUILD_BITS =		64_and_32
 
 # For now, all things built for C++11 require gcc.
-COMPILER = 		gcc
 CTF_MODE =		off	# C++
 
 include ../../../make-rules/shared-macros.mk

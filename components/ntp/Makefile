@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
+COMPILER= studio
 BUILD_BITS= 64
 
 # The Makefile of this component does not support multiple build jobs.

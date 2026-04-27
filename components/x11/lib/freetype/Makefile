@@ -25,7 +25,6 @@
 
 BUILD_BITS =            32_and_64
 # FreeType uses various gcc-isms for optimizations
-COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freetype

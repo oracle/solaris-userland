@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
-COMPILER=		gcc
 
 # Temporary opt out till llvm-13 packages are in CBE.
 SKIP_REQUIRED_PACKAGES_CHECK=

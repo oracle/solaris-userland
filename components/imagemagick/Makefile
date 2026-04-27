@@ -24,7 +24,6 @@
 #
 
 BUILD_BITS=		64
-COMPILER=		gcc
 CTF_MODE =		off # not supported for 'GNU C++17' frontend
 
 include ../../make-rules/shared-macros.mk

@@ -51,8 +51,8 @@ PKG_MACROS += PYVER=$(PYTHON_VERSIONS)
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
-build:		$(BUILD_64)
+build:		$(BUILD_NO_ARCH)
 
-install:	$(INSTALL_64)
+install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_64)
+test:		$(TEST_NO_ARCH)

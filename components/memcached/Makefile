@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
+COMPILER= studio
 BUILD_BITS= 64
 
 # Build does not start reliably when multiple jobs are allowed

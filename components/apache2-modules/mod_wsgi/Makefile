@@ -20,12 +20,11 @@
 #
 
 #
-# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Python 3.13 module doesn't build with Studio compiler without needing Studio specific atomic library.
 # This can be avoided by using GCC.
-COMPILER= gcc
 CONSOLIDATION = python
 include ../../../make-rules/shared-macros.mk
 

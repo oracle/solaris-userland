@@ -18,11 +18,10 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
-COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 include Makefile.com

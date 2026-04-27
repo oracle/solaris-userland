@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2009, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2026, Oracle and/or its affiliates.
 #
 
 # Use GNU compiler to automatically remove the build path from macros and debug information.
-COMPILER=	gcc
 BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 

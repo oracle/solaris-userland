@@ -54,7 +54,6 @@ LOCALE_TRANSFORMS += fix-locale.transform
 
 # While the Sphinx itself is pure python only, tests using
 # Cython need the following setup properly.
-COMPILER =	gcc
 BITS =		64
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)

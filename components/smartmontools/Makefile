@@ -20,6 +20,7 @@
 #
 # Copyright (c) 2017, 2026, Oracle and/or its affiliates.
 #
+COMPILER =		studio
 BUILD_BITS =		64
 CTF_MODE =		off	# Has no effect
 include ../../make-rules/shared-macros.mk

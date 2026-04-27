@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 CONSOLIDATION = python
@@ -55,14 +55,15 @@ BUILD_NO_ARCH = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH)-%/.built)
 INSTALL_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 INSTALL_NO_ARCH = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH)-%/.installed)
 
+ifneq ($(COMPILER),gcc)
+$(error "Python components must be compiled with gcc")
+endif
 PYTHON_ENV =	CC="$(CC)"
-ifeq ($(COMPILER),gcc)
 PYTHON_ENV +=	CXX="$(CXX)"
 PYTHON_ENV +=	LDSHARED="$(CC) -shared"
 PYTHON_ENV +=	LDCXXSHARED="$(CXX) -shared"
-endif
 PYTHON_ENV +=	CFLAGS="$(CFLAGS)"
-PYTHON_ENV +=	PATH="$(PATH):$(SPRO_VROOT)/bin"
+PYTHON_ENV +=	PATH="$(PATH)"
 PYTHON_ENV +=	PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 
 COMPONENT_BUILD_ENV += $(PYTHON_ENV)

@@ -27,7 +27,6 @@
 export PARFAIT_BUILD=no
 
 BUILD_BITS =		64
-COMPILER =		gcc
 CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
 

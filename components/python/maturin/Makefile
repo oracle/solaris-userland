@@ -20,10 +20,9 @@
 #
 
 #
-# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 #
 
-COMPILER =		gcc
 CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 

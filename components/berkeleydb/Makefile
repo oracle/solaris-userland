@@ -20,10 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
-COMPILER= gcc
 
 # The GCC 5.3 default optimization is -O3 (set via shared-macros.mk).
 # A previous comment for berkeleydb when built with the Studio compilers was:

@@ -20,17 +20,17 @@
 #
 
 #
-# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 
 # This Makefile contains wanboot specific rules.
 
+COMPILER=	studio
+BUILD_ARCH=	sparc
+BUILD_BITS=	64
 include ../../../make-rules/shared-macros.mk
 
 include ../openssl-3/Makefile.com
-
-BUILD_ARCH=	sparc
-BUILD_BITS=	64
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -57,9 +57,8 @@ CFLAGS_WANBOOT="-m64 \
 
 # Start with overriding the options.
 CONFIGURE_OPTIONS = CFLAGS=$(CFLAGS_WANBOOT)
-CONFIGURE_OPTIONS += CC=$(CC.studio.64)
+CONFIGURE_OPTIONS += CC=$(CC)
 
-BITS=64
 # CONFIGURE_PREFIX will not work, so use it directly.
 CONFIGURE_OPTIONS += --prefix=/usr/openssl/3/wanboot
 
@@ -200,8 +199,6 @@ CONFIGURE_OPTIONS += no-tls1_1
 #
 CONFIGURE_OPTIONS += solaris64-sparcv9-cc
 
-BITS=64
-CC=$(CC.studio.64)
 COMPONENT_POST_BUILD_ACTION = \
     ../common/verify_build.sh $(@D) $(CC) $(BITS) openssl-3-wanboot-internal.sparc.p5m wanboot || exit 1;
 

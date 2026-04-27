@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64_and_32
-COMPILER =		gcc
 CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 

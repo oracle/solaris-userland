@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796395)
@@ -28,7 +28,6 @@ export PARFAIT_BUILD=no
 
 BUILD_BITS =		64_and_32
 # Upstream requires gcc flags that Studio doesn't support
-COMPILER =		gcc
 CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 

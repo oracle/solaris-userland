@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
+COMPILER= studio
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 

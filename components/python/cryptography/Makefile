@@ -23,7 +23,6 @@
 # Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 
-COMPILER =		gcc
 CTF_MODE =		relaxed
 
 # Component uses ABI3 naming.

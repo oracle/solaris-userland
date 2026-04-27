@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
-COMPILER=		gcc
 BUILD_ARCH =		i386
 include ../../../../make-rules/shared-macros.mk
 

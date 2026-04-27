@@ -20,13 +20,12 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
 # Preferred compiler set to gcc and not Studio as on Sparc architecture
 # some assembler code is required for locking which fails to compile on
 # solaris, when using gcc this is inlined (see jslock.c)
-COMPILER =	gcc
 BUILD_BITS= 64
 
 # The Makefile of this component does not support multiple build jobs.

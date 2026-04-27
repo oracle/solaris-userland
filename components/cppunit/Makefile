@@ -20,10 +20,9 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
-COMPILER =		gcc
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS =		32_and_64
 CTF_MODE =		off	# C++

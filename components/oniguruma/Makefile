@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS = 64
 include ../../make-rules/shared-macros.mk
@@ -39,7 +39,6 @@ COMPONENT_BAID =	163791
 
 include $(WS_MAKE_RULES)/common.mk
 
-COMPILER =		gcc
 CONFIGURE_OPTIONS +=	--enable-static=no
 
 COMPONENT_TEST_ARGS +=	CFLAGS+=-I$(PROTOUSRINCDIR)

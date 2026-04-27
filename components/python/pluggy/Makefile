@@ -24,7 +24,6 @@
 #
 
 include ../../../make-rules/shared-macros.mk
-COMPILER=	gcc
 
 COMPONENT_NAME=		pluggy
 COMPONENT_VERSION=	1.6.0

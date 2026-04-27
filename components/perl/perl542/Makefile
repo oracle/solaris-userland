@@ -25,6 +25,7 @@
 
 
 BUILD_BITS= 64
+CTF_MODE= off
 
 include ../../../make-rules/shared-macros.mk
 

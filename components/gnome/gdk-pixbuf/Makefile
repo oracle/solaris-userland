@@ -20,12 +20,11 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
-COMPILER=		gcc
 BUILD_BITS =		32_and_64
 include ../../../make-rules/shared-macros.mk
 BUILD_STYLE=            meson

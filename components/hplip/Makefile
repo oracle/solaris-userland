@@ -25,7 +25,6 @@
 #
 
 BUILD_BITS =		64
-COMPILER =		gcc
 CTF_MODE =		off	# Has no effect
 PYTHON3_SOABI =		bare
 # parallel build will not survive the build process atrocity 

@@ -20,12 +20,11 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
 # Uses gcc-specific options (e.g. -Wall) which cause Studio build failures.
-COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-initial-setup

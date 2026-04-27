@@ -19,9 +19,10 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
+COMPILER = studio
 include ../../../make-rules/shared-macros.mk
 
 CFLAGS = -m64 -I../coolkey-1.1.0/src/coolkey

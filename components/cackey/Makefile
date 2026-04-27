@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 # TESTING:
@@ -40,6 +40,7 @@
 #   Search for CK_FAIL or "failed" in testoutput.log to see the actual failures,
 #   if no CK_FAIL or failed were reported, the test ran successfully.
 
+COMPILER= studio
 BUILD_BITS=	64_and_32
 include ../../make-rules/shared-macros.mk
  

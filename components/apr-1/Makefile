@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 
 # Prefer 32-bit over 64-bit as apr has its own custom package layout.
+COMPILER =		studio
 BUILD_BITS =		32_and_64
 CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk

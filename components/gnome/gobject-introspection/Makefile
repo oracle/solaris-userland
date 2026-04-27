@@ -20,13 +20,12 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 # gobject-introspection must be built with gcc as gobject-introspection does
 # not produce correct results when using Studio and the source code itself does
 # not build successfully.
-COMPILER =		gcc
 BUILD_BITS =		64
 CTF_MODE =		relaxed
 PYTHON3_SOABI =		bare

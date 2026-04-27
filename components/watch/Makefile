@@ -20,10 +20,9 @@
 #
 
 #
-# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
-COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		procps-ng

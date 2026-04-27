@@ -23,7 +23,6 @@
 # Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
-COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 # This component does not fully specify dependencies of shared objects

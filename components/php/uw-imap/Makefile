@@ -18,8 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2026, Oracle and/or its affiliates.
 #
+COMPILER= studio
 BUILD_BITS= 64
 
 # Parallel build jobs are supported only if GNU make is used.

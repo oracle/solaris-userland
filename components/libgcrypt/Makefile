@@ -57,7 +57,6 @@ include $(WS_MAKE_RULES)/common.mk
 # supported by Solaris C language preprocessor, cpp(1). Heavy manual
 # patching in a potentially dangerous area would be needed to allow use
 # of Solaris Studio as the component compiler.
-COMPILER =		gcc
 
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)

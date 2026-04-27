@@ -24,7 +24,6 @@
 #
 
 BUILD_BITS =            64
-COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bitmap

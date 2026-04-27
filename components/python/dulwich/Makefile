@@ -23,7 +23,6 @@
 # Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
-COMPILER=		gcc
 CTF_MODE=		off	# Has no effect
 BUILD_BITS=		64
 

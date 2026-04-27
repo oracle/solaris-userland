@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64
 # Currently only builds with gcc
-COMPILER =		gcc
 export PARFAIT_BUILD =	no
 CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk

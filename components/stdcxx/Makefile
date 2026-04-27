@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
+COMPILER= studio
 BUILD_BITS= 64_and_32
 
 # we really need to use studio so we don't like that

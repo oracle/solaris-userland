@@ -64,7 +64,6 @@ COMPONENT_ANITYA_ID=	5021
 OS_META_VERSION=	-$(PKG_SOLARIS_VERSION)
 PKG_MACROS +=		OS_META_VERSION=$(OS_META_VERSION)
 
-COMPILER=gcc
 
 # Include all files from the tarball into the package at
 # usr/share/lib/zoneinfo/src prefix. Exceptions will be handled by generate

@@ -20,12 +20,12 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
-# GCC produces faster gzip on amd64 (not on SPARC).
-ifeq ($(shell uname -p),i386)
-COMPILER= gcc
+# Studio produces faster gzip on SPARC than gcc.
+ifeq ($(shell uname -p),sparc)
+COMPILER= studio
 endif
 include ../../make-rules/shared-macros.mk
 

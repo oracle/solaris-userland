@@ -25,7 +25,6 @@
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS=		64
-COMPILER=		gcc
 
 # libcmocka is requested for testing purposes. As it is not generally
 # available at this time the package check needs to be bypassed.

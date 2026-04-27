@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 # Static assertions fail when building with Studio
-COMPILER =		gcc
 BUILD_BITS =            64_and_32
 include ../../../make-rules/shared-macros.mk
 

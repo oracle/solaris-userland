@@ -23,7 +23,6 @@
 # Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
-COMPILER =		gcc
 BUILD_BITS =		64_and_32
 CTF_MODE =		relaxed
 

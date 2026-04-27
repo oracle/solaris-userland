@@ -20,10 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64
-COMPILER =		gcc
 CTF_MODE =		relaxed
 
 # Temporary opt out till mysql-84 is in CBE

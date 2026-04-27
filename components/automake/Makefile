@@ -31,7 +31,6 @@ BUILD_BITS= 64
 
 # We only deliver scripts but unit tests use C++11
 # which is better supported by GCC compiler...
-COMPILER= gcc
 
 include ../../make-rules/shared-macros.mk
 

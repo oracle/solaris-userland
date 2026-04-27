@@ -18,14 +18,13 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 
 # Refer to ../../doc/makefile-variables.txt
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS=		64_and_32
-COMPILER=		gcc
 
 include ../../make-rules/shared-macros.mk
 

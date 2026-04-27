@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2008, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
-COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		font-misc-meltho

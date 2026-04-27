@@ -19,10 +19,9 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 #
 
-COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 # This component does not fully specify dependencies of shared objects

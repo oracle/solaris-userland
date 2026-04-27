@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -64,13 +64,13 @@ PKG_MACROS += PYVER=$(PYTHON_VERSIONS)
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # Common targets
-build:		$(BUILD_64)
+build:		$(BUILD_NO_ARCH)
 
-install:	$(INSTALL_64)
+install:	$(INSTALL_NO_ARCH)
 
-venv-test:	$(TEST_64)
+venv-test:	$(TEST_NO_ARCH)
 
-venv-system-test: $(SYSTEM_TEST_64)
+venv-system-test: $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += image/imagemagick
 REQUIRED_PACKAGES += library/libpaper

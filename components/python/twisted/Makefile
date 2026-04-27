@@ -23,7 +23,6 @@
 # Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
-COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		twisted

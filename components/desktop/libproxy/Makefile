@@ -20,10 +20,9 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS = 		32_and_64
-COMPILER = 		gcc
 CTF_MODE =		off	# Has little effect, largely C++
 include ../../../make-rules/shared-macros.mk
 

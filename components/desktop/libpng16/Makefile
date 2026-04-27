@@ -23,7 +23,6 @@
 # Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 #
 
-COMPILER =		gcc
 BUILD_BITS = 		32_and_64
 include ../../../make-rules/shared-macros.mk
 

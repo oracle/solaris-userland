@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
+COMPILER= studio
 # For this component, prefer 32-bit over 64-bit for now until sufficient
 # testing has been performed.
 BUILD_BITS= 32_and_64

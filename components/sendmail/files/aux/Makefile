@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2013, 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
+COMPILER=	studio
 include ../../../../make-rules/shared-macros.mk
 
 PROG=		mailq

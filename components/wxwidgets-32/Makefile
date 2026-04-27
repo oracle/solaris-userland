@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 # 32-bit preferred as only *-config and source generation scripts delivered.
 BUILD_BITS =		32_and_64
-COMPILER =		gcc
 CTF_MODE =		off	# Has little effect
 include ../../make-rules/shared-macros.mk
 

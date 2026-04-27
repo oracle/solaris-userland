@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64
 # using gcc makes parfait happy.
-COMPILER =		gcc
 CTF_MODE =		off	# Has little effect
 include ../../make-rules/shared-macros.mk
 

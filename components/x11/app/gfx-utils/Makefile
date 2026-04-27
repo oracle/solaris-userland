@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 
+COMPILER=		studio
 BUILD_BITS= 		64
 BUILD_ARCH=		sparc
 

@@ -24,7 +24,6 @@
 #
 BUILD_BITS =		64
 # Must use gcc because of 21090206
-COMPILER =		gcc
 CTF_MODE =		relaxed
 
 include ../../../make-rules/shared-macros.mk

@@ -58,7 +58,6 @@ install:	$(INSTALL_NO_ARCH)
 
 # Wheel itself is pure, but during tests it builds several C extensions
 # that need to have correct compiler and bits set.
-COMPILER=	gcc
 test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)

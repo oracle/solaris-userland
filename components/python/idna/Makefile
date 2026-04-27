@@ -52,10 +52,10 @@ COMPONENT_TEST_TRANSFORMER = $(NAWK)
 COMPONENT_TEST_TRANSFORMS = "'/^Ran .+ / { sub(\" tests in .+s\", \" tests in\"); print }; /!NF/ { print }; /^OK/ { print };'"
 
 # common targets
-build:		$(BUILD_64)
+build:		$(BUILD_NO_ARCH)
 
-install:	$(INSTALL_64)
+install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_64)
+test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TEST_64)
+system-test:	$(SYSTEM_TEST_NO_ARCH)

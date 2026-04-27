@@ -24,6 +24,7 @@
 #
 
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
+COMPILER= studio
 BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 

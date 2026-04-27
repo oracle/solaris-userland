@@ -23,7 +23,6 @@
 # Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 
-COMPILER=		gcc
 BUILD_BITS=		64
 BUILD_ARCH=		i386
 CTF_MODE =		off	# Has no effect

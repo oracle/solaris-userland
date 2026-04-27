@@ -23,7 +23,6 @@
 # Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
-COMPILER=	gcc
 
 COMPONENT_NAME=		pyopenssl
 COMPONENT_VERSION=	26.0.0

@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
+COMPILER=studio
 # Parallel build jobs are supported only if GNU make is used.
 COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
