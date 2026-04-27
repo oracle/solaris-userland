@@ -1,0 +1,16 @@
+Submitted to upstream in https://github.com/BuGlessRB/procmail/pull/17
+
+This patch prevents occasional build failures caused by race between two
+makefile targets.
+
+--- a/Makefile.1
++++ b/Makefile.1
+@@ -43,7 +43,7 @@
+       echo '   * Having backquotes in there could be unhealthy! *';\
+  echo;fi;exit 0
+ 
+-recommend: autoconf.h src/Makefile
++recommend: autoconf.h src/Makefile bins
+ 	@cd src; $(MAKE) $@
+ 	@echo ================================================================\
+ ===============
