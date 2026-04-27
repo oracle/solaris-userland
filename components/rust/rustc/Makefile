@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -29,13 +29,13 @@ CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	rustc
-COMPONENT_VERSION =	1.87.0
-COMPONENT_BAID =	330476
+COMPONENT_VERSION =	1.95.0
+COMPONENT_BAID =	387640
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_PROJECT_URL =	http://www.rust-lang.org/
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:8623b8651893e8c6aebfa45b6a90645a4f652f7b18189a0992a90d11ac2631f4
+    sha256:62b67230754da642a264ca0cb9fc08820c54e2ed7b3baba0289876d4cdb48c08
 COMPONENT_ARCHIVE_URL =	https://static.rust-lang.org/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL =	$(COMPONENT_ARCHIVE_URL).asc
 
@@ -56,9 +56,7 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Everything expects GNU utilities, so make sure those are preferred.
 # BOOTSTRAP_PATH is used during updates before new version is seeded.
-# GCC 14 is still needed for Oniguruma. To be resolved with new Rust
-# version.
-PATH = $(BOOTSTRAP_PATH):/usr/gcc/14/bin:/usr/gnu/bin:/usr/bin
+PATH = $(BOOTSTRAP_PATH):/usr/gnu/bin:/usr/bin
 
 # LD_B_DIRECT breaks the build.
 LD_B_DIRECT =
@@ -74,6 +72,7 @@ endif
 CONFIGURE_OPTIONS =	--prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS +=	--libdir=lib/$(MACH64)
 CONFIGURE_OPTIONS +=	--default-linker=gcc
+CONFIGURE_OPTIONS +=	--enable-lld
 CONFIGURE_OPTIONS +=	--enable-local-rust
 CONFIGURE_OPTIONS +=	--release-channel=stable
 CONFIGURE_OPTIONS +=	--docdir=/usr/share/doc/rust
@@ -97,18 +96,25 @@ COMPONENT_TEST_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
 # Rust library names (and some other file names) contain hash which differs
 # between intel and sparc. Therefore library list need to be created to be
 # included into p5m file.
+# Some rustdoc outputs are also architecture-dependent and need to be
+# variant-tagged through a generated include.
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR); \
 	ls -1 usr/lib/$(MACH64)/lib* \
 	  usr/lib/$(MACH64)/rustlib/$(RUST_PLATFORM)/lib/lib* \
 	  usr/share/doc/rust/html/rustc/searchindex-* \
 	  usr/share/doc/rust/html/static.files/* | \
-	  awk '{ print "file path="$$1 " variant.arch=$(MACH)" }' > ../../libraries-hashed.$(MACH64); )
+	  awk '{ print "file path="$$1 " variant.arch=$(MACH)" }' > ../../libraries-hashed.$(MACH64); \
+	/usr/gnu/bin/find usr/share/doc/rust/html/search.index \
+	  usr/share/doc/rust/html/src/std_detect/detect/os -type f | \
+	  awk '{ print "file path="$$1 " variant.arch=$(MACH)" }' > ../../documentation-arch.$(MACH64); )
 
 # pkg-report requires *.p5m files to be processed by pkgmogrify. Since the
 # libraries-hashed normally comes from build and since pkg-report runs
 # 'gmake clean' first we have to create empty file instead.
-PKG_REPORT_ADDITIONAL_SETUP = touch $(BUILD_DIR)/libraries-hashed.$(MACH64)
+PKG_REPORT_ADDITIONAL_SETUP = \
+	touch $(BUILD_DIR)/libraries-hashed.$(MACH64) \
+	    $(BUILD_DIR)/documentation-arch.$(MACH64)
 
 # We put $(BOOTSTRAP_DIR)/usr/bin into $PATH if we used it because we need to
 # use the same compiler during test as we did during build.  Otherwise, we'll
@@ -118,7 +124,58 @@ COMPONENT_TEST_CMD =	$(PYTHON) $(SOURCE_DIR)/x.py
 COMPONENT_TEST_ARGS =	test --no-fail-fast -j 8
 COMPONENT_TEST_TARGETS =
 
-REQUIRED_PACKAGES += developer/gcc-14
+GENERATE_COPYRIGHT_MANIFESTS = \
+$(SOURCE_DIR)/src/tools/cargo/Cargo.toml,\
+$(SOURCE_DIR)/src/tools/clippy/clippy_test_deps/Cargo.toml,\
+$(SOURCE_DIR)/src/tools/rust-analyzer/Cargo.toml,\
+$(SOURCE_DIR)/compiler/rustc_codegen_cranelift/Cargo.toml,\
+$(SOURCE_DIR)/compiler/rustc_codegen_gcc/Cargo.toml,\
+$(SOURCE_DIR)/library/Cargo.toml,\
+$(SOURCE_DIR)/src/bootstrap/Cargo.toml,\
+$(SOURCE_DIR)/src/tools/rustbook/Cargo.toml,\
+$(SOURCE_DIR)/src/tools/rustc-perf/Cargo.toml,\
+$(SOURCE_DIR)/src/tools/opt-dist/Cargo.toml,\
+$(SOURCE_DIR)/src/doc/book/packages/trpl/Cargo.toml
+
+GENERATE_COPYRIGHT_HTML = $(BUILD_DIR)/COPYRIGHT.full.html
+GENERATE_COPYRIGHT_LIBSTD_HTML = $(BUILD_DIR)/COPYRIGHT-library.full.html
+GENERATE_COPYRIGHT_LOG = $(BUILD_DIR)/generate-copyright.log
+GENERATE_COPYRIGHT_TARGET_DIR = $(BUILD_DIR)/generate-copyright-target
+
+.PHONY: license
+license:
+	test -f $(SOURCE_DIR)/license-metadata.json || $(MAKE) prep
+	rm -f $(GENERATE_COPYRIGHT_HTML) $(GENERATE_COPYRIGHT_LIBSTD_HTML) \
+	    $(GENERATE_COPYRIGHT_LOG) rust.license.new
+	cd $(SOURCE_DIR) && \
+	    CARGO_MANIFESTS="$$(printf '%s' '$(GENERATE_COPYRIGHT_MANIFESTS)' | tr -d '[:space:]')" \
+	    CARGO_HOME='$(SOURCE_DIR)/vendor' \
+	    CARGO_TARGET_DIR='$(GENERATE_COPYRIGHT_TARGET_DIR)' \
+	    CARGO_NET_OFFLINE=true \
+	    DEST='$(GENERATE_COPYRIGHT_HTML)' \
+	    DEST_LIBSTD='$(GENERATE_COPYRIGHT_LIBSTD_HTML)' \
+	    SRC_DIR='$(SOURCE_DIR)' \
+	    VENDOR_DIR='$(SOURCE_DIR)/vendor' \
+	    CARGO="$$(command -v cargo)" \
+	    LICENSE_METADATA='$(SOURCE_DIR)/license-metadata.json' \
+	    cargo run \
+	        --config 'source.crates-io.replace-with="vendored-sources"' \
+	        --config 'source.vendored-sources.directory="$(SOURCE_DIR)/vendor"' \
+	        --manifest-path '$(SOURCE_DIR)/src/tools/generate-copyright/Cargo.toml' \
+	        --quiet > '$(GENERATE_COPYRIGHT_LOG)' 2>&1
+	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
+	    lynx --display_charset=utf-8 -stdin --dump -nolist \
+	    < $(GENERATE_COPYRIGHT_HTML) > rust.license.new
+	cd $(SOURCE_DIR) && \
+	    ls -1 LICENSES | while read f; do \
+	        echo "-- licenses/$$f --"; \
+	        echo; \
+	        cat LICENSES/$$f; \
+	        echo; \
+	        echo; \
+	    done >> $(CURDIR)/rust.license.new
+	mv rust.license.new rust.license
+
 REQUIRED_PACKAGES += developer/llvm/llvm
 REQUIRED_PACKAGES += developer/rust/rustc
 REQUIRED_PACKAGES += library/libssh2
@@ -127,4 +184,5 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += web/browser/lynx
 REQUIRED_PACKAGES += web/curl

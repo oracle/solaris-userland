@@ -1,0 +1,37 @@
+Use configured local-rust libdir for stage0 sysroot copy.
+
+Solaris packages install Rust libraries under a configured libdir such as
+lib/amd64, while the sysroot remains /usr. Upstream bootstrap already computes
+the snapshot compiler's relative libdir, but stage0 local-rust sysroot setup
+still hardcodes initial_sysroot/lib. When local-rust is taken from /usr/bin,
+that ends up recursively copying the whole /usr/lib tree and can pull in
+unrelated root-only system files.
+
+Copy the configured relative libdir instead so stage0-sysroot only contains the
+Rust runtime tree that matches the installed toolchain layout.
+
+--- rustc-1.95.0-src/src/bootstrap/src/core/build_steps/compile.rs
++++ rustc-1.95.0-src/src/bootstrap/src/core/build_steps/compile.rs
+@@ -805,11 +805,17 @@
+         } else if compiler.stage == 0 {
+             let sysroot = builder.out.join(compiler.host.triple).join("stage0-sysroot");
++            let relative_libdir = builder.sysroot_libdir_relative(compiler);
++            let sysroot_libdir = sysroot.join(relative_libdir);
+ 
+             if builder.local_rebuild {
+                 // On local rebuilds this path might be a symlink to the project root,
+                 // which can be read-only (e.g., on CI). So remove it before copying
+                 // the stage0 lib.
+-                let _ = fs::remove_dir_all(sysroot.join("lib/rustlib/src/rust"));
++                let _ = fs::remove_dir_all(sysroot_libdir.join("rustlib/src/rust"));
+             }
+ 
+-            builder.cp_link_r(&builder.initial_sysroot.join("lib"), &sysroot.join("lib"));
++            t!(fs::create_dir_all(&sysroot_libdir));
++            builder.cp_link_r(
++                &builder.initial_sysroot.join(relative_libdir),
++                &sysroot_libdir,
++            );
+         } else {
+             if builder.download_rustc() {
+                 // Ensure there are no CI-rustc std artifacts.

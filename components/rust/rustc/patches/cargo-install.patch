@@ -2,22 +2,22 @@ Build and install also Cargo.
 
 Part of Solaris distribution configuration.
 
---- rustc-1.87.0-src/bootstrap.example.toml
-+++ rustc-1.87.0-src/bootstrap.example.toml
-@@ -351,7 +351,7 @@
+--- rustc-1.95.0-src/bootstrap.example.toml
++++ rustc-1.95.0-src/bootstrap.example.toml
+@@ -408,7 +408,7 @@
  # which tools should be built if `extended = true`.
  #
  # This is disabled by default.
--#extended = false
-+extended = true
+-#build.extended = false
++build.extended = true
  
  # Set of tools to be included in the installation.
  #
-@@ -372,6 +372,7 @@
+@@ -429,6 +429,7 @@
  #    "wasm-component-ld",
  #    "miri", "cargo-miri" # for dev/nightly channels
  #]
-+tools = ["cargo", "rustfmt"]
++build.tools = ["cargo", "rustdoc", "rustfmt"]
  
- # Verbosity level: 0 == not verbose, 1 == verbose, 2 == very verbose, 3 == print environment variables on each rustc invocation
- #verbose = 0
+ # Specify build configuration specific for some tool, such as enabled features.
+ # This option has no effect on which tools are enabled: refer to the `tools` option for that.

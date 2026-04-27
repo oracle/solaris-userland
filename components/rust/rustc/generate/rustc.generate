@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -28,11 +28,18 @@
 # libraries (and some other files) contain hash in their names and thus are included automatically
 <transform path=usr/lib/\$\(MACH64\)/lib.*\.so$ -> drop>
 <transform path=usr/lib/\$\(MACH64\)/rustlib/(sparcv9-sun|x86_64-pc)-solaris/lib.* -> drop>
+<transform path=usr/share/doc/rust/html/search.index/.* -> drop>
+<transform path=usr/share/doc/rust/html/src/std_detect/detect/os/.*\.rs\.html -> drop>
 <transform path=usr/share/doc/rust/html/static.files/.* -> drop>
 <transform path=usr/share/doc/rust/html/rustc/searchindex-.* -> drop>
 
 <transform path=usr/lib/\$\(MACH64\)/rustlib/sparcv9-sun-solaris -> edit path sparcv9-sun-solaris \$\(RUST_PLATFORM\)>
 <transform path=usr/lib/\$\(MACH64\)/rustlib/x86_64-pc-solaris -> edit path x86_64-pc-solaris \$\(RUST_PLATFORM\)>
+
+# Rust 1.95 started installing this generated schema, but it only mirrors the
+# unstable `rustc -Z unstable-options --print target-spec-json-schema` output.
+# We do not deliver it as a packaged sysroot file.
+<transform path=etc/target-spec-json-schema\.json -> drop>
 
 # no need to package these
 <transform path=usr/lib/\$\(MACH64\)/rustlib/components -> drop>
@@ -55,4 +62,3 @@
 # delete everything not belonging to this package
 <transform file link pkg.type=(?!rustc) -> drop>
 <transform file link -> delete pkg.type .*>
-
