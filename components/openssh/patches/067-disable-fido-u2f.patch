@@ -9,14 +9,14 @@
 #
 # As such, this is Solaris specific patch.
 #
---- old/ssh-keygen.1	2026-04-03 15:43:56.077356345 +0200
-+++ new/ssh-keygen.1	2026-04-03 15:43:57.955138845 +0200
+--- old/ssh-keygen.1	2026-04-23 16:07:35.243690280 +0200
++++ new/ssh-keygen.1	2026-04-23 16:07:37.125096150 +0200
 @@ -51,7 +51,7 @@
  .Op Fl m Ar format
  .Op Fl N Ar new_passphrase
  .Op Fl O Ar option
 -.Op Fl t Cm ecdsa | ecdsa-sk | ed25519 | ed25519-sk | rsa
-+.Op Fl t Cm ecdsa | | ed25519 | rsa
++.Op Fl t Cm ecdsa | ed25519 | rsa
  .Op Fl w Ar provider
  .Op Fl Z Ar cipher
  .Nm ssh-keygen
@@ -99,8 +99,8 @@
  .It Pa ~/.ssh/id_rsa.pub
  Contains the ECDSA, authenticator-hosted ECDSA, Ed25519,
  authenticator-hosted Ed25519 or RSA public key for authentication.
---- old/ssh.1	2026-04-03 15:43:56.079376830 +0200
-+++ new/ssh.1	2026-04-03 15:43:57.956304825 +0200
+--- old/ssh.1	2026-04-23 16:07:35.245842150 +0200
++++ new/ssh.1	2026-04-23 16:07:37.125836940 +0200
 @@ -306,10 +306,8 @@ when the private key file is not present
  The default is
  .Pa ~/.ssh/id_rsa ,
@@ -158,8 +158,8 @@
  .It Pa ~/.ssh/id_rsa.pub
  Contains the public key for authentication.
  These files are not
---- old/ssh_config.5	2026-04-03 15:43:56.081321970 +0200
-+++ new/ssh_config.5	2026-04-03 15:45:11.026422840 +0200
+--- old/ssh_config.5	2026-04-23 16:07:35.247765675 +0200
++++ new/ssh_config.5	2026-04-23 16:08:48.699449975 +0200
 @@ -444,8 +444,6 @@ The default is:
  .Bd -literal -offset indent
  ssh-ed25519,ecdsa-sha2-nistp256,
@@ -169,52 +169,54 @@
  rsa-sha2-512,rsa-sha2-256
  .Ed
  .Pp
-@@ -1093,15 +1091,11 @@ ssh-ed25519-cert-v01@openssh.com,
+@@ -1093,16 +1091,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
 -sk-ssh-ed25519-cert-v01@openssh.com,
 -sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+-webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
  rsa-sha2-512-cert-v01@openssh.com,
  rsa-sha2-256-cert-v01@openssh.com,
  ssh-ed25519,
  ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 -sk-ssh-ed25519@openssh.com,
 -sk-ecdsa-sha2-nistp256@openssh.com,
- webauthn-sk-ecdsa-sha2-nistp256@openssh.com,
+-webauthn-sk-ecdsa-sha2-nistp256@openssh.com,
  rsa-sha2-512,rsa-sha2-256
  .Ed
-@@ -1141,8 +1135,6 @@ ssh-ed25519-cert-v01@openssh.com,
+ .Pp
+@@ -1141,16 +1133,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
 -sk-ssh-ed25519-cert-v01@openssh.com,
 -sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+-webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
  rsa-sha2-512-cert-v01@openssh.com,
  rsa-sha2-256-cert-v01@openssh.com,
-@@ -1150,7 +1142,6 @@ ssh-ed25519,
+ ssh-ed25519,
  ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
- sk-ecdsa-sha2-nistp256@openssh.com,
- webauthn-sk-ecdsa-sha2-nistp256@openssh.com
+-sk-ecdsa-sha2-nistp256@openssh.com,
+-webauthn-sk-ecdsa-sha2-nistp256@openssh.com
 -sk-ssh-ed25519@openssh.com,
  rsa-sha2-512,rsa-sha2-256
  .Ed
  .Pp
-@@ -1779,15 +1770,11 @@ ssh-ed25519-cert-v01@openssh.com,
+@@ -1779,16 +1765,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
 -sk-ssh-ed25519-cert-v01@openssh.com,
 -sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+-webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
  rsa-sha2-512-cert-v01@openssh.com,
  rsa-sha2-256-cert-v01@openssh.com,
  ssh-ed25519,
  ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 -sk-ssh-ed25519@openssh.com,
 -sk-ecdsa-sha2-nistp256@openssh.com,
- webauthn-sk-ecdsa-sha2-nistp256@openssh.com,
+-webauthn-sk-ecdsa-sha2-nistp256@openssh.com,
  rsa-sha2-512,rsa-sha2-256
  .Ed
+ .Pp
