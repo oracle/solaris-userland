@@ -72,7 +72,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	 done);
 
 # Get the binaries to test from the component build area.
-COMPONENT_TEST_ENV +=	PATH=$(BUILD_DIR_$(BITS)):/usr/xpg4/bin:$(USRBINDIR)
+COMPONENT_TEST_ENV +=	PATH=$(BUILD_DIR_$(BITS)):/usr/gnu/bin:/usr/xpg4/bin:$(USRBINDIR)
 
 # Use the installed gzip binary from /usr/bin.
 COMPONENT_SYSTEM_TEST_ENV +=	PATH=/usr/xpg4/bin:$(USRBINDIR)
