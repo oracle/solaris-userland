@@ -30,14 +30,13 @@ include ../../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		xorg-server
-COMPONENT_VERSION=	21.1.20
+COMPONENT_VERSION=	21.1.22
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7695bc61824b3a81b6bad2f78b05400ca015003de402d1b322117105b702e937
+	sha256:1a242c8917c49ba29ccc1f6021613d8a2b9805dd0d271a66ae9d09f4b0bb06b3
 COMPONENT_BUGDB=        x11/xorg-server
 COMPONENT_ANITYA_ID=	5250
-COMPONENT_SIG_URL=
 
-COMPONENT_BAID=		353193
+COMPONENT_BAID=		387229
 
 # Remove compiler specific visibility flag that breaks builds of drivers
 # with other compilers
@@ -115,15 +114,6 @@ COMPONENT_BUILD_ENV += LD_SHARED_UNSET="$(LD_B_DIRECT)"
 LD_EXEC_OPTIONS +=     -zdiscard-unused=dependencies -zdiscard-unused=files
 LD_PIE_OPTIONS +=      -zdiscard-unused=dependencies -zdiscard-unused=files
 LD_SHARED_OPTIONS +=   -zdiscard-unused=dependencies -zdiscard-unused=files
-
-# Don't include build date & time in delivered binaries as it just causes
-# unnecessary binary differences to be pulled into package updates, but
-# leave it in debug builds for developer convenience.
-ifeq ($(filter -g,$(CFLAGS)),)
-COMPONENT_POST_CONFIGURE_ACTION += \
-	printf '\#undef BUILD_DATE\\n\#undef BUILD_TIME\\n' > \
-		$(@D)/hw/xfree86/common/xf86Build.h ;
-endif
 
 # Ensure xf86Sbus.h gets installed on x86, not just SPARC
 COMPONENT_POST_INSTALL_ACTION += \

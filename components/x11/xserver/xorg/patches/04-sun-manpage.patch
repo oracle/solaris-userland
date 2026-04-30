@@ -2,8 +2,8 @@ Specific manpage changes for Solaris
 
 Not suitable for upstream
 
---- a/man/Xserver.man	2019-02-12 10:24:52.442517149 -0800
-+++ b/man/Xserver.man	2019-02-12 10:29:34.221150088 -0800
+--- xorg-server-21.1.22/man/Xserver.man
++++ xorg-server-21.1.22/man/Xserver.man
 @@ -1,5 +1,27 @@
  '\" t
  .\"
@@ -32,7 +32,7 @@ Not suitable for upstream
  .\" Copyright 1984 - 1991, 1993, 1994, 1998  The Open Group
  .\"
  .\" Permission to use, copy, modify, distribute, and sell this software and its
-@@ -32,14 +54,22 @@
+@@ -32,14 +54,22 @@ Xserver \- X Window System display serve
  .SH SYNOPSIS
  .B X
  [option ...]
@@ -57,7 +57,7 @@ Not suitable for upstream
  This utility is run from the system boot files and takes care of keeping
  the server running, prompting for usernames and passwords, and starting up
  the user sessions.
-@@ -203,13 +233,14 @@
+@@ -210,13 +240,14 @@ with
  .BR "\-nolisten tcp" .
  This option may be issued multiple times to disable listening to different
  transport types.
@@ -74,7 +74,7 @@ Not suitable for upstream
  local   Platform preferred local connection method
  .TE
  .TP 8
-@@ -579,9 +610,13 @@
+@@ -577,8 +608,12 @@ .TP 30
  .I /tmp/.X11-unix/X\fBn\fP
  Unix domain socket for display number \fBn\fP
  .TP 30
@@ -82,15 +82,14 @@ Not suitable for upstream
 -Error log file for display number \fBn\fP if run from \fIinit\fP(@adminmansuffix@)
 +.I /tmp/.X11-pipe/X\fBn\fP
 +Named pipe (FIFO) for display number \fBn\fP
- .TP 30
++.TP 30
 +.I /var/log/gdm/:\fBn\fP.log
 +Default error log file for display number \fBn\fP if the server is run
 +from \fIgdm\fP(__adminmansuffix__)
-+.TP 30
+ .TP 30
  .I @projectroot@/lib/X11/xdm/xdm-errors
  Default error log file if the server is run from \fIxdm\fP(1)
- .SH "SEE ALSO"
-@@ -635,15 +635,22 @@
+@@ -600,15 +635,22 @@ Security: \fIXsecurity\fP(@miscmansuffix
  \fIxdm\fP(1), \fIxhost\fP(1)
  .I "Security Extension Specification"
  .PP
@@ -105,10 +104,10 @@ Not suitable for upstream
 -\fIXorg\fP(1), \fIXwayland\fP(1), \fIXephyr\fP(1), \fIXnest\fP(1),
 -\fIXvfb\fP(1), \fIXquartz\fP(1), \fIXWin\fP(1).
 +\fIXorg\fP(1), \fIXephyr\fP(1), \fIXvfb\fP(1), \fIXvnc\fP(1).
- .PP
++.PP
 +Service management framework configuration:
 +\fIapplication/x11/x11-server\fP(8s)
-+.PP
+ .PP
 +Dtrace probes:
 +\fI/usr/share/doc/Xserver/Xserver-DTrace.html\fP,
 +\fI/usr/share/doc/Xserver/Xserver-DTrace.txt\fP

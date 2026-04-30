@@ -1,8 +1,8 @@
 Changes required to build Xvnc with xorg-server 21.1.x
 
---- xserver.orig/configure.ac
+--- xserver/configure.ac
 +++ xserver/configure.ac
-@@ -74,6 +74,7 @@ dnl forcing an entire recompile.x
+@@ -72,6 +72,7 @@ dnl forcing an entire recompile.x
  AC_CONFIG_HEADERS(include/version-config.h)
  
  AM_PROG_AS
@@ -10,7 +10,7 @@ Changes required to build Xvnc with xorg-server 21.1.x
  AC_PROG_LN_S
  LT_PREREQ([2.2])
  LT_INIT([disable-static win32-dll])
-@@ -1777,6 +1778,10 @@ if test "x$XVFB" = xyes; then
+@@ -1728,6 +1729,10 @@ if test "x$XVFB" = xyes; then
  	AC_SUBST([XVFB_SYS_LIBS])
  fi
  
@@ -21,16 +21,16 @@ Changes required to build Xvnc with xorg-server 21.1.x
  
  dnl Xnest DDX
  
-@@ -1812,6 +1817,8 @@ if test "x$XORG" = xauto; then
+@@ -1763,6 +1768,8 @@ if test "x$XORG" = xauto; then
  fi
  AC_MSG_RESULT([$XORG])
  
 +AC_DEFINE_UNQUOTED(XORG_VERSION_CURRENT, [$VENDOR_RELEASE], [Current Xorg version])
 +
  if test "x$XORG" = xyes; then
- 	XORG_DDXINCS='-I$(top_srcdir)/hw/xfree86 -I$(top_srcdir)/hw/xfree86/include -I$(top_srcdir)/hw/xfree86/common'
- 	XORG_OSINCS='-I$(top_srcdir)/hw/xfree86/os-support -I$(top_srcdir)/hw/xfree86/os-support/bus -I$(top_srcdir)/os'
-@@ -2029,7 +2036,6 @@ if test "x$XORG" = xyes; then
+ 	PKG_CHECK_MODULES([LIBXCVT], $LIBXCVT)
+ 
+@@ -1971,7 +1978,6 @@ if test "x$XORG" = xyes; then
  	AC_DEFINE(XORG_SERVER, 1, [Building Xorg server])
  	AC_DEFINE(XORGSERVER, 1, [Building Xorg server])
  	AC_DEFINE(XFree86Server, 1, [Building XFree86 server])
@@ -38,22 +38,20 @@ Changes required to build Xvnc with xorg-server 21.1.x
  	AC_DEFINE(NEED_XF86_TYPES, 1, [Need XFree86 typedefs])
  	AC_DEFINE(NEED_XF86_PROTOTYPES, 1, [Need XFree86 helper functions])
  	AC_DEFINE(__XSERVERNAME__, "Xorg", [Name of X server])
-@@ -2565,6 +2571,7 @@ hw/dmx/Makefile
- hw/dmx/man/Makefile
+@@ -2354,6 +2360,7 @@ hw/xfree86/utils/man/Makefile
+ hw/xfree86/utils/gtf/Makefile
  hw/vfb/Makefile
  hw/vfb/man/Makefile
 +hw/vnc/Makefile
  hw/xnest/Makefile
  hw/xnest/man/Makefile
  hw/xwin/Makefile
- 
-Index: xserver/mi/miinitext.c
-===================================================================
---- xserver.orig/mi/miinitext.c
+
+--- xserver/mi/miinitext.c
 +++ xserver/mi/miinitext.c
-@@ -107,8 +107,15 @@ SOFTWARE.
- #include "os.h"
- #include "globals.h"
+@@ -106,8 +106,15 @@ SOFTWARE.
+ 
+ #include "miinitext.h"
  
 +#ifdef TIGERVNC
 +extern void vncExtensionInit(void);
@@ -67,9 +65,9 @@ Index: xserver/mi/miinitext.c
      {GEExtensionInit, "Generic Event Extension", &noGEExtension},
      {ShapeExtensionInit, "SHAPE", NULL},
  #ifdef MITSHM
---- a/hw/Makefile.am	2022-12-06 17:47:55.752397410 -0800
-+++ b/hw/Makefile.am	2022-12-06 17:48:07.332538312 -0800
-@@ -34,3 +34,5 @@
+--- xserver/hw/Makefile.am
++++ xserver/hw/Makefile.am
+@@ -34,3 +34,5 @@ DIST_SUBDIRS = xfree86 vfb xnest xwin xquartz kdrive
  
  relink:
  	$(AM_V_at)for i in $(SUBDIRS) ; do $(MAKE) -C $$i relink || exit 1 ; done
