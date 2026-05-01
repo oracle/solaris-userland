@@ -7,13 +7,10 @@ exports.default = exports.QuickOpenModal = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
-var _reactDomFactories = require("devtools/client/shared/vendor/react-dom-factories");
-
 var _reactPropTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
 
 var _reactRedux = require("devtools/client/shared/vendor/react-redux");
 
-loader.lazyRequireGetter(this, "_path", "devtools/client/debugger/src/utils/path");
 loader.lazyRequireGetter(this, "_location", "devtools/client/debugger/src/utils/location");
 
 var _index = _interopRequireDefault(require("../actions/index"));
@@ -162,20 +159,15 @@ class QuickOpenModal extends _react.Component {
 
         if (query == "" && !this.isShortcutQuery()) {
           this.showTopSources();
-          return;
-        }
-
-        if (this.isSymbolSearch()) {
+        } else if (this.isSymbolSearch()) {
           await this.searchSymbols(query);
-          return;
-        }
-
-        if (this.isShortcutQuery()) {
+        } else if (this.isShortcutQuery()) {
           this.searchShortcuts(query);
-          return;
+        } else {
+          this.searchSources(query);
         }
 
-        this.searchSources(query);
+        this.highlightQueryMatches(this.props.query);
       } catch (e) {
         // Due to throttling this might get scheduled after the component and the
         // toolbox are destroyed.
@@ -360,7 +352,7 @@ class QuickOpenModal extends _react.Component {
 
     _defineProperty(this, "isSourceSearch", () => this.isSourcesQuery() || this.isGotoSourceQuery());
 
-    _defineProperty(this, "highlightMatching", (query, results) => {
+    _defineProperty(this, "renderResults", (query, results) => {
       let newQuery = query;
 
       if (newQuery === "") {
@@ -371,7 +363,7 @@ class QuickOpenModal extends _react.Component {
       return results.map(result => {
         if (typeof result.title == "string") {
           return { ...result,
-            title: this.renderHighlight(result.title, (0, _path.basename)(newQuery), "title")
+            title: result.title
           };
         }
 
@@ -383,6 +375,7 @@ class QuickOpenModal extends _react.Component {
       results: null,
       selectedIndex: 0
     };
+    this.resultListRef = (0, _react.createRef)();
   }
 
   static get propTypes() {
@@ -441,20 +434,32 @@ class QuickOpenModal extends _react.Component {
     _classPrivateFieldSet(this, _willUnmountCalled, true);
   }
 
-  /* eslint-disable react/no-danger */
-  renderHighlight(candidateString, query) {
+  highlightQueryMatches(query) {
     const options = {
       wrap: {
         tagOpen: '<mark class="highlight">',
         tagClose: "</mark>"
       }
     };
-    const html = fuzzyAldrin.wrap(candidateString, query, options);
-    return (0, _reactDomFactories.div)({
-      dangerouslySetInnerHTML: {
-        __html: html
+
+    if (this.resultListRef.current) {
+      const domEl = this.resultListRef.current.ref.current;
+
+      for (const titleNode of domEl.querySelectorAll(".title")) {
+        const htmlString = fuzzyAldrin.wrap(titleNode.innerText, query, options); // Sanitizer API not supported in ESR 140
+        // Should remove at ESR 153
+
+        if ("Sanitizer" in window) {
+          const sanitizer = new Sanitizer({
+            elements: ["mark"],
+            attributes: ["class"]
+          });
+          titleNode.setHTML(htmlString, {
+            sanitizer
+          });
+        }
       }
-    });
+    }
   }
 
   shouldShowErrorEmoji() {
@@ -489,7 +494,7 @@ class QuickOpenModal extends _react.Component {
       selectedIndex,
       results
     } = this.state;
-    const items = this.highlightMatching(query, results || []);
+    const items = this.renderResults(query, results || []);
     const expanded = !!items && !!items.length;
     return _react.default.createElement(_Modal.default, {
       handleClose: this.closeModal
@@ -516,7 +521,7 @@ class QuickOpenModal extends _react.Component {
       items,
       selected: selectedIndex,
       selectItem: this.selectResultItem,
-      ref: "resultList",
+      ref: this.resultListRef,
       expanded,
       ...(this.isSourceSearch() ? SIZE_BIG : SIZE_DEFAULT)
     }));

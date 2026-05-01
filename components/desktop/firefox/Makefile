@@ -36,14 +36,14 @@ LD_SHARED_OPTIONS_Z_DEFS=
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	140.9.0
-COMPONENT_BAID=		382845
+COMPONENT_VERSION =	140.10.0
+COMPONENT_BAID=		389373
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:b972b2a4c17244d51c10123cbd6c936e2cf26ebc29eb724570d285c283e9e92c
+    sha256:c0852a261be3be3c83865ec2c2a4aa65dc1ad6db7c70574926b63a8b48312919
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -60,7 +60,7 @@ COMPONENT_ANITYA_ID =	16838
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:1c94892a475e9c48562b8d4ee71dfb425350f45fe238e71c69d2a5c3fe10b4a8
+    sha256:a4382ee286bb665bb5c4569fb28ef5ed42b415467c85952ef15fdcc8120626b6
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
@@ -148,9 +148,6 @@ LD_B_DIRECT=
 
 # SPARC build seems to require more open files for "Reticulating splines" phase
 ENV := ulimit -n 16384; $(ENV)
-
-# UL works better with configure script (instead mach script)
-COMPONENT_PRE_CONFIGURE_ACTION += $(CP) $(SOURCE_DIR)/configure.in $(SOURCE_DIR)/configure ;
 
 # make sure that node wrapper is executable
 COMPONENT_PRE_CONFIGURE_ACTION += (chmod 555 $(COMPONENT_DIR)/wrapper-node/node);

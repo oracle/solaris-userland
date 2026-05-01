@@ -36,12 +36,12 @@ LD_SHARED_OPTIONS_Z_DEFS=
 ESR = esr
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	140.9.0
-COMPONENT_BAID =	382848
+COMPONENT_VERSION =	140.10.0
+COMPONENT_BAID =	389375
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:b0a2cc5cf903a604db3be7f3aea699bdddc561110aeac035c0abd145e8cc522f
+    sha256:fdabd2b7f717c2333da9e98dcad4c650236fb2f56a9d6372cf707f5f6784cae3
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -58,7 +58,7 @@ COMPONENT_ANITYA_ID =	4967
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:93eeb9a55b7e828ebc4f231bd6b6f5869108b073c2afba9fd25be856922725a4
+    sha256:2b6cea7f19c3f9c8e1572bffbbecdf122b67574e385deff3f78cae54901d7665
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
@@ -157,9 +157,6 @@ COMPONENT_PRE_CONFIGURE_ACTION += (find $(SOURCE_DIR)/comm/third_party/rust -nam
 COMPONENT_PRE_CONFIGURE_ACTION += (find $(SOURCE_DIR)/comm/third_party/rust -name '.cargo-checksum.json' | while read f; do grep gitmodules $$f >> /dev/null && gsed -i 's/"\.gitmodules":"[^"]*",\?//g' $$f; done);
 COMPONENT_PRE_CONFIGURE_ACTION += (find $(SOURCE_DIR)/comm/third_party/rust -name '.cargo-checksum.json' | while read f; do grep gitattributes $$f >> /dev/null && gsed -i 's/"\.gitattributes":"[^"]*",\?//g' $$f; done);
 COMPONENT_PRE_CONFIGURE_ACTION += (find $(SOURCE_DIR)/comm/third_party/rust -name '.cargo-checksum.json' | while read f; do grep gitattributes $$f >> /dev/null && gsed -i 's/"tests\/\.gitattributes":"[^"]*",\?//g' $$f; done);
-
-# UL works better with configure script (instead mach script)
-COMPONENT_PRE_CONFIGURE_ACTION += $(CP) $(SOURCE_DIR)/configure.in $(SOURCE_DIR)/configure ;
 
 # make sure that node wrapper is executable
 COMPONENT_PRE_CONFIGURE_ACTION += (chmod 555 $(COMPONENT_DIR)/wrapper-node/node);
