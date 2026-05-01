@@ -40,8 +40,16 @@ COMPONENT_ANITYA_ID=	1290
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
+# Remove VIS3 from the gzip binary to make it compatible for all SPARC cpus.
+# crc-sparc-xmulx.patch has runtime detection for AV_SPARC_VIS3
+# and it allows run on systems without it.
+MAPFILE.sparc = -M ../../mapfile
+LD_OPTIONS += $(MAPFILE.$(MACH))
+
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
+
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 

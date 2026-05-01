@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2026, Oracle and/or its affiliates.
+#
+
+#
+# We explicitly remove the VIS3 capability here because gzip uses the XMULX
+# instruction, which causes the linker to mark the object as requiring VIS3.
+#
+# This would normally prevent the object from loading on older SPARC systems
+# that do not support VIS3.
+#
+# However, gzip contains its own runtime checks and safely manages the use
+# of XMULX where supported. By clearing the VIS3 requirement in this mapfile,
+# we allow the object to load on all supported SPARC systems and rely on
+# gzip's internal logic to handle capability-specific execution safely.
+#
+
+$mapfile_version 2
+CAPABILITY {
+        HW -= VIS3;
+};
