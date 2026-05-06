@@ -29,15 +29,15 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hex
-COMPONENT_VERSION=	2.3.2
+COMPONENT_VERSION=	2.4.2
 COMPONENT_PROJECT_URL=	https://hex.pm/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1f71502c17924e87e1426241537fbb3f262d6982eb34dd6f668a11c300102baa
+    sha256:39d3368b27fb7d65c82cd02048881ad518ee6a9371ac75168314e8123399c797
 COMPONENT_ARCHIVE_URL=	https://github.com/hexpm/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID=	132546
 
-COMPONENT_BAID=		385896
+COMPONENT_BAID=		389962
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
@@ -59,8 +59,9 @@ ELIXIR_INSTALL_PATH= $(PROTO_DIR)/usr/lib/elixir/lib
 COMPONENT_INSTALL_ACTION = cd $(@D); \
 			$(MIX_BUILDTOOL_ENV) mix install; \
 			$(MKDIR) $(ELIXIR_INSTALL_PATH); \
+			$(RM) -r $(ELIXIR_INSTALL_PATH)/hex; \
 			cd $(ELIXIR_INSTALL_PATH); \
-			unzip $(@D)/hex.ez 1> /dev/null
+			unzip -q $(@D)/hex.ez
 
 # Hex provides automated tests but it requires external dependencies and postgresql database.
 # As a result, the manual testing according to the TESTING file is preferred.
