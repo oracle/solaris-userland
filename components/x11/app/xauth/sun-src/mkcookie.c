@@ -2,7 +2,7 @@
  *
  * mkcookie.c 1.x
  *
- * Copyright (c) 1990, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1990, 2026, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -462,19 +462,8 @@ GenerateCryptoKey(char *auth, int len)
         }
     }
 
-    if (needed > 0) { /* fallback if getrandom returns non-retryable error */
-        struct timeval now;
-        int seed;
-        int i;
-
-        gettimeofday(&now, NULL);
-        seed = (int) (now.tv_sec + (now.tv_usec << 16));
-        srand(seed);
-
-        for (i = received; i < len; i++) {
-            int value = rand();
-            auth[i] = (char) (value & 0xff);
-        }
+    if (needed > 0) { /* fail if getrandom returns non-retryable error */
+        fatalError("Could not get random value. exiting");
     }
 }
 
