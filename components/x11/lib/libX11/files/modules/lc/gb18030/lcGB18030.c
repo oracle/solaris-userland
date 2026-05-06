@@ -1,5 +1,5 @@
 /*
- * Copyright © 1996, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2026, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include "Xlibint.h"
 #include "XlcGeneric.h"
+#include "reallocarray.h"
 
 /* 
  * codesets will derived from XLC_XLOCALE and codesets[0] is 
@@ -578,7 +579,9 @@ gb18030_cstowcs(
     wchar_t	*pwc = (wchar_t *) *to;
     int		rtn, rtn_1;
 
-    outbufptr = (XPointer) Xmalloc(*to_left * 4);
+    outbufptr = Xmallocarray(*to_left, 4);
+    if (outbufptr == NULL)
+	return -1;
     outbufptr_save = outbufptr;
 
     rtn = gb18030_cstombs(conv, from, from_left,
@@ -798,7 +801,9 @@ gb18030_ctstowcs(
     int		rtn, rtn_1;
 
 
-    outbufptr = (XPointer) Xmalloc(*to_left * 4); /* 100 safty tolerence */
+    outbufptr = Xmallocarray(*to_left, 4); /* 100 safety tolerence */
+    if (outbufptr == NULL)
+	return -1;
     outbufptr_end = outbufptr;
 
     rtn = gb18030_ctstombs(conv,
