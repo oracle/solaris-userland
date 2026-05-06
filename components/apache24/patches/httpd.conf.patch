@@ -1,11 +1,9 @@
 Patch origin: in-house
 Patch status: Solaris-specific; not suitable for upstream
 
-diff --git a/docs/conf/httpd.conf.in b/docs/conf/httpd.conf.in
-index 37d7c0b..a023fd2 100644
---- a/docs/conf/httpd.conf.in
-+++ b/docs/conf/httpd.conf.in
-@@ -6,6 +6,12 @@
+--- httpd-2.4.67/docs/conf/httpd.conf.in
++++ httpd-2.4.67/docs/conf/httpd.conf.in
+@@ -6,6 +6,12 @@ # In particular, see
  # <URL:http://httpd.apache.org/docs/2.4/mod/directives.html>
  # for a discussion of each configuration directive.
  #
@@ -18,7 +16,21 @@ index 37d7c0b..a023fd2 100644
  # Do NOT simply read the instructions in here without understanding
  # what they do.  They're here only as hints or reminders.  If you are unsure
  # consult the online docs. You have been warned.  
-@@ -74,8 +89,8 @@ Listen @@Port@@
+@@ -63,6 +69,13 @@ #
+ # Example:
+ # LoadModule foo_module modules/mod_foo.so
+ #
++# Note that mod_authn_dbd.so, mod_authz_dbd.so, mod_dbd.so and
++# mod_session_dbd.so are bundled in separate package "apache-dbd".
++# Similarly mod_authnz_ldap.so and mod_ldap.so are bundled in
++# separate package "apache-ldap".
++# Also mod_ssl.so is bundled in separate package "apache-ssl" and
++# mod_lua.so is bundled in separate package "apache-lua".
++#
+ @@LoadModule@@
+ 
+ <IfModule unixd_module>
+@@ -74,8 +87,8 @@ # User/Group: The name (or #number) of t
  # It is usually good practice to create a dedicated user and group for
  # running httpd, as with most system services.
  #
@@ -29,7 +41,7 @@ index 37d7c0b..a023fd2 100644
  
  </IfModule>
  
-@@ -96,7 +111,7 @@ Group daemon
+@@ -96,7 +109,7 @@ # ServerAdmin: Your address, where probl
  # e-mailed.  This address appears on some server-generated pages, such
  # as error documents.  e.g. admin@your-domain.com
  #
@@ -38,7 +50,7 @@ index 37d7c0b..a023fd2 100644
  
  #
  # ServerName gives the name and port that the server uses to identify itself.
-@@ -105,7 +120,7 @@ ServerAdmin you@example.com
+@@ -105,7 +118,7 @@ # it explicitly to prevent problems duri
  #
  # If your host doesn't have a registered DNS name, enter its IP address here.
  #
@@ -47,7 +59,7 @@ index 37d7c0b..a023fd2 100644
  
  #
  # Deny access to the entirety of your server's filesystem. You must
-@@ -323,6 +338,10 @@ LogLevel warn
+@@ -323,6 +336,10 @@ # (You will also need to add "Includes"
      #
      #AddType text/html .shtml
      #AddOutputFilter INCLUDES .shtml
@@ -58,7 +70,7 @@ index 37d7c0b..a023fd2 100644
  </IfModule>
  
  #
-@@ -364,48 +383,22 @@ LogLevel warn
+@@ -364,48 +381,22 @@ #EnableSendfile on
  
  # Supplemental configuration
  #
@@ -119,23 +131,5 @@ index 37d7c0b..a023fd2 100644
 -# Secure (SSL/TLS) connections
 -#Include @rel_sysconfdir@/extra/httpd-ssl.conf
  #
- # Note: The following must must be present to support
+ # Note: The following must be present to support
  #       starting without SSL on platforms with no /dev/random equivalent
-diff --git a/docs/conf/httpd.conf.in b/docs/conf/httpd.conf.in
-index 37d7c0b..a023fd2 100644
---- a/docs/conf/httpd.conf.in
-+++ b/docs/conf/httpd.conf.in
-@@ -69,6 +69,13 @@
- # Example:
- # LoadModule foo_module modules/mod_foo.so
- #
-+# Note that mod_authn_dbd.so, mod_authz_dbd.so, mod_dbd.so and
-+# mod_session_dbd.so are bundled in separate package "apache-dbd".
-+# Similarly mod_authnz_ldap.so and mod_ldap.so are bundled in
-+# separate package "apache-ldap".
-+# Also mod_ssl.so is bundled in separate package "apache-ssl" and
-+# mod_lua.so is bundled in separate package "apache-lua".
-+#
- @@LoadModule@@
- 
- <IfModule unixd_module>
