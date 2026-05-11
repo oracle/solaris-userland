@@ -201,8 +201,8 @@ incorporation:
 		$(WS_TOOLS)/userland-incorporator \
 			--repository $(PKG_REPO) \
 			--version $(PKG_SOLARIS_VERSION),$(BUILD_VERSION) \
-			--incorporation-version runtime/python-37-incorporation=99,$(BUILD_VERSION) \
-			--incorporation-version runtime/python-39-incorporation=99,$(BUILD_VERSION) \
+			--incorporation-version runtime/python-37-incorporation=99-AUTO_FMRI \
+			--incorporation-version runtime/python-39-incorporation=99-AUTO_FMRI \
 			--publisher $(PUBLISHER) \
 			--destdir $(WS_MACH) \
 			--repository-changeset $(CONSOLIDATION_CHANGESET) \
@@ -211,9 +211,10 @@ incorporation:
 			$(INCORPORATE_WERROR) && \
 		$(RM) $(WS_MACH)/smcc-incorporation.p5m && \
 		for incorporation in $(WS_MACH)/*.p5m ; do \
-		    $(call log-package-publish, $${incorporation}) ; \
+		    $(PKGMOGRIFY) -D BRANCHID=$(BRANCHID) $(WS_TOP)/transforms/auto_fmri $${incorporation} > $${incorporation}.mogrified && \
+		    $(call log-package-publish, $${incorporation}.mogrified) && \
 		    $(PKGSEND) -s $(PKG_REPO) publish --fmri-in-manifest \
-			       $${incorporation} || exit $$?; \
+			       $${incorporation}.mogrified || exit $$?; \
 		done \
 	) >$(WS_LOGS)/incorporator 2>&1; \
 	RET=$$?; \

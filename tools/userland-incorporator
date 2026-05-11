@@ -210,7 +210,7 @@ def get_incorporations():
     #
     userland = incorporations["consolidation/userland/userland-incorporation"]
     for i in incorporations:
-        if re.search("^runtime/python-\d+-incorporation$", i):
+        if re.search(r"^runtime/python-\d+-incorporation$", i):
             userland[i] = name_to_incorporation_version(i)
             userland.add_group_dependency(i)
 
@@ -231,7 +231,7 @@ def main():
     parser.add_argument('-v', '--version', default='5.12',
         help="Default incorporation version.")
     parser.add_argument('-i', '--incorporation-version', action='append',
-        help="Version of a specific incorporation (-i runtime/python-37-incorporation=99).")
+        help="Version of a specific incorporation (-i runtime/python-37-incorporation=99-AUTO_FMRI).")
     parser.add_argument('-d', '--destdir', default='',
         help="Directory of newly created incorporation manifest file.")
     parser.add_argument('-w', '--Werror', action='store_true',
@@ -249,9 +249,9 @@ def main():
     # Process --version and --incorporation-version
     temp_version_dict={'': args.version} # Empty key holds default version
     for commandline_string in args.incorporation_version or []:
-        match = re.search("^([^=]+)=([0-9.,-]+)$", commandline_string)
+        match = re.search(r"^([^=]+)=(\d+-AUTO_FMRI|[0-9.,-]+)$", commandline_string)
         if match is None:
-            print(f"Error, incorporatino version should be in the form of 'blah/blah/blah@1.2.3,11.4-11.4.72.0.0.171.0'. But it is '{commandline_string}'")
+            print(f"Error, incorporation version should be in the form of 'blah/blah/blah@1.2.3,11.4-11.4.72.0.0.171.0'. But it is '{commandline_string}'")
             sys.exit(1)
         temp_version_dict[match[1]]=match[2]
     args.incorporation_version = temp_version_dict

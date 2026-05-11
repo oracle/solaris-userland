@@ -22,7 +22,7 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 
 
@@ -57,7 +57,7 @@ echo "Replacing AUTO_FMRI by $BRANCHID"
 #          - transforms/legacy
 #   replace every AUTO_FMRI in the file unless the line starts with '#'
 hg manifest |
-	ggrep -P '((/history|\.p5m)(|\.i386|\.sparc)$|^transforms/legacy$|/generate/)' |
+	ggrep -P '((/history|\.p5m)(|\.i386|\.sparc)$|^transforms/legacy$|/generate/|^components/Makefile)' |
 	xargs perl -pi -e 's/AUTO_FMRI/'"$BRANCHID"'/g unless m/^\s*#/'
 
 # Now make all the modified manifests pkgfmt clean
@@ -78,6 +78,7 @@ ALL_FILES_CONTAINING_AUTO_FMRI=$(
 EXPECTED_FILES_CONTAINING_AUTO_FMRI="doc/packaging.txt
 tools/notifications.cfg
 tools/replace_auto_fmri
+tools/userland-incorporator
 transforms/auto_fmri"
 
 if [[ "$ALL_FILES_CONTAINING_AUTO_FMRI" != "$EXPECTED_FILES_CONTAINING_AUTO_FMRI" ]]; then
