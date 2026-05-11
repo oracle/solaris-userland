@@ -20,7 +20,7 @@
  */
 
 /*
- * Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026, Oracle and/or its affiliates.
  */
 
 #include "includes.h"
@@ -321,9 +321,9 @@ audit_sftp_utimes(char *f_path, int fd)
 		    strerror(errno), "could not allocate adt event");
 	}
 	/* fill the path token */
-	event->adt_ft_chmod.f_path = f_path;
+	event->adt_ft_utimes.f_path = f_path;
 	/* fill the attribute token */
-	event->adt_ft_chmod.f_attr = get_attrs(f_path, fd, AU_LFOLLOW);
+	event->adt_ft_utimes.f_attr = get_attrs(f_path, fd, AU_LFOLLOW);
 
 	return (event);
 }
