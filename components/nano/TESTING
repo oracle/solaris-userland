@@ -1,10 +1,41 @@
-#Please use the following instructions to test the basic functionality of nano:
-#Go to a testing directory.
+# Please use the following smoke test to verify the basic functionality of nano.
+# In many terminals, Meta commands can be entered either with Alt+<key> or by
+# pressing Esc and then the key.
+#
+# Confirm the correct nano is installed
+$ nano -V
 
-$ nano <new_file>
+# Go to a testing directory and create a small sample file.
+$ mkdir -p /tmp/nano-smoke && cd /tmp/nano-smoke
+$ printf '%s\n' 'first line' 'second line' 'third line' > sample.txt
 
-#Inside nano insert some text and then use the instructions at the bottom of the screen to save, copy, cut, etc.
+# 1. Create and save a new file.
+$ nano new_file
+# Type a few lines of text.
+# Press Ctrl+O, then Enter, to save the file.
+# Observe that nano reports that the file was written.
+# Press Ctrl+X to exit.
+# Observe that you return to the shell and that 'new_file' exists.
 
-#Other tests may include:
-# - opening a file with the cursor on a specific line and character (if character number is omitted, the cursor will be positioned on the first character):
-$ nano +<line_number>,<character_number> <file_name>
+# 2. Reopen the file and exercise basic editing.
+$ nano new_file
+# Move with the arrow keys and edit the text.
+# Press M-A to start marking text, move the cursor, then press M-6 to copy it.
+# Press Ctrl+U to paste the copied text.
+# Press Ctrl+K to cut the current line or the marked text.
+# Observe that copy, paste, and cut behave as expected.
+# Press Ctrl+O, then Enter, to save. Press Ctrl+X to exit.
+
+# 3. Open an existing file on a specific line and column.
+$ nano +2,1 sample.txt
+# Observe that the cursor starts on line 2, column 1.
+# Press Ctrl+W, type 'third', and press Enter.
+# Observe that nano jumps to the matching text.
+# Press Ctrl+X
+
+# 4. Exercise search and replace.
+$ nano sample.txt
+# Press Ctrl+\ to start replace, type 'third', press Enter, then type 'THIRD'
+# and press Enter.
+# When prompted, press Y to replace the match.
+# Observe that the text is replaced.

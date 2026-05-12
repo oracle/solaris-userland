@@ -677,6 +677,8 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 
+
+
 ## Files
 COPYING.DOC
 
@@ -1585,10 +1587,139 @@ That's all there is to it!
 
 
 ## Files:
+README
+
+
+          GNU nano -- a simple editor, inspired by Pico
+
+Purpose
+
+    Nano is a small and simple text editor for use on the terminal.
+    It copied the interface and key bindings of the Pico editor but
+    added several missing features: undo/redo, syntax highlighting,
+    line numbers, softwrapping, multiple buffers, selecting text by
+    holding Shift, search-and-replace with regular expressions, and
+    several other conveniences.
+
+Appearance
+
+    In rough ASCII graphics, this is what nano's screen looks like:
+
+   ____________________________________________________________________
+  |  GNU nano 9.0                  filename                  Modified  |
+   --------------------------------------------------------------------
+  | This is the text window, displaying the contents of a 'buffer',    |
+  | the contents of the file you are editing.                          |
+  |                                                                    |
+  | The top row of the screen is the 'title bar'; it shows nano's      |
+  | version, the name of the file, and whether you modified it.        |
+  | The two bottom rows display the most important shortcuts; in       |
+  | those lines ^ means Ctrl.  The third row from the bottom shows     |
+  | some feedback message, or gets replaced with a prompt bar when     |
+  | you tell nano to do something that requires extra input.           |
+  |                                                                    |
+   --------------------------------------------------------------------
+  |                       [ Some status message ]                      |
+  |^G Help       ^O Write Out  ^F Where Is   ^K Cut        ^T Execute  |
+  |^X Exit       ^R Read File  ^\ Replace    ^U Paste      ^J Justify  |
+   --------------------------------------------------------------------
+
+Origin
+
+    The nano project was started in 1999 because of a few "problems"
+    with the wonderfully easy-to-use and friendly Pico text editor.
+
+    First and foremost was its license: the Pine suite does not use
+    the GPL, and (before using the Apache License) it had unclear
+    restrictions on redistribution.  Because of this, Pine and Pico
+    were not included in many GNU/Linux distributions.  Furthermore,
+    some features (like go-to-line-number or search-and-replace) were
+    unavailable for a long time or require a command-line flag.  Yuck.
+
+    Nano aimed to solve these problems by: 1) being truly free software
+    by using the GPL, 2) emulating the functionality of Pico as closely
+    as is reasonable, and 3) including extra functionality by default.
+
+    Nowadays, nano wants to be a generally useful editor with sensible
+    defaults (linewise scrolling, no automatic line breaking).
+
+    The nano editor is an official GNU package.  For more information
+    on GNU and the Free Software Foundation, see https://www.gnu.org/.
+
+License
+
+    Nano's code and documentation are covered by the GPL version 3 or
+    (at your option) any later version, except for two functions that
+    were copied from busybox which are under a BSD license.  Nano's
+    documentation is additionally covered by the GNU Free Documentation
+    License version 1.2 or (at your option) any later version.  See the
+    files COPYING and COPYING.DOC for the full text of these licenses.
+
+    When in any file of this package a copyright notice mentions a
+    year range (such as 1999-2011), it is a shorthand for a list of
+    all the years in that interval.
+
+How to compile and install nano
+
+    Download the latest nano source tarball, and then:
+
+        tar -xvf nano-x.y.tar.gz
+        cd nano-x.y
+        ./configure
+        make
+        make install
+
+    You will need the header files of ncurses installed for ./configure
+    to succeed -- get them from libncurses-dev (Debian) or ncurses-devel
+    (Fedora) or a similarly named package.  Use --prefix with ./configure
+    to override the default installation directory of /usr/local.  And
+    use --sysconfdir=/etc when you want your self-compiled nano to read
+    the /etc/nanorc file.
+
+    After installation you may want to copy the doc/sample.nanorc file
+    to your home directory, rename it to ".nanorc", and then edit it
+    according to your taste.
+
+Web Page
+
+    https://nano-editor.org/
+
+Mailing Lists
+
+    There are three nano-related mailing-lists.
+
+    * <info-nano@gnu.org> is a very low traffic list used to announce
+      new nano versions or other important info about the project.
+
+    * <help-nano@gnu.org> is for those seeking to get help without
+      wanting to hear about the technical details of its development.
+
+    * <nano-devel@gnu.org> is the list used by the people that make nano
+      and a general development discussion list, with moderate traffic.
+
+    To subscribe, send email to <name>-request@gnu.org with a subject
+    of "subscribe", where <name> is the list you want to subscribe to.
+
+    The archives of the development and help mailing lists are here:
+
+        https://lists.gnu.org/archive/html/nano-devel/
+        https://lists.gnu.org/archive/html/help-nano/
+
+Bug Reports
+
+    If you find a bug, please file a detailed description of the problem
+    on nano's issue tracker: https://savannah.gnu.org/bugs/?group=nano
+    (you will need an account to be able to do so), or send an email
+    to the nano-devel list (no need to subscribe, but mention it if
+    you want to be CC'ed on an answer).
+
+
+
+## Files:
 lib/_Noreturn.h
 
 A C macro for declaring that a function does not return.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -1609,7 +1740,7 @@ lib/alloca.in.h
 
 Memory allocation on the stack.
 
-Copyright (C) 1995, 1999, 2001-2004, 2006-2024 Free Software Foundation,
+Copyright (C) 1995, 1999, 2001-2004, 2006-2026 Free Software Foundation,
 Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -1630,7 +1761,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/arg-nonnull.h
 
 A C macro for declaring that specific arguments must not be NULL.
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2009-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -1650,7 +1781,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/asnprintf.c
 
 Formatted output to strings.
-Copyright (C) 1999, 2002, 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2002, 2006, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1670,7 +1801,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/assert.in.h
 
 Substitute for and wrapper around <assert.h>
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1691,7 +1822,7 @@ lib/assure.h
 
 Run-time assert-like macros.
 
-Copyright (C) 2014-2024 Free Software Foundation, Inc.
+Copyright (C) 2014-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1711,7 +1842,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/at-func.c
 
 Define at-style functions like fstatat, unlinkat, fchownat, etc.
-Copyright (C) 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2006, 2009-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1732,7 +1863,7 @@ lib/attribute.h
 
 ATTRIBUTE_* macros for using attributes in GCC and similar compilers
 
-Copyright 2020-2024 Free Software Foundation, Inc.
+Copyright 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1753,7 +1884,7 @@ lib/basename-lgpl.c
 
 basename.c -- return the last element in a file name
 
-Copyright (C) 1990, 1998-2001, 2003-2006, 2009-2024 Free Software
+Copyright (C) 1990, 1998-2001, 2003-2006, 2009-2026 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -1775,7 +1906,7 @@ lib/basename-lgpl.h
 
 Extract the last component (base name) of a file name.
 
-Copyright (C) 1998, 2001, 2003-2006, 2009-2024 Free Software Foundation,
+Copyright (C) 1998, 2001, 2003-2006, 2009-2026 Free Software Foundation,
 Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -1796,7 +1927,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/btoc32.c
 
 Convert unibyte character to 32-bit wide character.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1816,7 +1947,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/btowc.c
 
 Convert unibyte character to wide character.
-Copyright (C) 2008, 2010-2024 Free Software Foundation, Inc.
+Copyright (C) 2008, 2010-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2008.
 
 This file is free software: you can redistribute it and/or modify
@@ -1837,7 +1968,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c++defs.h
 
 C++ compatible function declaration macros.
-Copyright (C) 2010-2024 Free Software Foundation, Inc.
+Copyright (C) 2010-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -1857,7 +1988,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32_apply_type_test.c
 
 Apply a 32-bit wide character property test.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1877,7 +2008,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32_get_type_test.c
 
 Get descriptor for a 32-bit wide character property.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1897,7 +2028,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32is-impl.h
 
 Test whether a 32-bit wide character belongs to a specific character class.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1917,7 +2048,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32isalnum.c
 
 Test 32-bit wide character for being alphanumeric.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1937,7 +2068,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32isalpha.c
 
 Test 32-bit wide character for being alphabetic.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1957,7 +2088,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32isblank.c
 
 Test 32-bit wide character for being blank.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1977,7 +2108,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32iscntrl.c
 
 Test 32-bit wide character for being a control character.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -1997,7 +2128,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32isdigit.c
 
 Test 32-bit wide character for being a digit.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2017,7 +2148,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32isgraph.c
 
 Test 32-bit wide character for being graphic.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2037,7 +2168,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32islower.c
 
 Test 32-bit wide character for being lowercase.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2057,7 +2188,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32isprint.c
 
 Test 32-bit wide character for being printable.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2077,7 +2208,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32ispunct.c
 
 Test 32-bit wide character for being a punctuation or symbol character.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2097,7 +2228,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32isspace.c
 
 Test 32-bit wide character for being white-space.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2117,7 +2248,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32isupper.c
 
 Test 32-bit wide character for being uppercase.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2137,7 +2268,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32isxdigit.c
 
 Test 32-bit wide character for being a hexadecimal digit.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2157,7 +2288,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32to-impl.h
 
 Case mapping of a 32-bit wide character.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2177,7 +2308,27 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/c32tolower.c
 
 Map a 32-bit wide character to lowercase.
-Copyright (C) 2023-2024 Free Software Foundation, Inc.
+Copyright (C) 2023-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/c32width.c
+
+Determine the number of screen columns needed for a 32-bit wide character.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2197,7 +2348,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/canonicalize-lgpl.c
 
 Return the canonical absolute name of a given file.
-Copyright (C) 1996-2024 Free Software Foundation, Inc.
+Copyright (C) 1996-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -2218,7 +2369,7 @@ License along with the GNU C Library; if not, see
 ## Files:
 lib/cdefs.h
 
-Copyright (C) 1992-2024 Free Software Foundation, Inc.
+Copyright (C) 1992-2026 Free Software Foundation, Inc.
 Copyright The GNU Toolchain Authors.
 This file is part of the GNU C Library.
 
@@ -2241,7 +2392,7 @@ License along with the GNU C Library; if not, see
 lib/chdir-long.c
 
 provide a chdir function that tries not to fail due to ENAMETOOLONG
-Copyright (C) 2004-2024 Free Software Foundation, Inc.
+Copyright (C) 2004-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -2261,7 +2412,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/chdir-long.h
 
 provide a chdir function that tries not to fail due to ENAMETOOLONG
-Copyright (C) 2004-2005, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2004-2005, 2009-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -2282,7 +2433,7 @@ lib/cloexec.c
 
 cloexec.c - set or clear the close-on-exec descriptor flag
 
-Copyright (C) 1991, 2004-2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1991, 2004-2006, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2303,7 +2454,7 @@ lib/cloexec.h
 
 cloexec.c - set or clear the close-on-exec descriptor flag
 
-Copyright (C) 2004, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2004, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2323,7 +2474,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/close.c
 
 close replacement.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2343,7 +2494,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/closedir.c
 
 Stop reading the entries of a directory.
-Copyright (C) 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2006-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2364,7 +2515,7 @@ lib/ctype.in.h
 
 A substitute for ISO C99 <ctype.h>, for platforms on which it is incomplete.
 
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2384,7 +2535,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/dirent-private.h
 
 Private details of the DIR type.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2404,7 +2555,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/dirent.in.h
 
 A GNU-like <dirent.h>.
-Copyright (C) 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2006-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2425,7 +2576,7 @@ lib/dirfd.c
 
 dirfd.c -- return the file descriptor associated with an open DIR*
 
-Copyright (C) 2001, 2006, 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2001, 2006, 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2446,7 +2597,7 @@ lib/dirname-lgpl.c
 
 dirname.c -- return all but the last element in a file name
 
-Copyright (C) 1990, 1998, 2000-2001, 2003-2006, 2009-2024 Free Software
+Copyright (C) 1990, 1998, 2000-2001, 2003-2006, 2009-2026 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -2468,7 +2619,7 @@ lib/dirname.h
 
 Take file names apart into directory and base names.
 
-Copyright (C) 1998, 2001, 2003-2006, 2009-2024 Free Software Foundation,
+Copyright (C) 1998, 2001, 2003-2006, 2009-2026 Free Software Foundation,
 Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -2486,54 +2637,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/dup-safer-flag.c
-
-Duplicate a file descriptor result, avoiding clobbering
-STD{IN,OUT,ERR}_FILENO, with specific flags.
-
-Copyright (C) 2001, 2004-2006, 2009-2024 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/dup-safer.c
-
-Invoke dup, but avoid some glitches.
-
-Copyright (C) 2001, 2004-2006, 2009-2024 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
 lib/dup2.c
 
 Duplicate an open file descriptor to a specified file descriptor.
 
-Copyright (C) 1999, 2004-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2004-2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2553,7 +2661,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/dynarray.h
 
 Type-safe arrays which grow dynamically.
-Copyright 2021-2024 Free Software Foundation, Inc.
+Copyright 2021-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2573,7 +2681,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/eloop-threshold.h
 
 Threshold at which to diagnose ELOOP.  Generic version.
-Copyright (C) 2012-2024 Free Software Foundation, Inc.
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -2596,7 +2704,7 @@ lib/errno.in.h
 
 A POSIX-like <errno.h>.
 
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2616,7 +2724,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/error.c
 
 Error handler for noninteractive utilities
-Copyright (C) 1990-2024 Free Software Foundation, Inc.
+Copyright (C) 1990-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -2638,7 +2746,7 @@ License along with the GNU C Library; if not, see
 lib/error.in.h
 
 Declarations for error-reporting functions.
-Copyright (C) 1995-1997, 2003, 2006, 2008-2024 Free Software Foundation,
+Copyright (C) 1995-1997, 2003, 2006, 2008-2026 Free Software Foundation,
 Inc.
 This file is part of the GNU C Library.
 
@@ -2661,7 +2769,7 @@ lib/exitfail.c
 
 Failure exit status
 
-Copyright (C) 2002-2003, 2005-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2002-2003, 2005-2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2682,7 +2790,7 @@ lib/exitfail.h
 
 Failure exit status
 
-Copyright (C) 2002, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2002, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2702,7 +2810,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/fchdir.c
 
 fchdir replacement.
-Copyright (C) 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2006-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2723,7 +2831,7 @@ lib/fcntl.c
 
 Provide file descriptor control.
 
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2744,7 +2852,7 @@ lib/fcntl.in.h
 
 Like <fcntl.h>, but with non-working flags defined to 0.
 
-Copyright (C) 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2006-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2764,7 +2872,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/fd-hook.c
 
 Hook for making file descriptor functions close(), ioctl() extensible.
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2009.
 
 This file is free software: you can redistribute it and/or modify
@@ -2785,7 +2893,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/fd-hook.h
 
 Hook for making file descriptor functions close(), ioctl() extensible.
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2802,53 +2910,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/fd-safer-flag.c
-
-Adjust a file descriptor result so that it avoids clobbering
-STD{IN,OUT,ERR}_FILENO, with specific flags.
-
-Copyright (C) 2005-2006, 2009-2024 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/fd-safer.c
-
-Return a safer copy of a file descriptor.
-
-Copyright (C) 2005-2006, 2009-2024 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
 lib/filename.h
 
 Basic filename support macros.
-Copyright (C) 2001-2024 Free Software Foundation, Inc.
+Copyright (C) 2001-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -2871,7 +2936,7 @@ lib/filenamecat-lgpl.c
 
 Concatenate two arbitrary file names.
 
-Copyright (C) 1996-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1996-2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -2892,7 +2957,7 @@ lib/filenamecat.h
 
 Concatenate two arbitrary file names.
 
-Copyright (C) 1996-1997, 2003, 2005, 2007, 2009-2024 Free Software
+Copyright (C) 1996-1997, 2003, 2005, 2007, 2009-2026 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -2914,7 +2979,7 @@ lib/flexmember.h
 
 Sizes of structs with flexible array members.
 
-Copyright 2016-2024 Free Software Foundation, Inc.
+Copyright 2016-2026 Free Software Foundation, Inc.
 
 This file is part of the GNU C Library.
 
@@ -2939,7 +3004,7 @@ Written by Paul Eggert.
 lib/float+.h
 
 Supplemental information about the floating-point formats.
-Copyright (C) 2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2007, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2007.
 
 This file is free software: you can redistribute it and/or modify
@@ -2960,7 +3025,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/float.c
 
 Auxiliary definitions for <float.h>.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2011.
 
 This file is free software: you can redistribute it and/or modify
@@ -2982,7 +3047,7 @@ lib/float.in.h
 
 A correct <float.h>.
 
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3005,7 +3070,7 @@ lib/glob-libc.h
 lib/glob.c
 lib/tempname.c
 
-Copyright (C) 1991-2024 Free Software Foundation, Inc.
+Copyright (C) 1991-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -3027,7 +3092,7 @@ License along with the GNU C Library; if not, see
 lib/fnmatch.in.h
 
 Substitute for and wrapper around <fnmatch.h>.
-Copyright (C) 1991-1993, 1996-1999, 2001-2003, 2005, 2007, 2009-2024 Free
+Copyright (C) 1991-1993, 1996-1999, 2001-2003, 2005, 2007, 2009-2026 Free
 Software Foundation, Inc.
 
 This file is part of the GNU C Library.
@@ -3050,7 +3115,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/fpucw.h
 
 Manipulating the FPU control word.  -*- coding: utf-8 -*-
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2007.
 
 This file is free software: you can redistribute it and/or modify
@@ -3072,7 +3137,7 @@ lib/free.c
 
 Make free() preserve errno.
 
-Copyright (C) 2003, 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2003, 2006, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3092,7 +3157,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/frexp.c
 
 Split a double into fraction and mantissa.
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3112,7 +3177,47 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/frexpl.c
 
 Split a 'long double' into fraction and mantissa.
-Copyright (C) 2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2007, 2009-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/fseterr.c
+
+Set the error indicator of a stream.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/fseterr.h
+
+Set the error indicator of a stream.
+Copyright (C) 2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3132,7 +3237,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/fstat.c
 
 fstat() replacement.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3153,7 +3258,7 @@ lib/fstatat.c
 
 Work around an fstatat bug on Solaris 9.
 
-Copyright (C) 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2006, 2009-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3173,7 +3278,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/futimens.c
 
 Set the access and modification time of an open fd.
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3192,7 +3297,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/getcwd-lgpl.c
 
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 This file is part of gnulib.
 
 This file is free software: you can redistribute it and/or modify
@@ -3213,7 +3318,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/getdelim.c
 
 getdelim.c --- Implementation of replacement getdelim function.
-Copyright (C) 1994, 1996-1998, 2001, 2003, 2005-2024 Free Software
+Copyright (C) 1994, 1996-1998, 2001, 2003, 2005-2026 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -3234,7 +3339,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/getdtablesize.c
 
 getdtablesize() function: Return maximum possible file descriptor value + 1.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2008.
 
 This file is free software: you can redistribute it and/or modify
@@ -3255,7 +3360,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/getline.c
 
 getline.c --- Implementation of replacement getline function.
-Copyright (C) 2005-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3276,7 +3381,7 @@ lib/getlogin_r.c
 
 Provide a working getlogin_r for systems which lack it.
 
-Copyright (C) 2005-2007, 2010-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2007, 2010-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3296,7 +3401,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/getopt-cdefs.in.h
 
 getopt-on-non-glibc compatibility macros.
-Copyright (C) 1989-2024 Free Software Foundation, Inc.
+Copyright (C) 1989-2026 Free Software Foundation, Inc.
 This file is part of gnulib.
 Unlike most of the getopt implementation, it is NOT shared
 with the GNU C Library.
@@ -3319,7 +3424,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/getopt-core.h
 
 Declarations for getopt (basic, portable features only).
-Copyright (C) 1989-2024 Free Software Foundation, Inc.
+Copyright (C) 1989-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library and is also part of gnulib.
 Patches to this file should be submitted to both projects.
 
@@ -3342,7 +3447,7 @@ License along with the GNU C Library; if not, see
 lib/getopt-ext.h
 
 Declarations for getopt (GNU extensions).
-Copyright (C) 1989-2024 Free Software Foundation, Inc.
+Copyright (C) 1989-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library and is also part of gnulib.
 Patches to this file should be submitted to both projects.
 
@@ -3365,7 +3470,7 @@ License along with the GNU C Library; if not, see
 lib/getopt-pfx-core.h
 
 getopt (basic, portable features) gnulib wrapper header.
-Copyright (C) 1989-2024 Free Software Foundation, Inc.
+Copyright (C) 1989-2026 Free Software Foundation, Inc.
 This file is part of gnulib.
 Unlike most of the getopt implementation, it is NOT shared
 with the GNU C Library.
@@ -3388,7 +3493,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/getopt-pfx-ext.h
 
 getopt (GNU extensions) gnulib wrapper header.
-Copyright (C) 1989-2024 Free Software Foundation, Inc.
+Copyright (C) 1989-2026 Free Software Foundation, Inc.
 This file is part of gnulib.
 Unlike most of the getopt implementation, it is NOT shared
 with the GNU C Library.
@@ -3411,7 +3516,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/getopt.c
 
 Getopt for GNU.
-Copyright (C) 1987-2024 Free Software Foundation, Inc.
+Copyright (C) 1987-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library and is also part of gnulib.
 Patches to this file should be submitted to both projects.
 
@@ -3434,7 +3539,7 @@ License along with the GNU C Library; if not, see
 lib/getopt.in.h
 
 Declarations for getopt.
-Copyright (C) 1989-2024 Free Software Foundation, Inc.
+Copyright (C) 1989-2026 Free Software Foundation, Inc.
 This file is part of gnulib.
 Unlike most of the getopt implementation, it is NOT shared
 with the GNU C Library, which supplies a different version of
@@ -3458,7 +3563,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/getopt1.c
 
 getopt_long and getopt_long_only entry points for GNU getopt.
-Copyright (C) 1987-2024 Free Software Foundation, Inc.
+Copyright (C) 1987-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library and is also part of gnulib.
 Patches to this file should be submitted to both projects.
 
@@ -3481,7 +3586,7 @@ License along with the GNU C Library; if not, see
 lib/getopt_int.h
 
 Internal declarations for getopt.
-Copyright (C) 1989-2024 Free Software Foundation, Inc.
+Copyright (C) 1989-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library and is also part of gnulib.
 Patches to this file should be submitted to both projects.
 
@@ -3505,7 +3610,7 @@ lib/getprogname.c
 lib/getprogname.h
 
 Program name management.
-Copyright (C) 2016-2024 Free Software Foundation, Inc.
+Copyright (C) 2016-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -3526,7 +3631,7 @@ lib/getrandom.c
 
 Obtain a series of random bytes.
 
-Copyright 2020-2024 Free Software Foundation, Inc.
+Copyright 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3546,8 +3651,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/gettext.h
 
 Convenience header for conditional use of GNU <libintl.h>.
-Copyright (C) 1995-1998, 2000-2002, 2004-2006, 2009-2024 Free Software
-Foundation, Inc.
+Copyright (C) 1995-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3568,7 +3672,7 @@ lib/gettime.c
 
 gettime -- get the system clock
 
-Copyright (C) 2002, 2004-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2002, 2004-2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3589,7 +3693,7 @@ lib/gettimeofday.c
 
 Provide gettimeofday for systems that don't have it or for which it's broken.
 
-Copyright (C) 2001-2003, 2005-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2001-2003, 2005-2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3610,7 +3714,7 @@ lib/glob.in.h
 
 glob.h -- Find a path matching a pattern.
 
-Copyright (C) 2005-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2007, 2009-2026 Free Software Foundation, Inc.
 
 Written by Derek Price <derek@ximbiot.com> & Paul Eggert <eggert@CS.UCLA.EDU>
 
@@ -3632,7 +3736,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/glob_internal.h
 
 Shared definition for glob and glob_pattern_p.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -3654,7 +3758,7 @@ License along with the GNU C Library; if not, see
 lib/glob_pattern_p.c
 
 Return nonzero if PATTERN contains any metacharacters.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -3676,7 +3780,7 @@ License along with the GNU C Library; if not, see
 lib/globfree.c
 
 Frees the dynamically allocated storage from an earlier call to glob.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -3699,7 +3803,7 @@ lib/glthread/lock.c
 lib/glthread/lock.h
 
 Locking in multithreaded situations.
-Copyright (C) 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3720,7 +3824,7 @@ lib/glthread/once.c
 lib/glthread/once.h
 
 Once-only initialization in multithreaded situations.
-Copyright (C) 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3740,7 +3844,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/glthread/threadlib.c
 
 Multithreading primitives.
-Copyright (C) 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3761,7 +3865,7 @@ lib/hard-locale.c
 
 hard-locale.c -- Determine whether a locale is hard.
 
-Copyright (C) 1997-1999, 2002-2004, 2006-2007, 2009-2024 Free Software
+Copyright (C) 1997-1999, 2002-2004, 2006-2007, 2009-2026 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -3783,7 +3887,7 @@ lib/hard-locale.h
 
 Determine whether a locale is hard.
 
-Copyright (C) 1999, 2003-2004, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2003-2004, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3803,7 +3907,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/idx.h
 
 A type for indices and sizes.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -3826,7 +3930,7 @@ lib/intprops-internal.h
 
 intprops-internal.h -- properties of integer types not visible to users
 
-Copyright (C) 2001-2024 Free Software Foundation, Inc.
+Copyright (C) 2001-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -3847,7 +3951,7 @@ lib/intprops.h
 
 intprops.h -- properties of integer types
 
-Copyright (C) 2001-2024 Free Software Foundation, Inc.
+Copyright (C) 2001-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -3866,7 +3970,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/inttypes.in.h
 
-Copyright (C) 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2006-2026 Free Software Foundation, Inc.
 Written by Paul Eggert, Bruno Haible, Derek Price.
 This file is part of gnulib.
 
@@ -3889,7 +3993,7 @@ lib/isblank.c
 
 Test whether a character is a blank.
 
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3912,7 +4016,7 @@ lib/isnanf-nolibm.h
 lib/isnanl-nolibm.h
 
 Test for NaN that does not need libm.
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3932,7 +4036,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/isnand.c
 
 Test for NaN that does not need libm.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3953,7 +4057,28 @@ lib/isnanf.c
 lib/isnanl.c
 
 Test for NaN that does not need libm.
-Copyright (C) 2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2007, 2009-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/issymlink.c
+lib/issymlink.h
+
+Test whether a file is a symbolic link.
+Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3973,7 +4098,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/iswblank.c
 
 Test wide character for being blank.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -3994,7 +4119,7 @@ lib/iswctype-impl.h
 lib/iswctype.c
 
 Test whether a wide character has a given property.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2011.
 
 This file is free software: you can redistribute it and/or modify
@@ -4015,7 +4140,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/iswdigit.c
 
 Test wide character for being a digit.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4035,7 +4160,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/iswpunct.c
 
 Test wide character for being a punctuation or symbol character.
-Copyright (C) 2023-2024 Free Software Foundation, Inc.
+Copyright (C) 2023-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4055,7 +4180,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/iswxdigit.c
 
 Test wide character for being a hexadecimal digit.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4075,7 +4200,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/itold.c
 
 Replacement for 'int' to 'long double' conversion routine.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2011.
 
 This file is free software: you can redistribute it and/or modify
@@ -4096,7 +4221,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/langinfo.in.h
 
 Substitute for and wrapper around <langinfo.h>.
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4117,7 +4242,7 @@ lib/lc-charset-dispatch.c
 lib/lc-charset-dispatch.h
 
 Dispatching based on the current locale's character encoding.
-Copyright (C) 2018-2024 Free Software Foundation, Inc.
+Copyright (C) 2018-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4138,7 +4263,7 @@ lib/libc-config.h
 
 System definitions for code taken from the GNU C Library
 
-Copyright 2017-2024 Free Software Foundation, Inc.
+Copyright 2017-2026 Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -4160,7 +4285,7 @@ lib/limits.in.h
 
 A GNU-like <limits.h>.
 
-Copyright 2016-2024 Free Software Foundation, Inc.
+Copyright 2016-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4181,7 +4306,7 @@ lib/localcharset.c
 
 Determine a canonical name for the current locale's character encoding.
 
-Copyright (C) 2000-2006, 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2000-2006, 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4201,7 +4326,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/localcharset.h
 
 Determine a canonical name for the current locale's character encoding.
-Copyright (C) 2000-2003, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2000-2003, 2009-2026 Free Software Foundation, Inc.
 This file is part of the GNU CHARSET Library.
 
 This file is free software: you can redistribute it and/or modify
@@ -4222,7 +4347,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/locale.in.h
 
 A POSIX <locale.h>.
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4242,7 +4367,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/localeconv.c
 
 Query locale dependent information for formatting numbers.
-Copyright (C) 2012-2024 Free Software Foundation, Inc.
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4263,7 +4388,7 @@ lib/lstat.c
 
 Work around a bug of lstat on some systems
 
-Copyright (C) 1997-2006, 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 1997-2006, 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4283,7 +4408,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/malloc/dynarray-skeleton.c
 
 Type-safe arrays which grow dynamically.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -4305,7 +4430,7 @@ License along with the GNU C Library; if not, see
 lib/malloc/dynarray.h
 
 Type-safe arrays which grow dynamically.  Shared definitions.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -4327,7 +4452,7 @@ License along with the GNU C Library; if not, see
 lib/malloc/dynarray_at_failure.c
 
 Report an dynamic array index out of bounds condition.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -4349,7 +4474,7 @@ License along with the GNU C Library; if not, see
 lib/malloc/dynarray_emplace_enlarge.c
 
 Increase the size of a dynamic array in preparation of an emplace operation.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -4371,7 +4496,7 @@ License along with the GNU C Library; if not, see
 lib/malloc/dynarray_finalize.c
 
 Copy the dynamically-allocated area to an explicitly-sized heap allocation.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -4393,7 +4518,7 @@ License along with the GNU C Library; if not, see
 lib/malloc/dynarray_resize.c
 
 Increase the size of a dynamic array.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -4415,7 +4540,7 @@ License along with the GNU C Library; if not, see
 lib/malloc/dynarray_resize_clear.c
 
 Increase the size of a dynamic array and clear the new part.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -4440,7 +4565,7 @@ lib/malloc/scratch_buffer_grow_preserve.c
 lib/malloc/scratch_buffer_set_array_size.c
 
 Variable-sized buffer with on-stack default allocation.
-Copyright (C) 2015-2024 Free Software Foundation, Inc.
+Copyright (C) 2015-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -4463,7 +4588,7 @@ lib/malloc.c
 
 malloc() function that is glibc compatible.
 
-Copyright (C) 1997-1998, 2006-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1997-1998, 2006-2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4483,7 +4608,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/malloca.c
 
 Safe automatic memory allocation.
-Copyright (C) 2003, 2006-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2003, 2006-2007, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2003, 2018.
 
 This file is free software: you can redistribute it and/or modify
@@ -4504,7 +4629,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/malloca.h
 
 Safe automatic memory allocation.
-Copyright (C) 2003-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2003-2007, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2003.
 
 This file is free software: you can redistribute it and/or modify
@@ -4526,7 +4651,7 @@ lib/math.c
 
 Inline functions for <math.h>.
 
-Copyright (C) 2012-2024 Free Software Foundation, Inc.
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4547,7 +4672,87 @@ lib/math.in.h
 
 A GNU-like <math.h>.
 
-Copyright (C) 2002-2003, 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2002-2003, 2007-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/mbchar.c
+
+Copyright (C) 2001, 2006, 2009-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/mbchar.h
+
+Multibyte character data type.
+Copyright (C) 2001, 2005-2007, 2009-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/mbiterf.c
+
+Iterating through multibyte strings: macros for multi-byte encodings.
+
+Copyright (C) 2023-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/mbiterf.h
+
+Iterating through multibyte strings, faster: macros for multi-byte encodings.
+Copyright (C) 2001, 2005, 2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4567,7 +4772,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbrtoc32.c
 
 Convert multibyte character to 32-bit wide character.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4588,7 +4793,7 @@ lib/mbrtowc-impl-utf8.h
 lib/mbrtowc-impl.h
 
 Convert multibyte character to wide character.
-Copyright (C) 1999-2002, 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 1999-2002, 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4608,7 +4813,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbrtowc.c
 
 Convert multibyte character to wide character.
-Copyright (C) 1999-2002, 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 1999-2002, 2005-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2008.
 
 This file is free software: you can redistribute it and/or modify
@@ -4629,8 +4834,29 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbsinit.c
 
 Test for initial conversion state.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2008.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/mbsnlen.c
+
+Counting the multibyte characters in a string.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
+Written by Bruno Haible <bruno@clisp.org>, 2007.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4650,7 +4876,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbsrtoc32s-state.c
 
 Convert string to 32-bit wide string.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2020.
 
 This file is free software: you can redistribute it and/or modify
@@ -4671,7 +4897,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbsrtoc32s.c
 
 Convert string to 32-bit wide string.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2020.
 
 This file is free software: you can redistribute it and/or modify
@@ -4694,7 +4920,7 @@ lib/mbsrtowcs-state.c
 lib/mbsrtowcs.c
 
 Convert string to wide string.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2008.
 
 This file is free software: you can redistribute it and/or modify
@@ -4715,7 +4941,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbszero.c
 
 Put an mbstate_t into an initial conversion state.
-Copyright (C) 2023-2024 Free Software Foundation, Inc.
+Copyright (C) 2023-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4736,7 +4962,7 @@ lib/mbtowc-impl.h
 lib/mbtowc.c
 
 Convert multibyte character to wide character.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2011.
 
 This file is free software: you can redistribute it and/or modify
@@ -4757,7 +4983,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbtowc-lock.c
 
 Return the internal lock used by mbrtowc and mbrtoc32.
-Copyright (C) 2019-2024 Free Software Foundation, Inc.
+Copyright (C) 2019-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4777,7 +5003,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/mbtowc-lock.h
 
 Use the internal lock used by mbrtowc and mbrtoc32.
-Copyright (C) 2019-2024 Free Software Foundation, Inc.
+Copyright (C) 2019-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4796,7 +5022,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/memchr.c
 
-Copyright (C) 1991, 1993, 1996-1997, 1999-2000, 2003-2004, 2006, 2008-2024
+Copyright (C) 1991, 1993, 1996-1997, 1999-2000, 2003-2004, 2006, 2008-2026
 Free Software Foundation, Inc.
 
 Based on strlen implementation by Torbjorn Granlund (tege@sics.se),
@@ -4823,10 +5049,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
+lib/memeq.c
+
+memeq function.
+Copyright (C) 2025-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
 lib/mempcpy.c
 
 Copy memory area and return pointer after last written byte.
-Copyright (C) 2003, 2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2003, 2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4847,7 +5093,7 @@ lib/memrchr.c
 
 memrchr -- find the last occurrence of a byte in a memory block
 
-Copyright (C) 1991, 1993, 1996-1997, 1999-2000, 2003-2024 Free Software
+Copyright (C) 1991, 1993, 1996-1997, 1999-2000, 2003-2026 Free Software
 Foundation, Inc.
 
 Based on strlen implementation by Torbjorn Granlund (tege@sics.se),
@@ -4874,7 +5120,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/minmax.h
 
 MIN, MAX macros.
-Copyright (C) 1995, 1998, 2001, 2003, 2005, 2009-2024 Free Software
+Copyright (C) 1995, 1998, 2001, 2003, 2005, 2009-2026 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -4897,7 +5143,7 @@ lib/mkdir.c
 On some systems, mkdir ("foo/", 0700) fails because of the trailing
 slash.  On those systems, this wrapper removes the trailing slash.
 
-Copyright (C) 2001, 2003, 2006, 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2001, 2003, 2006, 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4916,7 +5162,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/mkstemps.c
 
-Copyright (C) 1998-1999, 2001, 2005-2007, 2009-2024 Free Software
+Copyright (C) 1998-1999, 2001, 2005-2007, 2009-2026 Free Software
 Foundation, Inc.
 This file is derived from the one in the GNU C Library.
 
@@ -4939,7 +5185,7 @@ lib/msvc-inval.c
 lib/msvc-inval.h
 
 Invalid parameter handler for MSVC runtime libraries.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4961,7 +5207,7 @@ lib/msvc-nothrow.h
 
 Wrappers that don't throw invalid parameter notifications
 with MSVC runtime libraries.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -4981,7 +5227,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/nl_langinfo-lock.c
 
 Return the internal lock used by nl_langinfo.
-Copyright (C) 2019-2024 Free Software Foundation, Inc.
+Copyright (C) 2019-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5002,7 +5248,7 @@ lib/nl_langinfo.c
 
 nl_langinfo() replacement: query locale dependent information.
 
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5022,7 +5268,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/open.c
 
 Open a descriptor to a file.
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5043,7 +5289,7 @@ lib/openat-die.c
 
 Report a save- or restore-cwd failure in our openat replacement and then exit.
 
-Copyright (C) 2005-2006, 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2006, 2008-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -5064,7 +5310,7 @@ lib/openat-priv.h
 
 Internals for openat-like functions.
 
-Copyright (C) 2005-2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2006, 2009-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -5085,7 +5331,7 @@ lib/openat-proc.c
 
 Create /proc/self/fd-related names for subfiles of open directories.
 
-Copyright (C) 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2006, 2009-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -5105,7 +5351,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/openat.c
 
 provide a replacement openat function
-Copyright (C) 2004-2024 Free Software Foundation, Inc.
+Copyright (C) 2004-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -5125,7 +5371,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/openat.h
 
 provide a replacement openat function
-Copyright (C) 2004-2006, 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2004-2006, 2008-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -5145,7 +5391,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/opendir.c
 
 Start reading the entries of a directory.
-Copyright (C) 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2006-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5165,48 +5411,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/pathmax.h
 
 Define PATH_MAX somehow.  Requires sys/types.h.
-Copyright (C) 1992, 1999, 2001, 2003, 2005, 2009-2024 Free Software
+Copyright (C) 1992, 1999, 2001, 2003, 2005, 2009-2026 Free Software
 Foundation, Inc.
-
-This file is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as
-published by the Free Software Foundation; either version 2.1 of the
-License, or (at your option) any later version.
-
-This file is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/pipe-safer.c
-
-Invoke pipe, but avoid some glitches.
-Copyright (C) 2005-2006, 2009-2024 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/pipe.c
-
-Create a pipe.
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5226,7 +5432,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/printf-args.c
 
 Decomposed printf argument list.
-Copyright (C) 1999, 2002-2003, 2005-2007, 2009-2024 Free Software
+Copyright (C) 1999, 2002-2003, 2005-2007, 2009-2026 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -5247,7 +5453,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/printf-args.h
 
 Decomposed printf argument list.
-Copyright (C) 1999, 2002-2003, 2006-2007, 2011-2024 Free Software
+Copyright (C) 1999, 2002-2003, 2006-2007, 2011-2026 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -5269,7 +5475,7 @@ lib/printf-frexp.c
 lib/printf-frexp.h
 
 Split a double into fraction and mantissa, for hexadecimal printf.
-Copyright (C) 2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5290,7 +5496,7 @@ lib/printf-frexpl.c
 lib/printf-frexpl.h
 
 Split a 'long double' into fraction and mantissa, for hexadecimal printf.
-Copyright (C) 2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5310,7 +5516,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/printf-parse.c
 
 Formatted output to strings.
-Copyright (C) 1999-2000, 2002-2003, 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 1999-2000, 2002-2003, 2006-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5330,7 +5536,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/printf-parse.h
 
 Parse printf format string.
-Copyright (C) 1999, 2002-2003, 2005, 2007, 2010-2024 Free Software
+Copyright (C) 1999, 2002-2003, 2005, 2007, 2010-2026 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -5351,7 +5557,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/pthread-once.c
 
 POSIX once-only control.
-Copyright (C) 2019-2024 Free Software Foundation, Inc.
+Copyright (C) 2019-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5372,7 +5578,7 @@ lib/pthread.in.h
 
 Implement the most essential subset of POSIX pthread.h.
 
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5393,7 +5599,7 @@ lib/raise.c
 
 Provide a non-threads replacement for the POSIX raise function.
 
-Copyright (C) 2002-2003, 2005-2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2002-2003, 2005-2006, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5413,7 +5619,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/rawmemchr.c
 
 Searching in a string.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5433,7 +5639,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/readdir.c
 
 Read the next entry of a directory.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5453,7 +5659,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/readlink.c
 
 Read the contents of a symbolic link.
-Copyright (C) 2003-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2003-2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5474,7 +5680,7 @@ lib/realloc.c
 
 realloc() function that is glibc compatible.
 
-Copyright (C) 1997, 2003-2004, 2006-2007, 2009-2024 Free Software
+Copyright (C) 1997, 2003-2004, 2006-2007, 2009-2026 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -5499,7 +5705,7 @@ lib/regex_internal.h
 lib/regexec.c
 
 Extended regular expression matching and search library.
-Copyright (C) 2002-2024 Free Software Foundation, Inc.
+Copyright (C) 2002-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 Contributed by Isamu Hasegawa <isamu@yamato.ibm.com>.
 
@@ -5523,7 +5729,7 @@ lib/regex.h
 
 Definitions for data structures and routines for the regular
 expression library.
-Copyright (C) 1985, 1989-2024 Free Software Foundation, Inc.
+Copyright (C) 1985, 1989-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -5546,7 +5752,7 @@ lib/save-cwd.c
 
 save-cwd.c -- Save and restore current working directory.
 
-Copyright (C) 1995, 1997-1998, 2003-2006, 2009-2024 Free Software
+Copyright (C) 1995, 1997-1998, 2003-2006, 2009-2026 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -5568,7 +5774,7 @@ lib/save-cwd.h
 
 Save and restore current working directory.
 
-Copyright (C) 1995, 1997-1998, 2003, 2009-2024 Free Software Foundation,
+Copyright (C) 1995, 1997-1998, 2003, 2009-2026 Free Software Foundation,
 Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -5589,7 +5795,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/sched.in.h
 
 A GNU-like <sched.h>.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5609,7 +5815,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/scratch_buffer.h
 
 Variable-sized buffer with on-stack default allocation.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5629,7 +5835,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/setlocale-lock.c
 
 Return the internal lock used by setlocale_null_r.
-Copyright (C) 2019-2024 Free Software Foundation, Inc.
+Copyright (C) 2019-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5649,7 +5855,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/setlocale_null-unlocked.c
 
 Query the name of the current global locale, without locking.
-Copyright (C) 2019-2024 Free Software Foundation, Inc.
+Copyright (C) 2019-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5670,7 +5876,7 @@ lib/setlocale_null.c
 lib/setlocale_null.h
 
 Query the name of the current global locale.
-Copyright (C) 2019-2024 Free Software Foundation, Inc.
+Copyright (C) 2019-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5691,7 +5897,7 @@ lib/sig-handler.c
 
 Convenience declarations when working with <signal.h>.
 
-Copyright (C) 2012-2024 Free Software Foundation, Inc.
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5712,7 +5918,7 @@ lib/sig-handler.h
 
 Convenience declarations when working with <signal.h>.
 
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5732,7 +5938,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/sigaction.c
 
 POSIX compatible signal blocking.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 Written by Eric Blake <ebb9@byu.net>, 2008.
 
 This file is free software: you can redistribute it and/or modify
@@ -5754,7 +5960,7 @@ lib/signal.in.h
 
 A GNU-like <signal.h>.
 
-Copyright (C) 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2006-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5774,7 +5980,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/signbitd.c
 
 signbit() macro: Determine the sign bit of a floating-point number.
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5795,7 +6001,7 @@ lib/signbitf.c
 lib/signbitl.c
 
 signbit() macro: Determine the sign bit of a floating-point number.
-Copyright (C) 2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5815,7 +6021,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/sigprocmask.c
 
 POSIX compatible signal blocking.
-Copyright (C) 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2006-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2006.
 
 This file is free software: you can redistribute it and/or modify
@@ -5836,7 +6042,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/size_max.h
 
 size_max.h -- declare SIZE_MAX through system headers
-Copyright (C) 2005-2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2006, 2009-2026 Free Software Foundation, Inc.
 Written by Simon Josefsson.
 
 This file is free software: you can redistribute it and/or modify
@@ -5858,7 +6064,7 @@ lib/snprintf.c
 lib/vsnprintf.c
 
 Formatted output to strings.
-Copyright (C) 2004, 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2004, 2006-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5879,7 +6085,7 @@ lib/stat-time.c
 
 stat-related time functions.
 
-Copyright (C) 2012-2024 Free Software Foundation, Inc.
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5900,7 +6106,7 @@ lib/stat-time.h
 
 stat-related time functions.
 
-Copyright (C) 2005, 2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2005, 2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5921,7 +6127,7 @@ lib/stat-w32.c
 lib/stat-w32.h
 
 Core of implementation of fstat and stat for native Windows.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5941,7 +6147,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/stat.c
 
 Work around platform bugs in stat.
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5961,7 +6167,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/stdarg.in.h
 
 Substitute for and wrapper around <stdarg.h>.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -5982,7 +6188,26 @@ lib/stdckdint.in.h
 
 stdckdint.h -- checked integer arithmetic
 
-Copyright 2022-2024 Free Software Foundation, Inc.
+Copyright 2022-2026 Free Software Foundation, Inc.
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/stdcountof.in.h
+
+Copyright 2025-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -6003,7 +6228,7 @@ lib/stddef.in.h
 
 A substitute for POSIX 2008 <stddef.h>, for platforms that have issues.
 
-Copyright (C) 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6022,9 +6247,49 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/stdint.in.h
 
-Copyright (C) 2001-2002, 2004-2024 Free Software Foundation, Inc.
+Copyright (C) 2001-2002, 2004-2026 Free Software Foundation, Inc.
 Written by Paul Eggert, Bruno Haible, Sam Steingold, Peter Burwood.
 This file is part of gnulib.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/stdio-consolesafe.c
+
+msvcrt workarounds.
+Copyright (C) 2025-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/stdio-impl.h
+
+Implementation details of FILE streams.
+Copyright (C) 2007-2008, 2010-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6044,7 +6309,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/stdio-read.c
 
 POSIX compatible FILE stream read function.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2011.
 
 This file is free software: you can redistribute it and/or modify
@@ -6065,7 +6330,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/stdio-write.c
 
 POSIX compatible FILE stream write function.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2008.
 
 This file is free software: you can redistribute it and/or modify
@@ -6087,7 +6352,28 @@ lib/stdio.in.h
 
 A GNU-like <stdio.h>.
 
-Copyright (C) 2004, 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2004, 2007-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/stdlib.c
+
+Inline functions for <stdlib.h>.
+
+Copyright (C) 2024-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6108,7 +6394,7 @@ lib/stdlib.in.h
 
 A GNU-like <stdlib.h>.
 
-Copyright (C) 1995, 2001-2004, 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 1995, 2001-2004, 2006-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6128,7 +6414,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/str-two-way.h
 
 Byte-wise substring search, using the Two-Way algorithm.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 Written by Eric Blake <ebb9@byu.net>, 2008.
 
@@ -6148,9 +6434,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## Files:
 lib/strcasecmp.c
+lib/strncasecmp.c
 
-Case-insensitive string comparison function.
-Copyright (C) 1998-1999, 2005-2007, 2009-2024 Free Software Foundation, Inc.
+Case-insensitive string comparison function for unibyte locales.
+Copyright (C) 1998-1999, 2005-2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6170,7 +6457,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/strcasestr.c
 
 Case-insensitive searching in a string.
-Copyright (C) 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2005.
 
 This file is free software: you can redistribute it and/or modify
@@ -6190,7 +6477,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Files:
 lib/strdup.c
 
-Copyright (C) 1991, 1996-1998, 2002-2004, 2006-2007, 2009-2024 Free Software
+Copyright (C) 1991, 1996-1998, 2002-2004, 2006-2007, 2009-2026 Free Software
 Foundation, Inc.
 
 This file is part of the GNU C Library.
@@ -6210,10 +6497,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/streq.h
+lib/streq-opt.h
 
 Optimized string comparison.
-Copyright (C) 2001-2002, 2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2001-2002, 2007, 2009-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/streq.c
+
+streq function.
+Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6234,7 +6541,7 @@ lib/strerror-override.c
 
 strerror-override.c --- POSIX compatible system error routine
 
-Copyright (C) 2010-2024 Free Software Foundation, Inc.
+Copyright (C) 2010-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6255,7 +6562,7 @@ lib/strerror-override.h
 
 strerror-override.h --- POSIX compatible system error routine
 
-Copyright (C) 2010-2024 Free Software Foundation, Inc.
+Copyright (C) 2010-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6276,7 +6583,7 @@ lib/strerror.c
 
 strerror.c --- POSIX compatible system error routine
 
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6297,7 +6604,7 @@ lib/string.in.h
 
 A GNU-like <string.h>.
 
-Copyright (C) 1995-1996, 2001-2024 Free Software Foundation, Inc.
+Copyright (C) 1995-1996, 2001-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6318,7 +6625,7 @@ lib/strings.in.h
 
 A substitute <strings.h>.
 
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6339,7 +6646,7 @@ lib/stripslash.c
 
 stripslash.c -- remove redundant trailing slashes from a file name
 
-Copyright (C) 1990, 2001, 2003-2006, 2009-2024 Free Software Foundation,
+Copyright (C) 1990, 2001, 2003-2006, 2009-2026 Free Software Foundation,
 Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -6357,10 +6664,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/strncasecmp.c
+lib/strncpy.c
 
-strncasecmp.c -- case insensitive string comparator
-Copyright (C) 1998-1999, 2005-2007, 2009-2024 Free Software Foundation, Inc.
+Copy a size-bounded string.
+Copyright (C) 1999, 2011-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6380,7 +6687,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/strnlen.c
 
 Find the length of STRING, but scan at most MAXLEN characters.
-Copyright (C) 2005-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2007, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6400,7 +6707,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/strnlen1.c
 
 Find the length of STRING + 1, but scan at most MAXLEN bytes.
-Copyright (C) 2005-2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2006, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6420,7 +6727,27 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/strnlen1.h
 
 Find the length of STRING + 1, but scan at most MAXLEN bytes.
-Copyright (C) 2005, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2005, 2009-2026 Free Software Foundation, Inc.
+
+This file is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This file is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+lib/strnul.c
+
+_gl_strnul function.
+Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6440,7 +6767,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/sys_random.in.h
 
 Substitute for <sys/random.h>.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6460,7 +6787,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/sys_stat.in.h
 
 Provide a more complete sys/stat.h header file.
-Copyright (C) 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6481,7 +6808,7 @@ lib/sys_time.in.h
 
 Provide a more complete sys/time.h.
 
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6502,7 +6829,7 @@ lib/sys_types.in.h
 
 Provide a more complete sys/types.h.
 
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6522,7 +6849,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/sys_wait.in.h
 
 A POSIX-like <sys/wait.h>.
-Copyright (C) 2001-2003, 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2001-2003, 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6543,7 +6870,7 @@ lib/tempname.h
 
 Create a temporary file or directory.
 
-Copyright (C) 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2006, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6564,7 +6891,7 @@ lib/time.in.h
 
 A more-standard <time.h>.
 
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6585,7 +6912,7 @@ lib/timespec.c
 
 Inline functions for <timespec.h>.
 
-Copyright (C) 2012-2024 Free Software Foundation, Inc.
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6606,7 +6933,7 @@ lib/timespec.h
 
 timespec -- System time interface
 
-Copyright (C) 2000, 2002, 2004-2005, 2007, 2009-2024 Free Software
+Copyright (C) 2000, 2002, 2004-2005, 2007, 2009-2026 Free Software
 Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -6627,7 +6954,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/uchar.in.h
 
 <uchar.h> substitute - 16-bit and 32-bit wide character types.
-Copyright (C) 2019-2024 Free Software Foundation, Inc.
+Copyright (C) 2019-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6647,7 +6974,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unicase/simple-mapping.h
 
 Simple case mapping for Unicode characters.
-Copyright (C) 2002, 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2002, 2006, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2009.
 
 This file is free software: you can redistribute it and/or modify
@@ -6668,7 +6995,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unicase/tolower.c
 
 Lowercase mapping for Unicode characters (locale and context independent).
-Copyright (C) 2002, 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2002, 2006, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2009.
 
 This file is free software: you can redistribute it and/or modify
@@ -6702,7 +7029,7 @@ lib/unictype/ctype_xdigit.h
 lib/uniwidth/width0.h
 lib/uniwidth/width2.h
 
-Copyright (C) 2000-2024 Free Software Foundation, Inc.
+Copyright (C) 2000-2025 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6722,7 +7049,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unicase.in.h
 
 Unicode character case mappings.
-Copyright (C) 2002, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2002, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6742,7 +7069,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unictype/bitmap.h
 
 Three-level bitmap lookup.
-Copyright (C) 2000-2002, 2005-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2000-2002, 2005-2007, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2000-2002.
 
 This file is free software: you can redistribute it and/or modify
@@ -6774,7 +7101,7 @@ lib/unictype/ctype_upper.c
 lib/unictype/ctype_xdigit.c
 
 ISO C <ctype.h> like properties of Unicode characters.
-Copyright (C) 2002, 2006-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2002, 2006-2007, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2002.
 
 This file is free software: you can redistribute it and/or modify
@@ -6795,7 +7122,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unictype.in.h
 
 Unicode character classification and properties.
-Copyright (C) 2002, 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2002, 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6815,7 +7142,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/uninorm.in.h
 
 Normalization forms (composition and decomposition) of Unicode strings.
-Copyright (C) 2001-2002, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2001-2002, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2009.
 
 This file is free software: you can redistribute it and/or modify
@@ -6833,53 +7160,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## Files:
-lib/unistd--.h
-
-Like unistd.h, but redefine some names to avoid glitches.
-
-Copyright (C) 2005, 2009-2024 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
-lib/unistd-safer.h
-
-Invoke unistd-like functions, but avoid some glitches.
-
-Copyright (C) 2001, 2003, 2005, 2009-2024 Free Software Foundation, Inc.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-## Files:
 lib/unistd.c
 
 Inline functions for <unistd.h>.
 
-Copyright (C) 2012-2024 Free Software Foundation, Inc.
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6899,7 +7184,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistd.in.h
 
 Substitute for and wrapper around <unistd.h>.
-Copyright (C) 2003-2024 Free Software Foundation, Inc.
+Copyright (C) 2003-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -6919,7 +7204,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistr/u-cpy.h
 
 Copy piece of UTF-8/UTF-16/UTF-32 string.
-Copyright (C) 1999, 2002, 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2002, 2006, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2002.
 
 This file is free software: you can redistribute it and/or modify
@@ -6940,7 +7225,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistr/u-pcpy.h
 
 Copy piece of UTF-8/16/32 string, return pointer after last written unit.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2023.
 
 This file is free software: you can redistribute it and/or modify
@@ -6961,7 +7246,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistr/u-strcat.h
 
 Concatenate UTF-8/UTF-16/UTF-32 strings.
-Copyright (C) 1999, 2002, 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2002, 2006, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2002.
 
 This file is free software: you can redistribute it and/or modify
@@ -6982,7 +7267,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistr/u-strlen.h
 
 Determine length of UTF-8/UTF-16/UTF-32 string.
-Copyright (C) 1999, 2002, 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2002, 2006, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2002.
 
 This file is free software: you can redistribute it and/or modify
@@ -7003,7 +7288,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistr/u32-chr.c
 
 Search character in piece of UTF-32 string.
-Copyright (C) 1999, 2002, 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2002, 2006, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2002.
 
 This file is free software: you can redistribute it and/or modify
@@ -7024,7 +7309,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistr/u32-cpy.c
 
 Copy piece of UTF-32 string.
-Copyright (C) 1999, 2002, 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2002, 2006, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2002.
 
 This file is free software: you can redistribute it and/or modify
@@ -7045,7 +7330,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistr/u32-pcpy.c
 
 Copy piece of UTF-32 string, return pointer after last written unit.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2023.
 
 This file is free software: you can redistribute it and/or modify
@@ -7066,7 +7351,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistr/u32-strcat.c
 
 Concatenate UTF-32 strings.
-Copyright (C) 1999, 2002, 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2002, 2006, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2002.
 
 This file is free software: you can redistribute it and/or modify
@@ -7087,7 +7372,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistr/u32-strlen.c
 
 Determine length of UTF-32 string.
-Copyright (C) 1999, 2002, 2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2002, 2006, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2002.
 
 This file is free software: you can redistribute it and/or modify
@@ -7108,7 +7393,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unistr.in.h
 
 Elementary Unicode string functions.
-Copyright (C) 2001-2002, 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2001-2002, 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7128,7 +7413,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/unitypes.in.h
 
 Elementary types and macros for the GNU UniString library.
-Copyright (C) 2002, 2005-2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2002, 2005-2006, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7148,7 +7433,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/uniwidth/cjk.h
 
 Test for CJK encoding.
-Copyright (C) 2001-2002, 2005-2007, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2001-2002, 2005-2007, 2009-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2002.
 
 This file is free software: you can redistribute it and/or modify
@@ -7169,7 +7454,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/uniwidth/width.c
 
 Determine display width of Unicode character.
-Copyright (C) 2001-2002, 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2001-2002, 2006-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2002.
 
 This file is free software: you can redistribute it and/or modify
@@ -7190,7 +7475,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/uniwidth.in.h
 
 Display width functions.
-Copyright (C) 2001-2002, 2005, 2007, 2009-2024 Free Software Foundation,
+Copyright (C) 2001-2002, 2005, 2007, 2009-2026 Free Software Foundation,
 Inc.
 
 This file is free software: you can redistribute it and/or modify
@@ -7211,7 +7496,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/utime.c
 
 Work around platform bugs in utime.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7231,7 +7516,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/utime.in.h
 
 Substitute for and wrapper around <utime.h>.
-Copyright (C) 2017-2024 Free Software Foundation, Inc.
+Copyright (C) 2017-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7252,7 +7537,7 @@ lib/utimens.c
 
 Set file access and modification times.
 
-Copyright (C) 2003-2024 Free Software Foundation, Inc.
+Copyright (C) 2003-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7273,7 +7558,7 @@ lib/utimens.h
 
 Set file access and modification times.
 
-Copyright 2012-2024 Free Software Foundation, Inc.
+Copyright 2012-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7293,7 +7578,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/vasnprintf.c
 
 vsprintf with automatic memory allocation.
-Copyright (C) 1999, 2002-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2002-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7313,7 +7598,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/vasnprintf.h
 
 vsprintf with automatic memory allocation.
-Copyright (C) 2002-2004, 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2002-2004, 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7334,7 +7619,7 @@ lib/verify.h
 
 Compile-time assert-like macros.
 
-Copyright (C) 2005-2006, 2009-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2006, 2009-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7354,7 +7639,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/vsnzprintf.c
 
 Formatted output to strings.
-Copyright (C) 2004, 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2004, 2006-2026 Free Software Foundation, Inc.
 Written by Simon Josefsson and Yoann Vandoorselaere <yoann@prelude-ids.org>.
 
 This file is free software: you can redistribute it and/or modify
@@ -7375,7 +7660,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/warn-on-use.h
 
 A C macro for emitting warnings if a function is used.
-Copyright (C) 2010-2024 Free Software Foundation, Inc.
+Copyright (C) 2010-2026 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
@@ -7396,7 +7681,7 @@ lib/wchar.in.h
 
 A substitute for ISO C99 <wchar.h>, for platforms that have issues.
 
-Copyright (C) 2007-2024 Free Software Foundation, Inc.
+Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7416,7 +7701,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/wcrtomb.c
 
 Convert wide character to multibyte character.
-Copyright (C) 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2008-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2008.
 
 This file is free software: you can redistribute it and/or modify
@@ -7438,7 +7723,7 @@ lib/wctype-h.c
 
 Inline functions for <wctype.h>.
 
-Copyright (C) 2012-2024 Free Software Foundation, Inc.
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7459,7 +7744,7 @@ lib/wctype-impl.h
 lib/wctype.c
 
 Get descriptor for a wide character property.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2011.
 
 This file is free software: you can redistribute it and/or modify
@@ -7481,7 +7766,7 @@ lib/wctype.in.h
 
 A substitute for ISO C99 <wctype.h>, for platforms that lack it.
 
-Copyright (C) 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 2006-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7501,7 +7786,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/wcwidth.c
 
 Determine the number of screen columns needed for a character.
-Copyright (C) 2006-2007, 2010-2024 Free Software Foundation, Inc.
+Copyright (C) 2006-2007, 2010-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7521,7 +7806,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/windows-initguard.h
 
 Init guards, somewhat like spinlocks (native Windows implementation).
-Copyright (C) 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7542,7 +7827,7 @@ lib/windows-mutex.c
 lib/windows-mutex.h
 
 Plain mutexes (native Windows implementation).
-Copyright (C) 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7563,7 +7848,7 @@ lib/windows-once.c
 lib/windows-once.h
 
 Once-only control (native Windows implementation).
-Copyright (C) 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7584,7 +7869,7 @@ lib/windows-recmutex.c
 lib/windows-recmutex.h
 
 Plain recursive mutexes (native Windows implementation).
-Copyright (C) 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7605,7 +7890,7 @@ lib/windows-rwlock.c
 lib/windows-rwlock.h
 
 Read-write locks (native Windows implementation).
-Copyright (C) 2005-2024 Free Software Foundation, Inc.
+Copyright (C) 2005-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7625,7 +7910,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/wmemchr-impl.h
 
 Search wide character array for a wide character.
-Copyright (C) 1999, 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 1999, 2011-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 1999.
 
 This file is free software: you can redistribute it and/or modify
@@ -7646,7 +7931,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/wmemchr.c
 
 Search wide character array for a wide character.
-Copyright (C) 2011-2024 Free Software Foundation, Inc.
+Copyright (C) 2011-2026 Free Software Foundation, Inc.
 Written by Bruno Haible <bruno@clisp.org>, 2011.
 
 This file is free software: you can redistribute it and/or modify
@@ -7667,7 +7952,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 lib/wmempcpy.c
 
 Copy wide character array, return pointer after last written wide character.
-Copyright (C) 2020-2024 Free Software Foundation, Inc.
+Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7688,7 +7973,7 @@ lib/xalloc-oversized.h
 
 xalloc-oversized.h -- memory allocation size checking
 
-Copyright (C) 1990-2000, 2003-2004, 2006-2024 Free Software Foundation, Inc.
+Copyright (C) 1990-2000, 2003-2004, 2006-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7709,7 +7994,7 @@ lib/xsize.c
 
 Checked size_t computations.
 
-Copyright (C) 2012-2024 Free Software Foundation, Inc.
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7730,7 +8015,7 @@ lib/xsize.h
 
 xsize.h -- Checked size_t computations.
 
-Copyright (C) 2003, 2008-2024 Free Software Foundation, Inc.
+Copyright (C) 2003, 2008-2026 Free Software Foundation, Inc.
 
 This file is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -7744,6 +8029,15 @@ GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+## Files:
+po/ar.po
+
+Translation of nano to Arabic
+Copyright (C) 2026 Free Software Foundation, Inc.
+This file is distributed under the same license as the nano package.
+Zayed Al-Saidi <zayed.alsaidi@gmail.com>, 2026.
 
 
 ## Files:
@@ -7761,11 +8055,11 @@ Anton Zinoviev <zinoviev@debian.org>, 2005, 2006
 po/ca.po
 
 Catalan messages for the GNU nano editor.
-Copyright © 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024 Free Software Foundation, Inc.
+Copyright © 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024, 2025 Free Software Foundation, Inc.
 This file is distributed under the same licence as the nano package.
 
 Miquel Vidal <miquel@sindominio.net>, 2001.
-Jordi Mallach <jordi@mallach.net>, 2000-2024.
+Jordi Mallach <jordi@mallach.net>, 2000-2025.
 
 
 ## Files:
@@ -7776,8 +8070,8 @@ Copyright (C) 2010 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
 Václav Haisman <V.Haisman@sh.cvut.cz>, 2000, 2001.
-Pavel Fric <pavelfric@seznam.cz>, 2010, 2012, 2013, 2014, 2015, 2016, 2019, 2024.
 Branislav Makúch <makuch@disroot.org>, 2020.
+Pavel Fric <pavelfric@seznam.cz>, 2010, 2012, 2013, 2014, 2015, 2016, 2019, 2024, 2025.
 
 
 ## Files:
@@ -7809,33 +8103,33 @@ This file is distributed under the same license as the nano package.
 Karl Eichwalder <keichwa@gmx.net>, 2001.
 Florian König <floki@bigfoot.com>, 2000-2001.
 Michael Piefel <piefel@informatik.hu-berlin.de>, 2001-2006, 2008-2011, 2013-2014.
-Mario Blättermann <mario.blaettermann@gmail.com>, 2014-2022, 2024.
+Mario Blättermann <mario.blaettermann@gmail.com>, 2014-2022, 2024-2025.
 
 
 ## Files:
 po/eo.po
 
 Esperanto translations for GNU nano.
-Copyright (C) 2024 Free Software Foundation, Inc.
+Copyright (C) 2026 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
 "lo que no sabía era hasta qué punto"
 
-Benno Schulenberg <vertaling@coevern.nl>, 2010-2024.
+Benno Schulenberg <vertaling@coevern.nl>, 2010-2026.
 
 
 ## Files:
 po/es.po
 
 Mensajes en español para GNU nano.
-Copyright (C) 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Free Software Foundation, Inc.
+Copyright (C) 2026 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
 Jordi Mallach <jordi@sindominio.net>, 2000, 2001, 2002.
 Ricardo Cárdenes <ricardo@conysis.com>, 2002, 2003, 2004, 2005.
 Ricardo Javier Cardenes Medina <rcardenes@not.iac.es>, 2006.
 Jorge González <aloriel@gmail.com>, 2013.
-Benno Schulenberg <benno@vertaalt.nl>, 2015.
+Benno Schulenberg <vertaling@coevern.nl> 2015, 2025.
 Antonio Ceballos <aceballos@gmail.com>, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024.
 
 
@@ -7875,7 +8169,7 @@ This file is distributed under the same license as the nano package.
 Pierre Tane <tanep@bigfoot.com>, 2000.
 Clement Laforet <sheep.killer@free.fr>, 2000.
 Michel Robitaille <robitail@IRO.UMontreal.CA>, 2001.
-Jean-Philippe Guérard <jean-philippe.guerard@corbeaunoir.org>, 2001-2024.
+Jean-Philippe Guérard <jean-philippe.guerard@corbeaunoir.org>, 2001-2026.
 
 
 ## Files:
@@ -7901,15 +8195,11 @@ Francisco Javier Tsao Santín <tsao@members.fsf.org>, 2006, 2008, 2011, 2012, 20
 ## Files:
 po/hr.po
 
-Croatian translations of nano messages.
-Copyright (C) 2020 Free Software Foundation, Inc.
+Croatian translations for GNU nano.
+Copyright (C) 2026 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
-Permission is granted to freely copy and distribute
-this file and modified versions, provided that this
-header is not removed and modified versions are marked
-as such.
 
-Božidar Putanec <bozidarp@yahoo.com>, 2016 - 2024.
+Božidar Putanec <bozidarp@yahoo.com>, 2016-2026.
 
 
 ## Files:
@@ -7934,13 +8224,13 @@ Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
 Tedi Heriyanto <tedi_h@gmx.net>, 2001, 2002, 2003
-Andika Triwidada <andika@gmail.com>, 2021, 2022, 2024.
+Andika Triwidada <andika@gmail.com>, 2021, 2022, 2024, 2025.
 
 
 ## Files:
 po/is.po
 
-translation of nano-7.0-pre1.po to Icelandic
+translation of nano-8.1-pre1.po to Icelandic
 Copyright (C) 2021 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
@@ -7953,8 +8243,8 @@ po/it.po
 Italian messages for nano.
 Copyright (C) 2001-2006, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
-
 Marco Colombo <m.colombo@ed.ac.uk>, 2001-2018.
+Luca Vercelli <luca.vercelli.to@gmail.com>, 2024-2025.
 
 
 ## Files:
@@ -7965,7 +8255,7 @@ Copyright (C) 2021 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
 Yasuaki Taniguchi <yasuakit@gmail.com>, 2011.
-Takeshi Hamasaki <hmatrjp@users.sourceforge.jp>, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024.
+Takeshi Hamasaki <Takeshi.Ken.Hamasaki+hmatrjp@gmail.com>, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026.
 
 
 ## Files:
@@ -7978,43 +8268,54 @@ Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2024.
 
 
 ## Files:
+po/kk.po
+
+ SOME DESCRIPTIVE TITLE.
+ Copyright (C) 2026 Free Software Foundation, Inc.
+ This file is distributed under the same license as the nano package.
+ Baurzhan Muftakhidinov <baurthefirst@gmail.com>, 2026.
+
+, fuzzy
+
+
+## Files:
 po/ko.po
 
 Korean translation for the nano package.
 Copyright (C) 2019 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 Minho Park <parkmino@daum.net>, 2020.
-Seong-ho Cho <darkcircle.0426@gmail.com>, 2019-2022, 2024.
+Seong-ho Cho <darkcircle.0426@gmail.com>, 2019-2022, 2024, 2026.
 
 
 ## Files:
 po/ms.po
 
 Nano Editor Bahasa Melayu (Malay) (ms).
-Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2008, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024 Free Software Foundation, Inc.
+Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2008, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
-Sharuzzaman Ahmat Raslan <sharuzzaman@gmail.com>, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2008, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024.
+Sharuzzaman Ahmat Raslan <sharuzzaman@gmail.com>, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2008, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026.
 
 
 ## Files:
 po/nb.po
 
 Norwegian Bokmål message catalog for GNU nano.
-Copyright (C) 2001 - 2022 Free Software Foundation, Inc.
+Copyright (C) 2001 - 2025 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
 Eivind Kjørstad <ekj@vestdata.no>, 2001.
 Stig E Sandø <stig@ii.uib.no>, 2002.
 Geir Helland <pjallabais@users.sourceforge.net>, 2004
-Johnny A. Solbu <johnny@solbu.net>, 2013-2024
+Johnny A. Solbu <johnny@solbu.net>, 2013-2026
 
 
 ## Files:
 po/nl.po
 
 Dutch translations for GNU nano.
-Copyright (C) 2024 Free Software Foundation, Inc.
+Copyright (C) 2026 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
 "bien sabía él que la iba a echar de menos"
@@ -8022,19 +8323,19 @@ This file is distributed under the same license as the nano package.
 Guus Sliepen <guus@sliepen.eu.org>, 2003.
 Reinout van Schouwen <reinout@cs.vu.nl>, 2005.
 Erwin Poeze <erwin.poeze@gmail.com>, 2009.
-Benno Schulenberg <benno@vertaalt.nl>, 2005-2024.
+Benno Schulenberg <vertaling@coevern.nl>, 2005-2026.
 
 
 ## Files:
 po/pl.po
 
 Polish translations for the nano editor messages
-Copyright (C) 2021 Free Software Foundation, Inc.
+Copyright (C) 2026 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
 Cezary Sliwa <sliwa@cft.edu.pl>, 2001.
 Wojciech Kotwica <wkotwica@post.pl>, 2002.
-Sergey Poznyakoff <gray@gnu.org>, 2010, 2015-2021.
+Sergey Poznyakoff <gray@gnu.org>, 2010, 2015-2026.
 
 
 ## Files:
@@ -8043,7 +8344,7 @@ po/pt.po
 Portuguese (Portugal) Translation for the nano Package.
 Copyright (C) 2022 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
-Pedro Albuquerque <pmra@protonmail.com>, 2018-2021.
+Pedro Albuquerque <pmra@protonmail.com>, 2018-2021, 2025, 2026
 Benno Schulenberg made small adjustments, 2022.
 
 
@@ -8052,25 +8353,26 @@ po/pt_BR.po
 
 Brazilian Portuguese translation for the nano
 Traduções em português brasileiro para o pacote nano
-Copyright (C) 2021 Free Software Foundation, Inc.
+Copyright (C) 2025 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 João Victor Duarte Martins <jvdm@sdf.lonestar.org>, 2010.
-Rafael Fontenelle <rafaelff@gnome.org>, 2014-2021.
+Rafael Fontenelle <rafaelff@gnome.org>, 2014-2025.
 
 
 ## Files:
 po/ro.po
 
 Translation of the nano editor to Romanian.
-Copyright © 2024 Free Software Foundation, Inc.
+Mesajele în limba română pentru pachetul nano.
+Copyright © 2025, 2026 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
 "su propio cuerpo iba a renegar de la cordura"
 
 Laurențiu Buzdugan <lbuz@rolix.org>, 2003-2005.
 Mihai Cristescu <mihai.cristescu@gmail.com>, 2015-2021.
-Benno Schulenberg improved consistency, with advice from Daniel Șerbănescu, 2021, 2022, 2024.
-Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2022.
+Benno Schulenberg improved consistency, with advice from Daniel Șerbănescu, 2021, 2022, 2024, 2025.
+Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2022, 2026.
 
 
 ## Files:
@@ -8083,7 +8385,7 @@ This file is distributed under the same license as the nano package.
 Sergey A. Ribalchenko <fisher@obu.ck.ua>, 2001.
 Dimitriy Ryazantcev <DJm00n@mail.ru>, 2006-2007, 2008, 2014, 2020.
 Serge A. Ribalchenko <serge.fisher@gmail.com>, 2007, 2008.
-Pavlo Marianov <acid@jack.kiev.ua>, 2010, 2020.
+Pavlo Marianov <acid@jack.kiev.ua>, 2010, 2020, 2024.
 Sergey Alyoshin <alyoshin.s@gmail.com>, 2020
 
 
@@ -8093,7 +8395,7 @@ po/sk.po
 Slovak translation of nano
 Copyright (C) 2021 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
-Marek Felšöci <marek@felsoci.sk>, 2024.
+Marek Felšöci <marek@felsoci.sk>, 2026.
 
 
 ## Files:
@@ -8111,10 +8413,10 @@ Klemen Košir <klemen913@gmail.com>, 2009, 2012, 2013.
 ## Files:
 po/sq.po
 
-SOME DESCRIPTIVE TITLE.
+Albanian translation for nano editor.
 Copyright (C) 2022 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
-Besnik Bleta <besnik@programeshqip.org>, 2022,2024.
+Besnik Bleta <besnik@programeshqip.org>, 2022,2024, 2025, 2026.
 
 
 ## Files:
@@ -8124,20 +8426,20 @@ Serbian translation of nano.
 Copyright © 2020 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 Danilo Segan <dsegan@gmx.net>, 2003.
-Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013–2023.
+Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013-2026.
 
 
 ## Files:
 po/sv.po
 
 Swedish messages for nano.
-Copyright © 2001 - 2022 Free Software Foundation, Inc.
+Copyright © 2001 - 2025 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
 Christian Rose <menthos@menthos.com>, 2001, 2002, 2003, 2004.
 Daniel Nylander <po@danielnylander.se>, 2006.
 Anders Jonsson <anders.jonsson@norsjovallen.se>, 2015.
-Josef Andersson <l10nl18nsweja@gmail.com>, 2014-2022.
+Josef Andersson <janderssonse@proton.me>, 2014-2025.
 
 
 ## Files:
@@ -8159,7 +8461,7 @@ Copyright (C) 2001 Free Software Foundation, Inc.
 This file is distributed under the same license as the nano package.
 
 Sergey A. Ribalchenko <fisher@obu.ck.ua>, 2001.
-Yuri Chornoivan <yurchor@ukr.net>, 2014-2021, 2022, 2024.
+Yuri Chornoivan <yurchor@ukr.net>, 2014-2021, 2022, 2024, 2025, 2026.
 
 
 ## Files:
@@ -8184,7 +8486,7 @@ This file is distributed under the same license as the nano package.
 LI Daobing <lidaobing@gmail.com>, 2007, 2008, 2009.
 Aron Xu <happyaron.xu@gmail.com>, 2009, 2010, 2011, 2015.
 Boyuan Yang <073plan@gmail.com>, 2018, 2019, 2020, 2021, 2022.
-Wenbin Lv <wenbin816@gmail.com>, 2022, 2024.
+Wenbin Lv <wenbin816@gmail.com>, 2022, 2024, 2025.
 
 
 ## Files:
@@ -8203,8 +8505,8 @@ src/browser.c
 
 browser.c  --  This file is part of GNU nano.                        *
                                                                      *
-Copyright (C) 2001-2011, 2013-2024 Free Software Foundation, Inc.    *
-Copyright (C) 2015-2016, 2020, 2022 Benno Schulenberg                *
+Copyright (C) 2001-2011, 2013-2026 Free Software Foundation, Inc.    *
+Copyright (C) 2015, 2016, 2020, 2022, 2025 Benno Schulenberg         *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8217,7 +8519,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8226,7 +8528,7 @@ src/chars.c
 
 chars.c  --  This file is part of GNU nano.                          *
                                                                      *
-Copyright (C) 2001-2011, 2013-2024 Free Software Foundation, Inc.    *
+Copyright (C) 2001-2011, 2013-2026 Free Software Foundation, Inc.    *
 Copyright (C) 2016-2021 Benno Schulenberg                            *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
@@ -8240,7 +8542,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8249,7 +8551,7 @@ src/color.c
 
 color.c  --  This file is part of GNU nano.                          *
                                                                      *
-Copyright (C) 2001-2011, 2013-2024 Free Software Foundation, Inc.    *
+Copyright (C) 2001-2011, 2013-2026 Free Software Foundation, Inc.    *
 Copyright (C) 2014-2017, 2020, 2021 Benno Schulenberg                *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
@@ -8263,7 +8565,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8272,7 +8574,7 @@ src/cut.c
 
 cut.c  --  This file is part of GNU nano.                            *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
 Copyright (C) 2014 Mark Majeres                                      *
 Copyright (C) 2016, 2018-2020 Benno Schulenberg                      *
                                                                      *
@@ -8287,7 +8589,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8296,8 +8598,8 @@ src/definitions.h
 
 definitions.h  --  This file is part of GNU nano.                    *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
-Copyright (C) 2014-2017 Benno Schulenberg                            *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
+Copyright (C) 2014-2017, 2020-2022, 2024 Benno Schulenberg           *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8310,7 +8612,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8319,8 +8621,8 @@ src/files.c
 
 files.c  --  This file is part of GNU nano.                          *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
-Copyright (C) 2015-2022 Benno Schulenberg                            *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
+Copyright (C) 2015-2022, 2025 Benno Schulenberg                      *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8333,7 +8635,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8360,8 +8662,8 @@ src/global.c
 
 global.c  --  This file is part of GNU nano.                         *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
-Copyright (C) 2014-2022 Benno Schulenberg                            *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
+Copyright (C) 2014-2026 Benno Schulenberg                            *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8374,7 +8676,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8383,7 +8685,7 @@ src/help.c
 
 help.c  --  This file is part of GNU nano.                           *
                                                                      *
-Copyright (C) 2000-2011, 2013-2024 Free Software Foundation, Inc.    *
+Copyright (C) 2000-2011, 2013-2026 Free Software Foundation, Inc.    *
 Copyright (C) 2017 Rishabh Dave                                      *
 Copyright (C) 2014-2019 Benno Schulenberg                            *
                                                                      *
@@ -8398,7 +8700,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8407,8 +8709,8 @@ src/history.c
 
 history.c  --  This file is part of GNU nano.                        *
                                                                      *
-Copyright (C) 2003-2011, 2013-2024 Free Software Foundation, Inc.    *
-Copyright (C) 2016, 2017, 2019 Benno Schulenberg                     *
+Copyright (C) 2003-2011, 2013-2026 Free Software Foundation, Inc.    *
+Copyright (C) 2016, 2017, 2019, 2025 Benno Schulenberg               *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8421,7 +8723,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8430,8 +8732,8 @@ src/move.c
 
 move.c  --  This file is part of GNU nano.                           *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
-Copyright (C) 2014-2018 Benno Schulenberg                            *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
+Copyright (C) 2014-2018, 2020, 2024, 2026 Benno Schulenberg          *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8444,7 +8746,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8453,8 +8755,8 @@ src/nano.c
 
 nano.c  --  This file is part of GNU nano.                           *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
-Copyright (C) 2014-2022 Benno Schulenberg                            *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
+Copyright (C) 2014-2026 Benno Schulenberg                            *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8467,7 +8769,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8476,8 +8778,8 @@ src/prompt.c
 
 prompt.c  --  This file is part of GNU nano.                         *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
-Copyright (C) 2016, 2018, 2020, 2022 Benno Schulenberg               *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
+Copyright (C) 2016, 2018, 2020-2022, 2025 Benno Schulenberg          *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8490,7 +8792,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8499,7 +8801,7 @@ src/prototypes.h
 
 prototypes.h  --  This file is part of GNU nano.                     *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8512,7 +8814,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8521,10 +8823,10 @@ src/rcfile.c
 
 rcfile.c  --  This file is part of GNU nano.                         *
                                                                      *
-Copyright (C) 2001-2011, 2013-2024 Free Software Foundation, Inc.    *
+Copyright (C) 2001-2011, 2013-2026 Free Software Foundation, Inc.    *
 Copyright (C) 2014 Mike Frysinger                                    *
 Copyright (C) 2019 Brand Huntsman                                    *
-Copyright (C) 2014-2021 Benno Schulenberg                            *
+Copyright (C) 2014-2021, 2024 Benno Schulenberg                      *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8537,7 +8839,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8546,8 +8848,8 @@ src/search.c
 
 search.c  --  This file is part of GNU nano.                         *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
-Copyright (C) 2015-2020, 2022 Benno Schulenberg                      *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
+Copyright (C) 2015-2022, 2025 Benno Schulenberg                      *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8560,7 +8862,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8569,12 +8871,12 @@ src/text.c
 
 text.c  --  This file is part of GNU nano.                           *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
 Copyright (C) 2014-2015 Mark Majeres                                 *
 Copyright (C) 2016 Mike Scalora                                      *
 Copyright (C) 2016 Sumedh Pendurkar                                  *
 Copyright (C) 2018 Marco Diego Aurélio Mesquita                      *
-Copyright (C) 2015-2022 Benno Schulenberg                            *
+Copyright (C) 2015-2022, 2024 Benno Schulenberg                      *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8587,7 +8889,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8596,8 +8898,8 @@ src/utils.c
 
 utils.c  --  This file is part of GNU nano.                          *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
-Copyright (C) 2016, 2017, 2019 Benno Schulenberg                     *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
+Copyright (C) 2016, 2017, 2019, 2020, 2026 Benno Schulenberg         *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8610,7 +8912,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
                                                                      *
 
 
@@ -8619,8 +8921,8 @@ src/winio.c
 
 winio.c  --  This file is part of GNU nano.                          *
                                                                      *
-Copyright (C) 1999-2011, 2013-2024 Free Software Foundation, Inc.    *
-Copyright (C) 2014-2022 Benno Schulenberg                            *
+Copyright (C) 1999-2011, 2013-2026 Free Software Foundation, Inc.    *
+Copyright (C) 2014-2026 Benno Schulenberg                            *
                                                                      *
 GNU nano is free software: you can redistribute it and/or modify     *
 it under the terms of the GNU General Public License as published    *
@@ -8633,4 +8935,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.              *
 See the GNU General Public License for more details.                 *
                                                                      *
 You should have received a copy of the GNU General Public License    *
-along with this program.  If not, see http://www.gnu.org/licenses/.  *
+along with this program.  If not, see https://gnu.org/licenses/.     *
+                                                                     *
+
+
