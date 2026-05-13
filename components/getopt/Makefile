@@ -31,7 +31,7 @@ COMPONENT_VERSION=	1.1.6
 COMPONENT_PROJECT_URL=	http://frodo.looijaard.name/project/getopt/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:d0bf1dc642a993e7388a1cddfb9409bed375c21d5278056ccca3a0acd09dc5fe
-COMPONENT_ARCHIVE_URL=	http://frodo.looijaard.name/system/files/software/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://frodo.looijaard.name/system/files/software/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/gnu-getopt
 COMPONENT_ANITYA_ID=	13265
 

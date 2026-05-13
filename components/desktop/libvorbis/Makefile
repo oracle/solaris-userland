@@ -34,7 +34,7 @@ COMPONENT_VERSION=	1.3.7
 COMPONENT_PROJECT_URL=	https://xiph.org/vorbis/
 COMPONENT_ARCHIVE_HASH= \
 	sha256:0e982409a9c3fc82ee06e08205b1355e5c6aa4c36bca58146ef399621b0ce5ab
-COMPONENT_ARCHIVE_URL=	http://downloads.xiph.org/releases/vorbis/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://downloads.xiph.org/releases/vorbis/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1758
 

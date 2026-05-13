@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	https://xiph.org/flac/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
        sha256:f2c1c76592a82ffff8413ba3c4a1299b6c7ab06c734dee03fd88630485c2b920
-COMPONENT_ARCHIVE_URL=	http://downloads.xiph.org/releases/flac/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://downloads.xiph.org/releases/flac/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	817
 

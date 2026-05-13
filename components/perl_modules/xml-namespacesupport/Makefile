@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -31,7 +31,7 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:47e995859f8dd0413aa3f22d350c4a62da652e854267aa0586ae544ae2bae5ef
-COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/P/PE/PERIGRIN/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://search.cpan.org/CPAN/authors/id/P/PE/PERIGRIN/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/~perigrin/XML-NamespaceSupport-1.11/lib/XML/NamespaceSupport.pm
 COMPONENT_BUGDB=	perl-mod/xml-namespace 
 COMPONENT_ANITYA_ID=	3530

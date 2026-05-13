@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	http://0pointer.de/lennart/projects/libcanberra/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:c2b671e67e0c288a69fc33dc1b6f1b534d07882c2aceed37004bf48c601afa72
-COMPONENT_ARCHIVE_URL=	http://0pointer.de/lennart/projects/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://0pointer.de/lennart/projects/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13298
 

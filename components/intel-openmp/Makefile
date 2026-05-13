@@ -38,6 +38,7 @@ COMPONENT_SRC         = $(COMPONENT_NAME)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC)_oss.tgz
 COMPONENT_ARCHIVE_HASH= \
          sha256:d4254420d0081c6844eb05237bab5e731e669a429a9c1c87e2e0221ccf0de6ac
+# No working HTTPS source exists
 COMPONENT_ARCHIVE_URL = http://www.openmprtl.org/sites/default/files/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL = http://www.openmprtl.org/
 COMPONENT_BUGDB       = library/intel-openmp

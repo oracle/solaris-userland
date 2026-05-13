@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH= \
     sha256:0dcc3aebd2ada8719e47b77c62ab986c4f2747f9a7cab6f629b6472e6d058e09
 COMPONENT_ARCHIVE_HASH_1= \
     sha256:e28ab23e61870204f7e693ee204c01fa802c06c8b5da45ae6b65450628f6a8f9
-COMPONENT_ARCHIVE_URL=	http://prdownloads.sourceforge.net/docbook/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://prdownloads.sourceforge.net/docbook/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_URL_1=$(COMPONENT_ARCHIVE_URL:$(COMPONENT_ARCHIVE)=$(COMPONENT_ARCHIVE_1))
 COMPONENT_BUGDB=	utility/docbook
 COMPONENT_ANITYA_ID=	13115

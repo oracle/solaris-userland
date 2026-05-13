@@ -63,6 +63,7 @@ COMPONENT_PROJECT_URL=	http://www.oracle.com/technetwork/database/berkeleydb/ove
 COMPONENT_SRC_NAME=	db
 COMPONENT_ARCHIVE_HASH=	\
     sha256:ddd92a930317df92021054c03992392db9ea5cddba43bef8920d392a82114fb8
+# No working HTTPS source exists
 COMPONENT_ARCHIVE_URL=	http://download.oracle.com/berkeley-db/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	database/berkeley
 COMPONENT_ANITYA_ID=	1587

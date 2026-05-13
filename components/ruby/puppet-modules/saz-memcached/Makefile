@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../../make-rules/shared-macros.mk
@@ -31,7 +31,7 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:868482ded30a1f138bb328578f73857fa847c62c238210fe66866ceefd893d00
-COMPONENT_ARCHIVE_URL=	http://forgeapi.puppetlabs.com/v3/files/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://forgeapi.puppetlabs.com/v3/files/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://www.openstack.org/
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	13322

@@ -33,7 +33,7 @@ COMPONENT_PROJECT_URL=	http://cyberelk.net/tim/patchutils/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:cf55d4db83ead41188f5b6be16f60f6b76a87d5db1c42f5459d596e81dabe876
-COMPONENT_ARCHIVE_URL=	http://cyberelk.net/tim/data/patchutils/stable/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://cyberelk.net/tim/data/patchutils/stable/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	2599
 

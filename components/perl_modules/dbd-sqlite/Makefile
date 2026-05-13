@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 # This variable has no impact on perl build, it is here merely to satisfy
@@ -39,7 +39,7 @@ COMPONENT_NAME=		DBD-SQLite
 COMPONENT_VERSION=	1.72
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:5ca41e61eb52b52bd862a3088b912a75fe70910ac789b9a9983e0a449e94f551
-COMPONENT_ARCHIVE_URL=	http://backpan.perl.org/authors/id/I/IS/ISHIGAKI/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://backpan.perl.org/authors/id/I/IS/ISHIGAKI/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://github.com/DBD-SQLite/DBD-SQLite
 COMPONENT_BUGDB=	perl-mod/dbd-sqlite
 COMPONENT_ANITYA_ID=	2810

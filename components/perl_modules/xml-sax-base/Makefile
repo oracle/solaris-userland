@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -32,7 +32,7 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:66cb355ba4ef47c10ca738bd35999723644386ac853abbeb5132841f5e8a2ad0
-COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/G/GR/GRANTM/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://search.cpan.org/CPAN/authors/id/G/GR/GRANTM/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/~grantm/
 COMPONENT_BUGDB=	perl-mod/xml-sax-base
 COMPONENT_ANITYA_ID=	3535

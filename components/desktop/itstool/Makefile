@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		NO_ARCH
@@ -32,7 +32,7 @@ COMPONENT_PROJECT_URL=	http://itstool.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
     sha256:6b9a7cd29a12bb95598f5750e8763cee78836a1a207f85b74d8b3275b27e87ca
-COMPONENT_ARCHIVE_URL=	 http://files.itstool.org/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	 https://files.itstool.org/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13109
 COMPONENT_BUGDB=        utility/itstool
 

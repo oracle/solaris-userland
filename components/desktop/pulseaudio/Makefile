@@ -32,7 +32,7 @@ COMPONENT_PROJECT_URL=	http://freedesktop.org/software/pulseaudio
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
     sha256:75d3f7742c1ae449049a4c88900e454b8b350ecaa8c544f3488a2562a9ff66f1
-COMPONENT_ARCHIVE_URL=	http://freedesktop.org/software/$(COMPONENT_NAME)/releases/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://freedesktop.org/software/$(COMPONENT_NAME)/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	3729
 

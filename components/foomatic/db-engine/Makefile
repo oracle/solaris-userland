@@ -38,6 +38,7 @@ IPS_COMPONENT_VERSION=	$(FOO_VERSION).$(FOO_PATCHLEVEL).$(DAILY_VERSION)
 COMPONENT_BAID=		371893
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	sha256:31518df453a88cb1e327c90c7938d324fb748deedf19f4bcc63632f1ec441c97
+# No working HTTPS source exists
 COMPONENT_ARCHIVE_URL=	http://www.openprinting.org/download/foomatic/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://wiki.linuxfoundation.org/openprinting/database/foomatic
 COMPONENT_BUGDB=	utility/foomatic

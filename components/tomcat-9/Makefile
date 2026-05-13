@@ -68,7 +68,7 @@ COMPONENT_ARCHIVE_URL_4= make://build-ecj/$(COMPONENT_ARCHIVE_4)
 COMPONENT_ARCHIVE_5= ecjsrc-4.20.jar
 COMPONENT_ARCHIVE_HASH_5= \
     sha256:4cb55998b273debd2f99b31c5acfa50abb49f6880a38ebb17d407e26cff7c36a
-COMPONENT_ARCHIVE_URL_5= http://archive.eclipse.org/eclipse/downloads/drops4/R-4.20-202106111600/$(COMPONENT_ARCHIVE_5)
+COMPONENT_ARCHIVE_URL_5= https://archive.eclipse.org/eclipse/downloads/drops4/R-4.20-202106111600/$(COMPONENT_ARCHIVE_5)
 
 BUILD_STYLE= ant
 TEST_TARGET= $(SKIP_TEST)

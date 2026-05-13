@@ -30,7 +30,7 @@ COMPONENT_VERSION=	1.9.15
 COMPONENT_PROJECT_URL=	http://www.ivarch.com/programs/pv.shtml
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:e2b17564ab9eba1ec2caae285960cbf363b4401dffda191a60a0befe68e17dac
-COMPONENT_ARCHIVE_URL=	http://www.ivarch.com/programs/sources/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://www.ivarch.com/programs/sources/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3736
 
 COMPONENT_BAID=	189935

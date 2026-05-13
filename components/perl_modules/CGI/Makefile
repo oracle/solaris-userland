@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -30,7 +30,7 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:67895e94b13fdf46a3893c9a17c2d0d4c3d4cd2550e1f41e26696c10cb8c64b2
-COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/L/LE/LEEJO/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://search.cpan.org/CPAN/authors/id/L/LE/LEEJO/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/~leejo/CGI
 COMPONENT_BUGDB=	perl-mod/cgi
 COMPONENT_ANITYA_ID=	2687

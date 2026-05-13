@@ -31,7 +31,7 @@ COMPONENT_VERSION=	1.6.0
 COMPONENT_PROJECT_URL=	https://www.webmproject.org/
 COMPONENT_ARCHIVE_HASH= \
 	sha256:e4ab7009bf0629fd11982d4c2aa83964cf244cffba7347ecd39019a9e38c4564
-COMPONENT_ARCHIVE_URL=	http://downloads.webmproject.org/releases/webp/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://storage.googleapis.com/downloads.webmproject.org/releases/webp/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libwebp
 COMPONENT_ANITYA_ID=	1761

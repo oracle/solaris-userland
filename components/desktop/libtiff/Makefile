@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_PROJECT_URL=	http://www.simplesystems.org/libtiff/
 COMPONENT_SRC=		tiff-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_URL=	http://download.osgeo.org/libtiff/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://download.osgeo.org/libtiff/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libtiff
 COMPONENT_ANITYA_ID=	1738
 

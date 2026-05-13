@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -34,7 +34,7 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).gem
 COMPONENT_ARCHIVE_HASH=	\
     sha256:c4263ae04a517f3759b4885c22c1b99093fdc416e9e639c763445e158cf92643
-COMPONENT_ARCHIVE_URL=	http://rubygems.org/gems/$(COMPONENT_SRC).gem
+COMPONENT_ARCHIVE_URL=	https://rubygems.org/gems/$(COMPONENT_SRC).gem
 COMPONENT_PROJECT_URL=  http://puppetlabs.com/facter
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	67127

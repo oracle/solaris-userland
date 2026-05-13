@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -31,7 +31,7 @@ IPS_COMPONENT_VERSION=	45
 COMPONENT_PROJECT_URL=  https://extensions.gnome.org/extension/889/background-logo
 COMPONENT_ARCHIVE_HASH= \
 	sha256:e8c925bec2faa639542267bcb088aabf80ae8d68e493b901342834cfd8f178e0
-COMPONENT_ARCHIVE_URL=	http://releases.pagure.org/background-logo-extension/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://releases.pagure.org/background-logo-extension/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gnome-shell
 COMPONENT_ANITYA_ID=	13118
 

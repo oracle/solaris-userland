@@ -36,6 +36,7 @@ COMPONENT_BAID=		371889
 #  ...do not combine foomatic-db with foomatic-db-engine of the different versions
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(FOO_VERSION)-$(DAILY_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	sha256:499d626f31acc5e98fda0f6eba194a0c1b941dd5ec05b4f9f72a280713bb56b5
+# No working HTTPS source exists
 COMPONENT_ARCHIVE_URL=	http://www.openprinting.org/download/foomatic/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://wiki.linuxfoundation.org/openprinting/database/foomatic
 COMPONENT_BUGDB=	utility/foomatic

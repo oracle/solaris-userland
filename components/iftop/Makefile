@@ -31,7 +31,7 @@ COMPONENT_VERSION=	0.17
 COMPONENT_PROJECT_URL=	http://www.ex-parrot.com/~pdw/iftop/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:d032547c708307159ff5fd0df23ebd3cfa7799c31536fa0aea1820318a8e0eac
-COMPONENT_ARCHIVE_URL=	http://www.ex-parrot.com/~pdw/iftop/download/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://www.ex-parrot.com/~pdw/iftop/download/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1366
 
 COMPONENT_BAID=		8203

@@ -31,7 +31,7 @@ COMPONENT_VERSION=	0.29
 COMPONENT_PROJECT_URL=	http://www.freedesktop.org/wiki/Software/pkg-config
 COMPONENT_ARCHIVE_HASH= \
     sha256:c8507705d2a10c67f385d66ca2aae31e81770cc0734b4191eb8c489e864a006b
-COMPONENT_ARCHIVE_URL=	http://pkgconfig.freedesktop.org/releases/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://pkgconfig.freedesktop.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	3649
 

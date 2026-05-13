@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -35,7 +35,7 @@ IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
 COMPONENT_SRC=		IPAfont00303
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_PROJECT_URL=	http://ipafont.ipa.go.jp
-COMPONENT_ARCHIVE_URL=	http://ipafont.ipa.go.jp/old/ipafont/$(COMPONENT_SRC).php
+COMPONENT_ARCHIVE_URL=	https://moji.or.jp/wp-content/ipafont/IPAfont/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
     sha256:f755ed79a4b8e715bed2f05a189172138aedf93db0f465b4e20c344a02766fe5
 COMPONENT_BUGDB=	g11n/font

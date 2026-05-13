@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64
 CTF_MODE =		off	# Has no effect
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	http://search.cpan.org/~srezic/Tk
 COMPONENT_ARCHIVE_HASH=	\
     sha256:32aa7271a6bdfedc3330119b3825daddd0aa4b5c936f84ad74eabb932a200a5e
-COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/S/SR/SREZIC/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://search.cpan.org/CPAN/authors/id/S/SR/SREZIC/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	perl-mod/tk
 COMPONENT_ANITYA_ID=	3471
 

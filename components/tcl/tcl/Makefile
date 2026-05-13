@@ -34,7 +34,7 @@ COMPONENT_MAJOR_VERSION= $(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-
 COMPONENT_PROJECT_URL=   https://www.tcl.tk/
 COMPONENT_SRC=           $(COMPONENT_NAME)$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=       $(COMPONENT_NAME)-core$(COMPONENT_VERSION)-src.tar.gz
-COMPONENT_ARCHIVE_URL=   http://prdownloads.sourceforge.net/tcl/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=   https://prdownloads.sourceforge.net/tcl/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=         library/libtcl
 COMPONENT_ANITYA_ID=     4941
 

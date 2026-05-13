@@ -33,7 +33,7 @@ COMPONENT_NAME=		freeglut
 COMPONENT_VERSION=	3.6.0
 COMPONENT_PROJECT_URL=  http://freeglut.sourceforge.net
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
-COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/freeglut/freeglut/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/freeglut/freeglut/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
 	sha256:9c3d4d6516fbfa0280edc93c77698fb7303e443c1aaaf37d269e3288a6c3ea52
 COMPONENT_BUGDB=        x11/libraries

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 
 # The Makefile of this component does not support multiple build jobs.
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:32b9fd9fbaf0a6b66aae79bdf6ebaa9f53fe438601a9a850c6f035684cd5da39
 # This project is registered on SourceForge and CPAN
 COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/clusterssh/
-COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/clusterssh/2.%20ClusterSSH%20Series%204/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/clusterssh/2.%20ClusterSSH%20Series%204/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/cssh
 COMPONENT_ANITYA_ID=	10596
 

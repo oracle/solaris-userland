@@ -40,8 +40,8 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:2a48f2ca338456e750d2373bf671025ed799e04e0baa16c7bb8dbfd67d8734d2
-COMPONENT_ARCHIVE_URL= ftp://ftp.proftpd.org/distrib/source/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
+COMPONENT_ARCHIVE_URL= https://github.com/proftpd/proftpd/archive/refs/tags/v$(COMPONENT_VERSION).tar.gz
+COMPONENT_SIG_URL=	https://github.com/proftpd/proftpd/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE).asc
 COMPONENT_BUGDB=	service/proftpd
 COMPONENT_BAID_PROFTPD=	191398
 # For check_anitya target, https://release-monitoring.org/project/7609
