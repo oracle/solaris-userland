@@ -135,7 +135,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 # 32bits cmake files shouldn't refer to manifest dropped 32bits binaries
 # (64bits equivalents in /usr/bin should work too).
 COMPONENT_POST_INSTALL_ACTION += \
-	find $(PROTOUSRDIR)/llvm/$(LLVM_VERSION)/lib/cmake -type f | while read f; do gsed -i 's;/$(MACH);;' $$f; done;
+	find $(PROTOUSRDIR)/llvm/$(LLVM_VERSION)/lib/cmake -type f | while read f; do gsed -i 's;/$(MACH32);;' $$f; done;
 
 # The component uses check target for unit tests.
 COMPONENT_TEST_TARGETS = check
