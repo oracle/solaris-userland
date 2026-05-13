@@ -157,11 +157,11 @@ COMPONENT_POST_BUILD_ACTION = \
 		$(GMAKE) $(COMPONENT_BUILD_ARGS) $(COMPONENT_BUILD_TARGETS))
 
 COMPONENT_POST_INSTALL_ACTION += \
-        $(MKDIR) $(PROTOUSRLIBDIR)/firefox/browser/extensions ; $(RM) -rf xpi ; \
+        $(MKDIR) $(PROTOUSRLIBDIR)/firefox/distribution/extensions ; $(RM) -rf xpi ; \
         $(TAR) xvf $(COMPONENT_ARCHIVE_1) > /dev/null 2>&1 ; \
         list1='$(LANG_LIST)' ; for f in $$list1 ; do \
             $(CP) xpi/$$f.xpi \
-                $(PROTOUSRLIBDIR)/firefox/browser/extensions/langpack-$$f@firefox.mozilla.org.xpi ; \
+                $(PROTOUSRLIBDIR)/firefox/distribution/extensions/langpack-$$f@firefox.mozilla.org.xpi ; \
         done ;
 
 MOZ_XPI = $(MOZILLA_FTP)/linux-i686/xpi
