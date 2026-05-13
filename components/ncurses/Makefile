@@ -31,16 +31,16 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		ncurses
-COMPONENT_VERSION=	6.5-20250614
-IPS_COMPONENT_VERSION=	6.5.0.20250614
+COMPONENT_VERSION=	6.6-20260418
+IPS_COMPONENT_VERSION=	6.6.0.20260418
 COMPONENT_PROJECT_URL=	https://invisible-island.net/ncurses/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:c78a054fd86b0d6cbaad4a2489c0fe685a8e5ad123da20083f7b443f6223da3c
+    sha256:b2e7c61e5769b77b200250a38c21d736c3a6eb147df02e58ef2d505cb3d10c04
 COMPONENT_ARCHIVE_URL=	https://invisible-mirror.net/archives/ncurses/current/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/ncurses
 COMPONENT_ANITYA_ID=	2057
-COMPONENT_BAID=		332302
+COMPONENT_BAID=		389572
 
 # Tests are interactive and require ncurses to be installed in CBE.
 # You can compile and run them from ncurses' test directory.
@@ -63,6 +63,7 @@ CXXFLAGS += -std=sun03
 CONFIGURE_OPTIONS +=	--with-shared
 CONFIGURE_OPTIONS +=	--with-abi-version=5
 CONFIGURE_OPTIONS +=	--with-normal
+CONFIGURE_OPTIONS +=	--enable-ext-colors
 CONFIGURE_OPTIONS +=	--enable-rpath
 CONFIGURE_OPTIONS +=	--enable-widec
 CONFIGURE_OPTIONS +=	--enable-symlinks

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2026, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -1907,6 +1907,7 @@ link path=usr/gnu/share/terminfo/d/dwk-vt target=dwk
 file path=usr/gnu/share/terminfo/e/ecma+color
 file path=usr/gnu/share/terminfo/e/ecma+index
 file path=usr/gnu/share/terminfo/e/ecma+italics
+file path=usr/gnu/share/terminfo/e/ecma+overline
 file path=usr/gnu/share/terminfo/e/ecma+sgr
 file path=usr/gnu/share/terminfo/e/ecma+standout
 file path=usr/gnu/share/terminfo/e/ecma+strikeout
@@ -2307,6 +2308,7 @@ file path=usr/gnu/share/terminfo/l/linux+kbs
 file path=usr/gnu/share/terminfo/l/linux+lockeys
 file path=usr/gnu/share/terminfo/l/linux+sfkeys
 file path=usr/gnu/share/terminfo/l/linux-16color
+file path=usr/gnu/share/terminfo/l/linux-alt1049
 file path=usr/gnu/share/terminfo/l/linux-basic
 file path=usr/gnu/share/terminfo/l/linux-c
 file path=usr/gnu/share/terminfo/l/linux-c-nc
@@ -2812,6 +2814,7 @@ link path=usr/gnu/share/terminfo/p/pt505-22 target=../a/att505-22
 link path=usr/gnu/share/terminfo/p/pt505-24 target=../a/att505-24
 file path=usr/gnu/share/terminfo/p/pty
 file path=usr/gnu/share/terminfo/p/putty
+file path=usr/gnu/share/terminfo/p/putty+3keys
 file path=usr/gnu/share/terminfo/p/putty+cursor
 file path=usr/gnu/share/terminfo/p/putty+fnkeys
 file path=usr/gnu/share/terminfo/p/putty+fnkeys+esc
@@ -2823,6 +2826,8 @@ file path=usr/gnu/share/terminfo/p/putty+fnkeys+xterm
 file path=usr/gnu/share/terminfo/p/putty+keypad
 file path=usr/gnu/share/terminfo/p/putty+screen
 file path=usr/gnu/share/terminfo/p/putty-256color
+file path=usr/gnu/share/terminfo/p/putty-direct
+file path=usr/gnu/share/terminfo/p/putty-direct16
 file path=usr/gnu/share/terminfo/p/putty-m1
 file path=usr/gnu/share/terminfo/p/putty-m1b
 file path=usr/gnu/share/terminfo/p/putty-m2
@@ -2969,13 +2974,15 @@ file path=usr/gnu/share/terminfo/s/screen.teraterm
 file path=usr/gnu/share/terminfo/s/screen.vte
 file path=usr/gnu/share/terminfo/s/screen.vte-256color
 file path=usr/gnu/share/terminfo/s/screen.xterm-256color
-link path=usr/gnu/share/terminfo/s/screen.xterm-new target=screen.xterm-xfree86
+file path=usr/gnu/share/terminfo/s/screen.xterm-new
 file path=usr/gnu/share/terminfo/s/screen.xterm-r6
-file path=usr/gnu/share/terminfo/s/screen.xterm-xfree86
+link path=usr/gnu/share/terminfo/s/screen.xterm-xfree86 target=screen4.xterm-new
 file path=usr/gnu/share/terminfo/s/screen2
 file path=usr/gnu/share/terminfo/s/screen3
 file path=usr/gnu/share/terminfo/s/screen4
+file path=usr/gnu/share/terminfo/s/screen4.xterm-new
 file path=usr/gnu/share/terminfo/s/screen5
+file path=usr/gnu/share/terminfo/s/screen5.xterm-new
 file path=usr/gnu/share/terminfo/s/screwpoint
 file path=usr/gnu/share/terminfo/s/scrhp
 file path=usr/gnu/share/terminfo/s/scrt
@@ -3378,12 +3385,14 @@ file path=usr/gnu/share/terminfo/v/vt100
 link path=usr/gnu/share/terminfo/v/vt100+ target=../m/ms-vt100+
 file path=usr/gnu/share/terminfo/v/vt100+4bsd
 file path=usr/gnu/share/terminfo/v/vt100+enq
-file path=usr/gnu/share/terminfo/v/vt100+fnkeys
+file path=usr/gnu/share/terminfo/v/vt100+fnkeys-sco
 file path=usr/gnu/share/terminfo/v/vt100+keypad
+file path=usr/gnu/share/terminfo/v/vt100+keypad+emul
+file path=usr/gnu/share/terminfo/v/vt100+keypad-sco
 file path=usr/gnu/share/terminfo/v/vt100+noapp
 file path=usr/gnu/share/terminfo/v/vt100+noapp+pc
 file path=usr/gnu/share/terminfo/v/vt100+pf1-pf4
-file path=usr/gnu/share/terminfo/v/vt100+pfkeys
+file path=usr/gnu/share/terminfo/v/vt100+pfkeys-sco
 link path=usr/gnu/share/terminfo/v/vt100-am target=vt100
 link path=usr/gnu/share/terminfo/v/vt100-bm target=../n/nwp512
 link path=usr/gnu/share/terminfo/v/vt100-bm-o target=../n/nwp512
@@ -3419,7 +3428,7 @@ link path=usr/gnu/share/terminfo/v/vt200-w target=vt220-w
 file path=usr/gnu/share/terminfo/v/vt220
 file path=usr/gnu/share/terminfo/v/vt220+cvis
 file path=usr/gnu/share/terminfo/v/vt220+cvis8
-file path=usr/gnu/share/terminfo/v/vt220+keypad
+link path=usr/gnu/share/terminfo/v/vt220+keypad target=vt100+keypad
 file path=usr/gnu/share/terminfo/v/vt220+pcedit
 file path=usr/gnu/share/terminfo/v/vt220+sfkeys
 file path=usr/gnu/share/terminfo/v/vt220+ufkeys
@@ -3483,6 +3492,8 @@ link path=usr/gnu/share/terminfo/v/vtnt target=../m/ms-vt100-color
 link path=usr/gnu/share/terminfo/v/vv100 target=../m/mvterm
 file path=usr/gnu/share/terminfo/v/vwmterm
 file path=usr/gnu/share/terminfo/w/wezterm
+file path=usr/gnu/share/terminfo/w/wezterm-direct
+file path=usr/gnu/share/terminfo/w/wezterm-direct16
 file path=usr/gnu/share/terminfo/w/winconsole
 link path=usr/gnu/share/terminfo/w/wren target=../p/pt100
 link path=usr/gnu/share/terminfo/w/wrenw target=../p/pt100w
@@ -3797,6 +3808,7 @@ file path=usr/gnu/share/terminfo/x/xterm+256color
 file path=usr/gnu/share/terminfo/x/xterm+256color2
 file path=usr/gnu/share/terminfo/x/xterm+256setaf
 file path=usr/gnu/share/terminfo/x/xterm+256setaf2
+file path=usr/gnu/share/terminfo/x/xterm+3keys
 file path=usr/gnu/share/terminfo/x/xterm+88color
 file path=usr/gnu/share/terminfo/x/xterm+88color2
 file path=usr/gnu/share/terminfo/x/xterm+acs
@@ -3813,6 +3825,7 @@ file path=usr/gnu/share/terminfo/x/xterm+direct256
 file path=usr/gnu/share/terminfo/x/xterm+edit
 file path=usr/gnu/share/terminfo/x/xterm+focus
 file path=usr/gnu/share/terminfo/x/xterm+indirect
+file path=usr/gnu/share/terminfo/x/xterm+indirect16
 file path=usr/gnu/share/terminfo/x/xterm+kbs
 file path=usr/gnu/share/terminfo/x/xterm+keypad
 file path=usr/gnu/share/terminfo/x/xterm+meta
@@ -3851,6 +3864,7 @@ file path=usr/gnu/share/terminfo/x/xterm-1002
 file path=usr/gnu/share/terminfo/x/xterm-1003
 file path=usr/gnu/share/terminfo/x/xterm-1005
 file path=usr/gnu/share/terminfo/x/xterm-1006
+file path=usr/gnu/share/terminfo/x/xterm-16color
 file path=usr/gnu/share/terminfo/x/xterm-24
 file path=usr/gnu/share/terminfo/x/xterm-256color
 file path=usr/gnu/share/terminfo/x/xterm-88color
@@ -3861,6 +3875,7 @@ file path=usr/gnu/share/terminfo/x/xterm-color
 file path=usr/gnu/share/terminfo/x/xterm-direct
 file path=usr/gnu/share/terminfo/x/xterm-direct16
 file path=usr/gnu/share/terminfo/x/xterm-direct2
+file path=usr/gnu/share/terminfo/x/xterm-direct256
 file path=usr/gnu/share/terminfo/x/xterm-hp
 file path=usr/gnu/share/terminfo/x/xterm-mono
 file path=usr/gnu/share/terminfo/x/xterm-new
