@@ -55,7 +55,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 include $(WS_MAKE_RULES)/common.mk
 
 # Need to have in PATH mysql_config for cmake and exact perl version for tests
-PATH = /usr/perl/$(PERL_VERSION)/bin:/usr/mysql/8.0/bin:/usr/gnu/bin:/usr/bin:/usr/sbin
+PATH = /usr/perl/$(PERL_VERSION)/bin:/usr/mysql/8.4/bin:/usr/gnu/bin:/usr/bin:/usr/sbin
 
 CMAKE_PREFIX= $(LIGHTTPD_INSTALLDIR)
 
@@ -72,8 +72,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s/   [0-9]\.[0-9][0-9] sec//" '  \
 	'-e "s/  [0-9][0-9]\.[0-9][0-9] sec//" '
 
-REQUIRED_PACKAGES += database/mysql-80
-REQUIRED_PACKAGES += database/mysql-80/library
 REQUIRED_PACKAGES += database/mysql-84
 REQUIRED_PACKAGES += database/mysql-84/library
 REQUIRED_PACKAGES += library/pcre2

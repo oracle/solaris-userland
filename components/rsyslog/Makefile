@@ -136,7 +136,7 @@ TS_CONFIGURE_OPTIONS += --disable-libgcrypt
 # content. Also, building them from here requires python-docutils.
 TS_CONFIGURE_OPTIONS += --disable-generate-man-pages
 
-CONFIGURE_ENV += "MYSQL_CONFIG=/usr/mysql/8.0/bin/mysql_config"
+CONFIGURE_ENV += "MYSQL_CONFIG=/usr/mysql/8.4/bin/mysql_config"
 
 # Make the build verbose, show executed commands
 COMPONENT_BUILD_ARGS += AM_DEFAULT_VERBOSITY=1
@@ -180,8 +180,8 @@ COMPONENT_TEST_TRANSFORMS += '-e "/ERROR/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/TOTAL/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/Testsuite summary/p"'
 
-REQUIRED_PACKAGES += database/mysql-80
-REQUIRED_PACKAGES += database/mysql-80/library
+REQUIRED_PACKAGES += database/mysql-84
+REQUIRED_PACKAGES += database/mysql-84/library
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libestr

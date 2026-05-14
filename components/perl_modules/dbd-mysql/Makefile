@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 # This variable has no impact on perl build, it is here merely to satisfy
@@ -64,7 +64,7 @@ COMPONENT_TEST_TRANSFORMS += '-e "/Failed:/p"'
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-MYSQL_VERSION       = 8.0
+MYSQL_VERSION       = 8.4
 MYSQL_BINDIR        = $(USRDIR)/mysql/$(MYSQL_VERSION)/bin
 MYSQL_TEST_USER     = root
 MYSQL_TEST_PASSWORD = new-password
@@ -186,7 +186,8 @@ COMPONENT_POST_TEST_ACTION = ( \
 $(LICENSE): $(LICENSE).template
 	$(PERL) -pe 's/COMPONENT_VERSION/$(COMPONENT_VERSION)/g' "$<" > "$@"
 
-REQUIRED_PACKAGES += database/mysql-80/library
+REQUIRED_PACKAGES += database/mysql-84
+REQUIRED_PACKAGES += database/mysql-84/library
 REQUIRED_PACKAGES += library/perl-5/database
 REQUIRED_PACKAGES += system/library/c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

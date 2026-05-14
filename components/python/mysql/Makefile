@@ -45,8 +45,8 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-PKG_CONFIG_PATH =	/usr/mysql/8.0/lib/$(MACH64)/pkgconfig
-CFLAGS +=	-R/usr/mysql/8.0/lib/$(MACH64)
+PKG_CONFIG_PATH =	/usr/mysql/8.4/lib/$(MACH64)/pkgconfig
+CFLAGS +=	-R/usr/mysql/8.4/lib/$(MACH64)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -70,7 +70,7 @@ COMPONENT_TEST_ENV += MYSQL_HISTFILE=/dev/null
 # c) the COMPONENT_POST_TEST_ACTION kills both the mysql daemon and the
 #    background task
 
-MYSQL_VERSION       = 8.0
+MYSQL_VERSION       = 8.4
 MYSQL_BINDIR        = $(USRDIR)/mysql/$(MYSQL_VERSION)/bin
 MYSQL_TEST_USER     = root
 MYSQL_TEST_PASSWORD = test-password
@@ -158,6 +158,6 @@ test:		$(TEST_64)
 system-test:    $(SYSTEM_TEST_64)
 
 
-REQUIRED_PACKAGES += database/mysql-80
-REQUIRED_PACKAGES += database/mysql-80/library
+REQUIRED_PACKAGES += database/mysql-84
+REQUIRED_PACKAGES += database/mysql-84/library
 REQUIRED_PACKAGES += system/library

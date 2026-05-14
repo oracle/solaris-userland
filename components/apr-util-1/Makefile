@@ -61,7 +61,7 @@ CONFIGURE_PREFIX=$(USRDIR)/apr-util/1
 CONFIGURE_OPTIONS +=    --with-openssl
 CONFIGURE_OPTIONS +=    --with-nss
 
-CONFIGURE_OPTIONS.64 +=	--with-mysql=$(USRDIR)/mysql/8.0
+CONFIGURE_OPTIONS.64 +=	--with-mysql=$(USRDIR)/mysql/8.4
 CONFIGURE_OPTIONS +=	--with-crypto
 CONFIGURE_OPTIONS +=	--with-expat=$(USRDIR)
 CONFIGURE_OPTIONS +=	--with-sqlite3=$(USRDIR)
@@ -97,8 +97,8 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fi);
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-REQUIRED_PACKAGES += database/mysql-80
-REQUIRED_PACKAGES += database/mysql-80/library
+REQUIRED_PACKAGES += database/mysql-84
+REQUIRED_PACKAGES += database/mysql-84/library
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += library/apr-1

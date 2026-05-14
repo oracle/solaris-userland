@@ -1,10 +1,10 @@
-When not started from /usr/mysql/8.0/mysql-test/ it ends with Perl errors
+When not started from /usr/mysql/8.4/mysql-test/ it ends with Perl errors
 about missing library modules.
 
-/usr/mysql/8.0/mysql-test is read only direcotry, var/ should be created
+/usr/mysql/8.4/mysql-test is read only direcotry, var/ should be created
 elsewhere.
 
-Don't try to create any file in /usr/mysql/8.0/ bin/ and lib/ either.
+Don't try to create any file in /usr/mysql/8.4/ bin/ and lib/ either.
 
 Teach the script about location of 64bits plugin module (amd64|sparcv9).
 
@@ -37,7 +37,7 @@ https://bugs.mysql.com/bug.php?id=114206
    my $exe_mysqld = find_mysqld($basedir);
    my ($exename, $path, $suffix) = fileparse($exe_mysqld, qr/\.[^.]*/);
 -  my $manifest_file_path = $path.$exename.$manifest_file_ext;
-+  my $manifest_file_path = $opt_vardir.$exename.$manifest_file_ext;
++  my $manifest_file_path = $opt_vardir."/".$exename.$manifest_file_ext;
    open(my $mh, "> $manifest_file_path") or die;
    print $mh $config_content or die;
    close($mh);
@@ -46,7 +46,7 @@ https://bugs.mysql.com/bug.php?id=114206
    my $exe_mysqld = find_mysqld($basedir);
    my ($exename, $path, $suffix) = fileparse($exe_mysqld, qr/\.[^.]*/);
 -  my $manifest_file_path = $path.$exename.$manifest_file_ext;
-+  my $manifest_file_path = $opt_vardir.$exename.$manifest_file_ext;
++  my $manifest_file_path = $opt_vardir."/".$exename.$manifest_file_ext;
    unlink $manifest_file_path;
  }
  

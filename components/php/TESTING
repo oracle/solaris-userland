@@ -11,10 +11,10 @@ VERS=8.3
 VERS=8.4
 
 # prepare database
-pkg install mysql-80 mysql-80/client
-svcadm enable svc:/application/database/mysql:version_80
-while $(svcs mysql:version_80 | grep -q online && echo false || echo true); do echo "Waiting for MySQL.."; sleep 1; done
-mysql --connect-expired-password -p"$(grep 'temporary password'  /var/mysql/8.0/data/`hostname`.err | awk '{print $13}')" <<EOF
+pkg install database/mysql-84 database/mysql-84/client
+svcadm enable svc:/application/database/mysql:version_84
+while $(svcs mysql:version_84 | grep -q online && echo false || echo true); do echo "Waiting for MySQL.."; sleep 1; done
+mysql --connect-expired-password -p"$(grep 'temporary password'  /var/mysql/8.4/data/`hostname`.err | awk '{print $13}')" <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'password123';
 create database php;
 CREATE USER 'php'@'%' IDENTIFIED BY 'php123';
