@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		installer
-COMPONENT_VERSION=	0.7.0
+COMPONENT_VERSION=	1.0.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a26d3e3116289bb08216e0d0f7d925fcef0b0194eedfa0c944bcaaa106c4b631
+    sha256:94ce14283fb085a40d5ee04af1f4f6fde322840ed3ba27cd5ed5328eb0a05b11
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://installer.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	python-mod/installer
 COMPONENT_ANITYA_ID=	197662
-COMPONENT_BAID=		154742
+COMPONENT_BAID=		390772
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
