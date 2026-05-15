@@ -2,8 +2,8 @@ Disable the use of ciphers unacceptable according to Oracle standards by default
 
 Not intended for upstream.
 
---- apache-tomcat-9.0.117-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
-+++ apache-tomcat-9.0.117-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
+--- apache-tomcat-9.0.118-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
++++ apache-tomcat-9.0.118-src/java/org/apache/tomcat/util/net/SSLHostConfig.java
 @@ -57,7 +57,7 @@ // they are case-insensitive but are use
      // keys in Maps.
      protected static final String DEFAULT_SSL_HOST_NAME = "_default_";
@@ -13,8 +13,8 @@ Not intended for upstream.
      public static final String DEFAULT_TLS_CIPHERS_13 = "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256";
      /**
       * Default cipher list for TLS 1.2 and below.
---- apache-tomcat-9.0.117-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
-+++ apache-tomcat-9.0.117-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
+--- apache-tomcat-9.0.118-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
++++ apache-tomcat-9.0.118-src/java/org/apache/tomcat/util/net/openssl/ciphers/OpenSSLCipherConfigurationParser.java
 @@ -527,7 +527,7 @@ addListAlias(aSRP, filterByAuthenticatio
          addListAlias(kSRP, filterByKeyExchange(allCiphers, Collections.singleton(KeyExchange.SRP)));
          addListAlias(SRP, filterByKeyExchange(allCiphers, Collections.singleton(KeyExchange.SRP)));
@@ -24,8 +24,8 @@ Not intended for upstream.
          // COMPLEMENTOFDEFAULT is also not exactly as defined by the docs
          LinkedHashSet<Cipher> complementOfDefault =
                  filterByKeyExchange(all, new HashSet<>(Arrays.asList(KeyExchange.EDH, KeyExchange.EECDH)));
---- apache-tomcat-9.0.117-src/webapps/docs/config/http.xml
-+++ apache-tomcat-9.0.117-src/webapps/docs/config/http.xml
+--- apache-tomcat-9.0.118-src/webapps/docs/config/http.xml
++++ apache-tomcat-9.0.118-src/webapps/docs/config/http.xml
 @@ -1501,7 +1501,7 @@ starts.  The warnings can be avoided by
        TLSv1.2 and below ciphers that are supported by the configured SSL
        implementation.</p>
