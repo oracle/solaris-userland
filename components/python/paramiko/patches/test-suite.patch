@@ -6,10 +6,10 @@ are not strictly required.
 
 This is not intended for upstream.
 
---- paramiko-4.0.0/tests/test_client.py
-+++ paramiko-4.0.0/tests/test_client.py
-@@ -33,7 +33,15 @@ import weakref
- from tempfile import mkstemp
+--- paramiko-5.0.0/tests/test_client.py
++++ paramiko-5.0.0/tests/test_client.py
+@@ -33,7 +33,15 @@ from tempfile import mkstemp
+ from unittest.mock import patch
  
  import pytest
 -from pytest_relaxed import raises
@@ -22,43 +22,39 @@ This is not intended for upstream.
 +                pass
 +        return inner
 +    return outer
- from unittest.mock import patch, Mock
  
  import paramiko
---- paramiko-4.0.0/tests/conftest.py
-+++ paramiko-4.0.0/tests/conftest.py
-@@ -4,7 +4,7 @@ import shutil
- import threading
+ from paramiko import SSHClient
+--- paramiko-5.0.0/tests/conftest.py
++++ paramiko-5.0.0/tests/conftest.py
+@@ -5,9 +5,6 @@ import threading
  from pathlib import Path
  
--from invoke.vendor.lexicon import Lexicon
-+#from invoke.vendor.lexicon import Lexicon
- 
  import pytest
+-from icecream import ic
+-from icecream import install as install_ic
+-from invoke.vendor.lexicon import Lexicon
+ 
  from paramiko import (
-@@ -20,12 +20,12 @@ from ._loop import LoopSocket
+     SFTP,
+@@ -22,10 +19,6 @@ from ._loop import LoopSocket
  from ._stub_sftp import StubServer, StubSFTPServer
  from ._util import _support
  
--from icecream import ic, install as install_ic
-+#from icecream import ic, install as install_ic
- 
- 
- # Better print() for debugging - use ic()!
+-# Better print() for debugging - use ic()!
 -install_ic()
 -ic.configureOutput(includeContext=True)
-+#install_ic()
-+#ic.configureOutput(includeContext=True)
- 
+-
  
  # Perform logging by default; pytest will capture and thus hide it normally,
---- paramiko-4.0.0/pyproject.toml
-+++ paramiko-4.0.0/pyproject.toml
-@@ -11,7 +11,6 @@ authors = [{name = "Jeff Forcier", email
+ # presenting it on error/failure. (But also allow turning it off when doing
+--- paramiko-5.0.0/pyproject.toml
++++ paramiko-5.0.0/pyproject.toml
+@@ -11,7 +11,6 @@ authors = [{ name = "Jeff Forcier", emai
  dependencies = [
-     "bcrypt>=3.2",
-     "cryptography>=3.3",
--    "invoke>=2.0",
+   "bcrypt>=3.2",
+   "cryptography>=3.3",
+-  "invoke>=2.0",
  ]
- optional-dependencies = {gssapi = [
-     "pyasn1>=0.1.7",
+ 
+ classifiers = [
