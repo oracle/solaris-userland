@@ -27,12 +27,14 @@ BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXpresent
-COMPONENT_VERSION=	1.0.1
+COMPONENT_VERSION=	1.0.2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b964df9e5a066daa5e08d2dc82692c57ca27d00b8cc257e8e960c9f1cf26231b
+	sha256:4e5b21b4812206a4b223013606ae31170502c1043038777a1ef8f70c09d37602
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	17166
-COMPONENT_BAID=		132855
+COMPONENT_BAID=		390189
+
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -40,7 +42,7 @@ FIX_PC_FILES=xpresent.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-CONFIGURE_ENV += LIB_MAN_SUFFIX=3xpresent
+CONFIGURE_OPTIONS += -Dlib_man_suffix=3xpresent
 
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11

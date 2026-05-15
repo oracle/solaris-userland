@@ -27,12 +27,12 @@ BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libpciaccess
-COMPONENT_VERSION=	0.18.1
+COMPONENT_VERSION=	0.19
 COMPONENT_ARCHIVE_HASH= \
-	sha256:4af43444b38adb5545d0ed1c2ce46d9608cc47b31c2387fc5181656765a6fa76
+	sha256:3c55aa86c82e54a4e3109786f0463530d53b36b6d1cfd14616454f985dd2aa43
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1703
-COMPONENT_BAID=		175851
+COMPONENT_BAID=		390339
 
 BUILD_STYLE=		meson
 
@@ -41,6 +41,9 @@ TEST_TARGET = $(NO_TESTS)
 FIX_PC_FILES=pciaccess.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+CONFIGURE_OPTIONS.32 += -Dinstall-scanpci=false
+CONFIGURE_OPTIONS.64 += -Dinstall-scanpci=true
 
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/devinfo

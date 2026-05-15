@@ -21,11 +21,9 @@
 # DEALINGS IN THE SOFTWARE.
 #
 
-diff --git a/src/xlibi18n/lcCT.c b/src/xlibi18n/lcCT.c
-index b161300..624379a 100644
---- a/src/xlibi18n/lcCT.c
-+++ b/src/xlibi18n/lcCT.c
-@@ -51,7 +51,7 @@
+--- libX11-1.8.13/src/xlibi18n/lcCT.c
++++ libX11-1.8.13/src/xlibi18n/lcCT.c
+@@ -51,7 +51,7 @@ /*
   * Static representation of a character set that can be used in Compound Text.
   */
  typedef struct _CTDataRec {
@@ -34,7 +32,7 @@ index b161300..624379a 100644
      const char ct_sequence[5];	/* Compound Text encoding, ESC sequence */
  } CTDataRec, *CTData;
  
-@@ -95,6 +95,7 @@ static const CTDataRec default_ct_data[] =
+@@ -95,6 +95,7 @@ { "JISX0212.1990-0:GL", /* JIS_X0212-199
      { "JISX0212.1990-0:GR", /* JIS_X0212-1990      159   */ "\033$)D" },
      { "KSC5601.1987-0:GL",  /* KS_C_5601-1987      149   */ "\033$(C" },
      { "KSC5601.1987-0:GR",  /* KS_C_5601-1987      149   */ "\033$)C" },
@@ -42,11 +40,9 @@ index b161300..624379a 100644
      { "CNS11643.1986-1:GL", /* CNS 11643-1992 pl.1 171   */ "\033$(G" },
      { "CNS11643.1986-1:GR", /* CNS 11643-1992 pl.1 171   */ "\033$)G" },
      { "CNS11643.1986-2:GL", /* CNS 11643-1992 pl.2 172   */ "\033$(H" },
-diff --git a/src/xlibi18n/lcGeneric.c b/src/xlibi18n/lcGeneric.c
-index 20c455c..0562a71 100644
---- a/src/xlibi18n/lcGeneric.c
-+++ b/src/xlibi18n/lcGeneric.c
-@@ -747,6 +747,8 @@ load_generic(
+--- libX11-1.8.13/src/xlibi18n/lcGeneric.c
++++ libX11-1.8.13/src/xlibi18n/lcGeneric.c
+@@ -753,6 +753,8 @@ goto err;
              /* 3.4.1 side */
              if (!_XlcNCompareISOLatin1(value[0], "none", 4)) {
                  codeset->side =  XlcNONE;
@@ -55,11 +51,9 @@ index 20c455c..0562a71 100644
              } else if (!_XlcNCompareISOLatin1(value[0], "GL", 2)) {
                  codeset->side =  XlcGL;
              } else {
-diff --git a/src/xlibi18n/lcUTF8.c b/src/xlibi18n/lcUTF8.c
-index 0f3d0d2..18af23d 100644
---- a/src/xlibi18n/lcUTF8.c
-+++ b/src/xlibi18n/lcUTF8.c
-@@ -208,6 +208,7 @@ typedef struct {
+--- libX11-1.8.13/src/xlibi18n/lcUTF8.c
++++ libX11-1.8.13/src/xlibi18n/lcUTF8.c
+@@ -208,6 +208,7 @@ #include "lcUniConv/gb2312.h"
  #include "lcUniConv/jisx0208.h"
  #include "lcUniConv/jisx0212.h"
  #include "lcUniConv/ksc5601.h"
@@ -67,7 +61,7 @@ index 0f3d0d2..18af23d 100644
  #include "lcUniConv/big5.h"
  #include "lcUniConv/big5_emacs.h"
  #include "lcUniConv/big5hkscs.h"
-@@ -286,6 +287,9 @@ static Utf8ConvRec all_charsets[] = {
+@@ -286,6 +287,9 @@ },
      { "KSC5601.1987-0", NULLQUARK,
  	ksc5601_mbtowc, ksc5601_wctomb
      },

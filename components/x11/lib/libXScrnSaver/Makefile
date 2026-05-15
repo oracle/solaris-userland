@@ -27,12 +27,14 @@ BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXScrnSaver
-COMPONENT_VERSION=	1.2.4
+COMPONENT_VERSION=	1.2.5
 COMPONENT_ARCHIVE_HASH= \
-	sha256:75cd2859f38e207a090cac980d76bc71e9da99d48d09703584e00585abc920fe
+	sha256:5057365f847253e0e275871441e10ff7846c8322a5d88e1e187d326de1cd8d00
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1791
-COMPONENT_BAID=		140564
+COMPONENT_BAID=		390180
+
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -42,9 +44,7 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 LINT_FLAGS += -I$(SOURCE_DIR)/include/X11/extensions
 
-COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
-
-CONFIGURE_ENV += LIB_MAN_SUFFIX=3xss
+CONFIGURE_OPTIONS += -Dlib_man_suffix=3xss
 
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11

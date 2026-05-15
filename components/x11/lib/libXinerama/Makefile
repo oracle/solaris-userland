@@ -27,12 +27,14 @@ BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXinerama
-COMPONENT_VERSION=	1.1.5
+COMPONENT_VERSION=	1.1.6
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5094d1f0fcc1828cb1696d0d39d9e866ae32520c54d01f618f1a3c1e30c2085c
+	sha256:d00fc1599c303dc5cbc122b8068bdc7405d6fcb19060f4597fc51bd3a8be51d7
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1779
-COMPONENT_BAID=		132599
+COMPONENT_BAID=		390184
+
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -40,7 +42,7 @@ FIX_PC_FILES=xinerama.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-CONFIGURE_ENV += LIB_MAN_SUFFIX=3xinerama
+CONFIGURE_OPTIONS += -Dlib_man_suffix=3xinerama
 
 LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile
 

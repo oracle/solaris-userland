@@ -34,11 +34,9 @@ same time by multi threads. Adding some lock and unlock code to make
 sure only one thread can access the data at one time fixed the
 problem.
 
-diff --git a/src/GetColor.c b/src/GetColor.c
-index cd0eb9f..62b3bce 100644
---- a/src/GetColor.c
-+++ b/src/GetColor.c
-@@ -55,12 +55,14 @@ XColor *exact_def) /* RETURN */
+--- libX11-1.8.13/src/GetColor.c
++++ libX11-1.8.13/src/GetColor.c
+@@ -59,12 +59,14 @@ */
      if ((ccc = XcmsCCCOfColormap(dpy, cmap)) != (XcmsCCC)NULL) {
  	const char *tmpName = colorname;
  
@@ -53,7 +51,7 @@ index cd0eb9f..62b3bce 100644
  	    ret = XAllocColor(dpy, cmap, hard_def);
  	    exact_def->pixel = hard_def->pixel;
  	    return(ret);
-@@ -73,6 +75,7 @@ XColor *exact_def) /* RETURN */
+@@ -77,6 +79,7 @@ * gray70 would become tekhvc:0.0/70.0/0.
  	     */
  	    break;
  	}
@@ -61,11 +59,9 @@ index cd0eb9f..62b3bce 100644
      }
  #endif
  
-diff --git a/src/LookupCol.c b/src/LookupCol.c
-index f7f969f..718e043 100644
---- a/src/LookupCol.c
-+++ b/src/LookupCol.c
-@@ -53,6 +53,7 @@ XLookupColor (
+--- libX11-1.8.13/src/LookupCol.c
++++ libX11-1.8.13/src/LookupCol.c
+@@ -59,6 +59,7 @@ */
  	if ((ccc = XcmsCCCOfColormap(dpy, cmap)) != (XcmsCCC)NULL) {
  	    const char *tmpName = spec;
  
@@ -73,7 +69,7 @@ index f7f969f..718e043 100644
  	    switch (_XcmsResolveColorString(ccc, &tmpName, &cmsColor_exact,
  					    XcmsRGBFormat)) {
  	    case XcmsSuccess:
-@@ -60,6 +61,7 @@ XLookupColor (
+@@ -66,6 +67,7 @@ case XcmsSuccessWithCompression:
  		_XcmsRGB_to_XColor(&cmsColor_exact, def, 1);
  		memcpy((char *)scr, (char *)def, sizeof(XColor));
  		_XUnresolveColor(ccc, scr);
@@ -81,7 +77,7 @@ index f7f969f..718e043 100644
  		return(1);
  	    case XcmsFailure:
  	    case _XCMS_NEWNAME:
-@@ -70,6 +72,7 @@ XLookupColor (
+@@ -76,6 +78,7 @@ * gray70 would become tekhvc:0.0/70.0/0.
  		 */
  		break;
  	    }

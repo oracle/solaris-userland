@@ -27,12 +27,14 @@ BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXcomposite
-COMPONENT_VERSION=	0.4.6
+COMPONENT_VERSION=	0.4.7
 COMPONENT_ARCHIVE_HASH= \
-	sha256:fe40bcf0ae1a09070eba24088a5eb9810efe57453779ec1e20a55080c6dc2c87
+	sha256:8bdf310967f484503fa51714cf97bff0723d9b673e0eecbf92b3f97c060c8ccb
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1769
-COMPONENT_BAID=		140518
+COMPONENT_BAID=		390182
+
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -40,7 +42,7 @@ FIX_PC_FILES=xcomposite.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-CONFIGURE_ENV += LIB_MAN_SUFFIX=3xcomposite
+CONFIGURE_OPTIONS += -Dlib_man_suffix=3xcomposite
 
 LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile
 

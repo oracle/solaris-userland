@@ -27,12 +27,14 @@ BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXres
-COMPONENT_VERSION=	1.2.2
+COMPONENT_VERSION=	1.2.3
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9a7446f3484b9b7538ac5ee30d2c1ce9e5b7fbbaf1440e02f6cca186a1fa745f
+	sha256:d2de8f5401d6c86a8992791654547eb8def585dfdc0c08cc16e24ef6aeeb69dc
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1790
-COMPONENT_BAID=		140562
+COMPONENT_BAID=		390321
+
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -40,7 +42,7 @@ FIX_PC_FILES=xres.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-CONFIGURE_ENV += LIB_MAN_SUFFIX=3xres
+CONFIGURE_OPTIONS += -Dlib_man_suffix=3xres
 
 LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile
 

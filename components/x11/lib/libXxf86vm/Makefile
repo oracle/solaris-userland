@@ -27,12 +27,14 @@ BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXxf86vm
-COMPONENT_VERSION=	1.1.6
+COMPONENT_VERSION=	1.1.7
 COMPONENT_ARCHIVE_HASH= \
-	sha256:96af414c73ce1d5449ad04be7f9f27fa8330f844b6dda843ef22e3e1befb3ee3
+	sha256:ae50c0f669e0af5a67cc4cd0f54f21d64a64d2660af883e80e95d3fe51b945d8
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1799
-COMPONENT_BAID=		191056
+COMPONENT_BAID=		390326
+
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -40,7 +42,7 @@ FIX_PC_FILES=xxf86vm.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-CONFIGURE_ENV += LIB_MAN_SUFFIX=3xxf86vm
+CONFIGURE_OPTIONS += -Dlib_man_suffix=3xxf86vm
 
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11

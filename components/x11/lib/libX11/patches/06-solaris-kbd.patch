@@ -21,11 +21,9 @@
 # DEALINGS IN THE SOFTWARE.
 #
 
-diff --git a/src/KeyBind.c b/src/KeyBind.c
-index fe6a909..dcd84f5 100644
---- a/src/KeyBind.c
-+++ b/src/KeyBind.c
-@@ -845,6 +845,17 @@ _XTranslateKeySym(
+--- libX11-1.8.13/src/KeyBind.c
++++ libX11-1.8.13/src/KeyBind.c
+@@ -873,6 +873,17 @@ /* try to convert to Latin-1, handling c
      hiBytes = symbol >> 8;
      if (!(nbytes &&
  	  ((hiBytes == 0) ||
@@ -43,7 +41,7 @@ index fe6a909..dcd84f5 100644
  	   ((hiBytes == 0xFF) &&
  	    (((symbol >= XK_BackSpace) && (symbol <= XK_Clear)) ||
  	     (symbol == XK_Return) ||
-@@ -862,10 +873,20 @@ _XTranslateKeySym(
+@@ -890,10 +901,20 @@ if (symbol == XK_KP_Space)
  	c = XK_space & 0x7F; /* patch encoding botch */
      else if (hiBytes == 0xFF)
  	c = symbol & 0x7F;
@@ -64,11 +62,9 @@ index fe6a909..dcd84f5 100644
  	if ((c >= '@' && c < '\177') || c == ' ') c &= 0x1F;
  	else if (c == '2') c = '\000';
  	else if (c >= '3' && c <= '7') c -= ('3' - '\033');
-diff --git a/src/imConv.c b/src/imConv.c
-index 48bc790..2c54fd1 100644
---- a/src/imConv.c
-+++ b/src/imConv.c
-@@ -213,7 +213,9 @@ _XimLookupMBText(
+--- libX11-1.8.13/src/imConv.c
++++ libX11-1.8.13/src/imConv.c
+@@ -215,7 +215,9 @@ &from, &from_len, &to, &to_len,
  			    args, 1 ) != 0) {
  		count = 0;
  	    } else {
@@ -79,7 +75,7 @@ index 48bc790..2c54fd1 100644
  	    }
  	}
      }
-@@ -283,7 +285,9 @@ _XimLookupWCText(
+@@ -285,7 +287,9 @@ &from, &from_len, &to, &to_len,
  			    args, 1 ) != 0) {
  		count = 0;
  	    } else {
@@ -90,7 +86,7 @@ index 48bc790..2c54fd1 100644
  	    }
  	}
      } else
-@@ -344,7 +348,9 @@ _XimLookupUTF8Text(
+@@ -348,7 +352,9 @@ &from, &from_len, &to, &to_len,
                          NULL, 0) != 0) {
  	    count = 0;
  	} else {
