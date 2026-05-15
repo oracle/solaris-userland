@@ -24,7 +24,7 @@
  */
 
 /*
- * Copyright (c) 1990, 2025, Oracle and/or its affiliates.
+ * Copyright (c) 1990, 2026, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -129,7 +129,7 @@ static void UnmapPixWindow (void);
 static int shhh(Display *dsp, XErrorEvent *err); /* quiet IO error handler */
 #endif
 
-static void
+static void __attribute__((__noreturn__))
 Exit (int status)
 {
     if (dpy) {
@@ -602,11 +602,27 @@ magnify(
 */
 
   if ((num_vis) > 1 && (XMatchVisualInfo(dpy, screen, 24, TrueColor, &vis))) {
+    char *image_data;
     wd = source_hints.width;
     ht = source_hints.height;
+    if ((wd < 0) || (wd > 32767) || (ht < 0) || (ht > 37267)) {
+      fprintf(stderr, "%s: Invalid window size hints (%d x %d)\n",
+	      ProgramName, wd, ht);
+      Exit(1);
+    }
+    image_data = reallocarray(NULL, wd, ht * sizeof(unsigned long));
+    if (image_data == NULL) {
+      fprintf(stderr, "%s: Failed to allocate memory for image data\n",
+	      ProgramName);
+      Exit(1);
+    }
     FinalImage = XCreateImage(dpy, vis.visual, vis.depth, ZPixmap, 0, 
-		       (char *)malloc(wd*ht*sizeof(unsigned long)),
-		       wd, ht, 32, 0);
+		       image_data, wd, ht, 32, 0);
+    if (FinalImage == NULL) {
+      fprintf(stderr, "%s: Failed to allocate memory for image structure\n",
+	      ProgramName);
+      Exit(1);
+    }
     if (def_vis_is_ok) {
       w1 = XCreateWindow(dpy, root, 
 		       window_hints.x, window_hints.y, 

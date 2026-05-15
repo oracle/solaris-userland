@@ -10,7 +10,7 @@
  * 11-15-90 Written
  */
  
-/* Copyright (c) 1990, 2025, Oracle and/or its affiliates.
+/* Copyright (c) 1990, 2026, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -128,7 +128,7 @@ mvCreatImg(int wd, int ht, int x, int y)
   request_height = ht;
   request_x = x;
   request_y = y;
-  if ((mvImg = calloc(request_width * request_height, sizeof(MVPel)))
+  if ((mvImg = calloc(request_width, request_height * sizeof(MVPel)))
       != NULL) {
     return 1;
   }
@@ -377,7 +377,7 @@ mvDoWindowsFrontToBack(void)
   MVWinVisInfo *pWI;
   XImage *xim;
   int xi, yi;
-  int nPixelsUnLabeled = request_width*request_height;
+  unsigned int nPixelsUnLabeled = request_width*request_height;
 
    for (i=winList.used-1; ((nPixelsUnLabeled > 0) && i >= 0); i--) {
     pWI = &(winList.wins[i]);
