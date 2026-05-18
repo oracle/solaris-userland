@@ -28,13 +28,13 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME         = ruby
-COMPONENT_VERSION      = 3.3.10
+COMPONENT_VERSION      = 3.3.11
 COMPONENT_PROJECT_URL  = http://www.ruby-lang.org/
 COMPONENT_ARCHIVE_HASH = \
-    sha256:15e5d6db9597240271f966b5243e60529a2550e7e76d53058d5bccccf10d7977
+    sha256:97d1adc8df4f43eef7897dab3aae7a462a2b6a939738766883d7f214ad9f5f52
 COMPONENT_ARCHIVE_URL  = https://cache.ruby-lang.org/pub/ruby/3.3/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID    = 4223
-COMPONENT_BAID         = 354432
+COMPONENT_BAID         = 390917
 
 CFLAGS += "-std=gnu99"
 
