@@ -26,16 +26,15 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lcms2
-COMPONENT_VERSION=	2.17
+COMPONENT_VERSION=	2.19.1
 COMPONENT_PROJECT_URL=	http://www.littlecms.com/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d11af569e42a1baa1650d20ad61d12e41af4fead4aa7964a01f93b08b53ab074
+    sha256:bfc54f7bab59fbc921012014a8032e4cba4abd46db47d46b76416a8c0b2815c8
 COMPONENT_ARCHIVE_URL=	\
     https://sourceforge.net/projects/lcms/files/lcms/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/lcms
 COMPONENT_ANITYA_ID=	9815
-
-COMPONENT_BAID=		356531
+COMPONENT_BAID=		390967
 
 include $(WS_MAKE_RULES)/common.mk
 
