@@ -139,7 +139,6 @@ COMPONENT_PREP_ACTION= \
 	$(CP) Solaris/prof_solaris.c $(SOURCE_DIR)/src/lib/krb5/; \
 	$(CP) Solaris/private/krb5/prof_solaris.h $(SOURCE_DIR)/src/lib/krb5/; \
 	$(CP) Solaris/rc_mem.c $(SOURCE_DIR)/src/lib/krb5/rcache; \
-	$(CP) Solaris/rc_mem.h $(SOURCE_DIR)/src/lib/krb5/rcache; \
 	$(CP) Solaris/safechown.c $(SOURCE_DIR)/src/lib/krb5/os; \
 	$(CP) Solaris/util_ordering.c $(SOURCE_DIR)/src/lib/gssapi/generic; \
 	$(MKDIR) -p $(AUDIT_DIR); $(CP) Solaris/audit/* $(AUDIT_DIR); \
