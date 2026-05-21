@@ -75,9 +75,24 @@ CLEAN_PATHS += $(COMPONENT_DIR)/xpi
 # directory of all files (patches-all).
 PATCH_DIR=patches-all
 CLEAN_PATHS += $(PATCH_DIR)
-COPY_COMMON_FILES_1:= $(shell mkdir -p $(PATCH_DIR))
-COPY_COMMON_FILES_2:=  \
-    $(shell /usr/bin/rsync -ac patches/* ../firefox/patches/* $(PATCH_DIR))
+THUNDERBIRD_PATCHES = $(wildcard patches/*.patch)
+FIREFOX_PATCHES = $(wildcard ../firefox/patches/*.patch)
+THUNDERBIRD_ALL_PATCHES_ORIGIN := $(origin ALL_PATCHES)
+THUNDERBIRD_ALL_PATCHES := $(ALL_PATCHES)
+override ALL_PATCHES = \
+    $(if $(filter command line,$(THUNDERBIRD_ALL_PATCHES_ORIGIN)), \
+        $(THUNDERBIRD_ALL_PATCHES), \
+        $(sort \
+            $(patsubst patches/%,$(PATCH_DIR)/%,$(THUNDERBIRD_PATCHES)) \
+            $(patsubst ../firefox/patches/%,$(PATCH_DIR)/%,$(FIREFOX_PATCHES))))
+
+$(PATCH_DIR)/%: patches/%
+	$(MKDIR) $(PATCH_DIR)
+	$(CP) $< $@
+
+$(PATCH_DIR)/%: ../firefox/patches/%
+	$(MKDIR) $(PATCH_DIR)
+	$(CP) $< $@
 
 CONFIGURE_DEFAULT_DIRS=no
 
