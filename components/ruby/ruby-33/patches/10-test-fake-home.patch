@@ -1,0 +1,22 @@
+Some tests do not handle well that we intentionally set HOME outside of our user home.
+
+--- ruby-3.3.11/test/ruby/test_file_exhaustive.rb
++++ ruby-3.3.11/test/ruby/test_file_exhaustive.rb
+@@ -1117,6 +1117,7 @@ class TestFileExhaustive < Test::Unit::T
+   end if DRIVE
+ 
+   def test_expand_path_for_existent_username
++    omit "doesn't work with our test HOME"
+     user = ENV['USER']
+     omit "ENV['USER'] is not set" unless user
+     assert_equal(ENV['HOME'], File.expand_path("~#{user}"))
+--- ruby-3.3.11/spec/ruby/core/dir/home_spec.rb
++++ ruby-3.3.11/spec/ruby/core/dir/home_spec.rb
+@@ -26,6 +26,7 @@ describe "Dir.home" do
+ 
+     platform_is_not :windows do
+       it "works even if HOME is unset" do
++        skip "doesn't work with our test HOME"
+         ENV.delete('HOME')
+         Dir.home.should.start_with?('/')
+         Dir.home.encoding.should == Encoding.find("filesystem")

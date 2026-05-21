@@ -1,0 +1,14 @@
+On SPARC, conservative GC can retain a stale reference to the array holding
+the WeakMap keys through register-window/stack state, keeping all keys live.
+
+--- ruby-3.3.11/test/ruby/test_gc.rb
++++ ruby-3.3.11/test/ruby/test_gc.rb
+@@ -310,6 +310,8 @@ class TestGc < Test::Unit::TestCase
+   end
+ 
+   def test_latest_gc_info_weak_references_count
++    omit "conservative GC can retain WeakMap keys through SPARC register windows" if RUBY_PLATFORM.include?("sparc")
++
+     assert_separately([], __FILE__, __LINE__, <<~RUBY)
+       count = 10_000
+       # Some weak references may be created, so allow some margin of error

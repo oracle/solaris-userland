@@ -160,7 +160,8 @@ PRE_CLEAN_ACTION += $(CHMOD) -fR +w $(BUILD_DIR)/$(MACH64)/tmp
 
 
 # Some tests produce warnings if HTTP_PROXY is set
-COMPONENT_TEST_ENV += "--unset=HTTP_PROXY"
+COMPONENT_TEST_ENV_CMD += --unset=http_proxy
+COMPONENT_TEST_ENV_CMD += --unset=https_proxy
 
 # This set of tests goes through thousands of entries in the passwd
 # and group table, taking hours to run; move it aside so we skip it.
@@ -173,14 +174,16 @@ COMPONENT_PRE_TEST_ACTION += \
 
 COMPONENT_TEST_TRANSFORMS += \
     '-n' \
+    '-e "s/Finished in .* sec/Finished in X sec/"' \
     '-e "s/Finished tests in .*s, .* tests\/s, .* assertions/Finished tests in Xs, X tests\/s, X assertions/"' \
     '-e "s/.* tests, .* assertions, \(.*\) failures, \(.*\) errors, .* skips/X tests, X assertions, \1 failures, \2 errors, X skips/"' \
+    '-e "s/.* files, .* examples, .* expectations/X files, X examples, X expectations/"' \
     '-e "/^make/d"' \
     '-e "/fatal/Ip"' \
     '-e "/test succeeded/p"' \
     '-e "/Running tests/p"' \
-    '-e "/Finished tests in Xs, X tests\/s, X assertions/p"' \
-    '-e "/X tests, X assertions, .* failures, .* errors, X skips/p"'
+    '-e "/Finished/p"' \
+    '-e "/[0-9]* failures/p"'
 
 REQUIRED_PACKAGES += library/database/gdbm
 REQUIRED_PACKAGES += library/gmp

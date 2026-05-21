@@ -1,0 +1,15 @@
+Year 0 (and older) time construction is platform-dependent for time zones
+west of UTC on Solaris.
+
+--- ruby-3.3.11/spec/ruby/core/time/shared/time_params.rb
++++ ruby-3.3.11/spec/ruby/core/time/shared/time_params.rb
+@@ -134,7 +134,9 @@ describe :time_params, shared: true do
+ 
+   it "handles years from 0 as such" do
+-    0.upto(2100) do |year|
++    from = Time.send(@method, 0).utc_offset < 0 ? 1 : 0
++
++    from.upto(2100) do |year|
+       t = Time.send(@method, year)
+       t.year.should == year
+     end
