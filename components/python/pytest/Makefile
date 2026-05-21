@@ -26,16 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pytest
-COMPONENT_VERSION=	9.0.2
+COMPONENT_VERSION=	9.0.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:75186651a92bd89611d1d9fc20f0b4345fd827c41ccd5c299a868a05d70edf11
+    sha256:b86ada508af81d19edeb213c681b1d48246c1a91d304c6c81a427674c17eb91c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pytest.org/latest/
 COMPONENT_BUGDB=	python-mod/pytest
 COMPONENT_ANITYA_ID=	3765
-COMPONENT_BAID=		363557
+COMPONENT_BAID=		391114
 
 
 include $(WS_MAKE_RULES)/prep.mk
@@ -50,11 +50,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/testing
 COMPONENT_TEST_CMD =	$(PROTOUSRBINDIR)/py.test-$(PYTHON_VERSION)
-COMPONENT_TEST_ARGS =
-
 # Due to the existence of the 'pkg' package on Solaris, several tests
-# fail with 3.11 due to incorrect expectations.
-$(BUILD_DIR)/$(MACH)-3.11/.tested: COMPONENT_TEST_ARGS = \
+# fail due to incorrect expectations.
+COMPONENT_TEST_ARGS =	\
 	--ignore=test_collection.py \
 	--ignore=test_config.py \
 	--ignore=test_main.py \
