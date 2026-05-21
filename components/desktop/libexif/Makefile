@@ -27,17 +27,17 @@ BUILD_BITS=		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libexif
-COMPONENT_VERSION=	0.6.25
+COMPONENT_VERSION=	0.6.26
 COMPONENT_PROJECT_URL=  https://sourceforge.net/projects/$(COMPONENT_NAME)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7c9eba99aed3e6594d8c3e85861f1c6aaf450c218621528bc989d3b3e7a26307
+	sha256:0830ed253fceeb60444fb309598bc8a9491d3007dc054aad3a50a347c5597c57
 COMPONENT_ARCHIVE_URL= \
 	https://github.com/libexif/libexif/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libexif
 COMPONENT_ANITYA_ID=	1607
 
-COMPONENT_BAID=		193247
+COMPONENT_BAID=		391331
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -53,4 +53,3 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += system/library/math
-
