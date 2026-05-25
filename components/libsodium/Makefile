@@ -26,15 +26,15 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsodium
-COMPONENT_VERSION=	1.0.20
+COMPONENT_VERSION=	1.0.22
 COMPONENT_PROJECT_URL=	https://doc.libsodium.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ebb65ef6ca439333c2bb41a0c1990587288da07f6c7fd07cb3a18cc18d30ce19
+    sha256:adbdd8f16149e81ac6078a03aca6fc03b592b89ef7b5ed83841c086191be3349
 COMPONENT_ARCHIVE_URL=	https://github.com/jedisct1/libsodium/releases/download/$(COMPONENT_VERSION)-RELEASE/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libsodium
 COMPONENT_ANITYA_ID=	1728
 
-COMPONENT_BAID=		326006
+COMPONENT_BAID=		391701
 
 include $(WS_MAKE_RULES)/common.mk
 
