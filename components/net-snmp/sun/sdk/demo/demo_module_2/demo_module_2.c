@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026, Oracle and/or its affiliates.
  *
  * U.S. Government Rights - Commercial software. Government users are subject
  * to the Sun Microsystems, Inc. standard license agreement and applicable
@@ -39,7 +39,8 @@ int AddItem (char* fileName) {
 
     fileEntry *fprt = fileList;
     struct stat fAttrib;  /* Need to check if memory is valid */
-    if (!fileName || !strlen(fileName)) {
+    if (!fileName || !strlen(fileName) ||
+        strlen(fileName) >= sizeof(fprt->fileName)) {
         return FALSE;
     }
     if (stat(fileName, &fAttrib) == -1) {
@@ -60,7 +61,7 @@ int AddItem (char* fileName) {
 	fprt->next->findex = fprt->findex + 1;
 	fprt = fprt->next;
 	fprt->next = NULL;
-	strcpy(fprt->fileName, fileName);
+	strlcpy(fprt->fileName, fileName, sizeof(fprt->fileName));
         fprt->fileSize = fAttrib.st_size; 
 	sprintf(fprt->filePerm, "%d" , fAttrib.st_mode);
     }
@@ -68,7 +69,7 @@ int AddItem (char* fileName) {
 	fprt = (fileEntry  *) malloc (sizeof(fileEntry));
 	fprt->next = NULL;
 	fprt->findex = 1;
-	strcpy(fprt->fileName, fileName);
+	strlcpy(fprt->fileName, fileName, sizeof(fprt->fileName));
         fprt->fileSize = fAttrib.st_size; 
 	sprintf(fprt->filePerm, "%d" , fAttrib.st_mode);
 	fileList = fprt;
@@ -79,12 +80,13 @@ int AddItem (char* fileName) {
 int ChangeItem (int fileIndex, char* fileName) {
 
     fileEntry * tempp = fileList, *prev = fileList;
-    if (!fileName || !strlen(fileName)) {
+    if (!fileName || !strlen(fileName) ||
+        strlen(fileName) >= sizeof(tempp->fileName)) {
 	return FALSE;
     }
     while (tempp != NULL) {
 	if (tempp->findex == fileIndex) {
-	    strcpy(tempp->fileName, fileName);
+	    strlcpy(tempp->fileName, fileName, sizeof(tempp->fileName));
 	    return TRUE;
 	}
 	prev = tempp;
@@ -262,6 +264,8 @@ me1FileTable_handler(
     fileEntry *data;
     char*   fileName = NULL;
     char* undofn;
+    char tmp[MAXPATHLEN];
+    size_t tmp_len;
     
         for(request = requests; request; request = request->next) {
         var = request->requestvb;
@@ -397,7 +401,18 @@ me1FileTable_handler(
  *             Note that this may need to be reversed,
  *             so save any information needed to do this.
  */
-                if (!ChangeItem(data->findex, (char *)var->val.string)){
+                /*
+                 * val->val.string may not be NUL terminated.
+                 * Make a NUL terminated local copy to pass
+                 * to ChangeItem().
+                 */
+                tmp_len = var->val_len;
+                if (tmp_len > sizeof(tmp) - 1)
+                    tmp_len = sizeof(tmp) - 1;
+                memcpy(tmp, var->val.string, tmp_len);
+                tmp[tmp_len] = '\0';
+
+                if (!ChangeItem(data->findex, tmp)){
                     netsnmp_set_request_error(reqinfo, request, 
                                               SNMP_ERR_COMMITFAILED);
                 }

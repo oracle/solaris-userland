@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026, Oracle and/or its affiliates.
  *
  * U.S. Government Rights - Commercial software. Government users are subject
  * to the Sun Microsystems, Inc. standard license agreement and applicable
@@ -36,9 +36,9 @@ Netsnmp_Next_Data_Point   me1FileTable_get_next_data_point;
 
 typedef struct fileTable{
     unsigned long     findex;
-    char     fileName[255];
+    char     fileName[MAXNAMELEN];
     unsigned long     fileSize;
-    char     filePerm[255];
+    char     filePerm[MAXNAMELEN];
     struct  fileTable* next;
 } fileEntry;
 

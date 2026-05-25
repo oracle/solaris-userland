@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026, Oracle and/or its affiliates.
  * 
  * U.S. Government Rights - Commercial software. Government users are subject to
  * the Sun Microsystems, Inc. standard license agreement and applicable
@@ -250,9 +250,10 @@ me5FileTable_handler(
     fileEntry      *data;
     char           *fileName = NULL;
     char           *undofn;
-    int		   len;
+    char           tmp[MAXPATHLEN];
+    size_t         tmp_len;
 		
-    char            filebuf[255];
+    char            filebuf[MAXNAMELEN+12];
 
     for (request = requests; request; request = request->next) {
 
@@ -404,9 +405,19 @@ me5FileTable_handler(
 	     * Set the variable as requested. Note that this may need to be
 	     * reversed, so save any information needed to do this.
 	     */
-	  len =  var->val_len;
-	  var->val.string[len] = '\0';
-	  if (!ChangeItem(data->findex, (char *) var->val.string )) {
+
+	   /*
+	    * val->val.string may not be NUL terminated.
+	    * Make a NUL terminated local copy to pass
+	    * to ChangeItem().
+	    */
+	   tmp_len = var->val_len;
+	   if (tmp_len > sizeof(tmp) - 1)
+	       tmp_len = sizeof(tmp) - 1;
+	   memcpy(tmp, var->val.string, tmp_len);
+	   tmp[tmp_len] = '\0';
+
+	  if (!ChangeItem(data->findex, tmp )) {
 	    netsnmp_set_request_error(reqinfo, request,
 				      SNMP_ERR_COMMITFAILED);
 	  }
@@ -422,7 +433,7 @@ me5FileTable_handler(
 
 	    /* Persist the file information */
 
-		snprintf(&filebuf[0], MAXNAMELEN, "demo5_file%d %s",
+		snprintf(&filebuf[0], sizeof(filebuf), "demo5_file%d %s",
 		    data->findex, data->fileName);
 
 
@@ -488,14 +499,14 @@ AddItem(char *fileName)
 	fprt->next->findex = fprt->findex + 1;
 	fprt = fprt->next;
 	fprt->next = NULL;
-	strcpy(fprt->fileName, fileName);
+	strlcpy(fprt->fileName, fileName, sizeof(fprt->fileName));
 	fprt->fileSize = fAttrib.st_size;
 	sprintf(fprt->filePerm, "%d", fAttrib.st_mode);
     } else {
 	fprt = (fileEntry *) malloc(sizeof(fileEntry));
 	fprt->next = NULL;
 	fprt->findex = 1;
-	strcpy(fprt->fileName, fileName);
+	strlcpy(fprt->fileName, fileName, sizeof(fprt->fileName));
 	fprt->fileSize = fAttrib.st_size;
 	sprintf(fprt->filePerm, "%d", fAttrib.st_mode);
 	fileList = fprt;
@@ -516,22 +527,27 @@ ChangeItem(int fileIndex, char *fileName)
 
     fileEntry      *tempp = fileList;
 
-    if (!fileName || !strlen(fileName)) {
+    if (!fileName || !strlen(fileName) ||
+        strlen(fileName) >= sizeof(tempp->fileName)) {
 	return FALSE;
     }
 
        while (tempp != NULL) {
 	if (tempp->findex == fileIndex) {
-	    strcpy(tempp->fileName, fileName);
+	    strlcpy(tempp->fileName, fileName, sizeof(tempp->fileName));
 	    switch(fileIndex) {
 	    case 1:
-	      strcpy(file1, fileName);
+	      strlcpy(file1, fileName, sizeof(file1));
+	      break;
 	    case 2:
-	      strcpy(file2, fileName);
+	      strlcpy(file2, fileName, sizeof(file2));
+	      break;
 	    case 3:
-	      strcpy(file3, fileName);
+	      strlcpy(file3, fileName, sizeof(file3));
+	      break;
 	    case 4:
-	      strcpy(file4, fileName);
+	      strlcpy(file4, fileName, sizeof(file4));
+	      break;
 	    }
 	      return TRUE;
 	    
@@ -568,14 +584,17 @@ void
 demo5_load_tokens(const char *token, char *cptr)
 {
 
+    if (!cptr || !strlen(cptr) || strlen(cptr) >= MAXNAMELEN)
+	return;
+
     if (strcmp(token, "demo5_file1") == 0) {
-	strcpy(file1, cptr);
+	strlcpy(file1, cptr, sizeof(file1));
     } else if (strcmp(token, "demo5_file2") == 0) {
-	strcpy(file2, cptr);
+	strlcpy(file2, cptr, sizeof(file2));
     } else if (strcmp(token, "demo5_file3") == 0) {
-	strcpy(file3, cptr);
+	strlcpy(file3, cptr, sizeof(file3));
     } else if (strcmp(token, "demo5_file4") == 0) {
-	strcpy(file4, cptr);
+	strlcpy(file4, cptr, sizeof(file4));
     } else {
 	/* Do Nothing */
     }
@@ -596,19 +615,19 @@ demo5_persist_data(int a, int b, void *c, void *d)
     char            filebuf[300];
 
 
-    sprintf(filebuf, "demo5_file1 %s", file1);
+    snprintf(filebuf, sizeof(filebuf), "demo5_file1 %s", file1);
     read_config_store(DEMO5_CONF_FILE, filebuf);
 
 
-    sprintf(filebuf, "demo5_file2 %s", file2);
+    snprintf(filebuf, sizeof(filebuf), "demo5_file2 %s", file2);
     read_config_store(DEMO5_CONF_FILE, filebuf);
 
 
-    sprintf(filebuf, "demo5_file3 %s", file3);
+    snprintf(filebuf, sizeof(filebuf), "demo5_file3 %s", file3);
     read_config_store(DEMO5_CONF_FILE, filebuf);
 
 
-    sprintf(filebuf, "demo5_file4 %s", file4);
+    snprintf(filebuf, sizeof(filebuf), "demo5_file4 %s", file4);
     read_config_store(DEMO5_CONF_FILE, filebuf);
 
 }
