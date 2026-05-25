@@ -66,7 +66,9 @@ COMPONENT_POST_UNPACK_ACTION += \
 	    $(GSED) -i -e \
 		's|^test_LDADD.*$$|test_LDFLAGS = -L`pwd`/../.libs/ -R`pwd`/../.libs/\ntest_LDADD = -lgsl|' \
 		$$f ; \
-	done) ;
+	done ; \
+	$(GSED) -i -e '/^test_c11_LDADD = $$(test_LDADD)/i test_c11_LDFLAGS = $$(test_LDFLAGS)' \
+		complex/Makefile.am) ;
 
 # Remove ../../cblas/libgslcblas.la from LDADD definition in
 # .../doc/examples/Makefile.am
