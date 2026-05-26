@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2025, Oracle and/or its affiliates.
+ * Copyright (c) 2003, 2026, Oracle and/or its affiliates.
  *
  * U.S. Government Rights - Commercial software. Government users are subject
  * to the Sun Microsystems, Inc. standard license agreement and applicable
@@ -482,27 +482,22 @@ void
 wrdata()
 {
     char tmpname[MAXNAMELEN];
-    char *tfname;
     int        fd;
 
     (void) umask(02);
     (void) strcpy(tmpname, "/tmp/mibiisa_ps.XXXXXX");
-    if ((tfname = mktemp(tmpname)) == NULL || *tfname == '\0') {
-        SYSLOG1(" mktemp(\"/tmp/mibiisa_ps.XXXXXX\") failed, %s\n",
+    if ((fd = mkstemp(tmpname)) < 0) {
+        SYSLOG1(" mkstemp(\"/tmp/mibiisa_ps.XXXXXX\") failed, %s\n",
                 strerror(errno));
         return;
     }
 
-    if ((fd = open(tfname, O_WRONLY|O_CREAT|O_EXCL, 0664)) < 0) {
-        SYSLOG2(" open(\"%s\") for write failed, %s\n",
-                tfname, strerror(errno));
-        return;
-    }
+    (void) fchmod(fd, 0664);
 
     /*
      * Make owner root, group sys.
      */
-    (void) chown(tfname, (uid_t)0, (gid_t)3);
+    (void) fchown(fd, (uid_t)0, (gid_t)3);
 
     /* write /dev data */
     write_tmp_file(fd, (char *) &ndev, sizeof (ndev));
@@ -510,8 +505,8 @@ wrdata()
 
     (void) close(fd);
 
-    if (rename(tfname, psfile) != 0) {
-        SYSLOG2(" rename(\"%s\",\"%s\") failed\n", tfname, psfile);
+    if (rename(tmpname, psfile) != 0) {
+        SYSLOG2(" rename(\"%s\",\"%s\") failed\n", tmpname, psfile);
         return;
     }
 }
