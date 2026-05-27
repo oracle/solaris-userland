@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 # convert vim8x -> $(VIMVER)
@@ -44,6 +44,10 @@
 <transform file path=.*/defaults.vim$ -> set pkg.type core>
 <transform file path=.*/syntax.vim$ -> set pkg.type core>
 <transform file path=.*/filetype.vim$ -> set pkg.type core>
+# filetype.vim autoloads this implementation during BufRead.
+<transform file path=.*/autoload/dist/ft.vim$ -> set pkg.type core>
+# dist/ft.vim autoloads this helper for Modula-2 filetype detection.
+<transform file path=.*/autoload/modula2.vim$ -> set pkg.type core>
 
 # gvim with man pages is 'gvim'
 <transform file link path=.*/gvim(\.1$|$) -> set pkg.type gvim>
