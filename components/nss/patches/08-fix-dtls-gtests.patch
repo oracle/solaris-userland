@@ -1,0 +1,227 @@
+Fix unstable DTLS gtests.
+
+Drive DTLS retransmit tests with the test harness DTLS timers instead of
+depending on wall-clock scheduling.  The malformed DTLS 1.3 KeyUpdate length
+tests send invalid handshake fragments, so expect NSS to reject them as
+malformed handshakes instead of trying to exchange application data afterwards.
+
+--- nss-3.123.1/nss/gtests/ssl_gtest/tls_connect.h
++++ nss-3.123.1/nss/gtests/ssl_gtest/tls_connect.h
+@@ -71,8 +71,11 @@
+   void StartConnect();
+   // Run the handshake.
+   void Handshake();
++  // Run the handshake, explicitly driving DTLS retransmit timers.
++  void HandshakeWithDtlsTimers();
+   // Connect and check that it works.
+   void Connect();
++  void ConnectWithDtlsTimers();
+   // Check that the connection was successfully established.
+   void CheckConnected();
+   // Connect and expect it to fail.
+--- nss-3.123.1/nss/gtests/ssl_gtest/tls_connect.cc
++++ nss-3.123.1/nss/gtests/ssl_gtest/tls_connect.cc
+@@ -413,6 +413,34 @@ void TlsConnectTestBase::Handshake() {
+                    5000);
+ }
+ 
++void TlsConnectTestBase::HandshakeWithDtlsTimers() {
++  client_->SetServerKeyBits(server_->server_key_bits());
++  client_->Handshake();
++  server_->Handshake();
++
++  if (variant_ == ssl_variant_datagram) {
++    for (size_t i = 0;
++         i < 20 && (client_->state() == TlsAgent::STATE_CONNECTING ||
++                    server_->state() == TlsAgent::STATE_CONNECTING);
++         ++i) {
++      ShiftDtlsTimers();
++      client_->Handshake();
++      server_->Handshake();
++    }
++  }
++
++  ASSERT_TRUE_WAIT((client_->state() != TlsAgent::STATE_CONNECTING) &&
++                       (server_->state() != TlsAgent::STATE_CONNECTING),
++                   5000);
++}
++
++void TlsConnectTestBase::ConnectWithDtlsTimers() {
++  StartConnect();
++  client_->MaybeSetResumptionToken();
++  HandshakeWithDtlsTimers();
++  CheckConnected();
++}
++
+ void TlsConnectTestBase::EnableExtendedMasterSecret() {
+   client_->EnableExtendedMasterSecret();
+   server_->EnableExtendedMasterSecret();
+--- nss-3.123.1/nss/gtests/ssl_gtest/ssl_drop_unittest.cc
++++ nss-3.123.1/nss/gtests/ssl_gtest/ssl_drop_unittest.cc
+@@ -23,13 +23,13 @@
+ 
+ TEST_P(TlsConnectDatagramPre13, DropClientFirstFlightOnce) {
+   client_->SetFilter(std::make_shared<SelectiveDropFilter>(0x1));
+-  Connect();
++  ConnectWithDtlsTimers();
+   SendReceive();
+ }
+ 
+ TEST_P(TlsConnectDatagramPre13, DropServerFirstFlightOnce) {
+   server_->SetFilter(std::make_shared<SelectiveDropFilter>(0x1));
+-  Connect();
++  ConnectWithDtlsTimers();
+   SendReceive();
+ }
+ 
+@@ -39,31 +39,44 @@
+ TEST_P(TlsConnectDatagramPre13, DropAllFirstTransmissions) {
+   client_->SetFilter(std::make_shared<SelectiveDropFilter>(0x15));
+   server_->SetFilter(std::make_shared<SelectiveDropFilter>(0x5));
+-  Connect();
++  ConnectWithDtlsTimers();
+ }
+ 
+ // This drops the server's first flight three times.
+ TEST_P(TlsConnectDatagramPre13, DropServerFirstFlightThrice) {
+   server_->SetFilter(std::make_shared<SelectiveDropFilter>(0x7));
+-  Connect();
++  StartConnect();
++  client_->Handshake();
++  server_->Handshake();
++
++  // Drive the DTLS retransmit timers explicitly; the wall-clock timeout in
++  // Connect() is too sensitive to scheduler timing for this loss pattern.
++  for (size_t i = 0; i < 3; ++i) {
++    ShiftDtlsTimers();
++    client_->Handshake();
++    server_->Handshake();
++  }
++
++  Handshake();
++  CheckConnected();
+ }
+ 
+ // This drops the client's second flight once
+ TEST_P(TlsConnectDatagramPre13, DropClientSecondFlightOnce) {
+   client_->SetFilter(std::make_shared<SelectiveDropFilter>(0x2));
+-  Connect();
++  ConnectWithDtlsTimers();
+ }
+ 
+ // This drops the client's second flight three times.
+ TEST_P(TlsConnectDatagramPre13, DropClientSecondFlightThrice) {
+   client_->SetFilter(std::make_shared<SelectiveDropFilter>(0xe));
+-  Connect();
++  ConnectWithDtlsTimers();
+ }
+ 
+ // This drops the server's second flight three times.
+ TEST_P(TlsConnectDatagramPre13, DropServerSecondFlightThrice) {
+   server_->SetFilter(std::make_shared<SelectiveDropFilter>(0xe));
+-  Connect();
++  ConnectWithDtlsTimers();
+ }
+ 
+ static void CheckAcks(const std::shared_ptr<TlsRecordRecorder>& acks,
+@@ -206,7 +219,8 @@
+   StartConnect();
+   client_->Handshake();
+   server_->Handshake();
+-  CheckedHandshakeSendReceive();
++  HandshakeWithDtlsTimers();
++  CheckPostHandshake();
+   CheckAcks(server_filters_.ack_, 0, {0x0002000000000000ULL});
+ }
+ 
+@@ -930,7 +944,7 @@ TEST_P(TlsConnectDatagram, ReplaceFirstS
+ 
+ TEST_P(TlsConnectDatagram, ReplaceFirstClientRecordWithApplicationData) {
+   MakeTlsFilter<TlsReplaceFirstRecordWithJunk>(client_);
+-  Connect();
++  ConnectWithDtlsTimers();
+ }
+ 
+ INSTANTIATE_TEST_SUITE_P(Datagram12Plus, TlsConnectDatagram12Plus,
+@@ -979,7 +993,7 @@
+ 
+   SSLInt_SetMTU(client_->ssl_fd(), 150);
+   auto filter = MakeTlsFilter<FirstDropThenKeepHandshakeFilter>(client_);
+-  Connect();
++  ConnectWithDtlsTimers();
+ }
+ 
+ }  // namespace nss_test
+--- nss-3.123.1/nss/gtests/ssl_gtest/ssl_hrr_unittest.cc
++++ nss-3.123.1/nss/gtests/ssl_gtest/ssl_hrr_unittest.cc
+@@ -495,7 +495,7 @@ TEST_P(TlsConnectTls13, RetryCallbackRet
+   auto capture_client_2nd =
+       MakeTlsFilter<TlsExtensionCapture>(client_, ssl_tls13_key_share_xtn);
+ 
+-  Handshake();
++  HandshakeWithDtlsTimers();
+   CheckConnected();
+   EXPECT_EQ(2U, cb_called);
+   EXPECT_TRUE(capture_client_2nd->captured()) << "client should send key_share";
+--- nss-3.123.1/nss/gtests/ssl_gtest/ssl_record_unittest.cc
++++ nss-3.123.1/nss/gtests/ssl_gtest/ssl_record_unittest.cc
+@@ -556,7 +556,7 @@ TEST_P(ZeroLengthRecordSetup, ZeroLength
+         case ssl_ct_application_data:
+         case ssl_ct_handshake:
+           server_->Handshake();
+-          Connect();
++          ConnectWithDtlsTimers();
+           return;
+       }
+       break;
+--- nss-3.123.1/nss/gtests/ssl_gtest/ssl_timers_unittest.cc
++++ nss-3.123.1/nss/gtests/ssl_gtest/ssl_timers_unittest.cc
+@@ -314,7 +314,7 @@ TEST_F(TlsConnectDatagram13, HandshakeDr
+         MakeTlsFilter<TLSIthMessageSeqNumDropper>(client_, currMesSeqNum);
+     filter->EnableDecryption();
+ 
+-    Connect();
++    ConnectWithDtlsTimers();
+     SendReceive();
+     Reset();
+   }
+--- nss-3.123.1/nss/gtests/ssl_gtest/ssl_keyupdate_unittest.cc
++++ nss-3.123.1/nss/gtests/ssl_gtest/ssl_keyupdate_unittest.cc
+@@ -1193,11 +1193,16 @@
+ 
+   SSL_KeyUpdate(client_->ssl_fd(), PR_FALSE);
+   filter->Disable();
+-  SSLInt_SendImmediateACK(server_->ssl_fd());
++
++  server_->ExpectReadWriteError();
++
++  server_->ReadBytes();
+   client_->ReadBytes();
++
++  server_->CheckErrorCode(SSL_ERROR_RX_MALFORMED_HANDSHAKE);
++
+   // No KeyUpdate happened.
+   CheckEpochs(3, 3);
+-  SendReceive(50);
+ }
+ 
+ TEST_F(TlsConnectDatagram13, DTLSKU_DamagedLengthTooLong) {
+@@ -1230,11 +1235,16 @@
+ 
+   SSL_KeyUpdate(client_->ssl_fd(), PR_FALSE);
+   filter->Disable();
+-  SSLInt_SendImmediateACK(server_->ssl_fd());
++
++  server_->ExpectReadWriteError();
++
++  server_->ReadBytes();
+   client_->ReadBytes();
++
++  server_->CheckErrorCode(SSL_ERROR_RX_MALFORMED_HANDSHAKE);
++
+   // No KeyUpdate happened.
+   CheckEpochs(3, 3);
+-  SendReceive(50);
+ }
+ 
+ // This filter is used in order to modify an ACK message.

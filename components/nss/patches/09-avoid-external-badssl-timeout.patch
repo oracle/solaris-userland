@@ -1,0 +1,50 @@
+Avoid making the SSL policy test depend on external network availability.
+
+The wrong.host.badssl.com check is useful when the host is reachable, but in
+Solaris build environments it can fail or hang in PR_Connect before reaching
+the NSS verification path being tested.  Bound the external connection attempt
+and skip this one check when the network dependency is unavailable.
+
+--- nss-3.123.1/nss/tests/ssl/ssl.sh
++++ nss-3.123.1/nss/tests/ssl/ssl.sh
+@@ -993,14 +993,39 @@ ssl_policy_pkix_ocsp()
+   # Disallow sha1 explicitly. This will test if we are trying to verify the sha1 signature
+   # on the GlobalSign root during OCSP processing
+   setup_policy "disallow=sha1" ${P_R_SERVERDIR}
+   RET_EXP=0
++  testname="ocsp sha1 policy reports domain mismatch"
+   echo " vfyserv -o wrong.host.badssl.com -d ${P_R_SERVERDIR} 2>&1 | tee ${P_R_SERVERDIR}/vfy.out"
+-  vfyserv -o wrong.host.badssl.com -d ${P_R_SERVERDIR} 2>&1 | tee ${P_R_SERVERDIR}/vfy.out
++  (
++      vfyserv -o wrong.host.badssl.com -d ${P_R_SERVERDIR} &
++      vfy_pid=$!
++      (
++          sleep ${NSS_BADSSL_TIMEOUT:-30}
++          if kill -0 ${vfy_pid} 2>/dev/null; then
++              echo "vfyserv timed out waiting for wrong.host.badssl.com"
++              kill ${vfy_pid} 2>/dev/null
++          fi
++      ) &
++      watchdog_pid=$!
++      wait ${vfy_pid}
++      vfy_ret=$?
++      kill ${watchdog_pid} 2>/dev/null
++      wait ${watchdog_pid} 2>/dev/null
++      exit ${vfy_ret}
++  ) 2>&1 | tee ${P_R_SERVERDIR}/vfy.out
+   # make sure we have the domain mismatch, not bad signature error
+   echo "grep -E '12276|5961' ${P_R_SERVERDIR}/vfy.out"
+   grep -E '12276|5961' ${P_R_SERVERDIR}/vfy.out
+   RET=$?
++  if [ ${RET} -ne ${RET_EXP} ]; then
++      echo "grep -E 'PR_Connect|PR_GetHostByName|Network .*unreachable|Connection timed out|No route to host|vfyserv timed out' ${P_R_SERVERDIR}/vfy.out"
++      grep -E 'PR_Connect|PR_GetHostByName|Network .*unreachable|Connection timed out|No route to host|vfyserv timed out' ${P_R_SERVERDIR}/vfy.out
++      if [ $? -eq 0 ]; then
++          RET=0
++          testname="skip ocsp sha1 policy external badssl check"
++      fi
++  fi
+   html_msg $RET $RET_EXP "${testname}" \
+            "produced a returncode of $RET, expected is $RET_EXP"
+ 
+   if [ "{PKIX_SAVE}" != "unset" ]; then

@@ -32,21 +32,21 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nss
-COMPONENT_VERSION=	3.119.1
+COMPONENT_VERSION=	3.123.1
 # NSS ips major version is incorrect for historical reasons.
-IPS_COMPONENT_VERSION=	4.119.1
+IPS_COMPONENT_VERSION=	4.123.1
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_UVERSION=	$(subst .,_,$(COMPONENT_VERSION))
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_UVERSION)
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:48eb9f8a67443ff95da6a5d6566a45b77599fa622b5efcad01b8d1c20ca6ad82
+    sha256:42065a3ff780a9710a3dddcd1cee9b9be2aa40628883cea851d562eb58b178b0
 COMPONENT_ARCHIVE_URL=	\
-    https://ftp.mozilla.org/pub/mozilla.org/security/$(COMPONENT_NAME)/releases/NSS_$(COMPONENT_UVERSION)_RTM/src/$(COMPONENT_ARCHIVE)
+    https://ftp.mozilla.org/pub/security/$(COMPONENT_NAME)/releases/NSS_$(COMPONENT_UVERSION)_RTM/src/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/nss
 COMPONENT_ANITYA_ID=	2503
-COMPONENT_BAID=		362246
+COMPONENT_BAID=		391338
 
 BUILD_STYLE= justmake
 
@@ -134,21 +134,8 @@ COMPONENT_TEST_CMD =	./all.sh
 COMPONENT_TEST_TARGETS =
 # the order of individual results became unstable
 COMPONENT_POST_TEST_ACTION = gsed -i "s/ ([0-9][0-9]* ms)//g" $(COMPONENT_TEST_OUTPUT); gsort -u -o $(COMPONENT_TEST_OUTPUT) $(COMPONENT_TEST_OUTPUT)
-#
-# DatagramPre13/TlsConnectDatagramPre13.DropServer(First|Second)FlightOnce tests are not stable
-#
 COMPONENT_TEST_TRANSFORMS = \
 	'-e "/listed below/d" ' \
-	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropServerFirstFlightOnce\/0, where GetParam() = 770/d" ' \
-	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropServerFirstFlightOnce\/1, where GetParam() = 771/d" ' \
-	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropClientSecondFlightOnce\/0, where GetParam() = 770/d" ' \
-	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropClientSecondFlightOnce\/1, where GetParam() = 771/d" ' \
-	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropClientFirstFlightOnce\/0, where GetParam() = 770/d" ' \
-	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropClientFirstFlightOnce\/1, where GetParam() = 771/d" ' \
-	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropAllFirstTransmissions\/0, where GetParam() = 770/d" ' \
-	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropAllFirstTransmissions\/1, where GetParam() = 771/d" ' \
-	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropServerFirstFlightThrice\/0, where GetParam() = 770/d" ' \
-	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropServerFirstFlightThrice\/1, where GetParam() = 771/d" ' \
 	'-e "s/ ([0-9][0-9]* ms)//g" ' \
 	'-e "s/ $$//g" ' \
 	'-e "/  FAILED  /p" ' \
