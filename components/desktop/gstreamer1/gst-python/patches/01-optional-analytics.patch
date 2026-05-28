@@ -1,0 +1,89 @@
+Make the GstAnalytics override optional.
+
+Solaris does not deliver gst-plugins-bad, which provides the
+gstreamer-analytics-1.0 dependency used by the new GstAnalytics override.
+
+--- gst-python-1.28.2/gi/overrides/meson.build
++++ gst-python-1.28.2/gi/overrides/meson.build
+@@ -1,4 +1,7 @@
+-pysources = ['Gst.py', 'GstPbutils.py', 'GstVideo.py', 'GstAudio.py','GstAnalytics.py', 'GstApp.py']
++pysources = ['Gst.py', 'GstPbutils.py', 'GstVideo.py', 'GstAudio.py', 'GstApp.py']
++if gstbad_dep.found()
++  pysources += ['GstAnalytics.py']
++endif
+ python.install_sources(pysources,
+   pure : false,
+   subdir: 'gi/overrides',
+@@ -9,7 +12,6 @@ if host_system == 'windows'
+   gst_dep_for_gi = gst_dep
+ else
+   gst_dep_for_gi = gst_dep.partial_dependency(compile_args: true, includes: true, sources: true)
+-  gstanalytics_dep_for_gi = gstbad_dep.partial_dependency(compile_args:true, includes:true, sources:true)
+ endif
+ 
+ gstpython = python.extension_module('_gi_gst',
+@@ -21,14 +23,6 @@ include_directories : [configinc],
+     dependencies : [gst_dep_for_gi, python_dep, pygobject_dep],
+ )
+ 
+-gstanalyticspython = python.extension_module ('_gi_gst_analytics',
+-  sources: ['gstanalyticsmodule.c'],
+-  install: true,
+-  install_dir: pygi_override_dir,
+-  install_tag: 'python-runtime',
+-  include_directories : [configinc],
+-  dependencies : [gst_dep_for_gi, python_dep, pygobject_dep, gstbad_dep],
+-)
+ 
+ env = environment()
+ env.prepend('_GI_OVERRIDES_PATH', [meson.current_source_dir(), meson.current_build_dir()])
+@@ -37,7 +31,18 @@ meson.add_devenv(env)
+ 
+ # Convenience target to build the Python extension modules
+ # This ensures the _gi_gst and _gi_gst_analytics modules are built
+-gst_python_extensions = alias_target('gst-python-extensions',
+-  gstpython,
+-  gstanalyticspython
+-)
++if gstbad_dep.found()
++  gstanalyticspython = python.extension_module ('_gi_gst_analytics',
++    sources: ['gstanalyticsmodule.c'],
++    install: true,
++    install_dir: pygi_override_dir,
++    install_tag: 'python-runtime',
++    include_directories : [configinc],
++    dependencies : [gst_dep_for_gi, python_dep, pygobject_dep, gstbad_dep],
++  )
++  gst_python_extensions = alias_target('gst-python-extensions',
++    gstpython,
++    gstanalyticspython)
++else
++  gst_python_extensions = alias_target('gst-python-extensions', gstpython)
++endif
+--- gst-python-1.28.2/meson.build
++++ gst-python-1.28.2/meson.build
+@@ -18,7 +18,7 @@ gst_req = '>= @0@.@1@.0'.format(gst_vers
+ 
+ gst_dep = dependency('gstreamer-1.0', version : gst_req)
+ gstbase_dep = dependency('gstreamer-base-1.0', version : gst_req)
+-gstbad_dep = dependency('gstreamer-analytics-1.0', version :gst_req)
++gstbad_dep = dependency('gstreamer-analytics-1.0', version : gst_req, required : false)
+ gmodule_dep = dependency('gmodule-no-export-2.0')
+ libdl = cc.find_library('dl', required: false)
+ pygobject_dep = dependency('pygobject-3.0', allow_fallback: true, version: '>= 3.8')
+--- gst-python-1.28.2/testsuite/meson.build
++++ gst-python-1.28.2/testsuite/meson.build
+@@ -5,9 +5,12 @@ ['gst', 'test_gst.py'],
+     ['gstinit', 'test_gst_init.py'],
+     ['fundamentals', 'test_types.py'],
+     ['plugins', 'test_plugin.py'],
+-    ['analytics', 'test_analytics.py', ['gst-plugins-bad/gst-libs/gst/analytics', 'gst-plugins-base/gst-libs/gst/video']],
+     ['appsink', 'test_appsink.py', ['gst-plugins-base/gst-libs/gst/app']],
+ ]
++if gstbad_dep.found()
++  tests += [['analytics', 'test_analytics.py',
++      ['gst-plugins-bad/gst-libs/gst/analytics', 'gst-plugins-base/gst-libs/gst/video']]]
++endif
+ 
+ runcmd = run_command(python, '-c', '''with open("@0@/mesonconfig.py", "w") as f:
+     f.write("path='@1@'")'''.format(

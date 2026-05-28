@@ -1,0 +1,116 @@
+Handle Python int values when converting Gst.Fraction to GValue.
+
+On Python 3.11, int objects do not provide is_integer().  Gst.Fraction stores
+integer numerator and denominator values, so check PyLong first and avoid
+dereferencing a NULL result from PyObject_CallMethod().
+
+--- gst-python-1.28.2/gi/overrides/gstmodule.c
++++ gst-python-1.28.2/gi/overrides/gstmodule.c
+@@ -104,60 +104,75 @@ Py_DECREF (args);
+   return fraction;
+ }
+ 
++static gboolean
++gi_gst_fraction_component_to_long (PyObject * object, const gchar * name,
++    glong * component)
++{
++  PyObject *is_integer;
++
++  if (PyLong_Check (object)) {
++    *component = PyLong_AsLong (object);
++    if (PyErr_Occurred ())
++      return FALSE;
++  } else {
++    is_integer = PyObject_CallMethod (object, "is_integer", NULL);
++    if (is_integer == NULL)
++      return FALSE;
++
++    if (is_integer != Py_True) {
++      PyErr_Format (PyExc_TypeError, "%s %f is not an integer.", name,
++          PyFloat_AsDouble (object));
++      Py_DECREF (is_integer);
++      return FALSE;
++    }
++    Py_DECREF (is_integer);
++
++    *component = PyFloat_AsDouble (object);
++    if (PyErr_Occurred ())
++      return FALSE;
++  }
++
++  if (*component < -G_MAXINT || *component > G_MAXINT) {
++    PyErr_Format (PyExc_ValueError,
++        "%s %" G_GINT64_FORMAT " is out of bound. [-%d - %d]",
++        name, *component, G_MAXINT, G_MAXINT);
++    return FALSE;
++  }
++
++  return TRUE;
++}
++
+ static int
+ gi_gst_fraction_to_value (GValue * value, PyObject * object)
+ {
+   glong numerator, denominator;
+-  PyObject *numerator_obj, *denominator_obj, *is_integer;
++  PyObject *numerator_obj, *denominator_obj;
+ 
+   numerator_obj = PyObject_GetAttrString (object, "num");
+   if (numerator_obj == NULL)
+     goto fail;
+-
+-  is_integer = PyObject_CallMethod (numerator_obj, "is_integer", NULL);
+-  if (is_integer != Py_True) {
+-    PyErr_Format (PyExc_TypeError,
+-        "numerator %f is not an integer.", PyFloat_AsDouble (numerator_obj));
+-    Py_DECREF (is_integer);
+-    goto fail;
+-  }
+-  Py_DECREF (is_integer);
+-
+-  numerator = PyFloat_AsDouble (numerator_obj);
+-  if (numerator < -G_MAXINT || numerator > G_MAXINT) {
+-    PyErr_Format (PyExc_ValueError,
+-        "numerator %" G_GINT64_FORMAT " is out of bound. [-%d - %d]",
+-        numerator, G_MAXINT, G_MAXINT);
++  if (!gi_gst_fraction_component_to_long (numerator_obj, "numerator",
++          &numerator)) {
++    Py_DECREF (numerator_obj);
+     goto fail;
+   }
++  Py_DECREF (numerator_obj);
+ 
+   denominator_obj = PyObject_GetAttrString (object, "denom");
+   if (denominator_obj == NULL)
+     goto fail;
+-
+-  is_integer = PyObject_CallMethod (denominator_obj, "is_integer", NULL);
+-  if (is_integer != Py_True) {
+-    PyErr_Format (PyExc_TypeError,
+-        "denominator %f is not an integer.",
+-        PyFloat_AsDouble (denominator_obj));
+-    Py_DECREF (is_integer);
++  if (!gi_gst_fraction_component_to_long (denominator_obj, "denominator",
++          &denominator)) {
++    Py_DECREF (denominator_obj);
+     goto fail;
+   }
+-  Py_DECREF (is_integer);
++  Py_DECREF (denominator_obj);
+ 
+-  denominator = PyFloat_AsDouble (denominator_obj);
+   if (denominator == 0) {
+     PyErr_SetString (PyExc_ValueError, "denominator is 0.");
+     goto fail;
+   }
+ 
+-  if (denominator < -G_MAXINT || denominator > G_MAXINT) {
+-    PyErr_Format (PyExc_ValueError,
+-        "denominator %" G_GINT64_FORMAT " is out of bound. [-%d - %d]",
+-        denominator, G_MAXINT, G_MAXINT);
+-    goto fail;
+-  }
+-
+   gst_value_set_fraction (value, numerator, denominator);
+ 
+   return 0;

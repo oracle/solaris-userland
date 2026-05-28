@@ -3,23 +3,19 @@ Do not use external gl-headers subproject...
 
 The first part might be suitable for upstream.
 
-diff --git a/gst/tcp/gstmultifdsink.c b/gst/tcp/gstmultifdsink.c
-index e151dfc..c4dc2c1 100644
---- a/gst/tcp/gstmultifdsink.c
-+++ b/gst/tcp/gstmultifdsink.c
-@@ -118,6 +118,7 @@
+--- gst-plugins-base-1.28.2/gst/tcp/gstmultifdsink.c
++++ gst-plugins-base-1.28.2/gst/tcp/gstmultifdsink.c
+@@ -118,6 +118,7 @@ #include <sys/types.h>
  #include <sys/socket.h>
  #include <sys/stat.h>
  #include <netinet/in.h>
 +#include <sys/filio.h>
  
+ #include "gsttcpelements.h"
  #include "gstmultifdsink.h"
- 
-diff --git a/gst-libs/gst/gl/meson.build b/gst-libs/gst/gl/meson.build
-index db11c5e..ab286d9 100644
---- a/gst-libs/gst/gl/meson.build
-+++ b/gst-libs/gst/gl/meson.build
-@@ -293,16 +293,8 @@ gl_include_header = '''
+--- gst-plugins-base-1.28.2/gst-libs/gst/gl/meson.build
++++ gst-plugins-base-1.28.2/gst-libs/gst/gl/meson.build
+@@ -323,16 +323,8 @@ #define GL_GLEXT_PROTOTYPES 1
  #endif
  '''
  

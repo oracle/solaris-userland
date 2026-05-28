@@ -3,9 +3,9 @@ package. To workaround the issue, the paths are hardcoded.
 
 Not suitable for upstream.
 
---- gstreamer-1.20.3/meson.build	2022-08-01 22:01:05.076543881 -0700
-+++ gstreamer-1.20.3/meson.build	2022-08-01 22:04:14.631917024 -0700
-@@ -530,38 +530,11 @@
+--- gstreamer-1.28.2/meson.build
++++ gstreamer-1.28.2/meson.build
+@@ -628,37 +628,10 @@ endif
  # Used in gst/parse/meson.build and below
  python3 = import('python').find_installation()
  
@@ -13,11 +13,7 @@ Not suitable for upstream.
 -bashcomp_dep = dependency('bash-completion', version : '>= 2.0', required : bashcomp_option)
 -bash_completions_dir = ''
 -bash_helpers_dir = ''
-+# Hardcoded values for Solaris where pkg-config files for bash-completion are not available.
-+bashcomp_found = true
-+bash_completions_dir = '/etc/bash_completion.d/completions'
-+bash_helpers_dir = '/etc/bash_completion.d/helpers'
- 
+-
 -bashcomp_found = false
 -if bashcomp_dep.found()
 -  bashcomp_found = true
@@ -44,7 +40,10 @@ Not suitable for upstream.
 -    bashcomp_found = false
 -  endif
 -endif
--
++# Hardcoded values for Solaris where pkg-config files for bash-completion are not available.
++bashcomp_found = true
++bash_completions_dir = '/etc/bash_completion.d/completions'
++bash_helpers_dir = '/etc/bash_completion.d/helpers'
+ 
  plugins_install_dir = join_paths(get_option('libdir'), 'gstreamer-1.0')
  
- pkgconfig = import('pkgconfig')

@@ -1,0 +1,59 @@
+Fix the standalone Solaris test environment.
+
+In Userland gst-python is built as a separate component against the GStreamer
+packages installed in the CBE, so use the installed plugin paths and scanner
+when testing the local gst-python plugin.  Solaris also needs LD_LIBRARY_PATH,
+not DYLD_LIBRARY_PATH.
+
+--- gst-python-1.28.2/testsuite/meson.build
++++ gst-python-1.28.2/testsuite/meson.build
+@@ -62,14 +62,18 @@ env.set('GST_OVERRIDE_SRC_PATH', join_pa
+     env.set('GST_OVERRIDE_BUILD_PATH', join_paths (meson.current_build_dir(), '..', 'gi', 'overrides'))
+     env.set('GST_PLUGIN_LOADING_WHITELIST', 'gstreamer', 'gst-plugins-base',
+         'gst-python@' + meson.project_build_root())
+-    env.set('GST_PLUGIN_PATH_1_0', meson.global_build_root(), pluginsdirs + pypluginsdir)
++    env.set('GST_PLUGIN_PATH_1_0', pluginsdirs + pypluginsdir)
++    if gst_dep.type_name() == 'pkgconfig'
++      gst_plugin_scanner = gst_dep.get_variable('pluginscannerdir') / 'gst-plugin-scanner'
++      env.set('GST_PLUGIN_SCANNER_1_0', gst_plugin_scanner)
++    endif
+     env.set('GST_REGISTRY', join_paths(meson.current_build_dir(), '@0@.registry'.format(test_name)))
+ 
+     l = 0
+     testsenv_ld_library_path = []
+     foreach dep: gst_deps
+         if dep.type_name() == 'pkgconfig'
+             testsenv_ld_library_path += [dep.get_variable('libdir')]
+         else
+             depdef = gst_deps_defs[l][1]
+             libname = gst_deps_defs[l].get(2, '')
+@@ -99,7 +103,7 @@ endforeach
+ 
+     if build_machine.system() == 'windows'
+       env.append('PATH', testsenv_ld_library_path)
+-    elif build_machine.system() == 'linux'
++    elif build_machine.system() == 'linux' or build_machine.system() == 'sunos'
+       env.append('LD_LIBRARY_PATH', testsenv_ld_library_path)
+    else
+       env.append('DYLD_LIBRARY_PATH', testsenv_ld_library_path)
+--- gst-python-1.28.2/testsuite/test_plugin.py
++++ gst-python-1.28.2/testsuite/test_plugin.py
+@@ -18,15 +18,15 @@ # You should have received a copy of the
+ # License along with this library; if not, write to the Free Software
+ # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+ 
+-from gi.repository import Gst
+ import gi
+-from common import TestCase, unittest
+ import overrides_hack
+ overrides_hack
+ 
+-
+ gi.require_version("Gst", "1.0")
+ 
++from gi.repository import Gst
++from common import TestCase, unittest
++
+ 
+ class TestPlugin(TestCase):
+     def testLoad(self):
