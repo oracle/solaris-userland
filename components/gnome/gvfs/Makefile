@@ -27,14 +27,14 @@ BUILD_BITS =            64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gvfs
-COMPONENT_VERSION=	1.52.2
+COMPONENT_VERSION=	1.56.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/gvfs
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a643aceaa053caac0d8eff9a015f636e4bd1bb09cfe27864e347db67460e7b91
+	sha256:7b99f64a33437cb97987ac47a91cce73593994a9f1940f51661fa5eee0b42deb
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5496
 
-COMPONENT_BAID=		158541
+COMPONENT_BAID=		393643
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -50,9 +50,15 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # We build goa only 64-bit in Solaris
 CONFIGURE_OPTIONS.32 += -Dgoa=false
+# gcr-4 is only delivered 64-bit in Solaris
+CONFIGURE_OPTIONS.32 += -Dgcr=false
 CONFIGURE_OPTIONS += -Dsmb=false
 CONFIGURE_OPTIONS += -Dnfs=false
 CONFIGURE_OPTIONS += -Dgoogle=false
+CONFIGURE_OPTIONS += -Donedrive=false
+CONFIGURE_OPTIONS += -Dwsdd=false
+CONFIGURE_OPTIONS += -Dburn=true
+CONFIGURE_OPTIONS += -Ddeprecated_apis=true
 CONFIGURE_OPTIONS += -Dman=true
 # admin requires libcap
 CONFIGURE_OPTIONS += -Dadmin=false
@@ -73,7 +79,7 @@ CONFIGURE_OPTIONS += -Dafc=false
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gnome/gcr
+REQUIRED_PACKAGES += library/gnome/gcr-4
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/libarchive
