@@ -3,29 +3,29 @@ Fix tar.vim lz4 support on Solaris.
 I have added comments to https://github.com/vim/vim/pull/19925 , I am not sure
 whether this would be acceptable by upstream.
 
---- vim-9.2.0340/runtime/autoload/tar.vim
-+++ vim-9.2.0340/runtime/autoload/tar.vim
-@@ -712,8 +712,10 @@
+--- vim-9.2.0513/runtime/autoload/tar.vim
++++ vim-9.2.0513/runtime/autoload/tar.vim
+@@ -733,8 +733,10 @@ endif
    elseif tarball =~# "\.tlz4$"
     if has("linux")
      let extractcmd= substitute(extractcmd,"-","-I lz4 -","")
-+    call system(extractcmd." ".shellescape(tarball)." ".shellescape(fname))
++    call system(extractcmd." ".shellescape(tarball)." ".g:tar_secure.shellescape(fname))
 +   else
-+    call system("lz4 --decompress --stdout -- ".shellescape(tarball)." | ".extractcmd." - ".shellescape(fname))
++    call system("lz4 --decompress --stdout -- ".shellescape(tarball)." | ".extractcmd." - ".g:tar_secure.shellescape(fname))
     endif
--   call system(extractcmd." ".shellescape(tarball)." ".shellescape(fname))
+-   call system(extractcmd." ".shellescape(tarball)." ".g:tar_secure.shellescape(fname))
     if v:shell_error != 0
      call s:Msg('tar#Extract', 'error', $"{extractcmd} {tarball} {fname}: failed!")
     else
-@@ -723,8 +725,10 @@
+@@ -744,8 +746,10 @@ endif
    elseif tarball =~# "\.tar\.lz4$"
     if has("linux")
      let extractcmd= substitute(extractcmd,"-","-I lz4 -","")
-+    call system(extractcmd." ".shellescape(tarball)." ".shellescape(fname))
++    call system(extractcmd." ".shellescape(tarball)." ".g:tar_secure.shellescape(fname))
 +   else
-+    call system("lz4 --decompress --stdout -- ".shellescape(tarball)." | ".extractcmd." - ".shellescape(fname))
++    call system("lz4 --decompress --stdout -- ".shellescape(tarball)." | ".extractcmd." - ".g:tar_secure.shellescape(fname))
     endif
--   call system(extractcmd." ".shellescape(tarball)." ".shellescape(fname))
+-   call system(extractcmd." ".shellescape(tarball)." ".g:tar_secure.shellescape(fname))
     if v:shell_error != 0
      call s:Msg('tar#Extract', 'error', $"{extractcmd} {tarball} {fname}: failed!")
     else
