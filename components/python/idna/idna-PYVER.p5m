@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -37,13 +37,19 @@ set name=info.upstream value="Kim Davies <kim@cynosure.com.au>"
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/489
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/bin/idna target=idna-$(PYVER) mediator=python \
+    mediator-version=$(PYVER)
+file path=usr/bin/idna-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
 file path=usr/lib/python$(PYVER)/vendor-packages/idna-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/idna-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/idna-$(COMPONENT_VERSION).dist-info/RECORD
 file path=usr/lib/python$(PYVER)/vendor-packages/idna-$(COMPONENT_VERSION).dist-info/WHEEL
 file path=usr/lib/python$(PYVER)/vendor-packages/idna-$(COMPONENT_VERSION).dist-info/_solaris_dep
+file path=usr/lib/python$(PYVER)/vendor-packages/idna-$(COMPONENT_VERSION).dist-info/entry_points.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/idna-$(COMPONENT_VERSION).dist-info/licenses/LICENSE.md
 file path=usr/lib/python$(PYVER)/vendor-packages/idna/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/idna/__main__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/idna/cli.py
 file path=usr/lib/python$(PYVER)/vendor-packages/idna/codec.py
 file path=usr/lib/python$(PYVER)/vendor-packages/idna/compat.py
 file path=usr/lib/python$(PYVER)/vendor-packages/idna/core.py
