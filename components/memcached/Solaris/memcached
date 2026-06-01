@@ -19,7 +19,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2007, 2011, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2007, 2026, Oracle and/or its affiliates.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -29,16 +29,55 @@
 
 
 getproparg() {
-val=`svcprop -p "$1" memcached`
-[ -n "$val" ] && echo "$val"
+	val=$(svcprop -p "$1" memcached)
+	[ -n "$val" ] && echo "$val"
 }
 
-MCOPTIONS="`getproparg memcached/options`"
+# memcached/options is delegated via Solaris SMF authorizations. Do not let
+# delegated property values override the service account chosen by this method.
+filterpropargs() {
+	filtered_options=
+	skip_next=false
+	for option in $MCOPTIONS; do
+		if [ "$skip_next" = true ]; then
+			skip_next=false
+			continue
+		fi
+		case "$option" in
+		--)
+			echo "Ignoring $option in memcached/options; the service runs as noaccess" >&2
+			;;
+		--us|--use|--user)
+			echo "Ignoring $option in memcached/options; the service runs as noaccess" >&2
+			skip_next=true
+			;;
+		--us=*|--use=*|--user=*)
+			echo "Ignoring $option in memcached/options; the service runs as noaccess" >&2
+			;;
+		--*)
+			filtered_options="$filtered_options $option"
+			;;
+		-*u)
+			echo "Ignoring $option in memcached/options; the service runs as noaccess" >&2
+			skip_next=true
+			;;
+		-*u*)
+			echo "Ignoring $option in memcached/options; the service runs as noaccess" >&2
+			;;
+		*)
+			filtered_options="$filtered_options $option"
+			;;
+		esac
+	done
+	MCOPTIONS="$filtered_options"
+}
 
+MCOPTIONS="$(getproparg memcached/options)"
+filterpropargs
 
 case "$1" in
 'start')
-/usr/lib/memcached -u noaccess $MCOPTIONS &
+/usr/lib/memcached $MCOPTIONS -u noaccess &
 ;;
 
 'stop')
@@ -52,4 +91,3 @@ exit 1
 
 esac
 #exit $SMF_EXIT_OK
-

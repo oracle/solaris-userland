@@ -1,0 +1,88 @@
+Avoid unaligned memory accesses on SPARC.
+
+MurmurHash3_x86_32() can be called with key pointers that are not aligned
+to a 32-bit boundary. x86 tolerates the original uint32_t load, but SPARC
+raises SIGBUS. Read the block a byte at a time, preserving the little-endian
+layout expected by the x86 MurmurHash3 variant.
+
+Item client flags are stored after the key and can also be unaligned. Copy them
+with memcpy() before conversion instead of dereferencing a client_flags_t
+pointer directly.
+
+Logger payloads are overlaid with typed records, some of which contain 64-bit
+fields. Keep the flexible payload array 8-byte aligned so those overlays do not
+trap on SPARC.
+
+https://github.com/memcached/memcached/pull/1291
+
+--- memcached-1.6.41/logger.h
++++ memcached-1.6.41/logger.h
+@@ -164,6 +164,7 @@ struct _logentry {
+     struct timeval tv; /* not monotonic! */
+     int size;
+     union {
++        uint64_t align;
+         char end;
+     } data[];
+ };
+--- memcached-1.6.41/memcached.h
++++ memcached-1.6.41/memcached.h
+@@ -20,6 +20,7 @@
+ #include <assert.h>
+ #include <grp.h>
+ #include <signal.h>
++#include <string.h>
+ /* need this to get IOV_MAX on some platforms. */
+ #ifndef __need_IOV_MAX
+ #define __need_IOV_MAX
+@@ -172,7 +173,9 @@
+ /** Item client flag conversion */
+ #define FLAGS_CONV(it, flag) { \
+     if ((it)->it_flags & ITEM_CFLAGS) { \
+-        flag = *((client_flags_t *)ITEM_suffix((it))); \
++        client_flags_t _flags_conv; \
++        memcpy(&_flags_conv, ITEM_suffix((it)), sizeof(_flags_conv)); \
++        flag = _flags_conv; \
+     } else { \
+         flag = 0; \
+     } \
+--- memcached-1.6.41/murmur3_hash.c
++++ memcached-1.6.41/murmur3_hash.c
+@@ -47,7 +47,12 @@ static inline uint32_t rotl32 ( uint32_t
+ 
+ static FORCE_INLINE uint32_t getblock32 ( const uint32_t * p, int i )
+ {
+-  return p[i];
++  const uint8_t *data = (const uint8_t *)p + (i * 4);
++
++  return ((uint32_t)data[0]) |
++         ((uint32_t)data[1] << 8) |
++         ((uint32_t)data[2] << 16) |
++         ((uint32_t)data[3] << 24);
+ }
+ 
+ //-----------------------------------------------------------------------------
+--- memcached-1.6.41/proto_parser.c
++++ memcached-1.6.41/proto_parser.c
+@@ -636,7 +636,9 @@ static inline int make_ascii_get_suffix(
+         *p = '0';
+         p++;
+     } else {
+-        p = itoa_u64(*((client_flags_t *) ITEM_suffix(it)), p);
++        client_flags_t flags;
++        FLAGS_CONV(it, flags);
++        p = itoa_u64(flags, p);
+     }
+     *p = ' ';
+     p = itoa_u32(nbytes-2, p+1);
+@@ -1108,7 +1110,9 @@ static int _meta_flag_build(token_t *tokens, size_t ntokens, item *it,
+                         *p = '0';
+                         p++;
+                     } else {
+-                        p = itoa_u64(*((client_flags_t *) ITEM_suffix(it)), p);
++                        client_flags_t flags;
++                        FLAGS_CONV(it, flags);
++                        p = itoa_u64(flags, p);
+                     }
+                     break;
+                 case 'l':

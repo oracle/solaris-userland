@@ -10,8 +10,8 @@ From: Mark Adler <madler@alumni.caltech.edu>
 Date: Thu, 7 Dec 2023 11:44:47 -0800
 Subject: [PATCH] Remove extraneous register constraints in crc32c.c.
 
---- memcached-1.6.22/crc32c.c
-+++ memcached-1.6.22/crc32c.c
+--- memcached-1.6.41/crc32c.c
++++ memcached-1.6.41/crc32c.c
 @@ -1,6 +1,6 @@
  /* crc32c.c -- compute CRC-32C using the Intel crc32 instruction
 - * Copyright (C) 2013, 2015, 2021 Mark Adler
@@ -21,7 +21,7 @@ Subject: [PATCH] Remove extraneous register constraints in crc32c.c.
   */
  
  /*
-@@ -39,6 +39,7 @@
+@@ -39,6 +39,7 @@ 1.3  31 Dec 2015  Check for Intel archit
                       Support big-endian processors in software calculation
                       Add header for external use
     1.4  31 May 2021  Correct register constraints on assembly instructions
@@ -29,7 +29,7 @@ Subject: [PATCH] Remove extraneous register constraints in crc32c.c.
   */
  
  #include <pthread.h>
-@@ -137,14 +138,9 @@ static inline uint32_t crc32c_shift(uint
+@@ -137,14 +138,9 @@ zeros[2][(crc >> 16) & 0xff] ^ zeros[3][
  }
  
  /* Block sizes for three-way parallel crc computation.  LONG and SHORT must
@@ -45,7 +45,7 @@ Subject: [PATCH] Remove extraneous register constraints in crc32c.c.
  
  /* Tables for hardware crc that shift a crc by LONG and SHORT zeros. */
  static pthread_once_t crc32c_once_hw = PTHREAD_ONCE_INIT;
-@@ -170,9 +166,9 @@ static uint32_t crc32c_hw(uint32_t crc,
+@@ -170,9 +166,9 @@ /* compute the crc for up to seven leadi
         to an eight-byte boundary */
      unsigned char const *next = buf;
      while (len && ((uintptr_t)next & 7) != 0) {
@@ -57,7 +57,7 @@ Subject: [PATCH] Remove extraneous register constraints in crc32c.c.
          next++;
          len--;
      }
-@@ -186,11 +182,11 @@ static uint32_t crc32c_hw(uint32_t crc,
+@@ -186,11 +182,11 @@ uint64_t crc1 = 0;
          uint64_t crc2 = 0;
          unsigned char const * const end = next + LONG;
          do {
@@ -73,7 +73,7 @@ Subject: [PATCH] Remove extraneous register constraints in crc32c.c.
              next += 8;
          } while (next < end);
          crc0 = crc32c_shift(crc32c_long, crc0) ^ crc1;
-@@ -206,11 +202,11 @@ static uint32_t crc32c_hw(uint32_t crc,
+@@ -206,11 +202,11 @@ uint64_t crc1 = 0;
          uint64_t crc2 = 0;
          unsigned char const * const end = next + SHORT;
          do {
@@ -89,7 +89,7 @@ Subject: [PATCH] Remove extraneous register constraints in crc32c.c.
              next += 8;
          } while (next < end);
          crc0 = crc32c_shift(crc32c_short, crc0) ^ crc1;
-@@ -224,9 +220,9 @@ static uint32_t crc32c_hw(uint32_t crc,
+@@ -224,9 +220,9 @@ block */
      {
          unsigned char const * const end = next + (len - (len & 7));
          while (next < end) {
@@ -101,7 +101,7 @@ Subject: [PATCH] Remove extraneous register constraints in crc32c.c.
              next += 8;
          }
          len &= 7;
-@@ -234,9 +230,9 @@ static uint32_t crc32c_hw(uint32_t crc,
+@@ -234,9 +230,9 @@ }
  
      /* compute the crc for up to seven trailing bytes */
      while (len) {

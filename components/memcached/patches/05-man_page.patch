@@ -1,9 +1,9 @@
 Added Solaris specific information.
 Not suitable for upstream.
 
---- memcached-1.6.9/doc/memcached.1.orig	2021-08-25 19:18:43.398405472 +0200
-+++ memcached-1.6.9/doc/memcached.1	2021-08-25 20:24:43.975438766 +0200
-@@ -161,6 +161,131 @@
+--- memcached-1.6.41/doc/memcached.1
++++ memcached-1.6.41/doc/memcached.1
+@@ -160,12 +160,139 @@ .TP
  .B \-V, --version
  print version and exit
  .br
@@ -30,13 +30,12 @@ Not suitable for upstream.
 +example% svcadm refresh memcached
 +.fi
 +.in -2
-+
-+.LP
-+Note - 
 +.sp
-+.RS 2
-+The arguments cannot be passed as a single string because of a limitation in \fIsvccfg\fR.
-+.RE
++Each command line argument must be stored as a separate
++\fBmemcached/options\fR value. Do not store multiple arguments as a single
++string containing whitespace. The SMF method always runs the daemon as the
++\fBnoaccess\fR user and ignores \fB-u\fR or \fB--user\fR values in
++\fBmemcached/options\fR.
 +.RE
 +.RS +4
 +.TP
@@ -135,7 +134,6 @@ Not suitable for upstream.
  .SH LICENSE
  The memcached daemon is copyright Danga Interactive and is distributed under
  the BSD license. Note that daemon clients are licensed separately.
-@@ -167,6 +292,9 @@
  .br
  .SH SEE ALSO
  The README file that comes with memcached

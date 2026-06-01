@@ -1,0 +1,85 @@
+Memcached installed-package testing
+===================================
+
+Use this as a smoke test after installing or updating the built packages from a
+test repository. The libmemcached command line tools are delivered by the
+separate library/libmemcached component and provide useful client-side coverage
+for the packaged memcached server.
+
+  pkg list service/memcached library/libmemcached
+
+Save the current SMF service options and the default instance's persistent
+enablement flag. The smoke test temporarily changes the service-level
+memcached/options property to listen only on localhost; cleanup restores
+admin-layer customizations when they existed, or removes the temporary
+customizations to expose the previous manifest or profile values. It does not
+attempt to preserve transient runtime state such as maintenance, offline, or
+dependency-driven states.
+
+  SERVICE_FMRI=svc:/application/database/memcached
+  INSTANCE_FMRI=${SERVICE_FMRI}:default
+  old_enabled=$(svcprop -p general/enabled "$INSTANCE_FMRI")
+  old_enabled_admin=$(svcprop -l all -p general/enabled "$INSTANCE_FMRI" | \
+      awk '$3 == "admin" { found = 1 } END { print found ? "true" : "false" }')
+  old_options=$(svcprop -p memcached/options "$SERVICE_FMRI")
+  old_options_admin=$(svcprop -l all -p memcached/options "$SERVICE_FMRI" | \
+      awk '$3 == "admin" { found = 1 } END { print found ? "true" : "false" }')
+
+Configure memcached to listen only on localhost, then start or restart the
+default SMF instance.
+
+  pfexec svccfg -s "$SERVICE_FMRI" \
+      setprop memcached/options = \( "-l" "127.0.0.1" "-p" "11211" \)
+  pfexec svcadm refresh "$SERVICE_FMRI"
+  pfexec svcadm enable -rs "$INSTANCE_FMRI"
+  pfexec svcadm restart -s "$INSTANCE_FMRI"
+  svcs -xv "$INSTANCE_FMRI"
+
+Check basic client connectivity with libmemcached tools.
+
+  memping --servers=127.0.0.1:11211
+  printf '%s\n' 'memcached smoke value' > /tmp/memcached-smoke
+  memcp --servers=127.0.0.1:11211 /tmp/memcached-smoke
+  memcat --servers=127.0.0.1:11211 memcached-smoke
+  memstat --servers=127.0.0.1:11211
+  memrm --servers=127.0.0.1:11211 memcached-smoke
+
+The memcat output should contain:
+
+  memcached smoke value
+
+Clean up after the smoke test and restore the previous SMF service options
+property and persistent instance enablement flag.
+
+  pfexec svcadm disable -s "$INSTANCE_FMRI"
+  if [ "$old_options_admin" = true ]; then
+      pfexec svccfg -s "$SERVICE_FMRI" \
+          setprop memcached/options = \( $old_options \)
+  else
+      pfexec svccfg -s "$SERVICE_FMRI" delcust -G memcached -P options
+  fi
+  pfexec svcadm refresh "$SERVICE_FMRI"
+  if [ "$old_enabled_admin" = true ]; then
+      if [ "$old_enabled" = true ]; then
+          pfexec svcadm enable -rs "$INSTANCE_FMRI"
+      else
+          pfexec svcadm disable -s "$INSTANCE_FMRI"
+      fi
+  else
+      pfexec svccfg -s "$INSTANCE_FMRI" delcust -G general -P enabled
+      pfexec svcadm refresh "$INSTANCE_FMRI"
+  fi
+  rm -f /tmp/memcached-smoke
+
+Related libmemcached verification
+=================================
+
+Run the libmemcached component tests as an additional cross-component check
+when a memcached update changes protocol behavior, binary protocol handling,
+networking, or server startup behavior.
+
+  cd ../libmemcached
+  gmake clean test
+
+The libmemcached tests exercise the packaged /usr/lib/memcached binary through
+the libmemcached client library and command line tools.

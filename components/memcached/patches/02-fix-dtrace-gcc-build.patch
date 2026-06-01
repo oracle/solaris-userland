@@ -1,0 +1,49 @@
+Work around Solaris dtrace -G corruption of GCC-built objects.
+
+When the same object contains the memcached provider's slabs__free probe and an
+undefined libc free symbol, Solaris dtrace -G rewrites the symbol name to
+"ree". Route the Solaris DTrace-enabled slab page release through a small
+utility wrapper in another object so memcached-slabs.o no longer carries that
+undefined free symbol while preserving the public DTrace probe name.
+
+This works around Solaris dtrace -G behavior when instrumenting GCC-built ELF
+objects. It is Solaris-specific because this Userland component enables the
+native Solaris DTrace provider and builds with Solaris /usr/sbin/dtrace; there
+is no upstream memcached source change needed for non-Solaris platforms.
+
+--- memcached-1.6.42/slabs.c
++++ memcached-1.6.42/slabs.c
+@@ -652,6 +652,10 @@ static void memory_release(void) {
+     while (mem_malloced > mem_limit &&
+             (p = get_page_from_global_pool()) != NULL) {
++#if defined(__sun) && defined(ENABLE_DTRACE)
++        mc_free(p);
++#else
+         free(p);
++#endif
+         mem_malloced -= settings.slab_page_size;
+     }
+ }
+--- memcached-1.6.42/util.c
++++ memcached-1.6.42/util.c
+@@ -12,6 +12,10 @@
+ static char *uriencode_map[256];
+ static char uriencode_str[768];
+ 
++void mc_free(void *ptr) {
++    free(ptr);
++}
++
+ void uriencode_init(void) {
+     int x;
+     char *str = uriencode_str;
+--- memcached-1.6.42/util.h
++++ memcached-1.6.42/util.h
+@@ -21,6 +21,7 @@ bool safe_strtol(const char *str, int32_
+ bool safe_strtod(const char *str, double *out);
+ bool safe_strcpy(char *dst, const char *src, const size_t dstmax);
+ bool safe_memcmp(const void *a, const void *b, size_t len);
++void mc_free(void *ptr);
+ 
+ #ifndef HAVE_HTONLL
+ extern uint64_t htonll(uint64_t);

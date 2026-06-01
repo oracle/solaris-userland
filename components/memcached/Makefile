@@ -22,8 +22,10 @@
 #
 # Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
-COMPILER= studio
 BUILD_BITS= 64
+# DTrace generates memcached_dtrace.o without CTF; keep CTF for GCC-built
+# objects but do not require every linked object to carry CTF.
+CTF_MODE = relaxed
 
 # Build does not start reliably when multiple jobs are allowed
 COMPONENT_MAKE_JOBS=1
@@ -31,15 +33,15 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		memcached
-COMPONENT_VERSION=	1.6.22
+COMPONENT_VERSION=	1.6.42
 COMPONENT_PROJECT_URL=	https://www.memcached.org
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:34783a90a4ccf74c4107085fd92b688749d23b276cfdad9f04e4f725a05d1ca7
+    sha256:50f08b879d4f9d36dea9d905e9eaade15c708e38db7e9a73fc21dc8b45395de7
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/files/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	database/memcached
 COMPONENT_ANITYA_ID=	1965
 
-COMPONENT_BAID=		155434
+COMPONENT_BAID=		390224
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -48,7 +50,6 @@ PATH=$(USRBINDIR):$(GNUBIN):$(USRDIR)/perl5/bin
 studio_OPT = -xO5
 studio_ALIGN.sparc.64 = -xmemalign=16i
 CFLAGS += -D__ATTRIBUTE_DISABLED 
-ASLR_MODE = $(ASLR_DISABLE)
 
 CLONEY := echo
 COMPONENT_PRE_CONFIGURE_ACTION = (cp -r $(SOURCE_DIR)/. $(@D));
@@ -73,7 +74,11 @@ CONFIGURE_OPTIONS.64 +=	--with-libevent=$(USRLIBDIR64)
 # including setting the runpath (-R), which is currently ok
 # because libevent is in a default library directory.
 CONFIGURE_OPTIONS.64 +=	"ac_cv_libevent_dir=/usr/lib/$(MACH64)"
-CONFIGURE_OPTIONS +=	--enable-dtrace --disable-docs --disable-coverage
+# Keep Userland's link-editor options out of dtrace -G's internal relocatable
+# link.
+CONFIGURE_OPTIONS +=	"DTRACE=/usr/bin/env -u LD_OPTIONS -u LD_EXEC_OPTIONS -u LD_PIE_OPTIONS -u LD_SHARED_OPTIONS /usr/sbin/dtrace"
+CONFIGURE_OPTIONS +=	--enable-dtrace
+CONFIGURE_OPTIONS +=	--disable-docs --disable-coverage
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS +=	--disable-extstore
 

@@ -1,0 +1,30 @@
+memcapable already treats some ASCII protocol commands as more permissive
+with memcached 1.6.x. Apply the same rule to the malformed delete command:
+memcached 1.6.x accepts extra delete arguments and returns a normal NOT_FOUND
+response instead of an error.
+
+This keeps the stricter check for older memcached versions while allowing
+the tests to pass with both the current system memcached 1.6.41 and newer
+memcached 1.6.42.
+
+Submitted to libmemcached upstream:
+https://github.com/awesomized/libmemcached/pull/163
+
+--- libmemcached-1.1.4/src/bin/memcapable.cc
++++ libmemcached-1.1.4/src/bin/memcapable.cc
+@@ -1451,10 +1451,12 @@ static enum test_return test_ascii_delete_impl(
+ 
+   execute(send_string("delete\r\n"));
+   execute(receive_error_response());
+-  /* BUG: the server accepts delete a b */
+-  execute(send_string("delete a b c d e\r\n"));
+-  execute(receive_error_response());
+ 
++  if (!v16x_or_greater) {
++    execute(send_string("delete a b c d e\r\n"));
++    execute(receive_error_response());
++  }
++
+   char buffer[1024];
+   snprintf(buffer, sizeof(buffer), "delete %s%s\r\n", key, noreply ? " noreply" : "");
+   execute(send_string(buffer));
