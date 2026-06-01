@@ -1,0 +1,67 @@
+Make File::ShareDir optional for Solaris packaging.
+
+XML-Parser 2.48 and later moved encoding files to File::ShareDir.  Solaris does
+not currently ship File::ShareDir or File::ShareDir::Install, so install the
+encoding files into the historical XML/Parser/Encodings location and keep the
+runtime lookup compatible with that layout.
+
+--- XML-Parser-2.59/Expat/Expat.pm
++++ XML-Parser-2.59/Expat/Expat.pm
+@@ -13,12 +13,13 @@ our $VERSION = '2.59';
+ our ( %Encoding_Table, @Encoding_Path );
+ 
+ use File::Spec ();
+-use File::ShareDir ();
+ 
+ %Encoding_Table = ();
+ 
+ my $_share_dir;
+-eval { $_share_dir = File::ShareDir::dist_dir('XML-Parser') };
++if (eval { require File::ShareDir; 1 }) {
++    eval { $_share_dir = File::ShareDir::dist_dir('XML-Parser') };
++}
+ 
+ @Encoding_Path = (
+     ( defined $_share_dir && -d $_share_dir ? ($_share_dir) : () ),
+--- XML-Parser-2.59/Makefile.PL
++++ XML-Parser-2.59/Makefile.PL
+@@ -4,8 +4,6 @@ use warnings;
+ use ExtUtils::MakeMaker;
+ use lib './inc';
+ use Devel::CheckLib;
+-use File::ShareDir::Install;
+-install_share dist => 'share';
+ 
+ use Config;
+ use File::Spec;
+@@ -156,8 +154,13 @@ sub MY::test {
+ 
+ sub MY::postamble {
+     my $self = shift;
+-    my @ret  = File::ShareDir::Install::postamble($self);
+-    return join "\n", @ret;
++    return <<'MAKE_FRAGMENT';
++pure_all :: copy_encodings
++
++copy_encodings:
++	$(NOECHO) $(MKPATH) $(INST_LIB)/XML/Parser/Encodings
++	$(NOECHO) $(CP) share/*.enc $(INST_LIB)/XML/Parser/Encodings/
++MAKE_FRAGMENT
+ }
+ 
+ my $dist_version = MM->parse_version('Parser.pm');
+@@ -223,13 +227,9 @@ WriteMakefile1(
+     dist         => { COMPRESS => 'gzip', SUFFIX => '.gz' },
+     VERSION_FROM => 'Parser.pm',
+     CONFIGURE_REQUIRES => {
+-        'ExtUtils::MakeMaker'     => 0,
+-        'File::ShareDir::Install' => '0.06',
+-    },
+-    PREREQ_PM => {
+-        'File::ShareDir' => 0,
++        'ExtUtils::MakeMaker' => 0,
+     },
+     $^O =~ /win/i
+     ? (
+         dist => {
+             TAR      => 'ptar',
