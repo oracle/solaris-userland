@@ -22,20 +22,18 @@
 #
 # Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
-COMPILER= studio
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sed
-COMPONENT_VERSION=	4.9
+COMPONENT_VERSION=	4.10
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6e226b732e1cd739464ad6862bd1a1aba42d7982922da7a53519631d24975181
+    sha256:b8e72182b2ec96a3574e2998c47b7aaa64cc20ce000d8e9ac313cc07cecf28c7
 COMPONENT_BUGDB=	utility/gnu-sed
 COMPONENT_ANITYA_ID=	4789
-COMPONENT_BAID=		133534
+COMPONENT_BAID=		389231
 
-SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
 
 CONFIGURE_BINDIR.64= $(GNUBIN)
@@ -50,17 +48,4 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/FAIL/p" ' \
 	'-e "/ERROR/p" '
 
-# Modify test results for system-test
-COMPONENT_PRE_SYSTEM_TEST_ACTION += \
-	($(GSED) -i -e "s|../sed/sed|/usr/gnu/bin/sed|" \
-                $(@D)/testsuite/version.good) ;
-COMPONENT_PRE_SYSTEM_TEST_ACTION += \
-	($(GSED) -i -e "s|../sed/sed|/usr/gnu/bin/sed|" \
-                $(SOURCE_DIR)/testsuite/eval.good) ;
-COMPONENT_PRE_SYSTEM_TEST_ACTION += \
-	($(GSED) -i -e "s|../sed/sed|/usr/gnu/bin/sed|" \
-                $(SOURCE_DIR)/testsuite/eval.sed) ;
-
-COMPONENT_SYSTEM_TEST_ENV +=	SED=$(GNUBIN)/sed
-COMPONENT_SYSTEM_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
-COMPONENT_SYSTEM_TEST_DIR =	$(@D)/testsuite
+COMPONENT_TEST_MASTER =		$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
