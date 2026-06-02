@@ -10,9 +10,10 @@ unrelated root-only system files.
 Copy the configured relative libdir instead so stage0-sysroot only contains the
 Rust runtime tree that matches the installed toolchain layout.
 
---- rustc-1.95.0-src/src/bootstrap/src/core/build_steps/compile.rs
-+++ rustc-1.95.0-src/src/bootstrap/src/core/build_steps/compile.rs
-@@ -805,11 +805,17 @@
+--- rustc-1.96.0-src/src/bootstrap/src/core/build_steps/compile.rs
++++ rustc-1.96.0-src/src/bootstrap/src/core/build_steps/compile.rs
+@@ -804,15 +804,21 @@
+             }
          } else if compiler.stage == 0 {
              let sysroot = builder.out.join(compiler.host.triple).join("stage0-sysroot");
 +            let relative_libdir = builder.sysroot_libdir_relative(compiler);
