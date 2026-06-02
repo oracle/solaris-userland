@@ -28,17 +28,17 @@ BUILD_BITS = 	64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	jpeg
-COMPONENT_VERSION =	9.6
-PROJECT_VERSION =	9f
+COMPONENT_VERSION =	10
+PROJECT_VERSION =	$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL =	https://www.ijg.org/
 COMPONENT_SRC =		jpeg-$(PROJECT_VERSION)
 COMPONENT_ARCHIVE =	jpegsrc.v$(PROJECT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH =\
-	sha256:04705c110cb2469caa79fb71fba3d7bf834914706e9641a4589485c1f832565b
+	sha256:8b9eaa13242690ebd03e1728ab1edf97a81a78ed6e83624d493655f31ac95ab5
 COMPONENT_ARCHIVE_URL =	https://www.ijg.org/files/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	library/libjpeg
 
-COMPONENT_BAID =	336344
+COMPONENT_BAID =	391318
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -52,5 +52,13 @@ CONFIGURE_ENV += INSTALL="$(INSTALL) -D"
 COMPONENT_POST_CONFIGURE_ACTION += \
 	$(GSED) -i -e 's/hardcode_into_libs=yes/hardcode_into_libs=no/' $(@D)/libtool; \
 	$(GSED) -i -e 's/hardcode_libdir_flag_spec=.*/hardcode_libdir_flag_spec=""/' $(@D)/libtool;
+
+# For few builds we need to deliver original libjpeg.so.9 to avoid cross
+# consolidation seeding.
+COMPONENT_POST_INSTALL_ACTION.64 += \
+	$(CP) $(USRLIBDIR)/libjpeg.so.9.6.0 $(PROTOUSRLIBDIR) ; \
+	$(SYMLINK) libjpeg.so.9.6.0 $(PROTOUSRLIBDIR)/libjpeg.so.9 ; \
+	$(CP) $(USRLIBDIR)/$(MACH64)/libjpeg.so.9.6.0 $(PROTOUSRLIBDIR)/$(MACH64) ; \
+	$(SYMLINK) libjpeg.so.9.6.0 $(PROTOUSRLIBDIR)/$(MACH64)/libjpeg.so.9 ;
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
