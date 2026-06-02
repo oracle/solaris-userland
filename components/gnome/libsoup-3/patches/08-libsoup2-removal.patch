@@ -1,38 +1,39 @@
 Revert check in https://gitlab.gnome.org/GNOME/libsoup/-/commit/9596a869414bb0811f1e1f6009c950ca7af81189
 
---- a/libsoup/soup-init.c	2025-06-20 07:01:48.289466158 -0700
-+++ b/libsoup/soup-init.c	2025-06-20 07:03:06.778504721 -0700
-@@ -10,7 +10,6 @@
- #endif
+--- a/libsoup/soup-init.c
++++ b/libsoup/soup-init.c
+@@ -17,30 +17,8 @@
+ #include <windows.h>
  
- #include <glib/gi18n-lib.h>
--#include <gmodule.h>
- #include "gconstructor.h"
- 
- #ifdef G_OS_WIN32
-@@ -20,21 +19,6 @@
  HMODULE soup_dll;
+-#else
+-#include <dlfcn.h>
  #endif
  
 -static gboolean
 -soup2_is_loaded (void)
 -{
--    GModule *module = g_module_open (NULL, 0);
--    gpointer func;
--    gboolean result = FALSE;
+-	gboolean result = FALSE;
 -
--    if (g_module_symbol (module, "soup_uri_new", &func))
--        result = TRUE;
+-	/* Skip on PE/COFF, as it doesn't have a flat symbol namespace */
+-#ifndef G_OS_WIN32
+-	gpointer handle;
+-	gpointer func;
 -
--    g_module_close (module);
--
--    return result;
+-	handle = dlopen (NULL, RTLD_LAZY | RTLD_GLOBAL);
+-	if (handle != NULL) {
+-		func = dlsym (handle, "soup_uri_new");
+-		result = (func != NULL);
+-		dlclose (handle);
+-	}
+-#endif
+-	return result;
 -}
 -
  static void
  soup_init (void)
  {
-@@ -51,8 +35,6 @@
+@@ -57,8 +35,6 @@
  	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
  #endif
  
@@ -41,8 +42,8 @@ Revert check in https://gitlab.gnome.org/GNOME/libsoup/-/commit/9596a869414bb081
  }
  
  #if defined (G_OS_WIN32)
---- a/meson.build	2025-06-20 07:03:19.604586850 -0700
-+++ b/meson.build	2025-06-20 07:04:07.090318137 -0700
+--- a/meson.build
++++ b/meson.build
 @@ -101,14 +101,12 @@
  glib_required_version = '>= 2.70.0'
  glib_dep = dependency('glib-2.0', version : glib_required_version,
