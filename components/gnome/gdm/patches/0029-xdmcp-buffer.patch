@@ -1,0 +1,32 @@
+Ensure the XDMCP packet buffer is allocated before sending responses.
+
+GDM reuses one XdmcpBuffer for XDMCP receive and response paths.  The
+response helpers assume the buffer already has writable storage and ignore
+XdmcpWriteHeader() failures before writing additional fields.  Allocate the
+buffer when the display factory is initialized so XDMCP replies cannot
+dereference a null data pointer.
+
+Not suitable for upstream; legacy XDMCP support has been removed upstream.
+
+--- a/daemon/gdm-xdmcp-display-factory.c
++++ b/daemon/gdm-xdmcp-display-factory.c
+@@ -3413,6 +3413,11 @@
+ 
+         factory->session_serial = g_random_int ();
+ 
++        factory->buf.data = g_malloc0 (XDM_MAX_MSGLEN);
++        factory->buf.size = XDM_MAX_MSGLEN;
++        factory->buf.pointer = 0;
++        factory->buf.count = 0;
++
+         /* Fetch and store local hostname in XDMCP friendly format */
+         hostbuf[1023] = '\0';
+         if G_UNLIKELY (gethostname (hostbuf, 1023) != 0) {
+@@ -3461,6 +3466,7 @@
+         g_free (factory->hostname);
+         g_free (factory->multicast_address);
+         g_free (factory->willing_script);
++        g_free (factory->buf.data);
+ 
+         /* FIXME: Free servhost */
+ 
