@@ -1,0 +1,32 @@
+Solaris iconv may perform an implementation-defined conversion for
+non-identical characters instead of failing. In the tested conversions it
+substitutes question marks and reports success, so these negative tests do
+not match Solaris behavior.
+
+Upstream pull request:
+https://github.com/libarchive/libarchive/pull/3078
+
+--- a/libarchive/test/test_archive_string_conversion.c	2026-05-26 17:50:21.791331846 +0200
++++ b/libarchive/test/test_archive_string_conversion.c	2026-05-26 17:50:21.909040205 +0200
+@@ -966,6 +966,10 @@
+ DEFINE_TEST(test_archive_string_conversion_fail_c)
+ {
+ 	struct archive *a;
++#if defined(__sun)
++	skipping("Solaris iconv substitutes unrepresentable UTF-8 characters");
++	return;
++#endif
+ 
+ 	/* Test the C locale by not calling setlocale.  */
+ 
+@@ -983,6 +987,10 @@
+ {
+ 	struct archive *a;
+ 	struct archive_string_conv *sconv;
++#if defined(__sun)
++	skipping("Solaris iconv substitutes unrepresentable UTF-8 characters");
++	return;
++#endif
+ 
+ 	/* Test a Latin-1 locale.  */
+ 	if (
