@@ -29,24 +29,27 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		XML-LibXML
-COMPONENT_VERSION=	2.210
-HUMAN_VERSION=		2.0210
+COMPONENT_VERSION=	2.213
+HUMAN_VERSION=		2.0213
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a29bf3f00ab9c9ee04218154e0afc8f799bf23674eb99c1a9ed4de1f4059a48d
-COMPONENT_ARCHIVE_URL=	https://search.cpan.org/CPAN/authors/id/S/SH/SHLOMIF/$(COMPONENT_ARCHIVE)
-COMPONENT_PROJECT_URL=	http://search.cpan.org/~shlomif/XML-LibXML/
+    sha256:2af21c5d61ac34ea26a5fabf15ba5a5841e648f7189db3e33b6f28b5489802ab
+COMPONENT_ARCHIVE_URL=	https://cpan.metacpan.org/authors/id/T/TO/TODDR/$(COMPONENT_ARCHIVE)
+COMPONENT_PROJECT_URL=	https://metacpan.org/pod/XML::LibXML
 COMPONENT_BUGDB=	perl-mod/xml-libxml
 COMPONENT_ANITYA_ID=	3527
 
-COMPONENT_BAID=		363576
+COMPONENT_BAID=		394046
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/makemaker.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
+# Newer libxml2 headers emit extensive warnings from the generated XS file.
+CONFIGURE_OPTIONS += OPTIMIZE="-O3 -Wno-deprecated-declarations -Wno-discarded-qualifiers"
 
 # man pages go in the common area
 COMPONENT_INSTALL_ENV += INSTALLVENDORMAN3DIR=$(USRSHAREMAN3DIR)
