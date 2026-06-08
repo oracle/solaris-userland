@@ -1,6 +1,6 @@
 #!/bin/ksh
 #
-# Copyright (c) 2009, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2026, Oracle and/or its affiliates.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -67,7 +67,7 @@ start)
 
 	# Command to execute is found in second and further script arguments
 	shift
-	eval "$@  --option=logging=file"
+	"$@" --option=logging=file
 	check_running
 	;;
 stop)
