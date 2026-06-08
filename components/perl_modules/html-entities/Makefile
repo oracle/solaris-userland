@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 #
 
 CTF_MODE =		off	# Has no effect
@@ -30,18 +30,18 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		HTML-Parser
-COMPONENT_VERSION=	3.81
+COMPONENT_VERSION=	3.85
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c0910a5c8f92f8817edd06ccfd224ba1c2ebe8c10f551f032587a1fc83d62ff2
+    sha256:fd42ba6abe07241cf0ad57be246c3980065f683e4465e59b46af9efebc8e0c71
 COMPONENT_ARCHIVE_URL=	\
     https://cpan.metacpan.org/authors/id/O/OA/OALDERS/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://metacpan.org/pod/HTML::Entities
 COMPONENT_BUGDB=	perl-mod/html-entities
 COMPONENT_ANITYA_ID=	2967
 
-COMPONENT_BAID=		137470
+COMPONENT_BAID=		398638
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
