@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -28,6 +28,7 @@
 set name=pkg.fmri \
     value=pkg:/library/spell-checking/enchant@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="GNOME spell checker component"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=enchant
 set name=info.classification \
@@ -36,7 +37,7 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2006/202 value=LSARC/2006/462 \
     value=LSARC/2007/146 value=LSARC/2007/520 value=LSARC/2008/207 \
-    value=PSARC/2010/143
+    value=PSARC/2010/143 value=PSARC/2026/050
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/enchant
 file path=usr/bin/enchant-lsmod
@@ -57,6 +58,11 @@ link path=usr/lib/libenchant.so target=libenchant.so.$(COMPONENT_VERSION)
 file path=usr/lib/libenchant.so.$(COMPONENT_VERSION)
 link path=usr/lib/libenchant.so.1 target=libenchant.so.$(COMPONENT_VERSION)
 file path=usr/lib/pkgconfig/enchant.pc
+file release-notes/library-spell-checking-enchant.txt \
+    path=usr/share/doc/release-notes/library-spell-checking-enchant.txt \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/enchant/enchant.ordering
 file files/enchant-lsmod.1 path=usr/share/man/man1/enchant-lsmod.1
 file path=usr/share/man/man1/enchant.1
