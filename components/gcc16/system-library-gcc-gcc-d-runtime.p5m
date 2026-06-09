@@ -18,36 +18,38 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
-#
-
-#
-# This package manifest installs a copy of the newest GCC runtime bits in
-# /usr/lib for runtime linker to find and link against.  A copy of the bits
-# is being used instead of a mediated link so that transitivity doesn't cause
-# consumers of the interfaces to end up with dependencies on any version
-# specific runtime packaging that might exist on the system
+# Copyright (c) 2026, Oracle and/or its affiliates.
 #
 
 # search for these in the $(GCC_VERSION) installation area.
 <transform file path=usr/lib/(.*lib.*\.so.*) -> \
     set action.hash /$(GCC_BASEDIR)/lib/%<1>>
 set name=pkg.fmri \
-    value=pkg:/system/library/gcc/gcc-go-runtime24@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
-set name=pkg.summary value="GCC $(GCC_VERSION) - Go Runtime"
+    value=pkg:/system/library/gcc/gcc-d-runtime@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="GCC $(GCC_VERSION) - D Runtime"
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
-    value="the GNU Compiler Collection - Go Runtime Libraries"
+    value="the GNU Compiler Collection - D Runtime Libraries"
 set name=info.classification \
     value=org.opensolaris.category.2008:Development/GNU \
     value="org.opensolaris.category.2008:Development/Other Languages"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2025/075
+set name=org.opensolaris.arc-caseid value=PSARC/2026/054
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-link path=usr/lib/$(MACH64)/libgo.so.24 target=libgo.so.24.0.0
-file path=usr/lib/$(MACH64)/libgo.so.24.0.0
-link path=usr/lib/libgo.so.24 target=libgo.so.24.0.0
-file path=usr/lib/libgo.so.24.0.0
+#
+link path=usr/lib/$(MACH64)/libgdruntime.so target=libgdruntime.so.7.0.0
+link path=usr/lib/$(MACH64)/libgdruntime.so.7 target=libgdruntime.so.7.0.0
+file path=usr/lib/$(MACH64)/libgdruntime.so.7.0.0
+link path=usr/lib/$(MACH64)/libgphobos.so target=libgphobos.so.7.0.0
+link path=usr/lib/$(MACH64)/libgphobos.so.7 target=libgphobos.so.7.0.0
+file path=usr/lib/$(MACH64)/libgphobos.so.7.0.0
+link path=usr/lib/libgdruntime.so target=libgdruntime.so.7.0.0
+link path=usr/lib/libgdruntime.so.7 target=libgdruntime.so.7.0.0
+file path=usr/lib/libgdruntime.so.7.0.0
+link path=usr/lib/libgphobos.so target=libgphobos.so.7.0.0
+link path=usr/lib/libgphobos.so.7 target=libgphobos.so.7.0.0
+file path=usr/lib/libgphobos.so.7.0.0
+#
 license gcc.license \
-    license="GPLv3, GCC Runtime Library Exception v3.1, GPLv2, LGPLv3, LGPLv2.1, FDLv1.3, BSD, Apache v2.0"
+    license="GPLv3, GCC Runtime Library Exception v3.1, GPLv2, LGPLv3, LGPLv2.1, FDLv1.3, BSD, Apache v2.0, Boost Software License"

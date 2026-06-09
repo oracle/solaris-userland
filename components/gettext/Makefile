@@ -39,6 +39,7 @@ COMPONENT_BAID=		369328
 include $(WS_MAKE_RULES)/gnu-component.mk
 
 CONFIGURE_OPTIONS  +=		--libexecdir=$(USRLIB)
+CONFIGURE_OPTIONS  +=		--disable-d
 CONFIGURE_OPTIONS  +=		--disable-java
 CONFIGURE_OPTIONS  +=		--disable-libasprintf
 CONFIGURE_OPTIONS  +=		--without-emacs

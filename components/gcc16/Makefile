@@ -38,16 +38,15 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		gcc
-COMPONENT_VERSION=	15.2.0
+COMPONENT_VERSION=	16.1.0
 COMPONENT_PROJECT_URL=	https://gcc.gnu.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7294d65cc1a0558cb815af0ca8c7763d86f7a31199794ede3f630c0d1b0a5723
+    sha256:e064573bf072054577cde591761f51b60e7ec5db7d04936cb3d97b4d996d0efe
 COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/gcc/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	6502
-
-COMPONENT_BAID=		341329
+COMPONENT_BAID=		393654
 
 # Use gcc's default flags instead of userland's.
 CFLAGS=
@@ -62,7 +61,7 @@ include $(WS_MAKE_RULES)/common.mk
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-PYTHON_VERSION = 3.11
+PYTHON_VERSION = 3.13
 
 # The GNU compiler wants the GNU utilities.
 PATH=$(GNUBIN):$(USRBINDIR):$(USRDIR)/perl5/bin:$(GCC_ROOT)/bin
@@ -111,12 +110,12 @@ CONFIGURE_LIBDIR.64 = $(CONFIGURE_PREFIX)/lib
 
 CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS +=	--libexecdir=$(CONFIGURE_PREFIX)/lib
-CONFIGURE_OPTIONS +=	--enable-languages="ada,c,c++,fortran,go,objc"
+CONFIGURE_OPTIONS +=	--enable-languages="ada,c,c++,d,fortran,go,objc"
 CONFIGURE_OPTIONS +=	--enable-shared
 CONFIGURE_OPTIONS +=	--enable-initfini-array
 CONFIGURE_OPTIONS +=	--disable-rpath
 CONFIGURE_OPTIONS +=	--with-system-zlib
-CONFIGURE_OPTIONS +=	--with-build-config=no
+CONFIGURE_OPTIONS +=	--with-build-config=bootstrap-debug
 CONFIGURE_OPTIONS +=	--without-gnu-ld --with-ld=$(USRBINDIR)/ld
 CONFIGURE_OPTIONS +=	--with-gnu-as --with-as=$(GNUBIN)/as
 
@@ -194,6 +193,7 @@ license: install
 		gmon.license \
 		$(SOURCE_DIR)/libgo/LICENSE \
 		$(SOURCE_DIR)/libcody/LICENSE \
+		$(SOURCE_DIR)/libphobos/libdruntime/LICENSE.txt \
 	; do \
 	  (echo '-----------------------------------------------------------------------------' && \
 	  cat $$license) >> $(COMPONENT_NAME).license ; \
@@ -215,11 +215,13 @@ PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc-ar
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc-nm
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc-ranlib
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gccgo
+PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gdc
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gfortran
 
 
 REQUIRED_PACKAGES += compress/zstd
-REQUIRED_PACKAGES += developer/gcc/gcc-gnat-15
+REQUIRED_PACKAGES += developer/gcc/gcc-d-16
+REQUIRED_PACKAGES += developer/gcc/gcc-gnat-16
 REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/isl
