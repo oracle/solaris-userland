@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2026, Oracle and/or its affiliates.
 #
 
 
@@ -33,6 +33,8 @@ function usage {
 	cat <<-EOT
 	gen-components --help
 	gen-components --owners owners_file --output file [ --repo IPS_repo_location ] [ --hgroot ws root ]
+	    [ --hgweb-base-url url ] [ --aria-base-url url ] [ --arc-base-url url ]
+	    [ --bugdb-base-url url ] [ --baid-base-url url ]
 	
 	Generates version/baid/license report of a whole gate.
 	EOT
@@ -47,12 +49,21 @@ OWNERS=
 OUTPUT=
 REPO=
 WSROOT=
+HGWEB_BASE_URL=
+ARIA_BASE_URL=
+ARC_BASE_URL=
+BUGDB_URL=
+BAID_URL=
 
 while [ $# -gt 0 ]; do
 	case "$1" in
-		--owners|--output|--repo|--hgroot)
+		--owners|--output|--repo|--hgroot|--hgweb-base-url|--aria-base-url|--arc-base-url|--bugdb-url|--baid-url|--bugdb-base-url|--baid-base-url)
 			[ $# -gt 1 ] || fail "Option $1 requires an argument"
 			VAR="${1#--}"
+			VAR="${VAR//-/_}"
+			case "$VAR" in
+				bugdb_base_url|baid_base_url) VAR="${VAR/_base_url/_url}" ;;
+			esac
 			printf -v "${VAR^^}" '%s' "$2"
 			shift 2
 			;;
@@ -79,14 +90,25 @@ pkgrepo info -s $REPO >/dev/null || fail "Repo '$REPO' is not accessible?"
 
 typeset -p OWNERS OUTPUT REPO WSROOT
 
+function add_make_arg {
+	[ -n "$2" ] || return 0
+	local value
+	printf -v value '%q' "$2"
+	HOOK="$HOOK $1=$value"
+}
 
 function main {
 	write_preamble >> "$OUTPUT"
 	cd "$WSROOT/components"
 
 	HOOK="gmake -f Makefile -f $WSROOT/make-rules/component-report component-report"
-	HOOK="$HOOK COMPONENT_REPORT_RE_RM_LIST=$OWNERS"
-	HOOK="$HOOK COMPONENT_REPORT_REPO=$REPO"
+	add_make_arg COMPONENT_REPORT_RE_RM_LIST "$OWNERS"
+	add_make_arg COMPONENT_REPORT_REPO "$REPO"
+	add_make_arg HGWEB_BASE_URL "$HGWEB_BASE_URL"
+	add_make_arg ARIA_BASE_URL "$ARIA_BASE_URL"
+	add_make_arg ARC_BASE_URL "$ARC_BASE_URL"
+	add_make_arg BUGDB_URL "$BUGDB_URL"
+	add_make_arg BAID_URL "$BAID_URL"
 	gmake -j 50 \
 		COMPONENT_HOOK="$HOOK" \
 		component-hook

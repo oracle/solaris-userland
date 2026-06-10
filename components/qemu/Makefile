@@ -73,7 +73,7 @@ CONFIGURE_ENV += AR=/usr/bin/ar
 # To build qemu-img.1 man page, we need the sphinx_rtd_theme which
 # isn't in our package.  Uncomment the following lines to build it:
 #CONFIGURE_OPTIONS += --enable-docs --python=/usr/bin/python3.11
-#CONFIGURE_ENV += https_proxy=www-proxy.us.oracle.com:80
+#CONFIGURE_ENV += https_proxy=<your https proxy>
 
 REQUIRED_PACKAGES += developer/build/meson
 REQUIRED_PACKAGES += developer/build/ninja

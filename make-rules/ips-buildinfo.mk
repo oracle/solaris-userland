@@ -103,4 +103,4 @@ BUILD_VERSION ?=  11.4-$(BRANCHID)
 
 # Set a default reference repository against which pkglint is run, in case it
 # hasn't been set in the environment.
-$(call read-config,CANONICAL_REPO,http://ipkg.us.oracle.com/solaris11/trunk)
+$(call read-config,CANONICAL_REPO,http://pkg.oracle.com/solaris/release/)

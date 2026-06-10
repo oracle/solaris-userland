@@ -49,15 +49,17 @@ endef
 # for a few components where the communities either no longer provide matching
 # source archives or we have changes that aren't reflected in their archives or
 # anywhere else.
-$(call read-config,INTERNAL_ARCHIVE_MIRROR,http://ul.webad1phx.solarisx86phx.oraclevcn.com/source-archives)
+$(call read-config,INTERNAL_ARCHIVE_MIRROR,)
 
 # The location of an external mirror of community source archives that we build
 # in this gate.  The external mirror is a replica of the internal mirror.
 EXTERNAL_ARCHIVE_MIRROR =
 
-# Default to looking for source archives on the internal mirror and the external
-# mirror before we hammer on the community source archive repositories.
+# Look for source archives on configured mirrors before we hammer on the
+# community source archive repositories.
+ifneq   ($(strip $(INTERNAL_ARCHIVE_MIRROR)),)
 export DOWNLOAD_SEARCH_PATH +=	$(INTERNAL_ARCHIVE_MIRROR)
+endif
 ifneq   ($(strip $(EXTERNAL_ARCHIVE_MIRROR)),)
 export DOWNLOAD_SEARCH_PATH +=	$(EXTERNAL_ARCHIVE_MIRROR)
 endif
