@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
@@ -29,16 +29,16 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		DBI
-COMPONENT_VERSION=	1.647
+COMPONENT_VERSION=	1.648
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
-COMPONENT_ARCHIVE_HASH=	sha256:0df16af8e5b3225a68b7b592ab531004ddb35a9682b50300ce50174ad867d9aa
+COMPONENT_ARCHIVE_HASH=	sha256:ef266aad6010ce2eabb7e465ebd73ca3020bc58150f6989bd89c2b8f9bac6a86
 COMPONENT_ARCHIVE_URL=	https://cpan.metacpan.org/authors/id/H/HM/HMBRAND/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://metacpan.org/pod/DBI
 COMPONENT_BUGDB=	perl-mod/dbi
 COMPONENT_ANITYA_ID=	2811
 
-COMPONENT_BAID=		195734
+COMPONENT_BAID=		399888
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
