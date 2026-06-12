@@ -1,0 +1,16 @@
+The ExternalProject DownloadTimeout test is expected to fail.  Keep the
+failure local and deterministic instead of opening a no-timeout direct
+connection to cmake.org, which can hang in the Solaris build environment.
+
+Not suitable for upstream.
+
+--- cmake-4.3.3/Tests/RunCMake/ExternalProject/DownloadTimeout.cmake
++++ cmake-4.3.3/Tests/RunCMake/ExternalProject/DownloadTimeout.cmake
+@@ -2,4 +2,6 @@ include(ExternalProject)
+ set(source_dir "${CMAKE_CURRENT_BINARY_DIR}/DownloadTimeout")
+ file(REMOVE_RECURSE "${source_dir}")
+ file(MAKE_DIRECTORY "${source_dir}")
+-ExternalProject_Add(MyProj URL "http://cmake.org/invalid_file.tar.gz")
++ExternalProject_Add(MyProj
++  URL "http://127.0.0.1:1/invalid_file.tar.gz"
++  TIMEOUT 2)

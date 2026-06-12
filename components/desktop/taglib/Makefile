@@ -44,6 +44,7 @@ include $(WS_MAKE_RULES)/common.mk
 
 CXXFLAGS += -std=c++11
 CMAKE_OPTIONS += -DBUILD_SHARED_LIBS=ON
+CMAKE_OPTIONS += -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 # Override values from make-rules/cmake.mk to get correct pkgconfig files.
 CMAKE_OPTIONS.32 += -DCMAKE_INSTALL_LIBDIR="lib"

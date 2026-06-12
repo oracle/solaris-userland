@@ -39,6 +39,8 @@ BUILD_STYLE= cmake
 
 include $(WS_MAKE_RULES)/common.mk
 
+CMAKE_OPTIONS += -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+
 # elfedit removes wrong RUNPATH/RPATH 
 COMPONENT_POST_INSTALL_ACTION.64 = ( \
 	for i in bin/zipcmp bin/zipmerge bin/ziptool \

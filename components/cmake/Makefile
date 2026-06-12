@@ -29,15 +29,15 @@ CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cmake
-CMAKE_MAJOR_VERSION=	3.24
-COMPONENT_VERSION=	$(CMAKE_MAJOR_VERSION).0
+CMAKE_MAJOR_VERSION=	4.3
+COMPONENT_VERSION=	$(CMAKE_MAJOR_VERSION).3
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c2b61f7cdecb1576cad25f918a8f42b8685d88a832fd4b62b9e0fa32e915a658
+    sha256:cba4bb7a44edf2877bb6f059932896383babe435b3a8c3b5df48b4aa41c9bb85
 COMPONENT_ARCHIVE_URL=	https://www.cmake.org/files/v$(CMAKE_MAJOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  http://www.cmake.org/
 COMPONENT_ANITYA_ID=	306
 
-COMPONENT_BAID=		128604
+COMPONENT_BAID=		399906
 
 # configure in cmake does not accept many of the options set in
 # configure.mk (CC=, CXX=, --bindir, --libdir, --sbindir).
@@ -103,6 +103,8 @@ COMPONENT_BUILD_TARGETS =	all
 PKG_MACROS+= CMAKE_MAJOR_VERSION=$(CMAKE_MAJOR_VERSION)
 
 # The default version of gfortran compiler should correspond to gcc and g++ versions.
+COMPONENT_TEST_ENV += CC="$(CC)"
+COMPONENT_TEST_ENV += CXX="$(CXX)"
 COMPONENT_TEST_ENV += FC="$(GCC_ROOT)/bin/gfortran"
 # Disable term colors to avoid test failures (actual and expected output mismatch).
 COMPONENT_TEST_ENV += CLICOLOR=0

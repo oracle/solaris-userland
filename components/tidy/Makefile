@@ -46,6 +46,7 @@ SYSTEM_TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 CMAKE_OPTIONS += -DBUILD_TAB2SPACE=ON
+CMAKE_OPTIONS += -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 # Override values from make-rules/cmake.mk to get correct pkgconfig files.
 CMAKE_OPTIONS.32 += -DLIB_INSTALL_DIR="lib"
