@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through volatile">
@@ -49,6 +49,7 @@ file path=usr/include/$(COMPONENT_NAME)/crypto.h
 file path=usr/include/$(COMPONENT_NAME)/dtls.h
 file path=usr/include/$(COMPONENT_NAME)/gnutls.h
 file path=usr/include/$(COMPONENT_NAME)/gnutlsxx.h
+file path=usr/include/$(COMPONENT_NAME)/hpke.h
 file path=usr/include/$(COMPONENT_NAME)/ocsp.h
 file path=usr/include/$(COMPONENT_NAME)/openpgp.h
 file path=usr/include/$(COMPONENT_NAME)/pkcs11.h
@@ -61,34 +62,16 @@ file path=usr/include/$(COMPONENT_NAME)/tpm.h
 file path=usr/include/$(COMPONENT_NAME)/urls.h
 file path=usr/include/$(COMPONENT_NAME)/x509-ext.h
 file path=usr/include/$(COMPONENT_NAME)/x509.h
-link path=usr/lib/$(MACH64)/libgnutls.so target=libgnutls.so.30.40.4
-link path=usr/lib/$(MACH64)/libgnutls.so.30 target=libgnutls.so.30.40.4
-file path=usr/lib/$(MACH64)/libgnutls.so.30.40.4
+link path=usr/lib/$(MACH64)/libgnutls.so target=libgnutls.so.30.42.0
+link path=usr/lib/$(MACH64)/libgnutls.so.30 target=libgnutls.so.30.42.0
+file path=usr/lib/$(MACH64)/libgnutls.so.30.42.0
 link path=usr/lib/$(MACH64)/libgnutlsxx.so target=libgnutlsxx.so.30.0.0
 link path=usr/lib/$(MACH64)/libgnutlsxx.so.30 target=libgnutlsxx.so.30.0.0
 file path=usr/lib/$(MACH64)/libgnutlsxx.so.30.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/gnutls.pc
-file path=usr/lib/grub/wanboot/gnutls/abstract.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/compat.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/crypto.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/dtls.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/gnutls.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/ocsp.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/openpgp.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/pkcs11.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/pkcs12.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/pkcs7.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/self-test.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/socket.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/system-keys.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/tpm.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/urls.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/x509-ext.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/gnutls/x509.h mode=0444 variant.arch=i386
-file path=usr/lib/grub/wanboot/libgnutls.a mode=0444 variant.arch=i386
-link path=usr/lib/libgnutls.so target=libgnutls.so.30.40.4
-link path=usr/lib/libgnutls.so.30 target=libgnutls.so.30.40.4
-file path=usr/lib/libgnutls.so.30.40.4
+link path=usr/lib/libgnutls.so target=libgnutls.so.30.42.0
+link path=usr/lib/libgnutls.so.30 target=libgnutls.so.30.42.0
+file path=usr/lib/libgnutls.so.30.42.0
 link path=usr/lib/libgnutlsxx.so target=libgnutlsxx.so.30.0.0
 link path=usr/lib/libgnutlsxx.so.30 target=libgnutlsxx.so.30.0.0
 file path=usr/lib/libgnutlsxx.so.30.0.0
@@ -165,6 +148,9 @@ file path=usr/share/man/man3gnutls/gnutls_anti_replay_init.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_anti_replay_set_add_function.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_anti_replay_set_ptr.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_anti_replay_set_window.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_audit_current_context.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_audit_pop_context.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_audit_push_context.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_auth_client_get_type.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_auth_get_type.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_auth_server_get_type.3gnutls
@@ -382,6 +368,7 @@ file path=usr/share/man/man3gnutls/gnutls_handshake_set_random.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_handshake_set_read_function.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_handshake_set_secret_function.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_handshake_set_timeout.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_handshake_update_receiving_key.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_handshake_write.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_hash.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_hash_copy.3gnutls
@@ -413,6 +400,14 @@ file path=usr/share/man/man3gnutls/gnutls_hmac_get_len.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_hmac_init.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_hmac_output.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_hmac_set_nonce.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_hpke_decap.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_hpke_deinit.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_hpke_derive_keypair.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_hpke_encap.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_hpke_export.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_hpke_init.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_hpke_open.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_hpke_seal.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_idna_map.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_idna_reverse_map.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_init.3gnutls
@@ -532,6 +527,7 @@ file path=usr/share/man/man3gnutls/gnutls_pkcs11_obj_flags_get_str.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pkcs11_obj_get_exts.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pkcs11_obj_get_flags.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pkcs11_obj_get_info.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_pkcs11_obj_get_pk_algorithm.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pkcs11_obj_get_ptr.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pkcs11_obj_get_type.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_pkcs11_obj_import_url.3gnutls
@@ -706,7 +702,9 @@ file path=usr/share/man/man3gnutls/gnutls_protocol_get_version.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_protocol_list.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_protocol_set_enabled.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_allocate_client_credentials.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_psk_allocate_client_credentials2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_allocate_server_credentials.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_psk_allocate_server_credentials2.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_client_get_hint.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_format_imported_identity.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_psk_free_client_credentials.3gnutls
@@ -783,6 +781,7 @@ file path=usr/share/man/man3gnutls/gnutls_record_discard_queued.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_get_direction.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_get_discarded.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_get_max_early_data_size.3gnutls
+file path=usr/share/man/man3gnutls/gnutls_record_get_max_send_size.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_get_max_size.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_get_state.3gnutls
 file path=usr/share/man/man3gnutls/gnutls_record_overhead_size.3gnutls
@@ -1319,8 +1318,3 @@ license gnutls.license license="GPLv3, LGPLv2.1, FDLv1.3" \
     com.oracle.info.description="the GnuTLS library" \
     com.oracle.info.name=$(COMPONENT_NAME) \
     com.oracle.info.version=$(IPS_COMPONENT_VERSION)
-license gnutls.license license="GPLv3, LGPLv2.1, FDLv1.3." \
-    com.oracle.info.baid=$(COMPONENT_BAID_1) \
-    com.oracle.info.description="the GnuTLS library" \
-    com.oracle.info.name=$(COMPONENT_NAME_1) \
-    com.oracle.info.version=$(COMPONENT_VERSION_1)

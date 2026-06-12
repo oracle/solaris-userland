@@ -1,0 +1,42 @@
+From 45008119d0f8b696fef2e3904abe121959d24bd5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Niels=20M=C3=B6ller?= <nisse@lysator.liu.se>
+Date: Sun, 6 Jul 2025 23:09:56 +0200
+Subject: [PATCH] Fix 32-bit ecc_secp192r1_modp to work with the sc-* tests.
+
+Upstream commit:
+https://git.lysator.liu.se/nettle/nettle/-/commit/45008119d0f8b696fef2e3904abe121959d24bd5
+
+The upstream ChangeLog hunk is omitted because it applies after the 3.10.2
+release ChangeLog context.
+
+---
+ ecc-secp192r1.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/ecc-secp192r1.c b/ecc-secp192r1.c
+index 6097622b..9cb29cef 100644
+--- a/ecc-secp192r1.c
++++ b/ecc-secp192r1.c
+@@ -65,7 +65,7 @@ ecc_secp192r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp, mp_limb_t
+   cy = mpn_add_n (xp + 2, xp + 2, xp + 8, 4);
+   cy = sec_add_1 (xp + 6, xp + 6, 2, cy);
+   cy += mpn_add_n (xp + 4, xp + 4, xp + 8, 4);
+-  assert (cy <= 2);
++  assert_maybe (cy <= 2);
+ 
+   xp[8] = cy;
+ 
+@@ -75,9 +75,9 @@ ecc_secp192r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp, mp_limb_t
+   cy += mpn_add_n (xp + 2, xp + 2, xp + 6, 3);
+   cy = sec_add_1 (xp + 5, xp + 5, 1, cy);
+   
+-  assert (cy <= 1);
++  assert_maybe (cy <= 1);
+   cy = mpn_cnd_add_n (cy, rp, xp, ecc_Bmodp, 6);
+-  assert (cy == 0);  
++  assert_maybe (cy == 0);
+ }
+ #elif GMP_NUMB_BITS == 64
+ /* p is 3 limbs, p = B^3 - B - 1 */
+-- 
+GitLab

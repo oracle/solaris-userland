@@ -2,11 +2,9 @@ symbols-test started to fail on SPARC when we moved from Studio 12.4 to 12.6.
 The reason is that the new version now adds __cg_vis_memcpy function.
 We need to add another exception for this to the test.
 
-diff --git a/testsuite/symbols-test b/testsuite/symbols-test
-index 01ca30c..c50967a 100755
---- a/testsuite/symbols-test
-+++ b/testsuite/symbols-test
-@@ -18,9 +18,11 @@ fi
+--- nettle-3.10.2/testsuite/symbols-test
++++ nettle-3.10.2/testsuite/symbols-test
+@@ -18,9 +18,11 @@ #   code.
  # * LLVM shipped with Xcode/CLT 10+ on macOS builds the symbol
  #   ____chkstk_darwin into the majority of binaries/libraries, including
  #   both the libraries checked here.

@@ -27,14 +27,14 @@ CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nettle
-COMPONENT_VERSION=	3.7.3
+COMPONENT_VERSION=	3.10.2
 COMPONENT_PROJECT_URL=	http://www.lysator.liu.se/~nisse/nettle/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:661f5eb03f048a3b924c3a8ad2515d4068e40f67e774e8a26827658007e3bcf0
+    sha256:fe9ff51cb1f2abb5e65a6b8c10a92da0ab5ab6eaf26e7fc2b675c45f1fb519b5
 COMPONENT_BUGDB=	library/nettle
 COMPONENT_ANITYA_ID=	2073
 
-COMPONENT_BAID=	107603
+COMPONENT_BAID=	398630
 
 ifeq ($(MACH),i386)
 
@@ -77,6 +77,7 @@ CFLAGS.wanboot += -mno-stack-arg-probe
 CONFIGURE_OPTIONS  += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS  += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS  += --with-include-path=$(USRINCDIR)/gmp
+CONFIGURE_OPTIONS  += --disable-fat
 # Disable __builtin_bswap64 to avoid linkage errors.
 CONFIGURE_OPTIONS  += nettle_cv_c_builtin_bswap64=no
 
@@ -103,7 +104,14 @@ COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABL
 # test results to try to normalize them.
 COMPONENT_TEST_TRANSFORMS += \
     '-e "1,/run-tests/d"' \
-    '-e "/^e/d"' 
+    '-e "/^PASS:/b"' \
+    '-e "/^SKIP:/b"' \
+    '-e "/^FAIL:/b"' \
+    '-e "/^=\\+$$/b"' \
+    '-e "/^All [0-9][0-9]* tests passed$$/b"' \
+    '-e "d"'
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
