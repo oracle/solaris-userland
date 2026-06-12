@@ -1,0 +1,17 @@
+#
+# The 00-deadlock.patch removes the call to init_lib(); as all other
+# applications allrady call init_lib(), we add it to ntptime.
+#
+# This bug does not exist in upstream.
+#
+--- util/ntptime.c.org	2020-03-04 00:41:29.000000000 +0100
++++ util/ntptime.c	2026-06-11 12:39:57.700393495 +0200
+@@ -110,6 +110,8 @@
+ 	int cost	= 0;
+ 	volatile int rawtime	= 0;
+ 
++	init_lib();
++
+ 	ZERO(ntx);
+ 	progname = argv[0];
+ 	while ((ch = ntp_getopt(argc, argv, optargs)) != EOF) {
