@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2025, Oracle and/or its affiliates.
+ * Copyright (c) 2020, 2026, Oracle and/or its affiliates.
  */
 
 #include <config.h>
@@ -148,6 +148,46 @@ int copy_to_output(char *line, int lineno, va_list args) {
  * Info
  */
 
+static char *ps_escape(const char *src) {
+	const unsigned char *p;
+	char *dst;
+	char *q;
+	size_t len;
+
+	if (!src)
+		src = "";
+
+	len = strlen(src);
+	if (len > (((size_t)-1) - 1) / 4) {
+		errno = ENOMEM;
+		return NULL;
+	}
+
+	if (!(dst = malloc(len * 4 + 1)))
+		return NULL;
+
+	for (p = (const unsigned char *)src, q = dst; *p; p++)
+		switch (*p) {
+		case '(':
+		case ')':
+		case '\\':
+			*q++ = '\\';
+			*q++ = *p;
+			break;
+		default:
+			if (*p < 0x20 || *p >= 0x7f) {
+				sprintf(q, "\\%03o", *p);
+				q += 4;
+			} else
+				*q++ = *p;
+			break;
+		}
+
+	*q = '\0';
+
+	return dst;
+}
+
 void free_info(struct info_t *info) {
 	if (info->Job_Printer) free(info->Job_Printer);
 	if (info->Job_Host) free(info->Job_Host);
@@ -173,8 +213,10 @@ void free_info(struct info_t *info) {
 		free(date);\
 	if (hash)\
 		free(hash);\
-	if (file_label)\
-		m_label_free(file_label)
+	if (file_label) {\
+		m_label_free(file_label);\
+		file_label = NULL;\
+	}
 #define GI_DUP(var, str)\
 	{\
 		char *gi_dup_tmp = str;\
@@ -183,15 +225,46 @@ void free_info(struct info_t *info) {
 			FAIL("strdup failed: %s.", strerror(errno));\
 		}\
 	}
+#define GI_ESC(var, str)\
+	{\
+		char *gi_dup_tmp = str;\
+		if (gi_dup_tmp && !(var = ps_escape(gi_dup_tmp))) {\
+			GI_CLEANUP;\
+			FAIL("ps_escape failed.");\
+		}\
+	}
 #define GI_ASPRINTF(var, fmt, ...)\
 	if (asprintf(&(var), fmt, __VA_ARGS__) == -1) {\
 		GI_CLEANUP;\
 		FAIL("asprintf failed: %s.", strerror(errno));\
 	}
-#define GI_LABEL_TO_STR(var, name, names)\
-	if (label_to_str(file_label, &(var), name, names) != 0) {\
-		GI_CLEANUP;\
-		FAIL("label_to_str " #name " failed: %s.", strerror(errno));\
+#define GI_ESC_ASPRINTF(var, fmt, ...)\
+	{\
+		char *tmp;\
+		if (asprintf(&tmp, fmt, __VA_ARGS__) == -1) {\
+			GI_CLEANUP;\
+			FAIL("asprintf failed: %s.", strerror(errno));\
+		}\
+		if ((var = ps_escape(tmp)) == NULL) {\
+			free(tmp);\
+			GI_CLEANUP;\
+			FAIL("ps_escape failed.");\
+		}\
+		free(tmp);\
+	}
+#define GI_ESC_LABEL_TO_STR(var, name, names)\
+	{\
+		char *tmp;\
+		if (label_to_str(file_label, &tmp, name, names) != 0) {\
+			GI_CLEANUP;\
+			FAIL("label_to_str " #name " failed: %s.", strerror(errno));\
+		}\
+		if ((var = ps_escape(tmp)) == NULL) {\
+			free(tmp);\
+			GI_CLEANUP;\
+			FAIL("ps_escape failed.");\
+		}\
+		free(tmp);\
 	}
 #define GI_TRUSTED_FAIL(fmt, ...)\
 	{\
@@ -228,6 +301,7 @@ int get_info(struct info_t *info, cf_filter_data_t *data, int inputfd, int *bann
 			size_t chars;
 		       	if ((chars = strcspn(sa, "@!"))) {
 				free(host);
+				host = NULL;
 				GI_DUP(host, ((char *) sa) + chars + 1);
 			}
 		}
@@ -260,19 +334,19 @@ int get_info(struct info_t *info, cf_filter_data_t *data, int inputfd, int *bann
 	 * Fill info
 	 */
 
-	GI_DUP(info->Job_Printer, data->printer);
-	GI_DUP(info->Job_Host, host);
-	GI_DUP(info->Job_User, data->job_user);
-	GI_ASPRINTF(info->Job_JobID, "%s-%d", data->printer, data->job_id);
-	GI_DUP(info->Job_Title, data->job_title);
-	GI_DUP(info->Job_DoPageLabels, "NO");
-	GI_DUP(info->Job_Date, date);
-	GI_DUP(info->Job_Hash, hash);
-	GI_LABEL_TO_STR(info->Job_Classification, PRINTER_TOP_BOTTOM, DEF_NAMES);
-	GI_LABEL_TO_STR(info->Job_Protect, PRINTER_LABEL, DEF_NAMES);
-	GI_LABEL_TO_STR(info->Job_Caveats, PRINTER_CAVEATS, DEF_NAMES);
-	GI_LABEL_TO_STR(info->Job_Channels, PRINTER_CHANNELS, DEF_NAMES);
-	GI_LABEL_TO_STR(info->Job_SL_Internal, M_LABEL, LONG_NAMES);
+	GI_ESC(info->Job_Printer, data->printer);
+	GI_ESC(info->Job_Host, host);
+	GI_ESC(info->Job_User, data->job_user);
+	GI_ESC_ASPRINTF(info->Job_JobID, "%s-%d", data->printer, data->job_id);
+	GI_ESC(info->Job_Title, data->job_title);
+	GI_ESC(info->Job_DoPageLabels, "NO");
+	GI_ESC(info->Job_Date, date);
+	GI_ESC(info->Job_Hash, hash);
+	GI_ESC_LABEL_TO_STR(info->Job_Classification, PRINTER_TOP_BOTTOM, DEF_NAMES);
+	GI_ESC_LABEL_TO_STR(info->Job_Protect, PRINTER_LABEL, DEF_NAMES);
+	GI_ESC_LABEL_TO_STR(info->Job_Caveats, PRINTER_CAVEATS, DEF_NAMES);
+	GI_ESC_LABEL_TO_STR(info->Job_Channels, PRINTER_CHANNELS, DEF_NAMES);
+	GI_ESC_LABEL_TO_STR(info->Job_SL_Internal, M_LABEL, LONG_NAMES);
 
 	GI_CLEANUP;
 
@@ -339,7 +413,7 @@ int emit_dict(cups_file_t *fp, struct info_t *info){
 	if (cupsFilePrintf(fp, 
 		"%%!PS-Adobe-3.0\n"
 		"%%%%\n"
-		"%%%% Copyright (c) 2020, 2025, Oracle and/or its affiliates.\n"
+		"%%%% Copyright (c) 2020, 2026, Oracle and/or its affiliates.\n"
 		"%%%%\n"
 		"%%%%Pages: 1\n"
 		"%%%%EndComments\n"

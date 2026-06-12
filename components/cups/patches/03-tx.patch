@@ -288,7 +288,7 @@ Trusted Extension implementation complete.
  
  /*
   * Local functions...
-@@ -660,17 +665,37 @@ return (-1);
+@@ -660,17 +665,38 @@ return (-1);
    printer = cupsdFindDest(job->dest);
    attr    = ippFindAttribute(job->attrs, "job-sheets", IPP_TAG_NAME);
  
@@ -299,14 +299,15 @@ Trusted Extension implementation complete.
 -   /*
 -    * Yes...
 -    */
-+      attr && (attr->num_values > 1 || is_system_labeled()))
++      attr && (attr->num_values > 1 ||
++      (attr->num_values > 0 && is_system_labeled())))
 +#else
 +  if (printer &&
 +      !(printer->type & (CUPS_PRINTER_REMOTE | CUPS_PRINTER_IMPLICIT)) &&
 +      attr && (attr->num_values > 1))  
 +#endif /* HAVE_TSOL */ 
 + {
-+    char *job_sheets_banner = attr->values[1].string.text;
++    char *job_sheets_banner = attr->num_values > 1 ? attr->values[1].string.text : attr->values[0].string.text;
 + 
 +#if defined(HAVE_TSOL)
 +    if (is_system_labeled()) {
