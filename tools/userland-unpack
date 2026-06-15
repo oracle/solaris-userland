@@ -33,17 +33,27 @@
 
 import argparse
 import os
+import re
+import shlex
 import stat
+import subprocess
 import tempfile
-
-from typing import Tuple
 
 # By default the verbose mode is off and thus verbose does nothing
 verbose = lambda *a, **k: None
 
+RUBY_VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+$")
+GTAR_EXTRACT = ["gtar", "-xf", "-"]
 
-def uncompress_unpack_commands(filename: str) -> Tuple[str, str]:
-    """Get shell commands to uncompress and unpack given archive.
+
+def format_commands(commands: tuple[list[str], ...]) -> str:
+    """Render commands for diagnostics."""
+
+    return " | ".join(shlex.join(command) for command in commands)
+
+
+def extract_commands(filename: str) -> tuple[list[str], ...]:
+    """Get commands to extract the given archive.
 
     Several archives are supported with following results:
 
@@ -52,43 +62,64 @@ def uncompress_unpack_commands(filename: str) -> Tuple[str, str]:
       .Z                   -> /usr/bin/uncompress -c IN   | gtar -xf -
       .7z                  -> /usr/bin/7z --s IN          | gtar -xf -
       .xz                  -> /usr/bin/xz -dc IN          | gtar -xf -
-      .jar                 -> /bin/cat IN                 | jar xf -
+      .jar                 -> /usr/bin/jar xf IN
       .zip                 -> /usr/bin/unzip -qo IN
       .gem                 -> /usr/ruby/RUBYVER/bin/gem unpack IN
       .tlz4 | .tar.lz4     -> /usr/bin/unlz4 -c           | gtar -xf -
     """
 
-    uncompress = "/bin/cat"
-    unpack = " | gtar -xf -"
-
     if filename.endswith((".bz2", ".tbz", ".tbz2")):
-        uncompress = "/usr/bin/bzip2 -dc"
+        return (["/usr/bin/bzip2", "-dc", filename], GTAR_EXTRACT)
     elif filename.endswith((".gz", ".tgz")):
-        uncompress = "/usr/bin/gzip -dc"
+        return (["/usr/bin/gzip", "-dc", filename], GTAR_EXTRACT)
     elif filename.endswith(".Z"):
-        uncompress = "/usr/bin/uncompress -c"
+        return (["/usr/bin/uncompress", "-c", filename], GTAR_EXTRACT)
     elif filename.endswith(".7z"):
-        uncompress = "/usr/bin/7z --s"
+        return (["/usr/bin/7z", "--s", filename], GTAR_EXTRACT)
     elif filename.endswith(".xz"):
-        uncompress = "/usr/bin/xz -dc"
+        return (["/usr/bin/xz", "-dc", filename], GTAR_EXTRACT)
+    elif filename.endswith((".tlz4", ".tar.lz4")):
+        return (["/usr/bin/unlz4", "-c", filename], GTAR_EXTRACT)
+    elif filename.endswith(".jar"):
+        return (["/usr/bin/jar", "xf", filename],)
     elif filename.endswith(".zip"):
-        uncompress = "/usr/bin/unzip -qo"
+        return (["/usr/bin/unzip", "-qo", filename],)
     elif filename.endswith(".gem"):
         ruby_ver = os.getenv("RUBY_VERSION")
         if not ruby_ver:
             raise RuntimeError("RUBY_VERSION environment variable is not set")
-        uncompress = f"/usr/ruby/{ruby_ver}/bin/gem unpack"
-    elif filename.endswith((".tlz4", ".tar.lz4")):
-        uncompress = "/usr/bin/unlz4 -c"
+        if not RUBY_VERSION_RE.fullmatch(ruby_ver):
+            raise RuntimeError(
+                f"Unsupported RUBY_VERSION {ruby_ver!r}; expected <major>.<minor>"
+            )
+        return ([f"/usr/ruby/{ruby_ver}/bin/gem", "unpack", filename],)
 
-    if filename.endswith((".zip", ".gem")):
-        unpack = ""
-    elif filename.endswith((".jar")):
-        unpack = " | jar xf -"
+    return (["/bin/cat", filename], GTAR_EXTRACT)
 
-    verbose(f"command: {uncompress} {filename} {unpack}")
 
-    return uncompress, unpack
+def extract_archive(tempdir: str, commands: tuple[list[str], ...]) -> None:
+    """Extract the selected archive into a temporary directory.
+    """
+
+    if len(commands) == 1:
+        subprocess.run(commands[0], cwd=tempdir, check=True)
+        return
+    if len(commands) != 2:
+        raise RuntimeError(f"Unsupported command pipeline length: {len(commands)}")
+
+    first, second = commands
+
+    with subprocess.Popen(first, cwd=tempdir, stdout=subprocess.PIPE) as first_proc:
+        if first_proc.stdout is None:
+            raise RuntimeError("Could not capture archive stream")
+
+        try:
+            subprocess.run(second, cwd=tempdir, stdin=first_proc.stdout, check=True)
+        finally:
+            first_proc.stdout.close()
+
+        if first_proc.wait() != 0:
+            raise subprocess.CalledProcessError(first_proc.returncode, first)
 
 
 def fixup_permissions(directory: str) -> None:
@@ -131,12 +162,12 @@ def main():
         verbose = print
 
     filename = args.file if args.file.startswith("/") else f"../{args.file}"
-    uncompress, unpack = uncompress_unpack_commands(filename)
+    commands = extract_commands(filename)
     tempdir = tempfile.mkdtemp(dir='.')
 
     # extract the archive contents
-    verbose(f"cd {tempdir}; {uncompress} {filename}{unpack}")
-    os.system(f"cd {tempdir}; {uncompress} {filename}{unpack}")
+    verbose(f"cd {tempdir}; {format_commands(commands)}")
+    extract_archive(tempdir, commands)
 
     # open up the permissions on what we extracted
     if args.fix_permissions:
