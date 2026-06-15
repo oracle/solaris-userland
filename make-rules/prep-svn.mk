@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 SVN =		/usr/bin/svn
@@ -47,20 +47,24 @@ SOURCE_DIR$(1) = $$(COMPONENT_DIR)/$(COMPONENT_SRC$(1))
 download::	$$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1))
 
 # First attempt to download a cached archive of the SCM repo at the proper
-# changeset ID.  If that fails, create an archive by cloning the SCM repo,
-# and verify it by running userland-fetch over it again
+# changeset ID. If the archive cannot be found, create it by cloning the SCM
+# repo, archiving that directory, and validating the generated archive.
 $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
-	$$(FETCH) --file $$@ $$(SVN_HASH$(1):%=--hash %) || \
-	(TMP_REPO=$$$$(mktemp --directory --dry-run) && \
-	 $(SVN) export $$(SVN_REPO$(1)) $$(SVN_REV$(1):%=--revision %) \
+	$$(FETCH) --file $$@ $$(SVN_HASH$(1):%=--hash %); \
+	status=$$$$?; \
+	case $$$${status} in \
+	100) \
+		TMP_REPO=$$$$(mktemp --directory --dry-run) && \
+		$(SVN) export $$(SVN_REPO$(1)) $$(SVN_REV$(1):%=--revision %) \
 			$$$${TMP_REPO} && \
-	 /usr/gnu/bin/tar --create --file - --absolute-names \
-	      --sort=name --mtime="2018-10-05 00:00Z" --owner=0 --group=0 --numeric-owner \
-	      --transform="s;$$$${TMP_REPO};$$(COMPONENT_SRC$(1));g" \
-	      --bzip2 $$$${TMP_REPO} >$$@ && \
-	 $(RM) -rf $$$${TMP_REPO} && \
-	 $$(FETCH) --file $$@ $$(SVN_HASH$(1):%=--hash %) \
-	)
+		/usr/gnu/bin/tar --create --file - --absolute-names \
+			--sort=name --mtime="2018-10-05 00:00Z" --owner=0 --group=0 --numeric-owner \
+			--transform="s;$$$${TMP_REPO};$$(COMPONENT_SRC$(1));g" \
+			--bzip2 $$$${TMP_REPO} >$$@ && \
+		$(RM) -rf $$$${TMP_REPO} && \
+		$$(FETCH) --file $$@ $$(SVN_HASH$(1):%=--hash %) ;; \
+	*) exit $$$${status} ;; \
+	esac
 
 REQUIRED_PACKAGES += developer/versioning/subversion
 

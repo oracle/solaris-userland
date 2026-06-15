@@ -28,7 +28,14 @@
 # userland-fetch - a file download utility
 #
 # A simple program similar to wget(1), but handles local file copy, ignores
-# directories, and verifies file hashes.
+# directories, and verifies file hashes and signatures.
+#
+# Exit codes:
+#  0: download and validation success
+#  1: incorrect use of program arguments
+#  2: signature validation failure
+#  3: hash validation failure
+#  100: archive could not be found/downloaded, allowing SCM archive generation fallback in prep rules
 #
 
 import argparse
@@ -479,8 +486,7 @@ def hash_validation(name: str, args: argparse.Namespace) -> bool:
         args: Argument namespace from the ArgumentParser.
 
     Returns:
-        Whether the hash is valid. Returns true even if no hash was given in
-        the argument namespace (one of the program arguments).
+        Whether the hash is valid.
     """
 
     print("    validating hash...", end=" ")
@@ -494,15 +500,8 @@ def hash_validation(name: str, args: argparse.Namespace) -> bool:
         print(f"Can't calculate the archive hash due to the following error\n{err}")
         return False
 
-    # No hash was given by the user
-    #  -> output archive hash and be ok with it
-    if not args.hash:
-        print("skipping (no hash)")
-        print(f"hash is: {realhash}")
-        return True
-
     # Hash matched and everything seems nice and happy
-    if realhash == args.hash:
+    if args.hash and args.hash == realhash:
         print("ok")
         return True
 
@@ -515,27 +514,25 @@ def hash_validation(name: str, args: argparse.Namespace) -> bool:
     except NotImplementedError:
         payloadhash = None
     else:
-        if payloadhash == args.hash:
+        if args.hash and args.hash == payloadhash:
             print("ok")
             return True
 
-    # If the signature validated, we assume that the expected
-    # hash is just a typo, but we warn just in case.
-    print("invalid hash! Potential corruption detected!")
+    # No hash was given by the caller
+    if not args.hash:
+        print("failed (no hash)")
+    else:
+        print("invalid hash! Potential corruption detected!")
 
     print(f"    expected: {args.hash}")
     print(f"    actual:   {realhash}")
     print(f"    payload:  {payloadhash}")
 
-    # If the hash is invalid and the signature validation succeeded, rename the
-    # downloaded archive (so the user doesn't have to re-download it) and fail.
-    newname = f"{name}.invalid-hash"
     try:
-        os.rename(name, newname)
-        print(f"Archive saved as {newname}; "
-              f"if it isn't corrupted, rename it to {name}.")
+        os.remove(name)
+        print(f"File '{name}' was removed.")
     except OSError:
-        print(f"Failed to rename {name} file to {newname}!")
+        print("Failed to remove the corrupted file!")
 
     return False
 

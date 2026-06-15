@@ -55,6 +55,9 @@ COMPONENT_ARCHIVE_HASH_VECTORS=	\
 	sha256:1a3f2d33c992b4bb0444c698d030013b3b3daae3c56ac0f7a952b93c90b84699
 COMPONENT_ARCHIVE_URL_VECTORS=	$(call pypi_url,VECTORS)
 
+# hash for vendored rust sources
+COMPONENT_ARCHIVE_HASH_crates = \
+	sha256:d9fb58b4140bb64f07791b9cb511bd1b6e6fb4a2d5a94a8e37b26eede564388d
 
 # This is necessary for vendored rust dependencies
 include $(WS_MAKE_RULES)/cargo-vendored.mk

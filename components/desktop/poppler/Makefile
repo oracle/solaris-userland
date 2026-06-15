@@ -53,6 +53,7 @@ COMPONENT_BAID_1=	151084
 COMPONENT_NAME_2=	testfiles
 GIT_REPO_2=		https://gitlab.freedesktop.org/poppler/test.git
 GIT_COMMIT_ID_2=	b85e4d1c
+GIT_HASH_2=		sha256:8c0c3670df6e89ddf15779f29d6532b740381f06996c0aaa41c1d1421807e0c8
 
 # Only cmake is currently supported to build libpoppler.
 BUILD_STYLE = cmake

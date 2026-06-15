@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 HG =		/usr/bin/hg
@@ -60,22 +60,24 @@ ifdef HG_REV$(1)
 download::	$$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1))
 
 # First attempt to download a cached archive of the SCM repo at the proper
-# changeset ID.  If that fails, create an archive by cloning the SCM repo,
-# updating to the selected changeset, archiving that directory, and cleaning up
-# when complete.
+# changeset ID. If the archive cannot be found, create it by cloning the SCM
+# repo, updating to the selected changeset, archiving that directory, cleaning
+# up, and validating the generated archive.
 $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
-	$$(FETCH) --file $$@ $$(HG_HASH$(1):%=--hash %) || \
-	(TMP_REPO=$$$$(mktemp --directory) && \
-	 $(HG) clone $$(HG_REPO$(1)) $$(HG_REV$(1):%=--rev %) \
-		 $$(HG_REV$(1):%=--updaterev %) \
-		 $$(HG_BRANCH$(1):%=--branch %) \
-		    $$$${TMP_REPO} && \
-	 $(HG) -R $$$${TMP_REPO} archive --prefix $$(COMPONENT_SRC$(1)) $$@ && \
-	 $(RM) -rf $${TMP_REPO} && \
-	 HG_HASH=$$$$(digest -a sha256 $$@) && \
-	 $(GSED) -i \
-		-e "s/\(HG_HASH$(1)[[:space:]]*=[[:space:]]*\).*/\1sha256:$$$${HG_HASH}/" \
-		Makefile)
+	$$(FETCH) --file $$@ $$(HG_HASH$(1):%=--hash %); \
+	status=$$$$?; \
+	case $$$${status} in \
+	100) \
+		TMP_REPO=$$$$(mktemp --directory) && \
+		$(HG) clone $$(HG_REPO$(1)) $$(HG_REV$(1):%=--rev %) \
+			$$(HG_REV$(1):%=--updaterev %) \
+			$$(HG_BRANCH$(1):%=--branch %) \
+			$$$${TMP_REPO} && \
+		$(HG) -R $$$${TMP_REPO} archive --prefix $$(COMPONENT_SRC$(1)) $$@ && \
+		$(RM) -rf $$$${TMP_REPO} && \
+		$$(FETCH) --file $$@ $$(HG_HASH$(1):%=--hash %) ;; \
+	*) exit $$$${status} ;; \
+	esac
 
 REQUIRED_PACKAGES += developer/versioning/mercurial
 

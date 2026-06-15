@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 GIT =		/usr/bin/git
@@ -65,9 +65,9 @@ ifdef GIT_REPO$(1)
 download::	$$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1))
 
 # First attempt to download a cached archive of the SCM repo at the proper
-# changeset ID. If that fails, create an archive by cloning the SCM repo,
-# updating to the selected changeset, archiving that directory, and cleaning up
-# when complete.
+# changeset ID. If the archive cannot be found, create it by cloning the SCM
+# repo, updating to the selected changeset, archiving that directory, cleaning
+# up, and validating the generated archive.
 #
 # GIT CLONE ARGS
 # A shallow clone (--depth=1) to git clone takes only the top level (named)
@@ -77,25 +77,24 @@ download::	$$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1))
 # mercurial) currently has no way of cloning to a specific commit id.
 $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 	$$(FETCH) --file $$@ \
-		$$(GIT_HASH$(1):%=--hash %) || \
-		( \
-	$$(FETCH) --file $$@ \
-		$$(COMPONENT_ARCHIVE_URL$(1):%=--url %) || \
-	(TMP_REPO=$$$$(mktemp --directory) && \
-	$(GIT) clone $$(GIT_REPO$(1)) $$(GIT_BRANCH_ARG$(1)) $$$${TMP_REPO} && \
-	(cd $$$${TMP_REPO} ; \
-		$(GIT) config tar.tar.bz2.command "bzip2 -c"; \
-		$(GIT) config tar.tar.xz.command "xz -c"; \
-		$(GIT) archive \
-		--format $(subst $(COMPONENT_SRC$(1)).,,$(COMPONENT_ARCHIVE$(1))) \
-		--prefix $$(COMPONENT_SRC$(1))/ \
-		$$(or $$(GIT_COMMIT_ID$(1)),$$(GIT_BRANCH$(1)))) > $$@ && \
-	$(RM) -r $$$${TMP_REPO} ) && \
-	( GIT_HASH=$$$$( $(WS_TOOLS)/userland-payload-checksum $$@ ) && \
-	$(GSED) -i \
-		-e "s/\(GIT_HASH$(1)[[:space:]]*=[[:space:]]*\).*/\1sha256:$$$${GIT_HASH}/" \
-		Makefile )) && \
-	$(TOUCH) $$@
+		$$(COMPONENT_ARCHIVE_URL$(1):%=--url %) \
+		$$(GIT_HASH$(1):%=--hash %); \
+	status=$$$$?; \
+	case $$$${status} in \
+	100) \
+		TMP_REPO=$$$$(mktemp --directory) && \
+		$(GIT) clone $$(GIT_REPO$(1)) $$(GIT_BRANCH_ARG$(1)) $$$${TMP_REPO} && \
+		(cd $$$${TMP_REPO} ; \
+			$(GIT) config tar.tar.bz2.command "bzip2 -c"; \
+			$(GIT) config tar.tar.xz.command "xz -c"; \
+			$(GIT) archive \
+			--format $(subst $(COMPONENT_SRC$(1)).,,$(COMPONENT_ARCHIVE$(1))) \
+			--prefix $$(COMPONENT_SRC$(1))/ \
+			$$(or $$(GIT_COMMIT_ID$(1)),$$(GIT_BRANCH$(1)))) > $$@ && \
+		$(RM) -r $$$${TMP_REPO} && \
+		$$(FETCH) --file $$@ $$(GIT_HASH$(1):%=--hash %) ;; \
+	*) exit $$$${status} ;; \
+	esac
 
 
 REQUIRED_PACKAGES += developer/versioning/git

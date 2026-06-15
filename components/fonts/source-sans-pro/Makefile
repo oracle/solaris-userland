@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -33,7 +33,7 @@ COMPONENT_SRC=		source-sans-pro-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	https://fonts.google.com/specimen/Source+Sans+Pro
 COMPONENT_ARCHIVE_URL=	https://github.com/adobe-fonts/source-sans-pro/archive/2.020R-ro/1.075R-it.tar.gz
-COMPONENT_ARCHIVE_HASH_1= \
+COMPONENT_ARCHIVE_HASH= \
     sha256:bb45283fa9979c4821c99da3b54313012821aba0246e2ec0057f2b03ca24912c
 
 #GIT_REPO=		https://github.com/adobe-fonts/source-sans-pro
