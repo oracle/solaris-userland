@@ -45,7 +45,7 @@ COMPONENT_BAID=		393858
 
 # hash for vendored rust sources
 COMPONENT_ARCHIVE_HASH_crates = \
-	sha256:f653a18fc3d43e8914735947b0ca51995d7172c29e3f6e33ea1fd8db2723c38d
+	sha256:2006d4acb800db5575cab79e86e463d46aee335f73fd8852fad0b5b0a0baa8da
 
 # This is necessary for vendored rust dependencies
 include $(WS_MAKE_RULES)/cargo-vendored.mk
