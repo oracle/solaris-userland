@@ -1,0 +1,64 @@
+convert_to_unicode() may be called in-place on fixed-width ISO descriptor
+fields that are not NUL-terminated. Use bounded lengths in that case.
+
+--- a/mkisofs/joliet.c
++++ b/mkisofs/joliet.c
+@@ -269,11 +269,23 @@
+ 	}
+ 
+ 	/*
+-	 * joliet_strlen() behaves the same way: Stop at the first nul byte.
++	 * joliet_strlen() behaves the same way: Stop at the first nul byte
++	 * for C strings.
++	 *
++	 * When source is NULL, tmpbuf is a fixed-width in-place copy of an
++	 * ISO descriptor field. Such fields are space padded and do not need
++	 * to be NUL-terminated, so strlen() may read past the heap allocation.
++	 * The iconv() path must also be limited to the remaining bytes in the
++	 * temporary copy.
+ 	 * Note: we cannot have 16 bit character representations in the source
+ 	 * encoding, if we like strlen() to work correctly.
+ 	 */
+-	jsize = strlen((char *)tmpbuf);
++	if (source == NULL) {
++		for (jsize = 0; jsize < size && tmpbuf[jsize] != '\0'; jsize++)
++			;
++	} else {
++		jsize = strlen((char *)tmpbuf);
++	}
+ 
+ 	/*
+ 	 * Now start copying characters.  If the size was specified to be 0,
+@@ -297,10 +309,15 @@
+ 			if (use_iconv(inls)) {
+ 				Uchar		ob[2];
+ 				__IC_CONST char	*inbuf = (char *)&tmpbuf[j];
+-				size_t	isize = 3;
++				size_t	max_isize = 3;
++				size_t	isize;
+ 				char	*obuf = (char *)ob;
+ 				size_t	osize = 2;
+ 
++				if (source == NULL && jsize - j < max_isize)
++					max_isize = jsize - j;
++				isize = max_isize;
++
+ 				/*
+ 				 * iconv() from glibc ignores osize and thus
+ 				 * may try to access more than a single multi
+@@ -317,13 +334,13 @@
+ 					int	err = geterrno();
+ 
+ 					if ((err == EINVAL || err == EILSEQ) &&
+-					    isize == 3) {
++					    isize == max_isize) {
+ 						ob[0] = ob[1] = 0;
+ 						isize--;
+ 					}
+ 				}
+ 				unichar = ob[0] * 256 + ob[1];
+-				j += 2 - isize;
++				j += max_isize - 1 - isize;
+ 			} else
+ #endif
+ 			unichar = sic_c2uni(inls, uc);	/* Get the UNICODE */
