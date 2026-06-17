@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 include ../../../../make-rules/shared-macros.mk
 
 
 GIT_REPO= https://github.com/oracle/puppet-solaris_providers
-GIT_COMMIT_ID= v2.0.3
-GIT_HASH=  sha256:ef7e48fe152598e27ba6577940198678aed39ac2928c6eed5ef1a89af34b2d88
+GIT_COMMIT_ID= v2.0.4
+GIT_HASH=  sha256:c978159b84cdfb3bf4d5acf431a1ac8d0ecfd2b24670a1a98e251b941ce261a3
 
 COMPONENT_NAME=		puppet-solaris_providers
 COMPONENT_VERSION=	$(GIT_COMMIT_ID:v%=%)
@@ -43,14 +43,6 @@ include $(WS_MAKE_RULES)/ips.mk
 MODULE_NAME =	solaris_providers
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
-# Dump a list of files installed in the proto dir but not in the manifest
-# this is a convenience target for the package maintainer
-new-files: install
-	$(PKGSEND) generate $(PROTO_DIR)/usr/puppetlabs/puppet/modules/ | $(GNU_GREP) -v '/docs/' | \
-	    $(GSED)  -e 's/\(file\).*path=/\1 path=/' | \
-	    $(CAT) oracle-solaris_providers.p5m - | $(GNU_GREP) -h '^file' | sort | uniq -c | \
-	    $(GSED) -e '/ 2 /d' -e 's/   1 //'
 
 # common targets
 build: $(BUILD_NO_ARCH)
