@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2026, Oracle and/or its affiliates.
  *
  * U.S. Government Rights - Commercial software. Government users are subject
  * to the Sun Microsystems, Inc. standard license agreement and applicable
@@ -127,7 +127,7 @@ typedef struct HmDiskEntry {
     struct HmDiskEntry* pNext;
 } hmDiskTable;
 
-#define DISK_DATA_LEN 8
+#define DISK_DATA_LEN 32
 
 /* Function prototypes */
 

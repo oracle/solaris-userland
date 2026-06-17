@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2003, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2026, Oracle and/or its affiliates.
  * 
  * U.S. Government Rights - Commercial software. Government users are subject to
  * the Sun Microsystems, Inc. standard license agreement and applicable
@@ -1853,14 +1853,14 @@ construct_DISK_table()
 	code = krgetdiskdetail(name, alias, &rps, &wps, &tps, &krps, &kwps, &kps, &avw, &avr);
 
 	if (code < 0) {
-	    /* Error occured during kstat read */
+	    /* Error occurred during kstat read */
 	    snmp_log(LOG_ERR,"Health Monitor Module: errror getting disk info\n");
 	    return;
 	}
 	code = krgetdisksrv(name, alias, &w_pct, &r_pct, &wserv, &rserv, &serv);
 
 	if (code < 0) {
-	    /* Error occured during kstat read */
+	    /* Error occurred during kstat read */
 	    snmp_log(LOG_ERR,"Health Monitor Module: errror getting disk info\n");
 	    return;
 	}
@@ -1881,11 +1881,11 @@ construct_DISK_table()
 
 	strcpy(ptr->hmDiskAliasName,alias);
 
-	sprintf(ptr->hmAvgWaitTransactions, "%3.1f\0", w_pct);
+	snprintf(ptr->hmAvgWaitTransactions, DISK_DATA_LEN, "%3.1f", w_pct);
 
-	sprintf(ptr->hmDiskBusyPcnt, "%3.1f\0", r_pct);
+	snprintf(ptr->hmDiskBusyPcnt, DISK_DATA_LEN, "%3.1f", r_pct);
 
-	sprintf(ptr->hmAvgDiskSvcTime, "%3.1f\0", serv);
+	snprintf(ptr->hmAvgDiskSvcTime, DISK_DATA_LEN, "%3.1f", serv);
 
 	/* Set the state of Disk to OK. */
 
@@ -1965,14 +1965,14 @@ refresh_DISK_table(unsigned int clientreg, void *clientarg)
 	code = krgetdiskdetail(name, alias, &rps, &wps, &tps, &krps, &kwps, &kps, &avw, &avr);
 
 	if (code < 0) {
-	    /* Error occured during kstat read */
+	    /* Error occurred during kstat read */
 	    snmp_log(LOG_ERR,"Health Monitor Module: errror getting disk info\n");
 	    return;
 	}
 	code = krgetdisksrv(name, alias, &w_pct, &r_pct, &wserv, &rserv, &serv);
 
 	if (code < 0) {
-	    /* Error occured during kstat read */
+	    /* Error occurred during kstat read */
 	    snmp_log(LOG_ERR,"Health Monitor Module: errror getting disk info\n");
 	    return;
 	}
@@ -1992,9 +1992,12 @@ refresh_DISK_table(unsigned int clientreg, void *clientarg)
 		hit = 1;
 
 		strcpy(headPtr->hmDiskAliasName,alias);
-		sprintf(headPtr->hmAvgWaitTransactions, "%3.1f\0", w_pct);
-		sprintf(headPtr->hmDiskBusyPcnt, "%3.1f\0", r_pct);
-		sprintf(headPtr->hmAvgDiskSvcTime, "%3.1f\0", serv);
+		snprintf(headPtr->hmAvgWaitTransactions, DISK_DATA_LEN,
+		    "%3.1f", w_pct);
+		snprintf(headPtr->hmDiskBusyPcnt, DISK_DATA_LEN, "%3.1f",
+		    r_pct);
+		snprintf(headPtr->hmAvgDiskSvcTime, DISK_DATA_LEN, "%3.1f",
+		    serv);
 
 		/*
 		 * Don't change the hmDiskState here because existing
@@ -2030,11 +2033,11 @@ refresh_DISK_table(unsigned int clientreg, void *clientarg)
 
 	    strcpy(ptr->hmDiskAliasName,alias);
 
-	    sprintf(ptr->hmAvgWaitTransactions, "%3.1f\0", w_pct);
+	    snprintf(ptr->hmAvgWaitTransactions, DISK_DATA_LEN, "%3.1f", w_pct);
 
-	    sprintf(ptr->hmDiskBusyPcnt, "%3.1f\0", r_pct);
+	    snprintf(ptr->hmDiskBusyPcnt, DISK_DATA_LEN, "%3.1f", r_pct);
 
-	    sprintf(ptr->hmAvgDiskSvcTime, "%3.1f\0", serv);
+	    snprintf(ptr->hmAvgDiskSvcTime, DISK_DATA_LEN, "%3.1f", serv);
 
 	    /* Set the state of Disk to OK. */
 
@@ -2316,11 +2319,11 @@ hm_handle_rule(int *rule_state, int (*rule) (int))
  * appropriate varbind's see SMA trap mib for detailed trap notification
  * definition.
  * 
- * hostname - Name of host on which alarm occured ; modulename - Name of the
+ * hostname - Name of host on which alarm occurred ; modulename - Name of the
  * module generating the trap ; moduleContext - The context of the module, if
  * any; statusOID - The trapoid; size - The size of trapoid (not included in
  * the trap); status - status of the node; description - description of the
- * trap; dvalue - value of the node on which trap occured; dtype - data type of
+ * trap; dvalue - value of the node on which trap occurred; dtype - data type of
  * the value
  */
 
