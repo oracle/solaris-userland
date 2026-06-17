@@ -20,7 +20,7 @@
 
  CDDL HEADER END
 
- Copyright (c) 2007, 2011, Oracle and/or its affiliates. All rights reserved.
+ Copyright (c) 2007, 2026, Oracle and/or its affiliates.
 
 -->
 
@@ -78,7 +78,12 @@
 			type='method'
 			name='start'
 			exec='/lib/svc/method/http-squid start'
-			timeout_seconds='60' />
+			timeout_seconds='60'>
+			<method_context>
+				<method_credential
+					privileges='basic,proc_setid,net_icmpaccess'/>
+			</method_context>
+		</exec_method>
 
 		<exec_method
 			type='method'
