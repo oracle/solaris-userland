@@ -1,7 +1,10 @@
 some tests take longer to execute and this may cause some tests pass or fail at random
 
---- gst-plugins-base-1.28.2/tests/check/meson.build
-+++ gst-plugins-base-1.28.2/tests/check/meson.build
+test_that_we_can_provide_new_socketsrc_sockets_during_signal times out
+on Solaris.
+
+--- gst-plugins-base-1.28.4/tests/check/meson.build
++++ gst-plugins-base-1.28.4/tests/check/meson.build
 @@ -164,7 +164,7 @@ env = environment()
      env.set('GST_PLUGIN_PATH_1_0', meson.global_build_root(), pluginsdirs)
      env.set('GST_PLUGIN_SYSTEM_PATH_1_0', '')
@@ -11,3 +14,16 @@ some tests take longer to execute and this may cause some tests pass or fail at 
      env.set('GST_TAG_LICENSE_TRANSLATIONS_DICT', join_paths(gst_tag_dir, 'license-translations.dict'))
      env.set('GST_PLUGIN_LOADING_WHITELIST', 'gstreamer',
          'gst-plugins-base@' + meson.project_build_root())
+--- gst-plugins-base-1.28.4/tests/check/pipelines/tcp.c
++++ gst-plugins-base-1.28.4/tests/check/pipelines/tcp.c
+@@ -387,8 +387,10 @@ socketintegrationtest_suite (void)
+       test_that_tcpclientsink_and_tcpserversrc_are_symmetrical);
+   tcase_add_test (tc_chain,
+       test_that_tcpserversink_and_tcpclientsrc_are_symmetrical);
++#if 0
+   tcase_add_test (tc_chain,
+       test_that_we_can_provide_new_socketsrc_sockets_during_signal);
++#endif
+ #ifdef HAVE_GIO_UNIX_2_0
+   tcase_add_test (tc_chain,
+       test_that_multisocketsink_and_socketsrc_preserve_meta);

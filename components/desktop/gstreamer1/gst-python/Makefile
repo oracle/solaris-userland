@@ -29,17 +29,17 @@ BUILD_BITS =		64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-python
-COMPONENT_VERSION=	1.28.2
+COMPONENT_VERSION=	1.28.4
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:12fdd8e19af97d797a6b2c195228e6c9edc4cddfa68274912b78ef66068ad822
+	sha256:c4eb382720b4443fb801a53418dff0bd4cd7478716d5ced493504a675b4d09fd
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	3881
 
-COMPONENT_BAID=		391727
+COMPONENT_BAID=		401163
 
 BUILD_STYLE=		meson
 
@@ -62,8 +62,13 @@ $(BUILD_DIR)/%-3.13/.tested-and-compared:		PYTHON_VERSION=3.13
 
 include $(WS_MAKE_RULES)/common.mk
 
+PKG_CONFIG_PATHS += $(WS_COMPONENTS)/desktop/gstreamer1/gstreamer/build/$(MACH64)/meson-private
+PKG_CONFIG_PATHS += $(WS_COMPONENTS)/desktop/gstreamer1/gst-plugins-base/build/$(MACH64)/meson-private
+PKG_CONFIG_PATHS += $(WS_COMPONENTS)/desktop/gstreamer1/gstreamer/build/prototype/$(MACH)/usr/lib/$(MACH64)/pkgconfig
+PKG_CONFIG_PATHS += $(WS_COMPONENTS)/desktop/gstreamer1/gst-plugins-base/build/prototype/$(MACH)/usr/lib/$(MACH64)/pkgconfig
+
 CONFIGURE_OPTIONS += -Dpython=$(PYTHON)
-CONFIGURE_OPTIONS += -Dpygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES)/gi/overrides/64
+CONFIGURE_OPTIONS += -Dpygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES)/gi/overrides
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 

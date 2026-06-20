@@ -1,0 +1,94 @@
+### BASIC SMOKE TEST ###
+
+# Check that the updated tools start and report the expected version.
+gst-inspect-1.0 --version
+gst-launch-1.0 --version
+gst-discoverer-1.0 --help
+
+# Check that representative plugins from the updated GStreamer stack can be
+# loaded.  These cover gstreamer, gst-plugins-base, and gst-plugins-good.
+gst-inspect-1.0 fakesrc >/dev/null
+gst-inspect-1.0 audiotestsrc >/dev/null
+gst-inspect-1.0 videotestsrc >/dev/null
+gst-inspect-1.0 audioconvert >/dev/null
+gst-inspect-1.0 audioresample >/dev/null
+gst-inspect-1.0 videoconvert >/dev/null
+gst-inspect-1.0 oggmux >/dev/null
+gst-inspect-1.0 oggdemux >/dev/null
+gst-inspect-1.0 vorbisenc >/dev/null
+gst-inspect-1.0 vorbisdec >/dev/null
+gst-inspect-1.0 wavenc >/dev/null
+gst-inspect-1.0 wavparse >/dev/null
+gst-inspect-1.0 matroskamux >/dev/null
+gst-inspect-1.0 matroskademux >/dev/null
+gst-inspect-1.0 rtpbin >/dev/null
+
+# Run a simple generated audio pipeline.  It should finish without errors.
+gst-launch-1.0 -q \
+    audiotestsrc num-buffers=50 ! \
+    audioconvert ! audioresample ! fakesink
+
+# Run a simple generated video pipeline.  It should finish without errors.
+gst-launch-1.0 -q \
+    videotestsrc num-buffers=30 ! \
+    videoconvert ! videoscale ! \
+    video/x-raw,width=160,height=120 ! fakesink
+
+# Create, inspect, and read back a WAV file.
+gst-launch-1.0 -q \
+    audiotestsrc num-buffers=100 ! \
+    audioconvert ! wavenc ! \
+    filesink location=/var/tmp/gst-smoke.wav
+gst-discoverer-1.0 /var/tmp/gst-smoke.wav
+gst-launch-1.0 -q \
+    filesrc location=/var/tmp/gst-smoke.wav ! \
+    wavparse ! fakesink
+
+# Create and read back an Ogg/Vorbis file.
+gst-launch-1.0 -q \
+    audiotestsrc num-buffers=100 ! \
+    audioconvert ! vorbisenc ! oggmux ! \
+    filesink location=/var/tmp/gst-smoke.ogg
+gst-discoverer-1.0 /var/tmp/gst-smoke.ogg
+gst-launch-1.0 -q \
+    filesrc location=/var/tmp/gst-smoke.ogg ! \
+    oggdemux ! vorbisdec ! audioconvert ! fakesink
+
+# Run the same type of quick checks with 64-bit tools.
+/usr/bin/64/gst-inspect-1.0 --version
+/usr/bin/64/gst-launch-1.0 -q \
+    audiotestsrc num-buffers=50 ! \
+    audioconvert ! audioresample ! fakesink
+
+# Check that Python bindings can import Gst and run a tiny pipeline.
+python3.11 <<'PY'
+import gi
+gi.require_version("Gst", "1.0")
+from gi.repository import Gst
+Gst.init(None)
+pipeline = Gst.parse_launch("audiotestsrc num-buffers=5 ! fakesink")
+pipeline.set_state(Gst.State.PLAYING)
+bus = pipeline.get_bus()
+message = bus.timed_pop_filtered(Gst.CLOCK_TIME_NONE,
+    Gst.MessageType.ERROR | Gst.MessageType.EOS)
+pipeline.set_state(Gst.State.NULL)
+print(Gst.version_string())
+print(message.type)
+PY
+
+python3.13 <<'PY'
+import gi
+gi.require_version("Gst", "1.0")
+from gi.repository import Gst
+Gst.init(None)
+pipeline = Gst.parse_launch("audiotestsrc num-buffers=5 ! fakesink")
+pipeline.set_state(Gst.State.PLAYING)
+bus = pipeline.get_bus()
+message = bus.timed_pop_filtered(Gst.CLOCK_TIME_NONE,
+    Gst.MessageType.ERROR | Gst.MessageType.EOS)
+pipeline.set_state(Gst.State.NULL)
+print(Gst.version_string())
+print(message.type)
+PY
+
+rm -f /var/tmp/gst-smoke.wav /var/tmp/gst-smoke.ogg
