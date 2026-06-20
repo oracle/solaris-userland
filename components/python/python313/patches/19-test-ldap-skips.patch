@@ -3,8 +3,8 @@ test_posixpath doesn't work well within OWAN.
 Several tests are calling pwd.getpwall, which can get very slow on some
 test machines. Not intended for upstream.
 
---- cpython-3.13/Lib/test/test_posixpath.py
-+++ cpython-3.13/Lib/test/test_posixpath.py
+--- Python-3.13.14/Lib/test/test_posixpath.py
++++ Python-3.13.14/Lib/test/test_posixpath.py
 @@ -359,6 +359,8 @@ class PosixPathTest(unittest.TestCase):
  
      @unittest.skipIf(sys.platform == "vxworks",
@@ -14,8 +14,8 @@ test machines. Not intended for upstream.
      def test_expanduser_pwd2(self):
          pwd = import_helper.import_module('pwd')
          getpwall = support.get_attribute(pwd, 'getpwall')
---- cpython-3.13/Lib/test/test_pathlib/test_pathlib.py
-+++ cpython-3.13/Lib/test/test_pathlib/test_pathlib.py
+--- Python-3.13.14/Lib/test/test_pathlib/test_pathlib.py
++++ Python-3.13.14/Lib/test/test_pathlib/test_pathlib.py
 @@ -1360,6 +1360,7 @@ class PathTest(test_pathlib_abc.DummyPat
                           'pwd module does not expose getpwall()')
      @unittest.skipIf(sys.platform == "vxworks",
@@ -24,9 +24,9 @@ test machines. Not intended for upstream.
      @needs_posix
      def test_expanduser_posix(self):
          P = self.cls
---- cpython-3.13/Lib/test/test_pwd.py
-+++ cpython-3.13/Lib/test/test_pwd.py
-@@ -4,6 +4,7 @@ from test.support import import_helper
+--- Python-3.13.14/Lib/test/test_pwd.py
++++ Python-3.13.14/Lib/test/test_pwd.py
+@@ -6,6 +6,7 @@ from test.support import import_helper
  
  pwd = import_helper.import_module('pwd')
  
@@ -34,8 +34,8 @@ test machines. Not intended for upstream.
  @unittest.skipUnless(hasattr(pwd, 'getpwall'), 'Does not have getpwall()')
  class PwdTest(unittest.TestCase):
  
---- cpython-3.13/Lib/test/test_os.py
-+++ cpython-3.13/Lib/test/test_os.py
+--- Python-3.13.14/Lib/test/test_os.py
++++ Python-3.13.14/Lib/test/test_os.py
 @@ -52,7 +52,7 @@ except ImportError:
      _winapi = None
  try:
@@ -45,8 +45,8 @@ test machines. Not intended for upstream.
  except (ImportError, AttributeError):
      all_users = []
  try:
---- Python-3.13.12/Lib/test/test_mailbox.py
-+++ Python-3.13.12/Lib/test/test_mailbox.py
+--- Python-3.13.14/Lib/test/test_mailbox.py
++++ Python-3.13.14/Lib/test/test_mailbox.py
 @@ -1083,6 +1083,7 @@ class _TestSingleFile(TestMailbox):
  
          self.assertEqual(os.stat(self._path).st_mode, mode)

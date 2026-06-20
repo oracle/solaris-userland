@@ -14,9 +14,9 @@ This was reported upstream:
 https://github.com/python/cpython/issues/102494
 https://github.com/python/cpython/pull/102495
 
---- Python-3.13.12/Modules/selectmodule.c
-+++ Python-3.13.12/Modules/selectmodule.c
-@@ -787,12 +787,16 @@ poll_dealloc(pollObject *self)
+--- Python-3.13.14/Modules/selectmodule.c
++++ Python-3.13.14/Modules/selectmodule.c
+@@ -788,12 +788,16 @@ poll_dealloc(pollObject *self)
  #ifdef HAVE_SYS_DEVPOLL_H
  static PyMethodDef devpoll_methods[];
  
@@ -34,7 +34,7 @@ https://github.com/python/cpython/pull/102495
  } devpollObject;
  
  static PyObject *
-@@ -843,7 +847,7 @@ internal_devpoll_register(devpollObject
+@@ -844,7 +848,7 @@ internal_devpoll_register(devpollObject
          self->fds[self->n_fds].fd = fd;
          self->fds[self->n_fds].events = POLLREMOVE;
  
@@ -43,7 +43,7 @@ https://github.com/python/cpython/pull/102495
              if (devpoll_flush(self))
                  return NULL;
          }
-@@ -852,7 +856,7 @@ internal_devpoll_register(devpollObject
+@@ -853,7 +857,7 @@ internal_devpoll_register(devpollObject
      self->fds[self->n_fds].fd = fd;
      self->fds[self->n_fds].events = (signed short)events;
  
@@ -52,7 +52,7 @@ https://github.com/python/cpython/pull/102495
          if (devpoll_flush(self))
              return NULL;
      }
-@@ -924,7 +928,7 @@ select_devpoll_unregister_impl(devpollOb
+@@ -925,7 +929,7 @@ select_devpoll_unregister_impl(devpollOb
      self->fds[self->n_fds].fd = fd;
      self->fds[self->n_fds].events = POLLREMOVE;
  
@@ -61,7 +61,7 @@ https://github.com/python/cpython/pull/102495
          if (devpoll_flush(self))
              return NULL;
      }
-@@ -984,8 +988,8 @@ select_devpoll_poll_impl(devpollObject *
+@@ -985,8 +989,8 @@ select_devpoll_poll_impl(devpollObject *
      if (devpoll_flush(self))
          return NULL;
  
@@ -72,7 +72,7 @@ https://github.com/python/cpython/pull/102495
      dvp.dp_timeout = (int)ms;
  
      if (timeout >= 0) {
-@@ -1029,8 +1033,8 @@ select_devpoll_poll_impl(devpollObject *
+@@ -1030,8 +1034,8 @@ select_devpoll_poll_impl(devpollObject *
          return NULL;
  
      for (i = 0; i < poll_result; i++) {
@@ -83,7 +83,7 @@ https://github.com/python/cpython/pull/102495
          if ((num1 == NULL) || (num2 == NULL)) {
              Py_XDECREF(num1);
              Py_XDECREF(num2);
-@@ -1122,12 +1126,12 @@ static devpollObject *
+@@ -1123,12 +1127,12 @@ static devpollObject *
  newDevPollObject(PyObject *module)
  {
      devpollObject *self;
@@ -99,7 +99,7 @@ https://github.com/python/cpython/pull/102495
      ** fds, the kernel will give an error, so
      ** we set the limit here. It is a dynamic
      ** value, because we can change rlimit() anytime.
-@@ -1138,27 +1142,46 @@ newDevPollObject(PyObject *module)
+@@ -1139,27 +1143,46 @@ newDevPollObject(PyObject *module)
          return NULL;
      }
  
@@ -148,7 +148,7 @@ https://github.com/python/cpython/pull/102495
  
      return self;
  }
-@@ -1169,6 +1192,7 @@ devpoll_dealloc(devpollObject *self)
+@@ -1170,6 +1193,7 @@ devpoll_dealloc(devpollObject *self)
      PyObject *type = (PyObject *)Py_TYPE(self);
      (void)devpoll_internal_close(self);
      PyMem_Free(self->fds);
@@ -156,8 +156,8 @@ https://github.com/python/cpython/pull/102495
      PyObject_Free(self);
      Py_DECREF(type);
  }
---- Python-3.13.12/Lib/test/test_selectors.py
-+++ Python-3.13.12/Lib/test/test_selectors.py
+--- Python-3.13.14/Lib/test/test_selectors.py
++++ Python-3.13.14/Lib/test/test_selectors.py
 @@ -603,8 +603,7 @@ class KqueueSelectorTestCase(BaseSelecto
  
  @unittest.skipUnless(hasattr(selectors, 'DevpollSelector'),
