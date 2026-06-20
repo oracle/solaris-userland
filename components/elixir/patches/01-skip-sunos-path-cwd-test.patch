@@ -1,0 +1,18 @@
+Skip a test that relies on removing the current working directory.
+
+On Solaris, removing the current working directory fails with EINVAL, so this
+test cannot exercise the intended Elixir fallback path.
+
+--- elixir-1.20.1/lib/elixir/test/elixir/path_test.exs
++++ elixir-1.20.1/lib/elixir/test/elixir/path_test.exs
+@@ -435,6 +435,10 @@ defmodule Path.SyncTest do
+   use ExUnit.Case, async: false
+ 
+   @tag :tmp_dir
++  if :os.type() == {:unix, :sunos} do
++    @tag skip: "removing the current working directory fails with EINVAL on Solaris"
++  end
++
+   @tag :unix
+   test "relative_to_cwd/2 returns a binary even when cwd cannot be retrieved", config do
+     {:ok, original} = :file.get_cwd()

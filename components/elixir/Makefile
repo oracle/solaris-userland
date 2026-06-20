@@ -31,22 +31,17 @@ include ../../make-rules/shared-macros.mk
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 COMPONENT_NAME=		elixir
-COMPONENT_VERSION=	1.19.5
+COMPONENT_VERSION=	1.20.1
 COMPONENT_PROJECT_URL=	https://elixir-lang.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:10750b8bd74b10ac1e25afab6df03e3d86999890fa359b5f02aa81de18a78e36
+    sha256:baed8756da722c1b8d71613655c7223ab952051bc391a965cd79e320a93aaf77
 COMPONENT_ARCHIVE_URL=	https://github.com/elixir-lang/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID=	673
 
-COMPONENT_BAID=		370926
+COMPONENT_BAID=		401119
 
 BUILD_STYLE= justmake
-
-ifeq ($(MACH),sparc)
-# Disable tests on SPARC since they are unreproducible with regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-endif
 
 # This is just a workaround to a problem we mostly see on sparc.
 # The build stops and never finishes in about 8 % of cases. The process
@@ -79,17 +74,27 @@ COMPONENT_INSTALL_ENV +=	MANDIR=/usr/share/man
 COMPONENT_INSTALL_ENV +=	PREFIX=$(USRDIR)
 
 COMPONENT_TEST_TARGETS = test
+COMPONENT_TEST_CMD = /usr/gnu/bin/make
 COMPONENT_TEST_ENV += LC_ALL=en_US.UTF-8
+# Keep ExUnit ordering deterministic; some Mix profiler tests are very slow on
+# SPARC and random ordering can make the test phase appear hung.
+COMPONENT_TEST_ENV += SEED=988889
 COMPONENT_TEST_TRANSFORMS += '-e "s/\x1B\[[0-9;]*[[:alpha:]]//g"'
 COMPONENT_TEST_TRANSFORMS += '-e "s/with seed: [0-9]\+, //"'
 COMPONENT_TEST_TRANSFORMS += '-e "s/ max_cases: [0-9]\+//"'
 COMPONENT_TEST_TRANSFORMS += '-e "s/^[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\.[0-9][0-9][0-9] //"'
 COMPONENT_TEST_TRANSFORMS += '-e "s|/tmp/mix-local-installer-fetcher-[^/]\+/|/tmp/mix-local-installer-fetcher-XXXX/|g"'
 COMPONENT_TEST_TRANSFORMS += '-e "s/^\.\+//"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^[.*]\+$$/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "s/^[.*]\+\(src\/conflict\.yrl:none: warning: conflicts:.*\)$$/\1/"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^\[notice\] Application parsetools exited: :stopped/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^[.*].*git\.c:[0-9]\+[[:space:]]\+trace:/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^[0-9:.]\+ git\.c:[0-9]\+[[:space:]]\+trace:/d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^[[:space:]]*warning: redefining module .* (current version .*)$$/,+5d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^warning: using single-quoted strings to represent charlists is deprecated\.$$/,+4d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^warning: single-quoted string represent charlists\./,+1d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^warning: cannot infer signatures from :git_repo because it is not loaded$$/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^[[:space:]]*warning: the Collectable protocol has already been consolidated, an implementation for A has no effect\./,+5d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^Finished in/d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^$$/d"'
 
@@ -97,4 +102,3 @@ REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += runtime/erlang
-

@@ -1,0 +1,59 @@
+Skip Mix profiler tests on Solaris.
+
+The Erlang profiler trace setup can hang on Solaris.  On SPARC this leaves the
+Mix test runner stuck in :erlang.trace_pattern/3 long enough for BOB to time
+out the test phase, and a timed-out profiler test can leave the Mix tmp
+directory busy enough for later cleanup to fail with EINVAL.
+
+--- elixir-1.20.1/lib/mix/test/mix/tasks/profile.cprof_test.exs
++++ elixir-1.20.1/lib/mix/test/mix/tasks/profile.cprof_test.exs
+@@ -10,6 +10,10 @@ defmodule Mix.Tasks.Profile.CprofTest do
+   import ExUnit.CaptureIO
+   alias Mix.Tasks.Profile.Cprof
+ 
++  if :os.type() == {:unix, :sunos} do
++    @moduletag skip: "Erlang profiler trace setup hangs on Solaris"
++  end
++
+   @expr "Enum.each(1..5, &String.Chars.Integer.to_string/1)"
+ 
+   test "profiles evaluated expression", context do
+--- elixir-1.20.1/lib/mix/test/mix/tasks/profile.eprof_test.exs
++++ elixir-1.20.1/lib/mix/test/mix/tasks/profile.eprof_test.exs
+@@ -10,6 +10,10 @@ defmodule Mix.Tasks.Profile.EprofTest do
+   import ExUnit.CaptureIO
+   alias Mix.Tasks.Profile.Eprof
+ 
++  if :os.type() == {:unix, :sunos} do
++    @moduletag skip: "Erlang profiler trace setup hangs on Solaris"
++  end
++
+   @expr "Enum.each(1..5, &String.Chars.Integer.to_string/1)"
+ 
+   test "profiles evaluated expression", context do
+--- elixir-1.20.1/lib/mix/test/mix/tasks/profile.fprof_test.exs
++++ elixir-1.20.1/lib/mix/test/mix/tasks/profile.fprof_test.exs
+@@ -10,6 +10,10 @@ defmodule Mix.Tasks.Profile.FprofTest do
+   import ExUnit.CaptureIO
+   alias Mix.Tasks.Profile.Fprof
+ 
++  if :os.type() == {:unix, :sunos} do
++    @moduletag skip: "Erlang profiler trace setup hangs on Solaris"
++  end
++
+   test "profiles evaluated expression", context do
+     in_tmp(context.test, fn ->
+       assert capture_io(fn ->
+--- elixir-1.20.1/lib/mix/test/mix/tasks/profile.tprof_test.exs
++++ elixir-1.20.1/lib/mix/test/mix/tasks/profile.tprof_test.exs
+@@ -9,6 +9,10 @@ defmodule Mix.Tasks.Profile.TprofTest do
+   import ExUnit.CaptureIO
+   alias Mix.Tasks.Profile.Tprof
+ 
++  if :os.type() == {:unix, :sunos} do
++    @moduletag skip: "Erlang profiler trace setup hangs on Solaris"
++  end
++
+   @expr "Enum.each(1..5, &String.Chars.Integer.to_string/1)"
+ 
+   test "profiles evaluated expression", context do
