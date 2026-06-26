@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ansible_core
-COMPONENT_VERSION=	2.20.1
+COMPONENT_VERSION=	2.21.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a891e5f90cd46626778f0f3d545ec1115840c9b50e8adf25944c5e1748452106
+    sha256:a5536ece95be84de15212b3644cdbbe9cbd9efd62e4e8a544cd6b0b27a083039
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://www.ansible.com/
 COMPONENT_BUGDB=	utility/ansible
 COMPONENT_ANITYA_ID=	165410
+COMPONENT_BAID=		404790
 
-COMPONENT_BAID=		360444
 PKG_MACROS+= MICRO_VERSION=$(MICRO_VERSION)
 
 # We need just a single Python version
