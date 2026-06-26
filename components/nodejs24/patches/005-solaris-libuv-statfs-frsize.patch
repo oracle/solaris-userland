@@ -1,0 +1,18 @@
+Node.js 24.17.0 uses uv_statfs_t.f_frsize, which is present in the
+bundled libuv but not in the Solaris shared libuv headers used by this
+component.  Use f_bsize for the new frsize field on Solaris.
+
+--- node-24.17.0/src/node_file-inl.h
++++ node-24.17.0/src/node_file-inl.h
+@@ -153,7 +153,11 @@ static_cast<NativeT>(stat))
+ 
+   SET_FIELD(kType, s->f_type);
+   SET_FIELD(kBSize, s->f_bsize);
++#ifdef __sun
++  SET_FIELD(kFrSize, s->f_bsize);
++#else
+   SET_FIELD(kFrSize, s->f_frsize);
++#endif
+   SET_FIELD(kBlocks, s->f_blocks);
+   SET_FIELD(kBFree, s->f_bfree);
+   SET_FIELD(kBAvail, s->f_bavail);
