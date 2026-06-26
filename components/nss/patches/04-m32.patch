@@ -1,8 +1,8 @@
 Pass -m32 to gcc to make it build 32 bit.
 May investigate and send upstream. Use correct runpaths.
 
---- nss-3.123.1/nss/cmd/platlibs.mk
-+++ nss-3.123.1/nss/cmd/platlibs.mk
+--- nss-3.125/nss/cmd/platlibs.mk
++++ nss-3.125/nss/cmd/platlibs.mk
 @@ -10,9 +10,9 @@ # version and in the mixed (static nss l
  
  ifeq ($(OS_ARCH), SunOS) 
@@ -15,8 +15,8 @@ May investigate and send upstream. Use correct runpaths.
  endif
  endif
  
---- nss-3.123.1/nss/coreconf/SunOS5.mk
-+++ nss-3.123.1/nss/coreconf/SunOS5.mk
+--- nss-3.125/nss/coreconf/SunOS5.mk
++++ nss-3.125/nss/coreconf/SunOS5.mk
 @@ -45,6 +45,15 @@ OPTIMIZER = -O2
  	    # Enable this for accurate dtrace profiling
  	    # OPTIMIZER += -mno-omit-leaf-frame-pointer -fno-omit-frame-pointer
@@ -61,8 +61,8 @@ May investigate and send upstream. Use correct runpaths.
  endif
  
  OS_LIBS += -lthread -lnsl -lsocket -lposix4 -ldl -lc
---- nss-3.123.1/nss/lib/freebl/Makefile
-+++ nss-3.123.1/nss/lib/freebl/Makefile
+--- nss-3.125/nss/lib/freebl/Makefile
++++ nss-3.125/nss/lib/freebl/Makefile
 @@ -508,7 +508,7 @@ # Solaris for non-sparc family CPUs
      ifdef NS_USE_GCC
  	LD = gcc
@@ -72,8 +72,8 @@ May investigate and send upstream. Use correct runpaths.
      endif
      ifeq ($(USE_64),1)
  	# Solaris for AMD64
---- nss-3.123.1/nss/lib/sysinit/config.mk
-+++ nss-3.123.1/nss/lib/sysinit/config.mk
+--- nss-3.125/nss/lib/sysinit/config.mk
++++ nss-3.125/nss/lib/sysinit/config.mk
 @@ -49,18 +49,10 @@ endif
  
  # $(PROGRAM) has explicit dependencies on $(EXTRA_LIBS)

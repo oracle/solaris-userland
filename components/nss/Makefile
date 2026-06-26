@@ -32,21 +32,21 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nss
-COMPONENT_VERSION=	3.123.1
+COMPONENT_VERSION=	3.125
 # NSS ips major version is incorrect for historical reasons.
-IPS_COMPONENT_VERSION=	4.123.1
+IPS_COMPONENT_VERSION=	4.125
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_UVERSION=	$(subst .,_,$(COMPONENT_VERSION))
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:42065a3ff780a9710a3dddcd1cee9b9be2aa40628883cea851d562eb58b178b0
+    sha256:1ad541f10da7c58dec01f540ecc44d28cbbc033f741a57473de5a0893d91606d
 COMPONENT_ARCHIVE_URL=	\
     https://ftp.mozilla.org/pub/security/$(COMPONENT_NAME)/releases/NSS_$(COMPONENT_UVERSION)_RTM/src/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/nss
 COMPONENT_ANITYA_ID=	2503
-COMPONENT_BAID=		391338
+COMPONENT_BAID=		404405
 
 BUILD_STYLE= justmake
 
@@ -112,7 +112,9 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
       rsync --exclude '*.a' --copy-links -r "$(BUILD_DIR)/$(DIST_OBJ.$(MACH).64)/lib/" "$(PROTO_DIR)/usr/lib/mps/$(MACH64)/"; \
       rsync                 --copy-links -r "$(BUILD_DIR)/$(DIST_OBJ.$(MACH).64)/bin/" "$(PROTO_DIR)/usr/bin/"; \
       sed -e 's,@prefix@,/usr,' -e 's,@MOD_MAJOR_VERSION@,$(MAJOR_VER),' -e 's,@MOD_MINOR_VERSION@,$(MINOR_VER),' \
-          -e 's,@MOD_PATCH_VERSION@,$(PATCH_VER),' $(SOURCE_DIR)/nss/pkg/pkg-config/nss-config.in > $(PROTO_DIR)/usr/bin/nss-config; \
+          -e 's,@MOD_PATCH_VERSION@,$(PATCH_VER),' \
+          -e 's,$${major_version}\.$${minor_version}\.$${patch_version},$(COMPONENT_VERSION),' \
+          $(SOURCE_DIR)/nss/pkg/pkg-config/nss-config.in > $(PROTO_DIR)/usr/bin/nss-config; \
       chmod 755 $(PROTO_DIR)/usr/bin/nss-config; \
       $(MKDIR) "$(PROTO_DIR)/usr/lib/$(MACH64)/pkgconfig"; \
       $(GSED) $(REPLACE_STRING) files/nss-64.pc > "$(PROTO_DIR)/usr/lib/$(MACH64)/pkgconfig/nss.pc" \

@@ -5,10 +5,9 @@ Solaris build environments it can fail or hang in PR_Connect before reaching
 the NSS verification path being tested.  Bound the external connection attempt
 and skip this one check when the network dependency is unavailable.
 
---- nss-3.123.1/nss/tests/ssl/ssl.sh
-+++ nss-3.123.1/nss/tests/ssl/ssl.sh
-@@ -993,14 +993,39 @@ ssl_policy_pkix_ocsp()
-   # Disallow sha1 explicitly. This will test if we are trying to verify the sha1 signature
+--- nss-3.125/nss/tests/ssl/ssl.sh
++++ nss-3.125/nss/tests/ssl/ssl.sh
+@@ -994,12 +994,37 @@ # Disallow sha1 explicitly. This will te
    # on the GlobalSign root during OCSP processing
    setup_policy "disallow=sha1" ${P_R_SERVERDIR}
    RET_EXP=0
@@ -47,4 +46,3 @@ and skip this one check when the network dependency is unavailable.
    html_msg $RET $RET_EXP "${testname}" \
             "produced a returncode of $RET, expected is $RET_EXP"
  
-   if [ "{PKIX_SAVE}" != "unset" ]; then
