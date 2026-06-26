@@ -44,7 +44,7 @@ COMPONENT_ARCHIVE_HASH= \
 # Check the gnome releng location for tarballs if available
 COMPONENT_ARCHIVE_URL=	https://download.gnome.org/teams/releng/tarballs-needing-help/mozjs/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libmozjs
-COMPONENT_ANITYA_ID=	235328
+COMPONENT_ANITYA_ID=	368919
 
 COMPONENT_BAID=		156452
 

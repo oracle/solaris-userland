@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/drkjam/netaddr/
 COMPONENT_BUGDB=	python-mod/netaddr
-COMPONENT_ANITYA_ID=	12487
+COMPONENT_ANITYA_ID=	5586
 COMPONENT_BAID=		185473
 
 include $(WS_MAKE_RULES)/prep.mk

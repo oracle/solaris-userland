@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pexpect/ptyprocess
 COMPONENT_BUGDB=	python-mod/ptyprocess
-COMPONENT_ANITYA_ID=	6446
+COMPONENT_ANITYA_ID=	6447
 
 COMPONENT_BAID=		101439
 

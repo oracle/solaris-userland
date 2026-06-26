@@ -19,7 +19,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 #
 
@@ -53,7 +53,7 @@ COMPONENT_ARCHIVE_HASH_2=sha256:cd9253e6fa1cb0b60f526e9892648144d34a7dd096c7cf21
 UNPACK_ARGS_2=		-r $(COMPONENT_SRC_2)
 
 COMPONENT_BUGDB=	g11n/locale-data
-COMPONENT_ANITYA_ID=	17315
+COMPONENT_ANITYA_ID=	103642
 
 COMPONENT_BAID_CLDR=	29048
 COMPONENT_BAID_IEEE=	10404
