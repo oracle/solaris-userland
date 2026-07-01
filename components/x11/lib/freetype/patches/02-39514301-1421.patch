@@ -1,0 +1,31 @@
+Backport upstream FreeType fix for bug 39514301 / #1421.
+
+Integer overflow / out-of-bounds read in TrueType IUP instruction.
+
+Upstream commit:
+https://gitlab.freedesktop.org/freetype/freetype/-/commit/7974be74d8b5a2fbf99aa88f0461d1f80af51cee
+https://gitlab.freedesktop.org/freetype/freetype/-/work_items/1421
+
+--- freetype-2.14.3/src/truetype/ttinterp.c
++++ freetype-2.14.3/src/truetype/ttinterp.c
+@@ -6204,14 +6204,14 @@
+     IUP_WorkerRec  V;
+     FT_Byte        mask;
+ 
+-    FT_UInt   first_point;   /* first point of contour        */
+-    FT_UInt   end_point;     /* end point (last+1) of contour */
++    FT_UInt  first_point;   /* first point of contour        */
++    FT_UInt  end_point;     /* end point (last+1) of contour */
+ 
+-    FT_UInt   first_touched; /* first touched point in contour   */
+-    FT_UInt   cur_touched;   /* current touched point in contour */
++    FT_UInt  first_touched; /* first touched point in contour   */
++    FT_UInt  cur_touched;   /* current touched point in contour */
+ 
+-    FT_UInt   point;         /* current point   */
+-    FT_Short  contour;       /* current contour */
++    FT_UInt  point;         /* current point   */
++    FT_UInt  contour;       /* current contour */
+ 
+ 
+ #ifdef TT_SUPPORT_SUBPIXEL_HINTING_MINIMAL
