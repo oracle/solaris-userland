@@ -27,17 +27,18 @@ CTF_MODE =		off	# C++
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		paps
-COMPONENT_VERSION=	0.8.0
+COMPONENT_VERSION=	0.8.0.20251101
 
 # due to 27244651 the IPS version should be the solaris version
 IPS_COMPONENT_VERSION= $(PKG_SOLARIS_VERSION)
 
 COMPONENT_PROJECT_URL=	https://github.com/dov/paps
-COMPONENT_ARCHIVE_URL=	https://github.com/dov/paps/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_HASH=	sha256:bb5a826db364117a5ae79c833c4a000197f3b5b3eff10e31fb1513a583f96ff2
+GIT_REPO=		https://github.com/dov/paps
+GIT_COMMIT_ID=		199b478
+GIT_HASH=		sha256:9c294bf355a824f5360a59d3947ee648c97d2ed7c10bb8e47c54d7ff2f454da2
 
 COMPONENT_BUGDB=	utility/paps
-COMPONENT_BAID=		154385
+COMPONENT_BAID=		405136
 COMPONENT_ANITYA_ID=	2592
 
 BUILD_STYLE=		meson
@@ -53,6 +54,8 @@ REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/fmt
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/libpaper
+REQUIRED_PACKAGES += library/python/pygments-311
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime

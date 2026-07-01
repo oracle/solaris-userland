@@ -1,0 +1,75 @@
+Use Pygments to generate pango markup instead of calling source-highlight.
+
+--- a/scripts/src-to-paps
++++ b/scripts/src-to-paps
+@@ -1,7 +1,7 @@
+ #!/usr/bin/env python3
+ 
+ ######################################################################
+-#  Use GNU source-highlight to turn source code into pango markup
++#  Use Pygments to turn source code into pango markup
+ #  and pipe to paps.
+ #
+ #  This is currently of limited use for long lines, as the paps/pango
+@@ -14,8 +14,13 @@
+ import argparse
++import re
+ import subprocess
+ from pathlib import Path
+ import sys
+ import tempfile
++from pygments import highlight
++from pygments.formatters import PangoMarkupFormatter
++from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename, TextLexer
++from pygments.util import ClassNotFound
+ 
+ def xec(cmd, decode=True, chomp=True, verbose=False):
+   '''Run a command a returns its stdout output.
+@@ -44,12 +49,20 @@ def arg_if_not_none(param_name, val):
+   '''Return either an empty string or the parameter with its value'''
+   if val is None:
+     return ''
+   return param_name + ' ' + val + ' '
+ 
+-# Defaults
+-
+-# TBD - Make this a configuration variable
+-pango_outlang_path = '/usr/local/share/paps/pango_markup.outlang'
++def source_to_pango_markup(fn, source_lang, verbose=False):
++  source = Path(fn).read_text(errors='ignore')
++  try:
++    lexer = guess_lexer_for_filename(fn, source) if source_lang is None else get_lexer_by_name(source_lang)
++  except ClassNotFound:
++    if verbose:
++      sys.stderr.write(f'No lexer found for {fn}, using plain text\n')
++    lexer = TextLexer()
++  markup = highlight(source, lexer, PangoMarkupFormatter()).strip()
++  if markup.startswith('<tt>') and markup.endswith('</tt>'):
++    markup = markup[4:-5]
++  return re.sub(r'<span fgcolor="#bbbbbb">(\s+)</span>', r'\1', markup)
+ 
+ parser = argparse.ArgumentParser(description='Process a file')
+ parser.add_argument('-o', '--output',
+@@ -66,5 +76,1 @@ parser.add_argument('--pango-outlang-path',
+-                    dest='pango_outlang_path',
+-                    action='store',
+-                    type =str,
+-                    default = pango_outlang_path,
+-                    help='Path to pango_markup.outlang')
++                    help=argparse.SUPPRESS)
+@@ -119,14 +125,8 @@ for fn in args.filename:
+                  if args.source_lang is None
+                  else args.source_lang)
+ 
+   markups.append(
+-    xec(f'source-highlight '
+-        + (f'-s {source_lang} ' if source_lang is not None else '')
+-        + arg_if_not_none('--style-file', args.style_file)
+-        + arg_if_not_none('--style-css-file', args.style_css_file)
+-        + f'--outlang-def {args.pango_outlang_path} '
+-        f'--input {fn}',
+-        verbose=args.verbose))
++    source_to_pango_markup(fn, source_lang, args.verbose))
+ 
+ with tempfile.TemporaryDirectory() as tmp:
+   pmu_file = Path(tmp) / 'src-to-paps.pmu'
