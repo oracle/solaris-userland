@@ -13,9 +13,15 @@ have defaults, but can be overridden.
   which binaries are the preferred ones (i.e. should be installed in /usr/bin);
   values are: 64, 64_and_32, 32, 32_and_64, and NO_ARCH.
 
+* COMPILER declares which compiler should be used to build the component;
+  possible values are gcc (default) and studio.
+
 * COMPONENT_NAME is typically a short name (e.g., vim).
 
-* COMPONENT_VERSION is typically numbers separated by dots (e.g. 7.3).
+* COMPONENT_VERSION is typically numbers separated by dots (e.g. 7.3). If this
+  does not contain an IPS acceptable version (i.e. only numbers separated by
+  dots, with no leading zeros in any portion), then IPS_COMPONENT_VERSION has
+  to be set to an IPS accepted version string.
 
 * COMPONENT_SRC is where the archive is extracted; it has a default value of
   "$(COMPONENT_NAME)-$(COMPONENT_VERSION)". One component can be constructed
@@ -27,18 +33,18 @@ have defaults, but can be overridden.
 * COMPONENT_ARCHIVE is the base name of the archive to be downloaded; it has
   a default value of "$(COMPONENT_SRC).tar.gz".
 
-* COMPONENT_ARCHIVE_HASH contains checksum of downloaded file. Typically it is
-  "sha256:" followed by the first output field of
+* COMPONENT_ARCHIVE_HASH contains the checksum of the downloaded file.
+  Typically it is "sha256:" followed by the first output field of
   `sha256sum $(COMPONENT_ARCHIVE)`, but any hash algorithm supported by python
   hashlib can be used. Userland infrastructure recognizes two kinds of checksums.
-  `actual` is checksum of the whole archive (like source.tar.gz) and `payload` is
-  checksum of the unpacked archive (like source.tar). In practice it does not
-  matter which hash is being used.
+  `actual` is the checksum of the whole archive (like source.tar.gz) and
+  `payload` is the checksum of the unpacked archive (like source.tar). In
+  practice it does not matter which hash is being used.
 
 * COMPONENT_ARCHIVE_SRC defines what kind of object delivers the source.  This
   can be "git", "hg", or "svn" if the source comes from an SCM repository. It
-  can be "none" if there are no sources to unpack. Default is not set which
-  means source archive is regular file to unpack.
+  can be "none" if there are no sources to unpack. The default is not set, which
+  means the source archive is a regular file to unpack.
 
 * COMPONENT_ARCHIVE_URL is where the archive can be downloaded from.  This is
   typically constructed from $(COMPONENT_PROJECT_URL) and $(COMPONENT_ARCHIVE).
@@ -58,12 +64,12 @@ have defaults, but can be overridden.
 
 * COMPONENT_SIG_URL is the URL where the PGP signature for $(COMPONENT_ARCHIVE)
   can be found. By default this is set to $(COMPONENT_ARCHIVE_URL).sig . This
-  is used to validate the source archive we download from internet. If we can
-  not verify the signature, setting COMPONENT_SIG_URL empty disables this
+  is used to validate the source archive we download from the internet. If we
+  cannot verify the signature, setting COMPONENT_SIG_URL empty disables this
   check.
 
-  Userland tries to verify archive signature whenever we download the archive
-  from internet (as opposed to downloading from our cache specified by
+  Userland tries to verify the archive signature whenever we download the archive
+  from the internet (as opposed to downloading from our cache specified by
   INTERNAL_ARCHIVE_MIRROR where the archive is verified by
   COMPONENT_ARCHIVE_HASH only). Signature is not checked when downloading from
   the cache, because the public key can expire in which case signature would be
@@ -71,12 +77,12 @@ have defaults, but can be overridden.
   verify the archive must be stored either automatically or by hand in our
   keyring at $(hg root)/tools/.gnupg/pubring.gpg .
 
-  If our keyring does not contain the correct key then the infrastructure tries
-  to download it from from hkp://keys.gnupg.net (as configured in
+  If our keyring does not contain the correct key, then the infrastructure tries
+  to download it from hkp://keyserver.ubuntu.com (as configured in
   $(hg root)/tools/.gnupg/gpg.conf). If it can't get the appropriate key from
   there, you can set COMPONENT_PUBLIC_KEY_URL to have it downloaded from
-  elsewhere. The infrastructure will import whole keyring into our pubring.gpg
-  (and so you must commit it alongside your change).
+  elsewhere. The infrastructure will import the whole keyring into our
+  pubring.gpg (and so you must commit it alongside your change).
 
   You can also try to obtain the key by downloading it from
   https://keys.openpgp.org/
@@ -88,7 +94,7 @@ have defaults, but can be overridden.
 
   gpg2 --keyserver keyserver.ubuntu.com --keyserver-options http-proxy=$http_proxy --homedir "$(hg root)/tools/.gnupg" --recv DEACCAAEDB78137A
 
-  Manual key import has the advantage that we don't have to import whole
+  Manual key import has the advantage that we don't have to import the whole
   keyring, but can import only the single key we need. For that you need to know
   the key ID, which is printed in validation error message:
 
@@ -145,9 +151,9 @@ have defaults, but can be overridden.
   And then commit the change
 
 
-* COMPONENT_PUBLIC_KEY_URL contains a custom url to the public key that is
-  required to verify the validity of the signature. The most components do
-  not need to set this variable since the most of components have their keys
+* COMPONENT_PUBLIC_KEY_URL contains a custom URL to the public key that is
+  required to verify the validity of the signature. Most components do
+  not need to set this variable since most components have their keys
   stored on public gpg key servers that are queried automatically if the key
   is not found in the Userland keyring. If the variable is set, the public key
   is downloaded and imported. You should check the output of 'gmake prep' to
@@ -168,7 +174,7 @@ have defaults, but can be overridden.
 
 * JOBS_PER_COMPONENT variable says how many parallel jobs is to be executed
   inside every compiled component. (1 means do not build in parallel, 0 means
-  autodetect how many jobs should be executed based on how manu CPUs we have).
+  autodetect how many jobs should be executed based on how many CPUs we have).
   Component can override this setting by COMPONENT_MAKE_JOBS variable - this is
   often used to force given component to be built sequentially. Default value
   is 0 for single component build and 1 for full build.
@@ -190,6 +196,15 @@ have defaults, but can be overridden.
   source from the Subversion repository referenced in the value.
 * SVN_REV is the tag or changeset that you wish to pull from Subversion.
 
+When using a source code management system as the canonical source for a
+component, the build automatically generates a source archive for the
+component by pulling the source from the SCM and creating a tarball from
+the pulled source.  This allows us to automatically store a copy of the
+canonical source that we build from in our source archive cache and not
+continually hammer on the SCM repo for that component. You need to define
+hash for this tarball, but rather than using COMPONENT_ARCHIVE_HASH, use
+scm specific GIT_HASH/HG_HASH/SVN_HASH.
+
 * REQUIRED_PACKAGES is a list of packages required to build or run the
   component and its tests; it includes "system/library" and
   "system/library/libc" by default.
@@ -198,10 +213,10 @@ The following are basic variables that must be set before including common.mk
 if overriding the default:
 
 * BUILD_STYLE declares what type of build process this component uses;
-  possible values are: ant, archive (extract and copy), attpackagemake, cmake,
-  configure, gnu-component, justmake, pkg (publish only), and setup.py.  See
-  the corresponding file in make-rules for details.  The default value is
-  'configure'.
+  possible values are: ant, archive (extract and copy), attpackagemake,
+  cargo, cmake, configure, gnu-component, justmake, makemaker, meson,
+  pkg (publish only), pybuild, and setup.py.  See the corresponding
+  file in make-rules for details.  The default value is 'configure'.
 
   Based on the value of BUILD_STYLE, other variables are affected as follows:
 
@@ -272,17 +287,20 @@ The following variables alter the compilation or build process for components:
   $(BUILD_STYLE) is 'ant' then $(ASLR_NOT_APPLICABLE) is the default.
   Otherwise, the default is $(ASLR_ENABLE).
 
-When using a source code management system as the canonical source for a
-component, the build automatically generates a source archive for the
-component by pulling the source from the SCM and creating a tarball from
-the pulled source.  This allows us to automatically store a copy of the
-canonical source that we build from in our source archive cache and not
-continually hammer on the SCM repo for that component.  The source archive
-name is automatically generated from the COMPONENT_NAME, COMPONENT_VERSION,
-and {GIT|HG|SVN}_REV values.  Also, the source is archived and unpacked
-in a directory using these values.   You should also define a hash for
-this tarball in your Makefile similar to what you do with downloaded
-source archives.
+* CC_PIC_MODE controls generation of Position-Independent Code. The possible
+  values are $(CC_PIC_ENABLE) and $(CC_PIC_DISABLE). PIC is enabled by default
+  and can be disabled with:
+    CC_PIC_MODE = $(CC_PIC_DISABLE)
+
+* LD_Z_PIE_MODE controls creation of Position Independent Executables. The
+  possible values are $(LD_Z_PIE_ENABLE) and $(LD_Z_PIE_DISABLE). PIE is
+  enabled by default and can be disabled with:
+    LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
+* CTF_MODE controls CTF sections generation for executables, PIE, and shared
+  objects. The possible values are 'on', 'off', and 'relaxed' (best effort CTF
+  creation). The default is 'on' when compiled with gcc, 'off' otherwise.
+  See make-rules/shared-macros.mk for much more detailed info.
 
 
 These two are both initialized in make-rules/shared-macros.mk rather than any
@@ -315,7 +333,7 @@ test, they can be specified via the following.
 * COMPONENT_TEST_TARGETS has a default value of "check".  Several components
   need to set this to "test".
 
-* COMPONENT_BUILD_ARGS is probably the mostly useful variable here for solving
+* COMPONENT_BUILD_ARGS is probably the most useful variable here for solving
   subtle build issues.  When you need to override a MACRO set in the native
   Makefile of a component, do so by adding something like:
      COMPONENT_BUILD_ARGS += MKDIR="$(MKDIR)"
@@ -374,7 +392,7 @@ control the options and arguments passed:
 	32-bit libraries -> $(CONFIGURE_PREFIX)/lib
   	64-bit binaries -> $(CONFIGURE_PREFIX)/bin/$(MACH64)
 	64-bit libraries -> $(CONFIGURE_PREFIX)/lib/$(MACH64)
-* CC_FOR_BUILD and CXX_FOR_BUILD is included in CONFIGURE_ENV by default to
+* CC_FOR_BUILD and CXX_FOR_BUILD are included in CONFIGURE_ENV by default to
   ensure that 32-bit and 64-bit host detection works as expected for
   autoconf-based components by specifying the exact compiler and relevant
   $(CC_BITS) for the current build.  It can be set to "" to omit it from
@@ -455,7 +473,7 @@ publication, the following variables are available:
 * PKG_MACROS: the list of makefile macros that should be exported as defines
   for use in package manifests and pkgmogrify transform files.  Whitespace is
   NOT supported; use of PKG_VARS is strongly preferred for this reason.  The
-  expected form each of entry is a key-value pair as follows:
+  expected form of each entry is a key-value pair as follows:
 
      PKG_MACROS += NAME=NO-WHITESPACE-VALUE
 
@@ -522,7 +540,7 @@ publication, the following variables are available:
   builds, we run pkglint at the end of the publish phase.  But for top-down
   builds, running pkglint for each component would cause locking issues, so
   we skip that step and run pkglint once at the end.  There is also a pkglint:
-  target in components/Makefile that allows for the direction invocation of
+  target in components/Makefile that allows for the direct invocation of
   this end-of-the-build-pkglint-everything-together step, which makes it much
   easier to "finish off" a build where a small number of components failed.
 
@@ -530,13 +548,13 @@ publication, the following variables are available:
   repo will be logged. Please see comments in transforms/print-published-pkgs
   on details which packages are not logged.
 
-* PKG_HARDLINKS contains list of files treated as hardlink targets during
-  manifest generation. If not specified then (the variable is empty) then the
+* PKG_HARDLINKS contains a list of files treated as hardlink targets during
+  manifest generation. If not specified (the variable is empty), then the
   targets are read off existing manifest file. Please see "Hardlinks" paragraph
   in doc/manifest-check.txt
 
 * SKIP_BUILDING_INCORPORATIONS. When 'gmake publish' is executed in
-  'components' directory it will not only build components but also creates
+  'components' directory it will not only build components but also create
   incorporations and runs pkglint. While creating seeding packages it is handy
   to build components in parallel to speed up things so we run 'gmake publish'
   in components directory. But we do not want to run the incorporations step.
@@ -563,7 +581,7 @@ other places where constructs like this are used.
 
 Multiple source archives for one component
 ==========================================
-Userland provides set of tools to download, unpack and patch any archive. In
+Userland provides a set of tools to download, unpack and patch any archive. In
 order to utilize it one must define
 
 COMPONENT_SRC (== name of the directory where the archive is unpacked)
@@ -581,7 +599,7 @@ COMPONENT_ARCHIVE_lib
 COMPONENT_ARCHIVE_URL_lib
 
 And similarly as before, after unpacking COMPONENT_ARCHIVE_lib all patches with
-the same postfix, thus form patches/*.patch_lib are applied in
+the same postfix, thus from patches/*.patch_lib are applied in
 COMPONENT_SRC_lib directory.
 
 Please note that the variables are processed by "common.mk" so they have to be
@@ -592,7 +610,7 @@ the same postfix to given archive.
 
 SOURCE_DIR
 COMPONENT_ARCHIVE_HASH
-COMPONENT_ARCHIVE_SIG_URL
+COMPONENT_SIG_URL
 COMPONENT_POST_UNPACK_ACTION
 GIT_REPO, GIT_COMMIT_ID, ...
 HG_TAG, HG_BRANCH, HG_REV, ...
@@ -643,7 +661,7 @@ in REPEAT_CMD_CLEANUP environment variable. To use this trick in
 a component, the following modifications are required.
 
 - Prepend 'repeat_cmd <n> <t>' to GMAKE, NINJA, ANT, WAF, ...
-- Optionally setup a cleanup function, e.g., 'gmake clean'.
+- Optionally set up a cleanup function, e.g., 'gmake clean'.
 - Explicitly specify a test command to avoid inadvertent repeated runs.
 
 As an example, consider a fragment from elixir's Makefile.

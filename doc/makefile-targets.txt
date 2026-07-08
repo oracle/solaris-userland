@@ -1,6 +1,7 @@
 This is a guide to explain various useful targets in Userland component
 Makefiles.  There is a set of targets that all Makefiles must include, plus
-some additional targets that are there for convenience.
+some additional targets that are there for convenience.  You'll get many of
+these for free by including $(WS_MAKE_RULES)/common.mk or other makefiles.
 
 Most targets depend on your component Makefile, so changes to your component
 Makefile will automatically trigger a re-download and subsequent build steps
@@ -12,57 +13,63 @@ only be used in the calling environment via something like:
 component-environment-check::
   This target is an optional target that will be included in most Makefiles
   automatically.  It is defined in $(WS_MAKE_RULES)/environment.mk which is
-  included by $(WS_MAKE_RULES)/shares-macros.mk.  It reports on some interesting
+  included by $(WS_MAKE_RULES)/shared-macros.mk.  It reports on some interesting
   information about the current environment and whether or not it is suitable
   to build, publish, or test the component.
 
 component-environment-prep::
   This target is an optional target that will be included in most Makefiles
   automatically.  It is defined in $(WS_MAKE_RULES)/environment.mk which is
-  included by $(WS_MAKE_RULES)/shares-macros.mk.  It uses the REQUIRE_PACKAGES
+  included by $(WS_MAKE_RULES)/shared-macros.mk.  It uses the REQUIRED_PACKAGES
   macro contents to attempt to install any required packages in the current
-  environment.  It should never by used by developers to update any public
+  environment.  It should never be used by developers to update any public
   build machines as those are managed by dedicated staff.
 
 download::
   This target is present in all Makefiles.  It can be used at the top level
   to act across all components, or on an individual component basis.  It is
   typically defined by including $(WS_MAKE_RULES)/prep.mk in your component
-  Makefile.
+  Makefile.  It will download all verify (hash and signature) sources.
+  See COMPONENT_ARCHIVE and related variables in makefile-variables.txt for
+  detailed info on how the download works.
 
 unpack::
   This target is present in all Makefiles.  It can be used at the top level
   to act across all components, or on an individual component basis.  It is
   typically defined by including $(WS_MAKE_RULES)/prep.mk in your component
-  Makefile.  This target depends on the previously described "download" target,
-  This target will unpack any downloaded source archives.  It is an interim
+  Makefile.  This target depends on the previously described "download" target.
+  It will unpack any downloaded source archives.  It is an interim
   step in the source code preparation phase of the build.
 
 patch::
   This target is present in all Makefiles.  It can be used at the top level
   to act across all components, or on an individual component basis.  It is
   typically defined by including $(WS_MAKE_RULES)/prep.mk in your component
-  Makefile.  This target depends on the previously described "unpack" target,
-  This target will patch any unpacked source.  It is an interim step in the
-  source code preparation phase of the build.
+  Makefile.  This target depends on the previously described "unpack" target.
+  It will apply each patch from the patches directory onto unpacked sources.
+  It is an interim step in the source code preparation phase of the build.
 
 prep::
   This target is present in all Makefiles.  It can be used at the top level
-  to act across all components, or on an individual component basis.  It is 
+  to act across all components, or on an individual component basis.  It is
   typically defined by including $(WS_MAKE_RULES)/prep.mk in your component
   Makefile.  It depends on the previously described "download" target, as well
   as internal interim targets to unpack source archives and apply patches to
   the unpacked source.
 
-configure:
+configure::
   This target is an optional target that can be included in component Makefiles
   to run the community source configuration phase of a component build.  It is
-  typically defined in component Makefiles that make use of the
-  $(WS_MAKE_RULES)/configure.mk Makefile fragment, but could be defined in
-  others that include a source code configuration step.  It is not explicitly
-  called during the build, but provides a convenient means of downloading,
-  unpacking, patching, and "configuring" component source for building without
-  actually compiling the bits.
+  typically defined in component Makefiles that make use of one of the following
+  Makefile fragments:
+    $(WS_MAKE_RULES)/configure.mk
+    $(WS_MAKE_RULES)/cmake.mk
+    $(WS_MAKE_RULES)/meson.mk
+    $(WS_MAKE_RULES)/waf.mk
+  but could be defined in others that include a source code configuration step.
+  It is not explicitly called during the build, but provides a convenient means
+  of downloading, unpacking, patching, and "configuring" component source for
+  building without actually compiling the bits.
 
 build::
   This target must be present in all Makefiles.  It can be used at the top level
@@ -91,11 +98,6 @@ mangle::
   automatically defined by including $(WS_MAKE_RULES)/ips.mk.  It depends
   on the previously described 'install' target and will perform mangling
   of component manifests and deliverables.
-
-pkglint::
-  This target is an optional target is automatically defined in each Makefile
-  by the inclusion of $(WS_MAKE_RULES)/prep.mk.  It will run the build steps
-  necessary to pkglint the manifests for a component.
 
 publish::
   This target is present in all Makefiles.  It can be used at the top level
@@ -147,9 +149,9 @@ check_rtime:
   check_rtime script from pkg:/developer/build/onbld to check for common
   errors in ELF binaries.  It checks the binaries from the component's
   prototype directory for the current platform, resolving any dependencies
-  not found there against the installed versions on the machine its run on.
+  not found there against the installed versions on the machine it's run on.
   A global exceptions file is provided in $(WS_TOP)/exception_lists/check_rtime
-  and is automatically supplemented with the contest of test/check_rtime in
+  and is automatically supplemented with the contents of test/check_rtime in
   the component directory.
 
 regen-patches:
@@ -160,7 +162,7 @@ regen-patches:
   $(WS_MAKE_RULES)/prep-patch.mk.  It unpacks the pristine upstream source,
   applies each patch file in turn, and generates a new patch file under the
   new/ directory for those changes against the current source, making it
-  easier to keep our local patches in sync when we upgraded to new upstream
+  easier to keep our local patches in sync when we upgrade to new upstream
   releases, reducing fuzz and line offset warnings and improving the odds
   that the patches could be carried forward to new releases.  After running
   it, you will need to manually compare the patches in patches/ against new/

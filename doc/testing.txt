@@ -78,9 +78,8 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PERL_VERSION)-$(
 
 so that means it's looking for one or more of:
 
-5.12:    components/perl_modules/<component>/test/results-5.12-32.master
-5.12-mt: components/perl_modules/<component>/test/results-5.12-mt-32.master
-5.16:    components/perl_modules/<component>/test/results-5.16-64.master
+5.38:    components/perl_modules/<component>/test/results-5.38-32.master
+5.42:    components/perl_modules/<component>/test/results-5.42-64.master
 
 depending upon which versions of Perl this component supports.
 
@@ -113,7 +112,7 @@ You can now use the contents of that file as a first cut at the master results.
    $ cp build/test/$(MACH64)/results-64.snapshot test/results-64.master
 
 Now run the tests again. Note that you have to get back to a clean start
-just in case the test process tries to compile any code.
+in case the test process tries to compile any code.
 
    $ gmake clean
    $ gmake test
@@ -123,7 +122,7 @@ and if there are still differences, they will be placed in
 components/elinks/build/test/$(MACH64)/test-64-diffs
 
 Typically these differences will be for things like usernames, temporary
-filenames, timings etc. If you have some differences, then you are going
+filenames, timings, etc. If you have some differences, then you are going
 to have to write special regexp expressions in your component Makefile to
 "normalize" them, and adjust the master test results file so that it
 matches what the normalized version looks like.
@@ -189,12 +188,15 @@ against master results files.
 
 If a lot of people start generating the very same ones, then we can
 consider adding them to the "global" set of regexps in
-make-rules/shared-macros.mk which currently looks like:
+make-rules/shared-macros.mk which currently looks like this:
 
 COMPONENT_TEST_TRANSFORMS = \
         '-e "s|$(@D)|\\$$(@D)|g" ' \
         '-e "s|$(PERL)|\\$$(PERL)|g" ' \
-        '-e "s|$(SOURCE_DIR)|\\$$(SOURCE_DIR)|g" '
+        '-e "s|$(SOURCE_DIR)|\\$$(SOURCE_DIR)|g" ' \
+        '-e "/^gmake: warning: jobserver unavailable:/d" ' \
+        '-e "/^make\[.* jobserver unavailable:/d" ' \
+        '-e "/^make: Warning: Ignoring DistributedMake -j option/d" '
 
 Note that in some cases, gsed is not powerful enough.  E.g., if you need to
 do more than massage or remove certain lines, but only compare certain sections

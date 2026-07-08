@@ -91,17 +91,17 @@ Manually generated actions
       decorate this package attribute with an 'incorporate={incorporation-name}'
       decoration to specify where the package should be incorporated at the end
       of the userland build.  A special value of 'none' will cause the package
-      to be unincorporated and float freely from the rest of the rest of the
-      packages.  Note that unincorporated packages don't automatically get
-      updated with the rest of the system when 'pkg update' is run unless the
-      unincorporated package(s) are specified on the command line.
+      to be unincorporated and float freely from the rest of the packages.
+      Note that unincorporated packages don't automatically get updated with
+      the rest of the system when 'pkg update' is run unless the unincorporated
+      package(s) are specified on the command line.
 
 Mogrified Manifest
-    The canonical manifest is combined with a set of the transforms
-    in $(WS_TOP)/transforms, and a set of macros to more complete
+    The canonical manifest is combined with a set of transforms
+    in $(WS_TOP)/transforms, and a set of macros to create a more complete
     package manifest using pkgmogrify(1).  The transforms apply default
     attributes to the various actions in the canonical manifest(s).  More
-    detail about the attributes can be found in the transform file themselves.
+    detail about the attributes can be found in the transform files themselves.
     The macros applied at the time of mogrification are as follows:
         $(MACH)
         $(MACH32)
@@ -150,7 +150,7 @@ Dependencies Resolved
     generated in the previous step.  This makes the resolution step a great deal
     faster, but requires that you include a static list of these packages in
     your component Makefile REQUIRED_PACKAGES macro.  You can automatically
-    add REQURIED_PACKAGES settings for the packages used in dependency
+    add REQUIRED_PACKAGES settings for the packages used in dependency
     resolution by running "gmake REQUIRED_PACKAGES".  Once you have done so,
     you should manually verify the Makefile additions.
 
@@ -163,7 +163,7 @@ Manifest Validation
     $(WS_TOP)/tools/python/pkglint/userland.py
 
     Note that when integrating new packages, and one or more of them depends
-    on or more of the others, then this may result:
+    on one or more of the others, then this may result:
         WARNING pkglint.action005.1      obsolete dependency check skipped:
             unable to find dependency (target pkg) for (source pkg)
     This means that the target package was not found in the reference repo,
@@ -177,7 +177,7 @@ Publication.
 
 Facets
     Many facets are automatically set by default via transforms 
-    in $(WS_TOPS)/transforms, such as facet.doc.*, facet.devel, etc.
+    in $(WS_TOP)/transforms, such as facet.doc.*, facet.devel, etc.
 
     optional.test
 
@@ -238,7 +238,7 @@ Renames
     This step is not necessary but desirable. The problem is that for any
     reason (like unlocked facets) one may try to install pre-rename package aaa
     with post-rename package bbb at the same time. That is not possible because
-    yesterdays aaa delivers the same files as todays bbb. IPS will not allow
+    yesterday's aaa delivers the same files as today's bbb. IPS will not allow
     that, BUT the error message is quite cryptic. If we add this dependency, we
     say 'If you want to install bbb, you must have aaa of a version which does
     not deliver any files. It is just a rename package'. Installing old aaa and
@@ -248,7 +248,7 @@ Renames
     Optionally rename the manifest.
     -------------------------------
     You may consider 'hg rename aaa.p5m bbb.p5m'. It has no impact on how the
-    packages are created, but it might be nice touch.
+    packages are created, but it might be a nice touch.
 
 
     Optionally rename the component directory.
@@ -272,7 +272,7 @@ Renames
     set name=pkg.linted.pkglint.dupaction001.1 value=true
 
     It would be nice to remember and remove the exception in two builds when
-    both new aaa and bbb appears in IPS repo.
+    both new aaa and bbb appear in IPS repo.
 
     Backport.
     ---------
@@ -307,7 +307,7 @@ Renames
     renaming aaa to bbb and install the renamed to current CBE.
 
     Otherwise REQUIRED_PACKAGES_VALID check in make-rules/ips.mk will fail.
-    There is way around that using SKIP_REQUIRED_PACKAGES_CHECK and later
+    There is a way around that using SKIP_REQUIRED_PACKAGES_CHECK and later
     removing it in another commit, but installing the new packages right away
     to CBE is much simpler.
 
@@ -339,8 +339,8 @@ for example in
 components/meta-packages/history/docbook.p5m:
   set name=pkg.fmri value=pkg:/data/docbook@2.30.0,5.11-0.175.0.0.0.0.0
 
-The problem is that engineer does not know into which build his change will go
-into so they can't specify the FMRI manually. In such situations they can use
+The problem is that engineers do not know which build their changes will go
+into, so they can't specify the FMRI manually. In such situations they can use
 AUTO_FMRI keyword. This is replaced by transforms/auto_fmri script by current
 build number while the package is published.
 
@@ -385,24 +385,24 @@ TL;DR you have to:
 Longer description:
 
 This is a brief description on how to remove a component from Userland for
-an EOF. The process is described at PSARC/2018/018. That means that you will
-need to make three changes to the gate.
+an EOF. The process is described at PSARC/2018/018 and PSARC/2020/053. That
+means that you will need to make three changes to the gate.
 
 a) Mark component as legacy
-b) Make sure that no package do depend on the legacy one
+b) Make sure that no package depends on the legacy one
 c) Remove the component/package altogether
 
-The timing is defined that
+The timing is defined as follows:
 
- - timer starts when a) is delivered to customer in SRU
+ - timer starts when a) is delivered to customers in SRU
  - c) must not happen sooner than 6 months from a). In other words customer can
    be sure that if the package was just marked legacy it will stay on the
    machine for at least 6 more months.
  - b) has to be completed at least three months before c). In other words, we
-   are sure that no other package shipped by us required that removed package
-   for at last three months
- - it is expected that we release one SRU a month so if the rename happened in
-   SRU50 we can delete in SRU56 earliest
+   are sure that no other package shipped by us has required that removed
+   package for at least three months
+ - with the two-update-per-quarter release cadence this means that if the rename
+   happened in SRU92 we can delete in SRU96 at the earliest
  - if there are reasons to deviate from the process, it is documented in the
    associated arc case
 
@@ -427,49 +427,34 @@ pkg search -r 'depend::database/mysql-55*'
 
 You can ignore
  - consolidation/userland/userland-incorporation
- - packages which themselves you are moving to legacy namespace
+ - packages which themselves you are marking legacy
 
 You can potentially ignore 'developer/opensolaris/userland'. This package
 contains dependency on all REQUIRED_PACKAGES from all components. You should be
 removing such REQUIRED_PACKAGES while removing the named packages.
 
-Sadly pkg search is not optimal, so YMMW. Be sure to ask in mailing list if you
-have troubles.
+Sadly pkg search is not optimal, so YMMW. Be sure to ask on the mailing list if
+you have troubles.
 
 
 ad c) Finally removing the components
 -------------------------------------
 The last step is to remove the components. This consists of two steps
- - hg rm components/my_component
+ - hg rm <component directory>
  - edit components/meta-packages/history/history and add all the affected
-   packages there. One line per package, but you have to include the legacy
-   packages too.
+   packages there.
 
   my/package@1.2.3-AUTO_FMRI
-  legacy/my/package@1.2.3-AUTO_FMRI
 
+You should also (recursively) check for any entries that rename to the package
+you are removing and change them from rename packages to obsolete packages.
+Something like this:
 
-
-Deleting the Component
-----------------------
-
-At some point, you will need to do a "hg remove" of the component's directory.
-This can be done before or after you make the necessary entry in the
-components/meta-packages/history/history file.  In this file you will see plenty
-of examples like this:
-
-backup/areca@7.1-5.12.0.0.0.85.0
-
-You will need to make sure you have the correct package name, version, and
-build you are targeting for the EOF for your new entry.  Also check for an old
-SUNW entry at the top of the file.  If there is one you will need to change
-this to match the targeted build.  So something like this:
-
-SUNWareca@7.1,5.11-0.133 backup/areca@7.1-0.133
+  old/package@1.1.0-11.4.0.0.1.9.0 my/package
 
 Should be changed to:
 
-SUNWareca@7.1-5.12.0.0.0.85.0
+  old/package@1.1.0-AUTO_FMRI
 
 Remember that the package may have had numerous names in its history.
 Generally the way to find this is by using:
@@ -491,13 +476,12 @@ Testing
 To test your changes the first thing you will need to do is to invoke
 'gmake publish' from the components/meta-packages/history directory or at the
 top level (a full Userland build) if you are removing multiple components.  Once
-this is complete you will need to setup a client with the EOF package(s)
+this is complete you will need to set up a client with the EOF package(s)
 installed.
 
 Then perform the following steps:
 
-1. # pkg set-publisher \
-     -P -p file:///net/strax/builds/your_name/your_dir/i386/repo
+1. pkg set-publisher -P -p file:///net/<machine>/<ws_location>/i386/repo
 
 
 If you are removing just a single component:
@@ -543,9 +527,9 @@ packages being delivered to the experimental repo.
 
 
 
-=====================
-Python incorporations
-=====================
+==============
+Incorporations
+==============
 
 a) incorporations
 -----------------

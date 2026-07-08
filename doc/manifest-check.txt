@@ -2,17 +2,17 @@
 ================================ Manifest check ================================
 ================================================================================
 
-This guide describes steps to set up a system making sure whether the manifest
-(*.p5m) we have in the is still correct and complete.
+This guide describes the steps to set up a system that makes sure the manifest
+(*.p5m) we have in the gate is still correct and complete.
 
 
 
 The Goal
 ========
-Makes sure that the component manifest (p5m) delivers all the files from the
-proto area. An example could be when CBE is updated with new library, component
-X starts to use it and because of that delivers new file. But this file is not
-in it's p5m manifest and there is no warning that there is such new file. If
+Make sure that the component manifest (p5m) delivers all the files from the
+proto area. An example could be when CBE is updated with a new library, component
+X starts to use it and because of that delivers a new file. But this file is not
+in its p5m manifest and there is no warning that there is such a new file. If
 component X has 'manifest-check' implemented we'll get an error during 'gmake
 publish'.
 
@@ -20,14 +20,14 @@ The goal of the manifest check is to define how the manifest file (*.p5m) is
 created out of the proto area. And compare the result to the existing p5m files
 to make sure that there are no files or other changes left behind.
 
-Other way of describing it would be that "manifest check" is set of pkgmogrify
-transformations applied to "gmake sample-manifest" output.
+Another way of describing it would be that "manifest check" is a set of
+pkgmogrify transformations applied to "gmake sample-manifest" output.
 
 
 
 Operation
 =========
-The process is to combine multiple information sources and compare the result
+The process is to combine multiple sources of information and compare the result
 to the p5m files. That is to create this_component.p5m it considers:
  - contents of the proto directories itself (gmake sample-manifest output)
    ( 5) )
@@ -38,7 +38,7 @@ to the p5m files. That is to create this_component.p5m it considers:
  - fixed set of action read from generate/this_component.static
    ( 10) )
 
-In detail, these are the steps taken in order to form p5m file
+In detail, these are the steps taken in order to form a p5m file:
 
 1) "gmake manifest-check" is executed. Either by hand or as part of "gmake
    publish" command.
@@ -46,22 +46,22 @@ In detail, these are the steps taken in order to form p5m file
 2) "manifest-check" makes sure that the component was "gmake install"ed
 
 3) list of existing *.p5m files in the component is collected and for each such
-   file tools/manifest_generator is executed.
+   file tools/manifest-check is executed.
 
-4) for component.p5m manifest_generator checks whether corresponding
+4) for component.p5m, manifest-check checks whether corresponding
    generate/component.generate exists. If not, info message is printed and the
-   tool exists with return code 0 (success).
+   tool exits with return code 0 (success).
 
-5) manifest_generator collects list of existing files in proto areas (like
-   gmake sample-manifest would do). Please note that you can specify additional
-   proto directories in $(GENERATE_PROTO_DIRS) variable in a form
-   "directory^transpose" so that every file/link/etc. in "directory" produces
-   action with path=transpose/... .
+5) manifest-check collects a list of existing files in proto areas (using
+   tools/manifest-generate similarly to "gmake sample-manifest"). Please note
+   that you can specify additional proto directories in $(GENERATE_PROTO_DIRS)
+   variable in a form "directory^transpose" so that every file/link/etc. in
+   "directory" produces action with path=transpose/... .
 
 6) There are three mogrify transform files applied
   - $(GENERATE_TRANSFORMS) - that is to get the output the same as
     "gmake sample-manifest". By default that is transforms/generate-cleanup
-  - $(MANIFEST_CLEANUP_TRANSFORM) - that contains common actions needed to do
+  - $(MANIFEST_CLEANUP_TRANSFORM) - that contains common actions needed to
     make the sample-manifest output similar to the actual p5m. That is dropping
     directories, moving files from "mangled" dir into root directory etc. That
     is by default transforms/manifest-check-cleanup.
@@ -74,13 +74,13 @@ In detail, these are the steps taken in order to form p5m file
 8) The debug file is stripped of debug lines, passed through pkgfmt and long
    actions which are split on multiple lines are joined into one again. The
    result is filtered through uniq(1) to remove duplicate lines. Duplicate
-   lines can be generated for example if you have man page in the component and
-   the man page appears later in the "mangled" directory too.
+   lines can be generated for example if you have a man page in the component
+   and the man page appears later in the "mangled" directory too.
 
-9) manifest_generator takes all pkgmogrify transforms (<transform ... and
+9) manifest-check takes all pkgmogrify transforms (<transform ... and
    <include ...), "set", "depend" and "license" actions from existing
    component.p5m file. It also takes all actions with variant.arch set to
-   anything other than what our current architecture is. These actions can not
+   anything other than what our current architecture is. These actions cannot
    be guessed so are copied out of the existing p5m file.
 
 10) The contents of generate/component.static is read, as-is, if it exists.
@@ -154,9 +154,9 @@ The perl .generate file would then contain
 
 Manifest update
 ===============
-Manifest-check has an update mode (ran by passing --update as a first argument)
-in which program does not output the diff but rather applies it to the manifest
-file. You can run it with "gmake manifest-update".
+Manifest-check has an update mode (run by passing --update as a first argument)
+in which the program does not output the diff but rather applies it to the
+manifest file. You can run it with "gmake manifest-update".
 
 
 
