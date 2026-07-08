@@ -1,0 +1,27 @@
+Fix a crash when intersecting the static all-clipped object.
+
+Backport from upstream commit 1d3347a6904fd4d9a57e4a5e4819de885fce6e46.
+
+diff --git a/src/cairo-clip.c b/src/cairo-clip.c
+index 0822ea90..870a86c2 100644
+--- a/src/cairo-clip.c
++++ b/src/cairo-clip.c
+@@ -337,13 +337,13 @@ _cairo_clip_intersect_clip (cairo_clip_t *clip,
+ 	    else
+ 		clip = _cairo_clip_intersect_clip_path (clip, other->path);
+ 	}
+-    }
+ 
+-    if (clip->region) {
+-	cairo_region_destroy (clip->region);
+-	clip->region = NULL;
++        if (clip->region) {
++	    cairo_region_destroy (clip->region);
++	    clip->region = NULL;
++        }
++        clip->is_region = FALSE;
+     }
+-    clip->is_region = FALSE;
+ 
+     return clip;
+ }
