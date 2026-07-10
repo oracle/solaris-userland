@@ -4,8 +4,8 @@ Patch status: Solaris-specific; not suitable for upstream
 Download/use only archives we really need.
 Don't install unnecessary stuff.
 
---- apache-tomcat-9.0.118-src/build.xml
-+++ apache-tomcat-9.0.118-src/build.xml
+--- apache-tomcat-9.0.120-src/build.xml
++++ apache-tomcat-9.0.120-src/build.xml
 @@ -1520,8 +1520,6 @@ </target>
    <target name="deploy" depends="package,build-docs,build-tomcat-jdbc,compile-webapp-examples"
            description="Default. Builds a working Tomcat instance">
@@ -15,7 +15,7 @@ Don't install unnecessary stuff.
      <!-- Copy scripts -->
      <copy todir="${tomcat.build}/bin">
        <fileset dir="bin">
-@@ -2440,12 +2438,6 @@ <include name="**/*.dll"/>
+@@ -2444,12 +2442,6 @@ <include name="**/*.dll"/>
        </fileset>
      </copy>
  
@@ -28,7 +28,7 @@ Don't install unnecessary stuff.
      <!-- platform README files -->
      <echo append="false" file="${tomcat.dist}/bin/x64/README">
  Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
-@@ -3758,16 +3750,6 @@ <target name="download-compile"
+@@ -3757,16 +3749,6 @@ <target name="download-compile"
            description="Download components necessary to compile"
            depends="setup-bnd">
  
@@ -45,7 +45,7 @@ Don't install unnecessary stuff.
      <!-- Download JDT (Eclipse compiler) -->
      <antcall target="downloadfile-2">
        <param name="sourcefile.1" value="${jdt.loc.1}"/>
-@@ -3957,16 +3939,6 @@ </target>
+@@ -3956,16 +3938,6 @@ </target>
    <target name="download-dist"
            description="Download additional components for a distribution" >
  
@@ -62,7 +62,7 @@ Don't install unnecessary stuff.
      <antcall target="downloadzip-2">
        <param name="sourcefile.1" value="${tomcat-native.win.1}"/>
        <param name="sourcefile.2" value="${tomcat-native.win.2}"/>
-@@ -3977,16 +3949,6 @@ <param name="checksum.algorithm" value="
+@@ -3976,16 +3948,6 @@ <param name="checksum.algorithm" value="
        <param name="checksum.value" value="${tomcat-native.win.checksum.value}"/>
      </antcall>
  
