@@ -20,18 +20,23 @@
 #
 
 #
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 # directories which are empty but we want them created
-dir  path=usr/php/$(MAJOR_VERSION)/include/php/include
-dir  path=var/php/$(MAJOR_VERSION)/log
-dir  path=var/php/$(MAJOR_VERSION)/pear/.registry/.channel.__uri
-dir  path=var/php/$(MAJOR_VERSION)/pear/.registry/.channel.doc.php.net
-dir  path=var/php/$(MAJOR_VERSION)/pear/.registry/.channel.pecl.php.net
-dir  path=var/php/$(MAJOR_VERSION)/run
 
 # several files from package source folder
 file php.ini-production path=etc/php/$(MAJOR_VERSION)/php.ini preserve=renamenew
 file php.ini-development path=etc/php/$(MAJOR_VERSION)/php.ini-development
 file php.ini-production path=etc/php/$(MAJOR_VERSION)/php.ini-production
+dir  path=usr/php/$(MAJOR_VERSION)/include/php/include
+file release-notes/web-php-82.txt \
+    path=usr/share/doc/release-notes/web-php-82.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
+dir  path=var/php/$(MAJOR_VERSION)/log
+dir  path=var/php/$(MAJOR_VERSION)/pear/.registry/.channel.__uri
+dir  path=var/php/$(MAJOR_VERSION)/pear/.registry/.channel.doc.php.net
+dir  path=var/php/$(MAJOR_VERSION)/pear/.registry/.channel.pecl.php.net
+dir  path=var/php/$(MAJOR_VERSION)/run
