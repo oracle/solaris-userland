@@ -75,12 +75,14 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 # For autopyc transformation
 PKG_MACROS += PYVER=$(PYTHON_VERSION)
 
-# Requires bison >= 3.0
-REQUIRED_PACKAGES += developer/parser/bison
-REQUIRED_PACKAGES += library/desktop/cairo
+CBE_PACKAGES += developer/parser/bison
+CBE_PACKAGES += library/desktop/cairo
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+CBE_PACKAGES += system/library/iconv/iconv-core
+
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/iconv/iconv-core
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

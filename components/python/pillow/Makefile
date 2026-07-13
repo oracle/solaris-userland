@@ -60,19 +60,19 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)
 
+CBE_PACKAGES += runtime/tcl-8
+CBE_PACKAGES += runtime/tk-8
+CBE_PACKAGES += library/python/packaging
 
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += image/library/libwebp
 REQUIRED_PACKAGES += image/library/openjpeg2
 REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/tcl-8
-REQUIRED_PACKAGES += runtime/tk-8
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libxcb
-
-# testing dependencies
-REQUIRED_PACKAGES += library/python/packaging

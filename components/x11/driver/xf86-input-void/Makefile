@@ -37,3 +37,6 @@ COMPONENT_BAID=		134612
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

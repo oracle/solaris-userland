@@ -89,4 +89,6 @@ COMPONENT_TEST_TRANSFORMS += \
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/network/ldap/openldap

@@ -158,6 +158,9 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 BUILD_STYLE= attpackagemake
 include $(WS_MAKE_RULES)/common.mk
 
+CBE_PACKAGES += system/library/security/crypto
+
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/library/security/crypto

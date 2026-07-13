@@ -64,7 +64,8 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TEST_NO_ARCH)
 
+CBE_PACKAGES += system/locale
+
 REQUIRED_PACKAGES += $(PYVS:%=library/python/bcrypt-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
-# locale required for unicode sftp tests
-REQUIRED_PACKAGES += system/locale
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

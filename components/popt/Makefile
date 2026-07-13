@@ -74,3 +74,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/check-TESTS/d"' \
 	'-e "/^Making/d"' \
 	'-e "/^make/d"'
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

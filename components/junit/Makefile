@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32
 
@@ -87,4 +87,5 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "1,/^test/d"' \
 	'-e "s/.*[Tt]ime.*$$//"'
 
-REQUIRED_PACKAGES += runtime/java/jre-8
+CBE_PACKAGES += runtime/java/jre-8
+

@@ -40,8 +40,12 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_OPTIONS += --with-xinitdir=/etc/X11/xinit
 
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += library/security/openssl
+CBE_PACKAGES += system/core-os
+CBE_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/library/libxmuu
+
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxmuu

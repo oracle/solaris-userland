@@ -60,4 +60,6 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/mpfr
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

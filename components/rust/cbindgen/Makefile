@@ -66,5 +66,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^test result:/s; finished in .*;;" ' \
 	'-e "/Running /s;-................)$$;-xxxxxxxxxxxxxxxx);" '
 
+CBE_PACKAGES += system/library/math
+
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/libc

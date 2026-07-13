@@ -133,19 +133,21 @@ COMPONENT_TEST_TRANSFORMS +=  \
 	'-e "/Running tests.../d" ' \
 	'-e "/^Total Test time/d" '
 
+CBE_PACKAGES += library/libevent
+
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += compress/lz4
 REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libedit
-REQUIRED_PACKAGES += library/libevent
-REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/network

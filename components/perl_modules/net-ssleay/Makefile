@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
 CTF_MODE =		off	# Has no effect
@@ -69,6 +69,9 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-
 REQUIRED_PACKAGES += library/security/openssl-3
+REQUIRED_PACKAGES += runtime/perl-538
+REQUIRED_PACKAGES += runtime/perl-542
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

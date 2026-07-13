@@ -145,15 +145,20 @@ COMPONENT_TEST_TRANSFORMS = \
 	'-e "/^Testing/p" ' \
 	'-e "/.*/d" '
 
-REQUIRED_PACKAGES += developer/java/jdk-8
-REQUIRED_PACKAGES += developer/lexer/flex
+CBE_PACKAGES += developer/lexer/flex
+CBE_PACKAGES += x11/library/mesa
+
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/graphics/wxwidgets-32
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libglu

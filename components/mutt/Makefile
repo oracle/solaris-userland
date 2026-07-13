@@ -61,15 +61,18 @@ CONFIGURE_OPTIONS  +=		--with-wc-funcs
 CONFIGURE_OPTIONS  +=		--with-sasl
 CONFIGURE_OPTIONS  +=		--with-ssl
 
-REQUIRED_PACKAGES += data/docbook/docbook-dtds
-REQUIRED_PACKAGES += data/docbook/docbook-style-xsl
-REQUIRED_PACKAGES += data/xml-common
+CBE_PACKAGES += data/docbook/docbook-dtds
+CBE_PACKAGES += data/docbook/docbook-style-xsl
+CBE_PACKAGES += data/xml-common
+CBE_PACKAGES += system/library/math
+
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/database/gdbm
 REQUIRED_PACKAGES += library/libidn
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/security/libsasl2

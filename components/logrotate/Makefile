@@ -51,3 +51,5 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ERROR:/p" '	
 
 REQUIRED_PACKAGES += library/popt
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

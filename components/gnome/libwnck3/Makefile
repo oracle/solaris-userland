@@ -61,15 +61,18 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 LD_OPTIONS += -Wl,-zgnu-version-script-compat
 LD_OPTIONS += -M $(COMPONENT_DIR)/mapfile
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/startup-notification
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxrender

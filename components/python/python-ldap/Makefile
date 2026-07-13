@@ -112,9 +112,9 @@ $(BUILD_DIR)/$(license).new: unpack $(license)
 		$e 'ACTION: Check $(license) against TPNO';\
 	)
 
-# Package dependencies.
-# ---------------------
-# Created by 'gmake REQUIRED_PACKAGES', manually verified.
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyasn1-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyasn1-modules-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/network/ldap/openldap

@@ -57,7 +57,10 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_POST_TEST_ACTION.64 += \
 	$(CHMOD) 755 $(COMPONENT_SRC)/tests/files/extract/test-readonly-directory/output/arextract
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libarchive
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -56,4 +56,5 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += library/python/legacy-cgi-313

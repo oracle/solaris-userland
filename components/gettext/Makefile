@@ -65,13 +65,15 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/=====/p" ' \
 	'-e "/TOTAL/p" '
 
+CBE_PACKAGES += developer/vala
+CBE_PACKAGES += source/locale/localedef
+CBE_PACKAGES += system/locale
 
-REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += source/locale/localedef
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/locale
 REQUIRED_PACKAGES += web/curl

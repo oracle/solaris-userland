@@ -123,4 +123,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += ( \
 
 REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/readline
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

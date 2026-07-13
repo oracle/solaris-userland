@@ -43,5 +43,8 @@ include $(WS_MAKE_RULES)/common.mk
 CPPFLAGS += -I$(USRINCDIR)/ncurses
 CFLAGS += -I$(USRINCDIR)/ncurses
 
+CBE_PACKAGES += text/groff
+
 REQUIRED_PACKAGES += library/ncurses
-REQUIRED_PACKAGES += text/groff
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

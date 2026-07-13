@@ -66,11 +66,14 @@ COMPONENT_TEST_TRANSFORMS += \
        '-e "/Skipped: /p" ' \
        '-e "/Timeout: /p" '
 
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += library/libxml2
+CBE_PACKAGES += library/libxslt
+
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/libxslt
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxi

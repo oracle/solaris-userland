@@ -56,3 +56,6 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 # Lint library needs to be built against proto
 # area headers rather than system ones.
 LINT_FLAGS += -I$(PROTOUSRINCDIR)
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -53,12 +53,16 @@ LD_OPTIONS += -lresolv
 test:		$(NO_TESTS)
 system-test:    $(NO_TESTS)
 
+CBE_PACKAGES += system/network/ldap/openldap
+
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += print/cups
 REQUIRED_PACKAGES += print/cups/libcupsfilters
 REQUIRED_PACKAGES += print/cups/libppd
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/avahi
-REQUIRED_PACKAGES += system/network/ldap/openldap

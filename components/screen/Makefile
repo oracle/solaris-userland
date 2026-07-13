@@ -60,4 +60,6 @@ $(PROTOTERMINFODIR):
 
 $(INSTALL_64):	$(PROTOTERMINFODIR)
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/pam-core

@@ -81,5 +81,8 @@ configure:      $(BUILD_DIR_NO_ARCH)_1/.configured
 build:          $(BUILD_DIR_NO_ARCH)_1/.built
 install:        $(BUILD_DIR_NO_ARCH)_1/.installed
 
+CBE_PACKAGES += x11/header/x11-protocols
+
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += x11/header/x11-protocols
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

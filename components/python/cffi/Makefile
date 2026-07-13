@@ -91,6 +91,8 @@ system-test:	$(SYSTEM_TEST_64)
 
 endif
 
-
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pycparser-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += library/libffi
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

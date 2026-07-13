@@ -66,4 +66,6 @@ COMPONENT_BUILD_TARGETS =	watch
 
 PKG_PROTO_DIRS += $(BUILD_DIR_64)
 
-REQUIRED_PACKAGES +=	library/ncurses
+REQUIRED_PACKAGES += library/ncurses
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

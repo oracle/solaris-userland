@@ -72,8 +72,11 @@ COMPONENT_POST_INSTALL_ACTION += ( \
 COMPONENT_TEST_ENV = -i
 COMPONENT_TEST_ARGS = -k 0
 
+CBE_PACKAGES += library/libxslt
+
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

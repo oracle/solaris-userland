@@ -97,15 +97,17 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fi);
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-REQUIRED_PACKAGES += database/mysql-84
+CBE_PACKAGES += database/mysql-84
+CBE_PACKAGES += developer/documentation-tool/doxygen
+
 REQUIRED_PACKAGES += database/mysql-84/library
 REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += library/apr-1
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/security/nss
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/network/ldap/openldap

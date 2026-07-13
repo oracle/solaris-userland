@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 
 #
@@ -179,7 +179,7 @@ ifeq   ($(strip $(BUILD_STYLE)),meson)
 configure:	$(CONFIGURE_$(MK_BITS))
 endif
 
-REQUIRED_PACKAGES += developer/build/meson
+CBE_PACKAGES += developer/build/meson
 
 # Meson generates build.ninja files for the ninja build tool to run,
 # so we include ninja.mk for the build/install/test rules

@@ -81,6 +81,9 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL/p" ' \
         '-e "/All/p" '
 
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+
 REQUIRED_PACKAGES += library/security/libgpg-error
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

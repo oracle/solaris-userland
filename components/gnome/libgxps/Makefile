@@ -47,7 +47,8 @@ CONFIGURE_OPTIONS += -Denable-gtk-doc=true
 CONFIGURE_OPTIONS += -Denable-man=true
 CONFIGURE_OPTIONS += -Ddisable-introspection=true
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += image/library/libtiff
@@ -55,5 +56,7 @@ REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/libarchive
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

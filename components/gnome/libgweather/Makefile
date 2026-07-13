@@ -65,11 +65,14 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/Skipped:/p" ' \
         '-e "/Timeout:/p" '
 
-REQUIRED_PACKAGES += developer/vala
+CBE_PACKAGES += developer/vala
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+
 REQUIRED_PACKAGES += library/desktop/geocode-glib
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

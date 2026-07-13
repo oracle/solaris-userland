@@ -72,7 +72,10 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|^make.*: Nothing to be.*$$|XXX_REMOVE_XXX|g" ' \
 	'-e "/^XXX_REMOVE_XXX$$/d" '
 
-REQUIRED_PACKAGES += system/library/c++-runtime
+CBE_PACKAGES += system/library/c++-runtime
+
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime 
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

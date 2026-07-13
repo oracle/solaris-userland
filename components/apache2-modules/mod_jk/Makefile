@@ -50,3 +50,6 @@ include ../modules.mk
 PATCH_LEVEL=0
 
 CONFIGURE_SCRIPT = $(SOURCE_DIR)/native/configure
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

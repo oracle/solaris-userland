@@ -56,3 +56,5 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL/p" ' \
         '-e "/All/p" '
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

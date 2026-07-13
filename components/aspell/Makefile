@@ -90,9 +90,11 @@ CONFIGURE_ENV +=	LD_OPTIONS="$(LD_OPTIONS)"
 CLEAN_PATHS +=		$(SOURCE_DIR_1)
 PKG_PROTO_DIRS +=	$(SOURCE_DIR_1)
 
-REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES.sparc += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

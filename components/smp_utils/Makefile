@@ -91,3 +91,6 @@ COMPONENT_TEST_CMD =	\
 		$(PROTOUSRSBINDIR)/smp_zone_lock -V; \
 		$(PROTOUSRSBINDIR)/smp_zone_unlock -V; \
 		$(PROTOUSRSBINDIR)/smp_zoned_broadcast -V
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

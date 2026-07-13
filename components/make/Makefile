@@ -69,3 +69,6 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "s|^make.*: Leaving directory.*$$|XXX_CC_XXX|g" ' \
     '-e "s|^make.*: Entering directory.*$$|XXX_CC_XXX|g" ' \
     '-e "/^XXX_CC_XXX$$/d" '
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

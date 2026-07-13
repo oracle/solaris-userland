@@ -67,6 +67,8 @@ $(foreach n, $(LIST), \
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/data/xbitmaps
 REQUIRED_PACKAGES += x11/library/libsm

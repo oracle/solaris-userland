@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 GPATCH =	/usr/bin/patch
@@ -117,7 +117,7 @@ $$(SOURCE_DIR$(1))/.patched:	$$(PATCH_STAMPS$(1))
 
 patch::	$$(SOURCE_DIR$(1))/.patched
 
-REQUIRED_PACKAGES += text/gnu-patch
+CBE_PACKAGES += text/gnu-patch
 
 endif
 endef
@@ -175,5 +175,5 @@ regen-patches:
 	$(RM) -rf tmp-regen/
 	$(MAKE) clean
 
-REQUIRED_PACKAGES += developer/versioning/git
-REQUIRED_PACKAGES += text/gawk
+CBE_PACKAGES += developer/versioning/git
+CBE_PACKAGES += text/gawk

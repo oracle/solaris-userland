@@ -165,10 +165,14 @@ COMPONENT_TEST_TRANSFORMS +=	\
 # attributes.
 LICENSE_TRANSFORMS =
 
-REQUIRED_PACKAGES += library/libidn
-REQUIRED_PACKAGES += library/libidn2
+CBE_PACKAGES += library/libidn
+CBE_PACKAGES += library/libidn2
+
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network

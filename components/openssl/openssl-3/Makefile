@@ -99,3 +99,8 @@ COMPONENT_TEST_ENV+=	https_proxy=
 COMPONENT_TEST_ENV+=	HTTP_PROXY=
 COMPONENT_TEST_ENV+=	HTTPS_PROXY=
 
+REQUIRED_PACKAGES += library/security/openssl-3
+REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

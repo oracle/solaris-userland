@@ -50,3 +50,5 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
+
+REQUIRED_PACKAGES += runtime/python-313

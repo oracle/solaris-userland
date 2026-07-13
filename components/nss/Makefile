@@ -143,12 +143,14 @@ COMPONENT_TEST_TRANSFORMS = \
 	'-e "/  FAILED  /p" ' \
 	'-e "/.*/d" '
 
+CBE_PACKAGES += system/rsyslog
+CBE_PACKAGES += text/gnu-sed
+
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += library/nspr
-REQUIRED_PACKAGES += system/rsyslog
-REQUIRED_PACKAGES += system/library/math
-# for usr/bin/smime_gtest
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-# for the COMPONENT_POST_TEST_ACTION
-REQUIRED_PACKAGES += text/gnu-sed
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/math

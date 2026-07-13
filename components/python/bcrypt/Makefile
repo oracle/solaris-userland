@@ -74,5 +74,9 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)
 
-REQUIRED_PACKAGES += library/python/setuptools-rust
+CBE_PACKAGES += library/python/setuptools-rust
+
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

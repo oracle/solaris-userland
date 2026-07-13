@@ -76,9 +76,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(MV) $(PROTOPKGCONFIGDIR64)/py3cairo.pc \
 	$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/lib/pkgconfig/py3cairo.pc
 
-REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += runtime/python-313
+CBE_PACKAGES += library/python/pytest
 
-# Testing related components
-REQUIRED_PACKAGES += library/python/pytest
+REQUIRED_PACKAGES += $(subst .,,$(PYTHON_VERSIONS:%=runtime/python-%))
+REQUIRED_PACKAGES += library/desktop/cairo
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

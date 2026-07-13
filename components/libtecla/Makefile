@@ -50,3 +50,6 @@ studio_MT =
 
 # We have our own pre-Solarified man pages.
 CONFIGURE_OPTIONS +=	--without-man-pages
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

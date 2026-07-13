@@ -72,3 +72,5 @@ REQUIRED_PACKAGES += library/libpsl
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

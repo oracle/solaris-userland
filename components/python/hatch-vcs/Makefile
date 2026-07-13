@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -58,3 +58,4 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/hatchling-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/setuptools_scm-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

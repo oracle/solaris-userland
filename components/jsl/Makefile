@@ -68,4 +68,6 @@ test:		install $(TEST_64)
 
 # Add install dependency as above when system test targets are implemented.
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

@@ -126,9 +126,11 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Entering directory/d"' \
 	'-e "s|Testsuite summary for PCRE .*|Testsuite summary for PCRE|" '
 
+CBE_PACKAGES += system/library/c++-runtime
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/library/c++-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -113,3 +113,5 @@ regtest check:
 
 # Package dependencies. None.
 # EOF
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

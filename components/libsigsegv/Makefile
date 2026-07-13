@@ -57,3 +57,6 @@ COMPONENT_TEST_TRANSFORMS += \
 
 CONFIGURE_OPTIONS  +=		--disable-static
 CONFIGURE_OPTIONS  +=		--enable-shared
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

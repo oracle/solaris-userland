@@ -69,4 +69,4 @@ CONFIGURE_OPTIONS +=  MAKE=$(GMAKE)
 REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library
-REQUIRED_PACKAGES += system/linker
+REQUIRED_PACKAGES += system/library/libc

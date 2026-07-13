@@ -44,4 +44,7 @@ TEST_TARGET = $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-REQUIRED_PACKAGES += x11/library/mesa
+CBE_PACKAGES += x11/library/mesa
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

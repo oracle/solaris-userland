@@ -72,4 +72,5 @@ test:		$(TEST_NO_ARCH)
 # mediator switch for each Python variant.
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/dulwich-%)
+REQUIRED_PACKAGES += library/python/dulwich-311
+REQUIRED_PACKAGES += runtime/python-311

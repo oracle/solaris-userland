@@ -55,6 +55,9 @@ CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
+CBE_PACKAGES += system/library/libv12n
+CBE_PACKAGES += x11/library/libxi
+
 REQUIRED_PACKAGES += gnome/gnome-settings-daemon
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/audio/pulseaudio
@@ -73,13 +76,13 @@ REQUIRED_PACKAGES += library/libgtop
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += service/image/colord
 REQUIRED_PACKAGES += system/input-method/ibus
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/accountsservice
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/libv12n
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/polkit
 REQUIRED_PACKAGES += system/library/upower
 REQUIRED_PACKAGES += x11/library/libepoxy
 REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxi

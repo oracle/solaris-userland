@@ -55,12 +55,16 @@ CONFIGURE_OPTIONS +=	-Devports=enabled
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS +=	-Druntime_dir=$(VARDIR)/run
 
-REQUIRED_PACKAGES += developer/build/autoconf-archive
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += developer/documentation-tool/xmlto
+CBE_PACKAGES += developer/build/autoconf-archive
+CBE_PACKAGES += developer/documentation-tool/doxygen
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += developer/documentation-tool/xmlto
+CBE_PACKAGES += library/glib2
+CBE_PACKAGES += library/libxml2
+
 REQUIRED_PACKAGES += library/expat
-REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11

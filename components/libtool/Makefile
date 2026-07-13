@@ -73,10 +73,14 @@ build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-REQUIRED_PACKAGES += developer/base-developer-utilities
+CBE_PACKAGES += developer/base-developer-utilities
+
 REQUIRED_PACKAGES += developer/gnu-binutils
 REQUIRED_PACKAGES += file/gnu-coreutils
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/linker
 REQUIRED_PACKAGES += text/gnu-grep
 REQUIRED_PACKAGES += text/gnu-sed

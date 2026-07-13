@@ -229,10 +229,7 @@ $(BUILD_DIR)/.utf-8: $(BUILD_DIR)/.tools.prep
 	(cd $(@D); $(GEN_UTF8))
 	touch $(@)
 
-
 # this package needs to have installed itself because
 # it uses en_US.UTF-8 locale
-REQUIRED_PACKAGES += system/locale
-
-REQUIRED_PACKAGES += developer/build/ant
-REQUIRED_PACKAGES += runtime/python-311
+CBE_PACKAGES += system/locale
+CBE_PACKAGES += developer/build/ant

@@ -56,8 +56,8 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/markupsafe-%)
+CBE_PACKAGES += library/python/babel
+CBE_PACKAGES += library/python/mock
 
-# Testing related components
-REQUIRED_PACKAGES += library/python/babel
-REQUIRED_PACKAGES += library/python/mock
+REQUIRED_PACKAGES += $(PYVS:%=library/python/markupsafe-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -57,6 +57,9 @@ test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/capture-tiny-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/path-tiny-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/file-which-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/capture-tiny-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/path-tiny-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/file-which-5%)
+
+REQUIRED_PACKAGES += runtime/perl-538
+REQUIRED_PACKAGES += runtime/perl-542

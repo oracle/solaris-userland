@@ -60,10 +60,10 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
+CBE_PACKAGES += library/python/pip
+
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/jsonschema-specifications-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyrsistent-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/referencing-%)
-
-# Testing related components
-REQUIRED_PACKAGES += library/python/pip
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

@@ -67,11 +67,14 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/test/p" ' \
         '-e "/Fail/p" '
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += developer/vala
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += developer/vala
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += library/security/libassuan
+
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/security/gpgme
-REQUIRED_PACKAGES += library/security/libassuan
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

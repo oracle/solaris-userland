@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 #
@@ -62,11 +62,11 @@ PKGMOGRIFY_TRANSFORMS += $(WS_TOP)/transforms/X-incorporation
 include $(WS_MAKE_RULES)/common.mk
 
 # X.Org packages use a common set of sgml entities to build documentation
-REQUIRED_PACKAGES += x11/documentation/xorg-docs
+CBE_PACKAGES += x11/documentation/xorg-docs
 
 ifeq ($(strip $(BUILD_STYLE)),configure)
 # X.Org packages use a common set of autoconf macros
-REQUIRED_PACKAGES += developer/build/autoconf/xorg-macros
+CBE_PACKAGES += developer/build/autoconf/xorg-macros
 
 # Common documentation options for X.Org components that use autoconf
 CONFIGURE_OPTIONS += --enable-specs
@@ -106,12 +106,12 @@ CFLAGS.studio += -xldscope=hidden
 CFLAGS.gcc += -fvisibility=hidden
 
 # All drivers need some headers from this package
-REQUIRED_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/header/x11-protocols
 
 # Resolve calls to functions in Xorg against the Xorg binary
 XORG_EXTERNS_FLAG ?= -z parent=$(USRBINDIR)/Xorg
 LD_SHARED_OPTIONS += $(XORG_EXTERNS_FLAG)
-REQUIRED_PACKAGES += x11/server/xorg
+CBE_PACKAGES += x11/server/xorg
 
 # Many drivers fail to list -lc in their dependencies upstream, but not
 # all shared objects need it, so add it, but discard if not useful.
@@ -121,7 +121,7 @@ LD_SHARED_OPTIONS += -zdiscard-unused=dependencies -lc
 # calls in headers that normally get optimized out in non-debug builds.
 ifneq ($(filter -g,$(CFLAGS)),)
 LD_SHARED_OPTIONS += -lpixman-1
-REQUIRED_PACKAGES += library/graphics/pixman
+CBE_PACKAGES += library/graphics/pixman
 endif
 endif
 
@@ -167,9 +167,9 @@ CONFIGURE_ENV += MISC_MAN_SUFFIX=7 ADMIN_MAN_SUFFIX=8
 PKG_MACROS += X11PKGVERS=7.7
 
 # X.Org ships many docs using the DocBook XML DTD's, stylesheets, and tools
-REQUIRED_PACKAGES += data/docbook/docbook-dtds
-REQUIRED_PACKAGES += data/docbook/docbook-style-xsl
-REQUIRED_PACKAGES += data/sgml-common
-REQUIRED_PACKAGES += data/xml-common
-REQUIRED_PACKAGES += developer/documentation-tool/xmlto
-REQUIRED_PACKAGES += library/libxslt
+CBE_PACKAGES += data/docbook/docbook-dtds
+CBE_PACKAGES += data/docbook/docbook-style-xsl
+CBE_PACKAGES += data/sgml-common
+CBE_PACKAGES += data/xml-common
+CBE_PACKAGES += developer/documentation-tool/xmlto
+CBE_PACKAGES += library/libxslt

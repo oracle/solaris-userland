@@ -55,24 +55,24 @@ $(BUILD_DIR)/%/.installed:	$(BUILD_DIR)/%/.built $(BUILD_DIR)/config-%/$(CFG)
 	$(TOUCH) $@
 
 ifneq ($(findstring 3.11, $(PYTHON_VERSIONS)),)
-REQUIRED_PACKAGES += library/python/build-311
-REQUIRED_PACKAGES += library/python/installer-311
-REQUIRED_PACKAGES += library/python/wheel-311
+CBE_PACKAGES += library/python/build-311
+CBE_PACKAGES += library/python/installer-311
+CBE_PACKAGES += library/python/wheel-311
 
 # additional widely used PEP 517 build backends and plugins
-REQUIRED_PACKAGES += library/python/flit_core-311
-REQUIRED_PACKAGES += library/python/hatch-vcs-311
-REQUIRED_PACKAGES += library/python/hatchling-311
-REQUIRED_PACKAGES += library/python/pbr-313
+CBE_PACKAGES += library/python/flit_core-311
+CBE_PACKAGES += library/python/hatch-vcs-311
+CBE_PACKAGES += library/python/hatchling-311
+CBE_PACKAGES += library/python/pbr-313
 endif
 ifneq ($(findstring 3.13, $(PYTHON_VERSIONS)),)
-REQUIRED_PACKAGES += library/python/build-313
-REQUIRED_PACKAGES += library/python/installer-313
-REQUIRED_PACKAGES += library/python/wheel-313
+CBE_PACKAGES += library/python/build-313
+CBE_PACKAGES += library/python/installer-313
+CBE_PACKAGES += library/python/wheel-313
 
 # additional widely used PEP 517 build backends and plugins
-REQUIRED_PACKAGES += library/python/flit_core-313
-REQUIRED_PACKAGES += library/python/hatch-vcs-313
-REQUIRED_PACKAGES += library/python/hatchling-313
-REQUIRED_PACKAGES += library/python/pbr-313
+CBE_PACKAGES += library/python/flit_core-313
+CBE_PACKAGES += library/python/hatch-vcs-313
+CBE_PACKAGES += library/python/hatchling-313
+CBE_PACKAGES += library/python/pbr-313
 endif

@@ -71,8 +71,11 @@ COMPONENT_TEST_TRANSFORMS += \
        '-e "/FAIL:/p" ' \
        '-e "/ERROR:/p" '
 
+CBE_PACKAGES += network/ssh
+
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gcr
-REQUIRED_PACKAGES += network/ssh
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/library/security/libgcrypt

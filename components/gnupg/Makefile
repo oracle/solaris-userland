@@ -130,6 +130,9 @@ COMPONENT_PRE_TEST_ACTION += \
 	( cd $(COMPONENT_DIR)/build/$(MACH64)/bin ; \
 	    /usr/bin/ln gpg gpg2 )
 
+CBE_PACKAGES += system/library/math
+CBE_PACKAGES += security/pinentry
+
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += library/gnutls-3
@@ -140,7 +143,8 @@ REQUIRED_PACKAGES += library/security/libassuan
 REQUIRED_PACKAGES += library/security/libgpg-error
 REQUIRED_PACKAGES += library/security/libksba
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/security/libgcrypt
 REQUIRED_PACKAGES += system/network/ldap/openldap
-REQUIRED_PACKAGES += security/pinentry

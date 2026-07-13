@@ -77,14 +77,12 @@ CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
-REQUIRED_PACKAGES += library/python/pygobject-3
-REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += runtime/python-313
+CBE_PACKAGES += library/python/pygobject-3
+CBE_PACKAGES += runtime/python-313
+CBE_PACKAGES += library/desktop/at-spi2-core
+CBE_PACKAGES += library/desktop/gtk3
+CBE_PACKAGES += library/glib2
+CBE_PACKAGES += library/libxml2
+CBE_PACKAGES += library/python/dbus-python
+CBE_PACKAGES += system/library/libdbus
 
-# These are needed to build & run tests, but not for distributed packages
-REQUIRED_PACKAGES += library/desktop/at-spi2-core
-REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/python/dbus-python
-REQUIRED_PACKAGES += system/library/libdbus

@@ -117,6 +117,10 @@ hg-local: clean prep
 
 PKG_MACROS +=    VERSION_DIRECTORY=$(VERSION_DIRECTORY)
 
-REQUIRED_PACKAGES += developer/documentation-tool/docutils
-REQUIRED_PACKAGES += file/gnu-coreutils
-REQUIRED_PACKAGES += text/gnu-diffutils
+CBE_PACKAGES += developer/documentation-tool/docutils
+CBE_PACKAGES += file/gnu-coreutils
+CBE_PACKAGES += text/gnu-diffutils
+
+REQUIRED_PACKAGES += $(subst .,,$(PYTHON_VERSIONS:%=runtime/python-%))
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

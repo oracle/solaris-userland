@@ -52,10 +52,8 @@ CONFIGURE_OPTIONS += --disable-static
 # Force re-generate of configure since original configure is so old.
 COMPONENT_PREP_ACTION += (cd $(@D); $(CONFIG_SHELL) autogen.sh --no-configure);
 
-REQUIRED_PACKAGES += developer/build/autoconf
-REQUIRED_PACKAGES += developer/build/automake
-REQUIRED_PACKAGES += developer/build/gnu-make
-REQUIRED_PACKAGES += developer/build/pkg-config
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

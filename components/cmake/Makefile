@@ -137,14 +137,15 @@ COMPONENT_POST_SYSTEM_TEST_ACTION += \
 	$(RM) -r $(BUILD_DIR_64)/bin; \
 	$(MV) $(BUILD_DIR_64)/bin-save $(BUILD_DIR_64)/bin
 
-REQUIRED_PACKAGES += compress/bzip2
-REQUIRED_PACKAGES += compress/xz
-REQUIRED_PACKAGES += developer/documentation-tool/sphinx
+CBE_PACKAGES += developer/documentation-tool/sphinx
+
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/curl

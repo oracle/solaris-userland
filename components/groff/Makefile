@@ -80,14 +80,17 @@ PERL_SCRIPTS= \
 	$(PROTOUSRBINDIR)/afmtodit \
 	$(PROTOUSRBINDIR)/pdfmom
 
+CBE_PACKAGES += system/core-os
+CBE_PACKAGES += text/doctools
+
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += text/doctools
-REQUIRED_PACKAGES += text/gawk
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxmu
 REQUIRED_PACKAGES += x11/library/toolkit/libxaw7

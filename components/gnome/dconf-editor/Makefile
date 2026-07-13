@@ -53,10 +53,13 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-REQUIRED_PACKAGES += developer/vala
-REQUIRED_PACKAGES += library/desktop/pango
+CBE_PACKAGES += developer/vala
+CBE_PACKAGES += library/desktop/pango
+CBE_PACKAGES += library/libxml2
+
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/dconf
-REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

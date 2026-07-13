@@ -38,3 +38,6 @@ COMPONENT_BAID=		16752
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

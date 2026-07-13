@@ -64,7 +64,7 @@ $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 		$$(COMPONENT_PUBLIC_KEY_URL$(1):%=--pubkey '%')
 	$$(TOUCH) $$@
 
-REQUIRED_PACKAGES += runtime/python-313
+CBE_PACKAGES += runtime/python-313
 
 endif
 endef
@@ -81,4 +81,4 @@ $(foreach suffix, $(URL_SUFFIXES), $(eval $(call download-rules,_$(suffix))))
 endef
 
 # Needed for signature validation of downloads
-REQUIRED_PACKAGES += crypto/gnupg
+CBE_PACKAGES += crypto/gnupg

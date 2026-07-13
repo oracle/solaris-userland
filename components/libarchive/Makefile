@@ -104,9 +104,11 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/=========/p" ' \
 
 REQUIRED_PACKAGES += compress/bzip2
-REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += compress/lz4
+REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

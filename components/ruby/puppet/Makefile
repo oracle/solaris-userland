@@ -128,15 +128,17 @@ test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
+CBE_PACKAGES += library/ruby/hiera
+CBE_PACKAGES += library/ruby/semantic_puppet
+CBE_PACKAGES += library/ruby/concurrent-ruby
+CBE_PACKAGES += library/ruby/deep_merge
+CBE_PACKAGES += system/management/facter
+CBE_PACKAGES += system/core-os
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+CBE_PACKAGES += system/network
+
 REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
-REQUIRED_PACKAGES += library/ruby/hiera
-REQUIRED_PACKAGES += library/ruby/semantic_puppet
-REQUIRED_PACKAGES += library/ruby/concurrent-ruby
-REQUIRED_PACKAGES += library/ruby/deep_merge
-REQUIRED_PACKAGES += system/management/facter
-REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += system/library
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/network

@@ -65,4 +65,6 @@ COMPONENT_TEST_TRANSFORMS += \
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/security/libgcrypt

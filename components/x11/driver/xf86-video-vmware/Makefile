@@ -47,6 +47,8 @@ LD_OPTIONS += \
         -R$(X11_SERVERMODS_DIR) \
         -lpixman-1 -lshadowfb -lvgahw -lpciaccess
 
-REQUIRED_PACKAGES += diagnostic/scanpci
-REQUIRED_PACKAGES += library/graphics/pixman
-REQUIRED_PACKAGES += x11/server/xorg
+REQUIRED_PACKAGES.i386 += diagnostic/scanpci
+REQUIRED_PACKAGES.i386 += library/graphics/pixman
+REQUIRED_PACKAGES.i386 += system/library
+REQUIRED_PACKAGES.i386 += system/library/libc
+REQUIRED_PACKAGES.i386 += x11/server/xorg

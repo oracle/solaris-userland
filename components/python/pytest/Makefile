@@ -77,13 +77,13 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
+CBE_PACKAGES += library/python/hypothesis
+CBE_PACKAGES += library/python/mock
+CBE_PACKAGES += library/python/pynose
+CBE_PACKAGES += library/python/requests
+
 REQUIRED_PACKAGES += $(PYVS:%=library/python/iniconfig-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pluggy-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pygments-%)
-
-# Testing related components
-REQUIRED_PACKAGES += library/python/hypothesis
-REQUIRED_PACKAGES += library/python/mock
-REQUIRED_PACKAGES += library/python/pynose
-REQUIRED_PACKAGES += library/python/requests
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

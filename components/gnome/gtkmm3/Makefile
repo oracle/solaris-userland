@@ -47,8 +47,11 @@ CXXFLAGS += -std=c++11
 
 CONFIGURE_OPTIONS += -Dbuild-documentation=true
 
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
-REQUIRED_PACKAGES += image/graphviz
+CBE_PACKAGES += developer/documentation-tool/doxygen
+CBE_PACKAGES += image/graphviz
+CBE_PACKAGES += library/libxslt
+CBE_PACKAGES += $(PERL_PKG)
+
 REQUIRED_PACKAGES += library/c++/glibmm
 REQUIRED_PACKAGES += library/c++/sigcpp
 REQUIRED_PACKAGES += library/desktop/c++/atkmm
@@ -57,8 +60,8 @@ REQUIRED_PACKAGES += library/desktop/c++/pangomm
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

@@ -85,9 +85,10 @@ COMPONENT_TEST_ENV =		LC_ALL=en_US.UTF-8
 COMPONENT_TEST_TARGETS =	test.sh $(BUILD_DIR_64) $(BUILD_DIR_64)/test-rabbit
 COMPONENT_TEST_TRANSFORMS +=	'-e "/is updated to a safe effective value of/d"'
 
-REQUIRED_PACKAGES += system/core-os
+CBE_PACKAGES += runtime/elixir
+CBE_PACKAGES += developer/elixir/hex
+
 REQUIRED_PACKAGES += runtime/erlang
-REQUIRED_PACKAGES += runtime/elixir
-REQUIRED_PACKAGES += developer/elixir/hex
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/core-os

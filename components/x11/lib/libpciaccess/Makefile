@@ -46,4 +46,6 @@ CONFIGURE_OPTIONS.32 += -Dinstall-scanpci=false
 CONFIGURE_OPTIONS.64 += -Dinstall-scanpci=true
 
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/devinfo
+REQUIRED_PACKAGES += system/library/libc

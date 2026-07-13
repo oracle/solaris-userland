@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -78,6 +78,9 @@ PKG_OPTIONS +=		$(PKG_MACROS:%=-D %)
 
 build install test system-test:
 	@echo "nothing to be done for $@"
+
+REQUIRED_PACKAGES::
+
 
 $(BUILD_DIR):
 	$(MKDIR) $@

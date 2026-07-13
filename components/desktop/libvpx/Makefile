@@ -94,8 +94,11 @@ COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
 test: install
 
 ifneq ($(MACH), sparc)
-REQUIRED_PACKAGES += developer/nasm
+CBE_PACKAGES += developer/nasm
 endif
-REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/math

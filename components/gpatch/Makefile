@@ -55,3 +55,6 @@ COMPONENT_SYSTEM_TEST_ENV += PATCH=$(GPATCH)
 COMPONENT_TEST_TRANSFORMS += \
     '-n '\
     '-e "/^\#/p" '	
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

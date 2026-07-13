@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -65,9 +65,11 @@ test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
+CBE_PACKAGES += system/core-os
 
-REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += library/libffi
+REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/math

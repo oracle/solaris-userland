@@ -53,6 +53,8 @@ CONFIGURE_OPTIONS += -Dcheese=disabled
 # <utmp.h> - map it to the equivalent value in the Solaris <utmp.h>
 CPPFLAGS += -DUT_NAMESIZE=_UTMP_USER_LEN
 
+CBE_PACKAGES += system/library/math
+
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
@@ -61,7 +63,8 @@ REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += system/display-manager/gdm
 REQUIRED_PACKAGES += system/input-method/ibus
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/accountsservice
 REQUIRED_PACKAGES += system/library/fontconfig
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/polkit

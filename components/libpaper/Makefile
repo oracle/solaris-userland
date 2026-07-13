@@ -45,3 +45,6 @@ CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 COMPONENT_PRE_CONFIGURE_ACTION  = ($(CLONEY) $(SOURCE_DIR) $(@D));
 CONFIGURE_OPTIONS +=	--enable-relocatable
 unexport SHELLOPTS
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

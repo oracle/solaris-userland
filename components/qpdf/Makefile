@@ -54,6 +54,8 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 test-complete: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-complete-$(MACH).master
 test-complete: test
 
+CBE_PACKAGES += system/library/math
+
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/security/openssl-3
@@ -62,4 +64,4 @@ REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES.sparc += system/library/math

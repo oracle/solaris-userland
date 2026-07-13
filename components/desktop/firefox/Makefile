@@ -200,43 +200,40 @@ COMPONENT_TEST_TRANSFORMS = \
 	'-e "/^FAILURES:/,/Failed:/p" ' \
 	'-e "/.*/d" '
 
+CBE_PACKAGES += database/sqlite-3
+CBE_PACKAGES += desktop/xdg/desktop-file-utils
+CBE_PACKAGES += developer/llvm/clang
+CBE_PACKAGES += developer/rust/cbindgen
+CBE_PACKAGES += library/desktop/startup-notification
+CBE_PACKAGES += system/library/libdbus-glib
+CBE_PACKAGES += web/browser/lynx
+CBE_PACKAGES.i386 += developer/nasm
+CBE_PACKAGES.i386 += runtime/nodejs
+
 REQUIRED_PACKAGES += codec/libogg
 REQUIRED_PACKAGES += codec/libvorbis
 REQUIRED_PACKAGES += codec/libvpx
-REQUIRED_PACKAGES += compress/bzip2
-REQUIRED_PACKAGES += compress/unzip
-REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
-REQUIRED_PACKAGES += developer/llvm/clang
-REQUIRED_PACKAGES += developer/rust/cbindgen
-ifneq ($(MACH), sparc)
-REQUIRED_PACKAGES += developer/nasm
-endif
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/desktop/startup-notification
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/graphics/pixman
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/zlib
-ifneq ($(MACH), sparc)
-REQUIRED_PACKAGES += runtime/nodejs
-endif
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
-REQUIRED_PACKAGES += system/library/libdbus-glib
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/browser/lynx
+REQUIRED_PACKAGES += system/linker
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxext

@@ -79,8 +79,11 @@ COMPONENT_TEST_TRANSFORMS += '-e "/http:\/\//d"' \
 # system-test should really use system version library
 COMPONENT_PRE_SYSTEM_TEST_ACTION = ($(RM) $(@D)/libxslt/.libs/*)
 
-REQUIRED_PACKAGES += data/xml-common
+CBE_PACKAGES += data/xml-common
+CBE_PACKAGES += library/libxslt
+
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

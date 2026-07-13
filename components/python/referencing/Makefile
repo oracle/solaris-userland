@@ -58,4 +58,5 @@ system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyrsistent-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
+REQUIRED_PACKAGES += library/python/typing-extensions-311

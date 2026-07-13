@@ -54,3 +54,6 @@ CONFIGURE_OPTIONS +=   --without-java-extensions
 # When genders_test is manually executed, it terribly fails with lots of errors...
 test: $(NO_TESTS)
 system-test: $(NO_TESTS)
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

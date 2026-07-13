@@ -93,5 +93,8 @@ COMPONENT_POST_TEST_ACTION += \
 COMPONENT_SYSTEM_TEST_ENV +=	PATH=/usr/gnu/bin:/usr/bin
 COMPONENT_SYSTEM_TEST_DIR =	$(@D)/tests
 
+CBE_PACKAGES += terminal/screen
+
 REQUIRED_PACKAGES += library/gmp
-REQUIRED_PACKAGES += terminal/screen
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

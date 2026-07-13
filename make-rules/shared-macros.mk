@@ -255,6 +255,10 @@ SOURCE_DIR =	$(COMPONENT_DIR)/$(COMPONENT_SRC)
 BUILD_DIR =	$(COMPONENT_DIR)/build
 PROTO_DIR =	$(BUILD_DIR)/prototype/$(MACH)
 
+# Add architecture-specific packages for the current build machine.
+REQUIRED_PACKAGES +=	$(REQUIRED_PACKAGES.$(MACH))
+CBE_PACKAGES +=		$(CBE_PACKAGES.$(MACH))
+
 ETCDIR =	/etc
 USRDIR =	/usr
 USRGNUDIR =	$(USRDIR)/gnu
@@ -1579,7 +1583,7 @@ ifneq ($(strip $(BUILD_BITS)),NO_ARCH)
 # Only a default dependency if component being built produces binaries.
 
 ifeq ($(COMPILER),gcc)
-REQUIRED_PACKAGES += developer/gcc-$(subst /usr/gcc/,,$(GCC_ROOT))
+CBE_PACKAGES += developer/gcc-$(subst /usr/gcc/,,$(GCC_ROOT))
 endif
 
 # We do not add studio compiler to required packages as it is not part of
@@ -1589,15 +1593,15 @@ endif
 # Almost all components need libc and linker, so let's add that
 # requirements to all components which do NOT declare
 # BUILD_BITS=NO_ARCH.
-REQUIRED_PACKAGES += system/library
-REQUIRED_PACKAGES += system/library/libc
-REQUIRED_PACKAGES += system/linker
+CBE_PACKAGES += system/library
+CBE_PACKAGES += system/library/libc
+CBE_PACKAGES += system/linker
 endif
 
 # Almost all components have some sort of shell script, so let's
 # add that requirement to all components here.
-REQUIRED_PACKAGES += shell/bash
-REQUIRED_PACKAGES += shell/ksh93
+CBE_PACKAGES += shell/bash
+CBE_PACKAGES += shell/ksh93
 
 include $(WS_MAKE_RULES)/environment.mk
 

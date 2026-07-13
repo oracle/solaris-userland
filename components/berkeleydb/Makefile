@@ -144,7 +144,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 # By default "gmake test" runs standard tests, takes ~2 days per $(BITS).
 RUN=run_std
 
-
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

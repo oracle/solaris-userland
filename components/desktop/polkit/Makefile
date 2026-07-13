@@ -90,14 +90,18 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0555 $(COMPONENT_DIR)/files/svc-polkit \
                 $(PROTO_DIR)/lib/svc/method/svc-polkit; \
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += system/library/math
+
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libmozjs-115
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/dbus
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/pam-core

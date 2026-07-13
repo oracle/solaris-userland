@@ -209,21 +209,24 @@ PKG_MACROS += PERL_ARCH_22="$(PERL_ARCH_22)"
 PKG_MACROS += PYVER=$(PYTHON_VERSION)
 PKG_MACROS += PYV=$(shell echo $(PYTHON_VERSION) | tr -d .)
 
+CBE_PACKAGES += developer/swig
+CBE_PACKAGES += library/glib2
+CBE_PACKAGES += library/py3c
+CBE_PACKAGES += security/kerberos-5
+
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += developer/swig
 REQUIRED_PACKAGES += developer/versioning/subversion
 REQUIRED_PACKAGES += library/apr-1
 REQUIRED_PACKAGES += library/apr-util-1
 REQUIRED_PACKAGES += library/expat
-REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libserf
-REQUIRED_PACKAGES += library/py3c
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += security/kerberos-5
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/security/libsasl2
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += web/server/apache-24

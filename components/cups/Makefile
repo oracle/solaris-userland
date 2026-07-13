@@ -82,13 +82,14 @@ COMPONENT_TEST_TRANSFORMS = \
 	'-e "/ tests failed./p" ' \
 	'-e "d" '
 
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libpaper
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc

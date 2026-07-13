@@ -200,12 +200,12 @@ pypi_url_single = pypi:///$(COMPONENT_NAME)==$(COMPONENT_VERSION)
 pypi_url = $(if $(COMPONENT_VERSION_$(1)),$(pypi_url_multi),$(pypi_url_single))
 
 ifneq ($(findstring 3.11, $(PYTHON_VERSIONS)),)
-REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += library/python/setuptools-311
-REQUIRED_PACKAGES += library/python/pytest-311
+CBE_PACKAGES += runtime/python-311
+CBE_PACKAGES += library/python/setuptools-311
+CBE_PACKAGES += library/python/pytest-311
 endif
 ifneq ($(findstring 3.13, $(PYTHON_VERSIONS)),)
-REQUIRED_PACKAGES += runtime/python-313
-REQUIRED_PACKAGES += library/python/setuptools-313
-REQUIRED_PACKAGES += library/python/pytest-313
+CBE_PACKAGES += runtime/python-313
+CBE_PACKAGES += library/python/setuptools-313
+CBE_PACKAGES += library/python/pytest-313
 endif

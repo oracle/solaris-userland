@@ -67,5 +67,6 @@ CONFIGURE_OPTIONS += DAEMON_LIBS="-lglib-2.0 -lgobject-2.0 -lgio-2.0"
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)"
 CONFIGURE_OPTIONS += --with-python=no
 
-
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

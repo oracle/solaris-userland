@@ -152,25 +152,19 @@ PERL_SCRIPTS= \
   $(PROTOUSRLIBDIR)/golang/src/syscall/mksysnum_openbsd.pl
 
 
-ifeq ($(MACH), i386)
 # Used during the build.
-REQUIRED_PACKAGES += developer/gcc
-REQUIRED_PACKAGES += developer/versioning/git
-# Go bootstraps itself using Go, so at least one previous version must already
-# be installed.
-REQUIRED_PACKAGES += developer/go
-# Used in this Makefile.
-REQUIRED_PACKAGES += file/gnu-findutils
-REQUIRED_PACKAGES += text/gnu-sed
-# Required to build man pages.
-REQUIRED_PACKAGES += developer/documentation-tool/xml2roff
-# There's a single test script which requires perl.
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/header
-REQUIRED_PACKAGES += system/library
-# Used for cgo support at runtime; we don't add a package dependency since cgo
-# support is optional.
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/linker
-endif
+CBE_PACKAGES.i386 += developer/gcc
+CBE_PACKAGES.i386 += developer/versioning/git
+CBE_PACKAGES.i386 += developer/go
+CBE_PACKAGES.i386 += file/gnu-findutils
+CBE_PACKAGES.i386 += text/gnu-sed
+CBE_PACKAGES.i386 += developer/documentation-tool/xml2roff
+CBE_PACKAGES.i386 += $(PERL_PKG)
+CBE_PACKAGES.i386 += system/header
+CBE_PACKAGES.i386 += system/library/gcc/gcc-c-runtime
+
+REQUIRED_PACKAGES.i386 += shell/bash
+REQUIRED_PACKAGES.i386 += shell/ksh93
+REQUIRED_PACKAGES.i386 += system/core-os
+REQUIRED_PACKAGES.i386 += system/library
+REQUIRED_PACKAGES.i386 += system/library/libc

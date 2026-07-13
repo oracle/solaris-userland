@@ -92,8 +92,11 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)
 
+CBE_PACKAGES += developer/python/maturin
+
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cffi-%)
-REQUIRED_PACKAGES += developer/python/maturin
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

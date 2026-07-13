@@ -67,11 +67,14 @@ CONFIGURE_OPTIONS += -Dman=false
 CONFIGURE_OPTIONS.32 += -Dintrospection=false -Dvapi=false
 CONFIGURE_OPTIONS.64 += -Dintrospection=true -Dvapi=true
 
-REQUIRED_PACKAGES += developer/vala
+CBE_PACKAGES += developer/vala
+CBE_PACKAGES += text/gnu-gettext
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+
 REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/gtk4
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += service/image/colord
-REQUIRED_PACKAGES += text/gnu-gettext
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

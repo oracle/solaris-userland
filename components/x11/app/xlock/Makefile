@@ -48,6 +48,8 @@ COMPONENT_BUILD_ENV += 		PREFIX="$(USRDIR)"
 COMPONENT_INSTALL_ENV += 	INSTALL="$(INSTALL) -D"
 COMPONENT_INSTALL_ENV += 	PREFIX="$(USRDIR)"
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += x11/library/libx11

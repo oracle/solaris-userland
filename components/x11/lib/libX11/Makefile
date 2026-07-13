@@ -81,8 +81,11 @@ COMPONENT_TEST_TRANSFORMS += \
 # The default Userland locale transforms don't work with libX11 locale files
 LOCALE_TRANSFORMS =
 
-REQUIRED_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += system/library/iconv
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libxau
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxext
-REQUIRED_PACKAGES += system/library/iconv

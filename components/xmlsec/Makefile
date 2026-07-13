@@ -67,12 +67,16 @@ COMPONENT_PRE_TEST_ACTION+= $(MKDIR) $(@D)/tests-tmp ;
 COMPONENT_TEST_ENV+=    TMPFOLDER=$(@D)/tests-tmp
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
-REQUIRED_PACKAGES+=	system/library
-REQUIRED_PACKAGES+=	system/library/math
-REQUIRED_PACKAGES+=	library/libxml2
-REQUIRED_PACKAGES+=	library/libxslt
-REQUIRED_PACKAGES+=	system/library/security/libgcrypt
-REQUIRED_PACKAGES+=	library/gnutls-3
-REQUIRED_PACKAGES+=	library/security/openssl-3
-REQUIRED_PACKAGES+=	library/security/nss
-REQUIRED_PACKAGES+=	library/nspr
+CBE_PACKAGES += system/library/math
+
+REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += library/libtool/libltdl
+REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += library/libxslt
+REQUIRED_PACKAGES += library/nspr
+REQUIRED_PACKAGES += library/security/nss
+REQUIRED_PACKAGES += library/security/openssl-3
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/security/libgcrypt

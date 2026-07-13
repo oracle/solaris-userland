@@ -273,6 +273,7 @@ CLEAN_PATHS += $(COMPONENT_SRC)-32 $(COMPONENT_SRC)-64
 clean::
 	$(RM) -f *.sed *.out
 
-
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/c++-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

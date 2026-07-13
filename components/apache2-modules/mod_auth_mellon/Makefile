@@ -51,10 +51,12 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 CONFIGURE_OPTIONS.APXS= --with-apxs2=$(APXS)
 CONFIGURE_OPTIONS+=	--enable-diagnostics
 
-REQUIRED_PACKAGES+=	library/lasso
-REQUIRED_PACKAGES+=	library/glib2
-REQUIRED_PACKAGES+=	system/core-os
-REQUIRED_PACKAGES+=	system/library
-REQUIRED_PACKAGES+=	library/security/openssl-3
-REQUIRED_PACKAGES+=	web/curl
-REQUIRED_PACKAGES+=	text/gnu-grep
+CBE_PACKAGES+= text/gnu-grep
+
+REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/lasso
+REQUIRED_PACKAGES += library/security/openssl-3
+REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += web/curl

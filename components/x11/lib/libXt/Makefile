@@ -62,7 +62,10 @@ COMPONENT_TEST_TRANSFORMS += \
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ENV += libtool_install_magic='%%%MAGIC variable%%%'
 
-REQUIRED_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/header/x11-protocols
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11

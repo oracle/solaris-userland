@@ -85,6 +85,8 @@ $(BUILD_DIR_1)/.installed: $(BUILD_DIR_1)/.built
 	$(INSTALL) -m 555 $(@D)/xmag_multivis $(PROTO_DIR)/usr/bin
 	touch $@
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext

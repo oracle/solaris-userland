@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 #
@@ -140,4 +140,4 @@ COMPONENT_POST_INSTALL_ACTION += \
     cd $(PROTO_DIR)/usr/ruby/$(RUBY_VERSION); \
     $(RUBY_SCRIPT_FIX_FUNC);
 
-REQUIRED_PACKAGES += library/gmp
+CBE_PACKAGES += library/gmp

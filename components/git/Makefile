@@ -138,11 +138,16 @@ COMPONENT_PRE_CONFIGURE_ACTION += (cd $(@D); $(GMAKE) configure);
 # Allow manifest-generate see man pages from the second archive
 GENERATE_PROTO_DIRS += $(COMPONENT_SRC_1)
 
-REQUIRED_PACKAGES += crypto/gnupg
+CBE_PACKAGES += crypto/gnupg
+
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += web/curl

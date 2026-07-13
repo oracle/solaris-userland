@@ -58,3 +58,6 @@ COMPONENT_TEST_TRANSFORMS += '-e "/Leaving directory/d"'
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/security/openssl-3
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -91,15 +91,18 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
-REQUIRED_PACKAGES += developer/vala
-REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
+CBE_PACKAGES += desktop/xdg/desktop-file-utils
+CBE_PACKAGES += developer/vala
+CBE_PACKAGES += gnome/gsettings-desktop-schemas
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += system/library/freetype-2
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/pcre2
-REQUIRED_PACKAGES += system/library/freetype-2
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -49,3 +49,6 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
 
 CONFIGURE_OPTIONS += --srcdir=$(BUILD_DIR_64) 
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

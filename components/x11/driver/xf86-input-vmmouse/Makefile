@@ -46,4 +46,8 @@ CONFIGURE_OPTIONS += --with-hal-callouts-dir=/usr/lib/hal
 CONFIGURE_OPTIONS += --with-hal-fdi-dir=/etc/hal/fdi/policy/10osvendor
 CONFIGURE_OPTIONS += --bindir=/usr/lib/xorg
 
-REQUIRED_PACKAGES += system/library/math
+CBE_PACKAGES.i386 += system/library/math
+
+REQUIRED_PACKAGES.i386 += shell/ksh93
+REQUIRED_PACKAGES.i386 += system/library
+REQUIRED_PACKAGES.i386 += system/library/libc

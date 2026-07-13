@@ -56,9 +56,12 @@ COMPONENT_PRE_TEST_ACTION += cp $(SOURCE_DIR)/geocode-glib/tests/*.json \
           $(BUILD_DIR_$(BITS))/geocode-glib/tests/
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+
+REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libsoup-3
-REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

@@ -85,4 +85,5 @@ COMPONENT_PREP_ACTION +=(cd $(@D); autoreconf);
 # required packages  
 REQUIRED_PACKAGES += library/security/pcsc/pcsclite
 REQUIRED_PACKAGES += library/zlib
-
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

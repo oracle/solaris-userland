@@ -59,14 +59,16 @@ PERL_SCRIPTS = \
 	$(PROTOUSRBINDIR)/composeglyphs \
 	$(PROTOUSRBINDIR)/ogonkify
 
+CBE_PACKAGES += developer/gperf
+CBE_PACKAGES += editor/gnu-emacs
+CBE_PACKAGES += image/psutils
+
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += developer/gperf
-REQUIRED_PACKAGES += editor/gnu-emacs
-REQUIRED_PACKAGES += image/psutils
 REQUIRED_PACKAGES += library/bdw-gc
 REQUIRED_PACKAGES += library/libpaper
-# a2ps-lpr-wrapper needs bash
-REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/linker

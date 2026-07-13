@@ -84,3 +84,5 @@ REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 #
@@ -265,11 +265,11 @@ parfait:
 	$(MAKE) PARFAIT_BUILD=yes parfait
 endif
 
-REQUIRED_PACKAGES += developer/build/autoconf
-REQUIRED_PACKAGES += developer/build/automake
-REQUIRED_PACKAGES += developer/build/gnu-make
-REQUIRED_PACKAGES += developer/build/libtool
-REQUIRED_PACKAGES += developer/build/pkg-config
-REQUIRED_PACKAGES += developer/macro/gnu-m4
-REQUIRED_PACKAGES += file/gnu-coreutils
-REQUIRED_PACKAGES += library/libtool/libltdl
+CBE_PACKAGES += developer/build/autoconf
+CBE_PACKAGES += developer/build/automake
+CBE_PACKAGES += developer/build/gnu-make
+CBE_PACKAGES += developer/build/libtool
+CBE_PACKAGES += developer/build/pkg-config
+CBE_PACKAGES += developer/macro/gnu-m4
+CBE_PACKAGES += file/gnu-coreutils
+CBE_PACKAGES += library/libtool/libltdl

@@ -71,9 +71,10 @@ install:        $(SOURCE_DIR)/.prep
 		| $(GNUTAR) -C $(PROTO_DIR)$(DOC_DIR) -xf -
 	$(SYMLINK) VERSION $(PROTO_DIR)$(XSL_DIR)/VERSION.xsl
 
+CBE_PACKAGES += data/xml-common
+
 # Used in SMF method scripts:
-REQUIRED_PACKAGES += data/xml-common
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += shell/bash
-# SMF manifest dependencies:
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

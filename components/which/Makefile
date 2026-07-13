@@ -42,3 +42,6 @@ include $(WS_MAKE_RULES)/gnu-component.mk
 CONFIGURE_PREFIX    =	$(USRDIR)/gnu
 CONFIGURE_OPTIONS  +=	--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS  +=	--disable-dependency-tracking
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

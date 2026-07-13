@@ -48,13 +48,14 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS += -Dclassic_mode=true
 CONFIGURE_OPTIONS += -Dextension_set=all
 
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gnome-shell
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += gnome/window-manager/mutter
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2

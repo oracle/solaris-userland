@@ -48,6 +48,9 @@ CONFIGURE_OPTIONS += -Dgtk_doc=true
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += developer/vala
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += developer/vala
+
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

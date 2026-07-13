@@ -55,6 +55,9 @@ CPPFLAGS += -DSUNSOFT
 
 LD_OPTIONS += -M $(COMPONENT_DIR)/mapfile
 
-REQUIRED_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/header/x11-protocols
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxscrnsaver

@@ -81,3 +81,6 @@ COMPONENT_TEST_TRANSFORMS += -e '"/^\r/d" '
 COMPONENT_TEST_TRANSFORMS += -e '"/^+/d" '
 # lz4 version info in verbose mode can mess around too.
 COMPONENT_TEST_TRANSFORMS += -e '"/^\*\*\* lz4 /d" '
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

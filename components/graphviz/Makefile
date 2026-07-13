@@ -213,12 +213,21 @@ COMPONENT_SYSTEM_TEST_ARGS = tests --verbose
 COMPONENT_SYSTEM_TEST_TARGETS =
 COMPONENT_SYSTEM_TEST_ENV = CC=$(CC)
 
+CBE_PACKAGES += library/desktop/at-spi2-core
+CBE_PACKAGES += print/filter/poppler
+CBE_PACKAGES += web/php-82
+CBE_PACKAGES += web/php-83
+CBE_PACKAGES += web/php-84
+CBE_PACKAGES += x11/library/libxmu
+CBE_PACKAGES += x11/library/toolkit/libxaw7
+CBE_PACKAGES += x11/library/toolkit/libxt
+
+REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += $(subst .,,$(PYTHON_VERSIONS:%=runtime/python-%))
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
 REQUIRED_PACKAGES += image/ghostscript
-REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += image/library/libwebp
-REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
@@ -228,11 +237,7 @@ REQUIRED_PACKAGES += library/gd
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += print/filter/poppler
 REQUIRED_PACKAGES += runtime/lua
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += runtime/python-313
 REQUIRED_PACKAGES += runtime/ruby-33
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library
@@ -240,10 +245,4 @@ REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/php-82
-REQUIRED_PACKAGES += web/php-83
-REQUIRED_PACKAGES += web/php-84
 REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxmu
-REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
-REQUIRED_PACKAGES += x11/library/toolkit/libxt

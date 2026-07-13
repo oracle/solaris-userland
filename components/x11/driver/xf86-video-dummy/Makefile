@@ -41,3 +41,6 @@ include $(WS_MAKE_RULES)/x11-component.mk
 LD_OPTIONS += \
 	-L$(X11_SERVERMODS_DIR) \
 	-R$(X11_SERVERMODS_DIR)
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

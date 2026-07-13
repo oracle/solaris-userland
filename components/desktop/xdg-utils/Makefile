@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -54,12 +54,13 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # docbook-dtds, xsltproc, & xmlto are used to generate files during the build
-REQUIRED_PACKAGES += data/docbook/docbook-dtds
-REQUIRED_PACKAGES += developer/documentation-tool/xmlto
+CBE_PACKAGES += data/docbook/docbook-dtds
+CBE_PACKAGES += developer/documentation-tool/xmlto
+CBE_PACKAGES += library/gnome/gvfs
+CBE_PACKAGES += library/libxslt
+
 REQUIRED_PACKAGES += file/gnu-coreutils
 REQUIRED_PACKAGES += gnome/zenity
-REQUIRED_PACKAGES += library/gnome/gvfs
-REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += system/library/dbus
 REQUIRED_PACKAGES += text/gawk

@@ -49,3 +49,5 @@ REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -62,22 +62,22 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/Skipped:/p" ' \
         '-e "/Timeout:/p" '
 
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += library/libspectre
+CBE_PACKAGES += service/opengl/ogl-select
+CBE_PACKAGES += x11/library/mesa
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += library/glib2
-# Requires pixman >= 0.30
 REQUIRED_PACKAGES += library/graphics/pixman
-REQUIRED_PACKAGES += library/libspectre
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxrender
-REQUIRED_PACKAGES += x11/library/mesa

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
 ANT ?= /usr/bin/ant
@@ -128,4 +128,4 @@ endif
 clean::
 	$(RM) -r $(SOURCE_DIR) $(BUILD_DIR)
 
-REQUIRED_PACKAGES += developer/build/ant
+CBE_PACKAGES += developer/build/ant

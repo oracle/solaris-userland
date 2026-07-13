@@ -20,9 +20,13 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 SUDO =		/usr/bin/sudo
+
+ENVIRONMENT_PACKAGES =	$(sort $(REQUIRED_PACKAGES) \
+				$(REQUIRED_PACKAGES.$(MACH)) \
+				$(CBE_PACKAGES) $(CBE_PACKAGES.$(MACH)))
 
 # Hardcode Python path because it is only used here to print a title
 # and putting a variable PYTHON to the path could side effect other
@@ -42,14 +46,13 @@ component-environment-check::
 	@/usr/sbin/psrinfo -vp
 	@/usr/sbin/ipadm show-addr
 	$(call separator-line,Required Packages)
-	@/usr/bin/pkg list -vH $(REQUIRED_PACKAGES:%=/%)
+	@/usr/bin/pkg list -vH $(ENVIRONMENT_PACKAGES:%=/%)
 	$(call separator-line)
 
 component-environment-prep::
 	@echo "Adding required packages to build environment..."
-	@-echo $(REQUIRED_PACKAGES:%=/%) | xargs \
+	@-echo $(ENVIRONMENT_PACKAGES:%=/%) | xargs \
 		$(SUDO) /usr/bin/pkg install --accept -v
-
 
 #
 # For building in a constructed zone.  Currently this assumes a template zone
@@ -60,7 +63,7 @@ component-environment-prep::
 ZONENAME=bz-$(shell echo "$(WS_TOP)" | md5sum | cut -c0-7)-$(COMPONENT_NAME)
 
 $(BUILD_DIR)/packages.xml:	Makefile	$(BUILD_DIR)
-	@echo "$(REQUIRED_PACKAGES:%=\t\t<name>pkg:/%</name>\n)" >$(@)
+	@echo "$(foreach package,$(ENVIRONMENT_PACKAGES),\t\t<name>pkg:/$(package)</name>\n)" >$(@)
 
 $(BUILD_DIR)/ai_manifest.xml:	$(WS_TOOLS)/zone_default.xml $(BUILD_DIR)
 	$(CP) $< $(@)

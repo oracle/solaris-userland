@@ -52,8 +52,10 @@ CONFIGURE_OPTIONS += -Dvala-version=0.54.2
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
-REQUIRED_PACKAGES += developer/vala
-REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
+CBE_PACKAGES += developer/vala
+CBE_PACKAGES += gnome/gsettings-desktop-schemas
+CBE_PACKAGES += system/library/math
+
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/gtksourceview
@@ -64,4 +66,5 @@ REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/mpc
 REQUIRED_PACKAGES += library/mpfr
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

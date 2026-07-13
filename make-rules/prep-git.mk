@@ -97,7 +97,7 @@ $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 	esac
 
 
-REQUIRED_PACKAGES += developer/versioning/git
+CBE_PACKAGES += developer/versioning/git
 
 endif
 endef

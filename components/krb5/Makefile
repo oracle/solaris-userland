@@ -215,12 +215,19 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION= \
 	$(CP) $(BUILD_DIR)/$(MACH64)/lib/libkadm5clnt.so.1 \
 		$(PROTO_DIR)$(USRLIBDIR)/$(MACH64);
 
+CBE_PACKAGES += network/dns/bind
+CBE_PACKAGES += service/network/ldap/openldap
+CBE_PACKAGES += system/library/math
+CBE_PACKAGES += system/library/security/crypto
+CBE_PACKAGES += system/library/security/sasl/digestmd5
+
 REQUIRED_PACKAGES += library/libedit
 REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += service/security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/library/security/gss
 REQUIRED_PACKAGES += system/network/ldap/openldap

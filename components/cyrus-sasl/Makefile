@@ -262,9 +262,10 @@ sasltest.tgz:	install
 	(cd $(TARBALL_DIR) && $(CHMOD) 0777 $(TEST_SCRIPTS))
 	gtar czf sasltest.tgz $(TARBALL_DIR)
 
-REQUIRED_PACKAGES += archiver/gnu-tar
 REQUIRED_PACKAGES += database/berkeleydb-5
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network/ldap/openldap
-REQUIRED_PACKAGES += library/security/openssl-3

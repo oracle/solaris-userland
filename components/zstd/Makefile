@@ -68,4 +68,5 @@ REQUIRED_PACKAGES += compress/lz4
 REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc

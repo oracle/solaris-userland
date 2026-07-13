@@ -97,6 +97,9 @@ COMPONENT_TEST_TRANSFORMER =    $(NAWK)
 COMPONENT_TEST_TRANSFORMS = -F"'('" \
 	"'/The following tests FAILED/ {results = 1}; /Errors while running CTest/ {results = 0}; {if (results) print \$$1}'"
 
+CBE_PACKAGES += system/library/math
+
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
@@ -117,9 +120,10 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/security/nss
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES.sparc += system/library/math
 REQUIRED_PACKAGES += system/network/ldap/openldap

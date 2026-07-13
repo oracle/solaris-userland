@@ -62,12 +62,15 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
-REQUIRED_PACKAGES += developer/ui-designer/glade
+CBE_PACKAGES += developer/ui-designer/glade
+CBE_PACKAGES += library/libxml2
+CBE_PACKAGES += library/lua/lgi-54
+CBE_PACKAGES += library/python/pygobject-3
+
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/lua/lgi-54
-REQUIRED_PACKAGES += library/python/pygobject-3
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -52,15 +52,16 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS += -Dhkp-support=false -Dmanpage=true
 
+CBE_PACKAGES += gnome/gsettings-desktop-schemas
+CBE_PACKAGES += library/libxslt
 
-REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += library/gnome/libsecret
-# for manpage
-REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/security/gpgme
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/network/ldap/openldap

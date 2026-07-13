@@ -101,4 +101,7 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/pcre2
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

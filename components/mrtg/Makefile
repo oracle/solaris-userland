@@ -50,6 +50,8 @@ CONFIGURE_LIBDIR.64 = $(USRLIBDIR)
 # Build process expects a bin directory in compilation area.
 COMPONENT_PRE_BUILD_ACTION=(cd $(@D) ; mkdir -p bin)
 
-REQUIRED_PACKAGES += library/gd
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += library/gd
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

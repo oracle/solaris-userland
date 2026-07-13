@@ -45,7 +45,8 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
 CONFIGURE_OPTIONS += --enable-doc
 
-REQUIRED_PACKAGES += developer/documentation-tool/itstool
-REQUIRED_PACKAGES += developer/documentation-tool/mallard/ducktype
-REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/libxslt
+CBE_PACKAGES += developer/documentation-tool/itstool
+CBE_PACKAGES += developer/documentation-tool/mallard/ducktype
+CBE_PACKAGES += library/libxml2
+CBE_PACKAGES += library/libxslt
+

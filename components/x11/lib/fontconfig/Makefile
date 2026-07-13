@@ -101,10 +101,11 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 # Set packages to be part of the X consolidation incorporation
 PKGMOGRIFY_TRANSFORMS += $(WS_TOP)/transforms/X-incorporation
 
-REQUIRED_PACKAGES += library/expat
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/freetype-2
+CBE_PACKAGES += library/json-c
 
-# JSON-C is required to build and run tests, but is not used in the packaged
-# software
-REQUIRED_PACKAGES += library/json-c
+REQUIRED_PACKAGES += library/expat
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/libc

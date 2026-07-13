@@ -49,15 +49,19 @@ $(WS_MACH)/depends.mk:     $(WS_MACH)/components.mk
 -include $(WS_MACH)/depends.mk
 
 #
-# 1. Iterate over every component and print its REQUIRED_PACKAGES list.
-# 2. Pipe the entire output into a helper script.
-# 3. The script extracts each dependency and appends a comment that lists the
-#    component(s) that require that dependency.
+# Generate the package list needed to build the consolidation. This is the
+# union of automatically generated REQUIRED_PACKAGES and manually maintained
+# CBE_PACKAGES for the active architecture.
 #
 $(WS_MACH)/requires.mk:	$(WS_MACH)
 	@echo "Generating list of required packages to build consolidation..."
-	$(GMAKE) -j 5 --no-print-directory component-hook \
-		COMPONENT_HOOK='@echo $$(REQUIRED_PACKAGES:%="%:$$(subst $$(WS_TOP)/components/,,$$(COMPONENT_DIR))\\n")'  \
+	$(GMAKE) -j 5 --no-print-directory REQUIRES_MK_GENERATION=yes component-hook \
+		COMPONENT_HOOK='@printf "%s\n" \
+		$$(patsubst %,"%:$$(subst $$(WS_TOP)/components/,,$$(COMPONENT_DIR))", \
+		$$(REQUIRED_PACKAGES) \
+		$$(REQUIRED_PACKAGES.$(MACH)) \
+		$$(CBE_PACKAGES) \
+		$$(CBE_PACKAGES.$(MACH)))' \
 		| perl $(WS_TOP)/tools/process-required-packages.pl > "$(@)"
 
 system-check::	$(WS_MACH)/requires.mk
@@ -84,7 +88,8 @@ check_rtime:		TARGET = check_rtime
 zone-build:		TARGET = component-zone-build
 component-hook:		TARGET = component-hook
 regen-patches:		TARGET = regen-patches
-download zone-build prep build install mangle publish test system-test check_rtime regen-patches:	\
+REQUIRED_PACKAGES:	TARGET = REQUIRED_PACKAGES
+download zone-build prep build install mangle publish test system-test check_rtime regen-patches REQUIRED_PACKAGES:	\
 	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1 ; \
 	RET=$$? ; \
 	if [ -d $(WS_COMPONENTS)/$@/build ]; then \
@@ -119,7 +124,7 @@ zone-build build install mangle publish test system-test: $(COMPONENT_DIRS)
 COMPONENT_DIRS.nosetup =	$(COMPONENT_DIRS:%=%.nosetup)
 
 download unpack patch::	$(COMPONENT_DIRS.nosetup)
-prep check_anitya check_rtime regen-patches:	$(COMPONENT_DIRS.nosetup)
+prep check_anitya check_rtime regen-patches REQUIRED_PACKAGES:	$(COMPONENT_DIRS.nosetup)
 component-environment-check::	$(COMPONENT_DIRS.nosetup)
 component-hook:	$(COMPONENT_DIRS.nosetup)
 

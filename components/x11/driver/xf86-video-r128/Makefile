@@ -49,6 +49,8 @@ LD_OPTIONS += \
         -R$(X11_SERVERMODS_DIR) \
         -lint10 -lpciaccess -lpixman-1 -lfbdevhw -lvgahw -lexa
 
-REQUIRED_PACKAGES += diagnostic/scanpci
-REQUIRED_PACKAGES += library/graphics/pixman
-REQUIRED_PACKAGES += x11/server/xorg
+REQUIRED_PACKAGES.i386 += diagnostic/scanpci
+REQUIRED_PACKAGES.i386 += library/graphics/pixman
+REQUIRED_PACKAGES.i386 += system/library
+REQUIRED_PACKAGES.i386 += system/library/libc
+REQUIRED_PACKAGES.i386 += x11/server/xorg

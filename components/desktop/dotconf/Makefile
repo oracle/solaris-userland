@@ -50,3 +50,6 @@ CONFIGURE_OPTIONS +=    --disable-static
 
 # Assumes GNU xgettext & msgfmt are first in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

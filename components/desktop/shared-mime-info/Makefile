@@ -47,10 +47,13 @@ include $(WS_MAKE_RULES)/common.mk
 # so we don't suck them into the package and then have pkg verify errors
 CONFIGURE_OPTIONS += -Dupdate-mimedb=false
 
+CBE_PACKAGES += text/gnu-gettext
+
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
-# Needed for minimal-fs dependency in mime-types-cache.xml SMF manifest:
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += text/gnu-gettext
+REQUIRED_PACKAGES += system/library/libc

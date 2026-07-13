@@ -96,4 +96,6 @@ COMPONENT_TEST_TRANSFORMS += \
 PKG_HARDLINKS += usr/bin/gunzip
 
 REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/xopen/xcu4

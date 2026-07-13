@@ -64,15 +64,19 @@ CONFIGURE_OPTIONS.64 += --libexecdir="$(USRLIBDIR)"
 CONFIGURE_OPTIONS +=	--localstatedir="$(VARDIR)"
 CONFIGURE_OPTIONS +=	--enable-rbac-shutdown=solaris.system.shutdown
 
+CBE_PACKAGES += x11/server/xorg
+
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/xdg/consolekit
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/server/xorg
-REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/dbus
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib
-REQUIRED_PACKAGES += system/library/polkit
 REQUIRED_PACKAGES += system/library/pam-core
+REQUIRED_PACKAGES += system/library/polkit
 REQUIRED_PACKAGES += system/library/smf
+REQUIRED_PACKAGES += x11/library/libx11

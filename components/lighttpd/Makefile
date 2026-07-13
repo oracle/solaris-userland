@@ -72,14 +72,17 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s/   [0-9]\.[0-9][0-9] sec//" '  \
 	'-e "s/  [0-9][0-9]\.[0-9][0-9] sec//" '
 
-REQUIRED_PACKAGES += database/mysql-84
+CBE_PACKAGES += database/mysql-84
+CBE_PACKAGES += $(PERL_PKG)
+
 REQUIRED_PACKAGES += database/mysql-84/library
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/lua
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/ldap/openldap
 REQUIRED_PACKAGES += web/fastcgi/spawn-fcgi

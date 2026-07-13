@@ -44,3 +44,6 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fi;)
 
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

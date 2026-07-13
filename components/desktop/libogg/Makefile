@@ -43,4 +43,5 @@ include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

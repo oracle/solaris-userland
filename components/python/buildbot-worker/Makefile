@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -65,9 +65,10 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/python-twisted-%)
+CBE_PACKAGES += library/python/psutil-311
+
+REQUIRED_PACKAGES += library/python/python-twisted-311
+REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network
-
-# Testing related components
-REQUIRED_PACKAGES += $(PYVS:%=library/python/psutil-%)

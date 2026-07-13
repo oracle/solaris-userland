@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -54,5 +54,6 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-browser-connector
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-browser-connector-host
 
-REQUIRED_PACKAGES += library/python/pygobject-3-311
+CBE_PACKAGES += library/python/pygobject-3-311
+
 REQUIRED_PACKAGES += runtime/python-311

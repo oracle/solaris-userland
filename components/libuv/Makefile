@@ -105,3 +105,6 @@ test-license:
 # Helper target to display manual page.
 show-man: $(BUILD_DIR)/man/libuv.1
 	/usr/bin/nroff -man $(BUILD_DIR)/man/libuv.1
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

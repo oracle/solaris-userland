@@ -80,11 +80,12 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|.*ginstall.*$$|XXX_CC_XXX|g" ' \
 	'-e "/^XXX_CC_XXX$$/d" '
 
-REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

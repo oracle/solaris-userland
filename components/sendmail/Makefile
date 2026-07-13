@@ -248,13 +248,14 @@ INSTALL_64=
 # common targets
 install:	$(INSTALL_32_and_64)
 
-REQUIRED_PACKAGES += database/berkeleydb-5
-REQUIRED_PACKAGES += library/libmilter
-REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += database/berkeleydb-5
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/ldap
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/ldap/openldap

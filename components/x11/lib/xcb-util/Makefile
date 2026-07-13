@@ -123,8 +123,11 @@ PKG_VARS += SOURCE_DIR
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
-REQUIRED_PACKAGES += developer/gperf
-REQUIRED_PACKAGES += image/graphviz
-REQUIRED_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += developer/documentation-tool/doxygen
+CBE_PACKAGES += developer/gperf
+CBE_PACKAGES += image/graphviz
+CBE_PACKAGES += x11/header/x11-protocols
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libxcb

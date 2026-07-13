@@ -41,9 +41,13 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_OPTIONS += --libdir=$(CONFIGURE_LIBDIR.32)
 
+CBE_PACKAGES += x11/header/x11-protocols
+
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxft

@@ -78,8 +78,11 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^\./p" ' \
 	'-e "/ok$$/p" '
 
-REQUIRED_PACKAGES += codec/flac
-REQUIRED_PACKAGES += codec/libogg
-REQUIRED_PACKAGES += codec/libvorbis
-REQUIRED_PACKAGES += database/sqlite-3
+CBE_PACKAGES += codec/flac
+CBE_PACKAGES += codec/libogg
+CBE_PACKAGES += codec/libvorbis
+CBE_PACKAGES += database/sqlite-3
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

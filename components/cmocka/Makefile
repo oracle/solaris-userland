@@ -63,7 +63,5 @@ PATH=			$(GNUBIN):$(USRBINDIR)
 ADIHEAP_MODE=		$(ADIHEAP_ENABLE)
 ADISTACK_MODE=		$(ADISTACK_ENABLE)
 
-# Package dependencies.
-# ---------------------
-# Created by 'gmake REQUIRED_PACKAGES', manually verified.
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

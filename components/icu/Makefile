@@ -74,6 +74,9 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^All tests OK:  testdata intltest iotest cintltst/p" ' \
 	'-e "/^PASS: config selfcheck OK/p" '
 
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

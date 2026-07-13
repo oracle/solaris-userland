@@ -89,7 +89,9 @@ CONFIGURE_OPTIONS +=    --disable-dependency-tracking
 # Avoid using -std=c++11 with new autoconf 2.72
 CONFIGURE_OPTIONS +=    ac_cv_prog_cxx_cxx11=
 
-# required packages
-REQUIRED_PACKAGES += library/security/pcsc/pcsclite
+CBE_PACKAGES += library/security/pcsc/pcsclite
+
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/c++-runtime
+REQUIRED_PACKAGES += system/library/libc

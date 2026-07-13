@@ -69,6 +69,9 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/Skipped:/p" ' \
         '-e "/Timeout:/p" '
 
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+CBE_PACKAGES += system/library/math
+
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
@@ -76,7 +79,9 @@ REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/libmozjs-115
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES.sparc += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES.sparc += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11

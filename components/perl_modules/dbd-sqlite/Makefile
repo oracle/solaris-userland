@@ -80,6 +80,11 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 $(LICENSE): $(LICENSE).template
 	$(PERL) -pe 's/COMPONENT_VERSION/$(COMPONENT_VERSION)/g' "$<" > "$@"
 
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/database-5%)
+
 REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/database-5%)
+REQUIRED_PACKAGES += runtime/perl-538
+REQUIRED_PACKAGES += runtime/perl-542
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

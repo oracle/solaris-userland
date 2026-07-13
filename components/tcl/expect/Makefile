@@ -80,4 +80,6 @@ $(CONFIGURE_64):	../tcl/build/$(MACH64)/.built
 
 REQUIRED_PACKAGES += runtime/tcl-8
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

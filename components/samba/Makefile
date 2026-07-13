@@ -149,18 +149,20 @@ COMPONENT_POST_BUILD_ACTION.32+=	\
 #
 PKG_MACROS += PYVER=$(PYTHON_VERSION)
 
-REQUIRED_PACKAGES += library/desktop/search/tracker
-REQUIRED_PACKAGES += library/glib2
+CBE_PACKAGES += library/perl-5/parse-yapp
+
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/jansson
 REQUIRED_PACKAGES += library/libarchive
-REQUIRED_PACKAGES += library/perl-5/parse-yapp
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/avahi

@@ -44,6 +44,9 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_OPTIONS += -Dlib_man_suffix=3xxf86vm
 
-REQUIRED_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/header/x11-protocols
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext

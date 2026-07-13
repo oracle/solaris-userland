@@ -91,13 +91,17 @@ COMPONENT_BUILD_ENV += LD_LIBRARY_PATH=
 
 COMPONENT_INSTALL_TARGETS = non-interactive-package install_root="$(PROTO_DIR)"
 
+CBE_PACKAGES += text/gnu-grep
+
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl-3
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/ldap/openldap
-REQUIRED_PACKAGES += text/gnu-grep

@@ -92,6 +92,9 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
+CBE_PACKAGES += developer/documentation-tool/doxygen
+
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

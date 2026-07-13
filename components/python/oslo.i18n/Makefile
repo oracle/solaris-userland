@@ -61,3 +61,4 @@ venv-test:	$(TEST_NO_ARCH)
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

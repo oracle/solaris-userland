@@ -67,9 +67,11 @@ COMPONENT_SYSTEM_TEST_ARGS = AWKPROG=$(USRBINDIR)/gawk
 
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 
+CBE_PACKAGES += library/libsigsegv
+
 REQUIRED_PACKAGES += library/gmp
-REQUIRED_PACKAGES += library/libsigsegv
 REQUIRED_PACKAGES += library/mpfr
 REQUIRED_PACKAGES += library/readline
-REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

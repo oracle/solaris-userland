@@ -59,12 +59,13 @@ COMPONENT_INSTALL_ARGS +=	PREFIX=$(PROTOUSRDIR)
 COMPONENT_INSTALL_ARGS +=	MANDIR=$(PROTOUSRSHAREMANDIR)
 COMPONENT_INSTALL_ARGS +=	INSTALL=/usr/gnu/bin/install
 
-REQUIRED_PACKAGES += network/firewall
+CBE_PACKAGES += network/firewall
+
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/header
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/datalink
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libpcap
 REQUIRED_PACKAGES += system/library/smf
 REQUIRED_PACKAGES += system/network

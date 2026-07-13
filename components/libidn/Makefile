@@ -119,3 +119,5 @@ install: $(INSTALL_32_and_64)
 	$(CP) -Rp $(PROTOUSRSHAREDIR)/locale/en@boldquot \
 	    $(PROTOUSRSHAREDIR)/locale/en
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

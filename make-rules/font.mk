@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2009, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2026, Oracle and/or its affiliates.
 #
 
 # Handles fonts without any configure or build scripts, that just need to
@@ -106,6 +106,6 @@ $(MANIFEST_BASE)-%.font-transforms: %.p5m
 		|| ( rm $@ ; exit 1 )
 
 # Package containing fc-scan used in generate_font_metadata.pl
-REQUIRED_PACKAGES	+= system/library/fontconfig
+CBE_PACKAGES	+= system/library/fontconfig
 # Package containing $(MKFONTSCALE) & $(MKFONTDIR)
-REQUIRED_PACKAGES	+= x11/font-utilities
+CBE_PACKAGES	+= x11/font-utilities

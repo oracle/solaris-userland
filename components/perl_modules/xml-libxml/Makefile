@@ -68,12 +68,14 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-namespacesupport-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-base-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/alien-libxml2-5%)
 
 REQUIRED_PACKAGES += library/libxml2
-
-# Needed for testing:
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-namespacesupport-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-base-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/alien-libxml2-5%)
+REQUIRED_PACKAGES += runtime/perl-538
+REQUIRED_PACKAGES += runtime/perl-542
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

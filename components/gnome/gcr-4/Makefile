@@ -61,9 +61,12 @@ COMPONENT_TEST_TRANSFORMS += \
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
+CBE_PACKAGES += library/gnome/libsecret
+
 REQUIRED_PACKAGES += library/desktop/gtk4
 REQUIRED_PACKAGES += library/desktop/p11-kit
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gnome/libsecret
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/security/libgcrypt

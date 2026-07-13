@@ -127,11 +127,14 @@ COMPONENT_TEST_TRANSFORMS += '-e "s/\(check_ttyname:.*\)(.*)/\1/"'
 VISUDO=$(BUILD_DIR_64)/plugins/sudoers/.libs/visudo
 
 $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
+
+CBE_PACKAGES += system/library/security/crypto
+CBE_PACKAGES += text/groff/groff-core
+
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/pam-core
-REQUIRED_PACKAGES += system/library/security/crypto
-REQUIRED_PACKAGES += system/network/ldap/openldap
-REQUIRED_PACKAGES += text/groff/groff-core
-# for ca-certificates.xml and network/dns/client
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/pam-core
+REQUIRED_PACKAGES += system/network/ldap/openldap

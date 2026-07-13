@@ -48,6 +48,7 @@ CONFIGURE_ENV += PYTHON=$(PYTHON)
 # pkgdepend complains if it doesn't find a version of python specified
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/itstool
 
+CBE_PACKAGES += text/gawk
+
 REQUIRED_PACKAGES += library/python/libxml2-311
 REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += text/gawk

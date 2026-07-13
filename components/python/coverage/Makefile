@@ -59,4 +59,7 @@ test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
+REQUIRED_PACKAGES += $(PYVS:%=library/python/setuptools-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

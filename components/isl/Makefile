@@ -75,3 +75,5 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/TOTAL/p" '
 
 REQUIRED_PACKAGES += library/gmp
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -61,8 +61,11 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 # Required due to patches.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libxau

@@ -79,20 +79,24 @@ COMPONENT_POST_UNPACK_ACTION += $(TOUCH) $(SOURCE_DIR)/ui/gtk3/*.vala ;
 # For autopyc transformation
 PKG_MACROS +=   PYVER=$(PYTHON_VERSION)
 
-REQUIRED_PACKAGES +=	data/iso-codes
-REQUIRED_PACKAGES +=	developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES +=	library/desktop/at-spi2-core
-REQUIRED_PACKAGES +=	library/desktop/cairo
-REQUIRED_PACKAGES +=	library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES +=	library/desktop/gobject/gobject-introspection
-REQUIRED_PACKAGES +=	library/desktop/graphene
-REQUIRED_PACKAGES +=	library/desktop/gtk3
-REQUIRED_PACKAGES +=	library/desktop/gtk4
-REQUIRED_PACKAGES +=	library/desktop/libnotify
-REQUIRED_PACKAGES +=	library/desktop/pango
-REQUIRED_PACKAGES +=	library/glib2
-REQUIRED_PACKAGES +=	library/gnome/dconf
-REQUIRED_PACKAGES +=	runtime/python-311
-REQUIRED_PACKAGES +=	x11/library/libx11
-REQUIRED_PACKAGES +=	x11/library/libxfixes
-REQUIRED_PACKAGES +=	x11/library/libxi
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+
+REQUIRED_PACKAGES += data/iso-codes
+REQUIRED_PACKAGES += library/desktop/at-spi2-core
+REQUIRED_PACKAGES += library/desktop/cairo
+REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
+REQUIRED_PACKAGES += library/desktop/graphene
+REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/gtk4
+REQUIRED_PACKAGES += library/desktop/libnotify
+REQUIRED_PACKAGES += library/desktop/pango
+REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/gnome/dconf
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/input-method/ibus
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += x11/library/libx11
+REQUIRED_PACKAGES += x11/library/libxfixes
+REQUIRED_PACKAGES += x11/library/libxi

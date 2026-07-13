@@ -103,8 +103,11 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL/p" ' \
         '-e "/ERROR/p" '
 
+CBE_PACKAGES += system/library/libdbus
+CBE_PACKAGES += system/library/libdbus-glib
+
+REQUIRED_PACKAGES += $(subst .,,$(PYTHON_VERSIONS:%=runtime/python-%))
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
-REQUIRED_PACKAGES += system/library/libdbus-glib
-REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += runtime/python-313

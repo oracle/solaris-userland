@@ -54,5 +54,7 @@ LDFLAGS +=	-L$(IFTOP_LIBDIR) -R$(IFTOP_LIBDIR)
 CPPFLAGS +=	-I$(USRGNUDIR)/include -I$(USRINCDIR)/ncurses
 
 REQUIRED_PACKAGES += library/ncurses
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libpcap
 REQUIRED_PACKAGES += system/library/math

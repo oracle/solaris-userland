@@ -43,7 +43,9 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile
 
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxrender

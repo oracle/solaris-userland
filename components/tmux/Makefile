@@ -46,4 +46,6 @@ CONFIGURE_OPTIONS += --with-TERM=screen
 
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/ncurses
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

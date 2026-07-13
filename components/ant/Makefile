@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 
@@ -45,7 +45,17 @@ COMPONENT_BAID=		354230
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
 
-GMAKE=./build.sh
+ANT_BUILD = ./build.sh
+
+COMPONENT_BUILD_ACTION = \
+	cd $(@D); $(ENV) $(COMPONENT_BUILD_ENV) \
+	$(ANT_BUILD) $(COMPONENT_BUILD_ARGS) $(COMPONENT_BUILD_TARGETS)
+
+COMPONENT_INSTALL_ACTION = \
+	cd $(@D); $(ENV) $(COMPONENT_INSTALL_ENV) \
+	$(ANT_BUILD) $(COMPONENT_INSTALL_ARGS) $(COMPONENT_INSTALL_TARGETS)
+
+COMPONENT_TEST_CMD = $(ANT_BUILD)
 
 ANT_ENV+=JAVA_HOME=$(JAVA_HOME)
 
@@ -93,6 +103,7 @@ COMPONENT_TEST_TRANSFORMS +=  \
 	'-e "/^Total time: /d" ' \
 	'-e "/^Created dir: /d" '
 
-REQUIRED_PACKAGES += developer/java/junit
+CBE_PACKAGES += developer/java/junit
+
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93

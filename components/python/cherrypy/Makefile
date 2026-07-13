@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -72,11 +72,11 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += system/core-os
+CBE_PACKAGES += system/core-os
+CBE_PACKAGES += library/python/setuptools_scm
+
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cheroot-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/filelock-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/more_itertools-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/portend-%)
-
-# Setup related components
-REQUIRED_PACKAGES += library/python/setuptools_scm
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

@@ -58,4 +58,3 @@ PRE_CLEAN_ACTION = chmod 755 $(BUILD_DIR)/*/t/uninstall-fail.dir/__inst-dir__/sh
 
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/core-os

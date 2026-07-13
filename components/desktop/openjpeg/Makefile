@@ -82,8 +82,9 @@ COMPONENT_TEST_TRANSFORMS += \
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/${UPSTREAMTESTS}results-all.master
 
-REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/lcms2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

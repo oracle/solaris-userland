@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 # The Makefile of this component does not support multiple build jobs.
@@ -112,11 +112,12 @@ infiniband-diags:	libibverbs opensm
 
 FORCE:
 
-REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += runtime/tcl-8
-REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

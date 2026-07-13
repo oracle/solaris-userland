@@ -116,6 +116,5 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += developer/macro/gnu-m4
 REQUIRED_PACKAGES += system/library
-REQUIRED_PACKAGES += system/library/bison-runtime
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

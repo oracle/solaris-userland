@@ -62,4 +62,6 @@ install:	$(INSTALL_32_and_64)
 	$(MKDIR) -p $(PROTOUSRSHAREDOCDIR); \
 	$(CP) -r doc/html $(PROTOUSRSHAREDOCDIR)
 
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/devinfo
+REQUIRED_PACKAGES += system/library/libc

@@ -67,6 +67,8 @@ CONFIGURE_OPTIONS += -Ddemo-agent=false
 CONFIGURE_OPTIONS.32 += -Dintrospection=false
 
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += library/json-glib
+REQUIRED_PACKAGES += library/libsoup-3
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

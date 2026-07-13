@@ -51,6 +51,6 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "1,/^\#\# Test results. \#\#/d"' \
         '-e "/^make/d"'
 
-REQUIRED_PACKAGES += developer/macro/gnu-m4
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += developer/macro/gnu-m4
 REQUIRED_PACKAGES += shell/ksh93

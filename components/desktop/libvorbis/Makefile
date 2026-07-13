@@ -51,6 +51,9 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/Testing/p" ' \
         '-e "/ok/p" '
 
+CBE_PACKAGES += developer/documentation-tool/doxygen
+
 REQUIRED_PACKAGES += codec/libogg
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

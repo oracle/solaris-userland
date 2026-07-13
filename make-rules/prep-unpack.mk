@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 UNPACK =		$(WS_TOOLS)/userland-unpack
@@ -73,15 +73,15 @@ $$(UNPACK_STAMP$(1)):	$$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)) download
 
 unpack::	$$(UNPACK_STAMP$(1))
 
-REQUIRED_PACKAGES += archiver/gnu-tar
-REQUIRED_PACKAGES += compress/bzip2
-REQUIRED_PACKAGES += compress/gzip
-REQUIRED_PACKAGES += compress/7zip
-REQUIRED_PACKAGES += compress/unzip
-REQUIRED_PACKAGES += compress/xz
-REQUIRED_PACKAGES += compress/zip
-REQUIRED_PACKAGES += developer/java/jdk-8
-REQUIRED_PACKAGES += runtime/ruby
+CBE_PACKAGES += archiver/gnu-tar
+CBE_PACKAGES += compress/bzip2
+CBE_PACKAGES += compress/gzip
+CBE_PACKAGES += compress/7zip
+CBE_PACKAGES += compress/unzip
+CBE_PACKAGES += compress/xz
+CBE_PACKAGES += compress/zip
+CBE_PACKAGES += developer/java/jdk-8
+CBE_PACKAGES += runtime/ruby
 endif
 endef
 

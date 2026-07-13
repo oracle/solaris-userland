@@ -50,5 +50,8 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/Timeout:/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
-REQUIRED_PACKAGES += image/library/libpng16
+CBE_PACKAGES += image/library/libpng16
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

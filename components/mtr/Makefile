@@ -47,4 +47,6 @@ COMPONENT_PRE_CONFIGURE_ACTION += (cd $(SOURCE_DIR); ./bootstrap.sh)
 
 REQUIRED_PACKAGES += library/jansson
 REQUIRED_PACKAGES += library/ncurses
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

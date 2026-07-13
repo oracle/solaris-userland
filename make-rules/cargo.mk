@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 #
 # Rules and Macros for building open source software written in Rust and using
@@ -135,5 +135,5 @@ parfait:
 	$(MAKE) PARFAIT_BUILD=yes parfait
 endif
 
-REQUIRED_PACKAGES +=    developer/rust/cargo
-REQUIRED_PACKAGES +=    developer/rust/rustc
+CBE_PACKAGES +=    developer/rust/cargo
+CBE_PACKAGES +=    developer/rust/rustc

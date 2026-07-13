@@ -69,6 +69,9 @@ CONFIGURE_OPTIONS  += --without-qt
 CONFIGURE_OPTIONS  += WX_CONFIG="$(USRBINDIR64)/wx-config"
 CONFIGURE_OPTIONS  += --without-libcerf
 
+CBE_PACKAGES += system/library/fontconfig
+CBE_PACKAGES += system/library/freetype-2
+
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += image/library/libwebp
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
@@ -84,12 +87,11 @@ REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/lua
-REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/font/truetype/liberation
 REQUIRED_PACKAGES += system/font/xorg/xorg-core
-REQUIRED_PACKAGES += system/library/fontconfig
-REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11

@@ -63,4 +63,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Test results/p" ' \
 	'-e "/successful/p" '
 
-REQUIRED_PACKAGES += text/locale
+CBE_PACKAGES += text/locale
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

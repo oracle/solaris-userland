@@ -49,8 +49,11 @@ CONFIGURE_OPTIONS += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
 # for the tests
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
+CBE_PACKAGES += text/gnu-gettext
+
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libproxy
-REQUIRED_PACKAGES += text/gnu-gettext
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

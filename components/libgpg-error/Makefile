@@ -65,6 +65,8 @@ include ../../make-rules/shared-targets.mk
 # does not respect our PIE config so we need to work around it
 COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
 
-REQUIRED_PACKAGES += shell/ksh93
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

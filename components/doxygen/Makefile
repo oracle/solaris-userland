@@ -90,8 +90,11 @@ COMPONENT_SYSTEM_TEST_TARGETS =
 COMPONENT_POST_INSTALL_ACTION += \
 	cd $(PROTO_DIR) ; $(UNPACK) ../../../$(COMPONENT_ARCHIVE_1)
 
-REQUIRED_PACKAGES += developer/lexer/flex
-REQUIRED_PACKAGES += developer/parser/bison
+CBE_PACKAGES += developer/lexer/flex
+CBE_PACKAGES += developer/parser/bison
+
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

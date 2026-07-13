@@ -74,4 +74,6 @@ COMPONENT_TEST_TRANSFORMS += '-n -e "/^Checking/p" '
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libtiff
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

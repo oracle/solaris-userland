@@ -133,13 +133,15 @@ endif
 
 COMPONENT_INSTALL_ENV += INSTALL_ROOT=$(PROTO_DIR)
 
+CBE_PACKAGES += library/desktop/gstreamer-1
+CBE_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
+CBE_PACKAGES += system/core-os
+
 REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gstreamer-1
-REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango
@@ -149,7 +151,8 @@ REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
-REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2

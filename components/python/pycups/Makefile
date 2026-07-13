@@ -65,7 +65,9 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)
 
+CBE_PACKAGES += print/cups
 
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += library/print/cups-libs
-REQUIRED_PACKAGES += print/cups
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

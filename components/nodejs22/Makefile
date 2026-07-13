@@ -130,13 +130,15 @@ COMPONENT_POST_INSTALL_ACTION+= \
 	elfedit -e 'dyn:runpath $$ORIGIN/../lib/$(MACH64)' \
 	-e 'dyn:rpath $$ORIGIN/../lib/$(MACH64)' $(NODE_PROTO_DIR)/bin/node
 
-REQUIRED_PACKAGES+=	system/core-os
-REQUIRED_PACKAGES+=	system/library/math
-REQUIRED_PACKAGES+=	system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES+=	system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES+=	library/icu
-REQUIRED_PACKAGES+=	library/nghttp2
-REQUIRED_PACKAGES+=	library/security/openssl-3
-REQUIRED_PACKAGES+=	library/zlib
-REQUIRED_PACKAGES+=	library/libcares
-REQUIRED_PACKAGES+=	library/libuv
+REQUIRED_PACKAGES.i386 += library/icu
+REQUIRED_PACKAGES.i386 += library/libcares
+REQUIRED_PACKAGES.i386 += library/libuv
+REQUIRED_PACKAGES.i386 += library/nghttp2
+REQUIRED_PACKAGES.i386 += library/security/openssl-3
+REQUIRED_PACKAGES.i386 += library/zlib
+REQUIRED_PACKAGES.i386 += system/core-os
+REQUIRED_PACKAGES.i386 += system/library
+REQUIRED_PACKAGES.i386 += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES.i386 += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES.i386 += system/library/libc
+REQUIRED_PACKAGES.i386 += system/library/math

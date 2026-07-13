@@ -60,3 +60,4 @@ REQUIRED_PACKAGES += library/python/argcomplete
 REQUIRED_PACKAGES += library/python/packaging-$(PYV)
 REQUIRED_PACKAGES += library/python/platformdirs-$(PYV)
 REQUIRED_PACKAGES += library/python/userpath
+REQUIRED_PACKAGES += runtime/python-313

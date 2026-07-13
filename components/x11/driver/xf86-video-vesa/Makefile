@@ -48,5 +48,7 @@ LD_OPTIONS += \
         -R$(X11_SERVERMODS_DIR) \
         -lpciaccess -lshadow
 
-REQUIRED_PACKAGES += diagnostic/scanpci
-REQUIRED_PACKAGES += x11/server/xorg
+REQUIRED_PACKAGES.i386 += diagnostic/scanpci
+REQUIRED_PACKAGES.i386 += system/library
+REQUIRED_PACKAGES.i386 += system/library/libc
+REQUIRED_PACKAGES.i386 += x11/server/xorg

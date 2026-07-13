@@ -58,4 +58,6 @@ COMPONENT_SYSTEM_TEST_TARGETS =
 # Get wdiff from /usr/bin
 COMPONENT_SYSTEM_TEST_ENV +=   PATH="$(USRBINDIR)"
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += text/gnu-diffutils

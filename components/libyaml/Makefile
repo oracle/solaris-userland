@@ -42,3 +42,6 @@ COMPONENT_BAID=		163198
 COMPONENT_BUGDB=        library/libyaml
 
 include $(WS_MAKE_RULES)/common.mk
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

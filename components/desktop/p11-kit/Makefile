@@ -76,8 +76,11 @@ COMPONENT_TEST_TRANSFORMS += \
 # Avoid failures for users using csh or tcsh as their shell
 COMPONENT_TEST_ENV += SHELL=/bin/sh
 
-REQUIRED_PACKAGES += developer/build/gnu-make
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc 
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += library/libxslt
+
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/libtasn1
-REQUIRED_PACKAGES += library/libxslt
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

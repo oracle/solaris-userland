@@ -125,14 +125,16 @@ CONFIGURE_OPTIONS +=	--enable-ignore-dns-errors
 CONFIGURE_OPTIONS +=	--without-ntpsnmpd
 CONFIGURE_OPTIONS +=	--disable-problem-tests
 
+CBE_PACKAGES += service/network/dns/mdns
+
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/libedit
 REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += $(PERL_PKG)
-# Following line could be safely removed with a new NTP uprev.
-REQUIRED_PACKAGES += service/network/dns/mdns
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/library/smf
 REQUIRED_PACKAGES += system/library/security/crypto
+REQUIRED_PACKAGES += system/library/smf
 REQUIRED_PACKAGES += system/network/avahi

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 #
@@ -517,12 +517,25 @@ RESOLVE_DEPS=$(BUILD_DIR)/resolve.deps
 
 # Construct a list of packages which will be considered while looking for
 # package dependencies (see pkgdepend(1) resolve -e).
-$(RESOLVE_DEPS):	$(MAKEFILE_PREREQ) | $(BUILD_DIR)
-	printf "%s\n" $(REQUIRED_PACKAGES:%=/%) | sort -u >$@
+RESOLVE_DEPS_PACKAGES = $(REQUIRED_PACKAGES) $(REQUIRED_PACKAGES.$(MACH))
 
-# resolve the dependencies all at once
+$(RESOLVE_DEPS):	$(MAKEFILE_PREREQ) | $(BUILD_DIR)
+	if [ -n "$(strip $(RESOLVE_DEPS_PACKAGES))" ]; then \
+		printf "%s\n" $(RESOLVE_DEPS_PACKAGES:%=/%) | sort -u >$@; \
+	else \
+		$(TOUCH) $@; \
+	fi
+
+# Resolve dependencies all at once.  When resolve.deps has package
+# patterns, -e limits resolution to those installed packages.  When there are
+# no external package patterns, -S still resolves dependencies between the
+# manifests being processed without scanning all installed packages.
 $(RESOLVED) &:	$(DEPENDED) $(RESOLVE_DEPS)
-	$(PKGDEPEND) resolve $(RESOLVE_DEPS:%=-e %) -m $(DEPENDED)
+	if [ -s $(RESOLVE_DEPS) ]; then \
+		$(PKGDEPEND) resolve $(RESOLVE_DEPS:%=-e %) -m $(DEPENDED); \
+	else \
+		$(PKGDEPEND) resolve -S -m $(DEPENDED); \
+	fi
 ifneq ($(strip $(POSTRESOLVE_TRANSFORMS)),)
 	for manifest in $(RESOLVED) ; do \
 		$(MV) $${manifest} $${manifest}.raw ; \
@@ -533,17 +546,33 @@ endif
 
 #
 # Generate a set of REQUIRED_PACKAGES based on what is needed to for pkgdepend
-# to resolve properly.  Automatically append this to your Makefile for the truly
-# lazy among us.  This is only a piece of the REQUIRED_PACKAGES puzzle.
-# You must still include packages for tools you build and test with.
+# to resolve properly. Automatically replace the REQUIRED_PACKAGES block in
+# Makefile.
 #
+REQUIRED_PACKAGES_DEPEND =	$(BUILD_DIR)/required-packages.depend
+
+ifneq ($(strip $(BUILD_ARCH)),$(MACH))
 REQUIRED_PACKAGES::
-	$(RM) $(RESOLVED)
-	$(GMAKE) RESOLVE_DEPS= $(RESOLVED)
-	@echo "# Auto-generated contents below.  Please manually verify and remove this comment" >>Makefile
-	@set -o pipefail; $(PKGMOGRIFY) $(WS_TRANSFORMS)/$@ $(RESOLVED) | \
-		$(GSED) -e '/^[\t ]*$$/d' -e '/^#/d' | sort -u >>Makefile
-	@echo "*** Please edit your Makefile and verify the new content at the end ***"
+	@printf 'Not available for %s\n' '$(MACH)'
+else
+REQUIRED_PACKAGES::
+	$(RM) $(RESOLVE_DEPS) $(RESOLVED) $(REQUIRED_PACKAGES_DEPEND) $(REQUIRED_PACKAGES_DEPEND).res
+	# Use the generated dependency manifest, not the resolved manifest:
+	# $(RESOLVED) also contains explicit depend actions copied from *.p5m.
+	$(GMAKE) RESOLVE_DEPS= SKIP_REQUIRED_PACKAGES_CHECK= $(DEPENDED)
+	$(GSED) -n '/^set name=variant.arch /p; /^set name=pkg.fmri /p; /^file /p; /^link /p; /^hardlink /p; /^depend /{/fmri=__TBD/p;}' $(DEPENDED) > \
+	    $(REQUIRED_PACKAGES_DEPEND)
+	if [ -s $(REQUIRED_PACKAGES_DEPEND) ]; then \
+		$(PKGDEPEND) resolve -m $(REQUIRED_PACKAGES_DEPEND); \
+	else \
+		# pkgdepend resolve hangs on an empty input file. \
+		$(TOUCH) $(REQUIRED_PACKAGES_DEPEND).res; \
+	fi
+	set -o pipefail; $(PKGMOGRIFY) $(WS_TRANSFORMS)/$@ \
+	    $(REQUIRED_PACKAGES_DEPEND).res | \
+		$(GSED) -e '/^[\t ]*$$/d' -e '/^#/d' | \
+		$(WS_TOOLS)/update-required-packages Makefile
+endif
 
 # lint the manifests all at once
 $(BUILD_DIR)/.linted-$(MACH):	$(RESOLVED)

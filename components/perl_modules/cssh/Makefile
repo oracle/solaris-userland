@@ -60,7 +60,9 @@ test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/perl-x11-protocol-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/perl-tk-5%)
-REQUIRED_PACKAGES += shell/ksh93
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/perl-x11-protocol-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/perl-tk-5%)
+
+REQUIRED_PACKAGES += runtime/perl-538
+REQUIRED_PACKAGES += runtime/perl-542
 REQUIRED_PACKAGES += system/core-os

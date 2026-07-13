@@ -58,7 +58,8 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)
 
+CBE_PACKAGES += library/security/openssl-3
+
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += library/python/typing-extensions-311
-REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += system/library

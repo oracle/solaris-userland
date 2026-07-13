@@ -59,13 +59,16 @@ CONFIGURE_OPTIONS += --enable-logging
 CONFIGURE_OPTIONS += LUIT=$(USRBINDIR)/luit
 
 # xterm uses desktop-file-install
-REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
-# xterm uses ncurses/term.h
-REQUIRED_PACKAGES += library/ncurses
+CBE_PACKAGES += desktop/xdg/desktop-file-utils
+CBE_PACKAGES += library/ncurses
+CBE_PACKAGES += terminal/luit
+CBE_PACKAGES += text/groff
+
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
-REQUIRED_PACKAGES += terminal/luit
-REQUIRED_PACKAGES += text/groff
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext

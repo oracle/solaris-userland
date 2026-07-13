@@ -46,8 +46,11 @@ CONFIGURE_OPTIONS += -Dlib_man_suffix=3xcomposite
 
 LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile
 
-REQUIRED_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/library/libxext
+CBE_PACKAGES += x11/library/libxfixes
+CBE_PACKAGES += x11/library/libxrender
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxext
-REQUIRED_PACKAGES += x11/library/libxfixes
-REQUIRED_PACKAGES += x11/library/libxrender

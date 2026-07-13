@@ -88,8 +88,10 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+CBE_PACKAGES += system/library/math
 
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += system/library
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/libc

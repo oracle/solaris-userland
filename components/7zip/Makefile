@@ -74,5 +74,7 @@ test:	$(NO_TESTS)
 system-test:	$(NO_TESTS)
 COMPONENT_TEST_CMD = true
 
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

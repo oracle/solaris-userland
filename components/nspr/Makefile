@@ -59,3 +59,6 @@ COMPONENT_TEST_TRANSFORMS += '-e "/^END/d" '
 COMPONENT_TEST_TRANSFORMS += '-e "s/ ([012][0-9]:[0-5][0-9]:[0-5][0-9])//g" '
 
 include $(WS_MAKE_RULES)/common.mk
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

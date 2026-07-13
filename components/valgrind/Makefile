@@ -83,7 +83,8 @@ COMPONENT_TEST_TARGETS = regtest
 COMPONENT_TEST_TRANSFORMS += \
   '-e "/^\.\.\./d" -e "/^make\[/d" -e "1,/^== / d"'
 
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += system/library
-REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES.i386 += $(PERL_PKG)
+REQUIRED_PACKAGES.i386 += runtime/python-311
+REQUIRED_PACKAGES.i386 += shell/ksh93
+REQUIRED_PACKAGES.i386 += system/library
+REQUIRED_PACKAGES.i386 += system/library/libc

@@ -41,12 +41,17 @@ include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS  +=		--localedir=$(CONFIGURE_LOCALEDIR)
 
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+CBE_PACKAGES += system/library/math
+
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES.sparc += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

@@ -205,9 +205,22 @@ continually hammer on the SCM repo for that component. You need to define
 hash for this tarball, but rather than using COMPONENT_ARCHIVE_HASH, use
 scm specific GIT_HASH/HG_HASH/SVN_HASH.
 
-* REQUIRED_PACKAGES is a list of packages required to build or run the
-  component and its tests; it includes "system/library" and
-  "system/library/libc" by default.
+* REQUIRED_PACKAGES is a list of packages required to publish an already
+  built component.  It is the list of packages 'pkgdepend resolve' needs in
+  order to find all dependencies.  The list can be created or updated via
+  'gmake REQUIRED_PACKAGES'.
+
+* CBE_PACKAGES is a list of packages required to build or test the component,
+  but which cannot be determined by pkgdepend automatically.  For example,
+  this can include build tools and test-only dependencies.  Some common
+  CBE_PACKAGES are listed in the make-rules files and in
+  components/meta-packages/developer-opensolaris-userland/Makefile.
+
+  Architecture-specific dependencies can be added with the .i386 or .sparc
+  suffix, for example REQUIRED_PACKAGES.i386 or CBE_PACKAGES.sparc.
+
+The developer/opensolaris/userland meta-package contains the union of both
+REQUIRED_PACKAGES and CBE_PACKAGES lists from all components.
 
 The following are basic variables that must be set before including common.mk
 if overriding the default:
@@ -252,7 +265,7 @@ if overriding the default:
   everything gets rebuilt. Sometimes it is handy to turn off this dependency.
   For example, if you are working on 'gmake publish' (but works for other
   targets too) and do not want to have your component rebuilt from scratch
-  every time you change REQUIRED_PACKAGES, you can do
+  you can do
   $ gmake MAKEFILE_PREREQ= publish
 
 * GENERATE_TRANSFORM list of pkgmogrify transforms applied during

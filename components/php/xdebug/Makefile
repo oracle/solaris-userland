@@ -48,6 +48,8 @@ include $(PHP_TOP_DIR)/php.mk
 CONFIGURE_OPTIONS +=	--enable-xdebug
 
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/php-82
 REQUIRED_PACKAGES += web/php-83

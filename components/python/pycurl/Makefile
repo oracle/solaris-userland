@@ -80,6 +80,8 @@ venv-test:		$(TEST_64)
 
 venv-system-test:	$(SYSTEM_TEST_64)
 
-
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += library/security/openssl-3
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += web/curl

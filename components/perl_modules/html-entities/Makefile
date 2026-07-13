@@ -62,5 +62,10 @@ test:          $(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/html-tagset-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/html-tagset-5%)
+
+REQUIRED_PACKAGES += runtime/perl-538
+REQUIRED_PACKAGES += runtime/perl-542
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

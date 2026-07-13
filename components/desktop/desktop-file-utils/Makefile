@@ -44,10 +44,13 @@ TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
-REQUIRED_PACKAGES += developer/build/autoconf
-REQUIRED_PACKAGES += developer/build/automake
-REQUIRED_PACKAGES += developer/build/gnu-make
-REQUIRED_PACKAGES += developer/build/pkg-config
+CBE_PACKAGES += developer/build/autoconf
+CBE_PACKAGES += developer/build/automake
+CBE_PACKAGES += developer/build/gnu-make
+CBE_PACKAGES += developer/build/pkg-config
+
 REQUIRED_PACKAGES += library/glib2
-# Needed for minimal-fs dependency in desktop-mime-cache.xml SMF manifest:
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

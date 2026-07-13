@@ -47,6 +47,9 @@ CONFIGURE_OPTIONS += --with-libuuid
 
 LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile
 
-REQUIRED_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/library/xtrans
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libice
-REQUIRED_PACKAGES += x11/library/xtrans

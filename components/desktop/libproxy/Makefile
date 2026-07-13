@@ -80,20 +80,20 @@ COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_POST_INSTALL_ACTION=	\
 	[ $(BITS) -eq 64 ] && $(PYTHON) -m py_compile $(PROTO_DIR)/$(PYTHON_LIB)/libproxy.py || true
 
-REQUIRED_PACKAGES += developer/build/autoconf
-REQUIRED_PACKAGES += developer/build/automake
-REQUIRED_PACKAGES += developer/build/cmake
-REQUIRED_PACKAGES += developer/build/gnu-make
-REQUIRED_PACKAGES += developer/build/pkg-config
-REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/libdbus
-
 # Remove any color coding from the test output.
 COMPONENT_TEST_ARGS += COLOR=no
 # get rid of the timestamps from the test results
 COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9] sec//" '
 COMPONENT_TEST_TRANSFORMS += '-e "/Total Test time/d" '
+
+CBE_PACKAGES += developer/build/autoconf
+CBE_PACKAGES += developer/build/automake
+CBE_PACKAGES += developer/build/gnu-make
+CBE_PACKAGES += runtime/python-311
+
+REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/libdbus

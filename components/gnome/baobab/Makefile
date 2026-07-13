@@ -49,12 +49,15 @@ CFLAGS += -Wno-incompatible-pointer-types
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-REQUIRED_PACKAGES += developer/vala
-REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
+CBE_PACKAGES += developer/vala
+CBE_PACKAGES += gnome/gsettings-desktop-schemas
+CBE_PACKAGES += library/desktop/gdk-pixbuf
+
 REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

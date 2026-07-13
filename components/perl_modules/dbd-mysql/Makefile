@@ -186,8 +186,12 @@ COMPONENT_POST_TEST_ACTION = ( \
 $(LICENSE): $(LICENSE).template
 	$(PERL) -pe 's/COMPONENT_VERSION/$(COMPONENT_VERSION)/g' "$<" > "$@"
 
-REQUIRED_PACKAGES += database/mysql-84
+CBE_PACKAGES += database/mysql-84
+CBE_PACKAGES += library/perl-5/database
+
 REQUIRED_PACKAGES += database/mysql-84/library
-REQUIRED_PACKAGES += library/perl-5/database
-REQUIRED_PACKAGES += system/library/c++-runtime
+REQUIRED_PACKAGES += runtime/perl-538
+REQUIRED_PACKAGES += runtime/perl-542
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

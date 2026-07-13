@@ -92,4 +92,7 @@ COMPONENT_TEST_TRANSFORMS += \
 PKG_MACROS +=	PYVER=$(PYTHON_VERSION)
 
 # Ninja is needed at runtime, including when running tests, but not to build
-REQUIRED_PACKAGES += developer/build/ninja
+CBE_PACKAGES += developer/build/ninja
+
+REQUIRED_PACKAGES += library/python/setuptools-311
+REQUIRED_PACKAGES += runtime/python-311

@@ -50,12 +50,13 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 # '#!/usr/bin/env python3' so turn it into '#!/usr/bin/python3.11'
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-tweaks
 
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gnome-settings-daemon
 REQUIRED_PACKAGES += gnome/gnome-shell
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += gnome/window-manager/mutter
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/libnotify

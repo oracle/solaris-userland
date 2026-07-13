@@ -81,12 +81,15 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/TOTAL/p" ' \
 	'-e "/ERROR/p" '
 
-REQUIRED_PACKAGES += compress/zstd
+CBE_PACKAGES += compress/zstd
+CBE_PACKAGES += library/security/trousers
+CBE_PACKAGES += library/zlib
+
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/security/nettle
-REQUIRED_PACKAGES += library/security/trousers
-REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/math

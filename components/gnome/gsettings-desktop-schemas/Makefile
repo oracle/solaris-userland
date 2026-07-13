@@ -51,5 +51,6 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
-REQUIRED_PACKAGES += system/core-os
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += system/core-os
+

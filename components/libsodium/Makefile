@@ -41,4 +41,5 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_TEST_TRANSFORMS += '-e "/^make/d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^  CC/d"'
 
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -50,4 +50,6 @@ PATCH_LEVEL =		0
 # Just get stuff from the build directory.
 PKG_PROTO_DIRS += $(BUILD_DIR_64)
 
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/datalink
+REQUIRED_PACKAGES += system/library/libc

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -67,11 +67,12 @@ test:		$(TEST_64)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+CBE_PACKAGES += system/core-os
+
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
-REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/linker
 REQUIRED_PACKAGES += system/management/augeas

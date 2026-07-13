@@ -85,3 +85,5 @@ REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

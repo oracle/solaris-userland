@@ -166,5 +166,7 @@ $(BUILD_DIR)/wanboot-amd64/.installed: COMPONENT_POST_INSTALL_ACTION = $(COMPONE
 # Some static libraries are delivered, avoid manifest cleanup.
 MANIFEST_CLEANUP_TRANSFORM=
 
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

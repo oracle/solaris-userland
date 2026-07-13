@@ -59,15 +59,18 @@ CONFIGURE_OPTIONS += --disable-gtk # don't build obsolete gtk2 support
 CONFIGURE_OPTIONS += --enable-gtk3
 CONFIGURE_OPTIONS += --with-pic
 
-REQUIRED_PACKAGES += codec/libogg
+CBE_PACKAGES += codec/libogg
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += developer/vala
+CBE_PACKAGES += web/browser/lynx
+
 REQUIRED_PACKAGES += codec/libvorbis
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/browser/lynx
+REQUIRED_PACKAGES += library/libtool/libltdl
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES.sparc += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11

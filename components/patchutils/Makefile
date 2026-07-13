@@ -64,6 +64,10 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|$(MACH64)|\\$$(MACH64)|g"' \
 	'-e "1,3s|==*|=====================================================================|"'
 
+CBE_PACKAGES += text/gnu-diffutils
+
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += text/gnu-diffutils
-REQUIRED_PACKAGES += text/gnu-patch
+REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -62,11 +62,11 @@ COMPONENT_TEST_TRANSFORMS += \
 
 PKG_MACROS +=	PYVER=$(PYTHON_VERSION)
 
+# Testing related dependencies
+CBE_PACKAGES += image/graphviz
+CBE_PACKAGES += library/python/pygments
+
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += web/browser/lynx
-
-# Testing related dependencies
-REQUIRED_PACKAGES += image/graphviz
-REQUIRED_PACKAGES += library/python/pygments

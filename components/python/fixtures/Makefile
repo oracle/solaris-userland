@@ -57,4 +57,6 @@ test:		$(TEST_NO_ARCH)
 system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 # Test related dependencies
-REQUIRED_PACKAGES += library/python/testtools
+CBE_PACKAGES += library/python/testtools
+
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

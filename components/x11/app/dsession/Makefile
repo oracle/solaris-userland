@@ -46,4 +46,6 @@ COMPONENT_BUILD_ENV +=		LD="$(CC)"
 COMPONENT_INSTALL_ENV += 	INSTALL="$(INSTALL)"
 COMPONENT_INSTALL_ENV += 	PREFIX="$(USRDIR)"
 
-REQUIRED_PACKAGES += diagnostic/scanpci
+REQUIRED_PACKAGES.sparc += diagnostic/scanpci
+REQUIRED_PACKAGES.sparc += system/library
+REQUIRED_PACKAGES.sparc += system/library/libc

@@ -47,11 +47,14 @@ CONFIGURE_OPTIONS += -Dbuild-documentation=true
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
-REQUIRED_PACKAGES += image/graphviz
+CBE_PACKAGES += developer/documentation-tool/doxygen
+CBE_PACKAGES += image/graphviz
+CBE_PACKAGES += library/libxslt
+
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/c++/sigcpp
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += $(PERL_PKG) 
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

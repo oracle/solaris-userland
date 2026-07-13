@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -56,7 +56,7 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/django-%)
+CBE_PACKAGES += library/python/pytest-django
 
-# Testing related components
-REQUIRED_PACKAGES += library/python/pytest-django
+REQUIRED_PACKAGES += $(PYVS:%=library/python/django-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

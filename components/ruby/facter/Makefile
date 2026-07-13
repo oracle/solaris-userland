@@ -83,9 +83,9 @@ test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
+CBE_PACKAGES += system/core-os
+CBE_PACKAGES += library/ruby/thor
+CBE_PACKAGES += library/ruby/hocon
+CBE_PACKAGES += library/ruby/ffi
 
 REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += library/ruby/thor
-REQUIRED_PACKAGES += library/ruby/hocon
-REQUIRED_PACKAGES += library/ruby/ffi

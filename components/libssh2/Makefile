@@ -83,3 +83,5 @@ COMPONENT_SYSTEM_TEST_ARGS = -f $(BUILD_DIR_$(BITS))/tests/Makefile-system-test
 
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

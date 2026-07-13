@@ -83,8 +83,12 @@ $(BUILD_DIR_$(MK_BITS))/.configured:	CONFIGURE_OPTIONS += --with-bzip2
 
 COMPONENT_INSTALL_ARGS += pkgconfigdir="$(DESTDIR)/usr/share/pkgconfig"
 
+CBE_PACKAGES += x11/header/x11-protocols
+
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/freetype-2
-REQUIRED_PACKAGES += x11/header/x11-protocols
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libfontenc

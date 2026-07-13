@@ -46,10 +46,10 @@ include $(WS_MAKE_RULES)/common.mk
 CONFIGURE_OPTIONS += --enable-static=no
 CONFIGURE_OPTIONS += --with-x
 
-REQUIRED_PACKAGES += developer/build/automake
-REQUIRED_PACKAGES += developer/build/gnu-make
-REQUIRED_PACKAGES += developer/build/pkg-config
-REQUIRED_PACKAGES += text/gnu-grep
+CBE_PACKAGES += text/gnu-grep
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/xcb-util

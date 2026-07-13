@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 # Puppet modules do not have any concept of 'build' so make this a no-op
@@ -48,4 +48,4 @@ $(BUILD_DIR)/%/.installed:      $(BUILD_DIR)/%/.built
 	$(COMPONENT_POST_INSTALL_ACTION)
 	$(TOUCH) $@
 
-REQUIRED_PACKAGES += system/management/puppet
+CBE_PACKAGES += system/management/puppet

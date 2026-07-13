@@ -47,7 +47,9 @@ FIX_PC_FILES = glu.pc.in
 CONFIGURE_OPTIONS += -Dgl_provider=gl
 
 REQUIRED_PACKAGES += service/opengl/ogl-select
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/mesa

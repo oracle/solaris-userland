@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 #
 # Rules and Macros for building open source software that builds with
@@ -176,4 +176,4 @@ parfait:
 	$(MAKE) PARFAIT_BUILD=yes parfait
 endif
 
-REQUIRED_PACKAGES += developer/build/ninja
+CBE_PACKAGES += developer/build/ninja

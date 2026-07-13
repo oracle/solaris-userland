@@ -69,4 +69,6 @@ REQUIRED_PACKAGES += library/apr-util-1
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += runtime/lua
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += web/curl

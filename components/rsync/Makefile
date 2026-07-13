@@ -59,3 +59,5 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/skipped$$/p" '
 
 REQUIRED_PACKAGES += compress/lz4
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

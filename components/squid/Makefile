@@ -68,18 +68,20 @@ CONFIGURE_OPTIONS += --with-build-environment=POSIX_V6_LP64_OFF64
 CONFIGURE_OPTIONS += --disable-arch-native
 CONFIGURE_OPTIONS += PERL=$(PERL)
 
+CBE_PACKAGES += developer/c++/cppunit
+
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += database/berkeleydb-5
-# cppunit is required for testing
-REQUIRED_PACKAGES += developer/c++/cppunit
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/security/nettle
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/library/security/libsasl2

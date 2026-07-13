@@ -66,7 +66,7 @@ $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 	*) exit $$$${status} ;; \
 	esac
 
-REQUIRED_PACKAGES += developer/versioning/subversion
+CBE_PACKAGES += developer/versioning/subversion
 
 endif
 endif

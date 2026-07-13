@@ -73,10 +73,10 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
+CBE_PACKAGES += library/python/beautifulsoup4
+CBE_PACKAGES += library/python/mock
+CBE_PACKAGES += library/python/testtools
+
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/stevedore-%)
-
-# Testing related components
-REQUIRED_PACKAGES += library/python/beautifulsoup4
-REQUIRED_PACKAGES += library/python/mock
-REQUIRED_PACKAGES += library/python/testtools
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

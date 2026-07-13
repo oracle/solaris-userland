@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
@@ -42,11 +42,11 @@ include $(WS_MAKE_RULES)/common.mk
 # Assumes GNU msgfmt & xgettext in PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-REQUIRED_PACKAGES += file/gnu-coreutils
-REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += file/gnu-coreutils
+CBE_PACKAGES += library/desktop/gdk-pixbuf
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/python/pygobject-3-311
 REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += shell/ksh93

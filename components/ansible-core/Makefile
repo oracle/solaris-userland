@@ -69,4 +69,5 @@ REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/jinja2-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += library/python/resolvelib

@@ -92,25 +92,30 @@ COMPONENT_TEST_TRANSFORMS += \
 PYTHON_SCRIPTS += $(PROTO_DIR)$(CONFIGURE_BINDIR.$(BITS))/qpaeq
 
 # qpaeq (equalizer gui) needs Qt4 and PyQt4 so is omitted from p5m for now.
+
+CBE_PACKAGES += library/json-c
+CBE_PACKAGES += library/gmp
+CBE_PACKAGES += text/gnu-gettext
+CBE_PACKAGES += library/desktop/gstreamer-1
+CBE_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
+
 REQUIRED_PACKAGES += codec/speex
 REQUIRED_PACKAGES += library/database/gdbm
 REQUIRED_PACKAGES += library/desktop/orc
 REQUIRED_PACKAGES += library/fftw-3
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libsndfile
 REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += library/gmp
+REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/network/avahi
-REQUIRED_PACKAGES += text/gnu-gettext
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxtst
-REQUIRED_PACKAGES += library/desktop/gstreamer-1
-REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base

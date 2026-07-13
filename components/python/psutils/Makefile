@@ -72,8 +72,10 @@ venv-test:	$(TEST_NO_ARCH)
 
 venv-system-test: $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += image/imagemagick
-REQUIRED_PACKAGES += library/libpaper
+CBE_PACKAGES += image/imagemagick
+CBE_PACKAGES += library/libpaper
+CBE_PACKAGES += library/python/wand
+
 REQUIRED_PACKAGES += library/python/puremagic
 REQUIRED_PACKAGES += library/python/pypdf
-REQUIRED_PACKAGES += library/python/wand
+REQUIRED_PACKAGES += runtime/python-313

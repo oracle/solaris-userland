@@ -69,10 +69,10 @@ test:		$(TEST_64)
 
 system-test:	$(SYSTEM_TEST_64)
 
+CBE_PACKAGES += library/python/mock
+CBE_PACKAGES += library/python/pip
+
 REQUIRED_PACKAGES += $(PYVS:%=library/python/distlib-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/filelock-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/platformdirs-%)
-
-# Testing related components
-REQUIRED_PACKAGES += library/python/mock
-REQUIRED_PACKAGES += library/python/pip
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

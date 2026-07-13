@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 #
@@ -176,13 +176,13 @@ parfait:
 endif
 
 
-REQUIRED_PACKAGES += developer/build/cmake
-REQUIRED_PACKAGES += developer/build/pkg-config
-REQUIRED_PACKAGES += developer/gnu-binutils
-REQUIRED_PACKAGES += system/library
-REQUIRED_PACKAGES += system/linker
+CBE_PACKAGES += developer/build/cmake
+CBE_PACKAGES += developer/build/pkg-config
+CBE_PACKAGES += developer/gnu-binutils
+CBE_PACKAGES += system/library
+CBE_PACKAGES += system/linker
 # Most cmake-based components expect GNU versions of these.
-REQUIRED_PACKAGES += text/gawk
-REQUIRED_PACKAGES += text/gnu-gettext
-REQUIRED_PACKAGES += text/gnu-grep
-REQUIRED_PACKAGES += text/gnu-sed
+CBE_PACKAGES += text/gawk
+CBE_PACKAGES += text/gnu-gettext
+CBE_PACKAGES += text/gnu-grep
+CBE_PACKAGES += text/gnu-sed

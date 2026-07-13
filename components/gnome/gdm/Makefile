@@ -86,7 +86,15 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D $(COMPONENT_DIR)/files/org.gnome.login-screen.gschema.override \
                 $(PROTO_DIR)/usr/share/glib-2.0/schemas/org.gnome.login-screen.gschema.override;
 
-REQUIRED_PACKAGES += developer/documentation-tool/itstool
+CBE_PACKAGES += developer/documentation-tool/itstool
+CBE_PACKAGES += library/gnome/dconf
+CBE_PACKAGES += library/gnome/yelp-tools
+CBE_PACKAGES += system/io/audio
+CBE_PACKAGES += x11/server/xorg
+CBE_PACKAGES += x11/session/xinit
+CBE_PACKAGES += developer/test/check
+CBE_PACKAGES += library/libxml2
+
 REQUIRED_PACKAGES += file/gnu-coreutils
 REQUIRED_PACKAGES += gnome/accessibility/orca
 REQUIRED_PACKAGES += gnome/gnome-session
@@ -97,15 +105,16 @@ REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gnome/dconf
-REQUIRED_PACKAGES += library/gnome/yelp-tools
 REQUIRED_PACKAGES += library/xdg/consolekit
+REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/io/audio
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/accountsservice
 REQUIRED_PACKAGES += system/library/dbus
 REQUIRED_PACKAGES += system/library/devinfo
 REQUIRED_PACKAGES += system/library/fontconfig
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += terminal/xterm
 REQUIRED_PACKAGES += x11/keyboard/xkb-utilities
@@ -113,11 +122,5 @@ REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxau
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxdmcp
-REQUIRED_PACKAGES += x11/server/xorg
 REQUIRED_PACKAGES += x11/server/xserver-common
-REQUIRED_PACKAGES += x11/session/xinit
 REQUIRED_PACKAGES += x11/x11-server-utilities
-
-# Required for testing, not building or running:
-REQUIRED_PACKAGES += developer/test/check
-REQUIRED_PACKAGES += library/libxml2

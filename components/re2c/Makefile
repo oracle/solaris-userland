@@ -59,5 +59,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ERROR:/p" ' \
 	'-e "/SKIP:/p" '
 
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

@@ -217,18 +217,20 @@ PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc-ranlib
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gccgo
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gfortran
 
+CBE_PACKAGES += developer/gcc/gcc-gnat-15
+CBE_PACKAGES += developer/test/dejagnu
+CBE_PACKAGES += runtime/tcl-8
 
 REQUIRED_PACKAGES += compress/zstd
-REQUIRED_PACKAGES += developer/gcc/gcc-gnat-15
-REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/isl
 REQUIRED_PACKAGES += library/mpc
 REQUIRED_PACKAGES += library/mpfr
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/tcl-8
-REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/linker

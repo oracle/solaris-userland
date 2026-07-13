@@ -47,5 +47,8 @@ include $(WS_MAKE_RULES)/x11-component.mk
 COMPONENT_INSTALL_ENV += INSTALL="$(INSTALL)"
 COMPONENT_INSTALL_ENV += libdir="$(USRLIB)"
 
-REQUIRED_PACKAGES += system/library/math
+CBE_PACKAGES += system/library/math
+
+REQUIRED_PACKAGES.sparc += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11

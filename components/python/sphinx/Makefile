@@ -73,11 +73,12 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/babel-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/jinja2-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pygments-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/requests-%)
 REQUIRED_PACKAGES += developer/documentation-tool/docutils
 REQUIRED_PACKAGES += developer/documentation-tool/sphinx/alabaster
+REQUIRED_PACKAGES += library/python/babel-313
+REQUIRED_PACKAGES += library/python/jinja2-313
+REQUIRED_PACKAGES += library/python/packaging-313
+REQUIRED_PACKAGES += library/python/pygments-313
+REQUIRED_PACKAGES += library/python/requests-313
 REQUIRED_PACKAGES += library/python/roman-numerals
+REQUIRED_PACKAGES += runtime/python-313

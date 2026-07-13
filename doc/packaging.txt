@@ -148,11 +148,8 @@ Dependencies Resolved
     The resolution step is also set up to use the -e flag to pkgdepend resolve,
     which limits the set of packages it looks at to resolve the dependencies it
     generated in the previous step.  This makes the resolution step a great deal
-    faster, but requires that you include a static list of these packages in
-    your component Makefile REQUIRED_PACKAGES macro.  You can automatically
-    add REQUIRED_PACKAGES settings for the packages used in dependency
-    resolution by running "gmake REQUIRED_PACKAGES".  Once you have done so,
-    you should manually verify the Makefile additions.
+    faster.  The required dependency list can be refreshed in the component
+    Makefile by running "gmake REQUIRED_PACKAGES".
 
 Manifest Validation
     The resolved manifest(s) and prototype install tree are passed through
@@ -293,13 +290,15 @@ Renames
 
     even though Trunk had 1.2.3.
 
-    REQUIRED_PACKAGES.
-    ------------------
-    If there are other components which do require aaa, then this is a
-    complication. Ideally all such components should change:
+    REQUIRED_PACKAGES and CBE_PACKAGES.
+    -----------------------------------
+    If other components require aaa through REQUIRED_PACKAGES or CBE_PACKAGES,
+    then this is a complication. Ideally all such components should change:
 
     - REQUIRED_PACKAGES += aaa
     + REQUIRED_PACKAGES += bbb
+
+    and similarly for CBE_PACKAGES or architecture-specific variants.
 
     But only at the moment when the CBE receives the new package bbb (not at
     the moment of pushing such change to gate). This is hard to achieve, so
@@ -429,9 +428,11 @@ You can ignore
  - consolidation/userland/userland-incorporation
  - packages which themselves you are marking legacy
 
-You can potentially ignore 'developer/opensolaris/userland'. This package
-contains dependency on all REQUIRED_PACKAGES from all components. You should be
-removing such REQUIRED_PACKAGES while removing the named packages.
+You can potentially ignore developer/opensolaris/userland. This package
+contains dependencies collected from REQUIRED_PACKAGES and CBE_PACKAGES in all
+components. If it is the only remaining user of a package being renamed or
+removed, update the affected component Makefiles so they no longer list that
+package in REQUIRED_PACKAGES or CBE_PACKAGES.
 
 Sadly pkg search is not optimal, so YMMW. Be sure to ask on the mailing list if
 you have troubles.

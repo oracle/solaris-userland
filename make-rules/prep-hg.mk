@@ -79,7 +79,7 @@ $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 	*) exit $$$${status} ;; \
 	esac
 
-REQUIRED_PACKAGES += developer/versioning/mercurial
+CBE_PACKAGES += developer/versioning/mercurial
 
 endif
 endif

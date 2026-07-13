@@ -53,5 +53,6 @@ install:	$(INSTALL_64)
 
 test:		$(NO_TESTS)
 
-
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

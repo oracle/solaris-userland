@@ -347,9 +347,10 @@ COMPONENT_POST_INSTALL_ACTION += \
 republish:
 	$(GMAKE) publish PKGREPO_REMOVE_BEFORE_PUBLISH=yes
 
-
 REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/security/openssl-3
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/security/libsasl2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/network

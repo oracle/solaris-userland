@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS =		64
 CTF_MODE =		off	# Has no effect
@@ -103,10 +103,12 @@ COMPONENT_TEST_TRANSFORMS += \
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/CGI-5%)
+
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/apr-1
 REQUIRED_PACKAGES += library/apr-util-1
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/CGI-5%)
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += web/server/apache-24

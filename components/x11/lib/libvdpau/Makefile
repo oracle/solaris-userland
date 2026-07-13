@@ -47,7 +47,10 @@ CONFIGURE_OPTIONS += -Ddocumentation=false
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
-REQUIRED_PACKAGES += image/graphviz
-REQUIRED_PACKAGES += x11/library/libxext
+CBE_PACKAGES += developer/documentation-tool/doxygen
+CBE_PACKAGES += image/graphviz
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11
+REQUIRED_PACKAGES += x11/library/libxext

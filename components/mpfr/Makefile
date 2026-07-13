@@ -78,6 +78,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/=====/p" ' \
 	'-e "/TOTAL/p" '
 
+CBE_PACKAGES += developer/build/autoconf-archive
+
 REQUIRED_PACKAGES += library/gmp
-# Needed for only running autoreconf during build, not at runtime or to test:
-REQUIRED_PACKAGES += developer/build/autoconf-archive
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

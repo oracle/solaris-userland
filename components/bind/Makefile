@@ -290,15 +290,12 @@ republish:
 
 # Package dependencies.
 # ---------------------
-REQUIRED_PACKAGES += system/library/smf
+CBE_PACKAGES += system/library/smf
 # Service package requires client package for libraries.
-REQUIRED_PACKAGES += network/dns/bind
+CBE_PACKAGES += network/dns/bind
 # libcmocka is used for testing purposes only, not for delivery.
-REQUIRED_PACKAGES += library/libcmocka
+CBE_PACKAGES += library/libcmocka
 
-# Remaining packages are identified by 'gmake REQUIRED_PACKAGES',
-# manually verified. These should also be reflected in `gmake
-# configure` output log.
 REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libedit
 REQUIRED_PACKAGES += library/libidn2
@@ -309,8 +306,7 @@ REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-
-# The following are already identified in ../../make-rules/shared-macros.mk
-# REQUIRED_PACKAGES += system/library
-# REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

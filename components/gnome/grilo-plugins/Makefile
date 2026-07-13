@@ -50,6 +50,8 @@ CONFIGURE_OPTIONS += -Denable-lua-factory=no
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
+CBE_PACKAGES += library/libsoup-3
+
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += library/desktop/gom
 REQUIRED_PACKAGES += library/desktop/grilo
@@ -60,7 +62,8 @@ REQUIRED_PACKAGES += library/gnome/libmediaart
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/liboauth
-REQUIRED_PACKAGES += library/libsoup-3
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/media-player/totem-pl-parser
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/network/avahi

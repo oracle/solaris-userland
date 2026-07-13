@@ -61,6 +61,9 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/Skipped:/p" ' \
         '-e "/Timeout:/p" '
 
-REQUIRED_PACKAGES += diagnostic/scanpci
-REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += x11/library/libpthread-stubs
+CBE_PACKAGES += diagnostic/scanpci
+CBE_PACKAGES += library/desktop/cairo
+CBE_PACKAGES += x11/library/libpthread-stubs
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

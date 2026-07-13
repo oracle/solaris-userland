@@ -63,6 +63,10 @@ install:	$(INSTALL_64)
 
 test:		$(NO_TESTS)
 
-REQUIRED_PACKAGES += library/python/setuptools-rust
+CBE_PACKAGES += library/python/setuptools-rust
+
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

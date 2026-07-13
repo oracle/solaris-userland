@@ -57,7 +57,9 @@ CONFIGURE_OPTIONS += --disable-dependency-tracking
 
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/security/crypto

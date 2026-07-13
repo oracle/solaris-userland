@@ -65,4 +65,7 @@ COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH)
 # original source so that it doesn't get in the way.
 COMPONENT_PREP_ACTION += $(RM) $(@D)/src/jansson_config.h
 
-REQUIRED_PACKAGES += developer/documentation-tool/sphinx
+CBE_PACKAGES += developer/documentation-tool/sphinx
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

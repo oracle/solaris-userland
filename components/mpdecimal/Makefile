@@ -42,4 +42,6 @@ include $(WS_MAKE_RULES)/common.mk
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --disable-cxx
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

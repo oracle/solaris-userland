@@ -51,6 +51,6 @@ build:		$(BUILD_NO_ARCH)
 
 install: $(INSTALL_NO_ARCH)
 
-REQUIRED_PACKAGES += system/management/puppet/puppetlabs-stdlib
+CBE_PACKAGES += system/management/puppet/puppetlabs-stdlib
 
 test:		$(NO_TESTS)

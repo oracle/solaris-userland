@@ -46,3 +46,6 @@ COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 CONFIGURE_OPTIONS += --disable-thread-local-alloc
 
 include $(WS_MAKE_RULES)/common.mk
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

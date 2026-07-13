@@ -56,6 +56,7 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += library/perl-5/xml-parser
-REQUIRED_PACKAGES += text/gnu-gettext
+CBE_PACKAGES += $(PERL_PKG)
+CBE_PACKAGES += library/perl-5/xml-parser
+CBE_PACKAGES += text/gnu-gettext
+

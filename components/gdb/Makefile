@@ -207,17 +207,20 @@ COMPONENT_POST_INSTALL_ACTION += \
 # altering the results of the debugging experiment.
 ASLR_MODE=$(ASLR_DISABLE)
 
+CBE_PACKAGES += library/readline
+CBE_PACKAGES += text/texinfo
+
 REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += compress/zstd
-REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/expat
+REQUIRED_PACKAGES += library/gmp
+REQUIRED_PACKAGES += library/mpfr
 REQUIRED_PACKAGES += library/ncurses
-REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += library/mpfr
-REQUIRED_PACKAGES += text/texinfo

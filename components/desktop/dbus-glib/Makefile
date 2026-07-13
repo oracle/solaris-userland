@@ -59,8 +59,11 @@ CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS += 	--enable-gtk-doc
 CONFIGURE_OPTIONS += 	--enable-tests
 
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += system/library/dbus
+
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += system/library/dbus
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus

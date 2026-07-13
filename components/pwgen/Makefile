@@ -58,4 +58,6 @@ LDFLAGS += -lmd
 IPS_COMPONENT_VERSION=	2.8
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/security/crypto

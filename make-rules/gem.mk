@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 GEM = /usr/ruby/$(RUBY_VERSION)/bin/gem
 
@@ -131,4 +131,4 @@ $(BUILD_DIR)/%/.system-tested:    $(SOURCE_DIR)/.prep
 	$(COMPONENT_SYSTEM_TEST_CLEANUP)
 	$(TOUCH) $@
 
-REQUIRED_PACKAGES += runtime/ruby
+CBE_PACKAGES += runtime/ruby

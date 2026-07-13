@@ -61,8 +61,11 @@ CONFIGURE_OPTIONS +=	--with-gd=$(USRINCDIR)/gd2
 CC += -Du_int64_t=uint64_t
 CONFIGURE_OPTIONS +=	c_cv_type_u_int64_t=yes
 
+CBE_PACKAGES += image/library/libpng16
+
 REQUIRED_PACKAGES += database/berkeleydb-5
-REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += library/gd
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

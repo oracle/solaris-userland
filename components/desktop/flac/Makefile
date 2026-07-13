@@ -59,8 +59,11 @@ CONFIGURE_OPTIONS += --enable-ogg
 
 CXXFLAGS += -fstack-protector-all
 
+CBE_PACKAGES += codec/libvorbis
+
 REQUIRED_PACKAGES += codec/libogg
-REQUIRED_PACKAGES += codec/libvorbis
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

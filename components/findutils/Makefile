@@ -65,8 +65,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^SKIP:/p" ' \
 	'-e "/^\# /p" ' \
 
-# test dependencies:
-REQUIRED_PACKAGES += developer/versioning/git
-REQUIRED_PACKAGES += runtime/python-311
-
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

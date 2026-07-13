@@ -60,7 +60,10 @@ COMPONENT_BUILD_ARGS += STRIP="/bin/true"
 COMPONENT_BUILD_ARGS += CXX="$(CXX)"
 COMPONENT_BUILD_ARGS += CXXFLAGS="$(CXXFLAGS)"
 
-REQUIRED_PACKAGES += system/library/c++-runtime
+CBE_PACKAGES += system/library/c++-runtime
+CBE_PACKAGES += system/library/math
+
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/libc

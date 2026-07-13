@@ -61,3 +61,4 @@ system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/msgpack-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.utils-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

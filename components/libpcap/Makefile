@@ -53,8 +53,10 @@ LDFLAGS += $(CC_BITS)
 
 CONFIGURE_OPTIONS  +=	--disable-dbus
 
-REQUIRED_PACKAGES += developer/lexer/flex
-REQUIRED_PACKAGES += developer/parser/bison
-REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/network/bpf
+CBE_PACKAGES += developer/lexer/flex
+CBE_PACKAGES += developer/parser/bison
+CBE_PACKAGES += system/network/bpf
+
 REQUIRED_PACKAGES += network/open-fabrics
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library

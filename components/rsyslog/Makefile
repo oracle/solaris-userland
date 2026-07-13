@@ -180,16 +180,19 @@ COMPONENT_TEST_TRANSFORMS += '-e "/ERROR/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/TOTAL/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/Testsuite summary/p"'
 
-REQUIRED_PACKAGES += database/mysql-84
+CBE_PACKAGES += database/mysql-84
+CBE_PACKAGES += library/json-c
+CBE_PACKAGES += library/liblogging
+
 REQUIRED_PACKAGES += database/mysql-84/library
 REQUIRED_PACKAGES += library/gnutls-3
-REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libestr
-REQUIRED_PACKAGES += library/liblogging
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/curl

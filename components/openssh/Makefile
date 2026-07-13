@@ -123,12 +123,16 @@ COMPONENT_POST_INSTALL_ACTION += \
       $(CP) $(SOURCE_DIR)/contrib/ssh-copy-id.1 $(PROTOUSRSHAREMAN1DIR); \
     )
 
+CBE_PACKAGES += text/groff/groff-core
+
 REQUIRED_PACKAGES += library/libedit
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/pam-core
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network
-REQUIRED_PACKAGES += text/groff/groff-core

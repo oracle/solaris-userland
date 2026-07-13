@@ -79,4 +79,6 @@ COMPONENT_PRE_SYSTEM_TEST_ACTION = \
         ($(CP) -r $(SOURCE_DIR)/tests $(@D)/.)
 
 REQUIRED_PACKAGES += library/security/openssl-3
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libpcap

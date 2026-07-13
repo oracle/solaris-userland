@@ -114,11 +114,9 @@ COMPONENT_POST_BUILD_ACTION += \
 	(cd $(PROTO_DIR) ; $(RM) conf/CONF.tar.gz ; \
 	    gtar cfz conf/CONF.tar.gz conf/* )
 
-# Used by this Makefile
-REQUIRED_PACKAGES += archiver/gnu-tar
+CBE_PACKAGES += developer/java/junit
+CBE_PACKAGES += runtime/java/jre-8
 
-REQUIRED_PACKAGES += developer/java/junit
-REQUIRED_PACKAGES += runtime/java/jre-8
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network

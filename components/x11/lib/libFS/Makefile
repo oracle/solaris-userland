@@ -46,5 +46,8 @@ LINT_FLAGS += -I$(SOURCE_DIR)/include/X11/fonts
 # It can be removed when the upstream starts to use a newer automake version.
 COMPONENT_PREP_ACTION = (cd $(@D); autoreconf -fiv)
 
-REQUIRED_PACKAGES += x11/header/x11-protocols
-REQUIRED_PACKAGES += x11/library/xtrans
+CBE_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/library/xtrans
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

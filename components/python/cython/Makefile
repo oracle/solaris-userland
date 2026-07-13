@@ -83,5 +83,9 @@ install:	$(INSTALL_64)
 
 test:		$(TEST_64)
 
+CBE_PACKAGES += developer/debug/gdb
+
+REQUIRED_PACKAGES += $(PYVS:%=library/python/setuptools-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += system/library
-REQUIRED_PACKAGES += developer/debug/gdb
+REQUIRED_PACKAGES += system/library/libc

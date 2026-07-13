@@ -54,22 +54,25 @@ check_rtime:   $(PROTOUSRLIBDIR)/64
 $(PROTOUSRLIBDIR)/64: $(INSTALL_TARGET)
 	$(SYMLINK) $(MACH64) $@
 
+CBE_PACKAGES += developer/documentation-tool/doxygen
+CBE_PACKAGES += system/library/freetype-2
+CBE_PACKAGES += x11/library/libxext
+CBE_PACKAGES += x11/x11-server-utilities
 
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
-REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libglu
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcursor
-REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxfixes
 REQUIRED_PACKAGES += x11/library/libxft
 REQUIRED_PACKAGES += x11/library/libxinerama
 REQUIRED_PACKAGES += x11/library/libxrender
 REQUIRED_PACKAGES += x11/library/mesa
-REQUIRED_PACKAGES += x11/x11-server-utilities

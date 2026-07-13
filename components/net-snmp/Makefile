@@ -203,19 +203,19 @@ $(BUILD_DIR_64)/.docs:
 
 PKG_MACROS += PYVER=$(PYTHON_VERSION)
 
+CBE_PACKAGES += developer/build/make
+CBE_PACKAGES += developer/documentation-tool/doxygen
 
-REQUIRED_PACKAGES += developer/build/make
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
-REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += runtime/python-313
-REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libpcap
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/linker
-REQUIRED_PACKAGES += system/management/snmp/net-snmp
 REQUIRED_PACKAGES += system/network

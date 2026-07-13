@@ -56,13 +56,16 @@ COMPONENT_INSTALL_ENV +=  PATH="$(GNUBIN):$(PATH)"
 COMPONENT_TEST_TRANSFORMS += '-e "s/K       *[0-9].[0-9][0-9]s/K/" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
-REQUIRED_PACKAGES += data/docbook/docbook-dtds
-REQUIRED_PACKAGES += data/docbook/docbook-style-xsl
-REQUIRED_PACKAGES += data/sgml-common
-REQUIRED_PACKAGES += data/xml-common
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += data/docbook/docbook-dtds
+CBE_PACKAGES += data/docbook/docbook-style-xsl
+CBE_PACKAGES += data/sgml-common
+CBE_PACKAGES += data/xml-common
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += library/libxml2
+CBE_PACKAGES += library/libxslt
+CBE_PACKAGES += text/gnu-gettext
+CBE_PACKAGES += text/locale
+
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += text/gnu-gettext
-REQUIRED_PACKAGES += text/locale
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

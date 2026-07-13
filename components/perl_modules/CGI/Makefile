@@ -57,7 +57,10 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/html-entities-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/test-deep-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/test-warn-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/sub-uplevel-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/html-entities-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/test-deep-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/test-warn-5%)
+CBE_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/sub-uplevel-5%)
+
+REQUIRED_PACKAGES += runtime/perl-538
+REQUIRED_PACKAGES += runtime/perl-542

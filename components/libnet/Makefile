@@ -51,6 +51,8 @@ PKG_PROTO_DIRS += $(COMPONENT_SRC)/doc/man/man3
 CFLAGS += -g -fPIC
 CONFIGURE_OPTIONS += --srcdir=$(BUILD_DIR_$(BITS))
 
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

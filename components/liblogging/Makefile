@@ -46,3 +46,6 @@ CONFIGURE_OPTIONS +=    --disable-journal
 # There are built man pages in the tarball, which we shall patch. Making them
 # here would require python-docutils.
 CONFIGURE_OPTIONS +=	--disable-man-pages
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

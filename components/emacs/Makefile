@@ -246,8 +246,9 @@ COMPONENT_POST_INSTALL_ACTION += $(GUNZIP) \
 # common targets
 install:	$(BUILD_64) $(BUILD_DIR)/$(MACH64)-x/.installed 
 
+CBE_PACKAGES += $(PERL_PKG)
+
 REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += editor/gnu-emacs
 REQUIRED_PACKAGES += file/gnu-findutils
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
@@ -265,10 +266,11 @@ REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm

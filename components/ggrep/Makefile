@@ -79,6 +79,9 @@ ifeq ($(MACH),sparc)
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 endif
 
-REQUIRED_PACKAGES += developer/gcc
+CBE_PACKAGES += developer/gcc
+
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

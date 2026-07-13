@@ -55,11 +55,13 @@ COMPONENT_POST_CONFIGURE_ACTION.32 += ( \
 COMPONENT_POST_CONFIGURE_ACTION.64 += ( \
 	$(FIND) $(@D) -name Makefile | while read f; do $(GSED) -i '/^LASSO_LIBS/s;-L/usr/lib/$(MACH64);;g' $$f; done ) ;
 
-REQUIRED_PACKAGES+=	system/library
-REQUIRED_PACKAGES+=	library/security/openssl-3
-REQUIRED_PACKAGES+=	library/glib2
-REQUIRED_PACKAGES+=	system/library/math
-REQUIRED_PACKAGES+=	library/libxml2
-REQUIRED_PACKAGES+=	library/xmlsec
-REQUIRED_PACKAGES+=	library/libxslt
-REQUIRED_PACKAGES+=	library/zlib
+CBE_PACKAGES += system/library/math
+
+REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += library/libxslt
+REQUIRED_PACKAGES += library/security/openssl-3
+REQUIRED_PACKAGES += library/xmlsec
+REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

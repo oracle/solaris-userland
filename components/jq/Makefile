@@ -68,5 +68,7 @@ COMPONENT_TEST_TRANSFORMS += \
 # need proto to run tests
 test: install
 
-REQUIRED_PACKAGES +=	library/oniguruma
-REQUIRED_PACKAGES +=	system/library/math
+REQUIRED_PACKAGES += library/oniguruma
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/math

@@ -77,15 +77,14 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)
 
+CBE_PACKAGES += $(PYVS:%=library/python/python-zope-interface-%)
+CBE_PACKAGES += library/python/python-hamcrest
+CBE_PACKAGES += library/python/service_identity
+
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/automat-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/constantly-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/hyperlink-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/incremental-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/python-zope-interface-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
-REQUIRED_PACKAGES += system/library
-
-# Testing related components
-REQUIRED_PACKAGES += library/python/python-hamcrest
-REQUIRED_PACKAGES += library/python/service_identity
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

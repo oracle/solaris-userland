@@ -61,3 +61,5 @@ REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/security/nettle
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

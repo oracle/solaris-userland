@@ -43,3 +43,6 @@ include $(WS_MAKE_RULES)/common.mk
 studio_MT =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

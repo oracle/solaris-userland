@@ -66,6 +66,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Leaving directory/d"' \
 	'-e "/Entering directory/d"'
 
-REQUIRED_PACKAGES += library/libsigsegv
-REQUIRED_PACKAGES += system/library/math
-# Auto-generated contents below.  Please manually verify and remove this comment
+CBE_PACKAGES += library/libsigsegv
+CBE_PACKAGES += system/library/math
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

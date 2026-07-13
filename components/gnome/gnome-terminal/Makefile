@@ -50,8 +50,9 @@ LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 LDFLAGS += -fstack-protector
 LDFLAGS += -z gnu-version-script-compat
 
+CBE_PACKAGES += gnome/gnome-shell
+
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
-REQUIRED_PACKAGES += gnome/gnome-shell
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/gtk3
@@ -59,6 +60,8 @@ REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/dconf
 REQUIRED_PACKAGES += library/gnome/vte3
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11

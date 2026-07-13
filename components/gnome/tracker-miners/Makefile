@@ -68,6 +68,8 @@ COMPONENT_POST_UNPACK_ACTION += \
 	
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
+CBE_PACKAGES += library/desktop/search/tracker
+
 REQUIRED_PACKAGES += codec/flac
 REQUIRED_PACKAGES += codec/libvorbis
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
@@ -79,7 +81,6 @@ REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
 REQUIRED_PACKAGES += library/desktop/libgsf
 REQUIRED_PACKAGES += library/desktop/libgxps
-REQUIRED_PACKAGES += library/desktop/search/tracker
 REQUIRED_PACKAGES += library/exempi
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/icu

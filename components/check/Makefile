@@ -75,5 +75,7 @@ COMPONENT_SYSTEM_TEST_ENV =	CHECKMK_SCRIPT=$(USRBINDIR)/checkmk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-REQUIRED_PACKAGES +=	system/library/math
-REQUIRED_PACKAGES +=	text/gawk
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += text/gawk

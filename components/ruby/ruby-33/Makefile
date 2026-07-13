@@ -185,19 +185,21 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "/Finished/p"' \
     '-e "/[0-9]* failures/p"'
 
-REQUIRED_PACKAGES += library/database/gdbm
+CBE_PACKAGES += library/database/gdbm
+CBE_PACKAGES += library/ncurses
+CBE_PACKAGES += library/readline
+CBE_PACKAGES += runtime/tcl-8
+CBE_PACKAGES += runtime/tk-8
+CBE_PACKAGES += x11/library/libx11
+
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/libyaml
-REQUIRED_PACKAGES += library/ncurses
-REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/tcl-8
-REQUIRED_PACKAGES += runtime/tk-8
-REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/linker
-REQUIRED_PACKAGES += x11/library/libx11

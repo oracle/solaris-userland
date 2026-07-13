@@ -43,10 +43,13 @@ include $(WS_MAKE_RULES)/x11-component.mk
 COMPONENT_POST_BUILD_ACTION = \
 	(cd $(SOURCE_DIR); xgettext -n -d xfontsel -p $(BUILD_DIR_64) *.c) ;
 
-REQUIRED_PACKAGES += system/library/fontconfig
+CBE_PACKAGES += system/library/fontconfig
+CBE_PACKAGES += x11/library/libxft
+CBE_PACKAGES += x11/library/libxrender
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxft
 REQUIRED_PACKAGES += x11/library/libxmu
-REQUIRED_PACKAGES += x11/library/libxrender
 REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
 REQUIRED_PACKAGES += x11/library/toolkit/libxt

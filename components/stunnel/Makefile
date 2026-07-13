@@ -72,10 +72,10 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^stunnel/d" ' \
 	'-e "/Leaving directory/d" '
 
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/library
-# any Perl will do, use the default one
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/network

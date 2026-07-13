@@ -153,3 +153,5 @@ $(BUILD_DIR)/wanboot-amd64/.installed: \
 	$(AR) ts $(PROTO_DIR)/usr/lib/grub/wanboot/libhogweed.a;
 
 REQUIRED_PACKAGES += library/gmp
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -57,4 +57,6 @@ test:		$(TEST_NO_ARCH)
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 # Testing related components
-REQUIRED_PACKAGES += library/python/more_itertools
+CBE_PACKAGES += library/python/more_itertools
+
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

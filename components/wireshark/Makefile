@@ -106,11 +106,14 @@ docs-generated:
 	  $(COMPONENT_SRC)/doc/man_pages/*.4 $(COMPONENT_SRC)/doc/man_pages/*.html
 	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)
 
-REQUIRED_PACKAGES += compress/zstd
-REQUIRED_PACKAGES += developer/lexer/flex
-REQUIRED_PACKAGES += developer/parser/bison
-REQUIRED_PACKAGES += diagnostic/wireshark/wireshark-common
+CBE_PACKAGES += developer/lexer/flex
+CBE_PACKAGES += developer/parser/bison
+CBE_PACKAGES += library/security/libgpg-error
+CBE_PACKAGES += runtime/ruby-33
+
 REQUIRED_PACKAGES += codec/speex
+REQUIRED_PACKAGES += compress/lz4
+REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/desktop/qt6
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnutls-3
@@ -118,14 +121,13 @@ REQUIRED_PACKAGES += library/libcares
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/pcre2
-REQUIRED_PACKAGES += library/security/libgpg-error
 REQUIRED_PACKAGES += library/snappy
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += compress/lz4
-REQUIRED_PACKAGES += runtime/ruby-33
 REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libpcap
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/security/libgcrypt
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

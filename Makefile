@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2026, Oracle and/or its affiliates.
 #
 
 SUBDIRS =	components
@@ -39,6 +39,7 @@ TARGETS =	\
 		test \
 		system-test \
 		check_rtime \
+		REQUIRED_PACKAGES \
 		component-hook
 
 $(foreach target, $(TARGETS), $(eval $(target): TARGET = $(target)))

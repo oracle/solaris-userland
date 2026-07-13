@@ -59,4 +59,6 @@ COMPONENT_TEST_ENV +=   libtool_execute_magic='%%%MAGIC variable%%%'
 
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

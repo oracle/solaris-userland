@@ -45,6 +45,9 @@ include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS += --disable-static
 
+CBE_PACKAGES += codec/libvorbis
+
 REQUIRED_PACKAGES += codec/libogg
-REQUIRED_PACKAGES += codec/libvorbis
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

@@ -45,3 +45,6 @@ COMPONENT_INSTALL_ENV += 	INSTALL="$(INSTALL)"
 COMPONENT_INSTALL_ENV += 	PREFIX="$(USRDIR)"
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

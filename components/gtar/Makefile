@@ -65,3 +65,5 @@ REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/gzip
 REQUIRED_PACKAGES += network/ssh
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

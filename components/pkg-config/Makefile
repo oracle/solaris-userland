@@ -60,3 +60,5 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^make/d"'
 
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

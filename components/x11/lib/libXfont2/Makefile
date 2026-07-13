@@ -67,9 +67,12 @@ COMPONENT_POST_INSTALL_ACTION += \
 COMPONENT_INSTALL_ARGS.32 += pkgconfigdir="$(DESTDIR)/usr/lib/pkgconfig"
 COMPONENT_INSTALL_ARGS.64 += pkgconfigdir="$(DESTDIR)/usr/lib/$(MACH64)/pkgconfig"
 
+CBE_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/library/xtrans
+
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libfontenc
-REQUIRED_PACKAGES += x11/library/xtrans

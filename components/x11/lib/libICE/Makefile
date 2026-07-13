@@ -66,5 +66,8 @@ configure:      $(BUILD_64:%/.built=%_1/.configured)
 build:          $(BUILD_64:%/.built=%_1/.built)
 install:        $(INSTALL_64:%/.installed=%_1/.installed)
 
-REQUIRED_PACKAGES += x11/header/x11-protocols
-REQUIRED_PACKAGES += x11/library/xtrans
+CBE_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/library/xtrans
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

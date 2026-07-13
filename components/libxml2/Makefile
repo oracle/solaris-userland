@@ -123,9 +123,9 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 	$(CP) $(LIBDIR)/libxml2.so.2 $(PROTOLIBDIR) ; \
 	$(CP) $(LIBDIR)/$(MACH64)/libxml2.so.2 $(PROTOLIBDIR)/$(MACH64) ;
 
-REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += $(subst .,,$(PYTHON_VERSIONS:%=runtime/python-%))
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += runtime/python-313
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

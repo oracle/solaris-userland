@@ -45,3 +45,6 @@ COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D)) ;
 
 CONFIGURE_OPTIONS += --with-oss
 CONFIGURE_OPTIONS += --without-pulseaudio
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

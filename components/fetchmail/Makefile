@@ -71,4 +71,5 @@ REQUIRED_PACKAGES += library/python/tkinter-311
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += security/kerberos-5
-REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

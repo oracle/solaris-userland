@@ -64,5 +64,9 @@ test:		$(TEST_64)
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 # Testing related components
-REQUIRED_PACKAGES += library/python/coverage
-REQUIRED_PACKAGES += library/python/pynose
+CBE_PACKAGES += library/python/coverage
+CBE_PACKAGES += library/python/pynose
+
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -51,3 +51,6 @@ COMPONENT_POST_INSTALL_ACTION += ( \
     $(MKDIR) $(PROTO_DIR)/usr/share/man/man1; \
     $(CP) $(SOURCE_DIR)/*\.1 $(PROTO_DIR)/usr/share/man/man1; \
 );
+
+REQUIRED_PACKAGES += runtime/python-313
+REQUIRED_PACKAGES += shell/bash

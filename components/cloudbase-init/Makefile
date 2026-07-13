@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
@@ -82,7 +82,7 @@ REQUIRED_PACKAGES += library/python/oslo.log-$(PYV)
 REQUIRED_PACKAGES += library/python/pbr-$(PYV)
 REQUIRED_PACKAGES += library/python/pyyaml-$(PYV)
 REQUIRED_PACKAGES += library/python/requests-$(PYV)
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += runtime/python-$(PYV)
+REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/python/solaris-core-$(PYV)
+REQUIRED_PACKAGES += system/network

@@ -69,15 +69,18 @@ COMPONENT_TEST_TRANSFORMS += \
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH64).master
 
-REQUIRED_PACKAGES += developer/rust/cargo
-REQUIRED_PACKAGES += developer/rust/rustc
-REQUIRED_PACKAGES += developer/vala
+CBE_PACKAGES += developer/rust/cargo
+CBE_PACKAGES += developer/rust/rustc
+CBE_PACKAGES += developer/vala
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+CBE_PACKAGES += system/library/fontconfig
+
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += system/library/fontconfig
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

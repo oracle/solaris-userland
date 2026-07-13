@@ -50,10 +50,13 @@ CONFIGURE_ENV += $(COMPONENT_BUILD_ENV)
 # for tests
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
+CBE_PACKAGES += developer/documentation-tool/doxygen
+CBE_PACKAGES += developer/parser/bison
+CBE_PACKAGES += image/graphviz
 # xvfb is needed for testing
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
-REQUIRED_PACKAGES += developer/parser/bison
-REQUIRED_PACKAGES += image/graphviz
+CBE_PACKAGES += x11/server/xvfb
+
 REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libxcb
-REQUIRED_PACKAGES += x11/server/xvfb

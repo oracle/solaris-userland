@@ -62,6 +62,8 @@ CFLAGS.sparc += -DBYTE_ORDER=BIG_ENDIAN
 CFLAGS += $(CFLAGS.$(MACH))
 
 REQUIRED_PACKAGES += library/audio/pcaudiolib
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

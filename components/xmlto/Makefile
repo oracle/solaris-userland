@@ -66,7 +66,7 @@ COMPONENT_PRE_SYSTEM_TEST_ACTION += \
 	$(SOURCE_DIR)/xmlif/test/run-test
 
 # Used by this Makefile.
-REQUIRED_PACKAGES += text/gnu-sed
+CBE_PACKAGES += text/gnu-sed
 
 REQUIRED_PACKAGES += file/gnu-coreutils
 REQUIRED_PACKAGES += file/gnu-findutils
@@ -74,5 +74,7 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/gnu-getopt
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += text/gnu-grep
 REQUIRED_PACKAGES += web/browser/lynx

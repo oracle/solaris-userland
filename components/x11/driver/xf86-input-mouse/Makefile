@@ -42,5 +42,7 @@ LDFLAGS += -ldevinfo -lm
 
 COMPONENT_INSTALL_ARGS += pkgconfigdir="$(DESTDIR)/usr/share/pkgconfig"
 
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/devinfo
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

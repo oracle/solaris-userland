@@ -98,7 +98,7 @@ COMPONENT_TEST_TRANSFORMS += '-e "/^[[:space:]]*warning: the Collectable protoco
 COMPONENT_TEST_TRANSFORMS += '-e "/^Finished in/d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^$$/d"'
 
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += shell/bash
+CBE_PACKAGES += runtime/erlang
+
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += runtime/erlang
+REQUIRED_PACKAGES += system/core-os

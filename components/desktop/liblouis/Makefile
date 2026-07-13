@@ -82,8 +82,12 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/^==*$$/p" ' \
         '-e "/expected/p" '
 
-REQUIRED_PACKAGES += developer/documentation-tool/help2man
-REQUIRED_PACKAGES += library/libyaml
+CBE_PACKAGES += developer/documentation-tool/help2man
+CBE_PACKAGES += library/libyaml
+CBE_PACKAGES += runtime/python-311
+
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += library/libyaml
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

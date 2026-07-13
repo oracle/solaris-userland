@@ -115,3 +115,5 @@ CLEAN_PATHS += $(PROTO_DIR) capabilities/*/*/*.o capabilities/*/$(MACH32)/*.s
 
 system-test: build $(SYSTEM_TEST_32_and_64)
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

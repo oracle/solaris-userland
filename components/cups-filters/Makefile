@@ -49,9 +49,10 @@ CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=    --disable-mutool
 
-# patches/porting.patch uses gecho
-REQUIRED_PACKAGES += file/gnu-coreutils
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += print/cups/libcupsfilters
 REQUIRED_PACKAGES += print/cups/libppd
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

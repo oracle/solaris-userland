@@ -49,7 +49,8 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-REQUIRED_PACKAGES += developer/vala
+CBE_PACKAGES += developer/vala
+
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/geoclue
 REQUIRED_PACKAGES += library/desktop/geocode-glib
@@ -59,4 +60,6 @@ REQUIRED_PACKAGES += library/desktop/libadwaita
 REQUIRED_PACKAGES += library/desktop/libgweather
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

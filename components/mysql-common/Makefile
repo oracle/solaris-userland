@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -38,6 +38,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 # nothing to download or build; just package
 
-REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/network
+CBE_PACKAGES += system/core-os
+CBE_PACKAGES += system/network
+

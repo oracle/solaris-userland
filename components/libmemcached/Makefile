@@ -76,8 +76,11 @@ COMPONENT_TEST_ENV += CLICOLOR=0
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += -e '"s/[[:space:]]\+[0-9]\+\(\.[0-9]\+\)\? sec//g" '
 
-REQUIRED_PACKAGES += service/memcached
+CBE_PACKAGES += service/memcached
+
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/security/libsasl2

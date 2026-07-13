@@ -63,7 +63,7 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/more_itertools-%)
+CBE_PACKAGES += library/python/setuptools_scm
 
-# Setup related components
-REQUIRED_PACKAGES += library/python/setuptools_scm
+REQUIRED_PACKAGES += $(PYVS:%=library/python/more_itertools-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

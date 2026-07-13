@@ -45,4 +45,6 @@ IPS_COMPONENT_VERSION =	3.8
 # viewpathing support in the build is broken in the 'install' target
 COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

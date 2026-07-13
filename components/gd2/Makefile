@@ -86,15 +86,17 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/FAILED/p" ' \
 	'-e "/Errors/p" '
 
+CBE_PACKAGES += library/zlib
+CBE_PACKAGES += x11/library/libx11
+
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += image/library/libwebp
-REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxpm

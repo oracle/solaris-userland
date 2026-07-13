@@ -102,5 +102,8 @@ cdrtools.license: $(DIST_COPYING) $(DIST_COPYRIGHT) $(DIST_LICENSES)
 	done) |\
 	iconv -f ISO-8859-1 -t UTF-8 - >$@
 
-REQUIRED_PACKAGES += developer/build/make
+CBE_PACKAGES += developer/build/make
+
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

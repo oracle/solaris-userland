@@ -50,8 +50,10 @@ CMAKE_OPTIONS += -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 CMAKE_OPTIONS.32 += -DCMAKE_INSTALL_LIBDIR="lib"
 CMAKE_OPTIONS.64 += -DCMAKE_INSTALL_LIBDIR="lib/$(MACH64)"
 
-REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

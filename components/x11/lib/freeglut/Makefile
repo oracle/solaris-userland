@@ -48,6 +48,9 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 CPPFLAGS += -D__posix__ -D__unix__
 
+REQUIRED_PACKAGES += service/opengl/ogl-select
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxi

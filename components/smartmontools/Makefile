@@ -55,4 +55,6 @@ CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 # Avoid using -std=c++11 with new autoconf 2.72
 CONFIGURE_OPTIONS +=   ac_cv_prog_cxx_cxx11=
 
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/c++-runtime
+REQUIRED_PACKAGES += system/library/libc

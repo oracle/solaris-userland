@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
@@ -40,4 +40,5 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

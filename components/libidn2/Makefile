@@ -72,3 +72,5 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/passed/p" '
 
 # only the requested pkg is system/library
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

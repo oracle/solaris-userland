@@ -302,4 +302,5 @@ include $(WS_MAKE_RULES)/x11-component.mk
 include $(WS_MAKE_RULES)/font.mk
 
 # Needed at build time for installalias utility
-REQUIRED_PACKAGES += x11/library/libxfont2
+CBE_PACKAGES += x11/library/libxfont2
+

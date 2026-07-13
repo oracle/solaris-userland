@@ -118,19 +118,24 @@ COMPONENT_TEST_MASTER = \
 COMPONENT_TEST_TRANSFORMS += \
         '-e "s/[0-9]* subtests passed//"'
 
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += data/docbook/docbook-dtds
-REQUIRED_PACKAGES += data/docbook/docbook-style-xsl
-REQUIRED_PACKAGES += data/sgml-common
-REQUIRED_PACKAGES += data/xml-common
+CBE_PACKAGES += $(PERL_PKG)
+CBE_PACKAGES += data/docbook/docbook-dtds
+CBE_PACKAGES += data/docbook/docbook-style-xsl
+CBE_PACKAGES += data/sgml-common
+CBE_PACKAGES += data/xml-common
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += system/library/dbus
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+
 REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/file-monitor/gamin
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/dbus
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/linker

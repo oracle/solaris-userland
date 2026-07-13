@@ -107,7 +107,11 @@ include $(WS_MAKE_RULES)/x11-component.mk
 CONFIGURE_OPTIONS += --without-dmx
 CONFIGURE_OPTIONS += --without-xf86misc
 
-REQUIRED_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/library/xcb-util
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxcomposite
@@ -119,4 +123,3 @@ REQUIRED_PACKAGES += x11/library/libxtst
 REQUIRED_PACKAGES += x11/library/libxv
 REQUIRED_PACKAGES += x11/library/libxxf86vm
 REQUIRED_PACKAGES += x11/library/mesa
-REQUIRED_PACKAGES += x11/library/xcb-util

@@ -42,3 +42,5 @@ include $(WS_MAKE_RULES)/common.mk
 LDFLAGS += $(CC_BITS)
 
 REQUIRED_PACKAGES += library/ncurses
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

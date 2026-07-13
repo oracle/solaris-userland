@@ -56,3 +56,5 @@ build:		$(BUILD_NO_ARCH)
 install:	$(INSTALL_NO_ARCH)
 
 venv-test:	$(TEST_NO_ARCH)
+
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

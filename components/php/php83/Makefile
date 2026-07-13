@@ -192,17 +192,34 @@ clobber::
 # Add directory for generate check
 GENERATE_PROTO_DIRS += files^files
 
+CBE_PACKAGES += developer/icu
+CBE_PACKAGES += system/dtrace
+
+REQUIRED_PACKAGES += compress/bzip2
+REQUIRED_PACKAGES += compress/libzip
+REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += developer/icu
 REQUIRED_PACKAGES += library/gd
+REQUIRED_PACKAGES += library/gmp
+REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += library/libxslt
+REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/oniguruma
 REQUIRED_PACKAGES += library/pcre2
+REQUIRED_PACKAGES += library/readline
+REQUIRED_PACKAGES += library/security/libsodium
 REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += system/dtrace
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += library/spell-checking/enchant
+REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/management/snmp/net-snmp
 REQUIRED_PACKAGES += system/network/ldap/openldap
 REQUIRED_PACKAGES += text/gnu-sed
+REQUIRED_PACKAGES += text/tidy
+REQUIRED_PACKAGES += web/curl

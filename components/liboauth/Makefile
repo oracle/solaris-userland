@@ -67,9 +67,12 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL:/p" ' \
         '-e "/ERROR:/p" '
 
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
-REQUIRED_PACKAGES += image/graphviz
+CBE_PACKAGES += developer/documentation-tool/doxygen
+CBE_PACKAGES += image/graphviz
+CBE_PACKAGES += $(PERL_PKG)
+
+REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/security/nss
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += web/curl

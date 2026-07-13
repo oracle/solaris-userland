@@ -51,5 +51,8 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/PASS:/p" ' \
         '-e "/FAIL:/p" '
 
-REQUIRED_PACKAGES += developer/documentation-tool/doxygen
+CBE_PACKAGES += developer/documentation-tool/doxygen
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

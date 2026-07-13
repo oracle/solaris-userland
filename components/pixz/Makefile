@@ -80,4 +80,6 @@ COMPONENT_SYSTEM_TEST_TARGETS =
 
 REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += library/libarchive
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

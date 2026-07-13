@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../../make-rules/shared-macros.mk
@@ -55,11 +55,5 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(NO_TESTS)
 
+CBE_PACKAGES += system/core-os
 
-REQUIRED_PACKAGES += system/core-os
-
-new-files: install
-	$(PKGSEND) generate $(PROTO_DIR)/usr/puppetlabs/puppet/modules/ | \
-		$(GSED)  -e 's/\(file\).*path=/\1 path=/' | \
-		$(CAT) *.p5m - | $(GNU_GREP) -h '^file' | sort | uniq -c | \
-		$(GSED) -e '/ 2 /d' -e 's/   1 //'

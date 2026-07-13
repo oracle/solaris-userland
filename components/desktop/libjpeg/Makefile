@@ -62,3 +62,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 	$(SYMLINK) libjpeg.so.9.6.0 $(PROTOUSRLIBDIR)/$(MACH64)/libjpeg.so.9 ;
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

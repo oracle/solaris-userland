@@ -47,3 +47,6 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS = \
   '-n '\
   '-e "/^\#/p" '
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

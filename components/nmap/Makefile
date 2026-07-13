@@ -78,13 +78,16 @@ COMPONENT_TEST_TRANSFORMS += -E \
 	'-e "/ WARNING **/d" ' '-e "/warnings\.warn/d" ' '-e "/cc1plus: note/d" ' \
 	'-e "/\/usr\/gcc\/[0-9]+\/bin\/gcc/d" ' '-e "/\/usr\/gcc\/[0-9]+\/bin\/g\+\+/d" '
 
+CBE_PACKAGES += system/network/bpf
+
 REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/lua
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libpcap
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/network/bpf

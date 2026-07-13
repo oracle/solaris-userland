@@ -78,6 +78,8 @@ COMPONENT_POST_INSTALL_ACTION = \
 foomatic-db-engine.license:
 	cat $(SOURCE_DIR)/COPYING foomatic-db-engine.copyright > $@
 
-REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

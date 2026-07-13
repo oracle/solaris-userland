@@ -67,3 +67,6 @@ COMPONENT_TEST_TARGETS =
 
 # Needed for the 64-bit tab2space executable.
 PKG_PROTO_DIRS += $(BUILD_DIR_64)
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

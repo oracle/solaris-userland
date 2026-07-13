@@ -49,5 +49,5 @@ CONFIGURE_ENV += XORG_SGML_PATH="$(PROTO_DIR)/usr/share/sgml"
 # We've either EOF'ed or never shipped support for all the legacy extensions
 CONFIGURE_OPTIONS += --disable-legacy
 
-REQUIRED_PACKAGES += developer/documentation-tool/asciidoc
-REQUIRED_PACKAGES += x11/documentation/xorg-docs
+CBE_PACKAGES += developer/documentation-tool/asciidoc
+

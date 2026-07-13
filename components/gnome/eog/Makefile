@@ -61,23 +61,26 @@ COMPONENT_POST_INSTALL_ACTION += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/eog.1 \
                 $(PROTO_DIR)/usr/share/man/man1/eog.1;
 
-REQUIRED_PACKAGES += data/shared-mime-info
+CBE_PACKAGES += data/shared-mime-info
+CBE_PACKAGES += image/viewer/eog/eog-plugins
+CBE_PACKAGES += library/desktop/at-spi2-core
+
+REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/librsvg
-REQUIRED_PACKAGES += image/viewer/eog/eog-plugins
-REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
-REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/libhandy
+REQUIRED_PACKAGES += library/desktop/libpeas
 REQUIRED_PACKAGES += library/exempi
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
-REQUIRED_PACKAGES += library/desktop/libhandy
-REQUIRED_PACKAGES += library/desktop/libpeas
 REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11

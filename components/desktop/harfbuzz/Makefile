@@ -65,16 +65,17 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/Fail:/p" ' \
         '-e "/Pass:/p" '
 
-REQUIRED_PACKAGES += developer/build/autoconf
-REQUIRED_PACKAGES += developer/build/automake
-REQUIRED_PACKAGES += developer/build/gnu-make
-REQUIRED_PACKAGES += developer/build/pkg-config
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += developer/icu
+CBE_PACKAGES += developer/build/autoconf
+CBE_PACKAGES += developer/build/automake
+CBE_PACKAGES += developer/build/gnu-make
+CBE_PACKAGES += developer/build/pkg-config
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+CBE_PACKAGES += developer/icu
+
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/icu
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/freetype-2
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

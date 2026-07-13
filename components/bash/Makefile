@@ -134,6 +134,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 	    cp -Rp "en@boldquot" en_CA ; \
 	    cp -Rp "en@boldquot" en_GB )
 
+CBE_PACKAGES += terminal/screen # For running tests
+
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += terminal/screen
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

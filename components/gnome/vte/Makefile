@@ -63,12 +63,13 @@ LDFLAGS += -lssp
 CONFIGURE_OPTIONS += -D_b_symbolic_functions=false
 CONFIGURE_OPTIONS += -D_systemd=false
 
-REQUIRED_PACKAGES += developer/vala
+CBE_PACKAGES += developer/vala
+CBE_PACKAGES += library/desktop/gobject/gobject-introspection
+
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/fribidi
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
@@ -76,6 +77,8 @@ REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

@@ -81,3 +81,5 @@ COMPONENT_POST_INSTALL_ACTION.32 += \
 		$(PROTOGNUBIN)/$(MACH32)/ncursesw5-config;
 
 REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

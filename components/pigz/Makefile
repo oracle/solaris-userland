@@ -57,4 +57,6 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "/Leaving/d"'
 
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -53,10 +53,11 @@ COMPONENT_POST_INSTALL_ACTION += \
         $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
                 $(PROTOUSRBINDIR)/yelp-build;
 
-REQUIRED_PACKAGES += data/docbook/docbook-dtds
-REQUIRED_PACKAGES += developer/documentation-tool/itstool
-REQUIRED_PACKAGES += library/gnome/yelp-xsl
-REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/libxslt
+CBE_PACKAGES += data/docbook/docbook-dtds
+CBE_PACKAGES += developer/documentation-tool/itstool
+CBE_PACKAGES += library/gnome/yelp-xsl
+CBE_PACKAGES += library/libxml2
+CBE_PACKAGES += library/libxslt
+
 REQUIRED_PACKAGES += library/python/lxml-311
 REQUIRED_PACKAGES += runtime/python-311

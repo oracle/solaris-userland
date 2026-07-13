@@ -62,3 +62,6 @@ COMPONENT_TEST_TRANSFORMS += '-e "/skipped/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/FAILED/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/expected failure/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/successful/p"'
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

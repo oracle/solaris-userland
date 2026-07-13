@@ -79,7 +79,11 @@ COMPONENT_TEST_TRANSFORMS = \
 	'-e "s/ ([0-9][0-9]* ms)//g" ' \
 	'-e "s/ ([0-9][0-9]* ms total)//g" '
 
-REQUIRED_PACKAGES += developer/parser/re2c
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+CBE_PACKAGES += developer/parser/re2c
+CBE_PACKAGES += system/library/gcc/gcc-c-runtime
+CBE_PACKAGES += system/library/math
+
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES.sparc += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc

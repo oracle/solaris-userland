@@ -83,6 +83,6 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 
 CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 
-REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += runtime/python-313
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += $(subst .,,$(PYTHON_VERSIONS:%=runtime/python-%))
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

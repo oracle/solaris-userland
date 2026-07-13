@@ -157,7 +157,9 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TEST_64)
 
+CBE_PACKAGES += database/mysql-84
 
-REQUIRED_PACKAGES += database/mysql-84
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += database/mysql-84/library
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

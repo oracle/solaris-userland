@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -84,10 +84,10 @@ COMPONENT_TEST_TRANSFORMS += \
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += archiver/gnu-tar
 REQUIRED_PACKAGES += file/gnu-coreutils
 REQUIRED_PACKAGES += file/gnu-findutils
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += service/network/smtp/sendmail
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/gnu-getopt

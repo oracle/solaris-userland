@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -34,25 +34,29 @@ COMPONENT_PROJECT_URL=	https://github.com/oracle/solaris-userland
 COMPONENT_ARCHIVE_URL=	https://github.com/oracle/solaris-userland.git
 COMPONENT_BUGDB=	gate-stuff/userland
 
-# This component collects REQUIRED_PACKAGES from all other components. We do
-# not need to check that the packages do exist here again.
+# This component collects REQUIRED_PACKAGES and CBE_PACKAGES from all other
+# components. We do not need to check that the packages do exist here again.
 SKIP_REQUIRED_PACKAGES_CHECK=
 
 include $(WS_MAKE_RULES)/prep.mk
 
 include $(WS_MAKE_RULES)/ips.mk
 
+# The package is created in two parts: the checked-in manifest and a generated
+# file of dependency actions based on the workspace requires.mk.
+PKG_OPTIONS += -I $(BUILD_DIR)
+
 $(WS_MACH)/requires.mk:
 	(cd $(WS_COMPONENTS) ; $(GMAKE) $@)
 
+# Do not include the existing requires.mk while the top-level process is
+# regenerating it from scratch.
+ifeq ($(REQUIRES_MK_GENERATION),)
 -include $(WS_MACH)/requires.mk
-
-# The package is created in two parts: the checked-in manifest and a generated
-# file of actions based on the REQUIRED_PACKAGES macro value.
-PKG_OPTIONS += -I $(BUILD_DIR)
+endif
 
 $(BUILD_DIR)/package.list:	$(BUILD_DIR) $(WS_MACH)/requires.mk
-	@echo $(REQUIRED_PACKAGES:%="depend type=require fmri=pkg:/%\\n") >$@
+	@echo $(REQUIRED_PACKAGES:%="depend type=require fmri=pkg:/%\n") >$@
 
 build install: $(BUILD_DIR)/package.list
 
@@ -71,28 +75,28 @@ clean clobber::
 #
 
 # Userland infrastructure is driven by GNU make
-REQUIRED_PACKAGES += developer/build/gnu-make
+CBE_PACKAGES += developer/build/gnu-make
 
 # We use HG as a versioning system
-REQUIRED_PACKAGES += developer/versioning/mercurial
+CBE_PACKAGES += developer/versioning/mercurial
 
 # Utils to generate IPS packages
-REQUIRED_PACKAGES += package/pkg
+CBE_PACKAGES += package/pkg
 
 # Some of our tools need python 3.11, bash or ksh
-REQUIRED_PACKAGES += runtime/python-311
-REQUIRED_PACKAGES += shell/bash
-REQUIRED_PACKAGES += shell/ksh93
+CBE_PACKAGES += runtime/python-311
+CBE_PACKAGES += shell/bash
+CBE_PACKAGES += shell/ksh93
 
 # Public build machines do use sudo
-REQUIRED_PACKAGES += security/sudo
+CBE_PACKAGES += security/sudo
 
 # Generic tools our infrastructure uses
-REQUIRED_PACKAGES += file/gnu-findutils
-REQUIRED_PACKAGES += text/gawk
-REQUIRED_PACKAGES += text/gnu-grep
-REQUIRED_PACKAGES += text/gnu-sed
+CBE_PACKAGES += file/gnu-findutils
+CBE_PACKAGES += text/gawk
+CBE_PACKAGES += text/gnu-grep
+CBE_PACKAGES += text/gnu-sed
 
 # Generally useful tools for development
-REQUIRED_PACKAGES += developer/build/autoconf
-REQUIRED_PACKAGES += library/python/pipx
+CBE_PACKAGES += developer/build/autoconf
+CBE_PACKAGES += library/python/pipx

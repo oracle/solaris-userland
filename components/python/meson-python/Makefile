@@ -61,3 +61,4 @@ venv-test:	$(TEST_64)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pyproject-metadata-%)
+REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

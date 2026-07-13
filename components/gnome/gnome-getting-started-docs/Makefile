@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            NO_ARCH
@@ -43,7 +43,7 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # Assumes GNU msgfmt in PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-REQUIRED_PACKAGES += developer/documentation-tool/itstool
-REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libxml2
+CBE_PACKAGES += developer/documentation-tool/itstool
+CBE_PACKAGES += library/glib2
+CBE_PACKAGES += library/libxml2
 

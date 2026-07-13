@@ -82,4 +82,6 @@ $(PROTO_DIR)/dhcpd.leases:	$(INSTALL_32_and_64)
 # Created by 'gmake REQUIRED_PACKAGES', manually verified.
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/network

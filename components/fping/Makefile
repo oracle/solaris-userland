@@ -47,3 +47,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PRE_CONFIGURE_ACTION =  \
         ($(CLONEY) $(SOURCE_DIR) $(@D))
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

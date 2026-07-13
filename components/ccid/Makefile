@@ -58,5 +58,8 @@ CONFIGURE_OPTIONS +=    --exec-prefix=$(USRLIBDIR64)
 CONFIGURE_OPTIONS +=    --enable-libusb
 CONFIGURE_OPTIONS +=    --enable-usbdropdir=$(USRLIBDIR64)/pcsc/drivers
 
+CBE_PACKAGES += library/security/pcsc/pcsclite
+
 REQUIRED_PACKAGES += library/libusb-1
-REQUIRED_PACKAGES += library/security/pcsc/pcsclite
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

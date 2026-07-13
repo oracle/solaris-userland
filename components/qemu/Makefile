@@ -75,10 +75,13 @@ CONFIGURE_ENV += AR=/usr/bin/ar
 #CONFIGURE_OPTIONS += --enable-docs --python=/usr/bin/python3.11
 #CONFIGURE_ENV += https_proxy=<your https proxy>
 
-REQUIRED_PACKAGES += developer/build/meson
-REQUIRED_PACKAGES += developer/build/ninja
-REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/curl
+CBE_PACKAGES.i386 += developer/build/meson
+CBE_PACKAGES.i386 += developer/build/ninja
+CBE_PACKAGES.i386 += system/library/gcc/gcc-c-runtime
+CBE_PACKAGES.i386 += web/curl
+
+REQUIRED_PACKAGES.i386 += library/glib2
+REQUIRED_PACKAGES.i386 += library/zlib
+REQUIRED_PACKAGES.i386 += system/library
+REQUIRED_PACKAGES.i386 += system/library/libc
+REQUIRED_PACKAGES.i386 += system/library/math

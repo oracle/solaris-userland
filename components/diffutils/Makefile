@@ -66,5 +66,7 @@ COMPONENT_TEST_TRANSFORMS += \
 COMPONENT_SYSTEM_TEST_DIR =	$(@D)/tests
 COMPONENT_SYSTEM_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
 
-REQUIRED_PACKAGES += library/libsigsegv
+CBE_PACKAGES += library/libsigsegv
+
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

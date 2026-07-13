@@ -175,13 +175,18 @@ license:
 	    done >> $(CURDIR)/rust.license.new
 	mv rust.license.new rust.license
 
-REQUIRED_PACKAGES += developer/llvm/llvm
-REQUIRED_PACKAGES += developer/rust/rustc
-REQUIRED_PACKAGES += library/libssh2
+CBE_PACKAGES += developer/gcc-14
+CBE_PACKAGES += developer/llvm/llvm
+CBE_PACKAGES += developer/rust/rustc
+CBE_PACKAGES += library/libssh2
+CBE_PACKAGES += web/browser/lynx
+
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/browser/lynx
 REQUIRED_PACKAGES += web/curl

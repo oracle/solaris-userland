@@ -54,6 +54,9 @@ COMPONENT_BUILD_ARGS +=		-f Makefile.solaris.sunstudio
 COMPONENT_INSTALL_ARGS +=	-f Makefile.solaris.sunstudio
 COMPONENT_INSTALL_ARGS +=	PREFIX=$(PROTOUSRDIR)
 
+CBE_PACKAGES += system/library/math
+
 REQUIRED_PACKAGES += compress/bzip2
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/c++-runtime
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/libc

@@ -49,3 +49,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ERROR/p" '
 
 COMPONENT_TEST_MASTER =		$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

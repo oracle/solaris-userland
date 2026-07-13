@@ -46,8 +46,11 @@ CONFIGURE_ENV += LIB_MAN_SUFFIX=3xcursor
 CONFIGURE_OPTIONS += --with-icondir=/usr/share/icons
 CONFIGURE_OPTIONS += --with-cursorpath='~/.local/share/icons:~/.icons:/usr/share/icons:/usr/share/pixmaps'
 
-REQUIRED_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/header/x11-protocols
+CBE_PACKAGES += x11/library/libxext
+
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxfixes
 REQUIRED_PACKAGES += x11/library/libxrender

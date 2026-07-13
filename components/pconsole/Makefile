@@ -52,4 +52,6 @@ CONFIGURE_ENV += "CC=$(CC) -I. $(CC_BITS) $(CC_PIC_ENABLE)"
 
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += text/gawk

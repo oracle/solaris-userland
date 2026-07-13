@@ -59,3 +59,5 @@ CFLAGS += -I/usr/include/ncurses
 CFLAGS += "-Dinline"
 
 REQUIRED_PACKAGES += library/ncurses
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

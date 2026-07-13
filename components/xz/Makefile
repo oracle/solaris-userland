@@ -54,3 +54,5 @@ COMPONENT_TEST_TRANSFORMS += \
 include $(WS_MAKE_RULES)/shared-targets.mk
 
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

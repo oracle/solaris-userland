@@ -77,8 +77,10 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/XFAIL/p" ' \
 	'-e "/FAIL/p" '
 
-REQUIRED_PACKAGES += library/libgenders
+CBE_PACKAGES += library/libgenders
+
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

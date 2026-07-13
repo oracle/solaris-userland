@@ -38,5 +38,6 @@ TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-REQUIRED_PACKAGES += image/xcursorgen
-REQUIRED_PACKAGES += x11/library/libxcursor
+CBE_PACKAGES += image/xcursorgen
+CBE_PACKAGES += x11/library/libxcursor
+

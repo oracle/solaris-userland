@@ -104,7 +104,9 @@ CONFIGURE_OPTIONS +=    --build=$(GNU_ARCH)
 # not be omitted, or set to a non-existent default.
 CONFIGURE_OPTIONS +=    --with-sysroot=/
 
+CBE_PACKAGES += system/library/flex-runtime
+
 REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/library/flex-runtime
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -92,5 +92,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 		$(PROTO_DIR)$(SGMLXMLCATALOG) ;
 
 # library/libxml2 provides the xmlcatalog command run above
-REQUIRED_PACKAGES += library/libxml2
+CBE_PACKAGES += library/libxml2
+
 REQUIRED_PACKAGES += shell/ksh93

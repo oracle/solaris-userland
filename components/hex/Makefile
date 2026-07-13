@@ -69,9 +69,9 @@ test:		$(NO_TESTS)
 system-test: $(NO_TESTS)
 COMPONENT_TEST_CMD= true
 
+CBE_PACKAGES += system/core-os
+CBE_PACKAGES += runtime/erlang
+CBE_PACKAGES += runtime/elixir
+CBE_PACKAGES += shell/bash
+CBE_PACKAGES += shell/ksh93
 
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += shell/bash
-REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += runtime/erlang
-REQUIRED_PACKAGES += runtime/elixir

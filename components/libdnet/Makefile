@@ -56,5 +56,8 @@ COMPONENT_TEST_TRANSFORMS += \
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
 COMPONENT_SYSTEM_TEST_DIR =	$(@D)/test/check
 
-REQUIRED_PACKAGES += developer/test/check
+CBE_PACKAGES += developer/test/check
+
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc

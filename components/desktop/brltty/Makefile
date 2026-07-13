@@ -102,17 +102,20 @@ CONFIGURE_OPTIONS +=	CYTHON="/usr/bin/cython-$(PYTHON_VERSION)"
 
 COMPONENT_INSTALL_ARGS +=	INSTALL_ROOT=$(PROTO_DIR)
 
+CBE_PACKAGES += library/python/cython-311
+CBE_PACKAGES += runtime/python-311
+
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
+REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/icu
-REQUIRED_PACKAGES += library/python/cython-311
-REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += library/liblouis
+REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxfixes
 REQUIRED_PACKAGES += x11/library/libxtst
 REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
 REQUIRED_PACKAGES += x11/library/toolkit/libxt
-REQUIRED_PACKAGES += library/liblouis
-REQUIRED_PACKAGES += library/expat

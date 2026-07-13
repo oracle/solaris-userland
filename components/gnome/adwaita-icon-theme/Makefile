@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -45,4 +45,5 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 CONFIGURE_ENV += ac_cv_path_GTK_ENCODE_SYMBOLIC_SVG=$(USRBINDIR64)/gtk-encode-symbolic-svg
 
 # Needed for gtk-update-icon-cache
-REQUIRED_PACKAGES += library/desktop/gtk3
+CBE_PACKAGES += library/desktop/gtk3
+

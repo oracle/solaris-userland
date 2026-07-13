@@ -66,8 +66,9 @@ CONFIGURE_OPTIONS +=	-Dps=enabled
 # Needed to find GNU msgfmt.
 COMPONENT_BUILD_ENV += PATH="/usr/gnu/bin:$(PATH)"
 
+CBE_PACKAGES += developer/documentation-tool/gtk-doc
+
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
@@ -86,4 +87,6 @@ REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/libspectre
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

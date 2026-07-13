@@ -89,13 +89,16 @@ COMPONENT_BUILD_ENV += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)"
 COMPONENT_INSTALL_ENV += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)"
 endif
 
-REQUIRED_PACKAGES += developer/build/autoconf
+CBE_PACKAGES += library/security/nss
+
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/readline
-REQUIRED_PACKAGES += library/security/nss
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

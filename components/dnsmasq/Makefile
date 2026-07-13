@@ -105,4 +105,5 @@ REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/security/nettle
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc

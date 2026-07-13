@@ -45,4 +45,6 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 
 CONFIGURE_OPTIONS+=	--without-openssl
 
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
