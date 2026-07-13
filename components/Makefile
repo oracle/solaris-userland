@@ -201,8 +201,8 @@ incorporation:
 		$(WS_TOOLS)/userland-incorporator \
 			--repository $(PKG_REPO) \
 			--version $(PKG_SOLARIS_VERSION),$(BUILD_VERSION) \
-			--incorporation-version runtime/python-37-incorporation=99-AUTO_FMRI \
-			--incorporation-version runtime/python-39-incorporation=99-AUTO_FMRI \
+			--incorporation-version runtime/python-37-incorporation=99-11.4.95.0.1.227.0 \
+			--incorporation-version runtime/python-39-incorporation=99-11.4.95.0.1.227.0 \
 			--publisher $(PUBLISHER) \
 			--destdir $(WS_MACH) \
 			--repository-changeset $(CONSOLIDATION_CHANGESET) \
