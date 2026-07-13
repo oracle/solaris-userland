@@ -1,0 +1,29 @@
+Net-SNMP 5.9.5.2 includes two notable configuration changes.
+
+Logging priority handling has changed. Net-SNMP fixed a long-standing
+logging logic bug where more messages than intended were written by default.
+After the fix, configurations that relied on the old behavior may only log
+LOG_EMERG level messages unless verbose logging is configured explicitly.
+
+To restore verbose file logging, add an explicit debug-level log option, for
+example:
+
+    logOption F7 /var/log/snmpd.log
+
+See:
+
+    https://github.com/net-snmp/net-snmp/issues/681
+    https://github.com/net-snmp/net-snmp/commit/db0f7f83b820b6be91b25417d1e21fa32895f937
+
+The delivered snmpd.conf template also no longer enables the default
+world-readable community string:
+
+    rocommunity public
+
+It now leaves only a commented example:
+
+    # rocommunity <name>
+
+with explanatory text. Administrators who need SNMPv1 or SNMPv2c community
+access must configure an explicit non-default community string and should
+restrict access to trusted hosts or networks.

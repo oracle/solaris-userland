@@ -1,6 +1,6 @@
---- net-snmp-5.9.4/snmplib/scapi.c
-+++ net-snmp-5.9.4/snmplib/scapi.c
-@@ -205,6 +205,16 @@ static const netsnmp_priv_alg_info _priv
+--- net-snmp-5.9.5.2/snmplib/scapi.c
++++ net-snmp-5.9.5.2/snmplib/scapi.c
+@@ -205,6 +205,16 @@ { -1, NULL, NULL, 0 , 0, 0, 0 },
  };
  
  
@@ -17,7 +17,7 @@
  /*
   * sc_get_priv_alg(oid *privoid, u_int len)
   *
-@@ -781,7 +791,6 @@ sc_generate_keyed_hash(const oid * autht
+@@ -781,7 +791,6 @@ hashfn = sc_get_openssl_hashfn(auth_type
      if (NULL == hashfn) {
          QUITFUN(SNMPERR_GENERR, sc_generate_keyed_hash_quit);
      }
@@ -25,7 +25,7 @@
      HMAC(hashfn, key, keylen, message, msglen, buf, &buf_len);
      if (buf_len != properlength) {
          QUITFUN(rval, sc_generate_keyed_hash_quit);
-@@ -1263,44 +1272,10 @@ sc_encrypt(const oid * privtype, size_t
+@@ -1263,44 +1272,10 @@ memset(my_iv, 0, sizeof(my_iv));
  
  #ifndef NETSNMP_DISABLE_DES
      if (USM_CREATE_USER_PRIV_DES == (pai->type & USM_PRIV_MASK_ALG)) {
@@ -74,7 +74,7 @@
      }
  #endif
  #if defined(NETSNMP_USE_OPENSSL) && defined(HAVE_AES)
-@@ -1518,13 +1493,11 @@ sc_decrypt(const oid * privtype, size_t
+@@ -1518,13 +1493,11 @@ }
      memset(my_iv, 0, sizeof(my_iv));
  #ifndef NETSNMP_DISABLE_DES
      if (USM_CREATE_USER_PRIV_DES == (pai->type & USM_PRIV_MASK_ALG)) {
@@ -93,7 +93,7 @@
      }
  #endif
  #if defined(NETSNMP_USE_OPENSSL) && defined(HAVE_AES)
-@@ -1851,4 +1824,87 @@ SHA1_hmac(const u_char * data, size_t le
+@@ -1851,4 +1824,87 @@ free(newdata);
      return rc;
  }
  #endif /* NETSNMP_USE_INTERNAL_CRYPTO */

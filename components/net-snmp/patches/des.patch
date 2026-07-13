@@ -6,44 +6,9 @@ This patch does two things
 This patch would need some more work to remove DES traces conditionally in
 order to offer it to upstream.
 
---- net-snmp-5.8/net-snmp-create-v3-user.in
-+++ net-snmp-5.8/net-snmp-create-v3-user.in
-@@ -10,8 +10,8 @@
-     exit 1
- fi
- 
- Aalgorithm="MD5"
--Xalgorithm="DES"
-+Xalgorithm="AES"
- token=rwuser
- 
- while test "x$done" = "x" -a "x$1" != "x" -a "x$usage" != "xyes"; do
-@@ -53,11 +53,11 @@ case $1 in
- 	    exit 1
- 	fi
-         case $1 in
--            DES|AES|AES128)
-+            AES|AES128)
- 	    Xalgorithm=$1
- 	    shift
- 	    ;;
--            des|aes|aes128)
-+            aes|aes128)
- 	    Xalgorithm=$(echo "$1" | tr a-z A-Z)
- 	    shift
- 	    ;;
-@@ -86,7 +86,7 @@ if test "x$usage" = "xyes"; then
-     echo ""
-     echo "Usage:"
-     echo "  net-snmp-create-v3-user [-ro] [-A authpass] [-X privpass]"
--    echo "                          [-a MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224] [-x DES|AES] [username]"
-+    echo "                          [-a MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224] [-x AES] [username]"
-     echo ""
-     exit
- fi
---- net-snmp-5.9.4/man/net-snmp-config.1.def
-+++ net-snmp-5.9.4/man/net-snmp-config.1.def
-@@ -30,7 +30,7 @@ code for a list of available debug token
+--- net-snmp-5.9.5.2/man/net-snmp-config.1.def
++++ net-snmp-5.9.5.2/man/net-snmp-config.1.def
+@@ -30,7 +30,7 @@ .PP
  SNMP Setup commands:
  .TP
  \fB\-\-create\-snmpv3\-user\fR [\-ro] [\-a authpass] [\-x privpass]
@@ -52,71 +17,27 @@ order to offer it to upstream.
  .PP
  These options produce the various compilation flags needed when
  building external SNMP applications:
---- net-snmp-5.9.4/man/snmpcmd.1.def
-+++ net-snmp-5.9.4/man/snmpcmd.1.def
-@@ -311,7 +311,7 @@ Overrides the \fIdefSecurityName\fR toke
- file.
- .TP
- .BI \-x " privProtocol"
--Set the privacy protocol (DES or AES) used for encrypted SNMPv3 messages. 
-+Set the privacy protocol (AES) used for encrypted SNMPv3 messages. 
- Overrides the \fIdefPrivType\fR token in the
- .I snmp.conf
- file. This option is only valid if the Net-SNMP software was build
---- net-snmp-5.9.4/man/net-snmp-create-v3-user.1.def
-+++ net-snmp-5.9.4/man/net-snmp-create-v3-user.1.def
-@@ -3,7 +3,7 @@
+--- net-snmp-5.9.5.2/man/net-snmp-create-v3-user.1.def
++++ net-snmp-5.9.5.2/man/net-snmp-create-v3-user.1.def
+@@ -3,7 +3,7 @@ .SH NAME
  net-snmp-create-v3-user \- create a SNMPv3 user in net-snmp configuration file
  .SH SYNOPSIS
  .PP
--.B net-snmp-create-v3-user [-ro] [-a authpass] [-x privpass] [-X DES|AES]
-+.B net-snmp-create-v3-user [-ro] [-a authpass] [-x privpass] [-X AES]
+-.B net-snmp-create-v3-user [-ro] [-A authpass] [-a MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224] [-X privpass] [-x DES|AES|AES128]
++.B net-snmp-create-v3-user [-ro] [-A authpass] [-a MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224] [-X privpass] [-x AES|AES128]
  .B [username]
  .SH DESCRIPTION
  .PP
-@@ -24,5 +24,5 @@ specify authentication password
- \fB\-x privpass\fR
+@@ -27,5 +27,5 @@ .TP
+ \fB\-X privpass\fR
  specify encryption password
  .TP
--\fB\-X DES|AES\fR
-+\fB\-X AES\fR
+-\fB\-x DES|AES|AES128\fR
++\fB\-x AES|AES128\fR
  specify encryption algorithm
---- net-snmp-5.9.4/man/snmptrapd.conf.5.def
-+++ net-snmp-5.9.4/man/snmptrapd.conf.5.def
-@@ -117,7 +117,7 @@ to trigger the types of processing liste
- See
- .IR snmpd.conf (5)
- for more details.
--.IP "createUser [-e  ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [DES|AES]"
-+.IP "createUser [-e  ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [AES]"
- See the 
- .IR snmpd.conf (5)
- manual page for a description of how to create SNMPv3 users.  This
---- net-snmp-5.9.4/man/snmpd.conf.5.def
-+++ net-snmp-5.9.4/man/snmpd.conf.5.def
-@@ -284,16 +284,16 @@ them.  It is recommended you
- .B "use the net\-snmp\-config command"
- to do this, but you can also do it by directly specifying createUser
- directives yourself instead:
--.IP "createUser [\-e ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [DES|AES] [privpassphrase]"
-+.IP "createUser [\-e ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [AES] [privpassphrase]"
- .IP
- MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224 are the authentication types to use.
--DES and AES are the privacy protocols to use.  If the privacy
-+AES are the privacy protocols to use.  If the privacy
- passphrase is not specified, it is assumed to be the same as the
- authentication passphrase.  Note that the users created will be
- useless unless they are also added to the VACM access control tables
- described above.
- .IP
--SHA|SHA-512|SHA-384|SHA-256|SHA-224 authentication and DES/AES privacy
-+SHA|SHA-512|SHA-384|SHA-256|SHA-224 authentication and AES privacy
- require OpenSSL to be installed and
- the agent to be built with OpenSSL support.  MD5 authentication may be
- used without OpenSSL.
---- net-snmp-5.9.4/man/snmp.conf.5.def
-+++ net-snmp-5.9.4/man/snmp.conf.5.def
-@@ -221,13 +221,13 @@ The
+--- net-snmp-5.9.5.2/man/snmp.conf.5.def
++++ net-snmp-5.9.5.2/man/snmp.conf.5.def
+@@ -221,13 +221,13 @@ .B defPassphrase
  value will be used for the authentication and/or privacy pass phrases
  if either of the other directives are not specified.
  .IP "defAuthType MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224"
@@ -142,8 +63,110 @@ order to offer it to upstream.
  .IP "sshtosnmpsocket PATH"
  Sets the path of the \fBsshtosnmp\fR socket created by an application
  (e.g. snmpd) listening for incoming ssh connections through the
---- net-snmp-5.9.4/perl/SNMP/SNMP.pm
-+++ net-snmp-5.9.4/perl/SNMP/SNMP.pm
+--- net-snmp-5.9.5.2/man/snmpcmd.1.def
++++ net-snmp-5.9.5.2/man/snmpcmd.1.def
+@@ -311,7 +311,7 @@ .I snmp.conf
+ file.
+ .TP
+ .BI \-x " privProtocol"
+-Set the privacy protocol (DES or AES) used for encrypted SNMPv3 messages. 
++Set the privacy protocol (AES) used for encrypted SNMPv3 messages. 
+ Overrides the \fIdefPrivType\fR token in the
+ .I snmp.conf
+ file. This option is only valid if the Net-SNMP software was build
+--- net-snmp-5.9.5.2/man/snmpd.conf.5.def
++++ net-snmp-5.9.5.2/man/snmpd.conf.5.def
+@@ -284,16 +284,16 @@ them.  It is recommended you
+ .B "use the net\-snmp\-config command"
+ to do this, but you can also do it by directly specifying createUser
+ directives yourself instead:
+-.IP "createUser [\-e ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [DES|AES] [privpassphrase]"
++.IP "createUser [\-e ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [AES] [privpassphrase]"
+ .IP
+ MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224 are the authentication types to use.
+-DES and AES are the privacy protocols to use.  If the privacy
++AES are the privacy protocols to use.  If the privacy
+ passphrase is not specified, it is assumed to be the same as the
+ authentication passphrase.  Note that the users created will be
+ useless unless they are also added to the VACM access control tables
+ described above.
+ .IP
+-SHA|SHA-512|SHA-384|SHA-256|SHA-224 authentication and DES/AES privacy
++SHA|SHA-512|SHA-384|SHA-256|SHA-224 authentication and AES privacy
+ require OpenSSL to be installed and
+ the agent to be built with OpenSSL support.  MD5 authentication may be
+ used without OpenSSL.
+--- net-snmp-5.9.5.2/man/snmpd.examples.5.def
++++ net-snmp-5.9.5.2/man/snmpd.examples.5.def
+@@ -87,8 +87,8 @@ the same authentication and encryption s
+ .RS
+ .nf
+ createUser me     MD5 "single pass phrase"
+-createUser myself MD5 "single pass phrase" DES
+-createUser andI   MD5 "single pass phrase" DES "single pass phrase"
++createUser myself MD5 "single pass phrase" AES
++createUser andI   MD5 "single pass phrase" AES "single pass phrase"
+ .fi
+ .RE
+ Note that this defines three \fIdistinct\fR users, who could be granted
+--- net-snmp-5.9.5.2/man/snmptrapd.conf.5.def
++++ net-snmp-5.9.5.2/man/snmptrapd.conf.5.def
+@@ -117,7 +117,7 @@ to trigger the types of processing liste
+ See
+ .IR snmpd.conf (5)
+ for more details.
+-.IP "createUser [-e  ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [DES|AES]"
++.IP "createUser [-e  ENGINEID] username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [AES]"
+ See the 
+ .IR snmpd.conf (5)
+ manual page for a description of how to create SNMPv3 users.  This
+--- net-snmp-5.9.5.2/man/snmpusm.1.def
++++ net-snmp-5.9.5.2/man/snmpusm.1.def
+@@ -216,7 +216,7 @@ rwuser initial
+ # lets add the new user we'll create too:
+ rwuser wes
+ # USM configuration entries
+-createUser initial MD5 setup_passphrase DES
++createUser initial MD5 setup_passphrase AES
+ .fi
+ .RE
+ .PP
+--- net-snmp-5.9.5.2/net-snmp-create-v3-user.in
++++ net-snmp-5.9.5.2/net-snmp-create-v3-user.in
+@@ -10,7 +10,7 @@ exit 1
+ fi
+ 
+ Aalgorithm="MD5"
+-Xalgorithm="DES"
++Xalgorithm="AES"
+ token=rwuser
+ 
+ while test "x$done" = "x" -a "x$1" != "x" -a "x$usage" != "xyes"; do
+@@ -53,11 +53,11 @@ echo "You must specify an encryption alg
+ 	    exit 1
+ 	fi
+         case $1 in
+-            DES|AES|AES128)
++            AES|AES128)
+ 	    Xalgorithm=$1
+ 	    shift
+ 	    ;;
+-            des|aes|aes128)
++            aes|aes128)
+ 	    Xalgorithm=$(echo "$1" | tr a-z A-Z)
+ 	    shift
+ 	    ;;
+@@ -86,7 +86,7 @@ if test "x$usage" = "xyes"; then
+     echo ""
+     echo "Usage:"
+     echo "  net-snmp-create-v3-user [-ro] [-A authpass] [-X privpass]"
+-    echo "                          [-a MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224] [-x DES|AES|AES128] [username]"
++    echo "                          [-a MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224] [-x AES|AES128] [username]"
+     echo ""
+     exit
+ fi
+--- net-snmp-5.9.5.2/perl/SNMP/SNMP.pm
++++ net-snmp-5.9.5.2/perl/SNMP/SNMP.pm
 @@ -1698,9 +1698,9 @@ default <none>, authentication passphras
  
  =item PrivProto
@@ -156,33 +179,9 @@ order to offer it to upstream.
  
  =item PrivPass
  
---- net-snmp-5.9.4/man/snmpusm.1.def
-+++ net-snmp-5.9.4/man/snmpusm.1.def
-@@ -216,7 +216,7 @@ rwuser initial
- # lets add the new user we'll create too:
- rwuser wes
- # USM configuration entries
--createUser initial MD5 setup_passphrase DES
-+createUser initial MD5 setup_passphrase AES
- .fi
- .RE
- .PP
---- net-snmp-5.9.4/man/snmpd.examples.5.def
-+++ net-snmp-5.9.4/man/snmpd.examples.5.def
-@@ -87,8 +87,8 @@ the same authentication and encryption s
- .RS
- .nf
- createUser me     MD5 "single pass phrase"
--createUser myself MD5 "single pass phrase" DES
--createUser andI   MD5 "single pass phrase" DES "single pass phrase"
-+createUser myself MD5 "single pass phrase" AES
-+createUser andI   MD5 "single pass phrase" AES "single pass phrase"
- .fi
- .RE
- Note that this defines three \fIdistinct\fR users, who could be granted
---- net-snmp-5.9.4/snmplib/snmp_parse_args.c
-+++ net-snmp-5.9.4/snmplib/snmp_parse_args.c
-@@ -115,7 +115,7 @@ snmp_parse_args_descriptions(FILE * outf
+--- net-snmp-5.9.5.2/snmplib/snmp_parse_args.c
++++ net-snmp-5.9.5.2/snmplib/snmp_parse_args.c
+@@ -115,7 +115,7 @@ "  -l LEVEL\t\tset security level (noAut
      fprintf(outf, "  -n CONTEXT\t\tset context name (e.g. bridge1)\n");
      fprintf(outf, "  -u USER-NAME\t\tset security name (e.g. bert)\n");
  #ifdef HAVE_AES
@@ -191,9 +190,9 @@ order to offer it to upstream.
  #ifdef NETSNMP_DRAFT_BLUMENTHAL_AES_04
              "|AES-192|AES-256"
  #endif
---- net-snmp-5.9.4/snmplib/snmpusm.c
-+++ net-snmp-5.9.4/snmplib/snmpusm.c
-@@ -4860,7 +4860,7 @@ init_usm_conf(const char *app)
+--- net-snmp-5.9.5.2/snmplib/snmpusm.c
++++ net-snmp-5.9.5.2/snmplib/snmpusm.c
+@@ -4984,7 +4984,7 @@ register_config_handler(app, "usmUser",
                                    usm_parse_config_usmUser, NULL, NULL);
      register_config_handler(app, "createUser",
                                    usm_parse_create_usmUser, NULL,

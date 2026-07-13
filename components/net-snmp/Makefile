@@ -36,10 +36,10 @@ LD_SHARED_OPTIONS_Z_DEFS=
 PATH=$(GNUBIN):$(USRBINDIR)
 
 COMPONENT_NAME=		net-snmp
-COMPONENT_VERSION=	5.9.4
+COMPONENT_VERSION=	5.9.5.2
 COMPONENT_PROJECT_URL=	http://www.net-snmp.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:8b4de01391e74e3c7014beb43961a2d6d6fa03acc34280b9585f4930745b0544
+    sha256:16707719f833184a4b72835dac359ae188123b06b5e42817c00790d7dc1384bf
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/net-snmp/files/net-snmp/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/net-snmp utility/net-snmp library/net-snmp
 COMPONENT_ANITYA_ID=	2062
@@ -53,7 +53,7 @@ include $(WS_MAKE_RULES)/common.mk
 # Required by GCC 14 - needs to be evaluated and properly fixed.
 CFLAGS += -Wno-implicit-function-declaration -Wno-incompatible-pointer-types
 
-PYTHON_VERSION = 3.11
+PYTHON_VERSION = 3.13
 
 studio_C99MODE= $(studio_C99_ENABLE)
 CPPFLAGS += "-DFALSE_SHARING_ALIGN=64"
@@ -104,8 +104,8 @@ COMPONENT_PRE_CONFIGURE_ACTION.64 = \
 	($(CLONEY) $(SOURCE_DIR) $(@D); $(CLONEY) $(COMPONENT_DIR)/sun $(@D)/sun);
 COMPONENT_PRE_CONFIGURE_ACTION += $(COMPONENT_PRE_CONFIGURE_ACTION.$(BITS))
 
-# Make a copy of the python bits so we can build separate python 3.11 support
-COMPONENT_PREP_ACTION += (cd $(@D) ; cp -rp python python3.11);
+# Make a copy of the python bits so we can build separate python 3.13 support
+COMPONENT_PREP_ACTION += (cd $(@D) ; cp -rp python python3.13);
 
 CCSMAKE_ARGS =	CC="$(CC)" CFGPREFIX=$(USRDIR) CFGLIB64=$(USRLIBDIR64)
 CCSMAKE_ARGS +=	CFGLIB=$(USRLIBDIR) ARCH=$(ARCH) ROOT=$(PROTO_DIR)
@@ -146,17 +146,17 @@ GENERATE_PROTO_DIRS += sun/sdk/demo^sun/sdk/demo
 
 COMPONENT_PRE_BUILD_ACTION += (echo "COMPONENT_PRE_BUILD_ACTION - BITS=$(BITS)");
 COMPONENT_PRE_BUILD_ACTION += \
-	(cd $(BUILD_DIR_$(BITS)); rm -rf python3.11; gcp -vr python python3.11);
+	(cd $(BUILD_DIR_$(BITS)); rm -rf python3.13; gcp -vr python python3.13);
 
 COMPONENT_POST_BUILD_ACTION.64 += \
-	(cd $(BUILD_DIR_64)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS));
+	(cd $(BUILD_DIR_64)/sun ; ls agent; env; MAKEFLAGS= MFLAGS= $(CCSMAKE) -e $(CCSMAKE_ARGS));
 COMPONENT_POST_BUILD_ACTION.32 += \
-	(cd $(BUILD_DIR_32)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS));
+	(cd $(BUILD_DIR_32)/sun ; ls agent; env; MAKEFLAGS= MFLAGS= $(CCSMAKE) -e $(CCSMAKE_ARGS));
 
 COMPONENT_POST_BUILD_ACTION.64 += \
 	(cd $(BUILD_DIR_64)/python ; find . -name \*.so | gxargs --verbose rm);
 COMPONENT_POST_BUILD_ACTION.64 += \
-	(cd $(BUILD_DIR_$(BITS))/python3.11 ; $(PYTHON.3.11) setup.py build --basedir=$(BUILD_DIR)/$(MACH64));
+	(cd $(BUILD_DIR_$(BITS))/python3.13 ; $(PYTHON.3.13) setup.py build --basedir=$(BUILD_DIR)/$(MACH64));
 
 COMPONENT_POST_BUILD_ACTION += (echo "COMPONENT_POST_BUILD_ACTION - BITS=$(BITS)");
 COMPONENT_POST_BUILD_ACTION += $(COMPONENT_POST_BUILD_ACTION.$(BITS))
@@ -164,13 +164,30 @@ COMPONENT_POST_BUILD_ACTION += $(COMPONENT_POST_BUILD_ACTION.$(BITS))
 # Build sun agent and python modules
 COMPONENT_POST_INSTALL_ACTION += \
 	($(MKDIR) $(BUILD_DIR)/prototype/$(MACH64)/etc/net-snmp/snmp/mibs; \
-	 cd $(BUILD_DIR)/$(MACH64)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS) install);
+	 cd $(BUILD_DIR)/$(MACH64)/sun ; ls agent; MAKEFLAGS= MFLAGS= $(CCSMAKE) -e $(CCSMAKE_ARGS) install);
 
 COMPONENT_POST_INSTALL_ACTION.64 = \
-	(cd $(@D)/python3.11 ; env PYTHON=$(PYTHON.3.11) \
-	 $(PYTHON.3.11) ./setup.py install \
+	(cd $(@D)/python3.13 ; env PYTHON=$(PYTHON.3.13) \
+	 $(PYTHON.3.13) ./setup.py install \
 		--root $(PROTO_DIR) \
-		--install-lib=$(PYTHON.3.11.VENDOR_PACKAGES)) ;
+		--install-lib=$(PYTHON.3.13.VENDOR_PACKAGES)) ;
+
+# Copy existing snmp libraries to help smoother transition from .so.40 to
+# .so.45. This should be remove before next release from trunk by bug 39709687.
+COMPONENT_POST_INSTALL_ACTION.64 += \
+    $(CP) /usr/lib/$(MACH64)/libnetsnmp.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
+    $(CP) /usr/lib/libnetsnmp.so.40.2.1 $(PROTO_DIR)/usr/lib; \
+    $(CP) /usr/lib/$(MACH64)/libnetsnmpagent.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
+    $(CP) /usr/lib/libnetsnmpagent.so.40.2.1 $(PROTO_DIR)/usr/lib; \
+    $(CP) /usr/lib/$(MACH64)/libnetsnmphelpers.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
+    $(CP) /usr/lib/libnetsnmphelpers.so.40.2.1 $(PROTO_DIR)/usr/lib; \
+    $(CP) /usr/lib/$(MACH64)/libnetsnmpmibs.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
+    $(CP) /usr/lib/libnetsnmpmibs.so.40.2.1 $(PROTO_DIR)/usr/lib; \
+    $(CP) /usr/lib/$(MACH64)/libnetsnmptrapd.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
+    $(CP) /usr/lib/libnetsnmptrapd.so.40.2.1 $(PROTO_DIR)/usr/lib; \
+    $(CP) /usr/lib/$(MACH64)/libsnmp.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
+    $(CP) /usr/lib/libsnmp.so.40.2.1 $(PROTO_DIR)/usr/lib;
+
 
 COMPONENT_POST_INSTALL_ACTION += (echo "COMPONENT_POST_INSTALL_ACTION - BITS=$(BITS)");
 COMPONENT_POST_INSTALL_ACTION += $(COMPONENT_POST_INSTALL_ACTION.$(BITS))
@@ -191,7 +208,7 @@ REQUIRED_PACKAGES += developer/build/make
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-311
+REQUIRED_PACKAGES += runtime/python-313
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

@@ -1,15 +1,15 @@
 Solaris specific patch developed inhouse, not submitted upstream.
---- net-snmp-5.8.old/agent/mibgroup/if-mib/data_access/interface_solaris2.c	2018-07-16 07:33:40.000000000 +0000
-+++ net-snmp-5.8/agent/mibgroup/if-mib/data_access/interface_solaris2.c	2020-06-11 02:44:39.748389405 +0000
-@@ -17,6 +17,7 @@
+--- net-snmp-5.9.5.2/agent/mibgroup/if-mib/data_access/interface_solaris2.c
++++ net-snmp-5.9.5.2/agent/mibgroup/if-mib/data_access/interface_solaris2.c
+@@ -17,6 +17,7 @@ #include <sys/ioctl.h>
  #include <sys/sockio.h>
  #include <strings.h>
  #include <string.h>
 +#include <priv.h>
  
- netsnmp_feature_child_of(interface_arch_set_admin_status, interface_all)
+ netsnmp_feature_child_of(interface_arch_set_admin_status, interface_all);
  
-@@ -92,17 +93,27 @@
+@@ -92,17 +93,27 @@ break;
          }
          entry->ns_flags = 0;
  

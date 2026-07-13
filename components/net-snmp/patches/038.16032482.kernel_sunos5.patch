@@ -5,20 +5,9 @@
 # Developed in-house. Bug submitted upstream
 # https://sourceforge.net/p/net-snmp/bugs/2590/
 #
---- net-snmp-5.7.2.1/snmplib/Makefile.in	Thu Oct 30 02:07:41 2014
-+++ net-snmp-5.7.2.1/snmplib/Makefile.in	Thu Oct 30 02:08:06 2014
-@@ -222,7 +222,7 @@
- TOBJS=$(LOBJS)
- 
- # To satisfy -zdefs
--LIB_LD_ADD =-lnsl -lsocket -L$(libdir)
-+LIB_LD_ADD =-lnsl -lsocket -ldladm -L$(libdir)
- 
- FEATUREFILE     = $(top_builddir)/include/net-snmp/library/features.h
- 
---- net-snmp-5.9.4/agent/mibgroup/kernel_sunos5.c
-+++ net-snmp-5.9.4/agent/mibgroup/kernel_sunos5.c
-@@ -60,6 +60,8 @@
+--- net-snmp-5.9.5.2/agent/mibgroup/kernel_sunos5.c
++++ net-snmp-5.9.5.2/agent/mibgroup/kernel_sunos5.c
+@@ -60,6 +60,8 @@ #include <inet/ip.h>
  #include <net/if.h>
  #include <netinet/in.h>
  
@@ -27,12 +16,8 @@
  /*-
   * Includes of local application header files 
   */
-@@ -188,9 +190,11 @@ getif(mib2_ifEntry_t *ifbuf, size_t size
-       size_t *length, int (*comp)(void *, void *), void *arg);
- static void 
- set_if_info(mib2_ifEntry_t *ifp, unsigned index, char *name, uint64_t flags,
--            boolean_t flags_unknown, int mtu);
-+            boolean_t flags_unknown, int mtu);
+@@ -191,6 +193,8 @@ set_if_info(mib2_ifEntry_t *ifp, unsigne
+             boolean_t flags_unknown, int mtu);
  static int get_if_stats(mib2_ifEntry_t *ifp);
  
 +static int link_to_phydev(char *link, char *phy_devname);
@@ -40,7 +25,7 @@
  #if defined(HAVE_IF_NAMEINDEX)
  static int _dlpi_open(const char *devname);
  static int _dlpi_get_phys_address(int fd, char *paddr, int maxlen,
-@@ -1621,13 +1767,158 @@ getif(mib2_ifEntry_t *ifbuf, size_t size
+@@ -1763,6 +1767,147 @@ return ret;
  }
  #endif /*defined(HAVE_IF_NAMEINDEX)*/
  
@@ -187,9 +172,8 @@
 +
  static void
  set_if_info(mib2_ifEntry_t *ifp, unsigned index, char *name, uint64_t flags,
--            boolean_t flags_unknown, int mtu)
-+            boolean_t flags_unknown, int mtu)
- { 
+             boolean_t flags_unknown, int mtu)
+@@ -1770,6 +1915,10 @@ {
      boolean_t havespeed = B_FALSE;
      uint64_t ifspeed = 0;
  
@@ -200,7 +184,7 @@
      /*
       * Set basic information 
       */
-@@ -1673,6 +1967,16 @@ set_if_info(mib2_ifEntry_t *ifp, unsigne
+@@ -1818,6 +1967,16 @@ int i_tmp;
          /* only UPed interfaces get correct link status - if any */
          if (getKstatInt(NULL, name,"link_up",&i_tmp) == 0) {
              ifp->ifOperStatus = i_tmp ? 1 : 2;
@@ -217,3 +201,14 @@
  #ifdef IFF_FAILED
          } else if (flags & IFF_FAILED) {
              /*
+--- net-snmp-5.9.5.2/snmplib/Makefile.in
++++ net-snmp-5.9.5.2/snmplib/Makefile.in
+@@ -222,7 +222,7 @@ # just in case someone wants to remove l
+ TOBJS=$(LOBJS)
+ 
+ # To satisfy -zdefs
+-LIB_LD_ADD =-lnsl -lsocket -L$(libdir)
++LIB_LD_ADD =-lnsl -lsocket -ldladm -L$(libdir)
+ 
+ FEATUREFILE     = $(top_builddir)/include/net-snmp/library/features.h
+ 

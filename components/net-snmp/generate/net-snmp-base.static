@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2022, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 #
 
 # These are mib files which are not installed by net-snmp, but we were used to
@@ -58,3 +58,40 @@ file $(MACH32)/sun/agent/modules/entityMib/libentity.so \
     path=usr/lib/libentity.so
 file $(MACH64)/sun/agent/modules/entityMib/libentity.so \
     path=usr/lib/$(MACH64)/libentity.so
+
+# This is part of transition from old net-snmp to new one. Can be removed once
+# we stop delivering the old libraries
+link path=usr/lib/libnetsnmp.so.40 target=libnetsnmp.so.40.2.1
+link path=usr/lib/libnetsnmp.so.40.2 target=libnetsnmp.so.40.2.1
+link path=usr/lib/$(MACH64)/libnetsnmp.so.40 target=libnetsnmp.so.40.2.1
+link path=usr/lib/$(MACH64)/libnetsnmp.so.40.2 target=libnetsnmp.so.40.2.1
+
+link path=usr/lib/libnetsnmpagent.so.40 target=libnetsnmpagent.so.40.2.1
+link path=usr/lib/libnetsnmpagent.so.40.2 target=libnetsnmpagent.so.40.2.1
+link path=usr/lib/$(MACH64)/libnetsnmpagent.so.40 target=libnetsnmpagent.so.40.2.1
+link path=usr/lib/$(MACH64)/libnetsnmpagent.so.40.2 target=libnetsnmpagent.so.40.2.1
+
+link path=usr/lib/libnetsnmphelpers.so.40 target=libnetsnmphelpers.so.40.2.1
+link path=usr/lib/libnetsnmphelpers.so.40.2 target=libnetsnmphelpers.so.40.2.1
+link path=usr/lib/$(MACH64)/libnetsnmphelpers.so.40 target=libnetsnmphelpers.so.40.2.1
+link path=usr/lib/$(MACH64)/libnetsnmphelpers.so.40.2 target=libnetsnmphelpers.so.40.2.1
+
+link path=usr/lib/libnetsnmpmibs.so.40 target=libnetsnmpmibs.so.40.2.1
+link path=usr/lib/libnetsnmpmibs.so.40.2 target=libnetsnmpmibs.so.40.2.1
+link path=usr/lib/$(MACH64)/libnetsnmpmibs.so.40 target=libnetsnmpmibs.so.40.2.1
+link path=usr/lib/$(MACH64)/libnetsnmpmibs.so.40.2 target=libnetsnmpmibs.so.40.2.1
+
+link path=usr/lib/libnetsnmptrapd.so.40 target=libnetsnmptrapd.so.40.2.1
+link path=usr/lib/libnetsnmptrapd.so.40.2 target=libnetsnmptrapd.so.40.2.1
+link path=usr/lib/$(MACH64)/libnetsnmptrapd.so.40 target=libnetsnmptrapd.so.40.2.1
+link path=usr/lib/$(MACH64)/libnetsnmptrapd.so.40.2 target=libnetsnmptrapd.so.40.2.1
+
+link path=usr/lib/libsnmp.so.40 target=libsnmp.so.40.2.1
+link path=usr/lib/libsnmp.so.40.2 target=libsnmp.so.40.2.1
+link path=usr/lib/$(MACH64)/libsnmp.so.40 target=libsnmp.so.40.2.1
+link path=usr/lib/$(MACH64)/libsnmp.so.40.2 target=libsnmp.so.40.2.1
+
+file release-notes/net-snmp-5.9.5.2.txt \
+    path=usr/share/doc/release-notes/net-snmp-5.9.5.2.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI

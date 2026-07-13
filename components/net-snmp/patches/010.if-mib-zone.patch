@@ -1,6 +1,6 @@
---- net-snmp-5.4.1/agent/mibgroup/kernel_sunos5.c	2009-05-11 15:32:06.000000000 -0700
-+++ net-snmp-5.4.1.fix/agent/mibgroup/kernel_sunos5.c	2009-05-11 16:47:40.637063871 -0700
-@@ -170,7 +170,7 @@
+--- net-snmp-5.9.5.2/agent/mibgroup/kernel_sunos5.c
++++ net-snmp-5.9.5.2/agent/mibgroup/kernel_sunos5.c
+@@ -188,7 +188,7 @@ getif(mib2_ifEntry_t *ifbuf, size_t size
        size_t *length, int (*comp)(void *, void *), void *arg);
  static void 
  set_if_info(mib2_ifEntry_t *ifp, unsigned index, char *name, uint64_t flags,
@@ -8,8 +8,8 @@
 +            boolean_t flags_unknown, int mtu);
  static int get_if_stats(mib2_ifEntry_t *ifp);
  
- #if defined(HAVE_IF_NAMEINDEX) && defined(NETSNMP_INCLUDE_IFTABLE_REWRITES)
-@@ -1332,8 +1332,9 @@
+ #if defined(HAVE_IF_NAMEINDEX)
+@@ -1374,8 +1374,9 @@ struct lifreq   lifreq, *lifrp;
      mib2_ifEntry_t *ifp;
      int             nentries = size / sizeof(mib2_ifEntry_t);
      found_e         result = NOT_FOUND;
@@ -20,15 +20,15 @@
      struct if_nameindex *ifname, *ifnp;
  
      lifrp = &lifreq; 
-@@ -1365,6 +1366,7 @@
-         memcpy(lifrp->lifr_name, ifnp->if_name, LIFNAMSIZ);
+@@ -1407,6 +1408,7 @@ DEBUGMSGTL(("kernel_sunos5", "...... get
+         strlcpy(lifrp->lifr_name, ifnp->if_name, LIFNAMSIZ);
          if_isv6 = B_FALSE;
  
 +        flags_unknown = B_FALSE;
          if (ioctl(ifsd, SIOCGLIFFLAGS, lifrp) < 0) {
              if (ifsd6 == -1) {
                  if ((ifsd6 = socket(AF_INET6, SOCK_DGRAM, 0)) < 0) {
-@@ -1373,17 +1375,19 @@
+@@ -1415,17 +1417,19 @@ goto Return;
                  }
              }
              if (ioctl(ifsd6, SIOCGLIFFLAGS, lifrp) < 0) {
@@ -52,7 +52,7 @@
          }
  
          memset(ifp, 0, sizeof(mib2_ifEntry_t));
-@@ -1398,11 +1402,12 @@
+@@ -1440,11 +1444,12 @@ close(fd);
          }
  
          set_if_info(ifp, ifnp->if_index, ifnp->if_name, if_flags, 
@@ -67,7 +67,7 @@
          }
  
          /*
-@@ -1581,7 +1586,7 @@
+@@ -1623,7 +1628,7 @@ #endif /*defined(HAVE_IF_NAMEINDEX)*/
  
  static void
  set_if_info(mib2_ifEntry_t *ifp, unsigned index, char *name, uint64_t flags,
@@ -75,8 +75,8 @@
 +            boolean_t flags_unknown, int mtu)
  { 
      boolean_t havespeed = B_FALSE;
- 
-@@ -1592,7 +1597,10 @@
+     uint64_t ifspeed = 0;
+@@ -1635,7 +1640,10 @@ ifp->ifIndex = index;
      ifp->ifDescr.o_length = strlen(name);
      strcpy(ifp->ifDescr.o_bytes, name);
      ifp->ifAdminStatus = (flags & IFF_UP) ? 1 : 2;

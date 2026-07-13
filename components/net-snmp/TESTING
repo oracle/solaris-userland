@@ -1,3 +1,24 @@
+Build ON gate
+=============
+- install the built snmp
+- clone ON gate
+- if the .so version changed, then edit usr/src/Targetdirs, duplicate the lines and add new .so versions
+  - /usr/lib/libnetsnmp.so.40
+  - /usr/lib/libnetsnmpagent.so.40
+  - /usr/lib/libnetsnmphelpers.so.40.2.1
+  - and the same three under /usr/lib/$(MACH64)/
+- build ON GATE
+
+
+
+
+
+Test while installed on a machine
+=================================
+
+# Enable verbose logging
+$ echo 'logOption F7 /var/log/snmpd.log' >> /etc/net-snmp/snmp/snmp.conf
+
 # create v3 user
 $ svcadm disable svc:/application/management/net-snmp:default
 $ net-snmp-config --create-snmpv3-user -a "my_password" myuser
@@ -24,7 +45,7 @@ IF-MIB::ifDescr.2 = STRING: net0
 # memory statistics
 $ snmpwalk -v 2c -c public localhost  .1.3.6.1.4.1.2021.4
 
-# snmptranslte tests
+# snmptranslate tests
 $ snmptranslate 1.3.6.1.2.1.1.1.0
 SNMPv2-MIB::sysDescr.0
 
@@ -48,7 +69,7 @@ $ snmpset -v 2c -c public localhost IF-MIB::ifAlias.1 s aha
 IF-MIB::ifAlias.1 = STRING: aha
 
 $ snmpget -v 2c -c public localhost IF-MIB::ifAlias.1
-IF-MIB::ifAlias.1 = STRING: test
+IF-MIB::ifAlias.1 = STRING: aha
 
 
 # snmpbulkget
@@ -61,7 +82,7 @@ snmpwalk -v 2c -c public localhost IP-MIB::ipAddressPrefix
 # compare to 'ipadm' output. Both IPv4 and IPv6 should be seen
 
 # fma
-$ echo 'dlmod sunFM /usr/lib/fm/amd64/libfmd_snmp.so.1' >> /etc/net-snmp/snmp/snmpd.conf
+$ echo 'dlmod sunFM /usr/lib/fm/64/libfmd_snmp.so.1' >> /etc/net-snmp/snmp/snmpd.conf
 $ svcadm restart svc:/application/management/net-snmp:default
 $ cat /var/log/snmpd.log # no error loading module shoud be seen
 $ echo '
@@ -93,6 +114,7 @@ SUN-FM-MIB::sunFmProblemUUID."02546836-742a-48d5-a8c1-ae936eb6c4b0" = STRING: "0
 SUN-FM-MIB::sunFmProblemUUID."690d6c12-c070-4a97-bc11-f8593fc2f13d" = STRING: "690d6c12-c070-4a97-bc11-f8593fc2f13d"
 ...
 
+# The two hashes seen should equal to what 'fmadm list' says
 
 
 # trap
@@ -105,7 +127,7 @@ DISMAN-EVENT-MIB::sysUpTimeInstance = Timeticks: (0) 0:00:00.00 SNMPv2-MIB::snmp
 
 
 # python
-$ python3.11 -c "import netsnmp; print(netsnmp.snmpget(netsnmp.Varbind('sysDescr.0'), Version=2, DestHost = 'localhost', Community='public'))"
+$ python3 -c "import netsnmp; print(netsnmp.snmpget(netsnmp.Varbind('sysDescr.0'), Version=2, DestHost = 'localhost', Community='public'))"
 ('SunOS ST-ul-cbe 5.11 11.4.78.188.0 i86pc',)
 
 
@@ -116,3 +138,9 @@ $ truss -deafl -'t!all' -t open /usr/sbin/snmpd -f -Le -V 2>&1 | grep mem
 # The output should be empty and NOT something like
 29099/1:         0.008591    openat(AT_FDCWD, "/dev/kmem", O_RDONLY)            = 3
 29099/1:         0.008662    openat(AT_FDCWD, "/dev/mem", O_RDONLY)             = 4
+
+
+
+
+
+
