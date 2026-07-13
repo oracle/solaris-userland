@@ -3,9 +3,42 @@ Author: Vladimir Kotal <Vladimir.Kotal@Oracle.COM>
 Date:   Tue Jun 6 14:51:33 2023 +0200
 
     initial set of changes to build wanboot
---- old/crypto/bio/bio_addr.c	2026-01-28 11:32:52.569400734 +0100
-+++ new/crypto/bio/bio_addr.c	2026-01-28 11:34:07.924799258 +0100
-@@ -749,6 +749,29 @@ int BIO_lookup_ex(const char *host, cons
+
+
+# crypto/bio/bio_addr.c:
+# Avoid the getaddrinfo()/getnameinfo() path for _BOOT builds because it pulls
+# in resolver functions that are not available to wanboot. Keep the older
+# lookup path and provide the small netdb structure declarations needed there.
+--- openssl-3.5.5/crypto/bio/bio_addr.c
++++ openssl-3.5.5/crypto/bio/bio_addr.c
+@@ -233,7 +233,7 @@
+         return 0;
+ 
+     if (1) {
+-#ifdef AI_PASSIVE
++#if defined(AI_PASSIVE) && !defined(_BOOT)
+         int ret = 0;
+         char host[NI_MAXHOST] = "", serv[NI_MAXSERV] = "";
+         int flags = 0;
+@@ -455,7 +455,7 @@
+     if (bai == NULL)
+         return;
+ 
+-#ifdef AI_PASSIVE
++#if defined(AI_PASSIVE) && !defined(_BOOT)
+ #ifndef OPENSSL_NO_UNIX_SOCK
+ #define _cond bai->bai_family != AF_UNIX
+ #else
+@@ -713,7 +713,7 @@
+         return 0;
+ 
+     if (1) {
+-#ifdef AI_PASSIVE
++#if defined(AI_PASSIVE) && !defined(_BOOT)
+         int gai_ret = 0, old_ret = 0;
+         struct addrinfo hints;
+ 
+@@ -770,6 +770,28 @@ int BIO_lookup_ex(const char *host, cons
          }
      } else {
  #endif
@@ -21,7 +54,6 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
 +};
 +
 +extern int h_errno;
-+
 +extern struct hostent *gethostbyname(const char *);
 +
 +struct	servent {
@@ -35,7 +67,7 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
          const struct hostent *he;
  /*
   * Because struct hostent is defined for 32-bit pointers only with
-@@ -874,6 +897,7 @@ int BIO_lookup_ex(const char *host, cons
+@@ -902,6 +924,7 @@ int BIO_lookup_ex(const char *host, cons
                  se_fallback.s_port = htons((unsigned short)portnum);
                  se_fallback.s_proto = proto;
                  se = &se_fallback;
@@ -43,7 +75,7 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
              } else if (endp == service) {
                  se = getservbyname(service, proto);
  
-@@ -882,6 +906,7 @@ int BIO_lookup_ex(const char *host, cons
+@@ -910,6 +933,7 @@ int BIO_lookup_ex(const char *host, cons
                          "calling getservbyname()");
                      goto err;
                  }
@@ -51,9 +83,14 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
              } else {
                  ERR_raise(ERR_LIB_BIO, BIO_R_MALFORMED_HOST_OR_SERVICE);
                  goto err;
---- old/crypto/bio/bio_sock.c	2026-01-28 11:32:52.572464443 +0100
-+++ new/crypto/bio/bio_sock.c	2026-01-28 11:36:08.248171452 +0100
-@@ -391,6 +391,13 @@ int BIO_sock_info(int sock,
+
+
+# crypto/bio/bio_sock.c:
+# select()/poll() are unavailable in the standalone boot environment, so make
+# BIO_socket_wait() fail directly for wanboot instead of referencing them.
+--- openssl-3.5.5/crypto/bio/bio_sock.c
++++ openssl-3.5.5/crypto/bio/bio_sock.c
+@@ -431,6 +431,13 @@ int BIO_sock_info(int sock,
   */
  int BIO_socket_wait(int fd, int for_read, time_t max_time)
  {
@@ -62,33 +99,39 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
 +     * select() is not available when linking stand-alone
 +     * library for wanboot.
 +     */
-+    return 1;
++    return -1;
 +#else
+ #if defined(OPENSSL_SYS_WINDOWS) || !defined(POLLIN)
      fd_set confds;
      struct timeval tv;
-     time_t now;
-@@ -414,5 +421,6 @@ int BIO_socket_wait(int fd, int for_read
-     tv.tv_sec = (long)(max_time - now); /* might overflow */
-     return select(fd + 1, for_read ? &confds : NULL,
-         for_read ? NULL : &confds, NULL, &tv);
+@@ -472,5 +479,6 @@ int BIO_socket_wait(int fd, int for_read
+     confds.events = for_read ? POLLIN : POLLOUT;
+     return poll(&confds, 1, (int)(max_time - now) * 1000);
+ #endif
 +#endif
  }
  #endif /* !defined(OPENSSL_NO_SOCK) */
---- old/crypto/cryptlib.c	2026-01-28 11:32:52.575710348 +0100
-+++ new/crypto/cryptlib.c	2026-01-28 12:06:57.560911828 +0100
-@@ -233,6 +233,12 @@ void OPENSSL_showfatal(const char *fmta,
- #endif
+
+
+# crypto/cryptlib.c:
+# vfprintf() is not provided by the standalone libraries. Exclude
+# OPENSSL_showfatal() under _BOOT and use the simpler fprintf() path in
+# OPENSSL_die().
+--- openssl-3.5.5/crypto/cryptlib.c
++++ openssl-3.5.5/crypto/cryptlib.c
+@@ -102,6 +102,12 @@ int OPENSSL_isservice(void)
  }
- #else
+ #endif
+ 
 +/*
 + * Solaris libsa.a used for WAN boot doesn't provide for vfprintf(). Since
-+ * OPENSSL_showfatal() is not used anywhere else then here we can safely use
-+ * the code from 0.9.7d version.
++ * OPENSSL_showfatal() is only used here and in 'uplink' module which we do
++ * not compile we can safely remove this function.
 + */
 +#ifndef    _BOOT
  void OPENSSL_showfatal(const char *fmta, ...)
  {
- #ifndef OPENSSL_NO_STDIO
+     va_list ap;
 @@ -243,6 +249,7 @@ void OPENSSL_showfatal(const char *fmta,
      va_end(ap);
  #endif
@@ -97,7 +140,7 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  
  int OPENSSL_isservice(void)
  {
-@@ -252,8 +259,14 @@ int OPENSSL_isservice(void)
+@@ -252,8 +259,13 @@ int OPENSSL_isservice(void)
  
  void OPENSSL_die(const char *message, const char *file, int line)
  {
@@ -105,15 +148,19 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
      OPENSSL_showfatal("%s:%d: OpenSSL internal error: %s\n",
          file, line, message);
 +#else
-+    fprintf(stderr,
-+        "%s(%d): OpenSSL internal error, assertion failed: %s\n",
-+        file, line, message);
++    fprintf(stderr, "%s:%d: OpenSSL internal error: %s\n",
++                      file, line, message);
 +#endif /* _BOOT */
- #if !defined(_WIN32)
+ #if !defined(_WIN32) || defined(OPENSSL_SYS_UEFI)
      abort();
  #else
---- old/crypto/evp/ctrl_params_translate.c	2026-01-28 11:32:52.578888763 +0100
-+++ new/crypto/evp/ctrl_params_translate.c	2026-01-28 11:44:54.504224355 +0100
+
+
+# crypto/evp/ctrl_params_translate.c:
+# The boot libraries do not export atoi(). Provide the existing standalone
+# implementation locally for the OpenSSL code that needs it.
+--- openssl-3.5.5/crypto/evp/ctrl_params_translate.c
++++ openssl-3.5.5/crypto/evp/ctrl_params_translate.c
 @@ -37,6 +37,52 @@
  #include "crypto/dh.h"
  #include "crypto/ec.h"
@@ -167,9 +214,82 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  struct translation_ctx_st; /* Forwarding */
  struct translation_st; /* Forwarding */
  
---- old/crypto/init.c	2026-01-28 11:32:52.581898368 +0100
-+++ new/crypto/init.c	2026-01-28 11:45:58.237284942 +0100
-@@ -107,11 +107,13 @@ DEFINE_RUN_ONCE_STATIC(ossl_init_registe
+
+
+# crypto/http/http_lib.c:
+# Avoid sscanf(), which is not available during boot, by parsing decimal port
+# numbers with OpenSSL's character helpers.
+--- openssl-3.5.6/crypto/http/http_lib.c
++++ openssl-3.5.6/crypto/http/http_lib.c
+@@ -7,7 +7,6 @@
+  * https://www.openssl.org/source/license.html
+  */
+ 
+-#include <stdio.h> /* for sscanf() */
+ #include <string.h>
+ #include <openssl/http.h>
+ #include <openssl/httperr.h>
+@@ -50,6 +49,24 @@ static void free_pstring(char **pstr)
+     }
+ }
+ 
++static int parse_port(const char *port, unsigned int *portnum)
++{
++    unsigned int ret = 0;
++
++    if (!ossl_isdigit(*port))
++        return 0;
++
++    do {
++        ret = ret * 10 + (*port - '0');
++        if (ret > 65535)
++            return 0;
++        port++;
++    } while (ossl_isdigit(*port));
++
++    *portnum = ret;
++    return 1;
++}
++
+ int OSSL_parse_url(const char *url, char **pscheme, char **puser, char **phost,
+     char **pport, int *pport_num,
+     char **ppath, char **pquery, char **pfrag)
+@@ -123,7 +140,7 @@ int OSSL_parse_url(const char *url, char **pscheme, char **puser, char **phost,
+         port = ++p;
+     /* remaining port spec handling is also done for the default values */
+     /* make sure a decimal port number is given */
+-    if (sscanf(port, "%u", &portnum) <= 0 || portnum > 65535) {
++    if (!parse_port(port, &portnum)) {
+         ERR_raise_data(ERR_LIB_HTTP, HTTP_R_INVALID_PORT_NUMBER, "%s", port);
+         goto err;
+     }
+@@ -202,6 +219,7 @@ int OSSL_HTTP_parse_url(const char *url, int *pssl, char **puser, char **phost,
+ {
+     char *scheme, *port;
+     int ssl = 0, portnum;
++    unsigned int uportnum;
+ 
+     init_pstring(pport);
+     if (pssl != NULL)
+@@ -227,8 +245,9 @@ int OSSL_HTTP_parse_url(const char *url, int *pssl, char **puser, char **phost,
+         /* set default port */
+         OPENSSL_free(port);
+         port = ssl ? OSSL_HTTPS_PORT : OSSL_HTTP_PORT;
+-        if (!ossl_assert(sscanf(port, "%d", &portnum) == 1))
++        if (!ossl_assert(parse_port(port, &uportnum)))
+             goto err;
++        portnum = (int)uportnum;
+         if (pport_num != NULL)
+             *pport_num = portnum;
+         if (pport != NULL) {
+
+
+# crypto/init.c:
+# atexit() is not available during boot. Skip registering OPENSSL_cleanup()
+# for wanboot.
+--- openssl-3.5.5/crypto/init.c
++++ openssl-3.5.5/crypto/init.c
+@@ -109,11 +109,13 @@ DEFINE_RUN_ONCE_STATIC(ossl_init_registe
      if (_onexit(win32atexit) == NULL)
          return 0;
  #else
@@ -183,8 +303,13 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  
      return 1;
  }
---- old/crypto/o_dir.c	2026-01-28 11:32:52.584797227 +0100
-+++ new/crypto/o_dir.c	2026-01-28 11:34:07.940855396 +0100
+
+
+# crypto/o_dir.c:
+# Directory traversal support is not available to wanboot; avoid including the
+# Unix directory implementation for _BOOT builds.
+--- openssl-3.5.5/crypto/o_dir.c
++++ openssl-3.5.5/crypto/o_dir.c
 @@ -24,7 +24,7 @@
  
  /* clang-format off */
@@ -194,9 +319,53 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
      || (defined __VMS_VER && __VMS_VER >= 70000000)
  # include "LPdir_unix.c"
  #elif defined OPENSSL_SYS_VMS
---- old/crypto/sparccpuid.S	2026-01-28 11:32:52.587708642 +0100
-+++ new/crypto/sparccpuid.S	2026-01-28 11:34:07.944125056 +0100
-@@ -477,6 +477,7 @@ CRYPTO_memcmp:
+
+
+# crypto/sleep.c:
+# Sleep syscalls are unavailable in the boot environment. Make OSSL_sleep() a
+# no-op for _BOOT instead of using nanosleep(), sleep(), or fallback code that
+# still references sleep().
+--- openssl-3.5.6/crypto/sleep.c
++++ openssl-3.5.6/crypto/sleep.c
+@@ -12,7 +12,13 @@
+ #include "internal/time.h"
+ 
+ /* system-specific variants defining OSSL_sleep() */
+-#if (defined(OPENSSL_SYS_UNIX) || defined(__DJGPP__)) && !defined(OPENSSL_USE_SLEEP_BUSYLOOP)
++#if defined(_BOOT)
++static void ossl_sleep_millis(uint64_t millis)
++{
++    (void)millis;
++}
++
++#elif (defined(OPENSSL_SYS_UNIX) || defined(__DJGPP__)) && !defined(OPENSSL_USE_SLEEP_BUSYLOOP)
+ 
+ #if defined(OPENSSL_USE_USLEEP) \
+     || defined(__DJGPP__)       \
+@@ -112,6 +118,9 @@ void OSSL_sleep(uint64_t millis)
+ 
+ void OSSL_sleep(uint64_t millis)
+ {
++#ifdef _BOOT
++    (void)millis;
++#else
+     OSSL_TIME now = ossl_time_now();
+     OSSL_TIME finish = ossl_time_add(now, ossl_ms2time(millis));
+     uint64_t left = millis;
+@@ -132,4 +141,5 @@ void OSSL_sleep(uint64_t millis)
+         now = ossl_time_now();
+         left = ossl_time2ms(ossl_time_subtract(finish, now));
+     } while (ossl_time_compare(now, finish) < 0);
++#endif
+ }
+
+
+# crypto/sparccpuid.S:
+# The VIS instrumentation and init-time cpuid setup paths are not usable in
+# wanboot. Exclude those assembler entry points for _BOOT.
+--- openssl-3.5.1/crypto/sparccpuid.S
++++ openssl-3.5.1/crypto/sparccpuid.S
+@@ -477,6 +477,7 @@ mov	%g1,%o0
  .type	CRYPTO_memcmp,#function
  .size	CRYPTO_memcmp,.-CRYPTO_memcmp
  
@@ -204,7 +373,7 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  .global	_sparcv9_vis1_instrument_bus
  .align	8
  _sparcv9_vis1_instrument_bus:
-@@ -576,3 +577,7 @@ _sparcv9_vis1_instrument_bus2:
+@@ -576,3 +577,7 @@ .size	_sparcv9_vis1_instrument_bus2,.-_s
  .section	".init",#alloc,#execinstr
  	call	OPENSSL_cpuid_setup
  	nop
@@ -212,8 +381,13 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
 +        nop
 +        nop
 +#endif
---- old/crypto/sparcv9cap.c	2026-01-28 11:32:52.590725507 +0100
-+++ new/crypto/sparcv9cap.c	2026-01-28 11:48:57.858488243 +0100
+
+
+# crypto/sparcv9cap.c:
+# Avoid gethrtime() and runtime SPARC capability probing in the boot
+# environment. Use the fixed capability set expected by wanboot.
+--- openssl-3.5.5/crypto/sparcv9cap.c
++++ openssl-3.5.5/crypto/sparcv9cap.c
 @@ -21,8 +21,13 @@
  #if defined(__GNUC__) && defined(__linux)
  __attribute__((visibility("hidden")))
@@ -286,139 +460,73 @@ Date:   Tue Jun 6 14:51:33 2023 +0200
  #endif
  }
 +#endif
---- old/crypto/x509/v3_utl.c	2026-01-28 11:32:52.593908076 +0100
-+++ new/crypto/x509/v3_utl.c	2026-01-28 11:34:07.950080099 +0100
-@@ -1173,11 +1173,51 @@ int ossl_a2i_ipadd(unsigned char *ipout,
-     }
- }
- 
-+#if    defined(_BOOT)
-+/* This function was copied from bio/b_sock.c */
-+static int get_ip(const char *str, unsigned char ip[4])
-+{
-+    unsigned int tmp[4];
-+    int num = 0, c, ok = 0;
-+
-+    tmp[0]=tmp[1]=tmp[2]=tmp[3]=0;
-+
-+    for (;;) {
-+        c = *(str++);
-+        if ((c >= '0') && (c <= '9')) {
-+            ok = 1;
-+            tmp[num] = tmp[num]*10+c-'0';
-+            if (tmp[num] > 255)
-+                return(0);
-+        } else if (c == '.') {
-+            if (!ok)
-+                return (-1);
-+            if (num == 3)
-+                return (0);
-+            num++;
-+            ok = 0;
-+        } else if (c == '\0' && (num == 3) && ok)
-+            break;
-+        else
-+            return(0);
-+        }
-+    ip[0]=tmp[0];
-+    ip[1]=tmp[1];
-+    ip[2]=tmp[2];
-+    ip[3]=tmp[3];
-+    return(1);
-+}
-+#endif /* _BOOT */
-+
- static int ipv4_from_asc(unsigned char *v4, const char *in)
- {
-     const char *p;
-     int a0, a1, a2, a3, n;
- 
-+#if    defined(_BOOT)
-+    if (get_ip(in, v4) != 1)
-+        return 0;
-+#else    /* _BOOT */
-     if (sscanf(in, "%d.%d.%d.%d%n", &a0, &a1, &a2, &a3, &n) != 4)
-         return 0;
-     if ((a0 < 0) || (a0 > 255) || (a1 < 0) || (a1 > 255)
-@@ -1190,6 +1230,7 @@ static int ipv4_from_asc(unsigned char *
-     v4[1] = a1;
-     v4[2] = a2;
-     v4[3] = a3;
-+#endif
-     return 1;
- }
- 
---- old/crypto/x509/x_all.c	2026-01-28 11:32:52.596764384 +0100
-+++ new/crypto/x509/x_all.c	2026-01-28 11:50:21.104258051 +0100
-@@ -92,6 +92,7 @@ int X509_sign_ctx(X509 *x, EVP_MD_CTX *c
- static ASN1_VALUE *simple_get_asn1(const char *url, BIO *bio, BIO *rbio,
-     int timeout, const ASN1_ITEM *it)
- {
-+#ifndef OPENSSL_NO_HTTP
-     size_t max_resp_len = (it == ASN1_ITEM_rptr(X509_CRL)) ? OSSL_HTTP_DEFAULT_MAX_CRL_LEN : OSSL_HTTP_DEFAULT_MAX_RESP_LEN;
-     BIO *mem = OSSL_HTTP_get(url, NULL /* proxy */, NULL /* no_proxy */,
-         bio, rbio, NULL /* cb */, NULL /* arg */,
-@@ -102,6 +103,9 @@ static ASN1_VALUE *simple_get_asn1(const
- 
-     BIO_free(mem);
-     return res;
-+#else
-+    return 0;
-+#endif
- }
- 
- X509 *X509_load_http(const char *url, BIO *bio, BIO *rbio, int timeout)
---- old/include/internal/sockets.h	2026-01-28 11:32:52.599803295 +0100
-+++ new/include/internal/sockets.h	2026-01-28 11:53:07.775265808 +0100
-@@ -70,13 +70,15 @@ struct servent *PASCAL getservbyname(con
+
+
+# include/internal/sockets.h:
+# wanboot provides a reduced socket interface. Avoid netdb.h and map OpenSSL's
+# socket wrappers to the standalone socket functions available during boot.
+--- openssl-3.5.5/include/internal/sockets.h
++++ openssl-3.5.5/include/internal/sockets.h
+@@ -34,7 +34,9 @@
+ #include <sys/socket.h>
+ #include <sys/un.h>
+ #include <tcp.h>
++#  ifndef _BOOT
+ #include <netdb.h>
++#  endif
+ #include <arpa/inet.h>
+ #include <netinet/tcp.h>
+ #elif defined(_WIN32_WCE) && _WIN32_WCE < 410
+@@ -89,7 +91,9 @@
  #include <time.h>
  #endif
  
 +#ifndef _BOOT
  #include <netdb.h>
 +#endif
- #if defined(OPENSSL_SYS_VMS_NODECC)
- #include <socket.h>
+ #if defined(OPENSSL_SYS_VMS)
+ typedef size_t socklen_t; /* Currently appears to be missing on VMS */
+ #endif
+@@ -98,7 +102,7 @@ typedef size_t socklen_t; /* Currently a
  #include <in.h>
  #include <inet.h>
  #else
 -#include <sys/socket.h>
-+#include "sys/socket.h"
- #ifndef NO_SYS_UN_H
++#   include "sys/socket.h"
+ #if !defined(NO_SYS_UN_H) && defined(AF_UNIX) && !defined(OPENSSL_NO_UNIX_SOCK)
  #include <sys/un.h>
  #ifndef UNIX_PATH_MAX
-@@ -135,6 +137,14 @@ struct servent *PASCAL getservbyname(con
+@@ -174,9 +178,17 @@ typedef size_t socklen_t; /* Currently a
+ #define get_last_socket_error() WSAGetLastError()
  #define clear_socket_error() WSASetLastError(0)
+ #define get_last_socket_error_is_eintr() (get_last_socket_error() == WSAEINTR)
  #define readsocket(s, b, n) recv((s), (b), (n), 0)
  #define writesocket(s, b, n) send((s), (b), (n), 0)
-+#elif defined(_BOOT)
++# elif defined(_BOOT)
 +extern int socket_read(int, void *, size_t, int);
 +extern int socket_close(int);
-+#define ioctlsocket(a,b,c) (-1)
-+#define closesocket(s) socket_close(s)
-+#define readsocket(s,b,n) socket_read((s),(b),(n), 200)
-+#define writesocket(s,b,n) send((s),(b),(n), 0)
-+#define __xnet_getsockopt getsockopt
++#  define ioctlsocket(a,b,c)	  (-1)
++#  define closesocket(s)          socket_close(s)
++#  define readsocket(s,b,n)       socket_read((s),(b),(n), 200)
++#  define writesocket(s,b,n)      send((s),(b),(n), 0)
++#  define __xnet_getsockopt	  getsockopt
  #elif defined(__DJGPP__)
  #define closesocket(s) close_s(s)
  #define readsocket(s, b, n) read_s(s, b, n)
---- old/providers/implementations/rands/seeding/rand_unix.c	2026-01-28 11:32:52.602990621 +0100
-+++ new/providers/implementations/rands/seeding/rand_unix.c	2026-01-28 11:55:17.104014686 +0100
-@@ -78,7 +78,7 @@ static uint64_t get_timer_bits(void);
+ #define writesocket(s, b, n) send(s, b, n, 0)
+
+
+# providers/implementations/rands/seeding/rand_unix.c:
+# POSIX timers are unavailable during boot, so do not enable the timer-based
+# random seeding path for _BOOT builds.
+--- openssl-3.5.5/providers/implementations/rands/seeding/rand_unix.c
++++ openssl-3.5.5/providers/implementations/rands/seeding/rand_unix.c
+@@ -82,7 +82,7 @@ static uint64_t get_time_stamp(void);
  #undef OSSL_POSIX_TIMER_OKAY
  /* On some systems, _POSIX_TIMERS is defined but empty.
   * Subtracting by 0 when comparing avoids an error in this case. */
 -#if defined(_POSIX_TIMERS) && _POSIX_TIMERS - 0 > 0
-+#if defined(_POSIX_TIMERS) && _POSIX_TIMERS - 0 > 0 && !defined(_BOOT)
++# if defined(_POSIX_TIMERS) && _POSIX_TIMERS -0 > 0 && !defined(_BOOT)
  #if defined(__GLIBC__)
  #if defined(__GLIBC_PREREQ)
  #if __GLIBC_PREREQ(2, 17)
-@@ -842,7 +842,7 @@ static uint64_t get_timer_bits(void)
-     if (res != 0)
-         return res;
- 
--#if defined(__sun) || defined(__hpux)
-+#if (defined(__sun) && !defined(_BOOT)) || defined(__hpux)
-     return gethrtime();
- #elif defined(_AIX)
-     {

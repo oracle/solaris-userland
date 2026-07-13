@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
 
 function fail()
@@ -137,29 +137,21 @@ function soname_check()
 }
 
 #
-# To prevent regression of bug
-#
-#   29967264 64-bit OpenSSL pkgconfig files have 32-bit library path on x86
-#
-function pkgconfig_64bit_check()
-{
-	if [[ $BITS != "64" ]]; then
-		return
-	fi
-
-	for name in openssl.pc libssl.pc libcrypto.pc; do
-		file="$BUILD_DIR/$name"
-		if ! ggrep '^libdir=.*\/\(64\|amd64\|sparcv9\)' "$file" >/dev/null; then
-			fail "Missing 64-bit path component in $file"
-		fi
-	done
-}
-
-#
 # wanboot specific checks
 #
 function wanboot_check()
 {
+	typeset libcrypto="$BUILD_DIR/libcrypto.a"
+	typeset unavailable_symbols
+
+	unavailable_symbols="nanosleep|sscanf|getnameinfo|__xnet_getaddrinfo"
+	unavailable_symbols="$unavailable_symbols|getaddrinfo|freeaddrinfo|gai_strerror"
+
+	echo "Checking $libcrypto for symbols unavailable during boot"
+	if /usr/bin/nm -u "$libcrypto" | /usr/bin/egrep "$unavailable_symbols"; then
+		fail "$libcrypto contains symbols unavailable during boot"
+	fi
+
 	echo "Checking functions/symbols placed into separate sections"
 	for libfile in $BUILD_DIR/$lib/*.a; do
 		#
@@ -183,5 +175,4 @@ else
 	sx_check
 	threads_check
 	soname_check
-	pkgconfig_64bit_check
 fi
