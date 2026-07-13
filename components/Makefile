@@ -134,9 +134,9 @@ clean:		$(COMPONENT_DIRS.nosetup)
 
 clobber:	$(COMPONENT_DIRS.nosetup) clean
 	@cd ../tools ; echo "clobbering tools..." ; $(GMAKE) clobber
-	$(RM) -r $(WS_REPO) $(WS_EXPERIMENTAL_REPO) $(WS_HOME) $(WS_LOGS) $(WS_LINT_CACHE)
+	$(RM) -r $(WS_REPO) $(WS_HOME) $(WS_LOGS) $(WS_LINT_CACHE)
 
-setup:	$(WS_MACH) $(WS_LOGS) $(WS_HOME) $(WS_REPO) $(WS_EXPERIMENTAL_REPO) tools $(WS_LINT_CACHE)
+setup:	$(WS_MACH) $(WS_LOGS) $(WS_HOME) $(WS_REPO) tools $(WS_LINT_CACHE)
 
 $(WS_MACH) $(WS_LOGS) $(WS_HOME):
 	$(MKDIR) $@
@@ -145,11 +145,6 @@ $(WS_REPO):
 	$(PKGREPO) create $(PKG_REPO)
 	$(PKGREPO) add-publisher -s $(PKG_REPO) $(PUBLISHER)
 	$(PKGREPO) add-publisher -s $(PKG_REPO) $(PUBLISHER_LOCALIZABLE)
-
-$(WS_EXPERIMENTAL_REPO):
-	$(PKGREPO) create $(PKG_EXPERIMENTAL_REPO)
-	$(PKGREPO) add-publisher -s $(PKG_EXPERIMENTAL_REPO) $(PUBLISHER)
-	$(PKGREPO) add-publisher -s $(PKG_EXPERIMENTAL_REPO) $(PUBLISHER_LOCALIZABLE)
 
 DUMMYPKG =  "set name=fmri value=pkg:/dummy@0,$(BUILD_VERSION)\n"
 DUMMYPKG += "set pkg.summary=dummy\n"
@@ -244,7 +239,6 @@ pkglint:
 
 publish:
 	$(PKGREPO) refresh -s $(PKG_REPO)
-	$(PKGREPO) refresh -s $(PKG_EXPERIMENTAL_REPO)
 ifndef SKIP_BUILDING_INCORPORATIONS
 	$(MAKE) incorporation
 endif
