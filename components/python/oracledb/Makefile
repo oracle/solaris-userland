@@ -28,16 +28,16 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		oracledb
-COMPONENT_VERSION=	3.0.0
+COMPONENT_VERSION=	4.0.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:64dc86ee5c032febc556798b06e7b000ef6828bb0252084f6addacad3363db85
+	sha256:34bbea44423ed8b24093aa859ca7ee9b6e76ea490f9acdc5f6ff01aa1083e343
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=  https://oracle.github.io/python-oracledb
 COMPONENT_BUGDB=	python-mod/oracledb
 COMPONENT_ANITYA_ID=	248660
-COMPONENT_BAID=		323233
+COMPONENT_BAID=		408971
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -55,5 +55,6 @@ test:		$(NO_TESTS)
 system-test:    $(NO_TESTS)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc
