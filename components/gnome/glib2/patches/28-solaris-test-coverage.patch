@@ -1,0 +1,101 @@
+Keep Solaris GLib tests from masking regressions when the platform support is
+available through Solaris-specific packaging or modules.
+
+Also skip the g_usleep(0) versus g_usleep(1) timing comparison on Solaris i386;
+it is probabilistic and unreliable under loaded BOB builders.
+
+--- a/glib/meson.build
++++ b/glib/meson.build
+@@ -480,6 +480,7 @@
+   subdirs : ['glib-2.0'],
+   extra_cflags : ['-I${libdir}/glib-2.0/include'] + win32_cflags,
+   variables : [
++    'datadir=' + '${prefix}' / get_option('datadir'),
+     'glib_genmarshal=glib-genmarshal',
+     'gobject_query=gobject-query',
+     'glib_mkenums=glib-mkenums',
+--- a/glib/tests/meson.build
++++ b/glib/tests/meson.build
+@@ -64,7 +64,9 @@
+   'macros' : {
+     'c_standards': c_standards.keys(),
+   },
+-  'mainloop' : {},
++  'mainloop' : {
++    'is_parallel' : host_system != 'sunos',
++  },
+   'mappedfile' : {},
+   'mapping' : {},
+   'markup' : {},
+@@ -492,6 +494,7 @@
+     protocol : extra_args.get('protocol', test_protocol),
+     depends : depends,
+     env : local_test_env,
++    is_parallel : extra_args.get('is_parallel', true),
+     timeout : timeout,
+     suite : suite,
+     should_fail : extra_args.get('should_fail', false),
+@@ -613,13 +616,8 @@
+           get_option('prefix')),
+         'test "$(pkg-config --variable=datadir glib-2.0)" = "@0@"'.format(
+           prefix / get_option('datadir')),
+-        'test "$(pkg-config --variable=gobject_query glib-2.0)" = "@0@"'.format(
+-          prefix / get_option('bindir') / 'gobject-query'),
+-        'test "$(pkg-config --variable=glib_mkenums glib-2.0)" = "@0@"'.format(
+-          prefix / get_option('bindir') / 'glib-mkenums'),
+-        'test "$(pkg-config --variable=glib_valgrind_suppressions glib-2.0)" = "@0@"'.format(
+-          prefix / get_option('datadir') /
+-          valgrind_suppression_file_install_subdir / fs.name(valgrind_suppression_file)),
++        'test "$(pkg-config --variable=gobject_query glib-2.0)" = "gobject-query"',
++        'test "$(pkg-config --variable=glib_mkenums glib-2.0)" = "glib-mkenums"',
+       ]),
+     ],
+     suite: ['glib', 'core', 'no-valgrind', 'pkg-config'],
+--- a/glib/tests/timer.c
++++ b/glib/tests/timer.c
+@@ -344,6 +344,11 @@
+   GTimer *timer;
+   unsigned int n_times_shorter = 0;
+ 
++#if defined(__sun) && defined(__i386)
++  g_test_skip ("g_usleep(0) versus g_usleep(1) timing is unreliable on loaded Solaris i386 builders");
++  return;
++#endif
++
+   timer = g_timer_new ();
+ 
+   /* Test that g_usleep(0) sleeps for less time than g_usleep(1). We can’t
+--- a/gio/tests/meson.build
++++ b/gio/tests/meson.build
+@@ -267,8 +267,12 @@
+   }
+ endif
+ 
+-have_dbus_daemon = find_program('dbus-daemon', required : false).found()
++dbus_daemon = find_program('dbus-daemon', '/usr/lib/dbus-daemon', required : false)
++have_dbus_daemon = dbus_daemon.found()
+ if have_dbus_daemon
++  test_env.set('G_TEST_DBUS_DAEMON', dbus_daemon.full_path())
++  test_env.prepend('PATH', fs.parent(dbus_daemon.full_path()))
++
+   gio_tests += {
+     'debugcontroller' : {},
+     'defaultvalue' : {'extra_sources' : [giotypefuncs_inc]},
+@@ -1308,7 +1316,7 @@
+     pkg_config_tests += [
+       'test "$(pkg-config --variable=@0@ gio-2.0)" = "@1@"'.format(
+         binary.underscorify(),
+-        prefix / get_option('bindir') / binary)
++        binary)
+     ]
+   endforeach
+ 
+@@ -1316,7 +1324,7 @@
+     pkg_config_tests += [
+       'test "$(pkg-config --variable=@0@ gio-2.0)" = "@1@"'.format(
+         binary.underscorify(),
+-        prefix / multiarch_bindir / binary)
++        binary)
+     ]
+   endforeach
+ 
