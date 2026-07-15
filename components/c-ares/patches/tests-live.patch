@@ -1,0 +1,72 @@
+Allow live localhost tests to accept Solaris /etc/hosts aliases.
+
+Solaris build hosts often list the nodename first for loopback entries and
+localhost as an alias.  The live tests should accept that layout.
+
+Upstream PR:
+https://github.com/c-ares/c-ares/pull/1253
+
+--- c-ares-1.34.8/test/ares-test-live.cc
++++ c-ares-1.34.8/test/ares-test-live.cc
+@@ -46,6 +46,22 @@ 0x26, 0x06, 0x47, 0x00, 0x47, 0x00, 0x00
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 0x11
+ };
+ 
++static bool HostEntNameOrAliasContains(const HostEnt& host,
++                                        const std::string& name)
++{
++  if (host.name_.find(name) != SIZE_MAX) {
++    return true;
++  }
++
++  for (size_t i = 0; i < host.aliases_.size(); i++) {
++    if (host.aliases_[i].find(name) != SIZE_MAX) {
++      return true;
++    }
++  }
++
++  return false;
++}
++
+ MATCHER_P(IncludesAtLeastNumAddresses, n, "") {
+   if(!arg)
+     return false;
+@@ -177,7 +193,7 @@ if (result.status_ != ARES_ECONNREFUSED)
+     EXPECT_EQ(ARES_SUCCESS, result.status_);
+     EXPECT_EQ(1, (int)result.host_.addrs_.size());
+     EXPECT_EQ(AF_INET, result.host_.addrtype_);
+-    EXPECT_NE(SIZE_MAX, result.host_.name_.find("localhost"));
++    EXPECT_TRUE(HostEntNameOrAliasContains(result.host_, "localhost"));
+   }
+ }
+ 
+@@ -192,7 +208,7 @@ EXPECT_EQ(1, (int)result.host_.addrs_.si
+     EXPECT_EQ(AF_INET6, result.host_.addrtype_);
+     std::stringstream ss;
+     ss << HostEnt(result.host_);
+-    EXPECT_NE(SIZE_MAX, result.host_.name_.find("localhost"));
++    EXPECT_TRUE(HostEntNameOrAliasContains(result.host_, "localhost"));
+   }
+ }
+ 
+@@ -273,8 +289,7 @@ EXPECT_LT(0, (int)result.host_.addrs_.si
+     EXPECT_EQ(AF_INET, result.host_.addrtype_);
+     // oddly, travis does not resolve to localhost, but a random hostname starting with travis-job
+     if (result.host_.name_.find("travis-job") == SIZE_MAX) {
+-        EXPECT_NE(SIZE_MAX,
+-                  result.host_.name_.find("localhost"));
++        EXPECT_TRUE(HostEntNameOrAliasContains(result.host_, "localhost"));
+     }
+   }
+ }
+@@ -292,8 +307,8 @@ EXPECT_EQ(ARES_SUCCESS, result.status_);
+     EXPECT_LT(0, (int)result.host_.addrs_.size());
+     EXPECT_EQ(AF_INET6, result.host_.addrtype_);
+     const std::string& name = result.host_.name_;
+-    EXPECT_TRUE(SIZE_MAX != name.find("localhost") ||
+-                SIZE_MAX != name.find("ip6-loopback"));
++    EXPECT_TRUE(HostEntNameOrAliasContains(result.host_, "localhost") ||
++                HostEntNameOrAliasContains(result.host_, "ip6-loopback"));
+   }
+ }
+ 

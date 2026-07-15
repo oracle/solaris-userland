@@ -27,15 +27,15 @@ CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		c-ares
-COMPONENT_VERSION=	1.34.6
+COMPONENT_VERSION=	1.34.8
 COMPONENT_PROJECT_URL=	https://c-ares.org
 COMPONENT_ARCHIVE_HASH= \
-    sha256:912dd7cc3b3e8a79c52fd7fb9c0f4ecf0aaa73e45efda880266a2d6e26b84ef5
+    sha256:c222b6d681096f9444d2c4863d2c1174019e27cacca0a4a5c114d36dd7d7bf78
 COMPONENT_ARCHIVE_URL=	https://github.com/c-ares/c-ares/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/c-ares
 COMPONENT_ANITYA_ID=	5840
 
-COMPONENT_BAID=		360417
+COMPONENT_BAID=		407908
 
 # Internal testing requires Googletest.
 COMPONENT_NAME_TESTS=		googletest
