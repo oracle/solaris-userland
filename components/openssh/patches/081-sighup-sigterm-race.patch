@@ -1,0 +1,27 @@
+#
+# This patch addresses problem with sshd missing a termination request
+# if SIGTERM is delivered while the listener process is already processing
+# a SIGHUP restart.
+#
+# That can lead to ssh smf :kill stop method to time out if it is run
+# immediately after smf refresh method which sends SIGHUP to sshd.
+#
+# The patch can be removed once following upstream bug is addressed:
+# https://bugzilla.mindrot.org/show_bug.cgi?id=3981
+#
+--- old/sshd.c	2026-07-15 08:05:14.742000435 +0200
++++ new/sshd.c	2026-07-15 08:04:32.768862070 +0200
+@@ -991,6 +991,13 @@ server_accept_loop(int *sock_in, int *so
+ 				lameduck = 1;
+ 			}
+ 			if (listening <= 0) {
++				/*
++				 * Keep SIGTERM blocked across restart.
++				 * If it arrives before execv(), it remains
++				 * pending and is delivered when the new image
++				 * clears its signal mask during startup.
++				 */
++				sigaddset(&osigset, SIGTERM);
+ 				sigprocmask(SIG_SETMASK, &osigset, NULL);
+ 				sighup_restart();
+ 			}
