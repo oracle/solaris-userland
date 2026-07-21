@@ -53,6 +53,9 @@ include $(WS_MAKE_RULES)/common.mk
 PATH=$(GNUBIN):$(USRBINDIR)
 # solaris-build.md suggests setting these preprocessor CFLAGS
 CFLAGS += -D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1 -D__EXTENSIONS__=1
+# GCC 16 no longer defines this on Solaris for -pthread.  AX_PTHREAD still
+# checks it to verify that the selected compiler flags enable threads.
+CPPFLAGS += -D_REENTRANT
 # Don't deliver static libraries
 CONFIGURE_OPTIONS +=	--disable-static
 

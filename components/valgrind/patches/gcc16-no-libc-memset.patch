@@ -1,0 +1,34 @@
+Avoid GCC 16 emitting libc memset calls for aggregate initializers.
+
+Valgrind core executables are deliberately linked without libc.  Initialize
+only the fields that are used: the whole 512-byte output buffer need not be
+zeroed, and RRegUniverse__init already assigns every member explicitly.
+
+diff --git a/coregrind/m_libcprint.c b/coregrind/m_libcprint.c
+--- a/coregrind/m_libcprint.c
++++ b/coregrind/m_libcprint.c
+@@ -659,8 +659,10 @@ static UInt vprintf_to_buf ( printf_buf_t* b,
+ static UInt vprintf_WRK ( OutputSink* sink,
+                           const HChar *format, va_list vargs )
+ {
+-   printf_buf_t myprintf_buf
+-      = { "", 0, sink };
++   printf_buf_t myprintf_buf;
++   myprintf_buf.buf[0] = '\0';
++   myprintf_buf.buf_used = 0;
++   myprintf_buf.sink = sink;
+    UInt ret
+       = vprintf_to_buf(&myprintf_buf, format, vargs);
+    // Write out any chars left in the buffer.
+
+diff --git a/VEX/priv/host_generic_regs.c b/VEX/priv/host_generic_regs.c
+--- a/VEX/priv/host_generic_regs.c
++++ b/VEX/priv/host_generic_regs.c
+@@ -85,7 +85,6 @@ UInt ppHReg ( HReg r )
+ 
+ void RRegUniverse__init ( /*OUT*/RRegUniverse* univ )
+ {
+-   *univ = (RRegUniverse){};
+    univ->size      = 0;
+    univ->allocable = 0;
+    for (UInt i = 0; i < N_RREGUNIVERSE_REGS; i++) {

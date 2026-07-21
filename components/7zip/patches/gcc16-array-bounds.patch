@@ -1,0 +1,30 @@
+From: YOKOTA Hiroshi <yokota.hgml@gmail.com>
+Date: Mon, 11 May 2026 20:04:56 +0900
+Subject: Use "-Wno-error=array-bounds" option to some specific files to avoid
+ false-positive error on GCC 16
+
+Forwarded: https://sourceforge.net/p/sevenzip/bugs/2604/
+Forwarded: https://github.com/ip7z/7zip/issues/214
+
+diff --git a/CPP/7zip/7zip_gcc.mak b/CPP/7zip/7zip_gcc.mak
+index e8fcde4..0a87e8a 100644
+--- a/CPP/7zip/7zip_gcc.mak
++++ b/CPP/7zip/7zip_gcc.mak
+@@ -533,7 +533,7 @@ $O/GptHandler.o: ../../Archive/GptHandler.cpp
+ $O/GzHandler.o: ../../Archive/GzHandler.cpp
+ 	$(CXX) $(CXXFLAGS) $<
+ $O/HandlerCont.o: ../../Archive/HandlerCont.cpp
+-	$(CXX) $(CXXFLAGS) $<
++	$(CXX) $(CXXFLAGS) -Wno-error=array-bounds $<
+ $O/HfsHandler.o: ../../Archive/HfsHandler.cpp
+ 	$(CXX) $(CXXFLAGS) $<
+ $O/IhexHandler.o: ../../Archive/IhexHandler.cpp
+@@ -660,7 +660,7 @@ $O/NsisRegister.o: ../../Archive/Nsis/NsisRegister.cpp
+ $O/Rar5Handler.o: ../../Archive/Rar/Rar5Handler.cpp
+ 	$(CXX) $(CXXFLAGS) $<
+ $O/RarHandler.o: ../../Archive/Rar/RarHandler.cpp
+-	$(CXX) $(CXXFLAGS) $<
++	$(CXX) $(CXXFLAGS) -Wno-error=array-bounds $<
+ 
+ $O/TarHandler.o: ../../Archive/Tar/TarHandler.cpp
+ 	$(CXX) $(CXXFLAGS) $<

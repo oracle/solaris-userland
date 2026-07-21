@@ -39,6 +39,10 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
+# GCC 16 no longer defines this on Solaris for -pthread.  AX_PTHREAD still
+# checks it to verify that the selected compiler flags enable threads.
+CPPFLAGS +=	-D_REENTRANT
+
 # Needed to successfully run the test_commands.sh script in a built workspace.
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))

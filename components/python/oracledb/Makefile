@@ -56,6 +56,7 @@ system-test:    $(NO_TESTS)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)
 REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc
