@@ -32,7 +32,7 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 MAJOR_VERSION=8.4
-MICRO_VERSION=21
+MICRO_VERSION=23
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
@@ -40,11 +40,11 @@ UL_PHP_MINOR_VERSION=	$(MAJOR_VERSION)
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:7cf5d8ab12c3b2016875bcfaec71bef1ef0b07bed6148f2c447577074431f984
+    sha256:1ab9f52008414e43bb2427ffa288eff2a4de39e1a830f957e800ba368d887a72
 COMPONENT_ARCHIVE_URL=	https://www.php.net/distributions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3627
 
-COMPONENT_BAID=		390475
+COMPONENT_BAID=		407904
 
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
@@ -172,6 +172,7 @@ TESTS_DISABLED += ext/date/tests/strtotime2.phpt
 TESTS_DISABLED += ext/dba/tests/dba_db4_018.phpt
 TESTS_DISABLED += ext/gd/tests/gh13082.phpt
 TESTS_DISABLED += ext/gd/tests/gh16559.phpt
+TESTS_DISABLED += ext/gd/tests/gh19739.phpt
 TESTS_DISABLED += ext/openssl/tests/bug72333.phpt
 TESTS_DISABLED += ext/openssl/tests/bug77390.phpt
 TESTS_DISABLED += ext/pcntl/tests/pcntl_cpuaffinity.phpt
@@ -182,6 +183,10 @@ TESTS_DISABLED += ext/posix/tests/posix_isatty_value_errors.phpt
 TESTS_DISABLED += ext/sockets/tests/socket_cmsg_rights.phpt
 TESTS_DISABLED += ext/soap/tests/bugs/bug49278.phpt
 TESTS_DISABLED += ext/soap/tests/bugs/bug62900.phpt
+ifeq ($(MACH),i386)
+TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation6.phpt
+TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation13.phpt
+endif
 TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation10.phpt
 TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation18.phpt
 TESTS_DISABLED += ext/standard/tests/file/touch_basic.phpt

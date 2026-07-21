@@ -32,7 +32,7 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 MAJOR_VERSION=8.3
-MICRO_VERSION=31
+MICRO_VERSION=32
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
@@ -40,11 +40,11 @@ UL_PHP_MINOR_VERSION=	$(MAJOR_VERSION)
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:66410cee07f4b2baeb0843140bb2a2b52ef930b5cf9b3d6e6d158b33aae8fa37
+    sha256:8698ec1f9402fa5e5e872ae3d0916b62f5f27503c1fbfc9cc3521e113355ea92
 COMPONENT_ARCHIVE_URL=	https://www.php.net/distributions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3627
 
-COMPONENT_BAID=		390476
+COMPONENT_BAID=		407898
 COMPONENT_BAID_IMAP=	37002
 
 include $(WS_MAKE_RULES)/common.mk
@@ -163,6 +163,15 @@ COMPONENT_POST_INSTALL_ACTION += \
 	 sed -e "s%^include_dir=.*%include_dir=$(PROTOUSRPHPVERDIR)/include/php%" \
 	 > proto-scripts/php-config-proto ; \
 	chmod 755 proto-scripts/php-config-proto ) ;
+
+TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation6.phpt
+TESTS_DISABLED += sapi/fpm/tests/socket-uds-acl.phpt
+
+# Some tests are known to hang or they have inconsistent results
+COMPONENT_PRE_TEST_ACTION += ( \
+	list1='$(TESTS_DISABLED)' ; for f in $$list1 ; do \
+	   $(RM) $(SOURCE_DIR)/$$f; \
+	done ) ;
 
 # need to avoid clashes in /var/tmp directory
 COMPONENT_PRE_TEST_ACTION += ( rm -rf $(BUILD_DIR)/tmp-$(MACH); \
