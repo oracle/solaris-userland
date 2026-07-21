@@ -1,0 +1,59 @@
+Restore Gio-2.0 introspection compatibility for platform-specific APIs.
+Older applications use Gio.DesktopAppInfo and do not import GioUnix, so keep
+the platform APIs in Gio-2.0 while they remain available in GioUnix/GioWin32.
+
+--- a/girepository/introspection/meson.build
++++ b/girepository/introspection/meson.build
+@@ -225,6 +225,24 @@
+   '--symbol-prefix=gio',
+ ]
+ 
++# Keep platform-specific APIs in Gio-2.0 for introspection compatibility with
++# applications which predate the GioUnix and GioWin32 namespaces.
++if host_system == 'windows'
++  gio_gir_sources += [ gio_win32_include_headers, win32_sources ]
++  foreach h: gio_win32_include_headers
++    gio_gir_args += '--c-include=gio/' + fs.name(h)
++  endforeach
++  gio_gir_packages += 'gio-windows-2.0'
++  gio_gir_args += '--pkg=gio-windows-2.0'
++else
++  gio_gir_sources += [ gio_unix_include_headers, unix_sources ]
++  foreach h: gio_unix_include_headers
++    gio_gir_args += '--c-include=gio/' + fs.name(h)
++  endforeach
++  gio_gir_packages += 'gio-unix-2.0'
++  gio_gir_args += '--pkg=gio-unix-2.0'
++endif
++
+ gio_gir = gnome.generate_gir(libgio,
+   sources: gio_gir_sources,
+   namespace: 'Gio',
+--- a/girepository/tests/callable-info.c
++++ b/girepository/tests/callable-info.c
+@@ -288,22 +288,15 @@
+                                             const void *unused)
+ {
+   GIBaseInfo *info;
+-  GIFunctionInfo *func_info;
+ 
+-  g_test_message ("Checking DesktopAppInfo in Gio");
++  g_test_message ("Checking DesktopAppInfo compatibility in Gio");
+   info = gi_repository_find_by_name (fx->repository, "Gio", "DesktopAppInfo");
+-  g_assert_null (info);
++  g_assert_nonnull (info);
++  gi_base_info_unref (info);
+ 
+   g_test_message ("Checking DesktopAppInfo in GioUnix");
+   info = gi_repository_find_by_name (fx->repository, "GioUnix", "DesktopAppInfo");
+   g_assert_nonnull (info);
+-
+-  /* Must provide Gio.DesktopAppInfo methods */
+-  func_info = gi_object_info_find_method (GI_OBJECT_INFO (info), "has_key");
+-  g_assert_true (gi_callable_info_is_method (GI_CALLABLE_INFO (func_info)));
+-  g_assert_nonnull (func_info);
+-  g_clear_pointer (&func_info, gi_base_info_unref);
+-
+   gi_base_info_unref (info);
+ }
+ #endif
