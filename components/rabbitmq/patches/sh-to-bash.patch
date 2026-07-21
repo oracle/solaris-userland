@@ -1,28 +1,6 @@
 In-house patch to change script shebangs from /bin/sh to /bin/bash.
---- rabbitmq-server-4.2.4/deps/cowboy/erlang.mk
-+++ rabbitmq-server-4.2.4/deps/cowboy/erlang.mk
-@@ -4479,7 +4479,7 @@ rel:: sfx
- # Plugin-specific targets.
- 
- define sfx_stub
--#!/bin/sh
-+#!/bin/bash
- 
- TMPDIR=`mktemp -d`
- ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
---- rabbitmq-server-4.2.4/deps/cowlib/erlang.mk
-+++ rabbitmq-server-4.2.4/deps/cowlib/erlang.mk
-@@ -7548,7 +7548,7 @@ rel:: sfx
- # Plugin-specific targets.
- 
- define sfx_stub
--#!/bin/sh
-+#!/bin/bash
- 
- TMPDIR=`mktemp -d`
- ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
---- rabbitmq-server-4.2.4/deps/gun/erlang.mk
-+++ rabbitmq-server-4.2.4/deps/gun/erlang.mk
+--- rabbitmq-server-4.3.2/deps/cowboy/erlang.mk
++++ rabbitmq-server-4.3.2/deps/cowboy/erlang.mk
 @@ -4789,7 +4789,7 @@ rel:: sfx
  # Plugin-specific targets.
  
@@ -32,8 +10,30 @@ In-house patch to change script shebangs from /bin/sh to /bin/bash.
  
  TMPDIR=`mktemp -d`
  ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
---- rabbitmq-server-4.2.4/deps/osiris/erlang.mk
-+++ rabbitmq-server-4.2.4/deps/osiris/erlang.mk
+--- rabbitmq-server-4.3.2/deps/cowlib/erlang.mk
++++ rabbitmq-server-4.3.2/deps/cowlib/erlang.mk
+@@ -4789,7 +4789,7 @@ rel:: sfx
+ # Plugin-specific targets.
+ 
+ define sfx_stub
+-#!/bin/sh
++#!/bin/bash
+ 
+ TMPDIR=`mktemp -d`
+ ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
+--- rabbitmq-server-4.3.2/deps/gun/erlang.mk
++++ rabbitmq-server-4.3.2/deps/gun/erlang.mk
+@@ -4789,7 +4789,7 @@ rel:: sfx
+ # Plugin-specific targets.
+ 
+ define sfx_stub
+-#!/bin/sh
++#!/bin/bash
+ 
+ TMPDIR=`mktemp -d`
+ ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
+--- rabbitmq-server-4.3.2/deps/osiris/erlang.mk
++++ rabbitmq-server-4.3.2/deps/osiris/erlang.mk
 @@ -7597,7 +7597,7 @@ rel:: sfx
  # Plugin-specific targets.
  
@@ -43,117 +43,141 @@ In-house patch to change script shebangs from /bin/sh to /bin/bash.
  
  TMPDIR=`mktemp -d`
  ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
---- rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-defaults
-+++ rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-defaults
+--- rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-defaults
++++ rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-defaults
 @@ -1,4 +1,4 @@
 -#!/bin/sh -e
 +#!/bin/bash -e
  ##  This Source Code Form is subject to the terms of the Mozilla Public
  ##  License, v. 2.0. If a copy of the MPL was not distributed with this
  ##  file, You can obtain one at https://mozilla.org/MPL/2.0/.
---- rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-diagnostics
-+++ rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-diagnostics
+--- rabbitmq-server-4.3.2/deps/rabbit/docs/postprocess_man_html.sh
++++ rabbitmq-server-4.3.2/deps/rabbit/docs/postprocess_man_html.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ set -e
+ 
+--- rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-diagnostics
++++ rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-diagnostics
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  ##  This Source Code Form is subject to the terms of the Mozilla Public
  ##  License, v. 2.0. If a copy of the MPL was not distributed with this
  ##  file, You can obtain one at https://mozilla.org/MPL/2.0/.
---- rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-env
-+++ rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-env
+--- rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-env
++++ rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-env
 @@ -1,4 +1,4 @@
 -#!/bin/sh -e
 +#!/bin/bash -e
  ##  This Source Code Form is subject to the terms of the Mozilla Public
  ##  License, v. 2.0. If a copy of the MPL was not distributed with this
  ##  file, You can obtain one at https://mozilla.org/MPL/2.0/.
---- rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-plugins
-+++ rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-plugins
+--- rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-plugins
++++ rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-plugins
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  ##  This Source Code Form is subject to the terms of the Mozilla Public
  ##  License, v. 2.0. If a copy of the MPL was not distributed with this
  ##  file, You can obtain one at https://mozilla.org/MPL/2.0/.
---- rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-queues
-+++ rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-queues
+--- rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-queues
++++ rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-queues
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  ##  This Source Code Form is subject to the terms of the Mozilla Public
  ##  License, v. 2.0. If a copy of the MPL was not distributed with this
  ##  file, You can obtain one at https://mozilla.org/MPL/2.0/.
---- rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-server
-+++ rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-server
+--- rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-server
++++ rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-server
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  # vim:sw=4:et:
  ##  This Source Code Form is subject to the terms of the Mozilla Public
  ##  License, v. 2.0. If a copy of the MPL was not distributed with this
---- rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-upgrade
-+++ rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmq-upgrade
+--- rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-streams
++++ rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-streams
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ ## This Source Code Form is subject to the terms of the Mozilla Public
+ ## License, v. 2.0. If a copy of the MPL was not distributed with this
+--- rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-upgrade
++++ rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmq-upgrade
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  ##  This Source Code Form is subject to the terms of the Mozilla Public
  ##  License, v. 2.0. If a copy of the MPL was not distributed with this
  ##  file, You can obtain one at https://mozilla.org/MPL/2.0/.
---- rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmqctl
-+++ rabbitmq-server-4.2.4/deps/rabbit/scripts/rabbitmqctl
+--- rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmqctl
++++ rabbitmq-server-4.3.2/deps/rabbit/scripts/rabbitmqctl
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  ##  This Source Code Form is subject to the terms of the Mozilla Public
  ##  License, v. 2.0. If a copy of the MPL was not distributed with this
  ##  file, You can obtain one at https://mozilla.org/MPL/2.0/.
---- rabbitmq-server-4.2.4/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_django/start.sh
-+++ rabbitmq-server-4.2.4/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_django/start.sh
+--- rabbitmq-server-4.3.2/deps/rabbit/scripts/vmware-rabbitmq
++++ rabbitmq-server-4.3.2/deps/rabbit/scripts/vmware-rabbitmq
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ ##  This Source Code Form is subject to the terms of the Mozilla Public
+ ##  License, v. 2.0. If a copy of the MPL was not distributed with this
+ ##  file, You can obtain one at https://mozilla.org/MPL/2.0/.
+--- rabbitmq-server-4.3.2/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_django/start.sh
++++ rabbitmq-server-4.3.2/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_django/start.sh
 @@ -1,3 +1,3 @@
 -#!/bin/sh
 +#!/bin/bash
  python manage.py migrate
  python manage.py runserver 0.0.0.0:8000
---- rabbitmq-server-4.2.4/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot/mvnw
-+++ rabbitmq-server-4.2.4/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot/mvnw
+--- rabbitmq-server-4.3.2/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot/mvnw
++++ rabbitmq-server-4.3.2/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot/mvnw
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  # ----------------------------------------------------------------------------
  # Licensed to the Apache Software Foundation (ASF) under one
  # or more contributor license agreements.  See the NOTICE file
---- rabbitmq-server-4.2.4/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot_kotlin/mvnw
-+++ rabbitmq-server-4.2.4/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot_kotlin/mvnw
+--- rabbitmq-server-4.3.2/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot_kotlin/mvnw
++++ rabbitmq-server-4.3.2/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot_kotlin/mvnw
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  # ----------------------------------------------------------------------------
  # Licensed to the Apache Software Foundation (ASF) under one
  # or more contributor license agreements.  See the NOTICE file
---- rabbitmq-server-4.2.4/deps/rabbitmq_federation/etc/rabbit-test.sh
-+++ rabbitmq-server-4.2.4/deps/rabbitmq_federation/etc/rabbit-test.sh
+--- rabbitmq-server-4.3.2/deps/rabbitmq_federation/etc/rabbit-test.sh
++++ rabbitmq-server-4.3.2/deps/rabbitmq_federation/etc/rabbit-test.sh
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  CTL=$1
  
  # Test direct connections
---- rabbitmq-server-4.2.4/deps/rabbitmq_federation/etc/setup-rabbit-test.sh
-+++ rabbitmq-server-4.2.4/deps/rabbitmq_federation/etc/setup-rabbit-test.sh
+--- rabbitmq-server-4.3.2/deps/rabbitmq_federation/etc/setup-rabbit-test.sh
++++ rabbitmq-server-4.3.2/deps/rabbitmq_federation/etc/setup-rabbit-test.sh
 @@ -1,2 +1,2 @@
 -#!/bin/sh -e
 +#!/bin/bash -e
  sh -e `dirname $0`/rabbit-test.sh "$DEPS_DIR/rabbit/scripts/rabbitmqctl -n $RABBITMQ_NODENAME"
---- rabbitmq-server-4.2.4/deps/rabbitmq_sharding/etc/rkey.sh
-+++ rabbitmq-server-4.2.4/deps/rabbitmq_sharding/etc/rkey.sh
+--- rabbitmq-server-4.3.2/deps/rabbitmq_sharding/etc/rkey.sh
++++ rabbitmq-server-4.3.2/deps/rabbitmq_sharding/etc/rkey.sh
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  CTL=$1
  
  curl -i -u guest:guest -H "content-type:application/json" \
---- rabbitmq-server-4.2.4/deps/ranch/erlang.mk
-+++ rabbitmq-server-4.2.4/deps/ranch/erlang.mk
+--- rabbitmq-server-4.3.2/deps/ranch/erlang.mk
++++ rabbitmq-server-4.3.2/deps/ranch/erlang.mk
 @@ -7597,7 +7597,7 @@ rel:: sfx
  # Plugin-specific targets.
  
@@ -163,8 +187,8 @@ In-house patch to change script shebangs from /bin/sh to /bin/bash.
  
  TMPDIR=`mktemp -d`
  ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
---- rabbitmq-server-4.2.4/erlang.mk
-+++ rabbitmq-server-4.2.4/erlang.mk
+--- rabbitmq-server-4.3.2/erlang.mk
++++ rabbitmq-server-4.3.2/erlang.mk
 @@ -4783,7 +4783,7 @@ rel:: sfx
  # Plugin-specific targets.
  
@@ -174,19 +198,27 @@ In-house patch to change script shebangs from /bin/sh to /bin/bash.
  
  TMPDIR=`mktemp -d`
  ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
---- rabbitmq-server-4.2.4/scripts/rabbitmq-script-wrapper
-+++ rabbitmq-server-4.2.4/scripts/rabbitmq-script-wrapper
+--- rabbitmq-server-4.3.2/scripts/rabbitmq-script-wrapper
++++ rabbitmq-server-4.3.2/scripts/rabbitmq-script-wrapper
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  
  ## This Source Code Form is subject to the terms of the Mozilla Public
  ## License, v. 2.0. If a copy of the MPL was not distributed with this
---- rabbitmq-server-4.2.4/scripts/rabbitmq-server.ocf
-+++ rabbitmq-server-4.2.4/scripts/rabbitmq-server.ocf
+--- rabbitmq-server-4.3.2/scripts/rabbitmq-server.ocf
++++ rabbitmq-server-4.3.2/scripts/rabbitmq-server.ocf
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
  
  ## This Source Code Form is subject to the terms of the Mozilla Public
  ## License, v. 2.0. If a copy of the MPL was not distributed with this
+--- rabbitmq-server-4.3.2/selenium/authorization-server/mvnw
++++ rabbitmq-server-4.3.2/selenium/authorization-server/mvnw
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ # ----------------------------------------------------------------------------
+ # Licensed to the Apache Software Foundation (ASF) under one
+ # or more contributor license agreements.  See the NOTICE file

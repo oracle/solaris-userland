@@ -127,7 +127,7 @@ send_msg(RabbitHost, QueueStr, MsgStr, UserStr, PasswdStr) ->
   {ok, Connection} = amqp_connection:start(#amqp_params_network{
     host = RabbitHost, username = User, password = Passwd}),
   {ok, Channel} = amqp_connection:open_channel(Connection),
-  amqp_channel:call(Channel, #'queue.declare'{queue = Queue}),
+  amqp_channel:call(Channel, #'queue.declare'{queue = Queue, durable = true}),
   amqp_channel:cast(Channel, #'basic.publish'{exchange = <<"">>,
     routing_key = Queue}, #amqp_msg{payload = Msg}),
   ok = amqp_channel:close(Channel),
@@ -139,7 +139,7 @@ recv_msg(RabbitHost, QueueStr, UserStr, PasswdStr) ->
   {ok, Connection} = amqp_connection:start(#amqp_params_network{
     host = RabbitHost, username = User, password = Passwd}),
   {ok, Channel} = amqp_connection:open_channel(Connection),
-  amqp_channel:call(Channel, #'queue.declare'{queue = Queue}),
+  amqp_channel:call(Channel, #'queue.declare'{queue = Queue, durable = true}),
   amqp_channel:subscribe(Channel,
     #'basic.consume'{queue = Queue, no_ack = true}, self()),
   receive

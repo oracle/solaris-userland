@@ -2,7 +2,7 @@
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <!--
 
- Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
+ Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 
  CDDL HEADER START
 
@@ -66,18 +66,20 @@
 			privileges='basic,{zone}:/system/volatile/rabbitmq' />
 	</method_context>
 
+	<!-- RabbitMQ 4.3.x startup and shutdown can take over two minutes
+	     on some virtualized i386 systems while rabbitmqctl waits. -->
 	<exec_method
 		type='method'
 		name='start'
 		exec='/lib/svc/method/rabbitmq %m'
-		timeout_seconds='30'>
+		timeout_seconds='180'>
 	</exec_method>
 
 	<exec_method
 		type='method'
 		name='stop'
 		exec='/lib/svc/method/rabbitmq %m'
-		timeout_seconds='30'>
+		timeout_seconds='180'>
 	</exec_method>
 
 	<stability value='Unstable' />
