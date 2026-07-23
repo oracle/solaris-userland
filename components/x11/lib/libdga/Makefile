@@ -23,7 +23,6 @@
 # Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
-COMPILER= studio
 # 64-bit is sparc only since Xsun/DGA was already obsolete before amd64 was added
 BUILD_BITS.sparc = 64_and_32
 BUILD_BITS.i386  = 32

@@ -1,4 +1,4 @@
-/* Copyright (c) 1993, 1994, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (c) 1993, 2026, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -32,6 +32,7 @@
 #ifdef MT
 #include <synch.h>
 #endif
+#include <X11/Xfuncproto.h>
 #include <X11/Xmd.h>
 #include "dga.h"
 #include "dga_internaldefs.h"

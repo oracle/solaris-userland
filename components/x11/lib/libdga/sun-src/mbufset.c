@@ -1,4 +1,4 @@
-/* Copyright (c) 1993, 1997, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (c) 1993, 2026, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -25,17 +25,7 @@
 ** mbufset.c - Routines to manipulate multibuffer set objects.
 */
 
-#include <malloc.h>
-#ifdef SERVER_DGA
-#include <X11/Xlib.h>
-#endif /* SERVER_DGA */
 #include "dga_incls.h"
-#include "pix_grab.h"
-#include "mbufsetstr.h"
-
-static void dgai_mbufset_destroy (DgaMbufSetPtr pMbs);
-
-extern int dga_pixlist_add(Dga_token token, Display *dpy, Pixmap pix);
 
 /*
 ** Create a client-side multibuffer set object based on information
@@ -43,92 +33,23 @@ extern int dga_pixlist_add(Dga_token token, Display *dpy, Pixmap pix);
 */
 
 DgaMbufSetPtr
-dgai_mbufset_create (_Dga_window dgawin)
+dgai_mbufset_create (_Dga_window dgawin _X_UNUSED)
 {
-    DgaMbufSetPtr 	pMbs;
-    WXINFO		*infop;
-    DgaMbufSetShinfoPtr	pMbsInfo;
-    short		numBufs, i;
-    unsigned long	bufViewableFlags, bufMask;
-    Dga_token		token;
-    _Dga_pixmap		dgapix;
-    XID			*pShinfoId;
-
-    infop = (WXINFO *) dgawin->w_info;
-    pMbsInfo = &infop->w_mbsInfo;    
-    token = (Dga_token) pMbsInfo->nmbufShpxToken;
-    pShinfoId = &(pMbsInfo->nmbufIds[0]);
-
-    /* allocate mbufset client structure */
-    if (!(pMbs = (DgaMbufSetPtr) malloc(sizeof(DgaMbufSet)))) {
-	return (NULL);
-    }
-
-    numBufs = infop->wx_dbuf.number_buffers;
-    pMbs->numBufs = numBufs;
-
-    for (i = 0; i < numBufs;  i++) {
-	pMbs->pNbPixmaps[i] = NULL;
-    }
-
-    bufViewableFlags = pMbsInfo->bufViewableFlags;
-    bufMask = 1L;
-    for (i = 0; i < numBufs;  i++, pShinfoId++) {
-	if (!(bufViewableFlags & bufMask)) {
-	    if (!dga_pixlist_add(token, dgawin->w_dpy, (Pixmap)*pShinfoId) ||
-	        !(dgapix = dga_pix_grab(token, (Pixmap)*pShinfoId))) {
-		goto Bad;
-	    }
-	    pMbs->pNbPixmaps[i] = dgapix;
-	    pMbs->pNbShinfo[i] = (SHARED_PIXMAP_INFO *)dgapix->p_infop;
-	} else {
-	    pMbs->pNbShinfo[i] = NULL;
-	}
-	pMbs->mbufseq[i] = 0;
-	pMbs->clipseq[i] = 0;
-	pMbs->curseq[i] = 0;
-	pMbs->cacheSeqs[i] = 0;
-	pMbs->devInfoSeqs[i] = 0;
-	pMbs->prevLocked[i] = 0;
-	bufMask = bufMask << 1;
-    }
-
-    /* success */
-    pMbs->refcnt = 1;
-    return (pMbs);
-
-Bad:
-    dgai_mbufset_destroy(pMbs);
     return (NULL);
 }
 
 
 void
-dgai_mbufset_incref (DgaMbufSetPtr pMbs)
+dgai_mbufset_incref (DgaMbufSetPtr pMbs _X_UNUSED)
 {
-    pMbs->refcnt++;
+    return;
 }
 
-
-static void
-dgai_mbufset_destroy (DgaMbufSetPtr pMbs)
-{
-    short i;
-
-    for (i = 0; i < pMbs->numBufs;  i++) {
-	if (pMbs->pNbPixmaps[i]) {
-	    dga_pix_ungrab(pMbs->pNbPixmaps[i]);
-	}
-    }
-    free(pMbs);
-}
 
 void
-dgai_mbufset_decref (DgaMbufSetPtr pMbs)
+dgai_mbufset_decref (DgaMbufSetPtr pMbs _X_UNUSED)
 {
-    if ((int)(--(pMbs->refcnt)) <= 0) {
-	dgai_mbufset_destroy(pMbs);
-    }
+    return;
 }
 
 

@@ -2,7 +2,7 @@
 #
 # libdga Makefile
 #
-# Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2009, 2026, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -25,7 +25,7 @@
 #
 #
 
-SHLIBLDFLAGS = -G -z defs -z text $(LDFLAGS)
+SHLIBLDFLAGS = -shared -z defs -z text $(LDFLAGS) -Wl,-M,mapfile
 REQUIREDLIBS = -lX11 -lc
 DEFINES = -D_TS_ERRNO -DMT -DXTHREADS -DPANORAMIX -DIPv6 -DSVR4
 
@@ -43,7 +43,7 @@ libdga.so.1: $(OBJS)
 		$(OBJS) $(REQUIREDLIBS)
 
 .c.o:
-	$(CC) -Kpic $(CFLAGS) $(CPPFLAGS) $(DEFINES) -c $<
+	$(CC) -fpic -Wall $(CFLAGS) $(CPPFLAGS) $(DEFINES) -c $<
 
 install: libdga.so.1
 	mkdir -p $(DESTDIR)$(libdir) $(DESTDIR)$(INCDIR)

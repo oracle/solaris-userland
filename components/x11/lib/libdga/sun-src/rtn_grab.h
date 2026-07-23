@@ -1,4 +1,4 @@
-/* Copyright (c) 1993, 1996, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (c) 1993, 2026, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -39,10 +39,7 @@
  * DGA Retained Window Functions 
  */
 
-extern int	_dga_rtn_map();
-extern int	_dga_rtn_unmap();
-#ifdef DEBUG
-extern void	_dga_rtn_dump();
-#endif
+extern int	_dga_rtn_map(_Dga_window);
+extern int	_dga_rtn_unmap(_Dga_window);
 
 #endif /* _RTN_GRAB_H */
