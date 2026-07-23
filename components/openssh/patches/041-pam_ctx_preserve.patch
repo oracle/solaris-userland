@@ -531,7 +531,7 @@
  	return (ctxt);
  }
  
-@@ -971,7 +838,16 @@ sshpam_query(void *ctx, char **name, cha
+@@ -971,7 +838,19 @@ sshpam_query(void *ctx, char **name, cha
  	*info = xstrdup("");
  	*prompts = NULL;
  	*num = 0;
@@ -541,6 +541,9 @@
 +	switch (ctxt->pam_done) {
 +	case SshPamAuthenticated:
 +		return (0);
++	case SshPamAgain:
++		ctxt->pam_done = SshPamNone;
++		break;
 +	case SshPamNone:
 +		break;
 +	default:
