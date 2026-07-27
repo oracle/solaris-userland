@@ -41,13 +41,14 @@ COMPONENT_BAID =	139302
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Keep the generated files newer than the patched AX_PTHREAD macro.
+COMPONENT_PREP_ACTION += \
+	$(TOUCH) $(@D)/aclocal.m4 $(@D)/configure; \
+	gfind $(@D) -name Makefile.in -exec $(TOUCH) '{}' +;
+
 POD2MAN_PATH = /usr/perl5/$(PERL_VERSION)/bin
 
 COMPONENT_BUILD_ENV +=  PATH="$(PATH):$(POD2MAN_PATH)"
-
-# GCC 16 no longer defines this on Solaris for -pthread.  AX_PTHREAD still
-# checks it to verify that the selected compiler flags enable threads.
-CPPFLAGS += -D_REENTRANT
 
 # build against libusb-1.0 library
 CONFIGURE_ENV += LIBUSB_CFLAGS="-I$(USRINCDIR)/libusb-1.0"

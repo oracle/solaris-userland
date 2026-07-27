@@ -38,6 +38,9 @@ COMPONENT_BAID=		391701
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Regenerate configure after patching m4/ax_pthread.m4.
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -if)
+
 COMPONENT_TEST_TRANSFORMS += '-e "/^make/d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^  CC/d"'
 

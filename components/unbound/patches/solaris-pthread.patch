@@ -1,0 +1,49 @@
+https://github.com/NLnetLabs/unbound/pull/1479
+
+From 87a68d59d24b60319e081d5ad7ab0d6cbdca9680 Mon Sep 17 00:00:00 2001
+From: Petr Sumbera <petr.sumbera@oracle.com>
+Date: Fri, 24 Jul 2026 08:37:02 +0000
+Subject: [PATCH] Fix pthread detection on Solaris 11.4
+
+AX_PTHREAD requires _REENTRANT to confirm that pthread support is enabled.
+Solaris 11.4 headers no longer use the macro, and GCC 16 therefore no
+longer defines it for -pthread.
+
+Detect XPG7 support in the target headers and require _REENTRANT only on
+older Solaris releases. The existing pthread compile and link test remains
+the final capability check.
+
+This follows the canonical Autoconf Archive change:
+https://github.com/autoconf-archive/autoconf-archive/pull/341
+
+Tested on Solaris 11.4 with GCC 15.2 and GCC 16.1. The Autoconf Archive
+change was also tested on Solaris 11.3.
+
+Co-authored-by: Rainer Orth <ro@CeBiTec.Uni-Bielefeld.DE>
+
+--- unbound-1.25.1/ax_pthread.m4
++++ unbound-1.25.1/ax_pthread.m4
+@@ -249,7 +249,22 @@ # definitions is, on some systems, a str
+ # correctly enabled
+ 
+ case $host_os in
+-        darwin* | hpux* | linux* | osf* | solaris*)
++        solaris*)
++        # Solaris 11.4 introduced XPG7 support and did away with the need for
++        # _REENTRANT.
++
++        AC_EGREP_CPP([AX_PTHREAD_SOLARIS__REENTRANT],
++            [
++#            undef _XOPEN_SOURCE
++#            include <sys/feature_tests.h>
++#            if _XOPEN_VERSION < 700
++             AX_PTHREAD_SOLARIS__REENTRANT
++#            endif
++            ],
++            [ax_pthread_check_macro="_REENTRANT"],
++            [ax_pthread_check_macro="--"])
++        ;;
++        darwin* | hpux* | linux* | osf*)
+         ax_pthread_check_macro="_REENTRANT"
+         ;;
+ 

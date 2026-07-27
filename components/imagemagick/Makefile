@@ -52,6 +52,9 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Regenerate configure after patching m4/ax_pthread.m4.
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -if)
+
 CONFIGURE_OPTIONS+= --with-modules
 CONFIGURE_OPTIONS+= --disable-static
 CONFIGURE_OPTIONS+= --sysconfdir=$(ETCDIR)

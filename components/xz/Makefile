@@ -37,6 +37,9 @@ COMPONENT_ANITYA_ID=	5277
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Regenerate configure after patching m4/ax_pthread.m4.
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -if)
+
 COMPONENT_TEST_DIR =		$(@D)/tests
 
 # Master test results are the same for 32-bit and 64-bit, so override

@@ -49,13 +49,13 @@ COMPONENT_ANITYA_ID=	7134
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Regenerate configure after patching m4/ax_pthread.m4.
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -if)
+
 # Configure wants gnu make, so make sure its in the path first.
 PATH=$(GNUBIN):$(USRBINDIR)
 # solaris-build.md suggests setting these preprocessor CFLAGS
 CFLAGS += -D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1 -D__EXTENSIONS__=1
-# GCC 16 no longer defines this on Solaris for -pthread.  AX_PTHREAD still
-# checks it to verify that the selected compiler flags enable threads.
-CPPFLAGS += -D_REENTRANT
 # Don't deliver static libraries
 CONFIGURE_OPTIONS +=	--disable-static
 

@@ -1,0 +1,112 @@
+https://github.com/autoconf-archive/autoconf-archive/pull/341
+
+From a621aa7d4f2c847eb66209ea6ca8df26f7903ac7 Mon Sep 17 00:00:00 2001
+From: Rainer Orth <ro@CeBiTec.Uni-Bielefeld.DE>
+Date: Sun, 17 May 2026 17:06:04 +0200
+Subject: [PATCH] AX_PTHREAD: Fix pthread detection on Solaris 11.4
+
+Detect XPG7 support in the target headers and require _REENTRANT only
+on older Solaris releases.  The existing pthread compile and link test
+remains the final capability check.
+
+--- stunnel-5.74/aclocal.m4
++++ stunnel-5.74/aclocal.m4
+@@ -522,7 +522,22 @@ # definitions is, on some systems, a str
+ # correctly enabled
+ 
+ case $host_os in
+-        darwin* | hpux* | linux* | osf* | solaris*)
++        solaris*)
++        # Solaris 11.4 introduced XPG7 support and did away with the need for
++        # _REENTRANT.
++
++        AC_EGREP_CPP([AX_PTHREAD_SOLARIS__REENTRANT],
++            [
++#            undef _XOPEN_SOURCE
++#            include <sys/feature_tests.h>
++#            if _XOPEN_VERSION < 700
++             AX_PTHREAD_SOLARIS__REENTRANT
++#            endif
++            ],
++            [ax_pthread_check_macro="_REENTRANT"],
++            [ax_pthread_check_macro="--"])
++        ;;
++        darwin* | hpux* | linux* | osf*)
+         ax_pthread_check_macro="_REENTRANT"
+         ;;
+ 
+--- stunnel-5.74/configure
++++ stunnel-5.74/configure
+@@ -5259,7 +5259,32 @@ # definitions is, on some systems, a str
+ # correctly enabled
+ 
+ case $host_os in
+-        darwin* | hpux* | linux* | osf* | solaris*)
++        solaris*)
++        # Solaris 11.4 introduced XPG7 support and did away with the need for
++        # _REENTRANT.
++
++        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++
++#            undef _XOPEN_SOURCE
++#            include <sys/feature_tests.h>
++#            if _XOPEN_VERSION < 700
++             AX_PTHREAD_SOLARIS__REENTRANT
++#            endif
++
++_ACEOF
++if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
++  $EGREP_TRADITIONAL "AX_PTHREAD_SOLARIS__REENTRANT" >/dev/null 2>&1
++then :
++  ax_pthread_check_macro="_REENTRANT"
++else case e in #(
++  e) ax_pthread_check_macro="--" ;;
++esac
++fi
++rm -rf conftest*
++
++        ;;
++        darwin* | hpux* | linux* | osf*)
+         ax_pthread_check_macro="_REENTRANT"
+         ;;
+ 
+@@ -6060,7 +6085,32 @@ # definitions is, on some systems, a str
+ # correctly enabled
+ 
+ case $host_os in
+-        darwin* | hpux* | linux* | osf* | solaris*)
++        solaris*)
++        # Solaris 11.4 introduced XPG7 support and did away with the need for
++        # _REENTRANT.
++
++        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++
++#            undef _XOPEN_SOURCE
++#            include <sys/feature_tests.h>
++#            if _XOPEN_VERSION < 700
++             AX_PTHREAD_SOLARIS__REENTRANT
++#            endif
++
++_ACEOF
++if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
++  $EGREP_TRADITIONAL "AX_PTHREAD_SOLARIS__REENTRANT" >/dev/null 2>&1
++then :
++  ax_pthread_check_macro="_REENTRANT"
++else case e in #(
++  e) ax_pthread_check_macro="--" ;;
++esac
++fi
++rm -rf conftest*
++
++        ;;
++        darwin* | hpux* | linux* | osf*)
+         ax_pthread_check_macro="_REENTRANT"
+         ;;
+ 
+@@ -20376,4 +20426,3 @@ { printf "%s\n" "$as_me:${as_lineno-$LIN
+ printf "%s\n" "$as_me: **************************************** success" >&6;}
+ # vim: ft=automake ts=4 expandtab
+ # End of configure.ac
+-

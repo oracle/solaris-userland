@@ -55,6 +55,9 @@ COMPONENT_POST_CONFIGURE_ACTION += ( \
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Regenerate configure after patching m4/ax_pthread.m4.
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -if)
+
 CONFIGURE_OPTIONS += --enable-ogg
 
 CXXFLAGS += -fstack-protector-all

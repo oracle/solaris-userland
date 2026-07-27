@@ -44,6 +44,9 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Regenerate configure after patching ax_pthread.m4.
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -if)
+
 PATH = /usr/gnu/bin:/usr/bin
 
 CONFIGURE_OPTIONS +=	--sysconfdir=/etc

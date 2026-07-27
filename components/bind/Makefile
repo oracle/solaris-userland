@@ -88,8 +88,8 @@ include $(WS_MAKE_RULES)/common.mk
 # Component Configuration.
 # ------------------------
 
-# Patches to configure.in require configure script re-creation.
-# COMPONENT_PREP_ACTION +=(cd $(@D); autoreconf -vfi);
+# Regenerate configure after patching m4/ax_pthread.m4.
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -if);
 
 # Specify "configure" options and features, sorted as per configure usage.
 # FYI, The configure options applied are displayed by 'named -V'.

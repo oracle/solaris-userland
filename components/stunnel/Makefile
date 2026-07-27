@@ -41,6 +41,11 @@ COMPONENT_BAID=	322876
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Keep the generated files newer than the patched AX_PTHREAD macro.
+COMPONENT_PREP_ACTION += \
+	$(TOUCH) $(@D)/aclocal.m4 $(@D)/configure; \
+	gfind $(@D) -name Makefile.in -exec $(TOUCH) '{}' +;
+
 # need /usr/perl5/bin on path to access pod2man perl script, used by 
 # the build to create docs
 COMPONENT_BUILD_ENV +=  PATH=$(USRDIR)/perl5/bin:$(PATH)
