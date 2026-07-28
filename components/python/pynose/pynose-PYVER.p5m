@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2026, Oracle and/or its affiliates.
 #
 
 <transform depend fmri=library/python/nose-313 type=optional -> drop>
@@ -43,10 +43,12 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 link path=usr/bin/nosetests target=nosetests-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/nosetests-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
+file path=usr/bin/nosetests-$(PYVER) pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 link path=usr/bin/pynose target=pynose-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/pynose-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
+file path=usr/bin/pynose-$(PYVER) pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/nose/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/nose/__main__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/nose/__version__.py

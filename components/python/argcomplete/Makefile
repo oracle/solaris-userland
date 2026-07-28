@@ -24,16 +24,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		argcomplete
-COMPONENT_VERSION=	3.6.3
+COMPONENT_VERSION=	3.7.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:62e8ed4fd6a45864acc8235409461b72c9a28ee785a2011cc5eb78318786c89c
+    sha256:afde224f753f874807b1dc1414e883ab8fe0cda9c04807b6047dcb8e1ac23913
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/kislyuk/argcomplete
 COMPONENT_BUGDB=	python-mod/argcomplete
 COMPONENT_ANITYA_ID=	3773
-COMPONENT_BAID=		352410
+COMPONENT_BAID=		415993
 
 # No need for multiple versions, we need just the one used py pipx
 PYTHON_VERSIONS= 3.13

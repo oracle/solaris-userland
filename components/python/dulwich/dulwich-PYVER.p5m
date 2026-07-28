@@ -44,14 +44,17 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=usr/bin/dul-receive-pack target=dul-receive-pack$(PYVER) \
     mediator=python mediator-version=$(PYVER)
 file path=usr/bin/dul-receive-pack$(PYVER) \
-    pkg.depend.bypass-generate=.*importlib.*
+    pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 link path=usr/bin/dul-upload-pack target=dul-upload-pack$(PYVER) \
     mediator=python mediator-version=$(PYVER)
 file path=usr/bin/dul-upload-pack$(PYVER) \
-    pkg.depend.bypass-generate=.*importlib.*
+    pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 link path=usr/bin/dulwich target=dulwich$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/dulwich$(PYVER) pkg.depend.bypass-generate=.*importlib.*
+file path=usr/bin/dulwich$(PYVER) pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/dulwich-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/dulwich-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/dulwich-$(COMPONENT_VERSION).dist-info/RECORD

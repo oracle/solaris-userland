@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 #
 
 # Manifest contains only generic version with $(PYVER) variable. Choose one
@@ -35,8 +35,9 @@
 <transform file path=usr/bin/(.*)-\$\(PYVER\)$ -> \
 	emit link path=usr/bin/%<1> target=%<1>-$(PYVER) mediator=python mediator-version=$(PYVER)>
 
-# Bypass pkgdepend detection of importlib in executable entry scripts
+# Bypass pkgdepend detection of importlib and pkg_resources in executable entry scripts
 <transform file path=usr/bin/.* -> set pkg.depend.bypass-generate .*importlib.*>
+<transform file path=usr/bin/.* -> add pkg.depend.bypass-generate .*pkg_resources.*>
 
 # Handle PEP 3149 - ABI version tagged .so files (remove cpython-3XX version tags)
 <transform file path=.+\.cpython-311\.so$ -> edit path \\.cpython-311\\.so$ .so>

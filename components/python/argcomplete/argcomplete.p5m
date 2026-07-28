@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -38,11 +38,11 @@ set name=org.opensolaris.arc-caseid value=PSARC/2024/013
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file path=usr/bin/activate-global-python-argcomplete \
-    pkg.depend.bypass-generate=.*importlib.*
-file path=usr/bin/python-argcomplete-check-easy-install-script \
-    pkg.depend.bypass-generate=.*importlib.*
+    pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/bin/register-python-argcomplete \
-    pkg.depend.bypass-generate=.*importlib.*
+    pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/argcomplete-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/argcomplete-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/argcomplete-$(COMPONENT_VERSION).dist-info/RECORD
@@ -66,7 +66,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/argcomplete/packages/_shlex.py
 file path=usr/lib/python$(PYVER)/vendor-packages/argcomplete/py.typed
 file path=usr/lib/python$(PYVER)/vendor-packages/argcomplete/scripts/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/argcomplete/scripts/activate_global_python_argcomplete.py
-file path=usr/lib/python$(PYVER)/vendor-packages/argcomplete/scripts/python_argcomplete_check_easy_install_script.py
 file path=usr/lib/python$(PYVER)/vendor-packages/argcomplete/scripts/register_python_argcomplete.py
 file path=usr/lib/python$(PYVER)/vendor-packages/argcomplete/shell_integration.py
 #

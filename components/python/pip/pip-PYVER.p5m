@@ -40,7 +40,8 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 link path=usr/bin/pip target=pip-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/pip-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
+file path=usr/bin/pip-$(PYVER) pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/pip-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/pip-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/pip-$(COMPONENT_VERSION).dist-info/RECORD

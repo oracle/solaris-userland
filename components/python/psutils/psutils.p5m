@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -35,15 +35,24 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2024/110 value=PSARC/2025/063
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/bin/epsffit pkg.depend.bypass-generate=.*importlib.*
-file path=usr/bin/extractres pkg.depend.bypass-generate=.*importlib.*
-file path=usr/bin/includeres pkg.depend.bypass-generate=.*importlib.*
-file path=usr/bin/psbook pkg.depend.bypass-generate=.*importlib.*
-file path=usr/bin/psjoin pkg.depend.bypass-generate=.*importlib.*
-file path=usr/bin/psnup pkg.depend.bypass-generate=.*importlib.*
-file path=usr/bin/psresize pkg.depend.bypass-generate=.*importlib.*
-file path=usr/bin/psselect pkg.depend.bypass-generate=.*importlib.*
-file path=usr/bin/pstops pkg.depend.bypass-generate=.*importlib.*
+file path=usr/bin/epsffit pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
+file path=usr/bin/extractres pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
+file path=usr/bin/includeres pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
+file path=usr/bin/psbook pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
+file path=usr/bin/psjoin pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
+file path=usr/bin/psnup pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
+file path=usr/bin/psresize pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
+file path=usr/bin/psselect pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
+file path=usr/bin/pstops pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/psutils-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/psutils-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/psutils-$(COMPONENT_VERSION).dist-info/RECORD

@@ -41,11 +41,13 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=usr/bin/oslo-config-generator target=oslo-config-generator-$(PYVER) \
     mediator=python mediator-version=$(PYVER)
 file path=usr/bin/oslo-config-generator-$(PYVER) \
-    pkg.depend.bypass-generate=.*importlib.*
+    pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 link path=usr/bin/oslo-config-validator target=oslo-config-validator-$(PYVER) \
     mediator=python mediator-version=$(PYVER)
 file path=usr/bin/oslo-config-validator-$(PYVER) \
-    pkg.depend.bypass-generate=.*importlib.*
+    pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_config-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_config-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_config-$(COMPONENT_VERSION).dist-info/RECORD

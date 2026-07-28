@@ -37,7 +37,8 @@ set name=org.opensolaris.arc-caseid value=PSARC/2018/129
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=usr/bin/cheroot target=cheroot-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/cheroot-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
+file path=usr/bin/cheroot-$(PYVER) pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/cheroot-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/cheroot-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/cheroot-$(COMPONENT_VERSION).dist-info/RECORD

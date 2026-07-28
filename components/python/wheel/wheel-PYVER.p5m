@@ -39,7 +39,8 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 link path=usr/bin/wheel target=wheel-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/wheel-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
+file path=usr/bin/wheel-$(PYVER) pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/wheel-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/wheel-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/wheel-$(COMPONENT_VERSION).dist-info/RECORD

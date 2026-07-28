@@ -18,7 +18,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 
 <transform dir file link hardlink -> edit path "/python3.11/" "/python$!(PYVER)/">
@@ -29,5 +29,6 @@
 
 <transform file path=.*/mesonbuild/rewriter.py -> add pkg.depend.bypass-generate ".*">
 
-# Bypass pkgdepend detection of importlib in executable entry scripts
+# Bypass pkgdepend detection of importlib and pkg_resources in executable entry scripts
 <transform file path=usr/bin/.* -> set pkg.depend.bypass-generate .*importlib.*>
+<transform file path=usr/bin/.* -> add pkg.depend.bypass-generate .*pkg_resources.*>

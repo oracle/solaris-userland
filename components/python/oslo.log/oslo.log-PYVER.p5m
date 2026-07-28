@@ -40,7 +40,9 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 link path=usr/bin/convert-json target=convert-json-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/convert-json-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
+file path=usr/bin/convert-json-$(PYVER) \
+    pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_log-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_log-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_log-$(COMPONENT_VERSION).dist-info/RECORD

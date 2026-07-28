@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -39,12 +39,14 @@ set name=org.opensolaris.arc-caseid value=PSARC/2016/507
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=usr/bin/isort target=isort-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/isort-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
+file path=usr/bin/isort-$(PYVER) pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 link path=usr/bin/isort-identify-imports \
     target=isort-identify-imports-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
 file path=usr/bin/isort-identify-imports-$(PYVER) \
-    pkg.depend.bypass-generate=.*importlib.*
+    pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/isort-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/isort-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/isort-$(COMPONENT_VERSION).dist-info/RECORD

@@ -39,7 +39,8 @@ set name=org.opensolaris.arc-caseid value=PSARC/2015/489
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=usr/bin/idna target=idna-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/idna-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
+file path=usr/bin/idna-$(PYVER) pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/idna-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/idna-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/idna-$(COMPONENT_VERSION).dist-info/RECORD

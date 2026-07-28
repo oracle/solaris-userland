@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -38,7 +38,8 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 link path=usr/bin/xattr target=xattr-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/xattr-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
+file path=usr/bin/xattr-$(PYVER) pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/xattr-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/xattr-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/xattr-$(COMPONENT_VERSION).dist-info/RECORD
