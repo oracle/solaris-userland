@@ -1,0 +1,71 @@
+From upstream:
+https://github.com/python/cpython/issues/151504
+https://github.com/python/cpython/issues/100372
+https://github.com/python/cpython/pull/153311
+
+From 7eca7c58250ac7d193e2f5fd356c329d94428c40 Mon Sep 17 00:00:00 2001
+From: David Benjamin <davidben@google.com>
+Date: Fri, 24 Mar 2023 09:04:30 -0400
+Subject: [PATCH] gh-100372: Use BIO_eof to detect EOF for SSL_FILETYPE_ASN1
+ (GH-100373)
+
+In PEM, we need to parse until error and then suppress `PEM_R_NO_START_LINE`, because PEM allows arbitrary leading and trailing data. DER, however, does not. Parsing until error and suppressing `ASN1_R_HEADER_TOO_LONG` doesn't quite work because that error also covers some cases that should be rejected.
+
+Instead, check `BIO_eof` early and stop the loop that way.
+(cherry picked from commit acfe02f3b05436658d92add6b168538b30f357f0)
+
+Co-authored-by: David Benjamin <davidben@google.com>
+Automerge-Triggered-By: GH:Yhg1s
+---
+ Lib/test/test_ssl.py                                   |  2 ++
+ Modules/_ssl.c                                         | 10 ++++++----
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/Lib/test/test_ssl.py b/Lib/test/test_ssl.py
+index 0b169c37d571b4e..aa8ce81db6688be 100644
+--- a/Lib/test/test_ssl.py
++++ b/Lib/test/test_ssl.py
+@@ -1559,6 +1559,8 @@ def test_load_verify_cadata(self):
+             "not enough data: cadata does not contain a certificate"
+         ):
+             ctx.load_verify_locations(cadata=b"broken")
++        with self.assertRaises(ssl.SSLError):
++            ctx.load_verify_locations(cadata=cacert_der + b"A")
+ 
+     @unittest.skipIf(Py_DEBUG_WIN32, "Avoid mixing debug/release CRT on Windows")
+     def test_load_dh_params(self):
+diff --git a/Modules/_ssl.c b/Modules/_ssl.c
+index 6275d94d644c649..9c2e8c391d018c7 100644
+--- a/Modules/_ssl.c
++++ b/Modules/_ssl.c
+@@ -3978,7 +3978,7 @@ _add_ca_certs(PySSLContext *self, const void *data, Py_ssize_t len,
+ {
+     BIO *biobuf = NULL;
+     X509_STORE *store;
+-    int retval = -1, err, loaded = 0;
++    int retval = -1, err, loaded = 0, was_bio_eof = 0;
+ 
+     assert(filetype == SSL_FILETYPE_ASN1 || filetype == SSL_FILETYPE_PEM);
+ 
+@@ -4006,6 +4006,10 @@ _add_ca_certs(PySSLContext *self, const void *data, Py_ssize_t len,
+         int r;
+ 
+         if (filetype == SSL_FILETYPE_ASN1) {
++            if (BIO_eof(biobuf)) {
++                was_bio_eof = 1;
++                break;
++            }
+             cert = d2i_X509_bio(biobuf, NULL);
+         } else {
+             cert = PEM_read_bio_X509(biobuf, NULL,
+@@ -4041,9 +4045,7 @@ _add_ca_certs(PySSLContext *self, const void *data, Py_ssize_t len,
+         }
+         _setSSLError(get_state_ctx(self), msg, 0, __FILE__, __LINE__);
+         retval = -1;
+-    } else if ((filetype == SSL_FILETYPE_ASN1) &&
+-                    (ERR_GET_LIB(err) == ERR_LIB_ASN1) &&
+-                    (ERR_GET_REASON(err) == ASN1_R_HEADER_TOO_LONG)) {
++    } else if ((filetype == SSL_FILETYPE_ASN1) && was_bio_eof) {
+         /* EOF ASN1 file, not an error */
+         ERR_clear_error();
+         retval = 0;
