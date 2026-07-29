@@ -1,0 +1,29 @@
+# This patch updates mod_gss.c from the 1.3.8c and earlier to 1.3.9c
+# and later.  In 1.3.8c end_login was changed to pr_session_end and
+# temporarily a #define end_login was added for backwards compatibilty.
+# By 1.3.9c the macro has been removed, and all mods must be updated.
+--- a/mod_gss.c.in	2026-07-28 14:09:13.615236111 +0200
++++ b/mod_gss.c.in	2026-07-28 14:09:51.269238776 +0200
+@@ -1405,21 +1405,21 @@
+             maj_stat=gss_delete_sec_context(&min_stat,&gcontext,GSS_C_NO_BUFFER);
+             if (maj_stat != GSS_S_COMPLETE) {
+ 	       log_gss_error( maj_stat, min_stat,"could not delete credential");
+                gss_release_buffer(&min_stat,GSS_C_NO_BUFFER);
+             }
+             gcontext = GSS_C_NO_CONTEXT;
+         }
+     }
+     /* If session.user is set, we had a valid login reinforce USER,PASS,ACCT*/
+     if (session.user) {
+-        end_login(0);
++        pr_session_end(0);
+     }
+     
+     /* Convert the parameter to upper case */
+     for (i = 0; i < strlen(cmd->argv[1]); i++)
+ 	((char *)cmd->argv[1])[i] = toupper(((char *)cmd->argv[1])[i]);
+ 
+     if (!strcmp(cmd->argv[1], "GSSAPI")) { 
+ 	pr_response_send(R_334, "Using authentication type %s; ADAT must follow", (char *) cmd->argv[1]);
+ 	gss_log("GSSAPI Auth GSSAPI requested, ADAT must follow");
+ 	gss_flags |= GSS_SESS_AUTH_OK;

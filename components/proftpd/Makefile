@@ -32,18 +32,20 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		proftpd
-COMPONENT_VERSION=	1.3.8c
-IPS_COMPONENT_VERSION=	1.3.8.3.0
+COMPONENT_VERSION=	1.3.9c
+IPS_COMPONENT_VERSION=	1.3.9.3.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	http://www.proftpd.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:2a48f2ca338456e750d2373bf671025ed799e04e0baa16c7bb8dbfd67d8734d2
+	sha256:724a6aead2f4a284c1df0c96ad778da2a45d38474bb46db8db0921d2b222f300
 COMPONENT_ARCHIVE_URL= https://github.com/proftpd/proftpd/archive/refs/tags/v$(COMPONENT_VERSION).tar.gz
-COMPONENT_SIG_URL=	https://github.com/proftpd/proftpd/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE).asc
+# COMPONENT_SIG_URL temporarily disabled, The new format is the sigurl json
+# format that requires the sigstore/cosign tool to inspect.
+# COMPONENT_SIG_URL=    https://github.com/proftpd/proftpd/attestations/34307512/download
 COMPONENT_BUGDB=	service/proftpd
-COMPONENT_BAID_PROFTPD=	191398
+COMPONENT_BAID_PROFTPD=	418685
 # For check_anitya target, https://release-monitoring.org/project/7609
 COMPONENT_ANITYA_ID=	7609
 
@@ -112,6 +114,7 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 	$(UNPACK) $(UNPACK_ARGS) ../$(COMPONENT_ARCHIVE_1) ; \
 	cd $(COMPONENT_SRC_1) ; \
 	$(GPATCH) < ../../mod_gss-patches/002.27914767.patch ; \
+	$(GPATCH) < ../../mod_gss-patches/003.39776940.patch ; \
 	./configure CC="$(CC)" CFLAGS="-I/usr/include/kerberosv5"; \
 	$(CP) mod_gss.c mod_auth_gss.c $(SOURCE_DIR)/contrib ; \
 	$(CP) mod_gss.h $(SOURCE_DIR)/include ; \
@@ -156,7 +159,7 @@ COMPONENT_TEST_TRANSFORMS +=	\
 	'-e "/^api\/fsio.c:[0-9]*:F:base:fs_fgetsize_test:0: Failed to get fs size for fd 0: Operation not applicable/d" '
 # With the above deletions the FAILED count can vary, so remove it.
 COMPONENT_TEST_TRANSFORMS +=	\
-	'-e "s|^\(99%: Checks: 813, Failures:\) \([0-9]*\)\(, Errors:\)\(.*\)|\1 ELIDED\3 ELIDED|" ' \
+	'-e "s|^\(99%: Checks: 816, Failures:\) \([0-9]*\)\(, Errors:\)\(.*\)|\1 ELIDED\3 ELIDED|" ' \
 	'-e "/^ FAILED [1-9] test[s]*/d" '
 
 

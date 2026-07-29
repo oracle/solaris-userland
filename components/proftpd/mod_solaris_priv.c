@@ -2,7 +2,7 @@
  * ProFTPD - FTP server daemon
  * Copyright (c) 1997, 1998 Public Flood Software
  * Copyright (c) 2003-2010 The ProFTPD Project team
- * Copyright (c) 2011, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026, Oracle and/or its affiliates.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -261,7 +261,7 @@ MODRET solaris_priv_post_passwd(cmd_rec *cmd, unsigned int priv_flags) {
     priv_freeset(i);
     priv_freeset(p);
     pr_signals_unblock();
-    end_login(1);
+    pr_session_end(1);
   }
 
 out:
