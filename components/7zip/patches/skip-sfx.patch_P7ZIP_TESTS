@@ -1,0 +1,25 @@
+The Solaris package delivers 7zz but no SFX module.  Keep the reusable
+archive tests while omitting the p7zip-specific 7zCon.sfx test.
+
+--- a/check/check.sh
++++ b/check/check.sh
+@@ -86,8 +86,6 @@
+ 
+ sure ${P7ZIP} a 7za433_7zip_lzma.7z 7za433_7zip_lzma
+ 
+-sure ${P7ZIP} a -sfx7zCon.sfx 7za433_7zip_lzma.x 7za433_7zip_lzma
+-
+ sure ${P7ZIP} a -pqwerty -mhc=on -mhe=on 7za433_7zip_lzma_crypto.7z 7za433_7zip_lzma_crypto
+ 
+ sure ${P7ZIP} a -mx=9 -m0=ppmd:mem=64m:o=32 7za433_7zip_ppmd.7z 7za433_7zip_ppmd
+@@ -107,10 +105,6 @@
+ sure diff -r 7za433_ref 7za433_7zip_lzma
+ 
+ sure rm -fr 7za433_7zip_lzma
+-# FIXME - only for 7zG
+-sure chmod +x ./7za433_7zip_lzma.x
+-sure ${TOOLS} ./7za433_7zip_lzma.x
+-sure diff -r 7za433_ref 7za433_7zip_lzma
+ 
+ sure ${P7ZIP} x -pqwerty 7za433_7zip_lzma_crypto.7z
+ sure diff -r 7za433_ref 7za433_7zip_lzma_crypto

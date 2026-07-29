@@ -27,19 +27,32 @@ CTF_MODE =		off	# Has no effect
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		7-Zip
-COMPONENT_VERSION=	26.01
-COMPONENT_BAID=		393725
-COMPONENT_SRC=		7z2601-src
+COMPONENT_VERSION=	26.02
+COMPONENT_BAID=		413197
+COMPONENT_SRC=		7z2602-src
 COMPONENT_PROJECT_URL=	https://www.7-zip.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b2389e0e930b2f9a348cf0fe7d9870a46482a8ec044ee0bdf42e2136db31c3d6
+    sha256:cf967c98bca02a4b8b16375f441825a8e141362f14be1969bbec8e1ca0bff9dd
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/a/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	17875
 
-IPS_COMPONENT_VERSION=	26.1
+# The p7zip archive supplies only its check scripts and archive corpus for
+# testing 7zz.  It is not built or packaged, so it has no separate BAID.
+COMPONENT_NAME_P7ZIP_TESTS=	p7zip
+COMPONENT_VERSION_P7ZIP_TESTS=	16.02
+COMPONENT_SRC_P7ZIP_TESTS= \
+	$(COMPONENT_NAME_P7ZIP_TESTS)_$(COMPONENT_VERSION_P7ZIP_TESTS)
+COMPONENT_ARCHIVE_P7ZIP_TESTS=	$(COMPONENT_SRC_P7ZIP_TESTS)_src_all.tar.bz2
+COMPONENT_ARCHIVE_HASH_P7ZIP_TESTS= \
+    sha256:5eb20ac0e2944f6cb9c2d51dd6c4518941c185347d4089ea89087ffdd6e2341f
+COMPONENT_ARCHIVE_URL_P7ZIP_TESTS= \
+    https://downloads.sourceforge.net/p7zip/$(COMPONENT_ARCHIVE_P7ZIP_TESTS)
+
+IPS_COMPONENT_VERSION=	26.2
 
 BUILD_STYLE= justmake
+TEST_TARGET= $(TEST_64)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -69,10 +82,19 @@ COMPONENT_INSTALL_ACTION = \
 	$(INSTALL) -m 444 $(@D)/DOC/unRarLicense.txt $(PROTODOC) ; \
 	$(INSTALL) -m 444 files/7zz.1 $(PROTOUSRSHAREMAN1DIR)/7zz.1 ;
 
-# No tests. p7zip tests can be used eventually with 7-Zip binary.
-test:	$(NO_TESTS)
-system-test:	$(NO_TESTS)
-COMPONENT_TEST_CMD = true
+COMPONENT_TEST_DIR= $(SOURCE_DIR_P7ZIP_TESTS)/check
+COMPONENT_TEST_CMD= ./check.sh
+COMPONENT_TEST_ENV += TZ=UTC
+COMPONENT_TEST_ARGS= \
+	$(@D)/CPP/7zip/Bundles/Alone2/b/g/7zz
+COMPONENT_TEST_TARGETS=
+COMPONENT_TEST_MASTER= $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+	'-e "s/^REP=TMP_[0-9][0-9]*/REP=TMP_PID/" ' \
+	'-e "s|^P7ZIP=.*|P7ZIP= 7zz|" ' \
+	'-e "s/(x64)/(platform)/g" ' \
+	'-e "s/(sparcv9)/(platform)/g" ' \
+	'-e "s/Threads:[0-9][0-9]*/Threads:N/g" '
 
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
