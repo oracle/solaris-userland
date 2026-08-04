@@ -30,14 +30,14 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsoup
-COMPONENT_VERSION=	3.6.6
+COMPONENT_VERSION=	3.7.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libsoup
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:51ed0ae06f9d5a40f401ff459e2e5f652f9a510b7730e1359ee66d14d4872740
+    sha256:9c96e11bb91641fe21948013499ca716393c9e9336562f9ff849c41d4edab80e
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	11483
 
-COMPONENT_BAID=		375116
+COMPONENT_BAID=		414947
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -60,6 +60,8 @@ CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
+        '-E ' \
+        '-e "s/^([^[:space:]]+)[[:space:]]+(ERROR|FAIL|TIMEOUT|INTERRUPT|UNEXPECTEDPASS|EXPECTEDFAIL).*/\1 \2/p" ' \
         '-e "/Ok:/p" ' \
         '-e "/Fail:/p" ' \
         '-e "/Pass:/p" ' \
@@ -71,6 +73,7 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libpsl
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += compress/zstd
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc

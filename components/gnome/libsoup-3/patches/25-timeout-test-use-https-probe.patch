@@ -1,14 +1,64 @@
 The test first decides whether it is running on a 'slow' machine. If so, it
 uses longer timeouts for the real tests that follow. However, it probes HTTP
 rather than HTTPS. On sparcv7, HTTP is fast enough that the test thinks it is
-on a 'fast' machine, so the later HTTPS checks fail. I believe that the
-intention here was to probe how fast the 'https' test is.
+on a 'fast' machine, so the later HTTPS checks fail. The intention here is to
+probe how fast the HTTPS test is.
 
-Upstream pull request https://github.com/GNOME/libsoup/pull/5
+Additionally, the fixed three-second slow-mode timeout can be shorter than
+the measured HTTPS request on slower SPARC CI hosts. Scale the timeout from
+that measurement and keep the deliberately slow response longer so the
+timeout assertion remains effective.
 
---- libsoup-3.6.5/tests/timeout-test.c
-+++ libsoup-3.6.5/tests/timeout-test.c
-@@ -229,7 +229,7 @@ https_uri = soup_test_server_get_uri (se
+Upstream issue https://gitlab.gnome.org/GNOME/libsoup/-/issues/521
+
+--- a/tests/timeout-test.c
++++ b/tests/timeout-test.c
+@@ -5,7 +5,9 @@
+ #include "soup-connection.h"
+ #include "soup-uri-utils-private.h"
+ 
+ static gboolean slow_https;
++static guint https_timeout = 1;
++static guint slow_response_delay = 4000;
+ 
+ static void
+ message_finished (SoupMessage *msg, gpointer user_data)
+@@ -134,13 +136,13 @@
+ 	} else
+ 		extra_slow = FALSE;
+ 
+-	timeout_session = soup_test_session_new ("timeout", extra_slow ? 3 : 1, NULL);
+-	idle_session = soup_test_session_new ("idle-timeout", extra_slow ? 2 : 1, NULL);
++	timeout_session = soup_test_session_new ("timeout", extra_slow ? https_timeout : 1, NULL);
++	idle_session = soup_test_session_new ("idle-timeout", extra_slow ? https_timeout - 1 : 1, NULL);
+ 	/* The "plain" session also has an idle timeout, but it's longer
+ 	 * than the test takes, so for our purposes it should behave like
+ 	 * it has no timeout.
+ 	 */
+-	plain_session = soup_test_session_new ("idle-timeout", 20, NULL);
++	plain_session = soup_test_session_new ("idle-timeout", MAX (2 * https_timeout + 2, 20u), NULL);
+ 
+ 	do_msg_tests_for_session (timeout_session, idle_session, plain_session,
+ 				  fast_uri, slow_uri);
+@@ -166,7 +168,7 @@
+ 	} else
+ 		extra_slow = FALSE;
+ 
+-	timeout_session = soup_test_session_new ("timeout", extra_slow ? 3 : 1, NULL);
++	timeout_session = soup_test_session_new ("timeout", extra_slow ? https_timeout : 1, NULL);
+ 	/* SoupSession:timeout doesn't work with sync sessions */
+ 	plain_session = soup_test_session_new (NULL);
+ 	do_msg_tests_for_session (timeout_session, NULL, plain_session, fast_uri, slow_uri);
+@@ -200,7 +202,7 @@
+                 GSource *timeout;
+ 		soup_server_message_pause (msg);
+ 		timeout = soup_add_timeout (g_main_context_get_thread_default (),
+-                                            4000, timeout_finish_message, g_object_ref (msg));
++                                            slow_response_delay, timeout_finish_message, g_object_ref (msg));
+                 g_source_unref (timeout);
+ 	}
+ }
+@@ -229,12 +231,16 @@
  		/* The 1-second timeouts are too fast for some machines... */
  		test_session = soup_test_session_new (NULL);
  		start = g_get_monotonic_time ();
@@ -17,3 +67,18 @@ Upstream pull request https://github.com/GNOME/libsoup/pull/5
  		end = g_get_monotonic_time ();
  		soup_test_session_abort_unref (test_session);
  		debug_printf (2, "  (https request took %0.3fs)\n", (end - start) / 1000000.0);
+ 		if (end - start > 750000) {
+-			debug_printf (1, "  (using extra-slow mode)\n\n");
++			https_timeout = MAX (3u, (guint)((2 * (end - start) + G_USEC_PER_SEC - 1) /
++			                              G_USEC_PER_SEC));
++			slow_response_delay = (https_timeout + 1) * 1000;
++			debug_printf (1, "  (using extra-slow mode with %u-second timeout)\n\n",
++			              https_timeout);
+ 			slow_https = TRUE;
+ 		} else {
+ 			debug_printf (2, "\n");
+ 			slow_https = FALSE;
+ 		}
+ 	} else
+ 		https_uri = g_uri_parse ("https://fail.", SOUP_HTTP_URI_FLAGS, NULL);
+ 
