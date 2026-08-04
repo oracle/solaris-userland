@@ -27,14 +27,14 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		braille-printer-app
-COMPONENT_VERSION=	2.0.0
+COMPONENT_VERSION=	2.0.0.20241209
 COMPONENT_PROJECT_URL=	https://github.com/OpenPrinting/$(COMPONENT_NAME)
 GIT_REPO=		https://github.com/OpenPrinting/$(COMPONENT_NAME)
-GIT_COMMIT_ID=		3df7f94
-GIT_HASH=		sha256:3e526fd90c08f07e4eee557923a43faf9fd8ee460c51d3995b505990e534ac0b
+GIT_COMMIT_ID=		272d547
+GIT_HASH=		sha256:0cf234f284fb695488bb2ade33d361dacc6c10f7bc5ace09c20b2d8d4c941f24
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	utility/cups
-COMPONENT_BAID=		182118
+COMPONENT_BAID=		420761
 COMPONENT_ANITYA_ID=	5541
 
 include $(WS_MAKE_RULES)/common.mk
@@ -44,6 +44,7 @@ COMPONENT_PREP_ACTION = (cd $(@D); LC_ALL=C autoreconf -fiv)
 
 CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
+CONFIGURE_OPTIONS +=	--disable-printer-app
 
 # Makefile.am files of this component are not compatible with Solaris make.
 # Use GNU make to avoid the configuration error when makefile fragments are

@@ -1,0 +1,63 @@
+Allow building the classic CUPS filters without PAPPL, which is not available
+on Solaris.
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -107,7 +107,14 @@ PKG_CHECK_MODULES([LIBCUPSFILTERS], [libcupsfilters])
+ if ! $PKG_CONFIG --atleast-version 2.0 libcupsfilters ; then
+	AC_MSG_ERROR([libcupsfilters needs to be at least version 2.0])
+ fi
+-PKG_CHECK_MODULES([PAPPL], [pappl])
++AC_ARG_ENABLE([printer-app],
++	AS_HELP_STRING([--disable-printer-app], [disable the PAPPL-based printer application]),
++	[], [enable_printer_app=yes])
++AS_IF([test "x$enable_printer_app" = xyes], [
++	PKG_CHECK_MODULES([PAPPL], [pappl])
++])
++AM_CONDITIONAL([ENABLE_PRINTER_APP],
++	[test "x$enable_printer_app" = xyes])
+ 
+ # ======================
+ # Check system functions
+@@ -197,8 +204,10 @@ PKG_CHECK_EXISTS([liblouis], [
+ AM_CONDITIONAL(ENABLE_BRAILLE, test "x$enable_braille" = xyes)
+ AC_SUBST(TABLESDIR)
+ 
+-PKG_CHECK_MODULES([LIBLOUISUTDML], [liblouisutdml], [
+-	AC_DEFINE([HAVE_LIBLOUISUTDML], [1], [Define to 1 if you have the liblouisutdml library.])
++AS_IF([test "x$enable_printer_app" = xyes], [
++	PKG_CHECK_MODULES([LIBLOUISUTDML], [liblouisutdml], [
++		AC_DEFINE([HAVE_LIBLOUISUTDML], [1], [Define to 1 if you have the liblouisutdml library.])
++	])
+ ])
+ 
+ # ================
+@@ -220,7 +229,9 @@ AC_SUBST(MUSICXML_TYPE)
+ # Supports for filters
+ # ====================
+ #
+-PKG_CHECK_MODULES([LIBMAGIC], [libmagic])
++AS_IF([test "x$enable_printer_app" = xyes], [
++	PKG_CHECK_MODULES([LIBMAGIC], [libmagic])
++])
+ 
+ # ===================
+ # Systemd integration
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -24,6 +24,7 @@ EXTRA_DIST = \
+ # application
+ # ===========
+ 
++if ENABLE_PRINTER_APP
+ bin_PROGRAMS = brf-printer-app
+ 
+ brf_printer_app_SOURCES = \
+@@ -55,6 +56,7 @@ if HAVE_SYSTEMD
+ dist_systemdsystemunit_DATA = \
+	braille-printer-app/brf-printer-app.service
+ endif
++endif
+ 
+ # =========
+ # utilities

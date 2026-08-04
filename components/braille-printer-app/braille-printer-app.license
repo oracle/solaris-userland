@@ -303,10 +303,18 @@ especially also Linux. CUPS uses the Internet Printing Protocol
 interfaces, a web interface, and a C API to manage printers and
 print jobs.
 
-This package contains backends, filters, and auxiliary files for
-Braille embosser support, currently only as a classic CUPS printer
-driver package. A conversion to a Printer Application is in the works
-and will get committed here soon.
+`brf-printer-app` implements printing for a variety of common Braille printers
+connected via network or USB.  Features include:
+
+- A single executable handles spooling, status, and server functionality.
+- Multiple printer support.
+- Each printer implements an IPP Everywhere™ print service and is compatible
+  with the driverless printing support in Linux®.
+- Each printer can directly print "raw", pdf,ubrl files.
+
+More generally, this package includes backends, filters, and auxiliary files
+for Braille embosser support, currently only as a classic CUPS printer driver
+package.
 
 For compiling and using this package see INSTALL file.
 
@@ -318,11 +326,72 @@ See the "COPYING", "LICENCE", and "NOTICE" files for legal
 information. The license is the same as for CUPS, for a maximum of
 compatibility.
 
+## BASIC USAGE
+
+`brf-printer-app` uses a single executable to perform all functions.  The normal
+syntax is:
+
+    brf-printer-app SUB-COMMAND [OPTIONS] [FILES]
+
+where "SUB-COMMAND" is one of the following:
+
+- "add": Add a printer
+- "cancel": Cancel one or more jobs
+- "default": Get or set the default printer
+- "delete": Delete a printer
+- "devices": List available printers
+- "drivers": List available drivers
+- "jobs": List queued jobs
+- "modify": Modify a printer
+- "options": Lists the supported options and values
+- "printers": List added printer queues
+- "server": Run in server mode
+- "shutdown": Shutdown a running server
+- "status": Show server or printer status
+- "submit": Submit one or more files for printing
+
+You can omit the sub-command if you just want to print something, for example:
+
+    brf-printer-app somefile.brf
+
+The options vary based on the sub-command, but most commands support "-d" to
+specify a printer and "-o" to specify a named option with a value, for example:
+
+- `brf-printer-app -d myprinter somefile.brf`: Print a file to the printer named
+  "myprinter".
+- `brf-printer-app -o media=na_letter_8.5x11in picture.brf`: Print a media to a US
+  letter sheet.
+- `brf-printer-app default -d myprinter`: Set "myprinter" as the default printer.
+
+See the `brf-printer-app` man page for more examples.
+
+
+Running the Server
+------------------
+
+Normally you'll run `brf-printer-app` in the background as a service for your
+printer(s), using the systemd service file:
+
+    sudo systemctl enable brf-printer-app.service
+    sudo systemctl start brf-printer-app.service
+
+You can start it in the foreground with the following command:
+
+    sudo brf-printer-app server -o log-file=- -o log-level=debug
+
+Root access is needed on Linux when talking to USB printers, otherwise you can
+run `brf-printer-app` without the "sudo" on the front.
+
+
+Supported Printers
+------------------
+
+The following printers are currently supported:
+
+- Generic Braille embosser.
+
+
 ## LINKS
-
-### Converting the Braille Embosser Driver to a Printer Application
-
-* [Converting Braille embosser support into a printer application - GSoC 2022 project by Chandresh Soni](https://gist.github.com/Chandresh2702/73923b2c686039404cdd9b050edbe995)
 
 ### The New Architecture of Printing and Scanning
 
@@ -564,6 +633,23 @@ generation in the Makefile is more tedious than really useful.
 - Test whether one wants to negate, e.g. to emboss as few dots as possible
 - textubrltoindex when liblouis tools will be able to emit 8dot braille
 
+## LEGAL STUFF
+
+Filter used to convert various file format are in cups-filter is Copyright © 2022, 2024 by Samuel Thibault (samuel.thibault@ens-lyon.org).
+
+The Braille Printer Application is Copyright © 2024 by Arun Patwa .
+Some of the reference has been taken from (https://github.com/chandresh-soni/Braille-printer-app) which is copyright © 2022 by Chandresh Soni.
+and also from pappl-retrofit.(https://github.com/OpenPrinting/pappl-retrofit) which is Copyright © 2022 by openprinting.
+
+It is derived from the HP PCL Printer Application, a first working model of
+a raster Printer Application using PAPPL. It is available here:
+
+https://github.com/michaelrsweet/hp-printer-apps
+
+The HP PCL Printer Application is Copyright © 2019-2020 by Michael R Sweet.
+
+This software is licensed under the Apache License Version 2.0.  See the files
+"LICENSE" and "NOTICE" for more information.
 
 
 ## Files:
@@ -572,6 +658,22 @@ backend/cups-brf.c
 BRF (Braille-Ready Format) virtual backend
 
 Copyright (c) 2017 by Samuel Thibault <samuel.thibault@ens-lyon.org>
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+braille-printer-app/brf-converts.c
+braille-printer-app/brf-printer-app.c
+braille-printer-app/brf-printer.h
+braille-printer-app/generic-brf.c
+
+BRF-Printer app for the Printer Application Framework
+
+Copyright © 2020-2024 by Michael R Sweet.
+Copyright © 2022 by Chandresh Soni.
+Copyright © 2024 by Arun Patwa.
 
 Licensed under Apache License v2.0.  See the file "LICENSE" for more
 information.
