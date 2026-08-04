@@ -219,7 +219,6 @@ REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += library/security/libsodium
 REQUIRED_PACKAGES += library/security/openssl-3
-REQUIRED_PACKAGES += library/spell-checking/enchant
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library

@@ -86,9 +86,6 @@ CONFIGURE_OPTIONS += --with-db4	# Oracle Berkeley DB
 CONFIGURE_OPTIONS += --with-cdb	# another database (internal support)
 REQUIRED_PACKAGES += database/berkeleydb-5
 
-CONFIGURE_OPTIONS += --with-enchant=shared
-REQUIRED_PACKAGES += library/spell-checking/enchant
-
 CONFIGURE_OPTIONS += --enable-exif=shared
 
 CONFIGURE_OPTIONS += --enable-ftp=shared

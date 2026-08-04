@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 # This file specifies configure-line options to enable as many extensions as
@@ -85,9 +85,6 @@ CONFIGURE_OPTIONS += --enable-dba=shared
 CONFIGURE_OPTIONS += --with-db4	# Oracle Berkeley DB
 CONFIGURE_OPTIONS += --with-cdb	# another database (internal support)
 REQUIRED_PACKAGES += database/berkeleydb-5
-
-CONFIGURE_OPTIONS += --with-enchant=shared
-REQUIRED_PACKAGES += library/spell-checking/enchant
 
 CONFIGURE_OPTIONS += --enable-exif=shared
 
