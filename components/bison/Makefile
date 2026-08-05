@@ -58,7 +58,7 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 # is used to calculate the address of yydebug variable in .bss section.
 # To fix the problem, we disable the optimization that merges constants in
 # order to force the full calculation of yydebug address...
-gcc_OPT.sparc.64 = -fno-merge-constants
+gcc_OPT.sparc.64 += -fno-merge-constants
 
 CONFIGURE_OPTIONS  +=		M4="/usr/gnu/bin/m4"
 CONFIGURE_OPTIONS  += 		--disable-silent-rules
@@ -112,6 +112,7 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "s|^warning:.*bootstrap class path not set in conjunction with.*$$|XXX_CC_XXX|g" ' \
     '-e "s|^1 warning$$|XXX_CC_XXX|g" ' \
     '-e "s|.*/tests/testsuite -C tests.*|XXX_CC_XXX|g" ' \
+    '-e "/CTF debug info requested/d" ' \
     '-e "/^XXX_CC_XXX$$/d" ' \
 
 REQUIRED_PACKAGES += developer/macro/gnu-m4
