@@ -27,14 +27,12 @@ BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXfont2
-COMPONENT_VERSION=	2.0.8
+COMPONENT_VERSION=	2.0.9
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f556c0e1093a4e6911cc90bc4b106d201902ee187fd74af206ff162f7e6a24d5
+	sha256:f042a370666815e7b941e9b7019024755bd1c6c2954afbfa515af378251799e2
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	17165
-COMPONENT_BAID=		416572
-
-TEST_TARGET = $(NO_TESTS)
+COMPONENT_BAID=		421622
 
 CONFIGURE_LIBDIR.32 = $(USRLIBDIR)/xorg
 CONFIGURE_LIBDIR.64 = $(USRLIBDIR)/xorg/$(MACH64)
@@ -42,6 +40,17 @@ CONFIGURE_LIBDIR.64 = $(USRLIBDIR)/xorg/$(MACH64)
 FIX_PC_FILES=xfont2.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+# Regenerate Makefile.in after applying 0001-test.patch
+COMPONENT_PREP_ACTION = (cd $(@D); autoreconf -fiv)
+
+# Upstream has deprecated font server support, but we have not yet EOF'ed it,
+# so re-enable it for now.
+CONFIGURE_OPTIONS += --enable-fc
+
+# Test cases depend on static library to be able to call functions not
+# exported by shared library
+CONFIGURE_OPTIONS += --enable-static
 
 # Use mapfile instead of -fvisibility to control symbol visibility
 # so that we can expose symbols needed by our installalias program.
@@ -66,6 +75,14 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 COMPONENT_INSTALL_ARGS.32 += pkgconfigdir="$(DESTDIR)/usr/lib/pkgconfig"
 COMPONENT_INSTALL_ARGS.64 += pkgconfigdir="$(DESTDIR)/usr/lib/$(MACH64)/pkgconfig"
+
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/TOTAL/p" ' \
+        '-e "/SKIP/p" ' \
+        '-e "/PASS/p" ' \
+        '-e "/FAIL/p" ' \
+        '-e "/ERROR/p" '
 
 CBE_PACKAGES += x11/header/x11-protocols
 CBE_PACKAGES += x11/library/xtrans

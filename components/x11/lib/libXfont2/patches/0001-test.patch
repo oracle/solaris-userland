@@ -1,0 +1,19 @@
+Without this fix, tests fail with:
+
+FAIL: test-fserve-read-glyphs
+=============================
+
+ld.so.1: test-fserve-read-glyphs: fatal: libfontenc.so.1: open failed: No such file or directory
+FAIL test-fserve-read-glyphs (exit status: 137)
+
+--- libXfont2-2.0.9/Makefile.am
++++ libXfont2-2.0.9/Makefile.am
+@@ -179,7 +179,7 @@ # we statically link against libXfont2.a
+ test_fserve_read_glyphs_SOURCES = test/test-fserve-read-glyphs.c $(TEST_UTIL_SRCS)
+ test_fserve_read_glyphs_CFLAGS = $(AM_CFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/src/fc
+ test_fserve_read_glyphs_LDFLAGS = -static
+-test_fserve_read_glyphs_LDADD = libXfont2.la $(LTLIBOBJS)
++test_fserve_read_glyphs_LDADD = libXfont2.la $(LTLIBOBJS) $(XFONT_LIBS)
+ endif XFONT_FC
+ 
+ # PCF parser security regression tests
