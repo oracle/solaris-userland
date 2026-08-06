@@ -8,9 +8,9 @@
 # In the future, if this fix is accepted by the upstream in a later release, we
 # will remove this patch when we upgrade to that release.
 #
---- old/channels.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/channels.c	2025-04-15 11:42:37.040107810 +0200
-@@ -3830,8 +3830,12 @@ channel_setup_fwd_listener_tcpip(struct
+--- old/channels.c
++++ new/channels.c
+@@ -3917,8 +3917,12 @@ channel_setup_fwd_listener_tcpip(struct ssh *ssh, int type,
  	 */
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = ssh->chanctxt->IPv4or6;
@@ -24,7 +24,7 @@
  	snprintf(strport, sizeof strport, "%d", fwd->listen_port);
  	if ((r = getaddrinfo(addr, strport, &hints, &aitop)) != 0) {
  		if (addr == NULL) {
-@@ -4692,6 +4696,10 @@ connect_to_helper(struct ssh *ssh, const
+@@ -4781,6 +4785,10 @@ connect_to_helper(struct ssh *ssh, const char *name, int port, int socktype,
  		memset(&hints, 0, sizeof(hints));
  		hints.ai_family = ssh->chanctxt->IPv4or6;
  		hints.ai_socktype = socktype;
@@ -35,7 +35,7 @@
  		snprintf(strport, sizeof strport, "%d", port);
  		if ((gaierr = getaddrinfo(name, strport, &hints, &cctx->aitop))
  		    != 0) {
-@@ -5015,8 +5023,12 @@ x11_create_display_inet(struct ssh *ssh,
+@@ -5104,8 +5112,12 @@ x11_create_display_inet(struct ssh *ssh, int x11_display_offset,
  		port = X11_BASE_PORT + display_number;
  		memset(&hints, 0, sizeof(hints));
  		hints.ai_family = ssh->chanctxt->IPv4or6;
@@ -49,7 +49,7 @@
  		snprintf(strport, sizeof strport, "%d", port);
  		if ((gaierr = getaddrinfo(NULL, strport,
  		    &hints, &aitop)) != 0) {
-@@ -5239,6 +5251,10 @@ x11_connect_display(struct ssh *ssh)
+@@ -5328,6 +5340,10 @@ x11_connect_display(struct ssh *ssh)
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = ssh->chanctxt->IPv4or6;
  	hints.ai_socktype = SOCK_STREAM;
@@ -60,9 +60,9 @@
  	snprintf(strport, sizeof strport, "%u", X11_BASE_PORT + display_number);
  	if ((gaierr = getaddrinfo(buf, strport, &hints, &aitop)) != 0) {
  		error("%.100s: unknown host. (%s)", buf,
---- old/packet.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/packet.c	2025-04-15 11:37:20.859872440 +0200
-@@ -603,6 +603,10 @@ ssh_remote_hostname(struct ssh *ssh)
+--- old/packet.c
++++ new/packet.c
+@@ -613,6 +613,10 @@ ssh_remote_hostname(struct ssh *ssh)
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = from.ss_family;
  	hints.ai_socktype = SOCK_STREAM;
@@ -73,9 +73,9 @@
  	if (getaddrinfo(name, NULL, &hints, &aitop) != 0) {
  		logit("reverse mapping checking getaddrinfo for %.700s "
  		    "[%s] failed.", name, ntop);
---- old/regress/netcat.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/regress/netcat.c	2025-04-15 11:37:20.860564705 +0200
-@@ -343,6 +343,10 @@ main(int argc, char *argv[])
+--- old/regress/netcat.c
++++ new/regress/netcat.c
+@@ -339,6 +339,10 @@ main(int argc, char *argv[])
  		hints.ai_protocol = uflag ? IPPROTO_UDP : IPPROTO_TCP;
  		if (nflag)
  			hints.ai_flags |= AI_NUMERICHOST;
@@ -86,7 +86,7 @@
  	}
  
  	if (xflag) {
-@@ -371,6 +375,10 @@ main(int argc, char *argv[])
+@@ -367,6 +371,10 @@ main(int argc, char *argv[])
  		proxyhints.ai_protocol = IPPROTO_TCP;
  		if (nflag)
  			proxyhints.ai_flags |= AI_NUMERICHOST;
@@ -97,7 +97,7 @@
  	}
  
  	if (lflag) {
-@@ -645,6 +653,10 @@ remote_connect(const char *host, const c
+@@ -641,6 +649,10 @@ remote_connect(const char *host, const char *port, struct addrinfo hints)
  			ahints.ai_socktype = uflag ? SOCK_DGRAM : SOCK_STREAM;
  			ahints.ai_protocol = uflag ? IPPROTO_UDP : IPPROTO_TCP;
  			ahints.ai_flags = AI_PASSIVE;
@@ -108,7 +108,7 @@
  			if ((error = getaddrinfo(sflag, pflag, &ahints, &ares)))
  				errx(1, "getaddrinfo: %s", gai_strerror(error));
  
-@@ -1412,8 +1424,12 @@ decode_addrport(const char *h, const cha
+@@ -1408,8 +1420,12 @@ decode_addrport(const char *h, const char *p, struct sockaddr *addr,
  
  	bzero(&hints, sizeof(hints));
  	hints.ai_family = v4only ? PF_INET : PF_UNSPEC;
@@ -122,9 +122,9 @@
  	r = getaddrinfo(h, p, &hints, &res);
  	/* Don't fatal when attempting to convert a numeric address */
  	if (r != 0) {
---- old/servconf.c	2025-04-15 11:37:20.209473965 +0200
-+++ new/servconf.c	2025-04-15 11:37:20.861539900 +0200
-@@ -954,6 +954,10 @@ add_one_listen_addr(ServerOptions *optio
+--- old/servconf.c
++++ new/servconf.c
+@@ -692,6 +692,10 @@ add_one_listen_addr(ServerOptions *options, const char *addr,
  	hints.ai_family = options->address_family;
  	hints.ai_socktype = SOCK_STREAM;
  	hints.ai_flags = (addr == NULL) ? AI_PASSIVE : 0;
@@ -135,9 +135,9 @@
  	snprintf(strport, sizeof strport, "%d", port);
  	if ((gaierr = getaddrinfo(addr, strport, &hints, &aitop)) != 0)
  		fatal("bad addr or host: %s (%s)",
---- old/ssh-keyscan.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/ssh-keyscan.c	2025-04-15 11:37:20.862204550 +0200
-@@ -368,6 +368,10 @@ tcpconnect(char *host)
+--- old/ssh-keyscan.c
++++ new/ssh-keyscan.c
+@@ -361,6 +361,10 @@ tcpconnect(char *host)
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = IPv4or6;
  	hints.ai_socktype = SOCK_STREAM;
@@ -148,9 +148,9 @@
  	if ((gaierr = getaddrinfo(host, strport, &hints, &aitop)) != 0) {
  		error("getaddrinfo %s: %s", host, ssh_gai_strerror(gaierr));
  		return -1;
---- old/ssh.c	2025-04-15 11:37:20.212551045 +0200
-+++ new/ssh.c	2025-04-15 11:37:20.862998350 +0200
-@@ -272,6 +272,10 @@ resolve_host(const char *name, int port,
+--- old/ssh.c
++++ new/ssh.c
+@@ -259,6 +259,10 @@ resolve_host(const char *name, int port, int logerr, char *cname, size_t clen)
  	hints.ai_socktype = SOCK_STREAM;
  	if (cname != NULL)
  		hints.ai_flags = AI_CANONNAME;
@@ -161,7 +161,7 @@
  	if ((gaierr = getaddrinfo(name, strport, &hints, &res)) != 0) {
  		if (logerr || (gaierr != EAI_NONAME && gaierr != EAI_NODATA))
  			loglevel = SYSLOG_LEVEL_ERROR;
-@@ -348,6 +352,10 @@ resolve_addr(const char *name, int port,
+@@ -335,6 +339,10 @@ resolve_addr(const char *name, int port, char *caddr, size_t clen)
  	    AF_UNSPEC : options.address_family;
  	hints.ai_socktype = SOCK_STREAM;
  	hints.ai_flags = AI_NUMERICHOST|AI_NUMERICSERV;
@@ -172,9 +172,9 @@
  	if ((gaierr = getaddrinfo(name, strport, &hints, &res)) != 0) {
  		debug2_f("could not resolve name %.100s as address: %s",
  		    name, ssh_gai_strerror(gaierr));
---- old/sshconnect.c	2025-04-09 09:02:43.000000000 +0200
-+++ new/sshconnect.c	2025-04-15 11:37:20.863808065 +0200
-@@ -380,6 +380,10 @@ ssh_create_socket(struct addrinfo *ai)
+--- old/sshconnect.c
++++ new/sshconnect.c
+@@ -409,6 +409,10 @@ ssh_create_socket(struct addrinfo *ai)
  		hints.ai_socktype = ai->ai_socktype;
  		hints.ai_protocol = ai->ai_protocol;
  		hints.ai_flags = AI_PASSIVE;

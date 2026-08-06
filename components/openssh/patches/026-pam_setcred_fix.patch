@@ -10,9 +10,9 @@
 # In the future, if these bug fixes are accepted by the upstream in a later
 # release, we will remove this patch when we upgrade to that release.
 #
---- openssh-9.4p1/auth-pam.c
-+++ openssh-9.4p1/auth-pam.c
-@@ -1246,12 +1246,19 @@ if (sshpam_err == PAM_SUCCESS) {
+--- old/auth-pam.c
++++ new/auth-pam.c
+@@ -1220,12 +1220,19 @@ do_pam_setcred(void)
  		sshpam_cred_established = 1;
  		return;
  	}
@@ -31,8 +31,8 @@
 +#endif /* PAM_BUGFIX */
  }
  
- static int
-@@ -1347,10 +1354,16 @@ sshpam_err = pam_open_session(sshpam_han
+ void
+@@ -1244,10 +1251,16 @@ do_pam_session(struct ssh *ssh)
  	if (sshpam_err == PAM_SUCCESS)
  		sshpam_session_open = 1;
  	else {

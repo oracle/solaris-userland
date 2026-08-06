@@ -1,0 +1,252 @@
+OpenSSH 10.4 was released on 2026-07-06. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Potentially-incompatible changes
+--------------------------------
+
+ * sshd(8): configuration dump mode ("sshd -G") now writes directives
+   in mixed case (e.g. "PubkeyAuthentication") whereas previously it
+   emitted only lower-case names.
+
+ * sshd(8): on Linux systems with the seccomp sandbox enabled,
+   failures to enable SECCOMP or NO_NEW_PRIVS are now fatal.
+   Previously sshd(8) would log the error but continue operation,
+   to support systems that lacked these features. Now systems that
+   lack these should instead disable the sandbox at configure time.
+
+ * ssh(1), sshd(8): make the transport protocol stricter by
+   disconnecting if the peer sends non-KEX messages during a post-
+   authentication key re-exchange. Previously a malicious peer could
+   continue sending non-key exchange messages without penalty. These
+   would be buffered, causing memory to be wasted up until the
+   connection terminated or the server/client hit a memory limit.
+   Implementations that do not restrict messages sent during key
+   exchange as per RFC4253 section 7.1 may be disconnected.
+   Reported by Marko Jevtic.
+
+Changes since OpenSSH 10.3
+==========================
+
+This release contains a number of security fixes as well as general
+bugfixes and a couple of new features.
+
+Security
+========
+
+ * sftp(1): when downloading files on the command-line using
+   "sftp host:/path .", a malicious server could cause the file to
+   be downloaded to an unexpected location. This issue was identified
+   by the Swival Security Scanner.
+
+ * scp(1): when copying files between two remote destinations, do
+   not allow a malicious server to write files to the parent
+   directory of the intended target directory.  This issue was
+   identified by the Swival Security Scanner.
+
+ * sshd(8): when using the "internal-sftp" SFTP server implementation
+   (this is not the default), long command lines were previously
+   truncated silently after the 9th argument. If a security-relevant
+   option was in the 10th or later position, it would be discarded.
+   Reported by Steve Caffrey.
+
+ * sshd(8): add a documentation note to mention that the
+   GSSAPIStrictAcceptorCheck option is ineffective when the server
+   is joined to a Windows Active Directory. Reported by Yarin Aharoni
+   of Safebreach.
+
+ * sshd(8): DisableForwarding=yes didn't override PermitTunnel=yes
+   as it was documented to do. Note that PermitTunnel is not enabled
+   by default. Reported independently by Huzaifa Sidhpurwala of
+   Redhat and Marko Jevtic.
+
+ * sshd(8): avoid a potential pre-authentication denial of service
+   when GSSAPIAuthentication was enabled (this feature is off by
+   default). This was not mitigated by MaxAuthTries, but would be
+   penalised by PerSourcePenalties. This was reported by Manfred
+   Kaiser of the milCERT AT (Austrian Ministry of Defence).
+
+ * sshd(8): fix a number of cases where the minimum authentication
+   delay was not being enforced. Reported by the Orange Cyberdefense
+   Vulnerability Team.
+
+ * ssh(1): fix a possible client-side use-after-free if the server
+   changes its host key during a key reexchange. This was reported by
+   Zhenpeng (Leo) Lin of Depthfirst.
+
+New features
+------------
+
+ * All: add experimental support for a composite post-quantum
+   signature scheme that combines ML-DSA 44 and Ed25519 as specified
+   in draft-miller-sshm-mldsa44-ed25519-composite-sigs.
+
+   This scheme is not enabled by default. To use it, you'll need
+   to add it to HostKeyAlgorithms, PubkeyAcceptedAlgorithms, etc.
+   Keys may be generated using "ssh-keygen -t mldsa44-ed25519".
+
+ * ssh(1), sshd(8): replace the wildcard pattern matcher with an
+   implementation based on an NFA. This avoids exponential worst-case
+   behaviour for the old implementation.
+
+Bugfixes
+--------
+
+ * ssh-agent(1): fix incorrect reply to "query" SSH_AGENTC_EXTENSION
+   requests. bz3967
+
+ * sshd(8): avoid sending observably different messages for valid vs
+   invalid users in GSSAPIAuthentication (disabled by default).
+
+ * ssh(1), sshd(8): fix several bugs that incorrectly
+   classified bulk traffic as interactive. bz3972, bz3958
+
+ * ssh-keygen(1), ssh-add(1): skip unsupported key types when
+   downloading resident keys from a FIDO token. Previously, downloads
+   would abort when one was encountered. GHPR657
+
+ * ssh(1): fix a potential use-after-free on an error path if
+   cipher_init() fails.
+
+ * sshd(8): perform stricter encoding and validation of transport
+   state passed between sshd privilege separation subprocesses. This
+   somewhat further hardens the server against attacks on sshd-auth
+   or sshd-session subprocesses.
+
+ * ssh-agent(1): avoid possible runtime denial of service by
+   enforcing some limits on the length of usernames in key use
+   constraints.
+
+ * sftp(1): fix two separate one-byte out-of-bounds reads, in
+   SSH2_FXP_REALPATH and batch command processing.
+
+ * sftp-server(8): disallow use of the copy-data extension to read
+   and write to the same inode simultaneously.
+
+ * ssh(1), sshd(8): avoid strlen(NULL) crash if an X11 channel was
+   created before the x11-req SSH_MSG_CHANNEL_REQUEST was sent.
+   GHPR679
+
+ * sftp(1), scp(1): avoid a situation where sftp_download() could get
+   stuck in a loop if a broken server repeatedly returned zero length
+   while reading a file.
+
+ * ssh(1): avoid leaking DNS0x20 case-randomised names into names
+   canonicalised using CanonicalizePermittedCNAMEs. bz3966
+
+ * sftp-server(8): avoid truncation of pathnames passed to lstat()
+   during SSH_FXP_REALPATH handling on systems where PATH_MAX is not
+   the actual max. GHPR688
+
+ * ssh(1), sshd(8): correct arming of poll(2) event masks for some
+   socket-type channels. GHPR660
+
+ * sshd(8): major refactor of sshd_config parsing and management
+   code, to allow for more exact serialisation/deserialisation across
+   privilege separation boundaries.
+
+ * ssh-add(1): open connection to the agent only after getopt()
+   processing has completed, to give options like "-v" a chance to
+   display debug information about this operation.
+
+ * crypto code: fix bounds checking when signing messages of length
+   greater than will fit in a size_t. In OpenSSH, message sizes are
+   bounded by SSHBUF_SIZE_MAX so this was unreachable.
+
+ * crypto code: add signature malleability and pubkey validity checks
+   to ed25519 verification. SSH doesn't depend on these properties
+
+ * crypto code: fix ECDSA order check for curves with cofactor != 1.
+   All supported EC curves have cofactor 1, so this was
+   unreachable.
+
+ * sshd(8): differentiate between execution failures and a subsystem
+   that was not found when logging why a subsystem failed to start.
+   GHPR637
+
+ * All: use safer idioms for timegm(3) and mktime(3) error detection.
+
+ * ssh(1), sshd(8): avoid accepting invalid cipher or MAC lists in
+   config files or command-line arguments. This could cause runtime
+   failures later.
+
+ * ssh(1): fix NULL deref crash during pubkey auth when using a PEM
+   style private key with no corresponding .pub key adjacent to it.
+
+ * sshd(8): don't print an error message when trying to load a host
+   private key when PKCS#11 keys are in use, as these don't need the
+   private half on the filesystem. GHPR664
+
+ * All: don't use deprecated ERR_load_crypto_strings(). GHPR650
+
+ * ssh(1): properly report errors during configuration default
+   setting. GHPR649
+
+ * ssh(1): use correct directive name (Match instead of Host) in
+   error message. bz3968
+
+ * sftp(1): fix "ls -ln" which was not correctly showing numeric
+   UID/GIDs but rather user and group names. bz3953
+
+ * sshd(8): avoid possible NULL dereference if an allocation fails
+   during config parsing. bz3948
+
+ * All: fix ineffective guards against loading overly large public
+   keys in several places. bz3969 and bz3970
+
+ * sftp(1): ensure file descriptors used by sftp to communicate to
+   its ssh(1) subprocess don't leak into executed subprocesses (e.g.
+   via "!"). GHPR693
+
+Portability
+-----------
+
+ * Sync fmt_scaled.c with OpenBSD upstream, picking up an exactness
+   fix for large exponents (GHPR671)
+
+ * sshd(8): remove duplicate sandbox entry for clock_gettime64.
+
+ * ssh(1), sshd(8): use correct IPTOS_DSCP_VA value if not provided
+   by the system headers.
+
+ * Sync getrrsetbyname.c with OpenBSD upstream, picking up robustness
+   fixes.
+
+ * Disable replacements in openbsd-compat for strvisx(3) and
+   stravis(3), as these are unused in OpenSSH
+
+ * Avoid fortify warnings on Android bz3954
+
+ * Fix a number of memory leaks on error paths in the portability
+   code. GHPR681
+
+ * Revise the README.privsep documentation to reflect sshd's recent
+   switch to a multi-binary model.
+
+Checksums:
+==========
+
+ - SHA1 (openssh-10.4.tar.gz) = 8502b516230865e229d55045bb4ccc67aeae905b
+ - SHA256 (openssh-10.4.tar.gz) = qUVI+wMg4mVpiQbXvfMVkF3Zuyy2JrS+ZjN764mtyGE=
+
+ - SHA1 (openssh-10.4p1.tar.gz) = ae8650a71cc52dbbd049519cee276ae6d65c2c4d
+ - SHA256 (openssh-10.4p1.tar.gz) = 72Am3SrqjVYFljjV0yYpAsiSzrqfiDlYNeDQbT+2Mjg=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com

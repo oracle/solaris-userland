@@ -3,9 +3,9 @@
 # Solaris-specific, we will not contribute the changes to the upstream
 # community. 
 #
---- old/Makefile.in	2026-05-10 10:33:39.261426490 +0200
-+++ new/Makefile.in	2026-05-10 10:33:40.500323855 +0200
-@@ -134,7 +134,7 @@ SSHD_SESSION_OBJS=sshd-session.o auth-rh
+--- old/Makefile.in
++++ new/Makefile.in
+@@ -135,7 +135,7 @@ SSHD_SESSION_OBJS=sshd-session.o auth-rhosts.o auth-passwd.o \
  	monitor.o monitor_wrap.o auth-krb5.o \
  	auth2-gss.o gss-serv.o gss-serv-krb5.o kexgsss.o \
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o \
@@ -14,7 +14,7 @@
  	uidswap.o platform-listen.o $(P11OBJS) $(SKOBJS)
  
  SSHD_AUTH_OBJS=sshd-auth.o \
-@@ -149,7 +149,7 @@ SSHD_AUTH_OBJS=sshd-auth.o \
+@@ -150,7 +150,7 @@ SSHD_AUTH_OBJS=sshd-auth.o \
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o \
  	sandbox-null.o sandbox-rlimit.o sandbox-darwin.o \
  	sandbox-seccomp-filter.o sandbox-capsicum.o  sandbox-solaris.o \
@@ -23,7 +23,7 @@
  	uidswap.o $(P11OBJS) $(SKOBJS)
  
  SFTP_CLIENT_OBJS=sftp-common.o sftp-client.o sftp-glob.o ssherr-nolibcrypto.o
-@@ -170,7 +170,7 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o
+@@ -171,7 +171,7 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o sk-usbhid.o ssherr-nolibcrypto.o
  
  SSHKEYSCAN_OBJS=ssh-keyscan.o $(P11OBJS) $(SKOBJS)
  
@@ -32,7 +32,7 @@
  
  SFTP_OBJS=	sftp.o sftp-usergroup.o progressmeter.o $(SFTP_CLIENT_OBJS)
  
-@@ -222,46 +222,46 @@ libssh.a: $(LIBSSH_OBJS)
+@@ -223,46 +223,46 @@ libssh.a: $(LIBSSH_OBJS)
  	$(RANLIB) $@
  
  ssh$(EXEEXT): $(LIBCOMPAT) libssh.a $(SSHOBJS)
@@ -93,8 +93,8 @@
  
  # test driver for the loginrec code - not built by default
  logintest: logintest.o $(LIBCOMPAT) libssh.a loginrec.o
---- old/openbsd-compat/port-solaris.c	2026-04-02 10:09:03.000000000 +0200
-+++ new/openbsd-compat/port-solaris.c	2026-05-10 10:33:40.500924980 +0200
+--- old/openbsd-compat/port-solaris.c
++++ new/openbsd-compat/port-solaris.c
 @@ -36,6 +36,11 @@
  #include <sys/contract/process.h>
  #include <sys/ctfs.h>
@@ -107,7 +107,7 @@
  #define CT_TEMPLATE	CTFS_ROOT "/process/template"
  #define CT_LATEST	CTFS_ROOT "/process/latest"
  
-@@ -276,6 +281,14 @@ solaris_drop_privs_pinfo_net_fork_exec(v
+@@ -276,6 +281,14 @@ solaris_drop_privs_pinfo_net_fork_exec(void)
  	if ((npset = solaris_basic_privset()) == NULL)
  		fatal("solaris_basic_privset: %s", strerror(errno));
  
@@ -122,7 +122,7 @@
  	if (priv_addset(npset, PRIV_FILE_CHOWN) != 0 ||
  	    priv_addset(npset, PRIV_FILE_DAC_READ) != 0 ||
  	    priv_addset(npset, PRIV_FILE_DAC_SEARCH) != 0 ||
-@@ -379,4 +392,74 @@ solaris_drop_privs_root_pinfo_net_exec(v
+@@ -379,4 +392,74 @@ solaris_drop_privs_root_pinfo_net_exec(void)
  	priv_freeset(pset);
  }
  
@@ -197,8 +197,8 @@
 +#endif /* SFTP_AUDIT */
 +
  #endif
---- old/openbsd-compat/port-solaris.h	2026-04-02 10:09:03.000000000 +0200
-+++ new/openbsd-compat/port-solaris.h	2026-05-10 10:33:40.501254455 +0200
+--- old/openbsd-compat/port-solaris.h
++++ new/openbsd-compat/port-solaris.h
 @@ -30,6 +30,10 @@ priv_set_t *solaris_basic_privset(void);
  void solaris_drop_privs_pinfo_net_fork_exec(void);
  void solaris_drop_privs_root_pinfo_net(void);
@@ -210,8 +210,8 @@
  # endif /* USE_SOLARIS_PRIVS */
  
  #endif
---- old/session.c	2026-05-10 10:33:39.805883965 +0200
-+++ new/session.c	2026-05-10 10:33:40.502251565 +0200
+--- old/session.c
++++ new/session.c
 @@ -95,6 +95,10 @@
  #include "sftp.h"
  #include "atomicio.h"
@@ -243,26 +243,26 @@
  #endif
  	} else if (options.chroot_directory != NULL &&
  	    strcasecmp(options.chroot_directory, "none") != 0) {
-@@ -1944,12 +1959,18 @@ session_subsystem_req(struct ssh *ssh, S
- 					    prog, strerror(errno));
- 				s->is_subsystem = SUBSYSTEM_EXT;
- 				debug("subsystem: exec() %s", cmd);
+@@ -1947,12 +1962,18 @@ session_subsystem_req(struct ssh *ssh, Session *s)
+ 				    prog, strerror(errno));
+ 			s->is_subsystem = SUBSYSTEM_EXT;
+ 			debug("subsystem: exec() %s", cmd);
 +#if defined(USE_SOLARIS_PRIVS) && defined(SFTP_AUDIT)
-+				solaris_add_audit_privs(prog);
++			solaris_add_audit_privs(prog);
 +#endif
- 			}
- 			xasprintf(&type, "session:subsystem:%s",
- 			    options.subsystem_name[i]);
- 			channel_set_xtype(ssh, s->chanid, type);
- 			free(type);
- 			success = do_exec(ssh, s, cmd) == 0;
-+#if defined(USE_SOLARIS_PRIVS) && defined(SFTP_AUDIT)
-+			solaris_drop_audit_privs();
-+#endif
- 			break;
  		}
+ 		xasprintf(&type, "session:subsystem:%s",
+ 		    options.subsystem_name[i]);
+ 		channel_set_xtype(ssh, s->chanid, type);
+ 		free(type);
+ 		success = do_exec(ssh, s, cmd) == 0;
++#if defined(USE_SOLARIS_PRIVS) && defined(SFTP_AUDIT)
++		solaris_drop_audit_privs();
++#endif
+ 		break;
  	}
-@@ -2785,6 +2806,14 @@ do_cleanup(struct ssh *ssh, Authctxt *au
+ 
+@@ -2789,6 +2810,14 @@ do_cleanup(struct ssh *ssh, Authctxt *authctxt)
  	 */
  	if (mm_is_monitor())
  		session_destroy_all(ssh, session_pty_cleanup2);
@@ -277,9 +277,14 @@
  }
  
  /* Return a name for the remote host that fits inside utmp_size */
---- old/sftp-server.c	2026-05-10 10:33:37.345528970 +0200
-+++ new/sftp-server.c	2026-05-10 10:41:32.344399305 +0200
-@@ -57,6 +57,12 @@ char *sftp_realpath(const char *, char *
+@@ -2804,4 +2833,3 @@ session_get_remote_name_or_ip(struct ssh *ssh, u_int utmp_size, int use_dns)
+ 		remote = ssh_remote_ipaddr(ssh);
+ 	return remote;
+ }
+-
+--- old/sftp-server.c
++++ new/sftp-server.c
+@@ -57,6 +57,12 @@ char *sftp_realpath(const char *, char *); /* sftp-realpath.c */
  /* Maximum data read that we are willing to accept */
  #define SFTP_MAX_READ_LENGTH (SFTP_MAX_MSG_LENGTH - 1024)
  
@@ -320,7 +325,7 @@
  
  	if (first_unused_handle == -1) {
  		if (num_handles + 1 <= num_handles)
-@@ -351,7 +371,11 @@ handle_new(int use, const char *name, in
+@@ -351,7 +371,11 @@ handle_new(int use, const char *name, int fd, int flags, DIR *dirp)
  	handles[i].flags = flags;
  	handles[i].name = xstrdup(name);
  	handles[i].bytes_read = handles[i].bytes_write = 0;
@@ -742,7 +747,7 @@
 +#ifdef SFTP_AUDIT
 +			if (r == -1) {
 +				saved_errno = errno;
-+				status = errno_to_portable(errno);
+ 				status = errno_to_portable(errno);
 +			}
 +			ae = audit_sftp_utimes(audit_rpath, fd);
 +			audit_sftp_finish_event(ae,
@@ -750,7 +755,7 @@
 +
 +#else /* original */
 +			if (r == -1) 
- 				status = errno_to_portable(errno);
++				status = errno_to_portable(errno);
 +#endif
  		}
  		if (a.flags & SSH2_FILEXFER_ATTR_UIDGID) {
@@ -774,7 +779,7 @@
  		}
  	}
  	send_status(id, status);
-@@ -1201,14 +1466,23 @@ process_remove(uint32_t id)
+@@ -1202,14 +1467,23 @@ process_remove(uint32_t id)
  {
  	char *name;
  	int r, status = SSH2_FX_FAILURE;
@@ -798,7 +803,7 @@
  	send_status(id, status);
  	free(name);
  }
-@@ -1219,6 +1493,10 @@ process_mkdir(uint32_t id)
+@@ -1220,6 +1494,10 @@ process_mkdir(uint32_t id)
  	Attrib a;
  	char *name;
  	int r, mode, status = SSH2_FX_FAILURE;
@@ -809,7 +814,7 @@
  
  	if ((r = sshbuf_get_cstring(iqueue, &name, NULL)) != 0 ||
  	    (r = decode_attrib(iqueue, &a)) != 0)
-@@ -1228,8 +1506,20 @@ process_mkdir(uint32_t id)
+@@ -1229,8 +1507,20 @@ process_mkdir(uint32_t id)
  	    a.perm & 07777 : 0777;
  	debug3("request %u: mkdir", id);
  	logit("mkdir name \"%s\" mode 0%o", name, mode);
@@ -830,7 +835,7 @@
  	send_status(id, status);
  	free(name);
  }
-@@ -1239,14 +1529,23 @@ process_rmdir(uint32_t id)
+@@ -1240,14 +1530,23 @@ process_rmdir(uint32_t id)
  {
  	char *name;
  	int r, status;
@@ -854,7 +859,7 @@
  	send_status(id, status);
  	free(name);
  }
-@@ -1284,16 +1583,32 @@ process_rename(uint32_t id)
+@@ -1285,16 +1584,32 @@ process_rename(uint32_t id)
  	char *oldpath, *newpath;
  	int r, status;
  	struct stat sb;
@@ -887,7 +892,7 @@
  	else if (S_ISREG(sb.st_mode)) {
  		/* Race-free rename of regular files */
  		if (link(oldpath, newpath) == -1) {
-@@ -1312,27 +1627,51 @@ process_rename(uint32_t id)
+@@ -1313,27 +1628,51 @@ process_rename(uint32_t id)
  				 * stat+rename.  This is racy.
  				 */
  				if (stat(newpath, &st) == -1) {
@@ -939,7 +944,7 @@
  	send_status(id, status);
  	free(oldpath);
  	free(newpath);
-@@ -1368,6 +1707,9 @@ process_symlink(uint32_t id)
+@@ -1369,6 +1708,9 @@ process_symlink(uint32_t id)
  {
  	char *oldpath, *newpath;
  	int r, status;
@@ -949,7 +954,7 @@
  
  	if ((r = sshbuf_get_cstring(iqueue, &oldpath, NULL)) != 0 ||
  	    (r = sshbuf_get_cstring(iqueue, &newpath, NULL)) != 0)
-@@ -1376,8 +1718,19 @@ process_symlink(uint32_t id)
+@@ -1377,8 +1719,19 @@ process_symlink(uint32_t id)
  	debug3("request %u: symlink", id);
  	logit("symlink old \"%s\" new \"%s\"", oldpath, newpath);
  	/* this will fail if 'newpath' exists */
@@ -969,7 +974,7 @@
  	send_status(id, status);
  	free(oldpath);
  	free(newpath);
-@@ -1388,15 +1741,26 @@ process_extended_posix_rename(uint32_t i
+@@ -1389,15 +1742,26 @@ process_extended_posix_rename(uint32_t id)
  {
  	char *oldpath, *newpath;
  	int r, status;
@@ -996,7 +1001,7 @@
  	send_status(id, status);
  	free(oldpath);
  	free(newpath);
-@@ -1897,6 +2261,9 @@ sftp_server_cleanup_exit(int i)
+@@ -1922,6 +2286,9 @@ sftp_server_cleanup_exit(int i)
  		logit("session closed for local user %s from [%s]",
  		    pw->pw_name, client_addr);
  	}
@@ -1006,7 +1011,7 @@
  	_exit(i);
  }
  
-@@ -2002,6 +2369,14 @@ sftp_server_main(int argc, char **argv,
+@@ -2027,6 +2394,14 @@ sftp_server_main(int argc, char **argv, struct passwd *user_pw)
  
  	log_init(__progname, log_level, log_facility, log_stderr);
  
@@ -1021,8 +1026,8 @@
  	/*
  	 * On platforms where we can, avoid making /proc/self/{mem,maps}
  	 * available to the user so that sftp access doesn't automatically
---- old/sshd-auth.c	2026-05-10 10:33:39.272771215 +0200
-+++ new/sshd-auth.c	2026-05-10 10:33:40.504808300 +0200
+--- old/sshd-auth.c
++++ new/sshd-auth.c
 @@ -202,7 +202,12 @@ privsep_child_demote(void)
  		gidset[0] = privsep_pw->pw_gid;
  		if (setgroups(1, gidset) == -1)
@@ -1036,8 +1041,8 @@
  	}
  
  	/* sandbox ourselves */
---- old/uidswap.c	2026-04-02 10:09:03.000000000 +0200
-+++ new/uidswap.c	2026-05-10 10:33:40.505247080 +0200
+--- old/uidswap.c
++++ new/uidswap.c
 @@ -23,6 +23,11 @@
  #include <stdarg.h>
  #include <stdlib.h>
@@ -1104,8 +1109,8 @@
 +	}
 +}
 +#endif
---- old/uidswap.h	2026-04-02 10:09:03.000000000 +0200
-+++ new/uidswap.h	2026-05-10 10:33:40.505573765 +0200
+--- old/uidswap.h
++++ new/uidswap.h
 @@ -15,3 +15,7 @@
  void	 temporarily_use_uid(struct passwd *);
  void	 restore_uid(void);

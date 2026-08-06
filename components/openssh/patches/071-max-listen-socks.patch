@@ -6,9 +6,9 @@
 #
 # Plan to contribute upstream.
 #
---- openssh-9.4p1/sshd.c
-+++ openssh-9.4p1/sshd.c
-@@ -181,8 +181,7 @@ /*
+--- old/sshd.c
++++ new/sshd.c
+@@ -110,8 +110,7 @@ static int saved_argc;
   * The sockets that the server is listening; this is used in the SIGHUP
   * signal handler.
   */
@@ -17,8 +17,8 @@
 +static int *listen_socks = NULL;
  static int num_listen_socks = 0;
  
- /* Daemon's agent connection */
-@@ -281,6 +280,8 @@ int i;
+ /*
+@@ -203,6 +202,8 @@ close_listen_socks(void)
  
  	for (i = 0; i < num_listen_socks; i++)
  		close(listen_socks[i]);
@@ -27,10 +27,11 @@
  	num_listen_socks = 0;
  }
  
-@@ -1122,11 +1123,19 @@ struct addrinfo *ai;
+@@ -810,12 +811,20 @@ listen_on_addrs(struct listenaddr *la)
+ 	struct addrinfo *ai;
  	char ntop[NI_MAXHOST], strport[NI_MAXSERV];
  
- 	for (ai = la->addrs; ai; ai = ai->ai_next) {
++	for (ai = la->addrs; ai; ai = ai->ai_next) {
 +		if (ai->ai_family == AF_INET || ai->ai_family == AF_INET6) {
 +			num_listen_socks++;
 +		}
@@ -41,7 +42,7 @@
 +	}
 +	num_listen_socks = 0;
 +
-+	for (ai = la->addrs; ai; ai = ai->ai_next) {
+ 	for (ai = la->addrs; ai; ai = ai->ai_next) {
  		if (ai->ai_family != AF_INET && ai->ai_family != AF_INET6)
  			continue;
 -		if (num_listen_socks >= MAX_LISTEN_SOCKS)

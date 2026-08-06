@@ -16,9 +16,9 @@
 # Per agreement with upstream developers, filed:
 #    https://bugzilla.mindrot.org/show_bug.cgi?id=2615
 #
---- old/sshd-session.c	2025-02-27 14:20:09.439698625 +0100
-+++ new/sshd-session.c	2025-02-27 14:20:13.293150720 +0100
-@@ -190,7 +190,14 @@
+--- old/sshd-session.c
++++ new/sshd-session.c
+@@ -180,7 +180,14 @@ struct include_list includes = TAILQ_HEAD_INITIALIZER(includes);
  /* message to be displayed after login */
  struct sshbuf *loginmsg;
  
@@ -32,8 +32,8 @@
 +static void stop_grace_watchdog(void);
  void destroy_sensitive_data(void);
  void demote_sensitive_data(void);
- static void do_ssh2_kex(struct ssh *);
-@@ -220,9 +227,98 @@
+ 
+@@ -220,9 +227,98 @@ grace_alarm_handler(int sig)
  		(void)sigaction(SIGTERM, &sa, NULL);
  		kill(0, SIGTERM);
  	}
@@ -132,23 +132,23 @@
  /* Destroy the host and server keys.  They will no longer be needed. */
  void
  destroy_sensitive_data(void)
-@@ -374,6 +470,7 @@
+@@ -330,6 +426,7 @@ privsep_preauth(struct ssh *ssh)
  		/* child */
  		close(pmonitor->m_sendfd);
  		close(pmonitor->m_log_recvfd);
 +		grace_watchdog_pid = -1;
  
- 		/* Arrange for logging to be sent to the monitor */
- 		set_log_handler(mm_log_handler, pmonitor);
-@@ -1287,6 +1384,7 @@
+ 		/*
+ 		 * Arrange unpriv-preauth child process fds:
+@@ -1223,6 +1320,7 @@ main(int ac, char **av)
  
  		if (setitimer(ITIMER_REAL, &itv, NULL) == -1)
  			fatal("login grace time setitimer failed");
 +		start_grace_watchdog(options.login_grace_time);
  	}
  
- 	if ((r = kex_exchange_identification(ssh, -1,
-@@ -1336,6 +1434,7 @@
+ 	ssh_packet_set_nonblocking(ssh);
+@@ -1257,6 +1355,7 @@ main(int ac, char **av)
  	if (setitimer(ITIMER_REAL, &itv, NULL) == -1)
  		fatal("login grace time clear failed");
  	ssh_signal(SIGALRM, SIG_DFL);

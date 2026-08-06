@@ -9,14 +9,14 @@
 #
 # As such, this is Solaris specific patch.
 #
---- old/ssh-keygen.1	2026-04-23 16:07:35.243690280 +0200
-+++ new/ssh-keygen.1	2026-04-23 16:07:37.125096150 +0200
+--- old/ssh-keygen.1
++++ new/ssh-keygen.1
 @@ -51,7 +51,7 @@
  .Op Fl m Ar format
  .Op Fl N Ar new_passphrase
  .Op Fl O Ar option
--.Op Fl t Cm ecdsa | ecdsa-sk | ed25519 | ed25519-sk | rsa
-+.Op Fl t Cm ecdsa | ed25519 | rsa
+-.Op Fl t Cm ecdsa | ecdsa-sk | ed25519 | ed25519-sk | mldsa44-ed25519 | rsa
++.Op Fl t Cm ecdsa | ed25519 | mldsa44-ed25519 | rsa
  .Op Fl w Ar provider
  .Op Fl Z Ar cipher
  .Nm ssh-keygen
@@ -26,11 +26,11 @@
  .Pa ~/.ssh/id_ecdsa ,
 -.Pa ~/.ssh/id_ecdsa_sk ,
  .Pa ~/.ssh/id_ed25519 ,
--.Pa ~/.ssh/id_ed25519_sk
+-.Pa ~/.ssh/id_ed25519_sk ,
+ .Pa ~/.ssh/id_mldsa44-ed25519
  or
  .Pa ~/.ssh/id_rsa .
- Additionally, the system administrator may use this to generate host keys,
-@@ -304,7 +302,7 @@ flag determines the key length by select
+@@ -305,7 +303,7 @@ flag determines the key length by selecting from one of three elliptic
  curve sizes: 256, 384 or 521 bits.
  Attempting to use bit lengths other than these three values for ECDSA keys
  will fail.
@@ -39,22 +39,22 @@
  .Fl b
  flag will be ignored.
  .It Fl C Ar comment
-@@ -581,13 +579,11 @@ by key ID or serial number.
+@@ -582,13 +580,11 @@ by key ID or serial number.
  See the
  .Sx KEY REVOCATION LISTS
  section for details.
--.It Fl t Cm ecdsa | ecdsa-sk | ed25519 | ed25519-sk | rsa
-+.It Fl t Cm ecdsa | ed25519 | rsa
+-.It Fl t Cm ecdsa | ecdsa-sk | ed25519 | ed25519-sk | mldsa44-ed25519 | rsa
++.It Fl t Cm ecdsa | ed25519 | mldsa44-ed25519 | rsa
  Specifies the type of key to create.
  The possible values are
  .Dq ecdsa ,
 -.Dq ecdsa-sk ,
  .Dq ed25519 (the default),
 -.Dq ed25519-sk ,
+ .Dq mldsa44-ed25519
  or
  .Dq rsa .
- .Pp
-@@ -696,7 +692,7 @@ The maximum is 3.
+@@ -698,7 +694,7 @@ The maximum is 3.
  .It Fl w Ar provider
  Specifies a path to a library that will be used when creating
  FIDO authenticator-hosted keys, overriding the default of using
@@ -63,7 +63,7 @@
  .It Fl Y Cm find-principals
  Find the principal(s) associated with the public key of a signature,
  provided using the
-@@ -1046,7 +1042,8 @@ of user presence (e.g. by having the use
+@@ -1048,7 +1044,8 @@ of user presence (e.g. by having the user touch the authenticator).
  This option only makes sense for the FIDO authenticator algorithms
  .Cm ecdsa-sk
  and
@@ -73,7 +73,7 @@
  .Pp
  .It Ic source-address Ns = Ns Ar address_list
  Restrict the source addresses from which the certificate is considered valid.
-@@ -1296,14 +1293,12 @@ user2@example.com namespaces="file" ssh-
+@@ -1298,14 +1295,12 @@ user2@example.com namespaces="file" ssh-ed25519 AAA41...
  .It Ev SSH_SK_PROVIDER
  Specifies a path to a library that will be used when loading any
  FIDO authenticator-hosted keys, overriding the default of using
@@ -86,22 +86,22 @@
 -.It Pa ~/.ssh/id_ecdsa_sk
  .It Pa ~/.ssh/id_ed25519
 -.It Pa ~/.ssh/id_ed25519_sk
+ .It Pa ~/.ssh/id_mldsa44-ed25519
  .It Pa ~/.ssh/id_rsa
  Contains the ECDSA, authenticator-hosted ECDSA, Ed25519,
- authenticator-hosted Ed25519 or RSA authentication identity of the user.
-@@ -1318,9 +1313,7 @@ but it is offered as the default file fo
+@@ -1321,9 +1316,7 @@ but it is offered as the default file for the private key.
  will read this file when a login attempt is made.
  .Pp
  .It Pa ~/.ssh/id_ecdsa.pub
 -.It Pa ~/.ssh/id_ecdsa_sk.pub
  .It Pa ~/.ssh/id_ed25519.pub
 -.It Pa ~/.ssh/id_ed25519_sk.pub
+ .It Pa ~/.ssh/id_mldsa44-ed25519.pub
  .It Pa ~/.ssh/id_rsa.pub
  Contains the ECDSA, authenticator-hosted ECDSA, Ed25519,
- authenticator-hosted Ed25519 or RSA public key for authentication.
---- old/ssh.1	2026-04-23 16:07:35.245842150 +0200
-+++ new/ssh.1	2026-04-23 16:07:37.125836940 +0200
-@@ -306,10 +306,8 @@ when the private key file is not present
+--- old/ssh.1
++++ new/ssh.1
+@@ -306,10 +306,8 @@ when the private key file is not present locally.
  The default is
  .Pa ~/.ssh/id_rsa ,
  .Pa ~/.ssh/id_ecdsa ,
@@ -113,7 +113,7 @@
  Identity files may also be specified on
  a per-host basis in the configuration file.
  It is possible to have multiple
-@@ -984,24 +982,16 @@ The user creates their key pair by runni
+@@ -985,24 +983,16 @@ The user creates their key pair by running
  This stores the private key in
  .Pa ~/.ssh/id_ecdsa
  (ECDSA),
@@ -138,7 +138,7 @@
  or
  .Pa ~/.ssh/id_rsa.pub
  (RSA)
-@@ -1598,9 +1588,7 @@ Contains additional definitions for envi
+@@ -1599,9 +1589,7 @@ Contains additional definitions for environment variables; see
  above.
  .Pp
  .It Pa ~/.ssh/id_ecdsa
@@ -148,7 +148,7 @@
  .It Pa ~/.ssh/id_rsa
  Contains the private key for authentication.
  These files
-@@ -1613,9 +1601,7 @@ generating the key which will be used to
+@@ -1614,9 +1602,7 @@ generating the key which will be used to encrypt the
  sensitive part of this file using AES-128.
  .Pp
  .It Pa ~/.ssh/id_ecdsa.pub
@@ -158,9 +158,9 @@
  .It Pa ~/.ssh/id_rsa.pub
  Contains the public key for authentication.
  These files are not
---- old/ssh_config.5	2026-04-23 16:07:35.247765675 +0200
-+++ new/ssh_config.5	2026-04-23 16:08:48.699449975 +0200
-@@ -444,8 +444,6 @@ The default is:
+--- old/ssh_config.5
++++ new/ssh_config.5
+@@ -474,8 +474,6 @@ The default is:
  .Bd -literal -offset indent
  ssh-ed25519,ecdsa-sha2-nistp256,
  ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
@@ -169,7 +169,7 @@
  rsa-sha2-512,rsa-sha2-256
  .Ed
  .Pp
-@@ -1093,16 +1091,10 @@ ssh-ed25519-cert-v01@openssh.com,
+@@ -1130,16 +1128,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -186,7 +186,7 @@
  rsa-sha2-512,rsa-sha2-256
  .Ed
  .Pp
-@@ -1141,16 +1133,10 @@ ssh-ed25519-cert-v01@openssh.com,
+@@ -1178,16 +1170,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -203,7 +203,7 @@
  rsa-sha2-512,rsa-sha2-256
  .Ed
  .Pp
-@@ -1779,16 +1765,10 @@ ssh-ed25519-cert-v01@openssh.com,
+@@ -1791,16 +1777,10 @@ ssh-ed25519-cert-v01@openssh.com,
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,

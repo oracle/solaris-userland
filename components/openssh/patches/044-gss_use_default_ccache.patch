@@ -9,8 +9,8 @@
 # Patch source: in-house
 # Solaris specific, upstream already has per-session ccache.
 #
---- old/gss-serv.c	2026-04-03 15:37:33.941259710 +0200
-+++ new/gss-serv.c	2026-04-03 15:40:14.071899490 +0200
+--- old/gss-serv.c
++++ new/gss-serv.c
 @@ -53,6 +53,8 @@
  #include "ssh-gss.h"
  #include "monitor_wrap.h"
@@ -104,74 +104,48 @@
  }
  
  /* This allows GSSAPI methods to do things to the child's environment based
---- old/servconf.c	2026-04-03 15:37:34.898874905 +0200
-+++ new/servconf.c	2026-04-03 15:37:35.378054230 +0200
-@@ -212,6 +212,7 @@ initialize_server_options(ServerOptions
- 	options->num_revoked_keys_files = 0;
- 	options->sk_provider = NULL;
- 	options->trusted_user_ca_keys = NULL;
-+	options->gss_use_default_ccache = -1;
- 	options->authorized_principals_file = NULL;
- 	options->authorized_principals_command = NULL;
- 	options->authorized_principals_command_user = NULL;
-@@ -516,6 +517,8 @@ fill_default_server_options(ServerOption
- 		options->ip_qos_bulk = IPTOS_DSCP_CS0;
- 	if (options->version_addendum == NULL)
- 		options->version_addendum = xstrdup("");
-+	if (options->gss_use_default_ccache == -1)
-+		options->gss_use_default_ccache = 1;
- 	if (options->fwd_opts.streamlocal_bind_mask == (mode_t)-1)
- 		options->fwd_opts.streamlocal_bind_mask = 0177;
- 	if (options->fwd_opts.streamlocal_bind_unlink == -1)
-@@ -619,6 +622,7 @@ typedef enum {
- 	sRevokedKeys, sTrustedUserCAKeys, sAuthorizedPrincipalsFile,
- 	sAuthorizedPrincipalsCommand, sAuthorizedPrincipalsCommandUser,
- 	sKexAlgorithms, sCASignatureAlgorithms, sIPQoS, sVersionAddendum,
-+	sGssUseDefaultCCache,
- 	sAuthorizedKeysCommand, sAuthorizedKeysCommandUser,
- 	sAuthenticationMethods, sHostKeyAgent, sPermitUserRC,
- 	sStreamLocalBindMask, sStreamLocalBindUnlink,
-@@ -820,6 +824,7 @@ static struct {
- 	{ "authorizedprincipalscommand", sAuthorizedPrincipalsCommand, SSHCFG_ALL },
- 	{ "authorizedprincipalscommanduser", sAuthorizedPrincipalsCommandUser, SSHCFG_ALL },
- 	{ "versionaddendum", sVersionAddendum, SSHCFG_GLOBAL },
-+	{ "gssapiusedefaultccache", sGssUseDefaultCCache, SSHCFG_GLOBAL },
- 	{ "authenticationmethods", sAuthenticationMethods, SSHCFG_ALL },
- 	{ "streamlocalbindmask", sStreamLocalBindMask, SSHCFG_ALL },
- 	{ "streamlocalbindunlink", sStreamLocalBindUnlink, SSHCFG_ALL },
-@@ -1810,6 +1815,10 @@ process_server_config_line_depth(ServerO
+--- old/servconf.c
++++ new/servconf.c
+@@ -1545,6 +1545,10 @@ process_server_config_line_depth(ServerOptions *options, char *line,
  		intptr = &options->gss_strict_acceptor;
  		goto parse_flag;
  
-+	case sGssUseDefaultCCache:
++	case sGSSAPIUseDefaultCCache:
 +		intptr = &options->gss_use_default_ccache;
 +		goto parse_flag;
 +
- 	case sGssStoreRekey:
+ 	case sGSSAPIStoreCredentialsOnRekey:
  		intptr = &options->gss_store_rekey;
  		goto parse_flag;
-@@ -3495,6 +3504,7 @@ dump_config(ServerOptions *o)
- 	dump_cfg_fmtint(sFingerprintHash, o->fingerprint_hash);
- 	dump_cfg_fmtint(sExposeAuthInfo, o->expose_userauth_info);
- 	dump_cfg_fmtint(sRefuseConnection, o->refuse_connection);
-+	dump_cfg_fmtint(sGssUseDefaultCCache, o->gss_use_default_ccache);
- 
- 	/* string arguments */
- 	dump_cfg_string(sPidFile, o->pid_file);
---- old/servconf.h	2026-04-03 15:37:33.404552670 +0200
-+++ new/servconf.h	2026-04-03 15:37:35.378691595 +0200
-@@ -259,6 +259,8 @@ typedef struct {
- 	char   *sshd_auth_path;
- 
- 	int	refuse_connection;
-+
-+	int	gss_use_default_ccache;
- }       ServerOptions;
- 
- /* Information about the incoming connection as used by Match */
---- old/sshd-session.c	2026-04-03 15:37:34.751964165 +0200
-+++ new/sshd-session.c	2026-04-03 15:37:35.379455635 +0200
-@@ -1270,9 +1270,19 @@ main(int ac, char **av)
+@@ -4342,6 +4346,7 @@ dump_config(ServerOptions *o)
+ 	dump_cfg_fmtint(sGSSAPICleanupCredentials, o->gss_cleanup_creds);
+ 	dump_cfg_fmtint(sGSSAPIDelegateCredentials, o->gss_deleg_creds);
+ 	dump_cfg_fmtint(sGSSAPIStrictAcceptorCheck, o->gss_strict_acceptor);
++	dump_cfg_fmtint(sGSSAPIUseDefaultCCache, o->gss_use_default_ccache);
+ 	dump_cfg_fmtint(sGSSAPIStoreCredentialsOnRekey, o->gss_store_rekey);
+ 	dump_cfg_string(sGSSAPIKexAlgorithms, o->gss_kex_algorithms);
+ #endif
+--- old/servconf.h
++++ new/servconf.h
+@@ -338,6 +338,7 @@ SSHCONF_INTFLAG(gss_keyex, GSSAPIKeyExchange, SSHCFG_GLOBAL, 0, SSHCFG_COPY_NONE
+ SSHCONF_INTFLAG(gss_cleanup_creds, GSSAPICleanupCredentials, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE) \
+ SSHCONF_INTFLAG(gss_deleg_creds, GSSAPIDelegateCredentials, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE) \
+ SSHCONF_INTFLAG(gss_strict_acceptor, GSSAPIStrictAcceptorCheck, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE) \
++SSHCONF_INTFLAG(gss_use_default_ccache, GSSAPIUseDefaultCCache, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE) \
+ SSHCONF_INTFLAG(gss_store_rekey, GSSAPIStoreCredentialsOnRekey, SSHCFG_GLOBAL, 0, SSHCFG_COPY_NONE) \
+ SSHCONF_STRING(gss_kex_algorithms, GSSAPIKexAlgorithms, SSHCFG_GLOBAL, SSHCFG_COPY_NONE)
+ #else /* GSSAPI */
+@@ -347,6 +348,7 @@ SSHCONF_UNSUPPORTED_INT(gss_keyex, GSSAPIKeyExchange, SSHCFG_GLOBAL) \
+ SSHCONF_UNSUPPORTED_INT(gss_cleanup_creds, GSSAPICleanupCredentials, SSHCFG_GLOBAL) \
+ SSHCONF_UNSUPPORTED_INT(gss_deleg_creds, GSSAPIDelegateCredentials, SSHCFG_GLOBAL) \
+ SSHCONF_UNSUPPORTED_INT(gss_strict_acceptor, GSSAPIStrictAcceptorCheck, SSHCFG_GLOBAL) \
++SSHCONF_UNSUPPORTED_INT(gss_use_default_ccache, GSSAPIUseDefaultCCache, SSHCFG_GLOBAL) \
+ SSHCONF_UNSUPPORTED_INT(gss_store_rekey, GSSAPIStoreCredentialsOnRekey, SSHCFG_GLOBAL) \
+ SSHCONF_UNSUPPORTED_STRING(gss_kex_algorithms, GSSAPIKexAlgorithms, SSHCFG_GLOBAL)
+ #endif /* GSSAPI */
+--- old/sshd-session.c
++++ new/sshd-session.c
+@@ -1271,9 +1271,19 @@ main(int ac, char **av)
  
  #ifdef GSSAPI
  	if (options.gss_authentication) {
@@ -191,9 +165,9 @@
  	}
  #endif
  #ifdef USE_PAM
---- old/sshd_config.5	2026-04-03 15:37:34.753902790 +0200
-+++ new/sshd_config.5	2026-04-03 15:37:35.380511620 +0200
-@@ -768,6 +768,18 @@ The default is
+--- old/sshd_config.5
++++ new/sshd_config.5
+@@ -775,6 +775,18 @@ The default is
  Accept delegated credentials on the server side.
  The default is
  .Cm yes .

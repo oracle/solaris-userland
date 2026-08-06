@@ -3,25 +3,11 @@
 # always on and not configurable on Solaris.  This is for Solaris only, so we
 # will not contribute the changes to the upstream community.
 #
---- old/servconf.c	2025-02-18 09:15:08.000000000 +0100
-+++ new/servconf.c	2025-02-24 11:45:40.301784450 +0100
-@@ -297,7 +297,13 @@
- 
+--- old/servconf.c
++++ new/servconf.c
+@@ -1172,8 +1172,16 @@ process_server_config_line_depth(ServerOptions *options, char *line,
  	/* Portable-specific options */
- 	if (options->use_pam == -1)
-+#ifdef SET_USE_PAM
-+		/* use_pam should be always set to 1 on Solaris */
-+		options->use_pam = 1;
-+#else
- 		options->use_pam = 0;
-+#endif
-+
- 	if (options->pam_service_name == NULL)
- 		options->pam_service_name = xstrdup(SSHD_PAM_SERVICE);
- 
-@@ -1374,8 +1380,16 @@
- 	switch (opcode) {
- 	/* Portable-specific options */
+ #ifdef USE_PAM
  	case sUsePAM:
 +#ifdef SET_USE_PAM
 +		/* UsePAM is always on and not configurable on Solaris */
@@ -36,3 +22,20 @@
  	case sPAMServiceName:
  		charptr = &options->pam_service_name;
  		arg = argv_next(&ac, &av);
+--- old/servconf.h
++++ new/servconf.h
+@@ -271,8 +271,13 @@ SSHCONF_ALIAS(KeepAlive, TCPKeepAlive, SSHCFG_GLOBAL)
+ 	SSHD_CONFIG_ENTRIES_LASTLOG
+ 
+ #ifdef USE_PAM
++#ifdef SET_USE_PAM
++#define SSHD_DEFAULT_USE_PAM	1
++#else
++#define SSHD_DEFAULT_USE_PAM	0
++#endif
+ #define SSHD_CONFIG_ENTRIES_PAM \
+-SSHCONF_INTFLAG(use_pam, UsePAM, SSHCFG_GLOBAL, 0, SSHCFG_COPY_NONE) \
++SSHCONF_INTFLAG(use_pam, UsePAM, SSHCFG_GLOBAL, SSHD_DEFAULT_USE_PAM, SSHCFG_COPY_NONE) \
+ SSHCONF_STRING(pam_service_name, PAMServiceName, SSHCFG_GLOBAL, SSHCFG_COPY_NONE)
+ #else
+ #define SSHD_CONFIG_ENTRIES_PAM \

@@ -4,8 +4,8 @@
 # Because this is Solaris-specific and not suitable for upstream, we will not
 # contribute the changes to the upstream community.
 #
---- old/Makefile.in	2026-04-03 10:35:34.303825890 +0200
-+++ new/Makefile.in	2026-04-03 10:39:01.707335790 +0200
+--- old/Makefile.in
++++ new/Makefile.in
 @@ -27,6 +27,7 @@ SSHD_SESSION=$(libexecdir)/sshd-session
  SSHD_AUTH=$(libexecdir)/sshd-auth
  SSH_PKCS11_HELPER=$(libexecdir)/ssh-pkcs11-helper
@@ -14,7 +14,7 @@
  PRIVSEP_PATH=@PRIVSEP_PATH@
  SSH_PRIVSEP_USER=@SSH_PRIVSEP_USER@
  STRIP_OPT=@STRIP_OPT@
-@@ -132,7 +133,7 @@ SSHD_SESSION_OBJS=sshd-session.o auth-rh
+@@ -133,7 +134,7 @@ SSHD_SESSION_OBJS=sshd-session.o auth-rhosts.o auth-passwd.o \
  	monitor.o monitor_wrap.o auth-krb5.o \
  	auth2-gss.o gss-serv.o gss-serv-krb5.o \
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o \
@@ -23,7 +23,7 @@
  	uidswap.o platform-listen.o $(P11OBJS) $(SKOBJS)
  
  SSHD_AUTH_OBJS=sshd-auth.o \
-@@ -147,7 +148,7 @@ SSHD_AUTH_OBJS=sshd-auth.o \
+@@ -148,7 +149,7 @@ SSHD_AUTH_OBJS=sshd-auth.o \
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o \
  	sandbox-null.o sandbox-rlimit.o sandbox-darwin.o \
  	sandbox-seccomp-filter.o sandbox-capsicum.o  sandbox-solaris.o \
@@ -32,7 +32,7 @@
  	uidswap.o $(P11OBJS) $(SKOBJS)
  
  SFTP_CLIENT_OBJS=sftp-common.o sftp-client.o sftp-glob.o ssherr-nolibcrypto.o
-@@ -168,7 +169,7 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o
+@@ -169,7 +170,7 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o sk-usbhid.o ssherr-nolibcrypto.o
  
  SSHKEYSCAN_OBJS=ssh-keyscan.o $(P11OBJS) $(SKOBJS)
  
@@ -41,7 +41,7 @@
  
  SFTP_OBJS=	sftp.o sftp-usergroup.o progressmeter.o $(SFTP_CLIENT_OBJS)
  
-@@ -296,9 +297,20 @@ $(CONFIGFILES): $(CONFIGFILES_IN) Makefi
+@@ -297,9 +298,20 @@ $(CONFIGFILES): $(CONFIGFILES_IN) Makefile
  moduli:
  	echo
  
@@ -63,7 +63,7 @@
  	rm -f regress/check-perm$(EXEEXT)
  	rm -f regress/mkdtemp$(EXEEXT)
  	rm -f regress/unittests/test_helper/*.a
-@@ -466,6 +478,7 @@ install-files:
+@@ -475,6 +487,7 @@ install-files:
  	$(INSTALL) -m 644 ssh-keysign.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-keysign.8
  	$(INSTALL) -m 644 ssh-pkcs11-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-pkcs11-helper.8
  	$(INSTALL) -m 644 ssh-sk-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-sk-helper.8
@@ -71,8 +71,8 @@
  
  install-sysconf:
  	$(MKDIR_P) $(DESTDIR)$(sysconfdir)
---- old/sftp-server.c	2026-04-02 10:09:03.000000000 +0200
-+++ new/sftp-server.c	2026-04-03 10:41:28.649048230 +0200
+--- old/sftp-server.c
++++ new/sftp-server.c
 @@ -48,6 +48,9 @@
  
  #include "sftp.h"

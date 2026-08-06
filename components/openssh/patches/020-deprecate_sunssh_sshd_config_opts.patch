@@ -13,12 +13,12 @@
 # This is a Solaris specific change to ease the transition and will not be
 # offered upstream.
 #
---- old/servconf.c	2026-04-03 11:25:46.405936355 +0200
-+++ new/servconf.c	2026-04-03 11:31:58.381755745 +0200
-@@ -637,6 +637,30 @@ static struct {
- 	{ "pamservicename", sUnsupported, SSHCFG_ALL },
- #endif
- 	{ "pamauthenticationviakbdint", sDeprecated, SSHCFG_GLOBAL },
+--- old/servconf.c
++++ new/servconf.c
+@@ -522,6 +522,35 @@ static struct {
+ 	u_int flags;
+ } keywords[] = {
+ 	SSHD_CONFIG_ENTRIES
 +#ifdef DEPRECATE_SUNSSH_OPT
 +	/*
 +	 * On Solaris, to make the transition from SunSSH to OpenSSH as smooth
@@ -28,35 +28,26 @@
 +	 * network/ssh going to maintenance. Instead, a warning will be printed
 +	 * to /var/svc/log/network-ssh:default.log. Note that
 +	 * this is an interim enhancement to OpenSSH to make the transition
-+	 * smoother.  If a deprecated SunSSH-only option is migrated to OpenSSH
++	 * smoother. If a deprecated SunSSH-only option is migrated to OpenSSH
 +	 * later, then it will be changed from deprecated to supported.
 +	 */
 +	{ "maxauthtrieslog", sDeprecated, SSHCFG_GLOBAL },
 +	{ "lookupclienthostnames", sDeprecated, SSHCFG_GLOBAL },
 +	{ "useopensslengine", sDeprecated, SSHCFG_GLOBAL },
-+	{ "preuserauthhook", sDeprecated, SSHCFG_ALL},
++	{ "preuserauthhook", sDeprecated, SSHCFG_ALL },
 +	{ "kmfpolicydatabase", sDeprecated, SSHCFG_GLOBAL },
 +	{ "kmfpolicyname", sDeprecated, SSHCFG_GLOBAL },
 +	{ "trustedanchorkeystore", sDeprecated, SSHCFG_GLOBAL },
 +	{ "useunsupportedsshv1", sDeprecated, SSHCFG_GLOBAL },
-+	{ "usefips140", sDeprecated, SSHCFG_ALL},
++	{ "usefips140", sDeprecated, SSHCFG_ALL },
 +	{ "gssapistoredelegatedcredentials", sDeprecated, SSHCFG_ALL },
 +	{ "gssstoredelegcreds", sDeprecated, SSHCFG_ALL },
 +#endif
- 	/* Standard Options */
- 	{ "port", sPort, SSHCFG_GLOBAL },
- 	{ "hostkey", sHostKeyFile, SSHCFG_GLOBAL },
-@@ -683,11 +707,13 @@ static struct {
- 	{ "afstokenpassing", sUnsupported, SSHCFG_GLOBAL },
- #ifdef GSSAPI
- 	{ "gssapiauthentication", sGssAuthentication, SSHCFG_ALL },
-+	{ "gssauthentication", sGssAuthentication, SSHCFG_ALL }, /* alias */
- 	{ "gssapicleanupcredentials", sGssCleanupCreds, SSHCFG_GLOBAL },
- 	{ "gssapidelegatecredentials", sGssDelegateCreds, SSHCFG_GLOBAL },
- 	{ "gssapistrictacceptorcheck", sGssStrictAcceptor, SSHCFG_GLOBAL },
- #else
- 	{ "gssapiauthentication", sUnsupported, SSHCFG_ALL },
-+	{ "gssauthentication", sUnsupported, SSHCFG_ALL },	/* alias */
- 	{ "gssapicleanupcredentials", sUnsupported, SSHCFG_GLOBAL },
- 	{ "gssapidelegatecredentials", sUnsupported, SSHCFG_GLOBAL },
- 	{ "gssapistrictacceptorcheck", sUnsupported, SSHCFG_GLOBAL },
++#ifdef GSSAPI
++	{ "gssauthentication", sGssAuthentication, SSHCFG_ALL },
++#else
++	{ "gssauthentication", sUnsupported, SSHCFG_ALL },
++#endif
+ 	{ "match", sMatch, SSHCFG_ALL },
+ 	{ "include", sInclude, SSHCFG_ALL },
+ 	{ NULL, sBadOption, 0 }

@@ -9,8 +9,8 @@
 # Patch offered upstream:
 #     https://bugzilla.mindrot.org/show_bug.cgi?id=2378
 #
---- old/auth-pam.c	2026-04-03 11:53:57.886443675 +0200
-+++ new/auth-pam.c	2026-04-03 11:53:58.595830625 +0200
+--- old/auth-pam.c
++++ new/auth-pam.c
 @@ -1160,6 +1160,20 @@ start_pam(struct ssh *ssh)
  		fatal("PAM: initialisation failed");
  }
@@ -32,8 +32,8 @@
  void
  finish_pam(void)
  {
---- old/auth-pam.h	2026-04-03 11:56:32.630920490 +0200
-+++ new/auth-pam.h	2026-04-03 11:56:54.603141550 +0200
+--- old/auth-pam.h
++++ new/auth-pam.h
 @@ -43,5 +43,8 @@ int sshpam_get_maxtries_reached(void);
  void sshpam_set_maxtries_reached(int);
  int is_pam_session_open(void);
@@ -43,8 +43,8 @@
 +#endif
  
  #endif /* USE_PAM */
---- old/auth.h	2026-04-03 11:53:57.886801395 +0200
-+++ new/auth.h	2026-04-03 11:53:58.597382450 +0200
+--- old/auth.h
++++ new/auth.h
 @@ -98,6 +98,9 @@ struct Authctxt {
  #ifdef PAM_ENHANCEMENT
  	char		*authmethod_name;
@@ -55,19 +55,19 @@
  };
  
  /*
---- old/auth2-hostbased.c	2026-04-02 10:09:03.000000000 +0200
-+++ new/auth2-hostbased.c	2026-04-03 11:53:58.597783850 +0200
-@@ -81,6 +81,9 @@ userauth_hostbased(struct ssh *ssh, cons
+--- old/auth2-hostbased.c
++++ new/auth2-hostbased.c
+@@ -80,6 +80,9 @@ userauth_hostbased(struct ssh *ssh, const char *method)
+ #ifdef DEBUG_PK
  	debug("signature:");
  	sshbuf_dump_data(sig, slen, stderr);
- #endif
++#endif
 +#ifdef HAVE_PAM_AUSER
 +	authctxt->auser = NULL;
-+#endif
+ #endif
  	pktype = sshkey_type_from_name(pkalg);
  	if (pktype == KEY_UNSPEC) {
- 		/* this is perfectly legal */
-@@ -153,6 +156,13 @@ userauth_hostbased(struct ssh *ssh, cons
+@@ -153,6 +156,13 @@ userauth_hostbased(struct ssh *ssh, const char *method)
  	    sshbuf_ptr(b), sshbuf_len(b), pkalg, ssh->compat, NULL) == 0)
  		authenticated = 1;
  
@@ -81,9 +81,9 @@
  	auth2_record_key(authctxt, authenticated, key);
  	sshbuf_free(b);
  done:
---- old/config.h.in	2026-04-03 11:53:58.269411925 +0200
-+++ new/config.h.in	2026-04-03 11:53:58.598648795 +0200
-@@ -1064,6 +1064,9 @@
+--- old/config.h.in
++++ new/config.h.in
+@@ -1074,6 +1074,9 @@
  /* Define if you have Digital Unix Security Integration Architecture */
  #undef HAVE_OSF_SIA
  
@@ -93,9 +93,9 @@
  /* Define to 1 if you have the `pam_getenvlist' function. */
  #undef HAVE_PAM_GETENVLIST
  
---- old/configure.ac	2026-04-03 11:53:58.424226045 +0200
-+++ new/configure.ac	2026-04-03 11:53:58.600234190 +0200
-@@ -1307,6 +1307,7 @@ if (setsockopt(s, IPPROTO_IP, IP_TOS, &o
+--- old/configure.ac
++++ new/configure.ac
+@@ -1307,6 +1307,7 @@ if (setsockopt(s, IPPROTO_IP, IP_TOS, &one, sizeof(one)) == -1)
  		],
  	)
  	TEST_SHELL=$SHELL	# let configure find us a capable shell
@@ -103,9 +103,9 @@
  	;;
  *-*-sunos4*)
  	CPPFLAGS="$CPPFLAGS -DSUNOS4"
---- old/monitor.c	2026-04-03 11:53:58.430392455 +0200
-+++ new/monitor.c	2026-04-03 11:53:58.601352120 +0200
-@@ -409,6 +409,12 @@ monitor_child_preauth(struct ssh *ssh, s
+--- old/monitor.c
++++ new/monitor.c
+@@ -409,6 +409,12 @@ monitor_child_preauth(struct ssh *ssh, struct monitor *pmonitor)
  		}
  	}
  
@@ -136,7 +136,7 @@
  	hostbased_chost = NULL;
  }
  
-@@ -1235,6 +1243,11 @@ mm_answer_pam_account(struct ssh *ssh, i
+@@ -1209,6 +1217,11 @@ mm_answer_pam_account(struct ssh *ssh, int sock, struct sshbuf *m)
  	if (!options.use_pam)
  		fatal_f("PAM not enabled");
  
