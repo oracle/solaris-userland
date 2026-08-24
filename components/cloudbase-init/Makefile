@@ -27,17 +27,17 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cloudbase-init
-COMPONENT_VERSION=	1.1.6
+COMPONENT_VERSION=	1.1.8
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:00cf7f97c0f50e25f5fab08a7e7fb7cd7b5e99bb6dbd434c50ecb00583a880c0
+    sha256:e1ddb27caeba011be0c4afcaf9c329f8b7dc501efc6a89e962891e9066a8b965
 COMPONENT_ARCHIVE_URL=	\
     https://github.com/openstack/cloudbase-init/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://github.com/cloudbase/cloudbase-init
 COMPONENT_BUGDB=	service/cloudbase-init
 COMPONENT_ANITYA_ID=	13227
-COMPONENT_BAID=		185495
+COMPONENT_BAID=		428426
 
 # We need just a single version
 PYTHON_VERSIONS=	3.11
