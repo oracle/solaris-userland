@@ -25,16 +25,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jsonschema
-COMPONENT_VERSION=	4.23.0
+COMPONENT_VERSION=	4.26.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d71497fef26351a33265337fa77ffeb82423f3ea21283cd9467bb03999266bc4
+    sha256:0c26707e2efad8aa1bfc5b7ce170f3fccc2e4918ff85989ba9ffa9facb2be326
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/python-jsonschema/jsonschema
 COMPONENT_BUGDB=	python-mod/jsonschema
 COMPONENT_ANITYA_ID=	3898
-COMPONENT_BAID=		187834
+COMPONENT_BAID=		427744
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

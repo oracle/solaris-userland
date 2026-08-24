@@ -26,16 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		referencing
-COMPONENT_VERSION=	0.36.2
+COMPONENT_VERSION=	0.37.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:df2e89862cd09deabbdba16944cc3f10feb6b3e6f18e902f7cc25609a34775aa
+    sha256:44aefc3142c5b842538163acb373e24cce6632bd54bdb01b21ad5863489f50d8
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/python-jsonschema/referencing
 COMPONENT_BUGDB=	python-mod/referencing
 COMPONENT_ANITYA_ID=	304263
-COMPONENT_BAID=		194594
+COMPONENT_BAID=		427742
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

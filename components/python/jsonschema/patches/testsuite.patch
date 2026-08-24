@@ -1,0 +1,22 @@
+jsonpath_ng is not available on Solaris.
+
+--- jsonschema-4.26.0/jsonschema/tests/test_exceptions.py
++++ jsonschema-4.26.0/jsonschema/tests/test_exceptions.py
+@@ -1,8 +1,6 @@
+-from unittest import TestCase
++from unittest import TestCase, skip
+ import textwrap
+ 
+-import jsonpath_ng
+-
+ from jsonschema import exceptions
+ from jsonschema.validators import _LATEST_VERSION
+ 
+@@ -704,6 +702,7 @@ class TestHashable(TestCase):
+         {exceptions.SchemaError("")}
+ 
+ 
++@skip("jsonpath_ng is not available on Solaris")
+ class TestJsonPathRendering(TestCase):
+     def validate_json_path_rendering(self, property_name, expected_path):
+         error = exceptions.ValidationError(
