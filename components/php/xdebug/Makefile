@@ -51,7 +51,6 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/php-82
 REQUIRED_PACKAGES += web/php-83
 REQUIRED_PACKAGES += web/php-84
 REQUIRED_PACKAGES += web/php-85

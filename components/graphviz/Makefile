@@ -114,12 +114,6 @@ COMPONENT_INSTALL_ARGS += LN_S="gln -s"
 # support that, we have to handle all that manually below.
 
 # Convenience variables for later use.
-PHP_82_CONFIG = /usr/php/8.2/bin/php-config
-PHP_82_INCLUDES := $(shell $(PHP_82_CONFIG) --includes)
-PHP_82_INSTALL_DIR := $(shell $(PHP_82_CONFIG) --extension-dir)
-PHP_82_LDFLAGS := $(shell $(PHP_82_CONFIG) --ldflags)
-PHP_82_LIBS := $(shell $(PHP_82_CONFIG) --libs)
-
 PHP_83_CONFIG = /usr/php/8.3/bin/php-config
 PHP_83_INCLUDES := $(shell $(PHP_83_CONFIG) --includes)
 PHP_83_INSTALL_DIR := $(shell $(PHP_83_CONFIG) --extension-dir)
@@ -147,8 +141,6 @@ $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
     (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv2 ; \
     $(GSED) -i '/^SUBDIRS =/s|$$| gv2|' tclpkg/Makefile ; \
     $(GSED) -i \
-     -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_82_INCLUDES)|' \
-     -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_82_LDFLAGS) $(PHP_82_LIBS)|' \
      -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.11)|' \
      -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_311_INCLUDES)|' \
      -e '/^PYTHON3_LIBS =/s|=.*$$|= $(PYTHON_311_LIBS)|' \
@@ -172,17 +164,13 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
 # is already installed by Graphviz. Additional mediated links are handled
 # in manifests.
 PHP_GRAPHVIZ_PROTO = $(PROTO_DIR)$(USRLIBDIR64)/graphviz/php
-PHP82_VENDOR_PROTO = $(PROTO_DIR)$(PHP_82_INSTALL_DIR)
 PHP83_VENDOR_PROTO = $(PROTO_DIR)$(PHP_83_INSTALL_DIR)
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PHP82_VENDOR_PROTO); \
-	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_php.soT $(PHP82_VENDOR_PROTO)/gv.so; \
 	$(MKDIR) $(PHP83_VENDOR_PROTO); \
 	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_php.soT $(PHP83_VENDOR_PROTO)/gv.so; \
 	$(RM) -r $(PHP_GRAPHVIZ_PROTO); $(MKDIR) $(PHP_GRAPHVIZ_PROTO); \
 	$(INSTALL) $(@D)/tclpkg/gv/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php84.so; \
-	$(INSTALL) $(@D)/tclpkg/gv2/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php82.so; \
 	$(INSTALL) $(@D)/tclpkg/gv1/.libs/libgv_php.soT $(PHP_GRAPHVIZ_PROTO)/libgv_php83.so;
 
 # Create the config file once the 32-bit build is complete.  This runs the bits
@@ -215,7 +203,6 @@ COMPONENT_SYSTEM_TEST_ENV = CC=$(CC)
 
 CBE_PACKAGES += library/desktop/at-spi2-core
 CBE_PACKAGES += print/filter/poppler
-CBE_PACKAGES += web/php-82
 CBE_PACKAGES += web/php-83
 CBE_PACKAGES += web/php-84
 CBE_PACKAGES += x11/library/libxmu

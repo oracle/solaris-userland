@@ -1,1 +1,1 @@
-php/xdebug: php/php82 php/php83 php/php84 php/php85
+php/xdebug: php/php83 php/php84 php/php85
