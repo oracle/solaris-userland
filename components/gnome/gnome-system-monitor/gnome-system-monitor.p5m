@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 <transform file path=usr.*/man/.+ -> \
     default mangler.man.stability "pass-through volatile">
@@ -26,13 +26,15 @@ set name=pkg.fmri \
     value=pkg:/desktop/system-monitor/gnome-system-monitor@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
     value="The GNOME tool to manage running processes and monitor system resources"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=$(COMPONENT_NAME)
 set name=info.classification \
     value="org.opensolaris.category.2008:Applications/System Utilities"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=LSARC/2006/347 value=PSARC/2010/143
+set name=org.opensolaris.arc-caseid value=LSARC/2006/347 value=PSARC/2010/143 \
+    value=PSARC/2026/074
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/gnome-system-monitor
 file path=usr/lib/gnome-system-monitor/gsm-kill mode=0555
@@ -40,6 +42,11 @@ file path=usr/lib/gnome-system-monitor/gsm-renice mode=0555
 file path=usr/lib/gnome-system-monitor/gsm-taskset mode=0555
 file path=usr/share/applications/gnome-system-monitor-kde.desktop
 file path=usr/share/applications/gnome-system-monitor.desktop
+file release-notes/desktop-system-monitor-gnome-system-monitor.txt \
+    path=usr/share/doc/release-notes/desktop-system-monitor-gnome-system-monitor.txt \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/glib-2.0/schemas/org.gnome.gnome-system-monitor.enums.xml
 file path=usr/share/glib-2.0/schemas/org.gnome.gnome-system-monitor.gschema.xml
 file path=usr/share/gnome-system-monitor/gsm.gresource
