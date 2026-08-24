@@ -26,14 +26,14 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		puremagic
-COMPONENT_VERSION=	1.30
+COMPONENT_VERSION=	2.2.0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:f9ff7ac157d54e9cf3bff1addfd97233548e75e685282d84ae11e7ffee1614c9
+    sha256:eb4bddf07c177c4b434554b92165b67449f5a51e152b976202d6254498810eef
 COMPONENT_PROJECT_URL=	https://github.com/cdgriffith/puremagic
 COMPONENT_BUGDB=	python-mod/puremagic
 COMPONENT_ANITYA_ID=	86511
-COMPONENT_BAID=		355607
+COMPONENT_BAID=		427501
 
 # We need just a version pspdfutils is delivered with
 PYTHON_VERSIONS=	3.13

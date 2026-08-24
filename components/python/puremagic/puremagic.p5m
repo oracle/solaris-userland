@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -36,11 +36,14 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2024/110
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/bin/puremagic pkg.depend.bypass-generate=.*importlib.* \
+    pkg.depend.bypass-generate=.*pkg_resources.*
 file path=usr/lib/python$(PYVER)/vendor-packages/puremagic-$(COMPONENT_VERSION).dist-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/puremagic-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/puremagic-$(COMPONENT_VERSION).dist-info/RECORD
 file path=usr/lib/python$(PYVER)/vendor-packages/puremagic-$(COMPONENT_VERSION).dist-info/WHEEL
 file path=usr/lib/python$(PYVER)/vendor-packages/puremagic-$(COMPONENT_VERSION).dist-info/_solaris_dep
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic-$(COMPONENT_VERSION).dist-info/entry_points.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/puremagic-$(COMPONENT_VERSION).dist-info/licenses/LICENSE
 file path=usr/lib/python$(PYVER)/vendor-packages/puremagic-$(COMPONENT_VERSION).dist-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/__init__.py
@@ -48,6 +51,20 @@ file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/__main__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/magic_data.json
 file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/main.py
 file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/py.typed
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/asf_scanner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/cfbf_scanner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/ebml_scanner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/hdf5_scanner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/helpers.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/json_scanner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/mpeg_audio_scanner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/ogg_scanner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/pdf_scanner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/python_scanner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/sndhdr_scanner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/text_scanner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/puremagic/scanners/zip_scanner.py
 license puremagic.license license=MIT
 
 # force a dependency on the Python runtime
