@@ -53,14 +53,6 @@ COMPONENT_POST_CONFIGURE_ACTION += \
 	$(GSED) -i -e 's/hardcode_into_libs=yes/hardcode_into_libs=no/' $(@D)/libtool; \
 	$(GSED) -i -e 's/hardcode_libdir_flag_spec=.*/hardcode_libdir_flag_spec=""/' $(@D)/libtool;
 
-# For few builds we need to deliver original libjpeg.so.9 to avoid cross
-# consolidation seeding.
-COMPONENT_POST_INSTALL_ACTION.64 += \
-	$(CP) $(USRLIBDIR)/libjpeg.so.9.6.0 $(PROTOUSRLIBDIR) ; \
-	$(SYMLINK) libjpeg.so.9.6.0 $(PROTOUSRLIBDIR)/libjpeg.so.9 ; \
-	$(CP) $(USRLIBDIR)/$(MACH64)/libjpeg.so.9.6.0 $(PROTOUSRLIBDIR)/$(MACH64) ; \
-	$(SYMLINK) libjpeg.so.9.6.0 $(PROTOUSRLIBDIR)/$(MACH64)/libjpeg.so.9 ;
-
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += system/library
