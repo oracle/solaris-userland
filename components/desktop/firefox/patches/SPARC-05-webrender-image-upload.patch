@@ -1,0 +1,257 @@
+Normalize native-endian Cairo image uploads before sending them to WebRender.
+
+On big-endian, some Cairo-backed fallback/image paths can expose explicit
+A8R8G8B8/X8R8G8B8 surfaces. WebRender descriptors do not support those native
+byte-order formats directly; letting them reach IPC produces an invalid
+ImageFormat value and crashes while serializing OpAddImage. Convert those
+4-byte native ARGB/XRGB buffers to WebRender's BGRA/BGRX byte layout at the
+resource-update boundary.
+
+This is a pure host-byte-order boundary fix and is guarded with the compiler's
+__BYTE_ORDER__ condition.
+
+Dependency: apply after SPARC-01-cairo-surface-format.patch. This patch handles
+the WebRender upload boundary for native Cairo formats made visible by the base
+format-contract patch.
+
+--- firefox-153.0/gfx/layers/wr/IpcResourceUpdateQueue.cpp
++++ firefox-153.0/gfx/layers/wr/IpcResourceUpdateQueue.cpp
+@@ -6,6 +6,8 @@ #include "IpcResourceUpdateQueue.h"
+ #include <string.h>
+ #include <algorithm>
+ #include "mozilla/CheckedInt.h"
++#include "mozilla/EndianUtils.h"
++#include "mozilla/gfx/Swizzle.h"
+ #include "mozilla/Maybe.h"
+ #include "mozilla/layers/PTextureChild.h"
+ #include "mozilla/layers/WebRenderBridgeChild.h"
+@@ -15,6 +17,59 @@ namespace wr {
+ 
+ using namespace mozilla::layers;
+ 
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++static bool ConvertNativeEndianHostARGBForWebRender(
++    const ImageDescriptor& aDescriptor, Range<uint8_t> aBytes,
++    ImageDescriptor* aOutDescriptor, nsTArray<uint8_t>* aOutBytes) {
++  if (aDescriptor.format != static_cast<ImageFormat>(0) ||
++      aDescriptor.width <= 0 || aDescriptor.height <= 0) {
++    return false;
++  }
++
++  CheckedInt<uint32_t> minStride =
++      CheckedInt<uint32_t>(aDescriptor.width) * 4;
++  if (!minStride.isValid()) {
++    return false;
++  }
++
++  uint32_t stride = aDescriptor.stride ? aDescriptor.stride : minStride.value();
++  if (stride < minStride.value()) {
++    return false;
++  }
++
++  CheckedInt<size_t> requiredBytes =
++      CheckedInt<size_t>(stride) * aDescriptor.height;
++  if (!requiredBytes.isValid() || aBytes.length() < requiredBytes.value()) {
++    return false;
++  }
++
++  if (!aOutBytes->SetLength(requiredBytes.value(), fallible)) {
++    return false;
++  }
++
++  gfx::SurfaceFormat srcFormat =
++      aDescriptor.opacity == OpacityType::Opaque
++          ? gfx::SurfaceFormat::X8R8G8B8
++          : gfx::SurfaceFormat::A8R8G8B8;
++  gfx::SurfaceFormat dstFormat =
++      aDescriptor.opacity == OpacityType::Opaque
++          ? gfx::SurfaceFormat::B8G8R8X8
++          : gfx::SurfaceFormat::B8G8R8A8;
++
++  if (!gfx::SwizzleData(aBytes.begin().get(), stride, srcFormat,
++                        aOutBytes->Elements(), stride, dstFormat,
++                        gfx::IntSize(aDescriptor.width,
++                                     aDescriptor.height))) {
++    aOutBytes->Clear();
++    return false;
++  }
++
++  *aOutDescriptor = aDescriptor;
++  aOutDescriptor->format = ImageFormat::BGRA8;
++  return true;
++}
++#endif
++
+ ShmSegmentsWriter::ShmSegmentsWriter(layers::WebRenderBridgeChild* aAllocator,
+                                      size_t aChunkSize)
+     : mShmAllocator(aAllocator), mCursor(0), mChunkSize(aChunkSize) {
+@@ -315,11 +370,25 @@ }
+ bool IpcResourceUpdateQueue::AddImage(ImageKey key,
+                                       const ImageDescriptor& aDescriptor,
+                                       Range<uint8_t> aBytes) {
+-  auto bytes = mWriter.Write(aBytes);
++  ImageDescriptor descriptor = aDescriptor;
++  uint8_t* imageData = aBytes.begin().get();
++  size_t imageLength = aBytes.length();
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  nsTArray<uint8_t> convertedBytes;
++  if (ConvertNativeEndianHostARGBForWebRender(
++          aDescriptor, aBytes, &descriptor, &convertedBytes)) {
++    imageData = convertedBytes.Elements();
++    imageLength = convertedBytes.Length();
++  } else if (aDescriptor.format == static_cast<ImageFormat>(0)) {
++    return false;
++  }
++#endif
++
++  auto bytes = mWriter.Write(Range<uint8_t>(imageData, imageLength));
+   if (!bytes.length()) {
+     return false;
+   }
+-  mUpdates.AppendElement(layers::OpAddImage(aDescriptor, bytes, 0, key));
++  mUpdates.AppendElement(layers::OpAddImage(descriptor, bytes, 0, key));
+   return true;
+ }
+ 
+@@ -359,11 +428,25 @@ }
+ 
+ bool IpcResourceUpdateQueue::UpdateImageBuffer(
+     ImageKey aKey, const ImageDescriptor& aDescriptor, Range<uint8_t> aBytes) {
+-  auto bytes = mWriter.Write(aBytes);
++  ImageDescriptor descriptor = aDescriptor;
++  uint8_t* imageData = aBytes.begin().get();
++  size_t imageLength = aBytes.length();
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  nsTArray<uint8_t> convertedBytes;
++  if (ConvertNativeEndianHostARGBForWebRender(
++          aDescriptor, aBytes, &descriptor, &convertedBytes)) {
++    imageData = convertedBytes.Elements();
++    imageLength = convertedBytes.Length();
++  } else if (aDescriptor.format == static_cast<ImageFormat>(0)) {
++    return false;
++  }
++#endif
++
++  auto bytes = mWriter.Write(Range<uint8_t>(imageData, imageLength));
+   if (!bytes.length()) {
+     return false;
+   }
+-  mUpdates.AppendElement(layers::OpUpdateImage(aDescriptor, bytes, aKey));
++  mUpdates.AppendElement(layers::OpUpdateImage(descriptor, bytes, aKey));
+   return true;
+ }
+ 
+--- firefox-153.0/gfx/webrender_bindings/WebRenderAPI.cpp
++++ firefox-153.0/gfx/webrender_bindings/WebRenderAPI.cpp
+@@ -4,6 +4,9 @@ * file, You can obtain one at http://moz
+ 
+ #include "WebRenderAPI.h"
+ 
++#include "mozilla/CheckedInt.h"
++#include "mozilla/EndianUtils.h"
++#include "mozilla/gfx/Swizzle.h"
+ #include "mozilla/Logging.h"
+ #include "mozilla/ipc/ByteBuf.h"
+ #include "mozilla/webrender/RendererOGL.h"
+@@ -44,6 +47,61 @@ namespace wr {
+ MOZ_DEFINE_MALLOC_SIZE_OF(WebRenderMallocSizeOf)
+ MOZ_DEFINE_MALLOC_ENCLOSING_SIZE_OF(WebRenderMallocEnclosingSizeOf)
+ 
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++static bool ConvertNativeEndianHostARGBForWebRender(
++    const ImageDescriptor& aDescriptor, Range<uint8_t> aBytes,
++    ImageDescriptor* aOutDescriptor, Vec<uint8_t>* aOutBytes) {
++  if (aDescriptor.format != static_cast<ImageFormat>(0) ||
++      aDescriptor.width <= 0 || aDescriptor.height <= 0) {
++    return false;
++  }
++
++  CheckedInt<uint32_t> minStride =
++      CheckedInt<uint32_t>(aDescriptor.width) * 4;
++  if (!minStride.isValid()) {
++    return false;
++  }
++
++  uint32_t stride = aDescriptor.stride ? aDescriptor.stride : minStride.value();
++  if (stride < minStride.value()) {
++    return false;
++  }
++
++  CheckedInt<size_t> requiredBytes =
++      CheckedInt<size_t>(stride) * aDescriptor.height;
++  if (!requiredBytes.isValid() || aBytes.length() < requiredBytes.value()) {
++    return false;
++  }
++
++  nsTArray<uint8_t> convertedBytes;
++  if (!convertedBytes.SetLength(requiredBytes.value(), fallible)) {
++    return false;
++  }
++
++  gfx::SurfaceFormat srcFormat =
++      aDescriptor.opacity == OpacityType::Opaque
++          ? gfx::SurfaceFormat::X8R8G8B8
++          : gfx::SurfaceFormat::A8R8G8B8;
++  gfx::SurfaceFormat dstFormat =
++      aDescriptor.opacity == OpacityType::Opaque
++          ? gfx::SurfaceFormat::B8G8R8X8
++          : gfx::SurfaceFormat::B8G8R8A8;
++
++  if (!gfx::SwizzleData(aBytes.begin().get(), stride, srcFormat,
++                        convertedBytes.Elements(), stride, dstFormat,
++                        gfx::IntSize(aDescriptor.width,
++                                     aDescriptor.height))) {
++    return false;
++  }
++
++  *aOutDescriptor = aDescriptor;
++  aOutDescriptor->format = ImageFormat::BGRA8;
++  aOutBytes->PushBytes(
++      Range<uint8_t>(convertedBytes.Elements(), convertedBytes.Length()));
++  return true;
++}
++#endif
++
+ class RemoveRenderer : public RendererEvent {
+  public:
+   explicit RemoveRenderer(layers::SynchronousTask* aTask) : mTask(aTask) {
+@@ -1019,6 +1077,19 @@ }
+ void TransactionBuilder::AddImage(ImageKey key,
+                                   const ImageDescriptor& aDescriptor,
+                                   wr::Vec<uint8_t>& aBytes) {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  ImageDescriptor descriptor = aDescriptor;
++  wr::Vec<uint8_t> convertedBytes;
++  if (ConvertNativeEndianHostARGBForWebRender(
++          aDescriptor, aBytes.GetRange(), &descriptor, &convertedBytes)) {
++    wr_resource_updates_add_image(mTxn, key, &descriptor,
++                                  &convertedBytes.inner);
++    return;
++  }
++  if (aDescriptor.format == static_cast<ImageFormat>(0)) {
++    return;
++  }
++#endif
+   wr_resource_updates_add_image(mTxn, key, &aDescriptor, &aBytes.inner);
+ }
+ 
+@@ -1053,6 +1124,19 @@ }
+ void TransactionBuilder::UpdateImageBuffer(ImageKey aKey,
+                                            const ImageDescriptor& aDescriptor,
+                                            wr::Vec<uint8_t>& aBytes) {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  ImageDescriptor descriptor = aDescriptor;
++  wr::Vec<uint8_t> convertedBytes;
++  if (ConvertNativeEndianHostARGBForWebRender(
++          aDescriptor, aBytes.GetRange(), &descriptor, &convertedBytes)) {
++    wr_resource_updates_update_image(mTxn, aKey, &descriptor,
++                                     &convertedBytes.inner);
++    return;
++  }
++  if (aDescriptor.format == static_cast<ImageFormat>(0)) {
++    return;
++  }
++#endif
+   wr_resource_updates_update_image(mTxn, aKey, &aDescriptor, &aBytes.inner);
+ }
+ 

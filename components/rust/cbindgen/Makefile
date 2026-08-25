@@ -28,25 +28,45 @@ CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	cbindgen
-COMPONENT_VERSION =	0.29.0
-COMPONENT_BAID =	334424
+COMPONENT_VERSION =	0.29.4
+COMPONENT_BAID =	426209
 COMPONENT_PROJECT_URL =	https://github.com/mozilla/cbindgen
-COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_REVISION =	b826cb8911488fe8a209d2b693492c0c673e8cca
+COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_REVISION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:6697f449d4a15d814d991249a611af961c97e36d9344c7ced6df35c5c25b40cc
-COMPONENT_ARCHIVE_URL =	https://github.com/eqrion/cbindgen/archive/v$(COMPONENT_VERSION).tar.gz
+    sha256:3ffab97f4b7d05f68c54202e84f92fb1c1cab10d59b4dc0ac4588666b3273af8
+COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_REVISION).tar.gz
 
 # hash for vendored sources
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:05af6896ca6ba6681c88b0ac4c743473b60a9480279572f86783357481ae8e77
+    sha256:725f2ef60568e3090f1c8052c9533c66706a3345342eb5d0ec0d8072fb9be3e0
 
 COMPONENT_BUGDB =	utility/rust
 COMPONENT_ANITYA_ID =	16690
 
 BUILD_STYLE = cargo
 
+# Firefox and Thunderbird temporarily build this component from their
+# pre-configure action until cbindgen 0.29.4 is available in the CBE.  Serialize
+# direct and nested builds so a stale top-level dependency graph cannot make
+# them clobber the same Cargo build directory.
+BUILD_TARGET =		cbindgen-bootstrap-build
+INSTALL_TARGET =	cbindgen-bootstrap-install
+
 include $(WS_MAKE_RULES)/common.mk
+
+CBINDGEN_BOOTSTRAP_LOCK = $(BUILD_DIR)/.bootstrap.$(MACH64).lock
+
+.PHONY: cbindgen-bootstrap-build cbindgen-bootstrap-install
+cbindgen-bootstrap-build cbindgen-bootstrap-install:
+	$(MKDIR) $(BUILD_DIR)
+	$(PERL) -e 'open(my $$lock, ">>", shift) or die "$$!"; \
+	    flock($$lock, 2) or die "$$!"; my $$status = system(@ARGV); \
+	    exit($$status == -1 ? 1 : ($$status & 127) ? \
+	    128 + ($$status & 127) : $$status >> 8)' \
+	    $(CBINDGEN_BOOTSTRAP_LOCK) $(GMAKE) \
+	    $(if $(findstring install,$@),$(INSTALL_64),$(BUILD_64))
 
 # Tests don't like "cloney".
 CLONEY=$(CP) -r $(SOURCE_DIR)/* $(BUILD_DIR_64); echo

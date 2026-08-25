@@ -1,0 +1,43 @@
+Write big-endian BMP decoder rows in the byte order consumed by imagelib.
+
+The Userland graphics patches keep SurfaceFormat::OS_RGBA mapped to BGRA/BGRX
+byte-layout surfaces so shared image buffers can be sent to WebRender.
+nsBMPDecoder still builds each decoded row with gfxPackedPixelNoPreMultiply(),
+which packs a host-order AARRGGBB uint32_t. On big-endian machines that lands
+in memory as AA RR GG BB even though the SurfacePipe is consuming the row as
+BGRA bytes.
+
+Pack decoded BMP pixels explicitly as BGRA memory on big-endian builds. This
+keeps ICO/BMP resources, including search-engine favicons, consistent with the
+surface format already handed to the pipe.
+
+Dependency: logically follows SPARC-01-cairo-surface-format.patch because it
+matches the BGRA/BGRX image-buffer contract used by the Userland graphics
+stack, but the code change itself is localized to the BMP decoder.
+
+--- firefox-153.0/image/decoders/nsBMPDecoder.cpp
++++ firefox-153.0/image/decoders/nsBMPDecoder.cpp
+@@ -170,9 +170,23 @@ }
+ /// Sets the pixel data in aDecoded to the given values.
+ /// @param aDecoded pointer to pixel to be set, will be incremented to point to
+ /// the next pixel.
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++static uint32_t PackDecodedBGRAPixel(uint8_t aAlpha, uint8_t aRed,
++                                     uint8_t aGreen, uint8_t aBlue) {
++  return NativeEndian::swapFromLittleEndian((uint32_t(aAlpha) << 24) |
++                                            (uint32_t(aRed) << 16) |
++                                            (uint32_t(aGreen) << 8) |
++                                            uint32_t(aBlue));
++}
++#endif
++
+ static void SetPixel(uint32_t*& aDecoded, uint8_t aRed, uint8_t aGreen,
+                      uint8_t aBlue, uint8_t aAlpha = 0xFF) {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  *aDecoded++ = PackDecodedBGRAPixel(aAlpha, aRed, aGreen, aBlue);
++#else
+   *aDecoded++ = gfxPackedPixelNoPreMultiply(aAlpha, aRed, aGreen, aBlue);
++#endif
+ }
+ 
+ static void SetPixel(uint32_t*& aDecoded, uint8_t idx,

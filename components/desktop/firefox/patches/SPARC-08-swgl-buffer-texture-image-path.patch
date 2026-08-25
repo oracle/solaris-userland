@@ -1,0 +1,36 @@
+Keep SWGL buffer textures on the normal image path on SPARC.
+
+The tab hover preview renders PageThumbs output into a chrome 2D canvas and
+then presents that canvas through WebRender's async image pipeline.  The canvas
+pixels are valid: snapshot/readback from the same canvas renders correctly.
+The blank preview happens when the shared buffer texture asks WebRender to
+promote it into the compositor-surface path.
+
+On Solaris/SPARC, keep CPU buffer textures on the normal WebRender image
+sampling path instead of requesting compositor-surface promotion.  This fixes
+display of shared 2D canvas buffers without changing browser UI code, while
+leaving other TextureHost types alone.
+
+Dependency: apply after SPARC-07-swgl-native-rgb-texture.patch. Keeping buffer
+textures on the normal image path depends on the SWGL texture boundary handling
+for native-endian RGB data.
+
+--- firefox-153.0/gfx/layers/composite/TextureHost.cpp
++++ firefox-153.0/gfx/layers/composite/TextureHost.cpp
+@@ -616,6 +616,16 @@ bool preferCompositorSurface =
+       aFlags.contains(PushDisplayItemFlag::PREFER_COMPOSITOR_SURFACE);
+   bool useExternalSurface =
+       aFlags.contains(PushDisplayItemFlag::SUPPORTS_EXTERNAL_BUFFER_TEXTURES);
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  // BufferTextureHost wraps CPU memory owned by shared canvas/image buffers.
++  // On big-endian SPARC with SWGL, compositor-surface promotion can cull the
++  // async canvas primitive into a surface that is not populated correctly,
++  // leaving chrome canvas users such as tab-hover previews blank. Keep these
++  // buffers on the regular WebRender image path, where the existing SPARC
++  // format normalization is applied.
++  preferCompositorSurface = false;
++  useExternalSurface = false;
++#endif
+   if (!IsYCbCr()) {
+     if (aImageKeys.length() != 1) {
+       MOZ_ASSERT_UNREACHABLE("unexpected key length");

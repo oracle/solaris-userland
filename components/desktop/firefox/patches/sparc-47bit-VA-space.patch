@@ -6,9 +6,9 @@
 # Parent  936f52771552e8daa450888af1b6cc6564d6b3f5
 RESERVE_SEGMENT for SPARC - limit stack below 47bits of address space
 
---- firefox-140.1.0/browser/app/moz.build
-+++ firefox-140.1.0/browser/app/moz.build
-@@ -151,6 +151,10 @@ # Set it to 256k.  See bug 127069.
+--- firefox-153.0/browser/app/moz.build
++++ firefox-153.0/browser/app/moz.build
+@@ -162,6 +162,10 @@
  if CONFIG["OS_ARCH"] == "WINNT" and CONFIG["CC_TYPE"] not in ("clang", "gcc"):
      LDFLAGS += ["/HEAP:0x40000"]
  
@@ -19,9 +19,9 @@ RESERVE_SEGMENT for SPARC - limit stack below 47bits of address space
  DisableStlWrapping()
  
  if CONFIG["HAVE_CLOCK_MONOTONIC"]:
---- firefox-140.1.0/js/src/shell/moz.build
-+++ firefox-140.1.0/js/src/shell/moz.build
-@@ -64,3 +64,7 @@ if CONFIG["OS_TARGET"] == "Android":
+--- firefox-153.0/js/src/shell/moz.build
++++ firefox-153.0/js/src/shell/moz.build
+@@ -63,3 +63,7 @@
      LDFLAGS += [
          "-Wl,-rpath=$ORIGIN",
      ]
@@ -29,9 +29,9 @@ RESERVE_SEGMENT for SPARC - limit stack below 47bits of address space
 +# Enforce 47bits address space to resulting binary (Bug 577056).
 +if CONFIG['OS_ARCH'] == 'SunOS' and CONFIG['TARGET_CPU'] == 'sparc64':
 +    LDFLAGS += ['-Wl,-M/usr/lib/ld/map.vas47']
---- firefox-140.1.0/js/xpconnect/shell/moz.build
-+++ firefox-140.1.0/js/xpconnect/shell/moz.build
-@@ -32,6 +32,10 @@ # Always enter a Windows program through
+--- firefox-153.0/js/xpconnect/shell/moz.build
++++ firefox-153.0/js/xpconnect/shell/moz.build
+@@ -30,6 +30,10 @@
      # a console application.
      WIN32_EXE_LDFLAGS += ["-ENTRY:wmainCRTStartup"]
  

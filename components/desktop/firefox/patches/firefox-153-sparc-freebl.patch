@@ -1,0 +1,27 @@
+Link NSS's SPARC freebl implementation into libxul.
+
+Related Mozilla import:
+  imports/solaris-freebl3-os-libs.patch
+  Petr Sumbera, "SPARC: use Solaris freebl library for nss-rs links",
+  Tue Jun 23 2026.
+
+NSS does not build freebl3 on this platform.  It builds freebl_64fpu_3, which
+exports the FREEBL_GetVector entry point required by nss-rs.
+
+The earlier import selected freebl_64fpu_3 in the nss-rs build script. Firefox
+153 validates and links its non-system NSS library through
+toolkit/library/moz.build, so select the same implementation at that layer.
+
+--- firefox-153.0/toolkit/library/moz.build
++++ firefox-153.0/toolkit/library/moz.build
+@@ -165,8 +165,10 @@
+ # For system NSS, freebl is linked by the nss-rs build.rs via pkg-config instead.
+ if not CONFIG["MOZ_SYSTEM_NSS"]:
+     if CONFIG["OS_TARGET"] == "Linux":
+         USE_LIBS += ["freeblpriv3"]
++    elif CONFIG["OS_ARCH"] == "SunOS" and CONFIG["TARGET_CPU"] == "sparc64":
++        USE_LIBS += ["freebl_64fpu_3"]
+     else:
+         USE_LIBS += ["freebl3"]
+ 
+ if not CONFIG["USE_LIBZ_RS"]:

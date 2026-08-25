@@ -1,0 +1,53 @@
+Flush active 2D canvas targets before sharing their buffer provider.
+
+Popup windows can request a canvas buffer provider before the stable-state
+callback has returned the current draw target.  If a shared provider is then
+retargeted to the popup compositor while its current pixels only exist in the
+borrowed draw target, the provider has no front texture to copy and the canvas
+is presented as transparent.  This is visible on SPARC as an empty tab-hover
+preview thumbnail after the PageThumbs snapshot has been drawn successfully.
+
+Return the draw target before exposing the provider so the provider's front
+buffer is current for compositor handoff.
+
+This is kept as a separate canvas handoff patch and guarded for Solaris/SPARC,
+where the shared chrome canvas path is required for tab preview rendering.
+
+Dependency: apply before SPARC-11-snapshot-shared-canvas-textures.patch. This
+patch makes the provider handoff expose current canvas pixels; the later
+snapshot patch changes how those shared pixels are forwarded to WebRender.
+
+--- firefox-153.0/dom/canvas/CanvasRenderingContext2D.cpp
++++ firefox-153.0/dom/canvas/CanvasRenderingContext2D.cpp
+@@ -2057,6 +2057,15 @@ return true;
+ }
+ 
+ PersistentBufferProvider* CanvasRenderingContext2D::GetBufferProvider() {
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  if (mTarget && mBufferProvider && mTarget != sErrorTarget.get()) {
++    // The compositor may request the provider before the stable-state callback
++    // has returned the current draw target. Return it now so shared providers
++    // have a current front buffer when a canvas moves between compositors, such
++    // as into a popup window.
++    ReturnTarget();
++  }
++#endif
+   if (mBufferProvider && mBufferNeedsClear) {
+     // Force the buffer to clear before it is used.
+     EnsureTarget();
+@@ -2075,9 +2084,15 @@ }
+ already_AddRefed<layers::FwdTransactionTracker>
+ CanvasRenderingContext2D::UseCompositableForwarder(
+     layers::CompositableForwarder* aForwarder) {
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  if (auto* provider = GetBufferProvider()) {
++    return provider->UseCompositableForwarder(aForwarder);
++  }
++#else
+   if (mBufferProvider) {
+     return mBufferProvider->UseCompositableForwarder(aForwarder);
+   }
++#endif
+   return nullptr;
+ }
+ 

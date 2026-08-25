@@ -1,0 +1,73 @@
+Keep WebRender blob rendering in supported byte-layout formats.
+
+WebRender blob descriptors and software blob output buffers use BGRA/BGRX byte
+layouts.  On big-endian builds, a native Cairo screen target can otherwise leak
+explicit A8R8G8B8/X8R8G8B8 formats into blob image recording or resource
+serialization, which WebRender does not accept.  Use a BGRA reference target for
+big-endian blob descriptors.
+
+The blob rasterizer data target is kept on Cairo only for Solaris/SPARC.  That
+part depends on the companion Cairo data-target bridge in the Userland SPARC
+patch stack, which draws through a native-endian temporary surface and flushes
+back to the BGRA/BGRX WebRender buffer.
+
+The descriptor normalization is guarded for big-endian machines.  The Cairo
+blob rasterizer backend and explicit flush are Solaris/SPARC-only runtime
+selection.
+
+Dependency: apply after SPARC-01-cairo-surface-format.patch and
+SPARC-02-cairo-data-target.patch. Blob descriptors must honor the base format
+contract, and the Solaris/SPARC Cairo blob rasterizer depends on the data-target
+bridge to draw into WebRender BGRA/BGRX output buffers safely.
+
+--- firefox-153.0/gfx/layers/wr/WebRenderCommandBuilder.cpp
++++ firefox-153.0/gfx/layers/wr/WebRenderCommandBuilder.cpp
+@@ -650,8 +650,21 @@ }
+               fonts = std::move(aScaledFonts);
+             });
+ 
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++    // Blob image descriptors must stay in WebRender's BGRA/BGRX formats. Do not
++    // let a native-endian Cairo screen target leak an unsupported
++    // A8R8G8B8/X8R8G8B8 format into the descriptor.
++    RefPtr<gfx::DrawTarget> dummyDt = gfx::Factory::CreateDrawTarget(
++        gfx::BackendType::SKIA, gfx::IntSize(1, 1),
++        gfx::SurfaceFormat::B8G8R8A8);
++#else
+     RefPtr<gfx::DrawTarget> dummyDt =
+         gfxPlatform::GetPlatform()->ScreenReferenceDrawTarget();
++#endif
++    if (!dummyDt || !dummyDt->IsValid()) {
++      gfxCriticalNote << "Failed to create reference drawTarget for blob image";
++      return;
++    }
+ 
+     RefPtr<gfx::DrawTarget> dt = gfx::Factory::CreateRecordingDrawTarget(
+         recorder, dummyDt, mLayerBounds.ToUnknownRect());
+--- firefox-153.0/gfx/webrender_bindings/Moz2DImageRenderer.cpp
++++ firefox-153.0/gfx/webrender_bindings/Moz2DImageRenderer.cpp
+@@ -376,9 +376,12 @@ }
+   // In bindings.rs we allocate a buffer filled with opaque white.
+   bool uninitialized = false;
+ 
++  gfx::BackendType backend = gfx::BackendType::SKIA;
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  backend = gfx::BackendType::CAIRO;
++#endif
+   RefPtr<gfx::DrawTarget> dt = gfx::Factory::CreateDrawTargetForData(
+-      gfx::BackendType::SKIA, aOutput.begin().get(), size, stride, aFormat,
+-      uninitialized);
++      backend, aOutput.begin().get(), size, stride, aFormat, uninitialized);
+ 
+   if (!dt) {
+     return false;
+@@ -510,6 +513,9 @@ sprintf(filename, "out%d.png", i++);
+   gfxUtils::WriteAsPNG(dt, filename);
+ #endif
+ 
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  dt->Flush();
++#endif
+   return ret;
+ }
+ 

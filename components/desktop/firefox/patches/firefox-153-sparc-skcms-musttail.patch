@@ -1,0 +1,22 @@
+Disable skcms musttail calls with GCC on SPARC.
+
+Based on Mozilla import:
+  imports/260113.patch
+  Petr Sumbera, "no SKCMS_HAS_MUSTTAIL for SPARC",
+  Tue Jan 13 2026.
+
+GCC recognizes the clang::musttail attribute, but the SPARC target cannot
+honor it for the skcms stage dispatcher.  The optimization is optional.
+
+--- firefox-153.0/gfx/skia/skia/modules/skcms/src/skcms_internals.h
++++ firefox-153.0/gfx/skia/skia/modules/skcms/src/skcms_internals.h
+@@ -59,7 +59,8 @@
+     #elif defined(__GNUC__) && !defined(SKCMS_HAS_MUSTTAIL)
+         // GCC on riscv64 does not support our tail call functions
+         // cf. https://gcc.gnu.org/bugzilla/show_bug.cgi?id=121784
+-        #if __has_cpp_attribute(clang::musttail) && !defined(__riscv)
++        #if __has_cpp_attribute(clang::musttail) && !defined(__riscv) \
++                                                 && !defined(__sparc__)
+             #define SKCMS_HAS_MUSTTAIL 1
+         #else
+             #define SKCMS_HAS_MUSTTAIL 0

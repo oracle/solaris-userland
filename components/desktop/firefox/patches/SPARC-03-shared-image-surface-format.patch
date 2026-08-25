@@ -1,0 +1,65 @@
+Keep big-endian shared image surfaces in WebRender byte order.
+
+The compositor shared-surface IPC path only accepts B8G8R8A8/B8G8R8X8 image
+buffers. After preserving native Cairo formats on big-endian builds, vector/SVG
+image rasterization can ask imgFrame to allocate explicit
+A8R8G8B8/X8R8G8B8 shared surfaces. SourceSurfaceSharedData auto-shares those
+buffers during Init(), so the content process can hit
+SharedSurfacesChild::ShareInternal's release assert before the image is even
+drawn.
+
+Normalize image buffers backed by SourceSurfaceSharedData back to WebRender's
+BGRA/BGRX byte layout at allocation time. DrawTargetCairo's SPARC data-target
+bridge still lets Cairo draw through a native-endian temporary surface and
+flushes back to this shared BGRA/BGRX buffer, so this keeps both sides of the
+contract explicit.
+
+Dependency: apply after SPARC-01-cairo-surface-format.patch and
+SPARC-02-cairo-data-target.patch. The allocation format decision depends on the
+base surface-format contract, and Cairo drawing into these shared buffers relies
+on the data-target bridge.
+
+--- firefox-153.0/image/imgFrame.cpp
++++ firefox-153.0/image/imgFrame.cpp
+@@ -47,8 +47,25 @@ return SurfaceType::DATA_RECYCLING_SHARE
+   }
+ };
+ 
++static SurfaceFormat SharedImageSurfaceFormat(SurfaceFormat aFormat) {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  switch (aFormat) {
++    case SurfaceFormat::A8R8G8B8:
++      return SurfaceFormat::B8G8R8A8;
++    case SurfaceFormat::X8R8G8B8:
++      return SurfaceFormat::B8G8R8X8;
++    default:
++      return aFormat;
++  }
++#else
++  return aFormat;
++#endif
++}
++
+ static already_AddRefed<SourceSurfaceSharedData> AllocateBufferForImage(
+     const IntSize& size, SurfaceFormat format, bool aShouldRecycle = false) {
++  format = SharedImageSurfaceFormat(format);
++
+   // Stride must be a multiple of four or cairo will complain.
+   int32_t stride = (size.width * BytesPerPixel(format) + 0x3) & ~0x3;
+ 
+@@ -191,6 +208,7 @@ if (!mRawSurface) {
+     mAborted = true;
+     return NS_ERROR_OUT_OF_MEMORY;
+   }
++  mFormat = mRawSurface->GetFormat();
+ 
+   if (StaticPrefs::browser_measurement_render_anims_and_video_solid() &&
+       aAnimParams) {
+@@ -329,6 +347,7 @@ if (!mRawSurface) {
+       mAborted = true;
+       return NS_ERROR_OUT_OF_MEMORY;
+     }
++    mFormat = mRawSurface->GetFormat();
+ 
+     if (!ClearSurface(mRawSurface, mImageSize, mFormat)) {
+       NS_WARNING("Could not clear allocated buffer");

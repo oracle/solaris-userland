@@ -1,0 +1,499 @@
+Keep Cairo data draw targets byte-order safe on big-endian.
+
+On big-endian, cairo_image_surface_create_for_data(..., ARGB32, ...)
+expects native ARGB/XRGB bytes.  Mozilla's long-standing SPARC compatibility
+patch keeps A8R8G8B8_UINT32 mapped to BGRA/BGRX, so callers can still hand
+Cairo a BGRA/BGRX data buffer.  Letting Cairo draw directly into that buffer
+stores native ARGB bytes where the owner later reads BGRA, corrupting CSS
+gradients, SVG rasterization, text alpha, and other intermediate surfaces.
+
+For these data draw targets, draw into a native Cairo image surface and swizzle
+back to the caller's buffer when the target is flushed or destroyed.  This keeps
+the public buffer format unchanged while letting Cairo use the byte order it
+requires internally.
+
+Also normalize native Cairo source surfaces when wrapping them as ImageBitmap
+images, so drawSnapshot/tab-preview readback does not hand canvas image drawing
+an unsupported native-endian surface.
+
+The byte-order conversions in this patch use the compiler's __BYTE_ORDER__
+condition.  The backend selection, texture-client format policy, and flush
+hooks are Solaris/SPARC-only because they match the supported Userland runtime
+path.  Mechanical signature changes that pass the existing uninitialized flag
+through Cairo are unguarded support code.
+
+Dependency: apply after SPARC-01-cairo-surface-format.patch. This patch relies
+on the native Cairo surface formats introduced there and provides the data
+target bridge used by later shared-image, blob, and SWGL boundary fixes.
+
+--- firefox-153.0/dom/canvas/ImageBitmap.cpp
++++ firefox-153.0/dom/canvas/ImageBitmap.cpp
+@@ -430,9 +430,69 @@ }
+ /*
+  * Encapsulate the given _aSurface_ into a layers::SourceSurfaceImage.
+  */
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++static SurfaceFormat SharedImageBitmapFormat(SurfaceFormat aFormat) {
++  switch (aFormat) {
++    case SurfaceFormat::A8R8G8B8:
++      return SurfaceFormat::B8G8R8A8;
++    case SurfaceFormat::X8R8G8B8:
++      return SurfaceFormat::B8G8R8X8;
++    default:
++      return aFormat;
++  }
++}
++
++static already_AddRefed<SourceSurface> NormalizeImageBitmapSurface(
++    SourceSurface* aSurface) {
++  SurfaceFormat srcFormat = aSurface->GetFormat();
++  SurfaceFormat destFormat = SharedImageBitmapFormat(srcFormat);
++  if (srcFormat == destFormat) {
++    RefPtr<SourceSurface> surface = aSurface;
++    return surface.forget();
++  }
++
++  RefPtr<DataSourceSurface> srcSurface = aSurface->GetDataSurface();
++  if (!srcSurface) {
++    return nullptr;
++  }
++
++  DataSourceSurface::ScopedMap srcMap(srcSurface, DataSourceSurface::READ);
++  if (!srcMap.IsMapped()) {
++    return nullptr;
++  }
++
++  RefPtr<DataSourceSurface> destSurface =
++      Factory::CreateDataSourceSurfaceWithStride(
++          srcSurface->GetSize(), destFormat, srcMap.GetStride());
++  if (!destSurface) {
++    return nullptr;
++  }
++
++  DataSourceSurface::ScopedMap destMap(destSurface, DataSourceSurface::WRITE);
++  if (!destMap.IsMapped()) {
++    return nullptr;
++  }
++
++  if (!SwizzleData(srcMap.GetData(), srcMap.GetStride(), srcFormat,
++                   destMap.GetData(), destMap.GetStride(), destFormat,
++                   srcSurface->GetSize())) {
++    return nullptr;
++  }
++
++  return destSurface.forget();
++}
++#endif
++
+ static already_AddRefed<layers::Image> CreateImageFromSurface(
+     SourceSurface* aSurface) {
+   MOZ_ASSERT(aSurface);
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  RefPtr<SourceSurface> normalizedSurface =
++      NormalizeImageBitmapSurface(aSurface);
++  if (normalizedSurface) {
++    aSurface = normalizedSurface;
++  }
++#endif
+   RefPtr<layers::SourceSurfaceImage> image =
+       new layers::SourceSurfaceImage(aSurface->GetSize(), aSurface);
+   return image.forget();
+--- firefox-153.0/gfx/2d/DrawTargetCairo.cpp
++++ firefox-153.0/gfx/2d/DrawTargetCairo.cpp
+@@ -636,9 +636,19 @@ : mContext(nullptr),
+       mSurface(nullptr),
+       mTransformSingular(false),
+       mLockedBits(nullptr),
+-      mFontOptions(nullptr) {}
++      mFontOptions(nullptr)
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++      ,
++      mExternalData(nullptr),
++      mExternalDataStride(0),
++      mExternalDataFormat(SurfaceFormat::UNKNOWN)
++#endif
++      {}
+ 
+ DrawTargetCairo::~DrawTargetCairo() {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  FlushExternalData();
++#endif
+   cairo_destroy(mContext);
+   if (mSurface) {
+     cairo_surface_destroy(mSurface);
+@@ -812,6 +822,10 @@ << (mSurface ? cairo_surface_status(mSur
+     return nullptr;
+   }
+ 
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  FlushExternalData();
++#endif
++
+   if (mSnapshot) {
+     RefPtr<SourceSurface> snapshot(mSnapshot);
+     return snapshot.forget();
+@@ -897,7 +911,33 @@ }
+ 
+   cairo_surface_t* surf = cairo_get_group_target(mContext);
+   cairo_surface_flush(surf);
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  FlushExternalData();
++#endif
++}
++
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++void DrawTargetCairo::FlushExternalData() {
++  if (!mExternalData) {
++    return;
++  }
++
++  MOZ_ASSERT(mSurface);
++  if (!mSurface ||
++      cairo_surface_get_type(mSurface) != CAIRO_SURFACE_TYPE_IMAGE) {
++    return;
++  }
++
++  cairo_surface_flush(mSurface);
++  SurfaceFormat cairoFormat = NormalizeFormatForCairoSurface(mExternalDataFormat);
++  if (!SwizzleData(cairo_image_surface_get_data(mSurface),
++                   cairo_image_surface_get_stride(mSurface), cairoFormat,
++                   mExternalData, mExternalDataStride, mExternalDataFormat,
++                   mSize)) {
++    gfxWarning() << "Failed to flush cairo data target on big endian";
++  }
+ }
++#endif
+ 
+ void DrawTargetCairo::PrepareForDrawing(cairo_t* aContext,
+                                         const Path* aPath /* = nullptr */) {
+@@ -2161,7 +2201,35 @@ return InitAlreadyReferenced(surf, aSize
+ }
+ 
+ bool DrawTargetCairo::Init(unsigned char* aData, const IntSize& aSize,
+-                           int32_t aStride, SurfaceFormat aFormat) {
++                           int32_t aStride, SurfaceFormat aFormat,
++                           bool aUninitialized) {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  if (NeedsCairoDataSurfaceCopy(aFormat, aStride, aSize)) {
++    SurfaceFormat cairoFormat = NormalizeFormatForCairoSurface(aFormat);
++    cairo_surface_t* surf = cairo_image_surface_create(
++        GfxFormatToCairoFormat(cairoFormat), aSize.width, aSize.height);
++    if (cairo_surface_status(surf)) {
++      cairo_surface_destroy(surf);
++      return false;
++    }
++
++    if (!aUninitialized) {
++      unsigned char* surfData = cairo_image_surface_get_data(surf);
++      int32_t surfStride = cairo_image_surface_get_stride(surf);
++      if (!SwizzleData(aData, aStride, aFormat, surfData, surfStride,
++                       cairoFormat, aSize)) {
++        cairo_surface_destroy(surf);
++        return false;
++      }
++      cairo_surface_mark_dirty(surf);
++    }
++
++    mExternalData = aData;
++    mExternalDataStride = aStride;
++    mExternalDataFormat = aFormat;
++    return InitAlreadyReferenced(surf, aSize, &cairoFormat);
++  }
++#endif
+   cairo_surface_t* surf = cairo_image_surface_create_for_data(
+       aData, GfxFormatToCairoFormat(aFormat), aSize.width, aSize.height,
+       aStride);
+--- firefox-153.0/gfx/2d/DrawTargetCairo.h
++++ firefox-153.0/gfx/2d/DrawTargetCairo.h
+@@ -159,7 +159,7 @@ bool Init(cairo_surface_t* aSurface, con
+             SurfaceFormat* aFormat = nullptr);
+   bool Init(const IntSize& aSize, SurfaceFormat aFormat);
+   bool Init(unsigned char* aData, const IntSize& aSize, int32_t aStride,
+-            SurfaceFormat aFormat);
++            SurfaceFormat aFormat, bool aUninitialized = false);
+ 
+   void SetTransform(const Matrix& aTransform) override;
+ 
+@@ -208,6 +208,10 @@ // Set the Cairo context font options ac
+   // font state.
+   void SetFontOptions(cairo_antialias_t aAAMode = CAIRO_ANTIALIAS_DEFAULT);
+ 
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  void FlushExternalData();
++#endif
++
+  private:  // data
+   cairo_t* mContext;
+   cairo_surface_t* mSurface;
+@@ -219,6 +223,12 @@ uint8_t* mLockedBits;
+ 
+   cairo_font_options_t* mFontOptions;
+ 
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  uint8_t* mExternalData;
++  int32_t mExternalDataStride;
++  SurfaceFormat mExternalDataFormat;
++#endif
++
+   struct PushedLayer {
+     PushedLayer(Float aOpacity, CompositionOp aCompositionOp,
+                 bool aWasPermittingSubpixelAA)
+--- firefox-153.0/gfx/2d/Factory.cpp
++++ firefox-153.0/gfx/2d/Factory.cpp
+@@ -335,7 +335,7 @@ #ifdef USE_CAIRO
+     case BackendType::CAIRO: {
+       RefPtr<DrawTargetCairo> newTarget;
+       newTarget = new DrawTargetCairo();
+-      if (newTarget->Init(aData, aSize, aStride, aFormat)) {
++      if (newTarget->Init(aData, aSize, aStride, aFormat, aUninitialized)) {
+         retVal = std::move(newTarget);
+       }
+       break;
+--- firefox-153.0/gfx/layers/BufferTexture.cpp
++++ firefox-153.0/gfx/layers/BufferTexture.cpp
+@@ -10,6 +10,7 @@ #include "libyuv.h"
+ #include "mozilla/fallible.h"
+ #include "mozilla/gfx/2D.h"
+ #include "mozilla/gfx/Logging.h"
++#include "mozilla/gfx/Swizzle.h"
+ #include "mozilla/layers/CompositableForwarder.h"
+ #include "mozilla/layers/ISurfaceAllocator.h"
+ #include "mozilla/layers/ImageDataSerializer.h"
+@@ -345,6 +346,25 @@ }
+   return dt.forget();
+ }
+ 
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++already_AddRefed<gfx::SourceSurface> BufferTextureData::BorrowSnapshot() {
++  if (mDescriptor.type() != BufferDescriptor::TRGBDescriptor) {
++    return nullptr;
++  }
++
++  const RGBDescriptor& rgb = mDescriptor.get_RGBDescriptor();
++  auto stride = ImageDataSerializer::GetRGBStride(rgb);
++  if (stride.isNothing()) {
++    return nullptr;
++  }
++  RefPtr<gfx::DataSourceSurface> dataSurface =
++      gfx::Factory::CreateWrappingDataSourceSurface(
++          GetBuffer(), stride.value(), rgb.size(), rgb.format());
++  RefPtr<gfx::SourceSurface> surface = dataSurface;
++  return surface.forget();
++}
++#endif
++
+ bool BufferTextureData::BorrowMappedData(MappedTextureData& aData) {
+   if (GetFormat() == gfx::SurfaceFormat::YUV420) {
+     return false;
+@@ -431,8 +448,19 @@ gfxCriticalError() << "Failed to GetData
+     return false;
+   }
+ 
++  bool formatsMatch = surface->GetFormat() == srcSurf->GetFormat();
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  bool canSwizzleNativeCairoFormat =
++      (srcSurf->GetFormat() == gfx::SurfaceFormat::A8R8G8B8 &&
++       surface->GetFormat() == gfx::SurfaceFormat::B8G8R8A8) ||
++      (srcSurf->GetFormat() == gfx::SurfaceFormat::X8R8G8B8 &&
++       surface->GetFormat() == gfx::SurfaceFormat::B8G8R8X8);
++#else
++  bool canSwizzleNativeCairoFormat = false;
++#endif
++
+   if (surface->GetSize() != srcSurf->GetSize() ||
+-      surface->GetFormat() != srcSurf->GetFormat()) {
++      (!formatsMatch && !canSwizzleNativeCairoFormat)) {
+     gfxCriticalError() << "Attempt to update texture client from a surface "
+                           "with a different size or format (BT)! This: "
+                        << surface->GetSize() << " " << surface->GetFormat()
+@@ -456,10 +484,26 @@ << "Failed to map destination surface fo
+     return false;
+   }
+ 
+-  for (int y = 0; y < srcSurf->GetSize().height; y++) {
+-    memcpy(destMap.mData + destMap.mStride * y,
+-           sourceMap.mData + sourceMap.mStride * y,
+-           srcSurf->GetSize().width * BytesPerPixel(srcSurf->GetFormat()));
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  if (canSwizzleNativeCairoFormat) {
++    if (!gfx::SwizzleData(sourceMap.mData, sourceMap.mStride,
++                          srcSurf->GetFormat(), destMap.mData,
++                          destMap.mStride, surface->GetFormat(),
++                          srcSurf->GetSize())) {
++      srcSurf->Unmap();
++      surface->Unmap();
++      gfxCriticalError()
++          << "Failed to swizzle native Cairo surface for UpdateFromSurface.";
++      return false;
++    }
++  } else
++#endif
++  {
++    for (int y = 0; y < srcSurf->GetSize().height; y++) {
++      memcpy(destMap.mData + destMap.mStride * y,
++             sourceMap.mData + sourceMap.mStride * y,
++             srcSurf->GetSize().width * BytesPerPixel(srcSurf->GetFormat()));
++    }
+   }
+ 
+   srcSurf->Unmap();
+--- firefox-153.0/gfx/layers/BufferTexture.h
++++ firefox-153.0/gfx/layers/BufferTexture.h
+@@ -42,6 +42,10 @@ void FillInfo(TextureData::Info& aInfo)
+ 
+   already_AddRefed<gfx::DrawTarget> BorrowDrawTarget() override;
+ 
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  already_AddRefed<gfx::SourceSurface> BorrowSnapshot() override;
++#endif
++
+   bool BorrowMappedData(MappedTextureData& aMap) override;
+ 
+   bool BorrowMappedYCbCrData(MappedYCbCrTextureData& aMap) override;
+--- firefox-153.0/gfx/layers/PersistentBufferProvider.cpp
++++ firefox-153.0/gfx/layers/PersistentBufferProvider.cpp
+@@ -210,6 +210,9 @@ MOZ_ASSERT(mDrawTarget == dt);
+     if (!mDrawTarget) {
+       return false;
+     }
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++    mDrawTarget->Flush();
++#endif
+     mDrawTarget = nullptr;
+   }
+   mTexture->Unlock();
+@@ -594,6 +597,13 @@ MOZ_ASSERT(!mSnapshot);
+   TextureClient* back = GetTexture(mBack);
+   MOZ_ASSERT(back);
+ 
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  if (dt) {
++    dt->Flush();
++    dt->DetachAllSnapshots();
++  }
++#endif
++
+   mDrawTarget = nullptr;
+   dt = nullptr;
+ 
+--- firefox-153.0/gfx/layers/client/TextureClient.cpp
++++ firefox-153.0/gfx/layers/client/TextureClient.cpp
+@@ -961,6 +961,12 @@ }
+ already_AddRefed<gfx::SourceSurface> TextureClient::BorrowSnapshot() {
+   MOZ_ASSERT(mIsLocked);
+ 
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  if (mBorrowedDrawTarget) {
++    mBorrowedDrawTarget->Flush();
++  }
++#endif
++
+   RefPtr<gfx::SourceSurface> surface = mData->BorrowSnapshot();
+   if (surface) {
+     mBorrowedSnapshot = true;
+@@ -1285,6 +1291,23 @@ }
+ 
+ PTextureChild* TextureClient::GetIPDLActor() { return mActor; }
+ 
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++static SurfaceFormat FormatForTextureClient(SurfaceFormat aFormat) {
++  switch (aFormat) {
++    case SurfaceFormat::A8R8G8B8:
++      return SurfaceFormat::B8G8R8A8;
++    case SurfaceFormat::X8R8G8B8:
++      return SurfaceFormat::B8G8R8X8;
++    default:
++      return aFormat;
++  }
++}
++#else
++static SurfaceFormat FormatForTextureClient(SurfaceFormat aFormat) {
++  return aFormat;
++}
++#endif
++
+ // static
+ already_AddRefed<TextureClient> TextureClient::CreateForDrawing(
+     KnowsCompositor* aAllocator, gfx::SurfaceFormat aFormat, gfx::IntSize aSize,
+@@ -1314,6 +1337,8 @@ if (!gfx::Factory::AllowedSurfaceSize(aS
+     return nullptr;
+   }
+ 
++  aFormat = FormatForTextureClient(aFormat);
++
+   TextureData* data =
+       TextureData::Create(aAllocator, aFormat, aSize, aKnowsCompositor,
+                           aSelector, aTextureFlags, aAllocFlags);
+@@ -1393,21 +1418,31 @@ if (!gfx::Factory::AllowedSurfaceSize(aS
+     return nullptr;
+   }
+ 
++  aFormat = FormatForTextureClient(aFormat);
++
+   if (aFormat == SurfaceFormat::B8G8R8X8) {
+     // Skia doesn't support RGBX, so ensure we clear the buffer for the proper
+     // alpha values.
+     aAllocFlags = TextureAllocationFlags(aAllocFlags | ALLOC_CLEAR_BUFFER);
+   }
+ 
+-  // We ignore the backend type if we get here. It should only be Skia.
+-  // Therefore it is safe to force the buffer to be Skia.
+-  NS_WARNING_ASSERTION(aMoz2DBackend == gfx::BackendType::SKIA,
++  // Raw buffer textures normally use Skia. On big-endian SPARC, Skia writes
++  // B8G8R8A8 in a layout that later compositor and screenshot code interprets
++  // as native ARGB. Use Cairo so DrawTargetCairo can keep Cairo drawing
++  // native-endian internally and flush back to the raw BGRA texture.
++  NS_WARNING_ASSERTION(aMoz2DBackend == gfx::BackendType::SKIA ||
++                           aMoz2DBackend == gfx::BackendType::CAIRO,
+                        "Unsupported TextureClient backend type");
+ 
++  gfx::BackendType textureBackend = gfx::BackendType::SKIA;
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  textureBackend = gfx::BackendType::CAIRO;
++#endif
++
+   // For future changes, check aAllocFlags aAllocFlags & ALLOC_DO_NOT_ACCELERATE
+   TextureData* texData = BufferTextureData::Create(
+       aSize, aFormat, gfx::ColorSpace2::SRGB, gfx::TransferFunction::SRGB,
+-      gfx::BackendType::SKIA, aLayersBackend, aTextureFlags, aAllocFlags,
++      textureBackend, aLayersBackend, aTextureFlags, aAllocFlags,
+       aAllocator);
+   if (!texData) {
+     return nullptr;
+--- firefox-153.0/gfx/thebes/gfxPlatform.cpp
++++ firefox-153.0/gfx/thebes/gfxPlatform.cpp
+@@ -1954,6 +1954,17 @@ #endif
+   data.mCanvasDefault = BackendType::SKIA;
+   data.mContentDefault = BackendType::SKIA;
+ 
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  // Skia still assumes little-endian BGRA in several software readback and
++  // recording paths. Keep SPARC on Cairo at the platform backend boundary so
++  // offscreen snapshots, canvas extraction, and replayed surfaces agree on
++  // native ARGB byte order.
++  data.mCanvasBitmask = BackendTypeBit(BackendType::CAIRO);
++  data.mContentBitmask = BackendTypeBit(BackendType::CAIRO);
++  data.mCanvasDefault = BackendType::CAIRO;
++  data.mContentDefault = BackendType::CAIRO;
++#endif
++
+   return data;
+ }
+ 
+@@ -1980,9 +1991,16 @@ uint32_t swBackendBits = BackendTypeBit(
+ #ifdef MOZ_WIDGET_GTK
+   swBackendBits |= BackendTypeBit(BackendType::CAIRO);
+ #endif
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  swBackendBits = BackendTypeBit(BackendType::CAIRO);
++#endif
+   mSoftwareBackend = GetContentBackendPref(swBackendBits);
+   if (mSoftwareBackend == BackendType::NONE) {
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++    mSoftwareBackend = BackendType::CAIRO;
++#else
+     mSoftwareBackend = BackendType::SKIA;
++#endif
+   }
+ 
+   // If we don't have a fallback canvas backend then use the same software

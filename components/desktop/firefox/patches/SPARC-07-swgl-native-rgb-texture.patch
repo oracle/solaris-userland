@@ -1,0 +1,141 @@
+Normalize native-endian Cairo RGB external textures before SWGL.
+
+On big-endian SPARC, Cairo image surfaces can legitimately expose native
+A8R8G8B8/X8R8G8B8 buffers. Most WebRender resource-update paths are normalized
+earlier, but external TextureHost buffers can still reach
+RenderTextureHostSWGL::UpdatePlanes() with those native formats. SWGL only
+handles the WebRender BGRA/BGRX byte-layout formats there, so the native format
+hits the release-assert default case and crashes the renderer thread.
+
+Convert the remaining native Cairo RGB plane data into a per-plane BGRA/BGRX
+scratch buffer at the SWGL texture-host boundary. This keeps the producer-side
+buffer untouched while ensuring the SWGL texture registration sees the same byte
+layout as little-endian builds.
+
+Dependency: apply after SPARC-01-cairo-surface-format.patch and preferably
+after SPARC-06-swgl-bgra-endian.patch. This patch converts native Cairo RGB
+planes exposed by the base format contract before SWGL samples them.
+
+--- firefox-153.0/gfx/webrender_bindings/RenderTextureHostSWGL.cpp
++++ firefox-153.0/gfx/webrender_bindings/RenderTextureHostSWGL.cpp
+@@ -4,13 +4,85 @@ * file, You can obtain one at http://moz
+ 
+ #include "RenderTextureHostSWGL.h"
+ 
++#include "mozilla/CheckedInt.h"
++#include "mozilla/EndianUtils.h"
++#include "mozilla/fallible.h"
+ #include "mozilla/gfx/Logging.h"
++#include "mozilla/gfx/Swizzle.h"
+ #include "mozilla/layers/TextureHost.h"
+ #include "RenderThread.h"
+ 
+ namespace mozilla {
+ namespace wr {
+ 
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++static bool IsNativeEndianRGBFormat(gfx::SurfaceFormat aFormat) {
++  return aFormat == gfx::SurfaceFormat::A8R8G8B8 ||
++         aFormat == gfx::SurfaceFormat::X8R8G8B8;
++}
++
++static gfx::SurfaceFormat SWGLFormatForNativeEndianRGB(
++    gfx::SurfaceFormat aFormat) {
++  switch (aFormat) {
++    case gfx::SurfaceFormat::A8R8G8B8:
++      return gfx::SurfaceFormat::B8G8R8A8;
++    case gfx::SurfaceFormat::X8R8G8B8:
++      return gfx::SurfaceFormat::B8G8R8X8;
++    default:
++      return aFormat;
++  }
++}
++
++static bool NormalizeNativeEndianRGBPlaneForSWGL(
++    gfx::SurfaceFormat* aFormat, RenderTextureHostSWGL::PlaneInfo& aPlane) {
++  if (!IsNativeEndianRGBFormat(*aFormat)) {
++    aPlane.mConvertedData.Clear();
++    return true;
++  }
++
++  if (!aPlane.mData || aPlane.mSize.width <= 0 || aPlane.mSize.height <= 0 ||
++      aPlane.mStride <= 0) {
++    gfxCriticalNote << "Invalid native-endian SWGL RGB plane: "
++                    << aPlane.mSize << " stride " << aPlane.mStride;
++    return false;
++  }
++
++  CheckedInt<int32_t> minStride =
++      CheckedInt<int32_t>(aPlane.mSize.width) * 4;
++  if (!minStride.isValid() || aPlane.mStride < minStride.value()) {
++    gfxCriticalNote << "Invalid native-endian SWGL RGB stride: "
++                    << aPlane.mSize << " stride " << aPlane.mStride;
++    return false;
++  }
++
++  CheckedInt<size_t> requiredBytes =
++      CheckedInt<size_t>(aPlane.mStride) * aPlane.mSize.height;
++  if (!requiredBytes.isValid()) {
++    gfxCriticalNote << "Invalid native-endian SWGL RGB plane size: "
++                    << aPlane.mSize << " stride " << aPlane.mStride;
++    return false;
++  }
++
++  gfx::SurfaceFormat swglFormat = SWGLFormatForNativeEndianRGB(*aFormat);
++  if (!aPlane.mConvertedData.SetLength(requiredBytes.value(), fallible)) {
++    gfxCriticalNote << "Failed to allocate native-endian SWGL RGB conversion";
++    return false;
++  }
++
++  if (!gfx::SwizzleData(static_cast<uint8_t*>(aPlane.mData), aPlane.mStride,
++                        *aFormat, aPlane.mConvertedData.Elements(),
++                        aPlane.mStride, swglFormat, aPlane.mSize)) {
++    aPlane.mConvertedData.Clear();
++    gfxCriticalNote << "Failed to swizzle native-endian SWGL RGB plane";
++    return false;
++  }
++
++  aPlane.mData = aPlane.mConvertedData.Elements();
++  *aFormat = swglFormat;
++  return true;
++}
++#endif
++
+ bool RenderTextureHostSWGL::UpdatePlanes(RenderCompositor* aCompositor) {
+   wr_swgl_make_current(mContext);
+   size_t planeCount = GetPlaneCount();
+@@ -32,8 +104,15 @@ UnmapPlanes();
+       }
+       return false;
+     }
++    gfx::SurfaceFormat planeFormat = format;
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++    if (!NormalizeNativeEndianRGBPlaneForSWGL(&planeFormat, plane)) {
++      UnmapPlanes();
++      return false;
++    }
++#endif
+     GLenum internalFormat = 0;
+-    switch (format) {
++    switch (planeFormat) {
+       case gfx::SurfaceFormat::B8G8R8A8:
+       case gfx::SurfaceFormat::B8G8R8X8:
+         MOZ_ASSERT(colorDepth == gfx::ColorDepth::COLOR_8);
+--- firefox-153.0/gfx/webrender_bindings/RenderTextureHostSWGL.h
++++ firefox-153.0/gfx/webrender_bindings/RenderTextureHostSWGL.h
+@@ -7,6 +7,7 @@ #define MOZILLA_GFX_RENDERTEXTUREHOSTSWG
+ 
+ #include "GLTypes.h"
+ #include "RenderTextureHost.h"
++#include "nsTArray.h"
+ 
+ namespace mozilla {
+ namespace wr {
+@@ -39,6 +40,7 @@ GLuint mTexture = 0;
+     void* mData = nullptr;
+     int32_t mStride = 0;
+     gfx::IntSize mSize;
++    nsTArray<uint8_t> mConvertedData;
+   };
+ 
+   virtual bool MapPlane(RenderCompositor* aCompositor, uint8_t aChannelIndex,

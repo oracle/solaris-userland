@@ -36,14 +36,14 @@ LD_SHARED_OPTIONS_Z_DEFS=
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	140.12.0
-COMPONENT_BAID=		404750
+COMPONENT_VERSION =	153.0
+COMPONENT_BAID=		426291
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:85dfb9f6021152b4302b8968ef485d958c8c471cb02415a19853daaad5acce62
+    sha256:dbe3d9dedcb118a4b623688c559c6f2de280ea3be171e3ff256504cc01626cb5
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -60,7 +60,7 @@ COMPONENT_ANITYA_ID =	16838
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:3b1de64e03f975de7d7d7329c6c330e8ff722725f379baf064a70168ce711902
+    sha256:4bd3cc536a62f87a927cd7fc9bd8af59692c8d8c81fb1ca63e73340e2d0ae0fb
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
@@ -89,7 +89,21 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # /usr/gnu/bin needed to pick up the GNU version of tail and readelf.
 # /usr/sbin needed for dtrace.
-PATH = $(EXTPATH):$(COMPONENT_DIR)/wrapper-node:/usr/gnu/bin:/usr/bin:/usr/sbin
+# Temporarily use the cbindgen built in this workspace until version 0.29.4
+# is installed on the build systems.
+CBINDGEN_PATH = $(WS_COMPONENTS)/rust/cbindgen/build/$(MACH64)/target/release
+CBINDGEN = $(CBINDGEN_PATH)/cbindgen
+CBINDGEN_VERSION = 0.29.4
+PATH = $(CBINDGEN_PATH):$(EXTPATH):$(COMPONENT_DIR)/wrapper-node:/usr/gnu/bin:/usr/bin:/usr/sbin
+CONFIGURE_ENV += CBINDGEN="$(CBINDGEN)"
+
+COMPONENT_PRE_CONFIGURE_ACTION += \
+	if [ ! -x "$(CBINDGEN)" ] || \
+	    [ "$$($(CBINDGEN) --version 2>/dev/null)" != \
+	    "cbindgen $(CBINDGEN_VERSION)" ]; then \
+		$(GMAKE) -C $(WS_COMPONENTS)/rust/cbindgen install ; \
+	fi ; \
+	test "$$($(CBINDGEN) --version)" = "cbindgen $(CBINDGEN_VERSION)" ;
 
 MOZCONFIG = $(SOURCE_DIR)/mozconfig
 
@@ -127,7 +141,6 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-update-channel=esr" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libvpx" >> $(MOZCONFIG) ; \
@@ -164,7 +177,7 @@ COMPONENT_POST_INSTALL_ACTION += \
                 $(PROTOUSRLIBDIR)/firefox/distribution/extensions/langpack-$$f@firefox.mozilla.org.xpi ; \
         done ;
 
-MOZ_XPI = $(MOZILLA_FTP)/linux-i686/xpi
+MOZ_XPI = $(MOZILLA_FTP)/linux-x86_64/xpi
 
 # Run gmake download-xpis to download a tarball for xpi locally.
 download-xpis:
@@ -188,7 +201,7 @@ download-xpis:
 license: install
 	@echo "regenerating license text"
 	unzip -c $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/omni.ja chrome/toolkit/content/global/license.html \
-	    | LC_ALL=en_US.UTF-8 lynx --display_charset=utf-8 -stdin --dump -nolist \
+	    | LC_ALL=en_US.UTF-8 lynx --display_charset=utf-8 -width=120 -stdin --dump -nolist \
 	    | /usr/gnu/bin/sed '/Return to top\.$$/{d;}' > $(COMPONENT_NAME).license
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
@@ -221,7 +234,6 @@ REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/graphics/pixman
-REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/zlib
@@ -237,4 +249,5 @@ REQUIRED_PACKAGES += system/linker
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxext
+REQUIRED_PACKAGES += x11/library/libxfixes
 REQUIRED_PACKAGES += x11/library/libxrandr

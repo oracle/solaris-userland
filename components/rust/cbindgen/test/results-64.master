@@ -1,12 +1,13 @@
 warning: `$(BUILKD_DIR)/.cargo/config` is deprecated in favor of `config.toml`
-note: if you need to support cargo 1.38 or earlier, you can symlink `config` to `config.toml`
+  |
+  = help: if you need to support cargo 1.38 or earlier, you can symlink `config` to `config.toml`
 warning: function `build_using_lib` is never used
  --> tests/profile.rs:8:4
   |
 8 | fn build_using_lib(config: fn(Builder) -> Builder) -> tempfile::TempDir {
   |    ^^^^^^^^^^^^^^^
   |
-  = note: `#[warn(dead_code)]` on by default
+  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
 
 warning: `cbindgen` (test "profile") generated 1 warning
     Finished `test` profile [unoptimized + debuginfo] target(s)
@@ -47,7 +48,7 @@ test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;
 
      Running tests/tests.rs (target/debug/deps/tests-xxxxxxxxxxxxxxxx)
 
-running 152 tests
+running 157 tests
 test test_abi_string ... ok
 test test_alias ... ok
 test test_annotation ... ok
@@ -68,7 +69,9 @@ test test_cfg ... ok
 test test_cfg_2 ... ok
 test test_cfg_field ... ok
 test test_char ... ok
+test test_cmse ... ok
 test test_const_conflict ... ok
+test test_const_enum ... ok
 test test_const_generics ... ok
 test test_const_generics_arrayvec ... ok
 test test_const_generics_bool ... ok
@@ -98,9 +101,12 @@ test test_docstyle_c99 ... ok
 test test_docstyle_doxy ... ok
 test test_documentation ... ok
 test test_documentation_attr ... ok
+test test_documentation_block ... ok
+test test_duplicated_constants ... ok
 test test_enum ... ok
 test test_enum_discriminant ... ok
 test test_enum_self ... ok
+test test_enum_self_flags ... ok
 test test_euclid ... ok
 test test_exclude_generic_monomorph ... ok
 test test_expand ... FAILED
@@ -206,7 +212,7 @@ failures:
 ---- test_bitfield stdout ----
 Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/bitfield.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/bitfield"
 
-thread 'test_bitfield' panicked at tests/tests.rs:99:5:
+thread 'test_bitfield' (12) panicked at tests/tests.rs:99:5:
 ERROR: Couldn't generate bindings for $(@D)/tests/rust/bitfield.
 
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
@@ -214,35 +220,35 @@ note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 ---- test_expand stdout ----
 Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/expand.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/expand"
 
-thread 'test_expand' panicked at tests/tests.rs:99:5:
+thread 'test_expand' (62) panicked at tests/tests.rs:99:5:
 ERROR: Couldn't generate bindings for $(@D)/tests/rust/expand.
 
 
 ---- test_expand_default_features stdout ----
 Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/expand_default_features.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/expand_default_features"
 
-thread 'test_expand_default_features' panicked at tests/tests.rs:99:5:
+thread 'test_expand_default_features' (63) panicked at tests/tests.rs:99:5:
 ERROR: Couldn't generate bindings for $(@D)/tests/rust/expand_default_features.
 
 
 ---- test_expand_dep stdout ----
 Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/expand_dep.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/expand_dep"
 
-thread 'test_expand_dep' panicked at tests/tests.rs:99:5:
+thread 'test_expand_dep' (64) panicked at tests/tests.rs:99:5:
 ERROR: Couldn't generate bindings for $(@D)/tests/rust/expand_dep.
 
 
 ---- test_expand_dep_v2 stdout ----
 Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/expand_dep_v2.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/expand_dep_v2"
 
-thread 'test_expand_dep_v2' panicked at tests/tests.rs:99:5:
+thread 'test_expand_dep_v2' (65) panicked at tests/tests.rs:99:5:
 ERROR: Couldn't generate bindings for $(@D)/tests/rust/expand_dep_v2.
 
 
 ---- test_expand_no_default_features stdout ----
 Running: "$(@D)/target/debug/cbindgen" "--output" "$(@D)/tests/expectations/expand_no_default_features.compat.c" "--lang" "c" "--cpp-compat" "--style" "type" "$(@D)/tests/rust/expand_no_default_features"
 
-thread 'test_expand_no_default_features' panicked at tests/tests.rs:99:5:
+thread 'test_expand_no_default_features' (67) panicked at tests/tests.rs:99:5:
 ERROR: Couldn't generate bindings for $(@D)/tests/rust/expand_no_default_features.
 
 
@@ -255,6 +261,6 @@ failures:
     test_expand_dep_v2
     test_expand_no_default_features
 
-test result: FAILED. 146 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out;
+test result: FAILED. 151 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out;
 
 error: test failed, to rerun pass `--test tests`

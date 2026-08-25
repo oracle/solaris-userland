@@ -23,10 +23,10 @@
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
 # prevents "64bit file in 32bit path" errors
-<transform file path=usr/lib/firefox/(firefox|plugin-container|pingsender|.*\.so) -> \
+<transform file path=usr/lib/firefox/(firefox|plugin-container|pingsender|vulkantest|.*\.so) -> \
     add pkg.linted.userland.action001.2 true>
 # pkg.linted actions are needed to prevent bad RUNPATH lint errors.
-<transform file path=usr/lib/firefox/(firefox|glxtest|pingsender|vaapitest|.*\.so) -> \
+<transform file path=usr/lib/firefox/(firefox|glxtest|pingsender|vaapitest|vulkantest|.*\.so) -> \
     add pkg.linted.userland.action001.3 true>
 set name=pkg.fmri \
     value=pkg:/web/browser/firefox@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
@@ -157,6 +157,7 @@ file path=usr/lib/firefox/liblgpllibs.so
 file path=usr/lib/firefox/libmozavcodec.so
 file path=usr/lib/firefox/libmozavutil.so
 file path=usr/lib/firefox/libmozgtk.so
+file path=usr/lib/firefox/libmozinference.so
 file path=usr/lib/firefox/libmozsqlite3.so
 file path=usr/lib/firefox/libnspr4.so
 file path=usr/lib/firefox/libnss3.so
@@ -172,6 +173,7 @@ file path=usr/lib/firefox/pingsender mode=0555
 file path=usr/lib/firefox/platform.ini
 file path=usr/lib/firefox/removed-files
 file path=usr/lib/firefox/vaapitest mode=0555
+file path=usr/lib/firefox/vulkantest mode=0555
 file files/firefox.desktop path=usr/share/applications/firefox.desktop \
     restart_fmri=svc:/application/desktop-cache/desktop-mime-cache:default
 file files/firefox.1 path=usr/share/man/man1/firefox.1

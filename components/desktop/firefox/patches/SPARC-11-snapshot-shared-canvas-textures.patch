@@ -1,0 +1,55 @@
+Snapshot shared 2D canvas textures before async WebRender handoff on SPARC.
+
+Tab-hover previews draw a PageThumbs ImageBitmap into a chrome 2D canvas and
+then display that live canvas in a popup.  The pixels are correct when the
+canvas is read back, but forwarding the shared PersistentBufferProvider front
+texture directly into the async canvas pipeline can still present a blank
+thumbnail with SWGL on Solaris/SPARC.
+
+For shared canvas providers on this platform, use the renderer's existing
+snapshot path and copy into a compositor-owned TextureClient.  This keeps the
+fix in the canvas/WebRender handoff rather than in browser UI code, and it
+preserves the normal zero-copy path for other platforms and non-shared canvas
+sources.
+
+Dependency: apply after SPARC-10-canvas-return-target-before-share.patch. The
+snapshot handoff assumes shared canvas providers have returned their current
+draw target before being forwarded.
+
+--- firefox-153.0/gfx/layers/ShareableCanvasRenderer.cpp
++++ firefox-153.0/gfx/layers/ShareableCanvasRenderer.cpp
+@@ -205,15 +205,28 @@ }
+ 
+     EnsurePipeline();
+ 
+-    // Let's see if we can get a no-copy TextureClient from the canvas.
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++    const bool snapshotSharedProvider = provider && provider->IsShared();
++#else
++    const bool snapshotSharedProvider = false;
++#endif
++
+     bool lostFrontTexture = false;
+-    auto tc = fnGetExistingTc(desc, lostFrontTexture);
+-    if (lostFrontTexture) {
+-      // Device reset could cause this.
+-      return;
++    RefPtr<TextureClient> tc;
++    if (snapshotSharedProvider) {
++      // The snapshot path reads the current canvas contents and copies them
++      // into a texture owned by this async canvas pipeline.
++      tc = fnMakeTcFromSnapshot();
++    } else {
++      // Let's see if we can get a no-copy TextureClient from the canvas.
++      tc = fnGetExistingTc(desc, lostFrontTexture);
++      if (lostFrontTexture) {
++        // Device reset could cause this.
++        return;
++      }
+     }
+     if (!tc) {
+-      // Otherwise, snapshot the surface and copy into a TexClient.
++      // Otherwise, snapshot the surface and copy into a TextureClient.
+       tc = fnMakeTcFromSnapshot();
+     }
+     if (tc != mFrontBufferFromDesc) {

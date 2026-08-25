@@ -1,0 +1,33 @@
+Disable WebRender feature selection on Solaris/SPARC.
+
+The Solaris/SPARC WebRender/SWGL path still has unresolved big-endian
+presentation issues that can fail during renderer startup or produce incorrect
+output.  Disable WebRender at gfx feature-selection time on this platform so
+Firefox uses the non-WebRender compositor path consistently.
+
+Keep this as a Solaris/SPARC policy patch rather than a generic big-endian
+change: it reflects the supported Userland runtime configuration, not an
+upstream assumption that every big-endian target must disable WebRender.
+
+Dependency: independent policy patch. It may be applied anywhere after the
+source tree is unpacked, but is numbered with the rendering stack because it
+selects the supported Solaris/SPARC runtime path.
+
+--- firefox-153.0/gfx/config/gfxConfigManager.cpp
++++ firefox-153.0/gfx/config/gfxConfigManager.cpp
+@@ -193,6 +193,15 @@ }
+ 
+   ConfigureFromBlocklist(nsIGfxInfo::FEATURE_WEBRENDER, mFeatureWr);
+ 
++#if defined(XP_SOLARIS) && (defined(__sparc) || defined(__sparc__))
++  // WebRender backends are still not reliable on big-endian SPARC.
++  // Disable WR at feature selection time so GTK falls back cleanly to the
++  // non-WebRender compositor path instead of failing during renderer startup.
++  mFeatureWr->ForceDisable(FeatureStatus::Unavailable,
++                           "WebRender disabled on Solaris/SPARC",
++                           "FEATURE_FAILURE_WEBRENDER_SOLARIS_SPARC"_ns);
++#endif
++
+   // HW_COMPOSITING being disabled implies interfacing with the GPU might break
+   if (!mFeatureHwCompositing->IsEnabled()) {
+     mFeatureWr->ForceDisable(FeatureStatus::UnavailableNoHwCompositing,

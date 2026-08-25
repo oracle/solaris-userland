@@ -47,21 +47,20 @@ Couldn't convert chrome URL: chrome://branding/locale/brand.properties
 
 https://bugzilla.mozilla.org/show_bug.cgi?id=1344659
 
---- firefox-140.1.0/gfx/2d/Types.h
-+++ firefox-140.1.0/gfx/2d/Types.h
-@@ -104,15 +104,8 @@ UNKNOWN,  // TODO: Replace uses with May
- // The following values are endian-independent synonyms. The _UINT32 suffix
- // indicates that the name reflects the layout when viewed as a uint32_t
- // value.
--#if MOZ_LITTLE_ENDIAN()
-   A8R8G8B8_UINT32 = B8G8R8A8,  // 0xAARRGGBB
-   X8R8G8B8_UINT32 = B8G8R8X8,  // 0x00RRGGBB
--#elif MOZ_BIG_ENDIAN()
--  A8R8G8B8_UINT32 = A8R8G8B8,  // 0xAARRGGBB
--  X8R8G8B8_UINT32 = X8R8G8B8,  // 0x00RRGGBB
--#else
--#  error "bad endianness"
--#endif
+--- firefox-153.0/gfx/2d/Types.h
++++ firefox-153.0/gfx/2d/Types.h
+@@ -109,12 +109,8 @@
+   // The following values are endian-independent synonyms. The _UINT32 suffix
+   // indicates that the name reflects the layout when viewed as a uint32_t
+   // value.
+-  A8R8G8B8_UINT32 = std::endian::native == std::endian::little
+-                        ? B8G8R8A8
+-                        : A8R8G8B8,  // 0xAARRGGBB
+-  X8R8G8B8_UINT32 = std::endian::native == std::endian::little
+-                        ? B8G8R8X8
+-                        : X8R8G8B8,  // 0x00RRGGBB
++  A8R8G8B8_UINT32 = B8G8R8A8,  // 0xAARRGGBB
++  X8R8G8B8_UINT32 = B8G8R8X8,  // 0x00RRGGBB
  
    // The following values are OS and endian-independent synonyms.
    //

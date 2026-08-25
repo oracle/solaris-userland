@@ -1,0 +1,1008 @@
+Bug N/A - preserve native Cairo image formats and normalize big-endian surface bytes on SPARC
+
+On big-endian platforms, Cairo ARGB32/XRGB32 image surfaces are native-endian
+ARGB/XRGB byte layouts, while WebRender and most Mozilla image upload paths
+expect BGRA/BGRX byte layouts.  The Solaris/SPARC Userland build also keeps the
+legacy A8R8G8B8_UINT32 aliases mapped to BGRA/BGRX for WebRender compatibility.
+
+Preserve explicit native Cairo formats where Cairo needs them, and normalize
+data crossing back into WebRender, GTK pixbuf, canvas snapshot, and image upload
+paths.  This patch is intentionally mostly guarded by the compiler's
+__BYTE_ORDER__ condition, with Solaris/SPARC-only guards only around behavior
+that depends on the supported Userland runtime path.
+
+Dependency: this is the base format-contract patch for the SPARC rendering
+stack. Later Cairo, WebRender, SWGL, shared-image, and BMP/ICO fixes assume the
+native-Cairo-versus-WebRender-BGRA/BGRX split established here.
+
+--- firefox-153.0/dom/canvas/CanvasRenderingContext2D.cpp
++++ firefox-153.0/dom/canvas/CanvasRenderingContext2D.cpp
+@@ -2276,7 +2276,7 @@ RefPtr<DataSourceSurface> data = snapsho
+     if (data && data->GetSize() == GetSize()) {
+       *out_format = imgIEncoder::INPUT_FORMAT_HOSTARGB;
+       *out_imageSize = data->GetSize();
+-      ret = SurfaceToPackedBGRA(data);
++      ret = SurfaceToPackedHostARGB(data);
+     }
+   }
+ 
+--- firefox-153.0/dom/canvas/ImageBitmapRenderingContext.cpp
++++ firefox-153.0/dom/canvas/ImageBitmapRenderingContext.cpp
+@@ -8,6 +8,7 @@ #include "ImageContainer.h"
+ #include "gfx2DGlue.h"
+ #include "gfxPlatform.h"
+ #include "mozilla/dom/ImageBitmapRenderingContextBinding.h"
++#include "mozilla/gfx/DataSurfaceHelpers.h"
+ #include "mozilla/gfx/Types.h"
+ #include "nsComponentManagerUtils.h"
+ #include "nsRegion.h"
+@@ -192,7 +193,7 @@ }
+   *aFormat = imgIEncoder::INPUT_FORMAT_HOSTARGB;
+   *aImageSize = data->GetSize();
+ 
+-  UniquePtr<uint8_t[]> ret = gfx::SurfaceToPackedBGRA(data);
++  UniquePtr<uint8_t[]> ret = gfx::SurfaceToPackedHostARGB(data);
+ 
+   if (ret) {
+     nsRFPService::PotentiallyDumpImage(
+--- firefox-153.0/dom/canvas/OffscreenCanvasDisplayHelper.cpp
++++ firefox-153.0/dom/canvas/OffscreenCanvasDisplayHelper.cpp
+@@ -622,7 +622,8 @@ }
+   *aOutFormat = imgIEncoder::INPUT_FORMAT_HOSTARGB;
+   *aOutImageSize = dataSurface->GetSize();
+ 
+-  UniquePtr<uint8_t[]> imageBuffer = gfx::SurfaceToPackedBGRA(dataSurface);
++  UniquePtr<uint8_t[]> imageBuffer =
++      gfx::SurfaceToPackedHostARGB(dataSurface);
+   if (!imageBuffer) {
+     return nullptr;
+   }
+--- firefox-153.0/gfx/2d/DataSurfaceHelpers.cpp
++++ firefox-153.0/gfx/2d/DataSurfaceHelpers.cpp
+@@ -174,6 +174,95 @@ }
+   return imageBuffer;
+ }
+ 
++UniquePtr<uint8_t[]> SurfaceToPackedHostARGB(DataSourceSurface* aSurface) {
++  SurfaceFormat format = aSurface->GetFormat();
++  if (format != SurfaceFormat::B8G8R8A8 &&
++      format != SurfaceFormat::B8G8R8X8 &&
++      format != SurfaceFormat::A8R8G8B8 &&
++      format != SurfaceFormat::X8R8G8B8) {
++    return nullptr;
++  }
++
++  IntSize size = aSurface->GetSize();
++  if (size.width < 0 || size.width >= INT32_MAX / 4) {
++    return nullptr;
++  }
++  int32_t stride = size.width * 4;
++  CheckedInt<size_t> bufferSize =
++      CheckedInt<size_t>(stride) * CheckedInt<size_t>(size.height);
++  if (!bufferSize.isValid()) {
++    return nullptr;
++  }
++  UniquePtr<uint8_t[]> imageBuffer(new (std::nothrow)
++                                       uint8_t[bufferSize.value()]);
++  if (!imageBuffer) {
++    return nullptr;
++  }
++
++  DataSourceSurface::MappedSurface map;
++  if (!aSurface->Map(DataSourceSurface::MapType::READ, &map)) {
++    return nullptr;
++  }
++
++  for (int32_t y = 0; y < size.height; ++y) {
++    const uint8_t* src = map.mData + y * map.mStride;
++    uint8_t* dst = imageBuffer.get() + y * stride;
++    for (int32_t x = 0; x < size.width; ++x) {
++      uint8_t a;
++      uint8_t r;
++      uint8_t g;
++      uint8_t b;
++      switch (format) {
++        case SurfaceFormat::B8G8R8A8:
++          b = src[0];
++          g = src[1];
++          r = src[2];
++          a = src[3];
++          break;
++        case SurfaceFormat::B8G8R8X8:
++          b = src[0];
++          g = src[1];
++          r = src[2];
++          a = 0xFF;
++          break;
++        case SurfaceFormat::A8R8G8B8:
++          a = src[0];
++          r = src[1];
++          g = src[2];
++          b = src[3];
++          break;
++        case SurfaceFormat::X8R8G8B8:
++          a = 0xFF;
++          r = src[1];
++          g = src[2];
++          b = src[3];
++          break;
++        default:
++          MOZ_ASSERT_UNREACHABLE("Unsupported host ARGB source format");
++          aSurface->Unmap();
++          return nullptr;
++      }
++
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++      dst[0] = a;
++      dst[1] = r;
++      dst[2] = g;
++      dst[3] = b;
++#else
++      dst[0] = b;
++      dst[1] = g;
++      dst[2] = r;
++      dst[3] = a;
++#endif
++      src += 4;
++      dst += 4;
++    }
++  }
++
++  aSurface->Unmap();
++  return imageBuffer;
++}
++
+ uint8_t* SurfaceToPackedBGR(DataSourceSurface* aSurface) {
+   SurfaceFormat format = aSurface->GetFormat();
+   MOZ_ASSERT(format == SurfaceFormat::B8G8R8X8, "Format not supported");
+--- firefox-153.0/gfx/2d/DataSurfaceHelpers.h
++++ firefox-153.0/gfx/2d/DataSurfaceHelpers.h
+@@ -47,6 +47,12 @@ */
+ UniquePtr<uint8_t[]> SurfaceToPackedBGRA(DataSourceSurface* aSurface);
+ 
+ /**
++ * Convert aSurface to a packed buffer in host-endian ARGB format.
++ * This is BGRA byte order on little-endian and ARGB byte order on big-endian.
++ */
++UniquePtr<uint8_t[]> SurfaceToPackedHostARGB(DataSourceSurface* aSurface);
++
++/**
+  * Convert aSurface to a packed buffer in BGR format. The pixel data is
+  * returned in a buffer allocated with new uint8_t[]. The caller then has
+  * ownership of the buffer and is responsible for delete[]'ing it.
+--- firefox-153.0/gfx/2d/DrawTargetCairo.cpp
++++ firefox-153.0/gfx/2d/DrawTargetCairo.cpp
+@@ -20,6 +20,7 @@ #include <string.h>
+ 
+ #include "Blur.h"
+ #include "Logging.h"
++#include "Swizzle.h"
+ #include "Tools.h"
+ 
+ #ifdef CAIRO_HAS_QUARTZ_SURFACE
+@@ -193,6 +194,38 @@ data->Unmap();
+   data->Release();
+ }
+ 
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++static bool NeedsCairoFormatSwizzle(SurfaceFormat aFormat) {
++  return aFormat == SurfaceFormat::B8G8R8A8 ||
++         aFormat == SurfaceFormat::B8G8R8X8 ||
++         aFormat == SurfaceFormat::R8G8B8A8 ||
++         aFormat == SurfaceFormat::R8G8B8X8;
++}
++
++static SurfaceFormat NormalizeFormatForCairoSurface(SurfaceFormat aFormat) {
++  switch (aFormat) {
++    case SurfaceFormat::B8G8R8A8:
++    case SurfaceFormat::R8G8B8A8:
++      return SurfaceFormat::A8R8G8B8;
++    case SurfaceFormat::B8G8R8X8:
++    case SurfaceFormat::R8G8B8X8:
++      return SurfaceFormat::X8R8G8B8;
++    default:
++      return aFormat;
++  }
++}
++
++static bool NeedsCairoDataSurfaceCopy(SurfaceFormat aFormat,
++                                      int32_t aStride,
++                                      const IntSize& aSize) {
++  SurfaceFormat cairoFormat = NormalizeFormatForCairoSurface(aFormat);
++  cairo_format_t format = GfxFormatToCairoFormat(cairoFormat);
++  int32_t cairoStride = cairo_format_stride_for_width(format, aSize.width);
++  return NeedsCairoFormatSwizzle(aFormat) || cairoStride <= 0 ||
++         cairoStride != aStride;
++}
++#endif
++
+ static cairo_surface_t* CopyToImageSurface(unsigned char* aData,
+                                            const IntSize& aSize,
+                                            const IntRect& aRect,
+@@ -203,8 +236,15 @@ MOZ_ASSERT(aData);
+   auto aRectWidth = aRect.Width();
+   auto aRectHeight = aRect.Height();
+ 
++  SurfaceFormat cairoFormat = aFormat;
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  if (NeedsCairoFormatSwizzle(aFormat)) {
++    cairoFormat = NormalizeFormatForCairoSurface(aFormat);
++  }
++#endif
++
+   cairo_surface_t* surf = cairo_image_surface_create(
+-      GfxFormatToCairoFormat(aFormat), aRectWidth, aRectHeight);
++      GfxFormatToCairoFormat(cairoFormat), aRectWidth, aRectHeight);
+   // In certain scenarios, requesting larger than 8k image fails.  Bug 803568
+   // covers the details of how to run into it, but the full detailed
+   // investigation hasn't been done to determine the underlying cause.  We
+@@ -224,14 +264,28 @@ cairo_surface_destroy(surf);
+     return nullptr;
+   }
+ 
+-  const unsigned char* sourceRow = aData + size_t(aRect.Y()) * size_t(aStride) +
+-                                   size_t(aRect.X()) * pixelWidth;
+-  unsigned char* destRow = surfData;
+-
+-  for (int32_t y = 0; y < aRectHeight; ++y) {
+-    memcpy(destRow, sourceRow, rowDataWidth);
+-    sourceRow += aStride;
+-    destRow += surfStride;
++  const unsigned char* sourceData =
++      aData + size_t(aRect.Y()) * size_t(aStride) +
++      size_t(aRect.X()) * pixelWidth;
++
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  if (NeedsCairoFormatSwizzle(aFormat)) {
++    if (!SwizzleData(sourceData, aStride, aFormat, surfData, surfStride,
++                     cairoFormat, IntSize(aRectWidth, aRectHeight))) {
++      cairo_surface_destroy(surf);
++      return nullptr;
++    }
++  } else
++#endif
++  {
++    const unsigned char* sourceRow = sourceData;
++    unsigned char* destRow = surfData;
++
++    for (int32_t y = 0; y < aRectHeight; ++y) {
++      memcpy(destRow, sourceRow, rowDataWidth);
++      sourceRow += aStride;
++      destRow += surfStride;
++    }
+   }
+   cairo_surface_mark_dirty(surf);
+   return surf;
+@@ -262,6 +316,16 @@ if (!aData || aStride < 0 || !IntRect(In
+     gfxWarning() << "DrawTargetCairo.CreateSubImageForData null aData";
+     return nullptr;
+   }
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  if (NeedsCairoFormatSwizzle(aFormat)) {
++    cairo_surface_t* image =
++        CopyToImageSurface(aData, aSize, aRect, aStride, aFormat);
++    if (image) {
++      cairo_surface_set_device_offset(image, -aRect.X(), -aRect.Y());
++    }
++    return image;
++  }
++#endif
+   unsigned char* data = aData + size_t(aRect.Y()) * size_t(aStride) +
+                         size_t(aRect.X()) * size_t(BytesPerPixel(aFormat));
+ 
+@@ -1876,7 +1940,12 @@ if (!surf) {
+     return nullptr;
+   }
+ 
+-  RefPtr source_surf = MakeRefPtr<SourceSurfaceCairo>(surf, aSize, aFormat);
++  SurfaceFormat surfaceFormat = aFormat;
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  surfaceFormat = NormalizeFormatForCairoSurface(aFormat);
++#endif
++  RefPtr source_surf =
++      MakeRefPtr<SourceSurfaceCairo>(surf, aSize, surfaceFormat);
+   cairo_surface_destroy(surf);
+ 
+   return source_surf.forget();
+@@ -1930,7 +1999,11 @@ }
+ 
+   if (!cairo_surface_status(similar)) {
+     RefPtr target = MakeRefPtr<DrawTargetCairo>();
+-    if (target->InitAlreadyReferenced(similar, aSize)) {
++    SurfaceFormat cairoFormat = aFormat;
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++    cairoFormat = NormalizeFormatForCairoSurface(aFormat);
++#endif
++    if (target->InitAlreadyReferenced(similar, aSize, &cairoFormat)) {
+       return target.forget();
+     }
+   }
+@@ -2003,6 +2076,7 @@ cairo_rectangle(mContext, 0, 0, mSize.wi
+   cairo_clip(mContext);
+ 
+   if (mFormat == SurfaceFormat::A8R8G8B8_UINT32 ||
++      mFormat == SurfaceFormat::A8R8G8B8 ||
+       mFormat == SurfaceFormat::R8G8B8A8) {
+     SetPermitSubpixelAA(false);
+   } else {
+@@ -2026,7 +2100,11 @@ // If we don't have a blur then we can u
+   // operations in graphics memory.
+   if (aSigma == 0.0f || aFormat == SurfaceFormat::A8) {
+     RefPtr target = MakeRefPtr<DrawTargetCairo>();
+-    if (target->InitAlreadyReferenced(similar, aSize)) {
++    SurfaceFormat cairoFormat = aFormat;
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++    cairoFormat = NormalizeFormatForCairoSurface(aFormat);
++#endif
++    if (target->InitAlreadyReferenced(similar, aSize, &cairoFormat)) {
+       return target.forget();
+     } else {
+       return nullptr;
+@@ -2051,7 +2129,11 @@ cairo_tee_surface_add(tee, similar);
+   cairo_surface_destroy(similar);
+ 
+   RefPtr target = MakeRefPtr<DrawTargetCairo>();
+-  if (target->InitAlreadyReferenced(tee, aSize)) {
++  SurfaceFormat cairoFormat = aFormat;
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  cairoFormat = NormalizeFormatForCairoSurface(aFormat);
++#endif
++  if (target->InitAlreadyReferenced(tee, aSize, &cairoFormat)) {
+     return target.forget();
+   }
+   return nullptr;
+@@ -2069,9 +2151,13 @@ return InitAlreadyReferenced(aSurface, a
+ }
+ 
+ bool DrawTargetCairo::Init(const IntSize& aSize, SurfaceFormat aFormat) {
++  SurfaceFormat cairoFormat = aFormat;
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  cairoFormat = NormalizeFormatForCairoSurface(aFormat);
++#endif
+   cairo_surface_t* surf = cairo_image_surface_create(
+-      GfxFormatToCairoFormat(aFormat), aSize.width, aSize.height);
+-  return InitAlreadyReferenced(surf, aSize);
++      GfxFormatToCairoFormat(cairoFormat), aSize.width, aSize.height);
++  return InitAlreadyReferenced(surf, aSize, &cairoFormat);
+ }
+ 
+ bool DrawTargetCairo::Init(unsigned char* aData, const IntSize& aSize,
+@@ -2079,7 +2165,7 @@ int32_t aStride, SurfaceFormat aFormat)
+   cairo_surface_t* surf = cairo_image_surface_create_for_data(
+       aData, GfxFormatToCairoFormat(aFormat), aSize.width, aSize.height,
+       aStride);
+-  return InitAlreadyReferenced(surf, aSize);
++  return InitAlreadyReferenced(surf, aSize, &aFormat);
+ }
+ 
+ void* DrawTargetCairo::GetNativeSurface(NativeSurfaceType aType) {
+--- firefox-153.0/gfx/2d/HelpersCairo.h
++++ firefox-153.0/gfx/2d/HelpersCairo.h
+@@ -176,8 +176,10 @@ }
+ static inline cairo_content_t GfxFormatToCairoContent(SurfaceFormat format) {
+   switch (format) {
+     case SurfaceFormat::A8R8G8B8_UINT32:
++    case SurfaceFormat::A8R8G8B8:
+       return CAIRO_CONTENT_COLOR_ALPHA;
+     case SurfaceFormat::X8R8G8B8_UINT32:
++    case SurfaceFormat::X8R8G8B8:
+     case SurfaceFormat::R5G6B5_UINT16:  // fall through
+       return CAIRO_CONTENT_COLOR;
+     case SurfaceFormat::A8:
+@@ -219,10 +221,18 @@ }
+ static inline SurfaceFormat CairoContentToGfxFormat(cairo_content_t content) {
+   switch (content) {
+     case CAIRO_CONTENT_COLOR_ALPHA:
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++      return SurfaceFormat::A8R8G8B8;
++#else
+       return SurfaceFormat::A8R8G8B8_UINT32;
++#endif
+     case CAIRO_CONTENT_COLOR:
+       // BEWARE! format may be 565
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++      return SurfaceFormat::X8R8G8B8;
++#else
+       return SurfaceFormat::X8R8G8B8_UINT32;
++#endif
+     case CAIRO_CONTENT_ALPHA:
+       return SurfaceFormat::A8;
+   }
+@@ -233,9 +243,17 @@ }
+ static inline SurfaceFormat CairoFormatToGfxFormat(cairo_format_t format) {
+   switch (format) {
+     case CAIRO_FORMAT_ARGB32:
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++      return SurfaceFormat::A8R8G8B8;
++#else
+       return SurfaceFormat::A8R8G8B8_UINT32;
++#endif
+     case CAIRO_FORMAT_RGB24:
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++      return SurfaceFormat::X8R8G8B8;
++#else
+       return SurfaceFormat::X8R8G8B8_UINT32;
++#endif
+     case CAIRO_FORMAT_A8:
+       return SurfaceFormat::A8;
+     case CAIRO_FORMAT_RGB16_565:
+--- firefox-153.0/gfx/2d/SourceSurfaceCairo.cpp
++++ firefox-153.0/gfx/2d/SourceSurfaceCairo.cpp
+@@ -12,21 +12,6 @@ #include "cairo.h"
+ namespace mozilla {
+ namespace gfx {
+ 
+-static SurfaceFormat CairoFormatToSurfaceFormat(cairo_format_t format) {
+-  switch (format) {
+-    case CAIRO_FORMAT_ARGB32:
+-      return SurfaceFormat::B8G8R8A8;
+-    case CAIRO_FORMAT_RGB24:
+-      return SurfaceFormat::B8G8R8X8;
+-    case CAIRO_FORMAT_RGB16_565:
+-      return SurfaceFormat::R5G6B5_UINT16;
+-    case CAIRO_FORMAT_A8:
+-      return SurfaceFormat::A8;
+-    default:
+-      return SurfaceFormat::B8G8R8A8;
+-  }
+-}
+-
+ SourceSurfaceCairo::SourceSurfaceCairo(
+     cairo_surface_t* aSurface, const IntSize& aSize,
+     const SurfaceFormat& aFormat, DrawTargetCairo* aDrawTarget /* = nullptr */)
+@@ -115,7 +100,7 @@ return size;
+ }
+ 
+ SurfaceFormat DataSourceSurfaceCairo::GetFormat() const {
+-  return CairoFormatToSurfaceFormat(
++  return CairoFormatToGfxFormat(
+       cairo_image_surface_get_format(mImageSurface));
+ }
+ 
+--- firefox-153.0/gfx/thebes/gfx2DGlue.h
++++ firefox-153.0/gfx/thebes/gfx2DGlue.h
+@@ -67,8 +67,10 @@ }
+ inline gfxImageFormat SurfaceFormatToImageFormat(SurfaceFormat aFormat) {
+   switch (aFormat) {
+     case SurfaceFormat::B8G8R8A8:
++    case SurfaceFormat::A8R8G8B8:
+       return SurfaceFormat::A8R8G8B8_UINT32;
+     case SurfaceFormat::B8G8R8X8:
++    case SurfaceFormat::X8R8G8B8:
+       return SurfaceFormat::X8R8G8B8_UINT32;
+     case SurfaceFormat::R5G6B5_UINT16:
+       return SurfaceFormat::R5G6B5_UINT16;
+@@ -81,10 +83,17 @@ }
+ 
+ inline SurfaceFormat ImageFormatToSurfaceFormat(gfxImageFormat aFormat) {
+   switch (aFormat) {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++    case SurfaceFormat::A8R8G8B8_UINT32:
++      return SurfaceFormat::A8R8G8B8;
++    case SurfaceFormat::X8R8G8B8_UINT32:
++      return SurfaceFormat::X8R8G8B8;
++#else
+     case SurfaceFormat::A8R8G8B8_UINT32:
+       return SurfaceFormat::B8G8R8A8;
+     case SurfaceFormat::X8R8G8B8_UINT32:
+       return SurfaceFormat::B8G8R8X8;
++#endif
+     case SurfaceFormat::R5G6B5_UINT16:
+       return SurfaceFormat::R5G6B5_UINT16;
+     case SurfaceFormat::A8:
+@@ -99,11 +108,13 @@ inline gfxContentType ContentForFormat(c
+   switch (aFormat) {
+     case SurfaceFormat::R5G6B5_UINT16:
+     case SurfaceFormat::B8G8R8X8:
++    case SurfaceFormat::X8R8G8B8:
+     case SurfaceFormat::R8G8B8X8:
+       return gfxContentType::COLOR;
+     case SurfaceFormat::A8:
+       return gfxContentType::ALPHA;
+     case SurfaceFormat::B8G8R8A8:
++    case SurfaceFormat::A8R8G8B8:
+     case SurfaceFormat::R8G8B8A8:
+     default:
+       return gfxContentType::COLOR_ALPHA;
+--- firefox-153.0/gfx/thebes/gfxPlatform.cpp
++++ firefox-153.0/gfx/thebes/gfxPlatform.cpp
+@@ -2359,10 +2359,11 @@ }
+ 
+ RefPtr<mozilla::gfx::DrawTarget> gfxPlatform::ScreenReferenceDrawTarget() {
+   MOZ_ASSERT_IF(XRE_IsContentProcess(), NS_IsMainThread());
++  SurfaceFormat format = Optimal2DFormatForContent(gfxContentType::COLOR_ALPHA);
+   return (mScreenReferenceDrawTarget)
+              ? mScreenReferenceDrawTarget
+              : gPlatform->CreateOffscreenContentDrawTarget(
+-                   IntSize(1, 1), SurfaceFormat::B8G8R8A8, true);
++                  IntSize(1, 1), format, true);
+ }
+ 
+ /* static */ RefPtr<mozilla::gfx::DrawTarget>
+@@ -2376,8 +2377,13 @@ if (platformWorker) {
+     return platformWorker->ScreenReferenceDrawTarget();
+   }
+ 
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  return Factory::CreateDrawTarget(BackendType::CAIRO, IntSize(1, 1),
++                                   SurfaceFormat::A8R8G8B8);
++#else
+   return Factory::CreateDrawTarget(BackendType::SKIA, IntSize(1, 1),
+                                    SurfaceFormat::B8G8R8A8);
++#endif
+ }
+ 
+ mozilla::gfx::SurfaceFormat gfxPlatform::Optimal2DFormatForContent(
+@@ -2386,24 +2392,44 @@ switch (aContent) {
+     case gfxContentType::COLOR:
+       switch (GetOffscreenFormat()) {
+         case SurfaceFormat::A8R8G8B8_UINT32:
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++          return mozilla::gfx::SurfaceFormat::A8R8G8B8;
++#else
+           return mozilla::gfx::SurfaceFormat::B8G8R8A8;
++#endif
+         case SurfaceFormat::X8R8G8B8_UINT32:
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++          return mozilla::gfx::SurfaceFormat::X8R8G8B8;
++#else
+           return mozilla::gfx::SurfaceFormat::B8G8R8X8;
++#endif
+         case SurfaceFormat::R5G6B5_UINT16:
+           return mozilla::gfx::SurfaceFormat::R5G6B5_UINT16;
+         default:
+           MOZ_ASSERT_UNREACHABLE(
+               "unknown gfxImageFormat for "
+               "gfxContentType::COLOR");
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++          return mozilla::gfx::SurfaceFormat::A8R8G8B8;
++#else
+           return mozilla::gfx::SurfaceFormat::B8G8R8A8;
++#endif
+       }
+     case gfxContentType::ALPHA:
+       return mozilla::gfx::SurfaceFormat::A8;
+     case gfxContentType::COLOR_ALPHA:
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++      return mozilla::gfx::SurfaceFormat::A8R8G8B8;
++#else
+       return mozilla::gfx::SurfaceFormat::B8G8R8A8;
++#endif
+     default:
+       MOZ_ASSERT_UNREACHABLE("unknown gfxContentType");
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++      return mozilla::gfx::SurfaceFormat::A8R8G8B8;
++#else
+       return mozilla::gfx::SurfaceFormat::B8G8R8A8;
++#endif
+   }
+ }
+ 
+--- firefox-153.0/gfx/thebes/gfxUtils.cpp
++++ firefox-153.0/gfx/thebes/gfxUtils.cpp
+@@ -1000,6 +1000,55 @@ }
+   return colors[aFrameNumber % sNumFrameColors];
+ }
+ 
++static inline SurfaceFormat HostARGBSurfaceFormat() {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  return SurfaceFormat::A8R8G8B8;
++#else
++  return SurfaceFormat::B8G8R8A8;
++#endif
++}
++
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++static already_AddRefed<DataSourceSurface>
++CopySurfaceToHostARGBDataSourceSurface(SourceSurface* aSurface,
++                                       SurfaceFormat aHostARGBFormat) {
++  RefPtr<DataSourceSurface> source = aSurface->GetDataSurface();
++  if (!source) {
++    return nullptr;
++  }
++
++  RefPtr<DataSourceSurface> dest =
++      Factory::CreateDataSourceSurface(aSurface->GetSize(), aHostARGBFormat);
++  if (!dest) {
++    return nullptr;
++  }
++
++  DataSourceSurface::MappedSurface sourceMap;
++  if (!source->Map(DataSourceSurface::MapType::READ, &sourceMap)) {
++    return nullptr;
++  }
++
++  DataSourceSurface::MappedSurface destMap;
++  if (!dest->Map(DataSourceSurface::MapType::WRITE, &destMap)) {
++    source->Unmap();
++    return nullptr;
++  }
++
++  bool ok =
++      SwizzleData(sourceMap.mData, sourceMap.mStride, source->GetFormat(),
++                  destMap.mData, destMap.mStride, aHostARGBFormat,
++                  aSurface->GetSize());
++  dest->Unmap();
++  source->Unmap();
++
++  if (!ok) {
++    return nullptr;
++  }
++
++  return dest.forget();
++}
++#endif
++
+ // static
+ nsresult gfxUtils::EncodeSourceSurfaceAsStream(SourceSurface* aSurface,
+                                                const ImageType aImageType,
+@@ -1011,10 +1060,19 @@ return NS_ERROR_FAILURE;
+   }
+ 
+   RefPtr<DataSourceSurface> dataSurface;
+-  if (aSurface->GetFormat() != SurfaceFormat::B8G8R8A8) {
++  SurfaceFormat hostARGBFormat = HostARGBSurfaceFormat();
++  if (aSurface->GetFormat() != hostARGBFormat) {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++    dataSurface =
++        CopySurfaceToHostARGBDataSourceSurface(aSurface, hostARGBFormat);
++    if (!dataSurface) {
++#endif
+     // FIXME bug 995807 (B8G8R8X8), bug 831898 (R5G6B5)
+     dataSurface = gfxUtils::CopySurfaceToDataSourceSurfaceWithFormat(
+-        aSurface, SurfaceFormat::B8G8R8A8);
++        aSurface, hostARGBFormat);
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++    }
++#endif
+   } else {
+     dataSurface = aSurface->GetDataSurface();
+   }
+--- firefox-153.0/image/ClippedImage.cpp
++++ firefox-153.0/image/ClippedImage.cpp
+@@ -28,6 +28,16 @@ using std::max;
+ 
+ namespace image {
+ 
++static inline SurfaceFormat RasterFormatForClippedImageBackend(
++    BackendType aBackend) {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  if (aBackend == BackendType::CAIRO) {
++    return SurfaceFormat::A8R8G8B8;
++  }
++#endif
++  return SurfaceFormat::OS_RGBA;
++}
++
+ class ClippedImageCachedSurface {
+  public:
+   ClippedImageCachedSurface(already_AddRefed<SourceSurface> aSurface,
+@@ -256,9 +266,11 @@ if (!mCachedSurface ||
+       !mCachedSurface->Matches(aSize, aSVGContext, frameToDraw, aFlags) ||
+       mCachedSurface->NeedsRedraw()) {
+     // Create a surface to draw into.
++    SurfaceFormat format = RasterFormatForClippedImageBackend(
++        gfxPlatform::GetPlatform()->GetDefaultContentBackend());
+     RefPtr<DrawTarget> target =
+         gfxPlatform::GetPlatform()->CreateOffscreenContentDrawTarget(
+-            IntSize(aSize.width, aSize.height), SurfaceFormat::OS_RGBA);
++            IntSize(aSize.width, aSize.height), format);
+     if (!target || !target->IsValid()) {
+       NS_ERROR("Could not create a DrawTarget");
+       return std::make_pair(ImgDrawResult::TEMPORARY_ERROR,
+@@ -274,8 +286,8 @@ auto drawable = MakeRefPtr<gfxCallbackDr
+ 
+     // Actually draw. The callback will end up invoking DrawSingleTile.
+     gfxUtils::DrawPixelSnapped(&ctx, drawable, SizeDouble(aSize),
+-                               ImageRegion::Create(aSize),
+-                               SurfaceFormat::OS_RGBA, SamplingFilter::LINEAR,
++                               ImageRegion::Create(aSize), format,
++                               SamplingFilter::LINEAR,
+                                imgIContainer::FLAG_CLAMP);
+ 
+     // Cache the resulting surface.
+@@ -358,7 +370,7 @@ auto drawable = MakeRefPtr<gfxSurfaceDra
+ 
+     // Draw.
+     gfxUtils::DrawPixelSnapped(aContext, drawable, SizeDouble(aSize), aRegion,
+-                               SurfaceFormat::OS_RGBA, aSamplingFilter,
++                               surface->GetFormat(), aSamplingFilter,
+                                aOpacity);
+ 
+     return result;
+--- firefox-153.0/image/VectorImage.cpp
++++ firefox-153.0/image/VectorImage.cpp
+@@ -55,6 +55,24 @@ using namespace layers;
+ 
+ namespace image {
+ 
++static inline SurfaceFormat RasterFormatForVectorImage(BackendType aBackend) {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  if (aBackend == BackendType::CAIRO) {
++    // Use the explicit native-endian Cairo memory layout on big-endian
++    // platforms so later image code does not confuse it with BGRA aliases.
++    return SurfaceFormat::A8R8G8B8;
++  }
++#endif
++  return SurfaceFormat::OS_RGBA;
++}
++
++static inline SurfaceFormat RasterFormatForVectorContext(gfxContext* aContext) {
++  BackendType backend =
++      aContext ? aContext->GetDrawTarget()->GetBackendType()
++               : gfxPlatform::GetPlatform()->GetDefaultContentBackend();
++  return RasterFormatForVectorImage(backend);
++}
++
+ // Helper-class: SVGRootRenderingObserver
+ class SVGRootRenderingObserver final : public SVGRenderingObserver {
+  public:
+@@ -865,8 +883,8 @@ // drawing our gfxDrawable into it. (We
+     // scale here.)
+     auto frame = MakeNotNull<RefPtr<imgFrame>>();
+     nsresult rv = frame->InitWithDrawable(
+-        svgDrawable, params.size, SurfaceFormat::OS_RGBA, SamplingFilter::POINT,
+-        params.flags, backend);
++        svgDrawable, params.size, RasterFormatForVectorImage(backend),
++        SamplingFilter::POINT, params.flags, backend);
+ 
+     // If we couldn't create the frame, it was probably because it would end
+     // up way too big. Generally it also wouldn't fit in the cache, but the
+@@ -1331,8 +1349,8 @@ // Try to create an imgFrame, initializi
+   // our gfxDrawable into it. (We use FILTER_NEAREST since we never scale here.)
+   auto frame = MakeNotNull<RefPtr<imgFrame>>();
+   nsresult rv = frame->InitWithDrawable(
+-      aSVGDrawable, aParams.size, SurfaceFormat::OS_RGBA, SamplingFilter::POINT,
+-      aParams.flags, backend);
++      aSVGDrawable, aParams.size, RasterFormatForVectorImage(backend),
++      SamplingFilter::POINT, aParams.flags, backend);
+ 
+   // If we couldn't create the frame, it was probably because it would end
+   // up way too big. Generally it also wouldn't fit in the cache, but the prefs
+@@ -1414,10 +1432,11 @@ region.Scale(1.0 / scale.xScale, 1.0 / s
+   }
+ 
+   MOZ_ASSERT(aDrawable, "Should have a gfxDrawable by now");
++  SurfaceFormat format = RasterFormatForVectorContext(aParams.context);
+   gfxUtils::DrawPixelSnapped(aParams.context, aDrawable,
+-                             SizeDouble(aParams.size), region,
+-                             SurfaceFormat::OS_RGBA, aParams.samplingFilter,
+-                             aParams.flags, aParams.opacity);
++                             SizeDouble(aParams.size), region, format,
++                             aParams.samplingFilter, aParams.flags,
++                             aParams.opacity);
+ 
+   AutoProfilerImagePaintMarker PROFILER_RAII(this);
+ #ifdef DEBUG
+--- firefox-153.0/image/imgFrame.h
++++ firefox-153.0/image/imgFrame.h
+@@ -161,7 +161,7 @@ }
+   FrameTimeout GetTimeout() const { return mTimeout; }
+   BlendMethod GetBlendMethod() const { return mBlendMethod; }
+   DisposalMethod GetDisposalMethod() const { return mDisposalMethod; }
+-  bool FormatHasAlpha() const { return mFormat == SurfaceFormat::OS_RGBA; }
++  bool FormatHasAlpha() const { return !gfx::IsOpaque(mFormat); }
+ 
+   const IntRect& GetDirtyRect() const { return mDirtyRect; }
+   void SetDirtyRect(const IntRect& aDirtyRect) { mDirtyRect = aDirtyRect; }
+--- firefox-153.0/widget/gtk/WindowSurfaceX11.cpp
++++ firefox-153.0/widget/gtk/WindowSurfaceX11.cpp
+@@ -4,6 +4,7 @@ * License, v. 2.0. If a copy of the MPL
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ #include "WindowSurfaceX11.h"
++#include "mozilla/EndianUtils.h"
+ #include "gfxPlatform.h"
+ 
+ namespace mozilla::widget {
+@@ -23,13 +24,21 @@ switch (aDepth) {
+     case 32:
+       if (aVisual->red_mask == 0xff0000 && aVisual->green_mask == 0xff00 &&
+           aVisual->blue_mask == 0xff) {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++        return gfx::SurfaceFormat::A8R8G8B8;
++#else
+         return gfx::SurfaceFormat::B8G8R8A8;
++#endif
+       }
+       break;
+     case 24:
+       if (aVisual->red_mask == 0xff0000 && aVisual->green_mask == 0xff00 &&
+           aVisual->blue_mask == 0xff) {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++        return gfx::SurfaceFormat::X8R8G8B8;
++#else
+         return gfx::SurfaceFormat::B8G8R8X8;
++#endif
+       }
+       break;
+     case 16:
+--- firefox-153.0/widget/gtk/WindowSurfaceX11Image.cpp
++++ firefox-153.0/widget/gtk/WindowSurfaceX11Image.cpp
+@@ -5,6 +5,7 @@ * file, You can obtain one at http://moz
+ 
+ #include "WindowSurfaceX11Image.h"
+ 
++#include "mozilla/EndianUtils.h"
+ #include "mozilla/gfx/2D.h"
+ #include "mozilla/gfx/Tools.h"
+ #include "mozilla/gfx/gfxVars.h"
+@@ -20,7 +21,7 @@ using namespace mozilla::gfx;
+ 
+ // gfxImageSurface pixel format configuration.
+ #define SHAPED_IMAGE_SURFACE_BPP 4
+-#ifdef IS_BIG_ENDIAN
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+ #  define SHAPED_IMAGE_SURFACE_ALPHA_INDEX 0
+ #else
+ #  define SHAPED_IMAGE_SURFACE_ALPHA_INDEX 3
+--- firefox-153.0/widget/gtk/nsDragService.cpp
++++ firefox-153.0/widget/gtk/nsDragService.cpp
+@@ -29,6 +29,7 @@ #include <mutex>
+ #include <gtk/gtk.h>
+ #include "nsCRT.h"
+ #include "mozilla/BasicEvents.h"
++#include "mozilla/EndianUtils.h"
+ #include "mozilla/Services.h"
+ #include "mozilla/ClearOnShutdown.h"
+ #include "mozilla/PresShell.h"
+@@ -74,6 +75,14 @@ #define NS_DND_TMP_CLEANUP_TIMEOUT (1000
+ 
+ #define NS_SYSTEMINFO_CONTRACTID "@mozilla.org/system-info;1"
+ 
++static inline SurfaceFormat NativeCairoARGBFormat() {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  return SurfaceFormat::A8R8G8B8;
++#else
++  return SurfaceFormat::B8G8R8A8;
++#endif
++}
++
+ // This sets how opaque the drag image is
+ #define DRAG_IMAGE_ALPHA_LEVEL 0.5
+ 
+@@ -2305,7 +2314,7 @@ if (!surf) return false;
+   RefPtr<DrawTarget> dt = gfxPlatform::CreateDrawTargetForData(
+       cairo_image_surface_get_data(surf),
+       nsIntSize(dragRect.width, dragRect.height),
+-      cairo_image_surface_get_stride(surf), SurfaceFormat::B8G8R8A8);
++      cairo_image_surface_get_stride(surf), NativeCairoARGBFormat());
+   if (!dt) return false;
+ 
+   dt->ClearRect(Rect(0, 0, dragRect.width, dragRect.height));
+--- firefox-153.0/widget/gtk/nsImageToPixbuf.cpp
++++ firefox-153.0/widget/gtk/nsImageToPixbuf.cpp
+@@ -8,6 +8,7 @@ #include "nsImageToPixbuf.h"
+ 
+ #include "imgIContainer.h"
+ #include "mozilla/gfx/2D.h"
++#include "mozilla/EndianUtils.h"
+ #include "mozilla/RefPtr.h"
+ #include "GRefPtr.h"
+ #include "nsCOMPtr.h"
+@@ -21,6 +22,22 @@ // plus alpha/2 to round instead of trun
+   return (color * 255 + alpha / 2) / alpha;
+ }
+ 
++inline SurfaceFormat HostARGBSurfaceFormat() {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  return SurfaceFormat::A8R8G8B8;
++#else
++  return SurfaceFormat::B8G8R8A8;
++#endif
++}
++
++inline SurfaceFormat HostRGBXSurfaceFormat() {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  return SurfaceFormat::X8R8G8B8;
++#else
++  return SurfaceFormat::B8G8R8X8;
++#endif
++}
++
+ already_AddRefed<GdkPixbuf> nsImageToPixbuf::ImageToPixbuf(
+     imgIContainer* aImage, const mozilla::Maybe<nsIntSize>& aOverrideSize) {
+   RefPtr<SourceSurface> surface;
+@@ -78,10 +95,12 @@ RefPtr<DataSourceSurface> dataSurface;
+   DataSourceSurface::MappedSurface map;
+ 
+   SurfaceFormat sourceFormat = aSurface->GetFormat();
+-  if (MOZ_UNLIKELY(sourceFormat != SurfaceFormat::B8G8R8A8 &&
+-                   sourceFormat != SurfaceFormat::B8G8R8X8)) {
++  SurfaceFormat hostARGBFormat = HostARGBSurfaceFormat();
++  SurfaceFormat hostRGBXFormat = HostRGBXSurfaceFormat();
++  if (MOZ_UNLIKELY(sourceFormat != hostARGBFormat &&
++                   sourceFormat != hostRGBXFormat)) {
+     dataSurface = Factory::CreateDataSourceSurface(
+-        mozilla::gfx::IntSize(aWidth, aHeight), SurfaceFormat::B8G8R8A8);
++        mozilla::gfx::IntSize(aWidth, aHeight), hostARGBFormat);
+     if (NS_WARN_IF(!dataSurface)) {
+       return nullptr;
+     }
+@@ -124,7 +143,7 @@ guchar* destPixel = destPixels + row * d
+       uint32_t* srcPixel =
+           reinterpret_cast<uint32_t*>((srcData + row * srcStride + 4 * col));
+ 
+-      if (format == SurfaceFormat::B8G8R8A8) {
++      if (format == hostARGBFormat) {
+         const uint8_t a = (*srcPixel >> 24) & 0xFF;
+         const uint8_t r = unpremultiply((*srcPixel >> 16) & 0xFF, a);
+         const uint8_t g = unpremultiply((*srcPixel >> 8) & 0xFF, a);
+@@ -135,7 +154,7 @@ *destPixel++ = g;
+         *destPixel++ = b;
+         *destPixel++ = a;
+       } else {
+-        MOZ_ASSERT(format == SurfaceFormat::B8G8R8X8);
++        MOZ_ASSERT(format == hostRGBXFormat);
+ 
+         const uint8_t r = (*srcPixel >> 16) & 0xFF;
+         const uint8_t g = (*srcPixel >> 8) & 0xFF;
+--- firefox-153.0/widget/gtk/nsNativeThemeGTK.cpp
++++ firefox-153.0/widget/gtk/nsNativeThemeGTK.cpp
+@@ -10,6 +10,7 @@ #include "nsPresContext.h"
+ #include "GtkWidgets.h"
+ #include "nsIFrame.h"
+ 
++#include "mozilla/EndianUtils.h"
+ #include "gfxContext.h"
+ #include "mozilla/gfx/HelpersCairo.h"
+ #include "mozilla/WidgetUtilsGtk.h"
+@@ -21,6 +22,14 @@ using namespace mozilla;
+ using namespace mozilla::gfx;
+ using namespace mozilla::widget;
+ 
++static inline SurfaceFormat NativeCairoARGBFormat() {
++#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++  return SurfaceFormat::A8R8G8B8;
++#else
++  return SurfaceFormat::B8G8R8A8;
++#endif
++}
++
+ nsNativeThemeGTK::nsNativeThemeGTK() : Theme(ScrollbarStyle()) {}
+ 
+ nsNativeThemeGTK::~nsNativeThemeGTK() { GtkWidgets::Shutdown(); }
+@@ -51,7 +60,7 @@ }
+ 
+   auto surfaceRect = RoundedOut(rect * aScale);
+   RefPtr<DataSourceSurface> dataSurface = Factory::CreateDataSourceSurface(
+-      surfaceRect.Size().ToUnknownSize(), SurfaceFormat::B8G8R8A8,
++      surfaceRect.Size().ToUnknownSize(), NativeCairoARGBFormat(),
+       /* aZero = */ true);
+   if (NS_WARN_IF(!dataSurface)) {
+     return nullptr;
+--- firefox-153.0/widget/gtk/nsShmImage.cpp
++++ firefox-153.0/widget/gtk/nsShmImage.cpp
+@@ -6,6 +6,7 @@ * file, You can obtain one at http://moz
+ #include "nsShmImage.h"
+ 
+ #ifdef MOZ_HAVE_SHMIMAGE
++#  include "mozilla/EndianUtils.h"
+ #  include "mozilla/X11Util.h"
+ #  include "mozilla/PodOperations.h"
+ #  include "mozilla/gfx/gfxVars.h"
+@@ -160,7 +161,11 @@ switch (mDepth) {
+     case 32:
+       if (mVisual->red_mask == 0xff0000 && mVisual->green_mask == 0xff00 &&
+           mVisual->blue_mask == 0xff) {
++#  if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++        mFormat = SurfaceFormat::A8R8G8B8;
++#  else
+         mFormat = SurfaceFormat::B8G8R8A8;
++#  endif
+       }
+       break;
+     case 24:
+@@ -170,8 +175,12 @@ // Cairo/pixman lacks some fast paths fo
+       // just report it as BGRX directly in that case.
+       if (mVisual->red_mask == 0xff0000 && mVisual->green_mask == 0xff00 &&
+           mVisual->blue_mask == 0xff) {
++#  if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++        mFormat = SurfaceFormat::X8R8G8B8;
++#  else
+         mFormat = backend == BackendType::CAIRO ? SurfaceFormat::B8G8R8X8
+                                                 : SurfaceFormat::B8G8R8A8;
++#  endif
+       }
+       break;
+     case 16:

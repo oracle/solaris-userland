@@ -1,0 +1,16 @@
+Define Solaris' assembly guard while preprocessing the SPARC NSPR source.
+
+Solaris system assembly headers use _ASM, rather than GCC's __ASSEMBLER__,
+to hide C declarations and expose the ENTRY and SET_SIZE macros.
+
+--- firefox-153.0/config/external/nspr/pr/moz.build
++++ firefox-153.0/config/external/nspr/pr/moz.build
+@@ -73,7 +73,7 @@
+     elif CONFIG["TARGET_CPU"] == "sparc64":
+         # os_SunOS_sparcv9.s uses #include <sys/asm_linkage.h> and CPP
+         # macros (ENTRY/SET_SIZE); without preprocessing it won't build.
+-        ASFLAGS += ["-x", "assembler-with-cpp"]
++        ASFLAGS += ["-D_ASM", "-x", "assembler-with-cpp"]
+         SOURCES += ["/nsprpub/pr/src/md/unix/os_SunOS_sparcv9.s"]
+ elif CONFIG["OS_TARGET"] == "WINNT":
+     OS_LIBS += [

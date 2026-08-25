@@ -1,0 +1,1 @@
+desktop/thunderbird: rust/cbindgen

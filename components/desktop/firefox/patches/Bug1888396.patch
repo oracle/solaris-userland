@@ -1,7 +1,7 @@
 https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
 
---- firefox-140.1.0/gfx/skia/skia/src/core/SkBlitRow_D32.cpp
-+++ firefox-140.1.0/gfx/skia/skia/src/core/SkBlitRow_D32.cpp
+--- firefox-153.0/gfx/skia/skia/src/core/SkBlitRow_D32.cpp
++++ firefox-153.0/gfx/skia/skia/src/core/SkBlitRow_D32.cpp
 @@ -554,7 +554,7 @@ }
  void SkBlitRow::Color32(SkPMColor dst[], int count, SkPMColor color) {
      switch (SkGetPackedA32(color)) {
@@ -12,9 +12,9 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
 -    return SkOpts::blit_row_color32(dst, count, color);
 +    return SkOpts::blit_row_color32(dst, count, BE_CONVERT(color));
  }
---- firefox-140.1.0/gfx/skia/skia/src/core/SkBlitter_ARGB32.cpp
-+++ firefox-140.1.0/gfx/skia/skia/src/core/SkBlitter_ARGB32.cpp
-@@ -1495,17 +1495,17 @@ void SkARGB32_Blitter::blitAntiH2(int x,
+--- firefox-153.0/gfx/skia/skia/src/core/SkBlitter_ARGB32.cpp
++++ firefox-153.0/gfx/skia/skia/src/core/SkBlitter_ARGB32.cpp
+@@ -1497,17 +1497,17 @@ void SkARGB32_Blitter::blitAntiH2(int x,
      uint32_t* device = fDevice.writable_addr32(x, y);
      SkDEBUGCODE((void)fDevice.writable_addr32(x + 1, y);)
  
@@ -36,7 +36,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
  }
  
  //////////////////////////////////////////////////////////////////////////////////////
-@@ -1608,7 +1608,7 @@ return;
+@@ -1610,7 +1610,7 @@ return;
          }
          SkAlpha aa = antialias[0];
          if (aa == 255) {
@@ -45,7 +45,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
          } else if (aa > 0) {
              SkPMColor sc = SkAlphaMulQ(fPMColor, SkAlpha255To256(aa));
              SkBlitRow::Color32(device, count, sc);
-@@ -1623,17 +1623,17 @@ void SkARGB32_Opaque_Blitter::blitAntiH2
+@@ -1625,17 +1625,17 @@ void SkARGB32_Opaque_Blitter::blitAntiH2
      uint32_t* device = fDevice.writable_addr32(x, y);
      SkDEBUGCODE((void)fDevice.writable_addr32(x + 1, y);)
  
@@ -66,8 +66,8 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
 +    device[0] = BE_CONVERT(SkFastFourByteInterp(fPMColor, BE_CONVERT(device[0]), a1));
  }
  
- ///////////////////////////////////////////////////////////////////////////////
-@@ -1653,7 +1653,7 @@ }
+ std::optional<SkBlitter::DirectBlit> SkARGB32_Opaque_Blitter::canDirectBlit() {
+@@ -1659,7 +1659,7 @@ }
      const unsigned dst_scale = SkAlpha255To256(255 - SkGetPackedA32(color));
      const size_t rowBytes = fDevice.rowBytes();
      while (--height >= 0) {
@@ -76,7 +76,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
          device = (uint32_t*)((char*)device + rowBytes);
      }
  }
-@@ -1669,7 +1669,7 @@ uint32_t* device = fDevice.writable_addr
+@@ -1675,7 +1675,7 @@ uint32_t* device = fDevice.writable_addr
      const size_t rowBytes = fDevice.rowBytes();
  
      if (SkGetPackedA32(fPMColor) == 0xFF) {
@@ -85,7 +85,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
      } else {
          while (height --> 0) {
              SkBlitRow::Color32(device, width, fPMColor);
-@@ -1698,7 +1698,7 @@ }
+@@ -1704,7 +1704,7 @@ }
          unsigned aa = antialias[0];
          if (aa) {
              if (aa == 255) {
@@ -94,8 +94,8 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1888396
              } else {
                  const SkPMColor src = aa << SK_A32_SHIFT;
                  const unsigned dst_scale = SkAlpha255To256(255 - aa);
---- firefox-140.1.0/gfx/skia/skia/src/core/SkColorData.h
-+++ firefox-140.1.0/gfx/skia/skia/src/core/SkColorData.h
+--- firefox-153.0/gfx/skia/skia/src/core/SkColorData.h
++++ firefox-153.0/gfx/skia/skia/src/core/SkColorData.h
 @@ -18,6 +18,13 @@ #include "src/core/SkColorPriv.h"
  
  #include <cstdint>

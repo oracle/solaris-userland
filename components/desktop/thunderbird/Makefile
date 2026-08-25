@@ -33,15 +33,15 @@ include ../../../make-rules/shared-macros.mk
 # This component does not fully specify dependencies of shared objects
 LD_SHARED_OPTIONS_Z_DEFS=
 
-ESR = esr
+ESR =			esr
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	140.12.0
-COMPONENT_BAID =	404752
+COMPONENT_VERSION =	153.0
+COMPONENT_BAID =	426307
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:e857a1f81151fc3c4b7be72a15120f2d9cf0d5185d6d3612997f8b081bf8eda8
+    sha256:f11f28fb75d23460432ad5119b808d1df8cacf98ae09c443e2ae68afb28e2f8f
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -58,7 +58,7 @@ COMPONENT_ANITYA_ID =	4967
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:a12a6160145b9950aae961eb078719956e4e34e5e29ee499b4df4ea8ed481bb9
+    sha256:ee75f8f7a0b5b8f1cb1982fd6d6cf8578f163829b683209cad5ae152f852de6b
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
@@ -111,7 +111,21 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # /usr/gnu/bin needed to pick up the GNU version of tail and readelf.
 # /usr/sbin needed for dtrace.
-PATH = $(EXTPATH):$(COMPONENT_DIR)/wrapper-node:/usr/gnu/bin:/usr/bin:/usr/sbin
+# Temporarily use the cbindgen built in this workspace until version 0.29.4
+# is installed on the build systems.
+CBINDGEN_PATH = $(WS_COMPONENTS)/rust/cbindgen/build/$(MACH64)/target/release
+CBINDGEN = $(CBINDGEN_PATH)/cbindgen
+CBINDGEN_VERSION = 0.29.4
+PATH = $(CBINDGEN_PATH):$(EXTPATH):$(COMPONENT_DIR)/wrapper-node:/usr/gnu/bin:/usr/bin:/usr/sbin
+CONFIGURE_ENV += CBINDGEN="$(CBINDGEN)"
+
+COMPONENT_PRE_CONFIGURE_ACTION += \
+	if [ ! -x "$(CBINDGEN)" ] || \
+	    [ "$$($(CBINDGEN) --version 2>/dev/null)" != \
+	    "cbindgen $(CBINDGEN_VERSION)" ]; then \
+		$(GMAKE) -C $(WS_COMPONENTS)/rust/cbindgen install ; \
+	fi ; \
+	test "$$($(CBINDGEN) --version)" = "cbindgen $(CBINDGEN_VERSION)" ;
 
 MOZCONFIG = $(SOURCE_DIR)/mozconfig
 
@@ -214,7 +228,7 @@ download-xpis:
 license: install
 	@echo "regenerating license text"
 	unzip -c $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/omni.ja chrome/messenger/content/messenger/license.html \
-	    | LC_ALL=en_US.UTF-8 lynx --display_charset=utf-8 -stdin --dump -nolist \
+	    | LC_ALL=en_US.UTF-8 lynx --display_charset=utf-8 -width=120 -stdin --dump -nolist \
 	    | /usr/gnu/bin/sed '/Return to top\.$$/{d;}' > $(COMPONENT_NAME).license
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
@@ -261,4 +275,5 @@ REQUIRED_PACKAGES += system/linker
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxext
+REQUIRED_PACKAGES += x11/library/libxfixes
 REQUIRED_PACKAGES += x11/library/libxrandr
