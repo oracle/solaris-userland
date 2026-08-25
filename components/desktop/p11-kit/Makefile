@@ -31,16 +31,17 @@ COMPONENT_MAKE_JOBS=1
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		p11-kit
-COMPONENT_VERSION=	0.24.1
+COMPONENT_VERSION=	0.26.5
 COMPONENT_PROJECT_URL=	https://p11-glue.github.io/p11-glue/p11-kit.html
-COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
+COMPONENT_ARCHIVE=	p11-kit-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:27f3c23531b24a2672ab198a3118f4f399d3a1faa8697924cc8a1065a17ead25
-COMPONENT_ARCHIVE_URL=	https://github.com/p11-glue/p11-kit/archive/$(COMPONENT_ARCHIVE)
+    sha256:f2cc09111e44bf3fea58f023180b33acea90aa82d042d6fbb623fbc5ba033bb7
+COMPONENT_ARCHIVE_URL=	https://github.com/p11-glue/p11-kit/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	2582
 
-COMPONENT_BAID=		135546
+COMPONENT_BAID=		428479
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -75,6 +76,12 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/ERROR:/p" '
 # Avoid failures for users using csh or tcsh as their shell
 COMPONENT_TEST_ENV += SHELL=/bin/sh
+# Keep test temporary files in the workspace and Unix socket paths short.
+COMPONENT_TEST_ENV += TMPDIR=..
+# Build workspaces cannot reliably exercise upstream's set-id tests.
+COMPONENT_TEST_ENV += FAKED_MODE=1
+# Some tests require GNU utilities.
+COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CBE_PACKAGES += developer/documentation-tool/gtk-doc
 CBE_PACKAGES += library/libxslt

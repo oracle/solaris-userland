@@ -1,0 +1,67 @@
+Preserve the caller's tool ordering when adding exec_prefix to PATH, and use
+the Solaris procfs cwd alias for the compiled server test's Unix socket.  The
+shell tests require GNU tool options, while the RPC client requires an absolute
+socket path even when the test directory is workspace-local and relative.
+Absolute BOB workspace paths can exceed the Solaris AF_UNIX sun_path limit once
+the server appends its socket suffix.  /proc/self/path/cwd provides a short
+absolute alias for that same relative test directory, satisfying the RPC client
+without moving test data outside the workspace.
+
+This is test-only and does not change the delivered binaries.
+
+--- a/common/test-init.sh.in
++++ b/common/test-init.sh.in
+@@ -83,7 +83,7 @@ trap teardown_dirty EXIT
+ 			trap "teardown_dirty; exit 127" INT TERM
+ 			TD=""
+ 
+-			PATH="$exec_prefix/bin:$PATH"
++			PATH="$PATH:$exec_prefix/bin"
+ 			export PATH
+ 
+ 			PKG_CONFIG_PATH="$libdir/pkgconfig:$datadir/pkgconfig"
+--- a/p11-kit/test-server.c
++++ b/p11-kit/test-server.c
+@@ -59,6 +59,7 @@ struct {
+ 
+ struct {
+ 	char *directory;
++	char *runtime_directory;
+ 	char *socket_path;
+ 	char *user_config;
+ 	char *user_modules;
+@@ -97,7 +98,16 @@ setup_server (void *arg)
+ 	}
+ 
+ 	test.directory = p11_test_directory ("p11-test-server");
+-	if (asprintf (&path, "%s/p11-kit", test.directory) < 0)
++#ifdef __sun
++	if (asprintf (&test.runtime_directory,
++	              "/proc/self/path/cwd/%s", test.directory) < 0)
++		assert_not_reached ();
++#else
++	test.runtime_directory = strdup (test.directory);
++	if (!test.runtime_directory)
++		assert_not_reached ();
++#endif
++	if (asprintf (&path, "%s/p11-kit", test.runtime_directory) < 0)
+ 		assert_not_reached ();
+ 	if (mkdir (path, 0700) < 0)
+ 		assert_not_reached ();
+@@ -186,6 +196,7 @@ teardown_server (void *unused)
+ 
+ 	p11_test_directory_delete (test.directory);
+ 	free (test.directory);
++	free (test.runtime_directory);
+ 	free (test.socket_path);
+ 	free (test.user_config);
+ 	free (test.user_modules);
+@@ -216,7 +227,7 @@ test_initialize_no_address (void *unused)
+ 	CK_RV rv;
+ 
+ 	unsetenv ("P11_KIT_SERVER_ADDRESS");
+-	setenv ("XDG_RUNTIME_DIR", test.directory, 1);
++	setenv ("XDG_RUNTIME_DIR", test.runtime_directory, 1);
+ 
+ 	module = p11_kit_module_load (P11_MODULE_PATH "/p11-kit-client" SHLEXT, 0);
+ 	assert (module != NULL);
