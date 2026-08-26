@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -28,13 +28,15 @@
 set name=pkg.fmri \
     value=pkg:/desktop/archive-manager/file-roller@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="A tool to create and modify archives"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=$(COMPONENT_NAME)
 set name=info.classification \
     value=org.opensolaris.category.2008:Applications/Accessories
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=LSARC/2001/201 value=PSARC/2016/375
+set name=org.opensolaris.arc-caseid value=LSARC/2001/201 value=PSARC/2016/375 \
+    value=PSARC/2026/076
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/file-roller
 file path=usr/lib/$(MACH64)/file-roller/isoinfo.sh mode=0555
@@ -43,6 +45,11 @@ file path=usr/lib/$(MACH64)/nautilus/extensions-3.0/libnautilus-fileroller.so
 file path=usr/share/applications/org.gnome.FileRoller.desktop
 file path=usr/share/dbus-1/services/org.gnome.FileRoller.ArchiveManager1.service
 file path=usr/share/dbus-1/services/org.gnome.FileRoller.service
+file release-notes/file-roller.txt \
+    path=usr/share/doc/release-notes/file-roller.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/file-roller/packages.match
 file path=usr/share/glib-2.0/schemas/org.gnome.FileRoller.gschema.xml
 file path=usr/share/help/C/file-roller/archive-create.page

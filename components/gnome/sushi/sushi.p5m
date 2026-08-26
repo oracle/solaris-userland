@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -28,19 +28,24 @@
 set name=pkg.fmri \
     value=pkg:/library/gnome/sushi@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="The GNOME file previewer for Nautilus"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=$(COMPONENT_NAME)
 set name=info.classification \
     value="org.opensolaris.category.2008:Desktop (GNOME)/File Managers"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2016/375
+set name=org.opensolaris.arc-caseid value=PSARC/2016/375 value=PSARC/2026/076
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/sushi
 file path=usr/lib/$(MACH64)/sushi/girepository-1.0/Sushi-1.0.typelib
 file path=usr/lib/$(MACH64)/sushi/libsushi-1.0.so
 file path=usr/lib/org.gnome.NautilusPreviewer mode=0555
 file path=usr/share/dbus-1/services/org.gnome.NautilusPreviewer.service
+file release-notes/sushi.txt path=usr/share/doc/release-notes/sushi.txt \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/locale/af/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/an/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/ar/LC_MESSAGES/sushi.mo
