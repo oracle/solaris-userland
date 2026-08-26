@@ -1,0 +1,35 @@
+Allow Solaris to one of the sendfile implementations, which
+fixes the zero copy method of sending data.
+
+This was offered upstream:
+https://github.com/esnet/iperf/pull/2071
+
+--- iperf-3.21/src/net.c
++++ iperf-3.21/src/net.c
+@@ -43,7 +43,7 @@
+ #endif
+ 
+ #ifdef HAVE_SENDFILE
+-#ifdef linux
++#if defined(linux) || defined(__sun)
+ #include <sys/sendfile.h>
+ #else
+ #ifdef __FreeBSD__
+@@ -784,7 +784,7 @@ Nsendfile(int fromfd, int tofd, const ch
+     nleft = count;
+     while (nleft > 0) {
+ 	offset = count - nleft;
+-#ifdef linux
++#if defined(linux) || defined(__sun)
+ 	r = sendfile(tofd, fromfd, &offset, nleft);
+ 	if (r > 0)
+ 	    nleft -= r;
+@@ -820,7 +820,7 @@ Nsendfile(int fromfd, int tofd, const ch
+ 		return NET_HARDERROR;
+ 	    }
+ 	}
+-#ifdef linux
++#if defined(linux) || defined(__sun)
+ 	else if (r == 0)
+ 	    return NET_SOFTERROR;
+ #endif
