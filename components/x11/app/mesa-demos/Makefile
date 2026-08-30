@@ -27,23 +27,33 @@ BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mesa-demos
-COMPONENT_VERSION=	8.5.0
+COMPONENT_VERSION=	9.0.0
 COMPONENT_PROJECT_URL=	https://mesa3d.org/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
-COMPONENT_ARCHIVE_URL=  https://mesa.freedesktop.org/archive/demos/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
-#COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+COMPONENT_ARCHIVE_URL=  https://mesa.freedesktop.org/archive/demos/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ARCHIVE_HASH= \
-	sha256:cea2df0a80f09a30f635c4eb1a672bf90c5ddee0b8e77f4d70041668ef71aac1
+	sha256:3046a3d26a7b051af7ebdd257a5f23bfeb160cad6ed952329cdff1e9f1ed496b
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	16781
 
-COMPONENT_BAID=		139143
+COMPONENT_BAID=		418363
 
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+CPPFLAGS += -D__EXTENSIONS__
+
+# We just build and deliver glxinfo and glxgears
+CONFIGURE_OPTIONS += -Dx11=enabled
+CONFIGURE_OPTIONS += -Degl=disabled
+CONFIGURE_OPTIONS += -Dglut=disabled
+CONFIGURE_OPTIONS += -Dosmesa=disabled
+CONFIGURE_OPTIONS += -Dlibdrm=disabled
+CONFIGURE_OPTIONS += -Dvulkan=disabled
+CONFIGURE_OPTIONS += -Dwith-system-data-files=false
 
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc

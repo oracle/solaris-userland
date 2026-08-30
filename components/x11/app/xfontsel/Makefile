@@ -23,29 +23,21 @@
 # Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64
+BUILD_BITS =		64
+BUILD_STYLE=		meson
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xfontsel
-COMPONENT_VERSION=	1.1.1
+COMPONENT_VERSION=	1.1.2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7a4b86658a7701253ed0fe8a66471e54e4cacbba66d7278f1759d3b3a33a02c9
+	sha256:78ff018757c7b22137cf5d3526ef5e9388bc0cdead1f00daf2c898e2e274553f
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15023
-COMPONENT_BAID=		173698
-
-PKG_PROTO_DIRS += $(BUILD_DIR_64)
+COMPONENT_BAID=		427675
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
-
-COMPONENT_POST_BUILD_ACTION = \
-	(cd $(SOURCE_DIR); xgettext -n -d xfontsel -p $(BUILD_DIR_64) *.c) ;
-
-CBE_PACKAGES += system/library/fontconfig
-CBE_PACKAGES += x11/library/libxft
-CBE_PACKAGES += x11/library/libxrender
 
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc

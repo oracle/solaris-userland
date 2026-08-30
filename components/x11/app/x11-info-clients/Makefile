@@ -23,7 +23,8 @@
 # Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64
+BUILD_BITS =		64
+BUILD_STYLE =		meson
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xdpyinfo
@@ -42,40 +43,39 @@ COMPONENT_ANITYA_ID_1=	15027
 COMPONENT_BAID_1=	342696
 
 COMPONENT_NAME_2=       xlsclients
-COMPONENT_VERSION_2=    1.1.5
+COMPONENT_VERSION_2=    1.1.6
 COMPONENT_ARCHIVE_HASH_2=       \
-    sha256:68baee57e70250ac4a7759fb78221831f97d88bc8e51dcc2e64eb3f8ca56bae3
+    sha256:909810a3fdbd01d84747907f2c0cc32ee732e77afc88cb310abb9d155b2a0807
 COMPONENT_ANITYA_ID_2=	14989
-COMPONENT_BAID_2=	139175
+COMPONENT_BAID_2=	425716
 
 COMPONENT_NAME_3=       xwininfo
-COMPONENT_VERSION_3=    1.1.6
+COMPONENT_VERSION_3=    1.1.7
 COMPONENT_ARCHIVE_HASH_3=       \
-    sha256:3518897c17448df9ba99ad6d9bb1ca0f17bc0ed7c0fd61281b34ceed29a9253f
+    sha256:bee14d594cc86cc59aae1015c1b452a71bf60c304131e2716ca1cf0df733b4ac
 COMPONENT_ANITYA_ID_3=	14949
-COMPONENT_BAID_3=	150808
+COMPONENT_BAID_3=	425717
 
 COMPONENT_NAME_4=       xlsfonts
-COMPONENT_VERSION_4=    1.0.8
+COMPONENT_VERSION_4=    1.0.9
 COMPONENT_ARCHIVE_HASH_4=       \
-    sha256:807f909eace684b866fc63b3e962729c120822a6c96e051ff51cf350b3ffb6cd
-
+    sha256:a6a2e291801458d92510263b175d16f98024dc3816ebddbde79b5009f6c3b065
 COMPONENT_ANITYA_ID_4=	14964
-COMPONENT_BAID_4=	174207
+COMPONENT_BAID_4=	425719
 
 COMPONENT_NAME_5=       xvinfo
-COMPONENT_VERSION_5=    1.1.5
+COMPONENT_VERSION_5=    1.1.6
 COMPONENT_ARCHIVE_HASH_5=       \
-    sha256:3ede71ecb26d9614ccbc6916720285e95a2c7e0c5e19b8570eaaf72ad7c5c404
+    sha256:a436945e6a4ab70590358eec2b85d26970f7de480d27e8a25af8fe8421e88ae2
 COMPONENT_ANITYA_ID_5=	14951
-COMPONENT_BAID_5=	139176
+COMPONENT_BAID_5=	426152
 
 COMPONENT_NAME_6=       xlsatoms
-COMPONENT_VERSION_6=    1.1.4
+COMPONENT_VERSION_6=    1.1.5
 COMPONENT_ARCHIVE_HASH_6=       \
-    sha256:f4bfa15f56c066d326a5d5b292646708f25b9247506840b9047cd2687dcc71b7
+    sha256:9ac9400328fbeffe15c9d94a90dedb90d09dcaa9d51482efabc55b33a736e317
 COMPONENT_ANITYA_ID_6=	14990
-COMPONENT_BAID_6=	139177
+COMPONENT_BAID_6=	426153
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -103,12 +103,11 @@ $(foreach n, $(LIST), \
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-# Disable support for DMX & xf86misc in xdpyinfo, since they've been EOF'ed
-CONFIGURE_OPTIONS += --without-dmx
-CONFIGURE_OPTIONS += --without-xf86misc
+# Enable xcb optional packages for xwininfo
+$(BUILD_DIR_3)/.configured: CONFIGURE_OPTIONS += -Dxcb-errors=enabled
+$(BUILD_DIR_3)/.configured: CONFIGURE_OPTIONS += -Dxcb-icccm=enabled
 
 CBE_PACKAGES += x11/header/x11-protocols
-CBE_PACKAGES += x11/library/xcb-util
 
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc
@@ -118,8 +117,10 @@ REQUIRED_PACKAGES += x11/library/libxcomposite
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxi
 REQUIRED_PACKAGES += x11/library/libxinerama
+REQUIRED_PACKAGES += x11/library/libxpresent
 REQUIRED_PACKAGES += x11/library/libxrender
 REQUIRED_PACKAGES += x11/library/libxtst
 REQUIRED_PACKAGES += x11/library/libxv
 REQUIRED_PACKAGES += x11/library/libxxf86vm
 REQUIRED_PACKAGES += x11/library/mesa
+REQUIRED_PACKAGES += x11/library/xcb-util

@@ -23,7 +23,8 @@
 # Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64
+BUILD_BITS =		64
+BUILD_STYLE=		meson
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sessreg
@@ -37,6 +38,9 @@ COMPONENT_BAID=		342699
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+# Assumes GNU sed is first in $PATH.
+CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CBE_PACKAGES += x11/header/x11-protocols
 

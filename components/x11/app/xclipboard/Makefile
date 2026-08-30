@@ -23,16 +23,17 @@
 # Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64
+BUILD_BITS =		64
+BUILD_STYLE=		meson
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xclipboard
-COMPONENT_VERSION=	1.1.5
+COMPONENT_VERSION=	1.1.6
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8e47a4e18a88d47b14e8eb61a5f298687624a38f9decee9988d8b51a20514c45
+	sha256:d7c7a74ed0a4c8983b7dd47301a91c3da48e1027e9338705cad5be8d15c0d1f1
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15033
-COMPONENT_BAID=		180006
+COMPONENT_BAID=		427537
 
 TEST_TARGET = $(NO_TESTS)
 

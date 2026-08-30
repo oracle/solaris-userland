@@ -23,16 +23,17 @@
 # Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64
+BUILD_BITS =		64
+BUILD_STYLE=		meson
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xclock
-COMPONENT_VERSION=	1.1.1
+COMPONENT_VERSION=	1.2.1
 COMPONENT_ARCHIVE_HASH= \
-	sha256:df7ceabf8f07044a2fde4924d794554996811640a45de40cb12c2cf1f90f742c
+	sha256:e326cac20f7ad2af5412b9c4b70b1c3d392e08cd3cc6246e0a77b7c3935a4851
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15032
-COMPONENT_BAID=		122713
+COMPONENT_BAID=		427538
 
 TEST_TARGET = $(NO_TESTS)
 

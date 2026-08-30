@@ -23,16 +23,17 @@
 # Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            NO_ARCH
+BUILD_BITS =		NO_ARCH
+BUILD_STYLE=		meson
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xbitmaps
-COMPONENT_VERSION=	1.1.3
+COMPONENT_VERSION=	1.1.4
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ad6cad54887832a17d86c2ccfc5e52a1dfab090f8307b152c78b0e1529cd0f7a
+	sha256:895722f136e21e728c52f2d99fd2dae95018b9ddad1bac1f29d61bcd6593721d
 COMPONENT_BUGDB=        x11/other
 COMPONENT_ANITYA_ID=	13645
-COMPONENT_BAID=		147487
+COMPONENT_BAID=		428107
 
 TEST_TARGET = $(NO_TESTS)
 

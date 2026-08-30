@@ -23,16 +23,17 @@
 # Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64
+BUILD_BITS =		64
+BUILD_STYLE=		meson
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		constype
-COMPONENT_VERSION=	1.0.5
+COMPONENT_VERSION=	1.0.6
 COMPONENT_ARCHIVE_HASH= \
-	sha256:82d61d468214aed1a087207e6a8b6c6d35a1807345a51bf12a45e68e11a9ee74
+	sha256:4ce58aa9cfec80b0d119b031899a55cd51afc7aa05fa8e56e527e2c02ebad9d7
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	17147
-COMPONENT_BAID=		139146
+COMPONENT_BAID=		418355
 
 TEST_TARGET = $(NO_TESTS)
 
