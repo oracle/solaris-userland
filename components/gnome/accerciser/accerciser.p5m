@@ -20,14 +20,15 @@
 #
 
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
-    default mangler.man.stability "pass-through volatile">
+    default mangler.man.stability "obsolete pass-through volatile">
 set name=pkg.fmri \
     value=pkg:/gnome/accessibility/accerciser@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Interactive Python Accessibility Explorer"
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="Accerciser Interactive Python Accessibility Explorer"
@@ -35,7 +36,7 @@ set name=info.classification \
     value="org.opensolaris.category.2008:Applications/Universal Access"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2016/480
+set name=org.opensolaris.arc-caseid value=PSARC/2016/480 value=PSARC/2026/075
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/accerciser
 file path=usr/lib/python$(PYVER)/vendor-packages/accerciser/__init__.py
@@ -148,6 +149,11 @@ file path=usr/share/accerciser/plugins/quick_select.py
 file path=usr/share/accerciser/plugins/validate.py
 file path=usr/share/accerciser/plugins/validate.ui
 file path=usr/share/applications/accerciser.desktop
+file release-notes/accerciser.txt \
+    path=usr/share/doc/release-notes/accerciser.txt mode=0444 \
+    must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)-AUTO_FMRI \
+    release-note=feature/pkg/self@0
 file path=usr/share/glib-2.0/schemas/org.a11y.Accerciser.gschema.xml
 file path=usr/share/help/C/accerciser/api_browser_plugin.page
 file path=usr/share/help/C/accerciser/desktop_tree_view.page
