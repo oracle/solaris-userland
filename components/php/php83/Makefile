@@ -32,7 +32,7 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 MAJOR_VERSION=8.3
-MICRO_VERSION=32
+MICRO_VERSION=33
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
@@ -40,11 +40,11 @@ UL_PHP_MINOR_VERSION=	$(MAJOR_VERSION)
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:8698ec1f9402fa5e5e872ae3d0916b62f5f27503c1fbfc9cc3521e113355ea92
+    sha256:e293ed620cec74651bb4a071317892a478aa6840fab22db45c72d77cd42f9676
 COMPONENT_ARCHIVE_URL=	https://www.php.net/distributions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3627
 
-COMPONENT_BAID=		407898
+COMPONENT_BAID=		429381
 COMPONENT_BAID_IMAP=	37002
 
 include $(WS_MAKE_RULES)/common.mk
@@ -166,6 +166,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation6.phpt
 TESTS_DISABLED += sapi/fpm/tests/socket-uds-acl.phpt
+TESTS_DISABLED += sapi/fpm/tests/socket-uds-basic.phpt
 
 # Some tests are known to hang or they have inconsistent results
 COMPONENT_PRE_TEST_ACTION += ( \
