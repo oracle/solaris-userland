@@ -218,7 +218,7 @@ PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gccgo
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gdc
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gfortran
 
-CBE_PACKAGES += developer/gcc/gcc-gnat-15
+CBE_PACKAGES += developer/gcc/gcc-gnat-$(GCC_MAJOR_VERSION)
 CBE_PACKAGES += developer/test/dejagnu
 CBE_PACKAGES += runtime/tcl-8
 
