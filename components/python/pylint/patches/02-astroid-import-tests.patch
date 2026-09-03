@@ -1,0 +1,94 @@
+Backported from upstream:
+https://github.com/pylint-dev/pylint/pull/10896
+
+From a689076815a4c99a7c62f8d297474cdcd14ed66e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Dani=C3=ABl=20van=20Noord?=
+ <13665637+DanielNoord@users.noreply.github.com>
+Date: Sat, 7 Mar 2026 21:53:10 +0100
+Subject: Don't use astroid in import tests
+
+--- pylint-4.0.7/tests/functional/d/disable_wrong_import_order.py
++++ pylint-4.0.7/tests/functional/d/disable_wrong_import_order.py
+@@ -7,5 +7,5 @@ from first_party.foo import bar # pylint
+ import logging
+ import os.path
+ import sys
+-from astroid import are_exclusive
++from pytest import mark
+ from first_party.bar import foo # [ungrouped-imports]
+--- pylint-4.0.7/tests/functional/ext/private_import/private_import.py
++++ pylint-4.0.7/tests/functional/ext/private_import/private_import.py
+@@ -31,7 +31,7 @@
+ from private_import import _private  # pylint: disable=import-self
+ from private_import.other_file import _private
+ from . import _private
+-from astroid import _private  # [import-private-name]
++from pytest import _private  # [import-private-name]
+ from sys import _private  # [import-private-name]
+ 
+ # Ignore typecheck
+--- pylint-4.0.7/tests/functional/ext/private_import/private_import.txt
++++ pylint-4.0.7/tests/functional/ext/private_import/private_import.txt
+@@ -7,7 +7,7 @@ import-private-name:12:0:12:28::Imported private object (_d):HIGH
+ import-private-name:14:0:14:13::Imported private module (_house):HIGH
+ import-private-name:15:0:15:29::Imported private modules (_house, _chair, _stair):HIGH
+ import-private-name:16:0:16:28::Imported private modules (_chair, _stair):HIGH
+-import-private-name:34:0:34:28::Imported private object (_private):HIGH
++import-private-name:34:0:34:27::Imported private object (_private):HIGH
+ import-private-name:35:0:35:24::Imported private object (_private):HIGH
+ import-private-name:86:0:86:57::Imported private module (_TypeContainerExtra2):HIGH
+ import-private-name:91:0:91:22::Imported private module (_private_module):HIGH
+--- pylint-4.0.7/tests/functional/u/ungrouped_imports_isort_compatible.py
++++ pylint-4.0.7/tests/functional/u/ungrouped_imports_isort_compatible.py
+@@ -1,6 +1,5 @@
+ """Checks import order rule with imports that isort could generate"""
+ # pylint: disable=unused-import
+-import astroid
+ import isort
+-from astroid import are_exclusive, decorators
+-from astroid.modutils import get_module_part, is_standard_module
++import pytest
++from pytest import mark
+--- pylint-4.0.7/tests/functional/w/wrong_import_order.py
++++ pylint-4.0.7/tests/functional/w/wrong_import_order.py
+@@ -10,14 +10,14 @@
+ 
+ import six
+ import os.path  # [wrong-import-order]
+-from astroid import are_exclusive
++from pytest import mark
+ import sys  # [wrong-import-order]
+ import datetime  # [wrong-import-order]
+ import unused_import
+ from .package import Class
+ import totally_missing  # [wrong-import-order]
+ from . import package
+-import astroid  # [wrong-import-order]
++import pytest  # [wrong-import-order]
+ from . import package2
+ import pylint.checkers  # [wrong-import-order]
+ from pylint import config  # [wrong-import-order]
+--- pylint-4.0.7/tests/functional/w/wrong_import_order.txt
++++ pylint-4.0.7/tests/functional/w/wrong_import_order.txt
+@@ -1,16 +1,16 @@
+ wrong-import-order:12:0:12:14::"standard import ""os.path"" should be placed before third party import ""six""":UNDEFINED
+-wrong-import-order:14:0:14:10::"standard import ""sys"" should be placed before third party imports ""six"", ""astroid.are_exclusive""":UNDEFINED
+-wrong-import-order:15:0:15:15::"standard import ""datetime"" should be placed before third party imports ""six"", ""astroid.are_exclusive""":UNDEFINED
++wrong-import-order:14:0:14:10::"standard import ""sys"" should be placed before third party imports ""six"", ""pytest.mark""":UNDEFINED
++wrong-import-order:15:0:15:15::"standard import ""datetime"" should be placed before third party imports ""six"", ""pytest.mark""":UNDEFINED
+ wrong-import-order:18:0:18:22::"third party import ""totally_missing"" should be placed before local import ""package.Class""":UNDEFINED
+-wrong-import-order:20:0:20:14::"third party import ""astroid"" should be placed before local imports ""package.Class"", "".package""":UNDEFINED
++wrong-import-order:20:0:20:13::"third party import ""pytest"" should be placed before local imports ""package.Class"", "".package""":UNDEFINED
+ wrong-import-order:22:0:22:22::"first party import ""pylint.checkers"" should be placed before local imports ""package.Class"", "".package"", "".package2""":UNDEFINED
+ wrong-import-order:23:0:23:25::"first party import ""pylint.config"" should be placed before local imports ""package.Class"", "".package"", "".package2""":UNDEFINED
+ wrong-import-order:24:0:24:17::"first party import ""pylint.sys"" should be placed before local imports ""package.Class"", "".package"", "".package2""":UNDEFINED
+ wrong-import-order:25:0:25:28::"first party import ""pylint.pyreverse"" should be placed before local imports ""package.Class"", "".package"", "".package2""":UNDEFINED
+ wrong-import-order:30:0:30:40::"third party import ""six.moves.urllib.parse.quote"" should be placed before first party imports ""pylint.checkers"", ""pylint.config"", ""pylint.sys"", ""pylint.pyreverse"" and local imports ""package.Class"", "".package"", "".package2"" (...) ""package3.Class3"", "".package4"", ""package4.Class4""":UNDEFINED
+ wrong-import-order:31:0:31:23::"first party import ""pylint.constants"" should be placed before local imports ""package.Class"", "".package"", "".package2"" (...) ""package3.Class3"", "".package4"", ""package4.Class4""":UNDEFINED
+-wrong-import-order:32:0:32:19::"standard import ""re"" should be placed before third party imports ""six"", ""astroid.are_exclusive"", ""unused_import"", ""totally_missing"", ""astroid"", ""six.moves.urllib.parse.quote"", first party imports ""pylint.checkers"", ""pylint.config"", ""pylint.sys"", ""pylint.pyreverse"", ""pylint.constants"", and local imports ""package.Class"", "".package"", "".package2"" (...) ""package3.Class3"", "".package4"", ""package4.Class4""":UNDEFINED
++wrong-import-order:32:0:32:19::"standard import ""re"" should be placed before third party imports ""six"", ""pytest.mark"", ""unused_import"", ""totally_missing"", ""pytest"", ""six.moves.urllib.parse.quote"", first party imports ""pylint.checkers"", ""pylint.config"", ""pylint.sys"", ""pylint.pyreverse"", ""pylint.constants"", and local imports ""package.Class"", "".package"", "".package2"" (...) ""package3.Class3"", "".package4"", ""package4.Class4""":UNDEFINED
+ wrong-import-order:32:0:32:19::"third party import ""requests"" should be placed before first party imports ""pylint.checkers"", ""pylint.config"", ""pylint.sys"", ""pylint.pyreverse"", ""pylint.constants"" and local imports ""package.Class"", "".package"", "".package2"" (...) ""package3.Class3"", "".package4"", ""package4.Class4""":UNDEFINED
+ wrong-import-order:33:0:33:24::"first party import ""pylint.exceptions"" should be placed before local imports ""package.Class"", "".package"", "".package2"" (...) ""package3.Class3"", "".package4"", ""package4.Class4""":UNDEFINED
+ wrong-import-order:34:0:34:21::"first party import ""pylint.message"" should be placed before local imports ""package.Class"", "".package"", "".package2"" (...) ""package3.Class3"", "".package4"", ""package4.Class4""":UNDEFINED
+-wrong-import-order:35:0:35:11::"standard import ""time"" should be placed before third party imports ""six"", ""astroid.are_exclusive"", ""unused_import"" (...) ""astroid"", ""six.moves.urllib.parse.quote"", ""requests"", first party imports ""pylint.checkers"", ""pylint.config"", ""pylint.sys"" (...) ""pylint.constants"", ""pylint.exceptions"", ""pylint.message"", and local imports ""package.Class"", "".package"", "".package2"" (...) ""package3.Class3"", "".package4"", ""package4.Class4""":UNDEFINED
++wrong-import-order:35:0:35:11::"standard import ""time"" should be placed before third party imports ""six"", ""pytest.mark"", ""unused_import"" (...) ""pytest"", ""six.moves.urllib.parse.quote"", ""requests"", first party imports ""pylint.checkers"", ""pylint.config"", ""pylint.sys"" (...) ""pylint.constants"", ""pylint.exceptions"", ""pylint.message"", and local imports ""package.Class"", "".package"", "".package2"" (...) ""package3.Class3"", "".package4"", ""package4.Class4""":UNDEFINED

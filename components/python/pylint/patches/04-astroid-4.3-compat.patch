@@ -1,0 +1,34 @@
+Backported from:
+https://github.com/pylint-dev/pylint/pull/11153
+
+Also adjust the required astroid version to one that we deliver - all
+the compatibility issues are fixed by this and other patches.
+
+From c88f2bec24f8aaf678d5ae1e0bfd9eb2ca403aad Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Dani=C3=ABl=20van=20Noord?=
+ <13665637+DanielNoord@users.noreply.github.com>
+Date: Sat, 4 Jul 2026 19:13:22 +0200
+Subject: Bump `astroid` to `4.2.0b4`
+
+--- pylint-4.0.7/pylint/checkers/variables.py
++++ pylint-4.0.7/pylint/checkers/variables.py
+@@ -217,7 +217,7 @@ def _detect_global_scope(
+ def _infer_name_module(node: nodes.Import, name: str) -> Generator[InferenceResult]:
+     context = astroid.context.InferenceContext()
+     context.lookupname = name
+-    return node.infer(context, asname=False)  # type: ignore[no-any-return]
++    return node.infer(context)  # type: ignore[no-any-return]
+ 
+ 
+ def _fix_dot_imports(
+--- pylint-4.0.7/pyproject.toml
++++ pylint-4.0.7/pyproject.toml
+@@ -40,7 +40,7 @@ dependencies = [
+   # Also upgrade requirements_test_min.txt.
+   # Pinned to dev of second minor update to allow editable installs and fix primer issues,
+   # see https://github.com/pylint-dev/astroid/issues/1341
+-  "astroid>=4.1.1,<=4.2.dev0",
++  "astroid>=4.2.0b4,<=4.3.1",
+   "colorama>=0.4.5; sys_platform=='win32'",
+   "dill>=0.2; python_version<'3.11'",
+   "dill>=0.3.6; python_version>='3.11'",

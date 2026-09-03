@@ -1,0 +1,17 @@
+Setuptools 82 and later no longer provide pkg_resources, which the legacy
+namespace-package test requires. Upstream pins setuptools to a version that
+still provides it; we skip the test instead.
+
+https://github.com/pylint-dev/astroid/pull/3056
+
+--- astroid-4.3.0/tests/test_manager.py
++++ astroid-4.3.0/tests/test_manager.py
+@@ -164,6 +164,8 @@
+         self._test_ast_from_old_namespace_package_protocol("pkg_resources")
+ 
+     def test_identify_old_namespace_package_protocol(self) -> None:
++        pytest.importorskip("pkg_resources")
++
+         # Like the above cases, this package follows the old namespace package protocol
+         # astroid currently assumes such packages are in sys.modules, so import it
+         with warnings.catch_warnings():

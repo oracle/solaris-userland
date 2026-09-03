@@ -1,0 +1,24 @@
+Backported from upstream:
+https://github.com/pylint-dev/pylint/pull/10933
+
+From d0c102a2e4a10ab5ea183bf947451bffb9758d0d Mon Sep 17 00:00:00 2001
+From: Pierre Sassoulas <pierre.sassoulas@gmail.com>
+Date: Sun, 22 Mar 2026 18:38:27 +0100
+Subject: [test] Update test_enable_message_block for astroid block_range
+ change
+
+Astroid's `block_range` now scopes `try` body pragmas to the `try`
+block only, so pylint's message control inside `try` no longer leaks
+into the `except` handler. Update the expected assertion accordingly.
+
+--- pylint-4.0.7/tests/lint/unittest_lint.py
++++ pylint-4.0.7/tests/lint/unittest_lint.py
+@@ -317,7 +317,7 @@ def test_enable_message_block(initialized_linter: PyLinter) -> None:
+     # meth6
+     assert not linter.is_message_enabled("E1101", 57)
+     assert linter.is_message_enabled("E1101", 61)
+-    assert linter.is_message_enabled("E1101", 64)
++    assert not linter.is_message_enabled("E1101", 64)
+     assert not linter.is_message_enabled("E1101", 66)
+ 
+     assert linter.is_message_enabled("E0602", 57)
