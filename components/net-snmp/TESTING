@@ -2,7 +2,11 @@ Build ON gate
 =============
 - install the built snmp
 - clone ON gate
-- if the .so version changed, then edit usr/src/Targetdirs and add the new .so versions
+- if the .so version changed, then edit usr/src/Targetdirs, duplicate the lines and add new .so versions
+  - /usr/lib/libnetsnmp.so.40
+  - /usr/lib/libnetsnmpagent.so.40
+  - /usr/lib/libnetsnmphelpers.so.40.2.1
+  - and the same three under /usr/lib/$(MACH64)/
 - build ON GATE
 
 
@@ -134,6 +138,7 @@ $ truss -deafl -'t!all' -t open /usr/sbin/snmpd -f -Le -V 2>&1 | grep mem
 # The output should be empty and NOT something like
 29099/1:         0.008591    openat(AT_FDCWD, "/dev/kmem", O_RDONLY)            = 3
 29099/1:         0.008662    openat(AT_FDCWD, "/dev/mem", O_RDONLY)             = 4
+
 
 
 
