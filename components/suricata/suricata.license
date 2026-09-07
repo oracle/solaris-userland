@@ -349,6 +349,10 @@ Public License instead of this License.
 rust/vendor/build_const/LICENSE.txt
 rust/vendor/nibble_vec/LICENSE
 rust/vendor/nix/LICENSE
+## Files:
+rust/vendor/build_const/LICENSE.txt
+rust/vendor/nibble_vec/LICENSE
+rust/vendor/nix/LICENSE
 rust/vendor/radix_trie/LICENSE
 
 The MIT License (MIT)
@@ -16393,7 +16397,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 
 ## Files:
+ebpf/hash_func01.h
+
+SPDX-License-Identifier: LGPL-2.1
+
+Based on Paul Hsieh's (LGPL 2.1) hash function
+From: http://www.azillionmonkeys.com/qed/hash.html
+
+
+## Files:
 ebpf/include/linux/bpf.h
+ebpf/include/linux/bpf_common.h
 
 SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 
@@ -16429,7 +16443,7 @@ src/tests/detect-tls-certs.c
 src/tests/reputation.c
 suricata-update/suricata/update/commands/checkversions.py
 
- Copyright (C) 2019 Open Information Security Foundation
+Copyright (C) 2019 Open Information Security Foundation
 
 You can copy, redistribute or modify this Program under the terms of
 the GNU General Public License version 2 as published by the Free
@@ -16473,7 +16487,6 @@ src/detect-vlan.c
 src/detect-vlan.h
 src/flow-callbacks.c
 src/flow-callbacks.h
-src/log-flush.c
 src/log-flush.h
 src/output-eve.c
 src/output-eve.h
@@ -16648,7 +16661,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ## Files:
 ltmain.sh
 
-Copyright (C) 1996-2015 Free Software Foundation, Inc.
+Copyright (C) 1996-2019, 2021-2022 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
@@ -16678,76 +16691,87 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ## Files:
 ltmain.sh
 
-Copyright (C) 2004-2015 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This is free software.  There is NO warranty; not even for
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Copyright (C) 2004-2019, 2021 Bootstrap Authors
+
+This file is dual licensed under the terms of the MIT license
+<https://opensource.org/license/MIT>, and GPL version 2 or later
+<http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+these licenses when using or redistributing this software or any of
+the files within it.  See the URLs above, or the file `LICENSE`
+included in the Bootstrap distribution for the full license texts.
 
 
 ## Files:
 ltmain.sh
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+This is free software.  There is NO warranty; not even for
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Copyright (C) 2010-2019, 2021 Bootstrap Authors
+
+This file is dual licensed under the terms of the MIT license
+<https://opensource.org/license/MIT>, and GPL version 2 or later
+<http://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+these licenses when using or redistributing this software or any of
+the files within it.  See the URLs above, or the file `LICENSE`
+included in the Bootstrap distribution for the full license texts.
 
 
 ## Files:
 ltmain.sh
 
-As a special exception to the GNU General Public License, if you distribute
-this file as part of a program or library that is built using GNU Libtool,
-you may include this file under the same distribution terms that you use
-for the rest of that program.
+This file is a library for parsing options in your shell scripts along
+with assorted other useful supporting features that you can make use
+of too.
+
+For the simplest scripts you might need only:
+
+  #!/bin/sh
+  . relative/path/to/funclib.sh
+  . relative/path/to/options-parser
+  scriptversion=1.0
+  func_options ${1+"$@"}
+  eval set dummy "$func_options_result"; shift
+  ...rest of your script...
+
+In order for the '--version' option to work, you will need to have a
+suitably formatted comment like the one at the top of this file
+starting with '# Written by ' and ending with '# Copyright'.
+
+For '-h' and '--help' to work, you will also need a one line
+description of your script's purpose in a comment directly above the
+'# Written by ' line, like the one at the top of this file.
+
+The default options also support '--debug', which will turn on shell
+execution tracing (see the comment above debug_cmd below for another
+use), and '--verbose' and the func_verbose function to allow your script
+to display verbose messages only when your user has specified
+'--verbose'.
+
+After sourcing this file, you can plug in processing for additional
+options by amending the variables from the 'Configuration' section
+below, and following the instructions in the 'Option parsing'
+section further down.
 
 
 ## Files:
 ltmain.sh
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNES FOR A PARTICULAR PURPOSE. See the GNU
-General Public License for more details.
-
-
-## Files:
-ltmain.sh
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-
-## Files:
-ltmain.sh
-
-Copyright (C) 2010-2015 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-
-## Files:
-ltmain.sh
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-
-## Files:
-ltmain.sh
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-
-## Files:
-ltmain.sh
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+func_version
+------------
+Echo version message to standard output and exit.
+The version message is extracted from the calling file's header
+comments, with leading '# ' stripped:
+  1. First display the progname and version
+  2. Followed by the header comment line matching  /^# Written by /
+  3. Then a blank line followed by the first following line matching
+     /^# Copyright /
+  4. Immediately followed by any lines between the previous matches,
+     except lines preceding the intervening completely blank line.
+For example, see the header comments of this file.
 
 
 ## Files:
@@ -17212,6 +17236,15 @@ Kadatch and Jenkins (2010). See doc/crc-doc.1.0.pdf in this distribution.
 
 ## Files:
 rust/vendor/libz-sys/src/zlib-ng/deflate.c
+rust/vendor/libz-sys/src/zlib/deflate.c
+
+deflate.c -- compress data using the deflation algorithm
+Copyright (C) 1995-2024 Jean-loup Gailly and Mark Adler
+For conditions of distribution and use, see copyright notice in zlib.h
+
+
+## Files:
+rust/vendor/libz-sys/src/zlib-ng/deflate.c
 rust/vendor/libz-sys/src/zlib-ng/inftrees.c
 rust/vendor/libz-sys/src/zlib/deflate.c
 rust/vendor/libz-sys/src/zlib/inftrees.c
@@ -17220,15 +17253,6 @@ If you use the zlib library in a product, an acknowledgment is welcome
 in the documentation of your product. If for some reason you cannot
 include such an acknowledgment, I would appreciate that you keep this
 copyright string in the executable of your product.
-
-
-## Files:
-rust/vendor/libz-sys/src/zlib-ng/deflate.c
-rust/vendor/libz-sys/src/zlib/deflate.c
-
-deflate.c -- compress data using the deflation algorithm
-Copyright (C) 1995-2024 Jean-loup Gailly and Mark Adler
-For conditions of distribution and use, see copyright notice in zlib.h
 
 
 ## Files:
@@ -19028,7 +19052,6 @@ src/tests/stream-tcp.c
 src/util-debug.c
 src/util-error.c
 src/util-file.h
-src/util-logopenfile.h
 src/util-mpm.c
 src/util-unittest.h
 
@@ -19100,7 +19123,6 @@ src/output-json-dns.c
 src/output-streaming.c
 src/output-tx.c
 src/output-tx.h
-src/packet.c
 src/packet.h
 src/reputation.c
 src/reputation.h
@@ -19118,7 +19140,6 @@ src/util-cidr.c
 src/util-debug.h
 src/util-host-os-info.c
 src/util-host-os-info.h
-src/util-logopenfile.c
 src/util-memcmp.h
 src/util-misc.c
 src/util-misc.h
@@ -20454,7 +20475,6 @@ src/log-cf-common.c
 src/pkt-var.c
 src/pkt-var.h
 src/source-pcap-file-directory-helper.c
-src/source-pcap-file.c
 src/stream-tcp-inline.c
 src/stream-tcp-inline.h
 src/stream-tcp-list.h
@@ -20854,6 +20874,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 
 ## Files:
+src/log-flush.c
+src/util-lua-ntp.c
+src/util-lua-ntp.h
+
+Copyright (C) 2026 Open Information Security Foundation
+
+You can copy, redistribute or modify this Program under the terms of
+the GNU General Public License version 2 as published by the Free
+Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+version 2 along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.
+
+
+## Files:
 src/output-json-alert.c
 src/runmode-unittests.c
 
@@ -20961,6 +21003,30 @@ src/output-json-pgsql.c
 src/output-json-pgsql.h
 
 Copyright (C) 2022-2024 Open Information Security Foundation
+
+You can copy, redistribute or modify this Program under the terms of
+the GNU General Public License version 2 as published by the Free
+Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+version 2 along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.
+
+
+## Files:
+src/packet.c
+src/source-pcap-file.c
+src/stream-tcp.c
+src/util-logopenfile.c
+src/util-logopenfile.h
+
+Copyright (C) 2007-2026 Open Information Security Foundation
 
 You can copy, redistribute or modify this Program under the terms of
 the GNU General Public License version 2 as published by the Free
@@ -21094,26 +21160,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 src/source-erf-file.c
 
 Copyright (C) 2010-2014 Open Information Security Foundation
-
-You can copy, redistribute or modify this Program under the terms of
-the GNU General Public License version 2 as published by the Free
-Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-version 2 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
-
-
-## Files:
-src/stream-tcp.c
-
-Copyright (C) 2007-2026 Open Information Security Foundation
 
 You can copy, redistribute or modify this Program under the terms of
 the GNU General Public License version 2 as published by the Free
@@ -21375,6 +21421,13 @@ You should have received a copy of the GNU General Public License
 version 2 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301, USA.
+
+
+## Files:
+src/util-systemd.c
+src/util-systemd.h
+
+SPDX-License-Identifier: MIT-0
 
 
 ## Files:

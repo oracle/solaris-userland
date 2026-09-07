@@ -29,14 +29,14 @@ CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	suricata
-COMPONENT_VERSION =	8.0.4
+COMPONENT_VERSION =	8.0.6
 COMPONENT_PROJECT_URL =	https://suricata.io/
-COMPONENT_ARCHIVE_HASH = sha256:81cee7bae69848a9751b2ce0867620eefa52b192e79c20b5eac897600b28b191
+COMPONENT_ARCHIVE_HASH = sha256:b264584edda4a3b2b462050099c7c54f4f35ac0c7164e41084be9b216c090f8c
 COMPONENT_ARCHIVE_URL =	https://www.openinfosecfoundation.org/download/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH_crates = \
-	sha256:0736300102198ab7cfd4747e32620b862c39f75890fc143dfba0310fc31095c7
+	sha256:3a4404ea3d084e4f3eaf1a8bcb12a0dc2c572083c082709eb71b1fb1c1339169
 
-COMPONENT_BAID =	382164
+COMPONENT_BAID =	431074
 
 # Cargo don't have an internet access during non-download gmake targets so we need
 # to vendor dependencies
@@ -59,8 +59,10 @@ CONFIGURE_OPTIONS +=	--with-libpcre2-includes=/usr/include/pcre
 CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
-# Disable AVX as our platforms doesn't need to support it. At least VirtualBox does not.
-CFLAGS.gcc.i386 += -mno-avx -mno-bmi -mno-bmi2
+# Upstream adds -march=native, but Userland binaries must remain compatible
+# with supported pre-Sandy Bridge systems such as the Sun Server X2 series.
+# Disable optional x86 ISA extensions which are unavailable on those systems.
+CFLAGS.gcc.i386 += -mno-avx -mno-bmi -mno-bmi2 -mno-movbe
 
 # Requires a reconf due a change in configure.ac and Makefile.am
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
