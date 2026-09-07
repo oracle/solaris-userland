@@ -5,9 +5,9 @@ https://gcc.gnu.org/legacy-ml/gcc-patches/2005-06/msg02218.html
 
 Should be submitted to upstream.
 
---- gcc-16.1.0/gcc/config/i386/i386-options.cc
-+++ gcc-16.1.0/gcc/config/i386/i386-options.cc
-@@ -2157,6 +2157,10 @@ ix86_option_override_internal (bool main
+--- gcc-16.2.0/gcc/config/i386/i386-options.cc
++++ gcc-16.2.0/gcc/config/i386/i386-options.cc
+@@ -2167,6 +2167,10 @@ ix86_option_override_internal (bool main
    if (ix86_lam_type && !TARGET_LP64_P (opts->x_ix86_isa_flags))
      error ("%<-mlam=%> option: [u48|u57] not supported for 32-bit code");
  
@@ -18,8 +18,8 @@ Should be submitted to upstream.
    if (!opts->x_ix86_arch_string)
      opts->x_ix86_arch_string
        = TARGET_64BIT_P (opts->x_ix86_isa_flags)
---- gcc-16.1.0/gcc/config/i386/i386.cc
-+++ gcc-16.1.0/gcc/config/i386/i386.cc
+--- gcc-16.2.0/gcc/config/i386/i386.cc
++++ gcc-16.2.0/gcc/config/i386/i386.cc
 @@ -6065,7 +6065,7 @@ ix86_can_use_return_insn_p (void)
  
    struct ix86_frame &frame = cfun->machine->frame;
@@ -40,7 +40,7 @@ Should be submitted to upstream.
    return false;
  }
  
-@@ -6862,6 +6866,37 @@ ix86_save_reg (unsigned int regno, bool
+@@ -6864,6 +6868,37 @@ ix86_save_reg (unsigned int regno, bool
  	  && (regno != HARD_FRAME_POINTER_REGNUM || !frame_pointer_needed));
  }
  
@@ -78,7 +78,7 @@ Should be submitted to upstream.
  /* Return number of saved general prupose registers.  */
  
  static int
-@@ -7063,6 +7098,7 @@ ix86_compute_frame_layout (void)
+@@ -7065,6 +7100,7 @@ ix86_compute_frame_layout (void)
  
    frame->nregs = ix86_nsaved_regs ();
    frame->nsseregs = ix86_nsaved_sseregs ();
@@ -86,7 +86,7 @@ Should be submitted to upstream.
  
    /* 64-bit MS ABI seem to require stack alignment to be always 16,
       except for function prologues, leaf functions and when the defult
-@@ -7156,6 +7192,13 @@ ix86_compute_frame_layout (void)
+@@ -7158,6 +7194,13 @@ ix86_compute_frame_layout (void)
    frame->save_regs_using_mov
      = TARGET_PROLOGUE_USING_MOVE && m->use_fast_prologue_epilogue;
  
@@ -100,7 +100,7 @@ Should be submitted to upstream.
    /* Skip return address and error code in exception handler.  */
    offset = INCOMING_FRAME_SP_OFFSET;
  
-@@ -7171,6 +7214,17 @@ ix86_compute_frame_layout (void)
+@@ -7173,6 +7216,17 @@ ix86_compute_frame_layout (void)
    /* The traditional frame pointer location is at the top of the frame.  */
    frame->hard_frame_pointer_offset = offset;
  
@@ -118,7 +118,7 @@ Should be submitted to upstream.
    /* Register save area */
    offset += frame->nregs * UNITS_PER_WORD;
    frame->reg_save_offset = offset;
-@@ -7304,7 +7358,7 @@ ix86_compute_frame_layout (void)
+@@ -7306,7 +7360,7 @@ ix86_compute_frame_layout (void)
    /* Size prologue needs to allocate.  */
    to_allocate = offset - frame->sse_reg_save_offset;
  
@@ -127,7 +127,7 @@ Should be submitted to upstream.
      frame->save_regs_using_mov = false;
  
    if (ix86_using_red_zone ()
-@@ -7316,7 +7370,14 @@ ix86_compute_frame_layout (void)
+@@ -7318,7 +7372,14 @@ ix86_compute_frame_layout (void)
      {
        frame->red_zone_size = to_allocate;
        if (frame->save_regs_using_mov)
@@ -143,7 +143,7 @@ Should be submitted to upstream.
        if (frame->red_zone_size > RED_ZONE_SIZE - RED_ZONE_RESERVE)
  	frame->red_zone_size = RED_ZONE_SIZE - RED_ZONE_RESERVE;
      }
-@@ -7752,6 +7813,27 @@ ix86_emit_save_reg_using_mov (machine_mo
+@@ -7754,6 +7815,27 @@ ix86_emit_save_reg_using_mov (machine_mo
      }
  }
  
@@ -171,7 +171,7 @@ Should be submitted to upstream.
  /* Emit code to save registers using MOV insns.
     First register is stored at CFA - CFA_OFFSET.  */
  static void
-@@ -9449,6 +9531,9 @@ ix86_expand_prologue (void)
+@@ -9495,6 +9577,9 @@ ix86_expand_prologue (void)
      }
  
    int_registers_saved = (frame.nregs == 0);
@@ -181,7 +181,7 @@ Should be submitted to upstream.
    sse_registers_saved = (frame.nsseregs == 0);
    save_stub_call_needed = (m->call_ms2sysv);
    gcc_assert (sse_registers_saved || !save_stub_call_needed);
-@@ -9502,7 +9587,8 @@ ix86_expand_prologue (void)
+@@ -9548,7 +9633,8 @@ ix86_expand_prologue (void)
  					 m->fs.cfa_reg == stack_pointer_rtx);
  	      m->fs.sp_offset = cfun->machine->frame.stack_pointer_offset;
  	    }
@@ -191,7 +191,7 @@ Should be submitted to upstream.
  	  ix86_emit_save_regs_using_mov (frame.reg_save_offset);
  	  int_registers_saved = true;
  	}
-@@ -9802,7 +9888,11 @@ ix86_expand_prologue (void)
+@@ -9848,7 +9934,11 @@ ix86_expand_prologue (void)
      }
  
    if (!int_registers_saved)
@@ -204,9 +204,9 @@ Should be submitted to upstream.
    if (!sse_registers_saved)
      ix86_emit_save_sse_regs_using_mov (frame.sse_reg_save_offset);
    else if (save_stub_call_needed)
---- gcc-16.1.0/gcc/config/i386/i386.h
-+++ gcc-16.1.0/gcc/config/i386/i386.h
-@@ -2688,6 +2688,10 @@ enum avx_u128_state
+--- gcc-16.2.0/gcc/config/i386/i386.h
++++ gcc-16.2.0/gcc/config/i386/i386.h
+@@ -2708,6 +2708,10 @@ enum avx_u128_state
  
     saved frame pointer			if frame_pointer_needed
  					<- HARD_FRAME_POINTER
@@ -217,7 +217,7 @@ Should be submitted to upstream.
     [saved regs]
  					<- reg_save_offset
     [padding0]
-@@ -2733,6 +2737,7 @@ struct GTY(()) ix86_frame
+@@ -2753,6 +2757,7 @@ struct GTY(()) ix86_frame
    HOST_WIDE_INT stack_pointer_offset;
    HOST_WIDE_INT hfp_save_offset;
    HOST_WIDE_INT reg_save_offset;
@@ -225,7 +225,7 @@ Should be submitted to upstream.
    HOST_WIDE_INT stack_realign_allocate;
    HOST_WIDE_INT stack_realign_offset;
    HOST_WIDE_INT sse_reg_save_offset;
-@@ -2745,6 +2750,8 @@ struct GTY(()) ix86_frame
+@@ -2765,6 +2770,8 @@ struct GTY(()) ix86_frame
         EXPENSIVE_P = expensive_function_p (EXPENSIVE_COUNT).  */
    bool expensive_p;
    int expensive_count;
@@ -234,8 +234,8 @@ Should be submitted to upstream.
  };
  
  /* Machine specific frame tracking during prologue/epilogue generation.  All
---- gcc-16.1.0/gcc/config/i386/i386.opt
-+++ gcc-16.1.0/gcc/config/i386/i386.opt
+--- gcc-16.2.0/gcc/config/i386/i386.opt
++++ gcc-16.2.0/gcc/config/i386/i386.opt
 @@ -1389,3 +1389,11 @@ Support AMX-MOVRS built-in functions and
  mavx512bmm
  Target Mask(ISA2_AVX512BMM) Var(ix86_isa_flags2) Save
@@ -248,8 +248,8 @@ Should be submitted to upstream.
 +mpreserve-args
 +Target Alias(msave-args)
 +Save integer arguments on the stack at function entry.
---- gcc-16.1.0/gcc/config/i386/i386.opt.urls
-+++ gcc-16.1.0/gcc/config/i386/i386.opt.urls
+--- gcc-16.2.0/gcc/config/i386/i386.opt.urls
++++ gcc-16.2.0/gcc/config/i386/i386.opt.urls
 @@ -635,3 +635,6 @@ UrlSuffix(gcc/x86-Options.html#index-mam
  mavx512bmm
  UrlSuffix(gcc/x86-Options.html#index-mavx512bmm)
@@ -257,8 +257,8 @@ Should be submitted to upstream.
 +msave-args
 +UrlSuffix(gcc/x86-Options.html#index-msave-args)
 +
---- gcc-16.1.0/gcc/doc/invoke.texi
-+++ gcc-16.1.0/gcc/doc/invoke.texi
+--- gcc-16.2.0/gcc/doc/invoke.texi
++++ gcc-16.2.0/gcc/doc/invoke.texi
 @@ -1554,7 +1554,7 @@ See RS/6000 and PowerPC Options.
  -minline-stringops-dynamically  -mstringop-strategy=@var{alg}
  -mkl  -mwidekl
@@ -268,7 +268,7 @@ Should be submitted to upstream.
  -m96bit-long-double  -mlong-double-64  -mlong-double-80  -mlong-double-128
  -mregparm=@var{num}  -msseregparm
  -mveclibabi=@var{type}  -mvect8-ret-in-mem
-@@ -36723,6 +36723,15 @@ and usually equally fast as method using
+@@ -36760,6 +36760,15 @@ and usually equally fast as method using
  by default.  In some cases disabling it may improve performance because of
  improved scheduling and reduced dependencies.
  
@@ -284,8 +284,8 @@ Should be submitted to upstream.
  @opindex maccumulate-outgoing-args
  @opindex mno-accumulate-outgoing-args
  @item -maccumulate-outgoing-args
---- gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-1.c
-+++ gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-1.c
+--- gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-1.c
++++ gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-1.c
 @@ -0,0 +1,28 @@
 +/* { dg-do run { target { ! ia32 } } } */
 +/* { dg-options "-O2 -msave-args" } */
@@ -315,8 +315,8 @@ Should be submitted to upstream.
 +
 +	return ret;
 +}
---- gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-2.c
-+++ gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-2.c
+--- gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-2.c
++++ gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-2.c
 @@ -0,0 +1,27 @@
 +/* { dg-do run { target { ! ia32 } } } */
 +/* { dg-options "-O2 -msave-args" } */
@@ -345,8 +345,8 @@ Should be submitted to upstream.
 +
 +	return ret;
 +}
---- gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-3.c
-+++ gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-3.c
+--- gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-3.c
++++ gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-3.c
 @@ -0,0 +1,27 @@
 +/* { dg-do run { target { ! ia32 } } } */
 +/* { dg-options "-O2 -msave-args" } */
@@ -375,8 +375,8 @@ Should be submitted to upstream.
 +
 +	return ret;
 +}
---- gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-4.c
-+++ gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-4.c
+--- gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-4.c
++++ gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-4.c
 @@ -0,0 +1,27 @@
 +/* { dg-do run { target { ! ia32 } } } */
 +/* { dg-options "-O2 -msave-args" } */
@@ -405,8 +405,8 @@ Should be submitted to upstream.
 +
 +	return ret;
 +}
---- gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-5.c
-+++ gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-5.c
+--- gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-5.c
++++ gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-5.c
 @@ -0,0 +1,27 @@
 +/* { dg-do run { target { ! ia32 } } } */
 +/* { dg-options "-O2 -msave-args" } */
@@ -435,8 +435,8 @@ Should be submitted to upstream.
 +
 +	return ret;
 +}
---- gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-6.c
-+++ gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-6.c
+--- gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-6.c
++++ gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-6.c
 @@ -0,0 +1,27 @@
 +/* { dg-do run { target { ! ia32 } } } */
 +/* { dg-options "-O2 -msave-args" } */
@@ -465,8 +465,8 @@ Should be submitted to upstream.
 +
 +	return ret;
 +}
---- gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-argstruct.c
-+++ gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-argstruct.c
+--- gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-argstruct.c
++++ gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-argstruct.c
 @@ -0,0 +1,41 @@
 +/* { dg-do run { target { ! ia32 } } } */
 +/* { dg-options "-O2 -msave-args" } */
@@ -509,8 +509,8 @@ Should be submitted to upstream.
 +
 +	return ret;
 +}
---- gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-retstruct-1.c
-+++ gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-retstruct-1.c
+--- gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-retstruct-1.c
++++ gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-retstruct-1.c
 @@ -0,0 +1,45 @@
 +/* { dg-do run { target { ! ia32 } } } */
 +/* { dg-options "-O2 -msave-args" } */
@@ -557,8 +557,8 @@ Should be submitted to upstream.
 +
 +       return retstruct.retval;
 +}
---- gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-retstruct-2.c
-+++ gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs-retstruct-2.c
+--- gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-retstruct-2.c
++++ gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs-retstruct-2.c
 @@ -0,0 +1,47 @@
 +/* { dg-do run { target { ! ia32 } } } */
 +/* { dg-options "-O2 -msave-args" } */
@@ -607,8 +607,8 @@ Should be submitted to upstream.
 +
 +	return retstruct.retval;
 +}
---- gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs.h
-+++ gcc-16.1.0/gcc/testsuite/gcc.target/i386/saveargs.h
+--- gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs.h
++++ gcc-16.2.0/gcc/testsuite/gcc.target/i386/saveargs.h
 @@ -0,0 +1,38 @@
 +#include <stdio.h>
 +#include <stdint.h>

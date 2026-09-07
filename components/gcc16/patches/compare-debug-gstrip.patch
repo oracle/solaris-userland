@@ -7,7 +7,7 @@ objects.  Prefer gstrip on SunOS for this diagnostic comparison.
 
 --- gcc-16.1.0/contrib/compare-debug
 +++ gcc-16.1.0/contrib/compare-debug
-@@ -51,6 +51,21 @@ done
+@@ -57,6 +57,21 @@ done
  
  trap 'rm -f "$1.$suf1" "$2.$suf2"' 0 1 2 15
  
@@ -29,7 +29,7 @@ objects.  Prefer gstrip on SunOS for this diagnostic comparison.
  case `uname -s` in
  Darwin)
    # The strip command on darwin does not remove all debug info.
-@@ -62,10 +77,10 @@ Darwin)
+@@ -66,10 +81,10 @@ Darwin)
    ;;
  *)
    cp "$1" "$1.$suf1"
@@ -42,7 +42,7 @@ objects.  Prefer gstrip on SunOS for this diagnostic comparison.
    ;;
  esac
  
-@@ -144,15 +159,15 @@ if cmp "$1.$suf1" "$2.$suf2"; then
+@@ -157,13 +172,13 @@ mv "$1.$suf3" "$1.$suf1"
  
        objcopy $rsopts "$2.$suf2" "$2.$suf4"
        mv "$2.$suf4" "$2.$suf2"
