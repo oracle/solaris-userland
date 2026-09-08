@@ -26,19 +26,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		djangorestframework
-COMPONENT_VERSION=	3.16.0
+COMPONENT_VERSION=	3.18.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f022ff46613584de994c0c6a4aebbace5fd700555fbe9d33b865ebf173eba6c9
+    sha256:605d79fa2ec2f02905492e5ea13d903c2d842d0b4c915a57f7bf02ab9f3c91dd
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/encode/django-rest-framework
 COMPONENT_BUGDB=	python-mod/djangorest
 COMPONENT_ANITYA_ID=	9175
-COMPONENT_BAID=		331280
+COMPONENT_BAID=		434404
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
