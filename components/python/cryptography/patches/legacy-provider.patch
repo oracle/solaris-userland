@@ -11,32 +11,36 @@ https://github.com/pyca/cryptography/issues/7358
 https://github.com/pyca/cryptography/pull/7650
 https://github.com/pyca/cryptography/pull/12601
 
---- cryptography-46.0.7/src/rust/src/lib.rs
-+++ cryptography-46.0.7/src/rust/src/lib.rs
-@@ -10,8 +10,6 @@ use std::env;
- 
- #[cfg(CRYPTOGRAPHY_OPENSSL_300_OR_GREATER)]
+--- cryptography-50.0.0/src/rust/src/lib.rs
++++ cryptography-50.0.0/src/rust/src/lib.rs
+@@ -18,12 +18,6 @@ use std::env;
+     CRYPTOGRAPHY_IS_AWSLC
+ )))]
  use openssl::provider;
--#[cfg(CRYPTOGRAPHY_OPENSSL_300_OR_GREATER)]
+-#[cfg(not(any(
+-    CRYPTOGRAPHY_IS_LIBRESSL,
+-    CRYPTOGRAPHY_IS_BORINGSSL,
+-    CRYPTOGRAPHY_IS_AWSLC
+-)))]
 -use pyo3::PyTypeInfo;
  
- #[cfg(CRYPTOGRAPHY_OPENSSL_300_OR_GREATER)]
- use crate::error::CryptographyResult;
-@@ -55,7 +53,7 @@ fn is_fips_enabled() -> bool {
- }
- 
- #[cfg(CRYPTOGRAPHY_OPENSSL_300_OR_GREATER)]
+ #[cfg(not(any(
+     CRYPTOGRAPHY_IS_LIBRESSL,
+@@ -80,7 +74,7 @@ fn is_fips_enabled() -> bool {
+     CRYPTOGRAPHY_IS_BORINGSSL,
+     CRYPTOGRAPHY_IS_AWSLC
+ )))]
 -fn _initialize_providers(py: pyo3::Python<'_>) -> CryptographyResult<LoadedProviders> {
 +fn _initialize_providers(_py: pyo3::Python<'_>) -> CryptographyResult<LoadedProviders> {
      // As of OpenSSL 3.0.0 we must register a legacy cipher provider
      // to get RC2 (needed for junk asymmetric private key
      // serialization), RC4, Blowfish, IDEA, SEED, etc. These things
-@@ -68,10 +66,6 @@ fn _initialize_providers(py: pyo3::Pytho
+@@ -93,10 +87,6 @@ fn _initialize_providers(py: pyo3::Pytho
      let legacy = if load_legacy {
          let legacy_result = provider::Provider::load(None, "legacy");
          if legacy_result.is_err() {
--            let message = crate::utils::cstr_from_literal!("OpenSSL 3's legacy provider failed to load. Legacy algorithms will not be available. If you need those algorithms, check your OpenSSL configuration.");
--            let warning_cls = pyo3::exceptions::PyWarning::type_object(py).into_any();
+-            let message = c"OpenSSL 3's legacy provider failed to load. Legacy algorithms will not be available. If you need those algorithms, check your OpenSSL configuration.";
+-            let warning_cls = pyo3::exceptions::PyWarning::type_object(py);
 -            pyo3::PyErr::warn(py, &warning_cls, message, 1)?;
 -
              None

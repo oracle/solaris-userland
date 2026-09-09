@@ -1,0 +1,340 @@
+Backported from upstream:
+https://github.com/twisted/twisted/issues/12660
+https://github.com/twisted/twisted/pull/12661
+
+with follow-up fixes offered upstream:
+https://github.com/twisted/twisted/issues/12783
+https://github.com/twisted/twisted/pull/12784
+
+Replace usage of pyOpenSSL's X509Req with pyca/cryptography's
+CertificateSigningRequest in twisted.internet._sslverify and the
+test_ssl certificate generation helpers.
+
+--- twisted-26.4.0/src/twisted/internet/_sslverify.py
++++ twisted-26.4.0/src/twisted/internet/_sslverify.py
+@@ -20,6 +20,9 @@ from OpenSSL.SSL import VERIFY_FAIL_IF_N
+ 
+ import attr
+ from constantly import FlagConstant, Flags, NamedConstant, Names
++from cryptography import x509
++from cryptography.hazmat.primitives import hashes, serialization
++from cryptography.x509.oid import NameOID
+ from incremental import Version
+ 
+ from twisted.internet.abstract import isIPAddress, isIPv6Address
+@@ -169,6 +172,29 @@ _x509names = {
+     "emailAddress": "emailAddress",
+ }
+ 
++_x509NameOIDs = {
++    "commonName": NameOID.COMMON_NAME,
++    "organizationName": NameOID.ORGANIZATION_NAME,
++    "organizationalUnitName": NameOID.ORGANIZATIONAL_UNIT_NAME,
++    "localityName": NameOID.LOCALITY_NAME,
++    "stateOrProvinceName": NameOID.STATE_OR_PROVINCE_NAME,
++    "countryName": NameOID.COUNTRY_NAME,
++    "emailAddress": NameOID.EMAIL_ADDRESS,
++}
++
++# Reverse of _x509NameOIDs, for translating a parsed subject back into a
++# DistinguishedName.
++_x509OIDNames = {oid: name for name, oid in _x509NameOIDs.items()}
++
++_digestAlgorithms = {
++    "md5": hashes.MD5,
++    "sha1": hashes.SHA1,
++    "sha224": hashes.SHA224,
++    "sha256": hashes.SHA256,
++    "sha384": hashes.SHA384,
++    "sha512": hashes.SHA512,
++}
++
+ 
+ class DistinguishedName(dict[str, bytes]):
+     """
+@@ -490,19 +516,52 @@ class CertificateRequest(CertBase):
+ 
+     Certificate requests are given to certificate authorities to be signed and
+     returned resulting in an actual certificate.
++
++    @ivar original: The underlying CSR object.
+     """
+ 
++    original: x509.CertificateSigningRequest
++
+     @classmethod
+-    def load(Class, requestData, requestFormat=crypto.FILETYPE_ASN1):
+-        req = crypto.load_certificate_request(requestFormat, requestData)
++    def load(
++        cls, requestData: bytes, requestFormat: int = crypto.FILETYPE_ASN1
++    ) -> CertificateRequest:
++        if requestFormat == crypto.FILETYPE_ASN1:
++            req = x509.load_der_x509_csr(requestData)
++        elif requestFormat == crypto.FILETYPE_PEM:
++            req = x509.load_pem_x509_csr(requestData)
++        else:
++            raise ValueError(f"Unsupported format: {requestFormat!r}")
++        if not req.is_signature_valid:
++            subject = req.subject
++            raise VerifyError(
++                f"Can't verify that request for {subject!r} is self-signed."
++            )
++        return cls(req)
++
++    def getSubject(self) -> DistinguishedName:
++        """
++        Retrieve the subject of this certificate request.
++
++        @return: A copy of the subject of this certificate request.
++        @rtype: L{DistinguishedName}
++        """
+         dn = DistinguishedName()
+-        dn._copyFrom(req.get_subject())
+-        if not req.verify(req.get_pubkey()):
+-            raise VerifyError(f"Can't verify that request for {dn!r} is self-signed.")
+-        return Class(req)
++        for attribute in self.original.subject:
++            try:
++                name = _x509OIDNames[attribute.oid]
++            except KeyError:
++                raise ValueError(f"Unknown X509 name attribute: {attribute.oid!r}")
++            setattr(dn, name, attribute.value)
++        return dn
+ 
+-    def dump(self, format=crypto.FILETYPE_ASN1):
+-        return crypto.dump_certificate_request(format, self.original)
++    def dump(self, format: int = crypto.FILETYPE_ASN1) -> bytes:
++        if format == crypto.FILETYPE_ASN1:
++            return self.original.public_bytes(serialization.Encoding.DER)
++        elif format == crypto.FILETYPE_PEM:
++            return self.original.public_bytes(serialization.Encoding.PEM)
++        else:
++            raise ValueError(f"Unsupported format: {format!r}")
+ 
+ 
+ class PrivateCertificate(Certificate):
+@@ -714,10 +773,21 @@ class KeyPair(PublicKey):
+         return PrivateCertificate.load(newCertData, self, format)
+ 
+     def requestObject(self, distinguishedName, digestAlgorithm="sha256"):
+-        req = crypto.X509Req()
+-        req.set_pubkey(self.original)
+-        distinguishedName._copyInto(req.get_subject())
+-        req.sign(self.original, digestAlgorithm)
++        req = (
++            x509.CertificateSigningRequestBuilder()
++            .subject_name(
++                x509.Name(
++                    [
++                        x509.NameAttribute(_x509NameOIDs[k], nativeString(v))
++                        for k, v in distinguishedName.items()
++                    ]
++                )
++            )
++            .sign(
++                self.original.to_cryptography_key(),
++                _digestAlgorithms[digestAlgorithm](),
++            )
++        )
+         return CertificateRequest(req)
+ 
+     def certificateRequest(
+@@ -787,8 +857,8 @@ class KeyPair(PublicKey):
+         req = requestObject.original
+         cert = crypto.X509()
+         issuerDistinguishedName._copyInto(cert.get_issuer())
+-        cert.set_subject(req.get_subject())
+-        cert.set_pubkey(req.get_pubkey())
++        requestObject.getSubject()._copyInto(cert.get_subject())
++        cert.set_pubkey(crypto.PKey.from_cryptography_key(req.public_key()))
+         cert.gmtime_adj_notBefore(0)
+         cert.gmtime_adj_notAfter(secondsToExpiry)
+         cert.set_serial_number(serialNumber)
+@@ -1656,10 +1726,10 @@ class OpenSSLCertificateOptions:
+         return ctx
+ 
+ 
+-OpenSSLCertificateOptions.__getstate__ = deprecated(  # type:ignore[method-assign]
++OpenSSLCertificateOptions.__getstate__ = deprecated(  # type: ignore[method-assign]
+     Version("Twisted", 15, 0, 0), "a real persistence system"
+ )(OpenSSLCertificateOptions.__getstate__)
+-OpenSSLCertificateOptions.__setstate__ = deprecated(  # type:ignore[method-assign]
++OpenSSLCertificateOptions.__setstate__ = deprecated(  # type: ignore[method-assign]
+     Version("Twisted", 15, 0, 0), "a real persistence system"
+ )(OpenSSLCertificateOptions.__setstate__)
+ 
+--- twisted-26.4.0/src/twisted/test/test_ssl.py
++++ twisted-26.4.0/src/twisted/test/test_ssl.py
+@@ -21,6 +21,10 @@
+ try:
+     from OpenSSL import SSL, crypto
+ 
++    from cryptography import x509
++    from cryptography.hazmat.primitives import hashes, serialization
++    from cryptography.x509.oid import NameOID
++
+     from twisted.internet import ssl
+     from twisted.test.ssl_helpers import ClientTLSContext, certPath
+ except ImportError:
+@@ -164,21 +168,31 @@ def generateCertificateObjects(organization, organizationalUnit):
+     """
+     pkey = crypto.PKey()
+     pkey.generate_key(crypto.TYPE_RSA, 2048)
+-    req = crypto.X509Req()
+-    subject = req.get_subject()
+-    subject.O = organization
+-    subject.OU = organizationalUnit
+-    req.set_pubkey(pkey)
+-    req.sign(pkey, "md5")
++    req = (
++        x509.CertificateSigningRequestBuilder()
++        .subject_name(
++            x509.Name(
++                [
++                    x509.NameAttribute(NameOID.ORGANIZATION_NAME, organization),
++                    x509.NameAttribute(
++                        NameOID.ORGANIZATIONAL_UNIT_NAME, organizationalUnit
++                    ),
++                ]
++            )
++        )
++        .sign(pkey.to_cryptography_key(), hashes.SHA256())
++    )
+ 
+     # Here comes the actual certificate
+     cert = crypto.X509()
+     cert.set_serial_number(1)
+     cert.gmtime_adj_notBefore(0)
+     cert.gmtime_adj_notAfter(60)  # Testing certificates need not be long lived
+-    cert.set_issuer(req.get_subject())
+-    cert.set_subject(req.get_subject())
+-    cert.set_pubkey(req.get_pubkey())
++    subject = cert.get_subject()
++    subject.O = organization
++    subject.OU = organizationalUnit
++    cert.set_issuer(cert.get_subject())
++    cert.set_pubkey(pkey)
+     cert.sign(pkey, "md5")
+ 
+     return pkey, req, cert
+@@ -191,13 +205,13 @@ def generateCertificateFiles(basename, organization, organizationalUnit):
+     """
+     pkey, req, cert = generateCertificateObjects(organization, organizationalUnit)
+ 
+-    for ext, obj, dumpFunc in [
+-        ("key", pkey, crypto.dump_privatekey),
+-        ("req", req, crypto.dump_certificate_request),
+-        ("cert", cert, crypto.dump_certificate),
++    for ext, data in [
++        ("key", crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey)),
++        ("req", req.public_bytes(serialization.Encoding.PEM)),
++        ("cert", crypto.dump_certificate(crypto.FILETYPE_PEM, cert)),
+     ]:
+         fName = os.extsep.join((basename, ext)).encode("utf-8")
+-        FilePath(fName).setContent(dumpFunc(crypto.FILETYPE_PEM, obj))
++        FilePath(fName).setContent(data)
+ 
+ 
+ class ContextGeneratingMixin:
+--- twisted-26.4.0/src/twisted/test/test_sslverify.py
++++ twisted-26.4.0/src/twisted/test/test_sslverify.py
+@@ -51,6 +51,7 @@ if requireModule("OpenSSL"):
+     from cryptography import x509
+     from cryptography.hazmat.backends import default_backend
+     from cryptography.hazmat.primitives import hashes
++    from cryptography.hazmat.primitives.asymmetric import ec
+     from cryptography.hazmat.primitives.asymmetric.rsa import (
+         RSAPrivateKey,
+         generate_private_key,
+@@ -3472,3 +3473,91 @@ class KeyPairTests(TestCase):
+ 
+         certPEM = noTrailingNewlineKeyPemPath.getContent()
+         ssl.Certificate.loadPEM(certPEM)
++
++
++class CertificateRequestTests(SynchronousTestCase):
++    """
++    Tests for L{sslverify.CertificateRequest}.
++    """
++
++    if skipSSL:
++        skip = skipSSL
++
++    def _makeRequest(self):
++        """
++        Create a self-signed L{sslverify.CertificateRequest}.
++
++        @return: a fresh certificate request.
++        @rtype: L{sslverify.CertificateRequest}
++        """
++        dn = sslverify.DistinguishedName(commonName="example.twistedmatrix.com")
++        return sslverify.KeyPair.generate().requestObject(dn)
++
++    def test_getSubject(self) -> None:
++        """
++        L{sslverify.CertificateRequest.getSubject} returns the request subject.
++        """
++        request = self._makeRequest()
++        self.assertEqual(
++            request.getSubject(),
++            sslverify.DistinguishedName(commonName="example.twistedmatrix.com"),
++        )
++
++    def test_pemRoundTrip(self):
++        """
++        A L{sslverify.CertificateRequest} dumped to PEM format and loaded back
++        again preserves its subject.
++        """
++        request = self._makeRequest()
++        pem = request.dump(FILETYPE_PEM)
++        self.assertIn(b"BEGIN CERTIFICATE REQUEST", pem)
++        loaded = sslverify.CertificateRequest.load(pem, FILETYPE_PEM)
++        self.assertEqual(
++            loaded.getSubject(),
++            request.getSubject(),
++        )
++
++    def test_loadUnsupportedFormat(self):
++        """
++        L{sslverify.CertificateRequest.load} raises L{ValueError} when given an
++        unrecognized format.
++        """
++        request = self._makeRequest()
++        with self.assertRaises(ValueError):
++            sslverify.CertificateRequest.load(request.dump(), object())
++
++    def test_loadUnverifiableSignature(self):
++        """
++        L{sslverify.CertificateRequest.load} raises L{sslverify.VerifyError}
++        when the request's self-signature does not verify.
++        """
++        data = bytearray(self._makeRequest().dump())
++        # Corrupt the trailing signature bytes so the self-signature no longer
++        # verifies while the structure still parses.
++        data[-1] ^= 0xFF
++        with self.assertRaises(sslverify.VerifyError):
++            sslverify.CertificateRequest.load(bytes(data))
++
++    def test_dumpUnsupportedFormat(self):
++        """
++        L{sslverify.CertificateRequest.dump} raises L{ValueError} when given an
++        unrecognized format.
++        """
++        with self.assertRaises(ValueError):
++            self._makeRequest().dump(object())
++
++    def test_subjectUnknownAttribute(self):
++        """
++        L{sslverify.CertificateRequest._subjectToDistinguishedName} raises
++        L{ValueError} when the subject contains a name attribute that does not
++        correspond to a known L{sslverify.DistinguishedName} field.
++        """
++        key = ec.generate_private_key(ec.SECP256R1(), backend=default_backend())
++        csr = (
++            x509.CertificateSigningRequestBuilder()
++            .subject_name(x509.Name([x509.NameAttribute(NameOID.GIVEN_NAME, "Alice")]))
++            .sign(key, hashes.SHA256())
++        )
++        request = sslverify.CertificateRequest(csr)
++        with self.assertRaises(ValueError):
++            request.getSubject()

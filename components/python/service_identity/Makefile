@@ -26,18 +26,18 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		service_identity
-COMPONENT_VERSION=	24.2.0
+COMPONENT_VERSION=	26.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	https://service-identity.readthedocs.io/en/stable/
 COMPONENT_BUGDB=	python-mod/serv_identity
 COMPONENT_ANITYA_ID=	7917
-COMPONENT_BAID=		354195
+COMPONENT_BAID=		427096
 
 # pypi archive doesn't include the test suite
 GIT_REPO=   https://github.com/pyca/service-identity.git
 GIT_COMMIT_ID=  $(COMPONENT_VERSION)
-GIT_HASH=   sha256:2330647394038b9913a6ec7364da0af22596a720a07106ba4387779a56b4128a
+GIT_HASH=   sha256:bd3c54896034dff6b15adc206cdd95070eca73226b4419976d7e06c2cc071389
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -60,6 +60,4 @@ system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pyasn1-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pyasn1-modules-%)
 REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

@@ -1,0 +1,18 @@
+With the introduction of abi3t support, cryptography now requires newer
+version of maturin than the one available on Solaris:
+https://github.com/pyca/cryptography/pull/15063
+
+Since no of the Python versions we deliver do support free-threaded build,
+we can safely fall back to our currently available version.
+
+--- cryptography-50.0.0/pyproject.toml
++++ cryptography-50.0.0/pyproject.toml
+@@ -2,7 +2,7 @@
+ # These requirements must be kept sync with the requirements in
+ # ./.github/requirements/build-requirements.{in,txt}
+ requires = [
+-    "maturin>=1.14.1,<2",
++    "maturin>=1.9.6,<2",
+ 
+     # Must be kept in sync with `project.dependencies`
+     "cffi>=2.0.0; platform_python_implementation != 'PyPy'",
