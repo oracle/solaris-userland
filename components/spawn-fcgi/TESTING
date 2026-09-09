@@ -1,0 +1,32 @@
+spawn-fcgi installed-package smoke test
+=======================================
+
+spawn-fcgi opens a listening Unix or TCP socket and then starts a FastCGI
+application with that socket on file descriptor 0.  These tests use
+/usr/bin/true as a harmless stand-in application.  It exits immediately, but
+a successful command confirms that spawn-fcgi created the listening socket and
+started the child process.
+
+# Show the installed version and enabled features.
+/usr/bin/spawn-fcgi -v
+
+# Create a Unix listening socket and start the child without forking (-n).
+rm -f /var/tmp/spawn-fcgi-smoke.sock
+umask 022
+/usr/bin/spawn-fcgi -n -s /var/tmp/spawn-fcgi-smoke.sock -- /usr/bin/true
+test -S /var/tmp/spawn-fcgi-smoke.sock && echo "Unix socket creation: PASS"
+stat -c 'Default socket mode: %a (expected 640)' /var/tmp/spawn-fcgi-smoke.sock
+rm -f /var/tmp/spawn-fcgi-smoke.sock
+
+# Confirm that -M can set an explicit Unix-socket mode.
+/usr/bin/spawn-fcgi -n -s /var/tmp/spawn-fcgi-smoke.sock -M 0666 -- /usr/bin/true
+stat -c 'Explicit socket mode: %a (expected 666)' /var/tmp/spawn-fcgi-smoke.sock
+rm -f /var/tmp/spawn-fcgi-smoke.sock
+
+# Bind IPv4 and IPv6 loopback sockets and start the child application.
+/usr/bin/spawn-fcgi -n -a 127.0.0.1 -p 41001 -- /usr/bin/true && echo "IPv4 bind and child launch: PASS"
+/usr/bin/spawn-fcgi -n -a ::1 -p 41002 -- /usr/bin/true && echo "IPv6 bind and child launch: PASS"
+
+If either TCP port is already in use, repeat that command with another high
+port number.  These checks test socket creation and process launching; they do
+not send a FastCGI request.

@@ -22,22 +22,28 @@
 #
 # Copyright (c) 2011, 2026, Oracle and/or its affiliates.
 #
-COMPILER= studio
+COMPILER= gcc
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		spawn-fcgi
-COMPONENT_VERSION=	1.6.3
-COMPONENT_PROJECT_URL=	http://www.lighttpd.net/
+COMPONENT_VERSION=	1.6.6
+COMPONENT_PROJECT_URL=	https://redmine.lighttpd.net/projects/spawn-fcgi
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7507a822995731629149040ee5686279b7582ae46f0296efd64b542ef052a90e
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
+    sha256:4ffe2e9763cf71ca52c3d642a7bfe20d6be292ba0f2ec07a5900c3110d0e5a85
+COMPONENT_ARCHIVE_URL=	\
+	https://download.lighttpd.net/spawn-fcgi/releases-1.6.x/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5388
 
-COMPONENT_BAID=		16752
+COMPONENT_BAID=		434247
+
+BUILD_STYLE=		meson
+
+LDFLAGS +=		-fstack-protector
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
