@@ -1,0 +1,47 @@
+From 56e758d9e9b23f47c8855636a757f1b41114f3ca Mon Sep 17 00:00:00 2001
+From: Adam Stylinski <kungfujesus06@gmail.com>
+Date: Sun, 22 Jan 2023 21:07:22 -0500
+Subject: [PATCH] mesa: fix out of bounds stack access on big endian
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The texture format code relies on a python-generated atlas of structs
+that describe a lookup table for texture swizzling. Many of these
+texture formats contain the index "6" used for this lookup. The 6th
+index just so happens to represent a "don't care" value, however the
+out of bounds read is still best to be avoided. The address sanitizer
+finds this issue pretty immediately but it only shows up on big endian
+because the textures don't need this on little.
+
+Reviewed-by: Marek Olšák <marek.olsak@amd.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/20846>
+Upstream-Commit: <https://gitlab.freedesktop.org/mesa/mesa/-/commit/56e758d9e9b23f47c8855636a757f1b41114f3ca>
+---
+ src/mesa/main/formats.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/mesa/main/formats.c b/src/mesa/main/formats.c
+index a46572513f02..9c58e53eda19 100644
+--- a/src/mesa/main/formats.c
++++ b/src/mesa/main/formats.c
+@@ -412,7 +412,7 @@ _mesa_array_format_flip_channels(mesa_array_format format)
+       for (unsigned i = 0; i < 4; i++)
+          assert(swizzle[i] != 2 && swizzle[i] != 3);
+ 
+-      static const uint8_t flip_xy[6] = { 1, 0, 2, 3, 4, 5 };
++      static const uint8_t flip_xy[7] = { 1, 0, 2, 3, 4, 5, 6 };
+       _mesa_array_format_set_swizzle(&format,
+                                      flip_xy[swizzle[0]], flip_xy[swizzle[1]],
+                                      flip_xy[swizzle[2]], flip_xy[swizzle[3]]);
+@@ -420,7 +420,7 @@ _mesa_array_format_flip_channels(mesa_array_format format)
+    }
+ 
+    if (num_channels == 4) {
+-      static const uint8_t flip[6] = { 3, 2, 1, 0, 4, 5 };
++      static const uint8_t flip[7] = { 3, 2, 1, 0, 4, 5, 6 };
+       _mesa_array_format_set_swizzle(&format,
+                                      flip[swizzle[0]], flip[swizzle[1]],
+                                      flip[swizzle[2]], flip[swizzle[3]]);
+-- 
+GitLab

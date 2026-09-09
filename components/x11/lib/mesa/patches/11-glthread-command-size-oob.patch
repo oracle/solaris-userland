@@ -1,0 +1,160 @@
+From fd2fbc558b8e9c6ffdfbd90473e5b77e20f771e7 Mon Sep 17 00:00:00 2001
+From: Vadym Shovkoplias <vadym.shovkoplias@globallogic.com>
+Date: Tue, 11 Jan 2022 10:21:05 +0200
+Subject: [PATCH] glthread: Check out of bounds for MultiDrawElementsBaseVertex
+ cmd
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Make sure draw count is not high so the MultiDrawElementsBaseVertex cmd
+can fit the queue buffer.
+
+v2: add the same check for _mesa_marshal_MultiDrawArrays and add additional
+    assert to _mesa_glthread_allocate_command (Pierre-Eric)
+
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/5719
+Signed-off-by: Vadym Shovkoplias <vadym.shovkoplias@globallogic.com>
+Reviewed-by: Marek Olšák <marek.olsak@amd.com>
+Reviewed-by: Pierre-Eric Pelloux-Prayer <pierre-eric.pelloux-prayer@amd.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/14490>
+Upstream-Commit: <https://gitlab.freedesktop.org/mesa/mesa/-/commit/fd2fbc558b8e9c6ffdfbd90473e5b77e20f771e7>
+
+The final call site is adjusted for Mesa 21.3.8, which passes the index
+buffer and user buffer mask as separate arguments.  The Solaris import also
+adds division-based draw-count bounds before the size multiplications, so an
+oversized GLsizei cannot overflow cmd_size before the upstream limit check.
+---
+ src/mesa/main/glthread_draw.c    | 40 +++++++++++++++++++++++++++++++++-------
+ src/mesa/main/glthread_marshal.h |  2 ++
+ 2 files changed, 35 insertions(+), 7 deletions(-)
+
+diff --git a/src/mesa/main/glthread_draw.c b/src/mesa/main/glthread_draw.c
+index 7a0c72a6ff8b..21fce5010ef3 100644
+--- a/src/mesa/main/glthread_draw.c
++++ b/src/mesa/main/glthread_draw.c
+@@ -459,19 +459,30 @@ _mesa_unmarshal_MultiDrawArrays(struct gl_context *ctx,
+    return cmd->cmd_base.cmd_size;
+ }
+ 
+-static ALWAYS_INLINE void
++static ALWAYS_INLINE bool
+ multi_draw_arrays_async(struct gl_context *ctx, GLenum mode,
+                         const GLint *first, const GLsizei *count,
+                         GLsizei draw_count, unsigned user_buffer_mask,
+                         const struct glthread_attrib_binding *buffers)
+ {
++   /* Bound draw_count before using it in size multiplications. */
++   if (draw_count < 0 ||
++       (unsigned)draw_count > MARSHAL_MAX_CMD_SIZE /
++                              (sizeof(GLint) + sizeof(GLsizei)))
++      return false;
++
+    int first_size = sizeof(GLint) * draw_count;
+    int count_size = sizeof(GLsizei) * draw_count;
+    int buffers_size = util_bitcount(user_buffer_mask) * sizeof(buffers[0]);
+    int cmd_size = sizeof(struct marshal_cmd_MultiDrawArrays) +
+                   first_size + count_size + buffers_size;
+    struct marshal_cmd_MultiDrawArrays *cmd;
+ 
++   /* Make sure cmd can fit the queue buffer */
++   if (cmd_size > MARSHAL_MAX_CMD_SIZE) {
++      return false;
++   }
++
+    cmd = _mesa_glthread_allocate_command(ctx, DISPATCH_CMD_MultiDrawArrays,
+                                          cmd_size);
+    cmd->mode = mode;
+@@ -487,6 +498,8 @@ multi_draw_arrays_async(struct gl_context *ctx, GLenum mode,
+       variable_data += count_size;
+       memcpy(variable_data, buffers, buffers_size);
+    }
++
++   return true;
+ }
+ 
+ void GLAPIENTRY
+@@ -502,8 +515,8 @@ _mesa_marshal_MultiDrawArrays(GLenum mode, const GLint *first,
+       goto sync;
+ 
+    if (draw_count >= 0 &&
+-       (ctx->API == API_OPENGL_CORE || !user_buffer_mask)) {
+-      multi_draw_arrays_async(ctx, mode, first, count, draw_count, 0, NULL);
++       (ctx->API == API_OPENGL_CORE || !user_buffer_mask) &&
++       multi_draw_arrays_async(ctx, mode, first, count, draw_count, 0, NULL)) {
+       return;
+    }
+ 
+@@ -938,23 +951,34 @@ _mesa_unmarshal_MultiDrawElementsBaseVertex(struct gl_context *ctx,
+    return cmd->cmd_base.cmd_size;
+ }
+ 
+-static ALWAYS_INLINE void
++static ALWAYS_INLINE bool
+ multi_draw_elements_async(struct gl_context *ctx, GLenum mode,
+                           const GLsizei *count, GLenum type,
+                           const GLvoid *const *indices, GLsizei draw_count,
+                           const GLsizei *basevertex,
+                           struct gl_buffer_object *index_buffer,
+                           unsigned user_buffer_mask,
+                           const struct glthread_attrib_binding *buffers)
+ {
++   /* Bound draw_count before using it in size multiplications. */
++   if (draw_count < 0 ||
++       (unsigned)draw_count > MARSHAL_MAX_CMD_SIZE /
++                              (sizeof(GLsizei) + sizeof(indices[0])))
++      return false;
++
+    int count_size = sizeof(GLsizei) * draw_count;
+    int indices_size = sizeof(indices[0]) * draw_count;
+    int basevertex_size = basevertex ? sizeof(GLsizei) * draw_count : 0;
+    int buffers_size = util_bitcount(user_buffer_mask) * sizeof(buffers[0]);
+    int cmd_size = sizeof(struct marshal_cmd_MultiDrawElementsBaseVertex) +
+                   count_size + indices_size + basevertex_size + buffers_size;
+    struct marshal_cmd_MultiDrawElementsBaseVertex *cmd;
+ 
++   /* Make sure cmd can fit the queue buffer */
++   if (cmd_size > MARSHAL_MAX_CMD_SIZE) {
++      return false;
++   }
++
+    cmd = _mesa_glthread_allocate_command(ctx, DISPATCH_CMD_MultiDrawElementsBaseVertex, cmd_size);
+    cmd->mode = mode;
+    cmd->type = type;
+@@ -976,6 +1000,8 @@ multi_draw_elements_async(struct gl_context *ctx, GLenum mode,
+ 
+    if (user_buffer_mask)
+       memcpy(variable_data, buffers, buffers_size);
++
++   return true;
+ }
+ 
+ void GLAPIENTRY
+@@ -999,9 +1025,9 @@ _mesa_marshal_MultiDrawElementsBaseVertex(GLenum mode, const GLsizei *count,
+        (ctx->API == API_OPENGL_CORE ||
+         !is_index_type_valid(type) ||
+         (!user_buffer_mask && !has_user_indices))) {
+-      multi_draw_elements_async(ctx, mode, count, type, indices, draw_count,
+-                                basevertex, 0, 0, NULL);
+-      return;
++      if (multi_draw_elements_async(ctx, mode, count, type, indices,
++                                    draw_count, basevertex, 0, 0, NULL))
++         return;
+    }
+ 
+    bool need_index_bounds = user_buffer_mask & ~vao->NonZeroDivisorMask;
+diff --git a/src/mesa/main/glthread_marshal.h b/src/mesa/main/glthread_marshal.h
+index 67fa1e0e0979..aac940dc08c0 100644
+--- a/src/mesa/main/glthread_marshal.h
++++ b/src/mesa/main/glthread_marshal.h
+@@ -59,6 +59,8 @@ _mesa_glthread_allocate_command(struct gl_context *ctx,
+    struct glthread_state *glthread = &ctx->GLThread;
+    const unsigned num_elements = align(size, 8) / 8;
+ 
++   assert (num_elements <= MARSHAL_MAX_CMD_SIZE / 8);
++
+    if (unlikely(glthread->used + num_elements > MARSHAL_MAX_CMD_SIZE / 8))
+       _mesa_glthread_flush_batch(ctx);
+ 
+-- 
+GitLab

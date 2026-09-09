@@ -1,0 +1,33 @@
+From f17ebb138ff48236fd50af69a05328fd505b6828 Mon Sep 17 00:00:00 2001
+From: Mike Blumenkrantz <michael.blumenkrantz@gmail.com>
+Date: Mon, 14 Mar 2022 16:19:25 -0400
+Subject: [PATCH] gallivm: fix oob image detection for
+ cube/1dArray/2dArray/cubeArray
+
+these all need to check for z coord oob to avoid crashing
+
+cc: mesa-stable
+
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/15388>
+(cherry picked from commit 6345575f8a9e97f5856e53a1c3aee4474c4433c2)
+Upstream-Commit: <https://gitlab.freedesktop.org/mesa/mesa/-/commit/f17ebb138ff48236fd50af69a05328fd505b6828>
+---
+ src/gallium/auxiliary/gallivm/lp_bld_sample_soa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gallium/auxiliary/gallivm/lp_bld_sample_soa.c b/src/gallium/auxiliary/gallivm/lp_bld_sample_soa.c
+index ce58db67e790..8417cdd79fc9 100644
+--- a/src/gallium/auxiliary/gallivm/lp_bld_sample_soa.c
++++ b/src/gallium/auxiliary/gallivm/lp_bld_sample_soa.c
+@@ -4660,7 +4660,7 @@ lp_build_img_op_soa(const struct lp_static_texture_state *static_texture_state,
+       out1 = lp_build_cmp(&int_coord_bld, PIPE_FUNC_GEQUAL, y, height);
+       out_of_bounds = lp_build_or(&int_coord_bld, out_of_bounds, out1);
+    }
+-   if (dims >= 3) {
++   if (dims >= 3 || layer_coord) {
+       out1 = lp_build_cmp(&int_coord_bld, PIPE_FUNC_GEQUAL, z, depth);
+       out_of_bounds = lp_build_or(&int_coord_bld, out_of_bounds, out1);
+    }
+-- 
+GitLab
