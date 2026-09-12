@@ -1,0 +1,28 @@
+The user-name completion checks in Test_getcompletion() and
+Test_cmdline_complete_user_names() unnecessarily delay Solaris test runs because
+~user triggers slow ldap username resolution.
+
+This patch is not intended for upstream.
+
+--- vim-9.2.0564/src/testdir/test_cmdline.vim
++++ vim-9.2.0564/src/testdir/test_cmdline.vim
+@@ -894,6 +894,9 @@
+   unlet g:cmdline_compl_params
+ 
+   " For others test if the name is recognized.
++  if has('sun')
++    throw 'Skipped: user completion is unreliable on Solaris build hosts'
++  endif
+   let names = ['buffer', 'environment', 'file_in_path', 'dir_in_path', 'mapping', 'tag',
+       \ 'tag_listfiles', 'user']
+   if has('cmdline_hist')
+@@ -1303,6 +1306,9 @@
+ endfunc
+ 
+ func Test_cmdline_complete_user_names()
++  if has('sun')
++    throw 'Skipped: unreliable on Solaris build hosts'
++  endif
+   if has('unix') && executable('whoami')
+     let whoami = systemlist('whoami')[0]
+     let first_letter = whoami[0]

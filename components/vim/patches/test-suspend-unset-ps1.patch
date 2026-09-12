@@ -1,0 +1,18 @@
+Test_suspend() and Test_suspend_autocmd() wait for shell prompts that match
+[$#] $.  An exported PS1 from the test environment can make /bin/sh use a
+longer prompt that does not match that pattern.  Then the prompt wait times
+out silently before the test sends "fg".
+
+Unset PS1 so the shell started by the test uses its default prompt.
+
+
+--- vim-9.2.0670/src/testdir/test_suspend.vim
++++ vim-9.2.0670/src/testdir/test_suspend.vim
+@@ -1,5 +1,7 @@
+ " Test :suspend
+ 
++silent! unlet $PS1
++
+ func CheckSuspended(buf, fileExists)
+   call WaitForAssert({-> assert_match('[$#] $', term_getline(a:buf, '.'))})
+ 

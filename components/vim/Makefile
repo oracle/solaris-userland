@@ -28,16 +28,16 @@ include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=		vim
 COMPONENT_VERSION=	9.2
 # Remove any leading zeros in IPS_COMPONENT_VERSION
-IPS_COMPONENT_VERSION=	9.2.513
+IPS_COMPONENT_VERSION=	9.2.1014
 COMPONENT_FULL_VERSION=$(shell echo $(IPS_COMPONENT_VERSION) | awk -F. '{printf("%d.%d.%04d\n", $$1, $$2, $$3)}')
 COMPONENT_SRC=	vim-$(COMPONENT_FULL_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_URL=	https://github.com/vim/vim/archive/v$(COMPONENT_FULL_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:93109191741020620e5ee5c3d13905bf43d8f1003ebb3bbb226eff1ad484c4e6
+COMPONENT_ARCHIVE_HASH=	sha256:f5a2f3f289e1269f60977418e7db7479bb0fd11f0e17ef24df7625891cbc6aa3
 COMPONENT_PROJECT_URL=	http://www.vim.org/
 COMPONENT_ANITYA_ID=	5092
 
-COMPONENT_BAID=		393634
+COMPONENT_BAID=		429557
 
 PKG_MACROS +=	VIMVER=vim$(subst .,,$(COMPONENT_VERSION))
 
@@ -126,30 +126,25 @@ COMPONENT_POST_TEST_ACTION += \
     fi
 
 # Setup the testing environment for non-X variant.
-# The resulting file is list of failed tests
+# Keep the compared snapshot focused on failures.  Vim's script-test
+# summarizer records detailed SKIPPED entries and the capitalized
+# " Skipped: N Tests" line in the full test log, but those lines are
+# intentionally not part of the master-file comparison.
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TARGETS = test
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-n '
-# There are multiple tests which sometimes do succeed and sometimes don't. We
-# remove such tests from the result to make it comparable with master results file.
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_blob.vim:/d" '
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_channel.vim:/d" '
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_codestyle.vim:/d" '
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_netbeans.vim:/d" '
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_popup.vim:/d" '
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_search.vim:/d" '
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_suspend.vim:/d" '
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_terminal.vim:/d" '
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/test_terminal2.vim:/d" '
-# We keep in the filtered output just names of the failed tests. So we at least
-# know that it's not getting worse.
-NULL :=
-TAB  := $(NULL)	$(NULL)
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "s/\r//g"'
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/^FAILED:/p"'
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/^skipped:/p"'
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/^  FAILED: *[1-9][0-9]* Tests/p"'
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/^TEST FAILURE/p"'
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "1,/^Failures:/d"'
-$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/^$(TAB)From/p"'
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/^[[:space:]]*From /p"'
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-e "/^[[:space:]]*Found errors in /p"'
 $(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 CBE_PACKAGES += runtime/lua
 CBE_PACKAGES += runtime/ruby-33
+CBE_PACKAGES += terminal/screen
 CBE_PACKAGES += text/gnu-gettext
 CBE_PACKAGES += x11/library/libxcursor
 

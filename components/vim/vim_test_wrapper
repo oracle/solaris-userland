@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Copyright (c) 2026, Oracle and/or its affiliates.
 
 ## Override HOME. Bash processes $HOME/.profile.
 #HOME=$(pwd)/home
@@ -33,5 +35,5 @@ import sys;
 
 signal.signal(signal.SIGTSTP, signal.SIG_DFL)
 pty.spawn(sys.argv[1:])
-' env TERM=xterm /usr/bin/screen -c /dev/null bash -c 'gmake '"$@"' 2>&1 | tee outfile'
+' env TERM=xterm TERMINFO=/usr/share/lib/terminfo /usr/bin/screen -c /dev/null bash -c 'gmake '"$@"' 2>&1 | tee outfile'
 fi

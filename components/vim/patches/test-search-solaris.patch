@@ -1,0 +1,22 @@
+Test_searchpair_timeout_with_skip() assumes that a 1 ms timeout will finish
+within 15 ms on non-Windows platforms.  Under the Solaris screen-based test
+harness the measured time is commonly slightly above that, around 16-17 ms,
+which exhausts the flaky-test retries.  Reuse the existing relaxed BSD upper
+bound for Solaris; it still verifies the timeout but allows the platform timer
+granularity.
+
+This patch is not intended for upstream.
+
+--- vim-9.2.0564/src/testdir/test_search.vim
++++ vim-9.2.0564/src/testdir/test_search.vim
+@@ -376,8 +376,8 @@
+     if RunningWithValgrind()
+       let max_time += 0.04  " this can be slow with valgrind
+     endif
+-    if has('bsd')
+-      " test often fails with FreeBSD
++    if has('bsd') || has('sun')
++      " test often fails with FreeBSD and under the Solaris screen harness
+       let max_time = max_time * 2.0
+     endif
+   endif

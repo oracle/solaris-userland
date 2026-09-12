@@ -1,0 +1,42 @@
+Test_termdebug_evaluate() checks the most recent message immediately after
+asking gdb to evaluate an expression.  Under the Solaris screen-based terminal
+harness, gdb can print the intermediate "expr: ..." prompt before the evaluated
+result reaches Vim messages.  Slower SPARC runs can still need more than a
+short wait there, so wait longer after Evaluate so the test checks the actual
+expression result instead of the prompt.
+
+Test_termdebug_toggle_break() creates several duplicate breakpoints and then
+toggles them off.  Wait after each Break command so the signs for all duplicate
+breakpoints are registered before ToggleBreak removes them.
+
+--- vim-9.2.0564/src/testdir/test_plugin_termdebug.vim
++++ vim-9.2.0564/src/testdir/test_plugin_termdebug.vim
+@@ -387,13 +387,13 @@
+ 
+   " Evaluate an expression
+   Evaluate n
+-  call term_wait(gdb_buf)
++  call term_wait(gdb_buf, 2000)
+   call assert_equal(execute('1messages')->trim(), '"n": 7')
+   Evaluate argc
+-  call term_wait(gdb_buf)
++  call term_wait(gdb_buf, 2000)
+   call assert_equal(execute('1messages')->trim(), '"argc": 1')
+   Evaluate isprime(n)
+-  call term_wait(gdb_buf)
++  call term_wait(gdb_buf, 2000)
+   call assert_equal(execute('1messages')->trim(), '"isprime(n)": 1')
+ 
+   wincmd t
+@@ -756,8 +756,11 @@
+ 
+   " Remove multiple break points
+   execute "Break"
++  call term_wait(gdb_buf, 400)
+   execute "Break"
++  call term_wait(gdb_buf, 400)
+   execute "Break"
++  call term_wait(gdb_buf, 400)
+   execute "Break"
+   call term_wait(gdb_buf, 400)
+   execute "ToggleBreak"

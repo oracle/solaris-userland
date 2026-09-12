@@ -1,0 +1,21 @@
+getdigits() uses atol(), whose overflow behavior is not portable.  On Solaris,
+overflowing atol() can return a wrapped positive value without ERANGE, so Ex
+address parsing (like :999999999999999999999print) misses the intended
+out-of-range condition.
+
+Use strtol() for the conversion, which gives defined overflow handling and
+keeps the existing pointer advancement logic.  This fixes the
+Test_address_line_overflow() failure in test_excmd.vim.
+
+Upstream pull request: https://github.com/vim/vim/pull/20602
+
+--- vim-9.2.0564/src/charset.c
++++ vim-9.2.0564/src/charset.c
+@@ -2232,7 +2232,7 @@
+ 
+     p = *pp;
+-    retval = atol((char *)p);
++    retval = strtol((char *)p, NULL, 10);
+     if (*p == '-')		// skip negative sign
+ 	++p;
+     p = skipdigits(p);		// skip to next non-digit

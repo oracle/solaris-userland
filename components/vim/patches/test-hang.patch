@@ -1,64 +1,36 @@
+https://github.com/vim/vim/issues/11063
 https://www.mail-archive.com/vim_dev@googlegroups.com/msg63877.html
 
-This reverts https://github.com/vim/vim/commit/5903aaf7eb4586cf7e4fa5a219092334b05c89de
-which makes vim tests to hang on Solaris. More investigation is needed.
+Patch 9.0.0394 changed channel_read() to keep reading while the file
+descriptor is ready, instead of stopping after a short read.  That avoids
+treating a short read as if it meant that all available data had been drained.
 
-This patch is not intended for upstream.
+On Solaris, test_terminal2.vim's Test_term_getcursor() can read terminal data
+and then get EOF from the same file descriptor in the same channel_read()
+invocation.  That EOF is reported by read() returning zero after the queued
+data has been read.  The data is queued, but the EOF is ignored because
+channel_read() only closes the channel part when no data was read at all.
+
+Linux ptys behaved differently in the same tests: after reading queued data,
+the closed slave side was reported as read() returning -1 with errno set to
+EIO.  A later channel_read() invocation sees the same error with no data read,
+so the existing readlen <= 0 check closes the channel part there.  Solaris can
+complete the drain with read() returning zero in the same invocation, leaving
+no later read event to trigger that existing close path.
+
+Handle a read() result of zero as EOF even if bytes were read earlier in the
+same channel_read() call.  This keeps the 9.0.0394 short-read behavior while
+still closing the channel part when the peer has closed after the queued data.
 
 
---- vim-9.2.0513/src/channel.c
-+++ vim-9.2.0513/src/channel.c
-@@ -3995,24 +3995,6 @@ #define DETACH_MSG_RAW "DETACH\n"
- // Buffer size for reading incoming messages.
- #define MAXMSGSIZE 4096
- 
--/*
-- * Check if there are remaining data that should be written for "in_part".
-- */
--    static int
--is_channel_write_remaining(chanpart_T *in_part)
--{
--    buf_T *buf = in_part->ch_bufref.br_buf;
--
--    if (in_part->ch_writeque.wq_next != NULL)
--	return TRUE;
--    if (buf == NULL)
--	return FALSE;
--    return in_part->ch_buf_append
--	    ? (in_part->ch_buf_bot < buf->b_ml.ml_line_count)
--	    : (in_part->ch_buf_top <= in_part->ch_buf_bot
--			    && in_part->ch_buf_top <= buf->b_ml.ml_line_count);
--}
--
- #if defined(HAVE_SELECT)
- /*
-  * Add write fds where we are waiting for writing to be possible.
-@@ -4028,7 +4010,8 @@ {
- 	chanpart_T  *in_part = &ch->ch_part[PART_IN];
- 
- 	if (in_part->ch_fd != INVALID_FD
--		&& is_channel_write_remaining(in_part))
-+		&& (in_part->ch_bufref.br_buf != NULL
-+		    || in_part->ch_writeque.wq_next != NULL))
- 	{
- 	    FD_SET((int)in_part->ch_fd, wfds);
- 	    if ((int)in_part->ch_fd >= maxfd)
-@@ -4052,7 +4035,8 @@ {
- 	chanpart_T  *in_part = &ch->ch_part[PART_IN];
- 
- 	if (in_part->ch_fd != INVALID_FD
--		&& is_channel_write_remaining(in_part))
-+		&& (in_part->ch_bufref.br_buf != NULL
-+		    || in_part->ch_writeque.wq_next != NULL))
- 	{
- 	    in_part->ch_poll_idx = nfd;
- 	    fds[nfd].fd = in_part->ch_fd;
-@@ -4375,6 +4359,8 @@ break;	// error or nothing more to read
- 	// Store the read message in the queue.
- 	channel_save(channel, part, buf, len, FALSE, "RECV ");
- 	readlen += len;
-+	if (len < MAXMSGSIZE)
-+	    break;	// did read everything that's available
+--- vim-9.2.0670/src/channel.c
++++ vim-9.2.0670/src/channel.c
+@@ -4332,7 +4332,7 @@
      }
  
      // Reading a disconnection (readlen == 0), or an error.
+-    if (readlen <= 0)
++    if (len == 0 || readlen <= 0)
+     {
+ 	if (!channel->ch_keep_open)
+ 	    ch_close_part_on_error(channel, part, (len < 0), func);

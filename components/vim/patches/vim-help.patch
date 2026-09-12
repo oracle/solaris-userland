@@ -15,7 +15,7 @@ instead of missing help files to inform the user.
  
      if (ERROR_IF_ANY_POPUP_WINDOW)
  	return;
-@@ -88,6 +90,22 @@ // Check if there is a match for the arg
+@@ -88,6 +90,23 @@ // Check if there is a match for the arg
      n = find_help_tags(arg, &num_matches, &matches,
  						 eap != NULL && eap->forceit);
  
@@ -25,7 +25,8 @@ instead of missing help files to inform the user.
 +     * user to the minimized help file delivered with the core vim package which
 +     * explains why there's no help and how to get it.
 +     */
-+    if (num_matches == 0 && mch_access((char *)p_hf, F_OK) < 0) {
++    if (num_matches == 0 && mch_access((char *)p_hf, F_OK) < 0)
++    {
 +	nohelp = TRUE;
 +	mhf = alloc(MAXPATHL);
 +	STRNCPY(mhf, p_hf, MAXPATHL - 1);
@@ -47,14 +48,15 @@ instead of missing help files to inform the user.
      {
  #ifdef FEAT_MULTI_LANG
  	if (lang != NULL)
-@@ -113,9 +131,11 @@ FreeWild(num_matches, matches);
+@@ -113,9 +131,12 @@ FreeWild(num_matches, matches);
  	return;
      }
  
 -    // The first match (in the requested language) is the best match.
 -    tag = vim_strsave(matches[i]);
 -    FreeWild(num_matches, matches);
-+    if (!nohelp) {
++    if (!nohelp)
++    {
 +	/* The first match (in the requested language) is the best match. */
 +	tag = vim_strsave(matches[i]);
 +	FreeWild(num_matches, matches);
@@ -62,7 +64,7 @@ instead of missing help files to inform the user.
  
  #ifdef FEAT_GUI
      need_mouse_correct = TRUE;
-@@ -137,12 +157,14 @@ else
+@@ -137,12 +159,15 @@ else
  	{
  	    // There is no help window yet.
  	    // Try to open the file specified by the "helpfile" option.
@@ -70,19 +72,20 @@ instead of missing help files to inform the user.
 -	    {
 -		smsg(_("Sorry, help file \"%s\" not found"), p_hf);
 -		goto erret;
-+	    if (!nohelp || nominhelp) {
++	    if (!nohelp || nominhelp)
++	    {
 +		if ((helpfd = mch_fopen((char *)p_hf, READBIN)) == NULL)
-+	    	{
-+	    	    smsg(_("Sorry, help file \"%s\" not found"), p_hf);
-+	    	    goto erret;
-+	    	}
-+	    	fclose(helpfd);
++		{
++		    smsg(_("Sorry, help file \"%s\" not found"), p_hf);
++		    goto erret;
++		}
++		fclose(helpfd);
  	    }
 -	    fclose(helpfd);
  
  	    // Split off help window; put it at far top if no position
  	    // specified, the current window is vertically split and
-@@ -161,7 +183,7 @@ // Open help file (do_ecmd() will set b_
+@@ -161,7 +186,7 @@ // Open help file (do_ecmd() will set b_
  	    // set b_p_ro flag).
  	    // Set the alternate file to the previously edited file.
  	    alt_fnum = curbuf->b_fnum;
@@ -91,7 +94,7 @@ instead of missing help files to inform the user.
  			  ECMD_HIDE + ECMD_SET_HELP,
  			  NULL);  // buffer is still open, don't store info
  	    if ((cmdmod.cmod_flags & CMOD_KEEPALT) == 0)
-@@ -179,7 +201,7 @@ // It is needed for do_tag top open fold
+@@ -179,7 +204,7 @@ // It is needed for do_tag top open fold
      KeyTyped = old_KeyTyped;
  #endif
  
@@ -100,7 +103,7 @@ instead of missing help files to inform the user.
  	do_tag(tag, DT_HELP, 1, FALSE, TRUE);
  
      // Delete the empty buffer if we're not using it.  Careful: autocommands
-@@ -198,7 +220,8 @@ && (cmdmod.cmod_flags & CMOD_KEEPALT) ==
+@@ -198,7 +223,8 @@ && (cmdmod.cmod_flags & CMOD_KEEPALT) ==
  	curwin->w_alt_fnum = alt_fnum;
  
  erret:
