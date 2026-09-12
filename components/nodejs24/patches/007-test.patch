@@ -37,8 +37,8 @@ elsewhere, and skip these two tests in the Solaris status file because
 the shared nghttp2 session-close behavior can also affect unrelated
 streams in the same test process.
 
---- node-24.17.0/test/parallel/parallel.status
-+++ node-24.17.0/test/parallel/parallel.status
+--- node-24.18.1/test/parallel/parallel.status
++++ node-24.18.1/test/parallel/parallel.status
 @@ -64,6 +64,8 @@ # https://github.com/nodejs/node/issues/
  test-debugger-heap-profiler: PASS, FLAKY
  
@@ -48,8 +48,8 @@ streams in the same test process.
  # https://github.com/nodejs/node/issues/43457
  test-domain-no-error-handler-abort-on-uncaught-0: PASS, FLAKY
  test-domain-no-error-handler-abort-on-uncaught-1: PASS,FLAKY
---- node-24.17.0/test/parallel/test-fs-cp-async-socket.mjs
-+++ node-24.17.0/test/parallel/test-fs-cp-async-socket.mjs
+--- node-24.18.1/test/parallel/test-fs-cp-async-socket.mjs
++++ node-24.18.1/test/parallel/test-fs-cp-async-socket.mjs
 @@ -8,6 +8,7 @@ import { join } from 'node:path';
  import { nextdir } from '../common/fs.js';
  import tmpdir from '../common/tmpdir.js';
@@ -75,8 +75,8 @@ streams in the same test process.
      server.close();
    }));
  }
---- node-24.17.0/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
-+++ node-24.17.0/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
+--- node-24.18.1/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
++++ node-24.18.1/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
 @@ -7,6 +7,7 @@ import { createServer } from 'node:net';
  import { join } from 'node:path';
  import tmpdir from '../common/tmpdir.js';
@@ -102,8 +102,8 @@ streams in the same test process.
    );
    server.close();
  }
---- node-24.17.0/test/parallel/test-http2-client-unescaped-path.js
-+++ node-24.17.0/test/parallel/test-http2-client-unescaped-path.js
+--- node-24.18.1/test/parallel/test-http2-client-unescaped-path.js
++++ node-24.18.1/test/parallel/test-http2-client-unescaped-path.js
 @@ -5,6 +5,7 @@ if (!common.hasCrypto)
    common.skip('missing crypto');
  const http2 = require('http2');
@@ -134,8 +134,8 @@ streams in the same test process.
      req.on('close', common.mustCall(() => countdown.dec()));
    }
  
---- node-24.17.0/test/parallel/test-http2-multi-content-length.js
-+++ node-24.17.0/test/parallel/test-http2-multi-content-length.js
+--- node-24.18.1/test/parallel/test-http2-multi-content-length.js
++++ node-24.18.1/test/parallel/test-http2-multi-content-length.js
 @@ -6,10 +6,17 @@ common.skip('missing crypto');
  const assert = require('assert');
  const http2 = require('http2');
@@ -154,8 +154,8 @@ streams in the same test process.
    stream.respond();
    stream.end();
  }));
---- node-24.17.0/test/parallel/test-net-server-max-connections.js
-+++ node-24.17.0/test/parallel/test-net-server-max-connections.js
+--- node-24.18.1/test/parallel/test-net-server-max-connections.js
++++ node-24.18.1/test/parallel/test-net-server-max-connections.js
 @@ -58,13 +58,6 @@ c.on('close', common.mustCall(() => {
        console.error(`closed ${index}`);
        closes++;

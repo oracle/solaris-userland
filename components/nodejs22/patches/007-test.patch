@@ -30,8 +30,8 @@ Solaris may close accepted connections before rejected ones, or accept
 a later client before an earlier one, causing this test to fail
 spuriously.
 
---- node-22.23.0/test/parallel/parallel.status
-+++ node-22.23.0/test/parallel/parallel.status
+--- node-22.23.2/test/parallel/parallel.status
++++ node-22.23.2/test/parallel/parallel.status
 @@ -90,6 +90,8 @@ # https://github.com/nodejs/node/issues/
  test-debugger-heap-profiler: PASS, FLAKY
  
@@ -41,8 +41,8 @@ spuriously.
  # https://github.com/nodejs/node/issues/43457
  test-domain-no-error-handler-abort-on-uncaught-0: PASS, FLAKY
  test-domain-no-error-handler-abort-on-uncaught-1: PASS,FLAKY
---- node-22.23.0/test/parallel/test-fs-cp-async-socket.mjs
-+++ node-22.23.0/test/parallel/test-fs-cp-async-socket.mjs
+--- node-22.23.2/test/parallel/test-fs-cp-async-socket.mjs
++++ node-22.23.2/test/parallel/test-fs-cp-async-socket.mjs
 @@ -8,6 +8,7 @@ import { join } from 'node:path';
  import { nextdir } from '../common/fs.js';
  import tmpdir from '../common/tmpdir.js';
@@ -63,8 +63,8 @@ spuriously.
      server.close();
    }));
  }
---- node-22.23.0/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
-+++ node-22.23.0/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
+--- node-22.23.2/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
++++ node-22.23.2/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
 @@ -7,6 +7,7 @@ import { createServer } from 'node:net';
  import { join } from 'node:path';
  import tmpdir from '../common/tmpdir.js';
@@ -84,8 +84,8 @@ spuriously.
    );
    server.close();
  }
---- node-22.23.0/test/parallel/test-http2-client-unescaped-path.js
-+++ node-22.23.0/test/parallel/test-http2-client-unescaped-path.js
+--- node-22.23.2/test/parallel/test-http2-client-unescaped-path.js
++++ node-22.23.2/test/parallel/test-http2-client-unescaped-path.js
 @@ -5,6 +5,7 @@ if (!common.hasCrypto)
    common.skip('missing crypto');
  const http2 = require('http2');
@@ -116,8 +116,8 @@ spuriously.
      req.on('close', common.mustCall(() => countdown.dec()));
    }
  
---- node-22.23.0/test/parallel/test-http2-multi-content-length.js
-+++ node-22.23.0/test/parallel/test-http2-multi-content-length.js
+--- node-22.23.2/test/parallel/test-http2-multi-content-length.js
++++ node-22.23.2/test/parallel/test-http2-multi-content-length.js
 @@ -6,10 +6,17 @@ common.skip('missing crypto');
  const assert = require('assert');
  const http2 = require('http2');
@@ -136,8 +136,8 @@ spuriously.
    stream.respond();
    stream.end();
  }));
---- node-22.23.0/test/parallel/test-net-server-max-connections.js
-+++ node-22.23.0/test/parallel/test-net-server-max-connections.js
+--- node-22.23.2/test/parallel/test-net-server-max-connections.js
++++ node-22.23.2/test/parallel/test-net-server-max-connections.js
 @@ -58,13 +58,6 @@ c.on('close', function() {
        console.error(`closed ${index}`);
        closes++;
