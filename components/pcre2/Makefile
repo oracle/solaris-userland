@@ -26,15 +26,15 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pcre2
-COMPONENT_VERSION=	10.44
+COMPONENT_VERSION=	10.48
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:86b9cb0aa3bcb7994faa88018292bc704cdbb708e785f7c74352ff6ea7d3175b
+    sha256:ebcc25aadf2a51fa1fefa9b8bc9e7a79b3dae86870a0f1152a22e42befd46888
 COMPONENT_ARCHIVE_URL=	https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_PROJECT_URL=  http://pcre.org/
 COMPONENT_BUGDB=	library/pcre
 COMPONENT_ANITYA_ID=	5832
-COMPONENT_BAID=		188861
+COMPONENT_BAID=		434180
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
@@ -77,6 +77,10 @@ CONFIGURE_ENV+= "MAKE=$(GMAKE)"
 
 CONFIGURE_ENV.64+= "CXXLINKLIB=$(CXX) $(CCFLAGS) $(LDFLAGS)"
 CONFIGURE_ENV.64+= "MACH64=$(MACH64)"
+
+# Keep libtool from recording the default 64-bit library directory as RUNPATH.
+CONFIGURE_ENV.64+= "lt_cv_sys_lib_search_path_spec=/lib/$(MACH64) /usr/lib/$(MACH64)"
+CONFIGURE_ENV.64+= "lt_cv_sys_lib_dlsearch_path_spec=/lib/$(MACH64) /usr/lib/$(MACH64)"
 
 CONFIGURE_OPTIONS+=	--includedir=$(CONFIGURE_INCLUDEDIR)/pcre
 CONFIGURE_OPTIONS+=	--localstatedir=$(VARDIR)

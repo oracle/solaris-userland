@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 
 # Use this trick to revert $(MACH32) expansions.
@@ -32,7 +32,7 @@
 <transform file path=usr/bin/\$\(MACH32\)/pcre2test -> drop>
 
 # We do not deliver the following files from the historical reasons.
-<transform file path=usr/share/doc/pcre2/(AUTHORS|COPYING|ChangeLog|LICENCE|NEWS|README) -> drop>
+<transform file path=usr/share/doc/pcre2/(AUTHORS|AUTHORS.md|COPYING|ChangeLog|LICENCE|LICENCE.md|NEWS|README) -> drop>
 
 # Solaris studio compiler produces 32-bit applications by default, for that reason,
 # the pcre2-config script for 32-bit pcre2 libraries is located in '/usr/bin' path.
@@ -40,4 +40,3 @@
 <transform file path=usr/bin/pcre2-config -> edit path ^.*$ usr/bin/\$\(MACH64\)/pcre2-config>
 <transform file path=usr/bin/\$\(MACH32\)/pcre2-config -> set action.hash %(path)>
 <transform file path=usr/bin/\$\(MACH32\)/pcre2-config -> edit path ^.*$ usr/bin/pcre2-config>
-
