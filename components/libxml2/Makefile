@@ -29,14 +29,14 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 MAJOR_VERSION=2.15
-MICRO_VERSION=3
+MICRO_VERSION=4
 
 COMPONENT_NAME=		libxml2
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
-COMPONENT_BAID=		387580
+COMPONENT_BAID=		434391
 COMPONENT_PROJECT_URL=	http://xmlsoft.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:78262a6e7ac170d6528ebfe2efccdf220191a5af6a6cd61ea4a9a9a5042c7a07
+    sha256:98087fd181d9070724f3fbc65c7377db03038eb92bd882374daff44940138821
 COMPONENT_ARCHIVE =     $(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/libxml2/$(MAJOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libxml
@@ -91,7 +91,10 @@ COMPONENT_POST_CONFIGURE_ACTION.64 += \
 # It's also nice to test other python 3 modules (LC_ALL is set to avoid test failure).
 COMPONENT_POST_TEST_ACTION.64 += \
     ( cd $(@D)/python3.13 ; \
-	LC_ALL=en_US.utf8  $(GMAKE) $(COMPONENT_TEST_ARGS) check ; ) ;
+	LC_ALL=en_US.utf8 $(GMAKE) \
+	    pythondir=$(PYTHON.3.13.VENDOR_PACKAGES) \
+	    pyexecdir=$(PYTHON.3.13.VENDOR_PACKAGES) \
+	    $(COMPONENT_TEST_ARGS) check ; ) ;
 
 COMPONENT_PRE_TEST_ACTION += \
     (cd $(SOURCE_DIR) ; gtar xf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1));

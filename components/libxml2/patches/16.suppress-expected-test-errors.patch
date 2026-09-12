@@ -30,9 +30,9 @@ the structured error callback around those calls.
 This is Solaris specific because it only keeps downstream test baselines stable.
 It does not change installed library code or libxml2 runtime behaviour.
 
---- libxml2-2.15.3/testparser.c
-+++ libxml2-2.15.3/testparser.c
-@@ -19,12 +19,10 @@
+--- libxml2-2.15.4/testparser.c
++++ libxml2-2.15.4/testparser.c
+@@ -19,12 +19,10 @@ #include <libxml/xmlschemas.h>
  
  #include <string.h>
  
@@ -45,7 +45,7 @@ It does not change installed library code or libxml2 runtime behaviour.
  
  static int
  testNewDocNode(void) {
-@@ -1099,7 +1097,9 @@
+@@ -1102,7 +1100,9 @@ if (reader == NULL) {
          fprintf(stderr, "xmlReaderForDoc failed without resource loader\n");
          return 1;
      }
@@ -55,7 +55,7 @@ It does not change installed library code or libxml2 runtime behaviour.
      if (ret == 0) {
          fprintf(stderr, "xmlTextReaderSchemaValidate unexpectedly succeeded\n");
          err = 1;
-@@ -1156,10 +1156,12 @@
+@@ -1159,10 +1159,12 @@ }
  
      reader = xmlReaderForMemory(xml, (int) sizeof(xml) - 1, "doc.xml", NULL,
                                  XML_PARSE_NOENT | XML_PARSE_DTDLOAD);
@@ -68,7 +68,7 @@ It does not change installed library code or libxml2 runtime behaviour.
      if (ret != 0) {
          fprintf(stderr, "reader failed on entity-expanded document\n");
          err = 1;
-@@ -1216,7 +1218,9 @@
+@@ -1219,7 +1221,9 @@ if (reader == NULL) {
          fprintf(stderr, "xmlReaderForDoc failed without Relax NG loader\n");
          return 1;
      }
