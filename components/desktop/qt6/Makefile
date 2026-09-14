@@ -27,7 +27,7 @@ CTF_MODE =		relaxed	# Spotty coverage, C++
 
 include ../../../make-rules/shared-macros.mk
 
-MAJOR_VERSION=6.10
+MAJOR_VERSION=6.11
 MICRO_VERSION=2
 
 COMPONENT_NAME=		qt-everywhere
@@ -35,12 +35,12 @@ COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_PROJECT_URL=  https://qt.io/
 COMPONENT_SRC=		$(COMPONENT_NAME)-src-$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH=	sha256:c3df0f0e421130cc52ed81cb712358804471ce9bd2a41d97828f9f5b1bf7fed2
+COMPONENT_ARCHIVE_HASH=	sha256:6dcfbca271d76a6502741a2c0dc6fc98ef7dd0b7b4cfd0abcebb285a86a26f33
 COMPONENT_ARCHIVE_URL=	https://download.qt.io/official_releases/qt/$(MAJOR_VERSION)/$(COMPONENT_VERSION)/single/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/qt
 COMPONENT_ANITYA_ID=	7927
 
-COMPONENT_BAID=		368564
+COMPONENT_BAID=		428415
 
 TEST_TARGET= $(SKIP_TEST)
 
@@ -92,6 +92,7 @@ CONFIGURE_OPTIONS +=  -system-sqlite
 
 CONFIGURE_OPTIONS +=  -skip qt3d
 CONFIGURE_OPTIONS +=  -skip qtactiveqt
+CONFIGURE_OPTIONS +=  -skip qtcanvaspainter
 CONFIGURE_OPTIONS +=  -skip qtcharts
 CONFIGURE_OPTIONS +=  -skip qtconnectivity
 CONFIGURE_OPTIONS +=  -skip qtdatavis3d
@@ -107,6 +108,7 @@ CONFIGURE_OPTIONS +=  -skip qtlocation
 CONFIGURE_OPTIONS +=  -skip qtlottie
 CONFIGURE_OPTIONS +=  -skip qtmqtt
 CONFIGURE_OPTIONS +=  -skip qtnetworkauth
+CONFIGURE_OPTIONS +=  -skip qtopenapi
 CONFIGURE_OPTIONS +=  -skip qtremoteobjects
 CONFIGURE_OPTIONS +=  -skip qtquicktimeline
 CONFIGURE_OPTIONS +=  -skip qtopcua
@@ -115,6 +117,7 @@ CONFIGURE_OPTIONS +=  -skip qtsensors
 CONFIGURE_OPTIONS +=  -skip qtserialbus
 CONFIGURE_OPTIONS +=  -skip qtserialport
 CONFIGURE_OPTIONS +=  -skip qtspeech
+CONFIGURE_OPTIONS +=  -skip qttasktree
 CONFIGURE_OPTIONS +=  -skip qtvirtualkeyboard
 CONFIGURE_OPTIONS +=  -skip qtwayland
 CONFIGURE_OPTIONS +=  -skip qtwebchannel
@@ -125,6 +128,7 @@ CONFIGURE_OPTIONS +=  -nomake examples
 CONFIGURE_OPTIONS +=  -no-opengl
 CONFIGURE_OPTIONS +=  -no-feature-sqlmodel
 CONFIGURE_OPTIONS +=  -no-feature-itemmodeltester
+CONFIGURE_OPTIONS +=  -no-feature-wasmdeployqt
 
 # Workaround for QTBUG-113686
 ifeq ($(MACH),i386)
