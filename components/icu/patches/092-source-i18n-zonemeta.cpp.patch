@@ -1,8 +1,8 @@
 Add NULL checks for TimeZone::createTimeZoneIDEnumeration calls
 http://bugs.icu-project.org/trac/ticket/12377
---- icu4c-77_1/icu/source/i18n/dtfmtsym.cpp
-+++ icu4c-77_1/icu/source/i18n/dtfmtsym.cpp
-@@ -1304,6 +1304,10 @@ static const int32_t NUM_TYPES = 4;
+--- icu4c-78_3/icu/source/i18n/dtfmtsym.cpp
++++ icu4c-78_3/icu/source/i18n/dtfmtsym.cpp
+@@ -1352,6 +1352,10 @@ static const int32_t NUM_TYPES = 4;
      do { // dummy do-while
  
          tzids = TimeZone::createTimeZoneIDEnumeration(ZONE_SET, nullptr, nullptr, status);
@@ -13,8 +13,8 @@ http://bugs.icu-project.org/trac/ticket/12377
          rows = tzids->count(status);
          if (U_FAILURE(status)) {
              break;
---- icu4c-77_1/icu/source/i18n/zonemeta.cpp
-+++ icu4c-77_1/icu/source/i18n/zonemeta.cpp
+--- icu4c-78_3/icu/source/i18n/zonemeta.cpp
++++ icu4c-78_3/icu/source/i18n/zonemeta.cpp
 @@ -486,12 +486,14 @@ U_ASSERT(u_strlen(region) == 2);
              u_UCharsToChars(region, regionBuf, 2);
  

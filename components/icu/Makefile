@@ -28,18 +28,18 @@ CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		icu4c
-COMPONENT_VERSION=	77_1
-IPS_COMPONENT_VERSION=	77.1
+COMPONENT_VERSION=	78_3
+IPS_COMPONENT_VERSION=	78.3
 COMPONENT_PROJECT_URL=  http://site.icu-project.org/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tgz
+COMPONENT_ARCHIVE=	icu4c-$(IPS_COMPONENT_VERSION)-sources.tgz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:588e431f77327c39031ffbb8843c0e3bc122c211374485fa87dc5f3faff24061
-COMPONENT_ARCHIVE_URL=  https://github.com/unicode-org/icu/releases/download/release-77-1/$(COMPONENT_ARCHIVE)
+	sha256:3a2e7a47604ba702f345878308e6fefeca612ee895cf4a5f222e7955fabfe0c0
+COMPONENT_ARCHIVE_URL=  https://github.com/unicode-org/icu/releases/download/release-78.3/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/icu
 COMPONENT_ANITYA_ID=	16134
 
-COMPONENT_BAID=		336525
+COMPONENT_BAID=		429361
 
 # OpenPGP Key obtained from https://ssl.icu-project.org/KEYS
 
