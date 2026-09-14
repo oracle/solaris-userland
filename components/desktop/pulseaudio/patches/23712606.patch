@@ -1,0 +1,113 @@
+# Bug 23712606 - pulseaudio messages - Failed to load module module-detect
+#
+# pa_module_load() returns negative integer error codes.  Storing its return
+# value in pa_error_code_t (an enum containing only non-negative constants)
+# makes the "err < 0" test false with current GCC, so real module-load errors
+# are silently ignored.  Backport the upstream fix and compare PA_ERR_EXIST
+# with the sign used by pa_module_load().
+#
+# Headless systems legitimately lack OSS devices and detectable sound hardware,
+# and a desktop session can legitimately lack ConsoleKit.  Make only these
+# optional loads non-fatal and immediately restore the default fail-on-error
+# setting.  Loads made under .nofail retain their detailed debug diagnostic but
+# do not add the generic "Module load failed" error to the startup output.  Keep
+# the expected no-hardware diagnostic at debug level.  Solaris stopped shipping
+# the obsolete module-solaris in bug 25789688, so do not try to load it merely
+# because /dev/audio exists.
+#
+# Upstream fix:
+# https://gitlab.freedesktop.org/pulseaudio/pulseaudio/-/commit/6c77b0191a6be390cc1cef2f7da7ba202ab86a92
+
+--- a/src/pulsecore/cli-command.c
++++ b/src/pulsecore/cli-command.c
+@@ -421,7 +421,7 @@
+ 
+ static int pa_cli_command_load(pa_core *c, pa_tokenizer *t, pa_strbuf *buf, bool *fail) {
+     const char *name;
+-    pa_error_code_t err;
++    int err;
+     pa_module *m = NULL;
+ 
+     pa_core_assert_ref(c);
+@@ -435,10 +435,11 @@
+     }
+ 
+     if ((err = pa_module_load(&m, c, name,  pa_tokenizer_get(t, 2))) < 0) {
+-        if (err == PA_ERR_EXIST) {
++        if (err == -PA_ERR_EXIST) {
+             pa_strbuf_puts(buf, "Module already loaded; ignoring.\n");
+         } else {
+-            pa_strbuf_puts(buf, "Module load failed.\n");
++            if (*fail)
++                pa_strbuf_puts(buf, "Module load failed.\n");
+             return -1;
+         }
+     }
+
+--- a/src/daemon/default.pa.in
++++ b/src/daemon/default.pa.in
+@@ -41,7 +41,9 @@
+ #load-module module-alsa-source device=hw:1,0
+ ])dnl
+ ifelse(@HAVE_OSS_OUTPUT@, 1, [dnl
++.nofail
+ load-module module-oss 
++.fail
+ #load-module module-oss device="/dev/dsp" sink_name=output source_name=input
+ #load-module module-oss-mmap device="/dev/dsp" sink_name=output source_name=input
+ ])dnl
+@@ -66,7 +68,9 @@
+ .ifexists module-detect@PA_SOEXT@
+ ])dnl
+ ### Use the static hardware detection module (for systems that lack udev support)
++.nofail
+ load-module module-detect
++.fail
+ .endif
+ 
+ ### Automatically connect sink and source if JACK server is present
+@@ -151,7 +155,9 @@
+ ### If autoexit on idle is enabled we want to make sure we only quit
+ ### when no local session needs us anymore.
+ .ifexists module-console-kit@PA_SOEXT@
++.nofail
+ load-module module-console-kit
++.fail
+ .endif
+ .ifexists module-systemd-login@PA_SOEXT@
+ load-module module-systemd-login
+
+--- a/src/daemon/system.pa.in
++++ b/src/daemon/system.pa.in
+@@ -37,7 +37,9 @@
+ .ifexists module-detect@PA_SOEXT@
+ ])dnl
+ ### Use the static hardware detection module (for systems that lack udev/hal support)
++.nofail
+ load-module module-detect
++.fail
+ .endif
+ 
+ ### Load several protocols
+
+--- a/src/modules/module-detect.c
++++ b/src/modules/module-detect.c
+@@ -198,6 +198,9 @@
+     if (!S_ISCHR(s.st_mode))
+         return 0;
+ 
++    if (!pa_module_exists("module-solaris"))
++        return 0;
++
+     pa_snprintf(args, sizeof(args), "device=%s", dev);
+ 
+     if (pa_module_load(&m, c, "module-solaris", args) < 0)
+@@ -251,7 +251,7 @@
+     if ((n = detect_waveout(m->core, just_one)) <= 0)
+ #endif
+     {
+-        pa_log_warn("failed to detect any sound hardware.");
++        pa_log_debug("failed to detect any sound hardware.");
+         goto fail;
+     }
+ 
