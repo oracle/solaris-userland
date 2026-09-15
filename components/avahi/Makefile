@@ -28,11 +28,11 @@ BUILD_BITS=	64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		avahi
-COMPONENT_VERSION=	0.8.2024.12
-COMPONENT_BAID=		191476
+COMPONENT_VERSION=	0.8.20260826
+COMPONENT_BAID=		430318
 GIT_REPO=		https://github.com/avahi/avahi
-GIT_COMMIT_ID=		1dade81
-GIT_HASH=		sha256:0604b6a787b482a07880256a4c60dab2334f2bdaa2ea805df12d53228d8f0611
+GIT_COMMIT_ID=		b1a83592590445fc3b88d3b3fdda69b5103956a9
+GIT_HASH=		sha256:9227883e5a916f1cff2e2455fdf048072bab8e71e118ef0b21f5ea915e5044d4
 COMPONENT_PROJECT_URL=	http://www.avahi.org/
 COMPONENT_BUGDB=	library/avahi
 COMPONENT_ANITYA_ID=	147
@@ -49,15 +49,6 @@ include $(WS_MAKE_RULES)/common.mk
 # Give xmltoman script executable rights
 COMPONENT_PRE_CONFIGURE_ACTION += \
 	$(CHMOD) +x $(COMPONENT_SRC_1)/xmltoman;
-
-# service-type-database/build-db is missing from distribution, but is available
-# on github. That must have some reason because other distribution deliver it
-# same way. We should update the file during component upgrade. original:
-# https://github.com/lathiat/avahi/blob/master/service-type-database/build-db
-COMPONENT_PRE_CONFIGURE_ACTION += \
-	db=$(SOURCE_DIR)/service-type-database/build-db; \
-	$(CP) $(COMPONENT_DIR)/files/build-db $$db && $(CHMOD) +x $$db &&\
-	($(CLONEY) $(SOURCE_DIR) $(@D));
 
 # Because of the mapfile patch
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
