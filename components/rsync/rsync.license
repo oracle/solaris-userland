@@ -1,4 +1,31 @@
 ## Files:
+popt/COPYING
+
+Copyright (c) 1998  Red Hat Software
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name of the X Consortium shall not be
+used in advertising or otherwise to promote the sale, use or other dealings
+in this Software without prior written authorization from the X Consortium.
+
+
+## Files:
 COPYING
 
 REGARDING OPENSSL AND XXHASH
@@ -687,30 +714,163 @@ Public License instead of this License.  But first, please read
 
 
 ## Files:
-popt/COPYING
+README.md
 
-Copyright (c) 1998  Red Hat Software
+WHAT IS RSYNC?
+--------------
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Rsync is a fast and extraordinarily versatile file copying tool for
+both remote and local files.
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+Rsync uses a delta-transfer algorithm which provides a very fast method
+for bringing remote files into sync.  It does this by sending just the
+differences in the files across the link, without requiring that both
+sets of files are present at one of the ends of the link beforehand.  At
+first glance this may seem impossible because the calculation of diffs
+between two files normally requires local access to both files.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
-AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+A technical report describing the rsync algorithm is included with this
+package.
 
-Except as contained in this notice, the name of the X Consortium shall not be
-used in advertising or otherwise to promote the sale, use or other dealings
-in this Software without prior written authorization from the X Consortium.
+
+USAGE
+-----
+
+Basically you use rsync just like scp, but rsync has many additional
+options.  To get a complete list of supported options type:
+
+    rsync --help
+
+See the [manpage][0] for more detailed information.
+
+[0]: https://download.samba.org/pub/rsync/rsync.1
+
+BUILDING AND INSTALLING
+-----------------------
+
+If you need to build rsync yourself, check out the [INSTALL][1] page for
+information on what libraries and packages you can use to get the maximum
+features in your build.
+
+[1]: https://github.com/RsyncProject/rsync/blob/master/INSTALL.md
+
+SETUP
+-----
+
+Rsync normally uses ssh or rsh for communication with remote systems.
+It does not need to be setuid and requires no special privileges for
+installation.  You must, however, have a working ssh or rsh system.
+Using ssh is recommended for its security features.
+
+Alternatively, rsync can run in `daemon' mode, listening on a socket.
+This is generally used for public file distribution, although
+authentication and access control are available.
+
+To install rsync, first run the "configure" script.  This will create a
+Makefile and config.h appropriate for your system.  Then type "make".
+
+Note that on some systems you will have to force configure not to use
+gcc because gcc may not support some features (such as 64 bit file
+offsets) that your system may support.  Set the environment variable CC
+to the name of your native compiler before running configure in this
+case.
+
+Once built put a copy of rsync in your search path on the local and
+remote systems (or use "make install").  That's it!
+
+
+RSYNC DAEMONS
+-------------
+
+Rsync can also talk to "rsync daemons" which can provide anonymous or
+authenticated rsync.  See the rsyncd.conf(5) manpage for details on how
+to setup an rsync daemon.  See the rsync(1) manpage for info on how to
+connect to an rsync daemon.
+
+
+WEB SITE
+--------
+
+For more information, visit the [main rsync web site][2].
+
+[2]: https://rsync.samba.org/
+
+You'll find a FAQ list, downloads, resources, HTML versions of the
+manpages, etc.
+
+
+MAILING LISTS
+-------------
+
+There is a mailing list for the discussion of rsync and its applications
+that is open to anyone to join.  New releases are announced on this
+list, and there is also an announcement-only mailing list for those that
+want official announcements.  See the [mailing-list page][3] for full
+details.
+
+[3]: https://rsync.samba.org/lists.html
+
+
+DISCORD
+-------
+
+There is also an rsync [Discord server][d] for real-time chat about rsync
+and its development.
+
+[d]: https://discord.gg/Avfvy9zhdp
+
+
+BUG REPORTS
+-----------
+
+The [bug-tracking web page][4] has full details on bug reporting.
+
+[4]: https://rsync.samba.org/bug-tracking.html
+
+That page contains links to the current bug list, and information on how to
+do a good job when reporting a bug.  You might also like to try searching
+the Internet for the error message you've received, or looking in the
+[mailing list archives][5].
+
+[5]: https://mail-archive.com/rsync@lists.samba.org/
+
+To send a bug report, follow the instructions on the bug-tracking
+page of the web site.
+
+Alternately, email your bug report to <rsync@lists.samba.org>.
+
+For security issues please email details of the issue to <rsync.project@gmail.com>.
+
+GIT REPOSITORY
+--------------
+
+If you want to get the very latest version of rsync direct from the
+source code repository, then you will need to use git.  The git repo
+is hosted [on GitHub][6] and [on Samba's site][7].
+
+[6]: https://github.com/RsyncProject/rsync
+[7]: https://git.samba.org/?p=rsync.git;a=summary
+
+See [the download page][8] for full details on all the ways to grab the
+source.
+
+[8]: https://rsync.samba.org/download.html
+
+
+COPYRIGHT
+---------
+
+Rsync was originally written by Andrew Tridgell and Paul Mackerras.  Many
+people from around the world have helped to maintain and improve it.
+
+Special thanks go to Wayne Davison, who maintained rsync from 2004 to 2024.
+
+Rsync may be used, modified and redistributed only under the terms of
+the GNU General Public License, found in the file [COPYING][9] in this
+distribution, or at [the Free Software Foundation][10].
+
+[9]: https://github.com/RsyncProject/rsync/blob/master/COPYING
+[10]: https://www.fsf.org/licenses/gpl.html
 
 
 ## Files:
@@ -1134,6 +1294,27 @@ with this program; if not, visit the http://fsf.org website.
 
 
 ## Files:
+configure.sh
+
+! /bin/sh
+ Guess values for system-dependent variables and create Makefiles.
+ Generated by GNU Autoconf 2.72 for rsync.
+
+ Report bugs to <https://rsync.samba.org/bug-tracking.html>.
+
+
+ Copyright (C) 1992-1996, 1998-2017, 2020-2023 Free Software Foundation,
+ Inc.
+
+
+ This configure script is free software; the Free Software Foundation
+ gives unlimited permission to copy, distribute and modify it.
+# -------------------- ##
+# M4sh Initialization. ##
+# -------------------- ##
+
+
+## Files:
 connection.c
 
 Support the max connections option.
@@ -1450,6 +1631,65 @@ with this program; if not, visit the http://fsf.org website.
 
 
 ## Files:
+lib/acl.c
+
+POSIX ACL get/set/delete via the generic xattr syscalls.
+
+POSIX ACLs are stored by the kernel as the "system.posix_acl_access" and
+"system.posix_acl_default" extended attributes, in a fixed little-endian
+wire format (see include/acl_ea.h in the acl package).  By serializing that
+format ourselves and using fgetxattr/fsetxattr on a held O_NOFOLLOW fd -- or
+getxattrat/setxattrat(AT_SYMLINK_NOFOLLOW) on a dirfd+leaf -- we get a
+symlink-race-safe ACL primitive that also covers the *default* ACL, which
+libacl's fd API (acl_get_fd/acl_set_fd, access-only) cannot.
+
+This file knows nothing about rsync's globals or its internal ACL form: it
+speaks a neutral (tag, perm, id) entry array, which makes it directly
+comparable against the system libacl in the t_acl unit test.
+
+Copyright (C) 2026 Wayne Davison & the rsync project
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, visit the http://fsf.org website.
+
+
+## Files:
+lib/acl.h
+
+POSIX ACL get/set/delete via the generic xattr syscalls, addressing the
+kernel "system.posix_acl_{access,default}" attributes directly so that the
+operation can be confined to a held O_NOFOLLOW fd (fsetxattr) or a
+dirfd+leaf with AT_SYMLINK_NOFOLLOW (setxattrat).  This replaces the path-
+based libacl acl_*_file() calls on Linux, where those would re-resolve the
+path and could be redirected by a parent-component symlink race.
+
+Copyright (C) 2026 Wayne Davison & the rsync project
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, visit the http://fsf.org website.
+
+
+## Files:
 lib/addrinfo.h
 lib/getaddrinfo.c
 
@@ -1495,6 +1735,8 @@ lib/addrinfo.h
  in the system headers but no getaddrinfo() can be located.
 
  Copyright (c) 2003-2007, PostgreSQL Global Development Group
+
+-------------------------------------------------------------------------
 
 
 ## Files:
@@ -2015,27 +2257,17 @@ with this program; if not, visit the http://fsf.org website.
 
 
 ## Files:
-runtests.sh
+runtests.py
 
 Copyright (C) 2001, 2002 by Martin Pool <mbp@samba.org>
 Copyright (C) 2003-2022 Wayne Davison
+Copyright (C) 2026 Andrew Tridgell
 
-
-## Files:
-runtests.sh
+Rewrite of runtests.sh in Python (runtests.sh is now deprecated).
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License version
 2 as published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 ## Files:
@@ -2133,6 +2365,66 @@ with this program; if not, visit the http://fsf.org website.
 
 
 ## Files:
+t_acl.c
+
+Unit test for lib/acl.c.
+
+Validates the fd- and at-based POSIX ACL get/set/delete in lib/acl.c against
+the system libacl, used here as an oracle: we set an ACL via one and read it
+back via the other (both directions), round-trip through lib/acl.c, and check
+the default-ACL and delete paths.  We deliberately do NOT try to reproduce
+libacl's symlink-following races -- we only compare functional behaviour.
+
+Not linked into rsync itself.  Exits 0 if all checks pass, 1 on any failure,
+77 to skip (built without SUPPORT_ACL_FD, no libacl, or a scratch filesystem
+without ACL support).
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License version 2 as
+published by the Free Software Foundation.
+
+
+## Files:
+t_chmod_secure.c
+
+Test harness for do_chmod_at(). Confirms the symlink-TOCTOU
+primitive used by CVE-2026-29518 (and its incomplete-fix follow-up
+for chmod) is closed by do_chmod_at(): a parent directory component
+being a symlink that escapes the receiver's confinement must be
+rejected, while a parent symlink that resolves *within* the tree
+must still work (so legitimate dir-symlinks are not regressed).
+
+Not linked into rsync itself.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License version 2 as
+published by the Free Software Foundation.
+
+
+## Files:
+t_hashtable_overflow.c
+
+Regression harness for the hashtable size*node_size integer overflow
+(Leonid Bugaev May-2026 re-audit, KI-11/12).
+
+hashtable_create() once computed the slot-array byte count as
+new_array0(char, size * node_size) in 32-bit int arithmetic; for a large
+peer/data-driven size the product wrapped to a tiny value, under-allocating
+the table while tbl->size recorded the huge size -- a later node access then
+ran out of bounds (heap overflow / SEGV).  The fix passes size and node_size
+as separate factors so my_alloc's --max-alloc guard rejects the oversized
+request, exiting RERR_MALLOC instead of under-allocating.
+
+This harness sets a realistic max_alloc (t_stub leaves it at SIZE_MAX) and
+asks for an absurd size: the fixed code exits RERR_MALLOC; a regressed build
+under-allocates and crashes on the node access below.  Not linked into rsync.
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License version 3 as published by the
+Free Software Foundation.
+
+
+## Files:
 t_stub.c
 
 This file contains really simple implementations for rsync global
@@ -2175,29 +2467,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
 with this program; if not, visit the http://fsf.org website.
-
-
-## Files:
-testhelp/maketree.py
-
-Copyright (C) 2002 by Martin Pool <mbp@samba.org>
-
-
-## Files:
-testhelp/maketree.py
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License version
-2 as published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this program; if not, write to the Free Software
-Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 ## Files:
@@ -2436,20 +2705,20 @@ factor of two increase in speed on a Power PC G4 (PPC7455) using gcc -O3.
 
 ## Files:
 zlib/deflate.c
-
-deflate.c -- compress data using the deflation algorithm
-Copyright (C) 1995-2013 Jean-loup Gailly and Mark Adler
-For conditions of distribution and use, see copyright notice in zlib.h
-
-
-## Files:
-zlib/deflate.c
 zlib/inftrees.c
 
 If you use the zlib library in a product, an acknowledgment is welcome
 in the documentation of your product. If for some reason you cannot
 include such an acknowledgment, I would appreciate that you keep this
 copyright string in the executable of your product.
+
+
+## Files:
+zlib/deflate.c
+
+deflate.c -- compress data using the deflation algorithm
+Copyright (C) 1995-2013 Jean-loup Gailly and Mark Adler
+For conditions of distribution and use, see copyright notice in zlib.h
 
 
 ## Files:
@@ -2580,3 +2849,5 @@ zlib/zutil.h
 zutil.h -- internal interface and configuration of the compression library
 Copyright (C) 1995-2013 Jean-loup Gailly.
 For conditions of distribution and use, see copyright notice in zlib.h
+
+
