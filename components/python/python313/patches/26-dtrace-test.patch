@@ -2,15 +2,15 @@ On Solaris, it's not possible to list DTrace probes with readelf.
 
 Should be reported upstream.
 
---- Python-3.13.13/Lib/test/test_dtrace.py
-+++ Python-3.13.13/Lib/test/test_dtrace.py
-@@ -178,6 +178,9 @@ class SystemTapOptimizedTests(TraceTests
+--- Python-3.13.15/Lib/test/test_dtrace.py
++++ Python-3.13.15/Lib/test/test_dtrace.py
+@@ -182,6 +182,9 @@ class SystemTapOptimizedTests(TraceTests
  class CheckDtraceProbes(unittest.TestCase):
      @classmethod
      def setUpClass(cls):
 +        if sys.platform.startswith("sunos"):
 +            raise unittest.SkipTest("DTrace probes are not visible to readelf on Solaris.")
 +
-         if sysconfig.get_config_var('WITH_DTRACE'):
-             readelf_major_version, readelf_minor_version = cls.get_readelf_version()
-             if support.verbose:
+         readelf_major_version, readelf_minor_version = cls.get_readelf_version()
+         if support.verbose:
+             print(f"readelf version: {readelf_major_version}.{readelf_minor_version}")

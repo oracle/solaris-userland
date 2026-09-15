@@ -1,0 +1,94 @@
+Backported from upstream:
+https://github.com/python/cpython/pull/155185
+
+From 901a3cac9ebe06a6b9aee26c8c022c3b8234c3d4 Mon Sep 17 00:00:00 2001
+From: Harjoth Khara <harjoth.khara@gmail.com>
+Date: Tue, 4 Aug 2026 09:47:02 -0700
+Subject: [PATCH] gh-117807: Handle invalid UTF-8 in mimetypes map files
+ (GH-151216) (cherry picked from commit
+ 30ac23e3e413c2d38b80691b1c80e3cd74a22639)
+
+Co-authored-by: Harjoth Khara <harjoth.khara@gmail.com>
+---
+ Lib/mimetypes.py                              |  4 +-
+ Lib/test/test_mimetypes.py                    | 43 ++++++++++++++++++-
+ 2 files changed, 44 insertions(+), 3 deletions(-)
+
+diff --git a/Lib/mimetypes.py b/Lib/mimetypes.py
+index 2af7c4b7b808222..3fa9ccf521b12d8 100644
+--- a/Lib/mimetypes.py
++++ b/Lib/mimetypes.py
+@@ -212,7 +212,7 @@ def read(self, filename, strict=True):
+         list of standard types, else to the list of non-standard
+         types.
+         """
+-        with open(filename, encoding='utf-8') as fp:
++        with open(filename, encoding='utf-8', errors='surrogateescape') as fp:
+             self.readfp(fp, strict)
+ 
+     def readfp(self, fp, strict=True):
+@@ -393,7 +393,7 @@ def init(files=None):
+ 
+ def read_mime_types(file):
+     try:
+-        f = open(file, encoding='utf-8')
++        f = open(file, encoding='utf-8', errors='surrogateescape')
+     except OSError:
+         return None
+     with f:
+diff --git a/Lib/test/test_mimetypes.py b/Lib/test/test_mimetypes.py
+index 6bbb52c959af69f..54345fed353138c 100644
+--- a/Lib/test/test_mimetypes.py
++++ b/Lib/test/test_mimetypes.py
+@@ -89,9 +89,50 @@ class MimeTypesTestCase(unittest.TestCas
+         with unittest.mock.patch.object(mimetypes, 'open',
+                                         return_value=fp) as mock_open:
+             mime_dict = mimetypes.read_mime_types(filename)
+-            mock_open.assert_called_with(filename, encoding='utf-8')
++            mock_open.assert_called_with(filename, encoding='utf-8',
++                                         errors='surrogateescape')
+         eq(mime_dict[".Français"], "application/no-mans-land")
+ 
++    def test_read_mime_types_invalid_utf8_comment(self):
++        with os_helper.temp_dir() as directory:
++            data = (b"# non-UTF-8 comment: \x83\n"
++                    b"x-application/x-unittest pyunit\n")
++            file = os.path.join(directory, "sample.mimetype")
++            with open(file, "wb") as f:
++                f.write(data)
++
++            mime_dict = mimetypes.read_mime_types(file)
++            self.assertEqual(
++                mime_dict[".pyunit"], "x-application/x-unittest")
++
++            db = mimetypes.MimeTypes()
++            db.read(file)
++            self.assertEqual(
++                db.guess_type("sample.pyunit")[0],
++                "x-application/x-unittest")
++
++            mimetypes.init(files=[file])
++            self.assertEqual(
++                mimetypes.guess_type("sample.pyunit")[0],
++                "x-application/x-unittest")
++
++    def test_read_mime_types_invalid_utf8_type(self):
++        # A non-UTF-8 byte in a type or extension (not only in a comment) is
++        # preserved via surrogateescape, so the mapping is not corrupted.
++        with os_helper.temp_dir() as directory:
++            data = (b"x-application/x-unittest pyunit\n"
++                    b"application/bad\x83 badext\x83\n")
++            file = os.path.join(directory, "sample.mimetype")
++            with open(file, "wb") as f:
++                f.write(data)
++
++            bad_type = b"application/bad\x83".decode("utf-8", "surrogateescape")
++            bad_ext = b".badext\x83".decode("utf-8", "surrogateescape")
++
++            mime_dict = mimetypes.read_mime_types(file)
++            self.assertEqual(mime_dict[".pyunit"], "x-application/x-unittest")
++            self.assertEqual(mime_dict[bad_ext], bad_type)
++
+     def test_non_standard_types(self):
+         eq = self.assertEqual
+         # First try strict

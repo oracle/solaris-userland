@@ -1,0 +1,38 @@
+Python 3.13.15 fixed a race condition in logging.Logger.removeHandler()
+by replacing the handler list rather than modifying it in place
+(https://github.com/python/cpython/issues/79366).
+
+This can leave oslo.log's cached 'self.log_handlers' reference stale and
+cause test failures.
+
+This was reported upstream:
+https://bugs.launchpad.net/oslo.log/+bug/2163655
+
+--- oslo_log-8.0.0/oslo_log/tests/unit/test_log.py
++++ oslo_log-8.0.0/oslo_log/tests/unit/test_log.py
+@@ -101,7 +101,6 @@ class LoggerTestCase(test_base.BaseTestC
+         )
+         self.log = log.getLogger(None)
+         log._setup_logging_from_conf(self.config_fixture.conf, 'test', 'test')
+-        self.log_handlers = log.getLogger(None).logger.handlers
+ 
+     def test_handlers_have_context_formatter(self):
+         formatters_list = []
+@@ -163,7 +162,7 @@ class LoggerTestCase(test_base.BaseTestC
+             interval=interval,
+             backupCount=backup_count,
+         )
+-        self.assertEqual(self.log_handlers[0], handler_mock.return_value)
++        self.assertEqual(self.log.logger.handlers[0], handler_mock.return_value)
+ 
+     @mock.patch('logging.handlers.RotatingFileHandler')
+     @mock.patch('oslo_log.log._get_log_file_path', return_value='test.conf')
+@@ -181,7 +180,7 @@ class LoggerTestCase(test_base.BaseTestC
+         handler_mock.assert_called_once_with(
+             path_mock.return_value, maxBytes=maxBytes, backupCount=backup_count
+         )
+-        self.assertEqual(self.log_handlers[0], handler_mock.return_value)
++        self.assertEqual(self.log.logger.handlers[0], handler_mock.return_value)
+ 
+ 
+ class BaseTestCase(test_base.BaseTestCase):

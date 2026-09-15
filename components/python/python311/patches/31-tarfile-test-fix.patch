@@ -9,10 +9,10 @@ From: Petr Viktorin <encukou@gmail.com>
 Date: Tue, 3 Jun 2025 17:54:36 +0200
 Subject: [PATCH] Work around Path.glob() failure in 3.10
 
---- Python-3.11.14/Lib/test/test_tarfile.py
-+++ Python-3.11.14/Lib/test/test_tarfile.py
-@@ -3430,7 +3430,7 @@ class TestExtractionFilters(unittest.Tes
-     destdir = outerdir / 'dest'
+--- Python-3.11.16/Lib/test/test_tarfile.py
++++ Python-3.11.16/Lib/test/test_tarfile.py
+@@ -3482,7 +3482,7 @@ class TestExtractionFilters(unittest.Tes
+             cls.dotdot_resolves_early = False
  
      @contextmanager
 -    def check_context(self, tar, filter, *, check_flag=True):
@@ -20,7 +20,7 @@ Subject: [PATCH] Work around Path.glob() failure in 3.10
          """Extracts `tar` to `self.destdir` and allows checking the result
  
          If an error occurs, it must be checked using `expect_exception`
-@@ -3443,6 +3443,10 @@ class TestExtractionFilters(unittest.Tes
+@@ -3495,6 +3495,10 @@ class TestExtractionFilters(unittest.Tes
          A file called 'flag' is made in outerdir (i.e. outside destdir)
          before extraction; it should not be altered nor should its contents
          be read/copied.
@@ -31,7 +31,7 @@ Subject: [PATCH] Work around Path.glob() failure in 3.10
          """
          with os_helper.temp_dir(self.outerdir):
              flag_path = self.outerdir / 'flag'
-@@ -3454,6 +3458,8 @@ class TestExtractionFilters(unittest.Tes
+@@ -3506,6 +3510,8 @@ class TestExtractionFilters(unittest.Tes
                  self.reraise_exception = True
                  self.expected_paths = set()
              else:
@@ -40,7 +40,7 @@ Subject: [PATCH] Work around Path.glob() failure in 3.10
                  self.raised_exception = None
                  self.reraise_exception = False
                  self.expected_paths = set(self.outerdir.glob('**/*'))
-@@ -3662,7 +3668,7 @@ class TestExtractionFilters(unittest.Tes
+@@ -3723,7 +3729,7 @@ class TestExtractionFilters(unittest.Tes
  
          with (self.subTest('fully_trusted'),
                self.check_context(arc.open(), filter='fully_trusted',
@@ -49,7 +49,7 @@ Subject: [PATCH] Work around Path.glob() failure in 3.10
              if sys.platform == 'win32':
                  self.expect_exception((FileNotFoundError, FileExistsError))
              elif self.raised_exception:
-@@ -3670,7 +3676,6 @@ class TestExtractionFilters(unittest.Tes
+@@ -3731,7 +3737,6 @@ class TestExtractionFilters(unittest.Tes
                  self.expect_exception(KeyError)
                  # Otherwise, this block should never enter.
              else:
