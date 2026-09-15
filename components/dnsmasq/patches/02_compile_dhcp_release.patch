@@ -8,8 +8,8 @@ IP address of an interface on which Dnsmasq process is listening.
 This patch was developed in-house. Since it is Solaris-specific it is not
 suitable for upstream.
 
---- dnsmasq-2.90/Makefile
-+++ dnsmasq-2.90/Makefile
+--- dnsmasq-2.93/Makefile
++++ dnsmasq-2.93/Makefile
 @@ -19,6 +19,7 @@ # NOTE: Building the i18n targets requir
  # Variables you may well want to override.
  
@@ -26,16 +26,16 @@ suitable for upstream.
  
  #################################################################
  
-@@ -87,6 +89,8 @@ domain.o dnssec.o blockdata.o tables.o l
+@@ -83,6 +85,8 @@ domain.o dnssec.o blockdata.o tables.o l
         poll.o rrfilter.o edns0.o arp.o crypto.o dump.o ubus.o \
-        metrics.o hash-questions.o domain-match.o nftset.o
+        metrics.o domain-match.o nftset.o
  
 +dhcp_release_objs = dhcp_release.o
 +
  hdrs = dnsmasq.h config.h dhcp-protocol.h dhcp6-protocol.h \
         dns-protocol.h radv-protocol.h ip6addr.h metrics.h
  
-@@ -95,11 +99,12 @@ @cd $(BUILDDIR) && $(MAKE) \
+@@ -91,11 +95,12 @@ @cd $(BUILDDIR) && $(MAKE) \
   top="$(top)" \
   build_cflags="$(version) $(dbus_cflags) $(idn2_cflags) $(idn_cflags) $(ct_cflags) $(lua_cflags) $(nettle_cflags) $(nft_cflags)" \
   build_libs="$(dbus_libs) $(idn2_libs) $(idn_libs) $(ct_libs) $(lua_libs) $(sunos_libs) $(nettle_libs) $(gmp_libs) $(ubus_libs) $(nft_libs)" \
@@ -50,8 +50,8 @@ suitable for upstream.
  
  clean : mostly_clean
  	rm -f $(BUILDDIR)/dnsmasq_baseline
-@@ -111,8 +116,10 @@ install : all install-common
- install-common :
+@@ -105,8 +110,10 @@ rm -f *~ contrib/*/*~ */*~
+ install : all
  	$(INSTALL) -d $(DESTDIR)$(BINDIR)
  	$(INSTALL) -d $(DESTDIR)$(MANDIR)/man8
 +	$(INSTALL) -d $(DESTDIR)/$(LIBDIR)
@@ -61,7 +61,7 @@ suitable for upstream.
  
  all-i18n : $(BUILDDIR)
  	@cd $(BUILDDIR) && $(MAKE) \
-@@ -120,7 +127,7 @@ top="$(top)" \
+@@ -114,7 +121,7 @@ top="$(top)" \
   i18n=-DLOCALEDIR=\'\"$(LOCALEDIR)\"\' \
   build_cflags="$(version) $(dbus_cflags) $(idn2_cflags) $(idn_cflags) $(ct_cflags) $(lua_cflags) $(nettle_cflags) $(nft_cflags)" \
   build_libs="$(dbus_libs) $(idn2_libs) $(idn_libs) $(ct_libs) $(lua_libs) $(sunos_libs) $(nettle_libs) $(gmp_libs) $(ubus_libs) $(nft_libs)"  \
@@ -70,7 +70,7 @@ suitable for upstream.
  	for f in `cd $(PO); echo *.po`; do \
  		cd $(top) && cd $(BUILDDIR) && $(MAKE) top="$(top)" -f $(top)/Makefile $${f%.po}.mo; \
  	done
-@@ -163,6 +170,9 @@ @touch $@
+@@ -161,6 +168,9 @@ @touch $@
  $(objs:.o=.c) $(hdrs):
  	ln -s $(top)/$(SRC)/$@ .
  
@@ -80,7 +80,7 @@ suitable for upstream.
  $(objs): $(copts_conf) $(hdrs)
  
  .c.o:
-@@ -171,6 +181,9 @@ $(CC) $(CFLAGS) $(COPTS) $(i18n) $(build
+@@ -169,6 +179,9 @@ $(CC) $(CFLAGS) $(COPTS) $(i18n) $(build
  dnsmasq : $(objs)
  	$(CC) $(LDFLAGS) -o $@ $(objs) $(build_libs) $(LIBS) 
  
@@ -90,8 +90,8 @@ suitable for upstream.
  dnsmasq.pot : $(objs:.o=.c) $(hdrs)
  	$(XGETTEXT) -d dnsmasq --foreign-user --omit-header --keyword=_ -o $@ -i $(objs:.o=.c)
  
---- dnsmasq-2.90/contrib/lease-tools/dhcp_release.c
-+++ dnsmasq-2.90/contrib/lease-tools/dhcp_release.c
+--- dnsmasq-2.93/contrib/lease-tools/dhcp_release.c
++++ dnsmasq-2.93/contrib/lease-tools/dhcp_release.c
 @@ -33,6 +33,10 @@ for ethernet. This encoding is the one u
     The client-id is optional. If it is "*" then it treated as being missing.
  */

@@ -4,10 +4,11 @@ that causes DHCP to be extremely slow.
 This patch was developed in-house. Since it is Solaris-specific, it is not
 suitable for upstream.
 
-diff -r da5825e07bd5 src/dhcp-common.c
---- a/src/dhcp-common.c	Fri Feb 16 04:59:00 2024 -0800
-+++ b/src/dhcp-common.c	Mon Feb 19 02:44:19 2024 -0800
-@@ -611,6 +611,62 @@
+For information about this patch also see bug 39939538
+
+--- dnsmasq-2.93/src/dhcp-common.c
++++ dnsmasq-2.93/src/dhcp-common.c
+@@ -633,6 +633,62 @@ }
    
    return ret;
  }
@@ -70,10 +71,9 @@ diff -r da5825e07bd5 src/dhcp-common.c
  #endif
  
  static const struct opttab_t {
-diff -r da5825e07bd5 src/dnsmasq.c
---- a/src/dnsmasq.c	Fri Feb 16 04:59:00 2024 -0800
-+++ b/src/dnsmasq.c	Mon Feb 19 02:44:19 2024 -0800
-@@ -68,6 +68,11 @@
+--- dnsmasq-2.93/src/dnsmasq.c
++++ dnsmasq-2.93/src/dnsmasq.c
+@@ -73,6 +73,11 @@ char *netlink_warn;
  #else
    int bind_fallback = 0;
  #endif 
@@ -82,10 +82,10 @@ diff -r da5825e07bd5 src/dnsmasq.c
 +  int bound_ifindex = -1;
 +  int did_bind = 0;
 +#endif
- #if defined(HAVE_DHCP) || defined(HAVE_DHCP6)
+ #if defined(HAVE_DHCP)
    struct dhcp_context *context;
    struct dhcp_relay *relay;
-@@ -389,6 +395,13 @@
+@@ -403,6 +408,13 @@ bound_device = whichdevice();
  
        if ((did_bind = bind_dhcp_devices(bound_device)) & 2)
  	die(_("failed to set SO_BINDTODEVICE on DHCP socket: %s"), NULL, EC_BADNET);	
@@ -99,7 +99,7 @@ diff -r da5825e07bd5 src/dnsmasq.c
  #endif
      }
    else 
-@@ -984,6 +999,10 @@
+@@ -1018,6 +1030,10 @@ my_syslog(MS_DHCP | LOG_INFO, _("DHCP, s
    if (netlink_warn)
      my_syslog(LOG_WARNING, netlink_warn);
  #  endif
@@ -110,7 +110,7 @@ diff -r da5825e07bd5 src/dnsmasq.c
  
    /* after dhcp_construct_contexts */
    if (daemon->dhcp || daemon->doing_dhcp6)
-@@ -1109,6 +1130,23 @@
+@@ -1137,6 +1153,23 @@ poll_listen(daemon->dhcpfd, POLLIN);
  	  if (daemon->pxefd != -1)
  	    poll_listen(daemon->pxefd, POLLIN);
  	}
@@ -134,10 +134,9 @@ diff -r da5825e07bd5 src/dnsmasq.c
  #endif
  
  #ifdef HAVE_DHCP6
-diff -r da5825e07bd5 src/dnsmasq.h
---- a/src/dnsmasq.h	Fri Feb 16 04:59:00 2024 -0800
-+++ b/src/dnsmasq.h	Mon Feb 19 02:44:19 2024 -0800
-@@ -38,8 +38,12 @@
+--- dnsmasq-2.93/src/dnsmasq.h
++++ dnsmasq-2.93/src/dnsmasq.h
+@@ -38,8 +38,12 @@ #endif
  
  /* Need these defined early */
  #if defined(__sun) || defined(__sun__)
@@ -152,7 +151,7 @@ diff -r da5825e07bd5 src/dnsmasq.h
  #endif
  
  #if (defined(__GNUC__) && __GNUC__ >= 3) || defined(__clang__)
-@@ -153,6 +159,8 @@
+@@ -159,6 +163,8 @@ #define LINUX_CAPABILITY_VERSION_3  0x20
  #include <sys/prctl.h>
  #elif defined(HAVE_SOLARIS_NETWORK)
  #include <priv.h>
@@ -160,4 +159,4 @@ diff -r da5825e07bd5 src/dnsmasq.h
 +void bindtoif(int ifindex, int fd, int is_dhcp6);
  #endif
  
- /* Backwards compat with 2.83 */
+ #if defined(HAVE_DNSSEC)

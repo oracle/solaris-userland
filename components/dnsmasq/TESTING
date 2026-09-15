@@ -1,14 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 # DNSMASQ A lightweight DHCP, caching DNS server, and TFTP server.
 #
-# Its DNS and TFTP capabilities can be tested on a single machine.
-# DHCP testing requires a private network with at least two machines
-# to act as server and client.
+# Its DNS, TFTP, and DHCP capabilities can be tested on a single machine.
 
 # About this file.  TESTING has been written to be executable on the
-# machine with dnsmasq installed.  Note though that the DHCP testing
-# requires some commands to be executed on a client machine.
-# Therefore this testing is not fully automnated here.
+# machine with dnsmasq installed.
+
+if [ "$(id -u)" -ne 0 ]; then
+        printf '%s\n' 'TESTING must be run as root.' >&2
+        exit 1
+fi
 
 echo ==========================================================================
 echo			DNS forwarder Testing
@@ -110,34 +111,60 @@ svcadm disable -s svc:/network/dnsmasq:default
 
 set +x
 echo "========================================================================"
-echo "   DHCP test - requires at least two machines on private network"
+echo "             DHCP test using a temporary private network"
 echo "========================================================================"
 #
-# This test MUST only be done on a private network to prevent LAB
-# machines from obtaining network addresses from this test instance!
-#
-# In this example the server has two network interfaces,
-# One on the public network for access to it, and the other on a
-# private network which will be configured to provide DHCP services.
-#
-# The client has four interfaces, one on the public network and three
-# others on the same private network as the server.
+# This test creates a private in-host network with a temporary etherstub.
+# The dnsmasq server is attached to that etherstub through one VNIC, and
+# the simulated client has four interfaces: one public interface for access
+# to the machine, plus three temporary VNICs on the etherstub.
 #
 # This dnsmasq server configuration includes DNS and TFTP datum.
 
-echo Configuring this machine as server for dnsmasq DHCP testing
+DHCP_STUB=dnsmasqstub0
+DHCP_SERVER=dnsmasq0
+DHCP_CLIENTS="dnsclient1 dnsclient2 dnsclient3"
+
+cleanup_dhcp_test()
+{
+    svcadm disable -s svc:/network/dnsmasq:default 2>/dev/null
+
+    for net in $DHCP_CLIENTS; do
+        ipadm delete-addr -r "$net/v4" 2>/dev/null
+        ipadm delete-ip "$net" 2>/dev/null
+        dladm delete-vnic "$net" 2>/dev/null
+    done
+
+    ipadm delete-addr "$DHCP_SERVER/v4" 2>/dev/null
+    ipadm delete-ip "$DHCP_SERVER" 2>/dev/null
+    dladm delete-vnic "$DHCP_SERVER" 2>/dev/null
+    dladm delete-etherstub "$DHCP_STUB" 2>/dev/null
+}
+
+echo Configuring a temporary etherstub and VNICs for dnsmasq DHCP testing
 echo -----------------------------------------------------------
 set -x
-ipadm create-ip -t net1
-ipadm create-addr -t -T static -a local=192.168.57.1 net1/v4
+cleanup_dhcp_test
+trap cleanup_dhcp_test EXIT
+trap 'cleanup_dhcp_test; exit 1' HUP INT TERM
+
+dladm create-etherstub -t "$DHCP_STUB"
+dladm create-vnic -t -l "$DHCP_STUB" "$DHCP_SERVER"
+for net in $DHCP_CLIENTS; do
+    dladm create-vnic -t -l "$DHCP_STUB" "$net"
+done
+
+ipadm create-ip -t "$DHCP_SERVER"
+ipadm create-addr -t -T static -a local=192.168.57.1/24 "$DHCP_SERVER/v4"
 
 svcadm disable -s svc:/network/dnsmasq:default
+/bin/rm -f /var/cache/dnsmasq.leases
 
 echo Writing dnsmasq configuration file.
 cat  >/etc/dnsmasq.conf <<EOF
 domain-needed
 bogus-priv
-interface=net1
+interface=$DHCP_SERVER
 bind-interfaces
 expand-hosts
 domain=example.com
@@ -149,57 +176,28 @@ log-dhcp
 resolv-file=/etc/resolv.conf.dnsmasq
 EOF
 
+svcadm clear svc:/network/dnsmasq:default
 svcadm enable -t -s svc:/network/dnsmasq:default
-
-set +x
-echo "------------------------------------------------------"
-echo "-- Manual actions to Configure client for DHCP test --"
-echo "------------------------------------------------------"
-
-echo Run the following commands on client and server as directed.
 
 # Note that `-t` is being used so that these parameters will not
 # survive reboot.  The dhcp_inittab paramaters are being ignored to
 # prevent routing and DNS changes.
-
-cat << EOF
-for net in net1 net2 net3; do
-  ipadm create-ip -t \$net
-   ipadm create-addr -t -T dhcp -p param-ignore-list=3,6,15,20 \$net/v4
+for net in $DHCP_CLIENTS; do
+    ipadm create-ip -t "$net"
+    ipadm create-addr -t -T dhcp -w 30 \
+        -p param-ignore-list=3,6,15,20 "$net/v4"
 done
-ipadm
-EOF
 
-# Repeated here for direct copy and paste to client from this TESTING file
-# for net in net1 net2 net3; do ipadm create-ip -t $net; \
-#   ipadm create-addr -t -T dhcp -p param-ignore-list=3,6,15,20 $net/v4; done
-echo
-echo "Once the client has configured the private interfaces the"
-echo "dynamic assignments should be reflected in the leases file on the server:"
-echo
-echo cat /var/cache/dnsmasq.leases
-echo
-echo "Back on the client release two of the addresses,"
-echo "the `-r` option asks to inform the server the addresses are released."
-echo
-echo ipadm delete-addr -r net2/v4
-echo ipadm delete-addr -r net3/v4
-echo ipadm
-# Repeated: ipadm delete-addr -r net2/v4;ipadm delete-addr -r net3/v4;ipadm
-echo
-echo "On the server those addresses should now be released."
-echo
-echo cat /var/cache/dnsmasq.leases
-echo
-echo "Back on client remove final address and remove the IP networks:"
-echo
-echo ipadm delete-addr -r net1/v4
-cat <<EOF
-for net in net1 net2 net3; do ipadm delete-ip \$net; done
-EOF
-# Repeated: for net in net1 net2 net3; do ipadm delete-ip $net; done
-echo
-echo Stop dnsmasq server.
-echo svcadm disable svc:/network/dnsmasq:default
-echo
+ipadm show-addr
+cat /var/cache/dnsmasq.leases
+
+ipadm delete-addr -r dnsclient2/v4
+ipadm delete-addr -r dnsclient3/v4
+ipadm show-addr
+cat /var/cache/dnsmasq.leases
+
+ipadm delete-addr -r dnsclient1/v4
+cleanup_dhcp_test
+trap - EXIT HUP INT TERM
+set +x
 echo ============================= EOF TESTING ===============================

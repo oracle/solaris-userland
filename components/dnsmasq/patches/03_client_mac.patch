@@ -2,9 +2,9 @@ Solaris doesn't have an easy way to retrieve the MAC address of the client
 that is soliciting the DHCPv6 IP address. This fix uses a simple way to
 retrieve the client MAC address from the client's EUI64 link-local address.
 
---- dnsmasq-2.90/src/dhcp6.c
-+++ dnsmasq-2.90/src/dhcp6.c
-@@ -295,6 +295,23 @@ }
+--- dnsmasq-2.93/src/dhcp6.c
++++ dnsmasq-2.93/src/dhcp6.c
+@@ -307,6 +307,23 @@ }
  
  void get_client_mac(struct in6_addr *client, int iface, unsigned char *mac, unsigned int *maclenp, unsigned int *mactypep, time_t now)
  {
@@ -28,7 +28,7 @@ retrieve the client MAC address from the client's EUI64 link-local address.
    /* Receiving a packet from a host does not populate the neighbour
       cache, so we send a neighbour discovery request if we can't 
       find the sender. Repeat a few times in case of packet loss. */
-@@ -335,6 +352,7 @@ }
+@@ -347,6 +364,7 @@ }
  
    *maclenp = maclen;
    *mactypep = ARPHRD_ETHER;
