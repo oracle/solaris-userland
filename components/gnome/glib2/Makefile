@@ -28,14 +28,14 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glib
-COMPONENT_VERSION=	2.89.1
+COMPONENT_VERSION=	2.89.3
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GLib/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:74447129c31afe141810f995626e8b99ab677413dae76ee3cf5a9cc6e75a486e
+    sha256:09fd1e99f991067749ad66090e482ec4bd6514ad53abb4e9fbbdc2a4d2753532
 COMPONENT_BUGDB=	gnome/glib
 COMPONENT_ANITYA_ID=	10024
 
-COMPONENT_BAID=		406468
+COMPONENT_BAID=		427800
 BUILD_STYLE=		meson
 
 # No need to build for older versions.
