@@ -32,15 +32,15 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		ImageMagick
-COMPONENT_VERSION=	7.1.2-27
+COMPONENT_VERSION=	7.1.2-31
 COMPONENT_PROJECT_URL=	https://www.imagemagick.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:485dad5226fda2417ea65f3eb6e3f63e7d5dfacacdf6f57f9c39b6ef1e3cb667
+COMPONENT_ARCHIVE_HASH=	sha256:34d9cc3acddc3e3c429d23af60eda5ceaac477a8b296ddb9469f773f44a80a5f
 COMPONENT_ARCHIVE_URL=	https://github.com/ImageMagick/ImageMagick/archive/refs/tags/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/imagemagick
 COMPONENT_ANITYA_ID=	1372
 
-COMPONENT_BAID=		407588
+COMPONENT_BAID=		441862
 
 IPS_COMPONENT_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/-/./')
 COMPONENT_MAJOR_VERSION=$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\..*//')
@@ -54,6 +54,8 @@ include $(WS_MAKE_RULES)/common.mk
 
 # Regenerate configure after patching m4/ax_pthread.m4.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -if)
+
+COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D))
 
 CONFIGURE_OPTIONS+= --with-modules
 CONFIGURE_OPTIONS+= --disable-static
