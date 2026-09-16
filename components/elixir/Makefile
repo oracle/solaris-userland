@@ -31,15 +31,15 @@ include ../../make-rules/shared-macros.mk
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 COMPONENT_NAME=		elixir
-COMPONENT_VERSION=	1.20.1
+COMPONENT_VERSION=	1.20.4
 COMPONENT_PROJECT_URL=	https://elixir-lang.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:baed8756da722c1b8d71613655c7223ab952051bc391a965cd79e320a93aaf77
+    sha256:2f87be1702583ecbeee82c0ad4d6353de96463cfa0fa6e7557e05f68d90da869
 COMPONENT_ARCHIVE_URL=	https://github.com/elixir-lang/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID=	673
 
-COMPONENT_BAID=		401119
+COMPONENT_BAID=		434765
 
 BUILD_STYLE= justmake
 
@@ -95,6 +95,7 @@ COMPONENT_TEST_TRANSFORMS += '-e "/^warning: using single-quoted strings to repr
 COMPONENT_TEST_TRANSFORMS += '-e "/^warning: single-quoted string represent charlists\./,+1d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^warning: cannot infer signatures from :git_repo because it is not loaded$$/d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^[[:space:]]*warning: the Collectable protocol has already been consolidated, an implementation for A has no effect\./,+5d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^warning: the following clause cannot match because the previous clauses already matched all possible values:$$/,+12d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^Finished in/d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^$$/d"'
 
