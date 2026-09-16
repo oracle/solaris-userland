@@ -1,0 +1,40 @@
+Upstream Solaris fixes contain typos in the Solaris predefined macros.
+
+https://savannah.gnu.org/bugs/?68533
+
+The upstream commits used _sun, _sun_, and __sun_, but Solaris defines __sun
+and __sun__.
+
+--- screen-5.0.2/socket.c
++++ screen-5.0.2/socket.c
+@@ -1174,7 +1174,7 @@ AddStr(prompt);
+ }
+ 
+ #if ENABLE_PAM
+-#if defined(_sun) || defined(__sun_)    /* Solaris */
++#if defined(__sun) || defined(__sun__)  /* Solaris */
+ # define PAM_MSG_CONST
+ #else                                   /* Linux, BSD, etc. */
+ # define PAM_MSG_CONST const
+--- screen-5.0.2/termcap.c
++++ screen-5.0.2/termcap.c
+@@ -34,7 +34,7 @@ #include <sys/types.h>
+ #include <stdint.h>
+ 
+ /* to get index() declaration on Solaris */
+-#if defined(_sun_)
++#if defined(__sun) || defined(__sun__)
+ # include <strings.h>
+ #endif
+ 
+--- screen-5.0.2/tty.c
++++ screen-5.0.2/tty.c
+@@ -42,7 +42,7 @@ #include <sys/ioctl.h>
+ #include <unistd.h>
+ 
+ /* For SRIOCSREDIR on Solaris */
+-#if defined(_sun_)
++#if defined(__sun) || defined(__sun__)
+ # include <sys/strredir.h>
+ #endif
+ 

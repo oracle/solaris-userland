@@ -30,12 +30,14 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		screen
-COMPONENT_VERSION=	5.0.1
+COMPONENT_VERSION=	5.0.2
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_PROJECT_URL=	https://www.gnu.org/software/$(COMPONENT_NAME)
 COMPONENT_ARCHIVE_URL=	https://ftpmirror.gnu.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2dae36f4db379ffcd14b691596ba6ec18ac3a9e22bc47ac239789ab58409869d
+    sha256:ca9a2c7e240919bc7ac12124593ae4529bb4eb5f7349d8857829b7e3f0b3b332
 COMPONENT_ANITYA_ID=	4772
-COMPONENT_BAID=		344424
+COMPONENT_BAID=		430118
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -49,7 +51,7 @@ COMPONENT_PREP_ACTION= (cd $(@D) ; autoconf)
 # Allow build outside of source directory
 CFLAGS += -I$(SOURCE_DIR)
 
-CONFIGURE_OPTIONS +=	--with-sys-screenrc=$(ETCDIR)/screenrc
+CONFIGURE_OPTIONS +=	--with-system_screenrc=$(ETCDIR)/screenrc
 CONFIGURE_OPTIONS +=	--disable-socket-dir
 CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 
