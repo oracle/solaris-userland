@@ -18,12 +18,12 @@ exports.clearHighlightLineRange = clearHighlightLineRange;
 exports.openConditionalPanel = openConditionalPanel;
 exports.closeConditionalPanel = closeConditionalPanel;
 exports.updateViewport = updateViewport;
-exports.updateCursorPosition = updateCursorPosition;
 exports.setOrientation = setOrientation;
 exports.setSearchOptions = setSearchOptions;
 exports.copyToClipboard = copyToClipboard;
 exports.setHideOrShowIgnoredSources = setHideOrShowIgnoredSources;
 exports.toggleSourceMapIgnoreList = toggleSourceMapIgnoreList;
+exports.togglePausedOverlay = togglePausedOverlay;
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_select", "devtools/client/debugger/src/actions/sources/select");
 loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/utils/editor/index");
@@ -178,12 +178,12 @@ function togglePaneCollapse(position, paneCollapsed) {
 /**
  * Highlight one or many lines in CodeMirror for a given source.
  *
- * @param {Object} location
- * @param {String} location.sourceId
+ * @param {object} location
+ * @param {string} location.sourceId
  *        The precise source to highlight.
- * @param {Number} location.start
+ * @param {number} location.start
  *        The 1-based index of first line to highlight.
- * @param {Number} location.end
+ * @param {number} location.end
  *        The 1-based index of last line to highlight.
  */
 
@@ -240,13 +240,6 @@ function updateViewport() {
   };
 }
 
-function updateCursorPosition(cursorPosition) {
-  return {
-    type: "SET_CURSOR_POSITION",
-    cursorPosition
-  };
-}
-
 function setOrientation(orientation) {
   return {
     type: "SET_ORIENTATION",
@@ -266,7 +259,7 @@ function copyToClipboard(location) {
   return ({
     getState
   }) => {
-    const content = (0, _index.getSourceTextContent)(getState(), location);
+    const content = (0, _index.getSourceTextContentForLocation)(getState(), location);
 
     if (content && (0, _asyncValue.isFulfilled)(content) && content.value.type === "text") {
       (0, _clipboard.copyToTheClipboard)(content.value.value);
@@ -301,5 +294,12 @@ function toggleSourceMapIgnoreList(shouldEnable) {
       type: "ENABLE_SOURCEMAP_IGNORELIST",
       shouldEnable
     });
+  };
+}
+
+function togglePausedOverlay(shouldEnable) {
+  return {
+    type: "ENABLE_PAUSED_OVERLAY",
+    shouldEnable
   };
 }

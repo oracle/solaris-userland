@@ -35,9 +35,10 @@ function showEditorContextMenu(event, editor, lineObject, location) {
     const state = getState();
     const blackboxedRanges = (0, _index2.getBlackBoxRanges)(state);
     const isPaused = (0, _index2.getIsCurrentThreadPaused)(state);
-    const hasMappedLocation = (source.isOriginal || (0, _index2.isSourceWithMap)(state, source.id) || (0, _source.isPretty)(source)) && !(0, _index2.getPrettySource)(state, source.id);
+    const hasMappedLocation = (source.isOriginal || (0, _index2.isSourceWithMap)(state, source.id) || source.isPrettyPrinted) && !(0, _index2.getPrettySource)(state, source.id);
     const isSourceOnIgnoreList = (0, _index2.isSourceMapIgnoreListEnabled)(state) && (0, _index2.isSourceOnSourceMapIgnoreList)(state, source);
     const editorWrappingEnabled = (0, _index2.getEditorWrapping)(state);
+    const endColumn = editor.getText(lineObject.to.line).length;
     (0, _menu.showMenu)(event, editorMenuItems({
       blackboxedRanges,
       hasMappedLocation,
@@ -48,7 +49,8 @@ function showEditorContextMenu(event, editor, lineObject, location) {
       isTextSelected: editor.isTextSelected(),
       lineObject,
       isSourceOnIgnoreList,
-      dispatch
+      dispatch,
+      endColumn
     }));
   };
 }
@@ -69,7 +71,7 @@ function showEditorGutterContextMenu(event, line, location, lineText) {
       type: "separator"
     }, continueToHereItem(location, isPaused, dispatch), {
       type: "separator"
-    }, blackBoxLineMenuItem(source, line, blackboxedRanges, isSourceOnIgnoreList, location.line, dispatch)]);
+    }, blackBoxLineMenuItem(source, line, blackboxedRanges, isSourceOnIgnoreList, location.line, dispatch, lineText.length)]);
   };
 } // Menu Items
 
@@ -139,7 +141,7 @@ const blackBoxLineMenuItem = (selectedSource, {
 }, blackboxedRanges, isSourceOnIgnoreList, // the clickedLine is passed when the context menu
 // is opened from the gutter, it is not available when the
 // the context menu is opened from the editor.
-clickedLine = null, dispatch) => {
+clickedLine = null, dispatch, endColumn) => {
   const startLine = clickedLine ?? (0, _index.toSourceLine)(selectedSource, from.line);
   const endLine = clickedLine ?? (0, _index.toSourceLine)(selectedSource, to.line);
   const blackboxRange = (0, _source.findBlackBoxRange)(selectedSource, blackboxedRanges, {
@@ -164,11 +166,11 @@ clickedLine = null, dispatch) => {
       const selectionRange = {
         start: {
           line: startLine,
-          column: clickedLine == null ? from.ch : 0
+          column: 0
         },
         end: {
           line: endLine,
-          column: clickedLine == null ? to.ch : 0
+          column: endColumn
         }
       };
       dispatch((0, _blackbox.toggleBlackBox)(selectedSource, !selectedLineIsBlackBoxed, selectedLineIsBlackBoxed ? [blackboxRange] : [selectionRange]));
@@ -179,7 +181,7 @@ clickedLine = null, dispatch) => {
 const blackBoxLinesMenuItem = (selectedSource, {
   from,
   to
-}, blackboxedRanges, isSourceOnIgnoreList, clickedLine, dispatch) => {
+}, blackboxedRanges, isSourceOnIgnoreList, clickedLine, dispatch, endColumn) => {
   const startLine = (0, _index.toSourceLine)(selectedSource, from.line);
   const endLine = (0, _index.toSourceLine)(selectedSource, to.line);
   const blackboxRange = (0, _source.findBlackBoxRange)(selectedSource, blackboxedRanges, {
@@ -196,11 +198,11 @@ const blackBoxLinesMenuItem = (selectedSource, {
       const selectionRange = {
         start: {
           line: startLine,
-          column: from.ch
+          column: 0
         },
         end: {
           line: endLine,
-          column: to.ch
+          column: endColumn
         }
       };
       dispatch((0, _blackbox.toggleBlackBox)(selectedSource, !selectedLinesAreBlackBoxed, selectedLinesAreBlackBoxed ? [blackboxRange] : [selectionRange]));
@@ -250,7 +252,8 @@ function editorMenuItems({
   editorWrappingEnabled,
   lineObject,
   isSourceOnIgnoreList,
-  dispatch
+  dispatch,
+  endColumn
 }) {
   const items = [];
   const {
@@ -278,7 +281,7 @@ function editorMenuItems({
 
   if (!theWholeSourceIsBlackBoxed) {
     const blackBoxSourceLinesMenuItem = isMultiLineSelection ? blackBoxLinesMenuItem : blackBoxLineMenuItem;
-    items.push(blackBoxSourceLinesMenuItem(source, lineObject, blackboxedRanges, isSourceOnIgnoreList, null, dispatch));
+    items.push(blackBoxSourceLinesMenuItem(source, lineObject, blackboxedRanges, isSourceOnIgnoreList, null, dispatch, endColumn));
   }
 
   if (isTextSelected) {

@@ -20,6 +20,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /**
  * Redux actions for the navigation state
+ *
  * @module actions/navigation
  */
 

@@ -15,6 +15,7 @@ exports.saveAsLocalFile = saveAsLocalFile;
 const DevToolsUtils = require("resource://devtools/shared/DevToolsUtils.js");
 /**
  * Utils for utils, by utils
+ *
  * @module utils/utils
  */
 

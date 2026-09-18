@@ -15,9 +15,9 @@ Dependency: this is the base format-contract patch for the SPARC rendering
 stack. Later Cairo, WebRender, SWGL, shared-image, and BMP/ICO fixes assume the
 native-Cairo-versus-WebRender-BGRA/BGRX split established here.
 
---- firefox-153.0/dom/canvas/CanvasRenderingContext2D.cpp
-+++ firefox-153.0/dom/canvas/CanvasRenderingContext2D.cpp
-@@ -2276,7 +2276,7 @@ RefPtr<DataSourceSurface> data = snapsho
+--- firefox-153.3.0/dom/canvas/CanvasRenderingContext2D.cpp
++++ firefox-153.3.0/dom/canvas/CanvasRenderingContext2D.cpp
+@@ -2276,7 +2276,7 @@ UniquePtr<uint8_t[]> CanvasRenderingCont
      if (data && data->GetSize() == GetSize()) {
        *out_format = imgIEncoder::INPUT_FORMAT_HOSTARGB;
        *out_imageSize = data->GetSize();
@@ -26,9 +26,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
      }
    }
  
---- firefox-153.0/dom/canvas/ImageBitmapRenderingContext.cpp
-+++ firefox-153.0/dom/canvas/ImageBitmapRenderingContext.cpp
-@@ -8,6 +8,7 @@ #include "ImageContainer.h"
+--- firefox-153.3.0/dom/canvas/ImageBitmapRenderingContext.cpp
++++ firefox-153.3.0/dom/canvas/ImageBitmapRenderingContext.cpp
+@@ -8,6 +8,7 @@
  #include "gfx2DGlue.h"
  #include "gfxPlatform.h"
  #include "mozilla/dom/ImageBitmapRenderingContextBinding.h"
@@ -36,7 +36,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  #include "mozilla/gfx/Types.h"
  #include "nsComponentManagerUtils.h"
  #include "nsRegion.h"
-@@ -192,7 +193,7 @@ }
+@@ -192,7 +193,7 @@ mozilla::UniquePtr<uint8_t[]> ImageBitma
    *aFormat = imgIEncoder::INPUT_FORMAT_HOSTARGB;
    *aImageSize = data->GetSize();
  
@@ -45,9 +45,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  
    if (ret) {
      nsRFPService::PotentiallyDumpImage(
---- firefox-153.0/dom/canvas/OffscreenCanvasDisplayHelper.cpp
-+++ firefox-153.0/dom/canvas/OffscreenCanvasDisplayHelper.cpp
-@@ -622,7 +622,8 @@ }
+--- firefox-153.3.0/dom/canvas/OffscreenCanvasDisplayHelper.cpp
++++ firefox-153.3.0/dom/canvas/OffscreenCanvasDisplayHelper.cpp
+@@ -622,7 +622,8 @@ UniquePtr<uint8_t[]> OffscreenCanvasDisp
    *aOutFormat = imgIEncoder::INPUT_FORMAT_HOSTARGB;
    *aOutImageSize = dataSurface->GetSize();
  
@@ -57,9 +57,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    if (!imageBuffer) {
      return nullptr;
    }
---- firefox-153.0/gfx/2d/DataSurfaceHelpers.cpp
-+++ firefox-153.0/gfx/2d/DataSurfaceHelpers.cpp
-@@ -174,6 +174,95 @@ }
+--- firefox-153.3.0/gfx/2d/DataSurfaceHelpers.cpp
++++ firefox-153.3.0/gfx/2d/DataSurfaceHelpers.cpp
+@@ -174,6 +174,95 @@ UniquePtr<uint8_t[]> SurfaceToPackedBGRA
    return imageBuffer;
  }
  
@@ -155,9 +155,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  uint8_t* SurfaceToPackedBGR(DataSourceSurface* aSurface) {
    SurfaceFormat format = aSurface->GetFormat();
    MOZ_ASSERT(format == SurfaceFormat::B8G8R8X8, "Format not supported");
---- firefox-153.0/gfx/2d/DataSurfaceHelpers.h
-+++ firefox-153.0/gfx/2d/DataSurfaceHelpers.h
-@@ -47,6 +47,12 @@ */
+--- firefox-153.3.0/gfx/2d/DataSurfaceHelpers.h
++++ firefox-153.3.0/gfx/2d/DataSurfaceHelpers.h
+@@ -47,6 +47,12 @@ void CopySurfaceDataToPackedArray(uint8_
  UniquePtr<uint8_t[]> SurfaceToPackedBGRA(DataSourceSurface* aSurface);
  
  /**
@@ -170,9 +170,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
   * Convert aSurface to a packed buffer in BGR format. The pixel data is
   * returned in a buffer allocated with new uint8_t[]. The caller then has
   * ownership of the buffer and is responsible for delete[]'ing it.
---- firefox-153.0/gfx/2d/DrawTargetCairo.cpp
-+++ firefox-153.0/gfx/2d/DrawTargetCairo.cpp
-@@ -20,6 +20,7 @@ #include <string.h>
+--- firefox-153.3.0/gfx/2d/DrawTargetCairo.cpp
++++ firefox-153.3.0/gfx/2d/DrawTargetCairo.cpp
+@@ -20,6 +20,7 @@
  
  #include "Blur.h"
  #include "Logging.h"
@@ -180,7 +180,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  #include "Tools.h"
  
  #ifdef CAIRO_HAS_QUARTZ_SURFACE
-@@ -193,6 +194,38 @@ data->Unmap();
+@@ -193,6 +194,38 @@ static void ReleaseData(void* aData) {
    data->Release();
  }
  
@@ -219,7 +219,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  static cairo_surface_t* CopyToImageSurface(unsigned char* aData,
                                             const IntSize& aSize,
                                             const IntRect& aRect,
-@@ -203,8 +236,15 @@ MOZ_ASSERT(aData);
+@@ -203,8 +236,15 @@ static cairo_surface_t* CopyToImageSurfa
    auto aRectWidth = aRect.Width();
    auto aRectHeight = aRect.Height();
  
@@ -236,7 +236,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    // In certain scenarios, requesting larger than 8k image fails.  Bug 803568
    // covers the details of how to run into it, but the full detailed
    // investigation hasn't been done to determine the underlying cause.  We
-@@ -224,14 +264,28 @@ cairo_surface_destroy(surf);
+@@ -224,14 +264,28 @@ static cairo_surface_t* CopyToImageSurfa
      return nullptr;
    }
  
@@ -273,7 +273,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    }
    cairo_surface_mark_dirty(surf);
    return surf;
-@@ -262,6 +316,16 @@ if (!aData || aStride < 0 || !IntRect(In
+@@ -262,6 +316,16 @@ static cairo_surface_t* CreateSubImageFo
      gfxWarning() << "DrawTargetCairo.CreateSubImageForData null aData";
      return nullptr;
    }
@@ -290,7 +290,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    unsigned char* data = aData + size_t(aRect.Y()) * size_t(aStride) +
                          size_t(aRect.X()) * size_t(BytesPerPixel(aFormat));
  
-@@ -1876,7 +1940,12 @@ if (!surf) {
+@@ -1877,7 +1941,12 @@ already_AddRefed<SourceSurface> DrawTarg
      return nullptr;
    }
  
@@ -304,7 +304,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    cairo_surface_destroy(surf);
  
    return source_surf.forget();
-@@ -1930,7 +1999,11 @@ }
+@@ -1935,7 +2004,11 @@ already_AddRefed<DrawTarget> DrawTargetC
  
    if (!cairo_surface_status(similar)) {
      RefPtr target = MakeRefPtr<DrawTargetCairo>();
@@ -317,7 +317,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
        return target.forget();
      }
    }
-@@ -2003,6 +2076,7 @@ cairo_rectangle(mContext, 0, 0, mSize.wi
+@@ -2014,6 +2087,7 @@ bool DrawTargetCairo::InitAlreadyReferen
    cairo_clip(mContext);
  
    if (mFormat == SurfaceFormat::A8R8G8B8_UINT32 ||
@@ -325,7 +325,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
        mFormat == SurfaceFormat::R8G8B8A8) {
      SetPermitSubpixelAA(false);
    } else {
-@@ -2026,7 +2100,11 @@ // If we don't have a blur then we can u
+@@ -2037,7 +2111,11 @@ already_AddRefed<DrawTarget> DrawTargetC
    // operations in graphics memory.
    if (aSigma == 0.0f || aFormat == SurfaceFormat::A8) {
      RefPtr target = MakeRefPtr<DrawTargetCairo>();
@@ -338,7 +338,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
        return target.forget();
      } else {
        return nullptr;
-@@ -2051,7 +2129,11 @@ cairo_tee_surface_add(tee, similar);
+@@ -2062,7 +2140,11 @@ already_AddRefed<DrawTarget> DrawTargetC
    cairo_surface_destroy(similar);
  
    RefPtr target = MakeRefPtr<DrawTargetCairo>();
@@ -351,10 +351,10 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
      return target.forget();
    }
    return nullptr;
-@@ -2069,9 +2151,13 @@ return InitAlreadyReferenced(aSurface, a
- }
+@@ -2084,9 +2166,13 @@ bool DrawTargetCairo::Init(const IntSize
+     return false;
+   }
  
- bool DrawTargetCairo::Init(const IntSize& aSize, SurfaceFormat aFormat) {
 +  SurfaceFormat cairoFormat = aFormat;
 +#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 +  cairoFormat = NormalizeFormatForCairoSurface(aFormat);
@@ -367,7 +367,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  }
  
  bool DrawTargetCairo::Init(unsigned char* aData, const IntSize& aSize,
-@@ -2079,7 +2165,7 @@ int32_t aStride, SurfaceFormat aFormat)
+@@ -2094,7 +2180,7 @@ bool DrawTargetCairo::Init(unsigned char
    cairo_surface_t* surf = cairo_image_surface_create_for_data(
        aData, GfxFormatToCairoFormat(aFormat), aSize.width, aSize.height,
        aStride);
@@ -376,9 +376,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  }
  
  void* DrawTargetCairo::GetNativeSurface(NativeSurfaceType aType) {
---- firefox-153.0/gfx/2d/HelpersCairo.h
-+++ firefox-153.0/gfx/2d/HelpersCairo.h
-@@ -176,8 +176,10 @@ }
+--- firefox-153.3.0/gfx/2d/HelpersCairo.h
++++ firefox-153.3.0/gfx/2d/HelpersCairo.h
+@@ -176,8 +176,10 @@ static inline cairo_format_t CairoConten
  static inline cairo_content_t GfxFormatToCairoContent(SurfaceFormat format) {
    switch (format) {
      case SurfaceFormat::A8R8G8B8_UINT32:
@@ -389,7 +389,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
      case SurfaceFormat::R5G6B5_UINT16:  // fall through
        return CAIRO_CONTENT_COLOR;
      case SurfaceFormat::A8:
-@@ -219,10 +221,18 @@ }
+@@ -219,10 +221,18 @@ static inline cairo_line_cap_t GfxLineCa
  static inline SurfaceFormat CairoContentToGfxFormat(cairo_content_t content) {
    switch (content) {
      case CAIRO_CONTENT_COLOR_ALPHA:
@@ -408,7 +408,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
      case CAIRO_CONTENT_ALPHA:
        return SurfaceFormat::A8;
    }
-@@ -233,9 +243,17 @@ }
+@@ -233,9 +243,17 @@ static inline SurfaceFormat CairoContent
  static inline SurfaceFormat CairoFormatToGfxFormat(cairo_format_t format) {
    switch (format) {
      case CAIRO_FORMAT_ARGB32:
@@ -426,9 +426,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
      case CAIRO_FORMAT_A8:
        return SurfaceFormat::A8;
      case CAIRO_FORMAT_RGB16_565:
---- firefox-153.0/gfx/2d/SourceSurfaceCairo.cpp
-+++ firefox-153.0/gfx/2d/SourceSurfaceCairo.cpp
-@@ -12,21 +12,6 @@ #include "cairo.h"
+--- firefox-153.3.0/gfx/2d/SourceSurfaceCairo.cpp
++++ firefox-153.3.0/gfx/2d/SourceSurfaceCairo.cpp
+@@ -12,21 +12,6 @@
  namespace mozilla {
  namespace gfx {
  
@@ -450,7 +450,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  SourceSurfaceCairo::SourceSurfaceCairo(
      cairo_surface_t* aSurface, const IntSize& aSize,
      const SurfaceFormat& aFormat, DrawTargetCairo* aDrawTarget /* = nullptr */)
-@@ -115,7 +100,7 @@ return size;
+@@ -115,7 +100,7 @@ IntSize DataSourceSurfaceCairo::GetSize(
  }
  
  SurfaceFormat DataSourceSurfaceCairo::GetFormat() const {
@@ -459,9 +459,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
        cairo_image_surface_get_format(mImageSurface));
  }
  
---- firefox-153.0/gfx/thebes/gfx2DGlue.h
-+++ firefox-153.0/gfx/thebes/gfx2DGlue.h
-@@ -67,8 +67,10 @@ }
+--- firefox-153.3.0/gfx/thebes/gfx2DGlue.h
++++ firefox-153.3.0/gfx/thebes/gfx2DGlue.h
+@@ -67,8 +67,10 @@ inline gfxRect ThebesRect(const RectDoub
  inline gfxImageFormat SurfaceFormatToImageFormat(SurfaceFormat aFormat) {
    switch (aFormat) {
      case SurfaceFormat::B8G8R8A8:
@@ -472,7 +472,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
        return SurfaceFormat::X8R8G8B8_UINT32;
      case SurfaceFormat::R5G6B5_UINT16:
        return SurfaceFormat::R5G6B5_UINT16;
-@@ -81,10 +83,17 @@ }
+@@ -81,10 +83,17 @@ inline gfxImageFormat SurfaceFormatToIma
  
  inline SurfaceFormat ImageFormatToSurfaceFormat(gfxImageFormat aFormat) {
    switch (aFormat) {
@@ -504,9 +504,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
      case SurfaceFormat::R8G8B8A8:
      default:
        return gfxContentType::COLOR_ALPHA;
---- firefox-153.0/gfx/thebes/gfxPlatform.cpp
-+++ firefox-153.0/gfx/thebes/gfxPlatform.cpp
-@@ -2359,10 +2359,11 @@ }
+--- firefox-153.3.0/gfx/thebes/gfxPlatform.cpp
++++ firefox-153.3.0/gfx/thebes/gfxPlatform.cpp
+@@ -2359,10 +2359,11 @@ mozilla::LogModule* gfxPlatform::GetLog(
  
  RefPtr<mozilla::gfx::DrawTarget> gfxPlatform::ScreenReferenceDrawTarget() {
    MOZ_ASSERT_IF(XRE_IsContentProcess(), NS_IsMainThread());
@@ -519,7 +519,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  }
  
  /* static */ RefPtr<mozilla::gfx::DrawTarget>
-@@ -2376,8 +2377,13 @@ if (platformWorker) {
+@@ -2376,8 +2377,13 @@ gfxPlatform::ThreadLocalScreenReferenceD
      return platformWorker->ScreenReferenceDrawTarget();
    }
  
@@ -533,7 +533,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  }
  
  mozilla::gfx::SurfaceFormat gfxPlatform::Optimal2DFormatForContent(
-@@ -2386,24 +2392,44 @@ switch (aContent) {
+@@ -2386,24 +2392,44 @@ mozilla::gfx::SurfaceFormat gfxPlatform:
      case gfxContentType::COLOR:
        switch (GetOffscreenFormat()) {
          case SurfaceFormat::A8R8G8B8_UINT32:
@@ -578,9 +578,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    }
  }
  
---- firefox-153.0/gfx/thebes/gfxUtils.cpp
-+++ firefox-153.0/gfx/thebes/gfxUtils.cpp
-@@ -1000,6 +1000,55 @@ }
+--- firefox-153.3.0/gfx/thebes/gfxUtils.cpp
++++ firefox-153.3.0/gfx/thebes/gfxUtils.cpp
+@@ -1000,6 +1000,55 @@ const gfx::DeviceColor& gfxUtils::GetCol
    return colors[aFrameNumber % sNumFrameColors];
  }
  
@@ -636,7 +636,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  // static
  nsresult gfxUtils::EncodeSourceSurfaceAsStream(SourceSurface* aSurface,
                                                 const ImageType aImageType,
-@@ -1011,10 +1060,19 @@ return NS_ERROR_FAILURE;
+@@ -1011,10 +1060,19 @@ nsresult gfxUtils::EncodeSourceSurfaceAs
    }
  
    RefPtr<DataSourceSurface> dataSurface;
@@ -658,8 +658,8 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    } else {
      dataSurface = aSurface->GetDataSurface();
    }
---- firefox-153.0/image/ClippedImage.cpp
-+++ firefox-153.0/image/ClippedImage.cpp
+--- firefox-153.3.0/image/ClippedImage.cpp
++++ firefox-153.3.0/image/ClippedImage.cpp
 @@ -28,6 +28,16 @@ using std::max;
  
  namespace image {
@@ -677,7 +677,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  class ClippedImageCachedSurface {
   public:
    ClippedImageCachedSurface(already_AddRefed<SourceSurface> aSurface,
-@@ -256,9 +266,11 @@ if (!mCachedSurface ||
+@@ -256,9 +266,11 @@ std::pair<ImgDrawResult, RefPtr<SourceSu
        !mCachedSurface->Matches(aSize, aSVGContext, frameToDraw, aFlags) ||
        mCachedSurface->NeedsRedraw()) {
      // Create a surface to draw into.
@@ -690,7 +690,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
      if (!target || !target->IsValid()) {
        NS_ERROR("Could not create a DrawTarget");
        return std::make_pair(ImgDrawResult::TEMPORARY_ERROR,
-@@ -274,8 +286,8 @@ auto drawable = MakeRefPtr<gfxCallbackDr
+@@ -274,8 +286,8 @@ std::pair<ImgDrawResult, RefPtr<SourceSu
  
      // Actually draw. The callback will end up invoking DrawSingleTile.
      gfxUtils::DrawPixelSnapped(&ctx, drawable, SizeDouble(aSize),
@@ -701,7 +701,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
                                 imgIContainer::FLAG_CLAMP);
  
      // Cache the resulting surface.
-@@ -358,7 +370,7 @@ auto drawable = MakeRefPtr<gfxSurfaceDra
+@@ -358,7 +370,7 @@ ClippedImage::Draw(gfxContext* aContext,
  
      // Draw.
      gfxUtils::DrawPixelSnapped(aContext, drawable, SizeDouble(aSize), aRegion,
@@ -710,8 +710,8 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
                                 aOpacity);
  
      return result;
---- firefox-153.0/image/VectorImage.cpp
-+++ firefox-153.0/image/VectorImage.cpp
+--- firefox-153.3.0/image/VectorImage.cpp
++++ firefox-153.3.0/image/VectorImage.cpp
 @@ -55,6 +55,24 @@ using namespace layers;
  
  namespace image {
@@ -737,7 +737,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  // Helper-class: SVGRootRenderingObserver
  class SVGRootRenderingObserver final : public SVGRenderingObserver {
   public:
-@@ -865,8 +883,8 @@ // drawing our gfxDrawable into it. (We
+@@ -865,8 +883,8 @@ VectorImage::GetImageProvider(WindowRend
      // scale here.)
      auto frame = MakeNotNull<RefPtr<imgFrame>>();
      nsresult rv = frame->InitWithDrawable(
@@ -748,7 +748,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  
      // If we couldn't create the frame, it was probably because it would end
      // up way too big. Generally it also wouldn't fit in the cache, but the
-@@ -1331,8 +1349,8 @@ // Try to create an imgFrame, initializi
+@@ -1331,8 +1349,8 @@ already_AddRefed<SourceSurface> VectorIm
    // our gfxDrawable into it. (We use FILTER_NEAREST since we never scale here.)
    auto frame = MakeNotNull<RefPtr<imgFrame>>();
    nsresult rv = frame->InitWithDrawable(
@@ -759,7 +759,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  
    // If we couldn't create the frame, it was probably because it would end
    // up way too big. Generally it also wouldn't fit in the cache, but the prefs
-@@ -1414,10 +1432,11 @@ region.Scale(1.0 / scale.xScale, 1.0 / s
+@@ -1414,10 +1432,11 @@ void VectorImage::Show(gfxDrawable* aDra
    }
  
    MOZ_ASSERT(aDrawable, "Should have a gfxDrawable by now");
@@ -774,9 +774,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  
    AutoProfilerImagePaintMarker PROFILER_RAII(this);
  #ifdef DEBUG
---- firefox-153.0/image/imgFrame.h
-+++ firefox-153.0/image/imgFrame.h
-@@ -161,7 +161,7 @@ }
+--- firefox-153.3.0/image/imgFrame.h
++++ firefox-153.3.0/image/imgFrame.h
+@@ -161,7 +161,7 @@ class imgFrame {
    FrameTimeout GetTimeout() const { return mTimeout; }
    BlendMethod GetBlendMethod() const { return mBlendMethod; }
    DisposalMethod GetDisposalMethod() const { return mDisposalMethod; }
@@ -785,9 +785,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  
    const IntRect& GetDirtyRect() const { return mDirtyRect; }
    void SetDirtyRect(const IntRect& aDirtyRect) { mDirtyRect = aDirtyRect; }
---- firefox-153.0/widget/gtk/WindowSurfaceX11.cpp
-+++ firefox-153.0/widget/gtk/WindowSurfaceX11.cpp
-@@ -4,6 +4,7 @@ * License, v. 2.0. If a copy of the MPL
+--- firefox-153.3.0/widget/gtk/WindowSurfaceX11.cpp
++++ firefox-153.3.0/widget/gtk/WindowSurfaceX11.cpp
+@@ -4,6 +4,7 @@
   * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
  #include "WindowSurfaceX11.h"
@@ -795,7 +795,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  #include "gfxPlatform.h"
  
  namespace mozilla::widget {
-@@ -23,13 +24,21 @@ switch (aDepth) {
+@@ -23,13 +24,21 @@ gfx::SurfaceFormat WindowSurfaceX11::Get
      case 32:
        if (aVisual->red_mask == 0xff0000 && aVisual->green_mask == 0xff00 &&
            aVisual->blue_mask == 0xff) {
@@ -817,9 +817,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
        }
        break;
      case 16:
---- firefox-153.0/widget/gtk/WindowSurfaceX11Image.cpp
-+++ firefox-153.0/widget/gtk/WindowSurfaceX11Image.cpp
-@@ -5,6 +5,7 @@ * file, You can obtain one at http://moz
+--- firefox-153.3.0/widget/gtk/WindowSurfaceX11Image.cpp
++++ firefox-153.3.0/widget/gtk/WindowSurfaceX11Image.cpp
+@@ -5,6 +5,7 @@
  
  #include "WindowSurfaceX11Image.h"
  
@@ -836,9 +836,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  #  define SHAPED_IMAGE_SURFACE_ALPHA_INDEX 0
  #else
  #  define SHAPED_IMAGE_SURFACE_ALPHA_INDEX 3
---- firefox-153.0/widget/gtk/nsDragService.cpp
-+++ firefox-153.0/widget/gtk/nsDragService.cpp
-@@ -29,6 +29,7 @@ #include <mutex>
+--- firefox-153.3.0/widget/gtk/nsDragService.cpp
++++ firefox-153.3.0/widget/gtk/nsDragService.cpp
+@@ -29,6 +29,7 @@
  #include <gtk/gtk.h>
  #include "nsCRT.h"
  #include "mozilla/BasicEvents.h"
@@ -846,7 +846,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  #include "mozilla/Services.h"
  #include "mozilla/ClearOnShutdown.h"
  #include "mozilla/PresShell.h"
-@@ -74,6 +75,14 @@ #define NS_DND_TMP_CLEANUP_TIMEOUT (1000
+@@ -74,6 +75,14 @@ using namespace mozilla::gfx;
  
  #define NS_SYSTEMINFO_CONTRACTID "@mozilla.org/system-info;1"
  
@@ -861,7 +861,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  // This sets how opaque the drag image is
  #define DRAG_IMAGE_ALPHA_LEVEL 0.5
  
-@@ -2305,7 +2314,7 @@ if (!surf) return false;
+@@ -2313,7 +2322,7 @@ bool nsDragSession::SetAlphaPixmap(Sourc
    RefPtr<DrawTarget> dt = gfxPlatform::CreateDrawTargetForData(
        cairo_image_surface_get_data(surf),
        nsIntSize(dragRect.width, dragRect.height),
@@ -870,9 +870,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    if (!dt) return false;
  
    dt->ClearRect(Rect(0, 0, dragRect.width, dragRect.height));
---- firefox-153.0/widget/gtk/nsImageToPixbuf.cpp
-+++ firefox-153.0/widget/gtk/nsImageToPixbuf.cpp
-@@ -8,6 +8,7 @@ #include "nsImageToPixbuf.h"
+--- firefox-153.3.0/widget/gtk/nsImageToPixbuf.cpp
++++ firefox-153.3.0/widget/gtk/nsImageToPixbuf.cpp
+@@ -8,6 +8,7 @@
  
  #include "imgIContainer.h"
  #include "mozilla/gfx/2D.h"
@@ -880,7 +880,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  #include "mozilla/RefPtr.h"
  #include "GRefPtr.h"
  #include "nsCOMPtr.h"
-@@ -21,6 +22,22 @@ // plus alpha/2 to round instead of trun
+@@ -21,6 +22,22 @@ inline unsigned char unpremultiply(unsig
    return (color * 255 + alpha / 2) / alpha;
  }
  
@@ -903,7 +903,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  already_AddRefed<GdkPixbuf> nsImageToPixbuf::ImageToPixbuf(
      imgIContainer* aImage, const mozilla::Maybe<nsIntSize>& aOverrideSize) {
    RefPtr<SourceSurface> surface;
-@@ -78,10 +95,12 @@ RefPtr<DataSourceSurface> dataSurface;
+@@ -78,10 +95,12 @@ already_AddRefed<GdkPixbuf> nsImageToPix
    DataSourceSurface::MappedSurface map;
  
    SurfaceFormat sourceFormat = aSurface->GetFormat();
@@ -919,7 +919,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
      if (NS_WARN_IF(!dataSurface)) {
        return nullptr;
      }
-@@ -124,7 +143,7 @@ guchar* destPixel = destPixels + row * d
+@@ -124,7 +143,7 @@ already_AddRefed<GdkPixbuf> nsImageToPix
        uint32_t* srcPixel =
            reinterpret_cast<uint32_t*>((srcData + row * srcStride + 4 * col));
  
@@ -928,7 +928,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
          const uint8_t a = (*srcPixel >> 24) & 0xFF;
          const uint8_t r = unpremultiply((*srcPixel >> 16) & 0xFF, a);
          const uint8_t g = unpremultiply((*srcPixel >> 8) & 0xFF, a);
-@@ -135,7 +154,7 @@ *destPixel++ = g;
+@@ -135,7 +154,7 @@ already_AddRefed<GdkPixbuf> nsImageToPix
          *destPixel++ = b;
          *destPixel++ = a;
        } else {
@@ -937,9 +937,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  
          const uint8_t r = (*srcPixel >> 16) & 0xFF;
          const uint8_t g = (*srcPixel >> 8) & 0xFF;
---- firefox-153.0/widget/gtk/nsNativeThemeGTK.cpp
-+++ firefox-153.0/widget/gtk/nsNativeThemeGTK.cpp
-@@ -10,6 +10,7 @@ #include "nsPresContext.h"
+--- firefox-153.3.0/widget/gtk/nsNativeThemeGTK.cpp
++++ firefox-153.3.0/widget/gtk/nsNativeThemeGTK.cpp
+@@ -10,6 +10,7 @@
  #include "GtkWidgets.h"
  #include "nsIFrame.h"
  
@@ -962,7 +962,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  nsNativeThemeGTK::nsNativeThemeGTK() : Theme(ScrollbarStyle()) {}
  
  nsNativeThemeGTK::~nsNativeThemeGTK() { GtkWidgets::Shutdown(); }
-@@ -51,7 +60,7 @@ }
+@@ -51,7 +60,7 @@ static RefPtr<DataSourceSurface> GetWidg
  
    auto surfaceRect = RoundedOut(rect * aScale);
    RefPtr<DataSourceSurface> dataSurface = Factory::CreateDataSourceSurface(
@@ -971,9 +971,9 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
        /* aZero = */ true);
    if (NS_WARN_IF(!dataSurface)) {
      return nullptr;
---- firefox-153.0/widget/gtk/nsShmImage.cpp
-+++ firefox-153.0/widget/gtk/nsShmImage.cpp
-@@ -6,6 +6,7 @@ * file, You can obtain one at http://moz
+--- firefox-153.3.0/widget/gtk/nsShmImage.cpp
++++ firefox-153.3.0/widget/gtk/nsShmImage.cpp
+@@ -6,6 +6,7 @@
  #include "nsShmImage.h"
  
  #ifdef MOZ_HAVE_SHMIMAGE
@@ -981,7 +981,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  #  include "mozilla/X11Util.h"
  #  include "mozilla/PodOperations.h"
  #  include "mozilla/gfx/gfxVars.h"
-@@ -160,7 +161,11 @@ switch (mDepth) {
+@@ -160,7 +161,11 @@ bool nsShmImage::CreateImage(const IntSi
      case 32:
        if (mVisual->red_mask == 0xff0000 && mVisual->green_mask == 0xff00 &&
            mVisual->blue_mask == 0xff) {
@@ -993,7 +993,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
        }
        break;
      case 24:
-@@ -170,8 +175,12 @@ // Cairo/pixman lacks some fast paths fo
+@@ -170,8 +175,12 @@ bool nsShmImage::CreateImage(const IntSi
        // just report it as BGRX directly in that case.
        if (mVisual->red_mask == 0xff0000 && mVisual->green_mask == 0xff00 &&
            mVisual->blue_mask == 0xff) {

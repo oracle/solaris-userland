@@ -13,6 +13,7 @@ loader.lazyRequireGetter(this, "_quickOpen", "devtools/client/debugger/src/utils
 
 /**
  * Quick Open reducer
+ *
  * @module reducers/quick-open
  */
 const initialQuickOpenState = () => ({

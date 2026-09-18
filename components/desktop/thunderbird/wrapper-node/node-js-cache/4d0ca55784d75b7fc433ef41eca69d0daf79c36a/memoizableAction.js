@@ -11,14 +11,9 @@ loader.lazyRequireGetter(this, "_context", "devtools/client/debugger/src/utils/c
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
-/*
+/**
  * memoizableActon is a utility for actions that should only be performed
  * once per key. It is useful for loading sources
- *
- * @getValue - gets the result from the redux store
- * @createKey - creates a key for the requests map
- * @action - kicks off the async work for the action
- *
  *
  * For Example
  *
@@ -32,6 +27,14 @@ loader.lazyRequireGetter(this, "_context", "devtools/client/debugger/src/utils/c
  *   }
  * );
  *
+ * @param {string} name
+ * @param {object} options
+ * @param {Function} options.getValue
+ *   Gets the result from the redux store.
+ * @param {Function} options.createKey
+ *   Creates a key for the requests map.
+ * @param {Function} options.action
+ *   Kicks off the async work for the action.
  */
 function memoizeableAction(name, {
   getValue,

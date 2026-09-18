@@ -31,7 +31,6 @@ var selectors = _interopRequireWildcard(require("../selectors/index"));
 var _App = _interopRequireDefault(require("../components/App"));
 
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
-loader.lazyRequireGetter(this, "_tabs", "devtools/client/debugger/src/utils/tabs");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
@@ -69,12 +68,10 @@ function bootstrapStore(client, workers, panel, initialState) {
   const createStore = (0, _createStore.default)({
     log: _prefs.prefs.logging || _flags.default.testing,
     timing: debugJsModules,
-    makeThunkArgs: args => {
-      return { ...args,
-        client,
-        ...workers,
-        panel
-      };
+    thunkArgs: {
+      client,
+      ...workers,
+      panel
     }
   });
   let store = createStore((0, _redux.combineReducers)(_index3.default), initialState); // Also wrap the store in order to pause store update notifications while the panel is hidden.
@@ -111,7 +108,7 @@ function teardownWorkers() {
  *
  * @param {ReduxStore} store
  * @param {ReduxStore} toolboxStore
- * @param {Object} appComponentAttributes
+ * @param {object} appComponentAttributes
  * @param {Array} appComponentAttributes.fluentBundles
  * @param {Document} appComponentAttributes.toolboxDoc
  */
@@ -151,8 +148,13 @@ function updatePrefs(state, oldState) {
     _prefs.asyncStore.eventListenerBreakpoints = state.eventListenerBreakpoints;
   }
 
-  if (hasChanged(selectors.getTabs)) {
-    _prefs.asyncStore.tabs = (0, _tabs.persistTabs)(selectors.getTabs(state));
+  if (hasChanged(selectors.getOpenedURLs)) {
+    _prefs.asyncStore.openedURLs = selectors.getOpenedURLs(state);
+  }
+
+  if (hasChanged(selectors.getPrettyPrintedURLs)) {
+    // Convert the Set into an Array
+    _prefs.asyncStore.prettyPrintedURLs = Array.from(selectors.getPrettyPrintedURLs(state));
   }
 
   if (hasChanged(selectors.getXHRBreakpoints)) {

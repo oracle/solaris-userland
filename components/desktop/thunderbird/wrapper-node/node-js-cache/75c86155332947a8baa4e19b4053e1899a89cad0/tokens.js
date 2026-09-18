@@ -80,7 +80,8 @@ function _invalidLeaveTarget(target) {
 }
 /**
  * Wraps the codemirror mouse events  to generate token events
- * @param {Object} editor
+ *
+ * @param {object} editor
  * @returns {Function}
  */
 
@@ -140,9 +141,9 @@ function onMouseOver(editor) {
  * Gets the end position of a token at a specific line/column
  *
  * @param {*} codeMirror
- * @param {Number} line
- * @param {Number} column
- * @returns {Number}
+ * @param {number} line
+ * @param {number} column
+ * @returns {number}
  */
 
 
@@ -159,7 +160,7 @@ function getTokenEnd(codeMirror, line, column) {
  *
  * @param {*} editor
  * @param {*} tokenEl
- * @returns {Object} An object of the form { line, column }
+ * @returns {object} An object of the form { line, column }
  */
 
 

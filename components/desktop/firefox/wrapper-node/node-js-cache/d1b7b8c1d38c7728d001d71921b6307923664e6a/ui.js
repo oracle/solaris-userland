@@ -12,7 +12,6 @@ exports.getConditionalPanelLocation = getConditionalPanelLocation;
 exports.getLogPointStatus = getLogPointStatus;
 exports.getOrientation = getOrientation;
 exports.getViewport = getViewport;
-exports.getCursorPosition = getCursorPosition;
 exports.getInlinePreview = getInlinePreview;
 exports.getEditorWrapping = getEditorWrapping;
 exports.getJavascriptTracingLogMethod = getJavascriptTracingLogMethod;
@@ -81,10 +80,6 @@ function getOrientation(state) {
 
 function getViewport(state) {
   return state.ui.viewport;
-}
-
-function getCursorPosition(state) {
-  return state.ui.cursorPosition;
 }
 
 function getInlinePreview(state) {

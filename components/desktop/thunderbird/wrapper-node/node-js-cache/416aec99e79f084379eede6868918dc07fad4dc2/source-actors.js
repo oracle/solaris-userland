@@ -20,7 +20,7 @@ exports.initial = void 0;
 function initialSourceActorsState() {
   return {
     // Map(Source Actor ID: string => SourceActor: object)
-    // See create.js: `createSourceActor` for the shape of the source actor objects.
+    // See create.js: `createScriptSourceActor` for the shape of the source actor objects.
     mutableSourceActors: new Map(),
     // Map(Source Actor ID: string => Breakable lines: Promise or Array<Number>)
     // The array is the list of all lines where breakpoints can be set.
@@ -61,14 +61,18 @@ function update(state = initialSourceActorsState(), action) {
         };
       }
 
-    case "REMOVE_THREAD":
+    case "REMOVE_SOURCES":
       {
-        for (const sourceActor of state.mutableSourceActors.values()) {
-          if (sourceActor.thread == action.threadActorID) {
-            state.mutableSourceActors.delete(sourceActor.id);
-            state.mutableBreakableLines.delete(sourceActor.id);
-            state.mutableSourceActorsWithSourceMap.delete(sourceActor.id);
-          }
+        if (!action.actors.length) {
+          return state;
+        }
+
+        for (const {
+          id
+        } of action.actors) {
+          state.mutableSourceActors.delete(id);
+          state.mutableBreakableLines.delete(id);
+          state.mutableSourceActorsWithSourceMap.delete(id);
         }
 
         return { ...state

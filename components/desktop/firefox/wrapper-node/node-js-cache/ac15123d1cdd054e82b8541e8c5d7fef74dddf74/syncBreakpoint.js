@@ -7,10 +7,6 @@ exports.syncPendingBreakpoint = syncPendingBreakpoint;
 loader.lazyRequireGetter(this, "_breakpointPositions", "devtools/client/debugger/src/actions/breakpoints/breakpointPositions");
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/utils/breakpoint/index");
 loader.lazyRequireGetter(this, "_location", "devtools/client/debugger/src/utils/location");
-
-var _index2 = require("devtools/client/shared/source-map-loader/index");
-
-loader.lazyRequireGetter(this, "_index3", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_modify", "devtools/client/debugger/src/actions/breakpoints/modify");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -48,8 +44,7 @@ function syncPendingBreakpoint(source, pendingBreakpoint) {
       client,
       dispatch
     } = thunkArgs;
-    const generatedSourceId = source.isOriginal ? (0, _index2.originalToGeneratedId)(source.id) : source.id;
-    const generatedSource = (0, _index3.getSource)(getState(), generatedSourceId);
+    const generatedSource = source.isOriginal ? source.generatedSource : source;
 
     if (!source || !generatedSource) {
       return null;

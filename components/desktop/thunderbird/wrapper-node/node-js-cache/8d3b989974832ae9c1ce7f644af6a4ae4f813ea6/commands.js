@@ -11,7 +11,6 @@ exports.stepOut = stepOut;
 exports.resume = resume;
 exports.restart = restart;
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
-loader.lazyRequireGetter(this, "_promise", "devtools/client/debugger/src/actions/utils/middleware/promise");
 loader.lazyRequireGetter(this, "_expressions", "devtools/client/debugger/src/actions/expressions");
 loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/actions/sources/index");
 loader.lazyRequireGetter(this, "_fetchScopes", "devtools/client/debugger/src/actions/pause/fetchScopes");
@@ -22,6 +21,10 @@ loader.lazyRequireGetter(this, "_context", "devtools/client/debugger/src/utils/c
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+const {
+  PROMISE
+} = require("resource://devtools/client/shared/redux/middleware/promise.js");
+
 function selectThread(thread) {
   return async ({
     dispatch,
@@ -84,7 +87,7 @@ function command(type) {
       type: "COMMAND",
       command: type,
       thread,
-      [_promise.PROMISE]: client[type](thread, frame?.id)
+      [PROMISE]: client[type](thread, frame?.id)
     });
   };
 }
@@ -185,7 +188,7 @@ function restart(frame) {
       type: "COMMAND",
       command: "restart",
       thread: frame.thread,
-      [_promise.PROMISE]: client.restart(frame.thread, frame.id)
+      [PROMISE]: client.restart(frame.thread, frame.id)
     });
   };
 }

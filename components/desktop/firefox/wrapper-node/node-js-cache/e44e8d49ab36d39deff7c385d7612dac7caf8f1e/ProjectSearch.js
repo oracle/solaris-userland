@@ -20,9 +20,9 @@ loader.lazyRequireGetter(this, "_constants", "devtools/client/debugger/src/const
 loader.lazyRequireGetter(this, "_utils", "devtools/client/debugger/src/utils/sources-tree/utils");
 loader.lazyRequireGetter(this, "_index3", "devtools/client/debugger/src/selectors/index");
 
-var _SearchInput = _interopRequireDefault(require("../shared/SearchInput"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
-var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
+var _SearchInput = _interopRequireDefault(require("devtools/client/shared/components/SearchInput"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -170,12 +170,13 @@ class ProjectSearch extends _react.Component {
           focused
         }),
         key: file.location.source.id
-      }, _react.default.createElement(_AccessibleImage.default, {
-        className: classnames("arrow", {
+      }, _react.default.createElement(_DebuggerImage.default, {
+        name: "arrow",
+        className: classnames({
           expanded
         })
-      }), _react.default.createElement(_AccessibleImage.default, {
-        className: "file"
+      }), _react.default.createElement(_DebuggerImage.default, {
+        name: "file"
       }), (0, _reactDomFactories.span)({
         className: "file-path"
       }, file.location.source.url ? (0, _utils.getRelativePath)(file.location.source.url) : file.location.source.shortName), (0, _reactDomFactories.span)({
@@ -222,7 +223,6 @@ class ProjectSearch extends _react.Component {
       // We may restore a previous state when changing tabs in the primary panes,
       // or when restoring primary panes from collapse.
       query: this.props.query || "",
-      inputFocused: false,
       focusedItem: null,
       expanded: new Set(),
       results: [],
@@ -241,7 +241,10 @@ class ProjectSearch extends _react.Component {
       doSearchForHighlight: _reactPropTypes.default.func.isRequired,
       query: _reactPropTypes.default.string.isRequired,
       searchSources: _reactPropTypes.default.func.isRequired,
-      selectSpecificLocationOrSameUrl: _reactPropTypes.default.func.isRequired
+      selectSpecificLocationOrSameUrl: _reactPropTypes.default.func.isRequired,
+      searchOptions: _reactPropTypes.default.object.isRequired,
+      setSearchOptions: _reactPropTypes.default.func.isRequired,
+      navigateCounter: _reactPropTypes.default.number
     };
   }
 
@@ -299,8 +302,8 @@ class ProjectSearch extends _react.Component {
       }),
       title: highlight ? L10N.getStr("projectTextSearch.refreshButtonTooltipOnNavigation") : L10N.getStr("projectTextSearch.refreshButtonTooltip"),
       onClick: this.doSearch
-    }, _react.default.createElement(_AccessibleImage.default, {
-      className: "refresh"
+    }, _react.default.createElement(_DebuggerImage.default, {
+      name: "refresh"
     }));
   }
 
@@ -387,22 +390,20 @@ class ProjectSearch extends _react.Component {
       showErrorEmoji: this.shouldShowErrorEmoji(),
       isLoading: status === statusType.fetching,
       onChange: this.inputOnChange,
-      onFocus: () => this.setState({
-        inputFocused: true
-      }),
-      onBlur: () => this.setState({
-        inputFocused: false
-      }),
       onKeyDown: this.onKeyDown,
       onHistoryScroll: this.onHistoryScroll,
       showClose: false,
       showExcludePatterns: true,
+      showSearchModifiers: true,
       excludePatternsLabel: L10N.getStr("projectTextSearch.excludePatterns.label"),
       excludePatternsPlaceholder: L10N.getStr("projectTextSearch.excludePatterns.placeholder"),
-      ref: "searchInput",
-      showSearchModifiers: true,
       searchKey: _constants.searchKeys.PROJECT_SEARCH,
-      onToggleSearchModifier: this.doSearch
+      onToggleSearchModifier: this.doSearch,
+      searchOptions: this.props.searchOptions,
+      setSearchOptions: this.props.setSearchOptions,
+      expanded: false,
+      hasPrefix: false,
+      DebuggerImage: _DebuggerImage.default
     });
   }
 
@@ -425,13 +426,15 @@ ProjectSearch.contextTypes = {
 
 const mapStateToProps = state => ({
   query: (0, _index3.getProjectSearchQuery)(state),
-  navigateCounter: (0, _index3.getNavigateCounter)(state)
+  navigateCounter: (0, _index3.getNavigateCounter)(state),
+  searchOptions: (0, _index3.getSearchOptions)(state, _constants.searchKeys.PROJECT_SEARCH)
 });
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, {
   searchSources: _index.default.searchSources,
   selectSpecificLocationOrSameUrl: _index.default.selectSpecificLocationOrSameUrl,
-  doSearchForHighlight: _index.default.doSearchForHighlight
+  doSearchForHighlight: _index.default.doSearchForHighlight,
+  setSearchOptions: _index.default.setSearchOptions
 })(ProjectSearch);
 
 exports.default = _default;

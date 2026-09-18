@@ -21,10 +21,10 @@ loader.lazyRequireGetter(this, "_create", "devtools/client/debugger/src/client/f
  * In additional to `SourceMapLoader.getGeneratedLocation`,
  * this asserts that the related source is still registered in the reducer current state.
  *
- * @param {Object} location
- * @param {Object} thunkArgs
+ * @param {object} location
+ * @param {object} thunkArgs
  *        Redux action thunk arguments
- * @param {Object}
+ * @param {object}
  *        The matching generated location.
  */
 async function getGeneratedLocation(location, thunkArgs) {
@@ -52,10 +52,10 @@ async function getGeneratedLocation(location, thunkArgs) {
  * this automatically fetches the original source object in order to build
  * the original location object.
  *
- * @param {Object} location
- * @param {Object} thunkArgs
+ * @param {object} location
+ * @param {object} thunkArgs
  *        Redux action thunk arguments
- * @param {Object} options
+ * @param {object} options
  * @param {boolean} options.waitForSource
  *        Default to false. If true is passed, this function will
  *        ensure waiting, possibly asynchronously for the related original source
@@ -64,7 +64,7 @@ async function getGeneratedLocation(location, thunkArgs) {
  *        Default to false. If true, this won't query an exact mapping,
  *        but will also lookup for a loose match at the first column and next lines.
  *
- * @param {Object}
+ * @param {object}
  *        The matching original location.
  */
 

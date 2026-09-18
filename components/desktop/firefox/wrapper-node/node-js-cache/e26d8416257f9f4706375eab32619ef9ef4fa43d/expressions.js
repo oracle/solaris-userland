@@ -12,13 +12,15 @@ exports.evaluateExpressionsForCurrentContext = evaluateExpressionsForCurrentCont
 exports.evaluateExpressions = evaluateExpressions;
 exports.getMappedExpression = getMappedExpression;
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
-loader.lazyRequireGetter(this, "_promise", "devtools/client/debugger/src/actions/utils/middleware/promise");
 loader.lazyRequireGetter(this, "_expressions", "devtools/client/debugger/src/utils/expressions");
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+const {
+  PROMISE
+} = require("resource://devtools/client/shared/redux/middleware/promise.js");
 
 /**
  * Add expression for debugger to watch
@@ -199,7 +201,7 @@ function evaluateExpression(expression) {
       // When we aren't passing a frame, we have to pass a thread to the pause reducer
       thread: selectedFrame ? null : thread,
       input: expression.input,
-      [_promise.PROMISE]: client.evaluate((0, _expressions.wrapExpression)(input), {
+      [PROMISE]: client.evaluate((0, _expressions.wrapExpression)(input), {
         // When evaluating against the global scope (when not paused)
         // frameId will be null here.
         frameId: selectedFrame?.id

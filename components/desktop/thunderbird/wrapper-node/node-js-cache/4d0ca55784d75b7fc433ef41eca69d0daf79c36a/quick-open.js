@@ -71,7 +71,8 @@ function formatSourceForList(source, hasTabOpened, isBlackBoxed, projectDirector
     value,
     title: source.shortName,
     subtitle,
-    icon: hasTabOpened ? "tab result-item-icon" : `result-item-icon ${(0, _source.getSourceClassnames)(source, isBlackBoxed)}`,
+    iconClassName: "result-item-icon",
+    icon: hasTabOpened ? "tab" : (0, _source.getSourceClassnames)(source, isBlackBoxed),
     id: source.id,
     url: source.url,
     source

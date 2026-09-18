@@ -11,7 +11,7 @@ var _reactDomFactories = require("devtools/client/shared/vendor/react-dom-factor
 
 var _reactPropTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
 
-var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 loader.lazyRequireGetter(this, "_menu", "devtools/client/debugger/src/context-menu/menu");
 
@@ -213,8 +213,8 @@ class Scopes extends _react.PureComponent {
           "aria-role": "status"
         }, (0, _reactDomFactories.span)({
           className: "info icon"
-        }, _react.default.createElement(_AccessibleImage.default, {
-          className: "sourcemap"
+        }, _react.default.createElement(_DebuggerImage.default, {
+          name: "sourcemap"
         })), L10N.getFormatStr("scopes.noOriginalScopes", L10N.getStr("scopes.showOriginalScopes"))));
       }
 
@@ -225,8 +225,8 @@ class Scopes extends _react.PureComponent {
           className: "pane-info"
         }, (0, _reactDomFactories.span)({
           className: "info icon"
-        }, _react.default.createElement(_AccessibleImage.default, {
-          className: "loader"
+        }, _react.default.createElement(_DebuggerImage.default, {
+          name: "loader"
         })), L10N.getStr("scopes.loadingOriginalScopes")));
       }
 
@@ -239,15 +239,15 @@ class Scopes extends _react.PureComponent {
           className: "pane-info"
         }, (0, _reactDomFactories.span)({
           className: "info icon"
-        }, _react.default.createElement(_AccessibleImage.default, {
-          className: "loader"
+        }, _react.default.createElement(_DebuggerImage.default, {
+          name: "loader"
         })), L10N.getStr("loadingText")));
       }
 
       scopes = generatedScopes;
     }
 
-    function initiallyExpanded(item) {
+    function getInitiallyExpanded(item) {
       return expandedScopes.some(path => path == (0, _scopes.getScopeItemPath)(item));
     }
 
@@ -272,7 +272,7 @@ class Scopes extends _react.PureComponent {
         onContextMenu: this.onContextMenu,
         preventBlur: true,
         setExpanded: (path, expand) => setExpandedScope(selectedFrame, path, expand),
-        initiallyExpanded,
+        getInitiallyExpanded,
         renderItemActions: this.renderWatchpointButton,
         shouldRenderTooltip: true
       }));

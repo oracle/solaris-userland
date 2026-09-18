@@ -9,6 +9,7 @@ exports.addTraces = addTraces;
 exports.selectTrace = selectTrace;
 exports.setLocalAndRemoteRuntimeVersion = setLocalAndRemoteRuntimeVersion;
 exports.searchTraceArguments = searchTraceArguments;
+exports.updateSelectedLocationTraces = updateSelectedLocationTraces;
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_tracerFrames", "devtools/client/debugger/src/reducers/tracer-frames");
 loader.lazyRequireGetter(this, "_location", "devtools/client/debugger/src/utils/location");
@@ -78,8 +79,10 @@ function selectTrace(traceIndex) {
       const frames = (0, _index.getTraceFrames)(getState());
       const frame = frames[frameIndex];
       const source = (0, _index.getSourceByActorId)(getState(), frame.sourceId);
+      const sourceActor = (0, _index.getSourceActor)(getState(), frame.sourceId);
       location = (0, _location.createLocation)({
         source,
+        sourceActor,
         line: frame.line,
         column: frame.column
       });
@@ -102,6 +105,8 @@ function selectTrace(traceIndex) {
         highlight: false
       }));
     }
+
+    await dispatch(updateSelectedLocationTraces(location));
   };
 }
 
@@ -212,5 +217,42 @@ function searchTraceArguments(searchString) {
         searchValueOrGrip
       });
     }
+  };
+}
+
+function updateSelectedLocationTraces(selectedLocation) {
+  return async function ({
+    getState,
+    dispatch
+  }) {
+    if (!selectedLocation) {
+      dispatch({
+        type: "SET_SELECTED_LOCACTION_TRACES",
+        selectedLocationTraces: null
+      });
+      return;
+    }
+
+    const state = getState();
+    let location = selectedLocation; // When an original location is selected, we should be fetching the matching generated location from reducers
+
+    if (selectedLocation.source.isOriginal) {
+      location = state.sources.selectedGeneratedLocation;
+    }
+
+    const allTraces = (0, _index.getAllTraces)(state);
+    const frames = (0, _index.getTraceFrames)(state); // By computing this from the selectLocation action, we compute this once per location change,
+    // but it may be relevant to try to cache traces per location (file, line and column)
+    // to avoid having to go through all the traces on each location change.
+
+    const selectedLocationTraces = allTraces.filter(trace => {
+      const frameIndex = trace[TRACER_FIELDS_INDEXES.FRAME_INDEX];
+      const frame = frames[frameIndex];
+      return frame && frame.sourceId == location.sourceActor.id && frame.line == location.line && (!location.column || frame.column == location.column);
+    });
+    dispatch({
+      type: "SET_SELECTED_LOCACTION_TRACES",
+      selectedLocationTraces: !selectedLocationTraces.length ? null : selectedLocationTraces
+    });
   };
 }

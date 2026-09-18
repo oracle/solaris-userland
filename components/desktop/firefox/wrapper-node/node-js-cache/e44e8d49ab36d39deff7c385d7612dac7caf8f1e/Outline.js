@@ -91,7 +91,6 @@ class Outline extends _react.Component {
   static get propTypes() {
     return {
       alphabetizeOutline: _reactPropTypes.default.bool.isRequired,
-      cursorPosition: _reactPropTypes.default.object,
       onAlphabetizeClick: _reactPropTypes.default.func.isRequired,
       selectLocation: _reactPropTypes.default.func.isRequired,
       selectedLocation: _reactPropTypes.default.object,
@@ -112,13 +111,13 @@ class Outline extends _react.Component {
 
   componentDidUpdate(prevProps) {
     const {
-      cursorPosition,
+      selectedLocation,
       selectedSourceTextContent,
       canFetchSymbols
     } = this.props;
 
-    if (cursorPosition && cursorPosition !== prevProps.cursorPosition) {
-      this.setFocus(cursorPosition);
+    if (selectedLocation && selectedLocation !== prevProps.selectedLocation) {
+      this.setFocus(selectedLocation);
     }
 
     if (this.focusedElRef && !isVisible(this.focusedElRef, this.refs.outlineList)) {
@@ -149,7 +148,7 @@ class Outline extends _react.Component {
     });
   }
 
-  async setFocus(cursorPosition) {
+  async setFocus(selectedLocation) {
     const {
       symbols
     } = this.state;
@@ -166,7 +165,7 @@ class Outline extends _react.Component {
 
     const enclosedItems = [...classes, ...functions].filter(({
       location
-    }) => (0, _ast.containsPosition)(location, cursorPosition));
+    }) => (0, _ast.containsPosition)(location, selectedLocation));
 
     if (!enclosedItems.length) {
       this.setState({
@@ -379,8 +378,7 @@ const mapStateToProps = state => {
   return {
     selectedSourceTextContent,
     selectedLocation: (0, _index2.getSelectedLocation)(state),
-    canFetchSymbols: selectedSourceTextContent && (0, _asyncValue.isFulfilled)(selectedSourceTextContent),
-    cursorPosition: (0, _index2.getCursorPosition)(state)
+    canFetchSymbols: selectedSourceTextContent && (0, _asyncValue.isFulfilled)(selectedSourceTextContent)
   };
 };
 

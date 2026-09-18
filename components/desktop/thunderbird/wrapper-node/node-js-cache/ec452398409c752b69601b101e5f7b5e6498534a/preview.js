@@ -30,11 +30,11 @@ async function findExpressionMatches(state, editor, tokenPos) {
 /**
  * Get a preview object for the currently selected frame in the JS Tracer.
  *
- * @param {Object} target
+ * @param {object} target
  *        The hovered DOM Element within CodeMirror rendering.
- * @param {Object} tokenPos
+ * @param {object} tokenPos
  *        The CodeMirror position object for the hovered token.
- * @param {Object} editor
+ * @param {object} editor
  *        The CodeMirror editor object.
  */
 
@@ -117,11 +117,11 @@ function getTracerPreview(target, tokenPos, editor) {
 /**
  * Get a preview object for the currently paused frame, if paused.
  *
- * @param {Object} target
+ * @param {object} target
  *        The hovered DOM Element within CodeMirror rendering.
- * @param {Object} tokenPos
+ * @param {object} tokenPos
  *        The CodeMirror position object for the hovered token.
- * @param {Object} editor
+ * @param {object} editor
  *        The CodeMirror editor object.
  */
 

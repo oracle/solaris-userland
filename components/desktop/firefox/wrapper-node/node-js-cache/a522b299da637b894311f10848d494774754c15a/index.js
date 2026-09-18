@@ -54,6 +54,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 /**
  * Reducer index
+ *
  * @module reducers/index
  */
 

@@ -15,7 +15,7 @@ var _reactRedux = require("devtools/client/shared/vendor/react-redux");
 
 var _index = _interopRequireDefault(require("../../../actions/index"));
 
-var _AccessibleImage = _interopRequireDefault(require("../../shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -100,8 +100,9 @@ class ExceptionPopup extends _react.Component {
 
   renderArrowIcon(stacktrace) {
     if (stacktrace.length) {
-      return _react.default.createElement(_AccessibleImage.default, {
-        className: classnames("arrow", {
+      return _react.default.createElement(_DebuggerImage.default, {
+        name: "arrow",
+        className: classnames({
           expanded: this.state.isStacktraceExpanded
         })
       });

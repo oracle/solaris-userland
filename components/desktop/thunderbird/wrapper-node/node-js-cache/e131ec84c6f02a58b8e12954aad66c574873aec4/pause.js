@@ -350,7 +350,7 @@ function getSelectedFrameInlinePreviews(state) {
 }
 /**
  * This selector returns the inline previews object for the selected location.
- * It consider both paused and traced previews and will only return values
+ * It considers both paused and traced previews and will only return values
  * if it matches the currently selected location.
  */
 

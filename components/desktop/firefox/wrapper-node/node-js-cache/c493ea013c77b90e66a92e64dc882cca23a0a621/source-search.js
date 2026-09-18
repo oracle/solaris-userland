@@ -19,8 +19,6 @@ Object.defineProperty(exports, "buildQuery", {
 
 var _buildQuery = _interopRequireDefault(require("../build-query"));
 
-loader.lazyRequireGetter(this, "_constants", "devtools/client/debugger/src/constants");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -105,7 +103,7 @@ function doSearch(ctx, rev, query, keepSelection, modifiers, {
   }
 
   editor.setPositionContentMarker({
-    id: _constants.markerTypes.ACTIVE_SELECTION_MARKER,
+    id: editor.markerTypes.ACTIVE_SELECTION_MARKER,
     positionClassName: "cm-matchhighlight",
     positions: [{
       from: cursor.from,

@@ -11,7 +11,7 @@ var _reactPropTypes = _interopRequireDefault(require("devtools/client/shared/ven
 
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/utils/pause/frames/index");
 
-var _AccessibleImage = _interopRequireDefault(require("../../shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 var _Frame = _interopRequireDefault(require("./Frame"));
 
@@ -40,15 +40,16 @@ function FrameLocation({
     return null;
   }
 
-  const arrowClassName = classnames("arrow", {
-    expanded
-  });
   return _react.default.createElement("span", {
     className: "group-description"
-  }, _react.default.createElement(_AccessibleImage.default, {
-    className: arrowClassName
-  }), _react.default.createElement(_AccessibleImage.default, {
-    className: `annotation-logo ${library.toLowerCase()}`
+  }, _react.default.createElement(_DebuggerImage.default, {
+    name: "arrow",
+    className: classnames({
+      expanded
+    })
+  }), _react.default.createElement(_DebuggerImage.default, {
+    name: library.toLowerCase(),
+    className: "annotation-logo"
   }), _react.default.createElement("span", {
     className: "group-description-name"
   }, library));

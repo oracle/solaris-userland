@@ -26,9 +26,9 @@ Dependency: apply after SPARC-01-cairo-surface-format.patch. This patch relies
 on the native Cairo surface formats introduced there and provides the data
 target bridge used by later shared-image, blob, and SWGL boundary fixes.
 
---- firefox-153.0/dom/canvas/ImageBitmap.cpp
-+++ firefox-153.0/dom/canvas/ImageBitmap.cpp
-@@ -430,9 +430,69 @@ }
+--- firefox-153.3.0/dom/canvas/ImageBitmap.cpp
++++ firefox-153.3.0/dom/canvas/ImageBitmap.cpp
+@@ -430,9 +430,69 @@ static DataSourceSurface* AlphaPremultip
  /*
   * Encapsulate the given _aSurface_ into a layers::SourceSurfaceImage.
   */
@@ -98,9 +98,9 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
    RefPtr<layers::SourceSurfaceImage> image =
        new layers::SourceSurfaceImage(aSurface->GetSize(), aSurface);
    return image.forget();
---- firefox-153.0/gfx/2d/DrawTargetCairo.cpp
-+++ firefox-153.0/gfx/2d/DrawTargetCairo.cpp
-@@ -636,9 +636,19 @@ : mContext(nullptr),
+--- firefox-153.3.0/gfx/2d/DrawTargetCairo.cpp
++++ firefox-153.3.0/gfx/2d/DrawTargetCairo.cpp
+@@ -636,9 +636,19 @@ DrawTargetCairo::DrawTargetCairo()
        mSurface(nullptr),
        mTransformSingular(false),
        mLockedBits(nullptr),
@@ -121,7 +121,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
    cairo_destroy(mContext);
    if (mSurface) {
      cairo_surface_destroy(mSurface);
-@@ -812,6 +822,10 @@ << (mSurface ? cairo_surface_status(mSur
+@@ -812,6 +822,10 @@ already_AddRefed<SourceSurface> DrawTarg
      return nullptr;
    }
  
@@ -132,7 +132,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
    if (mSnapshot) {
      RefPtr<SourceSurface> snapshot(mSnapshot);
      return snapshot.forget();
-@@ -897,7 +911,33 @@ }
+@@ -897,7 +911,33 @@ void DrawTargetCairo::Flush() {
  
    cairo_surface_t* surf = cairo_get_group_target(mContext);
    cairo_surface_flush(surf);
@@ -166,7 +166,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
  
  void DrawTargetCairo::PrepareForDrawing(cairo_t* aContext,
                                          const Path* aPath /* = nullptr */) {
-@@ -2161,7 +2201,35 @@ return InitAlreadyReferenced(surf, aSize
+@@ -2176,7 +2216,35 @@ bool DrawTargetCairo::Init(const IntSize
  }
  
  bool DrawTargetCairo::Init(unsigned char* aData, const IntSize& aSize,
@@ -203,9 +203,9 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
    cairo_surface_t* surf = cairo_image_surface_create_for_data(
        aData, GfxFormatToCairoFormat(aFormat), aSize.width, aSize.height,
        aStride);
---- firefox-153.0/gfx/2d/DrawTargetCairo.h
-+++ firefox-153.0/gfx/2d/DrawTargetCairo.h
-@@ -159,7 +159,7 @@ bool Init(cairo_surface_t* aSurface, con
+--- firefox-153.3.0/gfx/2d/DrawTargetCairo.h
++++ firefox-153.3.0/gfx/2d/DrawTargetCairo.h
+@@ -161,7 +161,7 @@ class DrawTargetCairo final : public Dra
              SurfaceFormat* aFormat = nullptr);
    bool Init(const IntSize& aSize, SurfaceFormat aFormat);
    bool Init(unsigned char* aData, const IntSize& aSize, int32_t aStride,
@@ -214,7 +214,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
  
    void SetTransform(const Matrix& aTransform) override;
  
-@@ -208,6 +208,10 @@ // Set the Cairo context font options ac
+@@ -210,6 +210,10 @@ class DrawTargetCairo final : public Dra
    // font state.
    void SetFontOptions(cairo_antialias_t aAAMode = CAIRO_ANTIALIAS_DEFAULT);
  
@@ -225,7 +225,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
   private:  // data
    cairo_t* mContext;
    cairo_surface_t* mSurface;
-@@ -219,6 +223,12 @@ uint8_t* mLockedBits;
+@@ -221,6 +225,12 @@ class DrawTargetCairo final : public Dra
  
    cairo_font_options_t* mFontOptions;
  
@@ -238,9 +238,9 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
    struct PushedLayer {
      PushedLayer(Float aOpacity, CompositionOp aCompositionOp,
                  bool aWasPermittingSubpixelAA)
---- firefox-153.0/gfx/2d/Factory.cpp
-+++ firefox-153.0/gfx/2d/Factory.cpp
-@@ -335,7 +335,7 @@ #ifdef USE_CAIRO
+--- firefox-153.3.0/gfx/2d/Factory.cpp
++++ firefox-153.3.0/gfx/2d/Factory.cpp
+@@ -329,7 +329,7 @@ already_AddRefed<DrawTarget> Factory::Cr
      case BackendType::CAIRO: {
        RefPtr<DrawTargetCairo> newTarget;
        newTarget = new DrawTargetCairo();
@@ -249,9 +249,9 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
          retVal = std::move(newTarget);
        }
        break;
---- firefox-153.0/gfx/layers/BufferTexture.cpp
-+++ firefox-153.0/gfx/layers/BufferTexture.cpp
-@@ -10,6 +10,7 @@ #include "libyuv.h"
+--- firefox-153.3.0/gfx/layers/BufferTexture.cpp
++++ firefox-153.3.0/gfx/layers/BufferTexture.cpp
+@@ -10,6 +10,7 @@
  #include "mozilla/fallible.h"
  #include "mozilla/gfx/2D.h"
  #include "mozilla/gfx/Logging.h"
@@ -259,7 +259,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
  #include "mozilla/layers/CompositableForwarder.h"
  #include "mozilla/layers/ISurfaceAllocator.h"
  #include "mozilla/layers/ImageDataSerializer.h"
-@@ -345,6 +346,25 @@ }
+@@ -345,6 +346,25 @@ already_AddRefed<gfx::DrawTarget> Buffer
    return dt.forget();
  }
  
@@ -285,7 +285,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
  bool BufferTextureData::BorrowMappedData(MappedTextureData& aData) {
    if (GetFormat() == gfx::SurfaceFormat::YUV420) {
      return false;
-@@ -431,8 +448,19 @@ gfxCriticalError() << "Failed to GetData
+@@ -431,8 +451,19 @@ bool BufferTextureData::UpdateFromSurfac
      return false;
    }
  
@@ -306,7 +306,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
      gfxCriticalError() << "Attempt to update texture client from a surface "
                            "with a different size or format (BT)! This: "
                         << surface->GetSize() << " " << surface->GetFormat()
-@@ -456,10 +484,26 @@ << "Failed to map destination surface fo
+@@ -456,10 +487,26 @@ bool BufferTextureData::UpdateFromSurfac
      return false;
    }
  
@@ -337,9 +337,9 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
    }
  
    srcSurf->Unmap();
---- firefox-153.0/gfx/layers/BufferTexture.h
-+++ firefox-153.0/gfx/layers/BufferTexture.h
-@@ -42,6 +42,10 @@ void FillInfo(TextureData::Info& aInfo)
+--- firefox-153.3.0/gfx/layers/BufferTexture.h
++++ firefox-153.3.0/gfx/layers/BufferTexture.h
+@@ -42,6 +42,10 @@ class BufferTextureData : public Texture
  
    already_AddRefed<gfx::DrawTarget> BorrowDrawTarget() override;
  
@@ -350,9 +350,9 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
    bool BorrowMappedData(MappedTextureData& aMap) override;
  
    bool BorrowMappedYCbCrData(MappedYCbCrTextureData& aMap) override;
---- firefox-153.0/gfx/layers/PersistentBufferProvider.cpp
-+++ firefox-153.0/gfx/layers/PersistentBufferProvider.cpp
-@@ -210,6 +210,9 @@ MOZ_ASSERT(mDrawTarget == dt);
+--- firefox-153.3.0/gfx/layers/PersistentBufferProvider.cpp
++++ firefox-153.3.0/gfx/layers/PersistentBufferProvider.cpp
+@@ -210,6 +210,9 @@ bool PersistentBufferProviderAccelerated
      if (!mDrawTarget) {
        return false;
      }
@@ -362,7 +362,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
      mDrawTarget = nullptr;
    }
    mTexture->Unlock();
-@@ -594,6 +597,13 @@ MOZ_ASSERT(!mSnapshot);
+@@ -594,6 +597,13 @@ bool PersistentBufferProviderShared::Ret
    TextureClient* back = GetTexture(mBack);
    MOZ_ASSERT(back);
  
@@ -376,9 +376,9 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
    mDrawTarget = nullptr;
    dt = nullptr;
  
---- firefox-153.0/gfx/layers/client/TextureClient.cpp
-+++ firefox-153.0/gfx/layers/client/TextureClient.cpp
-@@ -961,6 +961,12 @@ }
+--- firefox-153.3.0/gfx/layers/client/TextureClient.cpp
++++ firefox-153.3.0/gfx/layers/client/TextureClient.cpp
+@@ -965,6 +965,12 @@ void TextureData::ReturnDrawTarget(alrea
  already_AddRefed<gfx::SourceSurface> TextureClient::BorrowSnapshot() {
    MOZ_ASSERT(mIsLocked);
  
@@ -391,7 +391,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
    RefPtr<gfx::SourceSurface> surface = mData->BorrowSnapshot();
    if (surface) {
      mBorrowedSnapshot = true;
-@@ -1285,6 +1291,23 @@ }
+@@ -1288,6 +1294,23 @@ bool TextureClient::InitIPDLActor(KnowsC
  
  PTextureChild* TextureClient::GetIPDLActor() { return mActor; }
  
@@ -415,7 +415,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
  // static
  already_AddRefed<TextureClient> TextureClient::CreateForDrawing(
      KnowsCompositor* aAllocator, gfx::SurfaceFormat aFormat, gfx::IntSize aSize,
-@@ -1314,6 +1337,8 @@ if (!gfx::Factory::AllowedSurfaceSize(aS
+@@ -1317,6 +1340,8 @@ already_AddRefed<TextureClient> TextureC
      return nullptr;
    }
  
@@ -424,7 +424,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
    TextureData* data =
        TextureData::Create(aAllocator, aFormat, aSize, aKnowsCompositor,
                            aSelector, aTextureFlags, aAllocFlags);
-@@ -1393,21 +1418,31 @@ if (!gfx::Factory::AllowedSurfaceSize(aS
+@@ -1396,21 +1421,31 @@ already_AddRefed<TextureClient> TextureC
      return nullptr;
    }
  
@@ -460,9 +460,9 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
        aAllocator);
    if (!texData) {
      return nullptr;
---- firefox-153.0/gfx/thebes/gfxPlatform.cpp
-+++ firefox-153.0/gfx/thebes/gfxPlatform.cpp
-@@ -1954,6 +1954,17 @@ #endif
+--- firefox-153.3.0/gfx/thebes/gfxPlatform.cpp
++++ firefox-153.3.0/gfx/thebes/gfxPlatform.cpp
+@@ -1954,6 +1954,17 @@ BackendPrefsData gfxPlatform::GetBackend
    data.mCanvasDefault = BackendType::SKIA;
    data.mContentDefault = BackendType::SKIA;
  
@@ -480,7 +480,7 @@ target bridge used by later shared-image, blob, and SWGL boundary fixes.
    return data;
  }
  
-@@ -1980,9 +1991,16 @@ uint32_t swBackendBits = BackendTypeBit(
+@@ -1980,9 +1991,16 @@ void gfxPlatform::InitBackendPrefs(Backe
  #ifdef MOZ_WIDGET_GTK
    swBackendBits |= BackendTypeBit(BackendType::CAIRO);
  #endif

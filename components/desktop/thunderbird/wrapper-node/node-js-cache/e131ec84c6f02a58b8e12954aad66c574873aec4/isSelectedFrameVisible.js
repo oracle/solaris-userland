@@ -4,9 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.isSelectedFrameVisible = isSelectedFrameVisible;
-
-var _index = require("devtools/client/shared/source-map-loader/index");
-
 loader.lazyRequireGetter(this, "_sources", "devtools/client/debugger/src/selectors/sources");
 loader.lazyRequireGetter(this, "_pause", "devtools/client/debugger/src/selectors/pause");
 
@@ -15,7 +12,7 @@ loader.lazyRequireGetter(this, "_pause", "devtools/client/debugger/src/selectors
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 function getGeneratedId(source) {
   if (source.isOriginal) {
-    return (0, _index.originalToGeneratedId)(source.id);
+    return source.generatedSource.id;
   }
 
   return source.id;

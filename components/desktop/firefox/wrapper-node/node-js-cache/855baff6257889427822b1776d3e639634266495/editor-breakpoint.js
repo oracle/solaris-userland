@@ -9,7 +9,6 @@ exports.createBreakpointItems = createBreakpointItems;
 loader.lazyRequireGetter(this, "_menu", "devtools/client/debugger/src/context-menu/menu");
 loader.lazyRequireGetter(this, "_selectedLocation", "devtools/client/debugger/src/utils/selected-location");
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
-loader.lazyRequireGetter(this, "_text", "devtools/client/debugger/src/utils/text");
 loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_modify", "devtools/client/debugger/src/actions/breakpoints/modify");
@@ -19,6 +18,10 @@ loader.lazyRequireGetter(this, "_ui", "devtools/client/debugger/src/actions/ui")
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+const {
+  stringifyFromElectronKey
+} = require("resource://devtools/client/shared/key-shortcuts.js");
+
 function showEditorEditBreakpointContextMenu(event, breakpoint) {
   return async ({
     dispatch,
@@ -78,7 +81,7 @@ const addBreakpointItem = (location, dispatch) => ({
   accesskey: L10N.getStr("shortcuts.toggleBreakpoint.accesskey"),
   disabled: false,
   click: () => dispatch((0, _modify.addBreakpoint)(location)),
-  accelerator: (0, _text.formatKeyShortcut)(L10N.getStr("toggleBreakpoint.key"))
+  accelerator: stringifyFromElectronKey(L10N.getStr("toggleBreakpoint.key"))
 });
 
 const removeBreakpointItem = (breakpoint, dispatch) => ({
@@ -87,13 +90,13 @@ const removeBreakpointItem = (breakpoint, dispatch) => ({
   accesskey: L10N.getStr("shortcuts.toggleBreakpoint.accesskey"),
   disabled: false,
   click: () => dispatch((0, _modify.removeBreakpoint)(breakpoint)),
-  accelerator: (0, _text.formatKeyShortcut)(L10N.getStr("toggleBreakpoint.key"))
+  accelerator: stringifyFromElectronKey(L10N.getStr("toggleBreakpoint.key"))
 });
 
 const addConditionalBreakpointItem = (location, dispatch) => ({
   id: "node-menu-add-conditional-breakpoint",
   label: L10N.getStr("editor.addConditionBreakpoint"),
-  accelerator: (0, _text.formatKeyShortcut)(L10N.getStr("toggleCondPanel.breakpoint.key")),
+  accelerator: stringifyFromElectronKey(L10N.getStr("toggleCondPanel.breakpoint.key")),
   accesskey: L10N.getStr("editor.addConditionBreakpoint.accesskey"),
   disabled: false,
   click: () => dispatch((0, _ui.openConditionalPanel)(location))
@@ -102,7 +105,7 @@ const addConditionalBreakpointItem = (location, dispatch) => ({
 const editConditionalBreakpointItem = (location, dispatch) => ({
   id: "node-menu-edit-conditional-breakpoint",
   label: L10N.getStr("editor.editConditionBreakpoint"),
-  accelerator: (0, _text.formatKeyShortcut)(L10N.getStr("toggleCondPanel.breakpoint.key")),
+  accelerator: stringifyFromElectronKey(L10N.getStr("toggleCondPanel.breakpoint.key")),
   accesskey: L10N.getStr("editor.addConditionBreakpoint.accesskey"),
   disabled: false,
   click: () => dispatch((0, _ui.openConditionalPanel)(location))
@@ -123,7 +126,7 @@ const addLogPointItem = (location, dispatch) => ({
   accesskey: L10N.getStr("editor.addLogPoint.accesskey"),
   disabled: false,
   click: () => dispatch((0, _ui.openConditionalPanel)(location, true)),
-  accelerator: (0, _text.formatKeyShortcut)(L10N.getStr("toggleCondPanel.logPoint.key"))
+  accelerator: stringifyFromElectronKey(L10N.getStr("toggleCondPanel.logPoint.key"))
 });
 
 const editLogPointItem = (location, dispatch) => ({
@@ -132,7 +135,7 @@ const editLogPointItem = (location, dispatch) => ({
   accesskey: L10N.getStr("editor.editLogPoint.accesskey"),
   disabled: false,
   click: () => dispatch((0, _ui.openConditionalPanel)(location, true)),
-  accelerator: (0, _text.formatKeyShortcut)(L10N.getStr("toggleCondPanel.logPoint.key"))
+  accelerator: stringifyFromElectronKey(L10N.getStr("toggleCondPanel.logPoint.key"))
 });
 
 const logPointItem = (breakpoint, location, dispatch) => {

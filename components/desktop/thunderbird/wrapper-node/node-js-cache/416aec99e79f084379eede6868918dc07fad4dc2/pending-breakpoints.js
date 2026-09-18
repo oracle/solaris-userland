@@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
 
 var _assert = _interopRequireDefault(require("../utils/assert"));
 
@@ -96,12 +95,12 @@ function removePendingBreakpoint(state, pendingBreakpoint) {
  * using its original location, or for pretty-printed sources,
  * its generated location.
  *
- * @param {Object} breakpoint
+ * @param {object} breakpoint
  */
 
 
 function makeIdFromBreakpoint(breakpoint) {
-  const location = (0, _source.isPrettyURL)(breakpoint.location.source.url) ? breakpoint.generatedLocation : breakpoint.location;
+  const location = breakpoint.location.source.isPrettyPrinted ? breakpoint.generatedLocation : breakpoint.location;
   const {
     source,
     line,

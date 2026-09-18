@@ -21,6 +21,7 @@ exports.getTraceMatchingSearchTraces = getTraceMatchingSearchTraces;
 exports.getTraceMatchingSearchException = getTraceMatchingSearchException;
 exports.getTraceMatchingSearchValueOrGrip = getTraceMatchingSearchValueOrGrip;
 exports.getIsTracingValues = getIsTracingValues;
+exports.getSelectedLocationTraces = getSelectedLocationTraces;
 loader.lazyRequireGetter(this, "_sources", "devtools/client/debugger/src/selectors/sources.js");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -117,4 +118,8 @@ function getTraceMatchingSearchValueOrGrip(state) {
 
 function getIsTracingValues(state) {
   return state.tracerFrames?.traceValues || false;
+}
+
+function getSelectedLocationTraces(state) {
+  return state.tracerFrames?.selectedLocationTraces || null;
 }

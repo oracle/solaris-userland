@@ -8,7 +8,6 @@ loader.lazyRequireGetter(this, "_menu", "devtools/client/debugger/src/context-me
 loader.lazyRequireGetter(this, "_selectedLocation", "devtools/client/debugger/src/utils/selected-location");
 loader.lazyRequireGetter(this, "_source2", "devtools/client/debugger/src/utils/source");
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
-loader.lazyRequireGetter(this, "_text", "devtools/client/debugger/src/utils/text");
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_modify", "devtools/client/debugger/src/actions/breakpoints/modify");
 loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/actions/breakpoints/index");
@@ -18,6 +17,10 @@ loader.lazyRequireGetter(this, "_ui", "devtools/client/debugger/src/actions/ui")
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+const {
+  stringifyFromElectronKey
+} = require("resource://devtools/client/shared/key-shortcuts.js");
+
 function showBreakpointContextMenu(event, breakpoint, source) {
   return async ({
     dispatch,
@@ -164,7 +167,7 @@ function showBreakpointContextMenu(event, breakpoint, source) {
         await dispatch((0, _select.selectSpecificLocation)(selectedLocation));
         await dispatch((0, _ui.openConditionalPanel)(selectedLocation));
       },
-      accelerator: (0, _text.formatKeyShortcut)(L10N.getStr("toggleCondPanel.breakpoint.key"))
+      accelerator: stringifyFromElectronKey(L10N.getStr("toggleCondPanel.breakpoint.key"))
     };
     const editConditionItem = {
       id: "node-menu-edit-condition",
@@ -174,7 +177,7 @@ function showBreakpointContextMenu(event, breakpoint, source) {
         await dispatch((0, _select.selectSpecificLocation)(selectedLocation));
         await dispatch((0, _ui.openConditionalPanel)(selectedLocation));
       },
-      accelerator: (0, _text.formatKeyShortcut)(L10N.getStr("toggleCondPanel.breakpoint.key"))
+      accelerator: stringifyFromElectronKey(L10N.getStr("toggleCondPanel.breakpoint.key"))
     };
     const addLogPointItem = {
       id: "node-menu-add-log-point",
@@ -185,7 +188,7 @@ function showBreakpointContextMenu(event, breakpoint, source) {
         await dispatch((0, _select.selectSpecificLocation)(selectedLocation));
         await dispatch((0, _ui.openConditionalPanel)(selectedLocation, true));
       },
-      accelerator: (0, _text.formatKeyShortcut)(L10N.getStr("toggleCondPanel.logPoint.key"))
+      accelerator: stringifyFromElectronKey(L10N.getStr("toggleCondPanel.logPoint.key"))
     };
     const editLogPointItem = {
       id: "node-menu-edit-log-point",
@@ -196,7 +199,7 @@ function showBreakpointContextMenu(event, breakpoint, source) {
         await dispatch((0, _select.selectSpecificLocation)(selectedLocation));
         await dispatch((0, _ui.openConditionalPanel)(selectedLocation, true));
       },
-      accelerator: (0, _text.formatKeyShortcut)(L10N.getStr("toggleCondPanel.logPoint.key"))
+      accelerator: stringifyFromElectronKey(L10N.getStr("toggleCondPanel.logPoint.key"))
     };
     const removeLogPointItem = {
       id: "node-menu-remove-log",

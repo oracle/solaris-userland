@@ -40,6 +40,11 @@ function getFileExtension(path) {
   return lastIndex !== -1 ? path.slice(lastIndex + 1).toLowerCase() : "";
 }
 
+const bundlerGroups = {
+  "webpack:": "Webpack",
+  "ng:": "Angular",
+  "turbopack:": "Turbopack"
+};
 const NoDomain = "(no domain)";
 const def = {
   path: "",
@@ -51,9 +56,9 @@ const def = {
 /**
  * Compute the URL which may be displayed in the Source Tree.
  *
- * @param {String} url
+ * @param {string} url
  *        The source absolute URL as a string
- * @param {String} extensionName
+ * @param {string} extensionName
  *        Optional, but mandatory when passing a moz-extension URL.
  *        Name of the extension serving this moz-extension source.
  * @return URL Object
@@ -71,6 +76,7 @@ const def = {
  *        - `path` and `pathname` have some special behavior.
  *          See `parse` implementation.
  */
+// eslint-disable-next-line complexity
 
 function getDisplayURL(url, extensionName = null) {
   if (!url) {
@@ -116,26 +122,6 @@ function getDisplayURL(url, extensionName = null) {
         fileExtension: getFileExtension(pathname),
         group: `${protocol}//${host || ""}`,
         origin: `${protocol}//${host || ""}`
-      };
-
-    case "webpack:":
-      return { ...def,
-        path: pathname,
-        search,
-        filename,
-        fileExtension: getFileExtension(pathname),
-        group: `Webpack`,
-        origin: `${protocol}//`
-      };
-
-    case "ng:":
-      return { ...def,
-        path: pathname,
-        search,
-        filename,
-        fileExtension: getFileExtension(pathname),
-        group: `Angular`,
-        origin: `${protocol}//`
       };
 
     case "about:":
@@ -196,11 +182,11 @@ function getDisplayURL(url, extensionName = null) {
   }
 
   return { ...def,
-    path: pathname,
+    path: host + pathname,
     search,
     fileExtension: getFileExtension(pathname),
-    filename,
-    group: protocol ? `${protocol}//` : "",
+    filename: filename ? filename : host,
+    group: protocol ? bundlerGroups[protocol] || `${protocol}//` : "",
     origin: origin && origin !== "null" ? origin : `${protocol}//${host || ""}`
   };
 }

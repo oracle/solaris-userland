@@ -27,7 +27,7 @@ function annotateFramesWithLibrary(frames) {
 /**
  * Returns all the indexes that are part of a babel async call stack.
  *
- * @param {Array<Object>} frames
+ * @param {Array<object>} frames
  * @returns Array<Integer>
  */
 

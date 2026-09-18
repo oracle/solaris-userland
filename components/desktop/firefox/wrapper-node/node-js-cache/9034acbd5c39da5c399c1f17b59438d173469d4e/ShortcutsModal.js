@@ -13,8 +13,6 @@ var _reactPropTypes = _interopRequireDefault(require("devtools/client/shared/ven
 
 var _Modal = _interopRequireDefault(require("./shared/Modal"));
 
-loader.lazyRequireGetter(this, "_text", "devtools/client/debugger/src/utils/text");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -24,6 +22,10 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+const {
+  stringifyFromElectronKey
+} = require("resource://devtools/client/shared/key-shortcuts.js");
+
 const classnames = require("resource://devtools/client/shared/classnames.js");
 
 const isMacOS = Services.appinfo.OS === "Darwin";
@@ -50,19 +52,19 @@ class ShortcutsModal extends _react.Component {
   renderEditorShortcuts() {
     return (0, _reactDomFactories.ul)({
       className: "shortcuts-list"
-    }, this.renderShorcutItem(L10N.getStr("shortcuts.toggleBreakpoint"), (0, _text.formatKeyShortcut)(L10N.getStr("toggleBreakpoint.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.toggleCondPanel.breakpoint"), (0, _text.formatKeyShortcut)(L10N.getStr("toggleCondPanel.breakpoint.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.toggleCondPanel.logPoint"), (0, _text.formatKeyShortcut)(L10N.getStr("toggleCondPanel.logPoint.key"))));
+    }, this.renderShorcutItem(L10N.getStr("shortcuts.toggleBreakpoint"), stringifyFromElectronKey(L10N.getStr("toggleBreakpoint.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.toggleCondPanel.breakpoint"), stringifyFromElectronKey(L10N.getStr("toggleCondPanel.breakpoint.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.toggleCondPanel.logPoint"), stringifyFromElectronKey(L10N.getStr("toggleCondPanel.logPoint.key"))));
   }
 
   renderSteppingShortcuts() {
     return (0, _reactDomFactories.ul)({
       className: "shortcuts-list"
-    }, this.renderShorcutItem(L10N.getStr("shortcuts.pauseOrResume"), "F8"), this.renderShorcutItem(L10N.getStr("shortcuts.stepOver"), "F10"), this.renderShorcutItem(L10N.getStr("shortcuts.stepIn"), "F11"), this.renderShorcutItem(L10N.getStr("shortcuts.stepOut"), (0, _text.formatKeyShortcut)(L10N.getStr("stepOut.key"))));
+    }, this.renderShorcutItem(L10N.getStr("shortcuts.pauseOrResume"), "F8"), this.renderShorcutItem(L10N.getStr("shortcuts.stepOver"), "F10"), this.renderShorcutItem(L10N.getStr("shortcuts.stepIn"), "F11"), this.renderShorcutItem(L10N.getStr("shortcuts.stepOut"), stringifyFromElectronKey(L10N.getStr("stepOut.key"))));
   }
 
   renderSearchShortcuts() {
     return (0, _reactDomFactories.ul)({
       className: "shortcuts-list"
-    }, this.renderShorcutItem(L10N.getStr("shortcuts.fileSearch2"), (0, _text.formatKeyShortcut)(L10N.getStr("sources.search.key2"))), this.renderShorcutItem(L10N.getStr("shortcuts.projectSearch2"), (0, _text.formatKeyShortcut)(L10N.getStr("projectTextSearch.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.functionSearch2"), (0, _text.formatKeyShortcut)(L10N.getStr("functionSearch.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.gotoLine"), (0, _text.formatKeyShortcut)(L10N.getStr("gotoLineModal.key3"))));
+    }, this.renderShorcutItem(L10N.getStr("shortcuts.fileSearch2"), stringifyFromElectronKey(L10N.getStr("sources.search.key2"))), this.renderShorcutItem(L10N.getStr("shortcuts.projectSearch2"), stringifyFromElectronKey(L10N.getStr("projectTextSearch.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.functionSearch2"), stringifyFromElectronKey(L10N.getStr("functionSearch.key"))), this.renderShorcutItem(L10N.getStr("shortcuts.gotoLine"), stringifyFromElectronKey(L10N.getStr("gotoLineModal.key3"))));
   }
 
   renderShortcutsContent() {

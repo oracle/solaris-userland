@@ -15,6 +15,7 @@ loader.lazyRequireGetter(this, "_constants", "devtools/client/debugger/src/const
 
 /**
  * UI reducer
+ *
  * @module reducers/ui
  */
 const initialUIState = () => ({
@@ -34,7 +35,6 @@ const initialUIState = () => ({
   isLogPoint: false,
   orientation: "horizontal",
   viewport: null,
-  cursorPosition: null,
   inlinePreviewEnabled: _prefs.features.inlinePreview,
   editorWrappingEnabled: _prefs.prefs.editorWrapping,
   javascriptEnabled: true,
@@ -61,7 +61,8 @@ const initialUIState = () => ({
   projectSearchQuery: "",
   hideIgnoredSources: _prefs.prefs.hideIgnoredSources,
   sourceMapsEnabled: _prefs.prefs.clientSourceMapsEnabled,
-  sourceMapIgnoreListEnabled: _prefs.prefs.sourceMapIgnoreListEnabled
+  sourceMapIgnoreListEnabled: _prefs.prefs.sourceMapIgnoreListEnabled,
+  pausedOverlayEnabled: _prefs.prefs.pausedOverlayEnabled
 });
 
 exports.initialUIState = initialUIState;
@@ -187,13 +188,6 @@ function update(state = initialUIState(), action) {
         };
       }
 
-    case "SET_CURSOR_POSITION":
-      {
-        return { ...state,
-          cursorPosition: action.cursorPosition
-        };
-      }
-
     case "NAVIGATE":
       {
         return { ...state,
@@ -201,12 +195,12 @@ function update(state = initialUIState(), action) {
         };
       }
 
-    case "REMOVE_THREAD":
+    case "REMOVE_SOURCES":
       {
         // Reset the highlighted range if the related source has been removed
-        const sourceId = state.highlightedLineRange?.sourceId;
+        const source = state.highlightedLineRange?.source;
 
-        if (sourceId && action.sources.some(s => s.id == sourceId)) {
+        if (source && action.sources.includes(source)) {
           return { ...state,
             highlightedLineRange: null
           };
@@ -262,6 +256,22 @@ function update(state = initialUIState(), action) {
           _prefs.prefs.sourceMapIgnoreListEnabled = shouldEnable;
           return { ...state,
             sourceMapIgnoreListEnabled: shouldEnable
+          };
+        }
+
+        return state;
+      }
+
+    case "ENABLE_PAUSED_OVERLAY":
+      {
+        const {
+          shouldEnable
+        } = action;
+
+        if (shouldEnable !== state.pausedOverlayEnabled) {
+          _prefs.prefs.pausedOverlayEnabled = shouldEnable;
+          return { ...state,
+            pausedOverlayEnabled: shouldEnable
           };
         }
 

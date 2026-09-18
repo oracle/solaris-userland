@@ -15,11 +15,12 @@ var _reactRedux = require("devtools/client/shared/vendor/react-redux");
 
 var _index = _interopRequireDefault(require("../../../actions/index"));
 
-loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/components/shared/Button/index");
-loader.lazyRequireGetter(this, "_index3", "devtools/client/debugger/src/utils/breakpoint/index");
+var _CloseButton = _interopRequireDefault(require("devtools/client/shared/components/CloseButton"));
+
+loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/utils/breakpoint/index");
 loader.lazyRequireGetter(this, "_selectedLocation", "devtools/client/debugger/src/utils/selected-location");
 loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
-loader.lazyRequireGetter(this, "_index4", "devtools/client/debugger/src/selectors/index");
+loader.lazyRequireGetter(this, "_index3", "devtools/client/debugger/src/selectors/index");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -32,8 +33,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 const classnames = require("resource://devtools/client/shared/classnames.js");
 
 class Breakpoint extends _react.PureComponent {
-  constructor(...args) {
-    super(...args);
+  static get propTypes() {
+    return {
+      breakpoint: _reactPropTypes.default.object.isRequired,
+      disableBreakpoint: _reactPropTypes.default.func.isRequired,
+      editor: _reactPropTypes.default.object.isRequired,
+      enableBreakpoint: _reactPropTypes.default.func.isRequired,
+      openConditionalPanel: _reactPropTypes.default.func.isRequired,
+      removeBreakpoint: _reactPropTypes.default.func.isRequired,
+      selectSpecificLocation: _reactPropTypes.default.func.isRequired,
+      selectedBreakpointLocation: _reactPropTypes.default.object.isRequired,
+      isCurrentlyPausedAtBreakpoint: _reactPropTypes.default.bool.isRequired,
+      source: _reactPropTypes.default.object.isRequired,
+      checkSourceOnIgnoreList: _reactPropTypes.default.func.isRequired,
+      isBreakpointLineBlackboxed: _reactPropTypes.default.bool,
+      showBreakpointContextMenu: _reactPropTypes.default.func.isRequired,
+      breakpointText: _reactPropTypes.default.string.isRequired
+    };
+  }
+
+  constructor() {
+    super();
 
     _defineProperty(this, "onContextMenu", event => {
       event.preventDefault();
@@ -70,6 +90,11 @@ class Breakpoint extends _react.PureComponent {
     });
 
     _defineProperty(this, "selectBreakpoint", event => {
+      // Ignore double click as we have a dedicated double click listener
+      if (event.type == "click" && event.detail > 1) {
+        return;
+      }
+
       event.preventDefault();
       const {
         selectSpecificLocation
@@ -99,25 +124,26 @@ class Breakpoint extends _react.PureComponent {
         disableBreakpoint(breakpoint);
       }
     });
+
+    this.breakpointTextRef = (0, _react.createRef)();
   }
 
-  static get propTypes() {
-    return {
-      breakpoint: _reactPropTypes.default.object.isRequired,
-      disableBreakpoint: _reactPropTypes.default.func.isRequired,
-      editor: _reactPropTypes.default.object.isRequired,
-      enableBreakpoint: _reactPropTypes.default.func.isRequired,
-      openConditionalPanel: _reactPropTypes.default.func.isRequired,
-      removeBreakpoint: _reactPropTypes.default.func.isRequired,
-      selectSpecificLocation: _reactPropTypes.default.func.isRequired,
-      selectedBreakpointLocation: _reactPropTypes.default.object.isRequired,
-      isCurrentlyPausedAtBreakpoint: _reactPropTypes.default.bool.isRequired,
-      source: _reactPropTypes.default.object.isRequired,
-      checkSourceOnIgnoreList: _reactPropTypes.default.func.isRequired,
-      isBreakpointLineBlackboxed: _reactPropTypes.default.bool,
-      showBreakpointContextMenu: _reactPropTypes.default.func.isRequired,
-      breakpointText: _reactPropTypes.default.string.isRequired
-    };
+  componentDidMount() {
+    if (!this.breakpointTextRef.current) {
+      return;
+    }
+
+    const sanitizer = new Sanitizer({
+      elements: ["span"],
+      attributes: ["class"]
+    });
+    const {
+      editor,
+      breakpointText
+    } = this.props;
+    this.breakpointTextRef.current.setHTML(editor.highlightText(document, breakpointText), {
+      sanitizer
+    });
   }
 
   getBreakpointLocation() {
@@ -135,17 +161,9 @@ class Breakpoint extends _react.PureComponent {
     return bpLocation;
   }
 
-  highlightText(text = "", editor) {
-    const htmlString = editor.highlightText(document, text);
-    return {
-      __html: htmlString
-    };
-  }
-
   render() {
     const {
       breakpoint,
-      editor,
       isBreakpointLineBlackboxed,
       breakpointText
     } = this.props;
@@ -176,16 +194,15 @@ class Breakpoint extends _react.PureComponent {
       "aria-labelledby": labelId
     }), (0, _reactDomFactories.span)({
       id: labelId,
-      className: "breakpoint-label cm-s-mozilla devtools-monospace",
-      onClick: this.selectBreakpoint
+      className: "breakpoint-label cm-s-mozilla devtools-monospace"
     }, (0, _reactDomFactories.span)({
       className: "cm-highlighted",
-      dangerouslySetInnerHTML: this.highlightText(breakpointText, editor)
-    })), (0, _reactDomFactories.div)({
+      ref: this.breakpointTextRef
+    }, breakpointText)), (0, _reactDomFactories.div)({
       className: "breakpoint-line-close"
     }, (0, _reactDomFactories.div)({
       className: "breakpoint-line devtools-monospace"
-    }, this.getBreakpointLocation()), _react.default.createElement(_index2.CloseButton, {
+    }, this.getBreakpointLocation()), _react.default.createElement(_CloseButton.default, {
       handleClick: this.removeBreakpoint,
       tooltip: L10N.getStr("breakpoints.removeBreakpointTooltip")
     })));
@@ -194,14 +211,14 @@ class Breakpoint extends _react.PureComponent {
 }
 
 function isCurrentlyPausedAtBreakpoint(state, selectedBreakpointLocation, selectedSource) {
-  const frame = (0, _index4.getSelectedFrame)(state);
+  const frame = (0, _index3.getSelectedFrame)(state);
 
   if (!frame) {
     return false;
   }
 
-  const bpId = (0, _index3.makeBreakpointId)(selectedBreakpointLocation);
-  const frameId = (0, _index3.makeBreakpointId)((0, _selectedLocation.getSelectedLocation)(frame, selectedSource));
+  const bpId = (0, _index2.makeBreakpointId)(selectedBreakpointLocation);
+  const frameId = (0, _index2.makeBreakpointId)((0, _selectedLocation.getSelectedLocation)(frame, selectedSource));
   return bpId == frameId;
 }
 
@@ -210,7 +227,7 @@ function getBreakpointText(breakpoint, selectedSource) {
     condition,
     logValue
   } = breakpoint.options;
-  return logValue || condition || (0, _index3.getSelectedText)(breakpoint, selectedSource);
+  return logValue || condition || (0, _index2.getSelectedText)(breakpoint, selectedSource);
 }
 
 const mapStateToProps = (state, props) => {
@@ -218,10 +235,10 @@ const mapStateToProps = (state, props) => {
     breakpoint,
     source
   } = props;
-  const selectedSource = (0, _index4.getSelectedSource)(state);
+  const selectedSource = (0, _index3.getSelectedSource)(state);
   const selectedBreakpointLocation = (0, _selectedLocation.getSelectedLocation)(breakpoint, selectedSource);
-  const blackboxedRangesForSource = (0, _index4.getBlackBoxRanges)(state)[source.url];
-  const isSourceOnIgnoreList = (0, _index4.isSourceMapIgnoreListEnabled)(state) && (0, _index4.isSourceOnSourceMapIgnoreList)(state, source);
+  const blackboxedRangesForSource = (0, _index3.getBlackBoxRanges)(state)[source.url];
+  const isSourceOnIgnoreList = (0, _index3.isSourceMapIgnoreListEnabled)(state) && (0, _index3.isSourceOnSourceMapIgnoreList)(state, source);
   return {
     selectedBreakpointLocation,
     isCurrentlyPausedAtBreakpoint: isCurrentlyPausedAtBreakpoint(state, selectedBreakpointLocation, selectedSource),

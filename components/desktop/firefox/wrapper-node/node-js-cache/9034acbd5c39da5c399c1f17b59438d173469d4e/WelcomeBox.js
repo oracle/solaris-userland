@@ -18,13 +18,16 @@ loader.lazyRequireGetter(this, "_constants", "devtools/client/debugger/src/const
 var _index = _interopRequireDefault(require("../actions/index"));
 
 loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/selectors/index");
-loader.lazyRequireGetter(this, "_text", "devtools/client/debugger/src/utils/text");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+const {
+  stringifyFromElectronKey
+} = require("resource://devtools/client/shared/key-shortcuts.js");
+
 class WelcomeBox extends _react.Component {
   static get propTypes() {
     return {
@@ -36,9 +39,9 @@ class WelcomeBox extends _react.Component {
   }
 
   render() {
-    const searchSourcesShortcut = (0, _text.formatKeyShortcut)(L10N.getStr("sources.search.key2"));
-    const searchProjectShortcut = (0, _text.formatKeyShortcut)(L10N.getStr("projectTextSearch.key"));
-    const allShortcutsShortcut = (0, _text.formatKeyShortcut)(L10N.getStr("allShortcut.key"));
+    const searchSourcesShortcut = stringifyFromElectronKey(L10N.getStr("sources.search.key2"));
+    const searchProjectShortcut = stringifyFromElectronKey(L10N.getStr("projectTextSearch.key"));
+    const allShortcutsShortcut = stringifyFromElectronKey(L10N.getStr("allShortcut.key"));
     const allShortcutsLabel = L10N.getStr("welcome.allShortcuts");
     const searchSourcesLabel = L10N.getStr("welcome.search2").substring(2);
     const searchProjectLabel = L10N.getStr("welcome.findInFiles2").substring(2);

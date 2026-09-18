@@ -9,7 +9,7 @@ var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/reac
 
 var _reactPropTypes = _interopRequireDefault(require("devtools/client/shared/vendor/react-prop-types"));
 
-var _AccessibleImage = _interopRequireDefault(require("../../shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/utils/pause/frames/index");
 loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
@@ -59,8 +59,9 @@ const FrameLocation = (0, _react.memo)(({
   if (frame.library) {
     return _react.default.createElement("span", {
       className: "location"
-    }, frame.library, _react.default.createElement(_AccessibleImage.default, {
-      className: `annotation-logo ${frame.library.toLowerCase()}`
+    }, frame.library, _react.default.createElement(_DebuggerImage.default, {
+      name: frame.library.toLowerCase(),
+      className: "annotation-logo"
     }));
   }
 
@@ -149,7 +150,11 @@ class FrameComponent extends _react.Component {
       tabIndex: -1,
       role: "option",
       id: frame.id,
-      "aria-selected": isSelected ? "true" : "false"
+      "aria-selected": isSelected ? "true" : "false",
+      // used by test helpers
+      "data-url": location.source.url,
+      "data-line": location.line,
+      "data-column": location.column + 1
     }, this.isSelectable && _react.default.createElement(_FrameIndent.default, {
       indentLevel: isInGroup ? 2 : 1
     }), _react.default.createElement(FrameTitle, {

@@ -41,7 +41,7 @@ async function updateFrameLocation(frame, thunkArgs) {
     return frame;
   }
 
-  const location = await (0, _sourceMaps.getOriginalLocation)(frame.location, thunkArgs, {
+  const location = await (0, _sourceMaps.getOriginalLocation)(frame.generatedLocation || frame.location, thunkArgs, {
     waitForSource: true
   }); // Avoid instantiating new frame objects if the frame location isn't mapped
 
@@ -127,7 +127,7 @@ async function updateFrameDisplayName(frame, thunkArgs) {
 /**
  * Update the display names of the mapped original frames
  *
- * @param {Object} thread
+ * @param {object} thread
  * @returns
  */
 
@@ -158,6 +158,7 @@ function updateAllFrameDisplayNames(thread) {
  * e.g.
  * 1. When the debuggee pauses
  * 2. When a source is pretty printed
+ *
  * @memberof actions/pause
  * @static
  */

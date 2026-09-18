@@ -19,7 +19,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /**
  * Create a SourceEditor
  *
- * @param {Object} config: SourceEditor config object
+ * @param {object} config: SourceEditor config object
  * @returns
  */
 function createEditor(config = {
@@ -32,8 +32,10 @@ function createEditor(config = {
   }
 
   return new _editor.default({
-    mode: _editor.default.modes.js,
+    mode: _editor.default.modes.javascript,
     foldGutter: _prefs.features.codeFolding,
+    disableSearchAddon: false,
+    useSearchAddonPanel: false,
     enableCodeFolding: _prefs.features.codeFolding,
     readOnly: true,
     lineNumbers: true,

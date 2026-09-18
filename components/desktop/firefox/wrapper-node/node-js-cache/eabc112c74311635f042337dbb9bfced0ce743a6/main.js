@@ -12,6 +12,7 @@ loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/pre
 loader.lazyRequireGetter(this, "_dbg", "devtools/client/debugger/src/utils/dbg");
 loader.lazyRequireGetter(this, "_telemetry", "devtools/client/debugger/src/utils/telemetry");
 loader.lazyRequireGetter(this, "_bootstrap", "devtools/client/debugger/src/utils/bootstrap");
+loader.lazyRequireGetter(this, "_tabs", "devtools/client/debugger/src/reducers/tabs");
 loader.lazyRequireGetter(this, "_breakpoints", "devtools/client/debugger/src/reducers/breakpoints");
 loader.lazyRequireGetter(this, "_sources", "devtools/client/debugger/src/reducers/sources");
 loader.lazyRequireGetter(this, "_sourcesTree", "devtools/client/debugger/src/reducers/sources-tree");
@@ -29,6 +30,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 const {
   sanitizeBreakpoints
 } = require("resource://devtools/client/shared/thread-utils.js");
+
+const {
+  START_IGNORE_ACTION
+} = require("resource://devtools/client/shared/redux/middleware/ignore.js");
+
+let gStore;
 
 async function syncBreakpoints() {
   const breakpoints = await _prefs.asyncStore.pendingBreakpoints;
@@ -78,9 +85,10 @@ function setPauseOnExceptions() {
 
 async function loadInitialState(commands) {
   const pendingBreakpoints = sanitizeBreakpoints((await _prefs.asyncStore.pendingBreakpoints));
-  const tabs = {
-    tabs: await _prefs.asyncStore.tabs
-  };
+  const tabs = (0, _tabs.initialTabState)({
+    urls: await _prefs.asyncStore.openedURLs,
+    prettyPrintedURLs: new Set((await _prefs.asyncStore.prettyPrintedURLs))
+  });
   const xhrBreakpoints = await _prefs.asyncStore.xhrBreakpoints;
   const blackboxedRanges = await _prefs.asyncStore.blackboxedRanges;
   const eventListenerBreakpoints = await _prefs.asyncStore.eventListenerBreakpoints;
@@ -130,6 +138,7 @@ async function bootstrap({
     actions,
     selectors
   } = (0, _bootstrap.bootstrapStore)(firefox.clientCommands, workers, panel, initialState);
+  gStore = store;
   const connected = firefox.onConnect(commands, resourceCommand, actions, store);
   await syncBreakpoints();
   await syncXHRBreakpoints();
@@ -157,7 +166,16 @@ async function bootstrap({
 }
 
 async function destroy() {
-  firefox.onDisconnect();
-  (0, _bootstrap.unmountRoot)();
+  // Instruct redux to start ignoring any further action
+  if (gStore) {
+    gStore.dispatch(START_IGNORE_ACTION);
+    gStore = null;
+  } // Unregister all listeners set on DevTools RDP client
+
+
+  firefox.onDisconnect(); // Unmount all React components
+
+  (0, _bootstrap.unmountRoot)(); // Unregister and cleanup everything about parser, pretty print and source map workers
+
   (0, _bootstrap.teardownWorkers)();
 }

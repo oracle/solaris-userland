@@ -36,14 +36,14 @@ LD_SHARED_OPTIONS_Z_DEFS=
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	153.0
-COMPONENT_BAID=		426291
+COMPONENT_VERSION =	153.3.0
+COMPONENT_BAID=		442110
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:dbe3d9dedcb118a4b623688c559c6f2de280ea3be171e3ff256504cc01626cb5
+    sha256:69f1335e78d2a340fc13fcf265c0a72bdce2df8774c9d4d49ee77d1726236df5
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -60,7 +60,7 @@ COMPONENT_ANITYA_ID =	16838
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:4bd3cc536a62f87a927cd7fc9bd8af59692c8d8c81fb1ca63e73340e2d0ae0fb
+    sha256:fc5800ad3f90c7ac2c7306ae25c04df9fb13e68feb9cb6c4c6e1b4530f1fb200
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
@@ -141,6 +141,7 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-update-channel=esr" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libvpx" >> $(MOZCONFIG) ; \
@@ -218,6 +219,7 @@ CBE_PACKAGES += desktop/xdg/desktop-file-utils
 CBE_PACKAGES += developer/llvm/clang
 CBE_PACKAGES += developer/rust/cbindgen
 CBE_PACKAGES += library/desktop/startup-notification
+CBE_PACKAGES += library/icu
 CBE_PACKAGES += system/library/libdbus-glib
 CBE_PACKAGES += web/browser/lynx
 CBE_PACKAGES.i386 += developer/nasm
@@ -234,6 +236,7 @@ REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/graphics/pixman
+REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/zlib

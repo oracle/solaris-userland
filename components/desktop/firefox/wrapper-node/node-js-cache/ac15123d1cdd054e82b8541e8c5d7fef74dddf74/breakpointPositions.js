@@ -5,11 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.updateBreakpointPositionsForNewPrettyPrintedSource = updateBreakpointPositionsForNewPrettyPrintedSource;
 exports.setBreakpointPositions = void 0;
-
-var _index = require("devtools/client/shared/source-map-loader/index");
-
-loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/selectors/index");
-loader.lazyRequireGetter(this, "_index3", "devtools/client/debugger/src/utils/breakpoint/index");
+loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
+loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/utils/breakpoint/index");
 loader.lazyRequireGetter(this, "_memoizableAction", "devtools/client/debugger/src/utils/memoizableAction");
 loader.lazyRequireGetter(this, "_asyncValue", "devtools/client/debugger/src/utils/async-value");
 loader.lazyRequireGetter(this, "_location", "devtools/client/debugger/src/utils/location");
@@ -24,17 +21,17 @@ loader.lazyRequireGetter(this, "_context", "devtools/client/debugger/src/utils/c
  * and map them to location objects.
  * During this process, the SourceMapLoader will be queried to map the positions from generated to original locations.
  *
- * @param {Object} breakpointPositions
+ * @param {object} breakpointPositions
  *        The positions to map related to the generated source:
  *          {
  *            1: [ 2, 6 ], // Line 1 is breakable on column 2 and 6
  *            2: [ 2 ], // Line 2 is only breakable on column 2
  *          }
- * @param {Object} generatedSource
- * @param {Object} location
+ * @param {object} generatedSource
+ * @param {object} location
  *        The current location we are computing breakable positions.
- * @param {Object} thunk arguments
- * @return {Object}
+ * @param {object} thunk arguments
+ * @return {object}
  *         The mapped breakable locations in the original source:
  *          {
  *            1: [ { source, line: 1, column: 2} , { source, line: 1, column 6 } ], // Line 1 is not mapped as location are same as breakpointPositions.
@@ -98,7 +95,7 @@ async function mapToLocations(breakpointPositions, generatedSource, mappedLocati
         location = (0, _location.sourceMapToDebuggerLocation)(getState(), columnOrSourceMapLocation); // Merge positions that refer to duplicated positions.
         // Some sourcemaped positions might refer to the exact same source/line/column triple.
 
-        const breakpointId = (0, _index3.makeBreakpointId)(location);
+        const breakpointId = (0, _index2.makeBreakpointId)(location);
 
         if (handledBreakpointIds.has(breakpointId)) {
           continue;
@@ -145,8 +142,7 @@ async function _setBreakpointPositions(location, thunkArgs) {
 
   if (location.source.isOriginal) {
     const ranges = await sourceMapLoader.getGeneratedRangesForOriginal(location.source.id, true);
-    const generatedSourceId = (0, _index.originalToGeneratedId)(location.source.id);
-    generatedSource = (0, _index2.getSourceFromId)(getState(), generatedSourceId); // Note: While looping here may not look ideal, in the vast majority of
+    generatedSource = location.source.generatedSource; // Note: While looping here may not look ideal, in the vast majority of
     // cases, the number of ranges here should be very small, and is quite
     // likely to only be a single range.
 
@@ -165,7 +161,7 @@ async function _setBreakpointPositions(location, thunkArgs) {
       // retrieve the whole bundle positions.
 
 
-      const allActorsPositions = await Promise.all((0, _index2.getSourceActorsForSource)(getState(), generatedSourceId).map(actor => client.getSourceActorBreakpointPositions(actor, range))); // `allActorsPositions` looks like this:
+      const allActorsPositions = await Promise.all((0, _index.getSourceActorsForSource)(getState(), generatedSource.id).map(actor => client.getSourceActorBreakpointPositions(actor, range))); // `allActorsPositions` looks like this:
       // [
       //   { // Positions for the first source actor
       //     1: [ 2, 6 ], // Line 1 is breakable on column 2 and 6
@@ -204,7 +200,7 @@ async function _setBreakpointPositions(location, thunkArgs) {
     // Or if this is an html page, with many inline scripts.
 
 
-    const allActorsBreakableColumns = await Promise.all((0, _index2.getSourceActorsForSource)(getState(), location.source.id).map(async actor => {
+    const allActorsBreakableColumns = await Promise.all((0, _index.getSourceActorsForSource)(getState(), location.source.id).map(async actor => {
       const positions = await client.getSourceActorBreakpointPositions(actor, {
         // Only retrieve positions for the given line
         start: {
@@ -247,8 +243,8 @@ async function _setBreakpointPositions(location, thunkArgs) {
 }
 
 function generatedSourceActorKey(state, source) {
-  const generatedSource = (0, _index2.getSource)(state, source.isOriginal ? (0, _index.originalToGeneratedId)(source.id) : source.id);
-  const actors = generatedSource ? (0, _index2.getSourceActorsForSource)(state, generatedSource.id).map(({
+  const generatedSource = source.isOriginal ? source.generatedSource : source;
+  const actors = generatedSource ? (0, _index.getSourceActorsForSource)(state, generatedSource.id).map(({
     actor
   }) => actor) : [];
   return [source.id, ...actors].join(":");
@@ -281,7 +277,7 @@ const setBreakpointPositions = (0, _memoizableAction.memoizeableAction)("setBrea
   getValue: (location, {
     getState
   }) => {
-    const positions = (0, _index2.getBreakpointPositionsForSource)(getState(), location.source.id);
+    const positions = (0, _index.getBreakpointPositionsForSource)(getState(), location.source.id);
 
     if (!positions) {
       return null;
@@ -312,7 +308,7 @@ function updateBreakpointPositionsForNewPrettyPrintedSource(minifiedSource) {
     dispatch,
     getState
   }) => {
-    const oldPositions = (0, _index2.getBreakpointPositionsForSource)(getState(), minifiedSource.id);
+    const oldPositions = (0, _index.getBreakpointPositionsForSource)(getState(), minifiedSource.id);
 
     if (!oldPositions) {
       return;

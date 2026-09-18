@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.isVisible = isVisible;
 exports.getLineNumberWidth = getLineNumberWidth;
 exports.resizeBreakpointGutter = resizeBreakpointGutter;
-exports.resizeToggleButton = resizeToggleButton;
+exports.updateEditorSizeCssVariables = updateEditorSizeCssVariables;
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -51,15 +51,15 @@ function resizeBreakpointGutter(editor) {
   }
 }
 /**
- * Forces the left toggle button in source header to be the same size
- * as the line numbers gutter.
+ * Updates CSS variables to reflect the current dimensions of the editor
+ * and its gutter.
+ * This is used to force the left toggle button in source header to be the same size
+ * as the line numbers gutter, and to properly position the conditional panel.
  */
 
 
-function resizeToggleButton(newSize) {
-  const toggleButton = document.querySelector(".source-header .toggle-button.start");
-
-  if (toggleButton) {
-    toggleButton.style.width = `${newSize}px`;
-  }
+function updateEditorSizeCssVariables(cmEditorEl) {
+  document.documentElement.style.setProperty("--cm-gutter-width", `${cmEditorEl.querySelector(".cm-gutters").clientWidth}px`);
+  document.documentElement.style.setProperty("--cm-editor-scroller-width", // We want the scroller width *without* a possible vertical scrollbar
+  `${cmEditorEl.querySelector(".cm-scroller").clientWidth}px`);
 }

@@ -8,7 +8,7 @@ exports.removeTarget = removeTarget;
 exports.toggleJavaScriptEnabled = toggleJavaScriptEnabled;
 loader.lazyRequireGetter(this, "_create", "devtools/client/debugger/src/client/firefox/create");
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
-loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/utils/editor/index");
+loader.lazyRequireGetter(this, "_removeSources", "devtools/client/debugger/src/actions/sources/removeSources");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,10 +21,9 @@ function addTarget(targetFront) {
 }
 
 function removeTarget(targetFront) {
-  return ({
+  return async ({
     getState,
-    dispatch,
-    parserWorker
+    dispatch
   }) => {
     const threadActorID = targetFront.targetForm.threadActor; // Just before emitting the REMOVE_THREAD action,
     // synchronously compute the list of source and source actor objects
@@ -36,24 +35,18 @@ function removeTarget(targetFront) {
     const {
       actors,
       sources
-    } = (0, _index.getSourcesToRemoveForThread)(getState(), threadActorID); // Notify the reducers that a target/thread is being removed
-    // and that all related resources should be cleared.
-    // This action receives the list of related source actors and source objects
-    // related to that to-be-removed target.
+    } = (0, _index.getSourcesToRemoveForThread)(getState(), threadActorID); // Notify the reducers that a target/thread is being removed.
     // This will be fired on navigation for all existing targets.
     // That except the top target, when pausing on unload, where the top target may still hold longer.
     // Also except for service worker targets, which may be kept alive.
 
     dispatch({
       type: "REMOVE_THREAD",
-      threadActorID,
-      actors,
-      sources
-    });
-    const sourceIds = sources.map(source => source.id);
-    parserWorker.clearSources(sourceIds);
-    const editor = (0, _index2.getEditor)();
-    editor.clearSources(sourceIds);
+      threadActorID
+    }); // A distinct action is used to notify about all the sources and source actors objects
+    // to be removed. This action is shared by some other codepath. Like removing the pretty printed source.
+
+    await dispatch((0, _removeSources.removeSources)(sources, actors));
   };
 }
 

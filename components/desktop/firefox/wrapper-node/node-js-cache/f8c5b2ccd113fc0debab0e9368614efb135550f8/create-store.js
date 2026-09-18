@@ -7,10 +7,7 @@ exports.default = void 0;
 
 var _redux = require("devtools/client/shared/vendor/redux");
 
-loader.lazyRequireGetter(this, "_waitService", "devtools/client/debugger/src/actions/utils/middleware/wait-service");
 loader.lazyRequireGetter(this, "_log", "devtools/client/debugger/src/actions/utils/middleware/log");
-loader.lazyRequireGetter(this, "_promise", "devtools/client/debugger/src/actions/utils/middleware/promise");
-loader.lazyRequireGetter(this, "_thunk", "devtools/client/debugger/src/actions/utils/middleware/thunk");
 loader.lazyRequireGetter(this, "_timing", "devtools/client/debugger/src/actions/utils/middleware/timing");
 loader.lazyRequireGetter(this, "_context", "devtools/client/debugger/src/actions/utils/middleware/context");
 
@@ -22,14 +19,22 @@ loader.lazyRequireGetter(this, "_context", "devtools/client/debugger/src/actions
 
 /**
  * Redux store utils
- * @module utils/create-store
  */
+const {
+  ignore
+} = require("resource://devtools/client/shared/redux/middleware/ignore.js");
 
-/**
- * @memberof utils/create-store
- * @static
- */
+const {
+  promise
+} = require("resource://devtools/client/shared/redux/middleware/promise.js");
 
+const {
+  thunk
+} = require("resource://devtools/client/shared/redux/middleware/thunk.js");
+
+const {
+  waitUntilService
+} = require("resource://devtools/client/shared/redux/middleware/wait-service.js");
 /**
  * This creates a dispatcher with all the standard middleware in place
  * that all code requires. It can also be optionally configured in
@@ -43,12 +48,14 @@ loader.lazyRequireGetter(this, "_context", "devtools/client/debugger/src/actions
  * @memberof utils/create-store
  * @static
  */
+
+
 const configureStore = (opts = {}) => {
-  const middleware = [(0, _thunk.thunk)(opts.makeThunkArgs), _context.context, _promise.promise, // Order is important: services must go last as they always
+  const middleware = [thunk(opts.thunkArgs), _context.context, promise, ignore, // Order is important: services must go last as they always
   // operate on "already transformed" actions. Actions going through
   // them shouldn't have any special fields like promises, they
   // should just be normal JSON objects.
-  _waitService.waitUntilService];
+  waitUntilService];
 
   if (opts.middleware) {
     opts.middleware.forEach(fn => middleware.push(fn));

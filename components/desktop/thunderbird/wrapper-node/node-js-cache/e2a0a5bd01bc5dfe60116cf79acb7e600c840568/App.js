@@ -18,7 +18,7 @@ loader.lazyRequireGetter(this, "_constants", "devtools/client/debugger/src/const
 
 var _index = _interopRequireDefault(require("../actions/index"));
 
-var _AccessibleImage = _interopRequireDefault(require("./shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_ShortcutsModal", "devtools/client/debugger/src/components/ShortcutsModal");
@@ -303,8 +303,8 @@ class App extends _react.Component {
         "aria-role": "status"
       }, (0, _reactDomFactories.span)({
         className: "info icon"
-      }, _react.default.createElement(_AccessibleImage.default, {
-        className: "sourcemap"
+      }, _react.default.createElement(_DebuggerImage.default, {
+        name: "sourcemap"
       })), `Source Map Error: ${this.props.sourceMapError}`, (0, _reactDomFactories.button)({
         className: "close-button",
         onClick: this.closeSourceMapError
@@ -317,8 +317,8 @@ class App extends _react.Component {
         "aria-role": "status"
       }, (0, _reactDomFactories.span)({
         className: "info icon"
-      }, _react.default.createElement(_AccessibleImage.default, {
-        className: "sourcemap"
+      }, _react.default.createElement(_DebuggerImage.default, {
+        name: "sourcemap"
       })), L10N.getFormatStr("editorNotificationFooter.noOriginalScopes", L10N.getStr("scopes.showOriginalScopes")));
     }
 

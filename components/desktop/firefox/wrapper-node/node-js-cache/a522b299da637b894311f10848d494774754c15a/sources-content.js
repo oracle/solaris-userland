@@ -62,8 +62,8 @@ function update(state = initialSourcesContentState(), action) {
 
       return updateSourceTextContent(state, action);
 
-    case "REMOVE_THREAD":
-      return removeThread(state, action);
+    case "REMOVE_SOURCES":
+      return removeAllSourceTextContentForSourcesAndActors(state, action);
   }
 
   return state;
@@ -115,7 +115,11 @@ function updateSourceTextContent(state, action) {
   };
 }
 
-function removeThread(state, action) {
+function removeAllSourceTextContentForSourcesAndActors(state, action) {
+  if (!action.sources.length && !action.actors.length) {
+    return state;
+  }
+
   const originalSizeBefore = state.mutableOriginalSourceTextContentMapBySourceId.size;
 
   for (const source of action.sources) {

@@ -11,7 +11,7 @@ exports.copyToTheClipboard = copyToTheClipboard;
 
 /**
  * Clipboard function taken from
- * https://searchfox.org/mozilla-central/source/devtools/shared/platform/clipboard.js
+ * https://searchfox.org/firefox-main/source/devtools/shared/platform/clipboard.js
  */
 function copyToTheClipboard(string) {
   const doCopy = function (e) {

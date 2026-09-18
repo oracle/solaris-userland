@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.initialBreakpointsState = initialBreakpointsState;
 exports.default = void 0;
+loader.lazyRequireGetter(this, "_create", "devtools/client/debugger/src/client/firefox/create");
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/utils/breakpoint/index");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -13,6 +14,7 @@ loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/utils/bre
 
 /**
  * Breakpoints reducer
+ *
  * @module reducers/breakpoints
  */
 function initialBreakpointsState(xhrBreakpoints = []) {
@@ -49,7 +51,7 @@ function update(state = initialBreakpointsState(), action) {
         };
       }
 
-    case "REMOVE_THREAD":
+    case "REMOVE_SOURCES":
       {
         return removeBreakpointsForSources(state, action.sources);
       }
@@ -179,17 +181,35 @@ function removeBreakpoint(state, {
 }
 
 function removeBreakpointsForSources(state, sources) {
+  if (!sources.length) {
+    return state;
+  }
+
   const remainingBreakpoints = {};
+  let changed = false;
 
   for (const [id, breakpoint] of Object.entries(state.breakpoints)) {
     if (!sources.includes(breakpoint.location.source)) {
       remainingBreakpoints[id] = breakpoint;
+    } else if (breakpoint.location.source.isOriginal && !sources.includes(breakpoint.generatedLocation.source)) {
+      // If we are removing an original source (which can be a pretty printed source), without removing its related generated/bundle/minimized source,
+      // the breakpoint is kept and replaced with an identical one but only against the generated source.
+      // We don't have to map the location, but instead only strip the references to original location.
+      const generatedId = (0, _index.makeBreakpointId)(breakpoint.generatedLocation);
+      remainingBreakpoints[generatedId] = (0, _create.createBreakpoint)({ ...breakpoint,
+        id: generatedId,
+        location: breakpoint.generatedLocation,
+        originalText: breakpoint.text
+      });
+      changed = true;
+    } else {
+      changed = true;
     }
   }
 
-  return { ...state,
+  return changed ? { ...state,
     breakpoints: remainingBreakpoints
-  };
+  } : state;
 }
 
 var _default = update;

@@ -17,7 +17,7 @@ var _index = _interopRequireDefault(require("../../actions/index"));
 
 loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/selectors/index");
 
-var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
 
@@ -64,8 +64,8 @@ function debugBtn(onClick, type, className, tooltip) {
     className: `${type} ${className}`,
     key: type,
     title: tooltip
-  }, _react.default.createElement(_AccessibleImage.default, {
-    className: type,
+  }, _react.default.createElement(_DebuggerImage.default, {
+    name: type,
     title: tooltip,
     "aria-label": tooltip
   }));
@@ -207,8 +207,8 @@ class SecondaryPanes extends _react.Component {
       href: mdnLink,
       onClick: e => e.stopPropagation(),
       title: L10N.getStr("scopes.showOriginalScopesHelpTooltip")
-    }, _react.default.createElement(_AccessibleImage.default, {
-      className: "shortcuts"
+    }, _react.default.createElement(_DebuggerImage.default, {
+      name: "shortcuts"
     })))];
   }
 

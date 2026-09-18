@@ -13,7 +13,7 @@ var _reactPropTypes = _interopRequireDefault(require("devtools/client/shared/ven
 
 var _reactRedux = require("devtools/client/shared/vendor/react-redux");
 
-var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 var _index = _interopRequireDefault(require("../../actions/index"));
 
@@ -203,8 +203,8 @@ class WhyPaused extends _react.PureComponent {
     } else {
       content = (0, _reactDomFactories.div)(null, (0, _reactDomFactories.div)({
         className: "info icon"
-      }, _react.default.createElement(_AccessibleImage.default, {
-        className: "info"
+      }, _react.default.createElement(_DebuggerImage.default, {
+        name: "info"
       })), (0, _reactDomFactories.div)({
         className: "pause reason"
       }, (0, _reactDomFactories.div)({}, _react.default.createElement(Localized, {

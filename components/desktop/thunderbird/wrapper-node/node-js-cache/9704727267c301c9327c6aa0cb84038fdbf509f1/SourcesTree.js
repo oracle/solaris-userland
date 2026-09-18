@@ -14,14 +14,13 @@ var _reactPropTypes = _interopRequireDefault(require("devtools/client/shared/ven
 var _reactRedux = require("devtools/client/shared/vendor/react-redux");
 
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
-loader.lazyRequireGetter(this, "_location", "devtools/client/debugger/src/utils/location");
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
 
 var _index2 = _interopRequireDefault(require("../../actions/index"));
 
 var _SourcesTreeItem = _interopRequireDefault(require("./SourcesTreeItem"));
 
-var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -52,13 +51,10 @@ class SourcesTree extends _react.Component {
     super(props);
 
     _defineProperty(this, "selectSourceItem", item => {
-      // Use a dedicated selection method to handle edgecases around pretty printed sources
-      // When a source is pretty printed, the `item.source` still refers to the minified source,
-      // whereas we expect to open the pretty printed version (if it exists).
-      this.props.selectMayBePrettyPrintedLocation((0, _location.createLocation)({
-        source: item.source,
-        sourceActor: item.sourceActor
-      }));
+      // Note that when the source is pretty printed, `item.source` still refers to the minified source.
+      // `mayBeSelectMappedSource` function within selectSource/selectLocation action will handle this edgecase
+      // and ensure selecting the pretty printed source, if relevant.
+      this.props.selectSource(item.source, item.sourceActor);
     });
 
     _defineProperty(this, "onFocus", item => {
@@ -222,7 +218,7 @@ class SourcesTree extends _react.Component {
       focusItem: _reactPropTypes.default.func.isRequired,
       focused: _reactPropTypes.default.object,
       projectRoot: _reactPropTypes.default.string.isRequired,
-      selectMayBePrettyPrintedLocation: _reactPropTypes.default.func.isRequired,
+      selectSource: _reactPropTypes.default.func.isRequired,
       setExpandedState: _reactPropTypes.default.func.isRequired,
       rootItems: _reactPropTypes.default.array.isRequired,
       clearProjectDirectoryRoot: _reactPropTypes.default.func.isRequired,
@@ -291,8 +287,8 @@ class SourcesTree extends _react.Component {
       className: "sources-clear-root",
       onClick: () => this.props.clearProjectDirectoryRoot(),
       title: L10N.getFormatStr("removeDirectoryRoot.label")
-    }, _react.default.createElement(_AccessibleImage.default, {
-      className: "back"
+    }, _react.default.createElement(_DebuggerImage.default, {
+      name: "back"
     })), (0, _reactDomFactories.div)({
       className: "devtools-separator"
     }), (0, _reactDomFactories.span)({
@@ -422,7 +418,7 @@ const mapStateToProps = state => {
 };
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, {
-  selectMayBePrettyPrintedLocation: _index2.default.selectMayBePrettyPrintedLocation,
+  selectSource: _index2.default.selectSource,
   setExpandedState: _index2.default.setExpandedState,
   focusItem: _index2.default.focusItem,
   clearProjectDirectoryRoot: _index2.default.clearProjectDirectoryRoot,

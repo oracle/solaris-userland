@@ -15,13 +15,12 @@ var _reactRedux = require("devtools/client/shared/vendor/react-redux");
 
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
-loader.lazyRequireGetter(this, "_text", "devtools/client/debugger/src/utils/text");
 
 var _index2 = _interopRequireDefault(require("../../actions/index"));
 
 loader.lazyRequireGetter(this, "_CommandBarButton", "devtools/client/debugger/src/components/shared/Button/CommandBarButton");
 
-var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -32,6 +31,10 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+const {
+  stringifyFromElectronKey
+} = require("resource://devtools/client/shared/key-shortcuts.js");
+
 const classnames = require("resource://devtools/client/shared/classnames.js");
 
 const MenuButton = require("resource://devtools/client/shared/components/menu/MenuButton.js");
@@ -86,11 +89,11 @@ function formatKey(action) {
     const winKey = getKeyForOS("WINNT", `${action}Display`) || getKeyForOS("WINNT", action);
 
     if (key != winKey) {
-      return (0, _text.formatKeyShortcut)([key, winKey].join(" "));
+      return stringifyFromElectronKey([key, winKey].join(" "));
     }
   }
 
-  return (0, _text.formatKeyShortcut)(key);
+  return stringifyFromElectronKey(key);
 }
 
 class CommandBar extends _react.Component {
@@ -118,7 +121,8 @@ class CommandBar extends _react.Component {
       toggleSourceMapsEnabled: _reactPropTypes.default.func.isRequired,
       topFrameSelected: _reactPropTypes.default.bool.isRequired,
       setHideOrShowIgnoredSources: _reactPropTypes.default.func.isRequired,
-      toggleSourceMapIgnoreList: _reactPropTypes.default.func.isRequired
+      toggleSourceMapIgnoreList: _reactPropTypes.default.func.isRequired,
+      togglePausedOverlay: _reactPropTypes.default.func.isRequired
     };
   }
 
@@ -199,8 +203,8 @@ class CommandBar extends _react.Component {
       }),
       title: skipPausing ? L10N.getStr("undoSkipPausingTooltip.label") : L10N.getStr("skipPausingTooltip.label"),
       onClick: toggleSkipPausing
-    }, _react.default.createElement(_AccessibleImage.default, {
-      className: skipPausing ? "enable-pausing" : "disable-pausing"
+    }, _react.default.createElement(_DebuggerImage.default, {
+      name: skipPausing ? "enable-pausing" : "disable-pausing"
     }));
   }
 
@@ -260,6 +264,22 @@ class CommandBar extends _react.Component {
       label: L10N.getStr("settings.enableSourceMapIgnoreList.label"),
       tooltip: L10N.getStr("settings.enableSourceMapIgnoreList.tooltip"),
       onClick: () => this.props.toggleSourceMapIgnoreList(!_prefs.prefs.sourceMapIgnoreListEnabled)
+    }), _react.default.createElement(MenuItem, {
+      key: "debugger-settings-menu-item-toggle-pause-overlay",
+      className: "menu-item debugger-settings-menu-item-toggle-pause-overlay",
+      checked: _prefs.prefs.pausedOverlayEnabled,
+      label: L10N.getStr("settings.showPausedOverlay.label"),
+      tooltip: L10N.getStr("settings.showPausedOverlay.tooltip"),
+      onClick: () => this.props.togglePausedOverlay(!_prefs.prefs.pausedOverlayEnabled)
+    }), _react.default.createElement(MenuItem, {
+      key: "debugger-settings-menu-item-toggle-auto-pretty-print",
+      className: "menu-item debugger-settings-menu-item-toggle-auto-pretty-print",
+      checked: _prefs.prefs.autoPrettyPrint,
+      label: L10N.getStr("settings.autoPrettyPrint.label"),
+      tooltip: L10N.getStr("settings.autoPrettyPrint.tooltip"),
+      onClick: () => {
+        _prefs.prefs.autoPrettyPrint = !_prefs.prefs.autoPrettyPrint;
+      }
     }));
   }
 
@@ -303,7 +323,8 @@ var _default = (0, _reactRedux.connect)(mapStateToProps, {
   toggleSourceMapsEnabled: _index2.default.toggleSourceMapsEnabled,
   toggleJavaScriptEnabled: _index2.default.toggleJavaScriptEnabled,
   setHideOrShowIgnoredSources: _index2.default.setHideOrShowIgnoredSources,
-  toggleSourceMapIgnoreList: _index2.default.toggleSourceMapIgnoreList
+  toggleSourceMapIgnoreList: _index2.default.toggleSourceMapIgnoreList,
+  togglePausedOverlay: _index2.default.togglePausedOverlay
 })(CommandBar);
 
 exports.default = _default;

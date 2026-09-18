@@ -17,7 +17,7 @@ var _index = _interopRequireDefault(require("../../actions/index"));
 
 loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/selectors/index");
 
-var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -81,8 +81,8 @@ class Thread extends _react.Component {
       onClick: this.onSelectThread
     }, (0, _reactDomFactories.div)({
       className: "icon"
-    }, _react.default.createElement(_AccessibleImage.default, {
-      className: iconClassname
+    }, _react.default.createElement(_DebuggerImage.default, {
+      name: iconClassname
     })), (0, _reactDomFactories.div)({
       className: "label"
     }, label), isPaused ? (0, _reactDomFactories.span)({

@@ -14,7 +14,6 @@ loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/utils/bre
 loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_breakpointPositions", "devtools/client/debugger/src/actions/breakpoints/breakpointPositions");
 loader.lazyRequireGetter(this, "_skipPausing", "devtools/client/debugger/src/actions/pause/skipPausing");
-loader.lazyRequireGetter(this, "_promise", "devtools/client/debugger/src/actions/utils/middleware/promise");
 loader.lazyRequireGetter(this, "_telemetry", "devtools/client/debugger/src/utils/telemetry");
 loader.lazyRequireGetter(this, "_location", "devtools/client/debugger/src/utils/location");
 loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
@@ -24,6 +23,10 @@ loader.lazyRequireGetter(this, "_context", "devtools/client/debugger/src/utils/c
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+const {
+  PROMISE
+} = require("resource://devtools/client/shared/redux/middleware/promise.js");
+
 // This file has the primitive operations used to modify individual breakpoints
 // and keep them in sync with the breakpoints installed on server threads. These
 // are collected here to make it easier to preserve the following invariant:
@@ -89,7 +92,7 @@ function enableBreakpoint(initialBreakpoint) {
       breakpoint: (0, _create.createBreakpoint)({ ...breakpoint,
         disabled: false
       }),
-      [_promise.PROMISE]: clientSetBreakpoint(client, thunkArgs, breakpoint)
+      [PROMISE]: clientSetBreakpoint(client, thunkArgs, breakpoint)
     });
   };
 }
@@ -107,6 +110,7 @@ function addBreakpoint(initialLocation, options = {}, disabled, shouldCancel = (
     // the line no longer exists.
 
     if (!position) {
+      console.error(`Unable to add breakpoint at non-breakable location "${JSON.stringify(initialLocation)}"`);
       return null;
     }
 
@@ -143,7 +147,7 @@ function addBreakpoint(initialLocation, options = {}, disabled, shouldCancel = (
       breakpoint,
       // If we just clobbered an enabled breakpoint with a disabled one, we need
       // to remove any installed breakpoint in the server.
-      [_promise.PROMISE]: disabled ? clientRemoveBreakpoint(client, getState(), generatedLocation) : clientSetBreakpoint(client, thunkArgs, breakpoint)
+      [PROMISE]: disabled ? clientRemoveBreakpoint(client, getState(), generatedLocation) : clientSetBreakpoint(client, thunkArgs, breakpoint)
     });
   };
 }
@@ -172,7 +176,7 @@ function removeBreakpoint(initialBreakpoint) {
       type: "REMOVE_BREAKPOINT",
       breakpoint,
       // If the breakpoint is disabled then it is not installed in the server.
-      [_promise.PROMISE]: breakpoint.disabled ? Promise.resolve() : clientRemoveBreakpoint(client, getState(), breakpoint.generatedLocation)
+      [PROMISE]: breakpoint.disabled ? Promise.resolve() : clientRemoveBreakpoint(client, getState(), breakpoint.generatedLocation)
     });
   };
 }
@@ -180,7 +184,7 @@ function removeBreakpoint(initialBreakpoint) {
  * Remove all installed, pending, and client breakpoints associated with a
  * target generated location.
  *
- * @param {Object} target
+ * @param {object} target
  *        Location object where to remove breakpoints.
  */
 
@@ -205,7 +209,7 @@ function removeBreakpointAtGeneratedLocation(target) {
         dispatch({
           type: "REMOVE_BREAKPOINT",
           breakpoint,
-          [_promise.PROMISE]: onBreakpointRemoved
+          [PROMISE]: onBreakpointRemoved
         });
       }
     } // Remove any remaining pending breakpoints matching the generated location.
@@ -254,7 +258,7 @@ function disableBreakpoint(initialBreakpoint) {
       breakpoint: (0, _create.createBreakpoint)({ ...breakpoint,
         disabled: true
       }),
-      [_promise.PROMISE]: clientRemoveBreakpoint(client, getState(), breakpoint.generatedLocation)
+      [PROMISE]: clientRemoveBreakpoint(client, getState(), breakpoint.generatedLocation)
     });
   };
 }
@@ -266,7 +270,7 @@ function disableBreakpoint(initialBreakpoint) {
  * @static
  * @param {SourceLocation} location
  *        @see DebuggerController.Breakpoints.addBreakpoint
- * @param {Object} options
+ * @param {object} options
  *        Any options to set on the breakpoint
  */
 
@@ -292,7 +296,7 @@ function setBreakpointOptions(location, options = {}) {
     return dispatch({
       type: "SET_BREAKPOINT",
       breakpoint,
-      [_promise.PROMISE]: clientSetBreakpoint(client, thunkArgs, breakpoint)
+      [PROMISE]: clientSetBreakpoint(client, thunkArgs, breakpoint)
     });
   };
 }

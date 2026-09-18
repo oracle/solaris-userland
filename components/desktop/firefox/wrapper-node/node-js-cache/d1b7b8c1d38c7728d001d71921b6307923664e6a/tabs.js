@@ -4,87 +4,49 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.tabExists = tabExists;
-exports.hasPrettyTab = hasPrettyTab;
-exports.getNewSelectedSource = getNewSelectedSource;
-exports.getSourcesForTabs = exports.getSourceTabs = exports.getTabs = void 0;
-
-var _reselect = require("devtools/client/shared/vendor/reselect");
-
-loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
-loader.lazyRequireGetter(this, "_sources", "devtools/client/debugger/src/selectors/sources");
-loader.lazyRequireGetter(this, "_tabs", "devtools/client/debugger/src/utils/tabs");
+exports.isPrettyPrinted = isPrettyPrinted;
+exports.isPrettyPrintedDisabled = isPrettyPrintedDisabled;
+exports.getPrettyPrintedURLs = exports.getOpenedSources = exports.getOpenedURLs = void 0;
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
-const getTabs = state => state.tabs.tabs; // Return the list of tabs which relates to an active source
+const getOpenedURLs = state => state.tabs.urls; // Return the list of source objects which are opened.
+// i.e. sources which have a tab currently opened.
 
 
-exports.getTabs = getTabs;
-const getSourceTabs = (0, _reselect.createSelector)(getTabs, tabs => tabs.filter(tab => tab.source));
-exports.getSourceTabs = getSourceTabs;
-const getSourcesForTabs = (0, _reselect.createSelector)(getSourceTabs, sourceTabs => {
-  return sourceTabs.map(tab => tab.source);
-});
-exports.getSourcesForTabs = getSourcesForTabs;
+exports.getOpenedURLs = getOpenedURLs;
 
-function tabExists(state, sourceId) {
-  return !!getSourceTabs(state).find(tab => tab.source.id == sourceId);
-}
+const getOpenedSources = state => state.tabs.openedSources;
 
-function hasPrettyTab(state, source) {
-  const prettyUrl = (0, _source.getPrettySourceURL)(source.url);
-  return getTabs(state).some(tab => tab.url === prettyUrl);
+exports.getOpenedSources = getOpenedSources;
+
+const getPrettyPrintedURLs = state => state.tabs.prettyPrintedURLs;
+
+exports.getPrettyPrintedURLs = getPrettyPrintedURLs;
+
+function tabExists(state, source) {
+  // Minimized(=generatedSource) and its related pretty printed source will both share the same tab,
+  // so we should consider that the tab is already opened if the tab relates to the passed minimized source.
+  return getOpenedSources(state).some(s => s == (source.isPrettyPrinted ? source.generatedSource : source));
 }
 /**
- * Gets the next tab to select when a tab closes. Heuristics:
- * 1. if the selected tab is available, it remains selected
- * 2. if it is gone, the next available tab to the left should be active
- * 3. if the first tab is active and closed, select the second tab
+ * For a given non-original source, returns true only if this source has been pretty printed
+ * and has a tab currently opened with pretty printing enabled.
+ *
+ * @return {boolean}
  */
 
 
-function getNewSelectedSource(state, tabList) {
-  const {
-    selectedLocation
-  } = state.sources;
-  const availableTabs = getTabs(state);
+function isPrettyPrinted(state, source) {
+  return source.url && state.tabs.prettyPrintedURLs.has(source.url);
+}
+/**
+ * Reports if a given source was ignored by auto-pretty printing,
+ * or if the user manually disabled pretty printing on it
+ */
 
-  if (!selectedLocation) {
-    return null;
-  }
 
-  const selectedSource = selectedLocation.source;
-
-  if (!selectedSource) {
-    return null;
-  }
-
-  const matchingTab = availableTabs.find(tab => (0, _tabs.isSimilarTab)(tab, selectedSource.url, selectedSource.isOriginal));
-
-  if (matchingTab) {
-    const specificSelectedSource = (0, _sources.getSpecificSourceByURL)(state, selectedSource.url, selectedSource.isOriginal);
-
-    if (specificSelectedSource) {
-      return specificSelectedSource;
-    }
-
-    return null;
-  }
-
-  const tabUrls = tabList.map(tab => tab.url);
-  const leftNeighborIndex = Math.max(tabUrls.indexOf(selectedSource.url) - 1, 0);
-  const lastAvailbleTabIndex = availableTabs.length - 1;
-  const newSelectedTabIndex = Math.min(leftNeighborIndex, lastAvailbleTabIndex);
-  const availableTab = availableTabs[newSelectedTabIndex];
-
-  if (availableTab) {
-    const tabSource = (0, _sources.getSpecificSourceByURL)(state, availableTab.url, availableTab.isOriginal);
-
-    if (tabSource) {
-      return tabSource;
-    }
-  }
-
-  return null;
+function isPrettyPrintedDisabled(state, source) {
+  return source.url && state.tabs.prettyPrintedDisabledURLs.has(source.url);
 }

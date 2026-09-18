@@ -15,7 +15,7 @@ var _reactRedux = require("devtools/client/shared/vendor/react-redux");
 
 var _SourceIcon = _interopRequireDefault(require("../shared/SourceIcon"));
 
-var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
 
@@ -89,38 +89,38 @@ class SourceTreeItemContents extends _react.Component {
   renderIcon(item) {
     if (item.type == "thread") {
       const icon = item.thread.targetType.includes("worker") ? "worker" : "window";
-      return _react.default.createElement(_AccessibleImage.default, {
-        className: classnames(icon)
+      return _react.default.createElement(_DebuggerImage.default, {
+        name: icon
       });
     }
 
     if (item.type == "group") {
       if (item.groupName === "Webpack") {
-        return _react.default.createElement(_AccessibleImage.default, {
-          className: "webpack"
+        return _react.default.createElement(_DebuggerImage.default, {
+          name: "webpack"
         });
       } else if (item.groupName === "Angular") {
-        return _react.default.createElement(_AccessibleImage.default, {
-          className: "angular"
+        return _react.default.createElement(_DebuggerImage.default, {
+          name: "angular"
         });
       } // Check if the group relates to an extension.
       // This happens when a webextension injects a content script.
 
 
       if (item.isForExtensionSource) {
-        return _react.default.createElement(_AccessibleImage.default, {
-          className: "extension"
+        return _react.default.createElement(_DebuggerImage.default, {
+          name: "extension"
         });
       }
 
-      return _react.default.createElement(_AccessibleImage.default, {
-        className: "globe-small"
+      return _react.default.createElement(_DebuggerImage.default, {
+        name: "globe-small"
       });
     }
 
     if (item.type == "directory") {
-      return _react.default.createElement(_AccessibleImage.default, {
-        className: "folder"
+      return _react.default.createElement(_DebuggerImage.default, {
+        name: "folder"
       });
     }
 
@@ -130,6 +130,7 @@ class SourceTreeItemContents extends _react.Component {
         sourceActor
       } = item;
       return _react.default.createElement(_SourceIcon.default, {
+        className: this.props.isSourceOverridden ? " has-network-override" : "",
         location: (0, _location.createLocation)({
           source,
           sourceActor
@@ -141,7 +142,7 @@ class SourceTreeItemContents extends _react.Component {
             return _source.sourceTypes[source.displayURL.fileExtension] || "javascript";
           }
 
-          return icon + (this.props.isSourceOverridden ? " has-network-override" : "");
+          return icon;
         }
       });
     }

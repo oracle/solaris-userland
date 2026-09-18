@@ -13,7 +13,8 @@ loader.lazyRequireGetter(this, "_asyncValue", "devtools/client/debugger/src/util
 
 /**
  * Get and store the in scope lines in the reducer
- * @param {Object} editor - The editor provides an API to retrieve the in scope location
+ *
+ * @param {object} editor - The editor provides an API to retrieve the in scope location
  *                          details based on lezer in CM6.
  * @returns
  */
@@ -32,7 +33,7 @@ function setInScopeLines(editor) {
     const {
       location
     } = visibleFrame;
-    const sourceTextContent = (0, _index.getSourceTextContent)(getState(), location); // Ignore if in scope lines have already be computed, or if the selected location
+    const sourceTextContent = (0, _index.getSourceTextContentForLocation)(getState(), location); // Ignore if in scope lines have already be computed, or if the selected location
     // doesn't have its content already fully fetched.
     // The ParserWorker will only have the source text content once the source text content is fulfilled.
 

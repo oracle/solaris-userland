@@ -10,7 +10,6 @@ exports.getSourceByActorId = getSourceByActorId;
 exports.getSourceByURL = getSourceByURL;
 exports.getSpecificSourceByURL = getSpecificSourceByURL;
 exports.getGeneratedSourceByURL = getGeneratedSourceByURL;
-exports.getGeneratedSource = getGeneratedSource;
 exports.getPendingSelectedLocation = getPendingSelectedLocation;
 exports.getPrettySource = getPrettySource;
 exports.getSourceList = getSourceList;
@@ -41,9 +40,6 @@ var _reselect = require("devtools/client/shared/vendor/reselect");
 loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
 loader.lazyRequireGetter(this, "_breakpointPositions", "devtools/client/debugger/src/utils/breakpoint/breakpointPositions");
 loader.lazyRequireGetter(this, "_asyncValue", "devtools/client/debugger/src/utils/async-value");
-
-var _index = require("devtools/client/shared/source-map-loader/index");
-
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
 loader.lazyRequireGetter(this, "_sources", "devtools/client/debugger/src/reducers/sources");
 loader.lazyRequireGetter(this, "_sourceActors", "devtools/client/debugger/src/selectors/source-actors");
@@ -65,6 +61,7 @@ function getSourceFromId(state, id) {
 
   if (!source) {
     console.warn(`source ${id} does not exist`);
+    dump(`>> ${new Error().stack}\n`);
   }
 
   return source;
@@ -75,7 +72,7 @@ function getSourceByActorId(state, actorId) {
     return null;
   }
 
-  return getSource(state, (0, _sourceActors.getSourceActor)(state, actorId).source);
+  return (0, _sourceActors.getSourceActor)(state, actorId).sourceObject;
 }
 
 function getSourcesByURL(state, url) {
@@ -99,18 +96,6 @@ function getOriginalSourceByURL(state, url) {
 
 function getGeneratedSourceByURL(state, url) {
   return getSpecificSourceByURL(state, url, false);
-}
-
-function getGeneratedSource(state, source) {
-  if (!source) {
-    return null;
-  }
-
-  if (!source.isOriginal) {
-    return source;
-  }
-
-  return getSourceFromId(state, (0, _index.originalToGeneratedId)(source.id));
 }
 
 function getPendingSelectedLocation(state) {
@@ -183,17 +168,16 @@ function getSelectedMappedSource(state) {
     }
 
     return null;
-  }
+  } // For non original source, which don't have selectedOriginalLocation provided,
+  // don't try to map to anything.
 
-  const mappedSource = getGeneratedSource(state, selectedLocation.source); // getGeneratedSource will return the exact same source object on sources
-  // that don't map to any original source. In this case, return null
-  // as that's most likely a regular source, not using source maps.
 
-  if (mappedSource == selectedLocation.source) {
+  if (!selectedLocation.source.isOriginal) {
     return null;
-  }
+  } // Otherwise, for original source, simply map to their related generated source
 
-  return mappedSource || null;
+
+  return selectedLocation.source.generatedSource;
 }
 /**
  * Helps knowing if we are still computing the mapped location for the currently selected source.
@@ -239,13 +223,12 @@ function getShouldScrollToSelectedLocation(state) {
  * Gets the first source actor for the source and/or thread
  * provided.
  *
- * @param {Object} state
- * @param {String} sourceId
+ * @param {object} state
+ * @param {string} sourceId
  *         The source used
- * @param {String} [threadId]
+ * @param {string} [threadId]
  *         The thread to check, this is optional.
- * @param {Object} sourceActor
- *
+ * @param {object} sourceActor
  */
 
 
@@ -257,7 +240,7 @@ function getFirstSourceActorForGeneratedSource(state, sourceId, threadId) {
   }
 
   if (source.isOriginal) {
-    source = getSource(state, (0, _index.originalToGeneratedId)(source.id));
+    source = source.generatedSource;
   }
 
   const actors = getSourceActorsForSource(state, source.id);
@@ -271,10 +254,10 @@ function getFirstSourceActorForGeneratedSource(state, sourceId, threadId) {
 /**
  * Get the source actor of the source
  *
- * @param {Object} state
- * @param {String} id
+ * @param {object} state
+ * @param {string} id
  *        The source id
- * @return {Array<Object>}
+ * @return {Array<object>}
  *         List of source actors
  */
 
@@ -288,18 +271,15 @@ function isSourceWithMap(state, id) {
   return actors.some(actor => (0, _sourceActors.isSourceActorWithSourceMap)(state, actor.id));
 }
 
-function canPrettyPrintSource(state, location) {
-  const sourceId = location.source.id;
-  const source = getSource(state, sourceId);
-
-  if (!source || (0, _source.isPretty)(source) || source.isOriginal || _prefs.prefs.clientSourceMapsEnabled && isSourceWithMap(state, sourceId)) {
+function canPrettyPrintSource(state, source, sourceActor) {
+  if (!source || source.isPrettyPrinted || source.isOriginal || _prefs.prefs.clientSourceMapsEnabled && isSourceWithMap(state, source.id)) {
     return false;
   }
 
-  const content = (0, _sourcesContent.getSourceTextContent)(state, location);
+  const content = (0, _sourcesContent.getSourceTextContentForSource)(state, source, sourceActor);
   const sourceContent = content && (0, _asyncValue.isFulfilled)(content) ? content.value : null;
 
-  if (!sourceContent || !(0, _source.isJavaScript)(source, sourceContent) && !source.isHTML) {
+  if (!sourceContent || (0, _source.isNotPrettyPrintable)(source, sourceContent)) {
     return false;
   }
 
@@ -313,8 +293,8 @@ function getPrettyPrintMessage(state, location) {
     return L10N.getStr("sourceTabs.prettyPrint");
   }
 
-  if ((0, _source.isPretty)(source)) {
-    return L10N.getStr("sourceFooter.prettyPrint.isPrettyPrintedMessage");
+  if (source.isPrettyPrinted) {
+    return L10N.getStr("sourceTabs.removePrettyPrint");
   }
 
   if (source.isOriginal) {
@@ -325,15 +305,15 @@ function getPrettyPrintMessage(state, location) {
     return L10N.getStr("sourceFooter.prettyPrint.hasSourceMapMessage");
   }
 
-  const content = (0, _sourcesContent.getSourceTextContent)(state, location);
+  const content = (0, _sourcesContent.getSourceTextContentForLocation)(state, location);
   const sourceContent = content && (0, _asyncValue.isFulfilled)(content) ? content.value : null;
 
   if (!sourceContent) {
     return L10N.getStr("sourceFooter.prettyPrint.noContentMessage");
   }
 
-  if (!(0, _source.isJavaScript)(source, sourceContent) && !source.isHTML) {
-    return L10N.getStr("sourceFooter.prettyPrint.isNotJavascriptMessage");
+  if ((0, _source.isNotPrettyPrintable)(source, sourceContent)) {
+    return L10N.getStr("sourceFooter.prettyPrint.isNotPrettyPrintableSourceMessage");
   }
 
   return L10N.getStr("sourceTabs.prettyPrint");
@@ -413,9 +393,9 @@ function isSourceOverridden(toolboxState, source) {
  * Compute the list of source actors and source objects to be removed
  * when removing a given target/thread.
  *
- * @param {String} threadActorID
+ * @param {string} threadActorID
  *        The thread to be removed.
- * @return {Object}
+ * @return {object}
  *         An object with two arrays:
  *         - actors: list of source actor objects to remove
  *         - sources: list of source objects to remove

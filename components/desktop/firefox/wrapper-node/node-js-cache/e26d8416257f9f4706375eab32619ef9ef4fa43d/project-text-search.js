@@ -18,6 +18,7 @@ loader.lazyRequireGetter(this, "_constants", "devtools/client/debugger/src/const
 
 /**
  * Redux actions for the search state
+ *
  * @module actions/search
  */
 function searchSources(query, onUpdatedResults, signal) {

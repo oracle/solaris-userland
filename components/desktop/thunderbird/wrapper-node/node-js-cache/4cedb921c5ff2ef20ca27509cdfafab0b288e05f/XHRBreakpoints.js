@@ -15,8 +15,9 @@ var _reactRedux = require("devtools/client/shared/vendor/react-redux");
 
 var _index = _interopRequireDefault(require("../../actions/index"));
 
-loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/components/shared/Button/index");
-loader.lazyRequireGetter(this, "_index3", "devtools/client/debugger/src/selectors/index");
+var _CloseButton = _interopRequireDefault(require("devtools/client/shared/components/CloseButton"));
+
+loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/selectors/index");
 
 var _ExceptionOption = _interopRequireDefault(require("./Breakpoints/ExceptionOption"));
 
@@ -27,6 +28,10 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to set private field on non-instance"); } if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } return value; }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to get private field on non-instance"); } if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
 
 const classnames = require("resource://devtools/client/shared/classnames.js"); // At present, the "Pause on any URL" checkbox creates an xhrBreakpoint
 // of "ANY" with no path, so we can remove that before creating the list
@@ -42,9 +47,18 @@ class XHRBreakpoints extends _react.Component {
   constructor(props) {
     super(props);
 
+    _input.set(this, {
+      writable: true,
+      value: void 0
+    });
+
     _defineProperty(this, "handleNewSubmit", e => {
       e.preventDefault();
-      e.stopPropagation();
+      e.stopPropagation(); // Prevent adding breakpoint with empty path
+
+      if (!this.state.inputValue.trim()) {
+        return;
+      }
 
       const setXHRBreakpoint = function () {
         this.props.setXHRBreakpoint(this.state.inputValue, this.state.inputMethod);
@@ -217,7 +231,7 @@ class XHRBreakpoints extends _react.Component {
         className: "xhr-label-url"
       }, path), (0, _reactDomFactories.div)({
         className: "xhr-container__close-btn"
-      }, _react.default.createElement(_index2.CloseButton, {
+      }, _react.default.createElement(_CloseButton.default, {
         handleClick: () => removeXHRBreakpoint(index)
       }))));
     });
@@ -299,24 +313,23 @@ class XHRBreakpoints extends _react.Component {
     } = this.props; // Ensures that the input is focused when the "+"
     // is clicked while the panel is collapsed
 
-    if (this._input && showInput) {
-      this._input.focus();
+    if (_classPrivateFieldGet(this, _input) && showInput) {
+      _classPrivateFieldGet(this, _input).focus();
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const _input = this._input;
+    const inputEl = _classPrivateFieldGet(this, _input);
 
-    if (!_input) {
+    if (!inputEl) {
       return;
     }
 
     if (!prevState.editing && this.state.editing) {
-      _input.setSelectionRange(0, _input.value.length);
-
-      _input.focus();
+      inputEl.setSelectionRange(0, inputEl.value.length);
+      inputEl.focus();
     } else if (this.props.showInput && !this.state.focused) {
-      _input.focus();
+      inputEl.focus();
     }
   }
 
@@ -341,7 +354,7 @@ class XHRBreakpoints extends _react.Component {
       onFocus: this.onFocus,
       value: inputValue,
       onKeyDown: this.handleTab,
-      ref: c => this._input = c
+      ref: c => _classPrivateFieldSet(this, _input, c)
     }), this.renderMethodSelectElement(), (0, _reactDomFactories.input)({
       type: "submit",
       style: {
@@ -360,9 +373,11 @@ class XHRBreakpoints extends _react.Component {
 
 }
 
+var _input = new WeakMap();
+
 const mapStateToProps = state => ({
-  xhrBreakpoints: (0, _index3.getXHRBreakpoints)(state),
-  shouldPauseOnAny: (0, _index3.shouldPauseOnAnyXHR)(state)
+  xhrBreakpoints: (0, _index2.getXHRBreakpoints)(state),
+  shouldPauseOnAny: (0, _index2.shouldPauseOnAnyXHR)(state)
 });
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, {

@@ -12,6 +12,7 @@ loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/pre
 
 /**
  * Expressions reducer
+ *
  * @module reducers/expressions
  */
 const initialExpressionState = () => ({
@@ -32,12 +33,14 @@ function update(state = initialExpressionState(), action) {
       });
 
     case "UPDATE_EXPRESSION":
-      const key = action.expression.input;
-      return updateExpressionInList(state, key, {
-        input: action.input,
-        value: null,
-        updating: true
-      });
+      {
+        const key = action.expression.input;
+        return updateExpressionInList(state, key, {
+          input: action.input,
+          value: null,
+          updating: true
+        });
+      }
 
     case "EVALUATE_EXPRESSION":
       return updateExpressionInList(state, action.input, {
@@ -47,30 +50,34 @@ function update(state = initialExpressionState(), action) {
       });
 
     case "EVALUATE_EXPRESSIONS":
-      const {
-        inputs,
-        results
-      } = action;
-      return inputs.reduce((_state, input, index) => updateExpressionInList(_state, input, {
-        input,
-        value: results[index],
-        updating: false
-      }), state);
+      {
+        const {
+          inputs,
+          results
+        } = action;
+        return inputs.reduce((_state, input, index) => updateExpressionInList(_state, input, {
+          input,
+          value: results[index],
+          updating: false
+        }), state);
+      }
 
     case "DELETE_EXPRESSION":
       return deleteExpression(state, action.input);
 
     case "AUTOCOMPLETE":
-      const {
-        matchProp,
-        matches
-      } = action.result;
-      return { ...state,
-        currentAutocompleteInput: matchProp,
-        autocompleteMatches: { ...state.autocompleteMatches,
-          [matchProp]: matches
-        }
-      };
+      {
+        const {
+          matchProp,
+          matches
+        } = action.result;
+        return { ...state,
+          currentAutocompleteInput: matchProp,
+          autocompleteMatches: { ...state.autocompleteMatches,
+            [matchProp]: matches
+          }
+        };
+      }
 
     case "CLEAR_AUTOCOMPLETE":
       return { ...state,

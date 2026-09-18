@@ -11,7 +11,7 @@ loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/utils/bre
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 function getInScopeLines(state, location) {
-  return state.ast.mutableInScopeLines[(0, _index.makeBreakpointId)(location)]?.lines;
+  return state.ast.mutableInScopeLines.get((0, _index.makeBreakpointId)(location))?.lines;
 }
 
 function hasInScopeLines(state, location) {

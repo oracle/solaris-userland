@@ -51,7 +51,6 @@ exports.togglePauseOnAny = togglePauseOnAny;
 exports.setXHRBreakpoint = setXHRBreakpoint;
 exports.removeAllXHRBreakpoints = removeAllXHRBreakpoints;
 exports.removeXHRBreakpoint = removeXHRBreakpoint;
-loader.lazyRequireGetter(this, "_promise", "devtools/client/debugger/src/actions/utils/middleware/promise");
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
 loader.lazyRequireGetter(this, "_location", "devtools/client/debugger/src/utils/location");
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
@@ -98,8 +97,13 @@ Object.keys(_syncBreakpoint).forEach(function (key) {
 
 /**
  * Redux actions for breakpoints
+ *
  * @module actions/breakpoints
  */
+const {
+  PROMISE
+} = require("resource://devtools/client/shared/redux/middleware/promise.js");
+
 function addHiddenBreakpoint(location) {
   return ({
     dispatch
@@ -267,7 +271,7 @@ function removeBreakpointsInSource(source) {
  * non-pretty-printed (generated) source to the related pretty-printed
  * (original) source by querying the SourceMap service.
  *
- * @param {String} source - the generated source
+ * @param {string} source - the generated source
  */
 
 
@@ -422,7 +426,7 @@ function enableXHRBreakpoint(index, bp) {
       type: "ENABLE_XHR_BREAKPOINT",
       breakpoint: enabledBreakpoint,
       index,
-      [_promise.PROMISE]: client.setXHRBreakpoint(breakpoint.path, breakpoint.method)
+      [PROMISE]: client.setXHRBreakpoint(breakpoint.path, breakpoint.method)
     });
   };
 }
@@ -442,7 +446,7 @@ function disableXHRBreakpoint(index, bp) {
       type: "DISABLE_XHR_BREAKPOINT",
       breakpoint: disabledBreakpoint,
       index,
-      [_promise.PROMISE]: client.removeXHRBreakpoint(breakpoint.path, breakpoint.method)
+      [PROMISE]: client.removeXHRBreakpoint(breakpoint.path, breakpoint.method)
     });
   };
 }
@@ -464,7 +468,7 @@ function updateXHRBreakpoint(index, path, method) {
       type: "UPDATE_XHR_BREAKPOINT",
       breakpoint: updatedBreakpoint,
       index,
-      [_promise.PROMISE]: Promise.all([client.removeXHRBreakpoint(breakpoint.path, breakpoint.method), client.setXHRBreakpoint(path, method)])
+      [PROMISE]: Promise.all([client.removeXHRBreakpoint(breakpoint.path, breakpoint.method), client.setXHRBreakpoint(path, method)])
     });
   };
 }
@@ -502,7 +506,7 @@ function setXHRBreakpoint(path, method) {
     return dispatch({
       type: "SET_XHR_BREAKPOINT",
       breakpoint,
-      [_promise.PROMISE]: client.setXHRBreakpoint(path, method)
+      [PROMISE]: client.setXHRBreakpoint(path, method)
     });
   };
 }
@@ -517,7 +521,7 @@ function removeAllXHRBreakpoints() {
     const promises = xhrBreakpoints.map(breakpoint => client.removeXHRBreakpoint(breakpoint.path, breakpoint.method));
     await dispatch({
       type: "CLEAR_XHR_BREAKPOINTS",
-      [_promise.PROMISE]: Promise.all(promises)
+      [PROMISE]: Promise.all(promises)
     });
     _prefs.asyncStore.xhrBreakpoints = [];
   };
@@ -535,7 +539,7 @@ function removeXHRBreakpoint(index) {
       type: "REMOVE_XHR_BREAKPOINT",
       breakpoint,
       index,
-      [_promise.PROMISE]: client.removeXHRBreakpoint(breakpoint.path, breakpoint.method)
+      [PROMISE]: client.removeXHRBreakpoint(breakpoint.path, breakpoint.method)
     });
   };
 }

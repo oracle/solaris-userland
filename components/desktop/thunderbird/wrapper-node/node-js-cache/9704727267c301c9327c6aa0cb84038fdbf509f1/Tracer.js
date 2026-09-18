@@ -10,14 +10,16 @@ var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/reac
 
 var _reactDomFactories = require("devtools/client/shared/vendor/react-dom-factories");
 
-var _SearchInput = _interopRequireDefault(require("../shared/SearchInput"));
-
 var _EventListeners = _interopRequireDefault(require("../shared/EventListeners"));
 
 var _reactRedux = require("devtools/client/shared/vendor/react-redux");
 
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_tracerFrames", "devtools/client/debugger/src/reducers/tracer-frames");
+
+var _SearchInput = _interopRequireDefault(require("devtools/client/shared/components/SearchInput"));
+
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 var _index2 = _interopRequireDefault(require("../../actions/index"));
 
@@ -67,8 +69,10 @@ class Tracer extends _react.Component {
     super(props);
 
     _defineProperty(this, "searchInputOnChange", e => {
-      const searchString = e.target.value; // Throttle the calls to searchTraceArgument as that a costly operation
-
+      const searchString = e.target.value;
+      this.setState({
+        searchQuery: searchString
+      });
       this.throttledUpdateSearch(searchString);
     });
 
@@ -113,7 +117,8 @@ class Tracer extends _react.Component {
       // Number of trace rendered in the timeline and the tree (considering the tree is expanded, less may be displayed based on collapsing)
       renderedTraceCount: 0,
       // Index of the currently selected tab (traces or events)
-      selectedTabIndex: 0
+      selectedTabIndex: 0,
+      searchQuery: ""
     };
     this.onSliderClick = this.onSliderClick.bind(this);
     this.onSliderWheel = this.onSliderWheel.bind(this);
@@ -168,6 +173,15 @@ class Tracer extends _react.Component {
 
     if (!this.tooltip) {
       this.instantiateTooltip();
+    } // Force updating indexes when we navigate back to the tracer sidebar.
+    // For example, when we navigated away to the source tree.
+
+
+    if (!this.state.renderedTraceCount) {
+      this.updateIndexes({
+        startIndex: this.state.startIndex,
+        endIndex: this.state.endIndex
+      }, this.props);
     }
   }
 
@@ -432,7 +446,11 @@ class Tracer extends _react.Component {
           className,
           showFunctionName: true,
           showAnonymousFunctionName: true,
-          frame,
+          // Frame's savedFrameToLocation mess up with the frame object
+          // by incrementing the column unexpectedly.
+          frame: { ...frame,
+            column: frame.column + 1
+          },
           sourceMapURLService: window.sourceMapURLService
         }));
       }
@@ -610,6 +628,12 @@ class Tracer extends _react.Component {
   }
 
   renderEventsInSlider() {
+    // When getting back to tracer sidebar after having moved to any other side panel, like source tree,
+    // the timeline is null and would crash here.
+    if (!this.refs.timeline) {
+      return null;
+    }
+
     const {
       topTraces,
       allTraces,
@@ -750,7 +774,7 @@ class Tracer extends _react.Component {
   /**
    * Select the next or previous trace according to the current search string
    *
-   * @param {Boolean} goForward
+   * @param {boolean} goForward
    *                  Select the next matching trace if true,
    *                  otherwise select the previous one.
    */
@@ -763,20 +787,30 @@ class Tracer extends _react.Component {
       searchValueOrGrip
     } = this.props;
     return [_react.default.createElement(_SearchInput.default, {
+      query: this.state.searchQuery,
       count: tracesMatchingSearch.length,
+      expanded: false,
+      hasPrefix: false,
       placeholder: this.props.traceValues ? `Search for function call argument values ("foo", 42, $0, $("canvas"), …)` : "Enable tracing values to search for values",
       disabled: !this.props.traceValues,
       size: "small",
       showClose: false,
+      showExcludePatterns: false,
+      showSearchModifiers: false,
+      showErrorEmoji: false,
+      isLoading: false,
       onChange: this.searchInputOnChange,
       onKeyDown: e => {
         if (e.key == "Enter") {
-          // Shift key will reverse the selection direction
           this.selectNextMatchingTrace(!e.shiftKey);
         }
       },
       handlePrev: () => this.selectNextMatchingTrace(false),
-      handleNext: () => this.selectNextMatchingTrace(true)
+      handleNext: () => this.selectNextMatchingTrace(true),
+      searchKey: "TRACER_SEARCH_TEMP",
+      searchOptions: {},
+      setSearchOptions: () => {},
+      DebuggerImage: _DebuggerImage.default
     }), // When this isn't a valid primitive type, we try to evaluate on the server
     // and show the exception, if one was thrown
     searchExceptionMessage ? (0, _reactDomFactories.div)({
@@ -837,9 +871,9 @@ class Tracer extends _react.Component {
  * Walk through the call tree to find the very last children frame
  * and return its trace index.
  *
- * @param {Object} traceChildren
+ * @param {object} traceChildren
  *                 The reducer data containing children trace indexes for all the traces.
- * @param {Number} traceIndex
+ * @param {number} traceIndex
  */
 
 
@@ -858,11 +892,11 @@ function findLastTraceIndex(traceChildren, traceIndex) {
  * Store in the `results` attribute all following siblings for a given trace,
  * as well as for its parents, that, recursively up to the top traces.
  *
- * @param {Object} traceParents
+ * @param {object} traceParents
  *                 The reducer data containing parent trace index for all the traces.
- * @param {Object} traceChildren
+ * @param {object} traceChildren
  *                 The reducer data containing children trace indexes for all the traces.
- * @param {Number} traceIndex
+ * @param {number} traceIndex
  * @param {Array} results
  */
 
@@ -886,7 +920,7 @@ function collectAllSiblings(traceParents, traceChildren, traceIndex, results) {
  * Given the TRACER_FIELDS_INDEXES.EVENT_NAME field of a trace,
  * return the classname to use for a given event trace.
  *
- * @param {String} eventName
+ * @param {string} eventName
  */
 
 
@@ -904,10 +938,10 @@ function getEventClassNameFromTraceEventName(eventName) {
 /**
  * Return the index of the top-most parent frame for a given trace index.
  *
- * @param {Object} traceParents
+ * @param {object} traceParents
  *                 The reducer data containing parent trace index for all the traces.
- * @param {Number} traceIndex
- * @return {Number} The top-most parent trace index
+ * @param {number} traceIndex
+ * @return {number} The top-most parent trace index
  */
 
 

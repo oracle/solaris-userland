@@ -14,8 +14,8 @@ Dependency: apply after SPARC-01-cairo-surface-format.patch. This patch handles
 the WebRender upload boundary for native Cairo formats made visible by the base
 format-contract patch.
 
---- firefox-153.0/gfx/layers/wr/IpcResourceUpdateQueue.cpp
-+++ firefox-153.0/gfx/layers/wr/IpcResourceUpdateQueue.cpp
+--- firefox-153.2.0/gfx/layers/wr/IpcResourceUpdateQueue.cpp
++++ firefox-153.2.0/gfx/layers/wr/IpcResourceUpdateQueue.cpp
 @@ -6,6 +6,8 @@ #include "IpcResourceUpdateQueue.h"
  #include <string.h>
  #include <algorithm>
@@ -141,8 +141,8 @@ format-contract patch.
    return true;
  }
  
---- firefox-153.0/gfx/webrender_bindings/WebRenderAPI.cpp
-+++ firefox-153.0/gfx/webrender_bindings/WebRenderAPI.cpp
+--- firefox-153.2.0/gfx/webrender_bindings/WebRenderAPI.cpp
++++ firefox-153.2.0/gfx/webrender_bindings/WebRenderAPI.cpp
 @@ -4,6 +4,9 @@ * file, You can obtain one at http://moz
  
  #include "WebRenderAPI.h"
@@ -215,7 +215,7 @@ format-contract patch.
  class RemoveRenderer : public RendererEvent {
   public:
    explicit RemoveRenderer(layers::SynchronousTask* aTask) : mTask(aTask) {
-@@ -1019,6 +1077,19 @@ }
+@@ -1021,6 +1079,19 @@ }
  void TransactionBuilder::AddImage(ImageKey key,
                                    const ImageDescriptor& aDescriptor,
                                    wr::Vec<uint8_t>& aBytes) {
@@ -235,7 +235,7 @@ format-contract patch.
    wr_resource_updates_add_image(mTxn, key, &aDescriptor, &aBytes.inner);
  }
  
-@@ -1053,6 +1124,19 @@ }
+@@ -1055,6 +1126,19 @@ }
  void TransactionBuilder::UpdateImageBuffer(ImageKey aKey,
                                             const ImageDescriptor& aDescriptor,
                                             wr::Vec<uint8_t>& aBytes) {

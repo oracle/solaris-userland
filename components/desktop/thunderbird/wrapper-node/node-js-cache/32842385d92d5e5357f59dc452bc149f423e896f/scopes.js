@@ -61,7 +61,7 @@ function _getThisVariable(this_, path) {
  * Each binding argument => [name: string, contents: BindingContents]
  *
  * @param {Array} bindings
- * @param {String} parentName
+ * @param {string} parentName
  * @returns
  */
 
@@ -200,7 +200,7 @@ function _mergeLexicalScopesBindings(scope, parentScope, item, parentItem) {
  * Returns a string path for an scope item which can be used
  * in different pauses for a thread.
  *
- * @param {Object} item
+ * @param {object} item
  * @returns
  */
 
@@ -249,6 +249,7 @@ function _getFrameExceptionOrReturnedValueVariables(why, path) {
 }
 /**
  * Generates the scope items (for scopes related to selected frame) to be rendered in the scope panel
+ *
  * @param {*} why
  * @param {*} selectedFrame
  * @param {*} frameScopes

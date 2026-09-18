@@ -8,7 +8,7 @@ exports.isFrameBlackBoxed = isFrameBlackBoxed;
 exports.findBlackBoxRange = findBlackBoxRange;
 exports.isLineBlackboxed = isLineBlackboxed;
 exports.isJavaScript = isJavaScript;
-exports.isPretty = isPretty;
+exports.isNotPrettyPrintable = isNotPrettyPrintable;
 exports.isPrettyURL = isPrettyURL;
 exports.getPrettySourceURL = getPrettySourceURL;
 exports.getRawSourceURL = getRawSourceURL;
@@ -42,6 +42,7 @@ loader.lazyRequireGetter(this, "_asyncValue", "devtools/client/debugger/src/util
 
 /**
  * Utils for working with Source URLs
+ *
  * @module utils/source
  */
 const {
@@ -97,11 +98,11 @@ function shouldBlackbox(source) {
  * Checks if the frame is within a line ranges which are blackboxed
  * in the source.
  *
- * @param {Object}  frame
+ * @param {object}  frame
  *                  The current frame
- * @param {Object}  blackboxedRanges
+ * @param {object}  blackboxedRanges
  *                  The currently blackboxedRanges for all the sources.
- * @param {Boolean} isFrameBlackBoxed
+ * @param {boolean} isFrameBlackBoxed
  *                  If the frame is within the blackboxed range
  *                  or not.
  */
@@ -121,13 +122,13 @@ function isFrameBlackBoxed(frame, blackboxedRanges) {
  * That is if any start and end lines overlap any of the
  * blackbox ranges
  *
- * @param {Object}  source
+ * @param {object}  source
  *                  The current selected source
- * @param {Object}  blackboxedRanges
+ * @param {object}  blackboxedRanges
  *                  The store of blackboxedRanges
- * @param {Object}  lineRange
+ * @param {object}  lineRange
  *                  The start/end line range `{ start: <Number>, end: <Number> }`
- * @return {Object} blackboxRange
+ * @return {object} blackboxRange
  *                  The first matching blackbox range that all or part of the
  *                  specified lineRange sits within.
  */
@@ -144,9 +145,10 @@ function findBlackBoxRange(source, blackboxedRanges, lineRange) {
 }
 /**
  * Checks if a source line is blackboxed
+ *
  * @param {Array} ranges - Line ranges that are blackboxed
- * @param {Number} line
- * @param {Boolean} isSourceOnIgnoreList - is the line in a source that is on
+ * @param {number} line
+ * @param {boolean} isSourceOnIgnoreList - is the line in a source that is on
  *                                         the sourcemap ignore lists then the line is blackboxed.
  * @returns boolean
  */
@@ -186,14 +188,9 @@ function isJavaScript(source, content) {
   const contentType = content.type === "wasm" ? null : content.contentType;
   return javascriptLikeExtensions.has(extension) || !!(contentType && contentType.includes("javascript"));
 }
-/**
- * @memberof utils/source
- * @static
- */
 
-
-function isPretty(source) {
-  return isPrettyURL(source.url);
+function isNotPrettyPrintable(source, sourceContent) {
+  return !isJavaScript(source, sourceContent) && !source.isHTML && !source.isStyleSheet;
 }
 
 function isPrettyURL(url) {
@@ -249,7 +246,8 @@ function getFormattedSourceId(id) {
 function getTruncatedFileName(source) {
   return (0, _text.truncateMiddleText)(source.longName, 30);
 }
-/* Gets path for files with same filename for editor tabs, breakpoints, etc.
+/**
+ * Gets path for files with same filename for editor tabs, breakpoints, etc.
  * Pass the source, and list of other sources
  *
  * @memberof utils/source
@@ -378,31 +376,22 @@ function getTextAtPosition(sourceId, asyncContent, location) {
 /**
  * Compute the CSS classname string to use for the icon of a given source.
  *
- * @param {Object} source
+ * @param {object} source
  *        The reducer source object.
- * @param {Boolean} isBlackBoxed
+ * @param {boolean} isBlackBoxed
  *        To be set to true, when the given source is blackboxed.
- * @param {Boolean} hasPrettyTab
- *        To be set to true, if the given source isn't the pretty printed one,
  *        but another tab for that source is opened pretty printed.
  * @return String
  *        The classname to use.
  */
 
 
-function getSourceClassnames(source, isBlackBoxed, hasPrettyTab = false) {
+function getSourceClassnames(source, isBlackBoxed) {
   // Conditionals should be ordered by priority of icon!
   const defaultClassName = "file";
 
   if (!source || !source.url) {
     return defaultClassName;
-  } // In the SourceTree, we don't show the pretty printed sources,
-  // but still want to show the pretty print icon when a pretty printed tab
-  // for the current source is opened.
-
-
-  if (isPretty(source) || hasPrettyTab) {
-    return "prettyPrint";
   }
 
   if (isBlackBoxed) {
@@ -437,8 +426,8 @@ function isUrlExtension(url) {
 /**
 * Checks that source url matches one of the glob patterns
 *
-* @param {Object} source
-* @param {String} excludePatterns
+* @param {object} source
+* @param {string} excludePatterns
                   String of comma-seperated glob patterns
 * @return {return} Boolean value specifies if the string matches any
                  of the patterns.

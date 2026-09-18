@@ -15,7 +15,7 @@ var _reactRedux = require("devtools/client/shared/vendor/react-redux");
 
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
 
-var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 var objectInspector = _interopRequireWildcard(require("resource://devtools/client/shared/components/object-inspector/index.js"));
 
@@ -23,7 +23,8 @@ var _index2 = _interopRequireDefault(require("../../actions/index"));
 
 loader.lazyRequireGetter(this, "_index3", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_expressions", "devtools/client/debugger/src/utils/expressions");
-loader.lazyRequireGetter(this, "_index4", "devtools/client/debugger/src/components/shared/Button/index");
+
+var _CloseButton = _interopRequireDefault(require("devtools/client/shared/components/CloseButton"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -32,6 +33,10 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to set private field on non-instance"); } if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } return value; }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to get private field on non-instance"); } if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
 
 const {
   debounce
@@ -44,6 +49,11 @@ const {
 class Expressions extends _react.Component {
   constructor(props) {
     super(props);
+
+    _input.set(this, {
+      writable: true,
+      value: void 0
+    });
 
     _defineProperty(this, "clear", () => {
       this.setState(() => ({
@@ -118,7 +128,7 @@ class Expressions extends _react.Component {
         editIndex
       } = this.state;
       const {
-        input: _input,
+        input: expressionInput,
         updating
       } = expression;
       const isEditingExpr = editing && editIndex === index;
@@ -136,8 +146,8 @@ class Expressions extends _react.Component {
         expressionResultFront
       } = (0, _expressions.getExpressionResultGripAndFront)(expression);
       const root = {
-        name: expression.input,
-        path: _input,
+        name: expressionInput,
+        path: expressionInput,
         contents: {
           value: expressionResultGrip,
           front: expressionResultFront
@@ -145,7 +155,7 @@ class Expressions extends _react.Component {
       };
       return (0, _reactDomFactories.li)({
         className: "expression-container",
-        key: _input,
+        key: expressionInput,
         title: expression.input
       }, (0, _reactDomFactories.div)({
         className: "expression-content"
@@ -170,7 +180,7 @@ class Expressions extends _react.Component {
         mayUseCustomFormatter: true
       }), (0, _reactDomFactories.div)({
         className: "expression-container__close-btn"
-      }, _react.default.createElement(_index4.CloseButton, {
+      }, _react.default.createElement(_CloseButton.default, {
         handleClick: e => this.deleteExpression(e, expression),
         tooltip: L10N.getStr("expressions.remove.tooltip")
       }))));
@@ -209,8 +219,8 @@ class Expressions extends _react.Component {
     } = this.props; // Ensures that the input is focused when the "+"
     // is clicked while the panel is collapsed
 
-    if (showInput && this._input) {
-      this._input.focus();
+    if (showInput && _classPrivateFieldGet(this, _input)) {
+      _classPrivateFieldGet(this, _input).focus();
     }
   }
 
@@ -243,18 +253,17 @@ class Expressions extends _react.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const _input = this._input;
+    const inputEl = _classPrivateFieldGet(this, _input);
 
-    if (!_input) {
+    if (!inputEl) {
       return;
     }
 
     if (!prevState.editing && this.state.editing) {
-      _input.setSelectionRange(0, _input.value.length);
-
-      _input.focus();
+      inputEl.setSelectionRange(0, inputEl.value.length);
+      inputEl.focus();
     } else if (this.props.showInput) {
-      _input.focus();
+      inputEl.focus();
     }
   }
 
@@ -291,8 +300,8 @@ class Expressions extends _react.Component {
         "aria-role": "status"
       }, (0, _reactDomFactories.span)({
         className: "info icon"
-      }, _react.default.createElement(_AccessibleImage.default, {
-        className: "sourcemap"
+      }, _react.default.createElement(_DebuggerImage.default, {
+        name: "sourcemap"
       })), (0, _reactDomFactories.span)({
         className: "message"
       }, L10N.getStr("expressions.noOriginalScopes")));
@@ -303,8 +312,8 @@ class Expressions extends _react.Component {
         className: "pane-info"
       }, (0, _reactDomFactories.span)({
         className: "info icon"
-      }, _react.default.createElement(_AccessibleImage.default, {
-        className: "loader"
+      }, _react.default.createElement(_DebuggerImage.default, {
+        name: "loader"
       })), (0, _reactDomFactories.span)({
         className: "message"
       }, L10N.getStr("scopes.loadingOriginalScopes")));
@@ -364,7 +373,7 @@ class Expressions extends _react.Component {
       onBlur: this.hideInput,
       onKeyDown: this.handleKeyDown,
       value: !editing ? inputValue : "",
-      ref: c => this._input = c,
+      ref: c => _classPrivateFieldSet(this, _input, c),
       ...(_prefs.features.autocompleteExpression && {
         list: "autocomplete-matches"
       })
@@ -392,7 +401,7 @@ class Expressions extends _react.Component {
       onBlur: this.clear,
       onKeyDown: this.handleKeyDown,
       value: editing ? inputValue : expression.input,
-      ref: c => this._input = c,
+      ref: c => _classPrivateFieldSet(this, _input, c),
       ...(_prefs.features.autocompleteExpression && {
         list: "autocomplete-matches"
       })
@@ -414,6 +423,8 @@ class Expressions extends _react.Component {
   }
 
 }
+
+var _input = new WeakMap();
 
 const mapStateToProps = state => {
   const selectedFrame = (0, _index3.getSelectedFrame)(state);

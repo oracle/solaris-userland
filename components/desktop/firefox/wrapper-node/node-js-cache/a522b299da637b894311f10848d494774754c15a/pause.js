@@ -12,10 +12,11 @@ loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/pre
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
-/* eslint complexity: ["error", 36]*/
+/* eslint complexity: ["error", 38]*/
 
 /**
  * Pause reducer
+ *
  * @module reducers/pause
  */
 // Pause state associated with an individual thread.
@@ -145,17 +146,21 @@ function update(state = initialPauseState(), action) {
 
     case "REMOVE_THREAD":
       {
-        if (action.threadActorID in state.threads || action.threadActorID == state.threadcx.thread) {
+        const {
+          threadActorID
+        } = action;
+
+        if (threadActorID in state.threads || threadActorID == state.threadcx.thread) {
           // Remove the thread from the cached list
           const threads = { ...state.threads
           };
-          delete threads[action.threadActorID];
+          delete threads[threadActorID];
           let threadcx = state.threadcx; // And also switch to another thread if this was the currently selected one.
           // As we don't store thread objects in this reducer, and only store thread actor IDs,
           // we can't try to find the top level thread. So we pick the first available thread,
           // and hope that's the top level one.
 
-          if (state.threadcx.thread == action.threadActorID) {
+          if (state.threadcx.thread == threadActorID) {
             threadcx = { ...threadcx,
               thread: Object.keys(threads)[0],
               pauseCounter: threadcx.pauseCounter + 1

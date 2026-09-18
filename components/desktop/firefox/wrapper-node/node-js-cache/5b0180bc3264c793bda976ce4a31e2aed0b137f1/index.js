@@ -50,9 +50,29 @@ async function buildMappedScopes(source, content, frame, generatedScopes, thunkA
     return null;
   }
 
-  const originalAstScopes = await parserWorker.getScopes(frame.location);
+  const {
+    location,
+    generatedLocation
+  } = frame;
+  const originalAstScopes = await parserWorker.getScopes({
+    // Only pass the useful data to the worker to reduce object copies,
+    // but also because location will have non-serializable objects, like target front
+    source: {
+      id: location.source.id
+    },
+    line: location.line,
+    column: location.column
+  });
   updateLocationsInScopes(getState(), originalAstScopes);
-  const generatedAstScopes = await parserWorker.getScopes(frame.generatedLocation);
+  const generatedAstScopes = await parserWorker.getScopes({
+    // Only pass the useful data to the worker to reduce object copies,
+    // but also because location will have non-serializable objects, like target front
+    source: {
+      id: generatedLocation.source.id
+    },
+    line: generatedLocation.line,
+    column: generatedLocation.column
+  });
   updateLocationsInScopes(getState(), generatedAstScopes);
 
   if (!originalAstScopes || !generatedAstScopes) {

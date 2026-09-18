@@ -36,12 +36,12 @@ LD_SHARED_OPTIONS_Z_DEFS=
 ESR =			esr
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	153.0
-COMPONENT_BAID =	426307
+COMPONENT_VERSION =	153.3.0
+COMPONENT_BAID =	442325
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:f11f28fb75d23460432ad5119b808d1df8cacf98ae09c443e2ae68afb28e2f8f
+    sha256:a67512aed61d61b1b333b76619681e891512f065cb894328ebb672920c5e4a83
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -58,7 +58,7 @@ COMPONENT_ANITYA_ID =	4967
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:ee75f8f7a0b5b8f1cb1982fd6d6cf8578f163829b683209cad5ae152f852de6b
+    sha256:d16e318d7a509a9d5f2fa994af9164d0c328e7078db659dd86a4f94046893c80
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
@@ -141,7 +141,9 @@ MOZCONFIG_DEBUG =	/dev/null
 MOZCONFIG_NON_DEBUG =	$(MOZCONFIG)
 endif
 
-# Don't enable system-icu unless Bug 1843007 is resolved.
+# Keep bundled ICU: Thunderbird calendar needs the ICU-22132 workaround not
+# present in Solaris ICU 78.3:
+# https://bugzilla.mozilla.org/show_bug.cgi?id=1843007
 COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options MOZILLA_OFFICIAL=1" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --prefix=/usr" >> $(MOZCONFIG) ; \
@@ -246,7 +248,6 @@ CBE_PACKAGES += developer/llvm/clang
 CBE_PACKAGES += developer/rust/cbindgen
 CBE_PACKAGES.i386 += developer/nasm
 CBE_PACKAGES += library/desktop/startup-notification
-CBE_PACKAGES += library/icu
 CBE_PACKAGES.i386 += runtime/nodejs
 CBE_PACKAGES += system/library/libdbus-glib
 CBE_PACKAGES += web/browser/lynx

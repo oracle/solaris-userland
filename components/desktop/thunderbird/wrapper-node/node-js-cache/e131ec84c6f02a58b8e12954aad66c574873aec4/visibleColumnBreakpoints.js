@@ -23,10 +23,6 @@ function contains(location, range) {
   // and the columns are within the start or end line content.
   return location.line > range.start.line && location.line < range.end.line || location.line == range.start.line && location.column >= range.start.column || location.line == range.end.line && location.column <= range.end.column;
 }
-
-function convertToList(breakpointPositions) {
-  return [].concat(...Object.values(breakpointPositions));
-}
 /**
  * Retrieve the list of column breakpoints to be displayed.
  * This ignores lines without any breakpoint, but also lines with a single possible breakpoint.
@@ -148,5 +144,11 @@ function getFirstBreakpointPosition(state, location) {
     return null;
   }
 
-  return (0, _location.sortSelectedLocations)(convertToList(positions), location.source).find(position => (0, _selectedLocation.getSelectedLocation)(position, location.source).line == location.line);
+  const breakpointPositionsForLine = positions[location.line];
+
+  if (!breakpointPositionsForLine) {
+    return null;
+  }
+
+  return (0, _location.sortSelectedLocations)(breakpointPositionsForLine, location.source)[0];
 }

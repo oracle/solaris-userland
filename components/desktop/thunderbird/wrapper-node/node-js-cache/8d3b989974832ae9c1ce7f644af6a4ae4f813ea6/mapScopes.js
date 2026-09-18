@@ -11,7 +11,6 @@ exports.getMappedScopesForLocation = getMappedScopesForLocation;
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_loadSourceText", "devtools/client/debugger/src/actions/sources/loadSourceText");
 loader.lazyRequireGetter(this, "_context", "devtools/client/debugger/src/utils/context");
-loader.lazyRequireGetter(this, "_promise", "devtools/client/debugger/src/actions/utils/middleware/promise");
 loader.lazyRequireGetter(this, "_log", "devtools/client/debugger/src/utils/log");
 loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/utils/pause/mapScopes/index");
 loader.lazyRequireGetter(this, "_asyncValue", "devtools/client/debugger/src/utils/async-value");
@@ -20,6 +19,10 @@ loader.lazyRequireGetter(this, "_sourceMaps", "devtools/client/debugger/src/util
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+const {
+  PROMISE
+} = require("resource://devtools/client/shared/redux/middleware/promise.js");
+
 const expressionRegex = /\bfp\(\)/g;
 
 async function buildOriginalScopes(selectedFrame, client, generatedScopes) {
@@ -125,7 +128,7 @@ function mapScopes(selectedFrame, scopes) {
     await dispatch({
       type: "MAP_SCOPES",
       selectedFrame,
-      [_promise.PROMISE]: async function () {
+      [PROMISE]: async function () {
         if (selectedFrame.isOriginal && selectedFrame.originalVariables) {
           return buildOriginalScopes(selectedFrame, client, scopes);
         } // getMappedScopes is only specific to the sources where we map the variables

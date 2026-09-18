@@ -38,26 +38,32 @@ function createLocation({
     sourceActorId: sourceActor?.id,
     // # Quick overview of 1-based versus 0-based lines and columns #
     //
-    // In the Debugger frontend, we use these location objects to refer to a precise line and column.
-    // Locations objects use 1-based `line` and 0-based `column`.
+    // Everything assumes a 1-based line, but columns can be 0 or 1 based.
+    // Note that while lines are 1-based some RDP packet may refer to line 0 which should be considered as "no precise location".
     //
-    // In the frontend, the Source Map library, as well as CodeMirror 6, both match the location objects convention
-    // and use 1-based for lines and 0-based for columns.
-    // CodeMirror 5 uses 0-based lines and 0-based columns.
+    // Columns are 0-based in:
+    //  - overall all debugger frontend
+    //  - anything around source maps (SourceMapLoader, SourceMapURLService, SourceMap library)
+    //  - most RDP packets, especially around the thread actor:
+    //    - breakpoints
+    //    - breakpoint positions
+    //    - pause location
+    //    - paused frames
     //
-    // This also matches RDP conventions.
-    // Breakpoints sent to the RDP server and breakable positions fetched from the RDP server
-    // are using 1-based lines and 0-based columns.
+    // Columns are 1-based in:
+    //  - the UI displayed to the user (console messages, frames, stacktraces,...)
+    //  - asserted locations in tests (to match displayed numbers)
+    //  - Spidermonkey:
+    //    This data is mostly coming from and driven by
+    //    JSScript::lineno and JSScript::column
+    //    https://searchfox.org/mozilla-central/rev/4c065f1df299065c305fb48b36cdae571a43d97c/js/src/vm/JSScript.h#1567-1570
+    //  - some RDP packets outside of the thread actor:
+    //    - CONSOLE_MESSAGE, CSS_MESSAGE, PAGE_ERROR resources for lineNumber, columnNumber and stacktrace attributes
+    //    - Error objects's Object Actor's grip's "preview" attribute will expose its stacktraces with 1-based columns
+    //  - SmartTrace is dealing with these RDP packets and consumes 1-based columns,
+    //    but has to map to 0-based columns as it depends on debugger frontend Frames components.
     //
-    // But within the RDP server, there is a mapping between RDP packets and Spidermonkey
-    // as Spidermonkey use 1-based lines **and** columns.
-    // This data is mostly coming from and driven by
-    // JSScript::lineno and JSScript::column
-    // https://searchfox.org/mozilla-central/rev/4c065f1df299065c305fb48b36cdae571a43d97c/js/src/vm/JSScript.h#1567-1570
-    //
-    // Spidermonkey also matches the lines and columns mentioned in tests to assert the (selected) locations.
-    // We are using human readeable numbers and both lines and columns are 1-based.
-    // This actually matches the numbers displayed in the UI to the user as we always display 1-based numbers.
+    // The RDP server, especially in the thread actor ecosystem has to map from spidermonkey 1-based to historical 0-based columns.
     line,
     column
   };
@@ -82,7 +88,7 @@ function debuggerToSourceMapLocation(location) {
  * Pending location only need these three attributes,
  * and especially doesn't need the large source and sourceActor objects of the regular location objects.
  *
- * @param {Object} location
+ * @param {object} location
  */
 
 

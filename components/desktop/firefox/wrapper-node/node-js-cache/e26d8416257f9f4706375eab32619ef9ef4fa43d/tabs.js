@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.addTab = addTab;
 exports.moveTab = moveTab;
 exports.moveTabBySourceId = moveTabBySourceId;
-exports.closeTab = closeTab;
-exports.closeTabs = closeTabs;
+exports.closeTabForSource = closeTabForSource;
+exports.closeTabsForSources = closeTabsForSources;
 loader.lazyRequireGetter(this, "_index", "devtools/client/debugger/src/actions/sources/index");
 loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/selectors/index");
 
@@ -18,11 +18,10 @@ loader.lazyRequireGetter(this, "_index2", "devtools/client/debugger/src/selector
 /**
  * Redux actions for the editor tabs
  */
-function addTab(source, sourceActor) {
+function addTab(source) {
   return {
     type: "ADD_TAB",
-    source,
-    sourceActor
+    source
   };
 }
 
@@ -42,11 +41,15 @@ function moveTabBySourceId(sourceId, tabIndex) {
   };
 }
 
-function closeTab(source) {
-  return closeTabs([source]);
+function closeTabForSource(source) {
+  return ({
+    dispatch
+  }) => {
+    dispatch(closeTabsForSources([source]));
+  };
 }
 
-function closeTabs(sources) {
+function closeTabsForSources(sources) {
   return ({
     dispatch,
     getState
@@ -59,7 +62,7 @@ function closeTabs(sources) {
 
     const newSourceToSelect = getNewSourceToSelect(getState(), sources);
     dispatch({
-      type: "CLOSE_TABS",
+      type: "CLOSE_TABS_FOR_SOURCES",
       sources
     });
     dispatch((0, _index.selectSource)(newSourceToSelect));
@@ -68,47 +71,50 @@ function closeTabs(sources) {
 /**
  * Compute the potential new source to select while closing tabs for a given set of sources.
  *
- * @param {Object} state
+ * @param {object} state
  *        Redux state object.
- * @param {Array<Source>} closedTabsSources
- *        Ordered list of source object for which tabs should be closed.
- *        Should be a consecutive list of source matching the order of tabs reducer.
+ * @param {Array<Source>} closedSources
+ *        Ordered list of sources which should be closed.
+ *        Should be a consecutive list of tabs matching the order of tabs reducer.
  */
 
 
-function getNewSourceToSelect(state, closedTabsSources) {
+function getNewSourceToSelect(state, closedSources) {
   const selectedLocation = (0, _index2.getSelectedLocation)(state); // Do not try to select any source if none was selected before
 
   if (!selectedLocation) {
     return null;
+  }
+
+  let selectedSource = selectedLocation.source; // When a source is pretty printed, the tab always refer to its minimized/generated source
+
+  if (selectedSource.isPrettyPrinted) {
+    selectedSource = selectedSource.generatedSource;
   } // Keep selecting the same source if we aren't removing the currently selected source
 
 
-  if (!closedTabsSources.includes(selectedLocation.source)) {
-    return selectedLocation.source;
+  if (!closedSources.includes(selectedSource)) {
+    return selectedSource;
   }
 
-  const tabsSources = (0, _index2.getSourcesForTabs)(state); // Assume that `sources` is a consecutive list of tab's sources
-  // ordered in the same way as `tabsSources`.
+  const openedSources = (0, _index2.getOpenedSources)(state);
+  const selectedSourceIndex = openedSources.indexOf(selectedSource); // Find the first source **after** the currently selected one, which will still be open and select it
 
-  const lastRemovedTabSource = closedTabsSources.at(-1);
-  const lastRemovedTabIndex = tabsSources.indexOf(lastRemovedTabSource);
+  for (let index = selectedSourceIndex + 1; index < openedSources.length; index++) {
+    const source = openedSources[index];
 
-  if (lastRemovedTabIndex == -1) {
-    // This is unexpected, do not try to select any source.
-    return null;
-  } // If there is some tabs after the last removed tab, select the first one.
-
-
-  if (lastRemovedTabIndex + 1 < tabsSources.length) {
-    return tabsSources[lastRemovedTabIndex + 1];
-  } // If there is some tabs before the first removed tab, select the last one.
+    if (!closedSources.includes(source)) {
+      return source;
+    }
+  } // Otherwise find the last source **before** the currently selected one.
 
 
-  const firstRemovedTabIndex = lastRemovedTabIndex - (closedTabsSources.length - 1);
+  for (let index = selectedSourceIndex - 1; index >= 0; index--) {
+    const source = openedSources[index];
 
-  if (firstRemovedTabIndex > 0) {
-    return tabsSources[firstRemovedTabIndex - 1];
+    if (!closedSources.includes(source)) {
+      return source;
+    }
   } // It looks like we removed all the tabs
 
 

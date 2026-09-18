@@ -36,12 +36,12 @@ function isUnavailable(value) {
 }
 /**
  *
- * @param {Object} expression: Expression item as stored in state.expressions in reducers/expressions.js
- * @param {String} expression.input: evaluated expression string
- * @param {Object} expression.value: evaluated expression result object as returned from ScriptCommand#execute
- * @param {Object} expression.value.result: expression result, might be a primitive, a grip or a front
- * @param {Object} expression.value.exception: expression result error, might be a primitive, a grip or a front
- * @returns {Object} an object of the following shape:
+ * @param {object} expression: Expression item as stored in state.expressions in reducers/expressions.js
+ * @param {string} expression.input: evaluated expression string
+ * @param {object} expression.value: evaluated expression result object as returned from ScriptCommand#execute
+ * @param {object} expression.value.result: expression result, might be a primitive, a grip or a front
+ * @param {object} expression.value.exception: expression result error, might be a primitive, a grip or a front
+ * @returns {object} an object of the following shape:
  *                   - expressionResultGrip: A primitive or a grip
  *                   - expressionResultFront: An object front if it exists, or undefined
  */

@@ -13,6 +13,7 @@ loader.lazyRequireGetter(this, "_sourcesTree", "devtools/client/debugger/src/red
 
 /**
  * Threads reducer
+ *
  * @module reducers/threads
  */
 const lazy = {};
@@ -68,28 +69,30 @@ function update(state = initialThreadsState(), action) {
       };
 
     case "TRACING_TOGGLED":
-      const {
-        mutableTracingThreads
-      } = state;
-      const sizeBefore = mutableTracingThreads.size;
-
-      if (action.enabled) {
-        mutableTracingThreads.add(action.thread);
-      } else {
-        mutableTracingThreads.delete(action.thread);
-      } // We may receive toggle events when we change the logging method
-      // while we are already tracing, but the list of tracing thread stays the same.
-
-
-      const changed = mutableTracingThreads.size != sizeBefore;
-
-      if (changed) {
-        return { ...state,
+      {
+        const {
           mutableTracingThreads
-        };
-      }
+        } = state;
+        const sizeBefore = mutableTracingThreads.size;
 
-      return state;
+        if (action.enabled) {
+          mutableTracingThreads.add(action.thread);
+        } else {
+          mutableTracingThreads.delete(action.thread);
+        } // We may receive toggle events when we change the logging method
+        // while we are already tracing, but the list of tracing thread stays the same.
+
+
+        const changed = mutableTracingThreads.size != sizeBefore;
+
+        if (changed) {
+          return { ...state,
+            mutableTracingThreads
+          };
+        }
+
+        return state;
+      }
 
     default:
       return state;

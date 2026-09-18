@@ -19,7 +19,7 @@ var _index2 = _interopRequireDefault(require("../../actions/index"));
 
 var _reactRedux = require("devtools/client/shared/vendor/react-redux");
 
-loader.lazyRequireGetter(this, "_index3", "devtools/client/debugger/src/components/shared/Button/index");
+var _CloseButton = _interopRequireDefault(require("devtools/client/shared/components/CloseButton"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -103,26 +103,21 @@ class DOMMutationBreakpointsContents extends _react.Component {
       onDOMNodeMouseOut: () => unHighlightDomElement()
     })), (0, _reactDomFactories.div)({
       className: "dom-mutation-type"
-    }, localizationTerms[mutationType] || mutationType)), _react.default.createElement(_index3.CloseButton, {
+    }, localizationTerms[mutationType] || mutationType)), _react.default.createElement(_CloseButton.default, {
       handleClick: () => deleteBreakpoint(nodeFront, mutationType)
     }));
   }
-  /* eslint-disable react/no-danger */
-
 
   renderEmpty() {
     const {
       openInspector
     } = this.props;
-    const text = L10N.getFormatStr("noDomMutationBreakpoints", `<a>${L10N.getStr("inspectorTool")}</a>`);
     return (0, _reactDomFactories.div)({
       className: "dom-mutation-empty"
-    }, (0, _reactDomFactories.div)({
-      onClick: () => openInspector(),
-      dangerouslySetInnerHTML: {
-        __html: text
-      }
-    }));
+    }, L10N.getStr("noDomMutationBreakpoints.notice"), (0, _reactDomFactories.br)(), (0, _reactDomFactories.button)({
+      className: "devtools-button devtools-button-standalone",
+      onClick: () => openInspector()
+    }, L10N.getStr("noDomMutationBreakpoints.openInspectorButton")));
   }
 
   render() {

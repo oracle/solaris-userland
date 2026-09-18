@@ -36,9 +36,18 @@ function initialEventListenerState() {
 function update(state = initialEventListenerState(), action) {
   switch (action.type) {
     case "RECEIVE_EVENT_LISTENER_TYPES":
-      return { ...state,
-        categories: action.categories
-      };
+      {
+        // The stored breakpoints in asyncStorage might not match the ones
+        // supported by the backend, either for backward compatibility reasons,
+        // or because the asyncStorage contains stale data.
+        //
+        // Sanitize active breakpoints based on currently supported events.
+        const supportedEventIds = action.categories.map(category => category.events).flat().map(event => event.id);
+        state.byPanel.breakpoint.active = state.active.filter(id => supportedEventIds.includes(id));
+        return { ...state,
+          categories: action.categories
+        };
+      }
 
     case "UPDATE_EVENT_LISTENERS":
       if (action.panelKey == "tracer") {

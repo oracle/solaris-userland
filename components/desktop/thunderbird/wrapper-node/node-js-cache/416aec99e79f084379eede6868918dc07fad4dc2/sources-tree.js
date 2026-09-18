@@ -36,11 +36,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *    They are the leaves of the Tree. (we should not have empty directories.)
  */
 const IGNORED_URLS = ["debugger eval code", "XStringBundle"];
-const IGNORED_EXTENSIONS = ["css", "svg", "png"];
+const IGNORED_EXTENSIONS = ["svg", "png"];
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   BinarySearch: "resource://gre/modules/BinarySearch.sys.mjs"
-});
+}); // Allow css if the stylesheetsInDebugger pref is enabled
+
+if (!_prefs.features.stylesheetsInDebugger) {
+  IGNORED_EXTENSIONS.push("css");
+}
 
 function initialSourcesTreeState({
   isWebExtension,
@@ -415,7 +419,7 @@ function applyMainThreadProjectDirectoryRoot(state, thread) {
 }
 
 function isSourceVisibleInSourceTree(source, showContentScripts, debuggeeIsWebExtension) {
-  return !!source.url && !IGNORED_EXTENSIONS.includes(source.displayURL.fileExtension) && !IGNORED_URLS.includes(source.url) && !(0, _source.isPretty)(source) && ( // Only accept web extension sources when the chrome pref is enabled (to allows showing content scripts),
+  return !!source.url && !IGNORED_EXTENSIONS.includes(source.displayURL.fileExtension) && !IGNORED_URLS.includes(source.url) && !source.isPrettyPrinted && ( // Only accept web extension sources when the chrome pref is enabled (to allows showing content scripts),
   // or when we are debugging an extension
   !source.isExtension || showContentScripts || debuggeeIsWebExtension);
 }
@@ -436,19 +440,35 @@ function isSourceVisibleInSourceTree(source, showContentScripts, debuggeeIsWebEx
 function addSortedItem(array, newValue, comparator) {
   const index = lazy.BinarySearch.insertionIndexOf(comparator, array, newValue);
   array.splice(index, 0, newValue);
-}
+} // Cache each of last possible containers to speedup item addition
+// when we are adding to the same container (thread, group, folder)
+
+
+let lastThreadItem = null;
+let lastGroupItem = null;
+let lastDirectoryItem = null;
 
 function addSource(threadItems, source, sourceActor) {
   // Ensure creating or fetching the related Thread Item
-  let threadItem = threadItems.find(item => {
-    return item.threadActorID == sourceActor.thread;
-  });
+  let threadItem;
 
-  if (!threadItem) {
-    threadItem = createThreadTreeItem(sourceActor.thread); // Note that threadItems will be cloned once to force a state update
-    // by the callsite of `addSourceActor`
+  if (lastThreadItem?.threadActorID == sourceActor.thread) {
+    threadItem = lastThreadItem;
+  } else {
+    threadItem = threadItems.find(item => {
+      return item.threadActorID == sourceActor.thread;
+    });
 
-    addSortedItem(threadItems, threadItem, sortThreadItems);
+    if (!threadItem) {
+      threadItem = createThreadTreeItem(sourceActor.thread); // Note that threadItems will be cloned once to force a state update
+      // by the callsite of `addSourceActor`
+
+      addSortedItem(threadItems, threadItem, sortThreadItems);
+    }
+
+    lastThreadItem = threadItem;
+    lastGroupItem = null;
+    lastDirectoryItem = null;
   } // Then ensure creating or fetching the related Group Item
   // About `source` versus `sourceActor`:
 
@@ -460,16 +480,25 @@ function addSource(threadItems, source, sourceActor) {
     group,
     origin
   } = displayURL;
-  let groupItem = threadItem.children.find(item => {
-    return item.groupName == group;
-  });
+  let groupItem;
 
-  if (!groupItem) {
-    groupItem = createGroupTreeItem(group, origin, threadItem, source); // Copy children in order to force updating react in case we picked
-    // this directory as a project root
+  if (lastGroupItem?.groupName == group) {
+    groupItem = lastGroupItem;
+  } else {
+    groupItem = threadItem.children.find(item => {
+      return item.groupName == group;
+    });
 
-    threadItem.children = [...threadItem.children];
-    addSortedItem(threadItem.children, groupItem, sortItems);
+    if (!groupItem) {
+      groupItem = createGroupTreeItem(group, origin, threadItem, source); // Copy children in order to force updating react in case we picked
+      // this directory as a project root
+
+      threadItem.children = [...threadItem.children];
+      addSortedItem(threadItem.children, groupItem, sortItems);
+    }
+
+    lastGroupItem = groupItem;
+    lastDirectoryItem = null;
   } // Then ensure creating or fetching all possibly nested Directory Item(s)
 
 
@@ -477,10 +506,17 @@ function addSource(threadItems, source, sourceActor) {
     path
   } = displayURL;
   const parentPath = path.substring(0, path.lastIndexOf("/"));
-  const parentUrl = source.url.substring(0, source.url.lastIndexOf("/"));
-  const directoryItem = addOrGetParentDirectory(groupItem, parentPath, parentUrl); // Check if a previous source actor registered this source.
+  let directoryItem;
+
+  if (lastDirectoryItem?.path == parentPath) {
+    directoryItem = lastDirectoryItem;
+  } else {
+    directoryItem = addOrGetParentDirectory(groupItem, parentPath);
+    lastDirectoryItem = directoryItem;
+  } // Check if a previous source actor registered this source.
   // It happens if we load the same url multiple times, or,
   // for inline sources (=HTML pages with inline scripts).
+
 
   const existing = directoryItem.children.find(item => {
     return item.type == "source" && item.source == source;
@@ -500,7 +536,8 @@ function addSource(threadItems, source, sourceActor) {
 }
 /**
  * Find all the source items in tree
- * @param {Object} item - Current item node in the tree
+ *
+ * @param {object} item - Current item node in the tree
  * @param {Function} callback
  */
 
@@ -530,9 +567,7 @@ function findSourceInThreadItem(source, threadItem) {
     });
   }
 
-  const directoryItem = groupItem._allGroupDirectoryItems.find(item => {
-    return item.type == "directory" && item.path == parentPath;
-  });
+  const directoryItem = groupItem._allGroupDirectoryItems.get(parentPath);
 
   if (!directoryItem) {
     return null;
@@ -620,26 +655,22 @@ function sortThreads(a, b) {
  *
  * @param {GroupItem} groupItem
  *        The Group Item for the group where the path should be displayed.
- * @param {String} path
+ * @param {string} path
  *        Path of the directory for which we want a Directory Item.
- * @param {String} url
- *        URL of the directory for which we want a Directory Item.
  * @return {GroupItem|DirectoryItem}
  *        The parent Item where this path should be inserted.
  *        Note that it may be displayed right under the Group Item if the path is empty.
  */
 
 
-function addOrGetParentDirectory(groupItem, path, url) {
+function addOrGetParentDirectory(groupItem, path) {
   // We reached the top of the Tree, so return the Group Item.
   if (!path) {
     return groupItem;
   } // See if we have this directory already registered by a previous source
 
 
-  const existing = groupItem._allGroupDirectoryItems.find(item => {
-    return item.type == "directory" && item.path == path;
-  });
+  const existing = groupItem._allGroupDirectoryItems.get(path);
 
   if (existing) {
     return existing;
@@ -648,17 +679,16 @@ function addOrGetParentDirectory(groupItem, path, url) {
 
 
   const parentPath = path.substring(0, path.lastIndexOf("/"));
-  const parentUrl = url.substring(0, url.lastIndexOf("/"));
-  const parentDirectory = addOrGetParentDirectory(groupItem, parentPath, parentUrl); // We can now create the new Directory Item and register it in its parent Item.
+  const parentDirectory = addOrGetParentDirectory(groupItem, parentPath); // We can now create the new Directory Item and register it in its parent Item.
 
-  const directory = createDirectoryTreeItem(path, url, parentDirectory); // Copy children in order to force updating react in case we picked
+  const directory = createDirectoryTreeItem(path, parentDirectory); // Copy children in order to force updating react in case we picked
   // this directory as a project root
 
   parentDirectory.children = [...parentDirectory.children];
   addSortedItem(parentDirectory.children, directory, sortItems); // Also maintain the list of all group items,
   // Which helps speedup querying for existing items.
 
-  groupItem._allGroupDirectoryItems.push(directory);
+  groupItem._allGroupDirectoryItems.set(directory.path, directory);
 
   return directory;
 }
@@ -718,19 +748,20 @@ function createGroupTreeItem(groupName, origin, parent, source) {
       children: []
     }),
     groupName,
-    url: origin,
+    // This is only used by project directory root tooltip
+    origin,
     // When a content script appear in a web page,
     // a dedicated group is created for it and should
     // be having an extension icon.
     isForExtensionSource: source.isExtension,
-    // List of all nested items for this group.
+    // Map of all nested directory items for this group, keyed by their path.
     // This helps find any nested directory in a given group without having to walk the tree.
-    // This is meant to be used only by the reducer.
-    _allGroupDirectoryItems: []
+    // This is meant to be used only within the reducer.
+    _allGroupDirectoryItems: new Map()
   };
 }
 
-function createDirectoryTreeItem(path, url, parent) {
+function createDirectoryTreeItem(path, parent) {
   // If the parent is a group we want to use '/' as separator
   const pathSeparator = parent.type == "directory" ? "/" : "|"; // `path` will be the absolute path from the group/domain,
   // while we want to append only the directory name in uniquePath.
@@ -749,8 +780,7 @@ function createDirectoryTreeItem(path, url, parent) {
     // For http://mozilla.org/foo/bar folder,
     // path will be:
     //   foo/bar
-    path,
-    url
+    path
   };
 }
 
@@ -770,8 +800,8 @@ function createSourceTreeItem(source, sourceActor, parent) {
  * Update `expanded` and `focusedItem` so that we show and focus
  * the new selected source.
  *
- * @param {Object} state
- * @param {Object} selectedLocation
+ * @param {object} state
+ * @param {object} selectedLocation
  *        The new location being selected.
  */
 
@@ -800,8 +830,8 @@ function updateSelectedLocation(state, selectedLocation) {
 /**
  * Get the SourceItem displayed in the SourceTree for the currently selected location.
  *
- * @param {Object} state
- * @param {Object} selectedLocation
+ * @param {object} state
+ * @param {object} selectedLocation
  * @return {SourceItem}
  *        The directory source item where the given source is displayed.
  */

@@ -22,9 +22,11 @@ loader.lazyRequireGetter(this, "_quickOpen", "devtools/client/debugger/src/utils
 
 var _Modal = _interopRequireDefault(require("./shared/Modal"));
 
-var _SearchInput = _interopRequireDefault(require("./shared/SearchInput"));
-
 var _ResultList = _interopRequireDefault(require("./shared/ResultList"));
+
+var _SearchInput = _interopRequireDefault(require("devtools/client/shared/components/SearchInput"));
+
+var _DebuggerImage = _interopRequireDefault(require("devtools/client/shared/components/DebuggerImage"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -78,12 +80,12 @@ class QuickOpenModal extends _react.Component {
       return index !== -1 ? query.slice(0, index) : query;
     });
 
-    _defineProperty(this, "formatSources", (0, _memoizeLast.memoizeLast)((displayedSources, openedTabUrls, blackBoxRanges, projectDirectoryRoot) => {
+    _defineProperty(this, "formatSources", (0, _memoizeLast.memoizeLast)((displayedSources, openedSources, blackBoxRanges, projectDirectoryRoot) => {
       // Note that we should format all displayed sources,
       // the actual filtering will only be done late from `searchSources()`
       return displayedSources.map(source => {
         const isBlackBoxed = !!blackBoxRanges[source.url];
-        const hasTabOpened = openedTabUrls.includes(source.url);
+        const hasTabOpened = openedSources.includes(source);
         return (0, _quickOpen.formatSourceForList)(source, hasTabOpened, isBlackBoxed, projectDirectoryRoot);
       });
     }));
@@ -91,11 +93,11 @@ class QuickOpenModal extends _react.Component {
     _defineProperty(this, "searchSources", query => {
       const {
         displayedSources,
-        openedTabUrls,
+        openedSources,
         blackBoxRanges,
         projectDirectoryRoot
       } = this.props;
-      const sources = this.formatSources(displayedSources, openedTabUrls, blackBoxRanges, projectDirectoryRoot);
+      const sources = this.formatSources(displayedSources, openedSources, blackBoxRanges, projectDirectoryRoot);
       const results = query == "" ? sources : filter(sources, this.dropGoto(query));
       return this.setResults(results);
     });
@@ -134,7 +136,7 @@ class QuickOpenModal extends _react.Component {
 
     _defineProperty(this, "showTopSources", () => {
       const {
-        openedTabUrls,
+        openedSources,
         blackBoxRanges,
         projectDirectoryRoot
       } = this.props;
@@ -144,11 +146,11 @@ class QuickOpenModal extends _react.Component {
       // Otherwise, we display all visible sources (per SourceTree definition),
       // setResults will restrict the number of results to a maximum limit.
 
-      if (openedTabUrls.length) {
-        displayedSources = displayedSources.filter(source => !!source.url && openedTabUrls.includes(source.url));
+      if (openedSources.length) {
+        displayedSources = displayedSources.filter(source => !!source.url && openedSources.includes(source));
       }
 
-      this.setResults(this.formatSources(displayedSources, openedTabUrls, blackBoxRanges, projectDirectoryRoot));
+      this.setResults(this.formatSources(displayedSources, openedSources, blackBoxRanges, projectDirectoryRoot));
     });
 
     _defineProperty(this, "updateResults", throttle(async query => {
@@ -259,8 +261,7 @@ class QuickOpenModal extends _react.Component {
     _defineProperty(this, "gotoLocation", location => {
       const {
         selectSpecificLocation,
-        selectedLocation,
-        updateCursorPosition
+        selectedLocation
       } = this.props;
 
       if (location != null) {
@@ -270,7 +271,6 @@ class QuickOpenModal extends _react.Component {
           column: location.column || 0
         });
         selectSpecificLocation(sourceLocation);
-        updateCursorPosition(sourceLocation);
         this.closeModal();
       }
     });
@@ -391,11 +391,10 @@ class QuickOpenModal extends _react.Component {
       selectedContentLoaded: _reactPropTypes.default.bool,
       selectedLocation: _reactPropTypes.default.object,
       setQuickOpenQuery: _reactPropTypes.default.func.isRequired,
-      openedTabUrls: _reactPropTypes.default.array.isRequired,
+      openedSources: _reactPropTypes.default.array.isRequired,
       toggleShortcutsModal: _reactPropTypes.default.func.isRequired,
       projectDirectoryRoot: _reactPropTypes.default.string,
-      getFunctionSymbols: _reactPropTypes.default.func.isRequired,
-      updateCursorPosition: _reactPropTypes.default.func.isRequired
+      getFunctionSymbols: _reactPropTypes.default.func.isRequired
     };
   }
 
@@ -446,18 +445,14 @@ class QuickOpenModal extends _react.Component {
       const domEl = this.resultListRef.current.ref.current;
 
       for (const titleNode of domEl.querySelectorAll(".title")) {
-        const htmlString = fuzzyAldrin.wrap(titleNode.innerText, query, options); // Sanitizer API not supported in ESR 140
-        // Should remove at ESR 153
-
-        if ("Sanitizer" in window) {
-          const sanitizer = new Sanitizer({
-            elements: ["mark"],
-            attributes: ["class"]
-          });
-          titleNode.setHTML(htmlString, {
-            sanitizer
-          });
-        }
+        const htmlString = fuzzyAldrin.wrap(titleNode.innerText, query, options);
+        const sanitizer = new Sanitizer({
+          elements: ["mark"],
+          attributes: ["class"]
+        });
+        titleNode.setHTML(htmlString, {
+          sanitizer
+        });
       }
     }
   }
@@ -515,6 +510,9 @@ class QuickOpenModal extends _react.Component {
       showExcludePatterns: false,
       showSearchModifiers: false,
       selectedItemId: expanded && items[selectedIndex] ? items[selectedIndex].id : "",
+      searchOptions: {},
+      setSearchOptions: () => {},
+      DebuggerImage: _DebuggerImage.default,
       ...(this.isSourceSearch() ? SIZE_BIG : SIZE_DEFAULT)
     }), results && _react.default.createElement(_ResultList.default, {
       key: "results",
@@ -540,8 +538,7 @@ _defineProperty(QuickOpenModal, "UPDATE_RESULTS_THROTTLE", 100);
 function mapStateToProps(state) {
   const selectedLocation = (0, _index2.getSelectedLocation)(state);
   const displayedSources = (0, _index2.getDisplayedSourcesList)(state);
-  const tabs = (0, _index2.getSourceTabs)(state);
-  const openedTabUrls = [...new Set(tabs.map(tab => tab.url))];
+  const openedSources = (0, _index2.getOpenedSources)(state);
   return {
     displayedSources,
     blackBoxRanges: (0, _index2.getBlackBoxRanges)(state),
@@ -550,7 +547,7 @@ function mapStateToProps(state) {
     selectedContentLoaded: selectedLocation ? !!(0, _index2.getSettledSourceTextContent)(state, selectedLocation) : undefined,
     query: (0, _index2.getQuickOpenQuery)(state),
     searchType: (0, _index2.getQuickOpenType)(state),
-    openedTabUrls
+    openedSources
   };
 }
 
@@ -560,8 +557,7 @@ var _default = (0, _reactRedux.connect)(mapStateToProps, {
   highlightLineRange: _index.default.highlightLineRange,
   clearHighlightLineRange: _index.default.clearHighlightLineRange,
   closeQuickOpen: _index.default.closeQuickOpen,
-  getFunctionSymbols: _index.default.getFunctionSymbols,
-  updateCursorPosition: _index.default.updateCursorPosition
+  getFunctionSymbols: _index.default.getFunctionSymbols
 })(QuickOpenModal);
 
 exports.default = _default;

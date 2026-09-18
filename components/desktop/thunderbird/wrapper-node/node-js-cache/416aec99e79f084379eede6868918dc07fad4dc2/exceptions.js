@@ -12,6 +12,7 @@ exports.default = void 0;
 
 /**
  * Exceptions reducer
+ *
  * @module reducers/exceptionss
  */
 function initialExceptionsState() {
@@ -27,9 +28,9 @@ function update(state = initialExceptionsState(), action) {
     case "ADD_EXCEPTION":
       return updateExceptions(state, action);
 
-    case "REMOVE_THREAD":
+    case "REMOVE_SOURCES":
       {
-        return removeExceptionsFromThread(state, action);
+        return removeExceptionsForSourceActors(state, action.actors);
       }
   }
 
@@ -69,28 +70,18 @@ function updateExceptions(state, action) {
   };
 }
 
-function removeExceptionsFromThread(state, action) {
+function removeExceptionsForSourceActors(state, sourceActors) {
   const {
     mutableExceptionsMap
   } = state;
-  const {
-    threadActorID
-  } = action;
   const sizeBefore = mutableExceptionsMap.size;
 
-  for (const [sourceActorId, exceptions] of mutableExceptionsMap) {
-    // All exceptions relates to the same source actor, and so, the same thread actor.
-    if (exceptions[0].threadActorId == threadActorID) {
-      mutableExceptionsMap.delete(sourceActorId);
-    }
+  for (const sourceActor of sourceActors) {
+    mutableExceptionsMap.delete(sourceActor.id);
   }
 
-  if (sizeBefore != mutableExceptionsMap.size) {
-    return { ...state
-    };
-  }
-
-  return state;
+  return mutableExceptionsMap.size != sizeBefore ? { ...state
+  } : state;
 }
 
 var _default = update;

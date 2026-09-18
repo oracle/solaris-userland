@@ -64,14 +64,14 @@ const displayNameLibraryMap = {
 /**
  * Compute the typical way to show a frame or function to the user.
  *
- * @param {Object} frameOrFunc
+ * @param {object} frameOrFunc
  *        Either a frame or a func object.
  *        Frame object is typically created via create.js::createFrame
  *        Func object comes from ast reducer.
- * @param {Boolean} shouldMapDisplayName
+ * @param {boolean} shouldMapDisplayName
  *        True by default, will try to translate internal framework function name
  *        into a most explicit and simplier name.
- * @param {Object} l10n
+ * @param {object} l10n
  *        The localization object.
  */
 
