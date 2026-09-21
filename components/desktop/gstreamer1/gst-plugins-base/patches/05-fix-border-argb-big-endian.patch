@@ -1,0 +1,42 @@
+Fix border ARGB channel handling on big-endian systems.
+
+The border color option is a numeric 0xAARRGGBB value.  The 1.28.7 border
+color change converts that value as if it were a big-endian memory word
+before extracting its channels and constructs the resulting AYUV word in
+little-endian order.  This swaps channels on SPARC and makes the new
+test_video_convert_border_color test fail.
+
+Extract the channels from the numeric option value, then convert the packed
+AYUV value to the byte order expected by the intermediate video line.
+
+Upstream status: not yet submitted.
+
+--- a/gst-libs/gst/video/video-converter.c
++++ b/gst-libs/gst/video/video-converter.c
+@@ -2211,12 +2211,10 @@ setup_borderline (GstVideoConverter * convert)
+       gint64 a, r, g, b;
+       gint64 y, u, v;
+ 
+-      border_val = GINT32_FROM_BE (convert->border_argb);
+-
+-      b = (0xFF000000 & border_val) >> 24;
+-      g = (0x00FF0000 & border_val) >> 16;
+-      r = (0x0000FF00 & border_val) >> 8;
+-      a = (0x000000FF & border_val);
++      a = (0xFF000000 & convert->border_argb) >> 24;
++      r = (0x00FF0000 & convert->border_argb) >> 16;
++      g = (0x0000FF00 & convert->border_argb) >> 8;
++      b = (0x000000FF & convert->border_argb);
+ 
+       /* Get Color matrix. */
+       color_matrix_set_identity (&cm);
+@@ -2243,7 +2241,8 @@ setup_borderline (GstVideoConverter * convert)
+       u = CLAMP (u, 0, 255);
+       v = CLAMP (v, 0, 255);
+ 
+-      border_val = (guint32) (a | (y << 8) | (u << 16) | v << 24);
++      border_val = GUINT32_FROM_BE ((guint32) ((a << 24) | (y << 16) |
++              (u << 8) | v));
+     } else {
+       border_val = GINT32_FROM_BE (convert->border_argb);
+     }
