@@ -1,0 +1,23 @@
+Allow the HTTP/2 flow-control test more time on slower SPARC systems.
+
+The test validates connection reuse after closing a buffered response, not the
+session timeout itself.  Its two-second limit expires before the follow-up
+response arrives on SPARC, while adjacent flow-control tests take substantially
+longer there.
+
+Not suitable for upstream.
+
+--- a/tests/http2-test.c
++++ b/tests/http2-test.c
+@@ -731,7 +731,11 @@ do_flow_control_close_buffered_body_test (Test *test, gconstpointer data)
+         GError *error = NULL;
+         WindowSize window_size = { -1, REALLY_LARGE_BUFFER_SIZE };
+ 
++#ifdef __sparc
++        soup_session_set_timeout (test->session, 30);
++#else
+         soup_session_set_timeout (test->session, 2);
++#endif
+ 
+         closed_uri = g_uri_parse_relative (base_uri, "/larger-than-window", SOUP_HTTP_URI_FLAGS, NULL);
+         closed_msg = soup_message_new_from_uri (SOUP_METHOD_GET, closed_uri);
