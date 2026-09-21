@@ -26,8 +26,8 @@ include ../../../../make-rules/shared-macros.mk
 
 
 GIT_REPO= https://github.com/oracle/puppet-solaris_providers
-GIT_COMMIT_ID= v2.0.4
-GIT_HASH=  sha256:c978159b84cdfb3bf4d5acf431a1ac8d0ecfd2b24670a1a98e251b941ce261a3
+GIT_COMMIT_ID= v2.1.0
+GIT_HASH=  sha256:eae362e18ee395a4a1c8efd36423ed9e3f0c5e8c8f8f672a9cfa751bf37a73ee
 
 COMPONENT_NAME=		puppet-solaris_providers
 COMPONENT_VERSION=	$(GIT_COMMIT_ID:v%=%)
