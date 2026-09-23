@@ -5,13 +5,13 @@
 # Common Development and Distribution License (the "License").
 # You may not use this file except in compliance with the License.
 #
-# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-# or http://www.opensolaris.org/os/licensing.
+# You can obtain a copy of the license at LICENSE.txt
+# or https://oss.oracle.com/licenses/.
 # See the License for the specific language governing permissions
 # and limitations under the License.
 #
 # When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# file and include the License file at LICENSE.txt.
 # If applicable, add the following below this CDDL HEADER, with the
 # fields enclosed by brackets "[]" replaced with your own identifying
 # information: Portions Copyright [yyyy] [name of copyright owner]
@@ -26,14 +26,13 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		diffutils
-COMPONENT_VERSION=	3.10
+COMPONENT_VERSION=	3.12
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:6b2df7b83de68e95670e21213ea69489394410275f4cfe70d358508c6e255ce1
+	sha256:7c8b7f9fc8609141fdea9cece85249d308624391ff61dedaf528fcb337727dfd
 COMPONENT_BUGDB=	utility/gnu-diffutils
 COMPONENT_ANITYA_ID=	436
-
-COMPONENT_BAID=	168774
+COMPONENT_BAID=		428452
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 

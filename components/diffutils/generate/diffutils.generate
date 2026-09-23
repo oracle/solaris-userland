@@ -1,0 +1,30 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at LICENSE.txt
+# or https://oss.oracle.com/licenses/.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at LICENSE.txt.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2026, Oracle and/or its affiliates.
+#
+
+# emit GNU links
+<transform file path=usr/gnu/bin/(.*)$ -> \
+	emit link path=/usr/bin/g%<1> target=../gnu/bin/%<1> facet.compat.gnulinks=true>
+<transform file path=usr/gnu/share/man/man1/(.*)$ -> \
+	emit link path=usr/share/man/man1/g%<1> target=../../../gnu/share/man/man1/%<1> facet.compat.gnulinks=all>
