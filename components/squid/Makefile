@@ -5,13 +5,13 @@
 # Common Development and Distribution License (the "License").
 # You may not use this file except in compliance with the License.
 #
-# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-# or http://www.opensolaris.org/os/licensing.
+# You can obtain a copy of the license at LICENSE.txt
+# or https://oss.oracle.com/licenses/.
 # See the License for the specific language governing permissions
 # and limitations under the License.
 #
 # When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# file and include the License file at LICENSE.txt.
 # If applicable, add the following below this CDDL HEADER, with the
 # fields enclosed by brackets "[]" replaced with your own identifying
 # information: Portions Copyright [yyyy] [name of copyright owner]
@@ -31,9 +31,9 @@ PATH = $(GNUBIN):$(USRBINDIR)
 
 COMPONENT_NAME=         squid
 COMPONENT_PROJECT_URL=  http://www.squid-cache.org/
-COMPONENT_VERSION=      7.6
-COMPONENT_BAID=		401449
-COMPONENT_ARCHIVE_HASH= sha256:57a385d0435768da1f6a469a251f3c951bb79f0ea6d3f04c569d5a50c20e678a
+COMPONENT_VERSION=      7.7
+COMPONENT_BAID=		443354
+COMPONENT_ARCHIVE_HASH= sha256:5b05417d681c3cca275bc48ede12ee50a3e7d60cb47fb94522ee3a66022a8c59
 COMPONENT_ARCHIVE_URL=  https://github.com/squid-cache/squid/releases/download/SQUID_$(subst .,_,$(COMPONENT_VERSION))/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4880
 COMPONENT_PUBLIC_KEY_URL=	http://www.squid-cache.org/pgp.asc
