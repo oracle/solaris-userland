@@ -349,10 +349,6 @@ Public License instead of this License.
 rust/vendor/build_const/LICENSE.txt
 rust/vendor/nibble_vec/LICENSE
 rust/vendor/nix/LICENSE
-## Files:
-rust/vendor/build_const/LICENSE.txt
-rust/vendor/nibble_vec/LICENSE
-rust/vendor/nix/LICENSE
 rust/vendor/radix_trie/LICENSE
 
 The MIT License (MIT)
@@ -6446,14 +6442,15 @@ additional terms or conditions.
 ## Files:
 rust/vendor/ldap-parser/README.md
 
-<!-- cargo-sync-readme start -->
-
+![Maintenance](https://img.shields.io/badge/maintenance-activly--developed-brightgreen.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE-MIT)
 [![Apache License 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE-APACHE)
 [![docs.rs](https://docs.rs/ldap-parser/badge.svg)](https://docs.rs/ldap-parser)
 [![crates.io](https://img.shields.io/crates/v/ldap-parser.svg)](https://crates.io/crates/ldap-parser)
 [![Github CI](https://github.com/rusticata/ldap-parser/workflows/Continuous%20integration/badge.svg)](https://github.com/rusticata/ldap-parser/actions)
 [![Minimum rustc version](https://img.shields.io/badge/rustc-1.44.0+-lightgray.svg)](#rust-version-requirements)
+
+<!-- cargo-rdme start -->
 
 # LDAP Parser
 
@@ -6472,12 +6469,12 @@ and is part of the [Rusticata](https://github.com/rusticata) project.
 Parsing an LDAP message (in BER format):
 
 ```rust
-use ldap_parser::parse_ldap_message;
-use ldap_parser::ldap::{MessageID, ProtocolOp, ProtocolOpTag};
+use ldap_parser::FromBer;
+use ldap_parser::ldap::{LdapMessage, MessageID, ProtocolOp, ProtocolOpTag};
 
 static DATA: &[u8] = include_bytes!("../assets/message-search-request-01.bin");
 
-let res = parse_ldap_message(DATA);
+let res = LdapMessage::from_ber(DATA);
 match res {
     Ok((rem, msg)) => {
         assert!(rem.is_empty());
@@ -6496,7 +6493,8 @@ match res {
 ```
 
 [RFC4511]: https://tools.ietf.org/html/rfc4511
-<!-- cargo-sync-readme end -->
+
+<!-- cargo-rdme end -->
 
 ## Changes
 
@@ -16443,7 +16441,7 @@ src/tests/detect-tls-certs.c
 src/tests/reputation.c
 suricata-update/suricata/update/commands/checkversions.py
 
-Copyright (C) 2019 Open Information Security Foundation
+ Copyright (C) 2019 Open Information Security Foundation
 
 You can copy, redistribute or modify this Program under the terms of
 the GNU General Public License version 2 as published by the Free
@@ -17103,7 +17101,6 @@ src/util-enum.c
 src/util-enum.h
 src/util-fmemopen.c
 src/util-fmemopen.h
-src/util-hash.c
 src/util-hash.h
 src/util-hashlist.c
 src/util-hashlist.h
@@ -17236,15 +17233,6 @@ Kadatch and Jenkins (2010). See doc/crc-doc.1.0.pdf in this distribution.
 
 ## Files:
 rust/vendor/libz-sys/src/zlib-ng/deflate.c
-rust/vendor/libz-sys/src/zlib/deflate.c
-
-deflate.c -- compress data using the deflation algorithm
-Copyright (C) 1995-2024 Jean-loup Gailly and Mark Adler
-For conditions of distribution and use, see copyright notice in zlib.h
-
-
-## Files:
-rust/vendor/libz-sys/src/zlib-ng/deflate.c
 rust/vendor/libz-sys/src/zlib-ng/inftrees.c
 rust/vendor/libz-sys/src/zlib/deflate.c
 rust/vendor/libz-sys/src/zlib/inftrees.c
@@ -17253,6 +17241,15 @@ If you use the zlib library in a product, an acknowledgment is welcome
 in the documentation of your product. If for some reason you cannot
 include such an acknowledgment, I would appreciate that you keep this
 copyright string in the executable of your product.
+
+
+## Files:
+rust/vendor/libz-sys/src/zlib-ng/deflate.c
+rust/vendor/libz-sys/src/zlib/deflate.c
+
+deflate.c -- compress data using the deflation algorithm
+Copyright (C) 1995-2024 Jean-loup Gailly and Mark Adler
+For conditions of distribution and use, see copyright notice in zlib.h
 
 
 ## Files:
@@ -19400,12 +19397,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 ## Files:
 src/app-layer-ftp.c
+src/detect-app-layer-protocol.c
+src/detect-pcre.c
+src/detect-reference.c
+src/packet.c
+src/source-pcap-file.c
+src/stream-tcp.c
+src/suricata.c
+src/util-hash.c
+src/util-logopenfile.c
+src/util-logopenfile.h
+
+Copyright (C) 2007-2026 Open Information Security Foundation
+
+You can copy, redistribute or modify this Program under the terms of
+the GNU General Public License version 2 as published by the Free
+Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+version 2 along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.
+
+
+## Files:
 src/app-layer-ftp.h
 src/app-layer-parser.c
 src/app-layer-parser.h
 src/app-layer-smtp.c
 src/decode-ipv6.c
-src/detect-app-layer-protocol.c
 src/detect-app-layer-state.c
 src/detect-app-layer-state.h
 src/detect-engine-analyzer.c
@@ -19413,7 +19438,6 @@ src/detect-engine-build.c
 src/detect-flowbits.c
 src/detect-flowbits.h
 src/detect-parse.c
-src/detect-pcre.c
 src/detect-tcp-wscale.c
 src/detect-tls-cert-issuer.c
 src/detect-tls-sni.c
@@ -19422,7 +19446,6 @@ src/detect.h
 src/flow.h
 src/output-json-flow.c
 src/stream-tcp.h
-src/suricata.c
 src/tx-bit.h
 src/util-profiling-rulegroups.c
 
@@ -19566,7 +19589,6 @@ src/detect-parse.h
 src/detect-pcre.h
 src/detect-pktvar.c
 src/detect-priority.c
-src/detect-reference.c
 src/detect-rpc.c
 src/detect-ssh-hassh-server-string.c
 src/detect-ssh-hassh-server-string.h
@@ -20163,7 +20185,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ## Files:
 src/detect-asn1.c
 src/detect-asn1.h
-src/detect-bytemath.c
 src/detect-http2.c
 src/detect-ike-vendor.c
 
@@ -20284,6 +20305,26 @@ src/util-prefilter.h
 src/util-spm-hs.h
 
 Copyright (C) 2016 Open Information Security Foundation
+
+You can copy, redistribute or modify this Program under the terms of
+the GNU General Public License version 2 as published by the Free
+Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+version 2 along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.
+
+
+## Files:
+src/detect-bytemath.c
+
+Copyright (C) 2020-2026 Open Information Security Foundation
 
 You can copy, redistribute or modify this Program under the terms of
 the GNU General Public License version 2 as published by the Free
@@ -20768,6 +20809,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 
 ## Files:
+src/detect-tcp-session.c
+src/detect-tcp-session.h
+src/log-flush.c
+src/threadvars.c
+src/util-lua-ntp.c
+src/util-lua-ntp.h
+
+Copyright (C) 2026 Open Information Security Foundation
+
+You can copy, redistribute or modify this Program under the terms of
+the GNU General Public License version 2 as published by the Free
+Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+version 2 along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.
+
+
+## Files:
 src/detect-template.c
 src/detect-tls-cert-validity.c
 
@@ -20874,32 +20940,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 
 ## Files:
-src/log-flush.c
-src/util-lua-ntp.c
-src/util-lua-ntp.h
-
-Copyright (C) 2026 Open Information Security Foundation
-
-You can copy, redistribute or modify this Program under the terms of
-the GNU General Public License version 2 as published by the Free
-Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-version 2 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
-
-
-## Files:
 src/output-json-alert.c
-src/runmode-unittests.c
 
-Copyright (C) 2013-2024 Open Information Security Foundation
+Copyright (C) 2013-2026 Open Information Security Foundation
 
 You can copy, redistribute or modify this Program under the terms of
 the GNU General Public License version 2 as published by the Free
@@ -21020,30 +21063,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 
 ## Files:
-src/packet.c
-src/source-pcap-file.c
-src/stream-tcp.c
-src/util-logopenfile.c
-src/util-logopenfile.h
-
-Copyright (C) 2007-2026 Open Information Security Foundation
-
-You can copy, redistribute or modify this Program under the terms of
-the GNU General Public License version 2 as published by the Free
-Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-version 2 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
-
-
-## Files:
 src/runmode-af-packet.c
 src/util-device-private.h
 src/util-device.h
@@ -21076,6 +21095,26 @@ src/util-dpdk-ixgbe.c
 src/util-dpdk-ixgbe.h
 
 Copyright (C) 2021-2025 Open Information Security Foundation
+
+You can copy, redistribute or modify this Program under the terms of
+the GNU General Public License version 2 as published by the Free
+Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+version 2 along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.
+
+
+## Files:
+src/runmode-unittests.c
+
+Copyright (C) 2013-2024 Open Information Security Foundation
 
 You can copy, redistribute or modify this Program under the terms of
 the GNU General Public License version 2 as published by the Free

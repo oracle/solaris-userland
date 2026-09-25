@@ -5,13 +5,13 @@
 # Common Development and Distribution License (the "License").
 # You may not use this file except in compliance with the License.
 #
-# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-# or http://www.opensolaris.org/os/licensing.
+# You can obtain a copy of the license at LICENSE.txt
+# or https://oss.oracle.com/licenses/.
 # See the License for the specific language governing permissions
 # and limitations under the License.
 #
 # When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# file and include the License file at LICENSE.txt.
 # If applicable, add the following below this CDDL HEADER, with the
 # fields enclosed by brackets "[]" replaced with your own identifying
 # information: Portions Copyright [yyyy] [name of copyright owner]
@@ -29,14 +29,14 @@ CTF_MODE =		relaxed
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	suricata
-COMPONENT_VERSION =	8.0.6
+COMPONENT_VERSION =	8.0.7
 COMPONENT_PROJECT_URL =	https://suricata.io/
-COMPONENT_ARCHIVE_HASH = sha256:b264584edda4a3b2b462050099c7c54f4f35ac0c7164e41084be9b216c090f8c
+COMPONENT_ARCHIVE_HASH = sha256:a9d46a9c8f40e81f8a6df3ecc2c5a9a8e8da985876299108d92da547c013ba8c
 COMPONENT_ARCHIVE_URL =	https://www.openinfosecfoundation.org/download/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH_crates = \
-	sha256:3a4404ea3d084e4f3eaf1a8bcb12a0dc2c572083c082709eb71b1fb1c1339169
+	sha256:1b5b01b61f9a35c844458f33cee87dc180b97745553e4e35e3cfd65f1b30764e
 
-COMPONENT_BAID =	431074
+COMPONENT_BAID =	443358
 
 # Cargo don't have an internet access during non-download gmake targets so we need
 # to vendor dependencies
