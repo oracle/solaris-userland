@@ -5,13 +5,13 @@
 # Common Development and Distribution License (the "License").
 # You may not use this file except in compliance with the License.
 #
-# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-# or http://www.opensolaris.org/os/licensing.
+# You can obtain a copy of the license at LICENSE.txt
+# or https://oss.oracle.com/licenses/.
 # See the License for the specific language governing permissions
 # and limitations under the License.
 #
 # When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# file and include the License file at LICENSE.txt.
 # If applicable, add the following below this CDDL HEADER, with the
 # fields enclosed by brackets "[]" replaced with your own identifying
 # information: Portions Copyright [yyyy] [name of copyright owner]
@@ -28,9 +28,9 @@ include ../../make-rules/shared-macros.mk
 PATH=$(dir $(CC)):$(JAVA_HOME)/bin:$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		libidn
-COMPONENT_VERSION=	1.34
-COMPONENT_BAID=		49053
-COMPONENT_ARCHIVE_HASH=	sha256:3719e2975f2fb28605df3479c380af2cf4ab4e919e1506527e4c7670afff6e3c
+COMPONENT_VERSION=	1.44
+COMPONENT_BAID=		431429
+COMPONENT_ARCHIVE_HASH=	sha256:499608bab3a65650a0ea52888c13a8deebe3f71408e319acd9ec52e02eb13959
 COMPONENT_BUGDB=	library/libidn
 COMPONENT_ANITYA_ID=	1639
 
@@ -79,8 +79,7 @@ CONFIGURE_OPTIONS  +=		--with-pic
 
 IDNDOCDIR = $(PROTOUSRSHAREDOCDIR)/idn
 HTMLDOCDIR = $(IDNDOCDIR)/html
-HTMLDOCLIST = libidn-components.png libidn.html
-DOCLIST = libidn-components.pdf libidn.pdf
+HTMLDOCLIST = libidn-components.png
 
 # We must unpack the TLD database and touch the perl scripts in order
 # to force re-generation of the TLD tables after augmenting them
@@ -108,16 +107,16 @@ install: $(INSTALL_32_and_64)
 	    $(INSTALL) -m 0644 $(COMPONENT_DIR)/$(COMPONENT_SRC)/doc/$$f \
 	    $(HTMLDOCDIR)/ ; \
 	    done
-	list2='$(DOCLIST)' ; for f in $$list2; do \
-	      $(INSTALL) -m 0644 $(COMPONENT_DIR)/$(COMPONENT_SRC)/doc/$$f \
-	      $(IDNDOCDIR)/ ; \
-	      done
-	$(CP) -Rp $(COMPONENT_DIR)/$(COMPONENT_SRC)/doc/java \
-	    $(IDNDOCDIR)/ ; \
+	$(MKDIR) $(IDNDOCDIR)/java ; \
+	$(CP) -Rp $(COMPONENT_DIR)/$(COMPONENT_SRC)/doc/java/Makefile.* \
+	    $(COMPONENT_DIR)/$(COMPONENT_SRC)/doc/java/html/. \
+	    $(IDNDOCDIR)/java/ ; \
 	$(CP) -Rp $(COMPONENT_DIR)/$(COMPONENT_SRC)/tld \
 	    $(IDNDOCDIR)/
-	$(CP) -Rp $(PROTOUSRSHAREDIR)/locale/en@boldquot \
-	    $(PROTOUSRSHAREDIR)/locale/en
+	$(LN) -sf libidn.so.12.6.7 $(PROTOUSRLIBDIR)/libidn.so.11
+	$(LN) -sf libidn.so.12.6.7 $(PROTOUSRLIBDIR)/libidn.so.11.6.18
+	$(LN) -sf libidn.so.12.6.7 $(PROTOUSRLIBDIR64)/libidn.so.11
+	$(LN) -sf libidn.so.12.6.7 $(PROTOUSRLIBDIR64)/libidn.so.11.6.18
 
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc
