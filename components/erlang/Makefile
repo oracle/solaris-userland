@@ -5,13 +5,13 @@
 # Common Development and Distribution License (the "License").
 # You may not use this file except in compliance with the License.
 #
-# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-# or http://www.opensolaris.org/os/licensing.
+# You can obtain a copy of the license at LICENSE.txt
+# or https://oss.oracle.com/licenses/.
 # See the License for the specific language governing permissions
 # and limitations under the License.
 #
 # When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# file and include the License file at LICENSE.txt.
 # If applicable, add the following below this CDDL HEADER, with the
 # fields enclosed by brackets "[]" replaced with your own identifying
 # information: Portions Copyright [yyyy] [name of copyright owner]
@@ -37,12 +37,12 @@ LD_SHARED_OPTIONS_Z_TEXT=
 PATH=$(JAVA_HOME)/bin:/usr/gnu/bin:$(USRBINDIR)
 
 COMPONENT_NAME=			erlang
-COMPONENT_VERSION=		28.5.0.5
+COMPONENT_VERSION=		28.5.0.6
 COMPONENT_PROJECT_URL=	https://erlang.org/
 COMPONENT_SRC_NAME=	otp_src
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:937770e1989b87b0799fdda967effe3bef4730a5467ecdff2e145963cf66005a
+    sha256:bd80a41226d379487b8be28bdd08d8d711f923b197cb21db9196f285eb60b737
 COMPONENT_ARCHIVE_URL=  https://github.com/erlang/otp/archive/OTP-${COMPONENT_VERSION}.tar.gz
 COMPONENT_BUGDB=	utility/erlang
 COMPONENT_ANITYA_ID=	707
@@ -54,7 +54,7 @@ COMPONENT_NAME_1=	otp_doc_man
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1=	\
-    sha256:3d2aafd6d39bdf312356b5e5823b9d1429c3e4613baf3316d34421e55a0c7079
+    sha256:596688f26df4dd572e139e336d5b98a8a8897b5df9b0abaed6ae99cd2d8eca28
 COMPONENT_ARCHIVE_URL_1=	https://github.com/erlang/otp/releases/download/OTP-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1=	-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
@@ -65,13 +65,13 @@ COMPONENT_NAME_2=	otp_doc_html
 COMPONENT_SRC_2=	$(COMPONENT_NAME_2)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_2=	$(COMPONENT_SRC_2).tar.gz
 COMPONENT_ARCHIVE_HASH_2=	\
-    sha256:e7a368ce7fc64e3be2929e31d5881d4afef8969b7f511e2263fbd3b93c476bc6
+    sha256:e7995dfd015beee254a82d02a687d021f55e7efaceebd36a290c98c5aa165b8d
 COMPONENT_ARCHIVE_URL_2=	https://github.com/erlang/otp/releases/download/OTP-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE_2)
 UNPACK_ARGS_2=	-r $(COMPONENT_SRC_2)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_2)
 COMPONENT_ANITYA_ID_2=	707
 
-COMPONENT_BAID=		428164
+COMPONENT_BAID=		434634
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -131,8 +131,8 @@ GENERATE_PROTO_DIRS += $(COMPONENT_SRC_1)/man/ $(COMPONENT_SRC_2)/ files^files
 RMRPATH= $(ELFEDIT) -e "dyn:delete RUNPATH" -e "dyn:delete RPATH"
 
 COMPONENT_POST_INSTALL_ACTION += \
-	$(RMRPATH) $(PROTOUSRLIBDIR64)/erlang/lib/crypto-5.8.3.2/priv/lib/crypto.so ; \
-	$(RMRPATH) $(PROTOUSRLIBDIR64)/erlang/lib/crypto-5.8.3.2/priv/lib/otp_test_engine.so ;
+	$(RMRPATH) $(PROTOUSRLIBDIR64)/erlang/lib/crypto-5.8.3.3/priv/lib/crypto.so ; \
+	$(RMRPATH) $(PROTOUSRLIBDIR64)/erlang/lib/crypto-5.8.3.3/priv/lib/otp_test_engine.so ;
 
 # remove INSTALL_PREFIX from path
 COMPONENT_POST_INSTALL_ACTION += \
