@@ -1,6 +1,6 @@
 #!/usr/bin/python3.11
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 # this script finds common parts in <loc>.src files
 # the common parts are saved to 'common/<lc_type>/data.<hash>'
@@ -20,7 +20,7 @@ hash_prefix = 6
 
 hdr = """
 #
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2026, Oracle and/or its affiliates.
 #
 # The following content could be generated from following sources:
 #
@@ -30,13 +30,13 @@ hdr = """
 # Common Development and Distribution License (the "License").
 # You may not use this file except in compliance with the License.
 #
-# You can obtain a copy of the license at src/OPENSOLARIS.LICENSE
-# or http://www.opensolaris.org/os/licensing.
+# You can obtain a copy of the license at LICENSE.txt
+# or https://oss.oracle.com/licenses/.
 # See the License for the specific language governing permissions
 # and limitations under the License.
 #
 # When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at src/OPENSOLARIS.LICENSE.
+# file and include the License file at LICENSE.txt.
 # If applicable, add the following below this CDDL HEADER, with the
 # fields enclosed by brackets "[]" replaced with your own identifying
 # information: Portions Copyright [yyyy] [name of copyright owner]
