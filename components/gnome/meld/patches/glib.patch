@@ -1,0 +1,28 @@
+Backport to meld 3.22.2 of patch from
+https://gitlab.gnome.org/GNOME/meld/-/merge_requests/168/diffs
+for compatibility with glib 2.88
+
+diff --git a/bin/meld b/bin/meld
+index e43cfd6cc92c141ad7f98f64eed13dac6b21f0de..0dff58bc9a71f1e81b9d6985fb21dc1473af4d93 100755
+--- a/bin/meld
++++ b/bin/meld
+@@ -494,9 +494,16 @@ def run_application():
+     app = MeldApp()
+ 
+     if sys.platform != 'win32':
+-        from gi.repository import GLib
+-        GLib.unix_signal_add(
+-            GLib.PRIORITY_DEFAULT, signal.SIGINT, lambda *args: app.quit())
++        try:
++            from gi.repository import GLib, GLibUnix
++            signal_add = GLibUnix.signal_add
++        except (ImportError, AttributeError):
++            # Support glib <= 2.86
++            from gi.repository import GLib
++
++            signal_add = GLib.unix_signal_add
++
++        signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, lambda *args: app.quit())
+ 
+     return app.run(sys.argv)
+ 
