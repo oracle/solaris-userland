@@ -1,0 +1,23 @@
+Avoid undefined behavior when BitsPerSample is 32.  Calculate bitMask only
+in the generic path that uses it; the 32-bit fast path reads samples directly.
+
+Source: https://gitlab.freedesktop.org/poppler/poppler/-/work_items/1758
+
+--- a/poppler/Function.cc
++++ b/poppler/Function.cc
+@@ -373,7 +373,6 @@ return;
+     }
+     buf = 0;
+     bits = 0;
+-    bitMask = (1 << sampleBits) - 1;
+     for (i = 0; i < nSamples; ++i) {
+         if (sampleBits == 8) {
+             s = str->getChar();
+@@ -390,6 +389,7 @@ return;
+                 buf = (buf << 8) | (str->getChar() & 0xff);
+                 bits += 8;
+             }
++            bitMask = (1U << sampleBits) - 1;
+             s = (buf >> (bits - sampleBits)) & bitMask;
+             bits -= sampleBits;
+         }
