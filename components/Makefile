@@ -249,8 +249,12 @@ endif
 
 $(COMPONENT_DIRS.nosetup):	$(WS_LOGS) FORCE
 	@cd $(@:%.nosetup=%) && echo "$(TARGET) $(@:%.nosetup=%)" && \
-	 env COMPONENT_MAKE_JOBS=$(JOBS_PER_COMPONENT) \
-	 $(GMAKE) $(TARGET) $(LOG)
+	( env COMPONENT_MAKE_JOBS=$(JOBS_PER_COMPONENT) \
+		$(GMAKE) $(TARGET); \
+		RET=$$?; \
+		echo TARGET_EXIT_CODE $$RET; \
+		exit $$RET \
+	) $(LOG)
 
 # component report uses component-hook to process every component.
 # component-hook however executes on the 'components' directory itself (it's
