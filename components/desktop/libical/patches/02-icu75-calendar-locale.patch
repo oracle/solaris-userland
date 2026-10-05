@@ -1,0 +1,26 @@
+Use the root locale when enumerating supported calendars. ICU 75 and newer
+reject a NULL locale, which makes RSCALE recurrence rules fail as unsupported.
+
+This fix is included in libical 3.0.19; remove this patch when upgrading.
+Source: https://github.com/libical/libical/commit/d76449fa87ef3e37a4a3e49a4cf7ba389a9b4816
+---
+--- a/src/libical/icalrecur.c
++++ b/src/libical/icalrecur.c
+@@ -1125,7 +1125,7 @@
+ 
+     calendars = icalarray_new(sizeof(const char **), 20);
+ 
+-    en = ucal_getKeywordValuesForLocale("calendar", NULL, false, &status);
++    en = ucal_getKeywordValuesForLocale("calendar", "", false, &status);
+     while ((cal = uenum_next(en, NULL, &status))) {
+         cal = icalmemory_tmp_copy(cal);
+         icalarray_append(calendars, &cal);
+@@ -1526,7 +1526,7 @@
+         }
+ 
+         /* Check if specified calendar is supported */
+-        en = ucal_getKeywordValuesForLocale("calendar", NULL, false, &status);
++        en = ucal_getKeywordValuesForLocale("calendar", "", false, &status);
+         while ((cal = uenum_next(en, NULL, &status))) {
+             if (!strcmp(cal, rule.rscale)) {
+                 is_hebrew = !strcmp(rule.rscale, "hebrew");
