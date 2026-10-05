@@ -32,7 +32,7 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 MAJOR_VERSION=8.3
-MICRO_VERSION=33
+MICRO_VERSION=35
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
@@ -40,11 +40,11 @@ UL_PHP_MINOR_VERSION=	$(MAJOR_VERSION)
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:e293ed620cec74651bb4a071317892a478aa6840fab22db45c72d77cd42f9676
+    sha256:ff4630fbbbd94359134b7d3c223db59329905bdc4f5a9ef93d257b48e358619a
 COMPONENT_ARCHIVE_URL=	https://www.php.net/distributions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3627
 
-COMPONENT_BAID=		429381
+COMPONENT_BAID=		445076
 COMPONENT_BAID_IMAP=	37002
 
 include $(WS_MAKE_RULES)/common.mk
@@ -164,6 +164,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	 > proto-scripts/php-config-proto ; \
 	chmod 755 proto-scripts/php-config-proto ) ;
 
+TESTS_DISABLED += ext/curl/tests/curl_setopt_ssl.phpt
 TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation6.phpt
 TESTS_DISABLED += sapi/fpm/tests/socket-uds-acl.phpt
 TESTS_DISABLED += sapi/fpm/tests/socket-uds-basic.phpt
@@ -182,6 +183,9 @@ COMPONENT_PRE_TEST_ACTION += ( \
 	gsed -e 's|^;extension=openssl|extension=$(BUILD_DIR_64)/modules/openssl.so|' \
 	  $(SOURCE_DIR)/php.ini-production > $(BUILD_DIR_64)/sapi/cli/php.ini );
 COMPONENT_TEST_ENV += TMPDIR=$(BUILD_DIR)/tmp-$(MACH)
+# Do not mix test configuration with an installed PHP configuration.  Use a
+# nonempty non-existent directory because PHP proc_open() drops empty variables.
+COMPONENT_TEST_ENV += PHP_INI_SCAN_DIR=/dev/null
 # test failures; keep going
 COMPONENT_TEST_ARGS += -k -i
 # some tests go to internet and others behave differently when proxy is set

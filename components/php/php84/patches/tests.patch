@@ -1,0 +1,36 @@
+Make tests independent of workspace path length and installed PHP settings.
+
+The FPM test helper's existing temporary-directory fallback does not help
+when TMPDIR itself is a long path.  Use a hashed /tmp socket name as the
+final fallback.  Ensure a child PHP process that is deliberately given an
+empty environment does not load the build host's installed configuration.
+
+Will submit upstream.
+
+
+--- php-8.4.26/ext/standard/tests/file/bug60120.phpt
++++ php-8.4.26/ext/standard/tests/file/bug60120.phpt
+@@ -14,7 +14,7 @@ if (PHP_OS_FAMILY === 'Windows') die('sk
+ error_reporting(E_ALL);
+ 
+ $php = getenv('TEST_PHP_EXECUTABLE_ESCAPED');
+-$cmd = $php . ' -r "\$in = file_get_contents(\'php://stdin\'); fwrite(STDOUT, \$in); fwrite(STDERR, \$in);"';
++$cmd = $php . ' -n -r "\$in = file_get_contents(\'php://stdin\'); fwrite(STDOUT, \$in); fwrite(STDERR, \$in);"';
+ $descriptors = array(array('pipe', 'r'), array('pipe', 'w'), array('pipe', 'w'));
+ $stdin = str_repeat('*', 2049 );
+ 
+--- php-8.4.26/sapi/fpm/tests/tester.inc
++++ php-8.4.26/sapi/fpm/tests/tester.inc
+@@ -1310,6 +1310,12 @@ class Tester
+                 return $tmpDirAddress;
+             }
+ 
++            $shortTmpAddress = '/tmp/' . $addressPart;
++
++            if (strlen($shortTmpAddress) <= 104) {
++                return $shortTmpAddress;
++            }
++
+             $srcRootAddress = dirname(__DIR__, 3) . '/' . $addressPart;
+ 
+             return $srcRootAddress;

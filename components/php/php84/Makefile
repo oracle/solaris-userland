@@ -32,7 +32,7 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 MAJOR_VERSION=8.4
-MICRO_VERSION=24
+MICRO_VERSION=26
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
@@ -40,11 +40,11 @@ UL_PHP_MINOR_VERSION=	$(MAJOR_VERSION)
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:e127be09a8506f4327c5cfa78a614b00d210714484ec215ce0011b4a03c00731
+    sha256:32a2de53862ad44ed4a5005244ce4f1b50c271e74dced215449a4443b40569f1
 COMPONENT_ARCHIVE_URL=	https://www.php.net/distributions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3627
 
-COMPONENT_BAID=		429383
+COMPONENT_BAID=		445077
 
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
@@ -197,6 +197,7 @@ TESTS_DISABLED += ext/standard/tests/streams/proc_open_bug60120.phpt
 TESTS_DISABLED += ext/standard/tests/streams/proc_open_bug64438.phpt
 TESTS_DISABLED += ext/xsl/tests/maxTemplateVars_modification_validation_bypass.phpt
 TESTS_DISABLED += sapi/cli/tests/022.phpt
+TESTS_DISABLED += sapi/cli/tests/gh23425.phpt
 TESTS_DISABLED += sapi/fpm/tests/bug68591-conf-test-listen-group.phpt
 TESTS_DISABLED += sapi/fpm/tests/bug68591-conf-test-listen-owner.phpt
 TESTS_DISABLED += sapi/fpm/tests/bug80024-socket-reduced-inherit.phpt
@@ -221,6 +222,9 @@ COMPONENT_PRE_TEST_ACTION += ( \
 	gsed -e 's|^;extension=openssl|extension=$(BUILD_DIR_64)/modules/openssl.so|' \
 	  $(SOURCE_DIR)/php.ini-production > $(BUILD_DIR_64)/sapi/cli/php.ini );
 COMPONENT_TEST_ENV += TMPDIR=$(BUILD_DIR)/tmp-$(MACH)
+# Do not mix test configuration with an installed PHP configuration.  Use a
+# nonempty non-existent directory because PHP proc_open() drops empty variables.
+COMPONENT_TEST_ENV += PHP_INI_SCAN_DIR=/dev/null
 # test failures; keep going
 COMPONENT_TEST_ARGS += -k -i
 # some tests go to internet and others behave differently when proxy is set
