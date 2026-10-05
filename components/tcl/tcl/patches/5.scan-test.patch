@@ -1,0 +1,20 @@
+Accept both "Inf" and "Infinity" as representations of floating-point
+overflow.  Solaris libc formats this value as "infinity".
+
+This patch should be submitted upstream.
+
+--- tcl8.6.18/tests/scan.test
++++ tcl8.6.18/tests/scan.test
+@@ -892,9 +892,9 @@ test scan-15.1 {scan %g overflow for sma
+ 	 308  203 1.1111111111111112e+308 n16
+ 	 308  300 1.1111111111111112e+308 n17
+ 	 308 1600 1.1111111111111112e+308 x18
+-	 400  110 *inf n19
+-	 400  111 *inf n20
+-	 400  300 *inf n21
++	 400  110 *inf* n19
++	 400  111 *inf* n20
++	 400  300 *inf* n21
+ 	 221  291 1.1111111111111112e+221 n22
+ 	 221  292 1.1111111111111112e+221 n23
+ 	 221  400 1.1111111111111112e+221 n24
