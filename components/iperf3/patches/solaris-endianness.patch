@@ -1,0 +1,29 @@
+Solaris does not define BYTE_ORDER, BIG_ENDIAN, or LITTLE_ENDIAN macros.
+It defines either _BIG_ENDIAN or _LITTLE_ENDIAN without a value instead.
+Define the missing macros to prevent mainly cross-endian interoperability
+issues.
+
+This was offered upstream:
+https://github.com/esnet/iperf/pull/2087
+
+--- iperf-3.22/src/portable_endian.h
++++ iperf-3.22/src/portable_endian.h
+@@ -60,6 +60,18 @@
+ #	include <netinet/in.h>
+ #	include <inttypes.h>
+ 
++/* Solaris does not define BYTE_ORDER, BIG_ENDIAN, and LITTLE_ENDIAN */
++#	define BIG_ENDIAN 4321
++#	define LITTLE_ENDIAN 1234
++
++#	if defined(_BIG_ENDIAN)
++#		define BYTE_ORDER BIG_ENDIAN
++#	elif defined(_LITTLE_ENDIAN)
++#		define BYTE_ORDER LITTLE_ENDIAN
++#	else
++#		error byte order not supported
++#	endif
++
+ #	if !defined (ntohll) || !defined(htonll)
+ #		ifdef _BIG_ENDIAN
+ #			define    htonll(x)   (x)
