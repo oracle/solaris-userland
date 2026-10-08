@@ -1,0 +1,22 @@
+From 28ef3777d215307330688f44c40032fc3d3226d6 Mon Sep 17 00:00:00 2001
+From: Marco Trevisan (Treviño) <mail@3v1n0.net>
+Date: Wed, 20 Aug 2025 13:23:33 +0200
+Subject: [PATCH] build: Include GioUnix-2.0 when scanning the libshell headers
+
+libshell exposes GDesktopAppInfo in its headers. Include the typelib which
+owns that type when generating Shell's GIR.
+
+Backported from:
+https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/3846
+
+diff --git a/src/meson.build b/src/meson.build
+--- gnome-shell-45.9/src/meson.build
++++ gnome-shell-45.9/src/meson.build
+@@ -218,6 +218,7 @@ libshell_gir_includes = [
+   'Clutter-@0@'.format(mutter_api_version),
+   'Meta-@0@'.format(mutter_api_version),
+   'Gcr-4',
++  'GioUnix-2.0',
+   'PolkitAgent-1.0',
+   'GdkPixbuf-2.0'
+ ]

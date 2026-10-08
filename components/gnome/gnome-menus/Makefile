@@ -41,6 +41,8 @@ TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
 CONFIGURE_OPTIONS += --disable-static
