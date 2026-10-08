@@ -31,7 +31,6 @@ COMPONENT_SRC=
 COMPONENT_ARCHIVE=
 COMPONENT_ARCHIVE_SRC=	none
 COMPONENT_PROJECT_URL=	https://github.com/oracle/solaris-userland
-COMPONENT_ARCHIVE_URL=	https://github.com/oracle/solaris-userland.git
 COMPONENT_BUGDB=	gate-stuff/userland
 
 include $(WS_MAKE_RULES)/prep.mk
