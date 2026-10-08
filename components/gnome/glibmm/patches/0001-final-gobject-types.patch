@@ -1,0 +1,105 @@
+Upstream commit: https://gitlab.gnome.org/GNOME/glibmm/-/commit/d26083c41219958e802d5da733d4b4d3c342ec89
+
+# The generated headers patched below come from gio/src/dbusactiongroup.hg
+# and gio/src/emblem.hg. The upstream commit above changes those
+# definition files.
+
+The problem is caused by
+https://github.com/GNOME/glib/commit/118265fb976cc14240a366ff820e9960bf4e056c
+https://github.com/GNOME/glib/commit/6210a7ea97e12e36118f31ad8c4008ccaea7c1ca
+
+From d26083c41219958e802d5da733d4b4d3c342ec89 Mon Sep 17 00:00:00 2001
+From: Kjell Ahlstedt <kjellahlstedt@gmail.com>
+Date: Sun, 5 Jul 2026 16:49:52 +0200
+Subject: [PATCH] Gio: Emblem and DBus::ActionGroup: Don't derive gtkmm__Gxxx
+ types
+
+GEmblem and GDBusActionGroup are declared G_DECLARE_FINAL_TYPE.
+Add _DO_NOT_DERIVE_GTYPE, _ABI_AS_WITH_DERIVED_GTYPE and _STRUCT_NOT_HIDDEN
+to the corresponding glibmm classes.
+
+diff --git a/untracked/gio/giomm/dbusactiongroup.cc b/untracked/gio/giomm/dbusactiongroup.cc
+index 13ecf4e..1576f67 100644
+--- a/untracked/gio/giomm/dbusactiongroup.cc
++++ b/untracked/gio/giomm/dbusactiongroup.cc
+@@ -64,16 +64,8 @@ const Glib::Class& ActionGroup_Class::init()
+     // Glib::Class has to know the class init function to clone custom types.
+     class_init_func_ = &ActionGroup_Class::class_init_function;
+ 
+-    // This is actually just optimized away, apparently with no harm.
+-    // Make sure that the parent type has been created.
+-    //CppClassParent::CppObjectType::get_type();
+-
+-    // Create the wrapper type, with the same class/instance size as the base type.
+-    register_derived_type(g_dbus_action_group_get_type());
+-
+-    // Add derived versions of interfaces, if the C type implements any interfaces:
+-  ::Gio::ActionGroup::add_interface(get_type());
+-  RemoteActionGroup::add_interface(get_type());
++    // Do not derive a GType, or use a derived class:
++    gtype_ = g_dbus_action_group_get_type();
+ 
+   }
+ 
+diff --git a/untracked/gio/giomm/dbusactiongroup.h b/untracked/gio/giomm/dbusactiongroup.h
+index d0ef2eb..f619f5d 100644
+--- a/untracked/gio/giomm/dbusactiongroup.h
++++ b/untracked/gio/giomm/dbusactiongroup.h
+@@ -28,8 +28,17 @@
+ 
+ 
+ #ifndef DOXYGEN_SHOULD_SKIP_THIS
+-using GDBusActionGroup = struct _GDBusActionGroup;
++// Necessary if compiled against glib < 2.89.1, where GDBusActionGroup is not
++// a final type, and GDBusActionGroupClass is not defined by G_DECLARE_FINAL_TYPE().
++// (It was declared a final type somewhere between 2.89.1 and 2.89.2.
++// The compiler will probably complain if you compile against a glib 2.89.1
++// where GDBusActionGroup is not a final type.)
++#if !GLIB_CHECK_VERSION(2,89,1)
+ using GDBusActionGroupClass = struct _GDBusActionGroupClass;
++#endif
++#endif /* DOXYGEN_SHOULD_SKIP_THIS */
++
++#ifndef DOXYGEN_SHOULD_SKIP_THIS
+ #endif /* DOXYGEN_SHOULD_SKIP_THIS */
+ 
+ 
+diff --git a/untracked/gio/giomm/emblem.cc b/untracked/gio/giomm/emblem.cc
+index a588196..79270af 100644
+--- a/untracked/gio/giomm/emblem.cc
++++ b/untracked/gio/giomm/emblem.cc
+@@ -60,15 +60,8 @@ const Glib::Class& Emblem_Class::init()
+     // Glib::Class has to know the class init function to clone custom types.
+     class_init_func_ = &Emblem_Class::class_init_function;
+ 
+-    // This is actually just optimized away, apparently with no harm.
+-    // Make sure that the parent type has been created.
+-    //CppClassParent::CppObjectType::get_type();
+-
+-    // Create the wrapper type, with the same class/instance size as the base type.
+-    register_derived_type(g_emblem_get_type());
+-
+-    // Add derived versions of interfaces, if the C type implements any interfaces:
+-  Icon::add_interface(get_type());
++    // Do not derive a GType, or use a derived class:
++    gtype_ = g_emblem_get_type();
+ 
+   }
+ 
+diff --git a/untracked/gio/giomm/emblem.h b/untracked/gio/giomm/emblem.h
+index 3411f49..b304ba4 100644
+--- a/untracked/gio/giomm/emblem.h
++++ b/untracked/gio/giomm/emblem.h
+@@ -24,11 +24,10 @@
+ 
+ #include <glibmm/object.h>
+ #include <giomm/icon.h>
++#include <gio/gio.h>
+ 
+ 
+ #ifndef DOXYGEN_SHOULD_SKIP_THIS
+-using GEmblem = struct _GEmblem;
+-using GEmblemClass = struct _GEmblemClass;
+ #endif /* DOXYGEN_SHOULD_SKIP_THIS */
+ 
+ 

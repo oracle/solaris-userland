@@ -1,0 +1,41 @@
+Upstream commit: https://gitlab.gnome.org/GNOME/glibmm/-/commit/b353a8b0afc1aa78f3eec58229f02acd9fab6d3e
+
+# The generated dbusactiongroup.h header patched below comes from
+# gio/src/dbusactiongroup.hg, changed by the upstream commit above.
+
+The problem is caused by
+https://github.com/GNOME/glib/commit/118265fb976cc14240a366ff820e9960bf4e056c
+https://github.com/GNOME/glib/commit/6210a7ea97e12e36118f31ad8c4008ccaea7c1ca
+
+From b353a8b0afc1aa78f3eec58229f02acd9fab6d3e Mon Sep 17 00:00:00 2001
+From: Kjell Ahlstedt <kjellahlstedt@gmail.com>
+Date: Mon, 6 Jul 2026 12:23:57 +0200
+Subject: [PATCH] Gio::DBus::ActionGroup: Improve the test whether
+ GDBusActionGroup is final
+
+diff --git a/untracked/gio/giomm/dbusactiongroup.h b/untracked/gio/giomm/dbusactiongroup.h
+index f619f5d..33157fa 100644
+--- a/untracked/gio/giomm/dbusactiongroup.h
++++ b/untracked/gio/giomm/dbusactiongroup.h
+@@ -28,13 +28,14 @@
+ 
+ 
+ #ifndef DOXYGEN_SHOULD_SKIP_THIS
+-// Necessary if compiled against glib < 2.89.1, where GDBusActionGroup is not
+-// a final type, and GDBusActionGroupClass is not defined by G_DECLARE_FINAL_TYPE().
+-// (It was declared a final type somewhere between 2.89.1 and 2.89.2.
+-// The compiler will probably complain if you compile against a glib 2.89.1
+-// where GDBusActionGroup is not a final type.)
+-#if !GLIB_CHECK_VERSION(2,89,1)
+-using GDBusActionGroupClass = struct _GDBusActionGroupClass;
++// GDBusActionGroup was declared a final type between GLib 2.89.1 and 2.89.2.
++// Before that, GDBusActionGroupClass was not declared in GLib.
++// The preprocessor macro G_DBUS_ACTION_GROUP_CLASS was defined, though.
++#if !GLIB_CHECK_VERSION(2,89,1) || (!GLIB_CHECK_VERSION(2,89,2) && defined(G_DBUS_ACTION_GROUP_CLASS))
++  // glib < 2.89.1 or (glib == 2.89.1 and G_DBUS_ACTION_GROUP_CLASS is a preprocessor macro)
++  // GDBusActionGroup is not a final type,
++  // GDBusActionGroupClass is not declared in GLib.
++  using GDBusActionGroupClass = struct _GDBusActionGroupClass;
+ #endif
+ #endif /* DOXYGEN_SHOULD_SKIP_THIS */
+ 
