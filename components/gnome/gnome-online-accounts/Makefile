@@ -26,45 +26,38 @@
 BUILD_BITS =            64
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
+CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-online-accounts
-COMPONENT_VERSION=	3.40.1
+COMPONENT_VERSION=	3.58.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeOnlineAccounts
 COMPONENT_ARCHIVE_HASH= \
-	sha256:955a03128d0e87855d34d7c534e088f6286ed7ac01baa4ef824ef42a2cb39aad
+	sha256:9ec1900cc51409c2067c07c828c10be06fe3bf68d2999bb72d7d5ed325ed9bbc
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10943
 
-COMPONENT_BAID=		115243
+COMPONENT_BAID=		434398
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 LD_OPTIONS += -lresolv
 
-# Doesn't build currently; conflicts between Solaris krb5.h and p11-kit.
-CONFIGURE_OPTIONS += --disable-kerberos
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-exchange
-CONFIGURE_OPTIONS += --enable-documentation
-CONFIGURE_OPTIONS += --enable-gtk-doc
-# This requires webkitgtk and is used for the online accounts registration
-CONFIGURE_OPTIONS += --disable-backend
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-facebook
-CONFIGURE_OPTIONS += --enable-flickr
-CONFIGURE_OPTIONS += --enable-google
-CONFIGURE_OPTIONS += --enable-imap-smtp
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --enable-windows-live
-CONFIGURE_OPTIONS += --with-pic
+# This requires GTK4/libadwaita and is not needed by GVFS.
+CONFIGURE_OPTIONS += -Dgoabackend=false
+# Avoid the Solaris krb5.h and p11-kit conflict.
+CONFIGURE_OPTIONS += -Dkerberos=false
+# The current Solaris package does not deliver documentation or man pages.
+CONFIGURE_OPTIONS += -Ddocumentation=false
+CONFIGURE_OPTIONS += -Dman=false
 
-CBE_PACKAGES += developer/documentation-tool/gtk-doc
 CBE_PACKAGES += developer/vala
 CBE_PACKAGES += library/desktop/gobject/gobject-introspection
 
