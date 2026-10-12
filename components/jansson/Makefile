@@ -22,22 +22,20 @@
 #
 # Copyright (c) 2014, 2026, Oracle and/or its affiliates.
 #
-COMPILER= studio
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jansson
-COMPONENT_VERSION=	2.14
+COMPONENT_VERSION=	2.15.1
 COMPONENT_PROJECT_URL=	http://www.digip.org/jansson
 COMPONENT_SRC_URL=	https://github.com/akheron/jansson
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5798d010e41cf8d76b66236cfb2f2543c8d082181d16bc3085ab49538d4b9929
+    sha256:0c7114dc0b2d22a670724a1f95922029d7077c19dbf79a584cb8084d2f267f2f
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_SRC_URL)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/jansson
 COMPONENT_ANITYA_ID=	1417
-
-COMPONENT_BAID=			111867
+COMPONENT_BAID=		431179
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -60,10 +58,11 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 # The test/suites/api/check-exports uses nm and expects it to be the GNU kind.
 COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH)
 
-# 003-CVE-2016-4425.patch modifies jansson_config.h.in that will generate a new
-# jansson_config.h in the build subdirectory. We need to rm the one in the
-# original source so that it doesn't get in the way.
-COMPONENT_PREP_ACTION += $(RM) $(@D)/src/jansson_config.h
+# Remove accidentally packaged stale test artifacts
+# which otherwise break our out-of-source testing.
+COMPONENT_PREP_ACTION += $(RM) \
+	$(@D)/scripts/clang-format-check.log \
+	$(@D)/scripts/clang-format-check.trs
 
 CBE_PACKAGES += developer/documentation-tool/sphinx
 
