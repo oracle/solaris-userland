@@ -27,13 +27,13 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libcupsfilters
-COMPONENT_VERSION=	2.1.1
-COMPONENT_ARCHIVE_HASH=	sha256:ff31778a438bf335ceed254ccc706d5cd0eee55f608fcf567d88699b15f4fa9e
+COMPONENT_VERSION=	2.2.1
+COMPONENT_ARCHIVE_HASH=	sha256:c732ed02fcc395c0fb3867589d8253bddd98b69dd77e262465bb795686239540
 COMPONENT_PROJECT_URL=	http://www.openprinting.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_URL=	https://github.com/OpenPrinting/libcupsfilters/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/cups
-COMPONENT_BAID=		182113
+COMPONENT_BAID=		434605
 COMPONENT_ANITYA_ID=	358477
 
 # Enable ADI security extensions
@@ -52,6 +52,7 @@ CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--with-cups-rundir=/system/volatile/cups
 CONFIGURE_OPTIONS +=	--disable-mutool
+CONFIGURE_OPTIONS +=	--without-jpegxl
 CONFIGURE_OPTIONS +=	LIBS="-ltsol"
 
 REQUIRED_PACKAGES += image/library/libexif
@@ -59,13 +60,11 @@ REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/lcms2
+REQUIRED_PACKAGES += library/pdfio
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += print/filter/poppler
-REQUIRED_PACKAGES += print/filter/qpdf
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math

@@ -278,11 +278,11 @@ License: Apache-2.0-with-GPL2-LGPL2-Exception
 ## Files:
 README.md
 
-# OpenPrinting libcupsfilters v2.1.1 - 2025-02-18
+# OpenPrinting libcupsfilters v2.2.1 - 2026-08-11
 
 Looking for compile instructions? Read the file "INSTALL"
 instead...
-
+ 
 
 ## INTRODUCTION
 
@@ -349,6 +349,25 @@ See the "COPYING", "LICENCE", and "NOTICE" files for legal
 information. The license is the same as for CUPS, for a maximum of
 compatibility.
 
+---
+
+## DEVELOPMENT AND CI/CD
+
+### CodeQL Static Analysis Configuration
+
+This repository uses a custom GitHub Actions workflow for CodeQL static analysis located at `.github/workflows/static-analysis.yml`. To ensure accurate analysis and avoid conflicts with GitHub's default settings, the following repository configurations are required:
+
+1. **Enable Advanced Setup**:
+   - Go to **Settings** -> **Code security and analysis**.
+   - Under **Code scanning**, locate **CodeQL analysis**.
+   - If "Default" is enabled, click the three dots (...) and select **Switch to advanced**.
+2. **Disable Default Setup**: 
+   - The "Default" setup must be disabled for the custom workflow to upload results successfully.
+3. **Custom Workflow Dependencies**:
+   - Our custom workflow is designed to install specific project dependencies and perform a manual build before the analysis. This ensures that CodeQL has a complete build graph for the C sources in this repository.
+
+*Note: If the Default setup is active, GitHub may reject the results uploaded by the manual workflow, causing the CI job to fail.*
+
 ## LINKS
 
 ### cups-filters
@@ -381,6 +400,7 @@ compatibility.
 * [cups-filters 2020 (PDF)](https://ftp.pwg.org/pub/pwg/liaison/openprinting/presentations/cups-filters-ippusbxd-2020.pdf)
 * [cups-filters 2021 (PDF)](https://ftp.pwg.org/pub/pwg/liaison/openprinting/presentations/cups-filters-cups-snap-ipp-usb-and-more-2021.pdf)
 * [cups-filters 2022 (PDF)](https://ftp.pwg.org/pub/pwg/liaison/openprinting/presentations/cups-filters-cups-snap-ipp-usb-and-more-2022.pdf)
+
 
 
 ## Files:
@@ -427,7 +447,6 @@ information.
 
 ## Files:
 cupsfilters/bannertopdf.c
-cupsfilters/pdf.cxx
 
 Copyright 2012 Canonical Ltd.
 Copyright 2013 ALT Linux, Andrew V. Stepanov <stanv@altlinux.com>
@@ -650,6 +669,12 @@ information.
 
 
 ## Files:
+cupsfilters/fontembed/embed-sfnt.c
+
+/version | /Notice | /Copyright | /FullName |
+
+
+## Files:
 cupsfilters/ghostscript.c
 
 Ghostscript filter function for libcupsfilters.
@@ -750,6 +775,39 @@ Contents:
   y_rotate()                   - Rotate about the y (green) axis...
   z_rotate()                   - Rotate about the z (blue) axis...
   z_shear()                    - Shear z using x and y...
+
+
+## Files:
+cupsfilters/image-jpeg-xl-private.h
+
+JPEG‑XL image routines for libcupsfilters.
+
+Copyright 2025 by Titiksha Bansal.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+Contents:
+
+  _cfIsJPEGXL()            - Check if the file header indicates JPEG‑XL format.
+  _cfImageReadJPEGXL()     - Read a JPEG‑XL image file using libjxl and fill a cf_image_t structure.
+
+
+## Files:
+cupsfilters/image-jpeg-xl.c
+
+JPEG‑XL image routines for libcupsfilters.
+
+Copyright 2025 by Titiksha Bansal.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+Contents:
+
+  _cfIsJPEGXL()                          - Check if the file header indicates JPEG‑XL format.
+  _cfImageReadJPEGXL()                   - Read a JPEG‑XL image file using libjxl and fill a
+                                           cf_image_t structure.
 
 
 ## Files:
@@ -927,6 +985,32 @@ Contents:
 
 
 ## Files:
+cupsfilters/ipp-options-private.h
+
+Option support definitions for the IPP tools.
+
+Copyright © 2024-2025 Uddhav Phatak <uddhavphatak@gmail.com>
+Copyright © 2023 by OpenPrinting.
+Copyright © 2022 by the Printer Working Group.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cupsfilters/ipp-options.c
+
+Option support functions for the IPP tools.
+
+Copyright © 2024-2025 by Uddhav Phatak <uddhavphatak@gmail.com>
+Copyright © 2023-2024 by OpenPrinting.
+Copyright © 2022-2023 by the Printer Working Group.
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
 cupsfilters/ipp.c
 
 IPP-related functions for libcupsfilters.
@@ -955,7 +1039,7 @@ information.
 ## Files:
 cupsfilters/labeltops.c
 
-Copyright (c) 2020, 2025, Oracle and/or its affiliates.
+Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 
 
 ## Files:
@@ -1045,11 +1129,24 @@ Contents:
 
 
 ## Files:
-cupsfilters/pclmtoraster.cxx
+cupsfilters/pclmtoraster.c
 
 PCLm/Raster-only PDF to Raster filter function for libcupsfilters.
 
 Copyright © 2020 by Vikrant Malik
+Copyright 2024-2026 Uddhav Phatak <uddhavphatak@gmail.com>
+
+Licensed under Apache License v2.0.  See the file "LICENSE" for more
+information.
+
+
+## Files:
+cupsfilters/pdf.c
+
+Copyright 2012 Canonical Ltd.
+Copyright 2013 ALT Linux, Andrew V. Stepanov <stanv@altlinux.com>
+Copyright 2018 Sahil Arora <sahilarora.535@gmail.com>
+Copyright 2024-2026 Uddhav Phatak <uddhavphatak@gmail.com>
 
 Licensed under Apache License v2.0.  See the file "LICENSE" for more
 information.
@@ -1060,64 +1157,38 @@ cupsfilters/pdf.h
 
 Copyright 2012 Canonical Ltd.
 Copyright 2018 Sahil Arora <sahilarora.535@gmail.com>
+Copyright 2024-2026 Uddhav Phatak <uddhavphatak@gmail.com>
 
 Licensed under Apache License v2.0.  See the file "LICENSE" for more
 information.
 
 
 ## Files:
-cupsfilters/pdftopdf/intervalset-private.h
-cupsfilters/pdftopdf/intervalset.cxx
-cupsfilters/pdftopdf/nup-private.h
-cupsfilters/pdftopdf/nup.cxx
-cupsfilters/pdftopdf/pdftopdf-processor-private.h
-cupsfilters/pdftopdf/pdftopdf-processor.cxx
-cupsfilters/pdftopdf/pptypes-private.h
-cupsfilters/pdftopdf/pptypes.cxx
-cupsfilters/pdftopdf/qpdf-cm-private.h
-cupsfilters/pdftopdf/qpdf-cm.cxx
-cupsfilters/pdftopdf/qpdf-pdftopdf-private.h
-cupsfilters/pdftopdf/qpdf-pdftopdf-processor-private.h
-cupsfilters/pdftopdf/qpdf-pdftopdf-processor.cxx
-cupsfilters/pdftopdf/qpdf-pdftopdf.cxx
-cupsfilters/pdftopdf/qpdf-tools-private.h
-cupsfilters/pdftopdf/qpdf-tools.cxx
-cupsfilters/pdftopdf/qpdf-xobject-private.h
-cupsfilters/pdftopdf/qpdf-xobject.cxx
-
-Licensed under Apache License v2.0.  See the file "LICENSE" for more
-information.
-
-
-## Files:
-cupsfilters/pdftopdf/pdftopdf-private.h
+cupsfilters/pdftopdf-private.h
 
 Copyright 2020 by Jai Luthra.
+Copyright 2024-2025 Uddhav Phatak <uddhavphatak@gmail.com>
 
 Licensed under Apache License v2.0.  See the file "LICENSE" for more
 information.
 
 
 ## Files:
-cupsfilters/pdftopdf/pdftopdf.cxx
+cupsfilters/pdftopdf.c
 
-Copyright (c) 2012 Tobias Hoffmann
-
-Copyright (c) 2006-2011, BBR Inc.  All rights reserved.
+Copyright (c) 6-2011, BBR Inc.  All rights reserved.
+Copyright 2024-2026 Uddhav Phatak <uddhavphatak@gmail.com>
 
 Licensed under Apache License v2.0.  See the file "LICENSE" for more
 information.
 
 
 ## Files:
-cupsfilters/pdftoraster.cxx
+cupsfilters/pdftoraster.c
 
 PDF to Raster filter function for libcupsfilters.
 
-Copyright (c) 2008-2011 BBR Inc.  All rights reserved.
-Copyright (c) 2012-2019 by Till Kamppeter
-Copyright (c) 2019 by Tanmay Anand.
-Modified 2021 by Pratyush Ranjan.
+Copyright (c) 2024-2026 by Uddhav Phatak <uddhavphatak@gmail.com>
 
 Licensed under Apache License v2.0.  See the file "LICENSE" for more
 information.
@@ -1136,7 +1207,7 @@ information.
 
 
 ## Files:
-cupsfilters/pwgtopdf.cxx
+cupsfilters/pwgtopdf.c
 
 PWG/Apple Raster to PDF filter function for libcupsfilters.
 
@@ -1144,6 +1215,7 @@ Copyright 2010 by Neil 'Superna' Armstrong <superna9999@gmail.com>
 Copyright 2012 by Tobias Hoffmann
 Copyright 2014-2022 by Till Kamppeter
 Copyright 2017 by Sahil Arora
+Copyright 2024-2026 by Uddhav Phatak <uddhavphatak@gmail.com>
 
 Licensed under Apache License v2.0.  See the file "LICENSE" for more
 information.
@@ -1401,7 +1473,7 @@ data/makePDFfromPS.sh
 ## Files:
 ltmain.sh
 
-Copyright (C) 1996-2015 Free Software Foundation, Inc.
+Copyright (C) 1996-2019, 2021-2024 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
@@ -1431,75 +1503,85 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ## Files:
 ltmain.sh
 
-Copyright (C) 2004-2015 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This is free software.  There is NO warranty; not even for
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Copyright (C) 2004-2019, 2021, 2023-2024 Bootstrap Authors
+
+This file is dual licensed under the terms of the MIT license
+<https://opensource.org/licenses/MIT>, and GPL version 2 or later
+<https://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+these licenses when using or redistributing this software or any of
+the files within it.  See the URLs above, or the file `LICENSE`
+included in the Bootstrap distribution for the full license texts.
 
 
 ## Files:
 ltmain.sh
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
+This is free software.  There is NO warranty; not even for
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Copyright (C) 2010-2019, 2021, 2023-2024 Bootstrap Authors
+
+This file is dual licensed under the terms of the MIT license
+<https://opensource.org/licenses/MIT>, and GPL version 2 or later
+<https://www.gnu.org/licenses/gpl-2.0.html>.  You must apply one of
+these licenses when using or redistributing this software or any of
+the files within it.  See the URLs above, or the file `LICENSE`
+included in the Bootstrap distribution for the full license texts.
 
 
 ## Files:
 ltmain.sh
 
-As a special exception to the GNU General Public License, if you distribute
-this file as part of a program or library that is built using GNU Libtool,
-you may include this file under the same distribution terms that you use
-for the rest of that program.
+This file is a library for parsing options in your shell scripts along
+with assorted other useful supporting features that you can make use
+of too.
+
+For the simplest scripts you might need only:
+
+  #!/bin/sh
+  . relative/path/to/funclib.sh
+  . relative/path/to/options-parser
+  scriptversion=1.0
+  func_options ${1+"$@"}
+  eval set dummy "$func_options_result"; shift
+  ...rest of your script...
+
+In order for the '--version' option to work, you will need to have a
+suitably formatted comment like the one at the top of this file
+starting with '# Written by ' and ending with '# Copyright'.
+
+For '-h' and '--help' to work, you will also need a one line
+description of your script's purpose in a comment directly above the
+'# Written by ' line, like the one at the top of this file.
+
+The default options also support '--debug', which will turn on shell
+execution tracing (see the comment above debug_cmd below for another
+use), and '--verbose' and the func_verbose function to allow your script
+to display verbose messages only when your user has specified
+'--verbose'.
+
+After sourcing this file, you can plug in processing for additional
+options by amending the variables from the 'Configuration' section
+below, and following the instructions in the 'Option parsing'
+section further down.
 
 
 ## Files:
 ltmain.sh
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNES FOR A PARTICULAR PURPOSE. See the GNU
-General Public License for more details.
-
-
-## Files:
-ltmain.sh
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-
-## Files:
-ltmain.sh
-
-Copyright (C) 2010-2015 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-
-## Files:
-ltmain.sh
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-
-## Files:
-ltmain.sh
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-
-## Files:
-ltmain.sh
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+func_version
+------------
+Echo version message to standard output and exit.
+The version message is extracted from the calling file's header
+comments, with leading '# ' stripped:
+  1. First display the progname and version
+  2. Followed by the header comment line matching  /^# Written by /
+  3. Then a blank line followed by the first following line matching
+     /^# Copyright /
+  4. Immediately followed by any lines between the previous matches,
+     except lines preceding the intervening completely blank line.
+For example, see the header comments of this file.
 
