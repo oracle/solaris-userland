@@ -26,18 +26,18 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pycodestyle
-COMPONENT_VERSION=	2.12.1
+COMPONENT_VERSION=	2.15.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	https://pycodestyle.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	python-mod/pycodestyle
 COMPONENT_ANITYA_ID=	11773
-COMPONENT_BAID=		178103
+COMPONENT_BAID=		448821
 
 # pypi archive doesn't include the test suite
 GIT_REPO=	https://github.com/PyCQA/pycodestyle
 GIT_COMMIT_ID=	$(COMPONENT_VERSION)
-GIT_HASH=	sha256:85af4e592999f56f4e810a2e2523d8243ce499f70fb183e4b8357f2e12c7552a
+GIT_HASH=	sha256:7e154105837ba0f7d003943d9da7e9b9864736c156935d176e1ad4808c83b99a
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -79,5 +79,4 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/setuptools-%)
 REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)

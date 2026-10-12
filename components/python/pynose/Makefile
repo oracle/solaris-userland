@@ -26,19 +26,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pynose
-COMPONENT_VERSION=	1.5.2
+COMPONENT_VERSION=	1.5.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=  https://github.com/mdmintz/pynose
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:93dd3045649e3672868fbee5aba319c448041435783b2de13e5f7617c75eece9
+    sha256:81da4e26473f98dd37497248eef4352d3221d1d56edf874a00c6bdda6daf7f49
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/pynose
 COMPONENT_ANITYA_ID=	343621
-COMPONENT_BAID=		171617
+COMPONENT_BAID=		430126
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_POST_INSTALL_ACTION += \
@@ -69,5 +69,4 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += $(PYVS:%=library/python/setuptools-%)
 REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
