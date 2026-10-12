@@ -43,7 +43,7 @@ COMPONENT_PROJECT_URL_1=http://www.malayalamfont.com/
 COMPONENT_ARCHIVE_1=	MalOtf.ttf
 COMPONENT_ARCHIVE_URL_1=https://malayalamlinux.sourceforge.net/downloads/fonts/MalOtf.ttf
 COMPONENT_ARCHIVE_HASH_1=sha256:2fea9a759d82610a7cea85d6bf6eef46a586a32231f10819421e67b642501905
-COMPONENT_BAID_MALAYALAM=	164810
+COMPONENT_BAID_MALAYALAM=	442208
 # hack to disable UNPACK for just one component
 UNPACK_ARGS_1= & true
 
