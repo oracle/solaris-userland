@@ -10,7 +10,7 @@
 #
 --- old/channels.c
 +++ new/channels.c
-@@ -3917,8 +3917,12 @@ channel_setup_fwd_listener_tcpip(struct ssh *ssh, int type,
+@@ -3972,8 +3972,12 @@ * set to NULL and hints.ai_flags is not
  	 */
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = ssh->chanctxt->IPv4or6;
@@ -24,7 +24,7 @@
  	snprintf(strport, sizeof strport, "%d", fwd->listen_port);
  	if ((r = getaddrinfo(addr, strport, &hints, &aitop)) != 0) {
  		if (addr == NULL) {
-@@ -4781,6 +4785,10 @@ connect_to_helper(struct ssh *ssh, const char *name, int port, int socktype,
+@@ -4835,6 +4839,10 @@ } else {
  		memset(&hints, 0, sizeof(hints));
  		hints.ai_family = ssh->chanctxt->IPv4or6;
  		hints.ai_socktype = socktype;
@@ -35,7 +35,7 @@
  		snprintf(strport, sizeof strport, "%d", port);
  		if ((gaierr = getaddrinfo(name, strport, &hints, &cctx->aitop))
  		    != 0) {
-@@ -5104,8 +5112,12 @@ x11_create_display_inet(struct ssh *ssh, int x11_display_offset,
+@@ -5161,8 +5169,12 @@ display_number++) {
  		port = X11_BASE_PORT + display_number;
  		memset(&hints, 0, sizeof(hints));
  		hints.ai_family = ssh->chanctxt->IPv4or6;
@@ -49,7 +49,7 @@
  		snprintf(strport, sizeof strport, "%d", port);
  		if ((gaierr = getaddrinfo(NULL, strport,
  		    &hints, &aitop)) != 0) {
-@@ -5328,6 +5340,10 @@ x11_connect_display(struct ssh *ssh)
+@@ -5385,6 +5397,10 @@ /* Look up the host address */
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = ssh->chanctxt->IPv4or6;
  	hints.ai_socktype = SOCK_STREAM;
@@ -62,7 +62,7 @@
  		error("%.100s: unknown host. (%s)", buf,
 --- old/packet.c
 +++ new/packet.c
-@@ -613,6 +613,10 @@ ssh_remote_hostname(struct ssh *ssh)
+@@ -612,6 +612,10 @@ */
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = from.ss_family;
  	hints.ai_socktype = SOCK_STREAM;
@@ -75,7 +75,7 @@
  		    "[%s] failed.", name, ntop);
 --- old/regress/netcat.c
 +++ new/regress/netcat.c
-@@ -339,6 +339,10 @@ main(int argc, char *argv[])
+@@ -339,6 +339,10 @@ hints.ai_socktype = uflag ? SOCK_DGRAM :
  		hints.ai_protocol = uflag ? IPPROTO_UDP : IPPROTO_TCP;
  		if (nflag)
  			hints.ai_flags |= AI_NUMERICHOST;
@@ -86,7 +86,7 @@
  	}
  
  	if (xflag) {
-@@ -367,6 +371,10 @@ main(int argc, char *argv[])
+@@ -367,6 +371,10 @@ proxyhints.ai_socktype = SOCK_STREAM;
  		proxyhints.ai_protocol = IPPROTO_TCP;
  		if (nflag)
  			proxyhints.ai_flags |= AI_NUMERICHOST;
@@ -97,7 +97,7 @@
  	}
  
  	if (lflag) {
-@@ -641,6 +649,10 @@ remote_connect(const char *host, const char *port, struct addrinfo hints)
+@@ -641,6 +649,10 @@ ahints.ai_family = res0->ai_family;
  			ahints.ai_socktype = uflag ? SOCK_DGRAM : SOCK_STREAM;
  			ahints.ai_protocol = uflag ? IPPROTO_UDP : IPPROTO_TCP;
  			ahints.ai_flags = AI_PASSIVE;
@@ -108,7 +108,7 @@
  			if ((error = getaddrinfo(sflag, pflag, &ahints, &ares)))
  				errx(1, "getaddrinfo: %s", gai_strerror(error));
  
-@@ -1408,8 +1420,12 @@ decode_addrport(const char *h, const char *p, struct sockaddr *addr,
+@@ -1408,8 +1420,12 @@ struct addrinfo hints, *res;
  
  	bzero(&hints, sizeof(hints));
  	hints.ai_family = v4only ? PF_INET : PF_UNSPEC;
@@ -124,7 +124,7 @@
  	if (r != 0) {
 --- old/servconf.c
 +++ new/servconf.c
-@@ -692,6 +692,10 @@ add_one_listen_addr(ServerOptions *options, const char *addr,
+@@ -712,6 +712,10 @@ memset(&hints, 0, sizeof(hints));
  	hints.ai_family = options->address_family;
  	hints.ai_socktype = SOCK_STREAM;
  	hints.ai_flags = (addr == NULL) ? AI_PASSIVE : 0;
@@ -137,7 +137,7 @@
  		fatal("bad addr or host: %s (%s)",
 --- old/ssh-keyscan.c
 +++ new/ssh-keyscan.c
-@@ -361,6 +361,10 @@ tcpconnect(char *host)
+@@ -363,6 +363,10 @@ snprintf(strport, sizeof strport, "%d",
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = IPv4or6;
  	hints.ai_socktype = SOCK_STREAM;
@@ -150,7 +150,7 @@
  		return -1;
 --- old/ssh.c
 +++ new/ssh.c
-@@ -259,6 +259,10 @@ resolve_host(const char *name, int port, int logerr, char *cname, size_t clen)
+@@ -259,6 +259,10 @@ AF_UNSPEC : options.address_family;
  	hints.ai_socktype = SOCK_STREAM;
  	if (cname != NULL)
  		hints.ai_flags = AI_CANONNAME;
@@ -161,7 +161,7 @@
  	if ((gaierr = getaddrinfo(name, strport, &hints, &res)) != 0) {
  		if (logerr || (gaierr != EAI_NONAME && gaierr != EAI_NODATA))
  			loglevel = SYSLOG_LEVEL_ERROR;
-@@ -335,6 +339,10 @@ resolve_addr(const char *name, int port, char *caddr, size_t clen)
+@@ -335,6 +339,10 @@ hints.ai_family = options.address_family
  	    AF_UNSPEC : options.address_family;
  	hints.ai_socktype = SOCK_STREAM;
  	hints.ai_flags = AI_NUMERICHOST|AI_NUMERICSERV;
@@ -174,7 +174,7 @@
  		    name, ssh_gai_strerror(gaierr));
 --- old/sshconnect.c
 +++ new/sshconnect.c
-@@ -409,6 +409,10 @@ ssh_create_socket(struct addrinfo *ai)
+@@ -409,6 +409,10 @@ hints.ai_family = ai->ai_family;
  		hints.ai_socktype = ai->ai_socktype;
  		hints.ai_protocol = ai->ai_protocol;
  		hints.ai_flags = AI_PASSIVE;

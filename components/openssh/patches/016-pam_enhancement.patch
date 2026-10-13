@@ -15,7 +15,7 @@
 #
 --- old/auth-pam.c
 +++ new/auth-pam.c
-@@ -632,6 +632,66 @@ sshpam_null_conv(int n, sshpam_const struct pam_message **msg,
+@@ -632,6 +632,66 @@ }
  
  static struct pam_conv null_conv = { sshpam_null_conv, NULL };
  
@@ -82,7 +82,7 @@
  static int
  sshpam_store_conv(int n, sshpam_const struct pam_message **msg,
      struct pam_response **resp, void *data)
-@@ -705,8 +765,17 @@ sshpam_init(struct ssh *ssh, Authctxt *authctxt)
+@@ -705,8 +765,17 @@ {
  	const char *user = authctxt->user;
  	int r;
  
@@ -100,7 +100,7 @@
  #if defined(PAM_SUN_CODEBASE) && defined(PAM_MAX_RESP_SIZE)
  	/* Protect buggy PAM implementations from excessively long usernames */
  	if (strlen(user) >= PAM_MAX_RESP_SIZE)
-@@ -716,15 +785,51 @@ sshpam_init(struct ssh *ssh, Authctxt *authctxt)
+@@ -716,15 +785,51 @@ #endif
  	if (sshpam_handle == NULL && ssh == NULL)
  		fatal("%s: called initially with no packet context", __func__);
  	if (sshpam_handle != NULL) {
@@ -158,7 +158,7 @@
  
 --- old/auth.h
 +++ new/auth.h
-@@ -95,6 +95,9 @@ struct Authctxt {
+@@ -97,6 +97,9 @@ char		*auth_method_info;
  
  	/* Information exposed to session */
  	struct sshbuf	*session_info;	/* Auth info for environment */
@@ -170,7 +170,7 @@
  /*
 --- old/auth2.c
 +++ new/auth2.c
-@@ -313,7 +313,15 @@ input_userauth_request(int type, uint32_t seq, struct ssh *ssh)
+@@ -313,7 +313,15 @@ mm_audit_event(ssh, SSH_INVALID_USER);
  #endif
  		}
  #ifdef USE_PAM
@@ -186,7 +186,7 @@
  			mm_start_pam(ssh);
  #endif
  		ssh_packet_set_log_preamble(ssh, "%suser %s",
-@@ -348,6 +356,16 @@ input_userauth_request(int type, uint32_t seq, struct ssh *ssh)
+@@ -350,6 +358,16 @@ authctxt->auth_failure_already_counted =
  	/* try to authenticate user */
  	m = authmethod_lookup(authctxt, method);
  	if (m != NULL && authctxt->failures < options.max_authtries) {
@@ -203,7 +203,7 @@
  		debug2("input_userauth_request: try method %s", method);
  		authenticated =	m->userauth(ssh, method);
  	}
-@@ -373,6 +391,10 @@ userauth_finish(struct ssh *ssh, int authenticated, const char *packet_method,
+@@ -375,6 +393,10 @@ const char *method = packet_method;
  	char *methods;
  	int r, partial = 0;
  
@@ -214,7 +214,7 @@
  	if (authenticated) {
  		if (!authctxt->valid) {
  			fatal("INTERNAL ERROR: authenticated invalid user %s",
-@@ -396,6 +418,30 @@ userauth_finish(struct ssh *ssh, int authenticated, const char *packet_method,
+@@ -398,6 +420,30 @@ #endif
  	}
  
  	if (authenticated && options.num_auth_methods != 0) {
@@ -245,7 +245,7 @@
  		if (!auth2_update_methods_lists(authctxt, method, submethod)) {
  			authenticated = 0;
  			partial = 1;
-@@ -413,7 +459,19 @@ userauth_finish(struct ssh *ssh, int authenticated, const char *packet_method,
+@@ -415,7 +461,19 @@ if (authctxt->postponed)
  		return;
  
  #ifdef USE_PAM
@@ -265,14 +265,14 @@
  		int r, success = mm_do_pam_account();
  
  		/* If PAM returned a message, send it to the user. */
-@@ -811,4 +869,3 @@ auth2_update_session_info(Authctxt *authctxt, const char *method,
+@@ -814,4 +872,3 @@ }
  	if ((r = sshbuf_put_u8(authctxt->session_info, '\n')) != 0)
  		fatal_fr(r, "append");
  }
 -
 --- old/monitor.c
 +++ new/monitor.c
-@@ -111,6 +111,9 @@ int mm_answer_sign(struct ssh *, int, struct sshbuf *);
+@@ -111,6 +111,9 @@ int mm_answer_sign(struct ssh *, int, st
  int mm_answer_pwnamallow(struct ssh *, int, struct sshbuf *);
  int mm_answer_auth2_read_banner(struct ssh *, int, struct sshbuf *);
  int mm_answer_authserv(struct ssh *, int, struct sshbuf *);
@@ -282,7 +282,7 @@
  int mm_answer_authpassword(struct ssh *, int, struct sshbuf *);
  int mm_answer_bsdauthquery(struct ssh *, int, struct sshbuf *);
  int mm_answer_bsdauthrespond(struct ssh *, int, struct sshbuf *);
-@@ -188,10 +191,17 @@ struct mon_table mon_dispatch_proto20[] = {
+@@ -188,10 +191,17 @@ {MONITOR_REQ_SETCOMPAT, MON_ONCE, mm_ans
      {MONITOR_REQ_SIGN, MON_ONCE, mm_answer_sign},
      {MONITOR_REQ_PWNAM, MON_ONCE, mm_answer_pwnamallow},
      {MONITOR_REQ_AUTHSERV, MON_ONCE, mm_answer_authserv},
@@ -300,7 +300,7 @@
      {MONITOR_REQ_PAM_ACCOUNT, 0, mm_answer_pam_account},
      {MONITOR_REQ_PAM_INIT_CTX, MON_ONCE, mm_answer_pam_init_ctx},
      {MONITOR_REQ_PAM_QUERY, 0, mm_answer_pam_query},
-@@ -305,6 +315,25 @@ monitor_child_preauth(struct ssh *ssh, struct monitor *pmonitor)
+@@ -305,6 +315,25 @@ auth_attempted = 1;
  
  		/* Special handling for multiple required authentications */
  		if (options.num_auth_methods != 0) {
@@ -326,7 +326,7 @@
  			if (authenticated &&
  			    !auth2_update_methods_lists(authctxt,
  			    auth_method, auth_submethod)) {
-@@ -322,8 +351,21 @@ monitor_child_preauth(struct ssh *ssh, struct monitor *pmonitor)
+@@ -322,8 +351,21 @@ if (authctxt->pw->pw_uid == 0 &&
  			    !auth_root_allowed(ssh, auth_method))
  				authenticated = 0;
  #ifdef USE_PAM
@@ -349,7 +349,7 @@
  				struct sshbuf *m;
  
  				if ((m = sshbuf_new()) == NULL)
-@@ -921,6 +963,10 @@ mm_answer_pwnamallow(struct ssh *ssh, int sock, struct sshbuf *m)
+@@ -933,6 +975,10 @@ mm_request_send(sock, MONITOR_ANS_PWNAM,
  	/* Allow service/style information on the auth context */
  	monitor_permit(mon_dispatch, MONITOR_REQ_AUTHSERV, 1);
  	monitor_permit(mon_dispatch, MONITOR_REQ_AUTH2_READ_BANNER, 1);
@@ -360,7 +360,7 @@
  
  #ifdef USE_PAM
  	if (options.use_pam)
-@@ -945,6 +991,27 @@ int mm_answer_auth2_read_banner(struct ssh *ssh, int sock, struct sshbuf *m)
+@@ -957,6 +1003,27 @@ free(banner);
  	return (0);
  }
  
@@ -388,14 +388,14 @@
  int
  mm_answer_authserv(struct ssh *ssh, int sock, struct sshbuf *m)
  {
-@@ -2079,4 +2146,3 @@ mm_answer_gss_userok(struct ssh *ssh, int sock, struct sshbuf *m)
+@@ -2092,4 +2159,3 @@ /* Monitor loop will terminate if authen
  	return (authenticated);
  }
  #endif /* GSSAPI */
 -
 --- old/monitor.h
 +++ new/monitor.h
-@@ -65,6 +65,9 @@ enum monitor_reqtype {
+@@ -65,6 +65,9 @@ MONITOR_REQ_PAM_RESPOND = 108, MONITOR_A
  	MONITOR_REQ_PAM_FREE_CTX = 110, MONITOR_ANS_PAM_FREE_CTX = 111,
  	MONITOR_REQ_AUDIT_EVENT = 112, MONITOR_REQ_AUDIT_COMMAND = 113,
  
@@ -407,7 +407,7 @@
  struct ssh;
 --- old/monitor_wrap.c
 +++ new/monitor_wrap.c
-@@ -438,6 +438,27 @@ mm_inform_authserv(char *service, char *style)
+@@ -443,6 +443,27 @@ mm_request_send(pmonitor->m_recvfd, MONI
  	sshbuf_free(m);
  }
  
@@ -447,7 +447,7 @@
  char *mm_auth2_read_banner(void);
 --- old/servconf.c
 +++ new/servconf.c
-@@ -305,8 +305,14 @@ fill_default_server_options(ServerOptions *options)
+@@ -320,9 +320,15 @@ #undef SSHCONF_UNSUPPORTED_STRING
  #undef SSHCONF_ALIAS
  
  #ifdef USE_PAM
@@ -458,11 +458,12 @@
 +#else
  	if (options->pam_service_name == NULL)
  		options->pam_service_name = xstrdup(SSHD_PAM_SERVICE);
-+#endif
  #endif
++#endif
  
  	if (options->num_host_key_files == 0) {
-@@ -1189,9 +1195,29 @@ process_server_config_line_depth(ServerOptions *options, char *line,
+ 		/* fill default hostkeys */
+@@ -1225,9 +1231,29 @@ if (!arg || *arg == '\0') {
  			fatal("%s line %d: missing argument.",
  			    filename, linenum);
  		}
@@ -492,7 +493,7 @@
  #endif
  
  	/* Standard Options */
-@@ -4194,7 +4220,17 @@ dump_config(ServerOptions *o)
+@@ -4322,8 +4348,18 @@ }
  	/* integer arguments */
  #ifdef USE_PAM
  	dump_cfg_fmtint(sUsePAM, o->use_pam);
@@ -506,13 +507,14 @@
 +	}
 +#else
  	dump_cfg_string(sPAMServiceName, o->pam_service_name);
-+#endif
  #endif
++#endif
  	dump_cfg_int(sLoginGraceTime, o->login_grace_time);
  	dump_cfg_int(sX11DisplayOffset, o->x11_display_offset);
+ 	dump_cfg_int(sMaxAuthTries, o->max_authtries);
 --- old/servconf.h
 +++ new/servconf.h
-@@ -276,9 +276,16 @@ SSHCONF_ALIAS(KeepAlive, TCPKeepAlive, SSHCFG_GLOBAL)
+@@ -283,9 +283,16 @@ #define SSHD_DEFAULT_USE_PAM	1
  #else
  #define SSHD_DEFAULT_USE_PAM	0
  #endif
@@ -524,15 +526,15 @@
 +#endif
  #define SSHD_CONFIG_ENTRIES_PAM \
  SSHCONF_INTFLAG(use_pam, UsePAM, SSHCFG_GLOBAL, SSHD_DEFAULT_USE_PAM, SSHCFG_COPY_NONE) \
--SSHCONF_STRING(pam_service_name, PAMServiceName, SSHCFG_GLOBAL, SSHCFG_COPY_NONE)
-+SSHCONF_STRING(pam_service_name, PAMServiceName, SSHCFG_GLOBAL, SSHCFG_COPY_NONE) \
+-SSHCONF_STRING(pam_service_name, PAMServiceName, SSHCFG_ALL, SSHCFG_COPY_MATCH)
++SSHCONF_STRING(pam_service_name, PAMServiceName, SSHCFG_ALL, SSHCFG_COPY_MATCH) \
 +SSHD_CONFIG_ENTRIES_PAM_ENHANCEMENT
  #else
  #define SSHD_CONFIG_ENTRIES_PAM \
  SSHCONF_UNSUPPORTED_INT(use_pam, UsePAM, SSHCFG_GLOBAL) \
 --- old/sshd.8
 +++ new/sshd.8
-@@ -1018,6 +1018,33 @@ concurrently for different ports, this contains the process ID of the one
+@@ -1024,6 +1024,33 @@ concurrently for different ports, this c
  started last).
  The content of this file is not sensitive; it can be world-readable.
  .El
@@ -568,7 +570,7 @@
  .Xr sftp 1 ,
 --- old/sshd_config.5
 +++ new/sshd_config.5
-@@ -1347,6 +1347,7 @@ Available keywords are
+@@ -1381,6 +1381,7 @@ .Cm LogLevel ,
  .Cm MaxAuthTries ,
  .Cm MaxSessions ,
  .Cm PAMServiceName ,
@@ -576,7 +578,7 @@
  .Cm PasswordAuthentication ,
  .Cm PermitEmptyPasswords ,
  .Cm PermitListen ,
-@@ -1415,12 +1416,20 @@ key exchange methods.
+@@ -1449,12 +1450,20 @@ key exchange methods.
  The default is
  .Pa /etc/moduli .
  .It Cm PAMServiceName
@@ -603,7 +605,7 @@
  .It Cm PasswordAuthentication
  Specifies whether password authentication is allowed.
  The default is
-@@ -2085,8 +2094,7 @@ If
+@@ -2141,8 +2150,7 @@ .Cm UsePAM
  is enabled, you will not be able to run
  .Xr sshd 8
  as a non-root user.

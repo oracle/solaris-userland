@@ -5,7 +5,7 @@
 #
 --- old/servconf.c
 +++ new/servconf.c
-@@ -1172,8 +1172,16 @@ process_server_config_line_depth(ServerOptions *options, char *line,
+@@ -1208,8 +1208,16 @@ switch (opcode) {
  	/* Portable-specific options */
  #ifdef USE_PAM
  	case sUsePAM:
@@ -24,7 +24,7 @@
  		arg = argv_next(&ac, &av);
 --- old/servconf.h
 +++ new/servconf.h
-@@ -271,8 +271,13 @@ SSHCONF_ALIAS(KeepAlive, TCPKeepAlive, SSHCFG_GLOBAL)
+@@ -278,8 +278,13 @@ SSHD_CONFIG_ENTRIES_PAM \
  	SSHD_CONFIG_ENTRIES_LASTLOG
  
  #ifdef USE_PAM
@@ -36,6 +36,6 @@
  #define SSHD_CONFIG_ENTRIES_PAM \
 -SSHCONF_INTFLAG(use_pam, UsePAM, SSHCFG_GLOBAL, 0, SSHCFG_COPY_NONE) \
 +SSHCONF_INTFLAG(use_pam, UsePAM, SSHCFG_GLOBAL, SSHD_DEFAULT_USE_PAM, SSHCFG_COPY_NONE) \
- SSHCONF_STRING(pam_service_name, PAMServiceName, SSHCFG_GLOBAL, SSHCFG_COPY_NONE)
+ SSHCONF_STRING(pam_service_name, PAMServiceName, SSHCFG_ALL, SSHCFG_COPY_MATCH)
  #else
  #define SSHD_CONFIG_ENTRIES_PAM \

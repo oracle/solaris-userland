@@ -5,7 +5,7 @@
 #
 --- old/session.c
 +++ new/session.c
-@@ -905,6 +905,39 @@ read_etc_default_login(char ***env, u_int *envsize, uid_t uid)
+@@ -910,6 +910,39 @@ free(tmpenv);
  }
  #endif /* HAVE_ETC_DEFAULT_LOGIN */
  
@@ -45,7 +45,7 @@
  #if defined(USE_PAM) || defined(HAVE_CYGWIN)
  static void
  copy_environment_denylist(char **source, char ***env, u_int *envsize,
-@@ -1069,6 +1102,8 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
+@@ -1074,6 +1107,8 @@ child_set_env(&env, &envsize, SSH_AUTHSO
  		    auth_sock_name);
  
  

@@ -9,7 +9,7 @@
 #
 --- old/auth-pam.c
 +++ new/auth-pam.c
-@@ -410,6 +410,8 @@ do_pam_auth(struct pam_ctxt *ctxt)
+@@ -410,6 +410,8 @@ {
  	struct pam_conv sshpam_conv;
  	int flags = (options.permit_empty_passwd == 0 ?
  	    PAM_DISALLOW_NULL_AUTHTOK : 0);
@@ -18,7 +18,7 @@
  
  	sshpam_conv.conv = sshpam_child_conv;
  	sshpam_conv.appdata_ptr = ctxt;
-@@ -436,6 +438,15 @@ do_pam_auth(struct pam_ctxt *ctxt)
+@@ -436,6 +438,15 @@ sshpam_err = PAM_ACCT_EXPIRED;
  		goto auth_fail;
  	}
  	if (sshpam_authctxt->force_pwchange) {

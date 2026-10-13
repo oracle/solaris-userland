@@ -1,0 +1,20 @@
+#
+# Terminate the server TCPKeepAlive option table so unrecognized values do
+# not cause the configuration parser to read beyond the end of the array.
+#
+# Reported upstream:
+# https://bugzilla.mindrot.org/show_bug.cgi?id=4028
+#
+# This patch can be removed when upgrading to an OpenSSH release that
+# includes the fix for upstream bug 4028.
+#
+--- old/servconf.c
++++ new/servconf.c
+@@ -1168,6 +1168,7 @@ static const struct multistate multistate_keepalives[] = {
+ 	{ "no",				SSH_KEEPALIVES_OFF },
+ 	{ "transport",			SSH_KEEPALIVES_TRANSPORT },
+ 	{ "all",			SSH_KEEPALIVES_ALL },
++	{ NULL, -1 }
+ };
+ static const struct multistate multistate_warnweakcrypto[] = {
+ 	{ "true",			1 },

@@ -6,7 +6,7 @@
 #
 --- old/readconf.c
 +++ new/readconf.c
-@@ -154,6 +154,9 @@ typedef enum {
+@@ -154,6 +154,9 @@ oAddressFamily, oGssAuthentication, oGss
  	oServerAliveInterval, oServerAliveCountMax, oIdentitiesOnly,
  	oSendEnv, oSetEnv, oControlPath, oControlMaster, oControlPersist,
  	oHashKnownHosts,
@@ -16,7 +16,7 @@
  	oTunnel, oTunnelDevice,
  	oLocalCommand, oPermitLocalCommand, oRemoteCommand,
  	oVisualHostKey,
-@@ -285,6 +288,9 @@ static struct {
+@@ -285,6 +288,9 @@ { "controlpath", oControlPath },
  	{ "controlmaster", oControlMaster },
  	{ "controlpersist", oControlPersist },
  	{ "hashknownhosts", oHashKnownHosts },
@@ -26,7 +26,7 @@
  	{ "include", oInclude },
  	{ "tunnel", oTunnel },
  	{ "tunneldevice", oTunnelDevice },
-@@ -1137,6 +1143,17 @@ parse_multistate_value(const char *arg, const char *filename, int linenum,
+@@ -1146,6 +1152,17 @@ }
  	return -1;
  }
  
@@ -44,7 +44,7 @@
  /*
   * Processes a single option line as used in the configuration files. This
   * only sets those values that have not already been set.
-@@ -2585,6 +2602,13 @@ parse_pubkey_algos:
+@@ -2597,6 +2614,13 @@ filename, linenum, arg);
  		}
  		break;
  
@@ -58,7 +58,7 @@
  	case oDeprecated:
  		debug("%s line %d: Deprecated option \"%s\"",
  		    filename, linenum, keyword);
-@@ -2823,6 +2847,9 @@ initialize_options(Options * options)
+@@ -2835,6 +2859,9 @@ options->session_type = -1;
  	options->stdin_null = -1;
  	options->fork_after_authentication = -1;
  	options->proxy_use_fdpass = -1;
@@ -68,7 +68,7 @@
  	options->ignored_unknown = NULL;
  	options->num_canonical_domains = 0;
  	options->num_permitted_cnames = 0;
-@@ -3029,6 +3056,10 @@ fill_default_options(Options * options)
+@@ -3041,6 +3068,10 @@ if (options->canonicalize_fallback_local
  		options->canonicalize_fallback_local = 1;
  	if (options->canonicalize_hostname == -1)
  		options->canonicalize_hostname = SSH_CANONICALISE_NO;
@@ -81,7 +81,7 @@
  #ifdef ENABLE_SK_INTERNAL
 --- old/readconf.h
 +++ new/readconf.h
-@@ -190,6 +190,9 @@ typedef struct {
+@@ -190,6 +190,9 @@ u_int	num_channel_timeouts;
  	char	*version_addendum;
  
  	char	*ignored_unknown; /* Pattern list of unknown tokens to ignore */
@@ -91,9 +91,9 @@
  }       Options;
  
  #define SSH_PUBKEY_AUTH_NO	0x00
-@@ -235,6 +238,12 @@ typedef struct {
- #define SSH_KEYSTROKE_CHAFF_MIN_MS		1024
- #define SSH_KEYSTROKE_CHAFF_RNG_MS		2048
+@@ -239,6 +242,12 @@ #define SSH_KEEPALIVES_OFF		0
+ #define SSH_KEEPALIVES_TRANSPORT	1
+ #define SSH_KEEPALIVES_ALL		2
  
 +#ifdef DISABLE_BANNER
 +#define SSH_DISABLEBANNER_NO		0
@@ -106,7 +106,7 @@
      const char *portstr, const char *user, const char *jump_host);
 --- old/ssh_config.5
 +++ new/ssh_config.5
-@@ -785,6 +785,14 @@ If set to a time in seconds, or a time in any of the formats documented in
+@@ -786,6 +786,14 @@ .Xr sshd_config 5 ,
  then the backgrounded master connection will automatically terminate
  after it has remained idle (with no client connections) for the
  specified time.
@@ -123,7 +123,7 @@
  over the secure channel, and the application
 --- old/sshconnect2.c
 +++ new/sshconnect2.c
-@@ -78,6 +78,10 @@
+@@ -78,6 +78,10 @@ #endif
  /* import */
  extern Options options;
  
@@ -134,7 +134,7 @@
  /*
   * SSH2 key exchange
   */
-@@ -579,8 +583,21 @@ input_userauth_banner(int type, uint32_t seq, struct ssh *ssh)
+@@ -577,8 +581,21 @@ debug3_f("entering");
  	if ((r = sshpkt_get_cstring(ssh, &msg, &len)) != 0 ||
  	    (r = sshpkt_get_cstring(ssh, NULL, NULL)) != 0)
  		goto out;

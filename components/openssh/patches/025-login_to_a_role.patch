@@ -11,7 +11,7 @@
 #
 --- old/auth-pam.c
 +++ new/auth-pam.c
-@@ -1160,6 +1160,20 @@ start_pam(struct ssh *ssh)
+@@ -1160,6 +1160,20 @@ if (sshpam_init(ssh, authctxt) == -1)
  		fatal("PAM: initialisation failed");
  }
  
@@ -45,7 +45,7 @@
  #endif /* USE_PAM */
 --- old/auth.h
 +++ new/auth.h
-@@ -98,6 +98,9 @@ struct Authctxt {
+@@ -100,6 +100,9 @@ struct sshbuf	*session_info;	/* Auth inf
  #ifdef PAM_ENHANCEMENT
  	char		*authmethod_name;
  #endif 
@@ -57,17 +57,17 @@
  /*
 --- old/auth2-hostbased.c
 +++ new/auth2-hostbased.c
-@@ -80,6 +80,9 @@ userauth_hostbased(struct ssh *ssh, const char *method)
- #ifdef DEBUG_PK
+@@ -80,6 +80,9 @@ #ifdef DEBUG_PK
  	debug("signature:");
  	sshbuf_dump_data(sig, slen, stderr);
-+#endif
+ #endif
 +#ifdef HAVE_PAM_AUSER
 +	authctxt->auser = NULL;
- #endif
++#endif
  	pktype = sshkey_type_from_name(pkalg);
  	if (pktype == KEY_UNSPEC) {
-@@ -153,6 +156,13 @@ userauth_hostbased(struct ssh *ssh, const char *method)
+ 		/* this is perfectly legal */
+@@ -161,6 +164,13 @@ mm_sshkey_verify(key, sig, slen,
  	    sshbuf_ptr(b), sshbuf_len(b), pkalg, ssh->compat, NULL) == 0)
  		authenticated = 1;
  
@@ -79,11 +79,11 @@
 +#endif
 +
  	auth2_record_key(authctxt, authenticated, key);
- 	sshbuf_free(b);
  done:
+ 	debug2_f("authenticated %d", authenticated);
 --- old/config.h.in
 +++ new/config.h.in
-@@ -1074,6 +1074,9 @@
+@@ -1080,6 +1080,9 @@ #undef HAVE_OPENSSL_VERSION_NUM
  /* Define if you have Digital Unix Security Integration Architecture */
  #undef HAVE_OSF_SIA
  
@@ -95,7 +95,7 @@
  
 --- old/configure.ac
 +++ new/configure.ac
-@@ -1307,6 +1307,7 @@ if (setsockopt(s, IPPROTO_IP, IP_TOS, &one, sizeof(one)) == -1)
+@@ -1296,6 +1296,7 @@ fi
  		],
  	)
  	TEST_SHELL=$SHELL	# let configure find us a capable shell
@@ -105,7 +105,7 @@
  	CPPFLAGS="$CPPFLAGS -DSUNOS4"
 --- old/monitor.c
 +++ new/monitor.c
-@@ -409,6 +409,12 @@ monitor_child_preauth(struct ssh *ssh, struct monitor *pmonitor)
+@@ -409,6 +409,12 @@ "attempts");
  		}
  	}
  
@@ -136,7 +136,7 @@
  	hostbased_chost = NULL;
  }
  
-@@ -1209,6 +1217,11 @@ mm_answer_pam_account(struct ssh *ssh, int sock, struct sshbuf *m)
+@@ -1221,6 +1229,11 @@ int r;
  	if (!options.use_pam)
  		fatal_f("PAM not enabled");
  

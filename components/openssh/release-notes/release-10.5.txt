@@ -1,0 +1,148 @@
+OpenSSH 10.5 was released on 2026-08-11. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Recently the OpenSSH team have received a large number of security
+bug reports, many of which are findings from AI models or made with
+AI assistance. While many AI reports are determined not to have
+security impact when considered in the context of a realistic
+threat model, we very much welcome these reports, especially when
+combined with human triage, analysis, test-cases and particularly
+when accompanied by proposed fixes.
+
+We have seen a number of cases where a security bug identified by
+AI tools is subsequently independently discovered by a different
+researcher. This suggests that adversaries who do not report bugs
+to OSS projects are likely to be able to discover these bugs too.
+Given this, the OpenSSH team will, for now, be making more frequent
+releases to get bugfixes into users' hands more quickly rather than
+batching them until the next planned release.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Potentially-incompatible changes
+--------------------------------
+
+ * Portable OpenSSH now requires ECC (Elliptic Curve Cryptography)
+   support in libcrypto, including support for the NISTP521 curve.
+   ECC is included in the default build configurations of all
+   versions of all libcrypto implementations currently supported by
+   OpenSSH, including LibreSSL, OpenSSL, BoringSSL and AWS LC.
+   The --without-openssl build configuration is not affected.
+
+Changes since OpenSSH 10.4
+==========================
+
+This release contains a number of security fixes and small bugfixes.
+
+Security
+========
+
+ * ssh-agent(1): fix an interaction between agent locking and the
+   session-bind@openssh.com extension that is used to identify
+   forwarded agents. These binding requests were refused when the
+   agent was locked, with the result that operations that were
+   intended to be limited to local use only could be performed
+   remotely, including the ability to add PKCS#11 tokens and make
+   use of keys that had destination restrictions applied.
+   Reported by sn0x-sharma
+
+ * ssh(1): avoid potential realloc use-after-free in the client if a
+   remote forwarding is added via the local session multiplexing
+   socket while a remote forwarding open request is pending with the
+   server. Report and fix from Brian Mingus of Cognatory
+
+ * sshd(8): make the authorized_keys "restrict" keyword apply
+   correctly to tunnel forwarding too (which is administratively
+   disabled by default). Reported by Erichen, Institute of Computing
+   Technology, Chinese Academy of Sciences
+    
+New features
+------------
+
+ * ssh-keygen(1): add ability to set or clear the touch-required and
+   verify-required flags on FIDO private keys when resetting a
+   private key's passphrase.
+
+ * ssh(1): tweak ordering of certificates tried during pubkey
+    authentication to prefer FIDO keys that do not require user
+    presence (touch) first, and FIDO keys that require user
+    verification via PIN or biometrics last. This effectively tries
+    low-friction authenticators before higher friction ones.
+
+ * ssh(1): add a "ssh -Z user@host" mode that prints the keys that
+   will be tried for public key authentication in the order that
+   they will be used.
+    
+ * sshd(8) use setproctitle(3) to identify sshd-session when its
+   acting as a post-authentication monitor.
+    
+Bugfixes
+--------
+
+ * ssh-keyscan(1): make reading the server banner a non-blocking
+   operation to prevent a stuck server from blocking a many-host
+   keyscan from proceeding.
+
+ * sshd(8): use sshpkt_fatal() instead of plain fatal() for errors
+   in the packet code as this provides context of the failing peer
+   (address, port, user, etc).
+
+ * sshd(8): when signing hostkey proofs for a client UpdateHostKeys
+   request, allow each hostkey to perform at most one signature
+   operation.
+    
+ * sshd(8) fix GSSAPI option names, that were broken during a
+   servconf.c refactoring in openssh-10.4; bz3974.
+    
+ * ssh-keygen(1): pass back errors from ed25519 key generation, which
+   theoretically can fail. GHPR702.
+
+ * sshd(8): move check of public key type against allowed algorithms
+   to before parsing of the key sent by the peer. This removes at
+   least some key parsing and verification paths from the pre-auth
+   attack surface. Suggested by Christopher Paul Rohlf of Anthropic.
+    
+ * ssh-keygen(1): fix double frees (impossible to reach outside of a
+   test harness), and also use freezero where possible. From
+   Christopher Paul Rohlf at Anthropic.
+
+ * sshd(8): fix ChannelTimeout and RekeyLimit not being applied in
+   sshd_config Match blocks.
+
+ * sshd(8): in sshd config dump mode, write all directives in mixed
+   case for consistency
+    
+Portability
+-----------
+
+ * sshd(8): re-allow PAMServiceName inside a Match block, which
+   was incorrectly disabled during a refactoring in openssh-10.4.
+   bz3987
+
+Checksums:
+==========
+
+ - SHA1 (openssh-10.5.tar.gz) = 273163972f623bb9bffef9fd75a85c74d3b22633
+ - SHA256 (openssh-10.5.tar.gz) = 9Zhp0C/mDWNLmnatq68mtbqOUhvbyYcffH04dsHUwZQ=
+
+ - SHA1 (openssh-10.5p1.tar.gz) = 3067e2af7c526b31c7e94bc3ed38904ef791eb2c
+ - SHA256 (openssh-10.5p1.tar.gz) = 1E0oqDnqna+WnMaRUP3lmRCys5Nh2tgaO9bL0ZIY2xE=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com
+

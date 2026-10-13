@@ -1,10 +1,9 @@
 --- old/openbsd-compat/port-solaris.c
 +++ new/openbsd-compat/port-solaris.c
-@@ -299,6 +299,15 @@ solaris_drop_privs_pinfo_net_fork_exec(void)
- 	if (priv_delset(npset, PRIV_PROC_EXEC) != 0 ||
+@@ -300,6 +300,15 @@ if (priv_delset(npset, PRIV_PROC_EXEC) !
  #ifdef PRIV_NET_ACCESS
  	    priv_delset(npset, PRIV_NET_ACCESS) != 0 ||
-+#endif
+ #endif
 +#ifdef PRIV_DAX_ACCESS
 +	    priv_delset(npset, PRIV_DAX_ACCESS) != 0 ||
 +#endif
@@ -13,18 +12,19 @@
 +#endif
 +#ifdef PRIV_PROC_SELF
 +	    priv_delset(npset, PRIV_PROC_SELF) != 0 ||
- #endif
++#endif
  	    priv_delset(npset, PRIV_PROC_FORK) != 0 ||
  	    priv_delset(npset, PRIV_PROC_INFO) != 0 ||
+ 	    priv_delset(npset, PRIV_PROC_SESSION) != 0)
 --- old/sandbox-solaris.c
 +++ new/sandbox-solaris.c
-@@ -67,6 +67,9 @@ ssh_sandbox_init(struct monitor *monitor)
- #endif
+@@ -68,6 +68,9 @@ #endif
  #ifdef PRIV_SYS_IB_INFO
  	    priv_delset(box->pset, PRIV_SYS_IB_INFO) != 0 ||
-+#endif
+ #endif
 +#ifdef PRIV_PROC_SELF
 +	    priv_delset(box->pset, PRIV_PROC_SELF) != 0 ||
- #endif
++#endif
  	    priv_delset(box->pset, PRIV_PROC_EXEC) != 0 ||
  	    priv_delset(box->pset, PRIV_PROC_FORK) != 0 ||
+ 	    priv_delset(box->pset, PRIV_PROC_INFO) != 0 ||

@@ -53,7 +53,7 @@
  also be enabled in sshd_config (refer to the UsePAM directive).
 --- old/Makefile.in
 +++ new/Makefile.in
-@@ -125,7 +125,7 @@ SSHDOBJS=sshd.o \
+@@ -125,7 +125,7 @@ dns.o fatal.o compat.o utf8.o authfd.o c
  	$(P11OBJS) $(SKOBJS)
  
  SSHD_SESSION_OBJS=sshd-session.o auth-rhosts.o auth-passwd.o \
@@ -62,7 +62,7 @@
  	sshpty.o sshlogin.o servconf.o serverloop.o \
  	auth.o auth2.o auth2-methods.o auth-options.o session.o \
  	auth2-chall.o groupaccess.o \
-@@ -145,7 +145,7 @@ SSHD_AUTH_OBJS=sshd-auth.o \
+@@ -145,7 +145,7 @@ groupaccess.o auth-bsdauth.o auth2-hostb
  	auth2-none.o auth2-passwd.o auth2-pubkey.o auth2-pubkeyfile.o \
  	auth2-gss.o gss-serv.o gss-serv-krb5.o \
  	monitor_wrap.o auth-krb5.o \
@@ -73,8 +73,8 @@
  	sandbox-seccomp-filter.o sandbox-capsicum.o  sandbox-solaris.o \
 --- old/README.platform
 +++ new/README.platform
-@@ -72,8 +72,8 @@ zlib-devel and pam-devel, on Debian based distros these may be
- libssl-dev, libz-dev and libpam-dev.
+@@ -72,8 +72,8 @@ zlib-devel and pam-devel, on Debian base
+ libcrypt-dev, libssl-dev, libz-dev and libpam-dev.
  
  
 -Solaris
@@ -84,7 +84,7 @@
  If you enable BSM auditing on Solaris, you need to update audit_event(4)
  for praudit(1m) to give sensible output.  The following line needs to be
  added to /etc/security/audit_event:
-@@ -87,6 +87,11 @@ number is already in use on your system, you may change it at build time
+@@ -87,6 +87,11 @@ number is already in use on your system,
  by configure'ing --with-cflags=-DAUE_openssh=32801 then rebuilding.
  
  
@@ -98,7 +98,7 @@
  As of OpenSSH 4.3p1, sshd will no longer check /etc/nologin itself when
 --- old/config.h.in
 +++ new/config.h.in
-@@ -2007,6 +2007,9 @@
+@@ -2004,6 +2004,9 @@ #undef USE_LIBEDIT
  /* Use Linux audit module */
  #undef USE_LINUX_AUDIT
  
@@ -110,7 +110,7 @@
  
 --- old/configure
 +++ new/configure
-@@ -1511,7 +1511,7 @@ Optional Packages:
+@@ -1509,7 +1509,7 @@ --without-zlib-version-check Disable zli
    --with-ldns[=PATH]      Use ldns for DNSSEC support (optionally in PATH)
    --with-libedit[=PATH]   Enable libedit support for sftp
    --with-wtmpdb[=PATH]   Enable wtmpdb support for sshd
@@ -119,7 +119,7 @@
    --with-pie              Build Position Independent Executables if possible
    --with-security-key-builtin include builtin U2F/FIDO support
    --with-security-key-standalone build standalone sk-libfido2 SecurityKeyProvider
-@@ -15920,6 +15920,31 @@ then :
+@@ -15931,6 +15931,31 @@ withval=$with_audit;
  	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for supported audit module" >&5
  printf %s "checking for supported audit module... " >&6; }
  	  case "$withval" in
@@ -153,7 +153,7 @@
  printf "%s\n" "bsm" >&6; }
 --- old/configure.ac
 +++ new/configure.ac
-@@ -1980,10 +1980,21 @@ AC_ARG_WITH([wtmpdb],
+@@ -1985,10 +1985,21 @@ )
  
  AUDIT_MODULE=none
  AC_ARG_WITH([audit],
@@ -178,7 +178,7 @@
  		AUDIT_MODULE=bsm
 --- old/defines.h
 +++ new/defines.h
-@@ -777,6 +777,11 @@ struct winsize {
+@@ -777,6 +777,11 @@ # define SSH_AUDIT_EVENTS
  # define CUSTOM_SSH_AUDIT_EVENTS
  #endif
  
@@ -192,7 +192,7 @@
  #elif !defined(HAVE___func__)
 --- old/sshd-session.c
 +++ new/sshd-session.c
-@@ -1264,9 +1264,6 @@ main(int ac, char **av)
+@@ -1253,9 +1253,6 @@ }
  	if (options.routing_domain != NULL)
  		set_process_rdomain(ssh, options.routing_domain);
  
@@ -202,7 +202,7 @@
  
  #ifdef GSSAPI
  	if (options.gss_authentication) {
-@@ -1282,6 +1279,11 @@ main(int ac, char **av)
+@@ -1271,6 +1268,11 @@ do_pam_session(ssh);
  	}
  #endif
  

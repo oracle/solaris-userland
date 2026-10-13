@@ -11,7 +11,7 @@
 #
 --- old/auth-pam.c
 +++ new/auth-pam.c
-@@ -433,10 +433,10 @@ do_pam_auth(struct pam_ctxt *ctxt)
+@@ -433,10 +433,10 @@ goto auth_fail;
  	if ((sshpam_err = check_pam_user(sshpam_authctxt)) != PAM_SUCCESS)
  		goto auth_fail;
  
@@ -25,7 +25,7 @@
  	if (sshpam_authctxt->force_pwchange) {
  		if ((buffer = sshbuf_new()) == NULL)
  			fatal("%s: sshbuf_new failed", __func__);
-@@ -1070,26 +1070,32 @@ finish_pam(void)
+@@ -1070,26 +1070,32 @@ }
  u_int
  do_pam_account(void)
  {
@@ -65,7 +65,7 @@
  void
 --- old/auth2.c
 +++ new/auth2.c
-@@ -427,7 +427,7 @@ userauth_finish(struct ssh *ssh, int authenticated, const char *packet_method,
+@@ -429,7 +429,7 @@ * If each userauth has its own PAM servi
  		 * perform account check for this service.
  		 */
  		if (options.use_pam && options.pam_service_name == NULL &&
@@ -74,7 +74,7 @@
  			/* if PAM returned a message, send it to the user */
  			if (sshbuf_len(loginmsg) > 0) {
  				if ((r = sshbuf_put(loginmsg, "\0", 1)) != 0)
-@@ -474,7 +474,7 @@ userauth_finish(struct ssh *ssh, int authenticated, const char *packet_method,
+@@ -476,7 +476,7 @@ options.pam_service_name == NULL)){
  #else
  	if (options.use_pam && authenticated) {
  #endif /* PAM_ENHANCEMENT */
@@ -85,7 +85,7 @@
  		if (sshbuf_len(loginmsg) > 0) {
 --- old/monitor.c
 +++ new/monitor.c
-@@ -1231,7 +1231,7 @@ mm_answer_pam_account(struct ssh *ssh, int sock, struct sshbuf *m)
+@@ -1243,7 +1243,7 @@ sshbuf_reset(loginmsg);
  
  	mm_request_send(sock, MONITOR_ANS_PAM_ACCOUNT, m);
  

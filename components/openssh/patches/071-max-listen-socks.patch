@@ -8,7 +8,7 @@
 #
 --- old/sshd.c
 +++ new/sshd.c
-@@ -110,8 +110,7 @@ static int saved_argc;
+@@ -111,8 +111,7 @@ /*
   * The sockets that the server is listening; this is used in the SIGHUP
   * signal handler.
   */
@@ -18,7 +18,7 @@
  static int num_listen_socks = 0;
  
  /*
-@@ -203,6 +202,8 @@ close_listen_socks(void)
+@@ -204,6 +203,8 @@ int i;
  
  	for (i = 0; i < num_listen_socks; i++)
  		close(listen_socks[i]);
@@ -27,11 +27,10 @@
  	num_listen_socks = 0;
  }
  
-@@ -810,12 +811,20 @@ listen_on_addrs(struct listenaddr *la)
- 	struct addrinfo *ai;
+@@ -812,11 +813,19 @@ struct addrinfo *ai;
  	char ntop[NI_MAXHOST], strport[NI_MAXSERV];
  
-+	for (ai = la->addrs; ai; ai = ai->ai_next) {
+ 	for (ai = la->addrs; ai; ai = ai->ai_next) {
 +		if (ai->ai_family == AF_INET || ai->ai_family == AF_INET6) {
 +			num_listen_socks++;
 +		}
@@ -42,7 +41,7 @@
 +	}
 +	num_listen_socks = 0;
 +
- 	for (ai = la->addrs; ai; ai = ai->ai_next) {
++	for (ai = la->addrs; ai; ai = ai->ai_next) {
  		if (ai->ai_family != AF_INET && ai->ai_family != AF_INET6)
  			continue;
 -		if (num_listen_socks >= MAX_LISTEN_SOCKS)

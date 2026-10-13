@@ -1,0 +1,353 @@
+OpenSSH 10.6 was released on 2026-10-06. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Recently the OpenSSH team have received a large number of security
+bug reports, many of which are findings from AI models or made with
+AI assistance. While many AI reports are determined not to have
+security impact when considered in the context of a realistic
+threat model, we very much welcome these reports, especially when
+combined with human triage, analysis, test-cases and particularly
+when accompanied by proposed fixes.
+
+** We have seen a number of cases where a security bug identified
+** by AI tools is subsequently independently discovered by a
+** different researcher. This suggests that adversaries who do not
+** report bugs to OSS projects are likely to be able to discover
+** these bugs too. Given this, the OpenSSH team will, for now, be
+** making more frequent releases to get bugfixes into users' hands
+** more quickly rather than batching them until the next planned
+** release.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Future deprecation notice
+-------------------------
+
+ * scp(1): begin deprecating the -R flag, which is used to perform a
+   remote-to-remote copy by executing scp on a remote host. This
+   option is a fragile optimisation that is difficult to use because
+   it requires credentials on the remote host. It also creates
+   security risks if the shell quoting rules on the remote system
+   where the copy is performed differ from the client's expectations.
+
+   From OpenSSH 10.6, this option will continue to work but will
+   cause a deprecation warning to be emitted to standard error. In
+   a future release, the option will be ignored and will leave in
+   place the default remote-to-remote copy behaviour (copy via the
+   host running scp).
+
+ * sshd(8): support for platforms that do not allow file descriptor
+   passing and that also require root privilege for PTY allocation
+   will be removed in a future release. Affected platforms are known
+   to include SCO OpenServer 5 and QNX 6 but may include other
+   similarly old operating systems. This deprecation can be avoided
+   if the user community for these platforms is able to assist us in
+   building alternatives, such as avoiding the need for root in PTY
+   allocation.
+
+Potentially-incompatible changes
+--------------------------------
+
+ * ssh(1), sshd(8): compression will be less effective as a result
+   of the change noted below in the "Security" section
+
+ * ssh(1): destination usernames entered on the commandline are now
+   more stricly checked and will refuse usernames that include
+   backslash and dollar symbols. Usernames that are specified by
+   the "User" directive in configuration files are no subject to
+   these restrictions. This motivation for this change is mentioned
+   below in the "Security" section.
+
+ * sshd(8): on platforms that do not support file descriptor passing
+   and that require root for PTY allocation, the GatewayPorts and
+   StreamLocalForwarding options are forcibly disabled. The
+   motivation for this changes is discussed below in the "Security"
+   section.
+
+Changes since OpenSSH 10.5
+==========================
+
+This release contains a number of security fixes, several new
+features and some small bugfixes.
+
+Security
+========
+
+ * sftp(1): more strictly validate paths returned from the server to
+   avoid some cases where a server could return paths that could
+   manipulate a recursive copy operation into writing outside its
+   target directory. Report and patch from Junghoon Cho.
+
+ * sshd(8): when GSSAPIAuthentication is in use, only store GSSAPI
+   credentials when authentication has succeeded. Avoids a situation
+   where credentials from a failed GSSAPIAuthentication attempt may
+   persist and be made inappropriately available if another
+   authentication subsequently succeeds. Issue report and patch from
+   Moritz Theile.
+
+ * sshd(8): reset GSSAPIAuthentication before authentication, avoiding
+   state from one authentication attempt being confused with that of
+   a later attempt. Report and feedback from Moritz Theile.
+
+ * sshd(8), ssh(1): disable LZ77 dictionary coder to mitigate the
+   side-channel leaks described in "Crossing the Streams: SSH
+   Plaintext Recovery via a Common Compression Context in
+   Multiplexed Channels" by Fabian Bäumer and Marcus Brinkmann,
+   preprint https://arxiv.org/abs/2609.07709 (2026)
+
+   A chosen-plaintext attack method exists which makes use of
+   dictionary-based compression to recover secrets from one channel
+   by interacting with the SSH session's shared compression
+   dictionary through another channel.
+
+   Attacker-controlled input can recognizably reflect into the
+   total length of transmitted ciphertexts by virtue of LZ77
+   replacing repeated strings with back-references into the SSH
+   session's encoder search buffer, which is shared across all
+   channels. For this reason, the documentation already recommended
+   against enabling compression for connections that share trusted
+   and untrusted traffic.
+
+   This change will reduce the effectiveness of the Compression
+   option. Users are encouraged to use application-level compression
+   over the SSH protocol where possible, as this will typically be
+   more effective and will be completely immune to this type of
+   attack.
+
+ * ssh(1): disallow '$' and '\' characters in usernames entered on
+   the command-line to avoid usernames from untrusted sources
+   yielding injection in shell context via ProxyCommand, Match exec,
+   etc. Usernames specified via the configuration files are not
+   subject this this control. Reported by SecBuddyF KeenLab Tencent
+   (CodeBuddy Security)
+
+   We continue to recommend against directly exposing ssh(1) and
+   other tools' command-lines to untrusted input. Mitigations such
+   as this can not be absolute given the variety of shells and user
+   configurations in use.
+
+ * ssh-keygen(1): correct handling of Daylight Saving Time when
+   converting dates. Previous handling could cause errors of
+   up to +/- 1 hour (unless you are in the Antarctica/Troll
+   timezone, where the error could be +/- 2 hours). These errors
+   could result in creation of certificates with incorrect expiry
+   times. bz4004; from Khush Patel
+
+ * sshd(8), ssh(1): ensure that compressed payloads don't inflate
+   past the maximum supported packet length. Reported by Oleh Konko.
+
+ * sshd(8): fully honor the authorized_keys "restrict" keyword,
+   which was not being properly applied to tunnel forwarding
+   (PermitTunnel, disabled by default). This is a separate problem
+   to the one fixed in openssh-10.5.
+
+ * sshd(8): correctly handle some options that accept "none". Some
+   options, including AuthorizedPrincipalsFile, were documented as
+   accepting "none" as a way to disable them; however, when
+   overridden by an sshd_config(5) Match keyword, this argument was
+   being incorrectly interpreted as a literal file.
+   With Chris Rohlf in collaboration with Claude and Anthropic Research
+
+ * sshd(8): On OS X SDK >= 27, sandboxing is no longer supported
+   as the API we depended upon has been removed and no obvious
+   alternative provided.
+
+ * sshd(8): on platforms that do not support file descriptor passing
+   and that require root for PTY allocation, the post-authentication
+   sshd-session process retains root privilege, whereas on other
+   platforms this process runs with the privilege of the logged-in
+   user. When sshd-session was run with elevated privilege, it could
+   perform certain actions as root and circumvent controls that
+   would normally have applied to the user, such as making unix
+   domain socket connections or binding (via -R forwarding) to low-
+   numbered TCP ports.
+
+   For this reason, this release disables the GatewayPorts and
+   StreamLocalForwarding options and support for these (few)
+   platforms will be removed in future if no alteratives to
+   requiring privilege in the post-authentication process are found.
+   Affected platforms include QNX 6, SCO OpenServer 5 and builds
+   that were made with the --disable-fd-passing configure option.
+
+   This problem was reported separately by sn0x-sharma and by Dark
+   River.
+
+New features
+------------
+
+ * All: enable hybrid post-quantum ssh-mldsa44-ed25519 signature
+   algorithm. Note that this no longer uses the "@openssh.com"
+   vendor extension suffix that the previous experimental
+   implementation used. Keys generated with the previous experimental
+   support must be regenerated and/or removed.
+
+ * sshd(8): Add the WarnWeakCrypto option to sshd_config(5). This
+   option was previously available for the client only. This option
+   is enabled by default and will log when the client uses a key
+   agreement scheme that is not post-quantum safe.
+
+ * ssh-keygen(1), ssh-add(1): preserve user-verification (PIN or
+   biometric) requirement for resident keys loaded from a FIDO
+   token, by checking the credential's credProtect policy.
+   GHPR701 from Savely Krasovsky
+
+ * ssh(1): include local and remote version strings in the ~I
+   connection information display.
+
+ * ssh-add(1): add a -P flag to skip PIN entry for FIDO and PKCS#11
+   tokens that do not require it.
+
+ * sftp(1): add '-p' flag for mkdir/lmkdir to create directories as
+   required. This flag has similar ergonomics to mkdir(1), and
+   previously-existing directories do not cause an error.
+
+ * ssh-keygen(1): add a "hexdump" key export mode that dumps the SSH
+   wire-formatted key blob in hex format. Useful when writing
+   documentation, tests, etc. E.g. `ssh-keygen -em hexdump -f /key`
+
+ * ssh(1), sshd(8): ChannelTimeout now accepts timeouts with
+   fractional seconds.
+
+ * sshd(8): allow specification of the location of $SSH_AUTH_SOCK
+   used for agent forwarding using a new AgentSocketPath option.
+   This supports both using a user-specific path, such as the
+   default of a subdirectory of $HOME ("user:.ssh/agent"), and
+   the previous approach of allowing agent forwarding sockets to be
+   located in a shared directory (e.g. "shared:/tmp"). Sockets
+   created in shared directories will be created inside a
+   subdirectory with a randomised name. bz3860
+
+ * ssh-agent(1): allow specification of agent socket directories
+   using a -A flag. It accepts "user:" and "shared:" directory
+   styles similar to the sshd AgentSocketPath option.
+
+ * sshd(8): account for public key authentication "key ok" tests
+   separately to auth attempts. Add a `PubkeyOptions max-pk-ok:nnnn`
+   option to allow a number of PK_OK tests (asking whether the
+   server might accept a given public key) that do not count against
+   MaxAuthTries, defaulting to 6 attempts. After these attempts are
+   exhausted, further attempts count as failed authentications
+   against MaxAuthTries. Practically, this allows more keys on disk
+   or held in ssh-agent to be checked for use before the server
+   disconnects.
+
+ * ssh(1), sshd(8): extend the existing TCPKeepAlive option to also
+   support setting keepalives on sockets created for forwarding
+   connections. Previously this option controlled keepalives on the
+   connection socket only. TCPKeepAlive "yes" or "transport" enables
+   keepalives on the connection socket. "TCPKeepAlive all" additionally
+   enables them for forwarding sockets. bz3921
+
+Bugfixes
+--------
+
+ * sshd(8), ssh(1): fix configuration matching on more Turkic
+   languages which have disjoint dotted and dotless i/I characters,
+   specifically Azerbaijani and Crimean Tatar. bz3991
+
+ * ssh(1), sshd(8): don't attempt to set TCP_NODELAY on non-IP/IPv6
+   sockets. Eliminates some noise in debug logs.
+
+ * ssh(1): fix case for ssh -G option output; bz4005
+
+ * ssh(1), sshd(8): Fix ChannelTimeout specificity; previously a
+   more specific channel type (e.g. "session:shell") could clobber
+   a user-specified ChannelTimeout if it was less specific (e.g.
+   "session").  Also, in some cases, the debug messages were
+   printing 0 instead of the effective timeout. bz3994
+
+ * sftp(1): avoid NULL dereference crash in some circumstances when
+   a server fails a stat/lstat operation. GHPR707
+
+ * sshd(8): close a race condition where a SIGTERM/SIGQUIT would be
+   ignored if it was received by the server while it was processing a
+   SIGHUP restart request. bz3981
+
+ * sshd(8), ssh(1): check key and CA signature types during key
+   parsing against allowlists (PubkeyAcceptedAlgorithms, etc) as
+   early as possible. This reduces the attack surface presented by
+   disabled algorithms. Suggested by and with extensive feedback
+   from Chris Rohlf in collaboration with Claude and Anthropic
+   Research.
+
+ * All: switch the fallback implementation of the ed25519 signature
+   algorithm used when libcrypto is disabled from SUPERCOP ed25519
+   to libsodium. The libsodium implementation includes a number of
+   strictness checks over the original reference implementation we
+   have used to this point and a more ergonomic API.
+
+ * ssh-add(1), ssh(1), ssh-keygen(1): fix spin on password entry when
+   the program attempting to read a password was started in a
+   background process group, with no TTY and with certain signals
+   ignored. bz3995
+
+ * scp(1): disallow nul byte in received scp -O filename. This was
+   not reachable in normal operation. Reported by Chua Wei Xun.
+
+ * ssh-keygen(1), ssh(1), sshd(8): implement a maximum number of KDF
+   rounds that will be accepted when writing an OpenSSH-format
+   private key or when loading one. This limit is set quite high
+   (1M), but ensures that a service that is passed a bad key with a
+   ridiculously high number of rounds will eventually complete
+   parsing it.
+
+ * ssh-keygen(1): bump the default number of KDF rounds from 24 to
+   32 (this is a linear increase, not like bcrypt(3) which is
+   exponential).
+
+ * ssh(1): make StreamLocalBindMask properly respect Host/Match
+   blocks and make it first-match-wins as documented. bz4013
+
+ * sshd(8): make StreamLocalBindMask properly first-match-wins.
+
+Portability
+-----------
+
+ * All: remove the NetBSD BROKEN_READ_COMPARISON workaround. This
+   appears to be no longer required and caused pre-auth CPU spinning.
+
+ * sshd(8): don't link sshd against libselinux when SELinux support
+   is enabled (note: this library is still linked for the sshd-auth
+   and sshd-session helper binaries).
+
+ * sshd(8): allow madvise(..., MADV_DONTNEED_LOCKED) in the seccomp
+   sandbox; needed by GrapheneOS' hardened allocator. bz4001
+
+ * sshd(8): restrict mremap(2) flags accepted by the seccomp
+   sandbox. Only MREMAP_MAYMOVE is now accepted as other flags may
+   have some utility in attack chains. Reported by: Mohammad Hossein
+   Abedini.
+
+ * sshd(8): allow PAMServiceName in Match (regressed in 10.4).
+   During the refactor of server option parsing, the ability to set
+   PAMServiceName in Match blocks was accidentally disabled.
+
+ * sshd(8): the --disable-fd-passing configure option has been
+   removed.
+
+Checksums:
+==========
+
+ - SHA1 (openssh-10.6.tar.gz) = 096e9cd60cd08e0acacfe16b615144f8c0463da5
+ - SHA256 (openssh-10.6.tar.gz) = 0lP9h9/QH3k667vqbxKhkkusc3CN5iKUiDNI9fsR06A=
+ - SHA1 (openssh-10.6p1.tar.gz) = e6a34f5625e20172b214c50ebd4e0dcb4fd18013
+ - SHA256 (openssh-10.6p1.tar.gz) = qdyVZd/+hkD2TYY80poyvEo9vewFZqf8RMXW7nZ9Xzk=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available from the mirror sites:
+https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com
+

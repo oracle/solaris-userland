@@ -7,7 +7,7 @@
 #
 --- old/ssh_config
 +++ new/ssh_config
-@@ -22,7 +22,7 @@
+@@ -22,7 +22,7 @@ #   ForwardAgent no
  #   ForwardX11 no
  #   PasswordAuthentication yes
  #   HostbasedAuthentication no
@@ -16,7 +16,7 @@
  #   GSSAPIDelegateCredentials no
  #   GSSAPIKeyExchange no
  #   GSSAPITrustDNS no
-@@ -45,3 +45,7 @@
+@@ -45,3 +45,7 @@ #   VisualHostKey no
  #   ProxyCommand ssh -q -W %h:%p gateway.example.com
  #   RekeyLimit 1G 1h
  #   UserKnownHostsFile ~/.ssh/known_hosts.d/%k
@@ -26,7 +26,7 @@
 +SendEnv LC_*
 --- old/sshd_config
 +++ new/sshd_config
-@@ -3,116 +3,88 @@
+@@ -3,117 +3,88 @@ #	$OpenBSD: sshd_config,v 1.106 2026/07/
  # This is the sshd server system-wide configuration file.  See
  # sshd_config(5) for more information.
  
@@ -50,59 +50,64 @@
 -#HostKey /etc/ssh/ssh_host_rsa_key
 -#HostKey /etc/ssh/ssh_host_ecdsa_key
 -#HostKey /etc/ssh/ssh_host_ed25519_key
+-#HostKey /etc/ssh/ssh_host_mldsa44_ed25519_key
+-
+-# Ciphers and keying
+-#RekeyLimit default none
+-
+-# Logging
+-#SyslogFacility AUTH
+-#LogLevel INFO
+-
+-# Authentication:
+-
+-#LoginGraceTime 2m
+-#PermitRootLogin prohibit-password
+-#StrictModes yes
+-#MaxAuthTries 6
+-#MaxSessions 10
 +# If port forwarding is enabled (default), specify if the server can bind to
 +# INADDR_ANY. 
 +# This allows the local port forwarding to work when connections are received
 +# from any remote host.
 +#GatewayPorts no
  
--# Ciphers and keying
--#RekeyLimit default none
+-#PubkeyAuthentication yes
 +# X11 tunneling options
 +#X11DisplayOffset 10
 +#X11UseLocalhost yes
 +X11Forwarding yes
  
--# Logging
--#SyslogFacility AUTH
--#LogLevel INFO
+-# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
+-# but this is overridden so installations will only check .ssh/authorized_keys
+-AuthorizedKeysFile	.ssh/authorized_keys
 +# The maximum number of concurrent unauthenticated connections to sshd.
 +# start:rate:full see sshd(1) for more information.
 +#MaxStartups 10:30:100
  
--# Authentication:
+-#AuthorizedPrincipalsFile none
 +# Banner to be printed before authentication starts.
 +Banner /etc/issue
  
--#LoginGraceTime 2m
--#PermitRootLogin prohibit-password
--#StrictModes yes
--#MaxAuthTries 6
--#MaxSessions 10
+-#AuthorizedKeysCommand none
+-#AuthorizedKeysCommandUser nobody
 +# Should sshd print the /etc/motd file and check for mail.
 +# On Solaris it is assumed that the login shell will do these (eg /etc/profile).
 +PrintMotd no
- 
--#PubkeyAuthentication yes
++
 +# KeepAlive specifies whether keep alive messages are sent to the client.
 +# See sshd(1) for detailed description of what this means.
 +# Note that the client may also be sending keep alive messages to the server.
 +#KeepAlive yes
- 
--# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
--# but this is overridden so installations will only check .ssh/authorized_keys
--AuthorizedKeysFile	.ssh/authorized_keys
++
 +# Syslog facility and level 
 +#SyslogFacility auth
 +#LogLevel info
- 
--#AuthorizedPrincipalsFile none
++
 +#
 +# Authentication configuration
 +#
- 
--#AuthorizedKeysCommand none
--#AuthorizedKeysCommandUser nobody
++
 +# sshd regenerates the key every KeyRegenerationInterval seconds.
 +# The key is never stored anywhere except the memory of sshd.
 +# The default is 1 hour (3600 seconds).
@@ -159,7 +164,9 @@
 -# PAM authentication, then enable this but set PasswordAuthentication
 -# and KbdInteractiveAuthentication to 'no'.
 -#UsePAM no
--
++# To disable tunneled clear text passwords, change PasswordAuthentication to no.
++#PasswordAuthentication yes
+ 
 -#AllowAgentForwarding yes
 -#AllowTcpForwarding yes
 -#GatewayPorts no
@@ -193,9 +200,6 @@
 -#	AllowTcpForwarding no
 -#	PermitTTY no
 -#	ForceCommand cvs server
-+# To disable tunneled clear text passwords, change PasswordAuthentication to no.
-+#PasswordAuthentication yes
-+
 +# Are root logins permitted using sshd.
 +# Note that sshd uses pam_authenticate(3PAM) so the root (or any other) user
 +# maybe denied access by a PAM module regardless of this setting.

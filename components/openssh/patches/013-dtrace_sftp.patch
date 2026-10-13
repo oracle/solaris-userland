@@ -14,7 +14,7 @@
  PRIVSEP_PATH=@PRIVSEP_PATH@
  SSH_PRIVSEP_USER=@SSH_PRIVSEP_USER@
  STRIP_OPT=@STRIP_OPT@
-@@ -133,7 +134,7 @@ SSHD_SESSION_OBJS=sshd-session.o auth-rhosts.o auth-passwd.o \
+@@ -133,7 +134,7 @@ auth2-none.o auth2-passwd.o auth2-pubkey
  	monitor.o monitor_wrap.o auth-krb5.o \
  	auth2-gss.o gss-serv.o gss-serv-krb5.o \
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o \
@@ -23,7 +23,7 @@
  	uidswap.o platform-listen.o $(P11OBJS) $(SKOBJS)
  
  SSHD_AUTH_OBJS=sshd-auth.o \
-@@ -148,7 +149,7 @@ SSHD_AUTH_OBJS=sshd-auth.o \
+@@ -148,7 +149,7 @@ audit.o audit-bsm.o audit-linux.o platfo
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o \
  	sandbox-null.o sandbox-rlimit.o sandbox-darwin.o \
  	sandbox-seccomp-filter.o sandbox-capsicum.o  sandbox-solaris.o \
@@ -32,7 +32,7 @@
  	uidswap.o $(P11OBJS) $(SKOBJS)
  
  SFTP_CLIENT_OBJS=sftp-common.o sftp-client.o sftp-glob.o ssherr-nolibcrypto.o
-@@ -169,7 +170,7 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o sk-usbhid.o ssherr-nolibcrypto.o
+@@ -169,7 +170,7 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o
  
  SSHKEYSCAN_OBJS=ssh-keyscan.o $(P11OBJS) $(SKOBJS)
  
@@ -41,7 +41,7 @@
  
  SFTP_OBJS=	sftp.o sftp-usergroup.o progressmeter.o $(SFTP_CLIENT_OBJS)
  
-@@ -297,9 +298,20 @@ $(CONFIGFILES): $(CONFIGFILES_IN) Makefile
+@@ -297,9 +298,20 @@ # fake rule to stop make trying to compi
  moduli:
  	echo
  
@@ -63,7 +63,7 @@
  	rm -f regress/check-perm$(EXEEXT)
  	rm -f regress/mkdtemp$(EXEEXT)
  	rm -f regress/unittests/test_helper/*.a
-@@ -475,6 +487,7 @@ install-files:
+@@ -475,6 +487,7 @@ $(INSTALL) -m 644 sftp-server.8.out $(DE
  	$(INSTALL) -m 644 ssh-keysign.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-keysign.8
  	$(INSTALL) -m 644 ssh-pkcs11-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-pkcs11-helper.8
  	$(INSTALL) -m 644 ssh-sk-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-sk-helper.8
@@ -73,7 +73,7 @@
  	$(MKDIR_P) $(DESTDIR)$(sysconfdir)
 --- old/sftp-server.c
 +++ new/sftp-server.c
-@@ -48,6 +48,9 @@
+@@ -48,6 +48,9 @@ #include "uidswap.h"
  
  #include "sftp.h"
  #include "sftp-common.h"
@@ -83,7 +83,7 @@
  
  char *sftp_realpath(const char *, char *); /* sftp-realpath.c */
  
-@@ -795,14 +798,16 @@ process_read(uint32_t id)
+@@ -795,14 +798,16 @@ static size_t buflen;
  	uint32_t len;
  	int r, handle, fd, ret, status = SSH2_FX_FAILURE;
  	uint64_t off;
@@ -101,7 +101,7 @@
  	if ((fd = handle_to_fd(handle)) == -1)
  		goto out;
  	if (len > SFTP_MAX_READ_LENGTH) {
-@@ -824,14 +829,23 @@ process_read(uint32_t id)
+@@ -824,14 +829,23 @@ }
  	if (len == 0) {
  		/* weird, but not strictly disallowed */
  		ret = 0;
@@ -133,7 +133,7 @@
  	}
  	send_data(id, buf, ret);
  	handle_update_read(handle, ret);
-@@ -849,14 +863,16 @@ process_write(uint32_t id)
+@@ -849,14 +863,16 @@ uint64_t off;
  	size_t len;
  	int r, handle, fd, ret, status;
  	u_char *data;
@@ -151,7 +151,7 @@
  	fd = handle_to_fd(handle);
  
  	if (fd < 0)
-@@ -869,7 +885,13 @@ process_write(uint32_t id)
+@@ -869,7 +885,13 @@ error_f("seek \"%.100s\": %s", handle_to
  			    strerror(errno));
  		} else {
  /* XXX ATOMICIO ? */

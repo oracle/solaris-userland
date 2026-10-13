@@ -18,7 +18,7 @@
 #
 --- old/sshd-session.c
 +++ new/sshd-session.c
-@@ -180,7 +180,14 @@ struct include_list includes = TAILQ_HEAD_INITIALIZER(includes);
+@@ -180,7 +180,14 @@ struct include_list includes = TAILQ_HEA
  /* message to be displayed after login */
  struct sshbuf *loginmsg;
  
@@ -33,7 +33,7 @@
  void destroy_sensitive_data(void);
  void demote_sensitive_data(void);
  
-@@ -220,9 +227,98 @@ grace_alarm_handler(int sig)
+@@ -220,9 +227,98 @@ #endif
  		(void)sigaction(SIGTERM, &sa, NULL);
  		kill(0, SIGTERM);
  	}
@@ -132,7 +132,7 @@
  /* Destroy the host and server keys.  They will no longer be needed. */
  void
  destroy_sensitive_data(void)
-@@ -330,6 +426,7 @@ privsep_preauth(struct ssh *ssh)
+@@ -330,6 +426,7 @@ } else {
  		/* child */
  		close(pmonitor->m_sendfd);
  		close(pmonitor->m_log_recvfd);
@@ -140,7 +140,7 @@
  
  		/*
  		 * Arrange unpriv-preauth child process fds:
-@@ -1223,6 +1320,7 @@ main(int ac, char **av)
+@@ -1210,6 +1307,7 @@ itv.it_value.tv_usec = ujitter % 1000000
  
  		if (setitimer(ITIMER_REAL, &itv, NULL) == -1)
  			fatal("login grace time setitimer failed");
@@ -148,7 +148,7 @@
  	}
  
  	ssh_packet_set_nonblocking(ssh);
-@@ -1257,6 +1355,7 @@ main(int ac, char **av)
+@@ -1246,6 +1344,7 @@ timerclear(&itv.it_value);
  	if (setitimer(ITIMER_REAL, &itv, NULL) == -1)
  		fatal("login grace time clear failed");
  	ssh_signal(SIGALRM, SIG_DFL);

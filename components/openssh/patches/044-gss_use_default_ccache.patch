@@ -11,7 +11,7 @@
 #
 --- old/gss-serv.c
 +++ new/gss-serv.c
-@@ -53,6 +53,8 @@
+@@ -53,6 +53,8 @@ #include "uidswap.h"
  #include "ssh-gss.h"
  #include "monitor_wrap.h"
  
@@ -20,7 +20,7 @@
  extern ServerOptions options;
  
  static ssh_gssapi_client gssapi_client =
-@@ -402,6 +404,12 @@ ssh_gssapi_cleanup_creds(void)
+@@ -403,6 +405,12 @@ {
  	krb5_ccache ccache = NULL;
  	krb5_error_code problem;
  
@@ -33,7 +33,7 @@
  	if (gssapi_client.store.data != NULL) {
  		if ((problem = krb5_cc_resolve(gssapi_client.store.data, gssapi_client.store.envval, &ccache))) {
  			debug("%s: krb5_cc_resolve(): %.100s", __func__,
-@@ -425,10 +433,66 @@ ssh_gssapi_storecreds(void)
+@@ -431,10 +439,66 @@ debug_f("delegate credential is disabled
  		return;
  	}
  
@@ -106,7 +106,7 @@
  /* This allows GSSAPI methods to do things to the child's environment based
 --- old/servconf.c
 +++ new/servconf.c
-@@ -1545,6 +1545,10 @@ process_server_config_line_depth(ServerOptions *options, char *line,
+@@ -1592,6 +1592,10 @@ case sGSSAPIStrictAcceptorCheck:
  		intptr = &options->gss_strict_acceptor;
  		goto parse_flag;
  
@@ -117,7 +117,7 @@
  	case sGSSAPIStoreCredentialsOnRekey:
  		intptr = &options->gss_store_rekey;
  		goto parse_flag;
-@@ -4342,6 +4346,7 @@ dump_config(ServerOptions *o)
+@@ -4470,6 +4474,7 @@ dump_cfg_fmtint(sGSSAPIKeyExchange, o->g
  	dump_cfg_fmtint(sGSSAPICleanupCredentials, o->gss_cleanup_creds);
  	dump_cfg_fmtint(sGSSAPIDelegateCredentials, o->gss_deleg_creds);
  	dump_cfg_fmtint(sGSSAPIStrictAcceptorCheck, o->gss_strict_acceptor);
@@ -127,7 +127,7 @@
  #endif
 --- old/servconf.h
 +++ new/servconf.h
-@@ -338,6 +338,7 @@ SSHCONF_INTFLAG(gss_keyex, GSSAPIKeyExchange, SSHCFG_GLOBAL, 0, SSHCFG_COPY_NONE
+@@ -345,6 +345,7 @@ SSHCONF_INTFLAG(gss_keyex, GSSAPIKeyExch
  SSHCONF_INTFLAG(gss_cleanup_creds, GSSAPICleanupCredentials, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE) \
  SSHCONF_INTFLAG(gss_deleg_creds, GSSAPIDelegateCredentials, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE) \
  SSHCONF_INTFLAG(gss_strict_acceptor, GSSAPIStrictAcceptorCheck, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE) \
@@ -135,7 +135,7 @@
  SSHCONF_INTFLAG(gss_store_rekey, GSSAPIStoreCredentialsOnRekey, SSHCFG_GLOBAL, 0, SSHCFG_COPY_NONE) \
  SSHCONF_STRING(gss_kex_algorithms, GSSAPIKexAlgorithms, SSHCFG_GLOBAL, SSHCFG_COPY_NONE)
  #else /* GSSAPI */
-@@ -347,6 +348,7 @@ SSHCONF_UNSUPPORTED_INT(gss_keyex, GSSAPIKeyExchange, SSHCFG_GLOBAL) \
+@@ -354,6 +355,7 @@ SSHCONF_UNSUPPORTED_INT(gss_keyex, GSSAP
  SSHCONF_UNSUPPORTED_INT(gss_cleanup_creds, GSSAPICleanupCredentials, SSHCFG_GLOBAL) \
  SSHCONF_UNSUPPORTED_INT(gss_deleg_creds, GSSAPIDelegateCredentials, SSHCFG_GLOBAL) \
  SSHCONF_UNSUPPORTED_INT(gss_strict_acceptor, GSSAPIStrictAcceptorCheck, SSHCFG_GLOBAL) \
@@ -145,7 +145,7 @@
  #endif /* GSSAPI */
 --- old/sshd-session.c
 +++ new/sshd-session.c
-@@ -1271,9 +1271,19 @@ main(int ac, char **av)
+@@ -1260,9 +1260,19 @@ set_process_rdomain(ssh, options.routing
  
  #ifdef GSSAPI
  	if (options.gss_authentication) {
@@ -167,7 +167,7 @@
  #ifdef USE_PAM
 --- old/sshd_config.5
 +++ new/sshd_config.5
-@@ -775,6 +775,18 @@ The default is
+@@ -802,6 +802,18 @@ .It Cm GSSAPIDelegateCredentials
  Accept delegated credentials on the server side.
  The default is
  .Cm yes .
