@@ -51,6 +51,7 @@ CONFIGURE_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS +=	--enable-unittests
+CONFIGURE_OPTIONS +=	--enable-dlpi
 CONFIGURE_OPTIONS +=	--with-libnet-includes=/usr/include/libnet
 CONFIGURE_OPTIONS +=	--with-libjansson-includes=/usr/include/jansson
 CONFIGURE_OPTIONS +=	--with-libpcre2-includes=/usr/include/pcre
@@ -91,7 +92,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 # Cargo will not find libsuricata static library and other system libraries
 # while building tests
 # https://redmine.openinfosecfoundation.org/issues/6793
-COMPONENT_TEST_ENV += RUSTFLAGS="-Clink-arg=--verbose -Clink-arg=$(BUILD_DIR)/$(MACH64)/src/libsuricata_c.a -Clink-arg=-lpcap -Clink-arg=-ljansson -Clink-arg=-lpcre2-8 -Clink-arg=-llua -Clink-arg=-lyaml -Clink-arg=-llz4 -Clink-arg=-Wl,-R$$(rustc --print target-libdir)"
+COMPONENT_TEST_ENV += RUSTFLAGS="-Clink-arg=--verbose -Clink-arg=$(BUILD_DIR)/$(MACH64)/src/libsuricata_c.a -Clink-arg=-lpcap -Clink-arg=-ljansson -Clink-arg=-lpcre2-8 -Clink-arg=-llua -Clink-arg=-lyaml -Clink-arg=-llz4 -Clink-arg=-ldlpi -Clink-arg=-Wl,-R$$(rustc --print target-libdir)"
 
 REQUIRED_PACKAGES += compress/lz4
 REQUIRED_PACKAGES += library/jansson
@@ -103,6 +104,7 @@ REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
+REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/libpcap
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/network

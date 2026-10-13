@@ -1,0 +1,910 @@
+Add Solaris inline IPS as a userspace Ethernet bridge using libdlpi, without
+kernel changes. Enabled with --dlpi, the runmode validates reciprocal
+interface/copy-iface pairs and starts one worker per input link. These links
+must be dedicated bridge ports without IP addresses or another forwarding path.
+
+ReceiveDLPILoop reads complete Ethernet frames using DLPI_RAW. Physical and
+SAP promiscuity capture all destinations and EtherTypes; DL_PROMISC_NOLOOP
+prevents recapturing transmitted frames. DLPIProcessPacket passes each frame
+through DecodeDLPI and the normal FlowWorker stream and detection processing.
+
+Suricata then invokes the packet's ReleasePacket callback, DLPIReleasePacket:
+ACTION_DROP suppresses forwarding; otherwise dlpi_send sends the Ethernet
+frame to copy-iface. The reciprocal worker handles the opposite direction.
+As in AF_PACKET, bounded receive batches check shutdown and link/read errors
+trigger a delayed reopen of the affected worker's DLPI handles.
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -584,6 +584,24 @@
+         AC_DEFINE([IPFW],[1],[Enable FreeBSD IPFW support for inline IDP])
+     ])
+ 
++  # Solaris DLPI support.  This is a userland Ethernet bridge capture
++  # method: the packet is forwarded to its configured peer only after
++  # inspection by Suricata.
++    AC_ARG_ENABLE(dlpi,
++            AS_HELP_STRING([--enable-dlpi], [Enable Solaris DLPI inline L2 IPS support]),
++            [enable_dlpi=$enableval],[enable_dlpi=no])
++    AS_IF([test "x$enable_dlpi" = "xyes"], [
++        case "$host_os" in
++            solaris*) ;;
++            *) AC_MSG_ERROR([Solaris DLPI support is only available on Solaris]) ;;
++        esac
++        AC_CHECK_HEADERS([libdlpi.h],,
++            [AC_MSG_ERROR([libdlpi.h not found; install system/library headers])])
++        AC_CHECK_LIB([dlpi], [dlpi_open],,
++            [AC_MSG_ERROR([libdlpi not found; install system/library])])
++        AC_DEFINE([HAVE_DLPI],[1],[Solaris DLPI inline L2 IPS support enabled])
++    ])
++
+     AC_ARG_ENABLE(coccinelle,
+            AS_HELP_STRING([--disable-coccinelle], [Disable coccinelle QA steps during make check]),[enable_coccinelle="$enableval"],[enable_coccinelle=yes])
+     AS_IF([test "x$enable_coccinelle" = "xyes"], [
+@@ -2603,6 +2621,7 @@
+   NFQueue support:                         ${enable_nfqueue}
+   NFLOG support:                           ${enable_nflog}
+   IPFW support:                            ${enable_ipfw}
++  Solaris DLPI support:                    ${enable_dlpi}
+   Netmap support:                          ${enable_netmap} ${have_netmap_version}
+   DAG enabled:                             ${enable_dag}
+   Napatech enabled:                        ${enable_napatech}
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -422,6 +422,7 @@
+ 	runmode-dpdk.h \
+ 	runmode-erf-dag.h \
+ 	runmode-erf-file.h \
++	runmode-dlpi.h \
+ 	runmode-ipfw.h \
+ 	runmode-lib.h \
+ 	runmode-netmap.h \
+@@ -440,6 +441,7 @@
+ 	source-dpdk.h \
+ 	source-erf-dag.h \
+ 	source-erf-file.h \
++	source-dlpi.h \
+ 	source-ipfw.h \
+ 	source-lib.h \
+ 	source-netmap.h \
+@@ -1019,6 +1021,7 @@
+ 	runmode-dpdk.c \
+ 	runmode-erf-dag.c \
+ 	runmode-erf-file.c \
++	runmode-dlpi.c \
+ 	runmode-ipfw.c \
+ 	runmode-lib.c \
+ 	runmode-netmap.c \
+@@ -1036,6 +1039,7 @@
+ 	source-dpdk.c \
+ 	source-erf-dag.c \
+ 	source-erf-file.c \
++	source-dlpi.c \
+ 	source-ipfw.c \
+ 	source-lib.c \
+ 	source-netmap.c \
+--- a/src/decode.h
++++ b/src/decode.h
+@@ -69,6 +69,7 @@
+ #include "source-ipfw.h"
+ #include "source-pcap.h"
+ #include "source-af-packet.h"
++#include "source-dlpi.h"
+ #include "source-netmap.h"
+ #include "source-windivert.h"
+ #ifdef HAVE_DPDK
+@@ -577,6 +578,9 @@
+ #ifdef HAVE_DPDK
+         DPDKPacketVars dpdk_v;
+ #endif
++#ifdef HAVE_DLPI
++        DLPIPacketVars dlpi_v;
++#endif
+ #ifdef HAVE_AF_XDP
+         AFXDPPacketVars afxdp_v;
+ #endif
+--- a/src/runmode-dlpi.c
++++ b/src/runmode-dlpi.c
+@@ -0,0 +1,156 @@
++/* Copyright (C) 2026 Oracle and/or its affiliates.
++ *
++ * You can copy, redistribute or modify this Program under the terms of
++ * the GNU General Public License version 2 as published by the Free
++ * Software Foundation.
++ */
++
++#include "suricata-common.h"
++#include "runmodes.h"
++#include "runmode-dlpi.h"
++#include "source-dlpi.h"
++#include "suricata.h"
++#include "util-conf.h"
++#include "util-debug.h"
++#include "util-device.h"
++#include "util-device-private.h"
++#include "util-runmodes.h"
++#include "util-time.h"
++
++const char *RunModeIpsDLPIGetDefaultMode(void)
++{
++    return "workers";
++}
++
++static void DLPIDerefConfig(void *conf)
++{
++    DLPIIfaceConfig *cfg = conf;
++    if (SC_ATOMIC_SUB(cfg->ref, 1) == 1)
++        SCFree(cfg);
++}
++
++static int DLPIGetPeer(const char *iface, const char **peer)
++{
++    SCConfNode *node = SCConfGetNode("dlpi");
++    if (node == NULL)
++        return -1;
++
++    SCConfNode *if_root = ConfFindDeviceConfig(node, iface);
++    SCConfNode *if_default = ConfFindDeviceConfig(node, "default");
++    const char *mode = NULL;
++    const char *threads = NULL;
++
++    if (SCConfGetChildValueWithDefault(if_root, if_default, "copy-mode", &mode) != 1 ||
++            mode == NULL || strcmp(mode, "ips") != 0) {
++        SCLogError("dlpi.%s: copy-mode must be ips", iface);
++        return -1;
++    }
++    if (SCConfGetChildValueWithDefault(if_root, if_default, "copy-iface", peer) != 1 ||
++            *peer == NULL || **peer == '\0') {
++        SCLogError("dlpi.%s: copy-iface is required", iface);
++        return -1;
++    }
++    if (SCConfGetChildValueWithDefault(if_root, if_default, "threads", &threads) == 1 &&
++            threads != NULL && strcmp(threads, "1") != 0) {
++        SCLogError("dlpi.%s: only threads: 1 is supported", iface);
++        return -1;
++    }
++    return 0;
++}
++
++static bool DLPIIsLiveDevice(const char *iface)
++{
++    const int nlive = LiveGetDeviceCount();
++    for (int i = 0; i < nlive; i++) {
++        const char *live = LiveGetDeviceName(i);
++        if (live != NULL && strcmp(live, iface) == 0)
++            return true;
++    }
++    return false;
++}
++
++static int DLPIRunModeEnableIPS(void)
++{
++    /* Explicit --dlpi=<link> options are registered during argument
++     * parsing.  With bare --dlpi, populate the list from YAML here. */
++    if (LiveGetDeviceCount() == 0 && LiveBuildDeviceList("dlpi") > 0)
++        LiveDeviceFinalize();
++
++    const int nlive = LiveGetDeviceCount();
++    if (nlive < 2) {
++        SCLogError("DLPI IPS requires two reciprocal data links");
++        return -1;
++    }
++
++    for (int i = 0; i < nlive; i++) {
++        const char *iface = LiveGetDeviceName(i);
++        const char *peer = NULL;
++        const char *back_peer = NULL;
++        if (iface == NULL || DLPIGetPeer(iface, &peer) != 0)
++            return -1;
++        if (strcmp(iface, peer) == 0 || !DLPIIsLiveDevice(peer)) {
++            SCLogError("dlpi.%s: copy-iface %s is not a configured data link", iface, peer);
++            return -1;
++        }
++        if (DLPIGetPeer(peer, &back_peer) != 0 || strcmp(back_peer, iface) != 0) {
++            SCLogError("dlpi.%s and dlpi.%s must be reciprocal", iface, peer);
++            return -1;
++        }
++    }
++
++    EngineModeSetIPS();
++    return 1;
++}
++
++static void *ParseDLPIConfig(const char *iface)
++{
++    const char *peer = NULL;
++    if (iface == NULL || DLPIGetPeer(iface, &peer) != 0)
++        return NULL;
++
++    DLPIIfaceConfig *cfg = SCCalloc(1, sizeof(*cfg));
++    if (cfg == NULL)
++        return NULL;
++
++    if (strlcpy(cfg->iface, iface, sizeof(cfg->iface)) >= sizeof(cfg->iface) ||
++            strlcpy(cfg->out_iface, peer, sizeof(cfg->out_iface)) >= sizeof(cfg->out_iface)) {
++        SCLogError("DLPI link name is too long");
++        SCFree(cfg);
++        return NULL;
++    }
++    SC_ATOMIC_INIT(cfg->ref);
++    (void)SC_ATOMIC_ADD(cfg->ref, 1);
++    cfg->DerefFunc = DLPIDerefConfig;
++    return cfg;
++}
++
++static int DLPIConfigGetThreadsCount(void *conf)
++{
++    (void)conf;
++    return 1;
++}
++
++void RunModeIpsDLPIRegister(void)
++{
++    RunModeRegisterNewRunMode(RUNMODE_DLPI, "workers",
++            "Solaris DLPI inline L2 IPS mode", RunModeIpsDLPIWorkers, DLPIRunModeEnableIPS);
++}
++
++int RunModeIpsDLPIWorkers(void)
++{
++#ifdef HAVE_DLPI
++    TimeModeSetLive();
++    LiveDeviceHasNoStats();
++
++    const char *live_dev = NULL;
++    (void)SCConfGet("dlpi.live-interface", &live_dev);
++    const int ret = RunModeSetLiveCaptureWorkers(ParseDLPIConfig, DLPIConfigGetThreadsCount,
++            "ReceiveDLPI", "DecodeDLPI", thread_name_workers, live_dev);
++    if (ret != 0)
++        FatalError("Unable to start DLPI workers runmode");
++    return ret;
++#else
++    FatalError("DLPI support is not configured");
++    return -1;
++#endif
++}
+--- a/src/runmode-dlpi.h
++++ b/src/runmode-dlpi.h
+@@ -0,0 +1,10 @@
++/* Copyright (C) 2026 Oracle and/or its affiliates. */
++
++#ifndef SURICATA_RUNMODE_DLPI_H
++#define SURICATA_RUNMODE_DLPI_H
++
++void RunModeIpsDLPIRegister(void);
++const char *RunModeIpsDLPIGetDefaultMode(void);
++int RunModeIpsDLPIWorkers(void);
++
++#endif /* SURICATA_RUNMODE_DLPI_H */
+--- a/src/runmodes.c
++++ b/src/runmodes.c
+@@ -35,6 +35,7 @@
+ #include "runmode-dpdk.h"
+ #include "runmode-erf-dag.h"
+ #include "runmode-erf-file.h"
++#include "runmode-dlpi.h"
+ #include "runmode-ipfw.h"
+ #include "runmode-lib.h"
+ #include "runmode-netmap.h"
+@@ -141,6 +142,12 @@
+             return "AF_PACKET_DEV";
+         case RUNMODE_AFXDP_DEV:
+             return "AF_XDP_DEV";
++        case RUNMODE_DLPI:
++#ifdef HAVE_DLPI
++            return "DLPI";
++#else
++            return "DLPI(DISABLED)";
++#endif
+         case RUNMODE_NETMAP:
+ #ifdef HAVE_NETMAP
+             return "NETMAP";
+@@ -240,6 +247,7 @@
+     RunModeErfDagRegister();
+     RunModeIdsAFPRegister();
+     RunModeIdsAFXDPRegister();
++    RunModeIpsDLPIRegister();
+     RunModeIdsNetmapRegister();
+     RunModeIdsNflogRegister();
+     RunModeUnixSocketRegister();
+@@ -339,6 +347,9 @@
+             case RUNMODE_AFXDP_DEV:
+                 custom_mode = RunModeAFXDPGetDefaultMode();
+                 break;
++            case RUNMODE_DLPI:
++                custom_mode = RunModeIpsDLPIGetDefaultMode();
++                break;
+             case RUNMODE_NETMAP:
+                 custom_mode = RunModeNetmapGetDefaultMode();
+                 break;
+--- a/src/runmodes.h
++++ b/src/runmodes.h
+@@ -35,6 +35,7 @@
+     RUNMODE_DAG,
+     RUNMODE_AFP_DEV,
+     RUNMODE_AFXDP_DEV,
++    RUNMODE_DLPI,
+     RUNMODE_NETMAP,
+     RUNMODE_DPDK,
+     RUNMODE_LIB,
+--- a/src/source-dlpi.c
++++ b/src/source-dlpi.c
+@@ -0,0 +1,395 @@
++/* Copyright (C) 2026 Oracle and/or its affiliates.
++ *
++ * You can copy, redistribute or modify this Program under the terms of
++ * the GNU General Public License version 2 as published by the Free
++ * Software Foundation.
++ */
++
++#include "suricata-common.h"
++#include "suricata.h"
++#include "action-globals.h"
++#include "decode.h"
++#include "packet.h"
++#include "source-dlpi.h"
++#include "tm-threads.h"
++#include "util-datalink.h"
++#include "util-device-private.h"
++#include "util-privs.h"
++#include "util-time.h"
++
++#ifdef HAVE_DLPI
++
++#include <libdlpi.h>
++
++#define DLPI_MAX_FRAME_SIZE 65536
++#define DLPI_POLL_TIMEOUT   100
++#define DLPI_MAX_BATCH      64
++#define DLPI_RECONNECT_US   500000
++
++typedef struct DLPIThreadVars_ {
++    dlpi_handle_t rx;
++    dlpi_handle_t tx;
++    ThreadVars *tv;
++    TmSlot *slot;
++    LiveDevice *livedev;
++    char iface[DLPI_IFACE_NAME_LENGTH];
++    char out_iface[DLPI_IFACE_NAME_LENGTH];
++    uint16_t capture_packets;
++    uint16_t capture_bytes;
++    uint16_t capture_drops;
++    uint16_t capture_send_errors;
++    uint64_t pkts;
++    uint64_t bytes;
++    uint64_t drops;
++    uint64_t send_errors;
++} DLPIThreadVars;
++
++static void DLPIPrintError(const char *operation, const char *iface, int error)
++{
++    if (error == DL_SYSERR) {
++        SCLogError("%s on %s failed: %s", operation, iface, strerror(errno));
++    } else {
++        SCLogError("%s on %s failed: %s", operation, iface, dlpi_strerror(error));
++    }
++}
++
++static int DLPILinkOpen(const char *iface, bool receive, dlpi_handle_t *handle)
++{
++    int ret = dlpi_open(iface, handle, DLPI_RAW);
++    if (ret != DLPI_SUCCESS) {
++        DLPIPrintError("dlpi_open", iface, ret);
++        return -1;
++    }
++
++    uint_t sap = 0;
++    ret = dlpi_bind(*handle, DLPI_ANY_SAP, &sap);
++    if (ret != DLPI_SUCCESS) {
++        DLPIPrintError("dlpi_bind", iface, ret);
++        goto error;
++    }
++
++    dlpi_info_t info;
++    ret = dlpi_info(*handle, &info, 0);
++    if (ret != DLPI_SUCCESS) {
++        DLPIPrintError("dlpi_info", iface, ret);
++        goto error;
++    }
++    if (info.di_mactype != DL_ETHER) {
++        SCLogError("DLPI link %s is not Ethernet", iface);
++        goto error;
++    }
++
++    if (receive) {
++        ret = dlpi_promiscon(*handle, DL_PROMISC_PHYS | DL_PROMISC_NOLOOP);
++        if (ret != DLPI_SUCCESS) {
++            DLPIPrintError("dlpi_promiscon", iface, ret);
++            goto error;
++        }
++
++        /* DLPI_ANY_SAP chooses a bind SAP; it does not disable SAP filtering. */
++        ret = dlpi_promiscon(*handle, DL_PROMISC_SAP | DL_PROMISC_NOLOOP);
++        if (ret != DLPI_SUCCESS) {
++            DLPIPrintError("dlpi_promiscon(SAP)", iface, ret);
++            goto error;
++        }
++    }
++    return 0;
++
++error:
++    dlpi_close(*handle);
++    *handle = NULL;
++    return -1;
++}
++
++static void DLPILinksClose(DLPIThreadVars *dtv)
++{
++    if (dtv->rx != NULL) {
++        dlpi_close(dtv->rx);
++        dtv->rx = NULL;
++    }
++    if (dtv->tx != NULL) {
++        dlpi_close(dtv->tx);
++        dtv->tx = NULL;
++    }
++}
++
++static inline void DLPIDumpCounters(DLPIThreadVars *dtv)
++{
++    StatsAddUI64(dtv->tv, dtv->capture_packets, dtv->pkts);
++    StatsAddUI64(dtv->tv, dtv->capture_bytes, dtv->bytes);
++    StatsAddUI64(dtv->tv, dtv->capture_drops, dtv->drops);
++    StatsAddUI64(dtv->tv, dtv->capture_send_errors, dtv->send_errors);
++    (void)SC_ATOMIC_ADD(dtv->livedev->pkts, dtv->pkts);
++    (void)SC_ATOMIC_ADD(dtv->livedev->drop, dtv->drops);
++    dtv->pkts = 0;
++    dtv->bytes = 0;
++    dtv->drops = 0;
++    dtv->send_errors = 0;
++}
++
++static void DLPIReleasePacket(Packet *p)
++{
++    DLPIThreadVars *dtv = p->dlpi_v.dtv;
++
++    if (!PKT_IS_PSEUDOPKT(p)) {
++        if (PacketCheckAction(p, ACTION_DROP)) {
++            dtv->drops++;
++        } else if (!PacketIsEthernet(p)) {
++            SCLogWarning("DLPI packet without Ethernet header was not forwarded");
++            dtv->drops++;
++        } else {
++            const int ret = dlpi_send(dtv->tx, NULL, 0, GET_PKT_DATA(p), GET_PKT_LEN(p), NULL);
++            if (ret != DLPI_SUCCESS) {
++                DLPIPrintError("dlpi_send", dtv->out_iface, ret);
++                dtv->send_errors++;
++                dtv->drops++;
++            }
++        }
++    }
++    PacketFreeOrRelease(p);
++}
++
++static TmEcode ReceiveDLPIThreadInit(ThreadVars *tv, const void *initdata, void **data)
++{
++    const DLPIIfaceConfig *cfg = initdata;
++    if (cfg == NULL) {
++        SCLogError("DLPI thread has no configuration");
++        return TM_ECODE_FAILED;
++    }
++
++    DLPIThreadVars *dtv = SCCalloc(1, sizeof(*dtv));
++    if (dtv == NULL) {
++        ((DLPIIfaceConfig *)cfg)->DerefFunc((void *)cfg);
++        return TM_ECODE_FAILED;
++    }
++    dtv->tv = tv;
++    strlcpy(dtv->iface, cfg->iface, sizeof(dtv->iface));
++    strlcpy(dtv->out_iface, cfg->out_iface, sizeof(dtv->out_iface));
++    dtv->livedev = LiveGetDevice(dtv->iface);
++    if (dtv->livedev == NULL) {
++        SCLogError("DLPI link %s is not a live device", dtv->iface);
++        goto error;
++    }
++    if (DLPILinkOpen(dtv->iface, true, &dtv->rx) != 0 ||
++            DLPILinkOpen(dtv->out_iface, false, &dtv->tx) != 0) {
++        goto error;
++    }
++
++    DatalinkSetGlobalType(LINKTYPE_ETHERNET);
++    dtv->capture_packets = StatsRegisterCounter("capture.dlpi_packets", tv);
++    dtv->capture_bytes = StatsRegisterCounter("capture.dlpi_bytes", tv);
++    dtv->capture_drops = StatsRegisterCounter("capture.dlpi_drops", tv);
++    dtv->capture_send_errors = StatsRegisterCounter("capture.dlpi_send_errors", tv);
++
++    ((DLPIIfaceConfig *)cfg)->DerefFunc((void *)cfg);
++    *data = dtv;
++    return TM_ECODE_OK;
++
++error:
++    DLPILinksClose(dtv);
++    SCFree(dtv);
++    ((DLPIIfaceConfig *)cfg)->DerefFunc((void *)cfg);
++    return TM_ECODE_FAILED;
++}
++
++static void DLPIProcessPacket(DLPIThreadVars *dtv, const uint8_t *buf, size_t len)
++{
++    Packet *p = PacketPoolGetPacket();
++    if (p == NULL) {
++        dtv->drops++;
++        return;
++    }
++
++    struct timeval ts;
++    (void)gettimeofday(&ts, NULL);
++    PKT_SET_SRC(p, PKT_SRC_WIRE);
++    p->livedev = dtv->livedev;
++    p->datalink = LINKTYPE_ETHERNET;
++    p->ts = SCTIME_FROM_TIMEVAL(&ts);
++    if (PacketCopyData(p, (uint8_t *)buf, len) == -1) {
++        TmqhOutputPacketpool(dtv->tv, p);
++        dtv->drops++;
++        return;
++    }
++    p->ReleasePacket = DLPIReleasePacket;
++    p->dlpi_v.dtv = dtv;
++    dtv->pkts++;
++    dtv->bytes += len;
++    (void)TmThreadsSlotProcessPkt(dtv->tv, dtv->slot, p);
++}
++
++static TmEcode ReceiveDLPILoop(ThreadVars *tv, void *data, void *slot)
++{
++    DLPIThreadVars *dtv = data;
++    struct pollfd fds[2] = {
++        { .fd = dlpi_fd(dtv->rx), .events = POLLIN },
++        { .fd = dlpi_fd(dtv->tx), .events = 0 },
++    };
++    bool link_down = false;
++    uint8_t buf[DLPI_MAX_FRAME_SIZE];
++    dtv->slot = ((TmSlot *)slot)->slot_next;
++    TmThreadsSetFlag(tv, THV_RUNNING);
++
++    for (;;) {
++        if (unlikely(suricata_ctl_flags != 0))
++            break;
++
++        /* Like AF_PACKET, back off and reopen after a link/read error. */
++        if (unlikely(link_down)) {
++            DLPILinksClose(dtv);
++            SleepUsec(DLPI_RECONNECT_US);
++            if (suricata_ctl_flags != 0)
++                break;
++            if (DLPILinkOpen(dtv->iface, true, &dtv->rx) != 0 ||
++                    DLPILinkOpen(dtv->out_iface, false, &dtv->tx) != 0)
++                continue;
++            fds[0].fd = dlpi_fd(dtv->rx);
++            fds[1].fd = dlpi_fd(dtv->tx);
++            link_down = false;
++        }
++
++        PacketPoolWait();
++        const int poll_ret = poll(fds, 2, DLPI_POLL_TIMEOUT);
++        if (suricata_ctl_flags != 0)
++            break;
++        if (poll_ret < 0) {
++            if (errno != EINTR) {
++                SCLogError("poll on DLPI link %s failed: %s", dtv->iface, strerror(errno));
++                link_down = true;
++            }
++        } else if (poll_ret == 0) {
++            TmThreadsCaptureHandleTimeout(tv, NULL);
++        } else if ((fds[0].revents | fds[1].revents) & (POLLERR | POLLHUP | POLLNVAL)) {
++            SCLogError("poll on DLPI links %s/%s returned error events 0x%x/0x%x", dtv->iface,
++                    dtv->out_iface, fds[0].revents, fds[1].revents);
++            link_down = true;
++        } else if (fds[0].revents & POLLIN) {
++            /* Bound each batch, as AF_PACKET bounds a pass over its RX ring. */
++            for (unsigned int n = 0; n < DLPI_MAX_BATCH; n++) {
++                if (unlikely(suricata_ctl_flags != 0))
++                    break;
++                size_t len = sizeof(buf);
++                dlpi_recvinfo_t info;
++                memset(&info, 0, sizeof(info));
++                const int ret = dlpi_recv(dtv->rx, NULL, NULL, buf, &len, 0, &info);
++                if (ret == DLPI_ETIMEDOUT)
++                    break;
++                if (ret != DLPI_SUCCESS) {
++                    if (ret == DL_SYSERR && errno == EINTR)
++                        break;
++                    DLPIPrintError("dlpi_recv", dtv->iface, ret);
++                    link_down = true;
++                    break;
++                }
++                if (info.dri_totmsglen > sizeof(buf)) {
++                    SCLogWarning("DLPI frame on %s was truncated (%zu bytes)", dtv->iface,
++                            info.dri_totmsglen);
++                    dtv->drops++;
++                    continue;
++                }
++                DLPIProcessPacket(dtv, buf, len);
++            }
++        }
++        DLPIDumpCounters(dtv);
++        StatsSyncCountersIfSignalled(tv);
++    }
++
++    DLPIDumpCounters(dtv);
++    StatsSyncCountersIfSignalled(tv);
++    return TM_ECODE_OK;
++}
++
++static void ReceiveDLPIThreadExitStats(ThreadVars *tv, void *data)
++{
++    DLPIThreadVars *dtv = data;
++    DLPIDumpCounters(dtv);
++    SCLogPerf("%s: (%s) DLPI packets %" PRIu64 ", bytes %" PRIu64 "", dtv->iface, tv->name,
++            StatsGetLocalCounterValue(tv, dtv->capture_packets),
++            StatsGetLocalCounterValue(tv, dtv->capture_bytes));
++}
++
++static TmEcode ReceiveDLPIThreadDeinit(ThreadVars *tv, void *data)
++{
++    (void)tv;
++    DLPIThreadVars *dtv = data;
++    if (dtv != NULL) {
++        DLPILinksClose(dtv);
++        SCFree(dtv);
++    }
++    return TM_ECODE_OK;
++}
++
++static TmEcode DecodeDLPIThreadInit(ThreadVars *tv, const void *initdata, void **data)
++{
++    (void)initdata;
++    DecodeThreadVars *dtv = DecodeThreadVarsAlloc(tv);
++    if (dtv == NULL)
++        return TM_ECODE_FAILED;
++    DecodeRegisterPerfCounters(dtv, tv);
++    *data = dtv;
++    return TM_ECODE_OK;
++}
++
++static TmEcode DecodeDLPI(ThreadVars *tv, Packet *p, void *data)
++{
++    DecodeThreadVars *dtv = data;
++    BUG_ON(PKT_IS_PSEUDOPKT(p));
++    DecodeUpdatePacketCounters(tv, dtv, p);
++    DecodeEthernet(tv, dtv, p, GET_PKT_DATA(p), GET_PKT_LEN(p));
++    PacketDecodeFinalize(tv, dtv, p);
++    return TM_ECODE_OK;
++}
++
++static TmEcode DecodeDLPIThreadDeinit(ThreadVars *tv, void *data)
++{
++    if (data != NULL)
++        DecodeThreadVarsFree(tv, data);
++    return TM_ECODE_OK;
++}
++
++void TmModuleReceiveDLPIRegister(void)
++{
++    tmm_modules[TMM_RECEIVEDLPI].name = "ReceiveDLPI";
++    tmm_modules[TMM_RECEIVEDLPI].ThreadInit = ReceiveDLPIThreadInit;
++    tmm_modules[TMM_RECEIVEDLPI].PktAcqLoop = ReceiveDLPILoop;
++    tmm_modules[TMM_RECEIVEDLPI].ThreadExitPrintStats = ReceiveDLPIThreadExitStats;
++    tmm_modules[TMM_RECEIVEDLPI].ThreadDeinit = ReceiveDLPIThreadDeinit;
++    tmm_modules[TMM_RECEIVEDLPI].cap_flags = SC_CAP_NET_RAW;
++    tmm_modules[TMM_RECEIVEDLPI].flags = TM_FLAG_RECEIVE_TM;
++}
++
++void TmModuleDecodeDLPIRegister(void)
++{
++    tmm_modules[TMM_DECODEDLPI].name = "DecodeDLPI";
++    tmm_modules[TMM_DECODEDLPI].ThreadInit = DecodeDLPIThreadInit;
++    tmm_modules[TMM_DECODEDLPI].Func = DecodeDLPI;
++    tmm_modules[TMM_DECODEDLPI].ThreadDeinit = DecodeDLPIThreadDeinit;
++    tmm_modules[TMM_DECODEDLPI].flags = TM_FLAG_DECODE_TM;
++}
++
++#else
++
++static TmEcode NoDLPISupportExit(ThreadVars *tv, const void *initdata, void **data)
++{
++    (void)initdata;
++    (void)data;
++    FatalError("Error creating thread %s: DLPI is not enabled. "
++               "Build Suricata with --enable-dlpi on Solaris.", tv->name);
++    return TM_ECODE_FAILED;
++}
++
++void TmModuleReceiveDLPIRegister(void)
++{
++    tmm_modules[TMM_RECEIVEDLPI].name = "ReceiveDLPI";
++    tmm_modules[TMM_RECEIVEDLPI].ThreadInit = NoDLPISupportExit;
++    tmm_modules[TMM_RECEIVEDLPI].flags = TM_FLAG_RECEIVE_TM;
++}
++
++void TmModuleDecodeDLPIRegister(void)
++{
++    tmm_modules[TMM_DECODEDLPI].name = "DecodeDLPI";
++    tmm_modules[TMM_DECODEDLPI].ThreadInit = NoDLPISupportExit;
++    tmm_modules[TMM_DECODEDLPI].flags = TM_FLAG_DECODE_TM;
++}
++
++#endif /* HAVE_DLPI */
+--- a/src/source-dlpi.h
++++ b/src/source-dlpi.h
+@@ -0,0 +1,22 @@
++/* Copyright (C) 2026 Oracle and/or its affiliates. */
++
++#ifndef SURICATA_SOURCE_DLPI_H
++#define SURICATA_SOURCE_DLPI_H
++
++#define DLPI_IFACE_NAME_LENGTH 32
++
++typedef struct DLPIPacketVars_ {
++    void *dtv;
++} DLPIPacketVars;
++
++typedef struct DLPIIfaceConfig_ {
++    char iface[DLPI_IFACE_NAME_LENGTH];
++    char out_iface[DLPI_IFACE_NAME_LENGTH];
++    SC_ATOMIC_DECLARE(unsigned int, ref);
++    void (*DerefFunc)(void *);
++} DLPIIfaceConfig;
++
++void TmModuleReceiveDLPIRegister(void);
++void TmModuleDecodeDLPIRegister(void);
++
++#endif /* SURICATA_SOURCE_DLPI_H */
+--- a/src/suricata.c
++++ b/src/suricata.c
+@@ -83,6 +83,7 @@
+ 
+ #include "runmode-af-packet.h"
+ #include "runmode-af-xdp.h"
++#include "runmode-dlpi.h"
+ #include "runmode-netmap.h"
+ #include "runmode-unittests.h"
+ 
+@@ -98,6 +99,7 @@
+ #include "source-erf-dag.h"
+ #include "source-af-packet.h"
+ #include "source-af-xdp.h"
++#include "source-dlpi.h"
+ #include "source-netmap.h"
+ #include "source-dpdk.h"
+ #include "source-windivert.h"
+@@ -669,6 +671,9 @@
+ #ifdef HAVE_NETMAP
+     printf("\t--netmap[=<dev>]                     : run in netmap mode, no value select interfaces from suricata.yaml\n");
+ #endif
++#ifdef HAVE_DLPI
++    printf("\t--dlpi[=<link>]                       : run in Solaris DLPI inline L2 IPS mode\n");
++#endif
+ #ifdef HAVE_PFRING
+     printf("\t--pfring[=<dev>]                     : run in pfring mode, use interfaces from suricata.yaml\n");
+     printf("\t--pfring-int <dev>                   : run in pfring mode, use interface <dev>\n");
+@@ -984,6 +989,9 @@
+     /* af-xdp */
+     TmModuleReceiveAFXDPRegister();
+     TmModuleDecodeAFXDPRegister();
++    /* Solaris DLPI */
++    TmModuleReceiveDLPIRegister();
++    TmModuleDecodeDLPIRegister();
+     /* netmap */
+     TmModuleReceiveNetmapRegister();
+     TmModuleDecodeNetmapRegister();
+@@ -1123,7 +1131,23 @@
+                 SCLogError("No interface found in config for netmap");
+                 SCReturnInt(TM_ECODE_FAILED);
+             }
++    }
++#endif
++#ifdef HAVE_DLPI
++    else if (runmode == RUNMODE_DLPI) {
++        if (strlen(pcap_dev)) {
++            if (SCConfSetFinal("dlpi.live-interface", pcap_dev) != 1) {
++                SCLogError("Failed to set dlpi.live-interface");
++                SCReturnInt(TM_ECODE_FAILED);
++            }
++        } else {
++            int ret = LiveBuildDeviceList("dlpi");
++            if (ret == 0) {
++                SCLogError("No interface found in config for dlpi");
++                SCReturnInt(TM_ECODE_FAILED);
++            }
+         }
++    }
+ #endif
+ #ifdef HAVE_NFLOG
+     } else if (runmode == RUNMODE_NFLOG) {
+@@ -1418,6 +1442,9 @@
+         {"af-packet", optional_argument, 0, 0},
+         {"af-xdp", optional_argument, 0, 0},
+         {"netmap", optional_argument, 0, 0},
++#ifdef HAVE_DLPI
++        {"dlpi", optional_argument, 0, 0},
++#endif
+         {"pcap", optional_argument, 0, 0},
+         {"pcap-file-continuous", 0, 0, 0},
+         {"pcap-file-delete", 0, 0, 0},
+@@ -1587,6 +1614,33 @@
+                 SCLogError("NETMAP not enabled.");
+                 return TM_ECODE_FAILED;
+ #endif
++            } else if (strcmp((long_opts[option_index]).name, "dlpi") == 0) {
++#ifdef HAVE_DLPI
++                if (suri->run_mode == RUNMODE_UNKNOWN) {
++                    suri->run_mode = RUNMODE_DLPI;
++                    if (optarg) {
++                        LiveRegisterDeviceName(optarg);
++                        memset(suri->pcap_dev, 0, sizeof(suri->pcap_dev));
++                        strlcpy(suri->pcap_dev, optarg,
++                                ((strlen(optarg) < sizeof(suri->pcap_dev)) ?
++                                 (strlen(optarg) + 1) : sizeof(suri->pcap_dev)));
++                    }
++                } else if (suri->run_mode == RUNMODE_DLPI) {
++                    if (optarg) {
++                        LiveRegisterDeviceName(optarg);
++                    } else {
++                        SCLogInfo("Multiple dlpi option without a link on each is useless");
++                        break;
++                    }
++                } else {
++                    SCLogError("more than one run mode has been specified");
++                    PrintUsage(argv[0]);
++                    return TM_ECODE_FAILED;
++                }
++#else
++                SCLogError("DLPI not enabled.");
++                return TM_ECODE_FAILED;
++#endif
+             } else if (strcmp((long_opts[option_index]).name, "nflog") == 0) {
+ #ifdef HAVE_NFLOG
+                 if (suri->run_mode == RUNMODE_UNKNOWN) {
+@@ -2578,6 +2632,7 @@
+                  * interface really is igb0 */
+                 strip_trailing_plus = 1;
+                 /* fall through */
++            case RUNMODE_DLPI:
+             case RUNMODE_PLUGIN:
+             case RUNMODE_PCAP_DEV:
+             case RUNMODE_AFXDP_DEV:
+--- a/src/tm-modules.c
++++ b/src/tm-modules.c
+@@ -182,6 +182,8 @@
+         CASE_CODE(TMM_DECODEPCAPFILE);
+         CASE_CODE(TMM_RECEIVEDPDK);
+         CASE_CODE(TMM_DECODEDPDK);
++        CASE_CODE(TMM_RECEIVEDLPI);
++        CASE_CODE(TMM_DECODEDLPI);
+         CASE_CODE(TMM_DECODELIB);
+         CASE_CODE (TMM_RECEIVEPLUGIN);
+         CASE_CODE (TMM_DECODEPLUGIN);
+--- a/src/tm-threads-common.h
++++ b/src/tm-threads-common.h
+@@ -55,6 +55,8 @@
+     TMM_DECODEAFXDP,
+     TMM_RECEIVEDPDK,
+     TMM_DECODEDPDK,
++    TMM_RECEIVEDLPI,
++    TMM_DECODEDLPI,
+     TMM_RECEIVENETMAP,
+     TMM_DECODENETMAP,
+     TMM_ALERTPCAPINFO,
+--- a/suricata.yaml.in
++++ b/suricata.yaml.in
+@@ -2139,6 +2139,20 @@
+    # Put default values here
+  - interface: default
+ 
++# Solaris DLPI inline IPS configuration. A DLPI IPS instance is a
++# transparent Ethernet bridge: it forwards a frame to copy-iface only after
++# Suricata has processed it. Configure both directions. The data links must
++# be dedicated appliance ports; do not assign IP addresses to them.
++#dlpi:
++# - interface: net1
++#   copy-mode: ips
++#   copy-iface: net2
++#   threads: 1
++# - interface: net2
++#   copy-mode: ips
++#   copy-iface: net1
++#   threads: 1
++
+ # PF_RING configuration: for use with native PF_RING support
+ # for more info see http://www.ntop.org/products/pf_ring/
+ pfring:

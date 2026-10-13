@@ -55,3 +55,54 @@ Check that suricata generates alerts:
     # netcat unix 8888
     uid=0(root) gid=0(root) groups=0(root)
     # 04/09/2025-15:58:02.830711  [**] [1:2100498:7] GPL ATTACK_RESPONSE id check returned root [**] [Classification: Potentially Bad Traffic] [Priority: 2] {TCP} 10.163.102.144:8888 -> 10.0.2.15:51975
+
+Solaris DLPI inline regression test
+----------------------------------
+
+Use two isolated Ethernet segments joined only by the Suricata DLPI workers.
+Keep management on a separate link. The virtual switch must permit the remote
+endpoint MAC addresses and VLAN 42; a ping alone does not validate this setup.
+The probes use source addresses 198.18.0.1 and 2001:db8:42::1, in both
+directions. Any endpoint anti-spoof policy must permit those test addresses.
+An untagged zone VNIC may filter VLAN frames before Suricata receives them;
+use VLAN-capable links or isolated virtual Ethernet pairs for the full test.
+Run the probe as root (raw DLPI privileges) on each endpoint, with Python 3.
+Read the script from the Userland workspace, or stream it to Python on stdin;
+it needs no third-party modules and creates no files.
+
+First check frame construction, without network access:
+
+  python3 -B tests/dlpi-frames.py selftest --token selftest
+
+On the receiving endpoint (replace MAC addresses with the actual endpoint
+addresses; do not use a management link):
+
+  python3 -B tests/dlpi-frames.py receive --link net1 \
+    --src 02:00:00:00:00:01 --dst 02:00:00:00:00:02 \
+    --token unique-test-1 --repeat 3 --seconds 60 --expect all
+
+Wait for the JSON "ready" event, then on the sending endpoint:
+
+  python3 -B tests/dlpi-frames.py send --link net1 \
+    --src 02:00:00:00:00:01 --dst 02:00:00:00:00:02 \
+    --token unique-test-1 --repeat 3
+
+The receiver expects exactly three byte-identical frames of each type: ARP,
+IPv4/ICMP, IPv6/ICMPv6, VLAN-42 IPv4, VLAN-42 IPv6, and experimental EtherType
+0x88b5. It fails on missing frames, modified bytes, or duplicate forwarding.
+Use a new token per run, swap the endpoint MACs, and repeat in the reverse
+direction. Every successful probe returns zero and prints result=PASS.
+
+Repeat with these Suricata rules and receiver --expect drop-ip:
+
+  drop icmp any any -> any any (msg:"DLPI IPv4 drop"; sid:9900101; rev:1;)
+  drop icmpv6 any any -> any any (msg:"DLPI IPv6 drop"; sid:9900102; rev:1;)
+
+Only ARP and experimental frames must arrive; tagged and untagged IPv4/IPv6
+must be blocked. Check the corresponding alerts, decoder VLAN/IPv6 counters,
+and capture.dlpi_send_errors. Repeat with Suricata stopped and --expect none
+to prove that the topology has no bypass path. Save probe output and engine
+logs in the task evidence directory inside the Userland workspace.
+
+This is a raw frame forwarding/verdict test, not a complete IPv6 stack,
+neighbor-discovery, fragmentation, TCP reassembly, or throughput test.
