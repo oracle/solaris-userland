@@ -1,0 +1,23 @@
+Prevent out-of-bounds accesses in the reversible vertical transform for empty
+resolution levels. Backport only the library fix.
+
+Downloaded from: https://github.com/uclouvain/openjpeg/pull/1674.patch
+Listed at: https://github.com/uclouvain/openjpeg/pull/1674
+Upstream commit: https://github.com/uclouvain/openjpeg/commit/843b78e2712edab13bbda30662465d443a062716
+Upstream issue: https://github.com/uclouvain/openjpeg/issues/1673
+
+diff --git a/src/lib/openjp2/dwt.c b/src/lib/openjp2/dwt.c
+index 4c2c6a438..c55a626d7 100644
+--- a/src/lib/openjp2/dwt.c
++++ b/src/lib/openjp2/dwt.c
+@@ -1573,6 +1573,10 @@ static void opj_dwt_encode_and_deinterleave_v(
+     const OPJ_UINT32 sn = (height + (even ? 1 : 0)) >> 1;
+     const OPJ_UINT32 dn = height - sn;
+ 
++    if (height == 0) {
++        return;
++    }
++
+     opj_dwt_fetch_cols_vertical_pass(arrayIn, tmpIn, height, stride_width, cols);
+ 
+ #define OPJ_Sc(i) tmp[(i)*2* NB_ELTS_V8 + c]
