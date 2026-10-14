@@ -1,26 +1,80 @@
-patch from https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=235009
+40117966 Preserve the Xorg keyboard layout when no input source is available
 
-Not suitable for upstream
+Solaris does not provide systemd-localed.  Xorg configures the system keyboard
+using HAL or xorg.conf; deriving a replacement from the UI locale can select
+an unrelated layout (ja_JP maps to the unavailable IBus engine anthy).
 
---- a/js/ui/status/keyboard.js	2020-05-21 13:46:27.177831239 -0700
-+++ b/js/ui/status/keyboard.js	2020-05-21 13:47:51.095863245 -0700
-@@ -252,6 +252,19 @@
-                 id += `+${variants[i]}`;
-             sourcesList.push({type: INPUT_SOURCE_TYPE_XKB, id});
+Leave Xorg's keymap unchanged when the greeter or user session has no usable
+input source.  Explicitly configured, available sources continue to be applied.
+Do not select a replacement IBus engine either: an XKB echo engine can also
+reset the Xorg layout. Handle an absent source in the indicator and on-screen
+keyboard as well.
+
+Solaris integration: not suitable for upstream in this form.
+
+--- a/js/ui/status/keyboard.js
++++ b/js/ui/status/keyboard.js
+@@ -591,12 +591,8 @@
+                 infosList.push({type, id, displayName, shortName});
          }
-+        // systemd-localed is absent, so the above sourcesList,
-+        // which would otherwise come from org.freedesktop.locale1, is
-+        // empty. As a fallback, retrieve the input source from the
-+        // current locale.
+ 
+-        if (infosList.length === 0) {
+-            let type = INPUT_SOURCE_TYPE_XKB;
+-            let id = KeyboardManager.DEFAULT_LAYOUT;
+-            let [, displayName, shortName] = this._xkbInfo.get_layout_info(id);
+-            infosList.push({type, id, displayName, shortName});
+-        }
++        // With no usable input source, retain Xorg's configured keymap.
++        // An unavailable IBus engine must not force a US keyboard layout.
+ 
+         let inputSourcesByShortName = {};
+         for (let i = 0; i < infosList.length; i++) {
+@@ -631,6 +627,8 @@
+ 
+         if (this._mruSources.length > 0)
+             this._mruSources[0].activate(false);
++        else
++            this.emit('current-source-changed', null);
+ 
+         // All ibus engines are preloaded here to reduce the launching time
+         // when users switch the input sources.
+@@ -1075,6 +1073,9 @@
+         Main.overview.hide();
+ 
+         let source = this._inputSourceManager.currentSource;
++        if (!source)
++            return;
 +
-+       let _keyboardManagerLayout = KeyboardManager.getKeyboardManager()._getLocaleLayout();
-+        if (_keyboardManagerLayout) {
-+            let _kMLid = _keyboardManagerLayout.layout;
-+            if (!!_keyboardManagerLayout.variant)
-+                _kMLid = _kMLid + '+' + _keyboardManagerLayout.variant;
-+            sourcesList.push({ type: INPUT_SOURCE_TYPE_XKB, id: _kMLid });
-+        }
-+
-         return sourcesList;
+         let xkbLayout = '';
+         let xkbVariant = '';
+ 
+--- a/js/ui/keyboard.js
++++ b/js/ui/keyboard.js
+@@ -2209,7 +2209,7 @@
+     _onSourceChanged(inputSourceManager, _oldSource) {
+         let source = inputSourceManager.currentSource;
+         this._currentSource = source;
+-        this.emit('active-group', source.id);
++        this.emit('active-group', source?.id ?? 'us');
      }
  
+     _onContentPurposeHintsChanged(method) {
+@@ -2246,6 +2246,9 @@
+     getCurrentGroup() {
+         if (Main.inputMethod.terminalMode)
+             return 'us-extended';
++
++        if (!this._currentSource)
++            return 'us';
+ 
+         // Special case for Korean, if Hangul mode is disabled, use the 'us' keymap
+         if (this._currentSource.id === 'hangul') {
+@@ -2267,7 +2270,7 @@
+         if (string == null)
+             return false;
+         /* Let ibus methods fall through keyval emission */
+-        if (fromKey && this._currentSource.type === InputSourceManager.INPUT_SOURCE_TYPE_IBUS)
++        if (fromKey && this._currentSource?.type === InputSourceManager.INPUT_SOURCE_TYPE_IBUS)
+             return false;
+ 
+         Main.inputMethod.commit(string);
