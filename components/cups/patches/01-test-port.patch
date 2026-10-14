@@ -7,6 +7,8 @@ Install trap to kill leftover cupsd.
 
 Restart test if cupsd fails to start.
 
+Wait for print jobs to finish before checking subscription limits.
+
 This patch is not for upstream. The change was made to make the tests more
 reliable in Userland infrastructure.
 
@@ -88,3 +90,29 @@ reliable in Userland infrastructure.
  
  	tries=`expr $tries + 1`
  done
+--- a/test/4.3-job-ops.test
++++ b/test/4.3-job-ops.test
+@@ -329,3 +329,23 @@
+ 	EXPECT job-state
+ 	EXPECT job-printer-uri
+ }
++{
++	# Job subscriptions must be gone before the subscription-limit tests.
++	NAME "Wait for print jobs to complete"
++	DELAY "0,1"
++
++	OPERATION Get-Jobs
++	RESOURCE /
++
++	GROUP operation
++	ATTR charset attributes-charset utf-8
++	ATTR language attributes-natural-language en
++	ATTR uri printer-uri $scheme://$hostname:$port/
++	ATTR keyword which-jobs not-completed
++	ATTR keyword requested-attributes job-id
++
++	STATUS successful-ok
++	EXPECT attributes-charset
++	EXPECT attributes-natural-language
++	EXPECT !job-id REPEAT-NO-MATCH REPEAT-LIMIT 60
++}
