@@ -1,0 +1,18 @@
+Temporarily undeprecate the following two functions as they are causing
+build failures in the ON gate.
+
+This patch should be removed once ON is migrated to new replacements.
+
+--- expat-2.9.0/lib/expat.h
++++ expat-2.9.0/lib/expat.h
+@@ -961,10 +961,8 @@ XML_GetErrorCode(XML_Parser parser);
+    return 0 to indicate an error.
+    Note: XML_GetCurrentByteIndex returns -1 to indicate an error.
+ */
+-XML_ATTR_DEPRECATED("please use XML_GetCurrentLineNumber64 instead")
+ XMLPARSEAPI(XML_Size) XML_GetCurrentLineNumber(XML_Parser parser);
+ XMLPARSEAPI(uint64_t) XML_GetCurrentLineNumber64(XML_Parser parser);
+-XML_ATTR_DEPRECATED("please use XML_GetCurrentColumnNumber64 instead")
+ XMLPARSEAPI(XML_Size) XML_GetCurrentColumnNumber(XML_Parser parser);
+ XMLPARSEAPI(uint64_t) XML_GetCurrentColumnNumber64(XML_Parser parser);
+ XML_ATTR_DEPRECATED("please use XML_GetCurrentByteIndex64 instead")
