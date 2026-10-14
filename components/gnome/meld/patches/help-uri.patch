@@ -1,0 +1,24 @@
+Open the static HTML help packaged by Solaris. Solaris no longer ships Yelp,
+so attempting to open help:meld raises G_IO_ERROR_NOT_SUPPORTED. The build
+converts Meld's Mallard documentation to HTML for offline viewing.
+
+This change should be offered upstream.
+
+--- meld-3.24.0/meld/meldapp.py
++++ meld-3.24.0/meld/meldapp.py
+@@ -125,6 +125,14 @@ class MeldApp(Gtk.Application):
+             uri = "https://meld.app/help/"
+         else:
+-            uri = "help:meld"
++            help_root = os.path.join(meld.conf.DATADIR, "help")
++            for language in GLib.get_language_names():
++                help_path = os.path.join(
++                    help_root, language, "index.html")
++                if os.path.isfile(help_path):
++                    uri = Gio.File.new_for_path(help_path).get_uri()
++                    break
++            else:
++                uri = "https://meld.app/help/"
+         Gtk.show_uri(
+             Gdk.Screen.get_default(), uri, Gtk.get_current_event_time())
+ 
