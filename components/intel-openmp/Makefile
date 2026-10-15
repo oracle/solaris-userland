@@ -114,7 +114,7 @@ COMPONENT_BUILD_ENV += LD_OPTIONS="$(LD_OPTIONS)"
 COMPONENT_POST_UNPACK_ACTION = \
       $(MV) libomp_oss $(COMPONENT_SRC)
 
-CBE_PACKAGES += developer/gcc/gcc-gfortran-13
+CBE_PACKAGES += developer/gcc/gcc-gfortran-$(subst /usr/gcc/,,$(GCC_ROOT))
 
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
