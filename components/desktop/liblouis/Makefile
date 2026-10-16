@@ -30,14 +30,14 @@ COMPONENT_MAKE_JOBS=1
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		liblouis
-COMPONENT_VERSION=	3.25.0
-COMPONENT_PROJECT_URL=	http://liblouis.org/
+COMPONENT_VERSION=	3.39.0
+COMPONENT_PROJECT_URL=	https://liblouis.io/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d720aa5fcd51de925a28ae801b8b2ca76ee67e2360b40055c679bce8e565f251
+	sha256:629fa8cb0dfd9ad457c5bf47a42f0953b673e62c8ad6b1d03ddc4e2bd20008f1
 COMPONENT_ARCHIVE_URL=	https://github.com/liblouis/liblouis/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	13112
-COMPONENT_BAID=		141830
+COMPONENT_BAID=		434617
 
 # Orca uses python 3.11, so we need to match
 PYTHON_VERSION=		3.11
@@ -49,24 +49,25 @@ CONFIGURE_OPTIONS +=    --enable-shared
 CONFIGURE_OPTIONS +=    --disable-static
 CONFIGURE_OPTIONS +=    --enable-ucs4
 
-# While the main library is built with configure, the python module is
-# built & installed with separate invocations of setup.py
+# While the main library is built with configure, the Python module is
+# built and installed separately.
 PYTHON_ENV +=	CC="$(CC)"
 PYTHON_ENV +=	CFLAGS="$(CFLAGS)"
 PYTHON_ENV +=	PYTHONPATH='$(@D)/python'
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D)) ;
 COMPONENT_POST_BUILD_ACTION += \
 	(cd $(@D)/python ; \
 	    $(ENV) $(COMPONENT_BUILD_ENV) $(PYTHON_ENV) \
 		LD_LIBRARY_PATH_$(BITS)=$(@D)/liblouis/.libs/ \
-	        $(PYTHON) ./setup.py build );
+	        $(PYTHON) -m build --wheel --no-isolation );
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(@D)/python ; \
 	    $(ENV) $(COMPONENT_INSTALL_ENV) $(PYTHON_ENV) \
 		LD_LIBRARY_PATH_$(BITS)=$(PROTO_DIR)$(USRLIB.$(BITS)) \
-	        $(PYTHON) ./setup.py install --root $(PROTO_DIR) \
-		--install-lib $(PYTHON_LIB) );
+	        $(PYTHON) $(WS_TOOLS)/pyinstaller --root $(PROTO_DIR) \
+		--install-lib $(PYTHON_LIB) --force dist );
 
 # Standard automake test framework results transform
 COMPONENT_TEST_TRANSFORMS += \
@@ -84,6 +85,10 @@ COMPONENT_TEST_TRANSFORMS += \
 
 CBE_PACKAGES += developer/documentation-tool/help2man
 CBE_PACKAGES += library/libyaml
+CBE_PACKAGES += library/python/build-311
+CBE_PACKAGES += library/python/installer-311
+CBE_PACKAGES += library/python/setuptools-311
+CBE_PACKAGES += library/python/wheel-311
 CBE_PACKAGES += runtime/python-311
 
 REQUIRED_PACKAGES += $(PERL_PKG)
