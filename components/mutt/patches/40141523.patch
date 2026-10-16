@@ -1,0 +1,57 @@
+Downloaded from: https://gitlab.com/muttmua/mutt/-/commit/7752d93f26f8f1384905fad874afff5abb0f3e54.patch
+Listed at: https://gitlab.com/muttmua/mutt/-/work_items/533
+Upstream commit: https://gitlab.com/muttmua/mutt/-/commit/7752d93f26f8f1384905fad874afff5abb0f3e54
+Context refreshed for Mutt 2.3.2 (function-call spacing only).
+
+From 7752d93f26f8f1384905fad874afff5abb0f3e54 Mon Sep 17 00:00:00 2001
+From: "Kevin J. McCarthy" <kevin@8t8.us>
+Date: Tue, 6 Oct 2026 13:50:42 +0800
+Subject: [PATCH] Fix OOB heap write in convert_file_from_to().
+
+This issue was reported by Calif.io, in collaboration with Anthropic,
+with a full reproduce and suggested patch.  I've reviewed the patch
+and concur it is the best approach.
+
+This is due to a logic error in convert_file_from_to() in sendlib.c.
+It first counts the number of charsets to try in one loop, and then
+allocates and copies the charsets over in a separate loop afterwards.
+
+Unfortunately the second loop's logic does not follow the first loop
+exactly, and the counter gets out of sync with a zero-length charset.
+For example ":utf-8" where ":" is the delimiter.
+
+The fix is to keep the counter logic the same: incrementing after the
+initial zero-length charset check instead of in the for loop increment
+clause.
+
+It takes user interaction to trigger this OOB write: using the
+received message as a template in a new message via <resend-message>.
+The write is of arbitrary length.
+
+Calif.io did not report any exploitation beyond the OOB write.
+Nonetheless, I recommend all shipping distributions apply this patch.
+---
+ sendlib.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sendlib.c b/sendlib.c
+index de6aa542..49d81400 100644
+--- a/sendlib.c
++++ b/sendlib.c
+@@ -864,11 +864,11 @@ static size_t convert_file_from_to(FILE *file,
+ 
+   /* Copy them */
+   tcode = safe_malloc (ncodes * sizeof (char *));
+-  for (c = tocodes, i = 0; c; c = c1 ? c1 + 1 : 0, i++)
++  for (c = tocodes, i = 0; c; c = c1 ? c1 + 1 : 0)
+   {
+     if ((c1 = strchr (c, ':')) == c)
+       continue;
+-    tcode[i] = mutt_substrdup (c, c1);
++    tcode[i++] = mutt_substrdup (c, c1);
+   }
+ 
+   ret = (size_t)(-1);
+-- 
+GitLab
+
