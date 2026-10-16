@@ -1,0 +1,25 @@
+When sending legacy I/O log files via sudo_sendlog, there is no
+run-time information availalble.
+
+Upstream commit: https://github.com/sudo-project/sudo/commit/22bd1127fd59fbed90ae4e053c19aab72783b8a6
+Adapted for sudo 1.9.17p2.
+
+This patch can be removed with next sudo release which releases the fix.
+
+--- a/logsrvd/logsrvd.c
++++ b/logsrvd/logsrvd.c
+@@ -526,8 +526,12 @@
+ 	debug_return_bool(false);
+     }
+ 
+-    /* Check that message is valid. */
+-    if (msg->run_time == NULL) {
++    /*
++     * Check that message is valid.
++     * The run_time field is optional and will not be present
++     * when sending legacy I/O logs via sudo_sendlog.
++     */
++    if (msg == NULL) {
+ 	sudo_warnx(U_("%s: %s"), source, U_("invalid ExitMessage"));
+ 	closure->errstr = _("invalid ExitMessage");
+ 	debug_return_bool(false);

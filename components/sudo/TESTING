@@ -1,336 +1,593 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Open second terminal with root shell. Keep this as a possibility to assume
-# root privileges if you loose the ability to do so via sudo during testing.
-# Otherwise be logged in as a regular user.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Make sure we are looking at the correct version
-sudo -V | grep version
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Test digest feature
-
-# Make sure that the following line is commented out in /etc/sudoers:
-# ALL    ALL=(ALL) NOPASSWD: ALL
-
-openssl dgst -sha224 /usr/bin/ls # make note of the hash
-
-# Add this line to sudoers (replace UID by your user name and HASH by the ls
-# hash):
-<UID> ALL = NOPASSWD: sha224:<HASH> /usr/bin/ls
-
-# This should work (asking you a password first)
-sudo /usr/bin/ls /
-
-# Now change the hash so that it is wrong and make sure it does not work this
-# time
-sudo /usr/bin/ls /
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# add this line to sudoers
-ALL ALL=(ALL:ALL) NOPASSWD: ALL
-
-# Make sure it gives you root account
-sudo id
-
-# Make sure this changes just your group
-sudo -g sol_src id
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Test creating a file in etc
-sudoedit /etc/test
-...
-cat /etc/test # Make sure the text is there
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Auditing
-cd /var/audit
-sudo /usr/sbin/audit -t
-sudo rm *
-sudo /usr/sbin/audit -s
-sudo /usr/sbin/auditreduce * | /usr/sbin/praudit -s
-> file,1970-01-01 00:00:00.000 +00:00,
-> file,2014-03-27 10:34:23.000 +00:00,
-
-# Make sure that since the first run we can see new auditing record
-sudo /usr/sbin/auditreduce * | /usr/sbin/praudit -s
-> file,2014-03-27 10:34:23.000 +00:00,
-> header,158,2,AUE_sudo,,10.0.2.15,2014-03-27 10:34:23.735 +00:00
-> subject,vmarek,root,staff,vmarek,staff,2295,3108723863,5096 202240 10.0.2.2
-> path,/var/share/audit
-> path,/usr/sbin/auditreduce
-> cmd,argcnt,1,20140327103420.not_terminated.S12-43,envcnt,0,
-> return,success,0
-> file,2014-03-27 10:34:23.000 +00:00,
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# PAM credentials
-
-# Make sure that 'root' is a role
-sudo /usr/sbin/usermod -K type=role root
-
-# Note the preselection mask, it should probably be 'sstore(0x200031000,0x200031000)'
-sudo bash -c '/usr/sbin/auditconfig -getpinfo $$'
-
-# Add audit flags to root
-sudo /usr/sbin/rolemod -K audit_flags=ex:no root
-
-# Make sure that the preselection mask now shows new entry ('ex')
-sudo bash -c '/usr/sbin/auditconfig -getpinfo $$'
-
-# Disable PAM credentials in sudo by adding this line to sudoers:
-Defaults !pam_setcred
-
-# Make sure that the preselection mask now shows only previous entry (no 'ex')
-sudo bash -c '/usr/sbin/auditconfig -getpinfo $$'
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Solaris privileges
-
-# Add this to the end of /etc/sudoers keeping the 'ALL ALL=(ALL:ALL) NOPASSWD: ALL' above
-<UID> ALL = () PRIVS="basic,dtrace_kernel,dtrace_proc,dtrace_user" NOPASSWD: /usr/sbin/dtrace, /usr/bin/bash
-
-# Just your regular id
-id
-> uid=157888(vmarek) gid=10(staff)
-
-# Sudo normally turning you into root via the 'ALL ALL=(ALL:ALL) NOPASSWD: ALL' line
-sudo id
-> uid=0(root) gid=0(root)
-
-# For bash it should leave your ID and just grant dtrace privileges
-sudo -u $LOGNAME bash -c 'id; ppriv $$'
-uid=157888(vmarek) gid=10(staff)
-> 2296:   bash -c id; ppriv $$
-> flags = <none>
->         E: basic,dtrace_kernel,dtrace_proc,dtrace_user
->         I: basic,dtrace_kernel,dtrace_proc,dtrace_user
->         P: basic,dtrace_kernel,dtrace_proc,dtrace_user
->         L: basic,dtrace_kernel,dtrace_proc,dtrace_user
-
-# dtrace functionality
-sudo -u $LOGNAME /usr/sbin/dtrace -l -n 'syscall::b*:entry'
->    ID   PROVIDER            MODULE                          FUNCTION NAME
-> 11282    syscall                                                 brk entry
-> 11550    syscall                                            brandsys entry
-> 11642    syscall                                                bind entry
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Test noexec
-
-# Verify the following works
-
-sudo /usr/perl5/5.38/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
-before
-uid=0(root) gid=0(root) groups=0(root),1(other),2(bin),3(sys),4(adm),6(mail),7(tty),8(lp),12(daemon)
-after
-
-# Add the following to sudoers
-
-ALL     ALL = NOPASSWD: NOEXEC: /usr/perl5/5.38/bin/perl
-
-# Now Perl should be prevent to run further commands, so the output is
-
-sudo /usr/perl5/5.38/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
-before
-after
-
-# Perl itself works as expected
-
-/usr/perl5/5.36/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
-before
-uid=101(rimmer) gid=10(staff) groups=10(staff)
-after
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Verify that "Last login..." message does not appear
-
-sudo /bin/date
-Thu Nov 10 08:24:57 UTC 2016
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Verify that root role is able to run commands.
-
-# make sure root is a role
-sudo /usr/sbin/usermod -K type=role root
-UX: /usr/sbin/usermod: ERROR: Roles must be modified with 'rolemod'.
-# and has no pam_policy
-sudo /usr/sbin/rolemod -K pam_policy= root
-# and there is no PAM_POLICY set in /etc/security/policy.conf
-sudo gsed -ibackup 's/^PAM_POLICY=/##PAM_POLICY=/' /etc/security/policy.conf
-# assume the root role
-sudo su - root
-# run commands as different user
-sudo -u webservd /sbin/uname
-sudo -i -u webservd /sbin/uname
-
-# Now retest with various pam_policy values (unix, ldap, ...)
-/usr/sbin/rolemod -K pam_policy=unix root
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Test sudo_logservd
-
-# Enable io logging by making sure the below three lines are present in /etc/sudoers:
-Defaults log_output
-Defaults log_input
-Defaults iolog_dir=/var/share/sudo/sudo-io
-
-# make sure your machine has the right hostname set up
-check-hostname
-# and regenerate the host CA and cert to capture the hostname change
-sudo svccfg -s system/identity:cert delcust
-sudo svcadm refresh system/identity:cert
-sudo svcadm restart -s system/identity:cert
-
-# create some logs
-$ sudo bash
-# ls
-# exit
-
-
-mkdir -p /certs
-cd /certs
-mkdir -p certs csr newcerts private
-touch index.txt
-echo 1000 > serial
-
-cat >openssl.cnf <<-'EOT'
-[ ca ]
-default_ca              = CA_default
-
-[ CA_default ]
-dir                     = /certs
-certs                   = $dir/certs
-new_certs_dir	        = $dir/certs
-database                = $dir/index.txt
-certificate             = $dir/cacert.pem
-private_key             = $dir/private/cakey.pem
-serial                  = $dir/serial
-policy		        = policy_match
-
-[ policy_match ]
-countryName		= match
-stateOrProvinceName	= optional
-organizationName	= match
-organizationalUnitName	= optional
-commonName		= supplied
-emailAddress		= optional
-
-
-[ v3_ca ]
-subjectKeyIdentifier    = hash
-authorityKeyIdentifier  = keyid:always,issuer
-basicConstraints        = critical,CA:true
-keyUsage                = cRLSign, keyCertSign
-
-[ usr_cert ]
-basicConstraints        = CA:FALSE
-keyUsage                = nonRepudiation, digitalSignature, \
-                          keyEncipherment
-subjectKeyIdentifier    = hash
-authorityKeyIdentifier  = keyid,issuer
-
-[req]
-distinguished_name = req_distinguished_name
-
-[req_distinguished_name]
-EOT
-
-openssl genrsa -aes256 -out private/cakey.pem 4096
-
-chmod 400 private/cakey.pem
-openssl req -config openssl.cnf -key private/cakey.pem \
-               -new -x509 -days 7300 -sha256 -extensions v3_ca \
-               -subj "/CN=$(hostname).oracle.com/O=My Company Name LTD./C=US" \
-               -out cacert.pem
-
-chmod 444 cacert.pem
-openssl x509 -noout -text -in cacert.pem
-
-
-
-openssl genrsa -out private/logsrvd_key.pem 2048
-chmod 400 private/logsrvd_key.pem
-openssl req -config openssl.cnf -key private/logsrvd_key.pem -new \
-               -subj "/CN=$(hostname).oracle.com/O=My Company Name LTD./C=US" \
-               -sha256 -out csr/logsrvd_csr.pem
-openssl ca -config openssl.cnf -days 375 -notext -md sha256 \
-               -in csr/logsrvd_csr.pem -out certs/logsrvd_cert.pem
-
-openssl verify -CAfile cacert.pem certs/logsrvd_cert.pem
-
-
-
-openssl genrsa -out private/client_key.pem 2048
-chmod 400 private/client_key.pem
-openssl req -config openssl.cnf -key private/client_key.pem -new \
-               -subj "/CN=$(hostname).oracle.com/O=My Company Name LTD./C=US" \
-               -sha256 -out csr/client_csr.pem
-openssl ca -config openssl.cnf -days 375 -notext -md sha256 \
-               -in csr/client_csr.pem -out certs/client_cert.pem
-
-openssl verify -CAfile cacert.pem certs/client_cert.pem
-
-
-# Make sure that the hostname corresponds to /etc/hosts:
-$ openssl x509 -noout -text -in /certs/certs/logsrvd_cert.pem | grep Subject:
-# You should be able to ping the hostname stated in CN. If not, fix your
-# /etc/hosts
-
-
-# remeber the correct hostname for commands below
-H=.......
-
-
-cp /etc/sudo_logsrvd.conf config
-vi config
-
-           # Listen on port 30344 for TLS connections to any address.
-           listen_address = *:30343
-           listen_address = *:30344(tls)
-
-           # Path to the certificate authority bundle file in PEM format.
-           tls_cacert = /certs/cacert.pem
-
-           # Path to the server's certificate file in PEM format.
-           tls_cert = /certs/certs/logsrvd_cert.pem
-
-           # Path to the server's private key file in PEM format.
-           tls_key = /certs/private/logsrvd_key.pem
-
-
-# In one terminal run the server
-/usr/sbin/sudo_logsrvd -n --file config
-
-# in another terminal run the client with TLS
-/usr/sbin/sudo_sendlog --host $H --key /certs/private/logsrvd_key.pem --cert /certs/certs/logsrvd_cert.pem --ca-bundle /certs/cacert.pem -p 30344 /var/share/sudo/sudo-io/00/00/01 -n
-Connected to sudocbe:30344
-Server ID: Sudo Audit Server 1.9.9
-Remote log ID: /var/share/sudo/sudo-io/00/00/0G
-1 I/O log transmitted successfully in 0.031067965 seconds
-
-# and again with verifying the server certificate
-/usr/sbin/sudo_sendlog --host $H --key /certs/private/logsrvd_key.pem --cert /certs/certs/logsrvd_cert.pem --ca-bundle /certs/cacert.pem -p 30344 /var/share/sudo/sudo-io/00/00/01
-Connected to sudocbe:30344
-Server ID: Sudo Audit Server 1.9.9
-Remote log ID: /var/share/sudo/sudo-io/00/00/0H
-1 I/O log transmitted successfully in 0.031471913 seconds
-
-# and without TLS
-/usr/sbin/sudo_sendlog --host $H -p 30343 /var/share/sudo/sudo-io/00/00/01
-Connected to sudocbe:30343
-Server ID: Sudo Audit Server 1.9.9
-Remote log ID: /var/share/sudo/sudo-io/00/00/0I
-1 I/O log transmitted successfully in 0.020557914 seconds
+#!/bin/sh
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Execute the tests on DISPOSABLE MACHINE as it will modify this machine configuration
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# This script replaces /etc/sudoers with @includedir /etc/sudoers.d and removes
+# /etc/sudoers.d. It also changes audit, root-role, PAM-policy, certificate,
+# and DTrace state and creates local user.
+#
+# Run as root:
+#
+#     ./TESTING
+#
+# It is advisible to keep second terminal with root shell available
+#
+
+PATH=/usr/bin:/usr/sbin:/usr/gnu/bin
+export PATH
+# Commands provided by the component or Solaris.
+SUDO=/usr/bin/sudo
+SUDOEDIT=/usr/bin/sudoedit
+OPENSSL=/usr/bin/openssl
+PERL=/usr/perl5/5.42/bin/perl
+
+# The account is fixed so that cleanup never removes a user supplied by an
+# environment variable or command-line argument.
+TEST_USER=sudo_testing
+test -n "$TEST_GROUP" || TEST_GROUP=webservd
+
+# Files that the root driver owns while this script runs.
+SUDOERS=/etc/sudoers
+SUDOERS_D=/etc/sudoers.d
+WORK=/var/tmp/sudo-TESTING.$$
+USER_WORK=/var/tmp/sudo-TESTING-user.$$
+failures=0
+
+trap cleanup 0 1 2 3 15
+
+main()
+{
+        setup_environment
+        install_empty_sudoers
+        test_basic_sudo
+        test_digest
+        test_sudoedit
+        test_auditing
+        test_pam_credentials
+        test_solaris_privileges
+        test_noexec
+        test_root_role
+        test_logsrvd
+
+        printf '%s\n' "Completed with $failures failure(s)."
+        test "$failures" -eq 0
+}
+
+# ---------------------------------------------------------------------------
+# 0. Preconditions and isolated test account
+#  - make sure we have all tools we need
+#  - delete and create test user
+setup_environment()
+{
+        test "$(/usr/bin/id -u)" -eq 0 || die "run this script as root"
+        # Every checklist block below depends on these commands.  A missing
+        # prerequisite invalidates the smoke test, so fail before changing any
+        # sudo or system configuration.
+        for command in \
+            "$SUDO" "$SUDOEDIT" "$OPENSSL" "$PERL" \
+            /usr/bin/awk /usr/bin/bash /usr/bin/chmod /usr/bin/chown \
+            /usr/bin/cp /usr/bin/dirname /usr/bin/find /usr/bin/getent \
+            /usr/bin/grep /usr/bin/hostname /usr/bin/id /usr/bin/install \
+            /usr/bin/kill /usr/bin/ls \
+            /usr/bin/mkdir /usr/bin/rm /usr/bin/sh /usr/bin/sleep \
+            /usr/bin/stty /usr/bin/su /usr/bin/tar \
+            /bin/date /bin/sh \
+            /usr/sbin/visudo /usr/sbin/useradd /usr/sbin/userdel \
+            /usr/bin/passwd /usr/bin/gsed \
+            /usr/sbin/audit /usr/sbin/auditreduce /usr/sbin/praudit \
+            /usr/sbin/auditconfig /usr/sbin/usermod /usr/sbin/rolemod \
+            /usr/sbin/dtrace /usr/bin/ppriv /sbin/uname \
+            /usr/sbin/sudo_logsrvd /usr/sbin/sudo_sendlog \
+            /usr/bin/find /usr/bin/getent /usr/gnu/bin/tail; do
+                require_command "$command"
+        done
+        /usr/bin/id webservd >/dev/null 2>&1 ||
+                die "required account is unavailable: webservd"
+        /usr/bin/getent group "$TEST_GROUP" >/dev/null 2>&1 ||
+                die "required group is unavailable: $TEST_GROUP"
+        test -d /var/audit || die "required directory is unavailable: /var/audit"
+        /usr/bin/mkdir -p /var/share/sudo/sudo-io ||
+                die "cannot create I/O log directory: /var/share/sudo/sudo-io"
+        
+        # A previously interrupted run may have left its dedicated account behind.
+        # TEST_USER is fixed above; never derive this destructive target from input.
+        if /usr/bin/id "$TEST_USER" >/dev/null 2>&1; then
+                /usr/sbin/userdel -r "$TEST_USER" ||
+                        die "cannot remove left-over test account: $TEST_USER"
+        fi
+        
+        /usr/bin/mkdir -p "$WORK" "$USER_WORK" ||
+                die "cannot create work directories"
+        /usr/bin/chmod 700 "$WORK" "$USER_WORK"
+        /usr/sbin/useradd -z no -m -s /usr/bin/bash "$TEST_USER" ||
+                die "cannot create test account: $TEST_USER"
+        # useradd creates a locked account.  Enable it for non-UNIX authentication so
+        # PAM account management accepts sudo's NOPASSWD policy without giving this
+        # temporary user a usable login password.
+        /usr/bin/passwd -N "$TEST_USER" ||
+                die "cannot activate test account for non-UNIX authentication"
+        /usr/bin/chown "$TEST_USER" "$USER_WORK" ||
+                die "cannot prepare user work directory"
+        
+        # Keep a recovery copy.  This script intentionally leaves its test sudoers
+        # configuration installed; reset the disposable VM or restore this copy after
+        # inspecting a failed run.
+        /usr/bin/cp -p "$SUDOERS" "$WORK/sudoers.before" ||
+                die "cannot back up sudoers"
+        if test -d "$SUDOERS_D"; then
+                (cd /etc && /usr/bin/tar cf "$WORK/sudoers.d.before.tar" sudoers.d) ||
+                        die "cannot back up sudoers.d"
+        fi
+        printf '%s\n' "Original sudoers files saved below $WORK"
+}
+
+# Set sudo config according to input parameters
+set_sudo_config()
+{
+        # Each caller passes complete sudoers lines.  Validate the generated
+        # fragment before installing it, then replace the only included file.
+        : > "$WORK/policy" || die "cannot create policy"
+        while test "$#" -gt 0; do
+                printf '%s\n' "$1" >> "$WORK/policy" || die "cannot write policy"
+                shift
+        done
+        /usr/sbin/visudo -cf "$WORK/policy" >/dev/null ||
+                die "generated policy is invalid"
+        /usr/bin/rm -rf "$SUDOERS_D" || die "cannot remove sudoers.d"
+        /usr/bin/mkdir -p "$SUDOERS_D" || die "cannot create sudoers.d"
+        /usr/bin/install -o root -g root -m 0440 \
+            "$WORK/policy" "$SUDOERS_D/00-TESTING" ||
+                die "cannot install policy"
+        /usr/sbin/visudo -c -f "$SUDOERS" >/dev/null ||
+                die "installed policy is invalid"
+}
+
+# Set default config
+baseline()
+{
+        set_sudo_config \
+            '# Managed by TESTING.' \
+            "$TEST_USER ALL = (ALL:ALL) NOPASSWD: ALL"
+}
+
+# Create empty /etc/sudoers. The sudo configuration changes will be placed in
+# /etc/sudoers.d/... during the tests
+install_empty_sudoers()
+{
+        baseline
+        printf '%s\n' '@includedir /etc/sudoers.d' > "$WORK/sudoers" ||
+                die "cannot create main sudoers"
+        /usr/sbin/visudo -cf "$WORK/sudoers" >/dev/null ||
+                die "main sudoers is invalid"
+        /usr/bin/install -o root -g root -m 0440 "$WORK/sudoers" "$SUDOERS" ||
+                die "cannot install main sudoers"
+        /usr/sbin/visudo -c -f "$SUDOERS" >/dev/null ||
+                die "installed main sudoers is invalid"
+}
+
+###############################################################################
+# 1. Basic sudo operation
+
+test_basic_sudo()
+{
+        # Verify that this is the installed version before testing its behavior.
+        expect_success \
+            "sudo reports its version" \
+            "$SUDO -V | /usr/bin/grep -i '^Sudo version'"
+        
+        # The baseline policy permits the temporary user to become root.
+        out=$(as_user "$SUDO -n /usr/bin/id" 2>&1)
+        case "$out" in
+                *'uid=0(root)'*)
+                        pass "sudo changes the effective user to root"
+                        ;;
+                *)
+                        fail "sudo changes the effective user to root: $out"
+                        ;;
+        esac
+        
+        # A sudo command may select an existing Solaris group.
+        out=$(as_user "$SUDO -n -g $TEST_GROUP /usr/bin/id" 2>&1)
+        case "$out" in
+                *"($TEST_GROUP)"*)
+                        pass "sudo changes the effective group to $TEST_GROUP"
+                        ;;
+                *)
+                        fail "sudo changes the effective group to $TEST_GROUP: $out"
+                        ;;
+        esac
+        
+        # sudo must not trigger a PAM "Last login" banner.
+        out=$(as_user "$SUDO -n /bin/date" 2>&1)
+        case "$out" in
+                *'Last login'*)
+                        fail "sudo does not display Last login"
+                        ;;
+                *)
+                        pass "sudo does not display Last login"
+                        ;;
+        esac
+}
+
+# ---------------------------------------------------------------------------
+# 2. Command digest enforcement
+
+test_digest()
+{
+        digest=$("$OPENSSL" dgst -sha224 /usr/bin/ls | /usr/bin/awk '{print $NF}')
+        
+        # Only this exact sha224 digest is permitted by the temporary policy.
+        set_sudo_config "$TEST_USER ALL = NOPASSWD: sha224:$digest /usr/bin/ls"
+        expect_success \
+            "the configured sha224 digest permits ls" \
+            "$SUDO -n /usr/bin/ls / >/dev/null"
+
+        # A deliberately incorrect digest must prevent execution.
+        set_sudo_config "$TEST_USER ALL = NOPASSWD: sha224:00000000000000000000000000000000000000000000000000000000 /usr/bin/ls"
+        expect_failure \
+            "an incorrect sha224 digest rejects ls" \
+            "$SUDO -n /usr/bin/ls /"
+        baseline
+}
+
+# ---------------------------------------------------------------------------
+# 3. sudoedit
+
+test_sudoedit()
+{
+        # sudoedit runs this tiny editor as sudo_testing.  It writes a known payload
+        # into sudoedit's temporary copy; sudoedit must install that copy as /etc/test.
+        printf '%s\n' '#!/bin/sh' 'printf "%s\n" "sudoedit TESTING" > "$1"' > "$USER_WORK/editor"
+        /usr/bin/chown "$TEST_USER" "$USER_WORK/editor"
+        /usr/bin/chmod 0700 "$USER_WORK/editor"
+        expect_success \
+            "sudoedit creates /etc/test" \
+            "SUDO_EDITOR=$USER_WORK/editor $SUDOEDIT -n /etc/test"
+        if /usr/bin/grep -q '^sudoedit TESTING$' /etc/test 2>/dev/null; then
+                pass "sudoedit wrote the expected content"
+        else
+                fail "sudoedit wrote the expected content"
+        fi
+}
+
+###############################################################################
+# 4. Solaris auditing
+
+test_auditing()
+{
+        # The original manual test clears temporary audit output before
+        # generating a sudo record.  This is why the script is VM-only.
+        expect_success \
+            "audit temporary mode can be enabled" \
+            "$SUDO -n /usr/sbin/audit -t"
+        /usr/bin/rm -f /var/audit/*
+        expect_success "audit can be started" "$SUDO -n /usr/sbin/audit -s"
+        
+        # Generate a sudo audit record, then allow time for the audit
+        # service to write it to disk before checking the trail.
+        expect_success "auditreduce reads the initial audit records" \
+            "$SUDO -n /usr/bin/sh -c '/usr/sbin/auditreduce /var/audit/* | /usr/sbin/praudit -s >/dev/null'"
+        attempts=10
+        while test "$attempts" -gt 0; do
+                out=$(as_user "$SUDO -n /usr/bin/sh -c '/usr/sbin/auditreduce /var/audit/* | /usr/sbin/praudit -s'" 2>&1)
+                case "$out" in
+                        *AUE_sudo*) break ;;
+                esac
+                attempts=$((attempts - 1))
+                if test "$attempts" -gt 0; then
+                        /usr/bin/sleep 1
+                fi
+        done
+        case "$out" in
+                *AUE_sudo*)
+                        pass "sudo generates an audit record"
+                        ;;
+                *)
+                        fail "sudo generates an audit record: $out"
+                        ;;
+        esac
+}
+
+# ---------------------------------------------------------------------------
+# 5. PAM credentials
+
+test_pam_credentials()
+{
+        ensure_root_role
+        
+        # With pam_setcred enabled, assuming root adds root's ex audit flag.
+        expect_success \
+            "root audit flags can be updated" \
+            "$SUDO -n /usr/sbin/rolemod -K audit_flags=ex:no root"
+        out=$(as_user "$SUDO -n /usr/bin/bash -c '/usr/sbin/auditconfig -getpinfo \$\$'" 2>&1)
+        case "$out" in
+                *ex*) pass "pam_setcred adds root audit ex" ;;
+                *) fail "pam_setcred adds root audit ex: $out" ;;
+        esac
+
+        # Reinstall policy with pam_setcred disabled and verify ex is absent.
+        set_sudo_config 'Defaults !pam_setcred' "$TEST_USER ALL = (ALL:ALL) NOPASSWD: ALL"
+        out=$(as_user "$SUDO -n /usr/bin/bash -c '/usr/sbin/auditconfig -getpinfo \$\$'" 2>&1)
+        case "$out" in
+                *ex*) fail "!pam_setcred omits root audit ex: $out" ;;
+                *) pass "!pam_setcred omits root audit ex" ;;
+        esac
+        baseline
+}
+
+###############################################################################
+# 6. Solaris privileges
+
+test_solaris_privileges()
+{
+        # This policy preserves the test user's identity and grants only the
+        # DTrace privileges needed by bash and dtrace.
+        set_sudo_config \
+            "$TEST_USER ALL = () PRIVS=\"basic,dtrace_kernel,dtrace_proc,dtrace_user\" NOPASSWD: /usr/sbin/dtrace, /usr/bin/bash"
+        out=$(as_user "$SUDO -n -u $TEST_USER /usr/bin/bash -c '/usr/bin/id; /usr/bin/ppriv \$\$'" 2>&1)
+        case "$out" in
+                *dtrace_kernel*dtrace_proc*dtrace_user*)
+                        pass "sudo grants configured DTrace privileges"
+                        ;;
+                *)
+                        fail "sudo grants configured DTrace privileges: $out"
+                        ;;
+        esac
+        expect_success "DTrace works with the configured privileges" \
+                "$SUDO -n -u $TEST_USER /usr/sbin/dtrace -l -n 'syscall::b*:entry' >/dev/null"
+        baseline
+}
+
+# ---------------------------------------------------------------------------
+# 7. NOEXEC
+
+test_noexec()
+{
+        # First show that the program can normally execute a child process.
+        out=$(as_user "$SUDO -n $PERL -e 'print \"before\\n\"; system(\"/usr/bin/id -a\"); print \"after\\n\"'" 2>&1)
+        case "$out" in
+                *before*'uid=0(root)'*after*)
+                        pass "Perl child commands normally work"
+                        ;;
+                *)
+                        fail "Perl child commands normally work: $out"
+                        ;;
+        esac
+
+        # NOEXEC permits Perl itself but blocks the system(3) child command.
+        set_sudo_config "$TEST_USER ALL = NOPASSWD: NOEXEC: $PERL"
+        out=$(as_user "$SUDO -n $PERL -e 'print \"before\\n\"; system(\"/usr/bin/id -a\"); print \"after\\n\"'" 2>&1)
+        case "$out" in
+                *before*after*)
+                        case "$out" in
+                                *'uid='*)
+                                        fail "NOEXEC prevents Perl child commands: $out"
+                                        ;;
+                                *)
+                                        pass "NOEXEC prevents Perl child commands"
+                                        ;;
+                        esac
+                        ;;
+                *)
+                        fail "NOEXEC Perl test completed: $out"
+                        ;;
+        esac
+
+        # The NOEXEC preload affects only the sudo invocation, not normal Perl.
+        out=$(as_user "$PERL -e 'print \"before\\n\"; system(\"/usr/bin/id -a\"); print \"after\\n\"'" 2>&1)
+        case "$out" in
+                *before*"($TEST_USER)"*after*)
+                        pass "ordinary Perl remains unaffected"
+                        ;;
+                *)
+                        fail "ordinary Perl remains unaffected: $out"
+                        ;;
+        esac
+        baseline
+}
+
+# ---------------------------------------------------------------------------
+# 8. Root role and PAM policy
+
+test_root_role()
+{
+        ensure_root_role
+        expect_success \
+            "root role has no pam_policy" \
+            "$SUDO -n /usr/sbin/rolemod -K pam_policy= root"
+        expect_success "PAM_POLICY is disabled in policy.conf" \
+            "$SUDO -n /usr/bin/gsed -ibackup 's/^PAM_POLICY=/##PAM_POLICY=/' /etc/security/policy.conf"
+        expect_success "the root role can run uname" "$SUDO -n -u root /sbin/uname"
+        expect_success "webservd can run uname" "$SUDO -n -u webservd /sbin/uname"
+        expect_success \
+            "an initial webservd login can run uname" \
+            "$SUDO -n -i -u webservd /sbin/uname"
+}
+
+###############################################################################
+# 9. sudo_logsrvd and sudo_sendlog
+
+test_logsrvd()
+{
+        # Enable I/O logging and generate one log as the temporary test user.
+        set_sudo_config 'Defaults log_output' 'Defaults log_input' \
+            'Defaults iolog_dir=/var/share/sudo/sudo-io' \
+            "$TEST_USER ALL = (ALL:ALL) NOPASSWD: ALL"
+        expect_success \
+            "sudo produces an I/O log" \
+            "$SUDO -n /usr/bin/bash -c 'printf \"sudo TESTING I/O log\\n\"'"
+        io_log=$(/usr/bin/find /var/share/sudo/sudo-io -type f -name log -print 2>/dev/null |
+                /usr/gnu/bin/tail -n 1)
+        if test -n "$io_log"; then
+                io_dir=$(/usr/bin/dirname "$io_log")
+                test -n "$SUDO_TEST_LOG_HOST" || SUDO_TEST_LOG_HOST=$(/usr/bin/hostname)
+                log_host=$SUDO_TEST_LOG_HOST
+
+                # Create the CA database and the server/client certificate
+                # directories used by the documented sudo_logsrvd test.
+                /usr/bin/mkdir -p /certs/certs /certs/csr /certs/newcerts /certs/private
+                : > /certs/index.txt
+                printf '%s\n' 1000 > /certs/serial
+
+                # This is the minimal OpenSSL CA configuration required by
+                # the two generated certificates below.
+                printf '%s\n' '[ ca ]' 'default_ca = CA_default' '[ CA_default ]' \
+                    'dir = /certs' 'certs = $dir/certs' 'new_certs_dir = $dir/newcerts' \
+                    'database = $dir/index.txt' 'certificate = $dir/cacert.pem' \
+                    'private_key = $dir/private/cakey.pem' 'serial = $dir/serial' \
+                    'policy = policy_match' '[ policy_match ]' 'countryName = match' \
+                    'stateOrProvinceName = optional' 'organizationName = match' \
+                    'organizationalUnitName = optional' 'commonName = supplied' \
+                    'emailAddress = optional' '[ v3_ca ]' \
+                    'subjectKeyIdentifier = hash' 'authorityKeyIdentifier = keyid:always,issuer' \
+                    'basicConstraints = critical,CA:true' 'keyUsage = cRLSign, keyCertSign' \
+                    '[ req ]' 'distinguished_name = req_distinguished_name' \
+                    '[ req_distinguished_name ]' > /certs/openssl.cnf
+                # The client subject differs from the server subject because
+                # OpenSSL's CA database rejects duplicate valid subjects.
+                # This is a disposable-VM test CA.  Keep its private key
+                # unreadable by non-root users but do not encrypt it, so the
+                # test remains non-interactive.
+                "$OPENSSL" genrsa -out /certs/private/cakey.pem 4096 &&
+                /usr/bin/chmod 0400 /certs/private/cakey.pem &&
+                "$OPENSSL" req -config /certs/openssl.cnf \
+                    -key /certs/private/cakey.pem \
+                    -new -x509 -days 7300 -sha256 -extensions v3_ca \
+                    -subj "/CN=$log_host/O=My Company Name LTD./C=US" \
+                    -out /certs/cacert.pem &&
+                "$OPENSSL" genrsa -out /certs/private/logsrvd_key.pem 2048 &&
+                "$OPENSSL" req -config /certs/openssl.cnf \
+                    -key /certs/private/logsrvd_key.pem -new \
+                    -subj "/CN=$log_host/O=My Company Name LTD./C=US" \
+                    -sha256 -out /certs/csr/logsrvd_csr.pem &&
+                "$OPENSSL" ca -batch \
+                    -config /certs/openssl.cnf -days 375 -notext -md sha256 \
+                    -in /certs/csr/logsrvd_csr.pem \
+                    -out /certs/certs/logsrvd_cert.pem &&
+                "$OPENSSL" genrsa -out /certs/private/client_key.pem 2048 &&
+                "$OPENSSL" req -config /certs/openssl.cnf \
+                    -key /certs/private/client_key.pem -new \
+                    -subj "/CN=sudo_sendlog-client/O=My Company Name LTD./C=US" \
+                    -sha256 -out /certs/csr/client_csr.pem &&
+                "$OPENSSL" ca -batch \
+                    -config /certs/openssl.cnf -days 375 -notext -md sha256 \
+                    -in /certs/csr/client_csr.pem \
+                    -out /certs/certs/client_cert.pem ||
+                        fail "create sudo_logsrvd certificates"
+
+                # Start a private server with both plaintext and TLS ports.
+                printf '%s\n' '[server]' 'listen_address = *:30343' 'listen_address = *:30344(tls)' \
+                    'tls_cacert = /certs/cacert.pem' 'tls_cert = /certs/certs/logsrvd_cert.pem' \
+                    'tls_key = /certs/private/logsrvd_key.pem' > "$WORK/logsrvd.conf"
+                /usr/sbin/sudo_logsrvd -n --file "$WORK/logsrvd.conf" > "$WORK/logsrvd.out" 2>&1 &
+                logsrvd_pid=$!
+                /usr/bin/sleep 1
+
+                # Send the same I/O log with unverified TLS, verified TLS,
+                # and without TLS, matching the former manual checklist.
+                if /usr/bin/kill -0 "$logsrvd_pid" 2>/dev/null &&
+                    /usr/sbin/sudo_sendlog --host "$log_host" \
+                        --key /certs/private/client_key.pem \
+                        --cert /certs/certs/client_cert.pem \
+                        --ca-bundle /certs/cacert.pem -p 30344 "$io_dir" -n &&
+                    /usr/sbin/sudo_sendlog --host "$log_host" \
+                        --key /certs/private/client_key.pem \
+                        --cert /certs/certs/client_cert.pem \
+                        --ca-bundle /certs/cacert.pem -p 30344 "$io_dir" &&
+                    /usr/sbin/sudo_sendlog --host "$log_host" -p 30343 "$io_dir"; then
+                        pass "sudo_sendlog transfers I/O logs with and without TLS"
+                else
+                        fail "sudo_logsrvd and sudo_sendlog; see $WORK/logsrvd.out"
+                fi
+                /usr/bin/kill "$logsrvd_pid" >/dev/null 2>&1 || :
+        else
+                fail "locate generated I/O log"
+        fi
+}
+
+
+die()
+{
+        printf '%s\n' "ERROR: $*" >&2
+        exit 1
+}
+
+pass()
+{
+        printf '%s\n' "PASS: $*"
+}
+
+fail()
+{
+        printf '%s\n' "FAIL: $*" >&2
+        failures=$((failures + 1))
+}
+
+have()
+{
+        test -x "$1"
+}
+
+require_command()
+{
+        have "$1" || die "required command is unavailable: $1"
+}
+
+# Run the actual sudo command as the temporary non-root account.
+as_user()
+{
+        /usr/bin/su - "$TEST_USER" -c "$1"
+}
+
+expect_success()
+{
+        description=$1
+        command=$2
+
+        if as_user "$command"; then
+                pass "$description"
+        else
+                fail "$description"
+        fi
+}
+
+expect_failure()
+{
+        description=$1
+        command=$2
+
+        if as_user "$command" >/dev/null 2>&1; then
+                fail "$description unexpectedly succeeded"
+        else
+                pass "$description"
+        fi
+}
+
+ensure_root_role()
+{
+        out=$(as_user "$SUDO -n /usr/sbin/usermod -K type=role root" 2>&1)
+        status=$?
+        if test "$status" -eq 0; then
+                pass "root can be made a role"
+        else
+                case "$out" in
+                        *'Roles must be modified with '*)
+                                pass "root is already a role"
+                                ;;
+                        *)
+                                fail "root can be made a role: $out"
+                                ;;
+                esac
+        fi
+}
+cleanup()
+{
+        # The account name is fixed above.  It is safe to attempt removal even
+        # if setup failed before useradd completed.
+        /usr/bin/rm -rf "$USER_WORK"
+        /usr/sbin/userdel -r "$TEST_USER" >/dev/null 2>&1 || :
+}
+
+main "$@"

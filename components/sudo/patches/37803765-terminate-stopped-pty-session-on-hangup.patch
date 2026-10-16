@@ -1,0 +1,60 @@
+Solaris sends SIGHUP to the session leader when its terminal goes away.
+If the session leader is stopped, it cannot process SIGHUP in its own
+signal handler.  (Linux also sends SIGCONT with SIGHUP for this reason;
+Solaris does not.)  While sudo is stopped, use the default SIGHUP action
+so that the kernel terminates the process.  Restore the original action
+after a normal job-control resume.
+
+The issue has been submitted to upstream https://bugzilla.sudo.ws/show_bug.cgi?id=1096
+
+This patch can be removed if upstream accepts the fix
+
+--- a/src/exec_pty.c
++++ b/src/exec_pty.c
+@@ -207,7 +207,11 @@
+ suspend_sudo_pty(struct exec_closure *ec, int signo)
+ {
+     char signame[SIG2STR_MAX];
+     struct sigaction sa, osa, saved_sigcont;
++#ifdef __sun
++    struct sigaction saved_sighup;
++    bool reset_sighup = false;
++#endif
+     int ret = 0;
+     debug_decl(suspend_sudo_pty, SUDO_DEBUG_EXEC);
+ 
+@@ -273,6 +277,22 @@
+	}
+ 
++#ifdef __sun
++	/*
++	 * Solaris sends SIGHUP to the session leader when its terminal goes away.
++	 * If the session leader is stopped, it cannot process SIGHUP in its own
++	 * signal handler.  (Linux also sends SIGCONT with SIGHUP for this reason;
++	 * Solaris does not.)  While sudo is stopped, use the default SIGHUP action
++	 * so that the kernel terminates the process.  Restore the original action
++	 * after a normal job-control resume.
++	 */
++	if (sudo_sigaction(SIGHUP, &sa, &saved_sighup) == 0) {
++	    reset_sighup = true;
++	} else {
++	    sudo_warn("%s", U_("unable to set handler for SIGHUP"));
++	}
++#endif
++
+ 	/*
+ 	 * We stop sudo's process group, even if sudo is not the process
+ 	 * group leader.  If we only send the signal to sudo itself,
+ 	 * the shell will not notice if it is not in monitor mode.
+@@ -291,6 +310,11 @@
+ 	    ec->cmnd_pid = -1;
+ 	}
+ 
++#ifdef __sun
++	if (reset_sighup && sudo_sigaction(SIGHUP, &saved_sighup, NULL) != 0)
++	    sudo_warn("%s", U_("unable to restore handler for SIGHUP"));
++#endif
++
+ 	if (signo != SIGSTOP) {
+ 	    if (sudo_sigaction(signo, &osa, NULL) != 0)
+ 		sudo_warn(U_("unable to restore handler for SIG%s"), signame);
