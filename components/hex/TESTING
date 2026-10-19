@@ -10,18 +10,36 @@ gmake install
 PROTO=$(hg root)/components/hex/build/prototype/$(uname -p)
 HEX_EBIN=$PROTO/usr/lib/elixir/lib/hex/ebin
 
+# Isolate user-installed archives, including any inherited MIX_ARCHIVES
+# override. Use these paths for every prototype check below.
+HEX_CHECK_HOME=$(hg root)/components/hex/build/hex-check-home/$(uname -p)
+mkdir -p "$HEX_CHECK_HOME/archives"
+
+# Confirm the loaded Hex module comes from the prototype.
+LC_ALL=en_US.UTF-8 MIX_HOME="$HEX_CHECK_HOME" \
+    MIX_ARCHIVES="$HEX_CHECK_HOME/archives" MIX_PATH="$HEX_EBIN" \
+    mix run --no-mix-exs -e '
+      {:module, Hex} = Code.ensure_loaded(Hex)
+      actual = List.to_string(:code.which(Hex))
+      expected = Path.join(System.fetch_env!("MIX_PATH"), "Elixir.Hex.beam")
+      if actual != expected, do: raise("Unexpected Hex module: #{actual}")
+      IO.puts(actual)
+    '
+
 # Verify that the built Hex is loaded.
 # Expected output:
 # Hex v$(COMPONENT_VERSION)
 # Hex is a package manager for the Erlang ecosystem.
 #
 # Further information can be found here: https://hex.pm/docs
-LC_ALL=en_US.UTF-8 MIX_PATH=$HEX_EBIN mix hex --help
+LC_ALL=en_US.UTF-8 MIX_HOME="$HEX_CHECK_HOME" \
+    MIX_ARCHIVES="$HEX_CHECK_HOME/archives" MIX_PATH="$HEX_EBIN" \
+    mix hex --help
 
 # Check the integrated tasks into mix command.
 # Expected output includes:
 # mix hex              # Prints Hex help information
-# mix hex.audit        # Shows retired Hex deps for the current project
+# mix hex.audit        # Shows retired Hex deps and security advisories for the current project
 # mix hex.build        # Builds a new package version locally
 # mix hex.config       # Reads, updates or deletes local Hex config
 # mix hex.docs         # Fetches or opens documentation of a package
@@ -29,13 +47,17 @@ LC_ALL=en_US.UTF-8 MIX_PATH=$HEX_EBIN mix hex --help
 # mix hex.organization # Manages Hex.pm organizations
 # mix hex.outdated     # Shows outdated Hex deps for the current project
 # mix hex.owner        # Manages Hex package ownership
+# mix hex.package      # Fetches, diffs, or searches packages
+# mix hex.policy       # Inspects the active Hex dependency policy
 # mix hex.publish      # Publishes a new package version
 # mix hex.repo         # Manages Hex repositories
 # mix hex.retire       # Retires a package version
-# mix hex.search       # Searches for package names
+# mix hex.search       # Open and perform documentation search
 # mix hex.user         # Manages your Hex user account
 # mix local.hex        # Installs Hex locally
-LC_ALL=en_US.UTF-8 MIX_PATH=$HEX_EBIN mix help --search hex
+LC_ALL=en_US.UTF-8 MIX_HOME="$HEX_CHECK_HOME" \
+    MIX_ARCHIVES="$HEX_CHECK_HOME/archives" MIX_PATH="$HEX_EBIN" \
+    mix help --search hex
 
 # Optional full-system validation can be done via IPS. This requires publishing
 # the package into the local repo and installing or updating it on the system.
