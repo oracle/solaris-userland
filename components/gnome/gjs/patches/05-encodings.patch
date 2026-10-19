@@ -1,0 +1,53 @@
+Map WHATWG windows-874 labels to Solaris iconv's CP874 converter.
+
+Solaris has no iconv converter matching WHATWG macintosh. Reject all macintosh
+labels at construction instead of claiming support and decoding incorrectly.
+
+Not intended for upstream.
+
+--- gjs-1.78.5/modules/esm/_encoding/encodingMap.js
++++ gjs-1.78.5/modules/esm/_encoding/encodingMap.js
+@@ -123,7 +123,6 @@ const encodingMap = {
+     'iso-8859-16': ['iso-8859-16'],
+     'koi8-r': ['cskoi8r', 'koi', 'koi8', 'koi8-r', 'koi8_r'],
+     'koi8-u': ['koi8-ru', 'koi8-u'],
+-    macintosh: ['csmacintosh', 'mac', 'macintosh', 'x-mac-roman'],
+     'windows-874': [
+         'dos-874',
+         'iso-8859-11',
+@@ -253,6 +252,8 @@ const internalEncodings = new Map([
+     // iconv follows a different naming convention for this
+     // encoding
+     ['x-mac-cyrillic', 'MacCyrillic'],
++    // Solaris CP874 covers windows-874 except some C1 control bytes.
++    ['windows-874', 'CP874'],
+     // Support HKSCS as a standalone encoding, iconv doesn't
+     // bundle it with Big5 like WHATWG does...
+     ['big5-hkscs', 'big5-hkscs'],
+--- gjs-1.78.5/installed-tests/js/testEncoding.js
++++ gjs-1.78.5/installed-tests/js/testEncoding.js
+@@ -381,6 +381,9 @@
+                 return group.heading === 'Legacy single-byte encodings';
+             })[0].encodings;
+ 
++            // iconv has no matching converter for these WHATWG encodings.
++            const unsupported = new Set(['macintosh']);
++
+             const buffer = new ArrayBuffer(255);
+             const view = new Uint8Array(buffer);
+ 
+@@ -389,6 +392,14 @@
+ 
+             for (let i = 0, l = singleByteEncodings.length; i < l; i++) {
+                 const encoding = singleByteEncodings[i];
++
++                if (unsupported.has(encoding.name)) {
++                    it(`${encoding.name} is unsupported.`, function () {
++                        for (const label of encoding.labels)
++                            expect(() => new TextDecoder(label)).toThrowError(RangeError);
++                    });
++                    continue;
++                }
+ 
+                 it(`${encoding.name} can be decoded.`, function () {
+                     for (const label of encoding.labels) {

@@ -1,0 +1,91 @@
+From upstream:
+https://gitlab.gnome.org/GNOME/gjs/-/commit/1b4232f2ef6227eb0649ab1960454622eadc8dd3
+
+From 1b4232f2ef6227eb0649ab1960454622eadc8dd3 Mon Sep 17 00:00:00 2001
+From: Philip Chimento <philip.chimento@gmail.com>
+Date: Sat, 16 Mar 2024 11:58:42 -0700
+Subject: [PATCH] boxed: Prevent name conflicts between boxed fields and
+ methods
+
+Methods take priority, as they do in conflicts between GObject properties
+and methods.
+
+Pango.LayoutLine has a name conflict like this, and could previously not
+be resolved.
+
+Closes: #547
+
+diff --git a/gi/boxed.cpp b/gi/boxed.cpp
+index 5fedd263c..467a0a01c 100644
+--- a/gi/boxed.cpp
++++ b/gi/boxed.cpp
+@@ -718,24 +718,37 @@ bool BoxedPrototype::define_boxed_class_
+     int n_fields = g_struct_info_get_n_fields(info());
+     int i;
+ 
+-    /* We define all fields as read/write so that the user gets an
+-     * error message. If we omitted fields or defined them read-only
+-     * we'd:
+-     *
+-     *  - Store a new property for a non-accessible field
+-     *  - Silently do nothing when writing a read-only field
+-     *
+-     * Which is pretty confusing if the only reason a field isn't
+-     * writable is language binding or memory-management restrictions.
+-     *
+-     * We just go ahead and define the fields immediately for the
+-     * class; doing it lazily in boxed_resolve() would be possible
+-     * as well if doing it ahead of time caused to much start-up
+-     * memory overhead.
+-     */
++    // We define all fields as read/write so that the user gets an error
++    // message. If we omitted fields or defined them read-only we'd:
++    //
++    //  - Store a new property for a non-accessible field
++    //  - Silently do nothing when writing a read-only field
++    //
++    // Which is pretty confusing if the only reason a field isn't writable is
++    // language binding or memory-management restrictions.
++    //
++    // We just go ahead and define the fields immediately for the class; doing
++    // it lazily in boxed_resolve() would be possible as well if doing it ahead
++    // of time caused too much start-up memory overhead.
++    //
++    // At this point methods have already been defined on the prototype, so we
++    // may get name conflicts which we need to check for.
+     for (i = 0; i < n_fields; i++) {
+         GjsAutoFieldInfo field = g_struct_info_get_field(info(), i);
+         JS::RootedValue private_id(cx, JS::PrivateUint32Value(i));
++        JS::RootedId id{cx, gjs_intern_string_to_id(cx, field.name())};
++
++        bool already_defined;
++        if (!JS_HasOwnPropertyById(cx, proto, id, &already_defined))
++            return false;
++        if (already_defined) {
++            gjs_debug(GJS_DEBUG_GBOXED,
++                      "Field %s.%s.%s overlaps with method of the same name; "
++                      "skipping",
++                      ns(), name(), field.name());
++            continue;
++        }
++
+         if (!gjs_define_property_dynamic(cx, proto, field.name(), "boxed_field",
+                                          &BoxedBase::field_getter,
+                                          &BoxedBase::field_setter, private_id,
+diff --git a/installed-tests/js/testRegress.js b/installed-tests/js/testRegress.js
+index e9533d5ca..8e1270a17 100644
+--- a/installed-tests/js/testRegress.js
++++ b/installed-tests/js/testRegress.js
+@@ -947,6 +947,12 @@ describe('Life, the Universe and Everything', function () {
+                 expect(() => new Regress.TestBoxedD()).toThrow();
+             });
+         });
++
++        xit('methods take priority over fields in a name conflict', function () {
++            const boxed = new Regress.TestBoxedC({name_conflict: true});
++            expect(boxed.name_conflict).not.toBeTrue();
++            expect(boxed.name_conflict()).toBeTrue();
++        }).pend('https://gitlab.gnome.org/GNOME/gobject-introspection/-/merge_requests/454');
+     });
+ 
+     describe('wrong type for GBoxed', function () {

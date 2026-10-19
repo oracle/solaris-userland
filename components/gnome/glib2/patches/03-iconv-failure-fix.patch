@@ -1,0 +1,90 @@
+From 2537c015cee6b1aa0e9c5011a32e732cd8341592 Mon Sep 17 00:00:00 2001
+From: Petr Sumbera <sumbera@volny.cz>
+Date: Tue, 22 Sep 2026 09:22:58 +0000
+Subject: [PATCH] gcharsetconverter: Avoid closing invalid iconv descriptors
+
+g_iconv_open() returns (GIConv) -1 on failure, but finalization
+treated that sentinel as a valid descriptor. This can crash native iconv
+implementations which do not tolerate it, including Solaris.
+
+Preserve NULL as the not-initialized state, skip both invalid descriptor
+values during finalization, and add coverage for unsupported charsets and
+initialization which fails before opening a converter.
+---
+ gio/gcharsetconverter.c |  2 +-
+ gio/tests/converter.c   | 39 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 40 insertions(+), 1 deletion(-)
+
+diff --git a/gio/gcharsetconverter.c b/gio/gcharsetconverter.c
+index 1c03cee312..c5639816df 100644
+--- a/gio/gcharsetconverter.c
++++ b/gio/gcharsetconverter.c
+@@ -74,7 +74,7 @@ g_charset_converter_finalize (GObject *object)
+ 
+   g_free (conv->from);
+   g_free (conv->to);
+-  if (conv->iconv)
++  if (conv->iconv != NULL && conv->iconv != (GIConv) -1)
+     g_iconv_close (conv->iconv);
+ 
+   G_OBJECT_CLASS (g_charset_converter_parent_class)->finalize (object);
+diff --git a/gio/tests/converter.c b/gio/tests/converter.c
+index 935cc3fbc1..03b72c3ccf 100644
+--- a/gio/tests/converter.c
++++ b/gio/tests/converter.c
+@@ -23,6 +23,43 @@
+ #include <stdlib.h>
+ #include <string.h>
+ 
++static void
++test_charset_unsupported (void)
++{
++  GCharsetConverter *converter;
++  GError *error = NULL;
++
++  converter = g_charset_converter_new ("UTF-8",
++                                       "this-charset-does-not-exist",
++                                       &error);
++  g_assert_null (converter);
++  g_assert_nonnull (error);
++  g_assert_cmpuint (error->domain, ==, G_IO_ERROR);
++  g_clear_error (&error);
++}
++
++static void
++test_charset_cancellable (void)
++{
++  GCharsetConverter *converter;
++  GCancellable *cancellable;
++  GError *error = NULL;
++
++  cancellable = g_cancellable_new ();
++  g_cancellable_cancel (cancellable);
++  converter = g_initable_new (G_TYPE_CHARSET_CONVERTER,
++                              cancellable,
++                              &error,
++                              "to-charset", "UTF-8",
++                              "from-charset", "UTF-8",
++                              NULL);
++  g_assert_null (converter);
++  g_assert_error (error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED);
++
++  g_clear_error (&error);
++  g_object_unref (cancellable);
++}
++
+ static void
+ test_extra_bytes_at_end (void)
+ {
+@@ -137,6 +174,8 @@ main (int   argc,
+ {
+   g_test_init (&argc, &argv, NULL);
+ 
++  g_test_add_func ("/converter/charset-unsupported", test_charset_unsupported);
++  g_test_add_func ("/converter/charset-cancellable", test_charset_cancellable);
+   g_test_add_func ("/converter/bytes", test_convert_bytes);
+   g_test_add_func ("/converter/extra-bytes-at-end", test_extra_bytes_at_end);
+   g_test_add_func ("/converter/gzip-os-property", test_gzip_os_property);
+-- 
+GitLab
+

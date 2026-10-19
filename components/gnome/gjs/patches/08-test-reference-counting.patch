@@ -1,0 +1,156 @@
+Native ref()/unref() calls do not work correctly in GJS; test specific
+related GjsTestTools methods should be used instead.
+
+This is partially based on:
+https://gitlab.gnome.org/GNOME/gjs/-/commit/658bbfdea50ae2f030457b275cdd4dbfb20982f5
+
+Upstream deprecated these methods in it, but to keep backward compatibility,
+we stick to just the test suite part for now.
+
+diff --git a/installed-tests/js/libgjstesttools/gjs-test-tools.cpp b/installed-tests/js/libgjstesttools/gjs-test-tools.cpp
+index 61ccbab65..d14fc751d 100644
+--- a/installed-tests/js/libgjstesttools/gjs-test-tools.cpp
++++ b/installed-tests/js/libgjstesttools/gjs-test-tools.cpp
+@@ -39,6 +39,10 @@ void gjs_test_tools_reset() {
+     FinalizedObjectsLocked()->clear();
+ }
+ 
++void gjs_test_tools_ref(GObject* object) { g_object_ref(object); }
++
++void gjs_test_tools_unref(GObject* object) { g_object_unref(object); }
++
+ // clang-format off
+ static G_DEFINE_QUARK(gjs-test-utils::finalize, finalize);
+ // clang-format on
+diff --git a/installed-tests/js/libgjstesttools/gjs-test-tools.h b/installed-tests/js/libgjstesttools/gjs-test-tools.h
+index 13fcb7a80..28fa4776a 100644
+--- a/installed-tests/js/libgjstesttools/gjs-test-tools.h
++++ b/installed-tests/js/libgjstesttools/gjs-test-tools.h
+@@ -22,6 +22,12 @@ void gjs_test_tools_init(void);
+ _GJS_TEST_TOOL_EXTERN
+ void gjs_test_tools_reset(void);
+ 
++_GJS_TEST_TOOL_EXTERN
++void gjs_test_tools_ref(GObject* object);
++
++_GJS_TEST_TOOL_EXTERN
++void gjs_test_tools_unref(GObject* object);
++
+ _GJS_TEST_TOOL_EXTERN
+ void gjs_test_tools_delayed_ref(GObject* object, int interval);
+ 
+diff --git a/installed-tests/js/testGObjectDestructionAccess.js b/installed-tests/js/testGObjectDestructionAccess.js
+index 32f5b0df6..1f0f12814 100644
+--- a/installed-tests/js/testGObjectDestructionAccess.js
++++ b/installed-tests/js/testGObjectDestructionAccess.js
+@@ -180,7 +180,7 @@ describe('Access to finalized GObject', function () {
+ 
+         GLib.test_expect_message('Gjs', GLib.LogLevelFlags.LEVEL_CRITICAL,
+             'Object Gtk.Window (* disposed *');
+-        destroyedWindow.unref();
++        GjsTestTools.unref(destroyedWindow);
+         GLib.test_assert_expected_messages_internal('Gjs', 'testGObjectDestructionAccess.js', 0,
+             'testExceptionInDestroyedObjectPropertyGet');
+     });
+@@ -390,7 +390,7 @@ describe('Disposed or finalized GObject', function () {
+     });
+ 
+     it('generates a warn on object garbage collection', function () {
+-        Gio.File.new_for_path('/').unref();
++        GjsTestTools.unref(Gio.File.new_for_path('/'));
+ 
+         GLib.test_expect_message('Gjs', GLib.LogLevelFlags.LEVEL_CRITICAL,
+             '*Object * has been finalized *');
+@@ -402,7 +402,7 @@ describe('Disposed or finalized GObject', function () {
+     it('generates a warn on object garbage collection if has expando property', function () {
+         let file = Gio.File.new_for_path('/');
+         file.toggleReferenced = true;
+-        file.unref();
++        GjsTestTools.unref(file);
+         expect(file.toString()).toMatch(
+             /\[object \(FINALIZED\) instance wrapper GType:GLocalFile jsobj@0x[a-f0-9]+ native@(?:0x)?[a-f0-9]+\]/);
+         file = null;
+@@ -489,7 +489,7 @@ describe('Disposed or finalized GObject', function () {
+     it('ignores toggling queued unref toggles', function () {
+         let file = Gio.File.new_for_path('/');
+         file.expandMeWithToggleRef = true;
+-        file.ref();
++        GjsTestTools.ref(file);
+         GjsTestTools.unref_other_thread(file);
+         file.run_dispose();
+     });
+@@ -505,7 +505,7 @@ describe('Disposed or finalized GObject', function () {
+     it('can be disposed from other thread', function () {
+         let file = Gio.File.new_for_path('/');
+         file.expandMeWithToggleRef = true;
+-        file.ref();
++        GjsTestTools.ref(file);
+         GjsTestTools.unref_other_thread(file);
+         GjsTestTools.run_dispose_other_thread(file);
+     });
+@@ -549,7 +549,7 @@ describe('GObject with toggle references', function () {
+             if (file) {
+                 expect(System.addressOfGObject(file)).toBe(objectAddress);
+                 expect(file instanceof Gio.File).toBeTruthy();
+-                file.unref();
++                GjsTestTools.unref(file);
+             }
+         } catch (e) {
+             expect(() => {
+@@ -563,7 +563,8 @@ describe('GObject with toggle references', function () {
+         const objectAddress = System.addressOfGObject(file);
+         file.expandMeWithToggleRef = true;
+         GjsTestTools.save_object(file);
+-        GjsTestTools.delayed_unref_other_thread(file.ref(), 10);
++        GjsTestTools.ref(file);
++        GjsTestTools.delayed_unref_other_thread(file, 10);
+         file = null;
+         System.gc();
+ 
+@@ -609,13 +610,13 @@ describe('GObject with toggle references', function () {
+         GjsTestTools.get_weak_other_thread();
+ 
+         // Ok, let's play more dirty now...
+-        file.ref(); // toggle up
+-        file.unref(); // toggle down
++        GjsTestTools.ref(file); // toggle up
++        GjsTestTools.unref(file); // toggle down
+ 
+-        file.ref();
+-        file.ref();
+-        file.unref();
+-        file.unref();
++        GjsTestTools.ref(file);
++        GjsTestTools.ref(file);
++        GjsTestTools.unref(file);
++        GjsTestTools.unref(file);
+     });
+ 
+     it('can be toggled up by getting a GWeakRef from another and re-reffed from various threads', function () {
+@@ -627,13 +628,13 @@ describe('GObject with toggle references', function () {
+         GjsTestTools.ref_other_thread(file);
+         GjsTestTools.unref_other_thread(file);
+ 
+-        file.ref();
+-        file.unref();
++        GjsTestTools.ref(file);
++        GjsTestTools.unref(file);
+ 
+         GjsTestTools.ref_other_thread(file);
+-        file.unref();
++        GjsTestTools.unref(file);
+ 
+-        file.ref();
++        GjsTestTools.ref(file);
+         GjsTestTools.unref_other_thread(file);
+     });
+ 
+@@ -683,7 +684,7 @@ describe('GObject with toggle references', function () {
+     it('can be finalized while queued in toggle queue', function () {
+         let file = Gio.File.new_for_path('/');
+         file.expandMeWithToggleRef = true;
+-        file.ref();
++        GjsTestTools.ref(file);
+         GjsTestTools.unref_other_thread(file);
+         GjsTestTools.unref_other_thread(file);
+ 

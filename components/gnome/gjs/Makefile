@@ -48,6 +48,7 @@ LD_EXEC_OPTIONS.64 += -M /usr/lib/ld/map.vas47
 endif
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+include $(WS_MAKE_RULES)/test-x11.mk
 
 # g-ir-scanner
 CC_PIC_MODE = $(CC_PIC_DISABLE)
@@ -60,9 +61,13 @@ CONFIGURE_OPTIONS += -Dprofiler=disabled
 # we don't need to distribute gjs tests
 CONFIGURE_OPTIONS += -Dinstalled_tests=false
 
+# dbus-run-session expects dbus-daemon on PATH; Solaris installs it in /usr/lib.
+COMPONENT_TEST_ENV += PATH="$(PATH):/usr/lib"
+
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
+        '-e "/gjs:/p" ' \
         '-e "/Ok:/p" ' \
         '-e "/Fail:/p" ' \
         '-e "/Pass:/p" ' \
@@ -71,6 +76,7 @@ COMPONENT_TEST_TRANSFORMS += \
 
 CBE_PACKAGES += system/library/gcc/gcc-c-runtime
 CBE_PACKAGES += system/library/math
+CBE_PACKAGES += system/library/dbus
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection

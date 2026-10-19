@@ -1,0 +1,23 @@
+One of the GJS tests fails during clean up with:
+GLib-GIO-FATAL-CRITICAL: GFileInfo created without standard::name
+
+As the GIO documentation states:
+https://docs.gtk.org/gio/method.File.enumerate_children.html
+
+G_FILE_ATTRIBUTE_STANDARD_NAME should always be specified when
+g_file_enumerator_iterate() is called with the returned enumerator.
+
+This was reported and merged upstream:
+https://gitlab.gnome.org/GNOME/gjs/-/merge_requests/1131
+
+--- a/test/gjs-test-coverage.cpp
++++ b/test/gjs-test-coverage.cpp
+@@ -48,6 +48,7 @@ recursive_delete_dir(GFile *dir)
+ {
+     GFileEnumerator *files =
+-        g_file_enumerate_children(dir, G_FILE_ATTRIBUTE_STANDARD_TYPE,
++        g_file_enumerate_children(dir, G_FILE_ATTRIBUTE_STANDARD_TYPE ","
++                                       G_FILE_ATTRIBUTE_STANDARD_NAME,
+                                   G_FILE_QUERY_INFO_NONE, NULL, NULL);
+     while (TRUE) {
+         GFile *file;
