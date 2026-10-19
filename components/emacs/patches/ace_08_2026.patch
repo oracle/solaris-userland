@@ -1,0 +1,56 @@
+# Subject: [oss-security] GNU Emacs vulnerability upon opening arbitrary file
+# Date: Thu, 20 Aug 2026 04:09:29 +0100
+# From: Sam James <sam@gentoo.org>
+# Reply-To: oss-security@lists.openwall.com
+# Organization: Gentoo
+# To: oss-security@lists.openwall.com
+# 
+# Eshel Yaron has shared an arbitrary code execution bug in GNU Emacs
+# exploitable upon opening an file. It affects >= Emacs 28.1.
+# 
+# The reporter has a writeup at
+# https://eshelyaron.com/posts/2026-08-06-emacs-arbitrary-code-execution-returns.html.
+# It's from the same reporter as CVE-2024-53920 [0].
+# 
+# Thread on emacs-devel:
+# * https://lists.gnu.org/archive/html/emacs-devel/2026-07/msg00453.html
+# * https://lists.gnu.org/archive/html/emacs-devel/2026-08/msg00000.html
+# 
+# There's a workaround patch available for Emacs 31
+# (https://cgit.git.savannah.gnu.org/cgit/emacs.git/commit/?h=emacs-31&id=8466eb44991707d128110bdc549fad14c8e1d61e)
+# while on master it apparently had a bigger rework
+# (https://cgit.git.savannah.gnu.org/cgit/emacs.git/commit/?id=c1337758a6c00e22e2a685e0556068fd73fa9a54). 
+#
+--- emacs-30.2.orig/lisp/progmodes/cc-fonts.el	2025-01-04 04:05:30.000000000 -0700
++++ emacs-30.2/lisp/progmodes/cc-fonts.el	2026-08-20 12:59:39.869483800 -0600
+@@ -2566,9 +2566,13 @@
+   (let* ((doc-keywords (c-get-doc-comment-style))
+ 	 (list (nconc (c--mapcan
+ 		       (lambda (doc-style)
+-			 (let ((sym (intern
+-				     (concat (symbol-name doc-style)
+-					     "-font-lock-keywords"))))
++			 (let ((sym
++				;; Guard `intern' from potentially
++				;; malicious shorthands.
++				(let (read-symbol-shorthands)
++				  (intern
++				   (concat (symbol-name doc-style)
++					   "-font-lock-keywords")))))
+ 			   (cond ((fboundp sym)
+ 				  (funcall sym))
+ 				 ((boundp sym)
+--- emacs-30.2.orig/lisp/vc/vc-hooks.el	2025-03-01 07:42:10.000000000 -0700
++++ emacs-30.2/lisp/vc/vc-hooks.el	2026-08-20 13:02:21.538649588 -0600
+@@ -234,7 +234,10 @@
+   "Return BACKEND-specific implementation of FUN.
+ If there is no such implementation, return the default implementation;
+ if that doesn't exist either, return nil."
+-  (let ((f (vc-make-backend-sym backend fun)))
++  ;; Nullify `read-symbol-shorthands' to guard the `intern' calls below
++  ;; and in `vc-make-backend-sym' from potentially malicious shorthands.
++  (let* ((read-symbol-shorthands nil)
++         (f (vc-make-backend-sym backend fun)))
+     (if (fboundp f) f
+       ;; Load vc-BACKEND.el if needed.
+       (require (intern (concat "vc-" (downcase (symbol-name backend)))))

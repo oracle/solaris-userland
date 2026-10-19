@@ -1,0 +1,26 @@
+#
+# Emacs arbitrary code execution: incomplete fix for CVE-2024-53920
+#
+# This issue was reported in oss-security at openwall.com, including this
+# fix:
+#
+# https://www.openwall.com/lists/oss-security/2026/09/14/1
+#
+--- emacs-30.1/lisp/progmodes/flymake.el.orig	2025-02-18 19:31:36.000000000 +0100
++++ emacs-30.1/lisp/progmodes/flymake.el	2026-09-16 15:18:34.553754220 +0200
+@@ -1253,8 +1253,13 @@
+             (flymake--state-disabled state) nil
+             (flymake--state-reported-p state) nil))
+     (condition-case-unless-debug err
+-        (apply backend (flymake-make-report-fn backend run-token)
+-               args)
++        (if (or (trusted-content-p) (function-get backend 'flymake-always-safe))
++            (apply backend (flymake-make-report-fn backend run-token)
++                   args)
++          (message "Disabling %S in %s (untrusted content)"
++                   backend (buffer-name))
++          (user-error "Disabling %S in %s (untrusted content)"
++                      backend (buffer-name)))
+       (error
+        (flymake--disable-backend backend err)))))
+ 

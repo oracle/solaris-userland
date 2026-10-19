@@ -31,12 +31,12 @@ BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		emacs
-COMPONENT_VERSION=	30.1
+COMPONENT_VERSION=	30.2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:54404782ea5de37e8fcc4391fa9d4a41359a4ba9689b541f6bc97dd1ac283f6c
+    sha256:1d79a4ba4d6596f302a7146843fe59cf5caec798190bcc07c907e7ba244b076d
 COMPONENT_ANITYA_ID=	675
 
-COMPONENT_BAID=		323231
+COMPONENT_BAID=		452727
 
 INSTALL_TARGET=
 # The upstream emacs distribution does not have tests to be run

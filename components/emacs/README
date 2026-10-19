@@ -22,7 +22,7 @@
 #
 
 NAME:             emacs
-VERSION:          30.1
+VERSION:          30.2
 DESCRIPTION:      GNU Emacs editor
 LICENSE:          GPLv3
 BUGTRAQ:          solaris/utility/emacs
@@ -37,6 +37,11 @@ information needed to understand how this component is put together.
 - We patch the following changes into the emacs sources. Additional
   details are found in the comment at the top of each patch.
 
+        ace_08_2026.patch
+            An arbitrary code execution bug that affects >= Emacs 28.1,
+            reported in August 2026. This patch can be removed when moving
+            to Emacs 31 or later.
+
         find.patch
             The rgrep function uses the GNU-specific -path option to the
             find command. Change the default value for the find-program
@@ -48,15 +53,16 @@ information needed to understand how this component is put together.
             The safest policy is to do a brute force search of the entire
             source tree for defvar of find-program, and to fix them all.
 
-	gcc-14-FIONREAD.patch
-	    When built with gcc-14, configure.ac must be patched to work
-	    properly. This has been submitted upstream, and can be removed
-   	    once it appears. At that time, the COMPONENT_PREP_ACTION
-	    line should be commented out in the Makefile. Note that emacs
-	    builds cleanly without this patch. However, it will be unable
-	    to use FIONREAD, and you'll see this in the configure output.
+        gcc-FIONREAD.patch
+            When built with gcc 14 or newer, configure.ac must be patched
+            to work properly. This has been submitted upstream, and can be
+            removed once it appears. As of gcc 16, this has not happened.
+            At that time, the COMPONENT_PREP_ACTION line should be commented
+            out in the Makefile. Note that emacs builds cleanly without this
+            patch. However, it will be unable to use FIONREAD, and you'll
+            see this in the configure output.
 
-		checking for usable FIONREAD... no
+                checking for usable FIONREAD... no
 
         mediator.patch
             Modify the way emacs searches for its dump files in the PATH_EXEC
@@ -66,33 +72,37 @@ information needed to understand how this component is put together.
 
             https://lists.gnu.org/archive/html/emacs-devel/2021-04/msg00875.html
 
+        pbm_load.patch
+            Patch for built-in PBM image loader, reported at:
+
+                https://debbugs.gnu.org/cgi/bugreport.cgi?bug=81344
+
+            It should be safe to remove this on update to Emacs 31.1
+            or later.
+
         svg.patch
             Incorrect strncpy() use can cause svg_load_image() to overwrite
             its buffer. This issue exists in emacs 28.1 through 30.2. This
-            patch can be removed on updated beyond that.
+            patch can be removed on update beyond that.
 
             https://debbugs.gnu.org/cgi/bugreport.cgi?bug=80851
 
-        tramp.patch
-            A problem was found with the version of tramp delivered with
-            Emacs 30.1. Path length limits in the shell break tramp with
-            long file names. This patch can be removed with the next update.
+        tramp_09_2026.patch
+            tramp zero-click local command execution issue reported
+            in August 2026 for Emacs 30.2 onwards, and possibly earlier.
+            This patch is a backport of the fix for that issue done by
+            gentoo. It should be safe to remove when moving to Emacs 31.1,
+            but this should be verified, as there is currently a patch
+            for RC1:
 
-            https://lists.gnu.org/archive/html/tramp-devel/2025-04/msg00000.html
+            31.1_rc1: https://gitweb.gentoo.org/proj/emacs-patches.git/tree/emacs/31.1_rc1/01_all_tramp.patch
 
-	    Subsequently the underlying issue with command lines that
-	    exceed 256 characters has been addressed. This too can be
-	    removed in the next update.
+	40022719.patch
+	     An arbitrary code execution bug that affects >= Emacs 24 or
+	     perhaps earlier.
 
-	    https://lists.gnu.org/archive/html/tramp-devel/2025-05/msg00017.html
-
-	man.patch
-	    This patch was taken from upstream and can be removed at
-	    the next update.  It Corrects an issue with man page
-	    processing which failed with an error from sed
-	    "/^[\o001-\o032][\o001-\ ...": RE error: invalid character range
-
-	    https://github.com/emacs-mirror/emacs/commit/fc5e905
+	     Reported in September 2026.  This patch can be removed when
+	     upgrading to Emacs 31.2.
 
 - The following line in Makefile must be uncommented if any patches
   modify configure.ac, and commented otherwise:
@@ -142,7 +152,7 @@ information needed to understand how this component is put together.
 
   For Solaris, we used to build both versions, using /usr/lib/isaexec to
   run the 64-bit version if possible, and the 32-bit version otherwise. Note
-  that this was only done for the emacs binary itself, as there is no
+  that this was only done for the emacs binary itself, as there was no
   technical need for 64-bit versions of the ancillary programs that come
   with emacs (etags, emacsclient, etc).
 
