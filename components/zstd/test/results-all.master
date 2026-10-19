@@ -1,0 +1,103 @@
+test : basic compression 
+test : basic decompression
+test : too large compression level => auto-fix
+test : --fast aka negative compression levels
+test : too large numeric argument
+test : set compression level with environment variable ZSTD_CLEVEL
+test : override ZSTD_CLEVEL with command line option
+test : compress to stdout
+test : compress to named file (-o)
+test : force write, correct order
+test : -c + -o : last one wins
+test : forgotten argument
+test : implied stdout when input is stdin
+test : null-length file roundtrip
+test : ensure small file doesn't add 3-bytes null block
+test : decompress file with wrong suffix (must fail)
+test : decompress into stdout
+test : decompress from stdin into stdout
+test : impose memory limitation (must fail)
+test : overwrite protection
+test : force overwrite
+test : overwrite readonly file
+test: --no-progress flag
+test: --progress flag
+test: overwrite input file (must fail)
+test: detect that input file does not exist
+test: --[no-]compress-literals
+test: --no-check for decompression
+test: check if binary has executable stack (#2963)
+test : single-thread 
+test : one worker thread (default)
+test : two worker threads 
+test : 16-thread 
+test : 127-thread 
+test : 128-thread 
+test : max allowed numeric value is 4294967295 
+test : numeric value overflows 32-bit unsigned int 
+test : basic compression 
+test : basic decompression
+test : basic compression 
+test: --fast=1
+test: --fast=99
+test: Invalid value -- negative number
+test: Invalid value -- zero
+test: max allowed numeric argument of --fast is 4294967295
+test: numeric value overflows 32-bit unsigned int 
+test: --rm is disabled when output is stdout
+test: --rm is disabled when multiple inputs are concatenated into a single output
+test: --rm is active with -o when single input
+test: -c followed by -o => -o wins, so --rm remains active
+test: -o followed by -c => -c wins, so --rm is disabled
+test : should quietly not remove non-regular file
+test : --rm on stdin
+test : -d -f do not delete destination when source is not present
+test : -f do not delete destination when source is not present
+test : copy 666 permissions in file -> file compression 
+test : copy 666 permissions in file -> file decompression 
+test : copy 400 permissions in file -> file compression (write to a read-only file) 
+test : copy 400 permissions in file -> file decompression (write to a read-only file) 
+test : check created permissions from stdin input in compression 
+test : check created permissions from stdin input in decompression 
+test : check created permissions from multiple inputs in compression 
+test : check created permissions from multiple inputs in decompression 
+test : check permissions on pre-existing output file in compression 
+test : check permissions on pre-existing output file in decompression 
+test : respect umask when compressing from stdin input 
+test : respect umask when decompressing from stdin input 
+test : copy mtime in file -> file compression 
+test : copy mtime in file -> file decompression 
+test : decompress multiple files into an output directory, --output-dir-flat
+test: compress input dir will be ignored if it has '..'
+test: compress input dir should succeed with benign uses of '..'
+test : decompress multiple files into an output directory, --output-dir-mirror
+test: decompress input dir will be ignored if it has '..'
+test : compress multiple files reading them from a file, --filelist=FILE
+test : alternate syntax: --filelist FILE
+test : reading file list from a symlink, --filelist=FILE
+test : compress multiple files reading them from multiple files, --filelist=FILE
+test : decompress multiple files reading them from a file, --filelist=FILE
+test : decompress multiple files reading them from multiple files, --filelist=FILE
+test : survive the list of files with too long filenames (--filelist=FILE)
+test : survive a list of files which is text garbage (--filelist=FILE)
+test : survive a list of files which is binary garbage (--filelist=FILE)
+test : try to overflow internal list of files (--filelist=FILE)
+test : show-default-cparams regular
+test : show-default-cparams recursive
+test : show compression parameters in verbose mode
+testing zstdcat symlink
+testing zcat symlink
+test : basic file compression vs sized streaming compression
+test : sized streaming compression and decompression
+test : incorrect stream size
+test : basic file compression vs hinted streaming compression
+test : hinted streaming compression and decompression
+test : hinted streaming compression with dictionary
+test : multiple file compression with hints and dictionary
+test : incorrect hinted stream sizes
+test : allows and interprets K,KB,KiB,M,MB and MiB suffix
+test one file (tmp1.zst) 
+test multiple files (*.zst) 
+test bad files (*) 
+test --rm and --test combined 
+test : detect truncated compressed file 

@@ -1,0 +1,40 @@
+Skip the GNU_STACK assertion on Solaris.
+
+Solaris ELF binaries do not use the Linux PT_GNU_STACK program header, so
+GNU readelf cannot report a GNU_STACK segment.  When GNU readelf is available
+in PATH, the absence of that Linux-specific segment otherwise produces the
+misleading "zstd binary has executable stack" test failure.
+
+This is Solaris specific and is not suitable for upstream in this form.
+
+Also accept and remove the empty output file left by the Solaris build after
+rejecting an out-of-range advanced compression parameter.  Still verify that
+the failed command produced no data.
+
+--- zstd-1.5.7/tests/playTests.sh
++++ zstd-1.5.7/tests/playTests.sh
+@@ -329,7 +329,9 @@ zstd -d -f tmp.zst --no-check
+ if [ "$isWindows" = false ] && [ "$UNAME" != "AIX" ]; then
+   if [ -n "$(which readelf)" ]; then
+     println "test: check if binary has executable stack (#2963)"
+-    readelf -lW "$ZSTD_BIN" | $GREP 'GNU_STACK .* RW ' || die "zstd binary has executable stack!"
++    if [ "$UNAME" != "SunOS" ]; then
++      readelf -lW "$ZSTD_BIN" | $GREP 'GNU_STACK .* RW ' || die "zstd binary has executable stack!"
++    fi
+   fi
+ fi
+ 
+@@ -892,7 +894,12 @@ println "Hello world!" | zstd --zstd=win
+ println "Hello world!" | zstd --zstd=windowLo=21        - -o tmp.zst && die "wrong parameters not detected!"
+ println "Hello world!" | zstd --zstd=windowLog=21,slog  - -o tmp.zst && die "wrong parameters not detected!"
+ println "Hello world!" | zstd --zstd=strategy=10        - -o tmp.zst && die "parameter out of bound not detected!"  # > btultra2 : does not exist
+-test ! -f tmp.zst  # tmp.zst should not be created
++if [ "$UNAME" = "SunOS" ]; then
++  test ! -s tmp.zst  # Solaris can leave an empty output file on this error
++  rm -f tmp.zst
++else
++  test ! -f tmp.zst  # tmp.zst should not be created
++fi
+ roundTripTest -g512K
+ roundTripTest -g512K " --zstd=mml=3,tlen=48,strat=6"
+ roundTripTest -g512K " --zstd=strat=6,wlog=23,clog=23,hlog=22,slog=6"

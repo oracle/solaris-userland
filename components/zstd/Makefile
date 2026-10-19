@@ -27,9 +27,9 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		zstd
-COMPONENT_VERSION=	1.5.6
-COMPONENT_BAID=		175373
-COMPONENT_ARCHIVE_HASH= sha256:8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1
+COMPONENT_VERSION=	1.5.7
+COMPONENT_BAID=		442337
+COMPONENT_ARCHIVE_HASH= sha256:eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3
 COMPONENT_LABEL=	v$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://github.com/facebook/zstd
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/download/$(COMPONENT_LABEL)/$(COMPONENT_ARCHIVE)
@@ -57,7 +57,22 @@ COMPONENT_POST_INSTALL_ACTION += $(GSED) -i -e 's|-L\$${libdir}||g' \
   $(PROTO_DIR)/usr/lib/pkgconfig/libzstd.pc ;
 
 # Set up arguments for test
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS += CC="$(CC)"
+# The test suite rebuilds the zstd executable.  Use the same compiler, bitness,
+# and link-editor hardening environment as the component build.
+COMPONENT_TEST_ENV += $(COMPONENT_BUILD_ENV)
+
+# cloney creates symlinks, but zstd tests reject symlink inputs. Replace the
+# symlinks under tests and programs with regular files before running tests.
+COMPONENT_PRE_TEST_ACTION += \
+	$(FIND) $(BUILD_DIR)/$(MACH$(BITS))/tests \
+	    $(BUILD_DIR)/$(MACH$(BITS))/programs -type l \
+	    -exec $(RM) {} \; ; \
+	$(CP) -prL $(SOURCE_DIR)/tests/. \
+	    $(BUILD_DIR)/$(MACH$(BITS))/tests/ ; \
+	$(CP) -prL $(SOURCE_DIR)/programs/. \
+	    $(BUILD_DIR)/$(MACH$(BITS))/programs/ ;
 
 # Keep list of tests performed
 COMPONENT_TEST_TRANSFORMS += \
