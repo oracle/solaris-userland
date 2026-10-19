@@ -44,7 +44,7 @@ COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/net-snmp/files/net-snmp/
 COMPONENT_BUGDB=	service/net-snmp utility/net-snmp library/net-snmp
 COMPONENT_ANITYA_ID=	2062
 
-COMPONENT_BAID=		192942
+COMPONENT_BAID=		429078
 
 BUILD_64 += $(BUILD_DIR_64)/.docs
 
