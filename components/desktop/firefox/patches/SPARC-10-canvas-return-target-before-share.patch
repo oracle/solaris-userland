@@ -17,9 +17,9 @@ Dependency: apply before SPARC-11-snapshot-shared-canvas-textures.patch. This
 patch makes the provider handoff expose current canvas pixels; the later
 snapshot patch changes how those shared pixels are forwarded to WebRender.
 
---- firefox-153.0/dom/canvas/CanvasRenderingContext2D.cpp
-+++ firefox-153.0/dom/canvas/CanvasRenderingContext2D.cpp
-@@ -2057,6 +2057,15 @@ return true;
+--- firefox-153.5.0/dom/canvas/CanvasRenderingContext2D.cpp
++++ firefox-153.5.0/dom/canvas/CanvasRenderingContext2D.cpp
+@@ -2055,6 +2055,15 @@ return true;
  }
  
  PersistentBufferProvider* CanvasRenderingContext2D::GetBufferProvider() {
@@ -35,7 +35,7 @@ snapshot patch changes how those shared pixels are forwarded to WebRender.
    if (mBufferProvider && mBufferNeedsClear) {
      // Force the buffer to clear before it is used.
      EnsureTarget();
-@@ -2075,9 +2084,15 @@ }
+@@ -2073,9 +2082,15 @@ }
  already_AddRefed<layers::FwdTransactionTracker>
  CanvasRenderingContext2D::UseCompositableForwarder(
      layers::CompositableForwarder* aForwarder) {

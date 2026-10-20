@@ -36,14 +36,14 @@ LD_SHARED_OPTIONS_Z_DEFS=
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	153.3.0
-COMPONENT_BAID=		442110
+COMPONENT_VERSION =	153.5.0
+COMPONENT_BAID=		451099
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:69f1335e78d2a340fc13fcf265c0a72bdce2df8774c9d4d49ee77d1726236df5
+    sha256:28714a7d4f9b38c7aafbe38022de7775a3d9cb3c1ebf19a567c26eb761e3410b
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -60,7 +60,7 @@ COMPONENT_ANITYA_ID =	16838
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:fc5800ad3f90c7ac2c7306ae25c04df9fb13e68feb9cb6c4c6e1b4530f1fb200
+    sha256:18a1119aead8656d542dedf8b90467925cf4b0b232eb574778824f93e71ef1d7
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
@@ -89,21 +89,7 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # /usr/gnu/bin needed to pick up the GNU version of tail and readelf.
 # /usr/sbin needed for dtrace.
-# Temporarily use the cbindgen built in this workspace until version 0.29.4
-# is installed on the build systems.
-CBINDGEN_PATH = $(WS_COMPONENTS)/rust/cbindgen/build/$(MACH64)/target/release
-CBINDGEN = $(CBINDGEN_PATH)/cbindgen
-CBINDGEN_VERSION = 0.29.4
-PATH = $(CBINDGEN_PATH):$(EXTPATH):$(COMPONENT_DIR)/wrapper-node:/usr/gnu/bin:/usr/bin:/usr/sbin
-CONFIGURE_ENV += CBINDGEN="$(CBINDGEN)"
-
-COMPONENT_PRE_CONFIGURE_ACTION += \
-	if [ ! -x "$(CBINDGEN)" ] || \
-	    [ "$$($(CBINDGEN) --version 2>/dev/null)" != \
-	    "cbindgen $(CBINDGEN_VERSION)" ]; then \
-		$(GMAKE) -C $(WS_COMPONENTS)/rust/cbindgen install ; \
-	fi ; \
-	test "$$($(CBINDGEN) --version)" = "cbindgen $(CBINDGEN_VERSION)" ;
+PATH = $(EXTPATH):$(COMPONENT_DIR)/wrapper-node:/usr/gnu/bin:/usr/bin:/usr/sbin
 
 MOZCONFIG = $(SOURCE_DIR)/mozconfig
 

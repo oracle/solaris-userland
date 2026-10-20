@@ -36,12 +36,12 @@ LD_SHARED_OPTIONS_Z_DEFS=
 ESR =			esr
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	153.3.0
-COMPONENT_BAID =	442325
+COMPONENT_VERSION =	153.5.0
+COMPONENT_BAID =	451101
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:a67512aed61d61b1b333b76619681e891512f065cb894328ebb672920c5e4a83
+    sha256:f29c5ba3acdf3e756e87f23d30c814c1ad70093a4fb5b383fdf9c51e21cc0baf
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -58,7 +58,7 @@ COMPONENT_ANITYA_ID =	4967
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:d16e318d7a509a9d5f2fa994af9164d0c328e7078db659dd86a4f94046893c80
+    sha256:bfb10067775a962a32098d53afdf87421f31ab1332fb30045777892ee8b5c846
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
@@ -111,21 +111,7 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # /usr/gnu/bin needed to pick up the GNU version of tail and readelf.
 # /usr/sbin needed for dtrace.
-# Temporarily use the cbindgen built in this workspace until version 0.29.4
-# is installed on the build systems.
-CBINDGEN_PATH = $(WS_COMPONENTS)/rust/cbindgen/build/$(MACH64)/target/release
-CBINDGEN = $(CBINDGEN_PATH)/cbindgen
-CBINDGEN_VERSION = 0.29.4
-PATH = $(CBINDGEN_PATH):$(EXTPATH):$(COMPONENT_DIR)/wrapper-node:/usr/gnu/bin:/usr/bin:/usr/sbin
-CONFIGURE_ENV += CBINDGEN="$(CBINDGEN)"
-
-COMPONENT_PRE_CONFIGURE_ACTION += \
-	if [ ! -x "$(CBINDGEN)" ] || \
-	    [ "$$($(CBINDGEN) --version 2>/dev/null)" != \
-	    "cbindgen $(CBINDGEN_VERSION)" ]; then \
-		$(GMAKE) -C $(WS_COMPONENTS)/rust/cbindgen install ; \
-	fi ; \
-	test "$$($(CBINDGEN) --version)" = "cbindgen $(CBINDGEN_VERSION)" ;
+PATH = $(EXTPATH):$(COMPONENT_DIR)/wrapper-node:/usr/gnu/bin:/usr/bin:/usr/sbin
 
 MOZCONFIG = $(SOURCE_DIR)/mozconfig
 
