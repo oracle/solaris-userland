@@ -172,23 +172,6 @@ COMPONENT_POST_INSTALL_ACTION.64 = \
 		--root $(PROTO_DIR) \
 		--install-lib=$(PYTHON.3.13.VENDOR_PACKAGES)) ;
 
-# Copy existing snmp libraries to help smoother transition from .so.40 to
-# .so.45. This should be remove before next release from trunk by bug 39709687.
-COMPONENT_POST_INSTALL_ACTION.64 += \
-    $(CP) /usr/lib/$(MACH64)/libnetsnmp.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
-    $(CP) /usr/lib/libnetsnmp.so.40.2.1 $(PROTO_DIR)/usr/lib; \
-    $(CP) /usr/lib/$(MACH64)/libnetsnmpagent.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
-    $(CP) /usr/lib/libnetsnmpagent.so.40.2.1 $(PROTO_DIR)/usr/lib; \
-    $(CP) /usr/lib/$(MACH64)/libnetsnmphelpers.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
-    $(CP) /usr/lib/libnetsnmphelpers.so.40.2.1 $(PROTO_DIR)/usr/lib; \
-    $(CP) /usr/lib/$(MACH64)/libnetsnmpmibs.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
-    $(CP) /usr/lib/libnetsnmpmibs.so.40.2.1 $(PROTO_DIR)/usr/lib; \
-    $(CP) /usr/lib/$(MACH64)/libnetsnmptrapd.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
-    $(CP) /usr/lib/libnetsnmptrapd.so.40.2.1 $(PROTO_DIR)/usr/lib; \
-    $(CP) /usr/lib/$(MACH64)/libsnmp.so.40.2.1 $(PROTO_DIR)/usr/lib/$(MACH64); \
-    $(CP) /usr/lib/libsnmp.so.40.2.1 $(PROTO_DIR)/usr/lib;
-
-
 COMPONENT_POST_INSTALL_ACTION += (echo "COMPONENT_POST_INSTALL_ACTION - BITS=$(BITS)");
 COMPONENT_POST_INSTALL_ACTION += $(COMPONENT_POST_INSTALL_ACTION.$(BITS))
 
