@@ -21,11 +21,9 @@
 # DEALINGS IN THE SOFTWARE.
 #
 
-diff --git a/modules/om/generic/omGeneric.c b/modules/om/generic/omGeneric.c
-index 61d3069..0ecd6c5 100644
---- a/modules/om/generic/omGeneric.c
-+++ b/modules/om/generic/omGeneric.c
-@@ -146,6 +146,11 @@ init_fontset(
+--- libX11-1.8.14/modules/om/generic/omGeneric.c
++++ libX11-1.8.14/modules/om/generic/omGeneric.c
+@@ -146,6 +146,11 @@ font_set->font_data_count = data->font_d
  	if((font_set->substitute = init_fontdata(data->substitute,
  				   data->substitute_num)) == NULL)
  	    goto err;
@@ -37,7 +35,7 @@ index 61d3069..0ecd6c5 100644
  	font_set->substitute_num = data->substitute_num;
  	if((font_set->vmap = init_fontdata(data->vmap,
  			     data->vmap_num)) == NULL)
-@@ -250,6 +255,10 @@ load_font(
+@@ -250,6 +255,10 @@ for ( ; num-- > 0; font_set++) {
  	if (font_set->font_name == NULL)
  	    continue;
  
@@ -48,7 +46,7 @@ index 61d3069..0ecd6c5 100644
          if (load_fontset_data (oc, font_set) != True)
  	    return False;
  #ifndef TESTVERSION
-@@ -299,12 +308,24 @@ load_font_info(
+@@ -299,12 +308,24 @@ if (font_set->font_name == NULL)
  	    continue;
  
  	if (font_set->info == NULL) {
@@ -73,7 +71,7 @@ index 61d3069..0ecd6c5 100644
  	}
      }
  
-@@ -420,7 +441,7 @@ init_core_part(
+@@ -420,7 +441,7 @@ font_set_num = gen->font_set_num;
      count = length = 0;
  
      for ( ; font_set_num-- > 0; font_set++) {
@@ -82,7 +80,7 @@ index 61d3069..0ecd6c5 100644
  	    continue;
  
  	length += strlen(font_set->font_name) + 1;
-@@ -450,7 +471,7 @@ init_core_part(
+@@ -450,7 +471,7 @@ font_set = gen->font_set;
      font_set_num = gen->font_set_num;
  
      for (count = 0; font_set_num-- > 0; font_set++) {
@@ -91,7 +89,7 @@ index 61d3069..0ecd6c5 100644
  	    continue;
  
  	font_set->id = count;
-@@ -1198,7 +1219,7 @@ set_missing_list(
+@@ -1198,7 +1219,7 @@ font_set_num = gen->font_set_num;
      count = length = 0;
  
      for ( ; font_set_num-- > 0; font_set++) {
@@ -100,7 +98,7 @@ index 61d3069..0ecd6c5 100644
  	    continue;
  	}
  
-@@ -1245,7 +1266,7 @@ set_missing_list(
+@@ -1245,7 +1266,7 @@ font_set = gen->font_set;
      font_set_num = gen->font_set_num;
  
      for ( ; font_set_num-- > 0; font_set++) {
@@ -109,7 +107,7 @@ index 61d3069..0ecd6c5 100644
  	    continue;
  	}
  
-@@ -2009,6 +2030,20 @@ init_om(
+@@ -2010,6 +2031,20 @@ }
  	}
          read_vw(lcd,data,num);
  	length += strlen(data->font_data->name) + 1;
@@ -130,10 +128,8 @@ index 61d3069..0ecd6c5 100644
      }
  
      /* required charset list */
-diff --git a/modules/om/generic/omXChar.c b/modules/om/generic/omXChar.c
-index c9bbb8e..4f80ce0 100644
---- a/modules/om/generic/omXChar.c
-+++ b/modules/om/generic/omXChar.c
+--- libX11-1.8.14/modules/om/generic/omXChar.c
++++ libX11-1.8.14/modules/om/generic/omXChar.c
 @@ -285,6 +285,12 @@ load_font(
      XOC oc,
      FontSet font_set)
@@ -147,7 +143,7 @@ index c9bbb8e..4f80ce0 100644
      font_set->font = XLoadQueryFont(oc->core.om->core.display,
  			oc->core.font_info.font_name_list[font_set->id]);
      if (font_set->font == NULL)
-@@ -330,8 +336,10 @@ _XomConvert(
+@@ -330,8 +336,10 @@ font_set = _XomGetFontSetFromCharSet(oc,
      if (font_set == NULL)
  	return -1;
  
@@ -160,11 +156,9 @@ index c9bbb8e..4f80ce0 100644
  
      length = *to_left - cs_left;
  
-diff --git a/src/XomGeneric.h b/src/XomGeneric.h
-index d6f182d..d8eaf89 100644
---- a/src/XomGeneric.h
-+++ b/src/XomGeneric.h
-@@ -81,6 +81,9 @@ typedef struct _OMDataRec {
+--- libX11-1.8.14/src/XomGeneric.h
++++ libX11-1.8.14/src/XomGeneric.h
+@@ -81,6 +81,9 @@ int 	charset_count;
      XlcCharSet 	*charset_list;
      int 	font_data_count;
      FontData 	font_data;
@@ -174,7 +168,7 @@ index d6f182d..d8eaf89 100644
      /* For VW/UDC */
      int substitute_num;
      FontData substitute;
-@@ -120,6 +123,9 @@ typedef struct _FontSetRec {
+@@ -120,6 +123,9 @@ XFontStruct 	*info;
      XFontStruct 	*font;
      XlcSide 		side;
      Bool 		is_xchar2b;
