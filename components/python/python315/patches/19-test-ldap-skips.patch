@@ -1,0 +1,49 @@
+test_posixpath doesn't work well within OWAN. Our internal LDAP has multiple
+cases of multiple entries for the same name, which makes this test fail.
+[Not for upstream]
+
+The rest are calling pwd.getpwall, which can be very slow on some test machines.
+[Not for upstream]
+
+--- Python-3.15.0/Lib/test/test_posixpath.py
++++ Python-3.15.0/Lib/test/test_posixpath.py
+@@ -360,6 +360,8 @@ class PosixPathTest(unittest.TestCase):
+ 
+     @unittest.skipIf(sys.platform == "vxworks",
+                      "no home directory on VxWorks")
++    @unittest.skipIf(sys.platform.startswith("sunos"),
++                     "doesn't work well with our internal LDAP entires")
+     def test_expanduser_pwd2(self):
+         pwd = import_helper.import_module('pwd')
+         getpwall = support.get_attribute(pwd, 'getpwall')
+--- Python-3.15.0/Lib/test/test_pathlib/test_pathlib.py
++++ Python-3.15.0/Lib/test/test_pathlib/test_pathlib.py
+@@ -3328,6 +3328,7 @@ class PathTest(PurePathTest):
+                          'pwd module does not expose getpwall()')
+     @unittest.skipIf(sys.platform == "vxworks",
+                      "no home directory on VxWorks")
++    @unittest.skipIf(sys.platform.startswith("sunos"), "slow within OWAN")
+     @needs_posix
+     def test_expanduser_posix(self):
+         P = self.cls
+--- Python-3.15.0/Lib/test/test_pwd.py
++++ Python-3.15.0/Lib/test/test_pwd.py
+@@ -6,6 +6,7 @@ from test.support import import_helper
+ 
+ pwd = import_helper.import_module('pwd')
+ 
++@unittest.skipIf(sys.platform.startswith("sunos"), "slow within OWAN")
+ @unittest.skipUnless(hasattr(pwd, 'getpwall'), 'Does not have getpwall()')
+ class PwdTest(unittest.TestCase):
+ 
+--- Python-3.15.0/Lib/test/test_os/test_os.py
++++ Python-3.15.0/Lib/test/test_os/test_os.py
+@@ -49,7 +49,7 @@ except ImportError:
+     fcntl = None
+ try:
+     import pwd
+-    all_users = [u.pw_uid for u in pwd.getpwall()]
++    all_users = []
+ except (ImportError, AttributeError):
+     all_users = []
+ try:

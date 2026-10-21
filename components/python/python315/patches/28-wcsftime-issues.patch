@@ -1,0 +1,84 @@
+Many tests will fail with non-Unicode locale due to a bug in wcsftime (see 37153811).
+
+Other recent strptime/wcsftime issues were solved with upstream here:
+https://github.com/python/cpython/issues/53203
+https://github.com/python/cpython/issues/126727
+
+--- Python-3.15.0/Lib/test/test_strptime.py
++++ Python-3.15.0/Lib/test/test_strptime.py
+@@ -327,7 +327,7 @@ class StrptimeTests(unittest.TestCase):
+         # Test for month directives
+         self.roundtrip('%m', 1)
+ 
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP', 'he_IL', '')
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR.UTF-8', 'de_DE.UTF-8', 'ja_JP.UTF-8', 'he_IL.UTF-8', '')
+     def test_month_locale(self):
+         # Test for month directives
+         self.roundtrip('%B', 1)
+@@ -354,7 +354,7 @@ class StrptimeTests(unittest.TestCase):
+         self.roundtrip('%H', 3)
+ 
+     # NB: Only works on locales with AM/PM
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'ja_JP')
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'ja_JP.UTF-8')
+     def test_hour_locale(self):
+         # Test hour directives
+         self.roundtrip('%I %p', 3)
+@@ -379,7 +379,7 @@ class StrptimeTests(unittest.TestCase):
+         self.roundtrip('%w', 6)
+         self.roundtrip('%u', 6)
+ 
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP', '')
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP.UTF-8', '')
+     def test_weekday_locale(self):
+         # Test weekday directives
+         self.roundtrip('%A', 6)
+@@ -503,8 +503,8 @@ class StrptimeTests(unittest.TestCase):
+     # * Year is not included: ha_NG.
+     # * Use non-Gregorian calendar: lo_LA, thai, th_TH.
+     #   On Windows: ar_IN, ar_SA, fa_IR, ps_AF.
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP',
+-                      'he_IL', 'eu_ES', 'ar_AE', 'mfe_MU', 'yo_NG',
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR.UTF-8', 'de_DE.UTF-8', 'ja_JP.UTF-8',
++                      'he_IL.UTF-8', 'eu_ES', 'ar_AE', 'mfe_MU', 'yo_NG',
+                       'csb_PL', 'br_FR', 'gez_ET', 'brx_IN',
+                       'my_MM', 'or_IN', 'shn_MM', 'az_IR',
+                       'byn_ER', 'wal_ET', 'lzh_TW')
+@@ -531,8 +531,8 @@ class StrptimeTests(unittest.TestCase):
+     # NB: Dates before 1969 do not roundtrip on some locales:
+     # az_IR, bo_CN, bo_IN, dz_BT, eu_ES, eu_FR, fa_IR, or_IN.
+     @support.run_with_tz('STD-1DST,M4.1.0,M10.1.0')
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP',
+-                      'he_IL', 'ar_AE', 'mfe_MU', 'yo_NG',
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR.UTF-8', 'de_DE.UTF-8', 'ja_JP.UTF-8',
++                      'he_IL.UTF-8', 'ar_AE', 'mfe_MU', 'yo_NG',
+                       'csb_PL', 'br_FR', 'gez_ET', 'brx_IN',
+                       'my_MM', 'shn_MM')
+     def test_date_time_locale2(self):
+@@ -546,7 +546,7 @@ class StrptimeTests(unittest.TestCase):
+ 
+     # NB: Does not roundtrip because use non-Gregorian calendar:
+     # lo_LA, thai, th_TH. On Windows: ar_IN, ar_SA, fa_IR, ps_AF.
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP',
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP.UTF-8',
+                       'he_IL', 'eu_ES', 'ar_AE',
+                       'az_IR', 'my_MM', 'or_IN', 'shn_MM', 'lzh_TW')
+     def test_date_locale(self):
+@@ -564,7 +564,7 @@ class StrptimeTests(unittest.TestCase):
+ 
+     # NB: Dates before 1969 do not roundtrip on many locales, including C.
+     @unittest.skipIf(support.linked_to_musl(), "musl libc issue, bpo-46390")
+-    @run_with_locales('LC_TIME', 'en_US', 'fr_FR', 'de_DE', 'ja_JP',
++    @run_with_locales('LC_TIME', 'en_US', 'fr_FR', 'de_DE', 'ja_JP.UTF-8',
+                       'eu_ES', 'ar_AE', 'my_MM', 'shn_MM', 'lzh_TW')
+     def test_date_locale2(self):
+         # Test %x directive
+@@ -581,7 +581,7 @@ class StrptimeTests(unittest.TestCase):
+     #   norwegian, nynorsk.
+     # * Hours are in 12-hour notation without AM/PM indication: hy_AM,
+     #   ms_MY, sm_WS.
+-    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP',
++    @run_with_locales('LC_TIME', 'C', 'en_US', 'fr_FR', 'de_DE', 'ja_JP.UTF-8',
+                       'aa_ET', 'am_ET', 'az_IR', 'byn_ER', 'fa_IR', 'gez_ET',
+                       'my_MM', 'om_ET', 'or_IN', 'shn_MM', 'sid_ET', 'so_SO',
+                       'ti_ET', 'tig_ER', 'wal_ET', 'lzh_TW',

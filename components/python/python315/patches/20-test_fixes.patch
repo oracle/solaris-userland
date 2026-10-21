@@ -1,0 +1,74 @@
+This patch disables several tests that doesn't work correctly on Solaris.
+
+test_gdb is not deterministic and sometimes fails for unimportant reasons (only
+when ran with gmake test from component root).
+
+test_tcl should be investigated more [Should be reported upstream]
+
+test_freeze is running configure and fails on endian check...
+
+test_c_stack_unwind can fail because GCC may use %rbp as a general-purpose
+register even when the build requests frame pointers.
+[Should be reported upstream]
+
+--- Python-3.15.0/Lib/test/test_gdb/__init__.py
++++ Python-3.15.0/Lib/test/test_gdb/__init__.py
+@@ -4,6 +4,7 @@
+ # Lib/test/test_jit_gdb.py
+ 
+ import os
++import sys
+ import sysconfig
+ import unittest
+ from test import support
+@@ -15,6 +16,9 @@ if support.MS_WINDOWS:
+     # debug symbol files.
+     raise unittest.SkipTest("test_gdb doesn't work on Windows")
+ 
++if sys.platform.startswith("sunos"):
++    raise unittest.SkipTest("test doesn't work well on Solaris")
++
+ if support.PGO:
+     raise unittest.SkipTest("test_gdb is not useful for PGO")
+ 
+--- Python-3.15.0/Lib/test/test_tcl.py
++++ Python-3.15.0/Lib/test/test_tcl.py
+@@ -243,6 +243,7 @@ class TclTest(unittest.TestCase):
+         self.assertRaises((UnicodeEncodeError, ValueError, TclError),
+                           tcl.getboolean, 'on\ud800')
+ 
++    @unittest.skipIf(sys.platform.startswith("sunos"), "test doesn't work well on Solaris")
+     def testEvalFile(self):
+         tcl = self.interp
+         filename = os_helper.TESTFN_ASCII
+@@ -257,6 +258,7 @@ class TclTest(unittest.TestCase):
+         self.assertEqual(tcl.eval('set b'),'2')
+         self.assertEqual(tcl.eval('set c'),'3')
+ 
++    @unittest.skipIf(sys.platform.startswith("sunos"), "test doesn't work well on Solaris")
+     def test_evalfile_null_in_result(self):
+         tcl = self.interp
+         filename = os_helper.TESTFN_ASCII
+--- Python-3.15.0/Lib/test/test_tools/test_freeze.py
++++ Python-3.15.0/Lib/test/test_tools/test_freeze.py
+@@ -16,6 +16,7 @@ with imports_under_tool('freeze', 'test'
+ @unittest.skipIf(sys.platform.startswith('win'), 'not supported on Windows')
+ @unittest.skipIf(sys.platform == 'darwin' and sys._framework,
+         'not supported for frameworks builds on macOS')
++@unittest.skipIf(sys.platform.startswith('sunos'), 'acts weird on Solaris')
+ @support.skip_if_buildbot('not all buildbots have enough space')
+ # gh-103053: Skip test if Python is built with Profile Guided Optimization
+ # (PGO), since the test is just too slow in this case.
+--- Python-3.15.0/Lib/test/test_c_stack_unwind.py
++++ Python-3.15.0/Lib/test/test_c_stack_unwind.py
+@@ -244,6 +244,10 @@
+ 
+ @support.requires_gil_enabled("test requires the GIL enabled")
+ @unittest.skipIf(support.is_wasi, "test not supported on WASI")
++@unittest.skipIf(
++    sys.platform.startswith('sunos'),
++    "manual frame-pointer unwinding is not reliable on Solaris",
++)
+ class ManualStackUnwindTests(unittest.TestCase):
+ 
+     def setUp(self):

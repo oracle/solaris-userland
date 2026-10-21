@@ -685,6 +685,7 @@ PYTHON_VERSIONS =	3.11 3.13
 
 PYTHON.3.11 =	/usr/bin/python3.11
 PYTHON.3.13 =	/usr/bin/python3.13
+PYTHON.3.15 =	/usr/bin/python3.15
 PYTHON ?=	$(PYTHON.$(PYTHON_VERSION))
 
 PYTHON.3.11.VENDOR_PACKAGES =  /usr/lib/python3.11/vendor-packages

@@ -1,0 +1,308 @@
+From upstream PR:
+https://github.com/python/cpython/pull/155164
+
+From 187d1c33bb21b81b2ecb796342339c814aec476b Mon Sep 17 00:00:00 2001
+From: Serhiy Storchaka <storchaka@gmail.com>
+Date: Tue, 4 Aug 2026 12:43:48 +0300
+Subject: [PATCH] gh-155109: Run tests exhausting the C stack with a limited C
+ stack (GH-155120)
+
+Add the @support.run_with_limited_c_stack() decorator which runs the test
+in a thread with a 8 MiB C stack, so that the outcome does not depend on
+RLIMIT_STACK. Use it in tests which recurse to a fixed depth --
+@support.skip_if_huge_c_stack() failed to skip them with a 16 MiB stack.
+(cherry picked from commit ce5ae29ef9b8ccb32683c922d135339311c36c9d)
+
+Co-authored-by: Serhiy Storchaka <storchaka@gmail.com>
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+--- Python-3.15.0/Lib/test/list_tests.py
++++ Python-3.15.0/Lib/test/list_tests.py
+@@ -6,7 +6,7 @@ import sys
+ from functools import cmp_to_key
+ 
+ from test import seq_tests
+-from test.support import ALWAYS_EQ, NEVER_EQ, skip_if_huge_c_stack
++from test.support import ALWAYS_EQ, NEVER_EQ, run_with_limited_c_stack
+ from test.support import skip_emscripten_stack_overflow, skip_wasi_stack_overflow
+ 
+ 
+@@ -60,7 +60,7 @@ class CommonTest(seq_tests.CommonTest):
+         self.assertEqual(str(a2), "[0, 1, 2, [...], 3]")
+         self.assertEqual(repr(a2), "[0, 1, 2, [...], 3]")
+ 
+-    @skip_if_huge_c_stack(200_000)
++    @run_with_limited_c_stack(200_000)
+     @skip_wasi_stack_overflow()
+     @skip_emscripten_stack_overflow()
+     def test_repr_deep(self):
+--- Python-3.15.0/Lib/test/mapping_tests.py
++++ Python-3.15.0/Lib/test/mapping_tests.py
+@@ -629,7 +629,7 @@ class TestHashMappingProtocol(TestMappin
+         d = self._full_mapping({1: BadRepr()})
+         self.assertRaises(Exc, repr, d)
+ 
+-    @support.skip_if_huge_c_stack()
++    @support.run_with_limited_c_stack()
+     @support.skip_wasi_stack_overflow()
+     @support.skip_emscripten_stack_overflow()
+     @support.skip_if_sanitizer("requires deep stack", ub=True)
+--- Python-3.15.0/Lib/test/support/__init__.py
++++ Python-3.15.0/Lib/test/support/__init__.py
+@@ -46,6 +46,7 @@ __all__ = [
+     "check_disallow_instantiation", "check_sanitizer", "skip_if_sanitizer",
+     "requires_limited_api", "requires_specialization", "thread_unsafe",
+     "skip_if_unlimited_stack_size", "skip_if_huge_c_stack",
++    "run_with_limited_c_stack",
+     # sys
+     "MS_WINDOWS", "is_jython", "is_android", "is_emscripten", "is_wasi",
+     "is_apple_mobile", "check_impl_detail", "unix_shell", "setswitchinterval",
+@@ -2830,6 +2831,26 @@ def exceeds_recursion_limit():
+     return 150_000
+ 
+ 
++def _has_huge_c_stack(depth):
++    """Check that *depth* recursive calls cannot exhaust the C stack."""
++    try:
++        from _testinternalcapi import get_c_recursion_remaining
++    except ImportError:
++        # Fall back to checking for an unlimited stack size.
++        if is_emscripten or is_wasi or os.name == "nt":
++            return False
++        import resource
++        soft, hard = resource.getrlimit(resource.RLIMIT_STACK)
++        return soft == hard and soft in (-1, 0xFFFF_FFFF_FFFF_FFFF)
++    else:
++        remaining = get_c_recursion_remaining()
++        # A negative value means integer overflow in the estimate
++        # (e.g. with an unlimited RLIMIT_STACK).  The estimate is based on
++        # the size of the interpreter loop frame, so it is only a lower
++        # bound for recursion with smaller C frames.
++        return remaining >= depth or remaining < 0
++
++
+ def skip_if_huge_c_stack(depth=150_000):
+     """Skip decorator for tests which cannot overflow the C stack.
+ 
+@@ -2837,23 +2858,67 @@ def skip_if_huge_c_stack(depth=150_000):
+     trigger the recursion protection if the C stack is too large (e.g.
+     with a large or unlimited RLIMIT_STACK), and either fail, or run
+     for a very long time, or crash, or consume all memory.
++
++    Prefer run_with_limited_c_stack() for tests recursing to a fixed depth.
+     """
+-    try:
+-        from _testinternalcapi import get_c_recursion_remaining
+-    except ImportError:
+-        # Fall back to checking for an unlimited stack size.
+-        huge = False
+-        if not (is_emscripten or is_wasi) and os.name != "nt":
+-            import resource
+-            soft, hard = resource.getrlimit(resource.RLIMIT_STACK)
+-            huge = soft == hard and soft in (-1, 0xFFFF_FFFF_FFFF_FFFF)
+-    else:
+-        remaining = get_c_recursion_remaining()
+-        # A negative value means integer overflow in the estimate
+-        # (e.g. with an unlimited RLIMIT_STACK).
+-        huge = remaining >= depth or remaining < 0
+     return unittest.skipIf(
+-        huge, f"the C stack is large enough for {depth} recursive calls")
++        _has_huge_c_stack(depth),
++        f"the C stack is large enough for {depth} recursive calls")
++
++
++# Small enough to be exhausted by tens of thousands of recursive calls,
++# but not smaller than Py_C_STACK_SIZE (4 MiB) which the interpreter
++# assumes if it cannot query the thread stack size.
++C_STACK_SIZE = 8 * 1024 * 1024
++
++
++def run_with_limited_c_stack(depth=150_000, size=C_STACK_SIZE):
++    """Decorator for tests exhausting the C stack with *depth* recursive calls.
++
++    Run the test in a separate thread with the C stack of *size* bytes, so
++    that the outcome does not depend on the C stack size of the main thread
++    (which can be large or unlimited, see RLIMIT_STACK).
++
++    If a thread with the limited C stack cannot be created, run the test in
++    the current thread, but skip it if the C stack is too large.
++    """
++    reason = f"the C stack is large enough for {depth} recursive calls"
++    def decorator(test):
++        @functools.wraps(test)
++        def wrapper(*args, **kwargs):
++            def run_test():
++                # The C stack can still be too large if limiting it failed.
++                if _has_huge_c_stack(depth):
++                    raise unittest.SkipTest(reason)
++                test(*args, **kwargs)
++
++            try:
++                import threading
++                old_size = threading.stack_size(size)
++            except (ImportError, ValueError, RuntimeError):
++                # Setting the thread stack size is not supported.
++                return run_test()
++
++            exceptions = []
++            def run():
++                try:
++                    run_test()
++                except BaseException as exc:
++                    exceptions.append(exc)
++
++            thread = threading.Thread(target=run)
++            try:
++                thread.start()
++            except RuntimeError:
++                # Threads are not supported.
++                return run_test()
++            finally:
++                threading.stack_size(old_size)
++            thread.join()
++            if exceptions:
++                raise exceptions[0]
++        return wrapper
++    return decorator
+ 
+ 
+ # Windows doesn't have os.uname() but it doesn't support s390x.
+--- Python-3.15.0/Lib/test/test_ast/test_ast.py
++++ Python-3.15.0/Lib/test/test_ast/test_ast.py
+@@ -1056,7 +1056,8 @@ class AST_Tests(unittest.TestCase):
+         enum._test_simple_enum(_Precedence, _ast_unparse._Precedence)
+ 
+     @support.cpython_only
+-    @support.skip_if_huge_c_stack(100_000 if sys.platform == "android" else 500_000)
++    @support.run_with_limited_c_stack(
++        100_000 if sys.platform == "android" else 500_000)
+     @skip_wasi_stack_overflow()
+     @skip_emscripten_stack_overflow()
+     def test_ast_recursion_limit(self):
+--- Python-3.15.0/Lib/test/test_compile.py
++++ Python-3.15.0/Lib/test/test_compile.py
+@@ -724,7 +724,8 @@ class TestSpecifics(unittest.TestCase):
+ 
+     @support.cpython_only
+     @unittest.skipIf(support.is_wasi, "exhausts limited stack on WASI")
+-    @support.skip_if_huge_c_stack(100_000 if sys.platform == "android" else 500_000)
++    @support.run_with_limited_c_stack(
++        100_000 if sys.platform == "android" else 500_000)
+     @support.skip_emscripten_stack_overflow()
+     def test_compiler_recursion_limit(self):
+         # Compiler frames are small
+--- Python-3.15.0/Lib/test/test_dict.py
++++ Python-3.15.0/Lib/test/test_dict.py
+@@ -678,7 +678,7 @@ class DictTest(unittest.TestCase):
+         d = {1: BadRepr()}
+         self.assertRaises(Exc, repr, d)
+ 
+-    @support.skip_if_huge_c_stack()
++    @support.run_with_limited_c_stack()
+     @support.skip_wasi_stack_overflow()
+     @support.skip_emscripten_stack_overflow()
+     def test_repr_deep(self):
+--- Python-3.15.0/Lib/test/test_dictviews.py
++++ Python-3.15.0/Lib/test/test_dictviews.py
+@@ -3,7 +3,7 @@ import copy
+ import pickle
+ import unittest
+ from test.support import (skip_emscripten_stack_overflow,
+-                          skip_wasi_stack_overflow, skip_if_huge_c_stack,
++                          skip_wasi_stack_overflow, run_with_limited_c_stack,
+                           exceeds_recursion_limit)
+ 
+ class DictSetTest(unittest.TestCase):
+@@ -279,7 +279,7 @@ class DictSetTest(unittest.TestCase):
+         # Again.
+         self.assertIsInstance(r, str)
+ 
+-    @skip_if_huge_c_stack()
++    @run_with_limited_c_stack()
+     @skip_wasi_stack_overflow()
+     @skip_emscripten_stack_overflow()
+     def test_deeply_nested_repr(self):
+--- Python-3.15.0/Lib/test/test_exception_group.py
++++ Python-3.15.0/Lib/test/test_exception_group.py
+@@ -2,7 +2,7 @@ import collections
+ import types
+ import unittest
+ from test.support import (skip_emscripten_stack_overflow,
+-                          skip_wasi_stack_overflow, skip_if_huge_c_stack,
++                          skip_wasi_stack_overflow, run_with_limited_c_stack,
+                           exceeds_recursion_limit)
+ 
+ class TestExceptionGroupTypeHierarchy(unittest.TestCase):
+@@ -549,7 +549,7 @@ class DeepRecursionInSplitAndSubgroup(un
+             e = ExceptionGroup('eg', [e])
+         return e
+ 
+-    @skip_if_huge_c_stack()
++    @run_with_limited_c_stack()
+     @skip_emscripten_stack_overflow()
+     @skip_wasi_stack_overflow()
+     def test_deep_split(self):
+@@ -557,7 +557,7 @@ class DeepRecursionInSplitAndSubgroup(un
+         with self.assertRaises(RecursionError):
+             e.split(TypeError)
+ 
+-    @skip_if_huge_c_stack()
++    @run_with_limited_c_stack()
+     @skip_emscripten_stack_overflow()
+     @skip_wasi_stack_overflow()
+     def test_deep_subgroup(self):
+--- Python-3.15.0/Lib/test/test_json/test_recursion.py
++++ Python-3.15.0/Lib/test/test_json/test_recursion.py
+@@ -69,7 +69,7 @@ class TestRecursion:
+ 
+ 
+     @support.skip_if_pgo_task  # fails during PGO training w/ some stack sizes
+-    @support.skip_if_huge_c_stack(500_000)
++    @support.run_with_limited_c_stack(500_000)
+     @support.skip_emscripten_stack_overflow()
+     @support.skip_wasi_stack_overflow()
+     def test_highly_nested_objects_decoding(self):
+--- Python-3.15.0/Lib/test/test_pyexpat.py
++++ Python-3.15.0/Lib/test/test_pyexpat.py
+@@ -855,7 +855,7 @@ class ElementDeclHandlerTest(unittest.Te
+         parser.ElementDeclHandler = lambda _1, _2: None
+         self.assertRaises(TypeError, parser.Parse, data, True)
+ 
+-    @support.skip_if_huge_c_stack(800_000)
++    @support.run_with_limited_c_stack(800_000)
+     @support.skip_emscripten_stack_overflow()
+     @support.skip_wasi_stack_overflow()
+     def test_deeply_nested_content_model(self):
+--- Python-3.15.0/Lib/test/test_typing.py
++++ Python-3.15.0/Lib/test/test_typing.py
+@@ -52,8 +52,8 @@ import types
+ from test.support import (
+     captured_stderr, cpython_only, requires_docstrings, import_helper, run_code,
+     subTests, EqualToForwardRef,
+-    exceeds_recursion_limit, skip_if_huge_c_stack, skip_wasi_stack_overflow,
+-    skip_emscripten_stack_overflow,
++    exceeds_recursion_limit, run_with_limited_c_stack,
++    skip_wasi_stack_overflow, skip_emscripten_stack_overflow,
+ )
+ from test.typinganndata import (
+     ann_module695, mod_generics_cache, _typed_dict_helper,
+@@ -5097,7 +5097,7 @@ class GenericTests(BaseTestCase):
+         self.assertEqual(MM2.__bases__, (collections.abc.MutableMapping, Generic))
+ 
+     @cpython_only
+-    @skip_if_huge_c_stack()
++    @run_with_limited_c_stack()
+     @skip_wasi_stack_overflow()
+     @skip_emscripten_stack_overflow()
+     def test_parameters_deep_recursion(self):
+--- Python-3.15.0/Lib/test/test_xml_etree.py
++++ Python-3.15.0/Lib/test/test_xml_etree.py
+@@ -3229,7 +3229,7 @@ class BadElementTest(ElementTestCase, un
+         self.assertEqual([c.tag for c in children[3:]],
+                          [a.tag, b.tag, a.tag, b.tag])
+ 
+-    @support.skip_if_huge_c_stack(500_000)
++    @support.run_with_limited_c_stack(500_000)
+     @support.skip_emscripten_stack_overflow()
+     @support.skip_wasi_stack_overflow()
+     def test_deeply_nested_deepcopy(self):

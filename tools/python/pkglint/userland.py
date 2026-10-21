@@ -751,6 +751,7 @@ class UserlandManifestChecker(base.ManifestChecker):
         MAGIC_NUMBERS = {
             "311": (3495).to_bytes(2, "little") + b"\r\n",
             "313": (3571).to_bytes(2, "little") + b"\r\n",
+            "315": (3666).to_bytes(2, "little") + b"\r\n",
         }
 
         # Find both files in given proto areas. Both files can be in a different
