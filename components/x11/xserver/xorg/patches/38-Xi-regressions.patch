@@ -1,0 +1,105 @@
+Backport to 21.1.25 of patch already accepted upstream in main branch
+to prevent regressions found by our code review AI bot.
+
+From f69a2c36d9f65e52d918436edb7a34df78570e87 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Thu, 8 Oct 2026 17:17:20 -0700
+Subject: [PATCH xserver 1/2] Xi: avoid memory leak when hitting bounds check
+ for barrier events
+
+The fix for CVE-2026-93519 added a bounds check for barrier events in
+CreatePointerBarrierClient() and if it's hit immediately returns
+BadAlloc.  Unfortunately it was added after `ret` was already allocated
+and before *client_out is set to `ret`, so `ret` leaks.
+
+This fix changes it to jump to the same cleanup code to free(ret)
+that the rest of the function already uses.
+
+Fixes: 1f42cc1f0 ("Xi: add bounds check for barrier events in input_constrain_cursor")
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+Part-of: <https://gitlab.freedesktop.org/xorg/xserver/-/merge_requests/2352>
+(cherry picked from commit 8e901e6013803a94b25020bde384dd17966564eb)
+---
+ Xi/xibarriers.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/Xi/xibarriers.c b/Xi/xibarriers.c
+index aad8db752..8cfc67555 100644
+--- a/Xi/xibarriers.c
++++ b/Xi/xibarriers.c
+@@ -602,8 +602,10 @@ CreatePointerBarrierClient(ClientPtr client,
+      * function */
+     xorg_list_for_each_entry(counter, &cs->barriers, entry) {
+         nbarriers++;
+-        if (nbarriers >= 32)
+-            return BadAlloc;
++        if (nbarriers >= 32) {
++            err = BadAlloc;
++            goto error;
++        }
+     }
+ 
+     ret->screen = screen;
+-- 
+2.50.1
+
+From 004d47432022f46dc0ce6673a281fd99848a45ff Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Thu, 8 Oct 2026 17:53:59 -0700
+Subject: [PATCH xserver 2/2] Xi: fix event_id & time delta in generated
+ barrier events
+
+The fix for CVE-2026-93519 moved the updates of pbd->last_timestamp
+and pbd->barrier_event_id from after they were used to generate the
+data in events to before, causing the event_id to be one too high,
+and the time delta (ms - pbd->last_timestamp) to always be zero.
+
+This fix moves them back to being after they are used to generate
+the event data.
+
+Fixes: 1f42cc1f ("Xi: add bounds check for barrier events in input_constrain_cursor")
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+Part-of: <https://gitlab.freedesktop.org/xorg/xserver/-/merge_requests/2353>
+(cherry picked from commit 98aed9ddba7b42d2a46fcc1f343f4b392967b838)
+---
+ Xi/xibarriers.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/Xi/xibarriers.c b/Xi/xibarriers.c
+index 8cfc67555..52bc6ecc8 100644
+--- a/Xi/xibarriers.c
++++ b/Xi/xibarriers.c
+@@ -417,7 +417,7 @@ input_constrain_cursor(DeviceIntPtr dev, ScreenPtr screen,
+     DeviceIntPtr master;
+ 
+     /* We cannot know how many events are available in *events, but
+-     * we know it all DDX very protbably allocated them with
++     * we know that all DDX very probably allocated them with
+      * GetMaximumEventsNum() and fill_pointer_events() may have added one.
+      *
+      * Let's cap at a maximum of 64 barrier events which is way more than
+@@ -517,10 +517,6 @@ input_constrain_cursor(DeviceIntPtr dev, ScreenPtr screen,
+             continue;
+ 
+         pbd->hit = FALSE;
+-        pbd->last_timestamp = ms;
+-        /* If we've left the hit box, this is the
+-         * start of a new event ID. */
+-        pbd->barrier_event_id++;
+ 
+         if (*nevents < MAX_BARRIER_EVENTS) {
+             ev.type = ET_BarrierLeave;
+@@ -542,6 +538,10 @@ input_constrain_cursor(DeviceIntPtr dev, ScreenPtr screen,
+             *nevents += 1;
+         }
+ 
++        pbd->last_timestamp = ms;
++        /* If we've left the hit box, this is the
++         * start of a new event ID. */
++        pbd->barrier_event_id++;
+     }
+ 
+  out:
+-- 
+2.50.1
+
