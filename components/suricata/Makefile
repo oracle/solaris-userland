@@ -34,14 +34,17 @@ COMPONENT_PROJECT_URL =	https://suricata.io/
 COMPONENT_ARCHIVE_HASH = sha256:a9d46a9c8f40e81f8a6df3ecc2c5a9a8e8da985876299108d92da547c013ba8c
 COMPONENT_ARCHIVE_URL =	https://www.openinfosecfoundation.org/download/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH_crates = \
-	sha256:1b5b01b61f9a35c844458f33cee87dc180b97745553e4e35e3cfd65f1b30764e
+	sha256:faecadc92467b810c197c73c697cea9cd89e3d0a0a3a2f3c21f091715660293b
 
-COMPONENT_BAID =	443358
+COMPONENT_BAID =	453276
 
 # Cargo don't have an internet access during non-download gmake targets so we need
 # to vendor dependencies
 include $(WS_MAKE_RULES)/cargo-vendored.mk
 VENDORED_CARGO_LOCK_LOCATION = $(COMPONENT_SRC)/rust # Cargo.toml location
+# The vendored crates changed without a Suricata version change.  Use a new
+# archive name so the source archive cache cannot supply the old crates.
+COMPONENT_ARCHIVE_crates = $(VENDORED_SOURCES_NAME)-40166814.tar.bz2
 COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
 
 include $(WS_MAKE_RULES)/common.mk

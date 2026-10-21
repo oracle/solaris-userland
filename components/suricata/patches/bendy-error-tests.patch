@@ -1,0 +1,148 @@
+Adjust BitTorrent DHT parser error expectations for bendy 0.6.1.
+
+The upgraded decoder renders context on separate lines and changes the
+wording of unexpected-token diagnostics. These tests check the same
+invalid inputs and now assert the decoder output in that version.
+---
+--- a/rust/src/bittorrent_dht/parser.rs
++++ b/rust/src/bittorrent_dht/parser.rs
+@@ -464,27 +464,27 @@
+ 
+     #[test_case(
+         b"d12:implied_porti1e9:info_hash20:mnopqrstuvwxyz1234564:porti6881e5:token8:aoeusnthe",
+-        "Error: missing field: id" ;
++        "missing field: id" ;
+         "test request from bencode err 1")]
+     #[test_case(
+         b"d2:id20:abcdefghij012345678912:implied_porti9999e9:info_hash20:mnopqrstuvwxyz1234564:porti6881e5:token8:aoeusnthe",
+-        "Error: malformed content discovered in implied_port" ;
++        "malformed content discovered\nin context:\n\timplied_port" ;
+         "test request from bencode err 2")]
+     #[test_case(
+         b"d2:id20:abcdefghij012345678912:implied_porti-1e9:info_hash20:mnopqrstuvwxyz1234564:porti6881e5:token8:aoeusnthe",
+-        "Error: malformed content discovered in implied_port" ;
++        "malformed content discovered\nin context:\n\timplied_port" ;
+         "test request from bencode err 3")]
+     #[test_case(
+         b"d2:id20:abcdefghij012345678912:implied_porti1e9:info_hash20:mnopqrstuvwxyz1234564:porti9999999e5:token8:aoeusnthe",
+-        "Error: malformed content discovered in port" ;
++        "malformed content discovered\nin context:\n\tport" ;
+         "test request from bencode err 4")]
+     #[test_case(
+         b"d2:id20:abcdefghij012345678912:implied_porti1e9:info_hash20:mnopqrstuvwxyz1234564:porti-1e5:token8:aoeusnthe",
+-        "Error: malformed content discovered in port" ;
++        "malformed content discovered\nin context:\n\tport" ;
+         "test request from bencode err 5")]
+     #[test_case(
+         b"i123e",
+-        "Error: discovered Dict but expected Num" ;
++        "discovered Num but expected Dict" ;
+         "test request from bencode err 6")]
+     fn test_request_from_bencode_err(encoded: &[u8], expected_error: &str) {
+         let err = BitTorrentDHTRequest::from_bencode(encoded).unwrap_err();
+@@ -493,11 +493,11 @@
+ 
+     #[test_case(
+         b"d5:token8:aoeusnth6:valuesl6:axje.u6:idhtnmee",
+-        "Error: missing field: id" ;
++        "missing field: id" ;
+         "test response from bencode err 1")]
+     #[test_case(
+         b"i123e",
+-        "Error: discovered Dict but expected Num" ;
++        "discovered Num but expected Dict" ;
+         "test response from bencode err 2")]
+     fn test_response_from_bencode_err(encoded: &[u8], expected_error: &str) {
+         let err = BitTorrentDHTResponse::from_bencode(encoded).unwrap_err();
+@@ -527,23 +527,23 @@
+ 
+     #[test_case(
+         b"l23:A Generic Error Ocurrede",
+-        "Error: missing field: num" ;
++        "missing field: num" ;
+         "test error from bencode err 1")]
+     #[test_case(
+         b"li201ee",
+-        "Error: missing field: msg" ;
++        "missing field: msg" ;
+         "test error from bencode err 2")]
+     #[test_case(
+         b"li999999ee",
+-        "Error: malformed content discovered in num" ;
++        "malformed content discovered\nin context:\n\tnum" ;
+         "test error from bencode err 3")]
+     #[test_case(
+         b"li-1ee",
+-        "Error: malformed content discovered in num" ;
++        "malformed content discovered\nin context:\n\tnum" ;
+         "test error from bencode err 4")]
+     #[test_case(
+         b"i123e",
+-        "Error: discovered List but expected Num" ;
++        "discovered Num but expected List" ;
+         "test error from bencode err 5")]
+     fn test_error_from_bencode_err(encoded: &[u8], expected_error: &str) {
+         let err = BitTorrentDHTError::from_bencode(encoded).unwrap_err();
+@@ -589,52 +589,52 @@
+ 
+     #[test_case(
+         b"",
+-        "Error: discovered Dict but expected EOF" ;
++        "discovered EOF but expected Dict" ;
+         "test parse bittorrent dht packet err 1"
+     )]
+     #[test_case(
+         b"li2123ei321ee",
+-        "Error: discovered Dict but expected List" ;
++        "discovered List but expected Dict" ;
+         "test parse bittorrent dht packet err 2"
+     )]
+     #[test_case(
+         b"d1:ad2:id20:abcdefghij0123456789e1:q4:ping1:t2:aae",
+-        "Error: missing field: packet_type" ;
++        "missing field: packet_type" ;
+         "test parse bittorrent dht packet err 3"
+     )]
+     #[test_case(
+         b"d1:ad2:id20:abcdefghij0123456789e1:q4:ping1:t2:aa1:y1:Fe",
+-        "Error: discovered packet_type q, r, or e but expected F" ;
++        "discovered F but expected packet_type q, r, or e" ;
+         "test parse bittorrent dht packet err 4"
+     )]
+     #[test_case(
+         b"d1:ad2:id20:abcdefghij0123456789e1:t2:aa1:y1:qe",
+-        "Error: missing field: query_type" ;
++        "missing field: query_type" ;
+         "test parse bittorrent dht packet err 5"
+     )]
+     #[test_case(
+         b"d1:q4:ping1:t2:aa1:y1:qe",
+-        "Error: missing field: query_arguments" ;
++        "missing field: query_arguments" ;
+         "test parse bittorrent dht packet err 6"
+     )]
+     #[test_case(
+         b"d1:t2:aa1:y1:re",
+-        "Error: missing field: response" ;
++        "missing field: response" ;
+         "test parse bittorrent dht packet err 7"
+     )]
+     #[test_case(
+         b"d1:t2:aa1:y1:ee",
+-        "Error: missing field: error" ;
++        "missing field: error" ;
+         "test parse bittorrent dht packet err 8"
+     )]
+     #[test_case(
+         b"d1:ade1:q4:ping1:t2:aa1:y1:qe",
+-        "Error: missing field: id in query_arguments" ;
++        "missing field: id\nin context:\n\tquery_arguments" ;
+         "test parse bittorrent dht packet err 9"
+     )]
+     #[test_case(
+         b"d1:ad2:id20:abcdefghij0123456789e1:q4:ping1:y1:qe",
+-        "Error: missing field: transaction_id" ;
++        "missing field: transaction_id" ;
+         "test parse bittorrent dht packet err 10"
+     )]
+     fn test_parse_bittorrent_dht_packet_err(encoded: &[u8], expected_error: &str) {
