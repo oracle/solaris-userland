@@ -31,6 +31,10 @@ dir  path=var/php/$(MAJOR_VERSION)/pear/.registry/.channel.doc.php.net
 dir  path=var/php/$(MAJOR_VERSION)/pear/.registry/.channel.pecl.php.net
 dir  path=var/php/$(MAJOR_VERSION)/run
 
+# Select the Apache module with the same mediator as the PHP commands.
+link path=usr/apache2/2.4/libexec/libphp.so target=libphp$(MAJOR_VERSION).so \
+    mediator=php mediator-priority=vendor mediator-version=$(MAJOR_VERSION)
+
 # several files from package source folder
 file php.ini-production path=etc/php/$(MAJOR_VERSION)/php.ini preserve=renamenew
 file php.ini-development path=etc/php/$(MAJOR_VERSION)/php.ini-development
