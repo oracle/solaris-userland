@@ -1,0 +1,577 @@
+Tomas Heran <tomas.heran@oracle.com> (original Solaris stream extension)
+Solaris stream transport and RAD source/binary compatibility, adapted to 1.0.10.
+
+RAD owns its transports (including TLS) and calls MHD_run() from one thread.
+Retain the installed stream flag value and three-argument unescape ABI.
+Reserve a different bit for upstream AUTO and keep the legacy int callbacks.
+Keep upstream response lifetime and notification handling unchanged.
+Retain RAD keepalive for initial-callback bodyless GET/HEAD/DELETE replies.
+Unread bodies and chunked requests retain upstream early-close handling.
+This Solaris extension has not been shared with upstream.
+
+--- a/doc/libmicrohttpd.texi
++++ b/doc/libmicrohttpd.texi
+@@ -3435,7 +3435,7 @@
+ @node microhttpd-util unescape
+ @section Unescape strings
+ 
+-@deftypefun {size_t} MHD_http_unescape (char *val)
++@deftypefun {size_t} MHD_http_unescape (void *cls, void *connection, char *val)
+ Process escape sequences ('%HH') Updates val in place; the result
+ should be UTF-8 encoded and cannot be larger than the input.  The
+ result must also still be 0-terminated.
+--- a/src/include/microhttpd.h
++++ b/src/include/microhttpd.h
+@@ -1523,7 +1523,17 @@
+    * If those flags are not specified then epoll or select() will be
+    * used (as the only suitable for MHD_get_fdset())
+    */
+-  MHD_USE_AUTO = 65536,
++  /* Solaris reserves bit 16 for the installed RAD stream ABI. */
++  MHD_USE_AUTO = 1U << 20,
++
++  /**
++   * Solaris descriptor-less streams. The application owns the transport
++   * and drives MHD_run() in the same thread as all other daemon operations.
++   * Callbacks use POSIX recv/send results and errno; they may block.
++   * Internal polling, socket polling, MHD TLS and upgrades are unsupported.
++   * The numeric value is part of the installed RAD ABI.
++   */
++  MHD_USE_STREAM_CONNS = 65536 | MHD_USE_NO_LISTEN_SOCKET,
+ 
+   /**
+    * Run using an internal thread (or thread pool) with best available on
+@@ -2678,7 +2688,8 @@
+  * @param addrlen length of @a addr
+  * @return #MHD_YES if connection is allowed, #MHD_NO if not
+  */
+-typedef enum MHD_Result
++/* Preserve the Solaris 0.9.52 callback source interface. */
++typedef int
+ (*MHD_AcceptPolicyCallback)(void *cls,
+                             const struct sockaddr *addr,
+                             socklen_t addrlen);
+@@ -2750,7 +2761,8 @@
+  *
+  * @sa #MHD_queue_response(), #MHD_get_connection_URI_path_n()
+  */
+-typedef enum MHD_Result
++/* Preserve the Solaris 0.9.52 callback source interface. */
++typedef int
+ (*MHD_AccessHandlerCallback)(void *cls,
+                              struct MHD_Connection *connection,
+                              const char *url,
+@@ -2821,7 +2833,8 @@
+  *         #MHD_NO to abort the iteration
+  * @ingroup request
+  */
+-typedef enum MHD_Result
++/* Preserve the Solaris 0.9.52 callback source interface. */
++typedef int
+ (*MHD_KeyValueIterator)(void *cls,
+                         enum MHD_ValueKind kind,
+                         const char *key,
+@@ -2940,7 +2953,8 @@
+  * @return #MHD_YES to continue iterating,
+  *         #MHD_NO to abort the iteration
+  */
+-typedef enum MHD_Result
++/* Preserve the Solaris 0.9.52 callback source interface. */
++typedef int
+ (*MHD_PostDataIterator)(void *cls,
+                         enum MHD_ValueKind kind,
+                         const char *key,
+@@ -3074,6 +3088,19 @@
+                     MHD_socket client_socket,
+                     const struct sockaddr *addr,
+                     socklen_t addrlen);
++
++/** Add an application-owned Solaris stream; never closes the transport. */
++_MHD_EXTERN int
++MHD_add_stream_connection (struct MHD_Daemon *daemon, void *stream,
++                          ssize_t (*recv_cb) (struct MHD_Connection *,
++                                             void *, size_t),
++                          ssize_t (*send_cb) (struct MHD_Connection *,
++                                             const void *, size_t));
++
++/** Return the opaque stream supplied to MHD_add_stream_connection(). */
++_MHD_EXTERN void *
++MHD_get_stream_connection_data (struct MHD_Connection *connection);
++
+ 
+ 
+ /**
+@@ -3719,7 +3746,8 @@
+  *  shorter afterwards due to elimination of escape sequences)
+  */
+ _MHD_EXTERN size_t
+-MHD_http_unescape (char *val);
++/* Solaris callback-compatible ABI; the first two arguments are ignored. */
++MHD_http_unescape (void *cls, void *connection, char *val);
+ 
+ 
+ /**
+--- a/src/microhttpd/Makefile.am
++++ b/src/microhttpd/Makefile.am
+@@ -331,6 +331,10 @@
+ endif
+ 
+ 
++check_PROGRAMS += test_solaris_stream
++test_solaris_stream_SOURCES = test-solaris-stream.c
++test_solaris_stream_LDADD = libmicrohttpd.la
++
+ TESTS = $(check_PROGRAMS)
+ 
+ update-po-POTFILES.in: $(top_srcdir)/po/POTFILES.in
+--- a/src/microhttpd/connection.c
++++ b/src/microhttpd/connection.c
+@@ -782,6 +782,15 @@
+                     size_t i)
+ {
+   ssize_t ret;
++
++  if (NULL != connection->stream_recv)
++  {
++    if (MHD_CONNECTION_CLOSED == connection->state)
++      return MHD_ERR_NOTCONN_;
++    if (i > SSIZE_MAX)
++      i = SSIZE_MAX;
++    return MHD_stream_result_ (connection->stream_recv (connection, other, i), i);
++  }
+ 
+   if ( (MHD_INVALID_SOCKET == connection->socket_fd) ||
+        (MHD_CONNECTION_CLOSED == connection->state) )
+@@ -1296,7 +1305,8 @@
+ {
+   const struct MHD_Daemon *daemon = connection->daemon;
+ 
+-  if (0 == (daemon->options & MHD_USE_TURBO))
++  if ((MHD_INVALID_SOCKET != connection->socket_fd) &&
++      (0 == (daemon->options & MHD_USE_TURBO)))
+   {
+ #ifdef HTTPS_SUPPORT
+     /* For TLS connection use shutdown of TLS layer
+@@ -8468,7 +8478,8 @@
+   connection->rp.responseCode = status_code;
+   connection->rp.responseIcy = reply_icy;
+ #if defined(_MHD_HAVE_SENDFILE)
+-  if ( (response->fd == -1) ||
++  if ( (NULL != connection->stream_send) ||
++       (response->fd == -1) ||
+        (response->is_pipe) ||
+        (0 != (connection->daemon->options & MHD_USE_TLS))
+ #if defined(MHD_SEND_SPIPE_SUPPRESS_NEEDED) && \
+@@ -8498,9 +8509,16 @@
+   }
+   if (MHD_CONNECTION_HEADERS_PROCESSED == connection->state)
+   {
+-    /* response was queued "early", refuse to read body / footers or
+-       further requests! */
+-    connection->discard_request = true;
++    /* RAD queues bodyless GET/HEAD/DELETE replies in the first callback.
++       Those stream requests are already complete and may be kept alive.
++       Keep upstream early-close handling for sockets and unread payloads. */
++    if ((NULL == connection->stream_send) ||
++        (0 != connection->rq.remaining_upload_size) ||
++        connection->rq.have_chunked_upload ||
++        ((MHD_HTTP_MTHD_GET != connection->rq.http_mthd) &&
++         (MHD_HTTP_MTHD_HEAD != connection->rq.http_mthd) &&
++         (MHD_HTTP_MTHD_DELETE != connection->rq.http_mthd)))
++      connection->discard_request = true;
+     connection->state = MHD_CONNECTION_START_REPLY;
+     connection->rq.remaining_upload_size = 0;
+   }
+--- a/src/microhttpd/daemon.c
++++ b/src/microhttpd/daemon.c
+@@ -1234,6 +1234,7 @@
+   if ( (NULL == daemon) ||
+        (NULL == read_fd_set) ||
+        (NULL == write_fd_set) ||
++       (0 != (daemon->options & MHD_STREAM_FLAG_)) ||
+        MHD_D_IS_USING_THREADS_ (daemon) ||
+        MHD_D_IS_USING_POLL_ (daemon))
+     return MHD_NO;
+@@ -2714,7 +2715,8 @@
+               _ ("Server reached connection limit. " \
+                  "Closing inbound connection.\n"));
+ #endif
+-    MHD_socket_close_chk_ (client_socket);
++    if (MHD_INVALID_SOCKET != client_socket)
++      MHD_socket_close_chk_ (client_socket);
+ #if defined(ENFILE) && (ENFILE + 0 != 0)
+     errno = ENFILE;
+ #endif
+@@ -2733,7 +2735,8 @@
+               _ ("Connection rejected by application. Closing connection.\n"));
+ #endif
+ #endif
+-    MHD_socket_close_chk_ (client_socket);
++    if (MHD_INVALID_SOCKET != client_socket)
++      MHD_socket_close_chk_ (client_socket);
+     MHD_ip_limit_del (daemon,
+                       addr,
+                       addrlen);
+@@ -2751,7 +2754,8 @@
+               _ ("Error allocating memory: %s\n"),
+               MHD_strerror_ (errno));
+ #endif
+-    MHD_socket_close_chk_ (client_socket);
++    if (MHD_INVALID_SOCKET != client_socket)
++      MHD_socket_close_chk_ (client_socket);
+     MHD_ip_limit_del (daemon,
+                       addr,
+                       addrlen);
+@@ -2780,7 +2784,8 @@
+                 _ ("Error allocating memory: %s\n"),
+                 MHD_strerror_ (errno));
+ #endif
+-      MHD_socket_close_chk_ (client_socket);
++      if (MHD_INVALID_SOCKET != client_socket)
++        MHD_socket_close_chk_ (client_socket);
+       MHD_ip_limit_del (daemon,
+                         addr,
+                         addrlen);
+@@ -2820,7 +2825,8 @@
+                  "for the connection: %s\n"),
+               MHD_itc_last_strerror_ ());
+ #endif
+-    MHD_socket_close_chk_ (client_socket);
++    if (MHD_INVALID_SOCKET != client_socket)
++      MHD_socket_close_chk_ (client_socket);
+     MHD_ip_limit_del (daemon,
+                       addr,
+                       addrlen);
+@@ -2869,7 +2875,8 @@
+     {
+       if (NULL != connection->tls_session)
+         gnutls_deinit (connection->tls_session);
+-      MHD_socket_close_chk_ (client_socket);
++      if (MHD_INVALID_SOCKET != client_socket)
++        MHD_socket_close_chk_ (client_socket);
+       MHD_ip_limit_del (daemon,
+                         addr,
+                         addrlen);
+@@ -2937,7 +2944,8 @@
+                 daemon->cred_type);
+ #endif
+       gnutls_deinit (connection->tls_session);
+-      MHD_socket_close_chk_ (client_socket);
++      if (MHD_INVALID_SOCKET != client_socket)
++        MHD_socket_close_chk_ (client_socket);
+       MHD_ip_limit_del (daemon,
+                         addr,
+                         addrlen);
+@@ -2966,7 +2974,8 @@
+       gnutls_certificate_server_set_request (connection->tls_session,
+                                              GNUTLS_CERT_REQUEST);
+ #else  /* ! HTTPS_SUPPORT */
+-    MHD_socket_close_chk_ (client_socket);
++    if (MHD_INVALID_SOCKET != client_socket)
++      MHD_socket_close_chk_ (client_socket);
+     MHD_ip_limit_del (daemon,
+                       addr,
+                       addrlen);
+@@ -3010,7 +3019,8 @@
+     gnutls_deinit (connection->tls_session);
+   }
+ #endif /* HTTPS_SUPPORT */
+-  MHD_socket_close_chk_ (connection->socket_fd);
++  if (MHD_INVALID_SOCKET != connection->socket_fd)
++    MHD_socket_close_chk_ (connection->socket_fd);
+   if (MHD_ITC_IS_VALID_ (connection->resume_itc))
+     MHD_itc_destroy_chk_ (connection->resume_itc);
+   MHD_ip_limit_del (daemon,
+@@ -3218,7 +3228,8 @@
+                     connection->addr_len);
+   if (NULL != connection->addr)
+     free (connection->addr);
+-  MHD_socket_close_chk_ (connection->socket_fd);
++  if (MHD_INVALID_SOCKET != connection->socket_fd)
++    MHD_socket_close_chk_ (connection->socket_fd);
+   free (connection);
+   if (0 != eno)
+     errno = eno;
+@@ -3345,6 +3356,37 @@
+ }
+ 
+ 
++_MHD_EXTERN int
++MHD_add_stream_connection (struct MHD_Daemon *daemon, void *stream,
++                          ReceiveCallback recv_cb, TransmitCallback send_cb)
++{
++  struct MHD_Connection *connection;
++
++  if ((NULL == daemon) || (daemon->shutdown) ||
++      (0 == (daemon->options & MHD_STREAM_FLAG_)) ||
++      (NULL == recv_cb) || (NULL == send_cb))
++  {
++    errno = EINVAL;
++    return MHD_NO;
++  }
++  connection = new_connection_prepare_ (daemon, MHD_INVALID_SOCKET,
++                                        NULL, 0, true, false, true, _MHD_YES);
++  if (NULL == connection)
++    return MHD_NO;
++  connection->stream_recv = recv_cb;
++  connection->stream_send = send_cb;
++  connection->stream_data = stream;
++  return new_connection_process_ (daemon, connection);
++}
++
++
++_MHD_EXTERN void *
++MHD_get_stream_connection_data (struct MHD_Connection *connection)
++{
++  return (NULL == connection) ? NULL : connection->stream_data;
++}
++
++
+ static void
+ new_connections_list_process_ (struct MHD_Daemon *daemon)
+ {
+@@ -3815,6 +3857,14 @@
+                     const struct sockaddr *addr,
+                     socklen_t addrlen)
+ {
++  if (0 != (daemon->options & MHD_STREAM_FLAG_))
++  {
++    if (MHD_INVALID_SOCKET != client_socket)
++      MHD_socket_close_chk_ (client_socket);
++    errno = EINVAL;
++    return MHD_NO;
++  }
++
+   bool sk_nonbl;
+   bool sk_spipe_supprs;
+   struct sockaddr_storage addrstorage;
+@@ -4882,7 +4932,8 @@
+                       const fd_set *except_fd_set,
+                       unsigned int fd_setsize)
+ {
+-  if (MHD_D_IS_USING_POLL_ (daemon) ||
++  if ((0 != (daemon->options & MHD_STREAM_FLAG_)) ||
++      MHD_D_IS_USING_POLL_ (daemon) ||
+       MHD_D_IS_USING_THREADS_ (daemon))
+     return MHD_NO;
+   if ((NULL == read_fd_set) || (NULL == write_fd_set))
+@@ -6127,6 +6178,21 @@
+     return MHD_NO;
+ 
+   mhd_assert (! MHD_thread_handle_ID_is_valid_handle_ (daemon->tid));
++
++  if (0 != (daemon->options & MHD_STREAM_FLAG_))
++  {
++    struct MHD_Connection *pos = daemon->connections_tail;
++    daemon->data_already_pending = false;
++    /* No select()/poll(): the application callbacks own all transport I/O. */
++    while (NULL != pos)
++    {
++      struct MHD_Connection *prev = pos->prev;
++      (void) call_handlers (pos, true, true, false);
++      pos = prev;
++    }
++    MHD_cleanup_connections (daemon);
++    return MHD_YES;
++  }
+ 
+   if (0 > millisec)
+     millisec = -1;
+@@ -7954,6 +8020,17 @@
+   eflags = (enum MHD_FLAG) flags;
+   pflags = &eflags;
+ 
++  if (0 != (*pflags & MHD_STREAM_FLAG_))
++  {
++    if (0 != (*pflags & (MHD_USE_INTERNAL_POLLING_THREAD |
++                         MHD_USE_THREAD_PER_CONNECTION | MHD_USE_TLS |
++                         MHD_USE_POLL | MHD_USE_EPOLL | MHD_USE_AUTO |
++                         MHD_ALLOW_UPGRADE | MHD_ALLOW_SUSPEND_RESUME)))
++      return NULL;
++    /* Solaris streams have always been driven by one application thread. */
++    *pflags |= MHD_USE_NO_LISTEN_SOCKET | MHD_USE_NO_THREAD_SAFETY;
++  }
++
+   if (0 != (*pflags & MHD_USE_THREAD_PER_CONNECTION))
+     *pflags |= MHD_USE_INTERNAL_POLLING_THREAD; /* Force enable, log warning later if needed */
+ 
+--- a/src/microhttpd/internal.c
++++ b/src/microhttpd/internal.c
+@@ -27,6 +27,7 @@
+  */
+ 
+ #include "internal.h"
++#include "connection.h"
+ #include "mhd_str.h"
+ 
+ #ifdef HAVE_MESSAGES
+@@ -145,8 +146,10 @@
+  *  shorter afterwards due to elimination of escape sequences)
+  */
+ _MHD_EXTERN size_t
+-MHD_http_unescape (char *val)
+-{
++MHD_http_unescape (void *cls, void *connection, char *val)
++{
++  (void) cls;
++  (void) connection;
+   return MHD_str_pct_decode_in_place_lenient_ (val, NULL);
+ }
+ 
+@@ -270,3 +273,34 @@
+ 
+ 
+ /* end of internal.c */
++
++
++/* Stream callbacks deliberately retain the POSIX interface used by RAD. */
++ssize_t
++MHD_stream_result_ (ssize_t result, size_t requested)
++{
++  if (result >= 0)
++    return ((size_t) result <= requested) ? result : MHD_ERR_INVAL_;
++  switch (errno)
++  {
++  case EAGAIN:
++#if EWOULDBLOCK != EAGAIN
++  case EWOULDBLOCK:
++#endif
++  case EINTR:
++    return MHD_ERR_AGAIN_;
++  case ECONNRESET:
++    return MHD_ERR_CONNRESET_;
++  case EPIPE:
++    return MHD_ERR_PIPE_;
++  case ENOMEM:
++  case ENOBUFS:
++    return MHD_ERR_NOMEM_;
++  case EBADF:
++    return MHD_ERR_BADF_;
++  case EINVAL:
++    return MHD_ERR_INVAL_;
++  default:
++    return MHD_ERR_NOTCONN_;
++  }
++}
+--- a/src/microhttpd/internal.h
++++ b/src/microhttpd/internal.h
+@@ -1579,6 +1579,11 @@
+    * Function used for reading HTTP request stream.
+    */
+   ReceiveCallback recv_cls;
++
++  /* Solaris stream callbacks use POSIX results, unlike recv_cls. */
++  ReceiveCallback stream_recv;
++  TransmitCallback stream_send;
++  void *stream_data;
+ 
+ #ifdef UPGRADE_SUPPORT
+   /**
+@@ -2985,4 +2990,12 @@
+ #endif /* UPGRADE_SUPPORT */
+ 
+ 
++
++/* Test the dedicated bit, not the shared NO_LISTEN_SOCKET bit. */
++#define MHD_STREAM_FLAG_ 65536U
++
++/* Convert a Solaris stream callback result to the MHD internal convention. */
++ssize_t
++MHD_stream_result_ (ssize_t result, size_t requested);
++
+ #endif
+--- a/src/microhttpd/mhd_send.c
++++ b/src/microhttpd/mhd_send.c
+@@ -763,6 +763,18 @@
+   const bool tls_conn = false;
+ #endif /* ! HTTPS_SUPPORT */
+ 
++  if (NULL != connection->stream_send)
++  {
++    if (MHD_CONNECTION_CLOSED == connection->state)
++      return MHD_ERR_NOTCONN_;
++    if (buffer_size > SSIZE_MAX)
++      buffer_size = SSIZE_MAX;
++    ret = MHD_stream_result_ (connection->stream_send (connection, buffer,
++                                                      buffer_size), buffer_size);
++    /* A non-empty write with no progress must be retried. */
++    return ((0 == ret) && (0 != buffer_size)) ? MHD_ERR_AGAIN_ : ret;
++  }
++
+   if ( (MHD_INVALID_SOCKET == s) ||
+        (MHD_CONNECTION_CLOSED == connection->state) )
+   {
+@@ -947,6 +959,14 @@
+ #endif /* MHD_VECT_SEND */
+ 
+   mhd_assert ( (NULL != body) || (0 == body_size) );
++
++  if (NULL != connection->stream_send)
++  {
++    /* Sending one buffer at a time also preserves order across retries. */
++    if (0 != header_size)
++      return MHD_send_data_ (connection, header, header_size, false);
++    return MHD_send_data_ (connection, body, body_size, complete_response);
++  }
+ 
+   if ( (MHD_INVALID_SOCKET == s) ||
+        (MHD_CONNECTION_CLOSED == connection->state) )
+@@ -1543,8 +1563,7 @@
+ 
+ #endif /* MHD_VECT_SEND */
+ 
+-#if ! defined(MHD_VECT_SEND) || defined(HTTPS_SUPPORT) || \
+-  defined(_MHD_VECT_SEND_NEEDS_SPIPE_SUPPRESSED)
++#if 1 /* Solaris streams always require iovec emulation. */
+ 
+ 
+ /**
+@@ -1630,6 +1649,9 @@
+ #endif /* HTTPS_SUPPORT || _MHD_VECT_SEND_NEEDS_SPIPE_SUPPRESSED */
+ #endif /* MHD_VECT_SEND */
+ 
++  if (NULL != connection->stream_send)
++    return send_iov_emu (connection, r_iov, push_data);
++
+   mhd_assert (NULL != connection->rp.resp_iov.iov);
+   mhd_assert (NULL != connection->rp.response->data_iov);
+   mhd_assert (connection->rp.resp_iov.cnt > connection->rp.resp_iov.sent);
+@@ -1649,8 +1671,7 @@
+   return send_iov_nontls (connection, r_iov, push_data);
+ #endif /* MHD_VECT_SEND */
+ 
+-#if ! defined(MHD_VECT_SEND) || defined(HTTPS_SUPPORT) || \
+-  defined(_MHD_VECT_SEND_NEEDS_SPIPE_SUPPRESSED)
++#if 1 /* Solaris streams always require iovec emulation. */
+   return send_iov_emu (connection, r_iov, push_data);
+ #endif /* !MHD_VECT_SEND || HTTPS_SUPPORT
+           || _MHD_VECT_SEND_NEEDS_SPIPE_SUPPRESSED */
+--- a/src/microhttpd/postprocessor.c
++++ b/src/microhttpd/postprocessor.c
+@@ -235,7 +235,7 @@
+     if (0 != xoff)
+     {
+       MHD_unescape_plus (xbuf);
+-      xoff = MHD_http_unescape (xbuf);
++      xoff = MHD_http_unescape (NULL, NULL, xbuf);
+     }
+     /* finally: call application! */
+     if (pp->must_ikvi || (0 != xoff) )
+@@ -485,7 +485,7 @@
+       {
+         kbuf[pp->buffer_pos] = '\0'; /* 0-terminate key */
+         MHD_unescape_plus (kbuf);
+-        MHD_http_unescape (kbuf);
++        MHD_http_unescape (NULL, NULL, kbuf);
+         pp->must_unescape_key = false;
+       }
+       process_value (pp,
+@@ -557,7 +557,7 @@
+     {
+       kbuf[pp->buffer_pos] = '\0'; /* 0-terminate key */
+       MHD_unescape_plus (kbuf);
+-      MHD_http_unescape (kbuf);
++      MHD_http_unescape (NULL, NULL, kbuf);
+       pp->must_unescape_key = false;
+     }
+     if (NULL == end_value)

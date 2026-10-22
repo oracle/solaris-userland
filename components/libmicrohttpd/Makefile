@@ -22,24 +22,22 @@
 #
 # Copyright (c) 2015, 2026, Oracle and/or its affiliates.
 #
-COMPILER =		studio
+COMPILER =		gcc
 BUILD_BITS =		64_and_32
 CTF_MODE =		off	# Adds unexplained dependency on libgpg-error
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME = libmicrohttpd
-COMPONENT_VERSION = 0.9.52
+COMPONENT_VERSION = 1.0.10
+# Use the GNU mirror with a certificate chain accepted by the build hosts.
+COMPONENT_ARCHIVE_URL = \
+    https://mirrors.kernel.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH = \
-    sha256:54797f6e763d417627f89f60e4ae0a431dab0523f92f83def23ea02d0defafea
+    sha256:04bfe8ef75db7d629a33de767599765cecadc56274a39822d5d081030d577685
 COMPONENT_BUGDB=	library/libmicrohttpd
 COMPONENT_ANITYA_ID=	1658
 
-COMPONENT_BAID = 36142
-
-# Use the compiler default 'xc99=all,no_lib' (specifically we want to prevent
-# autoconf from finding and using C11 Annex K bounds checking interfaces because
-# ON then won't be able to link with this library).
-studio_C99MODE=-xc99=all,no_lib
+COMPONENT_BAID = 447935
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -47,7 +45,15 @@ LINT_FLAGS += -I$(PROTOUSRINCDIR)
 
 CPPFLAGS += $(CPP_LARGEFILES)
 
+# ON libc stubs omit the Annex K interfaces; use POSIX gmtime_r instead.
+CONFIGURE_ENV += ac_cv_have_decl_gmtime_s=no
+
+# Upstream examples and tests use enum callbacks; Solaris retains int callbacks.
+CFLAGS.gcc += -Wno-error=incompatible-pointer-types
+
 CONFIGURE_OPTIONS += --includedir=$(USRINCDIR)/microhttpd
+# Solaris retains 32-bit time_t for its 32-bit library ABI.
+CONFIGURE_OPTIONS.32 += --disable-year2038
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 
 COMPONENT_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
@@ -60,8 +66,10 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^\#/p" '
 
 
-# GNU Build System files have to be regenerated for automake 1.16.
-# It can be removed when the upstream starts to use a newer automake version.
+# Add the Solaris transport regression to the upstream test suite.
+COMPONENT_PREP_ACTION += (cp $(COMPONENT_DIR)/test/test-solaris-stream.c $(@D)/src/microhttpd/);
+
+# Regenerate the build system after adding the Solaris test target.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 REQUIRED_PACKAGES += library/gnutls-3
