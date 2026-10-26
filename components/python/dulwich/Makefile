@@ -45,11 +45,11 @@ COMPONENT_BAID=		393858
 
 # hash for vendored rust sources
 COMPONENT_ARCHIVE_HASH_crates = \
-	sha256:2006d4acb800db5575cab79e86e463d46aee335f73fd8852fad0b5b0a0baa8da
+	sha256:7a91321577bd50631c3629431faba88d47fab4f26ef9cbae5760c3ed834c01ca
 
 # This is necessary for vendored rust dependencies
 include $(WS_MAKE_RULES)/cargo-vendored.mk
-VENDORED_SOURCES_NAME = $(COMPONENT_SRC)-rust-sources
+VENDORED_SOURCES_NAME = $(COMPONENT_SRC)-rust-sources.1
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk

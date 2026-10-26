@@ -44,11 +44,11 @@ COMPONENT_BAID=		354198
 
 # hash for vendored rust sources
 COMPONENT_ARCHIVE_HASH_crates = \
-	sha256:06fe761884105fe8e620f71d6d1261fb2f8a8b0c9582e0953a13e8d48a14a0e0
+	sha256:e6dada53fd9f56529566b438e2111844ef8ddfc43eaa6a608b57b00d0e698ee1
 
 # This is necessary for vendored rust dependencies
 include $(WS_MAKE_RULES)/cargo-vendored.mk
-VENDORED_SOURCES_NAME = $(COMPONENT_SRC)-rust-sources
+VENDORED_SOURCES_NAME = $(COMPONENT_SRC)-rust-sources.1
 VENDORED_CARGO_LOCK_LOCATION = $(COMPONENT_SRC)/src/_bcrypt
 
 include $(WS_MAKE_RULES)/prep.mk
