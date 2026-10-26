@@ -1,31 +1,40 @@
 Fix for Oracle Bug 34812717:
-meson should not strip RUNPATHs specified by -R arguments in pkg-config files
+meson should not strip RUNPATHs specified by -R arguments in pkg-config files.
+The rpath parser moved from the backend to mesonbuild/build.py in 1.12.1.
 
 Reported upstream:
 https://github.com/mesonbuild/meson/issues/11073
 
---- meson-1.5.2/mesonbuild/backend/backends.py
-+++ meson-1.5.2/mesonbuild/backend/backends.py
-@@ -735,6 +735,9 @@ # Match solaris style compat runpath for
-         # -Wl,-R
-         # -Wl,-R,
-         runpath_regex = re.compile(r'-Wl,-R[,]?([^,]+)')
-+        # Match solaris style compat rpath formats:
-+        # -R
-+        other_runpath_regex = re.compile(r'-R([^,]+)')
-         # Match symbols formats:
-         # -Wl,--just-symbols=
-         # -Wl,--just-symbols,
-@@ -750,6 +753,12 @@ for dir in runpath_match.group(1).split(
+---
+--- a/mesonbuild/build.py
++++ b/mesonbuild/build.py
+@@ -1919,6 +1919,8 @@ # Match solaris style compat runpath for
+     # -Wl,-R
+     # -Wl,-R,
+     _runpath_regex = re.compile(r'-Wl,-R[,]?([^,]+)')
++    # Match the direct Solaris -R/path form.
++    _other_runpath_regex = re.compile(r'-R([^,]+)')
+     # Match symbols formats:
+     # -Wl,--just-symbols=
+     # -Wl,--just-symbols,
+@@ -1929,7 +1931,7 @@ def get_rpath_dirs_from_link_args(cls, a
+         dirs: T.Set[str] = set()
+ 
+         for arg in args:
+-            if not arg.startswith('-Wl,'):
++            if not arg.startswith(('-Wl,', '-R')):
+                 continue
+ 
+             rpath_match = cls._rpath_regex.match(arg)
+@@ -1942,6 +1944,11 @@ for dir in runpath_match.group(1).split(
                      # The symbols arg is an rpath if the path is a directory
-                     if Path(dir).is_dir():
+                     if os.path.isdir(dir):
                          dirs.add(dir)
-+            other_runpath_match = other_runpath_regex.match(arg)
++            other_runpath_match = cls._other_runpath_regex.match(arg)
 +            if other_runpath_match:
 +                for dir in other_runpath_match.group(1).split(':'):
-+                    # The symbols arg is an rpath if the path is a directory
-+                    if Path(dir).is_dir():
++                    if os.path.isdir(dir):
 +                        dirs.add(dir)
-             symbols_match = symbols_regex.match(arg)
+             symbols_match = cls._symbols_regex.match(arg)
              if symbols_match:
                  for dir in symbols_match.group(1).split(':'):

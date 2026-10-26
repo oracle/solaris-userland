@@ -10,12 +10,9 @@ Subject: [PATCH] Don't try to use -fsanitize=address on Solaris, our gcc
 
 Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
 ---
- run_unittests.py | 4 ++++
- 1 file changed, 4 insertions(+)
-
---- meson-1.5.2/unittests/linuxliketests.py
-+++ meson-1.5.2/unittests/linuxliketests.py
-@@ -312,6 +312,8 @@ if is_cygwin():
+--- a/unittests/linuxliketests.py
++++ b/unittests/linuxliketests.py
+@@ -328,6 +328,8 @@ if is_cygwin():
              raise SkipTest('asan not available on Cygwin')
          if is_openbsd():
              raise SkipTest('-fsanitize=address is not supported on OpenBSD')
@@ -24,7 +21,7 @@ Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
  
          testdir = os.path.join(self.framework_test_dir, '7 gnome')
          self.init(testdir, extra_args=['-Db_sanitize=address', '-Db_lundef=false'])
-@@ -983,6 +985,8 @@ if is_cygwin():
+@@ -1044,6 +1046,8 @@ if is_cygwin():
              raise SkipTest('asan not available on Cygwin')
          if is_openbsd():
              raise SkipTest('-fsanitize=address is not supported on OpenBSD')

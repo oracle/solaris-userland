@@ -28,18 +28,18 @@ BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		meson
-COMPONENT_VERSION=	1.5.2
+COMPONENT_VERSION=	1.12.1
 COMPONENT_PROJECT_URL=	http://mesonbuild.com/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f955e09ab0d71ef180ae85df65991d58ed8430323de7d77a37e11c9ea630910b
+    sha256:ab0a6ca09f8ef70c564c8241fb5a23957886a0b53fb58412b5e07eaf07dba743
 COMPONENT_ARCHIVE_URL=	https://github.com/mesonbuild/meson/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
 COMPONENT_BUGDB=	utility/meson
 COMPONENT_ANITYA_ID=	6472
-COMPONENT_BAID=		179980
+COMPONENT_BAID=		453238
 
-# As of 0.62.0, meson requires Python 3.7 or newer, and we only need
+# As of 1.12.0, meson requires Python 3.10 or newer, and we only need
 # to build for a single version, not all of them.
 PYTHON_VERSION=    3.11
 PYTHON_VERSIONS=	$(PYTHON_VERSION)
@@ -66,7 +66,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 COMPONENT_TEST_DIR=	$(COMPONENT_SRC)
 COMPONENT_TEST_CMD=	./run_tests.py
-COMPONENT_TEST_ARGS=
+# Meson's default of up to 64 project-test workers can exhaust build hosts.
+COMPONENT_TEST_ARGS=	-j 8
 COMPONENT_TEST_MASTER=	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 # 'test cases/common/230 external project' fails if /usr/bin/make is used
@@ -78,6 +79,17 @@ COMPONENT_TEST_ENV +=	MAKE=$(GMAKE)
 # need to make sure we run /usr/bin/ar instead of /usr/gnu/bin/ar or
 # many tests will fail.
 COMPONENT_TEST_ENV +=	AR=/usr/bin/ar
+
+# GCC 16 cannot combine CTF debug info with the precompiled-header tests.
+COMPONENT_TEST_ENV +=	CFLAGS="$(filter-out -gctf,$(CFLAGS))"
+
+# D test binaries need the matching libgphobos at runtime.
+COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(GCC_ROOT)/lib/$(MACH64)
+
+# Use installed Python build dependencies for the pip installation test.
+# Isolated builds can exceed the test's five-minute timeout on build hosts.
+# The false value disables pip's build isolation option.
+COMPONENT_TEST_ENV +=	PIP_NO_BUILD_ISOLATION=false
 
 # Test transforms retain only reproducible summaries of results output.
 # -E flag enables extended regular expressions, so that | can be used

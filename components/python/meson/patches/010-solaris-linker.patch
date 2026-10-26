@@ -1,0 +1,64 @@
+Fix Solaris linker compatibility in Rust library arguments and tests.
+
+Solaris ld does not support GNU -l:PATH syntax, so disable Rust's verbatim
+library argument for ld.solaris. On SunOS, the find_library naming probes
+leave the fake host as Windows; restore it before the link test and build
+the test's static object with PIC. The CMake object-library test must reuse
+the ZLIB dependency already found by CMake on SunOS, where another lookup
+can select a library with the wrong architecture. Other hosts keep their
+existing compiler and ZLIB dependency paths.
+
+Source: https://github.com/mesonbuild/meson/pull/16293
+
+---
+--- a/unittests/internaltests.py
++++ b/unittests/internaltests.py
+@@ -41,2 +41,2 @@
+-    is_cygwin, is_openbsd, search_version, MesonException, EnvironmentException, python_command,
++    is_cygwin, is_openbsd, is_sunos, search_version, MesonException, EnvironmentException, python_command,
+     version_check_to_range,
+@@ -823,6 +823,8 @@
+             env.machines.host.system = 'windows'
+             self._test_all_naming(cc, patterns, 'windows-mingw')
+ 
++        if is_sunos():
++            env.machines.host.system = 'sunos'
+         self._test_find_library_undefined(cc)
+ 
+     def _test_find_library_undefined(self, cc):
+@@ -842,6 +844,8 @@
+             # use of x86_64 is hardcoded in run_tests.py:get_fake_env()
+             if is_osx():
+                 subprocess.check_call(['clang', '-c', str(src), '-o', str(out), '-arch', 'x86_64'])
++            elif is_sunos():
++                subprocess.check_call(['gcc', '-fPIC', '-c', str(src), '-o', str(out)])
+             else:
+                 subprocess.check_call(['gcc', '-c', str(src), '-o', str(out)])
+             subprocess.check_call(['ar', 'csr', str(name), str(out)])
+--- a/mesonbuild/compilers/rust.py
++++ b/mesonbuild/compilers/rust.py
+@@ -285,6 +285,9 @@
+     def has_verbatim(self) -> bool:
+         if version_compare(self.version, '< 1.67.0'):
+             return False
++        # Solaris ld does not support GNU ld's -l:PATH syntax.
++        if self.linker.id == 'ld.solaris':
++            return False
+         # GNU ld support '-l:PATH'
+         if 'ld.' in self.linker.id and self.linker.id != 'ld.wasm':
+             return True
+--- "a/test cases/cmake/5 object library/meson.build"
++++ "b/test cases/cmake/5 object library/meson.build"
+@@ -12,7 +12,11 @@
+ sub_sta = sub_pro.dependency('lib_sta')
+ 
+ # Required for the static library
+-zlib_dep = dependency('zlib')
++if host_machine.system() == 'sunos'
++  zlib_dep = dep_test
++else
++  zlib_dep = dependency('zlib')
++endif
+ 
+ exe_sha = executable('shared', ['main.cpp'], dependencies: [sub_sha])
+ exe_sta = executable('static', ['main.cpp'], dependencies: [sub_sta, zlib_dep])
