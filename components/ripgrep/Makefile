@@ -28,18 +28,18 @@ CTF_MODE =		off	# Has no effect
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	ripgrep
-COMPONENT_VERSION =	15.1.0
-COMPONENT_BAID =	409192
+COMPONENT_VERSION =	15.2.0
+COMPONENT_BAID =	453476
 COMPONENT_PROJECT_URL =	https://github.com/BurntSushi/ripgrep
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:046fa01a216793b8bd2750f9d68d4ad43986eb9c0d6122600f993906012972e8
+    sha256:7605249d3eb0d5f170e3414498e3344e26b1e7a147aec518b57090b80036a562
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_VERSION).tar.gz
 
 # hash for vendored sources
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:6ca5b4bdabe425683eaf03e231f140c0b64e5ea5f00ebbc01fc945ea65921030
+    sha256:651bbacd7b5bd0636e15f72d342506bd10566df52ec10415a24c3d7af842f7d3
 
 COMPONENT_BUGDB =	utility/ripgrep
 COMPONENT_ANITYA_ID =	15461
@@ -73,6 +73,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 # Everything expects GNU utilities, so make sure those are preferred.
 PATH = /usr/gnu/bin:/usr/bin
 
+# Avoid collisions with other users' /tmp/ripgrep-tests directories.
+COMPONENT_TEST_ENV += TMPDIR="$(COMPONENT_TEST_BUILD_DIR)"
 COMPONENT_TEST_TARGETS += --features $(RIPGREP_FEATURES) -- --test-threads=1
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "s;$(BUILD_DIR)/.cargo;\$$(BUILD_DIR)/.cargo;" ' \
