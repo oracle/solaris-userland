@@ -1,0 +1,56 @@
+From e4add5e5e093f0f44a146ab2fe970e2a2d5b96c4 Mon Sep 17 00:00:00 2001
+From: Andreas Gruenbacher <andreas.gruenbacher@gmail.com>
+Date: Sat, 24 Oct 2026 23:41:46 +0200
+Subject: Fix safe_xstat error return value
+
+When safe_xstat() is called on an empty filename, instead of returning
+EINVAL, safe_xstat() should set errno to ENOENT and return -1.  This
+matches the error number that Linux uses for empty path names.
+* src/safe.c: Fix safe_xstat().
+* tests/bad-filenames: Update the empty pathname test.
+
+This closes bug #68827:
+https://savannah.gnu.org/bugs/?68827
+
+Signed-off-by: Andreas Gruenbacher <andreas.gruenbacher@gmail.com>
+---
+ src/safe.c          | 5 ++++-
+ tests/bad-filenames | 8 ++++----
+ 2 files changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/src/safe.c b/src/safe.c
+index 273133f..f8b1f89 100644
+--- a/src/safe.c
++++ b/src/safe.c
+@@ -552,7 +552,10 @@ safe_xstat (char *pathname, struct stat *buf, int flags)
+   if (dirfd == DIRFD_INVALID)
+     return -1;
+   if (! strcmp (pathname, ""))
+-    return EINVAL;
++    {
++      errno = ENOENT;
++      return -1;
++    }
+   return fstatat (dirfd, pathname, buf, flags);
+ }
+ 
+diff --git a/tests/bad-filenames b/tests/bad-filenames
+index ae6ba13..67a5623 100644
+--- a/tests/bad-filenames
++++ b/tests/bad-filenames
+@@ -205,8 +205,8 @@ EOF
+ 
+ # Empty filenames are not allowed:
+ 
+-check 'emit_patch f | patch -r- "" || echo status: $?' <<EOF
+-File '' is not a regular file -- refusing to patch
+-1 out of 1 hunk ignored
+-status: 1
++check 'emit_patch f | ( patch -r- "" 2>&1 || echo status: $? ) | sed -e "s,.*\*\*\*\* ,," -e "s,file .* to \(.*\) : .*,file XXXXXX to \1,"' <<EOF
++patching file ''
++Can't rename file XXXXXX to ''
++status: 2
+ EOF
+-- 
+cgit v1.3
+

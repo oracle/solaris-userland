@@ -26,18 +26,12 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		patch
-COMPONENT_VERSION=	2.8
+COMPONENT_VERSION=	2.8.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:308a4983ff324521b9b21310bfc2398ca861798f02307c79eb99bb0e0d2bf980
+    sha256:35ff1c589a640ae5ae8bad1546ced72aca852a8e90b764d8c00974aa94c0b107
 COMPONENT_BUGDB=	utility/gpatch
 COMPONENT_ANITYA_ID=	2597
-COMPONENT_BAID=		332684
-
-# The .1 refers to version 2.8-1 to distinguish between community version
-# binutils and this package, which contains all known fixes.  A similar approach
-# is adopted by some Linux distros.
-IPS_COMPONENT_VERSION=	2.8.0.1
-HUMAN_VERSION=		$(COMPONENT_VERSION)-1
+COMPONENT_BAID=		457293
 
 # Although system-test doesn't run against the built bits, the tests
 # require the bits are built.  Using build as a pre-requisite
