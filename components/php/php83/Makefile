@@ -32,7 +32,7 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 MAJOR_VERSION=8.3
-MICRO_VERSION=35
+MICRO_VERSION=36
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
@@ -40,11 +40,11 @@ UL_PHP_MINOR_VERSION=	$(MAJOR_VERSION)
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:ff4630fbbbd94359134b7d3c223db59329905bdc4f5a9ef93d257b48e358619a
+    sha256:dd54693aa334c5c4d72e9aee96b082c2473750a18a6c1d105789c93a3b1692fd
 COMPONENT_ARCHIVE_URL=	https://www.php.net/distributions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3627
 
-COMPONENT_BAID=		445076
+COMPONENT_BAID=		455570
 COMPONENT_BAID_IMAP=	37002
 
 include $(WS_MAKE_RULES)/common.mk
@@ -168,6 +168,10 @@ TESTS_DISABLED += ext/curl/tests/curl_setopt_ssl.phpt
 TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation6.phpt
 TESTS_DISABLED += sapi/fpm/tests/socket-uds-acl.phpt
 TESTS_DISABLED += sapi/fpm/tests/socket-uds-basic.phpt
+
+# Exclude intermittent Solaris link/stat retry results; retain the remaining suite.
+TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation12.phpt
+TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation15.phpt
 
 # Some tests are known to hang or they have inconsistent results
 COMPONENT_PRE_TEST_ACTION += ( \

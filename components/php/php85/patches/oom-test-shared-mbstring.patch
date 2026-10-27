@@ -1,0 +1,27 @@
+Load shared mbstring in the multipart out-of-memory CGI test helper.
+
+The helper starts CGI with -n and otherwise omits the shared extension loaded
+by the parent test runner.  This leaves encoding conversion untested and
+produces post=1 instead of the required memory-limit failure.  Keep all
+memory-limit and expected-output assertions unchanged.
+
+Will submit upstream.
+
+--- a/tests/basic/oom_rfc1867.inc
++++ b/tests/basic/oom_rfc1867.inc
+@@ -52,6 +52,15 @@
+         '-d', 'fatal_error_backtraces=Off',
+     ];
+ 
++    /* The CGI subprocess uses -n, so explicitly load shared mbstring when
++     * testing its multipart input conversion.  The parent test runner sets
++     * extension_dir to the modules from this build. */
++    $mbstring = ini_get('extension_dir') . '/mbstring.' . PHP_SHLIB_SUFFIX;
++    if (extension_loaded('mbstring') && is_file($mbstring)) {
++        $cmd[] = '-d';
++        $cmd[] = 'extension=' . $mbstring;
++    }
++
+     foreach ($extraIni as $ini) {
+         $cmd[] = '-d';
+         $cmd[] = $ini;

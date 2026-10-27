@@ -1,0 +1,123 @@
+Use short, isolated test paths and inspect descriptor identity on Solaris.
+
+Long service clone paths exceed the socket limit before the test-specific
+prefix, and exceed the exact lengths exercised by bug75679.  Use short
+per-test paths while retaining all length, socket and output assertions.
+Solaris procfs file descriptor entries are not symbolic links; compare the
+reopened descriptor device, inode, mode and device number with /dev/null.
+This still detects descriptor zero leaking after failed proc_open setup.
+
+Will submit upstream.
+
+--- a/ext/standard/tests/file/bug75679.phpt
++++ b/ext/standard/tests/file/bug75679.phpt
+@@ -2,7 +2,7 @@
+ Bug #75679 Path 260 character problem
+ --FILE--
+ <?php
+-$d = __DIR__;
++$d = '/tmp/php75679-' . substr(hash('sha256', __DIR__), 0, 12);
+ $Files2Report =
+  [
+   str_pad ($d . '/' . str_repeat (str_pad ('bug75679_path_259_characters_long_', 100, '_') . '/', 1), 259, '_') => [],
+@@ -26,7 +26,7 @@
+ ?>
+ --CLEAN--
+ <?php
+-$d = __DIR__;
++$d = '/tmp/php75679-' . substr(hash('sha256', __DIR__), 0, 12);
+ $Files2Report =
+  [
+   str_pad ($d . '/' . str_repeat (str_pad ('bug75679_path_259_characters_long_', 100, '_') . '/', 1), 259, '_') => [],
+@@ -45,6 +45,7 @@
+ 		$d1 = dirname($d1);
+ 	}
+ }
++rmdir($d);
+ ?>
+ --EXPECT--
+ Array
+--- a/sapi/fpm/tests/socket-uds-too-long-filename-start.phpt
++++ b/sapi/fpm/tests/socket-uds-too-long-filename-start.phpt
+@@ -7,7 +7,7 @@
+ <?php
+ 
+ require_once "tester.inc";
+-$socketFilePrefix = __DIR__ . '/socket-file';
++$socketFilePrefix = '/tmp/php-fpm-' . substr(hash('sha256', __DIR__), 0, 12);
+ $socketFile = sprintf(
+     "%s-fpm-unix-socket-too-long-filename-but-starts-anyway%s.sock",
+     $socketFilePrefix,
+@@ -57,14 +57,10 @@
+ require_once "tester.inc";
+ FPM\Tester::clean();
+ 
+-// cleanup socket file if php-fpm was not killed
+-$socketFile = sprintf(
+-    "/socket-file-fpm-unix-socket-too-long-filename-but-starts-anyway%s.sock",
+-    __DIR__,
+-    str_repeat('-0000', 11)
+-);
+-
+-if (is_file($socketFile)) {
++// The configured path is deliberately truncated by FPM.  Remove the actual
++// socket if the process did not reach its normal shutdown cleanup.
++$socketFilePrefix = '/tmp/php-fpm-' . substr(hash('sha256', __DIR__), 0, 12);
++foreach (glob($socketFilePrefix . '*') as $socketFile) {
+     unlink($socketFile);
+ }
+ ?>
+--- a/ext/standard/tests/general_functions/proc_open_descriptor_0_setup_failure.phpt
++++ b/ext/standard/tests/general_functions/proc_open_descriptor_0_setup_failure.phpt
+@@ -15,7 +15,16 @@
+ fclose(STDIN);
+ var_dump(@proc_open("true", [0 => ["pipe", "w"], 1 => ["bogus_type"]], $pipes));
+ $fd = fopen("/dev/null", "r");
+-var_dump(readlink("/proc/self/fd/0"));
++// Solaris exposes /proc/self/fd entries without readlink() support.
++// Compare the reopened descriptor itself with /dev/null instead.
++$zero = fopen("php://fd/0", "r");
++$actual = fstat($zero);
++$expected = fstat($fd);
++var_dump($actual["dev"] === $expected["dev"]
++    && $actual["ino"] === $expected["ino"]
++    && $actual["mode"] === $expected["mode"]
++    && $actual["rdev"] === $expected["rdev"]);
++fclose($zero);
+ fclose($fd);
+ PHP;
+ $process = proc_open([PHP_BINARY, "-n", "-r", $code], [1 => ["pipe", "w"]], $pipes);
+@@ -25,5 +34,5 @@
+ ?>
+ --EXPECT--
+ bool(false)
+-string(9) "/dev/null"
++bool(true)
+ int(0)
+--- a/ext/standard/tests/general_functions/proc_open_socket_descriptor_0_setup_failure.phpt
++++ b/ext/standard/tests/general_functions/proc_open_socket_descriptor_0_setup_failure.phpt
+@@ -15,7 +15,16 @@
+ fclose(STDIN);
+ var_dump(@proc_open("true", [0 => ["socket"], 1 => ["bogus_type"]], $pipes));
+ $fd = fopen("/dev/null", "r");
+-var_dump(readlink("/proc/self/fd/0"));
++// Solaris exposes /proc/self/fd entries without readlink() support.
++// Compare the reopened descriptor itself with /dev/null instead.
++$zero = fopen("php://fd/0", "r");
++$actual = fstat($zero);
++$expected = fstat($fd);
++var_dump($actual["dev"] === $expected["dev"]
++    && $actual["ino"] === $expected["ino"]
++    && $actual["mode"] === $expected["mode"]
++    && $actual["rdev"] === $expected["rdev"]);
++fclose($zero);
+ fclose($fd);
+ PHP;
+ $process = proc_open([PHP_BINARY, "-n", "-r", $code], [1 => ["pipe", "w"]], $pipes);
+@@ -25,5 +34,5 @@
+ ?>
+ --EXPECT--
+ bool(false)
+-string(9) "/dev/null"
++bool(true)
+ int(0)

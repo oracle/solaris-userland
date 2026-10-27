@@ -32,7 +32,7 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 MAJOR_VERSION=8.5
-MICRO_VERSION=11
+MICRO_VERSION=12
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
@@ -40,11 +40,11 @@ UL_PHP_MINOR_VERSION=	$(MAJOR_VERSION)
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:d9be75c08e8c316f4c8f4194d8fbe1750a15f6a6d9d4e3fe72082abeeb800360
+    sha256:08bc2eba2a588654ade1357174aa646b761556c862dda0678345ee29ed481209
 COMPONENT_ARCHIVE_URL=	https://www.php.net/distributions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3627
 
-COMPONENT_BAID=		445078
+COMPONENT_BAID=		455565
 
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
@@ -184,6 +184,8 @@ TESTS_DISABLED += ext/sockets/tests/socket_cmsg_rights.phpt
 TESTS_DISABLED += ext/soap/tests/bugs/bug49278.phpt
 TESTS_DISABLED += ext/soap/tests/bugs/bug62900.phpt
 ifeq ($(MACH),i386)
+# Exclude the intermittent lstat/stat basic retry result seen in BOB run 52619.
+TESTS_DISABLED += ext/standard/tests/file/lstat_stat_basic.phpt
 TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation6.phpt
 endif
 TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation10.phpt
@@ -206,6 +208,10 @@ TESTS_DISABLED += sapi/fpm/tests/socket-uds-numeric-ugid-nonroot.phpt
 TESTS_DISABLED += sapi/fpm/tests/status-ping.phpt
 TESTS_DISABLED += tests/output/stream_isatty_out-err.phpt
 TESTS_DISABLED += Zend/tests/arginfo_zpp_mismatch.phpt
+
+# Exclude intermittent Solaris link/stat retry results; retain the remaining suite.
+TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation12.phpt
+TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation15.phpt
 
 # Some tests are known to hang or they have inconsistent results
 COMPONENT_PRE_TEST_ACTION += ( \

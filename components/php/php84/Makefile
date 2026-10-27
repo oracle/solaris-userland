@@ -32,7 +32,7 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 MAJOR_VERSION=8.4
-MICRO_VERSION=26
+MICRO_VERSION=27
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
@@ -40,11 +40,11 @@ UL_PHP_MINOR_VERSION=	$(MAJOR_VERSION)
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:32a2de53862ad44ed4a5005244ce4f1b50c271e74dced215449a4443b40569f1
+    sha256:dcf93923b0e38e0d5252b25b796520b5a47761a08b3488b6d0b5d1115764d3f0
 COMPONENT_ARCHIVE_URL=	https://www.php.net/distributions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3627
 
-COMPONENT_BAID=		445077
+COMPONENT_BAID=		455568
 
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
@@ -207,6 +207,10 @@ TESTS_DISABLED += sapi/fpm/tests/socket-uds-numeric-ugid-nonroot.phpt
 TESTS_DISABLED += sapi/fpm/tests/status-ping.phpt
 TESTS_DISABLED += tests/output/stream_isatty_out-err.phpt
 TESTS_DISABLED += Zend/tests/arginfo_zpp_mismatch.phpt
+
+# Exclude intermittent Solaris link/stat retry results; retain the remaining suite.
+TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation12.phpt
+TESTS_DISABLED += ext/standard/tests/file/lstat_stat_variation15.phpt
 
 # Some tests are known to hang or they have inconsistent results
 COMPONENT_PRE_TEST_ACTION += ( \

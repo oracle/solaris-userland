@@ -1,0 +1,44 @@
+Check complete malformed-GD2 diagnostics with external libgd.
+
+External libgd 2.3.3 and later disable the GD/GD2 formats by default and emit
+an additional disabled-format warning.  Existing PHP GD2 tests recognize
+that external-library version boundary.  Keep this test running and assert
+the exact diagnostic severity, text, order and count for each library mode,
+as well as the required false result.  Do not ignore arbitrary warnings.
+
+Will submit upstream.
+
+--- a/ext/gd/tests/createfromstring-overflow.phpt
++++ b/ext/gd/tests/createfromstring-overflow.phpt
+@@ -31,12 +31,27 @@
+ $trueColorHeader = implode("", $trueColorHeaderParts);
+ 
+ $source = $fileHeader . $chunkHeader . $trueColorHeader;
++// Check every diagnostic, including the disabled-format warning emitted
++// by external libgd 2.3.3 and later.  Do not skip the rejection check.
++$errors = [];
++set_error_handler(function (int $severity, string $message) use (&$errors): bool {
++    $errors[] = [$severity, $message];
++    return true;
++});
+ $img = imagecreatefromstring($source);
++restore_error_handler();
++$expected = [
++    [E_WARNING, 'imagecreatefromstring(): Passed data is not in "GD2" format'],
++    [E_WARNING, "imagecreatefromstring(): Couldn't create GD Image Stream out of Data"],
++];
++if (!GD_BUNDLED && version_compare(GD_VERSION, '2.3.3', '>=')) {
++    array_unshift($expected,
++        [E_WARNING, "imagecreatefromstring(): GD2 image support has been disabled\n"]);
++}
++var_dump($errors === $expected);
+ var_dump($img);
+ 
+ ?>
+---EXPECTF--
+-Warning: imagecreatefromstring(): Passed data is not in "GD2" format in %s on line %d
+-
+-Warning: imagecreatefromstring(): Couldn't create GD Image Stream out of Data in %s on line %d
++--EXPECT--
++bool(true)
+ bool(false)

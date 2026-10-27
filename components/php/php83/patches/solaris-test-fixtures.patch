@@ -1,0 +1,91 @@
+Use short, isolated test paths and inspect descriptor identity on Solaris.
+
+Long service clone paths exceed the socket limit before the test-specific
+prefix, and exceed the exact lengths exercised by bug75679.  Use short
+per-test paths while retaining all length, socket and output assertions.
+Solaris procfs file descriptor entries are not symbolic links; compare the
+reopened descriptor device, inode, mode and device number with /dev/null.
+This still detects descriptor zero leaking after failed proc_open setup.
+
+Will submit upstream.
+
+--- a/ext/standard/tests/file/bug75679.phpt
++++ b/ext/standard/tests/file/bug75679.phpt
+@@ -2,7 +2,7 @@
+ Bug #75679 Path 260 character problem
+ --FILE--
+ <?php
+-$d = __DIR__;
++$d = '/tmp/php75679-' . substr(hash('sha256', __DIR__), 0, 12);
+ $Files2Report =
+  [
+   str_pad ($d . '/' . str_repeat (str_pad ('bug75679_path_259_characters_long_', 100, '_') . '/', 1), 259, '_') => [],
+@@ -26,7 +26,7 @@
+ ?>
+ --CLEAN--
+ <?php
+-$d = __DIR__;
++$d = '/tmp/php75679-' . substr(hash('sha256', __DIR__), 0, 12);
+ $Files2Report =
+  [
+   str_pad ($d . '/' . str_repeat (str_pad ('bug75679_path_259_characters_long_', 100, '_') . '/', 1), 259, '_') => [],
+@@ -45,6 +45,7 @@
+ 		$d1 = dirname($d1);
+ 	}
+ }
++rmdir($d);
+ ?>
+ --EXPECT--
+ Array
+--- a/sapi/fpm/tests/socket-uds-too-long-filename-start.phpt
++++ b/sapi/fpm/tests/socket-uds-too-long-filename-start.phpt
+@@ -7,7 +7,7 @@
+ <?php
+ 
+ require_once "tester.inc";
+-$socketFilePrefix = __DIR__ . '/socket-file';
++$socketFilePrefix = '/tmp/php-fpm-' . substr(hash('sha256', __DIR__), 0, 12);
+ $socketFile = sprintf(
+     "%s-fpm-unix-socket-too-long-filename-but-starts-anyway%s.sock",
+     $socketFilePrefix,
+@@ -61,14 +61,10 @@
+ require_once "tester.inc";
+ FPM\Tester::clean();
+ 
+-// cleanup socket file if php-fpm was not killed
+-$socketFile = sprintf(
+-    "/socket-file-fpm-unix-socket-too-long-filename-but-starts-anyway%s.sock",
+-    __DIR__,
+-    str_repeat('-0000', 11)
+-);
+-
+-if (is_file($socketFile)) {
++// The configured path is deliberately truncated by FPM.  Remove the actual
++// socket if the process did not reach its normal shutdown cleanup.
++$socketFilePrefix = '/tmp/php-fpm-' . substr(hash('sha256', __DIR__), 0, 12);
++foreach (glob($socketFilePrefix . '*') as $socketFile) {
+     unlink($socketFile);
+ }
+ ?>
+--- a/ext/standard/tests/streams/bug74556.phpt
++++ b/ext/standard/tests/streams/bug74556.phpt
+@@ -6,7 +6,7 @@
+ --FILE--
+ <?php
+ 
+-$sock = tempnam(sys_get_temp_dir(), 'bug74556') . '.sock';
++$sock = tempnam('/tmp', 'bug74556') . '.sock';
+ $s = stream_socket_server("unix://$sock");
+ $c = stream_socket_client("unix://$sock");
+ 
+--- a/sapi/cli/tests/022.phpt
++++ b/sapi/cli/tests/022.phpt
+@@ -8,7 +8,7 @@
+ --FILE--
+ <?php
+ $php = getenv("TEST_PHP_EXECUTABLE_ESCAPED");
+-$socket_file = tempnam(sys_get_temp_dir(), pathinfo(__FILE__, PATHINFO_FILENAME) . '.sock');
++$socket_file = tempnam('/tmp', pathinfo(__FILE__, PATHINFO_FILENAME) . '.sock');
+ $test_file = __DIR__ . '/' . pathinfo(__FILE__, PATHINFO_FILENAME) . '.inc';
+ if (file_exists($socket_file)) {
+     unlink($socket_file);
