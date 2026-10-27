@@ -209,6 +209,7 @@ system-test: $(SYSTEM_TEST_64)
 PKG_PROTO_DIRS += $(COMPONENT_DIR)/files
 
 CBE_PACKAGES += developer/base-developer-utilities
+CBE_PACKAGES += runtime/python-315
 CBE_PACKAGES += x11/library/libx11
 
 REQUIRED_PACKAGES += compress/bzip2
