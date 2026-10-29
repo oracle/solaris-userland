@@ -1,0 +1,44 @@
+Links should not bundle and optionally use its its own certificate bundle, it
+should always use system certificates instead.
+
+Not suitable for upstream
+
+--- links.h
++++ links.h
+@@ -1677,7 +1677,7 @@
+ #ifdef HAVE_SSL_CERTIFICATES
+ int verify_ssl_certificate(links_ssl *ssl, unsigned char *host);
+ int verify_ssl_cipher(links_ssl *ssl);
+-#define HAVE_BUILTIN_SSL_CERTIFICATES
++/* Use the system trust store; do not compile in the bundled certificates. */
+ #endif
+ int ssl_not_reusable(links_ssl *ssl);
+ unsigned char *get_cipher_string(links_ssl *ssl);
+--- default.c
++++ default.c
+@@ -1724,12 +1724,7 @@
+ "  2 - reject invalid certificate\n"
+ "\n"
+ " -ssl.builtin-certificates <0>/<1>\n"
+-#if defined(DOS) || defined(OPENVMS)
+-"    (default 1)\n"
+-#else
+-"    (default 0)\n"
+-#endif
+-"  Use built-in certificates instead of system certificates.\n"
++"  Accepted for compatibility; ignored. System certificates are always used.\n"
+ "\n"
+ " -ssl.client-cert-key <filename>\n"
+ "  Name of the PEM encoded file with the user private key\n"
+--- links.1
++++ links.1
+@@ -239,8 +239,7 @@
+ 
+ .TP
+ \f3-ssl.builtin-certificates \f2<0>/<1>\f1
+-(default 0; on DOS and OpenVMS default 1)
+-Use built-in certificates instead of system certificates.
++Accepted for compatibility; ignored. System certificates are always used.
+ 
+ .TP
+ \f3-ssl.client-cert-key \f2<filename>\f1
