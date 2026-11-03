@@ -1,0 +1,33 @@
+Downloaded from: https://https.git.savannah.gnu.org/git/bash.git
+Listed at: https://lists.gnu.org/archive/html/bug-bash/2026-10/msg00015.html
+Upstream commit: https://git.savannah.gnu.org/cgit/bash.git/commit/?id=2f7eb80c770c13adaabca4d6bf4ba5c01a01244d
+
+Follow-up correction for upstream GNU Bash patch bash53-019.
+
+Patch bash53-019 changed legal_variable_starter() and legal_variable_char()
+to use the sh_syntaxtab character table. parameter_brace_expand() passed a
+plain char to legal_variable_starter(), allowing a high-bit input byte to
+become a negative table index on systems with signed char.
+
+Backport the subst.c correction from the upstream 2026-08-17 commit:
+convert that input byte to unsigned char before checking the variable name.
+
+Original upstream patch: https://ftp.gnu.org/gnu/bash/bash-5.3-patches/bash53-019
+Original report: https://lists.gnu.org/archive/html/bug-bash/2026-08/msg00025.html
+
+The 019a filename applies this backport immediately after bash53-019.patch.
+The GNU patch level remains 20.
+
+diff --git subst.c subst.c
+index f54459a..f22a553 100644
+--- subst.c
++++ subst.c
+@@ -10121,7 +10121,7 @@ parameter_brace_expand (char *string, size_t *indexp, int quoted, int pflags, in
+   sindex = *indexp;
+   t_index = ++sindex;
+   /* ${#var} doesn't have any of the other parameter expansions on it. */
+-  if (string[t_index] == '#' && legal_variable_starter (string[t_index+1]))		/* {{ */
++  if (string[t_index] == '#' && legal_variable_starter ((unsigned char)string[t_index+1]))		/* {{ */
+     name = string_extract (string, &t_index, "}", SX_VARNAME);
+   else
+ #if defined (CASEMOD_EXPANSIONS)
