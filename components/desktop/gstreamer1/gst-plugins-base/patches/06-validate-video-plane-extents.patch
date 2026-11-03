@@ -1,0 +1,229 @@
+Reject GstVideoMeta planes with insufficient row or tile geometry, or an
+extent outside the backing buffer or mapped memory. This completes the
+CVE-2026-86476 fix for directly attached and deserialized metadata. Mark
+alternate-field pool metadata as ONEFIELD so it describes its allocation.
+
+Local follow-up to the incomplete fix in 1.28.8.  Reported upstream:
+https://gitlab.freedesktop.org/gstreamer/gstreamer/-/work_items/5395
+
+--- gst-plugins-base-1.28.8/gst-libs/gst/video/gstvideoutilsprivate.h
++++ gst-plugins-base-1.28.8/gst-libs/gst/video/gstvideoutilsprivate.h
+@@ -27,6 +27,74 @@
+ #define _GST_VIDEO_UTILS_PRIVATE_H_
+ 
+ #include <gst/gst.h>
++#include "video-tile.h"
++
++/* Check the row or tile grid and the complete plane before mapping it. */
++static inline gboolean
++gst_video_meta_plane_extent (const GstVideoFormatInfo * finfo,
++    guint width, guint height, GstVideoFrameFlags flags, guint plane,
++    gint stride, guint64 * row_offset, guint64 * extent)
++{
++  guint field_height = (flags & GST_VIDEO_FRAME_FLAG_ONEFIELD) ?
++      height / 2 + height % 2 : height;
++
++  if (!finfo || !width || !height || width > G_MAXINT ||
++      height > G_MAXINT || plane >= finfo->n_planes)
++    return FALSE;
++
++  *row_offset = 0;
++  if (GST_VIDEO_FORMAT_INFO_IS_TILED (finfo)) {
++    GstVideoInfo canonical;
++    guint x_tiles = GST_VIDEO_TILE_X_TILES (stride);
++    guint y_tiles = GST_VIDEO_TILE_Y_TILES (stride);
++
++    if (stride < 0)
++      return FALSE;
++
++    if (!gst_video_info_set_format (&canonical, finfo->format, width,
++            field_height) ||
++        x_tiles < GST_VIDEO_TILE_X_TILES (canonical.stride[plane]) ||
++        y_tiles < GST_VIDEO_TILE_Y_TILES (canonical.stride[plane]) ||
++        (GST_VIDEO_FORMAT_INFO_TILE_MODE (finfo) ==
++            GST_VIDEO_TILE_MODE_ZFLIPZ_2X2 && (x_tiles & 1)))
++      return FALSE;
++    *extent = (guint64) x_tiles * y_tiles *
++        GST_VIDEO_FORMAT_INFO_TILE_SIZE (finfo, plane);
++  } else if (GST_VIDEO_FORMAT_INFO_HAS_PALETTE (finfo) && plane == 1) {
++    *extent = 256 * 4;
++  } else {
++    gint comp[GST_VIDEO_MAX_COMPONENTS];
++    guint64 min_stride = 0;
++    guint64 abs_stride = stride < 0 ? -(gint64) stride : stride;
++    guint rows;
++
++    gst_video_format_info_component (finfo, plane, comp);
++    if (comp[0] < 0)
++      return FALSE;
++    if (GST_VIDEO_FORMAT_INFO_IS_COMPLEX (finfo) ||
++        GST_VIDEO_FORMAT_INFO_PSTRIDE (finfo, comp[0]) == 0) {
++      GstVideoInfo canonical;
++      if (!gst_video_info_set_format (&canonical, finfo->format, width,
++              field_height))
++        return FALSE;
++      min_stride = canonical.stride[plane];
++    } else {
++      for (guint i = 0; i < GST_VIDEO_MAX_COMPONENTS && comp[i] >= 0; i++)
++        min_stride = MAX (min_stride,
++            (guint64) GST_VIDEO_FORMAT_INFO_SCALE_WIDTH (finfo, comp[i],
++                width) * GST_VIDEO_FORMAT_INFO_PSTRIDE (finfo, comp[i]));
++    }
++    if (abs_stride < min_stride)
++      return FALSE;
++    rows = GST_VIDEO_FORMAT_INFO_SCALE_HEIGHT (finfo, comp[0], field_height);
++    if (!rows)
++      return FALSE;
++    *extent = abs_stride * (rows - 1) + min_stride;
++    if (stride < 0)
++      *row_offset = abs_stride * (rows - 1);
++  }
++  return *extent > 0;
++}
+ 
+ G_BEGIN_DECLS
+ 
+--- gst-plugins-base-1.28.8/gst-libs/gst/video/gstvideopool.c
++++ gst-plugins-base-1.28.8/gst-libs/gst/video/gstvideopool.c
+@@ -268,7 +268,9 @@
+   if (priv->add_videometa) {
+     GST_DEBUG_OBJECT (pool, "adding GstVideoMeta");
+ 
+-    gst_buffer_add_video_meta_full (*buffer, GST_VIDEO_FRAME_FLAG_NONE,
++    gst_buffer_add_video_meta_full (*buffer,
++        info->interlace_mode == GST_VIDEO_INTERLACE_MODE_ALTERNATE ?
++        GST_VIDEO_FRAME_FLAG_ONEFIELD : GST_VIDEO_FRAME_FLAG_NONE,
+         GST_VIDEO_INFO_FORMAT (info),
+         GST_VIDEO_INFO_WIDTH (info), GST_VIDEO_INFO_HEIGHT (info),
+         GST_VIDEO_INFO_N_PLANES (info), info->offset, info->stride);
+
+--- gst-plugins-base-1.28.8/gst-libs/gst/video/gstvideometa.c
++++ gst-plugins-base-1.28.8/gst-libs/gst/video/gstvideometa.c
+@@ -21,6 +21,7 @@
+ #endif
+ 
+ #include "gstvideometa.h"
++#include "gstvideoutilsprivate.h"
+ 
+ #include <string.h>
+ #include <gst/base/base.h>
+@@ -330,8 +331,10 @@
+     for (int n = 0; n < n_planes; n++) {
+-      guint64 plane_size;
++      guint64 row_offset, plane_size;
+ 
+-      if (stride[n] < 0)
++      if (stride[n] < 0 ||
++          !gst_video_meta_plane_extent (vinfo.finfo, width, height, flags,
++              n, stride[n], &row_offset, &plane_size))
+         return NULL;
+ 
+       if (GST_VIDEO_FORMAT_INFO_IS_TILED (vinfo.finfo)) {
+         plane_size = (guint64) GST_VIDEO_TILE_X_TILES (stride[n]) *
+@@ -448,21 +451,32 @@
+     gpointer * data, gint * stride, GstMapFlags flags)
+ {
+   guint idx, length;
+-  gsize offset, skip;
++  guint64 row_offset, extent;
++  gsize offset, start, skip;
+   GstBuffer *buffer = meta->buffer;
++  const GstVideoFormatInfo *finfo = gst_video_format_get_info (meta->format);
+ 
+   offset = meta->offset[plane];
+-
+-  /* find the memory block for this plane, this is the memory block containing
+-   * the plane offset. FIXME use plane size */
+-  if (!gst_buffer_find_memory (buffer, offset, 1, &idx, &length, &skip))
++  if (!gst_video_meta_plane_extent (finfo, meta->width, meta->height,
++          meta->flags, plane, meta->stride[plane], &row_offset, &extent) ||
++      offset < row_offset)
++    goto no_memory;
++
++  start = offset - row_offset;
++  if (start > gst_buffer_get_size (buffer) ||
++      extent > gst_buffer_get_size (buffer) - start)
++    goto no_memory;
++
++  /* Map every memory block that contains bytes of this plane. */
++  if (!gst_buffer_find_memory (buffer, start, (gsize) extent,
++          &idx, &length, &skip))
+     goto no_memory;
+ 
+   if (!gst_buffer_map_range (buffer, idx, length, info, flags))
+     goto cannot_map;
+ 
+   *stride = meta->stride[plane];
+-  *data = (guint8 *) info->data + skip;
++  *data = (guint8 *) info->data + skip + row_offset;
+ 
+   return TRUE;
+ 
+--- gst-plugins-base-1.28.8/gst-libs/gst/video/video-frame.c
++++ gst-plugins-base-1.28.8/gst-libs/gst/video/video-frame.c
+@@ -30,6 +30,7 @@
+ #include "video-frame.h"
+ #include "video-tile.h"
+ #include "gstvideometa.h"
++#include "gstvideoutilsprivate.h"
+ 
+ #define CAT_PERFORMANCE video_frame_get_perf_category()
+ 
+@@ -100,10 +101,31 @@
+     frame->flags = meta->flags;
+ 
+     for (i = 0; i < meta->n_planes; i++) {
++      guint64 row_offset, extent;
++      guintptr map_start, data_start;
++      GstVideoFrameFlags extent_flags = meta->flags;
++
++      if (frame->info.interlace_mode != GST_VIDEO_INTERLACE_MODE_ALTERNATE)
++        extent_flags &= ~GST_VIDEO_FRAME_FLAG_ONEFIELD;
++
+       frame->info.offset[i] = meta->offset[i];
+       if (!gst_video_meta_map (meta, i, &frame->map[i], &frame->data[i],
+               &frame->info.stride[i], flags))
+         goto frame_map_failed;
++
++      map_start = (guintptr) frame->map[i].data;
++      data_start = (guintptr) frame->data[i];
++      if (!gst_video_meta_plane_extent (frame->info.finfo, meta->width,
++              meta->height, extent_flags, i, frame->info.stride[i],
++              &row_offset, &extent) ||
++          !map_start || data_start < map_start ||
++          data_start - map_start < row_offset ||
++          data_start - map_start - row_offset > frame->map[i].size ||
++          extent > frame->map[i].size -
++          (data_start - map_start - row_offset)) {
++        gst_video_meta_unmap (meta, i, &frame->map[i]);
++        goto frame_map_failed;
++      }
+     }
+   } else {
+     /* no metadata, we really need to have the metadata when the id is
+@@ -343,8 +365,12 @@
+   /* FIXME: workaround for complex formats like v210, UYVP and IYU1 that have
+    * pstride == 0 */
+-  if (w == 0)
+-    w = MIN (GST_VIDEO_INFO_PLANE_STRIDE (dinfo, plane),
+-        GST_VIDEO_INFO_PLANE_STRIDE (sinfo, plane));
++  if (w == 0) {
++    GstVideoInfo canonical;
++    if (!gst_video_info_set_format (&canonical, finfo->format,
++            dinfo->width, dinfo->height))
++      return FALSE;
++    w = canonical.stride[plane];
++  }
+ 
+   h = GST_VIDEO_FRAME_COMP_HEIGHT (dest, comp[0]);
+ 
+@@ -388,8 +414,7 @@
+ 
+     GST_CAT_DEBUG (CAT_PERFORMANCE, "copy plane %d, w:%d h:%d ", plane, w, h);
+ 
+-    if (GST_VIDEO_INFO_PLANE_STRIDE (dinfo,
+-            plane) == GST_VIDEO_INFO_PLANE_STRIDE (sinfo, plane)) {
++    if (ss == ds && ss > 0 && (guint) ss == w) {
+       memcpy (dp, sp, GST_VIDEO_INFO_PLANE_STRIDE (dinfo, plane) * h);
+     } else {
+       for (j = 0; j < h; j++) {

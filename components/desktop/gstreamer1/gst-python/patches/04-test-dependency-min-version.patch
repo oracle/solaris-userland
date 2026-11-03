@@ -1,0 +1,18 @@
+Use the same GStreamer minimum version for tests as for the main build.
+
+During a parallel stack uprev, BOB may configure gst-python before
+gstreamer-core 1.28.8 is built. The installed 1.28.7 is compatible with
+the 1.28 series, but an exact micro-version check in testsuite/meson.build
+rejects it during install.
+
+--- gst-python-1.28.8/testsuite/meson.build
++++ gst-python-1.28.8/testsuite/meson.build
+@@ -47,7 +47,7 @@
+ ]
+ 
+ api_version = '1.0'
+-gst_required_version = '>=@0@'.format(meson.project_version())
++gst_required_version = gst_req
+ gst_deps = []
+ 
+ foreach dep: gst_deps_defs

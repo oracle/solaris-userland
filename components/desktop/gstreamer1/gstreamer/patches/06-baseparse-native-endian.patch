@@ -1,0 +1,22 @@
+The parser accumulation test stores its marker as a native-endian guint64.
+Compare the integer value rather than its first byte so the test also works
+on big-endian SPARC.
+
+--- a/tests/check/libs/baseparse.c
++++ b/tests/check/libs/baseparse.c
+@@ -216,11 +216,14 @@
+     /* First call: Only the first input buffer with 8 bytes. */
+     fail_unless_equals_int (gst_buffer_get_size (buffer), 8);
+   } else {
++    guint64 second;
++
+     /* Second call: The original first input buffer with 8 bytes, followed
+      * by the second input buffer with another 8 bytes. */
+     fail_unless_equals_int (gst_buffer_get_size (buffer), 16);
+     fail_unless_equals_int (map.data[0], 0);
+-    fail_unless_equals_int (map.data[8], 1);
++    memcpy (&second, map.data + 8, sizeof (second));
++    fail_unless_equals_int (second, 1);
+   }
+ 
+   gst_buffer_unmap (buffer, &map);
