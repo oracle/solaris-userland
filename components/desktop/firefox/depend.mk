@@ -1,1 +1,0 @@
-desktop/firefox: rust/cbindgen
