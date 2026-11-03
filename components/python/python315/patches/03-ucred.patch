@@ -1,8 +1,8 @@
 This patch provides Python ucred support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-3.15.0/Modules/ucred.c
-+++ Python-3.15.0/Modules/ucred.c
+--- Python-3.15.2/Modules/ucred.c
++++ Python-3.15.2/Modules/ucred.c
 @@ -0,0 +1,404 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -408,8 +408,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +
 +	return m;
 +}
---- Python-3.15.0/Lib/test/ucredtest.py
-+++ Python-3.15.0/Lib/test/ucredtest.py
+--- Python-3.15.2/Lib/test/ucredtest.py
++++ Python-3.15.2/Lib/test/ucredtest.py
 @@ -0,0 +1,45 @@
 +#!/usr/bin/python3.15
 +
@@ -456,9 +456,9 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    uc.getpid()
 +except OSError as e:
 +    print(e)
---- Python-3.15.0/configure.ac
-+++ Python-3.15.0/configure.ac
-@@ -8319,6 +8319,9 @@ PY_STDLIB_MOD([_scproxy],
+--- Python-3.15.2/configure.ac
++++ Python-3.15.2/configure.ac
+@@ -8332,6 +8332,9 @@ PY_STDLIB_MOD([_scproxy],
  PY_STDLIB_MOD([syslog], [], [test "$ac_cv_header_syslog_h" = yes])
  PY_STDLIB_MOD([termios], [], [test "$ac_cv_header_termios_h" = yes])
  
@@ -468,8 +468,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  dnl _elementtree loads libexpat via CAPI hook in pyexpat
  PY_STDLIB_MOD([pyexpat],
    [], [test "$ac_cv_header_sys_time_h" = "yes"],
---- Python-3.15.0/Modules/Setup.stdlib.in
-+++ Python-3.15.0/Modules/Setup.stdlib.in
+--- Python-3.15.2/Modules/Setup.stdlib.in
++++ Python-3.15.2/Modules/Setup.stdlib.in
 @@ -167,6 +167,10 @@
  # _scproxy needs SystemConfiguration and CoreFoundation framework
  @MODULE__SCPROXY_TRUE@_scproxy _scproxy.c

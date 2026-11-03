@@ -9,16 +9,10 @@ Subject: [PATCH] gh-117807: Handle invalid UTF-8 in mimetypes map files
  30ac23e3e413c2d38b80691b1c80e3cd74a22639)
 
 Co-authored-by: Harjoth Khara <harjoth.khara@gmail.com>
----
- Lib/mimetypes.py                              |  4 +-
- Lib/test/test_mimetypes.py                    | 43 ++++++++++++++++++-
- 2 files changed, 44 insertions(+), 3 deletions(-)
 
-diff --git a/Lib/mimetypes.py b/Lib/mimetypes.py
-index 2af7c4b7b808222..3fa9ccf521b12d8 100644
---- a/Lib/mimetypes.py
-+++ b/Lib/mimetypes.py
-@@ -212,7 +212,7 @@ def read(self, filename, strict=True):
+--- Python-3.11.18/Lib/mimetypes.py
++++ Python-3.11.18/Lib/mimetypes.py
+@@ -218,7 +218,7 @@ class MimeTypes:
          list of standard types, else to the list of non-standard
          types.
          """
@@ -27,7 +21,7 @@ index 2af7c4b7b808222..3fa9ccf521b12d8 100644
              self.readfp(fp, strict)
  
      def readfp(self, fp, strict=True):
-@@ -393,7 +393,7 @@ def init(files=None):
+@@ -399,7 +399,7 @@ def init(files=None):
  
  def read_mime_types(file):
      try:
@@ -36,11 +30,9 @@ index 2af7c4b7b808222..3fa9ccf521b12d8 100644
      except OSError:
          return None
      with f:
-diff --git a/Lib/test/test_mimetypes.py b/Lib/test/test_mimetypes.py
-index 6bbb52c959af69f..54345fed353138c 100644
---- a/Lib/test/test_mimetypes.py
-+++ b/Lib/test/test_mimetypes.py
-@@ -89,9 +89,50 @@ class MimeTypesTestCase(unittest.TestCas
+--- Python-3.11.18/Lib/test/test_mimetypes.py
++++ Python-3.11.18/Lib/test/test_mimetypes.py
+@@ -93,9 +93,50 @@ class MimeTypesTestCase(unittest.TestCas
          with unittest.mock.patch.object(mimetypes, 'open',
                                          return_value=fp) as mock_open:
              mime_dict = mimetypes.read_mime_types(filename)
