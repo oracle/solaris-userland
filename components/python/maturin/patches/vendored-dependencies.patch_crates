@@ -1,0 +1,34 @@
+Adapt python-pkginfo to the fixed zip dependency used by maturin.
+
+--- a/python-pkginfo/Cargo.toml
++++ b/python-pkginfo/Cargo.toml
+@@ -78,7 +78,7 @@
+ package = "xz2"
+ 
+ [dependencies.zip]
+-version = ">=0.6,<9"
++version = "9.1.3"
+ features = ["deflate"]
+ default-features = false
+ 
+--- a/python-pkginfo/src/distribution.rs
++++ b/python-pkginfo/src/distribution.rs
+@@ -203,8 +203,9 @@
+     fn parse_zip(path: &Path, metadata_file_suffix: &str) -> Result<Metadata, Error> {
+         let reader = BufReader::new(fs_err::File::open(path)?);
+         let mut archive = ZipArchive::new(reader)?;
+-        let metadata_files: Vec<_> = archive
+-            .file_names()
++        let file_names = archive.file_names().collect::<Result<Vec<_>, _>>()?;
++        let metadata_files: Vec<_> = file_names
++            .iter()
+             .filter(|name| name.ends_with(metadata_file_suffix))
+             .map(ToString::to_string)
+             .collect();
+--- a/python-pkginfo/.cargo-checksum.json
++++ b/python-pkginfo/.cargo-checksum.json
+@@ -1 +1 @@
+-{"files":{".cargo_vcs_info.json":"5d5163d7da262ee26b64e3b53c9a8b85a14d34fbe69ff0d97c3ab9eb42d7ccd7",".github/dependabot.yml":"57ff35c8c8d21d08e1475cf532e76af54cc65adf8e76b5a6cd5736a01ea26d00",".github/workflows/CI.yml":"b7ee72b713c67cffd06115a1600e4ee99868ff0d3d49f36b203368153248eee8","Cargo.lock":"084e858ce97faf3fbb8804b16d2c9c008ff7500e80ec66a5d99f049bff0e85f0","Cargo.toml":"dd9c86185fcad8ca19094beedd10b4bab58a432460f8db483dd89c2ef621f365","Cargo.toml.orig":"c2a0806faa1c38cc119330b0a4be8ae6c8e26e37f8222ac54f2232edc262cedd","Changelog.md":"1867ef2a133e2103a991caae770a3b55a8530c2d826fecbfb9f103544e70bc3c","LICENSE":"ed289f2eaf4a1cc819edd4d333640150748a61344e22b5478fd818f325e5c0c6","README.md":"12272700e7d59e10b59029300c17756d375aa4bfe4c6cce84c477ba9235473db","src/distribution.rs":"290dc7455d4bee186b2e1b3223f7c9d864cffd5f1f42b29638b1020c49897c7e","src/error.rs":"2146dc53f236d771e6c32d25e3bbe40521cbd86b8f05284ffbf80126d0a84e06","src/lib.rs":"781f48e265a70d4a15e1cceb59812eef43f4eb9a3f59a4dcfa3569fb19c58787","src/metadata.rs":"fa4cc5782f4557c6195727ad8477a6bece89fb67ed5ea1ef51503b11f8e273ac","tests/fixtures/build-0.4.0-py2.py3-none-any.whl":"5950f98775a59f0c5ac68586691003d2db58a809fbea2ade3fe32109dfd12790","tests/fixtures/build-0.4.0-py3.9.egg":"8da1382701d74d808db66df70b6dbb122c561b8d414c18989404448d6665b50b","tests/fixtures/build-0.4.0.tar":"2e6f0dfd27dfe9e02fcfd60bcbf4cf9e41ba215fd994e35d73fec11352b14fe2","tests/fixtures/build-0.4.0.tar.bz2":"337d74316ad3879f96571b293e3010304c2976a1f3b2df2ca3a51c220521d187","tests/fixtures/build-0.4.0.tar.gz":"79c802529fa5e6baaafd741f0edeb0dc40912101a0d41651d3dbfda1f62df450","tests/fixtures/build-0.4.0.tar.lz":"294839e49e9315c9fa413e593846ff87644e3048cfea344f8b7fcba264d596bf","tests/fixtures/build-0.4.0.tar.xz":"6599ca735b1f20cbb71b7f1271d5d6fef31444b5d8477ac0f269603e5cc94009","tests/fixtures/build-0.4.0.zip":"f65bdc4500170ed29f20fcbe55b9fd8354541a54d59023c1aed691eeefd88cba","tests/fixtures/py-1.11.0-py2.py3-none-any.whl":"607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378","tests/test_distribution.rs":"feeb32d60400fe8acfa878a98442ab9982ecde1cde6f44d801f458921688f621"},"package":"229fe47647d6602b9b0934b21fab8aece1c5a5aeb0a934196a14355fec656623"}
+\ No newline at end of file
++{"files":{".cargo_vcs_info.json":"5d5163d7da262ee26b64e3b53c9a8b85a14d34fbe69ff0d97c3ab9eb42d7ccd7",".github/dependabot.yml":"57ff35c8c8d21d08e1475cf532e76af54cc65adf8e76b5a6cd5736a01ea26d00",".github/workflows/CI.yml":"b7ee72b713c67cffd06115a1600e4ee99868ff0d3d49f36b203368153248eee8","Cargo.lock":"084e858ce97faf3fbb8804b16d2c9c008ff7500e80ec66a5d99f049bff0e85f0","Cargo.toml":"bb12208af03aebb9f7c67fabb6f15fc6e32146390b7e79b4e65a1c4923d248b5","Cargo.toml.orig":"c2a0806faa1c38cc119330b0a4be8ae6c8e26e37f8222ac54f2232edc262cedd","Changelog.md":"1867ef2a133e2103a991caae770a3b55a8530c2d826fecbfb9f103544e70bc3c","LICENSE":"ed289f2eaf4a1cc819edd4d333640150748a61344e22b5478fd818f325e5c0c6","README.md":"12272700e7d59e10b59029300c17756d375aa4bfe4c6cce84c477ba9235473db","src/distribution.rs":"4fda04c0d7ab3158dd0a85564e98824d35f9d1ec67e3aadfea88abf519b92352","src/error.rs":"2146dc53f236d771e6c32d25e3bbe40521cbd86b8f05284ffbf80126d0a84e06","src/lib.rs":"781f48e265a70d4a15e1cceb59812eef43f4eb9a3f59a4dcfa3569fb19c58787","src/metadata.rs":"fa4cc5782f4557c6195727ad8477a6bece89fb67ed5ea1ef51503b11f8e273ac","tests/fixtures/build-0.4.0-py2.py3-none-any.whl":"5950f98775a59f0c5ac68586691003d2db58a809fbea2ade3fe32109dfd12790","tests/fixtures/build-0.4.0-py3.9.egg":"8da1382701d74d808db66df70b6dbb122c561b8d414c18989404448d6665b50b","tests/fixtures/build-0.4.0.tar":"2e6f0dfd27dfe9e02fcfd60bcbf4cf9e41ba215fd994e35d73fec11352b14fe2","tests/fixtures/build-0.4.0.tar.bz2":"337d74316ad3879f96571b293e3010304c2976a1f3b2df2ca3a51c220521d187","tests/fixtures/build-0.4.0.tar.gz":"79c802529fa5e6baaafd741f0edeb0dc40912101a0d41651d3dbfda1f62df450","tests/fixtures/build-0.4.0.tar.lz":"294839e49e9315c9fa413e593846ff87644e3048cfea344f8b7fcba264d596bf","tests/fixtures/build-0.4.0.tar.xz":"6599ca735b1f20cbb71b7f1271d5d6fef31444b5d8477ac0f269603e5cc94009","tests/fixtures/build-0.4.0.zip":"f65bdc4500170ed29f20fcbe55b9fd8354541a54d59023c1aed691eeefd88cba","tests/fixtures/py-1.11.0-py2.py3-none-any.whl":"607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378","tests/test_distribution.rs":"feeb32d60400fe8acfa878a98442ab9982ecde1cde6f44d801f458921688f621"},"package":"229fe47647d6602b9b0934b21fab8aece1c5a5aeb0a934196a14355fec656623"}
+\ No newline at end of file

@@ -27,20 +27,20 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		maturin
-COMPONENT_VERSION=	1.9.6
+COMPONENT_VERSION=	1.15.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:2c2ae37144811d365509889ed7220b0598487f1278c2441829c3abf56cc6324a
+    sha256:5c193209ac86263e2cbec3bf928a702a65b261a53578e44822fa5ec1cada3693
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pyo3/maturin
 COMPONENT_BUGDB=	utility/maturin
 COMPONENT_ANITYA_ID=	323858
-COMPONENT_BAID=		354112
+COMPONENT_BAID=		445083
 
 # hash for vendored sources
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:6aebff4594e9c66e51566266a5bf782731a0514716e25dfd8a25cac2f5a8b610
+    sha256:d3f02f31d3841481a849156c96cd1760a37863a418862ff71a8267e35206c2e0
 
 # This is necessary for vendored rust dependencies
 include $(WS_MAKE_RULES)/cargo-vendored.mk
@@ -53,6 +53,10 @@ include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
+
+# explicitly ask for minimal build without optional features
+COMPONENT_BUILD_ENV += MATURIN_SETUP_ARGS=--no-default-features
+COMPONENT_INSTALL_ENV += MATURIN_SETUP_ARGS=--no-default-features
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
