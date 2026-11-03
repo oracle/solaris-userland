@@ -51,7 +51,12 @@ LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+# Valgrind must load its own interposers, without inherited preload overrides.
+COMPONENT_TEST_ENV := -u LD_PRELOAD -u LD_PRELOAD_32 -u LD_PRELOAD_64 $(COMPONENT_TEST_ENV)
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
+
+# Regenerate build files for the upstream GCC 16 test fix.
+COMPONENT_PREP_ACTION = (cd $(@D) && $(AUTORECONF) -fi)
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
@@ -79,9 +84,19 @@ PERL_SCRIPTS += $(PROTO_DIR)/usr/bin/callgrind_control
 COMPONENT_POST_CONFIGURE_ACTION += ( cp $(@D)/config.h $(SOURCE_DIR) )
 
 COMPONENT_TEST_TARGETS = regtest
-# check just overal test results
+
+# Fail directly if any regression-test log contains an internal crash.
+COMPONENT_POST_TEST_ACTION = \
+  $(FIND) $(BUILD_DIR_64) -type f -name '*.vgtest.log' \
+    -exec $(NAWK) \
+      '/VALGRIND INTERNAL ERROR/ {print FILENAME ": " $$0; bad=1} \
+       END {exit bad}' {} +
+
+# Check overall test results against the platform master.
 COMPONENT_TEST_TRANSFORMS += \
   '-e "/^\.\.\./d" -e "/^make\[/d" -e "1,/^== / d"'
+
+$(BUILD_DIR_64)/.tested-and-compared: test/results-64.master
 
 REQUIRED_PACKAGES.i386 += $(PERL_PKG)
 REQUIRED_PACKAGES.i386 += runtime/python-311

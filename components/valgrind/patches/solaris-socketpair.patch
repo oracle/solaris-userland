@@ -1,0 +1,198 @@
+Support the descriptor-based so_socketpair syscall on newer Solaris.
+
+The legacy syscall takes an int array; newer Solaris takes two existing
+descriptors. Probe with invalid descriptors, which yields EBADF for the new
+form and EFAULT for the legacy form. Keep the legacy wrapper unchanged.
+No corresponding upstream fix is available in the inspected Valgrind git.
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -4800,6 +4800,22 @@
+ AC_MSG_RESULT([no])
+ ])
+ 
++# Newer Solaris connects two existing descriptors instead of reading an array.
++AC_MSG_CHECKING([if so_socketpair takes two descriptors (Solaris-specific)])
++AC_RUN_IFELSE([AC_LANG_PROGRAM([[
++#include <errno.h>
++#include <sys/syscall.h>
++#include <unistd.h>
++]], [[
++    return syscall(SYS_so_socketpair, -1, -1) != -1 || errno != EBADF;
++]])], [
++AC_MSG_RESULT([yes])
++AC_DEFINE([SOLARIS_SOCKETPAIR_TAKES_FDS], 1,
++          [Define to 1 if so_socketpair takes two file descriptors.])
++], [
++AC_MSG_RESULT([no])
++])
++
+ else
+ AM_CONDITIONAL(SOLARIS_SUN_STUDIO_AS, false)
+ AM_CONDITIONAL(SOLARIS_XPG_SYMBOLS_PRESENT, false)
+--- a/coregrind/m_syswrap/syswrap-solaris.c
++++ b/coregrind/m_syswrap/syswrap-solaris.c
+@@ -10310,6 +10310,14 @@
+ 
+ PRE(sys_so_socketpair)
+ {
++#if defined(SOLARIS_SOCKETPAIR_TAKES_FDS)
++   /* The syscall connects two existing descriptors and returns no new ones. */
++   PRINT("sys_so_socketpair ( %ld, %ld )", SARG1, SARG2);
++   PRE_REG_READ2(long, "socketpair", int, fd1, int, fd2);
++   if (!ML_(fd_allowed)(ARG1, "socketpair", tid, False)
++       || !ML_(fd_allowed)(ARG2, "socketpair", tid, False))
++      SET_STATUS_Failure(VKI_EBADF);
++#else
+    /* int so_socketpair(int sv[2]); */
+    /* This syscall is used to connect two already created sockets together. */
+    PRINT("sys_so_socketpair ( %#lx )", ARG1);
+@@ -10323,10 +10331,14 @@
+       else if (!ML_(fd_allowed)(fds[1], "socketpair", tid, False))
+          SET_STATUS_Failure(VKI_EBADF);
+    }
++#endif
+ }
+ 
+ POST(sys_so_socketpair)
+ {
++   /* The new ABI connects existing descriptors and writes no output array.
++      Only the legacy ABI needs memory and descriptor bookkeeping here. */
++#if !defined(SOLARIS_SOCKETPAIR_TAKES_FDS)
+    /* The kernel can return new file descriptors, in such a case we have to
+       validate them. */
+    int *fds = (int*)ARG1;
+@@ -10352,6 +10364,7 @@
+       ML_(record_fd_open_nameless)(tid, fds[0]);
+       ML_(record_fd_open_nameless)(tid, fds[1]);
+    }
++#endif
+ }
+ 
+ PRE(sys_bind)
+--- a/memcheck/tests/solaris/scalar.c
++++ b/memcheck/tests/solaris/scalar.c
+@@ -2520,9 +2520,7 @@
+    GO(SYS_so_socket, "5s 1m");
+    SY(SYS_so_socket, x0, x0, x0, x0 + 1, x0); FAIL;
+ 
+-   /* SYS_so_socketpair         231 */
+-   GO(SYS_so_socketpair, "1s 1m");
+-   SY(SYS_so_socketpair, x0); FAIL;
++   /* SYS_so_socketpair: tested separately for each syscall ABI. */
+ 
+    /* SYS_bind                  232 */
+    GO(SYS_bind, "4s 0m");
+--- a/memcheck/tests/solaris/scalar.stderr.exp
++++ b/memcheck/tests/solaris/scalar.stderr.exp
+@@ -5234,16 +5234,6 @@
+  Address 0x........ is not stack'd, malloc'd or (recently) free'd
+ 
+ ---------------------------------------------------------
+-231:       SYS_so_socketpair 1s 1m
+----------------------------------------------------------
+-Syscall param socketpair(sv) contains uninitialised byte(s)
+-   ...
+-
+-Syscall param socketpair(sv) points to unaddressable byte(s)
+-   ...
+- Address 0x........ is not stack'd, malloc'd or (recently) free'd
+-
+----------------------------------------------------------
+ 232:                SYS_bind 4s 0m
+ ---------------------------------------------------------
+ Syscall param bind(s) contains uninitialised byte(s)
+--- a/memcheck/tests/solaris/Makefile.am
++++ b/memcheck/tests/solaris/Makefile.am
+@@ -31,6 +31,8 @@
+ 	name_service_door.stdout.exp name_service_door.vgtest \
+ 	pkcs11.stderr.exp-illumos pkcs11.stderr.exp-solaris pkcs11.stdout.exp pkcs11.vgtest \
+ 	scalar.stderr.exp scalar.stdout.exp scalar.vgtest \
++	scalar_socketpair_fds.stderr.exp scalar_socketpair_fds.vgtest \
++	scalar_socketpair_legacy.stderr.exp scalar_socketpair_legacy.vgtest \
+ 	scalar_auditon_stat.stderr.exp scalar_auditon_stat.stdout.exp scalar_auditon_stat.vgtest \
+ 	scalar_frealpathat.stderr.exp scalar_frealpathat.stdout.exp scalar_frealpathat.vgtest \
+ 	scalar_getrandom.stderr.exp scalar_getrandom.stdout.exp scalar_getrandom.vgtest \
+@@ -78,6 +80,7 @@
+ 	name_service_door \
+ 	pkcs11 \
+ 	scalar \
++	scalar_socketpair \
+ 	scalar_ioctl \
+ 	sendfilev \
+ 	shmat \
+--- /dev/null
++++ b/memcheck/tests/solaris/scalar_socketpair.c
+@@ -0,0 +1,31 @@
++/* Copyright (c) 2026, Oracle and/or its affiliates. */
++/* Check the scalar arguments of both Solaris socketpair syscall ABIs. */
++
++#include "scalar.h"
++#include "config.h"
++#include "../../memcheck.h"
++#include <string.h>
++#include <unistd.h>
++
++int main(int argc, char **argv)
++{
++   if (argc > 1) {
++#if defined(SOLARIS_SOCKETPAIR_TAKES_FDS)
++      return strcmp(argv[1], "--fds") != 0;
++#else
++      return strcmp(argv[1], "--legacy") != 0;
++#endif
++   }
++
++   /* Keep the native value deterministic while testing undefined arguments. */
++   x0 = 0;
++   VALGRIND_MAKE_MEM_UNDEFINED(&x0, sizeof(x0));
++#if defined(SOLARIS_SOCKETPAIR_TAKES_FDS)
++   GO(SYS_so_socketpair, "2s 0m");
++   SY(SYS_so_socketpair, x0 - 1, x0 - 1); FAILx(EBADF);
++#else
++   GO(SYS_so_socketpair, "1s 1m");
++   SY(SYS_so_socketpair, x0); FAILx(EFAULT);
++#endif
++   return 0;
++}
+--- /dev/null
++++ b/memcheck/tests/solaris/scalar_socketpair_legacy.stderr.exp
+@@ -0,0 +1,10 @@
++---------------------------------------------------------
++231:       SYS_so_socketpair 1s 1m
++---------------------------------------------------------
++Syscall param socketpair(sv) contains uninitialised byte(s)
++   ...
++
++Syscall param socketpair(sv) points to unaddressable byte(s)
++   ...
++ Address 0x........ is not stack'd, malloc'd or (recently) free'd
++
+--- /dev/null
++++ b/memcheck/tests/solaris/scalar_socketpair_fds.stderr.exp
+@@ -0,0 +1,9 @@
++---------------------------------------------------------
++231:       SYS_so_socketpair 2s 0m
++---------------------------------------------------------
++Syscall param socketpair(fd1) contains uninitialised byte(s)
++   ...
++
++Syscall param socketpair(fd2) contains uninitialised byte(s)
++   ...
++
+--- /dev/null
++++ b/memcheck/tests/solaris/scalar_socketpair_fds.vgtest
+@@ -0,0 +1,5 @@
++prereq: test -e scalar_socketpair && ./scalar_socketpair --fds
++prog: scalar_socketpair
++vgopts: -q
++stderr_filter: filter_scalar
++stderr_filter_args: libc
+--- /dev/null
++++ b/memcheck/tests/solaris/scalar_socketpair_legacy.vgtest
+@@ -0,0 +1,5 @@
++prereq: test -e scalar_socketpair && ./scalar_socketpair --legacy
++prog: scalar_socketpair
++vgopts: -q
++stderr_filter: filter_scalar
++stderr_filter_args: libc

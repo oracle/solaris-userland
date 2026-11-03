@@ -1,0 +1,29 @@
+Keep the standalone daemon-thread test independent of libc.
+
+thr_daemon_exit_standalone checks that a process can exit while a daemon
+thread is still running. It uses direct syscalls, supplies its own assembly
+bzero, and links with -nostartfiles -nodefaultlibs to avoid libc.
+
+GCC recognizes bzero as a builtin and can replace a call with memset.
+We reproduced this with GCC 16 even at -O0: the replacement produces an
+undefined reference to memset because the test provides only bzero and
+does not link libc. This transformation predates GCC 16; it is not evidence
+of a new GCC 16 compiler regression.
+
+Disable only the bzero builtin for this test so that the call reaches its
+own implementation, preserving the test's independence from libc.
+
+Background on GCC's bzero-to-memset transformation:
+https://gcc.gnu.org/legacy-ml/gcc-patches/2017-06/msg00530.html
+Documentation of the per-function -fno-builtin option:
+https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html#index-fno-builtin
+
+diff --git a/memcheck/tests/solaris/Makefile.am b/memcheck/tests/solaris/Makefile.am
+--- a/memcheck/tests/solaris/Makefile.am
++++ b/memcheck/tests/solaris/Makefile.am
+@@ -200,4 +200,5 @@
+ mmapobj_bssonly_so_CFLAGS = $(AM_CFLAGS) -fPIC
+ mmapobj_bssonly_so_LDFLAGS = -nostartfiles -nodefaultlibs -shared
+ 
++thr_daemon_exit_standalone_CFLAGS = $(AM_CFLAGS) -fno-builtin-bzero
+ thr_daemon_exit_standalone_LDFLAGS = -nostartfiles -nodefaultlibs

@@ -1,0 +1,56 @@
+# Fix Solaris regression-test compilation with modern GCC.
+# Downloaded from: https://sourceware.org/git/valgrind.git
+# Upstream commit: https://sourceware.org/git/?p=valgrind.git;a=commit;h=0de98d08b1c50f35c6ed4bb90a20df7be8908bd0
+#
+commit 0de98d08b1c50f35c6ed4bb90a20df7be8908bd0
+Author:     Paul Floyd <pjfloyd@wanadoo.fr>
+AuthorDate: Wed Mar 18 20:36:46 2026 +0100
+Commit:     Paul Floyd <pjfloyd@wanadoo.fr>
+CommitDate: Wed Mar 18 20:36:46 2026 +0100
+
+    Solaris: compiler warnings and one regtest compile error
+
+diff --git a/coregrind/m_syswrap/syswrap-solaris.c b/coregrind/m_syswrap/syswrap-solaris.c
+index d255d4f96..3a8e691e2 100644
+--- a/coregrind/m_syswrap/syswrap-solaris.c
++++ b/coregrind/m_syswrap/syswrap-solaris.c
+@@ -1251,7 +1251,7 @@ PRE(sys_spawn)
+                   VKI_POSIX_SPAWN_WAITPID_NP    | VKI_POSIX_SPAWN_NOEXECERR_NP);
+                if (rem != 0) {
+                   VG_(unimplemented)("Support for spawn() with attributes flag "
+-                                     "%#x.", sap->sa_psflags);
++                                     "%#x.", (unsigned)sap->sa_psflags);
+                }
+             }
+          }
+@@ -1619,7 +1619,7 @@ PRE(sys_spawn)
+    VG_(free)(argenv);
+ 
+    if (SUCCESS) {
+-      PRINT("   spawn: process %d spawned child %ld\n", VG_(getpid)(), RES);
++      PRINT("   spawn: process %d spawned child %lu\n", VG_(getpid)(), RES);
+    }
+ 
+ exit:
+@@ -1758,7 +1758,7 @@ static Bool handle_cmdline_open(SyscallStatus *status, const HChar *filename)
+    HChar name[VKI_PATH_MAX];    // large enough
+    VG_(sprintf)(name, "/proc/%d/cmdline", VG_(getpid)());
+ 
+-   if (!VG_STREQ(filename, name) && !VG_STREQ(filename, "/proc/self/cmdline"))
++   if ((VG_(strcmp)(filename, name)!=0) && (VG_(strcmp)(filename, "/proc/self/cmdline")!=0))
+       return False;
+ 
+    SysRes sres = VG_(dup)(VG_(cl_cmdline_fd));
+diff --git a/none/tests/solaris/context_link.c b/none/tests/solaris/context_link.c
+index 6d2f457a2..21571c962 100644
+--- a/none/tests/solaris/context_link.c
++++ b/none/tests/solaris/context_link.c
+@@ -28,7 +28,7 @@ int main(void)
+    uc.uc_stack.ss_size = sizeof(stack);
+ 
+    /* Call print_value(). */
+-   makecontext(&uc, print_value, 1, 42);
++   makecontext(&uc, (void(*)())print_value, 1, 42);
+    setcontext(&uc);
+ 
+    /* This code should not be reached. */
