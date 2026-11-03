@@ -1,0 +1,14 @@
+Fix duplicate script-path argument when executing SCE scripts directly.
+The wrapper still requires the script path as its first argument.
+
+--- a/src/SCE/sce_engine.c
++++ b/src/SCE/sce_engine.c
+@@ -578,7 +578,7 @@
+ 				execvpe("oscap-run-sce-script", argvp, env_values);
+ #endif
+ 			} else {
+-				execve(tmp_href, argvp, env_values);
++				execve(tmp_href, argvp + 1, env_values);
+ 			}
+ 
+ 			free_env_values(env_values, index_of_first_env_value_not_compiled_in, env_value_count);
