@@ -29,14 +29,14 @@ BUILD_BITS =            64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgsf
-COMPONENT_VERSION=	1.14.53
+COMPONENT_VERSION=	1.14.60
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gsf/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:0eb59a86e0c50f97ac9cfe4d8cc1969f623f2ae8c5296f2414571ff0a9e8bcba
+	sha256:83e12c36a099a8a7019bf425e2c24af66eeb2ef5874251e694431a07d9805dae
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1980
 
-COMPONENT_BAID=		180604
+COMPONENT_BAID=		462747
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -56,7 +56,7 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgsf-1.3lib \
                 $(PROTO_DIR)/usr/share/man/man3lib/libgsf-1.3lib ;
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_ARGS =   -k -i
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \

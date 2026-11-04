@@ -1,0 +1,72 @@
+Adapt libgsf tests to Solaris iconv and valgrind behavior.
+
+Solaris iconv substitutes a question mark for the unsupported Euro sign.
+That is a valid non-identical conversion, but the upstream test expects only
+GLib's fallback output and rejects the valid Solaris result.
+Valgrind reports a file descriptor probe and retained stdio buffer in Solaris libc.
+
+--- a/tests/common.supp
++++ b/tests/common.supp
+@@ -86,6 +86,34 @@
+ }
+ 
+ {
++   SOLARIS/libc/extended_stdio_fd_probe
++   CoreError:FdBadUse
++   fun:syscall
++   fun:fcntl
++   fun:enable_extended_FILE_stdio
++   fun:libc_init
++   fun:rt_thr_init
++   fun:setup
++   fun:_setup
++   fun:_rt_boot
++   obj:*
++}
++
++{
++   SOLARIS/libc/stdio_output_buffer
++   Memcheck:Leak
++   match-leak-kinds: possible
++   fun:malloc
++   fun:_findbuf
++   fun:_wrtchk
++   fun:_fwrite_unlocked
++   fun:fwrite
++   ...
++   fun:main
++   fun:_start
++}
++
++{
+    GLIB/G_FILE_READ_LINK
+    Memcheck:Leak
+    fun:malloc
+--- a/tests/test-iconv.c
++++ b/tests/test-iconv.c
+@@ -17,7 +17,13 @@
+ 	GsfOutput *iconv;
+ 	const char *input = "Hello, world! \xc2\xa1Hola! \xe2\x82\xac"; /* UTF-8: Euro sign at the end */
+ 	/* ISO-8859-1: "Hello, world! \xa1Hola! " and then fallback for Euro */
++#ifdef __sun
++	/* Solaris iconv may substitute '?' for a non-identical conversion.
++	 * This is valid, but the upstream test expects GLib's fallback instead. */
++	const guint8 expected[] = "Hello, world! \xa1Hola! ?";
++#else
+ 	const guint8 expected[] = "Hello, world! \xa1Hola! \\u20ac";
++#endif
+ 	guint8 const *buf;
+ 	gsf_off_t size;
+ 
+@@ -75,7 +80,11 @@
+ 	size = gsf_output_size (GSF_OUTPUT (sink));
+ 	buf = gsf_output_memory_get_bytes (sink);
+ 
++#ifdef __sun
++	const guint8 expected_fallback[] = "Hello, world! \xa1Hola! ?";
++#else
+ 	const guint8 expected_fallback[] = "Hello, world! \xa1Hola! [?]";
++#endif
+ 	if (size != (gsf_off_t)strlen ((const char *)expected_fallback)) {
+ 		g_printerr ("Fallback size mismatch: expected %zd, got %" GSF_OFF_T_FORMAT "\n",
+ 			 strlen ((const char *)expected_fallback), size);
