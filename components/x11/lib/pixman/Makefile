@@ -41,8 +41,25 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_OPTIONS += -Dgtk=disabled
 
+# Solaris i386 compiler TLS can under-align the fast-path cache for SSE loads.
+# Use the supported pthread TLS implementation for this ABI.
+CONFIGURE_OPTIONS.i386.32 += -Dtls=disabled
+
+# Initialize lazy-loaded dispatch implementations before running the tests.
+# Let the CPU-intensive fuzzers finish on Solaris build hosts.
+COMPONENT_TEST_ENV += LD_NOLAZYLOAD=1 MESON_TESTTHREADS=4
+COMPONENT_TEST_CMD = $(MESON)
+COMPONENT_TEST_ARGS += test --print-errorlogs --timeout-multiplier 4
+COMPONENT_TEST_TARGETS =
+
+# Normalize summary formatting across Meson versions.
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
+        '-e "/^Expected Fail:[[:space:]]*0$$/d" ' \
+        '-e "/^Unexpected Pass:[[:space:]]*0$$/d" ' \
+        '-e "/^Skipped:[[:space:]]*0$$/d" ' \
+        '-e "/^Timeout:[[:space:]]*0$$/d" ' \
+        '-e "s/:[[:space:]]*/: /" ' \
         '-e "/Ok:/p" ' \
         '-e "/Fail:/p" ' \
         '-e "/Pass:/p" ' \
