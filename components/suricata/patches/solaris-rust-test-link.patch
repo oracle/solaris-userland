@@ -1,0 +1,18 @@
+Avoid duplicate FileFlowFlagsToFlags in Solaris Rust unit tests.
+
+The Userland test target links libsuricata_c.a, which already provides
+this symbol.  The upstream test-only stub is needed only where that C
+library is absent.
+
+Copyright (c) 2026, Oracle and/or its affiliates.
+---
+--- a/rust/src/smb/smb2.rs
++++ b/rust/src/smb/smb2.rs
+@@ -925,6 +925,7 @@ mod tests {
+ 
+     // link stub for 8.0.x's un-prefixed C symbol (main calls it
+     // SCFileFlowFlagsToFlags); the tests never rely on its value
++    #[cfg(not(target_os = "solaris"))]
+     #[no_mangle]
+     pub extern "C" fn FileFlowFlagsToFlags(_f: u16, _d: u8) -> u16 {
+         0
