@@ -1,0 +1,32 @@
+https://github.com/lavv17/lftp/commit/573d06c04674413ba9013673d083d6a110036bd0
+
+From 573d06c04674413ba9013673d083d6a110036bd0 Mon Sep 17 00:00:00 2001
+From: Jonas Jelten <jj@sft.lol>
+Date: Thu, 14 Aug 2025 19:00:59 +0200
+Subject: [PATCH] fix stack corruption in `cd` for relative paths due to added
+ prefix length
+
+when the current path is not absolute, the implementation prefixes
+the target directory to change to with ~/
+this is 2 more characters than allocated, hence we write beyond
+the buffer boundary.
+
+in order to fix this, we allocate two more characters for the reconstruction
+buffer, so it can hold a relative path prefixed with ~/ as well.
+---
+ src/ftpclass.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/ftpclass.cc b/src/ftpclass.cc
+index 1ea9579f6..eb5d0186b 100644
+--- a/src/ftpclass.cc
++++ b/src/ftpclass.cc
+@@ -651,7 +651,7 @@ int Ftp::SendCWD(const char *path,const char *path_url,Expect::expect_t c)
+       }
+    } else {
+       char *path1=alloca_strdup(path); // to split it
+-      char *path2=alloca_strdup(path); // to re-assemble
++      char *path2=alloca_strdup2(path, 2); // to re-assemble + add space for potential ~/ prefix
+       if(AbsolutePath(path)) {
+ 	 if(real_cwd && !strncmp(real_cwd,path,real_cwd.length())
+ 	 && path[real_cwd.length()]=='/') {
