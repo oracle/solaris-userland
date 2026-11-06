@@ -26,16 +26,16 @@ BUILD_BITS = 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	onig
-COMPONENT_VERSION =	6.9.9
+COMPONENT_VERSION =	6.9.10
 COMPONENT_PROJECT_URL =	https://github.com/kkos/oniguruma
 COMPONENT_ARCHIVE_HASH =	\
-    sha256:60162bd3b9fc6f4886d4c7a07925ffd374167732f55dce8c491bfd9cd818a6cf
+    sha256:2a5cfc5ae259e4e97f86b68dfffc152cdaffe94e2060b770cb827238d769fc05
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE = 	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB =	library/oniguruma
 COMPONENT_ANITYA_ID=	11184
 
-COMPONENT_BAID =	163791
+COMPONENT_BAID =	465424
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -56,6 +56,9 @@ COMPONENT_TEST_TRANSFORMS += \
 
 # need proto to run tests
 test:	install
+
+# The upstream tests need proto headers even when make runs in parallel.
+$(TEST_64): $(INSTALL_64)
 
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library
