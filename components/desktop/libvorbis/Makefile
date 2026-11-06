@@ -30,26 +30,34 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		libvorbis
-COMPONENT_VERSION=	1.3.7
+COMPONENT_VERSION=	1.3.7.20260803
+# Upstream still installs the generated documentation under its base version.
+COMPONENT_BASE_VERSION=$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\.[0-9]\{8\}$$//')
 COMPONENT_PROJECT_URL=	https://xiph.org/vorbis/
-COMPONENT_ARCHIVE_HASH= \
-	sha256:0e982409a9c3fc82ee06e08205b1355e5c6aa4c36bca58146ef399621b0ce5ab
-COMPONENT_ARCHIVE_URL=	https://downloads.xiph.org/releases/vorbis/$(COMPONENT_ARCHIVE)
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+GIT_REPO=		https://github.com/xiph/vorbis.git
+GIT_COMMIT_ID=		1b75110b5a2754ba1931d82dd83cb822b266a21d
+GIT_HASH=		sha256:c618497082a1e2225c59a423b9e670107098ba173c451d5df3bff6c574c0e3d4
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1758
 
-COMPONENT_BAID=		143975
+COMPONENT_BAID=		465493
+
+PKG_MACROS +=		COMPONENT_BASE_VERSION=$(COMPONENT_BASE_VERSION)
 
 include $(WS_MAKE_RULES)/common.mk
+
+COMPONENT_PRE_CONFIGURE_ACTION += (cd $(SOURCE_DIR); ./autogen.sh) ;
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS = -k -i
+# Ignore configure/build chatter and the variable number of codebook headers.
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/Testing/p" ' \
-        '-e "/ok/p" '
+        '-e "/^Testing [1-8] channel/p" ' \
+        '-e "/ : ok$$/p" '
 
 CBE_PACKAGES += developer/documentation-tool/doxygen
 
