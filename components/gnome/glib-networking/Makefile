@@ -27,14 +27,14 @@ BUILD_BITS = 64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glib-networking
-COMPONENT_VERSION=	2.80.0
+COMPONENT_VERSION=	2.90.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GLib
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d8f4f1aab213179ae3351617b59dab5de6bcc9e785021eee178998ebd4bb3acf
+    sha256:ea95636590098355a05e3027579dba1a9a950b05e456b2488ea03d82e4b6c18a
 COMPONENT_BUGDB=	gnome/glib
 COMPONENT_ANITYA_ID=	10024
 
-COMPONENT_BAID=		173292
+COMPONENT_BAID=		462746
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
