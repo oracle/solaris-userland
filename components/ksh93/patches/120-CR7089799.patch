@@ -2,7 +2,7 @@
 # issue and has not been submitted to the community.
 --- INIT.2012-08-01.old/src/cmd/ksh93/sh/io.c	2015-02-24 13:25:19.362427732 -0800
 +++ INIT.2012-08-01/src/cmd/ksh93/sh/io.c	2015-03-05 12:11:01.233941923 -0800
-@@ -871,7 +877,6 @@ int sh_iomovefd(register int fdold)
+@@ -877,8 +877,7 @@ int sh_iomovefd(register int fdold)
  {
  	Shell_t *shp = sh_getinterp();
  	register int fdnew;
@@ -12,7 +12,7 @@
  	if(fdold<0 || fdold>2)
  		return(fdold);
  	fdnew = sh_iomovefd(dup(fdold));
-@@ -893,6 +899,8 @@ int	sh_pipe(register int pv[])
+@@ -901,6 +900,8 @@ int	sh_pipe(register int pv[])
  		errormsg(SH_DICT,ERROR_system(1),e_pipe);
  	pv[0] = sh_iomovefd(pv[0]);
  	pv[1] = sh_iomovefd(pv[1]);
