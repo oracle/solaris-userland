@@ -1,0 +1,30 @@
+Fix CVE-2026-18103 print_hw_addr buffer overflow
+
+ISC DHCP accepts hardware addresses up to HARDWARE_ADDR_LEN bytes (20),
+including InfiniBand addresses.  print_hw_addr() has a 49-byte static buffer,
+which is only sufficient for a colon-separated 16-byte address.  Formatting a
+20-byte address therefore writes past the end of the buffer.
+
+Size the buffer from HARDWARE_ADDR_LEN and reject lengths which cannot be
+represented by struct hardware.  This preserves output for all valid supported
+hardware addresses and prevents both over-read and overflow for an invalid
+length supplied by a caller.
+
+diff --git a/common/print.c b/common/print.c
+index 3ed4c34..d6d2f52 100644
+--- a/common/print.c
++++ b/common/print.c
+@@ -173,11 +173,11 @@ char *print_hw_addr (htype, hlen, data)
+ 	const int hlen;
+ 	const unsigned char *data;
+ {
+-	static char habuf [49];
++	static char habuf [HARDWARE_ADDR_LEN * 3];
+ 	char *s;
+ 	int i;
+ 
+-	if (hlen <= 0)
++	if ((hlen <= 0) || (hlen > HARDWARE_ADDR_LEN))
+ 		habuf [0] = 0;
+ 	else {
+ 		s = habuf;
