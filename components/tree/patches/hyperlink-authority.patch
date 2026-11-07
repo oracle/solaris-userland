@@ -1,0 +1,16 @@
+Remove the extra colon after the authority in hyperlinks. It was introduced in
+2.3.0 and produces invalid file://hostname:/path URLs.
+
+Upstream acknowledged the issue and plans this removal for the next release:
+https://github.com/Old-Man-Programmer/tree/issues/64
+
+--- a/unix.c
++++ b/unix.c
+@@ -46,7 +46,6 @@ void open_hyperlink(char *dirname, char *filename)
+ {
+   fprintf(outfile,"\033]8;;%s", scheme);
+   url_encode(outfile, authority);
+-  fprintf(outfile, ":");
+   // (optional) Hanging slashes are a real pain to deal with
+   bool slash = url_encode(outfile, realbasepath);
+   if (*(dirname+dirpathoffset)) {
