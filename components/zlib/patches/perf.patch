@@ -27,7 +27,7 @@ Patch status: deflate.c part: Solaris-specific; not suitable for upstream
  #ifndef TOO_FAR
  #  define TOO_FAR 4096
  #endif
-@@ -1375,7 +1378,9 @@ ds->bl_desc.dyn_tree = ds->bl_tree;
+@@ -1404,7 +1407,9 @@ ds->bl_desc.dyn_tree = ds->bl_tree;
      return Z_OK;
  #endif /* MAXSEG_64K */
  }
@@ -37,7 +37,7 @@ Patch status: deflate.c part: Solaris-specific; not suitable for upstream
  #ifndef FASTEST
  /* ===========================================================================
   * Set match_start to the longest match starting at the given string and
-@@ -1386,7 +1391,12 @@ * IN assertions: cur_match is the head o
+@@ -1415,7 +1420,12 @@ * IN assertions: cur_match is the head o
   *   string (strstart) and its distance is <= MAX_DIST, and prev_length >= 1
   * OUT assertion: the match length is not greater than s->lookahead.
   */
@@ -51,7 +51,7 @@ Patch status: deflate.c part: Solaris-specific; not suitable for upstream
      unsigned chain_length = s->max_chain_length;/* max hash chain length */
      Bytef *scan = s->window + s->strstart;      /* current string */
      Bytef *match;                               /* matched string */
-@@ -1528,6 +1538,7 @@ && --chain_length != 0);
+@@ -1557,6 +1567,7 @@ && --chain_length != 0);
      if ((uInt)best_len <= s->lookahead) return (uInt)best_len;
      return s->lookahead;
  }
@@ -59,7 +59,7 @@ Patch status: deflate.c part: Solaris-specific; not suitable for upstream
  
  #else /* FASTEST */
  
-@@ -1587,6 +1598,7 @@ }
+@@ -1616,6 +1627,7 @@ }
  
  #endif /* FASTEST */
  
@@ -67,7 +67,7 @@ Patch status: deflate.c part: Solaris-specific; not suitable for upstream
  #ifdef ZLIB_DEBUG
  
  #define EQUAL 0
-@@ -2183,3 +2195,5 @@ if (s->sym_next)
+@@ -2219,3 +2231,5 @@ if (s->sym_next)
          FLUSH_BLOCK(s, 0);
      return block_done;
  }
