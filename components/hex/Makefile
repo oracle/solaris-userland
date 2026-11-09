@@ -29,17 +29,20 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hex
-COMPONENT_VERSION=	2.5.2
+COMPONENT_VERSION=	2.6.0
 COMPONENT_PROJECT_URL=	https://hex.pm/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6f1626441f3dbfedeae801b1c3e6db81eaa4be659c66027ef7a80ed504ffcdbf
+    sha256:779f298713e6a506acbb5946b3c4a357966698ebcbfca2b1e62bbcac6efdae2a
 COMPONENT_ARCHIVE_URL=	https://github.com/hexpm/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID=	132546
 
-COMPONENT_BAID=		451102
+COMPONENT_BAID=		465329
 
 BUILD_STYLE= justmake
+# Select offline prototype checks before common.mk adds test prerequisites.
+TEST_TARGET= hex-prototype-test
+SYSTEM_TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 CLONEY = echo
@@ -63,11 +66,17 @@ COMPONENT_INSTALL_ACTION = cd $(@D); \
 			cd $(ELIXIR_INSTALL_PATH); \
 			unzip -q $(@D)/hex.ez
 
-# Hex provides automated tests but it requires external dependencies and postgresql database.
-# As a result, the manual testing according to the TESTING file is preferred.
-test:		$(NO_TESTS)
-system-test: $(NO_TESTS)
-COMPONENT_TEST_CMD= true
+# Check the delivered prototype without downloads or external dependencies.
+HEX_CHECK_HOME= $(BUILD_DIR)/hex-check-home/$(MACH)
+HEX_CHECK_ENV= LC_ALL=en_US.UTF-8 HEX_HOME=$(HEX_CHECK_HOME) \
+	MIX_HOME=$(HEX_CHECK_HOME) MIX_ARCHIVES=$(HEX_CHECK_HOME)/archives \
+	MIX_PATH=$(ELIXIR_INSTALL_PATH)/hex/ebin
+
+.PHONY: hex-prototype-test
+hex-prototype-test: install
+	$(MKDIR) $(HEX_CHECK_HOME)/archives
+	$(ENV) $(HEX_CHECK_ENV) mix hex --help
+	$(ENV) $(HEX_CHECK_ENV) mix help --search hex
 
 CBE_PACKAGES += system/core-os
 CBE_PACKAGES += runtime/erlang

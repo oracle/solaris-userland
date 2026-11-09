@@ -1,4 +1,17 @@
-# Primary validation can be done directly from the prototype area without
+# gmake clean test runs only the offline prototype smoke checks.
+# No test-time downloads, external services or additional dependencies are used.
+cd $(hg root)/components/hex
+gmake clean test
+
+# Upstream supports mix test --exclude integration without PostgreSQL, but
+# requires Rebar and 12 locked test dependencies. Fetching these during tests
+# violates the gate download policy. Integrating that suite would require
+# separately declared archives fetched by gmake download; it is not enabled
+# here. Full integration tests additionally require a disposable Hex.pm server
+# and PostgreSQL database. Do not interpret the prototype checks as an upstream
+# suite pass. Earlier exploratory upstream results are separate evidence.
+
+# The individual checks below can also be run directly from the prototype area without
 # installing the package to the system. This is useful on build systems where
 # you do not have the privileges required for pkg install/update.
 #
@@ -16,7 +29,7 @@ HEX_CHECK_HOME=$(hg root)/components/hex/build/hex-check-home/$(uname -p)
 mkdir -p "$HEX_CHECK_HOME/archives"
 
 # Confirm the loaded Hex module comes from the prototype.
-LC_ALL=en_US.UTF-8 MIX_HOME="$HEX_CHECK_HOME" \
+LC_ALL=en_US.UTF-8 HEX_HOME="$HEX_CHECK_HOME" MIX_HOME="$HEX_CHECK_HOME" \
     MIX_ARCHIVES="$HEX_CHECK_HOME/archives" MIX_PATH="$HEX_EBIN" \
     mix run --no-mix-exs -e '
       {:module, Hex} = Code.ensure_loaded(Hex)
@@ -32,7 +45,7 @@ LC_ALL=en_US.UTF-8 MIX_HOME="$HEX_CHECK_HOME" \
 # Hex is a package manager for the Erlang ecosystem.
 #
 # Further information can be found here: https://hex.pm/docs
-LC_ALL=en_US.UTF-8 MIX_HOME="$HEX_CHECK_HOME" \
+LC_ALL=en_US.UTF-8 HEX_HOME="$HEX_CHECK_HOME" MIX_HOME="$HEX_CHECK_HOME" \
     MIX_ARCHIVES="$HEX_CHECK_HOME/archives" MIX_PATH="$HEX_EBIN" \
     mix hex --help
 
@@ -55,7 +68,7 @@ LC_ALL=en_US.UTF-8 MIX_HOME="$HEX_CHECK_HOME" \
 # mix hex.search       # Open and perform documentation search
 # mix hex.user         # Manages your Hex user account
 # mix local.hex        # Installs Hex locally
-LC_ALL=en_US.UTF-8 MIX_HOME="$HEX_CHECK_HOME" \
+LC_ALL=en_US.UTF-8 HEX_HOME="$HEX_CHECK_HOME" MIX_HOME="$HEX_CHECK_HOME" \
     MIX_ARCHIVES="$HEX_CHECK_HOME/archives" MIX_PATH="$HEX_EBIN" \
     mix help --search hex
 
