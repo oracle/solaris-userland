@@ -27,19 +27,19 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nasm
-COMPONENT_VERSION=	3.01
-IPS_COMPONENT_VERSION=	3.1
+COMPONENT_VERSION=	3.02
+IPS_COMPONENT_VERSION=	3.2
 COMPONENT_PROJECT_URL=	https://www.nasm.us/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:aea120d4adb0241f08ae24d6add09e4a993bc1c4d9f754dbfc8020d6916c9be1
+    sha256:f504227b2f529e658d41629075f0503b38d67d790af345f34eba4af60c6a5998
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/pub/nasm/releasebuilds/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2048
 
-COMPONENT_BAID= 354222
+COMPONENT_BAID= 465616
 
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-test-results.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:c0ddd5f8fd78437f5bac68a51904838cafe812e5d5662b5e9a86efdc98dc5687
+    sha256:e9549b4601674961ecfcde440c055d402cf99643568c2ae68bf7286a8934992d
 COMPONENT_ARCHIVE_URL_1 =  make://golden-test-results/$(COMPONENT_ARCHIVE_1)
 
 include $(WS_MAKE_RULES)/common.mk
@@ -47,9 +47,23 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
 
 COMPONENT_TEST_TARGETS = test
+# The top-level upstream target changes into the source tree.  Run the
+# test subdirectory target against the cloned tree and its built ../nasm.
+COMPONENT_TEST_ARGS += -C test
 
 COMPONENT_PRE_TEST_ACTION += \
 	(cd $(@D); gtar  --transform 's,$(COMPONENT_SRC)/,,' -xf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1));
+
+# performtest.pl does not fail when a golden file cannot be compared.
+# The existing golden recipe omits compilation-date-dependent _version
+# output, so check the version independently.
+COMPONENT_POST_TEST_ACTION = \
+	$(@D)/nasm -v | /usr/gnu/bin/grep '^NASM version 3\.02 ' && \
+	/usr/gnu/bin/awk '\
+	    /performtest\.pl/ { ran = 1 } \
+	    $$0 == "Can\047t compare at _version/version file stdout" { next } \
+	    /Can\047t compare|failed on|Warning:|\*\*\*/ { print; bad = 1 } \
+	    END { exit (bad || !ran) }' $(COMPONENT_TEST_OUTPUT)
 
 COMPONENT_TEST_TRANSFORMS = \
         '-e "/^Test /p" ' \
