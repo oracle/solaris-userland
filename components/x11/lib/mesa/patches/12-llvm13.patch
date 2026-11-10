@@ -1,0 +1,22 @@
+Mesa is built against LLVM 13 in Userland. Use llvm-config for shared
+LLVM so the build can explicitly select the required version.
+
+--- mesa-21.3.8/meson.build
++++ mesa-21.3.8/meson.build
+@@ -1711,13 +1711,10 @@
+   warning('llvm option "false" deprecated, please use "disabled" instead.')
+ endif
+ 
+-# the cmake method can only link statically, so don't attempt to use it if we
+-# want to link dynamically. Before 0.54.0 meson will try cmake even when shared
+-# linking is requested, so we need to force the config-tool method to be used
+-# in that case, but in 0.54.0 meson won't try the cmake method if shared
+-# linking is requested.
++# Use llvm-config for shared LLVM so LLVM_CONFIG can select the version
++# required by the Userland component instead of CMake selecting another one.
+ _llvm_method = 'auto'
+-if meson.version().version_compare('< 0.54.0') and _shared_llvm
++if _shared_llvm
+   _llvm_method = 'config-tool'
+ endif
+ 

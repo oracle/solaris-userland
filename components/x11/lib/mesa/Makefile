@@ -56,6 +56,9 @@ FIX_PC_FILES += src/mapi/es2api/glesv2.pc.in
 
 COMPONENT_BUILD_ENV += PATH="/usr/llvm/13/bin:$(GNUBIN):$(PATH)"
 
+# Pin the LLVM version used by Meson dependency discovery.
+CONFIGURE_ENV += LLVM_CONFIG=/usr/llvm/13/bin/llvm-config
+
 # to find gnu egrep and gsed
 CONFIGURE_ENV += PATH="/usr/llvm/13/bin:$(GNUBIN):$(PATH)"
 
