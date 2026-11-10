@@ -25,15 +25,15 @@ BUILD_BITS =            32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		json-c
-COMPONENT_VERSION=	0.18
+COMPONENT_VERSION=	0.19
 COMPONENT_PROJECT_URL=	https://github.com/json-c/json-c/wiki/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:876ab046479166b869afc6896d288183bbc0e5843f141200c677b3e8dfb11724
+    sha256:37ad0249902e301bd9052bf712e511fcc6acff4ecaad4b5900aad9ce564e26de
 COMPONENT_ARCHIVE_URL=	https://s3.amazonaws.com/json-c_releases/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/json-c
 COMPONENT_ANITYA_ID=	1477
-COMPONENT_BAID=		330765
+COMPONENT_BAID=		465856
 
 BUILD_STYLE = cmake
 

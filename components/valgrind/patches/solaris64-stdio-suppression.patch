@@ -1,0 +1,43 @@
+Match Solaris stdio buffer suppressions for both 32-bit and 64-bit libc.
+
+This was offered upstream:
+https://bugs.kde.org/show_bug.cgi?id=528632
+
+--- a/solaris11.supp
++++ b/solaris11.supp
+@@ -21,13 +21,14 @@
+ }
+ 
+ # Solaris libc doesn't deallocate I/O buffers on program exit.
++# Allow the architecture subdirectory used by 64-bit libc.
+ {
+    Solaris:file_buffer_malloc
+    Memcheck:Leak
+    fun:malloc
+    fun:_findbuf
+-   obj:/lib/libc.so.1
+-   obj:/lib/libc.so.1
++   obj:/lib*/libc.so.1
++   obj:/lib*/libc.so.1
+ }
+ 
+ #----------------------------------------------------------------------------#
+--- a/solaris12.supp
++++ b/solaris12.supp
+@@ -49,13 +49,14 @@
+ 
+ #----------------------------------------------------------------------------#
+ # Solaris libc doesn't deallocate I/O buffers on program exit.
++# Allow the architecture subdirectory used by 64-bit libc.
+ {
+    Solaris:file_buffer_malloc
+    Memcheck:Leak
+    fun:malloc
+    fun:_findbuf
+-   obj:/lib/libc.so.1
+-   obj:/lib/libc.so.1
++   obj:/lib*/libc.so.1
++   obj:/lib*/libc.so.1
+ }
+ 
+ #----------------------------------------------------------------------------#

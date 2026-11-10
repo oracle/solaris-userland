@@ -1,0 +1,25 @@
+From upstream:
+https://github.com/json-c/json-c/commit/105a1067e3467ec42bd52370613b27d7a8a6e85c
+
+From 105a1067e3467ec42bd52370613b27d7a8a6e85c Mon Sep 17 00:00:00 2001
+From: Max Rijkers <max_rijkers1@icloud.com>
+Date: Thu, 20 Aug 2026 23:21:16 +0200
+Subject: [PATCH] Use printf instead of echo
+
+---
+ tests/test_json_parse_cli.test | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/test_json_parse_cli.test b/tests/test_json_parse_cli.test
+index 0982afe3c8..c4359cab12 100755
+--- a/tests/test_json_parse_cli.test
++++ b/tests/test_json_parse_cli.test
+@@ -10,7 +10,7 @@ fi
+ 
+ set -x -v
+ 
+-echo -n '"tenant=blue;note=CANARY_STACK_WINDOW_2026;status=ok"' > file1.dat
++printf '%s' '"tenant=blue;note=CANARY_STACK_WINDOW_2026;status=ok"' > file1.dat
+ (printf '"' ; printf 'A%.0s' $(seq 1 16) ; echo 'e2'  | xxd -r -p) > file2.dat
+ 
+ TESTNAME="${0##*/}"
