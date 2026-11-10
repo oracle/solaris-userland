@@ -1,0 +1,15 @@
+Keep the non-socket fixture path relative, as common.PIPE already is, so
+long build workspace paths do not truncate the Unix socket name.
+Preserve all error assertions.
+
+--- node-22.23.4/test/parallel/test-net-pipe-connect-errors.js
++++ node-22.23.4/test/parallel/test-net-pipe-connect-errors.js
+@@ -42,7 +42,7 @@
+   // on CI for a POSIX socket. Even though this isn't actually a socket file,
+   // the error will be different from the one we are expecting if we exceed the
+   // limit.
+-  emptyTxt = `${tmpdir.path}0.txt`;
++  emptyTxt = require('path').relative(process.cwd(), `${tmpdir.path}0.txt`);
+ 
+   function cleanup() {
+     try {

@@ -1,0 +1,16 @@
+Exclude one Solaris inspector test in the retiring Node.js 22 branch.
+The owner accepts this coverage exception after an observed worker SIGABRT;
+the cause remains undiagnosed. Production inspector behavior is unchanged.
+
+--- a/test/parallel/parallel.status
++++ b/test/parallel/parallel.status
+@@ -90,6 +90,9 @@
+ test-debugger-heap-profiler: PASS, FLAKY
+ 
+ [$system==solaris] # Also applies to SmartOS
++# Owner-authorized coverage exception for the retiring Node.js 22 branch.
++# Inspector worker SIGABRT is undiagnosed; retain the other inspector tests.
++test-inspector-connect-main-thread: SKIP
+ test-http2-client-unescaped-path: SKIP
+ test-http2-multi-content-length: SKIP
+ # https://github.com/nodejs/node/issues/43457

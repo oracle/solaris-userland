@@ -1,0 +1,129 @@
+Solaris ships shared libuv 1.51, which lacks uv_tcp_keepalive_ex().
+Use uv_tcp_keepalive() for the existing handle state and idle delay, and
+set the Solaris 11.4 TCP_KEEPINTVL and TCP_KEEPCNT socket options directly.
+Match libuv 1.52's interval limits and retain configurable probe counts.
+The newer libuv path is unchanged.
+
+The addon regression test reads the actual kernel socket options after
+pre-connect configuration, reconfiguration, default restoration, and disabling.
+
+--- node-24.22.1/src/tcp_wrap.cc
++++ node-24.22.1/src/tcp_wrap.cc
+@@ -41,6 +41,9 @@
+ #include <netinet/in.h>
+ #include <netinet/ip.h>
+ #include <netinet/ip6.h>
++#ifdef __sun
++#include <netinet/tcp.h>
++#endif
+ #include <sys/socket.h>
+ #include <unistd.h>  // dup(), close()
+ #endif
+@@ -216,7 +219,35 @@
+   unsigned int count = 10;
+   if (args[2]->IsUint32()) interval = args[2].As<Uint32>()->Value();
+   if (args[3]->IsUint32()) count = args[3].As<Uint32>()->Value();
++#if defined(__sun) && UV_VERSION_HEX < 0x013400
++  // libuv before 1.52 has no uv_tcp_keepalive_ex(). Keep its handle flags
++  // and idle-delay handling, then set the Solaris 11.4 probe options.
++  int err = uv_tcp_keepalive(&wrap->handle_, enable, delay);
++  if (err == 0 && enable) {
++    uv_os_fd_t fd;
++    int fd_err = uv_fileno(reinterpret_cast<uv_handle_t*>(&wrap->handle_), &fd);
++    // net.Socket replays these options after connect if no socket exists yet.
++    if (fd_err == 0) {
++      if (interval == 0 || count == 0) {
++        err = UV_EINVAL;
++      } else {
++        // Match libuv 1.52's Solaris limits: ten seconds to ten days.
++        if (interval < 10) interval = 10;
++        if (interval > 10 * 24 * 60 * 60) interval = 10 * 24 * 60 * 60;
++        if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL,
++                       &interval, sizeof(interval)) != 0 ||
++            setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT,
++                       &count, sizeof(count)) != 0) {
++          err = uv_translate_sys_error(errno);
++        }
++      }
++    } else if (fd_err != UV_EBADF) {
++      err = fd_err;
++    }
++  }
++#else
+   int err = uv_tcp_keepalive_ex(&wrap->handle_, enable, delay, interval, count);
++#endif
+   args.GetReturnValue().Set(err);
+ }
+ 
+--- /dev/null
++++ node-24.22.1/test/addons/solaris-tcp-keepalive/binding.gyp
+@@ -0,0 +1,3 @@
++{
++  "targets": [{ "target_name": "binding", "sources": ["binding.cc"] }]
++}
+--- /dev/null
++++ node-24.22.1/test/addons/solaris-tcp-keepalive/binding.cc
+@@ -0,0 +1,35 @@
++#include <node.h>
++#ifdef __sun
++#include <sys/socket.h>
++#include <netinet/in.h>
++#include <netinet/tcp.h>
++
++static void GetOptions(const v8::FunctionCallbackInfo<v8::Value>& args) {
++  v8::Isolate* isolate = args.GetIsolate();
++  auto context = isolate->GetCurrentContext();
++  int fd = args[0]->Int32Value(context).FromJust();
++  const int levels[] = {SOL_SOCKET, IPPROTO_TCP, IPPROTO_TCP, IPPROTO_TCP};
++  const int options[] = {SO_KEEPALIVE, TCP_KEEPIDLE, TCP_KEEPINTVL, TCP_KEEPCNT};
++  auto result = v8::Array::New(isolate, 4);
++  for (unsigned int i = 0; i < 4; i++) {
++    int value = 0;
++    socklen_t size = sizeof(value);
++    if (getsockopt(fd, levels[i], options[i], &value, &size) != 0) {
++      isolate->ThrowException(v8::Exception::Error(
++          v8::String::NewFromUtf8Literal(isolate, "getsockopt failed")));
++      return;
++    }
++    result->Set(context, i, v8::Integer::New(
++        isolate, i == 0 ? value != 0 : value)).Check();
++  }
++  args.GetReturnValue().Set(result);
++}
++#endif
++
++static void Initialize(v8::Local<v8::Object> exports) {
++#ifdef __sun
++  NODE_SET_METHOD(exports, "getOptions", GetOptions);
++#endif
++}
++
++NODE_MODULE(NODE_GYP_MODULE_NAME, Initialize)
+--- /dev/null
++++ node-24.22.1/test/addons/solaris-tcp-keepalive/test.js
+@@ -0,0 +1,25 @@
++'use strict';
++
++const common = require('../../common');
++if (!common.isSunOS) common.skip('Solaris socket options');
++const assert = require('assert');
++const net = require('net');
++const binding = require(`./build/${common.buildType}/binding`);
++
++const server = net.createServer();
++server.listen(0, common.mustCall(() => {
++  const client = new net.Socket();
++  client.setKeepAlive(true, 5000, 37000, 6);
++  client.connect(server.address().port, common.mustCall(() => {
++    const options = () => binding.getOptions(client._handle.fd);
++    assert.deepStrictEqual(options(), [1, 10, 37, 6]);
++    client.setKeepAlive(true, 5000);
++    assert.deepStrictEqual(options(), [1, 10, 10, 10]);
++    client.setKeepAlive(true, 12000, 12000, 3);
++    assert.deepStrictEqual(options(), [1, 12, 12, 3]);
++    client.setKeepAlive(false);
++    assert.strictEqual(options()[0], 0);
++    client.end();
++  }));
++  client.on('close', common.mustCall(() => server.close()));
++}));

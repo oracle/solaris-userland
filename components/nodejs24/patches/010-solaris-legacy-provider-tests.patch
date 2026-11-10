@@ -1,0 +1,22 @@
+These tests explicitly load the OpenSSL legacy provider, which is not supplied
+in the Solaris build environment. Follow the existing Solaris provider-test
+exclusions; retain all assertions and production crypto behavior unchanged.
+
+--- a/test/parallel/parallel.status
++++ b/test/parallel/parallel.status
+@@ -71,6 +71,8 @@
+ [$system==solaris] # Also applies to SmartOS
++# The snapshot fixture requires the unavailable legacy provider (MD4/Blowfish).
++test-crypto-provider-cache-snapshot: SKIP
+ test-http2-client-unescaped-path: SKIP
+ test-http2-multi-content-length: SKIP
+ # https://github.com/nodejs/node/issues/43457
+ test-domain-no-error-handler-abort-on-uncaught-0: PASS, FLAKY
+ test-domain-no-error-handler-abort-on-uncaught-1: PASS,FLAKY
+--- a/test/addons/addons.status
++++ b/test/addons/addons.status
+@@ -42,2 +42,4 @@
+ openssl-providers/test-legacy-provider-config: SKIP
+ openssl-providers/test-legacy-provider-option: SKIP
++# Explicitly asserts that the unavailable legacy provider is loaded.
++openssl-providers/test-default-properties-config: SKIP

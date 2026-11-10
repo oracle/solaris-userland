@@ -1,0 +1,64 @@
+Use short, private Solaris socket directories for the fs.cp fixtures.
+Bound Solaris WebCrypto WPT concurrency to avoid exhausting memory while
+retaining every test case and assertion.
+
+--- node-24.22.1/test/parallel/test-fs-cp-async-socket.mjs
++++ node-24.22.1/test/parallel/test-fs-cp-async-socket.mjs
+@@ -2,7 +2,7 @@
+ 
+ import * as common from '../common/index.mjs';
+ import assert from 'node:assert';
+-import { cp, mkdirSync } from 'node:fs';
++import { cp, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+ import { createServer } from 'node:net';
+ import { join } from 'node:path';
+ import { nextdir } from '../common/fs.js';
+@@ -25,7 +25,11 @@
+   const src = nextdir();
+   mkdirSync(src);
+   const dest = nextdir();
+-  const sock = join(tmpdir.path, 's.sock');
++  const socketDir = isSolaris ? mkdtempSync('/var/tmp/node-cp-') : tmpdir.path;
++  if (isSolaris) {
++    process.on('exit', () => rmSync(socketDir, { recursive: true, force: true }));
++  }
++  const sock = join(socketDir, 's.sock');
+   const server = createServer();
+   server.listen(sock);
+   cp(sock, dest, common.mustCall((err) => {
+--- node-24.22.1/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
++++ node-24.22.1/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
+@@ -2,7 +2,7 @@
+ import * as common from '../common/index.mjs';
+ import { nextdir } from '../common/fs.js';
+ import assert from 'node:assert';
+-import { cpSync, mkdirSync } from 'node:fs';
++import { cpSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+ import { createServer } from 'node:net';
+ import { join } from 'node:path';
+ import tmpdir from '../common/tmpdir.js';
+@@ -24,7 +24,11 @@
+   const src = nextdir();
+   mkdirSync(src);
+   const dest = nextdir();
+-  const sock = join(tmpdir.path, 's.sock');
++  const socketDir = isSolaris ? mkdtempSync('/var/tmp/node-cp-') : tmpdir.path;
++  if (isSolaris) {
++    process.on('exit', () => rmSync(socketDir, { recursive: true, force: true }));
++  }
++  const sock = join(socketDir, 's.sock');
+   const server = createServer();
+   server.listen(sock);
+   assert.throws(
+--- node-24.22.1/test/wpt/test-webcrypto.js
++++ node-24.22.1/test/wpt/test-webcrypto.js
+@@ -6,7 +6,8 @@
+ 
+ const { WPTRunner } = require('../common/wpt');
+ 
+-const runner = new WPTRunner('WebCryptoAPI');
++const runner = new WPTRunner('WebCryptoAPI',
++                             common.isSunOS ? { concurrency: 4 } : undefined);
+ 
+ runner.setInitScript(`
+ if (Uint8Array.fromHex === undefined) {
