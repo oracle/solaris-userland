@@ -1,0 +1,40 @@
+Imported from upstream:
+https://github.com/zsh-users/zsh/commit/53de4623539a227b1eacc82399bdf76189dc679f
+https://zsh.org/workers/55082
+
+ChangeLog hunk omitted. Requires the vimatchbracket guard from
+01-zle-memory.patch. The upstream code hunks are unchanged.
+
+From 53de4623539a227b1eacc82399bdf76189dc679f Mon Sep 17 00:00:00 2001
+From: Mikael Magnusson <mikachu@gmail.com>
+Date: Fri, 29 May 2026 06:55:00 +0200
+Subject: [PATCH] 55082: fix zlecs bounds checks in vimatchbracket and
+ alignmultiwordleft
+
+---
+ ChangeLog          | 5 +++++
+ Src/Zle/zle_move.c | 4 ++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/Src/Zle/zle_move.c b/Src/Zle/zle_move.c
+index 7f46786836..f13305b784 100644
+--- a/Src/Zle/zle_move.c
++++ b/Src/Zle/zle_move.c
+@@ -51,7 +51,7 @@ alignmultiwordleft(int *pos, int setpos)
+     int loccs = *pos;
+ 
+     /* generic nothing to do test */
+-    if (!isset(COMBININGCHARS) || loccs == zlell || loccs == 0)
++    if (!isset(COMBININGCHARS) || loccs >= zlell || loccs <= 0)
+ 	return 0;
+ 
+     /* need to be on combining character */
+@@ -642,7 +642,7 @@ vimatchbracket(UNUSED(char **args))
+ 	    DECCS();
+ 	else
+ 	    INCCS();
+-	if (zlecs < 0 && zlecs >= zlell)
++	if (zlecs < 0 || zlecs >= zlell)
+ 	    break;
+ 	if (zleline[zlecs] == oth)
+ 	    ct--;

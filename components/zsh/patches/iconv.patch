@@ -1,0 +1,50 @@
+Reject non-identical character conversions as well as iconv errors.
+
+Solaris iconv can substitute a character and return a positive count instead
+of failing with EILSEQ. Treat that as an out-of-range character so that
+strict (#X) expansion fails and non-strict (#) retains its byte fallback.
+Commit the converted bytes only after an identical conversion, so failed
+conversions do not prevent the byte fallback. This preserves the existing
+upstream D04parameter.ztst expectations.
+
+The upstream report describes the same behavior on BSD systems:
+https://www.zsh.org/mla/workers/2023/msg00869.html (workers/52140).
+Upstream implements this behavior in:
+https://github.com/zsh-users/zsh/commit/02e33c54d85208c7d9b96d91a26d04069ff19ed2
+Author: Jun-ichi Takimoto <takimoto-j@kba.biglobe.ne.jp>
+Date: Wed Sep 27 01:56:47 2023 +0900
+Subject: 52169: a few more improvements of (#) flag
+
+This patch is a minimal adaptation of the upstream error handling to 5.9.2.
+The upstream commit also refactors character conversion into ucs4tomb();
+that broader refactoring is not included here. Both implementations reject
+any nonzero iconv return value and leave the caller's output position
+unchanged on failure. Linux reports an unrepresentable character with
+(size_t)-1; Solaris may instead report a positive substitution count.
+
+--- a/Src/utils.c
++++ b/Src/utils.c
+@@ -7022,6 +7022,7 @@
+ 		} else {
+ #   ifdef HAVE_ICONV
+ 		    ICONV_CONST char *inptr = inbuf;
++		    char *outptr = t;
+ 		    const char *codesetstr = nl_langinfo(CODESET);
+     	    	    inbytes = 4;
+ 		    outbytes = 6;
+@@ -7065,12 +7066,13 @@
+ 			zerr("cannot do charset conversion (iconv failed)");
+ 			CHARSET_FAILED();
+ 		    }
+-                    count = iconv(cd, &inptr, &inbytes, &t, &outbytes);
++                    count = iconv(cd, &inptr, &inbytes, &outptr, &outbytes);
+ 		    iconv_close(cd);
+-		    if (count == (size_t)-1) {
++		    if (count != 0) {
+                         zerr("character not in range");
+ 			CHARSET_FAILED();
+ 		    }
++		    t = outptr;
+ 		    if ((how & GETKEY_UPDATE_OFFSET) && s - sstart < *misc)
+ 			(*misc) += count;
+ #   else

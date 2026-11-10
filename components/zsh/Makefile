@@ -31,18 +31,18 @@ include $(WS_MAKE_RULES)/shared-targets.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		zsh
-COMPONENT_VERSION=	5.9
+COMPONENT_VERSION=	5.9.2
 COMPONENT_PROJECT_URL=	https://www.zsh.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9b8d1ecedd5b5e81fbf1918e876752a7dd948e05c1a0dba10ab863842d45acd5
+    sha256:36fa734374b44783582cec09bcd67822e2f992c779ec1624ab5596df078d2f81
 COMPONENT_ARCHIVE_URL=	\
 	https://downloads.sourceforge.net/project/zsh/zsh/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_PUBLIC_KEY_URL= https://raw.githubusercontent.com/clearlinux-pkgs/zsh/master/ACF8146CAE8CBBC4.pkey
 COMPONENT_ANITYA_ID=	5307
 
-COMPONENT_BAID = 347787
+COMPONENT_BAID = 465621
 
 BUILD_TARGET=
 INSTALL_TARGET=
@@ -97,7 +97,7 @@ install:	build $(INSTALL_64) $(PROTOETCDIR)/zprofile $(PROTOETCDIR)/zshrc
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
-        '-n -e "/^.* successful test scripts, .* failures, .* skipped/p"'
+        '-n -e "/^.* successful test scripts, .* failures*, .* skipped/p"'
 
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/pcre2

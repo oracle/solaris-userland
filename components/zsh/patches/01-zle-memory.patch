@@ -1,0 +1,313 @@
+Imported from upstream:
+https://github.com/zsh-users/zsh/commit/724548b4e9fa054d2fca7383cbe5627f1f65cadb
+https://zsh.org/workers/54569
+
+Selected memory-safety changes applicable to 5.9.2. Omitted ChangeLog,
+development-only termquery/OSSEL changes, unrelated behavior, cosmetics
+and leak-only changes. Adapted putreplaceselection to the release's lack
+of an OSSEL branch. Refreshed context after offsets were reported.
+The vimatchbracket guard is corrected by 02-zle-bounds.patch.
+
+From 724548b4e9fa054d2fca7383cbe5627f1f65cadb Mon Sep 17 00:00:00 2001
+From: Mikael Magnusson <mikachu@gmail.com>
+Date: Wed, 13 May 2026 20:59:29 +0200
+Subject: [PATCH] 54569: zle: various issues
+
+historysearchforward advanced zlecs instead of histpos
+(historysearchbackward already correctly uses CCRIGHTPOS(histpos)
+
+ST is actually 0x9c per ctlseqs.txt
+  ESC \
+    String Terminator (ST  is 0x9c).
+
+fix plenty of indexing confusion with prompt_markers(), it was never
+returning pre because markers did not include it. constants were
+compared against the wrong variable, or using the wrong hardcoded index
+(and those indices also changed now that pre is in markers).
+
+in bracketedstring, the imeta(next) branch writes two bytes to pbuf,
+make sure they both fit.
+
+only reallocate once in sizeline, and correct the comment for
+stringaszleline, though I don't think anyone will do that.
+
+putreplaceselection used a stale buffer in the following scenario:
+  % blah
+  set region to bl with cursor on a, hit ctrl-k, then invoke
+  put-replace-selection via alt-x or bind it in advance.
+==10588== Invalid read of size 2
+==10588==    by 0x6588FAA: pastebuf (zle_misc.c:597)
+==10588==    by 0x65895A6: putreplaceselection (zle_misc.c:720)
+==10588==  Address 0x6219550 is 0 bytes inside a block of size 16 free'd
+==10588==    at 0x483C17B: free (vgpreload_memcheck-amd64-linux.so)
+==10588==    by 0x65A347A: cuttext (zle_utils.c:1023)
+==10588==  Block was alloc'd at
+==10588==    at 0x483E82F: realloc (vgpreload_memcheck-amd64-linux.so)
+==10588==    by 0x65A34E8: cuttext (zle_utils.c:1028)
+
+also set clear so the stringaszleline allocation is freed in the same
+function, and fix the same leak in viputbefore and viputafter.
+
+fix out of bounds access in vimatchbracket
+==11986== Invalid read of size 4
+==11986==    at 0x658D14C: vimatchbracket (zle_move.c:645)
+
+fix out of bounds access in backwardmetafiedchar, this one won't cause a
+valgrind warning because the memory is owned by us.
+
+fix two separate leaks (impressive) when assigning to $registers special zle parameter
+==16615== 2,799,972 bytes in 99,999 blocks are definitely lost in loss record 631 of 631
+==16615==    at 0x48397B5: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16615==    by 0x473836: zalloc (mem.c:966)
+==16615==    by 0x65A1EEC: stringaszleline (zle_utils.c:440)
+==16615==    by 0x658EF17: set_register (zle_params.c:775)
+==16615== 599,988 bytes in 99,998 blocks are definitely lost in loss record 630 of 631
+==16615==    at 0x48397B5: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16615==    by 0x473836: zalloc (mem.c:966)
+==16615==    by 0x4AA101: ztrdup (string.c:68)
+==16615==    by 0x435536: addvars (exec.c:2604)
+
+don't crash on 'bindkey x foo; zle -l foo'
+==21910== Process terminating with default action of signal 11 (SIGSEGV)
+==21910==  Access not within mapped region at address 0x0
+==21910==    at 0x6597303: bin_zle_list (zle_thingy.c:406)
+==21910==    by 0x6597229: bin_zle (zle_thingy.c:388)
+
+restore keymap and zmod when erroring out of bin_zle_call
+
+inststrlen used the wrong len to advance zlecs which would cause it to
+advance way past the end of zleline. fortunately this function is never
+called with zlemetaline == NULL.
+
+fix expand-cmd-path to not just move the cursor an arbitrary
+amount forward, and convert the indices from zlemetaline to zleline.
+
+bangq in magicspace could be used after zleline was realloc()d,
+calculate the offset before calling selfinsert()
+
+the memo field wasn't always freed for region highlights
+
+vi-indent was skipping the last line for 4+ line ranges
+
+vi-unindent buffer overrun
+==3900== Conditional jump or move depends on uninitialised value(s)
+==3900==    at 0x65A3CE6: findeol (zle_utils.c:1180)
+==3900==    by 0x65A6E01: viunindent (zle_vi.c:880)
+
+break the loop on eof in vi-caps-lock-panic, though we do exit anyway
+when the terminal closes
+
+off by one in condition in vi-backward-word-end, this only prevented us
+moving to the start of the buffer if we were on the second character
+exactly.
+
+seq in cursor_form() was one byte too small to fit the nul terminator:
+zsh% zle_cursorform=( edit:steady,color=\#abcdef )
+Breakpoint 1, cursor_form () at termquery.c:987
+987	    if (s - seq)
+(gdb) p s - seq
+$1 = 31
+
+fix negation of h-3 in setmstatus. this was very noticable in interactive
+menu selection if you typed a long string. the entire string would be
+replaced by three dots instead of just the start of it.
+
+--- a/Src/Zle/zle_misc.c
++++ b/Src/Zle/zle_misc.c
+@@ -657,12 +657,14 @@
+     Cutbuffer putbuf;
+     int clear = 0;
+     int pos = 2;
++    int isvibuf;
+ 
+     if (invicmdmode())
+ 	startvichange(-1);
+     if (n < 0 || zmod.flags & MOD_NULL)
+ 	return 1;
+-    putbuf = (zmod.flags & MOD_VIBUF) ? &vibuf[zmod.vibuf] : &cutbuf;
++    isvibuf = zmod.flags & MOD_VIBUF;
++    putbuf = isvibuf ? &vibuf[zmod.vibuf] : &cutbuf;
+     if (!putbuf->buf)
+ 	return 1;
+     memcpy(&prevbuf, putbuf, sizeof(prevbuf));
+@@ -670,6 +672,14 @@
+     /* if "9 was specified, prevent killregion from freeing it */
+     if (zmod.vibuf == 35) {
+ 	putbuf->buf = 0;
++	clear = 1;
++    } else if (!isvibuf) {
++	/* when putbuf is pointing at cutbuf, we can't clear putbuf->buf
++	 * because that's where we want to put the stuff, but valgrind will be
++	 * quite sad if killregion reallocs it, so I think we need to copy it */
++	ZLE_STRING_T newbuf = (ZLE_STRING_T)zalloc(prevbuf.len * ZLE_CHAR_SIZE);
++	ZS_memcpy(newbuf, prevbuf.buf, prevbuf.len);
++	prevbuf.buf = newbuf;
+ 	clear = 1;
+     }
+ 
+@@ -755,7 +765,7 @@
+     int next, timeout;
+ 
+     while (endesc[endpos]) {
+-	if (current + 1 >= psize)
++	if (current + 2 >= psize)
+ 	    pbuf = zrealloc(pbuf, psize *= 2);
+ 	if ((next = getbyte(1L, &timeout, 1)) == EOF)
+ 	    break;
+--- a/Src/Zle/zle_move.c
++++ b/Src/Zle/zle_move.c
+@@ -274,7 +274,7 @@
+      */
+ #endif
+     if (endptr > start) {
+-	if (endptr > start - 1 && endptr[-2] == Meta)
++	if (endptr > start + 1 && endptr[-2] == Meta)
+ 	{
+ 	    if (retchr)
+ 		*retchr = (convchar_t)(endptr[-1] ^ 32);
+@@ -642,6 +642,8 @@
+ 	    DECCS();
+ 	else
+ 	    INCCS();
++	if (zlecs < 0 && zlecs >= zlell)
++	    break;
+ 	if (zleline[zlecs] == oth)
+ 	    ct--;
+ 	else if (zleline[zlecs] == me)
+--- a/Src/Zle/zle_refresh.c
++++ b/Src/Zle/zle_refresh.c
+@@ -1569,7 +1569,7 @@
+ 	     */
+ 	    snextline(&rpms);
+ 	}
+-	zfree(outputline, outsz);
++	zfree(outputline, (outsz+2) * ZLE_CHAR_SIZE);
+ 	free(statusdup);
+     }
+     *rpms.s = zr_zr;
+@@ -1632,7 +1632,7 @@
+ 	 * Ensure we don't start overwriting in the middle of a wide
+ 	 * character.
+ 	 */
+-	while(rpms.sen > nbuf[rpms.tosln - 1] && rpms.sen->chr == WEOF) {
++	while(rpms.sen > nbuf[rpms.tosln] && rpms.sen->chr == WEOF) {
+ 	    extra_ellipsis++;
+ 	    rpms.sen--;
+ 	}
+--- a/Src/Zle/zle_tricky.c
++++ b/Src/Zle/zle_tricky.c
+@@ -2246,7 +2246,7 @@
+ 	free(zlestr);
+ 	zsfree(instr);
+ 	if (move)
+-	    zlecs += len;
++	    zlecs += zlelen;
+     }
+     return len;
+ }
+@@ -2878,6 +2878,7 @@
+     ZLE_STRING_T bangq;
+     ZLE_CHAR_T zlebangchar[1];
+     int ret;
++    int bangq_off;
+ #ifdef MULTIBYTE_SUPPORT
+     mbstate_t mbs;
+ #endif
+@@ -2904,8 +2905,12 @@
+ 	    break;
+     }
+ 
++    /* selfinsert can call spaceinline which can realloc zleline, we can't
++     * use the bangq pointer after that */
++    bangq_off = (bangq < zleline + zlell) ? (int)(bangq - zleline) : -1;  
++
+     if (!(ret = selfinsert(args)) &&
+-	(!bangq || bangq + 2 > zleline + zlecs))
++	(bangq_off < 0 || bangq_off + 2 > zlecs))
+ 	doexpandhist();
+     return ret;
+ }
+@@ -2923,7 +2928,7 @@
+ 
+ /**/
+ static char *
+-getcurcmd(void)
++getcurcmd(int trackpos)
+ {
+     int curlincmd;
+     char *s = NULL;
+@@ -2951,6 +2956,17 @@
+     strinend();
+     inpop();
+     errflag &= ~ERRFLAG_ERROR;
++    if (s && trackpos) {
++	/* cmdwb and cmdwe are indices in zlemetaline, but we need indices
++	 * into zleline, so do a little trick: use cmdwe as the length and
++	 * cmdwb as the 'cursor position', this gives us both conversions
++	 * in a single call to stringaszleline */
++	char *prefix = zalloc(cmdwe + 1);
++	memcpy(prefix, zlemetaline, cmdwe);
++	prefix[cmdwe] = '\0';
++	free(stringaszleline(prefix, cmdwb, &cmdwe, NULL, &cmdwb));
++	free(prefix);
++    }
+     unmetafy_line();
+     zcontext_restore();
+ 
+@@ -2968,7 +2984,7 @@
+     int m = zmult, na = noaliases;
+ 
+     noaliases = 1;
+-    s = getcurcmd();
++    s = getcurcmd(0);
+     noaliases = na;
+     if (!s)
+ 	return 1;
+@@ -2999,7 +3015,7 @@
+     ZLE_STRING_T zlestr;
+ 
+     noaliases = 1;
+-    s = getcurcmd();
++    s = getcurcmd(1);
+     noaliases = na;
+     if (!s)
+ 	return 1;
+@@ -3020,8 +3036,8 @@
+     ZS_strncpy(zleline + zlecs, zlestr, strll);
+     free(zlestr);
+     zlecs = oldcs;
+-    if (zlecs >= cmdwe - 1)
+-	zlecs += cmdwe - cmdwb + strlen(str);
++    if (zlecs >= cmdwb)
++	zlecs += strll - (cmdwe - cmdwb);
+     if (zlecs > zlell)
+ 	zlecs = zlell;
+     return 0;
+--- a/Src/Zle/zle_vi.c
++++ b/Src/Zle/zle_vi.c
+@@ -836,11 +836,12 @@
+     }
+     oldcs = zlecs;
+     /* add a tab to the beginning of each line within range */
+-    while (zlecs <= c2 + 1) {
++    while (zlecs <= c2) {
+ 	if (zleline[zlecs] == '\n') { /* leave blank lines alone */
+ 	    ++zlecs;
+ 	} else {
+ 	    spaceinline(1);
++	    c2++;
+ 	    zleline[zlecs] = '\t';
+ 	    zlecs = findeol() + 1;
+ 	}
+@@ -873,8 +874,10 @@
+     oldcs = zlecs;
+     /* remove a tab from the beginning of each line within range */
+     while (zlecs < c2) {
+-	if (zleline[zlecs] == '\t')
++	if (zleline[zlecs] == '\t') {
+ 	    foredel(1, 0);
++	    c2--;
++	}
+ 	zlecs = findeol() + 1;
+     }
+     /* go back to the first line of the range */
