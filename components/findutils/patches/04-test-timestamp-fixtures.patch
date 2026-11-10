@@ -1,0 +1,94 @@
+Make timestamp fixtures independent of exact atime/mtime/ctime equality.
+
+On Solaris ZFS, both native and GNU touch can leave ctime a few microseconds
+later than atime/mtime.  The existing fixtures incorrectly assume equality.
+For used.sh, explicitly create and verify a small positive delta, updating
+only its +0 expectation to reflect that deliberate fixture change.
+For newer.sh, keep all predicates and reference comparisons, accounting for
+whether the reference file's own ctime is newer than its atime/mtime.  Sort
+multiple matches so directory enumeration order does not affect the check.
+No predicate, assertion, or failure is skipped or marked expected.
+
+Solaris filesystem portability fix; suitable for upstream submission.
+
+--- a/tests/find/used.sh
++++ b/tests/find/used.sh
+@@ -49,9 +49,16 @@
+     && test "$tdiff" -ge "$exp" \
+     || skip_ "cannot verify timestamps of sample files"
+ done
+-# Create another sample file with timestamp now.
+-touch t00 \
+-  || skip_ "creating sample file failed"
++# Keep the near-zero sample's atime strictly after ctime.  Some file systems
++# assign a slightly later ctime even when touch sets both timestamps to now.
++# A one-minute delta still lies well inside the five-day test boundary.
++touch -a -d "$($DATE -d '1 minute' '+%Y-%m-%d %H:%M:%S')" t00 \
++  || framework_failure_ "creating near-zero sample failed"
++x="$( $STAT -c '%X' t00 )" \
++  && z="$( $STAT -c '%Z' t00 )" \
++  && tdiff="$( expr "$x" - "$z" )" \
++  && test "$tdiff" -gt 0 && test "$tdiff" -lt 300 \
++  || framework_failure_ "near-zero sample does not have a small positive age"
+ 
+ $STAT -c "Name: %n  Access: %x  Change: %z" t?0 || : # ignore error.
+ 
+@@ -92,6 +99,7 @@
+ == testing: find -used 35
+ == testing: find -used 45
+ == testing: find -used +0
++./t00
+ ./t10
+ ./t20
+ ./t30
+--- a/tests/find/newer.sh
++++ b/tests/find/newer.sh
+@@ -35,7 +35,25 @@
+ # Stat the test files for debug purposes.
+ stat file? || : ignored
+ 
+-echo "./file3" > exp || framework_failure_
++# Record nanosecond timestamps independently of find.  Cross-field tests
++# may legitimately match the reference itself when ctime is later.
++atime="$( stat -c '%x' file2 )" || framework_failure_
++mtime="$( stat -c '%y' file2 )" || framework_failure_
++ctime="$( stat -c '%z' file2 )" || framework_failure_
++
++expect_newer_()
++{
++  echo "./file3" > exp || framework_failure_
++  case "$1" in
++    -cnewer|-newercm|-newerct) reference=$mtime ;;
++    -newerca) reference=$atime ;;
++    *) return ;;
++  esac
++  # stat's ISO timestamps have the same time zone and fixed-width fields.
++  if LC_ALL=C test "$ctime" \> "$reference"; then
++    printf '%s\n' './file2' './file3' > exp || framework_failure_
++  fi
++}
+ 
+ # Exercise -new options using a reference file.
+ for x in \
+@@ -45,7 +63,9 @@
+   -newerma -newermc -newermm \
+   ; do
+   rm -f out || framework_failure_
+-  find . $x file2 -name 'file*' > out || fail=1
++  expect_newer_ "$x"
++  find . $x file2 -name 'file*' > unsorted || fail=1
++  LC_ALL=C sort unsorted > out || framework_failure_
+   compare exp out || fail=1
+ done
+ 
+@@ -55,7 +75,9 @@
+ if test "${tref}"; then
+   for x in -newerat -newerct -newermt; do
+     rm -f out || framework_failure_
+-    find . $x "${tref}" -name 'file*' > out || fail=1
++    expect_newer_ "$x"
++    find . $x "${tref}" -name 'file*' > unsorted || fail=1
++    LC_ALL=C sort unsorted > out || framework_failure_
+     compare exp out || fail=1
+   done
+ else

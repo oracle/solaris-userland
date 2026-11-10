@@ -1,0 +1,32 @@
+Findutils test helpers need generated gnulib headers in VPATH builds.
+
+Solaris has no system error.h.  The replacement header is generated under
+$(top_builddir)/gl/lib, but the top-level tests currently search only the
+source gnulib directory.  This prevents test-sigusr from compiling and keeps
+the top-level shell tests, including execdir-command-name.sh, from running.
+Update both the Automake input and the shipped Makefile.in.
+
+Solaris-specific build fix; suitable for upstream submission.
+
+--- a/tests/local.mk
++++ b/tests/local.mk
+@@ -17,7 +17,7 @@
+ 
+ built_programs = find xargs frcode locate updatedb
+ 
+-AM_CPPFLAGS = -I$(top_srcdir)/gl/lib
++AM_CPPFLAGS = -I$(top_builddir)/gl/lib -I$(top_srcdir)/gl/lib
+ LDADD = $(top_builddir)/gl/lib/libgnulib.a
+ 
+ # Indirections required so that we'll still be able to know the
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -2815,7 +2815,7 @@
+ ACLOCAL_AMFLAGS = -I gl/m4 -I m4
+ TESTFILE_SUFFIXES = .exp .xo .xe .xi
+ built_programs = find xargs frcode locate updatedb
+-AM_CPPFLAGS = -I$(top_srcdir)/gl/lib
++AM_CPPFLAGS = -I$(top_builddir)/gl/lib -I$(top_srcdir)/gl/lib
+ LDADD = $(top_builddir)/gl/lib/libgnulib.a
+ 
+ # Indirections required so that we'll still be able to know the
