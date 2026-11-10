@@ -1,0 +1,24 @@
+From upstream:
+https://github.com/tobgu/pyrsistent/commit/f2ebb2b0425360fcbf4a0513595a85124997bb5c
+
+From f2ebb2b0425360fcbf4a0513595a85124997bb5c Mon Sep 17 00:00:00 2001
+From: Ignasi Abio <abio@arista.com>
+Date: Mon, 5 Jan 2026 05:38:52 -0800
+Subject: [PATCH] initialize refCount at doSetWithDirty
+
+---
+ pvectorcmodule.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/pvectorcmodule.c b/pvectorcmodule.c
+index 9b83a56..9ed0ea1 100644
+--- a/pvectorcmodule.c
++++ b/pvectorcmodule.c
+@@ -1357,6 +1357,7 @@ static VNode* doSetWithDirty(VNode* node, unsigned int level, unsigned int posit
+     if(!IS_DIRTY(node)) {
+       resultNode = allocNode();
+       copyInsert(resultNode->items, node->items, position & BIT_MASK, value);
++      SET_NODE_REF_COUNT(resultNode, 1);
+       incRefs((PyObject**)resultNode->items);
+       SET_DIRTY(resultNode);
+     } else {
