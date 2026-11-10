@@ -1,0 +1,58 @@
+From 1988b308ad43cf6f2d0c7f7457fe95f2aef5e93a Mon Sep 17 00:00:00 2001
+From: Petr Sumbera <sumbera@volny.cz>
+Date: Wed, 4 Nov 2026 09:18:24 +0000
+Subject: [PATCH] test: avoid DNS in metrics_pool_events
+
+Exercise the asynchronous resolver worker using 127.0.0.1 and
+AI_NUMERICHOST, avoiding external name-service latency in worker-pool
+metrics accounting. Check successful completion and a non-null result.
+Preserve the completion counters, metrics assertions, sleep and timeout.
+
+Generated-By: codex_gpt-6.1
+
+Upstream proposal (pending; not merged):
+https://github.com/libuv/libuv/pull/5407
+
+Applies to libuv 1.53.0 without code changes from the proposed commit.
+
+--- a/test/test-metrics.c
++++ b/test/test-metrics.c
+@@ -300,7 +300,9 @@
+ static void fs_addrinfo_cb(uv_getaddrinfo_t* req,
+                            int status,
+                            struct addrinfo* res) {
+-  uv_freeaddrinfo(req->addrinfo);
++  ASSERT_OK(status);
++  ASSERT_NOT_NULL(res);
++  uv_freeaddrinfo(res);
+   pool_events_counter++;
+ }
+ 
+@@ -313,6 +315,7 @@
+   uv_fs_t stat2_req;
+   uv_fs_t unlink_req;
+   uv_fs_t write_req;
++  struct addrinfo hints;
+   uv_getaddrinfo_t addrinfo_req;
+   uv_metrics_t metrics;
+   uv_prepare_t prepare;
+@@ -358,12 +361,17 @@
+                       1,
+                       0,
+                       fs_random_cb));
++  /* Exercise the resolver worker without waiting for external name services. */
++  memset(&hints, 0, sizeof(hints));
++  hints.ai_family = AF_INET;
++  hints.ai_socktype = SOCK_STREAM;
++  hints.ai_flags = AI_NUMERICHOST;
+   ASSERT_OK(uv_getaddrinfo(uv_default_loop(),
+                            &addrinfo_req,
+                            fs_addrinfo_cb,
+-                           "example.invalid",
++                           "127.0.0.1",
+                            NULL,
+-                           NULL));
++                           &hints));
+ 
+   /* Sleep for a moment to hopefully force the events to complete before
+    * entering the event loop. */

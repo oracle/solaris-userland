@@ -1,0 +1,323 @@
+From 1998e4b1e418b4308c9f87b6158533fa90e0adcd Mon Sep 17 00:00:00 2001
+From: Petr Sumbera <sumbera@volny.cz>
+Date: Wed, 4 Nov 2026 08:38:19 +0000
+Subject: [PATCH] unix: retain deferred TCP keepalive options
+
+Preserve idle, interval and count when keepalive is enabled before a TCP
+socket exists. Replay the requested values during stream opening instead
+of silently substituting 60/1/10.
+
+Use existing private reserved storage with a capacity assertion and byte
+copies, without changing public layouts or allocating memory. Keep socket
+creation deferred so bind/connect chooses the address family. Return
+replay errors through the existing descriptor cleanup path.
+
+Extend tcp_flags to compare immediate and deferred settings for explicit
+values, legacy calls and replacement of pending options. Cover invalid
+zero updates, disable/re-enable, close-before-open and address-family
+selection, with conditional IPv6 coverage.
+
+Generated-By: codex_gpt-6.1
+
+Upstream proposal (pending; not merged):
+https://github.com/libuv/libuv/pull/5406
+
+Adapted test context to follow the interval proposal on libuv 1.53.0.
+Keep the common Unix implementation from the proposed commit unchanged.
+Retain Solaris-only replay failure/retry and deferred idle-clamp assertions
+from the previous downstream fix; these supplement the proposed tests.
+Drain asynchronous closes before these block-local test handles leave scope.
+Public API semantics: https://docs.libuv.org/en/v1.x/tcp.html
+
+--- a/src/unix/internal.h
++++ b/src/unix/internal.h
+@@ -359,6 +359,7 @@
+ /* tcp */
+ int uv__tcp_listen(uv_tcp_t* tcp, int backlog, uv_connection_cb cb);
+ int uv__tcp_nodelay(int fd, int on);
++int uv__tcp_keepalive_replay(uv_tcp_t* handle, int fd);
+ int uv__tcp_keepalive(int fd,
+                       int on,
+                       unsigned int idle,
+--- a/src/unix/stream.c
++++ b/src/unix/stream.c
+@@ -400,6 +400,7 @@
+ 
+ 
+ int uv__stream_open(uv_stream_t* stream, int fd, int flags) {
++  int err;
+ #if defined(__APPLE__)
+   int enable;
+ #endif
+@@ -414,10 +415,10 @@
+     if ((stream->flags & UV_HANDLE_TCP_NODELAY) && uv__tcp_nodelay(fd, 1))
+       return UV__ERR(errno);
+ 
+-    /* TODO Use delay the user passed in. */
+-    if ((stream->flags & UV_HANDLE_TCP_KEEPALIVE) &&
+-        uv__tcp_keepalive(fd, 1, 60, 1, 10)) {
+-      return UV__ERR(errno);
++    if (stream->flags & UV_HANDLE_TCP_KEEPALIVE) {
++      err = uv__tcp_keepalive_replay((uv_tcp_t*) stream, fd);
++      if (err)
++        return err;
+     }
+   }
+ 
+--- a/src/unix/tcp.c
++++ b/src/unix/tcp.c
+@@ -35,6 +35,19 @@
+ #include <ifaddrs.h>
+ #endif
+ 
++struct uv__tcp_keepalive_params {
++  unsigned int idle;
++  unsigned int interval;
++  unsigned int count;
++};
++
++/* Unix TCP handles do not otherwise use this private union. Leave the first
++ * slot (which overlaps u.fd) untouched. No public layout changes are needed.
++ */
++STATIC_ASSERT(sizeof(struct uv__tcp_keepalive_params) <=
++              sizeof(((uv_tcp_t*) 0)->u.reserved) - sizeof(void*));
++
++
+ static int maybe_bind_socket(int fd) {
+   union uv__sockaddr s;
+   socklen_t slen;
+@@ -111,6 +124,7 @@
+ 
+ 
+ int uv_tcp_init_ex(uv_loop_t* loop, uv_tcp_t* tcp, unsigned int flags) {
++  static const struct uv__tcp_keepalive_params keepalive = { 60, 1, 10 };
+   int domain;
+   int err;
+ 
+@@ -123,6 +137,7 @@
+     return UV_EINVAL;
+ 
+   uv__stream_init(loop, (uv_stream_t*)tcp, UV_TCP);
++  memcpy(&tcp->u.reserved[1], &keepalive, sizeof(keepalive));
+ 
+   /* If anything fails beyond this point we need to remove the handle from
+    * the handle queue, since it was added by uv__handle_init in uv_stream_init.
+@@ -601,7 +616,11 @@
+                         unsigned int idle,
+                         unsigned int intvl,
+                         unsigned int cnt) {
+-  int err;
++  struct uv__tcp_keepalive_params keepalive;
++  int err;
++
++  if (on && (idle < 1 || intvl < 1 || cnt < 1))
++    return UV_EINVAL;
+ 
+   if (uv__stream_fd(handle) != -1) {
+     err = uv__tcp_keepalive(uv__stream_fd(handle), on, idle, intvl, cnt);
+@@ -609,16 +628,27 @@
+       return err;
+   }
+ 
+-  if (on)
++  if (on) {
++    keepalive.idle = idle;
++    keepalive.interval = intvl;
++    keepalive.count = cnt;
++    /* Copy bytes rather than aliasing pointer slots as an unrelated type. */
++    memcpy(&handle->u.reserved[1], &keepalive, sizeof(keepalive));
+     handle->flags |= UV_HANDLE_TCP_KEEPALIVE;
+-  else
++  } else {
+     handle->flags &= ~UV_HANDLE_TCP_KEEPALIVE;
+-
+-  /* TODO Store idle if uv__stream_fd(handle) == -1 but don't want to enlarge
+-   *      uv_tcp_t with an int that's almost never used...
+-   */
+-
+-  return 0;
++  }
++
++  return 0;
++}
++
++
++int uv__tcp_keepalive_replay(uv_tcp_t* handle, int fd) {
++  struct uv__tcp_keepalive_params keepalive;
++
++  memcpy(&keepalive, &handle->u.reserved[1], sizeof(keepalive));
++  return uv__tcp_keepalive(fd, 1, keepalive.idle, keepalive.interval,
++                          keepalive.count);
+ }
+ 
+ 
+--- a/test/test-tcp-flags.c
++++ b/test/test-tcp-flags.c
+@@ -25,10 +25,109 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ 
+-
+-#if defined(__sun)
++#ifndef _WIN32
+ #include <netinet/tcp.h>
+ #endif
++
++
++#ifndef _WIN32
++static void check_same_option(uv_os_fd_t immediate,
++                              uv_os_fd_t deferred,
++                              int level,
++                              int option) {
++  int expected;
++  int actual;
++  socklen_t size;
++
++  size = sizeof(expected);
++  ASSERT_OK(getsockopt(immediate, level, option, &expected, &size));
++  size = sizeof(actual);
++  ASSERT_OK(getsockopt(deferred, level, option, &actual, &size));
++  ASSERT_EQ(actual, expected);
++}
++
++
++/* Check explicit values, legacy defaults, and replacement of pending values. */
++static void check_deferred_keepalive(uv_loop_t* loop, int family, int mode) {
++  uv_tcp_t immediate;
++  uv_tcp_t deferred;
++  uv_tcp_t disabled;
++  uv_tcp_t unopened;
++  uv_os_fd_t immediate_fd;
++  uv_os_fd_t deferred_fd;
++  struct sockaddr_storage address;
++  int length;
++  int enabled;
++  socklen_t size;
++
++  ASSERT_OK(uv_tcp_init_ex(loop, &immediate, family));
++  ASSERT_OK(uv_tcp_init(loop, &deferred));
++  ASSERT_OK(uv_tcp_init(loop, &disabled));
++  ASSERT_OK(uv_tcp_init(loop, &unopened));
++  if (mode == 1) {
++    ASSERT_OK(uv_tcp_keepalive(&immediate, 1, 30));
++    ASSERT_OK(uv_tcp_keepalive(&deferred, 1, 30));
++  } else if (mode == 0) {
++    ASSERT_OK(uv_tcp_keepalive_ex(&immediate, 1, 60, 60, 60));
++    ASSERT_OK(uv_tcp_keepalive_ex(&deferred, 1, 60, 60, 60));
++  } else {
++    ASSERT_OK(uv_tcp_keepalive_ex(&immediate, 1, 30, 20, 3));
++    ASSERT_OK(uv_tcp_keepalive_ex(&deferred, 1, 60, 60, 60));
++    ASSERT_OK(uv_tcp_keepalive_ex(&deferred, 0, 0, 0, 0));
++    ASSERT_OK(uv_tcp_keepalive_ex(&deferred, 1, 30, 20, 3));
++  }
++  ASSERT_EQ(UV_EINVAL, uv_tcp_keepalive_ex(&deferred, 1, 0, 20, 3));
++  ASSERT_EQ(UV_EINVAL, uv_tcp_keepalive_ex(&deferred, 1, 30, 0, 3));
++  ASSERT_EQ(UV_EINVAL, uv_tcp_keepalive_ex(&deferred, 1, 30, 20, 0));
++  ASSERT_EQ(UV_EBADF, uv_fileno((uv_handle_t*) &deferred, &deferred_fd));
++
++  if (family == AF_INET)
++    ASSERT_OK(uv_ip4_addr("127.0.0.1", 0, (struct sockaddr_in*) &address));
++  else
++    ASSERT_OK(uv_ip6_addr("::1", 0, (struct sockaddr_in6*) &address));
++  ASSERT_OK(uv_tcp_bind(&deferred, (const struct sockaddr*) &address, 0));
++  length = sizeof(address);
++  ASSERT_OK(uv_tcp_getsockname(&deferred, (struct sockaddr*) &address, &length));
++  ASSERT_EQ(address.ss_family, family);
++  ASSERT_OK(uv_fileno((uv_handle_t*) &immediate, &immediate_fd));
++  ASSERT_OK(uv_fileno((uv_handle_t*) &deferred, &deferred_fd));
++  check_same_option(immediate_fd, deferred_fd, SOL_SOCKET, SO_KEEPALIVE);
++#ifdef TCP_KEEPIDLE
++  check_same_option(immediate_fd, deferred_fd, IPPROTO_TCP, TCP_KEEPIDLE);
++#elif defined(TCP_KEEPALIVE)
++  check_same_option(immediate_fd, deferred_fd, IPPROTO_TCP, TCP_KEEPALIVE);
++#endif
++#ifdef TCP_KEEPINTVL
++  check_same_option(immediate_fd, deferred_fd, IPPROTO_TCP, TCP_KEEPINTVL);
++#endif
++#ifdef TCP_KEEPCNT
++  check_same_option(immediate_fd, deferred_fd, IPPROTO_TCP, TCP_KEEPCNT);
++#endif
++
++  /* Disabling pending settings must prevent replay at socket creation. */
++  ASSERT_OK(uv_tcp_keepalive_ex(&disabled, 1, 30, 20, 3));
++  ASSERT_OK(uv_tcp_keepalive_ex(&disabled, 0, 0, 0, 0));
++  if (family == AF_INET)
++    ASSERT_OK(uv_ip4_addr("127.0.0.1", 0, (struct sockaddr_in*) &address));
++  else
++    ASSERT_OK(uv_ip6_addr("::1", 0, (struct sockaddr_in6*) &address));
++  ASSERT_OK(uv_tcp_bind(&disabled, (const struct sockaddr*) &address, 0));
++  ASSERT_OK(uv_fileno((uv_handle_t*) &disabled, &deferred_fd));
++  size = sizeof(enabled);
++  ASSERT_OK(getsockopt(deferred_fd, SOL_SOCKET, SO_KEEPALIVE, &enabled, &size));
++  ASSERT_EQ(enabled, 0);
++
++  /* Closing pending settings must not require a socket or heap cleanup. */
++  ASSERT_OK(uv_tcp_keepalive_ex(&unopened, 1, 30, 20, 3));
++  ASSERT_EQ(UV_EBADF, uv_fileno((uv_handle_t*) &unopened, &deferred_fd));
++  uv_close((uv_handle_t*) &immediate, NULL);
++  uv_close((uv_handle_t*) &deferred, NULL);
++  uv_close((uv_handle_t*) &disabled, NULL);
++  uv_close((uv_handle_t*) &unopened, NULL);
++  ASSERT_OK(uv_run(loop, UV_RUN_DEFAULT));
++}
++#endif
++
+ 
+ /* Match the Solaris 11.4 feature detection in src/unix/internal.h. */
+ #if defined(__sun) && !defined(__illumos__) && defined(SO_FLOW_NAME)
+@@ -97,6 +196,55 @@
+   r = uv_tcp_keepalive_ex(&handle, 1, 10, 10, 0);
+   ASSERT_EQ(r, UV_EINVAL);
+ 
++#ifndef _WIN32
++  check_deferred_keepalive(loop, AF_INET, 0);
++  check_deferred_keepalive(loop, AF_INET, 1);
++  check_deferred_keepalive(loop, AF_INET, 2);
++  if (can_ipv6()) {
++    check_deferred_keepalive(loop, AF_INET6, 0);
++    check_deferred_keepalive(loop, AF_INET6, 1);
++    check_deferred_keepalive(loop, AF_INET6, 2);
++  } else {
++    fprintf(stderr, "Deferred IPv6 keepalive checks unavailable.\n");
++  }
++#endif
++
++#if defined(__sun) && !defined(__illumos__) && defined(SO_FLOW_NAME)
++  {
++    uv_tcp_t retry;
++    uv_os_fd_t fd;
++    struct sockaddr_in address;
++
++    /* Failed replay must close the new descriptor and leave a retryable handle. */
++    ASSERT_OK(uv_ip4_addr("127.0.0.1", 0, &address));
++    ASSERT_OK(uv_tcp_init(loop, &retry));
++    ASSERT_OK(uv_tcp_keepalive_ex(&retry, 1, 60, 1, ~0u));
++    ASSERT_EQ(UV_EINVAL,
++              uv_tcp_bind(&retry, (const struct sockaddr*) &address, 0));
++    ASSERT_EQ(UV_EBADF, uv_fileno((uv_handle_t*) &retry, &fd));
++    ASSERT_OK(uv_tcp_keepalive_ex(&retry, 1, 30, 2, 4));
++    ASSERT_OK(uv_tcp_bind(&retry, (const struct sockaddr*) &address, 0));
++    check_keepalive(&retry, 30, 2, 4);
++    uv_close((uv_handle_t*) &retry, NULL);
++    /* Complete the asynchronous close while stack storage is still live. */
++    ASSERT_OK(uv_run(loop, UV_RUN_DEFAULT));
++  }
++  {
++    uv_tcp_t deferred;
++    struct sockaddr_in address;
++
++    /* Deferred replay must clamp only idle, preserving interval and count. */
++    ASSERT_OK(uv_ip4_addr("127.0.0.1", 0, &address));
++    ASSERT_OK(uv_tcp_init(loop, &deferred));
++    ASSERT_OK(uv_tcp_keepalive_ex(&deferred, 1, 1, 1, 3));
++    ASSERT_OK(uv_tcp_bind(&deferred, (const struct sockaddr*) &address, 0));
++    check_keepalive(&deferred, 10, 1, 3);
++    uv_close((uv_handle_t*) &deferred, NULL);
++    /* Complete the asynchronous close while stack storage is still live. */
++    ASSERT_OK(uv_run(loop, UV_RUN_DEFAULT));
++  }
++#endif
++
+   uv_close((uv_handle_t*)&handle, NULL);
+ 
+   r = uv_run(loop, UV_RUN_DEFAULT);

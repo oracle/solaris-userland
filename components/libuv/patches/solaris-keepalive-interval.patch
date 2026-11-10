@@ -1,0 +1,113 @@
+From 9c718ebe6ae35fc36ef07ab13b756c2f76900995 Mon Sep 17 00:00:00 2001
+From: Petr Sumbera <sumbera@volny.cz>
+Date: Wed, 4 Nov 2026 08:38:11 +0000
+Subject: [PATCH] sunos: allow one-second TCP keepalive intervals
+
+Keep the ten-second TCP_KEEPIDLE floor, but allow one-second probe
+intervals on Solaris 11.4. Preserve the existing interval handling on
+older Solaris and illumos/SmartOS, as well as upper bounds and errors.
+
+Extend tcp_flags with socket-option readback assertions for legacy
+probe defaults and explicit interval/count values with idle clamping.
+These assertions do not measure packet timing.
+
+Validation on Solaris 11.4.97.232.0 amd64 with GCC 16:
+- Fresh CMake Debug builds of shared/static libraries and test runners
+  passed (-m64 -D_POSIX_PTHREAD_SEMANTICS; build/test umask 022).
+- tcp_flags passed against both shared and static libraries.
+- Both complete CTest suites ran without added exclusions or timeout
+  relaxation. Each runner reported 468 passed, 20 skipped and one timeout
+  among 489 cases. CTest returned failure for both suites.
+- The sole failure, spawn_exercise_sigchld_issue, also timed out with
+  shared/static runners built from unmodified parent 716390fe9e0a.
+- SONAME remains libuv.so.1; all 327 defined dynamic symbols match the
+  unmodified parent. Public headers are unchanged.
+
+The 20 upstream skips include platform-specific cases, a root-only case,
+unavailable /dev/tty and unrecorded Solaris sizeof expectations. They
+are not counted as passes. SPARC and other operating systems were not
+validated here. No packet-timing measurement is claimed.
+
+Generated-By: codex_gpt-6.1
+
+Upstream proposal (pending; not merged):
+https://github.com/libuv/libuv/pull/5405
+
+Refreshed hunk positions for the libuv 1.53.0 package baseline.
+The validation above is upstream-proposal evidence on amd64 only; it does
+not validate this downstream patch set on either service architecture.
+The tcp_flags readback reproduces the accepted socket-option values;
+no claim about internal kernel timer implementation or packet timing is made.
+
+--- a/src/unix/tcp.c
++++ b/src/unix/tcp.c
+@@ -498,15 +498,18 @@
+    *
+    * - The second implementation is activated if socket option TCP_KEEPINTVL and/or TCP_KEEPCNT are set.
+    * The time between each consequent probes is set by TCP_KEEPINTVL in seconds.
+-   * The minimum value is ten seconds. The maximum is ten days, while the default is two hours.
++   * On Solaris 11.4 the minimum interval is one second. The initial idle
++   * period still has a ten-second minimum.
+    * The TCP connection will be aborted after certain amount of probes, which is set by TCP_KEEPCNT, without receiving response.
+    */
+ 
+-  /* Kernel expects at least 10 seconds for TCP_KEEPIDLE and TCP_KEEPINTVL. */
++  /* Kernel expects at least 10 seconds for TCP_KEEPIDLE. */
+   if (idle < 10)
+     idle = 10;
++#if !defined(UV__SOLARIS_11_4) || !UV__SOLARIS_11_4
+   if (intvl < 10)
+     intvl = 10;
++#endif
+   /* Kernel expects at most 10 days for TCP_KEEPIDLE and TCP_KEEPINTVL. */
+   if (idle > 10*24*60*60)
+     idle = 10*24*60*60;
+--- a/test/test-tcp-flags.c
++++ b/test/test-tcp-flags.c
+@@ -26,6 +26,31 @@
+ #include <stdlib.h>
+ 
+ 
++#if defined(__sun)
++#include <netinet/tcp.h>
++#endif
++
++/* Match the Solaris 11.4 feature detection in src/unix/internal.h. */
++#if defined(__sun) && !defined(__illumos__) && defined(SO_FLOW_NAME)
++static void check_keepalive(uv_tcp_t* handle, int idle, int interval, int count) {
++  uv_os_fd_t fd;
++  int value;
++  socklen_t size;
++
++  ASSERT_OK(uv_fileno((uv_handle_t*) handle, &fd));
++  size = sizeof(value);
++  ASSERT_OK(getsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &value, &size));
++  ASSERT_EQ(value, idle);
++  size = sizeof(value);
++  ASSERT_OK(getsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &value, &size));
++  ASSERT_EQ(value, interval);
++  size = sizeof(value);
++  ASSERT_OK(getsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &value, &size));
++  ASSERT_EQ(value, count);
++}
++#endif
++
++
+ TEST_IMPL(tcp_flags) {
+   uv_loop_t* loop;
+   uv_tcp_t handle;
+@@ -42,6 +67,14 @@
+ 
+   r = uv_tcp_keepalive(&handle, 1, 60);
+   ASSERT_OK(r);
++
++#if defined(__sun) && !defined(__illumos__) && defined(SO_FLOW_NAME)
++  check_keepalive(&handle, 60, 1, 10);
++
++  /* The idle floor must not be applied to the probe interval. */
++  ASSERT_OK(uv_tcp_keepalive_ex(&handle, 1, 1, 1, 3));
++  check_keepalive(&handle, 10, 1, 3);
++#endif
+ 
+   r = uv_tcp_keepalive(&handle, 0, 0);
+   ASSERT_OK(r);

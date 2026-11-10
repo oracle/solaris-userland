@@ -29,12 +29,12 @@ include ../../make-rules/shared-macros.mk
 # Component information, used for download and packaging.
 # -------------------------------------------------------
 COMPONENT_NAME=		libuv
-COMPONENT_VERSION=	1.51.0
+COMPONENT_VERSION=	1.53.0
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-v$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	library/libuv
-COMPONENT_BAID=		350708
+COMPONENT_BAID=		457335
 COMPONENT_PROJECT_URL=	https://libuv.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=	\
@@ -42,7 +42,7 @@ COMPONENT_ARCHIVE_URL=	\
 # For check_anitya target, https://release-monitoring.org/project/10784
 COMPONENT_ANITYA_ID=	10784
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:5f0557b90b1106de71951a3c3931de5e0430d78da1d9a10287ebc7a3f78ef8eb
+	sha256:cb0d6dd2128d5a95bd242c6cc982a24fe608fa93da57b6b4ec763b0018c53e64
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -55,11 +55,12 @@ endif
 COMPONENT_PREP_ACTION = (cd $(@D) ; $(SHELL) autogen.sh)
 
 # Post Build, create man page.  Requires sphinx-build.
+# Only the manpage extension is needed; sphinx_copybutton serves HTML output.
 # The awk script removes the DOWNLOADS and INSTALLATION sections.
 COMPONENT_POST_BUILD_ACTION += \
-	cd $(SOURCE_DIR)/docs; \
-	$(MAKE) man BUILDDIR=$(BUILD_DIR); \
-	$(CP) $(BUILD_DIR)/man/libuv.1 $(BUILD_DIR)/man/libuv.1.bak; \
+	cd $(SOURCE_DIR)/docs && \
+	$(MAKE) man BUILDDIR=$(BUILD_DIR) SPHINXOPTS="-D extensions=manpage" && \
+	$(CP) $(BUILD_DIR)/man/libuv.1 $(BUILD_DIR)/man/libuv.1.bak && \
 	$(NAWK) '/^.SH DOWNLOADS$$/{sk=1}/^.SH AUTHOR$$/{sk=0}sk==0{print}' \
 		$(BUILD_DIR)/man/libuv.1.bak > $(BUILD_DIR)/man/libuv.1; \
 

@@ -1,4 +1,4 @@
-1..444
+1..471
 ok # - platform_output
 # ELIDED platform_output
 ok # - active
@@ -152,6 +152,7 @@ ok # - idle_check
 ok # - idle_ref
 ok # - idle_starvation
 ok # - idna_toascii
+ok # - io_64_safe
 ok # - iouring_pollhup
 ok # - ip4_addr
 # IGNORED ip6_addr_link_local
@@ -189,6 +190,7 @@ ok # - not_readable_nor_writable_on_read_error
 ok # - not_writable_after_shutdown
 ok # - open_osfhandle_valid_handle
 ok # - pipe_bind_error_addrinuse
+ok # - pipe_bind_error_addrinuse_pending_instances
 ok # - pipe_bind_error_addrnotavail
 ok # - pipe_bind_error_inval
 ok # - pipe_bind_or_listen_error_after_close
@@ -202,6 +204,7 @@ ok # - pipe_getsockname
 ok # - pipe_getsockname_abstract
 ok # - pipe_getsockname_autobind
 ok # - pipe_getsockname_blocking
+ok # - pipe_getsockname_long_path # SKIP long unix paths not supported on this platform
 ok # - pipe_listen_without_bind
 ok # - pipe_overlong_path
 ok # - pipe_pending_instances
@@ -215,6 +218,14 @@ ok # - pipe_sendmsg
 ok # - pipe_server_close
 ok # - pipe_set_chmod
 ok # - pipe_set_non_blocking
+ok # - pipe_write_cancel
+ok # - pipe_write_cancel_after_close
+ok # - pipe_write_cancel_all
+ok # - pipe_write_cancel_all_overlapped
+ok # - pipe_write_cancel_ipc
+ok # - pipe_write_cancel_overlapped
+ok # - pipe_write_nwritten
+ok # - pipe_write_trailing_empty_buf
 ok # - poll_bad_fdtype
 ok # - poll_close
 ok # - poll_close_doesnt_corrupt_stack # SKIP Test only relevant on Windows
@@ -247,6 +258,7 @@ ok # - shutdown_twice
 ok # - signal_close_loop_alive
 ok # - signal_multiple_loops
 ok # - signal_pending_on_close
+ok # - sizeof # SKIP Solaris: sizes not yet recorded
 ok # - socket_buffer_size
 ok # - spawn_and_kill
 ok # - spawn_and_kill_with_std
@@ -272,6 +284,7 @@ ok # - spawn_setuid_fails
 ok # - spawn_setuid_setgid # SKIP It should be run as root user
 ok # - spawn_stdin
 ok # - spawn_stdio_greater_than_3
+ok # - spawn_stdio_socket_buffer_size
 ok # - spawn_stdout
 ok # - spawn_stdout_and_stderr_to_file
 ok # - spawn_stdout_and_stderr_to_file2
@@ -344,8 +357,11 @@ ok # - tcp_try_write
 ok # - tcp_try_write_error
 ok # - tcp_unexpected_read
 ok # - tcp_write_after_connect
+ok # - tcp_write_cancel
 ok # - tcp_write_fail
 ok # - tcp_write_in_a_row
+ok # - tcp_write_in_read_cb_backend_timeout # SKIP Event ports re-arm file descriptors on every iteration.
+ok # - tcp_write_nwritten
 ok # - tcp_write_queue_order
 ok # - tcp_write_ready
 ok # - tcp_write_to_half_open_connection
@@ -366,6 +382,7 @@ ok # - thread_rwlock_trylock
 ok # - thread_stack_size
 ok # - thread_stack_size_explicit
 ok # - threadpool_cancel_fs
+ok # - threadpool_cancel_fs_iouring_sync_cancel # SKIP Not on Linux.
 ok # - threadpool_cancel_getaddrinfo
 ok # - threadpool_cancel_getnameinfo
 ok # - threadpool_cancel_random
@@ -397,6 +414,7 @@ ok # - tmpdir
 ok # - tty
 ok # - tty_file
 ok # - tty_pty
+ok # - tty_pty_partial
 ok # - udp_alloc_cb_fail
 ok # - udp_bind
 ok # - udp_bind_reuseaddr
@@ -409,6 +427,9 @@ ok # - udp_dgram_too_big
 ok # - udp_dual_stack
 ok # - udp_ipv6_only
 ok # - udp_mmsg
+ok # - udp_mmsg_namelen_zero
+ok # - udp_mmsg_single_drain_cb
+ok # - udp_mmsg_small_buf
 ok # - udp_multicast_interface
 ok # - udp_multicast_interface6
 # IGNORED udp_multicast_join
@@ -421,20 +442,26 @@ ok # - udp_open_connect
 ok # - udp_open_twice
 ok # - udp_options
 ok # - udp_options6
+ok # - udp_recv_cb_close_pollerr # SKIP ICMP error handling is Linux-specific
 ok # - udp_recv_in_a_row
+ok # - udp_recvmsg_unreachable_error # SKIP This test is Linux-specific
+ok # - udp_recvmsg_unreachable_error6 # SKIP This test is Linux-specific
 ok # - udp_ref
 ok # - udp_ref2
 ok # - udp_ref3
 ok # - udp_reuseport
 ok # - udp_send_and_recv
+ok # - udp_send_fail_nbufs
 ok # - udp_send_hang_loop
 ok # - udp_send_immediate
+ok # - udp_send_pollerr_no_recv # SKIP ICMP error handling is Linux-specific
 ok # - udp_send_unix
 ok # - udp_send_unreachable
 ok # - udp_sendmmsg_error
 ok # - udp_try_send
 ok # - uname
 ok # - unref_in_prepare_cb
+ok # - utf16_to_wtf8_exact_fill
 ok # - utf8_decode1
 ok # - utf8_decode1_overrun
 ok # - walk_handles
