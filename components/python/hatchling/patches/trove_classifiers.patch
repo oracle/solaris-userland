@@ -4,21 +4,21 @@ This change makes it optional.
 
 Not intended for upstream.
 
---- hatchling-1.27.0/pyproject.toml
-+++ hatchling-1.27.0/pyproject.toml
-@@ -39,7 +39,6 @@ dependencies = [
-   "pathspec>=0.10.1",
+--- hatchling-1.33.0/pyproject.toml
++++ hatchling-1.33.0/pyproject.toml
+@@ -41,7 +41,6 @@ dependencies = [
    "pluggy>=1.0.0",
+   "tomlkit>=0.11.1",
    "tomli>=1.2.2; python_version < '3.11'",
 -  "trove-classifiers",
  ]
  
  [project.urls]
---- hatchling-1.27.0/src/hatchling/metadata/core.py
-+++ hatchling-1.27.0/src/hatchling/metadata/core.py
-@@ -967,8 +967,13 @@ class CoreMetadata:
+--- hatchling-1.33.0/src/hatchling/metadata/core.py
++++ hatchling-1.33.0/src/hatchling/metadata/core.py
+@@ -992,8 +992,13 @@ class CoreMetadata:
  
-             verify_classifiers = not os.environ.get('HATCH_METADATA_CLASSIFIERS_NO_VERIFY')
+             verify_classifiers = not os.environ.get("HATCH_METADATA_CLASSIFIERS_NO_VERIFY")
              if verify_classifiers:
 -                import trove_classifiers
 +                try:

@@ -26,16 +26,16 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hatchling
-COMPONENT_VERSION=	1.27.0
+COMPONENT_VERSION=	1.33.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7b37768d12b5a3d1dc1e5dfcf55ce6f6fbfbd028aaad34efb6191c13521db27e
+    sha256:4c422bd4d554fcff5de5b73e9596f85e41e9f97f7e553d8f7595ecb31a627bef
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://hatch.pypa.io/latest/
 COMPONENT_BUGDB=	python-mod/hatchling
 COMPONENT_ANITYA_ID=	185085
-COMPONENT_BAID=		337328
+COMPONENT_BAID=		462733
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
@@ -59,4 +59,5 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pathspec-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pluggy-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/tomlkit-%)
 REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
