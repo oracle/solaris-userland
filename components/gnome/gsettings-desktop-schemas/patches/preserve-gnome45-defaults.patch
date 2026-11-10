@@ -1,0 +1,42 @@
+Not suitable for upstream
+
+Keep existing Solaris desktop defaults while gsettings-desktop-schemas is
+updated independently of the rest of the GNOME 45 stack.
+
+--- a/schemas/org.gnome.desktop.peripherals.gschema.xml.in
++++ b/schemas/org.gnome.desktop.peripherals.gschema.xml.in
+@@ -26,7 +26,7 @@
+       <description>When enabled, touchpads will be disabled while typing on the keyboard.</description>
+     </key>
+     <key name="tap-to-click" type="b">
+-      <default>true</default>
++      <default>false</default>
+       <summary>Enable mouse clicks with touchpad</summary>
+       <description>Set this to TRUE to be able to send mouse clicks by tapping on the touchpad.</description>
+     </key>
+@@ -196,12 +196,12 @@
+       <description>Set this to the percentage of the physical pressure range that should map to the logical range.</description>
+     </key>
+     <key name="button-action" enum="org.gnome.desktop.GDesktopStylusButtonAction">
+-      <default>'right'</default>
++      <default>'default'</default>
+       <summary>Button action</summary>
+       <description>Stylus button action, this button is located along the pen handle.</description>
+     </key>
+     <key name="secondary-button-action" enum="org.gnome.desktop.GDesktopStylusButtonAction">
+-      <default>'middle'</default>
++      <default>'default'</default>
+       <summary>Secondary button action</summary>
+       <description>Secondary stylus button action, this button is located along the pen handle on some styli like the Grip Pen. Other styli like the Airbrush Pen or the Inking Pen only have one button, this setting is ineffective on those.</description>
+     </key>
+--- a/schemas/org.gnome.desktop.search-providers.gschema.xml.in
++++ b/schemas/org.gnome.desktop.search-providers.gschema.xml.in
+@@ -38,7 +38,7 @@
+     </key>
+ 
+     <key name="sort-order" type="as">
+-      <default>['org.gnome.Settings.desktop', 'org.gnome.Contacts.desktop', 'org.gnome.Nautilus.desktop']</default>
++      <default>['org.gnome.Contacts.desktop', 'org.gnome.Documents.desktop', 'org.gnome.Nautilus.desktop']</default>
+       <summary>List of desktop file IDs for search providers sort order</summary>
+       <description>
+         Results for applications contained in this list will be displayed in

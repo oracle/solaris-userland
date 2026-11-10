@@ -30,14 +30,14 @@ CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gsettings-desktop-schemas
-COMPONENT_VERSION=	45.0
+COMPONENT_VERSION=	48.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/HowDoI/GSettings
 COMPONENT_ARCHIVE_HASH= \
-    sha256:365c8d04daf79b38c8b3dc9626349a024f9e4befdd31fede74b42f7a9fbe0ae2
+    sha256:e68f155813bf18f865a8b2c8e9d473588b6ccadcafbb666ab788857c6c2d1bd3
 COMPONENT_BUGDB=	gnome/gconf
 COMPONENT_ANITYA_ID=	13139
 
-COMPONENT_BAID=		153631
+COMPONENT_BAID=		466215
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
