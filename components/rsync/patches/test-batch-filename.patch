@@ -1,0 +1,44 @@
+From 0ade6286f6600f5ba8c59839e1b91bff4e6b466d Mon Sep 17 00:00:00 2001
+From: Petr Sumbera <sumbera@volny.cz>
+Date: Mon, 9 Nov 2026 20:37:32 +0000
+Subject: [PATCH] tests: use relative batch names in source-removal regression
+
+The batch-file option limits its argument to 256 bytes. Passing the full
+scratch-directory path makes this test fail in deeply nested build trees
+before it can exercise source removal or batch replay.
+
+Run both rsync commands from the fixture directory and pass the batch
+basename. Keep source and destination paths and all existing payload,
+source-retention, replay and hard-link checks unchanged.
+
+Submitted upstream: https://github.com/RsyncProject/rsync/pull/1158
+
+--- rsync-3.5.2/testsuite/batch-only-remove-source-regression_test.py
++++ rsync-3.5.2/testsuite/batch-only-remove-source-regression_test.py
+@@ -29,11 +29,13 @@
+ destination_link_a.write_bytes(destination_bytes)
+ destination_link_b.write_bytes(destination_bytes)
+ 
++# The batch option limits the name to 256 bytes, including directory names.
++# Run in base and pass only the leaf name so long build paths work too.
+ batch = base / 'transfer.batch'
+ write = subprocess.run(
+-    rsync_argv('-aH', f'--only-write-batch={batch}',
++    rsync_argv('-aH', f'--only-write-batch={batch.name}',
+                '--remove-source-files', f'{source}/', f'{destination}/'),
+-    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
++    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=base)
+ if write.returncode != 0:
+     test_fail(f'batch-only transfer exited {write.returncode}:\n{write.stdout}')
+ if destination_file.read_bytes() != destination_bytes:
+@@ -56,8 +58,8 @@
+     test_fail('batch-only transfer broke the retained source hard link')
+ 
+ replay = subprocess.run(
+-    rsync_argv('-aH', f'--read-batch={batch}', f'{destination}/'),
+-    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
++    rsync_argv('-aH', f'--read-batch={batch.name}', f'{destination}/'),
++    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=base)
+ if replay.returncode != 0:
+     test_fail(f'batch replay exited {replay.returncode}:\n{replay.stdout}')
+ if destination_file.read_bytes() != source_bytes:

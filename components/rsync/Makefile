@@ -28,12 +28,14 @@ BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rsync
-COMPONENT_VERSION=	3.5.0
-COMPONENT_BAID=	429100
-COMPONENT_ARCHIVE_HASH=	sha256:c7ffd1ef653e99540f661e47cb00b7f9cad1ee6b972399b16f93d672656e0d33
+COMPONENT_VERSION=	3.5.2
+COMPONENT_BAID=	465761
+COMPONENT_ARCHIVE_HASH=	sha256:a10d591825251e070f74c98df3daad195def4ed81b4a2de16169026aea33f6c8
 COMPONENT_PROJECT_URL=	http://rsync.samba.org/
 COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/rsync/src/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
+COMPONENT_PUBLIC_KEY_URL= \
+	https://keys.openpgp.org/vks/v1/by-fingerprint/C0E1054505704F757D925AB26A64E8AA2EFBCF5D
 COMPONENT_ANITYA_ID=	4217
 
 include $(WS_MAKE_RULES)/common.mk
@@ -50,6 +52,7 @@ CONFIGURE_OPTIONS  +=		--disable-zstd
 CONFIGURE_OPTIONS  +=		--disable-openssl
 CONFIGURE_OPTIONS  +=		--disable-iconv-open
 CONFIGURE_OPTIONS  +=		--enable-iconv
+CPPFLAGS += $(shell pkg-config --cflags libidn2)
 CONFIGURE_ENV +=		CFLAGS="$(CFLAGS)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
@@ -59,5 +62,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/skipped$$/p" '
 
 REQUIRED_PACKAGES += compress/lz4
+REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc

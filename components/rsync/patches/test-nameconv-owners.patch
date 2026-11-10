@@ -1,0 +1,34 @@
+From accdbb0e559930ca332a0b07fac699c9351b266c Mon Sep 17 00:00:00 2001
+From: Petr Sumbera <sumbera@volny.cz>
+Date: Mon, 9 Nov 2026 20:37:33 +0000
+Subject: [PATCH] tests: check ownership support before enumerating passwd
+ entries
+
+The name-converter test enumerates passwd entries before checking
+whether it can change file ownership. Network name services can block
+that enumeration even for an unprivileged run that will skip this part
+of the test.
+
+Check owners_supported() first and enumerate accounts only when the
+name-converter test can run. Preserve early-exec coverage, the existing
+skip condition and all privileged name-converter assertions.
+
+Submitted upstream: https://github.com/RsyncProject/rsync/pull/1160
+
+--- rsync-3.5.2/testsuite/daemon-early-exec-nameconv_test.py
++++ rsync-3.5.2/testsuite/daemon-early-exec-nameconv_test.py
+@@ -103,8 +103,12 @@
+ # the incoming id is NON-zero, so the source tree needs a non-root owner.
+ # Pick any non-root passwd entry that exists in this environment; skip the
+ # name-converter half if there isn't one (or we can't chown).
+-nonroot = next((p for p in pwd.getpwall() if p.pw_uid != 0 and p.pw_gid != 0), None)
+-if not owners_supported() or nonroot is None:
++# Account enumeration may block on network name services. It is unnecessary
++# when the existing ownership-capability check already excludes this half.
++nonroot = None
++if owners_supported():
++    nonroot = next((p for p in pwd.getpwall() if p.pw_uid != 0 and p.pw_gid != 0), None)
++if nonroot is None:
+     print("daemon-early-exec-nameconv: early-exec ok; "
+           "name-converter SKIPPED (no non-root passwd entry / cannot chown)")
+     raise SystemExit(0)

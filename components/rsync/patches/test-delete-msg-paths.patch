@@ -1,0 +1,35 @@
+From 9d7cfa89e73f064f08bea0f110a30d03fee565ad Mon Sep 17 00:00:00 2001
+From: Petr Sumbera <sumbera@volny.cz>
+Date: Mon, 9 Nov 2026 20:37:33 +0000
+Subject: [PATCH] tests: shorten paths in daemon deletion-message regression
+
+Ten 79-character directory components can exceed Solaris's pathname
+limit when the test scratch directory is already deeply nested. The
+fixture then fails during setup before reaching the daemon transfer.
+
+Shorten each component and increase the file count from 1400 to 2200 to
+keep deletion messages above the 1-MiB allocation limit. Preserve all
+quiet-transfer, backup, allocation-error and verbosity assertions.
+
+Submitted upstream: https://github.com/RsyncProject/rsync/pull/1159
+
+--- rsync-3.5.2/testsuite/daemon-delete-msg-overflow_test.py
++++ rsync-3.5.2/testsuite/daemon-delete-msg-overflow_test.py
+@@ -22,7 +22,7 @@
+ 
+ 
+ DAEMON_PORT = 12969
+-FILE_COUNT = 1400
++FILE_COUNT = 2200
+ 
+ src = FROMDIR
+ dst = TODIR / 'current'
+@@ -39,7 +39,7 @@
+ # that makes its next doubling hit (and be rejected by) --max-alloc=1m.
+ deep = dst / 'runs'
+ for i in range(10):
+-    deep /= f'd{i}-' + 'x' * 76
++    deep /= f'd{i}-' + 'x' * 48
+ makepath(deep)
+ for i in range(FILE_COUNT):
+     (deep / f'stale-{i:04d}').touch()
