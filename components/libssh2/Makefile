@@ -67,6 +67,27 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^XXX_CC_XXX$$/d" '
 
 # Just run "gmake check" from the tests directory.
+# Check malformed publickey lengths against the matching static library.
+# The fixture replaces channel I/O and also runs in the supported 32-bit build.
+COMPONENT_POST_TEST_ACTION += \
+	$(CC) $(CFLAGS) -DHAVE_CONFIG_H -DNDEBUG \
+	    -I$(BUILD_DIR_$(BITS))/src -I$(SOURCE_DIR)/src \
+	    -I$(SOURCE_DIR)/include \
+	    $(COMPONENT_DIR)/test/publickey-lengths.c \
+	    $(BUILD_DIR_$(BITS))/src/.libs/libssh2.a -lssl -lcrypto -lz \
+	    -o $(BUILD_DIR_$(BITS))/tests/publickey-lengths && \
+	$(BUILD_DIR_$(BITS))/tests/publickey-lengths &&
+
+# Check ETM framing before allocation, MAC hashing, and decryption.
+COMPONENT_POST_TEST_ACTION += \
+	$(CC) $(CFLAGS) -DHAVE_CONFIG_H -DNDEBUG \
+	    -I$(BUILD_DIR_$(BITS))/src -I$(SOURCE_DIR)/src \
+	    -I$(SOURCE_DIR)/include \
+	    $(COMPONENT_DIR)/test/transport-lengths.c \
+	    $(BUILD_DIR_$(BITS))/src/.libs/libssh2.a -lssl -lcrypto -lz \
+	    -o $(BUILD_DIR_$(BITS))/tests/transport-lengths && \
+	$(BUILD_DIR_$(BITS))/tests/transport-lengths;
+
 COMPONENT_TEST_DIR =		$(BUILD_DIR_$(BITS))/tests
 COMPONENT_SYSTEM_TEST_DIR =	$(BUILD_DIR_$(BITS))/tests
 
