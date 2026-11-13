@@ -28,15 +28,15 @@ CTF_MODE =		off	# Has no effect
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         snappy
-COMPONENT_VERSION=      1.2.1
+COMPONENT_VERSION=      1.3.1
 COMPONENT_ARCHIVE_HASH= \
-    sha256:736aeb64d86566d2236ddffa2865ee5d7a82d26c9016b36218fcc27ea4f09f86
+    sha256:893f708a0bf4b5529d555ffcee390e940e932fcf90261f682604475a76cd0247
 COMPONENT_ARCHIVE_URL=  https://github.com/google/snappy/archive/refs/tags/$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=  http://google.github.io/snappy/
 COMPONENT_BUGDB=	library/libsnappy
 COMPONENT_ANITYA_ID=	4844
 
-COMPONENT_BAID = 323909
+COMPONENT_BAID = 467562
 
 # Internal testing requires Googletest.
 COMPONENT_NAME_TESTS=		googletest
