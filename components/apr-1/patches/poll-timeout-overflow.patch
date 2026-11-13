@@ -1,0 +1,53 @@
+From 5140fe6815a0a440ac822d85ddae87f9fd3835dd Mon Sep 17 00:00:00 2001
+From: Ruediger Pluem <rpluem@apache.org>
+Date: Tue, 21 Oct 2025 15:40:04 +0000
+Subject: [PATCH] Merge r1929188 from trunk:
+
+* Avoid an overflow when converting the given INT64 timeout in microseconds
+  to an INT32 timeout in milliseconds.
+
+PR: 69542
+Obtained from: https://github.com/apache/apr/pull/62
+Submitted by: [Alejandro Perez <alejandroperezpestana99@gmail.com>]
+Reviewed by: rpluem
+
+
+git-svn-id: https://svn.apache.org/repos/asf/apr/apr/branches/1.7.x@1929253 13f79535-47bb-0310-9956-ffa450edef68
+
+Upstream: https://github.com/apache/apr/commit/5140fe6815a0a440ac822d85ddae87f9fd3835dd
+Issue: https://bz.apache.org/bugzilla/show_bug.cgi?id=69542
+
+Import the waitio.c fix unchanged. Omit the CHANGES hunk, whose
+APR 1.7.7 context is absent from the APR 1.7.6 release.
+---
+diff --git a/support/unix/waitio.c b/support/unix/waitio.c
+index a3c6a83491e..ebc18be574a 100644
+--- a/support/unix/waitio.c
++++ b/support/unix/waitio.c
+@@ -40,15 +40,22 @@ apr_status_t apr_wait_for_io_or_timeout(apr_file_t *f, apr_socket_t *s,
+                                         int for_read)
+ {
+     struct pollfd pfd;
++    apr_interval_time_t raw_timeout;
+     int rc, timeout;
+ 
+-    timeout    = f        ? f->timeout        : s->timeout;
++    raw_timeout = f ? f->timeout : s->timeout;
++    if (raw_timeout > ((apr_interval_time_t)INT_MAX) * 1000) {
++        /* timeout value exceeds maximum allowed (~25 days in microseconds)
++         * capping to INT_MAX milliseconds to avoid overflow */
++        timeout = INT_MAX;
++    } else {
++        /* convert microseconds to milliseconds (round up) */
++        timeout = raw_timeout > 0 ? (int)((raw_timeout + 999) / 1000) : (int)raw_timeout;
++    }
++
+     pfd.fd     = f        ? f->filedes        : s->socketdes;
+     pfd.events = for_read ? POLLIN            : POLLOUT;
+ 
+-    if (timeout > 0) {
+-        timeout = (timeout + 999) / 1000;
+-    }
+     do {
+         rc = poll(&pfd, 1, timeout);
+     } while (rc == -1 && errno == EINTR);
