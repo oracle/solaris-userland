@@ -1,0 +1,28 @@
+From 4be549347e136a14d325ebbcfde8c9d0f74dd4b6 Mon Sep 17 00:00:00 2001
+From: Mark Thomas <markt@apache.org>
+Date: Mon, 28 Sep 2026 14:44:02 +0100
+Subject: [PATCH] Add a lower bounds check for encoded response headers
+
+Should never happen but harden against a potential origin server bug
+
+Upstream: https://github.com/apache/tomcat-connectors/commit/4be549347e136a14d325ebbcfde8c9d0f74dd4b6
+
+Import the native code change for Solaris. Omit the unreleased changelog
+context and use paths relative to the release source for PATCH_LEVEL=0.
+---
+ native/common/jk_ajp_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/native/common/jk_ajp_common.c b/native/common/jk_ajp_common.c
+index 9c940541b..0945b2bba 100644
+--- native/common/jk_ajp_common.c
++++ native/common/jk_ajp_common.c
+@@ -780,7 +780,7 @@ static int ajp_unmarshal_response(jk_msg_buf_t *msg,
+                     /* Consume bytes just peeked with jk_b_pget_int */
+                     jk_b_get_int(msg);
+                     name = name & 0X00FF;
+-                    if (name <= SC_RES_HEADERS_NUM) {
++                    if (name > 0 && name <= SC_RES_HEADERS_NUM) {
+                         d->header_names[i] =
+                             (char *)long_res_header_for_sc(name);
+                     }

@@ -1,0 +1,32 @@
+From 1c5b840ce09c9161327f919cd3e63a5ffbea51a1 Mon Sep 17 00:00:00 2001
+From: Christopher Schultz <chris@christopherschultz.net>
+Date: Mon, 8 Jun 2026 17:41:04 -0400
+Subject: [PATCH] Avoid unlikely underflow
+
+Upstream: https://github.com/apache/tomcat-connectors/commit/1c5b840ce09c9161327f919cd3e63a5ffbea51a1
+
+Import the upstream change for Solaris, using paths relative to the release
+source for PATCH_LEVEL=0. Correct the guard to reject only indices greater
+than SOCKBUF_SIZE: an exactly full buffer is valid and must reach the existing
+flush branch before the next write.
+---
+ native/common/jk_sockbuf.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/native/common/jk_sockbuf.c b/native/common/jk_sockbuf.c
+index 107eb09be..32c53931a 100644
+--- native/common/jk_sockbuf.c
++++ native/common/jk_sockbuf.c
+@@ -40,7 +40,11 @@ int jk_sb_open(jk_sockbuf_t *sb, jk_sock_t sd)
+ int jk_sb_write(jk_sockbuf_t *sb, const void *buf, unsigned sz)
+ {
+     if (sb && buf && sz) {
+-        if ((SOCKBUF_SIZE - sb->end) >= sz) {
++        if (sb->end > SOCKBUF_SIZE) {
++            return JK_FALSE;
++        }
++
++        if (sz <= SOCKBUF_SIZE - sb->end) {
+             memcpy(sb->buf + sb->end, buf, sz);
+             sb->end += sz;
+         }

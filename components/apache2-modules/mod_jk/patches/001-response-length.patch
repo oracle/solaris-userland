@@ -1,0 +1,35 @@
+From 6409270095d9faa3b22ae37693dde77ac89cf907 Mon Sep 17 00:00:00 2001
+From: Mark Thomas <markt@apache.org>
+Date: Mon, 28 Sep 2026 15:08:03 +0100
+Subject: [PATCH] Better length checks when processing response header values.
+
+Upstream: https://github.com/apache/tomcat-connectors/commit/6409270095d9faa3b22ae37693dde77ac89cf907
+
+Import the native code change for Solaris. Omit the unreleased changelog
+context and use paths relative to the release source for PATCH_LEVEL=0.
+---
+ native/common/jk_msg_buff.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/native/common/jk_msg_buff.c b/native/common/jk_msg_buff.c
+index 731eb7005..7115eca0f 100644
+--- native/common/jk_msg_buff.c
++++ native/common/jk_msg_buff.c
+@@ -285,7 +285,7 @@ char *jk_b_get_string(jk_msg_buf_t *msg)
+     unsigned short size = jk_b_get_int(msg);
+     int start = msg->pos;
+ 
+-    if ((size == 0xFFFF) || (size + start > msg->maxlen)) {
++    if ((size == 0xFFFF) || (size + start >= msg->len) || msg->buf[start + size] != '\0') {
+         /* Error of overflow in AJP packet.
+          * The complete message is probably invalid.
+          */
+@@ -302,7 +302,7 @@ int jk_b_get_bytes(jk_msg_buf_t *msg, unsigned char *buf, int len)
+ {
+     int start = msg->pos;
+ 
+-    if ((len < 0) || (len + start > msg->maxlen)) {
++    if ((len < 0) || (len + start > msg->len)) {
+         return (-1);
+     }
+ 
