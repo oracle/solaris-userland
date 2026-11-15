@@ -1,0 +1,48 @@
+From ba46aea1d49cc3dfe81dce38c58b1d51f780f5bd Mon Sep 17 00:00:00 2001
+From: Petr Sumbera <petr.sumbera@oracle.com>
+Date: Wed, 11 Nov 2026 16:11:14 +0000
+Subject: [PATCH] scsi: skip capacity queries for CD/DVD devices
+
+On Solaris, sending READ CAPACITY(16) to a VirtualBox ATAPI CD-ROM can
+wedge the device queue.
+
+Skip the optional capacity query for the CD/DVD peripheral device type
+when collecting device information in smartctl, smartd and lsdisk.
+Keep the existing capacity query and fallback logic for other devices.
+
+Adapted to the smartmontools 7.5 source layout. The lsdisk example is not
+present in this release.
+
+Submitted upstream (pending review):
+https://github.com/smartmontools/smartmontools/pull/697
+Proposed upstream commit: ba46aea1d49cc3dfe81dce38c58b1d51f780f5bd
+---
+ smartmontools-7.5/scsiprint.cpp | 4 ++--
+ smartmontools-7.5/smartd.cpp    | 3 ++-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+--- smartmontools-7.5/scsiprint.cpp
++++ smartmontools-7.5/scsiprint.cpp
+@@ -2922,8 +2922,8 @@ scsiGetDriveInfo(scsi_device * device, uint8_t * peripheral_type, bool all)
+         int lbpme = -1;
+         int lbprz = -1;
+         unsigned char lb_prov_resp[8];
+-        uint64_t capacity = scsiGetSize(device, false /*avoid_rcap16 */,
+-                                        &srr);
++        uint64_t capacity = (peri_dt == SCSI_PT_CDROM ? 0 :
++                             scsiGetSize(device, false /*avoid_rcap16*/, &srr));
+         static const char * lb_prov_j = "scsi_lb_provisioning";
+ 
+         if (capacity) {
+--- smartmontools-7.5/smartd.cpp
++++ smartmontools-7.5/smartd.cpp
+@@ -2564,7 +2564,8 @@ static int SCSIDeviceScan(dev_config & cfg, dev_state & state, scsi_device * scs
+ 
+   char si_str[64];
+   struct scsi_readcap_resp srr;
+-  uint64_t capacity = scsiGetSize(scsidev, scsidev->use_rcap16(), &srr);
++  uint64_t capacity = (pdt == SCSI_PT_CDROM ? 0 :
++                       scsiGetSize(scsidev, scsidev->use_rcap16(), &srr));
+ 
+   if (capacity)
+     format_capacity(si_str, sizeof(si_str), capacity, ".");

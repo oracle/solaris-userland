@@ -20,32 +20,24 @@
 #
 # Copyright (c) 2017, 2026, Oracle and/or its affiliates.
 #
-COMPILER =		studio
+COMPILER =		gcc
 BUILD_BITS =		64
 CTF_MODE =		off	# Has no effect
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		smartmontools
-COMPONENT_VERSION=	6.5
+COMPONENT_VERSION=	7.5
 COMPONENT_PROJECT_URL=	https://www.smartmontools.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:89e8bb080130bc6ce148573ba5bb91bfe30236b64b1b5bbca26515d4b5c945bc
-COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+    sha256:690b83ca331378da9ea0d9d61008c4b22dde391387b9bbad7f29387f2595f76e
+COMPONENT_ARCHIVE_URL=	https://github.com/smartmontools/smartmontools/releases/download/RELEASE_$(subst .,_,$(COMPONENT_VERSION))/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4835
 
-COMPONENT_BAID=		37704
+COMPONENT_BAID=		441748
 
 TEST_TARGET=	$(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
-
-#
-# This utility reads specific hardware pages, so it would be hard to
-# ensure aligned access to them in all cases. Therefore ask the compiler, to
-# do the dirty stuff instead of us.
-# 
-studio_ALIGN.sparc.32 = -xmemalign=8i
-studio_ALIGN.sparc.64 = -xmemalign=16i
 
 # Run automake to pickup man page normalization changes.
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv; automake)
@@ -56,5 +48,6 @@ CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=   ac_cv_prog_cxx_cxx11=
 
 REQUIRED_PACKAGES += system/library
-REQUIRED_PACKAGES += system/library/c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc

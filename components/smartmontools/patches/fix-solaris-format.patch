@@ -1,0 +1,17 @@
+Use the correct printf format for the size_t transfer length.
+
+Merged upstream via:
+https://github.com/smartmontools/smartmontools/pull/671
+https://github.com/smartmontools/smartmontools/commit/e15279fc5214b5a2784b1cd204792a849d146ba7
+
+--- smartmontools-7.5/os_solaris.cpp
++++ smartmontools-7.5/os_solaris.cpp
+@@ -313,7 +313,7 @@ int do_scsi_cmnd_io(int fd, struct scsi_cmnd_io * iop, int report)
+     } else if (iop->scsi_status)
+       pout("  status=%x\n", iop->scsi_status);
+     if (iop->resid)
+-      pout("  dxfer_len=%d, resid=%d\n", iop->dxfer_len, iop->resid);
++      pout("  dxfer_len=%zu, resid=%d\n", iop->dxfer_len, iop->resid);
+     if (report > 1) {
+       len = iop->dxfer_len - iop->resid;
+       if (len > 0) {

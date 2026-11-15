@@ -1,0 +1,34 @@
+Clamp supported log-page response lengths to the amount requested from the
+device and to the remaining destination-array capacity.  This includes and
+strengthens the bound added upstream after 7.5:
+
+https://github.com/smartmontools/smartmontools/commit/652d2089304bd0af4761079e267b0df794be6a65
+
+--- smartmontools-7.5/scsiprint.cpp
++++ smartmontools-7.5/scsiprint.cpp
+@@ -177,6 +177,8 @@ scsiGetSupportedLogPages(scsi_device * device)
+ 
+     memcpy(sup_lpgs, gBuf, LOG_RESP_LEN);
+     resp_len = gBuf[3];
++    if (resp_len > (LOG_RESP_LEN - LOGPAGEHDRSIZE))
++        resp_len = LOG_RESP_LEN - LOGPAGEHDRSIZE;
+     up = gBuf + LOGPAGEHDRSIZE;
+ 
+     for (k = 0; k < resp_len; k += 1) {
+@@ -219,7 +221,16 @@ scsiGetSupportedLogPages(scsi_device * device)
+     }
+ 
+     if (got_subpages) {
++        int resp_len_max = LOG_RESP_LONG_LEN - LOGPAGEHDRSIZE;
++        int array_len_max = 2 * (SCSI_SUPP_LOG_PAGES_MAX_COUNT -
++                                 supp_lpg_and_spg_count);
++
++        if (resp_len_max > array_len_max)
++            resp_len_max = array_len_max;
+         resp_len = sg_get_unaligned_be16(gBuf + 2);
++        if (resp_len > resp_len_max)
++            resp_len = resp_len_max;
++        resp_len &= ~1;
+         up = gBuf + LOGPAGEHDRSIZE;
+         for (k = 0; k < resp_len; k += 2) {
+             uint8_t page_code = 0x3f & up[k];

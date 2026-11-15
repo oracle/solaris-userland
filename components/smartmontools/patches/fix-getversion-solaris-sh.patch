@@ -1,0 +1,37 @@
+Solaris /bin/sh does not implement the non-POSIX local command.  Initialize
+the scratch variables explicitly so release metadata generation is quiet and
+portable.
+
+Not needed upstream.  The affected functions were removed during the upstream
+version-detection rewrite:
+https://github.com/smartmontools/smartmontools/commit/203d6a9e5f19c175d53003c12bb4c6d74021f1d1
+
+--- smartmontools-7.5/getversion.sh
++++ smartmontools-7.5/getversion.sh
+@@ -67,7 +67,7 @@ files="
+ 
+ revision_from_svn()
+ {
+-  local r t
++  r=; t=
+   r=$(cd "$srcdir" && svnversion 2>/dev/null) || return 1
+   case $r in [1-9][0-9]*) ;; *) return 1 ;; esac
+   t=$(cd "$srcdir" && TZ='' LC_ALL=C svn info 2>/dev/null) || return 1
+@@ -79,7 +79,7 @@ revision_from_svn()
+ 
+ revision_from_ids()
+ {
+-  local x
++  x=
+   x=$(cd "$srcdir" && \
+       sed -n 's,^.*\$[I][d]: [^ ]* \([0-9][0-9]*\) \([0-9][-0-9]*\) \([0-9][:0-9]*\)Z [^$]*\$.*$,\1 \2 \3,p' $files \
+       | sort -n -r | sed -n 1p)
+@@ -90,7 +90,7 @@ revision_from_ids()
+ 
+ revision_from_git()
+ {
+-  local h r t x
++  h=; r=; t=; x=
+   x=$(cd "$srcdir" && TZ='' LC_ALL=C git log -1 --date=iso 2>/dev/null) || return 1
+   h=$(echo "$x" | sed -n 's,^commit \([0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]\).*$,\1,p')
+   t=$(echo "$x" | sed -n 's,^Date: *\(2[-0-9]*\) \([0-9][:0-9]*\) .*$,\1 \2,p')

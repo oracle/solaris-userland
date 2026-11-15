@@ -1,0 +1,23 @@
+From 6204cfab1f8b9d4d77fe4e43ca2a7465d234f936 Mon Sep 17 00:00:00 2001
+From: Christian Franke <christian.franke@t-online.de>
+Date: Tue, 14 Oct 2025 14:12:06 +0200
+Subject: [PATCH] Fix null pointer dereference on unknown form factor value in
+ FARM data
+
+The issue was detected by Corgea.
+
+Signed-off-by: Christian Franke <christian.franke@t-online.de>
+
+https://github.com/smartmontools/smartmontools/commit/6204cfab1f8b9d4d77fe4e43ca2a7465d234f936
+
+--- smartmontools-7.5/farmprint.cpp
++++ smartmontools-7.5/farmprint.cpp
+@@ -55,7 +55,7 @@ static const char* farm_get_form_factor(const uint64_t formFactor) {
+     case 0x5:
+       return "< 1.8 inches";
+     default :
+-      return 0;
++      return "UNKNOWN";
+   }
+ }
+ 
