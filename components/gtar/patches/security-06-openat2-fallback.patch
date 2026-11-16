@@ -1,0 +1,166 @@
+Solaris adaptation: keep confined '..' resolution anchored at the starting FD.
+
+The imported gnulib openat2 fallback walks components with O_NOFOLLOW, but
+uses openat(current_fd, "..") at depth greater than one. A directory rename
+can change that parent after descent. Solaris lacks native openat2, so do
+not rely on the recorded depth alone to confine this lookup. Remember the
+resolved component names, and restart at the original directory FD after
+removing a component. Re-resolve with the same no-follow walk and symlink
+budget. Do not retain one FD per ancestor: upstream's scarce-FD extraction
+coverage and legitimate deep paths must keep working.
+
+This is a userspace resolution strategy, not an atomic filesystem snapshot.
+As with descriptor-relative extraction on Linux, callers must protect the
+extraction directory against untrusted writers moving already-opened
+directories. No path-based check followed by a symlink-following operation
+is substituted for the descriptor walk.
+
+Upstream fallback and documented portability limitation:
+https://cgit.git.savannah.gnu.org/cgit/gnulib.git/commit/?id=0b97ffdf32bdab909d02449043447237273df75e
+https://www.gnu.org/software/gnulib/manual/html_node/openat2.html
+
+--- a/gnu/openat2.c
++++ b/gnu/openat2.c
+@@ -161,6 +161,40 @@
+ #endif
+ }
+ 
++/* Names of directories already traversed, relative to the starting FD.
++   Each component ends in '/'.  Used only for confined resolution.  */
++struct resolved_path
++{
++  char *name;
++  idx_t len;
++  idx_t allocated;
++};
++
++/* Remember a successfully opened directory component.  Return a negative
++   errno on failure.  Keeping names rather than ancestor FDs permits deep
++   extraction even with a small file descriptor limit.  */
++static int
++remember_directory (struct resolved_path *path, char const *name, idx_t len)
++{
++  idx_t needed;
++  if (ckd_add (&needed, path->len, len)
++      || ckd_add (&needed, needed, 1))
++    return -ENOMEM;
++  if (path->allocated < needed)
++    {
++      idx_t size = ckd_add (&size, needed, needed >> 1) ? needed : size;
++      char *p = irealloc (path->name, size);
++      if (!p)
++        return negative_errno ();
++      path->name = p;
++      path->allocated = size;
++    }
++  memcpy (path->name + path->len, name, len);
++  path->name[needed - 1] = '/';
++  path->len = needed;
++  return 0;
++}
++
+ /* Like openat2 (*FD, FILENAME, h, sizeof h) where h is
+    (struct open_how) { .flags = FLAGS, .resolve = RESOLVE, .mode = MODE },
+    except trust h's contents, advance *FD as we go,
+@@ -172,9 +206,10 @@
+ static int
+ do_openat2 (int *fd, char const *filename,
+             int flags, char resolve, mode_t mode,
+-            char **buf, idx_t bufsize)
++            char **buf, idx_t bufsize, struct resolved_path *path)
+ {
+   int dfd = *fd;
++  bool confined = resolve & (RESOLVE_BENEATH | RESOLVE_IN_ROOT);
+ 
+   /* RESOLVED_CACHED cannot be implemented properly in user space,
+      so pretend nothing is cached.  */
+@@ -269,6 +304,11 @@
+               close (*fd);
+               *fd = dfd;
+             }
++          if (confined)
++            {
++              path->len = 0;
++              depth = 0;
++            }
+         }
+       idx_t h = g;
+       while (h > 1)
+@@ -303,6 +343,39 @@
+         {
+           /* A non-final component that acts like "."; skip it.  */
+           filenamesize = nextf;
++        }
++      else if (confined && dotdot && 0 < depth)
++        {
++          /* Never look up ".." from a directory that might have been
++             renamed since we opened it: the real parent might now be
++             outside DFD.  Remove the last remembered component and
++             resolve the remaining prefix again from DFD, using the same
++             no-follow component walk and the same symlink budget.  If
++             names have changed we may fail or find a different confined
++             directory, but cannot ascend through a renamed directory.
++             This also handles ".." introduced by symlink contents.  */
++          path->len--;
++          while (path->len && path->name[path->len - 1] != '/')
++            path->len--;
++          idx_t tail = final ? 2 : nextf;
++          idx_t needed;
++          if (ckd_add (&needed, path->len, tail))
++            return -ENOMEM;
++          bufsize = maybe_grow (buf, bufsize, stackbuf,
++                               path->len + final, nextf);
++          if (bufsize < 0)
++            return bufsize;
++          e = *buf + bufsize;
++          if (path->len)
++            memcpy (&e[-needed], path->name, path->len);
++          if (final)
++            e[-2] = '.';
++          if (*fd != dfd)
++            close (*fd);
++          *fd = dfd;
++          path->len = 0;
++          depth = 0;
++          filenamesize = needed;
+         }
+       else if (!final & dotdot & (depth == 1))
+         {
+@@ -444,6 +517,11 @@
+                       close (*fd);
+                       *fd = dfd;
+                     }
++                  if (confined)
++                    {
++                      path->len = 0;
++                      depth = 0;
++                    }
+                   prefix = slink;
+                   prefixlen = slinklen;
+                 }
+@@ -479,6 +557,13 @@
+                 {
+                   *fd = dfd;
+                   return subfd;
++                }
++
++              if (confined)
++                {
++                  int err = remember_directory (path, &e[-f], f - h);
++                  if (err < 0)
++                    return err;
+                 }
+ 
+               /* The component cannot be dotlike here, so if the depth is
+@@ -578,8 +663,10 @@
+       char stackbuf[256];
+       char *buf = stackbuf;
+ 
++      struct resolved_path path = { 0 };
+       r = do_openat2 (&fd, filename, flags, resolve, mode,
+-                      &buf, sizeof stackbuf);
++                      &buf, sizeof stackbuf, &path);
++      free (path.name);
+ 
+       if (fd != dfd)
+         close (fd);

@@ -1,0 +1,19 @@
+Patch origin: in-house
+Patch status: Solaris-specific; not suitable for upstream
+
+Preserve the Solaris installed-test binary path in the Automake input.
+Preparation regenerates Makefile.in, so patching that generated file as well
+would reapply the same change when a later security patch invalidates its
+patch stamp.
+
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -318,7 +318,7 @@
+ 
+ # Run the test suite on the *installed* tree.
+ installcheck-local: $(check_PROGRAMS)
+-	$(SHELL) $(TESTSUITE) $(TESTSUITEFLAGS) AUTOTEST_PATH=$(exec_prefix)/bin
++	$(SHELL) $(TESTSUITE) $(TESTSUITEFLAGS) AUTOTEST_PATH=/usr/gnu/bin
+ 
+ 
+ ## ------------ ##

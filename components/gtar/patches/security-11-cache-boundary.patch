@@ -1,0 +1,35 @@
+Keep the extraction root as the boundary when extending cached paths.
+
+Patch origin: in-house
+Patch status: Solaris adaptation of the imported extraction-fd stack
+
+Prerequisite: security-02-extraction-fds.patch and the subsequent
+security-04-CVE-2026-18508.patch descriptor-cache adjustments.
+
+When confinement is active, a cached subdirectory is not the confinement
+root. For example, after caching a/ for a/file, resolving b/ relative to
+that cache rejects a/b -> ../c even though c/ is under the extraction root.
+Resolve the full parent from chdir_fd in this case, retaining all configured
+openat2 restrictions. Keep the cache-extension shortcut for unconfined
+operations and exact-parent cache hits.
+
+--- a/src/misc.c
++++ b/src/misc.c
+@@ -1303,10 +1303,13 @@
+       *p = '\0';
+ 
+       if (submatch && c->subdirlen < subdirlen
+-	  && !ISSLASH (subdir[c->subdirlen]))
+-	{
+-	  /* The new directory is a subdirectory of the old,
+-	     so open relative to FD rather than to chdir_fd.  */
++	  && !ISSLASH (subdir[c->subdirlen])
++	  && !open_searchdir_how.resolve)
++	{
++	  /* Without confinement, open relative to the cached directory.
++	     With confinement, resolve the full parent from chdir_fd below:
++	     a symlink can leave the cached directory while remaining
++	     beneath the extraction root.  */
+ 	  int subfd = open_subdir (fd, &subdir[c->subdirlen]);
+ 	  if (subfd < 0)
+ 	    {

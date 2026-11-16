@@ -41,6 +41,11 @@ COMPONENT_BAID=		147609
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
 
+# The extraction-directory security imports add gnulib openat2, mkdtempat
+# and upstream Autotest regressions. Regenerate their build files together,
+# including the Solaris installed-test path patched in tests/Makefile.am.
+COMPONENT_PREP_ACTION = (cd $(@D); $(AUTORECONF) -fiv)
+
 # tests (ttyemu.c) requires c99
 studio_C99MODE = $(studio_C99_ENABLE)
 

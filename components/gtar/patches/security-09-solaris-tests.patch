@@ -1,0 +1,26 @@
+Use the native Solaris EXDEV diagnostic in the upstream regression.
+
+Patch origin: in-house
+Patch status: Solaris test portability adaptation
+
+The upstream two-archive confinement regression is imported by
+security-02-extraction-fds.patch from the complete CVE-2025-45582 stack:
+https://gitlab.com/redhat/centos-stream/rpms/tar/-/blob/60b4d64ef2d933d3c14cbf8844268e88a90dc69f/tar-1.35-CVE-2025-45582.patch
+
+Solaris strerror(EXDEV) is "Cross-device link". Keep the exact diagnostic
+checks, both exit-status assertions, all five archive formats and the
+victim-directory comparison; adapt only the platform's error text.
+
+--- a/tests/extrac31.at
++++ b/tests/extrac31.at
+@@ -48,8 +48,8 @@
+ [status1=0
+ status2=2
+ ],
+-[tar: sym/file1: Cannot open: Invalid cross-device link
+-tar: sub/sym/file2: Cannot open: Invalid cross-device link
++[tar: sym/file1: Cannot open: Cross-device link
++tar: sub/sym/file2: Cannot open: Cross-device link
+ tar: Exiting with failure status due to previous errors
+ ])
+ AT_CLEANUP
