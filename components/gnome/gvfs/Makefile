@@ -27,17 +27,15 @@ BUILD_BITS =            64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gvfs
-COMPONENT_VERSION=	1.56.3
+COMPONENT_VERSION=	1.60.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/gvfs
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7b99f64a33437cb97987ac47a91cce73593994a9f1940f51661fa5eee0b42deb
+	sha256:4cb21d511c2e29511a99f3a193deaa914a8bb7d9e372228673c6b085aff63f4b
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5496
 
-COMPONENT_BAID=		393643
+COMPONENT_BAID=		451005
 BUILD_STYLE=		meson
-
-TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -60,6 +58,7 @@ CONFIGURE_OPTIONS += -Dwsdd=false
 CONFIGURE_OPTIONS += -Dburn=true
 CONFIGURE_OPTIONS += -Ddeprecated_apis=true
 CONFIGURE_OPTIONS += -Dman=true
+CONFIGURE_OPTIONS += -Dunit_tests=true
 # admin requires libcap
 CONFIGURE_OPTIONS += -Dadmin=false
 CONFIGURE_OPTIONS += -Dbluray=false
@@ -77,6 +76,18 @@ CONFIGURE_OPTIONS += -Dmtp=false
 # Requires dependencies we don't have on Solaris - libimobiledevice, libplist
 CONFIGURE_OPTIONS += -Dafc=false
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
+
+# Upstream builds outputstream but does not register it with Meson's test target.
+# Run its local-file tests directly for both bitnesses.
+COMPONENT_PRE_TEST_ACTION = $(MKDIR) $(@D)/outputstream-test-data
+COMPONENT_TEST_ENV += GIO_USE_VFS=local
+COMPONENT_TEST_ENV += TMPDIR=$(@D)/outputstream-test-data
+COMPONENT_TEST_CMD = $(@D)/test/unit/outputstream
+COMPONENT_TEST_ARGS = $(@D)/outputstream-test-data
+# Local GIO reports an initial append offset of 0; this test expects EOF.
+COMPONENT_TEST_ARGS += -s /write/append-tell
+COMPONENT_TEST_TARGETS =
+COMPONENT_POST_TEST_ACTION = $(RM) -r $(@D)/outputstream-test-data
 
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gcr-4

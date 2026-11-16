@@ -1,0 +1,48 @@
+Copyright (c) 2026, Oracle and/or its affiliates.
+
+Reject incomplete SFTP handles before callbacks can use an uninitialized
+length. Use the existing connection-error path for malformed replies.
+
+Source: Oracle Solaris local fix (not an upstream backport).
+Submitted upstream:
+https://gitlab.gnome.org/GNOME/gvfs/-/work_items/892
+Follow-up to:
+https://gitlab.gnome.org/GNOME/gvfs/-/commit/015bf91450370a0717b91742feeb8f22e8b0243e
+---
+--- a/daemon/gvfsbackendsftp.c
++++ b/daemon/gvfsbackendsftp.c
+@@ -1512,6 +1512,19 @@
+       return;
+     }
+ 
++  /* Reject incomplete handles before callbacks can use an unset length. */
++  if (conn->reply_size > 0 && conn->reply[0] == SSH_FXP_HANDLE)
++    {
++      guint32 handle_len;
++
++      if (conn->reply_size < 9)
++        goto invalid_reply;
++
++      memcpy (&handle_len, conn->reply + 5, sizeof (handle_len));
++      if (GUINT32_FROM_BE (handle_len) > conn->reply_size - 9)
++        goto invalid_reply;
++    }
++
+   reply = make_reply_stream (conn->reply, conn->reply_size);
+   conn->reply = NULL;
+ 
+@@ -1532,7 +1545,13 @@
+   g_object_unref (reply);
+ 
+   read_reply_async (conn);
+-  
++  return;
++
++invalid_reply:
++  g_clear_pointer (&conn->reply, g_free);
++  g_set_error_literal (&error, G_IO_ERROR, G_IO_ERROR_FAILED,
++                       _("Invalid reply received"));
++  fail_jobs_and_unmount (conn->op_backend, error);
+ }
+ 
+ static void
