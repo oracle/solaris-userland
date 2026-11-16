@@ -30,14 +30,14 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsoup
-COMPONENT_VERSION=	3.7.2
+COMPONENT_VERSION=	3.8.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libsoup
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:03b7085df85645228c6490b6bbfda8c2ce5394d0cd7184005f550a81225ac4aa
+    sha256:bbf08fa3e03a88c31a3d27a0d87cb422e9490f2d08e149211103df6d638a2238
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	11483
 
-COMPONENT_BAID=		434390
+COMPONENT_BAID=		447919
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
