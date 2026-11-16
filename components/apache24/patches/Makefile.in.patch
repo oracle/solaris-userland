@@ -3,7 +3,7 @@ Patch status: Solaris-specific; not suitable for upstream
 
 --- httpd-2.4.55/Makefile.in
 +++ httpd-2.4.55/Makefile.in
-@@ -50,6 +50,9 @@ sed -e 's#@@ServerRoot@@#$(prefix)#g' \
+@@ -54,6 +54,9 @@ sed -e 's#@@ServerRoot@@#$(prefix)#g' \
  	    				-e 's#@@Port@@#$(PORT)#g' \
  	    				-e 's#@@SSLPort@@#$(SSLPORT)#g' \
  	    				-e '/@@LoadModule@@/d' \
@@ -13,7 +13,7 @@ Patch status: Solaris-specific; not suitable for upstream
  	    				< $$i; \
  	    		else \
  	    			sed -n -e '/@@LoadModule@@/q' \
-@@ -126,6 +129,19 @@ if test ! -f $(DESTDIR)$(sbindir)/envvar
+@@ -130,6 +133,19 @@ if test ! -f $(DESTDIR)$(sbindir)/envvar
  	        cp -p envvars-std $(DESTDIR)$(sbindir)/envvars ; \
  	    fi ; \
  	fi
@@ -33,7 +33,7 @@ Patch status: Solaris-specific; not suitable for upstream
  
  # Create a sanitized config_vars.mk
  build/config_vars.out: build/config_vars.mk build/config_vars.sh
-@@ -232,7 +248,6 @@ fi
+@@ -236,7 +252,6 @@ fi
  
  install-other:
  	@test -d $(DESTDIR)$(logfiledir) || $(MKINSTALLDIRS) $(DESTDIR)$(logfiledir)
