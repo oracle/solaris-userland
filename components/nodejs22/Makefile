@@ -30,18 +30,18 @@ CTF_MODE =		off	# Has no effect
 include			../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		node
-COMPONENT_VERSION=	22.23.4
+COMPONENT_VERSION=	22.23.5
 COMPONENT_SUBVERSION=
 HUMAN_VERSION=		$(COMPONENT_VERSION)$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=	https://github.com/nodejs/node
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_HASH= \
-    sha256:d4c67bc47470174e381d5321d6623dc04b0e3fba50cb91d9db8171e24286bd14
+    sha256:7c3e9043bcad2479053cf6798a17798000fee8db5ae67e81015f9519db317ec3
 COMPONENT_ARCHIVE_URL=	\
     $(COMPONENT_PROJECT_URL)/archive/v$(COMPONENT_VERSION).zip
 COMPONENT_BUGDB=	utility/nodejs
-COMPONENT_BAID=		465343
+COMPONENT_BAID=		467929
 COMPONENT_ANITYA_ID=	8251
 
 CONFIGURE_DEFAULT_DIRS=	no
@@ -112,6 +112,9 @@ COMPONENT_TEST_TARGETS=	test-only
 # The node-gyp sometimes rebuilds packages during 'gmake test'. It needs to
 # know which compiler and linker to use. Pass the information via environment.
 COMPONENT_TEST_ARGS+=	CC=gcc CXX=g++ LINK=$(LINK.OPENSSL3)
+# Bound the upstream test runner separately from recursive make.  Do not set
+# JOBS: individual tests use it to change their own workloads.
+COMPONENT_TEST_ARGS+=	PARALLEL_ARGS="-j $(COMPONENT_MAKE_JOBS)"
 # add /usr/sbin to PATH for dtrace
 # add openssl-3 to PATH, some tests can't speak to s_client from other versions
 COMPONENT_TEST_ENV+=	PATH=$(BINDIR.OPENSSL3):$(GNUBIN):$(PATH):/usr/sbin \

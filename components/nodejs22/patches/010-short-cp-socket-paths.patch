@@ -1,0 +1,48 @@
+Use relative Solaris socket paths so long build workspace names do not
+exceed sockaddr_un.sun_path and collide after truncation.  Keep the socket
+inside the upstream temporary directory and preserve every fs.cp assertion.
+
+--- node-22.23.5/test/parallel/test-fs-cp-async-socket.mjs
++++ node-22.23.5/test/parallel/test-fs-cp-async-socket.mjs
+@@ -4,7 +4,7 @@
+ import assert from 'node:assert';
+ import { cp, mkdirSync } from 'node:fs';
+ import { createServer } from 'node:net';
+-import { join } from 'node:path';
++import { join, relative } from 'node:path';
+ import { nextdir } from '../common/fs.js';
+ import tmpdir from '../common/tmpdir.js';
+ 
+@@ -25,7 +25,9 @@
+   const src = nextdir();
+   mkdirSync(src);
+   const dest = nextdir();
+-  const sock = join(src, `${process.pid}.sock`);
++  const absoluteSock = join(src, `${process.pid}.sock`);
++  const sock = isSolaris ? relative(process.cwd(), absoluteSock) : absoluteSock;
++
+   const server = createServer();
+   server.listen(sock);
+   cp(sock, dest, common.mustCall((err) => {
+--- node-22.23.5/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
++++ node-22.23.5/test/parallel/test-fs-cp-sync-copy-socket-error.mjs
+@@ -4,7 +4,7 @@
+ import assert from 'node:assert';
+ import { cpSync, mkdirSync } from 'node:fs';
+ import { createServer } from 'node:net';
+-import { join } from 'node:path';
++import { join, relative } from 'node:path';
+ import tmpdir from '../common/tmpdir.js';
+ 
+ const isSolaris = process.platform === 'sunos';
+@@ -24,7 +24,9 @@
+   const src = nextdir();
+   mkdirSync(src);
+   const dest = nextdir();
+-  const sock = join(src, `${process.pid}.sock`);
++  const absoluteSock = join(src, `${process.pid}.sock`);
++  const sock = isSolaris ? relative(process.cwd(), absoluteSock) : absoluteSock;
++
+   const server = createServer();
+   server.listen(sock);
+   assert.throws(
