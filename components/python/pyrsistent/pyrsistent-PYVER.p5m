@@ -23,6 +23,8 @@
 # Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 #
 
+# Use transform to prevent duplicate pkg.legacy action error
+<transform set name=pkg.fmri -> set mark_legacy true>
 set name=pkg.fmri \
     value=pkg:/library/python/pyrsistent-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Persistent/Functional/Immutable data structures."
@@ -34,7 +36,7 @@ set name=info.classification \
     value=org.opensolaris.category.2008:Development/Python
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2020/032
+set name=org.opensolaris.arc-caseid value=PSARC/2020/032 value=PSARC/2026/109
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file path=usr/lib/python$(PYVER)/vendor-packages/_pyrsistent_version.py

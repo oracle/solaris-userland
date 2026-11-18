@@ -64,6 +64,6 @@ CBE_PACKAGES += library/python/pip
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/jsonschema-specifications-%)
-REQUIRED_PACKAGES += $(PYVS:%=library/python/pyrsistent-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/referencing-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/rpds-py-%)
 REQUIRED_PACKAGES += $(PYVS:%=runtime/python-%)
