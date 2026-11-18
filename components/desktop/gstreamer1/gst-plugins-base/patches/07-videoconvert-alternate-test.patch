@@ -1,0 +1,77 @@
+Test-only adaptation for 06-validate-video-plane-extents.patch. The production
+video-plane extent validation fix has already been submitted upstream:
+https://gitlab.freedesktop.org/gstreamer/gstreamer/-/work_items/5395
+
+Use 2x4 ALTERNATE video info for buffers containing one 2x2 field, so the
+RGB comparison helper matches the tested interlaced format. Preserve the
+production video-plane extent validation.
+
+This test adaptation itself has not been submitted upstream.
+
+--- a/tests/check/elements/videoconvert.c
++++ b/tests/check/elements/videoconvert.c
+@@ -199,7 +199,8 @@
+ }
+ 
+ static gboolean
+-rgb_buffer_pixels_equal (GstBuffer * first, GstBuffer * second)
++rgb_buffer_pixels_equal (GstBuffer * first, GstBuffer * second,
++    gboolean alternate)
+ {
+   GstVideoInfo info;
+   GstVideoFrame first_frame;
+@@ -207,7 +208,11 @@
+   gboolean equal = TRUE;
+   guint i;
+ 
+-  gst_video_info_set_format (&info, GST_VIDEO_FORMAT_RGB, 2, 2);
++  if (alternate)
++    gst_video_info_set_interlaced_format (&info, GST_VIDEO_FORMAT_RGB,
++        GST_VIDEO_INTERLACE_MODE_ALTERNATE, 2, 4);
++  else
++    gst_video_info_set_format (&info, GST_VIDEO_FORMAT_RGB, 2, 2);
+   fail_unless (gst_video_frame_map (&first_frame, &info, first, GST_MAP_READ));
+   fail_unless (gst_video_frame_map (&second_frame, &info, second,
+           GST_MAP_READ));
+@@ -247,7 +252,7 @@
+       create_gray8_buffer_with_layout (3, 4));
+   fail_unless (second != NULL);
+ 
+-  fail_unless (rgb_buffer_pixels_equal (first, second));
++  fail_unless (rgb_buffer_pixels_equal (first, second, FALSE));
+ 
+   gst_buffer_unref (second);
+   gst_buffer_unref (first);
+@@ -298,7 +303,7 @@
+   exact = gst_harness_push_and_pull (h, create_black_gray8_2x2_buffer ());
+   fail_unless (exact != NULL);
+ 
+-  fail_unless (rgb_buffer_pixels_equal (padded, exact));
++  fail_unless (rgb_buffer_pixels_equal (padded, exact, FALSE));
+ 
+   gst_buffer_unref (exact);
+   gst_buffer_unref (padded);
+@@ -337,12 +342,12 @@
+ 
+   configured = gst_harness_push_and_pull (h, create_gray8_4x4_buffer ());
+   fail_unless (configured != NULL);
+-  fail_if (rgb_buffer_pixels_equal (full_frame, configured));
++  fail_if (rgb_buffer_pixels_equal (full_frame, configured, FALSE));
+ 
+   g_object_set (h->element, "converter-config", NULL, NULL);
+   restored = gst_harness_push_and_pull (h, create_gray8_4x4_buffer ());
+   fail_unless (restored != NULL);
+-  fail_unless (rgb_buffer_pixels_equal (full_frame, restored));
++  fail_unless (rgb_buffer_pixels_equal (full_frame, restored, FALSE));
+ 
+   gst_buffer_unref (restored);
+   gst_buffer_unref (configured);
+@@ -403,7 +408,7 @@
+   fail_unless (exact != NULL);
+ 
+   /* Each output buffer contains one 2x2 field; ignore row padding. */
+-  fail_unless (rgb_buffer_pixels_equal (padded, exact));
++  fail_unless (rgb_buffer_pixels_equal (padded, exact, TRUE));
+ 
+   gst_buffer_unref (exact);
+   gst_buffer_unref (padded);

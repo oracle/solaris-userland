@@ -29,17 +29,17 @@ BUILD_BITS =            32_and_64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-plugins-good
-COMPONENT_VERSION=	1.28.8
+COMPONENT_VERSION=	1.28.9
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a7670ed900d3d03be744d25c1873b239896e9a82ce6d17f8febc6fffbaee9521
+	sha256:e518cd97483706a252e95e60312a22d23dec6f5e7673af6f5bde719c3a9ca7f4
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1263
 
-COMPONENT_BAID=		458272
+COMPONENT_BAID=		467747
 
 BUILD_STYLE=		meson
 PYTHON_VERSION = 3.11
@@ -75,7 +75,11 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS)-$(MACH).master
 COMPONENT_TEST_ENV += -i
-COMPONENT_TEST_ARGS =   -k 0
+BASE_TEST_LIBDIR = $(WS_COMPONENTS)/desktop/gstreamer1/gst-plugins-base/build/prototype/$(MACH)/usr/lib$(if $(filter 64,$(BITS)),/$(MACH64))
+COMPONENT_TEST_CMD = $(MESON)
+COMPONENT_TEST_ARGS = test --no-rebuild --num-processes 4 --print-errorlogs \
+	--wrapper "$(COMPONENT_DIR)/test/with-base-proto.sh $(BASE_TEST_LIBDIR)"
+COMPONENT_TEST_TARGETS =
 
 CBE_PACKAGES += codec/libogg
 CBE_PACKAGES += codec/libtheora
