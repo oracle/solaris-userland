@@ -1,0 +1,20 @@
+On Solaris, uname can return any non-negative value on success;
+on other platforms, it seems to be just zero.
+
+Since -1 seems to be the error indicating return value everywhere,
+this patch might be acceptable upstream.
+
+This was reported upstream:
+https://lore.kernel.org/git/SJ0PR10MB5785807828F81EAC8CA165E78A702@SJ0PR10MB5785.namprd10.prod.outlook.com/
+
+--- git-2.56.0/version.c
++++ git-2.56.0/version.c
+@@ -83,7 +83,7 @@ int get_uname_info(struct strbuf *buf, u
+ {
+ 	struct utsname uname_info;
+ 
+-	if (uname(&uname_info)) {
++	if (uname(&uname_info) < 0) {
+ 		strbuf_addf(buf, _("uname() failed with error '%s' (%d)\n"),
+ 			    strerror(errno),
+ 			    errno);
