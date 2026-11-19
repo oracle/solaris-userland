@@ -1,0 +1,51 @@
+From cbad4adc133b16c803ec9445c8dd144bc5023a62 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Ol=C5=A1=C3=A1k?= <marek.olsak@amd.com>
+Date: Sun, 24 Jul 2022 20:36:00 -0400
+Subject: [PATCH] st/mesa: fix potential use-after-free in draw_bitmap_quad
+
+This is super unlikely to be freed before use, but let's fix it anyway.
+
+setup_render_state calls set_sampler_views(take_ownership=true), which
+means it takes ownership of the sampler view reference and is free to
+unreference it, so we can't use sv after setup_render_state.
+
+Fixes: feda6e9c5d101 - st/mesa: set take_ownership = true in set_sampler_views
+
+Reviewed-by: Brian Paul <brianp@vmware.com>
+Reviewed-by: Pierre-Eric Pelloux-Prayer <pierre-eric.pelloux-prayer@amd.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/17780>
+Upstream-Commit: <https://gitlab.freedesktop.org/mesa/mesa/-/commit/cbad4adc133b16c803ec9445c8dd144bc5023a62>
+
+Adapted for Mesa 21.3.8: retain setup_render_state's fourth (atlas)
+argument, false, and the existing bitmap atlas path. Inspect the texture
+target before transferring the sampler-view reference to the driver.
+---
+ src/mesa/state_tracker/st_cb_bitmap.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/mesa/state_tracker/st_cb_bitmap.c b/src/mesa/state_tracker/st_cb_bitmap.c
+--- a/src/mesa/state_tracker/st_cb_bitmap.c
++++ b/src/mesa/state_tracker/st_cb_bitmap.c
+@@ -319,17 +319,17 @@ draw_bitmap_quad(struct gl_context *ctx, GLint x, GLint y, GLfloat z,
+       assert(height <= (GLsizei) maxSize);
+    }
+ 
+-   setup_render_state(ctx, sv, color, false);
+-
+-   /* convert Z from [0,1] to [-1,-1] to match viewport Z scale/bias */
+-   z = z * 2.0f - 1.0f;
+-
+    if (sv->texture->target == PIPE_TEXTURE_RECT) {
+       /* use non-normalized texcoords */
+       sRight = (float) width;
+       tBot = (float) height;
+    }
+ 
++   setup_render_state(ctx, sv, color, false);
++
++   /* convert Z from [0,1] to [-1,-1] to match viewport Z scale/bias */
++   z = z * 2.0f - 1.0f;
++
+    if (!st_draw_quad(st, clip_x0, clip_y0, clip_x1, clip_y1, z,
+                      sLeft, tBot, sRight, tTop, color, 0)) {
+       _mesa_error(ctx, GL_OUT_OF_MEMORY, "glBitmap");
