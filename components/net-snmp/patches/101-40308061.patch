@@ -1,0 +1,64 @@
+#
+# Fix for https://github.com/net-snmp/net-snmp/issues/1175
+#
+--- old/agent/mibgroup/host/hr_system.c	2025-12-23 17:54:18.000000000 +0100
++++ new/agent/mibgroup/host/hr_system.c	2026-11-17 11:16:48.682045690 +0100
+@@ -73,6 +73,9 @@
+ #include <fcntl.h>
+ #include <sys/types.h>
+ #include <sys/openpromio.h>
++#include <spawn.h>
++
++extern char **environ;		/* needed for posix_spawn() */
+ #endif
+ 
+ #ifdef HAVE_SYS_SYSCTL_H
+@@ -480,19 +483,38 @@ set_solaris_bootcommand_parameter(int ac
+ static int set_solaris_eeprom_parameter(const char *key, const char *value,
+                                         size_t var_val_len) {
+ 
+-    int status=0;
+-    char buffer[1024],*pbuffer=buffer;
+-    
+-    if( strlen(key)+strlen(value)+16 > sizeof(buffer) ) {
+-        pbuffer=(char *)malloc(strlen(key)+strlen(value)+16);
+-    } 
++    int status = -1;
++    pid_t pid;
++    int error;
++    char *buf;
++    char *argv[] = { "/usr/sbin/eeprom", NULL, NULL };
++    posix_spawnattr_t attr;
++    short flags = POSIX_SPAWN_RESETIDS | POSIX_SPAWN_SETSIGMASK |
++        POSIX_SPAWN_SETSIGDEF | POSIX_SPAWN_NOSIGCHLD_NP |
++        POSIX_SPAWN_WAITPID_NP;
++
++    if (asprintf(&buf, "%s=%.*s", key, var_val_len, value) < 0)
++        return -1;
++
++    if (posix_spawnattr_init(&attr) != 0) {
++        free(buf);
++        return -1;
++    }
++    (void) posix_spawnattr_setflags(&attr, flags);
+ 
+-    
+-    sprintf(pbuffer, "eeprom %s=\"%.*s\"\n", key, var_val_len, value);
++    argv[1] = buf;
+ 
+-    status=system(pbuffer);
++    error = posix_spawn(&pid, argv[0], NULL, &attr, argv, environ);
+ 
+-    if(pbuffer!=buffer) free(pbuffer);
++    free(buf);
++    (void) posix_spawnattr_destroy(&attr);
++
++    if (error != 0) {
++        errno = error;
++        return -1;
++    }
++    while (waitpid(pid, &status, 0) == -1 && errno == EINTR)
++        ;
+     return status;
+ }
+ 
