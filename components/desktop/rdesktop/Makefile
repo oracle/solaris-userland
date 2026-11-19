@@ -25,15 +25,14 @@ BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rdesktop
-COMPONENT_VERSION=	1.9.0
-COMPONENT_PROJECT_URL=	http://www.rdesktop.org/
+COMPONENT_VERSION=	1.9.1
+COMPONENT_PROJECT_URL=	https://github.com/marcofortina/rdesktop
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d547c2e6f3e4c818a7e69a0f39adb39fac303633e0c25aa804bb588507ffc230
-COMPONENT_ARCHIVE_URL=	https://github.com/rdesktop/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION).tar.gz
+	sha256:5a48736533ed09e3eef76f770bfbe9322e3e5661547c1585cf6eca21c8f18917
+COMPONENT_ARCHIVE_URL=	https://github.com/marcofortina/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	gnome/remote-desktop
-COMPONENT_ANITYA_ID=	4172
 
-COMPONENT_BAID=		72612
+COMPONENT_BAID=		465772
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -46,17 +45,21 @@ COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
 CONFIGURE_OPTIONS += --with-ipv6
 CONFIGURE_OPTIONS += --x-includes=""
 CONFIGURE_OPTIONS += --x-libraries=""
-# we don't have libgssglue for this
-CONFIGURE_OPTIONS += --disable-credssp
+# Smartcard redirection is not required for the Solaris package. Exclude the
+# implementation, including the unresolved upstream issue 115 code paths.
+CONFIGURE_OPTIONS += --disable-smartcard
 
+REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libtasn1
 REQUIRED_PACKAGES += library/security/nettle
-REQUIRED_PACKAGES += library/security/pcsc/pcsclite
+REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcursor
+REQUIRED_PACKAGES += x11/library/libxfixes
+REQUIRED_PACKAGES += x11/library/libxft
 REQUIRED_PACKAGES += x11/library/libxrandr

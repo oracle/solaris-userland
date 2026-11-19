@@ -1,0 +1,26 @@
+The internal NTLMv2 CredSSP client needs 16 bytes for its exported session key,
+while generate_random() always writes 32. Generate into a 32-byte temporary
+buffer and copy the needed 16 bytes, avoiding a stack overflow.
+https://github.com/marcofortina/rdesktop/issues/65
+Solaris correction after Kryten review of D14683 diff 33814.
+
+--- a/ntlmssp.c
++++ b/ntlmssp.c
+@@ -523,6 +523,7 @@
+ 	uint8 lm_hash_input[NTLMSSP_CHALLENGE_SIZE + NTLMSSP_CLIENT_CHALLENGE_SIZE];
+ 	uint8 session_base_key[16];
+ 	uint8 exported_session_key[16];
++	uint8 session_random[SEC_RANDOM_SIZE];
+ 	uint8 encrypted_session_key[16];
+ 	uint8 mic[NTLMSSP_MIC_SIZE];
+ 	RDSSL_RC4 key_exchange;
+@@ -567,7 +568,8 @@
+ 	       spn, (unsigned) s_length(target_name_utf16));
+ 
+ 	generate_random(client_challenge);
+-	generate_random(exported_session_key);
++	generate_random(session_random);
++	memcpy(exported_session_key, session_random, sizeof(exported_session_key));
+ 	ntlmssp_ntowfv2(username, effective_domain, password, response_key);
+ 	blob = ntlmssp_build_blob(target_info, target_info_len, client_challenge, target_name_utf16);
+ 

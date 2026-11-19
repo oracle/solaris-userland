@@ -1,0 +1,140 @@
+Solaris correction for alignment/shift undefined behaviour found during
+follow-up validation of issue #436 (https://github.com/rdesktop/rdesktop/issues/436).
+Follow-up to https://github.com/rdesktop/rdesktop/pull/437.
+This is separate from the report's five claims and is not part of the Git PR.
+Original local change; no upstream source commit. Applies to i386 and SPARC.
+Use byte-wise bitmap reads and stream integer accessors, with unsigned
+operands of the required width before shifting. Preserve the existing
+preferred-endian selection. Bounds assertions and wire byte order are unchanged.
+
+diff --git a/bitmap.c b/bitmap.c
+index 10ead13..a3236a1 100644
+--- a/bitmap.c
++++ b/bitmap.c
+@@ -29,15 +29,11 @@
+ 
+ /* Keep failed reads inside the input span; the decoder propagates failure. */
+ #define CVAL(p) ((p) < end ? *((p)++) : (input_error = True, 0))
+-#ifdef NEED_ALIGN
+ #ifdef L_ENDIAN
+ #define CVAL2(p, v) { if (end - (p) < 2) return False; v = (*(p++)); v |= (*(p++)) << 8; }
+ #else
+ #define CVAL2(p, v) { if (end - (p) < 2) return False; v = (*(p++)) << 8; v |= (*(p++)); }
+ #endif /* L_ENDIAN */
+-#else
+-#define CVAL2(p, v) { if (end - (p) < 2) return False; v = (*((uint16*)p)); p += 2; }
+-#endif /* NEED_ALIGN */
+ 
+ #define UNROLL8(exp) { exp exp exp exp exp exp exp exp }
+ 
+diff --git a/stream.h b/stream.h
+index d3722ea..e595c44 100644
+--- a/stream.h
++++ b/stream.h
+@@ -91,36 +91,64 @@ size_t in_ansi_string(STREAM s, char *string, size_t len);
+ #define s_assert_r(s,n)		{ if (!s_check_rem(s, n)) rdp_protocol_error( "unexpected stream overrun", s); }
+ #define s_assert_w(s,n)		{ if (s_left(s) < (size_t)n) { logger(Core, Error, "%s:%d: %s(), %s", __FILE__, __LINE__, __func__, "unexpected stream overrun"); exit(0); } }
+ 
+-/* Read/write an unsigned integer in little-endian order */
+-#if defined(L_ENDIAN) && !defined(NEED_ALIGN)
+-#define in_uint16_le(s,v)	{ s_assert_r(s, 2); v = *(uint16 *)((s)->p); (s)->p += 2; }
+-#define in_uint32_le(s,v)	{ s_assert_r(s, 4); v = *(uint32 *)((s)->p); (s)->p += 4; }
+-#define in_uint64_le(s,v)	{ s_assert_r(s, 8); v = *(uint64 *)((s)->p); (s)->p += 8; }
+-#define out_uint16_le(s,v)	{ s_assert_w(s, 2); *(uint16 *)((s)->p) = v; (s)->p += 2; }
+-#define out_uint32_le(s,v)	{ s_assert_w(s, 4); *(uint32 *)((s)->p) = v; (s)->p += 4; }
+-#define out_uint64_le(s,v)	{ s_assert_w(s, 8); *(uint64 *)((s)->p) = v; (s)->p += 8; }
+-#else
+-#define in_uint16_le(s,v)	{ s_assert_r(s, 2); v = *((s)->p++); v += *((s)->p++) << 8; }
+-#define in_uint32_le(s,v)	{ s_assert_r(s, 4); in_uint16_le(s,v) \
+-				v += *((s)->p++) << 16; v += *((s)->p++) << 24; }
+-#define in_uint64_le(s,v)	{ s_assert_r(s, 8); in_uint32_le(s,v) \
+-				v += *((s)->p++) << 32; v += *((s)->p++) << 40; \
+-				v += *((s)->p++) << 48; v += *((s)->p++) << 56; }
+-#define out_uint16_le(s,v)	{ s_assert_w(s, 2); *((s)->p++) = (v) & 0xff; *((s)->p++) = ((v) >> 8) & 0xff; }
+-#define out_uint32_le(s,v)	{ s_assert_w(s, 4); out_uint16_le(s, (v) & 0xffff); out_uint16_le(s, ((v) >> 16) & 0xffff); }
+-#define out_uint64_le(s,v)	{ s_assert_w(s, 8); out_uint32_le(s, (v) & 0xffffffff); out_uint32_le(s, ((v) >> 32) & 0xffffffff); }
+-#endif
++/* Read/write unsigned integers without assuming pointer alignment. */
++#define in_uint16_le(s,v)	{ s_assert_r(s, 2); \
++				v = (uint16) (s)->p[0] | ((uint16) (s)->p[1] << 8); \
++				(s)->p += 2; }
++#define in_uint32_le(s,v)	{ s_assert_r(s, 4); \
++				v = (uint32) (s)->p[0] | ((uint32) (s)->p[1] << 8) | \
++				    ((uint32) (s)->p[2] << 16) | ((uint32) (s)->p[3] << 24); \
++				(s)->p += 4; }
++#define in_uint64_le(s,v)	{ s_assert_r(s, 8); \
++				v = (uint64) (s)->p[0] | ((uint64) (s)->p[1] << 8) | \
++				    ((uint64) (s)->p[2] << 16) | ((uint64) (s)->p[3] << 24) | \
++				    ((uint64) (s)->p[4] << 32) | ((uint64) (s)->p[5] << 40) | \
++				    ((uint64) (s)->p[6] << 48) | ((uint64) (s)->p[7] << 56); \
++				(s)->p += 8; }
++#define out_uint16_le(s,v)	{ s_assert_w(s, 2); \
++				(s)->p[0] = (v) & 0xff; (s)->p[1] = ((v) >> 8) & 0xff; \
++				(s)->p += 2; }
++#define out_uint32_le(s,v)	{ s_assert_w(s, 4); \
++				(s)->p[0] = (v) & 0xff; (s)->p[1] = ((v) >> 8) & 0xff; \
++				(s)->p[2] = ((v) >> 16) & 0xff; (s)->p[3] = ((v) >> 24) & 0xff; \
++				(s)->p += 4; }
++#define out_uint64_le(s,v)	{ s_assert_w(s, 8); \
++				(s)->p[0] = ((uint64) (v)) & 0xff; (s)->p[1] = (((uint64) (v)) >> 8) & 0xff; \
++				(s)->p[2] = (((uint64) (v)) >> 16) & 0xff; (s)->p[3] = (((uint64) (v)) >> 24) & 0xff; \
++				(s)->p[4] = (((uint64) (v)) >> 32) & 0xff; (s)->p[5] = (((uint64) (v)) >> 40) & 0xff; \
++				(s)->p[6] = (((uint64) (v)) >> 48) & 0xff; (s)->p[7] = (((uint64) (v)) >> 56) & 0xff; \
++				(s)->p += 8; }
+ 
+ 
+ /* Read/write an unsigned integer in big-endian order */
+-#if defined(B_ENDIAN) && !defined(NEED_ALIGN)
+-#define in_uint16_be(s,v)	{ s_assert_r(s, 2); v = *(uint16 *)((s)->p); (s)->p += 2; }
+-#define in_uint32_be(s,v)	{ s_assert_r(s, 4); v = *(uint32 *)((s)->p); (s)->p += 4; }
+-#define in_uint64_be(s,v)	{ s_assert_r(s, 8); v = *(uint64 *)((s)->p); (s)->p += 8; }
+-#define out_uint16_be(s,v)	{ s_assert_w(s, 2); *(uint16 *)((s)->p) = v; (s)->p += 2; }
+-#define out_uint32_be(s,v)	{ s_assert_w(s, 4); *(uint32 *)((s)->p) = v; (s)->p += 4; }
+-#define out_uint64_be(s,v)	{ s_assert_w(s, 8); *(uint64 *)((s)->p) = v; (s)->p += 8; }
+-
++#define in_uint16_be(s,v)	{ s_assert_r(s, 2); \
++				v = ((uint16) (s)->p[0] << 8) | (uint16) (s)->p[1]; \
++				(s)->p += 2; }
++#define in_uint32_be(s,v)	{ s_assert_r(s, 4); \
++				v = ((uint32) (s)->p[0] << 24) | ((uint32) (s)->p[1] << 16) | \
++				    ((uint32) (s)->p[2] << 8) | (uint32) (s)->p[3]; \
++				(s)->p += 4; }
++#define in_uint64_be(s,v)	{ s_assert_r(s, 8); \
++				v = ((uint64) (s)->p[0] << 56) | ((uint64) (s)->p[1] << 48) | \
++				    ((uint64) (s)->p[2] << 40) | ((uint64) (s)->p[3] << 32) | \
++				    ((uint64) (s)->p[4] << 24) | ((uint64) (s)->p[5] << 16) | \
++				    ((uint64) (s)->p[6] << 8) | (uint64) (s)->p[7]; \
++				(s)->p += 8; }
++#define out_uint16_be(s,v)	{ s_assert_w(s, 2); \
++				(s)->p[0] = ((v) >> 8) & 0xff; (s)->p[1] = (v) & 0xff; \
++				(s)->p += 2; }
++#define out_uint32_be(s,v)	{ s_assert_w(s, 4); \
++				(s)->p[0] = ((v) >> 24) & 0xff; (s)->p[1] = ((v) >> 16) & 0xff; \
++				(s)->p[2] = ((v) >> 8) & 0xff; (s)->p[3] = (v) & 0xff; \
++				(s)->p += 4; }
++#define out_uint64_be(s,v)	{ s_assert_w(s, 8); \
++				(s)->p[0] = (((uint64) (v)) >> 56) & 0xff; (s)->p[1] = (((uint64) (v)) >> 48) & 0xff; \
++				(s)->p[2] = (((uint64) (v)) >> 40) & 0xff; (s)->p[3] = (((uint64) (v)) >> 32) & 0xff; \
++				(s)->p[4] = (((uint64) (v)) >> 24) & 0xff; (s)->p[5] = (((uint64) (v)) >> 16) & 0xff; \
++				(s)->p[6] = (((uint64) (v)) >> 8) & 0xff; (s)->p[7] = ((uint64) (v)) & 0xff; \
++				(s)->p += 8; }
++
++#if defined(B_ENDIAN) && !defined(NEED_ALIGN)
+ #define B_ENDIAN_PREFERRED
+ #define in_uint16(s,v)		in_uint16_be(s,v)
+ #define in_uint32(s,v)		in_uint32_be(s,v)
+@@ -129,14 +157,6 @@ size_t in_ansi_string(STREAM s, char *string, size_t len);
+ #define out_uint16(s,v)		out_uint16_be(s,v)
+ #define out_uint32(s,v)		out_uint32_be(s,v)
+ #define out_uint64(s,v)		out_uint64_be(s,v)
+-
+-#else
+-#define in_uint16_be(s,v)	{ s_assert_r(s, 2); v = *((s)->p++); next_be(s,v); }
+-#define in_uint32_be(s,v)	{ s_assert_r(s, 4); in_uint16_be(s,v); next_be(s,v); next_be(s,v); }
+-#define in_uint64_be(s,v)	{ s_assert_r(s, 8); in_uint32_be(s,v); next_be(s,v); next_be(s,v); next_be(s,v); next_be(s,v); }
+-#define out_uint16_be(s,v)	{ s_assert_w(s, 2); *((s)->p++) = ((v) >> 8) & 0xff; *((s)->p++) = (v) & 0xff; }
+-#define out_uint32_be(s,v)	{ s_assert_w(s, 4); out_uint16_be(s, ((v) >> 16) & 0xffff); out_uint16_be(s, (v) & 0xffff); }
+-#define out_uint64_be(s,v)	{ s_assert_w(s, 8); out_uint32_be(s, ((v) >> 32) & 0xffffffff); out_uint32_be(s, (v) & 0xffffffff); }
+ #endif
+ 
+ #ifndef B_ENDIAN_PREFERRED

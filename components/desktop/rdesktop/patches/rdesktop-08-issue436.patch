@@ -1,0 +1,729 @@
+From 831e7a1020848fbd714781e0cd55e70d4f88ccc4 Mon Sep 17 00:00:00 2001
+From: Petr Sumbera <sumbera@volny.cz>
+Date: Tue, 22 Sep 2026 11:32:59 +0000
+Subject: [PATCH] Harden bitmap and MPPC parsing for issue #436
+
+Address confirmed bounds, allocation and stream-lifetime defects discussed in https://github.com/rdesktop/rdesktop/issues/436.
+
+Validate MPPC copy spans against the selected dictionary, constrain bitmap cache orders and primary bitmap payloads, check compressed input and planar row bounds, and preserve nullable stream offsets before realloc.
+
+Retain the existing row-bounded UNROLL8 loops: the overwrite mechanisms in claims 3 and 4 were not established. Correct independently identified input and allocation defects without claiming five verified CVE fixes.
+
+AI usage: local corrections generated with Codex; source review and validation AI-assisted.
+Submitted upstream: https://github.com/rdesktop/rdesktop/pull/437
+Source commit: https://github.com/psumbera/rdesktop/commit/831e7a1020848fbd714781e0cd55e70d4f88ccc4
+Source: https://github.com/psumbera/rdesktop/commit/831e7a1020848fbd714781e0cd55e70d4f88ccc4
+Not yet merged upstream.
+Ported to marcofortina/rdesktop v1.9.1; the same bounds checks apply.
+---
+ bitmap.c | 81 +++++++++++++++++++++++++++++++++++++++++++-------------
+ mppc.c   | 58 +++++++++++++++++++++++-----------------
+ orders.c | 22 +++++++++++++++
+ rdp.c    | 30 +++++++++++++++++----
+ stream.c | 24 ++++++++++++-----
+ 5 files changed, 161 insertions(+), 54 deletions(-)
+
+diff --git a/bitmap.c b/bitmap.c
+index 55c768c..10ead13 100644
+--- a/bitmap.c
++++ b/bitmap.c
+@@ -25,16 +25,18 @@
+ /* *INDENT-OFF* */
+ 
+ #include "rdesktop.h"
++#include <limits.h>
+ 
+-#define CVAL(p)   (*(p++))
++/* Keep failed reads inside the input span; the decoder propagates failure. */
++#define CVAL(p) ((p) < end ? *((p)++) : (input_error = True, 0))
+ #ifdef NEED_ALIGN
+ #ifdef L_ENDIAN
+-#define CVAL2(p, v) { v = (*(p++)); v |= (*(p++)) << 8; }
++#define CVAL2(p, v) { if (end - (p) < 2) return False; v = (*(p++)); v |= (*(p++)) << 8; }
+ #else
+-#define CVAL2(p, v) { v = (*(p++)) << 8; v |= (*(p++)); }
++#define CVAL2(p, v) { if (end - (p) < 2) return False; v = (*(p++)) << 8; v |= (*(p++)); }
+ #endif /* L_ENDIAN */
+ #else
+-#define CVAL2(p, v) { v = (*((uint16*)p)); p += 2; }
++#define CVAL2(p, v) { if (end - (p) < 2) return False; v = (*((uint16*)p)); p += 2; }
+ #endif /* NEED_ALIGN */
+ 
+ #define UNROLL8(exp) { exp exp exp exp exp exp exp exp }
+@@ -66,6 +68,7 @@
+ static RD_BOOL
+ bitmap_decompress1(uint8 * output, int width, int height, uint8 * input, int size)
+ {
++	RD_BOOL input_error = False;
+ 	uint8 *end = input + size;
+ 	uint8 *prevline = NULL, *line = NULL;
+ 	int opcode, count, offset, isfillormix, x = width;
+@@ -156,6 +159,8 @@ bitmap_decompress1(uint8 * output, int width, int height, uint8 * input, int siz
+ 				fom_mask = 5;
+ 				break;
+ 		}
++		if (input_error)
++			return False;
+ 		lastopcode = opcode;
+ 		mixmask = 0;
+ 		/* Output body */
+@@ -259,13 +264,14 @@ bitmap_decompress1(uint8 * output, int width, int height, uint8 * input, int siz
+ 			}
+ 		}
+ 	}
+-	return True;
++	return !input_error && height == 0 && x == width;
+ }
+ 
+ /* 2 byte bitmap decompress */
+ static RD_BOOL
+ bitmap_decompress2(uint8 * output, int width, int height, uint8 * input, int size)
+ {
++	RD_BOOL input_error = False;
+ 	uint8 *end = input + size;
+ 	uint16 *prevline = NULL, *line = NULL;
+ 	int opcode, count, offset, isfillormix, x = width;
+@@ -356,6 +362,8 @@ bitmap_decompress2(uint8 * output, int width, int height, uint8 * input, int siz
+ 				fom_mask = 5;
+ 				break;
+ 		}
++		if (input_error)
++			return False;
+ 		lastopcode = opcode;
+ 		mixmask = 0;
+ 		/* Output body */
+@@ -460,13 +468,14 @@ bitmap_decompress2(uint8 * output, int width, int height, uint8 * input, int siz
+ 			}
+ 		}
+ 	}
+-	return True;
++	return !input_error && height == 0 && x == width;
+ }
+ 
+ /* 3 byte bitmap decompress */
+ static RD_BOOL
+ bitmap_decompress3(uint8 * output, int width, int height, uint8 * input, int size)
+ {
++	RD_BOOL input_error = False;
+ 	uint8 *end = input + size;
+ 	uint8 *prevline = NULL, *line = NULL;
+ 	int opcode, count, offset, isfillormix, x = width;
+@@ -566,6 +575,8 @@ bitmap_decompress3(uint8 * output, int width, int height, uint8 * input, int siz
+ 				fom_mask = 5;
+ 				break;
+ 		}
++		if (input_error)
++			return False;
+ 		lastopcode = opcode;
+ 		mixmask = 0;
+ 		/* Output body */
+@@ -750,14 +761,14 @@ bitmap_decompress3(uint8 * output, int width, int height, uint8 * input, int siz
+ 			}
+ 		}
+ 	}
+-	return True;
++	return !input_error && height == 0 && x == width;
+ }
+ 
+ /* decompress a colour plane */
+ static int
+ process_plane(uint8 * in, int width, int height, uint8 * out, int size)
+ {
+-	UNUSED(size);
++	uint8 *end;
+ 	int indexw;
+ 	int indexh;
+ 	int code;
+@@ -771,13 +782,16 @@ process_plane(uint8 * in, int width, int height, uint8 * out, int size)
+ 	uint8 * org_in;
+ 	uint8 * org_out;
+ 
++	if (size < 0)
++		return -1;
++	end = in + size;
+ 	org_in = in;
+ 	org_out = out;
+ 	last_line = 0;
+ 	indexh = 0;
+ 	while (indexh < height)
+ 	{
+-		out = (org_out + width * height * 4) - ((indexh + 1) * width * 4);
++		out = org_out + (height - indexh - 1) * width * 4;
+ 		color = 0;
+ 		this_line = out;
+ 		indexw = 0;
+@@ -785,7 +799,11 @@ process_plane(uint8 * in, int width, int height, uint8 * out, int size)
+ 		{
+ 			while (indexw < width)
+ 			{
+-				code = CVAL(in);
++				if (in == end)
++					return -1;
++				code = *in++;
++				if (code == 0)
++					return -1;
+ 				replen = code & 0xf;
+ 				collen = (code >> 4) & 0xf;
+ 				revcode = (replen << 4) | collen;
+@@ -794,19 +812,23 @@ process_plane(uint8 * in, int width, int height, uint8 * out, int size)
+ 					replen = revcode;
+ 					collen = 0;
+ 				}
++				if (collen + replen > width - indexw || collen > end - in)
++					return -1;
+ 				while (indexw < width && collen > 0)
+ 				{
+-					color = CVAL(in);
++					color = *in++;
+ 					*out = color;
+-					out += 4;
+ 					indexw++;
++					if (indexw < width)
++						out += 4;
+ 					collen--;
+ 				}
+ 				while (indexw < width && replen > 0)
+ 				{
+ 					*out = color;
+-					out += 4;
+ 					indexw++;
++					if (indexw < width)
++						out += 4;
+ 					replen--;
+ 				}
+ 			}
+@@ -815,7 +837,11 @@ process_plane(uint8 * in, int width, int height, uint8 * out, int size)
+ 		{
+ 			while (indexw < width)
+ 			{
+-				code = CVAL(in);
++				if (in == end)
++					return -1;
++				code = *in++;
++				if (code == 0)
++					return -1;
+ 				replen = code & 0xf;
+ 				collen = (code >> 4) & 0xf;
+ 				revcode = (replen << 4) | collen;
+@@ -824,9 +850,11 @@ process_plane(uint8 * in, int width, int height, uint8 * out, int size)
+ 					replen = revcode;
+ 					collen = 0;
+ 				}
++				if (collen + replen > width - indexw || collen > end - in)
++					return -1;
+ 				while (indexw < width && collen > 0)
+ 				{
+-					x = CVAL(in);
++					x = *in++;
+ 					if (x & 1)
+ 					{
+ 						x = x >> 1;
+@@ -840,16 +868,18 @@ process_plane(uint8 * in, int width, int height, uint8 * out, int size)
+ 					}
+ 					x = last_line[indexw * 4] + color;
+ 					*out = x;
+-					out += 4;
+ 					indexw++;
++					if (indexw < width)
++						out += 4;
+ 					collen--;
+ 				}
+ 				while (indexw < width && replen > 0)
+ 				{
+ 					x = last_line[indexw * 4] + color;
+ 					*out = x;
+-					out += 4;
+ 					indexw++;
++					if (indexw < width)
++						out += 4;
+ 					replen--;
+ 				}
+ 			}
+@@ -868,22 +898,32 @@ bitmap_decompress4(uint8 * output, int width, int height, uint8 * input, int siz
+ 	int bytes_pro;
+ 	int total_pro;
+ 
+-	code = CVAL(input);
++	if (size < 1)
++		return False;
++	code = *input++;
+ 	if (code != 0x10)
+ 	{
+ 		return False;
+ 	}
+ 	total_pro = 1;
+ 	bytes_pro = process_plane(input, width, height, output + 3, size - total_pro);
++	if (bytes_pro < 0)
++		return False;
+ 	total_pro += bytes_pro;
+ 	input += bytes_pro;
+ 	bytes_pro = process_plane(input, width, height, output + 2, size - total_pro);
++	if (bytes_pro < 0)
++		return False;
+ 	total_pro += bytes_pro;
+ 	input += bytes_pro;
+ 	bytes_pro = process_plane(input, width, height, output + 1, size - total_pro);
++	if (bytes_pro < 0)
++		return False;
+ 	total_pro += bytes_pro;
+ 	input += bytes_pro;
+ 	bytes_pro = process_plane(input, width, height, output + 0, size - total_pro);
++	if (bytes_pro < 0)
++		return False;
+ 	total_pro += bytes_pro;
+ 	return size == total_pro;
+ }
+@@ -894,6 +934,11 @@ bitmap_decompress(uint8 * output, int width, int height, uint8 * input, int size
+ {
+ 	RD_BOOL rv = False;
+ 
++	/* The decoders and xmalloc use signed int sizes and offsets. */
++	if (output == NULL || input == NULL || width <= 0 || height <= 0 ||
++	    size <= 0 || Bpp < 1 || Bpp > 4 || width > INT_MAX / Bpp / height)
++		return False;
++
+ 	switch (Bpp)
+ 	{
+ 		case 1:
+diff --git a/mppc.c b/mppc.c
+index 3367cd0..e280e1d 100644
+--- a/mppc.c
++++ b/mppc.c
+@@ -57,12 +57,14 @@ RDPCOMP g_mppc_dict;
+ int
+ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen)
+ {
+-	int k, walker_len = 0, walker;
++	int k, walker_len = 0;
++	uint32 walker;
+ 	uint32 i = 0;
+ 	int next_offset, match_off;
+ 	int match_len;
+ 	int old_offset, match_bits;
+ 	RD_BOOL big = ctype & RDP_MPPC_BIG ? True : False;
++	int dict_size = big ? 65536 : 8192;
+ 
+ 	uint8 *dict = g_mppc_dict.hist;
+ 
+@@ -73,6 +75,9 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 		return 0;
+ 	}
+ 
++	if ((ctype & 0x0f) > 1)
++		return -1;
++
+ 	if ((ctype & RDP_MPPC_RESET) != 0)
+ 	{
+ 		g_mppc_dict.roff = 0;
+@@ -87,6 +92,8 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 	*roff = 0;
+ 	*rlen = 0;
+ 
++	if (g_mppc_dict.roff > (uint32) dict_size)
++		return -1;
+ 	walker = g_mppc_dict.roff;
+ 
+ 	next_offset = walker;
+@@ -102,10 +109,10 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 		{
+ 			if (i >= clen)
+ 				break;
+-			walker = data[i++] << 24;
++			walker = (uint32) data[i++] << 24;
+ 			walker_len = 8;
+ 		}
+-		if (walker >= 0)
++		if ((walker & 0x80000000U) == 0)
+ 		{
+ 			if (walker_len < 8)
+ 			{
+@@ -115,10 +122,10 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 						return -1;
+ 					break;
+ 				}
+-				walker |= (data[i++] & 0xff) << (24 - walker_len);
++				walker |= ((uint32) data[i++] & 0xff) << (24 - walker_len);
+ 				walker_len += 8;
+ 			}
+-			if (next_offset >= RDP_MPPC_DICT_SIZE)
++			if (next_offset >= dict_size)
+ 				return -1;
+ 			dict[next_offset++] = (((uint32) walker) >> ((uint32) 24));
+ 			walker <<= 8;
+@@ -131,20 +138,20 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 		{
+ 			if (i >= clen)
+ 				return -1;
+-			walker = data[i++] << 24;
++			walker = (uint32) data[i++] << 24;
+ 			walker_len = 8;
+ 		}
+ 		/* literal decoding */
+-		if (walker >= 0)
++		if ((walker & 0x80000000U) == 0)
+ 		{
+ 			if (walker_len < 8)
+ 			{
+ 				if (i >= clen)
+ 					return -1;
+-				walker |= (data[i++] & 0xff) << (24 - walker_len);
++				walker |= ((uint32) data[i++] & 0xff) << (24 - walker_len);
+ 				walker_len += 8;
+ 			}
+-			if (next_offset >= RDP_MPPC_DICT_SIZE)
++			if (next_offset >= dict_size)
+ 				return -1;
+ 			dict[next_offset++] = (uint8) (walker >> 24 | 0x80);
+ 			walker <<= 8;
+@@ -159,7 +166,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 		{
+ 			if (i >= clen)
+ 				return -1;
+-			walker |= (data[i++] & 0xff) << (24 - walker_len);
++			walker |= ((uint32) data[i++] & 0xff) << (24 - walker_len);
+ 			walker_len += 8;
+ 		}
+ 
+@@ -178,7 +185,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 					{
+ 						if (i >= clen)
+ 							return -1;
+-						walker |= (data[i++] & 0xff) << (24 - walker_len);
++						walker |= ((uint32) data[i++] & 0xff) << (24 - walker_len);
+ 					}
+ 					walker <<= 3;
+ 					match_off = ((uint32) walker) >> ((uint32) 26);
+@@ -191,7 +198,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 					{
+ 						if (i >= clen)
+ 							return -1;
+-						walker |= (data[i++] & 0xff) << (24 - walker_len);
++						walker |= ((uint32) data[i++] & 0xff) << (24 - walker_len);
+ 					}
+ 
+ 					walker <<= 3;
+@@ -206,7 +213,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 					{
+ 						if (i >= clen)
+ 							return -1;
+-						walker |= (data[i++] & 0xff) << (24 - walker_len);
++						walker |= ((uint32) data[i++] & 0xff) << (24 - walker_len);
+ 					}
+ 
+ 					walker <<= 2;
+@@ -220,7 +227,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 					{
+ 						if (i >= clen)
+ 							return -1;
+-						walker |= (data[i++] & 0xff) << (24 - walker_len);
++						walker |= ((uint32) data[i++] & 0xff) << (24 - walker_len);
+ 					}
+ 
+ 					walker <<= 1;
+@@ -244,7 +251,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 					{
+ 						if (i >= clen)
+ 							return -1;
+-						walker |= (data[i++] & 0xff) << (24 - walker_len);
++						walker |= ((uint32) data[i++] & 0xff) << (24 - walker_len);
+ 						walker_len += 8;
+ 					}
+ 					walker <<= 2;
+@@ -258,7 +265,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 					{
+ 						if (i >= clen)
+ 							return -1;
+-						walker |= (data[i++] & 0xff) << (24 - walker_len);
++						walker |= ((uint32) data[i++] & 0xff) << (24 - walker_len);
+ 					}
+ 
+ 					walker <<= 2;
+@@ -272,7 +279,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 					{
+ 						if (i >= clen)
+ 							return -1;
+-						walker |= (data[i++] & 0xff) << (24 - walker_len);
++						walker |= ((uint32) data[i++] & 0xff) << (24 - walker_len);
+ 					}
+ 
+ 					match_off = (walker >> 18) + 320;
+@@ -285,13 +292,13 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 		{
+ 			if (i >= clen)
+ 				return -1;
+-			walker = data[i++] << 24;
++			walker = (uint32) data[i++] << 24;
+ 			walker_len = 8;
+ 		}
+ 
+ 		/* decode length of match */
+ 		match_len = 0;
+-		if (walker >= 0)
++		if ((walker & 0x80000000U) == 0)
+ 		{		/* special case - length of 3 is in bit 0 */
+ 			match_len = 3;
+ 			walker <<= 1;
+@@ -323,10 +330,10 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 				{
+ 					if (i >= clen)
+ 						return -1;
+-					walker = data[i++] << 24;
++					walker = (uint32) data[i++] << 24;
+ 					walker_len = 8;
+ 				}
+-				if (walker >= 0)
++				if ((walker & 0x80000000U) == 0)
+ 					break;
+ 				if (--match_bits == 0)
+ 				{
+@@ -344,7 +351,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 					{
+ 						return -1;
+ 					}
+-					walker |= (data[i++] & 0xff) << (24 - walker_len);
++					walker |= ((uint32) data[i++] & 0xff) << (24 - walker_len);
+ 				}
+ 			}
+ 
+@@ -355,12 +362,15 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
+ 			walker <<= match_bits;
+ 			walker_len -= match_bits;
+ 		}
+-		if (next_offset + match_len >= RDP_MPPC_DICT_SIZE)
++		if (match_len > dict_size - next_offset)
+ 		{
+ 			return -1;
+ 		}
+ 		/* memory areas can overlap - meaning we can't use memXXX functions */
+-		k = (next_offset - match_off) & (big ? 65535 : 8191);
++		k = (next_offset - match_off) & (dict_size - 1);
++		/* Copy spans are linear; only the starting offset is masked. */
++		if (match_len > dict_size - k)
++			return -1;
+ 		do
+ 		{
+ 			dict[next_offset++] = dict[k++];
+diff --git a/orders.c b/orders.c
+index 3852149..e259207 100644
+--- a/orders.c
++++ b/orders.c
+@@ -1392,6 +1392,10 @@ process_raw_bmpcache(STREAM s)
+ 
+ 	logger(Graphics, Debug, "process_raw_bpmcache(), cx=%d, cy=%d, id=%d, idx=%d", width,
+ 	       height, cache_id, cache_idx);
++	if (width == 0 || height == 0 || Bpp < 1 || Bpp > 4 ||
++	    Bpp != (g_server_depth + 7) / 8 || width * height * Bpp > bufsize)
++		rdp_protocol_error("invalid raw bitmap cache dimensions or length", s);
++
+ 	inverted = (uint8 *) xmalloc(width * height * Bpp);
+ 	for (y = 0; y < height; y++)
+ 	{
+@@ -1447,6 +1451,10 @@ process_bmpcache(STREAM s)
+ 	       width, height, cache_id, cache_idx, bpp, size, pad1, bufsize, pad2, row_size,
+ 	       final_size);
+ 
++	if (width == 0 || height == 0 || Bpp < 1 || Bpp > 4 ||
++	    Bpp != (g_server_depth + 7) / 8)
++		rdp_protocol_error("invalid bitmap cache dimensions or depth", s);
++
+ 	bmpdata = (uint8 *) xmalloc(width * height * Bpp);
+ 
+ 	if (bitmap_decompress(bmpdata, width, height, data, size, Bpp))
+@@ -1508,6 +1516,10 @@ process_bmpcache2(STREAM s, uint16 flags, RD_BOOL compressed)
+ 	       "process_bmpcache2(), compr=%d, flags=%x, cx=%d, cy=%d, id=%d, idx=%d, Bpp=%d, bs=%d",
+ 	       compressed, flags, width, height, cache_id, cache_idx, Bpp, bufsize);
+ 
++	if (width == 0 || height == 0 || Bpp < 1 || Bpp > 4 ||
++	    Bpp != (g_server_depth + 7) / 8)
++		rdp_protocol_error("invalid bitmap cache dimensions or depth", s);
++
+ 	bmpdata = (uint8 *) xmalloc(width * height * Bpp);
+ 
+ 	if (compressed)
+@@ -1522,6 +1534,11 @@ process_bmpcache2(STREAM s, uint16 flags, RD_BOOL compressed)
+ 	}
+ 	else
+ 	{
++		if (width * height * Bpp > bufsize)
++		{
++			xfree(bmpdata);
++			rdp_protocol_error("short raw bitmap cache payload", s);
++		}
+ 		for (y = 0; y < height; y++)
+ 			memcpy(&bmpdata[(height - y - 1) * (width * Bpp)],
+ 			       &data[y * (width * Bpp)], width * Bpp);
+@@ -1924,6 +1941,7 @@ process_secondary_order(STREAM s)
+ 	uint16 flags;
+ 	uint8 type;
+ 	size_t next_order;
++	uint8 *saved_end = s->end;
+ 	struct stream packet = *s;
+ 
+ 	in_uint16_le(s, length);
+@@ -1941,6 +1959,8 @@ process_secondary_order(STREAM s)
+ 	}
+ 
+ 	next_order = s_tell(s) + length;
++	/* Nested readers must not consume bytes from the following order. */
++	s->end = s->p + length;
+ 
+ 	switch (type)
+ 	{
+@@ -1980,6 +2000,7 @@ process_secondary_order(STREAM s)
+ 				       "process_secondary_order(), unhandled secondary order %d", type);
+ 	}
+ 
++	s->end = saved_end;
+ 	s_seek(s, next_order);
+ }
+ 
+diff --git a/rdp.c b/rdp.c
+index 942e720..5e0bb55 100644
+--- a/rdp.c
++++ b/rdp.c
+@@ -30,6 +30,7 @@
+ #include <unistd.h>
+ #endif
+ #include "rdesktop.h"
++#include <limits.h>
+ #include "ssl.h"
+ 
+ 
+@@ -1632,7 +1633,7 @@ process_bitmap_data(STREAM s)
+ {
+ 	uint16 left, top, right, bottom, width, height;
+ 	uint16 cx, cy, bpp, Bpp, flags, bufsize, size;
+-	uint8 *data, *bmpdata;
++	uint8 *data, *bmpdata, *bitmap_end;
+ 	
+ 	logger(Protocol, Debug, "%s()", __func__);
+ 
+@@ -1648,6 +1649,10 @@ process_bitmap_data(STREAM s)
+ 	Bpp = (bpp + 7) / 8;
+ 	in_uint16_le(s, flags); /* flags */
+ 	in_uint16_le(s, bufsize); /* bitmapLength */
++	/* bitmapLength includes the optional eight-byte TS_CD_HEADER. */
++	if (!s_check_rem(s, bufsize))
++		rdp_protocol_error("TS_BITMAP_DATA, truncated bitmap payload", &packet);
++	bitmap_end = s->p + bufsize;
+ 
+ 	cx = right - left + 1;
+ 	cy = bottom - top + 1;
+@@ -1660,29 +1665,38 @@ process_bitmap_data(STREAM s)
+ 		Does this means that we can sanity check bpp with g_server_bpp ?
+ 	*/
+ 
+-	if (Bpp == 0 || width == 0 || height == 0)
++	if (Bpp < 1 || Bpp > 4 || width == 0 || height == 0 ||
++	    Bpp != (g_server_depth + 7) / 8 || right < left || bottom < top ||
++	    cx > width || cy > height)
+ 	{
+         logger(Protocol, Warning, "%s(), [%d,%d,%d,%d], [%d,%d], bpp=%d, flags=%x", __func__,
+ 				left, top, right, bottom, width, height, bpp, flags);
+ 		rdp_protocol_error("TS_BITMAP_DATA, unsafe size of bitmap data received from server", &packet);
+ 	}
+ 
+-	if ((RD_UINT32_MAX / Bpp) <= (width * height))
++	if (width > INT_MAX / 4 / height)
+ 	{
+ 		logger(Protocol, Warning, "%s(), [%d,%d,%d,%d], [%d,%d], bpp=%d, flags=%x", __func__,
+ 				left, top, right, bottom, width, height, bpp, flags);
+ 		rdp_protocol_error("TS_BITMAP_DATA, unsafe size of bitmap data received from server", &packet);
+ 	}
+  
+-	if (flags == 0)
++	if (!(flags & BITMAP_COMPRESSION))
+ 	{
+ 		/* read uncompressed bitmap data */
+ 		int y;
++		int row_size = width * Bpp;
++		int stride = (row_size + 3) & ~3;
++		/* Wire rows are padded to four bytes; UI pixels are packed. */
++		if (stride > bufsize / height)
++			rdp_protocol_error("TS_BITMAP_DATA, short raw bitmap payload", &packet);
+ 		bmpdata = (uint8 *) xmalloc(width * height * Bpp);
+ 		for (y = 0; y < height; y++)
+ 		{
+-			in_uint8a(s, &bmpdata[(height - y - 1) * (width * Bpp)], width * Bpp);
++			in_uint8a(s, &bmpdata[(height - y - 1) * row_size], row_size);
++			in_uint8s(s, stride - row_size);
+ 		}
++		s->p = bitmap_end;
+ 		
+ 		ui_paint_bitmap(left, top, cx, cy, width, height, bmpdata);
+ 		xfree(bmpdata);
+@@ -1696,10 +1710,14 @@ process_bitmap_data(STREAM s)
+ 	else
+ 	{
+ 		/* Read TS_CD_HEADER */
++		if (bufsize < 8)
++			rdp_protocol_error("TS_BITMAP_DATA, short compression header", &packet);
+ 		in_uint8s(s, 2);        /* skip cbCompFirstRowSize (must be 0x0000) */
+ 		in_uint16_le(s, size);  /* cbCompMainBodySize */
+ 		in_uint8s(s, 2);        /* skip cbScanWidth */
+ 		in_uint8s(s, 2);        /* skip cbUncompressedSize */
++		if (size > bufsize - 8)
++			rdp_protocol_error("TS_BITMAP_DATA, short compressed payload", &packet);
+ 	}
+ 
+ 	/* read compressed bitmap data */
+@@ -1708,6 +1726,8 @@ process_bitmap_data(STREAM s)
+ 		rdp_protocol_error("consume of bitmap data from stream would overrun", &packet);
+ 	}
+ 	in_uint8p(s, data, size);
++	/* Do not interpret any unused payload bytes as the next rectangle. */
++	s->p = bitmap_end;
+ 	bmpdata = (uint8 *) xmalloc(width * height * Bpp);
+ 	if (bitmap_decompress(bmpdata, width, height, data, size, Bpp))
+ 	{
+diff --git a/stream.c b/stream.c
+index a4b9542..24f6e17 100644
+--- a/stream.c
++++ b/stream.c
+@@ -20,6 +20,7 @@
+ #include <errno.h>
+ #include <iconv.h>
+ #include <stdlib.h>
++#include <stddef.h>
+ 
+ #include "rdesktop.h"
+ 
+@@ -54,20 +55,29 @@ void
+ s_realloc(STREAM s, unsigned int size)
+ {
+ 	unsigned char *data;
++	ptrdiff_t p, end, iso, mcs, sec, rdp, channel;
+ 
+ 	if (s->size >= size)
+ 		return;
+ 
+ 	data = s->data;
++	/* Save offsets before realloc ends the old allocation lifetime. */
++	p = s->p ? s->p - data : 0;
++	end = s->end ? s->end - data : 0;
++	iso = s->iso_hdr ? s->iso_hdr - data : -1;
++	mcs = s->mcs_hdr ? s->mcs_hdr - data : -1;
++	sec = s->sec_hdr ? s->sec_hdr - data : -1;
++	rdp = s->rdp_hdr ? s->rdp_hdr - data : -1;
++	channel = s->channel_hdr ? s->channel_hdr - data : -1;
+ 	s->size = size;
+ 	s->data = xrealloc(data, size);
+-	s->p = s->data + (s->p - data);
+-	s->end = s->data + (s->end - data);
+-	s->iso_hdr = s->data + (s->iso_hdr - data);
+-	s->mcs_hdr = s->data + (s->mcs_hdr - data);
+-	s->sec_hdr = s->data + (s->sec_hdr - data);
+-	s->rdp_hdr = s->data + (s->rdp_hdr - data);
+-	s->channel_hdr = s->data + (s->channel_hdr - data);
++	s->p = s->data + p;
++	s->end = s->data + end;
++	s->iso_hdr = iso < 0 ? NULL : s->data + iso;
++	s->mcs_hdr = mcs < 0 ? NULL : s->data + mcs;
++	s->sec_hdr = sec < 0 ? NULL : s->data + sec;
++	s->rdp_hdr = rdp < 0 ? NULL : s->data + rdp;
++	s->channel_hdr = channel < 0 ? NULL : s->data + channel;
+ }
+ 
+ void
+-- 
+2.50.1

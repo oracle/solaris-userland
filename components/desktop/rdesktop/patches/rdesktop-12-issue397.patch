@@ -1,0 +1,136 @@
+Reject zero or one RSA modulus/exponent values before GMP exponentiation and
+
+propagate invalid server crypto information through MCS negotiation.
+
+https://github.com/rdesktop/rdesktop/issues/397
+https://github.com/marcofortina/rdesktop/pull/9
+
+Solaris correction after Kryten review of D14683 diff 33859.
+
+--- a/secure.c
++++ b/secure.c
+@@ -649,7 +649,8 @@
+ 	{
+ 		/* no encryption */
+ 		logger(Protocol, Debug, "sec_parse_crypt_info(), got ENCRYPTION_LEVEL_NONE");
+-		return False;
++		*rc4_key_size = 0;
++		return True;
+ 	}
+ 
+ 	in_uint32_le(s, random_len);
+@@ -831,8 +832,30 @@
+ 	return s_check_end(s);
+ }
+ 
++/* Reject invalid server RSA parameters before they reach GMP. */
++static RD_BOOL
++sec_rsa_public_key_valid(const uint8 *modulus, uint32 modulus_size, const uint8 *exponent)
++{
++	uint32 i;
++	RD_BOOL modulus_gt_one = False;
++	RD_BOOL exponent_gt_one = False;
++
++	if (modulus_size < SEC_MODULUS_SIZE || modulus_size > SEC_MAX_MODULUS_SIZE)
++		return False;
++
++	for (i = 0; i < modulus_size; i++)
++		if (modulus[i] > (i == 0 ? 1 : 0))
++			modulus_gt_one = True;
++
++	for (i = 0; i < SEC_EXPONENT_SIZE; i++)
++		if (exponent[i] > (i == 0 ? 1 : 0))
++			exponent_gt_one = True;
++
++	return modulus_gt_one && exponent_gt_one;
++}
++
+ /* Process crypto information blob */
+-static void
++static RD_BOOL
+ sec_process_crypt_info(STREAM s)
+ {
+ 	uint8 *server_random = NULL;
+@@ -845,13 +868,22 @@
+ 	memset(modulus, 0, sizeof(modulus));
+ 	memset(exponent, 0, sizeof(exponent));
+ 	if (!sec_parse_crypt_info(s, &rc4_key_size, &server_random, modulus, exponent))
+-		return;
++		return False;
++	if (rc4_key_size == 0)
++		return True;
++
++	if (!sec_rsa_public_key_valid(modulus, g_server_public_key_len, exponent))
++	{
++		logger(Protocol, Error, "sec_process_crypt_info(), invalid RSA public key");
++		return False;
++	}
+ 
+ 	logger(Protocol, Debug, "sec_parse_crypt_info(), generating client random");
+ 	generate_random(g_client_random);
+ 	sec_rsa_encrypt(g_sec_crypted_random, g_client_random, SEC_RANDOM_SIZE,
+ 			g_server_public_key_len, modulus, exponent);
+ 	sec_generate_keys(g_client_random, server_random, rc4_key_size);
++	return True;
+ }
+ 
+ 
+@@ -871,7 +903,7 @@
+ 
+ 
+ /* Process connect response data blob */
+-void
++RD_BOOL
+ sec_process_mcs_data(STREAM s)
+ {
+ 	uint16 tag, length;
+@@ -890,7 +922,7 @@
+ 		in_uint16_le(s, length);
+ 
+ 		if (length <= 4)
+-			return;
++			return False;
+ 
+ 		next_tag = s_tell(s) + length - 4;
+ 
+@@ -903,7 +935,8 @@
+ 
+ 			case SEC_TAG_SRV_CRYPT:
+ 				logger(Protocol, Debug, "%s(), SEC_TAG_SRV_CRYPT", __func__);
+-				sec_process_crypt_info(s);
++				if (!sec_process_crypt_info(s))
++					return False;
+ 				break;
+ 
+ 			case SEC_TAG_SRV_CHANNELS:
+@@ -919,6 +952,7 @@
+ 
+ 		s_seek(s, next_tag);
+ 	}
++	return True;
+ }
+ 
+ /* Receive secure transport packet */
+--- a/mcs.c
++++ b/mcs.c
+@@ -132,7 +132,8 @@
+ 
+ 	ber_parse_header(s, BER_TAG_OCTET_STRING, &length);
+ 
+-	sec_process_mcs_data(s);
++	if (!sec_process_mcs_data(s))
++		return False;
+ 	/*
+ 	   if (length > mcs_data->size)
+ 	   {
+--- a/proto.h
++++ b/proto.h
+@@ -230,7 +230,7 @@
+ STREAM sec_init(uint32 flags, int maxlen);
+ void sec_send_to_channel(STREAM s, uint32 flags, uint16 channel);
+ void sec_send(STREAM s, uint32 flags);
+-void sec_process_mcs_data(STREAM s);
++RD_BOOL sec_process_mcs_data(STREAM s);
+ STREAM sec_recv(RD_BOOL * is_fastpath);
+ RD_BOOL sec_connect(char *server, char *username, char *domain, char *password, RD_BOOL reconnect);
+ void sec_disconnect(void);

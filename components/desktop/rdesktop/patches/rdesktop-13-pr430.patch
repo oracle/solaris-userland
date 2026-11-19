@@ -1,0 +1,89 @@
+Solaris correction after independent review of upstream pull request #430.
+https://github.com/rdesktop/rdesktop/pull/430
+Reject overlong local socket paths instead of silently truncating them.
+Check fdopen, retain fgetc's int result and terminate at the current index.
+Use one owner for the socket to avoid the proposal's double-close.
+Recognize complete OK replies as success; reject incomplete reply lines.
+Applicable to Solaris seamless mode; this is a local IPC path.
+
+--- rdesktop-1.9.0/ctrl.c
++++ rdesktop-1.9.0/ctrl.c
+@@ -198,7 +198,10 @@ len = sizeof(saun.sun_family) + strlen(s
+ 
+ 	/* test connection */
+ 	if (connect(s, (struct sockaddr *) &saun, len) != 0)
++	{
++		close(s);
+ 		return False;
++	}
+ 
+ 	shutdown(s, SHUT_RDWR);
+ 	close(s);
+@@ -271,6 +274,11 @@ /* get uniq hash for ctrlsock name */
+ 	_ctrl_create_hash(user, domain, host, hash, 41);
+ 	snprintf(ctrlsock_name, PATH_MAX, "%s" RDESKTOP_CTRLSOCK_STORE "/%s.ctl", home, hash);
+ 	ctrlsock_name[sizeof(ctrlsock_name) - 1] = '\0';
++	if (strlen(ctrlsock_name) >= sizeof(saun.sun_path))
++	{
++		logger(Core, Error, "ctrl_init(), control socket path is too long");
++		return -1;
++	}
+ 
+ 	/* make sure that ctrlsock store path exists */
+ 	snprintf(path, PATH_MAX, "%s" RDESKTOP_CTRLSOCK_STORE, home);
+@@ -459,11 +467,12 @@ ctrl_send_command(const char *cmd, const
+ {
+ 	FILE *fp;
+ 	struct sockaddr_un saun;
+-	int s, len, index, ret;
++	int s, len, index, ret, c;
+ 	char data[CTRL_LINEBUF_SIZE], tmp[CTRL_LINEBUF_SIZE];
+-	char result[CTRL_RESULT_SIZE], c, *escaped;
++	char result[CTRL_RESULT_SIZE], *escaped;
+ 
+ 	escaped = NULL;
++	fp = NULL;
+ 
+ 	if (!_ctrl_is_slave)
+ 		return -1;
+@@ -503,15 +512,25 @@ send(s, "\n", 1, 0);
+ 
+ 	/* read result from master */
+ 	fp = fdopen(s, "r");
++	if (fp == NULL)
++	{
++		ret = -1;
++		goto bail_out;
++	}
+ 	index = 0;
+-	while ((c = fgetc(fp)) != EOF && index < CTRL_RESULT_SIZE && c != '\n')
++	while (index < CTRL_RESULT_SIZE - 1 && (c = fgetc(fp)) != EOF && c != '\n')
+ 	{
+ 		result[index] = c;
+ 		index++;
+ 	}
+-	result[index - 1] = '\0';
++	result[index] = '\0';
++	ret = -1;
++	if (c != '\n')
++		goto bail_out;
+ 
+-	if (strncmp(result, "ERROR ", 6) == 0)
++	if (index == 2 && strcmp(result, "OK") == 0)
++		ret = 0;
++	else if (strncmp(result, "ERROR ", 6) == 0)
+ 	{
+ 		if (sscanf(result, "ERROR %d", &ret) != 1)
+ 			ret = -1;
+@@ -520,7 +539,10 @@ }
+       bail_out:
+ 	xfree(escaped);
+ 	shutdown(s, SHUT_RDWR);
+-	close(s);
++	if (fp != NULL)
++		fclose(fp);
++	else
++		close(s);
+ 
+ 	return ret;
+ }
