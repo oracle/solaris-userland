@@ -33,16 +33,16 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		brltty
-COMPONENT_VERSION=	6.4
-COMPONENT_PROJECT_URL=	http://mielke.cc/brltty/
+COMPONENT_VERSION=	6.9.1
+COMPONENT_PROJECT_URL=	https://brltty.app
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:bc7573b0d0ab865c36607945b64c209312405571788f3b409397726f6143eaa6
+    sha256:cf4619ce1471690e4ecc5544ee6289cef6c5bdf5855a1ac8dcc63f5beedf108d
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	220
 
-COMPONENT_BAID=		124114
+COMPONENT_BAID=		470166
 
 TEST_TARGET=		$(NO_TESTS)
 
@@ -51,11 +51,13 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D)) ;
 
 # Needed because we patch configure.ac
-COMPONENT_PRE_CONFIGURE_ACTION += (cd $(@D) ; ./autogen) ;
+COMPONENT_PREP_ACTION += (cd $(@D) ; ./autogen) ;
 
 CC +=			$(CC_BITS)
 CFLAGS += 		$(CC_PIC)
 CPPFLAGS += 		-D_SYS_UCONTEXT_H # Workaround Bug Id 15558893
+# FileViewer uses ncurses interfaces that Solaris curses does not provide.
+CPPFLAGS +=		-I/usr/include/ncurses
 
 # Orca uses python 3.11, so we need to match
 PYTHON_VERSION = 3.11
@@ -83,8 +85,11 @@ COMPONENT_POST_INSTALL_ACTION += \
         $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages
 
 CONFIGURE_OPTIONS +=	--enable-python-bindings
+CONFIGURE_OPTIONS +=	--with-curses=ncurses
+CONFIGURE_OPTIONS +=	--disable-emacs-bindings
 CONFIGURE_OPTIONS +=	--disable-java-bindings
 CONFIGURE_OPTIONS +=	--disable-lisp-bindings
+CONFIGURE_OPTIONS +=	--disable-lua-bindings
 CONFIGURE_OPTIONS +=	--disable-ocaml-bindings
 CONFIGURE_OPTIONS +=	--disable-tcl-bindings
 CONFIGURE_OPTIONS +=	--disable-speech-support
@@ -109,8 +114,10 @@ REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/liblouis
+REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus

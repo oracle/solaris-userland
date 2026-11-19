@@ -1,0 +1,22 @@
+Correct flag intersection checks when removing key ranges.  The previous
+expressions missed partial flag conflicts and could fragment the range list
+for disjoint removals.
+
+Upstream discussion: https://github.com/brltty/brltty/pull/410
+
+--- brltty-6.9.1/Programs/brlapi_keyranges.c
++++ brltty-6.9.1/Programs/brlapi_keyranges.c
+@@ -157,8 +157,9 @@
+   /* Need to intersect with every range */
+   p = l; c = *p;
+   while (c) {
++    /* A required flag outside the other range's maximum proves disjointness. */
+     if (c->minVal > maxVal || c->maxVal < minVal ||
+-        !(c->maxFlags | ~minFlags) || !(~c->minFlags | maxFlags)) {
++        (minFlags & ~c->maxFlags) || (c->minFlags & ~maxFlags)) {
+       /* don't intersect */
+       p = &c->next;
+       c = *p;
+@@ -220,1 +221,1 @@
+-      if (!(c->maxFlags | ~minFlags) || !(~c->minFlags | maxFlags))
++      if ((minFlags & ~c->maxFlags) || (c->minFlags & ~maxFlags))

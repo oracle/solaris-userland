@@ -1,0 +1,14 @@
+Use the configured curses libraries for FileViewer.  Solaris provides
+terminfo through ncurses rather than a separate libtinfo.
+
+--- brltty-6.9.1/configure.ac
++++ brltty-6.9.1/configure.ac
+@@ -1901,7 +1901,7 @@
+       ;;
+ esac
+ 
+-BRLTTY_SCREEN_DRIVER([fv], [FileViewer], [-ltinfo])
++BRLTTY_SCREEN_DRIVER([fv], [FileViewer], [$(CURSES_LIBS)])
+ BRLTTY_SCREEN_DRIVER([tx], [Tmux])
+ 
+ all_brltty_pty=""
