@@ -26,22 +26,24 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libffi
-COMPONENT_VERSION=	3.4.4
+COMPONENT_VERSION=	3.8.0
 COMPONENT_PROJECT_URL=	http://sourceware.org/libffi/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:d66c56ad259a82cf2a9dfc408b32bf5da52371500b84745f7fb8b645712df676
+    sha256:7da3e2d9a171eb0a038f592ecad3ff2bb2550f3496d87b3b29ad0cf4430c0db4
 COMPONENT_ARCHIVE_URL=	https://github.com/libffi/libffi/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libffi
 COMPONENT_ANITYA_ID=	1611
 
-COMPONENT_BAID=	136310
+COMPONENT_BAID=	468997
 
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_TEST_DIR =	$(@D)/testsuite
 
-# The 32 test suite is trying various ABI (fastcall, thiscall, stdcall).
-# We don't support those on Solaris.
+# DejaGnu does not inherit CFLAGS.  Match the library's data model so tests
+# link against the freshly built libffi instead of the installed library.
+COMPONENT_TEST_ARGS += RUNTESTFLAGS="--target_board=unix/-m$(BITS)"
+
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|^Test Run By.*$$|XXX_REMOVE_XXX|g" ' \
 	'-e "s|^Native configuration is.*$$|XXX_REMOVE_XXX|g" ' \
