@@ -28,40 +28,29 @@ BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		zenity
-COMPONENT_VERSION=	3.41.0
+COMPONENT_VERSION=	4.2.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Zenity
 COMPONENT_ARCHIVE_HASH= \
-	sha256:19b676c3510e22badfcc3204062d432ba537402f5e0ae26128c0d90c954037e1
+	sha256:019186a996096ef4fc356e21577b5673f5baa3a29ac8e3d608b753371c18018d
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13165
 
-COMPONENT_BAID=		115221
+COMPONENT_BAID=		467736
 BUILD_STYLE=		meson
-
-TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Ensures gdialog script specifies explicit version of perl.
-CONFIGURE_ENV += PERL="$(PERL)"
-
-CONFIGURE_OPTIONS += -Dlibnotify=true
 CONFIGURE_OPTIONS += -Dwebkitgtk=false
 
 # Assumes GNU msgfmt in PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-COMPONENT_POST_INSTALL_ACTION.64 += \
-        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gdialog.1 \
-                $(PROTO_DIR)/usr/share/man/man1/gdialog.1;
+CBE_PACKAGES += developer/documentation-tool/help2man
 
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/desktop/libnotify
+REQUIRED_PACKAGES += library/desktop/gtk4
+REQUIRED_PACKAGES += library/desktop/libadwaita
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc
-REQUIRED_PACKAGES += x11/library/libx11
