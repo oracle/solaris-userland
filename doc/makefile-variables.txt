@@ -141,8 +141,24 @@ have defaults, but can be overridden.
   standard diff algorithm. Instead of merging we have to import all keys both
   from our change and the other change.
 
-  If we are in the middle of hg merge, hg rebase or hg graft, (it reported conflict and
-  is waiting for us to resolve) we can do it by
+  To have Mercurial merge conflicting keyring changes automatically, add the
+  following to your ~/.hgrc or the workspace's .hg/hgrc:
+
+    [merge-patterns]
+    tools/.gnupg/pubring.gpg = gpg-keyring
+
+    [merge-tools]
+    gpg-keyring.executable = /usr/bin/gpg
+    gpg-keyring.args = --no-options --batch --no-default-keyring --keyring $local --import $other
+    gpg-keyring.binary = True
+    gpg-keyring.premerge = False
+    gpg-keyring.disabled = True
+
+  This imports the other revision's keys into the local keyring, preserving
+  keys from both changes. It combines keys rather than propagating deletions.
+
+  To resolve a conflict manually during hg merge, hg rebase or hg graft,
+  import the keys from both revisions and mark the file resolved:
 
     hg cat --rev 'conflictlocal()' $(hg root)/tools/.gnupg/pubring.gpg | gpg2 --homedir=$(hg root)/tools/.gnupg --import
     hg cat --rev 'conflictother()' $(hg root)/tools/.gnupg/pubring.gpg | gpg2 --homedir=$(hg root)/tools/.gnupg --import
