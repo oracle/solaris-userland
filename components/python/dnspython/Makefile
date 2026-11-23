@@ -26,18 +26,18 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dnspython
-COMPONENT_VERSION=	2.9.0
+COMPONENT_VERSION=	2.9.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/dnspython
 COMPONENT_BUGDB=	python-mod/dnspython
 COMPONENT_ANITYA_ID=	13190
-COMPONENT_BAID=		457343
+COMPONENT_BAID=		469093
 
 # pypi archive doesn't include the LICENSE file
 GIT_REPO=   https://github.com/rthalley/dnspython
 GIT_COMMIT_ID=  v$(COMPONENT_VERSION)
-GIT_HASH=   sha256:3830b2b88f35deccd4eb1616586940cd30006870d488ab4ae1c1fc3f252668ad
+GIT_HASH=   sha256:9c5bb5e37e2f63a803e6aefa2780e9312b47a75f7dbf32c92fb332a02dd85443
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/pybuild.mk
