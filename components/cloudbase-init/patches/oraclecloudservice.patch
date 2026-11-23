@@ -1,89 +1,48 @@
-Patch in pieces to allow Oracle Cloud metadata V2 service enhancements
-to work.  Based on patches OCI group wrote for their Windows images.
-Could be upstreamed in cooperation with OCI image team.
+Add missing get_public_keys method to now official Oracle Cloud
+metadata V2 service.
 
-diff --git a/cloudbaseinit/conf/factory.py b/cloudbaseinit/conf/factory.py
-index ad2b37e..57aa5a9 100644
---- cloudbase-init-1.1.8/cloudbaseinit/conf/factory.py
-+++ cloudbase-init-1.1.8/cloudbaseinit/conf/factory.py
-@@ -21,6 +21,7 @@ _OPT_PATHS = (
-     'cloudbaseinit.conf.ec2.EC2Options',
-     'cloudbaseinit.conf.maas.MAASOptions',
-     'cloudbaseinit.conf.openstack.OpenStackOptions',
-+    'cloudbaseinit.conf.oraclecloud.OracleCloudOptions',
-     'cloudbaseinit.conf.azure.AzureOptions',
-     'cloudbaseinit.conf.ovf.OvfOptions',
-     'cloudbaseinit.conf.packet.PacketOptions',
---- cloudbase-init-1.1.8/cloudbaseinit/metadata/services/base.py
-+++ cloudbase-init-1.1.8/cloudbaseinit/metadata/services/base.py
-@@ -51,7 +51,7 @@ class BaseMetadataService(object, metacl
-         self._cache = {}
+This was offered and accepted upstream:
+https://github.com/cloudbase/cloudbase-init/pull/226
+https://github.com/cloudbase/cloudbase-init-test-resources/pull/21
+
+--- cloudbase-init-1.1.9/cloudbaseinit/metadata/services/oraclecloudservice.py
++++ cloudbase-init-1.1.9/cloudbaseinit/metadata/services/oraclecloudservice.py
+@@ -67,3 +67,11 @@ class OracleCloudService(base.BaseHTTPMe
+     def get_host_name(self):
+         return self._get_cache_data('opc/%s/instance/hostname' %
+                                     self._metadata_version, decode=True)
++
++    def get_public_keys(self):
++        try:
++            return self._get_cache_data(
++                'opc/%s/instance/metadata/ssh_authorized_keys' %
++                self._metadata_version, decode=True).splitlines()
++        except base.NotExistingMetadataException:
++            return []
+--- cloudbase-init-1.1.9/cloudbaseinit/tests/metadata/services/test_oraclecloudservice.py
++++ cloudbase-init-1.1.9/cloudbaseinit/tests/metadata/services/test_oraclecloudservice.py
+@@ -20,6 +20,7 @@ except ImportError:
+     import mock
  
-     @abc.abstractmethod
--    def _get_data(self, path):
-+    def _get_data(self, path, headers=None):
-         pass
+ from cloudbaseinit import conf as cloudbaseinit_conf
++from cloudbaseinit.metadata.services import base
+ from cloudbaseinit.metadata.services import oraclecloudservice
+ from cloudbaseinit.tests import testutils
  
-     def _exec_with_retry(self, action):
-@@ -68,14 +68,14 @@ class BaseMetadataService(object, metacl
-                 else:
-                     raise
- 
--    def _get_cache_data(self, path, decode=False):
-+    def _get_cache_data(self, path, decode=False, headers=None):
-         """Get meta data with caching and decoding support."""
--        key = (path, decode)
-+        key = (path, decode, str(headers))
-         if key in self._cache:
-             LOG.debug("Using cached copy of metadata: '%s'" % path)
-             return self._cache[key]
-         else:
--            data = self._exec_with_retry(lambda: self._get_data(path))
-+            data = self._exec_with_retry(lambda: self._get_data(path, headers=headers))
-             if decode:
-                 data = encoding.get_as_string(data)
-             self._cache[key] = data
-@@ -344,10 +344,10 @@ class BaseHTTPMetadataService(BaseMetada
-         response.raise_for_status()
-         return response.content
- 
--    def _get_data(self, path):
-+    def _get_data(self, path, headers=None):
-         """Getting the required information using metadata service."""
-         try:
--            response = self._http_request(path)
-+            response = self._http_request(path, headers=headers)
-         except requests.HTTPError as exc:
-             if exc.response.status_code == 404:
-                 raise NotExistingMetadataException(
-@@ -377,7 +377,7 @@ class EmptyMetadataService(BaseMetadataS
-     def __init__(self):
-         super(EmptyMetadataService, self).__init__()
- 
--    def _get_data(self, path):
-+    def _get_data(self, path, headers=None):
-         pass
- 
-     def load(self):
---- cloudbase-init-1.1.8/cloudbaseinit/metadata/services/opennebulaservice.py
-+++ cloudbase-init-1.1.8/cloudbaseinit/metadata/services/opennebulaservice.py
-@@ -139,7 +139,7 @@ class OpenNebulaService(base.BaseMetadat
-             )
-             self._dict_content.update(vardict)
- 
--    def _get_data(self, name):
-+    def _get_data(self, name, headers=None):
-         # Return the requested field's value or raise an error if not found.
-         if name not in self._dict_content:
-             msg = "Metadata {} not found".format(name)
---- cloudbase-init-1.1.8/cloudbaseinit/tests/metadata/services/test_cloudstack.py
-+++ cloudbase-init-1.1.8/cloudbaseinit/tests/metadata/services/test_cloudstack.py
-@@ -120,7 +120,7 @@ class CloudStackTest(unittest.TestCase):
- 
-         response = self._service._get_cache_data(mock.sentinel.metadata)
-         self.assertEqual(mock.sentinel.metadata, response)
--        mock_get_data.assert_called_once_with(mock.sentinel.metadata)
-+        mock_get_data.assert_called_once_with(mock.sentinel.metadata, headers=None)
-         mock_get_data.reset_mock()
- 
-         response = self._service._get_cache_data(mock.sentinel.metadata)
+@@ -102,3 +103,16 @@ class OracleCloudServiceTest(unittest.Te
+             'opc/%s/instance/hostname' % self._service._metadata_version,
+             decode=True)
+         self.assertEqual(mock_get_cache_data.return_value, response)
++
++    @mock.patch('cloudbaseinit.metadata.services.oraclecloudservice.'
++                'OracleCloudService._get_cache_data')
++    def test_get_public_keys(self, mock_get_cache_data):
++        mock_get_cache_data.side_effect = [
++            'ssh-rsa AAAA first\nssh-ed25519 BBBB second\n',
++            base.NotExistingMetadataException(),
++        ]
++        response = self._service.get_public_keys()
++        self.assertEqual(
++            ['ssh-rsa AAAA first', 'ssh-ed25519 BBBB second'], response)
++        response = self._service.get_public_keys()
++        self.assertEqual([], response)

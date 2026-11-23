@@ -27,17 +27,17 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cloudbase-init
-COMPONENT_VERSION=	1.1.8
+COMPONENT_VERSION=	1.1.9
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e1ddb27caeba011be0c4afcaf9c329f8b7dc501efc6a89e962891e9066a8b965
+    sha256:dc43cf5e14ef7540135360555c511643c7c20dcbf19f68287cc8211929ef5493
 COMPONENT_ARCHIVE_URL=	\
     https://github.com/openstack/cloudbase-init/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://github.com/cloudbase/cloudbase-init
 COMPONENT_BUGDB=	service/cloudbase-init
 COMPONENT_ANITYA_ID=	13227
-COMPONENT_BAID=		428426
+COMPONENT_BAID=		465813
 
 # We need just a single version
 PYTHON_VERSIONS=	3.11
@@ -67,11 +67,7 @@ PKG_MACROS +=		PYV=$(PYV)
 COMPONENT_PREP_ACTION += \
     $(CP) PKG-INFO $(SOURCE_DIR); \
     $(CP) files/solaris.py \
-        $(SOURCE_DIR)/cloudbaseinit/metadata/services/osconfigdrive/; \
-    $(CP) files/oraclecloud.py \
-        $(SOURCE_DIR)/cloudbaseinit/conf/; \
-    $(CP) files/oraclecloudservice.py \
-        $(SOURCE_DIR)/cloudbaseinit/metadata/services/;
+        $(SOURCE_DIR)/cloudbaseinit/metadata/services/osconfigdrive/;
 
 REQUIRED_PACKAGES += library/python/cryptography-$(PYV)
 REQUIRED_PACKAGES += library/python/jinja2-$(PYV)
