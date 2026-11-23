@@ -1,0 +1,18 @@
+Bug 40248981 - preserve UTF-8 replacement words during translation
+
+The C library's isspace() can classify bytes above 0x7f as whitespace.
+Use eSpeak NG's byte-safe isspace2() while advancing through a replacement.
+Upstream submission: https://github.com/espeak-ng/espeak-ng/pull/2705
+
+--- espeak-ng-1.53.0.20261103/src/libespeak-ng/translate.c
++++ espeak-ng-1.53.0.20261103/src/libespeak-ng/translate.c
+@@ -289,8 +289,8 @@ static int TranslateWordWithBounds(TRANSLATOR *tr, char *word, WORD_TAB *wtab, int wtab_remaining, char *phonemes_out, int depth)
+ 			// skip to the next word in a multi-word replacement. Always skip at least one word.
+ 			for (dictionary_skipwords++; dictionary_skipwords > 0; dictionary_skipwords--) {
+-				while (!isspace(*word_out)) ++word_out;
+-				while (isspace(*word_out))  ++word_out;
++				while (!isspace2((unsigned char)*word_out)) ++word_out;
++				while (isspace2((unsigned char)*word_out))  ++word_out;
+ 			}
+ 			dictionary_skipwords = skipwords;
+ 		}

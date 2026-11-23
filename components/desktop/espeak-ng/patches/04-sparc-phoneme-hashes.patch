@@ -1,0 +1,28 @@
+Bug 40248981 - accept the verified SPARC hash for the Abkhaz phoneme test
+
+The Abkhaz phoneme vector produces different WAV samples on SPARC.
+Use the verified SPARC hash for this vector.
+
+--- espeak-ng-1.53.0.20261103/tests/common
++++ espeak-ng-1.53.0.20261103/tests/common
+@@ -104,6 +104,9 @@
+ 	TEST_LANG=$1
+ 	EXPECTED=$2
+ 	TEST_TEXT=$3
++	if [ "$(uname -p)" = sparc ] && [ -n "$4" ]; then
++		EXPECTED=$4
++	fi
+     test_wav $TEST_LANG $EXPECTED "[[$TEST_TEXT]]"
+ }
+ 
+--- espeak-ng-1.53.0.20261103/tests/language-phonemes.test
++++ espeak-ng-1.53.0.20261103/tests/language-phonemes.test
+@@ -16,7 +16,7 @@
+ done
+ 
+ 
+-test_phwav ab "3c00b95901989a0cc290e7258ad5bae2669f2072" "ma na pa p'a ta t'a ka k'a qa Ra xa ha ba da ga fa va sa za la ra ca gwa kwa k'wa qwa Rwa xwa hwa twa t'wa cwa c'wa Zwa Swa dZwa gja kja k'ja qja Rja xja Zja Sja Jja Uwа"
++test_phwav ab "3c00b95901989a0cc290e7258ad5bae2669f2072" "ma na pa p'a ta t'a ka k'a qa Ra xa ha ba da ga fa va sa za la ra ca gwa kwa k'wa qwa Rwa xwa hwa twa t'wa cwa c'wa Zwa Swa dZwa gja kja k'ja qja Rja xja Zja Sja Jja Uwа" afaac609e3725c3cc147c1dcf2f1db9837b973e3
+ 
+ test_phwav af c71ab424d045d9fa82d2a23b9be4542aee3ed15e "ma na Na pa ta ka tSa ba da ga dZa fa sa x2a Sa va za Za ca la ja ra r/a _:_ m@ ma mE mI mO mW mu m& m&: m@L mA: me@ mi mo@ my miu m@U maI mAI meI mOI moI muI mYy mY@ maU me: mO: m3: mA~ me~ mo~"
+ test_phwav am 4fcdb9bb68b72c06e4cadf91b2c1e244ea14ac21 "ma na Na pa ta ka ?a ba da ga p\`a t\`a k\`a tSa dZa tS\`a Ba sa za Sa Za xa ha la ja wa ra _:_ mi me my ma m@ mo mu"

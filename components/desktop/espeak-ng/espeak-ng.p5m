@@ -34,23 +34,24 @@ set name=com.oracle.info.description \
     value="eSpeak NG speech synthesizer based on eSpeak"
 set name=info.classification \
     value="org.opensolaris.category.2008:Applications/Universal Access"
-set name=info.source-url value=$(GIT_REPO)
+set name=info.source-url value=$(COMPONENT_PROJECT_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2008/536 value=PSARC/2022/011
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 link path=usr/bin/espeak target=espeak-ng
 file path=usr/bin/espeak-ng
-link path=usr/bin/speak target=speak-ng
-file path=usr/bin/speak-ng
+link path=usr/bin/speak target=espeak-ng
+link path=usr/bin/speak-ng target=espeak-ng
 file path=usr/include/espeak-ng/encoding.h
 file path=usr/include/espeak-ng/espeak_ng.h
 file path=usr/include/espeak-ng/speak_lib.h
-file path=usr/include/espeak/speak_lib.h
-link path=usr/lib/$(MACH64)/libespeak-ng.so target=libespeak-ng.so.1.1.51
-link path=usr/lib/$(MACH64)/libespeak-ng.so.1 target=libespeak-ng.so.1.1.51
-file path=usr/lib/$(MACH64)/libespeak-ng.so.1.1.51
+link path=usr/include/espeak/speak_lib.h target=../espeak-ng/speak_lib.h
+link path=usr/lib/$(MACH64)/libespeak-ng.so target=libespeak-ng.so.1
+link path=usr/lib/$(MACH64)/libespeak-ng.so.1 target=libespeak-ng.so.1.53.0
+file path=usr/lib/$(MACH64)/libespeak-ng.so.1.53.0
 file path=usr/lib/$(MACH64)/pkgconfig/espeak-ng.pc
+file path=usr/share/espeak-ng-data/ab_dict
 file path=usr/share/espeak-ng-data/af_dict
 file path=usr/share/espeak-ng-data/am_dict
 file path=usr/share/espeak-ng-data/an_dict
@@ -66,6 +67,7 @@ file path=usr/share/espeak-ng-data/bs_dict
 file path=usr/share/espeak-ng-data/ca_dict
 file path=usr/share/espeak-ng-data/chr_dict
 file path=usr/share/espeak-ng-data/cmn_dict
+file path=usr/share/espeak-ng-data/crh_dict
 file path=usr/share/espeak-ng-data/cs_dict
 file path=usr/share/espeak-ng-data/cv_dict
 file path=usr/share/espeak-ng-data/cy_dict
@@ -132,6 +134,7 @@ file path=usr/share/espeak-ng-data/lang/bat/ltg
 file path=usr/share/espeak-ng-data/lang/bat/lv
 file path=usr/share/espeak-ng-data/lang/bnt/sw
 file path=usr/share/espeak-ng-data/lang/bnt/tn
+file path=usr/share/espeak-ng-data/lang/cau/ab
 file path=usr/share/espeak-ng-data/lang/ccs/ka
 file path=usr/share/espeak-ng-data/lang/cel/cy
 file path=usr/share/espeak-ng-data/lang/cel/ga
@@ -182,6 +185,10 @@ file path=usr/share/espeak-ng-data/lang/ine/sq
 file path=usr/share/espeak-ng-data/lang/ira/fa
 file path=usr/share/espeak-ng-data/lang/ira/fa-Latn
 file path=usr/share/espeak-ng-data/lang/ira/ku
+file path=usr/share/espeak-ng-data/lang/ira/ps
+file path=usr/share/espeak-ng-data/lang/ira/ps-x-northwest
+file path=usr/share/espeak-ng-data/lang/ira/ps-x-southeast
+file path=usr/share/espeak-ng-data/lang/ira/ps-x-yusufzai
 file path=usr/share/espeak-ng-data/lang/iro/chr
 file path=usr/share/espeak-ng-data/lang/itc/la
 file path=usr/share/espeak-ng-data/lang/jpx/ja
@@ -205,10 +212,12 @@ file path=usr/share/espeak-ng-data/lang/roa/fr-BE
 file path=usr/share/espeak-ng-data/lang/roa/fr-CH
 file path=usr/share/espeak-ng-data/lang/roa/ht
 file path=usr/share/espeak-ng-data/lang/roa/it
+file path=usr/share/espeak-ng-data/lang/roa/lij
 file path=usr/share/espeak-ng-data/lang/roa/pap
 file path=usr/share/espeak-ng-data/lang/roa/pt
 file path=usr/share/espeak-ng-data/lang/roa/pt-BR
 file path=usr/share/espeak-ng-data/lang/roa/ro
+file path=usr/share/espeak-ng-data/lang/roa/rup
 file path=usr/share/espeak-ng-data/lang/sai/gn
 file path=usr/share/espeak-ng-data/lang/sem/am
 file path=usr/share/espeak-ng-data/lang/sem/ar
@@ -225,6 +234,7 @@ file path=usr/share/espeak-ng-data/lang/tai/shn
 file path=usr/share/espeak-ng-data/lang/tai/th
 file path=usr/share/espeak-ng-data/lang/trk/az
 file path=usr/share/espeak-ng-data/lang/trk/ba
+file path=usr/share/espeak-ng-data/lang/trk/crh
 file path=usr/share/espeak-ng-data/lang/trk/cv
 file path=usr/share/espeak-ng-data/lang/trk/kaa
 file path=usr/share/espeak-ng-data/lang/trk/kk
@@ -239,6 +249,8 @@ file path=usr/share/espeak-ng-data/lang/urj/et
 file path=usr/share/espeak-ng-data/lang/urj/fi
 file path=usr/share/espeak-ng-data/lang/urj/hu
 file path=usr/share/espeak-ng-data/lang/urj/smj
+file path=usr/share/espeak-ng-data/lang/xgn/mn
+file path=usr/share/espeak-ng-data/lang/xgn/mn-f
 file path=usr/share/espeak-ng-data/lang/zle/be
 file path=usr/share/espeak-ng-data/lang/zle/ru
 file path=usr/share/espeak-ng-data/lang/zle/ru-LV
@@ -255,6 +267,7 @@ file path=usr/share/espeak-ng-data/lang/zlw/pl
 file path=usr/share/espeak-ng-data/lang/zlw/sk
 file path=usr/share/espeak-ng-data/lb_dict
 file path=usr/share/espeak-ng-data/lfn_dict
+file path=usr/share/espeak-ng-data/lij_dict
 file path=usr/share/espeak-ng-data/lt_dict
 file path=usr/share/espeak-ng-data/lv_dict
 file path=usr/share/espeak-ng-data/mbrola_ph/af1_phtrans
@@ -312,6 +325,7 @@ file path=usr/share/espeak-ng-data/mbrola_ph/vz_phtrans
 file path=usr/share/espeak-ng-data/mi_dict
 file path=usr/share/espeak-ng-data/mk_dict
 file path=usr/share/espeak-ng-data/ml_dict
+file path=usr/share/espeak-ng-data/mn_dict
 file path=usr/share/espeak-ng-data/mr_dict
 file path=usr/share/espeak-ng-data/ms_dict
 file path=usr/share/espeak-ng-data/mt_dict
@@ -332,6 +346,7 @@ file path=usr/share/espeak-ng-data/phonindex
 file path=usr/share/espeak-ng-data/phontab
 file path=usr/share/espeak-ng-data/piqd_dict
 file path=usr/share/espeak-ng-data/pl_dict
+file path=usr/share/espeak-ng-data/ps_dict
 file path=usr/share/espeak-ng-data/pt_dict
 file path=usr/share/espeak-ng-data/py_dict
 file path=usr/share/espeak-ng-data/qdb_dict
@@ -340,6 +355,7 @@ file path=usr/share/espeak-ng-data/quc_dict
 file path=usr/share/espeak-ng-data/qya_dict
 file path=usr/share/espeak-ng-data/ro_dict
 file path=usr/share/espeak-ng-data/ru_dict
+file path=usr/share/espeak-ng-data/rup_dict
 file path=usr/share/espeak-ng-data/sd_dict
 file path=usr/share/espeak-ng-data/shn_dict
 file path=usr/share/espeak-ng-data/si_dict
@@ -570,10 +586,9 @@ file files/speak-ng.1 path=usr/share/man/man1/speak-ng.1
 link path=usr/share/man/man1/speak.1 target=speak-ng.1
 file files/libespeak-ng.3lib path=usr/share/man/man3lib/libespeak-ng.3lib
 link path=usr/share/man/man3lib/libespeak.3lib target=libespeak-ng.3lib
-file path=usr/share/vim/addons/ftdetect/espeakfiletype.vim
-file path=usr/share/vim/addons/syntax/espeaklist.vim
-file path=usr/share/vim/addons/syntax/espeakrules.vim
-file path=usr/share/vim/registry/espeak.yaml
+file path=usr/share/vim/vimfiles/ftdetect/espeakfiletype.vim
+file path=usr/share/vim/vimfiles/syntax/espeaklist.vim
+file path=usr/share/vim/vimfiles/syntax/espeakrules.vim
 #
 license espeak.license license=GPLv3
 
