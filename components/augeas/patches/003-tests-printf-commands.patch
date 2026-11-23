@@ -1,0 +1,18 @@
+Solaris bash enables xpg_echo, so echo interprets backslashes in the
+augtool command stream a second time after the test fixture is read.
+Use printf to pass the commands unchanged.  Preserve the quoted-string
+cases and their expected results.
+
+This portability fix has not been submitted upstream.
+
+--- a/tests/test-augtool.sh
++++ b/tests/test-augtool.sh
+@@ -63,7 +63,7 @@
+ $commands
+ save
+ quit"
+-    echo "$commands" | augtool $echo --nostdinc --noautoload -n || fail "augtool failed"
++    printf '%s\n' "$commands" | augtool $echo --nostdinc --noautoload -n || fail "augtool failed"
+ 
+     abs_file="$AUGEAS_ROOT$file"
+     if [ ! -f "${abs_file}.augnew" ]; then

@@ -1,0 +1,16 @@
+Augeas 1.15.0's augprint assumes sys/param.h defines MIN and MAX, which
+does not hold on Solaris.  Use the bundled gnulib minmax module instead.
+
+This portability fix has not been submitted upstream.
+
+--- a/src/augprint.c
++++ b/src/augprint.c
+@@ -70,7 +70,7 @@
+ #include <augeas.h>
+ #include <errno.h>
+ #include <libgen.h>        /* for basename() on FreeBSD and MacOS */
+-#include <sys/param.h>     /* for MIN() MAX() */
++#include "minmax.h"        /* for MIN() MAX() */
+ #include <unistd.h>
+ #include "augprint.h"
+ 

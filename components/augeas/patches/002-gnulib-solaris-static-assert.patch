@@ -1,0 +1,30 @@
+The bundled gnulib skips its Solaris static_assert adaptation when the
+compiler supports the C23 keyword.  Solaris 11.4 assert.h still hides that
+keyword with a two-argument macro.  Keep the adaptation active on Solaris,
+and split #undef as required by Autoconf so it survives config.h generation.
+The system header's guard then preserves the replacement on later includes.
+
+This follows the Solaris handling in current gnulib assert_h.m4:
+https://github.com/coreutils/gnulib/blob/master/m4/assert_h.m4
+This adaptation to the bundled version has not been submitted upstream.
+
+--- a/gnulib/m4/assert_h.m4
++++ b/gnulib/m4/assert_h.m4
+@@ -51,7 +51,7 @@
+   dnl including assert.h.  Break the #undef apart with a comment
+   dnl so that 'configure' does not comment it out.
+   AH_VERBATIM([zzstatic_assert],
+-[#if (!defined HAVE_C_STATIC_ASSERT && !defined assert \
++[#if ((!defined HAVE_C_STATIC_ASSERT || defined __sun) && !defined assert \
+      && (!defined __cplusplus \
+          || (__cpp_static_assert < 201411 \
+              && __GNUG__ < 6 && __clang_major__ < 6)))
+@@ -60,7 +60,7 @@
+  /* Solaris 11.4 <assert.h> defines static_assert as a macro with 2 arguments.
+     We need it also to be invocable with a single argument.  */
+  #if defined __sun && (__STDC_VERSION__ - 0 >= 201112L) && !defined __cplusplus
+-  #undef static_assert
++  #undef/**/static_assert
+   #define static_assert _Static_assert
+  #endif
+ #endif])
