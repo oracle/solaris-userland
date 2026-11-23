@@ -1,0 +1,72 @@
+sh unix/test_unzip.sh testmake.zip .
+>>> Found executable: funzip
+>>> Found executable: unzip
+>>> Found executable: unzipsfx
+>>> Found test archive: testmake.zip
+
+>>> UnZip extraction test...
+Archive:  ../testmake.zip
+  inflating: notes
+>>> Pass.
+
+>>> UnZip "-x" extraction test...
+Archive:  ../testmake.zip
+  inflating: testmake.zipinfo        [text]
+>>> Pass.
+
+>>> UnZip "-d dest_dir" extraction test...
+Archive:  ../testmake.zip
+  inflating: dest_dir/notes
+>>> Pass.
+
+>>> UnZip "-o" extraction test...
+Archive:  ../testmake.zip
+  inflating: notes
+>>> Pass.
+
+>>> ZipInfo ("unzip -Z") test...
+>>> Pass.
+
+>>> FunZip extraction test...
+>>>  (Expect a "zipfile has more than one entry" warning.)
+funzip warning: zipfile has more than one entry--rest ignored
+>>> Pass.
+
+>>> UnZipSFX test...
+UnZipSFX 6.1c25-BETA (2018-12-20)  (c) 2018 Info-ZIP  http://info-zip.org
+
+        THIS IS A BETA VERSION OF UNZIPSFX -- NOT FOR GENERAL DISTRIBUTION.
+  inflating: notes
+>>> Pass.
+
+>>> Test Results:   Pass: 7, Fail: 0
+
+sh unix/test_unzip.sh testmake_ppmd.zip . NOFUNSFX
+>>> Found executable: unzip
+>>> Found test archive: testmake_ppmd.zip
+
+>>> UnZip extraction test...
+Archive:  ../testmake_ppmd.zip
+  unPPMding: notes
+>>> Pass.
+
+>>> UnZip "-x" extraction test...
+Archive:  ../testmake_ppmd.zip
+  unPPMding: testmake.zipinfo        [text]
+>>> Pass.
+
+>>> UnZip "-d dest_dir" extraction test...
+Archive:  ../testmake_ppmd.zip
+  unPPMding: dest_dir/notes
+>>> Pass.
+
+>>> UnZip "-o" extraction test...
+Archive:  ../testmake_ppmd.zip
+  unPPMding: notes
+>>> Pass.
+
+>>> ZipInfo ("unzip -Z") test...
+>>> Pass.
+
+>>> Test Results:   Pass: 5, Fail: 0
+

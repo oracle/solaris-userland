@@ -1,0 +1,48 @@
+Reject truncated bzip2 ZIP entries after compressed input is exhausted.
+
+The private selector investigation found that UnZip's final output loop
+repeatedly calls BZ2_bzDecompress with no input on a truncated selector
+table.  The library correctly returns BZ_OK to request more input, but the
+UnZip loop never terminates.  This loop predates the selector-count fix.
+
+Adapt the EOF condition already used by upstream BZ2_bzRead in bzlib.c:
+BZ_OK, no remaining input and spare output space mean unexpected EOF.
+UnZip uses BZ_NO_STDIO, so its ZIP-entry reader must check this itself.
+Keep draining full output buffers, and use the existing PK_ERR cleanup
+path for incomplete streams.  This is a local UnZip integration change;
+the bundled selector fix remains the upstream bzip2 1.0.8 implementation.
+
+Review provenance: this is not a copied upstream UnZip commit or a Debian
+UnZip patch.  It adapts the upstream bzip2 stdio reader's EOF rule to UnZip's
+BZ_NO_STDIO ZIP-entry reader; the added extract.c hunk is local integration.
+
+Download the authoritative bzip2 1.0.8 source release:
+  https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz
+Exact member: bzip2-1.0.8/bzlib.c
+Function: BZ2_bzRead(), lines 1204-1206 in that release.
+  gtar -xOf bzip2-1.0.8.tar.gz bzip2-1.0.8/bzlib.c | gsed -n '1199,1209p'
+The upstream condition combines BZ_OK, myfeof(bzf->handle), avail_in == 0
+and avail_out > 0, then reports BZ_UNEXPECTED_EOF.  UnZip is already in its
+final loop after the compressed ZIP-entry input has been exhausted, replacing
+the stdio myfeof condition.  Map the failure to its existing PK_ERR cleanup;
+when output is full, continue draining rather than declaring truncation.
+
+References (BZ2_bzRead):
+https://sourceware.org/git/?p=bzip2.git;a=blob;f=bzlib.c;hb=bzip2-1.0.6
+https://sourceware.org/git/?p=bzip2.git;a=blob;f=bzlib.c;hb=bzip2-1.0.8
+
+--- unzip610c25/extract.c
++++ unzip610c25/extract.c
+@@ -6797,6 +6797,12 @@
+             DESTROYGLOBALS();
+             EXIT(PK_MEM3);
+         }
++        /* BZ_OK with spare output space needs more input.  None remains
++         * in this final loop, so report a truncated entry as BZ2_bzRead does.
++         */
++        if (err == BZ_OK && bstrm.avail_in == 0 && bstrm.avail_out > 0) {
++            retval = PK_ERR; goto uzbunzip_cleanup_exit;
++        }
+         /* final flush of slide[] */
+         if ((retval = FLUSH(wsize - bstrm.avail_out)) != 0)
+             goto uzbunzip_cleanup_exit;

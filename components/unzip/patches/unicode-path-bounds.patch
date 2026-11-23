@@ -1,0 +1,57 @@
+Adapt Debian's Unicode Path bounds fix to the fully patched UnZip 610c25.
+Check only EF_UNIPATH, after validating the enclosing block length and before
+reading its version/CRC or subtracting its five-byte fixed payload header.
+Unrelated short extra fields must still be skipped so subsequent Unicode Path
+fields are found.  Stop scanning a malformed Unicode Path block, consistent
+with the existing malformed-block policy; retain version/CRC/fallback behavior.
+
+Debian accepted the original universal length guard in 6.0-32 (2026-11-17).
+This field-specific adaptation is local; upstream approval is not claimed.
+The maintainer's published 6.1c25d addendum has no corresponding fix.
+
+Original Debian patch header:
+From: Paul Marquess <paul.marquess@outlook.com>
+Subject: Harden parsing of "up" extra field
+Bug-Debian: https://bugs.debian.org/1153750
+X-Debian-version: 6.0-32
+
+Review the original accepted Debian change directly:
+  https://sources.debian.org/src/unzip/6.0-32/debian/patches/harden-parsing-of-up-extra-field.patch/
+Exact member in unzip_6.0-32.debian.tar.xz:
+  debian/patches/harden-parsing-of-up-extra-field.patch
+For example, after downloading the Debian archive linked below:
+  gtar -xOf unzip_6.0-32.debian.tar.xz debian/patches/harden-parsing-of-up-extra-field.patch
+The original patch adds an unconditional eb_len < 5 check in getUnicodeData().
+Our adaptation instead restricts that check to EF_UNIPATH and places it after
+validation that the enclosing block fits.  This preserves skipping unrelated
+short fields while protecting version/CRC reads and the eb_len - 5 calculation.
+
+References:
+https://deb.debian.org/debian/pool/main/u/unzip/unzip_6.0-32.debian.tar.xz
+https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT (section 4.6.9)
+
+--- unzip610c25/process.c
++++ unzip610c25/process.c
+@@ -2616,16 +2616,22 @@
+         eb_id = makeword(EB_ID + ef_buf);
+         eb_len = makeword(EB_LEN + ef_buf);
+ 
+         if (eb_len > (ef_len - EB_HEADSIZE)) {
+             /* discovered some extra field inconsistency! */
+             Trace((stderr,
+              "getUnicodeData: block length %ld > rest ef_size %ld\n",
+              eb_len, ef_len - EB_HEADSIZE));
++            break;
++        }
++        if (eb_id == EF_UNIPATH && eb_len < 5) {
++            /* Need the version and CRC before using the UTF-8 path length. */
++            Trace((stderr,
++             "getUnicodeData: block length %ld < 5\n", eb_len));
+             break;
+         }
+         if (eb_id == EF_UNIPATH) {
+ 
+           unsigned offset = EB_HEADSIZE;
+           ush ULen = (ush)(eb_len - 5);
+           ulg chksum = CRCVAL_INITIAL;
+ 

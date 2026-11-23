@@ -40,7 +40,6 @@ COMPONENT_BUGDB=	utility/zip
 COMPONENT_ANITYA_ID=	8684
 
 BUILD_STYLE= justmake
-TEST_TARGET= $(NO_TESTS)
 HUMAN_VERSION= $(COMPONENT_VERSION)
 include $(WS_MAKE_RULES)/common.mk
 
@@ -74,6 +73,18 @@ COMPONENT_INSTALL_ARGS += -f unix/Makefile
 # Unzip build ignores DESTDIR
 COMPONENT_INSTALL_ARGS += BINDIR=$(PROTOUSRBINDIR)
 COMPONENT_INSTALL_ARGS += MANDIR=$(PROTOUSRSHAREMANDIR)
+
+# Run the existing upstream basic and PPMd tests.
+COMPONENT_TEST_ARGS += -f unix/Makefile
+COMPONENT_TEST_TARGETS = check test_ppmd
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
+# Keep all upstream diagnostics and counts; omit make's directory messages
+# and insignificant trailing whitespace.  Both delivered 64-bit builds match.
+COMPONENT_TEST_TRANSFORMS += \
+	'-e "/^make.*: Entering directory /d" ' \
+	'-e "/^make.*: Leaving directory /d" ' \
+	'-e "s/[[:blank:]]*$$//" '
 
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library
