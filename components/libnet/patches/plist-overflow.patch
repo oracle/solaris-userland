@@ -1,0 +1,47 @@
+From 425162fb7a9577f212d44c1b6f6e2ccc36acf131 Mon Sep 17 00:00:00 2001
+From: Thomas Habets <habets@google.com>
+Date: Fri, 1 Nov 2019 17:08:08 +0000
+Subject: [PATCH] Fix possible overflows
+
+https://github.com/libnet/libnet/pull/102
+https://github.com/libnet/libnet/commit/425162fb7a9577f212d44c1b6f6e2ccc36acf131
+
+Adapted to libnet 1.1.5 with additional bounds checks for Solaris:
+The upstream remaining-size correction still advances j by snprintf's
+would-have-written length after truncation.  Check negative or truncated
+results before advancing j, and reserve space for the comma and terminating
+NUL.  Return NULL, the documented error result, if the complete list does
+not fit.  These additional checks are proposed upstream (not merged):
+https://github.com/libnet/libnet/pull/178
+
+--- libnet-1.1.5/src/libnet_port_list.c.orig
++++ libnet-1.1.5/src/libnet_port_list.c
+@@ -256,16 +256,25 @@
+     {
+         if (plist->bport == plist->eport)
+         {
+-            i = snprintf(&buf[j], BUFSIZ, "%d", plist->bport);
++            i = snprintf(&buf[j], BUFSIZ-j, "%d", plist->bport);
+         }
+         else
+         {
+-            i = snprintf(&buf[j], BUFSIZ, "%d-%d", plist->bport, plist->eport);
++            i = snprintf(&buf[j], BUFSIZ-j, "%d-%d", plist->bport, plist->eport);
++        }
++        if (i < 0 || i >= BUFSIZ-j)
++        {
++            return (NULL);
+         }
+         j += i;
+         if (plist->next)
+         {
+-            snprintf(&buf[j++], BUFSIZ, ",");
++            if (j == BUFSIZ-1)
++            {
++                return (NULL);
++            }
++            snprintf(&buf[j], BUFSIZ-j, ",");
++            j++;
+         }
+     }
+     return (strdup(buf));       /* XXX - reentrancy == no */
