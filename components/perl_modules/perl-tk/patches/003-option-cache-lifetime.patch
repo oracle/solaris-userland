@@ -1,0 +1,100 @@
+Imported and adapted from the proposed fix in Debian bug 1140169:
+https://bugs.debian.org/1140169
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1140169&msg=5&att=2
+
+The original patch header is retained below.
+
+Solaris adaptation proposed to usptream:
+https://github.com/eserte/perl-tk/pull/125
+
+From fb3b7bc55b76b8d543a81ddbcf22d5c0b39aca47 Mon Sep 17 00:00:00 2001
+From: Niko Tyni <ntyni@debian.org>
+Date: Sat, 13 Jun 2026 17:25:46 +0100
+Subject: [PATCH] Prevent reusing cached Option pointers between Tcl
+ interpreters
+
+Mixing the interpreter address to the cache key protects it from use by
+another interpreter, which could otherwise see a reused memory area as
+containing a valid cached pointer.
+
+Bug: https://rt.cpan.org/Public/Bug/Display.html?id=155323
+---
+--- a/pTk/mTk/generic/tkConfig.c
++++ b/pTk/mTk/generic/tkConfig.c
+@@ -24,6 +24,8 @@
+ 
+ #define __NO_OLD_CONFIG
+ #endif
++
++#include <stdint.h>
+ 
+ #include "tk.h"
+ #include "tkInt.h"
+@@ -39,6 +41,14 @@
+  */
+ 
+ #define OPTION_HASH_KEY "TkOptionTable"
++
++/*
++ * Cache keys must identify table lifetimes, not allocator addresses.  Zero
++ * disables caching after the unsigned counter wraps, so keys are never reused.
++ */
++
++static uintptr_t nextOptionTableSerial = 1;
++TCL_DECLARE_MUTEX(optionTableMutex)
+ 
+ /*
+  * The following two structures are used along with Tk_OptionSpec
+@@ -91,6 +101,7 @@
+  */
+ 
+ typedef struct OptionTable {
++    uintptr_t serial;                   /* Cache key; zero if exhausted. */
+     int refCount;			/* Counts the number of uses of this
+ 					 * table (the number of times
+ 					 * Tk_CreateOptionTable has returned
+@@ -141,8 +152,9 @@
+ /*
+  * The structure below defines an object type that is used to cache the
+  * result of looking up an option name.  If an object has this type, then
+- * its internalPtr1 field points to the OptionTable in which it was looked up,
+- * and the internalPtr2 field points to the entry that matched.
++ * its internalPtr1 field holds the serial of the OptionTable in which it was
++ * looked up, and the internalPtr2 field points to the entry that matched.
++ * A serial is never reused, even if both table and interpreter addresses are.
+  */
+ 
+ Tcl_ObjType tkOptionObjType = {
+@@ -230,6 +242,12 @@
+     }
+     tablePtr = (OptionTable *) (ckalloc(sizeof(OptionTable)
+ 	    + ((numOptions - 1)  * sizeof(Option))));
++    Tcl_MutexLock(&optionTableMutex);
++    tablePtr->serial = nextOptionTableSerial;
++    if (nextOptionTableSerial != 0) {
++        nextOptionTableSerial++;
++    }
++    Tcl_MutexUnlock(&optionTableMutex);
+     tablePtr->refCount = 1;
+     tablePtr->hashEntryPtr = hashEntryPtr;
+     tablePtr->nextPtr = NULL;
+@@ -1210,8 +1228,8 @@
+      * First, check to see if the object already has the answer cached.
+      */
+ 
+-    if (objPtr->typePtr == &tkOptionObjType) {
+-        if (objPtr->internalRep.twoPtrValue.ptr1 == (VOID *) tablePtr) {
++    if (tablePtr->serial != 0 && objPtr->typePtr == &tkOptionObjType) {
++        if (objPtr->internalRep.twoPtrValue.ptr1 == (VOID *) tablePtr->serial) {
+             return (Option *) objPtr->internalRep.twoPtrValue.ptr2;
+         }
+     }
+@@ -1230,7 +1248,7 @@
+ 	    && (objPtr->typePtr->freeIntRepProc != NULL)) {
+ 	objPtr->typePtr->freeIntRepProc(objPtr);
+     }
+-    objPtr->internalRep.twoPtrValue.ptr1 = (VOID *) tablePtr;
++    objPtr->internalRep.twoPtrValue.ptr1 = (VOID *) tablePtr->serial;
+     objPtr->internalRep.twoPtrValue.ptr2 = (VOID *) bestPtr;
+     TclObjSetType(objPtr,&tkOptionObjType);
+     return bestPtr;
