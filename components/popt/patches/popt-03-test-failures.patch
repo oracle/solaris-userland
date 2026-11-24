@@ -1,0 +1,51 @@
+From ce80a8045c70db57084008a3fd98a7f0ba79544e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?H=C3=A5vard=20F=2E=20Aasen?= <havard.f.aasen@pfft.no>
+Date: Tue, 27 Sep 2022 20:14:08 +0200
+Subject: [PATCH] tests: Fix reporting of test failures
+
+After commit a4afb898f7758160acda71d774c7d98d528da273 the testsuite
+no longer reported test failures. This is because we rely on the exit
+status code of the script, and currently, this is always 0.
+
+If any test fails, we will exit with status code 2. The entire testsuite
+will continue to run, even after a test has failed.
+
+Upstream: https://github.com/rpm-software-management/popt/commit/ce80a8045c70db57084008a3fd98a7f0ba79544e
+
+--- a/tests/testit.sh
++++ b/tests/testit.sh
+@@ -8,6 +8,7 @@
+     result=`HOME=$builddir $builddir/$prog $*`
+     if [ "$answer" != "$result" ]; then
+         echo "FAIL: $name: \"$result\" != \"$answer\" "
++        retval=2
+     else
+         echo "PASS: $name"
+     fi
+@@ -30,6 +31,7 @@
+     if [ "$diff_ret" != "0" ]; then
+        echo "FAIL $name: failed output is in $out, diff is:"
+        cat $diff_file
++       retval=2
+     else
+         echo "PASS $name"
+     fi
+@@ -37,6 +39,7 @@
+ }
+ 
+ builddir=`pwd`
++retval=0
+ cd ${builddir}
+ echo "Running tests in ${builddir}"
+ 
+@@ -181,4 +184,9 @@
+ run_diff test3 "test3 - 3" test3-data/03.input test3-data/03.answer
+ 
+ echo ""
+-echo "Passed."
++if [ $retval != 0 ]; then
++    echo "Failed."
++    exit $retval
++else
++    echo "Passed."
++fi

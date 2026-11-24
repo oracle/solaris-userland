@@ -1,0 +1,212 @@
+Build the upstream security regression programs with the 1.19 Autotools
+build system. The upstream fixes register these programs with CMake,
+which is not used by this release. Keep Makefile.am and the shipped
+Makefile.in in sync, including distribution and dependency cleanup.
+
+Solaris integration; not suitable for upstream's CMake build.
+
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -7,11 +7,13 @@
+              test3-data/02.answer \
+              test3-data/02.input \
+              test3-data/03.answer \
+-             test3-data/03.input
++             test3-data/03.input \
++             test3-data/05.answer \
++             test3-data/05.input
+ 
+ AM_CPPFLAGS = -I. -I$(top_srcdir)/src
+ 
+-noinst_PROGRAMS = test1 test2 tdict test3
++noinst_PROGRAMS = test1 test2 tdict test3 test4-1 test4-2 test4-3 test4-4 tstuff
+ test1_SOURCES = test1.c
+ test1_LDFLAGS = 
+ test1_LDADD = $(top_builddir)/src/libpopt.la
+@@ -21,6 +23,21 @@
+ test3_SOURCES = test3.c
+ test3_LDFLAGS = 
+ test3_LDADD = $(top_builddir)/src/libpopt.la
++test4_1_SOURCES = test4-1.c
++test4_1_LDFLAGS = 
++test4_1_LDADD = $(top_builddir)/src/libpopt.la
++test4_2_SOURCES = test4-2.c
++test4_2_LDFLAGS = 
++test4_2_LDADD = $(top_builddir)/src/libpopt.la
++test4_3_SOURCES = test4-3.c
++test4_3_LDFLAGS = 
++test4_3_LDADD = $(top_builddir)/src/libpopt.la
++test4_4_SOURCES = test4-4.c
++test4_4_LDFLAGS = 
++test4_4_LDADD = $(top_builddir)/src/libpopt.la
++tstuff_SOURCES = tstuff.c
++tstuff_LDFLAGS = 
++tstuff_LDADD = $(top_builddir)/src/libpopt.la
+ tdict_SOURCES = tdict.c
+ tdict_LDFLAGS = 
+ tdict_LDADD = $(top_builddir)/src/libpopt.la
+--- a/tests/Makefile.in
++++ b/tests/Makefile.in
+@@ -92,7 +92,7 @@
+ build_triplet = @build@
+ host_triplet = @host@
+ noinst_PROGRAMS = test1$(EXEEXT) test2$(EXEEXT) tdict$(EXEEXT) \
+-	test3$(EXEEXT)
++	test3$(EXEEXT) test4-1$(EXEEXT) test4-2$(EXEEXT) test4-3$(EXEEXT) test4-4$(EXEEXT) tstuff$(EXEEXT)
+ subdir = tests
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+ am__aclocal_m4_deps = $(top_srcdir)/m4/gettext.m4 \
+@@ -139,6 +139,36 @@
+ test3_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+ 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+ 	$(test3_LDFLAGS) $(LDFLAGS) -o $@
++am_test4_1_OBJECTS = test4-1.$(OBJEXT)
++test4_1_OBJECTS = $(am_test4_1_OBJECTS)
++test4_1_DEPENDENCIES = $(top_builddir)/src/libpopt.la
++test4_1_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
++	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
++	$(test4_1_LDFLAGS) $(LDFLAGS) -o $@
++am_test4_2_OBJECTS = test4-2.$(OBJEXT)
++test4_2_OBJECTS = $(am_test4_2_OBJECTS)
++test4_2_DEPENDENCIES = $(top_builddir)/src/libpopt.la
++test4_2_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
++	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
++	$(test4_2_LDFLAGS) $(LDFLAGS) -o $@
++am_test4_3_OBJECTS = test4-3.$(OBJEXT)
++test4_3_OBJECTS = $(am_test4_3_OBJECTS)
++test4_3_DEPENDENCIES = $(top_builddir)/src/libpopt.la
++test4_3_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
++	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
++	$(test4_3_LDFLAGS) $(LDFLAGS) -o $@
++am_test4_4_OBJECTS = test4-4.$(OBJEXT)
++test4_4_OBJECTS = $(am_test4_4_OBJECTS)
++test4_4_DEPENDENCIES = $(top_builddir)/src/libpopt.la
++test4_4_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
++	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
++	$(test4_4_LDFLAGS) $(LDFLAGS) -o $@
++am_tstuff_OBJECTS = tstuff.$(OBJEXT)
++tstuff_OBJECTS = $(am_tstuff_OBJECTS)
++tstuff_DEPENDENCIES = $(top_builddir)/src/libpopt.la
++tstuff_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
++	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
++	$(tstuff_LDFLAGS) $(LDFLAGS) -o $@
+ SCRIPTS = $(noinst_SCRIPTS)
+ AM_V_P = $(am__v_P_@AM_V@)
+ am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
+@@ -156,7 +186,7 @@
+ depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
+ am__maybe_remake_depfiles = depfiles
+ am__depfiles_remade = ./$(DEPDIR)/tdict.Po ./$(DEPDIR)/test1.Po \
+-	./$(DEPDIR)/test2.Po ./$(DEPDIR)/test3.Po
++	./$(DEPDIR)/test2.Po ./$(DEPDIR)/test3.Po ./$(DEPDIR)/test4-1.Po ./$(DEPDIR)/test4-2.Po ./$(DEPDIR)/test4-3.Po ./$(DEPDIR)/test4-4.Po ./$(DEPDIR)/tstuff.Po
+ am__mv = mv -f
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+@@ -177,9 +207,9 @@
+ am__v_CCLD_0 = @echo "  CCLD    " $@;
+ am__v_CCLD_1 = 
+ SOURCES = $(tdict_SOURCES) $(test1_SOURCES) $(test2_SOURCES) \
+-	$(test3_SOURCES)
++	$(test3_SOURCES) $(test4_1_SOURCES) $(test4_2_SOURCES) $(test4_3_SOURCES) $(test4_4_SOURCES) $(tstuff_SOURCES)
+ DIST_SOURCES = $(tdict_SOURCES) $(test1_SOURCES) $(test2_SOURCES) \
+-	$(test3_SOURCES)
++	$(test3_SOURCES) $(test4_1_SOURCES) $(test4_2_SOURCES) $(test4_3_SOURCES) $(test4_4_SOURCES) $(tstuff_SOURCES)
+ am__can_run_installinfo = \
+   case $$AM_UPDATE_INFO_DIR in \
+     n|no|NO) false;; \
+@@ -556,7 +586,9 @@
+              test3-data/02.answer \
+              test3-data/02.input \
+              test3-data/03.answer \
+-             test3-data/03.input
++             test3-data/03.input \
++             test3-data/05.answer \
++             test3-data/05.input
+ 
+ AM_CPPFLAGS = -I. -I$(top_srcdir)/src
+ test1_SOURCES = test1.c
+@@ -568,6 +600,21 @@
+ test3_SOURCES = test3.c
+ test3_LDFLAGS = 
+ test3_LDADD = $(top_builddir)/src/libpopt.la
++test4_1_SOURCES = test4-1.c
++test4_1_LDFLAGS = 
++test4_1_LDADD = $(top_builddir)/src/libpopt.la
++test4_2_SOURCES = test4-2.c
++test4_2_LDFLAGS = 
++test4_2_LDADD = $(top_builddir)/src/libpopt.la
++test4_3_SOURCES = test4-3.c
++test4_3_LDFLAGS = 
++test4_3_LDADD = $(top_builddir)/src/libpopt.la
++test4_4_SOURCES = test4-4.c
++test4_4_LDFLAGS = 
++test4_4_LDADD = $(top_builddir)/src/libpopt.la
++tstuff_SOURCES = tstuff.c
++tstuff_LDFLAGS = 
++tstuff_LDADD = $(top_builddir)/src/libpopt.la
+ tdict_SOURCES = tdict.c
+ tdict_LDFLAGS = 
+ tdict_LDADD = $(top_builddir)/src/libpopt.la
+@@ -637,6 +684,26 @@
+ 	@rm -f test3$(EXEEXT)
+ 	$(AM_V_CCLD)$(test3_LINK) $(test3_OBJECTS) $(test3_LDADD) $(LIBS)
+ 
++test4-1$(EXEEXT): $(test4_1_OBJECTS) $(test4_1_DEPENDENCIES) $(EXTRA_test4_1_DEPENDENCIES) 
++	@rm -f test4-1$(EXEEXT)
++	$(AM_V_CCLD)$(test4_1_LINK) $(test4_1_OBJECTS) $(test4_1_LDADD) $(LIBS)
++
++test4-2$(EXEEXT): $(test4_2_OBJECTS) $(test4_2_DEPENDENCIES) $(EXTRA_test4_2_DEPENDENCIES) 
++	@rm -f test4-2$(EXEEXT)
++	$(AM_V_CCLD)$(test4_2_LINK) $(test4_2_OBJECTS) $(test4_2_LDADD) $(LIBS)
++
++test4-3$(EXEEXT): $(test4_3_OBJECTS) $(test4_3_DEPENDENCIES) $(EXTRA_test4_3_DEPENDENCIES) 
++	@rm -f test4-3$(EXEEXT)
++	$(AM_V_CCLD)$(test4_3_LINK) $(test4_3_OBJECTS) $(test4_3_LDADD) $(LIBS)
++
++test4-4$(EXEEXT): $(test4_4_OBJECTS) $(test4_4_DEPENDENCIES) $(EXTRA_test4_4_DEPENDENCIES) 
++	@rm -f test4-4$(EXEEXT)
++	$(AM_V_CCLD)$(test4_4_LINK) $(test4_4_OBJECTS) $(test4_4_LDADD) $(LIBS)
++
++tstuff$(EXEEXT): $(tstuff_OBJECTS) $(tstuff_DEPENDENCIES) $(EXTRA_tstuff_DEPENDENCIES) 
++	@rm -f tstuff$(EXEEXT)
++	$(AM_V_CCLD)$(tstuff_LINK) $(tstuff_OBJECTS) $(tstuff_LDADD) $(LIBS)
++
+ mostlyclean-compile:
+ 	-rm -f *.$(OBJEXT)
+ 
+@@ -647,6 +714,11 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test1.Po@am__quote@ # am--include-marker
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test2.Po@am__quote@ # am--include-marker
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test3.Po@am__quote@ # am--include-marker
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test4-1.Po@am__quote@ # am--include-marker
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test4-2.Po@am__quote@ # am--include-marker
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test4-3.Po@am__quote@ # am--include-marker
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test4-4.Po@am__quote@ # am--include-marker
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tstuff.Po@am__quote@ # am--include-marker
+ 
+ $(am__depfiles_remade):
+ 	@$(MKDIR_P) $(@D)
+@@ -976,6 +1048,11 @@
+ 	-rm -f ./$(DEPDIR)/test1.Po
+ 	-rm -f ./$(DEPDIR)/test2.Po
+ 	-rm -f ./$(DEPDIR)/test3.Po
++	-rm -f ./$(DEPDIR)/test4-1.Po
++	-rm -f ./$(DEPDIR)/test4-2.Po
++	-rm -f ./$(DEPDIR)/test4-3.Po
++	-rm -f ./$(DEPDIR)/test4-4.Po
++	-rm -f ./$(DEPDIR)/tstuff.Po
+ 	-rm -f Makefile
+ distclean-am: clean-am distclean-compile distclean-generic \
+ 	distclean-local distclean-tags
+@@ -1025,6 +1102,11 @@
+ 	-rm -f ./$(DEPDIR)/test1.Po
+ 	-rm -f ./$(DEPDIR)/test2.Po
+ 	-rm -f ./$(DEPDIR)/test3.Po
++	-rm -f ./$(DEPDIR)/test4-1.Po
++	-rm -f ./$(DEPDIR)/test4-2.Po
++	-rm -f ./$(DEPDIR)/test4-3.Po
++	-rm -f ./$(DEPDIR)/test4-4.Po
++	-rm -f ./$(DEPDIR)/tstuff.Po
+ 	-rm -f Makefile
+ maintainer-clean-am: distclean-am maintainer-clean-generic
+ 
