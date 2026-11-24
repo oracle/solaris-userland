@@ -47,7 +47,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
      nsRFPService::PotentiallyDumpImage(
 --- firefox-153.5.0/dom/canvas/OffscreenCanvasDisplayHelper.cpp
 +++ firefox-153.5.0/dom/canvas/OffscreenCanvasDisplayHelper.cpp
-@@ -638,7 +638,8 @@ }
+@@ -657,7 +657,8 @@ }
    *aOutFormat = imgIEncoder::INPUT_FORMAT_HOSTARGB;
    *aOutImageSize = dataSurface->GetSize();
  
@@ -180,7 +180,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  #include "Tools.h"
  
  #ifdef CAIRO_HAS_QUARTZ_SURFACE
-@@ -193,6 +194,38 @@ data->Unmap();
+@@ -196,6 +197,38 @@ data->Unmap();
    data->Release();
  }
  
@@ -219,7 +219,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  static cairo_surface_t* CopyToImageSurface(unsigned char* aData,
                                             const IntSize& aSize,
                                             const IntRect& aRect,
-@@ -203,8 +236,15 @@ MOZ_ASSERT(aData);
+@@ -206,8 +239,15 @@ MOZ_ASSERT(aData);
    auto aRectWidth = aRect.Width();
    auto aRectHeight = aRect.Height();
  
@@ -236,7 +236,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    // In certain scenarios, requesting larger than 8k image fails.  Bug 803568
    // covers the details of how to run into it, but the full detailed
    // investigation hasn't been done to determine the underlying cause.  We
-@@ -224,14 +264,28 @@ cairo_surface_destroy(surf);
+@@ -227,14 +267,28 @@ cairo_surface_destroy(surf);
      return nullptr;
    }
  
@@ -273,7 +273,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    }
    cairo_surface_mark_dirty(surf);
    return surf;
-@@ -262,6 +316,16 @@ if (!aData || aStride < 0 || !IntRect(In
+@@ -265,6 +319,16 @@ if (!aData || aStride < 0 || !IntRect(In
      gfxWarning() << "DrawTargetCairo.CreateSubImageForData null aData";
      return nullptr;
    }
@@ -290,7 +290,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    unsigned char* data = aData + size_t(aRect.Y()) * size_t(aStride) +
                          size_t(aRect.X()) * size_t(BytesPerPixel(aFormat));
  
-@@ -1877,7 +1941,12 @@ if (!surf) {
+@@ -1878,7 +1942,12 @@ if (!surf) {
      return nullptr;
    }
  
@@ -304,7 +304,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
    cairo_surface_destroy(surf);
  
    return source_surf.forget();
-@@ -1935,7 +2004,11 @@ }
+@@ -1936,7 +2005,11 @@ }
  
    if (!cairo_surface_status(similar)) {
      RefPtr target = MakeRefPtr<DrawTargetCairo>();
@@ -317,7 +317,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
        return target.forget();
      }
    }
-@@ -2014,6 +2087,7 @@ cairo_rectangle(mContext, 0, 0, mSize.wi
+@@ -2015,6 +2088,7 @@ cairo_rectangle(mContext, 0, 0, mSize.wi
    cairo_clip(mContext);
  
    if (mFormat == SurfaceFormat::A8R8G8B8_UINT32 ||
@@ -325,7 +325,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
        mFormat == SurfaceFormat::R8G8B8A8) {
      SetPermitSubpixelAA(false);
    } else {
-@@ -2037,7 +2111,11 @@ // If we don't have a blur then we can u
+@@ -2038,7 +2112,11 @@ // If we don't have a blur then we can u
    // operations in graphics memory.
    if (aSigma == 0.0f || aFormat == SurfaceFormat::A8) {
      RefPtr target = MakeRefPtr<DrawTargetCairo>();
@@ -338,7 +338,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
        return target.forget();
      } else {
        return nullptr;
-@@ -2062,7 +2140,11 @@ cairo_tee_surface_add(tee, similar);
+@@ -2063,7 +2141,11 @@ cairo_tee_surface_add(tee, similar);
    cairo_surface_destroy(similar);
  
    RefPtr target = MakeRefPtr<DrawTargetCairo>();
@@ -351,7 +351,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
      return target.forget();
    }
    return nullptr;
-@@ -2084,9 +2166,13 @@ if (!Factory::CheckSurfaceSize(aSize)) {
+@@ -2085,9 +2167,13 @@ if (!Factory::CheckSurfaceSize(aSize)) {
      return false;
    }
  
@@ -367,7 +367,7 @@ native-Cairo-versus-WebRender-BGRA/BGRX split established here.
  }
  
  bool DrawTargetCairo::Init(unsigned char* aData, const IntSize& aSize,
-@@ -2094,7 +2180,7 @@ int32_t aStride, SurfaceFormat aFormat)
+@@ -2095,7 +2181,7 @@ int32_t aStride, SurfaceFormat aFormat)
    cairo_surface_t* surf = cairo_image_surface_create_for_data(
        aData, GfxFormatToCairoFormat(aFormat), aSize.width, aSize.height,
        aStride);

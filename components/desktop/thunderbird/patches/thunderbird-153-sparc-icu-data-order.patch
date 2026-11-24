@@ -1,0 +1,20 @@
+Generate big-endian ICU data before hashing the assembly input.
+
+The new icu_data_hashed.S generator runs during pre-compile.  The existing
+target-objects dependency is too late: pre-compile needs the converted data
+before entering the directory, because its generation rule lives in the
+top-level backend.  Reuse that rule and its host icupkg prerequisite.
+
+Required for Solaris SPARC; not submitted upstream.
+
+--- a/config/recurse.mk
++++ b/config/recurse.mk
+@@ -170,7 +170,7 @@
+ endif
+ 
+ ifeq ($(TARGET_ENDIANNESS),big)
+-config/external/icu/data/target-objects: config/external/icu/data/$(MDDEPDIR)/icudt$(MOZ_ICU_VERSION)b.dat.stub
++config/external/icu/data/target-objects config/external/icu/data/pre-compile: config/external/icu/data/$(MDDEPDIR)/icudt$(MOZ_ICU_VERSION)b.dat.stub
+ config/external/icu/data/$(MDDEPDIR)/icudt$(MOZ_ICU_VERSION)b.dat.stub: config/external/icu/icupkg/host
+ endif
+ 

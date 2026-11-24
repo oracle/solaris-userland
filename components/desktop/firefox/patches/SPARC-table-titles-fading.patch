@@ -2,7 +2,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1504834#c10
 
 --- firefox-153.2.0/gfx/2d/DrawTargetSkia.cpp
 +++ firefox-153.2.0/gfx/2d/DrawTargetSkia.cpp
-@@ -2185,6 +2185,14 @@ aBounds.IsEmpty() ? nullptr : &bounds, &
+@@ -2192,6 +2192,14 @@
        SkCanvas::kPreserveLCDText_SaveLayerFlag |
            (aCopyBackground ? SkCanvas::kInitWithPrevious_SaveLayerFlag : 0));
  
@@ -15,5 +15,5 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1504834#c10
 +  if (!aMask)
 +#endif
    mCanvas->saveLayer(saveRec);
+   mPushedLayers.back().mSaveCount = mCanvas->getSaveCount();
  
-   SetPermitSubpixelAA(aOpaque);
