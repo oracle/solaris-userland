@@ -1,0 +1,57 @@
+Fix GNU indent saved-comment buffer identification (Savannah bug 64751).
+
+Local Solaris correction; not an accepted upstream patch.
+https://savannah.gnu.org/bugs/?64751
+The maintainer's 2025-09-24 NUL-guard example explicitly leaves the
+cur_line/buf_ptr buffer-identity problem unresolved.
+
+search_brace() can move a brace ahead of saved comments and reset
+save_com.len without reducing the replay buffer's extent. Testing whether
+buf_ptr lies within save_com.ptr + save_com.len then misidentifies saved
+input as original input. current_column() scans from cur_line in the
+original allocation towards buf_ptr in the saved allocation, potentially
+reading past the original input. The membership test itself also compares
+pointers to unrelated objects.
+
+Use bp_save, the existing saved-input state: both sw_buffer() and the
+preprocessor-comment path set it when selecting save_com, and fill_buffer()
+clears it when restoring original input. While replaying, save_com.ptr,
+buf_ptr and buf_end refer to the same live allocation; save_com.end is
+reset, and save_com.len is not the replay bound. Otherwise cur_line and
+buf_ptr refer to the original input. Scanning to buf_ptr therefore stays
+within its input allocation, independent of allocation order and without
+relying on NUL termination. Use the same state for boxed comments.
+
+Preserve the column calculation and saved-comment start-column behavior,
+including tab, backspace, form-feed and newline handling.
+
+--- indent-2.2.13/src/code_io.c
++++ indent-2.2.13/src/code_io.c
+@@ -143,10 +143,10 @@
+     char *p;
+     int column;
+ 
+-    /* Use save_com.size here instead of save_com.end, because save_com is
+-     * already emptied at this point. */
+-  
+-    if ((buf_ptr >= save_com.ptr) && (buf_ptr <= save_com.ptr + save_com.len))
++    /* bp_save identifies saved input.  save_com.end has been reset and
++     * save_com.len may have been shortened when moving a brace.  cur_line
++     * still belongs to the original input, so do not use it for replay. */
++    if (bp_save != 0)
+     {
+         p = save_com.ptr;
+         column = save_com.start_column;
+--- indent-2.2.13/src/comments.c
++++ indent-2.2.13/src/comments.c
+@@ -164,8 +164,8 @@
+       line_preamble_length = 0;
+       visible_preamble = 0;
+ 
+-      /* If this comment is in the save buffer, trust it's start_column. */
+-      if ((buf_ptr >= save_com.ptr) && (buf_ptr <= save_com.ptr + save_com.len))
++      /* If this comment is in the save buffer, trust its start_column. */
++      if (bp_save != 0)
+       {
+           start_column = save_com.start_column;
+       }
