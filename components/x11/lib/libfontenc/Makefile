@@ -27,12 +27,12 @@ BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libfontenc
-COMPONENT_VERSION=	1.1.9
+COMPONENT_VERSION=	1.1.10
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9d8392705cb10803d5fe1d27d236cbab3f664e26841ce01916bbbe430cf273e2
+	sha256:daa186a49e3cc2b6fc585ca09971351e6f010f618abc6a164eda82e42e4aa4d6
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1613
-COMPONENT_BAID=		390329
+COMPONENT_BAID=		470049
 
 COMPONENT_NAME_1=	encodings
 COMPONENT_VERSION_1=	1.1.0
@@ -47,7 +47,10 @@ COMPONENT_BAID_1=	175859
 
 BUILD_STYLE=		meson
 
-TEST_TARGET = $(NO_TESTS)
+# Test harness requires being able to dlopen() the library from Python,
+# which we can't do for 32-bit since we don't ship 32-bit Python, so we
+# only run tests for 64-bit.
+TEST_TARGET = $(TEST_64)
 
 CONFIGURE_LIBDIR.32 = $(USRLIBDIR)/xorg
 CONFIGURE_LIBDIR.64 = $(USRLIBDIR)/xorg/$(MACH64)
@@ -81,6 +84,7 @@ configure:      $(BUILD_DIR_NO_ARCH)_1/.configured
 build:          $(BUILD_DIR_NO_ARCH)_1/.built
 install:        $(BUILD_DIR_NO_ARCH)_1/.installed
 
+CBE_PACKAGES += library/python/pytest
 CBE_PACKAGES += x11/header/x11-protocols
 
 REQUIRED_PACKAGES += library/zlib
