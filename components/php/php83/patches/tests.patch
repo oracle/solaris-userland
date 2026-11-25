@@ -7,6 +7,9 @@ It might be some general problem (need to be investigated). Similar but
 not the same issue:
 http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
 
+The FPM helper also needs the existing PHP 8.4/8.5 short socket fallback
+when both the workspace pathname and TMPDIR exceed the Unix socket limit.
+
 --- php-8.3.33/Zend/tests/arginfo_zpp_mismatch.phpt
 +++ php-8.3.33/Zend/tests/arginfo_zpp_mismatch.phpt
 @@ -4,6 +4,8 @@ --SKIPIF--
@@ -209,3 +212,18 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  ?>
  --CAPTURE_STDIO--
  STDOUT STDERR
+--- php-8.3.37/sapi/fpm/tests/tester.inc
++++ php-8.3.37/sapi/fpm/tests/tester.inc
+@@ -1320,6 +1320,12 @@
+                 return $tmpDirAddress;
+             }
+ 
++            $shortTmpAddress = '/tmp/' . $addressPart;
++
++            if (strlen($shortTmpAddress) <= 104) {
++                return $shortTmpAddress;
++            }
++
+             $srcRootAddress = dirname(__DIR__, 3) . '/' . $addressPart;
+ 
+             return $srcRootAddress;

@@ -4,24 +4,29 @@ The FPM test helper's existing temporary-directory fallback does not help
 when TMPDIR itself is a long path.  Use a hashed /tmp socket name as the
 final fallback.  Ensure a child PHP process that is deliberately given an
 empty environment does not load the build host's installed configuration.
+The no-INI child must also omit inherited arguments containing an explicit
+-c option.
+
+Allow enough FPM log space to retain the complete fatal-error backtrace
+when the source pathname is long; keep the full upstream error assertions.
 
 Will submit upstream.
 
 
 --- php-8.5.11/ext/standard/tests/file/bug60120.phpt
 +++ php-8.5.11/ext/standard/tests/file/bug60120.phpt
-@@ -14,7 +14,7 @@ if (PHP_OS_FAMILY === 'Windows') die('sk
- error_reporting(E_ALL);
+@@ -15,7 +15,7 @@ if (PHP_OS_FAMILY === 'Windows') die('sk
  
  $php = getenv('TEST_PHP_EXECUTABLE_ESCAPED');
--$cmd = $php . ' -r "\$in = file_get_contents(\'php://stdin\'); fwrite(STDOUT, \$in); fwrite(STDERR, \$in);"';
-+$cmd = $php . ' -n -r "\$in = file_get_contents(\'php://stdin\'); fwrite(STDOUT, \$in); fwrite(STDERR, \$in);"';
+ $args = getenv('TEST_PHP_EXTRA_ARGS');
+-$cmd = ' -r "\$in = file_get_contents(\'php://stdin\'); fwrite(STDOUT, \$in); fwrite(STDERR, \$in);"';
++$cmd = ' -n -r "\$in = file_get_contents(\'php://stdin\'); fwrite(STDOUT, \$in); fwrite(STDERR, \$in);"';
+ $cmd = join(' ', [$php, $args, $cmd]);
  $descriptors = array(array('pipe', 'r'), array('pipe', 'w'), array('pipe', 'w'));
  $stdin = str_repeat('*', 2049 );
- 
 --- php-8.5.11/sapi/fpm/tests/tester.inc
 +++ php-8.5.11/sapi/fpm/tests/tester.inc
-@@ -1315,6 +1315,12 @@ class Tester
+@@ -1318,6 +1318,12 @@ class Tester
                  return $tmpDirAddress;
              }
  
@@ -34,3 +39,27 @@ Will submit upstream.
              $srcRootAddress = dirname(__DIR__, 3) . '/' . $addressPart;
  
              return $srcRootAddress;
+--- php-8.5.13/ext/standard/tests/ini_info/php_ini_loaded_file.phpt
++++ php-8.5.13/ext/standard/tests/ini_info/php_ini_loaded_file.phpt
+@@ -7,8 +7,8 @@
+     $args = getenv('TEST_PHP_EXTRA_ARGS');
+     $code = '"var_dump(php_ini_loaded_file());"';
+ 
+-    // No ini file
+-    passthru("$php $args -n -r $code");
++    // No ini file: inherited test arguments may contain an explicit -c.
++    passthru("$php -n -r $code");
+ 
+     // Specified ini file
+     passthru("$php $args -c $inifile -r $code");
+--- php-8.5.13/sapi/fpm/tests/fatal-error-backtrace-request-reset.phpt
++++ php-8.5.13/sapi/fpm/tests/fatal-error-backtrace-request-reset.phpt
+@@ -10,6 +10,8 @@
+ $cfg = <<<EOT
+ [global]
+ error_log = {{FILE:LOG}}
++; Keep all stack frames when the test lives in a long workspace path.
++log_limit = 8192
+ [unconfined]
+ listen = {{ADDR}}
+ pm = static
