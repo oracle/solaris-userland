@@ -1,0 +1,31 @@
+40308154 Quagga 0.99.19 AS-path confederation use-after-free
+
+Backport of upstream Quagga commit:
+https://github.com/Quagga/quagga/commit/5552da8f9abd786fb76019135277003f489626d6
+Author: Paul Jakma <paul.jakma@hpe.com>
+Date: Fri, 17 Jun 2016 11:36:59 +0100
+Subject: bgpd: Fix use after free in aspath_prepend with confeds
+
+Confederation deletion can free the cached head segment and leave an empty
+path.  Reload the head and handle an empty result before comparing types
+or merging segments.  Refreshed against Oracle's Quagga 0.99.19 source;
+comments and whitespace follow the component's existing style.
+
+--- bgpd/bgp_aspath.c
++++ bgpd/bgp_aspath.c
+@@ -1227,6 +1227,15 @@
+   if (seg1->type == AS_SEQUENCE && seg2->type == AS_CONFED_SEQUENCE)
+     as2 = aspath_delete_confed_seq (as2);
+ 
++  /* Confederation deletion may have freed the original head segment. */
++  seg2 = as2->segments;
++  if (seg2 == NULL)
++    {
++      as2->segments = assegment_dup_all (as1->segments);
++      aspath_str_update (as2);
++      return as2;
++    }
++
+   /* Compare last segment type of as1 and first segment type of as2. */
+   if (seg1->type != seg2->type)
+     return aspath_merge (as1, as2);
