@@ -1,0 +1,115 @@
+From ae3860b718d8fa88f72258e1e7634fc859e9930e Mon Sep 17 00:00:00 2001
+From: Peter Steinberger <steipete@gmail.com>
+Date: Tue, 22 Sep 2026 14:40:04 -0700
+Subject: [PATCH] fix(unix): preserve parent fds during spawn remapping
+
+
+Upstream: https://github.com/libuv/libuv/commit/ae3860b718d8fa88f72258e1e7634fc859e9930e
+Import the regression test. The Solaris fork/exec path from PR 5465
+preserves the parent descriptors that this test checks.
+
+--- a/test/test-list.h
++++ b/test/test-list.h
+@@ -352,6 +352,7 @@
+ TEST_DECLARE   (spawn_stdin)
+ TEST_DECLARE   (spawn_stdio_socket_buffer_size)
+ TEST_DECLARE   (spawn_stdio_greater_than_3)
++TEST_DECLARE   (spawn_stdio_high_fd)
+ TEST_DECLARE   (spawn_ignored_stdio)
+ TEST_DECLARE   (spawn_and_kill)
+ TEST_DECLARE   (spawn_detached)
+@@ -1074,6 +1075,9 @@
+   TEST_ENTRY  (spawn_stdio_socket_buffer_size)
+ #endif
+   TEST_ENTRY  (spawn_stdio_greater_than_3)
++#ifndef _WIN32
++  TEST_ENTRY  (spawn_stdio_high_fd)
++#endif
+   TEST_ENTRY  (spawn_ignored_stdio)
+   TEST_ENTRY  (spawn_and_kill)
+   TEST_ENTRY  (spawn_detached)
+--- a/test/test-spawn.c
++++ b/test/test-spawn.c
+@@ -782,6 +782,56 @@
+   MAKE_VALGRIND_HAPPY(uv_default_loop());
+   return 0;
+ }
++
++
++#ifndef _WIN32
++TEST_IMPL(spawn_stdio_high_fd) {
++  uv_stdio_container_t* stdio;
++  uv_pipe_t pipe;
++  char fd_arg[32];
++  int sentinel;
++  int flags;
++  int fd;
++
++  init_process_options("spawn_helper5", exit_cb);
++  ASSERT_OK(uv_pipe_init(uv_default_loop(), &pipe, 0));
++
++  fd = open("/dev/null", O_RDONLY | O_NONBLOCK);
++  ASSERT_GE(fd, 0);
++  sentinel = fcntl(fd, F_DUPFD, 64);
++  ASSERT_GE(sentinel, 64);
++  ASSERT_OK(close(fd));
++  flags = fcntl(sentinel, F_GETFL);
++  ASSERT_GE(flags, 0);
++
++  stdio = calloc(sentinel, sizeof(*stdio));
++  ASSERT_NOT_NULL(stdio);
++  stdio[sentinel - 1].flags = UV_CREATE_PIPE | UV_WRITABLE_PIPE;
++  stdio[sentinel - 1].data.stream = (uv_stream_t*) &pipe;
++  options.stdio = stdio;
++  options.stdio_count = sentinel;
++  snprintf(fd_arg, sizeof(fd_arg), "%d", sentinel - 1);
++  args[2] = fd_arg;
++  args[3] = "ignored";
++
++  /* The child must move the low pipe fd aside before mapping it to the high
++   * stdio slot. That temporary child fd must not affect the parent. */
++  ASSERT_OK(uv_spawn(uv_default_loop(), &process, &options));
++  ASSERT_EQ(flags, fcntl(sentinel, F_GETFL));
++  ASSERT_OK(close(sentinel));
++  free(stdio);
++
++  /* EOF also proves that the parent closed its copy of the child endpoint. */
++  ASSERT_OK(uv_read_start((uv_stream_t*) &pipe, on_alloc, on_read));
++  ASSERT_OK(uv_run(uv_default_loop(), UV_RUN_DEFAULT));
++  ASSERT_EQ(1, exit_cb_called);
++  ASSERT_EQ(2, close_cb_called);
++  ASSERT_OK(strcmp("fourth stdio!\n", output));
++
++  MAKE_VALGRIND_HAPPY(uv_default_loop());
++  return 0;
++}
++#endif
+ 
+ 
+ int spawn_tcp_server_helper(void) {
+--- a/test/run-tests.c
++++ b/test/run-tests.c
+@@ -160,19 +160,20 @@
+ 
+   if (strcmp(argv[1], "spawn_helper5") == 0) {
+     const char out[] = "fourth stdio!\n";
++    int fd = argc > 2 ? atoi(argv[2]) : 3;
+     notify_parent_process();
+     {
+ #ifdef _WIN32
+       DWORD bytes;
+-      WriteFile((HANDLE) _get_osfhandle(3), out, sizeof(out) - 1, &bytes, NULL);
++      WriteFile((HANDLE) _get_osfhandle(fd), out, sizeof(out) - 1, &bytes, NULL);
+ #else
+       ssize_t r;
+ 
+       do
+-        r = write(3, out, sizeof(out) - 1);
++        r = write(fd, out, sizeof(out) - 1);
+       while (r == -1 && errno == EINTR);
+ 
+-      fsync(3);
++      fsync(fd);
+ #endif
+     }
+     return 1;
