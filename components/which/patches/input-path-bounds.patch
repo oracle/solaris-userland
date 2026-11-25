@@ -1,0 +1,49 @@
+Complete the input and path bounds checks in GNU which 2.25.
+
+The upstream empty/NUL-leading input fix (9fcba83482638146cd9e41ba59eea0bacdd93660)
+leaves short nonempty function-input lines able to read before buf.  Require
+room for both preceding characters and pass an unsigned character to isspace.
+
+The upstream path-cleanup fix (9a46edbb3c30c70668d6cf60fdc6a09c3ff2f24c)
+does not bound the original-path copy when walking above the root.  Check
+that copy and avoid forming a pointer before the result array.  Keep the
+existing original-path fallback and error diagnostic.
+
+Source: https://cgit.git.savannah.gnu.org/cgit/which.git/
+Solaris follow-up; submitted to upstream via:
+https://lists.gnu.org/archive/html/which-bugs/2026-11/msg00001.html
+
+--- a/which.c
++++ b/which.c
+@@ -282,11 +282,17 @@
+       int cnt = 0;
+       do
+       {
+-        if (--p2 < result)
+-        {
++        if (p2 == result)
++        {
++          if (strlen(path) >= sizeof(result))
++          {
++            fprintf(stderr, "Can't create full path\n");
++            exit(-1);
++          }
+           strcpy(result, path);
+           return result;
+         }
++        --p2;
+         if (IS_DIRSEP(*p2))
+           ++cnt;
+       }
+@@ -639,9 +645,9 @@
+         if (buf[0] == '\0')
+           continue;
+         char *p = buf + strlen(buf) - 1;
+-        while (isspace(*p) && p > buf + 2)
++        while (p > buf + 2 && isspace((unsigned char) *p))
+           --p;
+-        if (*p == ')' && p[-1] == '(' && p[-2] == ' ')
++        if (p >= buf + 2 && *p == ')' && p[-1] == '(' && p[-2] == ' ')
+         {
+           looks_like_function_start = 1;
+           function_start_has_declare = (STRNCMP("declare -", buf, 9) == 0);
