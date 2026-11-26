@@ -42,8 +42,9 @@ include $(WS_MAKE_RULES)/common.mk
 
 PKG_PROTO_DIRS += $(BUILD_DIR_64)
 
-# Needed to make the tests work, now we use configure.mk not justmake.mk.
-COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
+# Tests need source files in the build tree.  Copy them so the test tarball
+# contains their contents and does not hit tar's symbolic-link length limit.
+COMPONENT_PRE_CONFIGURE_ACTION = $(CP) -rp $(SOURCE_DIR)/. $(@D)
 
 # Userland default includes -mt which links with libthread which we don't need.
 studio_MT =
@@ -62,15 +63,24 @@ COMPONENT_PRE_TEST_ACTION = \
 COMPONENT_PRE_SYSTEM_TEST_ACTION = \
 	(cd $(@D)/src; tar cvf pixz-test-tarball.tar  *.c *.o)
 
+# du reports filesystem allocation, which varies with filesystem compression.
+# Keep the archive names and content digests, but normalize allocated sizes.
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^real/d" ' \
 	'-e "/^user/d" ' \
-	'-e "/^sys/d" '
+	'-e "/^sys/d" ' \
+	'-e "s|^[0-9][0-9.]*[KMGTPEZY]*[[:space:]]src/pixz-test-tarball[.]tar$$|SIZE src/pixz-test-tarball.tar|" ' \
+	'-e "s|^[0-9][0-9.]*[KMGTPEZY]*[[:space:]]test[.]tpxz$$|SIZE test.tpxz|" ' \
+	'-e "s|^[0-9][0-9.]*[KMGTPEZY]*[[:space:]]test[.]txz$$|SIZE test.txz|" '
 
 COMPONENT_TEST_ENV =		PATH=$(GNUBIN):$(PATH)
 COMPONENT_TEST_CMD =		$(SOURCE_DIR)/test.sh
 COMPONENT_TEST_ARGS =		src/pixz-test-tarball.tar pixz.c
 COMPONENT_TEST_TARGETS =
+
+# Also run the upstream Automake suite, including the small-stream regression.
+COMPONENT_POST_TEST_ACTION = \
+	(cd $(@D)/test; $(ENV) $(COMPONENT_TEST_ENV) $(GMAKE) check)
 
 COMPONENT_SYSTEM_TEST_ENV =	PATH=$(GNUBIN):$(PATH)
 COMPONENT_SYSTEM_TEST_ENV +=	PIXZ_BIN=$(USRBINDIR)/pixz

@@ -1,0 +1,42 @@
+From 9c3aab2f5da19959e9aa89f9d2c9fe02598a145e Mon Sep 17 00:00:00 2001
+From: Scott McCaskill <scott.mccaskill@gmail.com>
+Date: Mon, 29 Aug 2022 14:48:44 -0500
+Subject: [PATCH] Bug fix for segfault
+
+In read_thread(), in the "Do we need this block?" block, it failed
+to advance to the next wanted_t when w->end is exactly equal to uend.
+
+In the particular case I looked at, this resulted in read_thread()
+erroneously putting two blocks into the queue (pipeline_split(),
+read.c:570) instead of one.
+
+This resulted in a subsequent crash in tar_read() at read.c:660,
+where gArWanted was null (when clearly the code does not expect it
+to be null at that point).
+
+My use case:
+
+I have several hundred large .tar.xz files (created by pixz). Each
+archive contains over 200k files. I frequently need to extract a lot
+of files from each archive, but not all files, only a specific subset.
+So I am making heavy use of the -x option to pixz.
+
+Upstream: https://github.com/vasi/pixz/commit/9c3aab2f5da19959e9aa89f9d2c9fe02598a145e
+
+---
+ src/read.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/read.c b/src/read.c
+index 12b9d14..43f721d 100644
+--- a/src/read.c
++++ b/src/read.c
+@@ -536,7 +536,7 @@ static void read_thread(void) {
+                 debug("read: skip %llu", iter.block.number_in_file);
+                 continue;
+             }
+-            for ( ; w && w->end < uend; w = w->next) ;
++            for ( ; w && w->end <= uend; w = w->next) ;
+         }
+         debug("read: want %llu", iter.block.number_in_file);
+         

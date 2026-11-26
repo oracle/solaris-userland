@@ -1,0 +1,128 @@
+From 1aeb09b868dcac05830c513c02dcbe587d3f44e1 Mon Sep 17 00:00:00 2001
+From: Dave Vasilevsky <dave@vasilevsky.ca>
+Date: Sun, 15 Nov 2020 17:40:43 -0500
+Subject: [PATCH] fix decompressing concatenated small files
+
+
+Upstream: https://github.com/vasi/pixz/commit/1aeb09b868dcac05830c513c02dcbe587d3f44e1
+
+---
+ src/read.c                       | 38 +++++++++++++++++++++++---------
+ test/Makefile.am                 |  3 ++-
+ test/concatenated-small-files.sh | 18 +++++++++++++++
+ 3 files changed, 48 insertions(+), 11 deletions(-)
+ create mode 100755 test/concatenated-small-files.sh
+
+diff --git a/src/read.c b/src/read.c
+index 2fdfb6d..12b9d14 100644
+--- a/src/read.c
++++ b/src/read.c
+@@ -74,7 +74,7 @@ typedef enum {
+ static rbuf_read_status rbuf_read(size_t bytes);
+ static bool rbuf_cycle(lzma_stream *stream, bool start, size_t skip);
+ static void rbuf_consume(size_t bytes);
+-static void rbuf_dispatch(void);
++static void rbuf_dispatch(size_t bytes);
+ 
+ static bool read_header(lzma_check *check);
+ static bool read_block(bool force_stream, lzma_check check, off_t uoffset);
+@@ -300,13 +300,18 @@ static void block_capacity(io_block_t *ib, size_t incap, size_t outcap) {
+ 	}
+ }
+ 
++// Get the next rbuf from the pipeline, and put it in gRbuf
++static void rbuf_from_pipeline(void) {
++    queue_pop(gPipelineStartQ, (void**)&gRbufPI);
++    gRbuf = (io_block_t*)(gRbufPI->data);
++    gRbuf->insize = gRbuf->outsize = 0;
++}
++
+ // Ensure at least this many bytes available
+ // Return 1 on success, zero on EOF, -1 on error
+ static rbuf_read_status rbuf_read(size_t bytes) {
+ 	if (!gRbufPI) {
+-        queue_pop(gPipelineStartQ, (void**)&gRbufPI);
+-		gRbuf = (io_block_t*)(gRbufPI->data);
+-		gRbuf->insize = gRbuf->outsize = 0;
++        rbuf_from_pipeline();
+ 	}
+ 	
+ 	if (gRbuf->insize >= bytes)
+@@ -339,10 +344,22 @@ static void rbuf_consume(size_t bytes) {
+ 	gRbuf->insize -= bytes;
+ }
+ 
+-static void rbuf_dispatch(void) {
+-	pipeline_split(gRbufPI);
+-	gRbufPI = NULL;
+-	gRbuf = NULL;
++static void rbuf_dispatch(size_t total_size) {
++    pipeline_item_t *prev_pi = gRbufPI;
++    if (gRbuf->insize > total_size) {
++        // We have extra data, get a place for it to live
++        io_block_t *prev_rbuf = gRbuf;
++        rbuf_from_pipeline();
++        size_t extra = prev_rbuf->insize - total_size;
++        block_capacity(gRbuf, extra, 0);
++        memcpy(gRbuf->input, prev_rbuf->input + total_size, extra);
++        gRbuf->insize = extra;
++    } else {
++        gRbufPI = NULL;
++        gRbuf = NULL;
++    }
++
++	pipeline_split(prev_pi);
+ }
+ 
+ 
+@@ -390,9 +407,10 @@ static bool read_block(bool force_stream, lzma_check check, off_t uoffset) {
+ 		gRbuf->check = check;
+ 		gRbuf->btype = BLOCK_SIZED;
+ 		
+-		if (rbuf_read(lzma_block_total_size(&block)) != RBUF_FULL)
++        size_t total_size = lzma_block_total_size(&block);
++		if (rbuf_read(total_size) != RBUF_FULL)
+ 			die("Error reading block contents");
+-		rbuf_dispatch();
++		rbuf_dispatch(total_size);
+ 	}
+ 	return true;
+ }
+diff --git a/test/Makefile.am b/test/Makefile.am
+index 3ed2f87..a3e9b1c 100644
+--- a/test/Makefile.am
++++ b/test/Makefile.am
+@@ -2,7 +2,8 @@ TESTS = \
+ 	compress-file-permissions.sh \
+ 	cppcheck-src.sh \
+ 	single-file-round-trip.sh \
+-	xz-compatibility-c-option.sh
++	xz-compatibility-c-option.sh \
++	concatenated-small-files.sh
+ 
+ EXTRA_DIST = $(TESTS)
+ 
+diff --git a/test/concatenated-small-files.sh b/test/concatenated-small-files.sh
+new file mode 100755
+index 0000000..cc680e0
+--- /dev/null
++++ b/test/concatenated-small-files.sh
+@@ -0,0 +1,18 @@
++#!/bin/sh
++
++PIXZ=../src/pixz
++
++F1=$(mktemp)
++F2=$(mktemp)
++EXPECTED=$(mktemp)
++ACTUAL=$(mktemp)
++trap "rm -f $F1 $F2 $EXPECTED $ACTUAL" EXIT
++
++echo foo >> $EXPECTED
++echo foo | $PIXZ > $F1
++echo bar >> $EXPECTED
++echo bar | $PIXZ > $F2
++
++cat $F1 $F2 | $PIXZ -d > $ACTUAL
++
++cmp $ACTUAL $EXPECTED
