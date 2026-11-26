@@ -30,57 +30,75 @@ CTF_MODE =		off	# Has no effect
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		librsvg
-COMPONENT_VERSION=	2.56.3
+COMPONENT_VERSION=	2.63.2
 COMPONENT_MAJOR_MINOR=	$(basename $(COMPONENT_VERSION))
-COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/LibRsvg
+COMPONENT_PROJECT_URL=	https://gitlab.gnome.org/GNOME/librsvg
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5a328048a02d014645cd27f61140f4e0b11280fb2c7f2a21864fe0c59ac1ce88
+    sha256:852b18e1a00b8605528825a27dc7748bff2a5dd254028f59dc22a34ea57e81b6
 
 # hash for vendored sources
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:9a72d8d100d362c47b81ad173b1da09e2bf674a79f9439d9f2c436b1f31c7e7e
+    sha256:3e0419fa100a469d60d67b63c319546515cecb6e79d6bd4ebed59bbab74962a5
 
 COMPONENT_BUGDB=        library/librsvg
 COMPONENT_ANITYA_ID=	5420
 
-COMPONENT_BAID=		147811
+COMPONENT_BAID=		446643
+
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/cargo-vendored.mk
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_OPTIONS += --disable-Bsymbolic
-CONFIGURE_OPTIONS += --disable-static
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-vala
+CONFIGURE_OPTIONS += -Dintrospection=enabled
+CONFIGURE_OPTIONS += -Dpixbuf=enabled
+CONFIGURE_OPTIONS += -Dpixbuf-loader=enabled
+CONFIGURE_OPTIONS += -Dvala=enabled
+CONFIGURE_OPTIONS += -Ddocs=disabled
+CONFIGURE_OPTIONS += -Davif=disabled
 
-# Requires a reconf due to patch to configure.ac.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+# g-ir-scanner links a temporary executable from non-PIC objects.
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
+# Upstream commit 55a08a2 refreshed this reference for Pango 1.58.2's
+# text-decoration rendering.  Solaris Pango 1.56.4 produces the previous
+# upstream image exactly on both architectures.  Remove this override when
+# Solaris Pango is updated to match the upstream test environment.
+COMPONENT_PREP_ACTION += \
+	$(CP) files/text-text-03-b-ref-pango-1.56.png \
+	    $(SOURCE_DIR)/rsvg/tests/fixtures/reftests/svg1.1/text-text-03-b-ref.png;
 
 COMPONENT_PRE_BUILD_ACTION += $(VENDORED_SOURCES_ENFORCE)
 COMPONENT_BUILD_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 COMPONENT_INSTALL_ENV += CARGO_HOME=$(COMPONENT_DIR)/build/.cargo
 
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/^[mM]ake/d" ' \
-        '-e "s/;[[:space:]]finished[[:space:]].*//" ' \
-        '-e "/test result/p" ' \
+# Upstream builds its man page with the optional API documentation.  Keep
+# the man page and the existing documentation when gi-docgen is unavailable.
+COMPONENT_POST_INSTALL_ACTION += \
+	$(MKDIR) $(PROTO_DIR)/usr/share/man/man1 $(PROTO_DIR)/usr/share/doc/librsvg; \
+	/usr/bin/rst2man $(SOURCE_DIR)/rsvg-convert.rst > \
+	    $(PROTO_DIR)/usr/share/man/man1/rsvg-convert.1; \
+	$(CP) $(SOURCE_DIR)/README.md $(SOURCE_DIR)/code-of-conduct.md \
+	    $(PROTO_DIR)/usr/share/doc/librsvg;
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH64).master
 
 CBE_PACKAGES += developer/rust/cargo
 CBE_PACKAGES += developer/rust/rustc
+CBE_PACKAGES += developer/documentation-tool/docutils
 CBE_PACKAGES += developer/vala
 CBE_PACKAGES += library/desktop/gobject/gobject-introspection
 CBE_PACKAGES += system/library/fontconfig
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
+REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

@@ -1,0 +1,110 @@
+Solaris needs libsocket at link time, but it has no pkg-config module.
+Put it in Libs.private so librsvg-2.0.pc and the GDK Pixbuf loader build.
+The Solaris linker requires GNU version-script compatibility.  Build the
+static C library with Cargo directly so the gate needs no cargo-cbuild tool.
+Use cargo rustc for the installed converter to add PIE without making the
+g-ir-scanner temporary executable PIE.
+
+--- a/meson.build
++++ b/meson.build
+@@ -25,7 +25,9 @@
+ cargo_cbuild_version = '0.10.10'
+ cargo = find_program('cargo', version:'>= @0@'.format(msrv))
+ cargo_wrapper = find_program('meson/cargo_wrapper.py', native: true)
+-cargo_c = find_program('cargo-cbuild', version:'>= @0@'.format(cargo_cbuild_version)) # https://github.com/lu-zero/cargo-c
++if host_system != 'sunos'
++  cargo_c = find_program('cargo-cbuild', version:'>= @0@'.format(cargo_cbuild_version)) # https://github.com/lu-zero/cargo-c
++endif
+ rustc = find_program('rustc', version:'>= @0@'.format(msrv))
+ makedef = find_program('meson/makedef.py', native: true)
+ 
+@@ -378,7 +380,7 @@
+ endif
+ 
+ private_libraries += [m_dep]
+-private_dependencies += network_deps
++private_libraries += network_deps
+ # appleframeworks cannot be exposed to pkg-config
+ library_dependencies += foundation_dep
+ library_dependencies += other_library_dependencies
+--- a/rsvg/meson.build
++++ b/rsvg/meson.build
+@@ -83,17 +83,25 @@
+   'src/xml/xml2.rs',
+ )
+ 
++if host_system == 'sunos'
++  rust_library_name = 'liblibrsvg_c.a'
++  rust_build_command = 'build'
++else
++  rust_library_name = '@0@rsvg_@1@.@2@'.format(lib_prefix, librsvg_api_major, ext_static)
++  rust_build_command = 'cbuild'
++endif
++
+ rust_artifacts = custom_target(
+   'librsvg-2',
+   build_by_default: true,
+-  output: '@0@rsvg_@1@.@2@'.format(lib_prefix, librsvg_api_major, ext_static),
++  output: rust_library_name,
+   console: true,
+   depend_files: library_sources + librsvg_c_sources,
+   env: extra_env,
+   command: [
+     cargo_wrapper,
+     cargo_wrapper_args,
+-    '--command=cbuild',
++    '--command=' + rust_build_command,
+     '--current-build-dir', '@OUTDIR@',
+     '--current-source-dir', meson.current_source_dir(),
+     '--packages', 'librsvg-c',
+@@ -172,6 +180,8 @@
+   vflag = '-Wl,-exported_symbols_list,@0@'.format(version_script)
+ elif host_system in ['windows', 'cygwin']
+   vflag = []
++elif host_system == 'sunos'
++  vflag = '-Wl,-z,gnu-version-script-compat,--version-script,@0@'.format(version_script)
+ else
+   vflag = '-Wl,--version-script,@0@'.format(version_script)
+ endif
+--- a/librsvg-c/Cargo.toml
++++ b/librsvg-c/Cargo.toml
+@@ -29,6 +29,9 @@
+ capi = ["librsvg/capi"]
+ pixbuf = ["dep:gdk-pixbuf"]
+ 
++[lib]
++crate-type = ["rlib", "staticlib"]
++
+ [package.metadata.capi]
+ min_version = "0.10.10"
+ 
+--- a/meson/cargo_wrapper.py
++++ b/meson/cargo_wrapper.py
+@@ -137,6 +137,7 @@
+ ]
+ 
+ cargo_cmd = [Path(args.cargo).as_posix()]
++solaris_pie_binary = args.command == 'build' and args.bin and sys.platform.startswith('sunos')
+ 
+ if args.toolchain_version is not None:
+     if args.build_triplet is not None:
+@@ -158,7 +159,9 @@
+         # https://github.com/rust-lang/cargo/issues/2911
+         features.extend(["capi", "test-utils"])
+ else:
+-    cargo_cmd.extend(["build", "--locked"])
++    # The installed converter must be PIE, while g-ir-scanner needs a non-PIE
++    # temporary executable on Solaris.  Apply the linker flag only to this bin.
++    cargo_cmd.extend(["rustc" if solaris_pie_binary else "build", "--locked"])
+     if args.bin:
+         cargo_cmd.extend(["--bin", args.bin])
+ 
+@@ -188,6 +191,8 @@
+ 
+ if args.command == "test":
+     cargo_cmd.extend(["--", "--include-ignored"])
++elif solaris_pie_binary:
++    cargo_cmd.extend(["--", "-C", "link-arg=-ztype=pie"])
+ 
+ k = {k: v for k, v in env.items() if k.startswith('CARGO_PROFILE')}
+ print(f"command: {cargo_cmd}, env: {k}")
