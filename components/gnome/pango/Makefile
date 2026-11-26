@@ -30,14 +30,14 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pango
-COMPONENT_VERSION=	1.56.4
+COMPONENT_VERSION=	1.58.2
 COMPONENT_PROJECT_URL=	http://www.pango.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:17065e2fcc5f5a5bdbffc884c956bfc7c451a96e8c4fb2f8ad837c6413cb5a01
+    sha256:342385b6ca3b7c73455d7c80a13b7dbe4489e00bc3bd4c5bd6ed4dce421e374a
 COMPONENT_BUGDB=	gnome/pango
 COMPONENT_ANITYA_ID=	11783
 
-COMPONENT_BAID=		342341
+COMPONENT_BAID=		465564
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -66,14 +66,9 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libpangox-1.0.3lib \
                 $(PROTO_DIR)/usr/share/man/man3lib/libpangox-1.0.3lib; \
 
-# cp boundaries.utf8 to tests directory in the build area
-COMPONENT_PRE_TEST_ACTION += cp $(SOURCE_DIR)/tests/boundaries.utf8 \
-	  $(BUILD_DIR_$(BITS))/tests/
-COMPONENT_TEST_TARGETS += ; cd tests; ./cxx-test; ./markup-parse; \
-        ./test-break; ./test-converage; ./test-font ; ./test-ot-tags; \
-        ./testboundaries; ./testcolor; ./testiter; ./testscript; \
-	./test-ellipsize; ./test-harfbuzz; ./test-itemize; ./test-layout; \
-	./test-pangocairo-threads; ./test-shape; ./testmisc; ./testattributes;
+# Run the complete upstream Meson test suite.
+# Solaris lazy loading can defer GObject constructors until worker threads run.
+COMPONENT_TEST_ENV += LD_NOLAZYLOAD=1
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
         '-e "s/[0-9]* subtests passed/x subtests passed/"'
