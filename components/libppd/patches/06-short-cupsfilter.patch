@@ -1,0 +1,15 @@
+Check cupsFilter value length before comparing its texttotext suffix.
+Source: https://github.com/OpenPrinting/libppd/commit/cec1462aa8686afa6dd3914043502e060acb46f0
+
+--- a/ppd/ppd-ipp.c
++++ b/ppd/ppd-ipp.c
+@@ -531,7 +531,8 @@
+ 	continue;
+ 
+       // Is the PPD file using the "texttotext" filter?
+-      if (strcmp(buf + strlen(buf) - 10, "texttotext") == 0)
++      if (strlen(buf) >= 10 &&
++	  strcmp(buf + strlen(buf) - 10, "texttotext") == 0)
+ 	is_texttotext = 1;
+ 
+       // Separate the first word

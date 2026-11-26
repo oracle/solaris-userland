@@ -1,0 +1,51 @@
+Validate custom page-size parameter types before accessing their value union.
+Source: https://github.com/OpenPrinting/libppd/commit/758c24e0adda656b40dd604ae2a552df82db6738
+
+--- a/ppd/ppd-page.c
++++ b/ppd/ppd-page.c
+@@ -121,10 +121,12 @@
+ 
+       if ((coption = ppdFindCustomOption(ppd, "PageSize")) != NULL)
+       {
+-        if ((cparam = ppdFindCustomParam(coption, "Width")) != NULL)
++        if ((cparam = ppdFindCustomParam(coption, "Width")) != NULL &&
++            cparam->type == PPD_CUSTOM_POINTS)
+ 	  cparam->current.custom_points = (float)w;
+ 
+-        if ((cparam = ppdFindCustomParam(coption, "Height")) != NULL)
++        if ((cparam = ppdFindCustomParam(coption, "Height")) != NULL &&
++            cparam->type == PPD_CUSTOM_POINTS)
+ 	  cparam->current.custom_points = (float)l;
+       }
+ 
+--- a/ppd/ppd.c
++++ b/ppd/ppd.c
+@@ -1105,6 +1105,28 @@
+       }
+ 
+       //
++      // Custom page sizes use Width, Height, WidthOffset, and HeightOffset
++      // as points and Orientation as an integer, so reject any other type
++      // before the values are used through the wrong union member.  Compare
++      // case-insensitively, as ppdFindCustomOption() and ppdFindCustomParam()
++      // do...
++      //
++
++      if (!_ppd_strcasecmp(coption->keyword, "PageSize") &&
++          (((!_ppd_strcasecmp(name, "Width") ||
++             !_ppd_strcasecmp(name, "Height") ||
++             !_ppd_strcasecmp(name, "WidthOffset") ||
++             !_ppd_strcasecmp(name, "HeightOffset")) &&
++            cparam->type != PPD_CUSTOM_POINTS) ||
++           (!_ppd_strcasecmp(name, "Orientation") &&
++            cparam->type != PPD_CUSTOM_INT)))
++      {
++        pg->ppd_status = PPD_BAD_CUSTOM_PARAM;
++
++	goto error;
++      }
++
++      //
+       // Now special-case for CustomPageSize...
+       //
+ 

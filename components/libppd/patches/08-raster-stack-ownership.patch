@@ -1,0 +1,33 @@
+Copy stack objects before a push can reallocate their backing storage.
+Source: https://github.com/OpenPrinting/libppd/commit/9cf7a3e62129ef58480d85ce5210f87b21326208
+
+--- a/ppd/raster-interpret.c
++++ b/ppd/raster-interpret.c
+@@ -885,7 +885,10 @@
+ 
+   while (c > 0)
+   {
+-    if (!ppd_push_stack(st, st->objs + n))
++    _ppd_ps_obj_t	temp;		// Temporary copy of object
++
++    temp = st->objs[n];
++    if (!ppd_push_stack(st, &temp))
+       return (-1);
+ 
+     n ++;
+@@ -1032,10 +1035,14 @@
+ ppd_index_stack(_ppd_ps_stack_t *st,	// I - Stack
+             int              n)		// I - Object index
+ {
++  _ppd_ps_obj_t	temp;		// Temporary copy of object
++
++
+   if (n < 0 || (n = st->num_objs - n - 1) < 0)
+     return (NULL);
+ 
+-  return (ppd_push_stack(st, st->objs + n));
++  temp = st->objs[n];
++  return (ppd_push_stack(st, &temp));
+ }
+ 
+ 

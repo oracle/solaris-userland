@@ -1,0 +1,55 @@
+Validate the four IPP default attributes before using string values.
+Source: https://github.com/OpenPrinting/libppd/commit/522af8dd135f4dde66b1aac8b9d067808bbe122d
+
+--- a/ppd/ppd-generator.c
++++ b/ppd/ppd-generator.c
+@@ -405,8 +405,11 @@
+   cupsFilePrintf(fp, "*ShortNickName: \"%s %s\"\n", make, model);
+ 
+   // Which is the default output bin?
+-  if ((attr = ippFindAttribute(supported, "output-bin-default", IPP_TAG_ZERO))
+-      != NULL)
++  if ((attr = ippFindAttribute(supported, "output-bin-default",
++			       IPP_TAG_ZERO)) != NULL &&
++      (ippGetValueTag(attr) == IPP_TAG_NAME ||
++       ippGetValueTag(attr) == IPP_TAG_NAMELANG ||
++       ippGetValueTag(attr) == IPP_TAG_KEYWORD))
+     defaultoutbin = strdup(ippGetString(attr, 0, NULL));
+   // Find out on which position of the list of output bins the default one is,
+   // if there is no default bin, take the first of this list
+@@ -2450,7 +2453,10 @@
+     //
+ 
+     if ((attr = ippFindAttribute(supported, "print-content-optimize-default",
+-				 IPP_TAG_ZERO)) != NULL)
++				 IPP_TAG_ZERO)) != NULL &&
++	(ippGetValueTag(attr) == IPP_TAG_NAME ||
++	 ippGetValueTag(attr) == IPP_TAG_NAMELANG ||
++	 ippGetValueTag(attr) == IPP_TAG_KEYWORD))
+       strlcpy(ppdname, ippGetString(attr, 0, NULL), sizeof(ppdname));
+     else
+       strlcpy(ppdname, "auto", sizeof(ppdname));
+@@ -2487,7 +2493,10 @@
+     //
+ 
+     if ((attr = ippFindAttribute(supported, "print-rendering-intent-default",
+-				 IPP_TAG_ZERO)) != NULL)
++				 IPP_TAG_ZERO)) != NULL &&
++	(ippGetValueTag(attr) == IPP_TAG_NAME ||
++	 ippGetValueTag(attr) == IPP_TAG_NAMELANG ||
++	 ippGetValueTag(attr) == IPP_TAG_KEYWORD))
+       strlcpy(ppdname, ippGetString(attr, 0, NULL), sizeof(ppdname));
+     else
+       strlcpy(ppdname, "auto", sizeof(ppdname));
+@@ -2527,7 +2536,10 @@
+     //
+ 
+     if ((attr = ippFindAttribute(supported, "print-scaling-default",
+-				 IPP_TAG_ZERO)) != NULL)
++				 IPP_TAG_ZERO)) != NULL &&
++	(ippGetValueTag(attr) == IPP_TAG_NAME ||
++	 ippGetValueTag(attr) == IPP_TAG_NAMELANG ||
++	 ippGetValueTag(attr) == IPP_TAG_KEYWORD))
+       strlcpy(ppdname, ippGetString(attr, 0, NULL), sizeof(ppdname));
+     else
+       strlcpy(ppdname, "auto", sizeof(ppdname));
