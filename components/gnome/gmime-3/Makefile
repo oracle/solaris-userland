@@ -28,18 +28,16 @@ BUILD_BITS =            32_and_64
 # gobject-introspection does not produce correct results when using Studio.
 include ../../../make-rules/shared-macros.mk
 
-# Although this component is historically generic, GNOME distributes it
-# directly now, presumably because the original author abandoned it and GNOME
-# depends on it.
 COMPONENT_NAME=		gmime
-COMPONENT_VERSION=	3.2.7
-COMPONENT_PROJECT_URL=	https://developer.gnome.org/gmime/
+COMPONENT_VERSION=	3.2.15
+COMPONENT_PROJECT_URL=	https://github.com/jstedfast/gmime
+COMPONENT_ARCHIVE_URL=	https://github.com/jstedfast/gmime/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2aea96647a468ba2160a64e17c6dc6afe674ed9ac86070624a3f584c10737d44
+	sha256:84cd2a481a27970ec39b5c95f72db026722904a2ccf3fdbd57b280cf2d02b5c4
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13124
 
-COMPONENT_BAID=		87301
+COMPONENT_BAID=		465579
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -61,6 +59,13 @@ CONFIGURE_OPTIONS += --enable-mono=no
 CONFIGURE_OPTIONS += ac_cv_func_getdomainname=no
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+GMIME_TEST_GNUPGHOME = $(WS_TOP)/.gmime-test-$(BITS)/gnupg
+COMPONENT_PRE_TEST_ACTION += /bin/mkdir -p $(WS_TOP)/.gmime-test-$(BITS); \
+	/bin/rm -f $(GMIME_TEST_GNUPGHOME); \
+	/bin/ln -s $(COMPONENT_TEST_DIR)/tests/tmp/.gnupg $(GMIME_TEST_GNUPGHOME)
+COMPONENT_TEST_ENV += GMIME_TEST_GNUPGHOME=$(GMIME_TEST_GNUPGHOME)
+COMPONENT_POST_TEST_ACTION += /bin/rm -f $(GMIME_TEST_GNUPGHOME); \
+	/bin/rmdir $(WS_TOP)/.gmime-test-$(BITS)
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/Testing/p" ' \

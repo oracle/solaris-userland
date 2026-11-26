@@ -1,0 +1,54 @@
+# Keep the GnuPG test home reachable through a short workspace path: BOB's
+# build path exceeds the Unix socket limit used by GnuPG's keyboxd.  Solaris
+# iconv's ISO-2022-JP ESC ( J output is text-equivalent to the fixture's
+# ESC ( B output, so compare decoded text when those byte sequences differ.
+--- a/tests/testsuite.c
++++ b/tests/testsuite.c
+@@ -414,6 +414,7 @@
+ int
+ testsuite_setup_gpghome (const char *gpg)
+ {
++	const char *gpghome = g_getenv ("GMIME_TEST_GNUPGHOME");
+ 	char *command;
+ 	FILE *fp;
+ 	
+@@ -424,7 +425,9 @@
+ 	if (g_mkdir ("./tmp", 0755) != 0)
+ 		return EXIT_FAILURE;
+ 	
+-	g_setenv ("GNUPGHOME", "./tmp/.gnupg", 1);
++	if (g_mkdir ("./tmp/.gnupg", 0700) != 0)
++		return EXIT_FAILURE;
++	g_setenv ("GNUPGHOME", gpghome && *gpghome ? gpghome : "./tmp/.gnupg", 1);
+ 	
+ 	/* disable environment variables that gpg-agent uses for pinentry */
+ 	g_unsetenv ("DBUS_SESSION_BUS_ADDRESS");
+--- a/tests/test-filters.c
++++ b/tests/test-filters.c
+@@ -144,6 +144,26 @@
+ 	}
+ 	
+ 	if (memcmp (actual->data, expected->data, actual->len) != 0) {
++		if (strcmp (to, "iso-2022-jp") == 0) {
++			gsize actual_utf8_len, expected_utf8_len;
++			gchar *actual_utf8, *expected_utf8;
++			
++			actual_utf8 = g_convert ((const gchar *) actual->data, actual->len,
++						 "UTF-8", to, NULL, &actual_utf8_len, NULL);
++			expected_utf8 = g_convert ((const gchar *) expected->data, expected->len,
++						   "UTF-8", to, NULL, &expected_utf8_len, NULL);
++			if (actual_utf8 && expected_utf8 &&
++			    actual_utf8_len == expected_utf8_len &&
++			    memcmp (actual_utf8, expected_utf8, actual_utf8_len) == 0) {
++				g_free (actual_utf8);
++				g_free (expected_utf8);
++				testsuite_check_passed ();
++				goto error;
++			}
++			
++			g_free (actual_utf8);
++			g_free (expected_utf8);
++		}
+ 		testsuite_check_failed ("%s failed: stream contents do not match", what);
+ 		goto error;
+ 	}

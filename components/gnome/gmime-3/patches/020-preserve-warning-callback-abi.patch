@@ -1,0 +1,67 @@
+# Preserve the 3.2.7 warning-callback setter ABI while retaining the new
+# destroy-notify functionality under a separate symbol.  GMime 3.2.15 did
+# not change the libgmime-3.0.so.0 SONAME for its four-argument setter.
+--- a/gmime/gmime-parser-options.h
++++ b/gmime/gmime-parser-options.h
+@@ -128,7 +128,9 @@
+ void g_mime_parser_options_set_fallback_charsets (GMimeParserOptions *options, const char **charsets);
+ 
+ GMimeParserWarningFunc g_mime_parser_options_get_warning_callback (GMimeParserOptions *options);
+-void g_mime_parser_options_set_warning_callback (GMimeParserOptions *options, 
++void g_mime_parser_options_set_warning_callback (GMimeParserOptions *options,
++		GMimeParserWarningFunc warning_cb, gpointer user_data);
++void g_mime_parser_options_set_warning_callback_full (GMimeParserOptions *options,
+ 		GMimeParserWarningFunc warning_cb, gpointer user_data, GDestroyNotify notify);
+ 
+ G_END_DECLS
+--- a/gmime/gmime-parser-options.c
++++ b/gmime/gmime-parser-options.c
+@@ -446,7 +446,7 @@
+ 
+ 
+ /**
+- * g_mime_parser_options_set_warning_callback:
++ * g_mime_parser_options_set_warning_callback_full:
+  * @options: a #GMimeParserOptions
+  * @warning_cb: a #GMimeParserWarningFunc or %NULL to clear the callback
+  * @user_data: data passed to the warning callback function
+@@ -455,7 +455,7 @@
+  * Registers the callback function being called if the parser detects any issues.
+  **/
+ void
+-g_mime_parser_options_set_warning_callback (GMimeParserOptions *options, GMimeParserWarningFunc warning_cb, gpointer user_data, GDestroyNotify notify)
++g_mime_parser_options_set_warning_callback_full (GMimeParserOptions *options, GMimeParserWarningFunc warning_cb, gpointer user_data, GDestroyNotify notify)
+ {
+ 	g_return_if_fail (options != NULL);
+ 
+@@ -467,3 +467,19 @@
+ 	options->warning_user_data = user_data;
+ 	options->notify = notify;
+ }
++
++
++/**
++ * g_mime_parser_options_set_warning_callback:
++ * @options: a #GMimeParserOptions
++ * @warning_cb: a #GMimeParserWarningFunc or %NULL to clear the callback
++ * @user_data: data passed to the warning callback function
++ *
++ * Registers the callback function being called if the parser detects any issues.
++ * The caller retains ownership of @user_data.
++ **/
++void
++g_mime_parser_options_set_warning_callback (GMimeParserOptions *options, GMimeParserWarningFunc warning_cb, gpointer user_data)
++{
++	g_mime_parser_options_set_warning_callback_full (options, warning_cb, user_data, NULL);
++}
+--- a/examples/msgcheck.c
++++ b/examples/msgcheck.c
+@@ -110,7 +110,7 @@
+ 		parser = g_mime_parser_new ();
+ 		g_mime_parser_init_with_stream (parser, stream);
+ 		options = g_mime_parser_options_new ();
+-		g_mime_parser_options_set_warning_callback (options, parser_issue, NULL, NULL);
++		g_mime_parser_options_set_warning_callback (options, parser_issue, NULL);
+ 		message = g_mime_parser_construct_message (parser, options);
+ 		g_mime_parser_options_free (options);
+ 		g_object_unref (parser);
