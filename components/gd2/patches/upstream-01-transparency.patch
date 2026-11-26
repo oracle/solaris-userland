@@ -1,0 +1,41 @@
+Imported from https://github.com/libgd/libgd/commit/ba14dec6efe9d87fe80fa1d7bd3d5b0583e1320e
+
+From ba14dec6efe9d87fe80fa1d7bd3d5b0583e1320e Mon Sep 17 00:00:00 2001
+From: Robert Hart <bathterror@gmail.com>
+Date: Sat, 9 Oct 2021 16:40:45 +0100
+Subject: [PATCH] Fix out of bounds write im->alpha[im->transparent] (#785)
+
+Since #737 gdImageColorTransparent does not correctly handle the case that im->transparent = -1
+(which is the initial value and used to indicate no transparent colour has been set).
+
+This leads to undefined behaviour via an out-of-bound write:
+im->alpha[im->transparent] = gdAlphaOpaque;
+(in practice I assume this merely overwrites an earlier struct member)
+
+This can be triggered via loading a gif through gdImageCreateFromGifPtr
+
+third_party/gd/source/gd.c:922:2: runtime error: index -1 out of bounds for type 'int [256]'
+    #0 0x5629c034a839 in gdImageColorTransparent third_party/gd/source/gd.c:922:29
+    #1 0x5629c034ebf0 in gdImageCreateFromGifCtx third_party/gd/source/gd_gif_in.c:328:4
+    #2 0x5629c034f14f in gdImageCreateFromGifPtr third_party/gd/source/gd_gif_in.c:186:7
+
+Fixes #784.
+---
+ src/gd.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/gd.c b/src/gd.c
+index 574368cce..0be8aadf6 100644
+--- src/gd.c
++++ src/gd.c
+@@ -919,7 +919,9 @@ BGD_DECLARE(void) gdImageColorTransparent (gdImagePtr im, int color)
+ 	if (color >= gdMaxColors) {
+ 		return;
+ 	}
+-	im->alpha[im->transparent] = gdAlphaOpaque;
++	if (im->transparent != -1) {
++		im->alpha[im->transparent] = gdAlphaOpaque;
++	}
+ 	im->alpha[color] = gdAlphaTransparent;
+ 	im->transparent = color;
+ }

@@ -1,0 +1,109 @@
+Imported from https://github.com/libgd/libgd/commit/987cfcb6290ae671b7e218058aaa5f6f1df7febb
+
+Import the NeuQuant ownership correction and upstream GIF regression.
+Omit the unrelated gdImageCopy debug printf from src/gd.c.
+
+From 987cfcb6290ae671b7e218058aaa5f6f1df7febb Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Fri, 22 May 2026 21:33:05 +0700
+Subject: [PATCH] Fix #953, NEUQUANT mode for to palette may dangle palette
+ ptr.
+
+---
+ src/gd_topal.c           | 14 +++++++-------
+ tests/gif/CMakeLists.txt |  1 +
+ tests/gif/Makemodule.am  |  1 +
+ tests/gif/bug000953.c    | 32 ++++++++++++++++++++++++++++++++
+ 4 files changed, 41 insertions(+), 7 deletions(-)
+ create mode 100644 tests/gif/bug000953.c
+
+diff --git a/src/gd_topal.c b/src/gd_topal.c
+index af9aae973..079a9dc1a 100644
+--- src/gd_topal.c
++++ src/gd_topal.c
+@@ -1593,16 +1593,16 @@ static int gdImageTrueColorToPaletteBody (gdImagePtr oim, int dither, int colors
+ 			gdImageDestroy(nim);
+ 		}
+ 		nim = gdImageNeuQuant(oim, colorsWanted, oim->paletteQuantizationSpeed ? oim->paletteQuantizationSpeed : 2);
+-		if (cimP) {
+-			*cimP = nim;
+-		}
+ 		if (!nim) {
+ 			return FALSE;
+-		} else {
+-			free_truecolor_image_data(oim);
+-			gdImageCopy(oim, nim, 0, 0, 0, 0, oim->sx, oim->sy);
+-			gdImageDestroy(nim);
+ 		}
++		if (cimP) {
++			*cimP = nim;
++			return TRUE;
++		}
++		free_truecolor_image_data(oim);
++		gdImageCopy(oim, nim, 0, 0, 0, 0, oim->sx, oim->sy);
++		gdImageDestroy(nim);
+ 		return TRUE;
+ 	}
+ 
+diff --git a/tests/gif/CMakeLists.txt b/tests/gif/CMakeLists.txt
+index 8349ace5b..4c6c88841 100644
+--- tests/gif/CMakeLists.txt
++++ tests/gif/CMakeLists.txt
+@@ -12,6 +12,7 @@ LIST(APPEND TESTS_FILES
+ 	bug00060
+ 	gif_im2im
+ 	bug00415
++	bug000953
+ )
+ 
+ IF(PNG_FOUND)
+diff --git a/tests/gif/Makemodule.am b/tests/gif/Makemodule.am
+index c616b3e61..5498d1c9b 100644
+--- tests/gif/Makemodule.am
++++ tests/gif/Makemodule.am
+@@ -10,6 +10,7 @@ libgd_test_programs += \
+ 	gif/uninitialized_memory_read \
+ 	gif/bug00006 \
+ 	gif/bug00060 \
++	gif/bug000953 \
+ 	gif/gif_im2im
+ 
+ if HAVE_LIBPNG
+diff --git a/tests/gif/bug000953.c b/tests/gif/bug000953.c
+new file mode 100644
+index 000000000..2acd02e15
+--- /dev/null
++++ tests/gif/bug000953.c
+@@ -0,0 +1,32 @@
++#include <gd.h>
++#include "gdtest.h"
++
++int main()
++{
++	gdImagePtr im;
++	void *gif;
++	int size = 0;
++
++	im = gdImageCreateTrueColor(5, 4);
++	if (!gdTestAssert(im != NULL)) {
++		return gdNumFailures();
++	}
++
++	gdImageFilledRectangle(im, 0, 0, 4, 3, gdTrueColor(255, 255, 255));
++	gdImageLine(im, 0, 0, 4, 3, gdTrueColor(0, 0, 0));
++	gdImageLine(im, 4, 0, 0, 3, gdTrueColor(255, 0, 0));
++
++	gdTestAssert(gdImageTrueColorToPaletteSetMethod(im, GD_QUANT_NEUQUANT, 0) == GD_TRUE);
++
++	gif = gdImageGifPtr(im, &size);
++	gdTestAssertMsg(gif != NULL, "expected GIF output");
++	gdTestAssertMsg(size > 0, "expected nonempty GIF output, got size %d", size);
++	gdTestAssertMsg(im->trueColor, "gdImageGifPtr must not convert source image in-place");
++
++	if (gif != NULL) {
++		gdFree(gif);
++	}
++	gdImageDestroy(im);
++
++	return gdNumFailures();
++}

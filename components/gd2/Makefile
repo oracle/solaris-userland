@@ -65,11 +65,18 @@ COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -if)
 # The tests do not recognise /tmp to be a valid directory (presumabely it being
 # a mount point), so we create it's own directory and supply it via TMPDIR
 # variable
+# CMake otherwise builds its test library with the compiler's default bitness.
 COMPONENT_TEST_CMD = \
-	cmake -DBUILD_TEST=1 .; \
-	(cd $(@D)/tests; gmake); \
-	export TMPDIR="$(COMPONENT_TEST_DIR)/tmpdir"; \
-	mkdir -p "$$TMPDIR"; \
+	cmake -DBUILD_TEST=1 \
+	    -DCMAKE_C_COMPILER="$(CC)" \
+	    -DCMAKE_C_FLAGS="$(CFLAGS) $(CPPFLAGS)" \
+	    -DCMAKE_CXX_COMPILER="$(CXX)" \
+	    -DCMAKE_CXX_FLAGS="$(CXXFLAGS) $(CPPFLAGS)" \
+	    -DCMAKE_EXE_LINKER_FLAGS="$(LDFLAGS) $(CC_BITS)" \
+	    -DCMAKE_SHARED_LINKER_FLAGS="$(LDFLAGS) $(CC_BITS)" . && \
+	(cd $(@D)/tests && $(GMAKE)) && \
+	export TMPDIR="$(COMPONENT_TEST_DIR)/tmpdir" && \
+	mkdir -p "$$TMPDIR" && \
 	ctest .
 
 COMPONENT_TEST_TARGETS =

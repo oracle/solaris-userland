@@ -1,0 +1,25 @@
+Imported from https://github.com/libgd/libgd/commit/6cc1e39e9fddd15ae74adb1a09fcd5740f44923e
+
+From 6cc1e39e9fddd15ae74adb1a09fcd5740f44923e Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sat, 29 Jan 2022 23:18:28 +0700
+Subject: [PATCH] Fix #810, Wrong image freed, src_cloned should be freed if
+ set. (#811)
+
+---
+ src/gd_interpolation.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gd_interpolation.c b/src/gd_interpolation.c
+index d1ebfc9cc..11c244692 100644
+--- src/gd_interpolation.c
++++ src/gd_interpolation.c
+@@ -1864,7 +1864,7 @@ BGD_DECLARE(gdImagePtr) gdImageRotateInterpolated(const gdImagePtr src, const fl
+ 
+ 		case -18000:
+ 		case  18000:
+-			if (src_cloned) gdImageDestroy(src);
++			if (src_cloned) gdImageDestroy(src_tc);
+ 			return gdImageRotate180(src, 0);
+ 
+ 		case  -9000:

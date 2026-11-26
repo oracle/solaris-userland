@@ -1,0 +1,247 @@
+Imported from https://github.com/libgd/libgd/commit/73c7109d0c5fa8e23bf73935a493a35abf8f919b
+
+From 73c7109d0c5fa8e23bf73935a493a35abf8f919b Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sun, 24 May 2026 21:18:21 +0700
+Subject: [PATCH] Fix #928 Fix unitialized read and refactor with proper CLAMP
+ instead of the kind of ugly/fragile 'manual' 4x4 build-up
+
+---
+ src/gd_interpolation.c                     | 119 +--------------------
+ tests/gdinterpolatedscale/CMakeLists.txt   |   1 +
+ tests/gdinterpolatedscale/Makemodule.am    |   1 +
+ tests/gdinterpolatedscale/gdBicubicFixed.c |  49 +++++++++
+ 4 files changed, 56 insertions(+), 114 deletions(-)
+ create mode 100644 tests/gdinterpolatedscale/gdBicubicFixed.c
+
+diff --git a/src/gd_interpolation.c b/src/gd_interpolation.c
+index f1c151ef7..8f3870fdb 100644
+--- src/gd_interpolation.c
++++ src/gd_interpolation.c
+@@ -1430,123 +1430,13 @@ gdImageScaleBicubicFixed(gdImagePtr src, const unsigned int width,
+ 			const long n = gd_fxtoi(f_b);
+ 			const gdFixed f_f = f_a - gd_itofx(m);
+ 			const gdFixed f_g = f_b - gd_itofx(n);
+-			unsigned int src_offset_x[16], src_offset_y[16];
+ 			long k;
+ 			register gdFixed f_red = 0, f_green = 0, f_blue = 0, f_alpha = 0;
+ 			unsigned char red, green, blue, alpha = 0;
+ 			int *dst_row = dst->tpixels[dst_offset_y];
+ 
+-			if ((m < 1) || (n < 1)) {
+-				src_offset_x[0] = n;
+-				src_offset_y[0] = m;
+-			} else {
+-				src_offset_x[0] = n - 1;
+-				src_offset_y[0] = m;
+-			}
+-
+-			src_offset_x[1] = n;
+-			src_offset_y[1] = m;
+-
+-			if ((m < 1) || (n >= src_w - 1)) {
+-				src_offset_x[2] = n;
+-				src_offset_y[2] = m;
+-			} else {
+-				src_offset_x[2] = n + 1;
+-				src_offset_y[2] = m;
+-			}
+-
+-			if ((m < 1) || (n >= src_w - 2)) {
+-				src_offset_x[3] = n;
+-				src_offset_y[3] = m;
+-			} else {
+-				src_offset_x[3] = n + 1 + 1;
+-				src_offset_y[3] = m;
+-			}
+-
+-			if (n < 1) {
+-				src_offset_x[4] = n;
+-				src_offset_y[4] = m;
+-			} else {
+-				src_offset_x[4] = n - 1;
+-				src_offset_y[4] = m;
+-			}
+-
+-			src_offset_x[5] = n;
+-			src_offset_y[5] = m;
+-			if (n >= src_w-1) {
+-				src_offset_x[6] = n;
+-				src_offset_y[6] = m;
+-			} else {
+-				src_offset_x[6] = n + 1;
+-				src_offset_y[6] = m;
+-			}
+-
+-			if (n >= src_w - 2) {
+-				src_offset_x[7] = n;
+-				src_offset_y[7] = m;
+-			} else {
+-				src_offset_x[7] = n + 1 + 1;
+-				src_offset_y[7] = m;
+-			}
+-
+-			if ((m >= src_h - 1) || (n < 1)) {
+-				src_offset_x[8] = n;
+-				src_offset_y[8] = m;
+-			} else {
+-				src_offset_x[8] = n - 1;
+-				src_offset_y[8] = m;
+-			}
+-
+-			src_offset_x[9] = n;
+-			src_offset_y[9] = m;
+-
+-			if ((m >= src_h-1) || (n >= src_w-1)) {
+-				src_offset_x[10] = n;
+-				src_offset_y[10] = m;
+-			} else {
+-				src_offset_x[10] = n + 1;
+-				src_offset_y[10] = m;
+-			}
+-
+-			if ((m >= src_h - 1) || (n >= src_w - 2)) {
+-				src_offset_x[11] = n;
+-				src_offset_y[11] = m;
+-			} else {
+-				src_offset_x[11] = n + 1 + 1;
+-				src_offset_y[11] = m;
+-			}
+-
+-			if ((m >= src_h - 2) || (n < 1)) {
+-				src_offset_x[12] = n;
+-				src_offset_y[12] = m;
+-			} else {
+-				src_offset_x[12] = n - 1;
+-				src_offset_y[12] = m;
+-			}
+-
+-			if (!(m >= src_h - 2)) {
+-				src_offset_x[13] = n;
+-				src_offset_y[13] = m;
+-			}
+-
+-			if ((m >= src_h - 2) || (n >= src_w - 1)) {
+-				src_offset_x[14] = n;
+-				src_offset_y[14] = m;
+-			} else {
+-				src_offset_x[14] = n + 1;
+-				src_offset_y[14] = m;
+-			}
+-
+-			if ((m >= src_h - 2) || (n >= src_w - 2)) {
+-				src_offset_x[15] = n;
+-				src_offset_y[15] = m;
+-			} else {
+-				src_offset_x[15] = n  + 1 + 1;
+-				src_offset_y[15] = m;
+-			}
+-
+ 			for (k = -1; k < 3; k++) {
+-				const gdFixed f = gd_itofx(k)-f_f;
++				const gdFixed f = k * f_1 - f_f;
+ 				const gdFixed f_fm1 = f - f_1;
+ 				const gdFixed f_fp1 = f + f_1;
+ 				const gdFixed f_fp2 = f + f_2;
+@@ -1562,14 +1452,15 @@ gdImageScaleBicubicFixed(gdImagePtr src, const unsigned int width,
+ 				f_RY = gd_divfx((f_a - gd_mulfx(f_4,f_b) + gd_mulfx(f_6,f_c) - gd_mulfx(f_4,f_d)),f_6);
+ 
+ 				for (l = -1; l < 3; l++) {
+-					const gdFixed f = gd_itofx(l) - f_g;
++					const gdFixed f = l * f_1 - f_g;
+ 					const gdFixed f_fm1 = f - f_1;
+ 					const gdFixed f_fp1 = f + f_1;
+ 					const gdFixed f_fp2 = f + f_2;
+ 					register gdFixed f_a = 0, f_b = 0, f_c = 0, f_d = 0;
+ 					register gdFixed f_RX, f_R, f_rs, f_gs, f_bs, f_ba;
+ 					register int c;
+-					const int _k = ((k+1)*4) + (l+1);
++					const int sample_y = CLAMP(m + k, 0, src_h - 1);
++					const int sample_x = CLAMP(n + l, 0, src_w - 1);
+ 
+ 					if (f_fp2 > 0) f_a = gd_mulfx(f_fp2,gd_mulfx(f_fp2,f_fp2));
+ 
+@@ -1582,7 +1473,7 @@ gdImageScaleBicubicFixed(gdImagePtr src, const unsigned int width,
+ 					f_RX = gd_divfx((f_a-gd_mulfx(f_4,f_b)+gd_mulfx(f_6,f_c)-gd_mulfx(f_4,f_d)),f_6);
+ 					f_R = gd_mulfx(f_RY,f_RX);
+ 
+-					c = src->tpixels[*(src_offset_y + _k)][*(src_offset_x + _k)];
++					c = src->tpixels[sample_y][sample_x];
+ 					f_rs = gd_itofx(gdTrueColorGetRed(c));
+ 					f_gs = gd_itofx(gdTrueColorGetGreen(c));
+ 					f_bs = gd_itofx(gdTrueColorGetBlue(c));
+diff --git a/tests/gdinterpolatedscale/CMakeLists.txt b/tests/gdinterpolatedscale/CMakeLists.txt
+index 7957c156a..2a8911034 100644
+--- tests/gdinterpolatedscale/CMakeLists.txt
++++ tests/gdinterpolatedscale/CMakeLists.txt
+@@ -1,4 +1,5 @@
+ LIST(APPEND TESTS_FILES
++	gdBicubicFixed
+ 	gdModesAndPalettes
+ 	gdTrivialResize
+ )
+diff --git a/tests/gdinterpolatedscale/Makemodule.am b/tests/gdinterpolatedscale/Makemodule.am
+index f13f4abbc..b02ce1521 100644
+--- tests/gdinterpolatedscale/Makemodule.am
++++ tests/gdinterpolatedscale/Makemodule.am
+@@ -1,4 +1,5 @@
+ libgd_test_programs += \
++	gdinterpolatedscale/gdBicubicFixed \
+ 	gdinterpolatedscale/gdModesAndPalettes \
+ 	gdinterpolatedscale/gdTrivialResize
+ 
+diff --git a/tests/gdinterpolatedscale/gdBicubicFixed.c b/tests/gdinterpolatedscale/gdBicubicFixed.c
+new file mode 100644
+index 000000000..2a8268347
+--- /dev/null
++++ tests/gdinterpolatedscale/gdBicubicFixed.c
+@@ -0,0 +1,49 @@
++#include "gd.h"
++#include "gdtest.h"
++
++/* 
++ using gradient here so it can be easily verified so repeated row scaling can be caught easily
++*/
++static gdImagePtr
++make_vertical_gradient(int width, int height)
++{
++	gdImagePtr im = gdImageCreateTrueColor(width, height);
++	int x, y;
++	int red;
++
++	gdTestAssert(im != NULL);
++
++	for (y = 0; y < height; y++) {
++		red = y * 60;
++		for (x = 0; x < width; x++) {
++			gdImageSetPixel(im, x, y, gdTrueColorAlpha(red, x * 30, 0, 0));
++		}
++	}
++
++	gdImageSetInterpolationMethod(im, GD_BICUBIC_FIXED);
++
++	return im;
++}
++
++int main()
++{
++	gdImagePtr src = make_vertical_gradient(4, 4);
++	gdImagePtr dst;
++	int top;
++	int between;
++
++	dst = gdImageScale(src, 4, 8);
++	gdTestAssert(dst != NULL);
++	gdTestAssert(dst->sx == 4);
++	gdTestAssert(dst->sy == 8);
++
++	top = gdTrueColorGetRed(gdImageGetTrueColorPixel(dst, 0, 0));
++	between = gdTrueColorGetRed(gdImageGetTrueColorPixel(dst, 0, 1));
++	gdTestAssertMsg(between > top,
++		"bicubic fixed scaling should interpolate between source rows");
++
++	gdImageDestroy(dst);
++	gdImageDestroy(src);
++
++	return gdNumFailures();
++}

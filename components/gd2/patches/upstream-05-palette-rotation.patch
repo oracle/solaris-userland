@@ -1,0 +1,107 @@
+Imported from https://github.com/libgd/libgd/commit/a656f5cc5592757996e9e96b0821a0966bfaa3b3
+
+From a656f5cc5592757996e9e96b0821a0966bfaa3b3 Mon Sep 17 00:00:00 2001
+From: "Christoph M. Becker" <cmbecker69@gmx.de>
+Date: Thu, 9 Jan 2025 13:11:19 +0100
+Subject: [PATCH] Fix fix for #320 (#929)
+
+At least `gdImageRotateNearestNeighbour()` requires a truecolor image,
+so we should actually pass the truecolor clone.  To be safe regarding
+future changes, we also do this for `gdImageRotateGeneric()`.  And if
+rotation of zero degrees is requested, we return the already cloned
+image, instead of creating another clone.
+
+We also extend the existing test case to cover all relevant code paths.
+---
+ src/gd_interpolation.c              | 16 ++++------------
+ tests/gdimagecopyrotated/bug00320.c | 26 +++++++++++++++++++++-----
+ 2 files changed, 25 insertions(+), 17 deletions(-)
+
+diff --git a/src/gd_interpolation.c b/src/gd_interpolation.c
+index 1cf2fc041..cb9e08c9c 100644
+--- src/gd_interpolation.c
++++ src/gd_interpolation.c
+@@ -1738,15 +1738,8 @@ BGD_DECLARE(gdImagePtr) gdImageRotateInterpolated(const gdImagePtr src, const fl
+ 	/* 0 && 90 degrees multiple rotation, 0 rotation simply clones the return image and convert it
+ 	   to truecolor, as we must return truecolor image. */
+ 	switch (angle_rounded) {
+-		case    0: {
+-			gdImagePtr dst = gdImageClone(src);
+-
+-			if (dst == NULL) {
+-				return NULL;
+-			}
+-			if (src_cloned) gdImageDestroy(src_tc);
+-			return dst;
+-		}
++		case    0:
++			return src_cloned ? src_tc : gdImageClone(src);
+ 
+ 		case -27000:
+ 		case   9000:
+@@ -1771,16 +1764,15 @@ BGD_DECLARE(gdImagePtr) gdImageRotateInterpolated(const gdImagePtr src, const fl
+ 
+ 	switch (src->interpolation_id) {
+ 		case GD_NEAREST_NEIGHBOUR: {
+-			gdImagePtr res = gdImageRotateNearestNeighbour(src, angle, bgcolor);
++			gdImagePtr res = gdImageRotateNearestNeighbour(src_tc, angle, bgcolor);
+ 			if (src_cloned) gdImageDestroy(src_tc);
+ 			return res;
+-			break;
+ 		}
+ 
+ 		case GD_BILINEAR_FIXED:
+ 		case GD_BICUBIC_FIXED:
+ 		default: {
+-			gdImagePtr res = gdImageRotateGeneric(src, angle, bgcolor);
++			gdImagePtr res = gdImageRotateGeneric(src_tc, angle, bgcolor);
+ 			if (src_cloned) gdImageDestroy(src_tc);
+ 			return res;
+ 		}
+diff --git a/tests/gdimagecopyrotated/bug00320.c b/tests/gdimagecopyrotated/bug00320.c
+index 72ff363c6..de72de19b 100644
+--- tests/gdimagecopyrotated/bug00320.c
++++ tests/gdimagecopyrotated/bug00320.c
+@@ -1,9 +1,11 @@
++/*
++ * Test that gdImageRotateInterpolated() never converts the src to palette.
++ */
++
+ #include "gd.h"
+ #include "gdtest.h"
+ 
+-#define width 20
+-
+-int main()
++void rotate(int method, float angle)
+ {
+     gdImagePtr src, dst;
+     int black;
+@@ -12,11 +14,25 @@ int main()
+     black = gdImageColorAllocate(src, 0, 0, 0);
+ 
+     gdTestAssert(gdImageTrueColor(src) == 0);
+-    dst = gdImageRotateInterpolated(src, 30.0, black);
++    gdImageSetInterpolationMethod(src, method);
++    dst = gdImageRotateInterpolated(src, angle, black);
+     gdTestAssert(dst != NULL);
+     gdTestAssert(gdImageTrueColor(src) == 0);
++    gdTestAssert(dst != src);
+ 
+ 	gdImageDestroy(src);
+ 	gdImageDestroy(dst);
+-	return gdNumFailures();
++}
++
++int main()
++{
++    rotate(GD_DEFAULT, 30.0);
++    rotate(GD_NEAREST_NEIGHBOUR, 30.0);
++    rotate(GD_BILINEAR_FIXED, 30.0);
++    rotate(GD_BICUBIC_FIXED, 30.0);
++    rotate(GD_DEFAULT, 0.0);
++    rotate(GD_DEFAULT, 90.0);
++    rotate(GD_DEFAULT, 180.0);
++    rotate(GD_DEFAULT, 270.0);
++    return gdNumFailures();
+ }
