@@ -32,15 +32,15 @@ include ../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=		ImageMagick
-COMPONENT_VERSION=	7.1.2-35
+COMPONENT_VERSION=	7.1.2-36
 COMPONENT_PROJECT_URL=	https://www.imagemagick.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:40b6fefa88fe16ca5a4b3d3db5133eaebfb0157f21f98530bde8aec5dd5b0776
+COMPONENT_ARCHIVE_HASH=	sha256:5ba807e38a6bcb7c3c96a166485e270c5017aaa6b166f0440dc4b2badf6e6167
 COMPONENT_ARCHIVE_URL=	https://github.com/ImageMagick/ImageMagick/archive/refs/tags/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/imagemagick
 COMPONENT_ANITYA_ID=	1372
 
-COMPONENT_BAID=		465862
+COMPONENT_BAID=		471616
 
 IPS_COMPONENT_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/-/./')
 COMPONENT_MAJOR_VERSION=$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\..*//')
@@ -51,6 +51,9 @@ ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 include $(WS_MAKE_RULES)/common.mk
+
+# Omit the tutorial PDF with embedded Microsoft fonts.
+COMPONENT_PREP_ACTION += $(RM) "$(SOURCE_DIR)/www/magick++/tutorial/Magick++_tutorial.pdf";
 
 # Regenerate configure after patching m4/ax_pthread.m4.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -if)
@@ -64,6 +67,9 @@ CONFIGURE_OPTIONS+= --with-fftw
 CONFIGURE_OPTIONS+= --with-gslib
 CONFIGURE_OPTIONS+= --with-rsvg
 CONFIGURE_OPTIONS+= --with-perl=$(PERL)
+
+# The CLI pipe tests expect the GNU od output format.
+COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Remove wrong RUNPATH and RPATH
 COMPONENT_POST_INSTALL_ACTION = (\
