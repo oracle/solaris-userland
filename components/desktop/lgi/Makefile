@@ -30,15 +30,16 @@ include ../../../make-rules/shared-macros.mk
 LD_SHARED_OPTIONS_Z_DEFS=
 
 COMPONENT_NAME=         lgi
-COMPONENT_VERSION=      0.9.2
-COMPONENT_PROJECT_URL=  https://github.com/pavouk/lgi
-COMPONENT_ARCHIVE_HASH= \
-        sha256:cfc4105482b4730b3a40097c9d9e7e35c46df2fb255370bdeb2f45a886548c4f
-COMPONENT_ARCHIVE_URL=  https://github.com/pavouk/lgi/archive/$(COMPONENT_VERSION).tar.gz
+COMPONENT_VERSION=      0.9.2.20260728
+COMPONENT_PROJECT_URL=  https://github.com/lgi-devs/lgi
+COMPONENT_SRC=          $(COMPONENT_NAME)-$(COMPONENT_VERSION)
+GIT_REPO=               $(COMPONENT_PROJECT_URL).git
+GIT_COMMIT_ID=          7a2276f9657a50ee548a636f2e646f96ec748bbd
+GIT_HASH=              sha256:e1bbf4e748802319f260221b072a55bd33ed6e1eb1c682e7ee2c46dc6847f4f9
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1851
 
-COMPONENT_BAID=                   71222
+COMPONENT_BAID=                   471072
 
 # Tests do not build on Solaris yet
 TEST_TARGET= $(SKIP_TEST)

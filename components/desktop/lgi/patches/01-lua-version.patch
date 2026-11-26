@@ -2,14 +2,14 @@ components/lua is 5.4.0 - not suitable for upstream
 
 --- lgi-0.9.2/lgi/Makefile.orig 2019-11-18 04:25:31.096072164 -0800
 +++ lgi-0.9.2/lgi/Makefile      2019-11-18 04:25:49.182673007 -0800
-@@ -17,17 +17,17 @@
- VERSION_FILE = version.lua
+@@ -19,17 +19,17 @@
+ LUA_LIB = -llua
 
  ifneq ($(filter cygwin% msys% mingw%, $(HOST_OS)),)
 -CORE = corelgilua51.dll
 +CORE = corelgilua54.dll
  LIBFLAG = -shared
- LIBS += -llua
+ LIBS += $(LUA_LIB)
  else
  ifeq ($(HOST_OS),darwin)
 -CORE = corelgilua51.so
@@ -25,7 +25,7 @@ components/lua is 5.4.0 - not suitable for upstream
  endif
 --- lgi-0.9.2/lgi/core.c.orig   2019-11-18 04:21:32.095989262 -0800
 +++ lgi-0.9.2/lgi/core.c        2019-11-18 04:22:21.583438362 -0800
-@@ -684,7 +684,7 @@
+@@ -697,7 +697,7 @@
  }
 
  G_MODULE_EXPORT int
