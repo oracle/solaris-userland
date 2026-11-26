@@ -1,0 +1,30 @@
+The book and calendar meta-backend tests use server.no.where as an unreachable
+destination while checking offline writes.  A build host proxy can make that
+address appear reachable, switch the test backend online and fail the offline
+connection-count assertions.  Use GIO's direct resolver for these two tests so
+their simulated offline state does not depend on the host's proxy settings.
+---
+--- a/tests/libedata-book/test-book-meta-backend.c
++++ b/tests/libedata-book/test-book-meta-backend.c
+@@ -1890,6 +1890,9 @@ main (gint argc,
+ 	TCUClosure closure = { 0 };
+ 	gint res;
+ 
++	/* Keep the test destination unreachable even behind a host proxy. */
++	g_assert_true (g_setenv ("GIO_USE_PROXY_RESOLVER", "dummy", TRUE));
++
+ 	g_test_init (&argc, &argv, NULL);
+ 	g_test_bug_base ("https://gitlab.gnome.org/GNOME/evolution-data-server/");
+ 
+--- a/tests/libedata-cal/test-cal-meta-backend.c
++++ b/tests/libedata-cal/test-cal-meta-backend.c
+@@ -5399,6 +5399,9 @@ main (gint argc,
+ 	TCUClosure closure_events = { TCU_LOAD_COMPONENT_SET_EVENTS };
+ 	gint res;
+ 
++	/* Keep the test destination unreachable even behind a host proxy. */
++	g_assert_true (g_setenv ("GIO_USE_PROXY_RESOLVER", "dummy", TRUE));
++
+ 	g_test_init (&argc, &argv, NULL);
+ 	g_test_bug_base ("https://gitlab.gnome.org/GNOME/evolution-data-server/");
+ 

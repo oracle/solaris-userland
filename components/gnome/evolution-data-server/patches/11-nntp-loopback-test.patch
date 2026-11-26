@@ -1,0 +1,13 @@
+The NNTP test probes 127.0.0.1 for a local fixture. Disable proxy use for
+that probe, or a reachable proxy can be mistaken for a local NNTP server.
+---
+--- a/src/camel/tests/test-camel-provider-nntp.c
++++ b/src/camel/tests/test-camel-provider-nntp.c
+@@ -1226,6 +1226,7 @@
+ 	GSocketConnection *connection;
+ 
+ 	client = g_socket_client_new ();
++	g_socket_client_set_enable_proxy (client, FALSE);
+ 	g_socket_client_set_timeout (client, 2);
+ 
+ 	connection = g_socket_client_connect_to_host (client, host, port, NULL, NULL);

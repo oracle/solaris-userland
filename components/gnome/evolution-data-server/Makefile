@@ -39,14 +39,14 @@ include ../../../make-rules/shared-macros.mk
 # GNOME stores and various components now expect it to be present.
 
 COMPONENT_NAME=		evolution-data-server
-COMPONENT_VERSION=	3.50.3
+COMPONENT_VERSION=	3.62.1
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Evolution
 COMPONENT_ARCHIVE_HASH= \
-	sha256:225d70b6a40268f225c2ac428ee5eb52d5a6fda2602955d50a24970526fe2452
+	sha256:b75c823445d7d30bca797eee929809e8d389abbb8d471f68ae2af60972779f26
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10935
 
-COMPONENT_BAID=		157584
+COMPONENT_BAID=		455162
 
 BUILD_STYLE= cmake
 
@@ -91,6 +91,8 @@ include $(WS_MAKE_RULES)/test-x11.mk
 # and export DISPLAY
 #
 COMPONENT_TEST_ENV += PATH="$(PATH):/usr/lib"
+# Cache tests use fixed names; keep them out of shared /var/tmp.
+COMPONENT_TEST_ENV += TMPDIR="$(COMPONENT_TEST_BUILD_DIR)"
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_ARGS =   -k -i
 COMPONENT_TEST_TRANSFORMER =    $(NAWK)

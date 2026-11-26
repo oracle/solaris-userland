@@ -1,0 +1,33 @@
+Solaris libuuid.pc reports Version: 0 but provides the UUID functions used by
+EDS. Accept that pkg-config module on Solaris. Solaris <sys/uuid.h> calls the
+37-byte UUID string buffer length UUID_PRINTABLE_STRING_LENGTH rather than
+UUID_STR_LEN.
+---
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -435,7 +435,11 @@
+ # **************************************************************
+ 
+ pkg_check_modules(JSON_GLIB REQUIRED json-glib-1.0>=${json_glib_minimum_version})
+-pkg_check_modules(UUID REQUIRED uuid>=${uuid_minimum_version})
++if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
++	pkg_check_modules(UUID REQUIRED uuid)
++else()
++	pkg_check_modules(UUID REQUIRED uuid>=${uuid_minimum_version})
++endif()
+ 
+ if(ENABLE_GTK)
+ 	add_printable_option(ENABLE_OAUTH2_WEBKITGTK "Enable WebKitGTK gtk3 for built-in OAuth2 authentications" ON)
+--- a/src/libedataserver/e-ms-oapxbc.c
++++ b/src/libedataserver/e-ms-oapxbc.c
+@@ -33,6 +33,10 @@
+ #include <libsoup/soup.h>
+ #include <uuid/uuid.h>
+ 
++#ifdef __sun
++#define UUID_STR_LEN UUID_PRINTABLE_STRING_LENGTH
++#endif
++
+ #include "e-dbus-identity-broker.h"
+ 
+ #include "e-ms-oapxbc.h"

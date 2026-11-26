@@ -1,0 +1,16 @@
+Store relative-month results in the time_t union member.  Writing through the
+32-bit number member leaves the time_t value malformed on big-endian SPARC,
+making date search return incorrect results.  Keep this Solaris backport
+separate from the CVE patch.
+---
+--- a/src/camel/camel-store-search.c
++++ b/src/camel/camel-store-search.c
+@@ -2023,7 +2023,7 @@ store_search_get_relative_months_cb (CamelSExp *sexp,
+ 	g_return_val_if_fail (argc == 1, res);
+ 	g_return_val_if_fail (argv[0]->type == CAMEL_SEXP_RES_INT, res);
+ 
+-	res->value.number = camel_search_util_add_months (time (NULL), argv[0]->value.number);
++	res->value.time = camel_search_util_add_months (time (NULL), argv[0]->value.number);
+ 
+ 	return res;
+ }
