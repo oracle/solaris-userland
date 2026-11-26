@@ -1,0 +1,25 @@
+The parser already warns when the required argument is missing.
+Discard the incomplete built-in include command before checking its
+context or invoking its callback. Return an error so the caller can detect
+the failed command.
+
+Upstream status: Maintainer contacted privately.
+
+--- a/src/dotconf.c
++++ b/src/dotconf.c
+@@ -711,6 +711,15 @@ const char *dotconf_handle_command(configfile_t * configfile, char *buffer)
+ 		/* set up the command structure (contextchecker wants this) */
+ 		dotconf_set_command(configfile, option, cp1, &command);
+ 
++		if (!command.data.str &&
++		    (option->callback == dotconf_cb_include ||
++		     option->callback == dotconf_cb_includepath)) {
++			dotconf_free_command(&command);
++			return option->callback == dotconf_cb_include ?
++			    "Missing or invalid argument to Include" :
++			    "Missing or invalid argument to IncludePath";
++		}
++
+ 		if (configfile->contextchecker)
+ 			context_error =
+ 			    configfile->contextchecker(&command,
