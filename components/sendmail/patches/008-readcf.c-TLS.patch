@@ -33,7 +33,7 @@ diff -r 35f2e411cf8b sendmail/conf.c
 diff -r 35f2e411cf8b sendmail/readcf.c
 --- a/sendmail/readcf.c	Wed Mar 08 02:10:17 2023 -0800
 +++ b/sendmail/readcf.c	Wed Mar 08 03:00:00 2023 -0800
-@@ -2379,6 +2379,17 @@
+@@ -2531,6 +2531,17 @@
  	size_t len, i;
  	int ret, rv;
  
@@ -51,7 +51,7 @@ diff -r 35f2e411cf8b sendmail/readcf.c
  # define who (srv ? "server" : "client")
  # define NAME_C_S macvalue(macid(srv ? "{client_name}" : "{server_name}"), e)
  # define ADDR_C_S macvalue(macid(srv ? "{client_addr}" : "{server_addr}"), e)
-@@ -2523,18 +2534,7 @@
+@@ -2675,18 +2686,7 @@
  		}
  		else if (SM_STRCASEEQ(opt, "cipherlist"))
  		{
@@ -71,10 +71,11 @@ diff -r 35f2e411cf8b sendmail/readcf.c
  		}
  # if MTA_HAVE_TLSv1_3
  		else if (SM_STRCASEEQ(opt, "ciphersuites"))
-@@ -2606,6 +2606,21 @@
+@@ -2757,6 +2757,21 @@
+ 		}
  
  	} while (optionlist[i] != '\0' && i < len);
- 
++
 +	if (SSL_set_cipher_list(ssl, cipherList) <= 0)
 +	{
 +		if (LogLevel > 7)
@@ -89,7 +90,6 @@ diff -r 35f2e411cf8b sendmail/readcf.c
 +		goto fail;
 +	}
 +
-+
+ 
  	/* need cert and key before we can use the options */
  	/* does not implement the "," hack for 2nd cert/key pair */
- 	if (keyfile != NULL && certfile != NULL)

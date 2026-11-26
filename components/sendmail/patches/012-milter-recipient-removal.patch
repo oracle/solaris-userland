@@ -1,0 +1,36 @@
+Import the upstream milter recipient-removal correction into Solaris trunk.
+Use the parsed recipient argument in RCPT exception cleanup rather than addr,
+an automatic pointer changed within SM_TRY.  The upstream release notes
+describe a milter recipient rejection being silently ignored on some systems;
+the failure has not been demonstrated with the Solaris compiler.
+
+Upstream provenance: the sendmail/srvrsmtp.c correction in official Sendmail
+8.18.2 (2025-12-27), compared with the shipped 8.18.1.  This patch extracts
+only that correction from the release archives; it is not a standalone
+upstream commit/patch.  The existing argument parsing and milter cleanup
+guards in 8.18.1 provide the prerequisites.
+
+Release notes:
+https://ftp.sendmail.org/RELEASE_NOTES (8.18.2 milter RCPT rejection entry)
+Official source archives:
+https://ftp.sendmail.org/sendmail.8.18.1.tar.gz
+SHA256: cbf1f309c38e4806f7cf3ead24260f17d1fe8fb63256d13edb3cdd1a098f0770
+https://ftp.sendmail.org/sendmail.8.18.2.tar.gz
+SHA256: 1a085faa8ace52cffde2f5e9bc611bdb5f81481caaabf46f0437b719ca089d2f
+
+Reproduce by comparing sendmail/srvrsmtp.c in those archives: select only
+the removefromlist(addr, ...) to removefromlist(args[0], ...) change in the
+CMDRCPT SM_EXCEPT handler.  Upstream source copyright/license headers are
+unchanged.  No unrelated 8.18.2 changes are imported.
+
+--- a/sendmail/srvrsmtp.c
++++ b/sendmail/srvrsmtp.c
+@@ -3505,7 +3505,7 @@
+ 			    milter_rcpt_added && milter_cmd_done &&
+ 			    milter_cmd_fail)
+ 			{
+-				(void) removefromlist(addr, &e->e_sendqueue, e);
++				(void) removefromlist(args[0], &e->e_sendqueue, e);
+ 				milter_cmd_fail = false;
+ 				if (smtp.sm_e_nrcpts_orig < e->e_nrcpts)
+ 					e->e_nrcpts = smtp.sm_e_nrcpts_orig;

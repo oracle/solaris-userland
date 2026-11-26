@@ -17,17 +17,17 @@
  BUILD=   ./Build
  OPTIONS= $(CONFIG) $(FLAGS)
  
-@@ -40,6 +40,13 @@
- 	do \
- 		(cd $$x; echo Making $@ in: && pwd && \
+@@ -42,6 +42,13 @@
  		$(SHELL) $(BUILD) $(OPTIONS) -c) || exit; \
-+	done
-+
+ 	done
+ 
 +check: FRC
 +	@for x in $(CHECKSUBDIRS); \
 +	do \
 +		(cd $$x; echo Making $@ in:; pwd; \
 +		$(SHELL) $(BUILD) $(OPTIONS) $@); \
- 	done
- 
++	done
++
  $(SUBDIRS): FRC
+ 	@cd $@; pwd; \
+ 	$(SHELL) $(BUILD) $(OPTIONS)
