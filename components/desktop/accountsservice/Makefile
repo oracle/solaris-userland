@@ -30,17 +30,17 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		accountsservice
-COMPONENT_VERSION=	0.6.55
+COMPONENT_VERSION=	26.27.3
 COMPONENT_PROJECT_URL=	http://freedesktop.org/wiki/Software/AccountsService/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ff2b2419a7e06bd9cb335ffe391c7409b49a0f0130b890bd54692a3986699c9b
-COMPONENT_ARCHIVE_URL=	https://freedesktop.org/software/accountsservice/$(COMPONENT_ARCHIVE)
+	sha256:11de07bcd499c2277f78a6fc830d1437654f3397cc7bbed19c28b3818435ba38
+COMPONENT_ARCHIVE_URL=	https://gitlab.freedesktop.org/accountsservice/accountsservice/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13107
 
-COMPONENT_BAID=		68303
+COMPONENT_BAID=		472167
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -59,6 +59,8 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 CONFIGURE_OPTIONS += -Dsystemd=false
 CONFIGURE_OPTIONS += -Dsystemdsystemunitdir='no'
 CONFIGURE_OPTIONS += -Delogind=false
+# Upstream tests build mocklibc, which assumes Linux libc interfaces.
+CONFIGURE_OPTIONS += -Dtests=false
 CONFIGURE_OPTIONS += -Dgtk_doc=true
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)"
 CONFIGURE_OPTIONS += --localstatedir="$(VARDIR)"
@@ -85,10 +87,12 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 
 CBE_PACKAGES += developer/documentation-tool/gtk-doc
 CBE_PACKAGES += developer/documentation-tool/xmlto
+CBE_PACKAGES += developer/vala
 CBE_PACKAGES += library/desktop/gobject/gobject-introspection
 CBE_PACKAGES += library/libxslt
 
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library

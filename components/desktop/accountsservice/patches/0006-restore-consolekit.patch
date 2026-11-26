@@ -1,0 +1,2038 @@
+Restore the upstream ConsoleKit backend for Solaris, which has neither
+systemd nor elogind. Reverse the backend removal, refreshing context only.
+Source: https://gitlab.freedesktop.org/accountsservice/accountsservice/-/commit/d75ae314913e91ef28bb4978593afcba31e15047
+
+--- a/meson.build
++++ b/meson.build
+@@ -238,11 +238,18 @@
+ create_homed = get_option('create_homed')
+ config_h.set10('CREATE_HOMED', create_homed)
+ 
+-if get_option('elogind')
++enable_systemd = get_option('systemd')
++enable_elogind = get_option('elogind')
++assert(not enable_systemd or not enable_elogind, 'systemd and elogind support requested, please choose only one.')
++
++if enable_systemd
++  logind_dep = dependency('libsystemd', version: '>= 186')
++endif
++
++if enable_elogind
+   logind_dep = dependency('libelogind', version: '>= 229.4')
+-else
+-  logind_dep = dependency('libsystemd', version: '>= 186')
+-endif
++endif
++config_h.set('WITH_SYSTEMD', enable_systemd or enable_elogind)
+ 
+ subdir('data')
+ subdir('src')
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -7,6 +7,7 @@
+ option('extra_admin_groups', type: 'array', value: [], description: 'Comma-separated list of extra groups that administrator users are part of')
+ option('minimum_uid', type: 'integer', value: 1000, description: 'Set minimum uid for human users')
+ 
++option('systemd', type: 'boolean', value: false, description: 'Use systemd')
+ option('elogind', type: 'boolean', value: false, description: 'Use elogind')
+ option('libxcrypt', type: 'boolean', value: true, description: 'Use crypt_gensalt() from libxcrypt if available')
+ 
+--- a/src/libaccountsservice/act-user-manager.c
++++ b/src/libaccountsservice/act-user-manager.c
+@@ -40,12 +40,21 @@
+ #include <glib-object.h>
+ #include <gio/gio.h>
+ #include <gio/gunixinputstream.h>
++
++#ifdef WITH_SYSTEMD
+ #include <systemd/sd-login.h>
++
++/* check if logind is running */
++#define LOGIND_RUNNING() (access("/run/systemd/seats/", F_OK) >= 0)
++#endif
+ 
+ #include "act-user-manager.h"
+ #include "act-user-private.h"
+ #include "accounts-generated.h"
+ 
++#include "ck-manager-generated.h"
++#include "ck-seat-generated.h"
++#include "ck-session-generated.h"
+ /**
+  * SECTION:act-user-manager
+  * @title: ActUserManager
+@@ -81,6 +90,13 @@
+  * Various error codes returned by the accounts service.
+  */
+ 
++#define CK_NAME      "org.freedesktop.ConsoleKit"
++
++#define CK_MANAGER_PATH      "/org/freedesktop/ConsoleKit/Manager"
++#define CK_MANAGER_INTERFACE "org.freedesktop.ConsoleKit.Manager"
++#define CK_SEAT_INTERFACE    "org.freedesktop.ConsoleKit.Seat"
++#define CK_SESSION_INTERFACE "org.freedesktop.ConsoleKit.Session"
++
+ #define ACCOUNTS_NAME      "org.freedesktop.Accounts"
+ #define ACCOUNTS_PATH      "/org/freedesktop/Accounts"
+ #define ACCOUNTS_INTERFACE "org.freedesktop.Accounts"
+@@ -89,6 +105,7 @@
+ {
+         ACT_USER_MANAGER_SEAT_STATE_UNLOADED = 0,
+         ACT_USER_MANAGER_SEAT_STATE_GET_SESSION_ID,
++        ACT_USER_MANAGER_SEAT_STATE_GET_SESSION_PROXY,
+         ACT_USER_MANAGER_SEAT_STATE_GET_ID,
+         ACT_USER_MANAGER_SEAT_STATE_GET_SEAT_PROXY,
+         ACT_USER_MANAGER_SEAT_STATE_LOADED,
+@@ -99,15 +116,20 @@
+         ActUserManagerSeatState state;
+         char                   *id;
+         char                   *session_id;
++        ConsoleKitSeat              *seat_proxy;
++        ConsoleKitSession           *session_proxy;
+         guint                   load_idle_id;
++#ifdef WITH_SYSTEMD
+         sd_login_monitor       *session_monitor;
+         GInputStream           *session_monitor_stream;
+         guint                   session_monitor_source_id;
++#endif
+ } ActUserManagerSeat;
+ 
+ typedef enum
+ {
+         ACT_USER_MANAGER_NEW_SESSION_STATE_UNLOADED = 0,
++        ACT_USER_MANAGER_NEW_SESSION_STATE_GET_PROXY,
+         ACT_USER_MANAGER_NEW_SESSION_STATE_GET_UID,
+         ACT_USER_MANAGER_NEW_SESSION_STATE_GET_X11_DISPLAY,
+         ACT_USER_MANAGER_NEW_SESSION_STATE_MAYBE_ADD,
+@@ -119,6 +141,7 @@
+         ActUserManager               *manager;
+         ActUserManagerNewSessionState state;
+         char                         *id;
++        ConsoleKitSession               *proxy;
+         GCancellable                 *cancellable;
+         uid_t                         uid;
+         char                         *x11_display;
+@@ -165,6 +188,7 @@
+         GDBusConnection   *connection;
+         AccountsAccounts  *accounts_proxy;
+ 
++        ConsoleKitManager     *ck_manager_proxy;
+         ActUserManagerSeat seat;
+ 
+         GSList            *new_sessions;
+@@ -260,6 +284,39 @@
+         return (GQuark) ret;
+ }
+ 
++static gboolean
++activate_console_kit_session_id (ActUserManager *manager,
++                                 const char     *seat_id,
++                                 const char     *session_id)
++{
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++        ConsoleKitSeat *proxy;
++        g_autoptr(GError) error = NULL;
++        gboolean res = FALSE;
++
++        proxy = console_kit_seat_proxy_new_sync (priv->connection,
++                                                 G_DBUS_PROXY_FLAGS_NONE,
++                                                 CK_NAME,
++                                                 seat_id,
++                                                 NULL,
++                                                 &error);
++        if (proxy)
++                res = console_kit_seat_call_activate_session_sync (proxy,
++                                                                   session_id,
++                                                                   G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION,
++                                                                   -1,
++                                                                   NULL,
++                                                                   &error);
++
++        if (!res) {
++                g_warning ("Unable to activate session: %s", error->message);
++                return FALSE;
++        }
++
++        return TRUE;
++}
++
++#ifdef WITH_SYSTEMD
+ static gboolean
+ activate_systemd_session_id (ActUserManager *manager,
+                              const char     *seat_id,
+@@ -296,9 +353,49 @@
+         return TRUE;
+ }
+ 
++#endif
++
+ static gboolean
+-session_is_login_window (ActUserManager *manager,
+-                         const char     *session_id)
++_ck_session_is_login_window (ActUserManager *manager,
++                             const char     *session_id)
++{
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++        ConsoleKitSession *proxy;
++        g_autoptr(GError) error = NULL;
++        g_autofree gchar *session_type = NULL;
++        gboolean res = FALSE;
++
++        proxy = console_kit_session_proxy_new_sync (priv->connection,
++                                                    G_DBUS_PROXY_FLAGS_NONE,
++                                                    CK_NAME,
++                                                    session_id,
++                                                    NULL,
++                                                    &error);
++        if (proxy)
++                res = console_kit_session_call_get_session_type_sync (proxy,
++                                                                      G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION,
++                                                                      -1,
++                                                                      &session_type,
++                                                                      NULL,
++                                                                      &error);
++
++        if (!res) {
++                if (error != NULL) {
++                        g_debug ("ActUserManager: Failed to identify the session type: %s", error->message);
++                } else {
++                        g_debug ("ActUserManager: Failed to identify the session type");
++                }
++                return FALSE;
++        }
++        if (proxy)
++                g_object_unref (proxy);
++
++        return strcmp (session_type, "LoginWindow") == 0;
++}
++#ifdef WITH_SYSTEMD
++static gboolean
++_systemd_session_is_login_window (ActUserManager *manager,
++                                  const char     *session_id)
+ {
+         int res;
+         g_autofree gchar *session_class = NULL;
+@@ -314,9 +411,32 @@
+         return g_strcmp0 (session_class, "greeter") == 0;
+ }
+ 
++#endif
++
+ static gboolean
+-session_is_on_our_seat (ActUserManager *manager,
+-                        const char     *session_id)
++session_is_login_window (ActUserManager *manager,
++                         const char     *session_id)
++{
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                return _systemd_session_is_login_window (manager, session_id);
++        }
++#endif
++
++        return _ck_session_is_login_window (manager, session_id);
++}
++
++static gboolean
++_ck_session_is_on_our_seat (ActUserManager *manager,
++                            const char     *session_id)
++{
++        /* With ConsoleKit, we only ever see sessions on our seat. */
++        return TRUE;
++}
++#ifdef WITH_SYSTEMD
++static gboolean
++_systemd_session_is_on_our_seat (ActUserManager *manager,
++                                 const char     *session_id)
+ {
+         ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
+         int res;
+@@ -335,6 +455,20 @@
+         return g_strcmp0 (priv->seat.id, session_seat) == 0;
+ }
+ 
++#endif
++
++static gboolean
++session_is_on_our_seat (ActUserManager *manager,
++                        const char     *session_id)
++{
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                return _systemd_session_is_on_our_seat (manager, session_id);
++        }
++#endif
++
++        return _ck_session_is_on_our_seat (manager, session_id);
++}
+ /**
+  * act_user_manager_goto_login_session:
+  * @manager: the user manager
+@@ -366,6 +500,7 @@
+         return res;
+ }
+ 
++#ifdef WITH_SYSTEMD
+ static gboolean
+ _can_activate_systemd_sessions (ActUserManager *manager)
+ {
+@@ -382,6 +517,32 @@
+         return res > 0;
+ }
+ 
++#endif
++
++static gboolean
++_can_activate_console_kit_sessions (ActUserManager *manager)
++{
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++        g_autoptr(GError) error = NULL;
++        gboolean  can_activate_sessions = FALSE;
++
++        if (!console_kit_seat_call_can_activate_sessions_sync (priv->seat.seat_proxy,
++                                                               G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION,
++                                                               -1,
++                                                               &can_activate_sessions,
++                                                               NULL,
++                                                               &error)) {
++                if (error != NULL) {
++                        g_warning ("unable to determine if seat can activate sessions: %s",
++                                   error->message);
++                } else {
++                        g_warning ("unable to determine if seat can activate sessions");
++                }
++                return FALSE;
++        }
++
++        return can_activate_sessions;
++}
+ /**
+  * act_user_manager_can_switch:
+  * @manager: the user manager
+@@ -408,7 +569,13 @@
+         g_debug ("ActUserManager: checking if seat can activate sessions");
+ 
+ 
+-        return _can_activate_systemd_sessions (manager);
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                return _can_activate_systemd_sessions (manager);
++        }
++#endif
++
++        return _can_activate_console_kit_sessions (manager);
+ }
+ 
+ /**
+@@ -444,7 +611,18 @@
+                 return FALSE;
+         }
+ 
+-        return activate_systemd_session_id (manager, priv->seat.id, ssid);
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                return activate_systemd_session_id (manager, priv->seat.id, ssid);
++        }
++#endif
++
++        if (!activate_console_kit_session_id (manager, priv->seat.id, ssid)) {
++                g_debug ("ActUserManager: unable to activate session: %s", ssid);
++                return FALSE;
++        }
++
++        return TRUE;
+ }
+ 
+ static const char *
+@@ -523,6 +701,40 @@
+         }
+ }
+ 
++static void
++on_get_seat_id_finished (GObject        *object,
++                         GAsyncResult   *result,
++                         gpointer        data)
++{
++        ConsoleKitSession *proxy = CONSOLE_KIT_SESSION (object);
++        g_autoptr(ActUserManager) manager = data;
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++        g_autoptr(GError)  error = NULL;
++        char              *seat_id;
++
++        if (!console_kit_session_call_get_seat_id_finish (proxy, &seat_id, result, &error)) {
++                if (error != NULL) {
++                        g_debug ("Failed to identify the seat of the "
++                                 "current session: %s",
++                                 error->message);
++                } else {
++                        g_debug ("Failed to identify the seat of the "
++                                 "current session");
++                }
++
++                g_debug ("ActUserManager: GetSeatId call failed, so unloading seat");
++                unload_seat (manager);
++
++                return;
++        }
++
++        g_debug ("ActUserManager: Found current seat: %s", seat_id);
++
++        priv->seat.id = seat_id;
++        priv->seat.state++;
++}
++
++#ifdef WITH_SYSTEMD
+ static gboolean
+ _systemd_session_is_graphical (const char *session_id)
+ {
+@@ -627,7 +839,7 @@
+ }
+ 
+ static void
+-get_seat_id_for_current_session (ActUserManager *manager)
++_get_systemd_seat_id (ActUserManager *manager)
+ {
+         ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
+         int res;
+@@ -655,6 +867,26 @@
+         priv->seat.state++;
+ }
+ 
++#endif
++
++static void
++get_seat_id_for_current_session (ActUserManager *manager)
++{
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                _get_systemd_seat_id (manager);
++                return;
++        }
++#endif
++        console_kit_session_call_get_seat_id (priv->seat.session_proxy,
++                                              G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION,
++                                              -1,
++                                              NULL,
++                                              on_get_seat_id_finished,
++                                              g_object_ref (manager));
++}
+ static gint
+ match_name_cmpfunc (gconstpointer a,
+                     gconstpointer b)
+@@ -1130,7 +1362,39 @@
+ }
+ 
+ static void
+-get_current_session_id (ActUserManager *manager)
++on_get_current_session_finished (GObject        *object,
++                                 GAsyncResult   *result,
++                                 gpointer        data)
++{
++        ConsoleKitManager *proxy = CONSOLE_KIT_MANAGER (object);
++        g_autoptr(ActUserManager) manager = data;
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++        g_autoptr(GError) error = NULL;
++        char              *session_id;
++
++        g_assert (priv->seat.state == ACT_USER_MANAGER_SEAT_STATE_GET_SESSION_ID);
++
++        if (!console_kit_manager_call_get_current_session_finish (proxy, &session_id, result, &error)) {
++                if (error != NULL) {
++                        g_debug ("Failed to identify the current session: %s",
++                                 error->message);
++                } else {
++                        g_debug ("Failed to identify the current session");
++                }
++                unload_seat (manager);
++
++                return;
++        }
++
++        priv->seat.session_id = session_id;
++        priv->seat.state++;
++
++        queue_load_seat_incrementally (manager);
++}
++
++#ifdef WITH_SYSTEMD
++static void
++_get_current_systemd_session_id (ActUserManager *manager)
+ {
+         ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
+         g_autofree gchar *session_id = NULL;
+@@ -1145,6 +1409,47 @@
+         priv->seat.state++;
+ 
+         queue_load_seat_incrementally (manager);
++
++}
++#endif
++
++static void
++get_current_session_id (ActUserManager *manager)
++{
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                _get_current_systemd_session_id (manager);
++                return;
++        }
++#endif
++
++        if (priv->ck_manager_proxy == NULL) {
++                g_autoptr(GError) error = NULL;
++
++                priv->ck_manager_proxy = console_kit_manager_proxy_new_sync (priv->connection,
++                                                                             G_DBUS_PROXY_FLAGS_NONE,
++                                                                             CK_NAME,
++                                                                             CK_MANAGER_PATH,
++                                                                             NULL,
++                                                                             &error);
++                if (priv->ck_manager_proxy == NULL) {
++                        if (error != NULL) {
++                                g_warning ("Failed to create ConsoleKit proxy: %s", error->message);
++                        } else {
++                                g_warning ("Failed to create_ConsoleKit_proxy");
++                        }
++                        unload_seat (manager);
++                        return;
++                }
++        }
++
++        console_kit_manager_call_get_current_session (priv->ck_manager_proxy,
++                                                      G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION,
++                                                      -1, NULL,
++                                                      on_get_current_session_finished,
++                                                      g_object_ref (manager));
+ }
+ 
+ static void
+@@ -1165,6 +1470,11 @@
+                 new_session->cancellable = NULL;
+         }
+ 
++        if (new_session->proxy != NULL) {
++                g_object_unref (new_session->proxy);
++                new_session->proxy = NULL;
++        }
++
+         g_free (new_session->x11_display);
+         new_session->x11_display = NULL;
+         g_free (new_session->id);
+@@ -1189,7 +1499,79 @@
+ }
+ 
+ static void
+-get_uid_for_new_session (ActUserManagerNewSession *new_session)
++get_proxy_for_new_session (ActUserManagerNewSession *new_session)
++{
++        ActUserManager *manager = new_session->manager;
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++        g_autoptr(GError) error = NULL;
++
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                new_session->state++;
++                load_new_session_incrementally (new_session);
++                return;
++        }
++#endif
++
++        new_session->proxy = console_kit_session_proxy_new_sync (priv->connection,
++                                                                 G_DBUS_PROXY_FLAGS_NONE,
++                                                                 CK_NAME,
++                                                                 new_session->id,
++                                                                 NULL,
++                                                                 &error);
++        if (new_session->proxy == NULL) {
++                g_warning ("Failed to connect to the ConsoleKit '%s' object: %s",
++                           new_session->id, error->message);
++                unload_new_session (new_session);
++                return;
++        }
++
++        new_session->state++;
++
++        load_new_session_incrementally (new_session);
++}
++
++static void
++on_get_unix_user_finished (GObject      *object,
++                           GAsyncResult *result,
++                           gpointer      data)
++{
++        ConsoleKitSession *proxy = CONSOLE_KIT_SESSION (object);
++        ActUserManagerNewSession *new_session = data;
++        g_autoptr(GError)  error = NULL;
++        guint              uid;
++
++        new_session->pending_calls--;
++
++        if (new_session->cancellable == NULL || g_cancellable_is_cancelled (new_session->cancellable)) {
++                unload_new_session (new_session);
++                return;
++        }
++
++        if (!console_kit_session_call_get_unix_user_finish (proxy, &uid, result, &error)) {
++                if (error != NULL) {
++                        g_debug ("Failed to get uid of session '%s': %s",
++                                 new_session->id, error->message);
++                } else {
++                        g_debug ("Failed to get uid of session '%s'",
++                                 new_session->id);
++                }
++                unload_new_session (new_session);
++                return;
++        }
++
++        g_debug ("ActUserManager: Found uid of session '%s': %u",
++                 new_session->id, uid);
++
++        new_session->uid = (uid_t) uid;
++        new_session->state++;
++
++        load_new_session_incrementally (new_session);
++}
++
++#ifdef WITH_SYSTEMD
++static void
++_get_uid_for_new_systemd_session (ActUserManagerNewSession *new_session)
+ {
+         uid_t uid;
+         int res;
+@@ -1210,6 +1592,28 @@
+         load_new_session_incrementally (new_session);
+ }
+ 
++#endif
++
++static void
++get_uid_for_new_session (ActUserManagerNewSession *new_session)
++{
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                _get_uid_for_new_systemd_session (new_session);
++                return;
++        }
++#endif
++
++        g_assert (new_session->proxy != NULL);
++
++        new_session->pending_calls++;
++        console_kit_session_call_get_unix_user (new_session->proxy,
++                                                G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION,
++                                                -1,
++                                                new_session->cancellable,
++                                                on_get_unix_user_finished,
++                                                new_session);
++}
+ static void
+ on_find_user_by_name_finished (GObject      *object,
+                                GAsyncResult *result,
+@@ -1369,7 +1773,46 @@
+ }
+ 
+ static void
+-get_x11_display_for_new_session (ActUserManagerNewSession *new_session)
++on_get_x11_display_finished (GObject      *object,
++                             GAsyncResult *result,
++                             gpointer      data)
++{
++        ConsoleKitSession *proxy = CONSOLE_KIT_SESSION (object);
++        ActUserManagerNewSession *new_session = data;
++        g_autoptr(GError) error = NULL;
++        char              *x11_display;
++
++        new_session->pending_calls--;
++
++        if (new_session->cancellable == NULL || g_cancellable_is_cancelled (new_session->cancellable)) {
++                unload_new_session (new_session);
++                return;
++        }
++
++        if (!console_kit_session_call_get_x11_display_finish (proxy, &x11_display, result, &error)) {
++                if (error != NULL) {
++                        g_debug ("Failed to get the x11 display of session '%s': %s",
++                                 new_session->id, error->message);
++                } else {
++                        g_debug ("Failed to get the x11 display of session '%s'",
++                                 new_session->id);
++                }
++                unload_new_session (new_session);
++                return;
++        }
++
++        g_debug ("ActUserManager: Found x11 display of session '%s': %s",
++                 new_session->id, x11_display);
++
++        new_session->x11_display = x11_display;
++        new_session->state++;
++
++        load_new_session_incrementally (new_session);
++}
++
++#ifdef WITH_SYSTEMD
++static void
++_get_x11_display_for_new_systemd_session (ActUserManagerNewSession *new_session)
+ {
+         g_autofree gchar *session_type = NULL;
+         g_autofree gchar *x11_display = NULL;
+@@ -1414,6 +1857,28 @@
+         load_new_session_incrementally (new_session);
+ }
+ 
++#endif
++
++static void
++get_x11_display_for_new_session (ActUserManagerNewSession *new_session)
++{
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                _get_x11_display_for_new_systemd_session (new_session);
++                return;
++        }
++#endif
++
++        g_assert (new_session->proxy != NULL);
++
++        new_session->pending_calls++;
++        console_kit_session_call_get_x11_display (new_session->proxy,
++                                                  G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION,
++                                                  -1,
++                                                  new_session->cancellable,
++                                                  on_get_x11_display_finished,
++                                                  new_session);
++}
+ static void
+ maybe_add_new_session (ActUserManagerNewSession *new_session)
+ {
+@@ -1462,6 +1927,16 @@
+ 
+         priv->new_sessions = g_slist_prepend (priv->new_sessions, new_session);
+         load_new_session_incrementally (new_session);
++}
++
++static void
++seat_session_added (GDBusProxy     *seat_proxy,
++                    const char     *session_id,
++                    ActUserManager *manager)
++{
++        g_debug ("ActUserManager: Session added: %s", session_id);
++
++        load_new_session (manager, session_id);
+ }
+ 
+ static gint
+@@ -1527,6 +2002,16 @@
+         g_hash_table_remove (priv->sessions, session_id);
+ }
+ 
++static void
++seat_session_removed (GDBusProxy     *seat_proxy,
++                      const char     *session_id,
++                      ActUserManager *manager)
++{
++        _remove_session (manager, session_id);
++}
++
++#ifdef WITH_SYSTEMD
++
+ static gboolean
+ _session_recognized (ActUserManager *manager,
+                      const char     *session_id)
+@@ -1573,6 +2058,13 @@
+                         _add_systemd_session (manager, session_id);
+                 }
+         }
++}
++
++static void
++_remove_systemd_session (ActUserManager *manager,
++                         const char     *session_id)
++{
++        _remove_session (manager, session_id);
+ }
+ 
+ static void
+@@ -1613,14 +2105,14 @@
+                 char *session_id = node->data;
+                 GSList *next_node = node->next;
+ 
+-                _remove_session (manager, session_id);
+-
++                _remove_systemd_session (manager, session_id);
+                 node = next_node;
+         }
+ 
+         g_slist_free (sessions_to_remove);
+ }
+ 
++#ifdef WITH_SYSTEMD
+ static void
+ reload_systemd_sessions (ActUserManager *manager)
+ {
+@@ -1674,6 +2166,7 @@
+         _remove_stale_systemd_sessions (manager, systemd_sessions);
+ }
+ 
++#endif
+ static gboolean
+ on_session_monitor_event (GPollableInputStream *stream,
+                           ActUserManager       *manager)
+@@ -1716,21 +2209,124 @@
+         g_source_unref (source);
+ }
+ 
++#endif
+ static void
+ get_seat_proxy (ActUserManager *manager)
+ {
+         ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
+ 
+-        _monitor_for_systemd_session_changes (manager);
++        g_autoptr(GError) error = NULL;
++
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                _monitor_for_systemd_session_changes (manager);
++                priv->seat.state++;
++                return;
++        }
++#endif
++
++        g_assert (priv->seat.seat_proxy == NULL);
++
++        priv->seat.seat_proxy = console_kit_seat_proxy_new_sync (priv->connection,
++                                                                 G_DBUS_PROXY_FLAGS_NONE,
++                                                                 CK_NAME,
++                                                                 priv->seat.id,
++                                                                 NULL,
++                                                                 &error);
++        if (priv->seat.seat_proxy == NULL) {
++                if (error != NULL) {
++                        g_warning ("Failed to connect to the ConsoleKit seat object: %s",
++                                   error->message);
++                } else {
++                        g_warning ("Failed to connect to the ConsoleKit seat object");
++                }
++                unload_seat (manager);
++                return;
++        }
++
++        g_signal_connect (priv->seat.seat_proxy,
++                          "session-added",
++                          G_CALLBACK (seat_session_added),
++                          manager);
++        g_signal_connect (priv->seat.seat_proxy,
++                          "session-removed",
++                          G_CALLBACK (seat_session_removed),
++                          manager);
+         priv->seat.state++;
+ }
+ 
+ static void
++on_console_kit_session_proxy_gotten (GObject *object, GAsyncResult *result, gpointer user_data)
++{
++        ActUserManager *manager = user_data;
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++        g_autoptr(GError) error = NULL;
++
++        g_debug ("on_console_kit_session_proxy_gotten");
++
++        priv->seat.session_proxy = console_kit_session_proxy_new_finish (result, &error);
++
++        if (priv->seat.session_proxy == NULL) {
++                if (error != NULL) {
++                        g_warning ("Failed to connect to the ConsoleKit session object: %s",
++                                   error->message);
++                } else {
++                        g_warning ("Failed to connect to the ConsoleKit session object");
++                }
++                unload_seat (manager);
++
++                goto out;
++        }
++        priv->seat.state++;
++        load_seat_incrementally (manager);
++
++ out:
++        g_debug ("ActUserManager: unrefing manager owned by ConsoleKit proxy getter");
++        g_object_unref (manager);
++}
++
++static void
++get_session_proxy (ActUserManager *manager)
++{
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                priv->seat.state++;
++                queue_load_seat_incrementally (manager);
++                return;
++        }
++#endif
++
++        g_debug ("ActUserManager: fetching user proxy");
++
++        g_assert (priv->seat.session_proxy == NULL);
++
++        console_kit_session_proxy_new (priv->connection,
++                                       G_DBUS_PROXY_FLAGS_NONE,
++                                       CK_NAME,
++                                       priv->seat.session_id,
++                                       NULL,
++                                       on_console_kit_session_proxy_gotten,
++                                       g_object_ref (manager));
++}
++
++static void
+ unload_seat (ActUserManager *manager)
+ {
+         ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
+ 
+         priv->seat.state = ACT_USER_MANAGER_SEAT_STATE_UNLOADED;
++
++        if (priv->seat.seat_proxy != NULL) {
++                g_object_unref (priv->seat.seat_proxy);
++                priv->seat.seat_proxy = NULL;
++        }
++
++        if (priv->seat.session_proxy != NULL) {
++                g_object_unref (priv->seat.session_proxy);
++                priv->seat.session_proxy = NULL;
++        }
+ 
+         g_free (priv->seat.id);
+         priv->seat.id = NULL;
+@@ -1746,6 +2342,9 @@
+ load_new_session_incrementally (ActUserManagerNewSession *new_session)
+ {
+         switch (new_session->state) {
++        case ACT_USER_MANAGER_NEW_SESSION_STATE_GET_PROXY:
++                get_proxy_for_new_session (new_session);
++                break;
+         case ACT_USER_MANAGER_NEW_SESSION_STATE_GET_UID:
+                 get_uid_for_new_session (new_session);
+                 break;
+@@ -2218,10 +2817,67 @@
+ }
+ 
+ static void
++on_get_sessions_finished (GObject      *object,
++                          GAsyncResult *result,
++                          gpointer      data)
++{
++        ConsoleKitSeat *proxy = CONSOLE_KIT_SEAT (object);
++        g_autoptr(ActUserManager) manager = data;
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++        g_autoptr(GError) error = NULL;
++        g_auto(GStrv) session_ids = NULL;
++        int             i;
++
++        if (!console_kit_seat_call_get_sessions_finish (proxy, &session_ids, result, &error)) {
++                if (error != NULL) {
++                        g_warning ("unable to determine sessions for seat: %s",
++                                   error->message);
++                } else {
++                        g_warning ("unable to determine sessions for seat");
++                }
++
++                return;
++        }
++
++        priv->getting_sessions = FALSE;
++        for (i = 0; session_ids[i] != NULL; i++) {
++                load_new_session (manager, session_ids[i]);
++        }
++
++        g_debug ("ActUserManager: GetSessions call finished, so trying to set loaded property");
++        maybe_set_is_loaded (manager);
++}
++
++static void
++load_console_kit_sessions (ActUserManager *manager)
++{
++        ActUserManagerPrivate *priv = act_user_manager_get_instance_private (manager);
++
++        if (priv->seat.seat_proxy == NULL) {
++                g_debug ("ActUserManager: no seat proxy; can't load sessions");
++                return;
++        }
++
++        priv->getting_sessions = TRUE;
++        console_kit_seat_call_get_sessions (priv->seat.seat_proxy,
++                                            G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION,
++                                            -1,
++                                            NULL,
++                                            on_get_sessions_finished,
++                                            g_object_ref (manager));
++}
++
++static void
+ load_sessions (ActUserManager *manager)
+ {
+-        reload_systemd_sessions (manager);
+-        maybe_set_is_loaded (manager);
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                reload_systemd_sessions (manager);
++                maybe_set_is_loaded (manager);
++                return;
++        }
++#endif
++        load_console_kit_sessions (manager);
+ }
+ 
+ static void
+@@ -2267,6 +2923,9 @@
+         switch (priv->seat.state) {
+         case ACT_USER_MANAGER_SEAT_STATE_GET_SESSION_ID:
+                 get_current_session_id (manager);
++                break;
++        case ACT_USER_MANAGER_SEAT_STATE_GET_SESSION_PROXY:
++                get_session_proxy (manager);
+                 break;
+         case ACT_USER_MANAGER_SEAT_STATE_GET_ID:
+                 get_seat_id_for_current_session (manager);
+@@ -2674,10 +3333,19 @@
+                 g_slist_free (priv->include_usernames);
+         }
+ 
++        if (priv->seat.seat_proxy != NULL) {
++                g_object_unref (priv->seat.seat_proxy);
++        }
++
++        if (priv->seat.session_proxy != NULL) {
++                g_object_unref (priv->seat.session_proxy);
++        }
++
+         if (priv->seat.load_idle_id != 0) {
+                 g_source_remove (priv->seat.load_idle_id);
+         }
+ 
++#ifdef WITH_SYSTEMD
+         if (priv->seat.session_monitor != NULL) {
+                 sd_login_monitor_unref (priv->seat.session_monitor);
+         }
+@@ -2690,6 +3358,7 @@
+                 g_source_remove (priv->seat.session_monitor_source_id);
+         }
+ 
++#endif
+         if (priv->accounts_proxy != NULL) {
+                 g_object_unref (priv->accounts_proxy);
+         }
+--- a/src/libaccountsservice/meson.build
++++ b/src/libaccountsservice/meson.build
+@@ -28,20 +28,44 @@
+   install_dir: join_paths(act_pkgincludedir, subdir),
+ )
+ 
++dbus_sources = []
++
++ifaces = [
++  'Manager',
++  'Seat',
++  'Session',
++]
++
++namespace = 'ConsoleKit'
++prefix = 'org.freedesktop.' + namespace
++
++foreach iface: ifaces
++  dbus_sources += gnome.gdbus_codegen(
++    'ck-@0@-generated'.format(iface.to_lower()),
++    '@0@.@1@.xml'.format(prefix, iface),
++    interface_prefix: prefix,
++    namespace: namespace,
++    extra_args: ['--glib-min-required', '2.64'],
++  )
++endforeach
++
+ deps = [
+   gio_unix_dep,
+   glib_dep,
+   libaccounts_shared_dep,
+-  logind_dep,
+ ]
+ 
+ symbol_map = join_paths(meson.current_source_dir(), 'symbol.map')
+ ldflags = cc.get_supported_link_arguments('-Wl,--version-script,@0@'.format(symbol_map))
+ 
++if enable_systemd or enable_elogind
++  deps += logind_dep
++endif
++
+ libaccountsservice = shared_library(
+   act_name,
+   soversion: soversion,
+-  sources: sources + enum_sources,
++  sources: sources + enum_sources + dbus_sources,
+   version: libversion,
+   include_directories: top_inc,
+   dependencies: deps,
+--- /dev/null
++++ b/src/libaccountsservice/org.freedesktop.ConsoleKit.Manager.xml
+@@ -0,0 +1,353 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<node name="/org/freedesktop/ConsoleKit/Manager"
++  xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd"
++>
++
++  <interface name="org.freedesktop.ConsoleKit.Manager">
++    <method name="Restart">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This method initiates a request to restart (ie. reboot) the computer system.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++
++    <method name="CanRestart">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="can_restart" type="b" direction="out"/>
++    </method>
++
++    <method name="Stop">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This method initiates a request to stop (ie. shutdown) the computer system.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++
++    <method name="CanStop">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="can_stop" type="b" direction="out"/>
++    </method>
++
++    <method name="OpenSession">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="cookie" direction="out" type="s">
++        <doc:doc>
++          <doc:summary>The secret cookie that is used to identify the new session</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This method requests that a new <doc:ref type="interface" to="Session">Session</doc:ref>
++          be created for the calling process.  The properties of this new Session are set automatically
++          from information collected about the calling process.
++          </doc:para>
++          <doc:para>This new session exists until the calling process disconnects from the system bus or
++          calls <doc:ref type="method" to="Manager.CloseSession">CloseSession()</doc:ref>.
++          </doc:para>
++          <doc:para>It is the responsibility of the calling process to set the environment variable
++          XDG_SESSION_COOKIE to the value of the returned cookie.  This cookie should only
++          be made available to child processes of the caller so that they may be identified
++          as members of this session.
++          </doc:para>
++          <doc:para>See this simple example:
++          <doc:example language="c" title="simple example"><doc:code>
++	DBusError       error;
++	DBusMessage    *message;
++	DBusMessage    *reply;
++
++	message = dbus_message_new_method_call ("org.freedesktop.ConsoleKit",
++						"/org/freedesktop/ConsoleKit/Manager",
++						"org.freedesktop.ConsoleKit.Manager",
++						"OpenSession");
++	if (message == NULL) {
++		goto out;
++	}
++
++        dbus_error_init (&amp;error);
++        reply = dbus_connection_send_with_reply_and_block (connector->connection,
++                                                           message,
++                                                           -1,
++                                                           &amp;error);
++        if (reply == NULL) {
++		goto out;
++        }
++
++        dbus_error_init (&amp;error);
++        if (! dbus_message_get_args (reply,
++                                     &amp;error,
++                                     DBUS_TYPE_STRING, &amp;cookie,
++                                     DBUS_TYPE_INVALID)) {
++		goto out;
++        }
++
++          </doc:code></doc:example></doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="method" to="Manager.OpenSessionWithParameters">OpenSessionWithParameters()</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="OpenSessionWithParameters">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="parameters" direction="in" type="a(sv)">
++        <doc:doc>
++          <doc:summary>An array of sets of property names and values</doc:summary>
++        </doc:doc>
++      </arg>
++      <arg name="cookie" direction="out" type="s">
++        <doc:doc>
++          <doc:summary>The secret cookie that is used to identify the new session</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This method requests that a new <doc:ref type="interface" to="Session">Session</doc:ref>
++          be created for the calling process.  The properties of this new Session are from the
++          parameters provided.
++          </doc:para>
++          <doc:para>This new session exists until the calling process disconnects from the system bus or
++          calls <doc:ref type="method" to="Manager.CloseSession">CloseSession()</doc:ref>.
++          </doc:para>
++          <doc:para>It is the responsibility of the calling process to set the environment variable
++          XDG_SESSION_COOKIE to the value of the returned cookie.  This cookie should only
++          be made available to child processes of the caller so that they may be identified
++          as members of this session.
++          </doc:para>
++          <doc:para>See the <doc:ref type="interface" to="Session">Session</doc:ref> properties for a list of valid parameters.</doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="interface" to="Session">org.freedesktop.ConsoleKit.Session</doc:ref></doc:seealso>
++        <doc:permission>This method is restricted to privileged users by D-Bus policy.</doc:permission>
++      </doc:doc>
++    </method>
++    <method name="CloseSession">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="cookie" direction="in" type="s">
++        <doc:doc>
++          <doc:summary>The secret cookie that is used to identify the session</doc:summary>
++        </doc:doc>
++      </arg>
++      <arg name="result" direction="out" type="b">
++        <doc:doc>
++          <doc:summary>Whether the session was successfully closed</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This method is used to close the session identified by the supplied cookie.
++          </doc:para>
++          <doc:para>The session can only be closed by the same process that opened the session.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++
++    <method name="GetSeats">
++      <arg name="seats" direction="out" type="ao">
++        <doc:doc>
++          <doc:summary>an array of Seat IDs</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This gets a list of all the <doc:ref type="interface" to="Seat">Seats</doc:ref>
++          that are currently present on the system.</doc:para>
++          <doc:para>Each Seat ID is an D-Bus object path for the object that implements the
++          <doc:ref type="interface" to="Seat">Seat</doc:ref> interface.</doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="interface" to="Seat">org.freedesktop.ConsoleKit.Seat</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++
++    <method name="GetSessions">
++      <arg name="sessions" direction="out" type="ao">
++        <doc:doc>
++          <doc:summary>an array of Session IDs</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This gets a list of all the <doc:ref type="interface" to="Session">Sessions</doc:ref>
++          that are currently present on the system.</doc:para>
++          <doc:para>Each Session ID is an D-Bus object path for the object that implements the
++          <doc:ref type="interface" to="Session">Session</doc:ref> interface.</doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="interface" to="Session">org.freedesktop.ConsoleKit.Session</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++
++    <method name="GetSessionForCookie">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="cookie" direction="in" type="s">
++        <doc:doc>
++          <doc:summary>The secret cookie that is used to identify the session</doc:summary>
++        </doc:doc>
++      </arg>
++      <arg name="ssid" direction="out" type="o">
++        <doc:doc>
++          <doc:summary>The object identifier for the current session</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Returns the session ID that is associated with the specified cookie.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++    <method name="GetSessionForUnixProcess">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="pid" direction="in" type="u">
++        <doc:doc>
++          <doc:summary>The POSIX process ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <arg name="ssid" direction="out" type="o">
++        <doc:doc>
++          <doc:summary>The object identifier for the current session</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Attempts to determine the session ID for the specified
++          POSIX process ID (pid).
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++    <method name="GetCurrentSession">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="ssid" direction="out" type="o">
++        <doc:doc>
++          <doc:summary>The object identifier for the current session</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Attempts to determine the session ID that the caller belongs to.
++          </doc:para>
++          <doc:para>See this example of using dbus-send:
++          <doc:example language="shell" title="shell example"><doc:code>
++  dbus-send --system --dest=org.freedesktop.ConsoleKit \
++  --type=method_call --print-reply --reply-timeout=2000 \
++  /org/freedesktop/ConsoleKit/Manager \
++  org.freedesktop.ConsoleKit.Manager.GetCurrentSession
++          </doc:code></doc:example></doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++    <method name="GetSessionsForUnixUser">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="uid" direction="in" type="u">
++         <doc:doc>
++          <doc:summary>POSIX User identification</doc:summary>
++        </doc:doc>
++     </arg>
++      <arg name="sessions" direction="out" type="ao">
++        <doc:doc>
++          <doc:summary>an array of Session IDs</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This gets a list of all the <doc:ref type="interface" to="Session">Sessions</doc:ref>
++          that are currently open for the specified user.</doc:para>
++          <doc:para>Each Session ID is an D-Bus object path for the object that implements the
++          <doc:ref type="interface" to="Session">Session</doc:ref> interface.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++    <method name="GetSessionsForUser">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="uid" direction="in" type="u">
++         <doc:doc>
++          <doc:summary>User identification</doc:summary>
++        </doc:doc>
++     </arg>
++      <arg name="sessions" direction="out" type="ao">
++        <doc:doc>
++          <doc:summary>an array of Session IDs</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This gets a list of all the <doc:ref type="interface" to="Session">Sessions</doc:ref>
++          that are currently open for the specified user.</doc:para>
++          <doc:para>Each Session ID is an D-Bus object path for the object that implements the
++          <doc:ref type="interface" to="Session">Session</doc:ref> interface.</doc:para>
++        </doc:description>
++        <doc:deprecated version="0.1.3" instead="GetSessionsForUnixUser"/>
++      </doc:doc>
++    </method>
++
++    <method name="GetSystemIdleHint">
++      <arg name="idle_hint" type="b" direction="out">
++        <doc:doc>
++          <doc:summary>The value of the system-idle-hint</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Returns TRUE if the <doc:ref type="property" to="Session:idle-hint">idle-hint</doc:ref>
++          property of every open session is TRUE or if there are no open sessions.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++    <method name="GetSystemIdleSinceHint">
++      <arg name="iso8601_datetime" type="s" direction="out">
++        <doc:doc>
++          <doc:summary>An ISO 8601 format date-type string</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Returns an ISO 8601 date-time string that corresponds to
++          the time of the last change of the system-idle-hint.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++
++    <signal name="SeatAdded">
++      <arg name="sid" type="o">
++        <doc:doc>
++          <doc:summary>The Seat ID for the added seat</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted when a Seat has been added to the system.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++    <signal name="SeatRemoved">
++      <arg name="sid" type="o">
++        <doc:doc>
++          <doc:summary>The Seat ID for the removed seat</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted when a Seat has been removed from the system.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++    <signal name="SystemIdleHintChanged">
++      <arg name="hint" type="b">
++        <doc:doc>
++          <doc:summary>The value of the system-idle-hint</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted when the value of the system-idle-hint has changed.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++  </interface>
++</node>
+--- /dev/null
++++ b/src/libaccountsservice/org.freedesktop.ConsoleKit.Seat.xml
+@@ -0,0 +1,164 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<node xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
++
++  <interface name="org.freedesktop.ConsoleKit.Seat">
++    <doc:doc>
++      <doc:description>
++        <doc:para>A seat is a collection of sessions and a set of hardware (usually at
++least a keyboard and mouse).  Only one session may be active on a
++seat at a time.</doc:para>
++      </doc:description>
++    </doc:doc>
++
++    <method name="GetId">
++      <arg name="sid" direction="out" type="o">
++        <doc:doc>
++          <doc:summary>Seat ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Returns the ID for Seat.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++
++    <method name="GetSessions">
++      <arg name="sessions" direction="out" type="ao">
++        <doc:doc>
++          <doc:summary>an array of Session IDs</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This gets a list of all the <doc:ref type="interface" to="Session">Sessions</doc:ref>
++          that are currently attached to this seat.</doc:para>
++          <doc:para>Each Session ID is an D-Bus object path for the object that implements the
++          <doc:ref type="interface" to="Session">Session</doc:ref> interface.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++
++    <method name="GetDevices">
++      <arg name="devices" direction="out" type="a(ss)">
++        <doc:doc>
++          <doc:summary>an array of devices</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This gets a list of all the devices
++          that are currently associated with this seat.</doc:para>
++          <doc:para>Each device is an D-Bus structure that represents
++          the device type and the device id.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++
++    <method name="GetActiveSession">
++      <arg name="ssid" direction="out" type="o">
++        <doc:doc>
++          <doc:summary>Session ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Gets the Session ID that is currently active on this Seat.</doc:para>
++          <doc:para>Returns NULL if there is no active session.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++
++    <method name="CanActivateSessions">
++      <arg name="can_activate" direction="out" type="b">
++        <doc:doc>
++          <doc:summary>TRUE if seat supports session activation</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Used to determine whether the seat supports session activation.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++
++    <method name="ActivateSession">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="ssid" direction="in" type="o">
++        <doc:doc>
++          <doc:summary>Session ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Attempt to activate the specified session.  In most
++          cases, if successful, this will cause the session to
++          become visible and take control of the hardware that is
++          associated with this seat.</doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="method" to="Session.Activate">Activate()</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++
++    <signal name="ActiveSessionChanged">
++      <arg name="ssid" type="o">
++        <doc:doc>
++          <doc:summary>Session ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted when the active session has changed.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++    <signal name="SessionAdded">
++      <arg name="ssid" type="o">
++        <doc:doc>
++          <doc:summary>Session ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted when a session has been added to the seat.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++    <signal name="SessionRemoved">
++      <arg name="ssid" type="o">
++        <doc:doc>
++          <doc:summary>Session ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted when a session has been removed from the seat.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++    <signal name="DeviceAdded">
++      <arg name="device" type="(ss)">
++        <doc:doc>
++          <doc:summary>Device structure</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted when a device has been associated with the seat.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++    <signal name="DeviceRemoved">
++      <arg name="device" type="(ss)">
++        <doc:doc>
++          <doc:summary>Device structure</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted when a device has been dissociated from the seat.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++  </interface>
++</node>
+--- /dev/null
++++ b/src/libaccountsservice/org.freedesktop.ConsoleKit.Session.xml
+@@ -0,0 +1,435 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<node xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
++
++  <interface name="org.freedesktop.ConsoleKit.Session">
++    <doc:doc>
++      <doc:description>
++        <doc:para>Session objects represent and store information
++        related to a user session.
++        </doc:para>
++        <doc:para>The properties associated with the Session
++        specifically refer to the properties of the "session leader".
++        </doc:para>
++      </doc:description>
++    </doc:doc>
++    <method name="GetId">
++      <arg name="ssid" direction="out" type="o">
++        <doc:doc>
++          <doc:summary>Session ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Returns the ID for Session.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++    <method name="GetSeatId">
++      <arg name="sid" direction="out" type="o">
++        <doc:doc>
++          <doc:summary>Seat ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Returns the ID for the Seat the Session is
++        attached to.</doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="interface" to="Seat">org.freedesktop.ConsoleKit.Seat</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="GetSessionType">
++      <arg name="type" direction="out" type="s">
++        <doc:doc>
++          <doc:summary>Session type</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Returns the type of the session.</doc:para>
++          <doc:para>Warning: we haven't yet defined the allowed values for this property.
++          It is probably best to avoid this until we do.
++          </doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="property" to="Session:session-type">session-type</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="GetUser">
++      <arg name="uid" direction="out" type="u">
++        <doc:doc>
++          <doc:summary>User ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Returns the user that the session belongs to.</doc:para>
++        </doc:description>
++        <doc:deprecated version="0.1.3" instead="GetUnixUser"/>
++        <doc:seealso><doc:ref type="property" to="Session:user">user</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="GetUnixUser">
++      <arg name="uid" direction="out" type="u">
++        <doc:doc>
++          <doc:summary>POSIX User ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Returns the POSIX user ID that the session belongs to.</doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="property" to="Session:unix-user">unix-user</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="GetX11Display">
++      <arg name="display" direction="out" type="s">
++        <doc:doc>
++          <doc:summary>The value of the X11 display</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Returns the value of the X11 DISPLAY for this session
++        if one is present.</doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="property" to="Session:x11-display">x11-display</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="GetX11DisplayDevice">
++       <arg name="x11_display_device" direction="out" type="s">
++        <doc:doc>
++          <doc:summary>The value of the X11 display device</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Returns the value of the display device (aka TTY) that the
++        X11 display for the session is connected to.  If there is no x11-display set then this value
++        is undefined.</doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="property" to="Session:x11-display-device">x11-display-device</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="GetDisplayDevice">
++      <arg name="display_device" direction="out" type="s">
++        <doc:doc>
++          <doc:summary>The value of the display device</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Returns the value of the display device (aka TTY) that the
++        session is connected to.</doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="property" to="Session:display-device">display-device</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="GetRemoteHostName">
++      <arg name="remote_host_name" direction="out" type="s">
++        <doc:doc>
++          <doc:summary>The remote host name</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Returns the value of the remote host name for the session.
++        </doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="property" to="Session:remote-host-name">remote-host-name</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="GetLoginSessionId">
++       <arg name="login_session_id" direction="out" type="s">
++        <doc:doc>
++          <doc:summary>The value of the native system login session ID</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Returns the value of the login session ID that the
++        underlying system uses to enforce session boundaries.  If there is no login session ID
++        set then this value is an empty string.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++    <method name="IsActive">
++      <arg name="active" direction="out" type="b">
++        <doc:doc>
++          <doc:summary>TRUE if the session is active, otherwise FALSE</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Returns whether the session is active on the Seat that
++        it is attached to.</doc:para>
++        <doc:para>If the session is not attached to a seat this value is undefined.
++        </doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="property" to="Session:active">active</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="IsLocal">
++      <arg name="local" direction="out" type="b">
++        <doc:doc>
++          <doc:summary>TRUE if the session is local, otherwise FALSE</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description><doc:para>Returns whether the session is local</doc:para>
++        <doc:para>FIXME: we need to come up with a concrete definition for this value.
++        It was originally used as a way to identify XDMCP sessions that originate
++        from a remote system.
++        </doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="property" to="Session:is-local">is-local</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="GetCreationTime">
++      <arg name="iso8601_datetime" type="s" direction="out">
++        <doc:doc>
++          <doc:summary>An ISO 8601 format date-type string</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Returns an ISO 8601 date-time string that corresponds to
++          the time that the session was opened.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++
++    <method name="Activate">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Attempt to activate the this session.  In most
++          cases, if successful, this will cause the session to
++          become visible and become active on the seat that it
++          is attached to.</doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="method" to="Seat.ActivateSession">Seat.ActivateSession()</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="Lock">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This will cause a <doc:ref type="signal" to="Session::Lock">Lock</doc:ref>
++          signal to be emitted for this session.
++          </doc:para>
++        </doc:description>
++        <doc:permission>This method is restricted to privileged users by D-Bus policy.</doc:permission>
++        <doc:seealso><doc:ref type="signal" to="Session::Lock">Lock signal</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="Unlock">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This will cause an <doc:ref type="signal" to="Session::Unlock">Unlock</doc:ref>
++          signal to be emitted for this session.
++          </doc:para>
++          <doc:para>This can be used by login managers to unlock a session before it is
++          re-activated during fast-user-switching.
++          </doc:para>
++        </doc:description>
++        <doc:permission>This method is restricted to privileged users by D-Bus policy.</doc:permission>
++        <doc:seealso><doc:ref type="signal" to="Session::Unlock">Unlock signal</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++
++    <method name="GetIdleHint">
++      <arg name="idle_hint" type="b" direction="out">
++        <doc:doc>
++          <doc:summary>The value of the idle-hint</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Gets the value of the <doc:ref type="property" to="Session:idle-hint">idle-hint</doc:ref>
++          property.
++          </doc:para>
++        </doc:description>
++        <doc:seealso><doc:ref type="property" to="Session:idle-hint">idle-hint</doc:ref></doc:seealso>
++      </doc:doc>
++    </method>
++    <method name="GetIdleSinceHint">
++      <arg name="iso8601_datetime" type="s" direction="out">
++        <doc:doc>
++          <doc:summary>An ISO 8601 format date-type string</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Returns an ISO 8601 date-time string that corresponds to
++          the time of the last change of the idle-hint.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++    <method name="SetIdleHint">
++      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
++      <arg name="idle_hint" type="b" direction="in">
++        <doc:doc>
++          <doc:summary>boolean value to set the idle-hint to</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>This may be used by the session to indicate that
++          it is idle.
++          </doc:para>
++          <doc:para>Use of this method is restricted to the user
++          that owns the session.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </method>
++
++    <signal name="ActiveChanged">
++      <arg name="is_active" type="b">
++        <doc:doc>
++          <doc:summary>TRUE if the session is active, otherwise FALSE</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted when the active property has changed.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++    <signal name="IdleHintChanged">
++      <arg name="hint" type="b">
++        <doc:doc>
++          <doc:summary>the new value of idle-hint</doc:summary>
++        </doc:doc>
++      </arg>
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted when the idle-hint property has changed.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++    <signal name="Lock">
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted in response to a call to the <doc:ref type="method" to="Session.Lock">Lock()</doc:ref> method.</doc:para>
++          <doc:para>It is intended that the screensaver for the session should lock the screen in response to this signal.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++    <signal name="Unlock">
++      <doc:doc>
++        <doc:description>
++          <doc:para>Emitted in response to a call to the <doc:ref type="method" to="Session.Unlock">Unlock()</doc:ref> method.</doc:para>
++          <doc:para>It is intended that the screensaver for the session should unlock the screen in response to this signal.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </signal>
++
++    <property name="unix-user" type="u" access="readwrite">
++      <doc:doc>
++        <doc:description>
++          <doc:para>The user assigned to the session.</doc:para>
++        </doc:description>
++      </doc:doc>
++    </property>
++    <property name="user" type="u" access="readwrite">
++      <doc:doc>
++        <doc:description>
++          <doc:para>The user assigned to the session.</doc:para>
++        </doc:description>
++        <doc:deprecated version="0.1.3" instead="unix-user"/>
++      </doc:doc>
++    </property>
++    <property name="session-type" type="s" access="readwrite">
++      <doc:doc>
++        <doc:description>
++          <doc:para>The type of the session.</doc:para>
++          <doc:para>Warning: we haven't yet defined the allowed values for this property.
++          It is probably best to avoid this until we do.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </property>
++    <property name="remote-host-name" type="s" access="readwrite">
++      <doc:doc>
++        <doc:description>
++          <doc:para>The remote host name for the session.
++          </doc:para>
++          <doc:para>This will be set in situations where the session is
++          opened and controlled from a remote system.
++          </doc:para>
++          <doc:para>For example, this value will be set when the
++          session is created from an SSH or XDMCP connection.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </property>
++    <property name="display-device" type="s" access="readwrite">
++      <doc:doc>
++        <doc:description>
++          <doc:para>The display device (aka TTY) that the
++          session is connected to.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </property>
++    <property name="x11-display" type="s" access="readwrite">
++      <doc:doc>
++        <doc:description>
++          <doc:para>Value of the X11 DISPLAY for this session
++          if one is present.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </property>
++    <property name="x11-display-device" type="s" access="readwrite">
++      <doc:doc>
++        <doc:description>
++          <doc:para>
++          The display device (aka TTY) that the X11 display for the
++          session is connected to.  If there is no x11-display set then
++          this value is undefined.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </property>
++    <property name="active" type="b" access="readwrite">
++      <doc:doc>
++        <doc:description>
++          <doc:para>
++          Whether the session is active on the Seat that
++          it is attached to.</doc:para>
++          <doc:para>If the session is not attached to a seat this value is undefined.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </property>
++    <property name="is-local" type="b" access="readwrite">
++      <doc:doc>
++        <doc:description>
++          <doc:para>
++          Whether the session is local</doc:para>
++          <doc:para>FIXME: we need to come up with a concrete definition for this value.
++          It was originally used as a way to identify XDMCP sessions that originate
++          from a remote system.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </property>
++    <property name="idle-hint" type="b" access="readwrite">
++      <doc:doc>
++        <doc:description>
++          <doc:para>
++          This is a hint used to indicate that the session may be idle.
++          </doc:para>
++          <doc:para>
++          For sessions with a <doc:ref type="property" to="Session:x11-display">x11-display</doc:ref> set (ie. graphical
++          sessions), it is up to each session to delegate the
++          responsibility for updating this value.  Typically, the
++          screensaver will set this.
++          </doc:para>
++          <doc:para>However, for non-graphical sessions with a <doc:ref type="property" to="Session:display-device">display-device</doc:ref> set
++          the Session object itself will periodically update this value based
++          on the activity detected on the display-device itself.
++          </doc:para>
++          <doc:para>
++          This should not be considered authoritative.
++          </doc:para>
++        </doc:description>
++      </doc:doc>
++    </property>
++
++  </interface>
++</node>

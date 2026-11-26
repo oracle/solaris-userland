@@ -1,0 +1,14 @@
+Solaris fgetspent_r returns the result through *entry.
+Test that result rather than the non-NULL address of the output parameter.
+
+--- a/src/daemon.c
++++ b/src/daemon.c
+@@ -261,7 +261,7 @@
+         return 0;
+ #elifdef __sun /* Solaris & illumos */
+         *entry = fgetspent_r (fp, spbuf, buf, len);
+-        return entry == NULL ? -1 : 0;
++        return *entry == NULL ? -1 : 0;
+ #else /* Other Linux */
+         return fgetspent_r (fp, spbuf, buf, len, entry);
+ #endif

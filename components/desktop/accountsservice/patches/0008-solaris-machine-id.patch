@@ -1,0 +1,17 @@
+Solaris uses the existing D-Bus machine ID at /var/lib/dbus/machine-id.
+Preserve the upstream path on other platforms and all read-error handling.
+
+--- a/src/util.c
++++ b/src/util.c
+@@ -459,7 +459,11 @@
+ {
+         g_autoptr (GError) error = NULL;
+ 
++#ifdef __sun
++        if (!g_file_get_contents ("/var/lib/dbus/machine-id", &machine_id, NULL, &error))
++#else
+         if (!g_file_get_contents ("/etc/machine-id", &machine_id, NULL, &error))
++#endif
+                 g_error ("Failed to read machine-id: %s", error->message);
+ 
+         machine_id = g_strchomp (machine_id);

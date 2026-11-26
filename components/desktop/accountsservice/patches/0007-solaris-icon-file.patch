@@ -1,0 +1,57 @@
+On Solaris, use the unchanged upstream 26.26.9 temporary-file helper.
+Keep the upstream memfd implementation on other platforms.
+The caller-UID copy helper, file validation and size limits remain intact.
+Source: https://gitlab.freedesktop.org/accountsservice/accountsservice/-/commit/4e254d9624cc48224c9920b9509df0b144f7be0c
+Source: https://gitlab.freedesktop.org/accountsservice/accountsservice/-/blob/26.26.9/src/user.c
+
+--- a/src/user.c
++++ b/src/user.c
+@@ -3084,6 +3084,28 @@
+         }
+ }
+ 
++#ifdef __sun
++static gint
++open_temporary_icon_file (GError **error)
++{
++        g_autofree gchar *filename = NULL;
++        gint fd;
++
++        filename = g_build_filename (g_get_tmp_dir (), "accountsservice-icon-XXXXXX", NULL);
++        fd = g_mkstemp_full (filename, O_RDWR | O_CLOEXEC, 0600);
++        if (fd < 0) {
++                int saved_errno = errno;
++                g_set_error (error, G_FILE_ERROR, g_file_error_from_errno (saved_errno),
++                             "creating temporary icon file failed: %s", g_strerror (saved_errno));
++                return -1;
++        }
++
++        g_unlink (filename);
++
++        return fd;
++}
++#endif
++
+ static glong
+ get_open_fd_limit (gint keep_fd)
+ {
+@@ -3201,6 +3223,11 @@
+         g_close (pipe_fds[1], NULL);
+         pipe_fds[1] = -1;
+ 
++#ifdef __sun
++        fd = open_temporary_icon_file (error);
++        if (fd < 0)
++                goto out;
++#else
+         fd = memfd_create ("accountsservice_icon_file", MFD_CLOEXEC);
+         if (fd < 0) {
+                 int saved_errno = errno;
+@@ -3208,6 +3235,7 @@
+                              "creating annonymous icon file failed: %s", g_strerror (saved_errno));
+                 goto out;
+         }
++#endif
+ 
+         if (!copy_fd_contents (pipe_fds[0], fd, ICON_FILE_MAX_SIZE)) {
+                 int saved_errno = errno;
