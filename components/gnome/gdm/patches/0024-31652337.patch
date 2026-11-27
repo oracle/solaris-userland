@@ -5,16 +5,15 @@ Not suitable for upstream
 
 --- a/daemon/gdm-local-display-factory.c	2020-09-16 16:35:35.983035125 -0700
 +++ b/daemon/gdm-local-display-factory.c	2020-09-16 16:36:22.790490264 -0700
-@@ -512,8 +512,8 @@
-         char            *session_class = NULL;
+@@ -592,7 +592,7 @@
+         char            *session_id = NULL;
          gboolean         is_initial = TRUE;
          gboolean         is_local = TRUE;
-+	GdmDisplayStore *store;
- 
 -
++        GdmDisplayStore *store;
+ 
          if (!factory->is_started)
                  return;
- 
 @@ -520,6 +520,8 @@
          num = -1;
          gdm_display_get_x11_display_number (display, &num, NULL);
@@ -24,15 +23,15 @@ Not suitable for upstream
          g_object_get (display,
                        "seat-id", &seat_id,
                        "is-initial", &is_initial,
-@@ -367,7 +370,7 @@
+@@ -625,7 +625,7 @@
                  if (num != -1) {
                          g_hash_table_remove (factory->used_display_numbers, GUINT_TO_POINTER (num));
                  }
 -                gdm_display_factory_queue_purge_displays (GDM_DISPLAY_FACTORY (factory));
 +                gdm_display_store_remove (store, display);
  
-                 /* if this is a local display, do a full resync.  Only
-                  * seats without displays will get created anyway.  This
+                 /* if this is a local display, ensure that we get a login
+                  * screen when the user logs out.
 @@ -384,7 +387,7 @@
          case GDM_DISPLAY_FAILED:
                  /* leave the display number in factory->used_display_numbers

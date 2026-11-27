@@ -1,0 +1,16 @@
+GNOME Shell 45 also uses BeginAutoLogin for timed login. Accept only the user
+already authorized by the manager for this session; retain arbitrary-user rejection.
+
+--- a/daemon/gdm-session.c
++++ b/daemon/gdm-session.c
+@@ -1834,7 +1834,9 @@
+ 
+         gdm_settings_direct_get_boolean (GDM_KEY_AUTO_LOGIN_ENABLE, &enabled);
+         gdm_settings_direct_get_string (GDM_KEY_AUTO_LOGIN_USER, &allowed);
+-        if (!enabled || allowed == NULL || g_strcmp0 (allowed, username) != 0) {
++        if (!(enabled && allowed != NULL && g_strcmp0 (allowed, username) == 0) &&
++            !(self->timed_login_username != NULL && self->timed_login_username[0] != '\0' &&
++              g_strcmp0 (self->timed_login_username, username) == 0)) {
+                 g_debug ("GdmSession: refusing auto login for user '%s' (enabled=%d, allowed=%s)",
+                          username, enabled, allowed ? allowed : "(null)");
+                 g_dbus_method_invocation_return_error (invocation,

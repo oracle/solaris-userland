@@ -1,0 +1,159 @@
+Use ConsoleKit to find the greeter seat when systemd is unavailable, preserving
+normal session selection. Skip Linux cgroup freeze detection on Solaris. The
+new logind-only conflicting-session termination has no ConsoleKit equivalent;
+return failure instead of linking against unavailable logind support.
+
+--- a/common/gdm-common.c
++++ b/common/gdm-common.c
+@@ -464,8 +464,8 @@
+         return TRUE;
+ }
+ 
+-static char *
+-get_current_seat_id (GDBusConnection *connection)
++char *
++gdm_get_current_seat_id (GDBusConnection *connection)
+ {
+         gboolean res;
+         char    *session_id;
+@@ -662,7 +662,7 @@
+         /* First look for any existing LoginWindow sessions on the seat.
+            If none are found, create a new one. */
+ 
+-        seat_id = get_current_seat_id (connection);
++        seat_id = gdm_get_current_seat_id (connection);
+         if (seat_id == NULL || seat_id[0] == '\0') {
+                 g_debug ("seat id is not set; can't switch sessions");
+                 g_set_error (error, GDM_COMMON_ERROR, 0, _("Could not identify the current session."));
+@@ -916,6 +916,17 @@
+ 
+         return ret;
+ }
++#else
++gboolean
++gdm_terminate_session_by_id (GDBusConnection *connection,
++                             GCancellable    *cancellable,
++                             const char      *session_id)
++{
++        (void) connection;
++        (void) cancellable;
++        (void) session_id;
++        return FALSE;
++}
+ #endif /* WITH_SYSTEMD */
+ 
+ gboolean
+--- a/common/gdm-common.h
++++ b/common/gdm-common.h
+@@ -80,6 +80,10 @@
+ 
+ gboolean       gdm_clear_close_on_exec_flag (int fd);
+ 
++#ifdef WITH_CONSOLE_KIT
++char          *gdm_get_current_seat_id (GDBusConnection *connection);
++#endif
++
+ char          *gdm_generate_random_bytes (gsize          size,
+                                           GError       **error);
+ 
+--- a/libgdm/gdm-sessions.c
++++ b/libgdm/gdm-sessions.c
+@@ -35,9 +35,12 @@
+ #include <glib/gi18n.h>
+ #include <glib/gstdio.h>
+ 
++#ifdef WITH_SYSTEMD
+ #include <systemd/sd-login.h>
++#endif
+ 
+ #include "gdm-sessions.h"
++#include "gdm-common.h"
+ 
+ typedef struct _GdmSessionFile {
+         char    *id;
+@@ -60,6 +63,7 @@
+   g_free (session);
+ }
+ 
++#ifdef WITH_SYSTEMD
+ static char *
+ get_systemd_session (void)
+ {
+@@ -84,10 +88,12 @@
+ 
+         return g_steal_pointer (&session_id);
+ }
++#endif
+ 
+ static char *
+-get_systemd_seat (void)
++get_current_seat (void)
+ {
++#ifdef WITH_SYSTEMD
+         g_autofree char *session_id = NULL;
+         g_autofree char *seat = NULL;
+         int ret;
+@@ -103,6 +109,17 @@
+                 return NULL;
+ 
+         return g_steal_pointer (&seat);
++#elif defined(WITH_CONSOLE_KIT)
++        g_autoptr(GDBusConnection) connection = NULL;
++
++        connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, NULL);
++        if (connection == NULL)
++                return NULL;
++
++        return gdm_get_current_seat_id (connection);
++#else
++        return NULL;
++#endif
+ }
+ 
+ /* adapted from gnome-menus desktop-entries.c */
+@@ -138,7 +155,7 @@
+                 g_error_free (error);
+         }
+ 
+-        seat = get_systemd_seat ();
++        seat = get_current_seat ();
+ 
+         only_headless_allowed = seat == NULL;
+ 
+--- a/daemon/gdm-session.c
++++ b/daemon/gdm-session.c
+@@ -45,7 +45,9 @@
+ 
+ #include <json-glib/json-glib.h>
+ 
++#ifdef WITH_SYSTEMD
+ #include <systemd/sd-login.h>
++#endif
+ 
+ #include "gdm-session.h"
+ #include "gdm-session-glue.h"
+@@ -3407,11 +3409,14 @@
+ gboolean
+ gdm_session_is_frozen (GdmSession *self)
+ {
++#ifdef WITH_SYSTEMD
+         g_autofree char *cgroup = NULL, *path = NULL, *data = NULL;
+         g_auto (GStrv) arr = NULL;
++#endif
+ 
+         g_return_val_if_fail (GDM_IS_SESSION (self), FALSE);
+ 
++#ifdef WITH_SYSTEMD
+         if (self->session_pid <= 0)
+                 return FALSE;
+ 
+@@ -3430,6 +3435,9 @@
+                         return g_str_equal (arr[i + 1], "1");
+         }
+         return FALSE;
++#else
++        return FALSE;
++#endif
+ }
+ 
+ gboolean

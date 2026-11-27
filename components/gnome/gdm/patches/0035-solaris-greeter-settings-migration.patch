@@ -1,0 +1,201 @@
+Solaris uses ConsoleKit Seat1. Repair old migrations without overwriting saved settings.
+Stage copies so a failure cannot remove live configuration; Solaris integration only.
+
+--- a/daemon/gdm-launch-environment.c
++++ b/daemon/gdm-launch-environment.c
+@@ -131,11 +131,117 @@
+ G_DEFINE_TYPE (GdmLaunchEnvironment, gdm_launch_environment, G_TYPE_OBJECT)
+ 
+ #define GID_NOBODY ((gid_t) 65534)
+-#define MIGRATED_STAMPFILE_PATH (GDM_WORKING_DIR "/.migrated-dyn-users")
++#define MIGRATED_STAMPFILE_PATH (GDM_WORKING_DIR "/.migrated-consolekit-seat1")
++
++static gboolean
++persist_dir_has_data (const char  *path,
++                      gboolean    *has_data,
++                      GError     **error)
++{
++        struct stat statbuf;
++        g_autoptr(GDir) dir = NULL;
++
++        *has_data = FALSE;
++        if (g_lstat (path, &statbuf) < 0) {
++                int errsv = errno;
++
++                if (errsv == ENOENT)
++                        return TRUE;
++
++                g_set_error (error, G_IO_ERROR, g_io_error_from_errno (errsv),
++                             "Failed to inspect '%s': %s", path, g_strerror (errsv));
++                return FALSE;
++        }
++
++        if (!S_ISDIR (statbuf.st_mode)) {
++                g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_DIRECTORY,
++                             "Not a directory: %s", path);
++                return FALSE;
++        }
++
++        dir = g_dir_open (path, 0, error);
++        if (dir == NULL)
++                return FALSE;
++
++        *has_data = g_dir_read_name (dir) != NULL;
++        return TRUE;
++}
++
++static gboolean
++migrate_persist_dir (const char  *legacy,
++                     const char  *fallback,
++                     const char  *destination,
++                     GError     **error)
++{
++        const char *source = legacy;
++        gboolean has_data;
++        g_autofree char *staging = NULL;
++        g_autoptr(GError) cleanup_error = NULL;
++
++        if (!persist_dir_has_data (destination, &has_data, error))
++                return FALSE;
++        if (has_data)
++                return TRUE;
++
++        if (!persist_dir_has_data (legacy, &has_data, error))
++                return FALSE;
++        if (!has_data) {
++                source = fallback;
++                if (!persist_dir_has_data (fallback, &has_data, error))
++                        return FALSE;
++        }
++        if (!has_data)
++                return TRUE;
++
++        /* The copy helper overwrites files and removes its destination on
++         * failure. Only give it a private staging directory. */
++        staging = g_strdup_printf ("%s.migrate-XXXXXX", destination);
++        if (g_mkdtemp_full (staging, 0700) == NULL) {
++                int errsv = errno;
++
++                g_set_error (error, G_IO_ERROR, g_io_error_from_errno (errsv),
++                             "Failed to stage '%s': %s", destination, g_strerror (errsv));
++                return FALSE;
++        }
++
++        if (!gdm_copy_dir_recursively (source, staging, error))
++                goto fail;
++
++        if (g_rmdir (destination) < 0 && errno != ENOENT) {
++                int errsv = errno;
++
++                g_set_error (error, G_IO_ERROR, g_io_error_from_errno (errsv),
++                             "Failed to replace empty directory '%s': %s",
++                             destination, g_strerror (errsv));
++                goto fail;
++        }
++
++        if (g_rename (staging, destination) < 0) {
++                int errsv = errno;
++
++                g_set_error (error, G_IO_ERROR, g_io_error_from_errno (errsv),
++                             "Failed to install '%s': %s", destination, g_strerror (errsv));
++                goto fail;
++        }
++
++        return TRUE;
++
++fail:
++        {
++                g_autoptr(GFile) dir = g_file_new_for_path (staging);
++
++                if (!gdm_rm_recursively (dir, &cleanup_error))
++                        g_warning ("Failed to clean migration staging directory: %s",
++                                   cleanup_error->message);
++        }
++        return FALSE;
++}
+ 
+ static gboolean
+ migrate_working_dir (GError **error)
+ {
++        struct stat seat_stat;
++
+         /* Makes sure GDM_WORKING_DIR has the right permissions and ownership.
+          * If it existed before the migration, g_mkdir_with_parents won't set
+          * the right mode. On some systems it'll be set to 0700 and gdm:gdm,
+@@ -167,35 +273,47 @@
+         if (g_file_test (MIGRATED_STAMPFILE_PATH, G_FILE_TEST_EXISTS))
+                 return TRUE;
+ 
+-        if (g_mkdir_with_parents (GDM_WORKING_DIR "/seat0", 0755) < 0) {
++        if (g_mkdir_with_parents (GDM_WORKING_DIR "/Seat1", 0755) < 0) {
+                 int errsv = errno;
+                 g_set_error (error,
+                              G_IO_ERROR,
+                              g_io_error_from_errno (errsv),
+                              "Failed to create directory '%s': %s",
+-                             GDM_WORKING_DIR "/seat0",
++                             GDM_WORKING_DIR "/Seat1",
+                              g_strerror (errsv));
+                 return FALSE;
+         }
+ 
+-        if (!gdm_copy_dir_recursively (GDM_WORKING_DIR "/.local/state",
+-                                       GDM_WORKING_DIR "/seat0/state",
+-                                       error)) {
+-               if (!g_error_matches (*error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+-                       return FALSE;
+-
+-                /* The directory not existing isn't an error */
+-                g_clear_error (error);
+-       }
+-
+-        if (!gdm_copy_dir_recursively (GDM_WORKING_DIR "/.config",
+-                                       GDM_WORKING_DIR "/seat0/config",
+-                                       error)) {
+-                if (!g_error_matches (*error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+-                       return FALSE;
+-
+-                g_clear_error (error);
+-        }
++        if (g_lstat (GDM_WORKING_DIR "/Seat1", &seat_stat) < 0) {
++                int errsv = errno;
++
++                g_set_error (error, G_IO_ERROR, g_io_error_from_errno (errsv),
++                             "Failed to inspect Seat1: %s", g_strerror (errsv));
++                return FALSE;
++        }
++        if (!S_ISDIR (seat_stat.st_mode)) {
++                g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_NOT_DIRECTORY,
++                                     "Seat1 is not a directory");
++                return FALSE;
++        }
++        if (chown (GDM_WORKING_DIR "/Seat1", 0, 0) < 0 ||
++            g_chmod (GDM_WORKING_DIR "/Seat1", 0755) < 0) {
++                int errsv = errno;
++
++                g_set_error (error, G_IO_ERROR, g_io_error_from_errno (errsv),
++                             "Failed to secure Seat1: %s", g_strerror (errsv));
++                return FALSE;
++        }
++
++        if (!migrate_persist_dir (GDM_WORKING_DIR "/.local/state",
++                                 GDM_WORKING_DIR "/seat0/state",
++                                 GDM_WORKING_DIR "/Seat1/state", error))
++                return FALSE;
++
++        if (!migrate_persist_dir (GDM_WORKING_DIR "/.config",
++                                 GDM_WORKING_DIR "/seat0/config",
++                                 GDM_WORKING_DIR "/Seat1/config", error))
++                return FALSE;
+ 
+         if (!g_file_set_contents (MIGRATED_STAMPFILE_PATH, "1", -1, error))
+                 return FALSE;
+@@ -227,7 +345,7 @@
+ 
+         if (!migrate_working_dir (&error)) {
+                 g_warning ("Failed to migrate " GDM_WORKING_DIR ": %s", error->message);
+-                g_clear_error (&error);
++                return FALSE;
+         }
+ 
+         config_dir = g_strdup_printf (GDM_WORKING_DIR "/%s/config", seat_id);

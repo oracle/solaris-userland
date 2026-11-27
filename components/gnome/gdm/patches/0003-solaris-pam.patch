@@ -92,13 +92,15 @@ index 3b10940..291caad 100644
  
  static gboolean
  gdm_session_worker_handle_initialize (GdmDBusWorker         *object,
-@@ -3254,8 +3266,10 @@
+@@ -3353,10 +3365,12 @@
          while (g_variant_iter_loop (&iter, "{sv}", &key, &value)) {
                  if (g_strcmp0 (key, "service") == 0) {
                          worker->service = g_variant_dup_string (value, NULL);
 +#ifdef SUPPORTS_PAM_EXTENSIONS
                  } else if (g_strcmp0 (key, "extensions") == 0) {
-                         worker->extensions = filter_extensions (g_variant_get_strv (value, NULL));
+                         g_autofree const char **supported_extensions = g_variant_get_strv (value, NULL);
+ 
+                         worker->extensions = filter_extensions (supported_extensions);
 +#endif
                  } else if (g_strcmp0 (key, "username") == 0) {
                          worker->username = g_variant_dup_string (value, NULL);

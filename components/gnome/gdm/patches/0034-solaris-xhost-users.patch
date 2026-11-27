@@ -1,0 +1,41 @@
+Solaris disables gnome-initial-setup and does not create its user account.
+Only grant and revoke X11 access for root and gdm. Asking the X server to
+remove access for the nonexistent account fails with BadValue and produces
+an unnecessary warning on every login.
+
+This Solaris integration change is not suitable for upstream.
+
+--- a/daemon/gdm-display.c
++++ b/daemon/gdm-display.c
+@@ -245,9 +245,6 @@
+         host_entries[1].family    = FamilyServerInterpreted;
+         host_entries[1].address   = "localuser\0" GDM_USERNAME;
+         host_entries[1].length    = sizeof ("localuser\0" GDM_USERNAME);
+-        host_entries[2].family    = FamilyServerInterpreted;
+-        host_entries[2].address   = "localuser\0gnome-initial-setup";
+-        host_entries[2].length    = sizeof ("localuser\0gnome-initial-setup");
+ }
+ #endif
+ 
+@@ -264,8 +261,8 @@
+         gboolean              res;
+ 
+         int                       i;
+-        XHostAddress              host_entries[3];
+-        xcb_void_cookie_t         cookies[3];
++        XHostAddress              host_entries[2];
++        xcb_void_cookie_t         cookies[2];
+ 
+         g_return_val_if_fail (GDM_IS_DISPLAY (self), FALSE);
+         g_return_val_if_fail (username != NULL, FALSE);
+@@ -1940,8 +1937,8 @@
+                 g_warning ("Unable to connect to display %s", priv->x11_display_name);
+                 ret = FALSE;
+         } else if (priv->is_local) {
+-                XHostAddress              host_entries[3];
+-                xcb_void_cookie_t         cookies[3];
++                XHostAddress              host_entries[2];
++                xcb_void_cookie_t         cookies[2];
+                 int                       i;
+ 
+                 g_debug ("GdmDisplay: Connected to display %s", priv->x11_display_name);

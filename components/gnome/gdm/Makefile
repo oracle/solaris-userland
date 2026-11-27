@@ -29,15 +29,15 @@ CTF_MODE =		relaxed
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdm
-COMPONENT_VERSION=	45.0.1
+COMPONENT_VERSION=	49.4
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GDM
 COMPONENT_ARCHIVE_URL=  https://download.gnome.org/sources/$(COMPONENT_NAME)/$(basename $(COMPONENT_MAJOR_MINOR))/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6572578c05e3c6569d6ed269f7de2aaf3a035657654586d8243907bb7a6ffa85
+	sha256:b62a33c2bf61a7037221e0dca372f6c6cf250bfe78a87bcb7b07c69bdff7e538
 COMPONENT_BUGDB=        gnome/gdm
 COMPONENT_ANITYA_ID=	13122
 
-COMPONENT_BAID=		158393
+COMPONENT_BAID=		465625
 BUILD_STYLE=		meson
 
 # g-ir-scanner
@@ -60,6 +60,8 @@ CONFIGURE_OPTIONS += -Dsystemdsystemunitdir=no
 CONFIGURE_OPTIONS += -Dsystemduserunitdir=no
 CONFIGURE_OPTIONS += -Dsystemd-journal=false
 CONFIGURE_OPTIONS += -Dwayland-support=false
+CONFIGURE_OPTIONS += -Dx11-support=true
+CONFIGURE_OPTIONS += -Dxdmcp=enabled
 CONFIGURE_OPTIONS += -Dplymouth=disabled
 CONFIGURE_OPTIONS += -Dgroup=gdm
 CONFIGURE_OPTIONS += -Ddefault-path='$(USRBINDIR):$(USRSBINDIR)'
@@ -86,6 +88,17 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D $(COMPONENT_DIR)/files/org.gnome.login-screen.gschema.override \
                 $(PROTO_DIR)/usr/share/glib-2.0/schemas/org.gnome.login-screen.gschema.override;
 
+# Compare every test name/status across old and new Meson output formats.
+COMPONENT_TEST_TRANSFORMS += \
+        '-e "s/^gdm://" ' \
+        '-e "/^$$/d" ' \
+        '-e "/^Ok:/d" ' \
+        '-e "/^Expected Fail:/d" ' \
+        '-e "/^Fail:/d" ' \
+        '-e "/^Unexpected Pass:/d" ' \
+        '-e "/^Skipped:/d" ' \
+        '-e "/^Timeout:/d" '
+
 CBE_PACKAGES += developer/documentation-tool/itstool
 CBE_PACKAGES += library/gnome/dconf
 CBE_PACKAGES += library/gnome/yelp-tools
@@ -105,6 +118,7 @@ REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/xdg/consolekit
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93

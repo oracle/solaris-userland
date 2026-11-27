@@ -1,0 +1,43 @@
+Set the XDMCP timed-login policy after GObject construct defaults are applied.
+The instance initializer value was overwritten, bypassing AllowRemoteAutoLogin=false.
+
+--- a/daemon/gdm-xdmcp-display.c
++++ b/daemon/gdm-xdmcp-display.c
+@@ -228,11 +228,23 @@
+ }
+ 
+ static void
++gdm_xdmcp_display_constructed (GObject *object)
++{
++        gboolean allow_remote_autologin = FALSE;
++
++        G_OBJECT_CLASS (gdm_xdmcp_display_parent_class)->constructed (object);
++        gdm_settings_direct_get_boolean (GDM_KEY_ALLOW_REMOTE_AUTOLOGIN,
++                                         &allow_remote_autologin);
++        g_object_set (object, "allow-timed-login", allow_remote_autologin, NULL);
++}
++
++static void
+ gdm_xdmcp_display_class_init (GdmXdmcpDisplayClass *klass)
+ {
+         GObjectClass    *object_class = G_OBJECT_CLASS (klass);
+         GdmDisplayClass *display_class = GDM_DISPLAY_CLASS (klass);
+ 
++        object_class->constructed = gdm_xdmcp_display_constructed;
+         object_class->get_property = gdm_xdmcp_display_get_property;
+         object_class->set_property = gdm_xdmcp_display_set_property;
+ 
+@@ -262,13 +274,6 @@
+ static void
+ gdm_xdmcp_display_init (GdmXdmcpDisplay *xdmcp_display)
+ {
+-
+-        gboolean allow_remote_autologin;
+-
+-        allow_remote_autologin = FALSE;
+-        gdm_settings_direct_get_boolean (GDM_KEY_ALLOW_REMOTE_AUTOLOGIN, &allow_remote_autologin);
+-
+-        g_object_set (G_OBJECT (xdmcp_display), "allow-timed-login", allow_remote_autologin, NULL);
+ }
+ 
+ GdmDisplay *

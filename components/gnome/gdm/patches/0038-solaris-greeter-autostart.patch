@@ -1,0 +1,44 @@
+Solaris gnome-session 45 reads desktop autostarts in the greeter unless
+GDM supplies its greeter-only directory. Restore the Orca entry and
+select that directory for the greeter session.
+
+Source: https://gitlab.gnome.org/GNOME/gdm/-/tree/45.0.1/data/autostart
+Source: https://gitlab.gnome.org/GNOME/gdm/-/blob/45.0.1/daemon/gdm-launch-environment.c
+
+--- a/daemon/gdm-launch-environment.c
++++ b/daemon/gdm-launch-environment.c
+@@ -1239,6 +1239,11 @@
+         args = g_ptr_array_new ();
+         g_ptr_array_add (args, "gnome-session");
+ 
++        if (g_strcmp0 (session_mode, GDM_SESSION_MODE) == 0) {
++                g_ptr_array_add (args, "--autostart");
++                g_ptr_array_add (args, DATADIR "/gdm/greeter/autostart");
++        }
++
+         if (debug) {
+                 g_ptr_array_add (args, "--debug");
+         }
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -59,6 +59,10 @@
+ 
+ install_data('locale.alias',
+   install_dir: gdm_datadir,
++)
++
++install_data('orca-autostart.desktop',
++  install_dir: gdm_datadir / 'greeter' / 'autostart',
+ )
+ 
+ install_data(
+--- /dev/null
++++ b/data/orca-autostart.desktop
+@@ -0,0 +1,7 @@
++[Desktop Entry]
++Type=Application
++Name=Orca screen reader
++Exec=orca --disable main-window,splash-window --enable speech,braille
++NoDisplay=true
++AutostartCondition=GSettings org.gnome.desktop.a11y.applications screen-reader-enabled
++X-GNOME-AutoRestart=true

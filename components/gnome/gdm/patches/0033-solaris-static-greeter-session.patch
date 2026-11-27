@@ -1,0 +1,162 @@
+Use the preallocated Solaris gdm account for greeter and XDMCP chooser
+sessions, including simultaneous displays. Never treat its persistent home
+as a disposable dynamic-user home. Restore the RequiredComponents list
+needed by Solaris gnome-session 45, which has no systemd service manager.
+
+--- a/data/gnome-login.session
++++ b/data/gnome-login.session
+@@ -1,3 +1,4 @@
+ [GNOME Session]
+ Name=GNOME Display Manager
+ Kiosk=true
++RequiredComponents=org.gnome.Shell;org.gnome.SettingsDaemon.A11ySettings;org.gnome.SettingsDaemon.Color;org.gnome.SettingsDaemon.Datetime;org.gnome.SettingsDaemon.Housekeeping;org.gnome.SettingsDaemon.Keyboard;org.gnome.SettingsDaemon.MediaKeys;org.gnome.SettingsDaemon.Power;org.gnome.SettingsDaemon.PrintNotifications;org.gnome.SettingsDaemon.Rfkill;org.gnome.SettingsDaemon.ScreensaverProxy;org.gnome.SettingsDaemon.Sharing;org.gnome.SettingsDaemon.Smartcard;org.gnome.SettingsDaemon.Sound;org.gnome.SettingsDaemon.Wacom;
+--- a/daemon/gdm-launch-environment.c
++++ b/daemon/gdm-launch-environment.c
+@@ -49,7 +49,7 @@
+ #include "gdm-settings-direct.h"
+ #include "gdm-settings-keys.h"
+ 
+-#define GDM_GREETER_USERNAME "gdm-greeter"
++#define GDM_GREETER_USERNAME GDM_USERNAME
+ #define GDM_GREETER_DISP_NAME "GDM Greeter"
+ #define GDM_SESSION_MODE "gdm"
+ 
+@@ -60,7 +60,7 @@
+ #define INITIAL_SETUP_GROUPNAME "gnome-initial-setup"
+ #define INITIAL_SETUP_DCONF_PROFILE "gnome-initial-setup"
+ 
+-#define GDM_CHOOSER_USERNAME "gdm-chooser"
++#define GDM_CHOOSER_USERNAME GDM_USERNAME
+ #define GDM_CHOOSER_DISP_NAME "GDM XDMCP Chooser"
+ 
+ extern char **environ;
+--- a/daemon/gdm-dynamic-user-store.c
++++ b/daemon/gdm-dynamic-user-store.c
+@@ -101,6 +101,7 @@
+ 
+ G_DEFINE_TYPE (GdmDynamicUserStore, gdm_dynamic_user_store, G_TYPE_OBJECT)
+ 
++#ifdef HAVE_USERDB
+ static DynamicUser *
+ dynamic_user_new (const char   *username,
+                   const char   *display_name,
+@@ -120,6 +121,7 @@
+ 
+         return user;
+ }
++#endif
+ 
+ static void
+ dynamic_user_free (DynamicUser *user)
+@@ -160,6 +162,7 @@
+ 
+ G_DEFINE_AUTOPTR_CLEANUP_FUNC (WorkerContext, worker_context_free)
+ 
++#ifdef HAVE_USERDB
+ typedef gboolean PwdLock;
+ 
+ static PwdLock
+@@ -182,6 +185,7 @@
+ }
+ 
+ G_DEFINE_AUTO_CLEANUP_FREE_FUNC (PwdLock, unlock_pwd_db, FALSE)
++#endif
+ 
+ #ifdef HAVE_USERDB
+ G_DEFINE_AUTOPTR_CLEANUP_FUNC (sd_varlink_server, sd_varlink_server_unref)
+@@ -236,32 +240,9 @@
+         return FALSE;
+ }
+ 
+-#else /* HAVE_USERDB */
+-
+-static gboolean
+-pick_uid (GdmDynamicUserStore  *store,
+-          const char           *username,
+-          uid_t                *ret_uid,
+-          GError              **error)
+-{
+-        struct passwd *pwe;
+-
+-        if (gdm_get_pwent_for_name (username, &pwe)) {
+-                *ret_uid = pwe->pw_uid;
+-                return TRUE;
+-        }
+-
+-        g_set_error (error,
+-             GDM_DYNAMIC_USER_STORE_ERROR,
+-             GDM_DYNAMIC_USER_STORE_ERROR_NO_FREE_UID,
+-             "User '%s' not preallocated and system lacks userdb",
+-             username);
+-
+-        return FALSE;
+-}
+-
+ #endif /* HAVE_USERDB */
+ 
++#ifdef HAVE_USERDB
+ static char *
+ pick_username (GdmDynamicUserStore *store,
+                const char          *preferred)
+@@ -283,6 +264,7 @@
+          * be caught in pick_uid */
+         g_assert_not_reached ();
+ }
++#endif
+ 
+ gboolean
+ gdm_dynamic_user_store_create (GdmDynamicUserStore  *store,
+@@ -294,6 +276,27 @@
+                                char                **ret_home,
+                                GError              **error)
+ {
++#ifndef HAVE_USERDB
++        struct passwd *pwe;
++
++        (void) store;
++        (void) display_name;
++        (void) member_of;
++
++        if (!gdm_get_pwent_for_name (preferred_username, &pwe)) {
++                g_set_error (error,
++                             GDM_DYNAMIC_USER_STORE_ERROR,
++                             GDM_DYNAMIC_USER_STORE_ERROR_NO_FREE_UID,
++                             "User '%s' is not preallocated",
++                             preferred_username);
++                return FALSE;
++        }
++
++        *ret_username = g_strdup (pwe->pw_name);
++        *ret_uid = pwe->pw_uid;
++        *ret_home = g_strdup (pwe->pw_dir);
++        return TRUE;
++#else
+         g_autofree char *username = NULL;
+         g_auto (PwdLock) pwd_lock = FALSE;
+         uid_t uid;
+@@ -342,12 +345,17 @@
+         *ret_uid = uid;
+         *ret_home = g_steal_pointer (&home);
+         return TRUE;
++#endif
+ }
+ 
+ void
+ gdm_dynamic_user_store_remove (GdmDynamicUserStore *store,
+                                uid_t                uid)
+ {
++#ifndef HAVE_USERDB
++        (void) store;
++        (void) uid;
++#else
+         DynamicUser *user;
+ 
+         user = g_hash_table_lookup (store->by_uid, &uid);
+@@ -358,6 +366,7 @@
+         g_hash_table_remove (store->by_uid, &uid);
+         g_hash_table_remove (store->by_name, user->username);
+         g_mutex_unlock (&store->mutex);
++#endif
+ }
+ 
+ static void
