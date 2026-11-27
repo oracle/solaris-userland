@@ -1,0 +1,63 @@
+From 0279c7e17d4e5e01e4a86dd9f5c54e7b6a8955cf Mon Sep 17 00:00:00 2001
+From: nataraj-hates-MS-for-stealing-github
+ <48326335+nataraj-hates-MS-for-stealing-github@users.noreply.github.com>
+Date: Tue, 29 Sep 2026 02:47:37 +0300
+Subject: [PATCH]  Fix context leak when socket is not closed explicitly (#496)
+
+If this patch is applied, this module when built with ASan enabled no longer fails on the following sample:
+
+```
+use strict;
+use Symbol qw(gensym);
+use Net::SSLeay::Handle;
+
+my @uris = ('ya.ru', 'google.com');
+#my @uris = ('google.com');
+
+for my $uri (@uris)
+{
+  my $ssl = gensym();
+  tie(*$ssl, "Net::SSLeay::Handle", $uri, 443);
+  print $ssl "GET / HTTP/1.0\r\n\r\n";
+
+  my $response = do { local $/ = undef; <$ssl> };
+}
+```
+
+This does not solve all ASan related problems, but reduces failed tests from 13 to 11 for me.
+
+Co-authored-by: Chris Novakovic <chris@chrisn.me.uk>
+
+Upstream: https://github.com/radiator-software/p5-net-ssleay/commit/0279c7e17d4e5e01e4a86dd9f5c54e7b6a8955cf
+Imported for stable 1.96, which lacks this lifetime fix. Only the Handle.pm
+change is needed; omit the development-branch Changes entry. Both cleanup
+paths are retained so explicit close followed by destruction frees once.
+
+diff --git a/lib/Net/SSLeay/Handle.pm b/lib/Net/SSLeay/Handle.pm
+index 2db0b04c..7f560d07 100644
+--- a/lib/Net/SSLeay/Handle.pm
++++ b/lib/Net/SSLeay/Handle.pm
+@@ -97,6 +97,13 @@ sub TIEHANDLE {
+     return $self;
+ }
+ 
++sub DESTROY {
++    my $self = shift;
++    # Clean up if the handle has not explicitly been closed.
++    Net::SSLeay::free ($self->{ssl}) if defined $self->{ssl};
++    Net::SSLeay::CTX_free ($self->{ctx}) if defined $self->{ctx};
++}
++
+ sub PRINT {
+     my $self = shift;
+ 
+@@ -155,7 +162,9 @@ sub CLOSE {
+     my $fileno = $self->{fileno};
+     $Debug > 10 and print "close($fileno)\n";
+     Net::SSLeay::free ($self->{ssl});
++    undef $self->{ssl};
+     Net::SSLeay::CTX_free ($self->{ctx});
++    undef $self->{ctx};
+     close $self->{socket};
+ }
+ 
