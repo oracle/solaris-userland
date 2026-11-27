@@ -1,0 +1,99 @@
+From f5dfc96063fef2d9c5446d0733867d899ef9b942 Mon Sep 17 00:00:00 2001
+From: Naveed Khan <naveed@digiscrypt.com>
+Date: Sat, 11 Jul 2026 22:18:43 +0530
+Subject: bzip2recover: create output block files safely with O_EXCL
+
+bzip2recover writes each recovered block to a file whose name is fully
+predictable ("recNNNNN" + basename of the input, e.g. rec00001foo.bz2)
+and which is created in the directory of the input file.  The output
+file was opened with a plain fopen(outFileName, "wb"), which follows
+symbolic links and truncates whatever it finds.
+
+If the input file lives in a directory that an attacker can write to
+(a shared spool/incoming directory, or any directory whose path the
+attacker supplied), the attacker can pre-create a symlink at the
+predictable output name pointing at an arbitrary file.  When the victim
+runs bzip2recover, the plain fopen follows that symlink and overwrites
+the target (CWE-59).  Existing regular files are likewise clobbered,
+and the files are created with lax umask permissions.
+
+The main bzip2 tool already guards against this in fopen_output_safely()
+by creating output files with open(O_WRONLY|O_CREAT|O_EXCL, S_IWUSR|
+S_IRUSR); bzip2recover was never given the same treatment.  Add a small
+fopenOutputSafely() helper mirroring that function and use it for the
+block files: O_EXCL makes the create fail rather than follow a symlink
+or overwrite an existing file, and the mode creates the file 0600.
+Non-Unix builds keep the previous fopen behaviour.
+
+Signed-off-by: Naveed Khan <naveed@digiscrypt.com>
+
+Upstream commit:
+https://sourceware.org/cgit/bzip2/commit/?id=f5dfc96063fef2d9c5446d0733867d899ef9b942
+Upstream review:
+https://sourceware.org/pipermail/bzip2-devel/2026q3/000331.html
+
+Imported into Solaris trunk for bzip2 1.0.8; hunk positions refreshed.
+---
+ bzip2recover.c | 32 +++++++++++++++++++++++++++++++-
+ 1 file changed, 31 insertions(+), 1 deletion(-)
+
+diff --git a/bzip2recover.c b/bzip2recover.c
+index e6c0a99..c17206b 100644
+--- a/bzip2recover.c
++++ b/bzip2recover.c
+@@ -25,6 +25,12 @@
+ #include <stdlib.h>
+ #include <string.h>
+ 
++#ifndef _WIN32
++#include <fcntl.h>
++#include <sys/stat.h>
++#include <unistd.h>
++#endif
++
+ 
+ /* This program records bit locations in the file to be recovered.
+    That means that if 64-bit ints are not supported, we will not
+@@ -270,6 +276,30 @@ static Bool endsInBz2 ( Char* name )
+ }
+ 
+ 
++/*---------------------------------------------*/
++/* Create an output block file safely.  The block file names are
++   predictable and are written into the directory of the (possibly
++   untrusted) input file, so a plain fopen() would follow a
++   pre-planted symlink and overwrite an arbitrary file, or silently
++   clobber an existing one.  Mirror fopen_output_safely() in bzip2.c:
++   create with O_EXCL and restrictive permissions so we never follow a
++   symlink and never overwrite an existing file. */
++static FILE* fopenOutputSafely ( Char* name )
++{
++#ifdef _WIN32
++   return fopen ( name, "wb" );
++#else
++   FILE* fp;
++   Int32 fh;
++   fh = open ( name, O_WRONLY|O_CREAT|O_EXCL, S_IWUSR|S_IRUSR );
++   if (fh == -1) return NULL;
++   fp = fdopen ( fh, "wb" );
++   if (fp == NULL) close ( fh );
++   return fp;
++#endif
++}
++
++
+ /*---------------------------------------------------*/
+ /*---                                             ---*/
+ /*---------------------------------------------------*/
+@@ -488,7 +518,7 @@ Int32 main ( Int32 argc, Char** argv )
+          fprintf ( stderr, "   writing block %d to `%s' ...\n",
+                            wrBlock+1, outFileName );
+ 
+-         outFile = fopen ( outFileName, "wb" );
++         outFile = fopenOutputSafely ( outFileName );
+          if (outFile == NULL) {
+             fprintf ( stderr, "%s: can't write `%s'\n",
+                       progName, outFileName );
+-- 
+cgit 
+
