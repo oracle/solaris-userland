@@ -1,0 +1,191 @@
+Upstream Ogg FLAC packet size limit adapted to 1.13.1 and C++11.
+Retain the public packet(unsigned int) entry point and existing layouts.
+Bound metadata packet reassembly while indexing pages, before retaining an
+unbounded continued packet. The block-count prerequisite is in patch 02.
+Upstream: https://github.com/taglib/taglib/commit/77f547760995217dd5fa321b162fa9149272989d
+
+From 77f547760995217dd5fa321b162fa9149272989d Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Thu, 13 Aug 2026 00:40:24 -0400
+Subject: [PATCH] Ogg FLAC: limit metadata packet size (#1407)
+
+Reject metadata packets larger than FLAC's 24-bit payload limit.
+Continued Ogg pages could otherwise make TagLib allocate arbitrary
+amounts of memory before validating the FLAC block length.
+
+Add bounded Ogg packet reassembly for Ogg FLAC metadata parsing.
+
+--- a/taglib/ogg/flac/oggflacfile.cpp
++++ b/taglib/ogg/flac/oggflacfile.cpp
+@@ -37,6 +37,10 @@
+ 
+ namespace {
+   constexpr int MAX_OGG_FLAC_METADATA_BLOCK_COUNT = 1024;
++  // FLAC metadata payloads use a 24-bit length. The first Ogg FLAC packet
++  // also contains 13 mapping bytes and a 4-byte FLAC metadata header.
++  constexpr unsigned int MAX_OGG_FLAC_METADATA_PACKET_SIZE =
++    (1U << 24) + 17;
+ }
+ 
+ class Ogg::FLAC::File::FilePrivate
+@@ -230,7 +234,8 @@
+   int blockCount = 1;
+   long overhead = 0;
+ 
+-  ByteVector metadataHeader = packet(ipacket);
++  ByteVector metadataHeader =
++    packet(ipacket, MAX_OGG_FLAC_METADATA_PACKET_SIZE);
+   if(metadataHeader.isEmpty())
+     return;
+ 
+@@ -256,7 +261,7 @@
+   }
+   else {
+     // FLAC 1.1.0 & 1.1.1
+-    metadataHeader = packet(++ipacket);
++    metadataHeader = packet(++ipacket, MAX_OGG_FLAC_METADATA_PACKET_SIZE);
+   }
+ 
+   ByteVector header = metadataHeader.mid(0, 4);
+@@ -296,7 +301,7 @@
+       debug("Ogg::FLAC::File::scan() -- Maximum metadata block count exceeded");
+       return;
+     }
+-    metadataHeader = packet(++ipacket);
++    metadataHeader = packet(++ipacket, MAX_OGG_FLAC_METADATA_PACKET_SIZE);
+     header = metadataHeader.mid(0, 4);
+     if(header.size() != 4) {
+       debug("Ogg::FLAC::File::scan() -- Invalid Ogg/FLAC metadata header");
+--- a/taglib/ogg/oggfile.cpp
++++ b/taglib/ogg/oggfile.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tbytevectorlist.h>
+ #include <tmap.h>
+ #include <tstring.h>
+@@ -79,16 +80,26 @@
+ 
+ ByteVector Ogg::File::packet(unsigned int i)
+ {
++  return packet(i, std::numeric_limits<unsigned int>::max());
++}
++
++ByteVector Ogg::File::packet(unsigned int i, unsigned int maxSize)
++{
+   // Check to see if we're called setPacket() for this packet since the last
+   // save:
+ 
+-  if(d->dirtyPackets.contains(i))
++  if(d->dirtyPackets.contains(i)) {
++    if(d->dirtyPackets[i].size() > maxSize) {
++      debug("Ogg::File::packet() -- Maximum packet size exceeded");
++      return ByteVector();
++    }
+     return d->dirtyPackets[i];
++  }
+ 
+   // If we haven't indexed the page where the packet we're interested in starts,
+   // begin reading pages until we have.
+ 
+-  if(!readPages(i)) {
++  if(!readPages(i, maxSize)) {
+     debug("Ogg::File::packet() -- Could not find the requested packet.");
+     return ByteVector();
+   }
+@@ -110,7 +121,12 @@
+ 
+   while(nextPacketIndex(*it) <= i) {
+     ++it;
+-    packet.append((*it)->packets().front());
++    const ByteVector packetPart = (*it)->packets().front();
++    if(packetPart.size() > maxSize - packet.size()) {
++      debug("Ogg::File::packet() -- Maximum packet size exceeded");
++      return ByteVector();
++    }
++    packet.append(packetPart);
+   }
+ 
+   return packet;
+@@ -190,6 +206,39 @@
+ 
+ bool Ogg::File::readPages(unsigned int i)
+ {
++  return readPages(i, std::numeric_limits<unsigned int>::max());
++}
++
++bool Ogg::File::readPages(unsigned int i, unsigned int maxSize)
++{
++  const bool limitPacketSize = maxSize != std::numeric_limits<unsigned int>::max();
++  unsigned int packetSize = 0;
++  const auto addPacketPartSize = [&](const Page *page) {
++    if(page->containsPacket(i) == Page::DoesNotContainPacket)
++      return true;
++
++    const ByteVectorList packets = page->packets();
++    const unsigned int packetPartIndex = i - page->firstPacketIndex();
++    if(packetPartIndex >= packets.size())
++      return false;
++
++    const unsigned int packetPartSize = packets[packetPartIndex].size();
++    if(packetPartSize > maxSize - packetSize)
++      return false;
++
++    packetSize += packetPartSize;
++    return true;
++  };
++
++  if(limitPacketSize) {
++    for(List<Page *>::ConstIterator it = d->pages.begin(); it != d->pages.end(); ++it) {
++      if(!addPacketPartSize(*it)) {
++        debug("Ogg::File::readPages() -- Maximum packet size exceeded");
++        return false;
++      }
++    }
++  }
++
+   while(true) {
+     unsigned int packetIndex;
+     long offset;
+@@ -220,6 +269,11 @@
+     }
+ 
+     nextPage->setFirstPacketIndex(packetIndex);
++    if(limitPacketSize && !addPacketPartSize(nextPage)) {
++      debug("Ogg::File::readPages() -- Maximum packet size exceeded");
++      delete nextPage;
++      return false;
++    }
+     d->pages.append(nextPage);
+ 
+     if(nextPage->header()->lastPageOfStream())
+--- a/taglib/ogg/oggfile.h
++++ b/taglib/ogg/oggfile.h
+@@ -82,6 +82,12 @@
+ 
+     protected:
+       /*!
++       * Returns the packet contents for the i-th packet if its size does not
++       * exceed the requested maximum.
++       */
++      ByteVector packet(unsigned int i, unsigned int maxSize);
++
++      /*!
+        * Constructs an Ogg file from \a file.
+        *
+        * \note This constructor is protected since Ogg::File shouldn't be
+@@ -113,6 +119,12 @@
+       bool readPages(unsigned int i);
+ 
+       /*!
++       * Reads the pages needed to compose the requested packet while limiting
++       * its total size.
++       */
++      bool readPages(unsigned int i, unsigned int maxSize);
++
++      /*!
+        * Writes the requested packet to the file.
+        */
+       void writePacket(unsigned int i, const ByteVector &packet);

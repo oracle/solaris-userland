@@ -45,10 +45,17 @@ include $(WS_MAKE_RULES)/common.mk
 CXXFLAGS += -std=c++11
 CMAKE_OPTIONS += -DBUILD_SHARED_LIBS=ON
 CMAKE_OPTIONS += -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+# Exercise the upstream suite and compressed ID3 frames; do not silently skip
+# either dependency when configuring the security fixes.
+CMAKE_OPTIONS += -DBUILD_TESTING=ON
+CMAKE_OPTIONS += -DCMAKE_REQUIRE_FIND_PACKAGE_CppUnit=ON
+CMAKE_OPTIONS += -DCMAKE_REQUIRE_FIND_PACKAGE_ZLIB=ON
 
 # Override values from make-rules/cmake.mk to get correct pkgconfig files.
 CMAKE_OPTIONS.32 += -DCMAKE_INSTALL_LIBDIR="lib"
 CMAKE_OPTIONS.64 += -DCMAKE_INSTALL_LIBDIR="lib/$(MACH64)"
+
+CBE_PACKAGES += developer/c++/cppunit
 
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93

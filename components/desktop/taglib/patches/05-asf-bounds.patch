@@ -1,0 +1,484 @@
+Applicable upstream ASF bounds, count and enumeration fixes adapted to 1.13.1.
+Include the private QWORD-size prerequisite without changing exported APIs.
+Use long for existing 1.x file offsets; bounds are checked before additions.
+Include the upstream follow-up that skips unknown attribute payloads and the
+post-2.3.2 header-size correction required before save-time subtraction.
+Upstream commits: https://github.com/taglib/taglib/commit/<full ID below>.
+
+From 57c8dbe014623ff0b04bb46100ea5aff1646cd87 Mon Sep 17 00:00:00 2001
+From: "Stephen F. Booth" <me@sbooth.org>
+Date: Sun, 17 Dec 2023 16:49:16 -0600
+Subject: [PATCH] Use long long (QWORD) for sizes
+
+
+From 04993427d7056c70df24f6350384df5362afa755 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Sun, 2 Aug 2026 02:23:08 -0400
+Subject: [PATCH] Bound ASF attribute parsing to object data (#1389)
+
+A truncated ASF attribute object could declare a large count and make
+the parser create empty attributes after reaching the end of its data.
+
+Validate each attribute object's data extent and stop parsing when an
+attribute would exceed it.
+
+From 2ada48a77f9b5158f6a4313ed7a90de8efc4eb75 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Mon, 3 Aug 2026 12:46:01 -0400
+Subject: [PATCH] ASF: limit header object count (#1395)
+
+ASF header parsing retained an unbounded number of objects. A crafted
+file with many small objects could consume disproportionate memory.
+
+Reject files whose header object count exceeds the parser limit.
+
+From fa4c623ab17dfee5fc92b003eec0888fc2682713 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Tue, 18 Aug 2026 15:27:26 -0400
+Subject: [PATCH] Bound ASF header-extension child parsing (#1426)
+
+ASF header extensions trusted their nested data size and accepted
+zero-sized child objects. A crafted file could make parsing continue
+outside the enclosing object while retaining one object per child
+header, exhausting process memory when opened.
+
+Bound nested data to the enclosing object, require a complete child
+header, and cap the nested object count.
+
+From 3672fa6dd2750d7d51b2e9a406773addfe6ec819 Mon Sep 17 00:00:00 2001
+From: Urs Fleisch <ufleisch@users.sourceforge.net>
+Date: Thu, 27 Aug 2026 17:35:54 +0200
+Subject: [PATCH] ASF: Skip attributes with invalid data type (#1429)
+
+
+From 4265461e9b5afa402dc88e317ef55092fcb0e38e Mon Sep 17 00:00:00 2001
+From: Stephen Booth <me@sbooth.org>
+Date: Wed, 9 Sep 2026 13:42:30 -0500
+Subject: [PATCH] Skip unknown ASF values (#1439)
+
+
+From 0faf7291ca654760b69599efdc3b21e6fbb28afa Mon Sep 17 00:00:00 2001
+From: Urs Fleisch <ufleisch@users.sourceforge.net>
+Date: Fri, 11 Sep 2026 19:32:08 +0200
+Subject: [PATCH] ASF: Verify if header size is valid
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When saving a .wma file, ASF::File::save() does not validate the
+header's headerSize field before using it in arithmetic. If its value
+is below 30, an unsigned underflow and a subsequent integer overflow
+cause FileStream::removeBlock() to compute a corrupted target offset,
+resulting in an unbounded copy loop.
+
+Credits for the discovery of this bug go to Ximena Molina Portilla,
+Software Engineering student at Instituto Tecnológico de Costa Rica
+(GitHub: @ximemolina).
+
+--- a/taglib/asf/asfattribute.cpp
++++ b/taglib/asf/asfattribute.cpp
+@@ -178,14 +178,15 @@
+ 
+ String ASF::Attribute::parse(ASF::File &f, int kind)
+ {
+-  unsigned int size, nameLength;
++  unsigned int size;
++  unsigned short nameLength, dataType;
+   String name;
+   d->pictureValue = Picture::fromInvalid();
+   // extended content descriptor
+   if(kind == 0) {
+     nameLength = readWORD(&f);
+     name = readString(&f, nameLength);
+-    d->type = static_cast<ASF::Attribute::AttributeTypes>(readWORD(&f));
++    dataType = readWORD(&f);
+     size = readWORD(&f);
+   }
+   // metadata & metadata library
+@@ -197,7 +198,7 @@
+     }
+     d->stream = readWORD(&f);
+     nameLength = readWORD(&f);
+-    d->type = static_cast<ASF::Attribute::AttributeTypes>(readWORD(&f));
++    dataType = readWORD(&f);
+     size = readDWORD(&f);
+     name = readString(&f, nameLength);
+   }
+@@ -206,7 +207,7 @@
+     debug("ASF::Attribute::parse() -- Value larger than 64kB");
+   }
+ 
+-  switch(d->type) {
++  switch(dataType) {
+   case WordType:
+     d->numericValue = readWORD(&f);
+     break;
+@@ -236,7 +237,13 @@
+   case GuidType:
+     d->byteVectorValue = f.readBlock(size);
+     break;
+-  }
++
++  default:
++    debug("ASF::Attribute::parse() -- Unknown data type");
++    f.seek(size, File::Current);
++    return String();
++  }
++  d->type = static_cast<AttributeTypes>(dataType);
+ 
+   if(d->type == BytesType && name == "WM/Picture") {
+     d->pictureValue.parse(d->byteVectorValue);
+--- a/taglib/asf/asffile.cpp
++++ b/taglib/asf/asffile.cpp
+@@ -97,6 +97,22 @@
+   const ByteVector contentEncryptionGuid("\xFB\xB3\x11\x22\x23\xBD\xD2\x11\xB4\xB7\x00\xA0\xC9\x55\xFC\x6E", 16);
+   const ByteVector extendedContentEncryptionGuid("\x14\xE6\x8A\x29\x22\x26 \x17\x4C\xB9\x35\xDA\xE0\x7E\xE9\x28\x9C", 16);
+   const ByteVector advancedContentEncryptionGuid("\xB6\x9B\x07\x7A\xA4\xDA\x12\x4E\xA5\xCA\x91\xD3\x8D\xC1\x1A\x8D", 16);
++  constexpr unsigned int MAX_ASF_HEADER_EXTENSION_OBJECT_COUNT = 50000;
++
++  bool attributeDataFits(File *file, long long size, long &end)
++  {
++    if(size < 26)
++      return false;
++
++    const long position = file->tell();
++    const long fileLength = file->length();
++    const auto dataSize = size - 24;
++    if(position < 0 || position > fileLength || dataSize > fileLength - position)
++      return false;
++
++    end = position + dataSize;
++    return true;
++  }
+ }  // namespace
+ 
+ class ASF::File::FilePrivate::BaseObject
+@@ -105,7 +121,7 @@
+   ByteVector data;
+   virtual ~BaseObject() {}
+   virtual ByteVector guid() const = 0;
+-  virtual void parse(ASF::File *file, unsigned int size);
++  virtual void parse(ASF::File *file, long long size);
+   virtual ByteVector render(ASF::File *file);
+ };
+ 
+@@ -121,21 +137,21 @@
+ {
+ public:
+   ByteVector guid() const;
+-  void parse(ASF::File *file, unsigned int size);
++  void parse(ASF::File *file, long long size);
+ };
+ 
+ class ASF::File::FilePrivate::StreamPropertiesObject : public ASF::File::FilePrivate::BaseObject
+ {
+ public:
+   ByteVector guid() const;
+-  void parse(ASF::File *file, unsigned int size);
++  void parse(ASF::File *file, long long size);
+ };
+ 
+ class ASF::File::FilePrivate::ContentDescriptionObject : public ASF::File::FilePrivate::BaseObject
+ {
+ public:
+   ByteVector guid() const;
+-  void parse(ASF::File *file, unsigned int size);
++  void parse(ASF::File *file, long long size);
+   ByteVector render(ASF::File *file);
+ };
+ 
+@@ -144,7 +160,7 @@
+ public:
+   ByteVectorList attributeData;
+   ByteVector guid() const;
+-  void parse(ASF::File *file, unsigned int size);
++  void parse(ASF::File *file, long long size);
+   ByteVector render(ASF::File *file);
+ };
+ 
+@@ -153,7 +169,7 @@
+ public:
+   ByteVectorList attributeData;
+   ByteVector guid() const;
+-  void parse(ASF::File *file, unsigned int size);
++  void parse(ASF::File *file, long long size);
+   ByteVector render(ASF::File *file);
+ };
+ 
+@@ -162,7 +178,7 @@
+ public:
+   ByteVectorList attributeData;
+   ByteVector guid() const;
+-  void parse(ASF::File *file, unsigned int size);
++  void parse(ASF::File *file, long long size);
+   ByteVector render(ASF::File *file);
+ };
+ 
+@@ -172,7 +188,7 @@
+   List<ASF::File::FilePrivate::BaseObject *> objects;
+   HeaderExtensionObject();
+   ByteVector guid() const;
+-  void parse(ASF::File *file, unsigned int size);
++  void parse(ASF::File *file, long long size);
+   ByteVector render(ASF::File *file);
+ };
+ 
+@@ -180,7 +196,7 @@
+ {
+ public:
+   ByteVector guid() const;
+-  void parse(ASF::File *file, unsigned int size);
++  void parse(ASF::File *file, long long size);
+ 
+ private:
+   enum CodecType
+@@ -191,10 +207,10 @@
+   };
+ };
+ 
+-void ASF::File::FilePrivate::BaseObject::parse(ASF::File *file, unsigned int size)
++void ASF::File::FilePrivate::BaseObject::parse(ASF::File *file, long long size)
+ {
+   data.clear();
+-  if(size > 24 && size <= static_cast<unsigned int>(file->length()))
++  if(size > 24 && size <= file->length())
+     data = file->readBlock(size - 24);
+   else
+     data = ByteVector();
+@@ -219,7 +235,7 @@
+   return filePropertiesGuid;
+ }
+ 
+-void ASF::File::FilePrivate::FilePropertiesObject::parse(ASF::File *file, unsigned int size)
++void ASF::File::FilePrivate::FilePropertiesObject::parse(ASF::File *file, long long size)
+ {
+   BaseObject::parse(file, size);
+   if(data.size() < 64) {
+@@ -237,7 +253,7 @@
+   return streamPropertiesGuid;
+ }
+ 
+-void ASF::File::FilePrivate::StreamPropertiesObject::parse(ASF::File *file, unsigned int size)
++void ASF::File::FilePrivate::StreamPropertiesObject::parse(ASF::File *file, long long size)
+ {
+   BaseObject::parse(file, size);
+   if(data.size() < 70) {
+@@ -257,7 +273,7 @@
+   return contentDescriptionGuid;
+ }
+ 
+-void ASF::File::FilePrivate::ContentDescriptionObject::parse(ASF::File *file, unsigned int /*size*/)
++void ASF::File::FilePrivate::ContentDescriptionObject::parse(ASF::File *file, long long /*size*/)
+ {
+   const int titleLength     = readWORD(file);
+   const int artistLength    = readWORD(file);
+@@ -297,13 +313,30 @@
+   return extendedContentDescriptionGuid;
+ }
+ 
+-void ASF::File::FilePrivate::ExtendedContentDescriptionObject::parse(ASF::File *file, unsigned int /*size*/)
+-{
++void ASF::File::FilePrivate::ExtendedContentDescriptionObject::parse(ASF::File *file, long long size)
++{
++  long end;
++  if(!attributeDataFits(file, size, end)) {
++    file->setValid(false);
++    return;
++  }
++
+   int count = readWORD(file);
+   while(count--) {
++    if(file->tell() >= end) {
++      file->setValid(false);
++      break;
++    }
++
+     ASF::Attribute attribute;
+     String name = attribute.parse(*file);
+-    file->d->tag->addAttribute(name, attribute);
++    if(!name.isEmpty())
++      file->d->tag->addAttribute(name, attribute);
++
++    if(file->tell() > end) {
++      file->setValid(false);
++      break;
++    }
+   }
+ }
+ 
+@@ -320,13 +353,30 @@
+   return metadataGuid;
+ }
+ 
+-void ASF::File::FilePrivate::MetadataObject::parse(ASF::File *file, unsigned int /*size*/)
+-{
++void ASF::File::FilePrivate::MetadataObject::parse(ASF::File *file, long long size)
++{
++  long end;
++  if(!attributeDataFits(file, size, end)) {
++    file->setValid(false);
++    return;
++  }
++
+   int count = readWORD(file);
+   while(count--) {
++    if(file->tell() >= end) {
++      file->setValid(false);
++      break;
++    }
++
+     ASF::Attribute attribute;
+     String name = attribute.parse(*file, 1);
+-    file->d->tag->addAttribute(name, attribute);
++    if(!name.isEmpty())
++      file->d->tag->addAttribute(name, attribute);
++
++    if(file->tell() > end) {
++      file->setValid(false);
++      break;
++    }
+   }
+ }
+ 
+@@ -343,13 +393,30 @@
+   return metadataLibraryGuid;
+ }
+ 
+-void ASF::File::FilePrivate::MetadataLibraryObject::parse(ASF::File *file, unsigned int /*size*/)
+-{
++void ASF::File::FilePrivate::MetadataLibraryObject::parse(ASF::File *file, long long size)
++{
++  long end;
++  if(!attributeDataFits(file, size, end)) {
++    file->setValid(false);
++    return;
++  }
++
+   int count = readWORD(file);
+   while(count--) {
++    if(file->tell() >= end) {
++      file->setValid(false);
++      break;
++    }
++
+     ASF::Attribute attribute;
+     String name = attribute.parse(*file, 2);
+-    file->d->tag->addAttribute(name, attribute);
++    if(!name.isEmpty())
++      file->d->tag->addAttribute(name, attribute);
++
++    if(file->tell() > end) {
++      file->setValid(false);
++      break;
++    }
+   }
+ }
+ 
+@@ -371,20 +438,39 @@
+   return headerExtensionGuid;
+ }
+ 
+-void ASF::File::FilePrivate::HeaderExtensionObject::parse(ASF::File *file, unsigned int /*size*/)
+-{
++void ASF::File::FilePrivate::HeaderExtensionObject::parse(ASF::File *file, long long size)
++{
++  // The object header is 24 bytes. The extension header contains an 18-byte
++  // reserved field and a 4-byte data size before the child objects.
++  if(size < 46) {
++    file->setValid(false);
++    return;
++  }
++
+   file->seek(18, File::Current);
+-  long long dataSize = readDWORD(file);
++  bool ok;
++  const long long dataSize = readDWORD(file, &ok);
++  if(!ok || dataSize > size - 46) {
++    file->setValid(false);
++    return;
++  }
++
+   long long dataPos = 0;
++  unsigned int objectCount = 0;
+   while(dataPos < dataSize) {
++    if(objectCount++ >= MAX_ASF_HEADER_EXTENSION_OBJECT_COUNT) {
++      debug("ASF::HeaderExtensionObject::parse(): Maximum child object count exceeded.");
++      file->setValid(false);
++      break;
++    }
++
+     ByteVector guid = file->readBlock(16);
+     if(guid.size() != 16) {
+       file->setValid(false);
+       break;
+     }
+-    bool ok;
+-    long long size = readQWORD(file, &ok);
+-    if(!ok || size < 0 || size > dataSize - dataPos) {
++    const long long childSize = readQWORD(file, &ok);
++    if(!ok || childSize < 24 || childSize > dataSize - dataPos) {
+       file->setValid(false);
+       break;
+     }
+@@ -400,9 +486,9 @@
+     else {
+       obj = new UnknownObject(guid);
+     }
+-    obj->parse(file, static_cast<unsigned int>(size));
++    obj->parse(file, childSize);
+     objects.append(obj);
+-    dataPos += size;
++    dataPos += childSize;
+   }
+ }
+ 
+@@ -421,7 +507,7 @@
+   return codecListGuid;
+ }
+ 
+-void ASF::File::FilePrivate::CodecListObject::parse(ASF::File *file, unsigned int size)
++void ASF::File::FilePrivate::CodecListObject::parse(ASF::File *file, long long size)
+ {
+   BaseObject::parse(file, size);
+   if(data.size() <= 20) {
+@@ -637,12 +723,22 @@
+ 
+   bool ok;
+   d->headerSize = readQWORD(this, &ok);
++  // The header must contain at least the 30-byte fixed portion
++  // (16-byte GUID + 8-byte size + 4-byte count + 2 reserved bytes),
++  // and it cannot extend beyond the physical file.
++  if(!ok || d->headerSize < 30 || d->headerSize > static_cast<unsigned long long>(length())) {
++    debug("ASF::File::read(): Invalid header size.");
++    setValid(false);
++    return;
++  }
++  static constexpr unsigned int MAX_ASF_HEADER_OBJECT_COUNT = 50000;
++  const unsigned int numObjects = readDWORD(this, &ok);
+   if(!ok) {
+     setValid(false);
+     return;
+   }
+-  int numObjects = readDWORD(this, &ok);
+-  if(!ok) {
++  if(numObjects > MAX_ASF_HEADER_OBJECT_COUNT) {
++    debug("ASF::File::read(): Maximum header object count exceeded.");
+     setValid(false);
+     return;
+   }
+@@ -650,13 +746,13 @@
+ 
+   FilePrivate::FilePropertiesObject   *filePropertiesObject   = 0;
+   FilePrivate::StreamPropertiesObject *streamPropertiesObject = 0;
+-  for(int i = 0; i < numObjects; i++) {
++  for(unsigned int i = 0; i < numObjects; i++) {
+     const ByteVector guid = readBlock(16);
+     if(guid.size() != 16) {
+       setValid(false);
+       break;
+     }
+-    long size = static_cast<long>(readQWORD(this, &ok));
++    long long size = readQWORD(this, &ok);
+     if(!ok) {
+       setValid(false);
+       break;

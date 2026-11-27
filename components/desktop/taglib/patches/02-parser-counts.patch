@@ -1,0 +1,365 @@
+Applicable upstream parser limits adapted to the TagLib 1.13.1 implementation.
+Preserve the existing ABI and reject excessive counts and truncated Xiph data.
+Upstream commits: https://github.com/taglib/taglib/commit/<full ID below>.
+
+From 6d9429b12160524f347bfde369cff3c01b561f44 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Mon, 10 Aug 2026 12:19:52 -0400
+Subject: [PATCH] ID3v2: limit parsed frame count (#1406)
+
+Bound top-level ID3v2 parsing to 50000 frames. Crafted tags with
+many small frames could otherwise consume excessive memory and crash
+applications.
+
+Stop parsing further frames after the limit while retaining the
+successfully parsed tag data.
+
+From 766471a5a4794370b3cc45f0113ec18f8715a13d Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Fri, 14 Aug 2026 00:07:47 -0400
+Subject: [PATCH] APE: limit parsed tag item count (#1411)
+
+An APEv2 footer controls the number of parsed items without a bound.
+A small crafted tag can therefore allocate a large item map and terminate
+a memory-constrained application.
+
+Stop parsing after 50,000 items. This matches existing parser count limits
+and preserves entries parsed before the limit.
+
+From 2e9cac7307ec41c523ae7b80f14ee9af967a8231 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Tue, 4 Aug 2026 00:12:57 -0400
+Subject: [PATCH] Xiph: limit parsed comment fields (#1397)
+
+Xiph comment parsing retained an unbounded number of fields. A
+crafted comment block with many small fields could consume
+disproportionate memory.
+
+Stop parsing comment fields when the parser limit is exceeded.
+
+From 0a13a11bad3c9c9a2a6f88db2981ccbfcad43bb0 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Tue, 18 Aug 2026 01:07:33 -0400
+Subject: [PATCH] Xiph: bound comment field lengths (#1424)
+
+Xiph comment lengths are read from the file. Without checking them
+against the remaining packet, a wrapped length can reset the parser
+position and make each field iteration copy the same payload.
+Reject truncated vendor and field data before advancing the parser.
+
+From eb4ba7e93be6bb2ef3291efd4b006a03d9570808 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Tue, 4 Aug 2026 00:10:22 -0400
+Subject: [PATCH] FLAC: limit metadata block count (#1396)
+
+FLAC metadata scanning retained an unbounded number of blocks. A
+crafted file with many small blocks could consume disproportionate
+memory.
+
+Reject files that exceed a maximum metadata block count.
+
+From d781aaed7f9d71aa9eeaf61c057df15c49acc39e Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Wed, 5 Aug 2026 14:29:11 -0400
+Subject: [PATCH] Ogg FLAC: limit metadata block count (#1399)
+
+Ogg FLAC scans metadata blocks by repeatedly fetching Ogg packets.
+Each packet lookup walks indexed pages from their beginning, so a file
+with many small metadata blocks has quadratic parsing time and page
+allocation.
+
+Limit the metadata block count to 1024. This keeps the worst-case scan
+bounded while allowing more than normal Ogg FLAC files require.
+
+From a1d0488dc62809785654356376e6eca9c51d6439 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Mon, 3 Aug 2026 12:35:36 -0400
+Subject: [PATCH] RIFF: limit parsed chunk count (#1394)
+
+RIFF files could contain an unbounded number of small chunks. The
+parser retained a descriptor for each chunk, allowing a crafted file
+to consume disproportionate memory.
+
+Reject files that exceed a maximum parsed chunk count.
+
+From 94f7b5af4c6ee6b1a5a81bd04ae1bf04132b352b Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Tue, 18 Aug 2026 23:36:58 -0400
+Subject: [PATCH] XM: assume 40 bytes for zero sample header size (#1422)
+
+A zero sample header size makes the sample loop consume no input,
+allowing crafted instrument and sample counts to cause excessive CPU
+and memory use during parsing.
+
+Some trackers write zero sample header sizes, some trackers ignore
+such values and assume a standard header size of 40 bytes. We do the
+same to ensure the sample loop advances.
+
+From f4117f873c2cdc7b61553ae27df34364340a37ea Mon Sep 17 00:00:00 2001
+From: tsdgeos <aacid@kde.org>
+Date: Wed, 4 Feb 2026 17:31:59 +0100
+Subject: [PATCH] wavpack: Fix infinite loop when reading broken files (#1304)
+
+A crafted file can have blockSamples set to 0 and a blockSize so big
+that when adding 8 it overflows and offset is 0 so it goes back to the
+same position and loops forever
+
+From 5fa6fa6c2f1cfeecc56305a3a3591e73984d8eff Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Sat, 29 Aug 2026 01:45:08 -0400
+Subject: [PATCH] IT: reject invalid files before saving (#1432)
+
+
+--- a/taglib/ape/apetag.cpp
++++ b/taglib/ape/apetag.cpp
+@@ -49,6 +49,7 @@
+ {
+   const unsigned int MinKeyLength = 2;
+   const unsigned int MaxKeyLength = 255;
++  const unsigned int MAX_APE_ITEM_COUNT = 50000;
+ 
+   bool isKeyValid(const ByteVector &key)
+   {
+@@ -405,6 +406,11 @@
+ 
+   for(unsigned int i = 0; i < d->footer.itemCount() && pos <= data.size() - 11; i++) {
+ 
++    if(i >= MAX_APE_ITEM_COUNT) {
++      debug("APE::Tag::parse() - Maximum item count exceeded. Stopped parsing.");
++      return;
++    }
++
+     const int nullPos = data.find('\0', pos + 8);
+     if(nullPos < 0) {
+       debug("APE::Tag::parse() - Couldn't find a key/value separator. Stopped parsing.");
+--- a/taglib/flac/flacfile.cpp
++++ b/taglib/flac/flacfile.cpp
+@@ -55,6 +55,7 @@
+   const long MaxPaddingLegnth = 1024 * 1024;
+ 
+   const char LastBlockFlag = '\x80';
++  const unsigned int MAX_FLAC_METADATA_BLOCK_COUNT = 50000;
+ }  // namespace
+ 
+ class FLAC::File::FilePrivate
+@@ -493,7 +494,14 @@
+   nextBlockOffset += 4;
+   d->flacStart = nextBlockOffset;
+ 
++  unsigned int blockCount = 0;
+   while(true) {
++
++    if(blockCount++ >= MAX_FLAC_METADATA_BLOCK_COUNT) {
++      debug("FLAC::File::scan() -- Maximum metadata block count exceeded");
++      setValid(false);
++      return;
++    }
+ 
+     seek(nextBlockOffset);
+     const ByteVector header = readBlock(4);
+--- a/taglib/it/itfile.cpp
++++ b/taglib/it/itfile.cpp
+@@ -93,6 +93,11 @@
+   if(readOnly())
+   {
+     debug("IT::File::save() - Cannot save to a read only file.");
++    return false;
++  }
++  if(!isValid())
++  {
++    debug("IT::File::save() -- Trying to save invalid file.");
+     return false;
+   }
+   seek(4);
+--- a/taglib/mpeg/id3v2/id3v2tag.cpp
++++ b/taglib/mpeg/id3v2/id3v2tag.cpp
+@@ -54,6 +54,7 @@
+ 
+   const long MinPaddingSize = 1024;
+   const long MaxPaddingSize = 1024 * 1024;
++  const unsigned int MAX_ID3V2_FRAME_COUNT = 50000;
+ 
+   bool contains(const char **a, const ByteVector &v)
+   {
+@@ -775,6 +776,7 @@
+ 
+   unsigned int frameDataPosition = 0;
+   unsigned int frameDataLength = data.size();
++  unsigned int frameCount = 0;
+ 
+   // check for extended header
+ 
+@@ -809,6 +811,11 @@
+         debug("Padding *and* a footer found.  This is not allowed by the spec.");
+       }
+ 
++      break;
++    }
++
++    if(frameCount++ >= MAX_ID3V2_FRAME_COUNT) {
++      debug("ID3v2::Tag::parse() -- Maximum frame count exceeded");
+       break;
+     }
+ 
+--- a/taglib/ogg/flac/oggflacfile.cpp
++++ b/taglib/ogg/flac/oggflacfile.cpp
+@@ -35,6 +35,10 @@
+ using namespace TagLib;
+ using TagLib::FLAC::Properties;
+ 
++namespace {
++  constexpr int MAX_OGG_FLAC_METADATA_BLOCK_COUNT = 1024;
++}
++
+ class Ogg::FLAC::File::FilePrivate
+ {
+ public:
+@@ -223,6 +227,7 @@
+     return;
+ 
+   int ipacket = 0;
++  int blockCount = 1;
+   long overhead = 0;
+ 
+   ByteVector metadataHeader = packet(ipacket);
+@@ -287,6 +292,10 @@
+   // Search through the remaining metadata
+ 
+   while(!lastBlock) {
++    if(blockCount++ >= MAX_OGG_FLAC_METADATA_BLOCK_COUNT) {
++      debug("Ogg::FLAC::File::scan() -- Maximum metadata block count exceeded");
++      return;
++    }
+     metadataHeader = packet(++ipacket);
+     header = metadataHeader.mid(0, 4);
+     if(header.size() != 4) {
+--- a/taglib/ogg/xiphcomment.cpp
++++ b/taglib/ogg/xiphcomment.cpp
+@@ -419,23 +419,41 @@
+ 
+ void Ogg::XiphComment::parse(const ByteVector &data)
+ {
++  static constexpr unsigned int MAX_XIPH_COMMENT_FIELD_COUNT = 50000;
++
+   // The first thing in the comment data is the vendor ID length, followed by a
+   // UTF8 string with the vendor ID.
+ 
++  if(data.size() < 8) {
++    debug("Ogg::XiphComment::parse() - Comment data is too short.");
++    return;
++  }
++
+   unsigned int pos = 0;
+ 
+   const unsigned int vendorLength = data.toUInt(0, false);
+   pos += 4;
++  if(vendorLength > data.size() - pos) {
++    debug("Ogg::XiphComment::parse() - Vendor ID exceeds comment data.");
++    return;
++  }
+ 
+   d->vendorID = String(data.mid(pos, vendorLength), String::UTF8);
+   pos += vendorLength;
+ 
++  if(data.size() - pos < 4) {
++    debug("Ogg::XiphComment::parse() - Missing comment field count.");
++    return;
++  }
++
+   // Next the number of fields in the comment vector.
+ 
+   const unsigned int commentFields = data.toUInt(pos, false);
+   pos += 4;
+ 
+-  if(commentFields > (data.size() - 8) / 4) {
++  if(commentFields > MAX_XIPH_COMMENT_FIELD_COUNT ||
++     commentFields > (data.size() - 8) / 4) {
++    debug("Ogg::XiphComment::parse() - Maximum comment field count exceeded.");
+     return;
+   }
+ 
+@@ -444,16 +462,17 @@
+     // Each comment field is in the format "KEY=value" in a UTF8 string and has
+     // 4 bytes before the text starts that gives the length.
+ 
++    if(data.size() - pos < 4)
++      break;
++
+     const unsigned int commentLength = data.toUInt(pos, false);
+     pos += 4;
+ 
++    if(commentLength > data.size() - pos)
++      break;
++
+     const ByteVector entry = data.mid(pos, commentLength);
+     pos += commentLength;
+-
+-    // Don't go past data end
+-
+-    if(pos > data.size())
+-      break;
+ 
+     // Check for field separator
+ 
+--- a/taglib/riff/rifffile.cpp
++++ b/taglib/riff/rifffile.cpp
+@@ -35,6 +35,12 @@
+ 
+ using namespace TagLib;
+ 
++namespace {
++
++  constexpr int MAX_RIFF_CHUNK_COUNT = 50000;
++
++}
++
+ struct Chunk
+ {
+   ByteVector   name;
+@@ -295,6 +301,12 @@
+ 
+   // + 8: chunk header at least, fix for additional junk bytes
+   while(offset + 8 <= length()) {
++
++    if(d->chunks.size() >= MAX_RIFF_CHUNK_COUNT) {
++      debug("RIFF::File::read() -- Maximum chunk count exceeded");
++      setValid(false);
++      return;
++    }
+ 
+     seek(offset);
+     const ByteVector   chunkName = readBlock(4);
+--- a/taglib/wavpack/wavpackproperties.cpp
++++ b/taglib/wavpack/wavpackproperties.cpp
+@@ -281,14 +281,14 @@
+     const unsigned int flags = data.toUInt(24, false);
+     unsigned int sampleRate = sampleRates[(flags & SRATE_MASK) >> SRATE_LSB];
+ 
++    if(blockSize < 24 || blockSize > 1048576) {
++      debug("WavPack::Properties::read() -- Invalid block header found.");
++      break;
++    }
++
+     if(!blockSamples) {        // ignore blocks with no samples
+       offset += blockSize + 8;
+       continue;
+-    }
+-
+-    if(blockSize < 24 || blockSize > 1048576) {
+-      debug("WavPack::Properties::read() -- Invalid block header found.");
+-      break;
+     }
+ 
+     // For non-standard sample rates or DSD audio files, we must read and parse the block
+--- a/taglib/xm/xmfile.cpp
++++ b/taglib/xm/xmfile.cpp
+@@ -597,6 +597,9 @@
+       sumSampleCount += sampleCount;
+       // wouldn't know which header size to assume otherwise:
+       READ_ASSERT(instrumentHeaderSize >= count + 4 && readU32L(sampleHeaderSize));
++      // Some trackers write zero even though 40-byte sample headers follow.
++      if(sampleHeaderSize == 0)
++        sampleHeaderSize = 40;
+       // skip unhandled header proportion:
+       seek(instrumentHeaderSize - count - 4, Current);
+ 

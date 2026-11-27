@@ -1,0 +1,17 @@
+The imported parser fixes require C++11, which the component Makefile already
+selects. TagLib 1.13.1 overrides that flag with its target-level C++98 setting.
+Require C++11 for the library target so CMake does not append -std=gnu++98.
+This is a Solaris build adaptation; the library interfaces are unchanged.
+
+--- a/taglib/CMakeLists.txt
++++ b/taglib/CMakeLists.txt
+@@ -335,7 +335,8 @@
+ )
+ 
+ add_library(tag ${tag_LIB_SRCS} ${tag_HDRS})
+-set_property(TARGET tag PROPERTY CXX_STANDARD 98)
++set_property(TARGET tag PROPERTY CXX_STANDARD 11)
++set_property(TARGET tag PROPERTY CXX_STANDARD_REQUIRED ON)
+ 
+ if(HAVE_ZLIB AND NOT HAVE_ZLIB_SOURCE)
+   target_link_libraries(tag ${ZLIB_LIBRARIES})

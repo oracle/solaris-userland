@@ -1,0 +1,580 @@
+Upstream enumeration validation adapted to 1.13.1 and C++11.
+Keep the existing picture enums and object layouts; validate through private
+inline helpers because the newer shared picture-type macro is absent.
+MP4 ItemFactory's applicable parsing code is in MP4::Tag in this release.
+ASF attribute enumeration validation is included in 05-asf-bounds.patch.
+Upstream: https://github.com/taglib/taglib/commit/ee0ab489e041144be7583f9ef2f348a111815180
+
+From ee0ab489e041144be7583f9ef2f348a111815180 Mon Sep 17 00:00:00 2001
+From: manuaudio <manu@arimaka.com>
+Date: Sun, 16 Aug 2026 04:30:31 -0600
+Subject: [PATCH] Validate enumerations decoded from file bytes before casting
+ to them (#1420)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+* ID3v2: validate the text encoding byte before casting it
+
+The first byte of most ID3v2 frames selects the text encoding and is
+cast straight to String::Type. It comes from the file, so it can be any
+value, and String::Type enumerates 0..4 — loading an enumeration object
+whose value is outside the enumeration's range is undefined:
+
+  runtime error: load of value 127, which is not a valid value for type
+  'String::Type'
+  runtime error: load of value 4294967295, which is not a valid value
+  for type 'String::Type'
+
+The second value is 0xFF read through a plain signed char.
+
+It matters beyond the sanitizer: String::data() switches on the type
+with no default case, so an unrecognised encoding silently falls
+through and returns an empty ByteVector on the render path.
+
+Add Utils::textEncodingFromByte(), which maps the byte to its
+String::Type or falls back to Latin1 — the encoding these frames
+already declare as their default — and use it at the eleven sites that
+read the byte from a file.
+
+Note that a byte of 5, 6 or 7 is *not* undefined, because the range of
+an enumeration is the bit width spanned by its enumerators rather than
+the enumerators themselves. It is still not a valid encoding, and the
+same helper rejects it.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+* Validate the picture type byte before casting it
+
+The picture type enumeration is declared by DECLARE_PICTURE_TYPE_ENUM
+and shared by three classes, and all three cast a file-supplied value
+to it without checking. The enumerators run 0x00..0x14, so the range of
+the enumeration is 0..31 and a load outside that is undefined:
+
+  taglib/mpeg/id3v2/frames/attachedpictureframe.cpp:96:13: runtime
+  error: load of value 4294967295, which is not a valid value for type
+  'AttachedPictureFrame::Type'
+  taglib/flac/flacpicture.cpp:129:13: runtime error: load of value
+  65536, which is not a valid value for type 'Type'
+
+FLAC is the widest of the three: it casts a whole 32 bit field, so no
+truncation to a byte limits it. ASF and ID3v2 read a plain signed char,
+which reaches the same place through sign extension.
+
+This is visible to callers, not only to a sanitizer. Before the change
+AttachedPictureFrame::type() and FLAC::Picture::type() return -1 and
+65536 for the files above; after it they return Other.
+
+Since the enumeration comes from a macro, add one typeFromByte() to the
+macro backed by Utils::pictureTypeFromByte(), rather than three copies
+of the same check.
+
+Six reports before the change, none after.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+* ID3v2: validate the RVA2 channel byte before casting it
+
+Each channel record in a relative volume frame starts with a channel
+type byte that is cast straight to ChannelType. The enumerators run
+0x00..0x08, so the range of the enumeration is 0..15 and the byte from
+the file can leave it:
+
+  runtime error: load of value 127, which is not a valid value for type
+  'RelativeVolumeFrame::ChannelType'
+  runtime error: load of value 4294967295, which is not a valid value
+  for type 'RelativeVolumeFrame::ChannelType'
+
+The value is also used as a map key, so the frame ends up holding a
+channel that channels() then reports back.
+
+Map an unrecognised byte to Other instead.
+
+Two reports before the change, none after. The 123 files in tests/data
+produce identical channel output either way.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+* ID3v2: validate the SYLT and ETCO enum bytes before casting them
+
+Synchronised lyrics carry a timestamp format byte and a content type
+byte, and event timing codes carry a timestamp format byte. All three
+are cast without checking. TimestampFormat enumerates 0..2, so its
+range is only 0..3:
+
+  runtime error: load of value 127, which is not a valid value for type
+  'SynchronizedLyricsFrame::TimestampFormat'
+  runtime error: load of value 127, which is not a valid value for type
+  'SynchronizedLyricsFrame::Type'
+  runtime error: load of value 127, which is not a valid value for type
+  'EventTimingCodesFrame::TimestampFormat'
+
+with 4294967295 in place of 127 when the byte is 0xFF. Before the
+change timestampFormat() and type() return -1 for such a file.
+
+Map an unrecognised byte to Unknown and Other respectively.
+
+Worth noting what is *not* changed: the event type byte on the line
+below the ETCO cast is already written
+static_cast<EventType>(static_cast<unsigned char>(...)), and EventType
+enumerates up to 0xFE, so an unsigned char cannot leave its range. It
+reads like the same defect and is not one.
+
+Three reports before the change, none after. The 123 files in
+tests/data produce identical output either way.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+* MP4: validate the atom data type before casting it
+
+The type field of an iTunes metadata atom is a 32 bit value read from
+the file and cast straight to AtomDataType, whose enumerators run
+0..255. Values above 255 are outside the range of the enumeration:
+
+  taglib/mp4/mp4atom.h:85:36: runtime error: load of value 65536, which
+  is not a valid value for type 'AtomDataType'
+  taglib/mp4/mp4atom.h:85:36: runtime error: load of value 4294967295,
+  which is not a valid value for type 'AtomDataType'
+
+Both cast sites are reachable: parseFreeForm calls parseData2 with
+expectedFlags = -1, so the flags == expectedFlags test never
+constrains the value, and the mean/name branch casts unconditionally. A
+'----' atom with an arbitrary flags field reaches both.
+
+Map anything outside the range to TypeUndefined, which the enumeration
+already provides for exactly this.
+
+Four reports before the change, none after. The 123 files in tests/data
+produce identical item output either way.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+--- a/taglib/asf/asfpicture.cpp
++++ b/taglib/asf/asfpicture.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "tutils.h"
+ #include <taglib.h>
+ #include <tdebug.h>
+ #include <trefcounter.h>
+@@ -150,7 +151,7 @@
+   if(bytes.size() < 9)
+     return;
+   int pos = 0;
+-  d->type = static_cast<Type>(bytes[0]); ++pos;
++  d->type = static_cast<Type>(Utils::pictureTypeFromUInt(static_cast<unsigned char>(bytes[0]))); ++pos;
+   const unsigned int dataLen = bytes.toUInt(pos, false); pos+=4;
+ 
+   const ByteVector nullStringTerminator(2, 0);
+--- a/taglib/flac/flacpicture.cpp
++++ b/taglib/flac/flacpicture.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "tutils.h"
+ #include <taglib.h>
+ #include <tdebug.h>
+ #include "flacpicture.h"
+@@ -79,7 +80,7 @@
+   }
+ 
+   unsigned int pos = 0;
+-  d->type = static_cast<FLAC::Picture::Type>(data.toUInt(pos));
++  d->type = static_cast<FLAC::Picture::Type>(Utils::pictureTypeFromUInt(data.toUInt(pos)));
+   pos += 4;
+   unsigned int mimeTypeLength = data.toUInt(pos);
+   pos += 4;
+--- a/taglib/mp4/mp4tag.cpp
++++ b/taglib/mp4/mp4tag.cpp
+@@ -32,6 +32,15 @@
+ 
+ using namespace TagLib;
+ 
++namespace {
++  MP4::AtomDataType atomDataTypeFromFlags(int flags)
++  {
++    if(flags >= MP4::TypeImplicit && flags <= MP4::TypeUndefined)
++      return static_cast<MP4::AtomDataType>(flags);
++    return MP4::TypeUndefined;
++  }
++}
++
+ class MP4::Tag::TagPrivate
+ {
+ public:
+@@ -144,7 +153,7 @@
+         debug("MP4: Unexpected atom \"" + name + "\", expecting \"name\"");
+         return result;
+       }
+-      result.append(AtomData(static_cast<AtomDataType>(flags), data.mid(pos + 12, length - 12)));
++      result.append(AtomData(atomDataTypeFromFlags(flags), data.mid(pos + 12, length - 12)));
+     }
+     else {
+       if(name != "data") {
+@@ -152,7 +161,7 @@
+         return result;
+       }
+       if(expectedFlags == -1 || flags == expectedFlags) {
+-        result.append(AtomData(static_cast<AtomDataType>(flags), data.mid(pos + 16, length - 16)));
++        result.append(AtomData(atomDataTypeFromFlags(flags), data.mid(pos + 16, length - 16)));
+       }
+     }
+     pos += length;
+--- a/taglib/mpeg/id3v2/frames/attachedpictureframe.cpp
++++ b/taglib/mpeg/id3v2/frames/attachedpictureframe.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "tutils.h"
+ #include "attachedpictureframe.h"
+ 
+ #include <tstringlist.h>
+@@ -133,7 +134,7 @@
+     return;
+   }
+ 
+-  d->textEncoding = static_cast<String::Type>(data[0]);
++  d->textEncoding = Utils::textEncodingFromByte(data[0]);
+ 
+   int pos = 1;
+ 
+@@ -144,7 +145,7 @@
+     return;
+   }
+ 
+-  d->type = static_cast<TagLib::ID3v2::AttachedPictureFrame::Type>(data[pos++]);
++  d->type = static_cast<Type>(Utils::pictureTypeFromUInt(static_cast<unsigned char>(data[pos++])));
+   d->description = readStringField(data, d->textEncoding, &pos);
+ 
+   d->data = data.mid(pos);
+@@ -189,7 +190,7 @@
+     return;
+   }
+ 
+-  d->textEncoding = static_cast<String::Type>(data[0]);
++  d->textEncoding = Utils::textEncodingFromByte(data[0]);
+ 
+   int pos = 1;
+ 
+@@ -205,7 +206,7 @@
+     d->mimeType = "image/" + fixedString;
+   }
+ 
+-  d->type = static_cast<TagLib::ID3v2::AttachedPictureFrame::Type>(data[pos++]);
++  d->type = static_cast<Type>(Utils::pictureTypeFromUInt(static_cast<unsigned char>(data[pos++])));
+   d->description = readStringField(data, d->textEncoding, &pos);
+ 
+   d->data = data.mid(pos);
+--- a/taglib/mpeg/id3v2/frames/commentsframe.cpp
++++ b/taglib/mpeg/id3v2/frames/commentsframe.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "tutils.h"
+ #include <tbytevectorlist.h>
+ #include <id3v2tag.h>
+ #include <tdebug.h>
+@@ -150,7 +151,7 @@
+     return;
+   }
+ 
+-  d->textEncoding = static_cast<String::Type>(data[0]);
++  d->textEncoding = Utils::textEncodingFromByte(data[0]);
+   d->language = data.mid(1, 3);
+ 
+   int byteAlign = d->textEncoding == String::Latin1 || d->textEncoding == String::UTF8 ? 1 : 2;
+--- a/taglib/mpeg/id3v2/frames/eventtimingcodesframe.cpp
++++ b/taglib/mpeg/id3v2/frames/eventtimingcodesframe.cpp
+@@ -31,6 +31,23 @@
+ 
+ using namespace TagLib;
+ using namespace ID3v2;
++
++namespace
++{
++  /*!
++   * Returns the timestamp format denoted by \a c, or Unknown if it denotes
++   * nothing. The range of the enumeration is only 0..3, so the byte read from
++   * the file cannot simply be cast.
++   */
++  EventTimingCodesFrame::TimestampFormat timestampFormatFromByte(char c)
++  {
++    const unsigned char value = static_cast<unsigned char>(c);
++    if(value <= EventTimingCodesFrame::AbsoluteMilliseconds)
++      return static_cast<EventTimingCodesFrame::TimestampFormat>(value);
++
++    return EventTimingCodesFrame::Unknown;
++  }
++} // namespace
+ 
+ class EventTimingCodesFrame::EventTimingCodesFramePrivate
+ {
+@@ -104,7 +121,7 @@
+     return;
+   }
+ 
+-  d->timestampFormat = static_cast<TimestampFormat>(data[0]);
++  d->timestampFormat = timestampFormatFromByte(data[0]);
+ 
+   int pos = 1;
+   d->synchedEvents.clear();
+--- a/taglib/mpeg/id3v2/frames/generalencapsulatedobjectframe.cpp
++++ b/taglib/mpeg/id3v2/frames/generalencapsulatedobjectframe.cpp
+@@ -26,6 +26,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "tutils.h"
+ #include <tdebug.h>
+ #include <tstringlist.h>
+ 
+@@ -142,7 +143,7 @@
+     return;
+   }
+ 
+-  d->textEncoding = static_cast<String::Type>(data[0]);
++  d->textEncoding = Utils::textEncodingFromByte(data[0]);
+ 
+   int pos = 1;
+ 
+--- a/taglib/mpeg/id3v2/frames/ownershipframe.cpp
++++ b/taglib/mpeg/id3v2/frames/ownershipframe.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "tutils.h"
+ #include <tdebug.h>
+ #include <tstringlist.h>
+ #include <id3v2tag.h>
+@@ -123,7 +124,7 @@
+   }
+ 
+   // Get the text encoding
+-  d->textEncoding = static_cast<String::Type>(data[0]);
++  d->textEncoding = Utils::textEncodingFromByte(data[0]);
+   pos += 1;
+ 
+   // Read the price paid this is a null terminate string
+--- a/taglib/mpeg/id3v2/frames/relativevolumeframe.cpp
++++ b/taglib/mpeg/id3v2/frames/relativevolumeframe.cpp
+@@ -31,6 +31,25 @@
+ using namespace TagLib;
+ using namespace ID3v2;
+ 
++namespace
++{
++  /*!
++   * Returns the channel type denoted by \a c, the channel byte of an RVA2
++   * channel record, or Other if it denotes nothing.
++   *
++   * The byte comes from the file, and the range of the enumeration is only
++   * 0..15, so the value cannot simply be cast.
++   */
++  RelativeVolumeFrame::ChannelType channelTypeFromByte(char c)
++  {
++    const unsigned char value = static_cast<unsigned char>(c);
++    if(value <= RelativeVolumeFrame::Subwoofer)
++      return static_cast<RelativeVolumeFrame::ChannelType>(value);
++
++    return RelativeVolumeFrame::Other;
++  }
++} // namespace
++
+ struct ChannelData
+ {
+   ChannelData() : channelType(RelativeVolumeFrame::Other), volumeAdjustment(0) {}
+@@ -182,7 +201,7 @@
+ 
+   while(pos <= static_cast<int>(data.size()) - 4) {
+ 
+-    ChannelType type = static_cast<ChannelType>(data[pos]);
++    ChannelType type = channelTypeFromByte(data[pos]);
+     pos += 1;
+ 
+     ChannelData &channel = d->channels[type];
+--- a/taglib/mpeg/id3v2/frames/synchronizedlyricsframe.cpp
++++ b/taglib/mpeg/id3v2/frames/synchronizedlyricsframe.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "tutils.h"
+ #include "synchronizedlyricsframe.h"
+ #include <tbytevectorlist.h>
+ #include <id3v2tag.h>
+@@ -31,6 +32,36 @@
+ 
+ using namespace TagLib;
+ using namespace ID3v2;
++
++namespace
++{
++  /*!
++   * Returns the timestamp format denoted by \a c, or Unknown if it denotes
++   * nothing. The range of the enumeration is only 0..3, so the byte read from
++   * the file cannot simply be cast.
++   */
++  SynchronizedLyricsFrame::TimestampFormat timestampFormatFromByte(char c)
++  {
++    const unsigned char value = static_cast<unsigned char>(c);
++    if(value <= SynchronizedLyricsFrame::AbsoluteMilliseconds)
++      return static_cast<SynchronizedLyricsFrame::TimestampFormat>(value);
++
++    return SynchronizedLyricsFrame::Unknown;
++  }
++
++  /*!
++   * Returns the content type denoted by \a c, or Other if it denotes nothing.
++   * The range of the enumeration is only 0..15.
++   */
++  SynchronizedLyricsFrame::Type contentTypeFromByte(char c)
++  {
++    const unsigned char value = static_cast<unsigned char>(c);
++    if(value <= SynchronizedLyricsFrame::ImageUrls)
++      return static_cast<SynchronizedLyricsFrame::Type>(value);
++
++    return SynchronizedLyricsFrame::Other;
++  }
++} // namespace
+ 
+ class SynchronizedLyricsFrame::SynchronizedLyricsFramePrivate
+ {
+@@ -150,10 +181,10 @@
+     return;
+   }
+ 
+-  d->textEncoding = static_cast<String::Type>(data[0]);
++  d->textEncoding = Utils::textEncodingFromByte(data[0]);
+   d->language = data.mid(1, 3);
+-  d->timestampFormat = static_cast<TimestampFormat>(data[4]);
+-  d->type = static_cast<Type>(data[5]);
++  d->timestampFormat = timestampFormatFromByte(data[4]);
++  d->type = contentTypeFromByte(data[5]);
+ 
+   int pos = 6;
+ 
+--- a/taglib/mpeg/id3v2/frames/textidentificationframe.cpp
++++ b/taglib/mpeg/id3v2/frames/textidentificationframe.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "tutils.h"
+ #include <tbytevectorlist.h>
+ #include <id3v2tag.h>
+ #include "textidentificationframe.h"
+@@ -194,7 +195,7 @@
+ 
+   // read the string data type (the first byte of the field data)
+ 
+-  d->textEncoding = static_cast<String::Type>(data[0]);
++  d->textEncoding = Utils::textEncodingFromByte(data[0]);
+ 
+   // split the byte array into chunks based on the string type (two byte delimiter
+   // for unicode encodings)
+--- a/taglib/mpeg/id3v2/frames/unsynchronizedlyricsframe.cpp
++++ b/taglib/mpeg/id3v2/frames/unsynchronizedlyricsframe.cpp
+@@ -26,6 +26,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "tutils.h"
+ #include "unsynchronizedlyricsframe.h"
+ #include <tbytevectorlist.h>
+ #include <id3v2tag.h>
+@@ -147,7 +148,7 @@
+     return;
+   }
+ 
+-  d->textEncoding = static_cast<String::Type>(data[0]);
++  d->textEncoding = Utils::textEncodingFromByte(data[0]);
+   d->language = data.mid(1, 3);
+ 
+   int byteAlign
+--- a/taglib/mpeg/id3v2/frames/urllinkframe.cpp
++++ b/taglib/mpeg/id3v2/frames/urllinkframe.cpp
+@@ -26,6 +26,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "tutils.h"
+ #include "urllinkframe.h"
+ #include "id3v2tag.h"
+ #include <tdebug.h>
+@@ -201,7 +202,7 @@
+ 
+   int pos = 0;
+ 
+-  d->textEncoding = static_cast<String::Type>(data[0]);
++  d->textEncoding = Utils::textEncodingFromByte(data[0]);
+   pos += 1;
+ 
+   if(d->textEncoding == String::Latin1 || d->textEncoding == String::UTF8) {
+--- a/taglib/mpeg/id3v2/id3v2framefactory.cpp
++++ b/taglib/mpeg/id3v2/id3v2framefactory.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "tutils.h"
+ #include <tdebug.h>
+ #include <tzlib.h>
+ 
+@@ -377,13 +378,13 @@
+        tdat &&
+        tdat->data().size() >= 5)
+     {
+-      String date(tdat->data().mid(1), static_cast<String::Type>(tdat->data()[0]));
++      String date(tdat->data().mid(1), Utils::textEncodingFromByte(tdat->data()[0]));
+       if(date.length() == 4) {
+         tdrc->setText(tdrc->toString() + '-' + date.substr(2, 2) + '-' + date.substr(0, 2));
+         if(tag->frameList("TIME").size() == 1) {
+           UnknownFrame *timeframe = dynamic_cast<UnknownFrame *>(tag->frameList("TIME").front());
+           if(timeframe && timeframe->data().size() >= 5) {
+-            String time(timeframe->data().mid(1), static_cast<String::Type>(timeframe->data()[0]));
++            String time(timeframe->data().mid(1), Utils::textEncodingFromByte(timeframe->data()[0]));
+             if(time.length() == 4) {
+               tdrc->setText(tdrc->toString() + 'T' + time.substr(0, 2) + ':' + time.substr(2, 2));
+             }
+--- a/taglib/toolkit/tutils.h
++++ b/taglib/toolkit/tutils.h
+@@ -45,6 +45,7 @@
+ #endif
+ 
+ #include <tstring.h>
++#include <tdebug.h>
+ #include <cstdio>
+ #include <cstdarg>
+ #include <cstring>
+@@ -55,6 +56,25 @@
+   {
+     namespace
+     {
++      inline String::Type textEncodingFromByte(char c)
++      {
++        switch(static_cast<unsigned char>(c)) {
++        case String::Latin1:
++        case String::UTF16:
++        case String::UTF16BE:
++        case String::UTF8:
++        case String::UTF16LE:
++          return static_cast<String::Type>(static_cast<unsigned char>(c));
++        default:
++          return String::Latin1;
++        }
++      }
++
++      inline unsigned int pictureTypeFromUInt(unsigned int value)
++      {
++        return value <= 0x14 ? value : 0;
++      }
++
+ 
+       /*!
+        * Reverses the order of bytes in an 16-bit integer.

@@ -1,0 +1,764 @@
+Upstream file-derived property conversion guards adapted to 1.13.1.
+Preserve the existing arithmetic and int API, leaving unrepresentable values
+at their defaults. Include the rounding guard follow-up consistently.
+Translate the MPC packet offset relative to the stream start because 1.x
+streamLength excludes any leading ID3v2 tag.
+Matroska, Shorten and DSD implementations are absent from 1.13.1.
+Upstream commits: https://github.com/taglib/taglib/commit/<full ID below>.
+
+From cb92e0aec4e3ced74010fe536f9c76356d3949fe Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Mon, 3 Aug 2026 09:46:46 -0400
+Subject: [PATCH] MPC: validate SV8 packet size (#1391)
+
+SV8 packet parsing subtracted its header size from an unchecked
+unsigned packet length. An undersized value could wrap and make the
+parser allocate the remainder of a large file.
+
+Reject packet lengths smaller than their header or beyond the remaining
+file data before reading the payload.
+
+From 4c3e3cf1b8a201733c5203d348e6eb275aca0e8a Mon Sep 17 00:00:00 2001
+From: manuaudio <manu@arimaka.com>
+Date: Sat, 15 Aug 2026 08:58:33 -0700
+Subject: [PATCH] FLAC: do not convert out of range properties to int
+
+STREAMINFO carries the total sample count in a 36 bit field and the
+sample rate in a 20 bit one, so a structurally valid file can declare
+2^36-1 frames at 1 Hz. The millisecond length is then ~6.9e13 and the
+conversion to int is undefined:
+
+  taglib/flac/flacproperties.cpp:136:35: runtime error: 6.87195e+13 is
+  outside the range of representable values of type 'int'
+
+The bitrate on the next line is reachable the other way round, with a
+short stream at a high declared rate making the divisor tiny:
+
+  taglib/flac/flacproperties.cpp:137:35: runtime error: 1.75922e+10 is
+  outside the range of representable values of type 'int'
+
+Leave the field at its default rather than converting.
+
+Two reports before the change, none after. The 23 FLAC, APE, Ogg
+Vorbis, Opus and Speex files in tests/data report identical channels,
+sample rate, bitrate and length before and after, and the suite runs
+576 tests either way.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+From b4a1f3d7d11aa8a3c8218d9826848e9247c3ffc3 Mon Sep 17 00:00:00 2001
+From: manuaudio <manu@arimaka.com>
+Date: Sat, 15 Aug 2026 09:00:25 -0700
+Subject: [PATCH] APE: do not convert out of range properties to int
+
+The frame count is assembled from three 32 bit header fields and the
+sample rate is read straight from the header, so a file can declare
+~4.3e9 frames at 1 Hz. The millisecond length is then ~4.3e12 and the
+conversion to int is undefined:
+
+  taglib/ape/apeproperties.cpp:141:35: runtime error: 4.29497e+12 is
+  outside the range of representable values of type 'int'
+
+The bitrate on the next line is reachable the other way round, with one
+frame at a high declared rate making the divisor tiny:
+
+  taglib/ape/apeproperties.cpp:142:35: runtime error: 3.60301e+13 is
+  outside the range of representable values of type 'int'
+
+Leave the field at its default rather than converting.
+
+Two reports before the change, none after. The 23 FLAC, APE, Ogg
+Vorbis, Opus and Speex files in tests/data report identical channels,
+sample rate, bitrate and length before and after, and the suite runs
+576 tests either way.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+From 16d2585f8416022801f6795f59b7838e067d63bb Mon Sep 17 00:00:00 2001
+From: manuaudio <manu@arimaka.com>
+Date: Sat, 15 Aug 2026 09:00:25 -0700
+Subject: [PATCH] Vorbis: do not convert out of range properties to int
+
+The length comes from the difference between two 64 bit granule
+positions over a sample rate read from the identification header, so a
+file can declare 2^62 samples at 1 Hz. The millisecond length is then
+~4.6e21 and the conversion to int is undefined:
+
+  taglib/ogg/vorbis/vorbisproperties.cpp:168:39: runtime error:
+  4.61169e+21 is outside the range of representable values of type 'int'
+
+The bitrate on the next line is reachable the other way round, with one
+sample at a high declared rate making the divisor tiny:
+
+  taglib/ogg/vorbis/vorbisproperties.cpp:169:39: runtime error:
+  3.51569e+13 is outside the range of representable values of type 'int'
+
+Leave the field at its default rather than converting.
+
+Two reports before the change, none after. The 23 FLAC, APE, Ogg
+Vorbis, Opus and Speex files in tests/data report identical channels,
+sample rate, bitrate and length before and after, and the suite runs
+576 tests either way.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+From 83e5427fe0a0db02ba7a4df332bea0c2a941bf11 Mon Sep 17 00:00:00 2001
+From: manuaudio <manu@arimaka.com>
+Date: Sat, 15 Aug 2026 09:00:38 -0700
+Subject: [PATCH] Opus: do not convert out of range properties to int
+
+Opus is the one worth reading twice: its granule clock is fixed at
+48 kHz, so unlike the other formats no absurd declared sample rate is
+needed. A 64 bit granule position alone is enough. At 2^62 samples the
+millisecond length is ~9.6e16 and the conversion to int is undefined:
+
+  taglib/ogg/opus/opusproperties.cpp:156:39: runtime error: 9.60768e+16
+  is outside the range of representable values of type 'int'
+
+The bitrate on the next line has the same shape as the other formats,
+but because the divisor cannot be made arbitrarily small at a fixed
+48 kHz it needs a stream of several megabytes to overflow, so I have
+not built a test file for it. It is guarded for consistency rather than
+on demonstrated evidence.
+
+Leave the field at its default rather than converting.
+
+One report before the change, none after. The 23 FLAC, APE, Ogg
+Vorbis, Opus and Speex files in tests/data report identical channels,
+sample rate, bitrate and length before and after, and the suite runs
+576 tests either way.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+From c3d4eef597cc4914ec6177cae83d792158bf8be3 Mon Sep 17 00:00:00 2001
+From: manuaudio <manu@arimaka.com>
+Date: Sat, 15 Aug 2026 09:00:38 -0700
+Subject: [PATCH] Speex: do not convert out of range properties to int
+
+Same shape as Vorbis. The length comes from the difference between two
+64 bit granule positions over a sample rate read from the Speex header,
+so a file can declare 2^62 samples at 1 Hz. The millisecond length is
+then ~4.6e21 and the conversion to int is undefined:
+
+  taglib/ogg/speex/speexproperties.cpp:165:39: runtime error: 4.61169e+21
+  is outside the range of representable values of type 'int'
+
+The bitrate on the next line is reachable the other way round, with one
+sample at a high declared rate making the divisor tiny:
+
+  taglib/ogg/speex/speexproperties.cpp:166:39: runtime error: 3.61877e+13
+  is outside the range of representable values of type 'int'
+
+Leave the field at its default rather than converting.
+
+Two reports before the change, none after. The 23 FLAC, APE, Ogg
+Vorbis, Opus and Speex files in tests/data report identical channels,
+sample rate, bitrate and length before and after, and the suite runs
+576 tests either way.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+From be424957dae963d9735933ae557e5cffee508fd5 Mon Sep 17 00:00:00 2001
+From: manuaudio <manu@arimaka.com>
+Date: Sat, 15 Aug 2026 09:29:59 -0700
+Subject: [PATCH] MPEG: do not convert out of range properties to int
+
+The Xing header supplies both the frame count and the byte count as raw
+32 bit values, and TagLib multiplies the frame count by the per-frame
+duration without checking the result. At MPEG 2.5 Layer III / 8 kHz a
+frame is 72 ms, so 2^32-1 declared frames puts the length at ~3.1e11 ms
+and the conversion to int is undefined:
+
+  taglib/mpeg/mpegproperties.cpp:166:35: runtime error: 3.09238e+11 is
+  outside the range of representable values of type 'int'
+
+The bitrate on the next line is reachable the other way round. One
+declared frame of MPEG 1 Layer I at 48 kHz is 8 ms, and the declared
+size is not the real file size, so a 1 KB file can claim 2^32-1 bytes:
+
+  taglib/mpeg/mpegproperties.cpp:167:35: runtime error: 4.29497e+09 is
+  outside the range of representable values of type 'int'
+
+The length computed on the non-Xing path has the same shape but is
+bounded by the real stream length rather than a declared count, so it
+needs a file of a couple of gigabytes rather than a crafted header. I
+have not built one; that guard is there for consistency, not on
+demonstrated evidence.
+
+Leave the field at its default rather than converting.
+
+Two reports before the change, none after. The 23 MPEG files in
+tests/data report identical channels, sample rate, bitrate and length
+before and after, and the suite runs 576 tests either way.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+From c767a557448c473baee01da4f37e6a9958a2b027 Mon Sep 17 00:00:00 2001
+From: manuaudio <manu@arimaka.com>
+Date: Sat, 15 Aug 2026 00:34:17 -0700
+Subject: [PATCH] AIFF: do not convert out of range properties to int
+
+Fourth instance of the same shape. The sample rate is an 80 bit float
+read from the file and the frame count is a 32 bit count from it, so all
+three conversions here can be handed a value int cannot represent:
+
+  taglib/riff/aiff/aiffproperties.cpp:145:38: runtime error: 6.29416e+49
+  is outside the range of representable values of type 'int'
+  taglib/riff/aiff/aiffproperties.cpp:150:35: runtime error: 1.00707e+48
+  is outside the range of representable values of type 'int'
+
+Line 149 is the same shape and reachable the other way round, with a
+large sampleFrames over a small sample rate, so it is guarded too.
+
+Leave the field at its default rather than converting. All seven AIFF
+files in tests/data report identical channels, sample rate, bitrate and
+length before and after.
+
+Two reports before the change, none after.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+From 9e3285c988bc2832ae7ded78332f306845d3254c Mon Sep 17 00:00:00 2001
+From: manuaudio <manu@arimaka.com>
+Date: Fri, 14 Aug 2026 23:58:49 -0700
+Subject: [PATCH] ASF: do not convert an out of range length to int
+
+Third instance of the same shape as the DSF and DSDIFF changes:
+
+    static_cast<int>(static_cast<double>(duration) / 10000.0
+                     - static_cast<double>(preroll) + 0.5)
+
+duration and preroll are both long long values read from the file
+properties object, so the result can land outside int, and converting a
+double the destination type cannot represent is undefined:
+
+  taglib/asf/asffile.cpp:240:22: runtime error: -2.80375e+14 is outside
+  the range of representable values of type 'int'
+
+Only skip the conversion when the value will not fit. Values that do
+fit, negative ones included, are set exactly as before, so the three
+.wma files in tests/data still report lengthMs 3549, 96502 and 3712.
+
+Found by the same fuzzing that turned up the DSF case.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+From df6c8e15d1d845ab222e9fff2e826d6c8575ea75 Mon Sep 17 00:00:00 2001
+From: manuaudio <manu@arimaka.com>
+Date: Sat, 15 Aug 2026 01:37:28 -0700
+Subject: [PATCH] MPC: do not convert an out of range length to int
+
+Fifth instance of the same shape, in readSV8:
+
+    const auto length = static_cast<double>(frameCount) * 1000.0 / d->sampleRate;
+    d->length  = static_cast<int>(length + 0.5);
+    d->bitrate = static_cast<int>(static_cast<double>(streamLength) * 8.0 / length + 0.5);
+
+frameCount is sampleFrames minus begSilence, both read from the file, so
+the millisecond figure can land outside int:
+
+  taglib/mpc/mpcproperties.cpp:244:39: runtime error: 4.18294e+17 is
+  outside the range of representable values of type 'int'
+
+The bitrate on the next line goes the same way when length is small, so
+it is guarded too. One report before, none after, and the .mpc files in
+tests/data report identical properties.
+
+Turned up independently from two different seed files, sv8_header.mpc
+and zerodiv.mpc.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+From d841424d4854cb083237b61c5569b77369151411 Mon Sep 17 00:00:00 2001
+From: manuaudio <manu@arimaka.com>
+Date: Sat, 15 Aug 2026 09:54:52 -0700
+Subject: [PATCH] MP4: do not convert an out of range length to int
+
+The mdhd duration is a signed 64 bit field in version 1 and the
+timescale sitting beside it is a 32 bit field that may be 1, so a
+4 KB file can declare 2^62 units of a one-hertz clock. The millisecond
+length is then ~4.6e21 and the conversion to int is undefined:
+
+  taglib/mp4/mp4properties.cpp:207:34: runtime error: 4.61169e+21 is
+  outside the range of representable values of type 'int'
+
+The version 0 path reaches the same line with a 32 bit duration:
+
+  taglib/mp4/mp4properties.cpp:207:34: runtime error: 4.29497e+12 is
+  outside the range of representable values of type 'int'
+
+The mvhd fallback a few lines above feeds the same expression, so it is
+covered by the same guard.
+
+Leave the field at its default rather than converting.
+
+For the record, the other conversions in this file were checked and are
+not affected. The esds and alac nominal bitrates divide a 32 bit value
+by 1000.0, which cannot leave int's range, and the three
+calculateMdatLength() estimates are integer arithmetic on a long long
+rather than a double conversion.
+
+One report per file before the change, none after. The 18 MP4 files in
+tests/data report identical channels, sample rate, bitrate and length
+before and after, and the suite runs 576 tests either way.
+
+Assisted-By: Claude Code (Claude Opus 5)
+
+From 8a78c5e5bdfbcf8edd7e140943a0a4aaa2a296a5 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Mon, 17 Aug 2026 12:46:22 -0400
+Subject: [PATCH] Guard file-derived audio property conversions (#1421)
+
+Crafted duration and sampling-rate fields can produce values outside the int properties API. Leave those properties at their defaults instead of invoking undefined floating-point conversions, and promote Shorten bitrate operands before multiplication.
+
+From 7f2964ab8bafb5716b63cecd9f5a9a8fe059752a Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Tue, 18 Aug 2026 00:59:51 -0400
+Subject: [PATCH] MPC: guard SV7 property conversions (#1423)
+
+SV7 derives the audio length and bitrate from file-controlled frame
+counts and stream length. A crafted stream can make the derived bitrate
+exceed the int property range, so converting it is undefined.
+Guard the SV7 conversions, and account for rounding when checking the
+existing SV8 conversions.
+
+--- a/taglib/ape/apeproperties.cpp
++++ b/taglib/ape/apeproperties.cpp
+@@ -27,6 +27,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tstring.h>
+ #include <tdebug.h>
+ #include <bitset>
+@@ -167,10 +168,19 @@
+   else
+     analyzeOld(file);
+ 
++  // Both the frame count and the sample rate are read from the file, so the
++  // millisecond length can land outside int, and a short stream at a high rate
++  // does the same to the bitrate. Converting a double the destination type
++  // cannot represent is undefined, so leave the field at its default instead.
+   if(d->sampleFrames > 0 && d->sampleRate > 0) {
+     const double length = d->sampleFrames * 1000.0 / d->sampleRate;
+-    d->length  = static_cast<int>(length + 0.5);
+-    d->bitrate = static_cast<int>(streamLength * 8.0 / length + 0.5);
++    const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++    if(length > 0.0 && length + 0.5 <= maxInt) {
++      d->length = static_cast<int>(length + 0.5);
++      const double bitrate = streamLength * 8.0 / length;
++      if(bitrate >= 0.0 && bitrate + 0.5 <= maxInt)
++        d->bitrate = static_cast<int>(bitrate + 0.5);
++    }
+   }
+ }
+ 
+--- a/taglib/asf/asffile.cpp
++++ b/taglib/asf/asffile.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tdebug.h>
+ #include <tbytevectorlist.h>
+ #include <tpropertymap.h>
+@@ -245,7 +246,10 @@
+ 
+   const long long duration = data.toLongLong(40, false);
+   const long long preroll  = data.toLongLong(56, false);
+-  file->d->properties->setLengthInMilliseconds(static_cast<int>(duration / 10000.0 - preroll + 0.5));
++  const double milliseconds = duration / 10000.0 - preroll + 0.5;
++  if(milliseconds > static_cast<double>(std::numeric_limits<int>::min()) &&
++     milliseconds < static_cast<double>(std::numeric_limits<int>::max()))
++    file->d->properties->setLengthInMilliseconds(static_cast<int>(milliseconds));
+ }
+ 
+ ByteVector ASF::File::FilePrivate::StreamPropertiesObject::guid() const
+--- a/taglib/flac/flacproperties.cpp
++++ b/taglib/flac/flacproperties.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tstring.h>
+ #include <tdebug.h>
+ 
+@@ -165,10 +166,19 @@
+ 
+   d->sampleFrames = (hi << 32) | lo;
+ 
++  // The frame count is a 36 bit field and the sample rate a 20 bit one, so the
++  // millisecond length can land outside int, and a short stream at a high rate
++  // does the same to the bitrate. Converting a double the destination type
++  // cannot represent is undefined, so leave the field at its default instead.
+   if(d->sampleFrames > 0 && d->sampleRate > 0) {
+     const double length = d->sampleFrames * 1000.0 / d->sampleRate;
+-    d->length  = static_cast<int>(length + 0.5);
+-    d->bitrate = static_cast<int>(streamLength * 8.0 / length + 0.5);
++    const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++    if(length > 0.0 && length + 0.5 <= maxInt) {
++      d->length = static_cast<int>(length + 0.5);
++      const double bitrate = streamLength * 8.0 / length;
++      if(bitrate >= 0.0 && bitrate + 0.5 <= maxInt)
++        d->bitrate = static_cast<int>(bitrate + 0.5);
++    }
+   }
+ 
+   if(data.size() >= pos + 16)
+--- a/taglib/mp4/mp4properties.cpp
++++ b/taglib/mp4/mp4properties.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tdebug.h>
+ #include <tstring.h>
+ #include "mp4file.h"
+@@ -207,8 +208,11 @@
+     unit   = data.toUInt(20U);
+     length = data.toUInt(24U);
+   }
+-  if(unit > 0 && length > 0)
+-    d->length = static_cast<int>(length * 1000.0 / unit + 0.5);
++  if(unit > 0 && length > 0) {
++    const double lengthMs = length * 1000.0 / unit;
++    if(lengthMs > 0.0 && lengthMs + 0.5 <= static_cast<double>(std::numeric_limits<int>::max()))
++      d->length = static_cast<int>(lengthMs + 0.5);
++  }
+ 
+   MP4::Atom *atom = trak->find("mdia", "minf", "stbl", "stsd");
+   if(!atom) {
+--- a/taglib/mpc/mpcproperties.cpp
++++ b/taglib/mpc/mpcproperties.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tstring.h>
+ #include <tdebug.h>
+ #include <bitset>
+@@ -205,6 +206,9 @@
+ 
+ void MPC::Properties::readSV8(File *file, long streamLength)
+ {
++  // The caller has consumed the four-byte magic. streamLength excludes any
++  // leading ID3v2 tag, so compare file offsets relative to the stream start.
++  const long streamStart = file->tell() - 4;
+   bool readSH = false, readRG = false;
+ 
+   while(!readSH && !readRG) {
+@@ -218,7 +222,21 @@
+       break;
+     }
+ 
+-    const unsigned long dataSize = packetSize - 2 - packetSizeLength;
++    const unsigned long headerSize = 2 + packetSizeLength;
++    const long offset = file->tell();
++    if(packetSize < headerSize || offset < streamStart ||
++       offset - streamStart > streamLength) {
++      debug("MPC::Properties::readSV8() - Invalid packet size.");
++      break;
++    }
++
++    const unsigned long dataSize = packetSize - headerSize;
++    const auto remaining =
++      static_cast<unsigned long long>(streamLength - (offset - streamStart));
++    if(dataSize > remaining || dataSize > std::numeric_limits<unsigned int>::max()) {
++      debug("MPC::Properties::readSV8() - Packet size exceeds remaining data.");
++      break;
++    }
+ 
+     const ByteVector data = file->readBlock(dataSize);
+     if(data.size() != dataSize) {
+@@ -261,8 +279,13 @@
+       const unsigned int frameCount = d->sampleFrames - begSilence;
+       if(frameCount > 0 && d->sampleRate > 0) {
+         const double length = frameCount * 1000.0 / d->sampleRate;
+-        d->length  = static_cast<int>(length + 0.5);
+-        d->bitrate = static_cast<int>(streamLength * 8.0 / length + 0.5);
++        const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++        if(length > 0.0 && length + 0.5 <= maxInt) {
++          d->length = static_cast<int>(length + 0.5);
++          const double bitrate = streamLength * 8.0 / length;
++          if(bitrate >= 0.0 && bitrate + 0.5 <= maxInt)
++            d->bitrate = static_cast<int>(bitrate + 0.5);
++        }
+       }
+     }
+     else if (packetType == "RG") {
+@@ -363,9 +386,14 @@
+ 
+   if(d->sampleFrames > 0 && d->sampleRate > 0) {
+     const double length = d->sampleFrames * 1000.0 / d->sampleRate;
+-    d->length = static_cast<int>(length + 0.5);
+-
+-    if(d->bitrate == 0)
+-      d->bitrate = static_cast<int>(streamLength * 8.0 / length + 0.5);
+-  }
+-}
++    const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++    if(length > 0.0 && length + 0.5 <= maxInt) {
++      d->length = static_cast<int>(length + 0.5);
++      if(d->bitrate == 0) {
++        const double bitrate = streamLength * 8.0 / length;
++        if(bitrate >= 0.0 && bitrate + 0.5 <= maxInt)
++          d->bitrate = static_cast<int>(bitrate + 0.5);
++      }
++    }
++  }
++}
+--- a/taglib/mpeg/mpegproperties.cpp
++++ b/taglib/mpeg/mpegproperties.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tdebug.h>
+ #include <tstring.h>
+ 
+@@ -182,8 +183,18 @@
+     const double timePerFrame = firstHeader.samplesPerFrame() * 1000.0 / firstHeader.sampleRate();
+     const double length = timePerFrame * d->xingHeader->totalFrames();
+ 
+-    d->length  = static_cast<int>(length + 0.5);
+-    d->bitrate = static_cast<int>(d->xingHeader->totalSize() * 8.0 / length + 0.5);
++    // Both the frame count and the byte count come straight from the Xing
++    // header, so the millisecond length can land outside int, and a single
++    // declared frame does the same to the bitrate. Converting a double the
++    // destination type cannot represent is undefined, so leave the field at
++    // its default instead.
++    if(length > 0.0 && length + 0.5 <= static_cast<double>(std::numeric_limits<int>::max())) {
++      d->length = static_cast<int>(length + 0.5);
++
++      const double bitrate = d->xingHeader->totalSize() * 8.0 / length;
++      if(bitrate >= 0.0 && bitrate + 0.5 <= static_cast<double>(std::numeric_limits<int>::max()))
++        d->bitrate = static_cast<int>(bitrate + 0.5);
++    }
+   }
+   else if(firstHeader.bitrate() > 0) {
+ 
+@@ -205,8 +216,11 @@
+     {
+       const Header lastHeader(file, lastFrameOffset, false);
+       const long streamLength = lastFrameOffset - firstFrameOffset + lastHeader.frameLength();
+-      if (streamLength > 0)
+-        d->length = static_cast<int>(streamLength * 8.0 / d->bitrate + 0.5);
++      if(streamLength > 0) {
++        const double length = streamLength * 8.0 / d->bitrate;
++        if(length > 0.0 && length + 0.5 <= static_cast<double>(std::numeric_limits<int>::max()))
++          d->length = static_cast<int>(length + 0.5);
++      }
+     }
+   }
+ 
+--- a/taglib/ogg/opus/opusproperties.cpp
++++ b/taglib/ogg/opus/opusproperties.cpp
+@@ -27,6 +27,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tstring.h>
+ #include <tdebug.h>
+ 
+@@ -169,8 +170,13 @@
+         for (unsigned int i = 0; i < 2; ++i) {
+           fileLengthWithoutOverhead -= file->packet(i).size();
+         }
+-        d->length  = static_cast<int>(length + 0.5);
+-        d->bitrate = static_cast<int>(fileLengthWithoutOverhead * 8.0 / length + 0.5);
++        const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++        if(length > 0.0 && length + 0.5 <= maxInt) {
++          d->length = static_cast<int>(length + 0.5);
++          const double bitrate = fileLengthWithoutOverhead * 8.0 / length;
++          if(bitrate >= 0.0 && bitrate + 0.5 <= maxInt)
++            d->bitrate = static_cast<int>(bitrate + 0.5);
++        }
+       }
+     }
+     else {
+--- a/taglib/ogg/speex/speexproperties.cpp
++++ b/taglib/ogg/speex/speexproperties.cpp
+@@ -27,6 +27,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tstring.h>
+ #include <tdebug.h>
+ 
+@@ -188,8 +189,13 @@
+         for (unsigned int i = 0; i < 2; ++i) {
+           fileLengthWithoutOverhead -= file->packet(i).size();
+         }
+-        d->length  = static_cast<int>(length + 0.5);
+-        d->bitrate = static_cast<int>(fileLengthWithoutOverhead * 8.0 / length + 0.5);
++        const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++        if(length > 0.0 && length + 0.5 <= maxInt) {
++          d->length = static_cast<int>(length + 0.5);
++          const double bitrate = fileLengthWithoutOverhead * 8.0 / length;
++          if(bitrate >= 0.0 && bitrate + 0.5 <= maxInt)
++            d->bitrate = static_cast<int>(bitrate + 0.5);
++        }
+       }
+     }
+     else {
+--- a/taglib/ogg/vorbis/vorbisproperties.cpp
++++ b/taglib/ogg/vorbis/vorbisproperties.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tstring.h>
+ #include <tdebug.h>
+ 
+@@ -192,8 +193,13 @@
+         for (unsigned int i = 0; i < 3; ++i) {
+           fileLengthWithoutOverhead -= file->packet(i).size();
+         }
+-        d->length  = static_cast<int>(length + 0.5);
+-        d->bitrate = static_cast<int>(fileLengthWithoutOverhead * 8.0 / length + 0.5);
++        const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++        if(length > 0.0 && length + 0.5 <= maxInt) {
++          d->length = static_cast<int>(length + 0.5);
++          const double bitrate = fileLengthWithoutOverhead * 8.0 / length;
++          if(bitrate >= 0.0 && bitrate + 0.5 <= maxInt)
++            d->bitrate = static_cast<int>(bitrate + 0.5);
++        }
+       }
+     }
+     else {
+--- a/taglib/riff/aiff/aiffproperties.cpp
++++ b/taglib/riff/aiff/aiffproperties.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tstring.h>
+ #include <tdebug.h>
+ #include "aifffile.h"
+@@ -175,13 +176,19 @@
+   d->bitsPerSample = data.toShort(6U);
+ 
+   const long double sampleRate = data.toFloat80BE(8);
+-  if(sampleRate >= 1.0)
++  if(sampleRate >= 1.0 &&
++     sampleRate + 0.5 <= static_cast<long double>(std::numeric_limits<int>::max()))
+     d->sampleRate = static_cast<int>(sampleRate + 0.5);
+ 
+   if(d->sampleFrames > 0 && d->sampleRate > 0) {
+     const double length = d->sampleFrames * 1000.0 / sampleRate;
+-    d->length  = static_cast<int>(length + 0.5);
+-    d->bitrate = static_cast<int>(streamLength * 8.0 / length + 0.5);
++    const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++    if(length > 0.0 && length + 0.5 <= maxInt) {
++      d->length = static_cast<int>(length + 0.5);
++      const double bitrate = streamLength * 8.0 / length;
++      if(bitrate >= 0.0 && bitrate + 0.5 <= maxInt)
++        d->bitrate = static_cast<int>(bitrate + 0.5);
++    }
+   }
+ 
+   if(data.size() >= 23) {
+--- a/taglib/riff/wav/wavproperties.cpp
++++ b/taglib/riff/wav/wavproperties.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tdebug.h>
+ #include "wavfile.h"
+ #include "wavproperties.h"
+@@ -208,14 +209,24 @@
+ 
+   if(d->sampleFrames > 0 && d->sampleRate > 0) {
+     const double length = d->sampleFrames * 1000.0 / d->sampleRate;
+-    d->length  = static_cast<int>(length + 0.5);
+-    d->bitrate = static_cast<int>(streamLength * 8.0 / length + 0.5);
++    const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++    if(length > 0.0 && length + 0.5 <= maxInt) {
++      d->length = static_cast<int>(length + 0.5);
++      const double bitrate = streamLength * 8.0 / length;
++      if(bitrate >= 0.0 && bitrate + 0.5 <= maxInt)
++        d->bitrate = static_cast<int>(bitrate + 0.5);
++    }
+   }
+   else {
+     const unsigned int byteRate = data.toUInt(8, false);
+     if(byteRate > 0) {
+-      d->length  = static_cast<int>(streamLength * 1000.0 / byteRate + 0.5);
+-      d->bitrate = static_cast<int>(byteRate * 8.0 / 1000.0 + 0.5);
+-    }
+-  }
+-}
++      const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++      const double length = streamLength * 1000.0 / byteRate;
++      if(length >= 0.0 && length + 0.5 <= maxInt)
++        d->length = static_cast<int>(length + 0.5);
++      const double bitrate = byteRate * 8.0 / 1000.0;
++      if(bitrate + 0.5 <= maxInt)
++        d->bitrate = static_cast<int>(bitrate + 0.5);
++    }
++  }
++}
+--- a/taglib/trueaudio/trueaudioproperties.cpp
++++ b/taglib/trueaudio/trueaudioproperties.cpp
+@@ -27,6 +27,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <tstring.h>
+ #include <tdebug.h>
+ #include <bitset>
+@@ -164,8 +165,13 @@
+ 
+     if(d->sampleFrames > 0 && d->sampleRate > 0) {
+       const double length = d->sampleFrames * 1000.0 / d->sampleRate;
+-      d->length  = static_cast<int>(length + 0.5);
+-      d->bitrate = static_cast<int>(streamLength * 8.0 / length + 0.5);
++      const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++      if(length > 0.0 && length + 0.5 <= maxInt) {
++        d->length = static_cast<int>(length + 0.5);
++        const double bitrate = streamLength * 8.0 / length;
++        if(bitrate >= 0.0 && bitrate + 0.5 <= maxInt)
++          d->bitrate = static_cast<int>(bitrate + 0.5);
++      }
+     }
+   }
+ }
+--- a/taglib/wavpack/wavpackproperties.cpp
++++ b/taglib/wavpack/wavpackproperties.cpp
+@@ -27,6 +27,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <limits>
+ #include <stdint.h>
+ #include <tstring.h>
+ #include <tdebug.h>
+@@ -334,8 +335,13 @@
+ 
+   if(d->sampleFrames > 0 && d->sampleRate > 0) {
+     const double length = d->sampleFrames * 1000.0 / d->sampleRate;
+-    d->length  = static_cast<int>(length + 0.5);
+-    d->bitrate = static_cast<int>(streamLength * 8.0 / length + 0.5);
++    const double maxInt = static_cast<double>(std::numeric_limits<int>::max());
++    if(length > 0.0 && length + 0.5 <= maxInt) {
++      d->length = static_cast<int>(length + 0.5);
++      const double bitrate = streamLength * 8.0 / length;
++      if(bitrate >= 0.0 && bitrate + 0.5 <= maxInt)
++        d->bitrate = static_cast<int>(bitrate + 0.5);
++    }
+   }
+ }
+ 

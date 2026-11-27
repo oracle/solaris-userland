@@ -1,0 +1,295 @@
+Applicable upstream post-2.3.2 parser follow-ups adapted to the 1.x offset
+and iterator APIs: overflow-safe FLAC picture and ByteVector bounds, Ogg page
+and stream replacement bounds, text value budgets and linear genre parsing.
+Keep the 1.x APIs and C++11 language level.
+Upstream commits: https://github.com/taglib/taglib/commit/<full ID below>.
+
+From 8fe8b8235b857fcaee6d16a9561e9659c5628fe4 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Wed, 4 Nov 2026 11:17:34 -0500
+Subject: [PATCH] Prevent FLAC picture length overflows (#1492)
+
+FLAC picture string and data lengths were checked with addition. On
+32-bit builds, crafted lengths can wrap the cursor and cause a
+four-byte read before the ByteVector allocation.
+
+Use remaining-length checks in Picture::parse and make fixed-width
+ByteVector conversions reject offsets at or beyond the buffer.
+
+From 58499cb157c38b8d07b262b15c4ecba9f36aeb9a Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Tue, 10 Nov 2026 23:43:08 -0500
+Subject: [PATCH] Fix ByteVector bounds checks (#1493)
+
+ByteVector::endsWith underflows when the pattern is longer than the
+receiver. containsAt then uses an addition that can wrap, allowing an
+out-of-bounds memcmp and a process crash.
+
+Reject invalid pattern offsets before subtraction and compare against
+the remaining receiver length without overflowing.
+
+From 1819fda4800af68bf688c7e111504f36f0ea5854 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Wed, 4 Nov 2026 11:07:19 -0500
+Subject: [PATCH] Validate Ogg page bounds before saving (#1491)
+
+Ogg page lacing values can declare payload beyond EOF. During an
+in-memory tag update, that replacement span can underflow the length
+passed to memmove and crash the process.
+
+Reject truncated pages and make ByteVectorStream::insert ignore invalid
+replacement ranges before doing offset arithmetic.
+
+From 5bd11b2fb6009eb35712dd6663c22ddea79f6a58 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Mon, 28 Sep 2026 14:28:51 -0400
+Subject: [PATCH] Bound text value counts in ID3v2 and APE tags (#1458)
+
+Null-separated text values create a ByteVector and String for each
+tiny field. A 1 MB tag can allocate over 100 MB and abort
+memory-limited applications.
+
+Limit decoded values based on input size and stop before creating
+String objects when the value count exceeds the budget.
+
+From 62db51159d543cd3eca08d33150621544d7be84e Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Mon, 28 Sep 2026 14:28:19 -0400
+Subject: [PATCH] Avoid repeated genre suffix copies in ID3v2 parsing (#1457)
+
+A TCON frame with many legacy genre codes copies the remaining text
+for every code. A small crafted tag can consume seconds of CPU.
+
+Walk the original string by offset, compare mapped genres without
+copying the suffix, and limit decoded codes by input size.
+
+--- a/taglib/ape/apeitem.cpp
++++ b/taglib/ape/apeitem.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <algorithm>
+ #include <tbytevectorlist.h>
+ #include <tdebug.h>
+ 
+@@ -259,8 +260,18 @@
+   setReadOnly(flags & 1);
+   setType(static_cast<ItemTypes>((flags >> 1) & 3));
+ 
+-  if(Text == d->type)
+-    d->text = StringList(ByteVectorList::split(value, '\0'), String::UTF8);
++  if(Text == d->type) {
++    static const unsigned int MAX_TEXT_VALUE_COUNT = 50000;
++    const unsigned int maxValues = std::min(MAX_TEXT_VALUE_COUNT,
++      std::max(1024U, value.size() / 32));
++    const ByteVectorList values = ByteVectorList::split(
++      value, '\0', 1, static_cast<int>(maxValues + 1));
++    if(values.size() > maxValues) {
++      debug("APE::Item::parse() -- Maximum text value count exceeded");
++      return;
++    }
++    d->text = StringList(values, String::UTF8);
++  }
+   else
+     d->value = value;
+ }
+--- a/taglib/flac/flacpicture.cpp
++++ b/taglib/flac/flacpicture.cpp
+@@ -84,7 +84,7 @@
+   pos += 4;
+   unsigned int mimeTypeLength = data.toUInt(pos);
+   pos += 4;
+-  if(pos + mimeTypeLength + 24 > data.size()) {
++  if(mimeTypeLength > data.size() - pos - 24) {
+     debug("Invalid picture block.");
+     return false;
+   }
+@@ -92,7 +92,7 @@
+   pos += mimeTypeLength;
+   unsigned int descriptionLength = data.toUInt(pos);
+   pos += 4;
+-  if(pos + descriptionLength + 20 > data.size()) {
++  if(descriptionLength > data.size() - pos - 20) {
+     debug("Invalid picture block.");
+     return false;
+   }
+@@ -108,7 +108,7 @@
+   pos += 4;
+   unsigned int dataLength = data.toUInt(pos);
+   pos += 4;
+-  if(pos + dataLength > data.size()) {
++  if(dataLength > data.size() - pos) {
+     debug("Invalid picture block.");
+     return false;
+   }
+--- a/taglib/mpeg/id3v2/frames/textidentificationframe.cpp
++++ b/taglib/mpeg/id3v2/frames/textidentificationframe.cpp
+@@ -23,11 +23,13 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <algorithm>
+ #include "tutils.h"
+ #include <tbytevectorlist.h>
+ #include <id3v2tag.h>
+ #include "textidentificationframe.h"
+ #include "tpropertymap.h"
++#include "tdebug.h"
+ #include "id3v1genres.h"
+ 
+ using namespace TagLib;
+@@ -212,7 +214,16 @@
+   while(dataLength % byteAlign != 0)
+     dataLength++;
+ 
+-  ByteVectorList l = ByteVectorList::split(data.mid(1, dataLength), textDelimiter(d->textEncoding), byteAlign);
++  static const unsigned int MAX_TEXT_FIELD_COUNT = 50000;
++  const unsigned int maxFields = std::min(MAX_TEXT_FIELD_COUNT,
++    std::max(1024U, static_cast<unsigned int>(dataLength) / 32));
++  const ByteVectorList l = ByteVectorList::split(
++    data.mid(1, dataLength), textDelimiter(d->textEncoding), byteAlign,
++    static_cast<int>(maxFields + 1));
++  if(l.size() > maxFields) {
++    debug("ID3v2: Maximum text field count exceeded");
++    return;
++  }
+ 
+   d->fieldList.clear();
+ 
+--- a/taglib/mpeg/id3v2/id3v2framefactory.cpp
++++ b/taglib/mpeg/id3v2/id3v2framefactory.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <algorithm>
+ #include "tutils.h"
+ #include <tdebug.h>
+ #include <tzlib.h>
+@@ -81,21 +82,30 @@
+       int offset = 0;
+       int end = 0;
+ 
+-      while(s.length() > offset && s[offset] == '(' &&
++      unsigned int codeCount = 0;
++      const unsigned int maxCodes = std::min(50000U, std::max(1024U, s.size() / 32));
++      while(s.length() > static_cast<unsigned int>(offset) && s[offset] == '(' &&
+             (end = s.find(")", offset + 1)) > offset) {
+-        // "(12)Genre"
+-        const String genreCode = s.substr(offset + 1, end - 1);
+-        s = s.substr(end + 1);
++        if(codeCount++ >= maxCodes) {
++          debug("ID3v2: Maximum genre code count exceeded");
++          break;
++        }
++        const String genreCode = s.substr(offset + 1, end - offset - 1);
++        offset = end + 1;
+         bool ok;
+         int number = genreCode.toInt(&ok);
+-        if((ok && number >= 0 && number <= 255 &&
+-            !(ID3v1::genre(number) == s)) ||
+-           genreCode == "RX" || genreCode == "CR")
++        if(ok && number >= 0 && number <= 255) {
++          const String genre = ID3v1::genre(number);
++          if(genre.size() != s.size() - offset ||
++             !std::equal(genre.begin(), genre.end(), s.begin() + offset))
++            newfields.append(genreCode);
++        }
++        else if(genreCode == "RX" || genreCode == "CR") {
+           newfields.append(genreCode);
++        }
+       }
+-      if(!s.isEmpty())
+-        // "Genre" or "12"
+-        newfields.append(s);
++      if(static_cast<unsigned int>(offset) < s.size())
++        newfields.append(s.substr(offset));
+     }
+ 
+     if(newfields.isEmpty())
+--- a/taglib/ogg/oggpageheader.cpp
++++ b/taglib/ogg/oggpageheader.cpp
+@@ -288,6 +288,13 @@
+   else
+     d->lastPacketCompleted = true;
+ 
++  const long streamLength = file->length();
++  if(streamLength < 0 || pageOffset > streamLength ||
++     d->size + d->dataSize > streamLength - pageOffset) {
++    debug("Ogg::PageHeader::read() -- page data exceeds stream length");
++    return;
++  }
++
+   d->isValid = true;
+ }
+ 
+--- a/taglib/toolkit/tbytevector.cpp
++++ b/taglib/toolkit/tbytevector.cpp
+@@ -136,8 +136,12 @@
+   const bool isBigEndian = (Utils::systemByteOrder() == Utils::BigEndian);
+   const bool swap = (mostSignificantByteFirst != isBigEndian);
+ 
+-  if(offset + sizeof(T) > v.size())
+-    return toNumber<T>(v, offset, v.size() - offset, mostSignificantByteFirst);
++  if(offset >= v.size())
++    return toNumber<T>(v, offset, 0, mostSignificantByteFirst);
++
++  const size_t remaining = v.size() - offset;
++  if(sizeof(T) > remaining)
++    return toNumber<T>(v, offset, remaining, mostSignificantByteFirst);
+ 
+   // Uses memcpy instead of reinterpret_cast to avoid an alignment exception.
+   T tmp;
+@@ -448,8 +452,11 @@
+     patternLength = pattern.size();
+ 
+   // do some sanity checking -- all of these things are needed for the search to be valid
++  if(patternLength == 0 || patternOffset >= patternLength || offset > size())
++    return false;
++
+   const unsigned int compareLength = patternLength - patternOffset;
+-  if(offset + compareLength > size() || patternOffset >= pattern.size() || patternLength == 0)
++  if(compareLength > size() - offset)
+     return false;
+ 
+   return (::memcmp(data() + offset, pattern.data() + patternOffset, compareLength) == 0);
+@@ -462,7 +469,8 @@
+ 
+ bool ByteVector::endsWith(const ByteVector &pattern) const
+ {
+-  return containsAt(pattern, size() - pattern.size());
++  return pattern.size() <= size() &&
++         containsAt(pattern, size() - pattern.size());
+ }
+ 
+ ByteVector &ByteVector::replace(char oldByte, char newByte)
+--- a/taglib/toolkit/tbytevectorstream.cpp
++++ b/taglib/toolkit/tbytevectorstream.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <climits>
+ #include "tbytevectorstream.h"
+ #include "tstring.h"
+ #include "tdebug.h"
+@@ -90,7 +91,17 @@
+ 
+ void ByteVectorStream::insert(const ByteVector &data, unsigned long start, unsigned long replace)
+ {
+-  long sizeDiff = data.size() - replace;
++  const long streamLength = length();
++  if(streamLength < 0 || start > static_cast<unsigned long>(streamLength) ||
++     replace > static_cast<unsigned long>(streamLength - start)) {
++    debug("ByteVectorStream::insert() -- replacement range is out of bounds");
++    return;
++  }
++  if(data.size() > static_cast<unsigned long>(LONG_MAX) - (streamLength - replace)) {
++    debug("ByteVectorStream::insert() -- resulting length is out of range");
++    return;
++  }
++  const long sizeDiff = static_cast<long>(data.size()) - static_cast<long>(replace);
+   if(sizeDiff < 0) {
+     removeBlock(start + data.size(), -sizeDiff);
+   }

@@ -1,0 +1,23 @@
+Upstream zero-length MPEG frame validation adapted to 1.13.1.
+Upstream: https://github.com/taglib/taglib/commit/b7dc1ab8acbfe341a76ab2e3b8e0a8c298abbe39
+
+From b7dc1ab8acbfe341a76ab2e3b8e0a8c298abbe39 Mon Sep 17 00:00:00 2001
+From: Urs Fleisch <ufleisch@users.sourceforge.net>
+Date: Thu, 16 Nov 2023 18:48:00 +0100
+Subject: [PATCH] Fail MPEG header check when frame length is zero (#1174)
+
+
+--- a/taglib/mpeg/mpegheader.cpp
++++ b/taglib/mpeg/mpegheader.cpp
+@@ -301,6 +301,11 @@
+     // consistent. Otherwise, we assume that either or both of the frames are
+     // broken.
+ 
++    // A frame length of 0 is probably invalid and would pass the test below
++    // because nextData would be the same as data.
++    if(d->frameLength == 0)
++      return;
++
+     file->seek(offset + d->frameLength);
+     const ByteVector nextData = file->readBlock(4);
+ 

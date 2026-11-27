@@ -1,0 +1,181 @@
+Upstream MP4 hardening adapted to the 1.13.1 Atom layout and offset API.
+A single count across all roots and descendants also enforces the per-level
+limit. Preserve the exported one-argument constructor and all object layouts.
+The QuickTime chapter implementation in newer releases is absent in 1.13.1.
+Upstream commits: https://github.com/taglib/taglib/commit/<full ID below>.
+
+From 193091fe2ebb93ba5961adb5ba3c4632f6c50327 Mon Sep 17 00:00:00 2001
+From: Urs Fleisch <ufleisch@users.sourceforge.net>
+Date: Wed, 8 Apr 2026 20:52:58 +0200
+Subject: [PATCH] Fix unbounded recursion in EBML/Matroska MasterElement and
+ MP4 atoms (#1326)
+
+Credits for fix and reporting go to https://github.com/ericliu-12.
+
+From c0f2a939b446809f0a05fc2fbaf492cbdd24dba5 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Mon, 3 Aug 2026 11:46:53 -0400
+Subject: [PATCH] MP4: limit atoms in nested containers (#1392)
+
+Nested MP4 containers did not enforce the atom count limit applied at
+the root level. A small file with many child atoms could consume
+disproportionate memory while building the atom tree.
+
+Apply the per-level limit to container children and reject files that
+exceed it.
+
+From 5f869755c8b6bc2dcdd36a11323ae45d3a851913 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Wed, 19 Aug 2026 12:25:21 -0400
+Subject: [PATCH] Bound recursive Matroska and MP4 element trees (#1425)
+
+The Matroska and MP4 parsers limited child elements per container, but
+allowed that limit to repeat at every nesting level. A crafted media file
+could therefore retain millions of small elements and exhaust process
+memory while it was opened.
+
+Carry a shared element count through recursive parsing so the existing
+per-container limits also have a global bound.
+
+From a6aff0bfce15975b065145f13a3020ccf5f5e5a7 Mon Sep 17 00:00:00 2001
+From: Urs Fleisch <ufleisch@users.sourceforge.net>
+Date: Mon, 6 Apr 2026 14:44:10 +0200
+Subject: [PATCH] Fix writing too many offsets when updating MP4 stco/co64
+ atoms (#1332)
+
+This will fix a DoS with a crafted MP4 file causing too many offsets
+to be written when updating the stco or co64 tables in MP4 files.
+
+Credits for the discovery of this bug go to Yuen Ying Ng (Ruth)
+(Cyber Security Researcher at PwC Hong Kong).
+
+From fd97c86bcb924bd23e4c99bd25ffdf85f3a162b8 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Sun, 2 Aug 2026 10:47:17 -0400
+Subject: [PATCH] MP4: reject undersized table atoms (#1390)
+
+MP4 chapter parsing subtracted table headers from atom lengths without
+checking that the headers were present. A short atom could wrap the
+read length and allocate the remainder of a large file.
+
+Validate table sizes before reading their payloads and before updating
+chunk offsets while saving.
+
+--- a/taglib/mp4/mp4atom.cpp
++++ b/taglib/mp4/mp4atom.cpp
+@@ -37,10 +37,33 @@
+     "stsd"
+ };
+ 
++namespace {
++  const unsigned int MAX_MP4_ATOM_COUNT = 50000;
++  const int MAX_MP4_ATOM_DEPTH = 64;
++}
++
+ MP4::Atom::Atom(File *file)
+   : offset(file->tell())
+ {
++  unsigned int atomCount = 0;
++  read(file, 0, atomCount);
++}
++
++MP4::Atom::Atom(File *file, int depth, unsigned int &atomCount)
++  : offset(file->tell())
++{
++  read(file, depth, atomCount);
++}
++
++void MP4::Atom::read(File *file, int depth, unsigned int &atomCount)
++{
+   children.setAutoDelete(true);
++  if(depth > MAX_MP4_ATOM_DEPTH || ++atomCount > MAX_MP4_ATOM_COUNT) {
++    debug("MP4: Maximum atom depth or count exceeded");
++    length = 0;
++    file->seek(0, File::End);
++    return;
++  }
+ 
+   ByteVector header = file->readBlock(8);
+   if(header.size() != 8) {
+@@ -117,7 +140,7 @@
+         file->seek(8, File::Current);
+       }
+       while(file->tell() < offset + length) {
+-        MP4::Atom *child = new MP4::Atom(file);
++        MP4::Atom *child = new MP4::Atom(file, depth + 1, atomCount);
+         children.append(child);
+         if(child->length == 0)
+           return;
+@@ -183,9 +206,10 @@
+ 
+   file->seek(0, File::End);
+   long end = file->tell();
++  unsigned int atomCount = 0;
+   file->seek(0);
+   while(file->tell() + 8 <= end) {
+-    MP4::Atom *atom = new MP4::Atom(file);
++    MP4::Atom *atom = new MP4::Atom(file, 0, atomCount);
+     atoms.append(atom);
+     if (atom->length == 0)
+       break;
+--- a/taglib/mp4/mp4atom.h
++++ b/taglib/mp4/mp4atom.h
+@@ -85,6 +85,9 @@
+       TagLib::ByteVector name;
+       AtomList children;
+     private:
++      friend class Atoms;
++      Atom(File *file, int depth, unsigned int &atomCount);
++      void read(File *file, int depth, unsigned int &atomCount);
+       static const int numContainers = 11;
+       static const char *const containers[11];
+     };
+--- a/taglib/mp4/mp4tag.cpp
++++ b/taglib/mp4/mp4tag.cpp
+@@ -593,12 +593,17 @@
+       if(atom->offset > offset) {
+         atom->offset += delta;
+       }
++      if(atom->length < 16)
++        continue;
+       d->file->seek(atom->offset + 12);
+       ByteVector data = d->file->readBlock(atom->length - 12);
++      if(data.size() < 4)
++        continue;
+       unsigned int count = data.toUInt();
+       d->file->seek(atom->offset + 16);
+       unsigned int pos = 4;
+-      while(count--) {
++      const unsigned int maxPos = data.size() - 4;
++      while(count-- && pos <= maxPos) {
+         long o = static_cast<long>(data.toUInt(pos));
+         if(o > offset) {
+           o += delta;
+@@ -614,12 +619,17 @@
+       if(atom->offset > offset) {
+         atom->offset += delta;
+       }
++      if(atom->length < 20)
++        continue;
+       d->file->seek(atom->offset + 12);
+       ByteVector data = d->file->readBlock(atom->length - 12);
++      if(data.size() < 8)
++        continue;
+       unsigned int count = data.toUInt();
+       d->file->seek(atom->offset + 16);
+       unsigned int pos = 4;
+-      while(count--) {
++      const unsigned int maxPos = data.size() - 8;
++      while(count-- && pos <= maxPos) {
+         long long o = data.toLongLong(pos);
+         if(o > offset) {
+           o += delta;
+@@ -638,6 +648,8 @@
+       if(atom->offset > offset) {
+         atom->offset += delta;
+       }
++      if(atom->length < 24)
++        continue;
+       d->file->seek(atom->offset + 9);
+       ByteVector data = d->file->readBlock(atom->length - 9);
+       const unsigned int flags = data.toUInt(0, 3, true);

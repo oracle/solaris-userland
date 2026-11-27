@@ -1,0 +1,371 @@
+Upstream ID3v2 hardening adapted to 1.13.1 and C++11.
+Unlike newer TagLib, this zlib helper grows its output incrementally. Limit
+that growth before allocation as well as checking declared output against
+the upstream 64 MiB and 64:1 limits. Decode the declared length as big-endian
+for ID3v2.3 and syncsafe for ID3v2.4 before applying those limits. Preserve
+the old decompress entry point.
+Retain the upstream inline test-size corrections. The pre-existing broken-
+length test uses the release archive's compressed_id3_frame.mp3, identical
+to compressed_id3_frame_invalid.mp3 in fa189f6c. Retain that commit's exact
+142-byte picture assertion for the bounded output. No additional binary
+fixtures or fixture-dependent tests are imported.
+Upstream commits: https://github.com/taglib/taglib/commit/<full ID below>.
+
+From 397b6c1de3f02688b71f50f7f3eec95584948363 Mon Sep 17 00:00:00 2001
+From: Stephen Booth <me@sbooth.org>
+Date: Sat, 31 Jan 2026 01:24:54 -0600
+Subject: [PATCH] Add check for ID3v2 frame data length (#1300)
+
+Also fix some wrong frame sizes in the unit tests.
+
+---------
+
+Co-authored-by: Urs Fleisch <ufleisch@users.sourceforge.net>
+
+From fa189f6cf73ad67656182149ab32395f66a255b3 Mon Sep 17 00:00:00 2001
+From: Urs Fleisch <ufleisch@users.sourceforge.net>
+Date: Fri, 26 Jun 2026 09:39:27 +0200
+Subject: [PATCH] Fix data length indicator check for compressed ID3v2 frames
+ (#1371)
+
+
+From 18572e90a6a4f72d21faa3bac4a7b467bd4e6c83 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Sat, 1 Aug 2026 00:18:24 -0400
+Subject: [PATCH] Limit ID3 compressed-frame expansion (#1382)
+
+A crafted compressed ID3v2 frame can declare an excessive output size
+and cause zlib to allocate memory based on attacker-controlled data.
+
+Bound decompression by an absolute 64 MiB limit and a 64:1 expansion
+ratio, while retaining normal ID3v2.3 length handling.
+
+From 5530420d088fa25f72d58349c6cc118b8f22d9bf Mon Sep 17 00:00:00 2001
+From: Thomas Bergwinkl <bergos@users.noreply.github.com>
+Date: Sat, 1 Aug 2026 07:53:53 +0200
+Subject: [PATCH] Fix ID3v2 frame data length check for per-frame
+ unsynchronised ID3v2.4 frames (#1385)
+
+Frame::fieldData() (taglib/mpeg/id3v2/id3v2frame.cpp) discarded any
+ID3v2.4 frame whose declared size (from the header) no longer matched
+its actual buffer size after per-frame unsynchronisation was decoded by
+FrameFactory::prepareFrameHeader(), silently emptying frames like
+TIT2/TPE1/TALB. Clamp the declared length to what's actually available
+instead of discarding the frame, only bailing out if the frame's data
+offset itself doesn't fit.
+
+Adds testUnsynchDecodeID3v24Frame() to tests/test_id3v2.cpp, covering a
+frame with its own per-frame Unsynchronisation flag (as opposed to the
+tag-wide flag already covered by testUnsynchDecode()), using new fixture
+tests/data/unsynch24.id3.
+
+From 2cace8e7aa6c8762cffaffedfbc71e451c04c912 Mon Sep 17 00:00:00 2001
+From: Acts1631 <69813585+acts-1631@users.noreply.github.com>
+Date: Sun, 9 Aug 2026 10:14:41 -0400
+Subject: [PATCH] ID3v2: limit embedded frame nesting (#1405)
+
+Limit recursive CHAP and CTOC embedded frame parsing to 64 levels.
+This prevents crafted ID3v2 tags from exhausting the parser stack.
+
+Use one thread-local guard shared by both paths so mixed CHAP and
+CTOC nesting is bounded as well.
+
+--- a/taglib/mpeg/id3v2/frames/chapterframe.cpp
++++ b/taglib/mpeg/id3v2/frames/chapterframe.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "id3v2framefactory.h"
+ #include <tbytevectorlist.h>
+ #include <tpropertymap.h>
+ #include <tdebug.h>
+@@ -267,7 +268,7 @@
+     return;
+ 
+   while(embPos < size - header()->size()) {
+-    Frame *frame = FrameFactory::instance()->createFrame(data.mid(pos + embPos), d->tagHeader);
++    Frame *frame = FrameFactory::createEmbeddedFrame(data.mid(pos + embPos), d->tagHeader);
+ 
+     if(!frame)
+       return;
+--- a/taglib/mpeg/id3v2/frames/tableofcontentsframe.cpp
++++ b/taglib/mpeg/id3v2/frames/tableofcontentsframe.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include "id3v2framefactory.h"
+ #include <tbytevectorlist.h>
+ #include <tpropertymap.h>
+ #include <tdebug.h>
+@@ -308,7 +309,7 @@
+     return;
+ 
+   while(embPos < size - header()->size()) {
+-    Frame *frame = FrameFactory::instance()->createFrame(data.mid(pos + embPos), d->tagHeader);
++    Frame *frame = FrameFactory::createEmbeddedFrame(data.mid(pos + embPos), d->tagHeader);
+ 
+     if(!frame)
+       return;
+--- a/taglib/mpeg/id3v2/id3v2frame.cpp
++++ b/taglib/mpeg/id3v2/id3v2frame.cpp
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <cstdint>
+ #include <bitset>
+ 
+ #include <tdebug.h>
+@@ -44,6 +45,11 @@
+ 
+ using namespace TagLib;
+ using namespace ID3v2;
++
++namespace {
++  const unsigned int maxCompressedFrameOutputSize = 64U * 1024U * 1024U;
++  const unsigned int maxCompressedFrameRatio = 64;
++}
+ 
+ class Frame::FramePrivate
+ {
+@@ -241,8 +247,24 @@
+   unsigned int frameDataLength = size();
+ 
+   if(d->header->compression() || d->header->dataLengthIndicator()) {
+-    frameDataLength = SynchData::toUInt(frameData.mid(headerSize, 4));
++    frameDataLength = d->header->version() < 4
++      ? frameData.mid(headerSize, 4).toUInt()
++      : SynchData::toUInt(frameData.mid(headerSize, 4));
+     frameDataOffset += 4;
++  }
++  if(!d->header->compression() &&
++     frameData.size() >= headerSize &&
++     (frameDataOffset > frameData.size() ||
++      frameDataLength > frameData.size() - frameDataOffset)) {
++    // The first check is needed because some "dual purpose" frame constructors
++    // call this method with only the frame ID, i.e. without a complete header.
++    if(frameDataOffset > frameData.size()) {
++      debug("Invalid frame data length");
++      return ByteVector();
++    }
++    // Per-frame ID3v2.4 unsynchronisation can shrink frameData after the
++    // header's declared size was set; use what's actually available.
++    frameDataLength = frameData.size() - frameDataOffset;
+   }
+ 
+   if(zlib::isAvailable() && d->header->compression() && !d->header->encryption()) {
+@@ -251,7 +273,16 @@
+       return ByteVector();
+     }
+ 
+-    const ByteVector outData = zlib::decompress(frameData.mid(frameDataOffset));
++    const ByteVector compressedData = frameData.mid(frameDataOffset);
++    const uint64_t maxOutputSizeForInput =
++      static_cast<uint64_t>(compressedData.size()) * maxCompressedFrameRatio;
++    if(frameDataLength > maxCompressedFrameOutputSize ||
++       frameDataLength > maxOutputSizeForInput) {
++      debug("Compressed frame exceeds decompression limit");
++      return ByteVector();
++    }
++
++    const ByteVector outData = zlib::decompress(compressedData, frameDataLength);
+     if(!outData.isEmpty() && frameDataLength != outData.size()) {
+       debug("frameDataLength does not match the data length returned by zlib");
+     }
+--- a/taglib/mpeg/id3v2/id3v2framefactory.cpp
++++ b/taglib/mpeg/id3v2/id3v2framefactory.cpp
+@@ -53,6 +53,23 @@
+ 
+ namespace
+ {
++  constexpr unsigned int MAX_EMBEDDED_FRAME_DEPTH = 64;
++  thread_local unsigned int embeddedFrameDepth = 0;
++
++  class EmbeddedFrameDepth
++  {
++  public:
++    EmbeddedFrameDepth()
++    {
++      ++embeddedFrameDepth;
++    }
++
++    ~EmbeddedFrameDepth()
++    {
++      --embeddedFrameDepth;
++    }
++  };
++
+   void updateGenre(TextIdentificationFrame *frame)
+   {
+     StringList fields = frame->fieldList();
+@@ -130,6 +147,18 @@
+ Frame *FrameFactory::createFrame(const ByteVector &origData, Header *tagHeader) const
+ {
+     return createFrame(origData, const_cast<const Header *>(tagHeader));
++}
++
++Frame *FrameFactory::createEmbeddedFrame(const ByteVector &origData,
++                                         const Header *tagHeader)
++{
++  if(embeddedFrameDepth >= MAX_EMBEDDED_FRAME_DEPTH) {
++    debug("ID3v2: Maximum embedded frame nesting depth exceeded");
++    return 0;
++  }
++
++  EmbeddedFrameDepth depth;
++  return FrameFactory::instance()->createFrame(origData, tagHeader);
+ }
+ 
+ Frame *FrameFactory::createFrame(const ByteVector &origData, const Header *tagHeader) const
+--- a/taglib/mpeg/id3v2/id3v2framefactory.h
++++ b/taglib/mpeg/id3v2/id3v2framefactory.h
+@@ -36,6 +36,8 @@
+   namespace ID3v2 {
+ 
+     class TextIdentificationFrame;
++    class ChapterFrame;
++    class TableOfContentsFrame;
+ 
+     //! A factory for creating ID3v2 frames during parsing
+ 
+@@ -154,6 +156,11 @@
+       virtual bool updateFrame(Frame::Header *header) const;
+ 
+     private:
++      static Frame *createEmbeddedFrame(const ByteVector &origData,
++                                        const Header *tagHeader);
++      friend class ChapterFrame;
++      friend class TableOfContentsFrame;
++
+       FrameFactory(const FrameFactory &);
+       FrameFactory &operator=(const FrameFactory &);
+ 
+--- a/taglib/toolkit/tzlib.cpp
++++ b/taglib/toolkit/tzlib.cpp
+@@ -33,6 +33,8 @@
+ # include <tdebug.h>
+ #endif
+ 
++#include <climits>
++#include <algorithm>
+ #include "tzlib.h"
+ 
+ using namespace TagLib;
+@@ -50,7 +52,7 @@
+ #endif
+ }
+ 
+-ByteVector zlib::decompress(const ByteVector &data)
++ByteVector zlib::decompress(const ByteVector &data, unsigned int maxLength)
+ {
+ #ifdef HAVE_ZLIB
+ 
+@@ -72,9 +74,15 @@
+ 
+   do {
+     const size_t offset = outData.size();
+-    outData.resize(outData.size() + chunkSize);
++    // Bound actual output, not only the size declared by the frame.
++    if(offset >= maxLength) {
++      inflateEnd(&stream);
++      return outData;
++    }
++    const unsigned int available = std::min(chunkSize, maxLength - outData.size());
++    outData.resize(outData.size() + available);
+ 
+-    stream.avail_out = static_cast<uInt>(chunkSize);
++    stream.avail_out = static_cast<uInt>(available);
+     stream.next_out  = reinterpret_cast<Bytef *>(outData.data() + offset);
+ 
+     const int result = inflate(&stream, Z_NO_FLUSH);
+@@ -104,3 +112,8 @@
+ 
+ #endif
+ }
++
++ByteVector zlib::decompress(const ByteVector &data)
++{
++  return decompress(data, UINT_MAX);
++}
+--- a/taglib/toolkit/tzlib.h
++++ b/taglib/toolkit/tzlib.h
+@@ -46,6 +46,11 @@
+       */
+      ByteVector decompress(const ByteVector &data);
+ 
++     /*!
++      * Decompress data by zlib, at most maxLength bytes.
++      */
++     ByteVector decompress(const ByteVector &data, unsigned int maxLength);
++
+   }  // namespace zlib
+ }  // namespace TagLib
+ 
+--- a/tests/test_id3v2.cpp
++++ b/tests/test_id3v2.cpp
+@@ -233,13 +233,13 @@
+     f.setData(multiBomBeData);
+     CPPUNIT_ASSERT_EQUAL(String("Foo Bar"), f.toString());
+ 
+-    ByteVector singleBomLeData("TPE1\x00\x00\x00\x13\x00\x00\x01\xff\xfe"
++    ByteVector singleBomLeData("TPE1\x00\x00\x00\x11\x00\x00\x01\xff\xfe"
+                                "F\0o\0o\0\0\0"
+                                "B\0a\0r\0", 27);
+     f.setData(singleBomLeData);
+     CPPUNIT_ASSERT_EQUAL(String("Foo Bar"), f.toString());
+ 
+-    ByteVector singleBomBeData("TPE1\x00\x00\x00\x13\x00\x00\x01\xfe\xff"
++    ByteVector singleBomBeData("TPE1\x00\x00\x00\x11\x00\x00\x01\xfe\xff"
+                                "\0F\0o\0o\0\0"
+                                "\0B\0a\0r", 27);
+     f.setData(singleBomBeData);
+@@ -280,7 +280,7 @@
+   void testParseAPIC_UTF16_BOM()
+   {
+     ID3v2::AttachedPictureFrame f(ByteVector(
+-      "\x41\x50\x49\x43\x00\x02\x0c\x59\x00\x00\x01\x69\x6d\x61\x67\x65"
++      "\x41\x50\x49\x43\x00\x00\x00\x26\x00\x00\x01\x69\x6d\x61\x67\x65"
+       "\x2f\x6a\x70\x65\x67\x00\x00\xfe\xff\x00\x63\x00\x6f\x00\x76\x00"
+       "\x65\x00\x72\x00\x2e\x00\x6a\x00\x70\x00\x67\x00\x00\xff\xd8\xff",
+       16 * 3));
+@@ -666,7 +666,7 @@
+   {
+     ID3v2::SynchronizedLyricsFrame f(
+       ByteVector("SYLT"                      // Frame ID
+-                 "\x00\x00\x00\x21"          // Frame size
++                 "\x00\x00\x00\x1e"          // Frame size
+                  "\x00\x00"                  // Frame flags
+                  "\x00"                      // Text encoding
+                  "eng"                       // Language
+@@ -1127,7 +1127,7 @@
+       CPPUNIT_ASSERT_EQUAL(String("image/bmp"), frame->mimeType());
+       CPPUNIT_ASSERT_EQUAL(ID3v2::AttachedPictureFrame::Other, frame->type());
+       CPPUNIT_ASSERT_EQUAL(String(""), frame->description());
+-      CPPUNIT_ASSERT_EQUAL((unsigned int)86414, frame->picture().size());
++      CPPUNIT_ASSERT_EQUAL((unsigned int)142, frame->picture().size());
+     }
+     else {
+       // Skip the test if ZLIB is not installed.
+@@ -1370,7 +1370,7 @@
+ 
+     ByteVector chapterData =
+       ByteVector("CHAP"                     // Frame ID
+-                 "\x00\x00\x00\x20"         // Frame size
++                 "\x00\x00\x00\x12"         // Frame size
+                  "\x00\x00"                 // Frame flags
+                  "\x43\x00"                 // Element ID ("C")
+                  "\x00\x00\x00\x03"         // Start time
+@@ -1393,7 +1393,10 @@
+     CPPUNIT_ASSERT((unsigned int)0x03 == f1.endOffset());
+     CPPUNIT_ASSERT((unsigned int)0x00 == f1.embeddedFrameList().size());
+ 
+-    ID3v2::ChapterFrame f2(&header, chapterData + embeddedFrameData);
++    auto chapWithTit2Data = chapterData + embeddedFrameData;
++    // Adapt the frame size for the added embedded frame data.
++    chapWithTit2Data[7] = static_cast<char>(chapterData[7] + embeddedFrameData.size());
++    ID3v2::ChapterFrame f2(&header, chapWithTit2Data);
+ 
+     CPPUNIT_ASSERT_EQUAL(ByteVector("C"), f2.elementID());
+     CPPUNIT_ASSERT((unsigned int)0x03 == f2.startTime());
