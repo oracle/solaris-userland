@@ -1,0 +1,25 @@
+From 0acfe66a9963a83d71fcc77223663a370149a916 Mon Sep 17 00:00:00 2001
+From: "Bernhard M. Wiedemann" <bwiedemann@suse.de>
+Date: Thu, 5 Apr 2018 06:36:00 +0200
+Subject: [PATCH] Do not make files world writable
+
+If we can chmod it, we own the file,
+so we only need a writable-bit for the owner, not for everybody.
+
+The permissions are changed back soon after, but it creates a small window
+for local attackers to insert their stuff into our build results.
+
+Upstream: https://github.com/duncs/clusterssh/commit/0acfe66a9963a83d71fcc77223663a370149a916
+Adapted to App-ClusterSSH 4.09 context; the final 0555 mode is unchanged.
+
+--- a/bin_PL/_build_docs
++++ b/bin_PL/_build_docs
+@@ -25,7 +25,7 @@
+     print "Generating: $source",$/;
+ 
+     if(-f $dest) {
+-        chmod(0777, $dest) || die "Could not chmod $dest for removing: $!";
++        chmod(0755, $dest) || die "Could not chmod $dest for removing: $!";
+     }
+ 
+     open(my $sfh, '<', $source) || die "Could not open $source for reading: $!";
